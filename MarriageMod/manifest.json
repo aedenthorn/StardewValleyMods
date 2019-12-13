@@ -1,0 +1,10 @@
+﻿{
+  "Name": "Marriage Mod",
+  "Author": "Aedenthorn",
+  "Version": "1.0.0",
+  "Description": "Allows marriage when already married.",
+  "UniqueID": "Aedenthorn.MarriageMod",
+  "EntryDll": "MarriageMod.dll",
+  "MinimumApiVersion": "2.10.0",
+  "UpdateKeys": []
+}

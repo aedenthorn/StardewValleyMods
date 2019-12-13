@@ -1,0 +1,10 @@
+﻿{
+  "Name": "Fruit Tree Shaker",
+  "Author": "Aedenthorn",
+  "Version": "1.0.0",
+  "Description": "Shakes fruit trees daily.",
+  "UniqueID": "Aedenthorn.FruitTreeShaker",
+  "EntryDll": "FruitTreeShaker.dll",
+  "MinimumApiVersion": "2.10.0",
+  "UpdateKeys": []
+}
