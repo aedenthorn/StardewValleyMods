@@ -4,12 +4,16 @@ namespace RandomNPC
 {
     public class RNPC
     {
-        internal string nameID;
-        public string npc;
+        public string nameID;
+        public string npcString;
         public string birthday;
         public string startLoc;
         public string name;
-        public string skin;
+        public string skinColour;
+        public string hairStyle;
+        public string hairColour;
+        public string eyeColour;
+        public string[] clothes;
         public string age;
         public string manner;
         public string anxiety;
@@ -17,26 +21,38 @@ namespace RandomNPC
         public string gender;
         public string datable;
         public string refinement;
-        internal string[] giftTaste;
+        public string[] giftTaste;
+        public string bodyType;
 
-        public RNPC(string npc)
+        public RNPC(string npcString, string npcID, string startLoc)
         {
-            this.npc = npc;
-            string[] npca = npc.Split('/');
-            this.age = npca[0];
-            this.manner = npca[1];
-            this.anxiety = npca[2];
-            this.optimism = npca[3];
-            this.gender = npca[4];
-            this.datable = npca[5];
-            this.birthday = npca[8];
-            this.startLoc = npca[10];
-            this.name = npca[11];
-            this.skin = npca[12];
-            this.refinement = npca[13];
-            this.giftTaste = npca[14].Split('^');
-            
-            this.nameID = String.Join("", name.Split(' '));
+            this.npcString = npcString;
+            string[] npca = npcString.Split('/');
+            int i = 0;
+            this.age = npca[i++];
+            this.manner = npca[i++];
+            this.anxiety = npca[i++];
+            this.optimism = npca[i++];
+            this.gender = npca[i++];
+            this.datable = npca[i++];
+            this.refinement = npca[i++];
+            this.birthday = npca[i++];
+            this.name = npca[i++];
+            this.giftTaste = npca[i++].Split('^');
+            this.bodyType = npca[i++];
+            this.skinColour = npca[i++];
+            this.hairStyle = npca[i++];
+            this.hairColour = npca[i++];
+            this.eyeColour = npca[i++];
+            this.clothes = npca[i++].Split('^');
+
+            this.nameID = npcID;
+            this.startLoc = startLoc;
+        }
+
+        internal string MakeDisposition()
+        {
+            return age + "/" + manner + "/" + anxiety + "/" + optimism + "/" + gender + "/" + datable + "///" + birthday + "//" +startLoc+ "/" + name;
         }
     }
 }

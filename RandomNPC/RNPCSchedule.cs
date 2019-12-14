@@ -20,7 +20,7 @@ namespace RandomNPC
 
         public string MakeString()
         {
-            string str = "";
+            string str = "610 "+npc.startLoc+" 3/";
             string mTime;
             int mHour;
             int mH;
