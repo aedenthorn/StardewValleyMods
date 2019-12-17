@@ -3,6 +3,7 @@ using Microsoft.Xna.Framework.Graphics;
 using StardewModdingAPI;
 using StardewModdingAPI.Events;
 using StardewValley;
+using StardewValley.Locations;
 using StardewValley.TerrainFeatures;
 using System;
 using System.Collections.Generic;
@@ -26,14 +27,160 @@ namespace RandomNPC
 		internal ModData RNPClightSkinColours { get; private set; }
 		internal ModData RNPChairStyles { get; private set; }
 		internal ModData RNPCnaturalHairColours { get; private set; }
+		internal ModData RNPCdarkHairColours { get; private set; }
 		internal ModData RNPCexoticHairColours { get; private set; }
 		internal ModData RNPCclothes { get; private set; }
 		internal ModData RNPCskinColours { get; private set; }
 		internal ModData RNPCsavedNPCs { get; private set; }
 
 		private List<RNPCSchedule> RNPCSchedules = new List<RNPCSchedule>();
-		public int RNPCMax { get; private set; }
+		public int RNPCMaxVisitors { get; private set; }
 		public List<RNPC> RNPCs = new List<RNPC>();
+
+
+
+		/*********
+        ** Public methods
+        *********/
+		/// <summary>The mod entry point, called after the mod is first loaded.</summary>
+		/// <param name="helper">Provides simplified APIs for writing mods.</param>
+		public override void Entry(IModHelper helper)
+		{
+			this.Config = this.Helper.ReadConfig<ModConfig>();
+
+			this.RNPCdialogueStrings = this.Helper.Data.ReadJsonFile<ModData>("assets/dialogues.json") ?? new ModData();
+			this.RNPCengagementDialogueStrings = this.Helper.Data.ReadJsonFile<ModData>("assets/engagement_dialogues.json") ?? new ModData();
+			this.RNPCgiftDialogueStrings = this.Helper.Data.ReadJsonFile<ModData>("assets/gift_dialogues.json") ?? new ModData();
+
+			this.RNPCscheduleStrings = this.Helper.Data.ReadJsonFile<ModData>("assets/schedules.json") ?? new ModData();
+
+			this.RNPCfemaleNameStrings = this.Helper.Data.ReadJsonFile<ModData>("assets/female_names.json") ?? new ModData();
+			this.RNPCmaleNameStrings = this.Helper.Data.ReadJsonFile<ModData>("assets/male_names.json") ?? new ModData();
+
+			this.RNPCbodyTypes = this.Helper.Data.ReadJsonFile<ModData>("assets/body_types.json") ?? new ModData();
+			this.RNPCdarkSkinColours = this.Helper.Data.ReadJsonFile<ModData>("assets/dark_skin_colours.json") ?? new ModData();
+			this.RNPClightSkinColours = this.Helper.Data.ReadJsonFile<ModData>("assets/light_skin_colours.json") ?? new ModData();
+
+			this.RNPChairStyles = this.Helper.Data.ReadJsonFile<ModData>("assets/hair_styles.json") ?? new ModData();
+			this.RNPCnaturalHairColours = this.Helper.Data.ReadJsonFile<ModData>("assets/natural_hair_sets.json") ?? new ModData();
+			this.RNPCdarkHairColours = this.Helper.Data.ReadJsonFile<ModData>("assets/dark_hair_sets.json") ?? new ModData();
+			this.RNPCexoticHairColours = this.Helper.Data.ReadJsonFile<ModData>("assets/exotic_hair_sets.json") ?? new ModData();
+
+			this.RNPCclothes = this.Helper.Data.ReadJsonFile<ModData>("assets/clothes.json") ?? new ModData();
+
+			this.RNPCMaxVisitors = Math.Min(24, Math.Min(Config.RNPCTotal, Config.RNPCMaxVisitors));
+
+			this.RNPCsavedNPCs = this.Helper.Data.ReadJsonFile<ModData>("assets/saved_npcs.json") ?? new ModData();
+			while (RNPCsavedNPCs.data.Count < Config.RNPCTotal)
+			{
+				RNPCsavedNPCs.data.Add(GenerateNPCString());
+			}
+			RNPCsavedNPCs.data = RNPCsavedNPCs.data.Take(Config.RNPCTotal).ToList();
+
+			this.Helper.Data.WriteJsonFile<ModData>("assets/saved_npcs.json", RNPCsavedNPCs);
+
+			for (int i = 0; i <RNPCsavedNPCs.data.Count; i++)
+			{
+				string npc = RNPCsavedNPCs.data[i];
+				this.RNPCs.Add(new RNPC(npc, "RNPC" + i));
+			}
+
+			// shuffle for visitors
+
+			RNPCs = RNPCs.OrderBy(n => Guid.NewGuid()).ToList();
+
+			for (int i = 0; i < RNPCs.Count; i++)
+			{
+				RNPCs[i].startLoc = "BusStop " + (13 + (i % 6)) + " " + (11 + i / 6);
+				if (i < RNPCMaxVisitors)
+				{
+					RNPCs[i].visiting = true;
+				}
+				else
+				{
+					RNPCs[i].visiting = false;
+				}
+			}
+
+			helper.Events.GameLoop.ReturnedToTitle += this.ReturnedToTitle;
+			helper.Events.GameLoop.DayEnding += this.DayEnding;
+			helper.Events.GameLoop.DayStarted += this.DayStarted;
+
+
+		}
+
+		private void ReturnedToTitle(object sender, ReturnedToTitleEventArgs e)
+		{
+			// shuffle for visitors
+
+			RNPCs = RNPCs.OrderBy(n => Guid.NewGuid()).ToList();
+
+			for (int i = 0; i < RNPCs.Count; i++)
+			{
+				RNPCs[i].startLoc = "BusStop " + (13 + (i % 6)) + " " + (11 + i / 6);
+				if (i < RNPCMaxVisitors)
+				{
+					RNPCs[i].visiting = true;
+				}
+				else
+				{
+					RNPCs[i].visiting = false;
+				}
+				this.Helper.Content.InvalidateCache("Characters/schedules/" + RNPCs[i].nameID);
+			}
+			this.Helper.Content.InvalidateCache("Data/NPCDispositions");
+		}
+
+		private void DayEnding(object sender, DayEndingEventArgs e)
+		{
+			// shuffle for visitors
+
+			RNPCs = RNPCs.OrderBy(n => Guid.NewGuid()).ToList();
+
+			for (int i = 0; i < RNPCs.Count; i++)
+			{
+				RNPCs[i].startLoc = "BusStop " + (13 + (i % 6)) + " " + (11 + i / 6);
+				if (i < RNPCMaxVisitors)
+				{
+					RNPCs[i].visiting = true;
+				}
+				else
+				{
+					RNPCs[i].visiting = false;
+				}
+				this.Helper.Content.InvalidateCache("Characters/schedules/" + RNPCs[i].nameID);
+			}
+			this.Helper.Content.InvalidateCache("Data/NPCDispositions");
+		}
+
+		private void DayStarted(object sender, DayStartedEventArgs e)
+		{
+			foreach (GameLocation l in Game1.locations)
+			{
+				if (l.GetType() == typeof(BusStop))
+				{
+					foreach (NPC npc in l.getCharacters())
+					{
+						for(int i = 0; i < RNPCs.Count; i++)
+						{
+							RNPC rnpc = RNPCs[i];
+							if(rnpc.nameID == npc.name && !rnpc.visiting) 
+							{
+								Game1.warpCharacter(npc, "BusStop", new Vector2(0, 0));
+								npc.IsInvisible = true;
+								
+							}
+							else
+							{
+								l.getCharacterFromName(npc.name).faceDirection(2);
+								npc.IsInvisible = false;
+							}
+						}
+					}
+				}
+			}
+		}
+
 
 		/// <summary>Get whether this instance can edit the given asset.</summary>
 		/// <param name="asset">Basic metadata about the asset being loaded.</param>
@@ -41,7 +188,7 @@ namespace RandomNPC
 		{
 			if (asset.AssetNameEquals("Data/NPCDispositions") || asset.AssetNameEquals("Data/NPCGiftTastes") || asset.AssetNameEquals("Characters/EngagementDialogue"))
 			{
-				base.Monitor.Log("Can load: " + asset.AssetName, LogLevel.Alert);
+				//base.Monitor.Log("Can load: " + asset.AssetName, LogLevel.Alert);
 				return true;
 			}
 
@@ -119,24 +266,6 @@ namespace RandomNPC
 			return potentialDialogue[Game1.random.Next(0,potentialDialogue.Count)];
 		}
 
-		private bool FitsNPC(string npcString, string str)
-		{
-			string[] stra = str.Split('/');
-			string[] npca = npcString.Split('/');
-			if(
-					(stra[0] == npca[0] || stra[0] == "any")
-					&& (stra[1] == npca[1] || stra[1] == "any")
-					&& (stra[2] == npca[2] || stra[2] == "any")
-					&& (stra[3] == npca[3] || stra[3] == "any")
-					&& (stra[4] == npca[4] || stra[4] == "any")
-					&& (stra[5] == npca[5] || stra[5] == "any")
-					&& (stra[6] == npca[6] || stra[6] == "any")
-				)
-			{
-				return true;
-			}
-			return false;
-		}
 
 		/// <summary>Get whether this instance can load the initial version of the given asset.</summary>
 		/// <param name="asset">Basic metadata about the asset being loaded.</param>
@@ -146,7 +275,6 @@ namespace RandomNPC
 			{
 				if (asset.AssetNameEquals("Portraits/"+ npc.nameID) || asset.AssetNameEquals("Characters/" + npc.nameID) || asset.AssetNameEquals("Characters/Dialogue/" + npc.nameID) || asset.AssetNameEquals("Characters/schedules/" + npc.nameID))
 				{
-					base.Monitor.Log("Can load: " + asset.AssetName, LogLevel.Alert);
 					return true;
 				}
 
@@ -194,12 +322,12 @@ namespace RandomNPC
 			Dictionary<string, List<string>> potentialDialogues = new Dictionary<string, List<string>>();
 			foreach(string dialogue in RNPCdialogueStrings.data)
 			{
-				if(FitsNPC(npc.npcString,dialogue))
+				if(FitsNPC(npc.npcString,dialogue.Replace('`','/')))
 				{
-					string which = dialogue.Split('/')[7];
+					string which = dialogue.Split('`')[7];
 					if (!potentialDialogues.ContainsKey(which)) 
 						potentialDialogues[which] = new List<string>();
-					potentialDialogues[which].Add(dialogue.Split('/')[8]);
+					potentialDialogues[which].Add(dialogue.Split('`')[8]);
 				}
 			}
 			foreach(KeyValuePair<string,List<string>> pot in potentialDialogues)
@@ -214,6 +342,14 @@ namespace RandomNPC
 			Dictionary<string, string> data = new Dictionary<string, string>();
 			RNPCSchedule schedule = new RNPCSchedule(npc);
 
+			if (!npc.visiting)
+			{
+				base.Monitor.Log(npc.nameID + " at "+ npc.startLoc+" is not visiting", LogLevel.Alert);
+
+				data.Add("spring", "");
+				return data;
+			}
+
 			string[] morning = MakeRandomAppointment(npc, "morning");
 			schedule.morningEarliest = morning[0];
 			schedule.morningLoc = morning[1];
@@ -225,12 +361,9 @@ namespace RandomNPC
 
 			string sstr = schedule.MakeString();
 
-			base.Monitor.Log("Schedule for "+npc.name+": "+sstr,LogLevel.Alert);
+			base.Monitor.Log(npc.nameID + " at " + npc.startLoc + " " + sstr, LogLevel.Alert);
 
 			data.Add("spring", sstr);
-			data.Add("summer", sstr);
-			data.Add("fall", sstr);
-			data.Add("winter", sstr);
 			return data;
 		}
 
@@ -280,22 +413,46 @@ namespace RandomNPC
 		{
 			Texture2D sprite = this.Helper.Content.Load<Texture2D>("assets/" + npc.bodyType + "_"+type+".png", ContentSource.ModFolder);
 			Texture2D hairT = this.Helper.Content.Load<Texture2D>("assets/" + npc.hairStyle + "_" + type + ".png", ContentSource.ModFolder);
-			Texture2D eyeT = this.Helper.Content.Load<Texture2D>("assets/" + npc.bodyType+ "_eyes_" + type + ".png", ContentSource.ModFolder);
+			Texture2D eyeT = this.Helper.Content.Load<Texture2D>("assets/eyes_" + type + ".png", ContentSource.ModFolder);
 			Texture2D topT = this.Helper.Content.Load<Texture2D>("assets/transparent_" + type + ".png", ContentSource.ModFolder);
 			Texture2D bottomT = topT;
 			Texture2D shoesT = topT;
 
-			if(npc.clothes[0] != "")
+			// clothes
+
+			// try and share with other type (char/portrait)
+			string[] clothes;
+			if (npc.clothes != null)
 			{
-				topT = this.Helper.Content.Load<Texture2D>("assets/" + npc.clothes[0]+ "_" + type + ".png", ContentSource.ModFolder);
+				clothes = npc.clothes;
 			}
-			if(npc.clothes[1] != "")
+			else
 			{
-				bottomT = this.Helper.Content.Load<Texture2D>("assets/" + npc.clothes[1]+ "_" + type + ".png", ContentSource.ModFolder);
+				List<string> potentialClothes = new List<string>();
+				foreach (string cloth in RNPCclothes.data)
+				{
+					string[] cla = cloth.Split('/');
+					if (FitsNPC(npc.npcString, cloth) && (cla[7] == "any" || cla[7] == npc.bodyType || cla[7].Split('|').Contains(npc.bodyType)))
+					{
+						potentialClothes.Add(cla[8]);
+					}
+				}
+				clothes = potentialClothes[Game1.random.Next(0, potentialClothes.Count)].Split('^');
+				npc.clothes = clothes;
+				npc.topRandomColour = new string[] { Game1.random.Next(0, 255).ToString(), Game1.random.Next(0, 255).ToString(), Game1.random.Next(0, 255).ToString() };
 			}
-			if(npc.clothes[2] != "" && type == "character")
+
+			if (clothes[0] != "")
 			{
-				shoesT = this.Helper.Content.Load<Texture2D>("assets/" + npc.clothes[2]+ ".png", ContentSource.ModFolder);
+				topT = this.Helper.Content.Load<Texture2D>("assets/" + clothes[0]+ "_" + type + ".png", ContentSource.ModFolder);
+			}
+			if(clothes[1] != "" && type == "character")
+			{
+				bottomT = this.Helper.Content.Load<Texture2D>("assets/" + clothes[1] + ".png", ContentSource.ModFolder);
+			}
+			if(clothes[2] != "" && type == "character")
+			{
+				shoesT = this.Helper.Content.Load<Texture2D>("assets/" + clothes[2]+ ".png", ContentSource.ModFolder);
 			}
 
 			Color[] data = new Color[sprite.Width * sprite.Height];
@@ -312,114 +469,149 @@ namespace RandomNPC
 			shoesT.GetData(dataS);
 
 			string[] skinRBG = npc.skinColour.Split(' ');
-			string[] hairRBG = npc.hairColour.Split(' ');
 			string[] eyeRBG = npc.eyeColour.Split(' ');
+			List<string> hairRBGs = npc.hairColour.Split('^').ToList();
+			
+			string[] baseColourT = clothes[3] == "any" ? npc.topRandomColour : null;
+			
+			string[] baseColourB;
+			switch (clothes[4])
+			{
+				case "any":
+					baseColourB = new string[] { Game1.random.Next(0, 255).ToString(), Game1.random.Next(0, 255).ToString(), Game1.random.Next(0, 255).ToString() };
+					break;
+				case "top":
+					baseColourB = baseColourT;
+					break;
+				default:
+					baseColourB = null;
+					break;
+			}
+			string[] baseColourS;
+			switch (clothes[5])
+			{
+				case "any":
+					baseColourS = new string[] { Game1.random.Next(0, 255).ToString(), Game1.random.Next(0, 255).ToString(), Game1.random.Next(0, 255).ToString() };
+					break;
+				case "top":
+					baseColourS = baseColourT;
+					break;
+				case "bottom":
+					baseColourS = baseColourB;
+					break;
+				default:
+					baseColourS = null;
+					break;
+			}
+
+			// make hair gradient
+
+			List<byte> hairGreys = new List<byte>();
+			for (int i = 0; i < data.Length; i++)
+			{
+				if (dataH[i].R == dataH[i].G && dataH[i].R == dataH[i].B && dataH[i].G == dataH[i].B) // greyscale
+				{
+					if(!hairGreys.Contains(dataH[i].R)) { // only add one of each grey
+						hairGreys.Add(dataH[i].R);
+					}
+				}
+			}
+
+			hairGreys.Sort();
+			hairGreys.Reverse(); // lightest to darkest
+
+			// make same number of greys as colours in gradient
+
+			if (hairRBGs.Count > hairGreys.Count) // ex 9 and 6
+			{
+				hairGreys = LengthenToMatch<byte,string>(hairGreys, hairRBGs);
+			}
+			else if (hairRBGs.Count < hairGreys.Count)
+			{
+				hairRBGs = LengthenToMatch<string,byte>(hairRBGs, hairGreys);
+
+			}
 
 			for (int i = 0; i < data.Length; i++)
 			{
-				if(dataH[i] != Color.Transparent)
+				if (dataH[i] != Color.Transparent)
 				{
-					data[i].R = (byte)(dataH[i].R - ((255 - int.Parse(hairRBG[0])) * dataH[i].R / 255));
-					data[i].G = (byte)(dataH[i].G - ((255 - int.Parse(hairRBG[1])) * dataH[i].G / 255));
-					data[i].B = (byte)(dataH[i].B - ((255 - int.Parse(hairRBG[2])) * dataH[i].B / 255));
-					data[i].A = 255;
+					if (dataH[i].R == dataH[i].G && dataH[i].R == dataH[i].B && dataH[i].G == dataH[i].B) // greyscale
+					{
+						// hair gradient
+
+						// for cases where more greys than colours
+						List<int> greyMatches = new List<int>();
+						for(int j = 0; j < hairGreys.Count; j++)
+						{
+							if(hairGreys[j] == dataH[i].R)
+							{
+								greyMatches.Add(j);
+							}
+
+						}
+
+						string[] hairRBG;
+						hairRBG = hairRBGs[greyMatches[Game1.random.Next(0,greyMatches.Count)]].Split(' '); // turns single grey into set of colours
+
+						data[i] = new Color(byte.Parse(hairRBG[0]), byte.Parse(hairRBG[1]), byte.Parse(hairRBG[2]), 255);
+					}
+					else // ignore already coloured parts
+					{
+						data[i] = dataH[i];
+					}
 				}
 				else if(dataE[i] != Color.Transparent)
 				{
 					if(dataE[i] != Color.White)
 					{
-						data[i].R = (byte)(dataE[i].R - ((255 - int.Parse(eyeRBG[0])) * dataE[i].R / 255));
-						data[i].G = (byte)(dataE[i].G - ((255 - int.Parse(eyeRBG[1])) * dataE[i].G / 255));
-						data[i].B = (byte)(dataE[i].B - ((255 - int.Parse(eyeRBG[2])) * dataE[i].B / 255));
+						data[i] = ColorizeGrey(eyeRBG, dataE[i]);
 					}
 					else
 					{
 						data[i] = Color.White;
 					}
-					data[i].A = 255;
 				}
 				else if(dataT[i] != Color.Transparent)
 				{
-					data[i] = dataT[i];
+					data[i] = baseColourT != null ? ColorizeGrey(baseColourT, dataT[i]) : dataT[i];
 				}
 				else if(dataB[i] != Color.Transparent)
 				{
-					data[i] = dataB[i];
+					data[i] = baseColourB != null ? ColorizeGrey(baseColourB, dataB[i]) : dataB[i];
 				}
 				else if(dataS[i] != Color.Transparent)
 				{
-					data[i] = dataS[i];
+					data[i] = baseColourS != null ? ColorizeGrey(baseColourS, dataS[i]) : dataS[i];
 				}
 				else if(data[i] != Color.Transparent)
 				{
-					data[i].R = (byte)(data[i].R - ((255-int.Parse(skinRBG[0]))*data[i].R/255));
-					data[i].G = (byte)(data[i].G - ((255 - int.Parse(skinRBG[1])) * data[i].G / 255));
-					data[i].B = (byte)(data[i].B - ((255 - int.Parse(skinRBG[2])) * data[i].B / 255));
-					data[i].A = 255;
+					data[i] = ColorizeGrey(skinRBG, data[i]);
 				}
 			}
 			sprite.SetData<Color>(data);
 			return sprite;
 		}
 
-		/*********
-        ** Public methods
-        *********/
-		/// <summary>The mod entry point, called after the mod is first loaded.</summary>
-		/// <param name="helper">Provides simplified APIs for writing mods.</param>
-		public override void Entry(IModHelper helper)
+		private Color ColorizeGrey(string[] baseColour, Color greyMap)
 		{
-			this.Config = this.Helper.ReadConfig<ModConfig>();
-			
-			this.RNPCdialogueStrings = this.Helper.Data.ReadJsonFile<ModData>("assets/dialogues.json") ?? new ModData();
-			this.RNPCengagementDialogueStrings = this.Helper.Data.ReadJsonFile<ModData>("assets/engagement_dialogues.json") ?? new ModData();
-			this.RNPCgiftDialogueStrings = this.Helper.Data.ReadJsonFile<ModData>("assets/gift_dialogues.json") ?? new ModData();	
-
-			this.RNPCscheduleStrings = this.Helper.Data.ReadJsonFile<ModData>("assets/schedules.json") ?? new ModData();
-			
-			this.RNPCfemaleNameStrings = this.Helper.Data.ReadJsonFile<ModData>("assets/female_names.json") ?? new ModData();
-			this.RNPCmaleNameStrings = this.Helper.Data.ReadJsonFile<ModData>("assets/male_names.json") ?? new ModData();
-
-			this.RNPCbodyTypes = this.Helper.Data.ReadJsonFile<ModData>("assets/body_types.json") ?? new ModData();
-			this.RNPCdarkSkinColours = this.Helper.Data.ReadJsonFile<ModData>("assets/dark_skin_colours.json") ?? new ModData();
-			this.RNPClightSkinColours = this.Helper.Data.ReadJsonFile<ModData>("assets/light_skin_colours.json") ?? new ModData();
-
-			this.RNPChairStyles = this.Helper.Data.ReadJsonFile<ModData>("assets/hair_styles.json") ?? new ModData();
-			this.RNPCnaturalHairColours = this.Helper.Data.ReadJsonFile<ModData>("assets/natural_hair.json") ?? new ModData();
-			this.RNPCexoticHairColours = this.Helper.Data.ReadJsonFile<ModData>("assets/exotic_hair.json") ?? new ModData();
-			
-			this.RNPCclothes = this.Helper.Data.ReadJsonFile<ModData>("assets/clothes.json") ?? new ModData();
-
-			
-
-			this.RNPCMax = Math.Min(24, Config.RNPCMax);
-
-			this.RNPCsavedNPCs = this.Helper.Data.ReadJsonFile<ModData>("assets/saved_npcs.json") ?? new ModData();
-			while (RNPCsavedNPCs.data.Count < RNPCMax)
-			{
-				RNPCsavedNPCs.data.Add(GenerateNPCString());
-			}
-			this.Helper.Data.WriteJsonFile<ModData>("assets/saved_npcs.json", RNPCsavedNPCs);
-
-			int npcCount = 0;
-			foreach(string npc in RNPCsavedNPCs.data)
-			{
-				string startLoc = "BusStop " + (13 + (npcCount % 5)) + " " + (10 + (npcCount) / 5);
-				this.RNPCs.Add(new RNPC(npc,"RNPC"+ (npcCount++),startLoc));
-			}
-			 
-
-			base.Monitor.Log("loaded", LogLevel.Alert);
-
+			//base.Monitor.Log(string.Join("", baseColour), LogLevel.Alert);
+			Color outColour = new Color();
+			outColour.R = (byte)(greyMap.R - Math.Round((255 - double.Parse(baseColour[0])) * greyMap.R / 255));
+			outColour.G = (byte)(greyMap.G - Math.Round((255 - double.Parse(baseColour[1])) * greyMap.G / 255));
+			outColour.B = (byte)(greyMap.B - Math.Round((255 - double.Parse(baseColour[2])) * greyMap.B / 255));
+			outColour.A = 255;
+			return outColour;
 		}
 
-		private string GenerateNPCString()
+		private string GenerateNPCString() 
 		{
 			string npcstring = "";
 
 			// age
-			string[] ages = { "child", "teen", "adult" };
-			string age = GetRandomFromDist(ages,Config.ageDist);
+			//string[] ages = { "child", "teen", "adult" };
+			string[] ages = { "teen", "adult" };
+			string age = GetRandomFromDist(ages,Config.AgeDist);
 
 			// manners
 			string[] manners = { "polite", "rude", "neutral" };
@@ -441,6 +633,9 @@ namespace RandomNPC
 			// datable
 			double datableChance = Config.DatableChance;
 			string datable = Game1.random.NextDouble() < datableChance ? "datable" : "non-datable";
+
+			// traits
+			string traits = "none"; // not used yet
 
 			// birthday
 			string[] seasons = { "spring", "summer", "fall", "winter" };
@@ -475,10 +670,6 @@ namespace RandomNPC
 			TextInfo textInfo = new CultureInfo("en-US", false).TextInfo;
 			name = textInfo.ToTitleCase(name.ToLower());
 
-			// refinement
-			string[] refinements = { "refined", "ordinary", "coarse" };
-			string refinement = refinements[Game1.random.Next(0, refinements.Length)];
-
 			// gift taste
 
 			string giftTaste = "^^^^";
@@ -489,7 +680,7 @@ namespace RandomNPC
 			foreach(string body in RNPCbodyTypes.data)
 			{
 				string[] ba = body.Split('/');
-				if ((ba[0] == "any" || ba[0] == age) && (ba[1] == "any" || ba[1] == gender))
+				if ((ba[0] == "any" || ba[0] == age || ba[0].Split('|').Contains(age)) && (ba[1] == "any" || ba[1] == gender || ba[1].Split('|').Contains(gender)))
 				{
 					potentialBodyTypes.Add(ba[2]);
 				}
@@ -506,9 +697,9 @@ namespace RandomNPC
 			foreach (string style in RNPChairStyles.data)
 			{
 				string[] ba = style.Split('/');
-				if ((ba[0] == "any" || ba[0] == age) && (ba[1] == "any" || ba[1] == gender) && (ba[2] == "any" || ba[2] == refinement))
+				if ((ba[0] == "any" || ba[0] == age || ba[0].Split('|').Contains(age))&& (ba[1] == "any" || ba[1] == gender) && (ba[2] == "any" || ba[2] == manner || ba[2].Split('|').Contains(manner)) && (ba[3] == "any" || SharesItems(traits.Split('|'),ba[3].Split('|'))))
 				{
-					potentialHairStyles.Add(ba[3]);
+					potentialHairStyles.Add(ba[4]);
 				}
 			}
 			string hairStyle = potentialHairStyles[Game1.random.Next(0, potentialHairStyles.Count)];
@@ -516,7 +707,11 @@ namespace RandomNPC
 			// hair colour
 
 			string hairColour;
-			if(Game1.random.NextDouble() < Config.NaturalHairChance)
+			if(int.Parse(skinColour.Split(' ')[0]) < 150 && Config.DarkSkinDarkHair)
+			{
+				hairColour = RNPCdarkHairColours.data[Game1.random.Next(0, RNPCdarkHairColours.data.Count)];
+			}
+			else if (Game1.random.NextDouble() < Config.NaturalHairChance)
 			{
 				hairColour = RNPCnaturalHairColours.data[Game1.random.Next(0, RNPCnaturalHairColours.data.Count)];
 			}
@@ -545,8 +740,8 @@ namespace RandomNPC
 					break;
 				case "brown":
 					r = 255;
-					g = Game1.random.Next(128, 200);
-					b = g - 128;
+					g = Game1.random.Next(100, 150);
+					b = g - 100;
 					break;
 				default:
 					break;
@@ -554,26 +749,75 @@ namespace RandomNPC
 			};
 			eyeColour = r + " " + g + " " + b;
 
-			// clothes
-
-			List<string> potentialClothes = new List<string>();
-			foreach (string cloth in RNPCclothes.data)
-			{
-				string[] cla = cloth.Split('/');
-				if (FitsNPC(age + "/" + manner + "/" + anxiety + "/" + optimism + "/" + gender + "/" + datable + "/" + refinement, cloth ) && (cla[7] == "any" || cla[7].Split('^').Contains(bodyType))) 
-				{ 
-					potentialClothes.Add(cla[8]);
-				}
-			}
-			string clothes = potentialClothes[Game1.random.Next(0, potentialClothes.Count)];
-
-
-			npcstring = age + "/" + manner + "/" + anxiety + "/" + optimism + "/" + gender + "/" + datable + "/" + refinement + "/" + birthday + "/" + name + "/" + giftTaste + "/" + bodyType + "/" + skinColour + "/" + hairStyle + "/" + hairColour + "/" + eyeColour + "/" + clothes;
+			npcstring = age + "/" + manner + "/" + anxiety + "/" + optimism + "/" + gender + "/" + datable + "/"+traits+"/" + birthday + "/" + name + "/" + giftTaste + "/" + bodyType + "/" + skinColour + "/" + hairStyle + "/" + hairColour + "/" + eyeColour;
 
 			return npcstring;
 		}
 
-		private string GetRandomFromDist(string[] strings, double[] dists)
+		private bool SharesItems(string[] sharing, string[] shares)
+		{
+			foreach(string s in shares)
+			{
+				if (!sharing.Contains(s))
+				{
+					return false;
+				}
+			}
+			return true;
+		}
+
+		private List<T1> LengthenToMatch<T1, T2>(List<T1> smallerL, List<T2> largerL)
+		{
+			int multMax = (int)Math.Ceiling((double)largerL.Count / (double)smallerL.Count); // 10/6 = 2
+			int multMin = (int)Math.Floor((double)largerL.Count / (double)smallerL.Count);  // 10/6 = 1
+			int multDiff = largerL.Count - smallerL.Count * multMin;  // 10 - 6*1 = 4 remainder, number of entries that get extra
+
+			List<T1> outList = new List<T1>();
+
+			for (int i = 0; i < smallerL.Count; i++)
+			{
+				int no;
+				if (i == 0 || i > multDiff) // first gets repeated fewer, also those after multDiff (4)
+				{
+					no = multMin;
+				}
+				else
+				{
+					no = multMax;
+				}
+				for (int j = 0; j < no; j++)
+				{
+					outList.Add(smallerL[i]);
+				}
+			}
+			return outList;
+		}
+
+
+		private bool FitsNPC(string npcString, string str)
+		{
+
+			string[] stra = str.Split('/');
+			string[] npca = npcString.Split('/');
+			for (int i = 0; i < 6; i++)
+			{
+				if(stra.Length == i) 
+				{
+					break;
+				}
+
+				if (stra[i] != "any")
+				{
+					List<string> strai = stra[i].Split('|').ToList();
+					if (stra[i] != "" && stra[i] != npca[i] && !strai.Contains(npca[i]))
+					{
+						return false;
+					}
+				}
+			}
+			return true;
+		}
+		private string GetRandomFromDist(string[] strings, double[] dists) 
 		{
 			double rnd = Game1.random.NextDouble();
 			double x = 0;

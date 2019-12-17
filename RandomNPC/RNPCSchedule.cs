@@ -20,7 +20,7 @@ namespace RandomNPC
 
         public string MakeString()
         {
-            string str = "610 "+npc.startLoc+" 3/";
+            string str = "";
             string mTime;
             int mHour;
             int mH;
@@ -35,7 +35,7 @@ namespace RandomNPC
             else
             {
                 mH = Game1.random.Next(6, 9);
-                mM = Game1.random.Next(0, 5);
+                mM = Game1.random.Next(mH == 6 ? 1 : 0, 5);
             }
             mTime = mH.ToString() + mM.ToString() + "0";
 
@@ -57,7 +57,7 @@ namespace RandomNPC
             }
             aTime = aH.ToString() + aM.ToString() + "0";
 
-            str += mTime + " " + morningLoc + "/" + aTime + " " + afternoonLoc;
+            str += mTime + " " + morningLoc + "/" + aTime + " " + afternoonLoc+ "/1800 "+npc.startLoc+" 0";
             return str;
         }
     }

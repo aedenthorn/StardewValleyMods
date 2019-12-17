@@ -13,18 +13,20 @@ namespace RandomNPC
         public string hairStyle;
         public string hairColour;
         public string eyeColour;
-        public string[] clothes;
         public string age;
         public string manner;
         public string anxiety;
         public string optimism;
         public string gender;
         public string datable;
-        public string refinement;
+        public string[] traits;
         public string[] giftTaste;
         public string bodyType;
+        public bool visiting = false;
+        public string[] clothes = null;
+        public string[] topRandomColour = null;
 
-        public RNPC(string npcString, string npcID, string startLoc)
+        public RNPC(string npcString, string npcID)
         {
             this.npcString = npcString;
             string[] npca = npcString.Split('/');
@@ -35,7 +37,7 @@ namespace RandomNPC
             this.optimism = npca[i++];
             this.gender = npca[i++];
             this.datable = npca[i++];
-            this.refinement = npca[i++];
+            this.traits = npca[i++].Split('|');
             this.birthday = npca[i++];
             this.name = npca[i++];
             this.giftTaste = npca[i++].Split('^');
@@ -44,15 +46,13 @@ namespace RandomNPC
             this.hairStyle = npca[i++];
             this.hairColour = npca[i++];
             this.eyeColour = npca[i++];
-            this.clothes = npca[i++].Split('^');
 
             this.nameID = npcID;
-            this.startLoc = startLoc;
         }
 
         internal string MakeDisposition()
         {
-            return age + "/" + manner + "/" + anxiety + "/" + optimism + "/" + gender + "/" + datable + "///" + birthday + "//" +startLoc+ "/" + name;
+            return age + "/" + manner + "/" + anxiety + "/" + optimism + "/" + gender + "/" + datable + "//Other/" + birthday + "//" +startLoc+ "/" + name;
         }
     }
 }
