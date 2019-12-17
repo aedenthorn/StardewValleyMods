@@ -1,8 +1,8 @@
 ﻿{
   "Name": "Random NPCs",
   "Author": "Aedenthorn",
-  "Version": "0.0.1",
-  "Description": "Cause randomly-generated NPCs to visit Stardew Valley.",
+  "Version": "0.0.4",
+  "Description": "Causes randomly-generated NPCs to visit Stardew Valley.",
   "UniqueID": "Aedenthorn.RandomNPC",
   "EntryDll": "RandomNPC.dll",
   "MinimumApiVersion": "3.0.0",

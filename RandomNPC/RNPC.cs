@@ -25,6 +25,7 @@ namespace RandomNPC
         public bool visiting = false;
         public string[] clothes = null;
         public string[] topRandomColour = null;
+        public RNPCSchedule schedule;
 
         public RNPC(string npcString, string npcID)
         {

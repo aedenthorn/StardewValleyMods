@@ -7,9 +7,11 @@ namespace RandomNPC
     {
         public string morningLoc;
         public string afternoonLoc;
-        internal string morningEarliest;
-        internal string afternoonEarliest;
-        private RNPC npc;
+        public string morningEarliest;
+        public string afternoonEarliest;
+        public string mTime;
+        public string aTime;
+        public RNPC npc;
 
         public RNPCSchedule(RNPC npc)
         {
@@ -21,7 +23,6 @@ namespace RandomNPC
         public string MakeString()
         {
             string str = "";
-            string mTime;
             int mHour;
             int mH;
             int mM;
@@ -37,9 +38,8 @@ namespace RandomNPC
                 mH = Game1.random.Next(6, 9);
                 mM = Game1.random.Next(mH == 6 ? 1 : 0, 5);
             }
-            mTime = mH.ToString() + mM.ToString() + "0";
+            this.mTime = mH.ToString() + mM.ToString() + "0";
 
-            string aTime;
             int aH;
             int aHour;
             int aM;
@@ -55,7 +55,7 @@ namespace RandomNPC
                 aH = Game1.random.Next(12, 16);
                 aM = Game1.random.Next(0, 5);
             }
-            aTime = aH.ToString() + aM.ToString() + "0";
+            this.aTime = aH.ToString() + aM.ToString() + "0";
 
             str += mTime + " " + morningLoc + "/" + aTime + " " + afternoonLoc+ "/1800 "+npc.startLoc+" 0";
             return str;

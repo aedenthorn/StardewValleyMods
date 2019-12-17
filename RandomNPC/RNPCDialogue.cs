@@ -1,19 +1,20 @@
 ﻿using System;
 using System.Collections;
+using System.Collections.Generic;
 
 namespace RandomNPC
 {
     internal class RNPCDialogue
     {
-        private string gender;
-        private string situation;
-        private string mood;
-        private string friendship;
-        private string personality;
-        private string age;
-        private string manners;
-        private string anxiety;
-        private string optimism;
+        public string gender;
+        public string situation;
+        public string mood;
+        public string friendship;
+        public string personality;
+        public string age;
+        public string manners;
+        public string anxiety;
+        public string optimism;
 
         public RNPCDialogue(string dialogueString)
         {

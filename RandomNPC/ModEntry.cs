@@ -16,7 +16,7 @@ namespace RandomNPC
 	public class ModEntry : Mod, IAssetEditor, IAssetLoader
 	{
 		internal ModConfig Config { get; private set; }
-		internal ModData RNPCdialogueStrings { get; private set; }
+		internal DialogueData RNPCdialogueData { get; private set; }
 		internal ModData RNPCengagementDialogueStrings { get; private set; }
 		internal ModData RNPCgiftDialogueStrings { get; private set; }
 		internal ModData RNPCscheduleStrings { get; private set; }
@@ -48,7 +48,7 @@ namespace RandomNPC
 		{
 			this.Config = this.Helper.ReadConfig<ModConfig>();
 
-			this.RNPCdialogueStrings = this.Helper.Data.ReadJsonFile<ModData>("assets/dialogues.json") ?? new ModData();
+			this.RNPCdialogueData = this.Helper.Data.ReadJsonFile<DialogueData>("assets/dialogue.json") ?? new DialogueData();
 			this.RNPCengagementDialogueStrings = this.Helper.Data.ReadJsonFile<ModData>("assets/engagement_dialogues.json") ?? new ModData();
 			this.RNPCgiftDialogueStrings = this.Helper.Data.ReadJsonFile<ModData>("assets/gift_dialogues.json") ?? new ModData();
 
@@ -70,14 +70,14 @@ namespace RandomNPC
 
 			this.RNPCMaxVisitors = Math.Min(24, Math.Min(Config.RNPCTotal, Config.RNPCMaxVisitors));
 
-			this.RNPCsavedNPCs = this.Helper.Data.ReadJsonFile<ModData>("assets/saved_npcs.json") ?? new ModData();
+			this.RNPCsavedNPCs = this.Helper.Data.ReadJsonFile<ModData>("saved_npcs.json") ?? new ModData();
 			while (RNPCsavedNPCs.data.Count < Config.RNPCTotal)
 			{
 				RNPCsavedNPCs.data.Add(GenerateNPCString());
 			}
 			RNPCsavedNPCs.data = RNPCsavedNPCs.data.Take(Config.RNPCTotal).ToList();
 
-			this.Helper.Data.WriteJsonFile<ModData>("assets/saved_npcs.json", RNPCsavedNPCs);
+			this.Helper.Data.WriteJsonFile<ModData>("saved_npcs.json", RNPCsavedNPCs);
 
 			for (int i = 0; i <RNPCsavedNPCs.data.Count; i++)
 			{
@@ -105,8 +105,18 @@ namespace RandomNPC
 			helper.Events.GameLoop.ReturnedToTitle += this.ReturnedToTitle;
 			helper.Events.GameLoop.DayEnding += this.DayEnding;
 			helper.Events.GameLoop.DayStarted += this.DayStarted;
+			//helper.Events.GameLoop.OneSecondUpdateTicked += this.OneSecondUpdateTicked;
 
 
+		}
+
+		private void OneSecondUpdateTicked(object sender, OneSecondUpdateTickedEventArgs e)
+		{
+			foreach (RNPC npc in RNPCs)
+			{
+				if(Game1.player.friendshipData.Keys.Contains(npc.nameID))
+					Game1.player.friendshipData[npc.nameID].TalkedToToday = false;
+			}
 		}
 
 		private void ReturnedToTitle(object sender, ReturnedToTitleEventArgs e)
@@ -235,14 +245,13 @@ namespace RandomNPC
 		private string[] MakeEngagementDialogue(RNPC npc)
 		{
 			List<string[]> potentialDialogues = new List<string[]>();
-			foreach (string dialog in RNPCengagementDialogueStrings.data)
+			List<string> potentialDialogue = new List<string>();
+			potentialDialogue = GetHighestRankedStrings(npc.npcString, RNPCengagementDialogueStrings.data,7);
+			for (int j = 0; j < potentialDialogue.Count; j++)
 			{
-				if (FitsNPC(npc.npcString, dialog))
-				{
-					potentialDialogues.Add(dialog.Split('/').Skip(7).ToArray());
-				}
-
+				potentialDialogues.Add(potentialDialogue[j].Split('/'));
 			}
+
 			string[] output = potentialDialogues[Game1.random.Next(0,potentialDialogues.Count)];
 			return output;
 		}
@@ -250,19 +259,18 @@ namespace RandomNPC
 		private string MakeGiftDialogue(RNPC npc)
 		{
 			List<string> potentialDialogue = new List<string>();
-			foreach(string taste in RNPCgiftDialogueStrings.data)
+			potentialDialogue = GetHighestRankedStrings(npc.npcString,RNPCgiftDialogueStrings.data,7);
+			for(int j = 0; j < potentialDialogue.Count; j++)
 			{
-				if(FitsNPC(npc.npcString, taste))
+				string str = potentialDialogue[j];
+				string[] tastes = str.Split('^');
+				for (int i = 0; i < tastes.Length; i++)
 				{
-					string[] tastea = taste.Split('/')[7].Split('^');
-					for(int i = 0; i < tastea.Length; i++)
-					{
-						tastea[i] += "/" + npc.giftTaste[i];
-					}
-					potentialDialogue.Add(String.Join("/",tastea));
+					tastes[i] += "/" + npc.giftTaste[i];
 				}
-
+				potentialDialogue[j] = String.Join("/", tastes);
 			}
+
 			return potentialDialogue[Game1.random.Next(0,potentialDialogue.Count)];
 		}
 
@@ -316,25 +324,150 @@ namespace RandomNPC
 			throw new InvalidOperationException($"Unexpected asset '{asset.AssetName}'.");
 		}
 
-		private Dictionary<string,string> MakeDialogue(RNPC npc)
+		private Dictionary<string,string> MakeDialogue(RNPC rnpc)
 		{
 			Dictionary<string, string> data = new Dictionary<string, string>();
-			Dictionary<string, List<string>> potentialDialogues = new Dictionary<string, List<string>>();
-			foreach(string dialogue in RNPCdialogueStrings.data)
+			List<string> intros = GetHighestRankedStrings(rnpc.npcString,RNPCdialogueData.introductions,7);
+			data.Add("Introduction", intros[Game1.random.Next(0, intros.Count)]);
+
+			// make dialogue
+
+			string[] dow = { "Mon","Tue","Wed","Thu","Fri","Sat","Sun" };
+
+			NPC npc = Game1.getCharacterFromName(rnpc.nameID);
+			int hearts = Game1.player.getFriendshipHeartLevelForNPC(rnpc.nameID);
+
+			if (!Config.RequireHeartsForDialogue)
 			{
-				if(FitsNPC(npc.npcString,dialogue.Replace('`','/')))
+				hearts = 10;
+			}
+
+			string question = GetRandomDialogue(rnpc, RNPCdialogueData.questions);
+			List<string> farmerQuestions = RNPCdialogueData.farmer_questions;
+			List<string> rejections = GetHighestRankedStrings(rnpc.npcString, RNPCdialogueData.rejections,7); 
+
+			List<string> questa = new List<string>();
+
+			string questionString = "$q 4242 question_asked#" + question;
+
+			int fqi = 0;
+
+			questionString += "#$r " + (Game1.Date.TotalDays - 1) + " 0 fquest_" + (fqi) + "#" + farmerQuestions[fqi];
+			if (hearts >=2) // allow asking about personality
+			{
+				string manner = GetRandomDialogue(rnpc,RNPCdialogueData.manner);
+				string anxiety = GetRandomDialogue(rnpc,RNPCdialogueData.anxiety);
+				string optimism = GetRandomDialogue(rnpc, RNPCdialogueData.optimism);
+
+				string infoResponse = GetRandomDialogue(rnpc, RNPCdialogueData.info_responses);
+
+				data.Add("fquest_"+(fqi), infoResponse.Replace("$name",rnpc.name).Replace("$manner",manner).Replace("$anxiety",anxiety).Replace("$optimism",optimism));
+			}
+			else
+			{
+				data.Add("fquest_" + (fqi),rejections[Game1.random.Next(0, rejections.Count)]);
+			}
+			fqi++;
+
+			questionString += "#$r 4343 0 fquest_" + (fqi) + "#" + farmerQuestions[fqi];
+			if (hearts >=4) // allow asking about plans
+			{
+				string morning = "THIS IS AN ERROR";
+				string afternoon = "THIS IS AN ERROR";
+				foreach (RNPCSchedule schedule in RNPCSchedules)
 				{
-					string which = dialogue.Split('`')[7];
-					if (!potentialDialogues.ContainsKey(which)) 
-						potentialDialogues[which] = new List<string>();
-					potentialDialogues[which].Add(dialogue.Split('`')[8]);
+					if(schedule.npc.nameID == rnpc.nameID)
+					{
+						morning = GetRandomDialogue(rnpc, RNPCdialogueData.places[schedule.morningLoc.Split(' ')[0]]);
+						afternoon = GetRandomDialogue(rnpc, RNPCdialogueData.places[schedule.afternoonLoc.Split(' ')[0]]);
+						break;
+					}
+				}
+				string scheduleDialogue = GetRandomDialogue(rnpc, RNPCdialogueData.schedules);
+				data.Add("fquest_" + (fqi), scheduleDialogue.Replace("@", morning).Replace("#", afternoon));
+			}
+			else
+			{
+				data.Add("fquest_" + (fqi), rejections[Game1.random.Next(0, rejections.Count)]);
+			}
+			fqi++;
+
+			questionString += "#$r 4343 0 fquest_" + (fqi) + "#" + farmerQuestions[fqi];
+			if (hearts >= 6) // allow asking about advice
+			{
+				string advice = GetRandomDialogue(rnpc, RNPCdialogueData.advice);
+				data.Add("fquest_" + (fqi), advice);
+			}
+			else
+			{
+				data.Add("fquest_" + (fqi), rejections[Game1.random.Next(0, rejections.Count)]);
+			}
+			fqi++;
+
+			questionString += "#$r 4343 0 fquest_" + (fqi) + "#" + farmerQuestions[fqi];
+			if (hearts >=6) // allow asking about help
+			{
+
+				string quest = GetRandomDialogue(rnpc, RNPCdialogueData.quests);
+				string questq = "$q 4242 questq_answered#" + quest.Split('^')[0];
+				string questRight = GetRandomDialogue(rnpc, RNPCdialogueData.questRight);
+				string questWrong = GetRandomDialogue(rnpc, RNPCdialogueData.questWrong);
+				string questUnknown = GetRandomDialogue(rnpc, RNPCdialogueData.questUnknown);
+
+				questa = quest.Split('^')[1].Split('|').ToList();
+				questa = questa.OrderBy(n => Guid.NewGuid()).ToList();
+
+				for(int i = 0; i < questa.Count; i++)
+				{
+					questq += "#$r 4343 " + questa[i];
+				}
+
+				data.Add("fquest_" + (fqi), questq);
+
+				data.Add("quest_right", questRight);
+				data.Add("quest_wrong", questWrong);
+				data.Add("quest_unknown", questUnknown);
+			}
+			else
+			{
+				data.Add("fquest_" + (fqi), rejections[Game1.random.Next(0, rejections.Count)]);
+			}
+			fqi++;
+
+			if (!npc.datingFarmer)
+			{
+				questionString += "#$r 4343 0 fquest_" + (fqi) + "#" + farmerQuestions[fqi];
+				if (hearts >= 8) // allow asking about datability
+				{
+					string datable = GetRandomDialogue(rnpc, RNPCdialogueData.datable);
+
+					data.Add("fquest_" + (fqi), npc.datable ? datable.Split('^')[0] : datable.Split('^')[1]);
+				}
+				else
+				{
+					data.Add("fquest_" + (fqi), rejections[Game1.random.Next(0, rejections.Count)]);
 				}
 			}
-			foreach(KeyValuePair<string,List<string>> pot in potentialDialogues)
+
+			//base.Monitor.Log(questionString, LogLevel.Alert);
+
+			foreach(string d in dow)
 			{
-				data.Add(pot.Key, pot.Value[Game1.random.Next(0, pot.Value.Count)]);
+				data.Add(d, questionString);
 			}
+
 			return data;
+		}
+
+		private void Alert(string alert)
+		{
+			base.Monitor.Log(alert, LogLevel.Alert);	
+		}
+
+		private string GetRandomDialogue(RNPC rnpc, List<string> dialogues)
+		{
+			List<string> potStrings = GetHighestRankedStrings(rnpc.npcString, dialogues,7);
+			return potStrings[Game1.random.Next(0,potStrings.Count)];
 		}
 
 		private Dictionary<string, string> MakeSchedule(RNPC npc)
@@ -344,7 +477,7 @@ namespace RandomNPC
 
 			if (!npc.visiting)
 			{
-				base.Monitor.Log(npc.nameID + " at "+ npc.startLoc+" is not visiting", LogLevel.Alert);
+				//base.Monitor.Log(npc.nameID + " at "+ npc.startLoc+" is not visiting", LogLevel.Alert);
 
 				data.Add("spring", "");
 				return data;
@@ -361,7 +494,7 @@ namespace RandomNPC
 
 			string sstr = schedule.MakeString();
 
-			base.Monitor.Log(npc.nameID + " at " + npc.startLoc + " " + sstr, LogLevel.Alert);
+			Alert(npc.nameID + " at " + npc.startLoc + " " + sstr);
 
 			data.Add("spring", sstr);
 			return data;
@@ -370,15 +503,13 @@ namespace RandomNPC
 		private string[] MakeRandomAppointment(RNPC npc, string morning)
 		{
 			List<string[]> potentialApps = new List<string[]>();
-			foreach (string appset in RNPCscheduleStrings.data)
+			List<string> fitApps = GetHighestRankedStrings(npc.npcString,RNPCscheduleStrings.data,7);
+
+			foreach (string appset in fitApps)
 			{
-				if (!FitsNPC(npc.npcString, appset))
-				{
-					continue;
-				}
-				string time = appset.Split('/')[7].Split('^')[0];
-				string place = appset.Split('/')[7].Split('^')[1];
-				string[] locs = appset.Split('/')[7].Split('^')[2].Split('#');
+				string time = appset.Split('^')[0];
+				string place = appset.Split('^')[1];
+				string[] locs = appset.Split('^')[2].Split('#');
 				if (time == "any" || morning != "morning" || int.Parse(time) < 1100)
 				{
 					foreach (string loc in locs)
@@ -408,7 +539,6 @@ namespace RandomNPC
 
 		}
 
-
 		private Texture2D CreateCustomCharacter(RNPC npc, string type)
 		{
 			Texture2D sprite = this.Helper.Content.Load<Texture2D>("assets/" + npc.bodyType + "_"+type+".png", ContentSource.ModFolder);
@@ -428,15 +558,9 @@ namespace RandomNPC
 			}
 			else
 			{
-				List<string> potentialClothes = new List<string>();
-				foreach (string cloth in RNPCclothes.data)
-				{
-					string[] cla = cloth.Split('/');
-					if (FitsNPC(npc.npcString, cloth) && (cla[7] == "any" || cla[7] == npc.bodyType || cla[7].Split('|').Contains(npc.bodyType)))
-					{
-						potentialClothes.Add(cla[8]);
-					}
-				}
+				string npcString = string.Join("/", npc.npcString.Split('/').Take(7)) + "/" + npc.bodyType;
+				List<string> potentialClothes = GetHighestRankedStrings(npcString,RNPCclothes.data,8);
+
 				clothes = potentialClothes[Game1.random.Next(0, potentialClothes.Count)].Split('^');
 				npc.clothes = clothes;
 				npc.topRandomColour = new string[] { Game1.random.Next(0, 255).ToString(), Game1.random.Next(0, 255).ToString(), Game1.random.Next(0, 255).ToString() };
@@ -794,28 +918,53 @@ namespace RandomNPC
 		}
 
 
-		private bool FitsNPC(string npcString, string str)
+		private List<string> GetHighestRankedStrings(string npcString, List<string> data, int checks)
 		{
-
-			string[] stra = str.Split('/');
-			string[] npca = npcString.Split('/');
-			for (int i = 0; i < 6; i++)
+			List<string> outStrings = new List<string>();
+			int rank = 0;
+			foreach (string str in data)
 			{
-				if(stra.Length == i) 
+				int aRank = RankStringForNPC(npcString, str, checks);
+				if (aRank > rank)
+				{
+					outStrings = new List<string>(); // reset on higher rank
+					rank = aRank;
+				}
+				if (aRank == rank)
+				{
+					outStrings.Add(string.Join("/",str.Split('/').Skip(checks)));
+				}
+
+			}
+			return outStrings;
+		}
+
+
+		private int RankStringForNPC(string npcString, string str, int checks)
+		{
+			int rank = 0;
+
+			IEnumerable<string> stra = str.Split('/').Take(checks);
+			IEnumerable<string> npca = npcString.Split('/').Take(checks);
+			for (int i = 0; i < checks; i++)
+			{
+				if(stra.Count() == i) 
 				{
 					break;
 				}
-
-				if (stra[i] != "any")
+				string strai = stra.ElementAt(i);
+				string npcai = npca.ElementAt(i);
+				if (strai != "any")
 				{
-					List<string> strai = stra[i].Split('|').ToList();
-					if (stra[i] != "" && stra[i] != npca[i] && !strai.Contains(npca[i]))
+					List<string> straia = strai.Split('|').ToList();
+					if (strai != "" && strai != npcai && !straia.Contains(npcai))
 					{
-						return false;
+						return -1;
 					}
+					rank++;
 				}
 			}
-			return true;
+			return rank;
 		}
 		private string GetRandomFromDist(string[] strings, double[] dists) 
 		{
