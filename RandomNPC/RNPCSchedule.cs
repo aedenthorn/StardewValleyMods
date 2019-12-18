@@ -12,6 +12,7 @@ namespace RandomNPC
         public string mTime;
         public string aTime;
         public RNPC npc;
+        public int startM;
 
         public RNPCSchedule(RNPC npc)
         {
@@ -35,8 +36,8 @@ namespace RandomNPC
             }
             else
             {
-                mH = Game1.random.Next(6, 9);
-                mM = Game1.random.Next(mH == 6 ? 1 : 0, 5);
+                mH = Game1.random.Next(7, 9);
+                mM = Game1.random.Next(0, 5);
             }
             this.mTime = mH.ToString() + mM.ToString() + "0";
 
@@ -57,7 +58,30 @@ namespace RandomNPC
             }
             this.aTime = aH.ToString() + aM.ToString() + "0";
 
-            str += mTime + " " + morningLoc + "/" + aTime + " " + afternoonLoc+ "/1800 "+npc.startLoc+" 0";
+            // create starting location to go to
+
+            int startX = Game1.random.Next(25, 35);
+            int startY = Game1.random.Next(63, 72);
+            int startFace = 0;
+            if(startY < 66)
+            {
+                startFace = 2;
+            }
+            else if (startY < 68)
+            {
+                if (startX < 30)
+                {
+                    startFace = 1;
+                }
+                else
+                {
+                    startFace = 3;
+                }
+            }
+
+            startM = Game1.random.Next(1, 5);
+
+            str += "6"+startM+"0 Town "+startX+" "+startY+" "+startFace+"/"+ mTime + " " + morningLoc + "/" + aTime + " " + afternoonLoc+ "/"+ModEntry.Config.LeaveTime+ " BusStop 12 9 0";
             return str;
         }
     }

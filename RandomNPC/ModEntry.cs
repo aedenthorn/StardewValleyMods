@@ -9,13 +9,16 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using System.Reflection;
+using xTile.Layers;
+using xTile.Tiles;
 
 namespace RandomNPC
 {
 	/// <summary>The mod entry point.</summary>
 	public class ModEntry : Mod, IAssetEditor, IAssetLoader
 	{
-		internal ModConfig Config { get; private set; }
+		internal static ModConfig Config { get; private set; }
 		internal DialogueData RNPCdialogueData { get; private set; }
 		internal ModData RNPCengagementDialogueStrings { get; private set; }
 		internal ModData RNPCgiftDialogueStrings { get; private set; }
@@ -35,7 +38,10 @@ namespace RandomNPC
 
 		private List<RNPCSchedule> RNPCSchedules = new List<RNPCSchedule>();
 		public int RNPCMaxVisitors { get; private set; }
+
+		private bool droveOff = false;
 		public List<RNPC> RNPCs = new List<RNPC>();
+		private bool drivingOff;
 
 
 
@@ -46,7 +52,7 @@ namespace RandomNPC
 		/// <param name="helper">Provides simplified APIs for writing mods.</param>
 		public override void Entry(IModHelper helper)
 		{
-			this.Config = this.Helper.ReadConfig<ModConfig>();
+			Config = this.Helper.ReadConfig<ModConfig>();
 
 			this.RNPCdialogueData = this.Helper.Data.ReadJsonFile<DialogueData>("assets/dialogue.json") ?? new DialogueData();
 			this.RNPCengagementDialogueStrings = this.Helper.Data.ReadJsonFile<ModData>("assets/engagement_dialogues.json") ?? new ModData();
@@ -105,17 +111,108 @@ namespace RandomNPC
 			helper.Events.GameLoop.ReturnedToTitle += this.ReturnedToTitle;
 			helper.Events.GameLoop.DayEnding += this.DayEnding;
 			helper.Events.GameLoop.DayStarted += this.DayStarted;
-			//helper.Events.GameLoop.OneSecondUpdateTicked += this.OneSecondUpdateTicked;
+			//helper.Events.GameLoop.TimeChanged += this.TimeChanged;
+			helper.Events.GameLoop.OneSecondUpdateTicked += this.OneSecondUpdateTicked;
+			helper.Events.GameLoop.UpdateTicked += this.UpdateTicked;
 
 
 		}
 
+		private void UpdateTicked(object sender, UpdateTickedEventArgs e)
+		{
+			if (drivingOff && !droveOff) {
+				FieldInfo pos = typeof(BusStop).GetField("busPosition", BindingFlags.NonPublic | BindingFlags.Instance);
+				BusStop bs = (BusStop)Game1.getLocationFromName("BusStop");
+				if (((Vector2)pos.GetValue(bs)).X + 512f >= 0f)
+				{
+					FieldInfo mot = typeof(BusStop).GetField("busMotion", BindingFlags.NonPublic | BindingFlags.Instance);
+					mot.SetValue(bs, new Vector2(((Vector2)mot.GetValue(bs)).X - 0.075f, ((Vector2)mot.GetValue(bs)).Y));
+				}
+				else
+				{
+					droveOff = true;
+					drivingOff = false;
+				}
+			}
+		}
+
+		private void TimeChanged(object sender, TimeChangedEventArgs e)
+		{
+			if(Game1.timeOfDay < 700)
+			{
+				foreach (RNPCSchedule schedule in RNPCSchedules)
+				{
+					RNPC rnpc = schedule.npc;
+					if (rnpc.visiting && !rnpc.inTown && schedule.startM == (Game1.timeOfDay-600)/10)
+					{
+
+					}
+				}
+			}
+		}
+
 		private void OneSecondUpdateTicked(object sender, OneSecondUpdateTickedEventArgs e)
 		{
-			foreach (RNPC npc in RNPCs)
+			if (Game1.timeOfDay >= Config.LeaveTime && !droveOff && !drivingOff)
 			{
-				if(Game1.player.friendshipData.Keys.Contains(npc.nameID))
-					Game1.player.friendshipData[npc.nameID].TalkedToToday = false;
+				int gone = 0;
+				foreach (NPC npc in Game1.getLocationFromName("BusStop").characters)
+				{
+					if (npc.getTileLocation().X == 0 && npc.getTileLocation().Y == 0)
+					{
+						gone++;
+					}
+					if (npc.getTileLocation().X == 12 && npc.getTileLocation().Y == 9)
+					{
+						foreach (RNPC rnpc in RNPCs)
+						{
+							if (npc.name.Equals(rnpc.nameID))
+							{
+								npc.IsInvisible = true;
+								Game1.warpCharacter(npc, "BusStop", new Vector2(0, 0));
+							}
+						}
+					}
+				}
+
+				if (!drivingOff && gone == RNPCs.Count)
+				{
+					//Alert("Driving off");
+					drivingOff = true;
+					FieldInfo door = typeof(BusStop).GetField("busDoor", BindingFlags.NonPublic | BindingFlags.Instance);
+					FieldInfo pos = typeof(BusStop).GetField("busPosition", BindingFlags.NonPublic | BindingFlags.Instance);
+					FieldInfo mot = typeof(BusStop).GetField("busMotion", BindingFlags.NonPublic | BindingFlags.Instance);
+					BusStop bs = (BusStop)Game1.getLocationFromName("BusStop");
+					door.SetValue(bs, new TemporaryAnimatedSprite("LooseSprites\\Cursors", new Microsoft.Xna.Framework.Rectangle(288, 1311, 16, 38), (Vector2)pos.GetValue(bs) + new Vector2(16f, 26f) * 4f, false, 0f, Color.White)
+					{
+						interval = 999999f,
+						animationLength = 6,
+						holdLastFrame = true,
+						layerDepth = (((Vector2)pos.GetValue(bs)).Y + 192f) / 10000f + 1E-05f,
+						scale = 4f
+					});
+					((TemporaryAnimatedSprite)door.GetValue(bs)).timer = 0f;
+					((TemporaryAnimatedSprite)door.GetValue(bs)).interval = 70f;
+					((TemporaryAnimatedSprite)door.GetValue(bs)).endFunction = new TemporaryAnimatedSprite.endBehavior(delegate
+					{
+						bs.localSound("batFlap");
+						bs.localSound("busDriveOff");
+					});
+					bs.localSound("trashcanlid");
+					((TemporaryAnimatedSprite)door.GetValue(bs)).paused = false;
+
+					for (int i = 11; i < 19; i++)
+					{
+						for (int j = 7; j < 10; j++)
+						{
+							if (i == 12 && j == 9)
+								continue;
+							bs.removeTile(i, j, "Buildings");
+							//bs.setTileProperty(i, j, "Buildings", "Passable", "T");
+						}
+					}
+
+				}
 			}
 		}
 
@@ -143,8 +240,26 @@ namespace RandomNPC
 
 		private void DayEnding(object sender, DayEndingEventArgs e)
 		{
-			// shuffle for visitors
+			//reset bus
 
+			drivingOff = false;
+			droveOff = false;
+			BusStop bs = (BusStop)Game1.getLocationFromName("BusStop");
+			Layer layer = bs.map.GetLayer("Buildings");
+			for (int i = 11; i < 19; i++)
+			{
+				for (int j = 8; j < 10; j++)
+				{
+					if (i == 12 && j == 9)
+						continue;
+
+					TileSheet tilesheet = bs.map.GetTileSheet("outdoors");
+					int index = j == 8 ? 1056 : 1054;
+					layer.Tiles[i, j] = new StaticTile(layer, tilesheet, BlendMode.Alpha, tileIndex: index);
+				}
+			}
+
+			// shuffle for visitors
 			RNPCs = RNPCs.OrderBy(n => Guid.NewGuid()).ToList();
 
 			for (int i = 0; i < RNPCs.Count; i++)
@@ -541,9 +656,19 @@ namespace RandomNPC
 
 		private Texture2D CreateCustomCharacter(RNPC npc, string type)
 		{
-			Texture2D sprite = this.Helper.Content.Load<Texture2D>("assets/" + npc.bodyType + "_"+type+".png", ContentSource.ModFolder);
-			Texture2D hairT = this.Helper.Content.Load<Texture2D>("assets/" + npc.hairStyle + "_" + type + ".png", ContentSource.ModFolder);
-			Texture2D eyeT = this.Helper.Content.Load<Texture2D>("assets/eyes_" + type + ".png", ContentSource.ModFolder);
+			Texture2D sprite = this.Helper.Content.Load<Texture2D>("assets/body/" + npc.bodyType + "_"+type+".png", ContentSource.ModFolder);
+			Texture2D hairT = this.Helper.Content.Load<Texture2D>("assets/hair/" + npc.hairStyle + "_" + type + ".png", ContentSource.ModFolder);
+			Texture2D eyeT = this.Helper.Content.Load<Texture2D>("assets/body/" + npc.gender + "_eyes_" + type + ".png", ContentSource.ModFolder);
+			
+			Texture2D eyeBackT = null;
+			Texture2D noseT = null;
+			Texture2D mouthT = null;
+			if (type == "portrait")
+			{
+				eyeBackT = this.Helper.Content.Load<Texture2D>("assets/body/" + npc.gender + "_eyes_back.png", ContentSource.ModFolder);
+				noseT = this.Helper.Content.Load<Texture2D>("assets/body/" + npc.gender + "_nose.png", ContentSource.ModFolder);
+				mouthT = this.Helper.Content.Load<Texture2D>("assets/body/" + npc.gender + "_mouth.png", ContentSource.ModFolder);
+			}
 			Texture2D topT = this.Helper.Content.Load<Texture2D>("assets/transparent_" + type + ".png", ContentSource.ModFolder);
 			Texture2D bottomT = topT;
 			Texture2D shoesT = topT;
@@ -568,26 +693,35 @@ namespace RandomNPC
 
 			if (clothes[0] != "")
 			{
-				topT = this.Helper.Content.Load<Texture2D>("assets/" + clothes[0]+ "_" + type + ".png", ContentSource.ModFolder);
+				topT = this.Helper.Content.Load<Texture2D>("assets/clothes/" + clothes[0]+ "_" + type + ".png", ContentSource.ModFolder);
 			}
 			if(clothes[1] != "" && type == "character")
 			{
-				bottomT = this.Helper.Content.Load<Texture2D>("assets/" + clothes[1] + ".png", ContentSource.ModFolder);
+				bottomT = this.Helper.Content.Load<Texture2D>("assets/clothes/" + clothes[1] + ".png", ContentSource.ModFolder);
 			}
 			if(clothes[2] != "" && type == "character")
 			{
-				shoesT = this.Helper.Content.Load<Texture2D>("assets/" + clothes[2]+ ".png", ContentSource.ModFolder);
+				shoesT = this.Helper.Content.Load<Texture2D>("assets/clothes/" + clothes[2]+ ".png", ContentSource.ModFolder);
 			}
 
 			Color[] data = new Color[sprite.Width * sprite.Height];
 			Color[] dataH = new Color[sprite.Width * sprite.Height];
 			Color[] dataE = new Color[sprite.Width * sprite.Height];
+			Color[] dataEB = new Color[sprite.Width * sprite.Height];
+			Color[] dataN = new Color[sprite.Width * sprite.Height];
+			Color[] dataM = new Color[sprite.Width * sprite.Height];
 			Color[] dataT = new Color[sprite.Width * sprite.Height];
 			Color[] dataB = new Color[sprite.Width * sprite.Height];
 			Color[] dataS = new Color[sprite.Width * sprite.Height];
 			sprite.GetData(data);
 			hairT.GetData(dataH);
 			eyeT.GetData(dataE);
+			if (type == "portrait")
+			{
+				eyeBackT.GetData(dataEB);
+				noseT.GetData(dataN);
+				mouthT.GetData(dataM);
+			}
 			topT.GetData(dataT);
 			bottomT.GetData(dataB);
 			shoesT.GetData(dataS);
@@ -656,6 +790,8 @@ namespace RandomNPC
 
 			}
 
+			// start putting it together
+
 			for (int i = 0; i < data.Length; i++)
 			{
 				if (dataH[i] != Color.Transparent)
@@ -685,17 +821,6 @@ namespace RandomNPC
 						data[i] = dataH[i];
 					}
 				}
-				else if(dataE[i] != Color.Transparent)
-				{
-					if(dataE[i] != Color.White)
-					{
-						data[i] = ColorizeGrey(eyeRBG, dataE[i]);
-					}
-					else
-					{
-						data[i] = Color.White;
-					}
-				}
 				else if(dataT[i] != Color.Transparent)
 				{
 					data[i] = baseColourT != null ? ColorizeGrey(baseColourT, dataT[i]) : dataT[i];
@@ -708,7 +833,30 @@ namespace RandomNPC
 				{
 					data[i] = baseColourS != null ? ColorizeGrey(baseColourS, dataS[i]) : dataS[i];
 				}
-				else if(data[i] != Color.Transparent)
+				else if (dataE[i] != Color.Transparent)
+				{
+					if (dataE[i] != Color.White)
+					{
+						data[i] = ColorizeGrey(eyeRBG, dataE[i]);
+					}
+					else
+					{
+						data[i] = Color.White;
+					}
+				}
+				else if (dataEB[i] != Color.Transparent)
+				{
+					data[i] = ColorizeGrey(skinRBG, dataEB[i]);
+				}
+				else if (dataN[i] != Color.Transparent)
+				{
+					data[i] = ColorizeGrey(skinRBG, dataN[i]);
+				}
+				else if (dataM[i] != Color.Transparent)
+				{
+					data[i] = ColorizeGrey(skinRBG, dataM[i]);
+				}
+				else if (data[i] != Color.Transparent)
 				{
 					data[i] = ColorizeGrey(skinRBG, data[i]);
 				}
@@ -719,6 +867,10 @@ namespace RandomNPC
 
 		private Color ColorizeGrey(string[] baseColour, Color greyMap)
 		{
+			if(greyMap.R == greyMap.G && greyMap.R == greyMap.B && greyMap.G == greyMap.B) // not greyscale
+			{
+				return greyMap;
+			}
 			//base.Monitor.Log(string.Join("", baseColour), LogLevel.Alert);
 			Color outColour = new Color();
 			outColour.R = (byte)(greyMap.R - Math.Round((255 - double.Parse(baseColour[0])) * greyMap.R / 255));
