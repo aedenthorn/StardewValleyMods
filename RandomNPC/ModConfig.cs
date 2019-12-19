@@ -12,6 +12,7 @@
         public int RNPCMaxVisitors { get; set; } = 5;
         public int RNPCTotal { get; set; } = 15;
         public bool RequireHeartsForDialogue { get; set; } = false;
-        public int LeaveTime { get; internal set; } = 1800;
+        public int LeaveTime { get; set; } = 1800;
+        public bool DestroyObjectsUnderfoot { get; set; } = false;
     }
 }

@@ -50,10 +50,21 @@ namespace RandomNPC
             this.eyeColour = npca[i++];
 
             this.nameID = npcID;
+            this.startLoc = "BusStop 10000 10000";
         }
 
-        internal string MakeDisposition()
+        internal string MakeDisposition(int idx)
         {
+            if(idx < ModEntry.Config.RNPCMaxVisitors)
+            {
+                startLoc = "BusStop " + (13 + (idx % 6)) + " " + (11 + idx / 6);
+                visiting = true;
+            }
+            else
+            {
+                startLoc = "BusStop 10000 10000";
+                visiting = false;
+            }
             return age + "/" + manner + "/" + anxiety + "/" + optimism + "/" + gender + "/" + datable + "//Other/" + birthday + "//" +startLoc+ "/" + name;
         }
     }
