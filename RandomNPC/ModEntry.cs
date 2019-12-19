@@ -1107,10 +1107,21 @@ namespace RandomNPC
 				bool thisfreename = true;
 				for (int i = 0; i < RNPCsavedNPCs.data.Count; i++)
 				{
-					if (RNPCsavedNPCs.data[i].Split('/')[11] == name)
+					if (RNPCsavedNPCs.data[i].Split('/')[8] == name)
 					{
 						thisfreename = false;
 						break;
+					}
+				}
+				foreach(string str in SDVNPCS)
+				{
+					if (Game1.getCharacterFromName(str) != null)
+					{
+						if(Game1.getCharacterFromName(str).getName() == name)
+						{
+							thisfreename = false;
+							break;
+						}
 					}
 				}
 				if (thisfreename)
