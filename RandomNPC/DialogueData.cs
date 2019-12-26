@@ -23,6 +23,7 @@ namespace RandomNPC
         public List<string> quiz_howmuch_places;
         public List<string> quiz_howmuch_items;
         public List<string> quiz_who_answers;
+        public List<string> quiz_quest;
         public List<string> quizRight;
         public List<string> quizWrong;
         public List<string> quizUnknown;

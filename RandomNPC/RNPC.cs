@@ -1,4 +1,7 @@
-﻿using System;
+﻿using StardewValley;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace RandomNPC
 {
@@ -13,6 +16,7 @@ namespace RandomNPC
         public string hairStyle;
         public string hairColour;
         public string eyeColour;
+        public int npcID;
         public string age;
         public string manner;
         public string anxiety;
@@ -26,9 +30,10 @@ namespace RandomNPC
         public string[] clothes = null;
         public string[] topRandomColour = null;
         public RNPCSchedule schedule;
-        internal bool inTown = false;
+        public bool inTown = false;
+        public int questItem;
 
-        public RNPC(string npcString, string npcID)
+        public RNPC(string npcString, int npcID)
         {
             this.npcString = npcString;
             string[] npca = npcString.Split('/');
@@ -49,8 +54,10 @@ namespace RandomNPC
             this.hairColour = npca[i++];
             this.eyeColour = npca[i++];
 
-            this.nameID = npcID;
+            this.npcID = npcID;
+            this.nameID = "RNPC" + npcID;
             this.startLoc = "BusStop 10000 10000";
+
         }
 
         internal string MakeDisposition(int idx)

@@ -4,7 +4,8 @@ using StardewModdingAPI;
 using StardewModdingAPI.Events;
 using StardewValley;
 using StardewValley.Locations;
-using StardewValley.TerrainFeatures;
+using StardewValley.Menus;
+using StardewValley.Quests;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -36,7 +37,7 @@ namespace RandomNPC
 		internal ModData RNPCskinColours { get; private set; }
 		internal ModData RNPCsavedNPCs { get; private set; }
 
-		private List<RNPCSchedule> RNPCSchedules = new List<RNPCSchedule>();
+		private List<RNPCSchedule> RNPCSchedules = new List<RNPCSchedule>(); 
 		public int RNPCMaxVisitors { get; private set; }
 
 		private bool droveOff = false;
@@ -89,7 +90,7 @@ namespace RandomNPC
 			for (int i = 0; i < RNPCsavedNPCs.data.Count; i++)
 			{
 				string npc = RNPCsavedNPCs.data[i];
-				this.RNPCs.Add(new RNPC(npc, "RNPC" + i));
+				this.RNPCs.Add(new RNPC(npc, i));
 			}
 
 			// shuffle for visitors
@@ -112,14 +113,86 @@ namespace RandomNPC
 			helper.Events.GameLoop.ReturnedToTitle += this.ReturnedToTitle;
 			helper.Events.GameLoop.DayEnding += this.DayEnding;
 			helper.Events.GameLoop.DayStarted += this.DayStarted;
+			helper.Events.GameLoop.SaveLoaded += this.SaveLoaded;
 			//helper.Events.GameLoop.TimeChanged += this.TimeChanged;
 			helper.Events.GameLoop.OneSecondUpdateTicked += this.OneSecondUpdateTicked;
 			helper.Events.GameLoop.UpdateTicked += this.UpdateTicked;
+			//helper.Events.Display.MenuChanged += this.MenuChanged;
+			helper.Events.Input.ButtonPressed += this.ButtonPressed;
 			if (!Config.DestroyObjectsUnderfoot)
 			{
 				helper.Events.GameLoop.UpdateTicking += this.UpdateTicking;
 			}
 
+		}
+
+		private void SaveLoaded(object sender, SaveLoadedEventArgs e)
+		{
+			foreach(RNPC rnpc in RNPCs)
+			{
+				rnpc.questItem = GetRandomQuestItem(rnpc);
+			}
+		}
+
+		private int GetRandomQuestItem(RNPC rnpc)
+		{
+			//Alert(Game1.currentSeason);
+			int item;
+			if (!Game1.currentSeason.Equals("winter") && Game1.random.NextDouble() < 0.5)
+			{
+				List<int> crops = Utility.possibleCropsAtThisTime(Game1.currentSeason, Game1.dayOfMonth <= 7);
+				item = crops.ElementAt(Game1.random.Next(crops.Count));
+			}
+			else
+			{
+				item = Utility.getRandomItemFromSeason(Game1.currentSeason, 1000, true, true);
+				if (item == -5)
+				{
+					item = 176;
+				}
+				if (item == -6)
+				{
+					item = 184;
+				}
+			}
+			return item;
+		}
+
+		private void ButtonPressed(object sender, ButtonPressedEventArgs e)
+		{
+			if(e.Button == SButton.MouseLeft || e.Button == SButton.MouseRight)
+			{
+				IClickableMenu menu = Game1.activeClickableMenu;
+				if (menu == null || menu.GetType() != typeof(DialogueBox))
+					return;
+				int resp = (int)typeof(DialogueBox).GetField("selectedResponse", BindingFlags.NonPublic | BindingFlags.Instance).GetValue(menu);
+				List<Response> resps = (List<Response>)typeof(DialogueBox).GetField("responses", BindingFlags.NonPublic | BindingFlags.Instance).GetValue(menu);
+				if (resp >= resps.Count || resps[resp] == null)
+					return;
+				string key = resps[resp].responseKey;
+				if (key.StartsWith("accept_npc_quest"))
+				{
+					StartQuest(key);
+				}
+			}
+		}
+
+		private void StartQuest(string key)
+		{
+			int id = int.Parse(key.Split('_')[3]); // accept_npc_quest_ID
+			Game1.player.addQuest(id);
+		}
+
+		private void MenuChanged(object sender, MenuChangedEventArgs e)
+		{
+			if (e.OldMenu is DialogueBox)
+			{
+				DialogueBox db2 = (DialogueBox)e.OldMenu;
+				FieldInfo fi = typeof(DialogueBox).GetField("selectedResponse", BindingFlags.NonPublic | BindingFlags.Instance);
+				FieldInfo fi2 = typeof(DialogueBox).GetField("dialogues", BindingFlags.NonPublic | BindingFlags.Instance);
+				List<string> dialogues = (List<string>)fi.GetValue(db2);
+
+			}
 		}
 
 		private void UpdateTicking(object sender, UpdateTickingEventArgs e)
@@ -165,17 +238,6 @@ namespace RandomNPC
 
 		private void TimeChanged(object sender, TimeChangedEventArgs e)
 		{
-			if (Game1.timeOfDay < 700)
-			{
-				foreach (RNPCSchedule schedule in RNPCSchedules)
-				{
-					RNPC rnpc = schedule.npc;
-					if (rnpc.visiting && !rnpc.inTown && schedule.startM == (Game1.timeOfDay - 600) / 10)
-					{
-
-					}
-				}
-			}
 		}
 
 		private void OneSecondUpdateTicked(object sender, OneSecondUpdateTickedEventArgs e)
@@ -195,7 +257,6 @@ namespace RandomNPC
 						{
 							if (npc.name.Equals(rnpc.nameID))
 							{
-								npc.IsInvisible = true;
 								Game1.warpCharacter(npc, "BusStop", new Vector2(10000, 10000));
 							}
 						}
@@ -263,10 +324,31 @@ namespace RandomNPC
 				this.Helper.Content.InvalidateCache("Characters/schedules/" + RNPCs[i].nameID);
 			}
 			this.Helper.Content.InvalidateCache("Data/NPCDispositions");
+			this.Helper.Content.InvalidateCache("Data/Quests");
 		}
 
 		private void DayEnding(object sender, DayEndingEventArgs e)
 		{
+
+			// reset schedules
+
+			RNPCSchedules = new List<RNPCSchedule>();
+
+			// reset quests and quest items
+
+			this.Helper.Content.InvalidateCache("Data/Quests");
+			foreach (RNPC rnpc in RNPCs)
+			{
+				foreach(Quest quest in Game1.player.questLog)
+				{
+					if(quest.id == rnpc.npcID + 4200)
+					{
+						Game1.player.removeQuest(quest.id);
+					}
+				}
+				rnpc.questItem = GetRandomQuestItem(rnpc);
+			}
+
 			//reset bus
 
 			drivingOff = false;
@@ -301,6 +383,8 @@ namespace RandomNPC
 					RNPCs[i].visiting = false;
 				}
 				this.Helper.Content.InvalidateCache("Characters/schedules/" + RNPCs[i].nameID);
+				this.Helper.Content.InvalidateCache("Characters/" + RNPCs[i].nameID);
+				this.Helper.Content.InvalidateCache("Portraits/" + RNPCs[i].nameID);
 			}
 			this.Helper.Content.InvalidateCache("Data/NPCDispositions");
 		}
@@ -324,12 +408,6 @@ namespace RandomNPC
 									string[] startLoc = rnpc.startLoc.Split(' ');
 									Game1.warpCharacter(npc, "BusStop", new Vector2(int.Parse(startLoc[1]), int.Parse(startLoc[2])));
 									l.getCharacterFromName(npc.name).faceDirection(2);
-									npc.IsInvisible = false;
-
-								}
-								else
-								{
-									npc.IsInvisible = true;
 								}
 							}
 						}
@@ -343,7 +421,7 @@ namespace RandomNPC
 		/// <param name="asset">Basic metadata about the asset being loaded.</param>
 		public bool CanEdit<T>(IAssetInfo asset)
 		{
-			if (asset.AssetNameEquals("Data/NPCDispositions") || asset.AssetNameEquals("Data/NPCGiftTastes") || asset.AssetNameEquals("Characters/EngagementDialogue"))
+			if (asset.AssetNameEquals("Data/NPCDispositions") || asset.AssetNameEquals("Data/NPCGiftTastes") || asset.AssetNameEquals("Characters/EngagementDialogue") || asset.AssetNameEquals("Data/Quests"))
 			{
 				//base.Monitor.Log("Can load: " + asset.AssetName, LogLevel.Alert);
 				return true;
@@ -387,6 +465,31 @@ namespace RandomNPC
 					data[npc.nameID + "1"] = str[1];
 				}
 			}
+			else if (asset.AssetNameEquals("Data/Quests"))
+			{
+				IDictionary<int, string> data = asset.AsDictionary<int, string>().Data;
+				
+				foreach (RNPC npc in RNPCs)
+				{
+					string str = MakeQuest(npc);
+					data[npc.npcID+4200] = str;
+				}
+			}
+		}
+
+		private string MakeQuest(RNPC npc)
+		{
+			string questInfo = GetRandomDialogue(npc, RNPCdialogueData.quiz_quest);
+
+			int item = npc.questItem;
+
+			string itemName = Game1.objectInformation[item].Split('/')[0];
+
+			questInfo = questInfo.Replace("$name",npc.name).Replace("$what",itemName);
+			string[] qia = questInfo.Split('|');
+			string output = "ItemDelivery/"+qia[0]+"/" + qia[0]+ ": " + Game1.objectInformation[item].Split('/')[5] + "/"+qia[1]+"/" + npc.nameID + " " + item + "/-1/"+Config.QuestReward+"/-1/true/"+ qia[2];
+			//Alert("Creating quest "+(npc.npcID+4200)+": "+output); 
+			return output;
 		}
 
 		private string[] MakeEngagementDialogue(RNPC npc)
@@ -562,7 +665,7 @@ namespace RandomNPC
 			questionString += "#$r 4343 0 fquest_" + (fqi) + "#" + farmerQuestions[fqi];
 			if (hearts >= 6) // allow asking about help
 			{
-				int quizType = Game1.random.Next(0, 4);
+				int quizType = Game1.random.Next(0, 5);
 				string quiz;
 				int friendship = 10;
 				List<string> quiza = new List<string>();
@@ -672,7 +775,6 @@ namespace RandomNPC
 
 						break;
 					case 3:
-					default:
 						quizA = GetRandomDialogue(rnpc, RNPCdialogueData.quiz_types["who"]).Split('|');
 						quiz = quizA[0];
 
@@ -701,6 +803,17 @@ namespace RandomNPC
 						}
 
 						break;
+					case 4:
+					default:
+						string tmp = GetRandomDialogue(rnpc, RNPCdialogueData.quiz_types["quest"]);
+						string[] quiz4 = tmp.Replace("$what", Game1.objectInformation[rnpc.questItem].Split('/')[0]).Split('|');
+						quiz = quiz4[0];
+
+						quiza.Add("2 accept_npc_quest_"+(rnpc.npcID+4200)+"#" + quiz4[1]);
+						quiza.Add("0 decline_npc_quest#" + quiz4[2]);
+						data.Add("accept_npc_quest_" + (rnpc.npcID + 4200), quiz4[3]);
+						data.Add("decline_npc_quest", quiz4[4]);
+						break;
 				}
 
 
@@ -709,8 +822,11 @@ namespace RandomNPC
 				string quizWrong = GetRandomDialogue(rnpc, RNPCdialogueData.quizWrong);
 				string quizUnknown = GetRandomDialogue(rnpc, RNPCdialogueData.quizUnknown);
 
-				quiza = quiza.OrderBy(n => Guid.NewGuid()).ToList();
-				quiza.Add("0 quiz_unknown#" + RNPCdialogueData.quiz_dont_know);
+				if(quizType != 4)
+				{
+					quiza = quiza.OrderBy(n => Guid.NewGuid()).ToList();
+					quiza.Add("0 quiz_unknown#" + RNPCdialogueData.quiz_dont_know);
+				}
 
 				for (int i = 0; i < quiza.Count; i++)
 				{
