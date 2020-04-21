@@ -2,6 +2,7 @@
 using Netcode;
 using StardewModdingAPI;
 using StardewValley;
+using StardewValley.Locations;
 using StardewValley.Monsters;
 using StardewValley.Network;
 using StardewValley.Projectiles;
@@ -20,11 +21,22 @@ namespace BossCreatures
 		public string defaultMusic;
 		public SerpentBoss(Vector2 position, string music) : base(position)
         {
-            //Health = base.Health * 10;
+            Health = base.Health * 20;
+			MaxHealth = Health;
             Scale = 2f;
             DamageToFarmer = base.damageToFarmer*2;
 			timeUntilNextAttack = 100;
 			defaultMusic = music;
+			this.moveTowardPlayerThreshold.Value = 20;
+		}
+		public override void MovePosition(GameTime time, xTile.Dimensions.Rectangle viewport, GameLocation currentLocation)
+		{
+			base.MovePosition(time, viewport, currentLocation);
+			if (Health < MaxHealth / 2)
+			{
+				base.MovePosition(time, viewport, currentLocation);
+			}
+
 		}
 
 		protected override void updateAnimation(GameTime time)
@@ -114,7 +126,7 @@ namespace BossCreatures
 						fire_angle += (float)Math.Sin((double)((float)this.totalFireTime / 1000f * 180f) * 3.1415926535897931 / 180.0) * 25f;
 						Vector2 shot_velocity = new Vector2((float)Math.Cos((double)fire_angle * 3.1415926535897931 / 180.0), -(float)Math.Sin((double)fire_angle * 3.1415926535897931 / 180.0));
 						shot_velocity *= 10f;
-						BasicProjectile projectile = new BasicProjectile(50, 10, 0, 1, 0.196349546f, shot_velocity.X, shot_velocity.Y, shot_origin, "", "", false, false, base.currentLocation, this, false, null);
+						BasicProjectile projectile = new BasicProjectile(30, 10, 0, 1, 0.196349546f, shot_velocity.X, shot_velocity.Y, shot_origin, "", "", false, false, base.currentLocation, this, false, null);
 						projectile.ignoreTravelGracePeriod.Value = true;
 						projectile.maxTravelDistance.Value = 512;
 						base.currentLocation.projectiles.Add(projectile);
@@ -126,7 +138,14 @@ namespace BossCreatures
 					this.totalFireTime = 0;
 					this.nextFireTime = 0;
 					this.attackState.Set(0);
-					this.timeUntilNextAttack = Game1.random.Next(1000, 2000);
+					if (Health < MaxHealth / 2)
+					{
+						this.timeUntilNextAttack = Game1.random.Next(8000, 1500);
+					}
+					else
+					{
+						this.timeUntilNextAttack = Game1.random.Next(1500, 3000);
+					}
 				}
 			}
 		}
@@ -138,24 +157,13 @@ namespace BossCreatures
 			{
 				ModEntry.PMonitor.Log("Boss dead", LogLevel.Alert);
 				ModEntry.PHelper.Events.Display.RenderedHud -= ModEntry.OnRenderedHud;
-				int[] objs = new int[objectsToDrop.Count];
-				objectsToDrop.CopyTo(objs,0);
-				ModEntry.PMonitor.Log("objects: " + objectsToDrop.Count);
-				foreach (int obj in objs)
-				{
-					objectsToDrop.Add(obj);
-					objectsToDrop.Add(obj);
-					objectsToDrop.Add(obj);
-				}
-				ModEntry.PMonitor.Log("objects: " + objectsToDrop.Count);
-				ModEntry.PMonitor.Log("coins: " + coinsToDrop.Value);
-				coinsToDrop.Value *= 2;
-				ModEntry.PMonitor.Log("coins: " + coinsToDrop.Value);
+
+				ModEntry.SpawnBossLoot(currentLocation, position.X, position.Y);
 
 				Game1.playSound("Cowboy_Secret");
-				if (currentLocation.Name == "Town")
+				if (!(currentLocation is MineShaft))
 				{
-					ModEntry.PMonitor.Log("resetting town music to "+defaultMusic, LogLevel.Alert);
+					ModEntry.PMonitor.Log("resetting music to "+defaultMusic, LogLevel.Alert);
 					Game1.changeMusicTrack(defaultMusic, false);
 				}
 			}
