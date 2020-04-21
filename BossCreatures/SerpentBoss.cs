@@ -1,0 +1,165 @@
+﻿using Microsoft.Xna.Framework;
+using Netcode;
+using StardewModdingAPI;
+using StardewValley;
+using StardewValley.Monsters;
+using StardewValley.Network;
+using StardewValley.Projectiles;
+using System;
+using System.Collections.Generic;
+
+namespace BossCreatures
+{
+    internal class SerpentBoss : Serpent
+    {
+		public int timeUntilNextAttack;
+		public readonly NetBool firing = new NetBool(false);
+		public NetInt attackState = new NetInt();
+		public int nextFireTime;
+		public int totalFireTime;
+		public string defaultMusic;
+		public SerpentBoss(Vector2 position, string music) : base(position)
+        {
+            //Health = base.Health * 10;
+            Scale = 2f;
+            DamageToFarmer = base.damageToFarmer*2;
+			timeUntilNextAttack = 100;
+			defaultMusic = music;
+		}
+
+		protected override void updateAnimation(GameTime time)
+        {
+            base.updateAnimation(time);
+        }
+
+		protected override void initNetFields()
+		{
+			base.NetFields.AddFields(new INetSerializable[]
+			{
+				this.attackState,
+				this.firing
+			});
+			base.initNetFields();
+		}
+		public override void behaviorAtGameTick(GameTime time)
+		{
+			base.behaviorAtGameTick(time);
+
+			if (Health <= 0)
+			{
+				return;
+			}
+
+			// fire!
+
+			this.timeUntilNextAttack -= time.ElapsedGameTime.Milliseconds;
+			if (this.attackState.Value == 0 && this.withinPlayerThreshold(5))
+			{
+				this.firing.Set(false);
+				if (this.timeUntilNextAttack < 0)
+				{
+					this.timeUntilNextAttack = 0;
+					this.attackState.Set(1);
+					this.nextFireTime = 50;
+					this.totalFireTime = 3000;
+					return;
+				}
+			}
+			else if (this.totalFireTime > 0)
+			{
+				Farmer player = base.Player;
+				if (!this.firing)
+				{
+					if (player != null)
+					{
+						base.faceGeneralDirection(player.Position, 0, false);
+					}
+				}
+				this.totalFireTime -= time.ElapsedGameTime.Milliseconds;
+				if (this.nextFireTime > 0)
+				{
+					this.nextFireTime -= time.ElapsedGameTime.Milliseconds;
+					if (this.nextFireTime <= 0)
+					{
+						if (!this.firing.Value)
+						{
+							this.firing.Set(true);
+							base.currentLocation.playSound("furnace", NetAudio.SoundContext.Default);
+						}
+						float fire_angle = 0f;
+						Vector2 shot_origin = new Vector2((float)this.GetBoundingBox().Center.X - 32f, (float)this.GetBoundingBox().Center.Y - 32f);
+						base.faceGeneralDirection(player.Position, 0, false);
+						switch (this.facingDirection.Value)
+						{
+							case 0:
+								this.yVelocity = -1f;
+								shot_origin.Y -= 64f;
+								fire_angle = 90f;
+								break;
+							case 1:
+								this.xVelocity = -1f;
+								shot_origin.X += 64f;
+								fire_angle = 0f;
+								break;
+							case 2:
+								this.yVelocity = 1f;
+								fire_angle = 270f;
+								break;
+							case 3:
+								this.xVelocity = 1f;
+								shot_origin.X -= 64f;
+								fire_angle = 180f;
+								break;
+						}
+						fire_angle += (float)Math.Sin((double)((float)this.totalFireTime / 1000f * 180f) * 3.1415926535897931 / 180.0) * 25f;
+						Vector2 shot_velocity = new Vector2((float)Math.Cos((double)fire_angle * 3.1415926535897931 / 180.0), -(float)Math.Sin((double)fire_angle * 3.1415926535897931 / 180.0));
+						shot_velocity *= 10f;
+						BasicProjectile projectile = new BasicProjectile(50, 10, 0, 1, 0.196349546f, shot_velocity.X, shot_velocity.Y, shot_origin, "", "", false, false, base.currentLocation, this, false, null);
+						projectile.ignoreTravelGracePeriod.Value = true;
+						projectile.maxTravelDistance.Value = 512;
+						base.currentLocation.projectiles.Add(projectile);
+						this.nextFireTime = 50;
+					}
+				}
+				if (this.totalFireTime <= 0)
+				{
+					this.totalFireTime = 0;
+					this.nextFireTime = 0;
+					this.attackState.Set(0);
+					this.timeUntilNextAttack = Game1.random.Next(1000, 2000);
+				}
+			}
+		}
+		public override int takeDamage(int damage, int xTrajectory, int yTrajectory, bool isBomb, double addedPrecision, Farmer who)
+		{
+			int mHealth = Health;
+			int result = base.takeDamage(damage, xTrajectory, yTrajectory, isBomb, addedPrecision, who);
+			if (mHealth - result <= 0)
+			{
+				ModEntry.PMonitor.Log("Boss dead", LogLevel.Alert);
+				ModEntry.PHelper.Events.Display.RenderedHud -= ModEntry.OnRenderedHud;
+				int[] objs = new int[objectsToDrop.Count];
+				objectsToDrop.CopyTo(objs,0);
+				ModEntry.PMonitor.Log("objects: " + objectsToDrop.Count);
+				foreach (int obj in objs)
+				{
+					objectsToDrop.Add(obj);
+					objectsToDrop.Add(obj);
+					objectsToDrop.Add(obj);
+				}
+				ModEntry.PMonitor.Log("objects: " + objectsToDrop.Count);
+				ModEntry.PMonitor.Log("coins: " + coinsToDrop.Value);
+				coinsToDrop.Value *= 2;
+				ModEntry.PMonitor.Log("coins: " + coinsToDrop.Value);
+
+				Game1.playSound("Cowboy_Secret");
+				if (currentLocation.Name == "Town")
+				{
+					ModEntry.PMonitor.Log("resetting town music to "+defaultMusic, LogLevel.Alert);
+					Game1.changeMusicTrack(defaultMusic, false);
+				}
+			}
+			return result;
+		}
+	}
+}

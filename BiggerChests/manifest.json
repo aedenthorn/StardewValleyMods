@@ -1,0 +1,10 @@
+﻿{
+  "Name": "Bigger Chests Mod",
+  "Author": "Aedenthorn",
+  "Version": "0.1.0",
+  "Description": "Increase size of chests.",
+  "UniqueID": "Aedenthorn.BiggerChests",
+  "EntryDll": "BiggerChests.dll",
+  "MinimumApiVersion": "3.0.0",
+  "UpdateKeys": []
+}

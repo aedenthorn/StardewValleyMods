@@ -1,0 +1,10 @@
+﻿{
+  "Name": "Boss Creatures",
+  "Author": "aedenthorn",
+  "Version": "0.1.0",
+  "Description": "Spawns boss creatures in dungeons and in town.",
+  "UniqueID": "Aedenthorn.BossCreatures",
+  "EntryDll": "BossCreatures.dll",
+  "MinimumApiVersion": "2.10.0",
+  "UpdateKeys": []
+}

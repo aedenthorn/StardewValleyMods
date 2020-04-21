@@ -1,0 +1,6 @@
+﻿namespace BiggerChests
+{
+    class ModConfig
+    {
+    }
+}

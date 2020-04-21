@@ -1,5 +1,6 @@
 ﻿using Harmony;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using Netcode;
 using StardewModdingAPI;
 using StardewModdingAPI.Events;
@@ -13,7 +14,7 @@ namespace MagnetMod
 {
     /// <summary>The mod entry point.</summary>
     public class ModEntry : Mod
-    {
+	{
 
         private ModConfig Config;
 		public float magnetRangeMult;

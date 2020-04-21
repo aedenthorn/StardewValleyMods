@@ -4,11 +4,11 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{6D811221-0CCE-43CE-81E0-A55A371BF57E}</ProjectGuid>
+    <ProjectGuid>{FE7693E0-1239-4BA5-89EA-979A090FE223}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>MarriageMod</RootNamespace>
-    <AssemblyName>MarriageMod</AssemblyName>
+    <RootNamespace>PlaceShaft</RootNamespace>
+    <AssemblyName>PlaceShaft</AssemblyName>
     <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <Deterministic>true</Deterministic>
@@ -34,27 +34,20 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="0Harmony">
-      <HintPath>..\..\..\..\..\..\Dell\tmp\g\tmp\Stardew.Valley\smapi-internal\0Harmony.dll</HintPath>
-    </Reference>
-    <Reference Include="MonoGame.Framework, Version=3.7.1.189, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\..\..\..\Program Files (x86)\MonoGame\v3.0\Assemblies\Windows\MonoGame.Framework.dll</HintPath>
-    </Reference>
     <Reference Include="Netcode">
-      <HintPath>..\..\..\..\..\..\Dell\tmp\g\tmp\Stardew.Valley\Netcode.dll</HintPath>
+      <HintPath>G:\ga\Stardew Valley\Netcode.dll</HintPath>
     </Reference>
     <Reference Include="SMAPI.Toolkit.CoreInterfaces">
-      <HintPath>..\..\..\..\..\..\Dell\tmp\g\tmp\Stardew.Valley\smapi-internal\SMAPI.Toolkit.CoreInterfaces.dll</HintPath>
+      <HintPath>G:\ga\Stardew Valley\smapi-internal\SMAPI.Toolkit.CoreInterfaces.dll</HintPath>
     </Reference>
     <Reference Include="Stardew Valley">
-      <HintPath>..\..\..\..\..\..\Dell\tmp\g\tmp\Stardew.Valley\Stardew Valley.exe</HintPath>
+      <HintPath>G:\ga\Stardew Valley\Stardew Valley.exe</HintPath>
     </Reference>
     <Reference Include="StardewModdingAPI">
-      <HintPath>..\..\..\..\..\..\Dell\tmp\g\tmp\Stardew.Valley\StardewModdingAPI.exe</HintPath>
+      <HintPath>G:\ga\Stardew Valley\StardewModdingAPI.exe</HintPath>
     </Reference>
     <Reference Include="StardewValley.GameData">
-      <HintPath>..\..\..\..\..\..\Dell\tmp\g\tmp\Stardew.Valley\StardewValley.GameData.dll</HintPath>
+      <HintPath>G:\ga\Stardew Valley\StardewValley.GameData.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -65,19 +58,16 @@
     <Reference Include="System.Net.Http" />
     <Reference Include="System.Xml" />
     <Reference Include="xTile">
-      <HintPath>..\..\..\..\..\..\Dell\tmp\g\tmp\Stardew.Valley\xTile.dll</HintPath>
+      <HintPath>G:\ga\Stardew Valley\xTile.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ModConfig.cs" />
     <Compile Include="ModEntry.cs" />
-    <Compile Include="ObjectPatches.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <WCFMetadata Include="Connected Services\" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="manifest.json" />
+    <None Include="config.json" />
     <None Include="packages.config" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
