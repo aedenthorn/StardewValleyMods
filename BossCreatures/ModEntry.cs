@@ -89,9 +89,18 @@ namespace BossCreatures
             }
         }
 
+        internal static void RevertMusic()
+        {
+            Game1.changeMusicTrack(defaultMusic, false);
+            isFightingBoss = false;
+        }
+
         private void Warped(object sender, WarpedEventArgs e)
         {
-            this.Monitor.Log("location:  "+e.NewLocation.name, LogLevel.Alert);
+            if (isFightingBoss)
+            {
+                RevertMusic();
+            }
 
             TryAddBoss(e.NewLocation);
         }
@@ -113,10 +122,18 @@ namespace BossCreatures
         }
 
         private static List<string> CheckedBosses = new List<string>();
+        private static bool isFightingBoss;
+        private static string defaultMusic;
 
         private void TryAddBoss(GameLocation location)
         {
-            if (BossHere(location) != null || CheckedBosses.Contains(location.name))
+            if (BossHere(location) != null)
+            {
+                Game1.changeMusicTrack("cowboy_boss", false, Game1.MusicContext.Default);
+
+                return;
+            }
+            if (CheckedBosses.Contains(location.name))
             {
                 return;
             }
@@ -159,21 +176,21 @@ namespace BossCreatures
             switch (r)
             {
                 case 0:
-                    SerpentBoss s = new SerpentBoss(spawnPos, Game1.getMusicTrackName())
+                    SerpentBoss s = new SerpentBoss(spawnPos)
                     {
                         currentLocation = location,
                     };
                     location.characters.Add(s);
                     break;
                 case 1:
-                    SkullBoss k = new SkullBoss(spawnPos, Game1.getMusicTrackName())
+                    SkullBoss k = new SkullBoss(spawnPos)
                     {
                         currentLocation = location,
                     };
                     location.characters.Add(k);
                     break;
                 case 2:
-                    BugBoss b = new BugBoss(spawnPos, Game1.getMusicTrackName())
+                    BugBoss b = new BugBoss(spawnPos)
                     {
                         currentLocation = location,
                     };
@@ -182,11 +199,8 @@ namespace BossCreatures
             }
 
             Game1.showGlobalMessage($"A boss creature has appeared!");
-
-            if (!(location is MineShaft))
-            {
-                Game1.changeMusicTrack("cowboy_boss", false, Game1.MusicContext.Default);
-            }
+            Game1.changeMusicTrack("cowboy_boss", false, Game1.MusicContext.Default);
+            defaultMusic = Game1.getMusicTrackName();
             PHelper.Events.Display.RenderedHud += OnRenderedHud;
         }
 

@@ -11,14 +11,12 @@ namespace BossCreatures
 {
     internal class BugBoss : Bat
     {
-        private string defaultMusic;
 		private float lastFly;
 		private float lastDebuff;
 		private int MaxFlies = 5;
 
-		public BugBoss(Vector2 spawnPos, string music) : base(spawnPos)
+		public BugBoss(Vector2 spawnPos) : base(spawnPos)
         {
-            this.defaultMusic = music;
 			this.Sprite.LoadTexture("Characters\\Monsters\\Bug");
 			this.Sprite.SpriteHeight = 16;
 			Health = base.Health * 150;
@@ -86,17 +84,12 @@ namespace BossCreatures
 			int result = base.takeDamage(damage, xTrajectory, yTrajectory, isBomb, addedPrecision, who);
 			if (mHealth - result <= 0)
 			{
-				ModEntry.PMonitor.Log("Boss dead", LogLevel.Alert);
 				ModEntry.PHelper.Events.Display.RenderedHud -= ModEntry.OnRenderedHud;
 
 				ModEntry.SpawnBossLoot(currentLocation, position.X, position.Y);
 
 				Game1.playSound("Cowboy_Secret");
-				if (!(currentLocation is MineShaft))
-				{
-					ModEntry.PMonitor.Log("resetting music to " + defaultMusic, LogLevel.Alert);
-					Game1.changeMusicTrack(defaultMusic, false);
-				}
+				ModEntry.RevertMusic();
 			}
 			return result;
 		}

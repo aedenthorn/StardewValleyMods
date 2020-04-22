@@ -18,15 +18,13 @@ namespace BossCreatures
 		public NetInt attackState = new NetInt();
 		public int nextFireTime;
 		public int totalFireTime;
-		public string defaultMusic;
-		public SerpentBoss(Vector2 position, string music) : base(position)
+		public SerpentBoss(Vector2 position) : base(position)
         {
             Health = base.Health * 20;
 			MaxHealth = Health;
             Scale = 2f;
             DamageToFarmer = base.damageToFarmer*2;
 			timeUntilNextAttack = 100;
-			defaultMusic = music;
 			this.moveTowardPlayerThreshold.Value = 20;
 		}
 		public override void MovePosition(GameTime time, xTile.Dimensions.Rectangle viewport, GameLocation currentLocation)
@@ -155,17 +153,12 @@ namespace BossCreatures
 			int result = base.takeDamage(damage, xTrajectory, yTrajectory, isBomb, addedPrecision, who);
 			if (mHealth - result <= 0)
 			{
-				ModEntry.PMonitor.Log("Boss dead", LogLevel.Alert);
 				ModEntry.PHelper.Events.Display.RenderedHud -= ModEntry.OnRenderedHud;
 
 				ModEntry.SpawnBossLoot(currentLocation, position.X, position.Y);
 
 				Game1.playSound("Cowboy_Secret");
-				if (!(currentLocation is MineShaft))
-				{
-					ModEntry.PMonitor.Log("resetting music to "+defaultMusic, LogLevel.Alert);
-					Game1.changeMusicTrack(defaultMusic, false);
-				}
+				ModEntry.RevertMusic();
 			}
 			return result;
 		}

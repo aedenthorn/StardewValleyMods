@@ -14,18 +14,15 @@ namespace BossCreatures
     internal class SkullBoss : Bat
     {
         internal GameLocation currentLocation;
-        private Vector2 spawnPos;
-        private string defaultMusic;
 		private float lastFireball;
 		private readonly NetEvent0 fireballEvent = new NetEvent0(false);
 
-		public SkullBoss(Vector2 position, string music) : base(position, 77377)
+		public SkullBoss(Vector2 position) : base(position, 77377)
         {
 			Health = base.Health * 20;
 			MaxHealth = Health;
 			Scale = 3f;
             DamageToFarmer = base.damageToFarmer * 2;
-            defaultMusic = music;
 			this.moveTowardPlayerThreshold.Value = 20;
 		}
 
@@ -87,17 +84,12 @@ namespace BossCreatures
 			int result = base.takeDamage(damage, xTrajectory, yTrajectory, isBomb, addedPrecision, who);
 			if (mHealth - result <= 0)
 			{
-				ModEntry.PMonitor.Log("Boss dead", LogLevel.Alert);
 				ModEntry.PHelper.Events.Display.RenderedHud -= ModEntry.OnRenderedHud;
 
 				ModEntry.SpawnBossLoot(currentLocation, position.X, position.Y);
 
 				Game1.playSound("Cowboy_Secret");
-				if (!(currentLocation is MineShaft))
-				{
-					ModEntry.PMonitor.Log("resetting music to " + defaultMusic, LogLevel.Alert);
-					Game1.changeMusicTrack(defaultMusic, false);
-				}
+				ModEntry.RevertMusic();
 			}
 			return result;
 		}
