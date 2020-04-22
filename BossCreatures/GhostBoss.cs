@@ -9,25 +9,21 @@ using System;
 
 namespace BossCreatures
 {
-    internal class BugBoss : Bat
+    internal class GhostBoss : Ghost
     {
-		private float lastFly;
+		private float lastGhost;
 		private float lastDebuff;
-		private int MaxFlies;
+		private int MaxGhosts;
 		private float difficulty;
 
-		public BugBoss(Vector2 spawnPos, float difficulty) : base(spawnPos)
+		public GhostBoss(Vector2 spawnPos, float difficulty) : base(spawnPos)
         {
-			this.Sprite.LoadTexture("Characters\\Monsters\\Bug");
-			this.Sprite.SpriteHeight = 16;
-
 			this.difficulty = difficulty;
 
-			Health = (int)Math.Round(base.Health * 150 * difficulty);
+			Health = (int)Math.Round(base.Health * 20 * difficulty);
 			MaxHealth = Health;
 			DamageToFarmer = (int)Math.Round(base.damageToFarmer * difficulty);
-			MaxFlies = 5;
-
+			MaxGhosts = 5;
 
 			Scale = 3f;
 			this.moveTowardPlayerThreshold.Value = 20;
@@ -35,13 +31,15 @@ namespace BossCreatures
 		public override void behaviorAtGameTick(GameTime time)
 		{
 			base.behaviorAtGameTick(time);
+			base.behaviorAtGameTick(time);
+
 
 			if (Health <= 0)
 			{
 				return;
 			}
 
-			this.lastFly = Math.Max(0f, this.lastFly - (float)time.ElapsedGameTime.Milliseconds);
+			this.lastGhost = Math.Max(0f, this.lastGhost - (float)time.ElapsedGameTime.Milliseconds);
 			this.lastDebuff = Math.Max(0f, this.lastDebuff - (float)time.ElapsedGameTime.Milliseconds);
 
 			if (withinPlayerThreshold(10))
@@ -50,34 +48,35 @@ namespace BossCreatures
 				{
 					Vector2 velocityTowardPlayer = Utility.getVelocityTowardPlayer(this.GetBoundingBox().Center, 15f, base.Player);
 
-					base.currentLocation.projectiles.Add(new DebuffingProjectile(14, 7, 4, 4, 0.196349546f, velocityTowardPlayer.X, velocityTowardPlayer.Y, new Vector2((float)this.GetBoundingBox().X, (float)this.GetBoundingBox().Y), base.currentLocation, this));
-					this.lastDebuff = Game1.random.Next(1500, 3000);
+					base.currentLocation.projectiles.Add(new DebuffingProjectile(19, 7, 4, 4, 0.196349546f, velocityTowardPlayer.X, velocityTowardPlayer.Y, new Vector2((float)this.GetBoundingBox().X, (float)this.GetBoundingBox().Y), base.currentLocation, this));
+					this.lastDebuff = Game1.random.Next(5000, 10000);
 				}
-				if (lastFly == 0f)
+				if (lastGhost == 0f)
 				{
-					int flies = 0;
+					int ghosts = 0;
 					using (NetCollection<NPC>.Enumerator enumerator = currentLocation.characters.GetEnumerator())
 					{
 						while (enumerator.MoveNext())
 						{
 							NPC j = enumerator.Current;
-							if (j is ToughFly)
+							if (j is ToughGhost)
 							{
-								flies++;
+								ghosts++;
 							}
 						}
 					}
-					if (flies < (Health < MaxHealth / 2 ? this.MaxFlies * 2 : this.MaxFlies))
+					if (ghosts < (Health < MaxHealth / 2 ? this.MaxGhosts * 2 : this.MaxGhosts))
 					{
-						currentLocation.characters.Add(new ToughFly(Position, difficulty)
+						currentLocation.characters.Add(new ToughGhost(Position, difficulty)
 						{
 							currentLocation = base.currentLocation
 						});
-						this.lastFly = (float)Game1.random.Next(300, 600);
+						this.lastGhost = (float)Game1.random.Next(300, 600);
 					}
 				}
 			}
 		}
+
 		public override int takeDamage(int damage, int xTrajectory, int yTrajectory, bool isBomb, double addedPrecision, Farmer who)
 		{
 			int mHealth = Health;

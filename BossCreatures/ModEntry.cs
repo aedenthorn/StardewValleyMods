@@ -97,11 +97,11 @@ namespace BossCreatures
 
         private void Warped(object sender, WarpedEventArgs e)
         {
-            if (isFightingBoss)
+            if (isFightingBoss && BossHere(e.NewLocation) == null)
             {
                 RevertMusic();
             }
-
+            
             TryAddBoss(e.NewLocation);
         }
 
@@ -112,7 +112,7 @@ namespace BossCreatures
                 while (enumerator.MoveNext())
                 {
                     NPC j = enumerator.Current;
-                    if (j is SerpentBoss || j is SkullBoss || j is BugBoss)
+                    if (j is SerpentBoss || j is SkullBoss || j is BugBoss || j is GhostBoss)
                     {
                         return (Monster)j;
                     }
@@ -144,6 +144,10 @@ namespace BossCreatures
             {
                 SpawnRandomBoss(location);
             }
+            else if ((location is Farm) && rand.Next(0, 100) < Config.PercentChanceOfBossInFarm)
+            {
+                SpawnRandomBoss(location);
+            }
             else if ((location is Town) && rand.Next(0, 100) < Config.PercentChanceOfBossInTown)
             {
                 SpawnRandomBoss(location);
@@ -171,30 +175,51 @@ namespace BossCreatures
         }
         private void SpawnRandomBoss(GameLocation location, Vector2 spawnPos)
         {
-
-            int r = rand.Next(0, 3);
+            float difficulty = Config.BaseUndergroundDifficulty;
+            if (location.Name.StartsWith("UndergroundMine"))
+            {
+                int diffMult = 0;
+                if(int.TryParse(location.Name.Substring(15), out diffMult))
+                {
+                    difficulty *= diffMult / 100;
+                    Monitor.Log("boss difficulty: " + difficulty, LogLevel.Alert);
+                }
+            }
+            else
+            {
+                difficulty = rand.Next((int)(Config.MinOverlandDifficulty * 100), (int)(Config.MaxOverlandDifficulty * 100)+1) / 100f;
+                Monitor.Log("boss difficulty: " + difficulty, LogLevel.Alert);
+            }
+            int r = rand.Next(0, 4);
             switch (r)
             {
                 case 0:
-                    SerpentBoss s = new SerpentBoss(spawnPos)
+                    SerpentBoss s = new SerpentBoss(spawnPos, difficulty)
                     {
                         currentLocation = location,
                     };
                     location.characters.Add(s);
                     break;
                 case 1:
-                    SkullBoss k = new SkullBoss(spawnPos)
+                    SkullBoss k = new SkullBoss(spawnPos, difficulty)
                     {
                         currentLocation = location,
                     };
                     location.characters.Add(k);
                     break;
                 case 2:
-                    BugBoss b = new BugBoss(spawnPos)
+                    BugBoss b = new BugBoss(spawnPos, difficulty)
                     {
                         currentLocation = location,
                     };
                     location.characters.Add(b);
+                    break;
+                case 3:
+                    GhostBoss g = new GhostBoss(spawnPos, difficulty)
+                    {
+                        currentLocation = location,
+                    };
+                    location.characters.Add(g);
                     break;
             }
 
@@ -204,7 +229,7 @@ namespace BossCreatures
             PHelper.Events.Display.RenderedHud += OnRenderedHud;
         }
 
-        public static void SpawnBossLoot(GameLocation location, float x, float y)
+        public static void SpawnBossLoot(GameLocation location, float x, float y, float difficulty)
         {
             List<KeyValuePair<int,double>> loots = new List<KeyValuePair<int,double>>()
             {
@@ -221,9 +246,18 @@ namespace BossCreatures
                     location.debris.Add(new Debris(Math.Abs(objectToAdd), rand.Next(10, 40), new Vector2(x, y), playerPosition));
                     
                 }
-                else if (Game1.random.NextDouble() < kvp.Value)
+                else
                 {
-                    location.debris.Add(new Debris(objectToAdd, new Vector2(x, y), playerPosition));
+                    double chance = kvp.Value * difficulty;
+                    while (chance > 1)
+                    {
+                        location.debris.Add(new Debris(objectToAdd, new Vector2(x, y), playerPosition));
+                        chance--;
+                    }
+                    if (Game1.random.NextDouble() < kvp.Value)
+                    {
+                        location.debris.Add(new Debris(objectToAdd, new Vector2(x, y), playerPosition));
+                    }
                 }
             }
         }

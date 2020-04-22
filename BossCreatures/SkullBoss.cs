@@ -16,17 +16,22 @@ namespace BossCreatures
         internal GameLocation currentLocation;
 		private float lastFireball;
 		private readonly NetEvent0 fireballEvent = new NetEvent0(false);
+		private int burstNo = 0;
+		private float difficulty;
 
-		public SkullBoss(Vector2 position) : base(position, 77377)
+		public SkullBoss(Vector2 position, float difficulty) : base(position, 77377)
         {
-			Health = base.Health * 20;
+			this.difficulty = difficulty;
+
+			Health = (int)Math.Round(base.Health * 10 * difficulty);
 			MaxHealth = Health;
+			DamageToFarmer = (int)Math.Round(base.damageToFarmer * difficulty);
+
 			Scale = 3f;
-            DamageToFarmer = base.damageToFarmer * 2;
 			this.moveTowardPlayerThreshold.Value = 20;
 		}
 
-		int burstNo = 0;
+
 		public override void MovePosition(GameTime time, xTile.Dimensions.Rectangle viewport, GameLocation currentLocation)
 		{
 			base.MovePosition(time, viewport, currentLocation);
@@ -50,7 +55,7 @@ namespace BossCreatures
 			if (this.withinPlayerThreshold(10) && this.lastFireball == 0f)
 			{
 				Vector2 trajectory = Utility.getVelocityTowardPlayer(Utility.Vector2ToPoint(base.getStandingPosition()), 8f, base.Player);
-				base.currentLocation.projectiles.Add(new BasicProjectile(30, 10, 3, 4, 0f, trajectory.X, trajectory.Y, base.getStandingPosition(), "", "", true, false, base.currentLocation, this, false, null));
+				base.currentLocation.projectiles.Add(new BasicProjectile((int)Math.Round(20 * difficulty), 10, 3, 4, 0f, trajectory.X, trajectory.Y, base.getStandingPosition(), "", "", true, false, base.currentLocation, this, false, null));
 				if (burstNo == 0)
 				{
 					base.currentLocation.playSound("fireball", NetAudio.SoundContext.Default);
@@ -86,7 +91,7 @@ namespace BossCreatures
 			{
 				ModEntry.PHelper.Events.Display.RenderedHud -= ModEntry.OnRenderedHud;
 
-				ModEntry.SpawnBossLoot(currentLocation, position.X, position.Y);
+				ModEntry.SpawnBossLoot(currentLocation, position.X, position.Y, difficulty);
 
 				Game1.playSound("Cowboy_Secret");
 				ModEntry.RevertMusic();

@@ -18,12 +18,15 @@ namespace BossCreatures
 		public NetInt attackState = new NetInt();
 		public int nextFireTime;
 		public int totalFireTime;
-		public SerpentBoss(Vector2 position) : base(position)
+		private float difficulty;
+
+		public SerpentBoss(Vector2 position, float difficulty) : base(position)
         {
-            Health = base.Health * 20;
+			this.difficulty = difficulty;
+			Health = (int)Math.Round(base.Health * 10 * difficulty);
 			MaxHealth = Health;
             Scale = 2f;
-            DamageToFarmer = base.damageToFarmer*2;
+            DamageToFarmer = (int)Math.Round(base.damageToFarmer * difficulty);
 			timeUntilNextAttack = 100;
 			this.moveTowardPlayerThreshold.Value = 20;
 		}
@@ -124,7 +127,7 @@ namespace BossCreatures
 						fire_angle += (float)Math.Sin((double)((float)this.totalFireTime / 1000f * 180f) * 3.1415926535897931 / 180.0) * 25f;
 						Vector2 shot_velocity = new Vector2((float)Math.Cos((double)fire_angle * 3.1415926535897931 / 180.0), -(float)Math.Sin((double)fire_angle * 3.1415926535897931 / 180.0));
 						shot_velocity *= 10f;
-						BasicProjectile projectile = new BasicProjectile(30, 10, 0, 1, 0.196349546f, shot_velocity.X, shot_velocity.Y, shot_origin, "", "", false, false, base.currentLocation, this, false, null);
+						BasicProjectile projectile = new BasicProjectile((int)Math.Round(20 * difficulty), 10, 0, 1, 0.196349546f, shot_velocity.X, shot_velocity.Y, shot_origin, "", "", false, false, base.currentLocation, this, false, null);
 						projectile.ignoreTravelGracePeriod.Value = true;
 						projectile.maxTravelDistance.Value = 512;
 						base.currentLocation.projectiles.Add(projectile);
@@ -138,7 +141,7 @@ namespace BossCreatures
 					this.attackState.Set(0);
 					if (Health < MaxHealth / 2)
 					{
-						this.timeUntilNextAttack = Game1.random.Next(8000, 1500);
+						this.timeUntilNextAttack = Game1.random.Next(800, 1500);
 					}
 					else
 					{
@@ -155,7 +158,7 @@ namespace BossCreatures
 			{
 				ModEntry.PHelper.Events.Display.RenderedHud -= ModEntry.OnRenderedHud;
 
-				ModEntry.SpawnBossLoot(currentLocation, position.X, position.Y);
+				ModEntry.SpawnBossLoot(currentLocation, position.X, position.Y, difficulty);
 
 				Game1.playSound("Cowboy_Secret");
 				ModEntry.RevertMusic();

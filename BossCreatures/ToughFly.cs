@@ -1,15 +1,16 @@
 ﻿using Microsoft.Xna.Framework;
 using StardewValley;
 using StardewValley.Monsters;
+using System;
 
 namespace BossCreatures
 {
     internal class ToughFly : Fly
     {
 
-        public ToughFly(Vector2 position) : base(position, true)
+        public ToughFly(Vector2 position, float difficulty) : base(position, true)
         {
-            Health *= 2;
+            Health = (int)Math.Round(Health * difficulty);
         }
         public override void MovePosition(GameTime time, xTile.Dimensions.Rectangle viewport, GameLocation currentLocation)
         {
