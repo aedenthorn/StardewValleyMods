@@ -163,6 +163,7 @@ namespace BossCreatures
 				Game1.playSound("Cowboy_Secret");
 				ModEntry.RevertMusic();
 			}
+			ModEntry.MakeBossHealthBar(Health - result, MaxHealth);
 			return result;
 		}
 	}

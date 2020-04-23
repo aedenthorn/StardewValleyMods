@@ -12,73 +12,113 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using xTile.Layers;
+using xTile.Tiles;
 
 namespace BossCreatures
 {
     public class ModEntry : Mod
     {
         public static ModConfig Config;
-        private static Random rand;
         public static IMonitor PMonitor;
         public static IModHelper PHelper;
+
+        public static Texture2D[] darknessTextures = new Texture2D[9];
+        private static int toggleSprite = 0;
+        private static int darknessTimer = 600;
+        private static bool isDarkness = false;
+
+
+
         public override void Entry(IModHelper helper)
         {
             Config = this.Helper.ReadConfig<ModConfig>();
-            helper.Events.Player.Warped += Warped;
-            helper.Events.GameLoop.DayStarted += OnDayStarted;
-            rand = new Random();
             PMonitor = Monitor;
             PHelper = helper;
+
+            helper.Events.Player.Warped += Warped;
+            helper.Events.GameLoop.DayStarted += OnDayStarted;
         }
 
         private void OnDayStarted(object sender, DayStartedEventArgs e)
         {
             CheckedBosses.Clear();
+
         }
 
-        private static int toggleSprite = 0;
+        private void Warped(object sender, WarpedEventArgs e)
+        {
+            MakeBossHealthBar(100, 100);
 
+            if (isFightingBoss && BossHere(e.NewLocation) == null)
+            {
+                RevertMusic();
+            }
+            TryAddBoss(e.NewLocation);
+
+        }
+
+        public static void OnRenderingHud(object sender, RenderingHudEventArgs e)
+        {
+            Monster boss = BossHere(Game1.player.currentLocation);
+            if (boss == null)
+            {
+                PHelper.Events.Display.RenderingHud -= OnRenderingHud;
+                return;
+            }
+
+            // Darkness
+
+            darknessTimer -= 1;
+
+            if (darknessTimer < 300)
+            {
+                if (isDarkness)
+                {
+                    if(darknessTimer < darknessTextures.Length)
+                    {
+                        e.SpriteBatch.Draw(darknessTextures[Math.Max(0, darknessTimer)], new Vector2(0, 0), Color.Black);
+                    }
+                    else
+                    {
+                        e.SpriteBatch.Draw(darknessTextures[Math.Min(8, 300 - darknessTimer)], new Vector2(0, 0), Color.Black);
+                    }
+
+                }
+                else
+                {
+                    isDarkness = Game1.random.NextDouble() < 0.5;
+                    if (isDarkness)
+                    {
+                        boss.currentLocation.localSound("Duggy");
+                    }
+                }
+            }
+            if (darknessTimer <= 0)
+            {
+                isDarkness = false;
+                darknessTimer = 600;
+                boss.currentLocation.localSound("Duggy");
+            }
+        }
         public static void OnRenderedHud(object sender, RenderedHudEventArgs e)
         {
             Monster boss = BossHere(Game1.player.currentLocation);
             if (boss == null)
             {
+                PHelper.Events.Display.RenderedHud -= OnRenderedHud;
                 return;
             }
 
-
-            Texture2D healthBarTexture = new Texture2D(Game1.graphics.GraphicsDevice, (int)Math.Round(Game1.viewport.Width * 0.74f), 30);
-            Color[] data = new Color[healthBarTexture.Width * healthBarTexture.Height];
-            healthBarTexture.GetData(data);
-            for (int i = 0; i < data.Length; i++)
-            {
-                if(i <= healthBarTexture.Width || i % healthBarTexture.Width == healthBarTexture.Width - 1)
-                {
-                    data[i] = new Color(1f,0.5f,0.5f);
-                }
-                else if(data.Length - i < healthBarTexture.Width || i % healthBarTexture.Width == 0)
-                {
-                    data[i] = new Color(0.5f,0,0);
-                }
-                else if((i % healthBarTexture.Width) / (float)healthBarTexture.Width < (float)boss.Health / (float)boss.MaxHealth)
-                {
-                    data[i] = Color.Red;
-                }
-                else
-                {
-                    data[i] = Color.Black;
-                }
-            }
-            healthBarTexture.SetData<Color>(data);
             e.SpriteBatch.Draw(healthBarTexture, new Vector2((int)Math.Round(Game1.viewport.Width * 0.13f), 100), Color.White);
 
             Vector2 bossPos = boss.Position;
             if (!Utility.isOnScreen(bossPos, 0))
             {
-                int x = (int)Math.Max(10, Math.Min(Game1.viewport.X + Game1.viewport.Width-58, bossPos.X) - Game1.viewport.X);
-                int y = (int)Math.Max(10, Math.Min(Game1.viewport.Y + Game1.viewport.Height-58, bossPos.Y) - Game1.viewport.Y);
+                int x = (int)Math.Max(10, Math.Min(Game1.viewport.X + Game1.viewport.Width - 58, bossPos.X) - Game1.viewport.X);
+                int y = (int)Math.Max(10, Math.Min(Game1.viewport.Y + Game1.viewport.Height - 58, bossPos.Y) - Game1.viewport.Y);
 
-                if(toggleSprite < 20)
+                if (toggleSprite < 20)
                 {
                     Texture2D texture = PHelper.Content.Load<Texture2D>("Characters/Monsters/Haunted Skull.xnb", ContentSource.GameContent);
                     ClickableTextureComponent bossIcon = new ClickableTextureComponent(new Rectangle(x, y, 48, 48), texture, new Rectangle(toggleSprite > 10 ? 16 : 0, 32, 16, 16), 3f, false);
@@ -89,20 +129,51 @@ namespace BossCreatures
             }
         }
 
+        public static void MakeBossHealthBar(int Health, int MaxHealth)
+        {
+            healthBarTexture = new Texture2D(Game1.graphics.GraphicsDevice, (int)Math.Round(Game1.viewport.Width * 0.74f), 30);
+            Color[] data = new Color[healthBarTexture.Width * healthBarTexture.Height];
+            healthBarTexture.GetData(data);
+            for (int i = 0; i < data.Length; i++)
+            {
+                if (i <= healthBarTexture.Width || i % healthBarTexture.Width == healthBarTexture.Width - 1)
+                {
+                    data[i] = new Color(1f, 0.5f, 0.5f);
+                }
+                else if (data.Length - i < healthBarTexture.Width || i % healthBarTexture.Width == 0)
+                {
+                    data[i] = new Color(0.5f, 0, 0);
+                }
+                else if ((i % healthBarTexture.Width) / (float)healthBarTexture.Width < (float)Health / (float)MaxHealth)
+                {
+                    data[i] = Color.Red;
+                }
+                else
+                {
+                    data[i] = Color.Black;
+                }
+            }
+            healthBarTexture.SetData<Color>(data);
+        }
+
+        private void MakeDarkness()
+        {
+            for (int j = 0; j < 9; j++)
+            {
+                darknessTextures[j] = new Texture2D(Game1.graphics.GraphicsDevice, Game1.viewport.Width, Game1.viewport.Height);
+                Color[] color = new Color[Game1.viewport.Width * Game1.viewport.Height];
+                for (int i = 0; i < Game1.viewport.Width * Game1.viewport.Height; i++)
+                {
+                    color[i] = new Color(0, 0, 0, (j + 1) / 10f);
+                }
+                darknessTextures[j].SetData<Color>(color);
+            }
+        }
+
         internal static void RevertMusic()
         {
             Game1.changeMusicTrack(defaultMusic, false);
             isFightingBoss = false;
-        }
-
-        private void Warped(object sender, WarpedEventArgs e)
-        {
-            if (isFightingBoss && BossHere(e.NewLocation) == null)
-            {
-                RevertMusic();
-            }
-            
-            TryAddBoss(e.NewLocation);
         }
 
         public static Monster BossHere(GameLocation location)
@@ -112,7 +183,7 @@ namespace BossCreatures
                 while (enumerator.MoveNext())
                 {
                     NPC j = enumerator.Current;
-                    if (j is SerpentBoss || j is SkullBoss || j is BugBoss || j is GhostBoss)
+                    if (j is SerpentBoss || j is SkullBoss || j is BugBoss || j is GhostBoss || j is SkeletonBoss)
                     {
                         return (Monster)j;
                     }
@@ -124,6 +195,15 @@ namespace BossCreatures
         private static List<string> CheckedBosses = new List<string>();
         private static bool isFightingBoss;
         private static string defaultMusic;
+        private Dictionary<Type, Vector2> SkeletonSpawnPos = new Dictionary<Type, Vector2>() 
+        {
+            {typeof(Farm), new Vector2(4832.09f,1121.761f) },
+            {typeof(Town), new Vector2(1835.856f,4309.934f) },
+            {typeof(Mountain), new Vector2(2777.356f,2018.429f) },
+            {typeof(Forest), new Vector2(4478.214f,2683.687f) },
+            {typeof(Desert), new Vector2(859.2023f,1734.465f) },
+        };
+        private static Texture2D healthBarTexture;
 
         private void TryAddBoss(GameLocation location)
         {
@@ -138,29 +218,31 @@ namespace BossCreatures
                 return;
             }
 
-            CheckedBosses.Add(location.name);
+            CheckedBosses.Add(location.Name);
 
-            if ((location is MineShaft) && (location as MineShaft).mustKillAllMonstersToAdvance() && rand.Next(0, 100) < Config.PercentChanceOfBossInMonsterArea)
+
+
+            if ((location is MineShaft) && (location as MineShaft).mustKillAllMonstersToAdvance() && Game1.random.Next(0, 100) < Config.PercentChanceOfBossInMonsterArea)
             {
                 SpawnRandomBoss(location);
             }
-            else if ((location is Farm) && rand.Next(0, 100) < Config.PercentChanceOfBossInFarm)
+            else if ((location is Farm) && Game1.random.Next(0, 100) < Config.PercentChanceOfBossInFarm)
             {
                 SpawnRandomBoss(location);
             }
-            else if ((location is Town) && rand.Next(0, 100) < Config.PercentChanceOfBossInTown)
+            else if ((location is Town) && Game1.random.Next(0, 100) < Config.PercentChanceOfBossInTown)
             {
                 SpawnRandomBoss(location);
             }
-            else if ((location is Forest) && rand.Next(0, 100) < Config.PercentChanceOfBossInForest)
+            else if ((location is Forest) && Game1.random.Next(0, 100) < Config.PercentChanceOfBossInForest)
             {
                 SpawnRandomBoss(location);
             }
-            else if ((location is Mountain) && rand.Next(0, 100) < Config.PercentChanceOfBossInMountain)
+            else if ((location is Mountain) && Game1.random.Next(0, 100) < Config.PercentChanceOfBossInMountain)
             {
                 SpawnRandomBoss(location);
             }
-            else if ((location is Desert) && rand.Next(0, 100) < Config.PercentChanceOfBossInDesert)
+            else if ((location is Desert) && Game1.random.Next(0, 100) < Config.PercentChanceOfBossInDesert)
             {
                 SpawnRandomBoss(location);
             }
@@ -168,8 +250,8 @@ namespace BossCreatures
 
         private void SpawnRandomBoss(GameLocation location)
         {
-            float x = rand.Next(location.map.DisplayWidth / 4, location.map.DisplayWidth * 3 / 4);
-            float y = rand.Next(location.map.DisplayHeight / 4, location.map.DisplayHeight * 3 / 4);
+            float x = Game1.random.Next(location.map.DisplayWidth / 4, location.map.DisplayWidth * 3 / 4);
+            float y = Game1.random.Next(location.map.DisplayHeight / 4, location.map.DisplayHeight * 3 / 4);
             Vector2 spawnPos = new Vector2(x, y);
             SpawnRandomBoss(location, spawnPos);
         }
@@ -182,15 +264,15 @@ namespace BossCreatures
                 if(int.TryParse(location.Name.Substring(15), out diffMult))
                 {
                     difficulty *= diffMult / 100;
-                    Monitor.Log("boss difficulty: " + difficulty, LogLevel.Alert);
+                    //Monitor.Log("boss difficulty: " + difficulty, LogLevel.Debug);
                 }
             }
             else
             {
-                difficulty = rand.Next((int)(Config.MinOverlandDifficulty * 100), (int)(Config.MaxOverlandDifficulty * 100)+1) / 100f;
-                Monitor.Log("boss difficulty: " + difficulty, LogLevel.Alert);
+                difficulty = Game1.random.Next((int)(Config.MinOverlandDifficulty * 100), (int)(Config.MaxOverlandDifficulty * 100)+1) / 100f;
+                //Monitor.Log("boss difficulty: " + difficulty, LogLevel.Debug);
             }
-            int r = rand.Next(0, 4);
+            int r = 1;
             switch (r)
             {
                 case 0:
@@ -221,12 +303,80 @@ namespace BossCreatures
                     };
                     location.characters.Add(g);
                     break;
+                case 4:
+                    spawnPos = GetLandSpawnPos(location);
+                    if (spawnPos == Vector2.Zero)
+                    {
+                        PMonitor.Log("no spawn location for boss!",LogLevel.Debug);
+
+                        break;
+                    }
+                    SkeletonBoss sk = new SkeletonBoss(spawnPos, difficulty)
+                    {
+                        currentLocation = location,
+                    };
+                    location.characters.Add(sk);
+                    break;
             }
 
-            Game1.showGlobalMessage($"A boss creature has appeared!");
+            Game1.showGlobalMessage(PHelper.Translation.Get("boss-warning"));
             Game1.changeMusicTrack("cowboy_boss", false, Game1.MusicContext.Default);
             defaultMusic = Game1.getMusicTrackName();
             PHelper.Events.Display.RenderedHud += OnRenderedHud;
+        }
+
+        private Vector2 GetLandSpawnPos(GameLocation location)
+        {
+            List<Vector2> tiles = new List<Vector2>();
+            if (location is MineShaft)
+            {
+                for (int x2 = 0; x2 < location.map.Layers[0].LayerWidth; x2++)
+                {
+                    for (int y2 = 0; y2 < location.map.Layers[0].LayerHeight; y2++)
+                    {
+                        Tile t = location.map.Layers[0].Tiles[x2, y2];
+                        if (t != null)
+                        {
+                            Vector2 tile2 = new Vector2((float)x2, (float)y2);
+                            int m = t.TileIndex;
+                            if ((location as MineShaft).isTileClearForMineObjects(tile2))
+                            {
+                                tiles.Add(tile2);
+                            }
+                        }
+                    }
+                }
+            }
+            else
+            {
+                for (int x2 = 0; x2 < location.map.Layers[0].LayerWidth; x2++)
+                {
+                    for (int y2 = 0; y2 < location.map.Layers[0].LayerHeight; y2++)
+                    {
+                        Layer l = location.map.GetLayer("Paths");
+                        if (l != null)
+                        {
+                            Tile t = l.Tiles[x2, y2];
+                            if (t != null)
+                            {
+                                Vector2 tile2 = new Vector2((float)x2, (float)y2);
+                                int m = t.TileIndex;
+                                if (location.isTileLocationTotallyClearAndPlaceable(tile2))
+                                {
+                                    tiles.Add(tile2);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            if(tiles.Count == 0)
+            {
+                return Vector2.Zero;
+            }
+            Vector2 posT = tiles[Game1.random.Next(0,tiles.Count)];
+            return new Vector2(posT.X * 64f, posT.Y * 64f);
+
         }
 
         public static void SpawnBossLoot(GameLocation location, float x, float y, float difficulty)
@@ -243,7 +393,7 @@ namespace BossCreatures
                 int objectToAdd = kvp.Key;
                 if(objectToAdd < 0)
                 {
-                    location.debris.Add(new Debris(Math.Abs(objectToAdd), rand.Next(10, 40), new Vector2(x, y), playerPosition));
+                    location.debris.Add(new Debris(Math.Abs(objectToAdd), Game1.random.Next(10, 40), new Vector2(x, y), playerPosition));
                     
                 }
                 else
@@ -261,5 +411,15 @@ namespace BossCreatures
                 }
             }
         }
+
+        public static Vector2 RotateVector2d(Vector2 inV, float degrees)
+        {
+            float rads = (float)Math.PI / 180;
+            Vector2 result = new Vector2();
+            result.X = (float)(inV.X * Math.Cos(rads) - inV.Y * Math.Sin(rads));
+            result.Y = (float)(inV.X * Math.Sin(rads) + inV.Y * Math.Cos(rads));
+            return result;
+        }
+
     }
 }

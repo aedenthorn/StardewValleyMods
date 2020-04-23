@@ -15,7 +15,6 @@ namespace BossCreatures
     {
         internal GameLocation currentLocation;
 		private float lastFireball;
-		private readonly NetEvent0 fireballEvent = new NetEvent0(false);
 		private int burstNo = 0;
 		private float difficulty;
 
@@ -30,7 +29,6 @@ namespace BossCreatures
 			Scale = 3f;
 			this.moveTowardPlayerThreshold.Value = 20;
 		}
-
 
 		public override void MovePosition(GameTime time, xTile.Dimensions.Rectangle viewport, GameLocation currentLocation)
 		{
@@ -62,7 +60,7 @@ namespace BossCreatures
 
 				}
 				
-				if (burstNo >= (Health < MaxHealth / 2?4:2))
+				if (burstNo >= (Health < MaxHealth / 2?8:4))
 				{
 					if (Health < MaxHealth / 4)
 					{
@@ -96,6 +94,9 @@ namespace BossCreatures
 				Game1.playSound("Cowboy_Secret");
 				ModEntry.RevertMusic();
 			}
+
+			ModEntry.MakeBossHealthBar(Health - result, MaxHealth);
+
 			return result;
 		}
 	}

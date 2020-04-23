@@ -43,6 +43,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="SkeletonBoss.cs" />
     <Compile Include="GhostBoss.cs" />
     <Compile Include="BugBoss.cs" />
     <Compile Include="ModConfig.cs" />
