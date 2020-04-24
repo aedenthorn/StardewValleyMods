@@ -272,7 +272,7 @@ namespace BossCreatures
                 difficulty = Game1.random.Next((int)(Config.MinOverlandDifficulty * 100), (int)(Config.MaxOverlandDifficulty * 100)+1) / 100f;
                 //Monitor.Log("boss difficulty: " + difficulty, LogLevel.Debug);
             }
-            int r = 1;
+            int r = Game1.random.Next(0,5);
             switch (r)
             {
                 case 0:

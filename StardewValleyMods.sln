@@ -19,6 +19,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WitcherMod", "WitcherMod\Wi
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BossCreatures", "BossCreatures\BossCreatures.csproj", "{189F99D8-9BF1-4FDC-9A53-33A97ACD86D2}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CustomMonsterFloors", "CustomMonsterFloors\CustomMonsterFloors.csproj", "{0C291A20-8560-4D6A-AB96-3AEE72E30B29}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -57,6 +59,10 @@ Global
 		{189F99D8-9BF1-4FDC-9A53-33A97ACD86D2}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{189F99D8-9BF1-4FDC-9A53-33A97ACD86D2}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{189F99D8-9BF1-4FDC-9A53-33A97ACD86D2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0C291A20-8560-4D6A-AB96-3AEE72E30B29}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0C291A20-8560-4D6A-AB96-3AEE72E30B29}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0C291A20-8560-4D6A-AB96-3AEE72E30B29}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0C291A20-8560-4D6A-AB96-3AEE72E30B29}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

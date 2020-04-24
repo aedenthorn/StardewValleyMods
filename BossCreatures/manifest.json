@@ -5,6 +5,6 @@
   "Description": "Spawns boss creatures in dungeons and around Stardew Valley.",
   "UniqueID": "Aedenthorn.BossCreatures",
   "EntryDll": "BossCreatures.dll",
-  "MinimumApiVersion": "2.10.0",
-  "UpdateKeys": []
+  "MinimumApiVersion": "3.4.0",
+  "UpdateKeys": ["Nexus:5864"]
 }
