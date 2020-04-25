@@ -30,7 +30,7 @@ namespace CustomMonsterFloors
         public int ChanceForIridiumMultiplier { get; set; } = 1;
         public int ChanceForGoldMultiplier { get; set; } = 1;
         public int ChanceForIronMultiplier { get; set; } = 1;
-        public double ChanceForLadderInStoneMultiplier { get; set; } = 1;
-        public double ChanceLadderIsShaftMultiplier { get; set; } = 1;
+        public int ChanceForLadderInStoneMultiplier { get; set; } = 1;
+        public int ChanceLadderIsShaftMultiplier { get; set; } = 1;
     }
 }

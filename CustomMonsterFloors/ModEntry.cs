@@ -55,13 +55,16 @@ namespace CustomMonsterFloors
 		{
 			monsterFloors.Clear();
 			treasureFloors.Clear();
+			GotShaft = false;
 		}
 		public static List<int> monsterFloors = new List<int>();
 		public static List<int> treasureFloors = new List<int>();
 
 		public static void loadLevel_Postfix(ref MineShaft __instance, int level, ref NetBool ___netIsTreasureRoom, ref NetBool ___netIsMonsterArea, ref NetBool ___netIsSlimeArea, ref NetBool ___netIsDinoArea, NetBool ___netIsQuarryArea, ref NetString ___mapImageSource, bool ___loadedDarkArea, Random ___mineRandom)
 		{
-			if(__instance.getMineArea(level) == 77377 || level == 220)
+			GotShaft = false;
+
+			if (__instance.getMineArea(level) == 77377 || level == 220)
 			{
 				return;
 			}
@@ -311,11 +314,13 @@ namespace CustomMonsterFloors
 				}
 			}
 		}
-		private static void checkStoneForItems_Postfix(MineShaft __instance, int x, int y, Farmer who, ref NetPointDictionary<bool, NetBool> ___createLadderDownEvent, bool ___ladderHasSpawned, int ___stonesLeftOnThisLevel)
+
+		private static bool GotShaft = false;
+		private static void checkStoneForItems_Postfix(MineShaft __instance, int x, int y, Farmer who, ref NetPointDictionary<bool, NetBool> ___createLadderDownEvent, bool ___ladderHasSpawned, NetIntDelta ___netStonesLeftOnThisLevel)
 		{
 			if(!___createLadderDownEvent.ContainsKey(new Point(x, y)))
 			{
-				double chanceForLadderDown = 0.02 + 1.0 / (double)Math.Max(1, ___stonesLeftOnThisLevel) + (double)who.LuckLevel / 100.0 + Game1.player.DailyLuck / 5.0;
+				double chanceForLadderDown = 0.02 + 1.0 / (double)Math.Max(1, ___netStonesLeftOnThisLevel) + (double)who.LuckLevel / 100.0 + Game1.player.DailyLuck / 5.0;
 				if (__instance.EnemyCount == 0)
 				{
 					chanceForLadderDown += 0.04;
@@ -323,13 +328,22 @@ namespace CustomMonsterFloors
 
 				chanceForLadderDown = chanceForLadderDown * Config.ChanceForLadderInStoneMultiplier - chanceForLadderDown;
 
-				if (!___ladderHasSpawned && !__instance.mustKillAllMonstersToAdvance() && (___stonesLeftOnThisLevel == 0 || Game1.random.NextDouble() < chanceForLadderDown) && __instance.shouldCreateLadderOnThisLevel())
+				if (!__instance.mustKillAllMonstersToAdvance() && (___netStonesLeftOnThisLevel == 0 || Game1.random.NextDouble() < chanceForLadderDown) && __instance.shouldCreateLadderOnThisLevel())
 				{
-					___createLadderDownEvent[new Point(x, y)] = __instance.getMineArea(-1) == 121 && !__instance.mustKillAllMonstersToAdvance() && Game1.random.NextDouble() < 0.2 * Config.ChanceLadderIsShaftMultiplier;
+					bool isShaft = !GotShaft && __instance.getMineArea(-1) == 121 && !__instance.mustKillAllMonstersToAdvance() && Game1.random.NextDouble() < 0.2 * Config.ChanceLadderIsShaftMultiplier;
+					if(isShaft || !___ladderHasSpawned)
+					{
+						if (isShaft)
+							GotShaft = true;
+						___createLadderDownEvent[new Point(x, y)] = isShaft;
+
+					}
 				}
 			}
-
-
+			else if(___createLadderDownEvent[new Point(x, y)])
+			{
+				GotShaft = true;
+			}
 		}
 	}
 }
