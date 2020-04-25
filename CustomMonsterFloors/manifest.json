@@ -1,8 +1,8 @@
 ﻿{
-  "Name": "Custom Monster Floors",
+  "Name": "Custom Dungeon Floors",
   "Author": "aedenthorn",
-  "Version": "0.1.0",
-  "Description": "Customize chance of a mine floor being a monster/slime/dino floor.",
+  "Version": "0.4.0",
+  "Description": "Customize type and nature of floors in mines and Skull Cave.",
   "UniqueID": "Aedenthorn.CustomMonsterFloors",
   "EntryDll": "CustomMonsterFloors.dll",
   "MinimumApiVersion": "3.4.0",
