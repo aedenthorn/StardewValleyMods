@@ -71,7 +71,14 @@ namespace BossCreatures
 				{
 					startedLightning = true;
 
-					playerPosition = Game1.player.position.Value;
+					List<Farmer> farmers = new List<Farmer>();
+					FarmerCollection.Enumerator enumerator = currentLocation.farmers.GetEnumerator();
+					while (enumerator.MoveNext())
+					{
+						farmers.Add(enumerator.Current);
+					}
+					playerPosition = farmers[Game1.random.Next(0, farmers.Count)].position;
+
 					Microsoft.Xna.Framework.Rectangle lightningSourceRect = new Rectangle(0, 0, 16, 16);
 					float markerScale = 8f;
 					Vector2 drawPosition = playerPosition + new Vector2(-16*markerScale/2 + 32f,-16*markerScale/ 2 + 32f);
@@ -95,9 +102,6 @@ namespace BossCreatures
 				{
 					Vector2 trajectory = ModEntry.VectorFromDegree(Game1.random.Next(0,360)) * 10f;
 					currentLocation.projectiles.Add(new BossProjectile((int)Math.Round(20 * difficulty), 9, 3, 4, 0f, trajectory.X, trajectory.Y, getStandingPosition(), "", "", true, false, currentLocation, this, false, null, false, 19));
-					//currentLocation.projectiles.Add(new BossProjectile(19, 9, 4, 4, 0f, trajectory.X, trajectory.Y, getStandingPosition(), currentLocation, this));
-					//currentLocation.projectiles.Add(new DebuffingProjectile(19, 9, 4, 4, 0f, trajectory.X, trajectory.Y, getStandingPosition(), currentLocation, this));
-					//base.currentLocation.playSound("fireball", NetAudio.SoundContext.Default);
 
 					projectileCount++;
 

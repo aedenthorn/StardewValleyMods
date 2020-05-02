@@ -285,8 +285,6 @@ namespace BossCreatures
 
             CheckedBosses.Add(location.Name);
 
-
-
             if ((location is MineShaft) && (location as MineShaft).mustKillAllMonstersToAdvance() && Game1.random.Next(0, 100) < Config.PercentChanceOfBossInMonsterArea)
             {
                 SpawnRandomBoss(location);
