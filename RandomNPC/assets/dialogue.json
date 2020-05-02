@@ -1,0 +1,362 @@
+{
+  "introductions": [
+	// age/manner/anxiety/optimism/gender/datable/traits/string
+	
+	// introductions
+	
+    "adult/polite|neutral/outgoing|neutral/any/positive/any/any/Oh, hello. Nice to meet you!$h",
+    "teen/polite|neutral/outgoing/any/positive/any/any/Oh, hi! Nice to meet you!$h",
+    "any/polite|neutral/outgoing|neutral/any/neutral/any/any/Hello, there! Nice to meet you.$h",
+    "adult/polite|neutral/shy/any/any/any/any/Oh, hello.$n",
+    "teen/polite|neutral/shy/any/any/any/any/Oh, hi.$n",
+    "adult/polite|neutral/outgoing|neutral/any/negative/any/any/Oh, hello. Do you need something?$s",
+    "teen/polite|neutral/outgoing|neutral/any/negative/any/any/Oh, hi. Do you need something?$s",
+    "adult/rude/outgoing|neutral/any/positive/any/any/Oh hey there! What's your name?$h",
+    "teen/rude/outgoing|neutral/any/positive/any/any/Hey! I haven't seen you here before! Who are you?$h",
+    "any/rude/outgoing|neutral/any/neutral/any/any/Hey. What's up?$n",
+    "adult/rude/shy/any/any/any/any/Yes? Do I know you?$n",
+    "teen/rude/shy/any/any/any/any/Yeah? Do I know you?$n",
+    "any/any/any/any/any/any/any/Hi.$h",
+
+  ],
+  "questions": [
+	// age/manner/anxiety/optimism/gender/datable/traits/string
+    "any/any/any/any/any/any/any/What can I do for you?",
+  ],
+  "farmer_questions": [
+    "Can you tell me about yourself?",
+    "What are your plans for today?",
+    "Do you have any advice for me?",
+    "Can I help you with anything?",
+    "Are you seeing anyone?",
+  ],
+  "rejections": [
+	// age/manner/anxiety/optimism/gender/datable/traits/string
+    "adult/rude/any/any/any/any/any/Mind your own business.",
+    "teen/rude/any/any/any/any/any/Mind your own bee's wax.",
+    "any/neutral/any/any/any/any/any/I don't know you well enough for that.",
+    "adult/polite/any/any/any/any/any/I'm sorry, I don't know you well enough for that.",
+    "teen/polite/any/any/any/any/any/Sorry, I don't know you well enough.",
+  ],
+  
+  "info_responses": [
+    "any/any/any/any/any/any/any/My name is $name. $manner; $anxiety; and $optimism.",
+  ],
+  
+  "manner": [
+	// age/manner/anxiety/optimism/gender/datable/traits/string
+    "adult/polite/any/neutral/any/any/any/I'm generally polite",
+    "teen/polite/any/neutral/any/any/any/I'm polite",
+    "adult/polite/any/positive/any/any/any/I'm pretty polite",
+    "teen/polite/any/positive/any/any/any/I'm really polite",
+    "adult/polite/any/negative/any/any/any/I'm well-mannered",
+    "teen/polite/any/negative/any/any/any/My parents taught me to be polite",
+
+    "adult/rude/any/neutral/any/any/any/I like to speak my mind",
+    "teen/rude/any/neutral/any/any/any/I tend to just say whatever",
+    "adult/rude/any/positive/any/any/any/I call it as I see it",
+    "teen/rude/any/positive/any/any/any/I tell it like it is",
+    "adult/rude/any/negative/any/any/any/I have no filter",
+    "teen/rude/any/negative/any/any/any/I'm kinda rude",
+
+    "adult/neutral/any/neutral/any/any/any/I am who I am",
+    "teen/neutral/any/neutral/any/any/any/I'm just me",
+    "adult/neutral/any/positive/any/any/any/I try to engage with people for who they are",
+    "teen/neutral/any/positive/any/any/any/I like to really listen when people talk to me",
+    "adult/neutral/any/negative/any/any/any/I'm pretty plain",
+    "teen/neutral/any/negative/any/any/any/I'm kinda dull",
+  ],
+  "anxiety": [
+	// age/manner/anxiety/optimism/gender/datable/any/traits/string
+
+	// shy
+	
+    "adult/neutral/shy/neutral/any/any/any/I'm introverted",
+    "teen/neutral/shy/neutral/any/any/any/I keep to myself",
+    "adult/neutral/shy/positive/any/any/any/I like to be alone",
+    "teen/neutral/shy/positive/any/any/any/I mostly stick to myself",
+    "adult/neutral/shy/negative/any/any/any/I dislike crowds",
+    "teen/neutral/shy/negative/any/any/any/I can't deal with crowds of people",
+
+    "adult/polite/shy/neutral/any/any/any/I'm an introvert",
+    "teen/polite/shy/neutral/any/any/any/I mostly keep to myself",
+    "adult/polite/shy/positive/any/any/any/I appreciate my alone time",
+    "teen/polite/shy/positive/any/any/any/I just like to be alone",
+    "adult/polite/shy/negative/any/any/any/I don't do well with strangers",
+    "teen/polite/shy/negative/any/any/any/I'm socially awkward",
+
+    "adult/rude/shy/neutral/any/any/any/I'm a loner",
+    "teen/rude/shy/neutral/any/any/any/I'm kind of a loner",
+    "adult/rude/shy/positive/any/any/any/I like being alone",
+    "teen/rude/shy/positive/any/any/any/I stick to myself",
+    "adult/rude/shy/negative/any/any/any/I hate crowds",
+    "teen/rude/shy/negative/any/any/any/I totally can't deal with crowds and crowds of people",
+
+	// outgoing
+
+    "adult/neutral/outgoing/neutral/any/any/any/I'm an extrovert",
+    "teen/neutral/outgoing/neutral/any/any/any/I'm an outgoing person",
+    "adult/neutral/outgoing/positive/any/any/any/I like being around other people",
+    "teen/neutral/outgoing/positive/any/any/any/I love meeting new people and hanging out with friends",
+    "adult/neutral/outgoing/negative/any/any/any/I don't like being alone",
+    "teen/neutral/outgoing/negative/any/any/any/I can't stand being alone",
+
+    "adult/polite/outgoing/neutral/any/any/any/I'm quite extroverted",
+    "teen/polite/outgoing/neutral/any/any/any/I'm pretty extroverted",
+    "adult/polite/outgoing/positive/any/any/any/I appreciate the company of others",
+    "teen/polite/outgoing/positive/any/any/any/I like being in the company of others",
+    "adult/polite/outgoing/negative/any/any/any/I am incapable of being alone and without society",
+    "teen/polite/outgoing/negative/any/any/any/I'm not able to stay alone for very long",
+
+    "adult/rude/outgoing/neutral/any/any/any/I'm into socializing",
+    "teen/rude/outgoing/neutral/any/any/any/I'm big into socializing",
+    "adult/rude/outgoing/positive/any/any/any/I love socializing",
+    "teen/rude/outgoing/positive/any/any/any/I love being around other people",
+    "adult/rude/outgoing/negative/any/any/any/I hate being alone",
+    "teen/rude/outgoing/negative/any/any/any/I totally hate being alone",
+
+	// neutral
+
+    "adult/neutral/neutral/neutral/any/any/any/I'm okay being alone or with other people",
+    "teen/neutral/neutral/neutral/any/any/any/I'm okay all by myself but sometimes I like being around other people",
+    "adult/neutral/neutral/positive/any/any/any/I can get along okay with or without others",
+    "teen/neutral/neutral/positive/any/any/any/I'm okay either with or without other people",
+    "adult/neutral/neutral/negative/any/any/any/I don't care if there are other people around or not",
+    "teen/neutral/neutral/negative/any/any/any/I don't care if I see my friends or not",
+
+    "adult/polite/neutral/neutral/any/any/any/I get by okay being alone or with other people",
+    "teen/polite/neutral/neutral/any/any/any/I'm fine all by myself but I like being around other people too",
+    "adult/polite/neutral/positive/any/any/any/I do well with or without the company others",
+    "teen/polite/neutral/positive/any/any/any/I'm just as happy with or without other people",
+    "adult/polite/neutral/negative/any/any/any/I don't really care if there are other people around or not",
+    "teen/polite/neutral/negative/any/any/any/I really don't care if I see my friends or not",
+
+    "adult/rude/neutral/neutral/any/any/any/I'm okay all alone or in crowds",
+    "teen/rude/neutral/neutral/any/any/any/I'm okay all by myself or with lots and lots of friends",
+    "adult/rude/neutral/positive/any/any/any/I do great all by myself, but I love company too",
+    "teen/rude/neutral/positive/any/any/any/I'm cool being alone, but I love my friends too",
+    "adult/rude/neutral/negative/any/any/any/I don't give a damn about socializing; friends come and go, like everything else",
+    "teen/rude/neutral/negative/any/any/any/I think sitting around talking is stupid and boring, but I don't like being alone either",
+
+
+  ],
+  "optimism": [
+	// age/manner/anxiety/optimism/gender/datable/any/traits/string
+	// positive
+	
+    "adult/neutral/any/positive/any/any/any/I'm a positive sort of person",
+    "teen/neutral/any/positive/any/any/any/I'm pretty positive",
+    "adult/polite/any/positive/any/any/any/I'm a generally positive sort of person",
+    "teen/polite/any/positive/any/any/any/I'm a pretty positive person",
+    "adult/rude/any/positive/any/any/any/I always look on the bright side",
+    "teen/rude/any/positive/any/any/any/I always try to see the good in things",
+
+	// negative
+
+    "adult/neutral/any/negative/any/any/any/I'm a negative sort of person",
+    "teen/neutral/any/negative/any/any/any/I'm pretty negative",
+    "adult/polite/any/negative/any/any/any/I'm a generally negative sort of person",
+    "teen/polite/any/negative/any/any/any/I'm a pretty negative person",
+    "adult/rude/any/negative/any/any/any/I mostly see the bad side of things",
+    "teen/rude/any/negative/any/any/any/I always obsess over my problems",
+
+	// neutral
+
+    "adult/neutral/any/neutral/any/any/any/I'm a neutral sort of person",
+    "teen/neutral/any/neutral/any/any/any/I'm pretty neutral",
+    "adult/polite/any/neutral/any/any/any/I'm a generally neutral sort of person",
+    "teen/polite/any/neutral/any/any/any/I'm a pretty neutral person",
+    "adult/rude/any/neutral/any/any/any/I see both sides of every situation",
+    "teen/rude/any/neutral/any/any/any/I can see both sides of good and bad things",
+  ],
+  
+
+  "schedules": [
+    "adult/any/any/any/any/any/any/Today my plan was to visit @ in the morning and # in the afternoon.",
+    "teen/any/any/any/any/any/any/Today I was going to visit @ in the morning and # in the afternoon.",
+  ],
+  
+	"places": {
+		"ArchaeologyHouse": [
+			"any/any/any/any/any/any/any/the library",
+		],
+
+		"Beach": [
+			"any/any/any/any/any/any/any/the beach",
+		],
+
+		"SeedShop": [
+			"any/any/any/any/any/any/any/the general store",
+		],
+
+		"Saloon": [
+			"any/any/any/any/any/any/any/the saloon",
+		],
+
+		"Town": [
+			"any/any/any/any/any/any/any/the town",
+		],
+
+		"Mountain": [
+			"any/any/any/any/any/any/any/the mountain",
+		],
+	},  
+
+  "advice": [
+	// age/manner/anxiety/optimism/gender/datable/any/traits/string
+    "any/rude/any/positive/any/any/any/Ain't nothin' sexier than creativity.",
+    "any/rude/any/positive/any/any/any/If they don't find you handsome, they should at least find you handy.", // Red Green
+    "any/rude/any/any/any/any/any/When in doubt, figure it out.",
+    "any/rude/any/any/any/any/any/Don't follow leaders, watch your parking meters.", // Bob Dylan
+    "any/any/any/negative/any/any/any/Never trust a computer you can't throw out the window.", // Steve Wozniak
+    "any/any/any/negative/any/any/any/Who eats cookies in bed wakes up with crumbs.", // Hero's Quest II
+    "any/any/any/negative/any/any/any/Who talks without thinking gets foot-in-mouth disease.", // Hero's Quest II
+    "any/polite/any/positive/any/any/any/The invariable mark of wisdom is to see the miraculous in the common.", // Emerson
+    "any/any/any/any/any/any/any/Certain things catch your eye, but pursue only those that capture the heart.", // Ancient Native American Proverb
+    "any/any/any/any/any/any/any/In the end, it’s not the years in your life that count. It’s the life in your years.", // Abraham Lincoln
+    "any/any/any/any/any/any/any/Life isn’t about finding yourself. Life is about creating yourself.", // George Bernard Shaw
+    "any/any/any/any/neutral/any/any/In three words I can sum up everything I’ve learned about life: it goes on.", // Robert Frost
+    "any/polite/any/negative/any/any/any/To live is the rarest thing in the world. Most people exist, that is all.", // Oscar Wilde
+    "any/polite/any/any/any/any/any/The greatest mistake you can make in life is to be continually fearing you will make one.", // Elbert Hubbard
+    "any/polite/any/any/any/any/any/Life is not a problem to be solved, but a reality to be experienced.", // Soren Kierkegaard
+    "any/any/any/positive/any/any/any/We make a living by what we get. We make a life by what we give.", // Winston Churchill
+    "any/any/any/positive/any/any/any/People are just about as happy as they make up their minds to be.", // Abraham Lincoln
+    "any/any/any/positive/any/any/any/It’s not the load that weighs you down, it’s how you carry it.", // C.S. Lewis 
+    "any/any/any/positive/any/any/any/There is more to life than increasing its speed.", // Gandhi 
+    "any/any/any/positive/any/any/any/Everyone in life is gonna hurt you; you just have to figure out which people are worth the pain.", // Erica Baican 
+    "teen/rude/any/positive/any/any/any/Never jump in a pile of leaves with a wet sucker.", // Linus van Pelt 
+    "any/rude/any/any/any/any/any/You never realize what you have until it's gone. Toilet paper is a good example.", //  
+    "any/rude/any/negative/any/any/any/Never argue with stupid people, they will drag you down to their level and then beat you with experience.", // Mark Twain 
+    "any/any/any/negative/any/any/any/If you think you are too small to make a difference, try sleeping with a mosquito.", // Dalai Lama
+    "any/rude/any/any/any/any/any/As you get older three things happen. The first is your memory goes, and I can't remember the other two.", // Norman Wisdom
+    "any/rude/any/any/any/male/any/Before you judge a man, walk a mile in his shoes. After that who cares?... He's a mile away and you've got his shoes!", // Billy Connolly
+    "teen/any/any/any/any/any/any/Nothing is impossible, the word itself says 'I'm possible'!", // Audrey Hepburn 
+    "any/rude/any/any/any/any/any/The early bird gets the worm, but the second mouse gets the cheese.", // Steven Wright  
+  ],
+
+	"quiz_types": {
+		"where": [
+			"any/any/any/any/any/any/any/Can you tell me where $who lives?",
+		],
+		"when": [
+			"any/any/any/any/any/any/any/Can you tell me when $where $openclose?|opens|closes|At $time|AM|PM",
+		],
+		"howmuch": [
+			"any/any/any/any/any/any/any/Can you tell me how much $what cost at $where?|They cost $gold gold.",
+		],
+		"who":[
+			"any/any/any/any/any/any/any/Can you tell me who is the $what in Stardew Valley?|$who is the $what in Stardew Valley.",
+		],
+		"quest":[ // criteria/request|answerYes|answerNo|responseY|responseN|reactionComplete
+			"any/polite/any/any/any/any/any/Would you be able to bring me a $what?|Sure I can!|Sorry, I can't!|I appreciate it!|Oh, well, that's okay.",
+			"any/neutral/any/any/any/any/any/Could you bring me a $what?|Sure I can!|Sorry, I can't!|Thanks!|Oh, well, never mind then.",
+			"any/rude/any/any/any/any/any/Can you get me a $what?|Sure I can!|Sorry, I can't!|Thanks!|Oh, well, whatever.",
+		],
+	},
+	"quiz_where_answers": [
+		"Caroline|In the general store.",
+		"Pierre|In the general store.",
+		"Abigail|In the general store.",
+		"Robin|In the carpenter's shop.",
+		"Demetrius|In the carpenter's shop.",
+		"Elliott|In a hut on the beach.",
+		"Maru|In the carpenter's shop.",
+		"Sabrina|In the carpenter's shop basement.",
+		"Emily|With her sister, Haley.",
+		"Evelyn|In the centre of town.",
+		"George|In the centre of town.",
+		"Alex|With his grandparents.",
+		"Pam|In the trailer by the river.",
+		"Penny|In the trailer by the river.",
+		"Haley|With her sister, Emily.",
+		"Jodi|In the southwest corner of town.",
+		"Sam|In the southwest corner of town.",
+		"Shane|In the farm store.",
+		"Vincent|In the southwest corner of town.",
+		"Marnie|In the farm store.",
+		"Jas|In the farm store.",
+		"Sebastian|In the farm store.",
+		"Harvey|Above the clinic.",
+		"Krobus|In the sewer.",
+		"Sandy|In the desert.",
+	],
+	"quiz_when_answers": [
+		"the clinic|9|15",
+		"the general store|9|17",
+		"the animal store|9|17",
+		"the saloon|12|24",
+		"the library|9|17",
+	],	
+	"quiz_howmuch_places": [
+		"the general store",
+		"Joja Mart",
+		"the animal shop",
+		"the blacksmith",
+		"the saloon",
+	],
+	"quiz_howmuch_items": [ // name|Pierre's|Joja|AnimalShop|Blacksmith|Saloon
+		"Jazz Seeds|30|37",
+		"Cauliflower Seeds|80|100",
+		"Bean Starters|60|75",
+		"Kale Seeds|70|87",
+		"Parsnip Seeds|20|25",
+		"Potato Seeds|50|62",
+		"Tulip Bulbs|20|25",
+		"Corn Seeds|150|187",
+		"Hops Starters|60|75",
+		"Pepper Seeds|40|50",
+		"Melon Seeds|80|100",
+		"Poppy Seeds|100|125",
+		"Radish Seeds|40|50",
+		"Spangle Seeds|50|62",
+		"Sunflower Seeds|200|125",
+		"Tomato Seeds|50|62",
+		"Wheat Seeds|10|12",
+		"Amaranth Seeds|70|87",
+		"Bok Choy Seeds|50|62",
+		"Cranberry Seeds|240|300",
+		"Eggplant Seeds|20|25",
+		"Fairy Seeds|200|250",
+		"Grape Starters|60|75",
+		"Pumpkin Seeds|100|125",
+		"Yam Seeds|60|75",
+	],
+	
+	"quiz_who_answers": [
+		"doctor|Harvey",
+		"carpenter|Robin",
+		"mayor|Lewis",
+		"blacksmith|Clint",
+		"museum curator|Gunther",
+		"nurse|Abigail",
+		"male bartender|Gus",
+		"female bartender|Emily",
+	],
+	"quiz_dont_know": "I don't know.",
+
+	"quizRight": [
+		"any/polite/any/any/any/any/any/Thank you very much!$h",
+		"any/neutral/any/any/any/any/any/Thank you!$h",
+		"any/rude/any/any/any/any/any/Thanks!$h",
+	],
+	"quizWrong": [
+		"any/neutral/any/any/any/any/any/That doesn't sound right!$u",
+		"any/polite/any/any/any/any/any/I think you're mistaken!$u",
+		"any/rude/any/any/any/any/any/That's not right!$a",
+	],
+	"quizUnknown": [
+		"any/neutral/any/any/any/any/any/Oh well, I thought you might know.",
+		"any/polite/any/any/any/any/any/Well, thanks anyways.$u",
+		"any/rude/any/any/any/any/any/Oh, well never mind then.$u",
+	],
+	"quiz_quest": [
+		"any/polite/any/any/any/any/any/$name wants a $what|Bring $name a $what.|Thank you very much!$h",
+		"any/neutral/any/any/any/any/any/$name wants a $what|Bring $name a $what.|Thank you so much!$h",
+		"any/rude/any/any/any/any/any/$name wants a $what|Bring $name a $what.|Awesome, thanks!$h",
+	],
+
+  "datable": [
+	// age/manner/anxiety/optimism/gender/datable/any/traits/yesstring^nostring
+    "any/any/any/any/any/any/any/I'm not seeing anyone at the moment.^I'm seeing someone at the moment, yes.",
+  ],
+}

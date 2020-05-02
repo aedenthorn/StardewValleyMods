@@ -5,12 +5,13 @@ using System;
 
 namespace BossCreatures
 {
-    internal class ToughFly : Fly
+    public class ToughFly : Fly
     {
-
+        public ToughFly() { 
+        }
         public ToughFly(Vector2 position, float difficulty) : base(position, true)
         {
-            Health = (int)Math.Round(Health * difficulty);
+            Health = (int)Math.Round(Health * 2 * difficulty);
         }
         public override void MovePosition(GameTime time, xTile.Dimensions.Rectangle viewport, GameLocation currentLocation)
         {

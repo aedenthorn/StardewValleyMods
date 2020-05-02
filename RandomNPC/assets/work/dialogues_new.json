@@ -1,0 +1,34 @@
+{
+  "introductions": [
+	// age`manner`anxiety`optimism`gender`datable`traits`key`string
+	
+	// introductions
+	
+    "adult`polite|neutral`outgoing|neutral`any`positive`any`any`Introduction`Oh, hello. Nice to meet you!$h",
+    "teen`polite|neutral`outgoing`any`positive`any`any`Introduction`Oh, hi! Nice to meet you!$h",
+    "any`polite|neutral`outgoing|neutral`any`neutral`any`any`Introduction`Hello, there! Nice to meet you.$h",
+    "adult`polite|neutral`shy`any`any`any`any`Introduction`Oh, hello.$neutral",
+    "teen`polite|neutral`shy`any`any`any`any`Introduction`Oh, hi.$neutral",
+    "adult`polite|neutral`outgoing|neutral`any`negative`any`any`Introduction`Oh, hello. Do you need something?$s",
+    "teen`polite|neutral`outgoing|neutral`any`negative`any`any`Introduction`Oh, hi. Do you need something?$s",
+    "adult`rude`outgoing|neutral`any`positive`any`any`Introduction`Oh hey there! What's your name?$h",
+    "teen`rude`outgoing|neutral`any`positive`any`any`Introduction`Hey! I haven't seen you here before! Who are you?$h",
+    "any`rude`outgoing|neutral`any`neutral`any`any`Introduction`Hey. What's up?$neutral",
+    "adult`rude`shy`any`any`any`any`Introduction`Yes? Do I know you?$neutral",
+    "teen`rude`shy`any`any`any`any`Introduction`Yeah? Do I know you?$neutral",
+    "any`any`any`any`any`any`Introduction`Hi.$h",
+
+  ],
+  "questions": [
+	// age`manner`anxiety`optimism`gender`datable`traits`string
+    "any`any`any`any`any`any`What can I do for you?",
+  ]
+  "advice": [
+	// age`manner`anxiety`optimism`gender`datable`traits`string
+    "any`any`any`any`any`any`Don't follow leaders, watch your parking meters.",
+  ]
+  "datable": [
+	// age`manner`anxiety`optimism`gender`datable`traits`yesstring`nostring
+    "any`any`any`any`any`any`I'm not seeing anyone at the moment.`I'm seeing someone at the moment, yes.",
+  ]
+}

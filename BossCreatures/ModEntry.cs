@@ -7,11 +7,10 @@ using StardewValley;
 using StardewValley.Locations;
 using StardewValley.Menus;
 using StardewValley.Monsters;
+using StardewValley.Network;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using xTile.Dimensions;
 using xTile.Layers;
 using xTile.Tiles;
 
@@ -20,6 +19,7 @@ namespace BossCreatures
     public class ModEntry : Mod
     {
         public static ModConfig Config;
+
         public static IMonitor PMonitor;
         public static IModHelper PHelper;
 
@@ -28,26 +28,73 @@ namespace BossCreatures
         private static int darknessTimer = 600;
         private static bool isDarkness = false;
 
+        private static List<string> CheckedBosses = new List<string>();
+        private static bool isFightingBoss;
+        private static string defaultMusic;
 
+        private static Texture2D healthBarTexture;
+        private static Dictionary<Type,string> BossTypes = new Dictionary<Type, string>() {
+            { typeof(BugBoss), "Armored Bug"},
+            { typeof(GhostBoss), "Ghost"},
+            { typeof(SerpentBoss), "Serpent"},
+            { typeof(SkeletonBoss), "Skeleton"},
+            { typeof(SkullBoss), "Haunted Skull"},
+            { typeof(SquidKidBoss), "Squid Kid"},
+        };
+        private static LootList BossLootList;
 
         public override void Entry(IModHelper helper)
         {
-            Config = this.Helper.ReadConfig<ModConfig>();
+            Config = Helper.ReadConfig<ModConfig>();
             PMonitor = Monitor;
             PHelper = helper;
 
             helper.Events.Player.Warped += Warped;
             helper.Events.GameLoop.DayStarted += OnDayStarted;
+            helper.Events.GameLoop.DayEnding += OnDayEnding;
+
+            MakeDarkness();
+            BossLootList = Helper.Data.ReadJsonFile<LootList>("assets/boss_loot.json") ?? new LootList();
+            if(BossLootList.loot.Count == 0)
+            {
+                Monitor.Log("No boss loot!", LogLevel.Warn);
+            }
+
         }
 
+        private void OnDayEnding(object sender, DayEndingEventArgs e)
+        {
+            foreach (GameLocation location in Game1.locations)
+            {
+                for (int i = 0; i < location.characters.Count; i++)
+                {
+                    if (BossTypes.ContainsKey(location.characters[i].GetType()) || location.characters[i] is ToughFly || location.characters[i] is ToughGhost)
+                    {
+                        location.characters.RemoveAt(i);
+                    }
+
+                }
+            }
+        }
         private void OnDayStarted(object sender, DayStartedEventArgs e)
         {
             CheckedBosses.Clear();
-
         }
 
         private void Warped(object sender, WarpedEventArgs e)
         {
+
+            PMonitor.Log("Entered location: " + e.NewLocation.Name);
+
+            for (int i = 0; i < e.OldLocation.characters.Count; i++)
+            {
+                if (e.OldLocation.characters[i] is ToughFly || e.OldLocation.characters[i] is ToughGhost)
+                {
+                    e.OldLocation.characters.RemoveAt(i);
+                }
+
+            }
+
             MakeBossHealthBar(100, 100);
 
             if (isFightingBoss && BossHere(e.NewLocation) == null)
@@ -56,6 +103,37 @@ namespace BossCreatures
             }
             TryAddBoss(e.NewLocation);
 
+        }
+
+        public static string GetBossTexture(Type type)
+        {
+            string texturePath = $"Characters\\Monsters\\{BossTypes[type]}";
+            if (Config.UseAlternateTextures)
+            {
+                try
+                {
+                    Texture2D spriteTexture = ModEntry.PHelper.Content.Load<Texture2D>($"Characters/Monsters/{type.Name}", ContentSource.GameContent);
+                    if(spriteTexture != null)
+                    {
+                        texturePath = $"Characters\\Monsters\\{type.Name}";
+                    }
+                }
+                catch(Exception ex)
+                {
+                    PMonitor.Log($"texture not found: Characters\\Monsters\\{type.Name}", LogLevel.Debug);
+                }
+            }
+            return texturePath;
+        }
+
+        public static void BossDeath(GameLocation currentLocation, NetPosition position, float difficulty)
+        {
+            PHelper.Events.Display.RenderedHud -= ModEntry.OnRenderedHud;
+
+            SpawnBossLoot(currentLocation, position.X, position.Y, difficulty);
+
+            Game1.playSound("Cowboy_Secret");
+            RevertMusic();
         }
 
         public static void OnRenderingHud(object sender, RenderingHudEventArgs e)
@@ -115,17 +193,17 @@ namespace BossCreatures
             Vector2 bossPos = boss.Position;
             if (!Utility.isOnScreen(bossPos, 0))
             {
-                int x = (int)Math.Max(10, Math.Min(Game1.viewport.X + Game1.viewport.Width - 58, bossPos.X) - Game1.viewport.X);
-                int y = (int)Math.Max(10, Math.Min(Game1.viewport.Y + Game1.viewport.Height - 58, bossPos.Y) - Game1.viewport.Y);
+                int x = (int)Math.Max(10, Math.Min(Game1.viewport.X + Game1.viewport.Width - 90, bossPos.X) - Game1.viewport.X);
+                int y = (int)Math.Max(10, Math.Min(Game1.viewport.Y + Game1.viewport.Height - 90, bossPos.Y) - Game1.viewport.Y);
 
                 if (toggleSprite < 20)
                 {
-                    Texture2D texture = PHelper.Content.Load<Texture2D>("Characters/Monsters/Haunted Skull.xnb", ContentSource.GameContent);
-                    ClickableTextureComponent bossIcon = new ClickableTextureComponent(new Rectangle(x, y, 48, 48), texture, new Rectangle(toggleSprite > 10 ? 16 : 0, 32, 16, 16), 3f, false);
+                    Texture2D texture = PHelper.Content.Load<Texture2D>("Characters/Monsters/Haunted Skull", ContentSource.GameContent);
+                    ClickableTextureComponent bossIcon = new ClickableTextureComponent(new Microsoft.Xna.Framework.Rectangle(x, y, 80, 80), texture, new Microsoft.Xna.Framework.Rectangle(toggleSprite > 10 ? 16 : 0, 32, 16, 16), 5f, false);
                     bossIcon.draw(Game1.spriteBatch);
                 }
                 toggleSprite++;
-                toggleSprite = toggleSprite % 30;
+                toggleSprite %= 30;
             }
         }
 
@@ -183,7 +261,7 @@ namespace BossCreatures
                 while (enumerator.MoveNext())
                 {
                     NPC j = enumerator.Current;
-                    if (j is SerpentBoss || j is SkullBoss || j is BugBoss || j is GhostBoss || j is SkeletonBoss)
+                    if (BossTypes.ContainsKey(j.GetType()))
                     {
                         return (Monster)j;
                     }
@@ -191,19 +269,6 @@ namespace BossCreatures
             }
             return null;
         }
-
-        private static List<string> CheckedBosses = new List<string>();
-        private static bool isFightingBoss;
-        private static string defaultMusic;
-        private Dictionary<Type, Vector2> SkeletonSpawnPos = new Dictionary<Type, Vector2>() 
-        {
-            {typeof(Farm), new Vector2(4832.09f,1121.761f) },
-            {typeof(Town), new Vector2(1835.856f,4309.934f) },
-            {typeof(Mountain), new Vector2(2777.356f,2018.429f) },
-            {typeof(Forest), new Vector2(4478.214f,2683.687f) },
-            {typeof(Desert), new Vector2(859.2023f,1734.465f) },
-        };
-        private static Texture2D healthBarTexture;
 
         private void TryAddBoss(GameLocation location)
         {
@@ -213,7 +278,7 @@ namespace BossCreatures
 
                 return;
             }
-            if (CheckedBosses.Contains(location.name))
+            if (CheckedBosses.Contains(location.Name))
             {
                 return;
             }
@@ -246,82 +311,92 @@ namespace BossCreatures
             {
                 SpawnRandomBoss(location);
             }
+            else if ((location.Name == "CrimsonBadlands") && Game1.random.Next(0, 100) < Config.PercentChanceOfBossInCrimsonBadlands)
+            {
+                SpawnRandomBoss(location);
+            }
         }
 
         private void SpawnRandomBoss(GameLocation location)
         {
-            float x = Game1.random.Next(location.map.DisplayWidth / 4, location.map.DisplayWidth * 3 / 4);
-            float y = Game1.random.Next(location.map.DisplayHeight / 4, location.map.DisplayHeight * 3 / 4);
-            Vector2 spawnPos = new Vector2(x, y);
-            SpawnRandomBoss(location, spawnPos);
-        }
-        private void SpawnRandomBoss(GameLocation location, Vector2 spawnPos)
-        {
+
+            Vector2 spawnPos = GetLandSpawnPos(location);
+            if (spawnPos == Vector2.Zero)
+            {
+                PMonitor.Log("no spawn location for boss!", LogLevel.Debug);
+                return;
+            }
+
             float difficulty = Config.BaseUndergroundDifficulty;
-            if (location.Name.StartsWith("UndergroundMine"))
+            if (location is MineShaft)
             {
                 int diffMult = 0;
                 if(int.TryParse(location.Name.Substring(15), out diffMult))
                 {
-                    difficulty *= diffMult / 100;
-                    //Monitor.Log("boss difficulty: " + difficulty, LogLevel.Debug);
+                    difficulty *= (float)diffMult / 100f;
+                    Monitor.Log("boss difficulty: " + difficulty, LogLevel.Debug);
                 }
             }
             else
             {
                 difficulty = Game1.random.Next((int)(Config.MinOverlandDifficulty * 100), (int)(Config.MaxOverlandDifficulty * 100)+1) / 100f;
-                //Monitor.Log("boss difficulty: " + difficulty, LogLevel.Debug);
+                Monitor.Log("boss difficulty: " + difficulty, LogLevel.Debug);
             }
-            int r = Game1.random.Next(0,5);
-            switch (r)
+
+            int r = Game1.random.Next(0, (int)Math.Round(Config.WeightSkullBossChance * 100 + Config.WeightSerpentBossChance * 100 + Config.WeightBugBossChance * 100 + Config.WeightGhostBossChance * 100 + Config.WeightSkeletonBossChance * 100 + Config.WeightSquidBossChance * 100));
+            if(r < Config.WeightSkullBossChance * 100)
             {
-                case 0:
-                    SerpentBoss s = new SerpentBoss(spawnPos, difficulty)
-                    {
-                        currentLocation = location,
-                    };
-                    location.characters.Add(s);
-                    break;
-                case 1:
-                    SkullBoss k = new SkullBoss(spawnPos, difficulty)
-                    {
-                        currentLocation = location,
-                    };
-                    location.characters.Add(k);
-                    break;
-                case 2:
-                    BugBoss b = new BugBoss(spawnPos, difficulty)
-                    {
-                        currentLocation = location,
-                    };
-                    location.characters.Add(b);
-                    break;
-                case 3:
-                    GhostBoss g = new GhostBoss(spawnPos, difficulty)
-                    {
-                        currentLocation = location,
-                    };
-                    location.characters.Add(g);
-                    break;
-                case 4:
-                    spawnPos = GetLandSpawnPos(location);
-                    if (spawnPos == Vector2.Zero)
-                    {
-                        PMonitor.Log("no spawn location for boss!",LogLevel.Debug);
+                SkullBoss k = new SkullBoss(spawnPos, difficulty)
+                {
+                    currentLocation = location,
+                };
+                location.characters.Add(k);
+            }
+            else if (r < Config.WeightSkullBossChance * 100 + Config.WeightSerpentBossChance * 100)
+            {
+                SerpentBoss s = new SerpentBoss(spawnPos, difficulty)
+                {
+                    currentLocation = location,
+                };
+                location.characters.Add(s);
+            }
+            else if (r < Config.WeightSkullBossChance * 100 + Config.WeightSerpentBossChance * 100 + Config.WeightBugBossChance * 100)
+            {
+                BugBoss b = new BugBoss(spawnPos, difficulty)
+                {
+                    currentLocation = location,
+                };
+                location.characters.Add(b);
+            }
+            else if (r < Config.WeightSkullBossChance * 100 + Config.WeightSerpentBossChance * 100 + Config.WeightBugBossChance * 100 + Config.WeightGhostBossChance * 100)
+            {
+                GhostBoss g = new GhostBoss(spawnPos, difficulty)
+                {
+                    currentLocation = location,
+                };
+                location.characters.Add(g);
+            }
+            else if (r < Config.WeightSkullBossChance * 100 + Config.WeightSerpentBossChance * 100 + Config.WeightBugBossChance * 100 + Config.WeightGhostBossChance * 100 + Config.WeightSkeletonBossChance * 100)
+            {
 
-                        break;
-                    }
-                    SkeletonBoss sk = new SkeletonBoss(spawnPos, difficulty)
-                    {
-                        currentLocation = location,
-                    };
-                    location.characters.Add(sk);
-                    break;
+                SkeletonBoss sk = new SkeletonBoss(spawnPos, difficulty)
+                {
+                    currentLocation = location,
+                };
+                location.characters.Add(sk);
+            }
+            else
+            {
+                SquidKidBoss sq = new SquidKidBoss(spawnPos, difficulty)
+                {
+                    currentLocation = location,
+                };
+                location.characters.Add(sq);
             }
 
+            defaultMusic = Game1.getMusicTrackName();
             Game1.showGlobalMessage(PHelper.Translation.Get("boss-warning"));
             Game1.changeMusicTrack("cowboy_boss", false, Game1.MusicContext.Default);
-            defaultMusic = Game1.getMusicTrackName();
             PHelper.Events.Display.RenderedHud += OnRenderedHud;
         }
 
@@ -360,8 +435,20 @@ namespace BossCreatures
                             if (t != null)
                             {
                                 Vector2 tile2 = new Vector2((float)x2, (float)y2);
-                                int m = t.TileIndex;
                                 if (location.isTileLocationTotallyClearAndPlaceable(tile2))
+                                {
+                                    tiles.Add(tile2);
+                                }
+                            }
+                        }
+
+                        if(tiles.Count == 0)
+                        {
+                            Tile t = location.map.Layers[0].Tiles[x2, y2];
+                            if (t != null)
+                            {
+                                Vector2 tile2 = new Vector2((float)x2, (float)y2);
+                                if (location.isTilePassable(new Location((int)tile2.X, (int)tile2.Y),Game1.viewport))
                                 {
                                     tiles.Add(tile2);
                                 }
@@ -376,35 +463,38 @@ namespace BossCreatures
             }
             Vector2 posT = tiles[Game1.random.Next(0,tiles.Count)];
             return new Vector2(posT.X * 64f, posT.Y * 64f);
-
         }
 
         public static void SpawnBossLoot(GameLocation location, float x, float y, float difficulty)
         {
-            List<KeyValuePair<int,double>> loots = new List<KeyValuePair<int,double>>()
-            {
-                new KeyValuePair<int,double>(766,.75), new KeyValuePair<int,double>(766,.05), new KeyValuePair<int,double>(153,.1), new KeyValuePair<int,double>(66,.015), new KeyValuePair<int,double>(92,.15), new KeyValuePair<int,double>(96,.005), new KeyValuePair<int,double>(99,.001), new KeyValuePair<int,double>(382,.5), new KeyValuePair<int,double>(433,.01), new KeyValuePair<int,double>(336,.001), new KeyValuePair<int,double>(84,.02), new KeyValuePair<int,double>(414,.02), new KeyValuePair<int,double>(97,.005), new KeyValuePair<int,double>(99,.001), new KeyValuePair<int,double>(767,.9), new KeyValuePair<int,double>(767,.4), new KeyValuePair<int,double>(108,.001), new KeyValuePair<int,double>(287,.02), new KeyValuePair<int,double>(96,.005), new KeyValuePair<int,double>(99,.001), new KeyValuePair<int,double>(767,.9), new KeyValuePair<int,double>(767,.55), new KeyValuePair<int,double>(108,.001), new KeyValuePair<int,double>(287,.02), new KeyValuePair<int,double>(97,.005), new KeyValuePair<int,double>(99,.001), new KeyValuePair<int,double>(767,.9), new KeyValuePair<int,double>(767,.7), new KeyValuePair<int,double>(108,.001), new KeyValuePair<int,double>(287,.02), new KeyValuePair<int,double>(98,.005), new KeyValuePair<int,double>(99,.001), new KeyValuePair<int,double>(386,.9), new KeyValuePair<int,double>(386,.5), new KeyValuePair<int,double>(386,.25), new KeyValuePair<int,double>(386,.1), new KeyValuePair<int,double>(288,.05), new KeyValuePair<int,double>(768,.5), new KeyValuePair<int,double>(773,.05), new KeyValuePair<int,double>(349,.05), new KeyValuePair<int,double>(787,.05), new KeyValuePair<int,double>(337,.008), new KeyValuePair<int,double>(390,.9), new KeyValuePair<int,double>(80,.1), new KeyValuePair<int,double>(382,.1), new KeyValuePair<int,double>(380,.1), new KeyValuePair<int,double>(96,.005), new KeyValuePair<int,double>(99,.001), new KeyValuePair<int,double>(771,.9), new KeyValuePair<int,double>(771,.5), new KeyValuePair<int,double>(770,.5), new KeyValuePair<int,double>(382,.1), new KeyValuePair<int,double>(86,.005), new KeyValuePair<int,double>(72,.001), new KeyValuePair<int,double>(684,.6), new KeyValuePair<int,double>(273,.05), new KeyValuePair<int,double>(273,.05), new KeyValuePair<int,double>(157,.02), new KeyValuePair<int,double>(114,.005), new KeyValuePair<int,double>(96,.005), new KeyValuePair<int,double>(99,.001), new KeyValuePair<int,double>(684,.9), new KeyValuePair<int,double>(157,.02), new KeyValuePair<int,double>(114,.005), new KeyValuePair<int,double>(96,.005), new KeyValuePair<int,double>(99,.001), new KeyValuePair<int,double>(766,.75), new KeyValuePair<int,double>(412,.08), new KeyValuePair<int,double>(70,.02), new KeyValuePair<int,double>(98,.015), new KeyValuePair<int,double>(92,.5), new KeyValuePair<int,double>(97,.005), new KeyValuePair<int,double>(99,.001), new KeyValuePair<int,double>(766,.8), new KeyValuePair<int,double>(157,.1), new KeyValuePair<int,double>(-4,.1), new KeyValuePair<int,double>(72,.01), new KeyValuePair<int,double>(92,.5), new KeyValuePair<int,double>(98,.005), new KeyValuePair<int,double>(99,.001), new KeyValuePair<int,double>(769,.75), new KeyValuePair<int,double>(769,.1), new KeyValuePair<int,double>(329,.02), new KeyValuePair<int,double>(337,.002), new KeyValuePair<int,double>(336,.01), new KeyValuePair<int,double>(335,.02), new KeyValuePair<int,double>(334,.04), new KeyValuePair<int,double>(203,.04), new KeyValuePair<int,double>(293,.03), new KeyValuePair<int,double>(108,.003), new KeyValuePair<int,double>(-4,.1), new KeyValuePair<int,double>(98,.005), new KeyValuePair<int,double>(99,.001), new KeyValuePair<int,double>(768,.95), new KeyValuePair<int,double>(768,.1), new KeyValuePair<int,double>(156,.08), new KeyValuePair<int,double>(338,.08), new KeyValuePair<int,double>(-6,.2), new KeyValuePair<int,double>(97,.005), new KeyValuePair<int,double>(99,.001), new KeyValuePair<int,double>(749,.99), new KeyValuePair<int,double>(338,.1), new KeyValuePair<int,double>(286,.25), new KeyValuePair<int,double>(535,.25), new KeyValuePair<int,double>(280,.03), new KeyValuePair<int,double>(105,.02), new KeyValuePair<int,double>(86,.1), new KeyValuePair<int,double>(72,.01), new KeyValuePair<int,double>(96,.005), new KeyValuePair<int,double>(99,.001), new KeyValuePair<int,double>(717,.15), new KeyValuePair<int,double>(286,.4), new KeyValuePair<int,double>(96,.005), new KeyValuePair<int,double>(99,.001), new KeyValuePair<int,double>(717,.25), new KeyValuePair<int,double>(287,.4), new KeyValuePair<int,double>(98,.005), new KeyValuePair<int,double>(99,.001), new KeyValuePair<int,double>(732,.5), new KeyValuePair<int,double>(386,.5), new KeyValuePair<int,double>(386,.5), new KeyValuePair<int,double>(386,.5), new KeyValuePair<int,double>(72,.0000001), new KeyValuePair<int,double>(768,.75), new KeyValuePair<int,double>(814,.2), new KeyValuePair<int,double>(336,.05), new KeyValuePair<int,double>(287,.1), new KeyValuePair<int,double>(288,.05), new KeyValuePair<int,double>(98,.005), new KeyValuePair<int,double>(99,.001), new KeyValuePair<int,double>(769,.25), new KeyValuePair<int,double>(105,.03), new KeyValuePair<int,double>(106,.03), new KeyValuePair<int,double>(166,.001), new KeyValuePair<int,double>(60,.04), new KeyValuePair<int,double>(232,.04), new KeyValuePair<int,double>(72,.03), new KeyValuePair<int,double>(74,.01), new KeyValuePair<int,double>(97,.005), new KeyValuePair<int,double>(99,.001), new KeyValuePair<int,double>(-4,.9), new KeyValuePair<int,double>(-4,.9), new KeyValuePair<int,double>(-6,.001), new KeyValuePair<int,double>(769,.75), new KeyValuePair<int,double>(769,.1), new KeyValuePair<int,double>(337,.002), new KeyValuePair<int,double>(336,.01), new KeyValuePair<int,double>(335,.02), new KeyValuePair<int,double>(334,.04), new KeyValuePair<int,double>(203,.04), new KeyValuePair<int,double>(108,.003), new KeyValuePair<int,double>(-4,.1), new KeyValuePair<int,double>(98,.005), new KeyValuePair<int,double>(99,.001), new KeyValuePair<int,double>(74,.0005), new KeyValuePair<int,double>(769,.75), new KeyValuePair<int,double>(769,.2), new KeyValuePair<int,double>(337,.002), new KeyValuePair<int,double>(336,.01), new KeyValuePair<int,double>(335,.02), new KeyValuePair<int,double>(334,.04), new KeyValuePair<int,double>(108,.003), new KeyValuePair<int,double>(-4,.1), new KeyValuePair<int,double>(98,.005), new KeyValuePair<int,double>(99,.001), new KeyValuePair<int,double>(74,.0005), new KeyValuePair<int,double>(80,0), new KeyValuePair<int,double>(80,0), new KeyValuePair<int,double>(768,.65), new KeyValuePair<int,double>(378,.1), new KeyValuePair<int,double>(378,.1), new KeyValuePair<int,double>(380,.1), new KeyValuePair<int,double>(380,.1), new KeyValuePair<int,double>(382,.1), new KeyValuePair<int,double>(98,.005), new KeyValuePair<int,double>(99,.001), new KeyValuePair<int,double>(378,.1), new KeyValuePair<int,double>(378,.1), new KeyValuePair<int,double>(380,.1), new KeyValuePair<int,double>(380,.1), new KeyValuePair<int,double>(382,.1), new KeyValuePair<int,double>(684,.76), new KeyValuePair<int,double>(157,.02), new KeyValuePair<int,double>(114,.005), new KeyValuePair<int,double>(96,.005), new KeyValuePair<int,double>(99,.001), new KeyValuePair<int,double>(768,.99), new KeyValuePair<int,double>(428,.2), new KeyValuePair<int,double>(428,.05), new KeyValuePair<int,double>(768,.15), new KeyValuePair<int,double>(243,.04), new KeyValuePair<int,double>(99,.001), new KeyValuePair<int,double>(74,.001), new KeyValuePair<int,double>(766,.99), new KeyValuePair<int,double>(766,.9), new KeyValuePair<int,double>(766,.4), new KeyValuePair<int,double>(99,.001), new KeyValuePair<int,double>(769,.99), new KeyValuePair<int,double>(769,.15), new KeyValuePair<int,double>(287,.15), new KeyValuePair<int,double>(226,.06), new KeyValuePair<int,double>(446,.008), new KeyValuePair<int,double>(74,.001)
-            };
-
             Vector2 playerPosition = new Vector2((float)Game1.player.GetBoundingBox().Center.X, (float)Game1.player.GetBoundingBox().Center.Y);
 
-            foreach (KeyValuePair<int,double> kvp in loots)
+            foreach (string loot in BossLootList.loot)
             {
-                int objectToAdd = kvp.Key;
-                if(objectToAdd < 0)
+                string[] loota = loot.Split('/');
+                if (!int.TryParse(loota[0], out int objectToAdd))
                 {
-                    location.debris.Add(new Debris(Math.Abs(objectToAdd), Game1.random.Next(10, 40), new Vector2(x, y), playerPosition));
-                    
+                    continue;
+                }
+
+                if (!double.TryParse(loota[1], out double chance))
+                {
+                    continue;
+                }
+
+                if (objectToAdd < 0)
+                {
+                    location.debris.Add(new Debris(Math.Abs(objectToAdd), (int)Math.Round(Game1.random.Next(10, 40) * difficulty), new Vector2(x, y), playerPosition));
+
                 }
                 else
                 {
-                    double chance = kvp.Value * difficulty;
                     while (chance > 1)
                     {
                         location.debris.Add(new Debris(objectToAdd, new Vector2(x, y), playerPosition));
-                        chance--;
+                        chance -= 1;
                     }
-                    if (Game1.random.NextDouble() < kvp.Value)
+                    if (Game1.random.NextDouble() < chance)
                     {
                         location.debris.Add(new Debris(objectToAdd, new Vector2(x, y), playerPosition));
                     }
@@ -421,5 +511,15 @@ namespace BossCreatures
             return result;
         }
 
+
+        public static Vector2 VectorFromDegree(int degrees)
+        {
+            double radians = Math.PI / 180 * degrees;
+            return new Vector2((float)Math.Cos(radians), (float)Math.Sin(radians));
+        }
+        public static bool IsLessThanHalfHealth(Monster m)
+        {
+            return m.Health < m.MaxHealth / 2;
+        }
     }
 }

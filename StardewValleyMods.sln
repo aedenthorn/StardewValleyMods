@@ -21,6 +21,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BossCreatures", "BossCreatu
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CustomMonsterFloors", "CustomMonsterFloors\CustomMonsterFloors.csproj", "{0C291A20-8560-4D6A-AB96-3AEE72E30B29}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CustomOreNodes", "CustomOreNodes\CustomOreNodes.csproj", "{80AA7B9A-03DE-4B2C-BB26-9F9514127A2E}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -63,6 +65,10 @@ Global
 		{0C291A20-8560-4D6A-AB96-3AEE72E30B29}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{0C291A20-8560-4D6A-AB96-3AEE72E30B29}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{0C291A20-8560-4D6A-AB96-3AEE72E30B29}.Release|Any CPU.Build.0 = Release|Any CPU
+		{80AA7B9A-03DE-4B2C-BB26-9F9514127A2E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{80AA7B9A-03DE-4B2C-BB26-9F9514127A2E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{80AA7B9A-03DE-4B2C-BB26-9F9514127A2E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{80AA7B9A-03DE-4B2C-BB26-9F9514127A2E}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -2,7 +2,7 @@
 
 namespace RandomNPC
 {
-    internal class DialogueData
+    public class DialogueData
     {
         public List<string> introductions = new List<string>();
         public List<string> questions = new List<string>();

@@ -54,7 +54,303 @@
     <Compile Include="SaveData.cs" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="assets\body_types.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="assets\clothes.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="assets\dark_hair_sets.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="assets\dark_skin_colours.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="assets\dialogue.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="assets\engagement_dialogues.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="assets\exotic_hair_sets.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="assets\female_names.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="assets\gift_dialogues.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="assets\hair_styles.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="assets\light_skin_colours.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="assets\male_names.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="assets\natural_hair_sets.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="assets\schedules.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="assets\skin_colours.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <None Include="assets\work\all_dialogues.json" />
+    <None Include="assets\work\dialog.json" />
+    <None Include="assets\work\dialogues_new.json" />
+    <None Include="assets\work\disney_hair" />
+    <None Include="assets\work\exotic_hair.json" />
+    <None Include="assets\work\last_names.json" />
+    <None Include="assets\work\lipstick" />
+    <None Include="assets\work\natural_hair" />
+    <None Include="assets\work\natural_hair.json" />
+    <None Include="assets\work\schedules_original.json" />
+    <None Include="assets\work\test_dialogue.json" />
+    <None Include="assets\work\test_schedule.json" />
+    <None Include="manifest.json" />
     <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="assets\body\female_buxom_character.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="assets\body\female_buxom_portrait.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="assets\body\female_character.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="assets\body\female_eyes_back.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="assets\body\female_eyes_character.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="assets\body\female_eyes_portrait.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="assets\body\female_mouth.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="assets\body\female_nose.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="assets\body\female_portrait.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="assets\body\female_portrait_full.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="assets\body\male_character.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="assets\body\male_eyes_back.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="assets\body\male_eyes_character.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="assets\body\male_eyes_portrait.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="assets\body\male_mouth.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="assets\body\male_nose.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="assets\body\male_portrait.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="assets\clothes\blue_jeans.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="assets\clothes\blue_shorts.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="assets\clothes\dress_buxom_character.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="assets\clothes\dress_buxom_portrait.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="assets\clothes\dress_character.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="assets\clothes\dress_portrait.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="assets\clothes\heels.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="assets\clothes\jeans.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="assets\clothes\male_blue_shirt_portrait.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="assets\clothes\male_shirt_character.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="assets\clothes\male_shirt_portrait.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="assets\clothes\pink_scarf_top_character.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="assets\clothes\pink_scarf_top_portrait.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="assets\clothes\pink_shirt_buxom_character.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="assets\clothes\pink_shirt_buxom_portrait.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="assets\clothes\red_dress_buxom_character.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="assets\clothes\red_dress_buxom_portrait.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="assets\clothes\red_dress_character.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="assets\clothes\red_dress_portrait.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="assets\clothes\red_heels.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="assets\clothes\scarf_top_character.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="assets\clothes\scarf_top_portrait.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="assets\clothes\shirt_buxom_character.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="assets\clothes\shirt_buxom_portrait.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="assets\clothes\shorts.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="assets\clothes\skirt_blouse_buxom_character.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="assets\clothes\skirt_blouse_buxom_portrait.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="assets\hair\beard_character.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="assets\hair\beard_portrait.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="assets\hair\female_hair_bun_character.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="assets\hair\female_hair_bun_portrait.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="assets\hair\female_hair_long_character.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="assets\hair\female_hair_long_portrait.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="assets\hair\female_hair_pigtail_character.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="assets\hair\female_hair_pigtail_portrait.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="assets\hair\female_hair_waivy_character.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="assets\hair\female_hair_waivy_portrait.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="assets\hair\goatee_character.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="assets\hair\goatee_portrait.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="assets\hair\short_hair_male_character.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="assets\hair\short_hair_male_portrait.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="assets\transparent_character.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="assets\transparent_portrait.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="assets\work\BackOnTheBus.png" />
+    <Content Include="assets\work\beard_character_original.png" />
+    <Content Include="assets\work\character_layers.xcf" />
+    <Content Include="assets\work\eyes_portrait.png" />
+    <Content Include="assets\work\female_character_orig.png" />
+    <Content Include="assets\work\female_hair_waivy_portrait_original_grey.png" />
+    <Content Include="assets\work\female_wild_long_hair_character.png" />
+    <Content Include="assets\work\goatee_character_original.png" />
+    <Content Include="assets\work\green_hair.png" />
+    <Content Include="assets\work\hair.png" />
+    <Content Include="assets\work\hairs\1.png" />
+    <Content Include="assets\work\hairs\10.png" />
+    <Content Include="assets\work\hairs\11.png" />
+    <Content Include="assets\work\hairs\12.png" />
+    <Content Include="assets\work\hairs\16.png" />
+    <Content Include="assets\work\hairs\2.png" />
+    <Content Include="assets\work\hairs\3.png" />
+    <Content Include="assets\work\hairs\4.png" />
+    <Content Include="assets\work\hairs\5.png" />
+    <Content Include="assets\work\hairs\6.png" />
+    <Content Include="assets\work\hairs\7.png" />
+    <Content Include="assets\work\hairs\8.png" />
+    <Content Include="assets\work\hairs\9.png" />
+    <Content Include="assets\work\hairs\hair.png" />
+    <Content Include="assets\work\jeans_character_original.png" />
+    <Content Include="assets\work\mouth1.png" />
+    <Content Include="assets\work\mouth2.png" />
+    <Content Include="assets\work\pink_shirt_portrait.png" />
+    <Content Include="assets\work\portrait_layers.xcf" />
+    <Content Include="assets\work\red_dress.xcf" />
+    <Content Include="assets\work\red_dress_portrait.xcf" />
+    <Content Include="assets\work\RobinNekked.xcf" />
+    <Content Include="assets\work\robin_hair_original.png" />
+    <Content Include="assets\work\screenshots.xcf" />
+    <Content Include="assets\work\screenshots\1.png" />
+    <Content Include="assets\work\screenshots\11.png" />
+    <Content Include="assets\work\screenshots\111.png" />
+    <Content Include="assets\work\screenshots\2.png" />
+    <Content Include="assets\work\screenshots\22.png" />
+    <Content Include="assets\work\screenshots\222.png" />
+    <Content Include="assets\work\screenshots\2222.png" />
+    <Content Include="assets\work\screenshots\crowd.png" />
+    <Content Include="assets\work\screenshots\Pasted Layer #1.png" />
+    <Content Include="assets\work\screenshots\Pasted Layer #10.png" />
+    <Content Include="assets\work\screenshots\Pasted Layer #11.png" />
+    <Content Include="assets\work\screenshots\Pasted Layer #12.png" />
+    <Content Include="assets\work\screenshots\Pasted Layer #13.png" />
+    <Content Include="assets\work\screenshots\Pasted Layer #15.png" />
+    <Content Include="assets\work\screenshots\Pasted Layer #4.png" />
+    <Content Include="assets\work\screenshots\Pasted Layer #6.png" />
+    <Content Include="assets\work\screenshots\Pasted Layer #8.png" />
+    <Content Include="assets\work\screenshots\Pasted Layer.png" />
+    <Content Include="assets\work\screenshots\Quest.png" />
+    <Content Include="assets\work\screenshots\Walking.png" />
+    <Content Include="assets\work\white_skirt_blouse_character.png" />
+    <Content Include="assets\work\white_skirt_blouse_portrait.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="..\packages\Pathoschild.Stardew.ModBuildConfig.3.1.0\build\Pathoschild.Stardew.ModBuildConfig.targets" Condition="Exists('..\packages\Pathoschild.Stardew.ModBuildConfig.3.1.0\build\Pathoschild.Stardew.ModBuildConfig.targets')" />

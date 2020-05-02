@@ -34,20 +34,20 @@ namespace CustomMonsterFloors
 
 			harmony.Patch(
 			   original: AccessTools.Method(typeof(MineShaft), "loadLevel"),
-			   postfix: new HarmonyMethod(typeof(ModEntry),nameof(ModEntry.loadLevel_Postfix))
+			   postfix: new HarmonyMethod(typeof(ModEntry), nameof(ModEntry.loadLevel_Postfix))
 			);
 			harmony.Patch(
 			   original: AccessTools.Method(typeof(MineShaft), "adjustLevelChances"),
-			   postfix: new HarmonyMethod(typeof(ModEntry),nameof(ModEntry.adjustLevelChances_Postfix))
+			   postfix: new HarmonyMethod(typeof(ModEntry), nameof(ModEntry.adjustLevelChances_Postfix))
 			);
 			harmony.Patch(
 			   original: AccessTools.Method(typeof(MineShaft), "chooseStoneType"),
-			   prefix: new HarmonyMethod(typeof(ModEntry),nameof(ModEntry.chooseStoneType_Prefix)),
-			   postfix: new HarmonyMethod(typeof(ModEntry),nameof(ModEntry.chooseStoneType_Postfix))
+			   prefix: new HarmonyMethod(typeof(ModEntry), nameof(ModEntry.chooseStoneType_Prefix)),
+			   postfix: new HarmonyMethod(typeof(ModEntry), nameof(ModEntry.chooseStoneType_Postfix))
 			);
 			harmony.Patch(
 			   original: AccessTools.Method(typeof(MineShaft), "checkStoneForItems"),
-			   postfix: new HarmonyMethod(typeof(ModEntry),nameof(ModEntry.checkStoneForItems_Postfix))
+			   postfix: new HarmonyMethod(typeof(ModEntry), nameof(ModEntry.checkStoneForItems_Postfix))
 			);
 		}
 
@@ -248,6 +248,10 @@ namespace CustomMonsterFloors
 		}
 		private static void chooseStoneType_Postfix(MineShaft __instance, ref StardewValley.Object __result, Vector2 tile)
 		{
+			if(__result == null)
+			{
+				return;
+			}
 			List<int> ores = new List<int>() { 765, 764, 290, 751 };
 			var x = __result.ParentSheetIndex;
 			if (!(x >= 31 && x <= 42 || x >= 47 && x <= 54 || ores.Contains(x)))
@@ -313,9 +317,20 @@ namespace CustomMonsterFloors
 					};
 				}
 			}
+			/*
+			if (!ores.Contains(__result.ParentSheetIndex))
+			{
+				foreach(CustomOreNode node in CustomOreNodeData)
+				{
+
+				}
+			}
+			*/
 		}
 
+
 		private static bool GotShaft = false;
+
 		private static void checkStoneForItems_Postfix(MineShaft __instance, int x, int y, Farmer who, ref NetPointDictionary<bool, NetBool> ___createLadderDownEvent, bool ___ladderHasSpawned, NetIntDelta ___netStonesLeftOnThisLevel)
 		{
 			if(!___createLadderDownEvent.ContainsKey(new Point(x, y)))

@@ -1,0 +1,9 @@
+﻿{
+	nodes:[
+		// nodes: Description/texturePath/relativeTexturePathLocation/spriteX,spriteY/spriteWidth,SpriteHeight/minMineLevel,maxMineLevel/spawnChance/durability/experience/dropItems
+		// dropItems(seperated by "|"): objectIndex;dropChance;minDrop,maxDrop;luckyAdditionalDropNum;minerAdditionalDropNum
+		"This stone is rich in coal./assets\\CoalStone.png/mod/0,0/16,16/1,120/5/4/12/382;100;1,4;1;1|390;75;1,2;1;1", // 5% chance of coal stone in mine levels 1-120
+		"This stone is rich in coal./assets\\CoalStone.png/mod/0,0/16,16/121,-1/10/4/12/382;100;1,4;1;1|390;75;1,2;1;1", // 10% chance of coal stone in mine levels 120+
+		"This stone smells like pizza./Maps\\springobjects/game/160,432/16,16/-1,-1/0/2/12/206;100;1,2;1;1" // no chance of pizza stone
+	]
+}

@@ -1,4 +1,5 @@
 ﻿using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using Netcode;
 using StardewModdingAPI;
 using StardewValley;
@@ -11,7 +12,7 @@ using System.Collections.Generic;
 
 namespace BossCreatures
 {
-    internal class SerpentBoss : Serpent
+	public class SerpentBoss : Serpent
     {
 		public int timeUntilNextAttack;
 		public readonly NetBool firing = new NetBool(false);
@@ -19,14 +20,25 @@ namespace BossCreatures
 		public int nextFireTime;
 		public int totalFireTime;
 		private float difficulty;
+		private int width;
+		private int height;
+
+		public SerpentBoss() { 
+		}
 
 		public SerpentBoss(Vector2 position, float difficulty) : base(position)
         {
+			width = ModEntry.Config.SerpentBossWidth;
+			height = ModEntry.Config.SerpentBossHeight;
+			Sprite.SpriteWidth = width;
+			Sprite.SpriteHeight = height;
+			Sprite.LoadTexture(ModEntry.GetBossTexture(GetType()));
+			Scale = ModEntry.Config.SerpentBossScale;
+
 			this.difficulty = difficulty;
-			Health = (int)Math.Round(base.Health * 10 * difficulty);
+			Health = (int)Math.Round(base.Health * 20 * difficulty);
 			MaxHealth = Health;
-            Scale = 2f;
-            DamageToFarmer = (int)Math.Round(base.damageToFarmer * difficulty);
+			DamageToFarmer = (int)Math.Round(base.damageToFarmer * difficulty);
 			timeUntilNextAttack = 100;
 			this.moveTowardPlayerThreshold.Value = 20;
 		}
@@ -131,6 +143,10 @@ namespace BossCreatures
 						projectile.ignoreTravelGracePeriod.Value = true;
 						projectile.maxTravelDistance.Value = 512;
 						base.currentLocation.projectiles.Add(projectile);
+						if (Health < MaxHealth / 2)
+						{
+							base.currentLocation.projectiles.Add(new BasicProjectile((int)Math.Round(20 * difficulty), 10, 3, 4, 0f, shot_velocity.X, shot_velocity.Y, shot_origin, "", "", true, false, base.currentLocation, this, false, null));
+						}
 						this.nextFireTime = 50;
 					}
 				}
@@ -139,31 +155,31 @@ namespace BossCreatures
 					this.totalFireTime = 0;
 					this.nextFireTime = 0;
 					this.attackState.Set(0);
-					if (Health < MaxHealth / 2)
-					{
-						this.timeUntilNextAttack = Game1.random.Next(800, 1500);
-					}
-					else
-					{
-						this.timeUntilNextAttack = Game1.random.Next(1500, 3000);
-					}
+					this.timeUntilNextAttack = Game1.random.Next(1500, 3000);
+				}
+			}
+		}
+
+		public override void drawAboveAllLayers(SpriteBatch b)
+		{
+			if (Utility.isOnScreen(base.Position, 128))
+			{
+				b.Draw(Game1.shadowTexture, base.getLocalPosition(Game1.viewport) + new Vector2(64f, (float)this.GetBoundingBox().Height), new Rectangle?(Game1.shadowTexture.Bounds), Color.White, 0f, new Vector2((float)Game1.shadowTexture.Bounds.Center.X, (float)Game1.shadowTexture.Bounds.Center.Y), 4f, SpriteEffects.None, (float)(base.getStandingY() - 1) / 10000f);
+				b.Draw(this.Sprite.Texture, base.getLocalPosition(Game1.viewport) + new Vector2(width*2, (float)(this.GetBoundingBox().Height / 2)), new Rectangle?(this.Sprite.SourceRect), Color.White, this.rotation, new Vector2(width/2, height/2), scale * 4f, this.flip ? SpriteEffects.FlipHorizontally : SpriteEffects.None, Math.Max(0f, this.drawOnTop ? 0.991f : ((float)(base.getStandingY() + 8) / 10000f)));
+				if (this.isGlowing)
+				{
+					b.Draw(this.Sprite.Texture, base.getLocalPosition(Game1.viewport) + new Vector2(width*2, (float)(this.GetBoundingBox().Height / 2)), new Rectangle?(this.Sprite.SourceRect), this.glowingColor * this.glowingTransparency, this.rotation, new Vector2(width/2, height/2), scale * 4f, this.flip ? SpriteEffects.FlipHorizontally : SpriteEffects.None, Math.Max(0f, this.drawOnTop ? 0.991f : ((float)(base.getStandingY() + 8) / 10000f + 0.0001f)));
 				}
 			}
 		}
 		public override int takeDamage(int damage, int xTrajectory, int yTrajectory, bool isBomb, double addedPrecision, Farmer who)
 		{
-			int mHealth = Health;
 			int result = base.takeDamage(damage, xTrajectory, yTrajectory, isBomb, addedPrecision, who);
-			if (mHealth - result <= 0)
+			if (Health <= 0)
 			{
-				ModEntry.PHelper.Events.Display.RenderedHud -= ModEntry.OnRenderedHud;
-
-				ModEntry.SpawnBossLoot(currentLocation, position.X, position.Y, difficulty);
-
-				Game1.playSound("Cowboy_Secret");
-				ModEntry.RevertMusic();
+				ModEntry.BossDeath(currentLocation, position, difficulty);
 			}
-			ModEntry.MakeBossHealthBar(Health - result, MaxHealth);
+			ModEntry.MakeBossHealthBar(Health, MaxHealth);
 			return result;
 		}
 	}

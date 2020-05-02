@@ -1,4 +1,5 @@
 ﻿using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using Netcode;
 using StardewModdingAPI;
 using StardewValley;
@@ -7,26 +8,42 @@ using StardewValley.Monsters;
 using StardewValley.Network;
 using StardewValley.Projectiles;
 using System;
+using System.Collections.Generic;
 using System.Reflection;
 
 namespace BossCreatures
 {
-    internal class SkullBoss : Bat
+	public class SkullBoss : Bat
     {
         internal GameLocation currentLocation;
 		private float lastFireball;
 		private int burstNo = 0;
 		private float difficulty;
+		private List<Vector2> previousPositions = new List<Vector2>();
+		private NetBool seenPlayer = new NetBool();
+		private int width;
+		private int height;
+
+		public SkullBoss()
+		{
+
+		}
 
 		public SkullBoss(Vector2 position, float difficulty) : base(position, 77377)
         {
+			width = ModEntry.Config.SkullBossWidth;
+			height = ModEntry.Config.SkullBossHeight;
+			Sprite.SpriteWidth = width;
+			Sprite.SpriteHeight = height;
+			this.Sprite.LoadTexture(ModEntry.GetBossTexture(GetType()));
+
 			this.difficulty = difficulty;
 
 			Health = (int)Math.Round(base.Health * 10 * difficulty);
 			MaxHealth = Health;
 			DamageToFarmer = (int)Math.Round(base.damageToFarmer * difficulty);
 
-			Scale = 3f;
+			Scale = ModEntry.Config.SkullBossScale;
 			this.moveTowardPlayerThreshold.Value = 20;
 		}
 
@@ -81,22 +98,74 @@ namespace BossCreatures
 				return;
 			}
 		}
-		public override int takeDamage(int damage, int xTrajectory, int yTrajectory, bool isBomb, double addedPrecision, Farmer who)
+		public override void drawAboveAllLayers(SpriteBatch b)
 		{
-			int mHealth = Health;
-			int result = base.takeDamage(damage, xTrajectory, yTrajectory, isBomb, addedPrecision, who);
-			if (mHealth - result <= 0)
+			if (!Utility.isOnScreen(Position, 128))
 			{
-				ModEntry.PHelper.Events.Display.RenderedHud -= ModEntry.OnRenderedHud;
-
-				ModEntry.SpawnBossLoot(currentLocation, position.X, position.Y, difficulty);
-
-				Game1.playSound("Cowboy_Secret");
-				ModEntry.RevertMusic();
+				return;
 			}
 
-			ModEntry.MakeBossHealthBar(Health - result, MaxHealth);
+			previousPositions = (List<Vector2>)GetType().BaseType.GetField("previousPositions", BindingFlags.NonPublic | BindingFlags.Instance).GetValue(this);
+			seenPlayer.Value = ((NetBool)GetType().BaseType.GetField("seenPlayer", BindingFlags.NonPublic | BindingFlags.Instance).GetValue(this)).Value;
+			Vector2 pos_offset = Vector2.Zero;
+			if (this.previousPositions.Count > 2)
+			{
+				pos_offset = base.Position - this.previousPositions[1];
+			}
+			int direction = (Math.Abs(pos_offset.X) > Math.Abs(pos_offset.Y)) ? ((pos_offset.X > 0f) ? 1 : 3) : ((pos_offset.Y < 0f) ? 0 : 2);
+			if (direction == -1)
+			{
+				direction = 2;
+			}
+			Vector2 offset = new Vector2(0f, width/2 * (float)Math.Sin(Game1.currentGameTime.TotalGameTime.TotalMilliseconds / 188.49555921538757));
+			b.Draw(Game1.shadowTexture, base.getLocalPosition(Game1.viewport) + new Vector2(width*2, height * 4), new Rectangle?(Game1.shadowTexture.Bounds), Color.White, 0f, new Vector2((float)Game1.shadowTexture.Bounds.Center.X, (float)Game1.shadowTexture.Bounds.Center.Y), 3f * Scale + offset.Y / 20f, SpriteEffects.None, 0.0001f);
+			b.Draw(this.Sprite.Texture, base.getLocalPosition(Game1.viewport) + new Vector2((float)(width*2 + Game1.random.Next(-6, 7)), (float)(height*2 + Game1.random.Next(-6, 7))) + offset, new Rectangle?(Game1.getSourceRectForStandardTileSheet(this.Sprite.Texture, direction * 2 + ((this.seenPlayer && Game1.currentGameTime.TotalGameTime.TotalMilliseconds % 500.0 < 250.0) ? 1 : 0), width, height)), Color.Red * 0.44f, 0f, new Vector2(width/2f, height), Scale * 4f, this.flip ? SpriteEffects.FlipHorizontally : SpriteEffects.None, (this.position.Y + 128f - 1f) / 10000f);
+			b.Draw(this.Sprite.Texture, base.getLocalPosition(Game1.viewport) + new Vector2((float)(width*2 + Game1.random.Next(-6, 7)), (float)(height*2 + Game1.random.Next(-6, 7))) + offset, new Rectangle?(Game1.getSourceRectForStandardTileSheet(this.Sprite.Texture, direction * 2 + ((this.seenPlayer && Game1.currentGameTime.TotalGameTime.TotalMilliseconds % 500.0 < 250.0) ? 1 : 0), width, height)), Color.Yellow * 0.44f, 0f, new Vector2(width/2, height), Scale * 4f, this.flip ? SpriteEffects.FlipHorizontally : SpriteEffects.None, (this.position.Y + 128f) / 10000f);
+			for (int i = this.previousPositions.Count - 1; i >= 0; i -= 2)
+			{
+				b.Draw(this.Sprite.Texture, new Vector2(this.previousPositions[i].X - (float)Game1.viewport.X, this.previousPositions[i].Y - (float)Game1.viewport.Y + (float)this.yJumpOffset) + this.drawOffset + new Vector2(height*2, width*2) + offset, new Rectangle?(Game1.getSourceRectForStandardTileSheet(Sprite.Texture, direction * 2 + ((seenPlayer && Game1.currentGameTime.TotalGameTime.TotalMilliseconds % 500.0 < 250.0) ? 1 : 0), width, height)), Color.White * (0f + 0.125f * (float)i), 0f, new Vector2(width/2, height), scale * 4f, this.flip ? SpriteEffects.FlipHorizontally : SpriteEffects.None, (this.position.Y + 128f - (float)i) / 10000f);
+			}
+			b.Draw(this.Sprite.Texture, base.getLocalPosition(Game1.viewport) + new Vector2(width*2, height*2) + offset, new Rectangle?(Game1.getSourceRectForStandardTileSheet(this.Sprite.Texture, direction * 2 + ((this.seenPlayer && Game1.currentGameTime.TotalGameTime.TotalMilliseconds % 500.0 < 250.0) ? 1 : 0), width, height)), Color.White, 0f, new Vector2(width/2, height), scale * 4f, this.flip ? SpriteEffects.FlipHorizontally : SpriteEffects.None, (this.position.Y + 128f + 1f) / 10000f);
 
+		}
+		protected override void updateAnimation(GameTime time)
+		{
+			if (base.focusedOnFarmers || this.withinPlayerThreshold(20) || this.seenPlayer)
+			{
+				this.Sprite.Animate(time, 0, 4, 80f);
+
+				this.shakeTimer -= time.ElapsedGameTime.Milliseconds;
+				if (this.shakeTimer < 0)
+				{
+					base.currentLocation.temporarySprites.Add(new TemporaryAnimatedSprite("Maps\\springobjects", Game1.getSourceRectForStandardTileSheet(Game1.objectSpriteSheet, 103, width, height), this.position + new Vector2(0f, -32f), false, 0.1f, new Color(255, 50, 255) * 0.8f)
+					{
+						scale = 4f
+					});
+					this.shakeTimer = 50;
+				}
+				this.previousPositions.Add(base.Position);
+				if (this.previousPositions.Count > 8)
+				{
+					this.previousPositions.RemoveAt(0);
+				}
+			}
+			base.resetAnimationSpeed();
+		}
+
+		public override void shedChunks(int number, float scale)
+		{
+			Game1.createRadialDebris(base.currentLocation, this.Sprite.textureName, new Rectangle(0, height*4, width, height), height/2, this.GetBoundingBox().Center.X, this.GetBoundingBox().Center.Y, number, (int)base.getTileLocation().Y, Color.White, 4f);
+		}
+
+		public override int takeDamage(int damage, int xTrajectory, int yTrajectory, bool isBomb, double addedPrecision, Farmer who)
+		{
+
+			int result = base.takeDamage(damage, xTrajectory, yTrajectory, isBomb, addedPrecision, who);
+			if (Health <= 0)
+			{
+				ModEntry.BossDeath(currentLocation, position, difficulty);
+			}
+			ModEntry.MakeBossHealthBar(Health, MaxHealth);
 			return result;
 		}
 	}

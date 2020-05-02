@@ -43,6 +43,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="BossProjectile.cs" />
+    <Compile Include="LootList.cs" />
+    <Compile Include="SquidKidBoss.cs" />
     <Compile Include="SkeletonBoss.cs" />
     <Compile Include="GhostBoss.cs" />
     <Compile Include="BugBoss.cs" />
@@ -55,9 +58,16 @@
     <Compile Include="ToughFly.cs" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="assets\boss_loot.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="i18n\default.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <None Include="manifest.json" />
     <None Include="packages.config" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="..\packages\Pathoschild.Stardew.ModBuildConfig.3.1.0\build\Pathoschild.Stardew.ModBuildConfig.targets" Condition="Exists('..\packages\Pathoschild.Stardew.ModBuildConfig.3.1.0\build\Pathoschild.Stardew.ModBuildConfig.targets')" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">

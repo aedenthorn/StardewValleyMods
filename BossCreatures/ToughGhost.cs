@@ -7,13 +7,16 @@ using System;
 
 namespace BossCreatures
 {
-    internal class ToughGhost : Ghost
+    public class ToughGhost : Ghost
     {
+
+		public ToughGhost() { 
+		}
 
         public ToughGhost(Vector2 position, float difficulty) : base(position)
         {
-            damageToFarmer.Value = (int)Math.Round(damageToFarmer.Value * difficulty);
-            Health = (int)(health * difficulty);
+            damageToFarmer.Value = (int)Math.Round(damageToFarmer.Value * 2 * difficulty);
+            Health = (int)(health * 2 * difficulty);
 
             Scale = 2;
         }

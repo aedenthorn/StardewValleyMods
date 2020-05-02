@@ -11,8 +11,8 @@ using System;
 
 namespace BossCreatures
 {
-    internal class SkeletonBoss : Skeleton
-    {
+	public class SkeletonBoss : Skeleton
+	{
 		private float difficulty;
 		private readonly NetBool throwing = new NetBool();
 		private bool spottedPlayer;
@@ -20,9 +20,19 @@ namespace BossCreatures
 		private int throwTimer = 0;
 		private int throwBurst = 10;
 		private int throws = 0;
+		private int width;
+		private int height;
+
+		public SkeletonBoss() {
+		}
 
 		public SkeletonBoss(Vector2 spawnPos, float difficulty) : base(spawnPos)
         {
+			width = ModEntry.Config.SkeletonBossWidth;
+			height = ModEntry.Config.SkeletonBossHeight;
+			Sprite.SpriteWidth = width;
+			Sprite.SpriteHeight = height;
+			Sprite.LoadTexture(ModEntry.GetBossTexture(GetType()));
 
 			this.difficulty = difficulty;
 
@@ -30,7 +40,7 @@ namespace BossCreatures
 			MaxHealth = Health;
 			DamageToFarmer = (int)Math.Round(base.damageToFarmer * 2 * difficulty);
 
-			Scale = 3f;
+			Scale = ModEntry.Config.SkeletonBossScale;
 			this.moveTowardPlayerThreshold.Value = 20;
 		}
 		protected override void initNetFields()
@@ -47,15 +57,14 @@ namespace BossCreatures
 
 		public override void behaviorAtGameTick(GameTime time)
 		{
-			if (Health <= 0)
-			{
-				return;
-			}
-
 			if (!this.throwing)
 			{
 				this.throwTimer -= time.ElapsedGameTime.Milliseconds;
 				base.behaviorAtGameTick(time);
+			}
+			if (Health <= 0)
+			{
+				return;
 			}
 			if (!this.spottedPlayer && !base.wildernessFarmMonster && Utility.doesPointHaveLineOfSightInMine(base.currentLocation, base.getTileLocation(), base.Player.getTileLocation(), 8))
 			{
@@ -89,8 +98,8 @@ namespace BossCreatures
 						{
 							base.currentLocation.playSound("fireball", NetAudio.SoundContext.Default);
 						}
-						base.currentLocation.projectiles.Add(new BasicProjectile(DamageToFarmer*2, 4, 0, 0, 0.196349546f, v.X, v.Y, new Vector2(base.Position.X, base.Position.Y), "", "", false, false, base.currentLocation, this, false, null));
-						base.currentLocation.projectiles.Add(new BasicProjectile(DamageToFarmer*2, 10, 0, 4, 0.196349546f, v.X, v.Y, new Vector2(base.Position.X, base.Position.Y), "", "", true, false, base.currentLocation, this, false, null));
+						base.currentLocation.projectiles.Add(new BasicProjectile(DamageToFarmer, 4, 0, 0, 0.196349546f, v.X, v.Y, new Vector2(base.Position.X, base.Position.Y), "", "", false, false, base.currentLocation, this, false, null));
+						base.currentLocation.projectiles.Add(new BasicProjectile(DamageToFarmer, 10, 0, 4, 0.196349546f, v.X, v.Y, new Vector2(base.Position.X, base.Position.Y), "", "", true, false, base.currentLocation, this, false, null));
 						if (++throws > throwBurst *2)
 						{
 							throwTimer = 1000;
@@ -98,7 +107,7 @@ namespace BossCreatures
 						}
 						else
 						{
-							throwTimer = 20;
+							throwTimer = 100;
 						}
 					}
 					else
@@ -146,24 +155,19 @@ namespace BossCreatures
 		{
 
 		}
-
+		public override void shedChunks(int number)
+		{
+			Game1.createRadialDebris(base.currentLocation, this.Sprite.textureName, new Rectangle(0, height*4, width, width), 8, this.GetBoundingBox().Center.X, this.GetBoundingBox().Center.Y, number, (int)base.getTileLocation().Y, Color.White, 4f);
+		}
 
 		public override int takeDamage(int damage, int xTrajectory, int yTrajectory, bool isBomb, double addedPrecision, Farmer who)
 		{
-			int mHealth = Health;
 			int result = base.takeDamage(damage, xTrajectory, yTrajectory, isBomb, addedPrecision, who);
-			if (mHealth - result <= 0)
+			if (Health <= 0)
 			{
-				ModEntry.PHelper.Events.Display.RenderedHud -= ModEntry.OnRenderedHud;
-
-				ModEntry.SpawnBossLoot(currentLocation, position.X, position.Y, difficulty);
-
-				Game1.playSound("Cowboy_Secret");
-				ModEntry.RevertMusic();
+				ModEntry.BossDeath(currentLocation, position, difficulty);
 			}
-
-			ModEntry.MakeBossHealthBar(Health - result, MaxHealth);
-
+			ModEntry.MakeBossHealthBar(Health, MaxHealth);
 			return result;
 		}
 	}

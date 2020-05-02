@@ -12,6 +12,8 @@ namespace CustomMonsterFloors
         public string SlimeDinoMonsterSplitPercents { get; set; } = "33:33:34";
         public string SlimeMonsterSplitPercents { get; set; } = "50:50";
         public int MinFloorsBetweenMonsterFloors { get; set; } = 4;
+        public int TreasureChestFloorMultiplier { get; set; } = 1;
+        public int MinFloorsBetweenTreasureFloors { get; set; } = 4;
         public int MonsterMultiplierOnDinoFloors { get; set; } = 1;
         public int MonsterMultiplierOnSlimeFloors { get; set; } = 1;
         public int MonsterMultiplierOnMonsterFloors { get; set; } = 1;
@@ -22,8 +24,6 @@ namespace CustomMonsterFloors
         public int ItemMultiplierOnRegularFloors { get; set; } = 1;
         public int StoneMultiplierOnRegularFloors { get; set; } = 1;
         public int GemstoneMultiplierOnRegularFloors { get; set; } = 1;
-        public int TreasureChestFloorMultiplier { get; set; } = 1;
-        public int MinFloorsBetweenTreasureFloors { get; set; } = 4;
         public int PurpleStoneMultiplier { get; set; } = 1;
         public int MysticStoneMultiplier { get; set; } = 1;
         public int ChanceForOreMultiplier { get; set; } = 1;

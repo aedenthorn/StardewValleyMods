@@ -167,7 +167,8 @@ namespace RandomNPC
 					return;
 				int resp = (int)typeof(DialogueBox).GetField("selectedResponse", BindingFlags.NonPublic | BindingFlags.Instance).GetValue(menu);
 				List<Response> resps = (List<Response>)typeof(DialogueBox).GetField("responses", BindingFlags.NonPublic | BindingFlags.Instance).GetValue(menu);
-				if (resp >= resps.Count || resps[resp] == null)
+				
+				if (resp < 0 || resp >= resps.Count || resps[resp] == null)
 					return;
 				string key = resps[resp].responseKey;
 				if (key.StartsWith("accept_npc_quest"))
