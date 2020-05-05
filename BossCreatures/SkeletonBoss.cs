@@ -150,7 +150,11 @@ namespace BossCreatures
 			this.controllerAttemptTimer -= time.ElapsedGameTime.Milliseconds;
 			
 		}
-
+		public override Rectangle GetBoundingBox()
+		{
+			Rectangle r = new Rectangle((int)(Position.X - Scale * width / 2), (int)(Position.Y - Scale * height / 2), (int)(Scale * width), (int)(Scale * height));
+			return r;
+		}
 		public override void Halt()
 		{
 
@@ -165,7 +169,7 @@ namespace BossCreatures
 			int result = base.takeDamage(damage, xTrajectory, yTrajectory, isBomb, addedPrecision, who);
 			if (Health <= 0)
 			{
-				ModEntry.BossDeath(currentLocation, position, difficulty);
+				ModEntry.BossDeath(currentLocation, this, difficulty);
 			}
 			ModEntry.MakeBossHealthBar(Health, MaxHealth);
 			return result;

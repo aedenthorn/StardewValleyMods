@@ -29,6 +29,8 @@ namespace PacifistValley
 		/// <param name="asset">Basic metadata about the asset being loaded.</param>
 		public bool CanLoad<T>(IAssetInfo asset)
 		{
+			if (!Config.EnableMod)
+				return false;
 			if (asset.AssetNameEquals("TileSheets/weapons") || asset.AssetNameEquals("Data/weapons"))
 			{
 				return true;
@@ -55,6 +57,8 @@ namespace PacifistValley
 
 		public bool CanEdit<T>(IAssetInfo asset)
 		{
+			if (!Config.EnableMod)
+				return false;
 			if (asset.AssetNameEquals("Data/mail") ||asset.AssetNameEquals("Data/Quests") || asset.AssetNameEquals("Strings/UI") || asset.AssetNameEquals("Strings/StringsFromCSFiles") || asset.AssetNameEquals("Data/ObjectInformation") || asset.AssetNameEquals("Data/TV/TipChannel") || asset.AssetNameEquals("LooseSprites/Cursors")
 				|| asset.AssetNameEquals("Characters/Monsters/Dust Spirit") // 1t
 				|| asset.AssetNameEquals("Characters/Monsters/Duggy") //3t
@@ -237,6 +241,11 @@ namespace PacifistValley
         {
 			context = this;
 			Config = this.Helper.ReadConfig<ModConfig>();
+
+			if (!Config.EnableMod)
+				return;
+
+
 			var harmony = HarmonyInstance.Create(this.ModManifest.UniqueID);
 
 			harmony.Patch(
@@ -254,10 +263,6 @@ namespace PacifistValley
 			harmony.Patch(
 			   original: AccessTools.Method(typeof(GameLocation), "updateCharacters"),
 			   prefix: new HarmonyMethod(typeof(ModEntry), nameof(ModEntry.updateCharacters_prefix))
-			);
-			harmony.Patch(
-			   original: AccessTools.Method(typeof(GameLocation), "damageMonster", new Type[] { typeof(Microsoft.Xna.Framework.Rectangle), typeof(int), typeof(int), typeof(bool), typeof(float), typeof(int), typeof(float), typeof(float), typeof(bool), typeof(Farmer) }),
-			   prefix: new HarmonyMethod(typeof(ModEntry), nameof(ModEntry.damageMonster_prefix))
 			);
 			harmony.Patch(
 			   original: AccessTools.Method(typeof(GameLocation), "damageMonster", new Type[] { typeof(Microsoft.Xna.Framework.Rectangle), typeof(int), typeof(int), typeof(bool), typeof(float), typeof(int), typeof(float), typeof(float), typeof(bool), typeof(Farmer) }),

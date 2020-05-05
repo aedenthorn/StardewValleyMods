@@ -30,7 +30,7 @@ namespace BossCreatures
 
         private static List<string> CheckedBosses = new List<string>();
         private static bool isFightingBoss;
-        private static string defaultMusic;
+        private static string defaultMusic = "none";
 
         private static Texture2D healthBarTexture;
         private static Dictionary<Type,string> BossTypes = new Dictionary<Type, string>() {
@@ -40,8 +40,10 @@ namespace BossCreatures
             { typeof(SkeletonBoss), "Skeleton"},
             { typeof(SkullBoss), "Haunted Skull"},
             { typeof(SquidKidBoss), "Squid Kid"},
+            { typeof(SlimeBoss), "Big Slime"},
         };
         private static LootList BossLootList;
+        private static int lastBossHealth;
 
         public override void Entry(IModHelper helper)
         {
@@ -74,6 +76,17 @@ namespace BossCreatures
                     }
 
                 }
+            }        
+            foreach (GameLocation location in Game1._locationLookup.Values)
+            {
+                for (int i = 0; i < location.characters.Count; i++)
+                {
+                    if (BossTypes.ContainsKey(location.characters[i].GetType()) || location.characters[i] is ToughFly || location.characters[i] is ToughGhost)
+                    {
+                        location.characters.RemoveAt(i);
+                    }
+
+                }
             }
         }
         private void OnDayStarted(object sender, DayStartedEventArgs e)
@@ -85,21 +98,25 @@ namespace BossCreatures
         {
 
             PMonitor.Log("Entered location: " + e.NewLocation.Name);
+            //defaultMusic = Game1.getMusicTrackName();
 
-            for (int i = 0; i < e.OldLocation.characters.Count; i++)
+            foreach (GameLocation location in Game1.locations)
             {
-                if (e.OldLocation.characters[i] is ToughFly || e.OldLocation.characters[i] is ToughGhost)
+                for (int i = 0; i < location.characters.Count; i++)
                 {
-                    e.OldLocation.characters.RemoveAt(i);
-                }
+                    if (location.characters[i] is ToughFly || location.characters[i] is ToughGhost)
+                    {
+                        location.characters.RemoveAt(i);
+                    }
 
+                }
             }
 
             MakeBossHealthBar(100, 100);
 
             if (isFightingBoss && BossHere(e.NewLocation) == null)
             {
-                RevertMusic();
+                RevertMusic(e.NewLocation);
             }
             TryAddBoss(e.NewLocation);
 
@@ -126,14 +143,16 @@ namespace BossCreatures
             return texturePath;
         }
 
-        public static void BossDeath(GameLocation currentLocation, NetPosition position, float difficulty)
+        public static void BossDeath(GameLocation currentLocation, Monster monster, float difficulty)
         {
             PHelper.Events.Display.RenderedHud -= ModEntry.OnRenderedHud;
 
-            SpawnBossLoot(currentLocation, position.X, position.Y, difficulty);
+            Microsoft.Xna.Framework.Rectangle monsterBox = monster.GetBoundingBox();
+
+            SpawnBossLoot(currentLocation, monsterBox.Center.X, monsterBox.Center.Y, difficulty);
 
             Game1.playSound("Cowboy_Secret");
-            RevertMusic();
+            RevertMusic(currentLocation);
         }
 
         public static void OnRenderingHud(object sender, RenderingHudEventArgs e)
@@ -186,6 +205,12 @@ namespace BossCreatures
             {
                 PHelper.Events.Display.RenderedHud -= OnRenderedHud;
                 return;
+            }
+
+            if(boss.Health != lastBossHealth)
+            {
+                lastBossHealth = boss.Health;
+                MakeBossHealthBar(boss.Health, boss.MaxHealth);
             }
 
             e.SpriteBatch.Draw(healthBarTexture, new Vector2((int)Math.Round(Game1.viewport.Width * 0.13f), 100), Color.White);
@@ -248,9 +273,10 @@ namespace BossCreatures
             }
         }
 
-        internal static void RevertMusic()
+        internal static void RevertMusic(GameLocation location)
         {
-            Game1.changeMusicTrack(defaultMusic, false);
+            Game1.changeMusicTrack(defaultMusic, true, Game1.MusicContext.Default);
+            location.checkForMusic(new GameTime());
             isFightingBoss = false;
         }
 
@@ -272,10 +298,11 @@ namespace BossCreatures
 
         private void TryAddBoss(GameLocation location)
         {
-            if (BossHere(location) != null)
+            Monster boss = BossHere(location);
+            if (boss != null && boss.Health > 0)
             {
                 Game1.changeMusicTrack("cowboy_boss", false, Game1.MusicContext.Default);
-
+                PHelper.Events.Display.RenderedHud += OnRenderedHud;
                 return;
             }
             if (CheckedBosses.Contains(location.Name))
@@ -328,20 +355,16 @@ namespace BossCreatures
             float difficulty = Config.BaseUndergroundDifficulty;
             if (location is MineShaft)
             {
-                int diffMult = 0;
-                if(int.TryParse(location.Name.Substring(15), out diffMult))
-                {
-                    difficulty *= (float)diffMult / 100f;
-                    Monitor.Log("boss difficulty: " + difficulty, LogLevel.Debug);
-                }
+                difficulty *= (location as MineShaft).mineLevel / 100f;
+                Monitor.Log("boss difficulty: " + difficulty, LogLevel.Debug);
             }
             else
             {
-                difficulty = Game1.random.Next((int)(Config.MinOverlandDifficulty * 100), (int)(Config.MaxOverlandDifficulty * 100)+1) / 100f;
+                difficulty = Game1.random.Next((int)Math.Round(Config.MinOverlandDifficulty * 1000), (int)Math.Round(Config.MaxOverlandDifficulty * 1000)+1) / 1000f;
                 Monitor.Log("boss difficulty: " + difficulty, LogLevel.Debug);
             }
 
-            int r = Game1.random.Next(0, (int)Math.Round(Config.WeightSkullBossChance * 100 + Config.WeightSerpentBossChance * 100 + Config.WeightBugBossChance * 100 + Config.WeightGhostBossChance * 100 + Config.WeightSkeletonBossChance * 100 + Config.WeightSquidBossChance * 100));
+            int r = Game1.random.Next(0, (int)Math.Round(Config.WeightSkullBossChance * 100 + Config.WeightSerpentBossChance * 100 + Config.WeightBugBossChance * 100 + Config.WeightGhostBossChance * 100 + Config.WeightSkeletonBossChance * 100 + Config.WeightSquidBossChance * 100 + Config.WeightSlimeBossChance * 100));
             if(r < Config.WeightSkullBossChance * 100)
             {
                 SkullBoss k = new SkullBoss(spawnPos, difficulty)
@@ -383,7 +406,7 @@ namespace BossCreatures
                 };
                 location.characters.Add(sk);
             }
-            else
+            else if (r < Config.WeightSkullBossChance * 100 + Config.WeightSerpentBossChance * 100 + Config.WeightBugBossChance * 100 + Config.WeightGhostBossChance * 100 + Config.WeightSkeletonBossChance * 100 + Config.WeightSquidBossChance * 100)
             {
                 SquidKidBoss sq = new SquidKidBoss(spawnPos, difficulty)
                 {
@@ -391,8 +414,15 @@ namespace BossCreatures
                 };
                 location.characters.Add(sq);
             }
+            else
+            {
+                SlimeBoss sl = new SlimeBoss(spawnPos, difficulty)
+                {
+                    currentLocation = location,
+                };
+                location.characters.Add(sl);
+            }
 
-            defaultMusic = Game1.getMusicTrackName();
             Game1.showGlobalMessage(PHelper.Translation.Get("boss-warning"));
             Game1.changeMusicTrack("cowboy_boss", false, Game1.MusicContext.Default);
             PHelper.Events.Display.RenderedHud += OnRenderedHud;
@@ -509,6 +539,17 @@ namespace BossCreatures
             return result;
         }
 
+        public static Vector2 RotateVector(Vector2 v, float degrees)
+        {
+            double radians = Math.PI / 180 * degrees;
+            double sin = Math.Sin(radians);
+            double cos = Math.Cos(radians);
+
+            float tx = v.X;
+            float ty = v.Y;
+
+            return new Vector2((float)cos * tx - (float)sin * ty, (float)sin * tx + (float)cos * ty);
+        }
 
         public static Vector2 VectorFromDegree(int degrees)
         {

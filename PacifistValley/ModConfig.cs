@@ -9,6 +9,7 @@ namespace PacifistValley
 {
     class ModConfig
     {
+        public bool EnableMod { get; set; } = true;
         public int MillisecondsPerLove { get; set; } = 300;
         public int DeviceSpeedFactor { get; set; } = 2;
         public int AreaOfKissEffectModifier { get; set; } = 20;

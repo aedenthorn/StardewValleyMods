@@ -26,7 +26,7 @@ namespace BossCreatures
 		public SquidKidBoss() {
 		}
 
-		public SquidKidBoss(Vector2 spawnPos, float difficulty) : base(spawnPos)
+		public SquidKidBoss(Vector2 spawnPos, float _difficulty) : base(spawnPos)
         {
 			width = ModEntry.Config.SquidKidBossWidth;
 			height = ModEntry.Config.SquidKidBossHeight;
@@ -34,10 +34,10 @@ namespace BossCreatures
 			Sprite.SpriteHeight = height;
 			Sprite.LoadTexture(ModEntry.GetBossTexture(GetType()));
 
-			this.difficulty = difficulty;
+			this.difficulty = _difficulty;
 			Health = (int)Math.Round(base.Health * 1500 * difficulty);
 			MaxHealth = Health;
-			DamageToFarmer = (int)Math.Round(base.damageToFarmer * 2 * difficulty);
+			DamageToFarmer = (int)Math.Round(damageToFarmer * 2 * difficulty);
 
 			Scale = ModEntry.Config.SquidKidBossScale;
 			this.moveTowardPlayerThreshold.Value = 20;
@@ -101,7 +101,7 @@ namespace BossCreatures
 				if (lastIceBall == 0f)
 				{
 					Vector2 trajectory = ModEntry.VectorFromDegree(Game1.random.Next(0,360)) * 10f;
-					currentLocation.projectiles.Add(new BossProjectile((int)Math.Round(20 * difficulty), 9, 3, 4, 0f, trajectory.X, trajectory.Y, getStandingPosition(), "", "", true, false, currentLocation, this, false, null, false, 19));
+					currentLocation.projectiles.Add(new BossProjectile((int)Math.Round(20 * difficulty), 9, 3, 4, 0f, trajectory.X, trajectory.Y, getStandingPosition(), "", "", true, false, currentLocation, this, false, null, 19));
 
 					projectileCount++;
 
@@ -128,16 +128,29 @@ namespace BossCreatures
 		{
 			Farm.LightningStrikeEvent lightningEvent = new Farm.LightningStrikeEvent();
 			lightningEvent.bigFlash = true;
-			GameLocation location = Game1.currentLocation;
 			lightningEvent.createBolt = true;
 			lightningEvent.boltPosition = playerLocation + new Vector2(32f, 32f);
 			Game1.flashAlpha = (float)(0.5 + Game1.random.NextDouble());
 			Game1.playSound("thunder");
-			Utility.drawLightningBolt(lightningEvent.boltPosition, location);
+			Utility.drawLightningBolt(lightningEvent.boltPosition, currentLocation);
 
-			typeof(GameLocation).GetMethod("damagePlayers", BindingFlags.NonPublic | BindingFlags.Instance).Invoke(location, new object[] { new Rectangle((int)Math.Round(playerLocation.X-32), (int)Math.Round(playerLocation.Y-32),64,64), (int)Math.Round(20*difficulty) });
+			List<Farmer> farmers = new List<Farmer>();
+			FarmerCollection.Enumerator enumerator = currentLocation.farmers.GetEnumerator();
+			while (enumerator.MoveNext())
+			{
+				if (enumerator.Current.currentLocation == currentLocation && enumerator.Current.GetBoundingBox().Intersects(new Rectangle((int)Math.Round(playerLocation.X - 32), (int)Math.Round(playerLocation.Y - 32), 64, 64)))
+				{
+					enumerator.Current.takeDamage((int)Math.Round(20 * difficulty), true, null);
+				}
+			}
+
+
 		}
-
+		public override Rectangle GetBoundingBox()
+		{
+			Rectangle r = new Rectangle((int)(Position.X - Scale * width / 2), (int)(Position.Y - Scale * height / 2), (int)(Scale * width), (int)(Scale * height));
+			return r;
+		}
 		public override void drawAboveAllLayers(SpriteBatch b)
 		{
 			b.Draw(this.Sprite.Texture, base.getLocalPosition(Game1.viewport) + new Vector2(width*2, (float)(21 + this.yOffset)), new Rectangle?(this.Sprite.SourceRect), Color.White, 0f, new Vector2(width/2, height), scale * 4f, this.flip ? SpriteEffects.FlipHorizontally : SpriteEffects.None, Math.Max(0f, this.drawOnTop ? 0.991f : ((float)base.getStandingY() / 10000f)));
@@ -149,12 +162,8 @@ namespace BossCreatures
 			int result = base.takeDamage(damage, xTrajectory, yTrajectory, isBomb, addedPrecision, who);
 			if (Health <= 0)
 			{
-				ModEntry.PHelper.Events.Display.RenderedHud -= ModEntry.OnRenderedHud;
+				ModEntry.BossDeath(currentLocation, this, difficulty);
 
-				ModEntry.SpawnBossLoot(currentLocation, position.X, position.Y, difficulty);
-
-				Game1.playSound("Cowboy_Secret");
-				ModEntry.RevertMusic();
 			}
 			ModEntry.MakeBossHealthBar(Health, MaxHealth);
 			return result;

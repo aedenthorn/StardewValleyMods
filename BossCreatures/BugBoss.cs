@@ -84,14 +84,18 @@ namespace BossCreatures
 						}
 						currentLocation.characters.Add(new ToughFly(Position, difficulty)
 						{
-							currentLocation = base.currentLocation
+							focusedOnFarmers = true
 						});
 						this.lastFly = (float)Game1.random.Next(2000, 4000);
 					}
 				}
 			}
 		}
-
+		public override Rectangle GetBoundingBox()
+		{
+			Rectangle r = new Rectangle((int)(Position.X - Scale * width / 2), (int)(Position.Y - Scale * height / 2), (int)(Scale * width), (int)(Scale * height));
+			return r;
+		}
 		public override void drawAboveAllLayers(SpriteBatch b)
 		{
 			b.Draw(this.Sprite.Texture, base.getLocalPosition(Game1.viewport) + new Vector2(width*2, height*2), new Rectangle?(this.Sprite.SourceRect), (this.shakeTimer > 0) ? Color.Red : Color.White, 0f, new Vector2(width/2, height/2), scale * 4f, this.flip ? SpriteEffects.FlipHorizontally : SpriteEffects.None, 0.92f);
@@ -110,7 +114,7 @@ namespace BossCreatures
 			int result = base.takeDamage(damage, xTrajectory, yTrajectory, isBomb, addedPrecision, who);
 			if (Health <= 0)
 			{
-				ModEntry.BossDeath(currentLocation, position, difficulty);
+				ModEntry.BossDeath(currentLocation, this, difficulty);
 			}
 			ModEntry.MakeBossHealthBar(Health, MaxHealth);
 			return result;

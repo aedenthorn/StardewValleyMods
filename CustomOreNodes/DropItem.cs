@@ -3,8 +3,8 @@
     public class DropItem
     {
         public string v;
-        public int itemId;
-        public int dropChance;
+        public string itemIdOrName;
+        public float dropChance;
         public int minAmount;
         public int maxAmount;
         public int luckyAmount;
@@ -14,8 +14,8 @@
         {
             int i = 0;
             string[] infos = itemInfo.Split(';');
-            this.itemId = int.Parse(infos[i++]);
-            this.dropChance = int.Parse(infos[i++]);
+            this.itemIdOrName = infos[i++];
+            this.dropChance = float.Parse(infos[i++]);
             this.minAmount = int.Parse(infos[i].Split(',')[0]);
             this.maxAmount = int.Parse(infos[i++].Split(',')[1]);
             this.luckyAmount = int.Parse(infos[i++]);

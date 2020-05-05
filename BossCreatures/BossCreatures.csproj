@@ -45,6 +45,7 @@
   <ItemGroup>
     <Compile Include="BossProjectile.cs" />
     <Compile Include="LootList.cs" />
+    <Compile Include="SlimeBoss.cs" />
     <Compile Include="SquidKidBoss.cs" />
     <Compile Include="SkeletonBoss.cs" />
     <Compile Include="GhostBoss.cs" />

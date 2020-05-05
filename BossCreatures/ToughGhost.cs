@@ -7,10 +7,11 @@ using System;
 
 namespace BossCreatures
 {
-    public class ToughGhost : Ghost
+    internal class ToughGhost : Ghost
     {
 
-		public ToughGhost() { 
+		public ToughGhost() 
+		{ 
 		}
 
         public ToughGhost(Vector2 position, float difficulty) : base(position)

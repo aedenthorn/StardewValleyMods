@@ -98,6 +98,21 @@ namespace BossCreatures
 				return;
 			}
 		}
+
+		public override void reloadSprite()
+		{
+			if (this.Sprite == null)
+			{
+				this.Sprite = new AnimatedSprite("Characters\\Monsters\\Haunted Skull");
+			}
+			else
+			{
+				this.Sprite.LoadTexture(ModEntry.GetBossTexture(GetType()));
+			}
+			base.HideShadow = true;
+		}
+
+
 		public override void drawAboveAllLayers(SpriteBatch b)
 		{
 			if (!Utility.isOnScreen(Position, 128))
@@ -151,7 +166,11 @@ namespace BossCreatures
 			}
 			base.resetAnimationSpeed();
 		}
-
+		public override Rectangle GetBoundingBox()
+		{
+			Rectangle r = new Rectangle((int)(Position.X - Scale * width / 2), (int)(Position.Y - Scale * height / 2), (int)(Scale * width), (int)(Scale * height));
+			return r;
+		}
 		public override void shedChunks(int number, float scale)
 		{
 			Game1.createRadialDebris(base.currentLocation, this.Sprite.textureName, new Rectangle(0, height*4, width, height), height/2, this.GetBoundingBox().Center.X, this.GetBoundingBox().Center.Y, number, (int)base.getTileLocation().Y, Color.White, 4f);
@@ -163,7 +182,7 @@ namespace BossCreatures
 			int result = base.takeDamage(damage, xTrajectory, yTrajectory, isBomb, addedPrecision, who);
 			if (Health <= 0)
 			{
-				ModEntry.BossDeath(currentLocation, position, difficulty);
+				ModEntry.BossDeath(currentLocation, this, difficulty);
 			}
 			ModEntry.MakeBossHealthBar(Health, MaxHealth);
 			return result;

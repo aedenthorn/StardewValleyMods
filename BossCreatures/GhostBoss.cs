@@ -11,7 +11,7 @@ using System.Reflection;
 
 namespace BossCreatures
 {
-    public class GhostBoss : Ghost
+    internal class GhostBoss : Ghost
     {
 		private float lastGhost;
 		private float lastDebuff;
@@ -39,6 +39,13 @@ namespace BossCreatures
 
 			this.moveTowardPlayerThreshold.Value = 20;
 		}
+
+		public override void reloadSprite()
+		{
+			this.Sprite = new AnimatedSprite("Characters\\Monsters\\Ghost");
+			this.Sprite.LoadTexture(ModEntry.GetBossTexture(GetType()));
+		}
+
 		public override void behaviorAtGameTick(GameTime time)
 		{
 			base.behaviorAtGameTick(time);
@@ -62,12 +69,12 @@ namespace BossCreatures
 						for (int i = 0; i < 12; i++)
 						{
 							Vector2 trajectory = ModEntry.VectorFromDegree(i * 30) * 10f;
-							currentLocation.projectiles.Add(new BossProjectile((int)Math.Round(20 * difficulty), 9, 3, 4, 0f, trajectory.X, trajectory.Y, getStandingPosition(), "", "", true, false, currentLocation, this, false, null, false, 19));
+							currentLocation.projectiles.Add(new BossProjectile((int)Math.Round(20 * difficulty), 9, 3, 4, 0f, trajectory.X, trajectory.Y, getStandingPosition(), "", "", true, false, currentLocation, this, false, null, 19));
 						}
 					}
 					else
 					{
-						currentLocation.projectiles.Add(new BossProjectile((int)Math.Round(20 * difficulty), 9, 3, 4, 0f, velocityTowardPlayer.X, velocityTowardPlayer.Y, getStandingPosition(), "", "", true, false, currentLocation, this, false, null, false, 19));
+						currentLocation.projectiles.Add(new BossProjectile((int)Math.Round(20 * difficulty), 9, 3, 4, 0f, velocityTowardPlayer.X, velocityTowardPlayer.Y, getStandingPosition(), "", "", true, false, currentLocation, this, false, null, 19));
 					}
 
 
@@ -89,14 +96,20 @@ namespace BossCreatures
 					}
 					if (ghosts < (Health < MaxHealth / 2 ? this.MaxGhosts * 2 : this.MaxGhosts))
 					{
+						GameLocation aLocation = currentLocation;
 						currentLocation.characters.Add(new ToughGhost(Position, difficulty)
 						{
-							currentLocation = base.currentLocation
+							focusedOnFarmers = true
 						});
 						this.lastGhost = (float)Game1.random.Next(1000, 2000);
 					}
 				}
 			}
+		}
+		public override Rectangle GetBoundingBox()
+		{
+			Rectangle r = new Rectangle((int)(Position.X - Scale * width / 2), (int)(Position.Y - Scale * height / 2), (int)(Scale * width), (int)(Scale * height));
+			return r;
 		}
 		public override void drawAboveAllLayers(SpriteBatch b)
 		{
@@ -111,8 +124,7 @@ namespace BossCreatures
 			int result = base.takeDamage(damage, xTrajectory, yTrajectory, isBomb, addedPrecision, who);
 			if (Health <= 0)
 			{
-				ModEntry.BossDeath(currentLocation, position, difficulty);
-
+				ModEntry.BossDeath(currentLocation, this, difficulty);
 			}
 			ModEntry.MakeBossHealthBar(Health, MaxHealth);
 			return result;
