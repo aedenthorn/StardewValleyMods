@@ -15,7 +15,6 @@ namespace BossCreatures
 {
 	public class SkullBoss : Bat
     {
-        internal GameLocation currentLocation;
 		private float lastFireball;
 		private int burstNo = 0;
 		private float difficulty;

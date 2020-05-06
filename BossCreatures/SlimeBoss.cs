@@ -15,7 +15,6 @@ namespace BossCreatures
 	public class SlimeBoss : BigSlime
     {
 		public int timeUntilNextAttack;
-		private int maxTimeUntilNextAttack;
 		public readonly NetBool firing = new NetBool(false);
 		public NetInt attackState = new NetInt();
 		public int nextFireTime;

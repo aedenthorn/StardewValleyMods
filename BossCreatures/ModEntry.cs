@@ -135,7 +135,7 @@ namespace BossCreatures
                         texturePath = $"Characters\\Monsters\\{type.Name}";
                     }
                 }
-                catch(Exception ex)
+                catch
                 {
                     PMonitor.Log($"texture not found: Characters\\Monsters\\{type.Name}", LogLevel.Debug);
                 }
