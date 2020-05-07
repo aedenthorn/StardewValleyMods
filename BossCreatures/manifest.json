@@ -1,7 +1,7 @@
 ﻿{
   "Name": "Boss Creatures",
   "Author": "aedenthorn",
-  "Version": "0.9.2",
+  "Version": "0.9.4",
   "Description": "Spawns boss creatures in dungeons and around Stardew Valley.",
   "UniqueID": "Aedenthorn.BossCreatures",
   "EntryDll": "BossCreatures.dll",

@@ -45,12 +45,12 @@ namespace BossCreatures
 			timeUntilNextAttack = 100;
 			this.moveTowardPlayerThreshold.Value = 20;
 
-			this.willDestroyObjectsUnderfoot = true;
+			//this.willDestroyObjectsUnderfoot = true;
 		}
 
 		public override void reloadSprite()
 		{
-			base.reloadSprite();
+			typeof(Monster).GetMethod("reloadSprite").Invoke(this, new object[] { });
 			this.Sprite.SpriteWidth = width;
 			this.Sprite.SpriteHeight = height;
 			this.Sprite.interval = 300f;
