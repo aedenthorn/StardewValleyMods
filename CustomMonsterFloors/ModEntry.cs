@@ -259,64 +259,106 @@ namespace CustomMonsterFloors
 				return;
 			}
 
-			int skullCavernMineLevel = __instance.mineLevel - 120;
-			double chanceForOre = 0.02 + (double)skullCavernMineLevel * 0.0005;
-			if (__instance.mineLevel >= 130)
+			if (__instance.getMineArea(-1) == 0 || __instance.getMineArea(-1) == 10)
 			{
-				chanceForOre += 0.01 * (double)((float)(Math.Min(100, skullCavernMineLevel) - 10) / 10f);
-			}
-			double iridiumBoost = 0.0;
-			if (__instance.mineLevel >= 130)
-			{
-				iridiumBoost += 0.001 * (double)((float)(skullCavernMineLevel - 10) / 10f);
-			}
-			iridiumBoost = Math.Min(iridiumBoost, 0.004);
-			if (skullCavernMineLevel > 100)
-			{
-				iridiumBoost += (double)skullCavernMineLevel / 1000000.0;
-			}
+				double chanceForOre = 0.029 * Config.ChanceForOresMultiplierInMines - 0.029;
 
-			chanceForOre = chanceForOre * Config.ChanceForOreMultiplier - chanceForOre;
-
-			if (ores.Contains(x) || Game1.random.NextDouble() < chanceForOre) // if already an ore, don't check again
-			{
-				double chanceForIridium = (double)Math.Min(100, skullCavernMineLevel) * (0.0003 + iridiumBoost);
-				double chanceForGold = 0.01 + (double)(__instance.mineLevel - Math.Min(150, skullCavernMineLevel)) * 0.0005;
-				double chanceForIron = Math.Min(0.5, 0.1 + (double)(__instance.mineLevel - Math.Min(200, skullCavernMineLevel)) * 0.005);
-
-				chanceForIridium *= Config.ChanceForIridiumMultiplier;
-				chanceForGold *= Config.ChanceForGoldMultiplier;
-				chanceForIron *= Config.ChanceForIronMultiplier;
-
-				if (Game1.random.NextDouble() < chanceForIridium)
+				if (__instance.mineLevel != 1 && __instance.mineLevel % 5 != 0 && Game1.random.NextDouble() < chanceForOre)
 				{
-					__result = new StardewValley.Object(tile, 765, "Stone", true, false, false, false)
+					__result = new StardewValley.Object(tile, 751, "Stone", true, false, false, false)
 					{
-						MinutesUntilReady = 16
+						MinutesUntilReady = 3
 					};
 				}
-				else if (Game1.random.NextDouble() < chanceForGold)
-				{
-					__result = new StardewValley.Object(tile, 764, "Stone", true, false, false, false)
-					{
-						MinutesUntilReady = 8
-					};
-				}
-				else if (Game1.random.NextDouble() < chanceForIron)
+			}
+			else if (__instance.getMineArea(-1) == 40)
+			{
+				double chanceForOre = 0.029 * Config.ChanceForOresMultiplierInMines - 0.029;
+				if (__instance.mineLevel % 5 != 0 && Game1.random.NextDouble() < chanceForOre)
 				{
 					__result = new StardewValley.Object(tile, 290, "Stone", true, false, false, false)
 					{
 						MinutesUntilReady = 4
 					};
 				}
-				else
+			}
+			else if (__instance.getMineArea(-1) == 80)
+			{
+				double chanceForOre = 0.029 * Config.ChanceForOresMultiplierInMines - 0.029;
+				if (__instance.mineLevel % 5 != 0 && Game1.random.NextDouble() < chanceForOre)
 				{
-					__result = new StardewValley.Object(tile, 751, "Stone", true, false, false, false)
+					__result = new StardewValley.Object(tile, 764, "Stone", true, false, false, false)
 					{
-						MinutesUntilReady = 2
+						MinutesUntilReady = 8
 					};
 				}
 			}
+			else if (__instance.getMineArea(-1) == 77377)
+			{
+				return;
+			}
+			else
+			{
+				int skullCavernMineLevel = __instance.mineLevel - 120;
+				double chanceForOre = 0.02 + (double)skullCavernMineLevel * 0.0005;
+				if (__instance.mineLevel >= 130)
+				{
+					chanceForOre += 0.01 * (double)((float)(Math.Min(100, skullCavernMineLevel) - 10) / 10f);
+				}
+				double iridiumBoost = 0.0;
+				if (__instance.mineLevel >= 130)
+				{
+					iridiumBoost += 0.001 * (double)((float)(skullCavernMineLevel - 10) / 10f);
+				}
+				iridiumBoost = Math.Min(iridiumBoost, 0.004);
+				if (skullCavernMineLevel > 100)
+				{
+					iridiumBoost += (double)skullCavernMineLevel / 1000000.0;
+				}
+
+				chanceForOre = chanceForOre * Config.ChanceForOreMultiplier - chanceForOre;
+
+				if (ores.Contains(x) || Game1.random.NextDouble() < chanceForOre) // if already an ore, don't check again
+				{
+					double chanceForIridium = (double)Math.Min(100, skullCavernMineLevel) * (0.0003 + iridiumBoost);
+					double chanceForGold = 0.01 + (double)(__instance.mineLevel - Math.Min(150, skullCavernMineLevel)) * 0.0005;
+					double chanceForIron = Math.Min(0.5, 0.1 + (double)(__instance.mineLevel - Math.Min(200, skullCavernMineLevel)) * 0.005);
+
+					chanceForIridium *= Config.ChanceForIridiumMultiplier;
+					chanceForGold *= Config.ChanceForGoldMultiplier;
+					chanceForIron *= Config.ChanceForIronMultiplier;
+
+					if (Game1.random.NextDouble() < chanceForIridium)
+					{
+						__result = new StardewValley.Object(tile, 765, "Stone", true, false, false, false)
+						{
+							MinutesUntilReady = 16
+						};
+					}
+					else if (Game1.random.NextDouble() < chanceForGold)
+					{
+						__result = new StardewValley.Object(tile, 764, "Stone", true, false, false, false)
+						{
+							MinutesUntilReady = 8
+						};
+					}
+					else if (Game1.random.NextDouble() < chanceForIron)
+					{
+						__result = new StardewValley.Object(tile, 290, "Stone", true, false, false, false)
+						{
+							MinutesUntilReady = 4
+						};
+					}
+					else
+					{
+						__result = new StardewValley.Object(tile, 751, "Stone", true, false, false, false)
+						{
+							MinutesUntilReady = 2
+						};
+					}
+				}
+			}
+
 			/*
 			if (!ores.Contains(__result.ParentSheetIndex))
 			{

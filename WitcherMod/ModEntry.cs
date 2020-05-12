@@ -48,7 +48,7 @@ namespace WitcherMod
         {
             if (asset.DataType == typeof(Dictionary<int,string>) || asset.DataType == typeof(Dictionary<string,string>))
             {
-                return true;
+                return false;
             }
 
             return false;
@@ -58,7 +58,7 @@ namespace WitcherMod
         /// <param name="asset">A helper which encapsulates metadata about an asset and enables changes to it.</param>
         public void Edit<T>(IAssetData asset)
         {
-            if (asset.DataType == typeof(Dictionary<int, string>)) 
+            if (asset.DataType == typeof(Dictionary<int, string>) && !asset.AssetNameEquals("Data/Events/ElliottHouse")) 
             {
                 IDictionary<int, string> data = asset.AsDictionary<int, string>().Data;
                 List<int> keys = new List<int>(data.Keys);
