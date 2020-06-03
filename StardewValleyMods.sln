@@ -25,6 +25,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CustomOreNodes", "CustomOre
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LooseAudioFiles", "LooseAudioFiles\LooseAudioFiles.csproj", "{433F98A0-8055-41CA-A109-9A8ADEE74615}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ProceduralDungeons", "ProceduralDungeons\ProceduralDungeons.csproj", "{2934EA4F-F6A9-4B5F-A266-2EDF8F610499}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MultipleSpouses", "MultipleSpouses\MultipleSpouses.csproj", "{D4990B31-2700-490E-9AF4-6D0ACF59FBAA}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -75,6 +79,14 @@ Global
 		{433F98A0-8055-41CA-A109-9A8ADEE74615}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{433F98A0-8055-41CA-A109-9A8ADEE74615}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{433F98A0-8055-41CA-A109-9A8ADEE74615}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2934EA4F-F6A9-4B5F-A266-2EDF8F610499}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2934EA4F-F6A9-4B5F-A266-2EDF8F610499}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2934EA4F-F6A9-4B5F-A266-2EDF8F610499}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2934EA4F-F6A9-4B5F-A266-2EDF8F610499}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D4990B31-2700-490E-9AF4-6D0ACF59FBAA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D4990B31-2700-490E-9AF4-6D0ACF59FBAA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D4990B31-2700-490E-9AF4-6D0ACF59FBAA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D4990B31-2700-490E-9AF4-6D0ACF59FBAA}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

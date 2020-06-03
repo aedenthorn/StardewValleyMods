@@ -1,0 +1,10 @@
+﻿{
+  "Name": "Multiple Spouses",
+  "Author": "aedenthorn",
+  "Version": "0.1.0",
+  "Description": "Allows you to have multiple spouses at once.",
+  "UniqueID": "aedenthorn.MultipleSpouses",
+  "EntryDll": "MultipleSpouses.dll",
+  "MinimumApiVersion": "3.4.0",
+  "UpdateKeys": ["Nexus:6227"]
+}

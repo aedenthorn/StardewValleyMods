@@ -452,9 +452,9 @@ namespace BossCreatures
             }
             else
             {
-                for (int x2 = 0; x2 < location.map.Layers[0].LayerWidth; x2++)
+                for (int x2 = (int)Math.Round(location.map.Layers[0].LayerWidth *0.1f); x2 < (int)Math.Round(location.map.Layers[0].LayerWidth * 0.9f); x2++)
                 {
-                    for (int y2 = 0; y2 < location.map.Layers[0].LayerHeight; y2++)
+                    for (int y2 = (int)Math.Round(location.map.Layers[0].LayerHeight * 0.1f); y2 < (int)Math.Round(location.map.Layers[0].LayerHeight * 0.9f); y2++)
                     {
                         Layer l = location.map.GetLayer("Paths");
                         if (l != null)
@@ -532,7 +532,7 @@ namespace BossCreatures
 
         public static Vector2 RotateVector2d(Vector2 inV, float degrees)
         {
-            float rads = (float)Math.PI / 180;
+            float rads = (float)Math.PI / 180 * degrees;
             Vector2 result = new Vector2();
             result.X = (float)(inV.X * Math.Cos(rads) - inV.Y * Math.Sin(rads));
             result.Y = (float)(inV.X * Math.Sin(rads) + inV.Y * Math.Cos(rads));

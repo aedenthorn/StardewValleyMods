@@ -7,7 +7,7 @@ using StardewModdingAPI.Events;
 using StardewModdingAPI.Utilities;
 using StardewValley;
 
-namespace MarriageMod
+namespace MultipleSpouses
 {
     /// <summary>The mod entry point.</summary>
     public partial class ModEntry : Mod

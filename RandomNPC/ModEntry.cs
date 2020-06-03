@@ -834,6 +834,8 @@ namespace RandomNPC
 					quizq += "#$r 4343 " + quiza[i];
 				}
 
+				Alert("NPC quiz: fquest_"+quizq);
+
 				data.Add("fquest_" + (fqi), quizq);
 
 				data.Add("quiz_right", quizRight);
@@ -873,7 +875,7 @@ namespace RandomNPC
 
 		private void Alert(string alert)
 		{
-			base.Monitor.Log(alert, LogLevel.Alert);
+			base.Monitor.Log(alert, LogLevel.Trace);
 		}
 
 		private string GetRandomDialogue(RNPC rnpc, List<string> dialogues)
@@ -984,6 +986,7 @@ namespace RandomNPC
 				List<string> potentialClothes = GetHighestRankedStrings(npcString, RNPCclothes.data, 8);
 
 				clothes = potentialClothes[Game1.random.Next(0, potentialClothes.Count)].Split('^');
+				//base.Monitor.Log(string.Join(" | ", clothes), LogLevel.Debug);
 				npc.clothes = clothes;
 				npc.topRandomColour = new string[] { Game1.random.Next(0, 255).ToString(), Game1.random.Next(0, 255).ToString(), Game1.random.Next(0, 255).ToString() };
 			}

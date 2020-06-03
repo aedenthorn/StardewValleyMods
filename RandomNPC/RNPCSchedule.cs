@@ -1,5 +1,6 @@
 ﻿using StardewValley;
 using System;
+using System.Threading;
 
 namespace RandomNPC
 {

@@ -20,7 +20,6 @@ namespace CustomOreNodes
 		public static ModEntry context;
 
 		internal static ModConfig Config;
-		private static CustomOreData CustomOreNodeData;
 		private static List<CustomOreNode> CustomOreNodes = new List<CustomOreNode>();
 		private static IMonitor PMonitor;
 		
@@ -49,24 +48,19 @@ namespace CustomOreNodes
 			{
 
 				var editor = asset.AsImage();
-
-				editor.ExtendImage(minWidth: editor.Data.Width, minHeight: SpringObjectsHeight + (Config.SpriteSheetOffsetRows * 16) + ((CustomOreNodes.Count / (editor.Data.Width / 16) + 1) * 16));
-
+				int extension = (Config.SpriteSheetOffsetRows * 16) + ((CustomOreNodes.Count / (editor.Data.Width / 16) + 1) * 16);
+				editor.ExtendImage(minWidth: editor.Data.Width, minHeight: SpringObjectsHeight + extension);
+				PMonitor.Log($"extended springobjects by {extension}");
 				for (int i = 0; i < CustomOreNodes.Count; i++)
 				{
 					CustomOreNode node = CustomOreNodes[i];
+					PMonitor.Log($"Patching springobjects with {node.spritePath}");
 					Texture2D customTexture;
-					if (node.spriteType == "mod")
-					{
-						customTexture = node.texture;
-					}
-					else
-					{
-						customTexture = this.Helper.Content.Load<Texture2D>(node.spritePath, ContentSource.GameContent);
-					}
+					customTexture = node.texture;
 					int x = (i % (editor.Data.Width / 16)) * 16;
 					int y = SpringObjectsHeight + (Config.SpriteSheetOffsetRows*16) + (i / (editor.Data.Width / 16)) * 16;
 					editor.PatchImage(customTexture, sourceArea: new Rectangle(node.spriteX, node.spriteY, node.spriteW, node.spriteH), targetArea: new Rectangle(x, y, 16, 16));
+					PMonitor.Log($"patched springobjects with {node.spritePath}");
 				}
 			}
 			else if (asset.AssetNameEquals("Data/ObjectInformation"))
@@ -115,13 +109,17 @@ namespace CustomOreNodes
 					{
 						node.texture = Helper.Content.Load<Texture2D>(node.spritePath, ContentSource.ModFolder);
 					}
+					else
+					{
+						node.texture = this.Helper.Content.Load<Texture2D>(node.spritePath, ContentSource.GameContent);
+					}
 					CustomOreNodes.Add(node);
 				}
 				Monitor.Log($"Got {CustomOreNodes.Count} ores from mod",LogLevel.Debug);
 			}
-			catch
+			catch(Exception ex)
 			{
-				PMonitor.Log("custom_ore_nodes.json file not found in mod, checking for content packs.", LogLevel.Debug);
+				PMonitor.Log("custom_ore_nodes.json error."+ex, LogLevel.Debug);
 			}
 
 			foreach (IContentPack contentPack in this.Helper.ContentPacks.GetOwned())
@@ -147,10 +145,14 @@ namespace CustomOreNodes
 				}
 			}
 			Monitor.Log($"Got {CustomOreNodes.Count} ores total", LogLevel.Debug);
+			Helper.Content.InvalidateCache("Maps/springobjects");
 		}
 
 		private static void chooseStoneType_Postfix(MineShaft __instance, ref Object __result, Vector2 tile)
 		{
+			if (__result == null || __result.parentSheetIndex == null)
+				return;
+
 			List<int> ores = new List<int>() { 765, 764, 290, 751 };
 			if (!ores.Contains(__result.ParentSheetIndex))
 			{
@@ -163,10 +165,15 @@ namespace CustomOreNodes
 					}
 					if(Game1.random.NextDouble() < node.spawnChance/100f)
 					{
-						__result = new StardewValley.Object(tile, (SpringObjectsHeight/16 * SpringObjectsWidth/16) + (Config.SpriteSheetOffsetRows * SpringObjectsWidth/16) + i, "Stone", true, false, false, false)
+						int index = (SpringObjectsHeight / 16 * SpringObjectsWidth / 16) + (Config.SpriteSheetOffsetRows * SpringObjectsWidth / 16) + i;
+						PMonitor.Log($"Displaying stone at index {index}", LogLevel.Debug);
+						__result = new StardewValley.Object(tile, index, "Stone", true, false, false, false)
 						{
 							MinutesUntilReady = node.durability
 						};
+
+						PMonitor.Log(__result.DisplayName);
+
 						break;
 					}
 				}
