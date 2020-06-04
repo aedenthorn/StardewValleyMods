@@ -61,7 +61,7 @@ namespace MultipleSpouses
 					return;
 				}
 
-				if (!ModEntry.config.BuildAllSpousesRooms || !(__instance is FarmHouse))
+				if (!(__instance is FarmHouse))
                 {
 					return;
                 }
@@ -69,11 +69,16 @@ namespace MultipleSpouses
 
 				FarmHouse farmHouse = __instance as FarmHouse;
 
-				Farmer f = farmHouse.owner;
-
 				ModEntry.ResetSpouseRoles();
 
-				if(ModEntry.spouses.ContainsKey("Emily") && f.spouse != "Emily")
+                if (!ModEntry.config.BuildAllSpousesRooms)
+                {
+					return;
+                }
+
+				Farmer f = farmHouse.owner;
+
+				if (ModEntry.spouses.ContainsKey("Emily") && f.spouse != "Emily")
                 {
 					int offset = (ModEntry.spouses.Keys.ToList().IndexOf("Emily") + 1) * 7 * 64;
 					Vector2 parrotSpot = new Vector2(2064f+offset, 160f);

@@ -12,6 +12,9 @@ namespace MultipleSpouses
         public bool EnableMod { get; set; } = true;
         public bool BuyPendantsAnytime { get; set; } = false;
         public bool BuildAllSpousesRooms { get; set; } = true;
-
+        public float MaxDistanceToKiss { get; set; } = 200f;
+        public double MinSpouseKissInterval { get; set; } = 5;
+        public float SpouseKissChance { get; set; } = 0.5f;
+        public bool AllowSpousesToKiss { get; set; } = true;
     }
 }

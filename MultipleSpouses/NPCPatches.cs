@@ -96,6 +96,12 @@ namespace MultipleSpouses
 					return;
 				}
 
+                if (!ModEntry.config.BuildAllSpousesRooms && spouse.spouse != __instance.Name)
+                {
+					__instance.setTilePosition(farmHouse.getRandomOpenPointInHouse(Game1.random));
+					return;
+				}
+
 				int offset = 0;
 				if (spouse.spouse != __instance.Name)
                 {
@@ -103,6 +109,7 @@ namespace MultipleSpouses
 					offset = 7 * (idx + 1);
 				}
 				__instance.setTilePosition((int)spot.X + offset, (int)spot.Y);
+				__instance.faceDirection(Game1.random.Next(0, 4));
 			}
 		}
 				
