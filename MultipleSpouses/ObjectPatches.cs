@@ -16,7 +16,23 @@ namespace MultipleSpouses
 			Monitor = monitor;
 		}
 
-
+		
+		[HarmonyPatch(typeof(NPC), "getSpouse")]
+		static class NPC_getSpouse
+		{
+			static bool Prefix(NPC __instance, ref Farmer __result)
+			{
+				foreach (Farmer f in Game1.getAllFarmers())
+                {
+					if(f.friendshipData.ContainsKey(__instance.Name) && f.friendshipData[__instance.Name].IsMarried())
+                    {
+						__result = f;
+						return false;
+					}
+				}
+				return true;
+			}
+		}
 		[HarmonyPatch(typeof(NPC), "tryToReceiveActiveObject")]
 		static class tryToReceiveActiveObject
 		{
