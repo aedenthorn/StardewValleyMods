@@ -32,24 +32,37 @@ namespace MultipleSpouses
         public static ModConfig config;
 
         public static Dictionary<string,NPC> spouses = new Dictionary<string, NPC>();
-        internal static string outdoorSpouse = null;
-        internal static string kitchenSpouse = null;
-        internal static string bedSpouse = null;
+        public static string outdoorSpouse = null;
+		public static string kitchenSpouse = null;
+        public static string bedSpouse = null;
+		public static Multiplayer mp;
 
-        /// <summary>The mod entry point, called after the mod is first loaded.</summary>
-        /// <param name="helper">Provides simplified APIs for writing mods.</param>
-        public override void Entry(IModHelper helper)
+		/// <summary>The mod entry point, called after the mod is first loaded.</summary>
+		/// <param name="helper">Provides simplified APIs for writing mods.</param>
+		public override void Entry(IModHelper helper)
         {
-			PMonitor = Monitor;
-			PHelper = helper;
 			config = Helper.ReadConfig<ModConfig>();
 
-            helper.Events.GameLoop.DayEnding += GameLoop_DayEnding;
+			if (!config.EnableMod)
+				return;
+
+			PMonitor = Monitor;
+			PHelper = helper;
+
+			helper.Events.GameLoop.DayEnding += GameLoop_DayEnding;
             helper.Events.GameLoop.OneSecondUpdateTicked += GameLoop_OneSecondUpdateTicked;
+			mp = helper.Reflection.GetField<Multiplayer>(typeof(Game1), "multiplayer").GetValue();
 
-			string filePath = $"{Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)}\\assets\\kiss.wav";
-			kissEffect = SoundEffect.FromStream(new FileStream(filePath, FileMode.Open));
-
+			string filePath = $"{helper.DirectoryPath}\\assets\\kiss.wav";
+			PMonitor.Log("Kissing audio path: "+filePath);
+            if (File.Exists(filePath))
+            {
+				kissEffect = SoundEffect.FromStream(new FileStream(filePath, FileMode.Open));
+			}
+			else
+            {
+				PMonitor.Log("Kissing audio not found at path: " + filePath);
+			}
 
 			var harmony = HarmonyInstance.Create(this.ModManifest.UniqueID);
 
@@ -61,6 +74,11 @@ namespace MultipleSpouses
 			harmony.Patch(
 			   original: AccessTools.Method(typeof(NPC), nameof(NPC.getSpouse)),
 			   prefix: new HarmonyMethod(typeof(NPCPatches), nameof(NPCPatches.NPC_getSpouse_Prefix))
+			);
+
+			harmony.Patch(
+			   original: AccessTools.Method(typeof(NPC), nameof(NPC.isRoommate)),
+			   prefix: new HarmonyMethod(typeof(NPCPatches), nameof(NPCPatches.NPC_isRoommate_Prefix))
 			);
 
 			harmony.Patch(
@@ -80,8 +98,7 @@ namespace MultipleSpouses
 
 			harmony.Patch(
 			   original: AccessTools.Method(typeof(NPC), nameof(NPC.checkAction)),
-			   prefix: new HarmonyMethod(typeof(NPCPatches), nameof(NPCPatches.NPC_checkAction_Prefix)),
-			   postfix: new HarmonyMethod(typeof(NPCPatches), nameof(NPCPatches.NPC_checkAction_Postfix))
+			   prefix: new HarmonyMethod(typeof(NPCPatches), nameof(NPCPatches.NPC_checkAction_Prefix))
 			);
 
 			harmony.Patch(
@@ -89,6 +106,11 @@ namespace MultipleSpouses
 			   postfix: new HarmonyMethod(typeof(NPCPatches), nameof(NPCPatches.NPC_marriageDuties_Postfix))
 			);
 
+
+			harmony.Patch(
+			   original: AccessTools.Method(typeof(Farm), "addSpouseOutdoorArea"),
+			   prefix: new HarmonyMethod(typeof(LocationPatches), nameof(LocationPatches.Farm_addSpouseOutdoorArea_Prefix))
+			);
 
 			harmony.Patch(
 			   original: AccessTools.Method(typeof(Beach), nameof(Beach.checkAction)),
@@ -255,9 +277,32 @@ namespace MultipleSpouses
 			}
 		}
 
+		public static Dictionary<string,NPC> GetRandomSpouses(bool all = false)
+        {
+			Dictionary<string, NPC> npcs = spouses;
+			if (all)
+            {
+				NPC ospouse = Game1.player.getSpouse();
+				if(ospouse!= null)
+                {
+					npcs.Add(ospouse.Name, ospouse);
+				}
+			}
+			int n = npcs.Count;
+			while (n > 1)
+			{
+				n--;
+				int k = Game1.random.Next(n + 1);
+				var value = npcs[npcs.Keys.ToArray()[k]];
+				npcs[npcs.Keys.ToArray()[k]] = npcs[npcs.Keys.ToArray()[n]];
+				npcs[npcs.Keys.ToArray()[n]] = value;
+			}
+			return npcs;
+		}
+
 		public static List<string> kissingSpouses = new List<string>();
 		public static int lastKissTime = 0;
-        private static SoundEffect kissEffect;
+		public static SoundEffect kissEffect = null;
 
         public static void TrySpousesKiss()
         {
@@ -421,9 +466,12 @@ namespace MultipleSpouses
 					new FarmerSprite.AnimationFrame(spouseFrame, delay, false, flip, new AnimatedSprite.endOfAnimationBehavior(npc.haltMe), true)
 				});
 			npc.doEmote(20, true);
-            if (config.RealKissSound)
+            if (config.RealKissSound && kissEffect != null)
             {
-				kissEffect.Play();
+				float distance = 1f / ((Vector2.Distance(midpoint, Game1.player.position) / 256) + 1);
+				float pan = (float)(Math.Atan((midpoint.X - Game1.player.position.X) / Math.Abs(midpoint.Y - Game1.player.position.Y)) /(Math.PI/2));
+				PMonitor.Log($"kiss distance: {distance} pan: {pan}");
+				kissEffect.Play(distance, 0, pan);
 			}
 			else
             {
@@ -501,7 +549,17 @@ namespace MultipleSpouses
 					back = "BackSpouse";
 					buildings = "BuildingsSpouse";
 					front = "FrontSpouse";
+
 					refurbishedMap = PHelper.Content.Load<Map>($"../[TMX] Stardew Valley Expanded/assets/{name}sRoom.tmx", ContentSource.ModFolder);
+					if(refurbishedMap == null)
+                    {
+						refurbishedMap = ModEntry.PHelper.Content.Load<Map>($"../../[TMX] Stardew Valley Expanded/assets/{name}sRoom.tmx", ContentSource.ModFolder);
+					}
+					if (refurbishedMap == null)
+                    {
+						ModEntry.PMonitor.Log($"Couldn't load spouse room for SVE spouse {name}", LogLevel.Error);
+						return;
+					}
 					indexInSpouseMapSheet = 0;
 
 				}

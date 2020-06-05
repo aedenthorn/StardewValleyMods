@@ -13,6 +13,7 @@ using System.IO;
 using StardewValley.BellsAndWhistles;
 using xTile.Tiles;
 using System.Linq;
+using xTile;
 
 namespace MultipleSpouses
 {
@@ -44,7 +45,6 @@ namespace MultipleSpouses
 			}
 			return true;
 		}
-
 
 		public static void GameLocation_resetLocalState_Postfix(GameLocation __instance)
 		{
@@ -84,9 +84,23 @@ namespace MultipleSpouses
 				farmHouse.temporarySprites.Add(new EmilysParrot(parrotSpot));
 			}
 
+			List<NPC> spouses = new List<NPC>();
 
+			foreach(NPC spouse in ModEntry.spouses.Values)
+            {
+				string name = spouse.Name;
+				if (name == "Victor" || name == "Olivia" || name == "Sophia")
+				{
+					if(ModEntry.PHelper.Content.Load<Map>($"../[TMX] Stardew Valley Expanded/assets/{name}sRoom.tmx", ContentSource.ModFolder) == null && ModEntry.PHelper.Content.Load<Map>($"../../[TMX] Stardew Valley Expanded/assets/{name}sRoom.tmx", ContentSource.ModFolder) == null)
+                    {
+						ModEntry.PMonitor.Log($"Couldn't load spouse room for SVE spouse {name}. Check and make sure it is located at ../[TMX] Stardew Valley Expanded/assets/{name}sRoom.tmx or ../../[TMX] Stardew Valley Expanded/assets/{name}sRoom.tmx", LogLevel.Error);
+						continue;
+                    } 
+				}
+				spouses.Add(spouse);
+			}
 
-			if (farmHouse.upgradeLevel > 3 || ModEntry.spouses.Count == 0)
+			if (farmHouse.upgradeLevel > 3 || spouses.Count == 0)
 			{
 				return;
 			}
@@ -162,14 +176,14 @@ namespace MultipleSpouses
 			}
 
 
-			for (int j = 0; j < ModEntry.spouses.Keys.Count; j++)
+			for (int j = 0; j < spouses.Count; j++)
 			{
 				farmHouse.removeTile(ox + 35 + (7 * count), oy + 0, "Buildings");
 				for (int i = 0; i < 10; i++)
 				{
 					farmHouse.removeTile(ox + 35 + (7 * count), oy + 1 + i, "Buildings");
 				}
-				ModEntry.BuildSpouseRoom(farmHouse, ModEntry.spouses.Keys.ToArray()[j], count++);
+				ModEntry.BuildSpouseRoom(farmHouse, spouses[j].Name, count++);
 			}
 
 
@@ -179,6 +193,16 @@ namespace MultipleSpouses
 				farmHouse.setMapTileIndex(ox + 35 + (7 * count), oy + 1 + i, 68, "Buildings", 0);
 			}
 			farmHouse.setMapTileIndex(ox + 35 + (7 * count), oy + 10, 130, "Front", 0);
+		}
+
+		public static void Farm_addSpouseOutdoorArea_Prefix(ref string spouseName)
+		{
+			ModEntry.PMonitor.Log($"Checking for outdoor spouse to change area");
+			if (ModEntry.outdoorSpouse != null)
+            {
+				spouseName = ModEntry.outdoorSpouse;
+				ModEntry.PMonitor.Log($"Setting outdoor spouse area for {spouseName}");
+			}
 		}
 
 

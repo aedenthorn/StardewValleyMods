@@ -13,6 +13,7 @@ using System.IO;
 using StardewValley.BellsAndWhistles;
 using xTile.Tiles;
 using System.Linq;
+using StardewValley.Network;
 
 namespace MultipleSpouses
 {
@@ -36,26 +37,167 @@ namespace MultipleSpouses
 			return true;
 		}
 
-		public static void NPC_checkAction_Prefix(ref NPC __instance, ref Farmer who, ref string __state)
+		public static bool NPC_checkAction_Prefix(ref NPC __instance, ref Farmer who, ref bool __result)
 		{
-			if (who.friendshipData.ContainsKey(__instance.Name) && who.friendshipData[__instance.Name].IsMarried())
-			{
-				__state = who.spouse;
-				who.spouse = __instance.Name;
-			}
-			else
-			{
-				__state = null;
-			}
-		}
+			ModEntry.ResetSpouses(who);
 
-		public static void NPC_checkAction_Postfix(ref NPC __instance, ref Farmer who, string __state)
-		{
-			if (__state != null)
+			if ((__instance.Name.Equals(who.spouse) || ModEntry.spouses.ContainsKey(__instance.Name)) && who.IsLocalPlayer)
 			{
-				who.spouse = __state;
-				__instance.hasBeenKissedToday.Value = false;
+				int timeOfDay = Game1.timeOfDay;
+				if (__instance.Sprite.CurrentAnimation == null)
+				{
+					__instance.faceDirection(-3);
+				}
+				if (__instance.Sprite.CurrentAnimation == null && who.friendshipData.ContainsKey(__instance.name) && who.friendshipData[__instance.name].Points >= 3125 && !who.mailReceived.Contains("CF_Spouse"))
+				{
+					__instance.CurrentDialogue.Push(new Dialogue(Game1.content.LoadString(Game1.player.isRoommate(who.spouse) ? "Strings\\StringsFromCSFiles:Krobus_Stardrop" : "Strings\\StringsFromCSFiles:NPC.cs.4001"), __instance));
+					Game1.player.addItemByMenuIfNecessary(new StardewValley.Object(Vector2.Zero, 434, "Cosmic Fruit", false, false, false, false), null);
+					__instance.shouldSayMarriageDialogue.Value = false;
+					__instance.currentMarriageDialogue.Clear();
+					who.mailReceived.Add("CF_Spouse");
+					__result = true;
+					return false;
+				}
+				if (__instance.Sprite.CurrentAnimation == null && !__instance.hasTemporaryMessageAvailable() && __instance.currentMarriageDialogue.Count == 0 && __instance.CurrentDialogue.Count == 0 && Game1.timeOfDay < 2200 && !__instance.isMoving() && who.ActiveObject == null)
+				{
+					__instance.faceGeneralDirection(who.getStandingPosition(), 0, false);
+					who.faceGeneralDirection(__instance.getStandingPosition(), 0, false);
+					if (__instance.FacingDirection == 3 || __instance.FacingDirection == 1)
+					{
+						int spouseFrame = 28;
+						bool facingRight = true;
+						string name = __instance.Name;
+						if (name == "Sam")
+						{
+							spouseFrame = 36;
+							facingRight = true;
+						}
+						else if (name == "Penny")
+						{
+							spouseFrame = 35;
+							facingRight = true;
+						}
+						else if (name == "Sebastian")
+						{
+							spouseFrame = 40;
+							facingRight = false;
+						}
+						else if (name == "Alex")
+						{
+							spouseFrame = 42;
+							facingRight = true;
+						}
+						else if (name == "Krobus")
+						{
+							spouseFrame = 16;
+							facingRight = true;
+						}
+						else if (name == "Maru")
+						{
+							spouseFrame = 28;
+							facingRight = false;
+						}
+						else if (name == "Emily")
+						{
+							spouseFrame = 33;
+							facingRight = false;
+						}
+						else if (name == "Harvey")
+						{
+							spouseFrame = 31;
+							facingRight = false;
+						}
+						else if (name == "Shane")
+						{
+							spouseFrame = 34;
+							facingRight = false;
+						}
+						else if (name == "Elliott")
+						{
+							spouseFrame = 35;
+							facingRight = false;
+						}
+						else if (name == "Leah")
+						{
+							spouseFrame = 25;
+							facingRight = true;
+						}
+						else if (name == "Abigail")
+						{
+							spouseFrame = 33;
+							facingRight = false;
+						}
+						bool flip = (facingRight && __instance.FacingDirection == 3) || (!facingRight && __instance.FacingDirection == 1);
+						if (who.getFriendshipHeartLevelForNPC(__instance.Name) > 9)
+						{
+							int delay = Game1.IsMultiplayer ? 1000 : 10;
+							__instance.movementPause = delay;
+							__instance.Sprite.setCurrentAnimation(new List<FarmerSprite.AnimationFrame>
+							{
+								new FarmerSprite.AnimationFrame(spouseFrame, delay, false, flip, new AnimatedSprite.endOfAnimationBehavior(__instance.haltMe), true)
+							});
+							if (!__instance.hasBeenKissedToday.Value)
+							{
+								who.changeFriendship(10, __instance);
+							}
+							if (who.hasCurrentOrPendingRoommate())
+								{
+									ModEntry.mp.broadcastSprites(who.currentLocation, new TemporaryAnimatedSprite[]
+									{
+										new TemporaryAnimatedSprite("LooseSprites\\emojis", new Microsoft.Xna.Framework.Rectangle(0, 0, 9, 9), 2000f, 1, 0, new Vector2((float)__instance.getTileX(), (float)__instance.getTileY()) * 64f + new Vector2(16f, -64f), false, false, 1f, 0f, Color.White, 4f, 0f, 0f, 0f, false)
+										{
+											motion = new Vector2(0f, -0.5f),
+											alphaFade = 0.01f
+										}
+									});
+								}
+								else
+								{
+									ModEntry.mp.broadcastSprites(who.currentLocation, new TemporaryAnimatedSprite[]
+									{
+										new TemporaryAnimatedSprite("LooseSprites\\Cursors", new Microsoft.Xna.Framework.Rectangle(211, 428, 7, 6), 2000f, 1, 0, new Vector2((float)__instance.getTileX(), (float)__instance.getTileY()) * 64f + new Vector2(16f, -64f), false, false, 1f, 0f, Color.White, 4f, 0f, 0f, 0f, false)
+										{
+											motion = new Vector2(0f, -0.5f),
+											alphaFade = 0.01f
+										}
+									});
+								}
+							if (ModEntry.config.RealKissSound && ModEntry.kissEffect != null)
+							{
+								ModEntry.kissEffect.Play();
+							}
+							else
+							{
+								__instance.currentLocation.playSound("dwop", NetAudio.SoundContext.NPC);
+							}
+								who.exhausted.Value = false;
+							__instance.hasBeenKissedToday.Value = true;
+							__instance.Sprite.UpdateSourceRect();
+						}
+						else
+						{
+							__instance.faceDirection((Game1.random.NextDouble() < 0.5) ? 2 : 0);
+							__instance.doEmote(12, true);
+						}
+						int playerFaceDirection = 1;
+						if ((facingRight && !flip) || (!facingRight && flip))
+						{
+							playerFaceDirection = 3;
+						}
+						who.PerformKiss(playerFaceDirection);
+						who.CanMove = false;
+						who.FarmerSprite.PauseForSingleAnimation = false;
+						who.FarmerSprite.animateOnce(new List<FarmerSprite.AnimationFrame>
+						{
+							new FarmerSprite.AnimationFrame(101, 1000, 0, false, who.FacingDirection == 3, null, false, 0),
+							new FarmerSprite.AnimationFrame(6, 1, false, who.FacingDirection == 3, new AnimatedSprite.endOfAnimationBehavior(Farmer.completelyStopAnimating), false)
+						}.ToArray(), null);
+						__result = true;
+						return false;
+					}
+				}
 			}
+			return true;
 		}
 
 
@@ -92,16 +234,38 @@ namespace MultipleSpouses
 				return;
 			}
 
+			ModEntry.ResetSpouses(spouse);
+
 			int offset = 0;
 			if (spouse.spouse != __instance.Name)
 			{
 				int idx = ModEntry.spouses.Keys.ToList().IndexOf(__instance.Name);
 				offset = 7 * (idx + 1);
 			}
+			ModEntry.PMonitor.Log($"{__instance.Name} loc: {(spot.X + offset)},{spot.Y}");
 			__instance.setTilePosition((int)spot.X + offset, (int)spot.Y);
 			__instance.faceDirection(Game1.random.Next(0, 4));
 		}
 
+		public static bool NPC_isRoommate_Prefix(NPC __instance, ref bool __result)
+		{
+			if (!__instance.isVillager())
+			{
+				__result = false;
+				return false;
+			}
+			foreach (Farmer f in Game1.getAllFarmers())
+			{
+				if (f.isRoommate(__instance.Name))
+				{
+					__result = true;
+					return false;
+				}
+			}
+			__result = false;
+			return false;
+		}
+		
 		public static bool NPC_getSpouse_Prefix(NPC __instance, ref Farmer __result)
 		{
 			foreach (Farmer f in Game1.getAllFarmers())
@@ -151,21 +315,23 @@ namespace MultipleSpouses
 			return true;
 		}
 
-		public static bool NPC_tryToReceiveActiveObject_Prefix(NPC __instance, ref Farmer who, string __state)
+		public static bool NPC_tryToReceiveActiveObject_Prefix(NPC __instance, ref Farmer who)
 		{
-			if (who.friendshipData.ContainsKey(__instance.Name) && who.friendshipData[__instance.Name].IsMarried())
-			{
-				who.spouse = __instance.Name;
-				GameLocation l = Game1.getLocationFromName(Game1.player.homeLocation);
-				if (l is FarmHouse)
-				{
-					(l as FarmHouse).showSpouseRoom();
-					l.resetForPlayerEntry();
-				}
-			}
-
 			if (who.ActiveObject.ParentSheetIndex == 458)
 			{
+				if (who.friendshipData.ContainsKey(__instance.Name) && who.friendshipData[__instance.Name].IsMarried())
+				{
+					who.spouse = __instance.Name;
+					GameLocation l = Game1.getLocationFromName(Game1.player.homeLocation);
+					l.playSound("dwop", NetAudio.SoundContext.NPC);
+					if (l is FarmHouse)
+					{
+						(l as FarmHouse).showSpouseRoom();
+						l.resetForPlayerEntry();
+					}
+					return false;
+				}
+
 				if (!__instance.datable)
 				{
 					if (Game1.random.NextDouble() < 0.5)
@@ -190,13 +356,13 @@ namespace MultipleSpouses
 						Game1.drawDialogue(__instance);
 						return false;
 					}
-					if (__instance.datable && who.friendshipData.ContainsKey(__instance.Name) && who.friendshipData[__instance.Name].Points < 1000)
+					if (__instance.datable && who.friendshipData.ContainsKey(__instance.Name) && who.friendshipData[__instance.Name].Points < ModEntry.config.MinPointsToDate/2f)
 					{
 						__instance.CurrentDialogue.Push(new Dialogue((Game1.random.NextDouble() < 0.5) ? Game1.content.LoadString("Strings\\StringsFromCSFiles:NPC.cs.3958") : Game1.LoadStringByGender(__instance.gender, "Strings\\StringsFromCSFiles:NPC.cs.3959"), __instance));
 						Game1.drawDialogue(__instance);
 						return false;
 					}
-					if (__instance.datable && who.friendshipData.ContainsKey(__instance.Name) && who.friendshipData[__instance.Name].Points < 2000)
+					if (__instance.datable && who.friendshipData.ContainsKey(__instance.Name) && who.friendshipData[__instance.Name].Points < ModEntry.config.MinPointsToDate)
 					{
 						__instance.CurrentDialogue.Push(new Dialogue((Game1.random.NextDouble() < 0.5) ? Game1.content.LoadString("Strings\\StringsFromCSFiles:NPC.cs.3960") : Game1.content.LoadString("Strings\\StringsFromCSFiles:NPC.cs.3961"), __instance));
 						Game1.drawDialogue(__instance);
@@ -225,7 +391,7 @@ namespace MultipleSpouses
 
 			if (who.ActiveObject.ParentSheetIndex == 460)
 			{
-				if (!__instance.datable || __instance.isMarriedOrEngaged() || (who.friendshipData.ContainsKey(__instance.Name) && who.friendshipData[__instance.Name].Points < 1500))
+				if (!__instance.datable || __instance.isMarriedOrEngaged() || (who.friendshipData.ContainsKey(__instance.Name) && who.friendshipData[__instance.Name].Points < ModEntry.config.MinPointsToMarry*0.6f))
 				{
 					if (Game1.random.NextDouble() < 0.5)
 					{
@@ -236,7 +402,7 @@ namespace MultipleSpouses
 					Game1.drawDialogue(__instance);
 					return false;
 				}
-				else if (__instance.datable && who.friendshipData.ContainsKey(__instance.Name) && who.friendshipData[__instance.Name].Points < 2500)
+				else if (__instance.datable && who.friendshipData.ContainsKey(__instance.Name) && who.friendshipData[__instance.Name].Points < ModEntry.config.MinPointsToMarry)
 				{
 					if (!who.friendshipData[__instance.Name].ProposalRejected)
 					{
@@ -273,5 +439,6 @@ namespace MultipleSpouses
 				return true;
 			}
 		}
+
 	}
 }

@@ -5,8 +5,6 @@ VisualStudioVersion = 16.0.29519.181
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MagnetMod", "MagnetMod\MagnetMod.csproj", "{7EA4E49D-D5FF-4A36-8755-D9F6B1F4A3C3}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MarriageMod", "MarriageMod\MarriageMod.csproj", "{6D811221-0CCE-43CE-81E0-A55A371BF57E}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FruitTreeShaker", "FruitTreeShaker\FruitTreeShaker.csproj", "{4E24EB5E-0477-49BD-92F8-BB849064C7E3}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RandomNPC", "RandomNPC\RandomNPC.csproj", "{E9D6D62B-0006-4CC9-A094-8D8944DBF8F8}"
@@ -39,10 +37,6 @@ Global
 		{7EA4E49D-D5FF-4A36-8755-D9F6B1F4A3C3}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{7EA4E49D-D5FF-4A36-8755-D9F6B1F4A3C3}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{7EA4E49D-D5FF-4A36-8755-D9F6B1F4A3C3}.Release|Any CPU.Build.0 = Release|Any CPU
-		{6D811221-0CCE-43CE-81E0-A55A371BF57E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{6D811221-0CCE-43CE-81E0-A55A371BF57E}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{6D811221-0CCE-43CE-81E0-A55A371BF57E}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{6D811221-0CCE-43CE-81E0-A55A371BF57E}.Release|Any CPU.Build.0 = Release|Any CPU
 		{4E24EB5E-0477-49BD-92F8-BB849064C7E3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{4E24EB5E-0477-49BD-92F8-BB849064C7E3}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{4E24EB5E-0477-49BD-92F8-BB849064C7E3}.Release|Any CPU.ActiveCfg = Release|Any CPU

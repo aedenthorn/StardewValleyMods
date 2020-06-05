@@ -69,8 +69,8 @@ namespace MultipleSpouses
 				int heartsWithSpouse = f.getFriendshipHeartLevelForNPC(spouse.Name);
 				Friendship friendship = f.friendshipData[spouse.Name];
 				List<Child> kids = f.getChildren();
-				bool can = Utility.getHomeOfFarmer(f).upgradeLevel >= 2 && friendship.DaysUntilBirthing < 0 && heartsWithSpouse >= 10 && friendship.DaysMarried >= 7 && (kids.Count == 0 || (kids.Count < 2));
-				ModEntry.PMonitor.Log($"Checking {spouse.Name} {can}{(friendship.DaysUntilBirthing >= 0 ? "gives birth in: "+friendship.DaysUntilBirthing:"")}");
+				bool can = Utility.getHomeOfFarmer(f).upgradeLevel >= 2 && friendship.DaysUntilBirthing < 0 && heartsWithSpouse >= 10 && friendship.DaysMarried >= 7 && (ModEntry.config.MaxChildren < 0 || kids.Count == 0 || (kids.Count < ModEntry.config.MaxChildren));
+				ModEntry.PMonitor.Log($"Checking ability to get pregnant: {spouse.Name} {can}{(friendship.DaysUntilBirthing >= 0 ? " Already pregnant! Gives birth in: "+friendship.DaysUntilBirthing:"")}");
 				if (can && Game1.player.currentLocation == Game1.getLocationFromName(Game1.player.homeLocation) && Game1.random.NextDouble() < ModEntry.config.BabyRequestChance)
 				{
 					ModEntry.PMonitor.Log("Making a baby!");
@@ -162,7 +162,7 @@ namespace MultipleSpouses
 					while (collision_found);
 					Child baby = new Child(newBabyName, ___isMale, isDarkSkinned, Game1.player);
 					baby.Age = 0;
-					baby.Position = new Vector2(16f, 4f) * 64f + new Vector2(0f-Game1.player.getChildrenCount()*2, -24f);
+					baby.Position = new Vector2(16f, 4f) * 64f + new Vector2(0f+Game1.random.Next(-64,48), -24f + Game1.random.Next(-24, 24));
 					Utility.getHomeOfFarmer(Game1.player).characters.Add(baby);
 					Game1.playSound("smallSelect");
 					lastBirthingSpouse.daysAfterLastBirth = 5;
@@ -189,8 +189,7 @@ namespace MultipleSpouses
 					}
 					Game1.morningQueue.Enqueue(delegate
 					{
-						Multiplayer mp = ModEntry.PHelper.Reflection.GetField<Multiplayer>(typeof(Game1), "multiplayer").GetValue();
-						mp.globalChatInfoMessage("Baby", new string[]
+						ModEntry.mp.globalChatInfoMessage("Baby", new string[]
 						{
 							Lexicon.capitalize(Game1.player.Name),
 							Game1.player.spouse,
