@@ -46,6 +46,7 @@
   <ItemGroup>
     <Compile Include="ModConfig.cs" />
     <Compile Include="ModEntry.cs" />
+    <Compile Include="Pregnancy.cs" />
     <Compile Include="NPCPatches.cs" />
     <Compile Include="LocationPatches.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

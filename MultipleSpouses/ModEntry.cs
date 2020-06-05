@@ -19,6 +19,7 @@ using StardewValley.Network;
 using System.Threading.Tasks;
 using Microsoft.Xna.Framework.Audio;
 using System.IO;
+using StardewValley.Events;
 
 namespace MultipleSpouses
 {
@@ -51,10 +52,82 @@ namespace MultipleSpouses
 
 
 			var harmony = HarmonyInstance.Create(this.ModManifest.UniqueID);
-            harmony.PatchAll(Assembly.GetExecutingAssembly());
-        }
 
-        private void GameLoop_OneSecondUpdateTicked(object sender, OneSecondUpdateTickedEventArgs e)
+			harmony.Patch(
+			   original: AccessTools.Method(typeof(NPC), nameof(NPC.setUpForOutdoorPatioActivity)),
+			   prefix: new HarmonyMethod(typeof(NPCPatches), nameof(NPCPatches.NPC_setUpForOutdoorPatioActivity_Prefix))
+			);
+
+			harmony.Patch(
+			   original: AccessTools.Method(typeof(NPC), nameof(NPC.getSpouse)),
+			   prefix: new HarmonyMethod(typeof(NPCPatches), nameof(NPCPatches.NPC_getSpouse_Prefix))
+			);
+
+			harmony.Patch(
+			   original: AccessTools.Method(typeof(NPC), nameof(NPC.isMarried)),
+			   prefix: new HarmonyMethod(typeof(NPCPatches), nameof(NPCPatches.NPC_isMarried_Prefix))
+			);
+
+			harmony.Patch(
+			   original: AccessTools.Method(typeof(NPC), nameof(NPC.isMarriedOrEngaged)),
+			   prefix: new HarmonyMethod(typeof(NPCPatches), nameof(NPCPatches.NPC_isMarriedOrEngaged_Prefix))
+			);
+
+			harmony.Patch(
+			   original: AccessTools.Method(typeof(NPC), nameof(NPC.tryToReceiveActiveObject)),
+			   prefix: new HarmonyMethod(typeof(NPCPatches), nameof(NPCPatches.NPC_tryToReceiveActiveObject_Prefix))
+			);
+
+			harmony.Patch(
+			   original: AccessTools.Method(typeof(NPC), nameof(NPC.checkAction)),
+			   prefix: new HarmonyMethod(typeof(NPCPatches), nameof(NPCPatches.NPC_checkAction_Prefix)),
+			   postfix: new HarmonyMethod(typeof(NPCPatches), nameof(NPCPatches.NPC_checkAction_Postfix))
+			);
+
+			harmony.Patch(
+			   original: AccessTools.Method(typeof(NPC), nameof(NPC.marriageDuties)),
+			   postfix: new HarmonyMethod(typeof(NPCPatches), nameof(NPCPatches.NPC_marriageDuties_Postfix))
+			);
+
+
+			harmony.Patch(
+			   original: AccessTools.Method(typeof(Beach), nameof(Beach.checkAction)),
+			   prefix: new HarmonyMethod(typeof(LocationPatches), nameof(LocationPatches.Beach_checkAction_Prefix))
+			);
+
+			harmony.Patch(
+			   original: AccessTools.Method(typeof(GameLocation), "resetLocalState"),
+			   postfix: new HarmonyMethod(typeof(LocationPatches), nameof(LocationPatches.GameLocation_resetLocalState_Postfix))
+			);
+
+			harmony.Patch(
+			   original: AccessTools.Method(typeof(GameLocation), "updateMap"),
+			   prefix: new HarmonyMethod(typeof(LocationPatches), nameof(LocationPatches.GameLocation_updateMap_Prefix))
+			);
+
+
+			harmony.Patch(
+			   original: AccessTools.Method(typeof(Utility), nameof(Utility.pickPersonalFarmEvent)),
+			   prefix: new HarmonyMethod(typeof(Pregnancy), nameof(Pregnancy.Utility_pickPersonalFarmEvent_Prefix))
+			);
+			harmony.Patch(
+			   original: AccessTools.Method(typeof(QuestionEvent), nameof(QuestionEvent.setUp)),
+			   prefix: new HarmonyMethod(typeof(Pregnancy), nameof(Pregnancy.QuestionEvent_setUp_Prefix))
+			);
+
+			harmony.Patch(
+			   original: AccessTools.Method(typeof(BirthingEvent), nameof(BirthingEvent.setUp)),
+			   prefix: new HarmonyMethod(typeof(Pregnancy), nameof(Pregnancy.BirthingEvent_setUp_Prefix))
+			);
+
+			harmony.Patch(
+			   original: AccessTools.Method(typeof(BirthingEvent), nameof(BirthingEvent.tickUpdate)),
+			   prefix: new HarmonyMethod(typeof(Pregnancy), nameof(Pregnancy.BirthingEvent_tickUpdate_Prefix))
+			);
+
+		}
+
+		private void GameLoop_OneSecondUpdateTicked(object sender, OneSecondUpdateTickedEventArgs e)
         {
             if (config.AllowSpousesToKiss)
             {
@@ -77,8 +150,17 @@ namespace MultipleSpouses
 			PMonitor.Log("num spouses: " + allSpouses.Count);
 			if(Game1.player.getSpouse() != null)
             {
+				PMonitor.Log("official spouse: " + Game1.player.getSpouse().Name);
 				allSpouses.Add(Game1.player.getSpouse()); 
 			}
+
+			foreach (NPC npc in allSpouses)
+            {
+				Friendship friendship = npc.getSpouse().friendshipData[npc.Name];
+				PMonitor.Log($"spouse: {npc.Name}{(friendship.DaysUntilBirthing >= 0 ? " gives birth in: " + friendship.DaysUntilBirthing : "")}");
+			}
+
+
 
 			int n = allSpouses.Count;
 			while (n > 1)
@@ -141,49 +223,6 @@ namespace MultipleSpouses
 			return false;
 		}
 
-		public static Point GetClearPosition(FarmHouse location)
-        {
-            List<Point> tiles = new List<Point>();
-            for (int x2 = (int)Math.Round(location.map.Layers[0].LayerWidth * 0.1f); x2 < (int)Math.Round(location.map.Layers[0].LayerWidth * 0.9f); x2++)
-            {
-                for (int y2 = (int)Math.Round(location.map.Layers[0].LayerHeight * 0.1f); y2 < (int)Math.Round(location.map.Layers[0].LayerHeight * 0.9f); y2++)
-                {
-                    Layer l = location.map.GetLayer("Paths");
-                    if (l != null)
-                    {
-                        Tile t = l.Tiles[x2, y2];
-                        if (t != null)
-                        {
-                            Vector2 tile2 = new Vector2((float)x2, (float)y2);
-                            if (location.isTileLocationTotallyClearAndPlaceable(tile2))
-                            {
-                                tiles.Add(new Point(x2,y2));
-                            }
-                        }
-                    }
-
-                    if (tiles.Count == 0)
-                    {
-                        Tile t = location.map.Layers[0].Tiles[x2, y2];
-                        if (t != null)
-                        {
-                            Vector2 tile2 = new Vector2((float)x2, (float)y2);
-                            if (location.isTileLocationTotallyClearAndPlaceable(tile2))
-                            {
-                                tiles.Add(new Point(x2, y2));
-                            }
-                        }
-                    }
-                }
-            }
-            if (tiles.Count == 0)
-            {
-                return Point.Zero;
-            }
-            Point posT = tiles[Game1.random.Next(0, tiles.Count)];
-            return posT;
-        }
-
         public static void ResetSpouses(Farmer f)
         {
 			spouses.Clear();
@@ -191,13 +230,29 @@ namespace MultipleSpouses
 			{
 				if (f.friendshipData[name].IsMarried() && f.spouse != name)
 				{
-					spouses.Add(name,Game1.getCharacterFromName(name));
+					NPC npc = Game1.getCharacterFromName(name);
+					if(npc == null)
+                    {
+						foreach(GameLocation l in Game1.locations)
+                        {
+							foreach(NPC c in l.characters)
+                            {
+								if(c.Name == name)
+                                {
+									npc = c;
+									goto next;
+                                }
+                            }
+                        }
+                    }
+					if(npc == null)
+                    {
+						continue;
+                    }
+					next:
+					spouses.Add(name,npc);
 				}
 			}
-			if(spouses.Count > 0)
-            {
-				//PMonitor.Log("got a spouse", LogLevel.Error);
-            }
 		}
 
 		public static List<string> kissingSpouses = new List<string>();
@@ -354,7 +409,7 @@ namespace MultipleSpouses
 			bool flip = (facingRight && !right) || (!facingRight && right);
 
 			int offset = 24;
-			if (npc.position.X < midpoint.X)
+			if (right)
 				offset *= -1;
 
 			npc.position.Value = new Vector2(midpoint.X+offset,midpoint.Y);
@@ -366,7 +421,14 @@ namespace MultipleSpouses
 					new FarmerSprite.AnimationFrame(spouseFrame, delay, false, flip, new AnimatedSprite.endOfAnimationBehavior(npc.haltMe), true)
 				});
 			npc.doEmote(20, true);
-			kissEffect.Play();
+            if (config.RealKissSound)
+            {
+				kissEffect.Play();
+			}
+			else
+            {
+				Game1.currentLocation.playSound("dwop", NetAudio.SoundContext.NPC);
+			}
 
 			npc.Sprite.UpdateSourceRect();
 		}
@@ -434,30 +496,16 @@ namespace MultipleSpouses
 				{
 					indexInSpouseMapSheet = 2;
 				}
-				else if(name == "Victor")
+				else if(name == "Victor" || name == "Olivia" || name == "Sophia")
                 {
 					back = "BackSpouse";
 					buildings = "BuildingsSpouse";
 					front = "FrontSpouse";
-					refurbishedMap = PHelper.Content.Load<Map>("../[TMX] Stardew Valley Expanded/assets/VictorsRoom.tmx", ContentSource.ModFolder);
+					refurbishedMap = PHelper.Content.Load<Map>($"../[TMX] Stardew Valley Expanded/assets/{name}sRoom.tmx", ContentSource.ModFolder);
 					indexInSpouseMapSheet = 0;
+
 				}
-				else if(name == "Olivia")
-                {
-					back = "BackSpouse";
-					buildings = "BuildingsSpouse";
-					front = "FrontSpouse";
-					refurbishedMap = PHelper.Content.Load<Map>("../[TMX] Stardew Valley Expanded/assets/OliviasRoom.tmx", ContentSource.ModFolder);
-					indexInSpouseMapSheet = 0;
-				}
-				else if(name == "Sophia")
-                {
-					back = "BackSpouse";
-					buildings = "BuildingsSpouse";
-					front = "FrontSpouse";
-					refurbishedMap = PHelper.Content.Load<Map>("../[TMX] Stardew Valley Expanded/assets/SophiasRoom.tmx", ContentSource.ModFolder);
-					indexInSpouseMapSheet = 0;
-				}
+
 
 				PMonitor.Log($"Building {name}'s room", LogLevel.Debug);
 				
@@ -468,6 +516,8 @@ namespace MultipleSpouses
                 {
 					Tile[,] tiles = FieldRefAccess<Layer, Tile[,]>(layers[i], "m_tiles");
 					Size size = FieldRefAccess<Layer, Size>(layers[i], "m_layerSize");
+					if (size.Width >= areaToRefurbish.X + 7)
+						continue;
 					size = new Size(size.Width + 7, size.Height);
 					FieldRefAccess<Layer, Size>(layers[i], "m_layerSize") = size;
 					FieldRefAccess<Map, List<Layer>>(farmHouse.map, "m_layers") = layers;
@@ -516,10 +566,10 @@ namespace MultipleSpouses
 				}
 				for (int i = 0; i < 3; i++)
 				{
-					farmHouse.setMapTileIndex(ox + 36 + (i*2) + (count*7), oy + 10, 53, "Back", untitled);
-					farmHouse.setMapTileIndex(ox + 36 + (i*2+1) + (count*7), oy + 10, 54, "Back", untitled);
+					farmHouse.setMapTileIndex(ox + 36 + (i * 2) + (count * 7), oy + 10, config.HallTileOdd, "Back", 0);
+					farmHouse.setMapTileIndex(ox + 36 + (i * 2 + 1) + (count * 7), oy + 10, config.HallTileEven, "Back", 0);
 				}
-				farmHouse.setMapTileIndex(ox + 42 + (count * 7), oy + 10, 54, "Back", 4);
+				farmHouse.setMapTileIndex(ox + 42 + (count * 7), oy + 10, config.HallTileOdd, "Back", 0);
 
 				for (int i = 0; i < 6; i++)
 				{
@@ -532,6 +582,7 @@ namespace MultipleSpouses
 				farmHouse.setMapTileIndex(ox + 35 + (7 * count), oy + 8, 123, "Buildings", untitled);
 				farmHouse.setMapTileIndex(ox + 35 + (7 * count), oy + 9, 135, "Buildings", untitled);
 				farmHouse.setMapTileIndex(ox + 35 + (7 * count), oy + 9, 54, "Back", untitled);
+
 
 				for (int x = 0; x < areaToRefurbish.Width; x++)
 				{
