@@ -13,6 +13,8 @@ namespace MultipleSpouses
         public bool BuyPendantsAnytime { get; set; } = false;
         public int MinPointsToMarry { get; set; } = 2500;
         public int MinPointsToDate { get; set; } = 2000;
+        public int DaysUntilMarriage { get; set; } = 3;
+        public bool FriendlyDivorce { get; set; } = true;
         public bool BuildAllSpousesRooms { get; set; } = true;
         public int HallTileOdd { get; set; } = 265;
         public int HallTileEven { get; set; } = 266;
@@ -25,6 +27,6 @@ namespace MultipleSpouses
         public bool AllowGayPregnancies { get; set; } = true;
         public float FemaleBabyChance { get; set; } = 0.5f;
         public int PregnancyDays { get; set; } = 14;
-        public int MaxChildren { get; set; } = -1;
+        public int MaxChildren { get; set; } = 2;
     }
 }

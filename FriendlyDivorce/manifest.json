@@ -1,0 +1,10 @@
+﻿{
+  "Name": "Friendly Divorce",
+  "Author": "aedenthorn",
+  "Version": "0.1.0",
+  "Description": "Allows you to stay friends after the divorce.",
+  "UniqueID": "aedenthorn.FriendlyDivorce",
+  "EntryDll": "FriendlyDivorce.dll",
+  "MinimumApiVersion": "3.4.0",
+  "UpdateKeys": ["Nexus:6241"]
+}

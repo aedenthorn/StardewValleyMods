@@ -33,7 +33,8 @@ namespace MultipleSpouses
 			if (__instance is FarmHouse)
 			{
 				FarmHouse farmHouse = __instance as FarmHouse;
-				ModEntry.ResetSpouses(farmHouse.owner);
+				if (farmHouse.owner == null)
+					return true;
 				bool showSpouse = ModEntry.spouses.Count > 0 || farmHouse.owner.spouse != null;
 				__instance.mapPath.Value = "Maps\\" + __instance.Name + ((farmHouse.upgradeLevel == 0) ? "" : ((farmHouse.upgradeLevel == 3) ? "2" : string.Concat(farmHouse.upgradeLevel))) + (showSpouse ? "_marriage" : "");
 
@@ -51,7 +52,7 @@ namespace MultipleSpouses
 
 			if (__instance is Beach && ModEntry.config.BuyPendantsAnytime)
 			{
-				FieldRefAccess<Beach, NPC>(__instance as Beach, "oldMariner") = new NPC(new AnimatedSprite("Characters\\Mariner", 0, 16, 32), new Vector2(80f, 5f) * 64f, 2, "Old Mariner", null);
+				ModEntry.PHelper.Reflection.GetField<NPC>(__instance,"oldMariner").SetValue(new NPC(new AnimatedSprite("Characters\\Mariner", 0, 16, 32), new Vector2(80f, 5f) * 64f, 2, "Old Mariner", null));
 				return;
 			}
 
@@ -63,16 +64,16 @@ namespace MultipleSpouses
 
 			FarmHouse farmHouse = __instance as FarmHouse;
 
-			ModEntry.ResetSpouseRoles();
+			Farmer f = farmHouse.owner;
+			ModEntry.ResetSpouses(f);
 
 			if (!ModEntry.config.BuildAllSpousesRooms)
 			{
 				return;
 			}
 
-			Farmer f = farmHouse.owner;
 
-			if (ModEntry.spouses.ContainsKey("Emily") && f.spouse != "Emily")
+			if (ModEntry.spouses.ContainsKey("Emily") && f.spouse != "Emily" && Game1.player.eventsSeen.Contains(463391))
 			{
 				int offset = (ModEntry.spouses.Keys.ToList().IndexOf("Emily") + 1) * 7 * 64;
 				Vector2 parrotSpot = new Vector2(2064f + offset, 160f);
@@ -84,7 +85,7 @@ namespace MultipleSpouses
 				farmHouse.temporarySprites.Add(new EmilysParrot(parrotSpot));
 			}
 
-			List<NPC> spouses = new List<NPC>();
+			List<NPC> mySpouses = new List<NPC>();
 
 			foreach(NPC spouse in ModEntry.spouses.Values)
             {
@@ -97,10 +98,10 @@ namespace MultipleSpouses
 						continue;
                     } 
 				}
-				spouses.Add(spouse);
+				mySpouses.Add(spouse);
 			}
 
-			if (farmHouse.upgradeLevel > 3 || spouses.Count == 0)
+			if (farmHouse.upgradeLevel > 3 || mySpouses.Count == 0)
 			{
 				return;
 			}
@@ -120,10 +121,6 @@ namespace MultipleSpouses
 				oy = 9;
 			}
 
-			for (int i = 0; i < 6; i++)
-			{
-
-			}
 			for (int i = 0; i < 7; i++)
 			{
 				farmHouse.setMapTileIndex(ox + 29 + i, oy + 11, 0, "Buildings", 0);
@@ -176,14 +173,14 @@ namespace MultipleSpouses
 			}
 
 
-			for (int j = 0; j < spouses.Count; j++)
+			for (int j = 0; j < mySpouses.Count; j++)
 			{
 				farmHouse.removeTile(ox + 35 + (7 * count), oy + 0, "Buildings");
 				for (int i = 0; i < 10; i++)
 				{
 					farmHouse.removeTile(ox + 35 + (7 * count), oy + 1 + i, "Buildings");
 				}
-				ModEntry.BuildSpouseRoom(farmHouse, spouses[j].Name, count++);
+				ModEntry.BuildSpouseRoom(farmHouse, mySpouses[j].Name, count++);
 			}
 
 
@@ -198,7 +195,7 @@ namespace MultipleSpouses
 		public static void Farm_addSpouseOutdoorArea_Prefix(ref string spouseName)
 		{
 			ModEntry.PMonitor.Log($"Checking for outdoor spouse to change area");
-			if (ModEntry.outdoorSpouse != null)
+			if (ModEntry.outdoorSpouse != null && spouseName != "")
             {
 				spouseName = ModEntry.outdoorSpouse;
 				ModEntry.PMonitor.Log($"Setting outdoor spouse area for {spouseName}");
@@ -247,6 +244,35 @@ namespace MultipleSpouses
 			}
 			return true;
 		}
-
+		public static bool ManorHouse_performAction_Prefix(ManorHouse __instance, string action, Farmer who, ref bool __result)
+		{
+			ModEntry.ResetSpouses(who);
+			if (action != null && who.IsLocalPlayer && Game1.player.isMarried())
+			{
+				string a = action.Split(new char[]
+				{
+					' '
+				})[0];
+				if (a == "DivorceBook")
+                {
+					string s2 = Game1.content.LoadStringReturnNullIfNotFound("Strings\\Locations:ManorHouse_DivorceBook_Question_" + Game1.player.spouse);
+					if (s2 == null)
+					{
+						s2 = Game1.content.LoadStringReturnNullIfNotFound("Strings\\Locations:ManorHouse_DivorceBook_Question");
+					}
+					List<Response> responses = new List<Response>();
+					responses.Add(new Response(who.spouse, who.spouse));
+					foreach (string spouse in ModEntry.spouses.Keys)
+                    {
+						responses.Add(new Response(spouse, spouse));
+                    }
+					responses.Add(new Response("No", Game1.content.LoadString("Strings\\Lexicon:QuestionDialogue_No")));
+					__instance.createQuestionDialogue(s2, responses.ToArray(), "divorce");
+				}
+				__result = true;
+				return false;
+			}
+			return true;
+		}
 	}
 }

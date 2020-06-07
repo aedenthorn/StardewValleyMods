@@ -1,4 +1,4 @@
-﻿using System;
+﻿ using System;
 using System.Collections.Generic;
 using System.Reflection;
 using Harmony;
@@ -20,6 +20,7 @@ using System.Threading.Tasks;
 using Microsoft.Xna.Framework.Audio;
 using System.IO;
 using StardewValley.Events;
+using StardewValley.Menus;
 
 namespace MultipleSpouses
 {
@@ -31,16 +32,18 @@ namespace MultipleSpouses
 		public static IModHelper PHelper;
         public static ModConfig config;
 
-        public static Dictionary<string,NPC> spouses = new Dictionary<string, NPC>();
+        public static Dictionary<string, NPC> spouses { get; private set; } = new Dictionary<string, NPC>();
         public static string outdoorSpouse = null;
 		public static string kitchenSpouse = null;
         public static string bedSpouse = null;
+        public static string spouseToDivorce = null;
+        public static int spouseRolesDate = -1;
 		public static Multiplayer mp;
 
 		/// <summary>The mod entry point, called after the mod is first loaded.</summary>
 		/// <param name="helper">Provides simplified APIs for writing mods.</param>
 		public override void Entry(IModHelper helper)
-        {
+		{
 			config = Helper.ReadConfig<ModConfig>();
 
 			if (!config.EnableMod)
@@ -49,22 +52,31 @@ namespace MultipleSpouses
 			PMonitor = Monitor;
 			PHelper = helper;
 
-			helper.Events.GameLoop.DayEnding += GameLoop_DayEnding;
-            helper.Events.GameLoop.OneSecondUpdateTicked += GameLoop_OneSecondUpdateTicked;
+			helper.Events.GameLoop.OneSecondUpdateTicked += GameLoop_OneSecondUpdateTicked;
+            helper.Events.GameLoop.ReturnedToTitle += GameLoop_ReturnedToTitle;
 			mp = helper.Reflection.GetField<Multiplayer>(typeof(Game1), "multiplayer").GetValue();
+			helper.Events.Input.ButtonPressed += Input_ButtonPressed;
+			myRand = new Random();
 
 			string filePath = $"{helper.DirectoryPath}\\assets\\kiss.wav";
-			PMonitor.Log("Kissing audio path: "+filePath);
-            if (File.Exists(filePath))
-            {
+			PMonitor.Log("Kissing audio path: " + filePath);
+			if (File.Exists(filePath))
+			{
 				kissEffect = SoundEffect.FromStream(new FileStream(filePath, FileMode.Open));
 			}
 			else
-            {
+			{
 				PMonitor.Log("Kissing audio not found at path: " + filePath);
 			}
 
+			NPCPatches.Initialize(Monitor);
+			LocationPatches.Initialize(Monitor);
+			MiscPatches.Initialize(Monitor);
+
 			var harmony = HarmonyInstance.Create(this.ModManifest.UniqueID);
+
+
+			// npc patches
 
 			harmony.Patch(
 			   original: AccessTools.Method(typeof(NPC), nameof(NPC.setUpForOutdoorPatioActivity)),
@@ -93,7 +105,8 @@ namespace MultipleSpouses
 
 			harmony.Patch(
 			   original: AccessTools.Method(typeof(NPC), nameof(NPC.tryToReceiveActiveObject)),
-			   prefix: new HarmonyMethod(typeof(NPCPatches), nameof(NPCPatches.NPC_tryToReceiveActiveObject_Prefix))
+			   prefix: new HarmonyMethod(typeof(NPCPatches), nameof(NPCPatches.NPC_tryToReceiveActiveObject_Prefix)),
+			   postfix: new HarmonyMethod(typeof(NPCPatches), nameof(NPCPatches.NPC_tryToReceiveActiveObject_Postfix))
 			);
 
 			harmony.Patch(
@@ -106,6 +119,18 @@ namespace MultipleSpouses
 			   postfix: new HarmonyMethod(typeof(NPCPatches), nameof(NPCPatches.NPC_marriageDuties_Postfix))
 			);
 
+			harmony.Patch(
+			   original: AccessTools.Method(typeof(NPC), nameof(NPC.spouseObstacleCheck)),
+			   postfix: new HarmonyMethod(typeof(NPCPatches), nameof(NPCPatches.NPC_spouseObstacleCheck_Postfix))
+			);
+
+			harmony.Patch(
+			   original: AccessTools.Method(typeof(NPC), "engagementResponse"),
+			   postfix: new HarmonyMethod(typeof(NPCPatches), nameof(NPCPatches.NPC_engagementResponse_Postfix))
+			);
+
+
+			// location patches
 
 			harmony.Patch(
 			   original: AccessTools.Method(typeof(Farm), "addSpouseOutdoorArea"),
@@ -118,6 +143,11 @@ namespace MultipleSpouses
 			);
 
 			harmony.Patch(
+			   original: AccessTools.Method(typeof(ManorHouse), nameof(ManorHouse.performAction)),
+			   prefix: new HarmonyMethod(typeof(LocationPatches), nameof(LocationPatches.ManorHouse_performAction_Prefix))
+			);
+
+			harmony.Patch(
 			   original: AccessTools.Method(typeof(GameLocation), "resetLocalState"),
 			   postfix: new HarmonyMethod(typeof(LocationPatches), nameof(LocationPatches.GameLocation_resetLocalState_Postfix))
 			);
@@ -127,6 +157,8 @@ namespace MultipleSpouses
 			   prefix: new HarmonyMethod(typeof(LocationPatches), nameof(LocationPatches.GameLocation_updateMap_Prefix))
 			);
 
+
+			// pregnancy patches
 
 			harmony.Patch(
 			   original: AccessTools.Method(typeof(Utility), nameof(Utility.pickPersonalFarmEvent)),
@@ -147,8 +179,79 @@ namespace MultipleSpouses
 			   prefix: new HarmonyMethod(typeof(Pregnancy), nameof(Pregnancy.BirthingEvent_tickUpdate_Prefix))
 			);
 
+
+			// misc patches
+
+			harmony.Patch(
+			   original: AccessTools.Method(typeof(Farmer), nameof(Farmer.doDivorce)),
+			   prefix: new HarmonyMethod(typeof(MiscPatches), nameof(MiscPatches.Farmer_doDivorce_Prefix))
+			);
+
 		}
 
+        private void GameLoop_ReturnedToTitle(object sender, ReturnedToTitleEventArgs e)
+        {
+			spouses.Clear();
+			outdoorSpouse = null;
+			kitchenSpouse = null;
+			bedSpouse = null;
+			spouseToDivorce = null;
+			spouseRolesDate = -1;
+		}
+
+        private void Input_ButtonPressed(object sender, ButtonPressedEventArgs e)
+		{
+			if (e.Button == SButton.MouseLeft || e.Button == SButton.MouseRight)
+			{
+				if (Game1.currentLocation == null || Game1.currentLocation.lastQuestionKey != "divorce")
+					return;
+				
+				IClickableMenu menu = Game1.activeClickableMenu;
+				if (menu == null || menu.GetType() != typeof(DialogueBox))
+					return;
+				int resp = (int)typeof(DialogueBox).GetField("selectedResponse", BindingFlags.NonPublic | BindingFlags.Instance).GetValue(menu);
+				List<Response> resps = (List<Response>)typeof(DialogueBox).GetField("responses", BindingFlags.NonPublic | BindingFlags.Instance).GetValue(menu);
+
+				if (resp < 0 || resps == null || resp >= resps.Count || resps[resp] == null)
+					return;
+
+				string key = resps[resp].responseKey;
+
+				foreach (NPC spouse in spouses.Values)
+				{
+					if (key == spouse.Name || key == "Krobus" || key == Game1.player.spouse)
+					{
+						if (Game1.player.Money >= 50000 || key == "Krobus")
+						{
+							if (!Game1.player.isRoommate(key))
+							{
+								Game1.player.Money -= 50000;
+								ModEntry.spouseToDivorce = key;
+							}
+							Game1.player.divorceTonight.Value = true;
+							string s = Game1.content.LoadStringReturnNullIfNotFound("Strings\\Locations:ManorHouse_DivorceBook_Filed_" + key);
+							if (s == null)
+							{
+								s = Game1.content.LoadStringReturnNullIfNotFound("Strings\\Locations:ManorHouse_DivorceBook_Filed");
+							}
+							Game1.drawObjectDialogue(s);
+							if (!Game1.player.isRoommate(Game1.player.spouse))
+							{
+								mp.globalChatInfoMessage("Divorce", new string[]
+								{
+									Game1.player.Name
+								});
+							}
+						}
+						else
+						{
+							Game1.drawObjectDialogue(Game1.content.LoadString("Strings\\UI:NotEnoughMoney1"));
+						}
+						break;
+					}
+				}
+			}
+		}
 		private void GameLoop_OneSecondUpdateTicked(object sender, OneSecondUpdateTickedEventArgs e)
         {
             if (config.AllowSpousesToKiss)
@@ -157,13 +260,10 @@ namespace MultipleSpouses
 			}
 		}
 
-        private void GameLoop_DayEnding(object sender, DayEndingEventArgs e)
-        {
-			ResetSpouseRoles();
-		}
 
 		public static void ResetSpouseRoles()
         {
+			spouseRolesDate = new WorldDate().TotalDays;
 			outdoorSpouse = null;
 			kitchenSpouse = null;
 			bedSpouse = null;
@@ -188,20 +288,22 @@ namespace MultipleSpouses
 			while (n > 1)
 			{
 				n--;
-				int k = Game1.random.Next(n + 1);
+				int k = myRand.Next(n + 1);
 				NPC value = allSpouses[k];
 				allSpouses[k] = allSpouses[n];
 				allSpouses[n] = value;
 			}
 
+			Game1.getFarm().addSpouseOutdoorArea("");
 
 			foreach (NPC spouse in allSpouses)
             {
 				int maxType = 4;
 
 
-				int type = Game1.random.Next(0, maxType);
+				int type = myRand.Next(0, maxType);
 
+				PMonitor.Log("spouse type: " + type);
 				switch (type)
                 {
 					case 1:
@@ -223,6 +325,7 @@ namespace MultipleSpouses
                         {
 							PMonitor.Log("made outdoor spouse: " + spouse.Name);
 							outdoorSpouse = spouse.Name;
+							Game1.getFarm().addSpouseOutdoorArea(outdoorSpouse);
 						}
 						break;
 					default:
@@ -233,7 +336,7 @@ namespace MultipleSpouses
 
         internal static bool SpotHasSpouse(Vector2 position, GameLocation location)
         {
-			foreach(NPC spouse in ModEntry.spouses.Values)
+			foreach(NPC spouse in spouses.Values)
 			{
 				if (spouse.currentLocation == location)
 				{
@@ -247,11 +350,34 @@ namespace MultipleSpouses
 
         public static void ResetSpouses(Farmer f)
         {
+			PMonitor.Log("Resetting spouses");
+			PMonitor.Log("official spouse: " + f.spouse);
 			spouses.Clear();
 			foreach (string name in f.friendshipData.Keys)
 			{
+				if (f.friendshipData[name].IsEngaged())
+				{
+					if(f.friendshipData[name].WeddingDate.TotalDays < new WorldDate(Game1.Date).TotalDays)
+                    {
+						PMonitor.Log("invalid engagement: " + name);
+						f.friendshipData[name].WeddingDate.TotalDays = new WorldDate(Game1.Date).TotalDays + 1;
+					}
+					PMonitor.Log("setting spouse to engagee: " + name);
+					f.spouse = name;
+					continue;
+				}
 				if (f.friendshipData[name].IsMarried() && f.spouse != name)
 				{
+					if (f.friendshipData[name].WeddingDate != null)
+					{
+						//PMonitor.Log($"wedding date {f.friendshipData[name].WeddingDate.TotalDays} " + name);
+					}
+					if (f.spouse != null && f.friendshipData[f.spouse] != null && !f.friendshipData[f.spouse].IsMarried() && !f.friendshipData[f.spouse].IsEngaged() && !f.friendshipData[f.spouse].IsRoommate())
+					{
+						PMonitor.Log("invalid ospouse, setting: " + name);
+						f.spouse = name;
+						continue;
+					}
 					NPC npc = Game1.getCharacterFromName(name);
 					if(npc == null)
                     {
@@ -272,37 +398,59 @@ namespace MultipleSpouses
 						continue;
                     }
 					next:
+					PMonitor.Log("adding spouse: " + name);
 					spouses.Add(name,npc);
 				}
+				Utility.getHomeOfFarmer(f).showSpouseRoom();
 			}
 		}
 
 		public static Dictionary<string,NPC> GetRandomSpouses(bool all = false)
         {
-			Dictionary<string, NPC> npcs = spouses;
+			Dictionary<string, NPC> npcs = new Dictionary<string, NPC>(spouses);
 			if (all)
             {
 				NPC ospouse = Game1.player.getSpouse();
-				if(ospouse!= null)
+				if (ospouse != null)
                 {
 					npcs.Add(ospouse.Name, ospouse);
 				}
 			}
-			int n = npcs.Count;
-			while (n > 1)
-			{
-				n--;
-				int k = Game1.random.Next(n + 1);
-				var value = npcs[npcs.Keys.ToArray()[k]];
-				npcs[npcs.Keys.ToArray()[k]] = npcs[npcs.Keys.ToArray()[n]];
-				npcs[npcs.Keys.ToArray()[n]] = value;
-			}
+
+			ShuffleDic(ref npcs);
+
 			return npcs;
 		}
 
-		public static List<string> kissingSpouses = new List<string>();
+		public static void ShuffleList<T>(ref List<T> list)
+        {
+			int n = list.Count;
+			while (n > 1)
+			{
+				n--;
+				int k = myRand.Next(n + 1);
+				var value = list[k];
+				list[k] = list[n];
+				list[n] = value;
+			}
+		}
+        public static void ShuffleDic<T1,T2>(ref Dictionary<T1,T2> list)
+        {
+			int n = list.Count;
+			while (n > 1)
+			{
+				n--;
+				int k = myRand.Next(n + 1);
+				var value = list[list.Keys.ToArray()[k]];
+				list[list.Keys.ToArray()[k]] = list[list.Keys.ToArray()[n]];
+				list[list.Keys.ToArray()[n]] = value;
+			}
+		}
+
+        public static List<string> kissingSpouses = new List<string>();
 		public static int lastKissTime = 0;
 		public static SoundEffect kissEffect = null;
+        public static Random myRand;
 
         public static void TrySpousesKiss()
         {
@@ -318,7 +466,7 @@ namespace MultipleSpouses
 			while (n > 1)
 			{
 				n--;
-				int k = Game1.random.Next(n + 1);
+				int k = myRand.Next(n + 1);
 				NPC value = list[k];
 				list[k] = list[n];
 				list[n] = value;
@@ -346,7 +494,7 @@ namespace MultipleSpouses
 						&& !kissingSpouses.Contains(npc1.Name) 
 						&& !kissingSpouses.Contains(npc2.Name) 
 						&& lastKissTime > config.MinSpouseKissInterval 
-						&& Game1.random.NextDouble() < config.SpouseKissChance
+						&& ModEntry.myRand.NextDouble() < config.SpouseKissChance
 					)
                     {
 						kissingSpouses.Add(npc1.Name);

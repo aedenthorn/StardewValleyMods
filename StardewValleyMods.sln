@@ -27,6 +27,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ProceduralDungeons", "Proce
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MultipleSpouses", "MultipleSpouses\MultipleSpouses.csproj", "{D4990B31-2700-490E-9AF4-6D0ACF59FBAA}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FriendlyDivorce", "FriendlyDivorce\FriendlyDivorce.csproj", "{E5A23657-6AC8-419F-BFB7-12A2F23B81D6}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -81,6 +83,10 @@ Global
 		{D4990B31-2700-490E-9AF4-6D0ACF59FBAA}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D4990B31-2700-490E-9AF4-6D0ACF59FBAA}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D4990B31-2700-490E-9AF4-6D0ACF59FBAA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E5A23657-6AC8-419F-BFB7-12A2F23B81D6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E5A23657-6AC8-419F-BFB7-12A2F23B81D6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E5A23657-6AC8-419F-BFB7-12A2F23B81D6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E5A23657-6AC8-419F-BFB7-12A2F23B81D6}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

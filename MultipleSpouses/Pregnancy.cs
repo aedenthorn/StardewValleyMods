@@ -43,7 +43,7 @@ namespace MultipleSpouses
 			while (n > 1)
 			{
 				n--;
-				int k = Game1.random.Next(n + 1);
+				int k = ModEntry.myRand.Next(n + 1);
 				NPC value = allSpouses[k];
 				allSpouses[k] = allSpouses[n];
 				allSpouses[n] = value;
@@ -71,7 +71,7 @@ namespace MultipleSpouses
 				List<Child> kids = f.getChildren();
 				bool can = Utility.getHomeOfFarmer(f).upgradeLevel >= 2 && friendship.DaysUntilBirthing < 0 && heartsWithSpouse >= 10 && friendship.DaysMarried >= 7 && (ModEntry.config.MaxChildren < 0 || kids.Count == 0 || (kids.Count < ModEntry.config.MaxChildren));
 				ModEntry.PMonitor.Log($"Checking ability to get pregnant: {spouse.Name} {can}{(friendship.DaysUntilBirthing >= 0 ? " Already pregnant! Gives birth in: "+friendship.DaysUntilBirthing:"")}");
-				if (can && Game1.player.currentLocation == Game1.getLocationFromName(Game1.player.homeLocation) && Game1.random.NextDouble() < ModEntry.config.BabyRequestChance)
+				if (can && Game1.player.currentLocation == Game1.getLocationFromName(Game1.player.homeLocation) && ModEntry.myRand.NextDouble() < ModEntry.config.BabyRequestChance)
 				{
 					ModEntry.PMonitor.Log("Making a baby!");
 					lastPregnantSpouse = spouse;
@@ -162,7 +162,7 @@ namespace MultipleSpouses
 					while (collision_found);
 					Child baby = new Child(newBabyName, ___isMale, isDarkSkinned, Game1.player);
 					baby.Age = 0;
-					baby.Position = new Vector2(16f, 4f) * 64f + new Vector2(0f+Game1.random.Next(-64,48), -24f + Game1.random.Next(-24, 24));
+					baby.Position = new Vector2(16f, 4f) * 64f + new Vector2(0f+ModEntry.myRand.Next(-64,48), -24f + ModEntry.myRand.Next(-24, 24));
 					Utility.getHomeOfFarmer(Game1.player).characters.Add(baby);
 					Game1.playSound("smallSelect");
 					lastBirthingSpouse.daysAfterLastBirth = 5;
@@ -170,7 +170,7 @@ namespace MultipleSpouses
 					if (Game1.player.getChildrenCount() == 2)
 					{
 						lastBirthingSpouse.shouldSayMarriageDialogue.Value = true;
-						lastBirthingSpouse.currentMarriageDialogue.Insert(0, new MarriageDialogueReference("Data\\ExtraDialogue", "NewChild_SecondChild" + Game1.random.Next(1, 3), true, new string[0]));
+						lastBirthingSpouse.currentMarriageDialogue.Insert(0, new MarriageDialogueReference("Data\\ExtraDialogue", "NewChild_SecondChild" + ModEntry.myRand.Next(1, 3), true, new string[0]));
 						Game1.getSteamAchievement("Achievement_FullHouse");
 					}
 					else if (Game1.player.getSpouse().isGaySpouse() && !ModEntry.config.AllowGayPregnancies)

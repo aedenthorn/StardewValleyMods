@@ -898,9 +898,14 @@ namespace RandomNPC
 			}
 
 			string[] morning = MakeRandomAppointment(npc, "morning");
+			string[] afternoon = MakeRandomAppointment(npc, schedule.morningLoc);
+			if (morning.Length != 2 || afternoon.Length != 2)
+			{
+				data.Add("spring", "");
+				return data;
+			}
 			schedule.morningEarliest = morning[0];
 			schedule.morningLoc = morning[1];
-			string[] afternoon = MakeRandomAppointment(npc, schedule.morningLoc);
 			schedule.afternoonEarliest = afternoon[0];
 			schedule.afternoonLoc = afternoon[1];
 
@@ -948,7 +953,11 @@ namespace RandomNPC
 					}
 				}
 			}
-
+			if(potentialApps.Count == 0)
+            {
+				Monitor.Log("No available schedule for " + npc.nameID, LogLevel.Warn);
+				return new string[0];
+            }
 			return potentialApps[Game1.random.Next(0, potentialApps.Count)];
 
 		}
