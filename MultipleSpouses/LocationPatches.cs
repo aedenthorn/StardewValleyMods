@@ -65,7 +65,7 @@ namespace MultipleSpouses
 					return;
 				}
 
-				if (!(__instance is FarmHouse))
+				if (!(__instance is FarmHouse) || __instance != Utility.getHomeOfFarmer(Game1.player))
 				{
 					return;
 				}
@@ -176,7 +176,7 @@ namespace MultipleSpouses
 
 				int count = 0;
 
-				if (f.spouse == "Victor" || f.spouse == "Olivia" || f.spouse == "Sophia")
+				if (f.isMarried() && f.spouse == "Victor" || f.spouse == "Olivia" || f.spouse == "Sophia")
 				{
 					ModEntry.BuildSpouseRoom(farmHouse, f.spouse, -1);
 				}
@@ -279,7 +279,7 @@ namespace MultipleSpouses
 			try
 			{
 				ModEntry.ResetSpouses(who);
-				if (action != null && who.IsLocalPlayer && Game1.player.isMarried())
+				if (action != null && who.IsLocalPlayer && (Game1.player.isMarried() || ModEntry.spouses.Count > 0))
 				{
 					string a = action.Split(new char[]
 					{
@@ -293,7 +293,8 @@ namespace MultipleSpouses
 							s2 = Game1.content.LoadStringReturnNullIfNotFound("Strings\\Locations:ManorHouse_DivorceBook_Question");
 						}
 						List<Response> responses = new List<Response>();
-						responses.Add(new Response(who.spouse, who.spouse));
+						if(who.spouse != null)
+							responses.Add(new Response(who.spouse, who.spouse));
 						foreach (string spouse in ModEntry.spouses.Keys)
 						{
 							responses.Add(new Response(spouse, spouse));

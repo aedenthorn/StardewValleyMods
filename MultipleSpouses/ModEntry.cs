@@ -116,6 +116,7 @@ namespace MultipleSpouses
 
 			harmony.Patch(
 			   original: AccessTools.Method(typeof(NPC), nameof(NPC.marriageDuties)),
+			   //prefix: new HarmonyMethod(typeof(NPCPatches), nameof(NPCPatches.NPC_marriageDuties_Prefix)),
 			   postfix: new HarmonyMethod(typeof(NPCPatches), nameof(NPCPatches.NPC_marriageDuties_Postfix))
 			);
 
@@ -362,8 +363,11 @@ namespace MultipleSpouses
 						PMonitor.Log("invalid engagement: " + name);
 						f.friendshipData[name].WeddingDate.TotalDays = new WorldDate(Game1.Date).TotalDays + 1;
 					}
-					PMonitor.Log("setting spouse to engagee: " + name);
-					f.spouse = name;
+					if(f.spouse != name)
+                    {
+						PMonitor.Log("setting spouse to engagee: " + name);
+						f.spouse = name;
+					}
 					continue;
 				}
 				if (f.friendshipData[name].IsMarried() && f.spouse != name)
@@ -455,10 +459,11 @@ namespace MultipleSpouses
         public static void TrySpousesKiss()
         {
 			GameLocation location = Game1.currentLocation;
-			if (location == null || typeof(FarmHouse) != location.GetType())
-				return;
 
 			lastKissTime++;
+
+			if (location.characters == null)
+				return;
 
 			List<NPC> list = location.characters.ToList();
 
@@ -636,9 +641,17 @@ namespace MultipleSpouses
 			string back = "Back";
 			string buildings = "Buildings";
 			string front = "Front";
-			if (spouse != null)
+			if (spouse != null || name == "")
 			{
-				Map refurbishedMap = PHelper.Content.Load<Map>("Maps\\spouseRooms", ContentSource.GameContent);
+				Map refurbishedMap;
+				if (name == "")
+                {
+					refurbishedMap = PHelper.Content.Load<Map>("Maps\\" + farmHouse.Name + ((farmHouse.upgradeLevel == 0) ? "" : ((farmHouse.upgradeLevel == 3) ? "2" : string.Concat(farmHouse.upgradeLevel))) + "_marriage", ContentSource.GameContent);
+				}
+                else
+                {
+					refurbishedMap = PHelper.Content.Load<Map>("Maps\\spouseRooms", ContentSource.GameContent);
+				}
 				int indexInSpouseMapSheet = -1;
 				if (name == "Sam")
 				{
@@ -744,7 +757,15 @@ namespace MultipleSpouses
 				FieldRefAccess<Map, List<Layer>>(farmHouse.map, "m_layers") = layers;
 
 
-				Point mapReader = new Point(indexInSpouseMapSheet % 5 * 6, indexInSpouseMapSheet / 5 * 9);
+				Point mapReader;
+				if(name == "")
+                {
+					mapReader = new Point(areaToRefurbish.X, areaToRefurbish.Y);
+                }
+				else
+                {
+					mapReader = new Point(indexInSpouseMapSheet % 5 * 6, indexInSpouseMapSheet / 5 * 9);
+				}
 				farmHouse.map.Properties.Remove("DayTiles");
 				farmHouse.map.Properties.Remove("NightTiles");
 
