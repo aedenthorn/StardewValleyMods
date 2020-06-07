@@ -29,21 +29,36 @@ namespace FriendlyDivorce
 		}
 		public static void Farmer_doDivorce_Prefix(ref Farmer __instance, ref Friendship __state)
 		{
-			if (__instance.spouse != null)
-			{
-				__state = __instance.friendshipData[__instance.getSpouse().name];
+            try
+            {
+				if (__instance.spouse != null)
+				{
+					__state = __instance.friendshipData[__instance.getSpouse().name];
+				}
+				else if (__instance.team.GetSpouse(__instance.UniqueMultiplayerID) != null)
+				{
+					long spouseID = __instance.team.GetSpouse(__instance.UniqueMultiplayerID).Value;
+					__state = __instance.team.GetFriendship(__instance.UniqueMultiplayerID, spouseID);
+				}
 			}
-			else if (__instance.team.GetSpouse(__instance.UniqueMultiplayerID) != null)
+			catch (Exception ex)
 			{
-				long spouseID = __instance.team.GetSpouse(__instance.UniqueMultiplayerID).Value;
-				__state = __instance.team.GetFriendship(__instance.UniqueMultiplayerID, spouseID);
+				Monitor.Log($"Failed in {nameof(Farmer_doDivorce_Prefix)}:\n{ex}", LogLevel.Error);
 			}
 		}
 
 		public static void Farmer_doDivorce_Postfix(ref Farmer __instance, ref Friendship __state)
 		{
-			__state.Points = ModEntry.Config.PointsAfterDivorce;
-			__state.Status = FriendshipStatus.Friendly;
+            try
+            {
+				__state.Points = ModEntry.Config.PointsAfterDivorce;
+				__state.Status = FriendshipStatus.Friendly;
+			}
+			catch (Exception ex)
+			{
+				Monitor.Log($"Failed in {nameof(Farmer_doDivorce_Postfix)}:\n{ex}", LogLevel.Error);
+			}
+
 		}
 
 	}

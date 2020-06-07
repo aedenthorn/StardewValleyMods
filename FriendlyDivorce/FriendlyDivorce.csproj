@@ -44,7 +44,6 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Class1.cs" />
     <Compile Include="ObjectPatches.cs" />
     <Compile Include="ModConfig.cs" />
     <Compile Include="ModEntry.cs" />

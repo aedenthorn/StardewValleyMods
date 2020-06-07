@@ -30,247 +30,284 @@ namespace MultipleSpouses
 
 		public static bool GameLocation_updateMap_Prefix(ref GameLocation __instance, string ___loadedMapPath)
 		{
-			if (__instance is FarmHouse)
+			try
 			{
-				FarmHouse farmHouse = __instance as FarmHouse;
-				if (farmHouse.owner == null)
-					return true;
-				bool showSpouse = ModEntry.spouses.Count > 0 || farmHouse.owner.spouse != null;
-				__instance.mapPath.Value = "Maps\\" + __instance.Name + ((farmHouse.upgradeLevel == 0) ? "" : ((farmHouse.upgradeLevel == 3) ? "2" : string.Concat(farmHouse.upgradeLevel))) + (showSpouse ? "_marriage" : "");
-
-				if (!object.Equals(__instance.mapPath.Value, ___loadedMapPath))
+				if (__instance is FarmHouse)
 				{
-					__instance.reloadMap();
+					FarmHouse farmHouse = __instance as FarmHouse;
+					if (farmHouse.owner == null)
+						return true;
+					bool showSpouse = ModEntry.spouses.Count > 0 || farmHouse.owner.spouse != null;
+					__instance.mapPath.Value = "Maps\\" + __instance.Name + ((farmHouse.upgradeLevel == 0) ? "" : ((farmHouse.upgradeLevel == 3) ? "2" : string.Concat(farmHouse.upgradeLevel))) + (showSpouse ? "_marriage" : "");
+
+					if (!object.Equals(__instance.mapPath.Value, ___loadedMapPath))
+					{
+						__instance.reloadMap();
+					}
+					return false;
 				}
-				return false;
+			}
+			catch (Exception ex)
+			{
+				Monitor.Log($"Failed in {nameof(GameLocation_updateMap_Prefix)}:\n{ex}", LogLevel.Error);
 			}
 			return true;
 		}
 
 		public static void GameLocation_resetLocalState_Postfix(GameLocation __instance)
 		{
-
-			if (__instance is Beach && ModEntry.config.BuyPendantsAnytime)
+			try
 			{
-				ModEntry.PHelper.Reflection.GetField<NPC>(__instance,"oldMariner").SetValue(new NPC(new AnimatedSprite("Characters\\Mariner", 0, 16, 32), new Vector2(80f, 5f) * 64f, 2, "Old Mariner", null));
-				return;
-			}
 
-			if (!(__instance is FarmHouse))
-			{
-				return;
-			}
-			ModEntry.PMonitor.Log("reset farm state");
-
-			FarmHouse farmHouse = __instance as FarmHouse;
-
-			Farmer f = farmHouse.owner;
-			ModEntry.ResetSpouses(f);
-
-			if (!ModEntry.config.BuildAllSpousesRooms)
-			{
-				return;
-			}
-
-
-			if (ModEntry.spouses.ContainsKey("Emily") && f.spouse != "Emily" && Game1.player.eventsSeen.Contains(463391))
-			{
-				int offset = (ModEntry.spouses.Keys.ToList().IndexOf("Emily") + 1) * 7 * 64;
-				Vector2 parrotSpot = new Vector2(2064f + offset, 160f);
-				int upgradeLevel = farmHouse.upgradeLevel;
-				if (upgradeLevel - 2 <= 1)
+				if (__instance is Beach && ModEntry.config.BuyPendantsAnytime)
 				{
-					parrotSpot = new Vector2(2448f + offset, 736f);
+					ModEntry.PHelper.Reflection.GetField<NPC>(__instance, "oldMariner").SetValue(new NPC(new AnimatedSprite("Characters\\Mariner", 0, 16, 32), new Vector2(80f, 5f) * 64f, 2, "Old Mariner", null));
+					return;
 				}
-				farmHouse.temporarySprites.Add(new EmilysParrot(parrotSpot));
-			}
 
-			List<NPC> mySpouses = new List<NPC>();
-
-			foreach(NPC spouse in ModEntry.spouses.Values)
-            {
-				string name = spouse.Name;
-				if (name == "Victor" || name == "Olivia" || name == "Sophia")
+				if (!(__instance is FarmHouse))
 				{
-					if(ModEntry.PHelper.Content.Load<Map>($"../[TMX] Stardew Valley Expanded/assets/{name}sRoom.tmx", ContentSource.ModFolder) == null && ModEntry.PHelper.Content.Load<Map>($"../../[TMX] Stardew Valley Expanded/assets/{name}sRoom.tmx", ContentSource.ModFolder) == null)
-                    {
-						ModEntry.PMonitor.Log($"Couldn't load spouse room for SVE spouse {name}. Check and make sure it is located at ../[TMX] Stardew Valley Expanded/assets/{name}sRoom.tmx or ../../[TMX] Stardew Valley Expanded/assets/{name}sRoom.tmx", LogLevel.Error);
-						continue;
-                    } 
+					return;
 				}
-				mySpouses.Add(spouse);
-			}
+				ModEntry.PMonitor.Log("reset farm state");
 
-			if (farmHouse.upgradeLevel > 3 || mySpouses.Count == 0)
-			{
-				return;
-			}
+				FarmHouse farmHouse = __instance as FarmHouse;
 
-			int untitled = 0;
-			for (int i = 0; i < farmHouse.map.TileSheets.Count; i++)
-			{
-				if (farmHouse.map.TileSheets[i].Id == "untitled tile sheet")
-					untitled = i;
-			}
+				Farmer f = farmHouse.owner;
+				ModEntry.ResetSpouses(f);
 
-			int ox = 0;
-			int oy = 0;
-			if (farmHouse.upgradeLevel > 1)
-			{
-				ox = 6;
-				oy = 9;
-			}
-
-			for (int i = 0; i < 7; i++)
-			{
-				farmHouse.setMapTileIndex(ox + 29 + i, oy + 11, 0, "Buildings", 0);
-				farmHouse.removeTile(ox + 29 + i, oy + 9, "Front");
-				farmHouse.removeTile(ox + 29 + i, oy + 10, "Buildings");
-				farmHouse.setMapTileIndex(ox + 28 + i, oy + 10, 165, "Front", 0);
-				farmHouse.removeTile(ox + 29 + i, oy + 10, "Back");
-			}
-			for (int i = 0; i < 8; i++)
-			{
-				farmHouse.setMapTileIndex(ox + 28 + i, oy + 10, 165, "Front", 0);
-			}
-			for (int i = 0; i < 10; i++)
-			{
-				farmHouse.removeTile(ox + 35, oy + 0 + i, "Buildings");
-				farmHouse.removeTile(ox + 35, oy + 0 + i, "Front");
-			}
-			for (int i = 0; i < 3; i++)
-			{
-				farmHouse.setMapTileIndex(ox + 29 + (i * 2 + 1), oy + 10, ModEntry.config.HallTileOdd, "Back", 0);
-				farmHouse.setMapTileIndex(ox + 29 + (i * 2), oy + 10, ModEntry.config.HallTileEven, "Back", 0);
-			}
-			farmHouse.setMapTileIndex(ox + 35, oy + 10, ModEntry.config.HallTileOdd, "Back", 0);
-
-			farmHouse.removeTile(ox + 28, oy + 9, "Front");
-			farmHouse.removeTile(ox + 28, oy + 10, "Buildings");
-			farmHouse.setMapTileIndex(ox + 28, oy + 10, 163, "Front", 0);
-			farmHouse.removeTile(ox + 35, oy + 0, "Front");
-			farmHouse.removeTile(ox + 35, oy + 0, "Buildings");
-
-			for (int i = 0; i < 6; i++)
-			{
-				farmHouse.setMapTileIndex(ox + 28, oy + 1 + i, 99, "Buildings", untitled);
-			}
-
-			farmHouse.setMapTileIndex(ox + 28, oy + 7, 111, "Buildings", untitled);
-			farmHouse.setMapTileIndex(ox + 28, oy + 8, 123, "Buildings", untitled);
-			farmHouse.setMapTileIndex(ox + 28, oy + 9, 135, "Buildings", untitled);
-			farmHouse.setMapTileIndex(ox + 28, oy + 9, 54, "Back", untitled);
-
-			farmHouse.removeTile(ox + 28, oy + 10, "Back");
-			farmHouse.setMapTileIndex(ox + 28, oy + 10, ModEntry.config.HallTileOdd, "Back", 0);
+				if (!ModEntry.config.BuildAllSpousesRooms)
+				{
+					return;
+				}
 
 
-			int count = 0;
+				if (ModEntry.spouses.ContainsKey("Emily") && f.spouse != "Emily" && Game1.player.eventsSeen.Contains(463391))
+				{
+					int offset = (ModEntry.spouses.Keys.ToList().IndexOf("Emily") + 1) * 7 * 64;
+					Vector2 parrotSpot = new Vector2(2064f + offset, 160f);
+					int upgradeLevel = farmHouse.upgradeLevel;
+					if (upgradeLevel - 2 <= 1)
+					{
+						parrotSpot = new Vector2(2448f + offset, 736f);
+					}
+					farmHouse.temporarySprites.Add(new EmilysParrot(parrotSpot));
+				}
 
-			if(f.spouse == "Victor" || f.spouse == "Olivia" || f.spouse == "Sophia")
-            {
-				ModEntry.BuildSpouseRoom(farmHouse, f.spouse, -1);
-			}
+				List<NPC> mySpouses = new List<NPC>();
 
+				foreach (NPC spouse in ModEntry.spouses.Values)
+				{
+					string name = spouse.Name;
+					if (name == "Victor" || name == "Olivia" || name == "Sophia")
+					{
+						if (ModEntry.PHelper.Content.Load<Map>($"../[TMX] Stardew Valley Expanded/assets/{name}sRoom.tmx", ContentSource.ModFolder) == null && ModEntry.PHelper.Content.Load<Map>($"../../[TMX] Stardew Valley Expanded/assets/{name}sRoom.tmx", ContentSource.ModFolder) == null)
+						{
+							ModEntry.PMonitor.Log($"Couldn't load spouse room for SVE spouse {name}. Check and make sure it is located at ../[TMX] Stardew Valley Expanded/assets/{name}sRoom.tmx or ../../[TMX] Stardew Valley Expanded/assets/{name}sRoom.tmx", LogLevel.Error);
+							continue;
+						}
+					}
+					mySpouses.Add(spouse);
+				}
 
-			for (int j = 0; j < mySpouses.Count; j++)
-			{
-				farmHouse.removeTile(ox + 35 + (7 * count), oy + 0, "Buildings");
+				if (farmHouse.upgradeLevel > 3 || mySpouses.Count == 0)
+				{
+					return;
+				}
+
+				int untitled = 0;
+				for (int i = 0; i < farmHouse.map.TileSheets.Count; i++)
+				{
+					if (farmHouse.map.TileSheets[i].Id == "untitled tile sheet")
+						untitled = i;
+				}
+
+				int ox = 0;
+				int oy = 0;
+				if (farmHouse.upgradeLevel > 1)
+				{
+					ox = 6;
+					oy = 9;
+				}
+
+				for (int i = 0; i < 7; i++)
+				{
+					farmHouse.setMapTileIndex(ox + 29 + i, oy + 11, 0, "Buildings", 0);
+					farmHouse.removeTile(ox + 29 + i, oy + 9, "Front");
+					farmHouse.removeTile(ox + 29 + i, oy + 10, "Buildings");
+					farmHouse.setMapTileIndex(ox + 28 + i, oy + 10, 165, "Front", 0);
+					farmHouse.removeTile(ox + 29 + i, oy + 10, "Back");
+				}
+				for (int i = 0; i < 8; i++)
+				{
+					farmHouse.setMapTileIndex(ox + 28 + i, oy + 10, 165, "Front", 0);
+				}
 				for (int i = 0; i < 10; i++)
 				{
-					farmHouse.removeTile(ox + 35 + (7 * count), oy + 1 + i, "Buildings");
+					farmHouse.removeTile(ox + 35, oy + 0 + i, "Buildings");
+					farmHouse.removeTile(ox + 35, oy + 0 + i, "Front");
 				}
-				ModEntry.BuildSpouseRoom(farmHouse, mySpouses[j].Name, count++);
+				for (int i = 0; i < 3; i++)
+				{
+					farmHouse.setMapTileIndex(ox + 29 + (i * 2 + 1), oy + 10, ModEntry.config.HallTileOdd, "Back", 0);
+					farmHouse.setMapTileIndex(ox + 29 + (i * 2), oy + 10, ModEntry.config.HallTileEven, "Back", 0);
+				}
+				farmHouse.setMapTileIndex(ox + 35, oy + 10, ModEntry.config.HallTileOdd, "Back", 0);
+
+				farmHouse.removeTile(ox + 28, oy + 9, "Front");
+				farmHouse.removeTile(ox + 28, oy + 10, "Buildings");
+				farmHouse.setMapTileIndex(ox + 28, oy + 10, 163, "Front", 0);
+				farmHouse.removeTile(ox + 35, oy + 0, "Front");
+				farmHouse.removeTile(ox + 35, oy + 0, "Buildings");
+
+				for (int i = 0; i < 6; i++)
+				{
+					farmHouse.setMapTileIndex(ox + 28, oy + 1 + i, 99, "Buildings", untitled);
+				}
+
+				farmHouse.setMapTileIndex(ox + 28, oy + 7, 111, "Buildings", untitled);
+				farmHouse.setMapTileIndex(ox + 28, oy + 8, 123, "Buildings", untitled);
+				farmHouse.setMapTileIndex(ox + 28, oy + 9, 135, "Buildings", untitled);
+				farmHouse.setMapTileIndex(ox + 28, oy + 9, 54, "Back", untitled);
+
+				farmHouse.removeTile(ox + 28, oy + 10, "Back");
+				farmHouse.setMapTileIndex(ox + 28, oy + 10, ModEntry.config.HallTileOdd, "Back", 0);
+
+
+				int count = 0;
+
+				if (f.spouse == "Victor" || f.spouse == "Olivia" || f.spouse == "Sophia")
+				{
+					ModEntry.BuildSpouseRoom(farmHouse, f.spouse, -1);
+				}
+
+
+				for (int j = 0; j < mySpouses.Count; j++)
+				{
+					farmHouse.removeTile(ox + 35 + (7 * count), oy + 0, "Buildings");
+					for (int i = 0; i < 10; i++)
+					{
+						farmHouse.removeTile(ox + 35 + (7 * count), oy + 1 + i, "Buildings");
+					}
+					ModEntry.BuildSpouseRoom(farmHouse, mySpouses[j].Name, count++);
+				}
+
+
+				farmHouse.setMapTileIndex(ox + 35 + (7 * count), oy + 0, 11, "Buildings", 0);
+				for (int i = 0; i < 10; i++)
+				{
+					farmHouse.setMapTileIndex(ox + 35 + (7 * count), oy + 1 + i, 68, "Buildings", 0);
+				}
+				farmHouse.setMapTileIndex(ox + 35 + (7 * count), oy + 10, 130, "Front", 0);
 			}
-
-
-			farmHouse.setMapTileIndex(ox + 35 + (7 * count), oy + 0, 11, "Buildings", 0);
-			for (int i = 0; i < 10; i++)
+			catch (Exception ex)
 			{
-				farmHouse.setMapTileIndex(ox + 35 + (7 * count), oy + 1 + i, 68, "Buildings", 0);
+				Monitor.Log($"Failed in {nameof(GameLocation_resetLocalState_Postfix)}:\n{ex}", LogLevel.Error);
 			}
-			farmHouse.setMapTileIndex(ox + 35 + (7 * count), oy + 10, 130, "Front", 0);
+
 		}
 
 		public static void Farm_addSpouseOutdoorArea_Prefix(ref string spouseName)
 		{
-			ModEntry.PMonitor.Log($"Checking for outdoor spouse to change area");
-			if (ModEntry.outdoorSpouse != null && spouseName != "")
-            {
-				spouseName = ModEntry.outdoorSpouse;
-				ModEntry.PMonitor.Log($"Setting outdoor spouse area for {spouseName}");
+			try
+			{
+				ModEntry.PMonitor.Log($"Checking for outdoor spouse to change area");
+				if (ModEntry.outdoorSpouse != null && spouseName != "")
+				{
+					spouseName = ModEntry.outdoorSpouse;
+					ModEntry.PMonitor.Log($"Setting outdoor spouse area for {spouseName}");
+				}
 			}
+			catch (Exception ex)
+			{
+				Monitor.Log($"Failed in {nameof(Farm_addSpouseOutdoorArea_Prefix)}:\n{ex}", LogLevel.Error);
+			}
+
 		}
 
 
 		public static bool Beach_checkAction_Prefix(Beach __instance, Location tileLocation, xTile.Dimensions.Rectangle viewport, Farmer who, ref bool __result, NPC ___oldMariner)
 		{
-			if (___oldMariner != null && ___oldMariner.getTileX() == tileLocation.X && ___oldMariner.getTileY() == tileLocation.Y)
+			try
 			{
-				string playerTerm = Game1.content.LoadString("Strings\\Locations:Beach_Mariner_Player_" + (who.IsMale ? "Male" : "Female"));
-				if (who.specialItems.Contains(460) && !Utility.doesItemWithThisIndexExistAnywhere(460, false))
+				if (___oldMariner != null && ___oldMariner.getTileX() == tileLocation.X && ___oldMariner.getTileY() == tileLocation.Y)
 				{
-					for (int i = who.specialItems.Count - 1; i >= 0; i--)
+					string playerTerm = Game1.content.LoadString("Strings\\Locations:Beach_Mariner_Player_" + (who.IsMale ? "Male" : "Female"));
+					if (who.specialItems.Contains(460) && !Utility.doesItemWithThisIndexExistAnywhere(460, false))
 					{
-						if (who.specialItems[i] == 460)
+						for (int i = who.specialItems.Count - 1; i >= 0; i--)
 						{
-							who.specialItems.RemoveAt(i);
+							if (who.specialItems[i] == 460)
+							{
+								who.specialItems.RemoveAt(i);
+							}
 						}
 					}
-				}
-				if (who.specialItems.Contains(460))
-				{
-					Game1.drawObjectDialogue(Game1.parseText(Game1.content.LoadString("Strings\\Locations:Beach_Mariner_PlayerHasItem", playerTerm)));
-				}
-				else if (who.hasAFriendWithHeartLevel(10, true) && who.houseUpgradeLevel == 0)
-				{
-					Game1.drawObjectDialogue(Game1.parseText(Game1.content.LoadString("Strings\\Locations:Beach_Mariner_PlayerNotUpgradedHouse", playerTerm)));
-				}
-				else if (who.hasAFriendWithHeartLevel(10, true))
-				{
-					Response[] answers = new Response[]
+					if (who.specialItems.Contains(460))
 					{
+						Game1.drawObjectDialogue(Game1.parseText(Game1.content.LoadString("Strings\\Locations:Beach_Mariner_PlayerHasItem", playerTerm)));
+					}
+					else if (who.hasAFriendWithHeartLevel(10, true) && who.houseUpgradeLevel == 0)
+					{
+						Game1.drawObjectDialogue(Game1.parseText(Game1.content.LoadString("Strings\\Locations:Beach_Mariner_PlayerNotUpgradedHouse", playerTerm)));
+					}
+					else if (who.hasAFriendWithHeartLevel(10, true))
+					{
+						Response[] answers = new Response[]
+						{
 					new Response("Buy", Game1.content.LoadString("Strings\\Locations:Beach_Mariner_PlayerBuyItem_AnswerYes")),
 					new Response("Not", Game1.content.LoadString("Strings\\Locations:Beach_Mariner_PlayerBuyItem_AnswerNo"))
-					};
-					__instance.createQuestionDialogue(Game1.parseText(Game1.content.LoadString("Strings\\Locations:Beach_Mariner_PlayerBuyItem_Question", playerTerm)), answers, "mariner");
+						};
+						__instance.createQuestionDialogue(Game1.parseText(Game1.content.LoadString("Strings\\Locations:Beach_Mariner_PlayerBuyItem_Question", playerTerm)), answers, "mariner");
+					}
+					else
+					{
+						Game1.drawObjectDialogue(Game1.parseText(Game1.content.LoadString("Strings\\Locations:Beach_Mariner_PlayerNoRelationship", playerTerm)));
+					}
+					__result = true;
+					return false;
 				}
-				else
-				{
-					Game1.drawObjectDialogue(Game1.parseText(Game1.content.LoadString("Strings\\Locations:Beach_Mariner_PlayerNoRelationship", playerTerm)));
-				}
-				__result = true;
-				return false;
+			}
+			catch (Exception ex)
+			{
+				Monitor.Log($"Failed in {nameof(Beach_checkAction_Prefix)}:\n{ex}", LogLevel.Error);
 			}
 			return true;
 		}
 		public static bool ManorHouse_performAction_Prefix(ManorHouse __instance, string action, Farmer who, ref bool __result)
 		{
-			ModEntry.ResetSpouses(who);
-			if (action != null && who.IsLocalPlayer && Game1.player.isMarried())
+			try
 			{
-				string a = action.Split(new char[]
+				ModEntry.ResetSpouses(who);
+				if (action != null && who.IsLocalPlayer && Game1.player.isMarried())
 				{
-					' '
-				})[0];
-				if (a == "DivorceBook")
-                {
-					string s2 = Game1.content.LoadStringReturnNullIfNotFound("Strings\\Locations:ManorHouse_DivorceBook_Question_" + Game1.player.spouse);
-					if (s2 == null)
+					string a = action.Split(new char[]
 					{
-						s2 = Game1.content.LoadStringReturnNullIfNotFound("Strings\\Locations:ManorHouse_DivorceBook_Question");
+					' '
+					})[0];
+					if (a == "DivorceBook")
+					{
+						string s2 = Game1.content.LoadStringReturnNullIfNotFound("Strings\\Locations:ManorHouse_DivorceBook_Question_" + Game1.player.spouse);
+						if (s2 == null)
+						{
+							s2 = Game1.content.LoadStringReturnNullIfNotFound("Strings\\Locations:ManorHouse_DivorceBook_Question");
+						}
+						List<Response> responses = new List<Response>();
+						responses.Add(new Response(who.spouse, who.spouse));
+						foreach (string spouse in ModEntry.spouses.Keys)
+						{
+							responses.Add(new Response(spouse, spouse));
+						}
+						responses.Add(new Response("No", Game1.content.LoadString("Strings\\Lexicon:QuestionDialogue_No")));
+						__instance.createQuestionDialogue(s2, responses.ToArray(), "divorce");
 					}
-					List<Response> responses = new List<Response>();
-					responses.Add(new Response(who.spouse, who.spouse));
-					foreach (string spouse in ModEntry.spouses.Keys)
-                    {
-						responses.Add(new Response(spouse, spouse));
-                    }
-					responses.Add(new Response("No", Game1.content.LoadString("Strings\\Lexicon:QuestionDialogue_No")));
-					__instance.createQuestionDialogue(s2, responses.ToArray(), "divorce");
+					__result = true;
+					return false;
 				}
-				__result = true;
-				return false;
+			}
+			catch (Exception ex)
+			{
+				Monitor.Log($"Failed in {nameof(ManorHouse_performAction_Prefix)}:\n{ex}", LogLevel.Error);
 			}
 			return true;
 		}
