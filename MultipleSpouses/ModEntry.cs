@@ -320,7 +320,7 @@ namespace MultipleSpouses
         public static int GetBedWidth(FarmHouse fh)
         {
 			bool up = fh.upgradeLevel > 1;
-			return Math.Min(up ? 9 : 6, Math.Max(config.BedWidth, 3));
+			return Math.Min(up ? 9 : 7, Math.Max(config.BedWidth, 3));
 		}
 
 		public static void ResetSpouseRoles()
