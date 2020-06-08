@@ -354,267 +354,57 @@ namespace MultipleSpouses
 
 		public static void NPC_marriageDuties_Prefix(NPC __instance, string ___nameOfTodaysSchedule, Dictionary<int, SchedulePathDescription> ___schedule)
         {
-			if (!Game1.newDay && Game1.gameMode != 6)
+			try
 			{
-				return;
-			}
-			Farmer spouse = __instance.getSpouse();
-			if (spouse != null)
-			{
-				__instance.shouldSayMarriageDialogue.Value = true;
-				__instance.DefaultMap = spouse.homeLocation.Value;
-				FarmHouse farmHouse = Utility.getHomeOfFarmer(spouse);
-				Random r = new Random((int)(Game1.stats.DaysPlayed + (uint)((int)Game1.uniqueIDForThisGame / 2) + (uint)((int)spouse.UniqueMultiplayerID)));
-				int heartsWithSpouse = spouse.getFriendshipHeartLevelForNPC(__instance.Name);
-				if (Game1.IsMasterGame && (__instance.currentLocation == null || !__instance.currentLocation.Equals(farmHouse)))
+				if (!Game1.newDay && Game1.gameMode != 6)
 				{
-					Game1.warpCharacter(__instance, spouse.homeLocation.Value, farmHouse.getBedSpot());
-				}
-				if (Game1.isRaining)
-				{
-					__instance.marriageDefaultDialogue.Value = new MarriageDialogueReference("MarriageDialogue", "Rainy_Day_" + r.Next(5), false, new string[0]);
-				}
-				else
-				{
-					__instance.marriageDefaultDialogue.Value = new MarriageDialogueReference("MarriageDialogue", "Indoor_Day_" + r.Next(5), false, new string[0]);
-				}
-				__instance.currentMarriageDialogue.Add(new MarriageDialogueReference(__instance.marriageDefaultDialogue.Value.DialogueFile, __instance.marriageDefaultDialogue.Value.DialogueKey, __instance.marriageDefaultDialogue.Value.IsGendered, __instance.marriageDefaultDialogue.Value.Substitutions));
-				if (spouse.GetSpouseFriendship().DaysUntilBirthing == 0)
-				{
-					__instance.setTilePosition(farmHouse.getKitchenStandingSpot());
-					__instance.currentMarriageDialogue.Clear();
 					return;
 				}
-				if (__instance.daysAfterLastBirth >= 0)
+				Farmer spouse = __instance.getSpouse();
+				if (spouse != null)
 				{
-					__instance.daysAfterLastBirth--;
-					int kids = __instance.getSpouse().getChildrenCount();
-					if (kids == 1)
+					__instance.shouldSayMarriageDialogue.Value = true;
+					__instance.DefaultMap = spouse.homeLocation.Value;
+					FarmHouse farmHouse = Utility.getHomeOfFarmer(spouse);
+					Random r = new Random((int)(Game1.stats.DaysPlayed + (uint)((int)Game1.uniqueIDForThisGame / 2) + (uint)((int)spouse.UniqueMultiplayerID)));
+					int heartsWithSpouse = spouse.getFriendshipHeartLevelForNPC(__instance.Name);
+					if (Game1.IsMasterGame && (__instance.currentLocation == null || !__instance.currentLocation.Equals(farmHouse)))
+					{
+						Game1.warpCharacter(__instance, spouse.homeLocation.Value, farmHouse.getBedSpot());
+					}
+					if (Game1.isRaining)
+					{
+						__instance.marriageDefaultDialogue.Value = new MarriageDialogueReference("MarriageDialogue", "Rainy_Day_" + r.Next(5), false, new string[0]);
+					}
+					else
+					{
+						__instance.marriageDefaultDialogue.Value = new MarriageDialogueReference("MarriageDialogue", "Indoor_Day_" + r.Next(5), false, new string[0]);
+					}
+					__instance.currentMarriageDialogue.Add(new MarriageDialogueReference(__instance.marriageDefaultDialogue.Value.DialogueFile, __instance.marriageDefaultDialogue.Value.DialogueKey, __instance.marriageDefaultDialogue.Value.IsGendered, __instance.marriageDefaultDialogue.Value.Substitutions));
+					if (spouse.GetSpouseFriendship().DaysUntilBirthing == 0)
 					{
 						__instance.setTilePosition(farmHouse.getKitchenStandingSpot());
-						if (!__instance.spouseObstacleCheck(new MarriageDialogueReference("Strings\\StringsFromCSFiles", "NPC.cs.4406", false, new string[0]), farmHouse, false))
-						{
-							__instance.currentMarriageDialogue.Clear();
-							__instance.addMarriageDialogue("MarriageDialogue", "OneKid_" + r.Next(4), false, new string[0]);
-						}
-						return;
-					}
-					if (kids == 2)
-					{
-						__instance.setTilePosition(farmHouse.getKitchenStandingSpot());
-						if (!__instance.spouseObstacleCheck(new MarriageDialogueReference("Strings\\StringsFromCSFiles", "NPC.cs.4406", false, new string[0]), farmHouse, false))
-						{
-							__instance.currentMarriageDialogue.Clear();
-							__instance.addMarriageDialogue("MarriageDialogue", "TwoKids_" + r.Next(4), false, new string[0]);
-						}
-						return;
-					}
-				}
-				__instance.setTilePosition(farmHouse.getKitchenStandingSpot());
-				if (__instance.tryToGetMarriageSpecificDialogueElseReturnDefault(Game1.currentSeason + "_" + Game1.dayOfMonth, "").Length > 0)
-				{
-					if (spouse != null)
-					{
 						__instance.currentMarriageDialogue.Clear();
-						__instance.addMarriageDialogue("MarriageDialogue", Game1.currentSeason + "_" + Game1.dayOfMonth, false, new string[0]);
-					}
-					return;
-				}
-				if (___schedule != null)
-				{
-					if (___nameOfTodaysSchedule.Equals("marriage_" + Game1.shortDayNameFromDayOfSeason(Game1.dayOfMonth)))
-					{
-						__instance.currentMarriageDialogue.Clear();
-						__instance.addMarriageDialogue("MarriageDialogue", "funLeave_" + __instance.Name, false, new string[0]);
 						return;
 					}
-					if (___nameOfTodaysSchedule.Equals("marriageJob"))
+					if (__instance.daysAfterLastBirth >= 0)
 					{
-						__instance.currentMarriageDialogue.Clear();
-						__instance.addMarriageDialogue("MarriageDialogue", "jobLeave_" + __instance.Name, false, new string[0]);
-					}
-					return;
-				}
-				else
-				{
-					if (!Game1.isRaining && !Game1.IsWinter && Game1.shortDayNameFromDayOfSeason(Game1.dayOfMonth).Equals("Sat") && spouse == Game1.MasterPlayer && !__instance.Name.Equals("Krobus"))
-					{
-						__instance.setUpForOutdoorPatioActivity();
-						return;
-					}
-					if (spouse.GetDaysMarried() >= 1 && r.NextDouble() < (double)(1f - (float)Math.Max(1, heartsWithSpouse) / 12f))
-					{
-						Furniture f = farmHouse.getRandomFurniture(r);
-						if (f != null && f.isGroundFurniture())
-						{
-							Point p = new Point((int)f.tileLocation.X - 1, (int)f.tileLocation.Y);
-							if (farmHouse.isTileLocationTotallyClearAndPlaceable(p.X, p.Y))
-							{
-								__instance.setTilePosition(p);
-								__instance.faceDirection(1);
-								switch (r.Next(10))
-								{
-									case 0:
-										__instance.currentMarriageDialogue.Clear();
-										__instance.addMarriageDialogue("Strings\\StringsFromCSFiles", "NPC.cs.4420", false, new string[0]);
-										return;
-									case 1:
-										__instance.currentMarriageDialogue.Clear();
-										__instance.addMarriageDialogue("Strings\\StringsFromCSFiles", "NPC.cs.4421", false, new string[0]);
-										return;
-									case 2:
-										__instance.currentMarriageDialogue.Clear();
-										__instance.addMarriageDialogue("Strings\\StringsFromCSFiles", "NPC.cs.4422", true, new string[0]);
-										return;
-									case 3:
-										__instance.currentMarriageDialogue.Clear();
-										__instance.addMarriageDialogue("Strings\\StringsFromCSFiles", "NPC.cs.4423", false, new string[0]);
-										return;
-									case 4:
-										__instance.currentMarriageDialogue.Clear();
-										__instance.addMarriageDialogue("Strings\\StringsFromCSFiles", "NPC.cs.4424", false, new string[0]);
-										return;
-									case 5:
-										__instance.currentMarriageDialogue.Clear();
-										__instance.addMarriageDialogue("Strings\\StringsFromCSFiles", "NPC.cs.4425", false, new string[0]);
-										return;
-									case 6:
-										__instance.currentMarriageDialogue.Clear();
-										__instance.addMarriageDialogue("Strings\\StringsFromCSFiles", "NPC.cs.4426", false, new string[0]);
-										return;
-									case 7:
-										if (__instance.Gender != 1)
-										{
-											__instance.currentMarriageDialogue.Clear();
-											__instance.addMarriageDialogue("Strings\\StringsFromCSFiles", "NPC.cs.4431", false, new string[0]);
-											return;
-										}
-										if (r.NextDouble() < 0.5)
-										{
-											__instance.currentMarriageDialogue.Clear();
-											__instance.addMarriageDialogue("Strings\\StringsFromCSFiles", "NPC.cs.4427", false, new string[0]);
-											return;
-										}
-										__instance.currentMarriageDialogue.Clear();
-										__instance.addMarriageDialogue("Strings\\StringsFromCSFiles", "NPC.cs.4429", false, new string[0]);
-										return;
-									case 8:
-										__instance.currentMarriageDialogue.Clear();
-										__instance.addMarriageDialogue("Strings\\StringsFromCSFiles", "NPC.cs.4432", false, new string[0]);
-										return;
-									case 9:
-										__instance.currentMarriageDialogue.Clear();
-										__instance.addMarriageDialogue("Strings\\StringsFromCSFiles", "NPC.cs.4433", false, new string[0]);
-										return;
-									default:
-										return;
-								}
-							}
-						}
-						switch (r.Next(5))
-						{
-							case 0:
-								new MarriageDialogueReference("Strings\\StringsFromCSFiles", "NPC.cs.4434", false, new string[0]);
-								break;
-							case 1:
-								new MarriageDialogueReference("Strings\\StringsFromCSFiles", "NPC.cs.4435", false, new string[0]);
-								break;
-							case 2:
-								new MarriageDialogueReference("Strings\\StringsFromCSFiles", "NPC.cs.4436", false, new string[0]);
-								break;
-							case 3:
-								new MarriageDialogueReference("Strings\\StringsFromCSFiles", "NPC.cs.4437", true, new string[0]);
-								break;
-							case 4:
-								new MarriageDialogueReference("Strings\\StringsFromCSFiles", "NPC.cs.4438", false, new string[0]);
-								break;
-						}
-						__instance.spouseObstacleCheck(new MarriageDialogueReference("Strings\\StringsFromCSFiles", "NPC.cs.4406", false, new string[0]), farmHouse, true);
-						return;
-					}
-					Friendship friendship = spouse.GetSpouseFriendship();
-					if (friendship.DaysUntilBirthing != -1 && friendship.DaysUntilBirthing <= 7 && r.NextDouble() < 0.5)
-					{
-						if (__instance.isGaySpouse())
+						__instance.daysAfterLastBirth--;
+						int kids = __instance.getSpouse().getChildrenCount();
+						if (kids == 1)
 						{
 							__instance.setTilePosition(farmHouse.getKitchenStandingSpot());
-							if (!__instance.spouseObstacleCheck(new MarriageDialogueReference("Strings\\StringsFromCSFiles", "NPC.cs.4439", false, new string[0]), farmHouse, false))
-							{
-								if (r.NextDouble() < 0.5)
-								{
-									__instance.currentMarriageDialogue.Clear();
-								}
-								if (r.NextDouble() < 0.5)
-								{
-									__instance.addMarriageDialogue("Strings\\StringsFromCSFiles", "NPC.cs.4440", false, new string[]
-									{
-										__instance.getSpouse().displayName
-									});
-									return;
-								}
-								__instance.addMarriageDialogue("Strings\\StringsFromCSFiles", "NPC.cs.4441", false, new string[]
-								{
-									"%endearment"
-								});
-								return;
-							}
-						}
-						else if (__instance.Gender == 1)
-						{
-							__instance.setTilePosition(farmHouse.getKitchenStandingSpot());
-							if (!__instance.spouseObstacleCheck((r.NextDouble() < 0.5) ? new MarriageDialogueReference("Strings\\StringsFromCSFiles", "NPC.cs.4442", false, new string[0]) : new MarriageDialogueReference("Strings\\StringsFromCSFiles", "NPC.cs.4443", false, new string[0]), farmHouse, false))
-							{
-								if (r.NextDouble() < 0.5)
-								{
-									__instance.currentMarriageDialogue.Clear();
-								}
-								__instance.currentMarriageDialogue.Add((r.NextDouble() < 0.5) ? new MarriageDialogueReference("Strings\\StringsFromCSFiles", "NPC.cs.4444", false, new string[]
-								{
-									__instance.getSpouse().displayName
-								}) : new MarriageDialogueReference("Strings\\StringsFromCSFiles", "NPC.cs.4445", false, new string[]
-								{
-									"%endearment"
-								}));
-								return;
-							}
-						}
-						else
-						{
-							__instance.setTilePosition(farmHouse.getKitchenStandingSpot());
-							if (!__instance.spouseObstacleCheck(new MarriageDialogueReference("Strings\\StringsFromCSFiles", "NPC.cs.4446", true, new string[0]), farmHouse, false))
-							{
-								if (r.NextDouble() < 0.5)
-								{
-									__instance.currentMarriageDialogue.Clear();
-								}
-								__instance.currentMarriageDialogue.Add((r.NextDouble() < 0.5) ? new MarriageDialogueReference("Strings\\StringsFromCSFiles", "NPC.cs.4447", true, new string[]
-								{
-									__instance.getSpouse().displayName
-								}) : new MarriageDialogueReference("Strings\\StringsFromCSFiles", "NPC.cs.4448", false, new string[]
-								{
-									"%endearment"
-								}));
-							}
-						}
-						return;
-					}
-					if (r.NextDouble() < 0.07)
-					{
-						int kids2 = __instance.getSpouse().getChildrenCount();
-						if (kids2 == 1)
-						{
-							__instance.setTilePosition(farmHouse.getKitchenStandingSpot());
-							if (!__instance.spouseObstacleCheck(new MarriageDialogueReference("Strings\\StringsFromCSFiles", "NPC.cs.4449", true, new string[0]), farmHouse, false))
+							if (!__instance.spouseObstacleCheck(new MarriageDialogueReference("Strings\\StringsFromCSFiles", "NPC.cs.4406", false, new string[0]), farmHouse, false))
 							{
 								__instance.currentMarriageDialogue.Clear();
 								__instance.addMarriageDialogue("MarriageDialogue", "OneKid_" + r.Next(4), false, new string[0]);
 							}
 							return;
 						}
-						if (kids2 == 2)
+						if (kids == 2)
 						{
 							__instance.setTilePosition(farmHouse.getKitchenStandingSpot());
-							if (!__instance.spouseObstacleCheck(new MarriageDialogueReference("Strings\\StringsFromCSFiles", "NPC.cs.4452", true, new string[0]), farmHouse, false))
+							if (!__instance.spouseObstacleCheck(new MarriageDialogueReference("Strings\\StringsFromCSFiles", "NPC.cs.4406", false, new string[0]), farmHouse, false))
 							{
 								__instance.currentMarriageDialogue.Clear();
 								__instance.addMarriageDialogue("MarriageDialogue", "TwoKids_" + r.Next(4), false, new string[0]);
@@ -622,108 +412,408 @@ namespace MultipleSpouses
 							return;
 						}
 					}
-					Farm farm = Game1.getFarm();
-					if (__instance.currentMarriageDialogue.Count > 0 && __instance.currentMarriageDialogue[0].IsItemGrabDialogue(__instance))
+					__instance.setTilePosition(farmHouse.getKitchenStandingSpot());
+					if (__instance.tryToGetMarriageSpecificDialogueElseReturnDefault(Game1.currentSeason + "_" + Game1.dayOfMonth, "").Length > 0)
 					{
-						__instance.setTilePosition(farmHouse.getKitchenStandingSpot());
-						__instance.spouseObstacleCheck(new MarriageDialogueReference("Strings\\StringsFromCSFiles", "NPC.cs.4455", true, new string[0]), farmHouse, false);
+						if (spouse != null)
+						{
+							__instance.currentMarriageDialogue.Clear();
+							__instance.addMarriageDialogue("MarriageDialogue", Game1.currentSeason + "_" + Game1.dayOfMonth, false, new string[0]);
+						}
 						return;
 					}
-					if (!Game1.isRaining && r.NextDouble() < 0.4 && !NPC.checkTileOccupancyForSpouse(farm, Utility.PointToVector2(farmHouse.getPorchStandingSpot()), "") && !__instance.Name.Equals("Krobus"))
+					if (___schedule != null)
 					{
-						bool filledBowl = false;
-						if (!farm.petBowlWatered.Value && !NPC.hasSomeoneFedThePet)
+						if (___nameOfTodaysSchedule.Equals("marriage_" + Game1.shortDayNameFromDayOfSeason(Game1.dayOfMonth)))
 						{
-							filledBowl = true;
-							farm.petBowlWatered.Set(true);
-							NPC.hasSomeoneFedThePet = true;
+							__instance.currentMarriageDialogue.Clear();
+							__instance.addMarriageDialogue("MarriageDialogue", "funLeave_" + __instance.Name, false, new string[0]);
+							return;
 						}
-						if (r.NextDouble() < 0.6 && !Game1.currentSeason.Equals("winter") && !NPC.hasSomeoneWateredCrops)
+						if (___nameOfTodaysSchedule.Equals("marriageJob"))
 						{
-							Vector2 origin = Vector2.Zero;
-							int tries = 0;
-							bool foundWatered = false;
-							while (tries < Math.Min(50, farm.terrainFeatures.Count()) && origin.Equals(Vector2.Zero))
+							__instance.currentMarriageDialogue.Clear();
+							__instance.addMarriageDialogue("MarriageDialogue", "jobLeave_" + __instance.Name, false, new string[0]);
+						}
+						return;
+					}
+					else
+					{
+						if (!Game1.isRaining && !Game1.IsWinter && Game1.shortDayNameFromDayOfSeason(Game1.dayOfMonth).Equals("Sat") && spouse == Game1.MasterPlayer && !__instance.Name.Equals("Krobus"))
+						{
+							__instance.setUpForOutdoorPatioActivity();
+							return;
+						}
+						if (spouse.GetDaysMarried() >= 1 && r.NextDouble() < (double)(1f - (float)Math.Max(1, heartsWithSpouse) / 12f))
+						{
+							Furniture f = farmHouse.getRandomFurniture(r);
+							if (f != null && f.isGroundFurniture())
 							{
-								int index = r.Next(farm.terrainFeatures.Count());
-								if (farm.terrainFeatures.Pairs.ElementAt(index).Value is HoeDirt)
+								Point p = new Point((int)f.tileLocation.X - 1, (int)f.tileLocation.Y);
+								if (farmHouse.isTileLocationTotallyClearAndPlaceable(p.X, p.Y))
 								{
-									if ((farm.terrainFeatures.Pairs.ElementAt(index).Value as HoeDirt).needsWatering())
+									__instance.setTilePosition(p);
+									__instance.faceDirection(1);
+									switch (r.Next(10))
 									{
-										origin = farm.terrainFeatures.Pairs.ElementAt(index).Key;
-									}
-									else if ((farm.terrainFeatures.Pairs.ElementAt(index).Value as HoeDirt).crop != null)
-									{
-										foundWatered = true;
+										case 0:
+											__instance.currentMarriageDialogue.Clear();
+											__instance.addMarriageDialogue("Strings\\StringsFromCSFiles", "NPC.cs.4420", false, new string[0]);
+											return;
+										case 1:
+											__instance.currentMarriageDialogue.Clear();
+											__instance.addMarriageDialogue("Strings\\StringsFromCSFiles", "NPC.cs.4421", false, new string[0]);
+											return;
+										case 2:
+											__instance.currentMarriageDialogue.Clear();
+											__instance.addMarriageDialogue("Strings\\StringsFromCSFiles", "NPC.cs.4422", true, new string[0]);
+											return;
+										case 3:
+											__instance.currentMarriageDialogue.Clear();
+											__instance.addMarriageDialogue("Strings\\StringsFromCSFiles", "NPC.cs.4423", false, new string[0]);
+											return;
+										case 4:
+											__instance.currentMarriageDialogue.Clear();
+											__instance.addMarriageDialogue("Strings\\StringsFromCSFiles", "NPC.cs.4424", false, new string[0]);
+											return;
+										case 5:
+											__instance.currentMarriageDialogue.Clear();
+											__instance.addMarriageDialogue("Strings\\StringsFromCSFiles", "NPC.cs.4425", false, new string[0]);
+											return;
+										case 6:
+											__instance.currentMarriageDialogue.Clear();
+											__instance.addMarriageDialogue("Strings\\StringsFromCSFiles", "NPC.cs.4426", false, new string[0]);
+											return;
+										case 7:
+											if (__instance.Gender != 1)
+											{
+												__instance.currentMarriageDialogue.Clear();
+												__instance.addMarriageDialogue("Strings\\StringsFromCSFiles", "NPC.cs.4431", false, new string[0]);
+												return;
+											}
+											if (r.NextDouble() < 0.5)
+											{
+												__instance.currentMarriageDialogue.Clear();
+												__instance.addMarriageDialogue("Strings\\StringsFromCSFiles", "NPC.cs.4427", false, new string[0]);
+												return;
+											}
+											__instance.currentMarriageDialogue.Clear();
+											__instance.addMarriageDialogue("Strings\\StringsFromCSFiles", "NPC.cs.4429", false, new string[0]);
+											return;
+										case 8:
+											__instance.currentMarriageDialogue.Clear();
+											__instance.addMarriageDialogue("Strings\\StringsFromCSFiles", "NPC.cs.4432", false, new string[0]);
+											return;
+										case 9:
+											__instance.currentMarriageDialogue.Clear();
+											__instance.addMarriageDialogue("Strings\\StringsFromCSFiles", "NPC.cs.4433", false, new string[0]);
+											return;
+										default:
+											return;
 									}
 								}
-								tries++;
 							}
-							if (!origin.Equals(Vector2.Zero))
+							switch (r.Next(5))
 							{
-								Microsoft.Xna.Framework.Rectangle wateringArea = new Microsoft.Xna.Framework.Rectangle((int)origin.X - 30, (int)origin.Y - 30, 60, 60);
-								Vector2 currentPosition = default(Vector2);
-								for (int x = wateringArea.X; x < wateringArea.Right; x++)
+								case 0:
+									new MarriageDialogueReference("Strings\\StringsFromCSFiles", "NPC.cs.4434", false, new string[0]);
+									break;
+								case 1:
+									new MarriageDialogueReference("Strings\\StringsFromCSFiles", "NPC.cs.4435", false, new string[0]);
+									break;
+								case 2:
+									new MarriageDialogueReference("Strings\\StringsFromCSFiles", "NPC.cs.4436", false, new string[0]);
+									break;
+								case 3:
+									new MarriageDialogueReference("Strings\\StringsFromCSFiles", "NPC.cs.4437", true, new string[0]);
+									break;
+								case 4:
+									new MarriageDialogueReference("Strings\\StringsFromCSFiles", "NPC.cs.4438", false, new string[0]);
+									break;
+							}
+							__instance.spouseObstacleCheck(new MarriageDialogueReference("Strings\\StringsFromCSFiles", "NPC.cs.4406", false, new string[0]), farmHouse, true);
+							return;
+						}
+						Friendship friendship = spouse.GetSpouseFriendship();
+						if (friendship.DaysUntilBirthing != -1 && friendship.DaysUntilBirthing <= 7 && r.NextDouble() < 0.5)
+						{
+							if (__instance.isGaySpouse())
+							{
+								__instance.setTilePosition(farmHouse.getKitchenStandingSpot());
+								if (!__instance.spouseObstacleCheck(new MarriageDialogueReference("Strings\\StringsFromCSFiles", "NPC.cs.4439", false, new string[0]), farmHouse, false))
 								{
-									for (int y = wateringArea.Y; y < wateringArea.Bottom; y++)
+									if (r.NextDouble() < 0.5)
 									{
-										currentPosition.X = (float)x;
-										currentPosition.Y = (float)y;
-										if (farm.isTileOnMap(currentPosition) && farm.terrainFeatures.ContainsKey(currentPosition) && farm.terrainFeatures[currentPosition] is HoeDirt && Game1.IsMasterGame && (farm.terrainFeatures[currentPosition] as HoeDirt).needsWatering())
-										{
-											(farm.terrainFeatures[currentPosition] as HoeDirt).state.Value = 1;
-										}
+										__instance.currentMarriageDialogue.Clear();
 									}
-								}
-								__instance.faceDirection(2);
-								__instance.currentMarriageDialogue.Clear();
-								__instance.addMarriageDialogue("Strings\\StringsFromCSFiles", "NPC.cs.4462", true, new string[0]);
-								if (filledBowl)
-								{
-									__instance.addMarriageDialogue("Strings\\StringsFromCSFiles", "NPC.cs.4463", false, new string[]
+									if (r.NextDouble() < 0.5)
 									{
-										Game1.player.getPetDisplayName()
+										__instance.addMarriageDialogue("Strings\\StringsFromCSFiles", "NPC.cs.4440", false, new string[]
+										{
+										__instance.getSpouse().displayName
+										});
+										return;
+									}
+									__instance.addMarriageDialogue("Strings\\StringsFromCSFiles", "NPC.cs.4441", false, new string[]
+									{
+									"%endearment"
 									});
+									return;
 								}
-								__instance.addMarriageDialogue("MarriageDialogue", "Outdoor_" + r.Next(5), false, new string[0]);
-								NPC.hasSomeoneWateredCrops = true;
+							}
+							else if (__instance.Gender == 1)
+							{
+								__instance.setTilePosition(farmHouse.getKitchenStandingSpot());
+								if (!__instance.spouseObstacleCheck((r.NextDouble() < 0.5) ? new MarriageDialogueReference("Strings\\StringsFromCSFiles", "NPC.cs.4442", false, new string[0]) : new MarriageDialogueReference("Strings\\StringsFromCSFiles", "NPC.cs.4443", false, new string[0]), farmHouse, false))
+								{
+									if (r.NextDouble() < 0.5)
+									{
+										__instance.currentMarriageDialogue.Clear();
+									}
+									__instance.currentMarriageDialogue.Add((r.NextDouble() < 0.5) ? new MarriageDialogueReference("Strings\\StringsFromCSFiles", "NPC.cs.4444", false, new string[]
+									{
+									__instance.getSpouse().displayName
+									}) : new MarriageDialogueReference("Strings\\StringsFromCSFiles", "NPC.cs.4445", false, new string[]
+									{
+									"%endearment"
+									}));
+									return;
+								}
 							}
 							else
 							{
-								__instance.faceDirection(2);
-								if (foundWatered)
+								__instance.setTilePosition(farmHouse.getKitchenStandingSpot());
+								if (!__instance.spouseObstacleCheck(new MarriageDialogueReference("Strings\\StringsFromCSFiles", "NPC.cs.4446", true, new string[0]), farmHouse, false))
+								{
+									if (r.NextDouble() < 0.5)
+									{
+										__instance.currentMarriageDialogue.Clear();
+									}
+									__instance.currentMarriageDialogue.Add((r.NextDouble() < 0.5) ? new MarriageDialogueReference("Strings\\StringsFromCSFiles", "NPC.cs.4447", true, new string[]
+									{
+									__instance.getSpouse().displayName
+									}) : new MarriageDialogueReference("Strings\\StringsFromCSFiles", "NPC.cs.4448", false, new string[]
+									{
+									"%endearment"
+									}));
+								}
+							}
+							return;
+						}
+						if (r.NextDouble() < 0.07)
+						{
+							int kids2 = __instance.getSpouse().getChildrenCount();
+							if (kids2 == 1)
+							{
+								__instance.setTilePosition(farmHouse.getKitchenStandingSpot());
+								if (!__instance.spouseObstacleCheck(new MarriageDialogueReference("Strings\\StringsFromCSFiles", "NPC.cs.4449", true, new string[0]), farmHouse, false))
 								{
 									__instance.currentMarriageDialogue.Clear();
-									if (Game1.gameMode == 6)
+									__instance.addMarriageDialogue("MarriageDialogue", "OneKid_" + r.Next(4), false, new string[0]);
+								}
+								return;
+							}
+							if (kids2 == 2)
+							{
+								__instance.setTilePosition(farmHouse.getKitchenStandingSpot());
+								if (!__instance.spouseObstacleCheck(new MarriageDialogueReference("Strings\\StringsFromCSFiles", "NPC.cs.4452", true, new string[0]), farmHouse, false))
+								{
+									__instance.currentMarriageDialogue.Clear();
+									__instance.addMarriageDialogue("MarriageDialogue", "TwoKids_" + r.Next(4), false, new string[0]);
+								}
+								return;
+							}
+						}
+						Farm farm = Game1.getFarm();
+						if (__instance.currentMarriageDialogue.Count > 0 && __instance.currentMarriageDialogue[0].IsItemGrabDialogue(__instance))
+						{
+							__instance.setTilePosition(farmHouse.getKitchenStandingSpot());
+							__instance.spouseObstacleCheck(new MarriageDialogueReference("Strings\\StringsFromCSFiles", "NPC.cs.4455", true, new string[0]), farmHouse, false);
+							return;
+						}
+						if (!Game1.isRaining && r.NextDouble() < 0.4 && !NPC.checkTileOccupancyForSpouse(farm, Utility.PointToVector2(farmHouse.getPorchStandingSpot()), "") && !__instance.Name.Equals("Krobus"))
+						{
+							bool filledBowl = false;
+							if (!farm.petBowlWatered.Value && !NPC.hasSomeoneFedThePet)
+							{
+								filledBowl = true;
+								farm.petBowlWatered.Set(true);
+								NPC.hasSomeoneFedThePet = true;
+							}
+							if (r.NextDouble() < 0.6 && !Game1.currentSeason.Equals("winter") && !NPC.hasSomeoneWateredCrops)
+							{
+								Vector2 origin = Vector2.Zero;
+								int tries = 0;
+								bool foundWatered = false;
+								while (tries < Math.Min(50, farm.terrainFeatures.Count()) && origin.Equals(Vector2.Zero))
+								{
+									int index = r.Next(farm.terrainFeatures.Count());
+									if (farm.terrainFeatures.Pairs.ElementAt(index).Value is HoeDirt)
 									{
-										if (r.NextDouble() < 0.5)
+										if ((farm.terrainFeatures.Pairs.ElementAt(index).Value as HoeDirt).needsWatering())
 										{
-											__instance.addMarriageDialogue("Strings\\StringsFromCSFiles", "NPC.cs.4465", false, new string[]
+											origin = farm.terrainFeatures.Pairs.ElementAt(index).Key;
+										}
+										else if ((farm.terrainFeatures.Pairs.ElementAt(index).Value as HoeDirt).crop != null)
+										{
+											foundWatered = true;
+										}
+									}
+									tries++;
+								}
+								if (!origin.Equals(Vector2.Zero))
+								{
+									Microsoft.Xna.Framework.Rectangle wateringArea = new Microsoft.Xna.Framework.Rectangle((int)origin.X - 30, (int)origin.Y - 30, 60, 60);
+									Vector2 currentPosition = default(Vector2);
+									for (int x = wateringArea.X; x < wateringArea.Right; x++)
+									{
+										for (int y = wateringArea.Y; y < wateringArea.Bottom; y++)
+										{
+											currentPosition.X = (float)x;
+											currentPosition.Y = (float)y;
+											if (farm.isTileOnMap(currentPosition) && farm.terrainFeatures.ContainsKey(currentPosition) && farm.terrainFeatures[currentPosition] is HoeDirt && Game1.IsMasterGame && (farm.terrainFeatures[currentPosition] as HoeDirt).needsWatering())
 											{
+												(farm.terrainFeatures[currentPosition] as HoeDirt).state.Value = 1;
+											}
+										}
+									}
+									__instance.faceDirection(2);
+									__instance.currentMarriageDialogue.Clear();
+									__instance.addMarriageDialogue("Strings\\StringsFromCSFiles", "NPC.cs.4462", true, new string[0]);
+									if (filledBowl)
+									{
+										__instance.addMarriageDialogue("Strings\\StringsFromCSFiles", "NPC.cs.4463", false, new string[]
+										{
+										Game1.player.getPetDisplayName()
+										});
+									}
+									__instance.addMarriageDialogue("MarriageDialogue", "Outdoor_" + r.Next(5), false, new string[0]);
+									NPC.hasSomeoneWateredCrops = true;
+								}
+								else
+								{
+									__instance.faceDirection(2);
+									if (foundWatered)
+									{
+										__instance.currentMarriageDialogue.Clear();
+										if (Game1.gameMode == 6)
+										{
+											if (r.NextDouble() < 0.5)
+											{
+												__instance.addMarriageDialogue("Strings\\StringsFromCSFiles", "NPC.cs.4465", false, new string[]
+												{
 												"%endearment"
-											});
+												});
+											}
+											else
+											{
+												__instance.addMarriageDialogue("Strings\\StringsFromCSFiles", "NPC.cs.4466", false, new string[]
+												{
+												"%endearment"
+												});
+												__instance.addMarriageDialogue("Strings\\StringsFromCSFiles", "NPC.cs.4462", true, new string[0]);
+												if (filledBowl)
+												{
+													__instance.addMarriageDialogue("Strings\\StringsFromCSFiles", "NPC.cs.4463", false, new string[]
+													{
+													Game1.player.getPetDisplayName()
+													});
+												}
+											}
 										}
 										else
 										{
-											__instance.addMarriageDialogue("Strings\\StringsFromCSFiles", "NPC.cs.4466", false, new string[]
-											{
-												"%endearment"
-											});
-											__instance.addMarriageDialogue("Strings\\StringsFromCSFiles", "NPC.cs.4462", true, new string[0]);
-											if (filledBowl)
-											{
-												__instance.addMarriageDialogue("Strings\\StringsFromCSFiles", "NPC.cs.4463", false, new string[]
-												{
-													Game1.player.getPetDisplayName()
-												});
-											}
+											__instance.currentMarriageDialogue.Clear();
+											__instance.addMarriageDialogue("Strings\\StringsFromCSFiles", "NPC.cs.4470", true, new string[0]);
 										}
 									}
 									else
 									{
 										__instance.currentMarriageDialogue.Clear();
-										__instance.addMarriageDialogue("Strings\\StringsFromCSFiles", "NPC.cs.4470", true, new string[0]);
+										__instance.addMarriageDialogue("MarriageDialogue", "Outdoor_" + r.Next(5), false, new string[0]);
 									}
+								}
+							}
+							else if (r.NextDouble() < 0.6 && !NPC.hasSomeoneFedTheAnimals)
+							{
+								bool fedAnything = false;
+								foreach (Building b in farm.buildings)
+								{
+									if ((b is Barn || b is Coop) && b.daysOfConstructionLeft <= 0)
+									{
+										if (Game1.IsMasterGame)
+										{
+											(b.indoors.Value as AnimalHouse).feedAllAnimals();
+										}
+										fedAnything = true;
+									}
+								}
+								__instance.faceDirection(2);
+								if (fedAnything)
+								{
+									NPC.hasSomeoneFedTheAnimals = true;
+									__instance.currentMarriageDialogue.Clear();
+									__instance.addMarriageDialogue("Strings\\StringsFromCSFiles", "NPC.cs.4474", true, new string[0]);
+									if (filledBowl)
+									{
+										__instance.addMarriageDialogue("Strings\\StringsFromCSFiles", "NPC.cs.4463", false, new string[]
+										{
+										Game1.player.getPetDisplayName()
+										});
+									}
+									__instance.addMarriageDialogue("MarriageDialogue", "Outdoor_" + r.Next(5), false, new string[0]);
+								}
+								else
+								{
+									__instance.currentMarriageDialogue.Clear();
+									__instance.addMarriageDialogue("MarriageDialogue", "Outdoor_" + r.Next(5), false, new string[0]);
+								}
+								if (Game1.IsMasterGame)
+								{
+									farm.petBowlWatered.Set(true);
+								}
+							}
+							else if (!NPC.hasSomeoneRepairedTheFences)
+							{
+								int tries2 = 0;
+								__instance.faceDirection(2);
+								Vector2 origin2 = Vector2.Zero;
+								while (tries2 < Math.Min(50, farm.objects.Count()) && origin2.Equals(Vector2.Zero))
+								{
+									int index2 = r.Next(farm.objects.Count());
+									if (farm.objects.Pairs.ElementAt(index2).Value is Fence)
+									{
+										origin2 = farm.objects.Pairs.ElementAt(index2).Key;
+									}
+									tries2++;
+								}
+								if (!origin2.Equals(Vector2.Zero))
+								{
+									Microsoft.Xna.Framework.Rectangle wateringArea2 = new Microsoft.Xna.Framework.Rectangle((int)origin2.X - 10, (int)origin2.Y - 10, 20, 20);
+									Vector2 currentPosition2 = default(Vector2);
+									for (int x2 = wateringArea2.X; x2 < wateringArea2.Right; x2++)
+									{
+										for (int y2 = wateringArea2.Y; y2 < wateringArea2.Bottom; y2++)
+										{
+											currentPosition2.X = (float)x2;
+											currentPosition2.Y = (float)y2;
+											if (farm.isTileOnMap(currentPosition2) && farm.objects.ContainsKey(currentPosition2) && farm.objects[currentPosition2] is Fence && Game1.IsMasterGame)
+											{
+												(farm.objects[currentPosition2] as Fence).repair();
+											}
+										}
+									}
+									__instance.currentMarriageDialogue.Clear();
+									__instance.addMarriageDialogue("Strings\\StringsFromCSFiles", "NPC.cs.4481", true, new string[0]);
+									if (filledBowl)
+									{
+										__instance.addMarriageDialogue("Strings\\StringsFromCSFiles", "NPC.cs.4463", false, new string[]
+										{
+										Game1.player.getPetDisplayName()
+										});
+									}
+									__instance.addMarriageDialogue("MarriageDialogue", "Outdoor_" + r.Next(5), false, new string[0]);
+									NPC.hasSomeoneRepairedTheFences = true;
 								}
 								else
 								{
@@ -731,172 +821,84 @@ namespace MultipleSpouses
 									__instance.addMarriageDialogue("MarriageDialogue", "Outdoor_" + r.Next(5), false, new string[0]);
 								}
 							}
-						}
-						else if (r.NextDouble() < 0.6 && !NPC.hasSomeoneFedTheAnimals)
-						{
-							bool fedAnything = false;
-							foreach (Building b in farm.buildings)
-							{
-								if ((b is Barn || b is Coop) && b.daysOfConstructionLeft <= 0)
-								{
-									if (Game1.IsMasterGame)
-									{
-										(b.indoors.Value as AnimalHouse).feedAllAnimals();
-									}
-									fedAnything = true;
-								}
-							}
+							Game1.warpCharacter(__instance, "Farm", farmHouse.getPorchStandingSpot());
+							__instance.popOffAnyNonEssentialItems();
 							__instance.faceDirection(2);
-							if (fedAnything)
-							{
-								NPC.hasSomeoneFedTheAnimals = true;
-								__instance.currentMarriageDialogue.Clear();
-								__instance.addMarriageDialogue("Strings\\StringsFromCSFiles", "NPC.cs.4474", true, new string[0]);
-								if (filledBowl)
-								{
-									__instance.addMarriageDialogue("Strings\\StringsFromCSFiles", "NPC.cs.4463", false, new string[]
-									{
-										Game1.player.getPetDisplayName()
-									});
-								}
-								__instance.addMarriageDialogue("MarriageDialogue", "Outdoor_" + r.Next(5), false, new string[0]);
-							}
-							else
-							{
-								__instance.currentMarriageDialogue.Clear();
-								__instance.addMarriageDialogue("MarriageDialogue", "Outdoor_" + r.Next(5), false, new string[0]);
-							}
-							if (Game1.IsMasterGame)
-							{
-								farm.petBowlWatered.Set(true);
-							}
-						}
-						else if (!NPC.hasSomeoneRepairedTheFences)
-						{
-							int tries2 = 0;
-							__instance.faceDirection(2);
-							Vector2 origin2 = Vector2.Zero;
-							while (tries2 < Math.Min(50, farm.objects.Count()) && origin2.Equals(Vector2.Zero))
-							{
-								int index2 = r.Next(farm.objects.Count());
-								if (farm.objects.Pairs.ElementAt(index2).Value is Fence)
-								{
-									origin2 = farm.objects.Pairs.ElementAt(index2).Key;
-								}
-								tries2++;
-							}
-							if (!origin2.Equals(Vector2.Zero))
-							{
-								Microsoft.Xna.Framework.Rectangle wateringArea2 = new Microsoft.Xna.Framework.Rectangle((int)origin2.X - 10, (int)origin2.Y - 10, 20, 20);
-								Vector2 currentPosition2 = default(Vector2);
-								for (int x2 = wateringArea2.X; x2 < wateringArea2.Right; x2++)
-								{
-									for (int y2 = wateringArea2.Y; y2 < wateringArea2.Bottom; y2++)
-									{
-										currentPosition2.X = (float)x2;
-										currentPosition2.Y = (float)y2;
-										if (farm.isTileOnMap(currentPosition2) && farm.objects.ContainsKey(currentPosition2) && farm.objects[currentPosition2] is Fence && Game1.IsMasterGame)
-										{
-											(farm.objects[currentPosition2] as Fence).repair();
-										}
-									}
-								}
-								__instance.currentMarriageDialogue.Clear();
-								__instance.addMarriageDialogue("Strings\\StringsFromCSFiles", "NPC.cs.4481", true, new string[0]);
-								if (filledBowl)
-								{
-									__instance.addMarriageDialogue("Strings\\StringsFromCSFiles", "NPC.cs.4463", false, new string[]
-									{
-										Game1.player.getPetDisplayName()
-									});
-								}
-								__instance.addMarriageDialogue("MarriageDialogue", "Outdoor_" + r.Next(5), false, new string[0]);
-								NPC.hasSomeoneRepairedTheFences = true;
-							}
-							else
-							{
-								__instance.currentMarriageDialogue.Clear();
-								__instance.addMarriageDialogue("MarriageDialogue", "Outdoor_" + r.Next(5), false, new string[0]);
-							}
-						}
-						Game1.warpCharacter(__instance, "Farm", farmHouse.getPorchStandingSpot());
-						__instance.popOffAnyNonEssentialItems();
-						__instance.faceDirection(2);
-						return;
-					}
-					if (__instance.Name.Equals("Krobus") && Game1.isRaining && r.NextDouble() < 0.4 && !NPC.checkTileOccupancyForSpouse(farm, Utility.PointToVector2(farmHouse.getPorchStandingSpot()), ""))
-					{
-						__instance.addMarriageDialogue("MarriageDialogue", "Outdoor_" + r.Next(5), false, new string[0]);
-						Game1.warpCharacter(__instance, "Farm", farmHouse.getPorchStandingSpot());
-						__instance.popOffAnyNonEssentialItems();
-						__instance.faceDirection(2);
-						return;
-					}
-					if (spouse.GetDaysMarried() >= 1 && r.NextDouble() < 0.045)
-					{
-						if (r.NextDouble() < 0.75)
-						{
-							Point spot = farmHouse.getRandomOpenPointInHouse(r, 1, 30);
-							Furniture new_furniture = null;
-							try
-							{
-								new_furniture = new Furniture(Utility.getRandomSingleTileFurniture(r), new Vector2((float)spot.X, (float)spot.Y));
-							}
-							catch (Exception)
-							{
-								new_furniture = null;
-							}
-							if (new_furniture == null || spot.X <= 0 || !farmHouse.isTileLocationOpen(new Location(spot.X - 1, spot.Y)))
-							{
-								__instance.setTilePosition(farmHouse.getKitchenStandingSpot());
-								__instance.spouseObstacleCheck(new MarriageDialogueReference("Strings\\StringsFromCSFiles", "NPC.cs.4490", false, new string[0]), farmHouse, false);
-								return;
-							}
-							farmHouse.furniture.Add(new_furniture);
-							__instance.setTilePosition(spot.X - 1, spot.Y);
-							__instance.faceDirection(1);
-							__instance.addMarriageDialogue("Strings\\StringsFromCSFiles", "NPC.cs.4486", false, new string[]
-							{
-								"%endearmentlower"
-							});
-							if (Game1.random.NextDouble() < 0.5)
-							{
-								__instance.addMarriageDialogue("Strings\\StringsFromCSFiles", "NPC.cs.4488", true, new string[0]);
-								return;
-							}
-							__instance.addMarriageDialogue("Strings\\StringsFromCSFiles", "NPC.cs.4489", false, new string[0]);
 							return;
 						}
-						else
+						if (__instance.Name.Equals("Krobus") && Game1.isRaining && r.NextDouble() < 0.4 && !NPC.checkTileOccupancyForSpouse(farm, Utility.PointToVector2(farmHouse.getPorchStandingSpot()), ""))
 						{
-							Point p2 = farmHouse.getRandomOpenPointInHouse(r, 0, 30);
-							if (p2.X > 0)
+							__instance.addMarriageDialogue("MarriageDialogue", "Outdoor_" + r.Next(5), false, new string[0]);
+							Game1.warpCharacter(__instance, "Farm", farmHouse.getPorchStandingSpot());
+							__instance.popOffAnyNonEssentialItems();
+							__instance.faceDirection(2);
+							return;
+						}
+						if (spouse.GetDaysMarried() >= 1 && r.NextDouble() < 0.045)
+						{
+							if (r.NextDouble() < 0.75)
 							{
-								__instance.setTilePosition(p2.X, p2.Y);
-								__instance.faceDirection(0);
-								if (r.NextDouble() < 0.5)
+								Point spot = farmHouse.getRandomOpenPointInHouse(r, 1, 30);
+								Furniture new_furniture = null;
+								try
 								{
-									int wall = farmHouse.getWallForRoomAt(p2);
-									if (wall != -1)
+									new_furniture = new Furniture(Utility.getRandomSingleTileFurniture(r), new Vector2((float)spot.X, (float)spot.Y));
+								}
+								catch (Exception)
+								{
+									new_furniture = null;
+								}
+								if (new_furniture == null || spot.X <= 0 || !farmHouse.isTileLocationOpen(new Location(spot.X - 1, spot.Y)))
+								{
+									__instance.setTilePosition(farmHouse.getKitchenStandingSpot());
+									__instance.spouseObstacleCheck(new MarriageDialogueReference("Strings\\StringsFromCSFiles", "NPC.cs.4490", false, new string[0]), farmHouse, false);
+									return;
+								}
+								farmHouse.furniture.Add(new_furniture);
+								__instance.setTilePosition(spot.X - 1, spot.Y);
+								__instance.faceDirection(1);
+								__instance.addMarriageDialogue("Strings\\StringsFromCSFiles", "NPC.cs.4486", false, new string[]
+								{
+								"%endearmentlower"
+								});
+								if (Game1.random.NextDouble() < 0.5)
+								{
+									__instance.addMarriageDialogue("Strings\\StringsFromCSFiles", "NPC.cs.4488", true, new string[0]);
+									return;
+								}
+								__instance.addMarriageDialogue("Strings\\StringsFromCSFiles", "NPC.cs.4489", false, new string[0]);
+								return;
+							}
+							else
+							{
+								Point p2 = farmHouse.getRandomOpenPointInHouse(r, 0, 30);
+								if (p2.X > 0)
+								{
+									__instance.setTilePosition(p2.X, p2.Y);
+									__instance.faceDirection(0);
+									if (r.NextDouble() < 0.5)
 									{
-										int style = r.Next(112);
-										List<int> styles = new List<int>();
-										string name = __instance.Name;
-														if (name == "Alex")
-														{
-															styles.AddRange(new int[]
-															{
-																6
-															});
-														}
-												else if (name == "Krobus")
+										int wall = farmHouse.getWallForRoomAt(p2);
+										if (wall != -1)
+										{
+											int style = r.Next(112);
+											List<int> styles = new List<int>();
+											string name = __instance.Name;
+											if (name == "Alex")
+											{
+												styles.AddRange(new int[]
 												{
-													styles.AddRange(new int[]
-													{
+																6
+												});
+											}
+											else if (name == "Krobus")
+											{
+												styles.AddRange(new int[]
+												{
 														23,
 														24
-													});
-												}
+												});
+											}
 											else if (name == "Sebastian")
 											{
 												styles.AddRange(new int[]
@@ -914,10 +916,10 @@ namespace MultipleSpouses
 													107
 												});
 											}
-													if (name == "Haley")
-													{
-														styles.AddRange(new int[]
-														{
+											if (name == "Haley")
+											{
+												styles.AddRange(new int[]
+												{
 															1,
 															7,
 															10,
@@ -925,8 +927,8 @@ namespace MultipleSpouses
 															49,
 															84,
 															99
-														});
-													}
+												});
+											}
 											else if (name == "Shane")
 											{
 												styles.AddRange(new int[]
@@ -936,10 +938,10 @@ namespace MultipleSpouses
 													60
 												});
 											}
-												if (name == "Leah")
+											if (name == "Leah")
+											{
+												styles.AddRange(new int[]
 												{
-													styles.AddRange(new int[]
-													{
 														44,
 														108,
 														43,
@@ -947,12 +949,12 @@ namespace MultipleSpouses
 														92,
 														37,
 														29
-													});
-												}
-										else if (name == "Abigail")
-										{
-											styles.AddRange(new int[]
+												});
+											}
+											else if (name == "Abigail")
 											{
+												styles.AddRange(new int[]
+												{
 												2,
 												13,
 												23,
@@ -963,72 +965,77 @@ namespace MultipleSpouses
 												77,
 												106,
 												107
-											});
+												});
+											}
+											if (styles.Count > 0)
+											{
+												style = styles[r.Next(styles.Count)];
+											}
+											farmHouse.setWallpaper(style, wall, true);
+											__instance.addMarriageDialogue("Strings\\StringsFromCSFiles", "NPC.cs.4496", false, new string[0]);
+											return;
 										}
-										if (styles.Count > 0)
-										{
-											style = styles[r.Next(styles.Count)];
-										}
-										farmHouse.setWallpaper(style, wall, true);
-										__instance.addMarriageDialogue("Strings\\StringsFromCSFiles", "NPC.cs.4496", false, new string[0]);
-										return;
 									}
-								}
-								else
-								{
-									int floor = farmHouse.getFloorAt(p2);
-									if (floor != -1)
+									else
 									{
-										farmHouse.setFloor(r.Next(40), floor, true);
-										__instance.addMarriageDialogue("Strings\\StringsFromCSFiles", "NPC.cs.4497", false, new string[0]);
-										return;
+										int floor = farmHouse.getFloorAt(p2);
+										if (floor != -1)
+										{
+											farmHouse.setFloor(r.Next(40), floor, true);
+											__instance.addMarriageDialogue("Strings\\StringsFromCSFiles", "NPC.cs.4497", false, new string[0]);
+											return;
+										}
 									}
 								}
-							}
-						}
-					}
-					else
-					{
-						if (Game1.isRaining && r.NextDouble() < 0.08 && heartsWithSpouse < 11)
-						{
-							foreach (Furniture f2 in farmHouse.furniture)
-							{
-								if (f2.furniture_type == 13 && farmHouse.isTileLocationTotallyClearAndPlaceable((int)f2.tileLocation.X, (int)f2.tileLocation.Y + 1))
-								{
-									__instance.setTilePosition((int)f2.tileLocation.X, (int)f2.tileLocation.Y + 1);
-									__instance.faceDirection(0);
-									__instance.currentMarriageDialogue.Clear();
-									__instance.addMarriageDialogue("Strings\\StringsFromCSFiles", "NPC.cs.4498", true, new string[0]);
-									return;
-								}
-							}
-							__instance.spouseObstacleCheck(new MarriageDialogueReference("Strings\\StringsFromCSFiles", "NPC.cs.4499", false, new string[0]), farmHouse, true);
-							return;
-						}
-						if (r.NextDouble() < 0.45)
-						{
-							Vector2 spot2 = (farmHouse.upgradeLevel == 1) ? new Vector2(32f, 5f) : new Vector2(38f, 14f);
-							__instance.setTilePosition((int)spot2.X, (int)spot2.Y);
-							__instance.faceDirection(0);
-							__instance.setSpouseRoomMarriageDialogue();
-							if (__instance.name == "Sebastian" && Game1.netWorldState.Value.hasWorldStateID("sebastianFrog"))
-							{
-								__instance.setTilePosition((farmHouse.upgradeLevel == 1) ? 31 : 37, (farmHouse.upgradeLevel == 1) ? 6 : 15);
-								__instance.faceDirection(2);
-								return;
 							}
 						}
 						else
 						{
-							__instance.setTilePosition(farmHouse.getKitchenStandingSpot());
-							__instance.faceDirection(0);
-							if (r.NextDouble() < 0.2)
+							if (Game1.isRaining && r.NextDouble() < 0.08 && heartsWithSpouse < 11)
 							{
-								__instance.setRandomAfternoonMarriageDialogue(Game1.timeOfDay, farmHouse, false);
+								foreach (Furniture f2 in farmHouse.furniture)
+								{
+									if (f2.furniture_type == 13 && farmHouse.isTileLocationTotallyClearAndPlaceable((int)f2.tileLocation.X, (int)f2.tileLocation.Y + 1))
+									{
+										__instance.setTilePosition((int)f2.tileLocation.X, (int)f2.tileLocation.Y + 1);
+										__instance.faceDirection(0);
+										__instance.currentMarriageDialogue.Clear();
+										__instance.addMarriageDialogue("Strings\\StringsFromCSFiles", "NPC.cs.4498", true, new string[0]);
+										return;
+									}
+								}
+								__instance.spouseObstacleCheck(new MarriageDialogueReference("Strings\\StringsFromCSFiles", "NPC.cs.4499", false, new string[0]), farmHouse, true);
+								return;
+							}
+							if (r.NextDouble() < 0.45)
+							{
+								Vector2 spot2 = (farmHouse.upgradeLevel == 1) ? new Vector2(32f, 5f) : new Vector2(38f, 14f);
+								__instance.setTilePosition((int)spot2.X, (int)spot2.Y);
+								__instance.faceDirection(0);
+								__instance.setSpouseRoomMarriageDialogue();
+								if (__instance.name == "Sebastian" && Game1.netWorldState.Value.hasWorldStateID("sebastianFrog"))
+								{
+									__instance.setTilePosition((farmHouse.upgradeLevel == 1) ? 31 : 37, (farmHouse.upgradeLevel == 1) ? 6 : 15);
+									__instance.faceDirection(2);
+									return;
+								}
+							}
+							else
+							{
+								__instance.setTilePosition(farmHouse.getKitchenStandingSpot());
+								__instance.faceDirection(0);
+								if (r.NextDouble() < 0.2)
+								{
+									__instance.setRandomAfternoonMarriageDialogue(Game1.timeOfDay, farmHouse, false);
+								}
 							}
 						}
 					}
 				}
+			}
+			catch (Exception ex)
+			{
+				Monitor.Log($"Failed in {nameof(NPC_marriageDuties_Prefix)}:\n{ex}", LogLevel.Error);
 			}
 		}
 
@@ -1330,7 +1337,7 @@ namespace MultipleSpouses
 			{
 				if (who.ActiveObject.ParentSheetIndex == 458)
 				{
-					if (who.friendshipData.ContainsKey(__instance.Name) && who.friendshipData[__instance.Name].IsMarried())
+					if (who.friendshipData.ContainsKey(__instance.Name) && who.friendshipData[__instance.Name].IsMarried() && !who.isEngaged())
 					{
 						who.spouse = __instance.Name;
 						GameLocation l = Game1.getLocationFromName(Game1.player.homeLocation);

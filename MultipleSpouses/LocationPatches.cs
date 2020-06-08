@@ -116,11 +116,13 @@ namespace MultipleSpouses
 				}
 
 				int untitled = 0;
+				List<string> sheets = new List<string>();
 				for (int i = 0; i < farmHouse.map.TileSheets.Count; i++)
 				{
-					if (farmHouse.map.TileSheets[i].Id == "untitled tile sheet")
-						untitled = i;
+					sheets.Add(farmHouse.map.TileSheets[i].Id);
 				}
+				untitled = sheets.IndexOf("untitled tile sheet");
+
 
 				int ox = 0;
 				int oy = 0;
@@ -129,6 +131,8 @@ namespace MultipleSpouses
 					ox = 6;
 					oy = 9;
 				}
+
+
 
 				for (int i = 0; i < 7; i++)
 				{
@@ -156,7 +160,8 @@ namespace MultipleSpouses
 
 				farmHouse.removeTile(ox + 28, oy + 9, "Front");
 				farmHouse.removeTile(ox + 28, oy + 10, "Buildings");
-				farmHouse.setMapTileIndex(ox + 28, oy + 10, 163, "Front", 0);
+				if(farmHouse.upgradeLevel > 1) 
+					farmHouse.setMapTileIndex(ox + 28, oy + 10, 163, "Front", 0);
 				farmHouse.removeTile(ox + 35, oy + 0, "Front");
 				farmHouse.removeTile(ox + 35, oy + 0, "Buildings");
 
@@ -205,6 +210,122 @@ namespace MultipleSpouses
 				Monitor.Log($"Failed in {nameof(GameLocation_resetLocalState_Postfix)}:\n{ex}", LogLevel.Error);
 			}
 
+		}
+
+
+		public static void ReplaceBed(FarmHouse __instance)
+		{
+			try
+			{
+				if (__instance.map == null)
+					return;
+
+				// bed
+
+				FarmHouse farmHouse = __instance;
+
+				int untitled = 0;
+				List<string> sheets = new List<string>();
+				for (int i = 0; i < farmHouse.map.TileSheets.Count; i++)
+				{
+					sheets.Add(farmHouse.map.TileSheets[i].Id);
+				}
+				untitled = sheets.IndexOf("untitled tile sheet");
+
+
+				int ox = 0;
+				int oy = 0;
+				if (farmHouse.upgradeLevel > 1)
+				{
+					ox = 6;
+					oy = 9;
+				}
+
+				int bedWidth = ModEntry.GetBedWidth(farmHouse);
+				int width = bedWidth - 1;
+				int start = 21 - (farmHouse.upgradeLevel > 1 ? (bedWidth / 2) - 1 : 0);
+
+				List<int> backIndexes = new List<int>();
+				List<int> frontIndexes = new List<int>();
+				List<int> buildIndexes = new List<int>();
+				List<int> backSheets = new List<int>();
+				List<int> frontSheets = new List<int>();
+				List<int> buildSheets = new List<int>();
+
+				for (int i = 0; i < 12; i++)
+				{
+					backIndexes.Add(farmHouse.getTileIndexAt(ox + 21 + (i % 3), oy + 2 + (i / 3), "Back"));
+					backSheets.Add(sheets.IndexOf(farmHouse.getTileSheetIDAt(ox + 21 + (i % 3), oy + 2 + (i / 3), "Back")));
+					frontIndexes.Add(farmHouse.getTileIndexAt(ox + 21 + (i % 3), oy + 2 + (i / 3), "Front"));
+					frontSheets.Add(sheets.IndexOf(farmHouse.getTileSheetIDAt(ox + 21 + (i % 3), oy + 2 + (i / 3), "Front")));
+					buildIndexes.Add(farmHouse.getTileIndexAt(ox + 21 + (i % 3), oy + 2 + (i / 3), "Buildings"));
+					buildSheets.Add(sheets.IndexOf(farmHouse.getTileSheetIDAt(ox + 21 + (i % 3), oy + 2 + (i / 3), "Buildings")));
+				}
+
+
+				setupTile(0, 2, 0, 0, farmHouse, start, ox, oy, frontIndexes, frontSheets, 1);
+				setupTile(0, 3, 0, 1, farmHouse, start, ox, oy, frontIndexes, frontSheets, 0);
+				setupTile(0, 3, 0, 1, farmHouse, start, ox, oy, buildIndexes, buildSheets, 2);
+				setupTile(0, 4, 0, 2, farmHouse, start, ox, oy, frontIndexes, frontSheets, 0);
+				setupTile(0, 5, 0, 3, farmHouse, start, ox, oy, buildIndexes, buildSheets, 1);
+
+				farmHouse.removeTile(ox + start, oy + 3, "Buildings");
+				for (int i = 1; i < width; i++)
+				{
+					farmHouse.removeTile(ox + start + i, oy + 3, "Buildings");
+
+					setupTile(i, 2, 1, 0, farmHouse, start, ox, oy, frontIndexes, frontSheets, 1);
+					setupTile(i, 3, 1, 1, farmHouse, start, ox, oy, frontIndexes, frontSheets, 0);
+					setupTile(i, 3, 1, 1, farmHouse, start, ox, oy, buildIndexes, buildSheets, 2);
+					setupTile(i, 4, 1, 2, farmHouse, start, ox, oy, frontIndexes, frontSheets, 0);
+					setupTile(i, 5, 1, 3, farmHouse, start, ox, oy, buildIndexes, buildSheets, 1);
+				}
+				farmHouse.removeTile(ox + start + width, oy + 3, "Buildings");
+
+				setupTile(width, 2, 2, 0, farmHouse, start, ox, oy, frontIndexes, frontSheets, 1);
+				setupTile(width, 3, 2, 1, farmHouse, start, ox, oy, frontIndexes, frontSheets, 0);
+				setupTile(width, 3, 2, 1, farmHouse, start, ox, oy, buildIndexes, buildSheets, 2);
+				setupTile(width, 4, 2, 2, farmHouse, start, ox, oy, frontIndexes, frontSheets, 0);
+				setupTile(width, 5, 2, 3, farmHouse, start, ox, oy, buildIndexes, buildSheets, 1);
+
+
+				farmHouse.removeTile(ox + 21, oy + 2, "Front");
+				farmHouse.removeTile(ox + 22, oy + 2, "Front");
+				farmHouse.removeTile(ox + 23, oy + 2, "Front");
+
+
+			}
+			catch (Exception ex)
+			{
+				Monitor.Log($"Failed in {nameof(ReplaceBed)}:\n{ex}", LogLevel.Error);
+			}
+
+		}
+
+
+		private static void setupTile(int v1, int v2, int x, int y, FarmHouse farmHouse, int start, int ox, int oy, List<int> indexes, List<int> sheets, int sheetNo)
+        {
+			string[] sheetNames = {
+				"Front",
+				"Buildings",
+				"Back"
+			};
+			int idx = y * 3 + x;
+			try
+			{
+				farmHouse.removeTile(ox + start + v1, oy + v2, sheetNames[sheetNo]);
+				farmHouse.setMapTileIndex(ox + start + v1, oy + v2, indexes[idx], sheetNames[sheetNo], sheets[idx]);
+			}
+            catch(Exception ex)
+            {
+				Monitor.Log("v1: "+v1);
+				Monitor.Log("v2: "+v2);
+				Monitor.Log("x: "+x);
+				Monitor.Log("y: "+y);
+				Monitor.Log("sheet: "+sheetNo);
+				Monitor.Log("index: "+ idx);
+				Monitor.Log("Exception: "+ex, LogLevel.Error);
+            }
 		}
 
 		public static void Farm_addSpouseOutdoorArea_Prefix(ref string spouseName)
@@ -297,7 +418,7 @@ namespace MultipleSpouses
 							responses.Add(new Response(who.spouse, who.spouse));
 						foreach (string spouse in ModEntry.spouses.Keys)
 						{
-							responses.Add(new Response(spouse, spouse));
+							responses.Add(new Response(spouse, ModEntry.spouses[spouse].displayName));
 						}
 						responses.Add(new Response("No", Game1.content.LoadString("Strings\\Lexicon:QuestionDialogue_No")));
 						__instance.createQuestionDialogue(s2, responses.ToArray(), "divorce");

@@ -8,6 +8,8 @@ namespace FriendlyDivorce
 {
     public class ModConfig
     {
-        public int PointsAfterDivorce { get; set; } = 2500;
+        public bool Enabled { get; set; } = true;
+        public int PointsAfterDivorce { get; set; } = 2000;
+        public bool ComplexDivorce { get; set; } = true;
     }
 }

@@ -1,6 +1,8 @@
 ﻿using StardewModdingAPI;
 using StardewValley;
+using StardewValley.Locations;
 using System;
+using System.Collections.Generic;
 
 namespace FriendlyDivorce
 {
@@ -13,18 +15,18 @@ namespace FriendlyDivorce
 		{
 			Monitor = monitor;
 		}
-		public static void Farmer_doDivorce_Prefix(ref Farmer __instance, ref Friendship __state)
+		public static void Farmer_doDivorce_Prefix(ref Farmer __instance, ref string __state)
 		{
             try
             {
 				if (__instance.spouse != null)
 				{
-					__state = __instance.friendshipData[__instance.getSpouse().name];
+					__state = __instance.getSpouse().name;
 				}
 				else if (__instance.team.GetSpouse(__instance.UniqueMultiplayerID) != null)
 				{
 					long spouseID = __instance.team.GetSpouse(__instance.UniqueMultiplayerID).Value;
-					__state = __instance.team.GetFriendship(__instance.UniqueMultiplayerID, spouseID);
+					__state = spouseID.ToString();
 				}
 			}
 			catch (Exception ex)
@@ -33,12 +35,27 @@ namespace FriendlyDivorce
 			}
 		}
 
-		public static void Farmer_doDivorce_Postfix(ref Farmer __instance, ref Friendship __state)
+		public static void Farmer_doDivorce_Postfix(ref Farmer __instance, ref string __state)
 		{
             try
-            {
-				__state.Points = ModEntry.Config.PointsAfterDivorce;
-				__state.Status = FriendshipStatus.Friendly;
+			{
+				int points = ModEntry.Config.PointsAfterDivorce;
+				points -= ModEntry.heartsLost * 250;
+				if (long.TryParse(__state,out long result))
+                {
+					Friendship f = __instance.team.GetFriendship(__instance.uniqueMultiplayerID,result);
+					f.Points = Math.Max(0, points);
+					f.Status = points < 1000 ? FriendshipStatus.Divorced : FriendshipStatus.Friendly;
+
+				}
+				else
+                {
+					__instance.friendshipData[__state].Points = Math.Max(0, points);
+					__instance.friendshipData[__state].Status = points < 1000 ? FriendshipStatus.Divorced : FriendshipStatus.Friendly;
+					Monitor.Log($"final points {__instance.friendshipData[__state].Points}");
+				}
+
+				ModEntry.heartsLost = 0;
 			}
 			catch (Exception ex)
 			{
@@ -47,5 +64,38 @@ namespace FriendlyDivorce
 
 		}
 
+		public static bool ManorHouse_performAction_Prefix(ManorHouse __instance, string action, Farmer who, ref bool __result)
+		{
+			try
+			{
+				if (action != null && who.IsLocalPlayer && Game1.player.isMarried())
+				{
+					string a = action.Split(new char[]
+					{
+					' '
+					})[0];
+					if (a == "DivorceBook")
+					{
+						string s2 = Game1.content.LoadStringReturnNullIfNotFound("Strings\\Locations:ManorHouse_DivorceBook_Question_" + Game1.player.spouse);
+						if (s2 == null)
+						{
+							s2 = Game1.content.LoadStringReturnNullIfNotFound("Strings\\Locations:ManorHouse_DivorceBook_Question");
+						}
+						List<Response> responses = new List<Response>();
+						responses.Add(new Response("Yes", Game1.content.LoadString("Strings\\Lexicon:QuestionDialogue_Yes")));
+						responses.Add(new Response("Complex", ModEntry.PHelper.Translation.Get("divorce_complex")));
+						responses.Add(new Response("No", Game1.content.LoadString("Strings\\Lexicon:QuestionDialogue_No")));
+						__instance.createQuestionDialogue(s2, responses.ToArray(), "divorce");
+					}
+					__result = true;
+					return false;
+				}
+			}
+			catch (Exception ex)
+			{
+				Monitor.Log($"Failed in {nameof(ManorHouse_performAction_Prefix)}:\n{ex}", LogLevel.Error);
+			}
+			return true;
+		}
 	}
 }

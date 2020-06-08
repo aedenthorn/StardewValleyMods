@@ -39,6 +39,10 @@ namespace MultipleSpouses
         public static string spouseToDivorce = null;
         public static int spouseRolesDate = -1;
 		public static Multiplayer mp;
+		public static List<string> kissingSpouses = new List<string>();
+		public static int lastKissTime = 0;
+		public static SoundEffect kissEffect = null;
+		public static Random myRand;
 
 		/// <summary>The mod entry point, called after the mod is first loaded.</summary>
 		/// <param name="helper">Provides simplified APIs for writing mods.</param>
@@ -52,11 +56,14 @@ namespace MultipleSpouses
 			PMonitor = Monitor;
 			PHelper = helper;
 
-			helper.Events.GameLoop.OneSecondUpdateTicked += GameLoop_OneSecondUpdateTicked;
+            helper.Events.GameLoop.DayStarted += GameLoop_DayStarted;
+            helper.Events.GameLoop.DayEnding += GameLoop_DayEnding;
             helper.Events.GameLoop.ReturnedToTitle += GameLoop_ReturnedToTitle;
 			mp = helper.Reflection.GetField<Multiplayer>(typeof(Game1), "multiplayer").GetValue();
 			helper.Events.Input.ButtonPressed += Input_ButtonPressed;
 			myRand = new Random();
+
+
 
 			string filePath = $"{helper.DirectoryPath}\\assets\\kiss.wav";
 			PMonitor.Log("Kissing audio path: " + filePath);
@@ -157,7 +164,7 @@ namespace MultipleSpouses
 			   original: AccessTools.Method(typeof(GameLocation), "updateMap"),
 			   prefix: new HarmonyMethod(typeof(LocationPatches), nameof(LocationPatches.GameLocation_updateMap_Prefix))
 			);
-
+			
 
 			// pregnancy patches
 
@@ -190,8 +197,20 @@ namespace MultipleSpouses
 
 		}
 
-        private void GameLoop_ReturnedToTitle(object sender, ReturnedToTitleEventArgs e)
+        private void GameLoop_DayEnding(object sender, DayEndingEventArgs e)
         {
+			Helper.Events.GameLoop.OneSecondUpdateTicked -= GameLoop_OneSecondUpdateTicked;
+		}
+
+		private void GameLoop_DayStarted(object sender, DayStartedEventArgs e)
+        {
+			Helper.Events.GameLoop.OneSecondUpdateTicked += GameLoop_OneSecondUpdateTicked;
+			LocationPatches.ReplaceBed(Utility.getHomeOfFarmer(Game1.player));
+		}
+
+		private void GameLoop_ReturnedToTitle(object sender, ReturnedToTitleEventArgs e)
+        {
+			Helper.Events.GameLoop.OneSecondUpdateTicked -= GameLoop_OneSecondUpdateTicked;
 			spouses.Clear();
 			outdoorSpouse = null;
 			kitchenSpouse = null;
@@ -255,12 +274,54 @@ namespace MultipleSpouses
 		}
 		private void GameLoop_OneSecondUpdateTicked(object sender, OneSecondUpdateTickedEventArgs e)
         {
-            if (config.AllowSpousesToKiss)
+			if (Game1.player == null)
+				return;
+			FarmHouse fh = Utility.getHomeOfFarmer(Game1.player);
+			if (fh == null)
+				return;
+
+			int bedWidth = GetBedWidth(fh);
+			Point bedStart = GetBedStart(fh);
+			Dictionary<string,NPC> allSpouses = GetRandomSpouses(true);
+			if (Game1.timeOfDay > 2000)
+            {
+				foreach (NPC character in fh.characters)
+				{
+					if (allSpouses.ContainsKey(character.Name))
+					{
+						//Monitor.Log($"{character.Name} bounding box: {character.GetBoundingBox().X + character.GetBoundingBox().Width/2},{character.GetBoundingBox().Y + character.GetBoundingBox().Height/2}");
+						character.farmerPassesThrough = true;
+						Microsoft.Xna.Framework.Rectangle bed = new Microsoft.Xna.Framework.Rectangle(bedStart.X * 64, bedStart.Y * 64 + 64, bedWidth * 64, 3 * 64);
+						if (character.GetBoundingBox().Intersects(bed) && !character.isMoving())
+						{
+							int x =  (int)(allSpouses.Keys.ToList().IndexOf(character.Name) / (float)allSpouses.Count * (bedWidth - 1) * 64 + 32);
+							Monitor.Log($"moving {character.Name} by {x} pixels");
+							character.position.Value = new Vector2(bed.X + x, bed.Y + 48);
+						}
+						else
+                        {
+							character.farmerPassesThrough = false;
+						}
+					}
+				}
+			}
+			if (config.AllowSpousesToKiss)
             {
 				TrySpousesKiss();
 			}
 		}
 
+        public static Point GetBedStart(FarmHouse fh)
+        {
+			bool up = fh.upgradeLevel > 1;
+			return new Point(21 - (up ? (GetBedWidth(fh) / 2) - 1: 0) + 6,2 + (up?9:0));
+		}
+
+        public static int GetBedWidth(FarmHouse fh)
+        {
+			bool up = fh.upgradeLevel > 1;
+			return Math.Min(up ? 9 : 6, Math.Max(config.BedWidth, 3));
+		}
 
 		public static void ResetSpouseRoles()
         {
@@ -382,6 +443,12 @@ namespace MultipleSpouses
 						f.spouse = name;
 						continue;
 					}
+					if (f.spouse == null)
+                    {
+						f.spouse = name;
+						continue;
+                    }
+
 					NPC npc = Game1.getCharacterFromName(name);
 					if(npc == null)
                     {
@@ -451,10 +518,6 @@ namespace MultipleSpouses
 			}
 		}
 
-        public static List<string> kissingSpouses = new List<string>();
-		public static int lastKissTime = 0;
-		public static SoundEffect kissEffect = null;
-        public static Random myRand;
 
         public static void TrySpousesKiss()
         {
@@ -462,7 +525,7 @@ namespace MultipleSpouses
 
 			lastKissTime++;
 
-			if (location.characters == null)
+			if (location == null || location.characters == null)
 				return;
 
 			List<NPC> list = location.characters.ToList();

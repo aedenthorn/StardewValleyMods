@@ -46,7 +46,7 @@ namespace MultipleSpouses
 				{
 					if (ModEntry.config.FriendlyDivorce)
 					{
-						__instance.friendshipData[key].Points = Math.Max(2500, __instance.friendshipData[key].Points);
+						__instance.friendshipData[key].Points = Math.Max(2000, __instance.friendshipData[key].Points);
 						__instance.friendshipData[key].Status = FriendshipStatus.Friendly;
 					}
 					else

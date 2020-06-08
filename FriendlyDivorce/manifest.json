@@ -1,8 +1,8 @@
 ﻿{
   "Name": "Friendly Divorce",
   "Author": "aedenthorn",
-  "Version": "0.1.0",
-  "Description": "Allows you to stay friends after the divorce.",
+  "Version": "0.2.1",
+  "Description": "Allows you to stay friends (or not) after the divorce.",
   "UniqueID": "aedenthorn.FriendlyDivorce",
   "EntryDll": "FriendlyDivorce.dll",
   "MinimumApiVersion": "3.4.0",
