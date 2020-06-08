@@ -89,6 +89,11 @@ namespace MultipleSpouses
         {
 			if(___whichQuestion == 1)
             {
+				if (lastPregnantSpouse == null)
+                {
+					__result = true;
+					return false;
+				}
 				Response[] answers = new Response[]
 				{
 					new Response("Yes", Game1.content.LoadString("Strings\\Events:HaveBabyAnswer_Yes")),

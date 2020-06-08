@@ -1,26 +1,20 @@
-﻿using Harmony;
-using static Harmony.AccessTools;
-using Microsoft.Xna.Framework;
-using Netcode;
+﻿using Microsoft.Xna.Framework;
 using StardewModdingAPI;
 using StardewValley;
+using StardewValley.Buildings;
 using StardewValley.Locations;
-using System;
-using System.Collections.Generic;
-using System.Reflection;
-using xTile.Dimensions;
-using System.IO;
-using StardewValley.BellsAndWhistles;
-using xTile.Tiles;
-using System.Linq;
 using StardewValley.Network;
 using StardewValley.Objects;
-using StardewValley.Buildings;
 using StardewValley.TerrainFeatures;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Reflection;
+using xTile.Dimensions;
 
 namespace MultipleSpouses
 {
-	public static class NPCPatches
+    public static class NPCPatches
 	{
 		private static IMonitor Monitor;
 

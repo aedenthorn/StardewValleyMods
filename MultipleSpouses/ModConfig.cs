@@ -18,6 +18,7 @@ namespace MultipleSpouses
         public bool BuildAllSpousesRooms { get; set; } = true;
         public int HallTileOdd { get; set; } = 265;
         public int HallTileEven { get; set; } = 266;
+        public bool CustomBed { get; set; } = true;
         public int BedWidth { get; set; } = 3;
         public bool AllowSpousesToKiss { get; set; } = true;
         public float SpouseKissChance { get; set; } = 0.5f;

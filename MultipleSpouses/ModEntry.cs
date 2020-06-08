@@ -205,7 +205,10 @@ namespace MultipleSpouses
 		private void GameLoop_DayStarted(object sender, DayStartedEventArgs e)
         {
 			Helper.Events.GameLoop.OneSecondUpdateTicked += GameLoop_OneSecondUpdateTicked;
-			LocationPatches.ReplaceBed(Utility.getHomeOfFarmer(Game1.player));
+            if (config.CustomBed)
+            {
+				LocationPatches.ReplaceBed(Utility.getHomeOfFarmer(Game1.player));
+			}
 		}
 
 		private void GameLoop_ReturnedToTitle(object sender, ReturnedToTitleEventArgs e)
