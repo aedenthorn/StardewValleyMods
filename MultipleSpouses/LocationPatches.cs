@@ -1,19 +1,10 @@
-﻿using Harmony;
-using static Harmony.AccessTools;
-using Microsoft.Xna.Framework;
-using Netcode;
+﻿using Microsoft.Xna.Framework;
 using StardewModdingAPI;
 using StardewValley;
 using StardewValley.Locations;
 using System;
 using System.Collections.Generic;
-using System.Reflection;
 using xTile.Dimensions;
-using System.IO;
-using StardewValley.BellsAndWhistles;
-using xTile.Tiles;
-using System.Linq;
-using xTile;
 
 namespace MultipleSpouses
 {
@@ -32,7 +23,7 @@ namespace MultipleSpouses
 		{
 			try
 			{
-				if (__instance is FarmHouse)
+				if (__instance is FarmHouse && __instance.Name.StartsWith("FarmHouse"))
 				{
 					FarmHouse farmHouse = __instance as FarmHouse;
 					if (farmHouse.owner == null)
@@ -65,7 +56,7 @@ namespace MultipleSpouses
 					return;
 				}
 
-				if (!(__instance is FarmHouse) || __instance != Utility.getHomeOfFarmer(Game1.player))
+				if (!(__instance is FarmHouse) || !__instance.Name.StartsWith("FarmHouse") || __instance != Utility.getHomeOfFarmer(Game1.player) || ModEntry.GetAllSpouses().Count == 0)
 				{
 					return;
 				}
@@ -76,10 +67,9 @@ namespace MultipleSpouses
 				Farmer f = farmHouse.owner;
 				ModEntry.ResetSpouses(f);
 
-				if (f.currentLocation == farmHouse)
+				if (f.currentLocation == farmHouse && ModEntry.IsInBed(f.GetBoundingBox()))
 				{
 					f.position.Value = ModEntry.GetSpouseBedLocation("Game1.player");
-					f.hasMoved = false;
 				}
 				if (ModEntry.config.CustomBed && !ModEntry.bedMade)
 				{

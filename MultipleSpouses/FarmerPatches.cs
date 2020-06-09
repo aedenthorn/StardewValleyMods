@@ -1,24 +1,13 @@
-﻿using Harmony;
-using static Harmony.AccessTools;
-using Microsoft.Xna.Framework;
-using Netcode;
+﻿using Microsoft.Xna.Framework;
 using StardewModdingAPI;
 using StardewValley;
 using StardewValley.Locations;
 using System;
-using System.Collections.Generic;
 using System.Reflection;
-using xTile.Dimensions;
-using System.IO;
-using StardewValley.BellsAndWhistles;
-using xTile.Tiles;
-using System.Linq;
-using StardewValley.Network;
-using System.Text.RegularExpressions;
 
 namespace MultipleSpouses
 {
-	public static class FarmerPatches
+    public static class FarmerPatches
 	{
 		private static IMonitor Monitor;
 

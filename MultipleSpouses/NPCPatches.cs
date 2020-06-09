@@ -1,5 +1,4 @@
-﻿using Harmony;
-using Microsoft.Xna.Framework;
+﻿using Microsoft.Xna.Framework;
 using StardewModdingAPI;
 using StardewValley;
 using StardewValley.Buildings;
@@ -11,7 +10,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using System.Reflection.Emit;
 using xTile.Dimensions;
 
 namespace MultipleSpouses
@@ -1070,7 +1068,7 @@ namespace MultipleSpouses
 				{
 					foreach (NPC character in farmHouse.characters)
 					{
-						if (character.isVillager() && ModEntry.GetAllSpouses().ContainsKey(character.Name) && ModEntry.IsInBed(character))
+						if (character.isVillager() && ModEntry.GetAllSpouses().ContainsKey(character.Name) && ModEntry.IsInBed(character.GetBoundingBox()))
 						{
 							ModEntry.PMonitor.Log($"{character.Name} is already in bed");
 							ModEntry.bedSpouse = character.Name;
@@ -1339,7 +1337,7 @@ namespace MultipleSpouses
 					{
 						who.spouse = __instance.Name;
 						ModEntry.ResetSpouses(who);
-						GameLocation l = Game1.getLocationFromName(Game1.player.homeLocation);
+						GameLocation l = Game1.currentLocation;
 						l.playSound("dwop", NetAudio.SoundContext.NPC);
 						Utility.getHomeOfFarmer(who).showSpouseRoom();
 						if (l == Utility.getHomeOfFarmer(who))

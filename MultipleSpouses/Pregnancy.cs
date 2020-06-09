@@ -8,7 +8,6 @@ using System;
 using StardewValley.BellsAndWhistles;
 using StardewValley.Menus;
 using Microsoft.Xna.Framework;
-using Harmony;
 
 namespace MultipleSpouses
 {
@@ -195,9 +194,11 @@ namespace MultipleSpouses
 					}
 					Game1.player.Position = Utility.PointToVector2(Utility.getHomeOfFarmer(Game1.player).getBedSpot()) * 64f;
 					Game1.globalFadeToClear(null, 0.02f);
-					return true;
+					__result = true;
+					return false;
 				}
 			}
+			__result = false;
 			return false;
 		}
 		public static bool BirthingEvent_setUp_Prefix(BirthingEvent __instance, ref bool ___isMale, ref string ___message, ref bool __result)

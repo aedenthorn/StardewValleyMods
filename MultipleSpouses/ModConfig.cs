@@ -17,10 +17,16 @@ namespace MultipleSpouses
         public int DaysUntilMarriage { get; set; } = 3;
         public bool FriendlyDivorce { get; set; } = true;
         public bool BuildAllSpousesRooms { get; set; } = true;
+        public int ExistingSpouseRoomOffsetX { get; set; } = 0;
+        public int ExistingSpouseRoomOffsetY { get; set; } = 0;
         public int HallTileOdd { get; set; } = 265;
         public int HallTileEven { get; set; } = 266;
+        public int HallTileOddSheet { get; set; } = 0;
+        public int HallTileEvenSheet { get; set; } = 0;
         public bool CustomBed { get; set; } = true;
         public int BedWidth { get; set; } = 3;
+        public int ExistingBedOffsetX { get; set; } = 0;
+        public int ExistingBedOffsetY { get; set; } = 0;
         public bool AllowSpousesToKiss { get; set; } = true;
         public float SpouseKissChance { get; set; } = 0.5f;
         public bool RealKissSound { get; set; } = false;

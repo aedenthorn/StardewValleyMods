@@ -12,13 +12,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
-using System.Threading;
 using xTile;
-using xTile.Dimensions;
-using xTile.Layers;
-using xTile.ObjectModel;
-using xTile.Tiles;
-using static Harmony.AccessTools;
 
 namespace MultipleSpouses
 {
@@ -200,7 +194,7 @@ namespace MultipleSpouses
 		{
 			// kiss audio
 
-			string filePath = $"{PHelper.DirectoryPath}\\assets\\kiss.wav";
+			string filePath = $"{PHelper.DirectoryPath}/assets/kiss.wav";
 			PMonitor.Log("Kissing audio path: " + filePath);
 			if (File.Exists(filePath))
 			{
@@ -215,41 +209,48 @@ namespace MultipleSpouses
 		public static void LoadTMXSpouseRooms()
 		{
 			Maps.tmxSpouseRooms.Clear();
-			// TMX spouse rooms
-
-			var tmxlAPI = PHelper.ModRegistry.GetApi("Platonymous.TMXLoader");
-			var tmxlAssembly = tmxlAPI?.GetType()?.Assembly;
-			var tmxlModType = tmxlAssembly?.GetType("TMXLoader.TMXLoaderMod");
-			var tmxlEditorType = tmxlAssembly?.GetType("TMXLoader.TMXAssetEditor");
-			// check for nulls here
-			var tmxlHelper = PHelper.Reflection.GetField<IModHelper>(tmxlModType, "helper").GetValue();
-			foreach (var editor in tmxlHelper.Content.AssetEditors)
-			{
-                try
-                {
-					if (editor == null)
-						continue;
-					if (editor.GetType() != tmxlEditorType) continue;
-
-					if (editor.GetType().GetField("type", BindingFlags.NonPublic | BindingFlags.Instance).GetValue(editor).ToString() != "SpouseRoom") continue;
-
-					string name = (string)tmxlEditorType.GetField("assetName").GetValue(editor);
-					if (name != "FarmHouse1_marriage") continue;
-
-					object edit = tmxlEditorType.GetField("edit", BindingFlags.NonPublic | BindingFlags.Instance).GetValue(editor);
-					string info = (string)edit.GetType().GetProperty("info").GetValue(edit);
-
-					Map map = PHelper.Reflection.GetField<Map>(editor, "newMap").GetValue();
-					if (map != null && !Maps.tmxSpouseRooms.ContainsKey(info))
+            // TMX spouse rooms
+            try
+            {
+				var tmxlAPI = PHelper.ModRegistry.GetApi("Platonymous.TMXLoader");
+				var tmxlAssembly = tmxlAPI?.GetType()?.Assembly;
+				var tmxlModType = tmxlAssembly?.GetType("TMXLoader.TMXLoaderMod");
+				var tmxlEditorType = tmxlAssembly?.GetType("TMXLoader.TMXAssetEditor");
+				// check for nulls here
+				var tmxlHelper = PHelper.Reflection.GetField<IModHelper>(tmxlModType, "helper").GetValue();
+				foreach (var editor in tmxlHelper.Content.AssetEditors)
+				{
+					try
 					{
-						PMonitor.Log("Adding TMX spouse room for " + info, LogLevel.Debug);
-						Maps.tmxSpouseRooms.Add(info, map);
+						if (editor == null)
+							continue;
+						if (editor.GetType() != tmxlEditorType) continue;
+
+						if (editor.GetType().GetField("type", BindingFlags.NonPublic | BindingFlags.Instance).GetValue(editor).ToString() != "SpouseRoom") continue;
+
+						string name = (string)tmxlEditorType.GetField("assetName").GetValue(editor);
+						if (name != "FarmHouse1_marriage") continue;
+
+						object edit = tmxlEditorType.GetField("edit", BindingFlags.NonPublic | BindingFlags.Instance).GetValue(editor);
+						string info = (string)edit.GetType().GetProperty("info").GetValue(edit);
+
+						Map map = PHelper.Reflection.GetField<Map>(editor, "newMap").GetValue();
+						if (map != null && !Maps.tmxSpouseRooms.ContainsKey(info))
+						{
+							PMonitor.Log("Adding TMX spouse room for " + info, LogLevel.Debug);
+							Maps.tmxSpouseRooms.Add(info, map);
+						}
+					}
+					catch (Exception ex)
+					{
+						PMonitor.Log($"Failed getting TMX spouse room data. Exception: {ex}", LogLevel.Debug);
 					}
 				}
-				catch(Exception ex)
-                {
-					PMonitor.Log($"Failed getting TMX spouse room data. Exception: {ex}", LogLevel.Debug);
-				}
+
+			}
+			catch (Exception ex)
+			{
+				PMonitor.Log($"Failed getting TMX spouse room data. Exception: {ex}", LogLevel.Debug);
 			}
 		}
 
@@ -276,6 +277,7 @@ namespace MultipleSpouses
 			spouseToDivorce = null;
 			spouseRolesDate = -1;
 			allRandomSpouses = null;
+			bedMade = false;
 		}
 
 		private void Input_ButtonPressed(object sender, ButtonPressedEventArgs e)
@@ -341,22 +343,23 @@ namespace MultipleSpouses
 
 			int bedWidth = GetBedWidth(fh);
 			Point bedStart = GetBedStart(fh);
-			if (Game1.timeOfDay > 2000)
-            {
-				foreach (NPC character in fh.characters)
+			foreach (NPC character in fh.characters)
+			{
+				if (allRandomSpouses.Contains(character.Name))
 				{
-					if (allRandomSpouses.Contains(character.Name))
+					if (IsInBed(character.GetBoundingBox()))
 					{
 						character.farmerPassesThrough = true;
-						if (IsInBed(character) && !character.isMoving())
-						{
+                        if (Game1.timeOfDay >= 2000)
+                        {
 							Vector2 bedPos = GetSpouseBedLocation(character.name);
 							character.position.Value = bedPos;
+							character.Halt();
 						}
-						else
-                        {
-							character.farmerPassesThrough = false;
-						}
+					}
+					else
+                    {
+						character.farmerPassesThrough = false;
 					}
 				}
 			}
@@ -366,13 +369,13 @@ namespace MultipleSpouses
 			}
 		}
 
-		public static bool IsInBed(NPC npc)
+		public static bool IsInBed(Rectangle box)
 		{
 			FarmHouse fh = Utility.getHomeOfFarmer(Game1.player);
 			int bedWidth = GetBedWidth(fh);
 			Point bedStart = GetBedStart(fh);
-			Microsoft.Xna.Framework.Rectangle bed = new Microsoft.Xna.Framework.Rectangle(bedStart.X * 64, bedStart.Y * 64 + 64, bedWidth * 64, 3 * 64);
-			return npc.GetBoundingBox().Intersects(bed);
+			Rectangle bed = new Rectangle(bedStart.X * 64, bedStart.Y * 64 + 64, bedWidth * 64, 3 * 64);
+			return box.Intersects(bed);
 		}
 		public static void SetBedmates()
 		{

@@ -78,13 +78,14 @@ namespace MultipleSpouses
 				untitled = sheets.IndexOf("untitled tile sheet");
 
 
-				int ox = 0;
-				int oy = 0;
+				int ox = ModEntry.config.ExistingSpouseRoomOffsetX;
+				int oy = ModEntry.config.ExistingSpouseRoomOffsetY;
 				if (farmHouse.upgradeLevel > 1)
 				{
-					ox = 6;
-					oy = 9;
+					ox += 6;
+					oy += 9;
 				}
+
 
 				for (int i = 0; i < 7; i++)
 				{
@@ -106,7 +107,7 @@ namespace MultipleSpouses
 				for (int i = 0; i < 7; i++)
 				{
 					// horiz hall
-					farmHouse.setMapTileIndex(ox + 29 + i, oy + 10, (i % 2 == 0 ? ModEntry.config.HallTileOdd: ModEntry.config.HallTileEven), "Back", 0);
+					farmHouse.setMapTileIndex(ox + 29 + i, oy + 10, (i % 2 == 0 ? ModEntry.config.HallTileOdd: ModEntry.config.HallTileEven), "Back", (i % 2 == 0 ? config.HallTileOddSheet : config.HallTileEvenSheet));
 				}
 
 
@@ -129,7 +130,7 @@ namespace MultipleSpouses
 
 				int count = 0;
 
-				if (f.isMarried() && tmxSpouseRooms.ContainsKey(f.spouse))
+				if (f.spouse != null && f.isMarried() && tmxSpouseRooms.ContainsKey(f.spouse))
 				{
 					BuildOneSpouseRoom(farmHouse, f.spouse, -1);
 				}
@@ -311,12 +312,12 @@ namespace MultipleSpouses
 				}
 
 
-				int ox = 0;
-				int oy = 0;
+				int ox = ModEntry.config.ExistingSpouseRoomOffsetX;
+				int oy = ModEntry.config.ExistingSpouseRoomOffsetY;
 				if (farmHouse.upgradeLevel > 1)
 				{
-					ox = 6;
-					oy = 9;
+					ox += 6;
+					oy += 9;
 				}
 
 				for (int i = 0; i < 7; i++)
@@ -326,13 +327,13 @@ namespace MultipleSpouses
 					farmHouse.setMapTileIndex(ox + 36 + i + (count * 7), oy + 11, 0, "Buildings", 0);
 
 					// horiz hall
-					farmHouse.setMapTileIndex(ox + 36 + i + (count * 7), oy + 10, (i % 2 == 0 ? ModEntry.config.HallTileOdd : ModEntry.config.HallTileEven), "Back", 0);
+					farmHouse.setMapTileIndex(ox + 36 + i + (count * 7), oy + 10, (i % 2 == 0 ? ModEntry.config.HallTileOdd : ModEntry.config.HallTileEven), "Back", (i % 2 == 0 ? config.HallTileOddSheet : config.HallTileEvenSheet));
 
 					if(count > -1)
                     {
 						// vert hall
 						farmHouse.removeTile(ox + 35 + (7 * count), oy + 4 + i, "Back");
-						farmHouse.setMapTileIndex(ox + 35 + (7 * count), oy + 4 + i, (i % 2 == 0 ? config.HallTileOdd : config.HallTileEven), "Back", 0);
+						farmHouse.setMapTileIndex(ox + 35 + (7 * count), oy + 4 + i, (i % 2 == 0 ? config.HallTileOdd : config.HallTileEven), "Back", (i % 2 == 0 ? config.HallTileOddSheet : config.HallTileEvenSheet));
 					}
 				}
 
@@ -391,6 +392,20 @@ namespace MultipleSpouses
 						}
 					}
 				}
+				/*
+				List<string> sheets = new List<string>();
+				for (int i = 0; i < farmHouse.map.TileSheets.Count; i++)
+				{
+					sheets.Add(farmHouse.map.TileSheets[i].Id);
+				}
+				for (int i = 0; i < 7; i++)
+				{
+
+					// vert floor ext
+					farmHouse.removeTile(ox + 42 + (7 * count), oy + 4 + i, "Back");
+					farmHouse.setMapTileIndex(ox + 42 + (7 * count), oy + 4 + i, farmHouse.getTileIndexAt(ox + 41 + (7 * count), oy + 4 + i, "Back"), "Back", sheets.IndexOf(farmHouse.getTileSheetIDAt(ox + 41 + (7 * count), oy + 4 + i, "Back")));
+				}
+				*/
 			}
 		}
 
@@ -415,12 +430,12 @@ namespace MultipleSpouses
 				untitled = sheets.IndexOf("untitled tile sheet");
 
 
-				int ox = 0;
-				int oy = 0;
+				int ox = ModEntry.config.ExistingBedOffsetX;
+				int oy = ModEntry.config.ExistingBedOffsetY;
 				if (farmHouse.upgradeLevel > 1)
 				{
-					ox = 6;
-					oy = 9;
+					ox += 6;
+					oy += 9;
 				}
 
 				int bedWidth = ModEntry.GetBedWidth(farmHouse);

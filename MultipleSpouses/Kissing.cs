@@ -1,26 +1,11 @@
-﻿ using System;
-using System.Collections.Generic;
-using System.Reflection;
-using Harmony;
-using static Harmony.AccessTools;
-using Microsoft.Xna.Framework;
-using StardewModdingAPI;
-using StardewModdingAPI.Events;
-using StardewModdingAPI.Utilities;
-using StardewValley;
-using StardewValley.Locations;
-using xTile;
-using xTile.Dimensions;
-using xTile.Layers;
-using xTile.ObjectModel;
-using xTile.Tiles;
-using System.Linq;
-using StardewValley.Network;
-using System.Threading.Tasks;
+﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Audio;
-using System.IO;
-using StardewValley.Events;
-using StardewValley.Menus;
+using StardewValley;
+using StardewValley.Network;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace MultipleSpouses
 {
