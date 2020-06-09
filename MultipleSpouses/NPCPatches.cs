@@ -1,4 +1,5 @@
-﻿using Microsoft.Xna.Framework;
+﻿using Harmony;
+using Microsoft.Xna.Framework;
 using StardewModdingAPI;
 using StardewValley;
 using StardewValley.Buildings;
@@ -10,6 +11,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using System.Reflection.Emit;
 using xTile.Dimensions;
 
 namespace MultipleSpouses
@@ -302,9 +304,9 @@ namespace MultipleSpouses
 										}
 									});
 								}
-								if (ModEntry.config.RealKissSound && ModEntry.kissEffect != null)
+								if (ModEntry.config.RealKissSound && Kissing.kissEffect != null)
 								{
-									ModEntry.kissEffect.Play();
+									Kissing.kissEffect.Play();
 								}
 								else
 								{
@@ -1068,10 +1070,11 @@ namespace MultipleSpouses
 				{
 					foreach (NPC character in farmHouse.characters)
 					{
-						if (character.isVillager() && ModEntry.GetRandomSpouses(true).ContainsKey(character.Name) && character.position == new Vector2(spot2.X * 64f, spot2.Y * 64f))
+						if (character.isVillager() && ModEntry.GetAllSpouses().ContainsKey(character.Name) && ModEntry.IsInBed(character))
 						{
 							ModEntry.PMonitor.Log($"{character.Name} is already in bed");
 							ModEntry.bedSpouse = character.Name;
+							character.position.Value = ModEntry.GetSpouseBedLocation(character.name);
 							break;
 						}
 					}
@@ -1081,12 +1084,13 @@ namespace MultipleSpouses
 				{
 					ModEntry.PMonitor.Log($"{__instance.Name} is in kitchen");
 					__instance.setTilePosition(farmHouse.getKitchenStandingSpot());
-					ModEntry.bedSpouse = null;
+					ModEntry.kitchenSpouse = null;
 				}
 				else if (ModEntry.bedSpouse == __instance.Name)
 				{
 					ModEntry.PMonitor.Log($"{__instance.Name} is in bed");
-					__instance.setTilePosition(farmHouse.getSpouseBedSpot(__instance.Name));
+					__instance.position.Value = ModEntry.GetSpouseBedLocation(__instance.name);
+					__instance.faceDirection(ModEntry.myRand.NextDouble() > 0.5?1:3);
 					ModEntry.bedSpouse = null;
 				}
 				else if (!ModEntry.config.BuildAllSpousesRooms && spouse.spouse != __instance.Name)
@@ -1245,7 +1249,7 @@ namespace MultipleSpouses
 			}
 			friendship.WeddingDate = weddingDate;
 
-			ModEntry.BuildSpouseRoom(Utility.getHomeOfFarmer(who), "", -1);
+			Maps.BuildOneSpouseRoom(Utility.getHomeOfFarmer(who), "", -1);
 		}
 
 		public static bool NPC_isRoommate_Prefix(NPC __instance, ref bool __result)
@@ -1325,15 +1329,16 @@ namespace MultipleSpouses
 			return true;
 		}
 
-		public static bool NPC_tryToReceiveActiveObject_Prefix(NPC __instance, ref Farmer who, ref string __state)
+		public static bool NPC_tryToReceiveActiveObject_Prefix(NPC __instance, ref Farmer who)
 		{
 			try
 			{
 				if (who.ActiveObject.ParentSheetIndex == 458)
 				{
-					if (who.friendshipData.ContainsKey(__instance.Name) && who.friendshipData[__instance.Name].IsMarried() && !who.isEngaged())
+					if (ModEntry.GetAllSpouses().ContainsKey(__instance.Name))
 					{
 						who.spouse = __instance.Name;
+						ModEntry.ResetSpouses(who);
 						GameLocation l = Game1.getLocationFromName(Game1.player.homeLocation);
 						l.playSound("dwop", NetAudio.SoundContext.NPC);
 						Utility.getHomeOfFarmer(who).showSpouseRoom();
@@ -1364,9 +1369,17 @@ namespace MultipleSpouses
 						}
 						if (__instance.datable && who.friendshipData.ContainsKey(__instance.Name) && who.friendshipData[__instance.Name].IsDivorced())
 						{
-							__instance.CurrentDialogue.Push(new Dialogue(Game1.content.LoadString("Strings\\Characters:Divorced_bouquet"), __instance));
-							Game1.drawDialogue(__instance);
-							return false;
+                            if (ModEntry.config.FriendlyDivorce)
+                            {
+								who.friendshipData[__instance.Name].Points = ModEntry.config.MinPointsToDate;
+								who.friendshipData[__instance.Name].Status = FriendshipStatus.Friendly;
+							}
+							else
+                            {
+								__instance.CurrentDialogue.Push(new Dialogue(Game1.content.LoadString("Strings\\Characters:Divorced_bouquet"), __instance));
+								Game1.drawDialogue(__instance);
+								return false;
+							}
 						}
 						if (__instance.datable && who.friendshipData.ContainsKey(__instance.Name) && who.friendshipData[__instance.Name].Points < ModEntry.config.MinPointsToDate / 2f)
 						{
@@ -1400,8 +1413,7 @@ namespace MultipleSpouses
 						return false;
 					}
 				}
-
-				if (who.ActiveObject.ParentSheetIndex == 460)
+				else if (who.ActiveObject.ParentSheetIndex == 460)
 				{
 					if (who.isEngaged())
 					{
@@ -1437,7 +1449,7 @@ namespace MultipleSpouses
 					}
 					else
 					{
-						if (!__instance.datable || who.houseUpgradeLevel >= 1)
+						if (__instance.datable && who.houseUpgradeLevel >= 1)
 						{
 							typeof(NPC).GetMethod("engagementResponse", BindingFlags.NonPublic | BindingFlags.Instance).Invoke(__instance, new object[] { who, false });
 							return false;
@@ -1452,6 +1464,17 @@ namespace MultipleSpouses
 						return false;
 					}
 				}
+				else if (ModEntry.GetAllSpouses().ContainsKey(__instance.Name) && Game1.NPCGiftTastes.ContainsKey(__instance.Name) && !(who.ActiveObject.ParentSheetIndex == 277))
+                {
+					if (who.friendshipData[__instance.Name].GiftsToday < ModEntry.config.MaxGiftsPerDay || ModEntry.config.MaxGiftsPerDay < 0)
+					{
+						__instance.receiveGift(who.ActiveObject, who, true, 1f, true);
+						who.reduceActiveItemByOne();
+						who.completelyStopAnimatingOrDoingAction();
+						__instance.faceTowardFarmerForPeriod(4000, 3, false, who);
+						return false;
+					}
+				}
 			}
 			catch (Exception ex)
 			{
@@ -1459,14 +1482,12 @@ namespace MultipleSpouses
 			}
 			return true;
 		}
-		public static void NPC_tryToReceiveActiveObject_Postfix(NPC __instance, ref Farmer who, ref string __state)
+
+		public static void NPC_tryToReceiveActiveObject_Postfix(NPC __instance, ref Farmer who)
 		{
 			try
 			{
-				if (who.spouse != __state)
-				{
-					who.spouse = __state;
-				}
+
 			}
 			catch (Exception ex)
 			{

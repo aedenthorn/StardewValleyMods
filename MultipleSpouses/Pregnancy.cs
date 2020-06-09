@@ -24,30 +24,16 @@ namespace MultipleSpouses
 
 		public static bool Utility_pickPersonalFarmEvent_Prefix(ref FarmEvent __result)
 		{
-
+			lastBirthingSpouse = null;
+			lastPregnantSpouse = null;
 			ModEntry.PMonitor.Log("picking event");
-			Random r = new Random((int)(Game1.stats.DaysPlayed + (uint)((int)Game1.uniqueIDForThisGame / 2) ^ (uint)(470124797 + (int)Game1.player.UniqueMultiplayerID)));
 			if (Game1.weddingToday)
 			{
 				__result = null;
 				return false;
 			}
 
-			List<NPC> allSpouses = ModEntry.spouses.Values.ToList();
-			if (Game1.player.getSpouse() != null)
-			{
-				allSpouses.Add(Game1.player.getSpouse());
-			}
-
-			int n = allSpouses.Count;
-			while (n > 1)
-			{
-				n--;
-				int k = ModEntry.myRand.Next(n + 1);
-				NPC value = allSpouses[k];
-				allSpouses[k] = allSpouses[n];
-				allSpouses[n] = value;
-			}
+			List<NPC> allSpouses = ModEntry.GetRandomSpouses(true).Values.ToList();
 
 			foreach (NPC spouse in allSpouses)
 			{
@@ -216,6 +202,11 @@ namespace MultipleSpouses
 		}
 		public static bool BirthingEvent_setUp_Prefix(BirthingEvent __instance, ref bool ___isMale, ref string ___message, ref bool __result)
         {
+			if(lastBirthingSpouse == null)
+            {
+				__result = true;
+				return false;
+            }
 			Random r = new Random((int)Game1.uniqueIDForThisGame + (int)Game1.stats.DaysPlayed);
 			NPC spouse = lastBirthingSpouse;
 			Game1.player.CanMove = false;

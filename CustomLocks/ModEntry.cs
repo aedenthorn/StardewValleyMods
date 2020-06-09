@@ -1,20 +1,13 @@
 ﻿using Harmony;
-using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
-using Netcode;
 using StardewModdingAPI;
-using StardewModdingAPI.Events;
 using StardewValley;
 using StardewValley.Network;
-using StardewValley.TerrainFeatures;
 using System;
-using System.Collections.Generic;
-using System.Reflection;
 
 namespace CustomLocks
 {
-	/// <summary>The mod entry point.</summary>
-	public class ModEntry : Mod
+    /// <summary>The mod entry point.</summary>
+    public class ModEntry : Mod
 	{
 
 		public static ModConfig Config;

@@ -86,7 +86,7 @@ namespace CustomLocks
 			}
 			catch (Exception ex)
 			{
-				Monitor.Log($"Failed in {nameof(GameLocation_performAction_Prefix)}:\n{ex}", LogLevel.Error);
+				Monitor.Log($"Failed in {nameof(GameLocation_performTouchAction_Prefix)}:\n{ex}", LogLevel.Error);
 			}
 			return true;
 		}

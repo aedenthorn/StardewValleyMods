@@ -1,26 +1,24 @@
-﻿ using System;
-using System.Collections.Generic;
-using System.Reflection;
-using Harmony;
-using static Harmony.AccessTools;
+﻿using Harmony;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Audio;
 using StardewModdingAPI;
 using StardewModdingAPI.Events;
-using StardewModdingAPI.Utilities;
 using StardewValley;
+using StardewValley.Events;
 using StardewValley.Locations;
+using StardewValley.Menus;
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Reflection;
+using System.Threading;
 using xTile;
 using xTile.Dimensions;
 using xTile.Layers;
 using xTile.ObjectModel;
 using xTile.Tiles;
-using System.Linq;
-using StardewValley.Network;
-using System.Threading.Tasks;
-using Microsoft.Xna.Framework.Audio;
-using System.IO;
-using StardewValley.Events;
-using StardewValley.Menus;
+using static Harmony.AccessTools;
 
 namespace MultipleSpouses
 {
@@ -39,14 +37,15 @@ namespace MultipleSpouses
         public static string spouseToDivorce = null;
         public static int spouseRolesDate = -1;
 		public static Multiplayer mp;
-		public static List<string> kissingSpouses = new List<string>();
-		public static int lastKissTime = 0;
-		public static SoundEffect kissEffect = null;
 		public static Random myRand;
+        public static List<string> allRandomSpouses;
+        public static int bedSleepOffset = 48;
+        public static List<string> allBedmates;
+        public static bool bedMade = false;
 
-		/// <summary>The mod entry point, called after the mod is first loaded.</summary>
-		/// <param name="helper">Provides simplified APIs for writing mods.</param>
-		public override void Entry(IModHelper helper)
+        /// <summary>The mod entry point, called after the mod is first loaded.</summary>
+        /// <param name="helper">Provides simplified APIs for writing mods.</param>
+        public override void Entry(IModHelper helper)
 		{
 			config = Helper.ReadConfig<ModConfig>();
 
@@ -56,29 +55,20 @@ namespace MultipleSpouses
 			PMonitor = Monitor;
 			PHelper = helper;
 
-            helper.Events.GameLoop.DayStarted += GameLoop_DayStarted;
-            helper.Events.GameLoop.DayEnding += GameLoop_DayEnding;
-            helper.Events.GameLoop.ReturnedToTitle += GameLoop_ReturnedToTitle;
 			mp = helper.Reflection.GetField<Multiplayer>(typeof(Game1), "multiplayer").GetValue();
-			helper.Events.Input.ButtonPressed += Input_ButtonPressed;
 			myRand = new Random();
 
-
-
-			string filePath = $"{helper.DirectoryPath}\\assets\\kiss.wav";
-			PMonitor.Log("Kissing audio path: " + filePath);
-			if (File.Exists(filePath))
-			{
-				kissEffect = SoundEffect.FromStream(new FileStream(filePath, FileMode.Open));
-			}
-			else
-			{
-				PMonitor.Log("Kissing audio not found at path: " + filePath);
-			}
+            helper.Events.GameLoop.GameLaunched += GameLoop_GameLaunched;
+            helper.Events.GameLoop.SaveLoaded += GameLoop_SaveLoaded; 
+			helper.Events.Input.ButtonPressed += Input_ButtonPressed;
+			helper.Events.GameLoop.DayStarted += GameLoop_DayStarted;
+            helper.Events.GameLoop.DayEnding += GameLoop_DayEnding;
+            helper.Events.GameLoop.ReturnedToTitle += GameLoop_ReturnedToTitle;
 
 			NPCPatches.Initialize(Monitor);
 			LocationPatches.Initialize(Monitor);
-			MiscPatches.Initialize(Monitor);
+			FarmerPatches.Initialize(Monitor);
+			Maps.Initialize(Monitor);
 
 			var harmony = HarmonyInstance.Create(this.ModManifest.UniqueID);
 
@@ -192,23 +182,88 @@ namespace MultipleSpouses
 
 			harmony.Patch(
 			   original: AccessTools.Method(typeof(Farmer), nameof(Farmer.doDivorce)),
-			   prefix: new HarmonyMethod(typeof(MiscPatches), nameof(MiscPatches.Farmer_doDivorce_Prefix))
+			   prefix: new HarmonyMethod(typeof(FarmerPatches), nameof(FarmerPatches.Farmer_doDivorce_Prefix))
 			);
 
 		}
 
-        private void GameLoop_DayEnding(object sender, DayEndingEventArgs e)
+        private void GameLoop_SaveLoaded(object sender, SaveLoadedEventArgs e)
+        {
+		}
+
+        private void GameLoop_GameLaunched(object sender, GameLaunchedEventArgs e)
+        {
+			LoadKissAudio();
+		}
+
+		private void LoadKissAudio()
+		{
+			// kiss audio
+
+			string filePath = $"{PHelper.DirectoryPath}\\assets\\kiss.wav";
+			PMonitor.Log("Kissing audio path: " + filePath);
+			if (File.Exists(filePath))
+			{
+				Kissing.kissEffect = SoundEffect.FromStream(new FileStream(filePath, FileMode.Open));
+			}
+			else
+			{
+				PMonitor.Log("Kissing audio not found at path: " + filePath);
+			}
+		}
+
+		public static void LoadTMXSpouseRooms()
+		{
+			Maps.tmxSpouseRooms.Clear();
+			// TMX spouse rooms
+
+			var tmxlAPI = PHelper.ModRegistry.GetApi("Platonymous.TMXLoader");
+			var tmxlAssembly = tmxlAPI?.GetType()?.Assembly;
+			var tmxlModType = tmxlAssembly?.GetType("TMXLoader.TMXLoaderMod");
+			var tmxlEditorType = tmxlAssembly?.GetType("TMXLoader.TMXAssetEditor");
+			// check for nulls here
+			var tmxlHelper = PHelper.Reflection.GetField<IModHelper>(tmxlModType, "helper").GetValue();
+			foreach (var editor in tmxlHelper.Content.AssetEditors)
+			{
+                try
+                {
+					if (editor == null)
+						continue;
+					if (editor.GetType() != tmxlEditorType) continue;
+
+					if (editor.GetType().GetField("type", BindingFlags.NonPublic | BindingFlags.Instance).GetValue(editor).ToString() != "SpouseRoom") continue;
+
+					string name = (string)tmxlEditorType.GetField("assetName").GetValue(editor);
+					if (name != "FarmHouse1_marriage") continue;
+
+					object edit = tmxlEditorType.GetField("edit", BindingFlags.NonPublic | BindingFlags.Instance).GetValue(editor);
+					string info = (string)edit.GetType().GetProperty("info").GetValue(edit);
+
+					Map map = PHelper.Reflection.GetField<Map>(editor, "newMap").GetValue();
+					if (map != null && !Maps.tmxSpouseRooms.ContainsKey(info))
+					{
+						PMonitor.Log("Adding TMX spouse room for " + info, LogLevel.Debug);
+						Maps.tmxSpouseRooms.Add(info, map);
+					}
+				}
+				catch(Exception ex)
+                {
+					PMonitor.Log($"Failed getting TMX spouse room data. Exception: {ex}", LogLevel.Debug);
+				}
+			}
+		}
+
+		private void GameLoop_DayEnding(object sender, DayEndingEventArgs e)
         {
 			Helper.Events.GameLoop.OneSecondUpdateTicked -= GameLoop_OneSecondUpdateTicked;
+			allRandomSpouses = null;
 		}
 
 		private void GameLoop_DayStarted(object sender, DayStartedEventArgs e)
         {
 			Helper.Events.GameLoop.OneSecondUpdateTicked += GameLoop_OneSecondUpdateTicked;
-            if (config.CustomBed)
-            {
-				LocationPatches.ReplaceBed(Utility.getHomeOfFarmer(Game1.player));
-			}
+
+			allRandomSpouses = GetRandomSpouses(true).Keys.ToList();
 		}
 
 		private void GameLoop_ReturnedToTitle(object sender, ReturnedToTitleEventArgs e)
@@ -220,9 +275,10 @@ namespace MultipleSpouses
 			bedSpouse = null;
 			spouseToDivorce = null;
 			spouseRolesDate = -1;
+			allRandomSpouses = null;
 		}
 
-        private void Input_ButtonPressed(object sender, ButtonPressedEventArgs e)
+		private void Input_ButtonPressed(object sender, ButtonPressedEventArgs e)
 		{
 			if (e.Button == SButton.MouseLeft || e.Button == SButton.MouseRight)
 			{
@@ -285,21 +341,17 @@ namespace MultipleSpouses
 
 			int bedWidth = GetBedWidth(fh);
 			Point bedStart = GetBedStart(fh);
-			Dictionary<string,NPC> allSpouses = GetRandomSpouses(true);
 			if (Game1.timeOfDay > 2000)
             {
 				foreach (NPC character in fh.characters)
 				{
-					if (allSpouses.ContainsKey(character.Name))
+					if (allRandomSpouses.Contains(character.Name))
 					{
-						//Monitor.Log($"{character.Name} bounding box: {character.GetBoundingBox().X + character.GetBoundingBox().Width/2},{character.GetBoundingBox().Y + character.GetBoundingBox().Height/2}");
 						character.farmerPassesThrough = true;
-						Microsoft.Xna.Framework.Rectangle bed = new Microsoft.Xna.Framework.Rectangle(bedStart.X * 64, bedStart.Y * 64 + 64, bedWidth * 64, 3 * 64);
-						if (character.GetBoundingBox().Intersects(bed) && !character.isMoving())
+						if (IsInBed(character) && !character.isMoving())
 						{
-							int x =  (int)(allSpouses.Keys.ToList().IndexOf(character.Name) / (float)allSpouses.Count * (bedWidth - 1) * 64 + 32);
-							Monitor.Log($"moving {character.Name} by {x} pixels");
-							character.position.Value = new Vector2(bed.X + x, bed.Y + 48);
+							Vector2 bedPos = GetSpouseBedLocation(character.name);
+							character.position.Value = bedPos;
 						}
 						else
                         {
@@ -310,20 +362,60 @@ namespace MultipleSpouses
 			}
 			if (config.AllowSpousesToKiss)
             {
-				TrySpousesKiss();
+				Kissing.TrySpousesKiss();
 			}
 		}
 
-        public static Point GetBedStart(FarmHouse fh)
+		public static bool IsInBed(NPC npc)
+		{
+			FarmHouse fh = Utility.getHomeOfFarmer(Game1.player);
+			int bedWidth = GetBedWidth(fh);
+			Point bedStart = GetBedStart(fh);
+			Microsoft.Xna.Framework.Rectangle bed = new Microsoft.Xna.Framework.Rectangle(bedStart.X * 64, bedStart.Y * 64 + 64, bedWidth * 64, 3 * 64);
+			return npc.GetBoundingBox().Intersects(bed);
+		}
+		public static void SetBedmates()
+		{
+			if (allRandomSpouses == null)
+			{
+				allRandomSpouses = GetRandomSpouses(true).Keys.ToList();
+			}
+
+			List<string> bedmates = new List<string>();
+			bedmates.Add("Game1.player");
+			for (int i = 0; i < allRandomSpouses.Count; i++)
+			{
+				bedmates.Add(allRandomSpouses[i]);
+			}
+			allBedmates = new List<string>(bedmates);
+		}
+		public static Vector2 GetSpouseBedLocation(string name)
+		{
+			SetBedmates();
+			FarmHouse fh = Utility.getHomeOfFarmer(Game1.player);
+			int bedWidth = GetBedWidth(fh);
+			Point bedStart = GetBedStart(fh);
+			int x = (int)(allBedmates.IndexOf(name) / (float)allBedmates.Count * (bedWidth - 1) * 64);
+			return new Vector2(bedStart.X * 64 + x, bedStart.Y * 64 + 64 + bedSleepOffset + (name == "Game1.player"?32:0));
+		}
+
+		public static Point GetBedStart(FarmHouse fh)
         {
 			bool up = fh.upgradeLevel > 1;
-			return new Point(21 - (up ? (GetBedWidth(fh) / 2) - 1: 0) + 6,2 + (up?9:0));
+			return new Point(21 - (up ? (GetBedWidth(fh) / 2) - 1: 0) + (up ? 6 : 0), 2 + (up?9:0));
 		}
 
         public static int GetBedWidth(FarmHouse fh)
         {
-			bool up = fh.upgradeLevel > 1;
-			return Math.Min(up ? 9 : 7, Math.Max(config.BedWidth, 3));
+            if (config.CustomBed)
+            {
+				bool up = fh.upgradeLevel > 1;
+				return Math.Min(up ? 9 : 6, Math.Max(config.BedWidth, 3));
+			}
+			else
+            {
+				return 3;
+            }
 		}
 
 		public static void ResetSpouseRoles()
@@ -479,6 +571,16 @@ namespace MultipleSpouses
 			}
 		}
 
+		public static Dictionary<string,NPC> GetAllSpouses()
+        {
+			Dictionary<string, NPC> npcs = new Dictionary<string, NPC>(spouses);
+			NPC ospouse = Game1.player.getSpouse();
+			if (ospouse != null)
+            {
+				npcs.Add(ospouse.Name, ospouse);
+			}
+			return npcs;
+		}
 		public static Dictionary<string,NPC> GetRandomSpouses(bool all = false)
         {
 			Dictionary<string, NPC> npcs = new Dictionary<string, NPC>(spouses);
@@ -522,403 +624,5 @@ namespace MultipleSpouses
 		}
 
 
-        public static void TrySpousesKiss()
-        {
-			GameLocation location = Game1.currentLocation;
-
-			lastKissTime++;
-
-			if (location == null || location.characters == null)
-				return;
-
-			List<NPC> list = location.characters.ToList();
-
-			int n = list.Count;
-			while (n > 1)
-			{
-				n--;
-				int k = myRand.Next(n + 1);
-				NPC value = list[k];
-				list[k] = list[n];
-				list[n] = value;
-			}
-
-
-			foreach (NPC npc1 in list)
-			{
-				foreach (NPC npc2 in list)
-				{
-					if (npc1.Name == npc2.Name)
-						continue;
-
-					if (lastKissTime >= config.MinSpouseKissInterval)
-						kissingSpouses.Clear();
-
-
-
-
-					float distance = Vector2.Distance(npc1.position, npc2.position);
-					if (
-						npc1.getSpouse() != null && npc2.getSpouse() != null  
-						&& npc1.getSpouse().Name == npc2.getSpouse().Name 
-						&& distance < config.MaxDistanceToKiss 
-						&& !kissingSpouses.Contains(npc1.Name) 
-						&& !kissingSpouses.Contains(npc2.Name) 
-						&& lastKissTime > config.MinSpouseKissInterval 
-						&& ModEntry.myRand.NextDouble() < config.SpouseKissChance
-					)
-                    {
-						kissingSpouses.Add(npc1.Name);
-						kissingSpouses.Add(npc2.Name);
-						PMonitor.Log("spouses kissing"); 
-						lastKissTime = 0;
-						Vector2 npc1pos = npc1.position;
-						Vector2 npc2pos = npc2.position;
-						int npc1face = npc1.facingDirection;
-						int npc2face = npc1.facingDirection;
-						Vector2 midpoint = new Vector2((npc1.position.X + npc2.position.X) / 2, (npc1.position.Y + npc2.position.Y) / 2);
-						PerformKiss(npc1, midpoint, npc2.Name);
-						PerformKiss(npc2, midpoint, npc1.Name);
-						DelayedAction action = new DelayedAction(1000);
-						var t = Task.Run(async delegate
-						{
-							await Task.Delay(TimeSpan.FromSeconds(1));
-							npc1.position.Value = npc1pos;
-							npc2.position.Value = npc2pos;
-							npc1.FacingDirection = npc1face;
-							npc2.FacingDirection = npc2face;
-							return;
-						});
-					}
-				}
-			}
-		}
-
-        private static void PerformKiss(NPC npc, Vector2 midpoint, string partner)
-        {
-			int spouseFrame = 28;
-			bool facingRight = true;
-			string name = npc.Name;
-			if (name == "Sam")
-			{
-				spouseFrame = 36;
-				facingRight = true;
-			}
-			else if (name == "Penny")
-			{
-				spouseFrame = 35;
-				facingRight = true;
-			}
-			else if (name == "Sebastian")
-			{
-				spouseFrame = 40;
-				facingRight = false;
-			}
-			else if (name == "Alex")
-			{
-				spouseFrame = 42;
-				facingRight = true;
-			}
-			else if (name == "Krobus")
-			{
-				spouseFrame = 16;
-				facingRight = true;
-			}
-			else if (name == "Maru")
-			{
-				spouseFrame = 28;
-				facingRight = false;
-			}
-			else if (name == "Emily")
-			{
-				spouseFrame = 33;
-				facingRight = false;
-			}
-			else if (name == "Harvey")
-			{
-				spouseFrame = 31;
-				facingRight = false;
-			}
-			else if (name == "Shane")
-			{
-				spouseFrame = 34;
-				facingRight = false;
-			}
-			else if (name == "Elliott")
-			{
-				spouseFrame = 35;
-				facingRight = false;
-			}
-			else if (name == "Leah")
-			{
-				spouseFrame = 25;
-				facingRight = true;
-			}
-			else if (name == "Abigail")
-			{
-				spouseFrame = 33;
-				facingRight = false;
-			}
-
-			bool right = npc.position.X < midpoint.X;
-			if(npc.position == midpoint)
-            {
-				right = String.Compare(npc.Name, partner) < 0;
-			}
-			else if(npc.position.X == midpoint.X)
-            {
-				right = npc.position.Y > midpoint.Y;
-            }
-
-			bool flip = (facingRight && !right) || (!facingRight && right);
-
-			int offset = 24;
-			if (right)
-				offset *= -1;
-
-			npc.position.Value = new Vector2(midpoint.X+offset,midpoint.Y);
-
-			int delay = 1000;
-			npc.movementPause = delay;
-			npc.Sprite.setCurrentAnimation(new List<FarmerSprite.AnimationFrame>
-				{
-					new FarmerSprite.AnimationFrame(spouseFrame, delay, false, flip, new AnimatedSprite.endOfAnimationBehavior(npc.haltMe), true)
-				});
-			npc.doEmote(20, true);
-            if (config.RealKissSound && kissEffect != null)
-            {
-				float distance = 1f / ((Vector2.Distance(midpoint, Game1.player.position) / 256) + 1);
-				float pan = (float)(Math.Atan((midpoint.X - Game1.player.position.X) / Math.Abs(midpoint.Y - Game1.player.position.Y)) /(Math.PI/2));
-				PMonitor.Log($"kiss distance: {distance} pan: {pan}");
-				kissEffect.Play(distance, 0, pan);
-			}
-			else
-            {
-				Game1.currentLocation.playSound("dwop", NetAudio.SoundContext.NPC);
-			}
-
-			npc.Sprite.UpdateSourceRect();
-		}
-
-        public static void BuildSpouseRoom(FarmHouse farmHouse, string name, int count)
-        {
-
-			NPC spouse = Game1.getCharacterFromName(name);
-			string back = "Back";
-			string buildings = "Buildings";
-			string front = "Front";
-			if (spouse != null || name == "")
-			{
-				Map refurbishedMap;
-				if (name == "")
-                {
-					refurbishedMap = PHelper.Content.Load<Map>("Maps\\" + farmHouse.Name + ((farmHouse.upgradeLevel == 0) ? "" : ((farmHouse.upgradeLevel == 3) ? "2" : string.Concat(farmHouse.upgradeLevel))) + "_marriage", ContentSource.GameContent);
-				}
-                else
-                {
-					refurbishedMap = PHelper.Content.Load<Map>("Maps\\spouseRooms", ContentSource.GameContent);
-				}
-				int indexInSpouseMapSheet = -1;
-				if (name == "Sam")
-				{
-					indexInSpouseMapSheet = 9;
-				}
-				else if (name == "Penny")
-				{
-					indexInSpouseMapSheet = 1;
-				}
-				else if (name == "Sebastian")
-				{
-					indexInSpouseMapSheet = 5;
-				}
-				else if (name == "Alex")
-				{
-					indexInSpouseMapSheet = 6;
-				}
-				else if (name == "Krobus")
-				{
-					indexInSpouseMapSheet = 12;
-				}
-				else if (name == "Maru")
-				{
-					indexInSpouseMapSheet = 4;
-				}
-				else if (name == "Haley")
-				{
-					indexInSpouseMapSheet = 3;
-				}
-				else if (name == "Harvey")
-				{
-					indexInSpouseMapSheet = 7;
-				}
-				else if (name == "Shane")
-				{
-					indexInSpouseMapSheet = 10;
-				}
-				else if (name == "Abigail")
-				{
-					indexInSpouseMapSheet = 0;
-				}
-				else if (name == "Emily")
-				{
-					indexInSpouseMapSheet = 11;
-				}
-				else if (name == "Elliott")
-				{
-					indexInSpouseMapSheet = 8;
-				}
-				else if (name == "Leah")
-				{
-					indexInSpouseMapSheet = 2;
-				}
-				else if(name == "Victor" || name == "Olivia" || name == "Sophia")
-                {
-					back = "BackSpouse";
-					buildings = "BuildingsSpouse";
-					front = "FrontSpouse";
-
-					refurbishedMap = PHelper.Content.Load<Map>($"../[TMX] Stardew Valley Expanded/assets/{name}sRoom.tmx", ContentSource.ModFolder);
-					if(refurbishedMap == null)
-                    {
-						refurbishedMap = ModEntry.PHelper.Content.Load<Map>($"../../[TMX] Stardew Valley Expanded/assets/{name}sRoom.tmx", ContentSource.ModFolder);
-					}
-					if (refurbishedMap == null)
-                    {
-						ModEntry.PMonitor.Log($"Couldn't load spouse room for SVE spouse {name}", LogLevel.Error);
-						return;
-					}
-					indexInSpouseMapSheet = 0;
-
-				}
-
-
-				PMonitor.Log($"Building {name}'s room", LogLevel.Debug);
-				
-				Microsoft.Xna.Framework.Rectangle areaToRefurbish = (farmHouse.upgradeLevel == 1) ? new Microsoft.Xna.Framework.Rectangle(36+(7*count), 1, 6, 9) : new Microsoft.Xna.Framework.Rectangle(42+(7 * count), 10, 6, 9);
-
-				List<Layer> layers = FieldRefAccess<Map, List<Layer>>(farmHouse.map, "m_layers");
-				for(int i = 0; i < layers.Count; i++)
-                {
-					Tile[,] tiles = FieldRefAccess<Layer, Tile[,]>(layers[i], "m_tiles");
-					Size size = FieldRefAccess<Layer, Size>(layers[i], "m_layerSize");
-					if (size.Width >= areaToRefurbish.X + 7)
-						continue;
-					size = new Size(size.Width + 7, size.Height);
-					FieldRefAccess<Layer, Size>(layers[i], "m_layerSize") = size;
-					FieldRefAccess<Map, List<Layer>>(farmHouse.map, "m_layers") = layers;
-
-					Tile[,] newTiles = new Tile[tiles.GetLength(0) + 7, tiles.GetLength(1)];
-
-					for (int k = 0; k < tiles.GetLength(0); k++)
-					{
-						for (int l = 0; l < tiles.GetLength(1); l++)
-						{
-							newTiles[k, l] = tiles[k, l];
-						}
-					}
-
-					FieldRefAccess<Layer, Tile[,]>(layers[i], "m_tiles") = newTiles;
-					FieldRefAccess<Layer, TileArray>(layers[i], "m_tileArray") = new TileArray(layers[i], newTiles);
-				}
-				FieldRefAccess<Map, List<Layer>>(farmHouse.map, "m_layers") = layers;
-
-
-				Point mapReader;
-				if(name == "")
-                {
-					mapReader = new Point(areaToRefurbish.X, areaToRefurbish.Y);
-                }
-				else
-                {
-					mapReader = new Point(indexInSpouseMapSheet % 5 * 6, indexInSpouseMapSheet / 5 * 9);
-				}
-				farmHouse.map.Properties.Remove("DayTiles");
-				farmHouse.map.Properties.Remove("NightTiles");
-
-
-				int untitled = 0;
-				for (int i = 0; i < farmHouse.map.TileSheets.Count; i++)
-				{
-					if (farmHouse.map.TileSheets[i].Id == "untitled tile sheet")
-						untitled = i;
-				}
-
-
-				int ox = 0;
-				int oy = 0;
-				if (farmHouse.upgradeLevel > 1)
-				{
-					ox = 6;
-					oy = 9;
-				}
-
-				for (int i = 0; i < 7; i++)
-				{
-					farmHouse.setMapTileIndex(ox + 36 + i + (count*7), oy + 10, 165, "Front", 0);
-					farmHouse.setMapTileIndex(ox + 36 + i + (count*7), oy + 11, 0, "Buildings", 0);
-				}
-				for (int i = 0; i < 3; i++)
-				{
-					farmHouse.setMapTileIndex(ox + 36 + (i * 2) + (count * 7), oy + 10, config.HallTileOdd, "Back", 0);
-					farmHouse.setMapTileIndex(ox + 36 + (i * 2 + 1) + (count * 7), oy + 10, config.HallTileEven, "Back", 0);
-				}
-				farmHouse.setMapTileIndex(ox + 42 + (count * 7), oy + 10, config.HallTileOdd, "Back", 0);
-
-				for (int i = 0; i < 6; i++)
-				{
-					farmHouse.setMapTileIndex(ox + 36 + i + (count * 7), oy + 0, 2, "Buildings", 0);
-					farmHouse.setMapTileIndex(ox + 35 + (7 * count), oy + 1 + i, 99, "Buildings", untitled);
-				}
-
-				farmHouse.setMapTileIndex(ox + 35 + (7 * count), oy + 0, 87, "Buildings", untitled);
-				farmHouse.setMapTileIndex(ox + 35 + (7 * count), oy + 7, 111, "Buildings", untitled);
-				farmHouse.setMapTileIndex(ox + 35 + (7 * count), oy + 8, 123, "Buildings", untitled);
-				farmHouse.setMapTileIndex(ox + 35 + (7 * count), oy + 9, 135, "Buildings", untitled);
-				farmHouse.setMapTileIndex(ox + 35 + (7 * count), oy + 9, 54, "Back", untitled);
-
-
-				for (int x = 0; x < areaToRefurbish.Width; x++)
-				{
-					for (int y = 0; y < areaToRefurbish.Height; y++)
-					{
-						//PMonitor.Log($"x {x}, y {y}", LogLevel.Debug);
-						if (refurbishedMap.GetLayer(back).Tiles[mapReader.X + x, mapReader.Y + y] != null)
-						{
-							farmHouse.map.GetLayer("Back").Tiles[areaToRefurbish.X + x, areaToRefurbish.Y + y] = new StaticTile(farmHouse.map.GetLayer("Back"), farmHouse.map.GetTileSheet(refurbishedMap.GetLayer(back).Tiles[mapReader.X + x, mapReader.Y + y].TileSheet.Id), BlendMode.Alpha, refurbishedMap.GetLayer(back).Tiles[mapReader.X + x, mapReader.Y + y].TileIndex);
-						}
-						if (refurbishedMap.GetLayer(buildings).Tiles[mapReader.X + x, mapReader.Y + y] != null)
-						{
-							farmHouse.map.GetLayer("Buildings").Tiles[areaToRefurbish.X + x, areaToRefurbish.Y + y] = new StaticTile(farmHouse.map.GetLayer("Buildings"), farmHouse.map.GetTileSheet(refurbishedMap.GetLayer(buildings).Tiles[mapReader.X + x, mapReader.Y + y].TileSheet.Id), BlendMode.Alpha, refurbishedMap.GetLayer(buildings).Tiles[mapReader.X + x, mapReader.Y + y].TileIndex);
-
-							typeof(GameLocation).GetMethod("adjustMapLightPropertiesForLamp", BindingFlags.NonPublic | BindingFlags.Instance).Invoke(farmHouse, new object[] { refurbishedMap.GetLayer(buildings).Tiles[mapReader.X + x, mapReader.Y + y].TileIndex, areaToRefurbish.X + x, areaToRefurbish.Y + y, "Buildings" });
-						}
-						else
-						{
-							farmHouse.map.GetLayer("Buildings").Tiles[areaToRefurbish.X + x, areaToRefurbish.Y + y] = null;
-						}
-						if (y < areaToRefurbish.Height - 1 && refurbishedMap.GetLayer(front).Tiles[mapReader.X + x, mapReader.Y + y] != null)
-						{
-							farmHouse.map.GetLayer("Front").Tiles[areaToRefurbish.X + x, areaToRefurbish.Y + y] = new StaticTile(farmHouse.map.GetLayer("Front"), farmHouse.map.GetTileSheet(refurbishedMap.GetLayer(front).Tiles[mapReader.X + x, mapReader.Y + y].TileSheet.Id), BlendMode.Alpha, refurbishedMap.GetLayer(front).Tiles[mapReader.X + x, mapReader.Y + y].TileIndex);
-							typeof(GameLocation).GetMethod("adjustMapLightPropertiesForLamp", BindingFlags.NonPublic | BindingFlags.Instance).Invoke(farmHouse, new object[] { refurbishedMap.GetLayer(front).Tiles[mapReader.X + x, mapReader.Y + y].TileIndex, areaToRefurbish.X + x, areaToRefurbish.Y + y, "Front" });
-						}
-						else if (y < areaToRefurbish.Height - 1)
-						{
-							farmHouse.map.GetLayer("Front").Tiles[areaToRefurbish.X + x, areaToRefurbish.Y + y] = null;
-						}
-						if (x == 4 && y == 4)
-						{
-                            try
-                            {
-								farmHouse.map.GetLayer("Back").Tiles[areaToRefurbish.X + x, areaToRefurbish.Y + y].Properties["NoFurniture"] = new PropertyValue("T");
-							}
-                            catch(Exception ex)
-                            {
-								PMonitor.Log(ex.ToString());
-                            }
-						}
-					}
-				}
-			}
-		}
 	}
 }

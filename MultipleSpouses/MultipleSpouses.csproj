@@ -44,9 +44,11 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Maps.cs" />
     <Compile Include="ModConfig.cs" />
+    <Compile Include="Kissing.cs" />
     <Compile Include="ModEntry.cs" />
-    <Compile Include="MiscPatches.cs" />
+    <Compile Include="FarmerPatches.cs" />
     <Compile Include="Pregnancy.cs" />
     <Compile Include="NPCPatches.cs" />
     <Compile Include="LocationPatches.cs" />

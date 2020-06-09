@@ -13,6 +13,7 @@ namespace MultipleSpouses
         public bool BuyPendantsAnytime { get; set; } = false;
         public int MinPointsToMarry { get; set; } = 2500;
         public int MinPointsToDate { get; set; } = 2000;
+        public int MaxGiftsPerDay { get; set; } = 1;
         public int DaysUntilMarriage { get; set; } = 3;
         public bool FriendlyDivorce { get; set; } = true;
         public bool BuildAllSpousesRooms { get; set; } = true;
