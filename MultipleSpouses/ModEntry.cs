@@ -36,6 +36,7 @@ namespace MultipleSpouses
         public static int bedSleepOffset = 48;
         public static List<string> allBedmates;
         public static bool bedMade = false;
+        public static string officialSpouse = null;
 
         /// <summary>The mod entry point, called after the mod is first loaded.</summary>
         /// <param name="helper">Provides simplified APIs for writing mods.</param>
@@ -513,7 +514,13 @@ namespace MultipleSpouses
         public static void ResetSpouses(Farmer f)
         {
             PMonitor.Log("Resetting spouses");
-            PMonitor.Log("official spouse: " + f.spouse);
+
+            if (f.spouse == null)
+            {
+                 f.spouse = officialSpouse;
+            }
+            officialSpouse = f.spouse;
+
             spouses.Clear();
             foreach (string name in f.friendshipData.Keys)
             {
@@ -528,6 +535,7 @@ namespace MultipleSpouses
                     {
                         PMonitor.Log("setting spouse to engagee: " + name);
                         f.spouse = name;
+                        officialSpouse = name;
                     }
                     continue;
                 }
@@ -541,11 +549,14 @@ namespace MultipleSpouses
                     {
                         PMonitor.Log("invalid ospouse, setting: " + name);
                         f.spouse = name;
+                        officialSpouse = name;
                         continue;
                     }
                     if (f.spouse == null)
                     {
+                        PMonitor.Log("null ospouse, setting: " + name);
                         f.spouse = name;
+                        officialSpouse = name;
                         continue;
                     }
 
@@ -572,8 +583,9 @@ namespace MultipleSpouses
                     PMonitor.Log("adding spouse: " + name);
                     spouses.Add(name,npc);
                 }
-                Utility.getHomeOfFarmer(f).showSpouseRoom();
             }
+            Utility.getHomeOfFarmer(f).showSpouseRoom();
+            PMonitor.Log("official spouse: " + officialSpouse);
         }
 
         public static Dictionary<string,NPC> GetAllSpouses()

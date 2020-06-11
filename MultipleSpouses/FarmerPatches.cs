@@ -50,7 +50,7 @@ namespace MultipleSpouses
                     ModEntry.ResetSpouses(__instance);
                     ModEntry.PHelper.Content.InvalidateCache("Maps/FarmHouse1_marriage");
                     ModEntry.PHelper.Content.InvalidateCache("Maps/FarmHouse2_marriage");
-                    typeof(FarmHouse).GetMethod("resetLocalState", BindingFlags.NonPublic | BindingFlags.Instance).Invoke(Utility.getHomeOfFarmer(__instance), new object[] { });
+                    Utility.getHomeOfFarmer(__instance).resetForPlayerEntry();
                     Utility.getHomeOfFarmer(__instance).showSpouseRoom();
                     Game1.getFarm().addSpouseOutdoorArea(__instance.spouse == null ? "" : __instance.spouse);
                 }

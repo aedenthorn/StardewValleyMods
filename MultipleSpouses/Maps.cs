@@ -326,14 +326,22 @@ namespace MultipleSpouses
 					farmHouse.setMapTileIndex(ox + 36 + i + (count * 7), oy + 10, 165, "Front", 0);
 					farmHouse.setMapTileIndex(ox + 36 + i + (count * 7), oy + 11, 0, "Buildings", 0);
 
-					// horiz hall
-					farmHouse.setMapTileIndex(ox + 36 + i + (count * 7), oy + 10, (i % 2 == 0 ? ModEntry.config.HallTileOdd : ModEntry.config.HallTileEven), "Back", (i % 2 == 0 ? config.HallTileOddSheet : config.HallTileEvenSheet));
 
-					if(count > -1)
+					farmHouse.removeTile(ox + 35 + (7 * count), oy + 4 + i, "Back");
+
+					if (count % 2 == 0)
                     {
 						// vert hall
-						farmHouse.removeTile(ox + 35 + (7 * count), oy + 4 + i, "Back");
 						farmHouse.setMapTileIndex(ox + 35 + (7 * count), oy + 4 + i, (i % 2 == 0 ? config.HallTileOdd : config.HallTileEven), "Back", (i % 2 == 0 ? config.HallTileOddSheet : config.HallTileEvenSheet));
+						// horiz hall
+						farmHouse.setMapTileIndex(ox + 36 + i + (count * 7), oy + 10, (i % 2 == 0 ? ModEntry.config.HallTileEven : ModEntry.config.HallTileOdd), "Back", (i % 2 == 0 ? config.HallTileEvenSheet : config.HallTileOddSheet));
+					}
+					else
+                    {
+						// vert hall
+						farmHouse.setMapTileIndex(ox + 35 + (7 * count), oy + 4 + i, (i % 2 == 0 ? config.HallTileEven : config.HallTileOdd), "Back", (i % 2 == 0 ? config.HallTileEvenSheet: config.HallTileOddSheet));
+						// horiz hall
+						farmHouse.setMapTileIndex(ox + 36 + i + (count * 7), oy + 10, (i % 2 == 0 ? ModEntry.config.HallTileOdd : ModEntry.config.HallTileEven), "Back", (i % 2 == 0 ? config.HallTileOddSheet : config.HallTileEvenSheet));
 					}
 				}
 

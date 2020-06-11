@@ -123,6 +123,7 @@
     <Content Include="assets\skin_colours.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <None Include="assets\work\36466006.zip" />
     <None Include="assets\work\all_dialogues.json" />
     <None Include="assets\work\dialog.json" />
     <None Include="assets\work\dialogues_new.json" />

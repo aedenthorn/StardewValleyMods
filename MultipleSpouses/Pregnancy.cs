@@ -211,14 +211,7 @@ namespace MultipleSpouses
             Random r = new Random((int)Game1.uniqueIDForThisGame + (int)Game1.stats.DaysPlayed);
             NPC spouse = lastBirthingSpouse;
             Game1.player.CanMove = false;
-            if (Game1.player.getNumberOfChildren() == 0)
-            {
-                ___isMale = (r.NextDouble() > ModEntry.config.FemaleBabyChance);
-            }
-            else
-            {
-                ___isMale = (Game1.player.getChildren()[0].Gender == 1);
-            }
+            ___isMale = (r.NextDouble() > ModEntry.config.FemaleBabyChance);
             if (spouse.isGaySpouse() && !ModEntry.config.AllowGayPregnancies)
             {
                 ___message = Game1.content.LoadString("Strings\\Events:BirthMessage_Adoption", Lexicon.getGenderedChildTerm(___isMale));
