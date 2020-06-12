@@ -16,6 +16,7 @@ namespace MultipleSpouses
         public int MaxGiftsPerDay { get; set; } = 1;
         public int DaysUntilMarriage { get; set; } = 3;
         public bool FriendlyDivorce { get; set; } = true;
+        public bool RoommateRomance { get; set; } = true;
         public bool AllowSpousesToKiss { get; set; } = true;
         public float SpouseKissChance { get; set; } = 0.5f;
         public bool RealKissSound { get; set; } = true;
@@ -27,6 +28,7 @@ namespace MultipleSpouses
         public int PregnancyDays { get; set; } = 14;
         public int MaxChildren { get; set; } = 2;
         public bool ChildrenHaveHairOfSpouse { get; set; } = true;
+        public int ChildGrowthMultiplier { get; set; } = 1;
         public bool ShowParentNames { get; set; } = true;
         public bool BuildAllSpousesRooms { get; set; } = true;
         public int ExistingSpouseRoomOffsetX { get; set; } = 0;

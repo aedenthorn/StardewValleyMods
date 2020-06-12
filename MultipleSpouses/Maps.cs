@@ -25,6 +25,21 @@ namespace MultipleSpouses
         private static ModConfig config;
         private static IModHelper PHelper;
         public static Dictionary<string, Map> tmxSpouseRooms = new Dictionary<string, Map>();
+		public static Dictionary<string, int> roomIndexes = new Dictionary<string, int>{
+			{ "Sam", 9 },
+			{ "Penny", 1 },
+			{ "Sebastian", 5 },
+			{ "Alex", 6 },
+			{ "Krobus", 12 },
+			{ "Maru", 4 },
+			{ "Haley", 3 },
+			{ "Harvey", 7 },
+			{ "Shane", 10 },
+			{ "Abigail", 0 },
+			{ "Emily", 11 },
+			{ "Elliott", 8 },
+			{ "Leah", 2 }
+		};
 
 		// call this method from your Entry class
 		public static void Initialize(IMonitor monitor)
@@ -42,8 +57,6 @@ namespace MultipleSpouses
 				if (f == null)
 					return;
 
-				ModEntry.LoadTMXSpouseRooms();
-
 				if (ModEntry.spouses.ContainsKey("Emily") && f.spouse != "Emily" && Game1.player.eventsSeen.Contains(463391))
 				{
 					int offset = (ModEntry.spouses.Keys.ToList().IndexOf("Emily") + 1) * 7 * 64;
@@ -60,8 +73,10 @@ namespace MultipleSpouses
 
 				foreach (NPC spouse in ModEntry.spouses.Values)
 				{
-					string name = spouse.Name;
-					mySpouses.Add(spouse);
+					if(roomIndexes.ContainsKey(spouse.Name) || tmxSpouseRooms.ContainsKey(spouse.Name))
+                    {
+						mySpouses.Add(spouse);
+					}
 				}
 
 				if (farmHouse.upgradeLevel > 3 || mySpouses.Count == 0)
@@ -130,10 +145,19 @@ namespace MultipleSpouses
 
 				int count = 0;
 
-				if (f.spouse != null && f.isMarried() && tmxSpouseRooms.ContainsKey(f.spouse))
+				if (f.spouse != null)
 				{
-					BuildOneSpouseRoom(farmHouse, f.spouse, -1);
+					if(roomIndexes.ContainsKey(f.spouse) || tmxSpouseRooms.ContainsKey(f.spouse))
+                    {
+						BuildOneSpouseRoom(farmHouse, (f.friendshipData[f.spouse].IsMarried() ? f.spouse : ""), -1);
+					}
+					else
+                    {
+						BuildOneSpouseRoom(farmHouse, (mySpouses[0].Name), -1);
+						mySpouses = new List<NPC>(mySpouses.Skip(1));
+					}
 				}
+
 
 				ExtendMap(farmHouse, ox + 37 + (7*mySpouses.Count));
 
@@ -182,58 +206,11 @@ namespace MultipleSpouses
 					refurbishedMap = PHelper.Content.Load<Map>("Maps\\spouseRooms", ContentSource.GameContent);
 				}
 				int indexInSpouseMapSheet = -1;
-				if (name == "Sam")
-				{
-					indexInSpouseMapSheet = 9;
-				}
-				else if (name == "Penny")
-				{
-					indexInSpouseMapSheet = 1;
-				}
-				else if (name == "Sebastian")
-				{
-					indexInSpouseMapSheet = 5;
-				}
-				else if (name == "Alex")
-				{
-					indexInSpouseMapSheet = 6;
-				}
-				else if (name == "Krobus")
-				{
-					indexInSpouseMapSheet = 12;
-				}
-				else if (name == "Maru")
-				{
-					indexInSpouseMapSheet = 4;
-				}
-				else if (name == "Haley")
-				{
-					indexInSpouseMapSheet = 3;
-				}
-				else if (name == "Harvey")
-				{
-					indexInSpouseMapSheet = 7;
-				}
-				else if (name == "Shane")
-				{
-					indexInSpouseMapSheet = 10;
-				}
-				else if (name == "Abigail")
-				{
-					indexInSpouseMapSheet = 0;
-				}
-				else if (name == "Emily")
-				{
-					indexInSpouseMapSheet = 11;
-				}
-				else if (name == "Elliott")
-				{
-					indexInSpouseMapSheet = 8;
-				}
-				else if (name == "Leah")
-				{
-					indexInSpouseMapSheet = 2;
-				}
+
+                if (roomIndexes.ContainsKey(name))
+                {
+					indexInSpouseMapSheet = roomIndexes[name];
+                }
 				else if (tmxSpouseRooms.ContainsKey(name))
 				{
 
@@ -256,6 +233,10 @@ namespace MultipleSpouses
 
 					indexInSpouseMapSheet = 0;
 				}
+                else if(name != "")
+                {
+					return;
+                }
 
 
 				Monitor.Log($"Building {name}'s room", LogLevel.Debug);

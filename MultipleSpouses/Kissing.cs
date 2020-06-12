@@ -1,5 +1,6 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Audio;
+using StardewModdingAPI;
 using StardewValley;
 using StardewValley.Network;
 using System;
@@ -12,13 +13,20 @@ namespace MultipleSpouses
     /// <summary>The mod entry point.</summary>
     public class Kissing
     {
-
+		private static IMonitor Monitor;
+		private static ModConfig config;
+		private static IModHelper PHelper;
 		public static List<string> kissingSpouses = new List<string>();
 		public static int lastKissTime = 0;
 		public static SoundEffect kissEffect = null;
+		public static void Initialize(IMonitor monitor)
+		{
+			Monitor = monitor;
+			config = ModEntry.config;
+			PHelper = ModEntry.PHelper;
+		}
 
-
-        public static void TrySpousesKiss()
+		public static void TrySpousesKiss()
         {
 			GameLocation location = Game1.currentLocation;
 
@@ -33,15 +41,21 @@ namespace MultipleSpouses
 
 			foreach (NPC npc1 in list)
 			{
+				if (!ModEntry.config.RoommateRomance && Game1.player.friendshipData[npc1.Name].RoommateMarriage)
+                {
+					continue;
+                }
+
+
 				foreach (NPC npc2 in list)
 				{
-					if (npc1.Name == npc2.Name)
+					if (npc1.Name == npc2.Name || !ModEntry.config.RoommateRomance && Game1.player.friendshipData[npc1.Name].RoommateMarriage)
+					{
 						continue;
+					}
 
 					if (lastKissTime >= ModEntry.config.MinSpouseKissInterval)
 						kissingSpouses.Clear();
-
-
 
 
 					float distance = Vector2.Distance(npc1.position, npc2.position);

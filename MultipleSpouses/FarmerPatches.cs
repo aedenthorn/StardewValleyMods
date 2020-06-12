@@ -46,6 +46,14 @@ namespace MultipleSpouses
                     __instance.friendshipData[key].RoommateMarriage = false;
                     NPC ex = Game1.getCharacterFromName(key);
                     ex.PerformDivorce();
+                    if(ModEntry.officialSpouse == key)
+                    {
+                        ModEntry.officialSpouse = null;
+                    }
+                    if(__instance.spouse == key)
+                    {
+                        __instance.spouse = null;
+                    }
                     ModEntry.ResetSpouses(__instance);
                     ModEntry.PHelper.Content.InvalidateCache("Maps/FarmHouse1_marriage");
                     ModEntry.PHelper.Content.InvalidateCache("Maps/FarmHouse2_marriage");

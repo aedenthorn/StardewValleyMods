@@ -64,6 +64,9 @@ namespace MultipleSpouses
                     return;
                 }
                 ModEntry.PMonitor.Log("reset farm state");
+                ModEntry.PHelper.Content.InvalidateCache("Maps/FarmHouse1_marriage");
+                ModEntry.PHelper.Content.InvalidateCache("Maps/FarmHouse2");
+                ModEntry.PHelper.Content.InvalidateCache("Maps/FarmHouse2_marriage");
 
                 FarmHouse farmHouse = __instance as FarmHouse;
 
@@ -76,19 +79,17 @@ namespace MultipleSpouses
                 {
                     f.position.Value = ModEntry.GetSpouseBedLocation("Game1.player");
                 }
-                if (ModEntry.config.CustomBed && !ModEntry.bedMadeToday)
-                {
-                    Maps.ReplaceBed();
-                    ModEntry.bedMadeToday = true;
-                }
-
                 if (ModEntry.config.BuildAllSpousesRooms)
                 {
                     Maps.BuildSpouseRooms(farmHouse);
                 }
-                if (!ModEntry.kidsRoomExpandedToday && farmHouse.upgradeLevel > 1 && (ModEntry.config.ExtraCribs > 0 || ModEntry.config.ExtraKidsBeds > 0))
+                if (ModEntry.config.CustomBed)
                 {
-                    ModEntry.kidsRoomExpandedToday = true;
+                    Maps.ReplaceBed();
+                }
+
+                if (farmHouse.upgradeLevel > 1 && (ModEntry.config.ExtraCribs > 0 || ModEntry.config.ExtraKidsBeds > 0))
+                {
                     Maps.ExpandKidsRoom(farmHouse);
                 }
             }

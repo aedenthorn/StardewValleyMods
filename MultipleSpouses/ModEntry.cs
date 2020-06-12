@@ -67,6 +67,8 @@ namespace MultipleSpouses
             LocationPatches.Initialize(Monitor);
             FarmerPatches.Initialize(Monitor);
             Maps.Initialize(Monitor);
+            Kissing.Initialize(Monitor);
+            UIPatches.Initialize(Monitor);
 
             var harmony = HarmonyInstance.Create(this.ModManifest.UniqueID);
 
@@ -135,6 +137,11 @@ namespace MultipleSpouses
                postfix: new HarmonyMethod(typeof(NPCPatches), nameof(NPCPatches.Child_resetForPlayerEntry_Postfix))
             );
 
+            harmony.Patch(
+               original: AccessTools.Method(typeof(Child), nameof(Child.dayUpdate)),
+               prefix: new HarmonyMethod(typeof(NPCPatches), nameof(NPCPatches.Child_dayUpdate_Prefix))
+            );
+
 
             // location patches
 
@@ -191,17 +198,41 @@ namespace MultipleSpouses
             );
 
 
-            // misc patches
+            // Farmer patches
 
             harmony.Patch(
                original: AccessTools.Method(typeof(Farmer), nameof(Farmer.doDivorce)),
                prefix: new HarmonyMethod(typeof(FarmerPatches), nameof(FarmerPatches.Farmer_doDivorce_Prefix))
             );
 
+            // UI patches
+
+            harmony.Patch(
+               original: AccessTools.Method(typeof(SocialPage), "drawNPCSlot"),
+               prefix: new HarmonyMethod(typeof(UIPatches), nameof(UIPatches.SocialPage_drawNPCSlot))
+            );
+
+            harmony.Patch(
+               original: AccessTools.Method(typeof(Event), nameof(Event.answerDialogueQuestion)),
+               prefix: new HarmonyMethod(typeof(UIPatches), nameof(UIPatches.Event_answerDialogueQuestion_Prefix))
+            );
+
         }
 
         private void GameLoop_SaveLoaded(object sender, SaveLoadedEventArgs e)
         {
+            outdoorSpouse = null;
+            kitchenSpouse = null;
+            bedSpouse = null;
+            spouseToDivorce = null;
+            spouseRolesDate = -1;
+            allRandomSpouses = null;
+            bedSleepOffset = 48;
+            allBedmates = null;
+            bedMadeToday = false;
+            kidsRoomExpandedToday = false;
+            officialSpouse = null;
+            LoadTMXSpouseRooms();
         }
 
         private void GameLoop_GameLaunched(object sender, GameLaunchedEventArgs e)
@@ -301,9 +332,11 @@ namespace MultipleSpouses
             outdoorSpouse = null;
             kitchenSpouse = null;
             bedSpouse = null;
+            officialSpouse = null;
             spouseToDivorce = null;
             spouseRolesDate = -1;
             allRandomSpouses = null;
+            allBedmates = null;
             bedMadeToday = false;
             kidsRoomExpandedToday = false;
         }
@@ -455,21 +488,8 @@ namespace MultipleSpouses
             kitchenSpouse = null;
             bedSpouse = null;
             ResetSpouses(Game1.player);
-            List<NPC> allSpouses = spouses.Values.ToList();
+            List<NPC> allSpouses = GetAllSpouses().Values.ToList();
             PMonitor.Log("num spouses: " + allSpouses.Count);
-            if(Game1.player.getSpouse() != null)
-            {
-                PMonitor.Log("official spouse: " + Game1.player.getSpouse().Name);
-                allSpouses.Add(Game1.player.getSpouse()); 
-            }
-
-            foreach (NPC npc in allSpouses)
-            {
-                Friendship friendship = npc.getSpouse().friendshipData[npc.Name];
-                PMonitor.Log($"spouse: {npc.Name}{(friendship.DaysUntilBirthing >= 0 ? " gives birth in: " + friendship.DaysUntilBirthing : "")}");
-            }
-
-
 
             int n = allSpouses.Count;
             while (n > 1)
@@ -541,7 +561,10 @@ namespace MultipleSpouses
 
             if (f.spouse == null)
             {
-                 f.spouse = officialSpouse;
+                if(officialSpouse != null && f.friendshipData[officialSpouse] != null && (f.friendshipData[officialSpouse].IsMarried() || f.friendshipData[officialSpouse].IsEngaged()))
+                {
+                    f.spouse = officialSpouse;
+                }
             }
             officialSpouse = f.spouse;
 
@@ -569,7 +592,7 @@ namespace MultipleSpouses
                     {
                         //PMonitor.Log($"wedding date {f.friendshipData[name].WeddingDate.TotalDays} " + name);
                     }
-                    if (f.spouse != null && f.friendshipData[f.spouse] != null && !f.friendshipData[f.spouse].IsMarried() && !f.friendshipData[f.spouse].IsEngaged() && !f.friendshipData[f.spouse].IsRoommate())
+                    if (f.spouse != null && f.friendshipData[f.spouse] != null && !f.friendshipData[f.spouse].IsMarried() && !f.friendshipData[f.spouse].IsEngaged())
                     {
                         PMonitor.Log("invalid ospouse, setting: " + name);
                         f.spouse = name;
@@ -766,55 +789,48 @@ namespace MultipleSpouses
                 {
                     if(hairData[i] != Color.Transparent)
                     {
-                        if (names[0].EndsWith("Baby"))
+                        if(hairColors.Count == 1)
                         {
-                            babyData[i] = hairColors[Game1.random.Next(hairColors.Count)];
+                            hairColors.Add(hairColors[0]);
+                            hairColors.Add(hairColors[0]);
+                            hairColors.Add(hairColors[0]);
                         }
-                        else
+                        else if(hairColors.Count == 2)
                         {
-                            if(hairColors.Count == 1)
-                            {
-                                hairColors.Add(hairColors[0]);
-                                hairColors.Add(hairColors[0]);
-                                hairColors.Add(hairColors[0]);
-                            }
-                            else if(hairColors.Count == 2)
-                            {
-                                hairColors.Add(hairColors[1]);
-                                hairColors.Add(hairColors[1]);
-                                hairColors[1] = new Color((hairColors[0].R + hairColors[0].R + hairColors[1].R) / 3, (hairColors[0].G + hairColors[0].G + hairColors[1].G) / 3, (hairColors[0].B + hairColors[0].B + hairColors[1].B) / 3);
-                                hairColors[2] = new Color((hairColors[0].R + hairColors[2].R + hairColors[2].R) / 3, (hairColors[0].G + hairColors[2].G + hairColors[2].G) / 3, (hairColors[0].B + hairColors[2].B + hairColors[2].B) / 3);
-                            }
-                            else if(hairColors.Count == 3)
-                            {
-                                hairColors.Add(hairColors[2]);
-                                hairColors[2] = new Color((hairColors[1].R + hairColors[2].R + hairColors[2].R) / 3, (hairColors[1].G + hairColors[2].G + hairColors[2].G) / 3, (hairColors[1].B + hairColors[2].B + hairColors[2].B) / 3);
-                                hairColors[1] = new Color((hairColors[0].R + hairColors[0].R + hairColors[1].R) / 3, (hairColors[0].G + hairColors[0].G + hairColors[1].G) / 3, (hairColors[0].B + hairColors[0].B + hairColors[1].B) / 3);
-                            }
-                            //Monitor.Log($"Hair grey: {hairData[i].R}");
-                            switch (hairData[i].R)
-                            {
-                                case 42:
-                                    babyData[i] = hairColors[0];
-                                    break;
-                                case 60:
-                                    babyData[i] = hairColors[1];
-                                    break;
-                                case 66:
-                                    babyData[i] = hairColors[Game1.random.Next(1,3)];
-                                    break;
-                                case 82:
-                                    babyData[i] = hairColors[2];
-                                    break;
-                                case 93:
-                                    babyData[i] = hairColors[Game1.random.Next(2, 4)];
-                                    break;
-                                case 114:
-                                    babyData[i] = hairColors[3];
-                                    break;
-                            }
+                            hairColors.Add(hairColors[1]);
+                            hairColors.Add(hairColors[1]);
+                            hairColors[1] = new Color((hairColors[0].R + hairColors[0].R + hairColors[1].R) / 3, (hairColors[0].G + hairColors[0].G + hairColors[1].G) / 3, (hairColors[0].B + hairColors[0].B + hairColors[1].B) / 3);
+                            hairColors[2] = new Color((hairColors[0].R + hairColors[2].R + hairColors[2].R) / 3, (hairColors[0].G + hairColors[2].G + hairColors[2].G) / 3, (hairColors[0].B + hairColors[2].B + hairColors[2].B) / 3);
+                        }
+                        else if(hairColors.Count == 3)
+                        {
+                            hairColors.Add(hairColors[2]);
+                            hairColors[2] = new Color((hairColors[1].R + hairColors[2].R + hairColors[2].R) / 3, (hairColors[1].G + hairColors[2].G + hairColors[2].G) / 3, (hairColors[1].B + hairColors[2].B + hairColors[2].B) / 3);
+                            hairColors[1] = new Color((hairColors[0].R + hairColors[0].R + hairColors[1].R) / 3, (hairColors[0].G + hairColors[0].G + hairColors[1].G) / 3, (hairColors[0].B + hairColors[0].B + hairColors[1].B) / 3);
+                        }
+                        //Monitor.Log($"Hair grey: {hairData[i].R}");
+                        switch (hairData[i].R)
+                        {
+                            case 42:
+                                babyData[i] = hairColors[0];
+                                break;
+                            case 60:
+                                babyData[i] = hairColors[1];
+                                break;
+                            case 66:
+                                babyData[i] = hairColors[1];
+                                break;
+                            case 82:
+                                babyData[i] = hairColors[2];
+                                break;
+                            case 93:
+                                babyData[i] = hairColors[2];
+                                break;
+                            case 114:
+                                babyData[i] = hairColors[3];
+                                break;
+                        }
                             //Monitor.Log($"Hair color: {babyData[i]}");
-                        }
                     }
                 }
                 babySheet.SetData(babyData);

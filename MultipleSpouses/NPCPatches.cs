@@ -281,7 +281,8 @@ namespace MultipleSpouses
                                 {
                                     who.changeFriendship(10, __instance);
                                 }
-                                if (who.hasCurrentOrPendingRoommate())
+
+                                if (!ModEntry.config.RoommateRomance && who.friendshipData[__instance.Name].RoommateMarriage)
                                 {
                                     ModEntry.mp.broadcastSprites(who.currentLocation, new TemporaryAnimatedSprite[]
                                     {
@@ -345,7 +346,6 @@ namespace MultipleSpouses
             }
             return true;
         }
-
 
         public static void NPC_marriageDuties_Prefix(NPC __instance, string ___nameOfTodaysSchedule, Dictionary<int, SchedulePathDescription> ___schedule)
         {
@@ -1053,8 +1053,8 @@ namespace MultipleSpouses
                     return;
                 }
 
-                Farmer spouse = __instance.getSpouse();
-                FarmHouse farmHouse = Utility.getHomeOfFarmer(spouse);
+                Farmer farmer = __instance.getSpouse();
+                FarmHouse farmHouse = Utility.getHomeOfFarmer(farmer);
                 if (__instance.currentLocation != farmHouse)
                 {
                     return;
@@ -1092,23 +1092,31 @@ namespace MultipleSpouses
                     __instance.faceDirection(ModEntry.myRand.NextDouble() > 0.5?1:3);
                     ModEntry.bedSpouse = null;
                 }
-                else if (!ModEntry.config.BuildAllSpousesRooms && spouse.spouse != __instance.Name)
+                else if (!ModEntry.config.BuildAllSpousesRooms && farmer.spouse != __instance.Name)
                 {
                     __instance.setTilePosition(farmHouse.getRandomOpenPointInHouse(ModEntry.myRand));
                 }
                 else
                 {
-                    ModEntry.ResetSpouses(spouse);
+                    ModEntry.ResetSpouses(farmer);
 
-                    int offset = 0;
-                    if (spouse.spouse != __instance.Name)
+                    List<string> spouses = ModEntry.GetAllSpouses().Keys.ToList().FindAll((s) => Maps.roomIndexes.ContainsKey(s) || Maps.tmxSpouseRooms.ContainsKey(s));
+
+
+                    if (!spouses.Contains(__instance.Name))
                     {
-                        int idx = ModEntry.spouses.Keys.ToList().IndexOf(__instance.Name);
-                        offset = 7 * (idx + 1);
+                        __instance.setTilePosition(farmHouse.getRandomOpenPointInHouse(ModEntry.myRand));
+                        __instance.faceDirection(ModEntry.myRand.Next(0, 4));
+                        ModEntry.PMonitor.Log($"{__instance.Name} spouse random loc");
+                        return;
                     }
-                    __instance.setTilePosition((int)spot.X + offset, (int)spot.Y);
-                    __instance.faceDirection(ModEntry.myRand.Next(0, 4));
-                    ModEntry.PMonitor.Log($"{__instance.Name} loc: {(spot.X + offset)},{spot.Y}");
+                    else
+                    {
+                        int offset = spouses.IndexOf(__instance.Name) * 7;
+                        __instance.setTilePosition((int)spot.X + offset, (int)spot.Y);
+                        __instance.faceDirection(ModEntry.myRand.Next(0, 4));
+                        ModEntry.PMonitor.Log($"{__instance.Name} loc: {(spot.X + offset)},{spot.Y}");
+                    }
                 }
 
 
@@ -1245,19 +1253,28 @@ namespace MultipleSpouses
                 Monitor.Log($"Failed in {nameof(NPC_spouseObstacleCheck_Postfix)}:\n{ex}", LogLevel.Error);
             }
         }
-        public static void NPC_engagementResponse_Postfix(NPC __instance, Farmer who)
+        public static void NPC_engagementResponse_Postfix(NPC __instance, Farmer who, bool asRoommate = false)
         {
+            if (asRoommate)
+                return;
+            Monitor.Log("1");
             ModEntry.ResetSpouses(who);
+            Monitor.Log("2");
             Friendship friendship = who.friendshipData[__instance.Name];
+            Monitor.Log("3");
             WorldDate weddingDate = new WorldDate(Game1.Date);
+            Monitor.Log("4");
             weddingDate.TotalDays += Math.Max(1,ModEntry.config.DaysUntilMarriage);
+            Monitor.Log("5");
             while (!Game1.canHaveWeddingOnDay(weddingDate.DayOfMonth, weddingDate.Season))
             {
                 weddingDate.TotalDays++;
             }
+            Monitor.Log("6");
             friendship.WeddingDate = weddingDate;
+            Monitor.Log("7");
 
-            Maps.BuildOneSpouseRoom(Utility.getHomeOfFarmer(who), "", -1);
+            Maps.BuildSpouseRooms(Utility.getHomeOfFarmer(who));
         }
 
         public static bool NPC_isRoommate_Prefix(NPC __instance, ref bool __result)
@@ -1351,6 +1368,14 @@ namespace MultipleSpouses
                     if (ModEntry.config.MaxGiftsPerDay < 0 || (who.friendshipData[__instance.Name].GiftsToday >= 1 && who.friendshipData[__instance.Name].GiftsToday < ModEntry.config.MaxGiftsPerDay))
                         who.friendshipData[__instance.Name].GiftsToday = 0;
                 }
+                if (who.ActiveObject.ParentSheetIndex == 808 && __instance.Name.Equals("Krobus"))
+                {
+                    if (who.getFriendshipHeartLevelForNPC(__instance.Name) >= 10 && who.houseUpgradeLevel >= 1 && !who.isEngaged())
+                    {
+                        typeof(NPC).GetMethod("engagementResponse", BindingFlags.NonPublic | BindingFlags.Instance).Invoke(__instance, new object[] { who, true });
+                        return false;
+                    }
+                }
                 if (who.ActiveObject.ParentSheetIndex == 458)
                 {
                     if (ModEntry.GetAllSpouses().ContainsKey(__instance.Name))
@@ -1435,12 +1460,16 @@ namespace MultipleSpouses
                 {
                     if (who.isEngaged())
                     {
+                        Monitor.Log($"Tried to give pendant while engaged");
+
                         __instance.CurrentDialogue.Push(new Dialogue((ModEntry.myRand.NextDouble() < 0.5) ? Game1.LoadStringByGender(__instance.gender, "Strings\\StringsFromCSFiles:NPC.cs.3965") : Game1.LoadStringByGender(__instance.gender, "Strings\\StringsFromCSFiles:NPC.cs.3966"), __instance));
                         Game1.drawDialogue(__instance);
                         return false;
                     }
                     if (!__instance.datable || __instance.isMarriedOrEngaged() || (who.friendshipData.ContainsKey(__instance.Name) && who.friendshipData[__instance.Name].Points < ModEntry.config.MinPointsToMarry * 0.6f))
                     {
+                        Monitor.Log($"Tried to give pendant to someone not datable");
+
                         if (ModEntry.myRand.NextDouble() < 0.5)
                         {
                             Game1.drawObjectDialogue(Game1.content.LoadString("Strings\\StringsFromCSFiles:NPC.cs.3969", __instance.displayName));
@@ -1452,6 +1481,8 @@ namespace MultipleSpouses
                     }
                     else if (__instance.datable && who.friendshipData.ContainsKey(__instance.Name) && who.friendshipData[__instance.Name].Points < ModEntry.config.MinPointsToMarry)
                     {
+                        Monitor.Log($"Tried to give pendant to someone not marriable");
+
                         if (!who.friendshipData[__instance.Name].ProposalRejected)
                         {
                             __instance.CurrentDialogue.Push(new Dialogue((ModEntry.myRand.NextDouble() < 0.5) ? Game1.content.LoadString("Strings\\StringsFromCSFiles:NPC.cs.3972") : Game1.content.LoadString("Strings\\StringsFromCSFiles:NPC.cs.3973"), __instance));
@@ -1467,11 +1498,13 @@ namespace MultipleSpouses
                     }
                     else
                     {
+                        Monitor.Log($"Tried to give pendant to someone marriable");
                         if (!__instance.datable || who.houseUpgradeLevel >= 1)
                         {
                             typeof(NPC).GetMethod("engagementResponse", BindingFlags.NonPublic | BindingFlags.Instance).Invoke(__instance, new object[] { who, false });
                             return false;
                         }
+                        Monitor.Log($"Can't marry");
                         if (ModEntry.myRand.NextDouble() < 0.5)
                         {
                             Game1.drawObjectDialogue(Game1.content.LoadString("Strings\\StringsFromCSFiles:NPC.cs.3969", __instance.displayName));
@@ -1564,10 +1597,8 @@ namespace MultipleSpouses
             {
                 return;
             }
-            Monitor.Log($"Child Name: {__instance.Name}");
             if (!ModEntry.config.ShowParentNames && __instance.Name.EndsWith(")"))
             {
-                Monitor.Log($"Shortening Child's Name: {__instance.Name}");
                 __instance.displayName = string.Join(" ", names.Take(names.Length - 1));
             }
             string parent = names[names.Length - 1].Substring(1, names[names.Length - 1].Length-2);
@@ -1587,27 +1618,31 @@ namespace MultipleSpouses
 
         public static void SetCribs(GameLocation location)
         {
-            Monitor.Log($"setting cribs");
+
+            if (ModEntry.config.ExtraCribs <= 0)
+                return;
+
             int babies = 0;
             foreach (NPC npc in location.characters)
             {
                 if (npc is Child && (npc.age == 0 || npc.age == 1))
                 {
-                    Monitor.Log($"setting crib for {npc.Name}");
                     if (ModEntry.config.ExtraCribs >= babies)
                     {
-                        Monitor.Log($"moving baby to crib: {(babies + 1)}");
                         npc.Position = new Vector2(16f + (3 * babies), 4f) * 64f + new Vector2(0f, -24f);
                     }
                     else
                     {
-                        int crib = babies % ModEntry.config.ExtraCribs;
-                        Monitor.Log($"moving baby to crib: {(crib + 1)}");
-                        npc.Position = new Vector2(15f + (3 * crib), 4f) * 64f;
+                        int crib = babies % (ModEntry.config.ExtraCribs+1);
+                        npc.Position = new Vector2(15f + (3 * crib), 4f) * 64f + new Vector2(24f, -48f);
                     }
                     babies++;
                 }
             }
+        }
+        public static void Child_dayUpdate_Prefix(Child __instance)
+        {
+            __instance.daysOld.Value += Math.Max(0,(ModEntry.config.ChildGrowthMultiplier - 1));
         }
     }
 }

@@ -8,6 +8,7 @@ using System;
 using StardewValley.BellsAndWhistles;
 using StardewValley.Menus;
 using Microsoft.Xna.Framework;
+using StardewValley.Locations;
 
 namespace MultipleSpouses
 {
@@ -50,6 +51,8 @@ namespace MultipleSpouses
             foreach (NPC spouse in allSpouses)
             {
                 Farmer f = spouse.getSpouse();
+                if (!ModEntry.config.RoommateRomance && f.friendshipData[spouse.Name].RoommateMarriage)
+                    continue;
 
                 int heartsWithSpouse = f.getFriendshipHeartLevelForNPC(spouse.Name);
                 Friendship friendship = f.friendshipData[spouse.Name];
@@ -127,7 +130,7 @@ namespace MultipleSpouses
                 }
                 if (___babyName != null && ___babyName != "" && ___babyName.Length > 0)
                 {
-                    double chance = lastBirthingSpouse.Name.Equals("Maru") ? 0.5 : 0.0;
+                    double chance = (lastBirthingSpouse.Name.Equals("Maru") || lastBirthingSpouse.Name.Equals("Krobus")) ? 0.5 : 0.0;
                     chance += (Game1.player.hasDarkSkin() ? 0.5 : 0.0);
                     bool isDarkSkinned = new Random((int)Game1.uniqueIDForThisGame + (int)Game1.stats.DaysPlayed).NextDouble() < chance;
                     string newBabyName = ___babyName;
@@ -166,7 +169,7 @@ namespace MultipleSpouses
                         Game1.getCharacterFromName(lastBirthingSpouse.Name).currentMarriageDialogue.Insert(0, new MarriageDialogueReference("Data\\ExtraDialogue", "NewChild_SecondChild" + ModEntry.myRand.Next(1, 3), true, new string[0]));
                         Game1.getSteamAchievement("Achievement_FullHouse");
                     }
-                    else if (Game1.player.getSpouse().isGaySpouse() && !ModEntry.config.AllowGayPregnancies)
+                    else if (lastBirthingSpouse.isGaySpouse() && !ModEntry.config.AllowGayPregnancies)
                     {
                         Game1.getCharacterFromName(lastBirthingSpouse.Name).currentMarriageDialogue.Insert(0, new MarriageDialogueReference("Data\\ExtraDialogue", "NewChild_Adoption", true, new string[]
                         {

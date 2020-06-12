@@ -65,6 +65,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="UIPatches.cs" />
     <Compile Include="Maps.cs" />
     <Compile Include="ModConfig.cs" />
     <Compile Include="Kissing.cs" />
