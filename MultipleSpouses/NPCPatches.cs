@@ -2,6 +2,7 @@
 using StardewModdingAPI;
 using StardewValley;
 using StardewValley.Buildings;
+using StardewValley.Characters;
 using StardewValley.Locations;
 using StardewValley.Network;
 using StardewValley.Objects;
@@ -1336,10 +1337,20 @@ namespace MultipleSpouses
             return true;
         }
 
-        public static bool NPC_tryToReceiveActiveObject_Prefix(NPC __instance, ref Farmer who)
+        public static bool NPC_tryToReceiveActiveObject_Prefix(NPC __instance, ref Farmer who, Dictionary<string, string> ___dialogue, ref int[] __state)
         {
             try
             {
+                if (ModEntry.GetAllSpouses().ContainsKey(__instance.Name))
+                {
+                    __state = new int[] { 
+                        who.friendshipData[__instance.Name].GiftsToday, 
+                        who.friendshipData[__instance.Name].GiftsThisWeek
+                    };
+                    who.friendshipData[__instance.Name].GiftsThisWeek = 0;
+                    if (ModEntry.config.MaxGiftsPerDay < 0 || (who.friendshipData[__instance.Name].GiftsToday >= 1 && who.friendshipData[__instance.Name].GiftsToday < ModEntry.config.MaxGiftsPerDay))
+                        who.friendshipData[__instance.Name].GiftsToday = 0;
+                }
                 if (who.ActiveObject.ParentSheetIndex == 458)
                 {
                     if (ModEntry.GetAllSpouses().ContainsKey(__instance.Name))
@@ -1471,17 +1482,55 @@ namespace MultipleSpouses
                         return false;
                     }
                 }
-                else if (ModEntry.GetAllSpouses().ContainsKey(__instance.Name) && Game1.NPCGiftTastes.ContainsKey(__instance.Name) && !(who.ActiveObject.ParentSheetIndex == 277))
+                else if (who.ActiveObject.parentSheetIndex == 809 && !who.ActiveObject.bigCraftable)
                 {
-                    if (who.friendshipData[__instance.Name].GiftsToday < ModEntry.config.MaxGiftsPerDay || ModEntry.config.MaxGiftsPerDay < 0)
+                    if(ModEntry.GetAllSpouses().ContainsKey(__instance.Name) && Utility.doesMasterPlayerHaveMailReceivedButNotMailForTomorrow("ccMovieTheater") && !__instance.Name.Equals("Krobus") && who.lastSeenMovieWeek.Value < Game1.Date.TotalWeeks && !Utility.isFestivalDay(Game1.dayOfMonth, Game1.currentSeason) && Game1.timeOfDay <= 2100 && __instance.lastSeenMovieWeek.Value < Game1.Date.TotalWeeks && MovieTheater.GetResponseForMovie(__instance) != "reject")
                     {
-                        __instance.receiveGift(who.ActiveObject, who, true, 1f, true);
+                        foreach (MovieInvitation invitation in who.team.movieInvitations)
+                        {
+                            if (invitation.farmer == who)
+                            {
+                                return true;
+                            }
+                        }
+                        foreach (MovieInvitation invitation2 in who.team.movieInvitations)
+                        {
+                            if (invitation2.invitedNPC == __instance)
+                            {
+                                return true;
+                            }
+                        }
+                        
+                        if (LocalizedContentManager.CurrentLanguageCode == LocalizedContentManager.LanguageCode.en)
+                        {
+                            __instance.CurrentDialogue.Push(new Dialogue(__instance.GetDispositionModifiedString("Strings\\Characters:MovieInvite_Spouse_" + __instance.name, new object[0]), __instance));
+                        }
+                        else if (LocalizedContentManager.CurrentLanguageCode == LocalizedContentManager.LanguageCode.en && ___dialogue != null && ___dialogue.ContainsKey("MovieInvitation"))
+                        {
+                            __instance.CurrentDialogue.Push(new Dialogue(___dialogue["MovieInvitation"], __instance));
+                        }
+                        else
+                        {
+                            __instance.CurrentDialogue.Push(new Dialogue(__instance.GetDispositionModifiedString("Strings\\Characters:MovieInvite_Invited", new object[0]), __instance));
+                        }
+                        Game1.drawDialogue(__instance);
                         who.reduceActiveItemByOne();
                         who.completelyStopAnimatingOrDoingAction();
-                        __instance.faceTowardFarmerForPeriod(4000, 3, false, who);
-                        return false;
+                        who.currentLocation.localSound("give_gift");
+                        MovieTheater.Invite(who, __instance);
+                        if (who == Game1.player)
+                        {
+                            ModEntry.mp.globalChatInfoMessage("MovieInviteAccept", new string[]
+                            {
+                            Game1.player.displayName,
+                            __instance.displayName
+                            });
+                            return false;
+                        }
                     }
+                    return true;
                 }
+
             }
             catch (Exception ex)
             {
@@ -1490,15 +1539,74 @@ namespace MultipleSpouses
             return true;
         }
 
-        public static void NPC_tryToReceiveActiveObject_Postfix(NPC __instance, ref Farmer who)
+        public static void NPC_tryToReceiveActiveObject_Postfix(NPC __instance, ref Farmer who, int[] __state)
         {
             try
             {
-
+                if(__state != null)
+                {
+                    who.friendshipData[__instance.Name].GiftsThisWeek = __state[0];
+                    who.friendshipData[__instance.Name].GiftsToday = __state[1];
+                }
             }
             catch (Exception ex)
             {
                 Monitor.Log($"Failed in {nameof(NPC_tryToReceiveActiveObject_Postfix)}:\n{ex}", LogLevel.Error);
+            }
+        }
+
+        public static void Child_reloadSprite_Postfix(ref Child __instance)
+        {
+            if (__instance.Name == null)
+                return;
+            string[] names = __instance.Name.Split(' ');
+            if (names.Length < 2 || names[names.Length - 1].Length < 3)
+            {
+                return;
+            }
+            Monitor.Log($"Child Name: {__instance.Name}");
+            if (!ModEntry.config.ShowParentNames && __instance.Name.EndsWith(")"))
+            {
+                Monitor.Log($"Shortening Child's Name: {__instance.Name}");
+                __instance.displayName = string.Join(" ", names.Take(names.Length - 1));
+            }
+            string parent = names[names.Length - 1].Substring(1, names[names.Length - 1].Length-2);
+            __instance.Sprite.textureName.Value += $"_{parent}";
+            Monitor.Log($"set child texture to: {__instance.Sprite.textureName.Value}");
+        }
+
+
+        
+        public static void Child_resetForPlayerEntry_Postfix(ref Child __instance, GameLocation l)
+        {
+            if (l is FarmHouse && (__instance.age == 0 || __instance.age == 1))
+            {
+                SetCribs(l);
+            }
+        }
+
+        public static void SetCribs(GameLocation location)
+        {
+            Monitor.Log($"setting cribs");
+            int babies = 0;
+            foreach (NPC npc in location.characters)
+            {
+                if (npc is Child && (npc.age == 0 || npc.age == 1))
+                {
+                    Monitor.Log($"setting crib for {npc.Name}");
+                    if (ModEntry.config.ExtraCribs >= babies)
+                    {
+                        Monitor.Log($"moving baby to crib: {(babies + 1)}");
+                        npc.Position = new Vector2(16f + (3 * babies), 4f) * 64f + new Vector2(0f, -24f);
+                    }
+                    else
+                    {
+                        int crib = babies % ModEntry.config.ExtraCribs;
+                        Monitor.Log($"moving baby to crib: {(crib + 1)}");
+                        npc.Position = new Vector2(15f + (3 * crib), 4f) * 64f;
+                    }
+                    babies++;
+                }
             }
         }
     }

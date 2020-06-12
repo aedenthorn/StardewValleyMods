@@ -46,7 +46,6 @@ namespace MultipleSpouses
                     __instance.friendshipData[key].RoommateMarriage = false;
                     NPC ex = Game1.getCharacterFromName(key);
                     ex.PerformDivorce();
-                    Game1.player.Money -= 50000;
                     ModEntry.ResetSpouses(__instance);
                     ModEntry.PHelper.Content.InvalidateCache("Maps/FarmHouse1_marriage");
                     ModEntry.PHelper.Content.InvalidateCache("Maps/FarmHouse2_marriage");

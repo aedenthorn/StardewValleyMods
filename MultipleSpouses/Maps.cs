@@ -135,6 +135,8 @@ namespace MultipleSpouses
 					BuildOneSpouseRoom(farmHouse, f.spouse, -1);
 				}
 
+				ExtendMap(farmHouse, ox + 37 + (7*mySpouses.Count));
+
 				// remove and rebuild spouse rooms
 				for (int j = 0; j < mySpouses.Count; j++)
 				{
@@ -161,7 +163,7 @@ namespace MultipleSpouses
 
 		}
 
-		public static void BuildOneSpouseRoom(FarmHouse farmHouse, string name, int count)
+        public static void BuildOneSpouseRoom(FarmHouse farmHouse, string name, int count)
 		{
 
 			NPC spouse = Game1.getCharacterFromName(name);
@@ -234,9 +236,6 @@ namespace MultipleSpouses
 				}
 				else if (tmxSpouseRooms.ContainsKey(name))
 				{
-					back = "BackSpouse";
-					buildings = "BuildingsSpouse";
-					front = "FrontSpouse";
 
 					refurbishedMap = tmxSpouseRooms[name];
 					if (refurbishedMap == null)
@@ -244,16 +243,15 @@ namespace MultipleSpouses
 						ModEntry.PMonitor.Log($"Couldn't load TMX spouse room for spouse {name}", LogLevel.Error);
 						return;
 					}
-					if (refurbishedMap.GetLayer(back) == null)
+                    try 
 					{
-						back = "Back";
-						buildings = "Buildings";
-						front = "Front";
+						back = refurbishedMap.Layers[0].Id;
+						buildings = refurbishedMap.Layers[1].Id;
+						front = refurbishedMap.Layers[2].Id;
 					}
-					if (refurbishedMap.GetLayer(back) == null)
-					{
-						ModEntry.PMonitor.Log($"Couldn't load TMX spouse room for spouse {name}", LogLevel.Error);
-						return;
+					catch(Exception ex)
+                    {
+						ModEntry.PMonitor.Log($"Couldn't load TMX spouse room layers for spouse {name}. Exception: {ex}", LogLevel.Error);
 					}
 
 					indexInSpouseMapSheet = 0;
@@ -263,33 +261,6 @@ namespace MultipleSpouses
 				Monitor.Log($"Building {name}'s room", LogLevel.Debug);
 
 				Microsoft.Xna.Framework.Rectangle areaToRefurbish = (farmHouse.upgradeLevel == 1) ? new Microsoft.Xna.Framework.Rectangle(36 + (7 * count), 1, 6, 9) : new Microsoft.Xna.Framework.Rectangle(42 + (7 * count), 10, 6, 9);
-
-				List<Layer> layers = FieldRefAccess<Map, List<Layer>>(farmHouse.map, "m_layers");
-				for (int i = 0; i < layers.Count; i++)
-				{
-					Tile[,] tiles = FieldRefAccess<Layer, Tile[,]>(layers[i], "m_tiles");
-					Size size = FieldRefAccess<Layer, Size>(layers[i], "m_layerSize");
-					if (size.Width >= areaToRefurbish.X + 7)
-						continue;
-					size = new Size(size.Width + 7, size.Height);
-					FieldRefAccess<Layer, Size>(layers[i], "m_layerSize") = size;
-					FieldRefAccess<Map, List<Layer>>(farmHouse.map, "m_layers") = layers;
-
-					Tile[,] newTiles = new Tile[tiles.GetLength(0) + 7, tiles.GetLength(1)];
-
-					for (int k = 0; k < tiles.GetLength(0); k++)
-					{
-						for (int l = 0; l < tiles.GetLength(1); l++)
-						{
-							newTiles[k, l] = tiles[k, l];
-						}
-					}
-
-					FieldRefAccess<Layer, Tile[,]>(layers[i], "m_tiles") = newTiles;
-					FieldRefAccess<Layer, TileArray>(layers[i], "m_tileArray") = new TileArray(layers[i], newTiles);
-				}
-				FieldRefAccess<Map, List<Layer>>(farmHouse.map, "m_layers") = layers;
-
 
 				Point mapReader;
 				if (name == "")
@@ -417,6 +388,35 @@ namespace MultipleSpouses
 			}
 		}
 
+        private static void ExtendMap(FarmHouse farmHouse, int v)
+        {
+			List<Layer> layers = FieldRefAccess<Map, List<Layer>>(farmHouse.map, "m_layers");
+			for (int i = 0; i < layers.Count; i++)
+			{
+				Tile[,] tiles = FieldRefAccess<Layer, Tile[,]>(layers[i], "m_tiles");
+				Size size = FieldRefAccess<Layer, Size>(layers[i], "m_layerSize");
+				if (size.Width >= v)
+					continue;
+				size = new Size(v, size.Height);
+				FieldRefAccess<Layer, Size>(layers[i], "m_layerSize") = size;
+				FieldRefAccess<Map, List<Layer>>(farmHouse.map, "m_layers") = layers;
+
+				Tile[,] newTiles = new Tile[v, tiles.GetLength(1)];
+
+				for (int k = 0; k < tiles.GetLength(0); k++)
+				{
+					for (int l = 0; l < tiles.GetLength(1); l++)
+					{
+						newTiles[k, l] = tiles[k, l];
+					}
+				}
+
+				FieldRefAccess<Layer, Tile[,]>(layers[i], "m_tiles") = newTiles;
+				FieldRefAccess<Layer, TileArray>(layers[i], "m_tileArray") = new TileArray(layers[i], newTiles);
+			}
+			FieldRefAccess<Map, List<Layer>>(farmHouse.map, "m_layers") = layers;
+		}
+
 		public static void ReplaceBed()
 		{
 			try
@@ -468,37 +468,34 @@ namespace MultipleSpouses
 				}
 
 
-				setupTile(0, 2, 0, 0, farmHouse, start, ox, oy, frontIndexes, frontSheets, 1);
-				setupTile(0, 3, 0, 1, farmHouse, start, ox, oy, frontIndexes, frontSheets, 0);
-				setupTile(0, 3, 0, 1, farmHouse, start, ox, oy, buildIndexes, buildSheets, 2);
-				setupTile(0, 4, 0, 2, farmHouse, start, ox, oy, frontIndexes, frontSheets, 0);
-				setupTile(0, 5, 0, 3, farmHouse, start, ox, oy, buildIndexes, buildSheets, 1);
+				setupTile(start + ox, 2 + oy, 0, 0, farmHouse, frontIndexes, frontSheets, 3, 1);
+				setupTile(start + ox, 3 + oy, 0, 1, farmHouse, frontIndexes, frontSheets, 3, 0);
+				setupTile(start + ox, 3 + oy, 0, 1, farmHouse, buildIndexes, buildSheets, 3, 2);
+				setupTile(start + ox, 4 + oy, 0, 2, farmHouse, frontIndexes, frontSheets, 3, 0);
+				setupTile(start + ox, 5 + oy, 0, 3, farmHouse, buildIndexes, buildSheets, 3, 1);
 
 				farmHouse.removeTile(ox + start, oy + 3, "Buildings");
 				for (int i = 1; i < width; i++)
 				{
 					farmHouse.removeTile(ox + start + i, oy + 3, "Buildings");
 
-					setupTile(i, 2, 1, 0, farmHouse, start, ox, oy, frontIndexes, frontSheets, 1);
-					setupTile(i, 3, 1, 1, farmHouse, start, ox, oy, frontIndexes, frontSheets, 0);
-					setupTile(i, 3, 1, 1, farmHouse, start, ox, oy, buildIndexes, buildSheets, 2);
-					setupTile(i, 4, 1, 2, farmHouse, start, ox, oy, frontIndexes, frontSheets, 0);
-					setupTile(i, 5, 1, 3, farmHouse, start, ox, oy, buildIndexes, buildSheets, 1);
+					setupTile(i + start + ox, 2 + oy, 1, 0, farmHouse, frontIndexes, frontSheets, 3, 1);
+					setupTile(i + start + ox, 3 + oy, 1, 1, farmHouse, frontIndexes, frontSheets, 3, 0);
+					setupTile(i + start + ox, 3 + oy, 1, 1, farmHouse, buildIndexes, buildSheets, 3, 2);
+					setupTile(i + start + ox, 4 + oy, 1, 2, farmHouse, frontIndexes, frontSheets, 3, 0);
+					setupTile(i + start + ox, 5 + oy, 1, 3, farmHouse, buildIndexes, buildSheets, 3, 1);
 				}
 				farmHouse.removeTile(ox + start + width, oy + 3, "Buildings");
 
-				setupTile(width, 2, 2, 0, farmHouse, start, ox, oy, frontIndexes, frontSheets, 1);
-				setupTile(width, 3, 2, 1, farmHouse, start, ox, oy, frontIndexes, frontSheets, 0);
-				setupTile(width, 3, 2, 1, farmHouse, start, ox, oy, buildIndexes, buildSheets, 2);
-				setupTile(width, 4, 2, 2, farmHouse, start, ox, oy, frontIndexes, frontSheets, 0);
-				setupTile(width, 5, 2, 3, farmHouse, start, ox, oy, buildIndexes, buildSheets, 1);
-
+				setupTile(width + start + ox, 2 + oy, 2, 0, farmHouse, frontIndexes, frontSheets, 3, 1);
+				setupTile(width + start + ox, 3 + oy, 2, 1, farmHouse, frontIndexes, frontSheets, 3, 0);
+				setupTile(width + start + ox, 3 + oy, 2, 1, farmHouse, buildIndexes, buildSheets, 3, 2);
+				setupTile(width + start + ox, 4 + oy, 2, 2, farmHouse, frontIndexes, frontSheets, 3, 0);
+				setupTile(width + start + ox, 5 + oy, 2, 3, farmHouse, buildIndexes, buildSheets, 3, 1);
 
 				farmHouse.removeTile(ox + 21, oy + 2, "Front");
 				farmHouse.removeTile(ox + 22, oy + 2, "Front");
 				farmHouse.removeTile(ox + 23, oy + 2, "Front");
-
-
 			}
 			catch (Exception ex)
 			{
@@ -508,29 +505,109 @@ namespace MultipleSpouses
 		}
 
 
-		private static void setupTile(int v1, int v2, int x, int y, FarmHouse farmHouse, int start, int ox, int oy, List<int> indexes, List<int> sheets, int sheetNo)
+		private static void setupTile(int x1, int y1, int x, int y, FarmHouse farmHouse, List<int> indexes, List<int> sheets, int width, int sheetNo)
         {
 			string[] sheetNames = {
 				"Front",
 				"Buildings",
 				"Back"
 			};
-			int idx = y * 3 + x;
+			int idx = y * width + x;
 			try
 			{
-				farmHouse.removeTile(ox + start + v1, oy + v2, sheetNames[sheetNo]);
-				farmHouse.setMapTileIndex(ox + start + v1, oy + v2, indexes[idx], sheetNames[sheetNo], sheets[idx]);
+				farmHouse.removeTile(x1, y1, sheetNames[sheetNo]);
+				farmHouse.setMapTileIndex(x1, y1, indexes[idx], sheetNames[sheetNo], sheets[idx]);
 			}
             catch(Exception ex)
             {
-				Monitor.Log("v1: "+v1);
-				Monitor.Log("v2: "+v2);
+				Monitor.Log("x1: "+x1);
+				Monitor.Log("y1: "+y1);
 				Monitor.Log("x: "+x);
 				Monitor.Log("y: "+y);
 				Monitor.Log("sheet: "+sheetNo);
 				Monitor.Log("index: "+ idx);
 				Monitor.Log("Exception: "+ex, LogLevel.Error);
             }
+		}
+		internal static void ExpandKidsRoom(FarmHouse farmHouse)
+		{
+			int totalWidth = ModEntry.config.ExtraCribs * 3 + 3 + ModEntry.config.ExtraKidsBeds * 4;
+			int width = 14;
+			int height = 9;
+			int startx = 15;
+			int starty = 0;
+			int ox = ModEntry.config.ExistingKidsRoomOffsetX;
+			int oy = ModEntry.config.ExistingKidsRoomOffsetY;
+
+			List<string> sheets = new List<string>();
+			for (int i = 0; i < farmHouse.map.TileSheets.Count; i++)
+			{
+				sheets.Add(farmHouse.map.TileSheets[i].Id);
+			}
+
+			List<int> backIndexes = new List<int>();
+			List<int> frontIndexes = new List<int>();
+			List<int> buildIndexes = new List<int>();
+			List<int> backSheets = new List<int>();
+			List<int> frontSheets = new List<int>();
+			List<int> buildSheets = new List<int>();
+
+			for (int i = 0; i < width * height; i++)
+			{
+				backIndexes.Add(farmHouse.getTileIndexAt(ox + startx + (i % width), oy + starty + (i / width), "Back"));
+				backSheets.Add(sheets.IndexOf(farmHouse.getTileSheetIDAt(ox + startx + (i % width), oy + starty + (i / width), "Back")));
+				frontIndexes.Add(farmHouse.getTileIndexAt(ox + startx + (i % width), oy + starty + (i / width), "Front"));
+				frontSheets.Add(sheets.IndexOf(farmHouse.getTileSheetIDAt(ox + startx + (i % width), oy + starty + (i / width), "Front")));
+				buildIndexes.Add(farmHouse.getTileIndexAt(ox + startx + (i % width), oy + starty + (i / width), "Buildings"));
+				buildSheets.Add(sheets.IndexOf(farmHouse.getTileSheetIDAt(ox + startx + (i % width), oy + starty + (i / width), "Buildings")));
+			}
+
+			ExtendMap(farmHouse, 28 + ox + totalWidth);
+
+			int cribsWidth = (ModEntry.config.ExtraCribs + 1)* 3;
+			int bedsWidth = (ModEntry.config.ExtraKidsBeds + 1) * 4;
+
+			for (int j = 0; j < ModEntry.config.ExtraCribs + 1; j++)
+            {
+				for(int i = 0; i < 3 * height; i++)
+                {
+					setupTile(ox + startx + (3 * j) + i % 3, oy + starty + i / 3, i % 3, i / 3, farmHouse, frontIndexes, frontSheets, 14, 0);
+					setupTile(ox + startx + (3 * j) + i % 3, oy + starty + i / 3, i % 3, i / 3, farmHouse, buildIndexes, buildSheets, 14, 1);
+					setupTile(ox + startx + (3 * j) + i % 3, oy + starty + i / 3, i % 3, i / 3, farmHouse, backIndexes, backSheets, 14, 2);
+				}
+				farmHouse.setTileProperty(ox + startx + (3 * j), oy + starty + 5, "Buildings", "Action", $"Crib{j}");
+				farmHouse.setTileProperty(ox + startx + (3 * j) + 1, oy + starty + 5, "Buildings", "Action", $"Crib{j}");
+				farmHouse.setTileProperty(ox + startx + (3 * j) + 2, oy + starty + 5, "Buildings", "Action", $"Crib{j}");
+			}
+			int k = 0;
+			for (int i = 0; i < 3 * height; i++)
+			{
+				k %= (3 * height);
+				setupTile(cribsWidth + ox + startx + i % 3, oy + starty + i / 3, 3 + (k % 3), k / 3, farmHouse, frontIndexes, frontSheets, 14, 0);
+				setupTile(cribsWidth + ox + startx + i % 3, oy + starty + i / 3, 3 + (k % 3), k / 3, farmHouse, buildIndexes, buildSheets, 14, 1);
+				setupTile(cribsWidth + ox + startx + i % 3, oy + starty + i / 3, 3 + (k % 3), k / 3, farmHouse, backIndexes, backSheets, 14, 2);
+				k++;
+			}
+			for (int j = 0; j < ModEntry.config.ExtraKidsBeds + 1; j++)
+            {
+				k = 0;
+				for (int i = 0; i < 4 * height; i++)
+                {
+					k %= (4 * height);
+					setupTile(cribsWidth + 3 + ox + startx + (4 * j) + i % 4, oy + starty + i / 4, 6 + (k % 4), k / 4, farmHouse, frontIndexes, frontSheets, 14, 0);
+					setupTile(cribsWidth + 3 + ox + startx + (4 * j) + i % 4, oy + starty + i / 4, 6 + (k % 4), k / 4, farmHouse, buildIndexes, buildSheets, 14, 1);
+					setupTile(cribsWidth + 3 + ox + startx + (4 * j) + i % 4, oy + starty + i / 4, 6 + (k % 4), k / 4, farmHouse, backIndexes, backSheets, 14, 2);
+					k++;
+				}
+			}
+			for (int i = 0; i < 4 * height; i++)
+			{
+				k %= (4 * height);
+				setupTile(cribsWidth + 3 + bedsWidth + ox + startx + i % 4, oy + starty + i / 4, 10 + (k % 4), k / 4, farmHouse, frontIndexes, frontSheets, 14, 0);
+				setupTile(cribsWidth + 3 + bedsWidth + ox + startx + i % 4, oy + starty + i / 4, 10 + (k % 4), k / 4, farmHouse, buildIndexes, buildSheets, 14, 1);
+				setupTile(cribsWidth + 3 + bedsWidth + ox + startx + i % 4, oy + starty + i / 4, 10 + (k % 4), k / 4, farmHouse, backIndexes, backSheets, 14, 2);
+				k++;
+			}
 		}
 	}
 }

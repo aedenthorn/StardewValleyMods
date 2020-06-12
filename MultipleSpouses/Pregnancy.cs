@@ -54,7 +54,7 @@ namespace MultipleSpouses
                 int heartsWithSpouse = f.getFriendshipHeartLevelForNPC(spouse.Name);
                 Friendship friendship = f.friendshipData[spouse.Name];
                 List<Child> kids = f.getChildren();
-                bool can = Utility.getHomeOfFarmer(f).upgradeLevel >= 2 && friendship.DaysUntilBirthing < 0 && heartsWithSpouse >= 10 && friendship.DaysMarried >= 7 && (ModEntry.config.MaxChildren < 0 || kids.Count == 0 || (kids.Count < ModEntry.config.MaxChildren));
+                bool can = spouse.daysAfterLastBirth <= 0 && Utility.getHomeOfFarmer(f).upgradeLevel >= 2 && friendship.DaysUntilBirthing < 0 && heartsWithSpouse >= 10 && friendship.DaysMarried >= 7 && (ModEntry.config.MaxChildren < 0 || kids.Count == 0 || (kids.Count < ModEntry.config.MaxChildren));
                 ModEntry.PMonitor.Log($"Checking ability to get pregnant: {spouse.Name} {can}{(friendship.DaysUntilBirthing >= 0 ? " Already pregnant! Gives birth in: "+friendship.DaysUntilBirthing:"")}");
                 if (can && Game1.player.currentLocation == Game1.getLocationFromName(Game1.player.homeLocation) && ModEntry.myRand.NextDouble() < ModEntry.config.BabyRequestChance)
                 {
@@ -150,29 +150,32 @@ namespace MultipleSpouses
                         }
                     }
                     while (collision_found);
-                    Child baby = new Child(newBabyName, ___isMale, isDarkSkinned, Game1.player);
-                    baby.Age = 0;
-                    baby.Position = new Vector2(16f, 4f) * 64f + new Vector2(0f+ModEntry.myRand.Next(-64,48), -24f + ModEntry.myRand.Next(-24, 24));
+                    Child baby = new Child($"{newBabyName} ({lastBirthingSpouse.Name})", ___isMale, isDarkSkinned, Game1.player)
+                    {
+                        Age = 0,
+                        Position = new Vector2(16f, 4f) * 64f + new Vector2(0f + ModEntry.myRand.Next(-64, 48), -24f + ModEntry.myRand.Next(-24, 24)),
+                    };
+
                     Utility.getHomeOfFarmer(Game1.player).characters.Add(baby);
                     Game1.playSound("smallSelect");
-                    lastBirthingSpouse.daysAfterLastBirth = 5;
+                    Game1.getCharacterFromName(lastBirthingSpouse.Name).daysAfterLastBirth = 5;
                     Game1.player.friendshipData[lastBirthingSpouse.Name].NextBirthingDate = null;
                     if (Game1.player.getChildrenCount() == 2)
                     {
-                        lastBirthingSpouse.shouldSayMarriageDialogue.Value = true;
-                        lastBirthingSpouse.currentMarriageDialogue.Insert(0, new MarriageDialogueReference("Data\\ExtraDialogue", "NewChild_SecondChild" + ModEntry.myRand.Next(1, 3), true, new string[0]));
+                        Game1.getCharacterFromName(lastBirthingSpouse.Name).shouldSayMarriageDialogue.Value = true;
+                        Game1.getCharacterFromName(lastBirthingSpouse.Name).currentMarriageDialogue.Insert(0, new MarriageDialogueReference("Data\\ExtraDialogue", "NewChild_SecondChild" + ModEntry.myRand.Next(1, 3), true, new string[0]));
                         Game1.getSteamAchievement("Achievement_FullHouse");
                     }
                     else if (Game1.player.getSpouse().isGaySpouse() && !ModEntry.config.AllowGayPregnancies)
                     {
-                        lastBirthingSpouse.currentMarriageDialogue.Insert(0, new MarriageDialogueReference("Data\\ExtraDialogue", "NewChild_Adoption", true, new string[]
+                        Game1.getCharacterFromName(lastBirthingSpouse.Name).currentMarriageDialogue.Insert(0, new MarriageDialogueReference("Data\\ExtraDialogue", "NewChild_Adoption", true, new string[]
                         {
                             ___babyName
                         }));
                     }
                     else
                     {
-                        lastBirthingSpouse.currentMarriageDialogue.Insert(0, new MarriageDialogueReference("Data\\ExtraDialogue", "NewChild_FirstChild", true, new string[]
+                        Game1.getCharacterFromName(lastBirthingSpouse.Name).currentMarriageDialogue.Insert(0, new MarriageDialogueReference("Data\\ExtraDialogue", "NewChild_FirstChild", true, new string[]
                         {
                             ___babyName
                         }));

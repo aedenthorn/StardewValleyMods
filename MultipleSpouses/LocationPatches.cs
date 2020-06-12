@@ -1,9 +1,12 @@
 ﻿using Microsoft.Xna.Framework;
+using Netcode;
 using StardewModdingAPI;
 using StardewValley;
+using StardewValley.Characters;
 using StardewValley.Locations;
 using System;
 using System.Collections.Generic;
+using System.Text.RegularExpressions;
 using xTile.Dimensions;
 
 namespace MultipleSpouses
@@ -64,6 +67,8 @@ namespace MultipleSpouses
 
                 FarmHouse farmHouse = __instance as FarmHouse;
 
+                NPCPatches.SetCribs(farmHouse);
+
                 Farmer f = farmHouse.owner;
                 ModEntry.ResetSpouses(f);
 
@@ -71,16 +76,20 @@ namespace MultipleSpouses
                 {
                     f.position.Value = ModEntry.GetSpouseBedLocation("Game1.player");
                 }
-                if (ModEntry.config.CustomBed && !ModEntry.bedMade)
+                if (ModEntry.config.CustomBed && !ModEntry.bedMadeToday)
                 {
                     Maps.ReplaceBed();
-                    ModEntry.bedMade = true;
+                    ModEntry.bedMadeToday = true;
                 }
-
 
                 if (ModEntry.config.BuildAllSpousesRooms)
                 {
                     Maps.BuildSpouseRooms(farmHouse);
+                }
+                if (!ModEntry.kidsRoomExpandedToday && farmHouse.upgradeLevel > 1 && (ModEntry.config.ExtraCribs > 0 || ModEntry.config.ExtraKidsBeds > 0))
+                {
+                    ModEntry.kidsRoomExpandedToday = true;
+                    Maps.ExpandKidsRoom(farmHouse);
                 }
             }
             catch (Exception ex)
@@ -157,12 +166,71 @@ namespace MultipleSpouses
             }
             return true;
         }
+        public static bool GameLocation_performAction_Prefix(GameLocation __instance, string action, Farmer who, ref bool __result, Location tileLocation)
+        {
+            try
+            {
+                if (action != null && who.IsLocalPlayer)
+                {
+                    string[] actionParams = action.Split(new char[]
+                    {
+                    ' '
+                    });
+                    string text = actionParams[0];
+                    Regex pattern = new Regex(@"Crib[0-9][0-9]*");
+                    if (pattern.IsMatch(text))
+                    {
+                        int crib = int.Parse(text.Substring(4));
+                        Monitor.Log($"Acting on crib {crib+1}");
+
+                        Microsoft.Xna.Framework.Rectangle rect = new Microsoft.Xna.Framework.Rectangle((ModEntry.config.ExistingKidsRoomOffsetX+15)*64 + (3 * crib * 64),(ModEntry.config.ExistingKidsRoomOffsetY+2)*64,3*64,4*64);
+                        using (NetCollection<NPC>.Enumerator enumerator = __instance.characters.GetEnumerator())
+                        {
+                            while (enumerator.MoveNext())
+                            {
+                                NPC j = enumerator.Current;
+                                if (j is Child)
+                                {
+                                    if (rect.Intersects(j.GetBoundingBox()))
+                                    {
+                                        if ((j as Child).Age == 1)
+                                        {
+                                            Monitor.Log($"Tossing {j.Name}");
+                                            (j as Child).toss(who);
+                                        }
+                                        else if ((j as Child).Age == 0)
+                                        {
+                                            Monitor.Log($"{j.Name} is sleeping");
+                                            Game1.drawObjectDialogue(Game1.parseText(Game1.content.LoadString("Strings\\Locations:FarmHouse_Crib_NewbornSleeping", j.displayName)));
+                                        }
+                                        else if ((j as Child).isInCrib() && (j as Child).Age == 2)
+                                        {
+                                            Monitor.Log($"acting on {j.Name}");
+                                            return j.checkAction(who, __instance);
+                                        }
+                                        __result = true;
+                                        return false;
+                                    }
+                                }
+                            }
+                        }
+                        __result = true;
+                        return false;
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Monitor.Log($"Failed in {nameof(ManorHouse_performAction_Prefix)}:\n{ex}", LogLevel.Error);
+            }
+            return true;
+        }
         public static bool ManorHouse_performAction_Prefix(ManorHouse __instance, string action, Farmer who, ref bool __result)
         {
             try
             {
                 ModEntry.ResetSpouses(who);
-                if (action != null && who.IsLocalPlayer && (Game1.player.isMarried() || ModEntry.spouses.Count > 0))
+                if (action != null && who.IsLocalPlayer && !Game1.player.divorceTonight && (Game1.player.isMarried() || ModEntry.spouses.Count > 0))
                 {
                     string a = action.Split(new char[]
                     {
@@ -184,9 +252,9 @@ namespace MultipleSpouses
                         }
                         responses.Add(new Response("No", Game1.content.LoadString("Strings\\Lexicon:QuestionDialogue_No")));
                         __instance.createQuestionDialogue(s2, responses.ToArray(), "divorce");
+                        __result = true;
+                        return false;
                     }
-                    __result = true;
-                    return false;
                 }
             }
             catch (Exception ex)

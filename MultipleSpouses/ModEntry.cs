@@ -1,9 +1,11 @@
 ﻿using Harmony;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Audio;
+using Microsoft.Xna.Framework.Graphics;
 using StardewModdingAPI;
 using StardewModdingAPI.Events;
 using StardewValley;
+using StardewValley.Characters;
 using StardewValley.Events;
 using StardewValley.Locations;
 using StardewValley.Menus;
@@ -17,7 +19,7 @@ using xTile;
 namespace MultipleSpouses
 {
     /// <summary>The mod entry point.</summary>
-    public class ModEntry : Mod
+    public class ModEntry : Mod, IAssetLoader
     {
 
         public static IMonitor PMonitor;
@@ -35,7 +37,8 @@ namespace MultipleSpouses
         public static List<string> allRandomSpouses;
         public static int bedSleepOffset = 48;
         public static List<string> allBedmates;
-        public static bool bedMade = false;
+        public static bool bedMadeToday = false;
+        public static bool kidsRoomExpandedToday = false;
         public static string officialSpouse = null;
 
         /// <summary>The mod entry point, called after the mod is first loaded.</summary>
@@ -122,6 +125,16 @@ namespace MultipleSpouses
                postfix: new HarmonyMethod(typeof(NPCPatches), nameof(NPCPatches.NPC_engagementResponse_Postfix))
             );
 
+            harmony.Patch(
+               original: AccessTools.Method(typeof(Child), nameof(Child.reloadSprite)),
+               postfix: new HarmonyMethod(typeof(NPCPatches), nameof(NPCPatches.Child_reloadSprite_Postfix))
+            );
+
+            harmony.Patch(
+               original: AccessTools.Method(typeof(Child), nameof(Child.resetForPlayerEntry)),
+               postfix: new HarmonyMethod(typeof(NPCPatches), nameof(NPCPatches.Child_resetForPlayerEntry_Postfix))
+            );
+
 
             // location patches
 
@@ -138,6 +151,11 @@ namespace MultipleSpouses
             harmony.Patch(
                original: AccessTools.Method(typeof(ManorHouse), nameof(ManorHouse.performAction)),
                prefix: new HarmonyMethod(typeof(LocationPatches), nameof(LocationPatches.ManorHouse_performAction_Prefix))
+            );
+            
+            harmony.Patch(
+               original: AccessTools.Method(typeof(GameLocation), nameof(GameLocation.performAction)),
+               prefix: new HarmonyMethod(typeof(LocationPatches), nameof(LocationPatches.GameLocation_performAction_Prefix))
             );
 
             harmony.Patch(
@@ -260,8 +278,13 @@ namespace MultipleSpouses
 
         private void GameLoop_DayEnding(object sender, DayEndingEventArgs e)
         {
+            Helper.Content.InvalidateCache("Maps/FarmHouse1_marriage");
+            Helper.Content.InvalidateCache("Maps/FarmHouse2");
+            Helper.Content.InvalidateCache("Maps/FarmHouse2_marriage");
             Helper.Events.GameLoop.OneSecondUpdateTicked -= GameLoop_OneSecondUpdateTicked;
             allRandomSpouses = null;
+            kidsRoomExpandedToday = false;
+            bedMadeToday = false;
         }
 
         private void GameLoop_DayStarted(object sender, DayStartedEventArgs e)
@@ -281,7 +304,8 @@ namespace MultipleSpouses
             spouseToDivorce = null;
             spouseRolesDate = -1;
             allRandomSpouses = null;
-            bedMade = false;
+            bedMadeToday = false;
+            kidsRoomExpandedToday = false;
         }
 
         private void Input_ButtonPressed(object sender, ButtonPressedEventArgs e)
@@ -300,7 +324,7 @@ namespace MultipleSpouses
                 if (resp < 0 || resps == null || resp >= resps.Count || resps[resp] == null)
                     return;
 
-                string key = resps[resp].responseKey;
+                string key = resps[resp].responseKey; 
 
                 foreach (NPC spouse in spouses.Values)
                 {
@@ -641,5 +665,162 @@ namespace MultipleSpouses
         }
 
 
+
+        /// <summary>Get whether this instance can load the initial version of the given asset.</summary>
+        /// <param name="asset">Basic metadata about the asset being loaded.</param>
+        public bool CanLoad<T>(IAssetInfo asset)
+        {
+            string[] names = asset.AssetName.Split('_');
+            if (config.ChildrenHaveHairOfSpouse &&(names[0].Equals("Characters\\Baby") || names[0].Equals("Characters\\Toddler")))
+            {
+                return true;
+            }
+
+            return false;
+        }
+
+        /// <summary>Load a matched asset.</summary>
+        /// <param name="asset">Basic metadata about the asset being loaded.</param>
+        public T Load<T>(IAssetInfo asset)
+        {
+            Monitor.Log($"loading asset for {asset.AssetName}");
+            if (asset.AssetName.StartsWith("Characters\\Baby") || asset.AssetName.StartsWith("Characters\\Toddler"))
+            {
+                if(asset.AssetNameEquals("Characters\\Baby") || asset.AssetNameEquals("Characters\\Baby_dark") || asset.AssetNameEquals("Characters\\Toddler") || asset.AssetNameEquals("Characters\\Toddler_dark") || asset.AssetNameEquals("Characters\\Toddler_girl") || asset.AssetNameEquals("Characters\\Toddler_girl_dark"))
+                {
+                    return (T)(object)Helper.Content.Load<Texture2D>($"assets/{asset.AssetName.Replace("Characters\\", "")}.png", ContentSource.ModFolder);
+                }
+
+                Monitor.Log($"loading child asset for {asset.AssetName}");
+
+                string[] names = asset.AssetName.Split('_');
+                string parent = names[names.Length - 1];
+                Texture2D parentTexSheet = Helper.Content.Load<Texture2D>($"Characters/{parent}", ContentSource.GameContent);
+                Texture2D babySheet = Helper.Content.Load<Texture2D>(string.Join("_", names.Take(names.Length - 1)), ContentSource.GameContent);
+                if (parentTexSheet == null)
+                {
+                    Monitor.Log($"couldn't find parent sheet for {asset.AssetName}");
+                    return (T)(object)babySheet;
+                }
+                Rectangle newBounds = parentTexSheet.Bounds;
+                newBounds.X = 0;
+                newBounds.Y = 64;
+                newBounds.Width = 16;
+                newBounds.Height = 32;
+                Texture2D parentTex = new Texture2D(Game1.graphics.GraphicsDevice, 16, 32);
+                Color[] data = new Color[parentTex.Width * parentTex.Height];
+                parentTexSheet.GetData(0, newBounds, data, 0, newBounds.Width * newBounds.Height);
+                
+                int start = -1;
+                Dictionary<Color, int> colorCounts = new Dictionary<Color, int>();
+                for (int i = 0; i < data.Length; i++)
+                {
+                    if(data[i] != Color.Transparent)
+                    {
+                        if(start == -1)
+                        {
+                            start = i / 16;
+                        }
+                        else
+                        {
+                            if (i / 16 - start > 8)
+                                break;
+                        }
+                        if (colorCounts.ContainsKey(data[i]))
+                        {
+                            colorCounts[data[i]]++;
+                        }
+                        else
+                        {
+                            colorCounts.Add(data[i], 1);
+                            Monitor.Log($"got hair color: {data[i]}");
+                        }
+                    }
+                }
+
+                if(colorCounts.Count == 0)
+                {
+                    Monitor.Log($"parent sheet empty for {asset.AssetName}");
+                    return (T)(object)babySheet;
+                }
+
+                var countsList = colorCounts.ToList();
+
+                countsList.Sort((pair1, pair2) => pair1.Value.CompareTo(pair2.Value));
+
+                List<Color> hairColors = new List<Color>();
+                for (int k = 0; k < Math.Min(countsList.Count, 4); k++)
+                {
+                    Monitor.Log($"using hair color: {countsList[k].Key}");
+                    hairColors.Add(countsList[k].Key);
+                }
+                hairColors.Sort((color1, color2) => (color1.R + color1.G + color1.B).CompareTo(color2.R + color2.G + color2.B));
+
+                Texture2D hairSheet = Helper.Content.Load<Texture2D>($"assets/hair/{string.Join("_", names.Take(names.Length - 1)).Replace("Characters\\","").Replace("_dark","")}.png", ContentSource.ModFolder);
+                Color[] babyData = new Color[babySheet.Width * babySheet.Height];
+                Color[] hairData = new Color[babySheet.Width * babySheet.Height];
+                babySheet.GetData(babyData);
+                hairSheet.GetData(hairData);
+
+                for(int i = 0; i < babyData.Length; i++)
+                {
+                    if(hairData[i] != Color.Transparent)
+                    {
+                        if (names[0].EndsWith("Baby"))
+                        {
+                            babyData[i] = hairColors[Game1.random.Next(hairColors.Count)];
+                        }
+                        else
+                        {
+                            if(hairColors.Count == 1)
+                            {
+                                hairColors.Add(hairColors[0]);
+                                hairColors.Add(hairColors[0]);
+                                hairColors.Add(hairColors[0]);
+                            }
+                            else if(hairColors.Count == 2)
+                            {
+                                hairColors.Add(hairColors[1]);
+                                hairColors.Add(hairColors[1]);
+                                hairColors[1] = new Color((hairColors[0].R + hairColors[0].R + hairColors[1].R) / 3, (hairColors[0].G + hairColors[0].G + hairColors[1].G) / 3, (hairColors[0].B + hairColors[0].B + hairColors[1].B) / 3);
+                                hairColors[2] = new Color((hairColors[0].R + hairColors[2].R + hairColors[2].R) / 3, (hairColors[0].G + hairColors[2].G + hairColors[2].G) / 3, (hairColors[0].B + hairColors[2].B + hairColors[2].B) / 3);
+                            }
+                            else if(hairColors.Count == 3)
+                            {
+                                hairColors.Add(hairColors[2]);
+                                hairColors[2] = new Color((hairColors[1].R + hairColors[2].R + hairColors[2].R) / 3, (hairColors[1].G + hairColors[2].G + hairColors[2].G) / 3, (hairColors[1].B + hairColors[2].B + hairColors[2].B) / 3);
+                                hairColors[1] = new Color((hairColors[0].R + hairColors[0].R + hairColors[1].R) / 3, (hairColors[0].G + hairColors[0].G + hairColors[1].G) / 3, (hairColors[0].B + hairColors[0].B + hairColors[1].B) / 3);
+                            }
+                            //Monitor.Log($"Hair grey: {hairData[i].R}");
+                            switch (hairData[i].R)
+                            {
+                                case 42:
+                                    babyData[i] = hairColors[0];
+                                    break;
+                                case 60:
+                                    babyData[i] = hairColors[1];
+                                    break;
+                                case 66:
+                                    babyData[i] = hairColors[Game1.random.Next(1,3)];
+                                    break;
+                                case 82:
+                                    babyData[i] = hairColors[2];
+                                    break;
+                                case 93:
+                                    babyData[i] = hairColors[Game1.random.Next(2, 4)];
+                                    break;
+                                case 114:
+                                    babyData[i] = hairColors[3];
+                                    break;
+                            }
+                            //Monitor.Log($"Hair color: {babyData[i]}");
+                        }
+                    }
+                }
+                babySheet.SetData(babyData);
+                return (T)(object)babySheet;
+            }
+            throw new InvalidOperationException($"Unexpected asset '{asset.AssetName}'.");
+        }
     }
 }
