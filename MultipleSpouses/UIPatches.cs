@@ -1,4 +1,5 @@
-﻿using StardewModdingAPI;
+﻿using Netcode;
+using StardewModdingAPI;
 using StardewValley;
 using StardewValley.Characters;
 using StardewValley.Menus;
@@ -89,6 +90,54 @@ namespace MultipleSpouses
 				Monitor.Log($"Failed in {nameof(Event_answerDialogueQuestion_Prefix)}:\n{ex}", LogLevel.Error);
 			}
 			return true;
+		}
+		
+		public static void DialogueBox_Prefix(ref List<string> dialogues)
+		{
+			try
+			{
+				if (dialogues[1] == Game1.content.LoadString("Strings\\StringsFromCSFiles:Event.cs.1826"))
+                {
+					List<string> newDialogues = new List<string>()
+					{
+						dialogues[0]
+					};
+
+
+
+					List<NPC> spouses = ModEntry.GetAllSpouses().Values.OrderBy(o => Game1.player.friendshipData[o.Name].Points).Reverse().Take(4).ToList();
+
+					List<int> which = new List<int>{ 0, 1, 2, 3 };
+
+					ModEntry.ShuffleList(ref which);
+
+					List<int> myWhich = new List<int>(which).Take(spouses.Count).ToList();
+
+					for(int i = 0; i < spouses.Count; i++)
+                    {
+                        switch (which[i])
+                        {
+							case 0:
+								newDialogues.Add(Game1.content.LoadString("Strings\\StringsFromCSFiles:Event.cs.1827", spouses[0].displayName));
+								break;
+							case 1:
+								newDialogues.Add(((spouses[1].Gender == 0) ? Game1.content.LoadString("Strings\\StringsFromCSFiles:Event.cs.1832") : Game1.content.LoadString("Strings\\StringsFromCSFiles:Event.cs.1834")) + " " + ((spouses[1].Gender == 0) ? Game1.content.LoadString("Strings\\StringsFromCSFiles:Event.cs.1837", spouses[1].displayName[0]) : Game1.content.LoadString("Strings\\StringsFromCSFiles:Event.cs.1838", spouses[1].displayName[0])));
+								break;
+							case 2:
+								newDialogues.Add(Game1.content.LoadString("Strings\\StringsFromCSFiles:Event.cs.1843", spouses[2].displayName));
+								break;
+							case 3:
+								newDialogues.Add(((spouses[1].Gender == 0) ? Game1.content.LoadString("Strings\\StringsFromCSFiles:Event.cs.1831") : Game1.content.LoadString("Strings\\StringsFromCSFiles:Event.cs.1833")) + " " + ((spouses[1].Gender == 0) ? Game1.content.LoadString("Strings\\StringsFromCSFiles:Event.cs.1837", spouses[1].displayName[0]) : Game1.content.LoadString("Strings\\StringsFromCSFiles:Event.cs.1838", spouses[1].displayName[0])));
+								break;
+                        }
+                    }
+					dialogues = new List<string>(newDialogues);
+				}
+			}
+			catch (Exception ex)
+			{
+				Monitor.Log($"Failed in {nameof(DialogueBox_Prefix)}:\n{ex}", LogLevel.Error);
+			}
 		}
 	}
 }

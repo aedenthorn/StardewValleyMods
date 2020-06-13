@@ -22,28 +22,32 @@ namespace MultipleSpouses
         }
 
 
-        public static bool GameLocation_updateMap_Prefix(ref GameLocation __instance, string ___loadedMapPath)
+        public static void FarmHouse_getWalls_Postfix(FarmHouse __instance, ref List<Microsoft.Xna.Framework.Rectangle> __result)
         {
             try
             {
-                if (__instance is FarmHouse && __instance.Name.StartsWith("FarmHouse"))
+                if(__instance.Name == Utility.getHomeOfFarmer(Game1.player).Name && __instance.upgradeLevel > 1 && ModEntry.config.ExtraCribs + ModEntry.config.ExtraKidsBeds > 0)
                 {
-                    FarmHouse farmHouse = __instance as FarmHouse;
-                    if (farmHouse.owner == null)
-                        return true;
-                    bool showSpouse = ModEntry.spouses.Count > 0 || farmHouse.owner.spouse != null;
-                    __instance.mapPath.Value = "Maps\\" + __instance.Name + ((farmHouse.upgradeLevel == 0) ? "" : ((farmHouse.upgradeLevel == 3) ? "2" : string.Concat(farmHouse.upgradeLevel))) + (showSpouse ? "_marriage" : "");
-
-                    if (!object.Equals(__instance.mapPath.Value, ___loadedMapPath))
-                    {
-                        __instance.reloadMap();
-                    }
-                    return false;
+                    int x = (ModEntry.config.ExtraCribs * 3) + (ModEntry.config.ExtraKidsBeds * 4);
+                    __result.Add(new Microsoft.Xna.Framework.Rectangle(28, 1, x, 3));
                 }
             }
             catch (Exception ex)
             {
-                Monitor.Log($"Failed in {nameof(GameLocation_updateMap_Prefix)}:\n{ex}", LogLevel.Error);
+                Monitor.Log($"Failed in {nameof(FarmHouse_getWalls_Postfix)}:\n{ex}", LogLevel.Error);
+            }
+        }
+        
+
+        public static bool FarmHouse_updateMap_Prefix(ref FarmHouse __instance, string ___loadedMapPath)
+        {
+            try
+            {
+                //ModEntry.ResetSpouses(Game1.player);
+            }
+            catch (Exception ex)
+            {
+                Monitor.Log($"Failed in {nameof(FarmHouse_updateMap_Prefix)}:\n{ex}", LogLevel.Error);
             }
             return true;
         }
@@ -78,10 +82,6 @@ namespace MultipleSpouses
                 if (f.currentLocation == farmHouse && ModEntry.IsInBed(f.GetBoundingBox()))
                 {
                     f.position.Value = ModEntry.GetSpouseBedLocation("Game1.player");
-                }
-                if (ModEntry.config.BuildAllSpousesRooms)
-                {
-                    Maps.BuildSpouseRooms(farmHouse);
                 }
                 if (ModEntry.config.CustomBed)
                 {

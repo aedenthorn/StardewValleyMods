@@ -2,6 +2,7 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Audio;
 using Microsoft.Xna.Framework.Graphics;
+using Netcode;
 using StardewModdingAPI;
 using StardewModdingAPI.Events;
 using StardewValley;
@@ -161,6 +162,11 @@ namespace MultipleSpouses
             );
             
             harmony.Patch(
+               original: AccessTools.Method(typeof(FarmHouse), nameof(FarmHouse.getWalls)),
+               postfix: new HarmonyMethod(typeof(LocationPatches), nameof(LocationPatches.FarmHouse_getWalls_Postfix))
+            );
+
+            harmony.Patch(
                original: AccessTools.Method(typeof(GameLocation), nameof(GameLocation.performAction)),
                prefix: new HarmonyMethod(typeof(LocationPatches), nameof(LocationPatches.GameLocation_performAction_Prefix))
             );
@@ -170,10 +176,12 @@ namespace MultipleSpouses
                postfix: new HarmonyMethod(typeof(LocationPatches), nameof(LocationPatches.GameLocation_resetLocalState_Postfix))
             );
 
+            /*
             harmony.Patch(
-               original: AccessTools.Method(typeof(GameLocation), "updateMap"),
-               prefix: new HarmonyMethod(typeof(LocationPatches), nameof(LocationPatches.GameLocation_updateMap_Prefix))
+               original: AccessTools.Method(typeof(FarmHouse), "updateMap"),
+               prefix: new HarmonyMethod(typeof(LocationPatches), nameof(LocationPatches.FarmHouse_updateMap_Prefix))
             );
+            */
             
 
             // pregnancy patches
@@ -205,6 +213,11 @@ namespace MultipleSpouses
                prefix: new HarmonyMethod(typeof(FarmerPatches), nameof(FarmerPatches.Farmer_doDivorce_Prefix))
             );
 
+            harmony.Patch(
+               original: AccessTools.Method(typeof(Farmer), nameof(Farmer.isMarried)),
+               prefix: new HarmonyMethod(typeof(FarmerPatches), nameof(FarmerPatches.Farmer_isMarried_Prefix))
+            );
+
             // UI patches
 
             harmony.Patch(
@@ -233,6 +246,7 @@ namespace MultipleSpouses
             kidsRoomExpandedToday = false;
             officialSpouse = null;
             LoadTMXSpouseRooms();
+            ResetSpouses(Game1.player);
         }
 
         private void GameLoop_GameLaunched(object sender, GameLaunchedEventArgs e)
@@ -321,8 +335,12 @@ namespace MultipleSpouses
         private void GameLoop_DayStarted(object sender, DayStartedEventArgs e)
         {
             Helper.Events.GameLoop.OneSecondUpdateTicked += GameLoop_OneSecondUpdateTicked;
-
+            ResetSpouses(Game1.player);
             allRandomSpouses = GetRandomSpouses(true).Keys.ToList();
+
+            Utility.getHomeOfFarmer(Game1.player).showSpouseRoom();
+            Maps.BuildSpouseRooms(Utility.getHomeOfFarmer(Game1.player));
+            PlaceSpousesInFarmhouse();
         }
 
         private void GameLoop_ReturnedToTitle(object sender, ReturnedToTitleEventArgs e)
@@ -427,6 +445,96 @@ namespace MultipleSpouses
             {
                 Kissing.TrySpousesKiss();
             }
+        }
+
+        public static void PlaceSpousesInFarmhouse()
+        {
+            FarmHouse farmHouse = Utility.getHomeOfFarmer(Game1.player);
+
+            using (NetCollection<NPC>.Enumerator enumerator = farmHouse.characters.GetEnumerator())
+            {
+                while (enumerator.MoveNext())
+                {
+                    NPC j = enumerator.Current;
+                    if (GetAllSpouses().ContainsKey(j.Name))
+                    {
+                        ModEntry.PMonitor.Log("marriage duties for " + j.Name);
+
+                        if (ModEntry.outdoorSpouse == j.Name && !Game1.isRaining && !Game1.IsWinter && Game1.shortDayNameFromDayOfSeason(Game1.dayOfMonth).Equals("Sat") && !j.Name.Equals("Krobus"))
+                        {
+                            ModEntry.PMonitor.Log("going to outdoor patio");
+                            j.setUpForOutdoorPatioActivity();
+                            return;
+                        }
+
+                        Farmer farmer = j.getSpouse();
+                        if (j.currentLocation != farmHouse)
+                        {
+                            return;
+                        }
+                        ModEntry.PMonitor.Log("in farm house");
+                        j.shouldPlaySpousePatioAnimation.Value = false;
+
+                        Vector2 spot = (farmHouse.upgradeLevel == 1) ? new Vector2(32f, 5f) : new Vector2(38f, 14f);
+                        Point spot2 = farmHouse.getSpouseBedSpot(j.Name);
+
+                        if (ModEntry.bedSpouse != null)
+                        {
+                            foreach (NPC character in farmHouse.characters)
+                            {
+                                if (character.isVillager() && ModEntry.GetAllSpouses().ContainsKey(character.Name) && ModEntry.IsInBed(character.GetBoundingBox()))
+                                {
+                                    ModEntry.PMonitor.Log($"{character.Name} is already in bed");
+                                    ModEntry.bedSpouse = character.Name;
+                                    character.position.Value = ModEntry.GetSpouseBedLocation(character.name);
+                                    break;
+                                }
+                            }
+                        }
+
+                        if (ModEntry.kitchenSpouse == j.Name)
+                        {
+                            ModEntry.PMonitor.Log($"{j.Name} is in kitchen");
+                            j.setTilePosition(farmHouse.getKitchenStandingSpot());
+                            ModEntry.kitchenSpouse = null;
+                        }
+                        else if (ModEntry.bedSpouse == j.Name)
+                        {
+                            ModEntry.PMonitor.Log($"{j.Name} is in bed");
+                            j.position.Value = ModEntry.GetSpouseBedLocation(j.name);
+                            j.faceDirection(ModEntry.myRand.NextDouble() > 0.5 ? 1 : 3);
+                            ModEntry.bedSpouse = null;
+                        }
+                        else if (!ModEntry.config.BuildAllSpousesRooms && farmer.spouse != j.Name)
+                        {
+                            j.setTilePosition(farmHouse.getRandomOpenPointInHouse(ModEntry.myRand));
+                        }
+                        else
+                        {
+                            ModEntry.ResetSpouses(farmer);
+
+                            List<string> spouses = ModEntry.GetAllSpouses().Keys.ToList().FindAll((s) => Maps.roomIndexes.ContainsKey(s) || Maps.tmxSpouseRooms.ContainsKey(s));
+
+
+                            if (!spouses.Contains(j.Name))
+                            {
+                                j.setTilePosition(farmHouse.getRandomOpenPointInHouse(ModEntry.myRand));
+                                j.faceDirection(ModEntry.myRand.Next(0, 4));
+                                ModEntry.PMonitor.Log($"{j.Name} spouse random loc");
+                                return;
+                            }
+                            else
+                            {
+                                int offset = spouses.IndexOf(j.Name) * 7;
+                                j.setTilePosition((int)spot.X + offset, (int)spot.Y);
+                                j.faceDirection(ModEntry.myRand.Next(0, 4));
+                                ModEntry.PMonitor.Log($"{j.Name} loc: {(spot.X + offset)},{spot.Y}");
+                            }
+                        }
+                    }
+                }
+            }
+
         }
 
         public static bool IsInBed(Rectangle box)
@@ -557,8 +665,6 @@ namespace MultipleSpouses
 
         public static void ResetSpouses(Farmer f)
         {
-            PMonitor.Log("Resetting spouses");
-
             if (f.spouse == null)
             {
                 if(officialSpouse != null && f.friendshipData[officialSpouse] != null && (f.friendshipData[officialSpouse].IsMarried() || f.friendshipData[officialSpouse].IsEngaged()))
@@ -631,7 +737,6 @@ namespace MultipleSpouses
                     spouses.Add(name,npc);
                 }
             }
-            Utility.getHomeOfFarmer(f).showSpouseRoom();
             PMonitor.Log("official spouse: " + officialSpouse);
         }
 

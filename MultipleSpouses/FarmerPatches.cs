@@ -57,8 +57,7 @@ namespace MultipleSpouses
                     ModEntry.ResetSpouses(__instance);
                     ModEntry.PHelper.Content.InvalidateCache("Maps/FarmHouse1_marriage");
                     ModEntry.PHelper.Content.InvalidateCache("Maps/FarmHouse2_marriage");
-                    Utility.getHomeOfFarmer(__instance).resetForPlayerEntry();
-                    Utility.getHomeOfFarmer(__instance).showSpouseRoom();
+                    Maps.BuildSpouseRooms(Utility.getHomeOfFarmer(Game1.player));
                     Game1.getFarm().addSpouseOutdoorArea(__instance.spouse == null ? "" : __instance.spouse);
                 }
 
@@ -68,6 +67,24 @@ namespace MultipleSpouses
             catch (Exception ex)
             {
                 Monitor.Log($"Failed in {nameof(Farmer_doDivorce_Prefix)}:\n{ex}", LogLevel.Error);
+            }
+            return true;
+        }
+
+        public static bool Farmer_isMarried_Prefix(Farmer __instance, ref bool __result)
+        {
+            try
+            {
+                if(__instance.spouse == null)
+                {
+                    ModEntry.ResetSpouses(__instance);
+                }
+                __result = __instance.team.IsMarried(__instance.UniqueMultiplayerID) || (ModEntry.spouses.Count > 0 || __instance.spouse != null);
+                return false;
+            }
+            catch (Exception ex)
+            {
+                Monitor.Log($"Failed in {nameof(Farmer_isMarried_Prefix)}:\n{ex}", LogLevel.Error);
             }
             return true;
         }

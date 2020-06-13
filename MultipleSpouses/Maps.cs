@@ -56,6 +56,12 @@ namespace MultipleSpouses
 				Farmer f = farmHouse.owner;
 				if (f == null)
 					return;
+				ModEntry.ResetSpouses(f);
+				if (f.spouse == null && ModEntry.spouses.Count == 0)
+                {
+					farmHouse.showSpouseRoom();
+					return;
+				}
 
 				if (ModEntry.spouses.ContainsKey("Emily") && f.spouse != "Emily" && Game1.player.eventsSeen.Contains(463391))
 				{
@@ -75,6 +81,7 @@ namespace MultipleSpouses
 				{
 					if(roomIndexes.ContainsKey(spouse.Name) || tmxSpouseRooms.ContainsKey(spouse.Name))
                     {
+						Monitor.Log($"Adding {spouse.Name} to list for spouse rooms");
 						mySpouses.Add(spouse);
 					}
 				}
@@ -100,6 +107,24 @@ namespace MultipleSpouses
 					ox += 6;
 					oy += 9;
 				}
+
+				if (f.spouse != null)
+				{
+					if (roomIndexes.ContainsKey(f.spouse) || tmxSpouseRooms.ContainsKey(f.spouse))
+					{
+						Monitor.Log($"Building spouse room for official spouse {f.spouse}");
+						farmHouse.showSpouseRoom();
+					}
+					else
+					{
+						Monitor.Log($"No spouse room for official spouse {f.spouse}, placing for {mySpouses[0].Name} instead.");
+						BuildOneSpouseRoom(farmHouse, mySpouses[0].Name, -1);
+						mySpouses = new List<NPC>(mySpouses.Skip(1));
+					}
+				}
+
+				if (!ModEntry.config.BuildAllSpousesRooms)
+					return;
 
 
 				for (int i = 0; i < 7; i++)
@@ -144,20 +169,6 @@ namespace MultipleSpouses
 
 
 				int count = 0;
-
-				if (f.spouse != null)
-				{
-					if(roomIndexes.ContainsKey(f.spouse) || tmxSpouseRooms.ContainsKey(f.spouse))
-                    {
-						BuildOneSpouseRoom(farmHouse, (f.friendshipData[f.spouse].IsMarried() ? f.spouse : ""), -1);
-					}
-					else
-                    {
-						BuildOneSpouseRoom(farmHouse, (mySpouses[0].Name), -1);
-						mySpouses = new List<NPC>(mySpouses.Skip(1));
-					}
-				}
-
 
 				ExtendMap(farmHouse, ox + 37 + (7*mySpouses.Count));
 
@@ -272,45 +283,50 @@ namespace MultipleSpouses
 					oy += 9;
 				}
 
-				for (int i = 0; i < 7; i++)
+				if (ModEntry.config.BuildAllSpousesRooms)
 				{
-					// bottom wall
-					farmHouse.setMapTileIndex(ox + 36 + i + (count * 7), oy + 10, 165, "Front", 0);
-					farmHouse.setMapTileIndex(ox + 36 + i + (count * 7), oy + 11, 0, "Buildings", 0);
 
 
-					farmHouse.removeTile(ox + 35 + (7 * count), oy + 4 + i, "Back");
 
-					if (count % 2 == 0)
-                    {
-						// vert hall
-						farmHouse.setMapTileIndex(ox + 35 + (7 * count), oy + 4 + i, (i % 2 == 0 ? config.HallTileOdd : config.HallTileEven), "Back", (i % 2 == 0 ? config.HallTileOddSheet : config.HallTileEvenSheet));
-						// horiz hall
-						farmHouse.setMapTileIndex(ox + 36 + i + (count * 7), oy + 10, (i % 2 == 0 ? ModEntry.config.HallTileEven : ModEntry.config.HallTileOdd), "Back", (i % 2 == 0 ? config.HallTileEvenSheet : config.HallTileOddSheet));
+					for (int i = 0; i < 7; i++)
+					{
+						// bottom wall
+						farmHouse.setMapTileIndex(ox + 36 + i + (count * 7), oy + 10, 165, "Front", 0);
+						farmHouse.setMapTileIndex(ox + 36 + i + (count * 7), oy + 11, 0, "Buildings", 0);
+
+
+						farmHouse.removeTile(ox + 35 + (7 * count), oy + 4 + i, "Back");
+
+						if (count % 2 == 0)
+						{
+							// vert hall
+							farmHouse.setMapTileIndex(ox + 35 + (7 * count), oy + 4 + i, (i % 2 == 0 ? config.HallTileOdd : config.HallTileEven), "Back", (i % 2 == 0 ? config.HallTileOddSheet : config.HallTileEvenSheet));
+							// horiz hall
+							farmHouse.setMapTileIndex(ox + 36 + i + (count * 7), oy + 10, (i % 2 == 0 ? ModEntry.config.HallTileEven : ModEntry.config.HallTileOdd), "Back", (i % 2 == 0 ? config.HallTileEvenSheet : config.HallTileOddSheet));
+						}
+						else
+						{
+							// vert hall
+							farmHouse.setMapTileIndex(ox + 35 + (7 * count), oy + 4 + i, (i % 2 == 0 ? config.HallTileEven : config.HallTileOdd), "Back", (i % 2 == 0 ? config.HallTileEvenSheet : config.HallTileOddSheet));
+							// horiz hall
+							farmHouse.setMapTileIndex(ox + 36 + i + (count * 7), oy + 10, (i % 2 == 0 ? ModEntry.config.HallTileOdd : ModEntry.config.HallTileEven), "Back", (i % 2 == 0 ? config.HallTileOddSheet : config.HallTileEvenSheet));
+						}
 					}
-					else
-                    {
-						// vert hall
-						farmHouse.setMapTileIndex(ox + 35 + (7 * count), oy + 4 + i, (i % 2 == 0 ? config.HallTileEven : config.HallTileOdd), "Back", (i % 2 == 0 ? config.HallTileEvenSheet: config.HallTileOddSheet));
-						// horiz hall
-						farmHouse.setMapTileIndex(ox + 36 + i + (count * 7), oy + 10, (i % 2 == 0 ? ModEntry.config.HallTileOdd : ModEntry.config.HallTileEven), "Back", (i % 2 == 0 ? config.HallTileOddSheet : config.HallTileEvenSheet));
+
+					for (int i = 0; i < 6; i++)
+					{
+						// top wall
+						farmHouse.setMapTileIndex(ox + 36 + i + (count * 7), oy + 0, 2, "Buildings", 0);
 					}
+
+					// vert wall
+					farmHouse.setMapTileIndex(ox + 35 + (7 * count), oy + 0, 87, "Buildings", untitled);
+					farmHouse.setMapTileIndex(ox + 35 + (7 * count), oy + 1, 99, "Buildings", untitled);
+					farmHouse.setMapTileIndex(ox + 35 + (7 * count), oy + 2, 111, "Buildings", untitled);
+					farmHouse.setMapTileIndex(ox + 35 + (7 * count), oy + 3, 123, "Buildings", untitled);
+					farmHouse.setMapTileIndex(ox + 35 + (7 * count), oy + 4, 135, "Buildings", untitled);
+
 				}
-
-				for (int i = 0; i < 6; i++)
-				{
-					// top wall
-					farmHouse.setMapTileIndex(ox + 36 + i + (count * 7), oy + 0, 2, "Buildings", 0);
-				}
-
-				// vert wall
-				farmHouse.setMapTileIndex(ox + 35 + (7 * count), oy + 0, 87, "Buildings", untitled);
-				farmHouse.setMapTileIndex(ox + 35 + (7 * count), oy + 1, 99, "Buildings", untitled);
-				farmHouse.setMapTileIndex(ox + 35 + (7 * count), oy + 2, 111, "Buildings", untitled);
-				farmHouse.setMapTileIndex(ox + 35 + (7 * count), oy + 3, 123, "Buildings", untitled);
-				farmHouse.setMapTileIndex(ox + 35 + (7 * count), oy + 4, 135, "Buildings", untitled);
-
-
 				for (int x = 0; x < areaToRefurbish.Width; x++)
 				{
 					for (int y = 0; y < areaToRefurbish.Height; y++)
@@ -552,9 +568,17 @@ namespace MultipleSpouses
             {
 				for(int i = 0; i < 3 * height; i++)
                 {
-					setupTile(ox + startx + (3 * j) + i % 3, oy + starty + i / 3, i % 3, i / 3, farmHouse, frontIndexes, frontSheets, 14, 0);
-					setupTile(ox + startx + (3 * j) + i % 3, oy + starty + i / 3, i % 3, i / 3, farmHouse, buildIndexes, buildSheets, 14, 1);
-					setupTile(ox + startx + (3 * j) + i % 3, oy + starty + i / 3, i % 3, i / 3, farmHouse, backIndexes, backSheets, 14, 2);
+					int x = ox + startx + (3 * j) + i % 3;
+					int y = oy + starty + i / 3 ;
+					int xt = i % 3;
+					int yt = i / 3;
+
+					if (y < 3)
+						farmHouse.setTileProperty(x, y, "Back", "NPCBarrier", "T");
+
+					setupTile(x, y, xt, yt, farmHouse, frontIndexes, frontSheets, 14, 0);
+					setupTile(x, y, xt, yt, farmHouse, buildIndexes, buildSheets, 14, 1);
+					setupTile(x, y, xt, yt, farmHouse, backIndexes, backSheets, 14, 2);
 				}
 				farmHouse.setTileProperty(ox + startx + (3 * j), oy + starty + 5, "Buildings", "Action", $"Crib{j}");
 				farmHouse.setTileProperty(ox + startx + (3 * j) + 1, oy + starty + 5, "Buildings", "Action", $"Crib{j}");
@@ -564,9 +588,18 @@ namespace MultipleSpouses
 			for (int i = 0; i < 3 * height; i++)
 			{
 				k %= (3 * height);
-				setupTile(cribsWidth + ox + startx + i % 3, oy + starty + i / 3, 3 + (k % 3), k / 3, farmHouse, frontIndexes, frontSheets, 14, 0);
-				setupTile(cribsWidth + ox + startx + i % 3, oy + starty + i / 3, 3 + (k % 3), k / 3, farmHouse, buildIndexes, buildSheets, 14, 1);
-				setupTile(cribsWidth + ox + startx + i % 3, oy + starty + i / 3, 3 + (k % 3), k / 3, farmHouse, backIndexes, backSheets, 14, 2);
+
+				int x = cribsWidth + ox + startx + i % 3;
+				int y = oy + starty + i / 3;
+				int xt = 3 + (k % 3);
+				int yt = k / 3;
+
+				if (y < 3)
+					farmHouse.setTileProperty(x, y, "Back", "NPCBarrier", "T");
+
+				setupTile(x, y, xt, yt, farmHouse, frontIndexes, frontSheets, 14, 0);
+				setupTile(x, y, xt, yt, farmHouse, buildIndexes, buildSheets, 14, 1);
+				setupTile(x, y, xt, yt, farmHouse, backIndexes, backSheets, 14, 2);
 				k++;
 			}
 			for (int j = 0; j < ModEntry.config.ExtraKidsBeds + 1; j++)
@@ -575,9 +608,18 @@ namespace MultipleSpouses
 				for (int i = 0; i < 4 * height; i++)
                 {
 					k %= (4 * height);
-					setupTile(cribsWidth + 3 + ox + startx + (4 * j) + i % 4, oy + starty + i / 4, 6 + (k % 4), k / 4, farmHouse, frontIndexes, frontSheets, 14, 0);
-					setupTile(cribsWidth + 3 + ox + startx + (4 * j) + i % 4, oy + starty + i / 4, 6 + (k % 4), k / 4, farmHouse, buildIndexes, buildSheets, 14, 1);
-					setupTile(cribsWidth + 3 + ox + startx + (4 * j) + i % 4, oy + starty + i / 4, 6 + (k % 4), k / 4, farmHouse, backIndexes, backSheets, 14, 2);
+
+					int x = cribsWidth + 3 + ox + startx + (4 * j) + i % 4;
+					int y = oy + starty + i / 4;
+					int xt = 6 + (k % 4);
+					int yt = k / 4;
+
+					if (y < 3)
+						farmHouse.setTileProperty(x, y, "Back", "NPCBarrier", "T");
+
+					setupTile(x, y, xt, yt, farmHouse, frontIndexes, frontSheets, 14, 0);
+					setupTile(x, y, xt, yt, farmHouse, buildIndexes, buildSheets, 14, 1);
+					setupTile(x, y, xt, yt, farmHouse, backIndexes, backSheets, 14, 2);
 					k++;
 				}
 			}
