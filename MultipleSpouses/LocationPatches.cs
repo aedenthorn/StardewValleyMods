@@ -92,6 +92,9 @@ namespace MultipleSpouses
                 {
                     Maps.ExpandKidsRoom(farmHouse);
                 }
+                farmHouse.showSpouseRoom();
+                Maps.BuildSpouseRooms(farmHouse);
+
             }
             catch (Exception ex)
             {
@@ -255,6 +258,26 @@ namespace MultipleSpouses
                         __instance.createQuestionDialogue(s2, responses.ToArray(), "divorce");
                         __result = true;
                         return false;
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Monitor.Log($"Failed in {nameof(ManorHouse_performAction_Prefix)}:\n{ex}", LogLevel.Error);
+            }
+            return true;
+        }
+
+        public static bool Event_endBehaviors_Postfix(string[] split)
+        {
+            try
+            {
+                if (split != null && split.Length > 1)
+                {
+                    string text = split[1];
+                    if (text == "wedding")
+                    {
+                        ModEntry.PlaceSpousesInFarmhouse();
                     }
                 }
             }

@@ -41,7 +41,7 @@ namespace BossCreatures
 			this.difficulty = difficulty;
 			Health = (int)Math.Round(base.Health * 10 * difficulty);
 			MaxHealth = Health;
-			DamageToFarmer = (int)Math.Round(base.damageToFarmer * difficulty);
+			DamageToFarmer = (int)Math.Round(base.damageToFarmer * 2 * difficulty);
 			timeUntilNextAttack = 100;
 			this.moveTowardPlayerThreshold.Value = 20;
 
@@ -211,7 +211,9 @@ namespace BossCreatures
 			}
 			else
 			{
-				base.currentLocation.characters.Add(new GreenSlime(base.Position, (int)(120*difficulty)));
+				if(Game1.random.NextDouble() < 0.5f)
+					base.currentLocation.characters.Add(new GreenSlime(base.Position, (int)(120*difficulty)));
+
 				base.currentLocation.characters[base.currentLocation.characters.Count - 1].setTrajectory(xTrajectory / 8 + Game1.random.Next(-20, 20), yTrajectory / 8 + Game1.random.Next(-20, 20));
 				base.currentLocation.characters[base.currentLocation.characters.Count - 1].willDestroyObjectsUnderfoot = false;
 				base.currentLocation.characters[base.currentLocation.characters.Count - 1].moveTowardPlayer(20);

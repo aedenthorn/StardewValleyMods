@@ -489,22 +489,15 @@ namespace MultipleSpouses
         {
             if (asRoommate)
                 return;
-            Monitor.Log("1");
             ModEntry.ResetSpouses(who);
-            Monitor.Log("2");
             Friendship friendship = who.friendshipData[__instance.Name];
-            Monitor.Log("3");
             WorldDate weddingDate = new WorldDate(Game1.Date);
-            Monitor.Log("4");
             weddingDate.TotalDays += Math.Max(1,ModEntry.config.DaysUntilMarriage);
-            Monitor.Log("5");
             while (!Game1.canHaveWeddingOnDay(weddingDate.DayOfMonth, weddingDate.Season))
             {
                 weddingDate.TotalDays++;
             }
-            Monitor.Log("6");
             friendship.WeddingDate = weddingDate;
-            Monitor.Log("7");
 
             Maps.BuildSpouseRooms(Utility.getHomeOfFarmer(who));
         }
@@ -586,19 +579,27 @@ namespace MultipleSpouses
             return true;
         }
 
-        public static bool NPC_tryToReceiveActiveObject_Prefix(NPC __instance, ref Farmer who, Dictionary<string, string> ___dialogue, ref int[] __state)
+        public static bool NPC_tryToReceiveActiveObject_Prefix(NPC __instance, ref Farmer who, Dictionary<string, string> ___dialogue, ref List<int> __state)
         {
             try
             {
                 if (ModEntry.GetAllSpouses().ContainsKey(__instance.Name))
                 {
-                    __state = new int[] { 
-                        who.friendshipData[__instance.Name].GiftsToday, 
-                        who.friendshipData[__instance.Name].GiftsThisWeek
+                    __state = new List<int> { 
+                        who.friendshipData[__instance.Name].GiftsThisWeek,
+                        who.friendshipData[__instance.Name].GiftsToday,
+                        0
                     };
                     who.friendshipData[__instance.Name].GiftsThisWeek = 0;
-                    if (ModEntry.config.MaxGiftsPerDay < 0 || (who.friendshipData[__instance.Name].GiftsToday >= 1 && who.friendshipData[__instance.Name].GiftsToday < ModEntry.config.MaxGiftsPerDay))
+                    if (ModEntry.config.MaxGiftsPerDay < 0 || who.friendshipData[__instance.Name].GiftsToday < ModEntry.config.MaxGiftsPerDay)
+                    {
                         who.friendshipData[__instance.Name].GiftsToday = 0;
+                    }
+                    else
+                    {
+                        who.friendshipData[__instance.Name].GiftsToday = 1;
+                        __state[2] = 1; // flag to say we set it to 1
+                    }
                 }
                 if (who.ActiveObject.ParentSheetIndex == 808 && __instance.Name.Equals("Krobus"))
                 {
@@ -749,8 +750,10 @@ namespace MultipleSpouses
                 }
                 else if (who.ActiveObject.parentSheetIndex == 809 && !who.ActiveObject.bigCraftable)
                 {
-                    if(ModEntry.GetAllSpouses().ContainsKey(__instance.Name) && Utility.doesMasterPlayerHaveMailReceivedButNotMailForTomorrow("ccMovieTheater") && !__instance.Name.Equals("Krobus") && who.lastSeenMovieWeek.Value < Game1.Date.TotalWeeks && !Utility.isFestivalDay(Game1.dayOfMonth, Game1.currentSeason) && Game1.timeOfDay <= 2100 && __instance.lastSeenMovieWeek.Value < Game1.Date.TotalWeeks && MovieTheater.GetResponseForMovie(__instance) != "reject")
+                    Monitor.Log($"Tried to give movie ticket");
+                    if (ModEntry.GetAllSpouses().ContainsKey(__instance.Name) && Utility.doesMasterPlayerHaveMailReceivedButNotMailForTomorrow("ccMovieTheater") && !__instance.Name.Equals("Krobus") && who.lastSeenMovieWeek.Value < Game1.Date.TotalWeeks && !Utility.isFestivalDay(Game1.dayOfMonth, Game1.currentSeason) && Game1.timeOfDay <= 2100 && __instance.lastSeenMovieWeek.Value < Game1.Date.TotalWeeks && MovieTheater.GetResponseForMovie(__instance) != "reject")
                     {
+                        Monitor.Log($"Tried to give movie ticket to spouse");
                         foreach (MovieInvitation invitation in who.team.movieInvitations)
                         {
                             if (invitation.farmer == who)
@@ -765,7 +768,9 @@ namespace MultipleSpouses
                                 return true;
                             }
                         }
-                        
+
+                        Monitor.Log($"Giving movie ticket to spouse");
+
                         if (LocalizedContentManager.CurrentLanguageCode == LocalizedContentManager.LanguageCode.en)
                         {
                             __instance.CurrentDialogue.Push(new Dialogue(__instance.GetDispositionModifiedString("Strings\\Characters:MovieInvite_Spouse_" + __instance.name, new object[0]), __instance));
@@ -804,14 +809,19 @@ namespace MultipleSpouses
             return true;
         }
 
-        public static void NPC_tryToReceiveActiveObject_Postfix(NPC __instance, ref Farmer who, int[] __state)
+        public static void NPC_tryToReceiveActiveObject_Postfix(NPC __instance, ref Farmer who, List<int> __state)
         {
             try
             {
                 if(__state != null)
                 {
-                    who.friendshipData[__instance.Name].GiftsThisWeek = __state[0];
-                    who.friendshipData[__instance.Name].GiftsToday = __state[1];
+                    if(__state.Count > 0)
+                    {
+                        who.friendshipData[__instance.Name].GiftsThisWeek += __state[0];
+                        who.friendshipData[__instance.Name].GiftsToday += __state[1] - (__state[2] == 1 ? 1 : 0);
+                        Monitor.Log($"gifts this week {who.friendshipData[__instance.Name].GiftsThisWeek}");
+                        Monitor.Log($"gifts today {who.friendshipData[__instance.Name].GiftsToday}");
+                    }
                 }
             }
             catch (Exception ex)

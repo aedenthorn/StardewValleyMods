@@ -11,13 +11,12 @@ namespace BossCreatures
         }
         public ToughFly(Vector2 position, float difficulty) : base(position, true)
         {
-            Health = (int)Math.Round(Health * 2 * difficulty);
+            Health = (int)Math.Round(Health * 1.5 * difficulty);
         }
         public override void MovePosition(GameTime time, xTile.Dimensions.Rectangle viewport, GameLocation currentLocation)
         {
             base.MovePosition(time, viewport, currentLocation);
-            base.MovePosition(time, viewport, currentLocation);
-
+            //base.MovePosition(time, viewport, currentLocation);
         }
 
     }

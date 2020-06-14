@@ -28,27 +28,36 @@ namespace CustomMonsterFloors
 		{
 			Config = helper.ReadConfig<ModConfig>();
 
+			if (!Config.EnableMod)
+				return;
+
 			helper.Events.GameLoop.DayStarted += OnDayStarted;
 
 			var harmony = HarmonyInstance.Create(this.ModManifest.UniqueID);
 
-			harmony.Patch(
-			   original: AccessTools.Method(typeof(MineShaft), "loadLevel"),
-			   postfix: new HarmonyMethod(typeof(ModEntry), nameof(ModEntry.loadLevel_Postfix))
-			);
-			harmony.Patch(
-			   original: AccessTools.Method(typeof(MineShaft), "adjustLevelChances"),
-			   postfix: new HarmonyMethod(typeof(ModEntry), nameof(ModEntry.adjustLevelChances_Postfix))
-			);
-			harmony.Patch(
-			   original: AccessTools.Method(typeof(MineShaft), "chooseStoneType"),
-			   prefix: new HarmonyMethod(typeof(ModEntry), nameof(ModEntry.chooseStoneType_Prefix)),
-			   postfix: new HarmonyMethod(typeof(ModEntry), nameof(ModEntry.chooseStoneType_Postfix))
-			);
-			harmony.Patch(
-			   original: AccessTools.Method(typeof(MineShaft), "checkStoneForItems"),
-			   postfix: new HarmonyMethod(typeof(ModEntry), nameof(ModEntry.checkStoneForItems_Postfix))
-			);
+            if (Config.EnableFloorTypeChanges)
+            {
+				harmony.Patch(
+				   original: AccessTools.Method(typeof(MineShaft), "loadLevel"),
+				   postfix: new HarmonyMethod(typeof(ModEntry), nameof(ModEntry.loadLevel_Postfix))
+				);
+			}
+			if (Config.EnableTileChanges)
+			{
+				harmony.Patch(
+				   original: AccessTools.Method(typeof(MineShaft), "adjustLevelChances"),
+				   postfix: new HarmonyMethod(typeof(ModEntry), nameof(ModEntry.adjustLevelChances_Postfix))
+				);
+				harmony.Patch(
+				   original: AccessTools.Method(typeof(MineShaft), "chooseStoneType"),
+				   prefix: new HarmonyMethod(typeof(ModEntry), nameof(ModEntry.chooseStoneType_Prefix)),
+				   postfix: new HarmonyMethod(typeof(ModEntry), nameof(ModEntry.chooseStoneType_Postfix))
+				);
+				harmony.Patch(
+				   original: AccessTools.Method(typeof(MineShaft), "checkStoneForItems"),
+				   postfix: new HarmonyMethod(typeof(ModEntry), nameof(ModEntry.checkStoneForItems_Postfix))
+				);
+			}
 		}
 
 		private void OnDayStarted(object sender, DayStartedEventArgs e)
@@ -216,7 +225,7 @@ namespace CustomMonsterFloors
 				mapImageSource.Value = "Maps\\Mines\\mine";
 			}
 		}
-		private static void adjustLevelChances_Postfix(MineShaft __instance, NetBool ___netIsMonsterArea, NetBool ___netIsSlimeArea, NetBool ___netIsDinoArea, ref double stoneChance, ref double monsterChance, ref double itemChance, ref double gemStoneChance)
+		private static void adjustLevelChances_Postfix(NetBool ___netIsMonsterArea, NetBool ___netIsSlimeArea, NetBool ___netIsDinoArea, ref double stoneChance, ref double monsterChance, ref double itemChance, ref double gemStoneChance)
 		{
 			if (___netIsDinoArea)
 			{

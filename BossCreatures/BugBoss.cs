@@ -35,7 +35,7 @@ namespace BossCreatures
 			Health = (int)Math.Round(base.Health * 100 * difficulty);
 			MaxHealth = Health;
 			DamageToFarmer = (int)Math.Round(base.damageToFarmer * difficulty);
-			MaxFlies = 5;
+			MaxFlies = 4;
 
 
 			this.moveTowardPlayerThreshold.Value = 20;
@@ -59,7 +59,7 @@ namespace BossCreatures
 					Vector2 velocityTowardPlayer = Utility.getVelocityTowardPlayer(this.GetBoundingBox().Center, 15f, base.Player);
 
 					base.currentLocation.projectiles.Add(new DebuffingProjectile(14, 2, 4, 4, 0.196349546f, velocityTowardPlayer.X, velocityTowardPlayer.Y, new Vector2((float)this.GetBoundingBox().X, (float)this.GetBoundingBox().Y), base.currentLocation, this));
-					this.lastDebuff = Game1.random.Next(1500, 3000);
+					this.lastDebuff = Game1.random.Next(3000, 6000);
 				}
 				if (lastFly == 0f)
 				{
@@ -86,7 +86,7 @@ namespace BossCreatures
 						{
 							focusedOnFarmers = true
 						});
-						this.lastFly = (float)Game1.random.Next(2000, 4000);
+						this.lastFly = (float)Game1.random.Next(4000, 8000);
 					}
 				}
 			}

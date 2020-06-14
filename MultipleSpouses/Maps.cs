@@ -63,18 +63,6 @@ namespace MultipleSpouses
 					return;
 				}
 
-				if (ModEntry.spouses.ContainsKey("Emily") && f.spouse != "Emily" && Game1.player.eventsSeen.Contains(463391))
-				{
-					int offset = (ModEntry.spouses.Keys.ToList().IndexOf("Emily") + 1) * 7 * 64;
-					Vector2 parrotSpot = new Vector2(2064f + offset, 160f);
-					int upgradeLevel = farmHouse.upgradeLevel;
-					if (upgradeLevel - 2 <= 1)
-					{
-						parrotSpot = new Vector2(2448f + offset, 736f);
-					}
-					farmHouse.temporarySprites.Add(new EmilysParrot(parrotSpot));
-				}
-
 				List<NPC> mySpouses = new List<NPC>();
 
 				foreach (NPC spouse in ModEntry.spouses.Values)
@@ -221,7 +209,20 @@ namespace MultipleSpouses
                 if (roomIndexes.ContainsKey(name))
                 {
 					indexInSpouseMapSheet = roomIndexes[name];
-                }
+					if(name == "Emily")
+                    {
+						farmHouse.temporarySprites.RemoveAll((s) => s is EmilysParrot);
+
+						int offset = (1 + count) * 7 * 64;
+						Vector2 parrotSpot = new Vector2(2064f + offset, 160f);
+						int upgradeLevel = farmHouse.upgradeLevel;
+						if (upgradeLevel - 2 <= 1)
+						{
+							parrotSpot = new Vector2(2448f + offset, 736f);
+						}
+						farmHouse.temporarySprites.Add(new EmilysParrot(parrotSpot));
+					}
+				}
 				else if (tmxSpouseRooms.ContainsKey(name))
 				{
 

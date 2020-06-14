@@ -8,6 +8,9 @@ namespace CustomMonsterFloors
 {
     public class ModConfig 
     {
+        public bool EnableMod { get; set; } = true;
+        public bool EnableFloorTypeChanges { get; set; } = true;
+        public bool EnableTileChanges { get; set; } = true;
         public int PercentChanceMonsterFloor { get; set; } = 20;
         public string SlimeDinoMonsterSplitPercents { get; set; } = "33:33:34";
         public string SlimeMonsterSplitPercents { get; set; } = "50:50";

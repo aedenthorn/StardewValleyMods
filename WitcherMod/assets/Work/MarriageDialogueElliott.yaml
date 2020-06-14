@@ -1,0 +1,73 @@
+
+xnbData: 
+    target: "w"
+    compressed: true
+    hiDef: true
+    readerData: 
+        - 
+            type: "Microsoft.Xna.Framework.Content.DictionaryReader`2[[System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089],[System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089]]"
+            version: 0
+
+        - 
+            type: "Microsoft.Xna.Framework.Content.StringReader"
+            version: 0
+
+
+    numSharedResources: 0
+
+content:  #!Dictionary<String,String>
+    Rainy_Day_0: "I feel inspired today... I think I'll do some writing." #!String
+    Rainy_Day_1: "The sound of rain, in some tiny way, reminds me of my cabin by the beach.#$e#The farm is wonderful, but I do miss the sound of the ocean." #!String
+    Rainy_Day_2: "I got up early and made coffee.[395]#$e#I find that a cup of this exquisite brew makes the early morning a lot more pleasant." #!String
+    Rainy_Day_3: "I think I'll remain indoors today, my dear. The rain causes my hair to go limp." #!String
+    Rainy_Day_4: "My inspiration for writing is like the weather... it comes and goes at random. Today I feel entirely dull.$s#$e#Perhaps I'll read one of the classics to get my creative juices flowing." #!String
+    patio_Elliott: "Ah, what a lovely day to read a book... don't you think, my dear?" #!String
+    Rainy_Night_0: "Good evening. Did you have a productive day, @?^Good evening. Did you have a productive day, my dear?" #!String
+    Rainy_Night_1: "You're ice cold! Let me keep you warm.$l" #!String
+    Rainy_Night_2: "My skill with words is unmatched, yet I can't find the way to properly describe your allure.$l^My skill with words is unmatched, yet I can't find the way to properly describe your beauty.$l" #!String
+    Rainy_Night_3: "What did I do today? I'll just say this... it takes a lot of work to maintain this rugged physique!" #!String
+    Rainy_Night_4: "I spent the afternoon daydreaming about the ocean. So I decided to cook some seafood. [198 202 727 728]$h" #!String
+    Indoor_Day_0: "I've been taking much better care of myself now that we're together. The bachelor life wasn't particularly healthy for me." #!String
+    Indoor_Day_1: "Good morning, @! I made us a pot of coffee.[395]#$e#I find myself craving this robust flavor nearly every morning." #!String
+    Indoor_Day_2: "If you find a spider in the house, don't squash it! Just let me know and I'll take the poor thing outside." #!String
+    Indoor_Day_3: "Today is going to be a fantastic day... I can feel it!$h#$e#I get this special feeling in my nose..." #!String
+    Indoor_Day_4: "I've had this recurring nightmare that you gave me a buzz cut... You wouldn't ever do that to me, would you?$s#$e#I trust you." #!String
+    Indoor_Night_0: "From the brightest winter star, to the shimmer of an iridium vein... nothing can compare to my wonderful man.$l^From the brightest winter star, to the fragrant fairy rose... nothing can compare with your captivating beauty.$l" #!String
+    Indoor_Night_1: "A crackling fire adds wonderful ambience to the house... every piece of wood burns in a unique way." #!String
+    Indoor_Night_2: "I never had much success growing plant in my old beach house. Hopefully I can pick up a thing or two by watching you.#$e#In this respect, you are the master and I only a humble apprentice." #!String
+    Indoor_Night_3: "When I behold thy wondrous face, a precious jewel of form and grace, my heart... torn by the dread of night, is purified with golden light.#$e#Poetry is the only way I can begin to describe my feelings for you.$l" #!String
+    Indoor_Night_4: "My love... I wouldn't trade you for 100 iridium bars.#$e#Nor 1000...#$e#Not even 10,000 bars, no.$7#$e#...$7#$e#No, not even 100,000 bars!$a#$e#...$s#$e#Wa... one million bars of pure iridium...? Don't make me do this...$8" #!String
+    Outdoor_0: "My wildest dreams have come true... just look at this incredible landscape!" #!String
+    Outdoor_1: "Fertile soil beneath my feet, fresh air to fill my lungs, and the sun's warmth to delight my skin... Life is going well." #!String
+    Outdoor_2: "I might stay here and write some poetry. I'm feeling a sudden surge of creativity! You go on ahead and take care of business." #!String
+    Outdoor_3: "If I stay perfectly still, perhaps a resplendent butterfly will bless my nose with a landing." #!String
+    Outdoor_4: "I drank too much coffee... my mouth feels about as dry as the Calico Desert.$s#$e#Oh... sorry about the coffee breath.$7" #!String
+    OneKid_0: "Have you had any time to entertain little %kid1 today? Maybe a second child will make things easier for both of us." #!String
+    OneKid_1: "Little %kid1 is going to have the perfect childhood here. There's so much to explore." #!String
+    OneKid_3: "Caring for babies isn't exactly my strong suit... but I'll do my best to be a good father." #!String
+    TwoKids_0: "I already gave %kid1 and %kid2 their food. They eat a lot for such small creatures!" #!String
+    TwoKids_1: "I was carrying %kid1 earlier, and I could've sworn I heard a \"Da...da\".$h" #!String
+    TwoKids_2: "I'm going to teach %kid1 to read as soon as possible! That's a great way for children to learn about the world." #!String
+    TwoKids_3: "We've done well, @. The farm is doing excellent and our healthy children are a great joy. I couldn't be happier." #!String
+    Good_0: "@... I'm so proud of all your hard work. I'm very lucky to have you.$l" #!String
+    Good_1: "I made a whole secret book of poems expressing my love for you.$l" #!String
+    Good_2: "I came to the valley to find the ivory tower from which my talents could reign supreme. But what I really found was a dungeon of loneliness. You saved me from that.$l" #!String
+    Good_3: "Wow, you look really handsome today! Did you shave? Your jawline is perfect.$l^Your feminine allure is irresistible today. I can't keep my eyes off you.$l" #!String
+    Good_4: "I feel burnt out in your absence. But when I hear that sound of muddy boots on wood, my heart rises from the ash." #!String
+    Good_5: "I'm doing a walking meditation. It's good for creativity." #!String
+    Good_6: "Be careful out there! I do worry about you sometimes. There are people in the world who would take advantage of you." #!String
+    funLeave_Elliott: "I think I'll walk down to the beach today. It's always nice to see the ocean again." #!String
+    funReturn_Elliott: "I had a nice time at the beach by myself. I watched the waves come and go, just like old times." #!String
+    spring_1: "My new year's resolution is to write, write, and write! I can never stop improving my skills." #!String
+    spring_12: "It's strange, but I often have cravings for pomegranate in the spring." #!String
+    spring_23: "I look forward to dancing with you tomorrow, my dear." #!String
+    summer_1: "It's hard to be in a foul mood when the sun is beaming and the butterflies are dancing on a spice-berry breeze.$h" #!String
+    summer_10: "I was going to grab an extra bottle of ink from my cabin today, but then I remembered the Luau is tomorrow. I'll just do it then." #!String
+    summer_27: "All good things must come to an end, including the joyful days of summer. The key to happiness is to accept change without judgement." #!String
+    fall_1: "The splendor of fall... a verdant banquet for all the senses to enjoy... has inspired some of the greatest poetry of all time." #!String
+    fall_15: "I might set my pride aside and sink my eager teeth into a sloppy, saucy barbecue sandwich tomorrow." #!String
+    fall_26: "Would you still love me if I guzzled two gallons of pumpkin ale at the Spirit's Eve festival? Sometimes a man has primitive urges..." #!String
+    winter_1: "Winter is a great time to read books and play the piano. Remember to pause and enjoy a quiet moment or two." #!String
+    winter_7: "I'm a little out of practice, but I plan on entering the fishing contest tomorrow! You've got some stiff competition, dear." #!String
+    winter_28: "Happy new year's eve, my dear. Please accept this to celebrate. [348]" #!String
+

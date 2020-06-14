@@ -68,8 +68,17 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="assets\Characters\Dialogue\Elliott.json" />
     <None Include="manifest.json" />
     <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="assets\Characters\Abigail.png" />
+    <Content Include="assets\Characters\Elliott.png" />
+    <Content Include="assets\Characters\Penny.png" />
+    <Content Include="assets\Portraits\Abigail.png" />
+    <Content Include="assets\Portraits\Elliott.png" />
+    <Content Include="assets\Portraits\Penny.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="..\packages\Pathoschild.Stardew.ModBuildConfig.3.1.0\build\Pathoschild.Stardew.ModBuildConfig.targets" Condition="Exists('..\packages\Pathoschild.Stardew.ModBuildConfig.3.1.0\build\Pathoschild.Stardew.ModBuildConfig.targets')" />

@@ -114,7 +114,6 @@ namespace MultipleSpouses
 
             harmony.Patch(
                original: AccessTools.Method(typeof(NPC), nameof(NPC.marriageDuties)),
-               //prefix: new HarmonyMethod(typeof(NPCPatches), nameof(NPCPatches.NPC_marriageDuties_Prefix)),
                postfix: new HarmonyMethod(typeof(NPCPatches), nameof(NPCPatches.NPC_marriageDuties_Postfix))
             );
 
@@ -228,6 +227,11 @@ namespace MultipleSpouses
             harmony.Patch(
                original: AccessTools.Method(typeof(Event), nameof(Event.answerDialogueQuestion)),
                prefix: new HarmonyMethod(typeof(UIPatches), nameof(UIPatches.Event_answerDialogueQuestion_Prefix))
+            );
+
+            harmony.Patch(
+               original: typeof(DialogueBox).GetConstructor(new Type[] { typeof(List<string>) }),
+               prefix: new HarmonyMethod(typeof(UIPatches), nameof(UIPatches.DialogueBox_Prefix))
             );
 
         }
@@ -449,88 +453,88 @@ namespace MultipleSpouses
 
         public static void PlaceSpousesInFarmhouse()
         {
-            FarmHouse farmHouse = Utility.getHomeOfFarmer(Game1.player);
+            Farmer farmer = Game1.player;
+            FarmHouse farmHouse = Utility.getHomeOfFarmer(farmer);
 
-            using (NetCollection<NPC>.Enumerator enumerator = farmHouse.characters.GetEnumerator())
+            List<NPC> mySpouses = spouses.Values.ToList();
+            if (farmer.spouse != null)
             {
-                while (enumerator.MoveNext())
+                mySpouses.Insert(0, farmer.getSpouse());
+            }
+
+            foreach (NPC j in mySpouses) { 
+                ModEntry.PMonitor.Log("placing " + j.Name);
+
+                if (ModEntry.outdoorSpouse == j.Name && !Game1.isRaining && !Game1.IsWinter && Game1.shortDayNameFromDayOfSeason(Game1.dayOfMonth).Equals("Sat") && !j.Name.Equals("Krobus"))
                 {
-                    NPC j = enumerator.Current;
-                    if (GetAllSpouses().ContainsKey(j.Name))
+                    ModEntry.PMonitor.Log("going to outdoor patio");
+                    j.setUpForOutdoorPatioActivity();
+                    continue;
+                }
+
+                if (j.currentLocation != farmHouse)
+                {
+                    continue;
+                }
+
+
+                ModEntry.PMonitor.Log("in farm house");
+                j.shouldPlaySpousePatioAnimation.Value = false;
+
+                Vector2 spot = (farmHouse.upgradeLevel == 1) ? new Vector2(32f, 5f) : new Vector2(38f, 14f);
+                Point spot2 = farmHouse.getSpouseBedSpot(j.Name);
+
+                if (ModEntry.bedSpouse != null)
+                {
+                    foreach (NPC character in farmHouse.characters)
                     {
-                        ModEntry.PMonitor.Log("marriage duties for " + j.Name);
-
-                        if (ModEntry.outdoorSpouse == j.Name && !Game1.isRaining && !Game1.IsWinter && Game1.shortDayNameFromDayOfSeason(Game1.dayOfMonth).Equals("Sat") && !j.Name.Equals("Krobus"))
+                        if (character.isVillager() && ModEntry.GetAllSpouses().ContainsKey(character.Name) && ModEntry.IsInBed(character.GetBoundingBox()))
                         {
-                            ModEntry.PMonitor.Log("going to outdoor patio");
-                            j.setUpForOutdoorPatioActivity();
-                            return;
+                            ModEntry.PMonitor.Log($"{character.Name} is already in bed");
+                            ModEntry.bedSpouse = character.Name;
+                            character.position.Value = ModEntry.GetSpouseBedLocation(character.name);
+                            break;
                         }
+                    }
+                }
 
-                        Farmer farmer = j.getSpouse();
-                        if (j.currentLocation != farmHouse)
-                        {
-                            return;
-                        }
-                        ModEntry.PMonitor.Log("in farm house");
-                        j.shouldPlaySpousePatioAnimation.Value = false;
+                if (ModEntry.kitchenSpouse == j.Name)
+                {
+                    ModEntry.PMonitor.Log($"{j.Name} is in kitchen");
+                    j.setTilePosition(farmHouse.getKitchenStandingSpot());
+                    ModEntry.kitchenSpouse = null;
+                }
+                else if (ModEntry.bedSpouse == j.Name)
+                {
+                    ModEntry.PMonitor.Log($"{j.Name} is in bed");
+                    j.position.Value = ModEntry.GetSpouseBedLocation(j.name);
+                    j.faceDirection(ModEntry.myRand.NextDouble() > 0.5 ? 1 : 3);
+                    ModEntry.bedSpouse = null;
+                }
+                else if (!ModEntry.config.BuildAllSpousesRooms && farmer.spouse != j.Name)
+                {
+                    j.setTilePosition(farmHouse.getRandomOpenPointInHouse(ModEntry.myRand));
+                }
+                else
+                {
+                    ModEntry.ResetSpouses(farmer);
 
-                        Vector2 spot = (farmHouse.upgradeLevel == 1) ? new Vector2(32f, 5f) : new Vector2(38f, 14f);
-                        Point spot2 = farmHouse.getSpouseBedSpot(j.Name);
-
-                        if (ModEntry.bedSpouse != null)
-                        {
-                            foreach (NPC character in farmHouse.characters)
-                            {
-                                if (character.isVillager() && ModEntry.GetAllSpouses().ContainsKey(character.Name) && ModEntry.IsInBed(character.GetBoundingBox()))
-                                {
-                                    ModEntry.PMonitor.Log($"{character.Name} is already in bed");
-                                    ModEntry.bedSpouse = character.Name;
-                                    character.position.Value = ModEntry.GetSpouseBedLocation(character.name);
-                                    break;
-                                }
-                            }
-                        }
-
-                        if (ModEntry.kitchenSpouse == j.Name)
-                        {
-                            ModEntry.PMonitor.Log($"{j.Name} is in kitchen");
-                            j.setTilePosition(farmHouse.getKitchenStandingSpot());
-                            ModEntry.kitchenSpouse = null;
-                        }
-                        else if (ModEntry.bedSpouse == j.Name)
-                        {
-                            ModEntry.PMonitor.Log($"{j.Name} is in bed");
-                            j.position.Value = ModEntry.GetSpouseBedLocation(j.name);
-                            j.faceDirection(ModEntry.myRand.NextDouble() > 0.5 ? 1 : 3);
-                            ModEntry.bedSpouse = null;
-                        }
-                        else if (!ModEntry.config.BuildAllSpousesRooms && farmer.spouse != j.Name)
-                        {
-                            j.setTilePosition(farmHouse.getRandomOpenPointInHouse(ModEntry.myRand));
-                        }
-                        else
-                        {
-                            ModEntry.ResetSpouses(farmer);
-
-                            List<string> spouses = ModEntry.GetAllSpouses().Keys.ToList().FindAll((s) => Maps.roomIndexes.ContainsKey(s) || Maps.tmxSpouseRooms.ContainsKey(s));
+                    List<NPC> roomSpouses = mySpouses.FindAll((s) => Maps.roomIndexes.ContainsKey(s.Name) || Maps.tmxSpouseRooms.ContainsKey(s.Name));
 
 
-                            if (!spouses.Contains(j.Name))
-                            {
-                                j.setTilePosition(farmHouse.getRandomOpenPointInHouse(ModEntry.myRand));
-                                j.faceDirection(ModEntry.myRand.Next(0, 4));
-                                ModEntry.PMonitor.Log($"{j.Name} spouse random loc");
-                                return;
-                            }
-                            else
-                            {
-                                int offset = spouses.IndexOf(j.Name) * 7;
-                                j.setTilePosition((int)spot.X + offset, (int)spot.Y);
-                                j.faceDirection(ModEntry.myRand.Next(0, 4));
-                                ModEntry.PMonitor.Log($"{j.Name} loc: {(spot.X + offset)},{spot.Y}");
-                            }
-                        }
+                    if (!roomSpouses.Contains(j))
+                    {
+                        j.setTilePosition(farmHouse.getRandomOpenPointInHouse(ModEntry.myRand));
+                        j.faceDirection(ModEntry.myRand.Next(0, 4));
+                        ModEntry.PMonitor.Log($"{j.Name} spouse random loc");
+                        continue;
+                    }
+                    else
+                    {
+                        int offset = roomSpouses.IndexOf(j) * 7;
+                        j.setTilePosition((int)spot.X + offset, (int)spot.Y);
+                        j.faceDirection(ModEntry.myRand.Next(0, 4));
+                        ModEntry.PMonitor.Log($"{j.Name} loc: {(spot.X + offset)},{spot.Y}");
                     }
                 }
             }
@@ -799,8 +803,9 @@ namespace MultipleSpouses
         public bool CanLoad<T>(IAssetInfo asset)
         {
             string[] names = asset.AssetName.Split('_');
-            if (config.ChildrenHaveHairOfSpouse &&(names[0].Equals("Characters\\Baby") || names[0].Equals("Characters\\Toddler")))
+            if (config.ChildrenHaveHairOfSpouse && (names[0].Equals("Characters\\Baby") || names[0].Equals("Characters\\Toddler") || names[0].Equals("Characters/Baby") || names[0].Equals("Characters/Toddler")))
             {
+                Monitor.Log($"can load child asset for {asset.AssetName}");
                 return true;
             }
 
@@ -812,11 +817,17 @@ namespace MultipleSpouses
         public T Load<T>(IAssetInfo asset)
         {
             Monitor.Log($"loading asset for {asset.AssetName}");
-            if (asset.AssetName.StartsWith("Characters\\Baby") || asset.AssetName.StartsWith("Characters\\Toddler"))
+            if (asset.AssetName.StartsWith("Characters\\Baby") || asset.AssetName.StartsWith("Characters\\Toddler") || asset.AssetName.StartsWith("Characters/Baby") || asset.AssetName.StartsWith("Characters/Toddler"))
             {
                 if(asset.AssetNameEquals("Characters\\Baby") || asset.AssetNameEquals("Characters\\Baby_dark") || asset.AssetNameEquals("Characters\\Toddler") || asset.AssetNameEquals("Characters\\Toddler_dark") || asset.AssetNameEquals("Characters\\Toddler_girl") || asset.AssetNameEquals("Characters\\Toddler_girl_dark"))
                 {
+                    Monitor.Log($"loading default child asset for {asset.AssetName}");
                     return (T)(object)Helper.Content.Load<Texture2D>($"assets/{asset.AssetName.Replace("Characters\\", "")}.png", ContentSource.ModFolder);
+                }
+                else if(asset.AssetNameEquals("Characters/Baby") || asset.AssetNameEquals("Characters/Baby_dark") || asset.AssetNameEquals("Characters/Toddler") || asset.AssetNameEquals("Characters/Toddler_dark") || asset.AssetNameEquals("Characters/Toddler_girl") || asset.AssetNameEquals("Characters/Toddler_girl_dark"))
+                {
+                    Monitor.Log($"loading default child asset for {asset.AssetName}");
+                    return (T)(object)Helper.Content.Load<Texture2D>($"assets/{asset.AssetName.Replace("Characters/", "")}.png", ContentSource.ModFolder);
                 }
 
                 Monitor.Log($"loading child asset for {asset.AssetName}");

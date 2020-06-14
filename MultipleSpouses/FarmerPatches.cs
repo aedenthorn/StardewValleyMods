@@ -75,10 +75,6 @@ namespace MultipleSpouses
         {
             try
             {
-                if(__instance.spouse == null)
-                {
-                    ModEntry.ResetSpouses(__instance);
-                }
                 __result = __instance.team.IsMarried(__instance.UniqueMultiplayerID) || (ModEntry.spouses.Count > 0 || __instance.spouse != null);
                 return false;
             }
