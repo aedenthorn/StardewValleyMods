@@ -6,6 +6,7 @@ using StardewValley.Characters;
 using StardewValley.Locations;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text.RegularExpressions;
 using xTile.Dimensions;
 
@@ -25,16 +26,75 @@ namespace MultipleSpouses
         {
             try
             {
-                if(Game1.player != null && __instance.Equals(Utility.getHomeOfFarmer(Game1.player)) && __instance.upgradeLevel > 1 && ModEntry.config.ExtraCribs + ModEntry.config.ExtraKidsBeds > 0)
+                if(Game1.player != null && __instance.Equals(Utility.getHomeOfFarmer(Game1.player)))
                 {
-                    //Monitor.Log("adding walls to farmhouse");
-                    int x = (ModEntry.config.ExtraCribs * 3) + (ModEntry.config.ExtraKidsBeds * 4);
-                    __result.Add(new Microsoft.Xna.Framework.Rectangle(28, 1, x, 3));
+                    if (__instance.upgradeLevel > 1 && ModEntry.config.ExtraCribs + ModEntry.config.ExtraKidsBeds > 0)
+                    {
+                        int x = (ModEntry.config.ExtraCribs * 3) + (ModEntry.config.ExtraKidsBeds * 4);
+                        __result.Remove(new Microsoft.Xna.Framework.Rectangle(15, 1, 13, 3));
+                        __result.Add(new Microsoft.Xna.Framework.Rectangle(15, 1, 13 + x, 3));
+                    }
+                    if (ModEntry.config.BuildAllSpousesRooms)
+                    {
+                        List<NPC> spouses = Maps.spousesWithRooms;
+                        if(spouses.Count > 0)
+                        {
+                            for(int i = 0; i < spouses.Count; i++)
+                            {
+                                if (__instance.upgradeLevel > 1)
+                                {
+                                    __result.Add(new Microsoft.Xna.Framework.Rectangle(41 + i * 7, 10, 7, 3));
+                                }
+                                else
+                                {
+                                    __result.Add(new Microsoft.Xna.Framework.Rectangle(35 + i * 7, 1, 7, 3));
+                                }
+                            }
+                        }
+                    }
                 }
             }
             catch (Exception ex)
             {
                 Monitor.Log($"Failed in {nameof(FarmHouse_getWalls_Postfix)}:\n{ex}", LogLevel.Error);
+            }
+        }
+        
+        public static void FarmHouse_getFloors_Postfix(FarmHouse __instance, ref List<Microsoft.Xna.Framework.Rectangle> __result)
+        {
+            try
+            {
+                if (Game1.player != null && __instance.Equals(Utility.getHomeOfFarmer(Game1.player)))
+                {
+                    if (__instance.upgradeLevel > 1 && ModEntry.config.ExtraCribs + ModEntry.config.ExtraKidsBeds > 0)
+                    {
+                        int x = (ModEntry.config.ExtraCribs * 3) + (ModEntry.config.ExtraKidsBeds * 4);
+                        __result.Remove(new Microsoft.Xna.Framework.Rectangle(15, 3, 13, 6));
+                        __result.Add(new Microsoft.Xna.Framework.Rectangle(15, 3, 13 + x, 6));
+                    }
+                    if (ModEntry.config.BuildAllSpousesRooms)
+                    {
+                        List<NPC> spouses = Maps.spousesWithRooms;
+                        if (spouses.Count > 0)
+                        {
+                            for (int i = 0; i < spouses.Count; i++)
+                            {
+                                if (__instance.upgradeLevel > 1)
+                                {
+                                    __result.Add(new Microsoft.Xna.Framework.Rectangle(41 + i * 7, 13, 7, 6));
+                                }
+                                else
+                                {
+                                    __result.Add(new Microsoft.Xna.Framework.Rectangle(35 + i * 7, 4, 7, 6));
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Monitor.Log($"Failed in {nameof(FarmHouse_getFloors_Postfix)}:\n{ex}", LogLevel.Error);
             }
         }
         
@@ -52,6 +112,28 @@ namespace MultipleSpouses
             return true;
         }
 
+        public static void GameLocation_resetLocalState_Prefix(GameLocation __instance)
+        {
+            try
+            {
+
+                if (!(__instance is FarmHouse) || !__instance.Name.StartsWith("FarmHouse") || __instance != Utility.getHomeOfFarmer(Game1.player) || ModEntry.GetAllSpouses().Count == 0)
+                {
+                    return;
+                }
+                ModEntry.PMonitor.Log("reset farm state");
+                ModEntry.PHelper.Content.InvalidateCache("Maps/FarmHouse1_marriage");
+                ModEntry.PHelper.Content.InvalidateCache("Maps/FarmHouse2");
+                ModEntry.PHelper.Content.InvalidateCache("Maps/FarmHouse2_marriage");
+
+
+            }
+            catch (Exception ex)
+            {
+                Monitor.Log($"Failed in {nameof(GameLocation_resetLocalState_Prefix)}:\n{ex}", LogLevel.Error);
+            }
+
+        } 
         public static void GameLocation_resetLocalState_Postfix(GameLocation __instance)
         {
             try
@@ -68,9 +150,6 @@ namespace MultipleSpouses
                     return;
                 }
                 ModEntry.PMonitor.Log("reset farm state");
-                ModEntry.PHelper.Content.InvalidateCache("Maps/FarmHouse1_marriage");
-                ModEntry.PHelper.Content.InvalidateCache("Maps/FarmHouse2");
-                ModEntry.PHelper.Content.InvalidateCache("Maps/FarmHouse2_marriage");
 
                 FarmHouse farmHouse = __instance as FarmHouse;
 
@@ -81,7 +160,7 @@ namespace MultipleSpouses
 
                 if (f.currentLocation == farmHouse && ModEntry.IsInBed(f.GetBoundingBox()))
                 {
-                    f.position.Value = ModEntry.GetSpouseBedLocation("Game1.player");
+                    f.position.Value = ModEntry.GetSpouseBedPosition(farmHouse, "Game1.player");
                 }
                 if (ModEntry.config.CustomBed)
                 {
@@ -229,6 +308,7 @@ namespace MultipleSpouses
             }
             return true;
         }
+
         public static bool ManorHouse_performAction_Prefix(ManorHouse __instance, string action, Farmer who, ref bool __result)
         {
             try
@@ -283,7 +363,7 @@ namespace MultipleSpouses
             }
             catch (Exception ex)
             {
-                Monitor.Log($"Failed in {nameof(ManorHouse_performAction_Prefix)}:\n{ex}", LogLevel.Error);
+                Monitor.Log($"Failed in {nameof(Event_endBehaviors_Postfix)}:\n{ex}", LogLevel.Error);
             }
             return true;
         }
@@ -327,7 +407,72 @@ namespace MultipleSpouses
             }
             catch (Exception ex)
             {
-                Monitor.Log($"Failed in {nameof(ManorHouse_performAction_Prefix)}:\n{ex}", LogLevel.Error);
+                Monitor.Log($"Failed in {nameof(GameLocation_checkEventPrecondition_Prefix)}:\n{ex}", LogLevel.Error);
+            }
+        }
+
+        public static void FarmHouse_performTenMinuteUpdate_Postfix(FarmHouse __instance, int timeOfDay)
+        {
+            try
+            {
+                foreach (NPC c in __instance.characters)
+                {
+                    if (c.isMarried())
+                    {
+                        string spouseName = c.Name;
+                        int upgradeLevel = __instance.upgradeLevel;
+                        Point bedSpot;
+                        if (Game1.player.friendshipData[spouseName].RoommateMarriage && !ModEntry.config.RoommateRomance)
+                        {
+                            List<string> mySpouses = ModEntry.GetAllSpouseNamesOfficialFirst(Game1.player);
+                            List<string> roomSpouses = mySpouses.FindAll((s) => Maps.roomIndexes.ContainsKey(s) || Maps.tmxSpouseRooms.ContainsKey(s));
+
+                            if (!roomSpouses.Exists((n) => n == spouseName))
+                            {
+                                bedSpot = __instance.getRandomOpenPointInHouse(ModEntry.myRand);
+                            }
+                            else
+                            {
+                                int offset = roomSpouses.IndexOf(spouseName) * 7;
+                                Vector2 spot = (upgradeLevel == 1) ? new Vector2(32f, 5f) : new Vector2(38f, 14f);
+                                bedSpot = new Point((int)spot.X + offset, (int)spot.Y);
+                            }
+                        }
+                        else
+                        {
+                            ModEntry.SetBedmates();
+
+                            int bedWidth;
+                            bool up = upgradeLevel > 1;
+                            if (ModEntry.config.CustomBed)
+                            {
+                                bedWidth = Math.Min(up ? 9 : 6, Math.Max(ModEntry.config.BedWidth, 3));
+                            }
+                            else
+                            {
+                                bedWidth = 3;
+                            }
+
+                            Point bedStart = new Point(21 - (up ? (bedWidth / 2) - 1 : 0) + (up ? 6 : 0), 2 + (up ? 9 : 0));
+                            int x = (int)(ModEntry.allBedmates.IndexOf(spouseName) / (float)ModEntry.allBedmates.Count * (bedWidth - 1));
+                            bedSpot = new Point(bedStart.X + x, bedStart.Y + 2);
+
+                        }
+                        if (Game1.IsMasterGame && Game1.timeOfDay >= 2200 && Game1.IsMasterGame && c.position != ModEntry.GetSpouseBedPosition(__instance,spouseName) && (timeOfDay == 2200 || (c.controller == null && timeOfDay % 100 % 30 == 0)))
+                        {
+                            c.controller = null;
+                            c.controller = new PathFindController(c, __instance, bedSpot, 0, new PathFindController.endBehavior(FarmHouse.spouseSleepEndFunction));
+                            if (c.controller.pathToEndPoint == null || !__instance.isTileOnMap(c.controller.pathToEndPoint.Last<Point>().X, c.controller.pathToEndPoint.Last<Point>().Y))
+                            {
+                                c.controller = null;
+                            }
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Monitor.Log($"Failed in {nameof(FarmHouse_performTenMinuteUpdate_Postfix)}:\n{ex}", LogLevel.Error);
             }
         }
     }

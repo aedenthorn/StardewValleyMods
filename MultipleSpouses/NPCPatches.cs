@@ -861,29 +861,43 @@ namespace MultipleSpouses
 
         public static void Child_reloadSprite_Postfix(ref Child __instance)
         {
-            if (__instance.Name == null)
-                return;
-            string[] names = __instance.Name.Split(' ');
-            if (names.Length < 2 || names[names.Length - 1].Length < 3)
+            try
             {
-                return;
+                if (__instance.Name == null)
+                    return;
+                string[] names = __instance.Name.Split(' ');
+                if (names.Length < 2 || names[names.Length - 1].Length < 3)
+                {
+                    return;
+                }
+                if (!ModEntry.config.ShowParentNames && __instance.Name.EndsWith(")"))
+                {
+                    __instance.displayName = string.Join(" ", names.Take(names.Length - 1));
+                }
+                string parent = names[names.Length - 1].Substring(1, names[names.Length - 1].Length - 2);
+                __instance.Sprite.textureName.Value += $"_{parent}";
+                Monitor.Log($"set child texture to: {__instance.Sprite.textureName.Value}");
             }
-            if (!ModEntry.config.ShowParentNames && __instance.Name.EndsWith(")"))
+            catch (Exception ex)
             {
-                __instance.displayName = string.Join(" ", names.Take(names.Length - 1));
+                Monitor.Log($"Failed in {nameof(Child_reloadSprite_Postfix)}:\n{ex}", LogLevel.Error);
             }
-            string parent = names[names.Length - 1].Substring(1, names[names.Length - 1].Length-2);
-            __instance.Sprite.textureName.Value += $"_{parent}";
-            Monitor.Log($"set child texture to: {__instance.Sprite.textureName.Value}");
         }
 
 
-        
+
         public static void Child_resetForPlayerEntry_Postfix(ref Child __instance, GameLocation l)
         {
-            if (l is FarmHouse && (__instance.age == 0 || __instance.age == 1))
+            try
             {
-                SetCribs(l);
+                if (l is FarmHouse && (__instance.age == 0 || __instance.age == 1))
+                {
+                    SetCribs(l);
+                }
+            }
+            catch (Exception ex)
+            {
+                Monitor.Log($"Failed in {nameof(Child_resetForPlayerEntry_Postfix)}:\n{ex}", LogLevel.Error);
             }
         }
 
@@ -913,7 +927,40 @@ namespace MultipleSpouses
         }
         public static void Child_dayUpdate_Prefix(Child __instance)
         {
-            __instance.daysOld.Value += Math.Max(0,(ModEntry.config.ChildGrowthMultiplier - 1));
+            try
+            {
+                __instance.daysOld.Value += Math.Max(0, (ModEntry.config.ChildGrowthMultiplier - 1));
+
+            }
+            catch (Exception ex)
+            {
+                Monitor.Log($"Failed in {nameof(Child_dayUpdate_Prefix)}:\n{ex}", LogLevel.Error);
+            }
+        }
+        public static void Child_tenMinuteUpdate_Postfix(Child __instance)
+        {
+            try
+            {
+
+                if (Game1.IsMasterGame && __instance.Age == 3 && Game1.timeOfDay == 1900)
+                {
+                    __instance.IsWalkingInSquare = false;
+                    __instance.Halt();
+                    FarmHouse farmHouse = __instance.currentLocation as FarmHouse;
+                    if (farmHouse.characters.Contains(__instance))
+                    {
+                        __instance.controller = new PathFindController(__instance, farmHouse, ModEntry.getChildBed(farmHouse, __instance.Name), -1, new PathFindController.endBehavior(__instance.toddlerReachedDestination));
+                        if (__instance.controller.pathToEndPoint == null || !farmHouse.isTileOnMap(__instance.controller.pathToEndPoint.Last<Point>().X, __instance.controller.pathToEndPoint.Last<Point>().Y))
+                        {
+                            __instance.controller = null;
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Monitor.Log($"Failed in {nameof(Child_tenMinuteUpdate_Postfix)}:\n{ex}", LogLevel.Error);
+            }
         }
     }
 }

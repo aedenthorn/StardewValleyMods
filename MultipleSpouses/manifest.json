@@ -1,7 +1,7 @@
 ﻿{
   "Name": "Multiple Spouses",
   "Author": "aedenthorn",
-  "Version": "0.19.0",
+  "Version": "0.20.0",
   "Description": "Allows you to have multiple spouses at once.",
   "UniqueID": "aedenthorn.MultipleSpouses",
   "EntryDll": "MultipleSpouses.dll",

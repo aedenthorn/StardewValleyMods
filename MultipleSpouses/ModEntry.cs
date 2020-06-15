@@ -142,6 +142,11 @@ namespace MultipleSpouses
                original: AccessTools.Method(typeof(Child), nameof(Child.dayUpdate)),
                prefix: new HarmonyMethod(typeof(NPCPatches), nameof(NPCPatches.Child_dayUpdate_Prefix))
             );
+            
+            harmony.Patch(
+               original: AccessTools.Method(typeof(Child), nameof(Child.tenMinuteUpdate)),
+               postfix: new HarmonyMethod(typeof(NPCPatches), nameof(NPCPatches.Child_tenMinuteUpdate_Postfix))
+            );
 
 
             // location patches
@@ -167,12 +172,18 @@ namespace MultipleSpouses
             );
 
             harmony.Patch(
+               original: AccessTools.Method(typeof(FarmHouse), nameof(FarmHouse.getFloors)),
+               postfix: new HarmonyMethod(typeof(LocationPatches), nameof(LocationPatches.FarmHouse_getFloors_Postfix))
+            );
+
+            harmony.Patch(
                original: AccessTools.Method(typeof(GameLocation), nameof(GameLocation.performAction)),
                prefix: new HarmonyMethod(typeof(LocationPatches), nameof(LocationPatches.GameLocation_performAction_Prefix))
             );
 
             harmony.Patch(
                original: AccessTools.Method(typeof(GameLocation), "resetLocalState"),
+               prefix: new HarmonyMethod(typeof(LocationPatches), nameof(LocationPatches.GameLocation_resetLocalState_Prefix)),
                postfix: new HarmonyMethod(typeof(LocationPatches), nameof(LocationPatches.GameLocation_resetLocalState_Postfix))
             );
 
@@ -180,13 +191,12 @@ namespace MultipleSpouses
                original: AccessTools.Method(typeof(GameLocation), "checkEventPrecondition"),
                prefix: new HarmonyMethod(typeof(LocationPatches), nameof(LocationPatches.GameLocation_checkEventPrecondition_Prefix))
             );
-            
-            /*
+
             harmony.Patch(
-               original: AccessTools.Method(typeof(FarmHouse), "updateMap"),
-               prefix: new HarmonyMethod(typeof(LocationPatches), nameof(LocationPatches.FarmHouse_updateMap_Prefix))
+               original: AccessTools.Method(typeof(FarmHouse), nameof(FarmHouse.performTenMinuteUpdate)),
+               postfix: new HarmonyMethod(typeof(LocationPatches), nameof(LocationPatches.FarmHouse_performTenMinuteUpdate_Postfix))
             );
-            */
+            
             
 
             // pregnancy patches
@@ -442,7 +452,7 @@ namespace MultipleSpouses
                         character.farmerPassesThrough = true;
                         if (Game1.timeOfDay >= 2000 && !character.isMoving())
                         {
-                            Vector2 bedPos = GetSpouseBedLocation(character.name);
+                            Vector2 bedPos = GetSpouseBedPosition(fh, character.name);
                             character.position.Value = bedPos;
                         }
                     }
@@ -456,6 +466,20 @@ namespace MultipleSpouses
             {
                 Kissing.TrySpousesKiss();
             }
+        }
+
+        public static List<string> GetAllSpouseNamesOfficialFirst(Farmer farmer)
+        {
+            List<string> mySpouses = spouses.Keys.ToList();
+            if (farmer.spouse != null)
+            {
+                mySpouses.Insert(0, farmer.spouse);
+            }
+            return mySpouses;
+        }
+        
+        public static void GetSpouseRoomPosition(FarmHouse farmHouse, string spouse)
+        {
         }
 
         public static void PlaceSpousesInFarmhouse()
@@ -489,7 +513,6 @@ namespace MultipleSpouses
                 j.shouldPlaySpousePatioAnimation.Value = false;
 
                 Vector2 spot = (farmHouse.upgradeLevel == 1) ? new Vector2(32f, 5f) : new Vector2(38f, 14f);
-                Point spot2 = farmHouse.getSpouseBedSpot(j.Name);
 
                 if (ModEntry.bedSpouse != null)
                 {
@@ -499,7 +522,7 @@ namespace MultipleSpouses
                         {
                             ModEntry.PMonitor.Log($"{character.Name} is already in bed");
                             ModEntry.bedSpouse = character.Name;
-                            character.position.Value = ModEntry.GetSpouseBedLocation(character.name);
+                            character.position.Value = ModEntry.GetSpouseBedPosition(farmHouse, character.name);
                             break;
                         }
                     }
@@ -514,7 +537,7 @@ namespace MultipleSpouses
                 else if (ModEntry.bedSpouse == j.Name)
                 {
                     ModEntry.PMonitor.Log($"{j.Name} is in bed");
-                    j.position.Value = ModEntry.GetSpouseBedLocation(j.name);
+                    j.position.Value = ModEntry.GetSpouseBedPosition(farmHouse, j.name);
                     j.faceDirection(ModEntry.myRand.NextDouble() > 0.5 ? 1 : 3);
                     ModEntry.bedSpouse = null;
                 }
@@ -571,10 +594,9 @@ namespace MultipleSpouses
             }
             allBedmates = new List<string>(bedmates);
         }
-        public static Vector2 GetSpouseBedLocation(string name)
+        public static Vector2 GetSpouseBedPosition(FarmHouse fh, string name)
         {
             SetBedmates();
-            FarmHouse fh = Utility.getHomeOfFarmer(Game1.player);
             int bedWidth = GetBedWidth(fh);
             Point bedStart = GetBedStart(fh);
             int x = (int)(allBedmates.IndexOf(name) / (float)allBedmates.Count * (bedWidth - 1) * 64);
@@ -752,7 +774,7 @@ namespace MultipleSpouses
         }
         private void SetAllNPCsDatable()
         {
-            if (!config.RomanceAllVillagers)
+            //if (!config.RomanceAllVillagers)
                 return;
             Farmer f = Game1.player;
             if (f == null)
@@ -910,12 +932,12 @@ namespace MultipleSpouses
 
                 var countsList = colorCounts.ToList();
 
-                countsList.Sort((pair1, pair2) => pair1.Value.CompareTo(pair2.Value));
+                countsList.Sort((pair1, pair2) => pair2.Value.CompareTo(pair1.Value));
 
                 List<Color> hairColors = new List<Color>();
                 for (int k = 0; k < Math.Min(countsList.Count, 4); k++)
                 {
-                    Monitor.Log($"using hair color: {countsList[k].Key}");
+                    Monitor.Log($"using hair color: {countsList[k].Key} {countsList[k].Value}");
                     hairColors.Add(countsList[k].Key);
                 }
                 hairColors.Sort((color1, color2) => (color1.R + color1.G + color1.B).CompareTo(color2.R + color2.G + color2.B));
@@ -1039,6 +1061,18 @@ namespace MultipleSpouses
                     }
                 }
             }
+        }
+
+        public static Point getChildBed(FarmHouse farmhouse, string name)
+        {
+            List<NPC> children = farmhouse.characters.ToList().FindAll((n) => n is Child && n.Age == 3);
+            int index = children.FindIndex((n) => n.Name == name);
+            int offset = (index * 4) + (config.ExtraCribs * 3);
+            if (index > config.ExtraKidsBeds + 1)
+            {
+                offset = (index % (config.ExtraKidsBeds + 1) * 4) + 1;
+            }
+            return new Point(22 + offset, 5);
         }
     }
 }

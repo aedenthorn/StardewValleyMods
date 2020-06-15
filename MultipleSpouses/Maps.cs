@@ -40,9 +40,10 @@ namespace MultipleSpouses
 			{ "Elliott", 8 },
 			{ "Leah", 2 }
 		};
+        public static List<NPC> spousesWithRooms;
 
-		// call this method from your Entry class
-		public static void Initialize(IMonitor monitor)
+        // call this method from your Entry class
+        public static void Initialize(IMonitor monitor)
 		{
 			Monitor = monitor;
 			config = ModEntry.config;
@@ -63,18 +64,18 @@ namespace MultipleSpouses
 					return;
 				}
 
-				List<NPC> mySpouses = new List<NPC>();
+				spousesWithRooms = new List<NPC>();
 
 				foreach (NPC spouse in ModEntry.spouses.Values)
 				{
 					if(roomIndexes.ContainsKey(spouse.Name) || tmxSpouseRooms.ContainsKey(spouse.Name))
                     {
 						Monitor.Log($"Adding {spouse.Name} to list for spouse rooms");
-						mySpouses.Add(spouse);
+						spousesWithRooms.Add(spouse);
 					}
 				}
 
-				if (farmHouse.upgradeLevel > 3 || mySpouses.Count == 0)
+				if (farmHouse.upgradeLevel > 3 || spousesWithRooms.Count == 0)
 				{
 					return;
 				}
@@ -105,9 +106,9 @@ namespace MultipleSpouses
 					}
 					else
 					{
-						Monitor.Log($"No spouse room for official spouse {f.spouse}, placing for {mySpouses[0].Name} instead.");
-						BuildOneSpouseRoom(farmHouse, mySpouses[0].Name, -1);
-						mySpouses = new List<NPC>(mySpouses.Skip(1));
+						Monitor.Log($"No spouse room for official spouse {f.spouse}, placing for {spousesWithRooms[0].Name} instead.");
+						BuildOneSpouseRoom(farmHouse, spousesWithRooms[0].Name, -1);
+						spousesWithRooms = new List<NPC>(spousesWithRooms.Skip(1));
 					}
 				}
 
@@ -158,17 +159,17 @@ namespace MultipleSpouses
 
 				int count = 0;
 
-				ExtendMap(farmHouse, ox + 37 + (7*mySpouses.Count));
+				ExtendMap(farmHouse, ox + 37 + (7* spousesWithRooms.Count));
 
 				// remove and rebuild spouse rooms
-				for (int j = 0; j < mySpouses.Count; j++)
+				for (int j = 0; j < spousesWithRooms.Count; j++)
 				{
 					farmHouse.removeTile(ox + 35 + (7 * count), oy + 0, "Buildings");
 					for (int i = 0; i < 10; i++)
 					{
 						farmHouse.removeTile(ox + 35 + (7 * count), oy + 1 + i, "Buildings");
 					}
-					BuildOneSpouseRoom(farmHouse, mySpouses[j].Name, count++);
+					BuildOneSpouseRoom(farmHouse, spousesWithRooms[j].Name, count++);
 				}
 
 				// far wall
