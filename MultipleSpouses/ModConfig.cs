@@ -17,6 +17,7 @@ namespace MultipleSpouses
         public int DaysUntilMarriage { get; set; } = 3;
         public bool FriendlyDivorce { get; set; } = true;
         public bool RoommateRomance { get; set; } = true;
+        public bool RomanceAllVillagers { get; set; } = false;
         public bool AllowSpousesToKiss { get; set; } = true;
         public float SpouseKissChance { get; set; } = 0.5f;
         public bool RealKissSound { get; set; } = true;

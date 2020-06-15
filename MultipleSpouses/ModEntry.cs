@@ -15,12 +15,13 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Text.RegularExpressions;
 using xTile;
 
 namespace MultipleSpouses
 {
     /// <summary>The mod entry point.</summary>
-    public class ModEntry : Mod, IAssetLoader
+    public class ModEntry : Mod, IAssetLoader, IAssetEditor
     {
 
         public static IMonitor PMonitor;
@@ -175,6 +176,11 @@ namespace MultipleSpouses
                postfix: new HarmonyMethod(typeof(LocationPatches), nameof(LocationPatches.GameLocation_resetLocalState_Postfix))
             );
 
+            harmony.Patch(
+               original: AccessTools.Method(typeof(GameLocation), "checkEventPrecondition"),
+               prefix: new HarmonyMethod(typeof(LocationPatches), nameof(LocationPatches.GameLocation_checkEventPrecondition_Prefix))
+            );
+            
             /*
             harmony.Patch(
                original: AccessTools.Method(typeof(FarmHouse), "updateMap"),
@@ -249,9 +255,11 @@ namespace MultipleSpouses
             bedMadeToday = false;
             kidsRoomExpandedToday = false;
             officialSpouse = null;
+            SetAllNPCsDatable();
             LoadTMXSpouseRooms();
             ResetSpouses(Game1.player);
         }
+
 
         private void GameLoop_GameLaunched(object sender, GameLaunchedEventArgs e)
         {
@@ -276,10 +284,9 @@ namespace MultipleSpouses
 
         public static void LoadTMXSpouseRooms()
         {
-            Maps.tmxSpouseRooms.Clear();
-            // TMX spouse rooms
             try
             {
+                Maps.tmxSpouseRooms.Clear();
                 var tmxlAPI = PHelper.ModRegistry.GetApi("Platonymous.TMXLoader");
                 var tmxlAssembly = tmxlAPI?.GetType()?.Assembly;
                 var tmxlModType = tmxlAssembly?.GetType("TMXLoader.TMXLoaderMod");
@@ -743,6 +750,24 @@ namespace MultipleSpouses
             }
             PMonitor.Log("official spouse: " + officialSpouse);
         }
+        private void SetAllNPCsDatable()
+        {
+            if (!config.RomanceAllVillagers)
+                return;
+            Farmer f = Game1.player;
+            if (f == null)
+            {
+                return;
+            }
+            foreach (string friend in f.friendshipData.Keys)
+            {
+                NPC npc = Game1.getCharacterFromName(friend);
+                if (npc != null)
+                {
+                    npc.datable.Value = true;
+                }
+            }
+        }
 
         public static Dictionary<string,NPC> GetAllSpouses()
         {
@@ -822,9 +847,9 @@ namespace MultipleSpouses
                 if(asset.AssetNameEquals("Characters\\Baby") || asset.AssetNameEquals("Characters\\Baby_dark") || asset.AssetNameEquals("Characters\\Toddler") || asset.AssetNameEquals("Characters\\Toddler_dark") || asset.AssetNameEquals("Characters\\Toddler_girl") || asset.AssetNameEquals("Characters\\Toddler_girl_dark"))
                 {
                     Monitor.Log($"loading default child asset for {asset.AssetName}");
-                    return (T)(object)Helper.Content.Load<Texture2D>($"assets/{asset.AssetName.Replace("Characters\\", "")}.png", ContentSource.ModFolder);
+                    return (T)(object)Helper.Content.Load<Texture2D>($"assets/{asset.AssetName.Replace("Characters\\", "").Replace("Characters/", "")}.png", ContentSource.ModFolder);
                 }
-                else if(asset.AssetNameEquals("Characters/Baby") || asset.AssetNameEquals("Characters/Baby_dark") || asset.AssetNameEquals("Characters/Toddler") || asset.AssetNameEquals("Characters/Toddler_dark") || asset.AssetNameEquals("Characters/Toddler_girl") || asset.AssetNameEquals("Characters/Toddler_girl_dark"))
+                if(asset.AssetNameEquals("Characters/Baby") || asset.AssetNameEquals("Characters/Baby_dark") || asset.AssetNameEquals("Characters/Toddler") || asset.AssetNameEquals("Characters/Toddler_dark") || asset.AssetNameEquals("Characters/Toddler_girl") || asset.AssetNameEquals("Characters/Toddler_girl_dark"))
                 {
                     Monitor.Log($"loading default child asset for {asset.AssetName}");
                     return (T)(object)Helper.Content.Load<Texture2D>($"assets/{asset.AssetName.Replace("Characters/", "")}.png", ContentSource.ModFolder);
@@ -895,7 +920,7 @@ namespace MultipleSpouses
                 }
                 hairColors.Sort((color1, color2) => (color1.R + color1.G + color1.B).CompareTo(color2.R + color2.G + color2.B));
 
-                Texture2D hairSheet = Helper.Content.Load<Texture2D>($"assets/hair/{string.Join("_", names.Take(names.Length - 1)).Replace("Characters\\","").Replace("_dark","")}.png", ContentSource.ModFolder);
+                Texture2D hairSheet = Helper.Content.Load<Texture2D>($"assets/hair/{string.Join("_", names.Take(names.Length - 1)).Replace("Characters\\","").Replace("Characters/","").Replace("_dark","")}.png", ContentSource.ModFolder);
                 Color[] babyData = new Color[babySheet.Width * babySheet.Height];
                 Color[] hairData = new Color[babySheet.Width * babySheet.Height];
                 babySheet.GetData(babyData);
@@ -953,6 +978,63 @@ namespace MultipleSpouses
                 return (T)(object)babySheet;
             }
             throw new InvalidOperationException($"Unexpected asset '{asset.AssetName}'.");
+        }
+
+        /// <summary>Get whether this instance can edit the given asset.</summary>
+        /// <param name="asset">Basic metadata about the asset being loaded.</param>
+        public bool CanEdit<T>(IAssetInfo asset)
+        {
+            if (asset.AssetNameEquals("Data/Events/HaleyHouse") || asset.AssetNameEquals("Data/Events/Saloon") || asset.AssetNameEquals("Data/EngagementDialogue"))
+            {
+                return true;
+            }
+
+            return false;
+        }
+
+        /// <summary>Edit a matched asset.</summary>
+        /// <param name="asset">A helper which encapsulates metadata about an asset and enables changes to it.</param>
+        public void Edit<T>(IAssetData asset)
+        {
+            if (asset.AssetNameEquals("Data/Events/HaleyHouse"))
+            {
+                IDictionary<string, string> data = asset.AsDictionary<string, string>().Data;
+
+                data["195012/f Haley 2500/f Emily 2500/f Penny 2500/f Abigail 2500/f Leah 2500/f Maru 2500/o Abigail/o Penny/o Leah/o Emily/o Maru/o Haley/o Shane/o Harvey/o Sebastian/o Sam/o Elliott/o Alex/e 38/e 2123343/e 10/e 901756/e 54/e 15/k 195019"] = Regex.Replace(data["195012/f Haley 2500/f Emily 2500/f Penny 2500/f Abigail 2500/f Leah 2500/f Maru 2500/o Abigail/o Penny/o Leah/o Emily/o Maru/o Haley/o Shane/o Harvey/o Sebastian/o Sam/o Elliott/o Alex/e 38/e 2123343/e 10/e 901756/e 54/e 15/k 195019"], "(pause 1000/speak Maru \\\")[^$]+.a\\\"",$"$1{PHelper.Translation.Get("confrontation-result")}$h\"/emote Haley 21/emote Emily 21/emote Penny 21/emote Maru 21/emote Leah 21/emote Abigail 21").Replace("/dump girls 3", "");
+                data["choseToExplain"] = Regex.Replace(data["choseToExplain"], "(pause 1000/speak Maru \\\")[^$]+.a\\\"",$"$1{PHelper.Translation.Get("confrontation-result")}$h\"/emote Haley 21/emote Emily 21/emote Penny 21/emote Maru 21/emote Leah 21/emote Abigail 21").Replace("/dump girls 4", "");
+                data["lifestyleChoice"] = Regex.Replace(data["lifestyleChoice"], "(pause 1000/speak Maru \\\")[^$]+.a\\\"",$"$1{PHelper.Translation.Get("confrontation-result")}$h\"/emote Haley 21/emote Emily 21/emote Penny 21/emote Maru 21/emote Leah 21/emote Abigail 21").Replace("/dump girls 4", "");
+            }
+            else if (asset.AssetNameEquals("Data/Events/Saloon"))
+            {
+                IDictionary<string, string> data = asset.AsDictionary<string, string>().Data;
+
+                data["195013/f Shane 2500/f Sebastian 2500/f Sam 2500/f Harvey 2500/f Alex 2500/f Elliott 2500/o Abigail/o Penny/o Leah/o Emily/o Maru/o Haley/o Shane/o Harvey/o Sebastian/o Sam/o Elliott/o Alex"] = Regex.Replace(data["195013/f Shane 2500/f Sebastian 2500/f Sam 2500/f Harvey 2500/f Alex 2500/f Elliott 2500/o Abigail/o Penny/o Leah/o Emily/o Maru/o Haley/o Shane/o Harvey/o Sebastian/o Sam/o Elliott/o Alex/e 911526/e 528052/e 9581348/e 43/e 384882/e 233104/k 195099"], "(pause 1000/speak Sam \\\")[^$]+.a\\\"",$"$1{PHelper.Translation.Get("confrontation-result")}$h\"/emote Shane 21/emote Sebastian 21/emote Sam 21/emote Harvey 21/emote Alex 21/emote Elliott 21").Replace("/dump guys 3", "");
+                data["choseToExplain"] = Regex.Replace(data["choseToExplain"], "(pause 1000/speak Sam \\\")[^$]+.a\\\"", $"$1{PHelper.Translation.Get("confrontation-result")}$h\"/emote Shane 21/emote Sebastian 21/emote Sam 21/emote Harvey 21/emote Alex 21/emote Elliott 21").Replace("/dump guys 4", "");
+                data["crying"] = Regex.Replace(data["crying"], "(pause 1000/speak Sam \\\")[^$]+.a\\\"",$"$1{PHelper.Translation.Get("confrontation-result")}$h\"/emote Shane 21/emote Sebastian 21/emote Sam 21/emote Harvey 21/emote Alex 21/emote Elliott 21").Replace("/dump guys 4", "");
+                data.Remove("195013/f Shane 2500/f Sebastian 2500/f Sam 2500/f Harvey 2500/f Alex 2500/f Elliott 2500/o Abigail/o Penny/o Leah/o Emily/o Maru/o Haley/o Shane/o Harvey/o Sebastian/o Sam/o Elliott/o Alex/e 911526/e 528052/e 9581348/e 43/e 384882/e 233104/k 195099");
+            }
+            else if (asset.AssetNameEquals("Data/EngagementDialogue"))
+            {
+                IDictionary<string, string> data = asset.AsDictionary<string, string>().Data;
+                if (!config.RomanceAllVillagers)
+                    return;
+                Farmer f = Game1.player;
+                if (f == null)
+                {
+                    return;
+                }
+                foreach (string friend in f.friendshipData.Keys)
+                {
+                    if (!data.ContainsKey(friend+"0"))
+                    {
+                        data[friend + "0"] = "";
+                    }
+                    if (!data.ContainsKey(friend+"1"))
+                    {
+                        data[friend + "1"] = "";
+                    }
+                }
+            }
         }
     }
 }

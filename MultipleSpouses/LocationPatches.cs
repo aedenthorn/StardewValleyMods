@@ -21,13 +21,13 @@ namespace MultipleSpouses
             Monitor = monitor;
         }
 
-
         public static void FarmHouse_getWalls_Postfix(FarmHouse __instance, ref List<Microsoft.Xna.Framework.Rectangle> __result)
         {
             try
             {
-                if(__instance.Name == Utility.getHomeOfFarmer(Game1.player).Name && __instance.upgradeLevel > 1 && ModEntry.config.ExtraCribs + ModEntry.config.ExtraKidsBeds > 0)
+                if(Game1.player != null && __instance.Equals(Utility.getHomeOfFarmer(Game1.player)) && __instance.upgradeLevel > 1 && ModEntry.config.ExtraCribs + ModEntry.config.ExtraKidsBeds > 0)
                 {
+                    //Monitor.Log("adding walls to farmhouse");
                     int x = (ModEntry.config.ExtraCribs * 3) + (ModEntry.config.ExtraKidsBeds * 4);
                     __result.Add(new Microsoft.Xna.Framework.Rectangle(28, 1, x, 3));
                 }
@@ -286,6 +286,49 @@ namespace MultipleSpouses
                 Monitor.Log($"Failed in {nameof(ManorHouse_performAction_Prefix)}:\n{ex}", LogLevel.Error);
             }
             return true;
+        }
+    
+        public static void GameLocation_checkEventPrecondition_Prefix(ref string precondition)
+        {
+            try
+            {
+                string[] split = precondition.Split('/');
+                int eventId;
+                if (!int.TryParse(split[0], out eventId))
+                {
+                    return;
+                }
+                if (Game1.player.eventsSeen.Contains(eventId))
+                {
+                    return;
+                }
+                for (int i = 1; i < split.Length; i++)
+                {
+                    if (split[i][0] == 'O')
+                    {
+                        string name = split[i].Substring(2);
+                        if (Game1.player.spouse != name && ModEntry.spouses.ContainsKey(name))
+                        {
+                            Monitor.Log($"Got unofficial spouse requirement for event: {name}, switching event condition to isSpouse O");
+                            split[i] = $"o {name}";
+                        }
+                    }
+                    else if (split[i][0] == 'o')
+                    {
+                        string name = split[i].Substring(2);
+                        if (Game1.player.spouse != name && ModEntry.spouses.ContainsKey(name))
+                        {
+                            Monitor.Log($"Got unofficial spouse barrier to event: {name}, switching event condition to notSpouse o");
+                            split[i] = $"O {name}";
+                        }
+                    }
+                }
+                precondition = string.Join("/", split);
+            }
+            catch (Exception ex)
+            {
+                Monitor.Log($"Failed in {nameof(ManorHouse_performAction_Prefix)}:\n{ex}", LogLevel.Error);
+            }
         }
     }
 }

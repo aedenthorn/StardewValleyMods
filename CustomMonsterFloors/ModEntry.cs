@@ -9,7 +9,9 @@ using StardewValley.Network;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection.Emit;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace CustomMonsterFloors
@@ -18,16 +20,17 @@ namespace CustomMonsterFloors
 	public class ModEntry : Mod
 	{
 		public static ModConfig Config;
+        private static ModEntry context;
 
-		/*********
+        /*********
         ** Public methods
         *********/
-		/// <summary>The mod entry point, called after the mod is first loaded.</summary>
-		/// <param name="helper">Provides simplified APIs for writing mods.</param>
-		public override void Entry(IModHelper helper)
+        /// <summary>The mod entry point, called after the mod is first loaded.</summary>
+        /// <param name="helper">Provides simplified APIs for writing mods.</param>
+        public override void Entry(IModHelper helper)
 		{
 			Config = helper.ReadConfig<ModConfig>();
-
+			context = this;
 			if (!Config.EnableMod)
 				return;
 
@@ -56,6 +59,10 @@ namespace CustomMonsterFloors
 				harmony.Patch(
 				   original: AccessTools.Method(typeof(MineShaft), "checkStoneForItems"),
 				   postfix: new HarmonyMethod(typeof(ModEntry), nameof(ModEntry.checkStoneForItems_Postfix))
+				);
+				harmony.Patch(
+				   original: AccessTools.Method(typeof(MineShaft), "tryToAddAreaUniques"),
+				   transpiler: new HarmonyMethod(typeof(ModEntry), nameof(ModEntry.MineShaft_tryToAddAreaUniques_Transpiler))
 				);
 			}
 		}
@@ -410,6 +417,48 @@ namespace CustomMonsterFloors
 			{
 				GotShaft = true;
 			}
+		}
+		private static IEnumerable<CodeInstruction> MineShaft_populateLevel_Transpiler(IEnumerable<CodeInstruction> instructions)
+		{
+
+			var codes = new List<CodeInstruction>(instructions);
+			for (int i = 0; i < codes.Count; i++)
+			{
+				if (codes[i].opcode == OpCodes.Ldc_R8)
+				{
+					context.Monitor.Log("got R8 opcode pop");
+					if ((double)codes[i].operand == 0.15)
+                    {
+						context.Monitor.Log("got 0.15 opcode pop");
+						//codes[i].operand = Config.WeedsChance; 
+						break;
+					}
+				}
+			}
+
+			return codes.AsEnumerable();
+		}
+		private static IEnumerable<CodeInstruction> MineShaft_tryToAddAreaUniques_Transpiler(IEnumerable<CodeInstruction> instructions)
+		{
+
+			var codes = new List<CodeInstruction>(instructions);
+			for (int i = 0; i < codes.Count; i++)
+			{
+				if (codes[i].opcode == OpCodes.Ldc_R8 && (double)codes[i].operand == 0.1)
+				{
+					context.Monitor.Log("got Ldc_R8 opcode try");
+					codes[i].operand = Config.WeedsChance;
+				}
+				else if (codes[i].opcode == OpCodes.Ldc_I4_7)
+				{
+					context.Monitor.Log("got Ldc_I4_7 opcode try");
+					codes[i] = new CodeInstruction(OpCodes.Ldc_I4, (int)Math.Round(7 * Config.WeedsMultiplier));
+					codes[i + 1] = new CodeInstruction(OpCodes.Ldc_I4, (int)Math.Round(24 * Config.WeedsMultiplier));
+					break;
+				}
+			}
+
+			return codes.AsEnumerable();
 		}
 	}
 }

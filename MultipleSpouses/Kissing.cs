@@ -41,6 +41,9 @@ namespace MultipleSpouses
 
 			foreach (NPC npc1 in list)
 			{
+				if (!Game1.player.friendshipData.ContainsKey(npc1.Name))
+					continue;
+
 				if (!ModEntry.config.RoommateRomance && Game1.player.friendshipData[npc1.Name].RoommateMarriage)
                 {
 					continue;
@@ -49,7 +52,10 @@ namespace MultipleSpouses
 
 				foreach (NPC npc2 in list)
 				{
-					if (npc1.Name == npc2.Name || !ModEntry.config.RoommateRomance && Game1.player.friendshipData[npc1.Name].RoommateMarriage)
+					if (!Game1.player.friendshipData.ContainsKey(npc2.Name))
+						continue;
+
+					if (npc1.Name == npc2.Name || (!ModEntry.config.RoommateRomance && Game1.player.friendshipData[npc2.Name].RoommateMarriage))
 					{
 						continue;
 					}
