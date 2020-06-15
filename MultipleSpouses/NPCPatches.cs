@@ -1,4 +1,5 @@
-﻿using Microsoft.Xna.Framework;
+﻿using Harmony;
+using Microsoft.Xna.Framework;
 using StardewModdingAPI;
 using StardewValley;
 using StardewValley.Buildings;
@@ -11,6 +12,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using System.Reflection.Emit;
 using xTile.Dimensions;
 
 namespace MultipleSpouses
@@ -579,6 +581,7 @@ namespace MultipleSpouses
             return true;
         }
 
+
         public static bool NPC_tryToReceiveActiveObject_Prefix(NPC __instance, ref Farmer who, Dictionary<string, string> ___dialogue, ref List<int> __state)
         {
             try
@@ -815,7 +818,7 @@ namespace MultipleSpouses
             {
                 if(__state != null)
                 {
-                    if(__state.Count > 0)
+                    if (__state.Count > 0)
                     {
                         who.friendshipData[__instance.Name].GiftsThisWeek += __state[0];
                         who.friendshipData[__instance.Name].GiftsToday += __state[1] - (__state[2] == 1 ? 1 : 0);
@@ -828,6 +831,32 @@ namespace MultipleSpouses
             {
                 Monitor.Log($"Failed in {nameof(NPC_tryToReceiveActiveObject_Postfix)}:\n{ex}", LogLevel.Error);
             }
+        }
+
+        public static IEnumerable<CodeInstruction> NPC_tryToReceiveActiveObject_Transpiler(IEnumerable<CodeInstruction> instructions)
+        {
+
+            var codes = new List<CodeInstruction>(instructions);
+            bool startLooking = false;
+            for (int i = 0; i < codes.Count; i++)
+            {
+                if (startLooking)
+                {
+                    if(codes[i].opcode == OpCodes.Ldc_I4_S && int.Parse(codes[i].operand.ToString()) < -10)
+                    {
+                        Monitor.Log($"got int!");
+                        codes[i] = new CodeInstruction(OpCodes.Ldc_I4_S, 30);
+                        break;
+                    }
+                }
+                else if ((codes[i].operand as string) == "Strings\\StringsFromCSFiles:NPC.cs.3981")
+                {
+                    Monitor.Log($"got string!");
+                    startLooking = true;
+                }
+            }
+
+            return codes.AsEnumerable();
         }
 
         public static void Child_reloadSprite_Postfix(ref Child __instance)
