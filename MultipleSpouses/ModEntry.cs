@@ -65,6 +65,7 @@ namespace MultipleSpouses
             Maps.Initialize(Monitor);
             Kissing.Initialize(Monitor);
             UIPatches.Initialize(Monitor);
+            EventPatches.Initialize(Monitor, Helper);
             HelperEvents.Initialize(Monitor, Helper);
             FileIO.Initialize(Monitor, Helper);
             Misc.Initialize(Monitor, Helper);
@@ -242,13 +243,20 @@ namespace MultipleSpouses
             );
 
             harmony.Patch(
+               original: typeof(DialogueBox).GetConstructor(new Type[] { typeof(List<string>) }),
+               prefix: new HarmonyMethod(typeof(UIPatches), nameof(UIPatches.DialogueBox_Prefix))
+            );
+
+            // Event patches
+
+            harmony.Patch(
                original: AccessTools.Method(typeof(Event), nameof(Event.answerDialogueQuestion)),
-               prefix: new HarmonyMethod(typeof(UIPatches), nameof(UIPatches.Event_answerDialogueQuestion_Prefix))
+               prefix: new HarmonyMethod(typeof(EventPatches), nameof(EventPatches.Event_answerDialogueQuestion_Prefix))
             );
 
             harmony.Patch(
-               original: typeof(DialogueBox).GetConstructor(new Type[] { typeof(List<string>) }),
-               prefix: new HarmonyMethod(typeof(UIPatches), nameof(UIPatches.DialogueBox_Prefix))
+               original: AccessTools.Method(typeof(Event), "setUpCharacters"),
+               postfix: new HarmonyMethod(typeof(EventPatches), nameof(EventPatches.Event_setUpCharacters_Postfix))
             );
 
         }

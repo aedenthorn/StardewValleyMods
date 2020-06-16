@@ -68,6 +68,7 @@
     <Compile Include="HelperEvents.cs" />
     <Compile Include="FileIO.cs" />
     <Compile Include="Misc.cs" />
+    <Compile Include="EventPatches.cs" />
     <Compile Include="UIPatches.cs" />
     <Compile Include="Maps.cs" />
     <Compile Include="ModConfig.cs" />
