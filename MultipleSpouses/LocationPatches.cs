@@ -129,7 +129,7 @@ namespace MultipleSpouses
             {
 
 
-                if (!(__instance is FarmHouse) || !__instance.Name.StartsWith("FarmHouse") || __instance != Utility.getHomeOfFarmer(Game1.player) || ModEntry.GetAllSpouses().Count == 0)
+                if (!(__instance is FarmHouse) || !__instance.Name.StartsWith("FarmHouse") || __instance != Utility.getHomeOfFarmer(Game1.player) || Misc.GetAllSpouses().Count == 0)
                 {
                     return;
                 }
@@ -137,15 +137,15 @@ namespace MultipleSpouses
 
 
                 Farmer f = __instance.owner;
-                ModEntry.ResetSpouses(f);
+                Misc.ResetSpouses(f);
 
-                if (f.currentLocation == __instance && ModEntry.IsInBed(f.GetBoundingBox()))
+                if (f.currentLocation == __instance && Misc.IsInBed(f.GetBoundingBox()))
                 {
-                    f.position.Value = ModEntry.GetSpouseBedPosition(__instance, "Game1.player");
+                    f.position.Value = Misc.GetSpouseBedPosition(__instance, "Game1.player");
                 }
                 NPCPatches.SetCribs(__instance);
 
-                if (ModEntry.ChangingHouse())
+                if (Misc.ChangingHouse())
                 {
                     if (__instance.upgradeLevel > 1)
                     {
@@ -296,7 +296,7 @@ namespace MultipleSpouses
         {
             try
             {
-                ModEntry.ResetSpouses(who);
+                Misc.ResetSpouses(who);
                 if (action != null && who.IsLocalPlayer && !Game1.player.divorceTonight && (Game1.player.isMarried() || ModEntry.spouses.Count > 0))
                 {
                     string a = action.Split(new char[]
@@ -340,7 +340,7 @@ namespace MultipleSpouses
                     string text = split[1];
                     if (text == "wedding")
                     {
-                        ModEntry.PlaceSpousesInFarmhouse();
+                        Misc.PlaceSpousesInFarmhouse();
                     }
                 }
             }
@@ -407,7 +407,7 @@ namespace MultipleSpouses
                         Point bedSpot;
                         if (Game1.player.friendshipData[spouseName].RoommateMarriage && !ModEntry.config.RoommateRomance)
                         {
-                            List<string> mySpouses = ModEntry.GetAllSpouseNamesOfficialFirst(Game1.player);
+                            List<string> mySpouses = Misc.GetAllSpouseNamesOfficialFirst(Game1.player);
                             List<string> roomSpouses = mySpouses.FindAll((s) => Maps.roomIndexes.ContainsKey(s) || Maps.tmxSpouseRooms.ContainsKey(s));
 
                             if (!roomSpouses.Exists((n) => n == spouseName))
@@ -423,7 +423,7 @@ namespace MultipleSpouses
                         }
                         else
                         {
-                            ModEntry.SetBedmates();
+                            Misc.SetBedmates();
 
                             int bedWidth;
                             bool up = upgradeLevel > 1;
@@ -441,7 +441,7 @@ namespace MultipleSpouses
                             bedSpot = new Point(bedStart.X + x, bedStart.Y + 2);
 
                         }
-                        if (Game1.IsMasterGame && Game1.timeOfDay >= 2200 && Game1.IsMasterGame && c.position != ModEntry.GetSpouseBedPosition(__instance,spouseName) && (timeOfDay == 2200 || (c.controller == null && timeOfDay % 100 % 30 == 0)))
+                        if (Game1.IsMasterGame && Game1.timeOfDay >= 2200 && Game1.IsMasterGame && c.position != Misc.GetSpouseBedPosition(__instance,spouseName) && (timeOfDay == 2200 || (c.controller == null && timeOfDay % 100 % 30 == 0)))
                         {
                             c.controller = null;
                             c.controller = new PathFindController(c, __instance, bedSpot, 0, new PathFindController.endBehavior(FarmHouse.spouseSleepEndFunction));

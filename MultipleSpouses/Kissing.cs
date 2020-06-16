@@ -37,7 +37,7 @@ namespace MultipleSpouses
 
 			List<NPC> list = location.characters.ToList();
 
-			ModEntry.ShuffleList(ref list);
+			Misc.ShuffleList(ref list);
 
 			foreach (NPC npc1 in list)
 			{

@@ -54,7 +54,7 @@ namespace MultipleSpouses
                     {
                         __instance.spouse = null;
                     }
-                    ModEntry.ResetSpouses(__instance);
+                    Misc.ResetSpouses(__instance);
                     ModEntry.PHelper.Content.InvalidateCache("Maps/FarmHouse1_marriage");
                     ModEntry.PHelper.Content.InvalidateCache("Maps/FarmHouse2_marriage");
                     Maps.BuildSpouseRooms(Utility.getHomeOfFarmer(Game1.player));

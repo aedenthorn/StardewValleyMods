@@ -105,11 +105,11 @@ namespace MultipleSpouses
 
 
 
-					List<NPC> spouses = ModEntry.GetAllSpouses().Values.OrderBy(o => Game1.player.friendshipData[o.Name].Points).Reverse().Take(4).ToList();
+					List<NPC> spouses = Misc.GetAllSpouses().Values.OrderBy(o => Game1.player.friendshipData[o.Name].Points).Reverse().Take(4).ToList();
 
 					List<int> which = new List<int>{ 0, 1, 2, 3 };
 
-					ModEntry.ShuffleList(ref which);
+					Misc.ShuffleList(ref which);
 
 					List<int> myWhich = new List<int>(which).Take(spouses.Count).ToList();
 

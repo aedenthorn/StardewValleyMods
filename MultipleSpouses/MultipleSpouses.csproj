@@ -65,6 +65,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="HelperEvents.cs" />
+    <Compile Include="FileIO.cs" />
+    <Compile Include="Misc.cs" />
     <Compile Include="UIPatches.cs" />
     <Compile Include="Maps.cs" />
     <Compile Include="ModConfig.cs" />

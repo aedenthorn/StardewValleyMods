@@ -1,25 +1,23 @@
-﻿using Harmony;
-using static Harmony.AccessTools;
-using Microsoft.Xna.Framework;
+﻿using Microsoft.Xna.Framework;
 using Netcode;
 using StardewModdingAPI;
 using StardewValley;
+using StardewValley.BellsAndWhistles;
 using StardewValley.Locations;
 using System;
 using System.Collections.Generic;
-using System.Reflection;
-using xTile.Dimensions;
-using System.IO;
-using StardewValley.BellsAndWhistles;
-using xTile.Tiles;
 using System.Linq;
+using System.Reflection;
 using xTile;
+using xTile.Dimensions;
 using xTile.Layers;
 using xTile.ObjectModel;
+using xTile.Tiles;
+using static Harmony.AccessTools;
 
 namespace MultipleSpouses
 {
-	public static class Maps
+    public static class Maps
 	{
 		private static IMonitor Monitor;
         private static ModConfig config;
@@ -57,7 +55,7 @@ namespace MultipleSpouses
 				Farmer f = farmHouse.owner;
 				if (f == null)
 					return;
-				ModEntry.ResetSpouses(f);
+				Misc.ResetSpouses(f);
 				ModEntry.PMonitor.Log("Building all spouse rooms");
 				if (f.spouse == null && ModEntry.spouses.Count == 0)
                 {
@@ -432,6 +430,45 @@ namespace MultipleSpouses
 
 				Map map = PHelper.Content.Load<Map>("Maps\\" + farmHouse.Name + ((farmHouse.upgradeLevel == 0) ? "" : ((farmHouse.upgradeLevel == 3) ? "2" : string.Concat(farmHouse.upgradeLevel))) + "_marriage", ContentSource.GameContent);
 
+				if (farmHouse.owner != null && !farmHouse.owner.activeDialogueEvents.ContainsKey("pennyRedecorating"))
+				{
+					int whichQuilt = -1;
+					if (farmHouse.owner.mailReceived.Contains("pennyQuilt0"))
+					{
+						whichQuilt = 0;
+					}
+					else if (farmHouse.owner.mailReceived.Contains("pennyQuilt1"))
+					{
+						whichQuilt = 1;
+					}
+					else if (farmHouse.owner.mailReceived.Contains("pennyQuilt2"))
+					{
+						whichQuilt = 2;
+					}
+					if (whichQuilt != -1)
+					{
+						Point startTile = Point.Zero;
+						if (farmHouse.upgradeLevel >= 2)
+						{
+							startTile = new Point(27, 12);
+						}
+						else if (farmHouse.upgradeLevel == 1)
+						{
+							startTile = new Point(21, 3);
+						}
+						if (!startTile.Equals(Point.Zero))
+						{
+							int startIndex = 61 + whichQuilt * 3;
+							setMapTileIndex(ref map, startTile.X, startTile.Y, startIndex, "Front", 1);
+							setMapTileIndex(ref map, startTile.X + 1, startTile.Y, startIndex + 1, "Front", 1);
+							setMapTileIndex(ref map, startTile.X + 2, startTile.Y, startIndex + 2, "Front", 1);
+							setMapTileIndex(ref map, startTile.X, startTile.Y + 1, startIndex + 12, "Front", 1);
+							setMapTileIndex(ref map, startTile.X + 1, startTile.Y + 1, startIndex + 13, "Front", 1);
+							setMapTileIndex(ref map, startTile.X + 2, startTile.Y + 1, startIndex + 14, "Front", 1);
+						}
+					}
+				}
+
 				int untitled = 0;
 				List<string> sheets = new List<string>();
 				for (int i = 0; i < map.TileSheets.Count; i++)
@@ -449,7 +486,7 @@ namespace MultipleSpouses
 					oy += 9;
 				}
 
-				int bedWidth = ModEntry.GetBedWidth(farmHouse);
+				int bedWidth = Misc.GetBedWidth(farmHouse);
 				int width = bedWidth - 1;
 				int start = 21 - (farmHouse.upgradeLevel > 1 ? (bedWidth / 2) - 1 : 0);
 
@@ -834,6 +871,31 @@ namespace MultipleSpouses
 				return tmp.TileIndex;
 			}
 			return -1;
+		}
+
+		public static void setMapTileIndex(ref Map map, int tileX, int tileY, int index, string layer, int whichTileSheet = 0)
+		{
+			try
+			{
+				if (map.GetLayer(layer).Tiles[tileX, tileY] != null)
+				{
+					if (index == -1)
+					{
+						map.GetLayer(layer).Tiles[tileX, tileY] = null;
+					}
+					else
+					{
+						map.GetLayer(layer).Tiles[tileX, tileY].TileIndex = index;
+					}
+				}
+				else
+				{
+					map.GetLayer(layer).Tiles[tileX, tileY] = new StaticTile(map.GetLayer(layer), map.TileSheets[whichTileSheet], BlendMode.Alpha, index);
+				}
+			}
+			catch (Exception)
+			{
+			}
 		}
 	}
 }

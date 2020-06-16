@@ -2,18 +2,14 @@
 using Microsoft.Xna.Framework;
 using StardewModdingAPI;
 using StardewValley;
-using StardewValley.Buildings;
 using StardewValley.Characters;
 using StardewValley.Locations;
 using StardewValley.Network;
-using StardewValley.Objects;
-using StardewValley.TerrainFeatures;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Reflection.Emit;
-using xTile.Dimensions;
 
 namespace MultipleSpouses
 {
@@ -182,7 +178,7 @@ namespace MultipleSpouses
         {
             try
             {
-                ModEntry.ResetSpouses(who);
+                Misc.ResetSpouses(who);
 
                 if ((__instance.Name.Equals(who.spouse) || ModEntry.spouses.ContainsKey(__instance.Name)) && who.IsLocalPlayer)
                 {
@@ -469,7 +465,7 @@ namespace MultipleSpouses
                 if (__result && __instance.getSpouse() != null && __instance.currentLocation == Utility.getHomeOfFarmer(__instance.getSpouse()))
                 {
                     Farmer spouse = __instance.getSpouse();
-                    ModEntry.ResetSpouses(spouse);
+                    Misc.ResetSpouses(spouse);
 
                     int offset = 0;
                     if (spouse.spouse != __instance.Name)
@@ -491,7 +487,7 @@ namespace MultipleSpouses
         {
             if (asRoommate)
                 return;
-            ModEntry.ResetSpouses(who);
+            Misc.ResetSpouses(who);
             Friendship friendship = who.friendshipData[__instance.Name];
             WorldDate weddingDate = new WorldDate(Game1.Date);
             weddingDate.TotalDays += Math.Max(1,ModEntry.config.DaysUntilMarriage);
@@ -586,7 +582,7 @@ namespace MultipleSpouses
         {
             try
             {
-                if (ModEntry.GetAllSpouses().ContainsKey(__instance.Name))
+                if (Misc.GetAllSpouses().ContainsKey(__instance.Name))
                 {
                     __state = new List<int> { 
                         who.friendshipData[__instance.Name].GiftsThisWeek,
@@ -614,10 +610,10 @@ namespace MultipleSpouses
                 }
                 if (who.ActiveObject.ParentSheetIndex == 458)
                 {
-                    if (ModEntry.GetAllSpouses().ContainsKey(__instance.Name))
+                    if (Misc.GetAllSpouses().ContainsKey(__instance.Name))
                     {
                         who.spouse = __instance.Name;
-                        ModEntry.ResetSpouses(who);
+                        Misc.ResetSpouses(who);
                         GameLocation l = Game1.currentLocation;
                         l.playSound("dwop", NetAudio.SoundContext.NPC);
                         Utility.getHomeOfFarmer(who).showSpouseRoom();
@@ -754,7 +750,7 @@ namespace MultipleSpouses
                 else if (who.ActiveObject.parentSheetIndex == 809 && !who.ActiveObject.bigCraftable)
                 {
                     Monitor.Log($"Tried to give movie ticket");
-                    if (ModEntry.GetAllSpouses().ContainsKey(__instance.Name) && Utility.doesMasterPlayerHaveMailReceivedButNotMailForTomorrow("ccMovieTheater") && !__instance.Name.Equals("Krobus") && who.lastSeenMovieWeek.Value < Game1.Date.TotalWeeks && !Utility.isFestivalDay(Game1.dayOfMonth, Game1.currentSeason) && Game1.timeOfDay <= 2100 && __instance.lastSeenMovieWeek.Value < Game1.Date.TotalWeeks && MovieTheater.GetResponseForMovie(__instance) != "reject")
+                    if (Misc.GetAllSpouses().ContainsKey(__instance.Name) && Utility.doesMasterPlayerHaveMailReceivedButNotMailForTomorrow("ccMovieTheater") && !__instance.Name.Equals("Krobus") && who.lastSeenMovieWeek.Value < Game1.Date.TotalWeeks && !Utility.isFestivalDay(Game1.dayOfMonth, Game1.currentSeason) && Game1.timeOfDay <= 2100 && __instance.lastSeenMovieWeek.Value < Game1.Date.TotalWeeks && MovieTheater.GetResponseForMovie(__instance) != "reject")
                     {
                         Monitor.Log($"Tried to give movie ticket to spouse");
                         foreach (MovieInvitation invitation in who.team.movieInvitations)
@@ -949,7 +945,7 @@ namespace MultipleSpouses
                     FarmHouse farmHouse = __instance.currentLocation as FarmHouse;
                     if (farmHouse.characters.Contains(__instance))
                     {
-                        __instance.controller = new PathFindController(__instance, farmHouse, ModEntry.getChildBed(farmHouse, __instance.Name), -1, new PathFindController.endBehavior(__instance.toddlerReachedDestination));
+                        __instance.controller = new PathFindController(__instance, farmHouse, Misc.getChildBed(farmHouse, __instance.Name), -1, new PathFindController.endBehavior(__instance.toddlerReachedDestination));
                         if (__instance.controller.pathToEndPoint == null || !farmHouse.isTileOnMap(__instance.controller.pathToEndPoint.Last<Point>().X, __instance.controller.pathToEndPoint.Last<Point>().Y))
                         {
                             __instance.controller = null;

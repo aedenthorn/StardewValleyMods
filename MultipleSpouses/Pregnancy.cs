@@ -33,7 +33,7 @@ namespace MultipleSpouses
                 return false;
             }
 
-            List<NPC> allSpouses = ModEntry.GetRandomSpouses(true).Values.ToList();
+            List<NPC> allSpouses = Misc.GetRandomSpouses(true).Values.ToList();
 
             foreach (NPC spouse in allSpouses)
             {
