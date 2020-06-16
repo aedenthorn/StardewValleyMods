@@ -26,18 +26,22 @@ namespace MultipleSpouses
         {
             try
             {
-                if(Game1.player != null && __instance.Equals(Utility.getHomeOfFarmer(Game1.player)))
+                if(Game1.player != null && Utility.getHomeOfFarmer(Game1.player) != null && __instance.Equals(Utility.getHomeOfFarmer(Game1.player)))
                 {
-                    if (__instance.upgradeLevel > 1 && ModEntry.config.ExtraCribs + ModEntry.config.ExtraKidsBeds > 0)
+                    int ecribs = Math.Max(ModEntry.config.ExtraCribs, 0);
+                    int espace = Math.Max(ModEntry.config.ExtraKidsRoomWidth, 0);
+                    int ebeds = Math.Max(ModEntry.config.ExtraKidsBeds, 0);
+
+                    if (__instance.upgradeLevel > 1 && ecribs + espace + ebeds > 0)
                     {
-                        int x = (ModEntry.config.ExtraCribs * 3) + (ModEntry.config.ExtraKidsBeds * 4);
+                        int x = (ecribs * 3) + espace + (ebeds * 4);
                         __result.Remove(new Microsoft.Xna.Framework.Rectangle(15, 1, 13, 3));
                         __result.Add(new Microsoft.Xna.Framework.Rectangle(15, 1, 13 + x, 3));
                     }
                     if (ModEntry.config.BuildAllSpousesRooms)
                     {
                         List<NPC> spouses = Maps.spousesWithRooms;
-                        if(spouses.Count > 0)
+                        if(spouses != null && spouses.Count > 0)
                         {
                             for(int i = 0; i < spouses.Count; i++)
                             {
@@ -45,7 +49,7 @@ namespace MultipleSpouses
                                 {
                                     __result.Add(new Microsoft.Xna.Framework.Rectangle(41 + i * 7, 10, 7, 3));
                                 }
-                                else
+                                else 
                                 {
                                     __result.Add(new Microsoft.Xna.Framework.Rectangle(35 + i * 7, 1, 7, 3));
                                 }
@@ -66,16 +70,19 @@ namespace MultipleSpouses
             {
                 if (Game1.player != null && __instance.Equals(Utility.getHomeOfFarmer(Game1.player)))
                 {
-                    if (__instance.upgradeLevel > 1 && ModEntry.config.ExtraCribs + ModEntry.config.ExtraKidsBeds > 0)
+                    int ecribs = Math.Max(ModEntry.config.ExtraCribs, 0);
+                    int espace = Math.Max(ModEntry.config.ExtraKidsRoomWidth, 0);
+                    int ebeds = Math.Max(ModEntry.config.ExtraKidsBeds, 0);
+                    if (__instance.upgradeLevel > 1 && ecribs + espace + ebeds > 0)
                     {
-                        int x = (ModEntry.config.ExtraCribs * 3) + (ModEntry.config.ExtraKidsBeds * 4);
+                        int x = (ecribs * 3) + espace + (ebeds * 4);
                         __result.Remove(new Microsoft.Xna.Framework.Rectangle(15, 3, 13, 6));
                         __result.Add(new Microsoft.Xna.Framework.Rectangle(15, 3, 13 + x, 6));
                     }
                     if (ModEntry.config.BuildAllSpousesRooms)
                     {
                         List<NPC> spouses = Maps.spousesWithRooms;
-                        if (spouses.Count > 0)
+                        if (spouses != null && spouses.Count > 0)
                         {
                             for (int i = 0; i < spouses.Count; i++)
                             {
@@ -111,8 +118,24 @@ namespace MultipleSpouses
             }
             return true;
         }
+                public static void Beach_resetLocalState_Postfix(Beach __instance)
+        {
+            try
+            {
 
-        public static void GameLocation_resetLocalState_Prefix(GameLocation __instance)
+                if (ModEntry.config.BuyPendantsAnytime)
+                {
+                    ModEntry.PHelper.Reflection.GetField<NPC>(__instance, "oldMariner").SetValue(new NPC(new AnimatedSprite("Characters\\Mariner", 0, 16, 32), new Vector2(80f, 5f) * 64f, 2, "Old Mariner", null));
+                }
+            }
+            catch (Exception ex)
+            {
+                Monitor.Log($"Failed in {nameof(Beach_resetLocalState_Postfix)}:\n{ex}", LogLevel.Error);
+            }
+        }
+
+
+        public static void FarmHouse_resetLocalState_Prefix(GameLocation __instance)
         {
             try
             {
@@ -121,7 +144,7 @@ namespace MultipleSpouses
                 {
                     return;
                 }
-                ModEntry.PMonitor.Log("reset farm state");
+                ModEntry.PMonitor.Log("invalidating farmhouse maps");
                 ModEntry.PHelper.Content.InvalidateCache("Maps/FarmHouse1_marriage");
                 ModEntry.PHelper.Content.InvalidateCache("Maps/FarmHouse2");
                 ModEntry.PHelper.Content.InvalidateCache("Maps/FarmHouse2_marriage");
@@ -130,54 +153,48 @@ namespace MultipleSpouses
             }
             catch (Exception ex)
             {
-                Monitor.Log($"Failed in {nameof(GameLocation_resetLocalState_Prefix)}:\n{ex}", LogLevel.Error);
+                Monitor.Log($"Failed in {nameof(FarmHouse_resetLocalState_Prefix)}:\n{ex}", LogLevel.Error);
             }
 
-        } 
-        public static void GameLocation_resetLocalState_Postfix(GameLocation __instance)
+        }
+
+        public static void FarmHouse_resetLocalState_Postfix(FarmHouse __instance)
         {
             try
             {
 
-                if (__instance is Beach && ModEntry.config.BuyPendantsAnytime)
-                {
-                    ModEntry.PHelper.Reflection.GetField<NPC>(__instance, "oldMariner").SetValue(new NPC(new AnimatedSprite("Characters\\Mariner", 0, 16, 32), new Vector2(80f, 5f) * 64f, 2, "Old Mariner", null));
-                    return;
-                }
 
                 if (!(__instance is FarmHouse) || !__instance.Name.StartsWith("FarmHouse") || __instance != Utility.getHomeOfFarmer(Game1.player) || ModEntry.GetAllSpouses().Count == 0)
                 {
                     return;
                 }
-                ModEntry.PMonitor.Log("reset farm state");
+                ModEntry.PMonitor.Log("reset farmhouse state");
 
-                FarmHouse farmHouse = __instance as FarmHouse;
 
-                NPCPatches.SetCribs(farmHouse);
+                NPCPatches.SetCribs(__instance);
 
-                Farmer f = farmHouse.owner;
+                Farmer f = __instance.owner;
                 ModEntry.ResetSpouses(f);
 
-                if (f.currentLocation == farmHouse && ModEntry.IsInBed(f.GetBoundingBox()))
+                if (f.currentLocation == __instance && ModEntry.IsInBed(f.GetBoundingBox()))
                 {
-                    f.position.Value = ModEntry.GetSpouseBedPosition(farmHouse, "Game1.player");
+                    f.position.Value = ModEntry.GetSpouseBedPosition(__instance, "Game1.player");
                 }
+                if (__instance.upgradeLevel > 1)
+                {
+                    Maps.ExpandKidsRoom(__instance);
+                }
+                __instance.showSpouseRoom();
+                Maps.BuildSpouseRooms(__instance);
                 if (ModEntry.config.CustomBed)
                 {
-                    Maps.ReplaceBed();
+                    Maps.ReplaceBed(__instance);
                 }
-
-                if (farmHouse.upgradeLevel > 1 && (ModEntry.config.ExtraCribs > 0 || ModEntry.config.ExtraKidsBeds > 0))
-                {
-                    Maps.ExpandKidsRoom(farmHouse);
-                }
-                farmHouse.showSpouseRoom();
-                Maps.BuildSpouseRooms(farmHouse);
 
             }
             catch (Exception ex)
             {
-                Monitor.Log($"Failed in {nameof(GameLocation_resetLocalState_Postfix)}:\n{ex}", LogLevel.Error);
+                Monitor.Log($"Failed in {nameof(FarmHouse_resetLocalState_Postfix)}:\n{ex}", LogLevel.Error);
             }
 
         }

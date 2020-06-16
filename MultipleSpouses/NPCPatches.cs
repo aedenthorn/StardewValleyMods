@@ -904,7 +904,7 @@ namespace MultipleSpouses
         public static void SetCribs(GameLocation location)
         {
 
-            if (ModEntry.config.ExtraCribs <= 0)
+            if (ModEntry.config.ExtraCribs < 0)
                 return;
 
             int babies = 0;

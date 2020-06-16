@@ -29,6 +29,7 @@
     "Do you have any advice for me?",
     "Can I help you with anything?",
     "Are you seeing anyone?",
+    "Nevermind.",
   ],
   "rejections": [
 	// age/manner/anxiety/optimism/gender/datable/traits/string
