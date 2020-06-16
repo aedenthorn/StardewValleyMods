@@ -10,14 +10,21 @@ namespace WitcherMod
 {
     public class ModEntry : Mod, IAssetEditor, IAssetLoader
     {
+        private static ModConfig config;
+
         public override void Entry(IModHelper helper)
         {
+            config = Helper.ReadConfig<ModConfig>();
+
         }
 
         /// <summary>Get whether this instance can load the initial version of the given asset.</summary>
         /// <param name="asset">Basic metadata about the asset being loaded.</param>
         public bool CanLoad<T>(IAssetInfo asset)
         {
+            if (!config.EnableMod)
+                return false;
+
             if (asset.AssetNameEquals("Characters/Dialogue/Elliott") || asset.AssetNameEquals("Portraits/Abigail") || asset.AssetNameEquals("Portraits/Elliott") || asset.AssetNameEquals("Portraits/Penny") || asset.AssetNameEquals("Characters/Abigail") || asset.AssetNameEquals("Characters/Elliott") || asset.AssetNameEquals("Characters/Penny"))
             {
                 return true;
@@ -46,6 +53,8 @@ namespace WitcherMod
         /// <param name="asset">Basic metadata about the asset being loaded.</param>
         public bool CanEdit<T>(IAssetInfo asset)
         {
+            if (!config.EnableMod)
+                return false;
             if (asset.DataType == typeof(Dictionary<int, string>) || asset.DataType == typeof(Dictionary<string, string>))
             {
                 return true;

@@ -187,7 +187,6 @@ namespace MultipleSpouses
             );
             harmony.Patch(
                original: AccessTools.Method(typeof(FarmHouse), "resetLocalState"),
-               prefix: new HarmonyMethod(typeof(LocationPatches), nameof(LocationPatches.FarmHouse_resetLocalState_Prefix)),
                postfix: new HarmonyMethod(typeof(LocationPatches), nameof(LocationPatches.FarmHouse_resetLocalState_Postfix))
             );
 
@@ -853,6 +852,9 @@ namespace MultipleSpouses
         /// <param name="asset">Basic metadata about the asset being loaded.</param>
         public bool CanLoad<T>(IAssetInfo asset)
         {
+            if (!config.EnableMod)
+                return false;
+
             string[] names = asset.AssetName.Split('_');
             if (config.ChildrenHaveHairOfSpouse && (names[0].Equals("Characters\\Baby") || names[0].Equals("Characters\\Toddler") || names[0].Equals("Characters/Baby") || names[0].Equals("Characters/Toddler")))
             {
@@ -1010,6 +1012,9 @@ namespace MultipleSpouses
         /// <param name="asset">Basic metadata about the asset being loaded.</param>
         public bool CanEdit<T>(IAssetInfo asset)
         {
+            if (!config.EnableMod)
+                return false;
+
             if (asset.AssetNameEquals("Data/Events/HaleyHouse") || asset.AssetNameEquals("Data/Events/Saloon") || asset.AssetNameEquals("Data/EngagementDialogue") || asset.AssetNameEquals("Strings/StringsFromCSFiles"))
             {
                 return true;
@@ -1077,6 +1082,10 @@ namespace MultipleSpouses
                 offset = (index % (config.ExtraKidsBeds + 1) * 4) + 1;
             }
             return new Point(22 + offset, 5);
+        }
+        public static bool ChangingHouse()
+        {
+            return config.BuildAllSpousesRooms || config.CustomBed || config.ExtraCribs != 0 || config.ExtraKidsBeds != 0 || config.ExtraKidsRoomWidth != 0;
         }
     }
 }

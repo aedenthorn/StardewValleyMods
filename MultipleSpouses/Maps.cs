@@ -58,8 +58,10 @@ namespace MultipleSpouses
 				if (f == null)
 					return;
 				ModEntry.ResetSpouses(f);
+				ModEntry.PMonitor.Log("Building all spouse rooms");
 				if (f.spouse == null && ModEntry.spouses.Count == 0)
                 {
+					ModEntry.PMonitor.Log("No spouses");
 					farmHouse.showSpouseRoom();
 					return;
 				}
@@ -77,6 +79,7 @@ namespace MultipleSpouses
 
 				if (farmHouse.upgradeLevel > 3 || spousesWithRooms.Count == 0)
 				{
+					ModEntry.PMonitor.Log("No spouses with rooms");
 					return;
 				}
 
@@ -389,6 +392,7 @@ namespace MultipleSpouses
 
         private static void ExtendMap(FarmHouse farmHouse, int v)
         {
+			ModEntry.PMonitor.Log($"Extending map width to {v}");
 			List<Layer> layers = FieldRefAccess<Map, List<Layer>>(farmHouse.map, "m_layers");
 			for (int i = 0; i < layers.Count; i++)
 			{
@@ -426,11 +430,13 @@ namespace MultipleSpouses
 
 				// bed
 
+				Map map = PHelper.Content.Load<Map>("Maps\\" + farmHouse.Name + ((farmHouse.upgradeLevel == 0) ? "" : ((farmHouse.upgradeLevel == 3) ? "2" : string.Concat(farmHouse.upgradeLevel))) + "_marriage", ContentSource.GameContent);
+
 				int untitled = 0;
 				List<string> sheets = new List<string>();
-				for (int i = 0; i < farmHouse.map.TileSheets.Count; i++)
+				for (int i = 0; i < map.TileSheets.Count; i++)
 				{
-					sheets.Add(farmHouse.map.TileSheets[i].Id);
+					sheets.Add(map.TileSheets[i].Id);
 				}
 				untitled = sheets.IndexOf("untitled tile sheet");
 
@@ -456,12 +462,12 @@ namespace MultipleSpouses
 
 				for (int i = 0; i < 12; i++)
 				{
-					backIndexes.Add(farmHouse.getTileIndexAt(ox + 21 + (i % 3), oy + 2 + (i / 3), "Back"));
-					backSheets.Add(sheets.IndexOf(farmHouse.getTileSheetIDAt(ox + 21 + (i % 3), oy + 2 + (i / 3), "Back")));
-					frontIndexes.Add(farmHouse.getTileIndexAt(ox + 21 + (i % 3), oy + 2 + (i / 3), "Front"));
-					frontSheets.Add(sheets.IndexOf(farmHouse.getTileSheetIDAt(ox + 21 + (i % 3), oy + 2 + (i / 3), "Front")));
-					buildIndexes.Add(farmHouse.getTileIndexAt(ox + 21 + (i % 3), oy + 2 + (i / 3), "Buildings"));
-					buildSheets.Add(sheets.IndexOf(farmHouse.getTileSheetIDAt(ox + 21 + (i % 3), oy + 2 + (i / 3), "Buildings")));
+					backIndexes.Add(getTileIndexAt(map, ox + 21 + (i % 3), oy + 2 + (i / 3), "Back"));
+					backSheets.Add(sheets.IndexOf(getTileSheetIDAt(map, ox + 21 + (i % 3), oy + 2 + (i / 3), "Back")));
+					frontIndexes.Add(getTileIndexAt(map, ox + 21 + (i % 3), oy + 2 + (i / 3), "Front"));
+					frontSheets.Add(sheets.IndexOf(getTileSheetIDAt(map, ox + 21 + (i % 3), oy + 2 + (i / 3), "Front")));
+					buildIndexes.Add(getTileIndexAt(map, ox + 21 + (i % 3), oy + 2 + (i / 3), "Buildings"));
+					buildSheets.Add(sheets.IndexOf(getTileSheetIDAt(map, ox + 21 + (i % 3), oy + 2 + (i / 3), "Buildings")));
 				}
 
 
@@ -528,6 +534,8 @@ namespace MultipleSpouses
 		}
 		internal static void ExpandKidsRoom(FarmHouse farmHouse)
 		{
+			ModEntry.PMonitor.Log("Expanding kids room");
+
 			int extraWidth = Math.Max(ModEntry.config.ExtraCribs,0) * 3 + Math.Max(ModEntry.config.ExtraKidsRoomWidth, 0) + Math.Max(ModEntry.config.ExtraKidsBeds, 0) * 4;
 			int width = 14;
 			int height = 9;
@@ -536,10 +544,12 @@ namespace MultipleSpouses
 			int ox = ModEntry.config.ExistingKidsRoomOffsetX;
 			int oy = ModEntry.config.ExistingKidsRoomOffsetY;
 
+			Map map = PHelper.Content.Load<Map>("Maps\\" + farmHouse.Name + ((farmHouse.upgradeLevel == 0) ? "" : ((farmHouse.upgradeLevel == 3) ? "2" : string.Concat(farmHouse.upgradeLevel))) + "_marriage", ContentSource.GameContent);
+
 			List<string> sheets = new List<string>();
-			for (int i = 0; i < farmHouse.map.TileSheets.Count; i++)
+			for (int i = 0; i < map.TileSheets.Count; i++)
 			{
-				sheets.Add(farmHouse.map.TileSheets[i].Id);
+				sheets.Add(map.TileSheets[i].Id);
 			}
 
 			List<int> backIndexes = new List<int>();
@@ -549,14 +559,15 @@ namespace MultipleSpouses
 			List<int> frontSheets = new List<int>();
 			List<int> buildSheets = new List<int>();
 
+
 			for (int i = 0; i < width * height; i++)
 			{
-				backIndexes.Add(farmHouse.getTileIndexAt(ox + startx + (i % width), oy + starty + (i / width), "Back"));
-				backSheets.Add(sheets.IndexOf(farmHouse.getTileSheetIDAt(ox + startx + (i % width), oy + starty + (i / width), "Back")));
-				frontIndexes.Add(farmHouse.getTileIndexAt(ox + startx + (i % width), oy + starty + (i / width), "Front"));
-				frontSheets.Add(sheets.IndexOf(farmHouse.getTileSheetIDAt(ox + startx + (i % width), oy + starty + (i / width), "Front")));
-				buildIndexes.Add(farmHouse.getTileIndexAt(ox + startx + (i % width), oy + starty + (i / width), "Buildings"));
-				buildSheets.Add(sheets.IndexOf(farmHouse.getTileSheetIDAt(ox + startx + (i % width), oy + starty + (i / width), "Buildings")));
+				backIndexes.Add(getTileIndexAt(map, ox + startx + (i % width), oy + starty + (i / width), "Back"));
+				backSheets.Add(sheets.IndexOf(getTileSheetIDAt(map, ox + startx + (i % width), oy + starty + (i / width), "Back")));
+				frontIndexes.Add(getTileIndexAt(map, ox + startx + (i % width), oy + starty + (i / width), "Front"));
+				frontSheets.Add(sheets.IndexOf(getTileSheetIDAt(map, ox + startx + (i % width), oy + starty + (i / width), "Front")));
+				buildIndexes.Add(getTileIndexAt(map, ox + startx + (i % width), oy + starty + (i / width), "Buildings"));
+				buildSheets.Add(sheets.IndexOf(getTileSheetIDAt(map, ox + startx + (i % width), oy + starty + (i / width), "Buildings")));
 			}
 
 			if(extraWidth > 0)
@@ -795,6 +806,34 @@ namespace MultipleSpouses
 				}
 			}
 
+		}
+
+		public static string getTileSheetIDAt(Map map, int x, int y, string layer)
+		{
+			if (map.GetLayer(layer) == null)
+			{
+				return "";
+			}
+			Tile tmp = map.GetLayer(layer).Tiles[x, y];
+			if (tmp != null)
+			{
+				return tmp.TileSheet.Id;
+			}
+			return "";
+		}
+
+		public static int getTileIndexAt(Map map, int x, int y, string layer)
+		{
+			if (map.GetLayer(layer) == null)
+			{
+				return -1;
+			}
+			Tile tmp = map.GetLayer(layer).Tiles[x, y];
+			if (tmp != null)
+			{
+				return tmp.TileIndex;
+			}
+			return -1;
 		}
 	}
 }

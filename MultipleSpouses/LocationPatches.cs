@@ -106,19 +106,7 @@ namespace MultipleSpouses
         }
         
 
-        public static bool FarmHouse_updateMap_Prefix(ref FarmHouse __instance, string ___loadedMapPath)
-        {
-            try
-            {
-                //ModEntry.ResetSpouses(Game1.player);
-            }
-            catch (Exception ex)
-            {
-                Monitor.Log($"Failed in {nameof(FarmHouse_updateMap_Prefix)}:\n{ex}", LogLevel.Error);
-            }
-            return true;
-        }
-                public static void Beach_resetLocalState_Postfix(Beach __instance)
+        public static void Beach_resetLocalState_Postfix(Beach __instance)
         {
             try
             {
@@ -135,29 +123,6 @@ namespace MultipleSpouses
         }
 
 
-        public static void FarmHouse_resetLocalState_Prefix(GameLocation __instance)
-        {
-            try
-            {
-
-                if (!(__instance is FarmHouse) || !__instance.Name.StartsWith("FarmHouse") || __instance != Utility.getHomeOfFarmer(Game1.player) || ModEntry.GetAllSpouses().Count == 0)
-                {
-                    return;
-                }
-                ModEntry.PMonitor.Log("invalidating farmhouse maps");
-                ModEntry.PHelper.Content.InvalidateCache("Maps/FarmHouse1_marriage");
-                ModEntry.PHelper.Content.InvalidateCache("Maps/FarmHouse2");
-                ModEntry.PHelper.Content.InvalidateCache("Maps/FarmHouse2_marriage");
-
-
-            }
-            catch (Exception ex)
-            {
-                Monitor.Log($"Failed in {nameof(FarmHouse_resetLocalState_Prefix)}:\n{ex}", LogLevel.Error);
-            }
-
-        }
-
         public static void FarmHouse_resetLocalState_Postfix(FarmHouse __instance)
         {
             try
@@ -171,8 +136,6 @@ namespace MultipleSpouses
                 ModEntry.PMonitor.Log("reset farmhouse state");
 
 
-                NPCPatches.SetCribs(__instance);
-
                 Farmer f = __instance.owner;
                 ModEntry.ResetSpouses(f);
 
@@ -180,23 +143,26 @@ namespace MultipleSpouses
                 {
                     f.position.Value = ModEntry.GetSpouseBedPosition(__instance, "Game1.player");
                 }
-                if (__instance.upgradeLevel > 1)
-                {
-                    Maps.ExpandKidsRoom(__instance);
-                }
-                __instance.showSpouseRoom();
-                Maps.BuildSpouseRooms(__instance);
-                if (ModEntry.config.CustomBed)
-                {
-                    Maps.ReplaceBed(__instance);
-                }
+                NPCPatches.SetCribs(__instance);
 
+                if (ModEntry.ChangingHouse())
+                {
+                    if (__instance.upgradeLevel > 1)
+                    {
+                        Maps.ExpandKidsRoom(__instance);
+                    }
+                    __instance.showSpouseRoom();
+                    Maps.BuildSpouseRooms(__instance);
+                    if (ModEntry.config.CustomBed)
+                    {
+                        Maps.ReplaceBed(__instance);
+                    }
+                }
             }
             catch (Exception ex)
             {
                 Monitor.Log($"Failed in {nameof(FarmHouse_resetLocalState_Postfix)}:\n{ex}", LogLevel.Error);
             }
-
         }
 
         public static void Farm_addSpouseOutdoorArea_Prefix(ref string spouseName)
