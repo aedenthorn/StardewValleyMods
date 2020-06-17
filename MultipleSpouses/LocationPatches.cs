@@ -253,6 +253,7 @@ namespace MultipleSpouses
             }
             return true;
         }
+
         public static bool GameLocation_performAction_Prefix(GameLocation __instance, string action, Farmer who, ref bool __result, Location tileLocation)
         {
             try
@@ -426,7 +427,7 @@ namespace MultipleSpouses
                         string spouseName = c.Name;
                         int upgradeLevel = __instance.upgradeLevel;
                         Point bedSpot;
-                        if (Game1.player.friendshipData[spouseName].RoommateMarriage && !ModEntry.config.RoommateRomance)
+                        if (__instance.owner.friendshipData[spouseName].RoommateMarriage && !ModEntry.config.RoommateRomance)
                         {
                             List<string> mySpouses = Misc.GetAllSpouseNamesOfficialFirst(Game1.player);
                             List<string> roomSpouses = mySpouses.FindAll((s) => Maps.roomIndexes.ContainsKey(s) || Maps.tmxSpouseRooms.ContainsKey(s));
@@ -479,5 +480,28 @@ namespace MultipleSpouses
                 Monitor.Log($"Failed in {nameof(FarmHouse_performTenMinuteUpdate_Postfix)}:\n{ex}", LogLevel.Error);
             }
         }
+
+        public static void Desert_getDesertMerchantTradeStock_Postfix(Farmer who, ref Dictionary<ISalable, int[]> __result)
+        {
+            try
+            {
+                if (who != null && who.getFriendshipHeartLevelForNPC("Krobus") >= 10 && !who.friendshipData["Krobus"].RoommateMarriage && who.houseUpgradeLevel >= 1 && (who.isMarried() || who.isEngaged()) && !who.hasItemInInventory(808, 1, 0))
+                {
+                    ISalable i = new StardewValley.Object(808, 1, false, -1, 0);
+                    __result.Add(i, new int[]
+                    {
+                        0,
+                        1,
+                        769,
+                        200
+                    });
+                }
+            }
+            catch (Exception ex)
+            {
+                Monitor.Log($"Failed in {nameof(Desert_getDesertMerchantTradeStock_Postfix)}:\n{ex}", LogLevel.Error);
+            }
+        }
+
     }
 }

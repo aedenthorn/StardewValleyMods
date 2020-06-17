@@ -136,7 +136,7 @@ namespace MultipleSpouses
 				for (int i = 0; i < 7; i++)
 				{
 					// horiz hall
-					farmHouse.setMapTileIndex(ox + 29 + i, oy + 10, (i % 2 == 0 ? 352: 353), "Back", floorsheet);
+					farmHouse.setMapTileIndex(ox + 29 + i, oy + 10, (i % 2 == 0 ? 352: 336), "Back", floorsheet);
 				}
 
 
@@ -306,17 +306,17 @@ namespace MultipleSpouses
 						if (count % 2 == 0)
 						{
 							// vert hall
-							farmHouse.setMapTileIndex(ox + 35 + (7 * count), oy + 4 + i, (i % 2 == 0 ? 352 : 353), "Back", floorsheet);
+							farmHouse.setMapTileIndex(ox + 35 + (7 * count), oy + 4 + i, (i % 2 == 0 ? 352 : 336), "Back", floorsheet);
 							// horiz hall
-							farmHouse.setMapTileIndex(ox + 36 + i + (count * 7), oy + 10, (i % 2 == 0 ? 353 : 352), "Back", floorsheet);
+							farmHouse.setMapTileIndex(ox + 36 + i + (count * 7), oy + 10, (i % 2 == 0 ? 336 : 352), "Back", floorsheet);
 						}
 						else
 						{
 							// vert hall
 							
-							farmHouse.setMapTileIndex(ox + 35 + (7 * count), oy + 4 + i, (i % 2 == 0 ? 353 : 352), "Back", floorsheet);
+							farmHouse.setMapTileIndex(ox + 35 + (7 * count), oy + 4 + i, (i % 2 == 0 ? 336 : 352), "Back", floorsheet);
 							// horiz hall
-							farmHouse.setMapTileIndex(ox + 36 + i + (count * 7), oy + 10, (i % 2 == 0 ? 352 : 353), "Back", floorsheet);
+							farmHouse.setMapTileIndex(ox + 36 + i + (count * 7), oy + 10, (i % 2 == 0 ? 352 : 336), "Back", floorsheet);
 						}
 					}
 

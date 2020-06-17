@@ -199,6 +199,11 @@ namespace MultipleSpouses
                postfix: new HarmonyMethod(typeof(LocationPatches), nameof(LocationPatches.FarmHouse_performTenMinuteUpdate_Postfix))
             );
             
+            harmony.Patch(
+               original: AccessTools.Method(typeof(Desert), nameof(Desert.getDesertMerchantTradeStock)),
+               postfix: new HarmonyMethod(typeof(LocationPatches), nameof(LocationPatches.Desert_getDesertMerchantTradeStock_Postfix))
+            );
+            
             
 
             // pregnancy patches
