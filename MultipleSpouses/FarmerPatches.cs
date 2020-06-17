@@ -41,12 +41,14 @@ namespace MultipleSpouses
                     points -= ModEntry.divorceHeartsLost * 250;
                 }
 
-                Monitor.Log($"Divorcing {key}, lost {points} points");
                 if (__instance.friendshipData.ContainsKey(key))
                 {
+                    Monitor.Log($"Divorcing {key}");
                     __instance.friendshipData[key].Points = Math.Min(2000, Math.Max(0,points));
+                    Monitor.Log($"Resulting points: {__instance.friendshipData[key].Points}");
 
                     __instance.friendshipData[key].Status = points < 1000 ? FriendshipStatus.Divorced : FriendshipStatus.Friendly;
+                    Monitor.Log($"Resulting friendship status: {__instance.friendshipData[key].Status}");
 
                     __instance.friendshipData[key].RoommateMarriage = false;
 

@@ -273,7 +273,7 @@ namespace MultipleSpouses
 				int floorsheet = 5;
 				for (int i = 0; i < farmHouse.map.TileSheets.Count; i++)
 				{
-					Monitor.Log($"tilesheet id: {farmHouse.map.TileSheets[i].Id}");
+					//Monitor.Log($"tilesheet id: {farmHouse.map.TileSheets[i].Id}");
 					if (farmHouse.map.TileSheets[i].Id == "untitled tile sheet")
 						untitled = i;
 					else if (farmHouse.map.TileSheets[i].Id == "walls_and_floors")
@@ -284,7 +284,7 @@ namespace MultipleSpouses
 				int ox = ModEntry.config.ExistingSpouseRoomOffsetX;
 				int oy = ModEntry.config.ExistingSpouseRoomOffsetY;
 				if (farmHouse.upgradeLevel > 1)
-				{
+				{ 
 					ox += 6;
 					oy += 9;
 				}
