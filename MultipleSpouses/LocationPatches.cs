@@ -81,18 +81,39 @@ namespace MultipleSpouses
                     }
                     if (ModEntry.config.BuildAllSpousesRooms)
                     {
-                        List<NPC> spouses = Maps.spousesWithRooms;
-                        if (spouses != null && spouses.Count > 0)
+
+                        int count = ModEntry.spouses.Values.ToList().FindAll((spouse) => Maps.roomIndexes.ContainsKey(spouse.Name) || Maps.tmxSpouseRooms.ContainsKey(spouse.Name)).Count;
+
+                        if (Game1.player.spouse != null && !Game1.player.friendshipData[Game1.player.spouse].IsEngaged() && (Maps.roomIndexes.ContainsKey(Game1.player.spouse) || Maps.tmxSpouseRooms.ContainsKey(Game1.player.spouse)))
+                            count++;
+
+                        Monitor.Log($"Number of spouse rooms for floor areas: {count}");
+
+                        if (count > 0)
                         {
-                            for (int i = 0; i < spouses.Count; i++)
+                            if (__instance.upgradeLevel > 1)
+                            {
+                                __result.Remove(new Microsoft.Xna.Framework.Rectangle(23, 12, 12, 11));
+                                __result.Add(new Microsoft.Xna.Framework.Rectangle(23, 12, 11, 11));
+                                __result.Add(new Microsoft.Xna.Framework.Rectangle(34, 19, count * 7, 1));
+                            }
+                            else
+                            {
+                                __result.Remove(new Microsoft.Xna.Framework.Rectangle(20, 3, 9, 8));
+                                __result.Add(new Microsoft.Xna.Framework.Rectangle(20, 3, 8, 8));
+                                __result.Add(new Microsoft.Xna.Framework.Rectangle(28, 10, count * 7, 1));
+                            }
+                            for (int i = 0; i < count; i++)
                             {
                                 if (__instance.upgradeLevel > 1)
                                 {
-                                    __result.Add(new Microsoft.Xna.Framework.Rectangle(41 + i * 7, 13, 7, 6));
+                                    __result.Add(new Microsoft.Xna.Framework.Rectangle(41 + i * 7, 13, 6, 6));
+                                    __result.Add(new Microsoft.Xna.Framework.Rectangle(34 + (i * 7), 13, 1, 6));
                                 }
                                 else
                                 {
-                                    __result.Add(new Microsoft.Xna.Framework.Rectangle(35 + i * 7, 4, 7, 6));
+                                    __result.Add(new Microsoft.Xna.Framework.Rectangle(29 + i * 7, 4, 6, 6));
+                                    __result.Add(new Microsoft.Xna.Framework.Rectangle(28 + (i * 7), 4, 1, 6));
                                 }
                             }
                         }

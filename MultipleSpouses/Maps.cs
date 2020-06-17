@@ -57,7 +57,7 @@ namespace MultipleSpouses
 					return;
 				Misc.ResetSpouses(f);
 				ModEntry.PMonitor.Log("Building all spouse rooms");
-				if (f.spouse == null && ModEntry.spouses.Count == 0)
+				if ((f.spouse == null && ModEntry.spouses.Count == 0) || farmHouse.upgradeLevel > 3)
                 {
 					ModEntry.PMonitor.Log("No spouses");
 					farmHouse.showSpouseRoom();
@@ -75,32 +75,15 @@ namespace MultipleSpouses
 					}
 				}
 
-				if (farmHouse.upgradeLevel > 3 || spousesWithRooms.Count == 0)
+				if (spousesWithRooms.Count == 0)
 				{
 					ModEntry.PMonitor.Log("No spouses with rooms");
 					return;
 				}
 
-				int untitled = 0;
-				List<string> sheets = new List<string>();
-				for (int i = 0; i < farmHouse.map.TileSheets.Count; i++)
-				{
-					sheets.Add(farmHouse.map.TileSheets[i].Id);
-				}
-				untitled = sheets.IndexOf("untitled tile sheet");
-
-
-				int ox = ModEntry.config.ExistingSpouseRoomOffsetX;
-				int oy = ModEntry.config.ExistingSpouseRoomOffsetY;
-				if (farmHouse.upgradeLevel > 1)
-				{
-					ox += 6;
-					oy += 9;
-				}
-
 				if (f.spouse != null)
 				{
-					if (roomIndexes.ContainsKey(f.spouse) || tmxSpouseRooms.ContainsKey(f.spouse))
+					if (!f.friendshipData[f.spouse].IsEngaged() && roomIndexes.ContainsKey(f.spouse) || tmxSpouseRooms.ContainsKey(f.spouse))
 					{
 						Monitor.Log($"Building spouse room for official spouse {f.spouse}");
 						farmHouse.showSpouseRoom();
@@ -115,6 +98,22 @@ namespace MultipleSpouses
 
 				if (!ModEntry.config.BuildAllSpousesRooms)
 					return;
+
+				List<string> sheets = new List<string>();
+				for (int i = 0; i < farmHouse.map.TileSheets.Count; i++)
+				{
+					sheets.Add(farmHouse.map.TileSheets[i].Id);
+				}
+				int untitled = sheets.IndexOf("untitled tile sheet");
+				int floorsheet = sheets.IndexOf("walls_and_floors");
+
+				int ox = ModEntry.config.ExistingSpouseRoomOffsetX;
+				int oy = ModEntry.config.ExistingSpouseRoomOffsetY;
+				if (farmHouse.upgradeLevel > 1)
+				{
+					ox += 6;
+					oy += 9;
+				}
 
 
 				for (int i = 0; i < 7; i++)
@@ -137,14 +136,14 @@ namespace MultipleSpouses
 				for (int i = 0; i < 7; i++)
 				{
 					// horiz hall
-					farmHouse.setMapTileIndex(ox + 29 + i, oy + 10, (i % 2 == 0 ? ModEntry.config.HallTileOdd: ModEntry.config.HallTileEven), "Back", (i % 2 == 0 ? config.HallTileOddSheet : config.HallTileEvenSheet));
+					farmHouse.setMapTileIndex(ox + 29 + i, oy + 10, (i % 2 == 0 ? 352: 353), "Back", floorsheet);
 				}
 
 
 				for (int i = 0; i < 7; i++)
 				{
 					//farmHouse.removeTile(ox + 28, oy + 4 + i, "Back");
-					//farmHouse.setMapTileIndex(ox + 28, oy + 4 + i, (i % 2 == 0 ? ModEntry.config.HallTileOdd : ModEntry.config.HallTileEven), "Back", 0);
+					//farmHouse.setMapTileIndex(ox + 28, oy + 4 + i, (i % 2 == 0 ? 352 : ModEntry.config.HallTileEven), "Back", 0);
 				}
 
 
@@ -270,11 +269,15 @@ namespace MultipleSpouses
 				farmHouse.map.Properties.Remove("NightTiles");
 
 
-				int untitled = 0;
+				int untitled = 4;
+				int floorsheet = 5;
 				for (int i = 0; i < farmHouse.map.TileSheets.Count; i++)
 				{
+					Monitor.Log($"tilesheet id: {farmHouse.map.TileSheets[i].Id}");
 					if (farmHouse.map.TileSheets[i].Id == "untitled tile sheet")
 						untitled = i;
+					else if (farmHouse.map.TileSheets[i].Id == "walls_and_floors")
+						floorsheet = i;
 				}
 
 
@@ -303,16 +306,17 @@ namespace MultipleSpouses
 						if (count % 2 == 0)
 						{
 							// vert hall
-							farmHouse.setMapTileIndex(ox + 35 + (7 * count), oy + 4 + i, (i % 2 == 0 ? config.HallTileOdd : config.HallTileEven), "Back", (i % 2 == 0 ? config.HallTileOddSheet : config.HallTileEvenSheet));
+							farmHouse.setMapTileIndex(ox + 35 + (7 * count), oy + 4 + i, (i % 2 == 0 ? 352 : 353), "Back", floorsheet);
 							// horiz hall
-							farmHouse.setMapTileIndex(ox + 36 + i + (count * 7), oy + 10, (i % 2 == 0 ? ModEntry.config.HallTileEven : ModEntry.config.HallTileOdd), "Back", (i % 2 == 0 ? config.HallTileEvenSheet : config.HallTileOddSheet));
+							farmHouse.setMapTileIndex(ox + 36 + i + (count * 7), oy + 10, (i % 2 == 0 ? 353 : 352), "Back", floorsheet);
 						}
 						else
 						{
 							// vert hall
-							farmHouse.setMapTileIndex(ox + 35 + (7 * count), oy + 4 + i, (i % 2 == 0 ? config.HallTileEven : config.HallTileOdd), "Back", (i % 2 == 0 ? config.HallTileEvenSheet : config.HallTileOddSheet));
+							
+							farmHouse.setMapTileIndex(ox + 35 + (7 * count), oy + 4 + i, (i % 2 == 0 ? 353 : 352), "Back", floorsheet);
 							// horiz hall
-							farmHouse.setMapTileIndex(ox + 36 + i + (count * 7), oy + 10, (i % 2 == 0 ? ModEntry.config.HallTileOdd : ModEntry.config.HallTileEven), "Back", (i % 2 == 0 ? config.HallTileOddSheet : config.HallTileEvenSheet));
+							farmHouse.setMapTileIndex(ox + 36 + i + (count * 7), oy + 10, (i % 2 == 0 ? 352 : 353), "Back", floorsheet);
 						}
 					}
 

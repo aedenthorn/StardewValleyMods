@@ -1,7 +1,7 @@
 ﻿{
-  "Name": "Real Names",
+  "Name": "Realistic Random Names",
   "Author": "aedenthorn",
-  "Version": "0.1.2",
+  "Version": "0.1.3",
   "Description": "Replaces the random name generator entries with real names.",
   "UniqueID": "aedenthorn.RealNames",
   "EntryDll": "RealNames.dll",
