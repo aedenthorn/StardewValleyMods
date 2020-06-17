@@ -3,7 +3,7 @@
     "divorce_fault_q": "Whose fault is the divorce?",
     "divorce_fault_1": "I am at fault.#my_#1",
     "divorce_fault_2": "The fault is with my spouse.#their_#3",
-    "divorce_fault_3": "This is all Yorba's fault!#their_#1",
+    "divorce_fault_3": "This is all Yorba's fault!#yorba_#1",
     "divorce_fault_4": "This is a no fault divorce.#no_#0",
     "divorce_my_reason_q": "Why are you at fault?",
     "divorce_my_reason_1": "I cheated on my spouse.#3",
@@ -21,5 +21,5 @@
     "divorce_method_1": "I want to pay for the divorce myself.#100#0",
     "divorce_method_2": "We should split the cost of the divorce 50/50.#50#2",
     "divorce_method_3": "I want to make my spouse pay for the divorce.#0#4",
-    "divorce_method_4": "Yorba should pay for the divorce.#100#0",
+    "divorce_method_4": "Yorba should pay for the divorce.#150#0",
 }

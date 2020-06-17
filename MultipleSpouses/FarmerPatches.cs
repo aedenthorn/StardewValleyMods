@@ -10,11 +10,13 @@ namespace MultipleSpouses
     public static class FarmerPatches
     {
         private static IMonitor Monitor;
+        private static IModHelper Helper;
 
         // call this method from your Entry class
-        public static void Initialize(IMonitor monitor)
+        public static void Initialize(IMonitor monitor, IModHelper helper)
         {
             Monitor = monitor;
+            Helper = helper;
         }
         public static bool Farmer_doDivorce_Prefix(ref Farmer __instance)
         {
@@ -23,27 +25,31 @@ namespace MultipleSpouses
                 __instance.divorceTonight.Value = false;
                 if (!__instance.isMarried() || ModEntry.spouseToDivorce == null)
                 {
-                    ModEntry.PMonitor.Log("Tried to divorce but not married!");
+                    Monitor.Log("Tried to divorce but no spouse to divorce!");
                     return false;
                 }
 
                 string key = ModEntry.spouseToDivorce;
 
+                int points = 2000;
+                if(ModEntry.divorceHeartsLost < 0)
+                {
+                    points = 0;
+                }
+                else
+                {
+                    points -= ModEntry.divorceHeartsLost * 250;
+                }
 
-                ModEntry.PMonitor.Log($"Divorcing {key}");
+                Monitor.Log($"Divorcing {key}, lost {points} points");
                 if (__instance.friendshipData.ContainsKey(key))
                 {
-                    if (ModEntry.config.FriendlyDivorce)
-                    {
-                        __instance.friendshipData[key].Points = Math.Max(2000, __instance.friendshipData[key].Points);
-                        __instance.friendshipData[key].Status = FriendshipStatus.Friendly;
-                    }
-                    else
-                    {
-                        __instance.friendshipData[key].Points = 0;
-                        __instance.friendshipData[key].Status = FriendshipStatus.Divorced;
-                    }
+                    __instance.friendshipData[key].Points = Math.Min(2000, Math.Max(0,points));
+
+                    __instance.friendshipData[key].Status = points < 1000 ? FriendshipStatus.Divorced : FriendshipStatus.Friendly;
+
                     __instance.friendshipData[key].RoommateMarriage = false;
+
                     NPC ex = Game1.getCharacterFromName(key);
                     ex.PerformDivorce();
                     if(ModEntry.officialSpouse == key)
@@ -55,8 +61,8 @@ namespace MultipleSpouses
                         __instance.spouse = null;
                     }
                     Misc.ResetSpouses(__instance);
-                    ModEntry.PHelper.Content.InvalidateCache("Maps/FarmHouse1_marriage");
-                    ModEntry.PHelper.Content.InvalidateCache("Maps/FarmHouse2_marriage");
+                    Helper.Content.InvalidateCache("Maps/FarmHouse1_marriage");
+                    Helper.Content.InvalidateCache("Maps/FarmHouse2_marriage");
                     Maps.BuildSpouseRooms(Utility.getHomeOfFarmer(Game1.player));
                     Game1.getFarm().addSpouseOutdoorArea(__instance.spouse == null ? "" : __instance.spouse);
                 }

@@ -86,9 +86,6 @@ namespace MultipleSpouses
 
                         if (Game1.player.spouse != null && !Game1.player.friendshipData[Game1.player.spouse].IsEngaged() && (Maps.roomIndexes.ContainsKey(Game1.player.spouse) || Maps.tmxSpouseRooms.ContainsKey(Game1.player.spouse)))
                             count++;
-
-                        Monitor.Log($"Number of spouse rooms for floor areas: {count}");
-
                         if (count > 0)
                         {
                             if (__instance.upgradeLevel > 1)

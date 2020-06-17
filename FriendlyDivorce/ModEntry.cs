@@ -19,14 +19,7 @@ namespace FriendlyDivorce
 		public static ModConfig Config;
 		private static IMonitor PMonitor;
 		public static IModHelper PHelper;
-		private static string[] questionKeys = new string[]
-		{
-			"divorce",
-			"divorce_fault_",
-			"divorce_my_reason_",
-			"divorce_their_reason_",
-			"divorce_method_",
-		};
+
 		public static int heartsLost = 0;
 		public static Multiplayer mp;
 
@@ -66,9 +59,7 @@ namespace FriendlyDivorce
 
 		private void Input_ButtonPressed(object sender, ButtonPressedEventArgs e)
 		{
-			if (e.Button != SButton.MouseLeft && e.Button != SButton.MouseRight)
-				return;
-			if (Game1.currentLocation == null || !questionKeys.Contains(Game1.currentLocation.lastQuestionKey))
+			if ((e.Button != SButton.MouseLeft && e.Button != SButton.MouseRight) || Game1.currentLocation == null || !(Game1.currentLocation is ManorHouse) || !Game1.currentLocation.lastQuestionKey.StartsWith("divorce"))
 				return;
 
 
@@ -139,7 +130,7 @@ namespace FriendlyDivorce
 				}
 				ShowNextDialogue($"divorce_{r.Split('#')[r.Split('#').Length - 2]}reason_", Game1.currentLocation);
 			}
-			else if (whichAnswer.StartsWith("divorce_my_reason_") || whichAnswer.StartsWith("divorce_their_reason_"))
+			else if (whichAnswer.Contains("reason_"))
 			{
 				PMonitor.Log("divorce reason");
 				string r = PHelper.Translation.Get(whichAnswer);

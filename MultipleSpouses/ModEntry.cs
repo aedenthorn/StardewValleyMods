@@ -36,6 +36,7 @@ namespace MultipleSpouses
         public static bool bedMadeToday = false;
         public static bool kidsRoomExpandedToday = false;
         public static string officialSpouse = null;
+        internal static int divorceHeartsLost;
 
         /// <summary>The mod entry point, called after the mod is first loaded.</summary>
         /// <param name="helper">Provides simplified APIs for writing mods.</param>
@@ -61,7 +62,7 @@ namespace MultipleSpouses
 
             NPCPatches.Initialize(Monitor);
             LocationPatches.Initialize(Monitor);
-            FarmerPatches.Initialize(Monitor);
+            FarmerPatches.Initialize(Monitor, Helper);
             Maps.Initialize(Monitor);
             Kissing.Initialize(Monitor);
             UIPatches.Initialize(Monitor);
