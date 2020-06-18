@@ -26,34 +26,33 @@ namespace MultipleSpouses
         {
             try
             {
-                if(Game1.player != null && Utility.getHomeOfFarmer(Game1.player) != null && __instance.Equals(Utility.getHomeOfFarmer(Game1.player)))
+                if (__instance.owner == null)
+                    return;
+                int ecribs = Math.Max(ModEntry.config.ExtraCribs, 0);
+                int espace = Math.Max(ModEntry.config.ExtraKidsRoomWidth, 0);
+                int ebeds = Math.Max(ModEntry.config.ExtraKidsBeds, 0);
+
+                if (__instance.upgradeLevel > 1 && ecribs + espace + ebeds > 0)
                 {
-                    int ecribs = Math.Max(ModEntry.config.ExtraCribs, 0);
-                    int espace = Math.Max(ModEntry.config.ExtraKidsRoomWidth, 0);
-                    int ebeds = Math.Max(ModEntry.config.ExtraKidsBeds, 0);
+                    int x = (ecribs * 3) + espace + (ebeds * 4);
+                    __result.Remove(new Microsoft.Xna.Framework.Rectangle(15, 1, 13, 3));
+                    __result.Add(new Microsoft.Xna.Framework.Rectangle(15, 1, 13 + x, 3));
+                }
+                if (ModEntry.config.BuildAllSpousesRooms)
+                {
+                    int count = Misc.GetSpouses(__instance.owner, 0).Keys.ToList().FindAll((spouse) => Maps.roomIndexes.ContainsKey(spouse) || Maps.tmxSpouseRooms.ContainsKey(spouse)).Count;
 
-                    if (__instance.upgradeLevel > 1 && ecribs + espace + ebeds > 0)
+                    if (count > 0)
                     {
-                        int x = (ecribs * 3) + espace + (ebeds * 4);
-                        __result.Remove(new Microsoft.Xna.Framework.Rectangle(15, 1, 13, 3));
-                        __result.Add(new Microsoft.Xna.Framework.Rectangle(15, 1, 13 + x, 3));
-                    }
-                    if (ModEntry.config.BuildAllSpousesRooms)
-                    {
-                        int count = Misc.GetSpouses(__instance.owner, 0).Keys.ToList().FindAll((spouse) => Maps.roomIndexes.ContainsKey(spouse) || Maps.tmxSpouseRooms.ContainsKey(spouse)).Count;
-
-                        if (count > 0)
+                        for(int i = 0; i < count; i++)
                         {
-                            for(int i = 0; i < count; i++)
+                            if (__instance.upgradeLevel > 1)
                             {
-                                if (__instance.upgradeLevel > 1)
-                                {
-                                    __result.Add(new Microsoft.Xna.Framework.Rectangle(41 + i * 7, 10, 7, 3));
-                                }
-                                else 
-                                {
-                                    __result.Add(new Microsoft.Xna.Framework.Rectangle(35 + i * 7, 1, 7, 3));
-                                }
+                                __result.Add(new Microsoft.Xna.Framework.Rectangle(41 + i * 7, 10, 7, 3));
+                            }
+                            else 
+                            {
+                                __result.Add(new Microsoft.Xna.Framework.Rectangle(35 + i * 7, 1, 7, 3));
                             }
                         }
                     }
@@ -69,49 +68,48 @@ namespace MultipleSpouses
         {
             try
             {
-                if (__instance.owner != null)
+                if (__instance.owner == null)
+                    return;
+                int ecribs = Math.Max(ModEntry.config.ExtraCribs, 0);
+                int espace = Math.Max(ModEntry.config.ExtraKidsRoomWidth, 0);
+                int ebeds = Math.Max(ModEntry.config.ExtraKidsBeds, 0);
+                if (__instance.upgradeLevel > 1 && ecribs + espace + ebeds > 0)
                 {
-                    int ecribs = Math.Max(ModEntry.config.ExtraCribs, 0);
-                    int espace = Math.Max(ModEntry.config.ExtraKidsRoomWidth, 0);
-                    int ebeds = Math.Max(ModEntry.config.ExtraKidsBeds, 0);
-                    if (__instance.upgradeLevel > 1 && ecribs + espace + ebeds > 0)
-                    {
-                        int x = (ecribs * 3) + espace + (ebeds * 4);
-                        __result.Remove(new Microsoft.Xna.Framework.Rectangle(15, 3, 13, 6));
-                        __result.Add(new Microsoft.Xna.Framework.Rectangle(15, 3, 13 + x, 6));
-                    }
-                    if (ModEntry.config.BuildAllSpousesRooms)
-                    {
-                        int count = Misc.GetSpouses(__instance.owner, 0).Keys.ToList().FindAll((spouse) => Maps.roomIndexes.ContainsKey(spouse) || Maps.tmxSpouseRooms.ContainsKey(spouse)).Count;
+                    int x = (ecribs * 3) + espace + (ebeds * 4);
+                    __result.Remove(new Microsoft.Xna.Framework.Rectangle(15, 3, 13, 6));
+                    __result.Add(new Microsoft.Xna.Framework.Rectangle(15, 3, 13 + x, 6));
+                }
+                if (ModEntry.config.BuildAllSpousesRooms)
+                {
+                    int count = Misc.GetSpouses(__instance.owner, 0).Keys.ToList().FindAll((spouse) => Maps.roomIndexes.ContainsKey(spouse) || Maps.tmxSpouseRooms.ContainsKey(spouse)).Count;
 
-                        if (Game1.player.spouse != null && !Game1.player.friendshipData[Game1.player.spouse].IsEngaged() && (Maps.roomIndexes.ContainsKey(Game1.player.spouse) || Maps.tmxSpouseRooms.ContainsKey(Game1.player.spouse)))
-                            count++;
-                        if (count > 0)
+                    if (__instance.owner.spouse != null && !__instance.owner.friendshipData[__instance.owner.spouse].IsEngaged() && (Maps.roomIndexes.ContainsKey(__instance.owner.spouse) || Maps.tmxSpouseRooms.ContainsKey(__instance.owner.spouse)))
+                        count++;
+                    if (count > 0)
+                    {
+                        if (__instance.upgradeLevel > 1)
+                        {
+                            __result.Remove(new Microsoft.Xna.Framework.Rectangle(23, 12, 12, 11));
+                            __result.Add(new Microsoft.Xna.Framework.Rectangle(23, 12, 11, 11));
+                            __result.Add(new Microsoft.Xna.Framework.Rectangle(34, 19, count * 7, 1));
+                        }
+                        else
+                        {
+                            __result.Remove(new Microsoft.Xna.Framework.Rectangle(20, 3, 9, 8));
+                            __result.Add(new Microsoft.Xna.Framework.Rectangle(20, 3, 8, 8));
+                            __result.Add(new Microsoft.Xna.Framework.Rectangle(28, 10, count * 7, 1));
+                        }
+                        for (int i = 0; i < count; i++)
                         {
                             if (__instance.upgradeLevel > 1)
                             {
-                                __result.Remove(new Microsoft.Xna.Framework.Rectangle(23, 12, 12, 11));
-                                __result.Add(new Microsoft.Xna.Framework.Rectangle(23, 12, 11, 11));
-                                __result.Add(new Microsoft.Xna.Framework.Rectangle(34, 19, count * 7, 1));
+                                __result.Add(new Microsoft.Xna.Framework.Rectangle(41 + i * 7, 13, 6, 6));
+                                __result.Add(new Microsoft.Xna.Framework.Rectangle(34 + (i * 7), 13, 1, 6));
                             }
                             else
                             {
-                                __result.Remove(new Microsoft.Xna.Framework.Rectangle(20, 3, 9, 8));
-                                __result.Add(new Microsoft.Xna.Framework.Rectangle(20, 3, 8, 8));
-                                __result.Add(new Microsoft.Xna.Framework.Rectangle(28, 10, count * 7, 1));
-                            }
-                            for (int i = 0; i < count; i++)
-                            {
-                                if (__instance.upgradeLevel > 1)
-                                {
-                                    __result.Add(new Microsoft.Xna.Framework.Rectangle(41 + i * 7, 13, 6, 6));
-                                    __result.Add(new Microsoft.Xna.Framework.Rectangle(34 + (i * 7), 13, 1, 6));
-                                }
-                                else
-                                {
-                                    __result.Add(new Microsoft.Xna.Framework.Rectangle(29 + i * 7, 4, 6, 6));
-                                    __result.Add(new Microsoft.Xna.Framework.Rectangle(28 + (i * 7), 4, 1, 6));
-                                }
+                                __result.Add(new Microsoft.Xna.Framework.Rectangle(29 + i * 7, 4, 6, 6));
+                                __result.Add(new Microsoft.Xna.Framework.Rectangle(28 + (i * 7), 4, 1, 6));
                             }
                         }
                     }
@@ -156,7 +154,7 @@ namespace MultipleSpouses
 
                 Misc.ResetSpouses(f);
 
-                if (f.currentLocation == __instance && Misc.IsInBed(f.GetBoundingBox()))
+                if (f.currentLocation == __instance && Misc.IsInBed(__instance, f.GetBoundingBox()))
                 {
                     f.position.Value = Misc.GetFarmerBedPosition(__instance);
                 }
@@ -416,6 +414,9 @@ namespace MultipleSpouses
         {
             try
             {
+                if (__instance.owner == null)
+                    return;
+
                 List<string> mySpouses = Misc.GetSpouses(__instance.owner, -1).Keys.ToList();
                 if (Game1.IsMasterGame && Game1.timeOfDay >= 2200 && Game1.IsMasterGame)
                 {

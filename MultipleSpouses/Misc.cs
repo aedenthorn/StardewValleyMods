@@ -121,7 +121,7 @@ namespace MultipleSpouses
 
                 if (bedSpouses.Count > 0)
                 {
-                    if (IsInBed(j.GetBoundingBox()) || bedSpouses.Contains(j.Name))
+                    if (IsInBed(farmHouse, j.GetBoundingBox()) || bedSpouses.Contains(j.Name))
                     {
                         Monitor.Log($"putting {j.Name} in bed");
                         j.position.Value = GetSpouseBedPosition(farmHouse, allBedSpouses, j.Name);
@@ -161,9 +161,8 @@ namespace MultipleSpouses
 
         }
 
-        public static bool IsInBed(Rectangle box)
+        public static bool IsInBed(FarmHouse fh, Rectangle box)
         {
-            FarmHouse fh = Utility.getHomeOfFarmer(Game1.player);
             int bedWidth = GetBedWidth(fh);
             Point bedStart = GetBedStart(fh);
             Rectangle bed = new Rectangle(bedStart.X * 64, bedStart.Y * 64 + 64, bedWidth * 64, 3 * 64);
@@ -174,7 +173,7 @@ namespace MultipleSpouses
             int bedWidth = GetBedWidth(fh);
             Point bedStart = GetBedStart(fh);
             int x = (int)((allBedmates.IndexOf(name) + 1) / (float)(allBedmates.Count + 1) * (bedWidth - 1) * 64);
-            return new Vector2(bedStart.X * 64 + x, bedStart.Y * 64 + 64 + ModEntry.bedSleepOffset + (name == "Game1.player"?32:0));
+            return new Vector2(bedStart.X * 64 + x, bedStart.Y * 64 + 64 + ModEntry.bedSleepOffset);
         }
         public static Vector2 GetFarmerBedPosition(FarmHouse fh)
         {

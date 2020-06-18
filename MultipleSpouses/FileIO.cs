@@ -56,7 +56,7 @@ namespace MultipleSpouses
                     {
                         if (editor == null)
                             continue;
-                        if (editor.GetType() != tmxlEditorType) continue;
+                        if (!ReferenceEquals(editor.GetType(),tmxlEditorType)) continue;
 
                         if (editor.GetType().GetField("type", BindingFlags.NonPublic | BindingFlags.Instance).GetValue(editor).ToString() != "SpouseRoom") continue;
 

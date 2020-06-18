@@ -53,9 +53,8 @@ namespace MultipleSpouses
 
 			foreach(GameLocation location in Game1.locations)
             {
-				if(location.GetType() ==  typeof(FarmHouse))
+				if(ReferenceEquals(location.GetType(),typeof(FarmHouse)))
                 {
-
 					(location as FarmHouse).showSpouseRoom();
 					Maps.BuildSpouseRooms((location as FarmHouse));
 					Misc.PlaceSpousesInFarmhouse((location as FarmHouse));
@@ -80,7 +79,7 @@ namespace MultipleSpouses
 				return;
 
 			IClickableMenu menu = Game1.activeClickableMenu;
-			if (menu == null || menu.GetType() != typeof(DialogueBox))
+			if (menu == null || !ReferenceEquals(menu.GetType(), typeof(DialogueBox)))
 				return;
 			int resp = (int)typeof(DialogueBox).GetField("selectedResponse", BindingFlags.NonPublic | BindingFlags.Instance).GetValue(menu);
 			List<Response> resps = (List<Response>)typeof(DialogueBox).GetField("responses", BindingFlags.NonPublic | BindingFlags.Instance).GetValue(menu);
@@ -260,38 +259,45 @@ namespace MultipleSpouses
 
 		public static void GameLoop_OneSecondUpdateTicked(object sender, OneSecondUpdateTickedEventArgs e)
         {
-            if (Game1.player == null)
-                return;
-            FarmHouse fh = Utility.getHomeOfFarmer(Game1.player);
-            if (fh == null)
-                return;
-
-			List<string> allSpouses = Misc.GetSpouses(Game1.player, 1).Keys.ToList();
-			List<string> bedSpouses = allSpouses.FindAll((s) => ModEntry.config.RoommateRomance || !Game1.player.friendshipData[s].RoommateMarriage);
-
-			foreach (NPC character in fh.characters)
+			foreach(GameLocation location in Game1.locations)
             {
-                if (allSpouses.Contains(character.Name))
+
+				if(ReferenceEquals(location.GetType(), typeof(FarmHouse)))
                 {
-                    if (Misc.IsInBed(character.GetBoundingBox()))
-                    {
-                        character.farmerPassesThrough = true;
-                        if (Game1.timeOfDay >= 2000 && !character.isMoving())
-                        {
-                            Vector2 bedPos = Misc.GetSpouseBedPosition(fh, bedSpouses, character.name);
-                            character.position.Value = bedPos;
-                        }
-                    }
-                    else
-                    {
-                        character.farmerPassesThrough = false;
-                    }
-                }
-            }
-            if (ModEntry.config.AllowSpousesToKiss)
-            {
-                Kissing.TrySpousesKiss();
-            }
+					FarmHouse fh = location as FarmHouse;
+					if (fh.owner == null)
+						continue;
+
+					List<string> allSpouses = Misc.GetSpouses(fh.owner, 1).Keys.ToList();
+					List<string> bedSpouses = allSpouses.FindAll((s) => ModEntry.config.RoommateRomance || !fh.owner.friendshipData[s].RoommateMarriage);
+
+					foreach (NPC character in fh.characters)
+					{
+						if (allSpouses.Contains(character.Name))
+						{
+							if (Misc.IsInBed(fh, character.GetBoundingBox()))
+							{
+								character.farmerPassesThrough = true;
+								if (Game1.timeOfDay >= 2000 && !character.isMoving())
+								{
+									Vector2 bedPos = Misc.GetSpouseBedPosition(fh, bedSpouses, character.name);
+									character.position.Value = bedPos;
+								}
+							}
+							else
+							{
+								character.farmerPassesThrough = false;
+							}
+						}
+					}
+					if (ModEntry.config.AllowSpousesToKiss)
+					{
+						Kissing.TrySpousesKiss();
+					}
+				}
+			}
+
+
         }
     }
 }

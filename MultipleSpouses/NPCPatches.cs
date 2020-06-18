@@ -634,7 +634,7 @@ namespace MultipleSpouses
                         Utility.getHomeOfFarmer(who).showSpouseRoom();
                         if (ModEntry.config.BuildAllSpousesRooms)
                         {
-                            Maps.BuildSpouseRooms(Utility.getHomeOfFarmer(Game1.player));
+                            Maps.BuildSpouseRooms(Utility.getHomeOfFarmer(who));
                         }
                         return false;
                     }
@@ -690,7 +690,7 @@ namespace MultipleSpouses
                             Multiplayer mp = ModEntry.PHelper.Reflection.GetField<Multiplayer>(typeof(Game1), "multiplayer").GetValue();
                             mp.globalChatInfoMessage("Dating", new string[]
                             {
-                                    Game1.player.Name,
+                                    who.Name,
                                     __instance.displayName
                             });
                         }
