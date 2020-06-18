@@ -2,6 +2,7 @@
 using Microsoft.Xna.Framework.Audio;
 using StardewModdingAPI;
 using StardewValley;
+using StardewValley.Locations;
 using StardewValley.Network;
 using System;
 using System.Collections.Generic;
@@ -30,6 +31,11 @@ namespace MultipleSpouses
         {
 			GameLocation location = Game1.currentLocation;
 
+			if (location.GetType() != typeof(FarmHouse))
+				return;
+
+			Farmer owner = (location as FarmHouse).owner;
+
 			lastKissTime++;
 
 			if (location == null || location.characters == null)
@@ -41,10 +47,10 @@ namespace MultipleSpouses
 
 			foreach (NPC npc1 in list)
 			{
-				if (!Game1.player.friendshipData.ContainsKey(npc1.Name))
+				if (!owner.friendshipData.ContainsKey(npc1.Name))
 					continue;
 
-				if (!ModEntry.config.RoommateRomance && Game1.player.friendshipData[npc1.Name].RoommateMarriage)
+				if (!ModEntry.config.RoommateRomance && owner.friendshipData[npc1.Name].RoommateMarriage)
                 {
 					continue;
                 }
@@ -52,10 +58,10 @@ namespace MultipleSpouses
 
 				foreach (NPC npc2 in list)
 				{
-					if (!Game1.player.friendshipData.ContainsKey(npc2.Name))
+					if (!owner.friendshipData.ContainsKey(npc2.Name))
 						continue;
 
-					if (npc1.Name == npc2.Name || (!ModEntry.config.RoommateRomance && Game1.player.friendshipData[npc2.Name].RoommateMarriage))
+					if (npc1.Name == npc2.Name || (!ModEntry.config.RoommateRomance && owner.friendshipData[npc2.Name].RoommateMarriage))
 					{
 						continue;
 					}
@@ -71,6 +77,8 @@ namespace MultipleSpouses
 						&& distance < ModEntry.config.MaxDistanceToKiss 
 						&& !kissingSpouses.Contains(npc1.Name) 
 						&& !kissingSpouses.Contains(npc2.Name) 
+						&& owner.getFriendshipHeartLevelForNPC(npc1.Name) >= ModEntry.config.MinHeartsForKiss
+						&& owner.getFriendshipHeartLevelForNPC(npc2.Name) >= ModEntry.config.MinHeartsForKiss
 						&& lastKissTime > ModEntry.config.MinSpouseKissInterval 
 						&& ModEntry.myRand.NextDouble() < ModEntry.config.SpouseKissChance
 					)

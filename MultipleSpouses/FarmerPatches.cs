@@ -92,24 +92,5 @@ namespace MultipleSpouses
             }
             return true;
         }
-
-        public static bool GameLocation_performTouchAction_Prefix(GameLocation __instance, string fullActionString, Vector2 playerStandingPosition)
-        {
-            try
-            {
-                string[] acta = fullActionString.Split(' ');
-                string text = acta[0];
-                if (text == "Sleep" && Game1.timeOfDay == 600)
-                {
-                    return false;
-                }
-            }
-            catch (Exception ex)
-            {
-                Monitor.Log($"Failed in {nameof(GameLocation_performTouchAction_Prefix)}:\n{ex}", LogLevel.Error);
-            }
-            return true;
-        }
-
     }
 }

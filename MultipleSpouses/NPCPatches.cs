@@ -267,7 +267,7 @@ namespace MultipleSpouses
                                 facingRight = false;
                             }
                             bool flip = (facingRight && __instance.FacingDirection == 3) || (!facingRight && __instance.FacingDirection == 1);
-                            if (who.getFriendshipHeartLevelForNPC(__instance.Name) > 9)
+                            if (who.getFriendshipHeartLevelForNPC(__instance.Name) >= ModEntry.config.MinHeartsForKiss)
                             {
                                 int delay = Game1.IsMultiplayer ? 1000 : 10;
                                 __instance.movementPause = delay;
@@ -345,6 +345,21 @@ namespace MultipleSpouses
             return true;
         }
 
+        public static void NPC_marriageDuties_Prefix(NPC __instance)
+        {
+            try
+            {
+                if (!ModEntry.config.SpousesKeepOrdinaryDialogue)
+                {
+                    __instance.CurrentDialogue.Clear();
+                }
+            }
+            catch (Exception ex)
+            {
+                Monitor.Log($"Failed in {nameof(NPC_marriageDuties_Prefix)}:\n{ex}", LogLevel.Error);
+            }
+        }
+        
         public static void NPC_marriageDuties_Postfix(NPC __instance)
         {
             try

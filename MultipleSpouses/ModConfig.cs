@@ -12,6 +12,8 @@
         public bool RoommateRomance { get; set; } = true;
         public bool RomanceAllVillagers { get; set; } = false;
         public int MaxGiftsPerDay { get; set; } = 1;
+        public bool SpousesKeepOrdinaryDialogue { get; set; } = false;
+        public int MinHeartsForKiss { get; set; } = 9;
         public bool AllowSpousesToKiss { get; set; } = true;
         public float SpouseKissChance { get; set; } = 0.5f;
         public bool RealKissSound { get; set; } = true;
@@ -38,6 +40,5 @@
         //public int TilesBetweenCribsAndBeds { get; set; } = 3;
         public int ExistingKidsRoomOffsetX { get; set; } = 0;
         public int ExistingKidsRoomOffsetY { get; set; } = 0;
-
     }
 }

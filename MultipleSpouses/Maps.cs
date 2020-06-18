@@ -24,19 +24,20 @@ namespace MultipleSpouses
         private static IModHelper PHelper;
         public static Dictionary<string, Map> tmxSpouseRooms = new Dictionary<string, Map>();
 		public static Dictionary<string, int> roomIndexes = new Dictionary<string, int>{
-			{ "Sam", 9 },
+			{ "Abigail", 0 },
 			{ "Penny", 1 },
+			{ "Leah", 2 },
+			{ "Haley", 3 },
+			{ "Maru", 4 },
 			{ "Sebastian", 5 },
 			{ "Alex", 6 },
-			{ "Krobus", 12 },
-			{ "Maru", 4 },
-			{ "Haley", 3 },
 			{ "Harvey", 7 },
-			{ "Shane", 10 },
-			{ "Abigail", 0 },
-			{ "Emily", 11 },
 			{ "Elliott", 8 },
-			{ "Leah", 2 }
+			{ "Sam", 9 },
+			{ "Shane", 10 },
+			{ "Emily", 11 },
+			{ "Krobus", 12 },
+			//{ "Sandy", 13 }
 		};
         public static List<NPC> spousesWithRooms;
 

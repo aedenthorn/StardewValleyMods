@@ -11,6 +11,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
+using xTile;
 
 namespace MultipleSpouses
 {
@@ -115,6 +116,7 @@ namespace MultipleSpouses
 
             harmony.Patch(
                original: AccessTools.Method(typeof(NPC), nameof(NPC.marriageDuties)),
+               prefix: new HarmonyMethod(typeof(NPCPatches), nameof(NPCPatches.NPC_marriageDuties_Prefix)),
                postfix: new HarmonyMethod(typeof(NPCPatches), nameof(NPCPatches.NPC_marriageDuties_Postfix))
             );
 
@@ -273,6 +275,11 @@ namespace MultipleSpouses
         {
             if (!config.EnableMod)
                 return false;
+            if (false && asset.AssetNameEquals("Maps/spouseRooms"))
+            {
+                Monitor.Log($"can load spouse rooms map");
+                return true;
+            }
 
             string[] names = asset.AssetName.Split('_');
             if (config.ChildrenHaveHairOfSpouse && (names[0].Equals("Characters\\Baby") || names[0].Equals("Characters\\Toddler") || names[0].Equals("Characters/Baby") || names[0].Equals("Characters/Toddler")))
@@ -289,7 +296,13 @@ namespace MultipleSpouses
         public T Load<T>(IAssetInfo asset)
         {
             Monitor.Log($"loading asset for {asset.AssetName}");
-            if (asset.AssetName.StartsWith("Characters\\Baby") || asset.AssetName.StartsWith("Characters\\Toddler") || asset.AssetName.StartsWith("Characters/Baby") || asset.AssetName.StartsWith("Characters/Toddler"))
+
+            if (false && asset.AssetNameEquals("Maps/spouseRooms"))
+            {
+                return (T)(object)Helper.Content.Load<Map>("assets/spouseRooms.tbin");
+                
+            }
+            else if (asset.AssetName.StartsWith("Characters\\Baby") || asset.AssetName.StartsWith("Characters\\Toddler") || asset.AssetName.StartsWith("Characters/Baby") || asset.AssetName.StartsWith("Characters/Toddler"))
             {
                 if(asset.AssetNameEquals("Characters\\Baby") || asset.AssetNameEquals("Characters\\Baby_dark") || asset.AssetNameEquals("Characters\\Toddler") || asset.AssetNameEquals("Characters\\Toddler_dark") || asset.AssetNameEquals("Characters\\Toddler_girl") || asset.AssetNameEquals("Characters\\Toddler_girl_dark"))
                 {
