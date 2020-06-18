@@ -39,7 +39,6 @@ namespace MultipleSpouses
 			{ "Krobus", 12 },
 			//{ "Sandy", 13 }
 		};
-        public static List<NPC> spousesWithRooms;
 
         // call this method from your Entry class
         public static void Initialize(IMonitor monitor)
@@ -58,20 +57,21 @@ namespace MultipleSpouses
 					return;
 				Misc.ResetSpouses(f);
 				ModEntry.PMonitor.Log("Building all spouse rooms");
-				if ((f.spouse == null && ModEntry.spouses.Count == 0) || farmHouse.upgradeLevel > 3)
+				if (Misc.GetSpouses(f, 1).Count == 0 || farmHouse.upgradeLevel > 3)
                 {
 					ModEntry.PMonitor.Log("No spouses");
 					farmHouse.showSpouseRoom();
 					return;
 				}
 
-				spousesWithRooms = new List<NPC>();
+				List<string> spousesWithRooms = new List<string>();
 
-				foreach (NPC spouse in ModEntry.spouses.Values)
+				foreach (string spouse in Misc.GetSpouses(f, 0).Keys)
 				{
-					if(roomIndexes.ContainsKey(spouse.Name) || tmxSpouseRooms.ContainsKey(spouse.Name))
+					Monitor.Log($"checking {spouse} for spouse room");
+					if (roomIndexes.ContainsKey(spouse) || tmxSpouseRooms.ContainsKey(spouse))
                     {
-						Monitor.Log($"Adding {spouse.Name} to list for spouse rooms");
+						Monitor.Log($"Adding {spouse} to list for spouse rooms");
 						spousesWithRooms.Add(spouse);
 					}
 				}
@@ -91,9 +91,9 @@ namespace MultipleSpouses
 					}
 					else
 					{
-						Monitor.Log($"No spouse room for official spouse {f.spouse}, placing for {spousesWithRooms[0].Name} instead.");
-						BuildOneSpouseRoom(farmHouse, spousesWithRooms[0].Name, -1);
-						spousesWithRooms = new List<NPC>(spousesWithRooms.Skip(1));
+						Monitor.Log($"No spouse room for official spouse {f.spouse}, placing for {spousesWithRooms[0]} instead.");
+						BuildOneSpouseRoom(farmHouse, spousesWithRooms[0], -1);
+						spousesWithRooms = new List<string>(spousesWithRooms.Skip(1));
 					}
 				}
 
@@ -171,7 +171,7 @@ namespace MultipleSpouses
 					{
 						farmHouse.removeTile(ox + 35 + (7 * count), oy + 1 + i, "Buildings");
 					}
-					BuildOneSpouseRoom(farmHouse, spousesWithRooms[j].Name, count++);
+					BuildOneSpouseRoom(farmHouse, spousesWithRooms[j], count++);
 				}
 
 				// far wall

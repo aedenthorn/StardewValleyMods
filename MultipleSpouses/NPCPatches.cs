@@ -180,7 +180,7 @@ namespace MultipleSpouses
             {
                 Misc.ResetSpouses(who);
 
-                if ((__instance.Name.Equals(who.spouse) || ModEntry.spouses.ContainsKey(__instance.Name)) && who.IsLocalPlayer)
+                if ((__instance.Name.Equals(who.spouse) || Misc.GetSpouses(who,1).ContainsKey(__instance.Name)) && who.IsLocalPlayer)
                 {
                     int timeOfDay = Game1.timeOfDay;
                     if (__instance.Sprite.CurrentAnimation == null)
@@ -485,7 +485,7 @@ namespace MultipleSpouses
                     int offset = 0;
                     if (spouse.spouse != __instance.Name)
                     {
-                        int idx = ModEntry.spouses.Keys.ToList().IndexOf(__instance.Name);
+                        int idx = Misc.GetSpouses(spouse,0).Keys.ToList().IndexOf(__instance.Name);
                         offset = 7 * (idx + 1);
                     }
                     Vector2 spot = ((__instance.currentLocation as FarmHouse).upgradeLevel == 1) ? new Vector2(32f, 5f) : new Vector2(38f, 14f);
@@ -597,7 +597,7 @@ namespace MultipleSpouses
         {
             try
             {
-                if (Misc.GetAllSpouses().ContainsKey(__instance.Name))
+                if (Misc.GetSpouses(who,1).ContainsKey(__instance.Name))
                 {
                     __state = new List<int> { 
                         who.friendshipData[__instance.Name].GiftsThisWeek,
@@ -625,7 +625,7 @@ namespace MultipleSpouses
                 }
                 if (who.ActiveObject.ParentSheetIndex == 458)
                 {
-                    if (Misc.GetAllSpouses().ContainsKey(__instance.Name))
+                    if (Misc.GetSpouses(who, 1).ContainsKey(__instance.Name))
                     {
                         who.spouse = __instance.Name;
                         Misc.ResetSpouses(who);
@@ -765,7 +765,7 @@ namespace MultipleSpouses
                 else if (who.ActiveObject.parentSheetIndex == 809 && !who.ActiveObject.bigCraftable)
                 {
                     Monitor.Log($"Tried to give movie ticket");
-                    if (Misc.GetAllSpouses().ContainsKey(__instance.Name) && Utility.doesMasterPlayerHaveMailReceivedButNotMailForTomorrow("ccMovieTheater") && !__instance.Name.Equals("Krobus") && who.lastSeenMovieWeek.Value < Game1.Date.TotalWeeks && !Utility.isFestivalDay(Game1.dayOfMonth, Game1.currentSeason) && Game1.timeOfDay <= 2100 && __instance.lastSeenMovieWeek.Value < Game1.Date.TotalWeeks && MovieTheater.GetResponseForMovie(__instance) != "reject")
+                    if (Misc.GetSpouses(who, 1).ContainsKey(__instance.Name) && Utility.doesMasterPlayerHaveMailReceivedButNotMailForTomorrow("ccMovieTheater") && !__instance.Name.Equals("Krobus") && who.lastSeenMovieWeek.Value < Game1.Date.TotalWeeks && !Utility.isFestivalDay(Game1.dayOfMonth, Game1.currentSeason) && Game1.timeOfDay <= 2100 && __instance.lastSeenMovieWeek.Value < Game1.Date.TotalWeeks && MovieTheater.GetResponseForMovie(__instance) != "reject")
                     {
                         Monitor.Log($"Tried to give movie ticket to spouse");
                         foreach (MovieInvitation invitation in who.team.movieInvitations)

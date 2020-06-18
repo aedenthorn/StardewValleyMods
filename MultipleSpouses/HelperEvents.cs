@@ -27,16 +27,9 @@ namespace MultipleSpouses
         public static void GameLoop_SaveLoaded(object sender, SaveLoadedEventArgs e)
         {
             ModEntry.outdoorSpouse = null;
-            ModEntry.kitchenSpouse = null;
-            ModEntry.bedSpouse = null;
             ModEntry.spouseToDivorce = null;
             ModEntry.spouseRolesDate = -1;
-            ModEntry.allRandomSpouses = null;
             ModEntry.bedSleepOffset = 48;
-            ModEntry.allBedmates = null;
-            ModEntry.bedMadeToday = false;
-            ModEntry.kidsRoomExpandedToday = false;
-            ModEntry.officialSpouse = null;
             Misc.SetAllNPCsDatable();
             FileIO.LoadTMXSpouseRooms();
             Misc.ResetSpouses(Game1.player);
@@ -51,37 +44,33 @@ namespace MultipleSpouses
         public static void GameLoop_DayEnding(object sender, DayEndingEventArgs e)
         {
             Helper.Events.GameLoop.OneSecondUpdateTicked -= GameLoop_OneSecondUpdateTicked;
-            ModEntry.allRandomSpouses = null;
-            ModEntry.kidsRoomExpandedToday = false;
-            ModEntry.bedMadeToday = false;
         }
 
         public static void GameLoop_DayStarted(object sender, DayStartedEventArgs e)
         {
             Helper.Events.GameLoop.OneSecondUpdateTicked += GameLoop_OneSecondUpdateTicked;
             Misc.ResetSpouses(Game1.player);
-            ModEntry.allRandomSpouses = Misc.GetRandomSpouses(true).Keys.ToList();
 
-            Utility.getHomeOfFarmer(Game1.player).showSpouseRoom();
-            Maps.BuildSpouseRooms(Utility.getHomeOfFarmer(Game1.player));
-            Misc.PlaceSpousesInFarmhouse();
+			foreach(GameLocation location in Game1.locations)
+            {
+				if(location.GetType() ==  typeof(FarmHouse))
+                {
+
+					(location as FarmHouse).showSpouseRoom();
+					Maps.BuildSpouseRooms((location as FarmHouse));
+					Misc.PlaceSpousesInFarmhouse((location as FarmHouse));
+				}
+			}
+
 			Game1.getFarm().addSpouseOutdoorArea(Game1.player.spouse == null ? "" : Game1.player.spouse);
 		}
 
 		public static void GameLoop_ReturnedToTitle(object sender, ReturnedToTitleEventArgs e)
         {
             Helper.Events.GameLoop.OneSecondUpdateTicked -= GameLoop_OneSecondUpdateTicked;
-            ModEntry.spouses.Clear();
             ModEntry.outdoorSpouse = null;
-            ModEntry.kitchenSpouse = null;
-            ModEntry.bedSpouse = null;
-            ModEntry.officialSpouse = null;
             ModEntry.spouseToDivorce = null;
             ModEntry.spouseRolesDate = -1;
-            ModEntry.allRandomSpouses = null;
-            ModEntry.allBedmates = null;
-            ModEntry.bedMadeToday = false;
-            ModEntry.kidsRoomExpandedToday = false;
         }
 
 		public static string complexDivorceSpouse;
@@ -105,7 +94,7 @@ namespace MultipleSpouses
 
 			Monitor.Log("answer " + whichAnswer);
 
-            if (Misc.GetAllSpouses().ContainsKey(whichAnswer))
+            if (Misc.GetSpouses(Game1.player,1).ContainsKey(whichAnswer))
             {
 				string s2 = Game1.content.LoadStringReturnNullIfNotFound("Strings\\Locations:ManorHouse_DivorceBook_Question_" + Game1.player.spouse);
 				if (s2 == null)
@@ -277,16 +266,19 @@ namespace MultipleSpouses
             if (fh == null)
                 return;
 
-            foreach (NPC character in fh.characters)
+			List<string> allSpouses = Misc.GetSpouses(Game1.player, 1).Keys.ToList();
+			List<string> bedSpouses = allSpouses.FindAll((s) => ModEntry.config.RoommateRomance || !Game1.player.friendshipData[s].RoommateMarriage);
+
+			foreach (NPC character in fh.characters)
             {
-                if (ModEntry.allRandomSpouses.Contains(character.Name))
+                if (allSpouses.Contains(character.Name))
                 {
                     if (Misc.IsInBed(character.GetBoundingBox()))
                     {
                         character.farmerPassesThrough = true;
                         if (Game1.timeOfDay >= 2000 && !character.isMoving())
                         {
-                            Vector2 bedPos = Misc.GetSpouseBedPosition(fh, character.name);
+                            Vector2 bedPos = Misc.GetSpouseBedPosition(fh, bedSpouses, character.name);
                             character.position.Value = bedPos;
                         }
                     }

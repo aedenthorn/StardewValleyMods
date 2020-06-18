@@ -23,21 +23,13 @@ namespace MultipleSpouses
         public static IModHelper PHelper;
         public static ModConfig config;
 
-        public static Dictionary<string, NPC> spouses { get; private set; } = new Dictionary<string, NPC>();
-        public static string outdoorSpouse = null;
-        public static string kitchenSpouse = null;
-        public static string bedSpouse = null;
         public static string spouseToDivorce = null;
         public static int spouseRolesDate = -1;
         public static Multiplayer mp;
         public static Random myRand;
-        public static List<string> allRandomSpouses;
         public static int bedSleepOffset = 48;
-        public static List<string> allBedmates;
-        public static bool bedMadeToday = false;
-        public static bool kidsRoomExpandedToday = false;
-        public static string officialSpouse = null;
         internal static int divorceHeartsLost;
+        internal static string outdoorSpouse;
 
         /// <summary>The mod entry point, called after the mod is first loaded.</summary>
         /// <param name="helper">Provides simplified APIs for writing mods.</param>

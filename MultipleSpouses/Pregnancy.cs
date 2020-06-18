@@ -1,14 +1,13 @@
-﻿using StardewModdingAPI;
+﻿using Microsoft.Xna.Framework;
+using StardewModdingAPI;
 using StardewValley;
+using StardewValley.BellsAndWhistles;
+using StardewValley.Characters;
+using StardewValley.Events;
+using StardewValley.Menus;
+using System;
 using System.Collections.Generic;
 using System.Linq;
-using StardewValley.Events;
-using StardewValley.Characters;
-using System;
-using StardewValley.BellsAndWhistles;
-using StardewValley.Menus;
-using Microsoft.Xna.Framework;
-using StardewValley.Locations;
 
 namespace MultipleSpouses
 {
@@ -33,7 +32,9 @@ namespace MultipleSpouses
                 return false;
             }
 
-            List<NPC> allSpouses = Misc.GetRandomSpouses(true).Values.ToList();
+            List<NPC> allSpouses = Misc.GetSpouses(Game1.player,1).Values.ToList();
+
+            Misc.ShuffleList(ref allSpouses);
 
             foreach (NPC spouse in allSpouses)
             {

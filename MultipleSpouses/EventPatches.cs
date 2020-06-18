@@ -87,13 +87,15 @@ namespace MultipleSpouses
         {
 			try
 			{
+				List<string> spouses = Misc.GetSpouses(Game1.player,0).Keys.ToList();
+				Misc.ShuffleList(ref spouses);
 				foreach(NPC actor in __instance.actors)
                 {
 					if (__instance.isWedding)
 					{
-						if (ModEntry.spouses.ContainsKey(actor.Name))
+						if (spouses.Contains(actor.Name))
 						{
-							int idx = ModEntry.spouses.Keys.ToList().IndexOf(actor.Name);
+							int idx = spouses.IndexOf(actor.Name);
 							Vector2 pos;
 							if (idx < weddingPositions.Count)
                             {

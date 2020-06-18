@@ -54,10 +54,6 @@ namespace MultipleSpouses
 
                     NPC ex = Game1.getCharacterFromName(key);
                     ex.PerformDivorce();
-                    if(ModEntry.officialSpouse == key)
-                    {
-                        ModEntry.officialSpouse = null;
-                    }
                     if(__instance.spouse == key)
                     {
                         __instance.spouse = null;
@@ -83,7 +79,7 @@ namespace MultipleSpouses
         {
             try
             {
-                __result = __instance.team.IsMarried(__instance.UniqueMultiplayerID) || (ModEntry.spouses.Count > 0 || __instance.spouse != null);
+                __result = __instance.team.IsMarried(__instance.UniqueMultiplayerID) || Misc.GetSpouses(__instance, 1).Count > 0;
                 return false;
             }
             catch (Exception ex)
