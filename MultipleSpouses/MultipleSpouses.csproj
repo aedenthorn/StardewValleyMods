@@ -83,7 +83,9 @@
   <ItemGroup>
     <Content Include="assets\Baby.png" />
     <Content Include="assets\Baby_dark.png" />
-    <Content Include="assets\beds.png" />
+    <Content Include="assets\beds.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="assets\hair\Baby.png" />
     <Content Include="assets\hair\Toddler.png" />
     <Content Include="assets\hair\Toddler_girl.png" />

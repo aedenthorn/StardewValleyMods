@@ -349,10 +349,7 @@ namespace MultipleSpouses
         {
             try
             {
-                if (!ModEntry.config.SpousesKeepOrdinaryDialogue && __instance.Name != Game1.player.spouse)
-                {
-                    __instance.CurrentDialogue.Clear();
-                }
+
             }
             catch (Exception ex)
             {
@@ -466,9 +463,10 @@ namespace MultipleSpouses
                         }
                     }
                 }
-                if (!ModEntry.config.SpousesKeepOrdinaryDialogue && __instance.Name != Game1.player.spouse)
+                if (!ModEntry.config.SpousesKeepOrdinaryDialogue && __instance.Name != Game1.player.spouse && __instance.currentMarriageDialogue.Count > 0)
                 {
-                    foreach(MarriageDialogueReference mdr in __instance.currentMarriageDialogue)
+                    __instance.CurrentDialogue.Clear();
+                    foreach (MarriageDialogueReference mdr in __instance.currentMarriageDialogue)
                     {
                         __instance.CurrentDialogue.Push(mdr.GetDialogue(__instance));
                         __instance.currentMarriageDialogue.Clear();

@@ -441,7 +441,7 @@ namespace MultipleSpouses
 				{
 					map = PHelper.Content.Load<Map>("Maps\\" + farmHouse.Name + ((farmHouse.upgradeLevel == 0) ? "" : ((farmHouse.upgradeLevel == 3) ? "2" : string.Concat(farmHouse.upgradeLevel))) + "_marriage", ContentSource.GameContent);
 
-					if (farmHouse.owner != null && !farmHouse.owner.activeDialogueEvents.ContainsKey("pennyRedecorating"))
+					if (!ModEntry.config.TransparentSheets && farmHouse.owner != null && !farmHouse.owner.activeDialogueEvents.ContainsKey("pennyRedecorating"))
 					{
 						int whichQuilt = -1;
 						if (farmHouse.owner.mailReceived.Contains("pennyQuilt0"))
@@ -549,6 +549,12 @@ namespace MultipleSpouses
 				setupTile(start + ox, 4 + oy, 0, 2, farmHouse, backIndexes, backSheets, 3, 2);
 				setupTile(start + ox, 5 + oy, 0, 3, farmHouse, buildIndexes, buildSheets, 3, 1);
 
+                if (ModEntry.config.TransparentSheets)
+                {
+					farmHouse.removeTile(start + ox, 4 + oy, "Back");
+					farmHouse.setMapTileIndex(start + ox, 4 + oy, 212, "Back", untitled);
+				}
+
 				farmHouse.setTileProperty(start + ox, oy + 3, "Back", "Bed", "T");
 				farmHouse.setTileProperty(start + ox, oy + 4, "Back", "Bed", "T");
 				farmHouse.setTileProperty(start + ox, oy + 3, "Back", "NoFurniture", "T");
@@ -565,7 +571,13 @@ namespace MultipleSpouses
 					setupTile(i + start + ox, 4 + oy, 1, 2, farmHouse, frontIndexes, frontSheets, 3, 0);
 					setupTile(i + start + ox, 4 + oy, 1, 2, farmHouse, backIndexes, backSheets, 3, 2);
 					setupTile(i + start + ox, 5 + oy, 1, 3, farmHouse, buildIndexes, buildSheets, 3, 1);
-					
+
+					if (ModEntry.config.TransparentSheets)
+					{
+						farmHouse.removeTile(i + start + ox, 4 + oy, "Back");
+						farmHouse.setMapTileIndex(i + start + ox, 4 + oy, 213, "Back", untitled);
+					}
+
 					farmHouse.setTileProperty(i + start + ox, oy + 3, "Back", "Bed", "T");
 					farmHouse.setTileProperty(i + start + ox, oy + 4, "Back", "Bed", "T");
 					farmHouse.setTileProperty(i + start + ox, oy + 3, "Back", "NoFurniture", "T");
@@ -579,6 +591,12 @@ namespace MultipleSpouses
 				setupTile(width + start + ox, 4 + oy, 2, 2, farmHouse, frontIndexes, frontSheets, 3, 0);
 				setupTile(width + start + ox, 4 + oy, 2, 2, farmHouse, backIndexes, backSheets, 3, 2);
 				setupTile(width + start + ox, 5 + oy, 2, 3, farmHouse, buildIndexes, buildSheets, 3, 1);
+
+				if (ModEntry.config.TransparentSheets)
+				{
+					farmHouse.removeTile(width + start + ox, 4 + oy, "Back");
+					farmHouse.setMapTileIndex(width + start + ox, 4 + oy, 214, "Back", untitled);
+				}
 
 				farmHouse.setTileProperty(width + start + ox, oy + 3, "Back", "Bed", "T");
 				farmHouse.setTileProperty(width + start + ox, oy + 4, "Back", "Bed", "T");

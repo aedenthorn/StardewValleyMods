@@ -33,12 +33,12 @@
         public bool CustomBed { get; set; } = true;
         public int BedWidth { get; set; } = 3;
         public bool SleepOnCovers { get; set; } = false;
+        public bool TransparentSheets { get; set; } = true;
         public int ExistingBedOffsetX { get; set; } = 0;
         public int ExistingBedOffsetY { get; set; } = 0;
         public int ExtraCribs { get; set; } = 0;
         public int ExtraKidsBeds { get; set; } = 0;
         public int ExtraKidsRoomWidth { get; set; } = 0;
-        //public int TilesBetweenCribsAndBeds { get; set; } = 3;
         public int ExistingKidsRoomOffsetX { get; set; } = 0;
         public int ExistingKidsRoomOffsetY { get; set; } = 0;
     }
