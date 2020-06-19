@@ -428,6 +428,12 @@ namespace MultipleSpouses
                         if (c.isMarried())
                         {
                             string spouseName = c.Name;
+
+                            if (Misc.GetSpouses(Game1.player,1).ContainsKey(spouseName))
+                            {
+                                c.checkForMarriageDialogue(timeOfDay, __instance);
+                            }
+
                             Point bedSpot;
                             if (!bedSpouses.Contains(c.Name) && c.position != Misc.GetSpouseBedPosition(__instance, bedSpouses, spouseName) && (timeOfDay == 2200 || (c.controller == null && timeOfDay % 100 % 30 == 0)))
                             {

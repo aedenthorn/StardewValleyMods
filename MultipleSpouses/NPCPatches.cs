@@ -349,7 +349,7 @@ namespace MultipleSpouses
         {
             try
             {
-                if (!ModEntry.config.SpousesKeepOrdinaryDialogue)
+                if (!ModEntry.config.SpousesKeepOrdinaryDialogue && __instance.Name != Game1.player.spouse)
                 {
                     __instance.CurrentDialogue.Clear();
                 }
@@ -464,6 +464,14 @@ namespace MultipleSpouses
                                 }
                             }
                         }
+                    }
+                }
+                if (!ModEntry.config.SpousesKeepOrdinaryDialogue && __instance.Name != Game1.player.spouse)
+                {
+                    foreach(MarriageDialogueReference mdr in __instance.currentMarriageDialogue)
+                    {
+                        __instance.CurrentDialogue.Push(mdr.GetDialogue(__instance));
+                        __instance.currentMarriageDialogue.Clear();
                     }
                 }
             }
