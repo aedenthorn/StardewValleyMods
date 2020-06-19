@@ -32,6 +32,7 @@
         public int ExistingSpouseRoomOffsetY { get; set; } = 0;
         public bool CustomBed { get; set; } = true;
         public int BedWidth { get; set; } = 3;
+        public bool SleepOnCovers { get; set; } = false;
         public int ExistingBedOffsetX { get; set; } = 0;
         public int ExistingBedOffsetY { get; set; } = 0;
         public int ExtraCribs { get; set; } = 0;

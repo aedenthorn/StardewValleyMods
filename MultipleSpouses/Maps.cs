@@ -432,53 +432,60 @@ namespace MultipleSpouses
 					return;
 
 				// bed
-
-				Map map = PHelper.Content.Load<Map>("Maps\\" + farmHouse.Name + ((farmHouse.upgradeLevel == 0) ? "" : ((farmHouse.upgradeLevel == 3) ? "2" : string.Concat(farmHouse.upgradeLevel))) + "_marriage", ContentSource.GameContent);
-
-				if (farmHouse.owner != null && !farmHouse.owner.activeDialogueEvents.ContainsKey("pennyRedecorating"))
+				Map map;
+				if (ModEntry.config.SleepOnCovers)
 				{
-					int whichQuilt = -1;
-					if (farmHouse.owner.mailReceived.Contains("pennyQuilt0"))
+					map = PHelper.Content.Load<Map>("assets/CustomBed.tmx");
+				}
+				else
+				{
+					map = PHelper.Content.Load<Map>("Maps\\" + farmHouse.Name + ((farmHouse.upgradeLevel == 0) ? "" : ((farmHouse.upgradeLevel == 3) ? "2" : string.Concat(farmHouse.upgradeLevel))) + "_marriage", ContentSource.GameContent);
+
+					if (farmHouse.owner != null && !farmHouse.owner.activeDialogueEvents.ContainsKey("pennyRedecorating"))
 					{
-						whichQuilt = 0;
-					}
-					else if (farmHouse.owner.mailReceived.Contains("pennyQuilt1"))
-					{
-						whichQuilt = 1;
-					}
-					else if (farmHouse.owner.mailReceived.Contains("pennyQuilt2"))
-					{
-						whichQuilt = 2;
-					}
-					if (whichQuilt != -1)
-					{
-						Point startTile = Point.Zero;
-						if (farmHouse.upgradeLevel >= 2)
+						int whichQuilt = -1;
+						if (farmHouse.owner.mailReceived.Contains("pennyQuilt0"))
 						{
-							startTile = new Point(27, 12);
+							whichQuilt = 0;
 						}
-						else if (farmHouse.upgradeLevel == 1)
+						else if (farmHouse.owner.mailReceived.Contains("pennyQuilt1"))
 						{
-							startTile = new Point(21, 3);
+							whichQuilt = 1;
 						}
-						if (!startTile.Equals(Point.Zero))
+						else if (farmHouse.owner.mailReceived.Contains("pennyQuilt2"))
 						{
-							int startIndex = 61 + whichQuilt * 3;
-							setMapTileIndex(ref map, startTile.X, startTile.Y, startIndex, "Front", 1);
-							setMapTileIndex(ref map, startTile.X + 1, startTile.Y, startIndex + 1, "Front", 1);
-							setMapTileIndex(ref map, startTile.X + 2, startTile.Y, startIndex + 2, "Front", 1);
-							setMapTileIndex(ref map, startTile.X, startTile.Y + 1, startIndex + 12, "Front", 1);
-							setMapTileIndex(ref map, startTile.X + 1, startTile.Y + 1, startIndex + 13, "Front", 1);
-							setMapTileIndex(ref map, startTile.X + 2, startTile.Y + 1, startIndex + 14, "Front", 1);
+							whichQuilt = 2;
+						}
+						if (whichQuilt != -1)
+						{
+							Point startTile = Point.Zero;
+							if (farmHouse.upgradeLevel >= 2)
+							{
+								startTile = new Point(27, 12);
+							}
+							else if (farmHouse.upgradeLevel == 1)
+							{
+								startTile = new Point(21, 3);
+							}
+							if (!startTile.Equals(Point.Zero))
+							{
+								int startIndex = 61 + whichQuilt * 3;
+								setMapTileIndex(ref map, startTile.X, startTile.Y, startIndex, "Front", 1);
+								setMapTileIndex(ref map, startTile.X + 1, startTile.Y, startIndex + 1, "Front", 1);
+								setMapTileIndex(ref map, startTile.X + 2, startTile.Y, startIndex + 2, "Front", 1);
+								setMapTileIndex(ref map, startTile.X, startTile.Y + 1, startIndex + 12, "Front", 1);
+								setMapTileIndex(ref map, startTile.X + 1, startTile.Y + 1, startIndex + 13, "Front", 1);
+								setMapTileIndex(ref map, startTile.X + 2, startTile.Y + 1, startIndex + 14, "Front", 1);
+							}
 						}
 					}
 				}
-
 				int untitled = 0;
 				List<string> sheets = new List<string>();
-				for (int i = 0; i < map.TileSheets.Count; i++)
+				for (int i = 0; i < farmHouse.map.TileSheets.Count; i++)
 				{
-					sheets.Add(map.TileSheets[i].Id);
+					sheets.Add(farmHouse.map.TileSheets[i].Id);
+					Monitor.Log($"bed sheet {farmHouse.map.TileSheets[i].Id} index: {i}");
 				}
 				untitled = sheets.IndexOf("untitled tile sheet");
 
@@ -502,14 +509,36 @@ namespace MultipleSpouses
 				List<int> frontSheets = new List<int>();
 				List<int> buildSheets = new List<int>();
 
+				int sheetx = 0;
+				int sheety = 0;
+				if (!ModEntry.config.SleepOnCovers)
+                {
+					sheetx = ox + 21;
+					sheety = oy + 2;
+				}
+
 				for (int i = 0; i < 12; i++)
 				{
-					backIndexes.Add(getTileIndexAt(map, ox + 21 + (i % 3), oy + 2 + (i / 3), "Back"));
-					backSheets.Add(sheets.IndexOf(getTileSheetIDAt(map, ox + 21 + (i % 3), oy + 2 + (i / 3), "Back")));
-					frontIndexes.Add(getTileIndexAt(map, ox + 21 + (i % 3), oy + 2 + (i / 3), "Front"));
-					frontSheets.Add(sheets.IndexOf(getTileSheetIDAt(map, ox + 21 + (i % 3), oy + 2 + (i / 3), "Front")));
-					buildIndexes.Add(getTileIndexAt(map, ox + 21 + (i % 3), oy + 2 + (i / 3), "Buildings"));
-					buildSheets.Add(sheets.IndexOf(getTileSheetIDAt(map, ox + 21 + (i % 3), oy + 2 + (i / 3), "Buildings")));
+					farmHouse.removeTile(ox + 21 + (i % 3), oy + 2 + (i / 3), "Front");
+					if (i > 2 && i < 9)
+                    {
+						farmHouse.removeTile(ox + 21 + (i % 3), oy + 2 + (i / 3), "Buildings");
+					}
+					backIndexes.Add(getTileIndexAt(map, sheetx + (i % 3), sheety + (i / 3), "Back"));
+					frontIndexes.Add(getTileIndexAt(map, sheetx + (i % 3), sheety + (i / 3), "Front"));
+					buildIndexes.Add(getTileIndexAt(map, sheetx + (i % 3), sheety + (i / 3), "Buildings"));
+					if (ModEntry.config.SleepOnCovers)
+                    {
+						backSheets.Add(untitled);
+						frontSheets.Add(untitled);
+						buildSheets.Add(untitled);
+					}
+					else
+                    {
+						backSheets.Add(sheets.IndexOf(getTileSheetIDAt(map, sheetx + (i % 3), sheety + (i / 3), "Back")));
+						frontSheets.Add(sheets.IndexOf(getTileSheetIDAt(map, sheetx + (i % 3), sheety + (i / 3), "Front")));
+						buildSheets.Add(sheets.IndexOf(getTileSheetIDAt(map, sheetx + (i % 3), sheety + (i / 3), "Buildings")));
+					}
 				}
 
 
@@ -517,7 +546,13 @@ namespace MultipleSpouses
 				setupTile(start + ox, 3 + oy, 0, 1, farmHouse, frontIndexes, frontSheets, 3, 0);
 				setupTile(start + ox, 3 + oy, 0, 1, farmHouse, buildIndexes, buildSheets, 3, 2);
 				setupTile(start + ox, 4 + oy, 0, 2, farmHouse, frontIndexes, frontSheets, 3, 0);
+				setupTile(start + ox, 4 + oy, 0, 2, farmHouse, backIndexes, backSheets, 3, 2);
 				setupTile(start + ox, 5 + oy, 0, 3, farmHouse, buildIndexes, buildSheets, 3, 1);
+
+				farmHouse.setTileProperty(start + ox, oy + 3, "Back", "Bed", "T");
+				farmHouse.setTileProperty(start + ox, oy + 4, "Back", "Bed", "T");
+				farmHouse.setTileProperty(start + ox, oy + 3, "Back", "NoFurniture", "T");
+				farmHouse.setTileProperty(start + ox, oy + 4, "Back", "NoFurniture", "T");
 
 				farmHouse.removeTile(ox + start, oy + 3, "Buildings");
 				for (int i = 1; i < width; i++)
@@ -528,19 +563,32 @@ namespace MultipleSpouses
 					setupTile(i + start + ox, 3 + oy, 1, 1, farmHouse, frontIndexes, frontSheets, 3, 0);
 					setupTile(i + start + ox, 3 + oy, 1, 1, farmHouse, buildIndexes, buildSheets, 3, 2);
 					setupTile(i + start + ox, 4 + oy, 1, 2, farmHouse, frontIndexes, frontSheets, 3, 0);
+					setupTile(i + start + ox, 4 + oy, 1, 2, farmHouse, backIndexes, backSheets, 3, 2);
 					setupTile(i + start + ox, 5 + oy, 1, 3, farmHouse, buildIndexes, buildSheets, 3, 1);
+					
+					farmHouse.setTileProperty(i + start + ox, oy + 3, "Back", "Bed", "T");
+					farmHouse.setTileProperty(i + start + ox, oy + 4, "Back", "Bed", "T");
+					farmHouse.setTileProperty(i + start + ox, oy + 3, "Back", "NoFurniture", "T");
+					farmHouse.setTileProperty(i + start + ox, oy + 4, "Back", "NoFurniture", "T");
 				}
-				farmHouse.removeTile(ox + start + width, oy + 3, "Buildings");
+				farmHouse.removeTile(width + ox + start, oy + 3, "Buildings");
 
 				setupTile(width + start + ox, 2 + oy, 2, 0, farmHouse, frontIndexes, frontSheets, 3, 1);
 				setupTile(width + start + ox, 3 + oy, 2, 1, farmHouse, frontIndexes, frontSheets, 3, 0);
 				setupTile(width + start + ox, 3 + oy, 2, 1, farmHouse, buildIndexes, buildSheets, 3, 2);
 				setupTile(width + start + ox, 4 + oy, 2, 2, farmHouse, frontIndexes, frontSheets, 3, 0);
+				setupTile(width + start + ox, 4 + oy, 2, 2, farmHouse, backIndexes, backSheets, 3, 2);
 				setupTile(width + start + ox, 5 + oy, 2, 3, farmHouse, buildIndexes, buildSheets, 3, 1);
 
-				farmHouse.removeTile(ox + 21, oy + 2, "Front");
-				farmHouse.removeTile(ox + 22, oy + 2, "Front");
-				farmHouse.removeTile(ox + 23, oy + 2, "Front");
+				farmHouse.setTileProperty(width + start + ox, oy + 3, "Back", "Bed", "T");
+				farmHouse.setTileProperty(width + start + ox, oy + 4, "Back", "Bed", "T");
+				farmHouse.setTileProperty(width + start + ox, oy + 3, "Back", "NoFurniture", "T");
+				farmHouse.setTileProperty(width + start + ox, oy + 4, "Back", "NoFurniture", "T");
+
+				farmHouse.setTileProperty(21 + ox, oy + 4, "Back", "asdf", "asdf");
+				farmHouse.setTileProperty(22 + ox, oy + 4, "Back", "TouchAction", "Sleep");
+				farmHouse.setTileProperty(23 + ox, oy + 4, "Back", "TouchAction", "Sleep2");
+
 			}
 			catch (Exception ex)
 			{

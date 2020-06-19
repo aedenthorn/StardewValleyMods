@@ -1,4 +1,5 @@
 ﻿using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using StardewModdingAPI;
 using StardewValley;
 using StardewValley.Characters;
@@ -69,7 +70,7 @@ namespace MultipleSpouses
                 switch (type)
                 {
                     case 1:
-                        if (bedSpouses.Count < GetBedWidth(farmHouse) && (ModEntry.config.RoommateRomance || !farmer.friendshipData[spouse.Name].IsRoommate()))
+                        if (bedSpouses.Count < GetBedWidth(farmHouse) && (ModEntry.config.RoommateRomance || !farmer.friendshipData[spouse.Name].IsRoommate()) && SleepAnimation(spouse.Name) != null)
                         {
                             Monitor.Log("made bed spouse: " + spouse.Name);
                             bedSpouses.Add(spouse.Name);
@@ -129,7 +130,11 @@ namespace MultipleSpouses
                 {
                     Monitor.Log($"putting {j.Name} in bed");
                     j.position.Value = GetSpouseBedPosition(farmHouse, allBedSpouses, j.Name);
-                    j.faceDirection(ModEntry.myRand.NextDouble() > 0.5 ? 1 : 3);
+                    //j.faceDirection(ModEntry.myRand.NextDouble() > 0.5 ? 1 : 3);
+                    if (SleepAnimation(j.Name) != null)
+                    {
+                        (j as NPC).playSleepingAnimation();
+                    }
                 }
                 else if (kitchenSpouse == j.Name)
                 {
@@ -165,6 +170,16 @@ namespace MultipleSpouses
 
         }
 
+        private static string SleepAnimation(string name)
+        {
+            string anim = null;
+            if (Game1.content.Load<Dictionary<string, string>>("Data\\animationDescriptions").ContainsKey(name.ToLower() + "_sleep"))
+            {
+                anim = Game1.content.Load<Dictionary<string, string>>("Data\\animationDescriptions")[name.ToLower() + "_sleep"];
+            }
+            return anim;
+        }
+
         public static bool IsInBed(FarmHouse fh, Rectangle box)
         {
             int bedWidth = GetBedWidth(fh);
@@ -176,13 +191,13 @@ namespace MultipleSpouses
         {
             int bedWidth = GetBedWidth(fh);
             Point bedStart = GetBedStart(fh);
-            int x = (int)((allBedmates.IndexOf(name) + 1) / (float)(allBedmates.Count + 1) * (bedWidth - 1) * 64);
-            return new Vector2(bedStart.X * 64 + x, bedStart.Y * 64 + 64 + ModEntry.bedSleepOffset);
+            int x = 64 + (int)((allBedmates.IndexOf(name) + 1) / (float)(allBedmates.Count + 1) * (bedWidth - 2) * 64);
+            return new Vector2(bedStart.X * 64 + x, bedStart.Y * 64 + ModEntry.bedSleepOffset - (GetTopOfHeadSleepOffset(name) * 4));
         }
         public static Vector2 GetFarmerBedPosition(FarmHouse fh)
         {
             Point bedStart = GetBedStart(fh);
-            return new Vector2(bedStart.X * 64, bedStart.Y * 64 + 64 + ModEntry.bedSleepOffset + 32);
+            return new Vector2(bedStart.X * 64, bedStart.Y * 64 + ModEntry.bedSleepOffset);
         }
 
         public static Point GetBedStart(FarmHouse fh)
@@ -306,6 +321,46 @@ namespace MultipleSpouses
         public static bool ChangingHouse()
         {
             return ModEntry.config.BuildAllSpousesRooms || ModEntry.config.CustomBed || ModEntry.config.ExtraCribs != 0 || ModEntry.config.ExtraKidsBeds != 0 || ModEntry.config.ExtraKidsRoomWidth != 0;
+        }
+        
+        public static int GetTopOfHeadSleepOffset(string name)
+        {
+            int top = 0;
+
+            if (name == "Krobus")
+                return 8;
+
+            Texture2D tex = Helper.Content.Load<Texture2D>($"Characters/{name}", ContentSource.GameContent);
+
+            int sleepidx;
+            string sleepAnim = SleepAnimation(name);
+            if (sleepAnim == null)
+                sleepidx = 8;
+            else
+                sleepidx = int.Parse(sleepAnim.Split('/')[0]);
+
+            Color[] colors = new Color[tex.Width * tex.Height];
+            tex.GetData(colors);
+
+            //Monitor.Log($"sleep index for {name} {sleepidx}");
+
+            int startx = (sleepidx * 16) % 64;
+            int starty = (sleepidx * 16) / 64 * 32;
+
+            //Monitor.Log($"start {startx},{starty}");
+
+            for (int i = 0; i < 16 * 32; i++)
+            {
+                int idx = startx + (starty * 64) + (i % 16) + ((i / 16) * 64);
+                Color c = colors[idx];
+                if(c != Color.Transparent)
+                {
+                    top = i / 16;
+                    break;
+                }
+            }
+            //Monitor.Log($"sleep offset: {top}");
+            return top;
         }
     }
 }

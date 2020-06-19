@@ -27,7 +27,7 @@ namespace MultipleSpouses
         public static int spouseRolesDate = -1;
         public static Multiplayer mp;
         public static Random myRand;
-        public static int bedSleepOffset = 48;
+        public static int bedSleepOffset = 140;
         internal static int divorceHeartsLost;
         internal static string outdoorSpouse;
 
@@ -267,11 +267,6 @@ namespace MultipleSpouses
         {
             if (!config.EnableMod)
                 return false;
-            if (false && asset.AssetNameEquals("Maps/spouseRooms"))
-            {
-                Monitor.Log($"can load spouse rooms map");
-                return true;
-            }
 
             string[] names = asset.AssetName.Split('_');
             if (config.ChildrenHaveHairOfSpouse && (names[0].Equals("Characters\\Baby") || names[0].Equals("Characters\\Toddler") || names[0].Equals("Characters/Baby") || names[0].Equals("Characters/Toddler")))
@@ -289,12 +284,7 @@ namespace MultipleSpouses
         {
             Monitor.Log($"loading asset for {asset.AssetName}");
 
-            if (false && asset.AssetNameEquals("Maps/spouseRooms"))
-            {
-                return (T)(object)Helper.Content.Load<Map>("assets/spouseRooms.tbin");
-                
-            }
-            else if (asset.AssetName.StartsWith("Characters\\Baby") || asset.AssetName.StartsWith("Characters\\Toddler") || asset.AssetName.StartsWith("Characters/Baby") || asset.AssetName.StartsWith("Characters/Toddler"))
+            if (asset.AssetName.StartsWith("Characters\\Baby") || asset.AssetName.StartsWith("Characters\\Toddler") || asset.AssetName.StartsWith("Characters/Baby") || asset.AssetName.StartsWith("Characters/Toddler"))
             {
                 if(asset.AssetNameEquals("Characters\\Baby") || asset.AssetNameEquals("Characters\\Baby_dark") || asset.AssetNameEquals("Characters\\Toddler") || asset.AssetNameEquals("Characters\\Toddler_dark") || asset.AssetNameEquals("Characters\\Toddler_girl") || asset.AssetNameEquals("Characters\\Toddler_girl_dark"))
                 {
@@ -439,8 +429,13 @@ namespace MultipleSpouses
             if (!config.EnableMod)
                 return false;
 
-            if (asset.AssetNameEquals("Data/Events/HaleyHouse") || asset.AssetNameEquals("Data/Events/Saloon") || asset.AssetNameEquals("Data/EngagementDialogue") || asset.AssetNameEquals("Strings/StringsFromCSFiles"))
+            if (asset.AssetNameEquals("Data/Events/HaleyHouse") || asset.AssetNameEquals("Data/Events/Saloon") || asset.AssetNameEquals("Data/EngagementDialogue") || asset.AssetNameEquals("Strings/StringsFromCSFiles") || asset.AssetNameEquals("Data/animationDescriptions"))
             {
+                return true;
+            }
+            if (config.CustomBed && asset.AssetNameEquals("Maps/farmhouse_tiles"))
+            {
+                Monitor.Log($"can edit farmhouse tiles");
                 return true;
             }
 
@@ -451,6 +446,7 @@ namespace MultipleSpouses
         /// <param name="asset">A helper which encapsulates metadata about an asset and enables changes to it.</param>
         public void Edit<T>(IAssetData asset)
         {
+            Monitor.Log("Editing asset" + asset.AssetName);
             if (asset.AssetNameEquals("Data/Events/HaleyHouse"))
             {
                 IDictionary<string, string> data = asset.AsDictionary<string, string>().Data;
@@ -471,6 +467,17 @@ namespace MultipleSpouses
             {
                 IDictionary<string, string> data = asset.AsDictionary<string, string>().Data;
                 data["NPC.cs.3985"] = Regex.Replace(data["NPC.cs.3985"],  @"\$s.+", $"$n#$e#$c 0.5#{data["ResourceCollectionQuest.cs.13681"]}#{data["ResourceCollectionQuest.cs.13683"]}");
+            }
+            else if (asset.AssetNameEquals("Data/animationDescriptions"))
+            {
+                IDictionary<string, string> data = asset.AsDictionary<string, string>().Data;
+                List<string> sleepKeys = data.Keys.ToList().FindAll((s) => s.EndsWith("_Sleep"));
+                foreach(string key in sleepKeys)
+                {
+                    Monitor.Log("xyz adding key" + key.ToLower());
+                    if (!data.ContainsKey(key.ToLower()))
+                        data.Add(key.ToLower(), data[key]);
+                }
             }
             else if (asset.AssetNameEquals("Data/EngagementDialogue"))
             {
@@ -494,6 +501,11 @@ namespace MultipleSpouses
                     }
                 }
             }
+            else if (asset.AssetNameEquals("Maps/farmhouse_tiles"))
+            {
+                asset.AsImage().PatchImage(Helper.Content.Load<Texture2D>("assets/beds.png"), new Rectangle(config.SleepOnCovers ? 48 : 0, 0, 48, 80), new Rectangle(128, 192, 48, 80));
+            }
+
         }
 
     }

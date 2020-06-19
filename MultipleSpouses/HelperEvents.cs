@@ -29,7 +29,6 @@ namespace MultipleSpouses
             ModEntry.outdoorSpouse = null;
             ModEntry.spouseToDivorce = null;
             ModEntry.spouseRolesDate = -1;
-            ModEntry.bedSleepOffset = 48;
             Misc.SetAllNPCsDatable();
             FileIO.LoadTMXSpouseRooms();
             Misc.ResetSpouses(Game1.player);
@@ -278,15 +277,26 @@ namespace MultipleSpouses
 							if (Misc.IsInBed(fh, character.GetBoundingBox()))
 							{
 								character.farmerPassesThrough = true;
-								if (Game1.timeOfDay >= 2000 && !character.isMoving())
+								if (!character.isMoving())
 								{
 									Vector2 bedPos = Misc.GetSpouseBedPosition(fh, bedSpouses, character.name);
 									character.position.Value = bedPos;
+									if (!Game1.content.Load<Dictionary<string, string>>("Data\\animationDescriptions").ContainsKey(character.name.Value.ToLower() + "_sleep"))
+									{
+										character.faceDirection(0);
+									}
+									character.HideShadow = true;
+								}
+								else
+                                {
+									character.isSleeping.Value = false;
 								}
 							}
 							else
 							{
 								character.farmerPassesThrough = false;
+								character.HideShadow = false;
+								character.isSleeping.Value = false;
 							}
 						}
 					}

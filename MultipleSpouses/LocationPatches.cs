@@ -417,7 +417,7 @@ namespace MultipleSpouses
                 if (__instance.owner == null)
                     return;
 
-                List<string> mySpouses = Misc.GetSpouses(__instance.owner, -1).Keys.ToList();
+                List<string> mySpouses = Misc.GetSpouses(__instance.owner, 1).Keys.ToList();
                 if (Game1.IsMasterGame && Game1.timeOfDay >= 2200 && Game1.IsMasterGame)
                 {
                     int upgradeLevel = __instance.upgradeLevel;
@@ -435,34 +435,42 @@ namespace MultipleSpouses
                             }
 
                             Point bedSpot;
-                            if (!bedSpouses.Contains(c.Name) && c.position != Misc.GetSpouseBedPosition(__instance, bedSpouses, spouseName) && (timeOfDay == 2200 || (c.controller == null && timeOfDay % 100 % 30 == 0)))
+                            if (timeOfDay >= 2200)
                             {
-                                if (!roomSpouses.Exists((n) => n == spouseName))
+                                if (!bedSpouses.Contains(c.Name))
                                 {
-                                    bedSpot = __instance.getRandomOpenPointInHouse(ModEntry.myRand);
+                                    if (!roomSpouses.Exists((n) => n == spouseName))
+                                    {
+                                        bedSpot = __instance.getRandomOpenPointInHouse(ModEntry.myRand);
+                                    }
+                                    else
+                                    {
+                                        int offset = roomSpouses.IndexOf(spouseName) * 7;
+                                        Vector2 spot = (upgradeLevel == 1) ? new Vector2(32f, 5f) : new Vector2(38f, 14f);
+                                        bedSpot = new Point((int)spot.X + offset, (int)spot.Y);
+                                    }
+
                                 }
                                 else
                                 {
-                                    int offset = roomSpouses.IndexOf(spouseName) * 7;
-                                    Vector2 spot = (upgradeLevel == 1) ? new Vector2(32f, 5f) : new Vector2(38f, 14f);
-                                    bedSpot = new Point((int)spot.X + offset, (int)spot.Y);
+                                    int bedWidth = Misc.GetBedWidth(__instance);
+                                    bool up = upgradeLevel > 1;
+
+                                    Point bedStart = new Point(21 - (up ? (bedWidth / 2) - 1 : 0) + (up ? 6 : 0), 2 + (up ? 9 : 0));
+                                    int x = 1 + (int)((bedSpouses.IndexOf(spouseName) + 1) / (float)(bedSpouses.Count + 1) * (bedWidth - 2));
+                                    bedSpot = new Point(bedStart.X + x, bedStart.Y + 2);
+
                                 }
-                            }
-                            else
-                            {
-                                int bedWidth = Misc.GetBedWidth(__instance);
-                                bool up = upgradeLevel > 1;
 
-                                Point bedStart = new Point(21 - (up ? (bedWidth / 2) - 1 : 0) + (up ? 6 : 0), 2 + (up ? 9 : 0));
-                                int x = (int)(bedSpouses.IndexOf(spouseName) / (float)bedSpouses.Count * (bedWidth - 1));
-                                bedSpot = new Point(bedStart.X + x, bedStart.Y + 2);
-
-                            }
-                            c.controller = null;
-                            c.controller = new PathFindController(c, __instance, bedSpot, 0, new PathFindController.endBehavior(FarmHouse.spouseSleepEndFunction));
-                            if (c.controller.pathToEndPoint == null || !__instance.isTileOnMap(c.controller.pathToEndPoint.Last<Point>().X, c.controller.pathToEndPoint.Last<Point>().Y))
-                            {
                                 c.controller = null;
+                                if (c.Position != Misc.GetSpouseBedPosition(__instance, bedSpouses, c.Name) && (!Misc.IsInBed(__instance,c.GetBoundingBox()) || !Kissing.kissingSpouses.Contains(c.Name)))
+                                {
+                                    c.controller = new PathFindController(c, __instance, bedSpot, 0, new PathFindController.endBehavior(FarmHouse.spouseSleepEndFunction));
+                                    if (c.controller.pathToEndPoint == null || !__instance.isTileOnMap(c.controller.pathToEndPoint.Last<Point>().X, c.controller.pathToEndPoint.Last<Point>().Y))
+                                    {
+                                        c.controller = null;
+                                    }
+                                }
                             }
                         }
                     }
