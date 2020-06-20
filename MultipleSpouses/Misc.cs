@@ -51,7 +51,15 @@ namespace MultipleSpouses
             if (farmer == null)
                 return;
 
-            List<NPC> allSpouses = GetSpouses(farmer, -1).Values.ToList();
+            List<NPC> allSpouses = GetSpouses(farmer, 1).Values.ToList();
+
+            if (allSpouses.Count == 0)
+            {
+                Monitor.Log("no spouses");
+                return;
+            }
+
+            ShuffleList(ref allSpouses);
 
             Game1.getFarm().addSpouseOutdoorArea("");
 
@@ -59,44 +67,43 @@ namespace MultipleSpouses
             string kitchenSpouse = null;
             ModEntry.outdoorSpouse = null;
 
+            ModEntry.outdoorSpouse = allSpouses[ModEntry.myRand.Next(allSpouses.Count)].Name;
+
+            Monitor.Log("made outdoor spouse: " + ModEntry.outdoorSpouse);
+            Game1.getFarm().addSpouseOutdoorArea(ModEntry.outdoorSpouse);
+
             foreach (NPC spouse in allSpouses)
             {
-                int maxType = 4;
+                if (ModEntry.outdoorSpouse == spouse.Name)
+                    continue;
 
 
-                int type = ModEntry.myRand.Next(0, maxType);
+                int type = ModEntry.myRand.Next(0, 100);
 
                 Monitor.Log("spouse type: " + type);
-                switch (type)
+                
+                if(type < ModEntry.config.PercentChanceForSpouseInBed)
                 {
-                    case 1:
-                        if (bedSpouses.Count < GetBedWidth(farmHouse) && (ModEntry.config.RoommateRomance || !farmer.friendshipData[spouse.Name].IsRoommate()) && SleepAnimation(spouse.Name) != null)
-                        {
-                            Monitor.Log("made bed spouse: " + spouse.Name);
-                            bedSpouses.Add(spouse.Name);
-                        }
-                        break;
-                    case 2:
-                        if (kitchenSpouse == null)
-                        {
-                            Monitor.Log("made kitchen spouse: " + spouse.Name);
-                            kitchenSpouse = spouse.Name;
-                        }
-                        break;
-                    case 3:
-                        if (ModEntry.outdoorSpouse == null)
-                        {
-                            Monitor.Log("made outdoor spouse: " + spouse.Name);
-                            ModEntry.outdoorSpouse = spouse.Name;
-                            Game1.getFarm().addSpouseOutdoorArea(ModEntry.outdoorSpouse);
-                        }
-                        break;
-                    default:
-                        break;
+                    if (bedSpouses.Count < GetBedWidth(farmHouse) && (ModEntry.config.RoommateRomance || !farmer.friendshipData[spouse.Name].IsRoommate()) && SleepAnimation(spouse.Name) != null)
+                    {
+                        Monitor.Log("made bed spouse: " + spouse.Name);
+                        bedSpouses.Add(spouse.Name);
+                    }
+
+                }
+                else if(type < ModEntry.config.PercentChanceForSpouseInBed + ModEntry.config.PercentChanceForSpouseInKitchen)
+                {
+                    if (kitchenSpouse == null)
+                    {
+                        Monitor.Log("made kitchen spouse: " + spouse.Name);
+                        kitchenSpouse = spouse.Name;
+                    }
                 }
             }
+
             List<string> allBedSpouses = new List<string>(GetSpouses(farmer, 1).Keys.ToList());
-            ShuffleList(ref allBedSpouses);
+
+            List<NPC> roomSpouses = GetSpouses(farmer, -1).Values.ToList().FindAll((s) => Maps.roomIndexes.ContainsKey(s.Name) || Maps.tmxSpouseRooms.ContainsKey(s.Name));
 
             foreach (NPC j in allSpouses) { 
                 Monitor.Log("placing " + j.Name);
@@ -147,8 +154,6 @@ namespace MultipleSpouses
                 }
                 else
                 {
-
-                    List<NPC> roomSpouses = allSpouses.FindAll((s) => Maps.roomIndexes.ContainsKey(s.Name) || Maps.tmxSpouseRooms.ContainsKey(s.Name));
 
                     if (!roomSpouses.Contains(j))
                     {

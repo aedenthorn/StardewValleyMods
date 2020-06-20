@@ -880,7 +880,7 @@ namespace MultipleSpouses
         {
             try
             {
-                if (__instance.Name == null)
+                if (__instance.Name == null || !ModEntry.config.ChildrenHaveHairOfSpouse)
                     return;
                 string[] names = __instance.Name.Split(' ');
                 if (names.Length < 2 || names[names.Length - 1].Length < 3)

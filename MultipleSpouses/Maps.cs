@@ -433,7 +433,7 @@ namespace MultipleSpouses
 
 				// bed
 				Map map;
-				if (ModEntry.config.SleepOnCovers)
+				if (ModEntry.config.SleepOnCovers && !config.TransparentSheets)
 				{
 					map = PHelper.Content.Load<Map>("assets/CustomBed.tmx");
 				}
@@ -511,7 +511,7 @@ namespace MultipleSpouses
 
 				int sheetx = 0;
 				int sheety = 0;
-				if (!ModEntry.config.SleepOnCovers)
+				if (!ModEntry.config.SleepOnCovers || config.TransparentSheets)
                 {
 					sheetx = ox + 21;
 					sheety = oy + 2;
@@ -527,7 +527,7 @@ namespace MultipleSpouses
 					backIndexes.Add(getTileIndexAt(map, sheetx + (i % 3), sheety + (i / 3), "Back"));
 					frontIndexes.Add(getTileIndexAt(map, sheetx + (i % 3), sheety + (i / 3), "Front"));
 					buildIndexes.Add(getTileIndexAt(map, sheetx + (i % 3), sheety + (i / 3), "Buildings"));
-					if (ModEntry.config.SleepOnCovers)
+					if (ModEntry.config.SleepOnCovers && !config.TransparentSheets)
                     {
 						backSheets.Add(untitled);
 						frontSheets.Add(untitled);

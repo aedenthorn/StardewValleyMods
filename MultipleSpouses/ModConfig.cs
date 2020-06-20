@@ -11,6 +11,8 @@
         public bool ComplexDivorce { get; set; } = true;
         public bool RoommateRomance { get; set; } = true;
         public bool RomanceAllVillagers { get; set; } = false;
+        public int PercentChanceForSpouseInBed { get; set; } = 25;
+        public int PercentChanceForSpouseInKitchen { get; set; } = 25;
         public int MaxGiftsPerDay { get; set; } = 1;
         public bool SpousesKeepOrdinaryDialogue { get; set; } = false;
         public int MinHeartsForKiss { get; set; } = 9;

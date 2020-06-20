@@ -502,7 +502,7 @@ namespace MultipleSpouses
             }
             else if (asset.AssetNameEquals("Maps/farmhouse_tiles"))
             {
-                asset.AsImage().PatchImage(Helper.Content.Load<Texture2D>("assets/beds.png"), new Rectangle(config.SleepOnCovers ? 48 : config.TransparentSheets? 96 : 0, 0, 48, 96), new Rectangle(128, 192, 48, 96));
+                asset.AsImage().PatchImage(Helper.Content.Load<Texture2D>("assets/beds.png"), new Rectangle(!config.TransparentSheets && config.SleepOnCovers ? 48 : config.TransparentSheets? 96 : 0, 0, 48, 96), new Rectangle(128, 192, 48, 96));
             }
         }
 
