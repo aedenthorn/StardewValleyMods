@@ -463,7 +463,7 @@ namespace MultipleSpouses
                         }
                     }
                 }
-                if (!ModEntry.config.SpousesKeepOrdinaryDialogue && __instance.Name != Game1.player.spouse && __instance.currentMarriageDialogue.Count > 0)
+                if (ModEntry.config.RemoveSpouseOrdinaryDialogue && __instance.Name != Game1.player.spouse && __instance.currentMarriageDialogue.Count > 0)
                 {
                     __instance.CurrentDialogue.Clear();
                     foreach (MarriageDialogueReference mdr in __instance.currentMarriageDialogue)
@@ -596,6 +596,40 @@ namespace MultipleSpouses
                 }
             }
             return true;
+        }
+
+        public static void NPC_loadCurrentDialogue_Postfix(NPC __instance, ref Stack<Dialogue> __result)
+        {
+            try
+            {
+                if (Misc.GetSpouses(Game1.player, 0).ContainsKey(__instance.Name))
+                {
+                    if (!Game1.newDay && __instance.marriageDefaultDialogue.Value != null && !__instance.shouldSayMarriageDialogue.Value)
+                    {
+                        __result.Push(__instance.marriageDefaultDialogue.Value.GetDialogue(__instance));
+                        __instance.marriageDefaultDialogue.Value = null;
+                    }
+                    if (__instance.marriageDefaultDialogue.Value.GetDialogue(__instance).getCurrentDialogue() == "")
+                    {
+                        Monitor.Log($"missing marriage dialogue for {__instance.Name}");
+                        Friendship friends;
+                        int heartLevel = Game1.player.friendshipData.TryGetValue(__instance.Name, out friends) ? (friends.Points / 250) : 0;
+                        Dialogue d = __instance.tryToRetrieveDialogue(Game1.currentSeason + "_", heartLevel, "");
+                        if (d == null)
+                        {
+                            d = __instance.tryToRetrieveDialogue("", heartLevel, "");
+                        }
+                        if (d != null)
+                        {
+                            __result.Push(d);
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Monitor.Log($"Failed in {nameof(NPC_loadCurrentDialogue_Postfix)}:\n{ex}", LogLevel.Error);
+            }
         }
 
 

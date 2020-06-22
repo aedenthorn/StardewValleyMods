@@ -1,10 +1,10 @@
 ﻿{
   "Name": "Swim Mod",
-  "Author": "Platonymous",
-  "Version": "0.1.0",
+  "Author": "aedenthorn",
+  "Version": "0.4.0",
   "Description": "Allows you to swim.",
-  "UniqueID": "Platonymous.Swim",
+  "UniqueID": "aedenthorn.Swim",
   "EntryDll": "Swim.dll",
-  "MinimumApiVersion": "3.5.0",
-  "UpdateKeys": ["Nexus:"]
+  "MinimumApiVersion": "3.5.0", 
+  "UpdateKeys": ["Nexus:6326"]
 }

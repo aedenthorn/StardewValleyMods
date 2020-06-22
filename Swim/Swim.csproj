@@ -14,6 +14,7 @@
     <Deterministic>true</Deterministic>
     <NuGetPackageImportStamp>
     </NuGetPackageImportStamp>
+    <EnableHarmony>true</EnableHarmony>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -46,10 +47,24 @@
     <Compile Include="ModConfig.cs" />
     <Compile Include="ModEntry.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Fishie.cs" />
+    <Compile Include="SwimPatches.cs" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="assets\content-pack\assets\UnderwaterBeach.tbin" />
+    <None Include="assets\content-pack\assets\UnderwaterMountain.tbin" />
+    <None Include="assets\content-pack\assets\UnderwaterTown.tbin" />
+    <None Include="assets\content-pack\content.json" />
+    <None Include="assets\content-pack\manifest.json" />
     <None Include="manifest.json" />
     <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="assets\Fishies\BlueFish.png" />
+    <Content Include="assets\content-pack\assets\spring_beach.png" />
+    <Content Include="assets\Fishies\GreenFish.png" />
+    <Content Include="assets\Fishies\PinkFish.png" />
+    <Content Include="assets\Fishies\Salamander.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="..\packages\Pathoschild.Stardew.ModBuildConfig.3.1.0\build\Pathoschild.Stardew.ModBuildConfig.targets" Condition="Exists('..\packages\Pathoschild.Stardew.ModBuildConfig.3.1.0\build\Pathoschild.Stardew.ModBuildConfig.targets')" />

@@ -103,16 +103,13 @@ namespace MultipleSpouses
 
             List<string> allBedSpouses = new List<string>(GetSpouses(farmer, 1).Keys.ToList());
 
-            List<NPC> roomSpouses = GetSpouses(farmer, -1).Values.ToList().FindAll((s) => Maps.roomIndexes.ContainsKey(s.Name) || Maps.tmxSpouseRooms.ContainsKey(s.Name));
+            List<NPC> roomSpouses = GetSpouses(farmer, -1).Values.ToList().FindAll((s) => (Maps.roomIndexes.ContainsKey(s.Name) || Maps.tmxSpouseRooms.ContainsKey(s.Name)) && !farmer.friendshipData[s.Name].IsEngaged());
 
             foreach (NPC j in allSpouses) { 
                 Monitor.Log("placing " + j.Name);
 
                 Point kitchenSpot = farmHouse.getKitchenStandingSpot();
                 Vector2 spouseRoomSpot = (farmHouse.upgradeLevel == 1) ? new Vector2(32f, 5f) : new Vector2(38f, 14f);
-
-                if (j.Position != new Vector2((float)(kitchenSpot.X * 64), (float)(kitchenSpot.Y * 64)) && j.Position != new Vector2((float)(spouseRoomSpot.X * 64), (float)(spouseRoomSpot.Y * 64)))
-                    continue;
 
                 if (ModEntry.outdoorSpouse == j.Name && !Game1.isRaining && !Game1.IsWinter && Game1.shortDayNameFromDayOfSeason(Game1.dayOfMonth).Equals("Sat") && !j.Name.Equals("Krobus"))
                 {
@@ -137,10 +134,11 @@ namespace MultipleSpouses
                 {
                     Monitor.Log($"putting {j.Name} in bed");
                     j.position.Value = GetSpouseBedPosition(farmHouse, allBedSpouses, j.Name);
-                    //j.faceDirection(ModEntry.myRand.NextDouble() > 0.5 ? 1 : 3);
+
                     if (SleepAnimation(j.Name) != null)
                     {
-                        (j as NPC).playSleepingAnimation();
+                        j.playSleepingAnimation();
+                        j.followSchedule = true;
                     }
                 }
                 else if (kitchenSpouse == j.Name)

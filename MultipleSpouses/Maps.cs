@@ -37,7 +37,6 @@ namespace MultipleSpouses
 			{ "Shane", 10 },
 			{ "Emily", 11 },
 			{ "Krobus", 12 },
-			//{ "Sandy", 13 }
 		};
 
         // call this method from your Entry class

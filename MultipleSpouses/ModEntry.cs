@@ -24,7 +24,6 @@ namespace MultipleSpouses
         public static ModConfig config;
 
         public static string spouseToDivorce = null;
-        public static int spouseRolesDate = -1;
         public static Multiplayer mp;
         public static Random myRand;
         public static int bedSleepOffset = 140;
@@ -438,6 +437,20 @@ namespace MultipleSpouses
                 Monitor.Log($"can edit farmhouse tiles");
                 return true;
             }
+            if (config.RomanceAllVillagers && (asset.AssetName.StartsWith("Characters/schedules") || asset.AssetName.StartsWith("Characters\\schedules")))
+            {
+                string name = asset.AssetName.Replace("Characters/schedules/","").Replace("Characters\\schedules\\","");
+                NPC npc = Game1.getCharacterFromName(name);
+                if (npc != null && npc.Age < 2 && !(npc is Child))
+                {
+                    string dispo = Helper.Content.Load<Dictionary<string, string>>("Data/NPCDispositions", ContentSource.GameContent)[name];
+                    if(dispo.Split('/')[5] != "datable")
+                    {
+                        Monitor.Log($"can edit schedule for {name}");
+                        return true;
+                    }
+                }
+            }
 
             return false;
         }
@@ -503,6 +516,17 @@ namespace MultipleSpouses
             else if (asset.AssetNameEquals("Maps/farmhouse_tiles"))
             {
                 asset.AsImage().PatchImage(Helper.Content.Load<Texture2D>("assets/beds.png"), new Rectangle(!config.TransparentSheets && config.SleepOnCovers ? 48 : config.TransparentSheets? 96 : 0, 0, 48, 96), new Rectangle(128, 192, 48, 96));
+            }
+            else if (asset.AssetName.StartsWith("Characters/schedules") || asset.AssetName.StartsWith("Characters\\schedules"))
+            {
+
+
+                IDictionary<string, string> data = asset.AsDictionary<string, string>().Data;
+                List<string> keys = new List<string>(data.Keys);
+                foreach (string key in keys)
+                {
+                    data.Add($"marriage_{key}", data[key]);
+                }
             }
         }
 

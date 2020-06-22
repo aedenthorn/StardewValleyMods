@@ -12,27 +12,49 @@ using xTile;
 using xTile.Dimensions;
 using xTile.ObjectModel;
 using xTile.Tiles;
+using Harmony;
+using Microsoft.Xna.Framework.Graphics;
+using Rectangle = Microsoft.Xna.Framework.Rectangle;
+using System.IO;
+using StardewValley.Locations;
 
 namespace Swim
 {
-    public class ModEntry : Mod, IAssetEditor
+    public class ModEntry : Mod, IAssetEditor, IAssetLoader
     {
         
         private ModConfig config;
         private List<SButton> dirButtons = new List<SButton>();
         private bool myButtonDown = false;
         private ulong lastJump = 0;
-        private bool swimToggle = false;
+        private int oxygen = 0;
+        private int lastUpdateMs = 0;
         private bool isJumping = false;
         private Vector2 startJumpLoc;
         private Vector2 endJumpLoc;
         private bool willSwim = false;
-        private bool isWearingSwimSuit = false;
-        private Dictionary<string,bool> changeLocations = new Dictionary<string, bool> {
+        private bool isUnderwater = false;
+        public static Dictionary<string,bool> changeLocations = new Dictionary<string, bool> {
+            {"UnderwaterMountain", false },
             {"Mountain", false },
             {"Town", false },
             {"Forest", false },
+            {"UnderwaterBeach", false },
             {"Beach", false },
+        };
+        private Texture2D OxygenBarTexture;
+        private List<Vector2> bubbles = new List<Vector2>();
+        private string[] diveLocations = new string[] {
+            "Beach",
+            "Mountain",
+            "UnderwaterBeach",
+            "UnderwaterMountain"
+        };
+        public static List<string> fishTextures = new List<string>()
+        {
+            "BlueFish",
+            "PinkFish",
+            "GreenFish",
         };
 
         public override void Entry(IModHelper helper)
@@ -41,7 +63,8 @@ namespace Swim
             if (!config.EnableMod)
                 return;
 
-            swimToggle = config.SwimByDefault;
+
+            SwimPatches.Initialize(Monitor, helper, config);
 
             foreach (InputButton ib in Game1.options.moveUpButton)
             {
@@ -64,12 +87,93 @@ namespace Swim
             helper.Events.Input.ButtonPressed += Input_ButtonPressed;
             helper.Events.Input.ButtonReleased += Input_ButtonReleased;
             helper.Events.GameLoop.DayStarted += GameLoop_DayStarted;
+            helper.Events.GameLoop.GameLaunched += GameLoop_GameLaunched;
+            helper.Events.Display.RenderedHud += Display_RenderedHud;
+            helper.Events.Display.RenderedWorld += Display_RenderedWorld;
 
+            var harmony = HarmonyInstance.Create(this.ModManifest.UniqueID);
+
+            harmony.Patch(
+               original: AccessTools.Method(typeof(FarmerRenderer), nameof(FarmerRenderer.draw), new Type[] { typeof(SpriteBatch), typeof(FarmerSprite.AnimationFrame), typeof(int), typeof(Rectangle), typeof(Vector2), typeof(Vector2), typeof(float), typeof(int), typeof(Color), typeof(float), typeof(float), typeof(Farmer) }),
+               prefix: new HarmonyMethod(typeof(SwimPatches), nameof(SwimPatches.FarmerRenderer_draw_Prefix)),
+               postfix: new HarmonyMethod(typeof(SwimPatches), nameof(SwimPatches.FarmerRenderer_draw_Postfix))
+            );
+            harmony.Patch(
+               original: AccessTools.Method(typeof(GameLocation), nameof(GameLocation.startEvent)),
+               postfix: new HarmonyMethod(typeof(SwimPatches), nameof(SwimPatches.GameLocation_StartEvent_Postfix))
+            );
+            harmony.Patch(
+               original: AccessTools.Method(typeof(Event), nameof(Event.exitEvent)),
+               postfix: new HarmonyMethod(typeof(SwimPatches), nameof(SwimPatches.Event_exitEvent_Postfix))
+            );
+
+            harmony.Patch(
+               original: AccessTools.Method(typeof(Farmer), "updateCommon"),
+               prefix: new HarmonyMethod(typeof(SwimPatches), nameof(SwimPatches.Farmer_updateCommon_Prefix)),
+               postfix: new HarmonyMethod(typeof(SwimPatches), nameof(SwimPatches.Farmer_updateCommon_Postfix))
+            );
+            
+            harmony.Patch(
+               original: AccessTools.Method(typeof(Farmer), nameof(Farmer.changeIntoSwimsuit)),
+               postfix: new HarmonyMethod(typeof(SwimPatches), nameof(SwimPatches.Farmer_changeIntoSwimsuit_Postfix))
+            );
+        }
+
+        private void Display_RenderedWorld(object sender, RenderedWorldEventArgs e)
+        {
+            if (isUnderwater && Game1.currentLocation.Name.StartsWith("Underwater"))
+            {
+                Texture2D tex = Helper.Content.Load<Texture2D>("LooseSprites/temporary_sprites_1", ContentSource.GameContent);
+                int maxOx = MaxOxygen();
+                if (oxygen < maxOx - (bubbles.Count / (10f * config.BubbleMult * config.OxygenMult)) * maxOx && Game1.random.NextDouble() < 0.05)
+                {
+                    Game1.playSound("tinyWhip");
+                    bubbles.Add(new Vector2(Game1.player.position.X + Game1.random.Next(-24,25), Game1.player.position.Y - 96));
+                }
+
+                for (int k = 0; k < bubbles.Count; k++) 
+                {
+                    bubbles[k] = new Vector2(bubbles[k].X, bubbles[k].Y - 2);
+                }
+                foreach (Vector2 v in bubbles)
+                {
+                    e.SpriteBatch.Draw(tex, v + new Vector2((float)Math.Sin((double)((float)(maxOx - oxygen) / 100f * 4f + v.X)) * 4f - Game1.viewport.X, -Game1.viewport.Y), new Microsoft.Xna.Framework.Rectangle?(new Microsoft.Xna.Framework.Rectangle(132, 20, 8, 8)), new Color(1,1,1,0.5f), 0f, Vector2.Zero, 4f, SpriteEffects.None, 0.001f);
+                }
+            }
+        }
+
+        private void Display_RenderedHud(object sender, RenderedHudEventArgs e)
+        {
+            int maxOx = MaxOxygen();
+            if (oxygen < maxOx)
+            {
+                MakeOxygenBar();
+                e.SpriteBatch.Draw(OxygenBarTexture, new Vector2((int)Math.Round(Game1.viewport.Width * 0.13f), 100), Color.White);
+            }
+        }
+
+        private void GameLoop_GameLaunched(object sender, GameLaunchedEventArgs e)
+        {
+            IContentPack contentPack = this.Helper.ContentPacks.CreateFake(Path.Combine(this.Helper.DirectoryPath, "assets/content-pack"));
+
+            object api = Helper.ModRegistry.GetApi("Platonymous.TMXLoader");
+            if (api != null)
+            {
+                Helper.Reflection.GetMethod(api, "AddContentPack").Invoke(contentPack);
+            }
         }
 
         private void GameLoop_DayStarted(object sender, DayStartedEventArgs e)
         {
-            AddTreasure(Game1._locationLookup["UnderwaterBeach"]);
+            if (Game1._locationLookup.ContainsKey("UnderwaterBeach"))
+            {
+                AddTreasure(Game1._locationLookup["UnderwaterBeach"]);
+            }
+            if (Game1._locationLookup.ContainsKey("UnderwaterMountain"))
+            {
+                AddMinerals(Game1._locationLookup["UnderwaterMountain"]);
+            }
+            oxygen = MaxOxygen();
         }
 
 
@@ -86,48 +190,61 @@ namespace Swim
 
         private void Input_ButtonPressed(object sender, ButtonPressedEventArgs e)
         {
-            if (Game1.player == null)
+            if (Game1.player == null || Game1.currentLocation == null)
             {
                 myButtonDown = false;
                 return;
             }
 
-            if (e.Button == config.DiveKey && Game1.player.swimming)
+            if (e.Button == config.DiveKey && diveLocations.Contains(Game1.currentLocation.Name))
             {
                 Point pos = Game1.player.getTileLocationPoint();
 
-                Game1.warpFarmer(Game1.currentLocation.Name == "Beach" ? "UnderwaterBeach" : "Beach", pos.X, pos.Y, false);
-
-                return;
+                Game1.playSound("pullItemFromWater");
+                string newName = Game1.currentLocation.Name.StartsWith("Underwater") ? Game1.currentLocation.Name.Replace("Underwater", "") : $"Underwater{Game1.currentLocation.Name}";
+                if (!Game1._locationLookup.ContainsKey(newName))
+                {
+                    Monitor.Log($"Can't find map named {newName}", LogLevel.Warn);
+                    return;
+                }
+                Game1.warpFarmer(newName, pos.X, pos.Y, false);
+                if (!Game1.currentLocation.Name.StartsWith("Underwater"))
+                {
+                    bubbles.Clear();
+                    isUnderwater = true;
+                }
+                else
+                {
+                    isUnderwater = false;
+                }
+                return; 
             }
             
             if (e.Button == config.SwimKey)
             {
-                swimToggle = !swimToggle;
+                config.ReadyToSwim = !config.ReadyToSwim;
+                Helper.WriteConfig<ModConfig>(config);
                 return;
             }
 
             if (e.Button == config.SwimSuitKey)
             {
-                if (Game1.player.bathingClothes)
+                config.SwimSuitAlways = !config.SwimSuitAlways;
+                Helper.WriteConfig<ModConfig>(config);
+                if (!Game1.player.swimming)
                 {
-                    if(!Game1.player.swimming)
+                    if(!config.SwimSuitAlways)
                         Game1.player.changeOutOfSwimSuit();
-                    isWearingSwimSuit = false;
-                }
-                else
-                {
-                    Game1.player.changeIntoSwimsuit();
-                    isWearingSwimSuit = true;
+                    else
+                        Game1.player.changeIntoSwimsuit();
                 }
                 return;
             }
 
-            CheckIfMyButtonDown();
         }
         private void CheckIfMyButtonDown()
         {
-            if (!swimToggle)
+            if(Game1.player == null || Game1.currentLocation == null || !config.ReadyToSwim || Game1.currentLocation.waterTiles == null || Helper.Input.IsDown(SButton.LeftShift) || Helper.Input.IsDown(SButton.RightShift))
             {
                 myButtonDown = false;
                 return;
@@ -141,16 +258,25 @@ namespace Swim
                     return;
                 }
             }
+
+            if (Helper.Input.IsDown(SButton.MouseLeft) && !(Game1.player.CurrentTool is WateringCan))
+            {
+                myButtonDown = true;
+                return;
+            }
+
             myButtonDown = false;
         }
 
         private void GameLoop_UpdateTicked(object sender, UpdateTickedEventArgs e)
         {
+            if (Game1.currentLocation == null || Game1.player == null)
+                return;
 
             if (Game1.player.swimming) {
-                if(Game1.player.position.Y > Game1.viewport.Y + Game1.viewport.Height)
+                if(Game1.player.position.Y > Game1.viewport.Y + Game1.viewport.Height + 64)
                 {
-                    Game1.player.position.Value = new Vector2(Game1.player.position.X, Game1.viewport.Y + Game1.viewport.Height - 64);
+                    Game1.player.position.Value = new Vector2(Game1.player.position.X, Game1.viewport.Y + Game1.viewport.Height + 63);
                     if (Game1.currentLocation.Name == "Mountain")
                     {
                         Game1.warpFarmer("Town",94,0, false);
@@ -162,7 +288,7 @@ namespace Swim
                 }
                 else if(Game1.player.position.Y < Game1.viewport.Y - 64)
                 {
-                    Game1.player.position.Value = new Vector2(Game1.player.position.X, Game1.viewport.Y + 64);
+                    Game1.player.position.Value = new Vector2(Game1.player.position.X, Game1.viewport.Y - 63);
                     if (Game1.currentLocation.Name == "Town")
                     {
                         Game1.warpFarmer("Mountain",72,40, false);
@@ -172,9 +298,9 @@ namespace Swim
                         Game1.warpFarmer("Town", 90, 109, false);
                     }
                 }
-                else if(Game1.player.position.X > Game1.viewport.X + Game1.viewport.Width)
+                else if(Game1.player.position.X > Game1.viewport.X + Game1.viewport.Width + 64)
                 {
-                    Game1.player.position.Value = new Vector2(Game1.viewport.X + Game1.viewport.Width - 64, Game1.player.position.Y);
+                    Game1.player.position.Value = new Vector2(Game1.viewport.X + Game1.viewport.Width + 63, Game1.player.position.Y);
                     if (Game1.currentLocation.Name == "Forest")
                     {
                         if(Game1.player.position.Y / 64 > 74)
@@ -185,7 +311,7 @@ namespace Swim
                 }
                 else if(Game1.player.position.X < Game1.viewport.X - 64)
                 {
-                    Game1.player.position.Value = new Vector2(Game1.viewport.X + 64, Game1.player.position.Y);
+                    Game1.player.position.Value = new Vector2(Game1.viewport.X - 63, Game1.player.position.Y);
                     if (Game1.currentLocation.Name == "Town")
                     {
                         Game1.warpFarmer("Forest",119,43, false);
@@ -194,6 +320,32 @@ namespace Swim
                     {
                         Game1.warpFarmer("Forest",119,111, false);
                     }
+                }
+
+            }
+            if(Game1.activeClickableMenu == null && !Game1.player.FarmerSprite.PauseForSingleAnimation && !Game1.player.isEating)
+            {
+                if (Game1.currentLocation.Name.StartsWith("Underwater"))
+                {
+                    if (isUnderwater)
+                    {
+                        if (oxygen > 0)
+                        {
+                            oxygen--;
+                        }
+                        else
+                        {
+                            Game1.playSound("pullItemFromWater");
+                            isUnderwater = false;
+                            Point pos = Game1.player.getTileLocationPoint();
+                            Game1.warpFarmer(Game1.currentLocation.Name.Replace("Underwater", ""), pos.X, pos.Y, false);
+                        }
+                    }
+                }
+                else
+                {
+                    if (oxygen < MaxOxygen())
+                        oxygen++;
                 }
             }
 
@@ -213,7 +365,7 @@ namespace Swim
                     }
                     else
                     {
-                        if(!isWearingSwimSuit)
+                        if(!config.SwimSuitAlways)
                             Game1.player.changeOutOfSwimSuit();
                     }
                     return;
@@ -221,6 +373,7 @@ namespace Swim
                 Game1.player.position.Value = new Vector2(endJumpLoc.X - (difx * completed), endJumpLoc.Y - (dify * completed) - (float)Math.Sin(completed * Math.PI) * 64);
                 return;
             }
+            CheckIfMyButtonDown();
 
             if (!myButtonDown || Game1.player.millisecondsPlayed - lastJump < 250 || Game1.currentLocation.Name.StartsWith("Underwater"))
                 return;
@@ -246,8 +399,18 @@ namespace Swim
                     maxDistance = 64;
                     break;
             }
+            if (Helper.Input.IsDown(SButton.MouseLeft))
+            {
+                int xTile = (Game1.viewport.X + Game1.getOldMouseX()) / 64;
+                int yTile = (Game1.viewport.Y + Game1.getOldMouseY()) / 64;
+                bool water = Game1.currentLocation.waterTiles[xTile, yTile];
+                if (Game1.player.swimming != water)
+                {
+                    distance = -1;
+                }
+            }
 
-            bool nextToLand = Game1.player.swimming && Game1.currentLocation.doesTileHaveProperty((int)tiles.Last().X, (int)tiles.Last().Y,"Water","Back") != null && !Game1.currentLocation.isTilePassable(new Location((int)tiles.Last().X, (int)tiles.Last().Y), Game1.viewport) && distance < maxDistance;
+            bool nextToLand = Game1.player.swimming && !Game1.currentLocation.isTilePassable(new Location((int)tiles.Last().X, (int)tiles.Last().Y), Game1.viewport) && distance < maxDistance;
             
             bool nextToWater = false;
             try
@@ -322,6 +485,11 @@ namespace Swim
 
         }
 
+        private int MaxOxygen()
+        {
+            return Game1.player.MaxStamina * Math.Max(1,config.OxygenMult);
+        }
+
         private List<Vector2> getSurroundingTiles()
         {
             List<Vector2> tiles = new List<Vector2>();
@@ -370,9 +538,36 @@ namespace Swim
 
         }
 
-        private void AddTreasure(GameLocation l)
+        public void MakeOxygenBar()
         {
-            List<Vector2> treasureSpots = new List<Vector2>();
+            OxygenBarTexture = new Texture2D(Game1.graphics.GraphicsDevice, (int)Math.Round(Game1.viewport.Width * 0.74f), 30);
+            Color[] data = new Color[OxygenBarTexture.Width * OxygenBarTexture.Height];
+            OxygenBarTexture.GetData(data);
+            for (int i = 0; i < data.Length; i++)
+            {
+                if (i <= OxygenBarTexture.Width || i % OxygenBarTexture.Width == OxygenBarTexture.Width - 1)
+                {
+                    data[i] = new Color(0.5f, 1f, 0.5f);
+                }
+                else if (data.Length - i < OxygenBarTexture.Width || i % OxygenBarTexture.Width == 0)
+                {
+                    data[i] = new Color(0, 0.5f, 0);
+                }
+                else if ((i % OxygenBarTexture.Width) / (float)OxygenBarTexture.Width < (float)oxygen / (float)MaxOxygen())
+                {
+                    data[i] = Color.Green;
+                }
+                else
+                {
+                    data[i] = Color.Black;
+                }
+            }
+            OxygenBarTexture.SetData<Color>(data);
+        }
+
+        private void AddMinerals(GameLocation l)
+        {
+            List<Vector2> spots = new List<Vector2>();
             for (int x = 0; x < l.map.Layers[0].LayerWidth; x++)
             {
                 for (int y = 0; y < l.map.Layers[0].LayerHeight; y++)
@@ -380,21 +575,273 @@ namespace Swim
                     Tile tile = l.map.GetLayer("Back").PickTile(new Location(x, y) * Game1.tileSize, Game1.viewport.Size);
                     if (tile != null && l.map.GetLayer("Buildings").PickTile(new Location(x, y) * Game1.tileSize, Game1.viewport.Size) == null && l.map.GetLayer("Front").PickTile(new Location(x, y) * Game1.tileSize, Game1.viewport.Size) == null)
                     {
-                        treasureSpots.Add(new Vector2(x, y));
+                        spots.Add(new Vector2(x, y));
                     }
                 }
             }
-            int n = treasureSpots.Count;
+            int n = spots.Count;
             while (n > 1)
             {
                 n--;
                 int k = Game1.random.Next(n + 1);
-                var value = treasureSpots[k];
-                treasureSpots[k] = treasureSpots[n];
-                treasureSpots[n] = value;
+                var value = spots[k];
+                spots[k] = spots[n];
+                spots[n] = value;
             }
-            treasureSpots = treasureSpots.Take(Game1.random.Next(1,5)).ToList();
-            foreach(Vector2 v in treasureSpots)
+            int mineralNo = Game1.random.Next(10, 30);
+            List<Vector2> mineralSpots = spots.Take(mineralNo).ToList();
+
+            foreach (Vector2 tile in mineralSpots)
+            {
+                double chance = Game1.random.NextDouble();
+
+                if (chance < 0.2)
+                {
+                    l.map.GetLayer("Back").Tiles[(int)tile.X, (int)tile.Y].TileIndex = 1299;
+                    l.map.GetLayer("Back").Tiles[(int)tile.X, (int)tile.Y].Properties.Add("Treasure", new PropertyValue("Object " + checkForBuriedItem(Game1.player)));
+                    l.map.GetLayer("Back").Tiles[(int)tile.X, (int)tile.Y].Properties.Add("Diggable", new PropertyValue("T"));
+                }
+                else if (chance < 0.4)
+                {
+                    l.overlayObjects[tile] = new StardewValley.Object(tile, 751, "Stone", true, false, false, false)
+                    {
+                        MinutesUntilReady = 2
+                    };
+                }
+                else if (chance < 0.5)
+                {
+                    l.overlayObjects[tile] = new StardewValley.Object(tile, 290, "Stone", true, false, false, false)
+                    {
+                        MinutesUntilReady = 4 
+                    };
+                }
+                else if (chance < 0.55)
+                {
+                    l.overlayObjects[tile] = new StardewValley.Object(tile, 764, "Stone", true, false, false, false)
+                    {
+                        MinutesUntilReady = 8
+                    };
+                }
+                else if (chance < 0.58)
+                {
+                    l.overlayObjects[tile] = new StardewValley.Object(tile, 765, "Stone", true, false, false, false)
+                    {
+                        MinutesUntilReady = 16
+                    };
+                }
+                else if (chance < 0.67)
+                {
+                    l.overlayObjects[tile] = new StardewValley.Object(tile, 80, "Stone", true, true, false, true);
+                }
+                else if (chance < 0.75)
+                {
+                    l.overlayObjects[tile] = new StardewValley.Object(tile, 82, "Stone", true, true, false, true);
+                }
+                else if (chance < 0.82)
+                {
+                    l.overlayObjects[tile] = new StardewValley.Object(tile, 84, "Stone", true, true, false, true);
+                }
+                else if (chance < 0.88)
+                {
+                    l.overlayObjects[tile] = new StardewValley.Object(tile, 86, "Stone", true, true, false, true);
+                }
+                else
+                {
+                    int[] gems = { 4,6,8,10,12,14,40 };
+                    int whichGem = gems[Game1.random.Next(gems.Length)];
+                    l.overlayObjects[tile] = new StardewValley.Object(tile, whichGem, "Stone", true, false, false, false)
+				    {
+                        MinutesUntilReady = 5
+
+                    };
+                }
+            }
+        }
+
+        public int checkForBuriedItem(Farmer who)
+        {
+            int objectIndex = 330;
+            if (Game1.random.NextDouble() < 0.1)
+            {
+                if (Game1.random.NextDouble() < 0.75)
+                {
+                    switch (Game1.random.Next(5))
+                    {
+                        case 0:
+                            objectIndex = 96;
+                            break;
+                        case 1:
+                            objectIndex = (who.hasOrWillReceiveMail("lostBookFound") ? ((Game1.netWorldState.Value.LostBooksFound < 21) ? 102 : 770) : 770);
+                            break;
+                        case 2:
+                            objectIndex = 110;
+                            break;
+                        case 3:
+                            objectIndex = 112;
+                            break;
+                        case 4:
+                            objectIndex = 585;
+                            break;
+                    }
+                }
+                else if (Game1.random.NextDouble() < 0.75)
+                {
+                    var r = Game1.random.NextDouble();
+                    
+                    if (r < 0.75)
+                    {
+                        objectIndex = ((Game1.random.NextDouble() < 0.5) ? 121 : 97);
+                    }
+                    else if (r < 0.80)
+                    {
+                        objectIndex = 99;
+                    }
+                    else
+                    {
+                        objectIndex = ((Game1.random.NextDouble() < 0.5) ? 122 : 336);
+                    }
+                }
+                else
+                {
+                    objectIndex = ((Game1.random.NextDouble() < 0.5) ? 126 : 127);
+                }
+            }
+            else
+            {
+                if (Game1.random.NextDouble() < 0.5)
+                {
+                    objectIndex = 330;
+                }
+                else
+                {
+                    if (Game1.random.NextDouble() < 0.25)
+                    {
+                        objectIndex = 749;
+                    }
+                    else if (Game1.random.NextDouble() < 0.5)
+                    {
+                        var r = Game1.random.NextDouble();
+                        if (r < 0.7)
+                        {
+                            objectIndex = 535;
+                        }
+                        else if (r < 8.5)
+                        {
+                            objectIndex = 537;
+                        }
+                        else
+                        {
+                            objectIndex = 536;
+                        }
+                    }
+                }
+            }
+            return objectIndex;
+        }
+        private void AddTreasure(GameLocation l)
+        {
+            List<Vector2> spots = new List<Vector2>();
+            for (int x = 0; x < l.map.Layers[0].LayerWidth; x++)
+            {
+                for (int y = 0; y < l.map.Layers[0].LayerHeight; y++)
+                {
+                    Tile tile = l.map.GetLayer("Back").PickTile(new Location(x, y) * Game1.tileSize, Game1.viewport.Size);
+                    if (tile != null && l.map.GetLayer("Buildings").PickTile(new Location(x, y) * Game1.tileSize, Game1.viewport.Size) == null && l.map.GetLayer("Front").PickTile(new Location(x, y) * Game1.tileSize, Game1.viewport.Size) == null)
+                    {
+                        spots.Add(new Vector2(x, y));
+                    }
+                }
+            }
+            int n = spots.Count;
+            while (n > 1)
+            {
+                n--;
+                int k = Game1.random.Next(n + 1);
+                var value = spots[k];
+                spots[k] = spots[n];
+                spots[n] = value;
+            }
+            int forageNo = Game1.random.Next(5, 20);
+            List<Vector2> forageSpots = spots.Take(forageNo).ToList();
+            List<Vector2> treasureSpots = new List<Vector2>();
+
+            if (config.AddFishies)
+            {
+                int fishes = Game1.random.Next(50, 100);
+                l.characters.Clear();
+                for (int i = 0; i < fishes; i++)
+                {
+                    int idx = Game1.random.Next(spots.Count);
+                    l.characters.Add(new Fishie(new Vector2(spots[idx].X * Game1.tileSize, spots[idx].Y * Game1.tileSize)));
+                }
+            }
+
+            foreach (Vector2 v in forageSpots)
+            {
+                double chance = Game1.random.NextDouble();
+                if(chance < 0.25)
+                {
+                    l.overlayObjects[v] = new StardewValley.Object(v, 152, "Seaweed", true, true, false, true)
+                    {
+                        CanBeGrabbed = true
+                    };
+                }
+                else if(chance < 0.4)
+                {
+                    l.overlayObjects[v] = new StardewValley.Object(v, 153, "Green Algae", true, true, false, true)
+                    {
+                        CanBeGrabbed = true
+                    };
+                }
+                else if(chance < 0.55)
+                {
+                    l.overlayObjects[v] = new StardewValley.Object(v, 157, "White Algae", true, true, false, true)
+                    {
+                        CanBeGrabbed = true
+                    };
+                }
+                else if(chance < 0.65)
+                {
+                    l.overlayObjects[v] = new StardewValley.Object(v, 372, "Clam", true, true, false, true)
+                    {
+                        CanBeGrabbed = true
+                    };
+                }
+                else if(chance < 0.75)
+                {
+                    l.overlayObjects[v] = new StardewValley.Object(v, 393, "Coral", true, true, false, true)
+                    {
+                        CanBeGrabbed = true
+                    };
+                }
+                else if(chance < 0.85)
+                {
+                    l.overlayObjects[v] = new StardewValley.Object(v, 397, "Sea Urchin", true, true, false, true)
+                    {
+                        CanBeGrabbed = true
+                    };
+                }
+                else if(chance < 0.9)
+                {
+                    l.overlayObjects[v] = new StardewValley.Object(v, 394, "Rainbow Shell", true, true, false, true)
+                    {
+                        CanBeGrabbed = true
+                    };
+                }
+                else if(chance < 0.95)
+                {
+                    l.overlayObjects[v] = new StardewValley.Object(v, 392, "Nautilus Shell", true, true, false, true)
+                    {
+                        CanBeGrabbed = true
+                    };
+                }
+                else
+                {
+                    treasureSpots.Add(v);
+                }
+            }
+
+            foreach (Vector2 v in treasureSpots)
             {
 
                 List<Item> treasures = new List<Item>();
@@ -612,18 +1059,49 @@ namespace Swim
             }
         }
 
-
-        /// <summary>Get whether this instance can edit the given asset.</summary>
+        /// <summary>Get whether this instance can load the initial version of the given asset.</summary>
         /// <param name="asset">Basic metadata about the asset being loaded.</param>
+        public bool CanLoad<T>(IAssetInfo asset)
+        {
+            if (!config.EnableMod)
+                return false;
+
+            if (asset.AssetName.StartsWith("Fishies"))
+            {
+                return true;
+            }
+
+
+            return false;
+        }
+
+        /// <summary>Load a matched asset.</summary>
+        /// <param name="asset">Basic metadata about the asset being loaded.</param>
+        public T Load<T>(IAssetInfo asset)
+        {
+            Monitor.Log($"loading asset for {asset.AssetName}");
+
+            if (asset.AssetName.StartsWith("Fishies"))
+            {
+                return (T)(object)Helper.Content.Load<Texture2D>($"assets/{asset.AssetName}.png");
+            }
+            throw new InvalidDataException();
+        }
+
+                /// <summary>Get whether this instance can edit the given asset.</summary>
+                /// <param name="asset">Basic metadata about the asset being loaded.</param>
         public bool CanEdit<T>(IAssetInfo asset)
         {
             if (!config.EnableMod)
                 return false;
 
-            if (asset.AssetNameEquals("Maps/Beach") || asset.AssetNameEquals("Maps/Town") || asset.AssetNameEquals("Maps/Forest") || asset.AssetNameEquals("Maps/Mountain"))
+            foreach(string key in changeLocations.Keys)
             {
-                return true;
+                if (asset.AssetNameEquals($"Maps/{key}"))
+                    return true;
+
             }
+
             return false;
         }
 
@@ -632,7 +1110,10 @@ namespace Swim
         public void Edit<T>(IAssetData asset)
         {
             Monitor.Log("Editing asset" + asset.AssetName);
-            if (asset.AssetNameEquals("Maps/Beach") || asset.AssetNameEquals("Maps/Town") || asset.AssetNameEquals("Maps/Forest") || asset.AssetNameEquals("Maps/Mountain"))
+
+            string mapName = asset.AssetName.Replace("Maps/", "").Replace("Maps\\", "");
+
+            if (changeLocations.ContainsKey(mapName))
             {
                 IAssetDataForMap map = asset.AsMap();
                 for (int x = 0; x < map.Data.Layers[0].LayerWidth; x++)
@@ -642,7 +1123,7 @@ namespace Swim
                         if (doesTileHaveProperty(map.Data, x, y, "Water", "Back") != null)
                         {
                             Tile tile = map.Data.GetLayer("Back").PickTile(new Location(x, y) * Game1.tileSize, Game1.viewport.Size);
-                            if(tile != null)
+                            if (tile != null && mapName != "Beach")
                             {
                                 if (tile.TileIndexProperties.ContainsKey("Passable"))
                                 {
@@ -650,14 +1131,14 @@ namespace Swim
                                 }
                             }
                             tile = map.Data.GetLayer("Front").PickTile(new Location(x, y) * Game1.tileSize, Game1.viewport.Size);
-                            if(tile != null)
+                            if (tile != null)
                             {
                                 if (tile.TileIndexProperties.ContainsKey("Passable"))
                                 {
                                     tile.TileIndexProperties.Remove("Passable");
                                 }
                             }
-                            if(map.Data.GetLayer("AlwaysFront") != null)
+                            if (map.Data.GetLayer("AlwaysFront") != null)
                             {
                                 tile = map.Data.GetLayer("AlwaysFront").PickTile(new Location(x, y) * Game1.tileSize, Game1.viewport.Size);
                                 if (tile != null)
@@ -668,31 +1149,53 @@ namespace Swim
                                     }
                                 }
                             }
-                            if (asset.AssetNameEquals("Maps/Mountain"))
+                            tile = map.Data.GetLayer("Buildings").PickTile(new Location(x, y) * Game1.tileSize, Game1.viewport.Size);
+                            if (tile != null)
                             {
-                                tile = map.Data.GetLayer("Buildings").PickTile(new Location(x, y) * Game1.tileSize, Game1.viewport.Size);
-                                if (tile != null)
-                                {
-                                    if ((tile.TileIndex > 1292 && tile.TileIndex < 1297) || (tile.TileIndex > 1317 && tile.TileIndex < 1322)
-                                        || (tile.TileIndex % 25 > 17 && tile.TileIndex / 25 < 53 && tile.TileIndex / 25 > 48)
-                                        || (tile.TileIndex % 25 > 1 && tile.TileIndex % 25 < 7 && tile.TileIndex / 25 < 53 && tile.TileIndex / 25 > 48)
-                                        || (tile.TileIndex % 25 > 11 && tile.TileIndex / 25 < 51 && tile.TileIndex / 25 > 48)
-                                        || (tile.TileIndex % 25 > 10 && tile.TileIndex % 25 < 14 && tile.TileIndex / 25 < 49 && tile.TileIndex / 25 > 46)
-                                        || tile.TileIndex == 734 || tile.TileIndex == 759
-                                        || tile.TileIndex == 628 || tile.TileIndex == 629
+                                if ((mapName == "Beach" && x > 58 && x < 61 && y > 11 && y < 15) ||
+                                    (mapName != "Beach"
+                                        && ((tile.TileIndex > 1292 && tile.TileIndex < 1297) || (tile.TileIndex > 1317 && tile.TileIndex < 1322)
+                                            || (tile.TileIndex % 25 > 17 && tile.TileIndex / 25 < 53 && tile.TileIndex / 25 > 48)
+                                            || (tile.TileIndex % 25 > 1 && tile.TileIndex % 25 < 7 && tile.TileIndex / 25 < 53 && tile.TileIndex / 25 > 48)
+                                            || (tile.TileIndex % 25 > 11 && tile.TileIndex / 25 < 51 && tile.TileIndex / 25 > 48)
+                                            || (tile.TileIndex % 25 > 10 && tile.TileIndex % 25 < 14 && tile.TileIndex / 25 < 49 && tile.TileIndex / 25 > 46)
+                                            || tile.TileIndex == 734 || tile.TileIndex == 759
+                                            || tile.TileIndex == 628 || tile.TileIndex == 629
+                                            || (mapName == "Forest" && x == 119 && ((y > 42 && y < 48) || (y > 104 && y < 119)))
+                                    
+                                        )
                                     )
+                                )
+                                {
+                                    if (tile.TileIndexProperties.ContainsKey("Passable"))
                                     {
-                                        if (tile.TileIndexProperties.ContainsKey("Passable"))
-                                        {
-                                            tile.TileIndexProperties["Passable"] = "T";
-                                        }
-                                        else
-                                        {
-                                            tile.TileIndexProperties.Add("Passable", "T");
-                                        }
-
+                                        tile.TileIndexProperties["Passable"] = "T";
                                     }
+                                    else
+                                    {
+                                        tile.TileIndexProperties.Add("Passable", "T");
+                                    }
+
                                 }
+                                else if (mapName == "Beach")
+                                {
+                                    tile.TileIndexProperties.Remove("Passable");
+                                }
+                            }
+                        }
+                    }
+                }
+                if (asset.AssetName.Contains("Underwater"))
+                {
+                    for (int x = 0; x < map.Data.Layers[0].LayerWidth; x++)
+                    {
+                        for (int y = 0; y < map.Data.Layers[0].LayerHeight; y++)
+                        {
+                            if (doesTileHaveProperty(map.Data, x, y, "Water", "Back") != null)
+                            {
+                                Tile tile = map.Data.GetLayer("Back").PickTile(new Location(x, y) * Game1.tileSize, Game1.viewport.Size);
+                                if(tile != null)
+                                    tile.TileIndexProperties.Remove("Water");
                             }
                         }
                     }

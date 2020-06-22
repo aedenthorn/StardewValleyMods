@@ -6,12 +6,16 @@ namespace Swim
     public class ModConfig
     {
         public bool EnableMod{ get; set; }
-        public bool SwimByDefault { get; set; }
+        public bool ReadyToSwim { get; set; }
+        public bool SwimSuitAlways { get; set; }
         public int JumpTimeInMilliseconds { get; set; }
         public SButton SwimKey{ get; set; }
         public SButton SwimSuitKey { get; set; }
         public SButton DiveKey { get; set; }
-        public float ChanceTreasure { get; set; }
+        public int OxygenMult { get; set; }
+        public int BubbleMult { get; set; }
+        public bool AllowActionsWhileInSwimsuit { get; set; }
+        public bool AddFishies { get; set; }
 
         public ModConfig()
         {
@@ -19,9 +23,13 @@ namespace Swim
             SwimSuitKey = SButton.K;
             DiveKey = SButton.H;
             EnableMod = true;
-            SwimByDefault = false;
+            ReadyToSwim = true;
+            SwimSuitAlways = false;
             JumpTimeInMilliseconds = 500;
-            ChanceTreasure = 0.9f;
+            OxygenMult = 10;
+            BubbleMult = 1;
+            AllowActionsWhileInSwimsuit = true;
+            AddFishies = true;
         }
     }
 }

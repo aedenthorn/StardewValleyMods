@@ -28,7 +28,6 @@ namespace MultipleSpouses
         {
             ModEntry.outdoorSpouse = null;
             ModEntry.spouseToDivorce = null;
-            ModEntry.spouseRolesDate = -1;
             Misc.SetAllNPCsDatable();
             FileIO.LoadTMXSpouseRooms();
             Misc.ResetSpouses(Game1.player);
@@ -68,7 +67,6 @@ namespace MultipleSpouses
             Helper.Events.GameLoop.OneSecondUpdateTicked -= GameLoop_OneSecondUpdateTicked;
             ModEntry.outdoorSpouse = null;
             ModEntry.spouseToDivorce = null;
-            ModEntry.spouseRolesDate = -1;
         }
 
 		public static string complexDivorceSpouse;
