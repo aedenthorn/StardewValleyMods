@@ -56,6 +56,17 @@ namespace Swim
             "PinkFish",
             "GreenFish",
         };
+        public static List<string> bigFishTextures = new List<string>()
+        {
+            "BigFishBlack",
+            "BigFishBlue",
+            "BigFishGold",
+            "BigFishGreen",
+            "BigFishGreenWhite",
+            "BigFishGrey",
+            "BigFishRed",
+            "BigFishWhite"
+        };
 
         public override void Entry(IModHelper helper)
         {
@@ -259,7 +270,7 @@ namespace Swim
                 }
             }
 
-            if (Helper.Input.IsDown(SButton.MouseLeft) && !(Game1.player.CurrentTool is WateringCan))
+            if (Helper.Input.IsDown(SButton.MouseLeft))
             {
                 myButtonDown = true;
                 return;
@@ -323,7 +334,7 @@ namespace Swim
                 }
 
             }
-            if(Game1.activeClickableMenu == null && !Game1.player.FarmerSprite.PauseForSingleAnimation && !Game1.player.isEating)
+            if(Game1.activeClickableMenu == null)
             {
                 if (Game1.currentLocation.Name.StartsWith("Underwater"))
                 {
@@ -344,6 +355,8 @@ namespace Swim
                 }
                 else
                 {
+                    if (oxygen < MaxOxygen())
+                        oxygen++;
                     if (oxygen < MaxOxygen())
                         oxygen++;
                 }
@@ -376,6 +389,9 @@ namespace Swim
             CheckIfMyButtonDown();
 
             if (!myButtonDown || Game1.player.millisecondsPlayed - lastJump < 250 || Game1.currentLocation.Name.StartsWith("Underwater"))
+                return;
+
+            if (Helper.Input.IsDown(SButton.MouseLeft) && !Game1.player.swimming && Game1.player.CurrentTool is WateringCan)
                 return;
 
             List<Vector2> tiles = getSurroundingTiles();
@@ -588,6 +604,18 @@ namespace Swim
                 spots[k] = spots[n];
                 spots[n] = value;
             }
+
+            if (config.AddFishies)
+            {
+                l.characters.Clear();
+                int bigFishes = Game1.random.Next(10, 20);
+                for (int i = 0; i < bigFishes; i++)
+                {
+                    int idx = Game1.random.Next(spots.Count);
+                    l.characters.Add(new BigFishie(new Vector2(spots[idx].X * Game1.tileSize, spots[idx].Y * Game1.tileSize)));
+                }
+            }
+
             int mineralNo = Game1.random.Next(10, 30);
             List<Vector2> mineralSpots = spots.Take(mineralNo).ToList();
 
@@ -767,8 +795,8 @@ namespace Swim
 
             if (config.AddFishies)
             {
-                int fishes = Game1.random.Next(50, 100);
                 l.characters.Clear();
+                int fishes = Game1.random.Next(50, 100);
                 for (int i = 0; i < fishes; i++)
                 {
                     int idx = Game1.random.Next(spots.Count);
@@ -1085,7 +1113,7 @@ namespace Swim
             {
                 return (T)(object)Helper.Content.Load<Texture2D>($"assets/{asset.AssetName}.png");
             }
-            throw new InvalidDataException();
+            throw new InvalidDataException(); 
         }
 
                 /// <summary>Get whether this instance can edit the given asset.</summary>

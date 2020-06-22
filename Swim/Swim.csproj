@@ -44,6 +44,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="BigFishie.cs" />
     <Compile Include="ModConfig.cs" />
     <Compile Include="ModEntry.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -60,11 +61,19 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="assets\Fishies\BigFishBlack.png" />
+    <Content Include="assets\Fishies\BigFishBlue.png" />
+    <Content Include="assets\Fishies\BigFishGold.png" />
+    <Content Include="assets\Fishies\BigFishGreen.png" />
+    <Content Include="assets\Fishies\BigFishGreenWhite.png" />
+    <Content Include="assets\Fishies\BigFishGrey.png" />
+    <Content Include="assets\Fishies\BigFishRed.png" />
+    <Content Include="assets\Fishies\BigFishWhite.png" />
     <Content Include="assets\Fishies\BlueFish.png" />
     <Content Include="assets\content-pack\assets\spring_beach.png" />
     <Content Include="assets\Fishies\GreenFish.png" />
     <Content Include="assets\Fishies\PinkFish.png" />
-    <Content Include="assets\Fishies\Salamander.png" />
+    <Content Include="assets\scuba.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="..\packages\Pathoschild.Stardew.ModBuildConfig.3.1.0\build\Pathoschild.Stardew.ModBuildConfig.targets" Condition="Exists('..\packages\Pathoschild.Stardew.ModBuildConfig.3.1.0\build\Pathoschild.Stardew.ModBuildConfig.targets')" />
