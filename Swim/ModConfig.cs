@@ -26,7 +26,7 @@ namespace Swim
             ReadyToSwim = true;
             SwimSuitAlways = false;
             JumpTimeInMilliseconds = 500;
-            OxygenMult = 10;
+            OxygenMult = 1;
             BubbleMult = 1;
             AllowActionsWhileInSwimsuit = true;
             AddFishies = true;

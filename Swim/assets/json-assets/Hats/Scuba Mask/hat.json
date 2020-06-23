@@ -1,0 +1,7 @@
+{
+	"Name": "Scuba Mask",
+	"Description": "A respirator for your scuba tank.",
+	"PurchasePrice": "50000",
+	"ShowHair": true,
+	"IgnoreHairstyleOffset": true
+}

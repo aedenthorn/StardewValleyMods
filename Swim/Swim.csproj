@@ -45,6 +45,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="BigFishie.cs" />
+    <Compile Include="IJsonAssetsApi.cs" />
     <Compile Include="ModConfig.cs" />
     <Compile Include="ModEntry.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -52,11 +53,15 @@
     <Compile Include="SwimPatches.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="assets\content-pack\assets\UnderwaterBeach.tbin" />
-    <None Include="assets\content-pack\assets\UnderwaterMountain.tbin" />
-    <None Include="assets\content-pack\assets\UnderwaterTown.tbin" />
-    <None Include="assets\content-pack\content.json" />
-    <None Include="assets\content-pack\manifest.json" />
+    <None Include="assets\json-assets\content-pack.json" />
+    <None Include="assets\json-assets\Hats\Scuba Mask\hat.json" />
+    <None Include="assets\json-assets\Shirts\Scuba Tank\shirt.json" />
+    <None Include="assets\tmx-pack\assets\Cave.tbin" />
+    <None Include="assets\tmx-pack\assets\UnderwaterBeach.tbin" />
+    <None Include="assets\tmx-pack\assets\UnderwaterMountain.tbin" />
+    <None Include="assets\tmx-pack\assets\UnderwaterTown.tbin" />
+    <None Include="assets\tmx-pack\content.json" />
+    <None Include="assets\tmx-pack\manifest.json" />
     <None Include="manifest.json" />
     <None Include="packages.config" />
   </ItemGroup>
@@ -70,7 +75,10 @@
     <Content Include="assets\Fishies\BigFishRed.png" />
     <Content Include="assets\Fishies\BigFishWhite.png" />
     <Content Include="assets\Fishies\BlueFish.png" />
-    <Content Include="assets\content-pack\assets\spring_beach.png" />
+    <Content Include="assets\json-assets\Hats\Scuba Mask\hat.png" />
+    <Content Include="assets\json-assets\Shirts\Scuba Tank\male.png" />
+    <Content Include="assets\tmx-pack\assets\mine.png" />
+    <Content Include="assets\tmx-pack\assets\spring_beach.png" />
     <Content Include="assets\Fishies\GreenFish.png" />
     <Content Include="assets\Fishies\PinkFish.png" />
     <Content Include="assets\scuba.png" />

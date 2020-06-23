@@ -7,6 +7,10 @@
 		{
 			"name": "UnderwaterMountain",
 			"file": "assets/UnderwaterMountain.tbin"
+		},
+		{
+			"name": "ScubaCave",
+			"file": "assets/Cave.tbin"
 		}
 	]
 }

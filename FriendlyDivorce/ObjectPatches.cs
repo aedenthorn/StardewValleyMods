@@ -86,9 +86,9 @@ namespace FriendlyDivorce
 						responses.Add(new Response("Complex", ModEntry.PHelper.Translation.Get("divorce_complex")));
 						responses.Add(new Response("No", Game1.content.LoadString("Strings\\Lexicon:QuestionDialogue_No")));
 						__instance.createQuestionDialogue(s2, responses.ToArray(), "divorce");
+						__result = true;
+						return false;
 					}
-					__result = true;
-					return false;
 				}
 			}
 			catch (Exception ex)

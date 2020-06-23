@@ -1,0 +1,7 @@
+{
+    "Name": "Scuba Tank",
+    "Description": "A scuba tank for your respirator.",
+    "HasFemaleVariant": true,
+    "Price": 100000,
+    "Dyeable": true
+}
