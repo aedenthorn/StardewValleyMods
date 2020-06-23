@@ -16,7 +16,10 @@ using Harmony;
 using Microsoft.Xna.Framework.Graphics;
 using Rectangle = Microsoft.Xna.Framework.Rectangle;
 using System.IO;
-using StardewValley.Locations;
+using StardewValley.Monsters;
+using StardewValley.Menus;
+using StardewValley.Projectiles;
+using System.Reflection;
 
 namespace Swim
 {
@@ -53,6 +56,7 @@ namespace Swim
             "UnderwaterBeach",
             "UnderwaterMountain",
             "ScubaCave",
+            "AbigailCave",
         };
         public static List<string> fishTextures = new List<string>()
         {
@@ -107,6 +111,7 @@ namespace Swim
             helper.Events.Display.RenderedHud += Display_RenderedHud;
             helper.Events.Display.RenderedWorld += Display_RenderedWorld;
             helper.Events.Player.InventoryChanged += Player_InventoryChanged;
+            helper.Events.Player.Warped += Player_Warped;
 
             var harmony = HarmonyInstance.Create(this.ModManifest.UniqueID);
 
@@ -134,6 +139,26 @@ namespace Swim
                original: AccessTools.Method(typeof(Farmer), nameof(Farmer.changeIntoSwimsuit)),
                postfix: new HarmonyMethod(typeof(SwimPatches), nameof(SwimPatches.Farmer_changeIntoSwimsuit_Postfix))
             );
+            
+            harmony.Patch(
+               original: AccessTools.Method(typeof(Toolbar), nameof(Toolbar.draw), new Type[] { typeof(SpriteBatch) }),
+               prefix: new HarmonyMethod(typeof(SwimPatches), nameof(SwimPatches.Toolbar_draw_Prefix))
+            );
+        }
+
+        private void Player_Warped(object sender, WarpedEventArgs e)
+        {
+            if(e.NewLocation.Name == "AbigailCave")
+            {
+                abigailTicks = 0;
+
+                if(Game1.player.hat != null)
+                    Game1.player.addItemToInventory(Game1.player.hat.Value);
+                Game1.player.hat.Value = new Hat(0);
+                //Game1.player.shirt.Value = 1131;
+                //Game1.player.pants.Value = -1;
+                //Game1.player.boots.Value = new Boots(515);
+            }
         }
 
         private void Player_InventoryChanged(object sender, InventoryChangedEventArgs e)
@@ -143,7 +168,7 @@ namespace Swim
 
             if (!Game1.player.mailReceived.Contains("ScubaGear") && scubaMaskID != -1 && scubaTankID != -1)
             {
-                if(e.Added.First().parentSheetIndex == scubaMaskID || e.Added.First().parentSheetIndex == scubaTankID)
+                if(e.Added != null && e.Added.Count() > 0 && e.Added.FirstOrDefault() != null && e.Added.FirstOrDefault().parentSheetIndex != null && e.Added.FirstOrDefault().parentSheetIndex == scubaMaskID || e.Added.FirstOrDefault().parentSheetIndex == scubaTankID)
                 {
                     Monitor.Log("Player found scuba gear");
                     Game1.player.mailReceived.Add("ScubaGear");
@@ -252,19 +277,17 @@ namespace Swim
             if (Game1._locationLookup.ContainsKey("ScubaCave"))
             {
                 AddWaterTiles(Game1._locationLookup["ScubaCave"]);
-                AddScubaChest(Game1._locationLookup["ScubaCave"]);
+                AddScubaChests(Game1._locationLookup["ScubaCave"], new Vector2(10,14), new Vector2(11,14));
             }
             oxygen = MaxOxygen();
         }
 
-        private void AddScubaChest(GameLocation gameLocation)
+        private void AddScubaChests(GameLocation gameLocation, Vector2 pos, Vector2 pos2)
         {
             if (!Game1.player.mailReceived.Contains("ScubaGear") && scubaMaskID != -1 && scubaTankID != -1)
             {
-                var loc = new Vector2(10, 14);
-                var loc2 = new Vector2(11, 14);
-                gameLocation.overlayObjects[loc] = new Chest(0, new List<Item>() { new Clothing(scubaTankID) }, loc, false, 0);
-                gameLocation.overlayObjects[loc2] = new Chest(0, new List<Item>() { new Hat(scubaMaskID) }, loc2, false, 0);
+                gameLocation.overlayObjects[pos] = new Chest(0, new List<Item>() { new Clothing(scubaTankID) }, pos, false, 0);
+                gameLocation.overlayObjects[pos2] = new Chest(0, new List<Item>() { new Hat(scubaMaskID) }, pos2, false, 0);
             }
         }
         private void AddWaterTiles(GameLocation gameLocation)
@@ -284,7 +307,12 @@ namespace Swim
             }
             if (!foundAnyWater)
             {
+                Monitor.Log($"{Game1.currentLocation.Name} has no water tiles");
                 gameLocation.waterTiles = null;
+            }
+            else
+            {
+                Monitor.Log($"Gave {Game1.currentLocation.Name} water tiles");
             }
         }
 
@@ -298,6 +326,7 @@ namespace Swim
             CheckIfMyButtonDown();
         }
 
+        ulong lastProjectile = 0;
 
         private void Input_ButtonPressed(object sender, ButtonPressedEventArgs e)
         {
@@ -327,6 +356,20 @@ namespace Swim
                 {
                     newName = "UnderwaterBeach";
                     pos = new Point(5,28);
+                }
+                else if (Game1.currentLocation.Name == "UnderwaterMountain" && pos.X > 46 && pos.X < 49 && pos.Y == 4)
+                {
+                    Game1.player.swimming.Value = false;
+                    Game1.player.changeOutOfSwimSuit();
+                    newName = "AbigailCave";
+                    pos = new Point(9,6);
+                }
+                else if(Game1.currentLocation.Name == "AbigailCave")
+                {
+                    Game1.player.swimming.Value = true;
+                    Game1.player.changeIntoSwimsuit();
+                    newName = "UnderwaterMountain";
+                    pos = new Point(48,5);
                 }
                 else
                     newName = Game1.currentLocation.Name.StartsWith("Underwater") ? Game1.currentLocation.Name.Replace("Underwater", "") : $"Underwater{Game1.currentLocation.Name}";
@@ -402,6 +445,11 @@ namespace Swim
         {
             if (Game1.currentLocation == null || Game1.player == null)
                 return;
+
+            if(Game1.currentLocation.Name == "AbigailCave")
+            {
+                AbigailCaveTick();
+            }
 
             if (Game1.player.swimming) {
                 if(Game1.player.position.Y > Game1.viewport.Y + Game1.viewport.Height + 64)
@@ -561,7 +609,7 @@ namespace Swim
             {
                 nextToWater = !Game1.player.swimming &&
                     (Game1.currentLocation.waterTiles[(int)tiles.Last().X, (int)tiles.Last().Y]
-                        || (Game1.player.FacingDirection == 0 && !Game1.currentLocation.isTilePassable(new Location((int)tiles.Last().X, (int)tiles.Last().Y), Game1.viewport) && Game1.currentLocation.waterTiles[(int)tiles[tiles.Count - 2].X, (int)tiles[tiles.Count - 2].Y]))
+                        || !Game1.currentLocation.isTilePassable(new Location((int)tiles.Last().X, (int)tiles.Last().Y), Game1.viewport) && Game1.currentLocation.waterTiles[(int)tiles[tiles.Count - 2].X, (int)tiles[tiles.Count - 2].Y])
                     && distance < maxDistance;
             }
             catch(Exception ex)
@@ -569,12 +617,12 @@ namespace Swim
                 Monitor.Log($"exception trying to get next to water: {ex}");
             }
 
-            //Monitor.Log("Distance: " + distance);
+            //Monitor.Log($"next to land: {nextToLand}, next to water: {nextToWater}");
 
 
             if (Helper.Input.IsDown(config.SwimKey) || nextToLand || nextToWater)
             {
-                Monitor.Log("okay to jump");
+                //Monitor.Log("okay to jump");
                 foreach (Vector2 tile in tiles)
                 {
                     bool isWater = false;
@@ -607,7 +655,7 @@ namespace Swim
             if (jumpLocation != Vector2.Zero)
             {
                 lastJump = Game1.player.millisecondsPlayed;
-                Monitor.Log("got swim location");
+                //Monitor.Log("got swim location");
                 if (Game1.player.swimming)
                 {
                     willSwim = false;
@@ -630,6 +678,229 @@ namespace Swim
                 endJumpLoc = new Vector2(jumpLocation.X * Game1.tileSize, jumpLocation.Y * Game1.tileSize);
             }
 
+        }
+
+        private static int abigailTicks;
+        private SButton[] abigailShootButtons = new SButton[] { 
+            SButton.Left,
+            SButton.Right,
+            SButton.Up,
+            SButton.Down
+        };
+
+        private void AbigailCaveTick()
+        {
+            Game1.exitActiveMenu();
+
+            Game1.player.CurrentToolIndex = Game1.player.items.Count;
+
+            List<NPC> list = Game1.currentLocation.characters.ToList().FindAll((n) => (n is Monster) && (n as Monster).Health <= 0);
+            foreach(NPC n in list)
+            {
+                Game1.currentLocation.characters.Remove(n);
+            }
+
+            if (abigailTicks < 0)
+            {
+                return;
+            }
+            if(abigailTicks == 0)
+            {
+                FieldInfo f1 = Game1.currentLocation.characters.GetType().GetField("OnValueRemoved", BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static);
+                f1.SetValue(Game1.currentLocation.characters, null);
+            }
+
+            Vector2 v = Vector2.Zero;
+            float yrt = (float)(1/Math.Sqrt(2));
+            if (Helper.Input.IsDown(SButton.Up))
+            {
+                if(Helper.Input.IsDown(SButton.Right))
+                    v = new Vector2(yrt, -yrt);
+                else if(Helper.Input.IsDown(SButton.Left))
+                    v = new Vector2(-yrt, -yrt);
+                else 
+                    v = new Vector2(0, -1);
+            }
+            else if (Helper.Input.IsDown(SButton.Down))
+            {
+                if(Helper.Input.IsDown(SButton.Right))
+                    v = new Vector2(yrt, yrt);
+                else if(Helper.Input.IsDown(SButton.Left))
+                    v = new Vector2(-yrt, yrt);
+                else 
+                    v = new Vector2(0, 1);
+            }
+            else if (Helper.Input.IsDown(SButton.Right))
+                v = new Vector2(1, 0);
+            else if (Helper.Input.IsDown(SButton.Left))
+                v = new Vector2(-1, 0);
+            else if (Helper.Input.IsDown(SButton.MouseLeft))
+            {
+                float x = Game1.viewport.X + Game1.getOldMouseX() - Game1.player.position.X;
+                float y = Game1.viewport.Y + Game1.getOldMouseY() - Game1.player.position.Y;
+                float dx = Math.Abs(x);
+                float dy = Math.Abs(y);
+                if(y < 0)
+                {
+                    if(x > 0)
+                    {
+                        if(dy > dx)
+                        {
+                            if (dy-dx > dy / 2)
+                                v = new Vector2(0, -1);
+                            else
+                                v = new Vector2(yrt, -yrt);
+
+                        }
+                        else
+                        {
+                            if (dx - dy > x / 2)
+                                v = new Vector2(1, 0);
+                            else
+                                v = new Vector2(yrt, -yrt);
+                        }
+                    }
+                    else
+                    {
+                        if (dy > dx)
+                        {
+                            if (dy - dx > dy / 2)
+                                v = new Vector2(0, -1);
+                            else
+                                v = new Vector2(-yrt, -yrt);
+
+                        }
+                        else
+                        {
+                            if (dx - dy > x / 2)
+                                v = new Vector2(-1, 0);
+                            else
+                                v = new Vector2(-yrt, -yrt);
+                        }
+                    }
+                }
+                else
+                {
+                    if (x > 0)
+                    {
+                        if (dy > dx)
+                        {
+                            if (dy - dx > dy / 2)
+                                v = new Vector2(0, 1);
+                            else
+                                v = new Vector2(yrt, yrt);
+
+                        }
+                        else
+                        {
+                            if (dx - dy > x / 2)
+                                v = new Vector2(1, 0);
+                            else
+                                v = new Vector2(yrt, yrt);
+                        }
+                    }
+                    else
+                    {
+                        if (dy > dx)
+                        {
+                            if (dy - dx > dy / 2)
+                                v = new Vector2(0, -1);
+                            else
+                                v = new Vector2(-yrt, yrt);
+
+                        }
+                        else
+                        {
+                            if (dx - dy > x / 2)
+                                v = new Vector2(-1, 0);
+                            else
+                                v = new Vector2(-yrt, yrt);
+                        }
+                    }
+                }
+            }
+
+            if (v != Vector2.Zero && Game1.player.millisecondsPlayed - lastProjectile > 250)
+            {
+                Game1.currentLocation.projectiles.Add(new BasicProjectile(1000, 379, 0, 0, 0, v.X * 5, v.Y * 5, new Vector2(Game1.player.getStandingX() - 16, Game1.player.getStandingY() - 64), "Cowboy_monsterDie", "Cowboy_gunshot", false, true, Game1.currentLocation, Game1.player, true, null)
+                {
+                    IgnoreLocationCollision = true
+                }); 
+                lastProjectile = Game1.player.millisecondsPlayed;
+            }
+
+            foreach (SButton button in abigailShootButtons)
+            {
+                if (Helper.Input.IsDown(button))
+                {
+                    switch (button)
+                    {
+                        case SButton.Up:
+                            break;
+                        case SButton.Right:
+                            v = new Vector2(1, 0);
+                            break;
+                        case SButton.Down:
+                            v = new Vector2(0, 1);
+                            break;
+                        default:
+                            v = new Vector2(-1, 0);
+                            break;
+                    }
+                }
+            }
+
+
+            abigailTicks++;
+            if(abigailTicks > 80000 / 16f)
+            {
+                if (Game1.currentLocation.characters.ToList().FindAll((n) => (n is Monster)).Count > 0)
+                    return;
+
+                abigailTicks = -1;
+                Game1.player.hat.Value = null;
+                Game1.stopMusicTrack(Game1.MusicContext.Default);
+                Game1.playSound("Cowboy_Secret");
+                AddScubaChests(Game1.currentLocation, new Vector2(8, 8), new Vector2(10, 8));
+                Game1.currentLocation.setMapTile(8, 16, 91, "Buildings", null);
+                Game1.currentLocation.setMapTile(9, 16, 92, "Buildings", null);
+                Game1.currentLocation.setTileProperty(9, 16, "Back", "Water", "T");
+                Game1.currentLocation.setMapTile(10, 16, 93, "Buildings", null);
+                Game1.currentLocation.setMapTile(8, 17, 107, "Buildings", null);
+                Game1.currentLocation.setMapTile(9, 17, 108, "Back", null);
+                Game1.currentLocation.setTileProperty(9, 17, "Back", "Water", "T");
+                Game1.currentLocation.removeTile(9, 17, "Buildings");
+                Game1.currentLocation.setMapTile(10, 17, 109, "Buildings", null); 
+                Game1.currentLocation.setMapTile(8, 18, 139, "Buildings", null);
+                Game1.currentLocation.setMapTile(9, 18, 140, "Buildings", null);
+                Game1.currentLocation.setMapTile(10, 18, 141, "Buildings", null);
+                AddWaterTiles(Game1.currentLocation);
+            }
+            else
+            {
+                if (Game1.random.NextDouble() < 0.04)
+                {
+                    int which = Game1.random.Next(3);
+                    Point p = new Point();
+                    switch (Game1.random.Next(4))
+                    {
+                        case 0:
+                            p = new Point(8 + which, 1);
+                            break;
+                        case 1:
+                            p = new Point(1, 8 + which);
+                            break;
+                        case 2:
+                            p = new Point(8 + which, 16);
+                            break;
+                        case 3:
+                            p = new Point(16, 8 + which);
+                            break;
+                    }
+                    Game1.currentLocation.characters.Add(new AbigailMetalHead(new Vector2(p.X * Game1.tileSize, p.Y * Game1.tileSize), 0));
+                }
+
+            }
         }
 
         private bool IsWearingScubaGear()

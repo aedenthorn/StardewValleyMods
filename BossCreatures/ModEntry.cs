@@ -512,19 +512,19 @@ namespace BossCreatures
 
                 if (objectToAdd < 0)
                 {
-                    location.debris.Add(new Debris(Math.Abs(objectToAdd), (int)Math.Round(Game1.random.Next(10, 40) * difficulty), new Vector2(x, y), playerPosition));
+                    location.debris.Add(Game1.createItemDebris(new StardewValley.Object(Math.Abs(objectToAdd), (int)Math.Round(Game1.random.Next(10, 40) * difficulty)), new Vector2(x, y), Game1.random.Next(4)));
 
                 }
                 else
                 {
                     while (chance > 1)
                     {
-                        location.debris.Add(new Debris(objectToAdd, new Vector2(x, y), playerPosition));
+                        location.debris.Add(Game1.createItemDebris(new StardewValley.Object(objectToAdd, 1), new Vector2(x, y), Game1.random.Next(4)));
                         chance -= 1;
                     }
                     if (Game1.random.NextDouble() < chance)
                     {
-                        location.debris.Add(new Debris(objectToAdd, new Vector2(x, y), playerPosition));
+                        location.debris.Add(Game1.createItemDebris(new StardewValley.Object(objectToAdd, 1), new Vector2(x, y), Game1.random.Next(4)));
                     }
                 }
             }

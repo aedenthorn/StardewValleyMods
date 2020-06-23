@@ -142,6 +142,19 @@ namespace Swim
                 Monitor.Log($"Failed in {nameof(Farmer_changeIntoSwimsuit_Postfix)}:\n{ex}", LogLevel.Error);
             }
         }
+        public static bool Toolbar_draw_Prefix(Farmer __instance)
+        {
+            try
+            {
+                if (Game1.currentLocation.Name == "AbigailCave")
+                    return false;
+            }
+            catch (Exception ex)
+            {
+                Monitor.Log($"Failed in {nameof(Farmer_changeIntoSwimsuit_Postfix)}:\n{ex}", LogLevel.Error);
+            }
+            return true;
+        }
 
 
     }

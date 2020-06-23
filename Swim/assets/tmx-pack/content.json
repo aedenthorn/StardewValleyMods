@@ -11,6 +11,10 @@
 		{
 			"name": "ScubaCave",
 			"file": "assets/Cave.tbin"
+		},
+		{
+			"name": "AbigailCave",
+			"file": "assets/Abigail.tbin"
 		}
 	]
 }

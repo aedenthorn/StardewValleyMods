@@ -45,6 +45,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="BigFishie.cs" />
+    <Compile Include="AbigailMetalHead.cs" />
     <Compile Include="IJsonAssetsApi.cs" />
     <Compile Include="ModConfig.cs" />
     <Compile Include="ModEntry.cs" />

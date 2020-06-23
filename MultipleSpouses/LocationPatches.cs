@@ -206,21 +206,7 @@ namespace MultipleSpouses
                 if (___oldMariner != null && ___oldMariner.getTileX() == tileLocation.X && ___oldMariner.getTileY() == tileLocation.Y)
                 {
                     string playerTerm = Game1.content.LoadString("Strings\\Locations:Beach_Mariner_Player_" + (who.IsMale ? "Male" : "Female"));
-                    if (who.specialItems.Contains(460) && !Utility.doesItemWithThisIndexExistAnywhere(460, false))
-                    {
-                        for (int i = who.specialItems.Count - 1; i >= 0; i--)
-                        {
-                            if (who.specialItems[i] == 460)
-                            {
-                                who.specialItems.RemoveAt(i);
-                            }
-                        }
-                    }
-                    if (who.specialItems.Contains(460))
-                    {
-                        Game1.drawObjectDialogue(Game1.parseText(Game1.content.LoadString("Strings\\Locations:Beach_Mariner_PlayerHasItem", playerTerm)));
-                    }
-                    else if (who.hasAFriendWithHeartLevel(10, true) && who.houseUpgradeLevel == 0)
+                    if (who.hasAFriendWithHeartLevel(10, true) && who.houseUpgradeLevel == 0)
                     {
                         Game1.drawObjectDialogue(Game1.parseText(Game1.content.LoadString("Strings\\Locations:Beach_Mariner_PlayerNotUpgradedHouse", playerTerm)));
                     }
