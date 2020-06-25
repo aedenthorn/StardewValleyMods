@@ -37,7 +37,12 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OutdoorButterflyHutch", "Ou
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Swim", "Swim\Swim.csproj", "{D06D6A79-D6AA-45E4-9E39-9D150F8A5365}"
 EndProject
+Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "_releases", "_releases\_releases.shproj", "{DAE274FA-6F23-42E4-B235-DF130EED1A00}"
+EndProject
 Global
+	GlobalSection(SharedMSBuildProjectFiles) = preSolution
+		_releases\_releases.projitems*{dae274fa-6f23-42e4-b235-df130eed1a00}*SharedItemsImports = 13
+	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
 		Debug|x86 = Debug|x86
