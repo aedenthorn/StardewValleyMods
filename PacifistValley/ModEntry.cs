@@ -635,6 +635,7 @@ namespace PacifistValley
 						Stats stats = Game1.stats;
 						uint monstersKilled = stats.MonstersKilled;
 						stats.MonstersKilled = monstersKilled + 1u;
+						monster.farmerPassesThrough = true;
 					}
 					if (damageAmount > 0 && who != null && damageAmount > 1 && Game1.player.CurrentTool != null && Game1.player.CurrentTool.Name.Equals("Dark Sword") && Game1.random.NextDouble() < 0.08)
 					{

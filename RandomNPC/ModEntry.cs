@@ -509,8 +509,7 @@ namespace RandomNPC
 
 		private string MakeGiftDialogue(RNPC npc)
 		{
-			List<string> potentialDialogue = new List<string>();
-			potentialDialogue = GetHighestRankedStrings(npc.npcString, RNPCgiftDialogueStrings.data, 7);
+			List<string> potentialDialogue = GetHighestRankedStrings(npc.npcString, RNPCgiftDialogueStrings.data, 7);
 			for (int j = 0; j < potentialDialogue.Count; j++)
 			{
 				string str = potentialDialogue[j];
@@ -519,10 +518,12 @@ namespace RandomNPC
 				{
 					tastes[i] += "/" + npc.giftTaste[i];
 				}
-				potentialDialogue[j] = String.Join("/", tastes);
+				potentialDialogue[j] = String.Join("/", tastes) + "/";
 			}
 
-			return potentialDialogue[Game1.random.Next(0, potentialDialogue.Count)];
+			string d = potentialDialogue[Game1.random.Next(0, potentialDialogue.Count)];
+			Monitor.Log($"{npc.nameID} gift taste: {d}");
+			return d;
 		}
 
 
@@ -862,7 +863,11 @@ namespace RandomNPC
 					data.Add("fquest_" + (fqi), rejections[Game1.random.Next(0, rejections.Count)]);
 				}
 			}
-
+			/*
+			fqi++;
+			questionString += "#$r 4343 0 fquest_" + (fqi) + "#" + farmerQuestions[fqi];
+			data.Add("fquest_" + (fqi), "...");
+			*/
 			//base.Monitor.Log(questionString, LogLevel.Alert);
 
 			foreach (string d in dow)

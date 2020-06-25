@@ -31,9 +31,9 @@ namespace Swim
         public override int takeDamage(int damage, int xTrajectory, int yTrajectory, bool isBomb, double addedPrecision, Farmer who)
         {
 			objectsToDrop.Clear();
-			int actualDamage = Math.Max(1, damage);
-			Health -= actualDamage;
-			return actualDamage;
+			if(currentLocation.characters.Contains(this))
+				currentLocation.characters.Remove(this);
+			return 1000;
 		}
         public override List<Item> getExtraDropItems()
         {
@@ -43,5 +43,9 @@ namespace Swim
         public override void Removed()
         {
         }
-    }
+        public override void onDealContactDamage(Farmer who)
+        {
+			Game1.playSound("cowboy_dead");
+		}
+	}
 }

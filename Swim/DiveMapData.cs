@@ -11,7 +11,8 @@ namespace Swim
     public class DiveMap
     {
         public string Name { get; set; }
-        public List<DiveLocation> DiveLocations { get; set; }
+        public List<string> Features { get; set; } = new List<string>();
+        public List<DiveLocation> DiveLocations { get; set; } = new List<DiveLocation>();
     }
 
     public class DiveLocation

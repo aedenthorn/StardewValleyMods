@@ -91,7 +91,6 @@
     <Content Include="assets\totally_not_weapons.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <None Include="config.json" />
     <None Include="manifest.json" />
     <None Include="packages.config" />
   </ItemGroup>

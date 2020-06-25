@@ -1,7 +1,14 @@
 ﻿{
-	maps:[
+	"maps":[
 		{
 			"Name":"UnderwaterBeach",
+			"Features":[
+				"SmolFishies",
+				"Crabs",
+				"OceanTreasure",
+				"OceanResources",
+				"Underwater"
+			],
 			"DiveLocations": [
 				{
 					"StartX":3,
@@ -29,6 +36,9 @@
 		},
 		{
 			"Name":"ScubaCrystalCave",
+			"Features":[
+				"WaterTiles",
+			],
 			"DiveLocations": [
 				{
 					"OtherMapName":"UnderwaterBeach",
@@ -57,6 +67,9 @@
 		},
 		{
 			"Name":"ScubaCave",
+			"Features":[
+				"WaterTiles",
+			],
 			"DiveLocations": [
 				{
 					"OtherMapName":"Forest",
@@ -81,6 +94,11 @@
 		},
 		{
 			"Name":"UnderwaterMountain",
+			"Features":[
+				"BigFishies",
+				"Minerals",
+				"Underwater"
+			],
 			"DiveLocations": [
 				{
 					"StartX":47,
