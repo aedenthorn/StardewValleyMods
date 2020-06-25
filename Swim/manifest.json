@@ -14,8 +14,9 @@
   },
   "UpdateKeys": ["Nexus:6326"],
   "Dependencies": [
-  {
-    "UniqueID": "Platonymous.ModUpdater",
-    "IsRequired": false
-  },
+      {
+        "UniqueID": "Platonymous.ModUpdater",
+        "IsRequired": false
+      },
+  ]
 }
