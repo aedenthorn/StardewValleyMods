@@ -279,8 +279,9 @@ namespace MultipleSpouses
 								{
 									Vector2 bedPos = Misc.GetSpouseBedPosition(fh, bedSpouses, character.name);
 									character.position.Value = bedPos;
-									if (!Game1.content.Load<Dictionary<string, string>>("Data\\animationDescriptions").ContainsKey(character.name.Value.ToLower() + "_sleep"))
+									if (!Misc.HasSleepingAnimation(character.name.Value))
 									{
+										character.Sprite.StopAnimation();
 										character.faceDirection(0);
 									}
 									character.HideShadow = true;

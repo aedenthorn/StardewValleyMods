@@ -97,6 +97,7 @@
     <Content Include="assets\Toddler_girl.png" />
     <Content Include="assets\Toddler_girl_dark.png" />
     <None Include="assets\CustomBed.tmx" />
+    <None Include="assets\underwater-map-content.json" />
     <None Include="assets\kiss.ogg" />
     <None Include="i18n\fr.json" />
     <None Include="i18n\es.json" />

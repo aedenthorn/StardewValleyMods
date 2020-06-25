@@ -84,7 +84,7 @@ namespace MultipleSpouses
                 
                 if(type < ModEntry.config.PercentChanceForSpouseInBed)
                 {
-                    if (bedSpouses.Count < GetBedWidth(farmHouse) && (ModEntry.config.RoommateRomance || !farmer.friendshipData[spouse.Name].IsRoommate()) && SleepAnimation(spouse.Name) != null)
+                    if (bedSpouses.Count < GetBedWidth(farmHouse) && (ModEntry.config.RoommateRomance || !farmer.friendshipData[spouse.Name].IsRoommate()) && HasSleepingAnimation(spouse.Name))
                     {
                         Monitor.Log("made bed spouse: " + spouse.Name);
                         bedSpouses.Add(spouse.Name);
@@ -135,7 +135,7 @@ namespace MultipleSpouses
                     Monitor.Log($"putting {j.Name} in bed");
                     j.position.Value = GetSpouseBedPosition(farmHouse, allBedSpouses, j.Name);
 
-                    if (SleepAnimation(j.Name) != null)
+                    if (HasSleepingAnimation(j.Name))
                     {
                         j.playSleepingAnimation();
                         j.followSchedule = true;
@@ -171,6 +171,24 @@ namespace MultipleSpouses
                 }
             }
 
+        }
+
+        public static bool HasSleepingAnimation(string name)
+        {
+            Texture2D tex = Helper.Content.Load<Texture2D>($"Characters/{name}", ContentSource.GameContent);
+
+            int sleepidx;
+            string sleepAnim = SleepAnimation(name);
+            if (sleepAnim == null)
+                return false;
+            else
+                sleepidx = int.Parse(sleepAnim.Split('/')[0]);
+
+            if ((sleepidx * 16) / 64 * 32 >= tex.Height)
+            {
+                return false;
+            }
+            return true;
         }
 
         private static string SleepAnimation(string name)
@@ -342,6 +360,12 @@ namespace MultipleSpouses
             else
                 sleepidx = int.Parse(sleepAnim.Split('/')[0]);
 
+            if ((sleepidx * 16) / 64 * 32 >= tex.Height)
+            {
+                sleepidx = 8;
+            }
+
+
             Color[] colors = new Color[tex.Width * tex.Height];
             tex.GetData(colors);
 
@@ -354,7 +378,12 @@ namespace MultipleSpouses
 
             for (int i = 0; i < 16 * 32; i++)
             {
-                int idx = startx + (starty * 64) + (i % 16) + ((i / 16) * 64);
+                int idx = startx + (i % 16) + (starty + i / 16) * 64;
+                if (idx >= colors.Length)
+                {
+                    Monitor.Log($"Sleep pos couldn't get pixel at {startx + i % 16},{starty + i / 16} ");
+                    return top;
+                }
                 Color c = colors[idx];
                 if(c != Color.Transparent)
                 {

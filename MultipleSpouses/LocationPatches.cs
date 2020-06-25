@@ -166,7 +166,7 @@ namespace MultipleSpouses
                     {
                         Maps.ExpandKidsRoom(__instance);
                     }
-                    __instance.showSpouseRoom();
+                    //__instance.showSpouseRoom();
                     Maps.BuildSpouseRooms(__instance);
                     if (ModEntry.config.CustomBed)
                     {

@@ -13,7 +13,11 @@
 			"file": "assets/Cave.tbin"
 		},
 		{
-			"name": "AbigailCave",
+			"name": "ScubaCrystalCave",
+			"file": "assets/CrystalCaveDark.tbin"
+		},
+		{
+			"name": "ScubaAbigailCave",
 			"file": "assets/Abigail.tbin"
 		}
 	]

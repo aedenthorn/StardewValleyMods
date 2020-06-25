@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection.Emit;
 using System.Threading.Tasks;
+using xTile.Dimensions;
 
 namespace Swim
 {
@@ -151,11 +152,149 @@ namespace Swim
             }
             catch (Exception ex)
             {
-                Monitor.Log($"Failed in {nameof(Farmer_changeIntoSwimsuit_Postfix)}:\n{ex}", LogLevel.Error);
+                Monitor.Log($"Failed in {nameof(Toolbar_draw_Prefix)}:\n{ex}", LogLevel.Error);
             }
             return true;
         }
 
 
+        public static IEnumerable<CodeInstruction> Wand_DoFunction_Transpiler(IEnumerable<CodeInstruction> instructions)
+        {
+
+            var codes = new List<CodeInstruction>(instructions);
+            try
+            {
+                int start = 0;
+                for (int i = 0; i < codes.Count; i++)
+                {
+                    if (codes[i].opcode == OpCodes.Ret)
+                    {
+                        start = i + 1;
+                        return codes.Skip(start).AsEnumerable();
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Monitor.Log($"Failed in {nameof(Wand_DoFunction_Transpiler)}:\n{ex}", LogLevel.Error);
+            }
+
+            return codes.AsEnumerable();
+        }
+        public static void GameLocation_resetForPlayerEntry_Prefix(GameLocation __instance)
+        {
+            try
+            {
+                if(__instance.Name == "ScubaCrystalCave")
+                {
+                    if (Game1.player.mailReceived.Contains("SwimMod_Mariner_Completed"))
+                    {
+                        __instance.mapPath.Value = "Maps\\CrystalCaveDark";
+                    }
+                    else
+                    {
+                        __instance.mapPath.Value = "Maps\\CrystalCave";
+                        ModEntry.oldMariner = new NPC(new AnimatedSprite("Characters\\Mariner", 0, 16, 32), new Vector2(10f, 7f) * 64f, 2, "Old Mariner", null);
+
+                    }
+                    //__instance.updateMap();
+                }
+            }
+            catch (Exception ex)
+            {
+                Monitor.Log($"Failed in {nameof(GameLocation_resetForPlayerEntry_Prefix)}:\n{ex}", LogLevel.Error);
+            }
+        }
+        public static void GameLocation_draw_Prefix(GameLocation __instance, SpriteBatch b)
+        {
+            try
+            {
+                if(__instance.Name == "ScubaCrystalCave")
+                {
+                    if (!Game1.player.mailReceived.Contains("SwimMod_Mariner_Completed"))
+                    {
+                        ModEntry.oldMariner.draw(b);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Monitor.Log($"Failed in {nameof(GameLocation_draw_Prefix)}:\n{ex}", LogLevel.Error);
+            }
+        }
+        public static bool GameLocation_isCollidingPosition_Prefix(GameLocation __instance, Microsoft.Xna.Framework.Rectangle position, xTile.Dimensions.Rectangle viewport, bool isFarmer, int damagesFarmer, bool glider, Character character, ref bool __result)
+        {
+            try
+            {
+                if(__instance.Name == "ScubaCrystalCave")
+                {
+                    if (!Game1.player.mailReceived.Contains("SwimMod_Mariner_Completed") && ModEntry.oldMariner != null && position.Intersects(ModEntry.oldMariner.GetBoundingBox()))
+                    {
+                        __result = true;
+                        return false;
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Monitor.Log($"Failed in {nameof(GameLocation_isCollidingPosition_Prefix)}:\n{ex}", LogLevel.Error);
+            }
+            return true;
+        }
+        public static void GameLocation_UpdateWhenCurrentLocation_Postfix(GameLocation __instance, GameTime time)
+        {
+            try
+            {
+                if (__instance.Name == "ScubaCrystalCave")
+                {
+                    if (!Game1.player.mailReceived.Contains("SwimMod_Mariner_Completed"))
+                    {
+                        if (ModEntry.oldMariner != null)
+                        {
+                            ModEntry.oldMariner.update(time, __instance);
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Monitor.Log($"Failed in {nameof(GameLocation_UpdateWhenCurrentLocation_Postfix)}:\n{ex}", LogLevel.Error);
+            }
+        }
+        public static void GameLocation_checkAction_Prefix(GameLocation __instance, Location tileLocation, xTile.Dimensions.Rectangle viewport, Farmer who)
+        {
+            try
+            {
+                if (__instance.Name == "ScubaCrystalCave")
+                {
+                    if (!who.mailReceived.Contains("SwimMod_Mariner_Completed"))
+                    {
+                        if (ModEntry.oldMariner != null && ModEntry.oldMariner.getTileX() == tileLocation.X && ModEntry.oldMariner.getTileY() == tileLocation.Y)
+                        {
+                            string playerTerm = Game1.content.LoadString("Strings\\Locations:Beach_Mariner_Player_" + (who.IsMale ? "Male" : "Female"));
+
+                            if (ModEntry.marinerQuestionsWrongToday)
+                            {
+                                string preface = Helper.Translation.Get("SwimMod_Mariner_Wrong_Today");
+                                Game1.drawObjectDialogue(string.Format(preface, playerTerm));
+                            }
+                            else
+                            {
+                                Response[] answers = new Response[]
+                                {
+                                new Response("SwimMod_Mariner_Questions_Yes", Game1.content.LoadString("Strings\\Lexicon:QuestionDialogue_Yes")),
+                                new Response("SwimMod_Mariner_Questions_No", Game1.content.LoadString("Strings\\Lexicon:QuestionDialogue_No"))
+                                };
+                                __instance.createQuestionDialogue(Game1.parseText(String.Format(Helper.Translation.Get(Game1.player.mailReceived.Contains("SwimMod_Mariner_Already") ? "SwimMod_Mariner_Questions_Old" : "SwimMod_Mariner_Questions").ToString(), playerTerm)), answers, "SwimMod_Mariner_Questions");
+                            }
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Monitor.Log($"Failed in {nameof(GameLocation_UpdateWhenCurrentLocation_Postfix)}:\n{ex}", LogLevel.Error);
+            }
+        }
     }
 }

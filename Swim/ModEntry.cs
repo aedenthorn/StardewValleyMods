@@ -28,8 +28,10 @@ namespace Swim
         
         private ModConfig config;
         private IJsonAssetsApi JsonAssets;
-        private int scubaMaskID = -1;
-        private int scubaTankID = -1;
+        public static int scubaMaskID = -1;
+        public static int scubaFinsID = -1;
+        public static int scubaTankID = -1;
+        public static List<int> scubaGear = new List<int>();
         private List<SButton> dirButtons = new List<SButton>();
         private bool myButtonDown = false;
         private ulong lastJump = 0;
@@ -40,6 +42,10 @@ namespace Swim
         private Vector2 endJumpLoc;
         private bool willSwim = false;
         private bool isUnderwater = false;
+        internal static NPC oldMariner;
+        public static bool marinerQuestionsWrongToday = false;
+        internal static Random myRand;
+        private Dictionary<string, DiveMap> underwaterMaps = new Dictionary<string, DiveMap>();
         public static Dictionary<string,bool> changeLocations = new Dictionary<string, bool> {
             {"UnderwaterMountain", false },
             {"Mountain", false },
@@ -52,11 +58,13 @@ namespace Swim
         private List<Vector2> bubbles = new List<Vector2>();
         private string[] diveLocations = new string[] {
             "Beach",
+            "Forest",
             "Mountain",
             "UnderwaterBeach",
             "UnderwaterMountain",
             "ScubaCave",
-            "AbigailCave",
+            "ScubaAbigailCave",
+            "ScubaCrystalCave",
         };
         public static List<string> fishTextures = new List<string>()
         {
@@ -82,8 +90,10 @@ namespace Swim
             if (!config.EnableMod)
                 return;
 
-
+            myRand = new Random();
+            
             SwimPatches.Initialize(Monitor, helper, config);
+            SwimDialog.Initialize(Monitor, helper, config);
 
             foreach (InputButton ib in Game1.options.moveUpButton)
             {
@@ -144,20 +154,49 @@ namespace Swim
                original: AccessTools.Method(typeof(Toolbar), nameof(Toolbar.draw), new Type[] { typeof(SpriteBatch) }),
                prefix: new HarmonyMethod(typeof(SwimPatches), nameof(SwimPatches.Toolbar_draw_Prefix))
             );
+
+            harmony.Patch(
+               original: AccessTools.Method(typeof(Wand), nameof(Wand.DoFunction)),
+               transpiler: new HarmonyMethod(typeof(SwimPatches), nameof(SwimPatches.Wand_DoFunction_Transpiler))
+            );
+
+            harmony.Patch(
+               original: AccessTools.Method(typeof(GameLocation), nameof(GameLocation.draw)),
+               prefix: new HarmonyMethod(typeof(SwimPatches), nameof(SwimPatches.GameLocation_draw_Prefix))
+            );
+
+            harmony.Patch(
+               original: AccessTools.Method(typeof(GameLocation), nameof(GameLocation.UpdateWhenCurrentLocation)),
+               postfix: new HarmonyMethod(typeof(SwimPatches), nameof(SwimPatches.GameLocation_UpdateWhenCurrentLocation_Postfix))
+            );
+
+            harmony.Patch(
+               original: AccessTools.Method(typeof(GameLocation), nameof(GameLocation.resetForPlayerEntry)),
+               prefix: new HarmonyMethod(typeof(SwimPatches), nameof(SwimPatches.GameLocation_resetForPlayerEntry_Prefix))
+            );
+
+            harmony.Patch(
+               original: AccessTools.Method(typeof(GameLocation), nameof(GameLocation.isCollidingPosition), new Type[] { typeof(Rectangle), typeof(xTile.Dimensions.Rectangle), typeof(bool), typeof(int), typeof(bool), typeof(Character) }),
+               prefix: new HarmonyMethod(typeof(SwimPatches), nameof(SwimPatches.GameLocation_isCollidingPosition_Prefix))
+            );
+
+            harmony.Patch(
+               original: AccessTools.Method(typeof(GameLocation), nameof(GameLocation.checkAction)),
+               prefix: new HarmonyMethod(typeof(SwimPatches), nameof(SwimPatches.GameLocation_checkAction_Prefix))
+            );
+
         }
 
         private void Player_Warped(object sender, WarpedEventArgs e)
         {
-            if(e.NewLocation.Name == "AbigailCave")
+            if (e.NewLocation.Name == "ScubaAbigailCave")
             {
                 abigailTicks = 0;
+                e.NewLocation.characters.Clear();
 
-                if(Game1.player.hat != null)
+                if(Game1.player.hat.Value != null && Game1.player.hat.Value.parentSheetIndex != 0)
                     Game1.player.addItemToInventory(Game1.player.hat.Value);
                 Game1.player.hat.Value = new Hat(0);
-                //Game1.player.shirt.Value = 1131;
-                //Game1.player.pants.Value = -1;
-                //Game1.player.boots.Value = new Boots(515);
             }
         }
 
@@ -166,22 +205,30 @@ namespace Swim
             if (e.Player != Game1.player)
                 return;
 
-            if (!Game1.player.mailReceived.Contains("ScubaGear") && scubaMaskID != -1 && scubaTankID != -1)
+            if (!Game1.player.mailReceived.Contains("ScubaTank") && scubaTankID != -1 && e.Added != null && e.Added.Count() > 0 && e.Added.FirstOrDefault() != null && e.Added.FirstOrDefault().parentSheetIndex != null && e.Added.FirstOrDefault().GetType() == typeof(Clothing) && e.Added.FirstOrDefault().parentSheetIndex == scubaTankID)
             {
-                if(e.Added != null && e.Added.Count() > 0 && e.Added.FirstOrDefault() != null && e.Added.FirstOrDefault().parentSheetIndex != null && e.Added.FirstOrDefault().parentSheetIndex == scubaMaskID || e.Added.FirstOrDefault().parentSheetIndex == scubaTankID)
-                {
-                    Monitor.Log("Player found scuba gear");
-                    Game1.player.mailReceived.Add("ScubaGear");
-                }
+                Monitor.Log("Player found scuba tank");
+                Game1.player.mailReceived.Add("ScubaTank");
+            }
+            if (!Game1.player.mailReceived.Contains("ScubaMask") && scubaMaskID != -1 && e.Added != null && e.Added.Count() > 0 && e.Added.FirstOrDefault() != null && e.Added.FirstOrDefault().parentSheetIndex != null && e.Added.FirstOrDefault().GetType() == typeof(Hat) && (e.Added.FirstOrDefault() as Hat).which == scubaMaskID)
+            {
+                Monitor.Log("Player found scuba mask");
+                Game1.player.mailReceived.Add("ScubaMask");
+            }
+            if (!Game1.player.mailReceived.Contains("ScubaFins") && scubaFinsID != -1 && e.Added != null && e.Added.Count() > 0 && e.Added.FirstOrDefault() != null && e.Added.FirstOrDefault().parentSheetIndex != null && e.Added.FirstOrDefault().GetType() == typeof(Boots) && e.Added.FirstOrDefault().parentSheetIndex == scubaFinsID)
+            {
+                Monitor.Log("Player found scuba fins");
+                Game1.player.mailReceived.Add("ScubaFins");
             }
         }
-
         private void GameLoop_SaveLoaded(object sender, SaveLoadedEventArgs e)
         {
+            scubaGear.Clear();
             if (JsonAssets != null)
             {
                 scubaMaskID = JsonAssets.GetHatId("Scuba Mask");
                 scubaTankID = JsonAssets.GetClothingId("Scuba Tank");
+
                 if (scubaMaskID == -1)
                 {
                     Monitor.Log("Can't get ID for Scuba Mask. Some functionality will be lost.", LogLevel.Warn);
@@ -189,7 +236,9 @@ namespace Swim
                 else
                 {
                     Monitor.Log(string.Format("Scuba Mask ID is {0}.", scubaMaskID), LogLevel.Debug);
+                    scubaGear.Add(scubaMaskID);
                 }
+
                 if (scubaTankID == -1)
                 {
                     Monitor.Log("Can't get ID for Scuba Tank. Some functionality will be lost.", LogLevel.Warn);
@@ -197,8 +246,25 @@ namespace Swim
                 else
                 {
                     Monitor.Log(string.Format("Scuba Tank ID is {0}.", scubaTankID), LogLevel.Debug);
+                    scubaGear.Add(scubaTankID);
+                }
+
+                try
+                {
+                    scubaFinsID = Helper.Content.Load<Dictionary<int, string>>(@"Data/Boots", ContentSource.GameContent).First(x => x.Value.StartsWith("Scuba Fins")).Key;
+                }
+                catch
+                {
+                    Monitor.Log("Can't get ID for Scuba Fins. Some functionality will be lost.", LogLevel.Warn);
+                }
+                if (scubaFinsID != -1)
+                {
+                    Monitor.Log(string.Format("Scuba Fins ID is {0}.", scubaFinsID), LogLevel.Debug);
+                    scubaGear.Add(scubaFinsID);
                 }
             }
+            if (!IsWearingScubaGear() && config.SwimSuitAlways)
+                Game1.player.changeIntoSwimsuit();
         }
 
         public static int ticksUnderwater = 0;
@@ -244,12 +310,12 @@ namespace Swim
 
         private void GameLoop_GameLaunched(object sender, GameLaunchedEventArgs e)
         {
-            IContentPack contentPack = this.Helper.ContentPacks.CreateFake(Path.Combine(this.Helper.DirectoryPath, "assets/tmx-pack"));
+            IContentPack TMXcontentPack = this.Helper.ContentPacks.CreateFake(Path.Combine(this.Helper.DirectoryPath, "assets/tmx-pack"));
 
             object api = Helper.ModRegistry.GetApi("Platonymous.TMXLoader");
             if (api != null)
             {
-                Helper.Reflection.GetMethod(api, "AddContentPack").Invoke(contentPack);
+                Helper.Reflection.GetMethod(api, "AddContentPack").Invoke(TMXcontentPack);
             }
 
             JsonAssets = Helper.ModRegistry.GetApi<IJsonAssetsApi>("spacechase0.JsonAssets");
@@ -261,6 +327,41 @@ namespace Swim
             else
             {
                 this.JsonAssets.LoadAssets(Path.Combine(base.Helper.DirectoryPath, "assets/json-assets"));
+            }
+
+            // load underwater maps
+
+            try
+            {
+                DiveMapData myData = Helper.Data.ReadJsonFile<DiveMapData>("assets/underwater-map-content.json") ?? new DiveMapData();
+                Monitor.Log($"Reading content pack from assets/underwater-map-content.json");
+                foreach (DiveMap map in myData.maps)
+                {
+                    underwaterMaps.Add(map.name, map);
+                    Monitor.Log($"added underwater map: {map.name}", LogLevel.Debug);
+                }
+            }
+            catch
+            {
+                Monitor.Log($"assets/underwater-map-content.json file not found in mod dir", LogLevel.Warn);
+            }
+
+            foreach (IContentPack contentPack in Helper.ContentPacks.GetOwned())
+            {
+                try
+                {
+                    Monitor.Log($"Reading content pack: {contentPack.Manifest.Name} {contentPack.Manifest.Version} from {contentPack.DirectoryPath}");
+                    DiveMapData data = contentPack.ReadJsonFile<DiveMapData>("content.json");
+                    foreach(DiveMap map in data.maps)
+                    {
+                        underwaterMaps.Add(map.name, map);
+                        Monitor.Log($"added underwater map: {map.name}", LogLevel.Debug);
+                    }
+                }
+                catch
+                {
+                    Monitor.Log($"content.json file not found in content pack {contentPack.Manifest.Name}", LogLevel.Warn);
+                }
             }
         }
 
@@ -277,17 +378,26 @@ namespace Swim
             if (Game1._locationLookup.ContainsKey("ScubaCave"))
             {
                 AddWaterTiles(Game1._locationLookup["ScubaCave"]);
-                AddScubaChests(Game1._locationLookup["ScubaCave"], new Vector2(10,14), new Vector2(11,14));
+                AddWaterTiles(Game1._locationLookup["ScubaCrystalCave"]);
+                AddScubaChest(Game1._locationLookup["ScubaCave"], new Vector2(10,14), "ScubaMask");
             }
+            marinerQuestionsWrongToday = false;
             oxygen = MaxOxygen();
         }
 
-        private void AddScubaChests(GameLocation gameLocation, Vector2 pos, Vector2 pos2)
+        public static void AddScubaChest(GameLocation gameLocation, Vector2 pos, string which)
         {
-            if (!Game1.player.mailReceived.Contains("ScubaGear") && scubaMaskID != -1 && scubaTankID != -1)
+            if (which == "ScubaTank" && !Game1.player.mailReceived.Contains(which))
             {
                 gameLocation.overlayObjects[pos] = new Chest(0, new List<Item>() { new Clothing(scubaTankID) }, pos, false, 0);
-                gameLocation.overlayObjects[pos2] = new Chest(0, new List<Item>() { new Hat(scubaMaskID) }, pos2, false, 0);
+            }
+            else if (which == "ScubaMask" && !Game1.player.mailReceived.Contains(which))
+            {
+                gameLocation.overlayObjects[pos] = new Chest(0, new List<Item>() { new Hat(scubaMaskID) }, pos, false, 0);
+            }
+            else if (which == "ScubaFins" && !Game1.player.mailReceived.Contains(which))
+            {
+                gameLocation.overlayObjects[pos] = new Chest(0, new List<Item>() { new Boots(scubaFinsID) }, pos, false, 0);
             }
         }
         private void AddWaterTiles(GameLocation gameLocation)
@@ -330,10 +440,33 @@ namespace Swim
 
         private void Input_ButtonPressed(object sender, ButtonPressedEventArgs e)
         {
-            if (Game1.player == null || Game1.currentLocation == null || Game1.activeClickableMenu != null)
+            if (Game1.player == null || Game1.currentLocation == null)
             {
                 myButtonDown = false;
                 return;
+            }
+
+            if (Game1.activeClickableMenu != null && Game1.currentLocation.Name == "ScubaCrystalCave" && Game1.currentLocation.lastQuestionKey.StartsWith("SwimMod_Mariner_"))
+            {
+                IClickableMenu menu = Game1.activeClickableMenu;
+                if (menu == null || menu.GetType() != typeof(DialogueBox))
+                    return;
+                int resp = (int)typeof(DialogueBox).GetField("selectedResponse", BindingFlags.NonPublic | BindingFlags.Instance).GetValue(menu);
+                List<Response> resps = (List<Response>)typeof(DialogueBox).GetField("responses", BindingFlags.NonPublic | BindingFlags.Instance).GetValue(menu);
+
+                if (resp < 0 || resps == null || resp >= resps.Count || resps[resp] == null)
+                    return;
+                Game1.currentLocation.lastQuestionKey = ""; 
+                
+                SwimDialog.OldMarinerDialogue(resps[resp].responseKey);
+                return;
+            }
+
+
+
+            if(false && e.Button == SButton.Q)
+            {
+                Game1.currentLocation.overlayObjects[Game1.player.getTileLocation() + new Vector2(0, 1)] = new Chest(0, new List<Item>() { Helper.Input.IsDown(SButton.LeftShift) ? (Item)(new StardewValley.Object(434, 1)) : (new Hat(scubaMaskID)) }, Game1.player.getTileLocation() + new Vector2(0, 1), false, 0);
             }
 
             if (e.Button == config.DiveKey && diveLocations.Contains(Game1.currentLocation.Name))
@@ -343,28 +476,55 @@ namespace Swim
                 if (Game1.currentLocation.waterTiles != null && !Game1.currentLocation.waterTiles[pos.X, pos.Y] && !Game1.currentLocation.Name.StartsWith("Underwater"))
                     return;
 
-                Game1.playSound("pullItemFromWater");
-
                 string newName;
 
                 if (Game1.currentLocation.Name == "UnderwaterBeach" && pos.X > 2 && pos.X < 7 && pos.Y > 26 && pos.Y < 29)
                 {
-                    newName = "ScubaCave";
-                    pos = new Point(9,6);
+                    newName = "ScubaCrystalCave";
+                    pos = new Point(10,12);
                 }
-                else if(Game1.currentLocation.Name == "ScubaCave")
+                else if(Game1.currentLocation.Name == "ScubaCrystalCave")
                 {
                     newName = "UnderwaterBeach";
                     pos = new Point(5,28);
+                }
+                else if (Game1.currentLocation.Name == "Forest")
+                {
+                    if ((new Point[] {
+                        new Point(35,30),
+                        new Point(35,36),
+                        new Point(36,29),
+                        new Point(36,30),
+                        new Point(36,35),
+                        new Point(36,36),
+                        new Point(37,29),
+                        new Point(37,36),
+                        new Point(38,29),
+                        new Point(38,36),
+                        new Point(39,29),
+                    }).Contains(pos) || (pos.X > 36 && pos.X < 41 && pos.Y > 29 && pos.Y < 36))
+                    {
+                        newName = "ScubaCave";
+                        pos = new Point(9, 6);
+                    }
+                    else
+                    {
+                        return;
+                    }
+                }
+                else if(Game1.currentLocation.Name == "ScubaCave")
+                {
+                    newName = "Forest";
+                    pos = new Point(38,33);
                 }
                 else if (Game1.currentLocation.Name == "UnderwaterMountain" && pos.X > 46 && pos.X < 49 && pos.Y == 4)
                 {
                     Game1.player.swimming.Value = false;
                     Game1.player.changeOutOfSwimSuit();
-                    newName = "AbigailCave";
+                    newName = "ScubaAbigailCave";
                     pos = new Point(9,6);
                 }
-                else if(Game1.currentLocation.Name == "AbigailCave")
+                else if(Game1.currentLocation.Name == "ScubaAbigailCave")
                 {
                     Game1.player.swimming.Value = true;
                     Game1.player.changeIntoSwimsuit();
@@ -380,6 +540,7 @@ namespace Swim
                     Monitor.Log($"Can't find map named {newName}", LogLevel.Warn);
                     return;
                 }
+                Game1.playSound("pullItemFromWater");
                 Game1.warpFarmer(newName, pos.X, pos.Y, false);
                 if (!Game1.currentLocation.Name.StartsWith("Underwater"))
                 {
@@ -443,18 +604,25 @@ namespace Swim
 
         private void GameLoop_UpdateTicked(object sender, UpdateTickedEventArgs e)
         {
-            if (Game1.currentLocation == null || Game1.player == null)
+            if (Game1.currentLocation == null || Game1.player == null || !Game1.displayFarmer || Game1.player.position == null)
                 return;
 
-            if(Game1.currentLocation.Name == "AbigailCave")
+            if(Game1.currentLocation.Name == "ScubaAbigailCave")
             {
                 AbigailCaveTick();
             }
 
             if (Game1.player.swimming) {
-                if(Game1.player.position.Y > Game1.viewport.Y + Game1.viewport.Height + 64)
+                if (!IsInWater())
                 {
-                    Game1.player.position.Value = new Vector2(Game1.player.position.X, Game1.viewport.Y + Game1.viewport.Height + 63);
+                    Game1.player.swimming.Value = false;
+                    if (Game1.player.bathingClothes && !config.SwimSuitAlways)
+                        Game1.player.changeOutOfSwimSuit();
+                }
+
+                if(Game1.player.position.Y > Game1.viewport.Y + Game1.viewport.Height - 16)
+                {
+                    Game1.player.position.Value = new Vector2(Game1.player.position.X, Game1.viewport.Y + Game1.viewport.Height - 17);
                     if (Game1.currentLocation.Name == "Mountain")
                     {
                         Game1.warpFarmer("Town",94,0, false);
@@ -464,9 +632,9 @@ namespace Swim
                         Game1.warpFarmer("Beach", 59, 0, false);
                     }
                 }
-                else if(Game1.player.position.Y < Game1.viewport.Y - 64)
+                else if(Game1.player.position.Y < Game1.viewport.Y - 16)
                 {
-                    Game1.player.position.Value = new Vector2(Game1.player.position.X, Game1.viewport.Y - 63);
+                    Game1.player.position.Value = new Vector2(Game1.player.position.X, Game1.viewport.Y - 15);
                     if (Game1.currentLocation.Name == "Town")
                     {
                         Game1.warpFarmer("Mountain",72,40, false);
@@ -476,9 +644,9 @@ namespace Swim
                         Game1.warpFarmer("Town", 90, 109, false);
                     }
                 }
-                else if(Game1.player.position.X > Game1.viewport.X + Game1.viewport.Width + 64)
+                else if(Game1.player.position.X > Game1.viewport.X + Game1.viewport.Width - 8)
                 {
-                    Game1.player.position.Value = new Vector2(Game1.viewport.X + Game1.viewport.Width + 63, Game1.player.position.Y);
+                    Game1.player.position.Value = new Vector2(Game1.viewport.X + Game1.viewport.Width - 9, Game1.player.position.Y);
                     if (Game1.currentLocation.Name == "Forest")
                     {
                         if(Game1.player.position.Y / 64 > 74)
@@ -487,9 +655,9 @@ namespace Swim
                             Game1.warpFarmer("Town", 0,100, false);
                     }
                 }
-                else if(Game1.player.position.X < Game1.viewport.X - 64)
+                else if(Game1.player.position.X < Game1.viewport.X - 8)
                 {
-                    Game1.player.position.Value = new Vector2(Game1.viewport.X - 63, Game1.player.position.Y);
+                    Game1.player.position.Value = new Vector2(Game1.viewport.X - 7, Game1.player.position.Y);
                     if (Game1.currentLocation.Name == "Town")
                     {
                         Game1.warpFarmer("Forest",119,43, false);
@@ -505,7 +673,20 @@ namespace Swim
                 else if (!Game1.player.bathingClothes && (!IsWearingScubaGear() || config.SwimSuitAlways))
                     Game1.player.changeIntoSwimsuit();
 
-
+                if (Game1.player.boots.Value != null && Game1.player.boots.Value.indexInTileSheet == scubaFinsID)
+                {
+                    int buffId = 42883167;
+                    Buff buff = Game1.buffsDisplay.otherBuffs.FirstOrDefault((Buff p) => p.which == buffId);
+                    if (buff == null)
+                    {
+                        BuffsDisplay buffsDisplay = Game1.buffsDisplay;
+                        Buff buff2 = new Buff(0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 1, "Scuba Fins", Helper.Translation.Get("scuba-fins"));
+                        buff2.which = buffId;
+                        buff = buff2;
+                        buffsDisplay.addOtherBuff(buff2);
+                    }
+                    buff.millisecondsDuration = 50;
+                }
             }
             if (Game1.activeClickableMenu == null)
             {
@@ -612,9 +793,9 @@ namespace Swim
                         || !Game1.currentLocation.isTilePassable(new Location((int)tiles.Last().X, (int)tiles.Last().Y), Game1.viewport) && Game1.currentLocation.waterTiles[(int)tiles[tiles.Count - 2].X, (int)tiles[tiles.Count - 2].Y])
                     && distance < maxDistance;
             }
-            catch(Exception ex)
+            catch
             {
-                Monitor.Log($"exception trying to get next to water: {ex}");
+                //Monitor.Log($"exception trying to get next to water: {ex}");
             }
 
             //Monitor.Log($"next to land: {nextToLand}, next to water: {nextToWater}");
@@ -690,7 +871,6 @@ namespace Swim
 
         private void AbigailCaveTick()
         {
-            Game1.exitActiveMenu();
 
             Game1.player.CurrentToolIndex = Game1.player.items.Count;
 
@@ -704,7 +884,9 @@ namespace Swim
             {
                 return;
             }
-            if(abigailTicks == 0)
+            Game1.exitActiveMenu();
+
+            if (abigailTicks == 0)
             {
                 FieldInfo f1 = Game1.currentLocation.characters.GetType().GetField("OnValueRemoved", BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static);
                 f1.SetValue(Game1.currentLocation.characters, null);
@@ -822,7 +1004,7 @@ namespace Swim
 
             if (v != Vector2.Zero && Game1.player.millisecondsPlayed - lastProjectile > 250)
             {
-                Game1.currentLocation.projectiles.Add(new BasicProjectile(1000, 379, 0, 0, 0, v.X * 5, v.Y * 5, new Vector2(Game1.player.getStandingX() - 16, Game1.player.getStandingY() - 64), "Cowboy_monsterDie", "Cowboy_gunshot", false, true, Game1.currentLocation, Game1.player, true, null)
+                Game1.currentLocation.projectiles.Add(new BasicProjectile(1000, 383, 0, 0, 0, v.X * 5, v.Y * 5, new Vector2(Game1.player.getStandingX() - 16, Game1.player.getStandingY() - 64), "Cowboy_monsterDie", "Cowboy_gunshot", false, true, Game1.currentLocation, Game1.player, true, null)
                 {
                     IgnoreLocationCollision = true
                 }); 
@@ -849,7 +1031,7 @@ namespace Swim
                     }
                 }
             }
-
+             
 
             abigailTicks++;
             if(abigailTicks > 80000 / 16f)
@@ -861,7 +1043,7 @@ namespace Swim
                 Game1.player.hat.Value = null;
                 Game1.stopMusicTrack(Game1.MusicContext.Default);
                 Game1.playSound("Cowboy_Secret");
-                AddScubaChests(Game1.currentLocation, new Vector2(8, 8), new Vector2(10, 8));
+                AddScubaChest(Game1.currentLocation, new Vector2(8, 8), "ScubaFins");
                 Game1.currentLocation.setMapTile(8, 16, 91, "Buildings", null);
                 Game1.currentLocation.setMapTile(9, 16, 92, "Buildings", null);
                 Game1.currentLocation.setTileProperty(9, 16, "Back", "Water", "T");
@@ -909,6 +1091,22 @@ namespace Swim
             bool mask = scubaMaskID != -1 && Game1.player.hat != null && Game1.player.hat.Value != null && Game1.player.hat.Value.which != null &&  Game1.player.hat.Value.which == scubaMaskID;
 
             return tank && mask;
+        }
+
+        private bool IsInWater()
+        {
+            var tiles = Game1.player.currentLocation.waterTiles;
+            Point p = Game1.player.getTileLocationPoint();
+            return (
+                    tiles != null 
+                    && tiles.GetLength(0) > p.X 
+                    && tiles.GetLength(1) > p.Y
+                    && tiles[p.X, p.Y]
+                )
+                || Game1.currentLocation.Name.StartsWith("Underwater")
+                || tiles.GetLength(0) <= p.X
+                || tiles.GetLength(1) <= p.Y
+                ;
         }
 
         private int MaxOxygen()
@@ -1509,6 +1707,13 @@ namespace Swim
                 return true;
             }
 
+            string name = asset.AssetName.Replace("/", "\\");
+
+            if (name.Equals("Maps\\CrystalCave") || name.Equals("Maps\\CrystalCaveDark"))
+            {
+                return true;
+            }
+
 
             return false;
         }
@@ -1519,6 +1724,15 @@ namespace Swim
         {
             Monitor.Log($"loading asset for {asset.AssetName}");
 
+
+            string name = asset.AssetName.Replace("/", "\\");
+
+            if (name.Equals("Maps\\CrystalCave") || name.Equals("Maps\\CrystalCaveDark"))
+            {
+                return (T)(object)Helper.Content.Load<Map>($"assets/tmx-pack/assets/{name.Substring(5)}.tbin");
+            }
+
+             
             if (asset.AssetName.StartsWith("Fishies"))
             {
                 return (T)(object)Helper.Content.Load<Texture2D>($"assets/{asset.AssetName}.png");
@@ -1561,7 +1775,7 @@ namespace Swim
                         if (doesTileHaveProperty(map.Data, x, y, "Water", "Back") != null)
                         {
                             Tile tile = map.Data.GetLayer("Back").PickTile(new Location(x, y) * Game1.tileSize, Game1.viewport.Size);
-                            if (tile != null && mapName != "Beach")
+                            if (tile != null && (((mapName == "Beach" || mapName == "UnderwaterBeach") && x > 58 && x < 61 && y > 11 && y < 15) || mapName != "Beach"))
                             {
                                 if (tile.TileIndexProperties.ContainsKey("Passable"))
                                 {
@@ -1590,8 +1804,9 @@ namespace Swim
                             tile = map.Data.GetLayer("Buildings").PickTile(new Location(x, y) * Game1.tileSize, Game1.viewport.Size);
                             if (tile != null)
                             {
-                                if ((mapName == "Beach" && x > 58 && x < 61 && y > 11 && y < 15) ||
-                                    (mapName != "Beach"
+                                if (
+                                    ((mapName == "Beach" || mapName == "UnderwaterBeach") && x > 58 && x < 61 && y > 11 && y < 15) ||
+                                    (mapName != "Beach" && mapName != "UnderwaterBeach"
                                         && ((tile.TileIndex > 1292 && tile.TileIndex < 1297) || (tile.TileIndex > 1317 && tile.TileIndex < 1322)
                                             || (tile.TileIndex % 25 > 17 && tile.TileIndex / 25 < 53 && tile.TileIndex / 25 > 48)
                                             || (tile.TileIndex % 25 > 1 && tile.TileIndex % 25 < 7 && tile.TileIndex / 25 < 53 && tile.TileIndex / 25 > 48)
@@ -1614,10 +1829,6 @@ namespace Swim
                                         tile.TileIndexProperties.Add("Passable", "T");
                                     }
 
-                                }
-                                else if (mapName == "Beach")
-                                {
-                                    tile.TileIndexProperties.Remove("Passable");
                                 }
                             }
                         }

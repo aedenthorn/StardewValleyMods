@@ -25,7 +25,14 @@ namespace WitcherMod
             if (!config.EnableMod)
                 return false;
 
-            if (asset.AssetNameEquals("Characters/Dialogue/Elliott") || asset.AssetNameEquals("Portraits/Abigail") || asset.AssetNameEquals("Portraits/Elliott") || asset.AssetNameEquals("Portraits/Penny") || asset.AssetNameEquals("Characters/Abigail") || asset.AssetNameEquals("Characters/Elliott") || asset.AssetNameEquals("Characters/Penny"))
+            if (
+                (config.EnableGeralt 
+                    && ((config.EnableDialogueChanges && asset.AssetNameEquals("Characters/Dialogue/Elliott")) || asset.AssetNameEquals("Portraits/Elliott") || asset.AssetNameEquals("Characters/Elliott")))
+                || (config.EnableYennifer 
+                    && (asset.AssetNameEquals("Portraits/Abigail") || asset.AssetNameEquals("Characters/Abigail"))) 
+                || (config.EnableTriss 
+                    && (asset.AssetNameEquals("Portraits/Penny")  || asset.AssetNameEquals("Characters/Penny")))
+                )
             {
                 return true;
             }
@@ -53,9 +60,9 @@ namespace WitcherMod
         /// <param name="asset">Basic metadata about the asset being loaded.</param>
         public bool CanEdit<T>(IAssetInfo asset)
         {
-            if (!config.EnableMod)
+            if (!config.EnableMod || !config.EnableDialogueChanges)
                 return false;
-            if (asset.DataType == typeof(Dictionary<int, string>) || asset.DataType == typeof(Dictionary<string, string>))
+            if (asset.AssetNameEquals("Data/NPCDispositions") || asset.AssetName.StartsWith("Characters/Dialogue/") || asset.AssetName.StartsWith("Characters\\Dialogue\\"))
             {
                 return true;
             }
@@ -70,9 +77,12 @@ namespace WitcherMod
             if (asset.AssetNameEquals("Data/NPCDispositions"))
             {
                 IDictionary<string, string> data = asset.AsDictionary<string, string>().Data;
-                data["Elliott"] = Regex.Replace(data["Elliott"],@"/[^/]+$", "/Geralt");
-                data["Abigail"] = Regex.Replace(data["Abigail"],@"/[^/]+$", "/Yennifer");
-                data["Penny"] = Regex.Replace(data["Penny"],@"/[^/]+$", "/Triss");
+                if (config.EnableGeralt)
+                    data["Elliott"] = Regex.Replace(data["Elliott"],@"/[^/]+$", "/Geralt");
+                if(config.EnableYennifer)
+                    data["Abigail"] = Regex.Replace(data["Abigail"],@"/[^/]+$", "/Yennifer");
+                if (config.EnableTriss)
+                    data["Penny"] = Regex.Replace(data["Penny"],@"/[^/]+$", "/Triss");
             }
             else if (asset.AssetName.StartsWith("Characters/Dialogue/") || asset.AssetName.StartsWith("Characters\\Dialogue\\"))
             {
@@ -80,10 +90,15 @@ namespace WitcherMod
                 List<string> keys = new List<string>(data.Keys);
                 foreach (string key in keys)
                 {
-                    data[key] = Regex.Replace(data[key], @"Elliott", "Geralt");
-                    data[key] = Regex.Replace(data[key], @"Abigail", "Yennifer");
-                    data[key] = Regex.Replace(data[key], @"Abby", "Yenn");
-                    data[key] = Regex.Replace(data[key], @"Penny", "Triss");
+                    if (config.EnableGeralt)
+                        data[key] = Regex.Replace(data[key], @"Elliott", "Geralt");
+                    if (config.EnableYennifer)
+                    {
+                        data[key] = Regex.Replace(data[key], @"Abigail", "Yennifer");
+                        data[key] = Regex.Replace(data[key], @"Abby", "Yenn");
+                    }
+                    if (config.EnableTriss)
+                        data[key] = Regex.Replace(data[key], @"Penny", "Triss");
                 }
             }
         }

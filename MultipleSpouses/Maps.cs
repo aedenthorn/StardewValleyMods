@@ -51,11 +51,16 @@ namespace MultipleSpouses
 		{
 			try
 			{
+				if(farmHouse is Cabin)
+                {
+					Monitor.Log("BuildSpouseRooms for Cabin");
+				}
+
 				Farmer f = farmHouse.owner;
 				if (f == null)
 					return;
 				Misc.ResetSpouses(f);
-				ModEntry.PMonitor.Log("Building all spouse rooms");
+				Monitor.Log("Building all spouse rooms");
 				if (Misc.GetSpouses(f, 1).Count == 0 || farmHouse.upgradeLevel > 3)
                 {
 					ModEntry.PMonitor.Log("No spouses");
@@ -99,6 +104,8 @@ namespace MultipleSpouses
 				if (!ModEntry.config.BuildAllSpousesRooms)
 					return;
 
+				Monitor.Log($"Building {spousesWithRooms.Count} additional spouse rooms");
+
 				List<string> sheets = new List<string>();
 				for (int i = 0; i < farmHouse.map.TileSheets.Count; i++)
 				{
@@ -108,6 +115,8 @@ namespace MultipleSpouses
 				int floorsheet = sheets.IndexOf("walls_and_floors");
 				int indoor = sheets.IndexOf("indoor");
 
+				Monitor.Log($"Map has sheets: {string.Join(", ", sheets)}");
+
 				int ox = ModEntry.config.ExistingSpouseRoomOffsetX;
 				int oy = ModEntry.config.ExistingSpouseRoomOffsetY;
 				if (farmHouse.upgradeLevel > 1)
@@ -116,6 +125,7 @@ namespace MultipleSpouses
 					oy += 9;
 				}
 
+				Monitor.Log($"Preliminary adjustments");
 
 				for (int i = 0; i < 7; i++)
 				{
@@ -173,6 +183,8 @@ namespace MultipleSpouses
 					BuildOneSpouseRoom(farmHouse, spousesWithRooms[j], count++);
 				}
 
+				Monitor.Log($"Building far wall");
+
 				// far wall
 				farmHouse.setMapTileIndex(ox + 35 + (7 * count), oy + 0, 11, "Buildings", indoor);
 				for (int i = 0; i < 10; i++)
@@ -197,6 +209,8 @@ namespace MultipleSpouses
 			string front = "Front";
 			if (spouse != null || name == "")
 			{
+				if (farmHouse.owner.friendshipData[spouse.Name] != null && farmHouse.owner.friendshipData[spouse.Name].IsEngaged())
+					name = "";
 				Map refurbishedMap;
 				if (name == "")
 				{

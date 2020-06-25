@@ -875,7 +875,7 @@ namespace RandomNPC
 
 		private void Alert(string alert)
 		{
-			base.Monitor.Log(alert, LogLevel.Trace);
+			Monitor.Log(alert);
 		}
 
 		private string GetRandomDialogue(RNPC rnpc, List<string> dialogues)

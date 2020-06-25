@@ -1,0 +1,27 @@
+﻿{
+	maps:[
+		{
+			"name":"UnderwaterBeach",
+			"diveLocations": [
+				{
+					"startx":3,
+					"starty":27,
+					"width":4,
+					"height":2,
+					"otherMapName":"ScubaCrystalCave",
+				},
+				{
+					"otherMapName":"Beach",
+				},
+			],
+		},
+		{
+			"name":"Beach",
+			"diveLocations": [
+				{
+					"otherMapName":"UnderwaterBeach",
+				},
+			],
+		}
+	]
+}
