@@ -45,7 +45,7 @@ namespace Swim
         internal static NPC oldMariner;
         public static bool marinerQuestionsWrongToday = false;
         internal static Random myRand;
-        private Dictionary<string, DiveMap> underwaterMaps = new Dictionary<string, DiveMap>();
+        private Dictionary<string, DiveMap> diveMaps = new Dictionary<string, DiveMap>();
         public static Dictionary<string,bool> changeLocations = new Dictionary<string, bool> {
             {"UnderwaterMountain", false },
             {"Mountain", false },
@@ -194,9 +194,12 @@ namespace Swim
                 abigailTicks = 0;
                 e.NewLocation.characters.Clear();
 
+
+                Game1.player.changeOutOfSwimSuit();
                 if(Game1.player.hat.Value != null && Game1.player.hat.Value.parentSheetIndex != 0)
                     Game1.player.addItemToInventory(Game1.player.hat.Value);
                 Game1.player.hat.Value = new Hat(0);
+                Game1.player.doEmote(9);
             }
         }
 
@@ -331,19 +334,20 @@ namespace Swim
 
             // load underwater maps
 
+            Monitor.Log($"Reading content pack from assets/underwater-map-content.json");
+
             try
             {
-                DiveMapData myData = Helper.Data.ReadJsonFile<DiveMapData>("assets/underwater-map-content.json") ?? new DiveMapData();
-                Monitor.Log($"Reading content pack from assets/underwater-map-content.json");
-                foreach (DiveMap map in myData.maps)
+                DiveMapData myData = Helper.Data.ReadJsonFile<DiveMapData>("assets/underwater-map-content.json");
+                foreach (DiveMap map in myData.Maps)
                 {
-                    underwaterMaps.Add(map.name, map);
-                    Monitor.Log($"added underwater map: {map.name}", LogLevel.Debug);
+                    diveMaps.Add(map.Name, map);
+                    Monitor.Log($"added dive map: {map.Name}", LogLevel.Debug);
                 }
             }
-            catch
+            catch(Exception ex)
             {
-                Monitor.Log($"assets/underwater-map-content.json file not found in mod dir", LogLevel.Warn);
+                Monitor.Log($"assets/underwater-map-content.json file read error. Exception: {ex}", LogLevel.Warn);
             }
 
             foreach (IContentPack contentPack in Helper.ContentPacks.GetOwned())
@@ -352,10 +356,17 @@ namespace Swim
                 {
                     Monitor.Log($"Reading content pack: {contentPack.Manifest.Name} {contentPack.Manifest.Version} from {contentPack.DirectoryPath}");
                     DiveMapData data = contentPack.ReadJsonFile<DiveMapData>("content.json");
-                    foreach(DiveMap map in data.maps)
+                    foreach(DiveMap map in data.Maps)
                     {
-                        underwaterMaps.Add(map.name, map);
-                        Monitor.Log($"added underwater map: {map.name}", LogLevel.Debug);
+                        if (Game1._locationLookup.ContainsKey(map.Name))
+                        {
+                            diveMaps.Add(map.Name, map);
+                            Monitor.Log($"added dive map: {map.Name}", LogLevel.Debug);
+                        }
+                        else
+                        {
+                            Monitor.Log($"dive map not loaded: {map.Name}, check you have the map installed", LogLevel.Warn);
+                        }
                     }
                 }
                 catch
@@ -469,79 +480,57 @@ namespace Swim
                 Game1.currentLocation.overlayObjects[Game1.player.getTileLocation() + new Vector2(0, 1)] = new Chest(0, new List<Item>() { Helper.Input.IsDown(SButton.LeftShift) ? (Item)(new StardewValley.Object(434, 1)) : (new Hat(scubaMaskID)) }, Game1.player.getTileLocation() + new Vector2(0, 1), false, 0);
             }
 
-            if (e.Button == config.DiveKey && diveLocations.Contains(Game1.currentLocation.Name))
+            if (e.Button == config.DiveKey && diveMaps.ContainsKey(Game1.currentLocation.Name))
             {
                 Point pos = Game1.player.getTileLocationPoint();
+                Location loc = new Location(pos.X, pos.Y);
 
-                if (Game1.currentLocation.waterTiles != null && !Game1.currentLocation.waterTiles[pos.X, pos.Y] && !Game1.currentLocation.Name.StartsWith("Underwater"))
+                if (!IsInWater())
+                {
                     return;
-
-                string newName;
-
-                if (Game1.currentLocation.Name == "UnderwaterBeach" && pos.X > 2 && pos.X < 7 && pos.Y > 26 && pos.Y < 29)
-                {
-                    newName = "ScubaCrystalCave";
-                    pos = new Point(10,12);
                 }
-                else if(Game1.currentLocation.Name == "ScubaCrystalCave")
+
+                string newName = null;
+                DivePosition dp = null;
+
+                DiveMap dm = diveMaps[Game1.currentLocation.Name];
+
+                foreach(DiveLocation dl in dm.DiveLocations)
                 {
-                    newName = "UnderwaterBeach";
-                    pos = new Point(5,28);
-                }
-                else if (Game1.currentLocation.Name == "Forest")
-                {
-                    if ((new Point[] {
-                        new Point(35,30),
-                        new Point(35,36),
-                        new Point(36,29),
-                        new Point(36,30),
-                        new Point(36,35),
-                        new Point(36,36),
-                        new Point(37,29),
-                        new Point(37,36),
-                        new Point(38,29),
-                        new Point(38,36),
-                        new Point(39,29),
-                    }).Contains(pos) || (pos.X > 36 && pos.X < 41 && pos.Y > 29 && pos.Y < 36))
+                    if (dl.GetRectangle().X == -1 || dl.GetRectangle().Contains(loc))
                     {
-                        newName = "ScubaCave";
-                        pos = new Point(9, 6);
-                    }
-                    else
-                    {
-                        return;
+                        newName = dl.OtherMapName;
+                        dp = dl.OtherMapPos;
+                        break;
                     }
                 }
-                else if(Game1.currentLocation.Name == "ScubaCave")
-                {
-                    newName = "Forest";
-                    pos = new Point(38,33);
-                }
-                else if (Game1.currentLocation.Name == "UnderwaterMountain" && pos.X > 46 && pos.X < 49 && pos.Y == 4)
-                {
-                    Game1.player.swimming.Value = false;
-                    Game1.player.changeOutOfSwimSuit();
-                    newName = "ScubaAbigailCave";
-                    pos = new Point(9,6);
-                }
-                else if(Game1.currentLocation.Name == "ScubaAbigailCave")
-                {
-                    Game1.player.swimming.Value = true;
-                    Game1.player.changeIntoSwimsuit();
-                    newName = "UnderwaterMountain";
-                    pos = new Point(48,5);
-                }
-                else
-                    newName = Game1.currentLocation.Name.StartsWith("Underwater") ? Game1.currentLocation.Name.Replace("Underwater", "") : $"Underwater{Game1.currentLocation.Name}";
 
+                if (newName == null)
+                {
+                    Monitor.Log($"No dive destination for this point on this map", LogLevel.Debug);
+                    return;
+                }
 
                 if (!Game1._locationLookup.ContainsKey(newName))
                 {
-                    Monitor.Log($"Can't find map named {newName}", LogLevel.Warn);
+                    Monitor.Log($"Can't find destination map named {newName}", LogLevel.Warn);
                     return;
                 }
+
+                Monitor.Log($"warping to {newName}", LogLevel.Debug);
+
+                if (dp == null)
+                {
+                    Monitor.Log($"warping to current position");
+                    dp = new DivePosition()
+                    {
+                        X = pos.X,
+                        Y = pos.Y
+                    };
+                }
+
                 Game1.playSound("pullItemFromWater");
-                Game1.warpFarmer(newName, pos.X, pos.Y, false);
+                Game1.warpFarmer(newName, dp.X, dp.Y, false);
                 if (!Game1.currentLocation.Name.StartsWith("Underwater"))
                 {
                     bubbles.Clear();
@@ -613,8 +602,9 @@ namespace Swim
             }
 
             if (Game1.player.swimming) {
-                if (!IsInWater())
+                if (!IsInWater() && !isJumping)
                 {
+                    Monitor.Log("Swimming out of water");
                     Game1.player.swimming.Value = false;
                     if (Game1.player.bathingClothes && !config.SwimSuitAlways)
                         Game1.player.changeOutOfSwimSuit();
@@ -688,6 +678,18 @@ namespace Swim
                     buff.millisecondsDuration = 50;
                 }
             }
+            else
+            {
+                if (IsInWater() && !isJumping)
+                {
+                    Monitor.Log("In water not swimming");
+                    Game1.player.swimming.Value = true;
+                    if (!Game1.player.bathingClothes && !IsWearingScubaGear())
+                        Game1.player.changeIntoSwimsuit();
+                }
+
+            }
+
             if (Game1.activeClickableMenu == null)
             {
                 if (Game1.currentLocation.Name.StartsWith("Underwater"))
@@ -1002,7 +1004,7 @@ namespace Swim
                 }
             }
 
-            if (v != Vector2.Zero && Game1.player.millisecondsPlayed - lastProjectile > 250)
+            if (v != Vector2.Zero && Game1.player.millisecondsPlayed - lastProjectile > 400)
             {
                 Game1.currentLocation.projectiles.Add(new BasicProjectile(1000, 383, 0, 0, 0, v.X * 5, v.Y * 5, new Vector2(Game1.player.getStandingX() - 16, Game1.player.getStandingY() - 64), "Cowboy_monsterDie", "Cowboy_gunshot", false, true, Game1.currentLocation, Game1.player, true, null)
                 {
@@ -1097,16 +1099,21 @@ namespace Swim
         {
             var tiles = Game1.player.currentLocation.waterTiles;
             Point p = Game1.player.getTileLocationPoint();
-            return (
-                    tiles != null 
-                    && tiles.GetLength(0) > p.X 
-                    && tiles.GetLength(1) > p.Y
-                    && tiles[p.X, p.Y]
-                )
-                || Game1.currentLocation.Name.StartsWith("Underwater")
-                || tiles.GetLength(0) <= p.X
-                || tiles.GetLength(1) <= p.Y
-                ;
+
+            if (!Game1.player.swimming && Game1.currentLocation.map.GetLayer("Buildings").PickTile(new Location(p.X, p.Y) * Game1.tileSize, Game1.viewport.Size) != null)
+                return false;
+
+            return Game1.currentLocation.Name.StartsWith("Underwater") 
+                ||
+                (tiles != null 
+                    && (
+                            (tiles.GetLength(0) > p.X && tiles.GetLength(1) > p.Y && tiles[p.X, p.Y])
+                            ||
+                            (Game1.player.swimming &&
+                                (tiles.GetLength(0) <= p.X || tiles.GetLength(1) <= p.Y)
+                            )
+                    )
+                );
         }
 
         private int MaxOxygen()

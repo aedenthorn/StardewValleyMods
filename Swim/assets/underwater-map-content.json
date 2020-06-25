@@ -1,0 +1,110 @@
+﻿{
+	maps:[
+		{
+			"Name":"UnderwaterBeach",
+			"DiveLocations": [
+				{
+					"StartX":3,
+					"StartY":27,
+					"Width":4,
+					"Height":2,
+					"OtherMapName":"ScubaCrystalCave",
+					"OtherMapPos":{
+                        "X":10,
+                        "Y":12,
+                    }
+				},
+				{
+					"OtherMapName":"Beach",
+				},
+			],
+		},
+		{
+			"Name":"Beach",
+			"DiveLocations": [
+				{
+					"OtherMapName":"UnderwaterBeach",
+				},
+			],
+		},
+		{
+			"Name":"ScubaCrystalCave",
+			"DiveLocations": [
+				{
+					"OtherMapName":"UnderwaterBeach",
+					"OtherMapPos":{
+                        "X":5,
+                        "Y":28,
+                    }
+                },
+			],
+		},
+		{
+			"Name":"Forest",
+			"DiveLocations": [
+				{
+					"StartX":37,
+					"StartY":29,
+					"Width":3,
+					"Height":8,
+					"OtherMapName":"ScubaCave",
+					"OtherMapPos":{
+                        "X":9,
+                        "Y":6,
+                    }
+                },
+			],
+		},
+		{
+			"Name":"ScubaCave",
+			"DiveLocations": [
+				{
+					"OtherMapName":"Forest",
+					"OtherMapPos":{
+                        "X":38,
+                        "Y":33,
+                    }
+                },
+			],
+		},
+		{
+			"Name":"ScubaAbigailCave",
+			"DiveLocations": [
+				{
+					"OtherMapName":"UnderwaterMountain",
+					"OtherMapPos":{
+                        "X":48,
+                        "Y":5,
+                    }
+                },
+			],
+		},
+		{
+			"Name":"UnderwaterMountain",
+			"DiveLocations": [
+				{
+					"StartX":47,
+					"StartY":4,
+					"Width":2,
+					"Height":1,
+					"OtherMapName":"ScubaAbigailCave",
+					"OtherMapPos":{
+                        "X":8,
+                        "Y":9,
+                    }
+                },
+				{
+					"OtherMapName":"Mountain",
+                },
+			],
+		},
+		{
+			"Name":"Mountain",
+			"DiveLocations": [
+				{
+					"OtherMapName":"UnderwaterMountain",
+                },
+			],
+		},
+	]
+}
