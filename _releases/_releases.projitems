@@ -9,6 +9,7 @@
     <Import_RootNamespace>_releases</Import_RootNamespace>
   </PropertyGroup>
   <ItemGroup>
+    <None Include="$(MSBuildThisFileDirectory)MultipleSpouses 1.0.2.zip" />
     <None Include="$(MSBuildThisFileDirectory)Swim 0.9.0.zip" />
   </ItemGroup>
 </Project>
