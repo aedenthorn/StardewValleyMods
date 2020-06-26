@@ -43,6 +43,31 @@ namespace MultipleSpouses
 
             return spouses;
         }
+        public static Dictionary<string, Dictionary<string, string>> relationships = new Dictionary<string, Dictionary<string, string>>();
+        public static void SetNPCRelations()
+        {
+            relationships.Clear();
+            Dictionary<string, string> NPCDispositions = Helper.Content.Load<Dictionary<string, string>>("Data\\NPCDispositions", ContentSource.GameContent);
+            foreach(KeyValuePair<string,string> kvp in NPCDispositions)
+            {
+                string[] relations = kvp.Value.Split('/')[9].Split(' ');
+                if (relations.Length > 0)
+                {
+                    relationships.Add(kvp.Key, new Dictionary<string, string>());
+                    for (int i = 0; i < relations.Length; i += 2)
+                    {
+                        try
+                        {
+                            relationships[kvp.Key].Add(relations[i], relations[i + 1].Replace("'", ""));
+                        }
+                        catch
+                        {
+
+                        }
+                    }
+                }
+            }
+        }
 
         public static void PlaceSpousesInFarmhouse(FarmHouse farmHouse)
         {
@@ -171,6 +196,49 @@ namespace MultipleSpouses
                 }
             }
 
+        }
+
+        public static string[] relativeRoles = new string[]
+        {
+            "son",
+            "daughter",
+            "sister",
+            "brother",
+            "dad",
+            "mom",
+            "father",
+            "mother",
+            "aunt",
+            "uncle",
+            "cousin",
+            "nephew",
+            "niece",
+        };
+        public static bool AreSpousesRelated(string npc1, string npc2)
+        {
+            if(relationships.ContainsKey(npc1) && relationships[npc1].ContainsKey(npc2))
+            {
+                string relation = relationships[npc1][npc2];
+                foreach (string r in relativeRoles)
+                {
+                    if (relation.Contains(r))
+                    {
+                        return true;
+                    }
+                }
+            }
+            if(relationships.ContainsKey(npc2) && relationships[npc2].ContainsKey(npc1))
+            {
+                string relation = relationships[npc2][npc1];
+                foreach (string r in relativeRoles)
+                {
+                    if (relation.Contains(r))
+                    {
+                        return true;
+                    }
+                }
+            }
+            return false;
         }
 
         public static bool HasSleepingAnimation(string name)

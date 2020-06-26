@@ -21,6 +21,7 @@
         public bool RealKissSound { get; set; } = true;
         public float MaxDistanceToKiss { get; set; } = 200f;
         public double MinSpouseKissInterval { get; set; } = 5;
+        public bool PreventRelativesFromKissing { get; set; } = true;
         public double BabyRequestChance { get; set; } = 0.05f;
         public bool AllowGayPregnancies { get; set; } = true;
         public float FemaleBabyChance { get; set; } = 0.5f;

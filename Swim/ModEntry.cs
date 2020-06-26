@@ -409,6 +409,10 @@ namespace Swim
             {
                 if (!Game1._locationLookup.ContainsKey(kvp.Key))
                     continue;
+                if (kvp.Value.Features.Contains("OceanTreasure") || kvp.Value.Features.Contains("OceanResources") || kvp.Value.Features.Contains("Minerals"))
+                {
+                    Game1._locationLookup[kvp.Key].overlayObjects.Clear();
+                }
                 if (kvp.Value.Features.Contains("OceanTreasure"))
                 {
                     AddOceanTreasure(Game1._locationLookup[kvp.Key]);
@@ -432,6 +436,10 @@ namespace Swim
                 if (kvp.Value.Features.Contains("WaterTiles"))
                 {
                     AddWaterTiles(Game1._locationLookup[kvp.Key]);
+                }
+                if (kvp.Value.Features.Contains("Underwater"))
+                {
+                    RemoveWaterTiles(Game1._locationLookup[kvp.Key]);
                 }
             }
             if (Game1._locationLookup.ContainsKey("ScubaCave"))
@@ -675,7 +683,7 @@ namespace Swim
                     {
                         Game1.warpFarmer("Mountain",72,40, false);
                     }
-                    else if (Game1.currentLocation.Name == "Beach")
+                    else if (Game1.currentLocation.Name == "Beach" && Game1.player.position.X / 64 < 93)
                     {
                         Game1.warpFarmer("Town", 90, 109, false);
                     }
@@ -921,7 +929,7 @@ namespace Swim
             return diveMaps.ContainsKey(Game1.currentLocation.Name) && diveMaps[Game1.currentLocation.Name].Features.Contains("Underwater");
         }
 
-        private static int abigailTicks;
+        public static int abigailTicks;
         private SButton[] abigailShootButtons = new SButton[] { 
             SButton.Left,
             SButton.Right,
@@ -1062,9 +1070,9 @@ namespace Swim
                 }
             }
 
-            if (v != Vector2.Zero && Game1.player.millisecondsPlayed - lastProjectile > 400)
+            if (v != Vector2.Zero && Game1.player.millisecondsPlayed - lastProjectile > 500)
             {
-                Game1.currentLocation.projectiles.Add(new BasicProjectile(1, 383, 0, 0, 0, v.X * 5, v.Y * 5, new Vector2(Game1.player.getStandingX() - 24, Game1.player.getStandingY() - 48), "Cowboy_monsterDie", "Cowboy_gunshot", false, true, Game1.currentLocation, Game1.player, true, null)
+                Game1.currentLocation.projectiles.Add(new BasicProjectile(1, 383, 0, 0, 0, v.X * 6, v.Y * 6, new Vector2(Game1.player.getStandingX() - 24, Game1.player.getStandingY() - 48), "Cowboy_monsterDie", "Cowboy_gunshot", false, true, Game1.currentLocation, Game1.player, true, null)
                 {
                     IgnoreLocationCollision = true
                 }); 
@@ -1499,7 +1507,6 @@ namespace Swim
             }
             int forageNo = Game1.random.Next(5, 20);
             List<Vector2> forageSpots = spots.Take(forageNo).ToList();
-            List<Vector2> treasureSpots = new List<Vector2>();
 
             foreach (Vector2 v in forageSpots)
             {
@@ -1518,51 +1525,47 @@ namespace Swim
                         CanBeGrabbed = true
                     };
                 }
-                else if (chance < 0.55)
+                else if (chance < 0.6)
                 {
                     l.overlayObjects[v] = new StardewValley.Object(v, 157, "White Algae", true, true, false, true)
                     {
                         CanBeGrabbed = true
                     };
                 }
-                else if (chance < 0.65)
+                else if (chance < 0.75)
                 {
                     l.overlayObjects[v] = new StardewValley.Object(v, 372, "Clam", true, true, false, true)
                     {
                         CanBeGrabbed = true
                     };
                 }
-                else if (chance < 0.75)
+                else if (chance < 0.85)
                 {
                     l.overlayObjects[v] = new StardewValley.Object(v, 393, "Coral", true, true, false, true)
                     {
                         CanBeGrabbed = true
                     };
                 }
-                else if (chance < 0.85)
+                else if (chance < 0.94)
                 {
                     l.overlayObjects[v] = new StardewValley.Object(v, 397, "Sea Urchin", true, true, false, true)
                     {
                         CanBeGrabbed = true
                     };
                 }
-                else if (chance < 0.9)
+                else if (chance < 0.97)
                 {
                     l.overlayObjects[v] = new StardewValley.Object(v, 394, "Rainbow Shell", true, true, false, true)
                     {
                         CanBeGrabbed = true
                     };
                 }
-                else if (chance < 0.95)
+                else
                 {
                     l.overlayObjects[v] = new StardewValley.Object(v, 392, "Nautilus Shell", true, true, false, true)
                     {
                         CanBeGrabbed = true
                     };
-                }
-                else
-                {
-                    treasureSpots.Add(v);
                 }
             }
         }
@@ -1948,19 +1951,24 @@ namespace Swim
                         }
                     }
                 }
-                if (IsMapUnderwater(mapName))
+            }
+        }
+
+        public void RemoveWaterTiles(GameLocation l)
+        {
+            if (l == null || l.map == null)
+                return;
+            Map map = l.map;
+            string mapName = l.Name;
+            for (int x = 0; x < map.Layers[0].LayerWidth; x++)
+            {
+                for (int y = 0; y < map.Layers[0].LayerHeight; y++)
                 {
-                    for (int x = 0; x < map.Data.Layers[0].LayerWidth; x++)
+                    if (doesTileHaveProperty(map, x, y, "Water", "Back") != null)
                     {
-                        for (int y = 0; y < map.Data.Layers[0].LayerHeight; y++)
-                        {
-                            if (doesTileHaveProperty(map.Data, x, y, "Water", "Back") != null)
-                            {
-                                Tile tile = map.Data.GetLayer("Back").PickTile(new Location(x, y) * Game1.tileSize, Game1.viewport.Size);
-                                if(tile != null)
-                                    tile.TileIndexProperties.Remove("Water");
-                            }
-                        }
+                        Tile tile = map.GetLayer("Back").PickTile(new Location(x, y) * Game1.tileSize, Game1.viewport.Size);
+                        if (tile != null)
+                            tile.TileIndexProperties.Remove("Water");
                     }
                 }
             }

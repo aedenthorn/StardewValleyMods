@@ -46,6 +46,7 @@ namespace Swim
         public override void onDealContactDamage(Farmer who)
         {
 			Game1.playSound("cowboy_dead");
+			ModEntry.abigailTicks = -1;
 		}
 	}
 }

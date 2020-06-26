@@ -31,6 +31,7 @@ namespace MultipleSpouses
             Misc.SetAllNPCsDatable();
             FileIO.LoadTMXSpouseRooms();
             Misc.ResetSpouses(Game1.player);
+			Misc.SetNPCRelations();
         }
 
 

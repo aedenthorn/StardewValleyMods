@@ -81,6 +81,7 @@ namespace MultipleSpouses
 						&& owner.getFriendshipHeartLevelForNPC(npc2.Name) >= ModEntry.config.MinHeartsForKiss
 						&& lastKissTime > ModEntry.config.MinSpouseKissInterval 
 						&& ModEntry.myRand.NextDouble() < ModEntry.config.SpouseKissChance
+						&& (!ModEntry.config.PreventRelativesFromKissing || !Misc.AreSpousesRelated(npc1.Name, npc2.Name))
 					)
                     {
 						kissingSpouses.Add(npc1.Name);
