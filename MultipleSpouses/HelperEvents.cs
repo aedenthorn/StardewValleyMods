@@ -273,6 +273,7 @@ namespace MultipleSpouses
 					{
 						if (allSpouses.Contains(character.Name))
 						{
+
 							if (Misc.IsInBed(fh, character.GetBoundingBox()))
 							{
 								character.farmerPassesThrough = true;

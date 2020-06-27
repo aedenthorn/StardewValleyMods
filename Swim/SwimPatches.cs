@@ -100,7 +100,7 @@ namespace Swim
             try
             {
                 __state = new float[0];
-                if(__instance.swimming && ModEntry.changeLocations.ContainsKey(Game1.currentLocation.Name))
+                if(__instance.swimming && ModEntry.changeLocations.ContainsKey(Game1.currentLocation.Name) && Config.ReadyToSwim)
                 {
                     __state = new float[]{
                         __instance.stamina,
@@ -259,6 +259,48 @@ namespace Swim
             catch (Exception ex)
             {
                 Monitor.Log($"Failed in {nameof(GameLocation_UpdateWhenCurrentLocation_Postfix)}:\n{ex}", LogLevel.Error);
+            }
+        }
+        public static void GameLocation_performTouchAction_Prefix(string fullActionString)
+        {
+            try
+            {
+                string text = fullActionString.Split(new char[]
+                {
+                    ' '
+                })[0];
+                if (text == "PoolEntrance")
+                {
+                    if (!Game1.player.swimming)
+                    {
+                        Config.ReadyToSwim = false;
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Monitor.Log($"Failed in {nameof(GameLocation_performTouchAction_Prefix)}:\n{ex}", LogLevel.Error);
+            }
+        }
+        public static void GameLocation_performTouchAction_Postfix(string fullActionString)
+        {
+            try
+            {
+                string text = fullActionString.Split(new char[]
+                {
+                    ' '
+                })[0];
+                if (text == "PoolEntrance")
+                {
+                    if (Game1.player.swimming)
+                    {
+                        Config = Helper.ReadConfig<ModConfig>();
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Monitor.Log($"Failed in {nameof(GameLocation_performTouchAction_Postfix)}:\n{ex}", LogLevel.Error);
             }
         }
         public static void GameLocation_checkAction_Prefix(GameLocation __instance, Location tileLocation, xTile.Dimensions.Rectangle viewport, Farmer who)

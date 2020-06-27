@@ -33,6 +33,28 @@
 					"OtherMapName":"UnderwaterBeach",
 				},
 			],
+			"EdgeWarps":[
+				{
+					"ThisMapEdge":"Top",
+					"FirstTile": 57,
+					"LastTile": 62,
+					"DestinationHorizontal": true,
+					"OtherMapIndex": 109,
+					"OtherMapFirstTile": 88,
+					"OtherMapLastTile": 92,
+					"OtherMapName":"Town",
+				},
+				{
+					"ThisMapEdge":"Right",
+					"FirstTile": 14,
+					"LastTile": 26,
+					"DestinationHorizontal": false,
+					"OtherMapIndex": 119,
+					"OtherMapFirstTile": 106,
+					"OtherMapLastTile": 119,
+					"OtherMapName":"Beach",
+				},
+			]
 		},
 		{
 			"Name":"ScubaCrystalCave",
@@ -64,7 +86,29 @@
                     }
                 },
 			],
-		},
+			"EdgeWarps":[
+				{
+					"ThisMapEdge":"Right",
+					"FirstTile": 39,
+					"LastTile": 48,
+					"DestinationHorizontal": false,
+					"OtherMapIndex": 0,
+					"OtherMapFirstTile": 96,
+					"OtherMapLastTile": 103,
+					"OtherMapName":"Town",
+				},
+				{
+					"ThisMapEdge":"Right",
+					"FirstTile": 106,
+					"LastTile": 119,
+					"DestinationHorizontal": false,
+					"OtherMapIndex": 0,
+					"OtherMapFirstTile": 14,
+					"OtherMapLastTile": 26,
+					"OtherMapName":"Beach",
+				},
+			]
+		},    
 		{
 			"Name":"ScubaCave",
 			"Features":[
@@ -118,11 +162,61 @@
 		},
 		{
 			"Name":"Mountain",
+			"Features":[
+				"FixWaterTiles"
+			],
 			"DiveLocations": [
 				{
 					"OtherMapName":"UnderwaterMountain",
                 },
 			],
+			"EdgeWarps":[
+				{
+					"ThisMapEdge":"Bottom",
+					"FirstTile": 64,
+					"LastTile": 78,
+					"DestinationHorizontal": true,
+					"OtherMapIndex": 0,
+					"OtherMapFirstTile": 92,
+					"OtherMapLastTile": 96,
+					"OtherMapName":"Town",
+				},
+			],
+		},
+		{
+			"Name":"Town",
+			"EdgeWarps":[
+				{
+					"ThisMapEdge":"Bottom",
+					"FirstTile": 88,
+					"LastTile": 92,
+					"DestinationHorizontal": true,
+					"OtherMapIndex": 0,
+					"OtherMapFirstTile": 57,
+					"OtherMapLastTile": 62,
+					"OtherMapName":"Beach",
+				},
+				{
+					"ThisMapEdge":"Top",
+					"FirstTile": 92,
+					"LastTile": 96,
+					"DestinationHorizontal": true,
+					"OtherMapIndex": 40,
+					"OtherMapFirstTile": 64,
+					"OtherMapLastTile": 78,
+					"OtherMapName":"Mountain",
+				},
+				{
+					"ThisMapEdge":"Left",
+					"FirstTile": 96,
+					"LastTile": 103,
+					"DestinationHorizontal": false,
+					"OtherMapIndex": 119,
+					"OtherMapFirstTile": 39,
+					"OtherMapLastTile": 48,
+					"OtherMapName":"Town",
+				},
+			]
 		},
 	]
 }

@@ -205,6 +205,8 @@ namespace RandomNPC
 			foreach (RNPC rnpc in RNPCs)
 			{
 				NPC npc = Game1.getCharacterFromName(rnpc.nameID);
+				if (npc == null)
+					continue;
 				GameLocation currentLocation = npc.currentLocation;
 				int dir = npc.getDirection();
 				if (currentLocation.isCollidingPosition(npc.nextPosition(dir), Game1.viewport, false, 0, false, npc))
