@@ -23,15 +23,7 @@ namespace CustomFixedDialogue
 			DialoguePatches.Initialize(Monitor, helper);
 
 			var harmony = HarmonyInstance.Create(ModManifest.UniqueID);
-			HarmonyInstance.DEBUG = true;
 
-			/*
-			harmony.Patch(
-				original: AccessTools.Constructor(typeof(Dialogue), new Type[] { typeof(string), typeof(NPC) }),
-				prefix: new HarmonyMethod(typeof(DialoguePatches), nameof(DialoguePatches.Dialogue_CTOR_Prefix)),
-				postfix: new HarmonyMethod(typeof(DialoguePatches), nameof(DialoguePatches.Dialogue_CTOR_Prefix))
-			);
-			*/
 			harmony.Patch(
 				original: AccessTools.Method(typeof(Dialogue), "parseDialogueString"),
 				prefix: new HarmonyMethod(typeof(DialoguePatches), nameof(DialoguePatches.Dialogue_parseDialogueString_Prefix))
