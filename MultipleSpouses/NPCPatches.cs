@@ -272,9 +272,9 @@ namespace MultipleSpouses
                                 int delay = Game1.IsMultiplayer ? 1000 : 10;
                                 __instance.movementPause = delay;
                                 __instance.Sprite.setCurrentAnimation(new List<FarmerSprite.AnimationFrame>
-                            {
-                                new FarmerSprite.AnimationFrame(spouseFrame, delay, false, flip, new AnimatedSprite.endOfAnimationBehavior(__instance.haltMe), true)
-                            });
+                                {
+                                    new FarmerSprite.AnimationFrame(spouseFrame, delay, false, flip, new AnimatedSprite.endOfAnimationBehavior(__instance.haltMe), true)
+                                });
                                 if (!__instance.hasBeenKissedToday.Value)
                                 {
                                     who.changeFriendship(10, __instance);
@@ -302,7 +302,7 @@ namespace MultipleSpouses
                                         }
                                     });
                                 }
-                                if (ModEntry.config.RealKissSound && Kissing.kissEffect != null)
+                                if (ModEntry.config.RealKissSound && Kissing.kissEffect != null && (ModEntry.config.RoommateRomance || !who.friendshipData[__instance.Name].RoommateMarriage))
                                 {
                                     Kissing.kissEffect.Play();
                                 }
@@ -328,10 +328,10 @@ namespace MultipleSpouses
                             who.CanMove = false;
                             who.FarmerSprite.PauseForSingleAnimation = false;
                             who.FarmerSprite.animateOnce(new List<FarmerSprite.AnimationFrame>
-                        {
-                            new FarmerSprite.AnimationFrame(101, 1000, 0, false, who.FacingDirection == 3, null, false, 0),
-                            new FarmerSprite.AnimationFrame(6, 1, false, who.FacingDirection == 3, new AnimatedSprite.endOfAnimationBehavior(Farmer.completelyStopAnimating), false)
-                        }.ToArray(), null);
+                            {
+                                new FarmerSprite.AnimationFrame(101, 1000, 0, false, who.FacingDirection == 3, null, false, 0),
+                                new FarmerSprite.AnimationFrame(6, 1, false, who.FacingDirection == 3, new AnimatedSprite.endOfAnimationBehavior(Farmer.completelyStopAnimating), false)
+                            }.ToArray(), null);
                             __result = true;
                             return false;
                         }

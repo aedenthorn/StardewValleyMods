@@ -131,7 +131,7 @@ namespace Swim
 			Game1.playSound("Cowboy_Secret");
 			Game1.player.mailReceived.Add("SwimMod_Mariner_Completed");
 			Game1.currentLocation.resetForPlayerEntry();
-			ModEntry.AddScubaChest(Game1.currentLocation, new Vector2(10,6), "ScubaTank");
+			SwimMaps.AddScubaChest(Game1.currentLocation, new Vector2(10,6), "ScubaTank");
 		}
 	}
 }

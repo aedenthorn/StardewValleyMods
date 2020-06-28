@@ -12,5 +12,6 @@
     <None Include="$(MSBuildThisFileDirectory)CustomFixedDialogue 0.1.2.zip" />
     <None Include="$(MSBuildThisFileDirectory)MultipleSpouses 1.0.4.zip" />
     <None Include="$(MSBuildThisFileDirectory)Swim 0.9.6.zip" />
+    <None Include="$(MSBuildThisFileDirectory)Swim 1.0.0.zip" />
   </ItemGroup>
 </Project>

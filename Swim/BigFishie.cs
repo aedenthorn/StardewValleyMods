@@ -2,6 +2,7 @@
 using Microsoft.Xna.Framework.Graphics;
 using StardewValley;
 using StardewValley.Monsters;
+using System.Collections.Generic;
 
 namespace Swim
 {
@@ -11,12 +12,23 @@ namespace Swim
 		{
 		}
 
+		public List<string> bigFishTextures = new List<string>()
+		{
+			"BigFishBlack",
+			"BigFishBlue",
+			"BigFishGold",
+			"BigFishGreen",
+			"BigFishGreenWhite",
+			"BigFishGrey",
+			"BigFishRed",
+			"BigFishWhite"
+		};
+
 		public BigFishie(Vector2 position) : base(position)
 		{
-			Sprite.LoadTexture("Fishies/" + ModEntry.bigFishTextures[Game1.random.Next(ModEntry.bigFishTextures.Count)]);
+			Sprite.LoadTexture("Fishies/" + bigFishTextures[Game1.random.Next(bigFishTextures.Count)]);
 			Scale = 0.5f + (float)Game1.random.NextDouble()/4f;
 			DamageToFarmer = 0;
-			moveTowardPlayerThreshold.Value = 50;
 			Slipperiness = 24 + Game1.random.Next(10);
 			collidesWithOtherCharacters.Value = false;
 			farmerPassesThrough = true;

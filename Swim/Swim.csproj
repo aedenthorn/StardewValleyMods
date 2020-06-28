@@ -46,6 +46,8 @@
   <ItemGroup>
     <Compile Include="AbigailProjectile.cs" />
     <Compile Include="DiveMapData.cs" />
+    <Compile Include="SwimHelperEvents.cs" />
+    <Compile Include="SwimMaps.cs" />
     <Compile Include="SeaCrab.cs" />
     <Compile Include="BigFishie.cs" />
     <Compile Include="AbigailMetalHead.cs" />
@@ -56,6 +58,7 @@
     <Compile Include="Fishie.cs" />
     <Compile Include="SwimDialog.cs" />
     <Compile Include="SwimModApi.cs" />
+    <Compile Include="SwimUtils.cs" />
     <Compile Include="SwimPatches.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -63,6 +66,7 @@
     <None Include="assets\json-assets\content-pack.json" />
     <None Include="assets\json-assets\Hats\Scuba Mask\hat.json" />
     <None Include="assets\json-assets\Shirts\Scuba Tank\shirt.json" />
+    <None Include="assets\wavebank.json" />
     <None Include="assets\tmx-pack\assets\Cave.tbin" />
     <None Include="assets\tmx-pack\assets\UnderwaterBeach.tbin" />
     <None Include="assets\tmx-pack\assets\UnderwaterMountain.tbin" />
@@ -83,10 +87,13 @@
     <Content Include="assets\Fishies\BigFishRed.png" />
     <Content Include="assets\Fishies\BigFishWhite.png" />
     <Content Include="assets\Fishies\BlueFish.png" />
+    <Content Include="assets\Fishies\ChestCrab.png" />
+    <Content Include="assets\Fishies\HermitCrab.png" />
     <Content Include="assets\json-assets\Boots\Scuba Fins\boots.png" />
     <Content Include="assets\json-assets\Boots\Scuba Fins\color.png" />
     <Content Include="assets\json-assets\Hats\Scuba Mask\hat.png" />
     <Content Include="assets\json-assets\Shirts\Scuba Tank\male.png" />
+    <Content Include="assets\seamonster.png" />
     <Content Include="assets\tmx-pack\assets\mine.png" />
     <Content Include="assets\tmx-pack\assets\spring_beach.png" />
     <Content Include="assets\Fishies\GreenFish.png" />

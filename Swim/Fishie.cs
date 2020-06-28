@@ -12,17 +12,23 @@ namespace Swim
 {
 	public class Fishie : Serpent
 	{
+		public List<string> fishTextures = new List<string>()
+		{
+			"BlueFish",
+			"PinkFish",
+			"GreenFish",
+		};
+
 		public Fishie() : base()
 		{
 		}
 
 		public Fishie(Vector2 position) : base(position)
 		{
-			Sprite.LoadTexture("Fishies/" + ModEntry.fishTextures[Game1.random.Next(ModEntry.fishTextures.Count)]);
+			Sprite.LoadTexture("Fishies/" + fishTextures[Game1.random.Next(fishTextures.Count)]);
 			Scale = ((float)Game1.random.NextDouble() + 0.1f) * 0.35f;
 			DamageToFarmer = 0;
 			moveTowardPlayerThreshold.Value = 50;
-			hideShadow.Value = true;
 
 		}
 		public override void drawAboveAllLayers(SpriteBatch b)

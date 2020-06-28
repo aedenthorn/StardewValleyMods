@@ -16,6 +16,7 @@ namespace Swim
         public int BubbleMult { get; set; }
         public bool AllowActionsWhileInSwimsuit { get; set; }
         public bool AddFishies { get; set; }
+        public bool AddCrabs { get; set; }
 
         public ModConfig()
         {
@@ -30,6 +31,7 @@ namespace Swim
             BubbleMult = 1;
             AllowActionsWhileInSwimsuit = true;
             AddFishies = true;
+            AddCrabs = true;
         }
     }
 }
