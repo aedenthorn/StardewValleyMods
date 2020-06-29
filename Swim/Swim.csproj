@@ -78,6 +78,7 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="assets\breathe.wav" />
     <Content Include="assets\Fishies\BigFishBlack.png" />
     <Content Include="assets\Fishies\BigFishBlue.png" />
     <Content Include="assets\Fishies\BigFishGold.png" />

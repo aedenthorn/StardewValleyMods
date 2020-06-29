@@ -1,4 +1,5 @@
 ﻿using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Audio;
 using Microsoft.Xna.Framework.Graphics;
 using StardewModdingAPI;
 using StardewModdingAPI.Events;
@@ -29,6 +30,11 @@ namespace Swim
         public static ulong lastJump = 0;
         public static ulong lastProjectile = 0;
         public static int abigailTicks;
+        public static SoundEffect breatheEffect = null;
+        public static int ticksUnderwater = 0;
+        public static int ticksWearingScubaGear = 0;
+        public static int bubbleOffset = 0;
+        private static int lastBreatheSound; 
         public static SButton[] abigailShootButtons = new SButton[] {
             SButton.Left,
             SButton.Right,
@@ -159,8 +165,6 @@ namespace Swim
 
 
 
-        public static int ticksUnderwater = 0;
-        public static int bubbleOffset = 0;
 
         public static void Display_RenderedWorld(object sender, RenderedWorldEventArgs e)
         {
@@ -249,6 +253,20 @@ namespace Swim
                     Monitor.Log($"couldn't read content.json in content pack {contentPack.Manifest.Name}", LogLevel.Warn);
                 }
             }
+
+            // load breath audio
+
+            if (Config.BreatheSound)
+            {
+                string filePath = $"{Helper.DirectoryPath}\\assets\\breathe.wav";
+                Monitor.Log("Loading breathing sound: " + filePath);
+                if (File.Exists(filePath))
+                {
+                    breatheEffect = SoundEffect.FromStream(new FileStream(filePath, FileMode.Open));
+                    Monitor.Log("Loaded breathing sound.");
+                }
+            }
+
         }
 
         public static void GameLoop_DayStarted(object sender, DayStartedEventArgs e)
@@ -431,6 +449,9 @@ namespace Swim
                         {
                             if (!SwimUtils.IsWearingScubaGear())
                                 ModEntry.oxygen--;
+                            else {
+                                ModEntry.oxygen = SwimUtils.MaxOxygen();
+                            }
                         }
                         else
                         {
@@ -447,6 +468,21 @@ namespace Swim
                         ModEntry.oxygen++;
                     if (ModEntry.oxygen < SwimUtils.MaxOxygen())
                         ModEntry.oxygen++;
+                }
+                if (SwimUtils.IsWearingScubaGear())
+                {
+                    ticksWearingScubaGear++;
+                    if (Config.BreatheSound && breatheEffect != null && (lastBreatheSound == 0 || ticksWearingScubaGear - lastBreatheSound > 6000 / 16))
+                    {
+                        Monitor.Log("Playing breathe sound");
+                        lastBreatheSound = ticksWearingScubaGear;
+                        breatheEffect.Play(0.5f,0f,0f);
+                    }
+                }
+                else
+                {
+                    lastBreatheSound = 0;
+                    ticksWearingScubaGear = 0;
                 }
             }
 

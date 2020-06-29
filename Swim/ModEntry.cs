@@ -310,6 +310,17 @@ namespace Swim
                                     }
 
                                 }
+                                else if(mapName == "Beach" && tile.TileIndex == 76)
+                                {
+                                    if(x > 58 && x < 61 && y > 11 && y < 15)
+                                    {
+                                        Game1.getLocationFromName(mapName).removeTile(x, y, "Buildings");
+                                    }
+                                    if (tile.TileIndexProperties.ContainsKey("Passable"))
+                                    {
+                                        tile.TileIndexProperties.Remove("Passable");
+                                    }
+                                }
                             }
                         }
                     }

@@ -25,7 +25,7 @@ namespace Swim
 
 		public SeaCrab(Vector2 position) : base(position)
 		{
-			Sprite.LoadTexture("Fishies/" + crabTextures[Game1.random.Next(crabTextures.Count)]);
+			Sprite.LoadTexture("Fishies/" + crabTextures[Game1.random.Next(8) < 7 ? 0 : 1]);
 			moveTowardPlayerThreshold.Value = 1;
 			damageToFarmer.Value = 0;
 		}

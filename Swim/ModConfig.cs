@@ -17,6 +17,7 @@ namespace Swim
         public bool AllowActionsWhileInSwimsuit { get; set; }
         public bool AddFishies { get; set; }
         public bool AddCrabs { get; set; }
+        public bool BreatheSound { get; set; }
 
         public ModConfig()
         {
@@ -32,6 +33,7 @@ namespace Swim
             AllowActionsWhileInSwimsuit = true;
             AddFishies = true;
             AddCrabs = true;
+            BreatheSound = true;
         }
     }
 }
