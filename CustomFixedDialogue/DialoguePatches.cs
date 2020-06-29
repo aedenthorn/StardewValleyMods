@@ -63,9 +63,16 @@ namespace CustomFixedDialogue
             {
                 if (masterString.StartsWith(prefix))
                 {
-                    Dictionary<string, string> dialogueDic = Helper.Content.Load<Dictionary<string, string>>($"Characters/Dialogue/{__instance.speaker.Name}", ContentSource.GameContent);
+                    Dictionary<string, string> dialogueDic = null;
+                    try
+                    {
+                        dialogueDic = Helper.Content.Load<Dictionary<string, string>>($"Characters/Dialogue/{__instance.speaker.Name}", ContentSource.GameContent);
+                    }
+                    catch 
+                    { 
+                    }
                     string key = masterString.Substring(prefix.Length).Split('^')[0];
-                    if (dialogueDic.ContainsKey(key))
+                    if (dialogueDic != null &&  dialogueDic.ContainsKey(key))
                     {
                         Monitor.Log($"{__instance.speaker.Name} has dialogue for {key}", LogLevel.Debug);
                         masterString = dialogueDic[key];
