@@ -99,7 +99,7 @@ namespace Swim
             {
                 double chance = Game1.random.NextDouble();
 
-                if (chance < 0.2)
+                if (chance < 0.2 && !l.map.GetLayer("Back").Tiles[(int)tile.X, (int)tile.Y].Properties.ContainsKey("Treasure") && !l.map.GetLayer("Back").Tiles[(int)tile.X, (int)tile.Y].Properties.ContainsKey("Diggable"))
                 {
                     l.map.GetLayer("Back").Tiles[(int)tile.X, (int)tile.Y].TileIndex = 1299;
                     l.map.GetLayer("Back").Tiles[(int)tile.X, (int)tile.Y].Properties.Add("Treasure", new PropertyValue("Object " + SwimUtils.CheckForBuriedItem(Game1.player)));
@@ -597,5 +597,77 @@ namespace Swim
             }
         }
 
+
+        public static void SwitchToWaterTiles(GameLocation location)
+        {
+
+            string mapName = location.Name;
+
+            Map map = location.Map;
+            for (int x = 0; x < map.Layers[0].LayerWidth; x++)
+            {
+                for (int y = 0; y < map.Layers[0].LayerHeight; y++)
+                {
+                    if (SwimUtils.doesTileHaveProperty(map, x, y, "Water", "Back") != null)
+                    {
+                        Tile tile = map.GetLayer("Back").PickTile(new Location(x, y) * Game1.tileSize, Game1.viewport.Size);
+                        if (tile != null)
+                        {
+                            if (tile.TileIndexProperties.ContainsKey("Passable"))
+                            {
+                                tile.TileIndexProperties["Passable"] = "T";
+                            }
+                        }
+                        tile = map.GetLayer("Buildings").PickTile(new Location(x, y) * Game1.tileSize, Game1.viewport.Size);
+                        if (tile != null)
+                        {
+                            if (tile.TileIndexProperties.ContainsKey("Passable"))
+                            {
+                                tile.TileIndexProperties["Passable"] = "T";
+                            }
+                            else
+                            {
+                                tile.TileIndexProperties.Add("Passable", "T");
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        public static void SwitchToLandTiles(GameLocation location)
+        {
+            string mapName = location.Name;
+
+            Map map = location.Map;
+            for (int x = 0; x < map.Layers[0].LayerWidth; x++)
+            {
+                for (int y = 0; y < map.Layers[0].LayerHeight; y++)
+                {
+                    if (SwimUtils.doesTileHaveProperty(map, x, y, "Water", "Back") != null)
+                    {
+                        Tile tile = map.GetLayer("Back").PickTile(new Location(x, y) * Game1.tileSize, Game1.viewport.Size);
+                        if (tile != null)
+                        {
+                            if (tile.TileIndexProperties.ContainsKey("Passable"))
+                            {
+                                tile.TileIndexProperties["Passable"] = "F";
+                            }
+                        }
+                        tile = map.GetLayer("Buildings").PickTile(new Location(x, y) * Game1.tileSize, Game1.viewport.Size);
+                        if (tile != null)
+                        {
+                            if (tile.TileIndexProperties.ContainsKey("Passable"))
+                            {
+                                tile.TileIndexProperties["Passable"] = "F";
+                            }
+                            else
+                            {
+                                tile.TileIndexProperties.Add("Passable", "F");
+                            }
+                        }
+                    }
+                }
+            }
+        }
     }
 }

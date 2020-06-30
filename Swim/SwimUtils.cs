@@ -13,10 +13,10 @@ using xTile.Tiles;
 namespace Swim
 {
     internal class SwimUtils
-	{
-		private static IMonitor Monitor;
-		private static ModConfig Config;
-		private static IModHelper Helper;
+    {
+        private static IMonitor Monitor;
+        private static ModConfig Config;
+        private static IModHelper Helper;
         public static Dictionary<string, string> seaMonsterSounds = new Dictionary<string, string>() {
             {"A","dialogueCharacter"},
             {"B","grunt"},
@@ -46,11 +46,11 @@ namespace Swim
             {"Z","harvest"},
         };
         public static void Initialize(IMonitor monitor, IModHelper helper, ModConfig config)
-		{
-			Monitor = monitor;
+        {
+            Monitor = monitor;
             Config = config;
-			Helper = helper;
-		}
+            Helper = helper;
+        }
 
         public static Point GetEdgeWarpDestination(int idxPos, EdgeWarp edge)
         {
@@ -251,14 +251,14 @@ namespace Swim
                 );
         }
 
-        public static List<Vector2> GetSurroundingTiles()
+        public static List<Vector2> GetTilesInDirection(int count)
         {
             List<Vector2> tiles = new List<Vector2>();
             int dir = Game1.player.facingDirection;
             if (dir == 1)
             {
 
-                for (int i = 4; i > 0; i--)
+                for (int i = count; i > 0; i--)
                 {
                     tiles.Add(Game1.player.getTileLocation() + new Vector2(i, 0));
                 }
@@ -268,7 +268,7 @@ namespace Swim
             if (dir == 2)
             {
 
-                for (int i = 4; i > 0; i--)
+                for (int i = count; i > 0; i--)
                 {
                     tiles.Add(Game1.player.getTileLocation() + new Vector2(0, i));
                 }
@@ -278,7 +278,7 @@ namespace Swim
             if (dir == 3)
             {
 
-                for (int i = 4; i > 0; i--)
+                for (int i = count; i > 0; i--)
                 {
                     tiles.Add(Game1.player.getTileLocation() - new Vector2(i, 0));
                 }
@@ -288,7 +288,7 @@ namespace Swim
             if (dir == 0)
             {
 
-                for (int i = 4; i > 0; i--)
+                for (int i = count; i > 0; i--)
                 {
                     tiles.Add(Game1.player.getTileLocation() - new Vector2(0, i));
                 }
@@ -297,6 +297,38 @@ namespace Swim
 
             return tiles;
 
+        }
+
+        public static Vector2 GetNextTile()
+        {
+            int dir = Game1.player.facingDirection;
+            if (dir == 1)
+            {
+
+                return Game1.player.getTileLocation() + new Vector2(1, 0);
+
+            }
+
+            if (dir == 2)
+            {
+
+                return Game1.player.getTileLocation() + new Vector2(0, 1);
+
+            }
+
+            if (dir == 3)
+            {
+
+                return Game1.player.getTileLocation() - new Vector2(1, 0);
+
+            }
+
+            if (dir == 0)
+            {
+
+                return Game1.player.getTileLocation() - new Vector2(0, 1);
+            }
+            return Vector2.Zero;
         }
 
         public static void MakeOxygenBar(int current, int max)
@@ -382,6 +414,15 @@ namespace Swim
                 }
                 await Task.Delay(100);
             }
+        }
+
+        internal static bool IsWaterTile(Vector2 tilePos)
+        {
+            if (Game1.currentLocation != null && Game1.currentLocation.waterTiles != null && Game1.currentLocation.waterTiles.GetLength(0) > tilePos.X && Game1.currentLocation.waterTiles.GetLength(1) > tilePos.Y)
+            {
+                return Game1.currentLocation.waterTiles[(int)tilePos.X, (int)tilePos.Y];
+            }
+            return false;
         }
     }
 }

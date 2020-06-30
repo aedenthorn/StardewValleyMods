@@ -168,6 +168,11 @@ namespace Swim
                prefix: new HarmonyMethod(typeof(SwimPatches), nameof(SwimPatches.GameLocation_checkAction_Prefix))
             );
 
+            harmony.Patch(
+               original: AccessTools.Method(typeof(GameLocation), nameof(GameLocation.isCollidingPosition), new Type[] { typeof(Rectangle), typeof(xTile.Dimensions.Rectangle), typeof(bool), typeof(int), typeof(bool), typeof(Character), typeof(bool), typeof(bool), typeof(bool) }),
+               postfix: new HarmonyMethod(typeof(SwimPatches), nameof(SwimPatches.GameLocation_isCollidingPosition_Postfix))
+            );
+
         }
         public override object GetApi()
         {
@@ -230,7 +235,7 @@ namespace Swim
             foreach(string key in changeLocations.Keys)
             {
                 if (asset.AssetNameEquals($"Maps/{key}"))
-                    return true;
+                    return false;
 
             }
 
@@ -245,7 +250,7 @@ namespace Swim
 
             string mapName = asset.AssetName.Replace("Maps/", "").Replace("Maps\\", "");
 
-            if (changeLocations.ContainsKey(mapName))
+            if (false && changeLocations.ContainsKey(mapName))
             {
                 IAssetDataForMap map = asset.AsMap();
                 for (int x = 0; x < map.Data.Layers[0].LayerWidth; x++)

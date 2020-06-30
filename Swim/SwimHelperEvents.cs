@@ -15,6 +15,7 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using xTile.Dimensions;
+using xTile.Tiles;
 
 namespace Swim
 {
@@ -61,6 +62,10 @@ namespace Swim
                     Game1.player.addItemToInventory(Game1.player.hat.Value);
                 Game1.player.hat.Value = new Hat(0);
                 Game1.player.doEmote(9);
+            }
+            if (Game1.player.swimming)
+            {
+                //SwimMaps.SwitchToWaterTiles(e.NewLocation);
             }
         }
 
@@ -364,7 +369,9 @@ namespace Swim
 
             if(false && e.Button == SButton.Q)
             {
-                Game1.currentLocation.overlayObjects[Game1.player.getTileLocation() + new Vector2(0, 1)] = new Chest(0, new List<Item>() { Helper.Input.IsDown(SButton.LeftShift) ? (Item)(new StardewValley.Object(434, 1)) : (new Hat(ModEntry.scubaMaskID)) }, Game1.player.getTileLocation() + new Vector2(0, 1), false, 0);
+                var v1 = Game1.game1;
+                return;
+                //Game1.currentLocation.overlayObjects[Game1.player.getTileLocation() + new Vector2(0, 1)] = new Chest(0, new List<Item>() { Helper.Input.IsDown(SButton.LeftShift) ? (Item)(new StardewValley.Object(434, 1)) : (new Hat(ModEntry.scubaMaskID)) }, Game1.player.getTileLocation() + new Vector2(0, 1), false, 0);
             }
 
             if (e.Button == Config.DiveKey && ModEntry.diveMaps.ContainsKey(Game1.currentLocation.Name) && ModEntry.diveMaps[Game1.currentLocation.Name].DiveLocations.Count > 0)
@@ -405,7 +412,7 @@ namespace Swim
                 return; 
             }
             
-            if (e.Button == Config.SwimKey)
+            if (e.Button == Config.SwimKey && !Game1.player.swimming)
             {
                 Config.ReadyToSwim = !Config.ReadyToSwim;
                 Helper.WriteConfig<ModConfig>(Config);
@@ -667,7 +674,7 @@ namespace Swim
                 return;
 
 
-            List<Vector2> tiles = SwimUtils.GetSurroundingTiles();
+            List<Vector2> tiles = SwimUtils.GetTilesInDirection(5);
             Vector2 jumpLocation = Vector2.Zero;
             
             double distance = -1;
@@ -707,14 +714,14 @@ namespace Swim
             }
             //Monitor.Log("Distance: " + distance);
 
-            bool nextToLand = Game1.player.swimming && !Game1.currentLocation.isTilePassable(new Location((int)tiles.Last().X, (int)tiles.Last().Y), Game1.viewport) && distance < maxDistance;
+            bool nextToLand = Game1.player.swimming && !Game1.currentLocation.isTilePassable(new Location((int)tiles.Last().X, (int)tiles.Last().Y), Game1.viewport) && !SwimUtils.IsWaterTile(tiles[tiles.Count - 2]) && distance < maxDistance;
             
             bool nextToWater = false;
             try
             {
                 nextToWater = !Game1.player.swimming &&
                     (Game1.currentLocation.waterTiles[(int)tiles.Last().X, (int)tiles.Last().Y]
-                        || !Game1.currentLocation.isTilePassable(new Location((int)tiles.Last().X, (int)tiles.Last().Y), Game1.viewport) && Game1.currentLocation.waterTiles[(int)tiles[tiles.Count - 2].X, (int)tiles[tiles.Count - 2].Y])
+                        || (!Game1.currentLocation.isTilePassable(new Location((int)tiles.Last().X, (int)tiles.Last().Y), Game1.viewport) && SwimUtils.IsWaterTile(tiles[tiles.Count - 2])))
                     && distance < maxDistance;
             }
             catch
@@ -728,28 +735,29 @@ namespace Swim
             if (Helper.Input.IsDown(Config.SwimKey) || nextToLand || nextToWater)
             {
                 //Monitor.Log("okay to jump");
-                foreach (Vector2 tile in tiles)
+                for(int i = 0; i < tiles.Count; i++)
                 {
+                    Vector2 tileV = tiles[i];
                     bool isWater = false;
                     bool isPassable = false;
                     try
                     {
-                        isPassable = Game1.currentLocation.isTilePassable(new Location((int)tile.X, (int)tile.Y), Game1.viewport);
-                        isWater = Game1.currentLocation.waterTiles[(int)tile.X, (int)tile.Y];
+                        Tile tile = Game1.currentLocation.map.GetLayer("Buildings")?.PickTile(new Location((int)tileV.X * Game1.tileSize, (int)tileV.Y * Game1.tileSize), Game1.viewport.Size);
+                        isWater = Game1.currentLocation.waterTiles != null && Game1.currentLocation.waterTiles[(int)tileV.X, (int)tileV.Y];
+                        isPassable = Game1.currentLocation.isTilePassable(new Location((int)tileV.X, (int)tileV.Y), Game1.viewport) || (isWater && (tile == null || tile.TileIndex == 76));
                     }
-                    catch (Exception exception)
+                    catch
                     {
                     }
-
                     if (nextToLand && !isWater && isPassable)
                     {
-                        jumpLocation = tile;
+                        jumpLocation = tileV;
 
                     }
 
                     if (nextToWater && isWater && isPassable)
                     {
-                        jumpLocation = tile;
+                        jumpLocation = tileV;
 
                     }
 

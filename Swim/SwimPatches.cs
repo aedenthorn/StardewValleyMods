@@ -9,6 +9,7 @@ using System.Linq;
 using System.Reflection.Emit;
 using System.Threading.Tasks;
 using xTile.Dimensions;
+using xTile.Tiles;
 
 namespace Swim
 {
@@ -75,7 +76,7 @@ namespace Swim
             try
             {
                 Monitor.Log($"exiting event");
-                if (__instance.exitLocation.Location.waterTiles[(int)(Game1.player.positionBeforeEvent.X),(int)(Game1.player.positionBeforeEvent.Y)])
+                if (__instance.exitLocation != null && __instance.exitLocation.Location.waterTiles != null && Game1.player.positionBeforeEvent != null && __instance.exitLocation.Location.waterTiles[(int)(Game1.player.positionBeforeEvent.X),(int)(Game1.player.positionBeforeEvent.Y)])
                 {
                     Monitor.Log($"swimming again");
                     ChangeAfterEvent();
@@ -336,6 +337,23 @@ namespace Swim
             catch (Exception ex)
             {
                 Monitor.Log($"Failed in {nameof(GameLocation_UpdateWhenCurrentLocation_Postfix)}:\n{ex}", LogLevel.Error);
+            }
+        }
+        public static void GameLocation_isCollidingPosition_Postfix(GameLocation __instance, ref bool __result, Microsoft.Xna.Framework.Rectangle position, xTile.Dimensions.Rectangle viewport, bool isFarmer, int damagesFarmer, bool glider, Character character, bool pathfinding, bool projectile = false, bool ignoreCharacterRequirement = false)
+        {
+            try
+            {
+                if (__result == false || !isFarmer || !character.Equals(Game1.player) || !Game1.player.swimming || ModEntry.isUnderwater)
+                    return;
+                Vector2 next = SwimUtils.GetNextTile();
+                if (__instance.Map.Layers[0].LayerWidth <= (int)next.X || __instance.Map.Layers[0].LayerHeight <= (int)next.Y || SwimUtils.doesTileHaveProperty(__instance.map, (int)next.X, (int)next.Y, "Water", "Back") != null)
+                {
+                    __result = false;
+                }
+            }
+            catch (Exception ex)
+            {
+                Monitor.Log($"Failed in {nameof(GameLocation_isCollidingPosition_Postfix)}:\n{ex}", LogLevel.Error);
             }
         }
     }
