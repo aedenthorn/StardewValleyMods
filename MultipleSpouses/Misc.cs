@@ -315,6 +315,7 @@ namespace MultipleSpouses
             {
                 if(spouses.Count > 0)
                 {
+                    Monitor.Log("No official spouse, setting official spouse to: " + spouses.First().Key);
                     f.spouse = spouses.First().Key;
                 }
             }
@@ -323,7 +324,8 @@ namespace MultipleSpouses
             {
                 if (f.friendshipData[name].IsEngaged())
                 {
-                    if(f.friendshipData[name].WeddingDate.TotalDays < new WorldDate(Game1.Date).TotalDays)
+                    Monitor.Log($"{f.Name} is engaged to: {name}");
+                    if (f.friendshipData[name].WeddingDate.TotalDays < new WorldDate(Game1.Date).TotalDays)
                     {
                         Monitor.Log("invalid engagement: " + name);
                         f.friendshipData[name].WeddingDate.TotalDays = new WorldDate(Game1.Date).TotalDays + 1;
@@ -336,14 +338,15 @@ namespace MultipleSpouses
                 }
                 if (f.friendshipData[name].IsMarried() && f.spouse != name)
                 {
+                    Monitor.Log($"{f.Name} is married to: {name}");
                     if (f.spouse != null && f.friendshipData[f.spouse] != null && !f.friendshipData[f.spouse].IsMarried() && !f.friendshipData[f.spouse].IsEngaged())
                     {
-                        Monitor.Log("invalid ospouse, setting: " + name);
+                        Monitor.Log("invalid ospouse, setting ospouse to " + name);
                         f.spouse = name;
                     }
                     if (f.spouse == null)
                     {
-                        Monitor.Log("null ospouse, setting: " + name);
+                        Monitor.Log("null ospouse, setting ospouse to " + name);
                         f.spouse = name;
                     }
                 }

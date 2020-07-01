@@ -145,7 +145,7 @@ namespace MultipleSpouses
             {
                 Farmer f = __instance.owner;
 
-                if (f == null || Misc.GetSpouses(f,1).Count == 0)
+                if (f == null)
                 {
                     return;
                 }
