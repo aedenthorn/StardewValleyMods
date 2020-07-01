@@ -410,9 +410,9 @@ namespace MultipleSpouses
             }
             return new Point(22 + offset, 5);
         }
-        public static bool ChangingHouse()
+        public static bool ChangingKidsRoom()
         {
-            return ModEntry.config.BuildAllSpousesRooms || ModEntry.config.CustomBed || ModEntry.config.ExtraCribs != 0 || ModEntry.config.ExtraKidsBeds != 0 || ModEntry.config.ExtraKidsRoomWidth != 0;
+            return ModEntry.config.ExtraCribs != 0 || ModEntry.config.ExtraKidsBeds != 0 || ModEntry.config.ExtraKidsRoomWidth != 0;
         }
         
         public static int GetTopOfHeadSleepOffset(string name)

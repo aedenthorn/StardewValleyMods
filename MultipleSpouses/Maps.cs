@@ -655,6 +655,7 @@ namespace MultipleSpouses
 		}
 		internal static void ExpandKidsRoom(FarmHouse farmHouse)
 		{
+
 			ModEntry.PMonitor.Log("Expanding kids room");
 
 			int extraWidth = Math.Max(ModEntry.config.ExtraCribs,0) * 3 + Math.Max(ModEntry.config.ExtraKidsRoomWidth, 0) + Math.Max(ModEntry.config.ExtraKidsBeds, 0) * 4;
@@ -665,7 +666,7 @@ namespace MultipleSpouses
 			int ox = ModEntry.config.ExistingKidsRoomOffsetX;
 			int oy = ModEntry.config.ExistingKidsRoomOffsetY;
 
-			Map map = PHelper.Content.Load<Map>("Maps\\" + farmHouse.Name + ((farmHouse.upgradeLevel == 0) ? "" : ((farmHouse.upgradeLevel == 3) ? "2" : string.Concat(farmHouse.upgradeLevel))) + "_marriage", ContentSource.GameContent);
+			Map map = PHelper.Content.Load<Map>("Maps\\" + farmHouse.Name + "2"+ (Misc.GetSpouses(farmHouse.owner,1).Count > 0? "_marriage":""), ContentSource.GameContent);
 
 			List<string> sheets = new List<string>();
 			for (int i = 0; i < map.TileSheets.Count; i++)

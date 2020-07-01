@@ -149,7 +149,7 @@ namespace MultipleSpouses
                 {
                     return;
                 }
-                ModEntry.PMonitor.Log("reset farmhouse state");
+                ModEntry.PMonitor.Log($"reset farmhouse state - upgrade level {__instance.upgradeLevel}");
 
                 Misc.ResetSpouses(f);
 
@@ -158,17 +158,20 @@ namespace MultipleSpouses
                     f.position.Value = Misc.GetFarmerBedPosition(__instance);
                 }
 
-                if (Misc.ChangingHouse())
+                if (ModEntry.config.CustomBed && __instance.upgradeLevel > 0)
                 {
-                    if(__instance.upgradeLevel > 1)
+                    Maps.ReplaceBed(__instance);
+                }
+                if(__instance.upgradeLevel > 0 && __instance.upgradeLevel < 4)
+                {
+                    Maps.BuildSpouseRooms(__instance);
+                }
+                if (Misc.ChangingKidsRoom())
+                {
+                    if(__instance.upgradeLevel > 1 && __instance.upgradeLevel < 4)
                     {
                         NPCPatches.SetCribs(__instance);
                         Maps.ExpandKidsRoom(__instance);
-                    }
-                    if (ModEntry.config.CustomBed && __instance.upgradeLevel > 0)
-                    {
-                        Maps.BuildSpouseRooms(__instance);
-                        Maps.ReplaceBed(__instance);
                     }
                 }
             }
