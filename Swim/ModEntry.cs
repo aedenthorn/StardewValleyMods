@@ -18,7 +18,7 @@ namespace Swim
     public class ModEntry : Mod, IAssetEditor, IAssetLoader
     {
         
-        private ModConfig config;
+        public static ModConfig config;
         public static IMonitor SMonitor;
         public static IJsonAssetsApi JsonAssets;
         public static Texture2D OxygenBarTexture;

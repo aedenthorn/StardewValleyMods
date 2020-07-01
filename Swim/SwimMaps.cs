@@ -92,7 +92,7 @@ namespace Swim
                 spots[n] = value;
             }
 
-            int mineralNo = (int)Math.Round(Game1.random.Next(10, 30) / 1000f * spots.Count);
+            int mineralNo = (int)Math.Round(Game1.random.Next(Config.MineralPerThousandMin, Config.MineralPerThousandMax) / 1000f * spots.Count);
             List<Vector2> mineralSpots = spots.Take(mineralNo).ToList();
 
             foreach (Vector2 tile in mineralSpots)
@@ -188,7 +188,7 @@ namespace Swim
                     spots[n] = value;
                 }
                 l.characters.ToList().RemoveAll((e) => e is SeaCrab);
-                int crabs = (int)(Game1.random.Next(2, 10) / 1000f * spots.Count);
+                int crabs = (int)(Game1.random.Next(Config.CrabsPerThousandMin, Config.CrabsPerThousandMax) / 1000f * spots.Count);
                 for (int i = 0; i < crabs; i++)
                 {
                     int idx = Game1.random.Next(spots.Count);
@@ -225,7 +225,7 @@ namespace Swim
                 l.characters.ToList().RemoveAll((e) => (smol ? (e is Fishie) : (e is BigFishie)));
                 if (smol)
                 {
-                    int fishes = Game1.random.Next(50, 100);
+                    int fishes = Game1.random.Next(Config.MinSmolFishies, Config.MaxSmolFishies);
                     for (int i = 0; i < fishes; i++)
                     {
                         int idx = Game1.random.Next(spots.Count);
@@ -234,7 +234,7 @@ namespace Swim
                 }
                 else
                 {
-                    int bigFishes = (int)(Game1.random.Next(10, 50) / 1000f * spots.Count);
+                    int bigFishes = (int)(Game1.random.Next(Config.BigFishiesPerThousandMin, Config.BigFishiesPerThousandMax) / 1000f * spots.Count);
                     for (int i = 0; i < bigFishes; i++)
                     {
                         int idx = Game1.random.Next(spots.Count);
@@ -266,7 +266,7 @@ namespace Swim
                 spots[k] = spots[n];
                 spots[n] = value;
             }
-            int forageNo = (int)(Game1.random.Next(1, 10) / 1000f * spots.Count);
+            int forageNo = (int)(Game1.random.Next(Config.OceanForagePerThousandMin, Config.OceanForagePerThousandMax) / 1000f * spots.Count);
             List<Vector2> forageSpots = spots.Take(forageNo).ToList();
 
             foreach (Vector2 v in forageSpots)
@@ -354,7 +354,7 @@ namespace Swim
                 spots[n] = value;
             }
 
-            int treasureNo = (int)(Game1.random.Next(0, 3));
+            int treasureNo = (int)(Game1.random.Next(Config.MinOceanChests, Config.MaxOceanChests));
 
             List<Vector2> treasureSpots = new List<Vector2>(spots).Take(treasureNo).ToList();
 
@@ -568,7 +568,7 @@ namespace Swim
                 if (treasures.Count > 0)
                 {
                     Color tint = Color.White;
-                    l.overlayObjects[v] = new Chest(Game1.random.Next(0, 1000), treasures, v, false, 0)
+                    l.overlayObjects[v] = new Chest(Game1.random.Next(0, 1000), new List<Item>() { treasures[ModEntry.myRand.Next(treasures.Count)] }, v, false, 0)
                     {
                         Tint = tint
                     };

@@ -452,7 +452,7 @@ namespace MultipleSpouses
 				}
 				else
 				{
-					map = PHelper.Content.Load<Map>("Maps\\" + farmHouse.Name + ((farmHouse.upgradeLevel == 0) ? "" : ((farmHouse.upgradeLevel == 3) ? "2" : string.Concat(farmHouse.upgradeLevel))) + "_marriage", ContentSource.GameContent);
+					map = PHelper.Content.Load<Map>("Maps\\" + farmHouse.Name + ((farmHouse.upgradeLevel == 0) ? "" : (((farmHouse.upgradeLevel == 3) ? "2" : string.Concat(farmHouse.upgradeLevel)) + "_marriage")), ContentSource.GameContent);
 
 					if (!ModEntry.config.TransparentSheets && farmHouse.owner != null && !farmHouse.owner.activeDialogueEvents.ContainsKey("pennyRedecorating"))
 					{

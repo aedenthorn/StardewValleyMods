@@ -19,6 +19,20 @@ namespace Swim
         public bool AddCrabs { get; set; }
         public bool BreatheSound { get; set; }
         public bool EnableClickToSwim { get; set; }
+        public int MineralPerThousandMin { get; set; }
+        public int MineralPerThousandMax { get; set; }
+        public int CrabsPerThousandMin { get; set; }
+        public int CrabsPerThousandMax { get; set; }
+        public int PercentChanceCrabIsMimic { get; set; }
+        public int MinSmolFishies { get; set; }
+        public int MaxSmolFishies { get; set; }
+        public int BigFishiesPerThousandMin { get; set; }
+        public int BigFishiesPerThousandMax { get; set; }
+        public int OceanForagePerThousandMin { get; set; }
+        public int OceanForagePerThousandMax { get; set; }
+        public int MinOceanChests { get; set; }
+        public int MaxOceanChests { get; set; }
+
 
         public ModConfig()
         {
@@ -36,6 +50,19 @@ namespace Swim
             AddCrabs = true;
             BreatheSound = true;
             EnableClickToSwim = true;
+            MineralPerThousandMin = 10;
+            MineralPerThousandMax = 30;
+            CrabsPerThousandMin = 2;
+            CrabsPerThousandMax = 10;
+            PercentChanceCrabIsMimic = 15;
+            MinSmolFishies = 50;
+            MaxSmolFishies = 100;
+            BigFishiesPerThousandMin = 20;
+            BigFishiesPerThousandMax = 50;
+            OceanForagePerThousandMin = 1;
+            OceanForagePerThousandMax = 10;
+            MinOceanChests = 0;
+            MaxOceanChests = 3;
         }
     }
 }

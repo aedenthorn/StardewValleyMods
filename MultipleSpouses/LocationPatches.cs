@@ -151,25 +151,23 @@ namespace MultipleSpouses
                 }
                 ModEntry.PMonitor.Log("reset farmhouse state");
 
-
                 Misc.ResetSpouses(f);
 
                 if (f.currentLocation == __instance && Misc.IsInBed(__instance, f.GetBoundingBox()))
                 {
                     f.position.Value = Misc.GetFarmerBedPosition(__instance);
                 }
-                NPCPatches.SetCribs(__instance);
 
                 if (Misc.ChangingHouse())
                 {
-                    if (__instance.upgradeLevel > 1)
+                    if(__instance.upgradeLevel > 1)
                     {
+                        NPCPatches.SetCribs(__instance);
                         Maps.ExpandKidsRoom(__instance);
                     }
-                    //__instance.showSpouseRoom();
-                    Maps.BuildSpouseRooms(__instance);
-                    if (ModEntry.config.CustomBed)
+                    if (ModEntry.config.CustomBed && __instance.upgradeLevel > 0)
                     {
+                        Maps.BuildSpouseRooms(__instance);
                         Maps.ReplaceBed(__instance);
                     }
                 }
