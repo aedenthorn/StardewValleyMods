@@ -11,6 +11,14 @@ namespace CustomFixedDialogue
         private static IMonitor Monitor;
         private static IModHelper Helper;
         private static string prefix = "CustomFixedDialogue";
+        private static string NPCPrefix = "Strings\\StringsFromCSFiles:NPC.cs.";
+        private static string extraPrefix = "Data\\ExtraDialogue";
+        private static List<string> NPCexceptions = new List<string>() 
+        { 
+            "3981",
+            "3969",
+        };
+
         public static void Initialize(IMonitor monitor, IModHelper helper)
         {
             Monitor = monitor;
@@ -20,12 +28,12 @@ namespace CustomFixedDialogue
         {
             try
             {
-                if (path.StartsWith("Data\\ExtraDialogue"))
+                if (path.StartsWith(extraPrefix))
                 {
                     __result = $"{prefix}{path.Replace("Data\\ExtraDialogue:", "ExtraDialogue_")}^{__result}";
                     Monitor.Log($"edited dialogue: {__result}");
                 }
-                else if (path.StartsWith("Strings\\StringsFromCSFiles:NPC.cs."))
+                else if (path.StartsWith(NPCPrefix) && !NPCexceptions.Contains(path.Substring(NPCPrefix.Length)))
                 {
                     __result = $"{prefix}{path.Replace("Strings\\StringsFromCSFiles:", "")}^{__result}";
                     Monitor.Log($"edited dialogue: {__result}");
@@ -42,11 +50,11 @@ namespace CustomFixedDialogue
         {
             try
             {
-                if (path.StartsWith("Data\\ExtraDialogue"))
+                if (path.StartsWith(extraPrefix))
                 {
                     __result = $"{prefix}{path.Replace("Data\\ExtraDialogue:", "ExtraDialogue_")}^{__result}";
                 }
-                else if (path.StartsWith("Strings\\StringsFromCSFiles:NPC.cs."))
+                else if (path.StartsWith(NPCPrefix) && !NPCexceptions.Contains(path.Substring(NPCPrefix.Length)))
                 {
                     __result = $"{prefix}{path.Replace("Strings\\StringsFromCSFiles:", "")}^{__result}";
                 }
