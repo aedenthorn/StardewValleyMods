@@ -418,7 +418,7 @@ namespace Swim
 
         internal static bool IsWaterTile(Vector2 tilePos)
         {
-            if (Game1.currentLocation != null && Game1.currentLocation.waterTiles != null && Game1.currentLocation.waterTiles.GetLength(0) > tilePos.X && Game1.currentLocation.waterTiles.GetLength(1) > tilePos.Y)
+            if (Game1.currentLocation != null && Game1.currentLocation.waterTiles != null && tilePos.X >= 0 && tilePos.Y >= 0 && Game1.currentLocation.waterTiles.GetLength(0) > tilePos.X && Game1.currentLocation.waterTiles.GetLength(1) > tilePos.Y)
             {
                 return Game1.currentLocation.waterTiles[(int)tilePos.X, (int)tilePos.Y];
             }

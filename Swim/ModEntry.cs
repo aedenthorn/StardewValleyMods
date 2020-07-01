@@ -109,6 +109,10 @@ namespace Swim
                postfix: new HarmonyMethod(typeof(SwimPatches), nameof(SwimPatches.FarmerRenderer_draw_Postfix))
             );
             harmony.Patch(
+               original: AccessTools.Method(typeof(FarmerSprite), "checkForFootstep"),
+               prefix: new HarmonyMethod(typeof(SwimPatches), nameof(SwimPatches.FarmerSprite_checkForFootstep_Prefix))
+            );
+            harmony.Patch(
                original: AccessTools.Method(typeof(GameLocation), nameof(GameLocation.startEvent)),
                postfix: new HarmonyMethod(typeof(SwimPatches), nameof(SwimPatches.GameLocation_StartEvent_Postfix))
             );

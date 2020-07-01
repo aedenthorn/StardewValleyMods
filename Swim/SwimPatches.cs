@@ -25,7 +25,7 @@ namespace Swim
 			Config = config;
 			Helper = helper;
 		}
-		internal static void FarmerRenderer_draw_Prefix(Farmer who, ref bool __state)
+        public static void FarmerRenderer_draw_Prefix(Farmer who, ref bool __state)
         {
             try
             {
@@ -39,6 +39,21 @@ namespace Swim
             {
                 Monitor.Log($"Failed in {nameof(FarmerRenderer_draw_Prefix)}:\n{ex}", LogLevel.Error);
             }
+        }
+        public static bool FarmerSprite_checkForFootstep_Prefix()
+        {
+            try
+            {
+                if(Game1.player.swimming)
+                {
+                    return false;
+                }
+            }
+            catch (Exception ex)
+            {
+                Monitor.Log($"Failed in {nameof(FarmerSprite_checkForFootstep_Prefix)}:\n{ex}", LogLevel.Error);
+            }
+            return true;
         }
         internal static void FarmerRenderer_draw_Postfix(Farmer who, bool __state)
         {
@@ -76,7 +91,7 @@ namespace Swim
             try
             {
                 Monitor.Log($"exiting event");
-                if (__instance.exitLocation != null && __instance.exitLocation.Location.waterTiles != null && Game1.player.positionBeforeEvent != null && __instance.exitLocation.Location.waterTiles[(int)(Game1.player.positionBeforeEvent.X),(int)(Game1.player.positionBeforeEvent.Y)])
+                if (__instance.exitLocation != null && __instance.exitLocation != null && __instance.exitLocation.Location.waterTiles != null && Game1.player.positionBeforeEvent != null && __instance.exitLocation.Location.waterTiles[(int)(Game1.player.positionBeforeEvent.X),(int)(Game1.player.positionBeforeEvent.Y)])
                 {
                     Monitor.Log($"swimming again");
                     ChangeAfterEvent();
@@ -346,7 +361,7 @@ namespace Swim
                 if (__result == false || !isFarmer || !character.Equals(Game1.player) || !Game1.player.swimming || ModEntry.isUnderwater)
                     return;
                 Vector2 next = SwimUtils.GetNextTile();
-                if (__instance.Map.Layers[0].LayerWidth <= (int)next.X || __instance.Map.Layers[0].LayerHeight <= (int)next.Y || SwimUtils.doesTileHaveProperty(__instance.map, (int)next.X, (int)next.Y, "Water", "Back") != null)
+                if ((int)next.X <= 0 || (int)next.Y <= 0 || __instance.Map.Layers[0].LayerWidth <= (int)next.X || __instance.Map.Layers[0].LayerHeight <= (int)next.Y || SwimUtils.doesTileHaveProperty(__instance.map, (int)next.X, (int)next.Y, "Water", "Back") != null)
                 {
                     __result = false;
                 }

@@ -457,7 +457,10 @@ namespace Swim
                             if (!SwimUtils.IsWearingScubaGear())
                                 ModEntry.oxygen--;
                             else {
-                                ModEntry.oxygen = SwimUtils.MaxOxygen();
+                                if (ModEntry.oxygen < SwimUtils.MaxOxygen())
+                                    ModEntry.oxygen++;
+                                if (ModEntry.oxygen < SwimUtils.MaxOxygen())
+                                    ModEntry.oxygen++;
                             }
                         }
                         else
@@ -476,21 +479,22 @@ namespace Swim
                     if (ModEntry.oxygen < SwimUtils.MaxOxygen())
                         ModEntry.oxygen++;
                 }
-                if (SwimUtils.IsWearingScubaGear())
+            }
+
+            if (SwimUtils.IsWearingScubaGear())
+            {
+                ticksWearingScubaGear++;
+                if (Config.BreatheSound && breatheEffect != null && (lastBreatheSound == 0 || ticksWearingScubaGear - lastBreatheSound > 6000 / 16))
                 {
-                    ticksWearingScubaGear++;
-                    if (Config.BreatheSound && breatheEffect != null && (lastBreatheSound == 0 || ticksWearingScubaGear - lastBreatheSound > 6000 / 16))
-                    {
-                        Monitor.Log("Playing breathe sound");
-                        lastBreatheSound = ticksWearingScubaGear;
-                        breatheEffect.Play(0.5f,0f,0f);
-                    }
+                    Monitor.Log("Playing breathe sound");
+                    lastBreatheSound = ticksWearingScubaGear;
+                    breatheEffect.Play(0.5f, 0f, 0f);
                 }
-                else
-                {
-                    lastBreatheSound = 0;
-                    ticksWearingScubaGear = 0;
-                }
+            }
+            else
+            {
+                lastBreatheSound = 0;
+                ticksWearingScubaGear = 0;
             }
 
             if (isJumping)
