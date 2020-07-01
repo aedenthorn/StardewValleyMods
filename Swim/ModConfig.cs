@@ -18,6 +18,7 @@ namespace Swim
         public bool AddFishies { get; set; }
         public bool AddCrabs { get; set; }
         public bool BreatheSound { get; set; }
+        public bool EnableClickToSwim { get; set; }
 
         public ModConfig()
         {
@@ -34,6 +35,7 @@ namespace Swim
             AddFishies = true;
             AddCrabs = true;
             BreatheSound = true;
+            EnableClickToSwim = true;
         }
     }
 }

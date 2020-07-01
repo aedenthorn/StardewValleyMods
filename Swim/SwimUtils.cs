@@ -132,7 +132,7 @@ namespace Swim
                 }
             }
 
-            if (Helper.Input.IsDown(SButton.MouseLeft))
+            if (Helper.Input.IsDown(SButton.MouseLeft) && Config.EnableClickToSwim)
             {
                 ModEntry.myButtonDown = true;
                 return;

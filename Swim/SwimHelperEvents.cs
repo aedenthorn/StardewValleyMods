@@ -522,7 +522,7 @@ namespace Swim
                 return;
             }
 
-
+            // only if ready to swim from here on!
 
             if (!Config.ReadyToSwim)
             {
@@ -674,7 +674,7 @@ namespace Swim
             if (!ModEntry.myButtonDown || Game1.player.millisecondsPlayed - lastJump < 250 || SwimUtils.IsMapUnderwater(Game1.currentLocation.Name))
                 return;
 
-            if (Helper.Input.IsDown(SButton.MouseLeft) && !Game1.player.swimming && Game1.player.CurrentTool is WateringCan)
+            if (Helper.Input.IsDown(SButton.MouseLeft) && !Game1.player.swimming && (Game1.player.CurrentTool is WateringCan || Game1.player.CurrentTool is FishingRod))
                 return;
 
 
