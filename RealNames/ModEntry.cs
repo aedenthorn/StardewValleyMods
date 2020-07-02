@@ -55,7 +55,6 @@ namespace RealNames
 			   original: typeof(Dialogue).GetMethod(nameof(Dialogue.randomName), BindingFlags.Public | BindingFlags.Static),
 			   prefix: new HarmonyMethod(typeof(ModEntry), nameof(Dialogue_randomName_Prefix))
 			);
-			ConvertNames();
 		}
 
 		private void ConvertNames()
@@ -69,26 +68,28 @@ namespace RealNames
 					fem.Add(name);
 				}
 			}
-			string filePath = $"{Helper.DirectoryPath}\\assets\\names_female_{Config.LocaleString}3.txt";
+			string filePath = $"{Helper.DirectoryPath}/assets/names_female_{Config.LocaleString}3.txt";
 			File.WriteAllLines(filePath, fem.ToArray());
 		}
 
 		private void LoadNames()
         {
-			string filePath = $"{Helper.DirectoryPath}\\assets\\names_female_{Config.LocaleString}.txt";
+			string filePath = $"{Helper.DirectoryPath}/assets/names_female_{Config.LocaleString}.txt";
             if (File.Exists(filePath))
             {
 				femaleNames = File.ReadAllLines(filePath);
+				Monitor.Log($"Female names found at {filePath}.", LogLevel.Debug);
 			}
 			else
             {
 				Monitor.Log($"Female names file not found at {filePath}.", LogLevel.Warn);
 				femaleNames = new string[0];
 			}
-			filePath = $"{Helper.DirectoryPath}\\assets\\names_male_{Config.LocaleString}.txt";
+			filePath = $"{Helper.DirectoryPath}/assets/names_male_{Config.LocaleString}.txt";
 			if (File.Exists(filePath))
 			{
 				maleNames = File.ReadAllLines(filePath);
+				Monitor.Log($"Male names file found at {filePath}.", LogLevel.Debug);
 			}
 			else
 			{
@@ -108,7 +109,7 @@ namespace RealNames
 			}
 			else
             {
-				filePath = $"{Helper.DirectoryPath}\\assets\\names_{Config.LocaleString}.txt";
+				filePath = $"{Helper.DirectoryPath}/assets/names_{Config.LocaleString}.txt";
 				if (File.Exists(filePath))
 				{
 					neuterNames = File.ReadAllLines(filePath);

@@ -765,6 +765,7 @@ namespace MultipleSpouses
 
 			if(ModEntry.config.ExtraKidsRoomWidth > 0)
             {
+				k = 0;
 				for (int j = 0; j < ModEntry.config.ExtraKidsRoomWidth / 3; j++)
 				{
 					k = 0;
@@ -804,7 +805,7 @@ namespace MultipleSpouses
 
 			// beds
 			if (ModEntry.config.ExtraKidsBeds >= 0)
-            {
+			{
 				for (int j = 0; j < ModEntry.config.ExtraKidsBeds + 1; j++)
 				{
 					k = 0;
@@ -836,7 +837,7 @@ namespace MultipleSpouses
 				}
 			}
 			else if (ModEntry.config.ExtraKidsBeds == -1)
-            {
+			{
 				// remove left bed
 
 				k = 0;
@@ -876,7 +877,7 @@ namespace MultipleSpouses
 				}
 			}
 			else
-            {
+			{
 				// remove both beds
 				k = 0;
 				for (int i = 0; i < 3 * height; i++)
@@ -925,6 +926,17 @@ namespace MultipleSpouses
 					setupTile(cribsWidth + spaceWidth + 7 + ox + startx, oy + starty + i, 13, i, farmHouse, frontIndexes, frontSheets, 14, 0);
 					setupTile(cribsWidth + spaceWidth + 7 + ox + startx, oy + starty + i, 13, i, farmHouse, buildIndexes, buildSheets, 14, 1);
 					setupTile(cribsWidth + spaceWidth + 7 + ox + startx, oy + starty + i, 13, i, farmHouse, backIndexes, backSheets, 14, 2);
+				}
+
+			}
+			// bottom
+			for (int i = 0; i < extraWidth; i++)
+			{
+				Tile tile = map.GetLayer("Buildings").PickTile(new Location((29 + ox + i) * Game1.tileSize, (9 + oy) * Game1.tileSize), Game1.viewport.Size);
+				if (tile == null || tile.TileIndex == -1)
+				{
+					Monitor.Log($"Adding building tile at {29 + ox + i},{ 9 + oy}");
+					farmHouse.setMapTileIndex(29 + ox + i, 9 + oy, 0, "Buildings");
 				}
 			}
 

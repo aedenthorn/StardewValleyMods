@@ -103,7 +103,7 @@ namespace MultipleSpouses
                         {
                             if (__instance.upgradeLevel > 1)
                             {
-                                __result.Add(new Microsoft.Xna.Framework.Rectangle(41 + i * 7, 13, 6, 6));
+                                __result.Add(new Microsoft.Xna.Framework.Rectangle(35 + i * 7, 13, 6, 6));
                                 __result.Add(new Microsoft.Xna.Framework.Rectangle(34 + (i * 7), 13, 1, 6));
                             }
                             else
