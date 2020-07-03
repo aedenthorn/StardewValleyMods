@@ -25,6 +25,38 @@ namespace CustomFixedDialogue
             Monitor = monitor;
             Helper = helper;
         }
+        public static void NPC_getHi_Postfix(NPC __instance, ref string __result)
+        {
+            try
+            {
+                if (__result.StartsWith(prefix))
+                {
+                    Dictionary<string, string> dialogueDic = null;
+                    try
+                    {
+                        dialogueDic = Helper.Content.Load<Dictionary<string, string>>($"Characters/Dialogue/{__instance.Name}", ContentSource.GameContent);
+                    }
+                    catch
+                    {
+                    }
+                    string key = __result.Substring(prefix.Length).Split('^')[0];
+                    if (dialogueDic != null && dialogueDic.ContainsKey(key))
+                    {
+                        Monitor.Log($"{__instance.Name} has dialogue for {key}", LogLevel.Debug);
+                        __result = dialogueDic[key];
+                    }
+                    else
+                    {
+                        __result = string.Join("^", __result.Split('^').Skip(1));
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Monitor.Log($"Failed in {nameof(NPC_getHi_Postfix)}:\n{ex}", LogLevel.Error);
+            }
+        }
+
         public static void LocalizedContentManager_LoadString_Postfix(string path, ref string __result)
         {
             try

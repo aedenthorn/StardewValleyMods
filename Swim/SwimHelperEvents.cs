@@ -131,21 +131,21 @@ namespace Swim
 
                 if (ModEntry.scubaMaskID == -1)
                 {
-                    Monitor.Log("Can't get ID for Scuba Mask. Some functionality will be lost.", LogLevel.Warn);
+                    Monitor.Log("Can't get ID for Swim mod item #1. Some functionality will be lost.");
                 }
                 else
                 {
-                    Monitor.Log(string.Format("Scuba Mask ID is {0}.", ModEntry.scubaMaskID), LogLevel.Debug);
+                    Monitor.Log(string.Format("Swim mod item #1 ID is {0}.", ModEntry.scubaMaskID));
                     ModEntry.scubaGear.Add(ModEntry.scubaMaskID);
                 }
 
                 if (ModEntry.scubaTankID == -1)
                 {
-                    Monitor.Log("Can't get ID for Scuba Tank. Some functionality will be lost.", LogLevel.Warn);
+                    Monitor.Log("Can't get ID for Swim mod item #2. Some functionality will be lost.");
                 }
                 else
                 {
-                    Monitor.Log(string.Format("Scuba Tank ID is {0}.", ModEntry.scubaTankID), LogLevel.Debug);
+                    Monitor.Log(string.Format("Swim mod item #2 ID is {0}.", ModEntry.scubaTankID));
                     ModEntry.scubaGear.Add(ModEntry.scubaTankID);
                 }
 
@@ -155,11 +155,11 @@ namespace Swim
                 }
                 catch
                 {
-                    Monitor.Log("Can't get ID for Scuba Fins. Some functionality will be lost.", LogLevel.Warn);
+                    Monitor.Log("Can't get ID for Swim mod item #3. Some functionality will be lost.");
                 }
                 if (ModEntry.scubaFinsID != -1)
                 {
-                    Monitor.Log(string.Format("Scuba Fins ID is {0}.", ModEntry.scubaFinsID), LogLevel.Debug);
+                    Monitor.Log(string.Format("Swim mod item #3 ID is {0}.", ModEntry.scubaFinsID), LogLevel.Debug);
                     ModEntry.scubaGear.Add(ModEntry.scubaFinsID);
                 }
             }

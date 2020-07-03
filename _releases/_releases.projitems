@@ -10,6 +10,7 @@
   </PropertyGroup>
   <ItemGroup>
     <None Include="$(MSBuildThisFileDirectory)CustomFixedDialogue 0.1.5.zip" />
+    <None Include="$(MSBuildThisFileDirectory)CustomFixedDialogue 0.1.6.zip" />
     <None Include="$(MSBuildThisFileDirectory)MultipleSpouses 1.0.9.zip" />
     <None Include="$(MSBuildThisFileDirectory)RealNames 0.1.4.zip" />
     <None Include="$(MSBuildThisFileDirectory)Swim 1.2.2.zip" />
