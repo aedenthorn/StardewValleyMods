@@ -16,6 +16,7 @@ namespace CustomFixedDialogue
         private static List<string> NPCexceptions = new List<string>() 
         { 
             "3981",
+            "3987",
             "3969",
         };
 
