@@ -1,9 +1,12 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using Netcode;
 using StardewModdingAPI;
 using StardewValley;
+using StardewValley.TerrainFeatures;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using xTile;
 using xTile.Dimensions;
@@ -91,7 +94,7 @@ namespace Swim
                     Y = pos.Y
                 };
             }
-            if (!IsMapUnderwater(Game1.currentLocation.Name))
+            if (!IsMapUnderwater(Game1.player.currentLocation.Name))
             {
                 ModEntry.bubbles.Clear();
                 ModEntry.isUnderwater = true;
@@ -117,7 +120,7 @@ namespace Swim
 
         public static void CheckIfMyButtonDown()
         {
-            if (Game1.player == null || Game1.currentLocation == null || !Config.ReadyToSwim || Game1.currentLocation.waterTiles == null || Helper.Input.IsDown(SButton.LeftShift) || Helper.Input.IsDown(SButton.RightShift))
+            if (Game1.player == null || Game1.player.currentLocation == null || !Config.ReadyToSwim || Game1.player.currentLocation.waterTiles == null || Helper.Input.IsDown(SButton.LeftShift) || Helper.Input.IsDown(SButton.RightShift))
             {
                 ModEntry.myButtonDown = false;
                 return;
@@ -235,10 +238,10 @@ namespace Swim
             var tiles = Game1.player.currentLocation.waterTiles;
             Point p = Game1.player.getTileLocationPoint();
 
-            if (!Game1.player.swimming && Game1.currentLocation.map.GetLayer("Buildings").PickTile(new Location(p.X, p.Y) * Game1.tileSize, Game1.viewport.Size) != null)
+            if (!Game1.player.swimming && Game1.player.currentLocation.map.GetLayer("Buildings").PickTile(new Location(p.X, p.Y) * Game1.tileSize, Game1.viewport.Size) != null)
                 return false;
 
-            return IsMapUnderwater(Game1.currentLocation.Name)
+            return IsMapUnderwater(Game1.player.currentLocation.Name)
                 ||
                 (tiles != null
                     && (
@@ -410,19 +413,51 @@ namespace Swim
                 string s = c.ToString().ToUpper();
                 if (seaMonsterSounds.ContainsKey(s))
                 {
-                    Game1.playSound(seaMonsterSounds[s]);
+                    Game1.playSoundPitched("junimoMeep1", (seaMonsterSounds.Keys.ToList().IndexOf(s) / 26) * 2 - 1);
                 }
                 await Task.Delay(100);
             }
         }
 
-        internal static bool IsWaterTile(Vector2 tilePos)
+        public static bool IsWaterTile(Vector2 tilePos)
         {
-            if (Game1.currentLocation != null && Game1.currentLocation.waterTiles != null && tilePos.X >= 0 && tilePos.Y >= 0 && Game1.currentLocation.waterTiles.GetLength(0) > tilePos.X && Game1.currentLocation.waterTiles.GetLength(1) > tilePos.Y)
+            if (Game1.player.currentLocation != null && Game1.player.currentLocation.waterTiles != null && tilePos.X >= 0 && tilePos.Y >= 0 && Game1.player.currentLocation.waterTiles.GetLength(0) > tilePos.X && Game1.player.currentLocation.waterTiles.GetLength(1) > tilePos.Y)
             {
-                return Game1.currentLocation.waterTiles[(int)tilePos.X, (int)tilePos.Y];
+                return Game1.player.currentLocation.waterTiles[(int)tilePos.X, (int)tilePos.Y];
             }
             return false;
+        }
+
+        public static bool IsTilePassable(GameLocation location, Location tileLocation, xTile.Dimensions.Rectangle viewport)
+        {
+            PropertyValue passable = null;
+            Microsoft.Xna.Framework.Rectangle tileLocationRect = new Microsoft.Xna.Framework.Rectangle((int)tileLocation.X * 64, (int)tileLocation.Y * 64, 64, 64);
+            Tile tmp = location.map.GetLayer("Back").PickTile(new Location(tileLocation.X * 64, tileLocation.Y * 64), viewport.Size);
+            if (tmp != null)
+            {
+                tmp.TileIndexProperties.TryGetValue("Passable", out passable);
+            }
+            Tile tile = location.map.GetLayer("Buildings").PickTile(new Location(tileLocation.X * 64, tileLocation.Y * 64), viewport.Size);
+            if (location.largeTerrainFeatures != null)
+            {
+                using (NetCollection<LargeTerrainFeature>.Enumerator enumerator = location.largeTerrainFeatures.GetEnumerator())
+                {
+                    while (enumerator.MoveNext())
+                    {
+                        if (enumerator.Current.getBoundingBox().Intersects(tileLocationRect))
+                        {
+                            return false;
+                        }
+                    }
+                }
+            }
+            Vector2 vLocation = new Vector2(tileLocation.X, tileLocation.Y);
+            if (location.terrainFeatures.ContainsKey(vLocation) && tileLocationRect.Intersects(location.terrainFeatures[vLocation].getBoundingBox(vLocation)) && (!location.terrainFeatures[vLocation].isPassable(null) || (location.terrainFeatures[vLocation] is HoeDirt && ((HoeDirt)location.terrainFeatures[vLocation]).crop != null)))
+            {
+                return false;
+            }
+            bool result = passable == null && tile == null && tmp != null;
+            return result;
         }
     }
 }

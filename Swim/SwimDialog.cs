@@ -120,7 +120,7 @@ namespace Swim
 				i++;
 			}
 			//Monitor.Log($"next question: {preface}{s2}");
-			Game1.currentLocation.createQuestionDialogue($"{preface}{s2}", responses.ToArray(), $"SwimMod_Mariner_Question_{qi}");
+			Game1.player.currentLocation.createQuestionDialogue($"{preface}{s2}", responses.ToArray(), $"SwimMod_Mariner_Question_{qi}");
 		}
 		private static void CompleteEvent()
 		{
@@ -130,8 +130,8 @@ namespace Swim
 			Game1.stopMusicTrack(Game1.MusicContext.Default);
 			Game1.playSound("Cowboy_Secret");
 			Game1.player.mailReceived.Add("SwimMod_Mariner_Completed");
-			Game1.currentLocation.resetForPlayerEntry();
-			SwimMaps.AddScubaChest(Game1.currentLocation, new Vector2(10,6), "ScubaTank");
+			Game1.player.currentLocation.resetForPlayerEntry();
+			SwimMaps.AddScubaChest(Game1.player.currentLocation, new Vector2(10,6), "ScubaTank");
 		}
 	}
 }

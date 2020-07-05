@@ -29,7 +29,7 @@ namespace Swim
         {
             try
             {
-                if(who.swimming && Game1.currentLocation.Name.StartsWith("Underwater"))
+                if(who.swimming && Game1.player.currentLocation.Name.StartsWith("Underwater"))
                 {
                     who.swimming.Value = false;
                     __state = true;
@@ -116,7 +116,7 @@ namespace Swim
             try
             {
                 __state = new float[0];
-                if(__instance.swimming && ModEntry.changeLocations.ContainsKey(Game1.currentLocation.Name) && Config.ReadyToSwim)
+                if(__instance.swimming && ModEntry.changeLocations.ContainsKey(Game1.player.currentLocation.Name) && Config.ReadyToSwim)
                 {
                     __state = new float[]{
                         __instance.stamina,
@@ -163,7 +163,7 @@ namespace Swim
         {
             try
             {
-                if (Game1.currentLocation != null && Game1.currentLocation.Name == "AbigailCave")
+                if (Game1.player.currentLocation != null && Game1.player.currentLocation.Name == "AbigailCave")
                     return false;
             }
             catch (Exception ex)
@@ -360,7 +360,9 @@ namespace Swim
             {
                 if (__result == false || !isFarmer || !character.Equals(Game1.player) || !Game1.player.swimming || ModEntry.isUnderwater)
                     return;
+
                 Vector2 next = SwimUtils.GetNextTile();
+                //Monitor.Log($"Checking collide {SwimUtils.doesTileHaveProperty(__instance.map, (int)next.X, (int)next.Y, "Water", "Back") != null}");
                 if ((int)next.X <= 0 || (int)next.Y <= 0 || __instance.Map.Layers[0].LayerWidth <= (int)next.X || __instance.Map.Layers[0].LayerHeight <= (int)next.Y || SwimUtils.doesTileHaveProperty(__instance.map, (int)next.X, (int)next.Y, "Water", "Back") != null)
                 {
                     __result = false;

@@ -58,12 +58,12 @@ namespace Swim
             }
             if (!foundAnyWater)
             {
-                Monitor.Log($"{Game1.currentLocation.Name} has no water tiles");
+                Monitor.Log($"{Game1.player.currentLocation.Name} has no water tiles");
                 gameLocation.waterTiles = null;
             }
             else
             {
-                Monitor.Log($"Gave {Game1.currentLocation.Name} water tiles");
+                Monitor.Log($"Gave {Game1.player.currentLocation.Name} water tiles");
             }
         }
 
