@@ -41,6 +41,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CustomFixedDialogue", "Cust
 EndProject
 Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "_releases", "_releases\_releases.shproj", "{047040E0-3D07-46E5-852B-D1D45CD57BB8}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TransparentObjects", "TransparentObjects\TransparentObjects.csproj", "{03B8A4DB-9B85-4FF9-A141-3081ECA63F50}"
+EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
 		_releases\_releases.projitems*{047040e0-3d07-46e5-852b-d1d45cd57bb8}*SharedItemsImports = 13
@@ -196,6 +198,14 @@ Global
 		{5CFBC975-48DC-40A0-9478-E81F76D7C8C2}.Release|Any CPU.Build.0 = Release|Any CPU
 		{5CFBC975-48DC-40A0-9478-E81F76D7C8C2}.Release|x86.ActiveCfg = Release|Any CPU
 		{5CFBC975-48DC-40A0-9478-E81F76D7C8C2}.Release|x86.Build.0 = Release|Any CPU
+		{03B8A4DB-9B85-4FF9-A141-3081ECA63F50}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{03B8A4DB-9B85-4FF9-A141-3081ECA63F50}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{03B8A4DB-9B85-4FF9-A141-3081ECA63F50}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{03B8A4DB-9B85-4FF9-A141-3081ECA63F50}.Debug|x86.Build.0 = Debug|Any CPU
+		{03B8A4DB-9B85-4FF9-A141-3081ECA63F50}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{03B8A4DB-9B85-4FF9-A141-3081ECA63F50}.Release|Any CPU.Build.0 = Release|Any CPU
+		{03B8A4DB-9B85-4FF9-A141-3081ECA63F50}.Release|x86.ActiveCfg = Release|Any CPU
+		{03B8A4DB-9B85-4FF9-A141-3081ECA63F50}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -1,0 +1,22 @@
+﻿{
+  "Name": "Transparent Objects",
+  "Author": "aedenthorn",
+  "Version": "0.1.0",
+  "Description": "Makes objects transparent when you walk behind them.",
+  "UniqueID": "aedenthorn.TransparentObjects",
+  "EntryDll": "TransparentObjects.dll",
+  "MinimumApiVersion": "3.5.0",
+  "ModUpdater": {
+    "Repository": "StardewValleyMods",
+    "User": "aedenthorn",
+    "Directory": "_releases",
+    "ModFolder": "TransparentObjects"
+  },
+  "UpdateKeys": ["Nexus:6412"],
+  "Dependencies": [
+      {
+        "UniqueID": "Platonymous.ModUpdater",
+        "IsRequired": false
+      },
+  ]
+}
