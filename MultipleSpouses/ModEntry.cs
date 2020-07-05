@@ -27,8 +27,8 @@ namespace MultipleSpouses
         public static Multiplayer mp;
         public static Random myRand;
         public static int bedSleepOffset = 140;
-        internal static int divorceHeartsLost;
-        internal static string outdoorSpouse;
+        public static int divorceHeartsLost;
+        public static OutdoorAreaData outdoorAreaData;
 
         /// <summary>The mod entry point, called after the mod is first loaded.</summary>
         /// <param name="helper">Provides simplified APIs for writing mods.</param>
@@ -103,12 +103,6 @@ namespace MultipleSpouses
             harmony.Patch(
                original: AccessTools.Method(typeof(NPC), nameof(NPC.checkAction)),
                prefix: new HarmonyMethod(typeof(NPCPatches), nameof(NPCPatches.NPC_checkAction_Prefix))
-            );
-
-            harmony.Patch(
-               original: AccessTools.Method(typeof(NPC), nameof(NPC.marriageDuties)),
-               prefix: new HarmonyMethod(typeof(NPCPatches), nameof(NPCPatches.NPC_marriageDuties_Prefix)),
-               postfix: new HarmonyMethod(typeof(NPCPatches), nameof(NPCPatches.NPC_marriageDuties_Postfix))
             );
 
             harmony.Patch(
@@ -256,6 +250,12 @@ namespace MultipleSpouses
             harmony.Patch(
                original: AccessTools.Method(typeof(Event), "setUpCharacters"),
                postfix: new HarmonyMethod(typeof(EventPatches), nameof(EventPatches.Event_setUpCharacters_Postfix))
+            );
+
+            // HelperEvent patches
+            harmony.Patch(
+               original: AccessTools.Method(typeof(SaveGame), nameof(SaveGame.Load)),
+               prefix: new HarmonyMethod(typeof(HelperEvents), nameof(HelperEvents.SaveGame_Load_prefix))
             );
 
         }

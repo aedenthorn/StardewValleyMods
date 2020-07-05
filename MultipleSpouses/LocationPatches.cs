@@ -139,7 +139,7 @@ namespace MultipleSpouses
         }
 
 
-        public static void FarmHouse_resetLocalState_Postfix(FarmHouse __instance)
+        public static void FarmHouse_resetLocalState_Postfix(ref FarmHouse __instance)
         {
             try
             {
@@ -157,7 +157,6 @@ namespace MultipleSpouses
                 {
                     f.position.Value = Misc.GetFarmerBedPosition(__instance);
                 }
-
                 if (ModEntry.config.CustomBed && __instance.upgradeLevel > 0)
                 {
                     Maps.ReplaceBed(__instance);
@@ -165,6 +164,7 @@ namespace MultipleSpouses
                 if(__instance.upgradeLevel > 0 && __instance.upgradeLevel < 4)
                 {
                     Maps.BuildSpouseRooms(__instance);
+                    __instance.setFloors();
                 }
                 if (Misc.ChangingKidsRoom())
                 {
@@ -181,22 +181,20 @@ namespace MultipleSpouses
             }
         }
 
-        public static void Farm_addSpouseOutdoorArea_Prefix(ref string spouseName)
+        public static bool Farm_addSpouseOutdoorArea_Prefix(ref string spouseName)
         {
             try
             {
-                ModEntry.PMonitor.Log($"Checking for outdoor spouse to change area");
-                if (ModEntry.outdoorSpouse != null && spouseName != "")
+                if (ModEntry.outdoorAreaData.areas.ContainsKey(spouseName))
                 {
-                    spouseName = ModEntry.outdoorSpouse;
-                    ModEntry.PMonitor.Log($"Setting outdoor spouse area for {spouseName}");
+                    return false;
                 }
             }
             catch (Exception ex)
             {
                 Monitor.Log($"Failed in {nameof(Farm_addSpouseOutdoorArea_Prefix)}:\n{ex}", LogLevel.Error);
             }
-
+            return true;
         }
 
 

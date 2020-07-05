@@ -535,7 +535,7 @@ namespace MultipleSpouses
 					farmHouse.removeTile(ox + 21 + (i % 3), oy + 2 + (i / 3), "Front");
 					if (i > 2 && i < 9)
                     {
-						farmHouse.removeTile(ox + 21 + (i % 3), oy + 2 + (i / 3), "Buildings");
+						//farmHouse.removeTile(ox + 21 + (i % 3), oy + 2 + (i / 3), "Buildings");
 					}
 					backIndexes.Add(getTileIndexAt(map, sheetx + (i % 3), sheety + (i / 3), "Back"));
 					frontIndexes.Add(getTileIndexAt(map, sheetx + (i % 3), sheety + (i / 3), "Front"));
@@ -555,9 +555,9 @@ namespace MultipleSpouses
 				}
 
 
-				setupTile(start + ox, 2 + oy, 0, 0, farmHouse, frontIndexes, frontSheets, 3, 1);
+				setupTile(start + ox, 2 + oy, 0, 0, farmHouse, frontIndexes, frontSheets, 3, 0);
 				setupTile(start + ox, 3 + oy, 0, 1, farmHouse, frontIndexes, frontSheets, 3, 0);
-				setupTile(start + ox, 3 + oy, 0, 1, farmHouse, buildIndexes, buildSheets, 3, 2);
+				setupTile(start + ox, 3 + oy, 0, 1, farmHouse, buildIndexes, buildSheets, 3, 1);
 				setupTile(start + ox, 4 + oy, 0, 2, farmHouse, frontIndexes, frontSheets, 3, 0);
 				setupTile(start + ox, 4 + oy, 0, 2, farmHouse, backIndexes, backSheets, 3, 2);
 				setupTile(start + ox, 5 + oy, 0, 3, farmHouse, buildIndexes, buildSheets, 3, 1);
@@ -573,14 +573,14 @@ namespace MultipleSpouses
 				farmHouse.setTileProperty(start + ox, oy + 3, "Back", "NoFurniture", "T");
 				farmHouse.setTileProperty(start + ox, oy + 4, "Back", "NoFurniture", "T");
 
-				farmHouse.removeTile(ox + start, oy + 3, "Buildings");
+				//farmHouse.removeTile(ox + start, oy + 3, "Buildings");
 				for (int i = 1; i < width; i++)
 				{
-					farmHouse.removeTile(ox + start + i, oy + 3, "Buildings");
+					//farmHouse.removeTile(ox + start + i, oy + 3, "Buildings");
 
-					setupTile(i + start + ox, 2 + oy, 1, 0, farmHouse, frontIndexes, frontSheets, 3, 1);
+					setupTile(i + start + ox, 2 + oy, 1, 0, farmHouse, frontIndexes, frontSheets, 3, 0);
 					setupTile(i + start + ox, 3 + oy, 1, 1, farmHouse, frontIndexes, frontSheets, 3, 0);
-					setupTile(i + start + ox, 3 + oy, 1, 1, farmHouse, buildIndexes, buildSheets, 3, 2);
+					setupTile(i + start + ox, 3 + oy, 1, 1, farmHouse, buildIndexes, buildSheets, 3, 1);
 					setupTile(i + start + ox, 4 + oy, 1, 2, farmHouse, frontIndexes, frontSheets, 3, 0);
 					setupTile(i + start + ox, 4 + oy, 1, 2, farmHouse, backIndexes, backSheets, 3, 2);
 					setupTile(i + start + ox, 5 + oy, 1, 3, farmHouse, buildIndexes, buildSheets, 3, 1);
@@ -596,11 +596,11 @@ namespace MultipleSpouses
 					farmHouse.setTileProperty(i + start + ox, oy + 3, "Back", "NoFurniture", "T");
 					farmHouse.setTileProperty(i + start + ox, oy + 4, "Back", "NoFurniture", "T");
 				}
-				farmHouse.removeTile(width + ox + start, oy + 3, "Buildings");
+				//farmHouse.removeTile(width + ox + start, oy + 3, "Buildings");
 
-				setupTile(width + start + ox, 2 + oy, 2, 0, farmHouse, frontIndexes, frontSheets, 3, 1);
+				setupTile(width + start + ox, 2 + oy, 2, 0, farmHouse, frontIndexes, frontSheets, 3, 0);
 				setupTile(width + start + ox, 3 + oy, 2, 1, farmHouse, frontIndexes, frontSheets, 3, 0);
-				setupTile(width + start + ox, 3 + oy, 2, 1, farmHouse, buildIndexes, buildSheets, 3, 2);
+				setupTile(width + start + ox, 3 + oy, 2, 1, farmHouse, buildIndexes, buildSheets, 3, 1);
 				setupTile(width + start + ox, 4 + oy, 2, 2, farmHouse, frontIndexes, frontSheets, 3, 0);
 				setupTile(width + start + ox, 4 + oy, 2, 2, farmHouse, backIndexes, backSheets, 3, 2);
 				setupTile(width + start + ox, 5 + oy, 2, 3, farmHouse, buildIndexes, buildSheets, 3, 1);

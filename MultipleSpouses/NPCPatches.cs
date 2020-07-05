@@ -164,13 +164,56 @@ namespace MultipleSpouses
             },
         };
 
+        public static Dictionary<string, int[]> spousePatioLocations = new Dictionary<string, int[]>()
+        {
+            {"Sam", new int[]{2,2}},
+            {"Penny", new int[]{2,2}},
+            {"Sebastian", new int[]{2,3}},
+            {"Shane", new int[]{0,3}},
+            {"Alex", new int[]{2,2}},
+            {"Maru", new int[]{1,2}},
+            {"Emily", new int[]{1,3}},
+            {"Haley", new int[]{1,2}},
+            {"Harvey", new int[]{2,2}},
+            {"Elliott", new int[]{2,2}},
+            {"Leah", new int[]{2,2}},
+            {"Abigail", new int[]{2,2}},
+
+        };
+
         public static bool NPC_setUpForOutdoorPatioActivity_Prefix(NPC __instance)
         {
-            if (ModEntry.outdoorSpouse != __instance.Name)
+            try
             {
+                if (ModEntry.outdoorAreaData.areas.ContainsKey(__instance.Name))
+                {
+                    Game1.warpCharacter(__instance, "Farm", ModEntry.outdoorAreaData.areas[__instance.Name].NpcPos(__instance.Name));
+                }
+                else if (Game1.MasterPlayer.spouse.Equals(__instance.Name))
+                {
+                    Point point = new Point(71, 10);
+                    if (spousePatioLocations.ContainsKey(__instance.Name))
+                    {
+                        point = new Point(69 + spousePatioLocations[__instance.Name][0], 6 + spousePatioLocations[__instance.Name][1]);
+                    }
+
+                    Game1.warpCharacter(__instance, "Farm", point);
+                }
+                else
+                {
+                    __instance.shouldPlaySpousePatioAnimation.Value = false;
+                    return false;
+                }
+                __instance.popOffAnyNonEssentialItems();
+                __instance.currentMarriageDialogue.Clear();
+                __instance.addMarriageDialogue("MarriageDialogue", "patio_" + __instance.Name, false, new string[0]);
+                __instance.shouldPlaySpousePatioAnimation.Value = true;
                 return false;
             }
-            ModEntry.PMonitor.Log("is outdoor spouse: " + __instance.Name);
+            catch (Exception ex)
+            {
+                Monitor.Log($"Failed in {nameof(NPC_setUpForOutdoorPatioActivity_Prefix)}:\n{ex}", LogLevel.Error);
+            }
             return true;
         }
 

@@ -24,15 +24,26 @@ namespace MultipleSpouses
             Helper = helper;
         }
 
-        public static void GameLoop_SaveLoaded(object sender, SaveLoadedEventArgs e)
+
+		public static void SaveGame_Load_prefix(string filename)
         {
-            ModEntry.outdoorSpouse = null;
+			Monitor.Log($"loading save {filename}");
+			ModEntry.outdoorAreaData = Helper.Data.ReadJsonFile<OutdoorAreaData>($"assets/outdoor-area-{filename}.json");
+			if (ModEntry.outdoorAreaData == null)
+			{
+				Helper.Data.WriteJsonFile($"assets/outdoor-area-{filename}.json", new OutdoorAreaData()); 
+				ModEntry.outdoorAreaData = new OutdoorAreaData();
+			}
+		}
+
+		public static void GameLoop_SaveLoaded(object sender, SaveLoadedEventArgs e)
+        {
             ModEntry.spouseToDivorce = null;
             Misc.SetAllNPCsDatable();
             FileIO.LoadTMXSpouseRooms();
             Misc.ResetSpouses(Game1.player);
 			Misc.SetNPCRelations();
-        }
+		}
 
 
         public static void GameLoop_GameLaunched(object sender, GameLaunchedEventArgs e)
@@ -66,7 +77,6 @@ namespace MultipleSpouses
 		public static void GameLoop_ReturnedToTitle(object sender, ReturnedToTitleEventArgs e)
         {
             Helper.Events.GameLoop.OneSecondUpdateTicked -= GameLoop_OneSecondUpdateTicked;
-            ModEntry.outdoorSpouse = null;
             ModEntry.spouseToDivorce = null;
         }
 

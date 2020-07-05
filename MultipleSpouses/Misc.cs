@@ -86,23 +86,11 @@ namespace MultipleSpouses
 
             ShuffleList(ref allSpouses);
 
-            Game1.getFarm().addSpouseOutdoorArea("");
-
             List<string> bedSpouses = new List<string>();
             string kitchenSpouse = null;
-            ModEntry.outdoorSpouse = null;
-
-            ModEntry.outdoorSpouse = allSpouses[ModEntry.myRand.Next(allSpouses.Count)].Name;
-
-            Monitor.Log("made outdoor spouse: " + ModEntry.outdoorSpouse);
-            Game1.getFarm().addSpouseOutdoorArea(ModEntry.outdoorSpouse);
 
             foreach (NPC spouse in allSpouses)
             {
-                if (ModEntry.outdoorSpouse == spouse.Name)
-                    continue;
-
-
                 int type = ModEntry.myRand.Next(0, 100);
 
                 Monitor.Log("spouse type: " + type);
@@ -136,18 +124,38 @@ namespace MultipleSpouses
                 Point kitchenSpot = farmHouse.getKitchenStandingSpot();
                 Vector2 spouseRoomSpot = (farmHouse.upgradeLevel == 1) ? new Vector2(32f, 5f) : new Vector2(38f, 14f);
 
-                if (ModEntry.outdoorSpouse == j.Name && !Game1.isRaining && !Game1.IsWinter && Game1.shortDayNameFromDayOfSeason(Game1.dayOfMonth).Equals("Sat") && !j.Name.Equals("Krobus"))
+                if (farmer.Equals(Game1.MasterPlayer))
                 {
-                    Monitor.Log("going to outdoor patio");
-                    j.setUpForOutdoorPatioActivity();
-                    continue;
+                    if (ModEntry.outdoorAreaData.areas.ContainsKey(j.Name))
+                    {
+                        SetupSpouseArea(ModEntry.outdoorAreaData.areas[j.Name], j.Name);
+                        if (!Game1.isRaining && !Game1.IsWinter && Game1.shortDayNameFromDayOfSeason(Game1.dayOfMonth).Equals("Sat") && !j.Name.Equals("Krobus"))
+                        {
+                            Monitor.Log("going to outdoor patio");
+                            j.setUpForOutdoorPatioActivity();
+                            continue;
+                        }
+                    }
+                    else if (farmer.spouse.Equals(j.Name))
+                    {
+                        OutdoorArea area = new OutdoorArea() { 
+                            startX = 69,
+                            startY = 6,
+                        };
+                        SetupSpouseArea(area, j.Name);
+                        if (!Game1.isRaining && !Game1.IsWinter && Game1.shortDayNameFromDayOfSeason(Game1.dayOfMonth).Equals("Sat") && !j.Name.Equals("Krobus"))
+                        {
+                            Monitor.Log("going to outdoor patio");
+                            j.setUpForOutdoorPatioActivity();
+                            continue;
+                        }
+                    }
                 }
 
                 if (!farmHouse.Equals(j.currentLocation))
                 {
                     continue;
                 }
-
 
                 Monitor.Log("in farm house");
                 j.shouldPlaySpousePatioAnimation.Value = false;
@@ -196,6 +204,117 @@ namespace MultipleSpouses
                 }
             }
 
+        }
+
+        private static void SetupSpouseArea(OutdoorArea area, string name)
+        {
+            Farm farm = Game1.getFarm();
+
+            int x = area.startX;
+            int y = area.startY;
+
+            farm.removeTile(x +1, y + 3, "Buildings");
+            farm.removeTile(x +2, y + 3, "Buildings");
+            farm.removeTile(x +3, y + 3, "Buildings");
+            farm.removeTile(x, y + 3, "Buildings");
+            farm.removeTile(x +1, y + 2, "Buildings");
+            farm.removeTile(x +2, y + 2, "Buildings");
+            farm.removeTile(x +3, y + 2, "Buildings");
+            farm.removeTile(x, y + 2, "Buildings");
+            farm.removeTile(x +1, y + 1, "Front");
+            farm.removeTile(x +2, y + 1, "Front");
+            farm.removeTile(x +3, y + 1, "Front");
+            farm.removeTile(x, y + 1, "Front");
+            farm.removeTile(x +1, y, "AlwaysFront");
+            farm.removeTile(x +2, y, "AlwaysFront");
+            farm.removeTile(x +3, y, "AlwaysFront");
+            farm.removeTile(x, y, "AlwaysFront");
+
+            switch (name)
+            {
+                case "Sam":
+                    farm.setMapTileIndex(x, y + 2, 1173, "Buildings", 1);
+                    farm.setMapTileIndex(x + 3, y + 2, 1174, "Buildings", 1);
+                    farm.setMapTileIndex(x + 1, y + 2, 1198, "Buildings", 1);
+                    farm.setMapTileIndex(x + 2, y + 2, 1199, "Buildings", 1);
+                    farm.setMapTileIndex(x, y + 1, 1148, "Front", 1);
+                    farm.setMapTileIndex(x + 3, y + 1, 1149, "Front", 1);
+                    return;
+                case "Penny":
+                    farm.setMapTileIndex(x, y + 2, 1098, "Buildings", 1);
+                    farm.setMapTileIndex(x + 1, y + 2, 1123, "Buildings", 1);
+                    farm.setMapTileIndex(x + 3, y + 2, 1098, "Buildings", 1);
+                    return;
+                case "Sebastian":
+                    farm.setMapTileIndex(x + 1, y + 2, 1927, "Buildings", 1);
+                    farm.setMapTileIndex(x + 2, y + 2, 1928, "Buildings", 1);
+                    farm.setMapTileIndex(x + 3, y + 2, 1929, "Buildings", 1);
+                    farm.setMapTileIndex(x + 1, y + 1, 1902, "Front", 1);
+                    farm.setMapTileIndex(x + 2, y + 1, 1903, "Front", 1);
+                    return;
+                case "Shane":
+                    farm.setMapTileIndex(x + 1, y + 3, 1940, "Buildings", 1);
+                    farm.setMapTileIndex(x + 2, y + 3, 1941, "Buildings", 1);
+                    farm.setMapTileIndex(x + 3, y + 3, 1942, "Buildings", 1);
+                    farm.setMapTileIndex(x + 1, y + 2, 1915, "Buildings", 1);
+                    farm.setMapTileIndex(x + 2, y + 2, 1916, "Buildings", 1);
+                    farm.setMapTileIndex(x + 3, y + 2, 1917, "Buildings", 1);
+                    farm.setMapTileIndex(x + 1, y + 1, 1772, "Front", 1);
+                    farm.setMapTileIndex(x + 2, y + 1, 1773, "Front", 1);
+                    farm.setMapTileIndex(x + 3, y + 1, 1774, "Front", 1);
+                    farm.setMapTileIndex(x + 1, y, 1747, "AlwaysFront", 1);
+                    farm.setMapTileIndex(x + 2, y, 1748, "AlwaysFront", 1);
+                    farm.setMapTileIndex(x + 3, y, 1749, "AlwaysFront", 1);
+                    return;
+                case "Alex":
+                    farm.setMapTileIndex(x, y + 2, 1099, "Buildings", 1);
+                    return;
+                case "Maru":
+                    farm.setMapTileIndex(x + 2, y + 2, 1124, "Buildings", 1);
+                    return;
+                case "Emily":
+                    farm.setMapTileIndex(x, y + 2, 1867, "Buildings", 1);
+                    farm.setMapTileIndex(x + 3, y + 2, 1867, "Buildings", 1);
+                    farm.setMapTileIndex(x, y + 1, 1842, "Front", 1);
+                    farm.setMapTileIndex(x + 3, y + 1, 1842, "Front", 1);
+                    farm.setMapTileIndex(x, y + 3, 1866, "Buildings", 1);
+                    farm.setMapTileIndex(x + 2, y + 2, 1866, "Buildings", 1);
+                    farm.setMapTileIndex(x + 3, y + 3, 1967, "Buildings", 1);
+                    farm.setMapTileIndex(x + 1, y + 2, 1967, "Buildings", 1);
+                    return;
+                case "Haley":
+                    farm.setMapTileIndex(x, y + 2, 1074, "Buildings", 1);
+                    farm.setMapTileIndex(x, y + 1, 1049, "Front", 1);
+                    farm.setMapTileIndex(x, y, 1024, "AlwaysFront", 1);
+                    farm.setMapTileIndex(x + 3, y + 2, 1074, "Buildings", 1);
+                    farm.setMapTileIndex(x + 3, y + 1, 1049, "Front", 1);
+                    farm.setMapTileIndex(x + 3, y, 1024, "AlwaysFront", 1);
+                    return;
+                case "Harvey":
+                    farm.setMapTileIndex(x, y + 2, 1098, "Buildings", 1);
+                    farm.setMapTileIndex(x + 1, y + 2, 1123, "Buildings", 1);
+                    farm.setMapTileIndex(x + 3, y + 2, 1098, "Buildings", 1);
+                    return;
+                case "Elliott":
+                    farm.setMapTileIndex(x, y + 2, 1098, "Buildings", 1);
+                    farm.setMapTileIndex(x + 1, y + 2, 1123, "Buildings", 1);
+                    farm.setMapTileIndex(x + 3, y + 2, 1098, "Buildings", 1);
+                    return;
+                case "Leah":
+                    farm.setMapTileIndex(x + 1, y + 2, 1122, "Buildings", 1);
+                    farm.setMapTileIndex(x + 1, y + 1, 1097, "Front", 1);
+                    return;
+                case "Abigail":
+                    farm.setMapTileIndex(x, y + 2, 1098, "Buildings", 1);
+                    farm.setMapTileIndex(x + 1, y + 2, 1123, "Buildings", 1);
+                    farm.setMapTileIndex(x + 3, y + 2, 1098, "Buildings", 1);
+                    return;
+
+            }
+            foreach(SpecialTile tile in area.specialTiles)
+            {
+                farm.setMapTileIndex(tile.x, tile.y, tile.tileIndex, tile.layer, tile.tilesheet);
+            }
         }
 
         public static string[] relativeRoles = new string[]
