@@ -206,6 +206,24 @@ namespace MultipleSpouses
 
         }
 
+        internal static void NPCDoAnimation(NPC npc, string npcAnimation)
+        {
+            Dictionary<string, string> animationDescriptions = Helper.Content.Load<Dictionary<string, string>>("Data\\animationDescriptions", ContentSource.GameContent);
+            if (!animationDescriptions.ContainsKey(npcAnimation))
+                return;
+
+            string[] rawData = animationDescriptions[npcAnimation].Split('/');
+            var animFrames = Utility.parseStringToIntArray(rawData[1], ' ');
+ 
+            List<FarmerSprite.AnimationFrame> anim = new List<FarmerSprite.AnimationFrame>();
+            for (int i = 0; i < animFrames.Length; i++)
+            {
+                    anim.Add(new FarmerSprite.AnimationFrame(animFrames[i], 100, 0, false, false, null, false, 0));
+            }
+            Monitor.Log($"playing animation {npcAnimation} for {npc.Name}");
+            npc.Sprite.setCurrentAnimation(anim);
+        }
+
         private static void SetupSpouseArea(OutdoorArea area, string name)
         {
             Farm farm = Game1.getFarm();

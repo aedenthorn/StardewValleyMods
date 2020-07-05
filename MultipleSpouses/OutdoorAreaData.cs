@@ -15,6 +15,7 @@ namespace MultipleSpouses
         public int startY;
         public List<SpecialTile> specialTiles = new List<SpecialTile>();
         public NPCOffset npcOffset = null;
+        public string npcAnimation = null;
 
         public Point NpcPos(string name)
         {

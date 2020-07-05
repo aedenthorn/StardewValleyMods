@@ -217,6 +217,22 @@ namespace MultipleSpouses
             return true;
         }
 
+        public static void NPC_doPlaySpousePatioAnimation_Postfix(NPC __instance)
+        {
+            try
+            {
+                if (ModEntry.outdoorAreaData.areas.ContainsKey(__instance.Name) && ModEntry.outdoorAreaData.areas[__instance.Name].npcAnimation != null)
+                {
+                    Monitor.Log($"got animation for {__instance.Name}");
+                    Misc.NPCDoAnimation(__instance, ModEntry.outdoorAreaData.areas[__instance.Name].npcAnimation);
+                }
+            }
+            catch (Exception ex)
+            {
+                Monitor.Log($"Failed in {nameof(NPC_doPlaySpousePatioAnimation_Postfix)}:\n{ex}", LogLevel.Error);
+            }
+        }
+
         public static bool NPC_checkAction_Prefix(ref NPC __instance, ref Farmer who, ref bool __result)
         {
             try

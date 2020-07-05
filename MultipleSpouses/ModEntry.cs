@@ -111,6 +111,11 @@ namespace MultipleSpouses
             );
 
             harmony.Patch(
+               original: AccessTools.Method(typeof(NPC), "doPlaySpousePatioAnimation"),
+               postfix: new HarmonyMethod(typeof(NPCPatches), nameof(NPCPatches.NPC_doPlaySpousePatioAnimation_Postfix))
+            );
+
+            harmony.Patch(
                original: AccessTools.Method(typeof(NPC), "engagementResponse"),
                postfix: new HarmonyMethod(typeof(NPCPatches), nameof(NPCPatches.NPC_engagementResponse_Postfix))
             );
