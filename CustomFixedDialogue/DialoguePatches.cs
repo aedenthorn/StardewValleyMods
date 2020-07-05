@@ -12,12 +12,29 @@ namespace CustomFixedDialogue
         private static IModHelper Helper;
         private static string prefix = "CustomFixedDialogue";
         private static string NPCPrefix = "Strings\\StringsFromCSFiles:NPC.cs.";
+        private static string eventPrefix = "Strings\\StringsFromCSFiles:Event.cs.";
         private static string extraPrefix = "Data\\ExtraDialogue";
         private static List<string> NPCexceptions = new List<string>() 
         { 
             "3981",
             "3987",
             "3969",
+        };
+
+        private static List<string> eventChanges = new List<string>() 
+        {
+            "1497",
+            "1498",
+            "1499",
+            "1500",
+            "1501",
+            "1503",
+            "1504",
+            "1632",
+            "1635",
+            "1736",
+            "1738",
+            "1801",
         };
 
         public static void Initialize(IMonitor monitor, IModHelper helper)
@@ -66,7 +83,7 @@ namespace CustomFixedDialogue
                     __result = $"{prefix}{path.Replace("Data\\ExtraDialogue:", "ExtraDialogue_")}^{__result}";
                     Monitor.Log($"edited dialogue: {__result}");
                 }
-                else if (path.StartsWith(NPCPrefix) && !NPCexceptions.Contains(path.Substring(NPCPrefix.Length)))
+                else if ((path.StartsWith(NPCPrefix) && !NPCexceptions.Contains(path.Substring(NPCPrefix.Length))) || (path.StartsWith(eventPrefix) && eventChanges.Contains(path.Substring(eventPrefix.Length))))
                 {
                     __result = $"{prefix}{path.Replace("Strings\\StringsFromCSFiles:", "")}^{__result}";
                     Monitor.Log($"edited dialogue: {__result}");
@@ -87,7 +104,7 @@ namespace CustomFixedDialogue
                 {
                     __result = $"{prefix}{path.Replace("Data\\ExtraDialogue:", "ExtraDialogue_")}^{__result}";
                 }
-                else if (path.StartsWith(NPCPrefix) && !NPCexceptions.Contains(path.Substring(NPCPrefix.Length)))
+                else if ((path.StartsWith(NPCPrefix) && !NPCexceptions.Contains(path.Substring(NPCPrefix.Length))) || (path.StartsWith(eventPrefix) && eventChanges.Contains(path.Substring(eventPrefix.Length))))
                 {
                     __result = $"{prefix}{path.Replace("Strings\\StringsFromCSFiles:", "")}^{__result}";
                 }

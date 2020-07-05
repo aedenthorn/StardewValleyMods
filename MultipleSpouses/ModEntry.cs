@@ -74,6 +74,11 @@ namespace MultipleSpouses
             );
 
             harmony.Patch(
+               original: AccessTools.Method(typeof(NPC), nameof(NPC.marriageDuties)),
+               postfix: new HarmonyMethod(typeof(NPCPatches), nameof(NPCPatches.NPC_marriageDuties_Postfix))
+            );
+
+            harmony.Patch(
                original: AccessTools.Method(typeof(NPC), nameof(NPC.getSpouse)),
                prefix: new HarmonyMethod(typeof(NPCPatches), nameof(NPCPatches.NPC_getSpouse_Prefix))
             );
