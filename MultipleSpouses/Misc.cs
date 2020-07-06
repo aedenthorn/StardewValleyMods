@@ -168,10 +168,9 @@ namespace MultipleSpouses
                     Monitor.Log($"putting {j.Name} in bed");
                     j.position.Value = GetSpouseBedPosition(farmHouse, allBedSpouses, j.Name);
 
-                    if (HasSleepingAnimation(j.Name))
+                    if (HasSleepingAnimation(j.Name) && Game1.timeOfDay >= 2000)
                     {
                         j.playSleepingAnimation();
-                        j.followSchedule = true;
                     }
                 }
                 else if (kitchenSpouse == j.Name)

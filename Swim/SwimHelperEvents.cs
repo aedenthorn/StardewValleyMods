@@ -92,35 +92,6 @@ namespace Swim
         }
         public static void GameLoop_SaveLoaded(object sender, SaveLoadedEventArgs e)
         {
-            // load dive maps
-
-            foreach (IContentPack contentPack in Helper.ContentPacks.GetOwned())
-            {
-                try
-                {
-                    Monitor.Log($"Reading content pack: {contentPack.Manifest.Name} {contentPack.Manifest.Version} from {contentPack.DirectoryPath}");
-                    DiveMapData data = contentPack.ReadJsonFile<DiveMapData>("content.json");
-                    SwimUtils.ReadDiveMapData(data);
-                }
-                catch
-                {
-                    Monitor.Log($"couldn't read content.json in content pack {contentPack.Manifest.Name}", LogLevel.Warn);
-                }
-            }
-
-            Monitor.Log($"Reading content pack from assets/swim-map-content.json");
-
-            try
-            {
-                DiveMapData myData = Helper.Data.ReadJsonFile<DiveMapData>("assets/swim-map-content.json");
-                SwimUtils.ReadDiveMapData(myData);
-            }
-            catch (Exception ex)
-            {
-                Monitor.Log($"assets/swim-map-content.json file read error. Exception: {ex}", LogLevel.Warn);
-            }
-
-
             // load scuba gear ids
 
             ModEntry.scubaGear.Clear();
@@ -163,6 +134,35 @@ namespace Swim
                     ModEntry.scubaGear.Add(ModEntry.scubaFinsID);
                 }
             }
+
+            // load dive maps
+
+            foreach (IContentPack contentPack in Helper.ContentPacks.GetOwned())
+            {
+                try
+                {
+                    Monitor.Log($"Reading content pack: {contentPack.Manifest.Name} {contentPack.Manifest.Version} from {contentPack.DirectoryPath}");
+                    DiveMapData data = contentPack.ReadJsonFile<DiveMapData>("content.json");
+                    SwimUtils.ReadDiveMapData(data);
+                }
+                catch
+                {
+                    Monitor.Log($"couldn't read content.json in content pack {contentPack.Manifest.Name}", LogLevel.Warn);
+                }
+            }
+
+            Monitor.Log($"Reading content pack from assets/swim-map-content.json");
+
+            try
+            {
+                DiveMapData myData = Helper.Data.ReadJsonFile<DiveMapData>("assets/swim-map-content.json");
+                SwimUtils.ReadDiveMapData(myData);
+            }
+            catch (Exception ex)
+            {
+                Monitor.Log($"assets/swim-map-content.json file read error. Exception: {ex}", LogLevel.Warn);
+            }
+
             if (!SwimUtils.IsWearingScubaGear() && Config.SwimSuitAlways)
                 Game1.player.changeIntoSwimsuit();
         }
@@ -218,6 +218,8 @@ namespace Swim
 
         public static void GameLoop_GameLaunched(object sender, GameLaunchedEventArgs e)
         {
+            // load TMX pack
+
             IContentPack TMXcontentPack = Helper.ContentPacks.CreateFake(Path.Combine(Helper.DirectoryPath, "assets/tmx-pack"));
 
             object api = Helper.ModRegistry.GetApi("Platonymous.TMXLoader");
@@ -225,6 +227,8 @@ namespace Swim
             {
                 Helper.Reflection.GetMethod(api, "AddContentPack").Invoke(TMXcontentPack);
             }
+
+            // load scuba gear
 
             ModEntry.JsonAssets = Helper.ModRegistry.GetApi<IJsonAssetsApi>("spacechase0.JsonAssets");
             bool flag = ModEntry.JsonAssets == null;
@@ -263,15 +267,19 @@ namespace Swim
 
             if (Config.BreatheSound)
             {
-                string filePath = $"{Helper.DirectoryPath}\\assets\\breathe.wav";
-                Monitor.Log("Loading breathing sound: " + filePath);
-                if (File.Exists(filePath))
-                {
-                    breatheEffect = SoundEffect.FromStream(new FileStream(filePath, FileMode.Open));
-                    Monitor.Log("Loaded breathing sound.");
-                }
+                LoadBreatheSound();
             }
+        }
 
+        private static void LoadBreatheSound()
+        {
+            string filePath = $"{Helper.DirectoryPath}\\assets\\breathe.wav";
+            Monitor.Log("Loading breathing sound: " + filePath);
+            if (File.Exists(filePath))
+            {
+                breatheEffect = SoundEffect.FromStream(new FileStream(filePath, FileMode.Open));
+                Monitor.Log("Loaded breathing sound.");
+            }
         }
 
         public static void GameLoop_DayStarted(object sender, DayStartedEventArgs e)
@@ -317,7 +325,7 @@ namespace Swim
                     SwimMaps.RemoveWaterTiles(Game1._locationLookup[kvp.Key]);
                 }
             }
-            if (Game1._locationLookup.ContainsKey("ScubaCave"))
+            if (Game1._locationLookup.ContainsKey("ScubaCave") && !Game1.player.mailReceived.Contains("ScubaMask"))
             {
                 SwimMaps.AddScubaChest(Game1._locationLookup["ScubaCave"], new Vector2(10,14), "ScubaMask");
             }
@@ -493,6 +501,11 @@ namespace Swim
             {
                 lastBreatheSound = 0;
                 ticksWearingScubaGear = 0;
+                if(breatheEffect != null)
+                {
+                    breatheEffect.Dispose();
+                    LoadBreatheSound();
+                }
             }
 
             if (isJumping)
@@ -991,8 +1004,13 @@ namespace Swim
                 abigailTicks = -1;
                 Game1.player.hat.Value = null;
                 Game1.stopMusicTrack(Game1.MusicContext.Default);
-                Game1.playSound("Cowboy_Secret");
-                SwimMaps.AddScubaChest(Game1.player.currentLocation, new Vector2(8, 8), "ScubaFins");
+
+                if(!Game1.player.mailReceived.Contains("ScubaFins"))
+                {
+                    Game1.playSound("Cowboy_Secret");
+                    SwimMaps.AddScubaChest(Game1.player.currentLocation, new Vector2(8, 8), "ScubaFins");
+                }
+
                 Game1.player.currentLocation.setMapTile(8, 16, 91, "Buildings", null);
                 Game1.player.currentLocation.setMapTile(9, 16, 92, "Buildings", null);
                 Game1.player.currentLocation.setTileProperty(9, 16, "Back", "Water", "T");

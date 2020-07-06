@@ -201,6 +201,7 @@ namespace MultipleSpouses
                     }
                     Game1.player.Position = Utility.PointToVector2(Utility.getHomeOfFarmer(Game1.player).getBedSpot()) * 64f;
                     Game1.globalFadeToClear(null, 0.02f);
+                    lastBirthingSpouse = null;
                     __result = true;
                     return false;
                 }

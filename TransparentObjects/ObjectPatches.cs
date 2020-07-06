@@ -17,7 +17,7 @@ namespace TransparentObjects
         }
         public static void Object_draw_Prefix(StardewValley.Object __instance, ref float alpha)
         {
-            if (__instance.bigCraftable && Game1.player.GetBoundingBox().Intersects(new Microsoft.Xna.Framework.Rectangle(64 * ((int)__instance.tileLocation.X) + 32 - (Config.TransparencyDiameter / 2), 64 * ((int)__instance.tileLocation.Y) - Config.TransparencyDiameter / 2, Config.TransparencyDiameter, Config.TransparencyDiameter)))
+            if (__instance.bigCraftable && Game1.player.GetBoundingBox().Intersects(new Microsoft.Xna.Framework.Rectangle(64 * ((int)__instance.tileLocation.X) + 32 - (Config.TransparencyDiameter / 2), 64 * ((int)__instance.tileLocation.Y + 1) - Config.TransparencyDiameter, Config.TransparencyDiameter, Config.TransparencyDiameter)))
             {
                 alpha = Config.ObjectAlpha;
             }

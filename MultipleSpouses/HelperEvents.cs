@@ -291,7 +291,7 @@ namespace MultipleSpouses
 								{
 									Vector2 bedPos = Misc.GetSpouseBedPosition(fh, bedSpouses, character.name);
 									character.position.Value = bedPos;
-									if (!Misc.HasSleepingAnimation(character.name.Value))
+									if (!Misc.HasSleepingAnimation(character.name.Value) && Game1.timeOfDay >= 2000)
 									{
 										character.Sprite.StopAnimation();
 										character.faceDirection(0);

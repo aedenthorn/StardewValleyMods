@@ -26,7 +26,6 @@ namespace TransparentObjects
             ObjectPatches.Initialize(Monitor, helper, config);
 
             var harmony = HarmonyInstance.Create(this.ModManifest.UniqueID);
-            HarmonyInstance.DEBUG = true;
 
             harmony.Patch(
                original: AccessTools.Method(typeof(StardewValley.Object), nameof(StardewValley.Object.draw), new Type[] { typeof(SpriteBatch), typeof(int), typeof(int), typeof(float) }),

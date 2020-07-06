@@ -489,7 +489,7 @@ namespace MultipleSpouses
             else if (asset.AssetNameEquals("Strings/StringsFromCSFiles"))
             {
                 IDictionary<string, string> data = asset.AsDictionary<string, string>().Data;
-                data["NPC.cs.3985"] = Regex.Replace(data["NPC.cs.3985"],  @"\$s.+", $"$n#$e#$c 0.5#{data["ResourceCollectionQuest.cs.13681"]}#{data["ResourceCollectionQuest.cs.13683"]}");
+                data["NPC.cs.3985"] = Regex.Replace(data["NPC.cs.3985"],  @"\$s.+", $"$n#$b#$c 0.5#{data["ResourceCollectionQuest.cs.13681"]}#{data["ResourceCollectionQuest.cs.13683"]}");
             }
             else if (asset.AssetNameEquals("Data/animationDescriptions"))
             {
