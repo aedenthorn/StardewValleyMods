@@ -274,7 +274,6 @@ namespace Swim
         private static void LoadBreatheSound()
         {
             string filePath = $"{Helper.DirectoryPath}\\assets\\breathe.wav";
-            Monitor.Log("Loading breathing sound: " + filePath);
             if (File.Exists(filePath))
             {
                 breatheEffect = SoundEffect.FromStream(new FileStream(filePath, FileMode.Open));
@@ -499,13 +498,13 @@ namespace Swim
             }
             else
             {
-                lastBreatheSound = 0;
-                ticksWearingScubaGear = 0;
-                if(breatheEffect != null)
+                if (breatheEffect != null && lastBreatheSound != 0)
                 {
                     breatheEffect.Dispose();
                     LoadBreatheSound();
                 }
+                lastBreatheSound = 0;
+                ticksWearingScubaGear = 0;
             }
 
             if (isJumping)
