@@ -299,6 +299,14 @@ namespace Swim
                 {
                     SwimMaps.AddOceanForage(Game1._locationLookup[kvp.Key]);
                 }
+                if (kvp.Value.Features.Contains("Minerals"))
+                {
+                    SwimMaps.AddMinerals(Game1._locationLookup[kvp.Key]);
+                }
+                if (kvp.Value.Features.Contains("SmolFishies") || kvp.Value.Features.Contains("BigFishies") || kvp.Value.Features.Contains("Crabs"))
+                {
+                    Game1._locationLookup[kvp.Key].characters.Clear();
+                }
                 if (kvp.Value.Features.Contains("SmolFishies"))
                 {
                     SwimMaps.AddFishies(Game1._locationLookup[kvp.Key]);
@@ -310,10 +318,6 @@ namespace Swim
                 if (kvp.Value.Features.Contains("Crabs"))
                 {
                     SwimMaps.AddCrabs(Game1._locationLookup[kvp.Key]);
-                }
-                if (kvp.Value.Features.Contains("Minerals"))
-                {
-                    SwimMaps.AddMinerals(Game1._locationLookup[kvp.Key]);
                 }
                 if (kvp.Value.Features.Contains("WaterTiles"))
                 {

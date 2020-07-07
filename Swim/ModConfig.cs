@@ -52,9 +52,9 @@ namespace Swim
             EnableClickToSwim = true;
             MineralPerThousandMin = 10;
             MineralPerThousandMax = 30;
-            CrabsPerThousandMin = 2;
-            CrabsPerThousandMax = 10;
-            PercentChanceCrabIsMimic = 15;
+            CrabsPerThousandMin = 1;
+            CrabsPerThousandMax = 5;
+            PercentChanceCrabIsMimic = 10;
             MinSmolFishies = 50;
             MaxSmolFishies = 100;
             BigFishiesPerThousandMin = 20;

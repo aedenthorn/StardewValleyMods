@@ -187,7 +187,6 @@ namespace Swim
                     spots[k] = spots[n];
                     spots[n] = value;
                 }
-                l.characters.ToList().RemoveAll((e) => e is SeaCrab);
                 int crabs = (int)(Game1.random.Next(Config.CrabsPerThousandMin, Config.CrabsPerThousandMax) / 1000f * spots.Count);
                 for (int i = 0; i < crabs; i++)
                 {
@@ -222,7 +221,6 @@ namespace Swim
                     spots[k] = spots[n];
                     spots[n] = value;
                 }
-                l.characters.ToList().RemoveAll((e) => (smol ? (e is Fishie) : (e is BigFishie)));
                 if (smol)
                 {
                     int fishes = Game1.random.Next(Config.MinSmolFishies, Config.MaxSmolFishies);
