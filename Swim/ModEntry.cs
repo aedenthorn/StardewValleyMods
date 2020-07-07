@@ -26,7 +26,12 @@ namespace Swim
         public static int scubaFinsID = -1;
         public static int scubaTankID = -1;
         public static List<int> scubaGear = new List<int>();
-        public static List<SButton> dirButtons = new List<SButton>();
+        public static List<SButton> dirButtons = new List<SButton>() { 
+            SButton.DPadUp,
+            SButton.DPadDown,
+            SButton.DPadLeft,
+            SButton.DPadRight
+        };
         public static bool myButtonDown = false;
         public static int oxygen = 0;
         public static int lastUpdateMs = 0;
