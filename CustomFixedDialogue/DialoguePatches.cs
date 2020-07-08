@@ -3,6 +3,7 @@ using StardewValley;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.RegularExpressions;
 
 namespace CustomFixedDialogue
 {
@@ -11,6 +12,7 @@ namespace CustomFixedDialogue
         private static IMonitor Monitor;
         private static IModHelper Helper;
         private static string prefix = "CustomFixedDialogue";
+        private static string suffix = "EndCustomFixedDialogue";
         private static string NPCPrefix = "Strings\\StringsFromCSFiles:NPC.cs.";
         private static string eventPrefix = "Strings\\StringsFromCSFiles:Event.cs.";
         private static string utilityPrefix = "Strings\\StringsFromCSFiles:Utility.cs.";
@@ -20,6 +22,33 @@ namespace CustomFixedDialogue
             "3981",
             "3987",
             "3969",
+
+            "4066",
+            "4078",
+            "4084",
+            "4088",
+            "4089",
+            "4109",
+            "4111",
+            "4113",
+            "4114",
+            "4115",
+            "4116",
+            "4118",
+            "4120",
+            "4125",
+            "4126",
+            "4128",
+            "4135",
+            "4138",
+            "4170",
+            "4171",
+            "4172",
+            "4174",
+            "4176",
+            "4178",
+            "4180",
+            "4182",
         };
 
         private static List<string> eventChanges = new List<string>() 
@@ -66,16 +95,7 @@ namespace CustomFixedDialogue
         {
             try
             {
-                if (path.StartsWith(extraPrefix))
-                {
-                    __result = $"{prefix}{path.Replace("Data\\ExtraDialogue:", "ExtraDialogue_")}^{__result}";
-                    Monitor.Log($"edited dialogue: {__result}");
-                }
-                else if ((path.StartsWith(NPCPrefix) && !NPCexceptions.Contains(path.Substring(NPCPrefix.Length))) || (path.StartsWith(eventPrefix) && eventChanges.Contains(path.Substring(eventPrefix.Length))) || (path.StartsWith(utilityPrefix) && utilityChanges.Contains(path.Substring(utilityPrefix.Length))))
-                {
-                    __result = $"{prefix}{path.Replace("Strings\\StringsFromCSFiles:", "")}^{__result}";
-                    Monitor.Log($"edited dialogue: {__result}");
-                }
+                AddWrapperToString(path, ref __result);
             }
             catch (Exception ex)
             {
@@ -83,51 +103,12 @@ namespace CustomFixedDialogue
             }
         }
 
-
-        public static void LocalizedContentManager_LoadString_Postfix2(string path, ref string __result)
-        {
-            try
-            {
-                if (path.StartsWith(extraPrefix))
-                {
-                    __result = $"{prefix}{path.Replace("Data\\ExtraDialogue:", "ExtraDialogue_")}^{__result}";
-                }
-                else if ((path.StartsWith(NPCPrefix) && !NPCexceptions.Contains(path.Substring(NPCPrefix.Length))) || (path.StartsWith(eventPrefix) && eventChanges.Contains(path.Substring(eventPrefix.Length))) || (path.StartsWith(utilityPrefix) && utilityChanges.Contains(path.Substring(utilityPrefix.Length))))
-                {
-                    __result = $"{prefix}{path.Replace("Strings\\StringsFromCSFiles:", "")}^{__result}";
-                }
-            }
-            catch (Exception ex)
-            {
-                Monitor.Log($"Failed in {nameof(LocalizedContentManager_LoadString_Postfix2)}:\n{ex}", LogLevel.Error);
-            }
-        }
-
         public static void Dialogue_parseDialogueString_Prefix(Dialogue __instance, ref string masterString)
         {
             try
             {
-                if (masterString.StartsWith(prefix))
-                {
-                    Dictionary<string, string> dialogueDic = null;
-                    try
-                    {
-                        dialogueDic = Helper.Content.Load<Dictionary<string, string>>($"Characters/Dialogue/{__instance.speaker.Name}", ContentSource.GameContent);
-                    }
-                    catch 
-                    { 
-                    }
-                    string key = masterString.Substring(prefix.Length).Split('^')[0];
-                    if (dialogueDic != null &&  dialogueDic.ContainsKey(key))
-                    {
-                        Monitor.Log($"{__instance.speaker.Name} has dialogue for {key}", LogLevel.Debug);
-                        masterString = dialogueDic[key];
-                    }
-                    else
-                    {
-                        masterString = string.Join("^", masterString.Split('^').Skip(1));
-                    }
-                }
+                FixString(__instance.speaker, ref masterString);
+
             }
             catch (Exception ex)
             {
@@ -135,35 +116,74 @@ namespace CustomFixedDialogue
             }
         }
 
+        public static void NPC_showTextAboveHead_Prefix(NPC __instance, ref string Text)
+        {
+            try
+            {
+                FixString(__instance, ref Text);
+            }
+            catch (Exception ex)
+            {
+                Monitor.Log($"Failed in {nameof(NPC_showTextAboveHead_Prefix)}:\n{ex}", LogLevel.Error);
+            }
+        }
         public static void NPC_getHi_Postfix(NPC __instance, ref string __result)
         {
             try
             {
-                if (__result.StartsWith(prefix))
-                {
-                    Dictionary<string, string> dialogueDic = null;
-                    try
-                    {
-                        dialogueDic = Helper.Content.Load<Dictionary<string, string>>($"Characters/Dialogue/{__instance.Name}", ContentSource.GameContent);
-                    }
-                    catch
-                    {
-                    }
-                    string key = __result.Substring(prefix.Length).Split('^')[0];
-                    if (dialogueDic != null && dialogueDic.ContainsKey(key))
-                    {
-                        Monitor.Log($"{__instance.Name} has dialogue for {key}", LogLevel.Debug);
-                        __result = dialogueDic[key];
-                    }
-                    else
-                    {
-                        __result = string.Join("^", __result.Split('^').Skip(1));
-                    }
-                }
+                FixString(__instance, ref __result);
+
             }
             catch (Exception ex)
             {
                 Monitor.Log($"Failed in {nameof(NPC_getHi_Postfix)}:\n{ex}", LogLevel.Error);
+            }
+        }
+
+        public static void AddWrapperToString(string path, ref string text)
+        {
+            if (path.StartsWith(extraPrefix))
+            {
+                text = $"{prefix}{path.Replace("Data\\ExtraDialogue:", "ExtraDialogue_")}^{text}^{suffix}{path.Replace("Data\\ExtraDialogue:", "ExtraDialogue_")}";
+                Monitor.Log($"edited dialogue: {text}");
+            }
+            else if ((path.StartsWith(NPCPrefix) && !NPCexceptions.Contains(path.Substring(NPCPrefix.Length))) || (path.StartsWith(eventPrefix) && eventChanges.Contains(path.Substring(eventPrefix.Length))) || (path.StartsWith(utilityPrefix) && utilityChanges.Contains(path.Substring(utilityPrefix.Length))))
+            {
+                text = $"{prefix}{path.Replace("Strings\\StringsFromCSFiles:", "")}^{text}^{suffix}{path.Replace("Strings\\StringsFromCSFiles:", "")}";
+                Monitor.Log($"edited dialogue: {text}");
+            }
+        }
+
+        public static void FixString(NPC speaker, ref string input)
+        {
+
+            Regex pattern1 = new Regex(prefix + @"(?<key>[^\^]+)\^(?<word>.*)\^" + suffix + @"(\k<key>)", RegexOptions.Compiled);
+
+            while (pattern1.IsMatch(input))
+            {
+                var match = pattern1.Match(input);
+                Dictionary<string, string> dialogueDic = null;
+                try
+                {
+                    dialogueDic = Helper.Content.Load<Dictionary<string, string>>($"Characters/Dialogue/{speaker.Name}", ContentSource.GameContent);
+                }
+                catch
+                {
+                }
+
+                string key = match.Groups["key"].Value;
+                string text = match.Groups["word"].Value;
+
+                if (dialogueDic != null && dialogueDic.ContainsKey(key))
+                {
+                    Regex pattern2 = new Regex(prefix + key + @"\^.*\^" + suffix + key, RegexOptions.Compiled);
+                    Monitor.Log($"{speaker.Name} has dialogue for {key}", LogLevel.Debug);
+                    input = pattern2.Replace(input, dialogueDic[key]);
+                }
+                else
+                {
+                    input = input.Replace($"{prefix}{key}^","").Replace($"^{suffix}{key}","");
+                }
             }
         }
     }

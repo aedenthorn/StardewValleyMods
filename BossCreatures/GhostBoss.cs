@@ -101,7 +101,7 @@ namespace BossCreatures
 						{
 							focusedOnFarmers = true
 						});
-						this.lastGhost = (float)Game1.random.Next(1000, 2000);
+						this.lastGhost = (float)Game1.random.Next(3000, 80000);
 					}
 				}
 			}
