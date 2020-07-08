@@ -34,5 +34,7 @@ namespace Familiars
         public Color DustRedColor { get; set; } = new Color(1f, 0, 1f);
         public Color DustGreenColor { get; set; } = new Color(0, 0.5f, 0.5f);
         public Color DustBlueColor { get; set; } = new Color(0, 0.5f, 0.5f);
+        public bool IAmAStinkyCheater { get; set; } = false;
+        public int FamiliarHatchMinutes { get; set; } = 4000;
     }
 }

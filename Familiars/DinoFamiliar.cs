@@ -1,29 +1,51 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Reflection;
-using Familiars;
+﻿using Familiars;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Netcode;
 using StardewValley.Network;
 using StardewValley.Projectiles;
+using System;
+using System.Collections.Generic;
+using System.Reflection;
 
 namespace StardewValley.Monsters
 {
-	public class DinoFamiliar : DinoMonster
+    public class DinoFamiliar : Familiar
 	{
 
 		public Monster currentTarget = null;
-		public bool followingPlayer = true;
-		public Farmer owner;
 		private bool chargingMonster;
 		private Color color;
+		public int timeUntilNextAttack;
+
+		protected bool _hasPlayedFireSound;
+
+		public readonly NetBool firing = new NetBool(false);
+
+		public NetInt attackState = new NetInt();
+
+		public int nextFireTime;
+
+		public int totalFireTime;
+
+		public int nextChangeDirectionTime;
+
+		public int nextWanderTime;
+
+		public bool wanderState;
+
+		public enum AttackState
+		{
+			None,
+			Fireball,
+			Charge
+		}
 
 		public DinoFamiliar()
 		{
 		}
 
-		public DinoFamiliar(Vector2 position, Farmer owner) : base(position)
+		public DinoFamiliar(Vector2 position, Farmer owner) : base("Pepper Rex", position)
 		{
 			this.owner = owner;
 			this.Sprite.SpriteWidth = 32;
@@ -36,8 +58,8 @@ namespace StardewValley.Monsters
 			damageToFarmer.Value = 0;
 			farmerPassesThrough = true;
 			this.reloadSprite();
-
 		}
+		public override bool IsMonster => true;
 
 		protected override void initNetFields()
 		{
@@ -68,7 +90,17 @@ namespace StardewValley.Monsters
 			this.Sprite.UpdateSourceRect();
 			base.HideShadow = true;
 		}
-
+		public override void draw(SpriteBatch b)
+		{
+			if (!base.IsInvisible && Utility.isOnScreen(base.Position, 128))
+			{
+				b.Draw(this.Sprite.Texture, base.getLocalPosition(Game1.viewport) + new Vector2(56f, (float)(16 + this.yJumpOffset)), new Rectangle?(this.Sprite.SourceRect), Color.White, this.rotation, new Vector2(16f, 16f), Math.Max(0.2f, this.scale) * 4f, this.flip ? SpriteEffects.FlipHorizontally : SpriteEffects.None, Math.Max(0f, this.drawOnTop ? 0.991f : ((float)base.getStandingY() / 10000f)));
+				if (this.isGlowing)
+				{
+					b.Draw(this.Sprite.Texture, base.getLocalPosition(Game1.viewport) + new Vector2(56f, (float)(16 + this.yJumpOffset)), new Rectangle?(this.Sprite.SourceRect), this.glowingColor * this.glowingTransparency, 0f, new Vector2(16f, 16f), 4f * Math.Max(0.2f, this.scale), this.flip ? SpriteEffects.FlipHorizontally : SpriteEffects.None, Math.Max(0f, this.drawOnTop ? 0.991f : ((float)base.getStandingY() / 10000f + 0.001f)));
+				}
+			}
+		}
 		public override Rectangle GetBoundingBox()
 		{
 			return new Rectangle((int)base.Position.X + 8, (int)base.Position.Y, this.Sprite.SpriteWidth * 4 * 3 / 4, 64);
@@ -120,7 +152,7 @@ namespace StardewValley.Monsters
 			chargingMonster = false;
 			foreach (NPC npc in currentLocation.characters)
 			{
-				if (ModEntry.familiarTypes.Contains(npc.GetType()))
+				if (npc is Familiar)
 					continue;
 
 				if (npc is Monster && Utils.withinMonsterThreshold(this, (Monster)npc, 2))
@@ -138,9 +170,12 @@ namespace StardewValley.Monsters
 				base.IsWalkingTowardPlayer = false;
 				this.Halt();
 			}
-			else if (this.withinPlayerThreshold())
+			else if (this.withinPlayerThreshold() && followingPlayer)
 			{
-				base.IsWalkingTowardPlayer = true;
+				if (withinPlayerThreshold(1))
+					Halt();
+				else
+					base.IsWalkingTowardPlayer = true;
 			}
 			else
 			{

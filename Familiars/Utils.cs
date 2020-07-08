@@ -23,7 +23,7 @@ namespace Familiars
 			return new Vector2(x, ySlope);
 		}
 
-		public static bool withinMonsterThreshold(Monster m1, Monster m2, int threshold)
+		public static bool withinMonsterThreshold(Familiar m1, Monster m2, int threshold)
 		{
 			if (m1.Equals(m2) || m1.Health <= 0 || m2.Health <= 0 || m2.IsInvisible || m2.isInvincible())
 				return false;
@@ -33,7 +33,7 @@ namespace Familiars
 			return Math.Abs(m2l.X - m1l.X) <= (float)threshold && Math.Abs(m2l.Y - m1l.Y) <= (float)threshold;
 		}
 
-		public static bool monstersColliding(Monster m1, Monster m2)
+		public static bool monstersColliding(Familiar m1, Monster m2)
 		{
 			if (m1.Equals(m2) || m1.Health <= 0 || m2.Health <= 0 || m2.IsInvisible)
 				return false;
@@ -43,7 +43,7 @@ namespace Familiars
 			return m1l.Intersects(m2l);
 		}
 
-        public static void monsterDrop(Monster familiar, Monster monster, Farmer owner)
+        public static void monsterDrop(Familiar familiar, Monster monster, Farmer owner)
         {
 			IList<int> objects = monster.objectsToDrop;
 			if (Game1.player.isWearingRing(526))

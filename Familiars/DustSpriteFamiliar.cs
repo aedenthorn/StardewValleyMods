@@ -4,22 +4,18 @@ using Netcode;
 using StardewValley;
 using StardewValley.Monsters;
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Familiars
 {
-	public class DustSpiritFamiliar : DustSpirit
+    public class DustSpriteFamiliar : Familiar
 	{
-		public DustSpiritFamiliar()
+		public DustSpriteFamiliar()
 		{
 		}
 
 
-		public DustSpiritFamiliar(Vector2 position, Farmer owner) : base(position)
+		public DustSpriteFamiliar(Vector2 position, Farmer owner) : base("Dust Spirit", position)
 		{
 			this.owner = owner;
 			IsWalkingTowardPlayer = false;
@@ -32,6 +28,8 @@ namespace Familiars
 			farmerPassesThrough = true;
 			reloadSprite();
 		}
+		public override bool IsMonster => true;
+
 		public override void reloadSprite()
 		{
 			if (this.Sprite == null)
@@ -48,9 +46,41 @@ namespace Familiars
 				typeof(AnimatedSprite).GetField("spriteTexture", BindingFlags.NonPublic | BindingFlags.Instance).SetValue(Sprite, Utils.ColorFamiliar(Sprite.Texture, ModEntry.Config.DustMainColor, ModEntry.Config.DustRedColor, ModEntry.Config.DustGreenColor, ModEntry.Config.DustBlueColor));
 			}
 		}
+		public override void draw(SpriteBatch b)
+		{
+			if (!base.IsInvisible && Utility.isOnScreen(base.Position, 128))
+			{
+				b.Draw(this.Sprite.Texture, base.getLocalPosition(Game1.viewport) + new Vector2(32f, (float)(64 + this.yJumpOffset)), new Rectangle?(this.Sprite.SourceRect), Color.White, this.rotation, new Vector2(8f, 16f), new Vector2(this.scale + (float)Math.Max(-0.1, (double)(this.yJumpOffset + 32) / 128.0), this.scale - Math.Max(-0.1f, (float)this.yJumpOffset / 256f)) * 4f, this.flip ? SpriteEffects.FlipHorizontally : SpriteEffects.None, Math.Max(0f, this.drawOnTop ? 0.991f : ((float)base.getStandingY() / 10000f)));
+				if (this.isGlowing)
+				{
+					b.Draw(this.Sprite.Texture, base.getLocalPosition(Game1.viewport) + new Vector2(32f, (float)(64 + this.yJumpOffset)), new Rectangle?(this.Sprite.SourceRect), this.glowingColor * this.glowingTransparency, this.rotation, new Vector2(8f, 16f), Math.Max(0.2f, this.scale) * 4f, this.flip ? SpriteEffects.FlipHorizontally : SpriteEffects.None, Math.Max(0f, this.drawOnTop ? 0.99f : ((float)base.getStandingY() / 10000f + 0.001f)));
+				}
+				b.Draw(Game1.shadowTexture, base.getLocalPosition(Game1.viewport) + new Vector2(32f, 80f), new Rectangle?(Game1.shadowTexture.Bounds), Color.White, 0f, new Vector2((float)Game1.shadowTexture.Bounds.Center.X, (float)Game1.shadowTexture.Bounds.Center.Y), 4f + (float)this.yJumpOffset / 64f, SpriteEffects.None, (float)(base.getStandingY() - 1) / 10000f);
+			}
+		}
 
 		protected override void sharedDeathAnimation()
 		{
+		}
+		protected override void localDeathAnimation()
+		{
+			base.currentLocation.localSound("dustMeep");
+			base.currentLocation.temporarySprites.Add(new TemporaryAnimatedSprite(44, base.Position, new Color(50, 50, 80), 10, false, 100f, 0, -1, -1f, -1, 0));
+			base.currentLocation.temporarySprites.Add(new TemporaryAnimatedSprite(44, base.Position + new Vector2((float)Game1.random.Next(-32, 32), (float)Game1.random.Next(-32, 32)), new Color(50, 50, 80), 10, false, 100f, 0, -1, -1f, -1, 0)
+			{
+				delayBeforeAnimationStart = 150,
+				scale = 0.5f
+			});
+			base.currentLocation.temporarySprites.Add(new TemporaryAnimatedSprite(44, base.Position + new Vector2((float)Game1.random.Next(-32, 32), (float)Game1.random.Next(-32, 32)), new Color(50, 50, 80), 10, false, 100f, 0, -1, -1f, -1, 0)
+			{
+				delayBeforeAnimationStart = 300,
+				scale = 0.5f
+			});
+			base.currentLocation.temporarySprites.Add(new TemporaryAnimatedSprite(44, base.Position + new Vector2((float)Game1.random.Next(-32, 32), (float)Game1.random.Next(-32, 32)), new Color(50, 50, 80), 10, false, 100f, 0, -1, -1f, -1, 0)
+			{
+				delayBeforeAnimationStart = 450,
+				scale = 0.5f
+			});
 		}
 		public override void shedChunks(int number, float scale)
 		{
@@ -61,7 +91,22 @@ namespace Familiars
 		public void offScreenBehavior(Character c, GameLocation l)
 		{
 		}
-
+		protected override void updateAnimation(GameTime time)
+		{
+			this.Sprite.AnimateDown(time, 0, "");
+			if (this.yJumpOffset == 0)
+			{
+				this.jumpWithoutSound(8f);
+				this.yJumpVelocity = (float)Game1.random.Next(50, 70) / 10f;
+				if (Game1.random.NextDouble() < 0.1 && (this.meep == null || !this.meep.IsPlaying) && Utility.isOnScreen(base.Position, 64) && Game1.soundBank != null && Game1.currentLocation == base.currentLocation)
+				{
+					this.meep = Game1.soundBank.GetCue("dustMeep");
+					this.meep.SetVariable("Pitch", (int)(this.voice * 100) + Game1.random.Next(-100, 100));
+					this.meep.Play();
+				}
+			}
+			base.resetAnimationSpeed();
+		}
 
 		public override void behaviorAtGameTick(GameTime time)
 		{
@@ -104,7 +149,7 @@ namespace Familiars
             {
 				foreach (NPC npc in currentLocation.characters)
 				{
-					if (ModEntry.familiarTypes.Contains(npc.GetType()))
+					if (npc is Familiar)
 						continue;
 					if (npc is Monster && Utils.monstersColliding(this, (Monster)npc) && Game1.random.NextDouble() < ModEntry.Config.DustStealChance)
 					{
@@ -144,7 +189,8 @@ namespace Familiars
             }
 
 			chargingFarmer = false;
-
+			if (!followingPlayer)
+				return;
 			if (!this.seenFarmer && Utility.doesPointHaveLineOfSightInMine(base.currentLocation, base.getStandingPosition() / 64f, owner.getStandingPosition() / 64f, 8))
 			{
 				this.seenFarmer = true;
@@ -216,12 +262,13 @@ namespace Familiars
 		private readonly NetInt lastHitCounter = new NetInt(0);
 
 		public Monster currentTarget = null;
-		public bool followingPlayer = true;
-		public Farmer owner;
 		private bool chargingMonster;
 		private Color color;
 		private bool seenFarmer;
 		private bool runningAwayFromFarmer;
 		private bool chargingFarmer;
-    }
+		private ICue meep;
+		public byte voice;
+
+	}
 }

@@ -18,5 +18,9 @@
         "UniqueID": "Platonymous.ModUpdater",
         "IsRequired": false
       },
+      {
+      "UniqueID": "spacechase0.JsonAssets",
+        "IsRequired": true
+      },
   ]
 }
