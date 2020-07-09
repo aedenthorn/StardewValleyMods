@@ -20,6 +20,27 @@ namespace Familiars
             Config = config;
             Helper = helper;
         }
+
+        public static void Player_Warped(object sender, WarpedEventArgs e)
+        {
+            if (e.OldLocation.characters == null)
+                return;
+            Monitor.Log($"Warping");
+
+            for (int i = e.OldLocation.characters.Count - 1; i >= 0; i--)
+            {
+                NPC npc = e.OldLocation.characters[i];
+                if (npc is Familiar)
+                {
+                    Farmer owner = Game1.getFarmer(Helper.Reflection.GetField<long>(npc, "ownerId").GetValue());
+                    if (owner == Game1.player)
+                    {
+                        Monitor.Log($"Warping {npc.GetType()}");
+                        Game1.warpCharacter(npc, e.NewLocation.Name, Game1.player.getTileLocationPoint());
+                    }
+                }
+            }
+        }
         public static void GameLoop_GameLaunched(object sender, GameLaunchedEventArgs e)
         {
             // load scuba gear

@@ -59,7 +59,7 @@ namespace Familiars
             Helper.Events.GameLoop.Saving += FamiliarsHelperEvents.GameLoop_Saving;
             Helper.Events.GameLoop.DayStarted += FamiliarsHelperEvents.GameLoop_DayStarted;
 
-			Helper.Events.Player.Warped += Player_Warped;
+			Helper.Events.Player.Warped += FamiliarsHelperEvents.Player_Warped;
 
 			var harmony = HarmonyInstance.Create(ModManifest.UniqueID);
 
@@ -105,27 +105,6 @@ namespace Familiars
 				if (npc is Familiar)
 				{
 					Game1.player.currentLocation.characters.RemoveAt(i);
-				}
-			}
-		}
-
-		private void Player_Warped(object sender, StardewModdingAPI.Events.WarpedEventArgs e)
-		{
-			if (e.OldLocation.characters == null)
-				return;
-			Monitor.Log($"Warping");
-
-			for (int i = e.OldLocation.characters.Count - 1; i >= 0; i--)
-			{
-				NPC npc = e.OldLocation.characters[i];
-				if (npc is Familiar)
-				{
-					Farmer owner = Helper.Reflection.GetField<Farmer>(npc, "owner").GetValue();
-					if (owner == Game1.player)
-					{
-						Monitor.Log($"Warping {npc.GetType()}");
-						Game1.warpCharacter(npc, e.NewLocation.Name, Game1.player.getTileLocationPoint());
-					}
 				}
 			}
 		}
