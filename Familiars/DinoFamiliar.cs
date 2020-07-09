@@ -7,6 +7,7 @@ using StardewValley.Projectiles;
 using System;
 using System.Collections.Generic;
 using System.Reflection;
+using System.Threading;
 
 namespace StardewValley.Monsters
 {
@@ -34,7 +35,8 @@ namespace StardewValley.Monsters
 
 		public bool wanderState;
 
-		public enum AttackState
+
+        public enum AttackState
 		{
 			None,
 			Fireball,
@@ -45,21 +47,36 @@ namespace StardewValley.Monsters
 		{
 		}
 
-		public DinoFamiliar(Vector2 position, Farmer owner) : base("Pepper Rex", position)
+		public DinoFamiliar(Vector2 position, long owner) : base("Pepper Rex", position)
 		{
-			this.owner = owner;
+			Name = "DinoFamiliar";
+			this.ownerId = owner;
 			this.Sprite.SpriteWidth = 32;
 			this.Sprite.SpriteHeight = 32;
 			this.Sprite.UpdateSourceRect();
 			this.timeUntilNextAttack = 2000;
 			this.nextChangeDirectionTime = Game1.random.Next(1000, 3000);
 			this.nextWanderTime = Game1.random.Next(1000, 2000);
-			moveTowardPlayerThreshold.Value = 20;
 			damageToFarmer.Value = 0;
 			farmerPassesThrough = true;
+
+			if (ModEntry.Config.DinoColorType.ToLower() == "random")
+            {
+				mainColor = new Color(Game1.random.Next(256),Game1.random.Next(256),Game1.random.Next(256));
+				redColor = new Color(Game1.random.Next(256),Game1.random.Next(256),Game1.random.Next(256));
+				greenColor = new Color(Game1.random.Next(256),Game1.random.Next(256),Game1.random.Next(256));
+				blueColor = new Color(Game1.random.Next(256),Game1.random.Next(256),Game1.random.Next(256));
+            }
+			else 
+            {
+				mainColor = ModEntry.Config.DinoMainColor;
+				redColor = ModEntry.Config.DinoRedColor;
+				greenColor = ModEntry.Config.DinoGreenColor;
+				blueColor = ModEntry.Config.DinoBlueColor;
+			}
+
 			this.reloadSprite();
 		}
-		public override bool IsMonster => true;
 
 		protected override void initNetFields()
 		{
@@ -81,9 +98,9 @@ namespace StardewValley.Monsters
 			{
 				this.Sprite.textureName.Value = ModEntry.Config.DinoTexture;
 			}
-			if (!ModEntry.Config.DefaultDinoColor)
+			if (ModEntry.Config.DinoColorType.ToLower() != "default")
 			{
-				typeof(AnimatedSprite).GetField("spriteTexture", BindingFlags.NonPublic | BindingFlags.Instance).SetValue(Sprite, Utils.ColorFamiliar(Sprite.Texture, ModEntry.Config.DinoMainColor, ModEntry.Config.DinoRedColor, ModEntry.Config.DinoGreenColor, ModEntry.Config.DinoBlueColor));
+				typeof(AnimatedSprite).GetField("spriteTexture", BindingFlags.NonPublic | BindingFlags.Instance).SetValue(Sprite, FamiliarsUtils.ColorFamiliar(Sprite.Texture, mainColor, redColor, greenColor, blueColor));
 			}
 			this.Sprite.SpriteWidth = 32;
 			this.Sprite.SpriteHeight = 32;
@@ -103,7 +120,10 @@ namespace StardewValley.Monsters
 		}
 		public override Rectangle GetBoundingBox()
 		{
-			return new Rectangle((int)base.Position.X + 8, (int)base.Position.Y, this.Sprite.SpriteWidth * 4 * 3 / 4, 64);
+			Rectangle baseRect = new Rectangle((int)base.Position.X + 8, (int)base.Position.Y, this.Sprite.SpriteWidth * 4 * 3 / 4, 64);
+			if(scale >= 1)
+				return baseRect;
+			return new Rectangle((int)baseRect.Center.X - (int)(Sprite.SpriteWidth * 4 * 3 / 4 * scale) / 2, (int)(baseRect.Center.Y - 32 * scale), (int)(Sprite.SpriteWidth * 4 * 3 / 4 * scale), (int)(64*scale));
 		}
 
 		public override List<Item> getExtraDropItems()
@@ -155,7 +175,7 @@ namespace StardewValley.Monsters
 				if (npc is Familiar)
 					continue;
 
-				if (npc is Monster && Utils.withinMonsterThreshold(this, (Monster)npc, 2))
+				if (npc is Monster && FamiliarsUtils.withinMonsterThreshold(this, (Monster)npc, 2))
 				{
 					chargingMonster = true;
 					if (currentTarget == null || Vector2.Distance(npc.position, position) < Vector2.Distance(currentTarget.position, position))
@@ -266,15 +286,16 @@ namespace StardewValley.Monsters
 						fire_angle += (float)Math.Sin((double)((float)this.totalFireTime / 1000f * 180f) * 3.1415926535897931 / 180.0) * 25f;
 						Vector2 shot_velocity = new Vector2((float)Math.Cos((double)fire_angle * 3.1415926535897931 / 180.0), -(float)Math.Sin((double)fire_angle * 3.1415926535897931 / 180.0));
 						shot_velocity *= 10f;
-						BasicProjectile projectile = new BasicProjectile(ModEntry.Config.DinoDamage, 10, 0, 1, 0.196349546f, shot_velocity.X, shot_velocity.Y, shot_origin, "", "", false, true, base.currentLocation, this, false, null);
+						BasicProjectile projectile = new BasicProjectile(GetDamage(), 10, 0, 1, 0.196349546f, shot_velocity.X, shot_velocity.Y, shot_origin, "", "", false, true, base.currentLocation, this, false, null);
 						projectile.ignoreTravelGracePeriod.Value = true;
-						projectile.maxTravelDistance.Value = 256;
+						projectile.maxTravelDistance.Value = GetFireDistance();
 						base.currentLocation.projectiles.Add(projectile);
 						this.nextFireTime = 50;
 					}
 				}
 				if (this.totalFireTime <= 0)
 				{
+					AddExp(1);
 					this.totalFireTime = 0;
 					this.nextFireTime = 0;
 					this.attackState.Set(0);
@@ -283,6 +304,20 @@ namespace StardewValley.Monsters
 			}
 		}
 
+        private int GetFireDistance()
+        {
+			return (int)Math.Sqrt(exp);
+		}
+
+		private int GetDamage()
+        {
+			return (int)Math.Sqrt(exp);
+        }
+
+        private void AddExp(int v)
+		{
+			exp.Value += v;
+		}
 		protected override void updateAnimation(GameTime time)
 		{
 			int direction_offset = 0;
@@ -428,9 +463,13 @@ namespace StardewValley.Monsters
 			{
 				return false;
 			}
-			Vector2 tileLocationOfPlayer = owner.getTileLocation();
+			Vector2 tileLocationOfPlayer = GetOwner().getTileLocation();
 			Vector2 tileLocationOfMonster = base.getTileLocation();
 			return Math.Abs(tileLocationOfMonster.X - tileLocationOfPlayer.X) <= (float)moveTowardPlayerThreshold && Math.Abs(tileLocationOfMonster.Y - tileLocationOfPlayer.Y) <= (float)moveTowardPlayerThreshold;
+		}
+		private Farmer GetOwner()
+		{
+			return Game1.getFarmer(ownerId);
 		}
 
 	}

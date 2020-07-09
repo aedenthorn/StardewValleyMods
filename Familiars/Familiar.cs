@@ -119,9 +119,29 @@ namespace Familiars
 		public Familiar(string name, Vector2 position) : this(name, position, 2)
 		{
 			base.Breather = false;
+			SetScale();
+			farmerPassesThrough = true;
+			moveTowardPlayerThreshold.Value = 20;
+
 		}
 
-		protected override void initNetFields()
+        public FamiliarData SaveData()
+        {
+			return new FamiliarData()
+			{
+				daysOld = this.daysOld,
+				exp = this.exp,
+				ownerId = this.ownerId,
+				mainColor = this.mainColor,
+				redColor = this.redColor,
+				greenColor = this.greenColor,
+				blueColor = this.blueColor,
+				currentLocation = this.currentLocation.Name,
+				position = this.position
+			};
+        }
+
+        protected override void initNetFields()
 		{
 			base.initNetFields();
 			base.NetFields.AddFields(new INetSerializable[]
@@ -144,6 +164,8 @@ namespace Familiars
 				this.netFocusedOnFarmers,
 				this.netWildernessFarmMonster,
 				this.deathAnimEvent,
+				this.daysOld,
+				this.exp,
 				this.trajectoryEvent
 			});
 			this.position.Field.AxisAlignedMovement = false;
@@ -151,8 +173,19 @@ namespace Familiars
 			this.trajectoryEvent.onEvent += this.doSetTrajectory;
 			this.trajectoryEvent.InterpolationWait = false;
 		}
+        public override void dayUpdate(int dayOfMonth)
+        {
+            base.dayUpdate(dayOfMonth);
+			daysOld.Value = daysOld.Value + 1;
+			SetScale();
+		}
 
-		protected override Farmer findPlayer()
+        public void SetScale()
+        {
+			Scale = (float)Math.Min(2, 0.2f + (daysOld * 0.01));
+		}
+
+        protected override Farmer findPlayer()
 		{
 			if (base.currentLocation == null)
 			{
@@ -198,10 +231,13 @@ namespace Familiars
 		{
 			get
 			{
-				return true;
+				return false;
 			}
 		}
-
+		public bool isVillager()
+		{
+			return false;
+		}
 		public Familiar(string name, Vector2 position, int facingDir) : base(new AnimatedSprite("Characters\\Monsters\\" + name), position, facingDir, name, null)
 		{
 			this.parseMonsterInfo(name);
@@ -627,7 +663,7 @@ namespace Familiars
 		{
 			if (base.IsWalkingTowardPlayer)
 			{
-				if ((this.moveTowardPlayerThreshold == -1 || this.withinPlayerThreshold()) && this.timeBeforeAIMovementAgain <= 0f && this.IsMonster && !this.isGlider && location.map.GetLayer("Back").Tiles[(int)this.Player.getTileLocation().X, (int)this.Player.getTileLocation().Y] != null && !location.map.GetLayer("Back").Tiles[(int)this.Player.getTileLocation().X, (int)this.Player.getTileLocation().Y].Properties.ContainsKey("NPCBarrier"))
+				if ((this.moveTowardPlayerThreshold == -1 || this.withinPlayerThreshold()) && this.timeBeforeAIMovementAgain <= 0f && !this.isGlider && location.map.GetLayer("Back").Tiles[(int)this.Player.getTileLocation().X, (int)this.Player.getTileLocation().Y] != null && !location.map.GetLayer("Back").Tiles[(int)this.Player.getTileLocation().X, (int)this.Player.getTileLocation().Y].Properties.ContainsKey("NPCBarrier"))
 				{
 					if (this.skipHorizontal <= 0)
 					{
@@ -1159,8 +1195,14 @@ namespace Familiars
 
 		protected delegate void collisionBehavior(GameLocation location);
 
-		public Farmer owner;
+		public long ownerId;
 		public bool followingPlayer = true;
 
+		public readonly NetInt daysOld = new NetInt(0);
+		public readonly NetInt exp = new NetInt(0);
+		public Color mainColor;
+		public Color redColor;
+		public Color greenColor;
+		public Color blueColor;
 	}
 }

@@ -3,9 +3,11 @@ using Microsoft.Xna.Framework.Graphics;
 using Netcode;
 using StardewValley;
 using StardewValley.Monsters;
+using StardewValley.Network;
 using System;
 using System.Collections.Generic;
 using System.Reflection;
+using System.Security.Policy;
 
 namespace Familiars
 {
@@ -15,12 +17,26 @@ namespace Familiars
 		{
 		}
 
-		public BatFamiliar(Vector2 position, Farmer _owner) : base("Bat", position)
+		public BatFamiliar(Vector2 position, long _owner) : base("Bat", position)
 		{
-			owner = _owner;
+			Name = "BatFamiliar";
+			ownerId = _owner;
 			base.Slipperiness = 20 + Game1.random.Next(-5, 6);
+			if (ModEntry.Config.BatColorType.ToLower() == "random")
+			{
+				mainColor = new Color(Game1.random.Next(256), Game1.random.Next(256), Game1.random.Next(256));
+				redColor = new Color(Game1.random.Next(256), Game1.random.Next(256), Game1.random.Next(256));
+				greenColor = new Color(Game1.random.Next(256), Game1.random.Next(256), Game1.random.Next(256));
+				blueColor = new Color(Game1.random.Next(256), Game1.random.Next(256), Game1.random.Next(256));
+			}
+			else
+			{
+				mainColor = ModEntry.Config.BatMainColor;
+				redColor = ModEntry.Config.BatRedColor;
+				greenColor = ModEntry.Config.BatGreenColor;
+				blueColor = ModEntry.Config.BatBlueColor;
+			}
 
-			ModEntry.SMonitor.Log($"creating new familiar of type {Name}");
 			reloadSprite();
 
 			farmerPassesThrough = true;
@@ -37,6 +53,7 @@ namespace Familiars
 			{
 				this.wasHitCounter,
 				this.lastHitCounter,
+				this.lastScreechCounter,
 				this.turningRight,
 				this.seenPlayer,
 				this.cursedDoll,
@@ -44,7 +61,6 @@ namespace Familiars
 			});
 		}
 
-        public override bool IsMonster => true;
 
         public override void reloadSprite()
 		{
@@ -60,9 +76,9 @@ namespace Familiars
 				ModEntry.SMonitor.Log($"updating sprite texture");
 				this.Sprite.textureName.Value = ModEntry.Config.BatTexture;
 			}
-			if (!ModEntry.Config.DefaultBatColor)
+			if (ModEntry.Config.BatColorType.ToLower() != "default")
 			{
-				typeof(AnimatedSprite).GetField("spriteTexture", BindingFlags.NonPublic | BindingFlags.Instance).SetValue(Sprite, Utils.ColorFamiliar(Sprite.Texture, ModEntry.Config.BatMainColor, ModEntry.Config.BatRedColor, ModEntry.Config.BatGreenColor, ModEntry.Config.BatBlueColor));
+				typeof(AnimatedSprite).GetField("spriteTexture", BindingFlags.NonPublic | BindingFlags.Instance).SetValue(Sprite, FamiliarsUtils.ColorFamiliar(Sprite.Texture, mainColor, redColor, greenColor, blueColor));
 			}
 			base.HideShadow = true;
 		}
@@ -89,48 +105,19 @@ namespace Familiars
 		{
 			if (Utility.isOnScreen(base.Position, 128))
 			{
-				if (this.cursedDoll)
+
+				b.Draw(this.Sprite.Texture, base.getLocalPosition(Game1.viewport) + new Vector2(32f, 32f), new Rectangle?(this.Sprite.SourceRect), (this.shakeTimer > 0) ? Color.Red : Color.White, 0f, new Vector2(8f, 16f), Math.Max(0.2f, this.scale) * 4f, this.flip ? SpriteEffects.FlipHorizontally : SpriteEffects.None, 0.92f);
+				b.Draw(Game1.shadowTexture, base.getLocalPosition(Game1.viewport) + new Vector2(32f, 64f), new Rectangle?(Game1.shadowTexture.Bounds), Color.White, 0f, new Vector2((float)Game1.shadowTexture.Bounds.Center.X, (float)Game1.shadowTexture.Bounds.Center.Y), 4f * scale, SpriteEffects.None, base.wildernessFarmMonster ? 0.0001f : ((float)(base.getStandingY() - 1) / 10000f));
+				if (this.isGlowing)
 				{
-					if (this.hauntedSkull)
-					{
-						Vector2 pos_offset = Vector2.Zero;
-						if (this.previousPositions.Count > 2)
-						{
-							pos_offset = base.Position - this.previousPositions[1];
-						}
-						int direction = (Math.Abs(pos_offset.X) > Math.Abs(pos_offset.Y)) ? ((pos_offset.X > 0f) ? 1 : 3) : ((pos_offset.Y < 0f) ? 0 : 2);
-						if (direction == -1)
-						{
-							direction = 2;
-						}
-						Vector2 offset = new Vector2(0f, 8f * (float)Math.Sin(Game1.currentGameTime.TotalGameTime.TotalMilliseconds / 188.49555921538757));
-						b.Draw(Game1.shadowTexture, base.getLocalPosition(Game1.viewport) + new Vector2(32f, 64f), new Rectangle?(Game1.shadowTexture.Bounds), Color.White, 0f, new Vector2((float)Game1.shadowTexture.Bounds.Center.X, (float)Game1.shadowTexture.Bounds.Center.Y), 3f + offset.Y / 20f, SpriteEffects.None, 0.0001f);
-						b.Draw(this.Sprite.Texture, base.getLocalPosition(Game1.viewport) + new Vector2((float)(32 + Game1.random.Next(-6, 7)), (float)(32 + Game1.random.Next(-6, 7))) + offset, new Rectangle?(Game1.getSourceRectForStandardTileSheet(this.Sprite.Texture, direction * 2 + ((this.seenPlayer && Game1.currentGameTime.TotalGameTime.TotalMilliseconds % 500.0 < 250.0) ? 1 : 0), 16, 16)), Color.Red * 0.44f, 0f, new Vector2(8f, 16f), Math.Max(0.2f, this.scale) * 4f, this.flip ? SpriteEffects.FlipHorizontally : SpriteEffects.None, (this.position.Y + 128f - 1f) / 10000f);
-						b.Draw(this.Sprite.Texture, base.getLocalPosition(Game1.viewport) + new Vector2((float)(32 + Game1.random.Next(-6, 7)), (float)(32 + Game1.random.Next(-6, 7))) + offset, new Rectangle?(Game1.getSourceRectForStandardTileSheet(this.Sprite.Texture, direction * 2 + ((this.seenPlayer && Game1.currentGameTime.TotalGameTime.TotalMilliseconds % 500.0 < 250.0) ? 1 : 0), 16, 16)), Color.Yellow * 0.44f, 0f, new Vector2(8f, 16f), Math.Max(0.2f, this.scale) * 4f, this.flip ? SpriteEffects.FlipHorizontally : SpriteEffects.None, (this.position.Y + 128f) / 10000f);
-						for (int i = this.previousPositions.Count - 1; i >= 0; i -= 2)
-						{
-							b.Draw(this.Sprite.Texture, new Vector2(this.previousPositions[i].X - (float)Game1.viewport.X, this.previousPositions[i].Y - (float)Game1.viewport.Y + (float)this.yJumpOffset) + this.drawOffset + new Vector2(32f, 32f) + offset, new Rectangle?(Game1.getSourceRectForStandardTileSheet(this.Sprite.Texture, direction * 2 + ((this.seenPlayer && Game1.currentGameTime.TotalGameTime.TotalMilliseconds % 500.0 < 250.0) ? 1 : 0), 16, 16)), Color.White * (0f + 0.125f * (float)i), 0f, new Vector2(8f, 16f), Math.Max(0.2f, this.scale) * 4f, this.flip ? SpriteEffects.FlipHorizontally : SpriteEffects.None, (this.position.Y + 128f - (float)i) / 10000f);
-						}
-						b.Draw(this.Sprite.Texture, base.getLocalPosition(Game1.viewport) + new Vector2(32f, 32f) + offset, new Rectangle?(Game1.getSourceRectForStandardTileSheet(this.Sprite.Texture, direction * 2 + ((this.seenPlayer && Game1.currentGameTime.TotalGameTime.TotalMilliseconds % 500.0 < 250.0) ? 1 : 0), 16, 16)), Color.White, 0f, new Vector2(8f, 16f), Math.Max(0.2f, this.scale) * 4f, this.flip ? SpriteEffects.FlipHorizontally : SpriteEffects.None, (this.position.Y + 128f + 1f) / 10000f);
-						return;
-					}
-					Vector2 offset2 = new Vector2(0f, 8f * (float)Math.Sin(Game1.currentGameTime.TotalGameTime.TotalMilliseconds / 188.49555921538757));
-					b.Draw(Game1.shadowTexture, base.getLocalPosition(Game1.viewport) + new Vector2(32f, 64f), new Rectangle?(Game1.shadowTexture.Bounds), Color.White, 0f, new Vector2((float)Game1.shadowTexture.Bounds.Center.X, (float)Game1.shadowTexture.Bounds.Center.Y), 3f + offset2.Y / 20f, SpriteEffects.None, 0.0001f);
-					b.Draw(Game1.objectSpriteSheet, base.getLocalPosition(Game1.viewport) + new Vector2((float)(32 + Game1.random.Next(-6, 7)), (float)(32 + Game1.random.Next(-6, 7))) + offset2, new Rectangle?(Game1.getSourceRectForStandardTileSheet(Game1.objectSpriteSheet, 103, 16, 16)), Color.Violet * 0.44f, 0f, new Vector2(8f, 16f), Math.Max(0.2f, this.scale) * 4f, this.flip ? SpriteEffects.FlipHorizontally : SpriteEffects.None, (this.position.Y + 128f - 1f) / 10000f);
-					b.Draw(Game1.objectSpriteSheet, base.getLocalPosition(Game1.viewport) + new Vector2((float)(32 + Game1.random.Next(-6, 7)), (float)(32 + Game1.random.Next(-6, 7))) + offset2, new Rectangle?(Game1.getSourceRectForStandardTileSheet(Game1.objectSpriteSheet, 103, 16, 16)), Color.Lime * 0.44f, 0f, new Vector2(8f, 16f), Math.Max(0.2f, this.scale) * 4f, this.flip ? SpriteEffects.FlipHorizontally : SpriteEffects.None, (this.position.Y + 128f) / 10000f);
-					b.Draw(Game1.objectSpriteSheet, base.getLocalPosition(Game1.viewport) + new Vector2(32f, 32f) + offset2, new Rectangle?(Game1.getSourceRectForStandardTileSheet(Game1.objectSpriteSheet, 103, 16, 16)), new Color(255, 50, 50), 0f, new Vector2(8f, 16f), Math.Max(0.2f, this.scale) * 4f, this.flip ? SpriteEffects.FlipHorizontally : SpriteEffects.None, (this.position.Y + 128f + 1f) / 10000f);
-					return;
-				}
-				else
-				{
-					b.Draw(this.Sprite.Texture, base.getLocalPosition(Game1.viewport) + new Vector2(32f, 32f), new Rectangle?(this.Sprite.SourceRect), (this.shakeTimer > 0) ? Color.Red : Color.White, 0f, new Vector2(8f, 16f), Math.Max(0.2f, this.scale) * 4f, this.flip ? SpriteEffects.FlipHorizontally : SpriteEffects.None, 0.92f);
-					b.Draw(Game1.shadowTexture, base.getLocalPosition(Game1.viewport) + new Vector2(32f, 64f), new Rectangle?(Game1.shadowTexture.Bounds), Color.White, 0f, new Vector2((float)Game1.shadowTexture.Bounds.Center.X, (float)Game1.shadowTexture.Bounds.Center.Y), 4f, SpriteEffects.None, base.wildernessFarmMonster ? 0.0001f : ((float)(base.getStandingY() - 1) / 10000f));
-					if (this.isGlowing)
-					{
-						b.Draw(this.Sprite.Texture, base.getLocalPosition(Game1.viewport) + new Vector2(32f, 32f), new Rectangle?(this.Sprite.SourceRect), this.glowingColor * this.glowingTransparency, 0f, new Vector2(8f, 16f), Math.Max(0.2f, this.scale) * 4f, this.flip ? SpriteEffects.FlipHorizontally : SpriteEffects.None, Math.Max(0f, this.drawOnTop ? 0.99f : ((float)base.getStandingY() / 10000f + 0.001f)));
-					}
+					b.Draw(this.Sprite.Texture, base.getLocalPosition(Game1.viewport) + new Vector2(32f, 32f), new Rectangle?(this.Sprite.SourceRect), this.glowingColor * this.glowingTransparency, 0f, new Vector2(8f, 16f), Math.Max(0.2f, this.scale) * 4f, this.flip ? SpriteEffects.FlipHorizontally : SpriteEffects.None, Math.Max(0f, this.drawOnTop ? 0.99f : ((float)base.getStandingY() / 10000f + 0.001f)));
 				}
 			}
+		}
+		public override Rectangle GetBoundingBox()
+		{
+			Rectangle baseRect = new Rectangle((int)base.Position.X + 8, (int)base.Position.Y, this.Sprite.SpriteWidth * 4 * 3 / 4, 32);
+			return new Rectangle((int)baseRect.Center.X - (int)(Sprite.SpriteWidth * 4 * 3 / 4 * scale) / 2, (int)(baseRect.Center.Y - 16 * scale), (int)(Sprite.SpriteWidth * 4 * 3 / 4 * scale), (int)(32 * scale));
 		}
 
 		public override void drawAboveAlwaysFrontLayer(SpriteBatch b)
@@ -148,6 +135,15 @@ namespace Familiars
             {
 				lastHitCounter.Value -= time.ElapsedGameTime.Milliseconds;
 			}
+			if (lastScreechCounter >= 0)
+            {
+				lastScreechCounter.Value -= time.ElapsedGameTime.Milliseconds;
+			}
+			if (lastScreechCounter < 0 && GetBoundingBox().Intersects(GetOwner().GetBoundingBox()))
+			{
+				base.currentLocation.playSound("batScreech", NetAudio.SoundContext.Default);
+				lastScreechCounter.Value = 10000;
+			}
 
 			chargingMonster = false;
 			if(lastHitCounter < 0)
@@ -157,14 +153,26 @@ namespace Familiars
 					if (npc is Familiar)
 						continue;
 
-					if (npc is Monster && Utils.monstersColliding(this, (Monster)npc))
+					if (npc is Monster && FamiliarsUtils.monstersColliding(this, (Monster)npc))
 					{
-						currentLocation.damageMonster(GetBoundingBox(), ModEntry.Config.BatMinDamage, ModEntry.Config.BatMaxDamage, false, owner);
-						lastHitCounter.Value = 5000;
+						if (BaseDamage() >= 0)
+						{
+							int damageAmount = Game1.random.Next(BaseDamage(), BaseDamage() * 2 + 1);
+							damageAmount = (npc as Monster).takeDamage(damageAmount, 0, 0, false, 0, GetOwner());
+							if((npc as Monster).Health <= 0)
+                            {
+								AddExp(10);
+                            }
+                            else
+                            {
+								AddExp(1);
+							}
+						}
+						lastHitCounter.Value = AttackInterval();
 						chargingMonster = false;
 						break;
 					}
-					else if (npc is Monster && Utils.withinMonsterThreshold(this, (Monster)npc, 2))
+					else if (npc is Monster && FamiliarsUtils.withinMonsterThreshold(this, (Monster)npc, 2))
 					{
 						chargingMonster = true;
 						if (currentTarget == null || Vector2.Distance(npc.position, position) < Vector2.Distance(currentTarget.position, position))
@@ -180,11 +188,11 @@ namespace Familiars
 				this.wasHitCounter.Value -= time.ElapsedGameTime.Milliseconds;
 			}
 
-			if (chargingMonster || (withinPlayerThreshold(10) && followingPlayer))
+			if (chargingMonster || (withinPlayerThreshold() && followingPlayer))
 			{
 				this.seenPlayer.Value = true;
 
-				Rectangle targetRect = chargingMonster ? currentTarget.GetBoundingBox() : owner.GetBoundingBox();
+				Rectangle targetRect = chargingMonster ? currentTarget.GetBoundingBox() : GetOwner().GetBoundingBox();
 
 				float xSlope = (float)(-(float)(targetRect.Center.X - this.GetBoundingBox().Center.X));
 				float ySlope = (float)(targetRect.Center.Y - this.GetBoundingBox().Center.Y);
@@ -234,7 +242,27 @@ namespace Familiars
 			}
 		}
 
-		protected override void updateAnimation(GameTime time)
+        private Farmer GetOwner()
+        {
+			return Game1.getFarmer(ownerId);
+        }
+
+        private void AddExp(int v)
+        {
+			exp.Value += v;
+        }
+
+        private int AttackInterval()
+        {
+			return Math.Max(500, 5000 - (int)Math.Sqrt(exp));
+        }
+
+        private int BaseDamage()
+        {
+			return (int)Math.Sqrt(exp);
+        }
+
+        protected override void updateAnimation(GameTime time)
 		{
 			if (base.focusedOnFarmers || this.withinPlayerThreshold(6) || this.seenPlayer)
 			{
@@ -242,7 +270,7 @@ namespace Familiars
 				if (this.Sprite.currentFrame % 3 == 0 && Utility.isOnScreen(base.Position, 512) && (this.batFlap == null || !this.batFlap.IsPlaying) && Game1.soundBank != null && base.currentLocation == Game1.currentLocation && !this.cursedDoll)
 				{
 					batFlap = Game1.soundBank.GetCue("batFlap");
-					batFlap.Play();
+					//batFlap.Play();
 				}
 				if (this.cursedDoll.Value)
 				{
@@ -273,10 +301,10 @@ namespace Familiars
 			base.resetAnimationSpeed();
 		}
 
-
 		private readonly NetInt wasHitCounter = new NetInt(0);
 
 		private readonly NetInt lastHitCounter = new NetInt(0);
+		private readonly NetInt lastScreechCounter = new NetInt(0);
 
 		private float targetRotation;
 
@@ -297,5 +325,5 @@ namespace Familiars
 		private List<Vector2> previousPositions = new List<Vector2>();
 		public Monster currentTarget = null;
 		private bool chargingMonster;
-	}
+    }
 }

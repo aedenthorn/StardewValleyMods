@@ -1,14 +1,26 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using StardewModdingAPI;
 using StardewValley;
 using StardewValley.Monsters;
 using System;
 using System.Collections.Generic;
+using Object = StardewValley.Object;
 
 namespace Familiars
 {
-    class Utils
+    class FamiliarsUtils
     {
+		private static IMonitor Monitor;
+		private static ModConfig Config;
+		private static IModHelper Helper;
+
+		public static void Initialize(IMonitor monitor, IModHelper helper, ModConfig config)
+		{
+			Monitor = monitor;
+			Config = config;
+			Helper = helper;
+		}
 		public static Vector2 getAwayFromNPCTrajectory(Microsoft.Xna.Framework.Rectangle monsterBox, NPC who)
 		{
 			float num = (float)(-(float)(who.GetBoundingBox().Center.X - monsterBox.Center.X));
@@ -82,6 +94,66 @@ namespace Familiars
 			}
 		}
 
+        internal static void LoadFamiliars()
+        {
+			FamiliarSaveData fsd = Helper.Data.ReadSaveData<FamiliarSaveData>("familiars") ?? new FamiliarSaveData();
+
+			foreach (FamiliarData f in fsd.dustSpriteFamiliars)
+			{
+				GameLocation l = Game1.getLocationFromName(f.currentLocation);
+				if (l != null)
+				{
+					Monitor.Log($"Returning saved Dust Familiar to {l.Name}");
+					DustSpriteFamiliar d = new DustSpriteFamiliar(f.position, f.ownerId);
+					d.daysOld.Value = f.daysOld;
+					d.exp.Value = f.exp;
+					d.mainColor = f.mainColor;
+					d.redColor = f.redColor;
+					d.greenColor = f.greenColor;
+					d.blueColor = f.blueColor;
+					d.SetScale();
+					d.currentLocation = l;
+					l.characters.Add(d);
+				}
+			}
+			foreach (FamiliarData f in fsd.dinoFamiliars)
+			{
+				GameLocation l = Game1.getLocationFromName(f.currentLocation);
+				if (l != null)
+				{
+					Monitor.Log($"Returning saved Dino Familiar to {l.Name}");
+					DinoFamiliar d = new DinoFamiliar(f.position, f.ownerId);
+					d.daysOld.Value = f.daysOld;
+					d.exp.Value = f.exp;
+					d.mainColor = f.mainColor;
+					d.redColor = f.redColor;
+					d.greenColor = f.greenColor;
+					d.blueColor = f.blueColor;
+					d.SetScale();
+					d.currentLocation = l;
+					l.characters.Add(d);
+				}
+			}
+			foreach (FamiliarData f in fsd.batFamiliars)
+			{
+				GameLocation l = Game1.getLocationFromName(f.currentLocation);
+				if (l != null)
+				{
+					Monitor.Log($"Returning saved Bat Familiar to {l.Name}");
+					BatFamiliar d = new BatFamiliar(f.position, f.ownerId);
+					d.daysOld.Value = f.daysOld;
+					d.exp.Value = f.exp;
+					d.mainColor = f.mainColor;
+					d.redColor = f.redColor;
+					d.greenColor = f.greenColor;
+					d.blueColor = f.blueColor;
+					d.SetScale();
+					d.currentLocation = l;
+					l.characters.Add(d);
+				}
+			}
+		}
+
         public static Texture2D ColorFamiliar(Texture2D texture, Color mainColor, Color redColor, Color greenColor, Color blueColor)
         {
 			Color[] data = new Color[texture.Width * texture.Height];
@@ -111,5 +183,22 @@ namespace Familiars
 			texture.SetData(data);
 			return texture;
         }
+
+        public static void getDinoEgg()
+		{
+			Game1.flashAlpha = 1f;
+			Game1.player.holdUpItemThenMessage(new Object(ModEntry.DinoFamiliarEgg, 1), true);
+			Game1.player.reduceActiveItemByOne();
+			if (!Game1.player.addItemToInventoryBool(new Object(ModEntry.DinoFamiliarEgg, 1), false))
+			{
+				Game1.createItemDebris(new Object(ModEntry.DinoFamiliarEgg, 1), Game1.player.getStandingPosition(), 1, null, -1);
+			}
+			Game1.player.jitterStrength = 0f;
+			Game1.screenGlowHold = false;
+			ModEntry.mp.globalChatInfoMessage("DinoFamiliarEgg", new string[]
+			{
+				Game1.player.Name
+			});
+		}
     }
 }

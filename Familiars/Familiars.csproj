@@ -48,13 +48,14 @@
     <Compile Include="DinoFamiliar.cs" />
     <Compile Include="DustSpriteFamiliar.cs" />
     <Compile Include="Familiar.cs" />
+    <Compile Include="FamiliarSaveData.cs" />
     <Compile Include="FamiliarsPatches.cs" />
     <Compile Include="IJsonAssetsApi.cs" />
     <Compile Include="ModConfig.cs" />
     <Compile Include="ModEntry.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="FamiliarsHelperEvents.cs" />
-    <Compile Include="Utils.cs" />
+    <Compile Include="FamiliarsUtils.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="assets\json-assets\content-pack.json" />

@@ -1,5 +1,7 @@
 ﻿using StardewModdingAPI;
 using StardewModdingAPI.Events;
+using StardewValley;
+using StardewValley.Monsters;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -34,9 +36,41 @@ namespace Familiars
             }
 
         }
+        public static void GameLoop_Saving(object sender, SavingEventArgs e)
+        {
+            FamiliarSaveData fsd = new FamiliarSaveData();
+
+            foreach(GameLocation l in Game1.locations)
+            {
+                for(int i = l.characters.Count - 1; i >= 0; i--)
+                {
+                    if(l.characters[i] is Familiar)
+                    {
+                        if(l.characters[i] is DustSpriteFamiliar)
+                        {
+                            fsd.dustSpriteFamiliars.Add((l.characters[i] as Familiar).SaveData());
+                        }
+                        else if(l.characters[i] is DinoFamiliar)
+                        {
+                            fsd.dinoFamiliars.Add((l.characters[i] as Familiar).SaveData());
+                        }
+                        else if(l.characters[i] is BatFamiliar)
+                        {
+                            fsd.batFamiliars.Add((l.characters[i] as Familiar).SaveData());
+                        }
+                        l.characters.RemoveAt(i);
+                    }
+                }
+            }
+            Helper.Data.WriteSaveData("familiars", fsd);
+        }
+
         public static void GameLoop_SaveLoaded(object sender, SaveLoadedEventArgs e)
         {
-            // load scuba gear ids
+            //load familiars
+            //FamiliarsUtils.LoadFamiliars();
+
+            // load egg ids
 
             if (ModEntry.JsonAssets != null)
             {
@@ -71,5 +105,9 @@ namespace Familiars
             }
         }
 
+        public static void GameLoop_DayStarted(object sender, DayStartedEventArgs e)
+        {
+            FamiliarsUtils.LoadFamiliars();
+        }
     }
 }

@@ -3,16 +3,21 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using StardewModdingAPI;
 using StardewValley;
+using StardewValley.Characters;
 using StardewValley.Monsters;
+using StardewValley.Objects;
+using StardewValley.Quests;
+using StardewValley.TerrainFeatures;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Xml.Serialization;
 using Object = StardewValley.Object;
 
 namespace Familiars
 {
 	/// <summary>The mod entry point.</summary>
-	public class ModEntry : Mod, IAssetLoader
+	public class ModEntry : Mod, IAssetLoader, IAssetEditor
 	{
 		public static ModEntry context;
 		public static ModConfig Config;
@@ -39,6 +44,7 @@ namespace Familiars
 
 			FamiliarsPatches.Initialize(Monitor, Helper, Config);
 			FamiliarsHelperEvents.Initialize(Monitor, Helper, Config);
+			FamiliarsUtils.Initialize(Monitor, Helper, Config);
 
 			Helper.ConsoleCommands.Add("DispelFamiliars", "Dispel all familiars.", new Action<string, string[]>(DispelFamiliars));
 			if (Config.IAmAStinkyCheater)
@@ -50,6 +56,9 @@ namespace Familiars
 
 			Helper.Events.GameLoop.GameLaunched += FamiliarsHelperEvents.GameLoop_GameLaunched;
 			Helper.Events.GameLoop.SaveLoaded += FamiliarsHelperEvents.GameLoop_SaveLoaded;
+            Helper.Events.GameLoop.Saving += FamiliarsHelperEvents.GameLoop_Saving;
+            Helper.Events.GameLoop.DayStarted += FamiliarsHelperEvents.GameLoop_DayStarted;
+
 			Helper.Events.Player.Warped += Player_Warped;
 
 			var harmony = HarmonyInstance.Create(ModManifest.UniqueID);
@@ -60,7 +69,7 @@ namespace Familiars
 			);
 			harmony.Patch(
 				original: AccessTools.Method(typeof(Object), nameof(Object.performObjectDropInAction)),
-				postfix: new HarmonyMethod(typeof(FamiliarsPatches), nameof(FamiliarsPatches.Object_performObjectDropInAction_Postfix))
+				prefix: new HarmonyMethod(typeof(FamiliarsPatches), nameof(FamiliarsPatches.Object_performObjectDropInAction_Prefix))
 			);
 			harmony.Patch(
 				original: AccessTools.Method(typeof(Object), nameof(Object.minutesElapsed)),
@@ -71,12 +80,21 @@ namespace Familiars
 				postfix: new HarmonyMethod(typeof(FamiliarsPatches), nameof(FamiliarsPatches.GameLocation_checkAction_Postfix))
 			);
 			harmony.Patch(
+				original: AccessTools.Method(typeof(GameLocation), nameof(GameLocation.performTouchAction)),
+				postfix: new HarmonyMethod(typeof(FamiliarsPatches), nameof(FamiliarsPatches.GameLocation_performTouchAction_Postfix))
+			);
+			harmony.Patch(
 				original: AccessTools.Method(typeof(Utility), nameof(Utility.checkForCharacterInteractionAtTile)),
 				postfix: new HarmonyMethod(typeof(FamiliarsPatches), nameof(FamiliarsPatches.Utility_checkForCharacterInteractionAtTile_Postfix))
 			);
+			harmony.Patch(
+				original: AccessTools.Method(typeof(NPC), nameof(NPC.isVillager)),
+				prefix: new HarmonyMethod(typeof(FamiliarsPatches), nameof(FamiliarsPatches.NPC_isVillager_Prefix))
+			);
 		}
 
-		private void DispelFamiliars(string arg1, string[] arg2)
+
+        private void DispelFamiliars(string arg1, string[] arg2)
 		{
 			if (Game1.player == null || Game1.player.currentLocation == null)
 				return;
@@ -120,13 +138,13 @@ namespace Familiars
 			switch (arg2[0].ToLower())
 			{
 				case "dust":
-					Game1.player.currentLocation.characters.Add(new DustSpriteFamiliar(Game1.player.position, Game1.player));
+					Game1.player.currentLocation.characters.Add(new DustSpriteFamiliar(Game1.player.position, Game1.player.UniqueMultiplayerID));
 					break;
 				case "dino":
-					Game1.player.currentLocation.characters.Add(new DinoFamiliar(Game1.player.position, Game1.player));
+					Game1.player.currentLocation.characters.Add(new DinoFamiliar(Game1.player.position, Game1.player.UniqueMultiplayerID));
 					break;
 				case "bat":
-					Game1.player.currentLocation.characters.Add(new BatFamiliar(Game1.player.position, Game1.player));
+					Game1.player.currentLocation.characters.Add(new BatFamiliar(Game1.player.position, Game1.player.UniqueMultiplayerID));
 					break;
 			}
 		}
@@ -161,6 +179,24 @@ namespace Familiars
 			}
 			string name = asset.AssetName.Replace("Characters\\Monsters\\", "").Replace("Characters/Monsters/", "");
 			return (T)(object)Helper.Content.Load<Texture2D>($"assets/{name}.png");
+		}
+
+        public bool CanEdit<T>(IAssetInfo asset)
+        {
+            if (asset.AssetNameEquals("Strings\\UI"))
+            {
+				return true;
+            }
+			return false;
+        }
+
+		public void Edit<T>(IAssetData asset)
+		{
+			if (asset.AssetNameEquals("Strings\\UI"))
+			{
+				var editor = asset.AsDictionary<string, string>();
+				editor.Data["Chat_DinoFamiliarEgg"] = Helper.Translation.Get("chat-dino-familiar-egg");
+			}
 		}
 	}
 }

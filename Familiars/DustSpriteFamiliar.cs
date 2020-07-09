@@ -15,20 +15,34 @@ namespace Familiars
 		}
 
 
-		public DustSpriteFamiliar(Vector2 position, Farmer owner) : base("Dust Spirit", position)
+		public DustSpriteFamiliar(Vector2 position, long owner) : base("Dust Spirit", position)
 		{
-			this.owner = owner;
+			Name = "DustSpriteFamiliar";
+			ModEntry.SMonitor.Log($"DSF Name: {Name}"); 
+			this.ownerId = owner;
 			IsWalkingTowardPlayer = false;
 			Sprite.interval = 45f;
-			Scale = (float)Game1.random.Next(75, 101) / 100f;
 			voice = (byte)Game1.random.Next(1, 24);
 			HideShadow = true;
 			DamageToFarmer = 0;
-			moveTowardPlayerThreshold.Value = 20;
 			farmerPassesThrough = true;
+
+			if (ModEntry.Config.DustColorType.ToLower() == "random")
+			{
+				mainColor = new Color(Game1.random.Next(256), Game1.random.Next(256), Game1.random.Next(256));
+				redColor = new Color(Game1.random.Next(256), Game1.random.Next(256), Game1.random.Next(256));
+				greenColor = new Color(Game1.random.Next(256), Game1.random.Next(256), Game1.random.Next(256));
+				blueColor = new Color(Game1.random.Next(256), Game1.random.Next(256), Game1.random.Next(256));
+			}
+			else
+			{
+				mainColor = ModEntry.Config.DustMainColor;
+				redColor = ModEntry.Config.DustRedColor;
+				greenColor = ModEntry.Config.DustGreenColor;
+				blueColor = ModEntry.Config.DustBlueColor;
+			}
 			reloadSprite();
 		}
-		public override bool IsMonster => true;
 
 		public override void reloadSprite()
 		{
@@ -40,10 +54,10 @@ namespace Familiars
 			{
 				this.Sprite.textureName.Value = ModEntry.Config.DustTexture;
 			}
-			if (!ModEntry.Config.DefaultDinoColor)
+			if (ModEntry.Config.DustColorType.ToLower() != "default")
 			{
 
-				typeof(AnimatedSprite).GetField("spriteTexture", BindingFlags.NonPublic | BindingFlags.Instance).SetValue(Sprite, Utils.ColorFamiliar(Sprite.Texture, ModEntry.Config.DustMainColor, ModEntry.Config.DustRedColor, ModEntry.Config.DustGreenColor, ModEntry.Config.DustBlueColor));
+				typeof(AnimatedSprite).GetField("spriteTexture", BindingFlags.NonPublic | BindingFlags.Instance).SetValue(Sprite, FamiliarsUtils.ColorFamiliar(Sprite.Texture, mainColor, redColor, greenColor, blueColor));
 			}
 		}
 		public override void draw(SpriteBatch b)
@@ -55,7 +69,7 @@ namespace Familiars
 				{
 					b.Draw(this.Sprite.Texture, base.getLocalPosition(Game1.viewport) + new Vector2(32f, (float)(64 + this.yJumpOffset)), new Rectangle?(this.Sprite.SourceRect), this.glowingColor * this.glowingTransparency, this.rotation, new Vector2(8f, 16f), Math.Max(0.2f, this.scale) * 4f, this.flip ? SpriteEffects.FlipHorizontally : SpriteEffects.None, Math.Max(0f, this.drawOnTop ? 0.99f : ((float)base.getStandingY() / 10000f + 0.001f)));
 				}
-				b.Draw(Game1.shadowTexture, base.getLocalPosition(Game1.viewport) + new Vector2(32f, 80f), new Rectangle?(Game1.shadowTexture.Bounds), Color.White, 0f, new Vector2((float)Game1.shadowTexture.Bounds.Center.X, (float)Game1.shadowTexture.Bounds.Center.Y), 4f + (float)this.yJumpOffset / 64f, SpriteEffects.None, (float)(base.getStandingY() - 1) / 10000f);
+				b.Draw(Game1.shadowTexture, base.getLocalPosition(Game1.viewport) + new Vector2(32f, 80f), new Rectangle?(Game1.shadowTexture.Bounds), Color.White, 0f, new Vector2((float)Game1.shadowTexture.Bounds.Center.X, (float)Game1.shadowTexture.Bounds.Center.Y), (4f + (float)this.yJumpOffset / 64f) * scale, SpriteEffects.None, (float)(base.getStandingY() - 1) / 10000f);
 			}
 		}
 
@@ -119,7 +133,7 @@ namespace Familiars
 
 			if (this.yJumpOffset == 0)
 			{
-				if (Game1.random.NextDouble() < 0.01)
+				if (Game1.random.NextDouble() < DestroyRockChance())
 				{
 					ModEntry.SHelper.Reflection.GetField<Multiplayer>(typeof(Game1), "multiplayer").GetValue().broadcastSprites(base.currentLocation, new TemporaryAnimatedSprite[]
 					{
@@ -129,6 +143,7 @@ namespace Familiars
 					{
 						if (base.currentLocation.objects.ContainsKey(v) && base.currentLocation.objects[v].Name.Contains("Stone"))
 						{
+							AddExp(1);
 							base.currentLocation.destroyObject(v, null);
 						}
 					}
@@ -151,15 +166,16 @@ namespace Familiars
 				{
 					if (npc is Familiar)
 						continue;
-					if (npc is Monster && Utils.monstersColliding(this, (Monster)npc) && Game1.random.NextDouble() < ModEntry.Config.DustStealChance)
+					if (npc is Monster && FamiliarsUtils.monstersColliding(this, (Monster)npc) && Game1.random.NextDouble() < StealChance())
 					{
 						ModEntry.SMonitor.Log("Stealing loot");
-						Utils.monsterDrop(this, (Monster)npc, owner);
-						lastHitCounter.Value = ModEntry.Config.DustStealInterval;
+						FamiliarsUtils.monsterDrop(this, (Monster)npc, GetOwner());
+						lastHitCounter.Value = StealInterval();
 						chargingMonster = false;
+						AddExp(1);
 						break;
 					}
-					else if (npc is Monster && Utils.withinMonsterThreshold(this, (Monster)npc, 5))
+					else if (npc is Monster && FamiliarsUtils.withinMonsterThreshold(this, (Monster)npc, 5))
 					{
 						chargingMonster = true;
 						if (currentTarget == null || Vector2.Distance(npc.position, position) < Vector2.Distance(currentTarget.position, position))
@@ -174,7 +190,7 @@ namespace Familiars
             {
 				base.Slipperiness = 10;
 
-				Vector2 v2 = Utils.getAwayFromNPCTrajectory(GetBoundingBox(), currentTarget);
+				Vector2 v2 = FamiliarsUtils.getAwayFromNPCTrajectory(GetBoundingBox(), currentTarget);
 				this.xVelocity += -v2.X / 150f + ((Game1.random.NextDouble() < 0.01) ? ((float)Game1.random.Next(-50, 50) / 10f) : 0f);
 				if (Math.Abs(this.xVelocity) > 5f)
 				{
@@ -191,7 +207,7 @@ namespace Familiars
 			chargingFarmer = false;
 			if (!followingPlayer)
 				return;
-			if (!this.seenFarmer && Utility.doesPointHaveLineOfSightInMine(base.currentLocation, base.getStandingPosition() / 64f, owner.getStandingPosition() / 64f, 8))
+			if (!this.seenFarmer && withinPlayerThreshold())
 			{
 				this.seenFarmer = true;
 				return;
@@ -211,7 +227,7 @@ namespace Familiars
 			if (this.chargingFarmer)
 			{
 				base.Slipperiness = 10;
-				Vector2 v2 = Utility.getAwayFromPlayerTrajectory(this.GetBoundingBox(), owner);
+				Vector2 v2 = Utility.getAwayFromPlayerTrajectory(this.GetBoundingBox(), GetOwner());
 				this.xVelocity += -v2.X / 150f + ((Game1.random.NextDouble() < 0.01) ? ((float)Game1.random.Next(-50, 50) / 10f) : 0f);
 				if (Math.Abs(this.xVelocity) > 5f)
 				{
@@ -224,14 +240,40 @@ namespace Familiars
 				}
 				if (Game1.random.NextDouble() < 0.0001)
 				{
-					this.controller = new PathFindController(this, base.currentLocation, new Point((int)owner.getTileLocation().X, (int)owner.getTileLocation().Y), Game1.random.Next(4), null, 300);
+					this.controller = new PathFindController(this, base.currentLocation, new Point((int)GetOwner().getTileLocation().X, (int)GetOwner().getTileLocation().Y), Game1.random.Next(4), null, 300);
 					this.chargingFarmer = false;
 					return;
 				}
 			}
 		}
+		public override Rectangle GetBoundingBox()
+		{
+			Rectangle baseRect = new Rectangle((int)base.Position.X + 8, (int)base.Position.Y, this.Sprite.SpriteWidth * 4 * 3 / 4, 32);
+			if (scale >= 1)
+				return baseRect;
+			return new Rectangle((int)baseRect.Center.X - (int)(Sprite.SpriteWidth * 4 * 3 / 4 * scale) / 2, (int)(baseRect.Center.Y - 16 * scale), (int)(Sprite.SpriteWidth * 4 * 3 / 4 * scale), (int)(32 * scale));
+		}
 
-        public override int takeDamage(int damage, int xTrajectory, int yTrajectory, bool isBomb, double addedPrecision, Farmer who)
+		private double DestroyRockChance()
+        {
+			return 0.01 + (0.001 * Math.Sqrt(exp));
+		}
+
+        private int StealInterval()
+        {
+			return 10000 - exp;
+        }
+
+        private double StealChance()
+        {
+			return 0.001 + (0.001 * Math.Sqrt(exp));
+		}
+
+        private void AddExp(int v)
+		{
+			exp.Value += v;
+		}
+		public override int takeDamage(int damage, int xTrajectory, int yTrajectory, bool isBomb, double addedPrecision, Farmer who)
         {
 			if(who != null)
             {
@@ -246,9 +288,13 @@ namespace Familiars
 			{
 				return false;
 			}
-			Vector2 tileLocationOfPlayer = owner.getTileLocation();
+			Vector2 tileLocationOfPlayer = GetOwner().getTileLocation();
 			Vector2 tileLocationOfMonster = base.getTileLocation();
 			return Math.Abs(tileLocationOfMonster.X - tileLocationOfPlayer.X) <= (float)moveTowardPlayerThreshold && Math.Abs(tileLocationOfMonster.Y - tileLocationOfPlayer.Y) <= (float)moveTowardPlayerThreshold;
+		}
+		private Farmer GetOwner()
+		{
+			return Game1.getFarmer(ownerId);
 		}
 
 		protected override void initNetFields()

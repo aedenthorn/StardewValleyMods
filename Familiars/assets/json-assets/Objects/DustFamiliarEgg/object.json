@@ -10,4 +10,24 @@
   "GiftTastes": {
 	"Hate": ["Alex", "Abigail", "Caroline", "Clint", "Demetrius", "Dwarf", "Elliott", "Evelyn", "George", "Gus", "Jodi", "Kent", "Krobus", "Lewis", "Linus", "Maru", "Pam", "Penny", "Pierre", "Robin", "Sam", "Sandy", "Shane", "Willy", "Wizard", "Vincent", "Emily", "Haley", "Harvey", "Jas", "Leah", "Marnie", "Sebastian"],
   },
+  "Recipe": {
+    "ResultCount": 1,
+    "Ingredients": [
+      {
+        "Object": "Coal",
+        "Count": 100,
+      },
+      {
+        "Object": "Diamond",
+        "Count": 2,
+      },
+      {
+        "Object": "Battery Pack",
+        "Count": 1,
+      }
+    ],
+    "CanPurchase": false,
+    "SkillUnlockName": "Combat",
+    "SkillUnlockLevel": 8,
+  },
 }
