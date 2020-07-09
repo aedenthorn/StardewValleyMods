@@ -242,5 +242,13 @@ namespace Familiars
             }
 			return true;
 		}
+		public static bool Character_checkForFootstep_Prefix(Character __instance)
+		{
+			if(__instance is Familiar)
+            {
+				return false;
+            }
+			return true;
+		}
     }
 }

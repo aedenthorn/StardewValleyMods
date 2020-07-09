@@ -47,9 +47,9 @@ namespace Familiars
 			FamiliarsUtils.Initialize(Monitor, Helper, Config);
 
 			Helper.ConsoleCommands.Add("DispelFamiliars", "Dispel all familiars.", new Action<string, string[]>(DispelFamiliars));
+			Helper.ConsoleCommands.Add("DF", "Dispel all familiars.", new System.Action<string, string[]>(DispelFamiliars));
 			if (Config.IAmAStinkyCheater)
             {
-				Helper.ConsoleCommands.Add("DF", "Dispel all familiars.", new System.Action<string, string[]>(DispelFamiliars));
 				Helper.ConsoleCommands.Add("CallFamiliar", "Call a familiar. Usage: CallFamiliar <familiarType>", new System.Action<string, string[]>(CallFamiliar));
 				Helper.ConsoleCommands.Add("CF", "Call a familiar. Usage: CF <familiarType>", new System.Action<string, string[]>(CallFamiliar));
 			}
@@ -90,6 +90,10 @@ namespace Familiars
 			harmony.Patch(
 				original: AccessTools.Method(typeof(NPC), nameof(NPC.isVillager)),
 				prefix: new HarmonyMethod(typeof(FamiliarsPatches), nameof(FamiliarsPatches.NPC_isVillager_Prefix))
+			);
+			harmony.Patch(
+				original: AccessTools.Method(typeof(Character), nameof(Character.checkForFootstep)),
+				prefix: new HarmonyMethod(typeof(FamiliarsPatches), nameof(FamiliarsPatches.Character_checkForFootstep_Prefix))
 			);
 		}
 
