@@ -4,6 +4,7 @@ using StardewModdingAPI;
 using StardewValley;
 using StardewValley.Monsters;
 using StardewValley.Network;
+using StardewValley.TerrainFeatures;
 using System;
 using xTile.Dimensions;
 using Object = StardewValley.Object;
@@ -180,9 +181,9 @@ namespace Familiars
 			{
 				if (i != null &&  i is Familiar && (i as Familiar).ownerId.Equals(who) && i.GetBoundingBox().Intersects(tileRect))
 				{
-					(i as Familiar).followingPlayer = !(i as Familiar).followingPlayer;
+					(i as Familiar).followingOwner = !(i as Familiar).followingOwner;
 					__instance.playSound("dwop");
-					Monitor.Log($"familiar following player: {(i as Familiar).followingPlayer}");
+					Monitor.Log($"familiar following player: {(i as Familiar).followingOwner}");
 					__result = true;
 					return;
 				}
@@ -248,6 +249,17 @@ namespace Familiars
             {
 				return false;
             }
+			return true;
+		}
+		public static bool Bush_shake_Prefix(Bush __instance, Vector2 tileLocation, bool doEvenIfStillShaking, float ___maxShake)
+		{
+			if (!ModEntry.receivedJunimoEggToday && (___maxShake == 0f || doEvenIfStillShaking) && Game1.player.currentLocation.Name == "Town" && tileLocation.X == 20f && tileLocation.Y == 8f && Game1.dayOfMonth == 28 && Game1.timeOfDay == 1200)
+			{
+				ModEntry.SMonitor.Log("shaking junimo bush");
+				ModEntry.receivedJunimoEggToday = true;
+				Game1.player.addItemByMenuIfNecessaryElseHoldUp(new Object(ModEntry.JunimoFamiliarEgg, 1), null);
+				return false;
+			} 
 			return true;
 		}
     }

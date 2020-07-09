@@ -43,7 +43,7 @@ namespace Familiars
         }
         public static void GameLoop_GameLaunched(object sender, GameLaunchedEventArgs e)
         {
-            // load scuba gear
+            // load json assets
 
             ModEntry.JsonAssets = Helper.ModRegistry.GetApi<IJsonAssetsApi>("spacechase0.JsonAssets");
             bool flag = ModEntry.JsonAssets == null;
@@ -79,6 +79,10 @@ namespace Familiars
                         {
                             fsd.batFamiliars.Add((l.characters[i] as Familiar).SaveData());
                         }
+                        else if(l.characters[i] is JunimoFamiliar)
+                        {
+                            fsd.junimoFamiliars.Add((l.characters[i] as Familiar).SaveData());
+                        }
                         l.characters.RemoveAt(i);
                     }
                 }
@@ -98,6 +102,7 @@ namespace Familiars
                 ModEntry.BatFamiliarEgg = ModEntry.JsonAssets.GetObjectId("Bat Familiar Egg");
                 ModEntry.DustFamiliarEgg = ModEntry.JsonAssets.GetObjectId("Dust Sprite Familiar Egg");
                 ModEntry.DinoFamiliarEgg = ModEntry.JsonAssets.GetObjectId("Dino Familiar Egg");
+                ModEntry.JunimoFamiliarEgg = ModEntry.JsonAssets.GetObjectId("Junimo Familiar Egg");
 
                 if (ModEntry.BatFamiliarEgg == -1)
                 {
@@ -123,12 +128,21 @@ namespace Familiars
                 {
                     Monitor.Log(string.Format("Familiars mod item #3 ID is {0}.", ModEntry.DinoFamiliarEgg));
                 }
+                if (ModEntry.JunimoFamiliarEgg == -1)
+                {
+                    Monitor.Log("Can't get ID for Familiars mod item #4. Some functionality will be lost.");
+                }
+                else
+                {
+                    Monitor.Log(string.Format("Familiars mod item #4 ID is {0}.", ModEntry.DinoFamiliarEgg));
+                }
             }
         }
 
         public static void GameLoop_DayStarted(object sender, DayStartedEventArgs e)
         {
             FamiliarsUtils.LoadFamiliars();
+            ModEntry.receivedJunimoEggToday = false;
         }
     }
 }

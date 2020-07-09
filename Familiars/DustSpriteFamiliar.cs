@@ -56,7 +56,6 @@ namespace Familiars
 			}
 			if (ModEntry.Config.DustColorType.ToLower() != "default")
 			{
-
 				typeof(AnimatedSprite).GetField("spriteTexture", BindingFlags.NonPublic | BindingFlags.Instance).SetValue(Sprite, FamiliarsUtils.ColorFamiliar(Sprite.Texture, mainColor, redColor, greenColor, blueColor));
 			}
 		}
@@ -110,8 +109,8 @@ namespace Familiars
 			this.Sprite.AnimateDown(time, 0, "");
 			if (this.yJumpOffset == 0)
 			{
-				this.jumpWithoutSound(8f);
-				this.yJumpVelocity = (float)Game1.random.Next(50, 70) / 10f;
+				this.jumpWithoutSound((int)(5 + Game1.random.Next(1, 4) * scale));
+				this.yJumpVelocity = (int)(5 + Game1.random.Next(1, 4) * scale);
 				if (Game1.random.NextDouble() < 0.1 && (this.meep == null || !this.meep.IsPlaying) && Utility.isOnScreen(base.Position, 64) && Game1.soundBank != null && Game1.currentLocation == base.currentLocation)
 				{
 					this.meep = Game1.soundBank.GetCue("dustMeep");
@@ -205,7 +204,7 @@ namespace Familiars
             }
 
 			chargingFarmer = false;
-			if (!followingPlayer)
+			if (!followingOwner)
 				return;
 			if (!this.seenFarmer && withinPlayerThreshold())
 			{

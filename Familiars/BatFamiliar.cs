@@ -188,7 +188,7 @@ namespace Familiars
 				this.wasHitCounter.Value -= time.ElapsedGameTime.Milliseconds;
 			}
 
-			if (chargingMonster || (withinPlayerThreshold() && followingPlayer))
+			if (chargingMonster || (withinPlayerThreshold() && followingOwner))
 			{
 				this.seenPlayer.Value = true;
 

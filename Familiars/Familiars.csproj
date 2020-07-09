@@ -44,6 +44,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="JunimoFamiliar.cs" />
     <Compile Include="BatFamiliar.cs" />
     <Compile Include="DinoFamiliar.cs" />
     <Compile Include="DustSpriteFamiliar.cs" />
@@ -60,6 +61,7 @@
   <ItemGroup>
     <None Include="assets\json-assets\content-pack.json" />
     <None Include="assets\json-assets\Objects\BatFamiliarEgg\object.json" />
+    <None Include="assets\json-assets\Objects\JunimoFamiliarEgg\object.json" />
     <None Include="assets\json-assets\Objects\DustFamiliarEgg\object.json" />
     <None Include="assets\json-assets\Objects\DinoFamiliarEgg\object.json" />
     <None Include="i18n\default.json" />
@@ -71,6 +73,7 @@
     <Content Include="assets\DinoFamiliar.png" />
     <Content Include="assets\DustSpiritFamiliar.png" />
     <Content Include="assets\json-assets\Objects\BatFamiliarEgg\object.png" />
+    <Content Include="assets\json-assets\Objects\JunimoFamiliarEgg\object.png" />
     <Content Include="assets\json-assets\Objects\DustFamiliarEgg\object.png" />
     <Content Include="assets\json-assets\Objects\DinoFamiliarEgg\object.png" />
   </ItemGroup>

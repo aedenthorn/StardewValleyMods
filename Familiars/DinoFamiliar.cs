@@ -190,7 +190,7 @@ namespace StardewValley.Monsters
 				base.IsWalkingTowardPlayer = false;
 				this.Halt();
 			}
-			else if (this.withinPlayerThreshold() && followingPlayer)
+			else if (this.withinPlayerThreshold() && followingOwner)
 			{
 				if (withinPlayerThreshold(1))
 					Halt();

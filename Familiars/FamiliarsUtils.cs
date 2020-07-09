@@ -152,6 +152,24 @@ namespace Familiars
 					l.characters.Add(d);
 				}
 			}
+			foreach (FamiliarData f in fsd.junimoFamiliars)
+			{
+				GameLocation l = Game1.getLocationFromName(f.currentLocation);
+				if (l != null)
+				{
+					Monitor.Log($"Returning saved Bat Familiar to {l.Name}");
+					JunimoFamiliar d = new JunimoFamiliar(f.position, f.ownerId);
+					d.daysOld.Value = f.daysOld;
+					d.exp.Value = f.exp;
+					d.mainColor = f.mainColor;
+					d.redColor = f.redColor;
+					d.greenColor = f.greenColor;
+					d.blueColor = f.blueColor;
+					d.SetScale();
+					d.currentLocation = l;
+					l.characters.Add(d);
+				}
+			}
 		}
 
         public static Texture2D ColorFamiliar(Texture2D texture, Color mainColor, Color redColor, Color greenColor, Color blueColor)

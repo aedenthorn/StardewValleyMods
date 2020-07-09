@@ -185,7 +185,7 @@ namespace Familiars
 			Scale = (float)Math.Min(2, 0.2f + (daysOld * 0.01));
 		}
 
-        protected override Farmer findPlayer()
+		protected override Farmer findPlayer()
 		{
 			if (base.currentLocation == null)
 			{
@@ -238,7 +238,7 @@ namespace Familiars
 		{
 			return false;
 		}
-		public Familiar(string name, Vector2 position, int facingDir) : base(new AnimatedSprite("Characters\\Monsters\\" + name), position, facingDir, name, null)
+		public Familiar(string name, Vector2 position, int facingDir) : base((name == "Junimo" ? new AnimatedSprite("Characters\\Junimo", 0, 16, 16) : new AnimatedSprite("Characters\\Monsters\\" + name)), position, facingDir, name, null)
 		{
 			this.parseMonsterInfo(name);
 			base.Breather = false;
@@ -337,8 +337,7 @@ namespace Familiars
 
 		public override void reloadSprite()
 		{
-			ModEntry.SMonitor.Log($"reloading familiar sprite for {base.Name}");
-			this.Sprite = new AnimatedSprite("Characters\\Monsters\\" + base.Name, 0, 16, 16);
+			this.Sprite = new AnimatedSprite((name == "Junimo" ? "Characters\\" : "Characters\\Monsters\\") + base.Name, 0, 16, 16);
 		}
 
 		public virtual void shedChunks(int number)
@@ -460,6 +459,12 @@ namespace Familiars
 
 		public override void update(GameTime time, GameLocation location)
 		{
+			if(this is JunimoFamiliar)
+            {
+				base.update(time, location);
+				return;
+            }
+
 			this.trajectoryEvent.Poll();
 			this.deathAnimEvent.Poll();
 			this.position.UpdateExtrapolation((float)(base.speed + base.addedSpeed));
@@ -501,7 +506,7 @@ namespace Familiars
 
 		protected void resetAnimationSpeed()
 		{
-			if (!this.ignoreMovementAnimations)
+			if (!this.ignoreMovementAnimations && !(this is JunimoFamiliar))
 			{
 				this.Sprite.interval = (float)this.defaultAnimationInterval - (float)(base.speed + base.addedSpeed - 2) * 20f;
 			}
@@ -1196,7 +1201,7 @@ namespace Familiars
 		protected delegate void collisionBehavior(GameLocation location);
 
 		public long ownerId;
-		public bool followingPlayer = true;
+		public bool followingOwner = true;
 
 		public readonly NetInt daysOld = new NetInt(0);
 		public readonly NetInt exp = new NetInt(0);

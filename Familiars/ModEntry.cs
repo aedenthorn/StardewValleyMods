@@ -28,6 +28,8 @@ namespace Familiars
 		public static int BatFamiliarEgg = -1;
 		public static int DustFamiliarEgg = -1;
 		public static int DinoFamiliarEgg = -1;
+		public static int JunimoFamiliarEgg = -1;
+        internal static bool receivedJunimoEggToday = false;
 
         /// <summary>The mod entry point, called after the mod is first loaded.</summary>
         /// <param name="helper">Provides simplified APIs for writing mods.</param>
@@ -95,6 +97,10 @@ namespace Familiars
 				original: AccessTools.Method(typeof(Character), nameof(Character.checkForFootstep)),
 				prefix: new HarmonyMethod(typeof(FamiliarsPatches), nameof(FamiliarsPatches.Character_checkForFootstep_Prefix))
 			);
+			harmony.Patch(
+				original: AccessTools.Method(typeof(Bush), "shake"),
+				prefix: new HarmonyMethod(typeof(FamiliarsPatches), nameof(FamiliarsPatches.Bush_shake_Prefix))
+			);
 		}
 
 
@@ -129,6 +135,9 @@ namespace Familiars
 				case "bat":
 					Game1.player.currentLocation.characters.Add(new BatFamiliar(Game1.player.position, Game1.player.UniqueMultiplayerID));
 					break;
+				case "junimo":
+					Game1.player.currentLocation.characters.Add(new JunimoFamiliar(Game1.player.position, Game1.player.UniqueMultiplayerID));
+					break;
 			}
 		}
 
@@ -137,7 +146,7 @@ namespace Familiars
 		if (!Config.EnableMod)
 			return false;
 
-		if (asset.AssetName.EndsWith("BatFamiliar") || asset.AssetName.EndsWith("DinoFamiliar") || asset.AssetName.EndsWith("DustSpiritFamiliar"))
+		if (asset.AssetName.EndsWith("BatFamiliar") || asset.AssetName.EndsWith("DinoFamiliar") || asset.AssetName.EndsWith("DustSpiritFamiliar") || asset.AssetName.EndsWith("JunimoFamiliar"))
 		{
 				Monitor.Log($"can load familiar {asset.AssetName}");
 				return true;
@@ -166,7 +175,7 @@ namespace Familiars
 
         public bool CanEdit<T>(IAssetInfo asset)
         {
-            if (asset.AssetNameEquals("Strings\\UI"))
+            if (asset.AssetNameEquals("Strings\\UI") || asset.AssetNameEquals("Data\\Monsters"))
             {
 				return true;
             }
@@ -179,6 +188,12 @@ namespace Familiars
 			{
 				var editor = asset.AsDictionary<string, string>();
 				editor.Data["Chat_DinoFamiliarEgg"] = Helper.Translation.Get("chat-dino-familiar-egg");
+			}
+			else if (asset.AssetNameEquals("Data\\Monsters"))
+			{
+				var editor = asset.AsDictionary<string, string>();
+
+				editor.Data["Junimo"] = "40/6/0/0/false/1000/382 .5 433 .01 336 .001 84 .02 414 .02 97 .005 99 .001/2/.00/4/3/.00/true/2/Junimo";
 			}
 		}
 	}

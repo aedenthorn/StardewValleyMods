@@ -14,6 +14,7 @@ namespace Familiars
         public List<FamiliarData> dustSpriteFamiliars = new List<FamiliarData>();
         public List<FamiliarData> dinoFamiliars = new List<FamiliarData>();
         public List<FamiliarData> batFamiliars = new List<FamiliarData>(); 
+        public List<FamiliarData> junimoFamiliars = new List<FamiliarData>(); 
 
     }
 
