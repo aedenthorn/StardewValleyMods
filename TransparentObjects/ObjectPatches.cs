@@ -1,5 +1,7 @@
-﻿using StardewModdingAPI;
+﻿using Microsoft.Xna.Framework;
+using StardewModdingAPI;
 using StardewValley;
+using System;
 
 namespace TransparentObjects
 {
@@ -17,9 +19,9 @@ namespace TransparentObjects
         }
         public static void Object_draw_Prefix(StardewValley.Object __instance, ref float alpha)
         {
-            if (__instance.bigCraftable && Game1.player.GetBoundingBox().Intersects(new Microsoft.Xna.Framework.Rectangle(64 * ((int)__instance.tileLocation.X) + 32 - (Config.TransparencyDiameter / 2), 64 * ((int)__instance.tileLocation.Y + 1) - Config.TransparencyDiameter, Config.TransparencyDiameter, Config.TransparencyDiameter)))
+            if (__instance.bigCraftable && Game1.player.GetBoundingBox().Intersects(new Rectangle(64 * ((int)__instance.tileLocation.X) + 32 - (Config.TransparencyDiameter / 2), 64 * ((int)__instance.tileLocation.Y) - Config.TransparencyDiameter, Config.TransparencyDiameter, Config.TransparencyDiameter)))
             {
-                alpha = Config.ObjectAlpha;
+                alpha = 1f - (1f - Math.Min(1f, Math.Max(0, Config.ObjectAlpha))) * (Vector2.Distance(new Vector2(Game1.player.GetBoundingBox().Center.X *64f, Game1.player.GetBoundingBox().Center.Y * 64f), new Vector2(__instance.TileLocation.X * 64 + 32, __instance.TileLocation.Y * 64)) / Config.TransparencyDiameter);
             }
         }
     }

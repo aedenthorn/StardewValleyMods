@@ -9,12 +9,13 @@
     <Import_RootNamespace>_releases</Import_RootNamespace>
   </PropertyGroup>
   <ItemGroup>
-    <None Include="$(MSBuildThisFileDirectory)CustomFixedDialogue 0.2.1.zip" />
+    <None Include="$(MSBuildThisFileDirectory)CustomFixedDialogue 0.4.0.zip" />
     <None Include="$(MSBuildThisFileDirectory)Familiars 0.5.0.zip" />
     <None Include="$(MSBuildThisFileDirectory)Familiars 0.5.1.zip" />
     <None Include="$(MSBuildThisFileDirectory)Familiars 0.5.2.zip" />
     <None Include="$(MSBuildThisFileDirectory)Familiars 0.6.0.zip" />
     <None Include="$(MSBuildThisFileDirectory)Familiars 0.6.1.zip" />
+    <None Include="$(MSBuildThisFileDirectory)FruitTreeShaker 1.1.0.zip" />
     <None Include="$(MSBuildThisFileDirectory)MultipleSpouses 1.1.2.zip" />
     <None Include="$(MSBuildThisFileDirectory)PacifistValley 0.5.4.zip" />
     <None Include="$(MSBuildThisFileDirectory)PacifistValley 0.5.5.zip" />

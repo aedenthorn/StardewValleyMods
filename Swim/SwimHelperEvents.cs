@@ -542,7 +542,7 @@ namespace Swim
 
             // only if ready to swim from here on!
 
-            if (!Config.ReadyToSwim)
+            if (!Config.ReadyToSwim || !Context.IsPlayerFree)
             {
                 return;
             }
@@ -667,7 +667,7 @@ namespace Swim
                 else if (!Game1.player.bathingClothes && (!SwimUtils.IsWearingScubaGear() || Config.SwimSuitAlways))
                     Game1.player.changeIntoSwimsuit();
 
-                if (Game1.player.boots.Value != null && Game1.player.boots.Value.indexInTileSheet == ModEntry.scubaFinsID)
+                if (Game1.player.boots.Value != null && ModEntry.scubaFinsID != -1 && Game1.player.boots.Value.indexInTileSheet == ModEntry.scubaFinsID)
                 {
                     int buffId = 42883167;
                     Buff buff = Game1.buffsDisplay.otherBuffs.FirstOrDefault((Buff p) => p.which == buffId);

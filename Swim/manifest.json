@@ -6,13 +6,13 @@
   "UniqueID": "aedenthorn.Swim",
   "EntryDll": "Swim.dll",
   "MinimumApiVersion": "3.5.0",
+  "UpdateKeys": ["Nexus:6326"],
   "ModUpdater": {
     "Repository": "StardewValleyMods",
     "User": "aedenthorn",
     "Directory": "_releases",
     "ModFolder": "Swim"
   },
-  "UpdateKeys": ["Nexus:6326"],
   "Dependencies": [
       {
         "UniqueID": "Platonymous.ModUpdater",
@@ -20,7 +20,7 @@
       },
       {
       "UniqueID": "spacechase0.JsonAssets",
-        "IsRequired": true
+        "IsRequired": false
       },
   ]
 }
