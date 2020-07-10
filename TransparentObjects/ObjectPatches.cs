@@ -19,9 +19,16 @@ namespace TransparentObjects
         }
         public static void Object_draw_Prefix(StardewValley.Object __instance, ref float alpha)
         {
-            if (__instance.bigCraftable && Game1.player.GetBoundingBox().Intersects(new Rectangle(64 * ((int)__instance.tileLocation.X) + 32 - (Config.TransparencyDiameter / 2), 64 * ((int)__instance.tileLocation.Y) - Config.TransparencyDiameter, Config.TransparencyDiameter, Config.TransparencyDiameter)))
+            float maxDistance = Config.TransparencyMaxDistance;
+            float minAlpha = Math.Min(1f, Math.Max(0, Config.MinTransparency));
+            Vector2 playerCenter = new Vector2(Game1.player.position.X + 32, Game1.player.position.Y + 32);
+            Vector2 objectCenter = new Vector2(__instance.TileLocation.X * 64 + 32, __instance.TileLocation.Y * 64);
+            float distance = Vector2.Distance(playerCenter, objectCenter);
+            if (__instance.bigCraftable && distance < maxDistance)
             {
-                alpha = 1f - (1f - Math.Min(1f, Math.Max(0, Config.ObjectAlpha))) * (Vector2.Distance(new Vector2(Game1.player.GetBoundingBox().Center.X *64f, Game1.player.GetBoundingBox().Center.Y * 64f), new Vector2(__instance.TileLocation.X * 64 + 32, __instance.TileLocation.Y * 64)) / Config.TransparencyDiameter);
+                float fraction = (Math.Max(0,distance)) / maxDistance;
+                alpha = minAlpha + (1 - minAlpha) * fraction;
+                Monitor.Log($"{distance} {playerCenter} {objectCenter} {maxDistance} {fraction} {alpha}");
             }
         }
     }

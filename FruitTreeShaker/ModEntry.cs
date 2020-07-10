@@ -3,6 +3,7 @@ using MultipleSpouses;
 using StardewModdingAPI;
 using StardewModdingAPI.Events;
 using StardewValley;
+using StardewValley.Locations;
 using StardewValley.TerrainFeatures;
 using System.Collections.Generic;
 
@@ -30,8 +31,6 @@ namespace FruitTreeShaker
 		{
 			foreach (GameLocation gl in Game1.locations)
 			{
-				if (gl.GetType() != typeof(Farm) && !gl.IsGreenhouse)
-					continue;
 				foreach (KeyValuePair<Vector2, TerrainFeature> keyValuePair in gl.terrainFeatures.Pairs)
 				{
 					FruitTree fruitTree;

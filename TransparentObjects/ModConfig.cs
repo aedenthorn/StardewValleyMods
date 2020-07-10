@@ -6,13 +6,13 @@ namespace TransparentObjects
     public class ModConfig
     {
         public bool EnableMod{ get; set; }
-        public float ObjectAlpha { get; set; }
-        public int TransparencyDiameter { get; set; }
+        public float MinTransparency { get; set; }
+        public int TransparencyMaxDistance { get; set; }
 
         public ModConfig()
         {
-            ObjectAlpha = 0.4f;
-            TransparencyDiameter = 128;
+            MinTransparency = 0.1f;
+            TransparencyMaxDistance = 192;
             EnableMod = true;
         }
     }
