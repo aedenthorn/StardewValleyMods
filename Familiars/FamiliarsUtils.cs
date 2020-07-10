@@ -105,6 +105,7 @@ namespace Familiars
 				{
 					Monitor.Log($"Returning saved Dust Familiar to {l.Name}");
 					DustSpriteFamiliar d = new DustSpriteFamiliar(f.position, f.ownerId);
+					d.followingOwner = f.followingOwner;
 					d.daysOld.Value = f.daysOld;
 					d.exp.Value = f.exp;
 					d.mainColor = f.mainColor;
@@ -123,6 +124,7 @@ namespace Familiars
 				{
 					Monitor.Log($"Returning saved Dino Familiar to {l.Name}");
 					DinoFamiliar d = new DinoFamiliar(f.position, f.ownerId);
+					d.followingOwner = f.followingOwner;
 					d.daysOld.Value = f.daysOld;
 					d.exp.Value = f.exp;
 					d.mainColor = f.mainColor;
@@ -141,6 +143,7 @@ namespace Familiars
 				{
 					Monitor.Log($"Returning saved Bat Familiar to {l.Name}");
 					BatFamiliar d = new BatFamiliar(f.position, f.ownerId);
+					d.followingOwner = f.followingOwner;
 					d.daysOld.Value = f.daysOld;
 					d.exp.Value = f.exp;
 					d.mainColor = f.mainColor;
@@ -159,6 +162,7 @@ namespace Familiars
 				{
 					Monitor.Log($"Returning saved Bat Familiar to {l.Name}");
 					JunimoFamiliar d = new JunimoFamiliar(f.position, f.ownerId);
+					d.followingOwner = f.followingOwner;
 					d.daysOld.Value = f.daysOld;
 					d.exp.Value = f.exp;
 					d.mainColor = f.mainColor;

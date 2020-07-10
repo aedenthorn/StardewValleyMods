@@ -25,7 +25,6 @@ namespace Swim
         public static int scubaMaskID = -1;
         public static int scubaFinsID = -1;
         public static int scubaTankID = -1;
-        public static List<int> scubaGear = new List<int>();
         public static List<SButton> dirButtons = new List<SButton>() { 
             SButton.DPadUp,
             SButton.DPadDown,
@@ -77,6 +76,7 @@ namespace Swim
             SwimMaps.Initialize(Monitor, helper, config);
             SwimHelperEvents.Initialize(Monitor, helper, config);
             SwimUtils.Initialize(Monitor, helper, config);
+
 
             foreach (InputButton ib in Game1.options.moveUpButton)
             {

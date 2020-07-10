@@ -1,7 +1,7 @@
 ﻿{
   "Name": "Familiars",
   "Author": "aedenthorn",
-  "Version": "0.6.1",
+  "Version": "0.6.2",
   "Description": "Allows the player to recruit monsters as familiars.",
   "UniqueID": "aedenthorn.Familiars",
   "EntryDll": "Familiars.dll",

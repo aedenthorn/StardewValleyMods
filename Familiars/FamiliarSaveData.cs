@@ -23,6 +23,7 @@ namespace Familiars
         public int daysOld;
         public int exp;
         public long ownerId;
+        public bool followingOwner;
         public Color mainColor;
         public Color redColor;
         public Color greenColor;

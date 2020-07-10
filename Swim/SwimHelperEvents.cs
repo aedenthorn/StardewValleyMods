@@ -25,6 +25,7 @@ namespace Swim
         private static IMonitor Monitor;
         private static ModConfig Config;
         private static IModHelper Helper;
+
         public static bool isJumping = false;
         public static Vector2 startJumpLoc;
         public static Vector2 endJumpLoc;
@@ -42,6 +43,8 @@ namespace Swim
             SButton.Up,
             SButton.Down
         };
+        internal static Texture2D bubbleTexture;
+
         public static void Initialize(IMonitor monitor, IModHelper helper, ModConfig config)
         {
             Monitor = monitor;
@@ -94,7 +97,6 @@ namespace Swim
         {
             // load scuba gear ids
 
-            ModEntry.scubaGear.Clear();
             if (ModEntry.JsonAssets != null)
             {
                 ModEntry.scubaMaskID = ModEntry.JsonAssets.GetHatId("Scuba Mask");
@@ -107,7 +109,6 @@ namespace Swim
                 else
                 {
                     Monitor.Log(string.Format("Swim mod item #1 ID is {0}.", ModEntry.scubaMaskID));
-                    ModEntry.scubaGear.Add(ModEntry.scubaMaskID);
                 }
 
                 if (ModEntry.scubaTankID == -1)
@@ -117,7 +118,6 @@ namespace Swim
                 else
                 {
                     Monitor.Log(string.Format("Swim mod item #2 ID is {0}.", ModEntry.scubaTankID));
-                    ModEntry.scubaGear.Add(ModEntry.scubaTankID);
                 }
 
                 try
@@ -130,8 +130,11 @@ namespace Swim
                 }
                 if (ModEntry.scubaFinsID != -1)
                 {
-                    Monitor.Log(string.Format("Swim mod item #3 ID is {0}.", ModEntry.scubaFinsID), LogLevel.Debug);
-                    ModEntry.scubaGear.Add(ModEntry.scubaFinsID);
+                    Monitor.Log(string.Format("Swim mod item #3 ID is {0}.", ModEntry.scubaFinsID));
+                    if(Game1.player.boots != null && Game1.player.boots.Value != null && Game1.player.boots.Value.Name == "Scuba Fins" && Game1.player.boots.Value.parentSheetIndex != ModEntry.scubaFinsID)
+                    {
+                        Game1.player.boots.Value = new Boots(ModEntry.scubaFinsID);
+                    }
                 }
             }
 
@@ -165,6 +168,8 @@ namespace Swim
 
             if (!SwimUtils.IsWearingScubaGear() && Config.SwimSuitAlways)
                 Game1.player.changeIntoSwimsuit();
+
+            bubbleTexture = Helper.Content.Load<Texture2D>("LooseSprites/temporary_sprites_1", ContentSource.GameContent);
         }
 
 
@@ -175,7 +180,6 @@ namespace Swim
         {
             if (ModEntry.isUnderwater && SwimUtils.IsMapUnderwater(Game1.player.currentLocation.Name))
             {
-                Texture2D tex = Helper.Content.Load<Texture2D>("LooseSprites/temporary_sprites_1", ContentSource.GameContent);
                 if ((ticksUnderwater % 100 / Math.Min(100, Config.BubbleMult)) - bubbleOffset == 0)
                 {
                     Game1.playSound("tinyWhip");
@@ -189,7 +193,7 @@ namespace Swim
                 }
                 foreach (Vector2 v in ModEntry.bubbles)
                 {
-                    e.SpriteBatch.Draw(tex, v + new Vector2((float)Math.Sin(ticksUnderwater / 20f) * 10f - Game1.viewport.X, -Game1.viewport.Y), new Microsoft.Xna.Framework.Rectangle?(new Microsoft.Xna.Framework.Rectangle(132, 20, 8, 8)), new Color(1,1,1,0.5f), 0f, Vector2.Zero, 4f, SpriteEffects.None, 0.001f);
+                    e.SpriteBatch.Draw(bubbleTexture, v + new Vector2((float)Math.Sin(ticksUnderwater / 20f) * 10f - Game1.viewport.X, -Game1.viewport.Y), new Microsoft.Xna.Framework.Rectangle?(new Microsoft.Xna.Framework.Rectangle(132, 20, 8, 8)), new Color(1,1,1,0.5f), 0f, Vector2.Zero, 4f, SpriteEffects.None, 0.001f);
                 }
                 ticksUnderwater++;
             }

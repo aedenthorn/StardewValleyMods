@@ -253,7 +253,7 @@ namespace Familiars
 		}
 		public static bool Bush_shake_Prefix(Bush __instance, Vector2 tileLocation, bool doEvenIfStillShaking, float ___maxShake)
 		{
-			if (!ModEntry.receivedJunimoEggToday && (___maxShake == 0f || doEvenIfStillShaking) && Game1.player.currentLocation.Name == "Town" && tileLocation.X == 20f && tileLocation.Y == 8f && Game1.dayOfMonth == 28 && Game1.timeOfDay == 1200)
+			if (!ModEntry.receivedJunimoEggToday && (___maxShake == 0f || doEvenIfStillShaking) && Game1.player.currentLocation.Name == "Town" && tileLocation.X == 20f && tileLocation.Y == 8f && Game1.player.mailReceived.Contains("junimoPlush") && Game1.dayOfMonth == 28 && Game1.timeOfDay == 1200)
 			{
 				ModEntry.SMonitor.Log("shaking junimo bush");
 				ModEntry.receivedJunimoEggToday = true;

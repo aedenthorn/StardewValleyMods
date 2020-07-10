@@ -130,6 +130,7 @@ namespace Familiars
 			return new FamiliarData()
 			{
 				daysOld = this.daysOld,
+				followingOwner = this.followingOwner,
 				exp = this.exp,
 				ownerId = this.ownerId,
 				mainColor = this.mainColor,
