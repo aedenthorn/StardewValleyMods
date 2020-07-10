@@ -31,7 +31,7 @@ namespace MultipleSpouses
         {
 			GameLocation location = Game1.currentLocation;
 
-			if (!ReferenceEquals(location.GetType(), typeof(FarmHouse)))
+			if (location == null || !ReferenceEquals(location.GetType(), typeof(FarmHouse)))
 				return;
 
 			Farmer owner = (location as FarmHouse).owner;

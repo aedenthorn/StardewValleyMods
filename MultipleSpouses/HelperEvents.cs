@@ -311,7 +311,7 @@ namespace MultipleSpouses
 							}
 						}
 					}
-					if (ModEntry.config.AllowSpousesToKiss)
+					if (location == Game1.player.currentLocation && ModEntry.config.AllowSpousesToKiss)
 					{
 						Kissing.TrySpousesKiss();
 					}
