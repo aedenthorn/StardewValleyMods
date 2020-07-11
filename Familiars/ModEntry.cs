@@ -101,6 +101,15 @@ namespace Familiars
 				original: AccessTools.Method(typeof(Bush), "shake"),
 				prefix: new HarmonyMethod(typeof(FamiliarsPatches), nameof(FamiliarsPatches.Bush_shake_Prefix))
 			);
+			
+			harmony.Patch(
+				original: AccessTools.Method(typeof(GameLocation), "updateCharacters"),
+				prefix: new HarmonyMethod(typeof(FamiliarsPatches), nameof(FamiliarsPatches.GameLocation_updateCharacters_Prefix))
+			);
+			harmony.Patch(
+				original: AccessTools.Method(typeof(GameLocation), "drawCharacters"),
+				prefix: new HarmonyMethod(typeof(FamiliarsPatches), nameof(FamiliarsPatches.GameLocation_drawCharacters_Prefix))
+			);
 		}
 
 

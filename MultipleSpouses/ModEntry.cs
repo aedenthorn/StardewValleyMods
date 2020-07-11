@@ -28,7 +28,7 @@ namespace MultipleSpouses
         public static Random myRand;
         public static int bedSleepOffset = 140;
         public static int divorceHeartsLost;
-        public static OutdoorAreaData outdoorAreaData;
+        public static OutdoorAreaData outdoorAreaData = new OutdoorAreaData();
 
         /// <summary>The mod entry point, called after the mod is first loaded.</summary>
         /// <param name="helper">Provides simplified APIs for writing mods.</param>

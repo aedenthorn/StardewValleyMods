@@ -118,12 +118,10 @@ namespace CustomFixedDialogue
             if (path.StartsWith(extraPrefix))
             {
                 text = $"{prefix}{path.Replace("Data\\ExtraDialogue:", "ExtraDialogue_")}^{text}^{suffix}{path.Replace("Data\\ExtraDialogue:", "ExtraDialogue_")}";
-                Monitor.Log($"edited dialogue: {text}");
             }
             else if ((path.StartsWith(NPCPrefix) && !NPCexceptions.Contains(path.Substring(NPCPrefix.Length))) || (path.StartsWith(eventPrefix) && eventChanges.Contains(path.Substring(eventPrefix.Length))) || (path.StartsWith(utilityPrefix) && utilityChanges.Contains(path.Substring(utilityPrefix.Length))))
             {
                 text = $"{prefix}{path.Replace("Strings\\StringsFromCSFiles:", "")}^{text}^{suffix}{path.Replace("Strings\\StringsFromCSFiles:", "")}";
-                Monitor.Log($"edited dialogue: {text}");
             }
         }
 

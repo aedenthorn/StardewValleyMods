@@ -262,5 +262,29 @@ namespace Familiars
 			} 
 			return true;
 		}
-    }
+
+		public static void GameLocation_updateCharacters_Prefix(GameLocation __instance)
+		{
+			foreach (Character c in __instance.characters)
+			{
+				if (c is Familiar)
+				{
+					c.forceUpdateTimer = 1;
+				}
+			}
+		}
+		public static void GameLocation_drawCharacters_Prefix(GameLocation __instance, SpriteBatch b)
+		{
+			if (Game1.eventUp)
+			{
+				for (int i = 0; i < __instance.characters.Count; i++)
+				{
+					if (__instance.characters[i] != null && __instance.characters[i] is Familiar)
+					{
+						__instance.characters[i].draw(b);
+					}
+				}
+			}
+		}
+	}
 }

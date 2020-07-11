@@ -45,7 +45,42 @@ namespace Familiars
 			return Math.Abs(m2l.X - m1l.X) <= (float)threshold && Math.Abs(m2l.Y - m1l.Y) <= (float)threshold;
 		}
 
-		public static bool monstersColliding(Familiar m1, Monster m2)
+        public static void warpFamiliar(NPC character, GameLocation targetLocation, Vector2 position)
+        {
+			if (Game1.currentSeason.Equals("winter") && Game1.dayOfMonth >= 15 && Game1.dayOfMonth <= 17 && targetLocation.name.Equals("Beach"))
+			{
+				targetLocation = Game1.getLocationFromName("BeachNightMarket");
+			}
+			if (targetLocation.name.Equals("Trailer") && Game1.MasterPlayer.mailReceived.Contains("pamHouseUpgrade"))
+			{
+				targetLocation = Game1.getLocationFromName("Trailer_Big");
+				if (position.X == 12f && position.Y == 9f)
+				{
+					position.X = 13f;
+					position.Y = 24f;
+				}
+			}
+			if (Game1.IsClient)
+			{
+				ModEntry.mp.requestCharacterWarp(character, targetLocation, position);
+				return;
+			}
+			if (!targetLocation.characters.Contains(character))
+			{
+				if(character.currentLocation != null)
+					character.currentLocation.characters.Remove(character);
+				targetLocation.addCharacter(character);
+			}
+			character.position.X = position.X * 64f;
+			character.position.Y = position.Y * 64f;
+			if (character.currentLocation != null && !character.currentLocation.Equals(targetLocation))
+			{
+				character.currentLocation.characters.Remove(character);
+			}
+			character.currentLocation = targetLocation;
+		}
+
+        public static bool monstersColliding(Familiar m1, Monster m2)
 		{
 			if (m1.Equals(m2) || m1.Health <= 0 || m2.Health <= 0 || m2.IsInvisible)
 				return false;

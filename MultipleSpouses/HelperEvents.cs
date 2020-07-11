@@ -28,7 +28,7 @@ namespace MultipleSpouses
 		public static void SaveGame_Load_prefix(string filename)
         {
 			Monitor.Log($"loading save {filename}");
-			ModEntry.outdoorAreaData = Helper.Data.ReadJsonFile<OutdoorAreaData>($"assets/outdoor-area-{filename}.json");
+			ModEntry.outdoorAreaData = Helper.Data.ReadJsonFile<OutdoorAreaData>($"assets/outdoor-area-{filename}.json") ?? new OutdoorAreaData();
 			if (ModEntry.outdoorAreaData == null)
 			{
 				Helper.Data.WriteJsonFile($"assets/outdoor-area-{filename}.json", new OutdoorAreaData()); 

@@ -460,7 +460,12 @@ namespace Familiars
 
 		public override void update(GameTime time, GameLocation location)
 		{
-			if(this is JunimoFamiliar)
+			if (lastLocation != currentLocation && currentLocation != null)
+			{
+				ModEntry.SMonitor.Log($"Last Location: {lastLocation?.Name} Current Location: {currentLocation?.Name}");
+				lastLocation = currentLocation;
+			}
+			if (this is JunimoFamiliar)
             {
 				base.update(time, location);
 				return;
@@ -1210,5 +1215,6 @@ namespace Familiars
 		public Color redColor;
 		public Color greenColor;
 		public Color blueColor;
-	}
+        public GameLocation lastLocation;
+    }
 }

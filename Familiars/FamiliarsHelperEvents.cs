@@ -2,6 +2,7 @@
 using StardewModdingAPI.Events;
 using StardewValley;
 using StardewValley.Monsters;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -25,7 +26,9 @@ namespace Familiars
         {
             if (e.OldLocation.characters == null)
                 return;
-            Monitor.Log($"Warping");
+
+            e.OldLocation.characters.OnValueRemoved -= Characters_OnValueRemoved;
+            e.NewLocation.characters.OnValueRemoved += Characters_OnValueRemoved;
 
             for (int i = e.OldLocation.characters.Count - 1; i >= 0; i--)
             {
@@ -35,12 +38,16 @@ namespace Familiars
                     Farmer owner = Game1.getFarmer(Helper.Reflection.GetField<long>(npc, "ownerId").GetValue());
                     if (owner == Game1.player)
                     {
-                        Monitor.Log($"Warping {npc.GetType()}");
-                        Game1.warpCharacter(npc, e.NewLocation.Name, Game1.player.getTileLocationPoint());
+                        FamiliarsUtils.warpFamiliar(npc, e.NewLocation, Game1.player.getTileLocation());
                     }
                 }
             }
         }
+
+        private static void Characters_OnValueRemoved(NPC value)
+        {
+        }
+
         public static void GameLoop_GameLaunched(object sender, GameLaunchedEventArgs e)
         {
             // load json assets
