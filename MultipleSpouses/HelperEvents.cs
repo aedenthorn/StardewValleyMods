@@ -291,17 +291,29 @@ namespace MultipleSpouses
 								{
 									Vector2 bedPos = Misc.GetSpouseBedPosition(fh, bedSpouses, character.name);
 									character.position.Value = bedPos;
-									if (!Misc.HasSleepingAnimation(character.name.Value) && Game1.timeOfDay >= 2000)
-									{
-										character.Sprite.StopAnimation();
-										character.faceDirection(0);
+									if(Game1.timeOfDay >= 2000 || Game1.timeOfDay <= 630)
+                                    {
+										character.isSleeping.Value = true;
+										if (!Misc.HasSleepingAnimation(character.name.Value))
+										{
+											character.Sprite.StopAnimation();
+											character.faceDirection(0);
+										}
+										else
+                                        {
+											character.playSleepingAnimation();
+                                        }
 									}
-									character.HideShadow = true;
+									else
+                                    {
+										character.isSleeping.Value = false;
+									}
 								}
 								else
                                 {
 									character.isSleeping.Value = false;
 								}
+								character.HideShadow = true;
 							}
 							else
 							{

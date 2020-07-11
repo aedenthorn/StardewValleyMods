@@ -88,10 +88,10 @@ namespace MultipleSpouses
 
 				if (f.spouse != null)
 				{
-					if (!f.friendshipData[f.spouse].IsEngaged() && roomIndexes.ContainsKey(f.spouse) || tmxSpouseRooms.ContainsKey(f.spouse))
+					if (!f.friendshipData[f.spouse].IsEngaged() && (roomIndexes.ContainsKey(f.spouse) || tmxSpouseRooms.ContainsKey(f.spouse)))
 					{
 						Monitor.Log($"Building spouse room for official spouse {f.spouse}");
-						farmHouse.showSpouseRoom();
+						BuildOneSpouseRoom(farmHouse, f.spouse, -1);
 					}
 					else
 					{

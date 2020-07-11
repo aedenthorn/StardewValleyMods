@@ -121,8 +121,9 @@ namespace Familiars
 			base.Breather = false;
 			SetScale();
 			farmerPassesThrough = true;
-			moveTowardPlayerThreshold.Value = 20;
-
+			moveTowardPlayerThreshold.Value = 500;
+			collidesWithOtherCharacters.Value = false;
+			baseSpeed = speed;
 		}
 
         public FamiliarData SaveData()
@@ -419,6 +420,10 @@ namespace Familiars
 
 		public virtual void behaviorAtGameTick(GameTime time)
 		{
+			if(followingOwner)
+            {
+				speed = baseSpeed + (int) Vector2.Distance(position, Game1.getFarmer(ownerId).position) / 128;
+			}
 			if (this.timeBeforeAIMovementAgain > 0f)
 			{
 				this.timeBeforeAIMovementAgain -= (float)time.ElapsedGameTime.Milliseconds;
@@ -455,7 +460,7 @@ namespace Familiars
 
 		public override bool shouldCollideWithBuildingLayer(GameLocation location)
 		{
-			return true;
+			return false;
 		}
 
 		public override void update(GameTime time, GameLocation location)
@@ -1216,5 +1221,6 @@ namespace Familiars
 		public Color greenColor;
 		public Color blueColor;
         public GameLocation lastLocation;
+        private int baseSpeed;
     }
 }

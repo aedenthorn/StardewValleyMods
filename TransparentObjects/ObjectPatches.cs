@@ -28,7 +28,6 @@ namespace TransparentObjects
             {
                 float fraction = (Math.Max(0,distance)) / maxDistance;
                 alpha = minAlpha + (1 - minAlpha) * fraction;
-                Monitor.Log($"{distance} {playerCenter} {objectCenter} {maxDistance} {fraction} {alpha}");
             }
         }
     }

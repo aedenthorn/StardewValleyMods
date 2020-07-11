@@ -728,12 +728,11 @@ namespace MultipleSpouses
                     {
                         who.spouse = __instance.Name;
                         Misc.ResetSpouses(who);
-                        GameLocation l = Game1.currentLocation;
-                        l.playSound("dwop", NetAudio.SoundContext.NPC);
-                        Utility.getHomeOfFarmer(who).showSpouseRoom();
+                        Game1.currentLocation.playSound("dwop", NetAudio.SoundContext.NPC);
+                        FarmHouse fh = Utility.getHomeOfFarmer(who);
                         if (ModEntry.config.BuildAllSpousesRooms)
                         {
-                            Maps.BuildSpouseRooms(Utility.getHomeOfFarmer(who));
+                            Maps.BuildSpouseRooms(fh);
                         }
                         return false;
                     }
