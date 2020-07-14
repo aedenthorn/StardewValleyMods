@@ -29,6 +29,7 @@ namespace Familiars
 		public static int DustFamiliarEgg = -1;
 		public static int DinoFamiliarEgg = -1;
 		public static int JunimoFamiliarEgg = -1;
+		public static int ButterflyFamiliarEgg = -1;
         internal static bool receivedJunimoEggToday = false;
 
         /// <summary>The mod entry point, called after the mod is first loaded.</summary>
@@ -147,6 +148,9 @@ namespace Familiars
 				case "junimo":
 					Game1.player.currentLocation.characters.Add(new JunimoFamiliar(Game1.player.position, Game1.player.UniqueMultiplayerID));
 					break;
+				case "bf":
+					Game1.player.currentLocation.characters.Add(new ButterflyFamiliar(Game1.player.position, Game1.player.UniqueMultiplayerID));
+					break;
 			}
 		}
 
@@ -155,7 +159,7 @@ namespace Familiars
 		if (!Config.EnableMod)
 			return false;
 
-		if (asset.AssetName.EndsWith("BatFamiliar") || asset.AssetName.EndsWith("DinoFamiliar") || asset.AssetName.EndsWith("DustSpiritFamiliar") || asset.AssetName.EndsWith("JunimoFamiliar"))
+		if (asset.AssetNameEquals("Characters\\Monsters\\BatFamiliar") || asset.AssetNameEquals("Characters\\Monsters\\DinoFamiliar") || asset.AssetNameEquals("Characters\\Monsters\\DustSpiritFamiliar") || asset.AssetNameEquals("Characters\\JunimoFamiliar"))
 		{
 				Monitor.Log($"can load familiar {asset.AssetName}");
 				return true;
@@ -178,7 +182,7 @@ namespace Familiars
 				string path = Path.Combine("Characters",asset.AssetName);
 				return (T)(object)Helper.Content.Load<Texture2D>(path,ContentSource.GameContent);
 			}
-			string name = asset.AssetName.Replace("Characters\\Monsters\\", "").Replace("Characters/Monsters/", "");
+			string name = asset.AssetName.Replace("Characters\\", "").Replace("Characters/", "").Replace("Monsters\\", "").Replace("Monsters/", "");
 			return (T)(object)Helper.Content.Load<Texture2D>($"assets/{name}.png");
 		}
 
@@ -203,6 +207,7 @@ namespace Familiars
 				var editor = asset.AsDictionary<string, string>();
 
 				editor.Data["Junimo"] = "40/6/0/0/false/1000/382 .5 433 .01 336 .001 84 .02 414 .02 97 .005 99 .001/2/.00/4/3/.00/true/2/Junimo";
+				editor.Data["Butterfly"] = "24/6/0/0/true/1000/767 .9 767 .4 108 .001 287 .02 96 .005 99 .001/1/.01/4/3/.00/true/3/Butterfly";
 			}
 		}
 	}

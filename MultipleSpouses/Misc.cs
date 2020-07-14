@@ -13,6 +13,8 @@ namespace MultipleSpouses
     /// <summary>The mod entry point.</summary>
     public class Misc
     {
+        private static Dictionary<string, int> topOfHeadOffsets = new Dictionary<string, int>();
+
         public static IMonitor Monitor;
         public static IModHelper Helper;
         // call this method from your Entry class
@@ -350,6 +352,7 @@ namespace MultipleSpouses
             "nephew",
             "niece",
         };
+
         public static bool AreSpousesRelated(string npc1, string npc2)
         {
             if(relationships.ContainsKey(npc1) && relationships[npc1].ContainsKey(npc2))
@@ -553,6 +556,10 @@ namespace MultipleSpouses
         
         public static int GetTopOfHeadSleepOffset(string name)
         {
+            if (topOfHeadOffsets.ContainsKey(name))
+            {
+                return topOfHeadOffsets[name];
+            }
             int top = 0;
 
             if (name == "Krobus")
@@ -598,7 +605,7 @@ namespace MultipleSpouses
                     break;
                 }
             }
-            //Monitor.Log($"sleep offset: {top}");
+            topOfHeadOffsets.Add(name, top);
             return top;
         }
     }

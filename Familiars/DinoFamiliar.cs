@@ -47,7 +47,7 @@ namespace StardewValley.Monsters
 		{
 		}
 
-		public DinoFamiliar(Vector2 position, long owner) : base("Pepper Rex", position)
+		public DinoFamiliar(Vector2 position, long owner) : base("Pepper Rex", position, new AnimatedSprite(ModEntry.Config.DinoTexture))
 		{
 			Name = "DinoFamiliar";
 			this.ownerId = owner;

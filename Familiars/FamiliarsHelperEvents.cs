@@ -90,6 +90,10 @@ namespace Familiars
                         {
                             fsd.junimoFamiliars.Add((l.characters[i] as Familiar).SaveData());
                         }
+                        else if(l.characters[i] is ButterflyFamiliar)
+                        {
+                            fsd.butterflyFamiliars.Add((l.characters[i] as Familiar).SaveData());
+                        }
                         l.characters.RemoveAt(i);
                     }
                 }
@@ -110,6 +114,7 @@ namespace Familiars
                 ModEntry.DustFamiliarEgg = ModEntry.JsonAssets.GetObjectId("Dust Sprite Familiar Egg");
                 ModEntry.DinoFamiliarEgg = ModEntry.JsonAssets.GetObjectId("Dino Familiar Egg");
                 ModEntry.JunimoFamiliarEgg = ModEntry.JsonAssets.GetObjectId("Junimo Familiar Egg");
+                ModEntry.ButterflyFamiliarEgg = ModEntry.JsonAssets.GetObjectId("Butterly Familiar Egg");
 
                 if (ModEntry.BatFamiliarEgg == -1)
                 {
@@ -141,7 +146,15 @@ namespace Familiars
                 }
                 else
                 {
-                    Monitor.Log(string.Format("Familiars mod item #4 ID is {0}.", ModEntry.DinoFamiliarEgg));
+                    Monitor.Log(string.Format("Familiars mod item #4 ID is {0}.", ModEntry.JunimoFamiliarEgg));
+                }
+                if (ModEntry.ButterflyFamiliarEgg == -1)
+                {
+                    Monitor.Log("Can't get ID for Familiars mod item #5. Some functionality will be lost.");
+                }
+                else
+                {
+                    Monitor.Log(string.Format("Familiars mod item #4 ID is {0}.", ModEntry.ButterflyFamiliarEgg));
                 }
             }
         }

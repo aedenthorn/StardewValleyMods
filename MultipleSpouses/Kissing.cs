@@ -206,7 +206,7 @@ namespace MultipleSpouses
 				float distance = 1f / ((Vector2.Distance(midpoint, Game1.player.position) / 256) + 1);
 				float pan = (float)(Math.Atan((midpoint.X - Game1.player.position.X) / Math.Abs(midpoint.Y - Game1.player.position.Y)) /(Math.PI/2));
 				//ModEntry.PMonitor.Log($"kiss distance: {distance} pan: {pan}");
-				kissEffect.Play(distance, 0, pan);
+				kissEffect.Play(distance * Game1.options.soundVolumeLevel, 0, pan);
 			}
 			else
             {

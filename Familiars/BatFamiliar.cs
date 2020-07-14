@@ -17,11 +17,18 @@ namespace Familiars
 		{
 		}
 
-		public BatFamiliar(Vector2 position, long _owner) : base("Bat", position)
+		public BatFamiliar(Vector2 position, long _owner) : base("Bat", position, new AnimatedSprite(ModEntry.Config.BatTexture))
 		{
 			Name = "BatFamiliar";
 			ownerId = _owner;
+
 			base.Slipperiness = 20 + Game1.random.Next(-5, 6);
+			farmerPassesThrough = true;
+			this.Halt();
+			base.IsWalkingTowardPlayer = false;
+			base.HideShadow = true;
+			damageToFarmer.Value = 0;
+
 			if (ModEntry.Config.BatColorType.ToLower() == "random")
 			{
 				mainColor = new Color(Game1.random.Next(256), Game1.random.Next(256), Game1.random.Next(256));
@@ -38,12 +45,6 @@ namespace Familiars
 			}
 
 			reloadSprite();
-
-			farmerPassesThrough = true;
-			this.Halt();
-			base.IsWalkingTowardPlayer = false;
-			base.HideShadow = true;
-			damageToFarmer.Value = 0;
 		}
 
 		protected override void initNetFields()
@@ -94,11 +95,6 @@ namespace Familiars
 
 		public override void shedChunks(int number, float scale)
 		{
-			if (this.cursedDoll && this.hauntedSkull)
-			{
-				Game1.createRadialDebris(base.currentLocation, this.Sprite.textureName, new Rectangle(0, 64, 16, 16), 8, this.GetBoundingBox().Center.X, this.GetBoundingBox().Center.Y, number, (int)base.getTileLocation().Y, Color.White, 4f);
-				return;
-			}
 			Game1.createRadialDebris(base.currentLocation, this.Sprite.textureName, new Rectangle(0, 384, 64, 64), 32, this.GetBoundingBox().Center.X, this.GetBoundingBox().Center.Y, number, (int)base.getTileLocation().Y, Color.White, scale);
 		}
 		public override void drawAboveAllLayers(SpriteBatch b)
@@ -113,11 +109,6 @@ namespace Familiars
 					b.Draw(this.Sprite.Texture, base.getLocalPosition(Game1.viewport) + new Vector2(32f, 32f), new Rectangle?(this.Sprite.SourceRect), this.glowingColor * this.glowingTransparency, 0f, new Vector2(8f, 16f), Math.Max(0.2f, this.scale) * 4f, this.flip ? SpriteEffects.FlipHorizontally : SpriteEffects.None, Math.Max(0f, this.drawOnTop ? 0.99f : ((float)base.getStandingY() / 10000f + 0.001f)));
 				}
 			}
-		}
-		public override Rectangle GetBoundingBox()
-		{
-			Rectangle baseRect = new Rectangle((int)base.Position.X + 8, (int)base.Position.Y, this.Sprite.SpriteWidth * 4 * 3 / 4, 32);
-			return new Rectangle((int)baseRect.Center.X - (int)(Sprite.SpriteWidth * 4 * 3 / 4 * scale) / 2, (int)(baseRect.Center.Y - 16 * scale), (int)(Sprite.SpriteWidth * 4 * 3 / 4 * scale), (int)(32 * scale));
 		}
 
 		public override void drawAboveAlwaysFrontLayer(SpriteBatch b)
@@ -188,7 +179,7 @@ namespace Familiars
 				this.wasHitCounter.Value -= time.ElapsedGameTime.Milliseconds;
 			}
 
-			if (chargingMonster || (withinPlayerThreshold() && followingOwner))
+			if (chargingMonster || followingOwner)
 			{
 				this.seenPlayer.Value = true;
 
@@ -264,7 +255,7 @@ namespace Familiars
 
         protected override void updateAnimation(GameTime time)
 		{
-			if (base.focusedOnFarmers || this.withinPlayerThreshold(6) || this.seenPlayer)
+			if (followingOwner)
 			{
 				this.Sprite.Animate(time, 0, 4, 80f);
 				if (this.Sprite.currentFrame % 3 == 0 && Utility.isOnScreen(base.Position, 512) && (this.batFlap == null || !this.batFlap.IsPlaying) && Game1.soundBank != null && base.currentLocation == Game1.currentLocation && !this.cursedDoll)

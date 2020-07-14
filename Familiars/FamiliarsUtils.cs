@@ -195,7 +195,7 @@ namespace Familiars
 				GameLocation l = Game1.getLocationFromName(f.currentLocation);
 				if (l != null)
 				{
-					Monitor.Log($"Returning saved Bat Familiar to {l.Name}");
+					Monitor.Log($"Returning saved Junimo Familiar to {l.Name}");
 					JunimoFamiliar d = new JunimoFamiliar(f.position, f.ownerId);
 					d.followingOwner = f.followingOwner;
 					d.daysOld.Value = f.daysOld;
@@ -204,6 +204,26 @@ namespace Familiars
 					d.redColor = f.redColor;
 					d.greenColor = f.greenColor;
 					d.blueColor = f.blueColor;
+					d.SetScale();
+					d.currentLocation = l;
+					l.characters.Add(d);
+				}
+			}
+			foreach (FamiliarData f in fsd.butterflyFamiliars)
+			{
+				GameLocation l = Game1.getLocationFromName(f.currentLocation);
+				if (l != null)
+				{
+					Monitor.Log($"Returning saved Butterfly Familiar to {l.Name}");
+					ButterflyFamiliar d = new ButterflyFamiliar(f.position, f.ownerId);
+					d.followingOwner = f.followingOwner;
+					d.daysOld.Value = f.daysOld;
+					d.exp.Value = f.exp;
+					d.mainColor = f.mainColor;
+					d.redColor = f.redColor;
+					d.greenColor = f.greenColor;
+					d.blueColor = f.blueColor;
+					d.baseFrame = f.baseFrame;
 					d.SetScale();
 					d.currentLocation = l;
 					l.characters.Add(d);

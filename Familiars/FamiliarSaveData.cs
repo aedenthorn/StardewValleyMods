@@ -15,6 +15,7 @@ namespace Familiars
         public List<FamiliarData> dinoFamiliars = new List<FamiliarData>();
         public List<FamiliarData> batFamiliars = new List<FamiliarData>(); 
         public List<FamiliarData> junimoFamiliars = new List<FamiliarData>(); 
+        public List<FamiliarData> butterflyFamiliars = new List<FamiliarData>(); 
 
     }
 
@@ -30,5 +31,6 @@ namespace Familiars
         public Color blueColor;
         public string currentLocation;
         public Vector2 position;
+        public int baseFrame;
     }
 }

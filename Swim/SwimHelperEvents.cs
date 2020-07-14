@@ -501,7 +501,7 @@ namespace Swim
                 {
                     Monitor.Log("Playing breathe sound");
                     lastBreatheSound = ticksWearingScubaGear;
-                    breatheEffect.Play(0.5f, 0f, 0f);
+                    breatheEffect.Play(0.5f * Game1.options.soundVolumeLevel, 0f, 0f);
                 }
             }
             else

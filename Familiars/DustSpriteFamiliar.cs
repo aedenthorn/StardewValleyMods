@@ -15,7 +15,7 @@ namespace Familiars
 		}
 
 
-		public DustSpriteFamiliar(Vector2 position, long owner) : base("Dust Spirit", position)
+		public DustSpriteFamiliar(Vector2 position, long owner) : base("Dust Spirit", position, new AnimatedSprite(ModEntry.Config.DustTexture))
 		{
 			Name = "DustSpriteFamiliar";
 			ModEntry.SMonitor.Log($"DSF Name: {Name}"); 

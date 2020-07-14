@@ -32,7 +32,7 @@ namespace Familiars
 			this.forceUpdateTimer = 9999;
 		}
 
-		public JunimoFamiliar(Vector2 position, long ownerId) : base("Junimo", position)
+		public JunimoFamiliar(Vector2 position, long ownerId) : base("Junimo", position, new AnimatedSprite("Characters\\Junimo", 0, 16, 16))
 		{
 			this.friendly.Value = true;
 			this.nextPosition.Value = this.GetBoundingBox();
@@ -41,8 +41,9 @@ namespace Familiars
 			this.forceUpdateTimer = 9999;
 			this.collidesWithOtherCharacters.Value = true;
 			this.farmerPassesThrough = true;
+			ignoreMovementAnimations = true;
 
-			if(ModEntry.Config.JunimoColorType.ToLower() == "default")
+			if (ModEntry.Config.JunimoColorType.ToLower() == "default")
             {
 				switch (Game1.random.Next(8))
 				{
@@ -114,7 +115,11 @@ namespace Familiars
 			this.returnToJunimoHutToFetchFinalStarEvent.onEvent += this.returnToJunimoHutToFetchFinalStar;
 			this.position.Field.AxisAlignedMovement = false;
 		}
-
+		public override void MovePosition(GameTime time, xTile.Dimensions.Rectangle viewport, GameLocation currentLocation)
+		{
+			ignoreMovementAnimations = true;
+			base.MovePosition(time, viewport, currentLocation);
+		}
 		public override bool canPassThroughActionTiles()
 		{
 			return false;

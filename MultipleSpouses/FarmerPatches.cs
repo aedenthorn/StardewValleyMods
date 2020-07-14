@@ -2,6 +2,7 @@
 using StardewModdingAPI;
 using StardewValley;
 using StardewValley.Locations;
+using StardewValley.Menus;
 using System;
 using System.Reflection;
 
@@ -22,8 +23,7 @@ namespace MultipleSpouses
         {
             try
             {
-                __instance.divorceTonight.Value = false;
-                if (!__instance.isMarried() || ModEntry.spouseToDivorce == null)
+                __instance.divorceTonight.Value = false;if (!__instance.isMarried() || ModEntry.spouseToDivorce == null)
                 {
                     Monitor.Log("Tried to divorce but no spouse to divorce!");
                     return false;
@@ -88,5 +88,43 @@ namespace MultipleSpouses
             }
             return true;
         }
+
+        
+        public static bool Farmer_checkAction_Prefix(Farmer __instance, Farmer who, GameLocation location, ref bool __result)
+        {
+            try
+            {
+                if (who.isRidingHorse())
+                {
+                    who.Halt();
+                }
+                if (__instance.hidden)
+                {
+                    return true;
+                }
+                if (Game1.CurrentEvent == null && who.CurrentItem != null && who.CurrentItem.parentSheetIndex == 801 && !__instance.isEngaged() && !who.isEngaged()) { 
+                    who.Halt();
+                    who.faceGeneralDirection(__instance.getStandingPosition(), 0, false);
+                    string question2 = Game1.content.LoadString("Strings\\UI:AskToMarry_" + (__instance.IsMale ? "Male" : "Female"), __instance.Name);
+                    location.createQuestionDialogue(question2, location.createYesNoResponses(), delegate (Farmer _, string answer)
+                    {
+                        if (answer == "Yes")
+                        {
+                            who.team.SendProposal(__instance, ProposalType.Marriage, who.CurrentItem.getOne());
+                            Game1.activeClickableMenu = new PendingProposalDialog();
+                        }
+                    }, null);
+                    __result = true;
+                    return false;
+                }
+            }
+            catch (Exception ex)
+            {
+                Monitor.Log($"Failed in {nameof(Farmer_checkAction_Prefix)}:\n{ex}", LogLevel.Error);
+            }
+            return true;
+        }
+
+
     }
 }

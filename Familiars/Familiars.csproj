@@ -44,6 +44,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ButterflyFamiliar.cs" />
     <Compile Include="JunimoFamiliar.cs" />
     <Compile Include="BatFamiliar.cs" />
     <Compile Include="DinoFamiliar.cs" />

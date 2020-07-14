@@ -14,11 +14,13 @@ namespace Familiars
         public string BatTexture { get; set; } = "Characters/Monsters/Bat";
         public string DinoTexture { get; set; } = "Characters/Monsters/Pepper Rex";
         public string DustTexture { get; set; } = "Characters/Monsters/Dust Spirit";
+        public string ButterflyTexture { get; set; } = "TileSheets\\critters";
         public string JunimoTexture { get; set; } = "Characters/Junimo";
         public string BatColorType { get; set; } = "default";
         public string DinoColorType { get; set; } = "default";
         public string DustColorType { get; set; } = "default";
         public string JunimoColorType { get; set; } = "default";
+        public string ButterflyColorType { get; set; } = "default";
         public Color BatMainColor { get; set; } = new Color(0.7f, 0, 0.7f);
         public Color BatRedColor { get; set; } = new Color(0, 0, 0.5f);
         public Color BatGreenColor { get; set; } = new Color(0, 0.5f, 0.5f);
@@ -35,8 +37,13 @@ namespace Familiars
         public Color JunimoRedColor { get; set; } = new Color(1f, 0, 1f);
         public Color JunimoGreenColor { get; set; } = new Color(0, 0.5f, 0.5f);
         public Color JunimoBlueColor { get; set; } = new Color(0, 0.5f, 0.5f);
+        public Color ButterflyMainColor { get; set; } = new Color(1f, 0, 0.8f);
+        public Color ButterflyRedColor { get; set; } = new Color(1f, 0, 1f);
+        public Color ButterflyGreenColor { get; set; } = new Color(0, 0.5f, 0.5f);
+        public Color ButterflyBlueColor { get; set; } = new Color(0, 0.5f, 0.5f);
         public bool IAmAStinkyCheater { get; set; } = false;
         public int FamiliarHatchMinutes { get; set; } = 4000;
         public int BatFamiliarEggMinutes { get;  set; } = 1200;
+        public float MaxFamiliarDistance { get; set; } = 1280;
     }
 }

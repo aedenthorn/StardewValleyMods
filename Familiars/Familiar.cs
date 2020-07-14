@@ -7,6 +7,7 @@ using Netcode;
 using StardewValley;
 using StardewValley.Network;
 using xTile.Dimensions;
+using Rectangle = Microsoft.Xna.Framework.Rectangle;
 
 namespace Familiars
 {
@@ -116,14 +117,13 @@ namespace Familiars
 		{
 		}
 
-		public Familiar(string name, Vector2 position) : this(name, position, 2)
+		public Familiar(string name, Vector2 position, AnimatedSprite animatedSprite) : this(name, position, 2, animatedSprite)
 		{
 			base.Breather = false;
 			SetScale();
 			farmerPassesThrough = true;
 			moveTowardPlayerThreshold.Value = 500;
 			collidesWithOtherCharacters.Value = false;
-			baseSpeed = speed;
 		}
 
         public FamiliarData SaveData()
@@ -184,7 +184,7 @@ namespace Familiars
 
         public void SetScale()
         {
-			Scale = (float)Math.Min(2, 0.2f + (daysOld * 0.01));
+			Scale = (float)Math.Min(2, 0.5f + (daysOld * 0.01));
 		}
 
 		protected override Farmer findPlayer()
@@ -240,13 +240,18 @@ namespace Familiars
 		{
 			return false;
 		}
-		public Familiar(string name, Vector2 position, int facingDir) : base((name == "Junimo" ? new AnimatedSprite("Characters\\Junimo", 0, 16, 16) : new AnimatedSprite("Characters\\Monsters\\" + name)), position, facingDir, name, null)
+		public Familiar(string name, Vector2 position, int facingDir, AnimatedSprite animatedSprite) : base(animatedSprite, position, facingDir, name, null)
 		{
+			
 			this.parseMonsterInfo(name);
 			base.Breather = false;
 		}
 
 		public virtual void drawAboveAllLayers(SpriteBatch b)
+		{
+		}
+
+		public virtual void drawAboveFrontLayer(SpriteBatch b)
 		{
 		}
 
@@ -355,6 +360,13 @@ namespace Familiars
 			}
 		}
 
+		public override Rectangle GetBoundingBox()
+		{
+			Rectangle baseRect = new Rectangle((int)base.Position.X, (int)base.Position.Y, Sprite.SpriteWidth, Sprite.SpriteHeight);
+			Rectangle resultRect = new Rectangle((int)baseRect.Center.X - (int)(Sprite.SpriteWidth * scale) / 2, (int)(baseRect.Center.Y - (int)(Sprite.SpriteHeight * scale) / 2), (int)(Sprite.SpriteWidth * scale), (int)(Sprite.SpriteHeight * scale));
+			return resultRect;
+		}
+
 		public void deathAnimation()
 		{
 			this.sharedDeathAnimation();
@@ -420,10 +432,6 @@ namespace Familiars
 
 		public virtual void behaviorAtGameTick(GameTime time)
 		{
-			if(followingOwner)
-            {
-				speed = baseSpeed + (int) Vector2.Distance(position, Game1.getFarmer(ownerId).position) / 128;
-			}
 			if (this.timeBeforeAIMovementAgain > 0f)
 			{
 				this.timeBeforeAIMovementAgain -= (float)time.ElapsedGameTime.Milliseconds;
@@ -465,11 +473,11 @@ namespace Familiars
 
 		public override void update(GameTime time, GameLocation location)
 		{
-			if (lastLocation != currentLocation && currentLocation != null)
+			if (followingOwner && Vector2.Distance(position, Game1.getFarmer(ownerId).position) > ModEntry.Config.MaxFamiliarDistance)
 			{
-				ModEntry.SMonitor.Log($"Last Location: {lastLocation?.Name} Current Location: {currentLocation?.Name}");
-				lastLocation = currentLocation;
+				position.Value = Game1.getFarmer(ownerId).position;
 			}
+
 			if (this is JunimoFamiliar)
             {
 				base.update(time, location);
@@ -491,33 +499,25 @@ namespace Familiars
 			{
 				return;
 			}
-			if (!this.Player.isRafting || !this.withinPlayerThreshold(4))
-			{
-				base.update(time, location);
-			}
+			base.update(time, location);
+			
 			if (Game1.IsMasterGame)
 			{
 				this.behaviorAtGameTick(time);
 			}
-			this.updateAnimation(time);
+			
+			if(!(this is ButterflyFamiliar))
+				this.updateAnimation(time);
+
 			if (this.controller != null && this.withinPlayerThreshold(3))
 			{
 				this.controller = null;
-			}
-			if (!this.isGlider && (base.Position.X < 0f || base.Position.X > (float)(location.Map.GetLayer("Back").LayerWidth * 64) || base.Position.Y < 0f || base.Position.Y > (float)(location.map.GetLayer("Back").LayerHeight * 64)))
-			{
-				location.characters.Remove(this);
-				return;
-			}
-			if (this.isGlider && base.Position.X < -2000f)
-			{
-				this.Health = -500;
 			}
 		}
 
 		protected void resetAnimationSpeed()
 		{
-			if (!this.ignoreMovementAnimations && !(this is JunimoFamiliar))
+			if (!this.ignoreMovementAnimations)
 			{
 				this.Sprite.interval = (float)this.defaultAnimationInterval - (float)(base.speed + base.addedSpeed - 2) * 20f;
 			}
@@ -1221,6 +1221,5 @@ namespace Familiars
 		public Color greenColor;
 		public Color blueColor;
         public GameLocation lastLocation;
-        private int baseSpeed;
     }
 }

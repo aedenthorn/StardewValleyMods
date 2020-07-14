@@ -116,7 +116,7 @@ namespace Swim
             try
             {
                 __state = new float[0];
-                if(__instance.swimming && ModEntry.changeLocations.ContainsKey(Game1.player.currentLocation.Name) && Config.ReadyToSwim)
+                if(__instance.swimming && Config.ReadyToSwim)
                 {
                     __state = new float[]{
                         __instance.stamina,
