@@ -459,5 +459,9 @@ namespace Swim
             bool result = passable == null && tile == null && tmp != null;
             return result;
         }
+        public static bool DebrisIsAnItem(Debris debris)
+        {
+            return debris.debrisType == Debris.DebrisType.OBJECT || debris.debrisType == Debris.DebrisType.ARCHAEOLOGY || debris.debrisType == Debris.DebrisType.RESOURCE || debris.item != null;
+        }
     }
 }

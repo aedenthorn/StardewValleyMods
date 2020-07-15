@@ -368,6 +368,9 @@ namespace MultipleSpouses
                 Dictionary<string, NPC> spouses = Misc.GetSpouses(Game1.player, -1);
                 for (int i = 1; i < split.Length; i++)
                 {
+                    if (split[i].Length == 0)
+                        continue;
+
                     if (split[i][0] == 'O')
                     {
                         string name = split[i].Substring(2);

@@ -373,5 +373,78 @@ namespace Swim
                 Monitor.Log($"Failed in {nameof(GameLocation_isCollidingPosition_Postfix)}:\n{ex}", LogLevel.Error);
             }
         }
+        public static void GameLocation_sinkDebris_Postfix(GameLocation __instance, bool __result, Debris debris, Vector2 chunkTile, Vector2 chunkPosition)
+        {
+            try
+            {
+                if (__result == false || !Game1.IsMasterGame || !SwimUtils.DebrisIsAnItem(debris))
+                    return;
+
+                if (ModEntry.diveMaps.ContainsKey(__instance.Name) && ModEntry.diveMaps[__instance.Name].DiveLocations.Count > 0)
+                {
+                    Point pos = new Point((int)chunkTile.X, (int)chunkTile.Y);
+                    Location loc = new Location(pos.X, pos.Y);
+
+                    DiveMap dm = ModEntry.diveMaps[__instance.Name];
+                    DiveLocation diveLocation = null;
+                    foreach (DiveLocation dl in dm.DiveLocations)
+                    {
+                        if (dl.GetRectangle().X == -1 || dl.GetRectangle().Contains(loc))
+                        {
+                            diveLocation = dl;
+                            break;
+                        }
+                    }
+
+                    if (diveLocation == null)
+                    {
+                        Monitor.Log($"sink debris: No dive destination for this point on this map");
+                        return;
+                    }
+
+                    if (!Game1._locationLookup.ContainsKey(diveLocation.OtherMapName))
+                    {
+                        Monitor.Log($"sink debris: Can't find destination map named {diveLocation.OtherMapName}", LogLevel.Warn);
+                        return;
+                    }
+
+                    
+                    foreach(Chunk chunk in debris.Chunks)
+                    {
+
+                        if(chunk.position == chunkPosition)
+                        {
+                            Monitor.Log($"sink debris: creating copy of debris {debris.debrisType} chunk {chunk.debrisType} item {debris.item != null} on {diveLocation.OtherMapName}");
+
+                            if (debris.debrisType != Debris.DebrisType.ARCHAEOLOGY && debris.debrisType != Debris.DebrisType.OBJECT && chunk.debrisType % 2 != 0)
+                            {
+                                Monitor.Log($"sink debris: non-item debris");
+                                break;
+                            }
+
+                            Debris newDebris;
+                            Vector2 newTile = diveLocation.OtherMapPos == null ? chunkTile : new Vector2(diveLocation.OtherMapPos.X, diveLocation.OtherMapPos.Y);
+                            Vector2 newPos = new Vector2(newTile.X * Game1.tileSize, newTile.Y * Game1.tileSize);
+                            if (debris.item != null)
+                            {
+                                newDebris = Game1.createItemDebris(debris.item, newPos, Game1.random.Next(4));
+                                Game1.getLocationFromName(diveLocation.OtherMapName).debris.Add(newDebris);
+                            }
+                            else
+                            {
+                                Game1.createItemDebris(new StardewValley.Object(chunk.debrisType, 1), newPos, Game1.random.Next(4), Game1.getLocationFromName(diveLocation.OtherMapName));
+                            }
+                            break; 
+                        }
+                    }
+
+
+                }
+            }
+            catch (Exception ex)
+            {
+                Monitor.Log($"Failed in {nameof(GameLocation_sinkDebris_Postfix)}:\n{ex}", LogLevel.Error);
+            }
+        }
     }
 }
