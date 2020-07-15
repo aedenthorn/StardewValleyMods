@@ -87,29 +87,56 @@ namespace MultipleSpouses
         {
 			try
 			{
-				List<string> spouses = Misc.GetSpouses(Game1.player,0).Keys.ToList();
+				if (!__instance.isWedding)
+					return;
+
+				List<string> spouses = Misc.GetSpouses(Game1.player, 0).Keys.ToList();
 				Misc.ShuffleList(ref spouses);
-				foreach(NPC actor in __instance.actors)
-                {
-					if (__instance.isWedding)
+				foreach (NPC actor in __instance.actors)
+				{
+					if (spouses.Contains(actor.Name))
 					{
-						if (spouses.Contains(actor.Name))
+						int idx = spouses.IndexOf(actor.Name);
+						Vector2 pos;
+						if (idx < weddingPositions.Count)
 						{
-							int idx = spouses.IndexOf(actor.Name);
-							Vector2 pos;
-							if (idx < weddingPositions.Count)
-                            {
-								pos = new Vector2(weddingPositions[idx][0]*64,weddingPositions[idx][1]*64);
-							}
-							else
-                            {
-								int x = 25 + ((idx - 4) % 6);
-								int y = 62 - ((idx - 4) / 6);
-								pos = new Vector2(x * 64, y * 64);
-							}
-							actor.position.Value = pos;
-							Utility.facePlayerEndBehavior(actor, location);
+							pos = new Vector2(weddingPositions[idx][0] * Game1.tileSize, weddingPositions[idx][1] * Game1.tileSize);
 						}
+						else
+						{
+							int x = 25 + ((idx - 4) % 6);
+							int y = 62 - ((idx - 4) / 6);
+							pos = new Vector2(x * Game1.tileSize, y * Game1.tileSize);
+						}
+						actor.position.Value = pos;
+                        if (ModEntry.config.AllSpousesWearMarriageClothesAtWeddings)
+                        {
+							bool flipped = false;
+							int frame = 37;
+							if(pos.Y < 62 * Game1.tileSize)
+                            {
+								if (pos.X == 25 * Game1.tileSize)
+                                {
+									flipped = true;
+                                }
+								else if (pos.X < 30 * Game1.tileSize)
+                                {
+									frame = 36;
+                                }
+
+							}
+							else if(pos.X < 28 * Game1.tileSize)
+                            {
+								flipped = true;
+							}
+
+							actor.Sprite.setCurrentAnimation(new List<FarmerSprite.AnimationFrame>
+							{
+								new FarmerSprite.AnimationFrame(frame, 0, false, flipped, null, true)
+							});
+						}
+						else 
+							Utility.facePlayerEndBehavior(actor, location);
 					}
 				}
 			}

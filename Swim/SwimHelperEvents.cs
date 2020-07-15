@@ -44,6 +44,7 @@ namespace Swim
             SButton.Down
         };
         internal static Texture2D bubbleTexture;
+        private static bool surfacing;
 
         public static void Initialize(IMonitor monitor, IModHelper helper, ModConfig config)
         {
@@ -454,39 +455,39 @@ namespace Swim
             if (Game1.player.currentLocation == null || Game1.player == null || !Game1.displayFarmer || Game1.player.position == null)
                 return;
 
-            if(Game1.player.currentLocation.Name == "ScubaAbigailCave")
+            ModEntry.isUnderwater = SwimUtils.IsMapUnderwater(Game1.player.currentLocation.Name);
+
+            if (Game1.player.currentLocation.Name == "ScubaAbigailCave")
             {
                 AbigailCaveTick();
             }
 
             if (Game1.activeClickableMenu == null)
             {
-                if (SwimUtils.IsMapUnderwater(Game1.player.currentLocation.Name))
+                if (ModEntry.isUnderwater)
                 {
-                    if (ModEntry.isUnderwater)
+                    if (ModEntry.oxygen >= 0)
                     {
-                        if (ModEntry.oxygen > 0)
-                        {
-                            if (!SwimUtils.IsWearingScubaGear())
-                                ModEntry.oxygen--;
-                            else {
-                                if (ModEntry.oxygen < SwimUtils.MaxOxygen())
-                                    ModEntry.oxygen++;
-                                if (ModEntry.oxygen < SwimUtils.MaxOxygen())
-                                    ModEntry.oxygen++;
-                            }
+                        if (!SwimUtils.IsWearingScubaGear())
+                            ModEntry.oxygen--;
+                        else {
+                            if (ModEntry.oxygen < SwimUtils.MaxOxygen())
+                                ModEntry.oxygen++;
+                            if (ModEntry.oxygen < SwimUtils.MaxOxygen())
+                                ModEntry.oxygen++;
                         }
-                        else
-                        {
-                            Game1.playSound("pullItemFromWater");
-                            ModEntry.isUnderwater = false;
-                            DiveLocation diveLocation = ModEntry.diveMaps[Game1.player.currentLocation.Name].DiveLocations.Last();
-                            SwimUtils.DiveTo(diveLocation);
-                        }
+                    }
+                    if(ModEntry.oxygen < 0 && !surfacing)
+                    {
+                        surfacing = true;
+                        Game1.playSound("pullItemFromWater");
+                        DiveLocation diveLocation = ModEntry.diveMaps[Game1.player.currentLocation.Name].DiveLocations.Last();
+                        SwimUtils.DiveTo(diveLocation);
                     }
                 }
                 else
                 {
+                    surfacing = false;
                     if (ModEntry.oxygen < SwimUtils.MaxOxygen())
                         ModEntry.oxygen++;
                     if (ModEntry.oxygen < SwimUtils.MaxOxygen())

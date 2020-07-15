@@ -87,6 +87,7 @@ namespace Swim
             DivePosition dp = diveLocation.OtherMapPos;
             if (dp == null)
             {
+                Monitor.Log($"Diving to existing tile position");
                 Point pos = Game1.player.getTileLocationPoint();
                 dp = new DivePosition()
                 {
@@ -97,11 +98,9 @@ namespace Swim
             if (!IsMapUnderwater(Game1.player.currentLocation.Name))
             {
                 ModEntry.bubbles.Clear();
-                ModEntry.isUnderwater = true;
             }
             else
             {
-                ModEntry.isUnderwater = false;
             }
 
             Game1.playSound("pullItemFromWater");
