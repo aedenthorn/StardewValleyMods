@@ -29,10 +29,9 @@ namespace MultipleSpouses
         {
 			Monitor.Log($"loading save {filename}");
 			ModEntry.outdoorAreaData = Helper.Data.ReadJsonFile<OutdoorAreaData>($"assets/outdoor-area-{filename}.json") ?? new OutdoorAreaData();
-			if (ModEntry.outdoorAreaData == null)
+			if (ModEntry.outdoorAreaData.areas.Count == 0)
 			{
 				Helper.Data.WriteJsonFile($"assets/outdoor-area-{filename}.json", new OutdoorAreaData()); 
-				ModEntry.outdoorAreaData = new OutdoorAreaData();
 			}
 		}
 

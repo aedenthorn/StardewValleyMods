@@ -1,7 +1,13 @@
 ﻿using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using StardewModdingAPI;
 using StardewValley;
 using System;
+using System.Collections.Generic;
+using xTile.Dimensions;
+using xTile.Display;
+using xTile.Layers;
+using xTile.Tiles;
 
 namespace TransparentObjects
 {
@@ -29,6 +35,43 @@ namespace TransparentObjects
                 float fraction = (Math.Max(0,distance)) / maxDistance;
                 alpha = minAlpha + (1 - minAlpha) * fraction;
             }
+        }
+        public static bool XnaDisplayDevice_DrawTile_Prefix(XnaDisplayDevice __instance, Tile tile, Location location, float layerDepth, Dictionary<TileSheet, Texture2D> ___m_tileSheetTextures, ref Vector2 ___m_tilePosition, ref Microsoft.Xna.Framework.Rectangle ___m_sourceRectangle, ref SpriteBatch ___m_spriteBatchAlpha, ref Color ___m_modulationColour)
+        {
+            Monitor.Log($"tile layer id {tile.Layer.Id}");
+            if (tile != null && tile.Layer.Id == "Front")
+            {
+                Vector2 playerLoc = Game1.player.getTileLocation();
+                if(Vector2.Distance(playerLoc, new Vector2(location.X, location.Y)) < 2)
+                {
+                    Monitor.Log($"0.25");
+                    ___m_modulationColour *= 0.25f;
+                }
+                else if(Vector2.Distance(playerLoc, new Vector2(location.X, location.Y)) < 3)
+                {
+                    Monitor.Log($"0.5");
+                    ___m_modulationColour *= 0.5f;
+                }
+                else if(Vector2.Distance(playerLoc, new Vector2(location.X, location.Y)) < 4)
+                {
+                    Monitor.Log($"0.75");
+                    ___m_modulationColour *= 0.75f;
+                }
+                xTile.Dimensions.Rectangle sourceRectangle = tile.TileSheet.GetTileImageBounds(tile.TileIndex);
+                Texture2D texture2D = ___m_tileSheetTextures[tile.TileSheet];
+                if (!texture2D.IsDisposed)
+                {
+                    ___m_tilePosition.X = (float)location.X;
+                    ___m_tilePosition.Y = (float)location.Y;
+                    ___m_sourceRectangle.X = sourceRectangle.X;
+                    ___m_sourceRectangle.Y = sourceRectangle.Y;
+                    ___m_sourceRectangle.Width = sourceRectangle.Width;
+                    ___m_sourceRectangle.Height = sourceRectangle.Height;
+                    ___m_spriteBatchAlpha.Draw(texture2D, ___m_tilePosition, new Microsoft.Xna.Framework.Rectangle?(___m_sourceRectangle), ___m_modulationColour, 0f, Vector2.Zero, (float)Layer.zoom, SpriteEffects.None, layerDepth);
+                }
+                return false;
+            }
+            return true;
         }
     }
 }
