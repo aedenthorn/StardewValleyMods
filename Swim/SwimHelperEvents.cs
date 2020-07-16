@@ -185,6 +185,10 @@ namespace Swim
                 {
                     Game1.playSound("tinyWhip");
                     ModEntry.bubbles.Add(new Vector2(Game1.player.position.X + Game1.random.Next(-24,25), Game1.player.position.Y - 96));
+                    if (ModEntry.bubbles.Count > 100)
+                    {
+                        ModEntry.bubbles = ModEntry.bubbles.Skip(1).ToList();
+                    }
                     bubbleOffset = Game1.random.Next(30/ Math.Min(100, Config.BubbleMult));
                 }
 
@@ -192,6 +196,7 @@ namespace Swim
                 {
                     ModEntry.bubbles[k] = new Vector2(ModEntry.bubbles[k].X, ModEntry.bubbles[k].Y - 2);
                 }
+
                 foreach (Vector2 v in ModEntry.bubbles)
                 {
                     e.SpriteBatch.Draw(bubbleTexture, v + new Vector2((float)Math.Sin(ticksUnderwater / 20f) * 10f - Game1.viewport.X, -Game1.viewport.Y), new Microsoft.Xna.Framework.Rectangle?(new Microsoft.Xna.Framework.Rectangle(132, 20, 8, 8)), new Color(1,1,1,0.5f), 0f, Vector2.Zero, 4f, SpriteEffects.None, 0.001f);

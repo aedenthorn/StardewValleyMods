@@ -386,22 +386,14 @@ namespace Swim
         {
             foreach (DiveMap map in data.Maps)
             {
-                if (Game1._locationLookup.ContainsKey(map.Name))
+                if (!ModEntry.diveMaps.ContainsKey(map.Name))
                 {
-                    if (!ModEntry.diveMaps.ContainsKey(map.Name))
-                    {
-                        ModEntry.diveMaps.Add(map.Name, map);
-                        Monitor.Log($"added dive map info for {map.Name}", LogLevel.Debug);
-                    }
-                    else
-                    {
-                        Monitor.Log($"dive map info already exists for {map.Name}", LogLevel.Warn);
-                    }
-
+                    ModEntry.diveMaps.Add(map.Name, map);
+                    Monitor.Log($"added dive map info for {map.Name}", LogLevel.Debug);
                 }
                 else
                 {
-                    Monitor.Log($"dive map info not loaded for {map.Name}, check you have the map installed", LogLevel.Warn);
+                    Monitor.Log($"dive map info already exists for {map.Name}", LogLevel.Warn);
                 }
             }
         }

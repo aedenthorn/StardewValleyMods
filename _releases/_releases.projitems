@@ -17,6 +17,7 @@
     <None Include="$(MSBuildThisFileDirectory)MultipleSpouses 1.2.3.zip" />
     <None Include="$(MSBuildThisFileDirectory)PacifistValley 0.5.5.zip" />
     <None Include="$(MSBuildThisFileDirectory)RealNames 0.1.4.zip" />
+    <None Include="$(MSBuildThisFileDirectory)Swim 1.3.10.zip" />
     <None Include="$(MSBuildThisFileDirectory)Swim 1.3.9.zip" />
     <None Include="$(MSBuildThisFileDirectory)TransparentObjects 0.2.0.zip" />
     <None Include="$(MSBuildThisFileDirectory)TransparentObjects 0.2.1.zip" />
