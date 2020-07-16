@@ -256,7 +256,7 @@ namespace MultipleSpouses
                         __result = true;
                         return false;
                     }
-                    if (__instance.Sprite.CurrentAnimation == null && !__instance.hasTemporaryMessageAvailable() && __instance.currentMarriageDialogue.Count == 0 && __instance.CurrentDialogue.Count == 0 && Game1.timeOfDay < 2200 && !__instance.isMoving() && who.ActiveObject == null)
+                    if (__instance.Sprite.CurrentAnimation == null && !__instance.hasTemporaryMessageAvailable() && __instance.currentMarriageDialogue.Count == 0 && __instance.CurrentDialogue.Count == 0 && Game1.timeOfDay < 2200 && !__instance.isMoving() && who.ActiveObject == null && (!__instance.hasBeenKissedToday || ModEntry.config.UnlimitedDailyKisses))
                     {
                         __instance.faceGeneralDirection(who.getStandingPosition(), 0, false);
                         who.faceGeneralDirection(__instance.getStandingPosition(), 0, false);

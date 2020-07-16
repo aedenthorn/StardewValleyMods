@@ -152,6 +152,7 @@ namespace Familiars
 					Game1.player.currentLocation.characters.Add(new JunimoFamiliar(Game1.player.position, Game1.player.UniqueMultiplayerID));
 					break;
 				case "bf":
+				case "butterfly":
 					Game1.player.currentLocation.characters.Add(new ButterflyFamiliar(Game1.player.position, Game1.player.UniqueMultiplayerID));
 					break;
 			}

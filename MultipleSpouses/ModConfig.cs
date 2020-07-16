@@ -7,6 +7,7 @@
         public int MinPointsToMarry { get; set; } = 2500;
         public int MinPointsToDate { get; set; } = 2000;
         public int DaysUntilMarriage { get; set; } = 3;
+        public bool AllSpousesWearMarriageClothesAtWeddings { get; set; } = false;
         public bool FriendlyDivorce { get; set; } = true;
         public bool ComplexDivorce { get; set; } = true;
         public bool RoommateRomance { get; set; } = true;
@@ -16,6 +17,7 @@
         public int MaxGiftsPerDay { get; set; } = 1;
         public bool RemoveSpouseOrdinaryDialogue { get; set; } = false;
         public int MinHeartsForKiss { get; set; } = 9;
+        public bool UnlimitedDailyKisses { get; set; } = true;
         public bool AllowSpousesToKiss { get; set; } = true;
         public float SpouseKissChance { get; set; } = 0.1f;
         public bool RealKissSound { get; set; } = true;
@@ -44,6 +46,5 @@
         public int ExtraKidsRoomWidth { get; set; } = 0;
         public int ExistingKidsRoomOffsetX { get; set; } = 0;
         public int ExistingKidsRoomOffsetY { get; set; } = 0;
-        public bool AllSpousesWearMarriageClothesAtWeddings { get; set; } = false;
     }
 }
