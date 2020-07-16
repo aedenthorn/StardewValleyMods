@@ -58,10 +58,6 @@ namespace Familiars
 			}
 			else if (__instance.name.Equals("Slime Egg-Press"))
 			{
-				if (who.IsLocalPlayer && (dropIn.parentSheetIndex != 767 || dropIn.Stack < 100))
-				{
-					return true;
-				}
 				if (__instance.heldObject.Value == null && !probe && dropIn.parentSheetIndex == 767 && dropIn.Stack >= 100)
 				{
 					dropIn.Stack -= 100;
@@ -79,9 +75,38 @@ namespace Familiars
 							}
 					});
 					__instance.heldObject.Value = new Object(ModEntry.BatFamiliarEgg, 1, false, -1, 0);
-					__instance.minutesUntilReady.Value = Config.BatFamiliarEggMinutes;
+					__instance.minutesUntilReady.Value = Config.FamiliarEggMinutes;
+					__result = true;
+					return false;
 				}
 				else if (__instance.heldObject.Value == null && probe && dropIn.parentSheetIndex == 767 && dropIn.Stack >= 100)
+				{
+					__instance.heldObject.Value = new Object();
+					__result = true;
+					return false;
+				}
+				else if (__instance.heldObject.Value == null && !probe && dropIn.parentSheetIndex == ModEntry.ButterflyDust && dropIn.Stack >= 100)
+				{
+					dropIn.Stack -= 100;
+					if (dropIn.Stack <= 0)
+					{
+						who.removeItemFromInventory(dropIn);
+					}
+					who.currentLocation.playSound("yoba", NetAudio.SoundContext.Default);
+					DelayedAction.playSoundAfterDelay("bubbles", 50, null, -1);
+					ModEntry.mp.broadcastSprites(who.currentLocation, new TemporaryAnimatedSprite[]
+					{
+							new TemporaryAnimatedSprite("TileSheets\\animations", new Microsoft.Xna.Framework.Rectangle(256, 1856, 64, 128), 80f, 6, 999999, __instance.tileLocation.Value * 64f + new Vector2(0f, -160f), false, false, (__instance.tileLocation.Y + 1f) * 64f / 10000f + 0.0001f, 0f, Color.Lime, 1f, 0f, 0f, 0f, false)
+							{
+								alphaFade = 0.005f
+							}
+					});
+					__instance.heldObject.Value = new Object(ModEntry.ButterflyFamiliarEgg, 1, false, -1, 0);
+					__instance.minutesUntilReady.Value = Config.FamiliarEggMinutes;
+					__result = true;
+					return false;
+				}
+				else if (__instance.heldObject.Value == null && probe && dropIn.parentSheetIndex == ModEntry.ButterflyDust && dropIn.Stack >= 100)
 				{
 					__instance.heldObject.Value = new Object();
 					__result = true;
@@ -114,7 +139,13 @@ namespace Familiars
 					case "Bat Familiar Egg":
 						familiar = new BatFamiliar(v, __instance.owner);
 						break;
-                }
+					case "Junimo Familiar Egg":
+						familiar = new JunimoFamiliar(v, __instance.owner);
+						break;
+					case "Butterfly Familiar Egg":
+						familiar = new ButterflyFamiliar(v, __instance.owner);
+						break;
+				}
 
 				if (familiar != null)
 				{
@@ -145,6 +176,12 @@ namespace Familiars
 						break;
 					case "Bat Familiar Egg":
 						familiar = new BatFamiliar(v, __instance.owner);
+						break;
+					case "Junimo Familiar Egg":
+						familiar = new JunimoFamiliar(v, __instance.owner);
+						break;
+					case "Butterfly Familiar Egg":
+						familiar = new ButterflyFamiliar(v, __instance.owner);
 						break;
                 }
 

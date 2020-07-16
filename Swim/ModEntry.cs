@@ -129,7 +129,8 @@ namespace Swim
             harmony.Patch(
                original: AccessTools.Method(typeof(Farmer), "updateCommon"),
                prefix: new HarmonyMethod(typeof(SwimPatches), nameof(SwimPatches.Farmer_updateCommon_Prefix)),
-               postfix: new HarmonyMethod(typeof(SwimPatches), nameof(SwimPatches.Farmer_updateCommon_Postfix))
+               postfix: new HarmonyMethod(typeof(SwimPatches), nameof(SwimPatches.Farmer_updateCommon_Postfix)),
+               transpiler: new HarmonyMethod(typeof(SwimPatches), nameof(SwimPatches.Farmer_updateCommon_Transpiler))
             );
             
             harmony.Patch(

@@ -43,7 +43,7 @@ namespace Familiars
         public Color ButterflyBlueColor { get; set; } = new Color(0, 0.5f, 0.5f);
         public bool IAmAStinkyCheater { get; set; } = false;
         public int FamiliarHatchMinutes { get; set; } = 4000;
-        public int BatFamiliarEggMinutes { get;  set; } = 1200;
+        public int FamiliarEggMinutes { get;  set; } = 1200;
         public float MaxFamiliarDistance { get; set; } = 1280;
     }
 }

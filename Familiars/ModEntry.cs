@@ -30,6 +30,7 @@ namespace Familiars
 		public static int DinoFamiliarEgg = -1;
 		public static int JunimoFamiliarEgg = -1;
 		public static int ButterflyFamiliarEgg = -1;
+		public static int ButterflyDust = -1;
         internal static bool receivedJunimoEggToday = false;
 
         /// <summary>The mod entry point, called after the mod is first loaded.</summary>
@@ -61,6 +62,8 @@ namespace Familiars
 			Helper.Events.GameLoop.SaveLoaded += FamiliarsHelperEvents.GameLoop_SaveLoaded;
             Helper.Events.GameLoop.Saving += FamiliarsHelperEvents.GameLoop_Saving;
             Helper.Events.GameLoop.DayStarted += FamiliarsHelperEvents.GameLoop_DayStarted;
+            Helper.Events.Input.ButtonPressed += FamiliarsHelperEvents.Input_ButtonPressed;
+						
 
 			Helper.Events.Player.Warped += FamiliarsHelperEvents.Player_Warped;
 

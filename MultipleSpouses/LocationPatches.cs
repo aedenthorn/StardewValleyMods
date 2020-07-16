@@ -365,6 +365,8 @@ namespace MultipleSpouses
                 if (precondition == null || precondition == "")
                     return;
                 string[] split = precondition.Split('/');
+                if (split.Length == 0)
+                    return;
                 int eventId;
                 if (!int.TryParse(split[0], out eventId))
                 {

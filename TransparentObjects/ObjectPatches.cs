@@ -38,24 +38,20 @@ namespace TransparentObjects
         }
         public static bool XnaDisplayDevice_DrawTile_Prefix(XnaDisplayDevice __instance, Tile tile, Location location, float layerDepth, Dictionary<TileSheet, Texture2D> ___m_tileSheetTextures, ref Vector2 ___m_tilePosition, ref Microsoft.Xna.Framework.Rectangle ___m_sourceRectangle, ref SpriteBatch ___m_spriteBatchAlpha, ref Color ___m_modulationColour)
         {
-            Monitor.Log($"tile layer id {tile.Layer.Id}");
             if (tile != null && tile.Layer.Id == "Front")
             {
                 Vector2 playerLoc = Game1.player.getTileLocation();
                 if(Vector2.Distance(playerLoc, new Vector2(location.X, location.Y)) < 2)
                 {
-                    Monitor.Log($"0.25");
-                    ___m_modulationColour *= 0.25f;
+                    ___m_modulationColour.A = 255 / 4;
                 }
                 else if(Vector2.Distance(playerLoc, new Vector2(location.X, location.Y)) < 3)
                 {
-                    Monitor.Log($"0.5");
-                    ___m_modulationColour *= 0.5f;
+                    ___m_modulationColour.A = 255 / 2;
                 }
                 else if(Vector2.Distance(playerLoc, new Vector2(location.X, location.Y)) < 4)
                 {
-                    Monitor.Log($"0.75");
-                    ___m_modulationColour *= 0.75f;
+                    ___m_modulationColour.A = 255 * 3 / 4 ;
                 }
                 xTile.Dimensions.Rectangle sourceRectangle = tile.TileSheet.GetTileImageBounds(tile.TileIndex);
                 Texture2D texture2D = ___m_tileSheetTextures[tile.TileSheet];

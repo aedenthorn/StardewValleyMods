@@ -1,11 +1,14 @@
-﻿using StardewModdingAPI;
+﻿using Microsoft.Xna.Framework;
+using StardewModdingAPI;
 using StardewModdingAPI.Events;
 using StardewValley;
+using StardewValley.BellsAndWhistles;
 using StardewValley.Monsters;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using Object = StardewValley.Object;
 
 namespace Familiars
 {
@@ -114,7 +117,8 @@ namespace Familiars
                 ModEntry.DustFamiliarEgg = ModEntry.JsonAssets.GetObjectId("Dust Sprite Familiar Egg");
                 ModEntry.DinoFamiliarEgg = ModEntry.JsonAssets.GetObjectId("Dino Familiar Egg");
                 ModEntry.JunimoFamiliarEgg = ModEntry.JsonAssets.GetObjectId("Junimo Familiar Egg");
-                ModEntry.ButterflyFamiliarEgg = ModEntry.JsonAssets.GetObjectId("Butterly Familiar Egg");
+                ModEntry.ButterflyFamiliarEgg = ModEntry.JsonAssets.GetObjectId("Butterfly Familiar Egg");
+                ModEntry.ButterflyDust = ModEntry.JsonAssets.GetObjectId("Butterfly Dust");
 
                 if (ModEntry.BatFamiliarEgg == -1)
                 {
@@ -154,7 +158,15 @@ namespace Familiars
                 }
                 else
                 {
-                    Monitor.Log(string.Format("Familiars mod item #4 ID is {0}.", ModEntry.ButterflyFamiliarEgg));
+                    Monitor.Log(string.Format("Familiars mod item #5 ID is {0}.", ModEntry.ButterflyFamiliarEgg));
+                }
+                if (ModEntry.ButterflyDust == -1)
+                {
+                    Monitor.Log("Can't get ID for Familiars mod item #6. Some functionality will be lost.");
+                }
+                else
+                {
+                    Monitor.Log(string.Format("Familiars mod item #6 ID is {0}.", ModEntry.ButterflyDust));
                 }
             }
         }
@@ -164,5 +176,32 @@ namespace Familiars
             FamiliarsUtils.LoadFamiliars();
             ModEntry.receivedJunimoEggToday = false;
         }
+
+        public static void Input_ButtonPressed(object sender, ButtonPressedEventArgs e)
+        {
+            if(Context.IsPlayerFree && (e.Button == SButton.MouseLeft || e.Button == SButton.MouseRight) && Game1.player.currentLocation != null)
+            {
+                List<Critter> critters = Helper.Reflection.GetField<List<Critter>>(Game1.player.currentLocation, "critters").GetValue();
+                if (critters == null)
+                    return;
+                Rectangle box = new Rectangle((int)Game1.lastCursorTile.X * Game1.tileSize, (int)Game1.lastCursorTile.Y * Game1.tileSize, Game1.tileSize, Game1.tileSize);
+                foreach(Critter c in critters)
+                {
+                    
+                    if (c is Butterfly && Helper.Reflection.GetField<int>(c, "flapSpeed").GetValue() <= 80 && Vector2.Distance(new Vector2(box.Center.X, box.Center.Y), new Vector2(c.position.X - 32, c.position.Y - 96)) < 32)
+                    {
+                        Monitor.Log($"flap speed {Helper.Reflection.GetField<int>(c, "flapSpeed").GetValue()} distance: {Vector2.Distance(new Vector2(box.Center.X, box.Center.Y), new Vector2(c.position.X - 32, c.position.Y - 96))}");
+                        if (!Game1.player.addItemToInventoryBool(new Object(ModEntry.ButterflyDust, 1), false))
+                        {
+                            Game1.createItemDebris(new Object(ModEntry.ButterflyDust, 1), Game1.player.getStandingPosition(), 1, null, -1);
+                        }
+                        Game1.playSound("daggerswipe");
+                        Helper.Reflection.GetField<int>(c, "flapSpeed").SetValue(81);
+                        break;
+                    }
+                }
+            }
+        }
+
     }
 }

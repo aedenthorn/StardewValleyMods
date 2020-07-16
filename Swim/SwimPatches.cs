@@ -6,6 +6,7 @@ using StardewValley;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Reflection.Emit;
 using System.Threading.Tasks;
 using xTile.Dimensions;
@@ -111,17 +112,20 @@ namespace Swim
         }
 
 
-        public static void Farmer_updateCommon_Prefix(Farmer __instance, ref float[] __state)
+        public static void Farmer_updateCommon_Prefix(ref Farmer __instance)
         {
             try
             {
-                __state = new float[0];
-                if(__instance.swimming && Config.ReadyToSwim)
+                if (__instance.swimming && (!Config.ReadyToSwim || Config.SwimRestoresVitals) && __instance.timerSinceLastMovement > 0 && !Game1.eventUp && (Game1.activeClickableMenu == null || Game1.IsMultiplayer) && !Game1.paused)
                 {
-                    __state = new float[]{
-                        __instance.stamina,
-                        __instance.health
-                    };
+                    if (__instance.timerSinceLastMovement > 800)
+                    {
+                        __instance.currentEyes = 1;
+                    }
+                    else if (__instance.timerSinceLastMovement > 700)
+                    {
+                        __instance.currentEyes = 4;
+                    }
                 }
             }
             catch (Exception ex)
@@ -129,17 +133,25 @@ namespace Swim
                 Monitor.Log($"Failed in {nameof(Farmer_updateCommon_Prefix)}:\n{ex}", LogLevel.Error);
             }
         }
-
-        public static void Farmer_updateCommon_Postfix(Farmer __instance, float[] __state)
+        public static void Farmer_updateCommon_Postfix(ref Farmer __instance)
         {
             try
             {
-                if(__state.Length == 2)
+                if (__instance.swimming && (!Config.ReadyToSwim || Config.SwimRestoresVitals) && __instance.timerSinceLastMovement > 0 && !Game1.eventUp && (Game1.activeClickableMenu == null || Game1.IsMultiplayer) && !Game1.paused)
                 {
-                    if (__instance.stamina == __state[0] + 1)
-                        __instance.stamina = __state[0];
-                    if (__instance.health == __state[1] + 1)
-                        __instance.health = (int)__state[1];
+                    if (__instance.swimTimer < 0)
+                    {
+                        __instance.swimTimer = 100;
+                        if (__instance.stamina < (float)__instance.maxStamina)
+                        {
+                            float stamina = __instance.stamina;
+                            __instance.stamina = stamina + 1f;
+                        }
+                        if (__instance.health < __instance.maxHealth)
+                        {
+                            __instance.health++;
+                        }
+                    }
                 }
             }
             catch (Exception ex)
@@ -147,6 +159,48 @@ namespace Swim
                 Monitor.Log($"Failed in {nameof(Farmer_updateCommon_Postfix)}:\n{ex}", LogLevel.Error);
             }
         }
+        public static IEnumerable<CodeInstruction> Farmer_updateCommon_Transpiler(IEnumerable<CodeInstruction> instructions)
+        {
+
+            var codes = new List<CodeInstruction>(instructions);
+            try
+            {
+                bool startLooking = false;
+                int start = -1;
+                int end = -1;
+                for (int i = 0; i < codes.Count; i++)
+                {
+                    if (startLooking)
+                    {
+                        if(start == -1 && codes[i].opcode == OpCodes.Ldfld && codes[i].operand as FieldInfo == typeof(Farmer).GetField("timerSinceLastMovement"))
+                        {
+                            start = i - 1;
+                            Monitor.Log($"start at {start}");
+                        }
+                        if (codes[i].opcode == OpCodes.Stfld && codes[i].operand as FieldInfo == typeof(Farmer).GetField("health"))
+                        {
+                            end = i + 1;
+                            Monitor.Log($"end at {end}");
+                        }
+                    }
+                    else if (codes[i].operand as string == "slosh")
+                    {
+                        startLooking = true;
+                    }
+                }
+                if(start > -1 && end > start)
+                {
+                    codes.RemoveRange(start, end - start);
+                }
+            }
+            catch (Exception ex)
+            {
+                Monitor.Log($"Failed in {nameof(Farmer_updateCommon_Transpiler)}:\n{ex}", LogLevel.Error);
+            }
+
+            return codes.AsEnumerable();
+        }
+
         public static void Farmer_changeIntoSwimsuit_Postfix(Farmer __instance)
         {
             try

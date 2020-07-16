@@ -17,7 +17,7 @@
         public bool RemoveSpouseOrdinaryDialogue { get; set; } = false;
         public int MinHeartsForKiss { get; set; } = 9;
         public bool AllowSpousesToKiss { get; set; } = true;
-        public float SpouseKissChance { get; set; } = 0.5f;
+        public float SpouseKissChance { get; set; } = 0.1f;
         public bool RealKissSound { get; set; } = true;
         public float MaxDistanceToKiss { get; set; } = 200f;
         public double MinSpouseKissInterval { get; set; } = 5;

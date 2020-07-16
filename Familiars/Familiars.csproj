@@ -62,6 +62,8 @@
   <ItemGroup>
     <None Include="assets\json-assets\content-pack.json" />
     <None Include="assets\json-assets\Objects\BatFamiliarEgg\object.json" />
+    <None Include="assets\json-assets\Objects\ButterflyFamiliarEgg\object.json" />
+    <None Include="assets\json-assets\Objects\ButterflyDust\object.json" />
     <None Include="assets\json-assets\Objects\JunimoFamiliarEgg\object.json" />
     <None Include="assets\json-assets\Objects\DustFamiliarEgg\object.json" />
     <None Include="assets\json-assets\Objects\DinoFamiliarEgg\object.json" />
@@ -74,6 +76,8 @@
     <Content Include="assets\DinoFamiliar.png" />
     <Content Include="assets\DustSpiritFamiliar.png" />
     <Content Include="assets\json-assets\Objects\BatFamiliarEgg\object.png" />
+    <Content Include="assets\json-assets\Objects\ButterflyFamiliarEgg\object.png" />
+    <Content Include="assets\json-assets\Objects\ButterflyDust\object.png" />
     <Content Include="assets\json-assets\Objects\JunimoFamiliarEgg\object.png" />
     <Content Include="assets\json-assets\Objects\DustFamiliarEgg\object.png" />
     <Content Include="assets\json-assets\Objects\DinoFamiliarEgg\object.png" />

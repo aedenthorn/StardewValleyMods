@@ -183,10 +183,16 @@ namespace Familiars
 			{
 				this.seenPlayer.Value = true;
 
-				Rectangle targetRect = chargingMonster ? currentTarget.GetBoundingBox() : GetOwner().GetBoundingBox();
+				Vector2 center = Position + new Vector2(8, 8);
+				Vector2 playerCenter = GetOwner().position + new Vector2(64, 92);
+				if (Vector2.Distance(playerCenter, center) > 256)
+				{
+					Position = Vector2.Distance(playerCenter, center) * 0.03f * Vector2.Normalize(playerCenter - center) + center - new Vector2(8, 8);
 
-				float xSlope = (float)(-(float)(targetRect.Center.X - this.GetBoundingBox().Center.X));
-				float ySlope = (float)(targetRect.Center.Y - this.GetBoundingBox().Center.Y);
+				}
+
+				float xSlope = (float)(-(float)(playerCenter.X - center.X));
+				float ySlope = (float)(playerCenter.Y - center.Y);
 				float t = Math.Max(1f, Math.Abs(xSlope) + Math.Abs(ySlope));
 				if (t < (float)((this.extraVelocity > 0f) ? 192 : 64))
 				{
