@@ -174,6 +174,13 @@ namespace MultipleSpouses
                         Maps.ExpandKidsRoom(__instance);
                     }
                 }
+                if(Misc.GetSpouses(f,0).ContainsKey("Sebastian") && Game1.netWorldState.Value.hasWorldStateID("sebastianFrog"))
+                {
+                    if (Game1.random.NextDouble() < 0.1 && Game1.timeOfDay > 610)
+                    {
+                        DelayedAction.playSoundAfterDelay("croak", 1000, null, -1);
+                    }
+                }
             }
             catch (Exception ex)
             {

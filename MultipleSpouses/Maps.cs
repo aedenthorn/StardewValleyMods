@@ -1,4 +1,5 @@
 ﻿using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using Netcode;
 using StardewModdingAPI;
 using StardewValley;
@@ -389,6 +390,65 @@ namespace MultipleSpouses
 						}
 					}
 				}
+
+				if(name == "Sebastian" && Game1.netWorldState.Value.hasWorldStateID("sebastianFrog"))
+                {
+					Monitor.Log("building Sebastian's terrarium");
+					Vector2 spot = new Vector2(37 + (7 * count) + ox, 7 + oy);
+					farmHouse.removeTile((int)spot.X, (int)spot.Y - 1, "Front");
+					farmHouse.removeTile((int)spot.X + 1, (int)spot.Y - 1, "Front");
+					farmHouse.removeTile((int)spot.X + 2, (int)spot.Y - 1, "Front");
+					farmHouse.temporarySprites.Add(new TemporaryAnimatedSprite
+					{
+						texture = Game1.mouseCursors,
+						sourceRect = new Microsoft.Xna.Framework.Rectangle(641, 1534, 48, 37),
+						animationLength = 1,
+						sourceRectStartingPos = new Vector2(641f, 1534f),
+						interval = 5000f,
+						totalNumberOfLoops = 9999,
+						position = spot * 64f + new Vector2(0f, -5f) * 4f,
+						scale = 4f,
+						layerDepth = (spot.Y + 2f + 0.1f) * 64f / 10000f
+					});
+					if (Game1.random.NextDouble() < 0.85)
+					{
+						Texture2D crittersText2 = Game1.temporaryContent.Load<Texture2D>("TileSheets\\critters");
+						farmHouse.TemporarySprites.Add(new SebsFrogs
+						{
+							texture = crittersText2,
+							sourceRect = new Microsoft.Xna.Framework.Rectangle(64, 224, 16, 16),
+							animationLength = 1,
+							sourceRectStartingPos = new Vector2(64f, 224f),
+							interval = 100f,
+							totalNumberOfLoops = 9999,
+							position = spot * 64f + new Vector2((float)((Game1.random.NextDouble() < 0.5) ? 22 : 25), (float)((Game1.random.NextDouble() < 0.5) ? 2 : 1)) * 4f,
+							scale = 4f,
+							flipped = (Game1.random.NextDouble() < 0.5),
+							layerDepth = (spot.Y + 2f + 0.11f) * 64f / 10000f,
+							Parent = farmHouse
+						});
+					}
+					if (!Game1.player.activeDialogueEvents.ContainsKey("sebastianFrog2") && Game1.random.NextDouble() < 0.5)
+					{
+						Texture2D crittersText3 = Game1.temporaryContent.Load<Texture2D>("TileSheets\\critters");
+						farmHouse.TemporarySprites.Add(new SebsFrogs
+						{
+							texture = crittersText3,
+							sourceRect = new Microsoft.Xna.Framework.Rectangle(64, 240, 16, 16),
+							animationLength = 1,
+							sourceRectStartingPos = new Vector2(64f, 240f),
+							interval = 150f,
+							totalNumberOfLoops = 9999,
+							position = spot * 64f + new Vector2(8f, 3f) * 4f,
+							scale = 4f,
+							layerDepth = (spot.Y + 2f + 0.11f) * 64f / 10000f,
+							flipped = (Game1.random.NextDouble() < 0.5),
+							pingPong = false,
+							Parent = farmHouse
+						});
+					}
+				}
+
 				/*
 				List<string> sheets = new List<string>();
 				for (int i = 0; i < farmHouse.map.TileSheets.Count; i++)

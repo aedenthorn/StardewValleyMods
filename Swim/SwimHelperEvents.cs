@@ -426,7 +426,7 @@ namespace Swim
                 return; 
             }
             
-            if (e.Button == Config.SwimKey && !Game1.player.swimming)
+            if (e.Button == Config.SwimKey && (!Game1.player.swimming || !Config.ReadyToSwim) && !isJumping)
             {
                 Config.ReadyToSwim = !Config.ReadyToSwim;
                 Helper.WriteConfig<ModConfig>(Config);

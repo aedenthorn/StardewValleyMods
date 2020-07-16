@@ -463,7 +463,7 @@ namespace MultipleSpouses
             {
                 if (f.friendshipData[name].IsEngaged())
                 {
-                    Monitor.Log($"{f.Name} is engaged to: {name}");
+                    Monitor.Log($"{f.Name} is engaged to: {name} {f.friendshipData[name].CountdownToWedding} days until wedding");
                     if (f.friendshipData[name].WeddingDate.TotalDays < new WorldDate(Game1.Date).TotalDays)
                     {
                         Monitor.Log("invalid engagement: " + name);

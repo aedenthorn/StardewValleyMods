@@ -189,7 +189,7 @@ namespace MultipleSpouses
                 {
                     Game1.warpCharacter(__instance, "Farm", ModEntry.outdoorAreaData.areas[__instance.Name].NpcPos(__instance.Name));
                 }
-                else if (Game1.MasterPlayer.spouse.Equals(__instance.Name))
+                else if (Game1.player.spouse.Equals(__instance.Name) && ModEntry.outdoorAreaData.areas.Count == 0)
                 {
                     Point point = new Point(71, 10);
                     if (spousePatioLocations.ContainsKey(__instance.Name))
