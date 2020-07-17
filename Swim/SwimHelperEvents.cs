@@ -295,52 +295,56 @@ namespace Swim
         {
             foreach(KeyValuePair<string, DiveMap> kvp in ModEntry.diveMaps)
             {
-                if (!Game1._locationLookup.ContainsKey(kvp.Key))
+                GameLocation location = Game1.getLocationFromName(kvp.Key);
+                if (location == null)
+                {
+                    Monitor.Log($"GameLocation {location.Name} not found in day started loop");
                     continue;
+                }
                 if (kvp.Value.Features.Contains("OceanTreasure") || kvp.Value.Features.Contains("OceanResources") || kvp.Value.Features.Contains("Minerals"))
                 {
-                    Game1._locationLookup[kvp.Key].overlayObjects.Clear();
+                    location.overlayObjects.Clear();
                 }
                 if (kvp.Value.Features.Contains("OceanTreasure"))
                 {
-                    SwimMaps.AddOceanTreasure(Game1._locationLookup[kvp.Key]);
+                    SwimMaps.AddOceanTreasure(location);
                 }
                 if (kvp.Value.Features.Contains("OceanResources"))
                 {
-                    SwimMaps.AddOceanForage(Game1._locationLookup[kvp.Key]);
+                    SwimMaps.AddOceanForage(location);
                 }
                 if (kvp.Value.Features.Contains("Minerals"))
                 {
-                    SwimMaps.AddMinerals(Game1._locationLookup[kvp.Key]);
+                    SwimMaps.AddMinerals(location);
                 }
                 if (kvp.Value.Features.Contains("SmolFishies") || kvp.Value.Features.Contains("BigFishies") || kvp.Value.Features.Contains("Crabs"))
                 {
-                    Game1._locationLookup[kvp.Key].characters.Clear();
+                    location.characters.Clear();
                 }
                 if (kvp.Value.Features.Contains("SmolFishies"))
                 {
-                    SwimMaps.AddFishies(Game1._locationLookup[kvp.Key]);
+                    SwimMaps.AddFishies(location);
                 }
                 if (kvp.Value.Features.Contains("BigFishies"))
                 {
-                    SwimMaps.AddFishies(Game1._locationLookup[kvp.Key], false);
+                    SwimMaps.AddFishies(location, false);
                 }
                 if (kvp.Value.Features.Contains("Crabs"))
                 {
-                    SwimMaps.AddCrabs(Game1._locationLookup[kvp.Key]);
+                    SwimMaps.AddCrabs(location);
                 }
                 if (kvp.Value.Features.Contains("WaterTiles"))
                 {
-                    SwimMaps.AddWaterTiles(Game1._locationLookup[kvp.Key]);
+                    SwimMaps.AddWaterTiles(location);
                 }
                 if (kvp.Value.Features.Contains("Underwater"))
                 {
-                    SwimMaps.RemoveWaterTiles(Game1._locationLookup[kvp.Key]);
+                    SwimMaps.RemoveWaterTiles(location);
                 }
             }
-            if (Game1._locationLookup.ContainsKey("ScubaCave") && !Game1.player.mailReceived.Contains("ScubaMask"))
+            if (Game1.getLocationFromName("ScubaCave") != null && !Game1.player.mailReceived.Contains("ScubaMask"))
             {
-                SwimMaps.AddScubaChest(Game1._locationLookup["ScubaCave"], new Vector2(10,14), "ScubaMask");
+                SwimMaps.AddScubaChest(Game1.getLocationFromName("ScubaCave"), new Vector2(10,14), "ScubaMask");
             }
             ModEntry.marinerQuestionsWrongToday = false;
             ModEntry.oxygen = SwimUtils.MaxOxygen();
@@ -420,7 +424,7 @@ namespace Swim
                     return;
                 }
 
-                if (!Game1._locationLookup.ContainsKey(diveLocation.OtherMapName))
+                if (Game1.getLocationFromName(diveLocation.OtherMapName) == null)
                 {
                     Monitor.Log($"Can't find destination map named {diveLocation.OtherMapName}", LogLevel.Warn);
                     return;

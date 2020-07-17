@@ -456,7 +456,7 @@ namespace Swim
                         return;
                     }
 
-                    if (!Game1._locationLookup.ContainsKey(diveLocation.OtherMapName))
+                    if (Game1.getLocationFromName(diveLocation.OtherMapName) == null)
                     {
                         Monitor.Log($"sink debris: Can't find destination map named {diveLocation.OtherMapName}", LogLevel.Warn);
                         return;
