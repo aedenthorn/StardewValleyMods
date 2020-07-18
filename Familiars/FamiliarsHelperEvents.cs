@@ -79,23 +79,23 @@ namespace Familiars
                     {
                         if(l.characters[i] is DustSpriteFamiliar)
                         {
-                            fsd.dustSpriteFamiliars.Add((l.characters[i] as Familiar).SaveData());
+                            fsd.dustSpriteFamiliars.Add((l.characters[i] as Familiar).SaveData(l));
                         }
                         else if(l.characters[i] is DinoFamiliar)
                         {
-                            fsd.dinoFamiliars.Add((l.characters[i] as Familiar).SaveData());
+                            fsd.dinoFamiliars.Add((l.characters[i] as Familiar).SaveData(l));
                         }
                         else if(l.characters[i] is BatFamiliar)
                         {
-                            fsd.batFamiliars.Add((l.characters[i] as Familiar).SaveData());
+                            fsd.batFamiliars.Add((l.characters[i] as Familiar).SaveData(l));
                         }
                         else if(l.characters[i] is JunimoFamiliar)
                         {
-                            fsd.junimoFamiliars.Add((l.characters[i] as Familiar).SaveData());
+                            fsd.junimoFamiliars.Add((l.characters[i] as Familiar).SaveData(l));
                         }
                         else if(l.characters[i] is ButterflyFamiliar)
                         {
-                            fsd.butterflyFamiliars.Add((l.characters[i] as Familiar).SaveData());
+                            fsd.butterflyFamiliars.Add((l.characters[i] as Familiar).SaveData(l));
                         }
                         l.characters.RemoveAt(i);
                     }

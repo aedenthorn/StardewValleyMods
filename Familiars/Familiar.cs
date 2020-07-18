@@ -126,7 +126,7 @@ namespace Familiars
 			collidesWithOtherCharacters.Value = false;
 		}
 
-        public FamiliarData SaveData()
+        public FamiliarData SaveData(GameLocation gameLocation)
         {
 			return new FamiliarData()
 			{
@@ -138,7 +138,7 @@ namespace Familiars
 				redColor = this.redColor,
 				greenColor = this.greenColor,
 				blueColor = this.blueColor,
-				currentLocation = this.currentLocation.Name,
+				currentLocation = gameLocation.Name,
 				position = this.position
 			};
         }

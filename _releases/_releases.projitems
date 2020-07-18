@@ -12,6 +12,7 @@
     <None Include="$(MSBuildThisFileDirectory)CustomFixedDialogue 0.4.0.zip" />
     <None Include="$(MSBuildThisFileDirectory)Familiars 0.7.0.zip" />
     <None Include="$(MSBuildThisFileDirectory)Familiars 0.7.1.zip" />
+    <None Include="$(MSBuildThisFileDirectory)Familiars 0.7.2.zip" />
     <None Include="$(MSBuildThisFileDirectory)FruitTreeShaker 1.1.0.zip" />
     <None Include="$(MSBuildThisFileDirectory)MultipleSpouses 1.2.3.zip" />
     <None Include="$(MSBuildThisFileDirectory)MultipleSpouses 1.3.0.zip" />
