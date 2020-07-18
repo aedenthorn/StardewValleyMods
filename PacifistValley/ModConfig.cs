@@ -15,5 +15,6 @@ namespace PacifistValley
         public int AreaOfKissEffectModifier { get; set; } = 20;
         public bool PreventUnlovedMonsterDamage { get; set; } = true;
         public bool LovedMonstersStillSwarm { get; set; } = false;
+        public bool MonstersIgnorePlayer { get; set; } = false;
     }
 }
