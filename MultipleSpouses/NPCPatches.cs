@@ -968,6 +968,27 @@ namespace MultipleSpouses
             return codes.AsEnumerable();
         }
 
+        public static void NPC_playSleepingAnimation_Postfix(NPC __instance)
+        {
+            try
+            {
+                Dictionary<string, string> animationDescriptions = Game1.content.Load<Dictionary<string, string>>("Data\\animationDescriptions");
+                if (!animationDescriptions.ContainsKey(__instance.name.Value.ToLower() + "_sleep") && animationDescriptions.ContainsKey(__instance.name.Value + "_Sleep"))
+                {
+                    int sleep_frame = Convert.ToInt32(animationDescriptions[__instance.name.Value + "_Sleep"].Split('/')[0]);
+                    __instance.Sprite.setCurrentAnimation(new List<FarmerSprite.AnimationFrame>
+                    {
+                        new FarmerSprite.AnimationFrame(sleep_frame, 100, false, false, null, false)
+                    });
+                    __instance.Sprite.loop = true;
+                }
+            }
+            catch (Exception ex)
+            {
+                Monitor.Log($"Failed in {nameof(NPC_playSleepingAnimation_Postfix)}:\n{ex}", LogLevel.Error);
+            }
+        }
+
         public static void Child_reloadSprite_Postfix(ref Child __instance)
         {
             try
@@ -1071,5 +1092,6 @@ namespace MultipleSpouses
                 Monitor.Log($"Failed in {nameof(Child_tenMinuteUpdate_Postfix)}:\n{ex}", LogLevel.Error);
             }
         }
+
     }
 }

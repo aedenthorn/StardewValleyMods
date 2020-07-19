@@ -126,6 +126,11 @@ namespace MultipleSpouses
             );
 
             harmony.Patch(
+               original: AccessTools.Method(typeof(NPC), nameof(NPC.playSleepingAnimation)),
+               postfix: new HarmonyMethod(typeof(NPCPatches), nameof(NPCPatches.NPC_playSleepingAnimation_Postfix))
+            );
+
+            harmony.Patch(
                original: AccessTools.Method(typeof(Child), nameof(Child.reloadSprite)),
                postfix: new HarmonyMethod(typeof(NPCPatches), nameof(NPCPatches.Child_reloadSprite_Postfix))
             );
@@ -495,7 +500,6 @@ namespace MultipleSpouses
             {
                 IDictionary<string, string> data = asset.AsDictionary<string, string>().Data;
                 data["NPC.cs.3985"] = Regex.Replace(data["NPC.cs.3985"],  @"\.\.\.\$s.+", $"$n#$b#$c 0.5#{data["ResourceCollectionQuest.cs.13681"]}#{data["ResourceCollectionQuest.cs.13683"]}");
-                Monitor.Log($"New NPC.cs.3985 jealousy dialogue: {data["NPC.cs.3985"]}");
             }
             else if (asset.AssetNameEquals("Data/animationDescriptions"))
             {
@@ -504,7 +508,10 @@ namespace MultipleSpouses
                 foreach(string key in sleepKeys)
                 {
                     if (!data.ContainsKey(key.ToLower()))
+                    {
+                        Monitor.Log($"adding {key.ToLower()} to animationDescriptions");
                         data.Add(key.ToLower(), data[key]);
+                    }
                 }
             }
             else if (asset.AssetNameEquals("Data/EngagementDialogue"))

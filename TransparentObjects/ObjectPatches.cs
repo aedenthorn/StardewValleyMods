@@ -36,22 +36,22 @@ namespace TransparentObjects
                 alpha = minAlpha + (1 - minAlpha) * fraction;
             }
         }
-        public static bool XnaDisplayDevice_DrawTile_Prefix(XnaDisplayDevice __instance, Tile tile, Location location, float layerDepth, Dictionary<TileSheet, Texture2D> ___m_tileSheetTextures, ref Vector2 ___m_tilePosition, ref Microsoft.Xna.Framework.Rectangle ___m_sourceRectangle, ref SpriteBatch ___m_spriteBatchAlpha, ref Color ___m_modulationColour)
+        public static bool XnaDisplayDevice_DrawTile_Prefix(Tile tile, Location location, float layerDepth, Dictionary<TileSheet, Texture2D> ___m_tileSheetTextures, ref Vector2 ___m_tilePosition, ref Microsoft.Xna.Framework.Rectangle ___m_sourceRectangle, ref SpriteBatch ___m_spriteBatchAlpha, ref Color ___m_modulationColour)
         {
+            Monitor.Log($"tile id {tile.Layer.Id }");
             if (tile != null && (tile.Layer.Id == "Front" || tile.Layer.Id == "AlwaysFront"))
             {
                 Vector2 playerLoc = Game1.player.getTileLocation();
                 Monitor.Log($"Player {playerLoc} Tile {location} distance {Vector2.Distance(playerLoc, new Vector2(location.X, location.Y))}");
-                if (Vector2.Distance(playerLoc, new Vector2(location.X, location.Y)) < 2)
+                if (Vector2.Distance(playerLoc, new Vector2(location.X, location.Y)) < 3)
                 {
-                    Monitor.Log(".25");
                     ___m_modulationColour.A = 255 / 4;
                 }
-                else if(Vector2.Distance(playerLoc, new Vector2(location.X, location.Y)) < 3)
+                else if(Vector2.Distance(playerLoc, new Vector2(location.X, location.Y)) < 4)
                 {
                     ___m_modulationColour.A = 255 / 2;
                 }
-                else if(Vector2.Distance(playerLoc, new Vector2(location.X, location.Y)) < 4)
+                else if(Vector2.Distance(playerLoc, new Vector2(location.X, location.Y)) < 5)
                 {
                     ___m_modulationColour.A = 255 * 3 / 4 ;
                 }
@@ -70,6 +70,10 @@ namespace TransparentObjects
                 return false;
             }
             return true;
+        }
+        public static void XnaDisplayDevice_DrawTile_Postfix(Tile tile, Location location, float layerDepth, Dictionary<TileSheet, Texture2D> ___m_tileSheetTextures, ref Vector2 ___m_tilePosition, ref Microsoft.Xna.Framework.Rectangle ___m_sourceRectangle, ref SpriteBatch ___m_spriteBatchAlpha, ref Color ___m_modulationColour)
+        {
+            Monitor.Log($"tile id {tile.Layer.Id }");
         }
     }
 }

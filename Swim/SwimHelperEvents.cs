@@ -298,47 +298,57 @@ namespace Swim
                 GameLocation location = Game1.getLocationFromName(kvp.Key);
                 if (location == null)
                 {
-                    Monitor.Log($"GameLocation {location.Name} not found in day started loop");
+                    Monitor.Log($"GameLocation {kvp.Key} not found in day started loop");
                     continue;
                 }
                 if (kvp.Value.Features.Contains("OceanTreasure") || kvp.Value.Features.Contains("OceanResources") || kvp.Value.Features.Contains("Minerals"))
                 {
+                    Monitor.Log($"Clearing overlay objects from GameLocation {location.Name} ");
                     location.overlayObjects.Clear();
                 }
                 if (kvp.Value.Features.Contains("OceanTreasure"))
                 {
+                    Monitor.Log($"Adding ocean treasure to GameLocation {location.Name} ");
                     SwimMaps.AddOceanTreasure(location);
                 }
                 if (kvp.Value.Features.Contains("OceanResources"))
                 {
+                    Monitor.Log($"Adding ocean forage to GameLocation {location.Name} ");
                     SwimMaps.AddOceanForage(location);
                 }
                 if (kvp.Value.Features.Contains("Minerals"))
                 {
+                    Monitor.Log($"Adding minerals to GameLocation {location.Name} ");
                     SwimMaps.AddMinerals(location);
                 }
                 if (kvp.Value.Features.Contains("SmolFishies") || kvp.Value.Features.Contains("BigFishies") || kvp.Value.Features.Contains("Crabs"))
                 {
+                    Monitor.Log($"Clearing characters from GameLocation {location.Name} ");
                     location.characters.Clear();
                 }
                 if (kvp.Value.Features.Contains("SmolFishies"))
                 {
+                    Monitor.Log($"Adding smol fishies to GameLocation {location.Name} ");
                     SwimMaps.AddFishies(location);
                 }
                 if (kvp.Value.Features.Contains("BigFishies"))
                 {
+                    Monitor.Log($"Adding big fishies to GameLocation {location.Name} ");
                     SwimMaps.AddFishies(location, false);
                 }
                 if (kvp.Value.Features.Contains("Crabs"))
                 {
+                    Monitor.Log($"Adding crabs to GameLocation {location.Name} ");
                     SwimMaps.AddCrabs(location);
                 }
                 if (kvp.Value.Features.Contains("WaterTiles"))
                 {
+                    Monitor.Log($"Adding water tiles to GameLocation {location.Name} ");
                     SwimMaps.AddWaterTiles(location);
                 }
                 if (kvp.Value.Features.Contains("Underwater"))
                 {
+                    Monitor.Log($"Removing water tiles from GameLocation {location.Name} ");
                     SwimMaps.RemoveWaterTiles(location);
                 }
             }

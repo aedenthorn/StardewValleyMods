@@ -33,12 +33,16 @@ namespace TransparentObjects
                original: AccessTools.Method(typeof(StardewValley.Object), nameof(StardewValley.Object.draw), new Type[] { typeof(SpriteBatch), typeof(int), typeof(int), typeof(float) }),
                prefix: new HarmonyMethod(typeof(ObjectPatches), nameof(ObjectPatches.Object_draw_Prefix))
             );
-            /*
+
+            return;
+            HarmonyMethod method = new HarmonyMethod(typeof(ObjectPatches), nameof(ObjectPatches.XnaDisplayDevice_DrawTile_Prefix));
+            method.prioritiy = 10000;
             harmony.Patch(
                original: AccessTools.Method(typeof(XnaDisplayDevice), nameof(XnaDisplayDevice.DrawTile)),
-               prefix: new HarmonyMethod(typeof(ObjectPatches), nameof(ObjectPatches.XnaDisplayDevice_DrawTile_Prefix))
+               prefix: method,
+               postfix: new HarmonyMethod(typeof(ObjectPatches), nameof(ObjectPatches.XnaDisplayDevice_DrawTile_Postfix))
             );
-            */
+            
         }
     }
 }
