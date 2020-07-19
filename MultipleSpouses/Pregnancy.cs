@@ -209,17 +209,16 @@ namespace MultipleSpouses
             __result = false;
             return false;
         }
-        public static bool BirthingEvent_setUp_Prefix(BirthingEvent __instance, ref bool ___isMale, ref string ___message, ref bool __result)
+        public static bool BirthingEvent_setUp_Postfix(ref bool ___isMale, ref string ___message, ref bool __result)
         {
             if(lastBirthingSpouse == null)
             {
                 __result = true;
                 return false;
             }
-            Random r = new Random((int)Game1.uniqueIDForThisGame + (int)Game1.stats.DaysPlayed);
             NPC spouse = lastBirthingSpouse;
             Game1.player.CanMove = false;
-            ___isMale = (r.NextDouble() > ModEntry.config.FemaleBabyChance);
+            ___isMale = ModEntry.myRand.NextDouble() > ModEntry.config.FemaleBabyChance;
             if (spouse.isGaySpouse() && !ModEntry.config.AllowGayPregnancies)
             {
                 ___message = Game1.content.LoadString("Strings\\Events:BirthMessage_Adoption", Lexicon.getGenderedChildTerm(___isMale));
