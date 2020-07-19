@@ -209,7 +209,7 @@ namespace MultipleSpouses
             __result = false;
             return false;
         }
-        public static bool BirthingEvent_setUp_Postfix(ref bool ___isMale, ref string ___message, ref bool __result)
+        public static bool BirthingEvent_setUp_Prefix(ref bool ___isMale, ref string ___message, ref bool __result)
         {
             if(lastBirthingSpouse == null)
             {
