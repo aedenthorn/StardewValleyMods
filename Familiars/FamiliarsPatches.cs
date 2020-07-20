@@ -216,7 +216,7 @@ namespace Familiars
 
 			foreach (NPC i in __instance.characters)
 			{
-				if (i != null &&  i is Familiar && (i as Familiar).ownerId.Equals(who) && i.GetBoundingBox().Intersects(tileRect))
+				if (i != null &&  i is Familiar && (i as Familiar).ownerId.Equals(who.UniqueMultiplayerID) && i.GetBoundingBox().Intersects(tileRect))
 				{
 					(i as Familiar).followingOwner = !(i as Familiar).followingOwner;
 					__instance.playSound("dwop");
