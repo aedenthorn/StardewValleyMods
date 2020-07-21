@@ -64,7 +64,7 @@ namespace Quotes
         private bool clickedOnQuote = true;
         private void Display_Rendering(object sender, StardewModdingAPI.Events.RenderingEventArgs e)
         {
-            if (Game1.fadeToBlack)
+            if (Game1.fadeToBlackAlpha > 0)
             {
                 if ((Config.QuoteDurationPerLineMult < 0 || ++displayTicks < Config.QuoteDurationPerLineMult * dailyQuote.quoteLines.Count * 300) && !clickedOnQuote)
                 {
