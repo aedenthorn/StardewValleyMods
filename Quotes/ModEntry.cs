@@ -18,6 +18,17 @@ namespace Quotes
 
         public static string[] quotestrings = new string[0];
         public static List<Quote> quotes = new List<Quote>();
+        private float lastFadeAlpha = 1f;
+        private Quote dailyQuote;
+        private int displayTicks = 0;
+        private bool clickedOnQuote = true;
+        private List<string> seasons = new List<string>
+        {
+            "spring",
+            "summer",
+            "fall",
+            "winter"
+        };
 
         /// <summary>The mod entry point, called after the mod is first loaded.</summary>
         /// <param name="helper">Provides simplified APIs for writing mods.</param>
@@ -51,17 +62,11 @@ namespace Quotes
             lastFadeAlpha = 1f;
             displayTicks = 0;
             clickedOnQuote = false;
-            dailyQuote = GetRandomQuote();
-            Monitor.Log($"Today's quote: {dailyQuote.quote}\r\n\r\n-- {dailyQuote.author}", LogLevel.Debug);
+            dailyQuote = GetAQuote();
             Helper.Events.Display.Rendering += Display_Rendering;
             Helper.Events.Display.Rendered += Display_Rendered;
         }
 
-
-        private float lastFadeAlpha = 1f;
-        private Quote dailyQuote;
-        private int displayTicks = 0;
-        private bool clickedOnQuote = true;
         private void Display_Rendering(object sender, StardewModdingAPI.Events.RenderingEventArgs e)
         {
             if (Game1.fadeToBlackAlpha > 0)
@@ -122,9 +127,11 @@ namespace Quotes
             }
         }
 
-        private Quote GetRandomQuote()
+        private Quote GetAQuote()
         {
-            return quotes[myRand.Next(quotes.Count)];
+            int idx = Config.RandomQuote ? myRand.Next(quotes.Count) : Game1.dayOfMonth + seasons.IndexOf(Game1.currentSeason) * 28 - 1;
+            Monitor.Log($"Today's quote (#{idx + 1}): {quotes[idx].quote}\r\n\r\n-- {quotes[idx].author}", LogLevel.Debug);
+            return quotes[idx];
         }
     }
 }

@@ -17,5 +17,6 @@ namespace Quotes
         public int QuoteFadeMult { get; set; } = 1;
         public string AuthorPrefix { get; set; } = "-- ";
         public bool ClickToDispelQuote { get; set; } = true;
+        public bool RandomQuote { get; set; } = false;
     }
 }
