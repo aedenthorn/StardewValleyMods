@@ -122,13 +122,16 @@ namespace CustomFixedDialogue
             else if ((path.StartsWith(NPCPrefix) && !NPCexceptions.Contains(path.Substring(NPCPrefix.Length))) || (path.StartsWith(eventPrefix) && eventChanges.Contains(path.Substring(eventPrefix.Length))) || (path.StartsWith(utilityPrefix) && utilityChanges.Contains(path.Substring(utilityPrefix.Length))))
             {
                 text = $"{prefix}{path.Replace("Strings\\StringsFromCSFiles:", "")}^{text}^{suffix}{path.Replace("Strings\\StringsFromCSFiles:", "")}";
+                //Monitor.Log($"edited string: {text}");
             }
         }
 
         public static void FixString(NPC speaker, ref string input)
         {
 
-            Regex pattern1 = new Regex(prefix + @"(?<key>[^\^]+)\^(?<word>.*)\^" + suffix + @"(\k<key>)", RegexOptions.Compiled);
+            //Monitor.Log($"checking string: {input}");
+
+            Regex pattern1 = new Regex(prefix + @"(?<key>[^\^]+)", RegexOptions.Compiled);
 
             while (pattern1.IsMatch(input))
             {
@@ -153,7 +156,9 @@ namespace CustomFixedDialogue
                 }
                 else
                 {
-                    input = input.Replace($"{prefix}{key}^","").Replace($"^{suffix}{key}","");
+                    //Monitor.Log($"edited input: {input}");
+                    input = input.Replace($"^{suffix}{key}", "").Replace($"{prefix}{key}^","");
+                    Monitor.Log($"reverted input: {input}");
                 }
             }
         }

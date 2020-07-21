@@ -25,11 +25,9 @@ namespace CustomFixedDialogue
 
 			DialoguePatches.Initialize(Monitor, helper);
 
-			string test = "CustomFixedDialogueNPC.cs.4279^Oh... It's for my birthday? ... Thanks.$s/Oh... It's for my birthday? ... Thanks.$s^EndCustomFixedDialogueNPC.cs.4279";
-
-			DialoguePatches.FixString(new NPC() { Name = "Jas" }, ref test);
-
-			Monitor.Log($"test dialogue {test}");
+			//string test = "CustomFixedDialogueNPC.cs.4279^Oh... It's for my birthday? ... Thanks.$s/Oh... It's for my birthday? ... Thanks.$s^EndCustomFixedDialogueNPC.cs.4279";
+			//DialoguePatches.FixString(new NPC() { Name = "Jas" }, ref test);
+			//Monitor.Log($"test dialogue {test}");
 
 			var harmony = HarmonyInstance.Create(ModManifest.UniqueID); 
 

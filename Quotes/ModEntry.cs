@@ -101,8 +101,11 @@ namespace Quotes
         private void LoadQuotes()
         {
             string file = Path.Combine(Helper.DirectoryPath, "assets", "quotes.txt");
-            if(!File.Exists(file))
+            if (!File.Exists(file))
+            {
+                Monitor.Log($"No quotes.txt file, using quotes_default.txt", LogLevel.Debug);
                 file = Path.Combine(Helper.DirectoryPath, "assets", "quotes_default.txt");
+            }
             if (File.Exists(file))
             {
                 quotestrings = File.ReadAllLines(file);
@@ -115,7 +118,7 @@ namespace Quotes
             }
             else
             {
-                Monitor.Log($"quotes file not found at {file}, maybe you didn't download the quotes file?", LogLevel.Error);
+                Monitor.Log($"Quotes file not found at {file}!", LogLevel.Error);
             }
         }
 
