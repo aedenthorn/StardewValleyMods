@@ -45,6 +45,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TransparentObjects", "Trans
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Familiars", "Familiars\Familiars.csproj", "{08FA65AF-8FEB-4A3C-8E50-52A2EF085DE5}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Quotes", "Quotes\Quotes.csproj", "{4FB39A1B-1952-40B2-A328-D1B8BEF2F95B}"
+EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
 		_releases\_releases.projitems*{047040e0-3d07-46e5-852b-d1d45cd57bb8}*SharedItemsImports = 13
@@ -216,6 +218,14 @@ Global
 		{08FA65AF-8FEB-4A3C-8E50-52A2EF085DE5}.Release|Any CPU.Build.0 = Release|Any CPU
 		{08FA65AF-8FEB-4A3C-8E50-52A2EF085DE5}.Release|x86.ActiveCfg = Release|Any CPU
 		{08FA65AF-8FEB-4A3C-8E50-52A2EF085DE5}.Release|x86.Build.0 = Release|Any CPU
+		{4FB39A1B-1952-40B2-A328-D1B8BEF2F95B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4FB39A1B-1952-40B2-A328-D1B8BEF2F95B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4FB39A1B-1952-40B2-A328-D1B8BEF2F95B}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{4FB39A1B-1952-40B2-A328-D1B8BEF2F95B}.Debug|x86.Build.0 = Debug|Any CPU
+		{4FB39A1B-1952-40B2-A328-D1B8BEF2F95B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4FB39A1B-1952-40B2-A328-D1B8BEF2F95B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4FB39A1B-1952-40B2-A328-D1B8BEF2F95B}.Release|x86.ActiveCfg = Release|Any CPU
+		{4FB39A1B-1952-40B2-A328-D1B8BEF2F95B}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

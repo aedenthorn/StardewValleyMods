@@ -1,0 +1,22 @@
+﻿{
+  "Name": "Quotes",
+  "Author": "aedenthorn",
+  "Version": "0.1.0",
+  "Description": "Displays a quote of the day.",
+  "UniqueID": "aedenthorn.Quotes",
+  "EntryDll": "Quotes.dll",
+  "MinimumApiVersion": "3.5.0",
+  "UpdateKeys": ["Nexus:6503"],
+  "ModUpdater": {
+    "Repository": "StardewValleyMods",
+    "User": "aedenthorn",
+    "Directory": "_releases",
+    "ModFolder": "Quotes"
+  },
+  "Dependencies": [
+      {
+        "UniqueID": "Platonymous.ModUpdater",
+        "IsRequired": false
+      },
+  ]
+}

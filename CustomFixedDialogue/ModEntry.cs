@@ -25,11 +25,13 @@ namespace CustomFixedDialogue
 
 			DialoguePatches.Initialize(Monitor, helper);
 
-			//string test = "CustomFixedDialogueNPC.cs.4083^Did you know that {0}^EndCustomFixedDialogueNPC.cs.4083CustomFixedDialogueNPC.cs.4084^ loves it.^EndCustomFixedDialogueNPC.cs.4084";
+			string test = "CustomFixedDialogueNPC.cs.4279^Oh... It's for my birthday? ... Thanks.$s/Oh... It's for my birthday? ... Thanks.$s^EndCustomFixedDialogueNPC.cs.4279";
 
-			//DialoguePatches.FixString(new NPC() { Name = "Abigail" }, ref test);
+			DialoguePatches.FixString(new NPC() { Name = "Jas" }, ref test);
 
-			var harmony = HarmonyInstance.Create(ModManifest.UniqueID);
+			Monitor.Log($"test dialogue {test}");
+
+			var harmony = HarmonyInstance.Create(ModManifest.UniqueID); 
 
 			harmony.Patch(
 				original: AccessTools.Method(typeof(Dialogue), "parseDialogueString"),
