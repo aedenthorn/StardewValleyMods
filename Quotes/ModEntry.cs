@@ -9,7 +9,7 @@ using System.Text.RegularExpressions;
 
 namespace Quotes
 {
-	public class ModEntry : Mod
+	public class ModEntry : Mod 
 	{
 		public static ModEntry context;
 
@@ -63,15 +63,18 @@ namespace Quotes
             displayTicks = 0;
             clickedOnQuote = false;
             dailyQuote = GetAQuote();
-            Helper.Events.Display.Rendering += Display_Rendering;
-            Helper.Events.Display.Rendered += Display_Rendered;
+            if(dailyQuote != null)
+            {
+                Helper.Events.Display.Rendering += Display_Rendering;
+                Helper.Events.Display.Rendered += Display_Rendered;
+            }
         }
 
         private void Display_Rendering(object sender, StardewModdingAPI.Events.RenderingEventArgs e)
         {
             if (Game1.fadeToBlackAlpha > 0)
             {
-                if ((Config.QuoteDurationPerLineMult < 0 || ++displayTicks < Config.QuoteDurationPerLineMult * dailyQuote.quoteLines.Count * 300) && !clickedOnQuote)
+                if ((Config.QuoteDurationPerLineMult < 0 || ++displayTicks < Config.QuoteDurationPerLineMult * dailyQuote.quoteLines.Count * 200) && !clickedOnQuote)
                 {
 
                     Game1.fadeToBlackAlpha = 1f;
@@ -129,7 +132,11 @@ namespace Quotes
 
         private Quote GetAQuote()
         {
-            int idx = Config.RandomQuote ? myRand.Next(quotes.Count) : Game1.dayOfMonth + seasons.IndexOf(Game1.currentSeason) * 28 - 1;
+            if (quotes.Count == 0)
+                return null;
+
+            int dayIdx = Game1.dayOfMonth + seasons.IndexOf(Game1.currentSeason) * 28 - 1;
+            int idx = (Config.RandomQuote || quotes.Count <= dayIdx ) ? myRand.Next(quotes.Count) : dayIdx;
             Monitor.Log($"Today's quote (#{idx + 1}): {quotes[idx].quote}\r\n\r\n-- {quotes[idx].author}", LogLevel.Debug);
             return quotes[idx];
         }

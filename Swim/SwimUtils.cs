@@ -242,13 +242,17 @@ namespace Swim
 
             return IsMapUnderwater(Game1.player.currentLocation.Name)
                 ||
-                (tiles != null
-                    && (
-                            (p.X >= 0 && p.Y >= 0 && tiles.GetLength(0) > p.X && tiles.GetLength(1) > p.Y && tiles[p.X, p.Y])
-                            ||
-                            (Game1.player.swimming &&
-                                (p.X < 0 || p.Y < 0 || tiles.GetLength(0) <= p.X || tiles.GetLength(1) <= p.Y)
-                            )
+                (
+                    tiles != null
+                    && 
+                    (
+                        (p.X >= 0 && p.Y >= 0 && tiles.GetLength(0) > p.X && tiles.GetLength(1) > p.Y && tiles[p.X, p.Y])
+                        ||
+                        (
+                            Game1.player.swimming 
+                            &&
+                            (p.X < 0 || p.Y < 0 || tiles.GetLength(0) <= p.X || tiles.GetLength(1) <= p.Y)
+                        )
                     )
                 );
         }

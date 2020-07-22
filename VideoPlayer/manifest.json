@@ -1,0 +1,22 @@
+﻿{
+  "Name": "Video Player",
+  "Author": "aedenthorn",
+  "Version": "0.1.0",
+  "Description": "Displays a video player on screen.",
+  "UniqueID": "aedenthorn.VideoPlayer",
+  "EntryDll": "VideoPlayer.dll",
+  "MinimumApiVersion": "3.5.0",
+  "UpdateKeys": ["Nexus:6503"],
+  "ModUpdater": {
+    "Repository": "StardewValleyMods",
+    "User": "aedenthorn",
+    "Directory": "_releases",
+    "ModFolder": "VideoPlayer"
+  },
+  "Dependencies": [
+      {
+        "UniqueID": "Platonymous.ModUpdater",
+        "IsRequired": false
+      },
+  ]
+}
