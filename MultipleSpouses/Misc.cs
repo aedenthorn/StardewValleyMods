@@ -95,7 +95,7 @@ namespace MultipleSpouses
             {
                 int type = ModEntry.myRand.Next(0, 100);
 
-                Monitor.Log("spouse type: " + type);
+                Monitor.Log($"spouse rand {type}, bed: {ModEntry.config.PercentChanceForSpouseInBed} kitchen {ModEntry.config.PercentChanceForSpouseInKitchen}");
                 
                 if(type < ModEntry.config.PercentChanceForSpouseInBed)
                 {
@@ -231,6 +231,12 @@ namespace MultipleSpouses
 
             int x = area.startX;
             int y = area.startY;
+
+            if(farm.map.Layers[0].LayerWidth <= x + 3 || farm.map.Layers[0].LayerHeight <= y + 3)
+            {
+                Monitor.Log($"Invalid spouse area coordinates {x},{y} for {name}", LogLevel.Error);
+                return;
+            }
 
             farm.removeTile(x +1, y + 3, "Buildings");
             farm.removeTile(x +2, y + 3, "Buildings");
@@ -564,6 +570,7 @@ namespace MultipleSpouses
             {
                 return topOfHeadOffsets[name];
             }
+            //Monitor.Log($"dont yet have offset for {name}");
             int top = 0;
 
             if (name == "Krobus")
@@ -600,7 +607,7 @@ namespace MultipleSpouses
                 if (idx >= colors.Length)
                 {
                     Monitor.Log($"Sleep pos couldn't get pixel at {startx + i % 16},{starty + i / 16} ");
-                    return top;
+                    break;
                 }
                 Color c = colors[idx];
                 if(c != Color.Transparent)

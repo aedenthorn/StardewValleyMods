@@ -292,16 +292,19 @@ namespace MultipleSpouses
 									character.position.Value = bedPos;
 									if(Game1.timeOfDay >= 2000 || Game1.timeOfDay <= 630)
                                     {
-										character.isSleeping.Value = true;
-										if (!Misc.HasSleepingAnimation(character.name.Value))
-										{
-											character.Sprite.StopAnimation();
-											character.faceDirection(0);
-										}
-										else
+										if (!character.isSleeping)
                                         {
-											character.playSleepingAnimation();
-                                        }
+											character.isSleeping.Value = true;
+											if (!Misc.HasSleepingAnimation(character.name.Value))
+											{
+												character.Sprite.StopAnimation();
+												character.faceDirection(0);
+											}
+											else
+											{
+												character.playSleepingAnimation();
+											}
+										}
 									}
 									else
                                     {
