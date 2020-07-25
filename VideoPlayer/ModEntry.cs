@@ -18,9 +18,8 @@ namespace VideoPlayerMod
         public VideoPlayer videoPlayer = new VideoPlayer();
         public Video currentVideo;
         private string[] videoFiles;
+        private IMobilePhoneApi api;
 
-        /// <summary>The mod entry point, called after the mod is first loaded.</summary>
-        /// <param name="helper">Provides simplified APIs for writing mods.</param>
         public override void Entry(IModHelper helper)
 		{
 			context = this;
@@ -47,7 +46,7 @@ namespace VideoPlayerMod
                 try
                 {
                     string videoPath = Path.Combine("assets", Path.GetFileName(v));
-                    videos.Add(Helper.Content.Load<Video>(videoPath));
+                    videos.Add(Helper.Content.Load<Video>(videoPath)); 
                 }
                 catch
                 {
@@ -57,8 +56,37 @@ namespace VideoPlayerMod
 
             SetVideo(0);
 
+            Helper.Events.GameLoop.GameLaunched += GameLoop_GameLaunched;
             Helper.Events.Input.ButtonPressed += Input_ButtonPressed;
             Helper.Events.Display.Rendered += Display_Rendered;
+        }
+
+        private void GameLoop_GameLaunched(object sender, StardewModdingAPI.Events.GameLaunchedEventArgs e)
+        {
+            if (Config.PhoneApp)
+            {
+                api = Helper.ModRegistry.GetApi<IMobilePhoneApi>("aedenthorn.MobilePhone");
+                if (api != null)
+                {
+                    Texture2D appIcon = Helper.Content.Load<Texture2D>(Path.Combine("assets", "app_icon.png"));
+                    bool success = api.AddApp(Helper.ModRegistry.ModID, "Video Player", OpenVideoPlayer, appIcon);
+                    Monitor.Log($"loaded phone app successfully: {success}", LogLevel.Debug);
+                }
+            }
+        }
+
+        private void OpenVideoPlayer()
+        {
+            if (Config.PhoneApp && api != null)
+            {
+                if (api.GetAppRunning())
+                {
+                    Monitor.Log($"can't start, app already running", LogLevel.Debug);
+                    return;
+                }
+                api.SetAppRunning(true);
+                PlayTrack();
+            }
         }
 
         private void SetVideo(int idx)
@@ -104,12 +132,25 @@ namespace VideoPlayerMod
                 videoPlayer.Pause();
             else
                 videoPlayer.Stop();
+
+            if (Config.PhoneApp && api != null)
+                api.SetAppRunning(false);
         }
 
         private void PlayTrack()
         {
+            if (Config.PhoneApp && api != null)
+            {
+                if(!api.GetPhoneOpened())
+                {
+                    Monitor.Log($"can't start, phone not open", LogLevel.Debug);
+                    return;
+                }
+                Monitor.Log($"ready to run app");
+            }
             Monitor.Log($"playing video {videoFiles[currentTrack]}");
             videoPlayer.Play(currentVideo);
+
         }
 
         private void SetTrack(bool next)
@@ -133,15 +174,28 @@ namespace VideoPlayerMod
         {
             if (videoPlayer.State != MediaState.Playing)
                 return;
+            if (Config.PhoneApp && api != null && (!api.GetPhoneOpened() || !api.GetAppRunning()))
+            {
+                StopTrack();
+                return;
+            }
 
             Texture2D texture = videoPlayer.GetTexture();
             if (texture != null)
             {
-                int x = Config.RightSide ? Game1.viewport.Width - Config.Width - Config.XOffset : Config.XOffset;
-                int y = Config.Bottom ? Game1.viewport.Height - Config.Height - Config.YOffset : Config.YOffset;
-                e.SpriteBatch.Draw(texture, new Rectangle(x, y, Config.Width, Config.Height), Color.White);
+                if (Config.PhoneApp && api != null)
+                {
+                    Vector2 pos = api.GetScreenPosition();
+                    Vector2 size = api.GetScreenSize();
+                    e.SpriteBatch.Draw(texture, new Rectangle((int)pos.X, (int)pos.Y, (int) size.X, (int)size.Y), Color.White);
+                }
+                else
+                {
+                    int x = Config.RightSide ? Game1.viewport.Width - Config.Width - Config.XOffset : Config.XOffset;
+                    int y = Config.Bottom ? Game1.viewport.Height - Config.Height - Config.YOffset : Config.YOffset;
+                    e.SpriteBatch.Draw(texture, new Rectangle(x, y, Config.Width, Config.Height), Color.White);
+                }
             }
         }
-
     }
 }

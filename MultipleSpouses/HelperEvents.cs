@@ -69,8 +69,11 @@ namespace MultipleSpouses
 					Misc.PlaceSpousesInFarmhouse((location as FarmHouse));
 				}
 			}
-
-			Game1.getFarm().addSpouseOutdoorArea(Game1.player.spouse == null ? "" : Game1.player.spouse);
+            if (Game1.IsMasterGame)
+            {
+				Game1.getFarm().addSpouseOutdoorArea(Game1.player.spouse == null ? "" : Game1.player.spouse);
+				ModEntry.farmHelperSpouse = Misc.GetRandomSpouse(Game1.MasterPlayer);
+			}
 		}
 
 		public static void GameLoop_ReturnedToTitle(object sender, ReturnedToTitleEventArgs e)

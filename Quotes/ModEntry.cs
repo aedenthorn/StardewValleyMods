@@ -1,15 +1,14 @@
 ﻿using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using StardewModdingAPI;
 using StardewValley;
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Reflection;
-using System.Text.RegularExpressions;
 
 namespace Quotes
 {
-	public class ModEntry : Mod 
+    public class ModEntry : Mod 
 	{
 		public static ModEntry context;
 
@@ -29,6 +28,7 @@ namespace Quotes
             "fall",
             "winter"
         };
+        private IMobilePhoneApi api;
 
         /// <summary>The mod entry point, called after the mod is first loaded.</summary>
         /// <param name="helper">Provides simplified APIs for writing mods.</param>
@@ -39,15 +39,39 @@ namespace Quotes
 			if (!Config.EnableMod)
 				return;
 
-			myRand = new Random();
+			myRand = new Random(Guid.NewGuid().GetHashCode());
 
             LoadQuotes();
 
             if(quotestrings.Length > 0)
             {
+                Helper.Events.GameLoop.GameLaunched += GameLoop_GameLaunched;
                 Helper.Events.GameLoop.DayStarted += GameLoop_DayStarted;
                 if(Config.ClickToDispelQuote || Config.QuoteDurationPerLineMult < 0)
                     Helper.Events.Input.ButtonPressed += Input_ButtonPressed;
+            }
+        }
+
+        private void GameLoop_GameLaunched(object sender, StardewModdingAPI.Events.GameLaunchedEventArgs e)
+        {
+            api = Helper.ModRegistry.GetApi<IMobilePhoneApi>("aedenthorn.MobilePhone");
+            if (api != null)
+            {
+                Texture2D appIcon = Helper.Content.Load<Texture2D>(Path.Combine("assets", "app_icon.png"));
+                bool success = api.AddApp(Helper.ModRegistry.ModID, "Random Quote", ShowRandomQuote, appIcon);
+                Monitor.Log($"loaded phone app successfully: {success}", LogLevel.Debug);
+            }
+        }
+
+        private void ShowRandomQuote()
+        {
+            lastFadeAlpha = 1f;
+            displayTicks = 0;
+            clickedOnQuote = false;
+            dailyQuote = GetAQuote(true);
+            if (dailyQuote != null)
+            {
+                Game1.drawObjectDialogue($"{dailyQuote.quote}\r\n\r\n{Config.AuthorPrefix}{dailyQuote.author}");
             }
         }
 
@@ -62,7 +86,7 @@ namespace Quotes
             lastFadeAlpha = 1f;
             displayTicks = 0;
             clickedOnQuote = false;
-            dailyQuote = GetAQuote();
+            dailyQuote = GetAQuote(Config.RandomQuote);
             if(dailyQuote != null)
             {
                 Helper.Events.Display.Rendering += Display_Rendering;
@@ -130,13 +154,13 @@ namespace Quotes
             }
         }
 
-        private Quote GetAQuote()
+        private Quote GetAQuote(bool random)
         {
             if (quotes.Count == 0)
                 return null;
 
             int dayIdx = Game1.dayOfMonth + seasons.IndexOf(Game1.currentSeason) * 28 - 1;
-            int idx = (Config.RandomQuote || quotes.Count <= dayIdx ) ? myRand.Next(quotes.Count) : dayIdx;
+            int idx = (random || quotes.Count <= dayIdx ) ? myRand.Next(quotes.Count) : dayIdx;
             Monitor.Log($"Today's quote (#{idx + 1}): {quotes[idx].quote}\r\n\r\n-- {quotes[idx].author}", LogLevel.Debug);
             return quotes[idx];
         }

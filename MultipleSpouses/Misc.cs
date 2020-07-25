@@ -71,6 +71,13 @@ namespace MultipleSpouses
             }
         }
 
+        public static string GetRandomSpouse(Farmer f)
+        {
+            var spouses = GetSpouses(f, 1);
+            ShuffleDic(ref spouses);
+            return spouses.Keys.ToArray()[0];
+        }
+
         public static void PlaceSpousesInFarmhouse(FarmHouse farmHouse)
         {
             Farmer farmer = farmHouse.owner;

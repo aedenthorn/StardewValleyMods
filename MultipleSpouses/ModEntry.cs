@@ -29,6 +29,7 @@ namespace MultipleSpouses
         public static int bedSleepOffset = 140;
         public static int divorceHeartsLost;
         public static OutdoorAreaData outdoorAreaData = new OutdoorAreaData();
+        public static string farmHelperSpouse = null;
 
         /// <summary>The mod entry point, called after the mod is first loaded.</summary>
         /// <param name="helper">Provides simplified APIs for writing mods.</param>

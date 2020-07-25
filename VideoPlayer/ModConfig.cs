@@ -17,5 +17,6 @@ namespace VideoPlayerMod
         public int YOffset { get; set; } = 64;
         public int Width { get; set; } = 720;
         public int Height { get; set; } = 480;
+        public bool PhoneApp { get; set; } = true;
     }
 }

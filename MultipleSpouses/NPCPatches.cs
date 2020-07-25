@@ -1,5 +1,6 @@
 ﻿using Harmony;
 using Microsoft.Xna.Framework;
+using Netcode;
 using StardewModdingAPI;
 using StardewValley;
 using StardewValley.Characters;
@@ -997,7 +998,7 @@ namespace MultipleSpouses
                 Monitor.Log($"Failed in {nameof(NPC_playSleepingAnimation_Postfix)}:\n{ex}", LogLevel.Error);
             }
         }
-
+        
         public static void Child_reloadSprite_Postfix(ref Child __instance)
         {
             try

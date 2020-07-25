@@ -1,17 +1,17 @@
 ﻿{
-  "Name": "Quotes",
+  "Name": "Mobile Phone",
   "Author": "aedenthorn",
-  "Version": "0.3.0",
-  "Description": "Displays a quote of the day.",
-  "UniqueID": "aedenthorn.Quotes",
-  "EntryDll": "Quotes.dll",
+  "Version": "0.1.0",
+  "Description": "Gives you a mobile phone.",
+  "UniqueID": "aedenthorn.MobilePhone",
+  "EntryDll": "MobilePhone.dll",
   "MinimumApiVersion": "3.5.0",
-  "UpdateKeys": ["Nexus:6503"],
+  "UpdateKeys": ["Nexus:6523"],
   "ModUpdater": {
     "Repository": "StardewValleyMods",
     "User": "aedenthorn",
     "Directory": "_releases",
-    "ModFolder": "Quotes"
+    "ModFolder": "MobilePhone"
   },
   "Dependencies": [
       {
