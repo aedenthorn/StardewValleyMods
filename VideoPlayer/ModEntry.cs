@@ -174,6 +174,7 @@ namespace VideoPlayerMod
         {
             if (videoPlayer.State != MediaState.Playing)
                 return;
+
             if (Config.PhoneApp && api != null && (!api.GetPhoneOpened() || !api.GetAppRunning()))
             {
                 StopTrack();

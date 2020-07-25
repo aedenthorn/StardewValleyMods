@@ -6,7 +6,7 @@
   "UniqueID": "aedenthorn.VideoPlayer",
   "EntryDll": "VideoPlayer.dll",
   "MinimumApiVersion": "3.5.0",
-  "UpdateKeys": ["Nexus:6503"],
+  "UpdateKeys": ["Nexus:6524"],
   "ModUpdater": {
     "Repository": "StardewValleyMods",
     "User": "aedenthorn",
