@@ -18,7 +18,9 @@ namespace CustomFixedDialogue
         private static string utilityPrefix = "Strings\\StringsFromCSFiles:Utility.cs.";
         private static string extraPrefix = "Data\\ExtraDialogue";
         private static List<string> NPCexceptions = new List<string>() 
-        { 
+        {
+            "3954",
+            "3955",
             "3981",
             "3987",
             "3969",
