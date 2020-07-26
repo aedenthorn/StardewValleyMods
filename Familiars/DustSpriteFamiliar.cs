@@ -77,7 +77,8 @@ namespace Familiars
 		}
 		protected override void localDeathAnimation()
 		{
-			base.currentLocation.localSound("dustMeep");
+			if (ModEntry.Config.DustSoundEffects)
+				currentLocation.localSound("dustMeep");
 			base.currentLocation.temporarySprites.Add(new TemporaryAnimatedSprite(44, base.Position, new Color(50, 50, 80), 10, false, 100f, 0, -1, -1f, -1, 0));
 			base.currentLocation.temporarySprites.Add(new TemporaryAnimatedSprite(44, base.Position + new Vector2((float)Game1.random.Next(-32, 32), (float)Game1.random.Next(-32, 32)), new Color(50, 50, 80), 10, false, 100f, 0, -1, -1f, -1, 0)
 			{
@@ -113,7 +114,8 @@ namespace Familiars
 				this.yJumpVelocity = (int)(5 + Game1.random.Next(1, 4) * scale);
 				if (Game1.random.NextDouble() < 0.1 && (this.meep == null || !this.meep.IsPlaying) && Utility.isOnScreen(base.Position, 64) && Game1.soundBank != null && Game1.currentLocation == base.currentLocation)
 				{
-					this.meep = Game1.soundBank.GetCue("dustMeep");
+					if (ModEntry.Config.DustSoundEffects)
+						this.meep = Game1.soundBank.GetCue("dustMeep");
 					this.meep.SetVariable("Pitch", (int)(this.voice * 100) + Game1.random.Next(-100, 100));
 					this.meep.Play();
 				}

@@ -1,5 +1,6 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using StardewValley;
 using System;
 using System.Collections.Generic;
 
@@ -27,63 +28,36 @@ namespace MobilePhone
             return ModEntry.GetScreenSize();
         }
 
+        public bool AddOnPhoneRotated(EventHandler action)
+        {
+            ModEntry.OnScreenRotated += action;
+            return true;
+        }
+
         public bool GetPhoneRotated()
         {
-            return PhoneRotated;
+            return ModEntry.phoneRotated;
         }
         public void SetPhoneRotated(bool value)
         {
-            PhoneRotated = value;
+            ModEntry.phoneRotated = value;
         }
         public bool GetPhoneOpened()
         {
-            return PhoneOpened;
+            return ModEntry.phoneOpen;
         }
         public void SetPhoneOpened(bool value)
         {
-            PhoneOpened = value;
+            ModEntry.phoneOpen = value;
         }
         public bool GetAppRunning()
         {
-            return AppRunning;
+            return ModEntry.appRunning;
         }
         public void SetAppRunning(bool value)
         {
-            AppRunning = value;
+            ModEntry.appRunning = value;
         }
 
-        public bool PhoneRotated  
-        {
-            get
-            {
-                return ModEntry.phoneRotated;
-            }
-            set
-            {
-                ModEntry.phoneRotated = value;
-            }
-        }
-        public bool PhoneOpened  
-        {
-            get
-            {
-                return ModEntry.phoneOpen;
-            }
-            set
-            {
-                ModEntry.TogglePhone(value);
-            }
-        }
-        public bool AppRunning  
-        {
-            get
-            {
-                return ModEntry.appRunning;
-            }
-            set
-            {
-                ModEntry.ToggleApp(value);
-            }
-        }
     }
 }

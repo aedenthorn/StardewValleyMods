@@ -132,7 +132,8 @@ namespace Familiars
 			}
 			if (lastScreechCounter < 0 && GetBoundingBox().Intersects(GetOwner().GetBoundingBox()))
 			{
-				base.currentLocation.playSound("batScreech", NetAudio.SoundContext.Default);
+				if(ModEntry.Config.BatSoundEffects)
+					currentLocation.playSound("batScreech", NetAudio.SoundContext.Default);
 				lastScreechCounter.Value = 10000;
 			}
 

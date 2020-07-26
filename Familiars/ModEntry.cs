@@ -3,6 +3,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using StardewModdingAPI;
 using StardewValley;
+using StardewValley.Buildings;
 using StardewValley.Characters;
 using StardewValley.Monsters;
 using StardewValley.Objects;
@@ -113,6 +114,14 @@ namespace Familiars
 			harmony.Patch(
 				original: AccessTools.Method(typeof(GameLocation), "drawCharacters"),
 				prefix: new HarmonyMethod(typeof(FamiliarsPatches), nameof(FamiliarsPatches.GameLocation_drawCharacters_Prefix))
+			);
+			harmony.Patch(
+				original: AccessTools.Method(typeof(AnimalHouse), nameof(AnimalHouse.incubator)),
+				prefix: new HarmonyMethod(typeof(FamiliarsPatches), nameof(FamiliarsPatches.AnimalHouse_incubator_Prefix))
+			);
+			harmony.Patch(
+				original: AccessTools.Method(typeof(Coop), nameof(Coop.dayUpdate)),
+				prefix: new HarmonyMethod(typeof(FamiliarsPatches), nameof(FamiliarsPatches.Coop_dayUpdate_Prefix))
 			);
 		}
 

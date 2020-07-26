@@ -45,5 +45,10 @@ namespace Familiars
         public int FamiliarHatchMinutes { get; set; } = 4000;
         public int FamiliarEggMinutes { get;  set; } = 1200;
         public float MaxFamiliarDistance { get; set; } = 1280;
+        public bool BatSoundEffects { get; set; } = false;
+        public bool ButterflySoundEffects { get; set; } = false;
+        public bool DinoSoundEffects { get; set; } = true;
+        public bool DustSoundEffects { get; set; } = false;
+        public bool JunimoSoundEffects { get; set; } = false;
     }
 }

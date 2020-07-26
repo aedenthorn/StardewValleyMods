@@ -199,7 +199,8 @@ namespace Familiars
 			{
 				DelayedAction.textAboveHeadAfterDelay((Game1.random.NextDouble() < 0.5) ? Game1.content.LoadString("Strings\\Characters:JunimoTextAboveHead1") : Game1.content.LoadString("Strings\\Characters:JunimoTextAboveHead2"), this, Game1.random.Next(3000, 6000));
 				this.setReturnToJunimoHutToFetchStarControllerEvent.Fire();
-				location.playSound("junimoMeep1", NetAudio.SoundContext.Default);
+				if (ModEntry.Config.JunimoSoundEffects)
+					location.playSound("junimoMeep1", NetAudio.SoundContext.Default);
 				this.collidesWithOtherCharacters.Value = false;
 				this.farmerPassesThrough = false;
 				this.holdingBundle.Value = true;
@@ -543,11 +544,8 @@ namespace Familiars
 			if (!base.IsInvisible)
 			{
 				this.Sprite.UpdateSourceRect();
-				b.Draw(this.Sprite.Texture, base.getLocalPosition(Game1.viewport) + new Vector2((float)(this.Sprite.SpriteWidth * 4 / 2), (float)this.Sprite.SpriteHeight * 3f / 4f * 4f / (float)Math.Pow((double)(this.Sprite.SpriteHeight / 16), 2.0) + (float)this.yJumpOffset - 8f) + ((this.shakeTimer > 0) ? new Vector2((float)Game1.random.Next(-1, 2), (float)Game1.random.Next(-1, 2)) : Vector2.Zero), new Rectangle?(this.Sprite.SourceRect), this.color.Value * alpha, this.rotation, new Vector2((float)(this.Sprite.SpriteWidth * 4 / 2), (float)(this.Sprite.SpriteHeight * 4) * 3f / 4f) / 4f, Math.Max(0.2f, this.scale) * 4f, this.flip ? SpriteEffects.FlipHorizontally : SpriteEffects.None, Math.Max(0f, this.drawOnTop ? 0.991f : ((float)base.getStandingY() / 10000f)));
-				if (!this.swimming && !base.HideShadow)
-				{
-					b.Draw(Game1.shadowTexture, Game1.GlobalToLocal(Game1.viewport, base.Position + new Vector2((float)(this.Sprite.SpriteWidth * 4) / 2f, 44f)), new Rectangle?(Game1.shadowTexture.Bounds), this.color.Value * alpha, 0f, new Vector2((float)Game1.shadowTexture.Bounds.Center.X, (float)Game1.shadowTexture.Bounds.Center.Y), (4f + (float)this.yJumpOffset / 40f) * this.scale, SpriteEffects.None, Math.Max(0f, (float)base.getStandingY() / 10000f) - 1E-06f);
-				}
+				b.Draw(this.Sprite.Texture, base.getLocalPosition(Game1.viewport) + new Vector2((float)(this.Sprite.SpriteWidth * 4 / 2), (float)this.Sprite.SpriteHeight * 3f / 4f * 4f / (float)Math.Pow((double)(this.Sprite.SpriteHeight / 16), 2.0) + (float)this.yJumpOffset - 8f) + ((this.shakeTimer > 0) ? new Vector2((float)Game1.random.Next(-1, 2), (float)Game1.random.Next(-1, 2)) : Vector2.Zero) + new Vector2(0,-24), new Rectangle?(this.Sprite.SourceRect), this.color.Value * alpha, this.rotation, new Vector2((float)(this.Sprite.SpriteWidth * 4 / 2), (float)(this.Sprite.SpriteHeight * 4) * 3f / 4f) / 4f, Math.Max(0.2f, this.scale) * 4f, this.flip ? SpriteEffects.FlipHorizontally : SpriteEffects.None, Math.Max(0f, this.drawOnTop ? 0.991f : ((float)base.getStandingY() / 10000f)));
+
 				if (this.holdingStar)
 				{
 					b.Draw(this.Sprite.Texture, Game1.GlobalToLocal(Game1.viewport, base.Position + new Vector2(8f, -64f * this.scale + 4f + (float)this.yJumpOffset)), new Rectangle?(new Rectangle(0, 109, 16, 19)), Color.White * alpha, 0f, Vector2.Zero, 4f * this.scale, SpriteEffects.None, base.Position.Y / 10000f + 0.0001f);

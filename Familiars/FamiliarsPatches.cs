@@ -1,11 +1,14 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using Netcode;
 using StardewModdingAPI;
 using StardewValley;
+using StardewValley.Buildings;
 using StardewValley.Monsters;
 using StardewValley.Network;
 using StardewValley.TerrainFeatures;
 using System;
+using System.Linq;
 using xTile.Dimensions;
 using Object = StardewValley.Object;
 
@@ -322,6 +325,37 @@ namespace Familiars
 					}
 				}
 			}
+		}
+		public static bool AnimalHouse_incubator_Prefix(AnimalHouse __instance)
+		{
+			if (__instance.incubatingEgg.Y <= 0 && Game1.player.ActiveObject != null && Game1.player.ActiveObject.name.Contains("Familiar Egg"))
+            {
+				Monitor.Log($"Tried adding familiar egg to incubator");
+				return false;
+            }
+			return true;
+		}
+		public static bool Coop_dayUpdate_Prefix(ref Coop __instance)
+		{
+			if (__instance.daysOfConstructionLeft <= 0)
+			{
+				if ((__instance.indoors.Value as AnimalHouse).incubatingEgg.Y > 0)
+				{
+					NetPoint incubatingEgg = (__instance.indoors.Value as AnimalHouse).incubatingEgg;
+					int x = incubatingEgg.X;
+					incubatingEgg.X = x - 1;
+					if ((__instance.indoors.Value as AnimalHouse).incubatingEgg.X <= 0)
+					{
+						if(new int[] { ModEntry.BatFamiliarEgg, ModEntry.ButterflyFamiliarEgg, ModEntry.DinoFamiliarEgg, ModEntry.DustFamiliarEgg, ModEntry.JunimoFamiliarEgg }.Contains(incubatingEgg.Y))
+                        {
+							(__instance.indoors.Value as AnimalHouse).incubatingEgg.X = 0;
+							(__instance.indoors.Value as AnimalHouse).incubatingEgg.Y = -1;
+							return false;
+						}
+					}
+				}
+			}
+			return true;
 		}
 	}
 }

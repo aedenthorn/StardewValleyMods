@@ -87,7 +87,7 @@ namespace MultipleSpouses
         {
 			try
 			{
-				if (!__instance.isWedding)
+				if (!__instance.isWedding || !ModEntry.config.AllSpousesJoinWeddings)
 					return;
 
 				List<string> spouses = Misc.GetSpouses(Game1.player, 0).Keys.ToList();

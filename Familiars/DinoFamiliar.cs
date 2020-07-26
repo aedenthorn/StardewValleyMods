@@ -235,7 +235,8 @@ namespace StardewValley.Monsters
 					this.attackState.Set(1);
 					this.nextFireTime = 500;
 					this.totalFireTime = 3000;
-					base.currentLocation.playSound("croak", NetAudio.SoundContext.Default);
+					if (ModEntry.Config.DinoSoundEffects)
+						base.currentLocation.playSound("croak", NetAudio.SoundContext.Default);
 					return;
 				}
 			}

@@ -1,7 +1,7 @@
 {
   "Name": "Junimo Familiar Egg",
   "Description": "Lets you hatch a Junimo familiar.",
-  "Category": "Egg",
+  "Category": "AnimalGoods",
   "Edibility": -300,
   "EdibleIsDrink": false,
   "EdibleBuffs": null,

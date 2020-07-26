@@ -237,6 +237,7 @@ namespace MultipleSpouses
 						{
 							parrotSpot = new Vector2(2448f + offset, 736f);
 						}
+						ModEntry.PMonitor.Log($"Building Emily's parrot at {parrotSpot}, spouse room count {count}");
 						farmHouse.temporarySprites.Add(new EmilysParrot(parrotSpot));
 					}
 				}

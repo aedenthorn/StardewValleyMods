@@ -1,7 +1,7 @@
 {
   "Name": "Dust Sprite Familiar Egg",
   "Description": "Lets you hatch a dust sprite familiar.",
-  "Category": "Egg",
+  "Category": "AnimalGoods",
   "Edibility": -300,
   "EdibleIsDrink": false,
   "EdibleBuffs": null,

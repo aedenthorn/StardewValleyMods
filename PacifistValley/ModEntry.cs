@@ -21,10 +21,11 @@ namespace PacifistValley
 	{
 		private static ModEntry context;
 		private static ModConfig Config;
+        private static IMonitor SMonitor;
 
-		/// <summary>Get whether this instance can load the initial version of the given asset.</summary>
-		/// <param name="asset">Basic metadata about the asset being loaded.</param>
-		public bool CanLoad<T>(IAssetInfo asset)
+        /// <summary>Get whether this instance can load the initial version of the given asset.</summary>
+        /// <param name="asset">Basic metadata about the asset being loaded.</param>
+        public bool CanLoad<T>(IAssetInfo asset)
 		{
 			if (!Config.EnableMod)
 				return false;
@@ -247,6 +248,7 @@ namespace PacifistValley
         {
 			context = this;
 			Config = this.Helper.ReadConfig<ModConfig>();
+			SMonitor = Monitor;
 
 			if (!Config.EnableMod)
 				return;
@@ -314,11 +316,7 @@ namespace PacifistValley
 				);
 				harmony.Patch(
 				   original: AccessTools.Method(typeof(Bat), "updateAnimation"),
-				   prefix: new HarmonyMethod(typeof(ModEntry), nameof(ModEntry.Bat_updateAnimation_prefix))
-				);
-				harmony.Patch(
-				   original: AccessTools.Method(typeof(Bat), nameof(Bat.behaviorAtGameTick)),
-				   postfix: new HarmonyMethod(typeof(ModEntry), nameof(ModEntry.Bat_behaviorAtGameTick_postfix))
+				   postfix: new HarmonyMethod(typeof(ModEntry), nameof(ModEntry.Bat_updateAnimation_Postfix))
 				);
 				harmony.Patch(
 				   original: AccessTools.Method(typeof(Fly), "updateAnimation"),
@@ -366,30 +364,21 @@ namespace PacifistValley
 				___invincibleCountdown = 1;
 			}
         }
-		private static void Bat_behaviorAtGameTick_postfix(Bat __instance)
-        {
 
-		}
-		private static bool Bat_updateAnimation_prefix(Bat __instance, ref ICue ___batFlap, bool ___cursedDoll)
+		private static void Bat_updateAnimation_Postfix(Bat __instance, ref ICue ___batFlap, bool ___cursedDoll)
         {
-            if (__instance.Health <= 0 || Config.MonstersIgnorePlayer)
+            try
             {
-				if (__instance.Sprite.currentFrame % 3 == 0 && Utility.isOnScreen(__instance.Position, 512) && (___batFlap == null || !___batFlap.IsPlaying) && Game1.soundBank != null && __instance.currentLocation == Game1.currentLocation && !___cursedDoll)
+				if (__instance.Health <= 0 || Config.MonstersIgnorePlayer)
 				{
-					___batFlap = Game1.soundBank.GetCue("batFlap");
-					___batFlap.Play();
+					__instance.xVelocity = 0f;
+					__instance.yVelocity = 0f;
 				}
-				else if ((__instance.Sprite.currentFrame == 0 || __instance.Sprite.currentFrame % 4 == 0) && (___batFlap == null || !___batFlap.IsPlaying))
-				{
-					__instance.Sprite.currentFrame = 4;
-
-				}
-				typeof(Monster).GetMethod("resetAnimationSpeed", BindingFlags.NonPublic | BindingFlags.Instance).Invoke(__instance, new object[] { });
-				__instance.xVelocity = 0f;
-				__instance.yVelocity = 0f;
-				return false;
-            }
-			return true;
+			}
+            catch(Exception ex)
+            {
+				SMonitor.Log($"Failed in {nameof(Bat_updateAnimation_Postfix)}:\n{ex}", LogLevel.Error);
+			}
         }
 		private static bool Serpent_updateAnimation_prefix(Serpent __instance, GameTime time)
         {

@@ -239,7 +239,8 @@ namespace Familiars
 				}
 				if (lastBuff <= 0 && Vector2.Distance(GetOwner().getTileLocation(), getTileLocation()) < 3 && Game1.random.NextDouble() < BuffChance())
 				{
-					Game1.playSound("yoba");
+					if(ModEntry.Config.ButterflySoundEffects)
+						Game1.playSound("yoba");
 					BuffsDisplay buffsDisplay = Game1.buffsDisplay;
 					Buff buff2 = GetBuff();
 					buff2.which = -1;

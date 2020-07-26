@@ -48,7 +48,9 @@ namespace MobilePhone
         public static int topRow;
 
         public static Dictionary<string, MobileApp> apps = new Dictionary<string, MobileApp>();
-        internal static Texture2D phoneBookTexture;
+        public static Texture2D phoneBookTexture;
+
+        public static event EventHandler OnScreenRotated;
 
         /// <summary>The mod entry point, called after the mod is first loaded.</summary>
         /// <param name="helper">Provides simplified APIs for writing mods.</param>

@@ -8,6 +8,7 @@
         public int MinPointsToDate { get; set; } = 2000;
         public int DaysUntilMarriage { get; set; } = 3;
         public bool AllSpousesWearMarriageClothesAtWeddings { get; set; } = false;
+        public bool AllSpousesJoinWeddings { get; set; } = true;
         public bool FriendlyDivorce { get; set; } = true;
         public bool ComplexDivorce { get; set; } = true;
         public bool RoommateRomance { get; set; } = true;

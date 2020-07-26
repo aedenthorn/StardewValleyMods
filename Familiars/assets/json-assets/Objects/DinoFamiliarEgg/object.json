@@ -1,7 +1,7 @@
 {
   "Name": "Dino Familiar Egg",
   "Description": "Lets you hatch a dino familiar.",
-  "Category": "Egg",
+  "Category": "AnimalGoods",
   "Edibility": -300,
   "EdibleIsDrink": false,
   "EdibleBuffs": null,

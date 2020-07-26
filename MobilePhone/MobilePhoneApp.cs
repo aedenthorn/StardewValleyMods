@@ -17,8 +17,6 @@ namespace MobilePhone
         private static Texture2D appIcon;
         private static List<CallableNPC> callableList = new List<CallableNPC>();
         private static int topRow = 0;
-        private static ulong startedClicking;
-        private static int startedClickingY;
         private static bool dragging = true;
         private static int yOffset;
         private static int lastMousePositionY;

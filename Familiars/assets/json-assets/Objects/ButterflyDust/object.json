@@ -1,7 +1,7 @@
 {
   "Name": "Butterfly Dust",
   "Description": "Dust dropped by a butterfly. I wonder what it could be used for?",
-  "Category": "AnimalGoods",
+  "Category": "Crafting",
   "Edibility": -300,
   "EdibleIsDrink": false,
   "EdibleBuffs": null,
