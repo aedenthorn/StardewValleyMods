@@ -36,44 +36,41 @@ namespace TransparentObjects
                 alpha = minAlpha + (1 - minAlpha) * fraction;
             }
         }
-        public static bool XnaDisplayDevice_DrawTile_Prefix(Tile tile, Location location, float layerDepth, Dictionary<TileSheet, Texture2D> ___m_tileSheetTextures, ref Vector2 ___m_tilePosition, ref Microsoft.Xna.Framework.Rectangle ___m_sourceRectangle, ref SpriteBatch ___m_spriteBatchAlpha, ref Color ___m_modulationColour)
+
+        private static Color m_modulationColour;
+
+        public static void DisplayDevice_DrawTile_Prefix(Tile tile, Location location, ref Color ___m_modulationColour)
         {
-            Monitor.Log($"tile id {tile.Layer.Id }");
+            Monitor.Log("Test");
+            m_modulationColour = ___m_modulationColour;
             if (tile != null && (tile.Layer.Id == "Front" || tile.Layer.Id == "AlwaysFront"))
             {
                 Vector2 playerLoc = Game1.player.getTileLocation();
-                Monitor.Log($"Player {playerLoc} Tile {location} distance {Vector2.Distance(playerLoc, new Vector2(location.X, location.Y))}");
                 if (Vector2.Distance(playerLoc, new Vector2(location.X, location.Y)) < 3)
                 {
-                    ___m_modulationColour.A = 255 / 4;
+                    Monitor.Log("1");
+                    ___m_modulationColour *= 1 / 4;
                 }
-                else if(Vector2.Distance(playerLoc, new Vector2(location.X, location.Y)) < 4)
+                else if (Vector2.Distance(playerLoc, new Vector2(location.X, location.Y)) < 4)
                 {
-                    ___m_modulationColour.A = 255 / 2;
+                    Monitor.Log("2");
+                    ___m_modulationColour *= 1 / 2;
                 }
-                else if(Vector2.Distance(playerLoc, new Vector2(location.X, location.Y)) < 5)
+                else if (Vector2.Distance(playerLoc, new Vector2(location.X, location.Y)) < 5)
                 {
-                    ___m_modulationColour.A = 255 * 3 / 4 ;
+                    Monitor.Log("3");
+                    ___m_modulationColour *= 3 / 4;
                 }
-                xTile.Dimensions.Rectangle sourceRectangle = tile.TileSheet.GetTileImageBounds(tile.TileIndex);
-                Texture2D texture2D = ___m_tileSheetTextures[tile.TileSheet];
-                if (!texture2D.IsDisposed)
-                {
-                    ___m_tilePosition.X = (float)location.X;
-                    ___m_tilePosition.Y = (float)location.Y;
-                    ___m_sourceRectangle.X = sourceRectangle.X;
-                    ___m_sourceRectangle.Y = sourceRectangle.Y;
-                    ___m_sourceRectangle.Width = sourceRectangle.Width;
-                    ___m_sourceRectangle.Height = sourceRectangle.Height;
-                    ___m_spriteBatchAlpha.Draw(texture2D, ___m_tilePosition, new Microsoft.Xna.Framework.Rectangle?(___m_sourceRectangle), ___m_modulationColour, 0f, Vector2.Zero, (float)Layer.zoom, SpriteEffects.None, layerDepth);
-                }
-                return false;
             }
-            return true;
         }
-        public static void XnaDisplayDevice_DrawTile_Postfix(Tile tile, Location location, float layerDepth, Dictionary<TileSheet, Texture2D> ___m_tileSheetTextures, ref Vector2 ___m_tilePosition, ref Microsoft.Xna.Framework.Rectangle ___m_sourceRectangle, ref SpriteBatch ___m_spriteBatchAlpha, ref Color ___m_modulationColour)
+        public static void DisplayDevice_DrawTile_Postfix(ref Color ___m_modulationColour)
         {
-            Monitor.Log($"tile id {tile.Layer.Id }");
+            Monitor.Log("test");
+            ___m_modulationColour = m_modulationColour;
+        }
+        public static void Layer_DrawNormal_Prefix(IDisplayDevice displayDevice, xTile.Dimensions.Rectangle mapViewport, Location displayOffset)
+        {
+            //Monitor.Log(displayDevice.GetType().ToString());
         }
     }
 }

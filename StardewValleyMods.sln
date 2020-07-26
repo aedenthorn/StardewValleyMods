@@ -53,6 +53,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NonRandomPrairieKing", "Non
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MobilePhone", "MobilePhone\MobilePhone.csproj", "{99168FC5-D48E-465C-8A95-155F60FE0995}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SocialNetwork", "SocialNetwork\SocialNetwork.csproj", "{D4056EE7-7B0C-4A97-BB15-CCFAF924A4F5}"
+EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
 		_releases\_releases.projitems*{047040e0-3d07-46e5-852b-d1d45cd57bb8}*SharedItemsImports = 13
@@ -256,6 +258,14 @@ Global
 		{99168FC5-D48E-465C-8A95-155F60FE0995}.Release|Any CPU.Build.0 = Release|Any CPU
 		{99168FC5-D48E-465C-8A95-155F60FE0995}.Release|x86.ActiveCfg = Release|Any CPU
 		{99168FC5-D48E-465C-8A95-155F60FE0995}.Release|x86.Build.0 = Release|Any CPU
+		{D4056EE7-7B0C-4A97-BB15-CCFAF924A4F5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D4056EE7-7B0C-4A97-BB15-CCFAF924A4F5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D4056EE7-7B0C-4A97-BB15-CCFAF924A4F5}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{D4056EE7-7B0C-4A97-BB15-CCFAF924A4F5}.Debug|x86.Build.0 = Debug|Any CPU
+		{D4056EE7-7B0C-4A97-BB15-CCFAF924A4F5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D4056EE7-7B0C-4A97-BB15-CCFAF924A4F5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D4056EE7-7B0C-4A97-BB15-CCFAF924A4F5}.Release|x86.ActiveCfg = Release|Any CPU
+		{D4056EE7-7B0C-4A97-BB15-CCFAF924A4F5}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

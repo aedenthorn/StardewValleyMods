@@ -1,19 +1,12 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using Microsoft.Xna.Framework.Input;
 using StardewModdingAPI;
 using StardewValley;
-using StardewValley.Menus;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Forms;
-using WindowsInput;
-using WindowsInput.Native;
 
 namespace MobilePhone
 {
@@ -34,14 +27,15 @@ namespace MobilePhone
         public static Texture2D upArrowTexture;
         public static Texture2D downArrowTexture;
 
-        private static int phoneWidth;
-        private static int phoneHeight;
-        private static int screenWidth;
-        private static int screenHeight;
-        private static int phoneOffsetX;
-        private static int phoneOffsetY;
-        private static int screenOffsetX;
-        private static int screenOffsetY;
+        public static int phoneWidth;
+        public static int phoneHeight;
+        public static int screenWidth;
+        public static int screenHeight;
+        public static int phoneOffsetX;
+        public static int phoneOffsetY;
+        public static int screenOffsetX;
+        public static int screenOffsetY;
+        public static Rectangle screenRect;
 
         public static Vector2 phonePosition;
         public static Vector2 screenPosition;
@@ -51,6 +45,8 @@ namespace MobilePhone
         private static MobilePhoneApi api;
         public static int appColumns;
         public static int appRows;
+        public static int topRow;
+
         public static Dictionary<string, MobileApp> apps = new Dictionary<string, MobileApp>();
         internal static Texture2D phoneBookTexture;
 
@@ -66,7 +62,8 @@ namespace MobilePhone
 
             MobilePhoneApp.Initialize(Helper, Monitor, Config);
 
-            CreatePhoneTexture();
+            CreatePhoneTextures();
+            RefreshPhoneLayout();
 
             Helper.Events.Input.ButtonPressed += Input_ButtonPressed;
             Helper.Events.Input.ButtonReleased += Input_ButtonReleased;
@@ -86,7 +83,7 @@ namespace MobilePhone
                     Monitor.Log($"Reading content pack: {contentPack.Manifest.Name} {contentPack.Manifest.Version} from {contentPack.DirectoryPath}");
                     MobileAppJSON json = contentPack.ReadJsonFile<MobileAppJSON>("content.json");
                     Texture2D icon = contentPack.LoadAsset<Texture2D>(json.iconPath);
-                    apps.Add(json.id, new MobileApp(json.name, json.keyPress, icon));
+                    apps.Add(json.id, new MobileApp(json.name, json.dllName, json.className, json.methodName, json.keyPress, icon));
                     Monitor.Log($"Added app {json.name} from {contentPack.DirectoryPath}");
                 }
                 catch (Exception ex)
@@ -111,7 +108,7 @@ namespace MobilePhone
         {
             return new MobilePhoneApi();
         }
-        private void CreatePhoneTexture()
+        private void CreatePhoneTextures()
         {
             phoneTexture = Helper.Content.Load<Texture2D>(Path.Combine("assets",Config.PhoneTexturePath));
             backgroundTexture = Helper.Content.Load<Texture2D>(Path.Combine("assets",Config.BackgroundTexturePath));
@@ -146,6 +143,9 @@ namespace MobilePhone
             List<string> keys = apps.Keys.ToList();
             for (int i = keys.Count - 1; i >= 0; i--)
             {
+                if (!IsOnScreen(i, topRow))
+                    continue;
+
                 MobileApp app = apps[keys[i]];
                 if (app.icon == null)
                 {
@@ -181,14 +181,26 @@ namespace MobilePhone
             }
             if (phoneOpen && !appRunning)
             {
-                if(e.Button == SButton.MouseLeft)
+                Monitor.Log($"pressing mouse key in phone");
+                if (e.Button == SButton.MouseLeft)
                 {
-                    if(Game1.activeClickableMenu == null)
+                    if(Game1.activeClickableMenu == null || Game1.activeClickableMenu is MobilePhoneMenu)
+                    {
                         Helper.Input.Suppress(SButton.MouseLeft);
+
+                        if (!(new Rectangle((int)phonePosition.X, (int)phonePosition.Y, phoneWidth, phoneHeight).Contains(Game1.getMousePosition())))
+                        {
+                            TogglePhone();
+                        }
+                    }
 
                     string[] keys = apps.Keys.ToArray();
                     for (int i = 0; i < keys.Length; i++)
                     {
+
+                        if (!IsOnScreen(i, topRow))
+                            continue;
+
                         Vector2 pos = GetAppPos(i);
                         Rectangle r = new Rectangle((int) pos.X, (int) pos.Y, Config.AppIconWidth, Config.AppIconHeight);
                         if (r.Contains(Game1.getMousePosition()))
@@ -198,6 +210,7 @@ namespace MobilePhone
                             {
                                 Monitor.Log($"pressing key {apps[keys[i]].keyPress}");
                                 Game1.activeClickableMenu = null;
+                                PressKey(apps[keys[i]]);
                             }
                             else
                             {
@@ -209,6 +222,17 @@ namespace MobilePhone
                     }
                 }
             }
+        }
+
+        private void PressKey(MobileApp app)
+        {
+            Assembly a = AppDomain.CurrentDomain.GetAssemblies().FirstOrDefault(n => n.GetName().Name == app.dllName);
+            if(a == null)
+            {
+                Monitor.Log($"Couldn't find assembly named {app.dllName}. Sample: {AppDomain.CurrentDomain.GetAssemblies()[0].GetName().Name}");
+                return;
+            }
+           // a.GetType(app.className).GetMethod(app.methodName, BindingFlags.NonPublic | BindingFlags.Instance).Invoke()
         }
 
         private void RotatePhone()
@@ -280,6 +304,7 @@ namespace MobilePhone
             }
             phonePosition = GetPhonePosition();
             screenPosition = GetScreenPosition();
+            screenRect = new Rectangle((int)screenPosition.X, (int)screenPosition.Y, (int)screenWidth, (int)screenHeight);
             GetArrowPositions();
             appColumns = (screenWidth - Config.AppIconMarginX) / (Config.AppIconWidth + Config.AppIconMarginX);
             appRows = (screenHeight - Config.AppIconMarginY) / (Config.AppIconHeight + Config.AppIconMarginY);
@@ -329,6 +354,7 @@ namespace MobilePhone
         }
         private Vector2 GetAppPos(int i)
         {
+            i -= topRow * appColumns;
             float x = screenPosition.X + Config.AppIconMarginX + (( i % appColumns) * (Config.AppIconWidth + Config.AppIconMarginX));
             float y = screenPosition.Y + Config.AppIconMarginY + ((i / appColumns) * (Config.AppIconHeight + Config.AppIconMarginY));
 
@@ -340,5 +366,9 @@ namespace MobilePhone
             downArrowPosition = new Vector2(screenPosition.X + screenWidth - Config.ArrowWidth, screenPosition.Y + screenHeight - Config.ArrowHeight);
         }
 
+        public static bool IsOnScreen(int i, int top)
+        {
+            return i >= top * appColumns && i < appRows * appColumns - top * appColumns;
+        }
     }
 }

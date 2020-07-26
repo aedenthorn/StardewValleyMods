@@ -17,6 +17,12 @@ namespace MobilePhone
         private static Texture2D appIcon;
         private static List<CallableNPC> callableList = new List<CallableNPC>();
         private static int topRow = 0;
+        private static ulong startedClicking;
+        private static int startedClickingY;
+        private static bool dragging = true;
+        private static int yOffset;
+        private static int lastMousePositionY;
+        private static float listHeight;
 
         public static void Initialize(IModHelper helper, IMonitor monitor, ModConfig config)
         {
@@ -39,16 +45,35 @@ namespace MobilePhone
             ModEntry.phoneAppRunning = true;
             Game1.activeClickableMenu = new PhoneBookMenu();
             CreateCallableList();
+            listHeight = Config.AppIconMarginY + (int)Math.Ceiling(callableList.Count / (float)ModEntry.appColumns) * (Config.AppIconHeight + Config.AppIconMarginY);
             Helper.Events.Display.RenderingActiveMenu += Display_RenderingActiveMenu;
             Helper.Events.Input.ButtonPressed += Input_ButtonPressed;
+            Helper.Events.Input.ButtonReleased += Input_ButtonReleased;
         }
 
         private static void Input_ButtonPressed(object sender, StardewModdingAPI.Events.ButtonPressedEventArgs e)
         {
             if (e.Button == SButton.MouseLeft)
             {
-                Helper.Input.Suppress(SButton.MouseLeft);
-                Monitor.Log($"clicked toprow {topRow} callables {callableList.Count} width {ModEntry.appColumns} tiles {ModEntry.appColumns * ModEntry.appRows}");
+                //Helper.Input.Suppress(SButton.MouseLeft);
+                //startedClicking = Game1.player.millisecondsPlayed;
+                lastMousePositionY = Game1.getMouseY();
+                Monitor.Log($"y {lastMousePositionY}");
+            }
+        }
+        private static void Input_ButtonReleased(object sender, StardewModdingAPI.Events.ButtonReleasedEventArgs e)
+        {
+            if (e.Button == SButton.MouseLeft)
+            {
+                Monitor.Log($"unclicked toprow {topRow} callables {callableList.Count} width {ModEntry.appColumns} tiles {ModEntry.appColumns * ModEntry.appRows}");
+                if (dragging)
+                {
+                    Monitor.Log($"was dragging");
+                    dragging = false;
+                    return;
+                }
+
+                /*
                 if (topRow > 0)
                 {
                     Vector2 pos = ModEntry.upArrowPosition;
@@ -71,6 +96,8 @@ namespace MobilePhone
                         return;
                     }
                 }
+                */
+
                 for (int i = 0; i < callableList.Count; i++)
                 {
                     Vector2 pos = GetNPCPos(i);
@@ -79,6 +106,9 @@ namespace MobilePhone
                     {
                         Monitor.Log($"calling {callableList[i].npc.Name}");
                         CallNPC(callableList[i].npc);
+                        Helper.Events.Input.ButtonPressed -= Input_ButtonPressed;
+                        Helper.Events.Input.ButtonReleased -= Input_ButtonReleased;
+                        dragging = true;
                         return;
                     }
                 }
@@ -119,32 +149,66 @@ namespace MobilePhone
         private static void Display_RenderingActiveMenu(object sender, StardewModdingAPI.Events.RenderingActiveMenuEventArgs e)
         {
 
+            if (Helper.Input.IsDown(SButton.MouseLeft) && ModEntry.screenRect.Contains(Game1.getMousePosition()))
+            {
+                int dy = Game1.getMouseY() - lastMousePositionY;
+                if (Math.Abs(dy) > 0)
+                {
+                    dragging = true;
+                }
+                if (dragging)
+                {
+                    yOffset = (int)Math.Max(Math.Min(0, yOffset + dy), -1 * Math.Max(0, listHeight - ModEntry.GetScreenSize().Y));
+                }
+            }
+
+            lastMousePositionY = Game1.getMouseY();
+
             if (!ModEntry.appRunning || !ModEntry.phoneOpen || !(Game1.activeClickableMenu is PhoneBookMenu))
             {
                 ModEntry.appRunning = false;
                 ModEntry.phoneAppRunning = false;
                 Helper.Events.Display.RenderingActiveMenu -= Display_RenderingActiveMenu;
                 Helper.Events.Input.ButtonPressed -= Input_ButtonPressed;
+                Helper.Events.Input.ButtonReleased -= Input_ButtonReleased;
                 return;
             }
             e.SpriteBatch.Draw(ModEntry.phoneBookTexture, ModEntry.screenPosition, Color.White);
 
-            if(topRow > 0)
+            if(yOffset < 0)
             {
                 e.SpriteBatch.Draw(ModEntry.upArrowTexture, ModEntry.upArrowPosition, Color.White);
             }
-            if (callableList.Count - topRow * ModEntry.appColumns > ModEntry.appColumns * ModEntry.appRows)
+            if (yOffset > ModEntry.GetScreenSize().Y - listHeight)
             {
                 e.SpriteBatch.Draw(ModEntry.downArrowTexture, ModEntry.downArrowPosition, Color.White);
             }
 
+            int screenBottom = (int)(ModEntry.screenPosition.Y + ModEntry.GetScreenSize().Y);
             for (int i = 0; i < callableList.Count; i++)
             {
-                if (i < topRow * ModEntry.appColumns || i - topRow * ModEntry.appColumns >= ModEntry.appColumns * ModEntry.appRows)
-                    continue;
-
                 Vector2 npcPos = GetNPCPos(i);
-                e.SpriteBatch.Draw(callableList[i].portrait, npcPos, callableList[i].sourceRect, Color.White, 0, Vector2.Zero, 2, SpriteEffects.None, 0.86f);
+                Rectangle r = callableList[i].sourceRect;
+                if (npcPos.Y < ModEntry.screenPosition.Y - r.Height * 2 || npcPos.Y >= screenBottom)
+                {
+                    continue;
+                }
+                Rectangle sourceRect = r;
+                int cutTop = 0;
+                int cutBottom = 0;
+                if(npcPos.Y < ModEntry.screenPosition.Y)
+                {
+                    cutTop = (int)Math.Round((ModEntry.screenPosition.Y - (int)npcPos.Y) / 2f);
+                    sourceRect = new Rectangle(r.X, r.Y + cutTop, r.Width, r.Height - cutTop);
+                    npcPos = new Vector2(npcPos.X, ModEntry.screenPosition.Y);
+                }
+                else if(npcPos.Y > screenBottom - r.Height * 2)
+                {
+                    cutBottom = (int)Math.Round((screenBottom - r.Height * 2 - (int)npcPos.Y) / 2f);
+                    sourceRect = new Rectangle(r.X, r.Y, r.Width, r.Height + cutBottom);
+                }
+
+                e.SpriteBatch.Draw(callableList[i].portrait, npcPos, sourceRect, Color.White, 0, Vector2.Zero, 2, SpriteEffects.None, 0.86f);
             }
         }
 
@@ -154,7 +218,7 @@ namespace MobilePhone
             float x = ModEntry.screenPosition.X + Config.AppIconMarginX + ((i % ModEntry.appColumns) * (Config.AppIconWidth + Config.AppIconMarginX));
             float y = ModEntry.screenPosition.Y + Config.AppIconMarginY + ((i / ModEntry.appColumns) * (Config.AppIconHeight + Config.AppIconMarginY));
 
-            return new Vector2(x, y);
+            return new Vector2(x, y + yOffset);
         }
 
         public static Texture2D MakeBackground()

@@ -1,8 +1,9 @@
 ﻿using Harmony;
 using Microsoft.Xna.Framework.Graphics;
 using StardewModdingAPI;
+using StardewValley;
 using System;
-using xTile.Display;
+using System.Reflection;
 
 namespace TransparentObjects
 {
@@ -34,15 +35,32 @@ namespace TransparentObjects
                prefix: new HarmonyMethod(typeof(ObjectPatches), nameof(ObjectPatches.Object_draw_Prefix))
             );
 
-            return;
-            HarmonyMethod method = new HarmonyMethod(typeof(ObjectPatches), nameof(ObjectPatches.XnaDisplayDevice_DrawTile_Prefix));
-            method.prioritiy = 10000;
-            harmony.Patch(
-               original: AccessTools.Method(typeof(XnaDisplayDevice), nameof(XnaDisplayDevice.DrawTile)),
-               prefix: method,
-               postfix: new HarmonyMethod(typeof(ObjectPatches), nameof(ObjectPatches.XnaDisplayDevice_DrawTile_Postfix))
-            );
-            
+            Helper.Events.GameLoop.GameLaunched += GameLoop_GameLaunched;
+        }
+
+        private void GameLoop_GameLaunched(object sender, StardewModdingAPI.Events.GameLaunchedEventArgs e)
+        {
+            var harmony = HarmonyInstance.Create(ModManifest.UniqueID);
+
+            MethodInfo mi = AccessTools.Method("PyTK.Types.PyDisplayDevice:DrawTile");
+            if (mi == null)
+            {
+                Monitor.Log($"patching PyDisplayDevice");
+                harmony.Patch(
+                   original: AccessTools.Method("PyTK.Types.PyDisplayDevice:DrawTile"),
+                   prefix: new HarmonyMethod(typeof(ObjectPatches), nameof(ObjectPatches.DisplayDevice_DrawTile_Prefix)),
+                   postfix: new HarmonyMethod(typeof(ObjectPatches), nameof(ObjectPatches.DisplayDevice_DrawTile_Postfix))
+                );
+            }
+            else
+            {
+                Monitor.Log($"patching SDisplayDevice");
+                harmony.Patch(
+                   original: AccessTools.Method("StardewModdingAPI.Framework.Rendering.SDisplayDevice:DrawTile"),
+                   prefix: new HarmonyMethod(typeof(ObjectPatches), nameof(ObjectPatches.DisplayDevice_DrawTile_Prefix)),
+                   postfix: new HarmonyMethod(typeof(ObjectPatches), nameof(ObjectPatches.DisplayDevice_DrawTile_Postfix))
+                );
+            }
         }
     }
 }
