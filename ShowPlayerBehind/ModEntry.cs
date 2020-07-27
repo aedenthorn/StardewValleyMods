@@ -115,7 +115,15 @@ namespace ShowPlayerBehind
                         if (tile != null)
                         {
                             tile.Properties.TryGetValue("@Opacity", out PropertyValue property);
-                            float opacity = fp == p || fp == new Point(p.X, p.Y + 1) ? config.InnerTransparency : config.OuterTransparency;
+                            float opacity = config.OuterTransparency;
+                            if (p == fp || p == new Point(fp.X, fp.Y - 1))
+                            {
+                                opacity = config.InnerTransparency;
+                            }
+                            else if(p.X != fp.X && (p.Y == fp.Y - 2 || p.Y == fp.Y + 1))
+                            {
+                                opacity = config.CornerTransparency;
+                            }
                             if (property != null)
                             {
                                 gl.map.GetLayer(layer).Tiles[p.X, p.Y].Properties["@Opacity"] = opacity;

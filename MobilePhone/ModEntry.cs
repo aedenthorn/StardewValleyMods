@@ -156,9 +156,17 @@ namespace MobilePhone
                 if(mousePos != lastMousePosition)
                 {
                     int x = mousePos.X - lastMousePosition.X;
-                    int y = mousePos.Y - lastMousePosition.Y;
-                    Config.PhoneOffsetX += x;
-                    Config.PhoneOffsetY += y;
+                    int y = mousePos.Y - lastMousePosition.Y; 
+                    if (phoneRotated)
+                    {
+                        Config.PhoneRotatedOffsetX += x;
+                        Config.PhoneRotatedOffsetY += y;
+                    }
+                    else
+                    {
+                        Config.PhoneOffsetX += x;
+                        Config.PhoneOffsetY += y;
+                    }
                     RefreshPhoneLayout();
                     lastMousePosition = mousePos;
                 }

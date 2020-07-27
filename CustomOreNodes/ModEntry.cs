@@ -197,12 +197,10 @@ namespace CustomOreNodes
 		{
 			if (Environment.StackTrace.Contains("chooseStoneType"))
 			{
-				SMonitor.Log("treating as mine stone");
 				return;
 			}
 			if (Givenname == "Stone" || parentSheetIndex == 294 || parentSheetIndex == 295)
             {
-				SMonitor.Log("treating as non-mine stone");
 				for (int i = 0; i < CustomOreNodes.Count; i++)
 				{
 					CustomOreNode node = CustomOreNodes[i];

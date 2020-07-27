@@ -315,8 +315,8 @@ namespace PacifistValley
 				   prefix: new HarmonyMethod(typeof(ModEntry), nameof(ModEntry.Serpent_updateAnimation_prefix))
 				);
 				harmony.Patch(
-				   original: AccessTools.Method(typeof(Bat), "updateAnimation"),
-				   postfix: new HarmonyMethod(typeof(ModEntry), nameof(ModEntry.Bat_updateAnimation_Postfix))
+				   original: AccessTools.Method(typeof(Bat), "behaviorAtGameTick"),
+				   postfix: new HarmonyMethod(typeof(ModEntry), nameof(ModEntry.Bat_behaviorAtGameTick_Postfix))
 				);
 				harmony.Patch(
 				   original: AccessTools.Method(typeof(Fly), "updateAnimation"),
@@ -365,7 +365,7 @@ namespace PacifistValley
 			}
         }
 
-		private static void Bat_updateAnimation_Postfix(Bat __instance)
+		private static void Bat_behaviorAtGameTick_Postfix(Bat __instance)
         {
             try
             {
@@ -377,7 +377,7 @@ namespace PacifistValley
 			}
             catch(Exception ex)
             {
-				SMonitor.Log($"Failed in {nameof(Bat_updateAnimation_Postfix)}:\n{ex}", LogLevel.Error);
+				SMonitor.Log($"Failed in {nameof(Bat_behaviorAtGameTick_Postfix)}:\n{ex}", LogLevel.Error);
 			}
         }
 		private static bool Serpent_updateAnimation_prefix(Serpent __instance, GameTime time)

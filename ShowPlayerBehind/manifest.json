@@ -1,7 +1,7 @@
 ﻿{
   "Name": "Show Players Behind Buildings",
   "Author": "aedenthorn",
-  "Version": "0.1.1",
+  "Version": "0.1.3",
   "Description": "Lets you see farmers behind buildings.",
   "UniqueID": "aedenthorn.ShowPlayerBehind",
   "EntryDll": "ShowPlayerBehind.dll",
@@ -14,6 +14,10 @@
     "ModFolder": "ShowPlayerBehind"
   },
   "Dependencies": [
+      {
+        "UniqueID": "Platonymous.Toolkit",
+        "IsRequired": true
+      },
       {
         "UniqueID": "Platonymous.ModUpdater",
         "IsRequired": false

@@ -5,15 +5,9 @@ namespace TransparentObjects
 {
     public class ModConfig
     {
-        public bool EnableMod{ get; set; }
-        public float MinTransparency { get; set; }
-        public int TransparencyMaxDistance { get; set; }
+        public bool EnableMod { get; set; } = true;
+        public float MinTransparency { get; set; } = 0.1f;
+        public int TransparencyMaxDistance { get; set; } = 192;
 
-        public ModConfig()
-        {
-            MinTransparency = 0.1f;
-            TransparencyMaxDistance = 192;
-            EnableMod = true;
-        }
     }
 }
