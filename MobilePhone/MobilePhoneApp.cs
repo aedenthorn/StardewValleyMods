@@ -138,7 +138,7 @@ namespace MobilePhone
                     NPC npc = Game1.getCharacterFromName(kvp.Key);
                     Texture2D portrait = npc.Sprite.Texture;
                     Rectangle sourceRect = npc.getMugShotSourceRect();
-                    callableList.Add(new CallableNPC(npc,portrait,sourceRect));
+                    callableList.Add(new CallableNPC(Config.UseRealNamesInPhoneBook ? npc.displayName : npc.Name, npc, portrait, sourceRect));
                 }
             }
             callableList = callableList.OrderBy(a => a.npc.Name).ToList();
@@ -207,8 +207,8 @@ namespace MobilePhone
                 }
 
                 e.SpriteBatch.Draw(callableList[i].portrait, npcPos + new Vector2((Config.ContactWidth - 32) / 2,0), sourceRect, Color.White, 0, Vector2.Zero, 2, SpriteEffects.None, 0.86f);
-                if(npcPos.Y < screenBottom - Config.ContactHeight - callableList[i].nameSize.Y * 0.4f + 6)
-                    e.SpriteBatch.DrawString(Game1.dialogueFont, callableList[i].npc.displayName, GetNPCPos(i) + new Vector2(Config.ContactWidth / 2 - callableList[i].nameSize.X * 0.2f, Config.ContactHeight - 6 ), Color.Black, 0, Vector2.Zero, 0.4f, SpriteEffects.None, 0.86f);
+                if(Config.ShowNamesInPhoneBook && npcPos.Y < screenBottom - Config.ContactHeight - callableList[i].nameSize.Y * 0.4f + 6)
+                    e.SpriteBatch.DrawString(Game1.dialogueFont, callableList[i].name, GetNPCPos(i) + new Vector2(Config.ContactWidth / 2 - callableList[i].nameSize.X * 0.2f, Config.ContactHeight - 6 ), Color.Black, 0, Vector2.Zero, 0.4f, SpriteEffects.None, 0.86f);
             }
         }
 

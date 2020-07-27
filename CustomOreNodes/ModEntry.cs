@@ -8,6 +8,7 @@ using StardewValley.Network;
 using System;
 using System.Collections.Generic;
 using System.Reflection;
+using System.Threading;
 using static Harmony.AccessTools;
 using Object = StardewValley.Object;
 
@@ -21,7 +22,7 @@ namespace CustomOreNodes
 
 		internal static ModConfig Config;
 		private static List<CustomOreNode> CustomOreNodes = new List<CustomOreNode>();
-		private static IMonitor PMonitor;
+		private static IMonitor SMonitor;
 		
 		private static int FirstIndex = 816;
 		private static int SpringObjectsHeight = 544;
@@ -50,17 +51,17 @@ namespace CustomOreNodes
 				var editor = asset.AsImage();
 				int extension = (Config.SpriteSheetOffsetRows * 16) + ((CustomOreNodes.Count / (editor.Data.Width / 16) + 1) * 16);
 				editor.ExtendImage(minWidth: editor.Data.Width, minHeight: SpringObjectsHeight + extension);
-				PMonitor.Log($"extended springobjects by {extension}");
+				SMonitor.Log($"extended springobjects by {extension}");
 				for (int i = 0; i < CustomOreNodes.Count; i++)
 				{
 					CustomOreNode node = CustomOreNodes[i];
-					PMonitor.Log($"Patching springobjects with {node.spritePath}");
+					SMonitor.Log($"Patching springobjects with {node.spritePath}");
 					Texture2D customTexture;
 					customTexture = node.texture;
 					int x = (i % (editor.Data.Width / 16)) * 16;
 					int y = SpringObjectsHeight + (Config.SpriteSheetOffsetRows*16) + (i / (editor.Data.Width / 16)) * 16;
 					editor.PatchImage(customTexture, sourceArea: new Rectangle(node.spriteX, node.spriteY, node.spriteW, node.spriteH), targetArea: new Rectangle(x, y, 16, 16));
-					PMonitor.Log($"patched springobjects with {node.spritePath}");
+					SMonitor.Log($"patched springobjects with {node.spritePath}");
 				}
 			}
 			else if (asset.AssetNameEquals("Data/ObjectInformation"))
@@ -80,16 +81,24 @@ namespace CustomOreNodes
 		{
 			context = this;
 			Config = this.Helper.ReadConfig<ModConfig>();
-			PMonitor = this.Monitor;
+			SMonitor = this.Monitor;
 			var harmony = HarmonyInstance.Create(this.ModManifest.UniqueID);
 
 			harmony.Patch(
 			   original: AccessTools.Method(typeof(MineShaft), "chooseStoneType"),
 			   postfix: new HarmonyMethod(typeof(ModEntry), nameof(ModEntry.chooseStoneType_Postfix))
 			);
+
 			harmony.Patch(
 			   original: AccessTools.Method(typeof(MineShaft), "breakStone"),
 			   postfix: new HarmonyMethod(typeof(ModEntry), nameof(ModEntry.breakStone_Postfix))
+			);
+
+			ConstructorInfo ci = typeof(Object).GetConstructor(new Type[] { typeof(Vector2), typeof(int), typeof(string), typeof(bool), typeof(bool), typeof(bool), typeof(bool) });
+			harmony.Patch(
+			   original: ci,
+			   prefix: new HarmonyMethod(typeof(ModEntry), nameof(ModEntry.Object_Prefix)),
+			   postfix: new HarmonyMethod(typeof(ModEntry), nameof(ModEntry.Object_Postfix))
 			);
 
 			helper.Events.GameLoop.GameLaunched += GameLoop_GameLaunched;
@@ -119,7 +128,7 @@ namespace CustomOreNodes
 			}
 			catch(Exception ex)
 			{
-				PMonitor.Log("custom_ore_nodes.json error."+ex, LogLevel.Debug);
+				SMonitor.Log("custom_ore_nodes.json error."+ex, LogLevel.Debug);
 			}
 
 			foreach (IContentPack contentPack in this.Helper.ContentPacks.GetOwned())
@@ -135,13 +144,17 @@ namespace CustomOreNodes
 						{
 							node.texture = contentPack.LoadAsset<Texture2D>(node.spritePath);
 						}
+						else
+						{
+							node.texture = Helper.Content.Load<Texture2D>(node.spritePath, ContentSource.GameContent);
+						}
 						CustomOreNodes.Add(node);
 					}
 					Monitor.Log($"Got {data.nodes.Count} ores from content pack {contentPack.Manifest.Name}", LogLevel.Debug);
 				}
 				catch
 				{
-					PMonitor.Log($"custom_ore_nodes.json file not found in content pack {contentPack.Manifest.Name}", LogLevel.Debug);
+					SMonitor.Log($"custom_ore_nodes.json file not found in content pack {contentPack.Manifest.Name}", LogLevel.Debug);
 				}
 			}
 			Monitor.Log($"Got {CustomOreNodes.Count} ores total", LogLevel.Debug);
@@ -159,29 +172,72 @@ namespace CustomOreNodes
 				for(int i = 0; i < CustomOreNodes.Count; i++)
 				{
 					CustomOreNode node = CustomOreNodes[i];
-					if (node.minLevel > 0 && __instance.mineLevel < node.minLevel || node.maxLevel > 0 && __instance.mineLevel > node.maxLevel)
+					if (node.minLevel > -1 && __instance.mineLevel < node.minLevel || node.maxLevel > -1 && __instance.mineLevel > node.maxLevel)
 					{
 						continue;
 					}
 					if(Game1.random.NextDouble() < node.spawnChance/100f)
 					{
 						int index = (SpringObjectsHeight / 16 * SpringObjectsWidth / 16) + (Config.SpriteSheetOffsetRows * SpringObjectsWidth / 16) + i;
-						PMonitor.Log($"Displaying stone at index {index}", LogLevel.Debug);
-						__result = new StardewValley.Object(tile, index, "Stone", true, false, false, false)
+						SMonitor.Log($"Displaying stone at index {index}", LogLevel.Debug);
+						__result = new Object(tile, index, "Stone", true, false, false, false)
 						{
 							MinutesUntilReady = node.durability
 						};
 
-						PMonitor.Log(__result.DisplayName);
+						SMonitor.Log(__result.DisplayName);
 
+						return;
+					}
+				}
+			}
+		}
+
+		private static void Object_Prefix(ref int parentSheetIndex, ref string Givenname)
+		{
+			if (Environment.StackTrace.Contains("chooseStoneType"))
+			{
+				SMonitor.Log("treating as mine stone");
+				return;
+			}
+			if (Givenname == "Stone" || parentSheetIndex == 294 || parentSheetIndex == 295)
+            {
+				SMonitor.Log("treating as non-mine stone");
+				for (int i = 0; i < CustomOreNodes.Count; i++)
+				{
+					CustomOreNode node = CustomOreNodes[i];
+					if (node.minLevel > 0)
+					{
+						continue;
+					}
+					if (Game1.random.NextDouble() < node.spawnChance / 100f)
+					{
+						int index = (SpringObjectsHeight / 16 * SpringObjectsWidth / 16) + (Config.SpriteSheetOffsetRows * SpringObjectsWidth / 16) + i;
+						parentSheetIndex = index;
 						break;
 					}
 				}
 			}
 		}
-		private static void breakStone_Postfix(GameLocation __instance, bool __result, int indexOfStone, int x, int y, Farmer who, Random r)
+		
+		private static void Object_Postfix(Object __instance, ref int parentSheetIndex, ref string Givenname)
 		{
-			PMonitor.Log($"Checking for custom ore in stone {indexOfStone}");
+            if (Givenname == "Stone" || parentSheetIndex == 294 || parentSheetIndex == 295)
+            {
+				for (int i = 0; i < CustomOreNodes.Count; i++)
+				{
+					if(parentSheetIndex == (SpringObjectsHeight / 16 * SpringObjectsWidth / 16) + (Config.SpriteSheetOffsetRows * SpringObjectsWidth / 16) + i)
+                    {
+						__instance.MinutesUntilReady = CustomOreNodes[i].durability;
+					}
+				}
+			}
+		}
+
+
+		private static void breakStone_Postfix(GameLocation __instance, ref bool __result, int indexOfStone, int x, int y, Farmer who, Random r)
+		{
+			SMonitor.Log($"Checking for custom ore in stone {indexOfStone}");
 			int firstIndex = FirstIndex + (Config.SpriteSheetOffsetRows * SpringObjectsWidth / 16);
 			if (indexOfStone - firstIndex < 0 || indexOfStone - firstIndex >= CustomOreNodes.Count)
 			{
@@ -205,12 +261,12 @@ namespace CustomOreNodes
 
 			int addedOres = who.professions.Contains(18) ? 1 : 0;
 			int experience = 0;
-			PMonitor.Log($"custom node has {node.dropItems.Count} potential items.");
+			SMonitor.Log($"custom node has {node.dropItems.Count} potential items.");
 			foreach (DropItem item in node.dropItems)
 			{
 				if (Game1.random.NextDouble() < item.dropChance/100) 
 				{
-					PMonitor.Log($"dropping item {item.itemIdOrName}");
+					SMonitor.Log($"dropping item {item.itemIdOrName}");
 
 					if(!int.TryParse(item.itemIdOrName, out int itemId))
 					{

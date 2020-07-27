@@ -20,13 +20,13 @@ namespace MobilePhone
         public string BackgroundRotatedTexturePath { get; set; } = "background_landscape.png";
         public string UpArrowTexturePath { get; set; } = "up_arrow.png";
         public string DownArrowTexturePath { get; set; } = "down_arrow.png";
-        public string PhonePosition { get; set; } = "mid"; // top-left, bottom-right, etc.
+        public string PhonePosition { get; set; } = "bottom-right"; // top-left, bottom-right, etc.
         public int PhoneWidth{ get; set; } = 286;
         public int PhoneHeight { get; set; } = 503;
         public int ScreenWidth { get; set; } = 260;
         public int ScreenHeight { get; set; } = 429;
-        public int PhoneOffsetX { get; set; } = 0;
-        public int PhoneOffsetY { get; set; } = 0;
+        public int PhoneOffsetX { get; set; } = -64;
+        public int PhoneOffsetY { get; set; } = -64;
         public int ScreenOffsetX { get; set; } = 13;
         public int ScreenOffsetY { get; set; } = 37;
         public int PhoneRotatedWidth{ get; set; } = 503;
@@ -49,5 +49,7 @@ namespace MobilePhone
         public int ContactArrowHeight { get; set; } = 16;
         public Color PhoneBookBackgroundColor { get; set; } = Color.White;
         public int MinPointsToCall { get; set; } = 1000;
+        public bool ShowNamesInPhoneBook { get; set; } = true;
+        public bool UseRealNamesInPhoneBook { get; set; } = true;
     }
 }

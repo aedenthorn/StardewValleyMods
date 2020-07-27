@@ -11,13 +11,15 @@ namespace MobilePhone
         public Texture2D portrait;
         public Rectangle sourceRect;
         public Vector2 nameSize;
+        public string name;
 
-        public CallableNPC(NPC npc, Texture2D portrait, Rectangle sourceRect)
+        public CallableNPC(string name, NPC npc, Texture2D portrait, Rectangle sourceRect)
         {
+            this.name = name;
             this.npc = npc;
             this.portrait = portrait;
             this.sourceRect = sourceRect;
-            this.nameSize = Game1.dialogueFont.MeasureString(npc.displayName);
+            this.nameSize = Game1.dialogueFont.MeasureString(name);
         }
     }
 }

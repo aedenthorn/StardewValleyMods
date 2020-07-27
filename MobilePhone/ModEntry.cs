@@ -51,6 +51,8 @@ namespace MobilePhone
 
         public static Dictionary<string, MobileApp> apps = new Dictionary<string, MobileApp>();
         public static Texture2D phoneBookTexture;
+        private bool draggingPhone;
+        private Point lastMousePosition;
 
         public static event EventHandler OnScreenRotated;
 
@@ -148,6 +150,20 @@ namespace MobilePhone
                 }
             }
 
+            if (draggingPhone)
+            {
+                Point mousePos = Game1.getMousePosition();
+                if(mousePos != lastMousePosition)
+                {
+                    int x = mousePos.X - lastMousePosition.X;
+                    int y = mousePos.Y - lastMousePosition.Y;
+                    Config.PhoneOffsetX += x;
+                    Config.PhoneOffsetY += y;
+                    RefreshPhoneLayout();
+                    lastMousePosition = mousePos;
+                }
+            }
+
             e.SpriteBatch.Draw(phoneRotated ? backgroundRotatedTexture : backgroundTexture, phonePosition, Color.White);
             e.SpriteBatch.Draw(phoneRotated ? phoneRotatedTexture : phoneTexture, phonePosition, Color.White);
 
@@ -172,7 +188,11 @@ namespace MobilePhone
 
         private void Input_ButtonReleased(object sender, StardewModdingAPI.Events.ButtonReleasedEventArgs e)
         {
-
+            if (e.Button == SButton.MouseLeft && draggingPhone)
+            {
+                Helper.WriteConfig(Config);
+                draggingPhone = false;
+            }
         }
 
         private void Input_ButtonPressed(object sender, StardewModdingAPI.Events.ButtonPressedEventArgs e)
@@ -192,16 +212,22 @@ namespace MobilePhone
             }
             if (phoneOpen && !appRunning)
             {
-                Monitor.Log($"pressing mouse key in phone");
                 if (e.Button == SButton.MouseLeft)
                 {
-                    if(Game1.activeClickableMenu == null || Game1.activeClickableMenu is MobilePhoneMenu)
+                    Monitor.Log($"pressing mouse key in phone");
+                    if (Game1.activeClickableMenu == null || Game1.activeClickableMenu is MobilePhoneMenu)
                     {
-                        Helper.Input.Suppress(SButton.MouseLeft);
 
-                        if (!(new Rectangle((int)phonePosition.X, (int)phonePosition.Y, phoneWidth, phoneHeight).Contains(Game1.getMousePosition())))
+                        Point mousePos = Game1.getMousePosition();
+
+                        if (!new Rectangle((int)phonePosition.X, (int)phonePosition.Y, phoneWidth, phoneHeight).Contains(mousePos))
                         {
                             TogglePhone();
+                        }
+                        else if(!screenRect.Contains(mousePos))
+                        {
+                            draggingPhone = true;
+                            lastMousePosition = mousePos;
                         }
                     }
 
@@ -352,6 +378,7 @@ namespace MobilePhone
                     y = Game1.viewport.Height - phoneHeight + phoneOffsetY;
                     break;
             }
+
             return new Vector2(x, y);
         }
 

@@ -1,17 +1,17 @@
 ﻿{
-  "Name": "Mobile Phone",
+  "Name": "Show Players Behind Buildings",
   "Author": "aedenthorn",
-  "Version": "0.3.0",
-  "Description": "Gives you a mobile phone.",
-  "UniqueID": "aedenthorn.MobilePhone",
-  "EntryDll": "MobilePhone.dll",
+  "Version": "0.1.1",
+  "Description": "Lets you see farmers behind buildings.",
+  "UniqueID": "aedenthorn.ShowPlayerBehind",
+  "EntryDll": "ShowPlayerBehind.dll",
   "MinimumApiVersion": "3.5.0",
-  "UpdateKeys": ["Nexus:6523"],
+  "UpdateKeys": ["Nexus:6540"],
   "ModUpdater": {
     "Repository": "StardewValleyMods",
     "User": "aedenthorn",
     "Directory": "_releases",
-    "ModFolder": "MobilePhone"
+    "ModFolder": "ShowPlayerBehind"
   },
   "Dependencies": [
       {

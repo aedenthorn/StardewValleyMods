@@ -36,41 +36,5 @@ namespace TransparentObjects
                 alpha = minAlpha + (1 - minAlpha) * fraction;
             }
         }
-
-        private static Color m_modulationColour;
-
-        public static void DisplayDevice_DrawTile_Prefix(Tile tile, Location location, ref Color ___m_modulationColour)
-        {
-            Monitor.Log("Test");
-            m_modulationColour = ___m_modulationColour;
-            if (tile != null && (tile.Layer.Id == "Front" || tile.Layer.Id == "AlwaysFront"))
-            {
-                Vector2 playerLoc = Game1.player.getTileLocation();
-                if (Vector2.Distance(playerLoc, new Vector2(location.X, location.Y)) < 3)
-                {
-                    Monitor.Log("1");
-                    ___m_modulationColour *= 1 / 4;
-                }
-                else if (Vector2.Distance(playerLoc, new Vector2(location.X, location.Y)) < 4)
-                {
-                    Monitor.Log("2");
-                    ___m_modulationColour *= 1 / 2;
-                }
-                else if (Vector2.Distance(playerLoc, new Vector2(location.X, location.Y)) < 5)
-                {
-                    Monitor.Log("3");
-                    ___m_modulationColour *= 3 / 4;
-                }
-            }
-        }
-        public static void DisplayDevice_DrawTile_Postfix(ref Color ___m_modulationColour)
-        {
-            Monitor.Log("test");
-            ___m_modulationColour = m_modulationColour;
-        }
-        public static void Layer_DrawNormal_Prefix(IDisplayDevice displayDevice, xTile.Dimensions.Rectangle mapViewport, Location displayOffset)
-        {
-            //Monitor.Log(displayDevice.GetType().ToString());
-        }
     }
 }
