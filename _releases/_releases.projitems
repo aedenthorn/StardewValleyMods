@@ -11,16 +11,21 @@
   <ItemGroup>
     <None Include="$(MSBuildThisFileDirectory)CustomFixedDialogue 0.4.2.zip" />
     <None Include="$(MSBuildThisFileDirectory)Familiars 0.7.3.zip" />
+    <None Include="$(MSBuildThisFileDirectory)Familiars 0.8.0.zip" />
     <None Include="$(MSBuildThisFileDirectory)FruitTreeShaker 1.1.0.zip" />
+    <None Include="$(MSBuildThisFileDirectory)MobileArcade 0.1.0.zip" />
     <None Include="$(MSBuildThisFileDirectory)MobilePhone 0.2.0.zip" />
+    <None Include="$(MSBuildThisFileDirectory)MobilePhone 0.2.1.zip" />
     <None Include="$(MSBuildThisFileDirectory)MultipleSpouses 1.3.3.zip" />
     <None Include="$(MSBuildThisFileDirectory)NonRandomPrairieKing 0.1.0.zip" />
     <None Include="$(MSBuildThisFileDirectory)PacifistValley 0.6.1.zip" />
     <None Include="$(MSBuildThisFileDirectory)PacifistValley 0.6.2.zip" />
     <None Include="$(MSBuildThisFileDirectory)Quotes 0.3.0.zip" />
+    <None Include="$(MSBuildThisFileDirectory)Quotes 0.3.1.zip" />
     <None Include="$(MSBuildThisFileDirectory)RealNames 0.1.4.zip" />
     <None Include="$(MSBuildThisFileDirectory)Swim 1.3.12.zip" />
     <None Include="$(MSBuildThisFileDirectory)TransparentObjects 0.2.1.zip" />
     <None Include="$(MSBuildThisFileDirectory)VideoPlayer 0.1.0.zip" />
+    <None Include="$(MSBuildThisFileDirectory)VideoPlayer 0.1.1.zip" />
   </ItemGroup>
 </Project>
