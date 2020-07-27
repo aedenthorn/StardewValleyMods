@@ -307,12 +307,12 @@ namespace StardewValley.Monsters
 
         private int GetFireDistance()
         {
-			return (int)Math.Sqrt(exp);
+			return (int)(Math.Sqrt(exp) * ModEntry.Config.DinoFireDistanceMult);
 		}
 
 		private int GetDamage()
         {
-			return (int)Math.Sqrt(exp);
+			return (int)(Math.Sqrt(exp) * ModEntry.Config.DinoDamageMult);
         }
 
         private void AddExp(int v)

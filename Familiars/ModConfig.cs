@@ -50,5 +50,14 @@ namespace Familiars
         public bool DinoSoundEffects { get; set; } = true;
         public bool DustSoundEffects { get; set; } = false;
         public bool JunimoSoundEffects { get; set; } = false;
+        public double DustSpriteStealChanceMult { get; set; } = 1;
+        public double BatDamageMult { get; set; } = 1;
+        public double BatAttackIntervalMult { get; set; } = 1;
+        public double ButterflyBuffIntervalMult { get; set; } = 1;
+        public double ButterflyBuffChanceMult { get; set; } = 1;
+        public double JunimoHealAmountMult { get; set; } = 1;
+        public double JunimoHealChanceMult { get; set; } = 1;
+        public double DinoFireDistanceMult { get; set; } = 1;
+        public double DinoDamageMult { get; set; } = 1;
     }
 }

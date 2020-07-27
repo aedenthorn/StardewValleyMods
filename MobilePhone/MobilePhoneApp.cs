@@ -43,7 +43,7 @@ namespace MobilePhone
             ModEntry.phoneAppRunning = true;
             Game1.activeClickableMenu = new PhoneBookMenu();
             CreateCallableList();
-            listHeight = Config.AppIconMarginY + (int)Math.Ceiling(callableList.Count / (float)ModEntry.appColumns) * (Config.AppIconHeight + Config.AppIconMarginY);
+            listHeight = Config.ContactMarginY + (int)Math.Ceiling(callableList.Count / (float)ModEntry.gridWidth) * (Config.ContactHeight + Config.ContactMarginY);
             Helper.Events.Display.RenderingActiveMenu += Display_RenderingActiveMenu;
             Helper.Events.Input.ButtonPressed += Input_ButtonPressed;
             Helper.Events.Input.ButtonReleased += Input_ButtonReleased;
@@ -63,7 +63,7 @@ namespace MobilePhone
         {
             if (e.Button == SButton.MouseLeft)
             {
-                Monitor.Log($"unclicked toprow {topRow} callables {callableList.Count} width {ModEntry.appColumns} tiles {ModEntry.appColumns * ModEntry.appRows}");
+                Monitor.Log($"unclicked toprow {topRow} callables {callableList.Count} width {ModEntry.gridWidth} tiles {ModEntry.gridWidth * ModEntry.gridHeight}");
                 if (dragging)
                 {
                     Monitor.Log($"was dragging");
@@ -83,7 +83,7 @@ namespace MobilePhone
                         return;
                     }
                 }
-                if(callableList.Count - topRow * ModEntry.appColumns > ModEntry.appColumns * ModEntry.appRows)
+                if(callableList.Count - topRow * ModEntry.gridWidth > ModEntry.gridWidth * ModEntry.gridHeight)
                 {
                     Vector2 pos = ModEntry.downArrowPosition;
                     Rectangle r = new Rectangle((int)pos.X, (int)pos.Y, Config.ArrowWidth, Config.ArrowHeight);
@@ -99,7 +99,7 @@ namespace MobilePhone
                 for (int i = 0; i < callableList.Count; i++)
                 {
                     Vector2 pos = GetNPCPos(i);
-                    Rectangle r = new Rectangle((int)pos.X, (int)pos.Y, Config.AppIconWidth, Config.AppIconHeight);
+                    Rectangle r = new Rectangle((int)pos.X, (int)pos.Y, Config.ContactWidth, Config.ContactHeight);
                     if (r.Contains(Game1.getMousePosition()))
                     {
                         Monitor.Log($"calling {callableList[i].npc.Name}");
@@ -206,15 +206,17 @@ namespace MobilePhone
                     sourceRect = new Rectangle(r.X, r.Y, r.Width, r.Height + cutBottom);
                 }
 
-                e.SpriteBatch.Draw(callableList[i].portrait, npcPos, sourceRect, Color.White, 0, Vector2.Zero, 2, SpriteEffects.None, 0.86f);
+                e.SpriteBatch.Draw(callableList[i].portrait, npcPos + new Vector2((Config.ContactWidth - 32) / 2,0), sourceRect, Color.White, 0, Vector2.Zero, 2, SpriteEffects.None, 0.86f);
+                if(npcPos.Y < screenBottom - Config.ContactHeight - callableList[i].nameSize.Y * 0.4f + 6)
+                    e.SpriteBatch.DrawString(Game1.dialogueFont, callableList[i].npc.displayName, GetNPCPos(i) + new Vector2(Config.ContactWidth / 2 - callableList[i].nameSize.X * 0.2f, Config.ContactHeight - 6 ), Color.Black, 0, Vector2.Zero, 0.4f, SpriteEffects.None, 0.86f);
             }
         }
 
         private static Vector2 GetNPCPos(int i)
         {
-            i -= topRow * ModEntry.appColumns;
-            float x = ModEntry.screenPosition.X + Config.AppIconMarginX + ((i % ModEntry.appColumns) * (Config.AppIconWidth + Config.AppIconMarginX));
-            float y = ModEntry.screenPosition.Y + Config.AppIconMarginY + ((i / ModEntry.appColumns) * (Config.AppIconHeight + Config.AppIconMarginY));
+            i -= topRow * ModEntry.gridWidth;
+            float x = ModEntry.screenPosition.X + Config.ContactMarginX + ((i % ModEntry.gridWidth) * (Config.ContactWidth + Config.ContactMarginX));
+            float y = ModEntry.screenPosition.Y + Config.ContactMarginY + ((i / ModEntry.gridWidth) * (Config.ContactHeight + Config.ContactMarginY));
 
             return new Vector2(x, y + yOffset);
         }

@@ -252,12 +252,12 @@ namespace Familiars
 
         private int AttackInterval()
         {
-			return Math.Max(500, 5000 - (int)Math.Sqrt(exp));
+			return (int)(Math.Max(500, 5000 - (int)Math.Sqrt(exp)) * ModEntry.Config.BatAttackIntervalMult);
         }
 
         private int BaseDamage()
         {
-			return (int)Math.Sqrt(exp);
+			return (int)(Math.Sqrt(exp) * ModEntry.Config.BatDamageMult);
         }
 
         protected override void updateAnimation(GameTime time)

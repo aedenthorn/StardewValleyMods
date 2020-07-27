@@ -65,7 +65,7 @@
   </ItemGroup>
   <ItemGroup />
   <ItemGroup>
-    <Content Include="assets\app_icon.png" />
+    <Content Include="assets\app_icon_64.png" />
     <Content Include="assets\background.png" />
     <Content Include="assets\background_landscape.png" />
     <Content Include="assets\phone.png" />

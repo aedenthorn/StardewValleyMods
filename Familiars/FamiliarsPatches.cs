@@ -335,27 +335,5 @@ namespace Familiars
             }
 			return true;
 		}
-		public static bool Coop_dayUpdate_Prefix(ref Coop __instance)
-		{
-			if (__instance.daysOfConstructionLeft <= 0)
-			{
-				if ((__instance.indoors.Value as AnimalHouse).incubatingEgg.Y > 0)
-				{
-					NetPoint incubatingEgg = (__instance.indoors.Value as AnimalHouse).incubatingEgg;
-					int x = incubatingEgg.X;
-					incubatingEgg.X = x - 1;
-					if ((__instance.indoors.Value as AnimalHouse).incubatingEgg.X <= 0)
-					{
-						if(new int[] { ModEntry.BatFamiliarEgg, ModEntry.ButterflyFamiliarEgg, ModEntry.DinoFamiliarEgg, ModEntry.DustFamiliarEgg, ModEntry.JunimoFamiliarEgg }.Contains(incubatingEgg.Y))
-                        {
-							(__instance.indoors.Value as AnimalHouse).incubatingEgg.X = 0;
-							(__instance.indoors.Value as AnimalHouse).incubatingEgg.Y = -1;
-							return false;
-						}
-					}
-				}
-			}
-			return true;
-		}
 	}
 }

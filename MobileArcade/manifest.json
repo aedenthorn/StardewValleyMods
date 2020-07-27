@@ -1,0 +1,26 @@
+﻿{
+  "Name": "Mobile Arcade",
+  "Author": "aedenthorn",
+  "Version": "0.1.0",
+  "Description": "Links to arcade games for your mobile phone.",
+  "UniqueID": "aedenthorn.MobileArcade",
+  "EntryDll": "MobileArcade.dll",
+  "MinimumApiVersion": "3.5.0",
+  "UpdateKeys": ["Nexus:6538"],
+  "ModUpdater": {
+    "Repository": "StardewValleyMods",
+    "User": "aedenthorn",
+    "Directory": "_releases",
+    "ModFolder": "MobileArcade"
+  },
+  "Dependencies": [
+      {
+        "UniqueID": "Platonymous.ModUpdater",
+        "IsRequired": false
+      },
+      {
+        "UniqueID": "aedenthorn.MobilePhone",
+        "IsRequired": true
+      },
+  ]
+}

@@ -1,8 +1,10 @@
 ﻿using Microsoft.Xna.Framework;
+using Netcode;
 using StardewModdingAPI;
 using StardewModdingAPI.Events;
 using StardewValley;
 using StardewValley.BellsAndWhistles;
+using StardewValley.Buildings;
 using StardewValley.Monsters;
 using System;
 using System.Collections.Generic;
@@ -167,6 +169,31 @@ namespace Familiars
                 else
                 {
                     Monitor.Log(string.Format("Familiars mod item #6 ID is {0}.", ModEntry.ButterflyDust));
+                }
+            }
+
+            // fix bug
+
+            foreach(Building l in Game1.getFarm().buildings)
+            {
+                if(l is Coop)
+                {
+                    foreach(Object o in (l as Coop).indoors.Value.Objects.Values)
+                    {
+                        if (o.bigCraftable && o.Name.Contains("Incubator") && o.heldObject.Value != null)
+                        {
+                            int egg = o.heldObject.Value.ParentSheetIndex;
+                            Monitor.Log($"egg id {egg}");
+                            if (new int[] { ModEntry.BatFamiliarEgg, ModEntry.ButterflyFamiliarEgg, ModEntry.DinoFamiliarEgg, ModEntry.DustFamiliarEgg, ModEntry.JunimoFamiliarEgg }.Contains(egg))
+                            {
+                                Monitor.Log($"familiar egg, removing.", LogLevel.Warn);
+                                o.heldObject.Value = null;
+                                o.minutesUntilReady.Value = -1;
+                                o.ParentSheetIndex = 101;
+                                Game1.player.addItemToInventory(new Object(egg, 1));
+                            }
+                        }
+                    }
                 }
             }
         }

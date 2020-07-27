@@ -267,7 +267,7 @@ namespace Familiars
 
         private double StealChance()
         {
-			return 0.001 + (0.001 * Math.Sqrt(exp));
+			return 0.001 + (0.001 * Math.Sqrt(exp)) * ModEntry.Config.DustSpriteStealChanceMult;
 		}
 
         private void AddExp(int v)

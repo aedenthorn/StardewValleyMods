@@ -119,10 +119,6 @@ namespace Familiars
 				original: AccessTools.Method(typeof(AnimalHouse), nameof(AnimalHouse.incubator)),
 				prefix: new HarmonyMethod(typeof(FamiliarsPatches), nameof(FamiliarsPatches.AnimalHouse_incubator_Prefix))
 			);
-			harmony.Patch(
-				original: AccessTools.Method(typeof(Coop), nameof(Coop.dayUpdate)),
-				prefix: new HarmonyMethod(typeof(FamiliarsPatches), nameof(FamiliarsPatches.Coop_dayUpdate_Prefix))
-			);
 		}
 
 

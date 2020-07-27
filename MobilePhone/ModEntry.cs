@@ -45,6 +45,8 @@ namespace MobilePhone
         private static MobilePhoneApi api;
         public static int appColumns;
         public static int appRows;
+        public static int gridWidth;
+        public static int gridHeight;
         public static int topRow;
 
         public static Dictionary<string, MobileApp> apps = new Dictionary<string, MobileApp>();
@@ -124,7 +126,14 @@ namespace MobilePhone
         {
 
             if (!phoneOpen)
+            {
+                appRunning = false;
+                if (Game1.activeClickableMenu is MobilePhoneMenu)
+                {
+                    Game1.activeClickableMenu = null;
+                }
                 return;
+            }
 
             if (!appRunning)
             {
@@ -204,7 +213,7 @@ namespace MobilePhone
                             continue;
 
                         Vector2 pos = GetAppPos(i);
-                        Rectangle r = new Rectangle((int) pos.X, (int) pos.Y, Config.AppIconWidth, Config.AppIconHeight);
+                        Rectangle r = new Rectangle((int) pos.X, (int) pos.Y, Config.IconWidth, Config.IconHeight);
                         if (r.Contains(Game1.getMousePosition()))
                         {
                             Monitor.Log($"rect: {r.X},{r.Y},{r.Width},{r.Height} pos {Game1.getMousePosition()} running app {keys[i]}");
@@ -308,8 +317,10 @@ namespace MobilePhone
             screenPosition = GetScreenPosition();
             screenRect = new Rectangle((int)screenPosition.X, (int)screenPosition.Y, (int)screenWidth, (int)screenHeight);
             GetArrowPositions();
-            appColumns = (screenWidth - Config.AppIconMarginX) / (Config.AppIconWidth + Config.AppIconMarginX);
-            appRows = (screenHeight - Config.AppIconMarginY) / (Config.AppIconHeight + Config.AppIconMarginY);
+            appColumns = (screenWidth - Config.IconMarginX) / (Config.IconWidth + Config.IconMarginX);
+            appRows = (screenHeight - Config.IconMarginY) / (Config.IconHeight + Config.IconMarginY);
+            gridWidth = (screenWidth - Config.ContactMarginX) / (Config.ContactWidth + Config.ContactMarginX);
+            gridHeight = (screenHeight - Config.ContactMarginY) / (Config.ContactHeight + Config.ContactMarginY); 
             phoneBookTexture = MobilePhoneApp.MakeBackground();
         }
 
@@ -357,15 +368,15 @@ namespace MobilePhone
         private Vector2 GetAppPos(int i)
         {
             i -= topRow * appColumns;
-            float x = screenPosition.X + Config.AppIconMarginX + (( i % appColumns) * (Config.AppIconWidth + Config.AppIconMarginX));
-            float y = screenPosition.Y + Config.AppIconMarginY + ((i / appColumns) * (Config.AppIconHeight + Config.AppIconMarginY));
+            float x = screenPosition.X + Config.IconMarginX + (( i % appColumns) * (Config.IconWidth + Config.IconMarginX));
+            float y = screenPosition.Y + Config.IconMarginY + ((i / appColumns) * (Config.IconHeight + Config.IconMarginY));
 
             return new Vector2(x, y);
         }
         private void GetArrowPositions()
         {
-            upArrowPosition = new Vector2(screenPosition.X + screenWidth - Config.ArrowWidth, screenPosition.Y);
-            downArrowPosition = new Vector2(screenPosition.X + screenWidth - Config.ArrowWidth, screenPosition.Y + screenHeight - Config.ArrowHeight);
+            upArrowPosition = new Vector2(screenPosition.X + screenWidth - Config.ContactArrowWidth, screenPosition.Y);
+            downArrowPosition = new Vector2(screenPosition.X + screenWidth - Config.ContactArrowWidth, screenPosition.Y + screenHeight - Config.ContactArrowHeight);
         }
 
         public static bool IsOnScreen(int i, int top)

@@ -531,12 +531,12 @@ namespace Familiars
 		}
 		private int HealAmount()
         {
-			return (int)Math.Ceiling(Math.Sqrt(exp/10f));
+			return (int)(Math.Ceiling(Math.Sqrt(exp/10f)) * ModEntry.Config.JunimoHealAmountMult);
         }
 
         private double HealChance()
         {
-			return 0.001 + Math.Sqrt(exp) * 0.001;
+			return (0.001 + Math.Sqrt(exp) * 0.001) * ModEntry.Config.JunimoHealChanceMult;
         }
 
         public override void draw(SpriteBatch b, float alpha = 1f)

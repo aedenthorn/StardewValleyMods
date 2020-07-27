@@ -74,6 +74,8 @@ namespace MultipleSpouses
         public static string GetRandomSpouse(Farmer f)
         {
             var spouses = GetSpouses(f, 1);
+            if (spouses.Count == 0)
+                return null;
             ShuffleDic(ref spouses);
             return spouses.Keys.ToArray()[0];
         }

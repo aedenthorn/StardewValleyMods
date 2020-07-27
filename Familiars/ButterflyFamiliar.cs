@@ -274,7 +274,7 @@ namespace Familiars
 
 		private int GetBuffInterval()
         {
-			return 10000 - (int)Math.Sqrt(exp) * 10;
+			return (int)((10000 - (int)Math.Sqrt(exp))* ModEntry.Config.ButterflyBuffIntervalMult);
 		}
 
         private int Buff()

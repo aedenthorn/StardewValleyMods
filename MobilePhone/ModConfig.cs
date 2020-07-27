@@ -37,12 +37,16 @@ namespace MobilePhone
         public int PhoneRotatedOffsetY { get; set; } = 0;
         public int ScreenRotatedOffsetX { get; set; } = 37;
         public int ScreenRotatedOffsetY { get; set; } = 13;
-        public int AppIconWidth { get; set; } = 64;
-        public int AppIconHeight { get; set; } = 64;
-        public int AppIconMarginX { get; set; } = 16;
-        public int AppIconMarginY { get; set; } = 16;
-        public int ArrowWidth { get; set; } = 32;
-        public int ArrowHeight { get; set; } = 32;
+        public int IconWidth { get; set; } = 48;
+        public int IconHeight { get; set; } = 48;
+        public int IconMarginX { get; set; } = 12;
+        public int IconMarginY { get; set; } = 12;
+        public int ContactWidth { get; set; } = 64;
+        public int ContactHeight { get; set; } = 64;
+        public int ContactMarginX { get; set; } = 16;
+        public int ContactMarginY { get; set; } = 16;
+        public int ContactArrowWidth { get; set; } = 16;
+        public int ContactArrowHeight { get; set; } = 16;
         public Color PhoneBookBackgroundColor { get; set; } = Color.White;
         public int MinPointsToCall { get; set; } = 1000;
     }

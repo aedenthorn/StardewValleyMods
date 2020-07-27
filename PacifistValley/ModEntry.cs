@@ -365,7 +365,7 @@ namespace PacifistValley
 			}
         }
 
-		private static void Bat_updateAnimation_Postfix(Bat __instance, ref ICue ___batFlap, bool ___cursedDoll)
+		private static void Bat_updateAnimation_Postfix(Bat __instance)
         {
             try
             {
