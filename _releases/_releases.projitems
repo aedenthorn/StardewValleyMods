@@ -28,6 +28,7 @@
     <None Include="$(MSBuildThisFileDirectory)PacifistValley 0.6.1.zip" />
     <None Include="$(MSBuildThisFileDirectory)PacifistValley 0.6.2.zip" />
     <None Include="$(MSBuildThisFileDirectory)PacifistValley 0.6.3.zip" />
+    <None Include="$(MSBuildThisFileDirectory)QuickResponses 0.1.0.zip" />
     <None Include="$(MSBuildThisFileDirectory)Quotes 0.3.0.zip" />
     <None Include="$(MSBuildThisFileDirectory)Quotes 0.3.1.zip" />
     <None Include="$(MSBuildThisFileDirectory)RealNames 0.1.4.zip" />
