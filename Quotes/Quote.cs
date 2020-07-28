@@ -24,6 +24,13 @@ namespace Quotes
             var line = "";
             for(int i = 0; i < words.Length; i++)
             {
+                if(words[i].Length > lineLength)
+                {
+                    quoteLines.Add(words[i].Substring(0, lineLength));
+                    words[i] = words[i].Substring(lineLength);
+                    i--;
+                    continue;
+                }
                 line += (line.Length == 0 ? "" : " ") + words[i];
                 if (line.Length >= lineLength)
                 {

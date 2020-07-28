@@ -18,5 +18,6 @@ namespace Quotes
         public string AuthorPrefix { get; set; } = "-- ";
         public bool ClickToDispelQuote { get; set; } = true;
         public bool RandomQuote { get; set; } = false;
+        public int QuoteWidth { get; set; } = 1000;
     }
 }

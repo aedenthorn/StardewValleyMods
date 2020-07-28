@@ -1,4 +1,5 @@
-﻿using Microsoft.Xna.Framework;
+﻿using AsfMojo.Parsing;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Media;
 using StardewModdingAPI;
@@ -6,6 +7,8 @@ using StardewValley;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
+using System.Reflection;
 
 namespace VideoPlayerMod
 {
@@ -35,7 +38,7 @@ namespace VideoPlayerMod
                 Monitor.Log($"Assets folder not found. No videos will be loaded.", LogLevel.Warn);
                 return;
             }
-            videoFiles = Directory.GetFiles(path, "*.xnb");
+            videoFiles = Directory.GetFiles(path, "*.wmv");
             if (videoFiles.Length == 0)
             {
                 Monitor.Log($"No videos found to play.", LogLevel.Warn);
@@ -47,12 +50,17 @@ namespace VideoPlayerMod
             {
                 try
                 {
-                    string videoPath = Path.Combine("assets", Path.GetFileName(v));
-                    videos.Add(Helper.Content.Load<Video>(videoPath)); 
+                    if (TryLoadFromWMV(v, out Video video))
+                    {
+                        videos.Add(video);
+                        Monitor.Log($"Success adding {v}!", LogLevel.Debug);
+                    }
+                    //string videoPath = Path.Combine("assets", Path.GetFileName(v));
+                    //videos.Add(Helper.Content.Load<Video>(videoPath)); 
                 }
-                catch
+                catch(Exception ex)
                 {
-
+                    Monitor.Log($"Exception loading wmv: {ex}");
                 }
             }
 
@@ -61,6 +69,37 @@ namespace VideoPlayerMod
             Helper.Events.GameLoop.GameLaunched += GameLoop_GameLaunched;
             Helper.Events.Input.ButtonPressed += Input_ButtonPressed;
             Helper.Events.Display.Rendered += Display_Rendered;
+        }
+        public bool TryLoadFromWMV(string filePath, out Video video)
+        {
+            video = null;
+            Monitor.Log($"Loading wmv: {filePath}");
+
+            using (AsfMojo.File.AsfFile asfFile = new AsfMojo.File.AsfFile(filePath))
+            {
+                int duration = (int)asfFile.PacketConfiguration.Duration * 1000, width = asfFile.PacketConfiguration.ImageWidth, height = asfFile.PacketConfiguration.ImageHeight;
+                Monitor.Log($"Duration: {duration}");
+                if (asfFile.GetAsfObjectByType(AsfGuid.ASF_Metadata_Object).FirstOrDefault() is AsfMetadataObject metadataObject)
+                {
+                    foreach(AsfMetadataObject o in asfFile.GetAsfObjectByType(AsfGuid.ASF_Metadata_Object))
+                    {
+                        Monitor.Log($"object: {o.Name}"); 
+                        foreach (AsfProperty p in o.DescriptionRecords)
+                        {
+                            Monitor.Log($"property: {p.Name}");
+                        }
+                    }
+                    ConstructorInfo videoConstructor = typeof(Video).GetConstructor(BindingFlags.NonPublic | BindingFlags.Instance, null, new Type[] { typeof(GraphicsDevice), typeof(string), typeof(int), typeof(int), typeof(int), typeof(float), typeof(VideoSoundtrackType) }, null);
+                    Monitor.Log($"Constructor: {videoConstructor != null}");
+                    if (videoConstructor?.Invoke(new object[] { Game1.graphics.GraphicsDevice, filePath, duration, width, height, -1, VideoSoundtrackType.MusicAndDialog }) is Video v)
+                    {
+                        video = v;
+                        Monitor.Log($"loaded video: {video != null}");
+                    }
+                }
+            }
+
+            return video is Video;
         }
 
         private void GameLoop_GameLaunched(object sender, StardewModdingAPI.Events.GameLaunchedEventArgs e)
@@ -111,6 +150,7 @@ namespace VideoPlayerMod
                     return;
                 }
                 api.SetAppRunning(true);
+                Helper.Events.Display.Rendered += Display_Rendered;
                 PlayTrack();
             }
         }
@@ -122,7 +162,13 @@ namespace VideoPlayerMod
 
         private void Input_ButtonPressed(object sender, StardewModdingAPI.Events.ButtonPressedEventArgs e)
         {
-            if(e.Button == SButton.NumPad4)
+            if (Config.PhoneApp)
+            {
+                if(api == null || !api.GetPhoneOpened() || !api.GetAppRunning())
+                    return;
+            }
+
+            if (e.Button == SButton.NumPad4)
             {
                 if (Helper.Input.IsDown(SButton.LeftControl))
                     Config.XOffset = Math.Max(0, Config.XOffset + (Config.RightSide ? -5 : 5));
@@ -158,9 +204,6 @@ namespace VideoPlayerMod
                 videoPlayer.Pause();
             else
                 videoPlayer.Stop();
-
-            if (Config.PhoneApp && api != null)
-                api.SetAppRunning(false);
         }
 
         private void PlayTrack()
@@ -198,14 +241,23 @@ namespace VideoPlayerMod
 
         private void Display_Rendered(object sender, StardewModdingAPI.Events.RenderedEventArgs e)
         {
+
+            if (Config.PhoneApp)
+            {
+
+                if (!api.GetPhoneOpened() || !api.GetAppRunning())
+                {
+                    StopTrack();
+                    Helper.Events.Display.Rendered -= Display_Rendered;
+                    return;
+                }
+                Vector2 screenSize = api.GetScreenSize();
+                Vector2 pos = api.GetScreenPosition();
+                e.SpriteBatch.Draw(backgroundTexture, new Rectangle((int)pos.X, (int)pos.Y, (int)screenSize.X, (int)screenSize.Y), Color.White);
+            }
+
             if (videoPlayer.State != MediaState.Playing)
                 return;
-
-            if (Config.PhoneApp && api != null && (!api.GetPhoneOpened() || !api.GetAppRunning()))
-            {
-                StopTrack();
-                return;
-            }
 
             Texture2D texture = videoPlayer.GetTexture();
             if (texture != null)
@@ -214,7 +266,6 @@ namespace VideoPlayerMod
                 {
                     Vector2 screenSize = api.GetScreenSize();
                     Vector2 pos = api.GetScreenPosition();
-                    e.SpriteBatch.Draw(backgroundTexture, new Rectangle((int)pos.X, (int)pos.Y, (int)screenSize.X, (int)screenSize.Y), Color.White);
                     Vector2 size;
                     float rs = screenSize.X / screenSize.Y;
                     float rv = texture.Width / (float) texture.Height;

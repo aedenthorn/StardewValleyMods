@@ -44,7 +44,7 @@ namespace QuickResponses
             int responseY = y - (heightForQuestions - Game1.activeClickableMenu.height) + SpriteText.getHeightOfString((Game1.activeClickableMenu as DialogueBox).getCurrentString(), Game1.activeClickableMenu.width - 16) + 44;
             for (int i = 0; i < count; i++)
             {
-                e.SpriteBatch.DrawString(Game1.dialogueFont, $"{i + 1}", new Vector2(x - 4, responseY), Config.NumberColor, 0, Vector2.Zero, 0.7f, SpriteEffects.None, 0.86f);
+                e.SpriteBatch.DrawString(Game1.dialogueFont, $"{i + 1}", new Vector2(x, responseY), Config.NumberColor, 0, Vector2.Zero, 0.4f, SpriteEffects.None, 0.86f);
                 responseY += SpriteText.getHeightOfString(responses[i].responseText, Game1.activeClickableMenu.width) + 16;
             }
 
