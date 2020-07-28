@@ -39,5 +39,6 @@
     <None Include="$(MSBuildThisFileDirectory)VideoPlayer 0.1.0.zip" />
     <None Include="$(MSBuildThisFileDirectory)VideoPlayer 0.1.1.zip" />
     <None Include="$(MSBuildThisFileDirectory)YAJM 0.1.0.zip" />
+    <None Include="$(MSBuildThisFileDirectory)YAJM 0.1.1.zip" />
   </ItemGroup>
 </Project>

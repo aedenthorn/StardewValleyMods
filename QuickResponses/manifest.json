@@ -6,7 +6,7 @@
   "UniqueID": "aedenthorn.QuickResponses",
   "EntryDll": "QuickResponses.dll",
   "MinimumApiVersion": "3.5.0",
-  "UpdateKeys": ["Nexus:"],
+  "UpdateKeys": ["Nexus:6548"],
   "ModUpdater": {
     "Repository": "StardewValleyMods",
     "User": "aedenthorn",
