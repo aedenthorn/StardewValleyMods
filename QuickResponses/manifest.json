@@ -1,17 +1,17 @@
 ﻿{
-  "Name": "Mobile Phone",
+  "Name": "Quick Responses",
   "Author": "aedenthorn",
-  "Version": "0.4.1",
-  "Description": "Gives you a mobile phone.",
-  "UniqueID": "aedenthorn.MobilePhone",
-  "EntryDll": "MobilePhone.dll",
+  "Version": "0.1.0",
+  "Description": "Quick responses.",
+  "UniqueID": "aedenthorn.QuickResponses",
+  "EntryDll": "QuickResponses.dll",
   "MinimumApiVersion": "3.5.0",
-  "UpdateKeys": ["Nexus:6523"],
+  "UpdateKeys": ["Nexus:"],
   "ModUpdater": {
     "Repository": "StardewValleyMods",
     "User": "aedenthorn",
     "Directory": "_releases",
-    "ModFolder": "MobilePhone"
+    "ModFolder": "QuickResponses"
   },
   "Dependencies": [
       {

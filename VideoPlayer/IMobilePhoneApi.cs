@@ -10,6 +10,7 @@ namespace VideoPlayerMod
 
         Vector2 GetScreenPosition();
         Vector2 GetScreenSize();
+        Vector2 GetScreenSize(bool rotated);
         bool GetPhoneRotated();
         void SetPhoneRotated(bool value);
         bool GetPhoneOpened();

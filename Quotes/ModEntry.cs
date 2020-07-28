@@ -12,7 +12,7 @@ namespace Quotes
 	{
 		public static ModEntry context;
 
-		internal static ModConfig Config;
+		public static ModConfig Config;
         private Random myRand;
 
         public static string[] quotestrings = new string[0];

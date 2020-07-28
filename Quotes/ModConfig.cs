@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace Quotes
 {
-    class ModConfig
+    public class ModConfig
     {
         public bool EnableMod { get; set; } = true;
         public Color QuoteColor { get; set; } = Color.DarkSeaGreen;

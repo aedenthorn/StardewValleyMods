@@ -28,6 +28,11 @@ namespace MobilePhone
             return ModEntry.GetScreenSize();
         }
 
+        public Vector2 GetScreenSize(bool rotated)
+        {
+            return ModEntry.GetScreenSize(rotated);
+        }
+
         public bool AddOnPhoneRotated(EventHandler action)
         {
             ModEntry.OnScreenRotated += action;

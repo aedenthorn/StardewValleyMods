@@ -19,6 +19,8 @@ namespace VideoPlayerMod
         public Video currentVideo;
         private string[] videoFiles;
         private IMobilePhoneApi api;
+        private Texture2D backgroundTexture;
+        private Texture2D backgroundRotatedTexture;
 
         public override void Entry(IModHelper helper)
 		{
@@ -71,8 +73,32 @@ namespace VideoPlayerMod
                     Texture2D appIcon = Helper.Content.Load<Texture2D>(Path.Combine("assets", "app_icon.png"));
                     bool success = api.AddApp(Helper.ModRegistry.ModID, "Video Player", OpenVideoPlayer, appIcon);
                     Monitor.Log($"loaded phone app successfully: {success}", LogLevel.Debug);
+                    MakeBackgrounds();
                 }
             }
+        }
+
+        public void MakeBackgrounds()
+        {
+            Vector2 screenSize = api.GetScreenSize(false);
+            Texture2D background = new Texture2D(Game1.graphics.GraphicsDevice, (int)screenSize.X, (int)screenSize.Y);
+            Color[] data = new Color[background.Width * background.Height];
+            for (int pixel = 0; pixel < data.Length; pixel++)
+            {
+                data[pixel] = Color.Black;
+            }
+            background.SetData(data);
+            backgroundTexture = background;
+
+            screenSize = api.GetScreenSize(true);
+            background = new Texture2D(Game1.graphics.GraphicsDevice, (int)screenSize.X, (int)screenSize.Y);
+            data = new Color[background.Width * background.Height];
+            for (int pixel = 0; pixel < data.Length; pixel++)
+            {
+                data[pixel] = Color.Black;
+            }
+            background.SetData(data);
+            backgroundRotatedTexture = background;
         }
 
         private void OpenVideoPlayer()
@@ -186,8 +212,26 @@ namespace VideoPlayerMod
             {
                 if (Config.PhoneApp && api != null)
                 {
+                    Vector2 screenSize = api.GetScreenSize();
                     Vector2 pos = api.GetScreenPosition();
-                    Vector2 size = api.GetScreenSize();
+                    e.SpriteBatch.Draw(backgroundTexture, new Rectangle((int)pos.X, (int)pos.Y, (int)screenSize.X, (int)screenSize.Y), Color.White);
+                    Vector2 size;
+                    float rs = screenSize.X / screenSize.Y;
+                    float rv = texture.Width / (float) texture.Height;
+                    if (rv > rs)
+                    {
+                        size = new Vector2(screenSize.X, screenSize.X * texture.Height / texture.Width);
+                        pos += new Vector2(0,(screenSize.Y - size.Y) / 2);
+                    }
+                    else if (rv > rs)
+                    {
+                        size = new Vector2(screenSize.Y * texture.Width / texture.Height, screenSize.Y);
+                        pos += new Vector2((screenSize.X - size.X) / 2, 0);
+                    }
+                    else
+                    {
+                        size = api.GetScreenSize();
+                    }
                     e.SpriteBatch.Draw(texture, new Rectangle((int)pos.X, (int)pos.Y, (int) size.X, (int)size.Y), Color.White);
                 }
                 else

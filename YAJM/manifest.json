@@ -1,17 +1,17 @@
 ﻿{
-  "Name": "Mobile Phone",
+  "Name": "Yet Another Jump Mod",
   "Author": "aedenthorn",
-  "Version": "0.4.1",
-  "Description": "Gives you a mobile phone.",
-  "UniqueID": "aedenthorn.MobilePhone",
-  "EntryDll": "MobilePhone.dll",
+  "Version": "0.1.0",
+  "Description": "Advanced Jumping.",
+  "UniqueID": "aedenthorn.YAJM",
+  "EntryDll": "YAJM.dll",
   "MinimumApiVersion": "3.5.0",
-  "UpdateKeys": ["Nexus:6523"],
+  "UpdateKeys": ["Nexus:"],
   "ModUpdater": {
     "Repository": "StardewValleyMods",
     "User": "aedenthorn",
     "Directory": "_releases",
-    "ModFolder": "MobilePhone"
+    "ModFolder": "YAJM"
   },
   "Dependencies": [
       {

@@ -171,6 +171,9 @@ namespace MobilePhone
                 return;
             }
 
+            if (Game1.game1.takingMapScreenshot)
+                return;
+
             if (!appRunning)
             {
                 if(Game1.activeClickableMenu == null)
@@ -532,6 +535,17 @@ namespace MobilePhone
         public static Vector2 GetScreenSize()
         {
             return new Vector2(screenWidth, screenHeight);
+        }
+        public static Vector2 GetScreenSize(bool rotated)
+        {
+            if (rotated)
+            {
+                return new Vector2(Config.ScreenRotatedWidth, Config.ScreenRotatedHeight);
+            }
+            else
+            {
+                return new Vector2(Config.ScreenWidth, Config.ScreenHeight);
+            }
         }
         private Vector2 GetAppPos(int i)
         {
