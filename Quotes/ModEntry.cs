@@ -65,10 +65,11 @@ namespace Quotes
 
         private void ShowRandomQuote()
         {
-            lastFadeAlpha = 1f;
-            displayTicks = 0;
-            clickedOnQuote = false;
+            if(clickedOnQuote == false)
+                return;
+
             dailyQuote = GetAQuote(true);
+
             if (dailyQuote != null)
             {
                 Game1.drawObjectDialogue($"{dailyQuote.quote}\r\n\r\n{Config.AuthorPrefix}{dailyQuote.author}");
@@ -87,8 +88,9 @@ namespace Quotes
             displayTicks = 0;
             clickedOnQuote = false;
             dailyQuote = GetAQuote(Config.RandomQuote);
-            if(dailyQuote != null)
+            if (dailyQuote != null)
             {
+                Monitor.Log($"Today's quote: {dailyQuote.quote}\r\n\r\n-- {dailyQuote.author}", LogLevel.Debug);
                 Helper.Events.Display.Rendering += Display_Rendering;
                 Helper.Events.Display.Rendered += Display_Rendered;
             }
@@ -161,7 +163,6 @@ namespace Quotes
 
             int dayIdx = Game1.dayOfMonth + seasons.IndexOf(Game1.currentSeason) * 28 - 1;
             int idx = (random || quotes.Count <= dayIdx ) ? myRand.Next(quotes.Count) : dayIdx;
-            Monitor.Log($"Today's quote (#{idx + 1}): {quotes[idx].quote}\r\n\r\n-- {quotes[idx].author}", LogLevel.Debug);
             return quotes[idx];
         }
     }

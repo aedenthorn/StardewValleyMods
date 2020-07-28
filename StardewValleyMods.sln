@@ -59,6 +59,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MobileArcade", "MobileArcad
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ShowPlayerBehind", "ShowPlayerBehind\ShowPlayerBehind.csproj", "{8D8331B7-D4B5-40FB-BC2A-A4FA25C9E46B}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MobileCatalogues", "MobileCatalogues\MobileCatalogues.csproj", "{7AF1F7CF-5BD8-4A46-BC81-3469B621B360}"
+EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
 		_releases\_releases.projitems*{047040e0-3d07-46e5-852b-d1d45cd57bb8}*SharedItemsImports = 13
@@ -286,6 +288,14 @@ Global
 		{8D8331B7-D4B5-40FB-BC2A-A4FA25C9E46B}.Release|Any CPU.Build.0 = Release|Any CPU
 		{8D8331B7-D4B5-40FB-BC2A-A4FA25C9E46B}.Release|x86.ActiveCfg = Release|Any CPU
 		{8D8331B7-D4B5-40FB-BC2A-A4FA25C9E46B}.Release|x86.Build.0 = Release|Any CPU
+		{7AF1F7CF-5BD8-4A46-BC81-3469B621B360}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7AF1F7CF-5BD8-4A46-BC81-3469B621B360}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7AF1F7CF-5BD8-4A46-BC81-3469B621B360}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{7AF1F7CF-5BD8-4A46-BC81-3469B621B360}.Debug|x86.Build.0 = Debug|Any CPU
+		{7AF1F7CF-5BD8-4A46-BC81-3469B621B360}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7AF1F7CF-5BD8-4A46-BC81-3469B621B360}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7AF1F7CF-5BD8-4A46-BC81-3469B621B360}.Release|x86.ActiveCfg = Release|Any CPU
+		{7AF1F7CF-5BD8-4A46-BC81-3469B621B360}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

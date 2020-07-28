@@ -34,6 +34,11 @@ namespace MobilePhone
             return true;
         }
 
+        public Texture2D GetBackgroundTexture(bool rotated)
+        {
+            return rotated ? ModEntry.backgroundRotatedTexture : ModEntry.backgroundTexture;
+        }
+
         public bool GetPhoneRotated()
         {
             return ModEntry.phoneRotated;
@@ -48,7 +53,7 @@ namespace MobilePhone
         }
         public void SetPhoneOpened(bool value)
         {
-            ModEntry.phoneOpen = value;
+            ModEntry.TogglePhone(value);
         }
         public bool GetAppRunning()
         {

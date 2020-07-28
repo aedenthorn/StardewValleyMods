@@ -233,11 +233,11 @@ namespace MultipleSpouses
 						int offset = (1 + count) * 7 * 64;
 						Vector2 parrotSpot = new Vector2(2064f + offset, 160f);
 						int upgradeLevel = farmHouse.upgradeLevel;
-						if (upgradeLevel - 2 <= 1)
+						if (upgradeLevel > 1)
 						{
 							parrotSpot = new Vector2(2448f + offset, 736f);
 						}
-						ModEntry.PMonitor.Log($"Building Emily's parrot at {parrotSpot}, spouse room count {count}");
+						ModEntry.PMonitor.Log($"Building Emily's parrot at {parrotSpot}, spouse room count {count}, upgrade level {upgradeLevel}");
 						farmHouse.temporarySprites.Add(new EmilysParrot(parrotSpot));
 					}
 				}

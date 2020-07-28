@@ -311,6 +311,7 @@ namespace MultipleSpouses
 									}
 									else
                                     {
+										character.faceDirection(3);
 										character.isSleeping.Value = false;
 									}
 								}

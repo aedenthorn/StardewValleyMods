@@ -53,8 +53,6 @@ namespace MobilePhone
         {
             if (e.Button == SButton.MouseLeft)
             {
-                //Helper.Input.Suppress(SButton.MouseLeft);
-                //startedClicking = Game1.player.millisecondsPlayed;
                 lastMousePositionY = Game1.getMouseY();
                 Monitor.Log($"y {lastMousePositionY}");
             }
@@ -70,31 +68,6 @@ namespace MobilePhone
                     dragging = false;
                     return;
                 }
-
-                /*
-                if (topRow > 0)
-                {
-                    Vector2 pos = ModEntry.upArrowPosition;
-                    Rectangle r = new Rectangle((int)pos.X, (int)pos.Y, Config.ArrowWidth, Config.ArrowHeight);
-                    if (r.Contains(Game1.getMousePosition()))
-                    {
-                        Monitor.Log($"clicked up arrow");
-                        topRow--;
-                        return;
-                    }
-                }
-                if(callableList.Count - topRow * ModEntry.gridWidth > ModEntry.gridWidth * ModEntry.gridHeight)
-                {
-                    Vector2 pos = ModEntry.downArrowPosition;
-                    Rectangle r = new Rectangle((int)pos.X, (int)pos.Y, Config.ArrowWidth, Config.ArrowHeight);
-                    if (r.Contains(Game1.getMousePosition()))
-                    {
-                        Monitor.Log($"clicked down arrow");
-                        topRow++;
-                        return;
-                    }
-                }
-                */
 
                 for (int i = 0; i < callableList.Count; i++)
                 {
@@ -138,7 +111,8 @@ namespace MobilePhone
                     NPC npc = Game1.getCharacterFromName(kvp.Key);
                     Texture2D portrait = npc.Sprite.Texture;
                     Rectangle sourceRect = npc.getMugShotSourceRect();
-                    callableList.Add(new CallableNPC(Config.UseRealNamesInPhoneBook ? npc.displayName : npc.Name, npc, portrait, sourceRect));
+                    string name = Config.UseRealNamesInPhoneBook && npc.displayName != null ? npc.displayName : npc.Name;
+                    callableList.Add(new CallableNPC(name, npc, portrait, sourceRect));
                 }
             }
             callableList = callableList.OrderBy(a => a.npc.Name).ToList();

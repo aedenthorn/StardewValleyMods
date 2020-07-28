@@ -2,6 +2,8 @@
 using Microsoft.Xna.Framework.Graphics;
 using StardewModdingAPI;
 using StardewValley;
+using StardewValley.Menus;
+using StardewValley.SDKs;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -14,18 +16,21 @@ namespace MobilePhone
     {
         public static ModEntry context;
 
-        internal static ModConfig Config;
+        public static ModConfig Config;
+        public static IModHelper SHelper;
+
         public static bool phoneOpen;
         public static bool phoneRotated;
         public static bool appRunning;
         public static bool phoneAppRunning;
 
-        private Texture2D phoneTexture;
-        private Texture2D backgroundTexture;
-        private Texture2D phoneRotatedTexture;
-        private Texture2D backgroundRotatedTexture;
+        public static Texture2D phoneTexture;
+        public static Texture2D backgroundTexture;
+        public static Texture2D phoneRotatedTexture;
+        public static Texture2D backgroundRotatedTexture;
         public static Texture2D upArrowTexture;
         public static Texture2D downArrowTexture;
+        public static Texture2D iconTexture;
 
         public static int phoneWidth;
         public static int phoneHeight;
@@ -38,6 +43,7 @@ namespace MobilePhone
         public static Rectangle screenRect;
 
         public static Vector2 phonePosition;
+        public static Vector2 phoneIconPosition;
         public static Vector2 screenPosition;
         public static Vector2 upArrowPosition;
         public static Vector2 downArrowPosition;
@@ -51,8 +57,12 @@ namespace MobilePhone
 
         public static Dictionary<string, MobileApp> apps = new Dictionary<string, MobileApp>();
         public static Texture2D phoneBookTexture;
-        private bool draggingPhone;
-        private Point lastMousePosition;
+        public static bool draggingPhone;
+        public static Point lastMousePosition;
+        public static int ticksSinceMoved = 0;
+        public static Point lastPos = new Point();
+        public static bool clickingPhoneIcon;
+        public static bool draggingPhoneIcon;
 
         public static event EventHandler OnScreenRotated;
 
@@ -62,6 +72,7 @@ namespace MobilePhone
         {
             context = this;
             Config = helper.ReadConfig<ModConfig>();
+            SHelper = helper;
             if (!Config.EnableMod)
                 return;
             api = (MobilePhoneApi)GetApi();
@@ -73,7 +84,6 @@ namespace MobilePhone
 
             Helper.Events.Input.ButtonPressed += Input_ButtonPressed;
             Helper.Events.Input.ButtonReleased += Input_ButtonReleased;
-            Helper.Events.Display.RenderedWorld += Display_RenderedWorld;
             Helper.Events.GameLoop.SaveLoaded += GameLoop_SaveLoaded;
             Helper.Events.GameLoop.GameLaunched += GameLoop_GameLaunched;
             Helper.Events.Display.WindowResized += Display_WindowResized;
@@ -108,6 +118,7 @@ namespace MobilePhone
         {
             Monitor.Log($"total apps: {apps.Count}");
             RefreshPhoneLayout();
+            SHelper.Events.Display.RenderedWorld += Display_RenderedWorld;
         }
 
         public override object GetApi()
@@ -122,10 +133,16 @@ namespace MobilePhone
             backgroundRotatedTexture = Helper.Content.Load<Texture2D>(Path.Combine("assets",Config.BackgroundRotatedTexturePath));
             upArrowTexture = Helper.Content.Load<Texture2D>(Path.Combine("assets",Config.UpArrowTexturePath));
             downArrowTexture = Helper.Content.Load<Texture2D>(Path.Combine("assets",Config.DownArrowTexturePath));
+            if (Config.ShowPhoneIcon)
+            {
+                iconTexture = Helper.Content.Load<Texture2D>(Path.Combine("assets", Config.iconTexturePath));
+            }
         }
 
-        private void Display_RenderedWorld(object sender, StardewModdingAPI.Events.RenderedWorldEventArgs e)
+        private static void Display_RenderedWorld(object sender, StardewModdingAPI.Events.RenderedWorldEventArgs e)
         {
+
+            Point mousePos = Game1.getMousePosition();
 
             if (!phoneOpen)
             {
@@ -134,6 +151,23 @@ namespace MobilePhone
                 {
                     Game1.activeClickableMenu = null;
                 }
+
+                if (Game1.displayHUD && Config.ShowPhoneIcon)
+                {
+                    if (clickingPhoneIcon)
+                    {
+                        if(SHelper.Input.IsDown(SButton.MouseLeft) && lastMousePosition != mousePos)
+                        {
+                            draggingPhoneIcon = true;
+                            Config.PhoneIconOffsetX += mousePos.X - lastMousePosition.X;
+                            Config.PhoneIconOffsetY += mousePos.Y - lastMousePosition.Y;
+                            phoneIconPosition = GetPhoneIconPosition();
+                            lastMousePosition = mousePos;
+                        }
+                    }
+                    e.SpriteBatch.Draw(iconTexture, phoneIconPosition, Color.White);
+                }
+
                 return;
             }
 
@@ -152,7 +186,6 @@ namespace MobilePhone
 
             if (draggingPhone)
             {
-                Point mousePos = Game1.getMousePosition();
                 if(mousePos != lastMousePosition)
                 {
                     int x = mousePos.X - lastMousePosition.X;
@@ -175,7 +208,21 @@ namespace MobilePhone
             e.SpriteBatch.Draw(phoneRotated ? backgroundRotatedTexture : backgroundTexture, phonePosition, Color.White);
             e.SpriteBatch.Draw(phoneRotated ? phoneRotatedTexture : phoneTexture, phonePosition, Color.White);
 
+            if (appRunning)
+                return;
+
             List<string> keys = apps.Keys.ToList();
+            string appHover = null;
+            bool hover = false;
+            if (mousePos == lastPos)
+            {
+                hover = true;
+            }
+            else
+            {
+                ticksSinceMoved = 0;
+            }
+
             for (int i = keys.Count - 1; i >= 0; i--)
             {
                 if (!IsOnScreen(i, topRow))
@@ -184,22 +231,51 @@ namespace MobilePhone
                 MobileApp app = apps[keys[i]];
                 if (app.icon == null)
                 {
-                    Monitor.Log($"no icon for app {app.name}, removing from app list.", LogLevel.Error);
+                    context.Monitor.Log($"no icon for app {app.name}, removing from app list.", LogLevel.Error);
                     apps.Remove(keys[i]);
                     continue;
                 }
-
-                Vector2 appPos = GetAppPos(i);
+                
+                Vector2 appPos = context.GetAppPos(i);
                 e.SpriteBatch.Draw(app.icon, appPos, Color.White);
+
+                Rectangle rect = new Rectangle((int)appPos.X, (int)appPos.Y, Config.IconWidth, Config.IconHeight);
+                if (hover && rect.Contains(mousePos))
+                {
+                    ticksSinceMoved++;
+                    if (ticksSinceMoved > Config.ToolTipDelayTicks)
+                        appHover = app.name;
+                }
             }
+            if (appHover != null)
+                Utility.drawTextWithShadow(e.SpriteBatch, appHover, Game1.dialogueFont, new Vector2(mousePos.X, mousePos.Y) - Game1.dialogueFont.MeasureString(appHover), Color.White, 1f, -1f, -1, -1, 1f, 3);
+            lastPos = mousePos;
         }
 
         private void Input_ButtonReleased(object sender, StardewModdingAPI.Events.ButtonReleasedEventArgs e)
         {
-            if (e.Button == SButton.MouseLeft && draggingPhone)
+            if (e.Button == SButton.MouseLeft)
             {
-                Helper.WriteConfig(Config);
-                draggingPhone = false;
+                if (draggingPhone)
+                {
+                    Helper.WriteConfig(Config);
+                    draggingPhone = false;
+                }
+                else if (clickingPhoneIcon)
+                {
+                    if (!draggingPhoneIcon)
+                    {
+                        TogglePhone(true);
+                    }
+                    else
+                    {
+                        Helper.WriteConfig(Config);
+                    }
+                    if(Game1.activeClickableMenu is DraggingPhoneIconMenu)
+                        Game1.activeClickableMenu = null;
+                    clickingPhoneIcon = false;
+                    draggingPhoneIcon = false;
+                }
             }
         }
 
@@ -211,6 +287,8 @@ namespace MobilePhone
             if (e.Button == Config.OpenPhoneKey || (phoneOpen && e.Button == SButton.Escape))
             {
                 TogglePhone();
+                if (phoneOpen && e.Button == SButton.Escape)
+                    Helper.Input.Suppress(SButton.Escape);
                 return;
             }
             if(e.Button == Config.RotatePhoneKey)
@@ -218,26 +296,44 @@ namespace MobilePhone
                 RotatePhone();
                 return;
             }
-            if (phoneOpen && !appRunning)
+
+            Point mousePos = Game1.getMousePosition();
+
+            if (!phoneOpen)
+            {
+                if (e.Button == SButton.MouseLeft && Game1.displayHUD && Config.ShowPhoneIcon && new Rectangle((int)phoneIconPosition.X, (int)phoneIconPosition.Y, Config.PhoneIconWidth, Config.PhoneIconHeight).Contains(mousePos))
+                {
+                    clickingPhoneIcon = true;
+                    draggingPhoneIcon = false;
+                    lastMousePosition = mousePos;
+                    Game1.activeClickableMenu = new DraggingPhoneIconMenu();
+                }
+                return;
+            }
+
+            if (e.Button == SButton.MouseLeft && (appRunning || Game1.activeClickableMenu is MobilePhoneMenu))
+            {
+                if (!new Rectangle((int)phonePosition.X, (int)phonePosition.Y, phoneWidth, phoneHeight).Contains(mousePos))
+                {
+                    Helper.Input.Suppress(SButton.MouseLeft);
+                    TogglePhone();
+                    return;
+                }
+
+                if (!screenRect.Contains(mousePos))
+                {
+                    draggingPhone = true;
+                    lastMousePosition = mousePos;
+                    return;
+                }
+            }
+
+            if (!appRunning && Game1.activeClickableMenu is MobilePhoneMenu)
             {
                 if (e.Button == SButton.MouseLeft)
                 {
                     Monitor.Log($"pressing mouse key in phone");
-                    if (Game1.activeClickableMenu == null || Game1.activeClickableMenu is MobilePhoneMenu)
-                    {
-
-                        Point mousePos = Game1.getMousePosition();
-
-                        if (!new Rectangle((int)phonePosition.X, (int)phonePosition.Y, phoneWidth, phoneHeight).Contains(mousePos))
-                        {
-                            TogglePhone();
-                        }
-                        else if(!screenRect.Contains(mousePos))
-                        {
-                            draggingPhone = true;
-                            lastMousePosition = mousePos;
-                        }
-                    }
+                    Helper.Input.Suppress(SButton.MouseLeft);
 
                     string[] keys = apps.Keys.ToArray();
                     for (int i = 0; i < keys.Length; i++)
@@ -254,7 +350,6 @@ namespace MobilePhone
                             if(apps[keys[i]].keyPress != null)
                             {
                                 Monitor.Log($"pressing key {apps[keys[i]].keyPress}");
-                                Game1.activeClickableMenu = null;
                                 PressKey(apps[keys[i]]);
                             }
                             else
@@ -291,13 +386,16 @@ namespace MobilePhone
         {
             phoneOpen = value;
             Game1.playSound("dwop");
-            if (!phoneOpen)
+            if (!value)
             {
-                Game1.activeClickableMenu = null;
+                context.Monitor.Log($"Closing phone");
+                if (Game1.activeClickableMenu is MobilePhoneMenu)
+                    Game1.activeClickableMenu = null;
                 appRunning = false;
             }
             else
             {
+                context.Monitor.Log($"Opening phone");
                 Game1.activeClickableMenu = new MobilePhoneMenu();
             }
         }
@@ -305,7 +403,9 @@ namespace MobilePhone
         {
             if(phoneOpen && appRunning)
             {
+                Game1.playSound("dwop");
                 appRunning = false;
+                Game1.activeClickableMenu = new MobilePhoneMenu();
                 return;
             }
             TogglePhone(!phoneOpen);
@@ -323,7 +423,7 @@ namespace MobilePhone
                 Game1.activeClickableMenu = new MobilePhoneMenu();
             }
         }
-        private void RefreshPhoneLayout()
+        private static void RefreshPhoneLayout()
         {
             if (phoneRotated)
             {
@@ -349,6 +449,7 @@ namespace MobilePhone
             }
             phonePosition = GetPhonePosition();
             screenPosition = GetScreenPosition();
+            phoneIconPosition = GetPhoneIconPosition();
             screenRect = new Rectangle((int)screenPosition.X, (int)screenPosition.Y, (int)screenWidth, (int)screenHeight);
             GetArrowPositions();
             appColumns = (screenWidth - Config.IconMarginX) / (Config.IconWidth + Config.IconMarginX);
@@ -389,6 +490,38 @@ namespace MobilePhone
 
             return new Vector2(x, y);
         }
+        
+
+        public static Vector2 GetPhoneIconPosition()
+        {
+            int x = 0;
+            int y = 0;
+            switch (Config.PhoneIconPosition.ToLower())
+            {
+                case "mid":
+                    x = Game1.viewport.Width / 2 - Config.PhoneIconWidth / 2 + Config.PhoneIconOffsetX;
+                    y = Game1.viewport.Height / 2 - Config.PhoneIconHeight / 2 + Config.PhoneIconOffsetY;
+                    break;
+                case "top-left":
+                    x = Config.PhoneIconOffsetX;
+                    y = Config.PhoneIconOffsetY;
+                    break;
+                case "top-right":
+                    x = Game1.viewport.Width - Config.PhoneIconWidth + Config.PhoneIconOffsetX;
+                    y = Config.PhoneIconOffsetY;
+                    break;
+                case "bottom-left":
+                    x = Config.PhoneIconOffsetX;
+                    y = Game1.viewport.Height - Config.PhoneIconHeight + Config.PhoneIconOffsetY;
+                    break;
+                case "bottom-right":
+                    x = Game1.viewport.Width - Config.PhoneIconWidth + Config.PhoneIconOffsetX;
+                    y = Game1.viewport.Height - Config.PhoneIconHeight + Config.PhoneIconOffsetY;
+                    break;
+            }
+
+            return new Vector2(x, y);
+        }
 
         public static Vector2 GetScreenPosition()
         {
@@ -408,7 +541,7 @@ namespace MobilePhone
 
             return new Vector2(x, y);
         }
-        private void GetArrowPositions()
+        private static void GetArrowPositions()
         {
             upArrowPosition = new Vector2(screenPosition.X + screenWidth - Config.ContactArrowWidth, screenPosition.Y);
             downArrowPosition = new Vector2(screenPosition.X + screenWidth - Config.ContactArrowWidth, screenPosition.Y + screenHeight - Config.ContactArrowHeight);
