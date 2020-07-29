@@ -41,7 +41,7 @@ namespace MobilePhone
         public static int screenOffsetX;
         public static int screenOffsetY;
         public static Rectangle screenRect;
-
+        public static Rectangle phoneRect;
         public static Vector2 phonePosition;
         public static Vector2 phoneIconPosition;
         public static Vector2 screenPosition;
@@ -151,8 +151,7 @@ namespace MobilePhone
                 {
                     Game1.activeClickableMenu = null;
                 }
-
-                if (Game1.displayHUD && Config.ShowPhoneIcon)
+                if ((Game1.displayHUD || Game1.eventUp) && Game1.currentBillboard == 0 && Game1.gameMode == 3 && !Game1.freezeControls && !Game1.panMode && !Game1.HostPaused && !Game1.game1.takingMapScreenshot)
                 {
                     if (clickingPhoneIcon)
                     {
@@ -316,14 +315,14 @@ namespace MobilePhone
 
             if (e.Button == SButton.MouseLeft && (appRunning || Game1.activeClickableMenu is MobilePhoneMenu))
             {
-                if (!new Rectangle((int)phonePosition.X, (int)phonePosition.Y, phoneWidth, phoneHeight).Contains(mousePos))
+                if (!appRunning && !phoneRect.Contains(mousePos))
                 {
                     Helper.Input.Suppress(SButton.MouseLeft);
                     TogglePhone();
                     return;
                 }
 
-                if (!screenRect.Contains(mousePos))
+                if (phoneRect.Contains(mousePos) && !screenRect.Contains(mousePos))
                 {
                     draggingPhone = true;
                     lastMousePosition = mousePos;
@@ -454,6 +453,7 @@ namespace MobilePhone
             screenPosition = GetScreenPosition();
             phoneIconPosition = GetPhoneIconPosition();
             screenRect = new Rectangle((int)screenPosition.X, (int)screenPosition.Y, (int)screenWidth, (int)screenHeight);
+            phoneRect = new Rectangle((int)phonePosition.X, (int)phonePosition.Y, phoneWidth, phoneHeight);
             GetArrowPositions();
             appColumns = (screenWidth - Config.IconMarginX) / (Config.IconWidth + Config.IconMarginX);
             appRows = (screenHeight - Config.IconMarginY) / (Config.IconHeight + Config.IconMarginY);

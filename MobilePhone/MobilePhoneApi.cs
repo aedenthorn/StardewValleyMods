@@ -32,6 +32,14 @@ namespace MobilePhone
         {
             return ModEntry.GetScreenSize(rotated);
         }
+        public Rectangle GetPhoneRectangle()
+        {
+            return ModEntry.phoneRect;
+        }
+        public Rectangle GetScreenRectangle()
+        {
+            return ModEntry.screenRect;
+        }
 
         public bool AddOnPhoneRotated(EventHandler action)
         {

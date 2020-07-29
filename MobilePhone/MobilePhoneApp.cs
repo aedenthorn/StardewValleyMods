@@ -51,12 +51,22 @@ namespace MobilePhone
 
         private static void Input_ButtonPressed(object sender, StardewModdingAPI.Events.ButtonPressedEventArgs e)
         {
+            if (!ModEntry.appRunning)
+                return;
             if (e.Button == SButton.MouseLeft)
             {
+                if (!ModEntry.phoneRect.Contains(Game1.getMousePosition()))
+                {
+                    Helper.Input.Suppress(SButton.MouseLeft);
+                    ModEntry.TogglePhone();
+                    return;
+                }
+
                 lastMousePositionY = Game1.getMouseY();
                 Monitor.Log($"y {lastMousePositionY}");
             }
         }
+
         private static void Input_ButtonReleased(object sender, StardewModdingAPI.Events.ButtonReleasedEventArgs e)
         {
             if (e.Button == SButton.MouseLeft)

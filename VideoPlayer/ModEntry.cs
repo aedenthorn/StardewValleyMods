@@ -1,6 +1,7 @@
 ﻿using AsfMojo.Parsing;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using Microsoft.Xna.Framework.Input;
 using Microsoft.Xna.Framework.Media;
 using StardewModdingAPI;
 using StardewValley;
@@ -24,6 +25,11 @@ namespace VideoPlayerMod
         private IMobilePhoneApi api;
         private Texture2D backgroundTexture;
         private Texture2D backgroundRotatedTexture;
+        private Texture2D xTexture;
+        private Texture2D buttonsTexture;
+        private Texture2D playTexture;
+        private int uiTicks = 0;
+        private Texture2D lastTexture;
 
         public override void Entry(IModHelper helper)
 		{
@@ -112,12 +118,12 @@ namespace VideoPlayerMod
                     Texture2D appIcon = Helper.Content.Load<Texture2D>(Path.Combine("assets", "app_icon.png"));
                     bool success = api.AddApp(Helper.ModRegistry.ModID, "Video Player", OpenVideoPlayer, appIcon);
                     Monitor.Log($"loaded phone app successfully: {success}", LogLevel.Debug);
-                    MakeBackgrounds();
+                    MakeTextures();
                 }
             }
         }
 
-        public void MakeBackgrounds()
+        public void MakeTextures()
         {
             Vector2 screenSize = api.GetScreenSize(false);
             Texture2D background = new Texture2D(Game1.graphics.GraphicsDevice, (int)screenSize.X, (int)screenSize.Y);
@@ -138,6 +144,9 @@ namespace VideoPlayerMod
             }
             background.SetData(data);
             backgroundRotatedTexture = background;
+            xTexture = Helper.Content.Load<Texture2D>(Path.Combine("assets", "x.png"));
+            buttonsTexture = Helper.Content.Load<Texture2D>(Path.Combine("assets", "buttons.png"));
+            playTexture = Helper.Content.Load<Texture2D>(Path.Combine("assets", "play.png"));
         }
 
         private void OpenVideoPlayer()
@@ -166,6 +175,45 @@ namespace VideoPlayerMod
             {
                 if(api == null || !api.GetPhoneOpened() || !api.GetAppRunning())
                     return;
+            }
+
+            if(e.Button == SButton.MouseLeft)
+            {
+                Point mousePos = Game1.getMousePosition();
+                Vector2 screenPos = api.GetScreenPosition();
+                Vector2 screenSize = api.GetScreenSize();
+                Vector2 xPos = screenPos + new Vector2(screenSize.X - 48, 16);
+                Vector2 backPos = screenPos + new Vector2(screenSize.X / 2 - 96, screenSize.Y - 48);
+                Vector2 stopPos = backPos + new Vector2(80,0);
+                Vector2 fwdPos = stopPos + new Vector2(80, 0);
+                if (new Rectangle((int)xPos.X, (int)xPos.Y, 32, 32).Contains(mousePos))
+                {
+                    api.SetAppRunning(false);
+                }
+                else if (new Rectangle((int)backPos.X, (int)backPos.Y, 32, 32).Contains(mousePos))
+                {
+                    SetTrack(false);
+                }
+                else if (new Rectangle((int)stopPos.X, (int)stopPos.Y, 32, 32).Contains(mousePos))
+                {
+                    StopTrack(true);
+                }
+                else if (new Rectangle((int)fwdPos.X, (int)fwdPos.Y, 32, 32).Contains(mousePos))
+                {
+                    SetTrack(true);
+                }
+                else if (new Rectangle((int)screenPos.X,(int)screenPos.Y,(int)screenSize.X,(int)screenSize.Y).Contains(mousePos))
+                {
+                    if (videoPlayer.State != MediaState.Playing)
+                        PlayTrack();
+                    else
+                        StopTrack();
+                }
+                else
+                {
+                    return;
+                }
+                Helper.Input.Suppress(SButton.MouseLeft);
             }
 
             if (e.Button == SButton.NumPad4)
@@ -198,9 +246,9 @@ namespace VideoPlayerMod
             }
         }
 
-        private void StopTrack()
+        private void StopTrack(bool forceStop = false)
         {
-            if (videoPlayer.State == MediaState.Playing)
+            if (videoPlayer.State == MediaState.Playing && !forceStop)
                 videoPlayer.Pause();
             else
                 videoPlayer.Stop();
@@ -256,11 +304,12 @@ namespace VideoPlayerMod
                 e.SpriteBatch.Draw(backgroundTexture, new Rectangle((int)pos.X, (int)pos.Y, (int)screenSize.X, (int)screenSize.Y), Color.White);
             }
 
-            if (videoPlayer.State != MediaState.Playing)
-                return;
-
-            Texture2D texture = videoPlayer.GetTexture();
-            if (texture != null)
+            Texture2D newTexture = videoPlayer.GetTexture();
+            if (newTexture != null)
+            {
+                lastTexture = newTexture;
+            }
+            if (lastTexture != null && videoPlayer.State != MediaState.Stopped)
             {
                 if (Config.PhoneApp && api != null)
                 {
@@ -268,28 +317,49 @@ namespace VideoPlayerMod
                     Vector2 pos = api.GetScreenPosition();
                     Vector2 size;
                     float rs = screenSize.X / screenSize.Y;
-                    float rv = texture.Width / (float) texture.Height;
+                    float rv = lastTexture.Width / (float) lastTexture.Height;
                     if (rv > rs)
                     {
-                        size = new Vector2(screenSize.X, screenSize.X * texture.Height / texture.Width);
+                        size = new Vector2(screenSize.X, screenSize.X * lastTexture.Height / lastTexture.Width);
                         pos += new Vector2(0,(screenSize.Y - size.Y) / 2);
                     }
                     else if (rv > rs)
                     {
-                        size = new Vector2(screenSize.Y * texture.Width / texture.Height, screenSize.Y);
+                        size = new Vector2(screenSize.Y * lastTexture.Width / lastTexture.Height, screenSize.Y);
                         pos += new Vector2((screenSize.X - size.X) / 2, 0);
                     }
                     else
                     {
                         size = api.GetScreenSize();
                     }
-                    e.SpriteBatch.Draw(texture, new Rectangle((int)pos.X, (int)pos.Y, (int) size.X, (int)size.Y), Color.White);
+                    e.SpriteBatch.Draw(lastTexture, new Rectangle((int)pos.X, (int)pos.Y, (int) size.X, (int)size.Y), Color.White);
+                    if (api.GetScreenRectangle().Contains(Game1.getMousePosition()))
+                    {
+                        int delay = 30;
+                        if (uiTicks < 255 + delay)
+                            uiTicks++;
+                        if (uiTicks < 255 + delay)
+                            uiTicks++;
+
+                        int c = Math.Max(uiTicks - delay, 0);
+
+                        Color color = new Color(c,c,c,c);
+                        e.SpriteBatch.Draw(xTexture, api.GetScreenPosition() + new Vector2(screenSize.X - 48, 16), color);
+                        e.SpriteBatch.Draw(buttonsTexture, api.GetScreenPosition() + new Vector2(screenSize.X / 2 - 96, screenSize.Y - 48), color);
+                    }
+                    else
+                        uiTicks = 0;
+
+                    if(videoPlayer.State != MediaState.Playing)
+                    {
+                        e.SpriteBatch.Draw(playTexture, api.GetScreenPosition() + new Vector2(screenSize.X / 2 - 32, screenSize.Y / 2 - 32), Color.White);
+                    }
                 }
                 else
                 {
                     int x = Config.RightSide ? Game1.viewport.Width - Config.Width - Config.XOffset : Config.XOffset;
                     int y = Config.Bottom ? Game1.viewport.Height - Config.Height - Config.YOffset : Config.YOffset;
-                    e.SpriteBatch.Draw(texture, new Rectangle(x, y, Config.Width, Config.Height), Color.White);
+                    e.SpriteBatch.Draw(lastTexture, new Rectangle(x, y, Config.Width, Config.Height), Color.White);
                 }
             }
         }
