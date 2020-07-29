@@ -75,6 +75,16 @@ namespace MobilePhone
         public void SetAppRunning(bool value)
         {
             ModEntry.appRunning = value;
+            if (!value)
+                ModEntry.runningApp = null;
+        }
+        public string GetRunningApp()
+        {
+            return ModEntry.runningApp;
+        }
+        public void SetRunningApp(string value)
+        {
+            ModEntry.runningApp = value;
         }
 
     }

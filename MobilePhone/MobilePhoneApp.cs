@@ -41,6 +41,7 @@ namespace MobilePhone
             topRow = 0;
             ModEntry.appRunning = true;
             ModEntry.phoneAppRunning = true;
+            ModEntry.runningApp = Helper.ModRegistry.ModID;
             Game1.activeClickableMenu = new PhoneBookMenu();
             CreateCallableList();
             listHeight = Config.ContactMarginY + (int)Math.Ceiling(callableList.Count / (float)ModEntry.gridWidth) * (Config.ContactHeight + Config.ContactMarginY);

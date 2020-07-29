@@ -19,5 +19,7 @@ namespace VideoPlayerMod
         void SetPhoneOpened(bool value);
         bool GetAppRunning();
         void SetAppRunning(bool value);
+        string GetRunningApp();
+        void SetRunningApp(string value);
     }
 }

@@ -63,6 +63,7 @@ namespace MobilePhone
         public static Point lastPos = new Point();
         public static bool clickingPhoneIcon;
         public static bool draggingPhoneIcon;
+        public static string runningApp;
 
         public static event EventHandler OnScreenRotated;
 
@@ -147,6 +148,7 @@ namespace MobilePhone
             if (!phoneOpen)
             {
                 appRunning = false;
+                runningApp = null;
                 if (Game1.activeClickableMenu is MobilePhoneMenu)
                 {
                     Game1.activeClickableMenu = null;

@@ -153,12 +153,13 @@ namespace VideoPlayerMod
         {
             if (Config.PhoneApp && api != null)
             {
-                if (api.GetAppRunning())
+                if (api.GetAppRunning() && api.GetRunningApp() != Helper.ModRegistry.ModID)
                 {
                     Monitor.Log($"can't start, app already running", LogLevel.Debug);
                     return;
                 }
                 api.SetAppRunning(true);
+                api.SetRunningApp(Helper.ModRegistry.ModID);
                 Helper.Events.Display.Rendered += Display_Rendered;
                 PlayTrack();
             }
@@ -173,7 +174,7 @@ namespace VideoPlayerMod
         {
             if (Config.PhoneApp)
             {
-                if(api == null || !api.GetPhoneOpened() || !api.GetAppRunning())
+                if(api == null || !api.GetPhoneOpened() || api.GetRunningApp() != Helper.ModRegistry.ModID)
                     return;
             }
 
@@ -181,7 +182,7 @@ namespace VideoPlayerMod
             {
                 Point mousePos = Game1.getMousePosition();
                 Vector2 screenPos = api.GetScreenPosition();
-                Vector2 screenSize = api.GetScreenSize();
+                Vector2 screenSize = api.GetScreenSize(); 
                 Vector2 xPos = screenPos + new Vector2(screenSize.X - 48, 16);
                 Vector2 backPos = screenPos + new Vector2(screenSize.X / 2 - 96, screenSize.Y - 48);
                 Vector2 stopPos = backPos + new Vector2(80,0);
@@ -293,7 +294,7 @@ namespace VideoPlayerMod
             if (Config.PhoneApp)
             {
 
-                if (!api.GetPhoneOpened() || !api.GetAppRunning())
+                if (!api.GetPhoneOpened() || api.GetRunningApp() != Helper.ModRegistry.ModID)
                 {
                     StopTrack();
                     Helper.Events.Display.Rendered -= Display_Rendered;
@@ -311,11 +312,11 @@ namespace VideoPlayerMod
             }
             if (lastTexture != null && videoPlayer.State != MediaState.Stopped)
             {
+                Vector2 screenSize = api.GetScreenSize();
+                Vector2 pos = api.GetScreenPosition();
+                Vector2 size;
                 if (Config.PhoneApp && api != null)
                 {
-                    Vector2 screenSize = api.GetScreenSize();
-                    Vector2 pos = api.GetScreenPosition();
-                    Vector2 size;
                     float rs = screenSize.X / screenSize.Y;
                     float rv = lastTexture.Width / (float) lastTexture.Height;
                     if (rv > rs)
@@ -333,33 +334,33 @@ namespace VideoPlayerMod
                         size = api.GetScreenSize();
                     }
                     e.SpriteBatch.Draw(lastTexture, new Rectangle((int)pos.X, (int)pos.Y, (int) size.X, (int)size.Y), Color.White);
-                    if (api.GetScreenRectangle().Contains(Game1.getMousePosition()))
-                    {
-                        int delay = 30;
-                        if (uiTicks < 255 + delay)
-                            uiTicks++;
-                        if (uiTicks < 255 + delay)
-                            uiTicks++;
-
-                        int c = Math.Max(uiTicks - delay, 0);
-
-                        Color color = new Color(c,c,c,c);
-                        e.SpriteBatch.Draw(xTexture, api.GetScreenPosition() + new Vector2(screenSize.X - 48, 16), color);
-                        e.SpriteBatch.Draw(buttonsTexture, api.GetScreenPosition() + new Vector2(screenSize.X / 2 - 96, screenSize.Y - 48), color);
-                    }
-                    else
-                        uiTicks = 0;
-
-                    if(videoPlayer.State != MediaState.Playing)
-                    {
-                        e.SpriteBatch.Draw(playTexture, api.GetScreenPosition() + new Vector2(screenSize.X / 2 - 32, screenSize.Y / 2 - 32), Color.White);
-                    }
                 }
                 else
                 {
                     int x = Config.RightSide ? Game1.viewport.Width - Config.Width - Config.XOffset : Config.XOffset;
                     int y = Config.Bottom ? Game1.viewport.Height - Config.Height - Config.YOffset : Config.YOffset;
                     e.SpriteBatch.Draw(lastTexture, new Rectangle(x, y, Config.Width, Config.Height), Color.White);
+                }
+                if (api.GetScreenRectangle().Contains(Game1.getMousePosition()))
+                {
+                    int delay = 30;
+                    if (uiTicks < 255 + delay)
+                        uiTicks++;
+                    if (uiTicks < 255 + delay)
+                        uiTicks++;
+
+                    int c = Math.Max(uiTicks - delay, 0);
+
+                    Color color = new Color(c, c, c, c);
+                    e.SpriteBatch.Draw(xTexture, api.GetScreenPosition() + new Vector2(screenSize.X - 48, 16), color);
+                    e.SpriteBatch.Draw(buttonsTexture, api.GetScreenPosition() + new Vector2(screenSize.X / 2 - 96, screenSize.Y - 48), color);
+                }
+                else
+                    uiTicks = 0;
+
+                if (videoPlayer.State != MediaState.Playing)
+                {
+                    e.SpriteBatch.Draw(playTexture, api.GetScreenPosition() + new Vector2(screenSize.X / 2 - 32, screenSize.Y / 2 - 32), Color.White);
                 }
             }
         }
