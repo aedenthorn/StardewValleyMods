@@ -1,7 +1,7 @@
 ﻿{
   "Name": "Quick Responses",
   "Author": "aedenthorn",
-  "Version": "0.1.1",
+  "Version": "0.2.0",
   "Description": "Quick responses.",
   "UniqueID": "aedenthorn.QuickResponses",
   "EntryDll": "QuickResponses.dll",

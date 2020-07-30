@@ -58,19 +58,13 @@ namespace QuickResponses
         {
             if (Game1.activeClickableMenu == null || !(Game1.activeClickableMenu is DialogueBox) || !Helper.Reflection.GetField<bool>(Game1.activeClickableMenu, "isQuestion").GetValue())
                 return;
-            if (Config.MenuKeySelectFirstResponse && e.Button != SButton.Escape && Helper.Reflection.GetField<List<Response>>(Game1.activeClickableMenu, "responses").GetValue().Count == 2)
+            if (e.Button == Config.SelectFirstResponseKey && Helper.Reflection.GetField<List<Response>>(Game1.activeClickableMenu, "responses").GetValue().Count == 2)
             {
-                foreach (InputButton ib in Game1.options.menuButton)
-                {
-                    if (e.Button == ib.ToSButton())
-                    {
-                        Monitor.Log("Pressed menu button key on question dialogue");
-                        Helper.Reflection.GetField<int>(Game1.activeClickableMenu, "selectedResponse").SetValue(0);
-                        Game1.activeClickableMenu.receiveLeftClick(0, 0, true);
-                        Helper.Input.Suppress(e.Button);
-                        return;
-                    }
-                }
+                Monitor.Log("Pressed selectFirstResponse button key on question dialogue");
+                Helper.Reflection.GetField<int>(Game1.activeClickableMenu, "selectedResponse").SetValue(0);
+                Game1.activeClickableMenu.receiveLeftClick(0, 0, true);
+                Helper.Input.Suppress(e.Button);
+                return;
             }
 
             List<SButton> sbs = new List<SButton> { SButton.D1, SButton.D2, SButton.D3, SButton.D4, SButton.D5, SButton.D6, SButton.D7, SButton.D8, SButton.D9, SButton.D0 };
