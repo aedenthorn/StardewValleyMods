@@ -36,7 +36,7 @@ namespace YAJM
 
         private void Input_ButtonPressed(object sender, StardewModdingAPI.Events.ButtonPressedEventArgs e)
         {
-			if (e.Button == Config.JumpButton && Context.IsPlayerFree && Game1.player.yJumpVelocity == 0)
+            if(e.Button == Config.JumpButton && Game1.player.yJumpVelocity == 0)
             {
 				if(Config.PlayJumpSound)
 					Game1.playSound("dwop");

@@ -1,4 +1,5 @@
-﻿using Microsoft.Xna.Framework;
+﻿using Harmony;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using StardewModdingAPI;
 using StardewValley;
@@ -21,6 +22,7 @@ namespace ShowPlayerBehind
 
         private Dictionary<long, Point[]> transparentPoints = new Dictionary<long, Point[]>();
         private Dictionary<long, Point> farmerPoints = new Dictionary<long, Point>();
+        private Texture2D _houseTexture;
 
         public override void Entry(IModHelper helper)
         {
@@ -30,24 +32,22 @@ namespace ShowPlayerBehind
 
             SMonitor = Monitor;
 
-            if (Game1.IsMasterGame)
-            {
-                Helper.Events.GameLoop.DayStarted += GameLoop_DayStarted;
-                Helper.Events.GameLoop.DayEnding += GameLoop_DayEnding;
-            }
-        }
-        private void GameLoop_DayStarted(object sender, StardewModdingAPI.Events.DayStartedEventArgs e)
-        {
+            Helper.Events.GameLoop.SaveLoaded += GameLoop_SaveLoaded;
             Helper.Events.Display.RenderingWorld += Display_RenderingWorld;
         }
 
-        private void GameLoop_DayEnding(object sender, StardewModdingAPI.Events.DayEndingEventArgs e)
+        private void GameLoop_SaveLoaded(object sender, StardewModdingAPI.Events.SaveLoadedEventArgs e)
         {
-            Helper.Events.Display.RenderingWorld -= Display_RenderingWorld;
+            _houseTexture = Helper.Content.Load<Texture2D>("Buildings\\houses");
         }
 
         private void Display_RenderingWorld(object sender, StardewModdingAPI.Events.RenderingWorldEventArgs e)
         {
+            Texture2D houseTexture = null;
+            if (config.TransparentFarmBuildings)
+            {
+                houseTexture = _houseTexture;
+            }
             foreach(Farmer f in Game1.getAllFarmers())
             {
                 Point fp = f.getTileLocationPoint();
@@ -135,7 +135,22 @@ namespace ShowPlayerBehind
                         }
                     }
                 }
+
+                if(gl is Farm && config.TransparentFarmBuildings)
+                {
+                    if (config.HouseRectangle.Contains(fp))
+                    {
+                        //AddBuildingTransparency(houseTexture, fp, );
+                    }
+                }
             }
+        }
+
+        private void AddBuildingTransparency(Texture2D texture, Point fp)
+        {
+            Color[] data = new Color[texture.Width * texture.Height];
+            texture.GetData(data);
+
         }
 
         private Point[] AddFarmerPoints(Farmer f)
@@ -171,5 +186,6 @@ namespace ShowPlayerBehind
 
             return outpoints.ToArray();
         }
+
     }
 }

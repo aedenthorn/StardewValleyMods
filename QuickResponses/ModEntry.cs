@@ -36,6 +36,10 @@ namespace QuickResponses
             if (!Config.ShowNumbers || Game1.activeClickableMenu == null || !(Game1.activeClickableMenu is DialogueBox) || !Helper.Reflection.GetField<bool>(Game1.activeClickableMenu, "isQuestion").GetValue())
                 return;
 
+            DialogueBox db = Game1.activeClickableMenu as DialogueBox;
+            if (Helper.Reflection.GetField<int>(db, "characterIndexInDialogue").GetValue() < db.getCurrentString().Length - 1 || Helper.Reflection.GetField<bool>(db, "transitioning").GetValue())
+                return;
+
             int x = Helper.Reflection.GetField<int>(Game1.activeClickableMenu, "x").GetValue();
             int y = Helper.Reflection.GetField<int>(Game1.activeClickableMenu, "y").GetValue();
             int heightForQuestions = Helper.Reflection.GetField<int>(Game1.activeClickableMenu, "heightForQuestions").GetValue();
@@ -54,7 +58,7 @@ namespace QuickResponses
         {
             if (Game1.activeClickableMenu == null || !(Game1.activeClickableMenu is DialogueBox) || !Helper.Reflection.GetField<bool>(Game1.activeClickableMenu, "isQuestion").GetValue())
                 return;
-            if (Config.MenuKeySelectFirstResponse && Helper.Reflection.GetField<List<Response>>(Game1.activeClickableMenu, "responses").GetValue().Count == 2)
+            if (Config.MenuKeySelectFirstResponse && e.Button != SButton.Escape && Helper.Reflection.GetField<List<Response>>(Game1.activeClickableMenu, "responses").GetValue().Count == 2)
             {
                 foreach (InputButton ib in Game1.options.menuButton)
                 {

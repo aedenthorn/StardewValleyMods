@@ -1,17 +1,17 @@
 ﻿{
-  "Name": "Quick Responses",
+  "Name": "Bigger Mine Floors",
   "Author": "aedenthorn",
-  "Version": "0.1.1",
-  "Description": "Quick responses.",
-  "UniqueID": "aedenthorn.QuickResponses",
-  "EntryDll": "QuickResponses.dll",
+  "Version": "0.2.0",
+  "Description": "Bigger Mine Floors.",
+  "UniqueID": "aedenthorn.BiggerMineFloors",
+  "EntryDll": "BiggerMineFloors.dll",
   "MinimumApiVersion": "3.5.0",
-  "UpdateKeys": ["Nexus:6548"],
+  "UpdateKeys": ["Nexus:"],
   "ModUpdater": {
     "Repository": "StardewValleyMods",
     "User": "aedenthorn",
     "Directory": "_releases",
-    "ModFolder": "QuickResponses"
+    "ModFolder": "BiggerMineFloors"
   },
   "Dependencies": [
       {
