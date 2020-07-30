@@ -46,13 +46,13 @@ namespace Familiars
 
 		public override void reloadSprite()
 		{
-			if (this.Sprite == null)
+			if (Sprite == null)
 			{
-				this.Sprite = new AnimatedSprite(ModEntry.Config.DustTexture);
+				Sprite = new AnimatedSprite(ModEntry.Config.DustTexture);
 			}
 			else
 			{
-				this.Sprite.textureName.Value = ModEntry.Config.DustTexture;
+				Sprite.textureName.Value = ModEntry.Config.DustTexture;
 			}
 			if (ModEntry.Config.DustColorType.ToLower() != "default")
 			{
