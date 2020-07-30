@@ -305,10 +305,9 @@ namespace VideoPlayerMod
                 e.SpriteBatch.Draw(backgroundTexture, new Rectangle((int)pos.X, (int)pos.Y, (int)screenSize.X, (int)screenSize.Y), Color.White);
             }
 
-            Texture2D newTexture = videoPlayer.GetTexture();
-            if (newTexture != null)
+            if (videoPlayer.State == MediaState.Playing)
             {
-                lastTexture = newTexture;
+                lastTexture = videoPlayer.GetTexture();
             }
             if (lastTexture != null && videoPlayer.State != MediaState.Stopped)
             {
