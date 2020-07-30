@@ -170,7 +170,7 @@ namespace VideoPlayerMod
                     return;
             }
 
-            if(e.Button == SButton.MouseLeft)
+            if(e.Button == SButton.MouseLeft && (Config.PhoneApp || videoPlayer.State != MediaState.Stopped))
             {
                 SetScreenPosAndSize();
 
