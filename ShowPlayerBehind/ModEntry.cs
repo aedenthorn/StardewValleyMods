@@ -32,13 +32,13 @@ namespace ShowPlayerBehind
 
             SMonitor = Monitor;
 
-            Helper.Events.GameLoop.SaveLoaded += GameLoop_SaveLoaded;
+            //Helper.Events.GameLoop.SaveLoaded += GameLoop_SaveLoaded;
             Helper.Events.Display.RenderingWorld += Display_RenderingWorld;
         }
 
         private void GameLoop_SaveLoaded(object sender, StardewModdingAPI.Events.SaveLoadedEventArgs e)
         {
-            _houseTexture = Helper.Content.Load<Texture2D>("Buildings\\houses");
+            //_houseTexture = Helper.Content.Load<Texture2D>("Buildings\\houses", ContentSource.GameContent);
         }
 
         private void Display_RenderingWorld(object sender, StardewModdingAPI.Events.RenderingWorldEventArgs e)

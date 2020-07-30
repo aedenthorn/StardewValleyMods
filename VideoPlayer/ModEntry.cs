@@ -30,6 +30,8 @@ namespace VideoPlayerMod
         private Texture2D playTexture;
         private int uiTicks = 0;
         private Texture2D lastTexture;
+        private Vector2 screenPos;
+        private Vector2 screenSize;
 
         public override void Entry(IModHelper helper)
 		{
@@ -71,6 +73,7 @@ namespace VideoPlayerMod
             }
 
             SetVideo(0);
+            MakeTextures();
 
             Helper.Events.GameLoop.GameLaunched += GameLoop_GameLaunched;
             Helper.Events.Input.ButtonPressed += Input_ButtonPressed;
@@ -118,15 +121,13 @@ namespace VideoPlayerMod
                     Texture2D appIcon = Helper.Content.Load<Texture2D>(Path.Combine("assets", "app_icon.png"));
                     bool success = api.AddApp(Helper.ModRegistry.ModID, "Video Player", OpenVideoPlayer, appIcon);
                     Monitor.Log($"loaded phone app successfully: {success}", LogLevel.Debug);
-                    MakeTextures();
                 }
             }
         }
 
         public void MakeTextures()
         {
-            Vector2 screenSize = api.GetScreenSize(false);
-            Texture2D background = new Texture2D(Game1.graphics.GraphicsDevice, (int)screenSize.X, (int)screenSize.Y);
+            Texture2D background = new Texture2D(Game1.graphics.GraphicsDevice, (int)Config.Width, (int)Config.Height);
             Color[] data = new Color[background.Width * background.Height];
             for (int pixel = 0; pixel < data.Length; pixel++)
             {
@@ -135,15 +136,6 @@ namespace VideoPlayerMod
             background.SetData(data);
             backgroundTexture = background;
 
-            screenSize = api.GetScreenSize(true);
-            background = new Texture2D(Game1.graphics.GraphicsDevice, (int)screenSize.X, (int)screenSize.Y);
-            data = new Color[background.Width * background.Height];
-            for (int pixel = 0; pixel < data.Length; pixel++)
-            {
-                data[pixel] = Color.Black;
-            }
-            background.SetData(data);
-            backgroundRotatedTexture = background;
             xTexture = Helper.Content.Load<Texture2D>(Path.Combine("assets", "x.png"));
             buttonsTexture = Helper.Content.Load<Texture2D>(Path.Combine("assets", "buttons.png"));
             playTexture = Helper.Content.Load<Texture2D>(Path.Combine("assets", "play.png"));
@@ -180,14 +172,14 @@ namespace VideoPlayerMod
 
             if(e.Button == SButton.MouseLeft)
             {
+                SetScreenPosAndSize();
+
                 Point mousePos = Game1.getMousePosition();
-                Vector2 screenPos = api.GetScreenPosition();
-                Vector2 screenSize = api.GetScreenSize(); 
                 Vector2 xPos = screenPos + new Vector2(screenSize.X - 48, 16);
                 Vector2 backPos = screenPos + new Vector2(screenSize.X / 2 - 96, screenSize.Y - 48);
                 Vector2 stopPos = backPos + new Vector2(80,0);
                 Vector2 fwdPos = stopPos + new Vector2(80, 0);
-                if (new Rectangle((int)xPos.X, (int)xPos.Y, 32, 32).Contains(mousePos))
+                if (Config.PhoneApp && new Rectangle((int)xPos.X, (int)xPos.Y, 32, 32).Contains(mousePos))
                 {
                     api.SetAppRunning(false);
                 }
@@ -247,6 +239,22 @@ namespace VideoPlayerMod
             }
         }
 
+        private void SetScreenPosAndSize()
+        {
+            if (Config.PhoneApp)
+            {
+                screenPos = api.GetScreenPosition();
+                screenSize = api.GetScreenSize();
+            }
+            else
+            {
+                int x = Config.RightSide ? Game1.viewport.Width - Config.Width - Config.XOffset : Config.XOffset;
+                int y = Config.Bottom ? Game1.viewport.Height - Config.Height - Config.YOffset : Config.YOffset;
+                screenPos = new Vector2(x, y);
+                screenSize = new Vector2(Config.Width, Config.Height);
+            }
+        }
+
         private void StopTrack(bool forceStop = false)
         {
             if (videoPlayer.State == MediaState.Playing && !forceStop)
@@ -291,19 +299,19 @@ namespace VideoPlayerMod
         private void Display_Rendered(object sender, StardewModdingAPI.Events.RenderedEventArgs e)
         {
 
+            SetScreenPosAndSize();
             if (Config.PhoneApp)
             {
-
                 if (!api.GetPhoneOpened() || api.GetRunningApp() != Helper.ModRegistry.ModID)
                 {
-                    StopTrack();
+                    StopTrack(true);
                     Helper.Events.Display.Rendered -= Display_Rendered;
                     return;
                 }
-                Vector2 screenSize = api.GetScreenSize();
-                Vector2 pos = api.GetScreenPosition();
-                e.SpriteBatch.Draw(backgroundTexture, new Rectangle((int)pos.X, (int)pos.Y, (int)screenSize.X, (int)screenSize.Y), Color.White);
+                e.SpriteBatch.Draw(backgroundTexture, new Rectangle((int)screenPos.X, (int)screenPos.Y, (int)screenSize.X, (int)screenSize.Y), Color.White);
             }
+            else if (videoPlayer.State == MediaState.Stopped)
+                return;
 
             if (videoPlayer.State == MediaState.Playing)
             {
@@ -311,36 +319,29 @@ namespace VideoPlayerMod
             }
             if (lastTexture != null && videoPlayer.State != MediaState.Stopped)
             {
-                Vector2 screenSize = api.GetScreenSize();
-                Vector2 pos = api.GetScreenPosition();
                 Vector2 size;
-                if (Config.PhoneApp && api != null)
+                Vector2 pos = screenPos;
+                float rs = screenSize.X / screenSize.Y;
+                float rv = lastTexture.Width / (float)lastTexture.Height;
+                if (rv > rs)
                 {
-                    float rs = screenSize.X / screenSize.Y;
-                    float rv = lastTexture.Width / (float) lastTexture.Height;
-                    if (rv > rs)
-                    {
-                        size = new Vector2(screenSize.X, screenSize.X * lastTexture.Height / lastTexture.Width);
-                        pos += new Vector2(0,(screenSize.Y - size.Y) / 2);
-                    }
-                    else if (rv > rs)
-                    {
-                        size = new Vector2(screenSize.Y * lastTexture.Width / lastTexture.Height, screenSize.Y);
-                        pos += new Vector2((screenSize.X - size.X) / 2, 0);
-                    }
-                    else
-                    {
-                        size = api.GetScreenSize();
-                    }
-                    e.SpriteBatch.Draw(lastTexture, new Rectangle((int)pos.X, (int)pos.Y, (int) size.X, (int)size.Y), Color.White);
+                    size = new Vector2(screenSize.X, screenSize.X * lastTexture.Height / lastTexture.Width);
+                    pos += new Vector2(0, (screenSize.Y - size.Y) / 2);
+                }
+                else if (rv > rs)
+                {
+                    size = new Vector2(screenSize.Y * lastTexture.Width / lastTexture.Height, screenSize.Y);
+                    pos += new Vector2((screenSize.X - size.X) / 2, 0);
                 }
                 else
                 {
-                    int x = Config.RightSide ? Game1.viewport.Width - Config.Width - Config.XOffset : Config.XOffset;
-                    int y = Config.Bottom ? Game1.viewport.Height - Config.Height - Config.YOffset : Config.YOffset;
-                    e.SpriteBatch.Draw(lastTexture, new Rectangle(x, y, Config.Width, Config.Height), Color.White);
+                    size = screenSize;
                 }
-                if (api.GetScreenRectangle().Contains(Game1.getMousePosition()))
+                Rectangle videoRect = new Rectangle((int)pos.X, (int)pos.Y, (int)size.X, (int)size.Y);
+
+                e.SpriteBatch.Draw(lastTexture, videoRect, Color.White);
+
+                if (new Rectangle((int)screenPos.X, (int)screenPos.Y, (int)screenSize.X, (int)screenSize.Y).Contains(Game1.getMousePosition()))
                 {
                     int delay = 30;
                     if (uiTicks < 255 + delay)
@@ -351,16 +352,18 @@ namespace VideoPlayerMod
                     int c = Math.Max(uiTicks - delay, 0);
 
                     Color color = new Color(c, c, c, c);
-                    e.SpriteBatch.Draw(xTexture, api.GetScreenPosition() + new Vector2(screenSize.X - 48, 16), color);
-                    e.SpriteBatch.Draw(buttonsTexture, api.GetScreenPosition() + new Vector2(screenSize.X / 2 - 96, screenSize.Y - 48), color);
+                    e.SpriteBatch.Draw(buttonsTexture, screenPos + new Vector2(screenSize.X / 2 - 96, screenSize.Y - 48), color);
+
+                    if(Config.PhoneApp)
+                        e.SpriteBatch.Draw(xTexture, screenPos + new Vector2(screenSize.X - 48, 16), color);
                 }
                 else
                     uiTicks = 0;
 
-                if (videoPlayer.State != MediaState.Playing)
-                {
-                    e.SpriteBatch.Draw(playTexture, api.GetScreenPosition() + new Vector2(screenSize.X / 2 - 32, screenSize.Y / 2 - 32), Color.White);
-                }
+            }
+            if (videoPlayer.State != MediaState.Playing)
+            {
+                e.SpriteBatch.Draw(playTexture, screenPos + new Vector2(screenSize.X / 2 - 32, screenSize.Y / 2 - 32), Color.White);
             }
         }
     }
