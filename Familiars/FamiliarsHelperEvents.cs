@@ -41,7 +41,7 @@ namespace Familiars
                 if (npc is Familiar)
                 {
                     Farmer owner = Game1.getFarmer(Helper.Reflection.GetField<long>(npc, "ownerId").GetValue());
-                    if (owner == Game1.player)
+                    if (owner == Game1.player && (npc as Familiar).followingOwner)
                     {
                         FamiliarsUtils.warpFamiliar(npc, e.NewLocation, Game1.player.getTileLocation());
                     }
@@ -173,25 +173,41 @@ namespace Familiars
             }
 
             // fix bug
-
-            foreach(Building l in Game1.getFarm().buildings)
+            if (Game1.IsMasterGame)
             {
-                if(l is Coop)
+                foreach (Building l in Game1.getFarm().buildings)
                 {
-                    foreach(Object o in (l as Coop).indoors.Value.Objects.Values)
+                    if (l is Coop)
                     {
-                        if (o.bigCraftable && o.Name.Contains("Incubator") && o.heldObject.Value != null)
+                        foreach (Object o in (l as Coop).indoors.Value.Objects.Values)
                         {
-                            int egg = o.heldObject.Value.ParentSheetIndex;
-                            Monitor.Log($"egg id {egg}");
-                            if (new int[] { ModEntry.BatFamiliarEgg, ModEntry.ButterflyFamiliarEgg, ModEntry.DinoFamiliarEgg, ModEntry.DustFamiliarEgg, ModEntry.JunimoFamiliarEgg }.Contains(egg))
+                            if (o.bigCraftable && o.Name.Contains("Incubator") && o.heldObject.Value != null)
                             {
-                                Monitor.Log($"familiar egg, removing.", LogLevel.Warn);
-                                o.heldObject.Value = null;
-                                o.minutesUntilReady.Value = -1;
-                                o.ParentSheetIndex = 101;
-                                Game1.player.addItemToInventory(new Object(egg, 1));
+                                int egg = o.heldObject.Value.ParentSheetIndex;
+                                Monitor.Log($"egg id {egg}");
+                                if (new int[] { ModEntry.BatFamiliarEgg, ModEntry.ButterflyFamiliarEgg, ModEntry.DinoFamiliarEgg, ModEntry.DustFamiliarEgg, ModEntry.JunimoFamiliarEgg }.Contains(egg))
+                                {
+                                    Monitor.Log($"familiar egg, removing.", LogLevel.Warn);
+                                    o.heldObject.Value = null;
+                                    o.minutesUntilReady.Value = -1;
+                                    o.ParentSheetIndex = 101;
+                                    Game1.player.addItemToInventory(new Object(egg, 1));
+                                }
                             }
+                        }
+                    }
+                }
+
+                foreach (GameLocation l in Game1.locations)
+                {
+                    for (int i = l.Objects.Count() - 1; i >= 0; i--)
+                    {
+                        Object o = l.Objects.Values.ElementAt(i);
+                        if (o.Name.Equals("Butterfly Dust"))
+                        {
+                            Monitor.Log($"Removing placed butterfly dust.", LogLevel.Warn);
+                            Game1.currentLocation.debris.Add(new Debris(o.ParentSheetIndex, l.Objects.Keys.ElementAt(i), Game1.player.position));
+                            l.objects.Remove(l.Objects.Keys.ElementAt(i));
                         }
                     }
                 }

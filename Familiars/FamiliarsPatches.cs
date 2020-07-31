@@ -212,16 +212,17 @@ namespace Familiars
 		}
         public static void GameLocation_checkAction_Postfix(GameLocation __instance, Location tileLocation, xTile.Dimensions.Rectangle viewport, Farmer who, ref bool __result)
 		{
-			if (!(__instance is SlimeHutch))
-				return;
-
 			Microsoft.Xna.Framework.Rectangle tileRect = new Microsoft.Xna.Framework.Rectangle(tileLocation.X * 64, tileLocation.Y * 64, 64, 64);
 
 			foreach (NPC i in __instance.characters)
 			{
 				if (i != null &&  i is Familiar && (i as Familiar).ownerId.Equals(who.UniqueMultiplayerID) && i.GetBoundingBox().Intersects(tileRect))
 				{
-					(i as Familiar).followingOwner = !(i as Familiar).followingOwner;
+					if (__instance is SlimeHutch)
+						(i as Familiar).followingOwner = !(i as Familiar).followingOwner;
+					else if (!(i as Familiar).followingOwner)
+						(i as Familiar).followingOwner = true;
+
 					__instance.playSound("dwop");
 					Monitor.Log($"familiar following player: {(i as Familiar).followingOwner}");
 					__result = true;

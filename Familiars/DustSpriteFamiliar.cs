@@ -115,9 +115,11 @@ namespace Familiars
 				if (Game1.random.NextDouble() < 0.1 && (this.meep == null || !this.meep.IsPlaying) && Utility.isOnScreen(base.Position, 64) && Game1.soundBank != null && Game1.currentLocation == base.currentLocation)
 				{
 					if (ModEntry.Config.DustSoundEffects)
+                    {
 						this.meep = Game1.soundBank.GetCue("dustMeep");
-					this.meep.SetVariable("Pitch", (int)(this.voice * 100) + Game1.random.Next(-100, 100));
-					this.meep.Play();
+						this.meep.SetVariable("Pitch", (int)(this.voice * 100) + Game1.random.Next(-100, 100));
+						this.meep.Play();
+					}
 				}
 			}
 			base.resetAnimationSpeed();
