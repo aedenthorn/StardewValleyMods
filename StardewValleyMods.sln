@@ -65,6 +65,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "QuickResponses", "QuickResp
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "YAJM", "YAJM\YAJM.csproj", "{DCAFD059-562A-47E1-810B-4C0C2793E2FC}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BiggerMineFloors", "BiggerMineFloors\BiggerMineFloors.csproj", "{7265B2A9-67F7-49F9-84C0-0294E7FC86CC}"
+EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
 		_releases\_releases.projitems*{047040e0-3d07-46e5-852b-d1d45cd57bb8}*SharedItemsImports = 13
@@ -316,6 +318,14 @@ Global
 		{DCAFD059-562A-47E1-810B-4C0C2793E2FC}.Release|Any CPU.Build.0 = Release|Any CPU
 		{DCAFD059-562A-47E1-810B-4C0C2793E2FC}.Release|x86.ActiveCfg = Release|Any CPU
 		{DCAFD059-562A-47E1-810B-4C0C2793E2FC}.Release|x86.Build.0 = Release|Any CPU
+		{7265B2A9-67F7-49F9-84C0-0294E7FC86CC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7265B2A9-67F7-49F9-84C0-0294E7FC86CC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7265B2A9-67F7-49F9-84C0-0294E7FC86CC}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{7265B2A9-67F7-49F9-84C0-0294E7FC86CC}.Debug|x86.Build.0 = Debug|Any CPU
+		{7265B2A9-67F7-49F9-84C0-0294E7FC86CC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7265B2A9-67F7-49F9-84C0-0294E7FC86CC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7265B2A9-67F7-49F9-84C0-0294E7FC86CC}.Release|x86.ActiveCfg = Release|Any CPU
+		{7265B2A9-67F7-49F9-84C0-0294E7FC86CC}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

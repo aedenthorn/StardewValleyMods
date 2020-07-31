@@ -254,15 +254,15 @@ namespace Familiars
         private Buff GetBuff()
         {
 			int buffAmount = (int)Math.Ceiling(Math.Sqrt(exp) / 10f);
-			int which = Game1.random.Next(12);
-			int[] buffs = new int[12];
-			for(int i = 0; i < 12; i++)
+			int which = Game1.random.Next(10);
+			int[] buffs = new int[10];
+			for(int i = 0; i < 10; i++)
             {
 				buffs[i] = which == i ? buffAmount : 0;
 
 			}
 
-			Buff buff = new Buff(buffs[0], buffs[1], buffs[2], buffs[3], buffs[4], buffs[5], buffs[6], buffs[7] * 100, buffs[8] * 100, buffs[9], buffs[10], buffs[11], BuffDuration(), "ButterflyFamiliar", ModEntry.SHelper.Translation.Get("butterfly-familiar"));
+			Buff buff = new Buff(buffs[0], buffs[1], buffs[2], buffs[3], buffs[4], buffs[5], buffs[6], 0, 0, buffs[7], buffs[8], buffs[9], BuffDuration(), "ButterflyFamiliar", ModEntry.SHelper.Translation.Get("butterfly-familiar"));
 			buff.which = 4200 + which;
 			return buff;
 		}

@@ -212,6 +212,11 @@ namespace Swim
                         }
                     }
                 }
+                if(spots.Count == 0)
+                {
+                    Monitor.Log($"No spots for fishies in map {l.Name}", LogLevel.Warn);
+                    return;
+                }
                 int n = spots.Count;
                 while (n > 1)
                 {
