@@ -129,6 +129,8 @@ namespace Familiars
 				if (!name.EndsWith("Familiar Egg"))
 					return;
 
+				Monitor.Log($"Hatched a familiar from {name}");
+
 				Familiar familiar = null;
 
                 switch (name)
@@ -167,9 +169,16 @@ namespace Familiars
 			if (__instance.name.Equals("Slime Incubator") && __instance.heldObject.Value != null && __instance.heldObject.Value.name.EndsWith("Familiar Egg") && __instance.minutesUntilReady <= 0)
 			{
 				Vector2 v = new Vector2((float)((int)__instance.tileLocation.X), (float)((int)__instance.tileLocation.Y + 1)) * 64f;
+				string name = __instance.heldObject.Value.name;
+
+				if (!name.EndsWith("Familiar Egg") || Game1.timeOfDay == 600)
+					return;
+
 				Familiar familiar = null;
 
-                switch (__instance.heldObject.Value.name)
+				Monitor.Log($"Hatched a familiar from {__instance.heldObject.Value.name} time {Game1.timeOfDay}");
+
+				switch (__instance.heldObject.Value.name)
                 {
 					case "Dino Familiar Egg":
 						familiar = new DinoFamiliar(v, __instance.owner);

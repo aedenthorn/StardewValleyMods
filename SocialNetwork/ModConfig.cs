@@ -2,7 +2,7 @@
 
 namespace SocialNetwork
 {
-    class ModConfig
+    public class ModConfig
     {
         public bool EnableMod { get; set; } = true;
         public Color BackgroundColor { get; set; } = new Color(41, 57, 106);
@@ -10,5 +10,6 @@ namespace SocialNetwork
         public int PostMarginX { get; set; } = 16;
         public int PostMarginY { get;  set; } = 16;
         public int PostHeight { get; set; } = 128;
+        public float TimeOfDayChangePostChance { get; set; } = 1.0f;
     }
 }

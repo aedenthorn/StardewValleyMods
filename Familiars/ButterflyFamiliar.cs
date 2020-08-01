@@ -124,13 +124,13 @@ namespace Familiars
 		public override void drawAboveAllLayers(SpriteBatch b)
 		{
 			Sprite.currentFrame = Math.Max(Sprite.CurrentFrame, baseFrame);
-			if(Sprite.currentAnimationIndex  > (summerButterfly ? 2 : 1))
+			if(Sprite.currentAnimationIndex  > (summerButterfly ? 3 : 2))
             {
 				position.Value += new Vector2(0, -4);
             }
 			else
             {
-				position.Value += new Vector2(0, 4);
+				position.Value += new Vector2(0, 2);
 			}
 			Sprite.draw(b, Game1.GlobalToLocal(Game1.viewport, position + new Vector2(-64f, -128f + yJumpOffset + yOffset)), position.Y / 10000f, 0, 0, Color.White, flip, 4f * scale, 0f, false);
 		}
@@ -237,16 +237,20 @@ namespace Familiars
 				{
 					this.yVelocity -= -ySlope * maxAccel / 6f;
 				}
-				if (lastBuff <= 0 && Vector2.Distance(GetOwner().getTileLocation(), getTileLocation()) < 3 && Game1.random.NextDouble() < BuffChance())
+				if (lastBuff <= 0 && Vector2.Distance(GetOwner().getTileLocation(), getTileLocation()) < 3)
 				{
-					if(ModEntry.Config.ButterflySoundEffects)
-						Game1.playSound("yoba");
-					BuffsDisplay buffsDisplay = Game1.buffsDisplay;
-					Buff buff2 = GetBuff();
-					buff2.which = -1;
-					buffsDisplay.addOtherBuff(buff2);
-					AddExp(1);
-					lastBuff.Value = GetBuffInterval();
+					if (Game1.random.NextDouble() < BuffChance())
+					{
+						if (ModEntry.Config.ButterflySoundEffects)
+							Game1.playSound("yoba");
+						BuffsDisplay buffsDisplay = Game1.buffsDisplay;
+						Buff buff2 = GetBuff();
+						buffsDisplay.addOtherBuff(buff2);
+						AddExp(1);
+						lastBuff.Value = GetBuffInterval();
+					}
+					else
+						lastBuff.Value = 1000;
 				}
 			}
 		}
@@ -274,7 +278,7 @@ namespace Familiars
 
 		private int GetBuffInterval()
         {
-			return (int)((10000 - (int)Math.Sqrt(exp))* ModEntry.Config.ButterflyBuffIntervalMult);
+			return (int)((10000 - (int)Math.Sqrt(exp)) * ModEntry.Config.ButterflyBuffIntervalMult);
 		}
 
         private int Buff()
@@ -284,7 +288,7 @@ namespace Familiars
 
 		private double BuffChance()
 		{
-			return 0.001 + Math.Sqrt(exp) * 0.001;
+			return (0.01 + Math.Sqrt(exp) * 0.001) * ModEntry.Config.ButterflyBuffChanceMult;
 		}
 
 		private Farmer GetOwner()

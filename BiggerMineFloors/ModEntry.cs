@@ -22,300 +22,6 @@ namespace BiggerMineFloors
 
 		public static ModConfig Config;
 
-        public static Dictionary<int, string> specialTiles = new Dictionary<int, string>()
-        {
-{ 0, "Unique" },
-{ 1, "TopLeft" },
-{ 2, "TopMid" },
-{ 3, "TopRight" },
-{ 4, "TopLeft" },
-{ 5, "TopMid" },
-{ 6, "TopLeft" },
-{ 7, "TopMid" },
-{ 8, "TopMid" },
-{ 9, "TopLeft" },
-{ 10, "TopRight" },
-{ 11, "TopLeft" },
-{ 12, "TopRight" },
-{ 13, "TopLeft" },
-{ 14, "TopRight" },
-{ 15, "TopMid" },
-{ 16, "Unique" },
-{ 17, "MidLeft" },
-{ 18, "Copy" },
-{ 19, "MidRight" },
-{ 20, "Unique" },
-{ 21, "Unique" },
-{ 22, "Unique" },
-{ 23, "Copy" },
-{ 24, "Copy" },
-{ 25, "BottomLeft" },
-{ 26, "BottomRight" },
-{ 27, "BottomLeft" },
-{ 28, "BottomRight" },
-{ 29, "BottomLeft" },
-{ 30, "BottomRight" },
-{ 31, "BottomMid" },
-{ 32, "Unique" },
-{ 33, "BottomLeft" },
-{ 34, "BottomMid" },
-{ 35, "BottomRight" },
-{ 36, "Unique" },
-{ 37, "Unique" },
-{ 38, "Unique" },
-{ 39, "Copy" },
-{ 40, "Copy" },
-{ 41, "TopLeft" },
-{ 42, "TopRight" },
-{ 43, "TopLeft" },
-{ 44, "TopRight" },
-{ 45, "TopLeft" },
-{ 46, "TopRight" },
-{ 47, "TopMid" },
-{ 48, "Unique" },
-{ 49, "Copy" },
-{ 50, "Unique" },
-{ 51, "Unique" },
-            { 52, "BottomLeft" },
-            { 53, "BottomMid" },
-            { 54, "BottomRight" },
-            { 55, "BottomMid" },
-            { 56, "BottomMid" },
-{ 57, "BottomLeft" },
-{ 58, "BottomRight" },
-{ 59, "BottomLeft" },
-{ 60, "BottomRight" },
-{ 61, "BottomLeft" },
-{ 62, "BottomRight" },
-{ 63, "BottomMid" },
-{ 64, "Unique" },
-{ 65, "Unique" },
-{ 66, "Unique" },
-{ 67, "Unique" },
-{ 68, "type" },
-{ 69, "type" },
-{ 70, "type" },
-{ 71, "type" },
-{ 72, "type" },
-{ 73, "type" },
-{ 74, "type" },
-{ 75, "type" },
-{ 76, "type" },
-{ 77, "type" },
-{ 78, "type" },
-{ 79, "type" },
-{ 80, "type" },
-{ 81, "type" },
-{ 82, "type" },
-{ 83, "type" },
-{ 84, "type" },
-{ 85, "type" },
-{ 86, "type" },
-{ 87, "type" },
-{ 88, "type" },
-{ 89, "type" },
-{ 90, "type" },
-{ 91, "type" },
-{ 92, "type" },
-{ 93, "type" },
-{ 94, "type" },
-{ 95, "type" },
-{ 96, "Unique" },
-{ 97, "Unique" },
-{ 98, "type" },
-{ 99, "type" },
-{ 100, "type" },
-{ 101, "type" },
-{ 102, "type" },
-{ 103, "type" },
-{ 104, "type" },
-{ 105, "type" },
-{ 106, "type" },
-{ 107, "type" },
-{ 108, "type" },
-{ 109, "type" },
-{ 110, "type" },
-{ 111, "type" },
-{ 112, "Unique" },
-{ 113, "Unique" },
-{ 114, "type" },
-{ 115, "type" },
-{ 116, "type" },
-{ 117, "type" },
-{ 118, "type" },
-{ 119, "type" },
-{ 120, "type" },
-            { 121, "copyRight" },
-            { 122, "copyRight" },
-            { 123, "copyRight" },
-            { 124, "copyRight" },
-
-{ 125, "type" },
-{ 126, "type" },
-{ 127, "type" },
-{ 128, "type" },
-{ 129, "type" },
-{ 130, "type" },
-{ 131, "type" },
-{ 132, "type" },
-{ 133, "type" },
-{ 134, "type" },
-{ 135, "type" },
-{ 136, "type" },
-{ 137, "type" },
-{ 138, "type" },
-{ 139, "type" },
-{ 140, "type" },
-{ 141, "type" },
-{ 142, "type" },
-{ 143, "type" },
-{ 144, "type" },
-{ 145, "type" },
-{ 146, "type" },
-{ 147, "type" },
-{ 148, "type" },
-{ 149, "type" },
-{ 150, "type" },
-{ 151, "type" },
-{ 152, "type" },
-{ 153, "type" },
-{ 154, "type" },
-{ 155, "type" },
-{ 156, "type" },
-{ 157, "type" },
-            { 158, "copyRight" },
-{ 159, "type" },
-{ 160, "type" },
-{ 161, "type" },
-            { 162, "copyRight" },
-            { 163, "copyRight" },
-{ 164, "type" },
-{ 165, "type" },
-{ 166, "type" },
-{ 167, "type" },
-{ 168, "type" },
-{ 169, "type" },
-{ 170, "type" },
-{ 171, "type" },
-{ 172, "type" },
-{ 173, "Unique" },
-{ 174, "type" },
-{ 175, "type" },
-{ 176, "type" },
-{ 177, "type" },
-{ 178, "type" },
-{ 179, "type" },
-{ 180, "type" },
-{ 181, "type" },
-{ 182, "type" },
-{ 183, "type" },
-{ 184, "type" },
-{ 185, "type" },
-{ 186, "type" },
-{ 187, "type" },
-{ 188, "type" },
-{ 189, "type" },
-{ 190, "type" },
-{ 191, "type" },
-{ 192, "type" },
-            { 193, "copyRight" },
-
-{ 194, "type" },
-{ 195, "type" },
-{ 196, "type" },
-{ 197, "type" },
-{ 198, "type" },
-{ 199, "type" },
-{ 200, "type" },
-{ 201, "type" },
-{ 202, "type" },
-{ 203, "type" },
-{ 204, "Unique" },
-{ 205, "type" },
-{ 206, "type" },
-{ 207, "type" },
-{ 208, "type" },
-{ 209, "type" },
-
-            { 210, "copyRight" },
-            { 211, "copyRight" },
-            { 212, "copyRight" },
-{ 213, "type" },
-{ 214, "type" },
-{ 215, "type" },
-{ 216, "type" },
-{ 217, "type" },
-{ 218, "type" },
-{ 219, "type" },
-{ 220, "type" },
-{ 221, "type" },
-{ 222, "type" },
-{ 223, "type" },
-{ 224, "type" },
-            { 225, "copyRight" },
-{ 226, "type" },
-{ 227, "type" },
-{ 228, "type" },
-{ 229, "type" },
-{ 230, "type" },
-{ 231, "type" },
-{ 232, "type" },
-{ 233, "type" },
-{ 234, "type" },
-{ 235, "type" },
-{ 236, "type" },
-{ 237, "Unique" },
-{ 238, "Unique" },
-{ 239, "Unique" },
-{ 240, "type" },
-{ 241, "type" },
-{ 242, "type" },
-{ 243, "type" },
-{ 244, "type" },
-{ 245, "type" },
-{ 246, "type" },
-{ 247, "type" },
-{ 248, "type" },
-{ 249, "type" },
-{ 250, "type" },
-{ 251, "type" },
-{ 252, "type" },
-{ 253, "type" },
-{ 254, "type" },
-{ 255, "type" },
-{ 256, "type" },
-{ 257, "type" },
-{ 258, "type" },
-{ 259, "type" },
-{ 260, "type" },
-{ 261, "type" },
-{ 262, "type" },
-{ 263, "type" },
-{ 264, "type" },
-{ 265, "type" },
-{ 266, "type" },
-{ 267, "type" },
-{ 268, "type" },
-{ 269, "type" },
-{ 270, "type" },
-{ 271, "type" },
-{ 272, "type" },
-{ 273, "type" },
-{ 274, "type" },
-{ 275, "type" },
-{ 276, "type" },
-{ 277, "type" },
-{ 278, "type" },
-{ 279, "type" },
-{ 280, "type" },
-{ 281, "type" },
-{ 282, "type" },
-
-
-
-
-        };
-
         /// <summary>The mod entry point, called after the mod is first loaded.</summary>
         /// <param name="helper">Provides simplified APIs for writing mods.</param>
         public override void Entry(IModHelper helper)
@@ -370,6 +76,8 @@ namespace BiggerMineFloors
                                     int plus;
                                     switch (BaseTileIndex(tile.TileIndex))
                                     {
+
+                                        // squares
                                         case 1:
                                         case 166:
                                         case 201:
@@ -403,46 +111,10 @@ namespace BiggerMineFloors
                                                 newTiles[basePos.X + w, basePos.Y + h].TileIndex = tile.TileIndex;
                                             else if (h == 0)
                                                 newTiles[basePos.X + w, basePos.Y + h].TileIndex = tile.TileIndex - 1;
-                                            else if (w == 0)
+                                            else if (w == mult - 1)
                                                 newTiles[basePos.X + w, basePos.Y + h].TileIndex = tile.TileIndex + 16;
                                             else
                                                 newTiles[basePos.X + w, basePos.Y + h].TileIndex = tile.TileIndex + 15;
-                                            break;
-                                        case 4:
-                                            plus = w == 0 ? 0 : 1;
-                                            if(h == 0)
-                                                newTiles[basePos.X + w, basePos.Y + h].TileIndex = tile.TileIndex + plus;
-                                            else if (h == 1)
-                                                newTiles[basePos.X + w, basePos.Y + h].TileIndex = tile.TileIndex + 16 + plus;
-                                            else
-                                                newTiles[basePos.X + w, basePos.Y + h].TileIndex = tile.TileIndex + 32 + plus;
-                                            break;
-                                        case 5:
-                                            if (h == 0)
-                                                newTiles[basePos.X + w, basePos.Y + h].TileIndex = tile.TileIndex;
-                                            else if (h == 1)
-                                                newTiles[basePos.X + w, basePos.Y + h].TileIndex = tile.TileIndex + 16;
-                                            else
-                                                newTiles[basePos.X + w, basePos.Y + h].TileIndex = tile.TileIndex + 32;
-                                            break;
-                                        case 6:
-                                            plus = w == mult - 1 ? 0 : -1;
-                                            if (h == 0)
-                                                newTiles[basePos.X + w, basePos.Y + h].TileIndex = tile.TileIndex + plus;
-                                            else if (h == 1)
-                                                newTiles[basePos.X + w, basePos.Y + h].TileIndex = tile.TileIndex + 16 + plus;
-                                            else
-                                                newTiles[basePos.X + w, basePos.Y + h].TileIndex = tile.TileIndex + 32 + plus;
-                                            break;
-                                        case 7:
-                                        case 8:
-                                            if (h == 0)
-                                                newTiles[basePos.X + w, basePos.Y + h].TileIndex = 7 + w % 2;
-                                            else 
-                                                newTiles[basePos.X + w, basePos.Y + h].TileIndex = 7 + 16 + (16 * ((h - 1) % 2)) + w % 2;
-                                            break;
-                                        case 9:
-                                            newTiles[basePos.X + w, basePos.Y + h].TileIndex = 8 + w % 7 + (16 * h % 4);
                                             break;
                                         case 17:
                                         case 182:
@@ -455,37 +127,13 @@ namespace BiggerMineFloors
                                                 newTiles[basePos.X + w, basePos.Y + h].TileIndex = tile.TileIndex + 1;
                                             break;
                                         case 19:
-                                        case 183:
-                                        case 218:
-                                        case 257:
-                                        case 263:
+                                        case 184:
+                                        case 219:
+                                        case 258:
                                             if (w == mult - 1)
                                                 newTiles[basePos.X + w, basePos.Y + h].TileIndex = tile.TileIndex;
                                             else
                                                 newTiles[basePos.X + w, basePos.Y + h].TileIndex = tile.TileIndex - 1;
-                                            break;
-                                        case 20:
-                                        case 36:
-                                        case 184:
-                                        case 219:
-                                        case 258:
-                                        case 264:
-                                            plus = w == 0 ? 0 : 1;
-                                            newTiles[basePos.X + w, basePos.Y + h].TileIndex = 36 + plus;
-                                            break;
-                                        case 21:
-                                            newTiles[basePos.X + w, basePos.Y + h].TileIndex = 37;
-                                            break;
-                                        case 22:
-                                        case 38:
-                                            plus = w == mult - 1 ? 0 : -1;
-                                            newTiles[basePos.X + w, basePos.Y + h].TileIndex = 38 + plus;
-                                            break;
-                                        case 23:
-                                        case 39:
-                                        case 24:
-                                        case 40:
-                                            newTiles[basePos.X + w, basePos.Y + h].TileIndex = 23 + 16 * h % 2 + w % 2;
                                             break;
                                         case 33:
                                         case 198:
@@ -525,6 +173,94 @@ namespace BiggerMineFloors
                                             else
                                                 newTiles[basePos.X + w, basePos.Y + h].TileIndex = tile.TileIndex - 17;
                                             break;
+
+                                        //corner floor
+
+                                        // TR corner
+                                        case 151:
+                                            if (w == mult - 1 && h == 0)
+                                            {
+                                                newTiles[basePos.X + w, basePos.Y + h].TileIndex = tile.TileIndex;
+                                            }
+                                            else
+                                            {
+                                                newTiles[basePos.X + w, basePos.Y + h].TileIndex = 183;
+                                            }
+                                            break;
+                                        // BR corner
+                                        case 150:
+                                            if (w == mult - 1 && h == mult - 1)
+                                            {
+                                                newTiles[basePos.X + w, basePos.Y + h].TileIndex = tile.TileIndex;
+                                            }
+                                            else
+                                            {
+                                                newTiles[basePos.X + w, basePos.Y + h].TileIndex = 183;
+                                            }
+                                            break;
+                                        // TL corner
+                                        case 152:
+                                            if (w + h == 0)
+                                            {
+                                                newTiles[basePos.X + w, basePos.Y + h].TileIndex = tile.TileIndex;
+                                            }
+                                            else
+                                            {
+                                                newTiles[basePos.X + w, basePos.Y + h].TileIndex = 183;
+                                            }
+                                            break;
+                                        // BL corner
+                                        case 149:
+                                            if (w == 0 &&  h == mult - 1)
+                                            {
+                                                newTiles[basePos.X + w, basePos.Y + h].TileIndex = tile.TileIndex;
+                                            }
+                                            else
+                                            {
+                                                newTiles[basePos.X + w, basePos.Y + h].TileIndex = 183;
+                                            }
+                                            break;
+
+                                        // wooden wall
+                                        case 4:
+                                            plus = w == 0 ? 0 : 1;
+                                            if(h == 0)
+                                                newTiles[basePos.X + w, basePos.Y + h].TileIndex = tile.TileIndex + plus;
+                                            else if (h == 1)
+                                                newTiles[basePos.X + w, basePos.Y + h].TileIndex = tile.TileIndex + 16 + plus;
+                                            else
+                                                newTiles[basePos.X + w, basePos.Y + h].TileIndex = tile.TileIndex + 32 + plus;
+                                            break;
+                                        case 5:
+                                            if (h == 0)
+                                                newTiles[basePos.X + w, basePos.Y + h].TileIndex = tile.TileIndex;
+                                            else if (h == 1)
+                                                newTiles[basePos.X + w, basePos.Y + h].TileIndex = tile.TileIndex + 16;
+                                            else
+                                                newTiles[basePos.X + w, basePos.Y + h].TileIndex = tile.TileIndex + 32;
+                                            break;
+                                        case 6:
+                                            plus = w == mult - 1 ? 0 : -1;
+                                            if (h == 0)
+                                                newTiles[basePos.X + w, basePos.Y + h].TileIndex = tile.TileIndex + plus;
+                                            else if (h == 1)
+                                                newTiles[basePos.X + w, basePos.Y + h].TileIndex = tile.TileIndex + 16 + plus;
+                                            else
+                                                newTiles[basePos.X + w, basePos.Y + h].TileIndex = tile.TileIndex + 32 + plus;
+                                            break;
+                                        case 20:
+                                        case 36:
+                                            plus = w == 0 ? 0 : 1;
+                                            newTiles[basePos.X + w, basePos.Y + h].TileIndex = 36 + plus;
+                                            break;
+                                        case 21:
+                                            newTiles[basePos.X + w, basePos.Y + h].TileIndex = 37;
+                                            break;
+                                        case 22:
+                                        case 38:
+                                            plus = w == mult - 1 ? 0 : -1;
+                                            newTiles[basePos.X + w, basePos.Y + h].TileIndex = 38 + plus;
+                                            break;
                                         case 52:
                                             plus = w == 0 ? 0 : 1;
                                             if (h == mult - 1)
@@ -545,18 +281,39 @@ namespace BiggerMineFloors
                                             else
                                                 newTiles[basePos.X + w, basePos.Y + h].TileIndex = tile.TileIndex - 16 + plus;
                                             break;
+
+                                        // vines
+
+                                        case 7:
+                                        case 8:
+                                            if (h == 0)
+                                                newTiles[basePos.X + w, basePos.Y + h].TileIndex = 7 + w % 2;
+                                            else 
+                                                newTiles[basePos.X + w, basePos.Y + h].TileIndex = 7 + 16 + (16 * ((h - 1) % 2)) + w % 2;
+                                            break;
+                                        case 23:
+                                        case 39:
+                                        case 24:
+                                        case 40:
+                                            newTiles[basePos.X + w, basePos.Y + h].TileIndex = 23 + 16 * h % 2 + w % 2;
+                                            break;
+
+                                        // jungle
+                                        case 9:
+                                            newTiles[basePos.X + w, basePos.Y + h].TileIndex = 8 + w % 7 + (16 * h % 4);
+                                            break;
+
+                                        // jungle bottom
                                         case 55:
                                         case 56:
                                             if(h == mult - 1)
                                                 newTiles[basePos.X + w, basePos.Y + h].TileIndex = 55 + w % 2;
                                             else
-                                                newTiles[basePos.X + mult - 1 - w, basePos.Y + mult - 1 - h].TileIndex = 40 - 16 * h % 2 - w % 2;
+                                                newTiles[basePos.X + w, basePos.Y + h].TileIndex = 40 - 16 * h % 2 - w % 2;
                                             break;
                                         case 65:
-                                            context.Monitor.Log($"index {tile.TileIndex} {basePos.X},{basePos.Y} {w},{h} mult {mult}");
                                             if(w == mult - 1 && h == mult - 1)
                                             {
-                                                context.Monitor.Log($"tileIndex");
                                                 newTiles[basePos.X + w, basePos.Y + h].TileIndex = tile.TileIndex;
                                             }
                                             else
@@ -567,7 +324,7 @@ namespace BiggerMineFloors
                                             break;
                                         case 66:
                                             if(w == 0 && h == mult - 1)
-                                                newTiles[basePos.X, basePos.Y + mult - 1].TileIndex = tile.TileIndex;
+                                                newTiles[basePos.X + w, basePos.Y + h].TileIndex = tile.TileIndex;
                                             else
                                                 newTiles[basePos.X + w, basePos.Y + h].TileIndex = 108 - 16 * h % 2 - w % 2;
                                             break;
@@ -605,9 +362,9 @@ namespace BiggerMineFloors
                                             else if (w == mult - 1)
                                                 newTiles[basePos.X + w, basePos.Y + h].TileIndex = tile.TileIndex + 16 + 16 * (h % 2);
                                             else if (h == 0)
-                                                newTiles[basePos.X + mult - 1 - w, basePos.Y + h].TileIndex = (w % 2 == 0 ? 85  : 110);
+                                                newTiles[basePos.X + w, basePos.Y + h].TileIndex = (w % 2 == 0 ? 85  : 110);
                                             else
-                                                newTiles[basePos.X + mult - 1 - w, basePos.Y + h].TileIndex = (w % 2 == 0 ? 85 : 110) + 16 + 16 * (h % 2);
+                                                newTiles[basePos.X + w, basePos.Y + h].TileIndex = (w % 2 == 0 ? 85 : 110) + 16 + 16 * (h % 2);
                                             break;
                                         case 101:
                                             if(w == mult - 1)
@@ -619,7 +376,7 @@ namespace BiggerMineFloors
                                             if(w == mult - 1)
                                                 newTiles[basePos.X + w, basePos.Y + h].TileIndex = tile.TileIndex - 16 * (h % 2);
                                             else
-                                                newTiles[basePos.X + mult - 1 - w, basePos.Y + h].TileIndex = (w % 2 == 0 ? 85 : 110) + 32 - 16 * (h % 2);
+                                                newTiles[basePos.X + w, basePos.Y + h].TileIndex = (w % 2 == 0 ? 85 : 110) + 32 - 16 * (h % 2);
                                             break;
                                         case 133:
                                             if (h == mult - 1 && w == mult - 1)
@@ -627,9 +384,110 @@ namespace BiggerMineFloors
                                             else if (w == mult - 1)
                                                 newTiles[basePos.X + w, basePos.Y + h].TileIndex = tile.TileIndex - 16 - 16 * (h % 2);
                                             else if (h == mult - 1)
-                                                newTiles[basePos.X + mult - 1 - w, basePos.Y + h].TileIndex = (w % 2 == 0 ? 133 : 158);
+                                                newTiles[basePos.X + w, basePos.Y + h].TileIndex = (w % 2 == 0 ? 133 : 158);
                                             else
-                                                newTiles[basePos.X + mult - 1 - w, basePos.Y + h].TileIndex = (w % 2 == 0 ? 133 : 158) - 16 - 16 * (h % 2);
+                                                newTiles[basePos.X + w, basePos.Y + h].TileIndex = (w % 2 == 0 ? 133 : 158) - 16 - 16 * (h % 2);
+                                            break;
+
+                                        case 110:
+                                            if (h == 0)
+                                                newTiles[basePos.X + w, basePos.Y + h].TileIndex = (w % 2 == 0 ? 110 : 85);
+                                            else
+                                                newTiles[basePos.X + w, basePos.Y + h].TileIndex = (w % 2 == 0 ? 110 : 85) + 16 + 16 * (h % 2);
+                                            break;
+                                        case 126:
+                                            if(w == 0)
+                                                newTiles[basePos.X + w, basePos.Y + h].TileIndex = tile.TileIndex + 16 * (h % 2);
+                                            else
+                                                newTiles[basePos.X + w, basePos.Y + h].TileIndex = (w % 2 == 0 ? 110 : 85) + 16 + 16 * (h % 2);
+                                            break;
+                                        case 142:
+                                            if(w == 0)
+                                                newTiles[basePos.X + w, basePos.Y + h].TileIndex = tile.TileIndex - 16 * (h % 2);
+                                            else
+                                                newTiles[basePos.X + w, basePos.Y + h].TileIndex = (w % 2 == 0 ? 110 : 85) + 32 - 16 * (h % 2);
+                                            break;
+                                        case 158:
+                                            if (h == mult - 1 && w == 0)
+                                                newTiles[basePos.X + w, basePos.Y + h].TileIndex = tile.TileIndex;
+                                            else if (w == 0)
+                                                newTiles[basePos.X + w, basePos.Y + h].TileIndex = tile.TileIndex - 16 - 16 * (h % 2);
+                                            else if (h == mult - 1)
+                                                newTiles[basePos.X + w, basePos.Y + h].TileIndex = (w % 2 == 0 ? 158 : 133);
+                                            else
+                                                newTiles[basePos.X + w, basePos.Y + h].TileIndex = (w % 2 == 0 ? 158 : 133) - 16 - 16 * (h % 2);
+                                            break;
+
+                                        // top wall slant left
+                                        case 70:
+                                            if (w == mult - 1 && h == 0)
+                                                newTiles[basePos.X + w, basePos.Y + h].TileIndex = tile.TileIndex;
+                                            else if (h == 0)
+                                                newTiles[basePos.X + w, basePos.Y + h].TileIndex = 79;
+                                            else if (h == 1 && w < mult - 1)
+                                                newTiles[basePos.X + w, basePos.Y + h].TileIndex = 85;
+                                            else if (w == mult - 1)
+                                                newTiles[basePos.X +w, basePos.Y + h].TileIndex = (h % 2 == 0 ? 86 : 102);
+                                            else
+                                                newTiles[basePos.X + w, basePos.Y + h].TileIndex = (h % 2 == 0 ? 117 : 101);
+                                            break;
+                                        case 86:
+                                            if (w == mult - 1)
+                                                newTiles[basePos.X + w, basePos.Y + h].TileIndex = tile.TileIndex + 16 * (h % 2);
+                                            else if (h == 0)
+                                                newTiles[basePos.X + w, basePos.Y + h].TileIndex = 85;
+                                            else
+                                                newTiles[basePos.X + w, basePos.Y + h].TileIndex = (h % 2 == 0 ? 117 : 101);
+                                            break;
+                                        case 102:
+                                            if (w == mult - 1)
+                                                newTiles[basePos.X + w, basePos.Y + h].TileIndex = tile.TileIndex - 16 * (h % 2);
+                                            else
+                                                newTiles[basePos.X + w, basePos.Y + h].TileIndex = (h % 2 == 0 ? 117 : 101);
+                                            break;
+                                        case 118:
+                                            if (w == mult - 1 && h == mult - 1)
+                                                newTiles[basePos.X + w, basePos.Y + h].TileIndex = tile.TileIndex;
+                                            else if (w % 2 == 0)
+                                                newTiles[basePos.X + w, basePos.Y + h].TileIndex = 101 + 16 * (h % 2);
+                                            else
+                                                newTiles[basePos.X + w, basePos.Y + h].TileIndex = 109 + 16 * (h % 2);
+                                            break;
+
+                                        // top wall slant right
+                                        case 93:
+                                            if (w == 0 && h == 0)
+                                                newTiles[basePos.X + w, basePos.Y + h].TileIndex = tile.TileIndex;
+                                            else if (h == 0)
+                                                newTiles[basePos.X + w, basePos.Y + h].TileIndex = 79;
+                                            else if (h == 1 && w > 0)
+                                                newTiles[basePos.X + w, basePos.Y + h].TileIndex = 110;
+                                            else if (w == 0)
+                                                newTiles[basePos.X + w, basePos.Y + h].TileIndex = (h % 2 == 0 ? 109 : 125);
+                                            else
+                                                newTiles[basePos.X + w, basePos.Y + h].TileIndex = (h % 2 == 0 ? 142 : 126);
+                                            break;
+                                        case 109:
+                                            if (w == 0)
+                                                newTiles[basePos.X + w, basePos.Y + h].TileIndex = tile.TileIndex + 16 * (h % 2);
+                                            else if (h == 0)
+                                                newTiles[basePos.X + w, basePos.Y + h].TileIndex = 110;
+                                            else
+                                                newTiles[basePos.X + w, basePos.Y + h].TileIndex = (h % 2 == 0 ? 142 : 126);
+                                            break;
+                                        case 125:
+                                            if (w == 0)
+                                                newTiles[basePos.X + w, basePos.Y + h].TileIndex = tile.TileIndex - 16 * (h % 2);
+                                            else
+                                                newTiles[basePos.X + w, basePos.Y + h].TileIndex = (h % 2 == 0 ? 142 : 126);
+                                            break;
+                                        case 141:
+                                            if (w == 0 && h == mult - 1)
+                                                newTiles[basePos.X + w, basePos.Y + h].TileIndex = tile.TileIndex;
+                                            else if (w % 2 == 0)
+                                                newTiles[basePos.X + w, basePos.Y + h].TileIndex = 109 + 16 * (h % 2);
+                                            else
+                                                newTiles[basePos.X + w, basePos.Y + h].TileIndex = 101 + 16 * (h % 2);
                                             break;
 
                                         // left face
@@ -706,30 +564,30 @@ namespace BiggerMineFloors
                                         case 75:
                                         case 76:
                                             if (h == 0)
-                                                newTiles[basePos.X + w, basePos.Y + h].TileIndex = 73 + (w + tile.TileIndex - 73) % 4;
+                                                newTiles[basePos.X + w, basePos.Y + h].TileIndex = 73 + w % 4;
                                             else
-                                                newTiles[basePos.X + w, basePos.Y + h].TileIndex = 89 + 16 * h % 2 + (w + tile.TileIndex - 73) % 4;
+                                                newTiles[basePos.X + w, basePos.Y + h].TileIndex = 89 + 16 * h % 2 + w % 4;
                                             break;
                                         case 89:
                                         case 90:
                                         case 91:
                                         case 92:
-                                            newTiles[basePos.X + w, basePos.Y + h].TileIndex = 89 + 16 * h % 2 + (w + tile.TileIndex - 89) % 4;
+                                            newTiles[basePos.X + w, basePos.Y + h].TileIndex = 89 + 16 * h % 2 + w % 4;
                                             break;
                                         case 105:
                                         case 106:
                                         case 107:
                                         case 108:
-                                            newTiles[basePos.X + w, basePos.Y + h].TileIndex = 89 + 16 * h % 2 + (w + tile.TileIndex - 105) % 4;
+                                            newTiles[basePos.X + w, basePos.Y + h].TileIndex = 89 + 16 * h % 2 + w % 4;
                                             break;
                                         case 121:
                                         case 122:
                                         case 123:
                                         case 124:
                                             if (h == mult - 1)
-                                                newTiles[basePos.X + w, basePos.Y + h].TileIndex = 121 + (w + tile.TileIndex - 121) % 4;
+                                                newTiles[basePos.X + w, basePos.Y + h].TileIndex = 121 + w % 4;
                                             else
-                                                newTiles[basePos.X + w, basePos.Y + h].TileIndex = 89 + 16 * h % 2 + (w + tile.TileIndex - 121) % 4;
+                                                newTiles[basePos.X + w, basePos.Y + h].TileIndex = 89 + 16 * h % 2 + w % 4;
                                             break;
 
                                         // TR corner
@@ -748,7 +606,7 @@ namespace BiggerMineFloors
                                             }
                                             else
                                             {
-                                                newTiles[basePos.X + w, basePos.Y + h].TileIndex = -1;
+                                                newTiles[basePos.X + w, basePos.Y + h] = null;
                                             }
                                             break;
                                         // BR corner
@@ -767,7 +625,8 @@ namespace BiggerMineFloors
                                             }
                                             else
                                             {
-                                                newTiles[basePos.X + w, basePos.Y + h].TileIndex = -1;
+                                                newTiles[basePos.X + w, basePos.Y + h] = null;
+
                                             }
                                             break;
                                         // TL corner
@@ -786,7 +645,7 @@ namespace BiggerMineFloors
                                             }
                                             else
                                             {
-                                                newTiles[basePos.X + w, basePos.Y + h].TileIndex = -1;
+                                                newTiles[basePos.X + w, basePos.Y + h] = null;
                                             }
                                             break;
                                         // BL corner
@@ -801,13 +660,235 @@ namespace BiggerMineFloors
                                             }
                                             else if (w < h - 1)
                                             {
-                                                newTiles[basePos.X + w, basePos.Y + h].TileIndex = tile.TileIndex = 79;
+                                                newTiles[basePos.X + w, basePos.Y + h].TileIndex = 79;
                                             }
                                             else
                                             {
-                                                newTiles[basePos.X + w, basePos.Y + h].TileIndex = -1;
+                                                newTiles[basePos.X + w, basePos.Y + h] = null;
                                             }
                                             break;
+                                        // bottom wall
+                                        case 214:
+                                        case 215:
+                                            if (h == 0)
+                                                newTiles[basePos.X + w, basePos.Y + h].TileIndex = 214 + w % 2;
+                                            else
+                                                newTiles[basePos.X + w, basePos.Y + h].TileIndex = 79;
+                                            break;
+                                        // left wall
+                                        case 132:
+                                        case 148:
+                                        case 164:
+                                        case 180:
+                                            if(w == mult - 1)
+                                                newTiles[basePos.X + w, basePos.Y + h].TileIndex = 132 + 16 * (h % 4);
+                                            else
+                                                newTiles[basePos.X + w, basePos.Y + h].TileIndex = 79;
+                                            break;
+                                        // right wall
+                                        case 175:
+                                        case 191:
+                                        case 207:
+                                        case 223:
+                                            if(w == 0)
+                                                newTiles[basePos.X + w, basePos.Y + h].TileIndex = 175 + 16 * (h % 4);
+                                            else
+                                                newTiles[basePos.X + w, basePos.Y + h].TileIndex = 79;
+                                            break;
+                                        // TL inner corner
+                                        case 116:
+                                            if (w == mult - 1 && h == mult - 1)
+                                                newTiles[basePos.X + w, basePos.Y + h].TileIndex = tile.TileIndex;
+                                            else if (w == mult - 1)
+                                                newTiles[basePos.X + w, basePos.Y + h].TileIndex = tile.TileIndex - 32 + 16 * (h % 2);
+                                            else
+                                                newTiles[basePos.X + w, basePos.Y + h].TileIndex = 79;
+                                            break;
+                                        // TL inner corner wall
+                                        case 68:
+                                            if (w == mult - 1 && h == 0)
+                                                newTiles[basePos.X + w, basePos.Y + h].TileIndex = tile.TileIndex;
+                                            else if (w == mult - 1)
+                                                newTiles[basePos.X + w, basePos.Y + h].TileIndex = tile.TileIndex + 16 + 16 * (h % 2);
+                                            else
+                                                newTiles[basePos.X + w, basePos.Y + h].TileIndex = 79;
+                                            break;
+                                        case 100:
+                                            if (w == mult - 1)
+                                                newTiles[basePos.X + w, basePos.Y + h].TileIndex = tile.TileIndex - 16 * (h % 2);
+                                            else
+                                                newTiles[basePos.X + w, basePos.Y + h].TileIndex = 79;
+                                            break;
+                                        case 84:
+                                            if (w == mult - 1)
+                                                newTiles[basePos.X + w, basePos.Y + h].TileIndex = tile.TileIndex + 16 * (h % 2);
+                                            else
+                                                newTiles[basePos.X + w, basePos.Y + h].TileIndex = 79;
+                                            break;
+                                        // TR inner corner
+                                        case 159:
+                                            if (w == 0 && h == mult - 1)
+                                                newTiles[basePos.X + w, basePos.Y + h].TileIndex = tile.TileIndex;
+                                            else if (w == 0)
+                                                newTiles[basePos.X + w, basePos.Y + h].TileIndex = tile.TileIndex - 32 + 16 * (h % 2);
+                                            else
+                                                newTiles[basePos.X + w, basePos.Y + h].TileIndex = 79;
+                                            break;
+                                        // TR inner corner wall
+                                        case 111:
+                                            if (w == 0 && h == 0)
+                                                newTiles[basePos.X + w, basePos.Y + h].TileIndex = tile.TileIndex;
+                                            else if (w == 0)
+                                                newTiles[basePos.X + w, basePos.Y + h].TileIndex = tile.TileIndex + 16 + 16 * (h % 2);
+                                            else
+                                                newTiles[basePos.X + w, basePos.Y + h].TileIndex = 79;
+                                            break;
+                                        case 127:
+                                            if (w == 0)
+                                                newTiles[basePos.X + w, basePos.Y + h].TileIndex = tile.TileIndex - 16 * (h % 2);
+                                            else
+                                                newTiles[basePos.X + w, basePos.Y + h].TileIndex = 79;
+                                            break;
+                                        case 143:
+                                            if (w == 0)
+                                                newTiles[basePos.X + w, basePos.Y + h].TileIndex = tile.TileIndex + 16 * (h % 2);
+                                            else
+                                                newTiles[basePos.X + w, basePos.Y + h].TileIndex = 79;
+                                            break;
+
+                                        // slanted left wall
+                                        case 216:
+                                            if (w == mult - 1 && h == mult - 1)
+                                                newTiles[basePos.X + w, basePos.Y + h].TileIndex = tile.TileIndex;
+                                            else if (w == h)
+                                                newTiles[basePos.X + w, basePos.Y + h].TileIndex = 197;
+                                            else if (w > h)
+                                            {
+                                                newTiles[basePos.X + w, basePos.Y + h] = null;
+                                            }
+                                            else
+                                                newTiles[basePos.X + w, basePos.Y + h].TileIndex = 79;
+                                            break;
+                                        case 232:
+                                            if (w == mult - 1 && h == 0)
+                                                newTiles[basePos.X + w, basePos.Y + h].TileIndex = tile.TileIndex;
+                                            else if (w == mult - 1)
+                                                newTiles[basePos.X + w, basePos.Y + h].TileIndex = 132 + 16 * (h % 4);
+                                            else
+                                                newTiles[basePos.X + w, basePos.Y + h].TileIndex = 79;
+                                            break;
+                                        // slanted right wall
+                                        case 220:
+                                            if (w == 0 && h == mult - 1)
+                                                newTiles[basePos.X + w, basePos.Y + h].TileIndex = tile.TileIndex;
+                                            else if (w + h == mult - 1)
+                                                newTiles[basePos.X + w, basePos.Y + h].TileIndex = 205;
+                                            else if (w + h == mult)
+                                            {
+                                                newTiles[basePos.X + w, basePos.Y + h].TileIndex = 221;
+                                            }
+                                            else if (w + h < mult - 1)
+                                            {
+                                                newTiles[basePos.X + w, basePos.Y + h] = null;
+                                            }
+                                            else
+                                                newTiles[basePos.X + w, basePos.Y + h].TileIndex = 79;
+                                            break;
+                                        case 236:
+                                            if (w == 0 && h == 0)
+                                                newTiles[basePos.X + w, basePos.Y + h].TileIndex = tile.TileIndex;
+                                            else if (w == 0)
+                                                newTiles[basePos.X + w, basePos.Y + h].TileIndex = 175 + 16 * (h % 4);
+                                            else
+                                                newTiles[basePos.X + w, basePos.Y + h].TileIndex = 79;
+                                            break;
+
+                                        // bottom slanted wall
+                                        case 230:
+                                            if (h == mult - 1)
+                                            {
+                                                newTiles[basePos.X + w, basePos.Y + h].TileIndex = tile.TileIndex + w % 2;
+                                            }
+                                            else
+                                                newTiles[basePos.X + w, basePos.Y + h] = null;
+                                            break;
+                                        case 231:
+                                            if (h == mult - 1)
+                                            {
+                                                if (mult % 2 == 1)
+                                                    newTiles[basePos.X + w, basePos.Y + h].TileIndex = tile.TileIndex - w % 2;
+                                                else
+                                                    newTiles[basePos.X + w, basePos.Y + h].TileIndex = tile.TileIndex - 1 + w % 2;
+                                            }
+                                            else
+                                                newTiles[basePos.X + w, basePos.Y + h] = null;
+                                            break;
+
+                                        // BR Corner Insides
+                                        case 206:
+                                        case 221:
+                                            if (h == 0 && w == 0)
+                                                newTiles[basePos.X + w, basePos.Y + h].TileIndex = tile.TileIndex;
+                                            else
+                                                newTiles[basePos.X + w, basePos.Y + h].TileIndex = 79;
+                                            break;
+
+                                        // BL Corner Insides
+                                        case 196:
+                                        case 213:
+                                            if (h == 0 && w == mult -1)
+                                                newTiles[basePos.X + w, basePos.Y + h].TileIndex = tile.TileIndex;
+                                            else
+                                                newTiles[basePos.X + w, basePos.Y + h].TileIndex = 79;
+                                            break;
+
+
+                                        //tracks
+                                        case 226:
+                                            if (w + h == mult - 1)
+                                                newTiles[basePos.X + w, basePos.Y + h].TileIndex = tile.TileIndex;
+                                            else if (w + h < mult - 1)
+                                                newTiles[basePos.X + w, basePos.Y + h].TileIndex = 210;
+                                            else 
+                                                newTiles[basePos.X + w, basePos.Y + h].TileIndex = 209;
+                                            break;
+                                        case 227:
+                                            if (w + h == mult - 1)
+                                                newTiles[basePos.X + w, basePos.Y + h].TileIndex = tile.TileIndex;
+                                            else if (w + h < mult - 1)
+                                                newTiles[basePos.X + w, basePos.Y + h].TileIndex = 209;
+                                            else 
+                                                newTiles[basePos.X + w, basePos.Y + h].TileIndex = 210;
+                                            break;
+
+                                        // mine cart
+                                        case 178:
+                                        case 179:
+                                            if (w == mult - 1 && h == mult - 1)
+                                                newTiles[basePos.X + w, basePos.Y + h].TileIndex = tile.TileIndex;
+                                            else
+                                                newTiles[basePos.X + w, basePos.Y + h]= null;
+                                            break;
+                                        case 194:
+                                        case 195:
+                                            if (w == mult - 1 && h == 0)
+                                                newTiles[basePos.X + w, basePos.Y + h].TileIndex = tile.TileIndex;
+                                            else
+                                                newTiles[basePos.X + w, basePos.Y + h]= null;
+                                            break;
+                                        case 208:
+                                            if (w == 0 && h == mult - 1)
+                                                newTiles[basePos.X + w, basePos.Y + h].TileIndex = tile.TileIndex;
+                                            else
+                                                newTiles[basePos.X + w, basePos.Y + h]= null;
+                                            break;
+                                        case 224:
+                                            if (w == 0 && h == 0)
+                                                newTiles[basePos.X + w, basePos.Y + h].TileIndex = tile.TileIndex;
+                                            else
+                                                newTiles[basePos.X + w, basePos.Y + h]= null;
+                                            break;
+
                                         default:
                                             try
                                             {
@@ -818,6 +899,7 @@ namespace BiggerMineFloors
                                                 context.Monitor.Log($"Error trying to add tile at {basePos.X + basePos.Y + h} to map {__instance.Name}: {ex}", LogLevel.Error);
                                             }
                                             break;
+
                                     }
                                 }
                             }
@@ -829,7 +911,7 @@ namespace BiggerMineFloors
 
             }
             __instance.map = map;
-            __instance.loadLights();
+            //__instance.loadLights();
         }
 
         private static int BaseTileIndex(int tileIndex)

@@ -45,6 +45,9 @@
   <ItemGroup>
     <Compile Include="IMobilePhoneApi.cs" />
     <Compile Include="ModConfig.cs" />
+    <Compile Include="HelperEvents.cs" />
+    <Compile Include="SocialPostReaction.cs" />
+    <Compile Include="Utils.cs" />
     <Compile Include="ModEntry.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SocialNetworkMenu.cs" />

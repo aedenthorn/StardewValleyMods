@@ -261,17 +261,17 @@ namespace StardewValley.Monsters
 							base.currentLocation.playSound("furnace", NetAudio.SoundContext.Default);
 						}
 						float fire_angle = 0f;
-						Vector2 shot_origin = new Vector2((float)this.GetBoundingBox().Center.X - 32f, (float)this.GetBoundingBox().Center.Y - 32f);
+						Vector2 shot_origin = new Vector2((float)this.GetBoundingBox().Center.X - 32f * scale, (float)this.GetBoundingBox().Center.Y - 32f * scale);
 						switch (this.facingDirection.Value)
 						{
 							case 0:
 								this.yVelocity = -1f;
-								shot_origin.Y -= 64f;
+								shot_origin.Y -= 64f * scale;
 								fire_angle = 90f;
 								break;
 							case 1:
 								this.xVelocity = -1f;
-								shot_origin.X += 64f;
+								shot_origin.X += 64f * scale;
 								fire_angle = 0f;
 								break;
 							case 2:
@@ -280,7 +280,7 @@ namespace StardewValley.Monsters
 								break;
 							case 3:
 								this.xVelocity = 1f;
-								shot_origin.X -= 64f;
+								shot_origin.X -= 64f * scale;
 								fire_angle = 180f;
 								break;
 						}
