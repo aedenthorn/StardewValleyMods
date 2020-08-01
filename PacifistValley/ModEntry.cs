@@ -253,6 +253,8 @@ namespace PacifistValley
 			if (!Config.EnableMod)
 				return;
 
+            Helper.Events.GameLoop.DayEnding += GameLoop_DayEnding;
+
 			var harmony = HarmonyInstance.Create(this.ModManifest.UniqueID);
 
 			harmony.Patch(
@@ -337,6 +339,19 @@ namespace PacifistValley
 				   original: AccessTools.Method(typeof(Skeleton), nameof(Skeleton.behaviorAtGameTick)),
 				   postfix: new HarmonyMethod(typeof(ModEntry), nameof(ModEntry.Skeleton_behaviorAtGameTick_postfix))
 				);
+			}
+		}
+
+        private void GameLoop_DayEnding(object sender, StardewModdingAPI.Events.DayEndingEventArgs e)
+        {
+			foreach(GameLocation l in Game1.locations)
+            {
+				for (int i = l.characters.Count - 1; i >= 0; i--)
+				{
+					NPC npc = l.characters[i];
+					if (npc is Monster && (npc as Monster).Health <= 0)
+						l.characters.RemoveAt(i);
+				}
 			}
 		}
 
