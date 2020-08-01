@@ -4,6 +4,7 @@ using StardewModdingAPI;
 using StardewModdingAPI.Events;
 using StardewValley;
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 
@@ -14,6 +15,7 @@ namespace SocialNetwork
         internal static IModHelper Helper;
         internal static IMonitor Monitor;
         internal static ModConfig Config;
+        private static Rectangle lastScreenRect = new Rectangle();
 
         public static void GameLoop_TimeChanged(object sender, TimeChangedEventArgs e)
         {
@@ -63,10 +65,20 @@ namespace SocialNetwork
         {
             if (!ModEntry.api.GetAppRunning() || !ModEntry.api.GetPhoneOpened() || !(Game1.activeClickableMenu is SocialNetworkMenu))
                 return;
-            if(e.Button == SButton.MouseLeft && ModEntry.api.GetPhoneRectangle().Contains(Game1.getMousePosition()))
+            if(e.Button == SButton.MouseLeft)
             {
-                ModEntry.dragging = true;
-                ModEntry.lastMousePosition = Game1.getMousePosition();
+                if (ModEntry.api.GetScreenRectangle().Contains(Game1.getMousePosition()))
+                {
+                    ModEntry.dragging = true;
+                    ModEntry.lastMousePosition = Game1.getMousePosition();
+                }
+                else if (!ModEntry.api.GetPhoneRectangle().Contains(Game1.getMousePosition()))
+                {
+                    Game1.activeClickableMenu = null;
+                    ModEntry.api.SetAppRunning(false);
+                    ModEntry.api.SetRunningApp(null);
+                    Helper.Input.Suppress(SButton.MouseLeft);
+                }
             }
         }
         public static void Input_ButtonReleased(object sender, ButtonReleasedEventArgs e)
@@ -76,17 +88,30 @@ namespace SocialNetwork
                 ModEntry.dragging = false;
             }
         }
-        public static void Display_RenderingActiveMenu(object sender, StardewModdingAPI.Events.RenderingActiveMenuEventArgs e)
+        public static void Display_RenderingActiveMenu(object sender, RenderingActiveMenuEventArgs e)
         {
             if (!ModEntry.api.GetAppRunning() || !ModEntry.api.GetPhoneOpened() || !(Game1.activeClickableMenu is SocialNetworkMenu))
             {
-                ModEntry.api.SetAppRunning(false);
-                ModEntry.api.SetPhoneOpened(false);
+                if(ModEntry.api.GetRunningApp() == Helper.ModRegistry.ModID)
+                {
+                    ModEntry.api.SetAppRunning(false);
+                    ModEntry.api.SetRunningApp(null);
+                }
+                if (Game1.activeClickableMenu is SocialNetworkMenu)
+                    Game1.activeClickableMenu = null;
+
                 Helper.Events.Display.RenderingActiveMenu -= Display_RenderingActiveMenu;
                 Helper.Events.Input.ButtonPressed -= Input_ButtonPressed;
                 return;
             }
-            e.SpriteBatch.Draw(ModEntry.backgroundTexture, ModEntry.api.GetScreenPosition(), Color.White);
+            bool refresh = false;
+            if(lastScreenRect != ModEntry.api.GetScreenRectangle())
+            {
+                lastScreenRect = ModEntry.api.GetScreenRectangle();
+                refresh = true;
+            }
+
+            e.SpriteBatch.Draw(ModEntry.backgroundTexture, lastScreenRect, Color.White);
 
             if (Helper.Input.IsDown(SButton.MouseLeft) && ModEntry.dragging)
             {
@@ -94,7 +119,7 @@ namespace SocialNetwork
                 if (mousePos.Y != ModEntry.lastMousePosition.Y)
                 {
                     ModEntry.yOffset += ModEntry.lastMousePosition.Y - mousePos.Y;
-                    ModEntry.yOffset = (int)Math.Max(0, Math.Min(ModEntry.yOffset, Utils.GetPostListHeight() - ModEntry.api.GetScreenSize().Y));
+                    ModEntry.yOffset = (int)Math.Max(0, Math.Min(ModEntry.yOffset, Utils.GetPostListHeight(refresh) - ModEntry.api.GetScreenSize().Y));
                     ModEntry.lastMousePosition = mousePos;
                 }
             }
@@ -103,13 +128,16 @@ namespace SocialNetwork
             for (int i = 0; i < ModEntry.postList.Count; i++)
             {
                 SocialPost post = ModEntry.postList[i];
+                if (refresh)
+                    post.Refresh();
+                int postHeight = post.postHeight;
                 Vector2 postPos = Utils.GetPostPos(i);
                 int currentY = 0;
                 Vector2 screenPos = ModEntry.api.GetScreenPosition();
                 Vector2 screenSize = ModEntry.api.GetScreenSize();
                 int screenTop = (int)screenPos.Y;
-                int screenBottom = ModEntry.api.GetScreenRectangle().Bottom;
-                if (postPos.Y <= screenTop - post.postHeight)
+                int screenBottom = lastScreenRect.Bottom;
+                if (postPos.Y <= screenTop - postHeight)
                     continue;
                 if (postPos.Y >= screenBottom)
                     continue;
@@ -117,10 +145,10 @@ namespace SocialNetwork
                 if (postPos.Y < screenTop)
                     topCut = screenTop - (int)postPos.Y;
                 int bottomCut = 0;
-                if (postPos.Y + post.postHeight > screenBottom)
-                    bottomCut = (int)postPos.Y + post.postHeight- screenBottom;
+                if (postPos.Y + postHeight > screenBottom)
+                    bottomCut = (int)postPos.Y + postHeight- screenBottom;
 
-                e.SpriteBatch.Draw(ModEntry.postBackgroundTexture, new Rectangle((int)postPos.X, (int)Math.Max(screenTop, postPos.Y), (int)screenSize.X - Config.PostMarginX * 2, post.postHeight - bottomCut - topCut), Color.White);
+                e.SpriteBatch.Draw(ModEntry.postBackgroundTexture, new Rectangle((int)postPos.X, (int)Math.Max(screenTop, postPos.Y), (int)screenSize.X - Config.PostMarginX * 2, postHeight - bottomCut - topCut), Color.White);
 
                 Vector2 npcPos = postPos + new Vector2(8, 0);
                 Rectangle r = post.sourceRect;
@@ -143,21 +171,22 @@ namespace SocialNetwork
                     e.SpriteBatch.Draw(post.portrait, npcPos, NPCRect, Color.White, 0, Vector2.Zero, 2, SpriteEffects.None, 0.86f);
                 }
 
-
-                for(int j = 0; j < post.lines.Count; j++)
+                List<string> lines = post.lines;
+                for (int j = 0; j < lines.Count; j++)
                 {
                     Vector2 linePos = postPos + new Vector2(48, (j + 1) * 20);
                     if (linePos.Y < screenTop)
                         continue;
                     if (linePos.Y > screenBottom - 15)
                         break;
-                    e.SpriteBatch.DrawString(Game1.tinyFont, post.lines[j], linePos, Color.Black, 0, Vector2.Zero, 0.5f, SpriteEffects.None, 0.86f);
+                    e.SpriteBatch.DrawString(Game1.tinyFont, lines[j], linePos, Color.Black, 0, Vector2.Zero, 0.5f, SpriteEffects.None, 0.86f);
                 }
-                currentY += (post.lines.Count + 1) * 20;
+                currentY += (lines.Count + 1) * 20;
 
                 if (post.picture != null)
                 {
                     Vector2 picPos = postPos + new Vector2(0, currentY);
+                    Vector2 picPosTemp = postPos + new Vector2(0, currentY);
                     Rectangle pictureRect = new Rectangle(0, 0, post.picture.Width, post.picture.Height);
                     Rectangle picRect = pictureRect;
                     float scale = Utils.GetPictureHeight(post.picture) / post.picture.Height;
@@ -166,14 +195,15 @@ namespace SocialNetwork
                     if (picPos.Y < screenPos.Y)
                     {
                         cutTop = (int)Math.Round((screenPos.Y - (int)picPos.Y) / scale);
-                        picRect = new Rectangle(pictureRect.X, pictureRect.Y + cutTop, pictureRect.Width, pictureRect.Height - cutTop);
-                        picPos = new Vector2(picPos.X, screenPos.Y);
+                        picPosTemp = new Vector2(picPos.X, screenPos.Y);
                     }
-                    else if (picPos.Y > screenBottom - pictureRect.Height * scale)
+                    if (picPos.Y > screenBottom - pictureRect.Height * scale)
                     {
                         cutBottom = (int)Math.Round((screenBottom - pictureRect.Height * scale - (int)picPos.Y) / scale);
-                        picRect = new Rectangle(pictureRect.X, pictureRect.Y, pictureRect.Width, pictureRect.Height + cutBottom);
                     }
+                    picPos = picPosTemp;
+                    picRect = new Rectangle(pictureRect.X, pictureRect.Y + cutTop, pictureRect.Width, pictureRect.Height - cutTop + cutBottom);
+
                     e.SpriteBatch.Draw(post.picture, new Rectangle((int)picPos.X, (int)picPos.Y, (int)screenSize.X - Config.PostMarginX * 2, (int)(picRect.Height * scale)), picRect, Color.White);
 
                     currentY += Utils.GetPictureHeight(post.picture);
@@ -190,7 +220,7 @@ namespace SocialNetwork
                             e.SpriteBatch.Draw(reaction.portrait, likePos + new Vector2(j * 28, 0), reaction.sourceRect, Color.White, 0, Vector2.Zero, 1f, SpriteEffects.None, 0.86f);
                             //e.SpriteBatch.DrawString(Game1.tinyFont, post.lines[j], likePos + new Vector2(j * 28, 0), Color.Black, 0, Vector2.Zero, 0.5f, SpriteEffects.None, 0.86f);
                         }
-                        e.SpriteBatch.DrawString(Game1.tinyFont, Utils.GetSocialNetworkString(null, "reacted", false), likePos + new Vector2(28 * (post.postReactions.Count + 1), 0), Color.Black, 0, Vector2.Zero, 0.5f, SpriteEffects.None, 0.86f);
+                        //e.SpriteBatch.DrawString(Game1.tinyFont, Utils.GetSocialNetworkString(null, "reacted", false), likePos + new Vector2(20 * (post.postReactions.Count), 8), Color.Black, 0, Vector2.Zero, 0.5f, SpriteEffects.None, 0.86f);
                     }
                     currentY += 20;
                 }
@@ -200,19 +230,20 @@ namespace SocialNetwork
                     {
                         Vector2 commentPos = postPos + new Vector2(4, currentY + 10);
                         SocialPostReaction comment = post.postComments[j];
+                        List<string> clines = comment.lines;
                         if (commentPos.Y >= screenTop && commentPos.Y <= screenBottom - 15)
                         {
                             e.SpriteBatch.Draw(comment.portrait, commentPos, comment.sourceRect, Color.White, 0, Vector2.Zero, 1f, SpriteEffects.None, 0.86f);
                         }
 
-                        for (int k = 0; k < comment.lines.Count; k++)
+                        for (int k = 0; k < clines.Count; k++)
                         {
                             Vector2 linePos = postPos + new Vector2(32, currentY + 20);
                             if (linePos.Y < screenTop)
                                 continue;
                             if (linePos.Y > screenBottom - 15)
                                 break;
-                            e.SpriteBatch.DrawString(Game1.tinyFont, comment.lines[k], linePos, Color.Black, 0, Vector2.Zero, 0.5f, SpriteEffects.None, 0.86f);
+                            e.SpriteBatch.DrawString(Game1.tinyFont, clines[k], linePos, Color.Black, 0, Vector2.Zero, 0.5f, SpriteEffects.None, 0.86f);
                             currentY += 20;
                         }
                     }

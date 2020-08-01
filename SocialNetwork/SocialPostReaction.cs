@@ -1,6 +1,7 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using StardewValley;
+using System;
 using System.Collections.Generic;
 
 namespace SocialNetwork
@@ -24,8 +25,12 @@ namespace SocialNetwork
             portrait = npc.Sprite.Texture;
             sourceRect = npc.getMugShotSourceRect();
             text = Utils.GetSocialNetworkString(parts[0], parts[1], isComment);
-            if(text != null)
-                lines = Utils.GetTextLines(text);
+            lines = Utils.GetTextLines(text);
+        }
+
+        public void Refresh()
+        {
+            lines = Utils.GetTextLines(text);
         }
     }
 }

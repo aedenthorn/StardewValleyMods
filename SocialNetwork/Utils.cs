@@ -14,14 +14,13 @@ namespace SocialNetwork
 
         public static ModConfig Config;
         internal static IMonitor Monitor;
+        public static IModHelper Helper;
+
         public static Dictionary<string,Dictionary<string,string>> npcStrings = new Dictionary<string, Dictionary<string, string>>();
         public static Dictionary<string, string> socialNetworkStrings = new Dictionary<string, string>();
 
-        public static IModHelper Helper { get; internal set; }
-
         public static void GetRandomPost(string friend)
         {
-            friend = "Emily";
             IDictionary<string, string> data;
             try
             {
@@ -197,12 +196,6 @@ namespace SocialNetwork
                         Texture2D portrait = npc.Sprite.Texture;
                         Rectangle sourceRect = npc.getMugShotSourceRect();
                         ModEntry.postList.Add(new SocialPost(npc, portrait, sourceRect, data[postKey]));
-                        ModEntry.postList.Add(new SocialPost(npc, portrait, sourceRect, data[postKey]));
-                        ModEntry.postList.Add(new SocialPost(npc, portrait, sourceRect, data[postKey]));
-                        ModEntry.postList.Add(new SocialPost(npc, portrait, sourceRect, data[postKey]));
-                        ModEntry.postList.Add(new SocialPost(npc, portrait, sourceRect, data[postKey]));
-                        ModEntry.postList.Add(new SocialPost(npc, portrait, sourceRect, data[postKey]));
-                        ModEntry.postList.Add(new SocialPost(npc, portrait, sourceRect, data[postKey]));
                         Monitor.Log($"added {postKey} post from {npc.displayName}");
                         posts++;
                     }
@@ -212,11 +205,13 @@ namespace SocialNetwork
         }
 
 
-        public static int GetPostListHeight()
+        public static int GetPostListHeight(bool refresh)
         {
             int y = 0;
             for (int i = 0; i < ModEntry.postList.Count; i++)
             {
+                if (refresh)
+                    ModEntry.postList[i].Refresh();
                 y += ModEntry.postList[i].postHeight + Config.PostMarginY * 2;
             }
             return y;
@@ -233,11 +228,8 @@ namespace SocialNetwork
         }
         public static List<string> GetTextLines(string text)
         {
-            Monitor.Log($"making lines from '{text}'");
             List<string> lines = new List<string>();
             int lineLength = ((int)ModEntry.api.GetScreenSize().X - ModEntry.Config.PostMarginX * 2 - 64) / 9;
-            //if(text.Length >= lineLength * 3)
-            //text = text.Substring(0, lineLength * 3 - 4) + "...";
 
             var words = text.Split(' ');
             var line = "";
@@ -247,13 +239,11 @@ namespace SocialNetwork
                 if (line.Length + (i == words.Length - 1 ? 0 : words[i + 1].Length) >= lineLength)
                 {
                     lines.Add(line);
-                    Monitor.Log($"added '{line}'");
                     line = "";
                 }
             }
             if (line.Length > 0)
                 lines.Add(line);
-            Monitor.Log($"added last line '{line}'");
             return lines;
         }
 

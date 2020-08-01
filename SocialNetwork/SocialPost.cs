@@ -14,13 +14,13 @@ namespace SocialNetwork
         public string text;
         public Rectangle sourceRect;
         public string[] postItems;
-        public List<string> lines;
-        public int postHeight;
         public Texture2D picture;
         public string[] reactions;
         public string[] comments;
         public List<SocialPostReaction> postComments = new List<SocialPostReaction>();
         public List<SocialPostReaction> postReactions = new List<SocialPostReaction>();
+        public int postHeight;
+        public List<string> lines = new List<string>();
 
         public SocialPost(NPC npc, Texture2D portrait, Rectangle sourceRect, string post)
         {
@@ -29,13 +29,12 @@ namespace SocialNetwork
             this.sourceRect = sourceRect;
             postItems = post.Split('^');
             GetPostDetails();
-            GetPostHeight();
         }
 
-        private void GetPostHeight()
+        public void GetPostHeight()
         {
             postHeight = 0;
-            postHeight += (lines.Count + 1) * 20;
+            postHeight += (Utils.GetTextLines(text).Count + 1) * 20;
             postHeight += (reactions != null ? 20 : 0);
             postHeight += (picture != null ? Utils.GetPictureHeight(picture) : 0);
             if(postComments != null && postComments.Count > 0)
@@ -93,6 +92,20 @@ namespace SocialNetwork
             {
                 postReactions.Add(new SocialPostReaction(this, like, false));
             }
+        }
+
+        internal void Refresh()
+        {
+            lines = new List<string>(Utils.GetTextLines(text));
+            if (postComments != null && postComments.Count > 0)
+            {
+                foreach (SocialPostReaction c in postComments)
+                {
+                    c.Refresh();
+                }
+            }
+            GetPostHeight();
+
         }
     }
 }

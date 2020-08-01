@@ -266,21 +266,22 @@ namespace StardewValley.Monsters
 						{
 							case 0:
 								this.yVelocity = -1f;
-								shot_origin.Y -= 64f * scale;
+								shot_origin.Y -= 74f * scale;
 								fire_angle = 90f;
 								break;
 							case 1:
 								this.xVelocity = -1f;
-								shot_origin.X += 64f * scale;
+								shot_origin.X += 74f * scale;
 								fire_angle = 0f;
 								break;
 							case 2:
 								this.yVelocity = 1f;
 								fire_angle = 270f;
+								shot_origin.Y += 10 * scale;
 								break;
 							case 3:
 								this.xVelocity = 1f;
-								shot_origin.X -= 64f * scale;
+								shot_origin.X -= 74f * scale;
 								fire_angle = 180f;
 								break;
 						}

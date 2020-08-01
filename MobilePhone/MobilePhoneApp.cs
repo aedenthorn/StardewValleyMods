@@ -117,13 +117,20 @@ namespace MobilePhone
             callableList.Clear();
             foreach(KeyValuePair<string,Netcode.NetRef<Friendship>> kvp in Game1.player.friendshipData.FieldDict)
             {
-                if(kvp.Value.Value.Points >= Config.MinPointsToCall)
+                try
                 {
-                    NPC npc = Game1.getCharacterFromName(kvp.Key);
-                    Texture2D portrait = npc.Sprite.Texture;
-                    Rectangle sourceRect = npc.getMugShotSourceRect();
-                    string name = Config.UseRealNamesInPhoneBook && npc.displayName != null ? npc.displayName : npc.Name;
-                    callableList.Add(new CallableNPC(name, npc, portrait, sourceRect));
+                    if (kvp.Value.Value.Points >= Config.MinPointsToCall)
+                    {
+                        NPC npc = Game1.getCharacterFromName(kvp.Key);
+                        Texture2D portrait = npc.Sprite.Texture;
+                        Rectangle sourceRect = npc.getMugShotSourceRect();
+                        string name = Config.UseRealNamesInPhoneBook && npc.displayName != null ? npc.displayName : npc.Name;
+                        callableList.Add(new CallableNPC(name, npc, portrait, sourceRect));
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Monitor.Log($"Couldn't load npc {kvp.Key}: {ex}");
                 }
             }
             callableList = callableList.OrderBy(a => a.npc.Name).ToList();
