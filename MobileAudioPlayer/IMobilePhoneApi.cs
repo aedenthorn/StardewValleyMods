@@ -2,7 +2,7 @@
 using Microsoft.Xna.Framework.Graphics;
 using System;
 
-namespace Quotes
+namespace MobileAudioPlayer
 {
     public interface IMobilePhoneApi
     {   

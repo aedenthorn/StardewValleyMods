@@ -130,25 +130,27 @@ namespace Familiars
 					return;
 
 				Monitor.Log($"Hatched a familiar from {name}");
-
+				long owner = __instance.owner;
+				if (owner == 0)
+					owner = Game1.MasterPlayer.UniqueMultiplayerID;
 				Familiar familiar = null;
 
                 switch (name)
                 {
 					case "Dino Familiar Egg":
-						familiar = new DinoFamiliar(v, __instance.owner);
+						familiar = new DinoFamiliar(v, owner);
 						break;
 					case "Dust Sprite Familiar Egg":
-						familiar = new DustSpriteFamiliar(v, __instance.owner);
+						familiar = new DustSpriteFamiliar(v, owner);
 						break;
 					case "Bat Familiar Egg":
-						familiar = new BatFamiliar(v, __instance.owner);
+						familiar = new BatFamiliar(v, owner);
 						break;
 					case "Junimo Familiar Egg":
-						familiar = new JunimoFamiliar(v, __instance.owner);
+						familiar = new JunimoFamiliar(v, owner);
 						break;
 					case "Butterfly Familiar Egg":
-						familiar = new ButterflyFamiliar(v, __instance.owner);
+						familiar = new ButterflyFamiliar(v, owner);
 						break;
 				}
 
@@ -171,29 +173,33 @@ namespace Familiars
 				Vector2 v = new Vector2((float)((int)__instance.tileLocation.X), (float)((int)__instance.tileLocation.Y + 1)) * 64f;
 				string name = __instance.heldObject.Value.name;
 
-				if (!name.EndsWith("Familiar Egg") || Game1.timeOfDay == 600)
+				if (!name.EndsWith("Familiar Egg"))
 					return;
 
 				Familiar familiar = null;
 
-				Monitor.Log($"Hatched a familiar from {__instance.heldObject.Value.name} time {Game1.timeOfDay}");
+				Monitor.Log($"Hatched a familiar from {__instance.heldObject.Value.name} time {Game1.timeOfDay} owner {__instance.owner}");
+
+				long owner = __instance.owner;
+				if (owner == 0)
+					owner = Game1.MasterPlayer.UniqueMultiplayerID;
 
 				switch (__instance.heldObject.Value.name)
                 {
 					case "Dino Familiar Egg":
-						familiar = new DinoFamiliar(v, __instance.owner);
+						familiar = new DinoFamiliar(v, owner);
 						break;
 					case "Dust Sprite Familiar Egg":
-						familiar = new DustSpriteFamiliar(v, __instance.owner);
+						familiar = new DustSpriteFamiliar(v, owner);
 						break;
 					case "Bat Familiar Egg":
-						familiar = new BatFamiliar(v, __instance.owner);
+						familiar = new BatFamiliar(v, owner);
 						break;
 					case "Junimo Familiar Egg":
-						familiar = new JunimoFamiliar(v, __instance.owner);
+						familiar = new JunimoFamiliar(v, owner);
 						break;
 					case "Butterfly Familiar Egg":
-						familiar = new ButterflyFamiliar(v, __instance.owner);
+						familiar = new ButterflyFamiliar(v, owner);
 						break;
                 }
 
@@ -225,8 +231,11 @@ namespace Familiars
 
 			foreach (NPC i in __instance.characters)
 			{
-				if (i != null &&  i is Familiar && (i as Familiar).ownerId.Equals(who.UniqueMultiplayerID) && i.GetBoundingBox().Intersects(tileRect))
+				if (i != null &&  i is Familiar && ((i as Familiar).ownerId == who.UniqueMultiplayerID || (i as Familiar).ownerId == 0 || !(i as Familiar).followingOwner) && i.GetBoundingBox().Intersects(tileRect))
 				{
+					if (!(i as Familiar).followingOwner)
+						(i as Familiar).ownerId = who.UniqueMultiplayerID;
+
 					if (__instance is SlimeHutch)
 						(i as Familiar).followingOwner = !(i as Familiar).followingOwner;
 					else if (!(i as Familiar).followingOwner)

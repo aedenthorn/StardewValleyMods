@@ -5,6 +5,7 @@ using StardewModdingAPI.Events;
 using StardewValley;
 using StardewValley.BellsAndWhistles;
 using StardewValley.Buildings;
+using StardewValley.Locations;
 using StardewValley.Monsters;
 using System;
 using System.Collections.Generic;
@@ -99,10 +100,48 @@ namespace Familiars
                         {
                             fsd.butterflyFamiliars.Add((l.characters[i] as Familiar).SaveData(l));
                         }
+                        Monitor.Log($"removing {l.characters[i].GetType()} from {l.Name}");
                         l.characters.RemoveAt(i);
                     }
                 }
             }
+
+            foreach (Building b in Game1.getFarm().buildings)
+            {
+                if (b.indoors == null || b.indoors.Value == null || b.indoors.Value.characters == null || b.indoors.Value.Name != "Slime Hutch")
+                    continue;
+                for (int i = b.indoors.Value.characters.Count - 1; i >= 0; i--)
+                {
+                    NPC npc = b.indoors.Value.characters[i];
+                    if (npc is Familiar)
+                    {
+                        
+                        if (npc is DustSpriteFamiliar)
+                        {
+                            fsd.dustSpriteFamiliars.Add((npc as Familiar).SaveData(b.indoors.Value));
+                        }
+                        else if (npc is DinoFamiliar)
+                        {
+                            fsd.dinoFamiliars.Add((npc as Familiar).SaveData(b.indoors.Value));
+                        }
+                        else if (npc is BatFamiliar)
+                        {
+                            fsd.batFamiliars.Add((npc as Familiar).SaveData(b.indoors.Value));
+                        }
+                        else if (npc is JunimoFamiliar)
+                        {
+                            fsd.junimoFamiliars.Add((npc as Familiar).SaveData(b.indoors.Value));
+                        }
+                        else if (npc is ButterflyFamiliar)
+                        {
+                            fsd.butterflyFamiliars.Add((npc as Familiar).SaveData(b.indoors.Value));
+                        }
+                        Monitor.Log($"removing {npc.GetType()} from {b.indoors.Value.Name}");
+                        b.indoors.Value.characters.RemoveAt(i);
+                    }
+                }
+            }
+
             Helper.Data.WriteSaveData("familiars", fsd);
         }
 
