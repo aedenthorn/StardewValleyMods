@@ -1,16 +1,16 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using Microsoft.Xna.Framework.Media;
 using StardewModdingAPI;
 using StardewModdingAPI.Events;
 using StardewValley;
 using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Media;
+using System.Runtime.Remoting.Metadata.W3cXsd2001;
 using System.Text.RegularExpressions;
+using System.Threading;
 using System.Threading.Tasks;
+using WMPLib;
 
 namespace MobileAudioPlayer
 {
@@ -29,9 +29,11 @@ namespace MobileAudioPlayer
         private bool dragging;
         private int offsetY;
         private SoundPlayer soundPlayer = new SoundPlayer();
-        private string state = "stopped";
         private int trackPlaying;
         private Texture2D hightlightTexture;
+        WindowsMediaPlayer Player;
+        private int currentState;
+        private bool ended;
 
         /// <summary>The mod entry point, called after the mod is first loaded.</summary>
         /// <param name="helper">Provides simplified APIs for writing mods.</param>
@@ -43,7 +45,11 @@ namespace MobileAudioPlayer
 				return;
 
 			myRand = new Random(Guid.NewGuid().GetHashCode());
-            
+
+            Player = new WindowsMediaPlayer();
+            Player.PlayStateChange += new _WMPOCXEvents_PlayStateChangeEventHandler(Player_PlayStateChange);
+            Player.MediaError += new _WMPOCXEvents_MediaErrorEventHandler(Player_MediaError);
+
             audio = Directory.GetFiles(Path.Combine(Helper.DirectoryPath, "audio"));
 
             Helper.Events.GameLoop.GameLaunched += GameLoop_GameLaunched;
@@ -55,8 +61,42 @@ namespace MobileAudioPlayer
             api.SetAppRunning(true);
             api.SetRunningApp(Helper.ModRegistry.ModID);
             Game1.activeClickableMenu = new AudioPlayerMenu();
-            Helper.Events.Display.RenderingActiveMenu += Display_RenderingActiveMenu;
+            Helper.Events.Display.RenderedWorld += Display_RenderedWorld;
             dragging = true;
+        }
+        private void PlayFile(String url)
+        {
+            Monitor.Log($"playing file {audio[trackPlaying]}", LogLevel.Debug);
+            Player.controls.stop();
+            Player.URL = url;
+            Player.controls.play();
+            
+        }
+
+        private void Player_MediaError(object pMediaObject)
+        {
+            Monitor.Log($"track error {audio[trackPlaying]}", LogLevel.Debug);
+        }
+
+        private void Player_PlayStateChange(int NewState)
+        {
+            Monitor.Log($"new state {(WMPPlayState)NewState}", LogLevel.Debug);
+            if ((WMPPlayState)NewState == WMPPlayState.wmppsMediaEnded)
+            {
+                Monitor.Log($"track ended {audio[trackPlaying]}", LogLevel.Debug);
+                if (!Config.PlayAll || (trackPlaying >= audio.Length - 1 && !Config.LoopPlaylist))
+                    return;
+                trackPlaying++;
+                trackPlaying %= audio.Length;
+                DelayedPlay(audio[trackPlaying]);
+            }
+            currentState = NewState;
+        }
+        private async void DelayedPlay(string url)
+        {
+            await Task.Delay(100);
+            Monitor.Log($"Delayed play {url}");
+            PlayFile(url);
         }
 
         private void Input_ButtonPressed(object sender, ButtonPressedEventArgs e)
@@ -65,16 +105,16 @@ namespace MobileAudioPlayer
                 return;
             if(e.Button == SButton.MouseLeft)
             {
-                if (!api.GetScreenRectangle().Contains(Game1.getMousePosition()))
+                if (!api.GetPhoneRectangle().Contains(Game1.getMousePosition()))
                 {
                     api.SetAppRunning(false);
                     api.SetRunningApp(null);
                     Game1.activeClickableMenu = null;
-                    StopTrack();
+                    StopTrack(true);
                     Helper.Input.Suppress(SButton.MouseLeft);
                 }
 
-                if (Game1.activeClickableMenu is AudioPlayerMenu)
+                if (Game1.activeClickableMenu is AudioPlayerMenu && dragging == false)
                 {
                     lastMousePosition = Game1.getMousePosition();
                 }
@@ -106,29 +146,16 @@ namespace MobileAudioPlayer
         private void ClickTrack(Point mousePos)
         {
             int idx = (int)((mousePos.Y - api.GetScreenPosition().Y - Config.MarginY - offsetY) / (Config.MarginY + Game1.dialogueFont.LineSpacing * (Config.LineOneScale + Config.LineTwoScale)));
-            Monitor.Log($"index: {idx}");
+            Monitor.Log($"clicked index: {idx}");
             if (idx < audio.Length && idx >= 0)
             {
-                soundPlayer.Stop();
-                soundPlayer.SoundLocation = audio[idx];
-                PlayPlayer();
-                state = "playing";
+                if(idx == trackPlaying && Player.playState == WMPPlayState.wmppsPlaying) 
+                { 
+                    Player.controls.pause();
+                    return;
+                }
                 trackPlaying = idx;
-            }
-        }
-
-        private async void PlayPlayer()
-        {
-            while(api.GetAppRunning() && api.GetRunningApp() == Helper.ModRegistry.ModID)
-            {
-                await Task.Run(() => soundPlayer.PlaySync());
-                if (!Config.PlayAll)
-                    return;
-                trackPlaying++;
-                if(trackPlaying >= audio.Length && !Config.LoopPlaylist)
-                    return;
-                trackPlaying %= audio.Length;
-                soundPlayer.SoundLocation = audio[trackPlaying];
+                PlayFile(audio[trackPlaying]);
             }
         }
 
@@ -165,23 +192,31 @@ namespace MobileAudioPlayer
             hightlightTexture = background;
         }
 
-        private void Display_RenderingActiveMenu(object sender, RenderingActiveMenuEventArgs e)
+        private void Display_RenderedWorld(object sender, RenderedWorldEventArgs e)
         {
             float itemHeight = Game1.dialogueFont.LineSpacing * (Config.LineOneScale + Config.LineTwoScale);
 
             screenPos = api.GetScreenPosition();
             screenSize = api.GetScreenSize();
-            if (!api.GetPhoneOpened() || api.GetRunningApp() != Helper.ModRegistry.ModID)
+            if (!api.GetPhoneOpened() || !api.GetAppRunning() || api.GetRunningApp() != Helper.ModRegistry.ModID || !(Game1.activeClickableMenu is AudioPlayerMenu))
             {
+                Monitor.Log($"Closing app: phone opened {api.GetPhoneOpened()} app running {api.GetAppRunning()} running app {api.GetRunningApp()} menu {Game1.activeClickableMenu}");
                 StopTrack(true);
-                Helper.Events.Display.RenderingActiveMenu -= Display_RenderingActiveMenu;
+                Helper.Events.Display.RenderedWorld -= Display_RenderedWorld;
+                if (Game1.activeClickableMenu is AudioPlayerMenu)
+                    Game1.activeClickableMenu = null;
+                if (api.GetRunningApp() == Helper.ModRegistry.ModID || !api.GetAppRunning())
+                {
+                    api.SetAppRunning(false);
+                    api.SetRunningApp(null);
+                }
                 return;
             }
 
             if (Helper.Input.IsDown(SButton.MouseLeft))
             {
                 Point mousePos = Game1.getMousePosition();
-                if (mousePos.Y != lastMousePosition.Y)
+                if (mousePos.Y != lastMousePosition.Y && (dragging == true || api.GetScreenRectangle().Contains(mousePos)))
                 {
                     dragging = true;
                     offsetY += mousePos.Y - lastMousePosition.Y;
@@ -198,8 +233,8 @@ namespace MobileAudioPlayer
                 string a = Path.GetFileName(audio[i]);
                 string lineOne = Config.ListLineOne;
                 string lineTwo = Config.ListLineTwo;
-                MakeListString(a, ref lineOne);
-                MakeListString(a, ref lineTwo);
+                MakeListString(a, ref lineOne, Config.LineOneScale);
+                MakeListString(a, ref lineTwo, Config.LineTwoScale);
                 float posY = screenPos.Y + Config.MarginY * (i + 1) + i * itemHeight + offsetY;
                 if(i == trackPlaying && posY > screenPos.Y - itemHeight && posY < screenPos.Y + screenSize.Y)
                 {
@@ -224,7 +259,7 @@ namespace MobileAudioPlayer
             }
         }
 
-        private void MakeListString(string a, ref string line)
+        private void MakeListString(string a, ref string line, float scale)
         {
             a = new Regex(@"\.[^.]+$").Replace(a, "");
             string[] aa = a.Split('_');
@@ -232,12 +267,29 @@ namespace MobileAudioPlayer
             {
                 line = line.Replace("{"+ (i + 1) + "}", aa[i]);
             }
-
+            float width = api.GetScreenSize().X - Config.MarginX * 2;
+            int j = 0;
+            string ow = line;
+            while (Game1.dialogueFont.MeasureString(line).X * scale > width)
+            {
+                line = line.Substring(0, ow.Length - 3 - j++) + "...";
+            }
         }
 
         private void StopTrack(bool force = false)
         {
-            soundPlayer.Stop();
+            Monitor.Log($"status on stopping: {Player.status}");
+            if (force)
+            {
+                Player.controls.stop();
+            }
+            else
+            {
+                if(Player.playState == WMPPlayState.wmppsPlaying)
+                    Player.controls.pause();
+                else
+                    Player.controls.stop();
+            }
         }
     }
 }

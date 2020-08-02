@@ -88,7 +88,7 @@ namespace SocialNetwork
                 ModEntry.dragging = false;
             }
         }
-        public static void Display_RenderingActiveMenu(object sender, RenderingActiveMenuEventArgs e)
+        public static void Display_RenderedWorld(object sender, RenderedWorldEventArgs e)
         {
             if (!ModEntry.api.GetAppRunning() || !ModEntry.api.GetPhoneOpened() || !(Game1.activeClickableMenu is SocialNetworkMenu))
             {
@@ -100,7 +100,7 @@ namespace SocialNetwork
                 if (Game1.activeClickableMenu is SocialNetworkMenu)
                     Game1.activeClickableMenu = null;
 
-                Helper.Events.Display.RenderingActiveMenu -= Display_RenderingActiveMenu;
+                Helper.Events.Display.RenderedWorld -= Display_RenderedWorld;
                 Helper.Events.Input.ButtonPressed -= Input_ButtonPressed;
                 return;
             }

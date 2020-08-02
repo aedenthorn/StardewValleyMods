@@ -148,6 +148,9 @@ namespace BossCreatures
 		}
 		public override Rectangle GetBoundingBox()
 		{
+			return new Rectangle((int)(base.Position.X + 8 * Scale), (int)(base.Position.Y + 16 * Scale), (int)(this.Sprite.SpriteWidth * 4 * 3 / 4 * Scale), (int)(32 * Scale));
+			return new Microsoft.Xna.Framework.Rectangle((int)this.Position.X + 8, (int)this.Position.Y + 16, this.Sprite.SpriteWidth * 4 * 3 / 4, 32);
+
 			Rectangle r = new Rectangle((int)(Position.X - Scale * width / 2), (int)(Position.Y - Scale * height / 2), (int)(Scale * width), (int)(Scale * height));
 			return r;
 		}

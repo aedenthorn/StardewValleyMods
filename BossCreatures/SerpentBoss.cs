@@ -170,6 +170,7 @@ namespace BossCreatures
 
 		public override Rectangle GetBoundingBox()
 		{
+			return new Rectangle((int)(base.Position.X + 8 * Scale), (int)base.Position.Y, (int)(this.Sprite.SpriteWidth * 4 * 3 / 4 * Scale), (int)(96 * Scale));
 			Rectangle r = new Rectangle((int)(Position.X - Scale * width / 2), (int)(Position.Y - Scale * height / 2), (int)(Scale * width), (int)(Scale * height));
 			return r;
 		}

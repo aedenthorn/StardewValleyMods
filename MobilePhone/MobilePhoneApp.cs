@@ -45,7 +45,7 @@ namespace MobilePhone
             Game1.activeClickableMenu = new PhoneBookMenu();
             CreateCallableList();
             listHeight = Config.ContactMarginY + (int)Math.Ceiling(callableList.Count / (float)ModEntry.gridWidth) * (Config.ContactHeight + Config.ContactMarginY);
-            Helper.Events.Display.RenderingActiveMenu += Display_RenderingActiveMenu;
+            Helper.Events.Display.RenderedWorld += Display_RenderedWorld;
             Helper.Events.Input.ButtonPressed += Input_ButtonPressed;
             Helper.Events.Input.ButtonReleased += Input_ButtonReleased;
         }
@@ -136,7 +136,7 @@ namespace MobilePhone
             callableList = callableList.OrderBy(a => a.npc.Name).ToList();
         }
 
-        private static void Display_RenderingActiveMenu(object sender, StardewModdingAPI.Events.RenderingActiveMenuEventArgs e)
+        private static void Display_RenderedWorld(object sender, StardewModdingAPI.Events.RenderedWorldEventArgs e)
         {
 
             if (Helper.Input.IsDown(SButton.MouseLeft) && ModEntry.screenRect.Contains(Game1.getMousePosition()))
@@ -158,7 +158,7 @@ namespace MobilePhone
             {
                 ModEntry.appRunning = false;
                 ModEntry.phoneAppRunning = false;
-                Helper.Events.Display.RenderingActiveMenu -= Display_RenderingActiveMenu;
+                Helper.Events.Display.RenderedWorld -= Display_RenderedWorld;
                 Helper.Events.Input.ButtonPressed -= Input_ButtonPressed;
                 Helper.Events.Input.ButtonReleased -= Input_ButtonReleased;
                 return;

@@ -48,7 +48,7 @@ namespace SocialNetwork
             api.SetAppRunning(true);
             api.SetRunningApp(context.Helper.ModRegistry.ModID);
             Game1.activeClickableMenu = new SocialNetworkMenu();
-            context.Helper.Events.Display.RenderingActiveMenu += HelperEvents.Display_RenderingActiveMenu;
+            context.Helper.Events.Display.RenderedWorld += HelperEvents.Display_RenderedWorld;
             context.Helper.Events.Input.ButtonPressed += HelperEvents.Input_ButtonPressed;
             context.Helper.Events.Input.ButtonReleased += HelperEvents.Input_ButtonReleased;
         }

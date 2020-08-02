@@ -252,7 +252,10 @@ namespace MobilePhone
                 }
             }
             if (appHover != null)
-                Utility.drawTextWithShadow(e.SpriteBatch, appHover, Game1.dialogueFont, new Vector2(mousePos.X, mousePos.Y) - Game1.dialogueFont.MeasureString(appHover), Color.White, 1f, -1f, -1, -1, 1f, 3);
+            {
+                e.SpriteBatch.DrawString(Game1.dialogueFont, appHover, new Vector2(mousePos.X, mousePos.Y) - Game1.dialogueFont.MeasureString(appHover) + new Vector2(-2, 2), Color.Black);
+                e.SpriteBatch.DrawString(Game1.dialogueFont, appHover, new Vector2(mousePos.X, mousePos.Y) - Game1.dialogueFont.MeasureString(appHover), Color.White);
+            }
             lastPos = mousePos;
         }
 
