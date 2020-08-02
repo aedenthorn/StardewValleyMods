@@ -44,7 +44,9 @@ namespace SocialNetwork
             List<Object> favs = new List<Object>();
             foreach(string str in likes)
             {
-                var obj = new Object(Convert.ToInt32(str), 1, false, -1, 0);
+                if (!int.TryParse(str, out int idx))
+                    continue;
+                var obj = new Object(idx, 1, false, -1, 0);
                 if (obj.Type == "Cooking")
                     foods.Add(obj);
                 else

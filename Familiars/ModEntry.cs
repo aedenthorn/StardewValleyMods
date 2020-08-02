@@ -5,6 +5,7 @@ using StardewModdingAPI;
 using StardewValley;
 using StardewValley.Buildings;
 using StardewValley.Characters;
+using StardewValley.Locations;
 using StardewValley.Monsters;
 using StardewValley.Objects;
 using StardewValley.Quests;
@@ -118,6 +119,10 @@ namespace Familiars
 			harmony.Patch(
 				original: AccessTools.Method(typeof(AnimalHouse), nameof(AnimalHouse.incubator)),
 				prefix: new HarmonyMethod(typeof(FamiliarsPatches), nameof(FamiliarsPatches.AnimalHouse_incubator_Prefix))
+			);
+			harmony.Patch(
+				original: AccessTools.Method(typeof(Utility), nameof(Utility.isThereAFarmerOrCharacterWithinDistance)),
+				postfix: new HarmonyMethod(typeof(FamiliarsPatches), nameof(FamiliarsPatches.Utility_isThereAFarmerOrCharacterWithinDistance_Postfix))
 			);
 		}
 

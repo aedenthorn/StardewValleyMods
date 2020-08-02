@@ -165,7 +165,8 @@ namespace Familiars
 				}
 			}
 		}
-				
+
+
         public static void Object_minutesElapsed_Postfix(Object __instance, int minutes, GameLocation environment)
 		{
 			if (__instance.name.Equals("Slime Incubator") && __instance.heldObject.Value != null && __instance.heldObject.Value.name.EndsWith("Familiar Egg") && __instance.minutesUntilReady <= 0)
@@ -354,5 +355,11 @@ namespace Familiars
             }
 			return true;
 		}
+		public static void Utility_isThereAFarmerOrCharacterWithinDistance_Postfix(ref Character __result)
+		{
+			if (__result is Familiar)
+				__result = null;
+		}
+
 	}
 }

@@ -53,6 +53,12 @@ namespace MobileCatalogues
                     success = api.AddApp(Helper.ModRegistry.ModID + "FurnitureCatalogue", Helper.Translation.Get("furniture-catalogue"), OpenFurnitureCatalogue, appIcon);
                     Monitor.Log($"loaded furniture catalogue app successfully: {success}", LogLevel.Debug);
                 }
+                if (Config.EnableSeedCatalogue)
+                {
+                    appIcon = Helper.Content.Load<Texture2D>(Path.Combine("assets", "app_icon_seed_catalogue.png"));
+                    success = api.AddApp(Helper.ModRegistry.ModID + "SeedCatalogue", Helper.Translation.Get("seed-catalogue"), OpenSeedCatalogue, appIcon);
+                    Monitor.Log($"loaded furniture catalogue app successfully: {success}", LogLevel.Debug);
+                }
             }
         }
 
@@ -67,6 +73,12 @@ namespace MobileCatalogues
         {
             Monitor.Log("Opening furniture catalogue");
             DelayedOpen(new ShopMenu(GetAllFurnitures(), 0, null, null, null, "Furniture Catalogue"));
+        }
+
+        private void OpenSeedCatalogue()
+        {
+            Monitor.Log("Opening seed catalogue");
+            DelayedOpen(new ShopMenu(GetAllSeeds(), 0, null));
         }
 
         private async void DelayedOpen(ShopMenu menu)
@@ -88,7 +100,7 @@ namespace MobileCatalogues
                     Stack = int.MaxValue
                 }, new int[]
                 {
-                    Config.FreeCatalogue  ? 0 : f.salePrice(),
+                    Config.FreeCatalogue  ? 0 : f.Price,
                     int.MaxValue
                 });
             }
@@ -100,7 +112,7 @@ namespace MobileCatalogues
                     Stack = int.MaxValue
                 }, new int[]
                 {
-                    Config.FreeCatalogue  ? 0 : f.salePrice(),
+                    Config.FreeCatalogue  ? 0 : f.Price,
                     int.MaxValue
                 });
             }
@@ -118,7 +130,7 @@ namespace MobileCatalogues
                     f = new Furniture(v.Key, Vector2.Zero);
                     decors.Add(f, new int[]
                     {
-                        Config.FreeFurnitureCatalogue ? 0 : f.salePrice(),
+                        Config.FreeFurnitureCatalogue ? 0 : f.Price,
                         int.MaxValue
                     });
                 }
@@ -126,29 +138,66 @@ namespace MobileCatalogues
             f = new Furniture(1402, Vector2.Zero);
             decors.Add(f, new int[]
             {
-                Config.FreeFurnitureCatalogue  ? 0 : f.salePrice(),
+                Config.FreeFurnitureCatalogue  ? 0 : f.Price,
                 int.MaxValue
             });
             f = new TV(1680, Vector2.Zero);
             decors.Add(f, new int[]
             {
-                Config.FreeFurnitureCatalogue  ? 0 : f.salePrice(),
+                Config.FreeFurnitureCatalogue  ? 0 : f.Price,
                 int.MaxValue
             });
             f = new TV(1466, Vector2.Zero);
             decors.Add(f, new int[]
             {
-                Config.FreeFurnitureCatalogue  ? 0 : f.salePrice(),
+                Config.FreeFurnitureCatalogue  ? 0 : f.Price,
                 int.MaxValue
             });
             f = new TV(1468, Vector2.Zero);
             decors.Add(f, new int[]
             {
-                Config.FreeFurnitureCatalogue  ? 0 : f.salePrice(),
+                Config.FreeFurnitureCatalogue  ? 0 : f.Price,
                 int.MaxValue
             });
             return decors;
         }
-
+        private Dictionary<ISalable, int[]> GetAllSeeds()
+        {
+            Dictionary<ISalable, int[]> items = new Dictionary<ISalable, int[]>();
+            Dictionary<int, string> cropData = base.Helper.Content.Load<Dictionary<int, string>>("Data\\Crops", 0);
+            foreach (KeyValuePair<int, string> crop in cropData)
+            {
+                string[] values = crop.Value.Split('/');
+                if (!int.TryParse(values[3], out int product))
+                    continue;
+                bool include = false;
+                switch (Config.SeedsToInclude.ToLower())
+                {
+                    case "all":
+                        include = true;
+                        break;
+                    case "shipped":
+                        include = Game1.player.basicShipped.ContainsKey(product);
+                        break;
+                    case "season":
+                        include = Utility.possibleCropsAtThisTime(Game1.currentSeason, Game1.dayOfMonth <= 7).Contains(product);
+                        break;
+                }
+                if (include)
+                {
+                    StardewValley.Object item = new StardewValley.Object(crop.Key, int.MaxValue, false, -1, 0);
+                    if (!item.bigCraftable.Value && item.ParentSheetIndex == 745)
+                    {
+                        item.Price = 50;
+                    }
+                    items.Add(item, new int[]
+                    {
+                        Config.FreeSeedCatalogue ? 0 : item.Price,
+                        int.MaxValue
+                    });
+                }
+            }
+            return items;
+        }
     }
 }
