@@ -29,7 +29,7 @@ namespace MobileAudioPlayer
         private bool dragging;
         private int offsetY;
         private SoundPlayer soundPlayer = new SoundPlayer();
-        private int trackPlaying;
+        private int trackPlaying = -1;
         private Texture2D hightlightTexture;
         WindowsMediaPlayer Player;
         private int currentState;
@@ -64,14 +64,6 @@ namespace MobileAudioPlayer
             Helper.Events.Display.RenderedWorld += Display_RenderedWorld;
             dragging = true;
         }
-        private void PlayFile(String url)
-        {
-            Monitor.Log($"playing file {audio[trackPlaying]}", LogLevel.Debug);
-            Player.controls.stop();
-            Player.URL = url;
-            Player.controls.play();
-            
-        }
 
         private void Player_MediaError(object pMediaObject)
         {
@@ -92,12 +84,6 @@ namespace MobileAudioPlayer
             }
             currentState = NewState;
         }
-        private async void DelayedPlay(string url)
-        {
-            await Task.Delay(100);
-            Monitor.Log($"Delayed play {url}");
-            PlayFile(url);
-        }
 
         private void Input_ButtonPressed(object sender, ButtonPressedEventArgs e)
         {
@@ -110,7 +96,6 @@ namespace MobileAudioPlayer
                     api.SetAppRunning(false);
                     api.SetRunningApp(null);
                     Game1.activeClickableMenu = null;
-                    StopTrack(true);
                     Helper.Input.Suppress(SButton.MouseLeft);
                 }
 
@@ -143,21 +128,6 @@ namespace MobileAudioPlayer
             }
         }
 
-        private void ClickTrack(Point mousePos)
-        {
-            int idx = (int)((mousePos.Y - api.GetScreenPosition().Y - Config.MarginY - offsetY) / (Config.MarginY + Game1.dialogueFont.LineSpacing * (Config.LineOneScale + Config.LineTwoScale)));
-            Monitor.Log($"clicked index: {idx}");
-            if (idx < audio.Length && idx >= 0)
-            {
-                if(idx == trackPlaying && Player.playState == WMPPlayState.wmppsPlaying) 
-                { 
-                    Player.controls.pause();
-                    return;
-                }
-                trackPlaying = idx;
-                PlayFile(audio[trackPlaying]);
-            }
-        }
 
         private void GameLoop_GameLaunched(object sender, GameLaunchedEventArgs e)
         {
@@ -201,7 +171,6 @@ namespace MobileAudioPlayer
             if (!api.GetPhoneOpened() || !api.GetAppRunning() || api.GetRunningApp() != Helper.ModRegistry.ModID || !(Game1.activeClickableMenu is AudioPlayerMenu))
             {
                 Monitor.Log($"Closing app: phone opened {api.GetPhoneOpened()} app running {api.GetAppRunning()} running app {api.GetRunningApp()} menu {Game1.activeClickableMenu}");
-                StopTrack(true);
                 Helper.Events.Display.RenderedWorld -= Display_RenderedWorld;
                 if (Game1.activeClickableMenu is AudioPlayerMenu)
                     Game1.activeClickableMenu = null;
@@ -274,6 +243,43 @@ namespace MobileAudioPlayer
             {
                 line = line.Substring(0, ow.Length - 3 - j++) + "...";
             }
+        }
+
+        private void ClickTrack(Point mousePos)
+        {
+            int idx = (int)((mousePos.Y - api.GetScreenPosition().Y - Config.MarginY - offsetY) / (Config.MarginY + Game1.dialogueFont.LineSpacing * (Config.LineOneScale + Config.LineTwoScale)));
+            Monitor.Log($"clicked index: {idx}");
+            if (idx < audio.Length && idx >= 0)
+            {
+                if (idx == trackPlaying)
+                {
+                    if(Player.playState == WMPPlayState.wmppsPlaying)
+                        Player.controls.pause();
+                    else if (Player.playState == WMPPlayState.wmppsPaused)
+                        Player.controls.play();
+                    else
+                        PlayFile(audio[trackPlaying]);
+                }
+                else
+                {
+                    trackPlaying = idx;
+                    PlayFile(audio[trackPlaying]);
+                }
+            }
+        }
+        private async void DelayedPlay(string url)
+        {
+            await Task.Delay(100);
+            Monitor.Log($"Delayed play {url}");
+            PlayFile(url);
+        }
+
+        private void PlayFile(String url)
+        {
+            Monitor.Log($"playing file {audio[trackPlaying]}", LogLevel.Debug);
+            Player.URL = url;
+            Player.controls.play();
+
         }
 
         private void StopTrack(bool force = false)

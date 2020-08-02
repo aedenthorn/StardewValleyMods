@@ -11,7 +11,7 @@ namespace MobileAudioPlayer
     public class ModConfig
     {
         public bool EnableMod { get; set; } = true;
-        public Color BackgroundColor { get; set; } = Color.CornflowerBlue;
+        public Color BackgroundColor { get; set; } = new Color(200, 239, 255);
         public string ListLineOne { get; set; } = "{1}";
         public string ListLineTwo { get; set; } = "{2} - {3}";
         public Color LineOneColor { get; set; } = Color.White;

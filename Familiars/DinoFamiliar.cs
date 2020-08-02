@@ -277,7 +277,7 @@ namespace StardewValley.Monsters
 							case 2:
 								this.yVelocity = 1f;
 								fire_angle = 270f;
-								shot_origin.Y += 10 * scale;
+								shot_origin.Y += 74 * scale;
 								break;
 							case 3:
 								this.xVelocity = 1f;

@@ -13,8 +13,11 @@
     <None Include="$(MSBuildThisFileDirectory)CustomFixedDialogue 0.4.2.zip" />
     <None Include="$(MSBuildThisFileDirectory)CustomOreNodes 0.5.0.zip" />
     <None Include="$(MSBuildThisFileDirectory)Familiars 0.8.6.zip" />
+    <None Include="$(MSBuildThisFileDirectory)Familiars 0.8.7.zip" />
     <None Include="$(MSBuildThisFileDirectory)FruitTreeShaker 1.1.0.zip" />
     <None Include="$(MSBuildThisFileDirectory)MobileArcade 0.1.0.zip" />
+    <None Include="$(MSBuildThisFileDirectory)MobileAudioPlayer 0.1.0.zip" />
+    <None Include="$(MSBuildThisFileDirectory)MobileAudioPlayer 0.2.0.zip" />
     <None Include="$(MSBuildThisFileDirectory)MobileCatalogues 0.1.2.zip" />
     <None Include="$(MSBuildThisFileDirectory)MobilePhone 0.4.5.zip" />
     <None Include="$(MSBuildThisFileDirectory)MobilePhone 0.4.6.zip" />
