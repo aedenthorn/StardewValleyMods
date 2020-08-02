@@ -214,6 +214,12 @@ namespace MobilePhone
 
             if (appRunning)
                 return;
+            if (runningApp == context.Helper.ModRegistry.ModID && Game1.activeClickableMenu == null)
+            {
+                MobilePhoneApp.OpenPhoneBook();
+                return;
+            }
+
 
             List<string> keys = apps.Keys.ToList();
             string appHover = null;

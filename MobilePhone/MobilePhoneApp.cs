@@ -36,8 +36,9 @@ namespace MobilePhone
             return new MobileApp("Mobile Phone", OpenPhoneBook, appIcon);
         }
 
-        private static void OpenPhoneBook()
+        public static void OpenPhoneBook()
         {
+            Monitor.Log($"opening phone book");
             topRow = 0;
             ModEntry.appRunning = true;
             ModEntry.phoneAppRunning = true;
@@ -56,7 +57,7 @@ namespace MobilePhone
                 return;
             if (e.Button == SButton.MouseLeft)
             {
-                if (!ModEntry.phoneRect.Contains(Game1.getMousePosition()))
+                if (!ModEntry.phoneRect.Contains(Game1.getMousePosition()) && Game1.activeClickableMenu is MobilePhoneMenu)
                 {
                     Helper.Input.Suppress(SButton.MouseLeft);
                     ModEntry.TogglePhone();
@@ -88,9 +89,9 @@ namespace MobilePhone
                     {
                         Monitor.Log($"calling {callableList[i].npc.Name}");
                         CallNPC(callableList[i].npc);
-                        Helper.Events.Input.ButtonPressed -= Input_ButtonPressed;
-                        Helper.Events.Input.ButtonReleased -= Input_ButtonReleased;
-                        dragging = true;
+                        //Helper.Events.Input.ButtonPressed -= Input_ButtonPressed;
+                        //Helper.Events.Input.ButtonReleased -= Input_ButtonReleased;
+                        //dragging = true;
                         return;
                     }
                 }
@@ -154,7 +155,7 @@ namespace MobilePhone
 
             lastMousePositionY = Game1.getMouseY();
 
-            if (!ModEntry.appRunning || !ModEntry.phoneOpen || !(Game1.activeClickableMenu is PhoneBookMenu))
+            if (!ModEntry.appRunning || !ModEntry.phoneOpen || ModEntry.runningApp != Helper.ModRegistry.ModID)
             {
                 ModEntry.appRunning = false;
                 ModEntry.phoneAppRunning = false;
@@ -163,6 +164,10 @@ namespace MobilePhone
                 Helper.Events.Input.ButtonReleased -= Input_ButtonReleased;
                 return;
             }
+
+            if (Game1.activeClickableMenu == null)
+                Game1.activeClickableMenu = new MobilePhoneMenu();
+
             e.SpriteBatch.Draw(ModEntry.phoneBookTexture, ModEntry.screenPosition, Color.White);
 
             if(yOffset < 0)
