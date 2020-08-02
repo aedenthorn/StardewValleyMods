@@ -1,17 +1,11 @@
 ﻿using Microsoft.Xna.Framework;
-using Netcode;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace MobileAudioPlayer
 {
     public class ModConfig
     {
         public bool EnableMod { get; set; } = true;
-        public Color BackgroundColor { get; set; } = new Color(200, 239, 255);
+        public Color BackgroundColor { get; set; } = new Color(25, 60, 107);
         public string ListLineOne { get; set; } = "{1}";
         public string ListLineTwo { get; set; } = "{2} - {3}";
         public Color LineOneColor { get; set; } = Color.White;
