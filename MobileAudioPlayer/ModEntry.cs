@@ -1,5 +1,7 @@
 ﻿using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Audio;
 using Microsoft.Xna.Framework.Graphics;
+using Microsoft.Xna.Framework.Input;
 using StardewModdingAPI;
 using StardewModdingAPI.Events;
 using StardewValley;
@@ -19,21 +21,27 @@ namespace MobileAudioPlayer
 		public static ModEntry context;
 
 		public static ModConfig Config;
-        private Random myRand;
         private string[] audio;
         private IMobilePhoneApi api;
         private Vector2 screenPos;
         private Vector2 screenSize;
-        private Texture2D backgroundTexture;
         private Point lastMousePosition;
         private bool dragging;
         private int offsetY;
-        private SoundPlayer soundPlayer = new SoundPlayer();
-        private int trackPlaying = -1;
+        private int trackPlaying = 0;
+
+        private Texture2D backgroundTexture;
         private Texture2D hightlightTexture;
+        private Texture2D buttonBarTexture;
+        private Texture2D buttonsTexture;
+
         WindowsMediaPlayer Player;
         private int currentState;
         private bool ended;
+        private bool clicking;
+        private float currentMusicVolume;
+        private float currentAmbientVolume;
+        private bool opening;
 
         /// <summary>The mod entry point, called after the mod is first loaded.</summary>
         /// <param name="helper">Provides simplified APIs for writing mods.</param>
@@ -43,8 +51,6 @@ namespace MobileAudioPlayer
 			Config = Helper.ReadConfig<ModConfig>();
 			if (!Config.EnableMod)
 				return;
-
-			myRand = new Random(Guid.NewGuid().GetHashCode());
 
             Player = new WindowsMediaPlayer();
             Player.PlayStateChange += new _WMPOCXEvents_PlayStateChangeEventHandler(Player_PlayStateChange);
@@ -60,9 +66,8 @@ namespace MobileAudioPlayer
         {
             api.SetAppRunning(true);
             api.SetRunningApp(Helper.ModRegistry.ModID);
-            Game1.activeClickableMenu = new AudioPlayerMenu();
             Helper.Events.Display.RenderedWorld += Display_RenderedWorld;
-            dragging = true;
+            opening = true;
         }
 
         private void Player_MediaError(object pMediaObject)
@@ -77,7 +82,11 @@ namespace MobileAudioPlayer
             {
                 Monitor.Log($"track ended {audio[trackPlaying]}", LogLevel.Debug);
                 if (!Config.PlayAll || (trackPlaying >= audio.Length - 1 && !Config.LoopPlaylist))
+                {
+                    MuteVolume(false);
+
                     return;
+                }
                 trackPlaying++;
                 trackPlaying %= audio.Length;
                 DelayedPlay(audio[trackPlaying]);
@@ -89,42 +98,83 @@ namespace MobileAudioPlayer
         {
             if (api.GetRunningApp() != Helper.ModRegistry.ModID)
                 return;
+
+            if (opening)
+            {
+                clicking = false;
+                dragging = false;
+                opening = false;
+                return;
+            }
+
+
             if(e.Button == SButton.MouseLeft)
             {
-                if (!api.GetPhoneRectangle().Contains(Game1.getMousePosition()))
+                Point mousePos = Game1.getMousePosition();
+                if (!api.GetScreenRectangle().Contains(mousePos))
                 {
-                    api.SetAppRunning(false);
-                    api.SetRunningApp(null);
-                    Game1.activeClickableMenu = null;
-                    Helper.Input.Suppress(SButton.MouseLeft);
+                    return;
                 }
 
-                if (Game1.activeClickableMenu is AudioPlayerMenu && dragging == false)
+                Helper.Input.Suppress(SButton.MouseLeft);
+
+                Vector2 screenPos = api.GetScreenPosition();
+                Vector2 screenSize = api.GetScreenSize();
+                if (new Rectangle((int)screenPos.X, (int)(screenPos.Y + screenSize.Y - 32), (int)screenSize.X, 32).Contains(mousePos))
                 {
-                    lastMousePosition = Game1.getMousePosition();
+                    int space = (int)Math.Round((screenSize.X - 168) / 8f);
+                    int offset = mousePos.X - (int)screenPos.X - space / 2;
+                    int idx = offset / (space + 24);
+                    Monitor.Log($"button index: {idx}");
+                    ClickButton(idx);
+                    return;
                 }
+
+                clicking = true;
+                lastMousePosition = mousePos;
+            }
+        }
+
+        private void ClickButton(int idx)
+        {
+            switch (idx)
+            {
+                case 0:
+                    StopTrack(true);
+                    api.SetAppRunning(false);
+                    api.SetRunningApp(null);
+                    break;
+                case 1:
+                    SwitchTrack(false);
+                    break;
+                case 2:
+                    SeekTrack(false);
+                    break;
+                case 3:
+                    ToggleTrack();
+                    break;
+                case 4:
+                    SeekTrack(true);
+                    break;
+                case 5:
+                    SwitchTrack(true);
+                    break;
+                case 6:
+                    api.SetAppRunning(false);
+                    api.SetRunningApp(null);
+                    break;
 
             }
         }
+
         private void Input_ButtonReleased(object sender, ButtonReleasedEventArgs e)
         {
             if (e.Button == SButton.MouseLeft)
             {
                 if (api.GetRunningApp() != Helper.ModRegistry.ModID)
                     return;
-                if (dragging)
-                    dragging = false;
-                else
-                {
-                    if (Game1.activeClickableMenu is AudioPlayerMenu)
-                    {
-                        Point mousePos = Game1.getMousePosition();
-                        if (api.GetScreenRectangle().Contains(mousePos))
-                        {
-                            ClickTrack(mousePos);
-                        }
-                    }
-                }
+
+
             }
         }
 
@@ -144,22 +194,33 @@ namespace MobileAudioPlayer
         private void MakeTextures()
         {
             screenSize = api.GetScreenSize();
-            Texture2D background = new Texture2D(Game1.graphics.GraphicsDevice, (int)screenSize.X, (int)screenSize.Y);
-            Color[] data = new Color[background.Width * background.Height];
+            Texture2D texture = new Texture2D(Game1.graphics.GraphicsDevice, (int)screenSize.X, (int)screenSize.Y);
+            Color[] data = new Color[texture.Width * texture.Height];
             for (int pixel = 0; pixel < data.Length; pixel++)
             {
                 data[pixel] = Config.BackgroundColor;
             }
-            background.SetData(data);
-            backgroundTexture = background;
-            background = new Texture2D(Game1.graphics.GraphicsDevice, (int)screenSize.X, (int)(Game1.dialogueFont.LineSpacing * (Config.LineOneScale + Config.LineTwoScale)));
-            data = new Color[background.Width * background.Height];
+            texture.SetData(data);
+            backgroundTexture = texture;
+            texture = new Texture2D(Game1.graphics.GraphicsDevice, (int)screenSize.X, (int)(Game1.dialogueFont.LineSpacing * (Config.LineOneScale + Config.LineTwoScale)));
+            data = new Color[texture.Width * texture.Height];
             for (int pixel = 0; pixel < data.Length; pixel++)
             {
                 data[pixel] = Config.HighlightColor;
             }
-            background.SetData(data);
-            hightlightTexture = background;
+            texture.SetData(data);
+            hightlightTexture = texture;
+
+            texture = new Texture2D(Game1.graphics.GraphicsDevice, (int)screenSize.X, 32);
+            data = new Color[texture.Width * texture.Height];
+            for (int pixel = 0; pixel < data.Length; pixel++)
+            {
+                data[pixel] = Config.ButtonBarColor;
+            }
+            texture.SetData(data);
+            buttonBarTexture = texture;
+
+            buttonsTexture = Helper.Content.Load<Texture2D>(Path.Combine("assets", "buttons.png"));
         }
 
         private void Display_RenderedWorld(object sender, RenderedWorldEventArgs e)
@@ -168,12 +229,11 @@ namespace MobileAudioPlayer
 
             screenPos = api.GetScreenPosition();
             screenSize = api.GetScreenSize();
-            if (!api.GetPhoneOpened() || !api.GetAppRunning() || api.GetRunningApp() != Helper.ModRegistry.ModID || !(Game1.activeClickableMenu is AudioPlayerMenu))
+            if (!api.GetPhoneOpened() || !api.GetAppRunning() || api.GetRunningApp() != Helper.ModRegistry.ModID)
             {
-                Monitor.Log($"Closing app: phone opened {api.GetPhoneOpened()} app running {api.GetAppRunning()} running app {api.GetRunningApp()} menu {Game1.activeClickableMenu}");
+                Monitor.Log($"Closing app: phone opened {api.GetPhoneOpened()} app running {api.GetAppRunning()} running app {api.GetRunningApp()}");
                 Helper.Events.Display.RenderedWorld -= Display_RenderedWorld;
-                if (Game1.activeClickableMenu is AudioPlayerMenu)
-                    Game1.activeClickableMenu = null;
+
                 if (api.GetRunningApp() == Helper.ModRegistry.ModID || !api.GetAppRunning())
                 {
                     api.SetAppRunning(false);
@@ -182,17 +242,32 @@ namespace MobileAudioPlayer
                 return;
             }
 
-            if (Helper.Input.IsDown(SButton.MouseLeft))
+            if (!clicking)
+                dragging = false;
+
+            Point mousePos = Game1.getMousePosition();
+            if (clicking)
             {
-                Point mousePos = Game1.getMousePosition();
-                if (mousePos.Y != lastMousePosition.Y && (dragging == true || api.GetScreenRectangle().Contains(mousePos)))
+                if (mousePos.Y != lastMousePosition.Y && (dragging || api.GetScreenRectangle().Contains(mousePos)))
                 {
                     dragging = true;
                     offsetY += mousePos.Y - lastMousePosition.Y;
                     //Monitor.Log($"offsetY {offsetY} max {screenSize.Y - Config.MarginY + (Config.MarginY + Game1.dialogueFont.LineSpacing * 0.9f) * audio.Length}");
-                    offsetY = Math.Min(0, Math.Max(offsetY, (int)(screenSize.Y - (Config.MarginY + (Config.MarginY + itemHeight) * audio.Length))));
+                    offsetY = Math.Min(0, Math.Max(offsetY, (int)(screenSize.Y - (32 + Config.MarginY + (Config.MarginY + itemHeight) * audio.Length))));
                     lastMousePosition = mousePos;
                 }
+            }
+
+            if(clicking && !Helper.Input.IsSuppressed(SButton.MouseLeft))
+            {
+                Monitor.Log($"unclicking; dragging = {dragging}");
+                if (dragging)
+                    dragging = false;
+                else if (api.GetScreenRectangle().Contains(mousePos) && !new Rectangle((int)screenPos.X, (int)(screenPos.Y + screenSize.Y - 32), (int)screenSize.X, 32).Contains(mousePos))
+                {
+                    ClickTrack(mousePos);
+                }
+                clicking = false;
             }
 
 
@@ -226,6 +301,25 @@ namespace MobileAudioPlayer
                 if (posY > screenPos.Y - Game1.dialogueFont.LineSpacing * Config.LineOneScale && posY < screenPos.Y + screenSize.Y - itemHeight)
                     e.SpriteBatch.DrawString(Game1.dialogueFont, lineTwo, new Vector2(screenPos.X + Config.MarginX, posY + Game1.dialogueFont.LineSpacing * Config.LineOneScale), Config.LineTwoColor, 0f, Vector2.Zero, Config.LineTwoScale, SpriteEffects.None, 0.86f);
             }
+            Vector2 barPos = screenPos + new Vector2(0, screenSize.Y - 32);
+            int space = (int)Math.Round((screenSize.X - 168) / 8f);
+            e.SpriteBatch.Draw(buttonBarTexture, new Rectangle((int)barPos.X, (int)barPos.Y, (int)screenSize.X, 32), Color.White);
+            for (int i = 0; i < 7; i++)
+            {
+                int j = i;
+                bool playing = true;
+                try
+                {
+                    playing = (Player.playState == WMPPlayState.wmppsPlaying);
+                }
+                catch 
+                { 
+                }
+                if (playing && i > 2 || i > 3)
+                    j++;
+
+                e.SpriteBatch.Draw(buttonsTexture, barPos + new Vector2(space + (space + 24) * i, 4), new Rectangle(24 * j, 0, 24, 24), Color.White);
+            }
         }
 
         private void MakeListString(string a, ref string line, float scale)
@@ -254,9 +348,15 @@ namespace MobileAudioPlayer
                 if (idx == trackPlaying)
                 {
                     if(Player.playState == WMPPlayState.wmppsPlaying)
+                    {
+                        MuteVolume(false);
                         Player.controls.pause();
+                    }
                     else if (Player.playState == WMPPlayState.wmppsPaused)
+                    {
+                        MuteVolume(true);
                         Player.controls.play();
+                    }
                     else
                         PlayFile(audio[trackPlaying]);
                 }
@@ -276,14 +376,67 @@ namespace MobileAudioPlayer
 
         private void PlayFile(String url)
         {
+            MuteVolume(true);
             Monitor.Log($"playing file {audio[trackPlaying]}", LogLevel.Debug);
             Player.URL = url;
             Player.controls.play();
+        }
 
+        private void MuteVolume1(bool off)
+        {
+            if (off)
+            {
+                Game1.currentSong.Stop(AudioStopOptions.Immediate);
+            }
+            else
+            {
+
+                Game1.currentSong.Play();
+            }
+        }
+        
+        private void MuteVolume(bool off)
+        {
+            if (off)
+            {
+                currentMusicVolume = Game1.musicPlayerVolume;
+                currentAmbientVolume = Game1.ambientPlayerVolume;
+                if (Config.MuteGameMusicWhilePlaying)
+                {
+                    Game1.currentSong.Stop(AudioStopOptions.Immediate);
+                    Game1.musicPlayerVolume = 0;
+                }
+                if (Config.MuteAmbientSoundWhilePlaying)
+                    Game1.ambientPlayerVolume = 0;
+
+            }
+            else
+            {
+                if (Config.MuteGameMusicWhilePlaying)
+                {
+                    try
+                    {
+                        Game1.musicPlayerVolume = currentMusicVolume;
+                        Game1.player.currentLocation.checkForMusic(Game1.currentGameTime);
+                        Game1.currentSong = Game1.soundBank.GetCue(Game1.currentSong.Name);
+                        Game1.currentSong.Play();
+                    }
+                    catch
+                    {
+                        Monitor.Log($"Couldn't restart music track {Game1.currentSong?.Name}");
+                    }
+                }
+                if (Config.MuteAmbientSoundWhilePlaying)
+                    Game1.ambientPlayerVolume = currentAmbientVolume;
+            }
+            Game1.musicCategory.SetVolume(Game1.musicPlayerVolume);
+            Game1.ambientCategory.SetVolume(Game1.ambientPlayerVolume);
         }
 
         private void StopTrack(bool force = false)
         {
+            MuteVolume(false);
+
             Monitor.Log($"status on stopping: {Player.status}");
             if (force)
             {
@@ -297,5 +450,54 @@ namespace MobileAudioPlayer
                     Player.controls.stop();
             }
         }
+        private void SwitchTrack(bool next)
+        {
+            Player.controls.stop();
+            if (next)
+            {
+                if (trackPlaying < audio.Length - 1 || Config.LoopPlaylist)
+                {
+                    trackPlaying++;
+                    trackPlaying %= audio.Length;
+                    PlayFile(audio[trackPlaying]);
+                }
+            }
+            else
+            {
+                if (trackPlaying > 0 || Config.LoopPlaylist)
+                {
+                    trackPlaying--;
+                    if(trackPlaying < 0)
+                        trackPlaying = audio.Length - 1;
+                    PlayFile(audio[trackPlaying]);
+                }
+            }
+        }
+        private void ToggleTrack()
+        {
+            if (Player.playState == WMPPlayState.wmppsPlaying)
+            {
+                MuteVolume(false);
+                Player.controls.pause();
+            }
+            else if (Player.playState == WMPPlayState.wmppsStopped)
+            {
+                PlayFile(audio[trackPlaying]);
+            }
+            else 
+            { 
+                MuteVolume(true);
+                Player.controls.play();
+            }
+        }
+
+        private void SeekTrack(bool forward)
+        {
+            if (forward)
+                Player.controls.fastForward();
+            else
+                Player.controls.fastReverse();
+        }
+
     }
 }

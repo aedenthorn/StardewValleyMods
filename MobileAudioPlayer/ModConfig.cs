@@ -17,5 +17,8 @@ namespace MobileAudioPlayer
         public bool LoopPlaylist { get; set; } = true;
         public float LineOneScale { get; set; } = 0.5f;
         public float LineTwoScale { get; set; } = 0.4f;
+        public bool MuteGameMusicWhilePlaying { get; set; } = true;
+        public bool MuteAmbientSoundWhilePlaying { get; set; } = true;
+        public Color ButtonBarColor { get; set; } = Color.DarkGray;
     }
 }

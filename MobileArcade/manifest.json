@@ -1,7 +1,7 @@
 ﻿{
   "Name": "Mobile Arcade",
   "Author": "aedenthorn",
-  "Version": "0.1.0",
+  "Version": "0.1.1",
   "Description": "Links to arcade games for your mobile phone.",
   "UniqueID": "aedenthorn.MobileArcade",
   "EntryDll": "MobileArcade.dll",

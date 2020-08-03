@@ -20,9 +20,11 @@
     <None Include="$(MSBuildThisFileDirectory)Familiars 0.9.1.zip" />
     <None Include="$(MSBuildThisFileDirectory)FruitTreeShaker 1.1.0.zip" />
     <None Include="$(MSBuildThisFileDirectory)MobileArcade 0.1.0.zip" />
+    <None Include="$(MSBuildThisFileDirectory)MobileArcade 0.1.1.zip" />
     <None Include="$(MSBuildThisFileDirectory)MobileAudioPlayer 0.1.0.zip" />
     <None Include="$(MSBuildThisFileDirectory)MobileAudioPlayer 0.2.0.zip" />
     <None Include="$(MSBuildThisFileDirectory)MobileAudioPlayer 0.2.1.zip" />
+    <None Include="$(MSBuildThisFileDirectory)MobileAudioPlayer 0.3.0.zip" />
     <None Include="$(MSBuildThisFileDirectory)MobileCatalogues 0.1.2.zip" />
     <None Include="$(MSBuildThisFileDirectory)MobileCatalogues 0.2.0.zip" />
     <None Include="$(MSBuildThisFileDirectory)MobileCatalogues 0.2.1.zip" />

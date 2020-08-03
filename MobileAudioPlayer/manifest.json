@@ -1,8 +1,8 @@
 ﻿{
   "Name": "Mobile Audio Player",
   "Author": "aedenthorn",
-  "Version": "0.2.1",
-  "Description": "Plays mp3 audio files on the mobile phone.",
+  "Version": "0.3.0",
+  "Description": "Plays audio files on the mobile phone.",
   "UniqueID": "aedenthorn.MobileAudioPlayer",
   "EntryDll": "MobileAudioPlayer.dll",
   "MinimumApiVersion": "3.5.0",
