@@ -10,9 +10,11 @@ using StardewValley.Monsters;
 using StardewValley.Network;
 using System;
 using System.Collections.Generic;
+using System.Threading;
 using xTile.Dimensions;
 using xTile.Layers;
 using xTile.Tiles;
+using Object = StardewValley.Object;
 
 namespace BossCreatures
 {
@@ -502,30 +504,37 @@ namespace BossCreatures
                 string[] loota = loot.Split('/');
                 if (!int.TryParse(loota[0], out int objectToAdd))
                 {
+                    PMonitor.Log($"loot object {loota[0]} is invalid", LogLevel.Error);
                     continue;
+                }
+                Object o = new Object(objectToAdd, 1);
+                if (objectToAdd >= 0)
+                {
+                    if (o.Name == Game1.content.LoadString("Strings\\StringsFromCSFiles:CraftingRecipe.cs.575"))
+                    {
+                        PMonitor.Log($"object {objectToAdd} is error item");
+                        continue;
+                    }
                 }
 
                 if (!double.TryParse(loota[1], out double chance))
                 {
+                    PMonitor.Log($"loot chance {loota[1]} is invalid", LogLevel.Error);
                     continue;
                 }
 
-                if (objectToAdd < 0)
+                while (chance > 1 || (chance > 0 && Game1.random.NextDouble() < chance))
                 {
-                    location.debris.Add(Game1.createItemDebris(new StardewValley.Object(Math.Abs(objectToAdd), (int)Math.Round(Game1.random.Next(10, 40) * difficulty)), new Vector2(x, y), Game1.random.Next(4)));
+                    if (objectToAdd < 0)
+                    {
+                        Game1.createDebris(Math.Abs(objectToAdd), (int)x, (int)y, (int)Math.Round(Game1.random.Next(10, 40) * difficulty), location);
+                    }
+                    else
+                    {
+                        location.debris.Add(Game1.createItemDebris(o, new Vector2(x, y), Game1.random.Next(4)));
+                    }
 
-                }
-                else
-                {
-                    while (chance > 1)
-                    {
-                        location.debris.Add(Game1.createItemDebris(new StardewValley.Object(objectToAdd, 1), new Vector2(x, y), Game1.random.Next(4)));
-                        chance -= 1;
-                    }
-                    if (Game1.random.NextDouble() < chance)
-                    {
-                        location.debris.Add(Game1.createItemDebris(new StardewValley.Object(objectToAdd, 1), new Vector2(x, y), Game1.random.Next(4)));
-                    }
+                    chance -= 1;
                 }
             }
         }
