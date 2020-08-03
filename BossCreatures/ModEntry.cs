@@ -114,13 +114,16 @@ namespace BossCreatures
                 }
             }
 
+
             MakeBossHealthBar(100, 100);
 
             if (isFightingBoss && BossHere(e.NewLocation) == null)
             {
                 RevertMusic(e.NewLocation);
             }
-            TryAddBoss(e.NewLocation);
+
+            if (!Game1.eventUp)
+                TryAddBoss(e.NewLocation);
 
         }
 
