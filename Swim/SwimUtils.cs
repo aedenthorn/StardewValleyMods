@@ -119,14 +119,34 @@ namespace Swim
 
         public static void CheckIfMyButtonDown()
         {
-            if (Game1.player == null || Game1.player.currentLocation == null || !Config.ReadyToSwim || Game1.player.currentLocation.waterTiles == null || !Context.IsPlayerFree || Helper.Input.IsDown(SButton.LeftShift) || Helper.Input.IsDown(SButton.RightShift))
+            if (Game1.player == null || Game1.player.currentLocation == null || !Config.ReadyToSwim || Game1.player.currentLocation.waterTiles == null || !Context.IsPlayerFree || Helper.Input.IsDown(SButton.LeftShift))
             {
                 ModEntry.myButtonDown = false;
                 return;
             }
 
-            foreach (SButton b in ModEntry.dirButtons)
+            List<SButton> dirButtons = new List<SButton>();
+            foreach (InputButton ib in Game1.options.moveUpButton)
             {
+                dirButtons.Add(ib.ToSButton());
+            }
+            foreach (InputButton ib in Game1.options.moveDownButton)
+            {
+                dirButtons.Add(ib.ToSButton());
+            }
+            foreach (InputButton ib in Game1.options.moveRightButton)
+            {
+                dirButtons.Add(ib.ToSButton());
+            }
+            foreach (InputButton ib in Game1.options.moveLeftButton)
+            {
+                dirButtons.Add(ib.ToSButton());
+            }
+
+            Monitor.Log($"checking movement buttons");
+            foreach (SButton b in dirButtons)
+            {
+                Monitor.Log($"movement button: {b}");
                 if (Helper.Input.IsDown(b))
                 {
                     ModEntry.myButtonDown = true;
