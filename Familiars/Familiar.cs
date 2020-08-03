@@ -124,9 +124,10 @@ namespace Familiars
 			farmerPassesThrough = true;
 			moveTowardPlayerThreshold.Value = 500;
 			collidesWithOtherCharacters.Value = false;
+			lastPosition = position;
 		}
 
-        public FamiliarData SaveData(GameLocation gameLocation)
+		public FamiliarData SaveData(GameLocation gameLocation)
         {
 			return new FamiliarData()
 			{
@@ -139,7 +140,8 @@ namespace Familiars
 				greenColor = this.greenColor,
 				blueColor = this.blueColor,
 				currentLocation = gameLocation.Name,
-				position = this.position
+				position = this.position,
+				baseFrame = this.baseFrame
 			};
         }
 
@@ -468,11 +470,16 @@ namespace Familiars
 
 		public override bool shouldCollideWithBuildingLayer(GameLocation location)
 		{
-			return false;
+			return !followingOwner;
 		}
 
 		public override void update(GameTime time, GameLocation location)
 		{
+			if (followingOwner || location.getTileIndexAt(getTileLocationPoint(), "Back") != -1)
+				lastPosition = position;
+			else
+				position.Value = lastPosition;
+
 			if (followingOwner && Vector2.Distance(position, Game1.getFarmer(ownerId).position) > ModEntry.Config.MaxFamiliarDistance)
 			{
 				position.Value = Game1.getFarmer(ownerId).position;
@@ -1221,5 +1228,7 @@ namespace Familiars
 		public Color greenColor;
 		public Color blueColor;
         public GameLocation lastLocation;
-    }
+        public int baseFrame;
+		public Vector2 lastPosition;
+	}
 }

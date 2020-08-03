@@ -226,29 +226,7 @@ namespace Familiars
 				}
 			}
 		}
-        public static void GameLocation_checkAction_Postfix(GameLocation __instance, Location tileLocation, xTile.Dimensions.Rectangle viewport, Farmer who, ref bool __result)
-		{
-			Microsoft.Xna.Framework.Rectangle tileRect = new Microsoft.Xna.Framework.Rectangle(tileLocation.X * 64, tileLocation.Y * 64, 64, 64);
 
-			foreach (NPC i in __instance.characters)
-			{
-				if (i != null &&  i is Familiar && ((i as Familiar).ownerId == who.UniqueMultiplayerID || (i as Familiar).ownerId == 0 || !(i as Familiar).followingOwner) && i.GetBoundingBox().Intersects(tileRect))
-				{
-					if (!(i as Familiar).followingOwner)
-						(i as Familiar).ownerId = who.UniqueMultiplayerID;
-
-					if (__instance is SlimeHutch)
-						(i as Familiar).followingOwner = !(i as Familiar).followingOwner;
-					else if (!(i as Familiar).followingOwner)
-						(i as Familiar).followingOwner = true;
-
-					__instance.playSound("dwop");
-					Monitor.Log($"familiar following player: {(i as Familiar).followingOwner}");
-					__result = true;
-					return;
-				}
-			}
-		}
 		public static void GameLocation_performTouchAction_Postfix(GameLocation __instance, string fullActionString, Vector2 playerStandingPosition)
 		{
 			if (Game1.eventUp)

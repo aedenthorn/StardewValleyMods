@@ -9,5 +9,6 @@
         public string className;
         public string methodName;
         public string keyPress;
+        public bool closePhone;
     }
 }

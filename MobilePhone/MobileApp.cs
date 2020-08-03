@@ -7,6 +7,7 @@ namespace MobilePhone
     {
         public string name;
         public string keyPress = null;
+        public bool closePhone;
         public Action action;
         public Texture2D icon;
         public string dllName;
@@ -20,6 +21,13 @@ namespace MobilePhone
             this.icon = icon;
         }
 
+        public MobileApp(string name, string keyPress, bool closePhone, Texture2D icon)
+        {
+            this.name = name;
+            this.keyPress = keyPress;
+            this.closePhone = closePhone;
+            this.icon = icon;
+        }
         public MobileApp(string name, string dllName, string className, string methodName, string keyPress, Texture2D icon)
         {
             this.name = name;

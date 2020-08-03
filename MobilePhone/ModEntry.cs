@@ -1,5 +1,6 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using Microsoft.Xna.Framework.Input;
 using StardewModdingAPI;
 using StardewValley;
 using StardewValley.Menus;
@@ -9,6 +10,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Threading.Tasks;
 
 namespace MobilePhone
 {
@@ -92,7 +94,6 @@ namespace MobilePhone
 
         private void GameLoop_GameLaunched(object sender, StardewModdingAPI.Events.GameLaunchedEventArgs e)
         {
-            return;
             foreach (IContentPack contentPack in Helper.ContentPacks.GetOwned())
             {
                 try
@@ -100,7 +101,7 @@ namespace MobilePhone
                     Monitor.Log($"Reading content pack: {contentPack.Manifest.Name} {contentPack.Manifest.Version} from {contentPack.DirectoryPath}");
                     MobileAppJSON json = contentPack.ReadJsonFile<MobileAppJSON>("content.json");
                     Texture2D icon = contentPack.LoadAsset<Texture2D>(json.iconPath);
-                    apps.Add(json.id, new MobileApp(json.name, json.dllName, json.className, json.methodName, json.keyPress, icon));
+                    apps.Add(json.id, new MobileApp(json.name, json.keyPress, json.closePhone, icon));
                     Monitor.Log($"Added app {json.name} from {contentPack.DirectoryPath}");
                 }
                 catch (Exception ex)
@@ -379,6 +380,29 @@ namespace MobilePhone
 
         private void PressKey(MobileApp app)
         {
+            if(app.closePhone)
+                TogglePhone(false);
+
+            if (!Enum.TryParse(app.keyPress, out SButton keyPress))
+            {
+                Monitor.Log($"Error on app invoke: {app.keyPress} isn't a valid key", LogLevel.Error);
+                return;
+            }
+
+            //await Task.Delay(100);
+
+            // get SMAPI's input handler
+            object input = typeof(Game1).GetField("input", BindingFlags.NonPublic | BindingFlags.Static)?.GetValue(null)
+               ?? throw new InvalidOperationException("Can't find 'Game1.input' field.");
+
+            // get OverrideButton method
+            var method = input.GetType().GetMethod("OverrideButton")
+               ?? throw new InvalidOperationException("Can't find 'OverrideButton' method on SMAPI's input class.");
+
+            // call method
+            // The arguments are the button to override, and whether to mark the button pressed (true) or raised (false)
+            method.Invoke(input, new object[] { keyPress, true });
+            return;
             Assembly a = AppDomain.CurrentDomain.GetAssemblies().FirstOrDefault(n => n.GetName().Name == app.dllName);
             if(a == null)
             {

@@ -19,7 +19,7 @@ namespace Familiars
 		}
 
 
-		public ButterflyFamiliar(Vector2 position, long _owner) : base("Butterfly", position, new AnimatedSprite(ModEntry.Config.ButterflyTexture, 0, 16, 16))
+		public ButterflyFamiliar(Vector2 position, long _owner, bool existing = false) : base("Butterfly", position, new AnimatedSprite(ModEntry.Config.ButterflyTexture, 0, 16, 16))
 		{
 			Name = "ButterflyFamiliar";
 			ownerId = _owner;
@@ -33,33 +33,37 @@ namespace Familiars
 			ignoreMovementAnimations = true;
 			damageToFarmer.Value = 0;
 
-			if (Game1.random.NextDouble() < 0.5)
-			{
-				baseFrame = (Game1.random.NextDouble() < 0.5) ? (Game1.random.Next(3) * 3 + 160) : (Game1.random.Next(3) * 3 + 180);
-			}
-			else
-			{
-				baseFrame = (Game1.random.NextDouble() < 0.5) ? (Game1.random.Next(3) * 4 + 128) : (Game1.random.Next(3) * 4 + 148);
-				summerButterfly = true;
-			}
-			Sprite.currentFrame = baseFrame;
-			sprite.Value.loop = false;
+            if (!existing)
+            {
 
-			if (ModEntry.Config.ButterflyColorType.ToLower() == "random")
-			{
-				mainColor = new Color(Game1.random.Next(256), Game1.random.Next(256), Game1.random.Next(256));
-				redColor = new Color(Game1.random.Next(256), Game1.random.Next(256), Game1.random.Next(256));
-				greenColor = new Color(Game1.random.Next(256), Game1.random.Next(256), Game1.random.Next(256));
-				blueColor = new Color(Game1.random.Next(256), Game1.random.Next(256), Game1.random.Next(256));
+				if (Game1.random.NextDouble() < 0.5)
+				{
+					baseFrame = (Game1.random.NextDouble() < 0.5) ? (Game1.random.Next(3) * 3 + 160) : (Game1.random.Next(3) * 3 + 180);
+				}
+				else
+				{
+					baseFrame = (Game1.random.NextDouble() < 0.5) ? (Game1.random.Next(3) * 4 + 128) : (Game1.random.Next(3) * 4 + 148);
+					summerButterfly = true;
+				}
+				Sprite.currentFrame = baseFrame;
+				sprite.Value.loop = false;
+
+				if (ModEntry.Config.ButterflyColorType.ToLower() == "random")
+				{
+					mainColor = new Color(Game1.random.Next(256), Game1.random.Next(256), Game1.random.Next(256));
+					redColor = new Color(Game1.random.Next(256), Game1.random.Next(256), Game1.random.Next(256));
+					greenColor = new Color(Game1.random.Next(256), Game1.random.Next(256), Game1.random.Next(256));
+					blueColor = new Color(Game1.random.Next(256), Game1.random.Next(256), Game1.random.Next(256));
+				}
+				else
+				{
+					mainColor = ModEntry.Config.ButterflyMainColor;
+					redColor = ModEntry.Config.ButterflyRedColor;
+					greenColor = ModEntry.Config.ButterflyGreenColor;
+					blueColor = ModEntry.Config.ButterflyBlueColor;
+				}
+				reloadSprite();
 			}
-			else
-			{
-				mainColor = ModEntry.Config.ButterflyMainColor;
-				redColor = ModEntry.Config.ButterflyRedColor;
-				greenColor = ModEntry.Config.ButterflyGreenColor;
-				blueColor = ModEntry.Config.ButterflyBlueColor;
-			}
-			reloadSprite();
 		}
 
 		public override void reloadSprite()
@@ -88,6 +92,10 @@ namespace Familiars
 
         public override void update(GameTime time, GameLocation location)
 		{
+			if (followingOwner || location.getTileIndexAt(getTileLocationPoint(), "Back") != -1)
+				lastPosition = position;
+			else
+				position.Value = lastPosition;
 
 			flapTimer -= time.ElapsedGameTime.Milliseconds;
 			if (flapTimer <= 0 && sprite.Value.CurrentAnimation == null)
@@ -135,7 +143,13 @@ namespace Familiars
 			Sprite.draw(b, Game1.GlobalToLocal(Game1.viewport, position + new Vector2(-64f, -128f + yJumpOffset + yOffset)), position.Y / 10000f, 0, 0, Color.White, flip, 4f * scale, 0f, false);
 		}
 
-		protected override void initNetFields()
+        public override Rectangle GetBoundingBox()
+        {
+			Vector2 pos = position + new Vector2(-64f, -128f + yJumpOffset + yOffset);
+			return new Rectangle((int)pos.X - 16, (int)pos.Y - 16, 32, 32);
+        }
+
+        protected override void initNetFields()
 		{
 			base.initNetFields();
 			base.NetFields.AddFields(new INetSerializable[]
@@ -332,6 +346,5 @@ namespace Familiars
 		private int flapSpeed = 50;
 		private bool summerButterfly;
 		public bool stayInbounds;
-		public int baseFrame;
-	}
+    }
 }

@@ -261,12 +261,37 @@ namespace Familiars
 
         public static void Input_ButtonPressed(object sender, ButtonPressedEventArgs e)
         {
-            if(Context.IsPlayerFree && (e.Button == SButton.MouseLeft || e.Button == SButton.MouseRight) && Game1.player.currentLocation != null)
+            Rectangle box = new Rectangle((int)Game1.lastCursorTile.X * Game1.tileSize, (int)Game1.lastCursorTile.Y * Game1.tileSize, Game1.tileSize, Game1.tileSize);
+
+            if (Context.IsPlayerFree && (e.Button == SButton.MouseLeft || e.Button == SButton.MouseRight) && Game1.player.currentLocation != null)
             {
+                foreach (Familiar f in Game1.player.currentLocation.characters.Where(n => n is Familiar))
+                {
+                    Monitor.Log($"familiar location: {f.position} click: {Game1.getMousePosition()}");
+
+                    if ((f.ownerId == Game1.player.UniqueMultiplayerID || f.ownerId == 0 || !f.followingOwner) && f.GetBoundingBox().Intersects(box))
+                    {
+                        if (!f.followingOwner)
+                            f.ownerId = Game1.player.UniqueMultiplayerID;
+
+                        if (Game1.player.currentLocation is SlimeHutch)
+                            f.followingOwner = !f.followingOwner;
+                        else if (!f.followingOwner)
+                            f.followingOwner = true;
+
+                        if (!f.followingOwner && f.currentLocation.getTileIndexAt(f.getTileLocationPoint(), "Back") == -1)
+                            f.followingOwner = true;
+
+                        Game1.player.currentLocation.playSound("dwop");
+                        Monitor.Log($"familiar following player: {f.followingOwner}");
+                        Helper.Input.Suppress(e.Button);
+                        return;
+                    }
+                }
+
                 List<Critter> critters = Helper.Reflection.GetField<List<Critter>>(Game1.player.currentLocation, "critters").GetValue();
                 if (critters == null)
                     return;
-                Rectangle box = new Rectangle((int)Game1.lastCursorTile.X * Game1.tileSize, (int)Game1.lastCursorTile.Y * Game1.tileSize, Game1.tileSize, Game1.tileSize);
                 foreach(Critter c in critters)
                 {
                     

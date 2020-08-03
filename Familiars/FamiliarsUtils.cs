@@ -257,7 +257,7 @@ namespace Familiars
 				}
 				else if (f.currentLocation == "Slime Hutch")
 				{
-					l = Game1.getFarm().buildings.FirstOrDefault(b => b.nameOfIndoors == "Slime Hutch").indoors.Value;
+					l = Game1.getFarm().buildings.FirstOrDefault(b => b.indoors.Value is SlimeHutch)?.indoors.Value;
 				}
 				if (l == null)
 					continue;
@@ -273,6 +273,8 @@ namespace Familiars
 				d.baseFrame = f.baseFrame;
 				d.SetScale();
 				d.currentLocation = l;
+				d.baseFrame = f.baseFrame;
+				d.reloadSprite();
 				l.characters.Add(d);
 			}
 		}

@@ -71,7 +71,6 @@ namespace Familiars
 				b.Draw(Game1.shadowTexture, base.getLocalPosition(Game1.viewport) + new Vector2(32f, 80f), new Rectangle?(Game1.shadowTexture.Bounds), Color.White, 0f, new Vector2((float)Game1.shadowTexture.Bounds.Center.X, (float)Game1.shadowTexture.Bounds.Center.Y), (4f + (float)this.yJumpOffset / 64f) * scale, SpriteEffects.None, (float)(base.getStandingY() - 1) / 10000f);
 			}
 		}
-
 		protected override void sharedDeathAnimation()
 		{
 		}
@@ -251,7 +250,8 @@ namespace Familiars
 		}
 		public override Rectangle GetBoundingBox()
 		{
-			Rectangle baseRect = new Rectangle((int)base.Position.X + 8, (int)base.Position.Y, this.Sprite.SpriteWidth * 4 * 3 / 4, 32);
+			Vector2 pos = position + new Vector2(0, (float)(32 + this.yJumpOffset));
+			Rectangle baseRect = new Rectangle((int)pos.X, (int)pos.Y, this.Sprite.SpriteWidth * 4 * 3 / 4, 32);
 			if (scale >= 1)
 				return baseRect;
 			return new Rectangle((int)baseRect.Center.X - (int)(Sprite.SpriteWidth * 4 * 3 / 4 * scale) / 2, (int)(baseRect.Center.Y - 16 * scale), (int)(Sprite.SpriteWidth * 4 * 3 / 4 * scale), (int)(32 * scale));
