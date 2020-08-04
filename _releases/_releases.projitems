@@ -42,6 +42,7 @@
     <None Include="$(MSBuildThisFileDirectory)ShowPlayerBehind 0.1.3.zip" />
     <None Include="$(MSBuildThisFileDirectory)Swim 1.3.12.zip" />
     <None Include="$(MSBuildThisFileDirectory)Swim 1.3.13.zip" />
+    <None Include="$(MSBuildThisFileDirectory)Swim 1.3.14.zip" />
     <None Include="$(MSBuildThisFileDirectory)TransparentObjects 0.2.1.zip" />
     <None Include="$(MSBuildThisFileDirectory)VideoPlayer 0.2.5.zip" />
     <None Include="$(MSBuildThisFileDirectory)YAJM 0.2.1.zip" />

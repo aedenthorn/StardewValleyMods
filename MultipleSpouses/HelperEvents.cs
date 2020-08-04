@@ -57,7 +57,8 @@ namespace MultipleSpouses
 
         public static void GameLoop_DayStarted(object sender, DayStartedEventArgs e)
         {
-            Helper.Events.GameLoop.OneSecondUpdateTicked += GameLoop_OneSecondUpdateTicked;
+			Misc.ResetDivorces();
+			Helper.Events.GameLoop.OneSecondUpdateTicked += GameLoop_OneSecondUpdateTicked;
             Misc.ResetSpouses(Game1.player);
 
 			foreach(GameLocation location in Game1.locations)

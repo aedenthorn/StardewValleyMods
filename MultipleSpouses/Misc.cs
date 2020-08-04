@@ -45,6 +45,24 @@ namespace MultipleSpouses
 
             return spouses;
         }
+
+        internal static void ResetDivorces()
+        {
+            if (!ModEntry.config.PreventHostileDivorces)
+                return;
+            List<string> friends = Game1.player.friendshipData.Keys.ToList();
+            foreach(string f in friends)
+            {
+                if(Game1.player.friendshipData[f].Status == FriendshipStatus.Divorced)
+                {
+                    if (Game1.player.friendshipData[f].Points < 8 * 250)
+                        Game1.player.friendshipData[f].Status = FriendshipStatus.Friendly;
+                    else
+                        Game1.player.friendshipData[f].Status = FriendshipStatus.Dating;
+                }
+            }
+        }
+
         public static Dictionary<string, Dictionary<string, string>> relationships = new Dictionary<string, Dictionary<string, string>>();
         public static void SetNPCRelations()
         {

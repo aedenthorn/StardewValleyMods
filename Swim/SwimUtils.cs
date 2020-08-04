@@ -143,10 +143,8 @@ namespace Swim
                 dirButtons.Add(ib.ToSButton());
             }
 
-            Monitor.Log($"checking movement buttons");
             foreach (SButton b in dirButtons)
             {
-                Monitor.Log($"movement button: {b}");
                 if (Helper.Input.IsDown(b))
                 {
                     ModEntry.myButtonDown = true;

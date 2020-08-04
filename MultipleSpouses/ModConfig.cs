@@ -11,6 +11,7 @@
         public bool AllSpousesJoinWeddings { get; set; } = true;
         public bool FriendlyDivorce { get; set; } = true;
         public bool ComplexDivorce { get; set; } = true;
+        public bool PreventHostileDivorces { get; set; }
         public bool RoommateRomance { get; set; } = true;
         public bool RomanceAllVillagers { get; set; } = false;
         public int PercentChanceForSpouseInBed { get; set; } = 25;
