@@ -55,6 +55,10 @@ namespace MobilePhone
         public int ContactArrowWidth { get; set; } = 16;
         public int ContactArrowHeight { get; set; } = 16;
         public Color PhoneBookBackgroundColor { get; set; } = Color.White;
+        public Color PhoneBookHeaderColor { get; set; } = Color.DeepSkyBlue;
+        public Color PhoneBookHeaderTextColor { get; set; } = Color.White;
+        public int PhoneBookHeaderHeight { get; set; } = 32;
+        public float PhoneBookHeaderTextScale { get; set; } = 0.6f;
         public int MinPointsToCall { get; set; } = 1000;
         public bool ShowNamesInPhoneBook { get; set; } = true;
         public bool UseRealNamesInPhoneBook { get; set; } = true;

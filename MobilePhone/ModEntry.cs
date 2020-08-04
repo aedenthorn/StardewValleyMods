@@ -1,16 +1,12 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using Microsoft.Xna.Framework.Input;
 using StardewModdingAPI;
 using StardewValley;
-using StardewValley.Menus;
-using StardewValley.SDKs;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
-using System.Threading.Tasks;
 
 namespace MobilePhone
 {
@@ -59,6 +55,7 @@ namespace MobilePhone
 
         public static Dictionary<string, MobileApp> apps = new Dictionary<string, MobileApp>();
         public static Texture2D phoneBookTexture;
+        public static Texture2D phoneBookHeaderTexture;
         public static bool draggingPhone;
         public static Point lastMousePosition;
         public static int ticksSinceMoved = 0;
@@ -389,8 +386,6 @@ namespace MobilePhone
                 return;
             }
 
-            //await Task.Delay(100);
-
             // get SMAPI's input handler
             object input = typeof(Game1).GetField("input", BindingFlags.NonPublic | BindingFlags.Static)?.GetValue(null)
                ?? throw new InvalidOperationException("Can't find 'Game1.input' field.");
@@ -403,13 +398,6 @@ namespace MobilePhone
             // The arguments are the button to override, and whether to mark the button pressed (true) or raised (false)
             method.Invoke(input, new object[] { keyPress, true });
             return;
-            Assembly a = AppDomain.CurrentDomain.GetAssemblies().FirstOrDefault(n => n.GetName().Name == app.dllName);
-            if(a == null)
-            {
-                Monitor.Log($"Couldn't find assembly named {app.dllName}. Sample: {AppDomain.CurrentDomain.GetAssemblies()[0].GetName().Name}");
-                return;
-            }
-           // a.GetType(app.className).GetMethod(app.methodName, BindingFlags.NonPublic | BindingFlags.Instance).Invoke()
         }
 
         private void RotatePhone()
@@ -448,9 +436,12 @@ namespace MobilePhone
             TogglePhone(!phoneOpen);
         }
 
-        public static void ToggleApp(bool value)
+        public static void ToggleApp(bool open)
         {
-            appRunning = value;
+            appRunning = open;
+            if (!open)
+                runningApp = null;
+
             if (!phoneOpen)
             {
                 Game1.activeClickableMenu = null;
@@ -493,10 +484,23 @@ namespace MobilePhone
             appColumns = (screenWidth - Config.IconMarginX) / (Config.IconWidth + Config.IconMarginX);
             appRows = (screenHeight - Config.IconMarginY) / (Config.IconHeight + Config.IconMarginY);
             gridWidth = (screenWidth - Config.ContactMarginX) / (Config.ContactWidth + Config.ContactMarginX);
-            gridHeight = (screenHeight - Config.ContactMarginY) / (Config.ContactHeight + Config.ContactMarginY); 
-            phoneBookTexture = MobilePhoneApp.MakeBackground();
+            gridHeight = (screenHeight - Config.ContactMarginY) / (Config.ContactHeight + Config.ContactMarginY);
+            Vector2 screenSize = GetScreenSize();
+            phoneBookTexture = MakeColorTexture(Config.PhoneBookBackgroundColor, screenSize);
+            phoneBookHeaderTexture = MakeColorTexture(Config.PhoneBookHeaderColor, new Vector2(screenSize.X, Config.PhoneBookHeaderHeight));
         }
 
+        public static Texture2D MakeColorTexture(Color color, Vector2 size)
+        {
+            Texture2D texture = new Texture2D(Game1.graphics.GraphicsDevice, (int)size.X, (int)size.Y);
+            Color[] data = new Color[texture.Width * texture.Height];
+            for (int pixel = 0; pixel < data.Length; pixel++)
+            {
+                data[pixel] = color;
+            }
+            texture.SetData(data);
+            return texture;
+        }
 
         public static Vector2 GetPhonePosition()
         {
@@ -592,7 +596,7 @@ namespace MobilePhone
         }
         private static void GetArrowPositions()
         {
-            upArrowPosition = new Vector2(screenPosition.X + screenWidth - Config.ContactArrowWidth, screenPosition.Y);
+            upArrowPosition = new Vector2(screenPosition.X + screenWidth - Config.ContactArrowWidth, screenPosition.Y + Config.PhoneBookHeaderHeight);
             downArrowPosition = new Vector2(screenPosition.X + screenWidth - Config.ContactArrowWidth, screenPosition.Y + screenHeight - Config.ContactArrowHeight);
         }
 

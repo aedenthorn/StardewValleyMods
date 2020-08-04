@@ -55,6 +55,7 @@ namespace MultipleSpouses
             {
                 if(Game1.player.friendshipData[f].Status == FriendshipStatus.Divorced)
                 {
+                    Monitor.Log($"Wiping divorce for {f}");
                     if (Game1.player.friendshipData[f].Points < 8 * 250)
                         Game1.player.friendshipData[f].Status = FriendshipStatus.Friendly;
                     else

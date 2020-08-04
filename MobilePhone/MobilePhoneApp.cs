@@ -21,6 +21,7 @@ namespace MobilePhone
         private static int yOffset;
         private static int lastMousePositionY;
         private static float listHeight;
+        private static bool clicked;
 
         public static void Initialize(IModHelper helper, IMonitor monitor, ModConfig config)
         {
@@ -28,7 +29,7 @@ namespace MobilePhone
             Monitor = monitor;
             Config = config;
             appIcon = Helper.Content.Load<Texture2D>(Path.Combine("assets","app_icon.png"));
-            ModEntry.apps.Add("aedenthorn.MobilePhone", GetApp());
+            ModEntry.apps.Add(Helper.ModRegistry.ModID, GetApp());
         }
 
         private static MobileApp GetApp()
@@ -43,7 +44,6 @@ namespace MobilePhone
             ModEntry.appRunning = true;
             ModEntry.phoneAppRunning = true;
             ModEntry.runningApp = Helper.ModRegistry.ModID;
-            Game1.activeClickableMenu = new PhoneBookMenu();
             CreateCallableList();
             listHeight = Config.ContactMarginY + (int)Math.Ceiling(callableList.Count / (float)ModEntry.gridWidth) * (Config.ContactHeight + Config.ContactMarginY);
             Helper.Events.Display.RenderedWorld += Display_RenderedWorld;
@@ -53,16 +53,14 @@ namespace MobilePhone
 
         private static void Input_ButtonPressed(object sender, StardewModdingAPI.Events.ButtonPressedEventArgs e)
         {
-            if (!ModEntry.appRunning)
+            if (!ModEntry.appRunning || ModEntry.runningApp != Helper.ModRegistry.ModID || !ModEntry.screenRect.Contains(Game1.getMousePosition()))
                 return;
+
             if (e.Button == SButton.MouseLeft)
             {
-                if (!ModEntry.phoneRect.Contains(Game1.getMousePosition()) && Game1.activeClickableMenu is MobilePhoneMenu)
-                {
-                    Helper.Input.Suppress(SButton.MouseLeft);
-                    ModEntry.TogglePhone();
-                    return;
-                }
+                Helper.Input.Suppress(SButton.MouseLeft);
+
+                clicked = true;
 
                 lastMousePositionY = Game1.getMouseY();
                 Monitor.Log($"y {lastMousePositionY}");
@@ -73,28 +71,6 @@ namespace MobilePhone
         {
             if (e.Button == SButton.MouseLeft)
             {
-                Monitor.Log($"unclicked toprow {topRow} callables {callableList.Count} width {ModEntry.gridWidth} tiles {ModEntry.gridWidth * ModEntry.gridHeight}");
-                if (dragging)
-                {
-                    Monitor.Log($"was dragging");
-                    dragging = false;
-                    return;
-                }
-
-                for (int i = 0; i < callableList.Count; i++)
-                {
-                    Vector2 pos = GetNPCPos(i);
-                    Rectangle r = new Rectangle((int)pos.X, (int)pos.Y, Config.ContactWidth, Config.ContactHeight);
-                    if (r.Contains(Game1.getMousePosition()))
-                    {
-                        Monitor.Log($"calling {callableList[i].npc.Name}");
-                        CallNPC(callableList[i].npc);
-                        //Helper.Events.Input.ButtonPressed -= Input_ButtonPressed;
-                        //Helper.Events.Input.ButtonReleased -= Input_ButtonReleased;
-                        //dragging = true;
-                        return;
-                    }
-                }
             }
         }
 
@@ -139,22 +115,6 @@ namespace MobilePhone
 
         private static void Display_RenderedWorld(object sender, StardewModdingAPI.Events.RenderedWorldEventArgs e)
         {
-
-            if (Helper.Input.IsDown(SButton.MouseLeft) && ModEntry.screenRect.Contains(Game1.getMousePosition()))
-            {
-                int dy = Game1.getMouseY() - lastMousePositionY;
-                if (Math.Abs(dy) > 0)
-                {
-                    dragging = true;
-                }
-                if (dragging)
-                {
-                    yOffset = (int)Math.Max(Math.Min(0, yOffset + dy), -1 * Math.Max(0, listHeight - ModEntry.GetScreenSize().Y));
-                }
-            }
-
-            lastMousePositionY = Game1.getMouseY();
-
             if (!ModEntry.appRunning || !ModEntry.phoneOpen || ModEntry.runningApp != Helper.ModRegistry.ModID)
             {
                 ModEntry.appRunning = false;
@@ -164,38 +124,88 @@ namespace MobilePhone
                 Helper.Events.Input.ButtonReleased -= Input_ButtonReleased;
                 return;
             }
+            Vector2 screenPos = ModEntry.GetScreenPosition();
+            Vector2 screenSize = ModEntry.GetScreenSize();
+            Rectangle headerRect = new Rectangle((int)screenPos.X, (int)screenPos.Y, (int)screenSize.X, Config.PhoneBookHeaderHeight);
 
-            if (Game1.activeClickableMenu == null)
-                Game1.activeClickableMenu = new MobilePhoneMenu();
+            if (Helper.Input.IsSuppressed(SButton.MouseLeft) && ModEntry.screenRect.Contains(Game1.getMousePosition()))
+            {
+                int dy = Game1.getMouseY() - lastMousePositionY;
+                if (Math.Abs(dy) > 0)
+                {
+                    dragging = true;
+                }
+                if (dragging)
+                {
+                    yOffset = (int)Math.Max(Math.Min(0, yOffset + dy), -1 * Math.Max(0, listHeight - (screenSize.Y - Config.PhoneBookHeaderHeight)));
+                }
+            }
 
-            e.SpriteBatch.Draw(ModEntry.phoneBookTexture, ModEntry.screenPosition, Color.White);
+            if (clicked && !Helper.Input.IsSuppressed(SButton.MouseLeft))
+            {
+                Point mousePos = Game1.getMousePosition();
+                clicked = false;
+                Monitor.Log($"unclicked toprow {topRow} callables {callableList.Count} width {ModEntry.gridWidth} tiles {ModEntry.gridWidth * ModEntry.gridHeight}");
+                if (dragging)
+                {
+                    Monitor.Log($"was dragging");
+                    dragging = false;
+                }
+                else
+                {
+                    if (headerRect.Contains(mousePos))
+                    {
+                        if (new Rectangle((int)screenPos.X + (int)screenSize.X - Config.PhoneBookHeaderHeight, (int)screenPos.Y, Config.PhoneBookHeaderHeight, Config.PhoneBookHeaderHeight).Contains(mousePos))
+                        {
+                            ModEntry.ToggleApp(false);
+                        }
+                    }
+                    else
+                    {
+                        for (int i = 0; i < callableList.Count; i++)
+                        {
+                            Vector2 pos = GetNPCPos(i);
+                            Rectangle r = new Rectangle((int)pos.X, (int)pos.Y, Config.ContactWidth, Config.ContactHeight);
+                            if (r.Contains(mousePos))
+                            {
+                                Monitor.Log($"calling {callableList[i].npc.Name}");
+                                CallNPC(callableList[i].npc);
+                            }
+                        }
+                    }
+                }
+            }
+
+            lastMousePositionY = Game1.getMouseY();
+            int startListY = (int)screenPos.Y + 32;
+            e.SpriteBatch.Draw(ModEntry.phoneBookTexture, screenPos, Color.White);
 
             if(yOffset < 0)
             {
                 e.SpriteBatch.Draw(ModEntry.upArrowTexture, ModEntry.upArrowPosition, Color.White);
             }
-            if (yOffset > ModEntry.GetScreenSize().Y - listHeight)
+            if (yOffset > ModEntry.GetScreenSize().Y - Config.PhoneBookHeaderHeight - listHeight)
             {
                 e.SpriteBatch.Draw(ModEntry.downArrowTexture, ModEntry.downArrowPosition, Color.White);
             }
 
-            int screenBottom = (int)(ModEntry.screenPosition.Y + ModEntry.GetScreenSize().Y);
+            int screenBottom = (int)(screenPos.Y + screenSize.Y);
             for (int i = 0; i < callableList.Count; i++)
             {
                 Vector2 npcPos = GetNPCPos(i);
                 Rectangle r = callableList[i].sourceRect;
-                if (npcPos.Y < ModEntry.screenPosition.Y - r.Height * 2 || npcPos.Y >= screenBottom)
+                if (npcPos.Y < startListY - r.Height * 2 || npcPos.Y >= screenBottom)
                 {
                     continue;
                 }
                 Rectangle sourceRect = r;
                 int cutTop = 0;
                 int cutBottom = 0;
-                if(npcPos.Y < ModEntry.screenPosition.Y)
+                if(npcPos.Y < startListY)
                 {
-                    cutTop = (int)Math.Round((ModEntry.screenPosition.Y - (int)npcPos.Y) / 2f);
+                    cutTop = (int)Math.Round((startListY - (int)npcPos.Y) / 2f);
                     sourceRect = new Rectangle(r.X, r.Y + cutTop, r.Width, r.Height - cutTop);
-                    npcPos = new Vector2(npcPos.X, ModEntry.screenPosition.Y);
+                    npcPos = new Vector2(npcPos.X, startListY);
                 }
                 else if(npcPos.Y > screenBottom - r.Height * 2)
                 {
@@ -203,32 +213,24 @@ namespace MobilePhone
                     sourceRect = new Rectangle(r.X, r.Y, r.Width, r.Height + cutBottom);
                 }
 
-                e.SpriteBatch.Draw(callableList[i].portrait, npcPos + new Vector2((Config.ContactWidth - 32) / 2,0), sourceRect, Color.White, 0, Vector2.Zero, 2, SpriteEffects.None, 0.86f);
+                e.SpriteBatch.Draw(callableList[i].portrait, npcPos + new Vector2((Config.ContactWidth - 32) / 2f,0), sourceRect, Color.White, 0, Vector2.Zero, 2, SpriteEffects.None, 0.86f);
                 if(Config.ShowNamesInPhoneBook && npcPos.Y < screenBottom - Config.ContactHeight - callableList[i].nameSize.Y * 0.4f + 6)
-                    e.SpriteBatch.DrawString(Game1.dialogueFont, callableList[i].name, GetNPCPos(i) + new Vector2(Config.ContactWidth / 2 - callableList[i].nameSize.X * 0.2f, Config.ContactHeight - 6 ), Color.Black, 0, Vector2.Zero, 0.4f, SpriteEffects.None, 0.86f);
+                    e.SpriteBatch.DrawString(Game1.dialogueFont, callableList[i].name, GetNPCPos(i) + new Vector2(Config.ContactWidth / 2f - callableList[i].nameSize.X * 0.2f, Config.ContactHeight - 6 ), Color.Black, 0, Vector2.Zero, 0.4f, SpriteEffects.None, 0.86f);
             }
+            e.SpriteBatch.Draw(ModEntry.phoneBookHeaderTexture, headerRect, Color.White);
+            string headerText = Helper.Translation.Get("phone-book");
+            Vector2 headerTextSize = Game1.dialogueFont.MeasureString(headerText) * Config.PhoneBookHeaderTextScale;
+            e.SpriteBatch.DrawString(Game1.dialogueFont, headerText, screenPos + new Vector2(screenSize.X / 2f - headerTextSize.X / 2f, Config.PhoneBookHeaderHeight / 2f - headerTextSize.Y / 2f ), Config.PhoneBookHeaderTextColor, 0, Vector2.Zero, Config.PhoneBookHeaderTextScale, SpriteEffects.None, 0.86f);
+            e.SpriteBatch.DrawString(Game1.dialogueFont, "x", screenPos + new Vector2(screenSize.X - Config.PhoneBookHeaderHeight / 2f - Game1.dialogueFont.MeasureString("x").X * Config.PhoneBookHeaderTextScale / 2f, Config.PhoneBookHeaderHeight / 2f - headerTextSize.Y / 2f), Config.PhoneBookHeaderTextColor, 0, Vector2.Zero, Config.PhoneBookHeaderTextScale, SpriteEffects.None, 0.86f);
         }
 
         private static Vector2 GetNPCPos(int i)
         {
             i -= topRow * ModEntry.gridWidth;
             float x = ModEntry.screenPosition.X + Config.ContactMarginX + ((i % ModEntry.gridWidth) * (Config.ContactWidth + Config.ContactMarginX));
-            float y = ModEntry.screenPosition.Y + Config.ContactMarginY + ((i / ModEntry.gridWidth) * (Config.ContactHeight + Config.ContactMarginY));
+            float y = ModEntry.screenPosition.Y + Config.PhoneBookHeaderHeight + Config.ContactMarginY + ((i / ModEntry.gridWidth) * (Config.ContactHeight + Config.ContactMarginY));
 
             return new Vector2(x, y + yOffset);
-        }
-
-        public static Texture2D MakeBackground()
-        {
-            Vector2 screenSize = ModEntry.GetScreenSize();
-            Texture2D phoneBook = new Texture2D(Game1.graphics.GraphicsDevice, (int)screenSize.X, (int)screenSize.Y);
-            Color[] data = new Color[phoneBook.Width * phoneBook.Height];
-            for (int pixel = 0; pixel < data.Length; pixel++)
-            {
-                data[pixel] = Config.PhoneBookBackgroundColor;
-            }
-            phoneBook.SetData(data);
-            return phoneBook;
         }
     }
 }
