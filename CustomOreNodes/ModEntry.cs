@@ -94,12 +94,16 @@ namespace CustomOreNodes
 			   postfix: new HarmonyMethod(typeof(ModEntry), nameof(ModEntry.breakStone_Postfix))
 			);
 
-			ConstructorInfo ci = typeof(Object).GetConstructor(new Type[] { typeof(Vector2), typeof(int), typeof(string), typeof(bool), typeof(bool), typeof(bool), typeof(bool) });
-			harmony.Patch(
-			   original: ci,
-			   prefix: new HarmonyMethod(typeof(ModEntry), nameof(ModEntry.Object_Prefix)),
-			   postfix: new HarmonyMethod(typeof(ModEntry), nameof(ModEntry.Object_Postfix))
-			);
+            if (Config.AllowCustomOreNodesAboveGround)
+            {
+				ConstructorInfo ci = typeof(Object).GetConstructor(new Type[] { typeof(Vector2), typeof(int), typeof(string), typeof(bool), typeof(bool), typeof(bool), typeof(bool) });
+				harmony.Patch(
+				   original: ci,
+				   prefix: new HarmonyMethod(typeof(ModEntry), nameof(ModEntry.Object_Prefix)),
+				   postfix: new HarmonyMethod(typeof(ModEntry), nameof(ModEntry.Object_Postfix))
+				);
+			}
+
 
 			helper.Events.GameLoop.GameLaunched += GameLoop_GameLaunched;
 		}
@@ -179,7 +183,7 @@ namespace CustomOreNodes
 					if(Game1.random.NextDouble() < node.spawnChance/100f)
 					{
 						int index = (SpringObjectsHeight / 16 * SpringObjectsWidth / 16) + (Config.SpriteSheetOffsetRows * SpringObjectsWidth / 16) + i;
-						SMonitor.Log($"Displaying stone at index {index}", LogLevel.Debug);
+						//SMonitor.Log($"Displaying stone at index {index}", LogLevel.Debug);
 						__result = new Object(tile, index, "Stone", true, false, false, false)
 						{
 							MinutesUntilReady = node.durability
@@ -203,12 +207,11 @@ namespace CustomOreNodes
             {
 				for (int i = 0; i < CustomOreNodes.Count; i++)
 				{
-					CustomOreNode node = CustomOreNodes[i];
-					if (node.minLevel > 0)
+					if (CustomOreNodes[i].minLevel > 0)
 					{
 						continue;
 					}
-					if (Game1.random.NextDouble() < node.spawnChance / 100f)
+					if (Game1.random.NextDouble() < CustomOreNodes[i].spawnChance / 100f)
 					{
 						int index = (SpringObjectsHeight / 16 * SpringObjectsWidth / 16) + (Config.SpriteSheetOffsetRows * SpringObjectsWidth / 16) + i;
 						parentSheetIndex = index;
@@ -227,6 +230,7 @@ namespace CustomOreNodes
 					if(parentSheetIndex == (SpringObjectsHeight / 16 * SpringObjectsWidth / 16) + (Config.SpriteSheetOffsetRows * SpringObjectsWidth / 16) + i)
                     {
 						__instance.MinutesUntilReady = CustomOreNodes[i].durability;
+						break;
 					}
 				}
 			}

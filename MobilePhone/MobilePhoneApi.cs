@@ -21,16 +21,16 @@ namespace MobilePhone
 
         public Vector2 GetScreenPosition()
         {
-            return ModEntry.GetScreenPosition();
+            return PhoneUtils.GetScreenPosition();
         }
         public Vector2 GetScreenSize()
         {
-            return ModEntry.GetScreenSize();
+            return PhoneUtils.GetScreenSize();
         }
 
         public Vector2 GetScreenSize(bool rotated)
         {
-            return ModEntry.GetScreenSize(rotated);
+            return PhoneUtils.GetScreenSize(rotated);
         }
         public Rectangle GetPhoneRectangle()
         {
@@ -66,7 +66,7 @@ namespace MobilePhone
         }
         public void SetPhoneOpened(bool value)
         {
-            ModEntry.TogglePhone(value);
+            PhoneUtils.TogglePhone(value);
         }
         public bool GetAppRunning()
         {

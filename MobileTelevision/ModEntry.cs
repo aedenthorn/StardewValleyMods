@@ -3,17 +3,9 @@ using Microsoft.Xna.Framework.Graphics;
 using StardewModdingAPI;
 using StardewModdingAPI.Events;
 using StardewValley;
-using StardewValley.Locations;
-using StardewValley.Menus;
-using StardewValley.Minigames;
 using StardewValley.Objects;
-using StardewValley.Tools;
-using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Threading.Tasks;
-using Object = StardewValley.Object;
 
 namespace MobileTelevision
 {
@@ -23,7 +15,8 @@ namespace MobileTelevision
 
         internal static ModConfig Config;
 
-        private IMobilePhoneApi api;
+        public static IMobilePhoneApi api;
+        private MobileTV tv;
 
         /// <summary>The mod entry point, called after the mod is first loaded.</summary>
         /// <param name="helper">Provides simplified APIs for writing mods.</param>
@@ -35,6 +28,15 @@ namespace MobileTelevision
                 return;
 
             Helper.Events.GameLoop.GameLaunched += GameLoop_GameLaunched;
+            Helper.Events.Display.RenderedActiveMenu += Display_RenderedActiveMenu;
+        }
+
+        private void Display_RenderedActiveMenu(object sender, RenderedActiveMenuEventArgs e)
+        {
+            if(tv != null && api.GetPhoneOpened())
+            {
+                tv.draw(e.SpriteBatch, Game1.viewport.Width / 2, Game1.viewport.Height / 2);
+            }
         }
 
         private void GameLoop_GameLaunched(object sender, GameLaunchedEventArgs e)
@@ -61,7 +63,7 @@ namespace MobileTelevision
         {
             await Task.Delay(50);
             Monitor.Log("Really opening television");
-            TV tv = new TV();
+            tv = new MobileTV(1468, new Vector2((Game1.viewport.X + Game1.viewport.Width / 2 - Game1.tileSize) / Game1.tileSize,(Game1.viewport.Y + Game1.viewport.Height / 2 - Game1.tileSize) / Game1.tileSize));
             tv.checkForAction(Game1.player);
         }
 

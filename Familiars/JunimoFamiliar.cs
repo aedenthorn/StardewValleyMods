@@ -43,46 +43,8 @@ namespace Familiars
 			this.farmerPassesThrough = true;
 			ignoreMovementAnimations = true;
 
-			if (ModEntry.Config.JunimoColorType.ToLower() == "default")
-            {
-				switch (Game1.random.Next(8))
-				{
-					case 0:
-						this.color.Value = Color.LimeGreen;
-						return;
-					case 1:
-						this.color.Value = Color.Orange;
-						return;
-					case 2:
-						this.color.Value = Color.LightGreen;
-						return;
-					case 3:
-						this.color.Value = Color.Tan;
-						return;
-					case 4:
-						this.color.Value = Color.GreenYellow;
-						return;
-					case 5:
-						this.color.Value = Color.LawnGreen;
-						return;
-					case 6:
-						this.color.Value = Color.PaleGreen;
-						return;
-					case 7:
-						this.color.Value = Color.Turquoise;
-						return;
-					default:
-						return;
-				}
-			}
-			else if (ModEntry.Config.JunimoColorType.ToLower() == "random")
-            {
-				color.Value = new Color(Game1.random.Next(256), Game1.random.Next(256), Game1.random.Next(256));
-			}
-			else
-            {
-				color.Value = ModEntry.Config.JunimoMainColor;
-            }
+			color.Value = FamiliarsUtils.GetJunimoColor();
+
 		}
 
 		protected override void initNetFields()
@@ -571,8 +533,6 @@ namespace Familiars
 		private readonly NetVector2 motion = new NetVector2(Vector2.Zero);
 
 		private new readonly NetRectangle nextPosition = new NetRectangle();
-
-		private readonly NetColor color = new NetColor();
 
 		private readonly NetColor bundleColor = new NetColor();
 

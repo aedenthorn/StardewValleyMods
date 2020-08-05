@@ -32,5 +32,6 @@ namespace Familiars
         public string currentLocation;
         public Vector2 position;
         public int baseFrame;
+        public Color color;
     }
 }

@@ -267,8 +267,6 @@ namespace Familiars
             {
                 foreach (Familiar f in Game1.player.currentLocation.characters.Where(n => n is Familiar))
                 {
-                    Monitor.Log($"familiar location: {f.position} click: {Game1.getMousePosition()}");
-
                     if ((f.ownerId == Game1.player.UniqueMultiplayerID || f.ownerId == 0 || !f.followingOwner) && f.GetBoundingBox().Intersects(box))
                     {
                         if (!f.followingOwner)

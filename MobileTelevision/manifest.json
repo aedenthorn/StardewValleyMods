@@ -1,12 +1,12 @@
 ﻿{
   "Name": "Mobile Television",
   "Author": "aedenthorn",
-  "Version": "0.1.0",
+  "Version": "0.2.1",
   "Description": "Television for your mobile phone.",
   "UniqueID": "aedenthorn.MobileTelevision",
   "EntryDll": "MobileTelevision.dll",
   "MinimumApiVersion": "3.5.0",
-  "UpdateKeys": ["Nexus:"],
+  "UpdateKeys": ["Nexus:6575"],
   "ModUpdater": {
     "Repository": "StardewValleyMods",
     "User": "aedenthorn",

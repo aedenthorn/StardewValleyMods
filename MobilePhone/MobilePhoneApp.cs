@@ -16,8 +16,7 @@ namespace MobilePhone
         private static ModConfig Config;
         private static Texture2D appIcon;
         private static List<CallableNPC> callableList = new List<CallableNPC>();
-        private static int topRow = 0;
-        private static bool dragging = true;
+        private static bool dragging;
         private static int yOffset;
         private static int lastMousePositionY;
         private static float listHeight;
@@ -40,7 +39,6 @@ namespace MobilePhone
         public static void OpenPhoneBook()
         {
             Monitor.Log($"opening phone book");
-            topRow = 0;
             ModEntry.appRunning = true;
             ModEntry.phoneAppRunning = true;
             ModEntry.runningApp = Helper.ModRegistry.ModID;
@@ -63,7 +61,6 @@ namespace MobilePhone
                 clicked = true;
 
                 lastMousePositionY = Game1.getMouseY();
-                Monitor.Log($"y {lastMousePositionY}");
             }
         }
 
@@ -124,28 +121,27 @@ namespace MobilePhone
                 Helper.Events.Input.ButtonReleased -= Input_ButtonReleased;
                 return;
             }
-            Vector2 screenPos = ModEntry.GetScreenPosition();
-            Vector2 screenSize = ModEntry.GetScreenSize();
-            Rectangle headerRect = new Rectangle((int)screenPos.X, (int)screenPos.Y, (int)screenSize.X, Config.PhoneBookHeaderHeight);
+            Vector2 screenPos = PhoneUtils.GetScreenPosition();
+            Vector2 screenSize = PhoneUtils.GetScreenSize();
+            Rectangle headerRect = new Rectangle((int)screenPos.X, (int)screenPos.Y, (int)screenSize.X, Config.AppHeaderHeight);
+            Point mousePos = Game1.getMousePosition();
 
-            if (Helper.Input.IsSuppressed(SButton.MouseLeft) && ModEntry.screenRect.Contains(Game1.getMousePosition()))
+            if (Helper.Input.IsSuppressed(SButton.MouseLeft))
             {
-                int dy = Game1.getMouseY() - lastMousePositionY;
-                if (Math.Abs(dy) > 0)
+                int dy = mousePos.Y - lastMousePositionY;
+                if (Math.Abs(dy) > 0 && ModEntry.screenRect.Contains(mousePos))
                 {
                     dragging = true;
                 }
                 if (dragging)
                 {
-                    yOffset = (int)Math.Max(Math.Min(0, yOffset + dy), -1 * Math.Max(0, listHeight - (screenSize.Y - Config.PhoneBookHeaderHeight)));
+                    yOffset = (int)Math.Max(Math.Min(0, yOffset + dy), -1 * Math.Max(0, listHeight - (screenSize.Y - Config.AppHeaderHeight)));
                 }
             }
 
             if (clicked && !Helper.Input.IsSuppressed(SButton.MouseLeft))
             {
-                Point mousePos = Game1.getMousePosition();
                 clicked = false;
-                Monitor.Log($"unclicked toprow {topRow} callables {callableList.Count} width {ModEntry.gridWidth} tiles {ModEntry.gridWidth * ModEntry.gridHeight}");
                 if (dragging)
                 {
                     Monitor.Log($"was dragging");
@@ -155,9 +151,9 @@ namespace MobilePhone
                 {
                     if (headerRect.Contains(mousePos))
                     {
-                        if (new Rectangle((int)screenPos.X + (int)screenSize.X - Config.PhoneBookHeaderHeight, (int)screenPos.Y, Config.PhoneBookHeaderHeight, Config.PhoneBookHeaderHeight).Contains(mousePos))
+                        if (new Rectangle((int)screenPos.X + (int)screenSize.X - Config.AppHeaderHeight, (int)screenPos.Y, Config.AppHeaderHeight, Config.AppHeaderHeight).Contains(mousePos))
                         {
-                            ModEntry.ToggleApp(false);
+                            PhoneUtils.ToggleApp(false);
                         }
                     }
                     else
@@ -177,14 +173,14 @@ namespace MobilePhone
             }
 
             lastMousePositionY = Game1.getMouseY();
-            int startListY = (int)screenPos.Y + 32;
+            int startListY = (int)screenPos.Y + Config.AppHeaderHeight;
             e.SpriteBatch.Draw(ModEntry.phoneBookTexture, screenPos, Color.White);
 
             if(yOffset < 0)
             {
                 e.SpriteBatch.Draw(ModEntry.upArrowTexture, ModEntry.upArrowPosition, Color.White);
             }
-            if (yOffset > ModEntry.GetScreenSize().Y - Config.PhoneBookHeaderHeight - listHeight)
+            if (yOffset > PhoneUtils.GetScreenSize().Y - Config.AppHeaderHeight - listHeight)
             {
                 e.SpriteBatch.Draw(ModEntry.downArrowTexture, ModEntry.downArrowPosition, Color.White);
             }
@@ -219,16 +215,15 @@ namespace MobilePhone
             }
             e.SpriteBatch.Draw(ModEntry.phoneBookHeaderTexture, headerRect, Color.White);
             string headerText = Helper.Translation.Get("phone-book");
-            Vector2 headerTextSize = Game1.dialogueFont.MeasureString(headerText) * Config.PhoneBookHeaderTextScale;
-            e.SpriteBatch.DrawString(Game1.dialogueFont, headerText, screenPos + new Vector2(screenSize.X / 2f - headerTextSize.X / 2f, Config.PhoneBookHeaderHeight / 2f - headerTextSize.Y / 2f ), Config.PhoneBookHeaderTextColor, 0, Vector2.Zero, Config.PhoneBookHeaderTextScale, SpriteEffects.None, 0.86f);
-            e.SpriteBatch.DrawString(Game1.dialogueFont, "x", screenPos + new Vector2(screenSize.X - Config.PhoneBookHeaderHeight / 2f - Game1.dialogueFont.MeasureString("x").X * Config.PhoneBookHeaderTextScale / 2f, Config.PhoneBookHeaderHeight / 2f - headerTextSize.Y / 2f), Config.PhoneBookHeaderTextColor, 0, Vector2.Zero, Config.PhoneBookHeaderTextScale, SpriteEffects.None, 0.86f);
+            Vector2 headerTextSize = Game1.dialogueFont.MeasureString(headerText) * Config.HeaderTextScale;
+            e.SpriteBatch.DrawString(Game1.dialogueFont, headerText, screenPos + new Vector2(screenSize.X / 2f - headerTextSize.X / 2f, Config.AppHeaderHeight / 2f - headerTextSize.Y / 2f ), Config.PhoneBookHeaderTextColor, 0, Vector2.Zero, Config.HeaderTextScale, SpriteEffects.None, 0.86f);
+            e.SpriteBatch.DrawString(Game1.dialogueFont, "x", screenPos + new Vector2(screenSize.X - Config.AppHeaderHeight / 2f - Game1.dialogueFont.MeasureString("x").X * Config.HeaderTextScale / 2f, Config.AppHeaderHeight / 2f - headerTextSize.Y / 2f), Config.PhoneBookHeaderTextColor, 0, Vector2.Zero, Config.HeaderTextScale, SpriteEffects.None, 0.86f);
         }
 
         private static Vector2 GetNPCPos(int i)
         {
-            i -= topRow * ModEntry.gridWidth;
             float x = ModEntry.screenPosition.X + Config.ContactMarginX + ((i % ModEntry.gridWidth) * (Config.ContactWidth + Config.ContactMarginX));
-            float y = ModEntry.screenPosition.Y + Config.PhoneBookHeaderHeight + Config.ContactMarginY + ((i / ModEntry.gridWidth) * (Config.ContactHeight + Config.ContactMarginY));
+            float y = ModEntry.screenPosition.Y + Config.AppHeaderHeight + Config.ContactMarginY + ((i / ModEntry.gridWidth) * (Config.ContactHeight + Config.ContactMarginY));
 
             return new Vector2(x, y + yOffset);
         }

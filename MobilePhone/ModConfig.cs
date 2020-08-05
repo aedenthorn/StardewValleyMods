@@ -1,11 +1,6 @@
 ﻿using Microsoft.Xna.Framework;
-using Netcode;
 using StardewModdingAPI;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.IO;
 
 namespace MobilePhone
 {
@@ -15,15 +10,17 @@ namespace MobilePhone
         public SButton OpenPhoneKey { get; set; } = SButton.End;
         public SButton RotatePhoneKey { get; set; } = SButton.PageDown;
         public bool ShowPhoneIcon { get; set; } = true;
-        public string PhoneTexturePath { get; set; } = "phone.png";
-        public string BackgroundTexturePath { get; set; } = "background.png";
-        public string PhoneRotatedTexturePath { get; set; } = "phone_landscape.png";
-        public string BackgroundRotatedTexturePath { get; set; } = "background_landscape.png";
+        public string PhoneSkinPath { get; set; } = Path.Combine("assets", "skins", "black.png");
+        public string BackgroundPath { get; set; } = Path.Combine("assets", "backgrounds", "clouds.png");
         public string UpArrowTexturePath { get; set; } = "up_arrow.png";
         public string DownArrowTexturePath { get; set; } = "down_arrow.png";
         public string iconTexturePath { get; set; } = "phone_icon.png";
         public string PhonePosition { get; set; } = "bottom-right"; // mid, top-left, bottom-right, etc.
         public string PhoneIconPosition { get; set; } = "top-right"; // mid, top-left, bottom-right, etc.
+        public int ToolTipDelayTicks { get; set; } = 40;
+        public int TicksToMoveAppIcon { get; set; } = 20;
+        public string[] AppList { get; set; } = new string[0];
+
         public int PhoneWidth{ get; set; } = 286;
         public int PhoneHeight { get; set; } = 503;
         public int ScreenWidth { get; set; } = 260;
@@ -48,6 +45,9 @@ namespace MobilePhone
         public int IconHeight { get; set; } = 48;
         public int IconMarginX { get; set; } = 12;
         public int IconMarginY { get; set; } = 12;
+
+        // Phone book
+
         public int ContactWidth { get; set; } = 64;
         public int ContactHeight { get; set; } = 64;
         public int ContactMarginX { get; set; } = 16;
@@ -57,11 +57,23 @@ namespace MobilePhone
         public Color PhoneBookBackgroundColor { get; set; } = Color.White;
         public Color PhoneBookHeaderColor { get; set; } = Color.DeepSkyBlue;
         public Color PhoneBookHeaderTextColor { get; set; } = Color.White;
-        public int PhoneBookHeaderHeight { get; set; } = 32;
-        public float PhoneBookHeaderTextScale { get; set; } = 0.6f;
+        public int AppHeaderHeight { get; set; } = 32;
+        public float HeaderTextScale { get; set; } = 0.6f;
         public int MinPointsToCall { get; set; } = 1000;
         public bool ShowNamesInPhoneBook { get; set; } = true;
         public bool UseRealNamesInPhoneBook { get; set; } = true;
-        public int ToolTipDelayTicks { get; set; } = 40;
+
+
+        // Themes
+
+        public int ThemeItemWidth { get; set; } = 64;
+        public int ThemeItemHeight { get; set; } = 128;
+        public int ThemeItemMarginX { get; set; } = 16;
+        public int ThemeItemMarginY { get; set; } = 16;
+
+        public Color ThemesHeaderColor { get; set; } = Color.DeepSkyBlue;
+        public Color ThemesFooterHighlightColor { get; set; } = Color.AliceBlue;
+        public Color ThemesHeaderTextColor { get; set; } = Color.White;
+        public Color ThemesHeaderHighlightedTextColor { get; set; } = Color.DarkSlateBlue;
     }
 }

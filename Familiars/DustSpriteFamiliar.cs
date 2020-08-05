@@ -2,6 +2,7 @@
 using Microsoft.Xna.Framework.Graphics;
 using Netcode;
 using StardewValley;
+using StardewValley.Locations;
 using StardewValley.Monsters;
 using System;
 using System.Reflection;
@@ -26,6 +27,7 @@ namespace Familiars
 			HideShadow = true;
 			DamageToFarmer = 0;
 			farmerPassesThrough = true;
+			willDestroyObjectsUnderfoot = false;
 
 			if (ModEntry.Config.DustColorType.ToLower() == "random")
 			{
@@ -143,10 +145,10 @@ namespace Familiars
 					});
 					foreach (Vector2 v in Utility.getAdjacentTileLocations(base.getTileLocation()))
 					{
-						if (base.currentLocation.objects.ContainsKey(v) && base.currentLocation.objects[v].Name.Contains("Stone"))
+						if (currentLocation is MineShaft && currentLocation.objects.ContainsKey(v) && base.currentLocation.objects[v].Name.Equals("Stone"))
 						{
 							AddExp(1);
-							base.currentLocation.destroyObject(v, null);
+							currentLocation.destroyObject(v, null);
 						}
 					}
 					this.yJumpVelocity *= 2f;

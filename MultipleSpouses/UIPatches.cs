@@ -42,6 +42,9 @@ namespace MultipleSpouses
 		{
 			try
 			{
+				if (dialogues == null || dialogues.Count < 2)
+					return;
+
 				if (dialogues[1] == Game1.content.LoadString("Strings\\StringsFromCSFiles:Event.cs.1826"))
                 {
 					List<string> newDialogues = new List<string>()

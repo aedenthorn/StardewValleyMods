@@ -16,5 +16,6 @@ namespace YAJM
         public bool EnableMultiJump { get; set; } = false;
         public int MaxJumpDistance { get; set; } = 10;
         public bool PlayJumpSound { get; set; } = true;
+        public bool CustomHorseTexture { get; set; } = false;
     }
 }

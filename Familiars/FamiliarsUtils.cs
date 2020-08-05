@@ -242,6 +242,14 @@ namespace Familiars
 				d.redColor = f.redColor;
 				d.greenColor = f.greenColor;
 				d.blueColor = f.blueColor;
+				if(f.color != null && f.color.A == 255)
+                {
+					d.color.Value = f.color;
+				}
+                else
+                {
+					d.color.Value = FamiliarsUtils.GetJunimoColor();
+                }
 				d.SetScale();
 				d.currentLocation = l;
 				l.characters.Add(d);
@@ -276,6 +284,42 @@ namespace Familiars
 				d.baseFrame = f.baseFrame;
 				d.reloadSprite();
 				l.characters.Add(d);
+			}
+		}
+
+        public static Color GetJunimoColor()
+        {
+			if (ModEntry.Config.JunimoColorType.ToLower() == "default")
+			{
+				switch (Game1.random.Next(8))
+				{
+					case 0:
+						return Color.LimeGreen;
+					case 1:
+						return Color.Orange;
+					case 2:
+						return Color.LightGreen;
+					case 3:
+						return Color.Tan;
+					case 4:
+						return Color.GreenYellow;
+					case 5:
+						return Color.LawnGreen;
+					case 6:
+						return Color.PaleGreen;
+					case 7:
+						return Color.Turquoise;
+					default:
+						return Color.LimeGreen;
+				}
+			}
+			else if (ModEntry.Config.JunimoColorType.ToLower() == "random")
+			{
+				return new Color(Game1.random.Next(256), Game1.random.Next(256), Game1.random.Next(256));
+			}
+			else
+			{
+				return ModEntry.Config.JunimoMainColor;
 			}
 		}
 

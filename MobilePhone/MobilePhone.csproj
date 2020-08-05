@@ -45,15 +45,18 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CallableNPC.cs" />
-    <Compile Include="DraggingPhoneIconMenu.cs" />
     <Compile Include="MobileAppJSON.cs" />
     <Compile Include="MobilePhoneApi.cs" />
     <Compile Include="MobileApp.cs" />
+    <Compile Include="ThemeApp.cs" />
     <Compile Include="MobilePhoneApp.cs" />
     <Compile Include="MobilePhoneMenu.cs" />
     <Compile Include="ModConfig.cs" />
+    <Compile Include="PhoneUtils.cs" />
+    <Compile Include="PhoneGameLoop.cs" />
+    <Compile Include="PhoneInput.cs" />
+    <Compile Include="PhoneVisuals.cs" />
     <Compile Include="ModEntry.cs" />
-    <Compile Include="PhoneBookMenu.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -65,20 +68,20 @@
   <ItemGroup>
     <Content Include="assets\app_icon.png" />
     <Content Include="assets\app_icon_64.png" />
-    <Content Include="assets\background.png" />
-    <Content Include="assets\background_hearts.png" />
-    <Content Include="assets\background_hearts_landscape.png" />
-    <Content Include="assets\background_landscape.png" />
+    <Content Include="assets\backgrounds\clouds.png" />
+    <Content Include="assets\backgrounds\clouds_landscape.png" />
+    <Content Include="assets\backgrounds\hearts.png" />
+    <Content Include="assets\backgrounds\hearts_landscape.png" />
     <Content Include="assets\down_arrow.png" />
-    <Content Include="assets\phone.png" />
-    <Content Include="assets\phone_icon.png" />
-    <Content Include="assets\phone_landscape.png" />
-    <Content Include="assets\phone_pink.png" />
-    <Content Include="assets\phone_pink_decals.png" />
-    <Content Include="assets\phone_pink_decals_landscape.png" />
-    <Content Include="assets\phone_pink_landscape.png" />
-    <Content Include="assets\phone_white.png" />
-    <Content Include="assets\phone_white_landscape.png" />
+    <Content Include="assets\skins\black.png" />
+    <Content Include="assets\skins\black_landscape.png" />
+    <Content Include="assets\skins\pink.png" />
+    <Content Include="assets\skins\pink_decals.png" />
+    <Content Include="assets\skins\pink_decals_landscape.png" />
+    <Content Include="assets\skins\pink_landscape.png" />
+    <Content Include="assets\skins\white.png" />
+    <Content Include="assets\skins\white_landscape.png" />
+    <Content Include="assets\theme_app_icon.png" />
     <Content Include="assets\up_arrow.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

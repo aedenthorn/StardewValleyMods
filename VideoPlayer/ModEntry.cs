@@ -18,7 +18,6 @@ namespace VideoPlayerMod
 		public static ModEntry context;
         public static ModConfig Config;
         public int currentTrack = 0;
-        private List<Video> videos = new List<Video>();
         public VideoPlayer videoPlayer = new VideoPlayer();
         public Video currentVideo;
         private string[] videoFiles;
@@ -53,24 +52,6 @@ namespace VideoPlayerMod
                 return;
             }
             Monitor.Log($"Loaded {videoFiles.Length} videos.", LogLevel.Debug);
-
-            foreach(string v in videoFiles)
-            {
-                try
-                {
-                    if (TryLoadFromWMV(v, out Video video))
-                    {
-                        videos.Add(video);
-                        Monitor.Log($"Success adding {v}!", LogLevel.Debug);
-                    }
-                    //string videoPath = Path.Combine("assets", Path.GetFileName(v));
-                    //videos.Add(Helper.Content.Load<Video>(videoPath)); 
-                }
-                catch(Exception ex)
-                {
-                    Monitor.Log($"Exception loading wmv: {ex}");
-                }
-            }
 
             SetVideo(0);
             MakeTextures();
@@ -159,7 +140,10 @@ namespace VideoPlayerMod
 
         private void SetVideo(int idx)
         {
-            currentVideo = videos[idx];
+            if(!TryLoadFromWMV(videoFiles[idx], out currentVideo))
+            {
+                Monitor.Log($"Error loading video file {videoFiles[idx]}", LogLevel.Error);
+            }
         }
 
         private void Input_ButtonPressed(object sender, StardewModdingAPI.Events.ButtonPressedEventArgs e)

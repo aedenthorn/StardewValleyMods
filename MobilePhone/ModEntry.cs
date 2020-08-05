@@ -1,5 +1,6 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using Microsoft.Xna.Framework.Input;
 using StardewModdingAPI;
 using StardewValley;
 using System;
@@ -46,23 +47,41 @@ namespace MobilePhone
         public static Vector2 upArrowPosition;
         public static Vector2 downArrowPosition;
 
-        private static MobilePhoneApi api;
+        public static MobilePhoneApi api;
         public static int appColumns;
         public static int appRows;
         public static int gridWidth;
         public static int gridHeight;
-        public static int topRow;
+        public static int themeGridWidth;
+        public static int themeGridHeight;
 
-        public static Dictionary<string, MobileApp> apps = new Dictionary<string, MobileApp>();
         public static Texture2D phoneBookTexture;
         public static Texture2D phoneBookHeaderTexture;
+
+        public static Dictionary<string, MobileApp> apps = new Dictionary<string, MobileApp>();
+        public static List<string> appOrder;
+        public static string runningApp;
+        public static int listHeight;
+
+        public static bool clicking;
         public static bool draggingPhone;
-        public static Point lastMousePosition;
-        public static int ticksSinceMoved = 0;
-        public static Point lastPos = new Point();
+        public static bool draggingIcons;
         public static bool clickingPhoneIcon;
         public static bool draggingPhoneIcon;
-        public static string runningApp;
+        public static bool movingAppIcon;
+
+        public static Point lastMousePosition;
+        public static Point movingAppIconOffset;
+
+        public static float yOffset;
+
+        public static int clickingApp = -1;
+        public static int switchingApp = -1;
+
+        public static int clickingTicks;
+        public static int ticksSinceMoved;
+        internal static Texture2D themesHighlightTexture;
+        internal static Texture2D themesHeaderTexture;
 
         public static event EventHandler OnScreenRotated;
 
@@ -78,531 +97,22 @@ namespace MobilePhone
             api = (MobilePhoneApi)GetApi();
 
             MobilePhoneApp.Initialize(Helper, Monitor, Config);
+            ThemeApp.Initialize(Helper, Monitor, Config);
+            PhoneVisuals.Initialize(Helper, Monitor, Config);
+            PhoneInput.Initialize(Helper, Monitor, Config);
+            PhoneGameLoop.Initialize(Helper, Monitor, Config);
+            PhoneUtils.Initialize(Helper, Monitor, Config);
 
-            CreatePhoneTextures();
-            RefreshPhoneLayout();
-
-            Helper.Events.Input.ButtonPressed += Input_ButtonPressed;
-            Helper.Events.Input.ButtonReleased += Input_ButtonReleased;
-            Helper.Events.GameLoop.SaveLoaded += GameLoop_SaveLoaded;
-            Helper.Events.GameLoop.GameLaunched += GameLoop_GameLaunched;
-            Helper.Events.Display.WindowResized += Display_WindowResized;
-        }
-
-        private void GameLoop_GameLaunched(object sender, StardewModdingAPI.Events.GameLaunchedEventArgs e)
-        {
-            foreach (IContentPack contentPack in Helper.ContentPacks.GetOwned())
-            {
-                try
-                {
-                    Monitor.Log($"Reading content pack: {contentPack.Manifest.Name} {contentPack.Manifest.Version} from {contentPack.DirectoryPath}");
-                    MobileAppJSON json = contentPack.ReadJsonFile<MobileAppJSON>("content.json");
-                    Texture2D icon = contentPack.LoadAsset<Texture2D>(json.iconPath);
-                    apps.Add(json.id, new MobileApp(json.name, json.keyPress, json.closePhone, icon));
-                    Monitor.Log($"Added app {json.name} from {contentPack.DirectoryPath}");
-                }
-                catch (Exception ex)
-                {
-                    Monitor.Log($"error reading content.json file in content pack {contentPack.Manifest.Name}.\r\n{ex}", LogLevel.Error);
-                }
-            }
-        }
-
-        private void Display_WindowResized(object sender, StardewModdingAPI.Events.WindowResizedEventArgs e)
-        {
-            RefreshPhoneLayout();
-        }
-
-        private void GameLoop_SaveLoaded(object sender, StardewModdingAPI.Events.SaveLoadedEventArgs e)
-        {
-            Monitor.Log($"total apps: {apps.Count}");
-            RefreshPhoneLayout();
-            SHelper.Events.Display.RenderedWorld += Display_RenderedWorld;
+            Helper.Events.Input.ButtonPressed += PhoneInput.Input_ButtonPressed;
+            Helper.Events.Input.ButtonReleased += PhoneInput.Input_ButtonReleased;
+            Helper.Events.GameLoop.SaveLoaded += PhoneGameLoop.GameLoop_SaveLoaded;
+            Helper.Events.GameLoop.GameLaunched += PhoneGameLoop.GameLoop_GameLaunched;
+            Helper.Events.Display.WindowResized += PhoneVisuals.Display_WindowResized;
         }
 
         public override object GetApi()
         {
             return new MobilePhoneApi();
-        }
-        private void CreatePhoneTextures()
-        {
-            phoneTexture = Helper.Content.Load<Texture2D>(Path.Combine("assets",Config.PhoneTexturePath));
-            backgroundTexture = Helper.Content.Load<Texture2D>(Path.Combine("assets",Config.BackgroundTexturePath));
-            phoneRotatedTexture = Helper.Content.Load<Texture2D>(Path.Combine("assets",Config.PhoneRotatedTexturePath));
-            backgroundRotatedTexture = Helper.Content.Load<Texture2D>(Path.Combine("assets",Config.BackgroundRotatedTexturePath));
-            upArrowTexture = Helper.Content.Load<Texture2D>(Path.Combine("assets",Config.UpArrowTexturePath));
-            downArrowTexture = Helper.Content.Load<Texture2D>(Path.Combine("assets",Config.DownArrowTexturePath));
-            if (Config.ShowPhoneIcon)
-            {
-                iconTexture = Helper.Content.Load<Texture2D>(Path.Combine("assets", Config.iconTexturePath));
-            }
-        }
-
-        private static void Display_RenderedWorld(object sender, StardewModdingAPI.Events.RenderedWorldEventArgs e)
-        {
-
-            Point mousePos = Game1.getMousePosition();
-
-            if (!phoneOpen)
-            {
-                appRunning = false;
-                runningApp = null;
-                if (Game1.activeClickableMenu is MobilePhoneMenu)
-                {
-                    Game1.activeClickableMenu = null;
-                }
-                if (Config.ShowPhoneIcon && (Game1.displayHUD || Game1.eventUp) && Game1.currentBillboard == 0 && Game1.gameMode == 3 && !Game1.freezeControls && !Game1.panMode && !Game1.HostPaused && !Game1.game1.takingMapScreenshot)
-                {
-                    if (clickingPhoneIcon)
-                    {
-                        if(SHelper.Input.IsDown(SButton.MouseLeft) && lastMousePosition != mousePos)
-                        {
-                            draggingPhoneIcon = true;
-                            Config.PhoneIconOffsetX += mousePos.X - lastMousePosition.X;
-                            Config.PhoneIconOffsetY += mousePos.Y - lastMousePosition.Y;
-                            phoneIconPosition = GetPhoneIconPosition();
-                            lastMousePosition = mousePos;
-                        }
-                    }
-                    e.SpriteBatch.Draw(iconTexture, phoneIconPosition, Color.White);
-                }
-
-                return;
-            }
-
-            if (Game1.game1.takingMapScreenshot)
-                return;
-
-            if (!appRunning)
-            {
-                if(Game1.activeClickableMenu == null)
-                    Game1.activeClickableMenu = new MobilePhoneMenu();
-            }
-            else
-            {
-                if(Game1.activeClickableMenu is MobilePhoneMenu)
-                {
-                    Game1.activeClickableMenu = null;
-                }
-            }
-
-            if (draggingPhone)
-            {
-                if(mousePos != lastMousePosition)
-                {
-                    int x = mousePos.X - lastMousePosition.X;
-                    int y = mousePos.Y - lastMousePosition.Y; 
-                    if (phoneRotated)
-                    {
-                        Config.PhoneRotatedOffsetX += x;
-                        Config.PhoneRotatedOffsetY += y;
-                    }
-                    else
-                    {
-                        Config.PhoneOffsetX += x;
-                        Config.PhoneOffsetY += y;
-                    }
-                    RefreshPhoneLayout();
-                    lastMousePosition = mousePos;
-                }
-            }
-
-            e.SpriteBatch.Draw(phoneRotated ? backgroundRotatedTexture : backgroundTexture, phonePosition, Color.White);
-            e.SpriteBatch.Draw(phoneRotated ? phoneRotatedTexture : phoneTexture, phonePosition, Color.White);
-
-            if (appRunning)
-                return;
-            if (runningApp == context.Helper.ModRegistry.ModID && Game1.activeClickableMenu == null)
-            {
-                MobilePhoneApp.OpenPhoneBook();
-                return;
-            }
-
-
-            List<string> keys = apps.Keys.ToList();
-            string appHover = null;
-            bool hover = false;
-            if (mousePos == lastPos)
-            {
-                hover = true;
-            }
-            else
-            {
-                ticksSinceMoved = 0;
-            }
-
-            for (int i = keys.Count - 1; i >= 0; i--)
-            {
-                if (!IsOnScreen(i, topRow))
-                    continue;
-
-                MobileApp app = apps[keys[i]];
-                if (app.icon == null)
-                {
-                    context.Monitor.Log($"no icon for app {app.name}, removing from app list.", LogLevel.Error);
-                    apps.Remove(keys[i]);
-                    continue;
-                }
-                
-                Vector2 appPos = context.GetAppPos(i);
-                e.SpriteBatch.Draw(app.icon, appPos, Color.White);
-
-                Rectangle rect = new Rectangle((int)appPos.X, (int)appPos.Y, Config.IconWidth, Config.IconHeight);
-                if (hover && rect.Contains(mousePos))
-                {
-                    ticksSinceMoved++;
-                    if (ticksSinceMoved > Config.ToolTipDelayTicks)
-                        appHover = app.name;
-                }
-            }
-            if (appHover != null)
-            {
-                e.SpriteBatch.DrawString(Game1.dialogueFont, appHover, new Vector2(mousePos.X, mousePos.Y) - Game1.dialogueFont.MeasureString(appHover) + new Vector2(-2, 2), Color.Black);
-                e.SpriteBatch.DrawString(Game1.dialogueFont, appHover, new Vector2(mousePos.X, mousePos.Y) - Game1.dialogueFont.MeasureString(appHover), Color.White);
-            }
-            lastPos = mousePos;
-        }
-
-        private void Input_ButtonReleased(object sender, StardewModdingAPI.Events.ButtonReleasedEventArgs e)
-        {
-            if (e.Button == SButton.MouseLeft)
-            {
-                if (draggingPhone)
-                {
-                    Helper.WriteConfig(Config);
-                    draggingPhone = false;
-                }
-                else if (clickingPhoneIcon)
-                {
-                    if (!draggingPhoneIcon)
-                    {
-                        TogglePhone(true);
-                    }
-                    else
-                    {
-                        Helper.WriteConfig(Config);
-                    }
-                    if(Game1.activeClickableMenu is DraggingPhoneIconMenu)
-                        Game1.activeClickableMenu = null;
-                    clickingPhoneIcon = false;
-                    draggingPhoneIcon = false;
-                }
-            }
-        }
-
-        private void Input_ButtonPressed(object sender, StardewModdingAPI.Events.ButtonPressedEventArgs e)
-        {
-            if (!Context.IsWorldReady)
-                return;
-
-            if (e.Button == Config.OpenPhoneKey || (phoneOpen && e.Button == SButton.Escape))
-            {
-                TogglePhone();
-                if (phoneOpen && e.Button == SButton.Escape)
-                    Helper.Input.Suppress(SButton.Escape);
-                return;
-            }
-            if(e.Button == Config.RotatePhoneKey)
-            {
-                RotatePhone();
-                return;
-            }
-
-            Point mousePos = Game1.getMousePosition();
-
-            if (!phoneOpen)
-            {
-                if (e.Button == SButton.MouseLeft && Game1.displayHUD && Config.ShowPhoneIcon && new Rectangle((int)phoneIconPosition.X, (int)phoneIconPosition.Y, Config.PhoneIconWidth, Config.PhoneIconHeight).Contains(mousePos))
-                {
-                    clickingPhoneIcon = true;
-                    draggingPhoneIcon = false;
-                    lastMousePosition = mousePos;
-                    Game1.activeClickableMenu = new DraggingPhoneIconMenu();
-                }
-                return;
-            }
-
-            if (e.Button == SButton.MouseLeft && (appRunning || Game1.activeClickableMenu is MobilePhoneMenu))
-            {
-                if (!appRunning && !phoneRect.Contains(mousePos))
-                {
-                    Helper.Input.Suppress(SButton.MouseLeft);
-                    TogglePhone();
-                    return;
-                }
-
-                if (phoneRect.Contains(mousePos) && !screenRect.Contains(mousePos))
-                {
-                    draggingPhone = true;
-                    lastMousePosition = mousePos;
-                    return;
-                }
-            }
-
-            if (!appRunning && Game1.activeClickableMenu is MobilePhoneMenu)
-            {
-                if (e.Button == SButton.MouseLeft)
-                {
-                    Monitor.Log($"pressing mouse key in phone");
-                    Helper.Input.Suppress(SButton.MouseLeft);
-
-                    string[] keys = apps.Keys.ToArray();
-                    for (int i = 0; i < keys.Length; i++)
-                    {
-
-                        if (!IsOnScreen(i, topRow))
-                            continue;
-
-                        Vector2 pos = GetAppPos(i);
-                        Rectangle r = new Rectangle((int) pos.X, (int) pos.Y, Config.IconWidth, Config.IconHeight);
-                        if (r.Contains(Game1.getMousePosition()))
-                        {
-                            Monitor.Log($"rect: {r.X},{r.Y},{r.Width},{r.Height} pos {Game1.getMousePosition()} running app {keys[i]}");
-                            if(apps[keys[i]].keyPress != null)
-                            {
-                                Monitor.Log($"pressing key {apps[keys[i]].keyPress}");
-                                PressKey(apps[keys[i]]);
-                            }
-                            else
-                            {
-                                Monitor.Log($"starting app {apps[keys[i]].name}");
-                                apps[keys[i]].action.Invoke();
-                            }
-                            return;
-                        }
-                    }
-                }
-            }
-        }
-
-        private void PressKey(MobileApp app)
-        {
-            if(app.closePhone)
-                TogglePhone(false);
-
-            if (!Enum.TryParse(app.keyPress, out SButton keyPress))
-            {
-                Monitor.Log($"Error on app invoke: {app.keyPress} isn't a valid key", LogLevel.Error);
-                return;
-            }
-
-            // get SMAPI's input handler
-            object input = typeof(Game1).GetField("input", BindingFlags.NonPublic | BindingFlags.Static)?.GetValue(null)
-               ?? throw new InvalidOperationException("Can't find 'Game1.input' field.");
-
-            // get OverrideButton method
-            var method = input.GetType().GetMethod("OverrideButton")
-               ?? throw new InvalidOperationException("Can't find 'OverrideButton' method on SMAPI's input class.");
-
-            // call method
-            // The arguments are the button to override, and whether to mark the button pressed (true) or raised (false)
-            method.Invoke(input, new object[] { keyPress, true });
-            return;
-        }
-
-        private void RotatePhone()
-        {
-            phoneRotated = !phoneRotated;
-            RefreshPhoneLayout();
-            Game1.playSound("dwop");
-        }
-
-        public static void TogglePhone(bool value)
-        {
-            phoneOpen = value;
-            Game1.playSound("dwop");
-            if (!value)
-            {
-                context.Monitor.Log($"Closing phone");
-                if (Game1.activeClickableMenu is MobilePhoneMenu)
-                    Game1.activeClickableMenu = null;
-                appRunning = false;
-            }
-            else
-            {
-                context.Monitor.Log($"Opening phone");
-                Game1.activeClickableMenu = new MobilePhoneMenu();
-            }
-        }
-        public static void TogglePhone()
-        {
-            if(phoneOpen && appRunning)
-            {
-                Game1.playSound("dwop");
-                appRunning = false;
-                Game1.activeClickableMenu = new MobilePhoneMenu();
-                return;
-            }
-            TogglePhone(!phoneOpen);
-        }
-
-        public static void ToggleApp(bool open)
-        {
-            appRunning = open;
-            if (!open)
-                runningApp = null;
-
-            if (!phoneOpen)
-            {
-                Game1.activeClickableMenu = null;
-            }
-            else if(phoneOpen)
-            {
-                Game1.activeClickableMenu = new MobilePhoneMenu();
-            }
-        }
-        private static void RefreshPhoneLayout()
-        {
-            if (phoneRotated)
-            {
-                phoneWidth = Config.PhoneRotatedWidth;
-                phoneHeight = Config.PhoneRotatedHeight;
-                screenWidth = Config.ScreenRotatedWidth;
-                screenHeight = Config.ScreenRotatedHeight;
-                phoneOffsetX = Config.PhoneRotatedOffsetX;
-                phoneOffsetY = Config.PhoneRotatedOffsetY;
-                screenOffsetX = Config.ScreenRotatedOffsetX;
-                screenOffsetY = Config.ScreenRotatedOffsetY;
-            }
-            else
-            {
-                phoneWidth = Config.PhoneWidth;
-                phoneHeight = Config.PhoneHeight;
-                screenWidth = Config.ScreenWidth;
-                screenHeight = Config.ScreenHeight;
-                phoneOffsetX = Config.PhoneOffsetX;
-                phoneOffsetY = Config.PhoneOffsetY;
-                screenOffsetX = Config.ScreenOffsetX;
-                screenOffsetY = Config.ScreenOffsetY;
-            }
-            phonePosition = GetPhonePosition();
-            screenPosition = GetScreenPosition();
-            phoneIconPosition = GetPhoneIconPosition();
-            screenRect = new Rectangle((int)screenPosition.X, (int)screenPosition.Y, (int)screenWidth, (int)screenHeight);
-            phoneRect = new Rectangle((int)phonePosition.X, (int)phonePosition.Y, phoneWidth, phoneHeight);
-            GetArrowPositions();
-            appColumns = (screenWidth - Config.IconMarginX) / (Config.IconWidth + Config.IconMarginX);
-            appRows = (screenHeight - Config.IconMarginY) / (Config.IconHeight + Config.IconMarginY);
-            gridWidth = (screenWidth - Config.ContactMarginX) / (Config.ContactWidth + Config.ContactMarginX);
-            gridHeight = (screenHeight - Config.ContactMarginY) / (Config.ContactHeight + Config.ContactMarginY);
-            Vector2 screenSize = GetScreenSize();
-            phoneBookTexture = MakeColorTexture(Config.PhoneBookBackgroundColor, screenSize);
-            phoneBookHeaderTexture = MakeColorTexture(Config.PhoneBookHeaderColor, new Vector2(screenSize.X, Config.PhoneBookHeaderHeight));
-        }
-
-        public static Texture2D MakeColorTexture(Color color, Vector2 size)
-        {
-            Texture2D texture = new Texture2D(Game1.graphics.GraphicsDevice, (int)size.X, (int)size.Y);
-            Color[] data = new Color[texture.Width * texture.Height];
-            for (int pixel = 0; pixel < data.Length; pixel++)
-            {
-                data[pixel] = color;
-            }
-            texture.SetData(data);
-            return texture;
-        }
-
-        public static Vector2 GetPhonePosition()
-        {
-            int x = 0;
-            int y = 0;
-            switch (Config.PhonePosition.ToLower())
-            {
-                case "mid":
-                    x = Game1.viewport.Width / 2 - phoneWidth / 2 + phoneOffsetX;
-                    y = Game1.viewport.Height / 2 - phoneHeight / 2 + phoneOffsetY;
-                    break;
-                case "top-left":
-                    x = phoneOffsetX;
-                    y = phoneOffsetY;
-                    break;
-                case "top-right":
-                    x = Game1.viewport.Width - phoneWidth + phoneOffsetX;
-                    y = phoneOffsetY;
-                    break;
-                case "bottom-left":
-                    x = phoneOffsetX;
-                    y = Game1.viewport.Height - phoneHeight + phoneOffsetY;
-                    break;
-                case "bottom-right":
-                    x = Game1.viewport.Width - phoneWidth + phoneOffsetX;
-                    y = Game1.viewport.Height - phoneHeight + phoneOffsetY;
-                    break;
-            }
-
-            return new Vector2(x, y);
-        }
-        
-
-        public static Vector2 GetPhoneIconPosition()
-        {
-            int x = 0;
-            int y = 0;
-            switch (Config.PhoneIconPosition.ToLower())
-            {
-                case "mid":
-                    x = Game1.viewport.Width / 2 - Config.PhoneIconWidth / 2 + Config.PhoneIconOffsetX;
-                    y = Game1.viewport.Height / 2 - Config.PhoneIconHeight / 2 + Config.PhoneIconOffsetY;
-                    break;
-                case "top-left":
-                    x = Config.PhoneIconOffsetX;
-                    y = Config.PhoneIconOffsetY;
-                    break;
-                case "top-right":
-                    x = Game1.viewport.Width - Config.PhoneIconWidth + Config.PhoneIconOffsetX;
-                    y = Config.PhoneIconOffsetY;
-                    break;
-                case "bottom-left":
-                    x = Config.PhoneIconOffsetX;
-                    y = Game1.viewport.Height - Config.PhoneIconHeight + Config.PhoneIconOffsetY;
-                    break;
-                case "bottom-right":
-                    x = Game1.viewport.Width - Config.PhoneIconWidth + Config.PhoneIconOffsetX;
-                    y = Game1.viewport.Height - Config.PhoneIconHeight + Config.PhoneIconOffsetY;
-                    break;
-            }
-
-            return new Vector2(x, y);
-        }
-
-        public static Vector2 GetScreenPosition()
-        {
-            
-            return new Vector2(phonePosition.X + screenOffsetX, phonePosition.Y + screenOffsetY);
-        }
-
-        public static Vector2 GetScreenSize()
-        {
-            return new Vector2(screenWidth, screenHeight);
-        }
-        public static Vector2 GetScreenSize(bool rotated)
-        {
-            if (rotated)
-            {
-                return new Vector2(Config.ScreenRotatedWidth, Config.ScreenRotatedHeight);
-            }
-            else
-            {
-                return new Vector2(Config.ScreenWidth, Config.ScreenHeight);
-            }
-        }
-        private Vector2 GetAppPos(int i)
-        {
-            i -= topRow * appColumns;
-            float x = screenPosition.X + Config.IconMarginX + (( i % appColumns) * (Config.IconWidth + Config.IconMarginX));
-            float y = screenPosition.Y + Config.IconMarginY + ((i / appColumns) * (Config.IconHeight + Config.IconMarginY));
-
-            return new Vector2(x, y);
-        }
-        private static void GetArrowPositions()
-        {
-            upArrowPosition = new Vector2(screenPosition.X + screenWidth - Config.ContactArrowWidth, screenPosition.Y + Config.PhoneBookHeaderHeight);
-            downArrowPosition = new Vector2(screenPosition.X + screenWidth - Config.ContactArrowWidth, screenPosition.Y + screenHeight - Config.ContactArrowHeight);
-        }
-
-        public static bool IsOnScreen(int i, int top)
-        {
-            return i >= top * appColumns && i < appRows * appColumns - top * appColumns;
         }
     }
 }

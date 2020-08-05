@@ -125,6 +125,7 @@ namespace Familiars
 			moveTowardPlayerThreshold.Value = 500;
 			collidesWithOtherCharacters.Value = false;
 			lastPosition = position;
+			willDestroyObjectsUnderfoot = false;
 		}
 
 		public FamiliarData SaveData(GameLocation gameLocation)
@@ -141,8 +142,14 @@ namespace Familiars
 				blueColor = this.blueColor,
 				currentLocation = gameLocation.Name,
 				position = this.position,
-				baseFrame = this.baseFrame
+				baseFrame = this.baseFrame,
+				color = this.color
 			};
+        }
+
+        public override void performTenMinuteUpdate(int timeOfDay, GameLocation l)
+        {
+
         }
 
         protected override void initNetFields()
@@ -1230,5 +1237,6 @@ namespace Familiars
         public GameLocation lastLocation;
         public int baseFrame;
 		public Vector2 lastPosition;
+		public readonly NetColor color = new NetColor();
 	}
 }
