@@ -73,6 +73,7 @@
     <Content Include="assets\backgrounds\hearts.png" />
     <Content Include="assets\backgrounds\hearts_landscape.png" />
     <Content Include="assets\down_arrow.png" />
+    <Content Include="assets\phone_icon.png" />
     <Content Include="assets\skins\black.png" />
     <Content Include="assets\skins\black_landscape.png" />
     <Content Include="assets\skins\pink.png" />
