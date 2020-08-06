@@ -8,6 +8,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Threading;
+using xTile.Dimensions;
 
 namespace YAJM
 {
@@ -19,10 +20,12 @@ namespace YAJM
 		private float lastYJumpVelocity;
 		private float velX;
 		private float velY;
-		private static Texture2D horseShadow;
-        private static Texture2D horse;
-        private static bool playerJumping;
-        private bool playerJumpingOver;
+		private  Texture2D horseShadow;
+        private  Texture2D horse;
+        private  bool playerJumping;
+		private  bool playerJumpingOver;
+        private  bool playerJumpingWithHorse;
+        private static bool blockedJump;
 
         /// <summary>The mod entry point, called after the mod is first loaded.</summary>
         /// <param name="helper">Provides simplified APIs for writing mods.</param>
@@ -38,11 +41,15 @@ namespace YAJM
 			HarmonyInstance harmony = HarmonyInstance.Create(Helper.ModRegistry.ModID);
 
 			harmony.Patch(
+			   original: AccessTools.Method(typeof(Farmer), nameof(Farmer.getDrawLayer)),
+			   prefix: new HarmonyMethod(typeof(ModEntry), nameof(ModEntry.Farmer_getDrawLayer_prefix))
+			);
+			harmony.Patch(
 			   original: AccessTools.Method(typeof(NPC), nameof(NPC.draw), new Type[] { typeof(SpriteBatch), typeof(float) }),
 			   prefix: new HarmonyMethod(typeof(ModEntry), nameof(ModEntry.NPC_draw_prefix))
 			);
 			harmony.Patch(
-			   original: AccessTools.Method(typeof(GameLocation), nameof(GameLocation.isCollidingPosition), new Type[] { typeof(Rectangle), typeof(xTile.Dimensions.Rectangle), typeof(bool), typeof(int), typeof(bool), typeof(Character), typeof(bool), typeof(bool), typeof(bool) }),
+			   original: AccessTools.Method(typeof(GameLocation), nameof(GameLocation.isCollidingPosition), new Type[] { typeof(Microsoft.Xna.Framework.Rectangle), typeof(xTile.Dimensions.Rectangle), typeof(bool), typeof(int), typeof(bool), typeof(Character), typeof(bool), typeof(bool), typeof(bool) }),
 			   prefix: new HarmonyMethod(typeof(ModEntry), nameof(ModEntry.GameLocation_isCollidingPosition_prefix))
 			);
 
@@ -51,9 +58,19 @@ namespace YAJM
 			
 		}
 
+        private static bool Farmer_getDrawLayer_prefix(ref Farmer __instance, ref float __result)
+        {
+			if(__instance.UniqueMultiplayerID == Game1.player.UniqueMultiplayerID && context.playerJumpingWithHorse)
+            {
+				__result = 0.992f;
+				return false;
+			}
+			return true;
+        }
+
         private static bool GameLocation_isCollidingPosition_prefix(bool isFarmer, ref bool __result)
         {
-			if (isFarmer && playerJumping)
+			if (isFarmer && context.playerJumpingWithHorse && !blockedJump)
 			{
 				__result = false;
 				return false;
@@ -65,9 +82,19 @@ namespace YAJM
 		{
 			if (__instance is Horse)
 			{
-				b.Draw(horseShadow, __instance.getLocalPosition(Game1.viewport) + new Vector2((float)(__instance.Sprite.SpriteWidth * 4 / 2), (float)(__instance.GetBoundingBox().Height / 2)), new Rectangle?(__instance.Sprite.SourceRect), Color.White * alpha, __instance.rotation, new Vector2((float)(__instance.Sprite.SpriteWidth / 2), (float)__instance.Sprite.SpriteHeight * 3f / 4f), Math.Max(0.2f, __instance.scale) * 4f, (__instance.flip || (__instance.Sprite.CurrentAnimation != null && __instance.Sprite.CurrentAnimation[__instance.Sprite.currentAnimationIndex].flip)) ? SpriteEffects.FlipHorizontally : SpriteEffects.None, 0);
-				if ((__instance as Horse).rider != null && playerJumping)
-					__instance.Position += new Vector2(0, (__instance as Horse).rider.yJumpOffset * 2);
+				b.Draw(context.horseShadow, __instance.getLocalPosition(Game1.viewport) + new Vector2((float)(__instance.Sprite.SpriteWidth * 4 / 2), (float)(__instance.GetBoundingBox().Height / 2)), new Microsoft.Xna.Framework.Rectangle?(__instance.Sprite.SourceRect), Color.White * alpha, __instance.rotation, new Vector2((float)(__instance.Sprite.SpriteWidth / 2), (float)__instance.Sprite.SpriteHeight * 3f / 4f), Math.Max(0.2f, __instance.scale) * 4f, (__instance.flip || (__instance.Sprite.CurrentAnimation != null && __instance.Sprite.CurrentAnimation[__instance.Sprite.currentAnimationIndex].flip)) ? SpriteEffects.FlipHorizontally : SpriteEffects.None, 0);
+				if ((__instance as Horse).rider != null)
+                {
+                    if (context.playerJumpingWithHorse)
+                    {
+						__instance.Position += new Vector2(0, (__instance as Horse).rider.yJumpOffset * 2);
+						__instance.drawOnTop = true;
+					}
+					else
+					{
+						__instance.drawOnTop = false;
+					}
+				}
 			}
 		}
 
@@ -75,6 +102,10 @@ namespace YAJM
 		{
 			if (e.Button == Config.JumpButton && Context.IsPlayerFree && Game1.player.yJumpVelocity == 0)
 			{
+				playerJumpingOver = false;
+				playerJumpingWithHorse = false;
+				blockedJump = false;
+
 				if (Config.PlayJumpSound)
 					Game1.playSound("dwop");
 				velX = 0;
@@ -102,7 +133,7 @@ namespace YAJM
 				List<bool> collisions = new List<bool>();
 				for (int i = 0; i < maxJumpDistance; i++)
 				{
-					Rectangle box = Game1.player.GetBoundingBox();
+                    Microsoft.Xna.Framework.Rectangle box = Game1.player.GetBoundingBox();
                     if (Game1.player.isRidingHorse())
                     {
 						box.X += ox * 32;
@@ -110,12 +141,13 @@ namespace YAJM
 					}
 					box.X += ox * 64 * i;
 					box.Y += oy * 64 * i;
-					collisions.Add(l.isCollidingPosition(box, Game1.viewport, true, 0, false, Game1.player));
+					collisions.Add(l.isCollidingPosition(box, Game1.viewport, true, 0, false, Game1.player) || box.X >= l.map.DisplayWidth || box.Y >= l.map.DisplayWidth || box.X < 0 || box.Y < 0);
 				}
 
+				playerJumpingWithHorse = Game1.player.isRidingHorse();
 				if (!collisions[0] && !collisions[1])
 				{
-					PlayerJump(8f);
+					PlayerJump(Config.OrdinaryJumpHeight);
 					return;
 				}
 
@@ -132,11 +164,12 @@ namespace YAJM
 						return;
 					}
 				}
-				Game1.player.synchronizedJump(8f);
+				blockedJump = true;
+				PlayerJump(Config.OrdinaryJumpHeight);
 			}
 		}
 
-		private void PlayerJump(float v)
+        private void PlayerJump(float v)
 		{
 			playerJumping = true;
 			Game1.player.synchronizedJump(v);
@@ -149,6 +182,8 @@ namespace YAJM
 			{
 				playerJumping = false;
 				playerJumpingOver = false;
+				playerJumpingWithHorse = false;
+				blockedJump = false;
 				Game1.player.canMove = true;
 				Helper.Events.GameLoop.UpdateTicked -= GameLoop_UpdateTicked;
 				return;

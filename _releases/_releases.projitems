@@ -21,6 +21,7 @@
     <None Include="$(MSBuildThisFileDirectory)Familiars 0.9.0.zip" />
     <None Include="$(MSBuildThisFileDirectory)Familiars 0.9.1.zip" />
     <None Include="$(MSBuildThisFileDirectory)Familiars 0.9.2.zip" />
+    <None Include="$(MSBuildThisFileDirectory)Familiars 0.9.3.zip" />
     <None Include="$(MSBuildThisFileDirectory)FruitTreeShaker 1.1.0.zip" />
     <None Include="$(MSBuildThisFileDirectory)MobileArcade 0.1.0.zip" />
     <None Include="$(MSBuildThisFileDirectory)MobileArcade 0.1.1.zip" />
@@ -57,5 +58,6 @@
     <None Include="$(MSBuildThisFileDirectory)VideoPlayer 0.2.5.zip" />
     <None Include="$(MSBuildThisFileDirectory)YAJM 0.2.1.zip" />
     <None Include="$(MSBuildThisFileDirectory)YAJM 0.3.0.zip" />
+    <None Include="$(MSBuildThisFileDirectory)YAJM 0.4.0.zip" />
   </ItemGroup>
 </Project>

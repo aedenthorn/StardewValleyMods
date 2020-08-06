@@ -60,5 +60,6 @@ namespace Familiars
         public double JunimoHealIntervalMult { get; set; } = 1;
         public double DinoFireDistanceMult { get; set; } = 1;
         public double DinoDamageMult { get; set; } = 1;
+        public bool TryToFixOldBugs { get; set; } = false;
     }
 }

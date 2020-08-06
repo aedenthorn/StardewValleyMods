@@ -27,8 +27,11 @@ namespace HereFishy
         private static int whichFish;
         private static int fishSize;
         private static bool recordSize;
-		private static int fishQuality;
+        private static bool perfect;
+        private static int fishQuality;
         private static bool fishCaught;
+        private static bool bossFish;
+        private static int fishDifficulty;
 
 
         /// <summary>The mod entry point, called after the mod is first loaded.</summary>
@@ -106,11 +109,12 @@ namespace HereFishy
 			{
                 try
                 {
-					if (location.waterTiles != null && location.waterTiles[x / 64, y / 64])
+					Vector2 mousePos = Game1.currentCursorTile;
+					if (location.waterTiles != null && location.waterTiles[(int)mousePos.X, (int)mousePos.Y])
 					{
-						context.Monitor.Log($"here fishy fishy");
+						context.Monitor.Log($"here fishy fishy {mousePos.X},{mousePos.Y}");
 						who.forceCanMove();
-						HereFishyFishy(who, x, y);
+						HereFishyFishy(who, (int)mousePos.X * 64, (int)mousePos.Y * 64);
 						__result = true;
 						return false;
 					}
@@ -131,27 +135,69 @@ namespace HereFishy
 				fishySound.Play();
 			}
 
-			await System.Threading.Tasks.Task.Delay(Game1.random.Next(3000,6000));
+			await System.Threading.Tasks.Task.Delay(Game1.random.Next(3000,4000));
 
 			Object o = who.currentLocation.getFish(0, -1, 1, who, 0, new Vector2(x, y), who.currentLocation.Name);
 			if (o == null || o.ParentSheetIndex <= 0)
 			{
 				o = new Object(Game1.random.Next(167, 173), 1, false, -1, 0);
 			}
-			pullFishFromWater(who, o, x, y, o.ParentSheetIndex, -1, 0, 0, false, false, false, false);
+			pullFishFromWater(who, x, y, o.ParentSheetIndex);
 			return;
 
 		}
 
-		private static void pullFishFromWater(Farmer who, Object o, int x, int y, int parentSheetIndex, int v1, int v2, int v3, bool v4, bool v5, bool v6, bool v7)
+		private static void pullFishFromWater(Farmer who, int x, int y, int parentSheetIndex)
 		{
 
 			animations.Clear();
 			float t;
 			lastUser = who;
-			whichFish = o.ParentSheetIndex;
-			fishSize = Game1.random.Next(1, 30);
-			context.Monitor.Log($"pulling fish {whichFish} {fishSize} {who.Name}");
+			whichFish = parentSheetIndex;
+			Dictionary<int, string> data = Game1.content.Load<Dictionary<int, string>>("Data\\Fish");
+			string[] datas = null;
+			if (data.ContainsKey(whichFish))
+			{
+				datas = data[whichFish].Split('/');
+			}
+			float fs = 1f;
+			int minimumSizeContribution = 1 + who.FishingLevel / 2;
+			fs *= (float)Game1.random.Next(minimumSizeContribution, Math.Max(6, minimumSizeContribution)) / 5f;
+			fs *= 1.2f;
+			fs *= 1f + (float)Game1.random.Next(-10, 11) / 100f;
+			fs = Math.Max(0f, Math.Min(1f, fs));
+			if(datas != null)
+            {
+				int minFishSize = int.Parse(datas[3]);
+				int maxFishSize = int.Parse(datas[4]);
+				fishSize = (int)((float)minFishSize + (float)(maxFishSize - minFishSize) * fishSize);
+				fishSize++;
+				perfect = true;
+				fishQuality = (((double)fishSize < 0.33) ? 0 : (((double)fishSize < 0.66) ? 2 : 4));
+			}
+			bossFish = FishingRod.isFishBossFish(whichFish);
+			caughtDoubleFish = !bossFish && Game1.random.NextDouble() < 0.25 + Game1.player.DailyLuck / 2.0;
+
+			context.Monitor.Log($"pulling fish {whichFish} {fishSize} {who.Name} {x},{y}");
+
+			if (who.IsLocalPlayer)
+			{
+				if (datas != null)
+				{
+					fishDifficulty = int.Parse(datas[1]);
+
+				}
+				else
+					fishDifficulty = 0;
+				
+				int experience = Math.Max(1, (fishQuality + 1) * 3 + fishDifficulty / 3);
+				if (bossFish)
+				{
+					experience *= 5;
+				}
+				experience += (int)((float)experience * 1.4f); // perfect
+				who.gainExperience(1, experience);
+			}
 
 			if (who.FacingDirection == 1 || who.FacingDirection == 3)
 			{
@@ -166,13 +212,13 @@ namespace HereFishy
 				}
 				float xVelocity = (float)((double)yVelocity * (1.0 / Math.Tan(angle)));
 				t = distance / xVelocity;
-				animations.Add(new TemporaryAnimatedSprite("Maps\\springobjects", Game1.getSourceRectForStandardTileSheet(Game1.objectSpriteSheet, o.ParentSheetIndex, 16, 16), t, 1, 0, new Vector2(x,y), false, false, y / 10000f, 0f, Color.White, 4f, 0f, 0f, 0f, false)
+				animations.Add(new TemporaryAnimatedSprite("Maps\\springobjects", Game1.getSourceRectForStandardTileSheet(Game1.objectSpriteSheet, parentSheetIndex, 16, 16), t, 1, 0, new Vector2(x,y), false, false, y / 10000f, 0f, Color.White, 4f, 0f, 0f, 0f, false)
 				{
 					motion = new Vector2((float)((who.FacingDirection == 3) ? -1 : 1) * -xVelocity, -yVelocity),
 					acceleration = new Vector2(0f, gravity),
 					timeBasedMotion = true,
 					endFunction = new TemporaryAnimatedSprite.endBehavior(playerCaughtFishEndFunction),
-					extraInfoForEndBehavior = o.ParentSheetIndex,
+					extraInfoForEndBehavior = parentSheetIndex,
 					endSound = "tinyWhip"
 				});
 				if (caughtDoubleFish)
@@ -188,7 +234,7 @@ namespace HereFishy
 					}
 					xVelocity = (float)((double)yVelocity * (1.0 / Math.Tan(angle)));
 					t = distance / xVelocity;
-					animations.Add(new TemporaryAnimatedSprite("Maps\\springobjects", Game1.getSourceRectForStandardTileSheet(Game1.objectSpriteSheet, o.ParentSheetIndex, 16, 16), t, 1, 0, new Vector2(x, y), false, false, y / 10000f, 0f, Color.White, 4f, 0f, 0f, 0f, false)
+					animations.Add(new TemporaryAnimatedSprite("Maps\\springobjects", Game1.getSourceRectForStandardTileSheet(Game1.objectSpriteSheet, parentSheetIndex, 16, 16), t, 1, 0, new Vector2(x, y), false, false, y / 10000f, 0f, Color.White, 4f, 0f, 0f, 0f, false)
 					{
 						motion = new Vector2((float)((who.FacingDirection == 3) ? -1 : 1) * -xVelocity, -yVelocity),
 						acceleration = new Vector2(0f, gravity),
@@ -214,13 +260,13 @@ namespace HereFishy
 				{
 					xVelocity2 = (who.Position.X - x) / t;
 				}
-				animations.Add(new TemporaryAnimatedSprite("Maps\\springobjects", Game1.getSourceRectForStandardTileSheet(Game1.objectSpriteSheet, o.ParentSheetIndex, 16, 16), t, 1, 0, new Vector2(x, y), false, false, y / 10000f, 0f, Color.White, 4f, 0f, 0f, 0f, false)
+				animations.Add(new TemporaryAnimatedSprite("Maps\\springobjects", Game1.getSourceRectForStandardTileSheet(Game1.objectSpriteSheet, parentSheetIndex, 16, 16), t, 1, 0, new Vector2(x, y), false, false, y / 10000f, 0f, Color.White, 4f, 0f, 0f, 0f, false)
 				{
 					motion = new Vector2(xVelocity2, -velocity),
 					acceleration = new Vector2(0f, gravity2),
 					timeBasedMotion = true,
 					endFunction = new TemporaryAnimatedSprite.endBehavior(playerCaughtFishEndFunction),
-					extraInfoForEndBehavior = o.ParentSheetIndex,
+					extraInfoForEndBehavior = parentSheetIndex,
 					endSound = "tinyWhip"
 				});
 				if (caughtDoubleFish)
@@ -239,7 +285,7 @@ namespace HereFishy
 					{
 						xVelocity2 = (who.Position.X - x) / t;
 					}
-					animations.Add(new TemporaryAnimatedSprite("Maps\\springobjects", Game1.getSourceRectForStandardTileSheet(Game1.objectSpriteSheet, o.ParentSheetIndex, 16, 16), t, 1, 0, new Vector2(x, y), false, false, y / 10000f, 0f, Color.White, 4f, 0f, 0f, 0f, false)
+					animations.Add(new TemporaryAnimatedSprite("Maps\\springobjects", Game1.getSourceRectForStandardTileSheet(Game1.objectSpriteSheet, parentSheetIndex, 16, 16), t, 1, 0, new Vector2(x, y), false, false, y / 10000f, 0f, Color.White, 4f, 0f, 0f, 0f, false)
 					{
 						motion = new Vector2(xVelocity2, -velocity),
 						acceleration = new Vector2(0f, gravity2),
@@ -257,6 +303,9 @@ namespace HereFishy
 			fishQuality = Game1.random.Next(0, 5);
 			lastUser.Halt();
 			lastUser.armOffset = Vector2.Zero;
+
+			recordSize = lastUser.caughtFish(whichFish, fishSize, false, caughtDoubleFish ? 2 : 1);
+			lastUser.faceDirection(2);
 			if (FishingRod.isFishBossFish(whichFish))
 			{
 				Game1.showGlobalMessage(Game1.content.LoadString("Strings\\StringsFromCSFiles:FishingRod.cs.14068"));

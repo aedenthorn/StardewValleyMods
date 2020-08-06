@@ -212,8 +212,9 @@ namespace Familiars
             }
 
             // fix bug
-            if (Game1.IsMasterGame)
+            if (Game1.IsMasterGame && Config.TryToFixOldBugs)
             {
+                Monitor.Log("Fixing bugs");
                 foreach (Building l in Game1.getFarm().buildings)
                 {
                     if (l is Coop)

@@ -49,6 +49,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="assets\put_fishy.wav_here" />
     <None Include="manifest.json" />
     <None Include="packages.config" />
   </ItemGroup>
