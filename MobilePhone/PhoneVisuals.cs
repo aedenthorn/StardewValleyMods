@@ -3,12 +3,14 @@ using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using StardewModdingAPI;
 using StardewValley;
+using StardewValley.BellsAndWhistles;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Security.Cryptography;
+using System.Windows.Forms;
 
 namespace MobilePhone
 {
@@ -130,6 +132,70 @@ namespace MobilePhone
             e.SpriteBatch.Draw(ModEntry.phoneRotated ? ModEntry.backgroundRotatedTexture : ModEntry.backgroundTexture, ModEntry.phoneRect, Color.White);
             e.SpriteBatch.Draw(ModEntry.phoneRotated ? ModEntry.phoneRotatedTexture : ModEntry.phoneTexture, ModEntry.phoneRect, Color.White);
 
+            Vector2 screenPos = PhoneUtils.GetScreenPosition();
+            Vector2 screenSize = PhoneUtils.GetScreenSize();
+            if (ModEntry.callingNPC != null)
+            {
+                Rectangle destRect;
+                Rectangle portraitSource = Game1.getSourceRectForStandardTileSheet(ModEntry.callingNPC.Portrait, 0, 64, 64);
+                float scale;
+                if ((float)portraitSource.Height * screenSize.X / (float)portraitSource.Width > screenSize.Y - Config.AppHeaderHeight)
+                {
+                    scale = (screenSize.Y - Config.AppHeaderHeight) / (float)portraitSource.Height;
+                    destRect = new Rectangle((int)(screenPos.X + screenSize.X / 2f - portraitSource.Width * scale / 2f), (int)screenPos.Y, (int)(portraitSource.Width * scale), (int)screenSize.Y - Config.AppHeaderHeight);
+                }
+                else
+                {
+                    scale = screenSize.X / (float)portraitSource.Width;
+                    //Monitor.Log($"{screenSize} {portraitSource.Width},{portraitSource.Height} {scale}");
+                    destRect = new Rectangle((int)(screenPos.X), (int)(screenPos.Y + (screenSize.Y - Config.AppHeaderHeight) / 2f - portraitSource.Height * scale / 2f), (int)screenSize.X, (int)(portraitSource.Height * scale));
+                }
+                e.SpriteBatch.Draw(ModEntry.callingNPC.Portrait, destRect, new Rectangle?(portraitSource), Color.White);
+                SpriteText.drawStringHorizontallyCenteredAt(e.SpriteBatch, ModEntry.callingNPC.getName(), destRect.X + destRect.Width / 2, destRect.Bottom + 16, 999999, -1, 999999, 1f, 0.88f, false, -1, 99999);
+
+                if (!ModEntry.inCall)
+                {
+                    Rectangle answerRect = new Rectangle((int)(screenPos.X), ModEntry.screenRect.Bottom - Config.AppHeaderHeight, (int)(screenSize.X / 2f), Config.AppHeaderHeight);
+                    Rectangle declineRect = new Rectangle((int)(screenPos.X + screenSize.X / 2f), ModEntry.screenRect.Bottom - Config.AppHeaderHeight, (int)(screenSize.X / 2f), Config.AppHeaderHeight);
+                    e.SpriteBatch.Draw(ModEntry.answerTexture, answerRect, Color.White);
+                    e.SpriteBatch.Draw(ModEntry.declineTexture, declineRect, Color.White);
+                    float textScale = Config.CallTextScale;
+                    string ans = Helper.Translation.Get("answer");
+                    Vector2 ansSize = Game1.dialogueFont.MeasureString(ans) * textScale;
+                    string dec = Helper.Translation.Get("decline");
+                    Vector2 decSize = Game1.dialogueFont.MeasureString(dec) * textScale;
+                    e.SpriteBatch.DrawString(Game1.dialogueFont, ans, new Vector2(answerRect.X + answerRect.Width / 2f - ansSize.X / 2f, answerRect.Top + answerRect.Height / 2f - ansSize.Y / 2f), Config.CallTextColor, 0f, Vector2.Zero, textScale, SpriteEffects.None,1f);
+                    e.SpriteBatch.DrawString(Game1.dialogueFont, dec, new Vector2(declineRect.X + declineRect.Width / 2f - decSize.X / 2f, declineRect.Top + declineRect.Height / 2f - decSize.Y / 2f), Config.CallTextColor, 0f, Vector2.Zero, textScale, SpriteEffects.None, 1f);
+                    if (ModEntry.clicking && !Helper.Input.IsSuppressed(SButton.MouseLeft))
+                    {
+                        if (answerRect.Contains(mousePos))
+                        {
+                            MobilePhoneApp.CallNPC(ModEntry.callingNPC);
+                            ModEntry.currentCallRings = 0;
+                        }
+                        else if (declineRect.Contains(mousePos))
+                        {
+                            ModEntry.currentCallRings = 0;
+                            ModEntry.callingNPC = null;
+                        }
+                    }
+                }
+                if ((ModEntry.clicking || ModEntry.clickingPhoneIcon) && !Helper.Input.IsSuppressed(SButton.MouseLeft))
+                {
+                    ModEntry.clickingApp = -1;
+                    ModEntry.switchingApp = -1;
+                    ModEntry.movingAppIconOffset = new Point(0, 0);
+                    ModEntry.clickingTicks = 0;
+                    ModEntry.clicking = false;
+                    ModEntry.movingAppIcon = false;
+                    ModEntry.clickingPhoneIcon = false;
+                    ModEntry.draggingPhone = false;
+                    ModEntry.draggingIcons = false;
+                }
+
+                return;
+            }
+
             if (ModEntry.appRunning)
             {
                 return;
@@ -144,9 +210,10 @@ namespace MobilePhone
 
             if ((ModEntry.clicking || ModEntry.clickingPhoneIcon) && !Helper.Input.IsSuppressed(SButton.MouseLeft))
             {
+                Monitor.Log($"released click");
                 if (ModEntry.movingAppIcon && ModEntry.switchingApp != -1)
                 {
-                    Monitor.Log($"released: switching app: {ModEntry.switchingApp} clicking app {ModEntry.clickingApp}");
+                    Monitor.Log($"switching app: {ModEntry.switchingApp} clicking app {ModEntry.clickingApp}");
                     Game1.playSound("stoneStep");
                     ModEntry.appOrder[ModEntry.clickingApp] = keys[ModEntry.switchingApp];
                     ModEntry.appOrder[ModEntry.switchingApp] = keys[ModEntry.clickingApp];
@@ -261,8 +328,6 @@ namespace MobilePhone
                 ModEntry.ticksSinceMoved = 0;
             }
 
-            Vector2 screenPos = PhoneUtils.GetScreenPosition();
-            Vector2 screenSize = PhoneUtils.GetScreenSize();
             int screenBottom = (int)(screenPos.Y + screenSize.Y);
             for (int i = keys.Count - 1; i >= 0; i--)
             {

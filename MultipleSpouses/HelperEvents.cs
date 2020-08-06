@@ -6,6 +6,7 @@ using StardewValley.Locations;
 using StardewValley.Menus;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Reflection;
 
@@ -27,11 +28,21 @@ namespace MultipleSpouses
 
 		public static void SaveGame_Load_prefix(string filename)
         {
-			Monitor.Log($"loading save {filename}");
-			ModEntry.outdoorAreaData = Helper.Data.ReadJsonFile<OutdoorAreaData>($"assets/outdoor-area-{filename}.json") ?? new OutdoorAreaData();
+			string path = Path.Combine("assets", $"outdoor-area-{filename}.json");
+			Monitor.Log($"loading outdoor patio file {path}");
+			try
+			{
+				ModEntry.outdoorAreaData = Helper.Data.ReadJsonFile<OutdoorAreaData>(path) ?? new OutdoorAreaData();
+			}
+			catch(Exception ex) 
+			{
+				Monitor.Log($"Error loading json file {path}", LogLevel.Error);
+			}
+
 			if (ModEntry.outdoorAreaData.areas.Count == 0)
 			{
-				Helper.Data.WriteJsonFile($"assets/outdoor-area-{filename}.json", new OutdoorAreaData()); 
+				Monitor.Log($"no spouse areas for save, creating empty json file", LogLevel.Warn);
+				Helper.Data.WriteJsonFile($"assets/outdoor-area-{filename}.json", new OutdoorAreaData());
 			}
 		}
 
@@ -290,11 +301,11 @@ namespace MultipleSpouses
 							if (Misc.IsInBed(fh, character.GetBoundingBox()))
 							{
 								character.farmerPassesThrough = true;
-								if (!character.isMoving())
+								if (!character.isMoving() && !Kissing.kissingSpouses.Contains(character.Name))
 								{
 									Vector2 bedPos = Misc.GetSpouseBedPosition(fh, bedSpouses, character.name);
 									character.position.Value = bedPos;
-									if(Game1.timeOfDay >= 2000 || Game1.timeOfDay <= 630)
+									if(Game1.timeOfDay >= 2000 || Game1.timeOfDay <= 600)
                                     {
 										if (!character.isSleeping)
                                         {

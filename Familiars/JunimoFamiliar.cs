@@ -435,7 +435,10 @@ namespace Familiars
 				{
 					this.position.Y += (float)((int)this.motion.Y);
 				}
-				if (Vector2.Distance(f.getTileLocation(), getTileLocation()) < 3 && Game1.random.NextDouble() < HealChance())
+
+				lastHeal -= time.ElapsedGameTime.Milliseconds;
+
+				if (Vector2.Distance(f.getTileLocation(), getTileLocation()) < 3 && lastHeal < 0 && Game1.random.NextDouble() < HealChance())
 				{
 					bool heal = Game1.random.NextDouble() < 0.5;
 					location.temporarySprites.Add(new TemporaryAnimatedSprite((Game1.random.NextDouble() < 0.5) ? 10 : 11, base.Position, (heal ? Color.Red : Color.LawnGreen), 8, false, 100f, 0, -1, -1f, -1, 0)
@@ -456,6 +459,7 @@ namespace Familiars
 						f.stamina += HealAmount();
                     }
 					ModEntry.SMonitor.Log($"Junimo Heal {HealAmount()}, exp {exp}");
+					lastHeal = HealInterval();
 				}
 			}
 			if (this.controller == null && this.motion.Equals(Vector2.Zero))
@@ -499,6 +503,11 @@ namespace Familiars
         private double HealChance()
         {
 			return (0.001 + Math.Sqrt(exp) * 0.001) * ModEntry.Config.JunimoHealChanceMult;
+        }
+
+        private int HealInterval()
+        {
+			return (int)Math.Round(Math.Max(1000, 10000 - Math.Sqrt(exp)) * ModEntry.Config.JunimoHealIntervalMult);
         }
 
         public override void draw(SpriteBatch b, float alpha = 1f)
@@ -549,5 +558,6 @@ namespace Familiars
 		private int farmerCloseCheckTimer = 100;
 
 		private static int soundTimer;
-	}
+        private int lastHeal;
+    }
 }

@@ -1,5 +1,8 @@
 ﻿{
 	"no-answer": "There's no answer...",
+	"answer": "Answer",
+	"decline": "Decline",
+	"generic-greeting": "Hi @!$h",
 	"phone-book": "Phone Book",
 	"themes": "Themes",
 	"skins": "Case",

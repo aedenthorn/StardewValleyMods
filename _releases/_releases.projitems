@@ -15,6 +15,7 @@
     <None Include="$(MSBuildThisFileDirectory)CustomFixedDialogue 0.4.2.zip" />
     <None Include="$(MSBuildThisFileDirectory)CustomOreNodes 0.5.0.zip" />
     <None Include="$(MSBuildThisFileDirectory)CustomOreNodes 0.5.1.zip" />
+    <None Include="$(MSBuildThisFileDirectory)CustomOreNodes 0.5.2.zip" />
     <None Include="$(MSBuildThisFileDirectory)Familiars 0.8.6.zip" />
     <None Include="$(MSBuildThisFileDirectory)Familiars 0.8.7.zip" />
     <None Include="$(MSBuildThisFileDirectory)Familiars 0.9.0.zip" />

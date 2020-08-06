@@ -158,7 +158,7 @@ namespace SocialNetwork
             ModEntry.postBackgroundTexture = texture;
         }
 
-        public static void GetOvernightPosts()
+        public static void GetDailyPosts()
         {
             string[] postKeys = new string[] {
                 $"SocialNetwork_Date_{Game1.Date.Season}_{Game1.Date.DayOfMonth}",
@@ -170,8 +170,42 @@ namespace SocialNetwork
             AddPosts(postKeys);
 
             ModEntry.postList = ModEntry.postList.OrderBy(a => ModEntry.myRand.NextDouble()).ToList();
-        }
 
+
+            int posts = 0; 
+            foreach (KeyValuePair<string, Netcode.NetRef<Friendship>> kvp in Game1.player.friendshipData.FieldDict)
+            {
+                Dictionary<string, string> data1;
+                Dictionary<string, string> data2;
+                try
+                {
+                    data1 = Helper.Content.Load<Dictionary<string, string>>($"Characters\\Dialogue\\{kvp.Key}", ContentSource.GameContent).Where(k => k.Key.StartsWith("SocialNetwork_Time_")).ToDictionary(s => s.Key, s => s.Value);
+                    data2 = Helper.Content.Load<Dictionary<string, string>>($"Characters\\Dialogue\\{kvp.Key}", ContentSource.GameContent).Where(k => k.Key.StartsWith($"SocialNetwork_DateTime_{Game1.Date.Season}_{Game1.Date.DayOfMonth}_")).ToDictionary(s => s.Key, s => s.Value);
+                }
+                catch
+                {
+                    continue;
+                }
+
+                if ((data1 == null && data2 == null) || (data1.Count == 0 && data2.Count == 0))
+                {
+                    Monitor.Log($"NPC {kvp.Key} has no timed dialogues today");
+                    continue;
+                }
+
+                ModEntry.todaysPosts[kvp.Key] = new Dictionary<string, string>();
+
+                if (data1.Count > 0)
+                    foreach(KeyValuePair<string,string> kvp2 in data1)
+                        ModEntry.todaysPosts[kvp.Key].Add(kvp2.Key,kvp2.Value);
+                if (data2.Count > 0)
+                    foreach (KeyValuePair<string, string> kvp2 in data1)
+                        ModEntry.todaysPosts[kvp.Key].Add(kvp2.Key, kvp2.Value);
+
+                Monitor.Log($"NPC {kvp.Key} has {ModEntry.todaysPosts[kvp.Key].Count} timed dialogue(s) today");
+
+            }
+        }
         public static int AddPosts(string[] postKeys)
         {
             int posts = 0; 
@@ -248,6 +282,5 @@ namespace SocialNetwork
                 lines.Add(line);
             return lines;
         }
-
     }
 }

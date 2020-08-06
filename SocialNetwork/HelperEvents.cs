@@ -29,7 +29,21 @@ namespace SocialNetwork
                 $"SocialNetwork_Time_{e.NewTime}",
                 $"SocialNetwork_DateTime_{Game1.Date.Season}_{Game1.Date.DayOfMonth}_{e.NewTime}",
             };
-            int posts = Utils.AddPosts(postKeys);
+
+            foreach(KeyValuePair<string,Dictionary<string,string>> kvp in ModEntry.todaysPosts)
+            {
+                foreach(string postKey in postKeys)
+                {
+                    if (kvp.Value.ContainsKey(postKey))
+                    {
+                        NPC npc = Game1.getCharacterFromName(kvp.Key);
+                        Texture2D portrait = npc.Sprite.Texture;
+                        Rectangle sourceRect = npc.getMugShotSourceRect();
+                        ModEntry.postList.Add(new SocialPost(npc, portrait, sourceRect, kvp.Value[postKey]));
+                        Monitor.Log($"added {postKey} post from {npc.displayName}");
+                    }
+                }
+            }
 
             if(Game1.random.NextDouble() <= Config.TimeOfDayChangePostChance)
             {
@@ -37,16 +51,11 @@ namespace SocialNetwork
                 string friend = friends[Game1.random.Next(friends.Length)];
                 Utils.GetRandomPost(friend);
             }
-
-            if (posts != 0)
-            {
-
-            }
         }
 
         public static void GameLoop_DayStarted(object sender, DayStartedEventArgs e)
         {
-            Utils.GetOvernightPosts();
+            Utils.GetDailyPosts();
         }
 
         public static void GameLoop_GameLaunched(object sender, GameLaunchedEventArgs e)

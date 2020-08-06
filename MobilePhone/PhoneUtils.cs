@@ -136,6 +136,8 @@ namespace MobilePhone
             ModEntry.phoneBookHeaderTexture = PhoneVisuals.MakeColorTexture(Config.PhoneBookHeaderColor, new Vector2(screenSize.X, Config.AppHeaderHeight));
             ModEntry.themesHeaderTexture = PhoneVisuals.MakeColorTexture(Config.ThemesHeaderColor, new Vector2(screenSize.X, Config.AppHeaderHeight));
             ModEntry.themesHighlightTexture = PhoneVisuals.MakeColorTexture(Config.ThemesFooterHighlightColor, new Vector2(screenSize.X / 2, Config.AppHeaderHeight));
+            ModEntry.answerTexture = PhoneVisuals.MakeColorTexture(Config.AnswerColor, new Vector2(screenSize.X / 2, Config.AppHeaderHeight));
+            ModEntry.declineTexture = PhoneVisuals.MakeColorTexture(Config.DeclineColor, new Vector2(screenSize.X / 2, Config.AppHeaderHeight));
         }
 
         public static Vector2 GetPhonePosition()
@@ -168,7 +170,18 @@ namespace MobilePhone
 
             return new Vector2(x, y);
         }
-        
+
+        internal static void CreateTones()
+        {
+            if (Config.PhoneRingTone.Contains("."))
+            {
+
+            }
+            if (Config.NotificationTone.Contains("."))
+            {
+
+            }
+        }
 
         public static Vector2 GetPhoneIconPosition()
         {

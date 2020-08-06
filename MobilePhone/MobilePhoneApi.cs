@@ -87,5 +87,21 @@ namespace MobilePhone
             ModEntry.runningApp = value;
         }
 
+        public void PlayRingTone()
+        {
+            Game1.playSound(ModEntry.Config.PhoneRingTone);
+        }
+        public void PlayNotificationTone()
+        {
+            Game1.playSound(ModEntry.Config.NotificationTone);
+        }
+        public NPC GetCallingNPC()
+        {
+            return ModEntry.callingNPC;
+        }
+        public bool IsCallingNPC()
+        {
+            return ModEntry.callingNPC != null;
+        }
     }
 }

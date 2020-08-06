@@ -80,8 +80,18 @@ namespace MobilePhone
 
         public static int clickingTicks;
         public static int ticksSinceMoved;
-        internal static Texture2D themesHighlightTexture;
-        internal static Texture2D themesHeaderTexture;
+
+        public static Texture2D themesHighlightTexture;
+        public static Texture2D themesHeaderTexture;
+        public static Texture2D answerTexture;
+        public static Texture2D declineTexture;
+
+        public static int currentCallRings;
+        public static int currentCallMaxRings;
+
+        public static int ringToggle;
+        public static NPC callingNPC;
+        internal static bool inCall;
 
         public static event EventHandler OnScreenRotated;
 
@@ -107,6 +117,8 @@ namespace MobilePhone
             Helper.Events.Input.ButtonReleased += PhoneInput.Input_ButtonReleased;
             Helper.Events.GameLoop.SaveLoaded += PhoneGameLoop.GameLoop_SaveLoaded;
             Helper.Events.GameLoop.GameLaunched += PhoneGameLoop.GameLoop_GameLaunched;
+            Helper.Events.GameLoop.TimeChanged += PhoneGameLoop.GameLoop_TimeChanged;
+            Helper.Events.GameLoop.OneSecondUpdateTicked += PhoneGameLoop.GameLoop_OneSecondUpdateTicked;
             Helper.Events.Display.WindowResized += PhoneVisuals.Display_WindowResized;
         }
 

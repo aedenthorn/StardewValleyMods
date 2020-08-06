@@ -2,6 +2,7 @@
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using StardewModdingAPI;
+using StardewModdingAPI.Events;
 using StardewValley;
 using System;
 using System.Collections.Generic;
@@ -108,7 +109,9 @@ namespace MobilePhone
             ModEntry.listHeight = Config.IconMarginY + (int)Math.Ceiling(ModEntry.apps.Count / (float)ModEntry.gridWidth) * (Config.IconHeight + Config.IconMarginY);
             PhoneVisuals.CreatePhoneTextures();
             PhoneUtils.RefreshPhoneLayout();
+            PhoneUtils.CreateTones();
         }
+
 
 
         public static void GameLoop_SaveLoaded(object sender, StardewModdingAPI.Events.SaveLoadedEventArgs e)
@@ -117,6 +120,41 @@ namespace MobilePhone
             PhoneUtils.OrderApps();
             PhoneUtils.RefreshPhoneLayout();
             Helper.Events.Display.RenderedWorld += PhoneVisuals.Display_RenderedWorld;
+        }
+        public static void GameLoop_TimeChanged(object sender, TimeChangedEventArgs e)
+        {
+            if (e.OldTime >= e.NewTime || ModEntry.callingNPC != null || !Config.EnableIncomingCalls)
+                return;
+
+            if(Game1.random.NextDouble() < Config.FriendCallChance)
+            {
+                Monitor.Log($"Receiving random call", LogLevel.Debug);
+                MobilePhoneApp.ReceiveRandomCall();
+            }
+        }
+        public static void GameLoop_OneSecondUpdateTicked(object sender, OneSecondUpdateTickedEventArgs e)
+        {
+            if (ModEntry.callingNPC != null)
+            {
+                if (ModEntry.currentCallRings < ModEntry.currentCallMaxRings && !ModEntry.inCall)
+                {
+                    if (ModEntry.ringToggle == Config.PhoneRingInterval)
+                    {
+                        Monitor.Log($"Phone ringing, {ModEntry.callingNPC.displayName} calling", LogLevel.Debug);
+                        Game1.playSound(Config.PhoneRingTone);
+                        ModEntry.currentCallRings++;
+                        ModEntry.ringToggle = 0;
+                    }
+                    else
+                        ModEntry.ringToggle++;
+                }
+                else
+                {
+                    if(!ModEntry.inCall)
+                        ModEntry.callingNPC = null;
+                    ModEntry.currentCallRings = 0;
+                }
+            }
         }
     }
 }

@@ -7,6 +7,7 @@ using StardewValley.Locations;
 using StardewValley.Network;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Reflection;
 using System.Threading;
 using static Harmony.AccessTools;
@@ -114,25 +115,33 @@ namespace CustomOreNodes
 			CustomOreData data;
 			try
 			{
-				data = Helper.Content.Load<CustomOreData>("custom_ore_nodes.json", ContentSource.ModFolder);
-				foreach (string nodeInfo in data.nodes)
+				if(File.Exists(Path.Combine(Helper.DirectoryPath, "custom_ore_nodes.json")))
 				{
-					CustomOreNode node = new CustomOreNode(nodeInfo);
-					if (node.spriteType == "mod")
+					data = Helper.Content.Load<CustomOreData>("custom_ore_nodes.json", ContentSource.ModFolder);
+					foreach (string nodeInfo in data.nodes)
 					{
-						node.texture = Helper.Content.Load<Texture2D>(node.spritePath, ContentSource.ModFolder);
+						CustomOreNode node = new CustomOreNode(nodeInfo);
+						if (node.spriteType == "mod")
+						{
+							node.texture = Helper.Content.Load<Texture2D>(node.spritePath, ContentSource.ModFolder);
+						}
+						else
+						{
+							node.texture = this.Helper.Content.Load<Texture2D>(node.spritePath, ContentSource.GameContent);
+						}
+						CustomOreNodes.Add(node);
 					}
-					else
-					{
-						node.texture = this.Helper.Content.Load<Texture2D>(node.spritePath, ContentSource.GameContent);
-					}
-					CustomOreNodes.Add(node);
+					Monitor.Log($"Got {CustomOreNodes.Count} ores from mod", LogLevel.Debug);
+
 				}
-				Monitor.Log($"Got {CustomOreNodes.Count} ores from mod",LogLevel.Debug);
+				else
+                {
+					SMonitor.Log("No custom_ore_nodes.json in mod directory.");
+				}
 			}
 			catch(Exception ex)
 			{
-				SMonitor.Log("custom_ore_nodes.json error."+ex, LogLevel.Debug);
+				SMonitor.Log("Error processing custom_ore_nodes.json: "+ex, LogLevel.Error);
 			}
 
 			foreach (IContentPack contentPack in this.Helper.ContentPacks.GetOwned())
@@ -156,9 +165,9 @@ namespace CustomOreNodes
 					}
 					Monitor.Log($"Got {data.nodes.Count} ores from content pack {contentPack.Manifest.Name}", LogLevel.Debug);
 				}
-				catch
+				catch(Exception ex)
 				{
-					SMonitor.Log($"custom_ore_nodes.json file not found in content pack {contentPack.Manifest.Name}", LogLevel.Debug);
+					SMonitor.Log($"Error processing custom_ore_nodes.json in content pack {contentPack.Manifest.Name} {ex}", LogLevel.Error);
 				}
 			}
 			Monitor.Log($"Got {CustomOreNodes.Count} ores total", LogLevel.Debug);

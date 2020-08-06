@@ -2,10 +2,13 @@
 using Microsoft.Xna.Framework.Graphics;
 using StardewModdingAPI;
 using StardewValley;
+using StardewValley.Menus;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Runtime.InteropServices;
+using System.Threading.Tasks;
 
 namespace MobilePhone
 {
@@ -51,7 +54,7 @@ namespace MobilePhone
 
         private static void Input_ButtonPressed(object sender, StardewModdingAPI.Events.ButtonPressedEventArgs e)
         {
-            if (!ModEntry.appRunning || ModEntry.runningApp != Helper.ModRegistry.ModID || !ModEntry.screenRect.Contains(Game1.getMousePosition()))
+            if (ModEntry.inCall || !ModEntry.appRunning || ModEntry.runningApp != Helper.ModRegistry.ModID || !ModEntry.screenRect.Contains(Game1.getMousePosition()))
                 return;
 
             if (e.Button == SButton.MouseLeft)
@@ -71,19 +74,50 @@ namespace MobilePhone
             }
         }
 
-        private static void CallNPC(NPC npc)
+        public static async void CallNPC(NPC npc)
         {
             if (npc.CurrentDialogue.Count >= 1 || npc.endOfRouteMessage.Value != null)
             {
                 Monitor.Log($"{npc.Name} has dialogue");
                 npc.grantConversationFriendship(Game1.player, 20);
-                Game1.drawDialogue(npc);
+                Dialogue greet = GetCallGreeting(npc);
+                if(greet != null)
+                    npc.CurrentDialogue.Push(greet);
+                int i = 0;
+                ModEntry.inCall = true;
+                while (npc.CurrentDialogue.Count > 0 && ModEntry.phoneOpen)
+                {
+                    if(!(Game1.activeClickableMenu is DialogueBox))
+                    {
+                        Game1.drawDialogue(npc);
+                        Monitor.Log($"Dialogues left {npc.CurrentDialogue.Count}");
+                    }
+                    await Task.Delay(100);
+                }
+                ModEntry.inCall = false;
+                ModEntry.callingNPC = null;
             }
             else
             {
                 Monitor.Log($"{npc.Name} has no dialogue");
                 Game1.drawObjectDialogue(Helper.Translation.Get("no-answer"));
             }
+        }
+
+        private static Dialogue GetCallGreeting(NPC npc)
+        {
+            try
+            {
+                Dictionary<string, string> dict = Helper.Content.Load<Dictionary<string, string>>($"Characters/Dialogue/{npc.name}", ContentSource.GameContent);
+                if (dict.ContainsKey("MobilePhoneGreeting"))
+                    return new Dialogue(dict["MobilePhoneGreeting"], npc);
+            }
+            catch
+            {
+                Monitor.Log($"{npc.Name} has no dialogue file, using generic greeting");
+            }
+            Monitor.Log($"{npc.Name} has no greeting, using generic greeting");
+            return new Dialogue(Helper.Translation.Get("generic-greeting"), npc);
         }
 
         private static void CreateCallableList()
@@ -112,6 +146,11 @@ namespace MobilePhone
 
         private static void Display_RenderedWorld(object sender, StardewModdingAPI.Events.RenderedWorldEventArgs e)
         {
+            if (ModEntry.callingNPC != null)
+            {
+                return;
+            }
+
             if (!ModEntry.appRunning || !ModEntry.phoneOpen || ModEntry.runningApp != Helper.ModRegistry.ModID)
             {
                 ModEntry.appRunning = false;
@@ -226,6 +265,28 @@ namespace MobilePhone
             float y = ModEntry.screenPosition.Y + Config.AppHeaderHeight + Config.ContactMarginY + ((i / ModEntry.gridWidth) * (Config.ContactHeight + Config.ContactMarginY));
 
             return new Vector2(x, y + yOffset);
+        }
+        public static void ReceiveRandomCall()
+        {
+            CreateCallableList();
+            if (callableList.Count == 0)
+            {
+                Monitor.Log($"You have no friends.", LogLevel.Debug);
+                return;
+            }
+            CallableNPC[] callers = callableList.Where(s => s.npc.CurrentDialogue.Count >= 1 || s.npc.endOfRouteMessage.Value != null).ToArray();
+            if (callers.Length == 0)
+            {
+                Monitor.Log($"None of your friends want to talk to you.", LogLevel.Debug);
+                return;
+            }
+            CallableNPC caller = callers[Game1.random.Next(callers.Length)];
+            
+            Monitor.Log($"Friend calling: {caller.npc.displayName}", LogLevel.Debug);
+
+            ModEntry.currentCallRings = 0;
+            ModEntry.currentCallMaxRings = Game1.random.Next(Math.Max(0, Config.IncomingCallMinRings), Math.Max(Config.IncomingCallMinRings + 1, Config.IncomingCallMaxRings));
+            ModEntry.callingNPC = caller.npc;
         }
     }
 }

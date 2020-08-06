@@ -20,6 +20,7 @@ namespace SocialNetwork
         public static float yOffset;
         public static bool dragging;
         public static Point lastMousePosition;
+        public static Dictionary<string, Dictionary<string, string>> todaysPosts = new Dictionary<string, Dictionary<string, string>>();
 
         /// <summary>The mod entry point, called after the mod is first loaded.</summary>
         /// <param name="helper">Provides simplified APIs for writing mods.</param>

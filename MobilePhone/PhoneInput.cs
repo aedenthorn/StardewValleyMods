@@ -65,27 +65,34 @@ namespace MobilePhone
                 return;
             }
 
-            if (e.Button == SButton.MouseLeft && (ModEntry.appRunning || Game1.activeClickableMenu is MobilePhoneMenu))
+            if (e.Button == SButton.MouseLeft)
             {
-                if (!ModEntry.appRunning && !ModEntry.phoneRect.Contains(mousePos))
+                if(ModEntry.appRunning || Game1.activeClickableMenu is MobilePhoneMenu)
                 {
-                    Helper.Input.Suppress(SButton.MouseLeft);
-                    PhoneUtils.TogglePhone();
+                    if (!ModEntry.appRunning && !ModEntry.phoneRect.Contains(mousePos))
+                    {
+                        Helper.Input.Suppress(SButton.MouseLeft);
+                        PhoneUtils.TogglePhone();
+                        return;
+                    }
+
+                    if (ModEntry.phoneRect.Contains(mousePos) && !ModEntry.screenRect.Contains(mousePos))
+                    {
+                        ModEntry.clicking = true;
+                        Helper.Input.Suppress(SButton.MouseLeft);
+                        ModEntry.draggingPhone = true;
+                        ModEntry.lastMousePosition = mousePos;
+                        return;
+                    }
+                }
+
+                if(ModEntry.callingNPC != null && ModEntry.screenRect.Contains(mousePos))
+                {
+                    ModEntry.clicking = true;
                     return;
                 }
 
-                if (ModEntry.phoneRect.Contains(mousePos) && !ModEntry.screenRect.Contains(mousePos))
-                {
-                    ModEntry.draggingPhone = true;
-                    ModEntry.lastMousePosition = mousePos;
-                    return;
-                }
-
-            }
-
-            if (!ModEntry.appRunning && Game1.activeClickableMenu is MobilePhoneMenu)
-            {
-                if (e.Button == SButton.MouseLeft && ModEntry.screenRect.Contains(mousePos))
+                if (!ModEntry.appRunning && Game1.activeClickableMenu is MobilePhoneMenu && ModEntry.screenRect.Contains(mousePos))
                 {
                     Monitor.Log($"pressing mouse key in phone");
                     Helper.Input.Suppress(SButton.MouseLeft);
@@ -105,6 +112,7 @@ namespace MobilePhone
                     }
                 }
             }
+
         }
 
         public static void PressKey(MobileApp app)
