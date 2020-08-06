@@ -106,7 +106,7 @@ namespace MobilePhone
 
         private static void Input_ButtonPressed(object sender, StardewModdingAPI.Events.ButtonPressedEventArgs e)
         {
-            if (!ModEntry.appRunning || ModEntry.runningApp != Helper.ModRegistry.ModID || !ModEntry.screenRect.Contains(Game1.getMousePosition()))
+            if (ModEntry.callingNPC != null || !ModEntry.appRunning || ModEntry.runningApp != Helper.ModRegistry.ModID || !ModEntry.screenRect.Contains(Game1.getMousePosition()))
                 return;
 
             if (e.Button == SButton.MouseLeft)
@@ -144,6 +144,9 @@ namespace MobilePhone
 
         private static void Display_RenderedWorld(object sender, StardewModdingAPI.Events.RenderedWorldEventArgs e)
         {
+            if (ModEntry.callingNPC != null)
+                return;
+
             if (!ModEntry.appRunning || !ModEntry.phoneOpen || ModEntry.runningApp != Helper.ModRegistry.ModID)
             {
                 ModEntry.appRunning = false;

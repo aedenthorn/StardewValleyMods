@@ -12,5 +12,6 @@ namespace MobileCatalogues
         public bool FreeFurnitureCatalogue { get; set; } = false;
         public bool FreeSeedCatalogue { get; set; } = false;
         public string SeedsToInclude { get; set; } = "season";
+        public float PriceMult { get; set; } = 1f;
     }
 }

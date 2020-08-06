@@ -1,16 +1,11 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using Microsoft.Xna.Framework.Input;
 using StardewModdingAPI;
 using StardewValley;
 using StardewValley.BellsAndWhistles;
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Reflection;
-using System.Security.Cryptography;
-using System.Windows.Forms;
 
 namespace MobilePhone
 {
@@ -96,23 +91,33 @@ namespace MobilePhone
                     Game1.activeClickableMenu = null;
                 }
             }
+
             if (ModEntry.draggingPhone)
             {
-                if(mousePos != lastMousePos)
+                if (Helper.Input.IsSuppressed(SButton.MouseLeft))
                 {
-                    int x = mousePos.X - lastMousePos.X;
-                    int y = mousePos.Y - lastMousePos.Y; 
-                    if (ModEntry.phoneRotated)
+                    if (mousePos != lastMousePos)
                     {
-                        Config.PhoneRotatedOffsetX += x;
-                        Config.PhoneRotatedOffsetY += y;
+                        int x = mousePos.X - lastMousePos.X;
+                        int y = mousePos.Y - lastMousePos.Y;
+                        if (ModEntry.phoneRotated)
+                        {
+                            Config.PhoneRotatedOffsetX += x;
+                            Config.PhoneRotatedOffsetY += y;
+                        }
+                        else
+                        {
+                            Config.PhoneOffsetX += x;
+                            Config.PhoneOffsetY += y;
+                        }
+                        PhoneUtils.RefreshPhoneLayout();
                     }
-                    else
-                    {
-                        Config.PhoneOffsetX += x;
-                        Config.PhoneOffsetY += y;
-                    }
-                    PhoneUtils.RefreshPhoneLayout();
+                }
+                else
+                {
+                    ModEntry.context.Helper.WriteConfig(Config);
+                    ModEntry.draggingPhone = false;
+                    Monitor.Log($"released dragging phone");
                 }
             }
             else if (Helper.Input.IsSuppressed(SButton.MouseLeft) && !ModEntry.movingAppIcon)
@@ -220,11 +225,6 @@ namespace MobilePhone
                     keys = new List<string>(ModEntry.appOrder);
                     Config.AppList = keys.ToArray();
                     Helper.WriteConfig(Config);
-                }
-                else if (ModEntry.draggingPhone)
-                {
-                    ModEntry.context.Helper.WriteConfig(Config);
-                    ModEntry.draggingPhone = false;
                 }
                 else if (ModEntry.draggingIcons)
                 {

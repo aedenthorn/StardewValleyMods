@@ -83,7 +83,7 @@ namespace MobilePhone
         public float FriendCallChance { get; set; } = 0.01f;
         public Color CallTextColor { get; set; } = Color.White;
         public Color AnswerColor { get; set; } = Color.ForestGreen;
-        public Color DeclineColor { get; set; } = Color.IndianRed;
+        public Color DeclineColor { get; set; } = Color.DarkRed;
         public int IncomingCallMinRings { get; set; } = 3;
         public int IncomingCallMaxRings { get; set; } = 5;
         public int PhoneRingInterval { get; set; } = 3;

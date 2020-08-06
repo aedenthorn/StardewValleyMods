@@ -1,8 +1,10 @@
 ﻿using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Audio;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using StardewModdingAPI;
 using StardewValley;
+using StardewValley.Events;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -171,15 +173,83 @@ namespace MobilePhone
             return new Vector2(x, y);
         }
 
-        internal static void CreateTones()
+        public static void CreateTones()
         {
-            if (Config.PhoneRingTone.Contains("."))
+            string tone = Config.PhoneRingTone;
+            if (tone.Contains("."))
             {
-
+                try
+                {
+                    string filePath = Path.Combine(Helper.DirectoryPath, "assets", tone);
+                    if (File.Exists(filePath))
+                    {
+                        ModEntry.ringSound = SoundEffect.FromStream(new FileStream(filePath, FileMode.Open));
+                        Monitor.Log($"Loaded ring tone {tone}");
+                    }
+                }
+                catch(Exception ex)
+                {
+                    Monitor.Log($"Couldn't load ring tone {tone}: {ex}", LogLevel.Error);
+                }
             }
+            tone = Config.NotificationTone;
             if (Config.NotificationTone.Contains("."))
             {
+                try
+                {
+                    string filePath = Path.Combine(Helper.DirectoryPath, "assets", tone);
+                    if (File.Exists(filePath))
+                    {
+                        ModEntry.notificationSound = SoundEffect.FromStream(new FileStream(filePath, FileMode.Open));
+                        Monitor.Log($"Loaded notification tone {tone}");
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Monitor.Log($"Couldn't load notification tone {tone}: {ex}", LogLevel.Error);
+                }
+            }
+        }
 
+        public static void PlayRingTone()
+        {
+            string tone = Config.PhoneRingTone;
+
+            try
+            {
+                if (tone.Contains("."))
+                {
+                    ModEntry.ringSound.Play(); 
+                }
+                else
+                {
+                    Game1.playSound(tone);
+                }
+            }
+            catch(Exception ex)
+            {
+                Monitor.Log($"Couldn't play ring sound {tone}: {ex}", LogLevel.Error);
+            }
+        }
+
+        public static void PlayNotificationTone()
+        {
+            string tone = Config.NotificationTone;
+
+            try
+            {
+                if (tone.Contains("."))
+                {
+                    ModEntry.notificationSound.Play(); 
+                }
+                else
+                {
+                    Game1.playSound(tone);
+                }
+            }
+            catch(Exception ex)
+            {
+                Monitor.Log($"Couldn't play notification sound {tone}: {ex}", LogLevel.Error);
             }
         }
 

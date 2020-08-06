@@ -1,13 +1,10 @@
 ﻿using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Audio;
 using Microsoft.Xna.Framework.Graphics;
-using Microsoft.Xna.Framework.Input;
 using StardewModdingAPI;
 using StardewValley;
 using System;
 using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Reflection;
 
 namespace MobilePhone
 {
@@ -91,7 +88,9 @@ namespace MobilePhone
 
         public static int ringToggle;
         public static NPC callingNPC;
-        internal static bool inCall;
+        public static bool inCall;
+        public static SoundEffect ringSound;
+        public static SoundEffect notificationSound;
 
         public static event EventHandler OnScreenRotated;
 
@@ -104,6 +103,7 @@ namespace MobilePhone
             SHelper = helper;
             if (!Config.EnableMod)
                 return;
+
             api = (MobilePhoneApi)GetApi();
 
             MobilePhoneApp.Initialize(Helper, Monitor, Config);

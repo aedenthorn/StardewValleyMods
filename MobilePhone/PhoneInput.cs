@@ -71,6 +71,7 @@ namespace MobilePhone
                 {
                     if (!ModEntry.appRunning && !ModEntry.phoneRect.Contains(mousePos))
                     {
+                        Monitor.Log($"pressing mouse outside of opened phone");
                         Helper.Input.Suppress(SButton.MouseLeft);
                         PhoneUtils.TogglePhone();
                         return;
@@ -78,8 +79,9 @@ namespace MobilePhone
 
                     if (ModEntry.phoneRect.Contains(mousePos) && !ModEntry.screenRect.Contains(mousePos))
                     {
-                        ModEntry.clicking = true;
+                        Monitor.Log($"pressing mouse key on phone border");
                         Helper.Input.Suppress(SButton.MouseLeft);
+                        ModEntry.clicking = true;
                         ModEntry.draggingPhone = true;
                         ModEntry.lastMousePosition = mousePos;
                         return;

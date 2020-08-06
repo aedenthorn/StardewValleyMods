@@ -96,17 +96,8 @@ namespace MobileAudioPlayer
 
         private void Input_ButtonPressed(object sender, ButtonPressedEventArgs e)
         {
-            if (api.GetRunningApp() != Helper.ModRegistry.ModID)
+            if (api.IsCallingNPC() || api.GetRunningApp() != Helper.ModRegistry.ModID)
                 return;
-
-            if (opening)
-            {
-                clicking = false;
-                dragging = false;
-                opening = false;
-                return;
-            }
-
 
             if(e.Button == SButton.MouseLeft)
             {
@@ -169,6 +160,8 @@ namespace MobileAudioPlayer
 
         private void Input_ButtonReleased(object sender, ButtonReleasedEventArgs e)
         {
+            opening = false;
+
             if (e.Button == SButton.MouseLeft)
             {
                 if (api.GetRunningApp() != Helper.ModRegistry.ModID)
@@ -225,6 +218,10 @@ namespace MobileAudioPlayer
 
         private void Display_RenderedWorld(object sender, RenderedWorldEventArgs e)
         {
+
+            if (api.IsCallingNPC())
+                return;
+
             float itemHeight = Game1.dialogueFont.LineSpacing * (Config.LineOneScale + Config.LineTwoScale);
 
             screenPos = api.GetScreenPosition();
@@ -416,6 +413,8 @@ namespace MobileAudioPlayer
                 {
                     try
                     {
+                        if(Game1.currentSong != null && Game1.currentSong.IsPlaying)
+                            Game1.currentSong.Stop(AudioStopOptions.Immediate);
                         Game1.musicPlayerVolume = currentMusicVolume;
                         Game1.player.currentLocation.checkForMusic(Game1.currentGameTime);
                         Game1.currentSong = Game1.soundBank.GetCue(Game1.currentSong.Name);

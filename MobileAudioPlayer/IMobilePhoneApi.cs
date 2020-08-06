@@ -1,5 +1,6 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using StardewValley;
 using System;
 
 namespace MobileAudioPlayer
@@ -21,5 +22,10 @@ namespace MobileAudioPlayer
         void SetAppRunning(bool value);
         string GetRunningApp();
         void SetRunningApp(string value);
+
+        void PlayRingTone();
+        void PlayNotificationTone();
+        NPC GetCallingNPC();
+        bool IsCallingNPC();
     }
 }

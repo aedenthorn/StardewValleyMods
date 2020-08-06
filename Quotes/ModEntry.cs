@@ -124,13 +124,14 @@ namespace Quotes
         {
             Color thisColor = Config.QuoteColor;
             thisColor.A = (byte)Math.Round(255 * Game1.fadeToBlackAlpha);
-            
+            int lineSpacing = Game1.dialogueFont.LineSpacing + Config.LineSpacing;
+
             for (int i = 0; i < dailyQuote.quoteLines.Count; i++)
             {
-                e.SpriteBatch.DrawString(Game1.dialogueFont, dailyQuote.quoteLines[i], new Vector2(Game1.viewport.Width / 2 - (Config.QuoteCharPerLine * 10), Game1.viewport.Height / 2 - (dailyQuote.quoteLines.Count / 2) * Game1.dialogueFont.LineSpacing + Game1.dialogueFont.LineSpacing * i), thisColor);
+                e.SpriteBatch.DrawString(Game1.dialogueFont, dailyQuote.quoteLines[i], new Vector2(Game1.viewport.Width / 2 - (Config.QuoteCharPerLine * 10), Game1.viewport.Height / 2 - (dailyQuote.quoteLines.Count / 2) * lineSpacing + lineSpacing * i), thisColor);
             }
             if (dailyQuote.author != null)
-                e.SpriteBatch.DrawString(Game1.dialogueFont, Config.AuthorPrefix + dailyQuote.author, new Vector2(Game1.viewport.Width / 2 + (Config.QuoteCharPerLine * 10) - (dailyQuote.author.Length * 20 + Config.AuthorPrefix.Length * 20), Game1.viewport.Height / 2 - (dailyQuote.quoteLines.Count / 2) * Game1.dialogueFont.LineSpacing + Game1.dialogueFont.LineSpacing * dailyQuote.quoteLines.Count), thisColor);
+                e.SpriteBatch.DrawString(Game1.dialogueFont, Config.AuthorPrefix + dailyQuote.author, new Vector2(Game1.viewport.Width / 2 + (Config.QuoteCharPerLine * 10) - (dailyQuote.author.Length * 20 + Config.AuthorPrefix.Length * 20), Game1.viewport.Height / 2 - (dailyQuote.quoteLines.Count / 2) * lineSpacing + lineSpacing * dailyQuote.quoteLines.Count), thisColor);
 
 
             //SpriteText.drawString(e.SpriteBatch, dailyQuote.quote, x, y, 999999, Config.QuoteWidth, 999999, Game1.fadeToBlackAlpha, 0.88f, false, -1, "", colorCode, SpriteText.ScrollTextAlignment.Left);

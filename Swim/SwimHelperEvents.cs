@@ -283,7 +283,7 @@ namespace Swim
 
         private static void LoadBreatheSound()
         {
-            string filePath = $"{Helper.DirectoryPath}\\assets\\breathe.wav";
+            string filePath = Path.Combine(Helper.DirectoryPath, "assets", "breathe.wav");
             if (File.Exists(filePath))
             {
                 breatheEffect = SoundEffect.FromStream(new FileStream(filePath, FileMode.Open));

@@ -19,5 +19,6 @@ namespace Quotes
         public bool ClickToDispelQuote { get; set; } = true;
         public bool RandomQuote { get; set; } = false;
         public int QuoteWidth { get; set; } = 1000;
+        public int LineSpacing { get; set; } = 10;
     }
 }

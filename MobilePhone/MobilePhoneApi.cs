@@ -89,11 +89,11 @@ namespace MobilePhone
 
         public void PlayRingTone()
         {
-            Game1.playSound(ModEntry.Config.PhoneRingTone);
+            PhoneUtils.PlayRingTone();
         }
         public void PlayNotificationTone()
         {
-            Game1.playSound(ModEntry.Config.NotificationTone);
+            PhoneUtils.PlayNotificationTone();
         }
         public NPC GetCallingNPC()
         {

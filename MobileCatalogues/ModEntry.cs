@@ -5,13 +5,10 @@ using StardewModdingAPI.Events;
 using StardewValley;
 using StardewValley.Locations;
 using StardewValley.Menus;
-using StardewValley.Minigames;
 using StardewValley.Objects;
-using StardewValley.Tools;
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Threading.Tasks;
 using Object = StardewValley.Object;
 
@@ -103,7 +100,7 @@ namespace MobileCatalogues
                     Stack = int.MaxValue
                 }, new int[]
                 {
-                    Config.FreeCatalogue  ? 0 : f.salePrice(),
+                    Config.FreeCatalogue  ? 0 : (int)Math.Round(f.salePrice() * Config.PriceMult),
                     int.MaxValue
                 });
             }
@@ -115,7 +112,7 @@ namespace MobileCatalogues
                     Stack = int.MaxValue
                 }, new int[]
                 {
-                    Config.FreeCatalogue  ? 0 : f.salePrice(),
+                    Config.FreeCatalogue  ? 0 : (int)Math.Round(f.salePrice() * Config.PriceMult),
                     int.MaxValue
                 });
             }
@@ -133,7 +130,7 @@ namespace MobileCatalogues
                     f = new Furniture(v.Key, Vector2.Zero);
                     decors.Add(f, new int[]
                     {
-                        Config.FreeFurnitureCatalogue ? 0 : f.salePrice(),
+                        Config.FreeFurnitureCatalogue ? 0 : (int)Math.Round(f.salePrice() * Config.PriceMult),
                         int.MaxValue
                     });
                 }
@@ -141,7 +138,7 @@ namespace MobileCatalogues
             f = new Furniture(1402, Vector2.Zero);
             decors.Add(f, new int[]
             {
-                Config.FreeFurnitureCatalogue  ? 0 : f.salePrice(),
+                Config.FreeFurnitureCatalogue  ? 0 :  (int)Math.Round(f.salePrice() * Config.PriceMult),
                 int.MaxValue
             });
             f = new TV(1680, Vector2.Zero);
@@ -153,13 +150,13 @@ namespace MobileCatalogues
             f = new TV(1466, Vector2.Zero);
             decors.Add(f, new int[]
             {
-                Config.FreeFurnitureCatalogue  ? 0 : f.salePrice(),
+                Config.FreeFurnitureCatalogue  ? 0 :  (int)Math.Round(f.salePrice() * Config.PriceMult),
                 int.MaxValue
             });
             f = new TV(1468, Vector2.Zero);
             decors.Add(f, new int[]
             {
-                Config.FreeFurnitureCatalogue  ? 0 : f.salePrice(),
+                Config.FreeFurnitureCatalogue  ? 0 :  (int)Math.Round(f.salePrice() * Config.PriceMult),
                 int.MaxValue
             });
             return decors;
@@ -199,11 +196,11 @@ namespace MobileCatalogues
                     StardewValley.Object item = new StardewValley.Object(crop.Key, int.MaxValue, false, -1, 0);
                     if (!item.bigCraftable.Value && item.ParentSheetIndex == 745)
                     {
-                        item.Price = 50;
+                        item.Price = (int)Math.Round(50 * Config.PriceMult);
                     }
                     items.Add(item, new int[]
                     {
-                        Config.FreeSeedCatalogue ? 0 : item.salePrice(),
+                        Config.FreeSeedCatalogue ? 0 :  (int)Math.Round(item.salePrice() * Config.PriceMult),
                         int.MaxValue
                     });
                 }

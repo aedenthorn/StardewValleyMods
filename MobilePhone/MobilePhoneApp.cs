@@ -204,6 +204,7 @@ namespace MobilePhone
                             if (r.Contains(mousePos))
                             {
                                 Monitor.Log($"calling {callableList[i].npc.Name}");
+                                PhoneUtils.PlayRingTone();
                                 CallNPC(callableList[i].npc);
                             }
                         }
@@ -283,7 +284,7 @@ namespace MobilePhone
             CallableNPC caller = callers[Game1.random.Next(callers.Length)];
             
             Monitor.Log($"Friend calling: {caller.npc.displayName}", LogLevel.Debug);
-
+            PhoneUtils.PlayRingTone();
             ModEntry.currentCallRings = 0;
             ModEntry.currentCallMaxRings = Game1.random.Next(Math.Max(0, Config.IncomingCallMinRings), Math.Max(Config.IncomingCallMinRings + 1, Config.IncomingCallMaxRings));
             ModEntry.callingNPC = caller.npc;

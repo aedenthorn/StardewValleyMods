@@ -141,7 +141,7 @@ namespace MobilePhone
                     if (ModEntry.ringToggle == Config.PhoneRingInterval)
                     {
                         Monitor.Log($"Phone ringing, {ModEntry.callingNPC.displayName} calling", LogLevel.Debug);
-                        Game1.playSound(Config.PhoneRingTone);
+                        PhoneUtils.PlayRingTone();
                         ModEntry.currentCallRings++;
                         ModEntry.ringToggle = 0;
                     }
