@@ -152,7 +152,7 @@ namespace Swim
                 }
             }
 
-            if (Helper.Input.IsDown(SButton.MouseLeft) && Config.EnableClickToSwim)
+            if (Helper.Input.IsDown(SButton.MouseLeft) && !(Game1.player.CurrentTool is StardewValley.Tools.Pan) && !(Game1.player.CurrentTool is StardewValley.Tools.FishingRod) && Config.EnableClickToSwim)
             {
                 ModEntry.myButtonDown = true;
                 return;

@@ -73,6 +73,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MobileTelevision", "MobileT
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HereFishy", "HereFishy\HereFishy.csproj", "{6C0EF6FF-4CE7-4A21-AC71-2E45C342727B}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UndergroundSecrets", "UndergroundSecrets\UndergroundSecrets.csproj", "{858DA3C6-AF61-435B-B9B3-0CAFD337FE29}"
+EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
 		_releases\_releases.projitems*{047040e0-3d07-46e5-852b-d1d45cd57bb8}*SharedItemsImports = 13
@@ -356,6 +358,14 @@ Global
 		{6C0EF6FF-4CE7-4A21-AC71-2E45C342727B}.Release|Any CPU.Build.0 = Release|Any CPU
 		{6C0EF6FF-4CE7-4A21-AC71-2E45C342727B}.Release|x86.ActiveCfg = Release|Any CPU
 		{6C0EF6FF-4CE7-4A21-AC71-2E45C342727B}.Release|x86.Build.0 = Release|Any CPU
+		{858DA3C6-AF61-435B-B9B3-0CAFD337FE29}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{858DA3C6-AF61-435B-B9B3-0CAFD337FE29}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{858DA3C6-AF61-435B-B9B3-0CAFD337FE29}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{858DA3C6-AF61-435B-B9B3-0CAFD337FE29}.Debug|x86.Build.0 = Debug|Any CPU
+		{858DA3C6-AF61-435B-B9B3-0CAFD337FE29}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{858DA3C6-AF61-435B-B9B3-0CAFD337FE29}.Release|Any CPU.Build.0 = Release|Any CPU
+		{858DA3C6-AF61-435B-B9B3-0CAFD337FE29}.Release|x86.ActiveCfg = Release|Any CPU
+		{858DA3C6-AF61-435B-B9B3-0CAFD337FE29}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

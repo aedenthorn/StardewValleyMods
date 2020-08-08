@@ -32,6 +32,8 @@ namespace HereFishy
         private static bool fishCaught;
         private static bool bossFish;
         private static int fishDifficulty;
+        private static bool canPerfect;
+        private static bool hereFishying;
 
 
         /// <summary>The mod entry point, called after the mod is first loaded.</summary>
@@ -42,13 +44,6 @@ namespace HereFishy
 			Config = Helper.ReadConfig<ModConfig>();
 			if (!Config.EnableMod)
 				return;
-
-			HarmonyInstance harmony = HarmonyInstance.Create(Helper.ModRegistry.ModID);
-
-			harmony.Patch(
-			   original: AccessTools.Method(typeof(Pan), nameof(Pan.beginUsing)),
-			   prefix: new HarmonyMethod(typeof(ModEntry), nameof(ModEntry.Pan_beginUsing_prefix))
-			);
 
             try
             {
@@ -61,7 +56,41 @@ namespace HereFishy
 
 			Helper.Events.Display.RenderedWorld += Display_RenderedWorld;
             Helper.Events.GameLoop.UpdateTicking += GameLoop_UpdateTicking;
+            Helper.Events.Input.ButtonPressed += Input_ButtonPressed;
 		}
+
+        private void Input_ButtonPressed(object sender, StardewModdingAPI.Events.ButtonPressedEventArgs e)
+        {
+            if(e.Button == SButton.MouseRight && Context.IsWorldReady && Context.CanPlayerMove && (Game1.player.CurrentTool is FishingRod))
+            {
+                if (hereFishying)
+                {
+                    if (canPerfect)
+                    {
+						perfect = true;
+						sparklingText = new SparklingText(Game1.dialogueFont, Game1.content.LoadString("Strings\\UI:BobberBar_Perfect"), Color.Yellow, Color.White, false, 0.1, 1500, -1, 500, 1f);
+						Game1.playSound("jingle1");
+					}
+					return;
+                }
+
+				try
+				{
+					Vector2 mousePos = Game1.currentCursorTile;
+					if (Game1.player.currentLocation.waterTiles != null && Game1.player.currentLocation.waterTiles[(int)mousePos.X, (int)mousePos.Y])
+					{
+						context.Monitor.Log($"here fishy fishy {mousePos.X},{mousePos.Y}");
+						HereFishyFishy(Game1.player, (int)mousePos.X * 64, (int)mousePos.Y * 64);
+					}
+
+				}
+				catch
+				{
+					context.Monitor.Log($"error getting water tile");
+				}
+			}
+
+        }
 
         private void GameLoop_UpdateTicking(object sender, StardewModdingAPI.Events.UpdateTickingEventArgs e)
         {
@@ -96,46 +125,47 @@ namespace HereFishy
 
 		}
 
-        private static bool Pan_beginUsing_prefix(Pan __instance, GameLocation location, int x, int y, Farmer who, ref bool __result)
-        {
-			context.Monitor.Log($"begin using pan");
-			bool overrideCheck = false;
-			Rectangle orePanRect = new Rectangle(location.orePanPoint.X * 64 - 64, location.orePanPoint.Y * 64 - 64, 256, 256);
-			if (orePanRect.Contains(x, y) && Utility.distance((float)who.getStandingX(), (float)orePanRect.Center.X, (float)who.getStandingY(), (float)orePanRect.Center.Y) <= 192f)
+		private static async void HereFishyFishy(Farmer who, int x, int y)
+		{
+			hereFishying = true;
+			if (fishySound != null)
 			{
-				overrideCheck = true;
-			}
-			if (!overrideCheck && (location.orePanPoint == null || location.orePanPoint.Equals(Point.Zero)))
-			{
-                try
-                {
-					Vector2 mousePos = Game1.currentCursorTile;
-					if (location.waterTiles != null && location.waterTiles[(int)mousePos.X, (int)mousePos.Y])
-					{
-						context.Monitor.Log($"here fishy fishy {mousePos.X},{mousePos.Y}");
-						who.forceCanMove();
-						HereFishyFishy(who, (int)mousePos.X * 64, (int)mousePos.Y * 64);
-						__result = true;
-						return false;
-					}
-
-				}
-                catch
-                {
-					context.Monitor.Log($"error getting water tile");
-                }
-			}
-			return true;
-		}
-
-        private static async void HereFishyFishy(Farmer who, int x, int y)
-        {
-			if(fishySound != null)
-            {
 				fishySound.Play();
 			}
+			who.completelyStopAnimatingOrDoingAction();
+			who.jitterStrength = 2f;
+			List<FarmerSprite.AnimationFrame> animationFrames = new List<FarmerSprite.AnimationFrame>(){
+				new FarmerSprite.AnimationFrame(94, 100, false, false, null, false).AddFrameAction(delegate (Farmer f)
+				{
+					f.jitterStrength = 2f;
+				})
+			};
+			who.FarmerSprite.setCurrentAnimation(animationFrames.ToArray());
+			who.FarmerSprite.PauseForSingleAnimation = true;
+			who.FarmerSprite.loop = true;
+			who.FarmerSprite.loopThisAnimation = true;
+			who.Sprite.currentFrame = 94;
 
-			await System.Threading.Tasks.Task.Delay(Game1.random.Next(3000,4000));
+			await System.Threading.Tasks.Task.Delay(1793);
+
+			canPerfect = true;
+			perfect = false;
+
+			who.synchronizedJump(8f);
+
+			await System.Threading.Tasks.Task.Delay(100);
+
+			canPerfect = false;
+
+			await System.Threading.Tasks.Task.Delay(900);
+
+			who.stopJittering();
+			who.completelyStopAnimatingOrDoingAction();
+			who.forceCanMove();
+
+			hereFishying = false;
+
+			await System.Threading.Tasks.Task.Delay(Game1.random.Next(500, 1000));
 
 			Object o = who.currentLocation.getFish(0, -1, 1, who, 0, new Vector2(x, y), who.currentLocation.Name);
 			if (o == null || o.ParentSheetIndex <= 0)
@@ -172,11 +202,12 @@ namespace HereFishy
 				int maxFishSize = int.Parse(datas[4]);
 				fishSize = (int)((float)minFishSize + (float)(maxFishSize - minFishSize) * fishSize);
 				fishSize++;
-				perfect = true;
-				fishQuality = (((double)fishSize < 0.33) ? 0 : (((double)fishSize < 0.66) ? 2 : 4));
+				fishQuality = (((double)fishSize < 0.33) ? 0 : (((double)fishSize < 0.66) ? 1 : 2));
+				if (perfect)
+					fishQuality *= 2;
 			}
 			bossFish = FishingRod.isFishBossFish(whichFish);
-			caughtDoubleFish = !bossFish && Game1.random.NextDouble() < 0.25 + Game1.player.DailyLuck / 2.0;
+			caughtDoubleFish = !bossFish && Game1.random.NextDouble() < 0.1 + Game1.player.DailyLuck / 2.0;
 
 			context.Monitor.Log($"pulling fish {whichFish} {fishSize} {who.Name} {x},{y}");
 
@@ -195,7 +226,10 @@ namespace HereFishy
 				{
 					experience *= 5;
 				}
-				experience += (int)((float)experience * 1.4f); // perfect
+				
+				if(perfect)
+					experience += (int)((float)experience * 1.4f);
+				
 				who.gainExperience(1, experience);
 			}
 

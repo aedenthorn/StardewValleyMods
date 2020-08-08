@@ -201,7 +201,7 @@ namespace Familiars
 		if (!Config.EnableMod)
 			return false;
 
-		if (asset.AssetNameEquals("Characters\\Monsters\\BatFamiliar") || asset.AssetNameEquals("Characters\\Monsters\\DinoFamiliar") || asset.AssetNameEquals("Characters\\Monsters\\DustSpiritFamiliar") || asset.AssetNameEquals("Characters\\JunimoFamiliar") || asset.AssetNameEquals("Characters\\BatFamiliar") || asset.AssetNameEquals("Characters\\DinoFamiliar") || asset.AssetNameEquals("Characters\\DustSpiritFamiliar") || asset.AssetNameEquals("Characters\\JunimoFamiliar"))
+		if (asset.AssetNameEquals("Characters/Monsters/BatFamiliar") || asset.AssetNameEquals("Characters/Monsters/DinoFamiliar") || asset.AssetNameEquals("Characters/Monsters/DustSpriteFamiliar") || asset.AssetNameEquals("Characters/JunimoFamiliar") || asset.AssetNameEquals("Characters/BatFamiliar") || asset.AssetNameEquals("Characters/DinoFamiliar") || asset.AssetNameEquals("Characters/DustSpriteFamiliar") || asset.AssetNameEquals("Characters/JunimoFamiliar"))
 		{
 				Monitor.Log($"can load familiar {asset.AssetName}");
 				return true;

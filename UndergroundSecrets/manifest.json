@@ -1,0 +1,10 @@
+﻿{
+  "Name": "Underground Secrets",
+  "Author": "aedenthorn",
+  "Version": "0.1.0",
+  "Description": "To dungeons deep and caverns old...",
+  "UniqueID": "aedenthorn.UndergroundSecrets",
+  "EntryDll": "UndergroundSecrets.dll",
+  "MinimumApiVersion": "3.2.0",
+  "UpdateKeys": ["Nexus:"],
+}
