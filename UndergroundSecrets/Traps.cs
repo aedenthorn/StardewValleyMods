@@ -15,7 +15,7 @@ namespace UndergroundSecrets
         private static IModHelper helper;
         private static IMonitor monitor;
         private static ModConfig config;
-        private static int traps = 4;
+        private static int traps = 3;
 
         public static void Initialize(IModHelper _helper, IMonitor _monitor, ModConfig _config)
         {
@@ -65,9 +65,6 @@ namespace UndergroundSecrets
                 case 2:
                     SlimeTrap(shaft, position);
                     break;
-                case 3:
-                    CollapsedFloors.collapseFloor(shaft, position);
-                    break;
             }
             shaft.removeTileProperty((int)position.X, (int)position.Y, "Back", "TouchAction");
         }
@@ -82,9 +79,9 @@ namespace UndergroundSecrets
                 {
                     float x = position.X - v.X;
                     float y = position.Y - v.Y;
-                    BasicProjectile projectile = new BasicProjectile(25, 10, 0, 1, 0.5f, x, y, v * Game1.tileSize, "", "", false, false, shaft, Game1.player, false, null);
+                    BasicProjectile projectile = new BasicProjectile(shaft.mineLevel / 3, 10, 0, 1, 0.5f, x, y, v * Game1.tileSize, "", "", false, false, shaft, Game1.player, false, null);
                     projectile.ignoreTravelGracePeriod.Value = true;
-                    projectile.maxTravelDistance.Value = 256;
+                    projectile.maxTravelDistance.Value = 100;
                     shaft.projectiles.Add(projectile);
                 }
                 catch(Exception ex) 
@@ -98,7 +95,7 @@ namespace UndergroundSecrets
         {
             shaft.playSound("explosion", SoundContext.Default);
 
-            shaft.explode(position, Game1.random.Next(1,8), Game1.player);
+            shaft.explode(position, Game1.random.Next(2,8), Game1.player);
         }
         public static void SlimeTrap(MineShaft shaft, Vector2 position)
         {

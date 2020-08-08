@@ -8,5 +8,6 @@
         public float TrapsMaxPortion { get; set; } = 0.01f;
         public float MushroomTreesMaxPortion { get; set; } = 0.01f;
         public double OfferingPuzzleChance { get; set; } = 0.05f;
+        public float DisarmTrapsChanceModifier { get; set; } = 0.5f;
     }
 }

@@ -31,8 +31,10 @@ namespace UndergroundSecrets
             HelperEvents.Initialize(Helper, Monitor, Config);
             UndergroundPatches.Initialize(Helper, Monitor, Config);
             Utils.Initialize(Helper, Monitor, Config);
+
             CollapsedFloors.Initialize(Helper, Monitor, Config);
             TilePuzzles.Initialize(Helper, Monitor, Config);
+            OfferingPuzzles.Initialize(Helper, Monitor, Config);
             Traps.Initialize(Helper, Monitor, Config);
             MushroomTrees.Initialize(Helper, Monitor, Config);
 
@@ -47,13 +49,18 @@ namespace UndergroundSecrets
             );
 
             harmony.Patch(
-                original: AccessTools.Method(typeof(MineShaft), nameof(MineShaft.loadMap)),
-                postfix: new HarmonyMethod(typeof(UndergroundPatches), nameof(UndergroundPatches.MineShaft_loadMap_postfix))
+                original: AccessTools.Method(typeof(GameLocation), nameof(GameLocation.loadMap)),
+                postfix: new HarmonyMethod(typeof(UndergroundPatches), nameof(UndergroundPatches.GameLocation_loadMap_postfix))
             );
 
             harmony.Patch(
                 original: AccessTools.Method(typeof(MineShaft), "populateLevel"),
                 transpiler: new HarmonyMethod(typeof(UndergroundPatches), nameof(UndergroundPatches.MineShaft_populateLevel_transpiler))
+            );
+
+            harmony.Patch(
+                original: AccessTools.Method(typeof(MineShaft), "checkAction"),
+                prefix: new HarmonyMethod(typeof(UndergroundPatches), nameof(UndergroundPatches.MineShaft_checkAction_prefix))
             );
 
 		}

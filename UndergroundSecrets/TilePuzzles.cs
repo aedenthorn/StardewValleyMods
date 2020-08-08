@@ -81,7 +81,7 @@ namespace UndergroundSecrets
 
             for (int i = 0; i < spots.Length; i++)
             {
-                string action = $"tilePuzzle_{i}_{spot.X}_{spot.Y}";
+                string action = $"tilePuzzle_{i}_{idx}_{spot.X}_{spot.Y}";
                 layer.Tiles[(int)spots[i].X, (int)spots[i].Y] = new StaticTile(layer, tilesheet, BlendMode.Alpha, tileIndex: i + 16 * idx);
                 shaft.setTileProperty((int)spots[i].X, (int)spots[i].Y, "Back", "TouchAction", action);
             }
@@ -103,8 +103,9 @@ namespace UndergroundSecrets
             monitor.Log($"Pressed floor number {parts[0]} (center: {parts[1]},{parts[2]}) at {playerStandingPosition} {shaft.Name}");
 
             int idx = int.Parse(parts[0]);
-            int cx = int.Parse(parts[1]);
-            int cy = int.Parse(parts[2]);
+            int row = int.Parse(parts[1]);
+            int cx = int.Parse(parts[2]);
+            int cy = int.Parse(parts[3]);
 
             Vector2[] spots = Utils.getCenteredSpots(new Vector2(cx, cy), true);
 
@@ -116,7 +117,7 @@ namespace UndergroundSecrets
             {
                 monitor.Log($"correct order, deactivating tile {idx}");
                 shaft.playSound("Ship", SoundContext.Default);
-                layer.Tiles[(int)playerStandingPosition.X, (int)playerStandingPosition.Y] = new StaticTile(layer, tilesheet, BlendMode.Alpha, tileIndex: idx + 8);
+                layer.Tiles[(int)playerStandingPosition.X, (int)playerStandingPosition.Y] = new StaticTile(layer, tilesheet, BlendMode.Alpha, tileIndex: 16*row + idx + 8);
                 shaft.removeTileProperty(cx, cy, "Back", "TouchAction");
             }
             else
@@ -125,7 +126,7 @@ namespace UndergroundSecrets
                 foreach (Vector2 spot in spots)
                 {
                     monitor.Log($"wrong order, deactivating puzzle");
-                    layer.Tiles[(int)spot.X, (int)spot.Y] = new StaticTile(layer, tilesheet, BlendMode.Alpha, tileIndex: layer.Tiles[(int)spot.X, (int)spot.Y].TileIndex + 8);
+                    layer.Tiles[(int)spot.X, (int)spot.Y] = new StaticTile(layer, tilesheet, BlendMode.Alpha, tileIndex: 16 * row + layer.Tiles[(int)spot.X, (int)spot.Y].TileIndex + 8);
                     shaft.removeTileProperty((int)spot.X, (int)spot.Y, "Back", "TouchAction");
                     Traps.TriggerRandomTrap(shaft, playerStandingPosition);
                 }
@@ -154,15 +155,10 @@ namespace UndergroundSecrets
                 }
             }
             if (!remain)
-                DropChest(shaft, new Vector2(cx, cy));
+                Utils.DropChest(shaft, new Vector2(cx, cy));
             return true;
         }
 
-        private static void DropChest(MineShaft shaft, Vector2 spot)
-        {
-            monitor.Log($"solved, dropping chest!");
-            shaft.playSound("yoba", SoundContext.Default);
-            shaft.overlayObjects[spot] = new Chest(0, new List<Item>() { MineShaft.getTreasureRoomItem() }, spot, false, 0);
-        }
+
     }
 }

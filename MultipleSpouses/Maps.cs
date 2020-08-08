@@ -87,6 +87,8 @@ namespace MultipleSpouses
 					return;
 				}
 
+				spousesWithRooms = new List<string>(Misc.ReorderSpousesForRooms(spousesWithRooms));
+
 				if (f.spouse != null)
 				{
 					if (!f.friendshipData[f.spouse].IsEngaged() && (roomIndexes.ContainsKey(f.spouse) || tmxSpouseRooms.ContainsKey(f.spouse)))

@@ -41,9 +41,11 @@ namespace UndergroundSecrets
                     {
                         if (tile.X < 0 || tile.Y < 0 || tile.X >= back.LayerWidth || tile.Y >= back.LayerHeight)
                             continue;
-                        if(shaft.doesTileHaveProperty((int)tile.X, (int)tile.Y,"","Back") != null && Game1.random.NextDouble() < (Game1.player.getEffectiveSkillLevel(3) + Game1.player.getEffectiveSkillLevel(4) + Game1.player.getEffectiveSkillLevel(5) / 0.3f))
+                        if(shaft.doesTileHaveProperty((int)tile.X, (int)tile.Y, "TouchAction", "Back") == "randomTrap" && Game1.random.NextDouble() < (Game1.player.getEffectiveSkillLevel(3) + Game1.player.getEffectiveSkillLevel(4) + Game1.player.getEffectiveSkillLevel(5)) / 0.3f * Utils.Clamp(0, 1, config.DisarmTrapsChanceModifier))
                         {
-
+                            Game1.player.currentLocation.playSoundAt("openBox", tile);
+                            Game1.player.currentLocation.playSoundAt("Cowboy_monsterDie", tile);
+                            shaft.removeTileProperty((int)tile.X, (int)tile.Y, "Back", "TouchAction");
                         }
                     }
                     lastLoc = loc;

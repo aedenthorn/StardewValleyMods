@@ -1,4 +1,6 @@
-﻿namespace MultipleSpouses
+﻿using System.Collections.Generic;
+
+namespace MultipleSpouses
 {
     public class ModConfig
     {
@@ -48,5 +50,6 @@
         public int ExtraKidsRoomWidth { get; set; } = 0;
         public int ExistingKidsRoomOffsetX { get; set; } = 0;
         public int ExistingKidsRoomOffsetY { get; set; } = 0;
+        public string SpouseRoomOrder { get; set; } = "";
     }
 }

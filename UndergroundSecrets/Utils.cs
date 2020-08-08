@@ -1,7 +1,9 @@
 ﻿using Microsoft.Xna.Framework;
+using Netcode;
 using StardewModdingAPI;
 using StardewValley;
 using StardewValley.Locations;
+using StardewValley.Objects;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.Eventing.Reader;
@@ -30,10 +32,14 @@ namespace UndergroundSecrets
             List<Vector2> clearCenters = new List<Vector2>();
             List<Vector2> superClearCenters = new List<Vector2>();
 
+            Vector2 tileBeneathLadder = helper.Reflection.GetField<NetVector2>(shaft, "netTileBeneathLadder").GetValue();
+
             for (int x = 0; x < shaft.map.Layers[0].LayerWidth; x++)
             {
                 for (int y = 0; y < shaft.map.Layers[0].LayerHeight; y++)
                 {
+                    if (x == tileBeneathLadder.X && y == tileBeneathLadder.Y)
+                        continue;
                     Tile tile = shaft.map.GetLayer("Back").PickTile(new Location(x, y) * Game1.tileSize, Game1.viewport.Size);
                     if (tile != null && (tile.TileIndex / 16 > 7 || tile.TileIndex % 16 < 9) && shaft.map.GetLayer("Buildings").PickTile(new Location(x, y) * Game1.tileSize, Game1.viewport.Size) == null && shaft.map.GetLayer("Front").PickTile(new Location(x, y) * Game1.tileSize, Game1.viewport.Size) == null)
                     {
@@ -41,7 +47,9 @@ namespace UndergroundSecrets
                     }
                 }
             }
-            foreach(Vector2 spot in clearSpots)
+
+
+            foreach (Vector2 spot in clearSpots)
             {
                 int clear = GetTileClearance(shaft, spot, clearSpots);
                 if(clear > 0)
@@ -53,13 +61,28 @@ namespace UndergroundSecrets
                     superClearCenters.Add(spot);
                 }
             }
+            monitor.Log($"got {clearSpots.Count} clear spots in {shaft.Name}");
+            monitor.Log($"got {clearCenters.Count} clear centers in {shaft.Name}");
+            monitor.Log($"got {superClearCenters.Count} super clear centers in {shaft.Name}");
+
             monitor.Log($"adding underground_secrets tilesheet");
-            shaft.map.AddTileSheet(new TileSheet(ModEntry.tileSheetId, shaft.map, ModEntry.tileSheetPath, new Size(16,16), new Size(16,16)));
+            shaft.map.AddTileSheet(new TileSheet(ModEntry.tileSheetId, shaft.map, ModEntry.tileSheetPath, new Size(16,18), new Size(16,16)));
             shaft.map.LoadTileSheets(Game1.mapDisplayDevice);
-            CollapsedFloors.Start(shaft, ref superClearCenters, ref clearCenters, ref clearSpots);
             TilePuzzles.Start(shaft, ref superClearCenters, ref clearCenters, ref clearSpots);
+            OfferingPuzzles.Start(shaft, ref superClearCenters, ref clearCenters, ref clearSpots);
             Traps.Start(shaft, ref superClearCenters, ref clearCenters, ref clearSpots);
+            CollapsedFloors.Start(shaft, ref superClearCenters, ref clearCenters, ref clearSpots);
             MushroomTrees.Start(shaft, ref superClearCenters, ref clearCenters, ref clearSpots);
+        }
+        public static void DropChest(MineShaft shaft, Vector2 spot)
+        {
+            monitor.Log($"solved, dropping chest!");
+            shaft.playSound("yoba");
+            shaft.overlayObjects[spot] = new Chest(0, new List<Item>() { MineShaft.getTreasureRoomItem() }, spot, false, 0);
+        }
+        internal static float Clamp(float min, float max, float val)
+        {
+            return Math.Max(min, Math.Min(max, val));
         }
 
         internal static List<Vector2> GetSurroundingTiles(Vector2 spot, int v, bool skipCenter = false)

@@ -65,6 +65,35 @@ namespace MultipleSpouses
         }
 
         public static Dictionary<string, Dictionary<string, string>> relationships = new Dictionary<string, Dictionary<string, string>>();
+
+        public static List<string> ReorderSpousesForRooms(List<string> spousesWithRooms)
+        {
+            List<string> configSpouses = ModEntry.config.SpouseRoomOrder.Split(',').ToList();
+            List<string> spouses = new List<string>();
+            foreach(string s in configSpouses)
+            {
+                if (spousesWithRooms.Contains(s))
+                    spouses.Add(s);
+            }
+
+            foreach (string s in spousesWithRooms)
+            {
+                if (!spouses.Contains(s))
+                {
+                    spouses.Add(s);
+                    configSpouses.Add(s);
+                }
+            }
+            string configString = string.Join(",", configSpouses);
+            if(configString != ModEntry.config.SpouseRoomOrder)
+            {
+                ModEntry.config.SpouseRoomOrder = configString;
+                Helper.WriteConfig(ModEntry.config);
+            }
+
+            return spouses;
+        }
+
         public static void SetNPCRelations()
         {
             relationships.Clear();
