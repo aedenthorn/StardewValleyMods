@@ -1,3 +1,10 @@
 ﻿{
-	"disarm-trap": "You found a trap and disarmed it before it could hurt you!",
+	"disarmed-trap": "You found a trap and disarmed it before it could hurt you!",
+	"triggered-trap": "You triggered a trap!",
+	"altar-type-0": "Ghastly Altar",
+	"altar-type-1": "Terrifying Altar",
+	"altar-type-2": "Altar of Yoba",
+	"altar-explain-0": "A ghastly altar, most likely dedicated to a violent deity.",
+	"altar-explain-1": "A terrifying altar, most likely dedicated to an evil deity.",
+	"altar-explain-2": "A beautiful altar dedicated to the benevolent deity Yoba.",
 }

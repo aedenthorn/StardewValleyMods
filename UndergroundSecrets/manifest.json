@@ -6,5 +6,5 @@
   "UniqueID": "aedenthorn.UndergroundSecrets",
   "EntryDll": "UndergroundSecrets.dll",
   "MinimumApiVersion": "3.2.0",
-  "UpdateKeys": ["Nexus:"],
+  "UpdateKeys": ["Nexus:6597"],
 }

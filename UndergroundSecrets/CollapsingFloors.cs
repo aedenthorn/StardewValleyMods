@@ -9,7 +9,7 @@ using xTile.Tiles;
 
 namespace UndergroundSecrets
 {
-    public class CollapsedFloors
+    public class CollapsingFloors
     {
         private static IModHelper helper;
         private static IMonitor monitor;
@@ -29,18 +29,23 @@ namespace UndergroundSecrets
         public static void Start(MineShaft shaft, ref List<Vector2> superClearCenters, ref List<Vector2> clearCenters, ref List<Vector2> clearSpots)
         {
 
-            int max =  (int)Math.Round(clearCenters.Count * Math.Min(Math.Max(0, config.CollapsedFloorMaxPortion),1));
+            int max =  (int)Math.Round(clearCenters.Count * Math.Min(Math.Max(0, config.CollapsedBaseFloorMaxPortion * Math.Sqrt(shaft.mineLevel)),1));
 
-            int num = Math.Min(clearSpots.Count, Game1.random.Next(0, max));
+            int num = Math.Min(clearCenters.Count - 1, Game1.random.Next(0, max));
 
-            monitor.Log($"adding {num} collapsing floor(s) of {max} max");
+            monitor.Log($"adding {num} collapsing floor(s) of {max} max({clearCenters.Count} clearCenters)");
+
+            for(int i = 0; i < shaft.map.TileSheets.Count; i++)
+            {
+                monitor.Log($"tilesheet ({i}): {shaft.map.TileSheets[i].Id}");
+            }
 
             List<Vector2> rSpots = Utils.ShuffleList(clearCenters);
 
-            for(int i = 0; i < num; i++)
+            for(int i = num - 1; i >= 0; i--)
             {
 
-                monitor.Log($"adding collapsing floor at {(int)rSpots[i].X},{(int)rSpots[i].Y}");
+                //monitor.Log($"adding collapsing floor at {(int)rSpots[i].X},{(int)rSpots[i].Y}");
                 shaft.setTileProperty((int)rSpots[i].X, (int)rSpots[i].Y, "Back", "TouchAction", "collapseFloor");
                 //shaft.setMapTileIndex((int)rSpots[i].X, (int)rSpots[i].Y,49,"Back");
                 foreach (Vector2 v in Utils.GetSurroundingTiles(rSpots[i], 4))
@@ -63,18 +68,16 @@ namespace UndergroundSecrets
 
             for(int i = 0; i < spots.Length; i++)
             {
-                try
-                {
-                    shaft.removeTile((int)spots[i].X, (int)spots[i].Y, "Back");
-                    shaft.setMapTileIndex((int)spots[i].X, (int)spots[i].Y, hole[i], "Buildings");
-                }
-                catch (Exception ex)
-                {
-                }
+                shaft.removeTile((int)spots[i].X, (int)spots[i].Y, "Back");
+                shaft.removeTile((int)spots[i].X, (int)spots[i].Y, "Buildings");
+                monitor.Log($"spot {i} {spots[i]} {hole[i]} sheet {shaft.map.TileSheets[Utils.GetMainSheetIndex(shaft)].SheetWidth},{shaft.map.TileSheets[Utils.GetMainSheetIndex(shaft)].SheetHeight}");
+                if(hole[i] != -1)
+                    shaft.map.GetLayer("Buildings").Tiles[(int)spots[i].X, (int)spots[i].Y] = new StaticTile(shaft.map.GetLayer("Buildings"), shaft.map.TileSheets[Utils.GetMainSheetIndex(shaft)], BlendMode.Alpha, hole[i]);
             }
             shaft.playSound("boulderBreak", NetAudio.SoundContext.Default);
             Farmer who = Game1.player;
             who.completelyStopAnimatingOrDoingAction();
+            who.Halt();
             List<FarmerSprite.AnimationFrame> animationFrames = new List<FarmerSprite.AnimationFrame>(){
                 new FarmerSprite.AnimationFrame(94, 100, false, false, null, false)
             };

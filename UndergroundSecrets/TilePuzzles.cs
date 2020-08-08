@@ -2,10 +2,10 @@
 using StardewModdingAPI;
 using StardewValley;
 using StardewValley.Locations;
-using StardewValley.Objects;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using xTile.Dimensions;
 using xTile.Layers;
 using xTile.Tiles;
 using static StardewValley.Network.NetAudio;
@@ -26,29 +26,46 @@ namespace UndergroundSecrets
             config = _config;
         }
 
-        internal static void Start(MineShaft shaft, ref List<Vector2> superClearCenters, ref List<Vector2> clearCenters, ref List<Vector2> clearSpots)
+        public static void Start(MineShaft shaft, ref List<Vector2> superClearCenters, ref List<Vector2> clearCenters, ref List<Vector2> clearSpots)
         {
-            if (Game1.random.NextDouble() >= config.TilePuzzleChance || superClearCenters.Count == 0)
+            if (Game1.random.NextDouble() >= config.TilePuzzleBaseChance * Math.Sqrt(shaft.mineLevel) || superClearCenters.Count == 0)
                 return;
 
             monitor.Log($"adding a tile puzzle");
 
             Vector2 spot = superClearCenters[Game1.random.Next(0, superClearCenters.Count)];
 
+            CreatePuzzle(spot, shaft);
+            foreach (Vector2 v in Utils.GetSurroundingTiles(spot, 4))
+            {
+                superClearCenters.Remove(v);
+                if (Math.Abs(v.X - spot.X) < 3 && Math.Abs(v.Y - spot.Y) < 3)
+                {
+                    clearCenters.Remove(v);
+                    if (Math.Abs(v.X - spot.X) < 2 && Math.Abs(v.Y - spot.Y) < 2)
+                        clearSpots.Remove(v);
+                }
+            }
+        }
+
+        public static void CreatePuzzle(Vector2 spot, MineShaft shaft)
+        {
             Vector2[] spots = Utils.getCenteredSpots(spot, true);
-            
+
             spots = Utils.ShuffleList(spots.ToList()).ToArray();
 
             int idx = Game1.random.Next(0, 4);
 
             Layer layer = shaft.map.GetLayer("Back");
+            if (shaft.map.TileSheets.FirstOrDefault(s => s.Id == ModEntry.tileSheetId) == null)
+                shaft.map.AddTileSheet(new TileSheet(ModEntry.tileSheetId, shaft.map, ModEntry.tileSheetPath, new Size(16, 18), new Size(16, 16)));
             TileSheet tilesheet = shaft.map.GetTileSheet(ModEntry.tileSheetId);
 
-            monitor.Log($"building: {shaft.map.GetLayer("Buildings").LayerSize.Width},{shaft.map.GetLayer("Buildings").LayerSize.Height} front: {shaft.map.GetLayer("Front").LayerSize.Width},{shaft.map.GetLayer("Front").LayerSize.Height} spot {spot}");
+            //monitor.Log($"building: {shaft.map.GetLayer("Buildings").LayerSize.Width},{shaft.map.GetLayer("Buildings").LayerSize.Height} front: {shaft.map.GetLayer("Front").LayerSize.Width},{shaft.map.GetLayer("Front").LayerSize.Height} spot {spot}");
 
-            if(spot.X > 1)
+            if (spot.X > 1)
             {
-                if(spot.Y > 3)
+                if (spot.Y > 3)
                     shaft.map.GetLayer("Front").Tiles[(int)spot.X - 2, (int)spot.Y - 4] = new StaticTile(shaft.map.GetLayer("Front"), tilesheet, BlendMode.Alpha, tileIndex: 16 * cornerY + idx);
                 if (spot.Y > 2)
                     shaft.map.GetLayer("Front").Tiles[(int)spot.X - 2, (int)spot.Y - 3] = new StaticTile(shaft.map.GetLayer("Front"), tilesheet, BlendMode.Alpha, tileIndex: 16 * (cornerY + 1) + idx);
@@ -61,7 +78,7 @@ namespace UndergroundSecrets
                 shaft.map.GetLayer("Front").Tiles[(int)spot.X - 2, (int)spot.Y + 1] = new StaticTile(shaft.map.GetLayer("Front"), tilesheet, BlendMode.Alpha, tileIndex: 16 * (cornerY + 1) + idx);
                 shaft.map.GetLayer("Front").Tiles[(int)spot.X - 2, (int)spot.Y] = new StaticTile(shaft.map.GetLayer("Front"), tilesheet, BlendMode.Alpha, tileIndex: 16 * cornerY + idx);
             }
-            if(spot.X < shaft.map.GetLayer("Buildings").LayerSize.Width - 3)
+            if (spot.X < shaft.map.GetLayer("Buildings").LayerSize.Width - 3)
             {
 
                 if (spot.Y > 3)
@@ -85,22 +102,12 @@ namespace UndergroundSecrets
                 layer.Tiles[(int)spots[i].X, (int)spots[i].Y] = new StaticTile(layer, tilesheet, BlendMode.Alpha, tileIndex: i + 16 * idx);
                 shaft.setTileProperty((int)spots[i].X, (int)spots[i].Y, "Back", "TouchAction", action);
             }
-            foreach (Vector2 v in Utils.GetSurroundingTiles(spot, 4))
-            {
-                superClearCenters.Remove(v);
-                if (Math.Abs(v.X - spot.X) < 3 && Math.Abs(v.Y - spot.Y) < 3)
-                {
-                    clearCenters.Remove(v);
-                    if (Math.Abs(v.X - spot.X) < 2 && Math.Abs(v.Y - spot.Y) < 2)
-                        clearSpots.Remove(v);
-                }
-            }
         }
 
         internal static void pressTile(MineShaft shaft, Vector2 playerStandingPosition, string action)
         {
             string[] parts = action.Split('_').Skip(1).ToArray();
-            monitor.Log($"Pressed floor number {parts[0]} (center: {parts[1]},{parts[2]}) at {playerStandingPosition} {shaft.Name}");
+            monitor.Log($"Pressed floor number {parts[0]} (row: {parts[1]} center: {parts[2]},{parts[3]}) at {playerStandingPosition} {shaft.Name}");
 
             int idx = int.Parse(parts[0]);
             int row = int.Parse(parts[1]);
@@ -123,13 +130,13 @@ namespace UndergroundSecrets
             else
             {
                 shaft.playSound("Duggy", SoundContext.Default);
+                monitor.Log($"wrong order, deactivating puzzle");
                 foreach (Vector2 spot in spots)
                 {
-                    monitor.Log($"wrong order, deactivating puzzle");
-                    layer.Tiles[(int)spot.X, (int)spot.Y] = new StaticTile(layer, tilesheet, BlendMode.Alpha, tileIndex: 16 * row + layer.Tiles[(int)spot.X, (int)spot.Y].TileIndex + 8);
+                    layer.Tiles[(int)spot.X, (int)spot.Y] = new StaticTile(layer, tilesheet, BlendMode.Alpha, tileIndex: layer.Tiles[(int)spot.X, (int)spot.Y].TileIndex + 8);
                     shaft.removeTileProperty((int)spot.X, (int)spot.Y, "Back", "TouchAction");
-                    Traps.TriggerRandomTrap(shaft, playerStandingPosition);
                 }
+                Traps.TriggerRandomTrap(shaft, playerStandingPosition, false);
             }
         }
 
@@ -145,7 +152,7 @@ namespace UndergroundSecrets
                 int i = int.Parse(val.Split('_')[1]);
                 if (val.StartsWith("tilePuzzle_") && i != idx)
                 {
-                    monitor.Log($"remaining tile {i}");
+                    //monitor.Log($"remaining tile {i}");
 
                     remain = true;
                     if(i < idx)

@@ -6,6 +6,7 @@ using StardewValley.Locations;
 using System;
 using System.Collections.Generic;
 using xTile.Layers;
+using Object = StardewValley.Object;
 
 namespace UndergroundSecrets
 {
@@ -41,11 +42,20 @@ namespace UndergroundSecrets
                     {
                         if (tile.X < 0 || tile.Y < 0 || tile.X >= back.LayerWidth || tile.Y >= back.LayerHeight)
                             continue;
-                        if(shaft.doesTileHaveProperty((int)tile.X, (int)tile.Y, "TouchAction", "Back") == "randomTrap" && Game1.random.NextDouble() < (Game1.player.getEffectiveSkillLevel(3) + Game1.player.getEffectiveSkillLevel(4) + Game1.player.getEffectiveSkillLevel(5)) / 0.3f * Utils.Clamp(0, 1, config.DisarmTrapsChanceModifier))
+                        if(shaft.doesTileHaveProperty((int)tile.X, (int)tile.Y, "TouchAction", "Back") == "randomTrap")
                         {
-                            Game1.player.currentLocation.playSoundAt("openBox", tile);
-                            Game1.player.currentLocation.playSoundAt("Cowboy_monsterDie", tile);
-                            shaft.removeTileProperty((int)tile.X, (int)tile.Y, "Back", "TouchAction");
+                            float chance = (Game1.player.getEffectiveSkillLevel(3) + Game1.player.getEffectiveSkillLevel(4) + Game1.player.getEffectiveSkillLevel(5)) / 30f * Utils.Clamp(0f, 1f, config.DisarmTrapsBaseChanceModifier / (float)Math.Sqrt(shaft.mineLevel / 10f));
+                            monitor.Log($"trap disarm chance: {chance}");
+
+                            if (Game1.random.NextDouble() < chance)
+                            {
+                                monitor.Log($"Disarmed trap");
+                                Game1.player.currentLocation.playSoundAt("openBox", tile);
+                                Game1.player.currentLocation.playSoundAt("Cowboy_monsterDie", tile);
+                                shaft.removeTileProperty((int)tile.X, (int)tile.Y, "Back", "TouchAction");
+                                if (config.ShowTrapNotifications)
+                                    Game1.addHUDMessage(new HUDMessage(helper.Translation.Get("disarmed-trap"), 1));
+                            }
                         }
                     }
                     lastLoc = loc;

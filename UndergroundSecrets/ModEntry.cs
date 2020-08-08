@@ -32,9 +32,11 @@ namespace UndergroundSecrets
             UndergroundPatches.Initialize(Helper, Monitor, Config);
             Utils.Initialize(Helper, Monitor, Config);
 
-            CollapsedFloors.Initialize(Helper, Monitor, Config);
             TilePuzzles.Initialize(Helper, Monitor, Config);
             OfferingPuzzles.Initialize(Helper, Monitor, Config);
+            LightPuzzles.Initialize(Helper, Monitor, Config);
+            Altars.Initialize(Helper, Monitor, Config);
+            CollapsingFloors.Initialize(Helper, Monitor, Config);
             Traps.Initialize(Helper, Monitor, Config);
             MushroomTrees.Initialize(Helper, Monitor, Config);
 
@@ -61,6 +63,11 @@ namespace UndergroundSecrets
             harmony.Patch(
                 original: AccessTools.Method(typeof(MineShaft), "checkAction"),
                 prefix: new HarmonyMethod(typeof(UndergroundPatches), nameof(UndergroundPatches.MineShaft_checkAction_prefix))
+            );
+
+            harmony.Patch(
+                original: AccessTools.Method(typeof(MineShaft), "addLevelChests"),
+                prefix: new HarmonyMethod(typeof(UndergroundPatches), nameof(UndergroundPatches.MineShaft_addLevelChests_prefix))
             );
 
 		}

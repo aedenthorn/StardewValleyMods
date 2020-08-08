@@ -26,15 +26,15 @@ namespace UndergroundSecrets
         {
             int max = (int)Math.Round(clearSpots.Count * Math.Min(Math.Max(0, config.MushroomTreesMaxPortion), 1));
 
-            int num = Math.Min(clearSpots.Count, Game1.random.Next(0, max));
+            int num = Math.Min(clearSpots.Count - 1, Game1.random.Next(0, max));
 
             monitor.Log($"adding {num} mushroom trees");
 
             List<Vector2> rSpots = Utils.ShuffleList(clearSpots);
 
-            for (int i = 0; i < num; i++)
+            for (int i = num - 1; i >= 0; i--)
             {
-                shaft.terrainFeatures.Add(rSpots[i], new Tree(7, 5));
+                shaft.terrainFeatures.Add(rSpots[i], new Tree(7, Game1.random.Next(1,6)));
 
                 //shaft.setMapTileIndex((int)rSpots[i].X, (int)rSpots[i].Y,0,"Back");
                 //monitor.Log($"adding random trap at {(int)rSpots[i].X},{(int)rSpots[i].Y}");

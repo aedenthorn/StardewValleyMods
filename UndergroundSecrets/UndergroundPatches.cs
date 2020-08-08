@@ -1,5 +1,6 @@
 ﻿using Harmony;
 using Microsoft.Xna.Framework;
+using Netcode;
 using StardewModdingAPI;
 using StardewValley;
 using StardewValley.Locations;
@@ -18,7 +19,6 @@ namespace UndergroundSecrets
         private static IModHelper helper;
         private static IMonitor monitor;
         private static ModConfig config;
-        private static int[] ores = new int[] { 378, 380, 384, 386};
 
         public static void Initialize(IModHelper _helper, IMonitor _monitor, ModConfig _config)
         {
@@ -35,7 +35,7 @@ namespace UndergroundSecrets
             string action = fullActionString.Split(' ')[0];
             if(action == "collapseFloor")
             {
-                CollapsedFloors.collapseFloor(__instance as MineShaft, playerStandingPosition);
+                CollapsingFloors.collapseFloor(__instance as MineShaft, playerStandingPosition);
                 return false;
             }
             if(action.StartsWith("tilePuzzle_"))
@@ -43,9 +43,14 @@ namespace UndergroundSecrets
                 TilePuzzles.pressTile(__instance as MineShaft, playerStandingPosition, action);
                 return false;
             }
+            if(action.StartsWith("lightPuzzle_"))
+            {
+                LightPuzzles.pressTile(__instance as MineShaft, playerStandingPosition, action);
+                return false;
+            }
             if (action == "randomTrap")
             {
-                Traps.TriggerRandomTrap(__instance as MineShaft, playerStandingPosition);
+                Traps.TriggerRandomTrap(__instance as MineShaft, playerStandingPosition, true);
                 return false;
             }
             return true;
@@ -94,32 +99,49 @@ namespace UndergroundSecrets
             return codes.AsEnumerable();
         }
 
+        internal static bool MineShaft_addLevelChests_prefix(MineShaft __instance)
+        {
+            if(config.OverrideTreasureRooms && !Game1.player.chestConsumedMineLevels.ContainsKey(__instance.mineLevel) && (helper.Reflection.GetField<NetBool>(__instance, "netIsTreasureRoom").GetValue().Value || (__instance.mineLevel < 121 && __instance.mineLevel % 20 == 0) || __instance.mineLevel == 10 || __instance.mineLevel == 50 || __instance.mineLevel == 70 ||__instance.mineLevel == 90 ||__instance.mineLevel == 110))
+            {
+                Vector2 spot = new Vector2(9, 9);
+                if (__instance.mineLevel % 20 == 0 && __instance.mineLevel % 40 != 0)
+                {
+                    spot.Y += 4f;
+                }
+
+                if (Game1.random.NextDouble() < 1 / 3f)
+                    LightPuzzles.CreatePuzzle(spot, __instance);
+                else if (Game1.random.NextDouble() < 2 / 3f)
+                    OfferingPuzzles.CreatePuzzle(spot, __instance);
+                else
+                    TilePuzzles.CreatePuzzle(spot, __instance);
+
+                return false;
+            }
+            return true;
+        }
+
         internal static bool MineShaft_checkAction_prefix(MineShaft __instance, Location tileLocation, xTile.Dimensions.Rectangle viewport, Farmer who)
         {
-            if (who.ActiveObject == null || !ores.Contains(who.ActiveObject.ParentSheetIndex))
-                return true;
-
             Tile tile = __instance.map.GetLayer("Buildings").PickTile(new Location(tileLocation.X * 64, tileLocation.Y * 64), viewport.Size);
             if (tile != null && who.IsLocalPlayer)
             {
-                
-                PropertyValue property;
-                tile.Properties.TryGetValue("Action", out property);
+                tile.Properties.TryGetValue("Action", out PropertyValue property);
                 if (property != null)
                 {
                     string action = property.ToString();
-                    if (action.StartsWith("offerPuzzle_"))
+
+                    if (action.StartsWith("offerPuzzleSteal"))
                     {
-                        string[] parts = action.Split('_').Skip(1).ToArray();
-                        if(ores[int.Parse(parts[0])] == who.ActiveObject.ParentSheetIndex)
-                        {
-                            who.reduceActiveItemByOne();
-                            __instance.setMapTileIndex(tileLocation.X, tileLocation.Y, OfferingPuzzles.offerIdx + 1 + int.Parse(parts[0]), "Buildings");
-                            __instance.setMapTileIndex(tileLocation.X, tileLocation.Y - 2, 245, "Front");
-                            __instance.removeTileProperty(tileLocation.X, tileLocation.Y, "Buildings", "Action");
-                            Utils.DropChest(__instance, new Vector2(int.Parse(parts[1]), int.Parse(parts[2])));
-                            Game1.addHUDMessage(new HUDMessage(helper.Translation.Get("disarmed-trap"), Color.Green, 3500f));
-                        }
+                        OfferingPuzzles.StealAttempt(__instance, action, tileLocation, who);
+                    }
+                    else if (who.ActiveObject != null && action.StartsWith("offerPuzzle_"))
+                    {
+                        OfferingPuzzles.OfferObject(__instance, action, tileLocation, who);
+                    }
+                    else if (action.StartsWith("undergroundAltar_"))
+                    {
+                        Altars.OfferObject(__instance, action, tileLocation, who);
                     }
                 }
             }

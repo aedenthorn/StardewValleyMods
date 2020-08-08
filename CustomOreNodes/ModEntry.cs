@@ -198,7 +198,7 @@ namespace CustomOreNodes
 							MinutesUntilReady = node.durability
 						};
 
-						SMonitor.Log(__result.DisplayName);
+						//SMonitor.Log(__result.DisplayName);
 
 						return;
 					}

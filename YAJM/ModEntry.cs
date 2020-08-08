@@ -136,12 +136,12 @@ namespace YAJM
                     Microsoft.Xna.Framework.Rectangle box = Game1.player.GetBoundingBox();
                     if (Game1.player.isRidingHorse())
                     {
-						box.X += ox * 32;
-						box.Y += oy * 32;
+						box.X += ox * Game1.tileSize / 2;
+						box.Y += oy * Game1.tileSize / 2;
 					}
-					box.X += ox * 64 * i;
-					box.Y += oy * 64 * i;
-					collisions.Add(l.isCollidingPosition(box, Game1.viewport, true, 0, false, Game1.player) || box.X >= l.map.DisplayWidth || box.Y >= l.map.DisplayWidth || box.X < 0 || box.Y < 0);
+					box.X += ox * Game1.tileSize * i;
+					box.Y += oy * Game1.tileSize * i;
+					collisions.Add(l.isCollidingPosition(box, Game1.viewport, true, 0, false, Game1.player) || box.X >= l.map.Layers[0].LayerWidth * Game1.tileSize || box.Y >= l.map.Layers[0].LayerHeight * Game1.tileSize || box.X < 0 || box.Y < 0);
 				}
 
 				playerJumpingWithHorse = Game1.player.isRidingHorse();
