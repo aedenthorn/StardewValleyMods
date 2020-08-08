@@ -16,6 +16,7 @@ namespace MultipleSpouses
         public bool PreventHostileDivorces { get; set; } = false;
         public bool RoommateRomance { get; set; } = true;
         public bool RomanceAllVillagers { get; set; } = false;
+
         public int PercentChanceForSpouseInBed { get; set; } = 25;
         public int PercentChanceForSpouseInKitchen { get; set; } = 25;
         public int MaxGiftsPerDay { get; set; } = 1;
@@ -28,6 +29,7 @@ namespace MultipleSpouses
         public float MaxDistanceToKiss { get; set; } = 200f;
         public double MinSpouseKissInterval { get; set; } = 5;
         public bool PreventRelativesFromKissing { get; set; } = true;
+
         public double BabyRequestChance { get; set; } = 0.05f;
         public bool AllowGayPregnancies { get; set; } = true;
         public float FemaleBabyChance { get; set; } = 0.5f;
@@ -36,7 +38,9 @@ namespace MultipleSpouses
         public bool ChildrenHaveHairOfSpouse { get; set; } = true;
         public int ChildGrowthMultiplier { get; set; } = 1;
         public bool ShowParentNames { get; set; } = true;
+
         public bool BuildAllSpousesRooms { get; set; } = true;
+        public string SpouseRoomOrder { get; set; } = "";
         public int ExistingSpouseRoomOffsetX { get; set; } = 0;
         public int ExistingSpouseRoomOffsetY { get; set; } = 0;
         public bool CustomBed { get; set; } = true;
@@ -50,6 +54,5 @@ namespace MultipleSpouses
         public int ExtraKidsRoomWidth { get; set; } = 0;
         public int ExistingKidsRoomOffsetX { get; set; } = 0;
         public int ExistingKidsRoomOffsetY { get; set; } = 0;
-        public string SpouseRoomOrder { get; set; } = "";
     }
 }
