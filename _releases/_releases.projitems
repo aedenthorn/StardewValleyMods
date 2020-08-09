@@ -70,6 +70,7 @@
     <None Include="$(MSBuildThisFileDirectory)TransparentObjects 0.2.1.zip" />
     <None Include="$(MSBuildThisFileDirectory)UndergroundSecrets 0.1.0.zip" />
     <None Include="$(MSBuildThisFileDirectory)UndergroundSecrets 0.2.0.zip" />
+    <None Include="$(MSBuildThisFileDirectory)UndergroundSecrets 0.2.1.zip" />
     <None Include="$(MSBuildThisFileDirectory)VideoPlayer 0.2.5.zip" />
     <None Include="$(MSBuildThisFileDirectory)YAJM 0.2.1.zip" />
     <None Include="$(MSBuildThisFileDirectory)YAJM 0.3.0.zip" />
