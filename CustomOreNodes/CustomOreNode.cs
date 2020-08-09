@@ -24,6 +24,11 @@ namespace CustomOreNodes
         {
             int i = 0;
             string[] infos = nodeInfo.Split('/');
+            if(infos.Length != 10)
+            {
+                ModEntry.context.Monitor.Log($"improper syntax in ore node string: number of elements is {infos.Length} but should be 10", StardewModdingAPI.LogLevel.Error);
+                throw new System.ArgumentException();
+            }
             this.nodeDesc = infos[i++];
             this.spritePath = infos[i++];
             this.spriteType = infos[i++];

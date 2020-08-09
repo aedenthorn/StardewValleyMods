@@ -113,23 +113,40 @@ namespace CustomOreNodes
 		{
 			CustomOreNodes.Clear();
 			CustomOreData data;
+			Dictionary<string, Texture2D> gameTextures = new Dictionary<string, Texture2D>();
 			try
 			{
 				if(File.Exists(Path.Combine(Helper.DirectoryPath, "custom_ore_nodes.json")))
 				{
+					Dictionary<string, Texture2D> modTextures = new Dictionary<string, Texture2D>();
 					data = Helper.Content.Load<CustomOreData>("custom_ore_nodes.json", ContentSource.ModFolder);
 					foreach (string nodeInfo in data.nodes)
 					{
-						CustomOreNode node = new CustomOreNode(nodeInfo);
-						if (node.spriteType == "mod")
+                        try
 						{
-							node.texture = Helper.Content.Load<Texture2D>(node.spritePath, ContentSource.ModFolder);
+							CustomOreNode node = new CustomOreNode(nodeInfo);
+							if (node.spriteType == "mod")
+							{
+                                if (!modTextures.ContainsKey(node.spritePath))
+                                {
+									modTextures.Add(node.spritePath, Helper.Content.Load<Texture2D>(node.spritePath, ContentSource.ModFolder));
+                                }
+								node.texture = modTextures[node.spritePath];
+							}
+							else
+							{
+								if (!gameTextures.ContainsKey(node.spritePath))
+								{
+									gameTextures.Add(node.spritePath, Helper.Content.Load<Texture2D>(node.spritePath, ContentSource.GameContent));
+								}
+								node.texture = gameTextures[node.spritePath];
+							}
+							CustomOreNodes.Add(node);
 						}
-						else
+						catch(Exception ex)
 						{
-							node.texture = this.Helper.Content.Load<Texture2D>(node.spritePath, ContentSource.GameContent);
+							SMonitor.Log($"Error parsing node {nodeInfo}: {ex}", LogLevel.Error);
 						}
-						CustomOreNodes.Add(node);
 					}
 					Monitor.Log($"Got {CustomOreNodes.Count} ores from mod", LogLevel.Debug);
 
@@ -144,24 +161,40 @@ namespace CustomOreNodes
 				SMonitor.Log("Error processing custom_ore_nodes.json: "+ex, LogLevel.Error);
 			}
 
-			foreach (IContentPack contentPack in this.Helper.ContentPacks.GetOwned())
+			foreach (IContentPack contentPack in Helper.ContentPacks.GetOwned())
 			{
 				try
 				{
-					this.Monitor.Log($"Reading content pack: {contentPack.Manifest.Name} {contentPack.Manifest.Version} from {contentPack.DirectoryPath}");
+					Dictionary<string, Texture2D> modTextures = new Dictionary<string, Texture2D>();
+					Monitor.Log($"Reading content pack: {contentPack.Manifest.Name} {contentPack.Manifest.Version} from {contentPack.DirectoryPath}");
 					data = contentPack.ReadJsonFile<CustomOreData>("custom_ore_nodes.json");
 					foreach (string nodeInfo in data.nodes)
 					{
-						CustomOreNode node = new CustomOreNode(nodeInfo);
-						if (node.spriteType == "mod")
+						try
 						{
-							node.texture = contentPack.LoadAsset<Texture2D>(node.spritePath);
+							CustomOreNode node = new CustomOreNode(nodeInfo);
+							if (node.spriteType == "mod")
+							{
+								if (!modTextures.ContainsKey(node.spritePath))
+								{
+									modTextures.Add(node.spritePath, contentPack.LoadAsset<Texture2D>(node.spritePath));
+								}
+								node.texture = modTextures[node.spritePath];
+							}
+							else
+							{
+								if (!gameTextures.ContainsKey(node.spritePath))
+								{
+									gameTextures.Add(node.spritePath, Helper.Content.Load<Texture2D>(node.spritePath, ContentSource.GameContent));
+								}
+								node.texture = gameTextures[node.spritePath];
+							}
+							CustomOreNodes.Add(node);
 						}
-						else
+						catch (Exception ex)
 						{
-							node.texture = Helper.Content.Load<Texture2D>(node.spritePath, ContentSource.GameContent);
+							SMonitor.Log($"Error parsing node {nodeInfo}: {ex}", LogLevel.Error);
 						}
-						CustomOreNodes.Add(node);
 					}
 					Monitor.Log($"Got {data.nodes.Count} ores from content pack {contentPack.Manifest.Name}", LogLevel.Debug);
 				}

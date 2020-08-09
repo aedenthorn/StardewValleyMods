@@ -133,6 +133,9 @@ namespace UndergroundSecrets
                 monitor.Log($"wrong order, deactivating puzzle");
                 foreach (Vector2 spot in spots)
                 {
+                    if (layer.Tiles[(int)spot.X, (int)spot.Y].TileIndex % 16 >= 8)
+                        continue;
+                    
                     layer.Tiles[(int)spot.X, (int)spot.Y] = new StaticTile(layer, tilesheet, BlendMode.Alpha, tileIndex: layer.Tiles[(int)spot.X, (int)spot.Y].TileIndex + 8);
                     shaft.removeTileProperty((int)spot.X, (int)spot.Y, "Back", "TouchAction");
                 }
