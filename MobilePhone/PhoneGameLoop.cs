@@ -77,7 +77,7 @@ namespace MobilePhone
                             string skinPath = Path.Combine("assets", "skins", Path.GetFileName(skinFile));
                             Monitor.Log($"Adding skin {Path.GetFileName(skinFile).Replace("_landscape.png", "")} from {contentPack.DirectoryPath}");
                             Texture2D skin = contentPack.LoadAsset<Texture2D>(skinPath.Replace("_landscape.png", ".png"));
-                            Texture2D skinl = contentPack.LoadAsset<Texture2D>(skinPath.Replace("_landscape.png", ".png"));
+                            Texture2D skinl = contentPack.LoadAsset<Texture2D>(skinPath);
                             ThemeApp.skinList.Add(contentPack.Manifest.UniqueID + ":" + Path.GetFileName(skinFile).Replace("_landscape.png", ""));
                             ThemeApp.skinDict.Add(contentPack.Manifest.UniqueID + ":" + Path.GetFileName(skinFile).Replace("_landscape.png", ""), new Texture2D[] { skin, skinl});
                             Monitor.Log($"Added skin {Path.GetFileName(skinFile).Replace("_landscape.png", "")} from {contentPack.DirectoryPath}");
