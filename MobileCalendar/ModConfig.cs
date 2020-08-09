@@ -1,6 +1,6 @@
 ﻿using Microsoft.Xna.Framework;
 
-namespace MobileTelevision
+namespace MobileCalendar
 {
     class ModConfig
     {

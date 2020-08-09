@@ -54,7 +54,7 @@ namespace UndergroundSecrets
 
             spots = Utils.ShuffleList(spots.ToList()).ToArray();
 
-            int idx = Game1.random.Next(0, 4);
+            int idx = Game1.random.Next(0, 6);
 
             Layer layer = shaft.map.GetLayer("Back");
             if (shaft.map.TileSheets.FirstOrDefault(s => s.Id == ModEntry.tileSheetId) == null)
