@@ -238,7 +238,26 @@ namespace MobileCatalogues
         private Dictionary<ISalable, int[]> GetAllSeeds()
         {
             Dictionary<ISalable, int[]> items = new Dictionary<ISalable, int[]>();
-            Dictionary<int, string> cropData = base.Helper.Content.Load<Dictionary<int, string>>("Data\\Crops", 0);
+            Dictionary<int, string> cropData = Helper.Content.Load<Dictionary<int, string>>("Data\\Crops", 0);
+            Dictionary<int, string> fruitTreeData = Helper.Content.Load<Dictionary<int, string>>("Data\\fruitTrees", 0);
+
+            Dictionary<int, int> seedProducts = new Dictionary<int, int>();
+
+            foreach (KeyValuePair<int, string> kvp in cropData)
+            {
+                string[] values = kvp.Value.Split('/');
+                if (!int.TryParse(values[3], out int product))
+                    continue;
+                seedProducts.Add(kvp.Key, product);
+            }
+            foreach (KeyValuePair<int, string> kvp in fruitTreeData)
+            {
+                string[] values = kvp.Value.Split('/');
+                if (!int.TryParse(values[2], out int product))
+                    continue;
+                seedProducts.Add(kvp.Key, product);
+            }
+
             List<int> shopSeeds = new List<int>();
             if (Config.SeedsToInclude.ToLower() == "season")
             {
@@ -249,21 +268,16 @@ namespace MobileCatalogues
                     shopSeeds.Add(idx);
                 }
             }
-            foreach (KeyValuePair<int, string> crop in cropData)
+            foreach (KeyValuePair<int, int> crop in seedProducts)
             {
                 bool include = true;
                 if(Config.SeedsToInclude.ToLower() == "shipped")
                 {
-                    string[] values = crop.Value.Split('/');
-                    if (!int.TryParse(values[3], out int product))
-                        continue;
-                    include = Game1.player.basicShipped.ContainsKey(product);
-
+                    include = Game1.player.basicShipped.ContainsKey(crop.Value);
                 }
                 else if(Config.SeedsToInclude.ToLower() == "season")
                 {
                     include = shopSeeds.Contains(crop.Key);
-
                 }
                 if (include)
                 {
