@@ -58,7 +58,7 @@ namespace MultipleSpouses
             FarmerPatches.Initialize(Monitor, Helper);
             Maps.Initialize(Monitor);
             Kissing.Initialize(Monitor);
-            UIPatches.Initialize(Monitor);
+            UIPatches.Initialize(Monitor, Helper);
             EventPatches.Initialize(Monitor, Helper);
             HelperEvents.Initialize(Monitor, Helper);
             FileIO.Initialize(Monitor, Helper);
@@ -253,7 +253,13 @@ namespace MultipleSpouses
 
             harmony.Patch(
                original: AccessTools.Method(typeof(SocialPage), "drawNPCSlot"),
-               prefix: new HarmonyMethod(typeof(UIPatches), nameof(UIPatches.SocialPage_drawNPCSlot))
+               prefix: new HarmonyMethod(typeof(UIPatches), nameof(UIPatches.SocialPage_drawNPCSlot_prefix)),
+               transpiler: new HarmonyMethod(typeof(UIPatches), nameof(UIPatches.SocialPage_drawSlot_transpiler))
+            );
+
+            harmony.Patch(
+               original: AccessTools.Method(typeof(SocialPage), "drawFarmerSlot"),
+               transpiler: new HarmonyMethod(typeof(UIPatches), nameof(UIPatches.SocialPage_drawSlot_transpiler))
             );
 
             harmony.Patch(

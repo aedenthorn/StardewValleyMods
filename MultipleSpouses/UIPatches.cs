@@ -1,4 +1,5 @@
-﻿using Netcode;
+﻿using Harmony;
+using Netcode;
 using StardewModdingAPI;
 using StardewValley;
 using StardewValley.Characters;
@@ -6,23 +7,26 @@ using StardewValley.Menus;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
+using System.Reflection.Emit;
 
 namespace MultipleSpouses
 {
 	public static class UIPatches
 	{
 		private static IMonitor Monitor;
+		private static IModHelper Helper;
 
 		// call this method from your Entry class
-		public static void Initialize(IMonitor monitor)
+		public static void Initialize(IMonitor monitor, IModHelper helper)
 		{
 			Monitor = monitor;
+			Helper = helper;
 		}
-		public static void SocialPage_drawNPCSlot(SocialPage __instance, int i, List<string> ___kidsNames, ref Dictionary<string, string> ___npcNames)
+		public static void SocialPage_drawNPCSlot_prefix(SocialPage __instance, int i, List<string> ___kidsNames, ref Dictionary<string, string> ___npcNames)
 		{
 			try
 			{
-
 				string name = __instance.names[i] as string;
 				if (___kidsNames.Contains(name))
 				{
@@ -34,10 +38,35 @@ namespace MultipleSpouses
 			}
 			catch (Exception ex)
 			{
-				Monitor.Log($"Failed in {nameof(SocialPage_drawNPCSlot)}:\n{ex}", LogLevel.Error);
+				Monitor.Log($"Failed in {nameof(SocialPage_drawNPCSlot_prefix)}:\n{ex}", LogLevel.Error);
 			}
 		}
-		
+		public static IEnumerable<CodeInstruction> SocialPage_drawSlot_transpiler(IEnumerable<CodeInstruction> instructions)
+		{
+			List<CodeInstruction> codes = instructions.ToList();
+            if (Helper.ModRegistry.IsLoaded("SG.Partners"))
+            {
+				Monitor.Log("Keep Your Partners mod is loaded, not patching social page.");
+				return codes.AsEnumerable();
+			}
+			try
+			{
+				MethodInfo m_IsMarried = AccessTools.Method(typeof(Farmer), "isMarried", null, null);
+				int index = codes.FindIndex((CodeInstruction c) => c.operand != null && c.operand is MethodInfo && (MethodInfo)c.operand == m_IsMarried);
+				if(index > -1)
+                {
+					codes[index - 1].opcode = OpCodes.Nop;
+					codes[index].opcode = OpCodes.Nop;
+					codes[index + 1].opcode = OpCodes.Nop;
+				}
+			}
+			catch (Exception ex)
+			{
+				Monitor.Log($"Failed in {nameof(SocialPage_drawSlot_transpiler)}:\n{ex}", LogLevel.Error);
+			}
+			return codes.AsEnumerable();
+		}
+
 		public static void DialogueBox_Prefix(ref List<string> dialogues)
 		{
 			try
