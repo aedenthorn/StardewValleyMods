@@ -4,7 +4,8 @@
 		{
 			"name": "Art (Two Hearts)",
 			"location": "LeahHouse",
-			"eventId":"50"
+			"eventId":"50",
+			"mail":"LeahArtShowSuggestion,LeahInternet"
 		},
 		{
 			"name": "Bird (Four Hearts)",

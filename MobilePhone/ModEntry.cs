@@ -93,6 +93,7 @@ namespace MobilePhone
         public static SoundEffect ringSound;
         public static SoundEffect notificationSound;
         internal static bool isReminiscing;
+        internal static INpcAdventureModApi npcAdventureModApi;
 
         public static event EventHandler OnScreenRotated;
 

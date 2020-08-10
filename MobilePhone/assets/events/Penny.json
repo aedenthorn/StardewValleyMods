@@ -29,7 +29,8 @@
 		{
 			"name": "Redecorating (Fourteen Hearts)",
 			"location": "FarmHouse",
-			"eventId":"4325434"
+			"eventId": "4325434",
+			"mail": "pennyQuilt0,pennyQuilt1,pennyQuilt2,noQuilt"
 		},
 		{
 			"name": "Redecorated",

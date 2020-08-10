@@ -14,7 +14,8 @@
 		{
 			"name": "Solarion Chronicles (Six Hearts)",
 			"location": "SebastianRoom",
-			"eventId":"27"
+			"eventId":"27",
+			"mail":"choseWarrior,choseWizard,choseHealer,killedSkeleton,destroyedPods,savedFriends"
 		},
 		{
 			"name": "Rain (Eight Hearts)",

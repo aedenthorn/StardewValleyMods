@@ -110,6 +110,15 @@ namespace MobilePhone
             PhoneVisuals.CreatePhoneTextures();
             PhoneUtils.RefreshPhoneLayout();
             PhoneUtils.CreateTones();
+            if (Helper.ModRegistry.IsLoaded("purrplingcat.npcadventure"))
+            {
+                INpcAdventureModApi api = Helper.ModRegistry.GetApi<INpcAdventureModApi>("purrplingcat.npcadventure");
+                if (api != null)
+                {
+                    Monitor.Log("Loaded NpcAdventureModApi successfully");
+                    ModEntry.npcAdventureModApi = api;
+                }
+            }
         }
 
 
@@ -120,13 +129,32 @@ namespace MobilePhone
             PhoneUtils.OrderApps();
             PhoneUtils.RefreshPhoneLayout();
             Helper.Events.Display.RenderedWorld += PhoneVisuals.Display_RenderedWorld;
+
+            if (ModEntry.npcAdventureModApi != null)
+            {
+                Monitor.Log("Testing NpcAdventureModApi...");
+                try
+                {
+                    Monitor.Log($"Can recruit: {ModEntry.npcAdventureModApi.CanRecruitCompanions()}");
+                    Monitor.Log($"Possible companions: {ModEntry.npcAdventureModApi.GetPossibleCompanions().Count()}");
+                    Monitor.Log($"Can recruit Abigail: {ModEntry.npcAdventureModApi.IsPossibleCompanion("Abigail")}");
+                    Monitor.Log($"Recruit Abigail: {ModEntry.npcAdventureModApi.IsPossibleCompanion("Abigail") && ModEntry.npcAdventureModApi.RecruitCompanion(Game1.player, Game1.getCharacterFromName("Abigail"))}");
+                }
+                catch (Exception ex)
+                {
+                    Monitor.Log($"Error testing NpcAdventureModApi: {ex}", LogLevel.Warn);
+                }
+                Monitor.Log("Testing NpcAdventureModApi finished");
+
+            }
+
         }
         public static void GameLoop_TimeChanged(object sender, TimeChangedEventArgs e)
         {
             if (e.OldTime >= e.NewTime || ModEntry.callingNPC != null || !Config.EnableIncomingCalls)
                 return;
 
-            if(Game1.random.NextDouble() < Config.FriendCallChance)
+            if(ModEntry.callingNPC == null && !ModEntry.inCall && Game1.random.NextDouble() < Config.FriendCallChance)
             {
                 Monitor.Log($"Receiving random call", LogLevel.Debug);
                 MobilePhoneApp.ReceiveRandomCall();

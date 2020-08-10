@@ -31,5 +31,7 @@ namespace MobilePhone
         public string name;
         public string location;
         public string eventId;
+        public bool night;
+        public string mail;
     }
 }

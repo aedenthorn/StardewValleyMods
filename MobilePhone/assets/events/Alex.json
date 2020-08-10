@@ -39,7 +39,8 @@
 		{
 			"name": "Secret Project",
 			"location": "Farm",
-			"eventId":"3917587"
+			"eventId":"3917587",
+			"mail": "gaveAlexMoney"
 		},
 	]
 }

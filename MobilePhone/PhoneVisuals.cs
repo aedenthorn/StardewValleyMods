@@ -3,6 +3,7 @@ using Microsoft.Xna.Framework.Graphics;
 using StardewModdingAPI;
 using StardewValley;
 using StardewValley.BellsAndWhistles;
+using StardewValley.Menus;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -166,6 +167,24 @@ namespace MobilePhone
                         {
                             ModEntry.currentCallRings = 0;
                             ModEntry.callingNPC = null;
+                        }
+                    }
+                }
+                else
+                {
+                    Rectangle endRect = new Rectangle((int)(screenPos.X + screenSize.X / 4), ModEntry.screenRect.Bottom - Config.AppHeaderHeight, (int)(screenSize.X / 2), Config.AppHeaderHeight);
+                    e.SpriteBatch.Draw(ModEntry.declineTexture, endRect, Color.White);
+                    float textScale = Config.CallTextScale;
+                    string ends = Helper.Translation.Get("end-call");
+                    Vector2 endsSize = Game1.dialogueFont.MeasureString(ends) * textScale;
+                    e.SpriteBatch.DrawString(Game1.dialogueFont, ends, new Vector2(endRect.X + endRect.Width / 2f - endsSize.X / 2f, endRect.Top + endRect.Height / 2f - endsSize.Y / 2f), Config.CallTextColor, 0f, Vector2.Zero, textScale, SpriteEffects.None,1f);
+                    if (ModEntry.clicking && !Helper.Input.IsSuppressed(SButton.MouseLeft))
+                    {
+                        if (endRect.Contains(mousePos))
+                        {
+                            MobilePhoneApp.EndCall();
+                            if (Game1.activeClickableMenu is DialogueBox)
+                                Game1.activeClickableMenu = null;
                         }
                     }
                 }

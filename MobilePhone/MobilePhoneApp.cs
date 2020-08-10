@@ -57,24 +57,6 @@ namespace MobilePhone
         private static void Input_ButtonPressed(object sender, StardewModdingAPI.Events.ButtonPressedEventArgs e)
         {
 
-
-            if (Game1.activeClickableMenu != null && Game1.activeClickableMenu.GetType() == typeof(DialogueBox) && Game1.player.currentLocation != null && Game1.player.currentLocation.lastQuestionKey != null && Game1.player.currentLocation.lastQuestionKey.StartsWith("PhoneApp_InCall_"))
-            {
-                IClickableMenu menu = Game1.activeClickableMenu;
-                int resp = (int)typeof(DialogueBox).GetField("selectedResponse", BindingFlags.NonPublic | BindingFlags.Instance).GetValue(menu);
-                List<Response> resps = (List<Response>)typeof(DialogueBox).GetField("responses", BindingFlags.NonPublic | BindingFlags.Instance).GetValue(menu);
-
-                if (resp >= 0 && resps != null && resp < resps.Count && resps[resp] != null)
-                {
-                    Helper.Input.Suppress(SButton.MouseLeft);
-                    Game1.player.currentLocation.lastQuestionKey = "";
-                    Monitor.Log($"clicked on response {resps[resp].responseKey} calling npc: {ModEntry.callingNPC} inCall {ModEntry.inCall}");
-                    CallDialogueAnswer(resps[resp].responseKey, ModEntry.callingNPC);
-
-                    return;
-                }
-            }
-
             if (ModEntry.inCall || !ModEntry.appRunning || ModEntry.runningApp != Helper.ModRegistry.ModID || !ModEntry.screenRect.Contains(Game1.getMousePosition()))
                 return;
 
@@ -101,6 +83,14 @@ namespace MobilePhone
 
         private static void ShowMainCallDialogue(NPC npc)
         {
+            Monitor.Log($"Showing Main Call Dialogue");
+
+            if (!ModEntry.inCall)
+            {
+                Monitor.Log($"Not in call, exiting");
+                return;
+            }
+
             List<Response> answers = new List<Response>();
             if (npc.CurrentDialogue != null && npc.CurrentDialogue.Count > 0)
                 answers.Add(new Response("PhoneApp_InCall_Chat", Helper.Translation.Get("chat")));
@@ -117,6 +107,10 @@ namespace MobilePhone
             {
                 answers.Add(new Response("PhoneApp_InCall_Reminisce", Helper.Translation.Get("reminisce")));
             }
+            if (ModEntry.npcAdventureModApi != null && ModEntry.npcAdventureModApi.IsPossibleCompanion( npc) && ModEntry.npcAdventureModApi.CanAskToFollow(npc))
+            {
+                answers.Add(new Response("PhoneApp_InCall_Recruit", Helper.Translation.Get("recruit")));
+            }
 
             answers.Add(new Response("PhoneApp_InCall_GoodBye", Helper.Translation.Get("goodbye")));
 
@@ -124,9 +118,16 @@ namespace MobilePhone
             Game1.objectDialoguePortraitPerson = npc;
         }
 
-        private static void CallDialogueAnswer(string whichAnswer, NPC npc)
+        public static void CallDialogueAnswer(string whichAnswer, NPC npc)
         {
-            Monitor.Log("answer " + whichAnswer);
+            Monitor.Log($"Showing Call Dialogue based on answer {whichAnswer}");
+
+            if (!ModEntry.inCall)
+            {
+                Monitor.Log($"Not in call, exiting");
+                return;
+            }
+
             if (whichAnswer == "PhoneApp_InCall_Return")
             {
                 ShowMainCallDialogue(npc);
@@ -139,6 +140,18 @@ namespace MobilePhone
             {
                 ReminisceOnPhone(npc);
             }
+            else if (whichAnswer == "PhoneApp_InCall_Recruit")
+            {
+                RecruitOnPhone(npc);
+            }
+            else if (whichAnswer == "PhoneApp_InCall_Recruit_Yes")
+            {
+                StartRecruit(npc);
+            }
+            else if (whichAnswer == "PhoneApp_InCall_Recruit_No")
+            {
+                ShowMainCallDialogue(npc);
+            }
             else if (whichAnswer.StartsWith("PhoneApp_InCall_Reminiscence_"))
             {
                 int which = int.Parse(whichAnswer.Substring("PhoneApp_InCall_Reminiscence_".Length));
@@ -147,16 +160,21 @@ namespace MobilePhone
             else if (whichAnswer == "PhoneApp_InCall_GoodBye")
             {
                 Game1.drawDialogue(npc, GetGoodBye(npc));
-                ModEntry.inCall = false;
-                ModEntry.callingNPC = null;
-                ModEntry.isReminiscing = false;
-                inCallDialogue = null;
-                inCallReminiscence = null;
+                EndCall();
             }
         }
 
         private static async void ChatOnPhone(NPC npc)
         {
+            Monitor.Log($"Showing chat dialogue");
+
+            if (!ModEntry.inCall)
+            {
+                Monitor.Log($"Not in call, exiting");
+                return;
+            }
+
+
             (Game1.activeClickableMenu as DialogueBox).closeDialogue();
 
             npc.grantConversationFriendship(Game1.player, 20);
@@ -173,6 +191,15 @@ namespace MobilePhone
         }
         private static void ReminisceOnPhone(NPC npc)
         {
+            Monitor.Log($"Showing reminisce menu");
+
+            if (!ModEntry.inCall)
+            {
+                Monitor.Log($"Not in call, exiting");
+                return;
+            }
+
+
             List<Response> responses = new List<Response>();
             for(int i = 0; i < inCallReminiscence.Count; i++)
                 responses.Add(new Response($"PhoneApp_InCall_Reminiscence_{i}", inCallReminiscence[i].name));
@@ -183,6 +210,15 @@ namespace MobilePhone
         } 
         private static void DoReminisce(int which, NPC npc)
         {
+            Monitor.Log($"Doing reminisce");
+
+            if (!ModEntry.inCall)
+            {
+                Monitor.Log($"Not in call, exiting");
+                return;
+            }
+
+
             Reminisce r = inCallReminiscence[which];
             Dictionary<string, string> dict;
             try
@@ -198,40 +234,146 @@ namespace MobilePhone
             string eventString;
             if (dict.ContainsKey(r.eventId))
                 eventString = dict[r.eventId];
-            else if (!dict.FirstOrDefault(k => k.Key.StartsWith(r.eventId)).Equals(default(KeyValuePair<string, string>)))
-                eventString = dict.FirstOrDefault(k => k.Key.StartsWith(r.eventId)).Value;
+            else if (!dict.FirstOrDefault(k => k.Key.StartsWith($"{r.eventId}/")).Equals(default(KeyValuePair<string, string>)))
+                eventString = dict.FirstOrDefault(k => k.Key.StartsWith($"{r.eventId}/")).Value;
             else
             {
                 Monitor.Log($"Event not found for id {r.eventId}");
                 return;
             }
 
+
             ModEntry.isReminiscing = true;
             (Game1.activeClickableMenu as DialogueBox).closeDialogue();
             Game1.player.currentLocation.lastQuestionKey = "";
             LocationRequest l = Game1.getLocationRequest(r.location);
+            if (r.night)
+            {
+
+            }
+            if (r.mail != null)
+            {
+                foreach (string m in r.mail.Split(','))
+                {
+                    if (Game1.player.mailReceived.Contains(m))
+                    {
+                        Monitor.Log($"Removing received mail {m}");
+                        Game1.player.mailReceived.Remove(m);
+                    }
+                }
+            }
+
             Event e = new Event(eventString)
             {
                 exitLocation = new LocationRequest(Game1.player.currentLocation.Name, Game1.player.currentLocation.isStructure, Game1.player.currentLocation)
             };
-            Game1.player.positionBeforeEvent = Game1.player.position;
+            Vector2 exitPos = Game1.player.getTileLocation();
             e.onEventFinished += delegate ()
             {
                 Monitor.Log($"Event finished");
-                RestartConversation();
+                ReturnToReminisce();
             };
             Game1.warpFarmer(l, 0, 0, 0);
             l.Location.startEvent(e);
+            Game1.player.positionBeforeEvent = exitPos;
+        }
+        private static void RecruitOnPhone(NPC npc)
+        {
+            Monitor.Log($"Showing recruit question");
+
+            if (!ModEntry.inCall)
+            {
+                Monitor.Log($"Not in call, exiting");
+                return;
+            }
+
+
+            Response[] responses = new Response[]
+            {
+                new Response("PhoneApp_InCall_Recruit_Yes", Game1.content.LoadString("Strings\\Lexicon:QuestionDialogue_Yes")),
+				new Response("PhoneApp_InCall_Recruit_No", Game1.content.LoadString("Strings\\Lexicon:QuestionDialogue_No"))
+            };
+            Game1.player.currentLocation.createQuestionDialogue(ModEntry.npcAdventureModApi.LoadString("Strings/Strings:askToFollow", npc.Name), responses, "PhoneApp_InCall_Recruit_Question");
+        }
+        private static async void StartRecruit(NPC npc)
+        {
+            Monitor.Log($"Showing recruit response");
+
+            if (!ModEntry.inCall)
+            {
+                Monitor.Log($"Not in call, exiting");
+                return;
+            }
+
+
+            if (ModEntry.npcAdventureModApi.CanRecruit(Game1.player, npc))
+            {
+                Game1.drawDialogue(npc, ModEntry.npcAdventureModApi.GetFriendSpecificDialogueText(Game1.player, npc, "companionAccepted"));
+                while(Game1.activeClickableMenu is DialogueBox)
+                {
+                    await Task.Delay(50);
+                }
+                DoRecruit(npc);
+            }
+            else
+            {
+                Game1.drawDialogue(npc, ModEntry.npcAdventureModApi.GetFriendSpecificDialogueText(Game1.player, npc, Game1.timeOfDay >= 2200 ? "companionRejectedNight" : "companionRejected"));
+            }
+        }
+        private static void DoRecruit(NPC npc)
+        {
+            Monitor.Log($"Doing recruit");
+
+            if (!ModEntry.inCall)
+            {
+                Monitor.Log($"Not in call, exiting");
+                return;
+            }
+
+            if (ModEntry.npcAdventureModApi.RecruitCompanion(Game1.player, npc))
+            {
+                if (ModEntry.npcAdventureModApi.IsRecruited(npc))
+                {
+                    Vector2 targetPos = PhoneUtils.GetOpenSurroundingPosition();
+                    Monitor.Log($"Recruiting {npc.Name} to {targetPos} (player: {Game1.player.getTileLocation()})");
+                    Game1.warpCharacter(npc, Game1.player.currentLocation, targetPos);
+                    EndCall();
+                }
+                else
+                {
+                    ShowMainCallDialogue(npc);
+                }
+            }
+            else
+            {
+                Monitor.Log($"Error trying to recruit {npc.Name}", LogLevel.Error);
+                ShowMainCallDialogue(npc);
+            }
         }
 
-        private static async void RestartConversation()
+        private static async void ReturnToReminisce()
         {
             await Task.Delay(1000);
             Monitor.Log($"Returning to reminisce menu");
+
+            if (!ModEntry.inCall)
+            {
+                Monitor.Log($"Not in call, exiting");
+                return;
+            }
+
             ModEntry.isReminiscing = false;
             ReminisceOnPhone(ModEntry.callingNPC);
         }
-
+        public static void EndCall()
+        {
+            Monitor.Log($"Ending call");
+            ModEntry.inCall = false;
+            ModEntry.callingNPC = null;
+            ModEntry.isReminiscing = false;
+            inCallDialogue = null;
+            inCallReminiscence = null;
+        }
         private static string GetCallGreeting(NPC npc)
         {
             try
