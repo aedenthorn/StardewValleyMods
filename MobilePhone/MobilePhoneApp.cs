@@ -7,6 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 
@@ -24,6 +25,8 @@ namespace MobilePhone
         private static int lastMousePositionY;
         private static float listHeight;
         private static bool clicked;
+        private static List<Reminisce> inCallReminiscence;
+        private static Dictionary<string, string> inCallDialogue;
 
         public static void Initialize(IModHelper helper, IMonitor monitor, ModConfig config)
         {
@@ -49,11 +52,29 @@ namespace MobilePhone
             listHeight = Config.ContactMarginY + (int)Math.Ceiling(callableList.Count / (float)ModEntry.gridWidth) * (Config.ContactHeight + Config.ContactMarginY);
             Helper.Events.Display.RenderedWorld += Display_RenderedWorld;
             Helper.Events.Input.ButtonPressed += Input_ButtonPressed;
-            Helper.Events.Input.ButtonReleased += Input_ButtonReleased;
         }
 
         private static void Input_ButtonPressed(object sender, StardewModdingAPI.Events.ButtonPressedEventArgs e)
         {
+
+
+            if (Game1.activeClickableMenu != null && Game1.activeClickableMenu.GetType() == typeof(DialogueBox) && Game1.player.currentLocation != null && Game1.player.currentLocation.lastQuestionKey != null && Game1.player.currentLocation.lastQuestionKey.StartsWith("PhoneApp_InCall_"))
+            {
+                IClickableMenu menu = Game1.activeClickableMenu;
+                int resp = (int)typeof(DialogueBox).GetField("selectedResponse", BindingFlags.NonPublic | BindingFlags.Instance).GetValue(menu);
+                List<Response> resps = (List<Response>)typeof(DialogueBox).GetField("responses", BindingFlags.NonPublic | BindingFlags.Instance).GetValue(menu);
+
+                if (resp >= 0 && resps != null && resp < resps.Count && resps[resp] != null)
+                {
+                    Helper.Input.Suppress(SButton.MouseLeft);
+                    Game1.player.currentLocation.lastQuestionKey = "";
+                    Monitor.Log($"clicked on response {resps[resp].responseKey} calling npc: {ModEntry.callingNPC} inCall {ModEntry.inCall}");
+                    CallDialogueAnswer(resps[resp].responseKey, ModEntry.callingNPC);
+
+                    return;
+                }
+            }
+
             if (ModEntry.inCall || !ModEntry.appRunning || ModEntry.runningApp != Helper.ModRegistry.ModID || !ModEntry.screenRect.Contains(Game1.getMousePosition()))
                 return;
 
@@ -67,57 +88,195 @@ namespace MobilePhone
             }
         }
 
-        private static void Input_ButtonReleased(object sender, StardewModdingAPI.Events.ButtonReleasedEventArgs e)
+        public static void CallNPC(NPC npc)
         {
-            if (e.Button == SButton.MouseLeft)
-            {
-            }
+            inCallReminiscence = null;
+            ModEntry.inCall = true;
+            ModEntry.callingNPC = npc;
+
+            ShowMainCallDialogue(npc);
+
+            return;
         }
 
-        public static async void CallNPC(NPC npc)
+        private static void ShowMainCallDialogue(NPC npc)
         {
-            if (npc.CurrentDialogue.Count >= 1 || npc.endOfRouteMessage.Value != null)
+            List<Response> answers = new List<Response>();
+            if (npc.CurrentDialogue != null && npc.CurrentDialogue.Count > 0)
+                answers.Add(new Response("PhoneApp_InCall_Chat", Helper.Translation.Get("chat")));
+                
+            if(inCallReminiscence == null)
             {
-                Monitor.Log($"{npc.Name} has dialogue");
-                npc.grantConversationFriendship(Game1.player, 20);
-                Dialogue greet = GetCallGreeting(npc);
-                if(greet != null)
-                    npc.CurrentDialogue.Push(greet);
-                int i = 0;
-                ModEntry.inCall = true;
-                while (npc.CurrentDialogue.Count > 0 && ModEntry.phoneOpen)
-                {
-                    if(!(Game1.activeClickableMenu is DialogueBox))
-                    {
-                        Game1.drawDialogue(npc);
-                        Monitor.Log($"Dialogues left {npc.CurrentDialogue.Count}");
-                    }
-                    await Task.Delay(100);
-                }
+                Reminiscence r = Helper.Data.ReadJsonFile<Reminiscence>(Path.Combine("assets", "events", $"{npc.Name}.json")) ?? new Reminiscence();
+                Monitor.Log($"Total Reminisces: {r.events.Count}");
+                r.WeedOutUnseen();
+                Monitor.Log($"Seen Reminisces: {r.events.Count}");
+                inCallReminiscence = r.events;
+            }
+            if (inCallReminiscence != null && inCallReminiscence.Count > 0)
+            {
+                answers.Add(new Response("PhoneApp_InCall_Reminisce", Helper.Translation.Get("reminisce")));
+            }
+
+            answers.Add(new Response("PhoneApp_InCall_GoodBye", Helper.Translation.Get("goodbye")));
+
+            Game1.player.currentLocation.createQuestionDialogue(GetCallGreeting(npc), answers.ToArray(), "PhoneApp_InCall_Begin");
+            Game1.objectDialoguePortraitPerson = npc;
+        }
+
+        private static void CallDialogueAnswer(string whichAnswer, NPC npc)
+        {
+            Monitor.Log("answer " + whichAnswer);
+            if (whichAnswer == "PhoneApp_InCall_Return")
+            {
+                ShowMainCallDialogue(npc);
+            }
+            else if (whichAnswer == "PhoneApp_InCall_Chat")
+            {
+                ChatOnPhone(npc);
+            }
+            else if (whichAnswer == "PhoneApp_InCall_Reminisce")
+            {
+                ReminisceOnPhone(npc);
+            }
+            else if (whichAnswer.StartsWith("PhoneApp_InCall_Reminiscence_"))
+            {
+                int which = int.Parse(whichAnswer.Substring("PhoneApp_InCall_Reminiscence_".Length));
+                DoReminisce(which, npc);
+            }
+            else if (whichAnswer == "PhoneApp_InCall_GoodBye")
+            {
+                Game1.drawDialogue(npc, GetGoodBye(npc));
                 ModEntry.inCall = false;
                 ModEntry.callingNPC = null;
-            }
-            else
-            {
-                Monitor.Log($"{npc.Name} has no dialogue");
-                Game1.drawObjectDialogue(Helper.Translation.Get("no-answer"));
+                ModEntry.isReminiscing = false;
+                inCallDialogue = null;
+                inCallReminiscence = null;
             }
         }
 
-        private static Dialogue GetCallGreeting(NPC npc)
+        private static async void ChatOnPhone(NPC npc)
+        {
+            (Game1.activeClickableMenu as DialogueBox).closeDialogue();
+
+            npc.grantConversationFriendship(Game1.player, 20);
+            while (npc.CurrentDialogue.Count > 0 && ModEntry.phoneOpen)
+            {
+                if (!(Game1.activeClickableMenu is DialogueBox))
+                {
+                    Game1.drawDialogue(npc);
+                    Monitor.Log($"Dialogues left {npc.CurrentDialogue.Count}");
+                }
+                await Task.Delay(50);
+            }
+            ShowMainCallDialogue(npc);
+        }
+        private static void ReminisceOnPhone(NPC npc)
+        {
+            List<Response> responses = new List<Response>();
+            for(int i = 0; i < inCallReminiscence.Count; i++)
+                responses.Add(new Response($"PhoneApp_InCall_Reminiscence_{i}", inCallReminiscence[i].name));
+
+            responses.Add(new Response("PhoneApp_InCall_Return", Helper.Translation.Get("back")));
+
+            Game1.player.currentLocation.createQuestionDialogue(GetReminiscePrefix(npc), responses.ToArray(), "PhoneApp_InCall_Reminisce_Question");
+        } 
+        private static void DoReminisce(int which, NPC npc)
+        {
+            Reminisce r = inCallReminiscence[which];
+            Dictionary<string, string> dict;
+            try
+            {
+                dict = Helper.Content.Load<Dictionary<string, string>>(Path.Combine("Data", "Events", r.location), ContentSource.GameContent);
+            }
+            catch (Exception ex) 
+            {
+                Monitor.Log($"Exception loading event dictionary for {r.location}: {ex}");
+                return;
+            }
+
+            string eventString;
+            if (dict.ContainsKey(r.eventId))
+                eventString = dict[r.eventId];
+            else if (!dict.FirstOrDefault(k => k.Key.StartsWith(r.eventId)).Equals(default(KeyValuePair<string, string>)))
+                eventString = dict.FirstOrDefault(k => k.Key.StartsWith(r.eventId)).Value;
+            else
+            {
+                Monitor.Log($"Event not found for id {r.eventId}");
+                return;
+            }
+
+            ModEntry.isReminiscing = true;
+            (Game1.activeClickableMenu as DialogueBox).closeDialogue();
+            Game1.player.currentLocation.lastQuestionKey = "";
+            LocationRequest l = Game1.getLocationRequest(r.location);
+            Event e = new Event(eventString)
+            {
+                exitLocation = new LocationRequest(Game1.player.currentLocation.Name, Game1.player.currentLocation.isStructure, Game1.player.currentLocation)
+            };
+            Game1.player.positionBeforeEvent = Game1.player.position;
+            e.onEventFinished += delegate ()
+            {
+                Monitor.Log($"Event finished");
+                RestartConversation();
+            };
+            Game1.warpFarmer(l, 0, 0, 0);
+            l.Location.startEvent(e);
+        }
+
+        private static async void RestartConversation()
+        {
+            await Task.Delay(1000);
+            Monitor.Log($"Returning to reminisce menu");
+            ModEntry.isReminiscing = false;
+            ReminisceOnPhone(ModEntry.callingNPC);
+        }
+
+        private static string GetCallGreeting(NPC npc)
         {
             try
             {
                 Dictionary<string, string> dict = Helper.Content.Load<Dictionary<string, string>>($"Characters/Dialogue/{npc.name}", ContentSource.GameContent);
+                inCallDialogue = new Dictionary<string, string>(dict);
                 if (dict.ContainsKey("MobilePhoneGreeting"))
-                    return new Dialogue(dict["MobilePhoneGreeting"], npc);
+                    return string.Format(dict["MobilePhoneGreeting"],Game1.player.displayName);
             }
             catch
             {
-                Monitor.Log($"{npc.Name} has no dialogue file, using generic greeting");
+                Monitor.Log($"{npc.Name} has no dialogue file");
             }
             Monitor.Log($"{npc.Name} has no greeting, using generic greeting");
-            return new Dialogue(Helper.Translation.Get("generic-greeting"), npc);
+            return string.Format(Helper.Translation.Get("generic-greeting"), Game1.player.displayName);
+        }
+
+        private static string GetReminiscePrefix(NPC npc)
+        {
+            try
+            {
+                if (inCallDialogue.ContainsKey("MobilePhoneReminisce"))
+                    return inCallDialogue["MobilePhoneReminisce"];
+            }
+            catch
+            {
+                Monitor.Log($"{npc.Name} has no dialogue file");
+            }
+            Monitor.Log($"{npc.Name} has no greeting, using generic reminisce question");
+            return Helper.Translation.Get("generic-reminisce");
+        }
+        
+        private static string GetGoodBye(NPC npc)
+        {
+            try
+            {
+                if (inCallDialogue.ContainsKey("MobilePhoneGoodBye"))
+                    return inCallDialogue["MobilePhoneGoodBye"];
+            }
+            catch
+            {
+                Monitor.Log($"{npc.Name} has no dialogue file");
+            }
+            Monitor.Log($"{npc.Name} has no goodbye, using generic goodbye");
+            return Helper.Translation.Get("generic-goodbye");
         }
 
         private static void CreateCallableList()
@@ -157,7 +316,6 @@ namespace MobilePhone
                 ModEntry.phoneAppRunning = false;
                 Helper.Events.Display.RenderedWorld -= Display_RenderedWorld;
                 Helper.Events.Input.ButtonPressed -= Input_ButtonPressed;
-                Helper.Events.Input.ButtonReleased -= Input_ButtonReleased;
                 return;
             }
             Vector2 screenPos = PhoneUtils.GetScreenPosition();

@@ -1,0 +1,45 @@
+﻿{
+	"events":
+	[
+		{
+			"name": "Gridball (Two Hearts)",
+			"location": "Beach",
+			"eventId":"20"
+		},
+		{
+			"name": "Parents (Four Hearts)",
+			"location": "Town",
+			"eventId":"2481135"
+		},
+		{
+			"name": "Books (Five Hearts)",
+			"location": "JoshHouse",
+			"eventId":"21"
+		},
+		{
+			"name": "Training (Six Hearts)",
+			"location": "JoshHouse",
+			"eventId":"2119820"
+		},
+		{
+			"name": "Mom (Eight Hearts)",
+			"location": "Beach",
+			"eventId":"288847"
+		},
+		{
+			"name": "Dinner Date (Ten Hearts)",
+			"location": "Saloon",
+			"eventId":"911526"
+		},
+		{
+			"name": "Sports Room",
+			"location": "Saloon",
+			"eventId":"3917590"
+		},
+		{
+			"name": "Secret Project",
+			"location": "Farm",
+			"eventId":"3917587"
+		},
+	]
+}

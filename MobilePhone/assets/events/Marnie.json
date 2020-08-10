@@ -1,0 +1,21 @@
+﻿{
+	"events":
+	[
+		{
+			"name": "Cat",
+			"location": "Farm",
+			"eventId": "1590166"
+		},
+		{
+			"name": "Dog",
+			"location": "Farm",
+			"eventId":"897405"
+		},
+		{
+			"name": "Affair (Six Hearts)",
+			"location": "Town",
+			"eventId":"639373",
+			"night": true
+		},
+	]
+}

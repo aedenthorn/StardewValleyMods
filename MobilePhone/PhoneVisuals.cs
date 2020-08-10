@@ -33,11 +33,8 @@ namespace MobilePhone
             {
                 ModEntry.appRunning = false;
                 ModEntry.runningApp = null;
-                if (Game1.activeClickableMenu is MobilePhoneMenu)
-                {
-                    Game1.activeClickableMenu = null;
-                }
-                if (Config.ShowPhoneIcon && (Game1.displayHUD || Game1.eventUp) && Game1.currentBillboard == 0 && Game1.gameMode == 3 && !Game1.freezeControls && !Game1.panMode && !Game1.HostPaused && !Game1.game1.takingMapScreenshot)
+
+                if (Config.ShowPhoneIcon && Game1.displayHUD && !Game1.eventUp && Game1.currentBillboard == 0 && Game1.gameMode == 3 && !Game1.freezeControls && !Game1.panMode && !Game1.HostPaused && !Game1.game1.takingMapScreenshot)
                 {
                     if (ModEntry.clickingPhoneIcon)
                     {
@@ -77,19 +74,6 @@ namespace MobilePhone
             {
                
                 return;
-            }
-
-            if (!ModEntry.appRunning)
-            {
-                if(Game1.activeClickableMenu == null)
-                    Game1.activeClickableMenu = new MobilePhoneMenu();
-            }
-            else
-            {
-                if(Game1.activeClickableMenu is MobilePhoneMenu)
-                {
-                    Game1.activeClickableMenu = null;
-                }
             }
 
             if (ModEntry.draggingPhone)

@@ -1,0 +1,20 @@
+﻿{
+	"events":
+	[
+		{
+			"name": "Linus",
+			"location": "Town",
+			"eventId":"502969"
+		},
+		{
+			"name": "Pam (Four Hearts)",
+			"location": "Saloon",
+			"eventId":"96"
+		},
+		{
+			"name": "Farm Visit (Five Hearts)",
+			"location": "Farm",
+			"eventId": "980558"
+		},
+	]
+}

@@ -14,6 +14,7 @@
     <Deterministic>true</Deterministic>
     <NuGetPackageImportStamp>
     </NuGetPackageImportStamp>
+    <EnableHarmony>true</EnableHarmony>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -48,6 +49,8 @@
     <Compile Include="MobileAppJSON.cs" />
     <Compile Include="MobilePhoneApi.cs" />
     <Compile Include="MobileApp.cs" />
+    <Compile Include="PhonePatches.cs" />
+    <Compile Include="Reminiscence.cs" />
     <Compile Include="ThemeApp.cs" />
     <Compile Include="MobilePhoneApp.cs" />
     <Compile Include="MobilePhoneMenu.cs" />
@@ -60,6 +63,37 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="assets\events\Abigail.json" />
+    <None Include="assets\events\Alex.json" />
+    <None Include="assets\events\Caroline.json" />
+    <None Include="assets\events\Clint.json" />
+    <None Include="assets\events\Demetrius.json" />
+    <None Include="assets\events\Elliott.json" />
+    <None Include="assets\events\Evelyn.json" />
+    <None Include="assets\events\George.json" />
+    <None Include="assets\events\Gus.json" />
+    <None Include="assets\events\Haley.json" />
+    <None Include="assets\events\Harvey.json" />
+    <None Include="assets\events\Jas.json" />
+    <None Include="assets\events\Jodi.json" />
+    <None Include="assets\events\Kent.json" />
+    <None Include="assets\events\Krobus.json" />
+    <None Include="assets\events\Leah.json" />
+    <None Include="assets\events\Lewis.json" />
+    <None Include="assets\events\Linus.json" />
+    <None Include="assets\events\Marnie.json" />
+    <None Include="assets\events\Maru.json" />
+    <None Include="assets\events\Pam.json" />
+    <None Include="assets\events\Penny.json" />
+    <None Include="assets\events\Pierre.json" />
+    <None Include="assets\events\Robin.json" />
+    <None Include="assets\events\Sam.json" />
+    <None Include="assets\events\Sandy.json" />
+    <None Include="assets\events\Sebastian.json" />
+    <None Include="assets\events\Shane.json" />
+    <None Include="assets\events\Vincent.json" />
+    <None Include="assets\events\Willy.json" />
+    <None Include="assets\events\Wizard.json" />
     <None Include="i18n\default.json" />
     <None Include="manifest.json" />
     <None Include="packages.config" />
@@ -73,6 +107,7 @@
     <Content Include="assets\backgrounds\hearts.png" />
     <Content Include="assets\backgrounds\hearts_landscape.png" />
     <Content Include="assets\down_arrow.png" />
+    <None Include="assets\events\Emily.json" />
     <Content Include="assets\phone_icon.png" />
     <Content Include="assets\skins\black.png" />
     <Content Include="assets\skins\black_landscape.png" />

@@ -1,0 +1,35 @@
+﻿{
+	"events":
+	[
+		{
+			"name": "Prairie King (Two Hearts)",
+			"location": "SeedShop",
+			"eventId":"1"
+		},
+		{
+			"name": "Flute (Four Hearts)",
+			"location": "Mountain",
+			"eventId":"2"
+		},
+		{
+			"name": "Cemetary (Six Hearts)",
+			"location": "Town",
+			"eventId":"4"
+		},
+		{
+			"name": "Spirit BoardTherapy (Eight Hearts)",
+			"location": "SeedShop",
+			"eventId":"3"
+		},
+		{
+			"name": "Adventurer (Ten Hearts)",
+			"location": "Mine",
+			"eventId":"901756"
+		},
+		{
+			"name": "Backwoods (Fourteen Hearts)",
+			"location": "Backwoods",
+			"eventId":"6963327"
+		},
+	]
+}

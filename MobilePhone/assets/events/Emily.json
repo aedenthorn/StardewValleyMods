@@ -1,0 +1,37 @@
+﻿{
+	"events":
+	[
+		{
+			"name": "Dream (Two Hearts)",
+			"location": "HaleyHouse",
+			"eventId":"471942"
+		},
+		{
+			"name": "Bird (Four Hearts)",
+			"location": "Town",
+			"eventId":"463391"
+		},
+		{
+			"name": "Dancing (Six Hearts)",
+			"location": "HaleyHouse",
+			"eventId":"917409"
+		},
+		{
+			"name": "Clothing Therapy (Eight Hearts)",
+			"location": "ManorHouse",
+			"eventId":"2123243"
+		},
+		{
+			"name": "Camping (Ten Hearts)",
+			"location": "Woods",
+			"eventId":"2123343",
+			"night": true
+		},
+		{
+			"name": "Magic Clothes (Fourteen Hearts)",
+			"location": "FarmHouse",
+			"eventId":"3917601",
+			"night": true
+		},
+	]
+}

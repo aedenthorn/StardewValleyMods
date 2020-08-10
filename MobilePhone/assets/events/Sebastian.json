@@ -1,0 +1,40 @@
+﻿{
+	"events":
+	[
+		{
+			"name": "Working (Two Hearts)",
+			"location": "SebastianRoom",
+			"eventId":"2794460"
+		},
+		{
+			"name": "Bike (Four Hearts)",
+			"location": "Mountain",
+			"eventId":"384883"
+		},
+		{
+			"name": "Solarion Chronicles (Six Hearts)",
+			"location": "SebastianRoom",
+			"eventId":"27"
+		},
+		{
+			"name": "Rain (Eight Hearts)",
+			"location": "Beach",
+			"eventId":"29"
+		},
+		{
+			"name": "Bike Ride (Ten Hearts)",
+			"location": "Mountain",
+			"eventId":"384882"
+		},
+		{
+			"name": "Frog (Fourteen Hearts)",
+			"location": "Mountain",
+			"eventId":"9333219"
+		},
+		{
+			"name": "Terrarium",
+			"location": "FarmHouse",
+			"eventId":"9333220"
+		},
+	]
+}

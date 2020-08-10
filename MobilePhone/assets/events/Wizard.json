@@ -1,0 +1,20 @@
+﻿{
+	"events":
+	[
+		{
+			"name": "Magic Ink Quest",
+			"location": "Railroad",
+			"eventId":"529952"
+		},
+		{
+			"name": "Junimo",
+			"location": "WizardHouse",
+			"eventId":"112"
+		},
+		{
+			"name": "Magic Ink Returned",
+			"location": "WizardHouse",
+			"eventId":"418172"
+		},
+	]
+}

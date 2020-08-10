@@ -1,0 +1,16 @@
+﻿{
+	"events":
+	[
+		{
+			"name": "Community Center",
+			"location": "Town",
+			"eventId":"611439"
+		},
+		{
+			"name": "Affair (Six Hearts)",
+			"location": "Town",
+			"eventId":"639373",
+			"night": true
+		},
+	]
+}

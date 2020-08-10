@@ -1,0 +1,20 @@
+﻿{
+	"events":
+	[
+		{
+			"name": "Joja Coupons",
+			"location": "Town",
+			"eventId":"3102768"
+		},
+		{
+			"name": "No More Joja",
+			"location": "Town",
+			"eventId":"191393"
+		},
+		{
+			"name": "Secret Stash (Six Hearts)",
+			"location": "SeedShop",
+			"eventId":"16"
+		},
+	]
+}

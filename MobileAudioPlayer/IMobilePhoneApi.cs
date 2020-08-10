@@ -3,7 +3,7 @@ using Microsoft.Xna.Framework.Graphics;
 using StardewValley;
 using System;
 
-namespace MobileCatalogues
+namespace MobileAudioPlayer
 {
     public interface IMobilePhoneApi
     {   

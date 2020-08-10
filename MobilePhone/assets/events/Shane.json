@@ -1,0 +1,55 @@
+﻿{
+	"events":
+	[
+		{
+			"name": "Pond (Two Hearts)",
+			"location": "Forest",
+			"eventId":"611944"
+		},
+		{
+			"name": "Passed Out (Four Hearts)",
+			"location": "AnimalShop",
+			"eventId":"3910674"
+		},
+		{
+			"name": "Cliff (Six Hearts)",
+			"location": "Forest",
+			"eventId":"3910975"
+		},
+		{
+			"name": "Apology",
+			"location": "Farm",
+			"eventId":"2118991"
+		},
+		{
+			"name": "Recovery (Seven Hearts)",
+			"location": "AnimalShop",
+			"eventId":"3910974"
+		},
+		{
+			"name": "Commercial (Seven Hearts)",
+			"location": "Town",
+			"eventId":"831125"
+		},
+		{
+			"name": "Charlie (Eight Hearts)",
+			"location": "ManorHouse",
+			"eventId":"3900074"
+		},
+		{
+			"name": "Gridball Game (Ten Hearts)",
+			"location": "BusStop",
+			"eventId":"9581348"
+		},
+		{
+			"name": "Drinking 1",
+			"location": "Town",
+			"eventId":"3917585"
+		},
+		{
+			"name": "Drinking 2",
+			"location": "Town",
+			"eventId":"3917586"
+		},
+	]
+}

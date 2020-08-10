@@ -1,0 +1,20 @@
+﻿{
+	"events":
+	[
+		{
+			"name": "Furnace",
+			"location": "Farm",
+			"eventId":"992553"
+		},
+		{
+			"name": "Emily (Three Hearts)",
+			"location": "Saloon",
+			"eventId":"97"
+		},
+		{
+			"name": "Date (Six Hearts)",
+			"location": "Town",
+			"eventId":"101"
+		},
+	]
+}

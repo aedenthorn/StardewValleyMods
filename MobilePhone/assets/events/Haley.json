@@ -1,0 +1,35 @@
+﻿{
+	"events":
+	[
+		{
+			"name": "Cleaning (Two Hearts)",
+			"location": "HaleyHouse",
+			"eventId":"11"
+		},
+		{
+			"name": "Jar (Four Hearts)",
+			"location": "HaleyHouse",
+			"eventId":"12"
+		},
+		{
+			"name": "Bracelet (Six Hearts)",
+			"location": "Beach",
+			"eventId":"13"
+		},
+		{
+			"name": "Photo Op (Eight Hearts)",
+			"location": "Forest",
+			"eventId":"14"
+		},
+		{
+			"name": "Dark Room (Ten Hearts)",
+			"location": "HaleyHouse",
+			"eventId":"15"
+		},
+		{
+			"name": "Cake Walk (Fourteen Hearts)",
+			"location": "Town",
+			"eventId":"6184644"
+		},
+	]
+}

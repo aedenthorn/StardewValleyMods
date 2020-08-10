@@ -5,7 +5,7 @@ using StardewValley.Menus;
 
 namespace MobilePhone
 {
-    internal class MobilePhoneMenu : IClickableMenu
+    internal class MobilePhoneMenus : IClickableMenu
     {
         public override void draw(SpriteBatch b)
         {

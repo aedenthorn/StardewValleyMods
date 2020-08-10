@@ -41,7 +41,7 @@ namespace MobilePhone
             if (e.Button == Config.OpenPhoneKey || (ModEntry.phoneOpen && e.Button == SButton.Escape))
             {
                 PhoneUtils.TogglePhone();
-                if (ModEntry.phoneOpen && e.Button == SButton.Escape)
+                if (!ModEntry.phoneOpen && e.Button == SButton.Escape)
                     Helper.Input.Suppress(SButton.Escape);
                 return;
             }
@@ -67,8 +67,7 @@ namespace MobilePhone
 
             if (e.Button == SButton.MouseLeft)
             {
-                if(ModEntry.appRunning || Game1.activeClickableMenu is MobilePhoneMenu)
-                {
+
                     if (!ModEntry.appRunning && !ModEntry.phoneRect.Contains(mousePos))
                     {
                         Monitor.Log($"pressing mouse outside of opened phone");
@@ -86,7 +85,7 @@ namespace MobilePhone
                         ModEntry.lastMousePosition = mousePos;
                         return;
                     }
-                }
+
 
                 if(ModEntry.callingNPC != null && ModEntry.screenRect.Contains(mousePos))
                 {
@@ -94,7 +93,7 @@ namespace MobilePhone
                     return;
                 }
 
-                if (!ModEntry.appRunning && Game1.activeClickableMenu is MobilePhoneMenu && ModEntry.screenRect.Contains(mousePos))
+                if (!ModEntry.appRunning && ModEntry.screenRect.Contains(mousePos))
                 {
                     Monitor.Log($"pressing mouse key in phone");
                     Helper.Input.Suppress(SButton.MouseLeft);

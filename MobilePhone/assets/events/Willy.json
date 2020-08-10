@@ -1,0 +1,20 @@
+﻿{
+	"events":
+	[
+		{
+			"name": "Fishing",
+			"location": "Beach",
+			"eventId":"739330"
+		},
+		{
+			"name": "Panning",
+			"location": "Beach",
+			"eventId":"404798"
+		}
+		{
+			"name": "Crabs (Six Hearts)",
+			"location": "Beach",
+			"eventId":"711130"
+		}
+	]
+}

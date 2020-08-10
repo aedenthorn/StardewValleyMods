@@ -41,14 +41,11 @@ namespace MobilePhone
             if (!value)
             {
                 Monitor.Log($"Closing phone");
-                if (Game1.activeClickableMenu is MobilePhoneMenu)
-                    Game1.activeClickableMenu = null;
                 ModEntry.appRunning = false;
             }
             else
             {
                 Monitor.Log($"Opening phone");
-                Game1.activeClickableMenu = new MobilePhoneMenu();
             }
         }
         public static void TogglePhone()
@@ -57,7 +54,6 @@ namespace MobilePhone
             {
                 Game1.playSound("dwop");
                 ModEntry.appRunning = false;
-                Game1.activeClickableMenu = new MobilePhoneMenu();
                 return;
             }
             TogglePhone(!ModEntry.phoneOpen);
@@ -75,7 +71,6 @@ namespace MobilePhone
             }
             else if(ModEntry.phoneOpen)
             {
-                Game1.activeClickableMenu = new MobilePhoneMenu();
             }
         }
 

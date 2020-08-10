@@ -1,0 +1,15 @@
+﻿{
+	"events":
+	[
+		{
+			"name": "Tab (Four Hearts)",
+			"location": "Saloon",
+			"eventId":"96"
+		},
+		{
+			"name": "New Home (Nine Hearts)",
+			"location": "Trailer_big",
+			"eventId":"503180"
+		},
+	]
+}

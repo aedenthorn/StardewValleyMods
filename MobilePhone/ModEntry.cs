@@ -1,4 +1,5 @@
-﻿using Microsoft.Xna.Framework;
+﻿using Harmony;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Audio;
 using Microsoft.Xna.Framework.Graphics;
 using StardewModdingAPI;
@@ -91,6 +92,7 @@ namespace MobilePhone
         public static bool inCall;
         public static SoundEffect ringSound;
         public static SoundEffect notificationSound;
+        internal static bool isReminiscing;
 
         public static event EventHandler OnScreenRotated;
 
@@ -112,6 +114,42 @@ namespace MobilePhone
             PhoneInput.Initialize(Helper, Monitor, Config);
             PhoneGameLoop.Initialize(Helper, Monitor, Config);
             PhoneUtils.Initialize(Helper, Monitor, Config);
+            PhonePatches.Initialize(Helper, Monitor, Config);
+
+            var harmony = HarmonyInstance.Create(ModManifest.UniqueID);
+
+            harmony.Patch(
+                original: AccessTools.Method(typeof(Event), nameof(Event.endBehaviors)),
+                prefix: new HarmonyMethod(typeof(PhonePatches), nameof(PhonePatches.Event_endBehaviors_prefix))
+            );
+            harmony.Patch(
+                original: AccessTools.Method(typeof(Farmer), nameof(Farmer.changeFriendship)),
+                prefix: new HarmonyMethod(typeof(PhonePatches), nameof(PhonePatches.Reminiscing_Override_prefix))
+            );
+            harmony.Patch(
+                original: AccessTools.Method(typeof(Event), nameof(Event.command_awardFestivalPrize)),
+                prefix: new HarmonyMethod(typeof(PhonePatches), nameof(PhonePatches.Reminiscing_Override_prefix))
+            );
+            harmony.Patch(
+                original: AccessTools.Method(typeof(Event), nameof(Event.command_addTool)),
+                prefix: new HarmonyMethod(typeof(PhonePatches), nameof(PhonePatches.Reminiscing_Override_prefix))
+            );
+            harmony.Patch(
+                original: AccessTools.Method(typeof(Event), nameof(Event.command_money)),
+                prefix: new HarmonyMethod(typeof(PhonePatches), nameof(PhonePatches.Reminiscing_Override_prefix))
+            );
+            harmony.Patch(
+                original: AccessTools.Method(typeof(Event), nameof(Event.command_removeItem)),
+                prefix: new HarmonyMethod(typeof(PhonePatches), nameof(PhonePatches.Reminiscing_Override_prefix))
+            );
+            harmony.Patch(
+                original: AccessTools.Method(typeof(Event), nameof(Event.command_friendship)),
+                prefix: new HarmonyMethod(typeof(PhonePatches), nameof(PhonePatches.Reminiscing_Override_prefix))
+            );
+            harmony.Patch(
+                original: AccessTools.Method(typeof(Event), nameof(Event.command_dump)),
+                prefix: new HarmonyMethod(typeof(PhonePatches), nameof(PhonePatches.Reminiscing_Override_prefix))
+            );
 
             Helper.Events.Input.ButtonPressed += PhoneInput.Input_ButtonPressed;
             Helper.Events.Input.ButtonReleased += PhoneInput.Input_ButtonReleased;

@@ -1,0 +1,25 @@
+﻿{
+	"events":
+	[
+		{
+			"name": "Welcome to Stardew Valley",
+			"location": "HaleyHouse",
+			"eventId":"60367"
+		},
+		{
+			"name": "Pam's House",
+			"location": "Town",
+			"eventId":"611173/Hn pamHouseUpgrade/o Penny"
+		},
+		{
+			"name": "Pam's House",
+			"location": "Town",
+			"eventId":"611173/Hn pamHouseUpgrade"
+		},
+		{
+			"name": "Carpentry (Six Hearts)",
+			"location": "ScienceHouse",
+			"eventId":"33"
+		},
+	]
+}

@@ -1,0 +1,15 @@
+﻿{
+	"events":
+	[
+		{
+			"name": "Fish Dinner (Four Hearts)",
+			"location": "SamHouse",
+			"eventId":"94"
+		},
+		{
+			"name": "Fish Dinner with Kent  (Four Hearts)",
+			"location": "SamHouse",
+			"eventId":"95"
+		},
+	]
+}

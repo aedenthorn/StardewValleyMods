@@ -1,0 +1,21 @@
+﻿{
+	"events":
+	[
+		{
+			"name": "Trash",
+			"location": "Town",
+			"eventId":"502969"
+		},
+		{
+			"name": "Fireside (Four Hearts)",
+			"location": "Mountain",
+			"eventId":"26",
+			"night": true
+		},
+		{
+			"name": "My Life (Eight Hearts)",
+			"location": "Mountain",
+			"eventId":"371652"
+		},
+	]
+}
