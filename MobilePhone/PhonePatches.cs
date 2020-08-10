@@ -1,4 +1,6 @@
-﻿using StardewModdingAPI;
+﻿using Harmony;
+using StardewModdingAPI;
+using StardewValley;
 using System;
 
 namespace MobilePhone
@@ -16,16 +18,30 @@ namespace MobilePhone
             Helper = helper;
             Config = config;
         }
-        internal static bool Reminiscing_Override_prefix()
-        {
-            if (ModEntry.isReminiscing)
-                return false;
-            return true;
-        }
-        internal static bool Event_endBehaviors_prefix(StardewValley.Event __instance)
+        internal static bool Farmer_changeFriendship_prefix(int amount, NPC n)
         {
             if (ModEntry.isReminiscing)
             {
+                Monitor.Log($"Reminiscing, will not change friendship with {n.name} by {amount}");
+                return false;
+            }
+            return true;
+        }        
+        internal static bool Event_command_prefix(Event __instance, string[] split)
+        {
+            if (ModEntry.isReminiscing)
+            {
+                Monitor.Log($"Reminiscing, will not execute event command {string.Join(" ",split)}");
+                __instance.CurrentCommand++;
+                return false;
+            }
+            return true;
+        }
+        internal static bool Event_endBehaviors_prefix(Event __instance, string[] split)
+        {
+            if (ModEntry.isReminiscing)
+            {
+                Monitor.Log($"Reminiscing, will not execute end behaviors {string.Join(" ", split)}");
                 __instance.exitEvent();
                 return false;
             }

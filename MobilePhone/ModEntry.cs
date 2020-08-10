@@ -124,31 +124,35 @@ namespace MobilePhone
             );
             harmony.Patch(
                 original: AccessTools.Method(typeof(Farmer), nameof(Farmer.changeFriendship)),
-                prefix: new HarmonyMethod(typeof(PhonePatches), nameof(PhonePatches.Reminiscing_Override_prefix))
+                prefix: new HarmonyMethod(typeof(PhonePatches), nameof(PhonePatches.Farmer_changeFriendship_prefix))
             );
             harmony.Patch(
                 original: AccessTools.Method(typeof(Event), nameof(Event.command_awardFestivalPrize)),
-                prefix: new HarmonyMethod(typeof(PhonePatches), nameof(PhonePatches.Reminiscing_Override_prefix))
+                prefix: new HarmonyMethod(typeof(PhonePatches), nameof(PhonePatches.Event_command_prefix))
             );
             harmony.Patch(
                 original: AccessTools.Method(typeof(Event), nameof(Event.command_addTool)),
-                prefix: new HarmonyMethod(typeof(PhonePatches), nameof(PhonePatches.Reminiscing_Override_prefix))
+                prefix: new HarmonyMethod(typeof(PhonePatches), nameof(PhonePatches.Event_command_prefix))
+            );
+            harmony.Patch(
+                original: AccessTools.Method(typeof(Event), nameof(Event.command_addConversationTopic)),
+                prefix: new HarmonyMethod(typeof(PhonePatches), nameof(PhonePatches.Event_command_prefix))
             );
             harmony.Patch(
                 original: AccessTools.Method(typeof(Event), nameof(Event.command_money)),
-                prefix: new HarmonyMethod(typeof(PhonePatches), nameof(PhonePatches.Reminiscing_Override_prefix))
+                prefix: new HarmonyMethod(typeof(PhonePatches), nameof(PhonePatches.Event_command_prefix))
             );
             harmony.Patch(
                 original: AccessTools.Method(typeof(Event), nameof(Event.command_removeItem)),
-                prefix: new HarmonyMethod(typeof(PhonePatches), nameof(PhonePatches.Reminiscing_Override_prefix))
+                prefix: new HarmonyMethod(typeof(PhonePatches), nameof(PhonePatches.Event_command_prefix))
             );
             harmony.Patch(
                 original: AccessTools.Method(typeof(Event), nameof(Event.command_friendship)),
-                prefix: new HarmonyMethod(typeof(PhonePatches), nameof(PhonePatches.Reminiscing_Override_prefix))
+                prefix: new HarmonyMethod(typeof(PhonePatches), nameof(PhonePatches.Event_command_prefix))
             );
             harmony.Patch(
                 original: AccessTools.Method(typeof(Event), nameof(Event.command_dump)),
-                prefix: new HarmonyMethod(typeof(PhonePatches), nameof(PhonePatches.Reminiscing_Override_prefix))
+                prefix: new HarmonyMethod(typeof(PhonePatches), nameof(PhonePatches.Event_command_prefix))
             );
 
             Helper.Events.Input.ButtonPressed += PhoneInput.Input_ButtonPressed;
