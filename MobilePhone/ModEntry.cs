@@ -175,6 +175,7 @@ namespace MobilePhone
             Helper.Events.Input.ButtonReleased += PhoneInput.Input_ButtonReleased;
             Helper.Events.GameLoop.SaveLoaded += PhoneGameLoop.GameLoop_SaveLoaded;
             Helper.Events.GameLoop.GameLaunched += PhoneGameLoop.GameLoop_GameLaunched;
+            Helper.Events.GameLoop.ReturnedToTitle += PhoneGameLoop.ReturnedToTitle;
             Helper.Events.GameLoop.TimeChanged += PhoneGameLoop.GameLoop_TimeChanged;
             Helper.Events.GameLoop.OneSecondUpdateTicked += PhoneGameLoop.GameLoop_OneSecondUpdateTicked;
             Helper.Events.Display.WindowResized += PhoneVisuals.Display_WindowResized;
@@ -183,6 +184,13 @@ namespace MobilePhone
         public override object GetApi()
         {
             return new MobilePhoneApi();
+        }
+
+        internal static void ClosePhone()
+        {
+            phoneOpen = false;
+            appRunning = false;
+            runningApp = null;
         }
     }
 }

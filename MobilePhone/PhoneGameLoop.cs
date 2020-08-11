@@ -149,6 +149,12 @@ namespace MobilePhone
             }
 
         }
+
+        internal static void ReturnedToTitle(object sender, ReturnedToTitleEventArgs e)
+        {
+            ModEntry.ClosePhone();
+        }
+
         public static void GameLoop_TimeChanged(object sender, TimeChangedEventArgs e)
         {
             if (e.OldTime >= e.NewTime || ModEntry.callingNPC != null || !Config.EnableIncomingCalls)

@@ -15,15 +15,7 @@ namespace MobileCatalogues
         private static ModConfig Config;
         private static IMobilePhoneApi api;
         public static bool opening;
-        internal static List<string> catalogueList = new List<string>()
-        {
-            "catalogue",
-            "furniture-catalogue",
-            "seed-catalogue",
-            "travel-catalogue",
-            "desert-catalogue",
-            "hat-catalogue",
-        };
+        internal static List<string> catalogueList = new List<string>();
 
         // call this method from your Entry class
         public static void Initialize(IModHelper helper, IMonitor monitor, ModConfig config)
@@ -31,6 +23,19 @@ namespace MobileCatalogues
             Monitor = monitor;
             Helper = helper;
             Config = config;
+
+            if (Config.EnableCatalogue)
+                catalogueList.Add("catalogue");
+            if (Config.EnableFurnitureCatalogue)
+                catalogueList.Add("furniture-catalogue");
+            if (Config.EnableSeedCatalogue)
+                catalogueList.Add("seed-catalogue");
+            if (Config.EnableTravelingCatalogue)
+                catalogueList.Add("travel-catalogue");
+            if (Config.EnableDesertCatalogue)
+                catalogueList.Add("desert-catalogue");
+            if (Config.EnableHatCatalogue)
+                catalogueList.Add("hat-catalogue");
         }
         internal static void OpenCatalogueApp()
         {

@@ -111,7 +111,7 @@ namespace MobilePhone
             {
                 answers.Add(new Response("PhoneApp_InCall_Recruit", Helper.Translation.Get("recruit")));
             }
-            if(npc.Name == "Robin")
+            if(npc.Name == "Robin" && Game1.player.daysUntilHouseUpgrade < 0 && !Game1.getFarm().isThereABuildingUnderConstruction())
             {
                 if(Game1.player.houseUpgradeLevel < 3)
                     answers.Add(new Response("PhoneApp_InCall_Upgrade", Helper.Translation.Get("upgrade-house")));
@@ -253,6 +253,7 @@ namespace MobilePhone
                 Monitor.Log($"Not in call, exiting");
                 return;
             }
+            (Game1.activeClickableMenu as DialogueBox).closeDialogue();
             ModEntry.callLocation = Game1.getLocationRequest(Game1.player.currentLocation.Name, false);
             ModEntry.callPosition = Game1.player.position;
             ModEntry.callViewportLocation = Game1.viewport.Location;
@@ -509,6 +510,8 @@ namespace MobilePhone
 
         private static void CreateCallableList()
         {
+            Monitor.Log($"Creating Callable List");
+
             callableList.Clear();
             foreach(KeyValuePair<string,Netcode.NetRef<Friendship>> kvp in Game1.player.friendshipData.FieldDict)
             {
@@ -516,6 +519,7 @@ namespace MobilePhone
                 {
                     if (kvp.Value.Value.Points >= Config.MinPointsToCall)
                     {
+                        Monitor.Log($"Adding to callable list");
                         NPC npc = Game1.getCharacterFromName(kvp.Key);
                         Texture2D portrait = npc.Sprite.Texture;
                         Rectangle sourceRect = npc.getMugShotSourceRect();

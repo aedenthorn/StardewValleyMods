@@ -67,7 +67,7 @@ namespace MobilePhone
             return false;
         }
 
-        internal static object CarpenterMenu_returnToCarpentryMenuAfterSuccessfulBuild_prefix()
+        internal static bool CarpenterMenu_returnToCarpentryMenuAfterSuccessfulBuild_prefix()
         {
             if (!ModEntry.inCall)
                 return true;

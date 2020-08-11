@@ -13,8 +13,6 @@ namespace MobileCatalogues
         public bool EnableDesertCatalogue { get; set; } = true;
         public bool LimitDesertCatalogToBusFixed { get; set; } = true;
         public bool EnableHatCatalogue { get; set; } = true;
-        public bool EnableFarmCatalogue { get; set; } = true;
-        public bool EnableBuildingCatalogue { get; set; } = true;
         public bool RequireCataloguePurchase { get; set; } = true;
         public int PriceCatalogue { get; set; } = 30000;
         public int PriceFurnitureCatalogue { get; set; } = 100000;
