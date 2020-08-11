@@ -12,8 +12,6 @@ namespace CustomFixedDialogue
 		public static ModEntry context;
 
 		internal static ModConfig Config;
-		private static string prefix = "CustomFixedDialogue";
-		private static string suffix = "EndCustomFixedDialogue";
 
 
 		/// <summary>The mod entry point, called after the mod is first loaded.</summary>

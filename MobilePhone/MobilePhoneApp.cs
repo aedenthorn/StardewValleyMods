@@ -81,7 +81,7 @@ namespace MobilePhone
             return;
         }
 
-        private static void ShowMainCallDialogue(NPC npc)
+        public static void ShowMainCallDialogue(NPC npc)
         {
             Monitor.Log($"Showing Main Call Dialogue");
 
@@ -110,6 +110,12 @@ namespace MobilePhone
             if (ModEntry.npcAdventureModApi != null && ModEntry.npcAdventureModApi.IsPossibleCompanion( npc) && ModEntry.npcAdventureModApi.CanAskToFollow(npc))
             {
                 answers.Add(new Response("PhoneApp_InCall_Recruit", Helper.Translation.Get("recruit")));
+            }
+            if(npc.Name == "Robin")
+            {
+                if(Game1.player.houseUpgradeLevel < 3)
+                    answers.Add(new Response("PhoneApp_InCall_Upgrade", Helper.Translation.Get("upgrade-house")));
+                answers.Add(new Response("PhoneApp_InCall_Build", Helper.Translation.Get("build-buildings")));
             }
 
             answers.Add(new Response("PhoneApp_InCall_GoodBye", Helper.Translation.Get("goodbye")));
@@ -148,9 +154,21 @@ namespace MobilePhone
             {
                 StartRecruit(npc);
             }
-            else if (whichAnswer == "PhoneApp_InCall_Recruit_No")
+            else if (whichAnswer == "PhoneApp_InCall_No")
             {
                 ShowMainCallDialogue(npc);
+            }
+            else if (whichAnswer == "PhoneApp_InCall_Build")
+            {
+                BuildOnPhone();
+            }
+            else if (whichAnswer == "PhoneApp_InCall_Upgrade")
+            {
+                UpgradeOnPhone(npc);
+            }
+            else if (whichAnswer == "PhoneApp_InCall_Upgrade_Yes")
+            {
+                DoUpgrade(npc);
             }
             else if (whichAnswer.StartsWith("PhoneApp_InCall_Reminiscence_"))
             {
@@ -208,6 +226,72 @@ namespace MobilePhone
 
             Game1.player.currentLocation.createQuestionDialogue(GetReminiscePrefix(npc), responses.ToArray(), "PhoneApp_InCall_Reminisce_Question");
         } 
+        private static void RecruitOnPhone(NPC npc)
+        {
+            Monitor.Log($"Showing recruit question");
+
+            if (!ModEntry.inCall)
+            {
+                Monitor.Log($"Not in call, exiting");
+                return;
+            }
+
+
+            Response[] responses = new Response[]
+            {
+                new Response("PhoneApp_InCall_Recruit_Yes", Game1.content.LoadString("Strings\\Lexicon:QuestionDialogue_Yes")),
+				new Response("PhoneApp_InCall_No", Game1.content.LoadString("Strings\\Lexicon:QuestionDialogue_No"))
+            };
+            Game1.player.currentLocation.createQuestionDialogue(ModEntry.npcAdventureModApi.LoadString("Strings/Strings:askToFollow", npc.Name), responses, "PhoneApp_InCall_Recruit_Question");
+        }
+        private static void BuildOnPhone()
+        {
+            Monitor.Log($"Showing build menu");
+
+            if (!ModEntry.inCall)
+            {
+                Monitor.Log($"Not in call, exiting");
+                return;
+            }
+            ModEntry.callLocation = Game1.getLocationRequest(Game1.player.currentLocation.Name, false);
+            ModEntry.callPosition = Game1.player.position;
+            ModEntry.callViewportLocation = Game1.viewport.Location;
+            Game1.activeClickableMenu = new CarpenterPhoneMenu(false, Game1.player, Helper);
+        }
+        private static void UpgradeOnPhone(NPC npc)
+        {
+            Monitor.Log($"Showing upgrade question");
+
+            if (!ModEntry.inCall)
+            {
+                Monitor.Log($"Not in call, exiting");
+                return;
+            }
+            Response[] responses = new Response[]
+            {
+                new Response("PhoneApp_InCall_Upgrade_Yes", Game1.content.LoadString("Strings\\Lexicon:QuestionDialogue_Yes")),
+                new Response("PhoneApp_InCall_No", Game1.content.LoadString("Strings\\Lexicon:QuestionDialogue_No"))
+            };
+
+            string question;
+            switch (Game1.player.houseUpgradeLevel)
+            {
+                case 0:
+                    question = Game1.parseText(Game1.content.LoadString("Strings\\Locations:ScienceHouse_Carpenter_UpgradeHouse1"));
+                    break;
+                case 1:
+                    question = Game1.parseText(Game1.content.LoadString("Strings\\Locations:ScienceHouse_Carpenter_UpgradeHouse2"));
+                    break;
+                case 2:
+                    question = Game1.parseText(Game1.content.LoadString("Strings\\Locations:ScienceHouse_Carpenter_UpgradeHouse3"));
+                    break;
+                default:
+                    ShowMainCallDialogue(npc);
+                    return;
+            }
+            Game1.player.currentLocation.createQuestionDialogue(question, responses, "PhoneApp_InCall_Upgrade");
+
+        }
         private static void DoReminisce(int which, NPC npc)
         {
             Monitor.Log($"Doing reminisce");
@@ -225,7 +309,7 @@ namespace MobilePhone
             {
                 dict = Helper.Content.Load<Dictionary<string, string>>(Path.Combine("Data", "Events", r.location), ContentSource.GameContent);
             }
-            catch (Exception ex) 
+            catch (Exception ex)
             {
                 Monitor.Log($"Exception loading event dictionary for {r.location}: {ex}");
                 return;
@@ -277,24 +361,6 @@ namespace MobilePhone
             l.Location.startEvent(e);
             Game1.player.positionBeforeEvent = exitPos;
         }
-        private static void RecruitOnPhone(NPC npc)
-        {
-            Monitor.Log($"Showing recruit question");
-
-            if (!ModEntry.inCall)
-            {
-                Monitor.Log($"Not in call, exiting");
-                return;
-            }
-
-
-            Response[] responses = new Response[]
-            {
-                new Response("PhoneApp_InCall_Recruit_Yes", Game1.content.LoadString("Strings\\Lexicon:QuestionDialogue_Yes")),
-				new Response("PhoneApp_InCall_Recruit_No", Game1.content.LoadString("Strings\\Lexicon:QuestionDialogue_No"))
-            };
-            Game1.player.currentLocation.createQuestionDialogue(ModEntry.npcAdventureModApi.LoadString("Strings/Strings:askToFollow", npc.Name), responses, "PhoneApp_InCall_Recruit_Question");
-        }
         private static async void StartRecruit(NPC npc)
         {
             Monitor.Log($"Showing recruit response");
@@ -318,6 +384,11 @@ namespace MobilePhone
             else
             {
                 Game1.drawDialogue(npc, ModEntry.npcAdventureModApi.GetFriendSpecificDialogueText(Game1.player, npc, Game1.timeOfDay >= 2200 ? "companionRejectedNight" : "companionRejected"));
+                while (Game1.activeClickableMenu is DialogueBox)
+                {
+                    await Task.Delay(50);
+                }
+                ShowMainCallDialogue(npc);
             }
         }
         private static void DoRecruit(NPC npc)
@@ -350,7 +421,22 @@ namespace MobilePhone
                 ShowMainCallDialogue(npc);
             }
         }
+        private static async void DoUpgrade(NPC npc)
+        {
+            Monitor.Log($"Doing recruit");
 
+            if (!ModEntry.inCall)
+            {
+                Monitor.Log($"Not in call, exiting");
+                return;
+            }
+            Helper.Reflection.GetMethod(Game1.player.currentLocation, "houseUpgradeAccept").Invoke(new object[] { });
+            while (Game1.activeClickableMenu is DialogueBox)
+            {
+                await Task.Delay(50);
+            }
+            ShowMainCallDialogue(npc);
+        }
         private static async void ReturnToReminisce()
         {
             await Task.Delay(1000);

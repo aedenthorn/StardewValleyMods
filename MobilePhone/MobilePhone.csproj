@@ -46,6 +46,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CallableNPC.cs" />
+    <Compile Include="CarpenterPhoneMenu.cs" />
     <Compile Include="INpcAdventureModApi.cs" />
     <Compile Include="MobileAppJSON.cs" />
     <Compile Include="MobilePhoneApi.cs" />

@@ -43,8 +43,13 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="CataloguesApp.cs" />
+    <Compile Include="Visuals.cs" />
+    <Compile Include="IJsonAssetsApi.cs" />
     <Compile Include="IMobilePhoneApi.cs" />
     <Compile Include="ModConfig.cs" />
+    <Compile Include="Catalogues.cs" />
+    <Compile Include="HelperEvents.cs" />
     <Compile Include="ModEntry.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -55,12 +60,14 @@
   </ItemGroup>
   <ItemGroup />
   <ItemGroup>
+    <Content Include="assets\app_icon.png" />
     <Content Include="assets\app_icon_catalogue.png" />
     <Content Include="assets\app_icon_desert_catalogue.png" />
     <Content Include="assets\app_icon_furniture_catalogue.png" />
     <Content Include="assets\app_icon_hat_catalogue.png" />
     <Content Include="assets\app_icon_seed_catalogue.png" />
     <Content Include="assets\app_icon_travel_catalogue.png" />
+    <Content Include="assets\coin.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="..\packages\Pathoschild.Stardew.ModBuildConfig.3.1.0\build\Pathoschild.Stardew.ModBuildConfig.targets" Condition="Exists('..\packages\Pathoschild.Stardew.ModBuildConfig.3.1.0\build\Pathoschild.Stardew.ModBuildConfig.targets')" />

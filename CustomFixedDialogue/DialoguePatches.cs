@@ -16,7 +16,7 @@ namespace CustomFixedDialogue
         private static string NPCPrefix = "Strings\\StringsFromCSFiles:NPC.cs.";
         private static string eventPrefix = "Strings\\StringsFromCSFiles:Event.cs.";
         private static string utilityPrefix = "Strings\\StringsFromCSFiles:Utility.cs.";
-        private static string extraPrefix = "Data\\ExtraDialogue";
+        private static string extraPrefix = "Data\\ExtraDialogue:";
         private static List<string> NPCexceptions = new List<string>() 
         {
             "3954",
@@ -24,6 +24,75 @@ namespace CustomFixedDialogue
             "3981",
             "3987",
             "3969",
+        };
+        private static List<string> extraExceptions = new List<string>() 
+        {
+            "Farm_RobinWorking_ReadyTomorrow",
+            "Farm_RobinWorking1",
+            "Farm_RobinWorking2",
+            "SeedShop_Abigail_Drawers",
+            "Wizard_Hatch",
+            "Clint_NoInventorySpace",
+            "Clint_StillWorking",
+            "Gunther_MuseumComplete",
+            "Gunther_NothingToDonate",
+            "Gunther_NoArtifactsFound",
+            "Sandy_PlayerClubMember",
+            "MisterQi_PlayerClubMember",
+            "Robin_HouseUpgrade_Accepted",
+            "Robin_PamUpgrade_Accepted",
+            "Mines_PlayerKilled_Robin",
+            "Mines_PlayerKilled_Clint",
+            "Mines_PlayerKilled_Maru_Spouse",
+            "Mines_PlayerKilled_Maru_NotSpouse",
+            "Mines_PlayerKilled_Linus",
+            "Morris_PlayerSignedUp",
+            "Morris_ComeBackLater",
+            "Morris_Greeting",
+            "Morris_WeekendGreeting",
+            "Morris_FirstGreeting",
+            "Morris_FirstGreeting_CommunityCenterComplete",
+            "Morris_WeekendGreeting_CommunityCenterComplete",
+            "Morris_WeekendGreeting_MembershipAvailable",
+            "Morris_FirstGreeting_MembershipAvailable",
+            "Morris_WeekendGreeting_SecondPlayer",
+            "Morris_FirstGreeting_SecondPlayer",
+            "Morris_StillProcessingOrder",
+            "Morris_CommunityDevelopmentForm_PlayerMale",
+            "Morris_CommunityDevelopmentForm_PlayerFemale",
+            "PurchasedItem_Abigail_QualityLow",
+            "PurchasedItem_Abigail_QualityHigh",
+            "PurchasedItem_Caroline_QualityLow",
+            "PurchasedItem_Caroline_QualityHigh",
+            "PurchasedItem_Pierre_QualityLow",
+            "PurchasedItem_Pierre_QualityHigh",
+            "PurchasedItem_Haley",
+            "PurchasedItem_Elliott",
+            "PurchasedItem_Alex",
+            "PurchasedItem_Leah",
+            "PurchasedItem_1_QualityHigh_Willy",
+            "PurchasedItem_1_QualityLow_Willy",
+            "PurchasedItem_2_QualityHigh_Willy",
+            "PurchasedItem_2_QualityHigh_Jodi_Willy",
+            "PurchasedItem_2_QualityLow_Willy",
+            "PurchasedItem_3_QualityLow_Rude_Willy",
+            "PurchasedItem_3_QualityHigh_Rude_Willy",
+            "PurchasedItem_3_NonRude_Willy",
+            "PurchasedItem_4_Willy",
+            "PurchasedItem_Pierre_QualityLow_Willy",
+            "PurchasedItem_Pierre_QualityHigh_Willy",
+            "Town_DumpsterDiveComment_Linus",
+            "SkullCavern_100_event",
+            "SkullCavern_100_event_honorable",
+            "Robin_UpgradeConstruction_Festival",
+            "Robin_UpgradeConstruction",
+            "Robin_NewConstruction_Festival",
+            "Robin_NewConstruction",
+            "Robin_Instant",
+            "Morris_JojaCDConfirm",
+            "Morris_BuyMovieTheater",
+            "Morris_TheaterBought",
+            "Morris_NoMoreCD"
         };
 
         private static List<string> eventChanges = new List<string>() 
@@ -117,7 +186,7 @@ namespace CustomFixedDialogue
 
         public static void AddWrapperToString(string path, ref string text)
         {
-            if (path.StartsWith(extraPrefix))
+            if (path.StartsWith(extraPrefix) && !extraExceptions.Contains(path.Substring(extraPrefix.Length)))
             {
                 text = $"{prefix}{path.Replace("Data\\ExtraDialogue:", "ExtraDialogue_")}^{text}^{suffix}{path.Replace("Data\\ExtraDialogue:", "ExtraDialogue_")}";
             }

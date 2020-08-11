@@ -4,6 +4,8 @@ using Microsoft.Xna.Framework.Audio;
 using Microsoft.Xna.Framework.Graphics;
 using StardewModdingAPI;
 using StardewValley;
+using StardewValley.Menus;
+using StardewValley.Network;
 using System;
 using System.Collections.Generic;
 
@@ -95,6 +97,10 @@ namespace MobilePhone
         internal static bool isReminiscing;
         internal static INpcAdventureModApi npcAdventureModApi;
 
+        public static LocationRequest callLocation;
+        internal static NetPosition callPosition;
+        internal static xTile.Dimensions.Location callViewportLocation;
+
         public static event EventHandler OnScreenRotated;
 
         /// <summary>The mod entry point, called after the mod is first loaded.</summary>
@@ -154,6 +160,15 @@ namespace MobilePhone
             harmony.Patch(
                 original: AccessTools.Method(typeof(Event), nameof(Event.command_dump)),
                 prefix: new HarmonyMethod(typeof(PhonePatches), nameof(PhonePatches.Event_command_prefix))
+            );
+
+            harmony.Patch(
+                original: AccessTools.Method(typeof(CarpenterMenu), nameof(CarpenterMenu.returnToCarpentryMenu)),
+                prefix: new HarmonyMethod(typeof(PhonePatches), nameof(PhonePatches.CarpenterMenu_returnToCarpentryMenu_prefix))
+            );
+            harmony.Patch(
+                original: AccessTools.Method(typeof(CarpenterMenu), nameof(CarpenterMenu.returnToCarpentryMenuAfterSuccessfulBuild)),
+                prefix: new HarmonyMethod(typeof(PhonePatches), nameof(PhonePatches.CarpenterMenu_returnToCarpentryMenuAfterSuccessfulBuild_prefix))
             );
 
             Helper.Events.Input.ButtonPressed += PhoneInput.Input_ButtonPressed;
