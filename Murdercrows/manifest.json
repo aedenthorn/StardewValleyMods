@@ -1,0 +1,22 @@
+﻿{
+  "Name": "Murdercrows",
+  "Author": "aedenthorn",
+  "Version": "0.2.0",
+  "Description": "Badass scarecrows.",
+  "UniqueID": "aedenthorn.Murdercrows",
+  "EntryDll": "Murdercrows.dll",
+  "MinimumApiVersion": "3.5.0",
+  "UpdateKeys": ["Nexus:6548"],
+  "ModUpdater": {
+    "Repository": "StardewValleyMods",
+    "User": "aedenthorn",
+    "Directory": "_releases",
+    "ModFolder": "Murdercrows"
+  },
+  "Dependencies": [
+      {
+        "UniqueID": "Platonymous.ModUpdater",
+        "IsRequired": false
+      },
+  ]
+}
