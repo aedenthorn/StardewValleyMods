@@ -1,4 +1,4 @@
-﻿namespace MultipleSpouses
+﻿namespace FruitTreeShaker
 {
     public class ModConfig
     {

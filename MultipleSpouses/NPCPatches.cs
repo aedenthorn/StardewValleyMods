@@ -186,6 +186,9 @@ namespace MultipleSpouses
         {
             try
             {
+                if (!ModEntry.config.CustomSpouseAreas)
+                    return true;
+
                 if (ModEntry.outdoorAreaData.areas.ContainsKey(__instance.Name))
                 {
                     Game1.warpCharacter(__instance, "Farm", ModEntry.outdoorAreaData.areas[__instance.Name].NpcPos(__instance.Name));

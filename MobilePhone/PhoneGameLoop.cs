@@ -32,11 +32,11 @@ namespace MobilePhone
                 Monitor.Log($"Reading content pack: {contentPack.Manifest.Name} {contentPack.Manifest.Version} from {contentPack.DirectoryPath}");
                 try
                 {
-                    MobileAppJSON json = contentPack.ReadJsonFile<MobileAppJSON>("content.json") ?? null;
+                    MobilePhonePackJSON json = contentPack.ReadJsonFile<MobilePhonePackJSON>("content.json") ?? null;
                     
                     if(json != null)
                     {
-                        if (json.apps != null && json.apps.Count > 0)
+                        if (json.apps != null && json.apps.Any())
                         {
                             foreach (AppJSON app in json.apps)
                             {
@@ -58,6 +58,14 @@ namespace MobilePhone
                             }
                             ModEntry.apps.Add(json.id, new MobileApp(json.name, json.keyPress, json.closePhone, icon));
                             Monitor.Log($"Added app {json.name} from {contentPack.DirectoryPath}");
+                        }
+                        if (json.invites != null && json.invites.Any())
+                        {
+                            foreach (EventInvite invite in json.invites)
+                            {
+                                MobilePhoneCall.eventInvites.Add(invite);
+                                Monitor.Log($"Added event invite {invite.name} from {contentPack.DirectoryPath}");
+                            }
                         }
                     }
                 }

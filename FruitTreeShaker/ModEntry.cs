@@ -1,5 +1,4 @@
 ﻿using Microsoft.Xna.Framework;
-using MultipleSpouses;
 using StardewModdingAPI;
 using StardewModdingAPI.Events;
 using StardewValley;

@@ -507,6 +507,7 @@ namespace MultipleSpouses
             {
                 IDictionary<string, string> data = asset.AsDictionary<string, string>().Data;
                 data["NPC.cs.3985"] = Regex.Replace(data["NPC.cs.3985"],  @"\.\.\.\$s.+", $"$n#$b#$c 0.5#{data["ResourceCollectionQuest.cs.13681"]}#{data["ResourceCollectionQuest.cs.13683"]}");
+                Monitor.Log($"NPC.cs.3985 is set to \"{data["NPC.cs.3985"]}\"");
             }
             else if (asset.AssetNameEquals("Data/animationDescriptions"))
             {

@@ -63,7 +63,7 @@ namespace MobilePhone
                     Helper.Input.Suppress(SButton.MouseLeft);
                     Game1.player.currentLocation.lastQuestionKey = "";
                     Monitor.Log($"clicked on response {resps[resp].responseKey} calling npc: {ModEntry.callingNPC} inCall {ModEntry.inCall}");
-                    MobilePhoneApp.CallDialogueAnswer(resps[resp].responseKey, ModEntry.callingNPC);
+                    MobilePhoneCall.CallDialogueAnswer(resps[resp].responseKey, ModEntry.callingNPC);
 
                     return;
                 }

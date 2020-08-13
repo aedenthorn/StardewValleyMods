@@ -182,7 +182,7 @@ namespace MobilePhone
                     {
                         if (endRect.Contains(mousePos))
                         {
-                            MobilePhoneApp.EndCall();
+                            MobilePhoneCall.EndCall();
                             if (Game1.activeClickableMenu is DialogueBox)
                                 Game1.activeClickableMenu = null;
                         }

@@ -24,7 +24,7 @@ namespace MobilePhone
 
         private void OnExit()
         {
-			MobilePhoneApp.ShowMainCallDialogue(ModEntry.callingNPC);
+			MobilePhoneCall.ShowMainCallDialogue(ModEntry.callingNPC);
         }
     }
 }

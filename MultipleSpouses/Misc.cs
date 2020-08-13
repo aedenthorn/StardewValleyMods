@@ -183,7 +183,7 @@ namespace MultipleSpouses
                 Point kitchenSpot = farmHouse.getKitchenStandingSpot();
                 Vector2 spouseRoomSpot = (farmHouse.upgradeLevel == 1) ? new Vector2(32f, 5f) : new Vector2(38f, 14f);
 
-                if (farmer.Equals(Game1.MasterPlayer))
+                if (ModEntry.config.CustomSpouseAreas && farmer.Equals(Game1.MasterPlayer))
                 {
                     if (ModEntry.outdoorAreaData.areas.ContainsKey(j.Name))
                     {

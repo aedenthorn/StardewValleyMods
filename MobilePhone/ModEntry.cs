@@ -8,10 +8,11 @@ using StardewValley.Menus;
 using StardewValley.Network;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace MobilePhone
 {
-    public class ModEntry : Mod
+    public class ModEntry : Mod, IAssetEditor
     {
         public static ModEntry context;
 
@@ -95,11 +96,13 @@ namespace MobilePhone
         public static SoundEffect ringSound;
         public static SoundEffect notificationSound;
         internal static bool isReminiscing;
+        internal static bool isInviting;
         internal static INpcAdventureModApi npcAdventureModApi;
 
         public static LocationRequest callLocation;
         internal static NetPosition callPosition;
         internal static xTile.Dimensions.Location callViewportLocation;
+        internal static NPC invitedNPC;
 
         public static event EventHandler OnScreenRotated;
 
@@ -116,6 +119,7 @@ namespace MobilePhone
             api = (MobilePhoneApi)GetApi();
 
             MobilePhoneApp.Initialize(Helper, Monitor, Config);
+            MobilePhoneCall.Initialize(Helper, Monitor, Config);
             ThemeApp.Initialize(Helper, Monitor, Config);
             PhoneVisuals.Initialize(Helper, Monitor, Config);
             PhoneInput.Initialize(Helper, Monitor, Config);
@@ -163,6 +167,12 @@ namespace MobilePhone
             );
 
             harmony.Patch(
+                original: AccessTools.Method(typeof(Event), nameof(Event.command_cutscene)),
+                prefix: new HarmonyMethod(typeof(PhonePatches), nameof(PhonePatches.Event_command_cutscene_prefix))
+            );
+
+
+            harmony.Patch(
                 original: AccessTools.Method(typeof(CarpenterMenu), nameof(CarpenterMenu.returnToCarpentryMenu)),
                 prefix: new HarmonyMethod(typeof(PhonePatches), nameof(PhonePatches.CarpenterMenu_returnToCarpentryMenu_prefix))
             );
@@ -191,6 +201,38 @@ namespace MobilePhone
             phoneOpen = false;
             appRunning = false;
             runningApp = null;
+        }
+
+        public bool CanEdit<T>(IAssetInfo asset)
+        {
+            if (!Config.EnableMod)
+                return false;
+            if (asset.AssetName.Contains("Events") && inCall)
+            {
+                foreach (EventInvite invite in MobilePhoneCall.eventInvites)
+                {
+                    if (invite.forks?.Any() == true && asset.AssetNameEquals($"Data/Events/{invite.location}"))
+                        return true;
+                }
+            }
+            return false;
+        }
+        public void Edit<T>(IAssetData asset)
+        {
+            if (asset.AssetName.Contains("Events"))
+            {
+                foreach (EventInvite invite in MobilePhoneCall.eventInvites)
+                {
+                    if (invite.CanInvite(callingNPC) && invite.forks?.Any() == true && asset.AssetNameEquals($"Data/Events/{invite.location}"))
+                    {
+                        foreach(EventFork fork in invite.forks)
+                        {
+                            asset.AsDictionary<string, string>().Data.Add(fork.key, MobilePhoneCall.CreateEventString(fork.nodes, callingNPC));
+                        }
+                    }
+                }
+            }
+
         }
     }
 }

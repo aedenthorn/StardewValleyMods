@@ -54,5 +54,6 @@ namespace MultipleSpouses
         public int ExtraKidsRoomWidth { get; set; } = 0;
         public int ExistingKidsRoomOffsetX { get; set; } = 0;
         public int ExistingKidsRoomOffsetY { get; set; } = 0;
+        public bool CustomSpouseAreas { get; set; }
     }
 }

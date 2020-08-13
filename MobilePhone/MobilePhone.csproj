@@ -48,7 +48,8 @@
     <Compile Include="CallableNPC.cs" />
     <Compile Include="CarpenterPhoneMenu.cs" />
     <Compile Include="INpcAdventureModApi.cs" />
-    <Compile Include="MobileAppJSON.cs" />
+    <Compile Include="MobilePhoneCall.cs" />
+    <Compile Include="MobilePhonePackJSON.cs" />
     <Compile Include="MobilePhoneApi.cs" />
     <Compile Include="MobileApp.cs" />
     <Compile Include="PhonePatches.cs" />

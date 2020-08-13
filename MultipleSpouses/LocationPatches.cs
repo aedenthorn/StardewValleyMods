@@ -192,10 +192,7 @@ namespace MultipleSpouses
         {
             try
             {
-                if (ModEntry.outdoorAreaData.areas.ContainsKey(spouseName))
-                {
-                    return false;
-                }
+                return ModEntry.config.CustomSpouseAreas && ModEntry.outdoorAreaData.areas.ContainsKey(spouseName);
             }
             catch (Exception ex)
             {

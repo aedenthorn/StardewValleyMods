@@ -12,6 +12,7 @@
     <None Include="$(MSBuildThisFileDirectory)BossCreatures 1.0.2.zip" />
     <None Include="$(MSBuildThisFileDirectory)CustomFixedDialogue 0.4.2.zip" />
     <None Include="$(MSBuildThisFileDirectory)CustomOreNodes 0.5.3.zip" />
+    <None Include="$(MSBuildThisFileDirectory)CustomSpousePatio 0.1.0.zip" />
     <None Include="$(MSBuildThisFileDirectory)Familiars 0.9.5.zip" />
     <None Include="$(MSBuildThisFileDirectory)FruitTreeShaker 1.1.0.zip" />
     <None Include="$(MSBuildThisFileDirectory)HereFishy 0.3.0.zip" />
@@ -27,6 +28,7 @@
     <None Include="$(MSBuildThisFileDirectory)MobilePhone 1.1.3.zip" />
     <None Include="$(MSBuildThisFileDirectory)MobilePhone 1.2.0.zip" />
     <None Include="$(MSBuildThisFileDirectory)MobilePhone 1.3.0.zip" />
+    <None Include="$(MSBuildThisFileDirectory)MobilePhone 1.3.1.zip" />
     <None Include="$(MSBuildThisFileDirectory)MobileTelevision 0.1.0.zip" />
     <None Include="$(MSBuildThisFileDirectory)MultipleSpouses 1.6.0.zip" />
     <None Include="$(MSBuildThisFileDirectory)Murdercrows 0.2.0.zip" />
