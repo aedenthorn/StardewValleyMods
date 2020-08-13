@@ -54,8 +54,6 @@ namespace CustomSpousePatio
             SMonitor = Monitor;
             SHelper = Helper;
 
-            SMonitor.Log($"Mod Loaded.");
-
             Helper.Events.GameLoop.GameLaunched += GameLoop_GameLaunched;
             Helper.Events.GameLoop.SaveLoaded += GameLoop_SaveLoaded;
             Helper.Events.GameLoop.DayStarted += GameLoop_DayStarted;

@@ -32,8 +32,11 @@ namespace MobilePhone
         public string name;
         public string location;
         public bool date;
-        public string AllowedNPCs;
+        public bool allowMarried = true;
+        public bool requireMarried = false;
+        public string allowedNPCs;
         public int minPoints;
+        public int maxPoints = -1;
         public string season;
         public int dayOfWeek;
         public int minTimeOfDay;
@@ -62,9 +65,15 @@ namespace MobilePhone
             }
             if (date && !Game1.player.friendshipData[npc.Name].IsDating() && !Game1.player.friendshipData[npc.Name].IsEngaged() && !Game1.player.friendshipData[npc.Name].IsMarried())
                 return false;
-            if (AllowedNPCs != null && !AllowedNPCs.Split(',').Contains(npc.Name))
+            if (!allowMarried && (Game1.player.friendshipData[npc.Name].IsMarried() || Game1.player.friendshipData[npc.Name].IsEngaged()))
+                return false;
+            if (requireMarried && !Game1.player.friendshipData[npc.Name].IsMarried() && !Game1.player.friendshipData[npc.Name].IsEngaged())
+                return false;
+            if (allowedNPCs != null && !allowedNPCs.Split(',').Contains(npc.Name))
                 return false;
             if (Game1.player.friendshipData[npc.Name].Points < minPoints)
+                return false;
+            if (maxPoints != -1 && Game1.player.friendshipData[npc.Name].Points >= maxPoints)
                 return false;
             if (season != null && Game1.currentSeason != season)
                 return false;
