@@ -207,12 +207,15 @@ namespace MobilePhone
         {
             if (!Config.EnableMod)
                 return false;
-            if (asset.AssetName.Contains("Events") && inCall)
+            if (asset.AssetName.Contains("Events") && isInviting)
             {
                 foreach (EventInvite invite in MobilePhoneCall.eventInvites)
                 {
                     if (invite.forks?.Any() == true && asset.AssetNameEquals($"Data/Events/{invite.location}"))
+                    {
+                        Monitor.Log($"invite {invite.name} has {invite.forks.Count} forks");
                         return true;
+                    }
                 }
             }
             return false;
@@ -223,11 +226,12 @@ namespace MobilePhone
             {
                 foreach (EventInvite invite in MobilePhoneCall.eventInvites)
                 {
-                    if (invite.CanInvite(callingNPC) && invite.forks?.Any() == true && asset.AssetNameEquals($"Data/Events/{invite.location}"))
+                    Monitor.Log($"invite {invite.name} can invite {invite.CanInvite(invitedNPC)}, forks {invite.forks?.Any() == true}, asset is this: {asset.AssetNameEquals($"Data/Events/{invite.location}")} ");
+                    if (invite.CanInvite(invitedNPC) && invite.forks?.Any() == true && asset.AssetNameEquals($"Data/Events/{invite.location}"))
                     {
                         foreach(EventFork fork in invite.forks)
                         {
-                            asset.AsDictionary<string, string>().Data.Add(fork.key, MobilePhoneCall.CreateEventString(fork.nodes, callingNPC));
+                            asset.AsDictionary<string, string>().Data.Add(fork.key, MobilePhoneCall.CreateEventString(fork.nodes, invitedNPC));
                         }
                     }
                 }

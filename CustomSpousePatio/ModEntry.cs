@@ -71,6 +71,12 @@ namespace CustomSpousePatio
                original: AccessTools.Method(typeof(NPC), "doPlaySpousePatioAnimation"),
                postfix: new HarmonyMethod(typeof(ModEntry), nameof(ModEntry.NPC_doPlaySpousePatioAnimation_Postfix))
             );
+
+            harmony.Patch(
+               original: AccessTools.Method(typeof(Farm), "addSpouseOutdoorArea"),
+               prefix: new HarmonyMethod(typeof(ModEntry), nameof(ModEntry.Farm_addSpouseOutdoorArea_Prefix))
+            );
+
         }
 
         public static void GameLoop_DayStarted(object sender, DayStartedEventArgs e)
@@ -88,10 +94,10 @@ namespace CustomSpousePatio
                 foreach (string name in spouses)
                 {
                     NPC npc = Game1.getCharacterFromName(name);
-                    SMonitor.Log($"placing {name} outdoors");
 
                     if (outdoorAreas.ContainsKey(name) || farmer.spouse.Equals(npc.Name))
                     {
+                        SMonitor.Log($"placing {name} outdoors");
                         npc.setUpForOutdoorPatioActivity();
                     }
                 }
@@ -152,7 +158,7 @@ namespace CustomSpousePatio
 							foreach (KeyValuePair<string,OutdoorArea> area in json.areas)
 							{
 								outdoorAreas[area.Key] = area.Value;
-                                SMonitor.Log($"Added outdoor area at {area.Value.GetLocation()} for {area.Key}", LogLevel.Debug);
+                                SMonitor.Log($"Added outdoor area at {area.Value.location} or {area.Value.GetLocation()} for {area.Key}", LogLevel.Debug);
                             }
                         }
                         if(json.tileSheetsToAdd != null)
@@ -355,6 +361,7 @@ namespace CustomSpousePatio
             {
                 if (outdoorAreas.ContainsKey(__instance.Name))
                 {
+                    SMonitor.Log($"Placing {__instance.Name} outdoors");
                     Game1.warpCharacter(__instance, "Farm", outdoorAreas[__instance.Name].NpcPos(__instance.Name));
                     __instance.popOffAnyNonEssentialItems();
                     __instance.currentMarriageDialogue.Clear();
@@ -364,6 +371,7 @@ namespace CustomSpousePatio
                 }
                 if (Game1.player.spouse == __instance.Name && outdoorAreas.Count == 0)
                 {
+                    SMonitor.Log($"Placing main spouse {__instance.Name} outdoors");
                     Point point = Config.DefaultSpouseAreaLocation;
                     if (spousePatioLocations.ContainsKey(__instance.Name))
                     {
@@ -401,6 +409,19 @@ namespace CustomSpousePatio
             {
                 SMonitor.Log($"Failed in {nameof(NPC_doPlaySpousePatioAnimation_Postfix)}:\n{ex}", LogLevel.Error);
             }
+        }
+
+        public static bool Farm_addSpouseOutdoorArea_Prefix(ref string spouseName)
+        {
+            try
+            {
+                return outdoorAreas.Count == 0;
+            }
+            catch (Exception ex)
+            {
+                SMonitor.Log($"Failed in {nameof(Farm_addSpouseOutdoorArea_Prefix)}:\n{ex}", LogLevel.Error);
+            }
+            return true;
         }
 
         private static void NPCDoAnimation(NPC npc, string npcAnimation)

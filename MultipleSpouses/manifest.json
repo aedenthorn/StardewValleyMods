@@ -1,7 +1,7 @@
 ﻿{
   "Name": "Multiple Spouses",
   "Author": "aedenthorn",
-  "Version": "1.6.0",
+  "Version": "1.6.1",
   "Description": "Allows you to have multiple spouses at once.",
   "UniqueID": "aedenthorn.MultipleSpouses",
   "EntryDll": "MultipleSpouses.dll",
@@ -16,6 +16,10 @@
   "Dependencies": [
       {
         "UniqueID": "Platonymous.ModUpdater",
+        "IsRequired": false
+      },
+      {
+        "UniqueID": "aedenthorn.CustomSpousePatio",
         "IsRequired": false
       },
   ]

@@ -24,9 +24,9 @@ namespace CustomSpousePatio
     public class OutdoorArea
     {
         public bool useDefaultTiles = false;
-        private Point location;
+        public Point location = new Point(-1,-1);
         public List<SpecialTile> specialTiles = new List<SpecialTile>();
-        private Point npcOffset = new Point(-1,-1);
+        public Point npcOffset = new Point(-1,-1);
         public string npcAnimation = null;
         public Point GetLocation()
         {

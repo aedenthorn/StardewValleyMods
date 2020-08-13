@@ -188,20 +188,6 @@ namespace MultipleSpouses
             }
         }
 
-        public static bool Farm_addSpouseOutdoorArea_Prefix(ref string spouseName)
-        {
-            try
-            {
-                return ModEntry.config.CustomSpouseAreas && ModEntry.outdoorAreaData.areas.ContainsKey(spouseName);
-            }
-            catch (Exception ex)
-            {
-                Monitor.Log($"Failed in {nameof(Farm_addSpouseOutdoorArea_Prefix)}:\n{ex}", LogLevel.Error);
-            }
-            return true;
-        }
-
-
         public static bool Beach_checkAction_Prefix(Beach __instance, Location tileLocation, xTile.Dimensions.Rectangle viewport, Farmer who, ref bool __result, NPC ___oldMariner)
         {
             try

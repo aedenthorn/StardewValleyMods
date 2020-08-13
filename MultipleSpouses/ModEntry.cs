@@ -28,7 +28,6 @@ namespace MultipleSpouses
         public static Random myRand;
         public static int bedSleepOffset = 140;
         public static int divorceHeartsLost;
-        public static OutdoorAreaData outdoorAreaData = new OutdoorAreaData();
         public static string farmHelperSpouse = null;
 
         /// <summary>The mod entry point, called after the mod is first loaded.</summary>
@@ -68,11 +67,6 @@ namespace MultipleSpouses
 
 
             // npc patches
-
-            harmony.Patch(
-               original: AccessTools.Method(typeof(NPC), nameof(NPC.setUpForOutdoorPatioActivity)),
-               prefix: new HarmonyMethod(typeof(NPCPatches), nameof(NPCPatches.NPC_setUpForOutdoorPatioActivity_Prefix))
-            );
 
             harmony.Patch(
                original: AccessTools.Method(typeof(NPC), nameof(NPC.marriageDuties)),
@@ -116,10 +110,6 @@ namespace MultipleSpouses
                postfix: new HarmonyMethod(typeof(NPCPatches), nameof(NPCPatches.NPC_spouseObstacleCheck_Postfix))
             );
 
-            harmony.Patch(
-               original: AccessTools.Method(typeof(NPC), "doPlaySpousePatioAnimation"),
-               postfix: new HarmonyMethod(typeof(NPCPatches), nameof(NPCPatches.NPC_doPlaySpousePatioAnimation_Postfix))
-            );
 
             harmony.Patch(
                original: AccessTools.Method(typeof(NPC), "engagementResponse"),
@@ -154,10 +144,6 @@ namespace MultipleSpouses
 
             // location patches
 
-            harmony.Patch(
-               original: AccessTools.Method(typeof(Farm), "addSpouseOutdoorArea"),
-               prefix: new HarmonyMethod(typeof(LocationPatches), nameof(LocationPatches.Farm_addSpouseOutdoorArea_Prefix))
-            );
 
             harmony.Patch(
                original: AccessTools.Method(typeof(Beach), nameof(Beach.checkAction)),
@@ -279,11 +265,6 @@ namespace MultipleSpouses
                postfix: new HarmonyMethod(typeof(EventPatches), nameof(EventPatches.Event_setUpCharacters_Postfix))
             );
 
-            // HelperEvent patches
-            harmony.Patch(
-               original: AccessTools.Method(typeof(SaveGame), nameof(SaveGame.Load)),
-               prefix: new HarmonyMethod(typeof(HelperEvents), nameof(HelperEvents.SaveGame_Load_prefix))
-            );
 
         }
 

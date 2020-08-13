@@ -1,9 +1,9 @@
 ﻿{
   "Name": "Custom Spouse Patio",
-  "Author": "Aedenthorn",
-  "Version": "0.1.0",
+  "Author": "aedenthorn",
+  "Version": "0.1.1",
   "Description": "Lets you create a custom spouse patio.",
-  "UniqueID": "Aedenthorn.CustomSpousePatio",
+  "UniqueID": "aedenthorn.CustomSpousePatio",
   "EntryDll": "CustomSpousePatio.dll",
   "MinimumApiVersion": "3.5.0",
   "UpdateKeys": ["Nexus:6630"],

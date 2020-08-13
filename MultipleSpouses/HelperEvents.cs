@@ -26,26 +26,6 @@ namespace MultipleSpouses
         }
 
 
-		public static void SaveGame_Load_prefix(string filename)
-        {
-			string path = Path.Combine("assets", $"outdoor-area-{filename}.json");
-			Monitor.Log($"loading outdoor patio file {path}");
-			try
-			{
-				ModEntry.outdoorAreaData = Helper.Data.ReadJsonFile<OutdoorAreaData>(path) ?? new OutdoorAreaData();
-			}
-			catch(Exception ex) 
-			{
-				Monitor.Log($"Error loading json file {path}", LogLevel.Error);
-			}
-
-			if (ModEntry.outdoorAreaData.areas.Count == 0)
-			{
-				Monitor.Log($"no spouse areas for save, creating empty json file", LogLevel.Warn);
-				Helper.Data.WriteJsonFile($"assets/outdoor-area-{filename}.json", new OutdoorAreaData());
-			}
-		}
-
 		public static void GameLoop_SaveLoaded(object sender, SaveLoadedEventArgs e)
         {
             ModEntry.spouseToDivorce = null;
