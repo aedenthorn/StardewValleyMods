@@ -48,11 +48,19 @@ namespace MobileAudioPlayer
 			if (!Config.EnableMod)
 				return;
 
+            try
+            {
+                audio = Directory.GetFiles(Path.Combine(Helper.DirectoryPath, "audio"));
+            }
+            catch (Exception ex)
+            {
+                Monitor.Log($"Error loading audio files:\r\n{ex}");
+                return;
+            }
+
             Player = new WindowsMediaPlayer();
             Player.PlayStateChange += new _WMPOCXEvents_PlayStateChangeEventHandler(Player_PlayStateChange);
             Player.MediaError += new _WMPOCXEvents_MediaErrorEventHandler(Player_MediaError);
-
-            audio = Directory.GetFiles(Path.Combine(Helper.DirectoryPath, "audio"));
 
             Helper.Events.GameLoop.GameLaunched += GameLoop_GameLaunched;
             Helper.Events.Input.ButtonPressed += Input_ButtonPressed;

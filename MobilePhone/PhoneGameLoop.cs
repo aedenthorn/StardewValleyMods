@@ -127,6 +127,7 @@ namespace MobilePhone
                             if (ring != null)
                             {
                                 ThemeApp.ringDict.Add(string.Concat(contentPack.Manifest.UniqueID,":", Path.GetFileName(path).Replace(".wav", "")), ring);
+                                ThemeApp.ringList.Add(string.Concat(contentPack.Manifest.UniqueID,":", Path.GetFileName(path).Replace(".wav", "")));
                                 Monitor.Log($"loaded ring {path}");
                             }
                             else
@@ -139,10 +140,11 @@ namespace MobilePhone
                     }
                 }
             }
+
             ModEntry.listHeight = Config.IconMarginY + (int)Math.Ceiling(ModEntry.apps.Count / (float)ModEntry.gridWidth) * (Config.IconHeight + Config.IconMarginY);
             PhoneVisuals.CreatePhoneTextures();
             PhoneUtils.RefreshPhoneLayout();
-            PhoneUtils.CreateTones();
+
             if (Helper.ModRegistry.IsLoaded("purrplingcat.npcadventure"))
             {
                 INpcAdventureModApi api = Helper.ModRegistry.GetApi<INpcAdventureModApi>("purrplingcat.npcadventure");

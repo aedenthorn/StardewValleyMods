@@ -26,10 +26,10 @@ namespace MobilePhone
         public static Dictionary<string, Texture2D[]> skinDict = new Dictionary<string, Texture2D[]>();
         public static Dictionary<string, Texture2D[]> backgroundDict = new Dictionary<string, Texture2D[]>();
         public static Dictionary<string, SoundEffect> ringDict = new Dictionary<string, SoundEffect>();
-        private static int whichTab = 0;
-        private static List<string> ringList;
+        public static List<string> ringList;
         public static List<string> skinList = new List<string>();
         public static List<string> backgroundList = new List<string>();
+        private static int whichTab = 0;
 
         public static void Initialize(IModHelper helper, IMonitor monitor, ModConfig config)
         {
@@ -51,76 +51,90 @@ namespace MobilePhone
             Monitor.Log($"opening customize app");
             ModEntry.appRunning = true;
             ModEntry.runningApp = Helper.ModRegistry.ModID;
-            skinListHeight = Config.ThemeItemMarginY + (int)Math.Ceiling(skinDict.Count / (float)ModEntry.themeGridWidth) * (Config.ThemeItemHeight + Config.ThemeItemMarginY) + Config.AppHeaderHeight;
-            backListHeight = Config.ThemeItemMarginY + (int)Math.Ceiling(backgroundList.Count / (float)ModEntry.themeGridWidth) * (Config.ThemeItemHeight + Config.ThemeItemMarginY) + Config.AppHeaderHeight;
-            ringListHeight = Config.RingListItemMarginY + ringList.Count * (Config.RingListItemHeight + Config.RingListItemMarginY) + Config.AppHeaderHeight;
+            skinListHeight = Config.ThemeItemMarginY + (int)Math.Ceiling(skinDict.Count / (float)ModEntry.themeGridWidth) * (Config.ThemeItemHeight + Config.ThemeItemMarginY) + Config.AppHeaderHeight * 2;
+            backListHeight = Config.ThemeItemMarginY + (int)Math.Ceiling(backgroundList.Count / (float)ModEntry.themeGridWidth) * (Config.ThemeItemHeight + Config.ThemeItemMarginY) + Config.AppHeaderHeight * 2;
+            ringListHeight = Config.RingListItemMarginY + ringList.Count * Config.RingListItemHeight + Config.AppHeaderHeight * 2;
             Helper.Events.Display.RenderedWorld += Display_RenderedWorld;
             Helper.Events.Input.ButtonPressed += Input_ButtonPressed;
         }
         private static void CreateThemeLists()
         {
-            skinDict.Clear();
-            backgroundDict.Clear();
 
-            string[] skins = Directory.GetFiles(Path.Combine(Helper.DirectoryPath, "assets", "skins"), "*_landscape.png");
-
-            foreach (string path in skins)
+            if (Directory.Exists(Path.Combine(Helper.DirectoryPath, "assets", "skins")))
             {
-                try
+                string[] skins = Directory.GetFiles(Path.Combine(Helper.DirectoryPath, "assets", "skins"), "*_landscape.png");
+
+                foreach (string path in skins)
                 {
-                    Texture2D skin = Helper.Content.Load<Texture2D>(Path.Combine("assets", "skins", Path.GetFileName(path).Replace("_landscape","")));
-                    Texture2D skinl = Helper.Content.Load<Texture2D>(Path.Combine("assets", "skins", Path.GetFileName(path)));
-                    if(skin != null && skinl != null)
+                    try
                     {
-                        skinDict.Add(Path.Combine("assets", "skins", Path.GetFileName(path).Replace("_landscape", "")), new Texture2D[] { skin, skinl });
-                        Monitor.Log($"loaded skin {path.Replace("_landscape", "")}");
+                        Texture2D skin = Helper.Content.Load<Texture2D>(Path.Combine("assets", "skins", Path.GetFileName(path).Replace("_landscape", "")));
+                        Texture2D skinl = Helper.Content.Load<Texture2D>(Path.Combine("assets", "skins", Path.GetFileName(path)));
+                        if (skin != null && skinl != null)
+                        {
+                            skinDict.Add(Path.Combine("assets", "skins", Path.GetFileName(path).Replace("_landscape", "")), new Texture2D[] { skin, skinl });
+                            Monitor.Log($"loaded skin {path.Replace("_landscape", "")}");
+                        }
+                        else
+                            Monitor.Log($"Couldn't load skin {path.Replace("_landscape", "")}: texture was null");
                     }
-                    else
-                        Monitor.Log($"Couldn't load skin {path.Replace("_landscape", "")}: texture was null");
-                }
-                catch (Exception ex)
-                {
-                    Monitor.Log($"Couldn't load skin {path.Replace("_landscape", "")}: {ex}");
+                    catch (Exception ex)
+                    {
+                        Monitor.Log($"Couldn't load skin {path.Replace("_landscape", "")}: {ex}");
+                    }
                 }
             }
 
-            string[] papers = Directory.GetFiles(Path.Combine(Helper.DirectoryPath, "assets", "backgrounds"), "*_landscape.png");
-            foreach (string path in papers)
+            if (Directory.Exists(Path.Combine(Helper.DirectoryPath, "assets", "backgrounds")))
             {
-                try
+                string[] papers = Directory.GetFiles(Path.Combine(Helper.DirectoryPath, "assets", "backgrounds"), "*_landscape.png");
+                foreach (string path in papers)
                 {
-                    Texture2D back = Helper.Content.Load<Texture2D>(Path.Combine("assets", "backgrounds", Path.GetFileName(path).Replace("_landscape","")));
-                    Texture2D backl = Helper.Content.Load<Texture2D>(Path.Combine("assets", "backgrounds", Path.GetFileName(path)));
-                    if (back != null && backl != null)
+                    try
                     {
-                        backgroundDict.Add(Path.Combine("assets", "backgrounds", Path.GetFileName(path).Replace("_landscape", "")), new Texture2D[] { back, backl });
-                        Monitor.Log($"loaded background {path.Replace("_landscape", "")}");
+                        Texture2D back = Helper.Content.Load<Texture2D>(Path.Combine("assets", "backgrounds", Path.GetFileName(path).Replace("_landscape", "")));
+                        Texture2D backl = Helper.Content.Load<Texture2D>(Path.Combine("assets", "backgrounds", Path.GetFileName(path)));
+                        if (back != null && backl != null)
+                        {
+                            backgroundDict.Add(Path.Combine("assets", "backgrounds", Path.GetFileName(path).Replace("_landscape", "")), new Texture2D[] { back, backl });
+                            Monitor.Log($"loaded background {path.Replace("_landscape", "")}");
+                        }
+                        else
+                            Monitor.Log($"Couldn't load background {path.Replace("_landscape", "")}: texture was null");
                     }
-                    else
-                        Monitor.Log($"Couldn't load background {path.Replace("_landscape", "")}: texture was null");
-                }
-                catch (Exception ex)
-                {
-                    Monitor.Log($"Couldn't load background {path.Replace("_landscape", "")}: {ex}");
+                    catch (Exception ex)
+                    {
+                        Monitor.Log($"Couldn't load background {path.Replace("_landscape", "")}: {ex}");
+                    }
                 }
             }
-            string[] rings = Directory.GetFiles(Path.Combine(Helper.DirectoryPath, "assets", "ringtones"), "*.wav");
-            foreach (string path in rings)
+
+
+            if (Directory.Exists(Path.Combine(Helper.DirectoryPath, "assets", "ringtones")))
             {
-                try
+                string[] rings = Directory.GetFiles(Path.Combine(Helper.DirectoryPath, "assets", "ringtones"), "*.wav");
+                foreach (string path in rings)
                 {
-                    SoundEffect ring = SoundEffect.FromStream(new FileStream(path, FileMode.Open));
-                    if (ring != null)
+                    try
                     {
-                        ringDict.Add(Path.GetFileName(path).Replace(".wav",""), ring);
-                        Monitor.Log($"loaded ring {path}");
+                        SoundEffect ring = SoundEffect.FromStream(new FileStream(path, FileMode.Open));
+                        if (ring != null)
+                        {
+                            ringDict.Add(Path.GetFileName(path).Replace(".wav", ""), ring);
+                            Monitor.Log($"loaded ring {path}");
+                        }
+                        else
+                            Monitor.Log($"Couldn't load ring {path}");
                     }
-                    else
-                        Monitor.Log($"Couldn't load ring {path}");
+                    catch (Exception ex)
+                    {
+                        Monitor.Log($"Couldn't load ring {path}:\r\n{ex}");
+                    }
                 }
-                catch (Exception ex)
+                rings = Config.BuiltInRingTones.Split(',');
+                foreach (string ring in rings)
                 {
-                    Monitor.Log($"Couldn't load ring {path}:\r\n{ex}");
+                    ringDict.Add(ring, null);
                 }
             }
             ringList = ringDict.Keys.ToList();
@@ -172,7 +186,10 @@ namespace MobilePhone
             if (!ringDict.ContainsKey(ringName))
                 return;
             ModEntry.ringSound = ringDict[ringName];
-            ModEntry.ringSound.Play();
+            if (ModEntry.ringSound != null)
+                ModEntry.ringSound.Play();
+            else if(Config.BuiltInRingTones.Split(',').Contains(ringName))
+                Game1.playSound(ringName);
             Config.PhoneRingTone = ringName;
             Helper.WriteConfig(Config);
         }
@@ -211,7 +228,7 @@ namespace MobilePhone
                         listHeight = backListHeight;
                     else 
                         listHeight = ringListHeight;
-                    yOffset = (int)Math.Max(Math.Min(0, yOffset + dy), -1 * Math.Max(0, listHeight - (screenSize.Y - Config.AppHeaderHeight)));
+                    yOffset = (int)Math.Max(Math.Min(0, yOffset + dy), -1 * Math.Max(0, listHeight - screenSize.Y));
                 }
             }
 
@@ -240,8 +257,10 @@ namespace MobilePhone
                         {
                             whichTab = newTab;
                             yOffset = 0;
+                            int listcount = whichTab == 0 ? skinList.Count : (whichTab == 1 ? backgroundList.Count : ringList.Count);
+                            Monitor.Log($"switching to tab {whichTab}: {listcount} items");
                         }
-                        
+
                     }
                     else
                     {
@@ -291,7 +310,11 @@ namespace MobilePhone
 
             lastMousePositionY = Game1.getMouseY();
             int startListY = (int)screenPos.Y + Config.AppHeaderHeight;
-            //e.SpriteBatch.Draw(ModEntry.backgroundTexture, ModEntry.phoneRect, Color.White);
+
+            if (whichTab == 2)
+                e.SpriteBatch.Draw(ModEntry.ringListBackgroundTexture, ModEntry.screenRect, Color.White);
+            else
+                e.SpriteBatch.Draw(ModEntry.backgroundTexture, ModEntry.phoneRect, Color.White);
 
             if(yOffset < 0)
             {
@@ -306,14 +329,15 @@ namespace MobilePhone
 
             int count = whichTab == 0 ? skinList.Count : (whichTab == 1 ? backgroundList.Count : ringList.Count );
 
+
             for (int i = 0; i < count; i++)
             {
                 Vector2 itemPos = GetItemPos(i);
-                Rectangle r = ModEntry.phoneRect;
-                Rectangle sourceRect = r;
-                Rectangle destRect;
                 if (whichTab < 2)
                 {
+                    Rectangle r = new Rectangle(0,0,Config.PhoneWidth, Config.PhoneHeight);
+                    Rectangle sourceRect = r;
+                    Rectangle destRect;
                     destRect = new Rectangle((int)itemPos.X, (int)itemPos.Y, Config.ThemeItemWidth, Config.ThemeItemHeight);
                     float yScale = Config.ThemeItemHeight / (float)Config.PhoneHeight;
                     if (itemPos.Y < startListY - r.Height * yScale || itemPos.Y >= screenBottom)
@@ -337,7 +361,7 @@ namespace MobilePhone
                         sourceRect = new Rectangle(r.X, r.Y, r.Width, r.Height + cutBottom);
                     }
                     Texture2D texture = whichTab == 0 ? skinDict[skinList[i]][0] : backgroundDict[backgroundList[i]][0];
-
+                    //Monitor.Log($"drawing texture {i} {texture.Width}x{texture.Height} {destRect} {ModEntry.screenRect}");
                     e.SpriteBatch.Draw(texture, destRect, sourceRect, Color.White);
                 }
                 else
@@ -348,9 +372,11 @@ namespace MobilePhone
                     }
                     if (ringList[i] == Config.PhoneRingTone)
                         e.SpriteBatch.Draw(ModEntry.ringListHighlightTexture, new Rectangle((int)(itemPos.X), (int)itemPos.Y, (int)(screenSize.X), Config.RingListItemHeight), Color.White);
-                    else
-                        e.SpriteBatch.Draw(ModEntry.ringListBackgroundTexture, new Rectangle((int)(itemPos.X), (int)itemPos.Y, (int)(screenSize.X), Config.RingListItemHeight), Color.White);
-                    e.SpriteBatch.DrawString(Game1.dialogueFont, ringList[i], itemPos, Config.RingListItemColor, 0, Vector2.Zero, Config.RingListItemScale, SpriteEffects.None, 0.86f);
+
+                    string itemName = ringList[i];
+                    if (itemName.Contains(":"))
+                        itemName = itemName.Split(':')[1];
+                    e.SpriteBatch.DrawString(Game1.dialogueFont, itemName, itemPos, Config.RingListItemColor, 0, Vector2.Zero, Config.RingListItemScale, SpriteEffects.None, 0.86f);
                 }
             }
             e.SpriteBatch.Draw(ModEntry.themesHeaderTexture, headerRect, Color.White);
@@ -361,14 +387,14 @@ namespace MobilePhone
             string backsText = Helper.Translation.Get("backs");
             string ringsText = Helper.Translation.Get("rings");
             Vector2 headerTextSize = Game1.dialogueFont.MeasureString(headerText) * Config.HeaderTextScale;
-            Vector2 skinsTextSize = Game1.dialogueFont.MeasureString(skinsText) * Config.HeaderTextScale;
-            Vector2 backsTextSize = Game1.dialogueFont.MeasureString(backsText) * Config.HeaderTextScale;
-            Vector2 ringsTextSize = Game1.dialogueFont.MeasureString(ringsText) * Config.HeaderTextScale;
+            Vector2 skinsTextSize = Game1.dialogueFont.MeasureString(skinsText) * Config.TabTextScale;
+            Vector2 backsTextSize = Game1.dialogueFont.MeasureString(backsText) * Config.TabTextScale;
+            Vector2 ringsTextSize = Game1.dialogueFont.MeasureString(ringsText) * Config.TabTextScale;
             e.SpriteBatch.DrawString(Game1.dialogueFont, headerText, screenPos + new Vector2(screenSize.X / 2f - headerTextSize.X / 2f, Config.AppHeaderHeight / 2f - headerTextSize.Y / 2f ), Config.PhoneBookHeaderTextColor, 0, Vector2.Zero, Config.HeaderTextScale, SpriteEffects.None, 0.86f);
             e.SpriteBatch.DrawString(Game1.dialogueFont, "x", screenPos + new Vector2(screenSize.X - Config.AppHeaderHeight / 2f - Game1.dialogueFont.MeasureString("x").X * Config.HeaderTextScale / 2f, Config.AppHeaderHeight / 2f - headerTextSize.Y / 2f), Config.PhoneBookHeaderTextColor, 0, Vector2.Zero, Config.HeaderTextScale, SpriteEffects.None, 0.86f);
-            e.SpriteBatch.DrawString(Game1.dialogueFont, skinsText, screenPos + new Vector2(screenSize.X / 6f - skinsTextSize.X / 2f, screenSize.Y - Config.AppHeaderHeight / 2f - headerTextSize.Y / 2f), whichTab == 0 ? Config.ThemesHeaderHighlightedTextColor : Config.ThemesHeaderTextColor, 0, Vector2.Zero, Config.HeaderTextScale, SpriteEffects.None, 0.86f);
-            e.SpriteBatch.DrawString(Game1.dialogueFont, backsText, screenPos + new Vector2(screenSize.X / 2f - backsTextSize.X / 2f, screenSize.Y - Config.AppHeaderHeight / 2f - headerTextSize.Y / 2f), whichTab == 1 ? Config.ThemesHeaderTextColor : Config.ThemesHeaderHighlightedTextColor, 0, Vector2.Zero, Config.HeaderTextScale, SpriteEffects.None, 0.86f);
-            e.SpriteBatch.DrawString(Game1.dialogueFont, ringsText, screenPos + new Vector2(screenSize.X * 2f / 3f - ringsTextSize.X / 2f, screenSize.Y - Config.AppHeaderHeight / 2f - headerTextSize.Y / 2f), whichTab == 2 ? Config.ThemesHeaderTextColor : Config.ThemesHeaderHighlightedTextColor, 0, Vector2.Zero, Config.HeaderTextScale, SpriteEffects.None, 0.86f);
+            e.SpriteBatch.DrawString(Game1.dialogueFont, skinsText, screenPos + new Vector2(screenSize.X / 6f - skinsTextSize.X / 2f, screenSize.Y - Config.AppHeaderHeight / 2f - headerTextSize.Y / 2f), whichTab == 0 ? Config.ThemesHeaderHighlightedTextColor : Config.ThemesHeaderTextColor, 0, Vector2.Zero, Config.TabTextScale, SpriteEffects.None, 0.86f);
+            e.SpriteBatch.DrawString(Game1.dialogueFont, backsText, screenPos + new Vector2(screenSize.X / 2f - backsTextSize.X / 2f, screenSize.Y - Config.AppHeaderHeight / 2f - headerTextSize.Y / 2f), whichTab == 1 ? Config.ThemesHeaderHighlightedTextColor : Config.ThemesHeaderTextColor, 0, Vector2.Zero, Config.TabTextScale, SpriteEffects.None, 0.86f);
+            e.SpriteBatch.DrawString(Game1.dialogueFont, ringsText, screenPos + new Vector2(screenSize.X * 5f / 6f - ringsTextSize.X / 2f, screenSize.Y - Config.AppHeaderHeight / 2f - headerTextSize.Y / 2f), whichTab == 2 ? Config.ThemesHeaderHighlightedTextColor : Config.ThemesHeaderTextColor, 0, Vector2.Zero, Config.TabTextScale, SpriteEffects.None, 0.86f);
 
         }
 
@@ -384,7 +410,7 @@ namespace MobilePhone
             else
             {
                 x = ModEntry.screenPosition.X;
-                y = ModEntry.screenPosition.Y + Config.AppHeaderHeight + Config.RingListItemMarginY + (i * (Config.RingListItemHeight + Config.ThemeItemMarginY));
+                y = ModEntry.screenPosition.Y + Config.AppHeaderHeight + (i * Config.RingListItemHeight);
             }
             return new Vector2(x, y + yOffset);
         }

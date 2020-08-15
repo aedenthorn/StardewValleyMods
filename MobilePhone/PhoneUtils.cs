@@ -132,7 +132,7 @@ namespace MobilePhone
             Vector2 screenSize = GetScreenSize();
             ModEntry.phoneBookTexture = PhoneVisuals.MakeColorTexture(Config.PhoneBookBackgroundColor, screenSize);
             ModEntry.phoneBookHeaderTexture = PhoneVisuals.MakeColorTexture(Config.PhoneBookHeaderColor, new Vector2(screenSize.X, Config.AppHeaderHeight));
-            ModEntry.ringListBackgroundTexture = PhoneVisuals.MakeColorTexture(Config.RingListBackgroundColor, new Vector2(screenSize.X, Config.RingListItemHeight));
+            ModEntry.ringListBackgroundTexture = PhoneVisuals.MakeColorTexture(Config.RingListBackgroundColor, screenSize);
             ModEntry.ringListHighlightTexture = PhoneVisuals.MakeColorTexture(Config.RingListHighlightColor, new Vector2(screenSize.X, Config.RingListItemHeight));
             ModEntry.themesHeaderTexture = PhoneVisuals.MakeColorTexture(Config.ThemesHeaderColor, new Vector2(screenSize.X, Config.AppHeaderHeight));
             ModEntry.themesHighlightTexture = PhoneVisuals.MakeColorTexture(Config.ThemesFooterHighlightColor, new Vector2(screenSize.X / 2, Config.AppHeaderHeight));
@@ -171,60 +171,17 @@ namespace MobilePhone
             return new Vector2(x, y);
         }
 
-        public static void CreateTones()
-        {
-            string tone = Config.PhoneRingTone;
-            if (tone.Contains("."))
-            {
-                try
-                {
-                    string filePath;
-                    if (tone.Contains("/") || tone.Contains("\\"))
-                        filePath = Path.Combine(Helper.DirectoryPath, tone);
-                    else
-                        filePath = Path.Combine(Helper.DirectoryPath, "assets", tone);
-
-                    if (File.Exists(filePath))
-                    {
-                        ModEntry.ringSound = SoundEffect.FromStream(new FileStream(filePath, FileMode.Open));
-                        Monitor.Log($"Loaded ring tone {tone}");
-                    }
-                }
-                catch(Exception ex)
-                {
-                    Monitor.Log($"Couldn't load ring tone {tone}: {ex}", LogLevel.Error);
-                }
-            }
-            tone = Config.NotificationTone;
-            if (Config.NotificationTone.Contains("."))
-            {
-                try
-                {
-                    string filePath = Path.Combine(Helper.DirectoryPath, "assets", tone);
-                    if (File.Exists(filePath))
-                    {
-                        ModEntry.notificationSound = SoundEffect.FromStream(new FileStream(filePath, FileMode.Open));
-                        Monitor.Log($"Loaded notification tone {tone}");
-                    }
-                }
-                catch (Exception ex)
-                {
-                    Monitor.Log($"Couldn't load notification tone {tone}: {ex}", LogLevel.Error);
-                }
-            }
-        }
-
         public static void PlayRingTone()
         {
             string tone = Config.PhoneRingTone;
 
             try
             {
-                if (tone.Contains("."))
+                if (ThemeApp.ringDict.ContainsKey(tone) && ThemeApp.ringDict[tone] != null)
                 {
-                    ModEntry.ringSound.Play(); 
+                    ThemeApp.ringDict[tone].Play();
                 }
-                else
+                else if(Config.BuiltInRingTones.Contains(tone))
                 {
                     Game1.playSound(tone);
                 }

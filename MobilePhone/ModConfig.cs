@@ -74,6 +74,7 @@ namespace MobilePhone
         public int RingListItemMarginY { get; set; } = 8;
         public int RingListItemHeight { get; set; } = 32;
         public float RingListItemScale { get; set; } = 0.5f;
+        public float TabTextScale { get; set; } = 0.5f;
         public Color RingListItemColor { get; set; } = Color.Black;
         public Color RingListBackgroundColor { get; set; } = Color.White;
         public Color RingListHighlightColor { get; set; } = new Color(200,200,200);
@@ -94,6 +95,8 @@ namespace MobilePhone
         public int IncomingCallMinRings { get; set; } = 3;
         public int IncomingCallMaxRings { get; set; } = 5;
         public int PhoneRingInterval { get; set; } = 3;
+        public string BuiltInRingTones { get; set; } = "phone,fishBite";
+        public string BuiltInNotificationTones { get; set; } = "cavedrip,jingle1";
         public string PhoneRingTone { get; set; } = "phone";
         public string NotificationTone { get; set; } = "jingle1";
         public float CallTextScale { get; set; } = 0.6f;
