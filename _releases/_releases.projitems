@@ -14,6 +14,7 @@
     <None Include="$(MSBuildThisFileDirectory)CustomOreNodes 0.5.3.zip" />
     <None Include="$(MSBuildThisFileDirectory)CustomSpousePatio 0.1.0.zip" />
     <None Include="$(MSBuildThisFileDirectory)Familiars 0.9.5.zip" />
+    <None Include="$(MSBuildThisFileDirectory)Familiars 0.9.6.zip" />
     <None Include="$(MSBuildThisFileDirectory)FruitTreeShaker 1.1.0.zip" />
     <None Include="$(MSBuildThisFileDirectory)HereFishy 0.3.0.zip" />
     <None Include="$(MSBuildThisFileDirectory)MobileArcade 0.1.1.zip" />

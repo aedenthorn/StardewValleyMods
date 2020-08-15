@@ -54,7 +54,6 @@ namespace CustomSpousePatio
             SMonitor = Monitor;
             SHelper = Helper;
 
-            Helper.Events.GameLoop.GameLaunched += GameLoop_GameLaunched;
             Helper.Events.GameLoop.SaveLoaded += GameLoop_SaveLoaded;
             Helper.Events.GameLoop.DayStarted += GameLoop_DayStarted;
 
@@ -82,7 +81,7 @@ namespace CustomSpousePatio
             if (Context.IsMainPlayer && !Game1.isRaining && !Game1.IsWinter && Game1.shortDayNameFromDayOfSeason(Game1.dayOfMonth).Equals("Sat"))
             {
                 Farmer farmer = Game1.player;
-                Game1.getFarm().addSpouseOutdoorArea(Game1.player.spouse == null ? "" : Game1.player.spouse);
+                //Game1.getFarm().addSpouseOutdoorArea(Game1.player.spouse == null ? "" : Game1.player.spouse);
                 IEnumerable<string> spouses = farmer.friendshipData.Pairs.Where(f => f.Value.IsMarried() && f.Key != "Krobus").Select(f => f.Key);
                 NPC ospouse = farmer.getSpouse();
                 if (ospouse != null)
@@ -102,9 +101,6 @@ namespace CustomSpousePatio
             }
         }
 
-        private void GameLoop_GameLaunched(object sender, GameLaunchedEventArgs e)
-        {
-        }
         private void GameLoop_SaveLoaded(object sender, SaveLoadedEventArgs e)
         {
             if (!Context.IsMainPlayer)
@@ -131,9 +127,22 @@ namespace CustomSpousePatio
 					{
 						foreach (KeyValuePair<string, OutdoorArea> area in json.areas)
 						{
-							outdoorAreas[area.Key] = area.Value;
-						}
-					}
+                            if (area.Key == "default")
+                            {
+                                if (Game1.MasterPlayer.spouse != null)
+                                {
+                                    outdoorAreas[Game1.MasterPlayer.spouse] = area.Value;
+                                    SMonitor.Log($"Added outdoor area at {area.Value.location} or {area.Value.GetLocation()} for {area.Key} ({Game1.MasterPlayer.spouse})", LogLevel.Debug);
+
+                                }
+                            }
+                            else
+                            {
+                                outdoorAreas[area.Key] = area.Value;
+                                SMonitor.Log($"Added outdoor area at {area.Value.location} or {area.Value.GetLocation()} for {area.Key}", LogLevel.Debug);
+                            }
+                        }
+                    }
 				}
 
 			}
@@ -155,8 +164,20 @@ namespace CustomSpousePatio
 						{
 							foreach (KeyValuePair<string,OutdoorArea> area in json.areas)
 							{
-								outdoorAreas[area.Key] = area.Value;
-                                SMonitor.Log($"Added outdoor area at {area.Value.location} or {area.Value.GetLocation()} for {area.Key}", LogLevel.Debug);
+                                if (area.Key == "default")
+                                {
+                                    if (Game1.MasterPlayer.spouse != null)
+                                    {
+                                        outdoorAreas[Game1.MasterPlayer.spouse] = area.Value;
+                                        SMonitor.Log($"Added outdoor area at {area.Value.location} or {area.Value.GetLocation()} for {area.Key} ({Game1.MasterPlayer.spouse})", LogLevel.Debug);
+
+                                    }
+                                }
+                                else
+                                {
+                                    outdoorAreas[area.Key] = area.Value;
+                                    SMonitor.Log($"Added outdoor area at {area.Value.location} or {area.Value.GetLocation()} for {area.Key}", LogLevel.Debug);
+                                }
                             }
                         }
                         if(json.tileSheetsToAdd != null)
@@ -357,33 +378,31 @@ namespace CustomSpousePatio
         {
             try
             {
+                Point point;
                 if (outdoorAreas.ContainsKey(__instance.Name))
                 {
+                    point = outdoorAreas[__instance.Name].NpcPos(__instance.Name);
                     SMonitor.Log($"Placing {__instance.Name} outdoors");
-                    Game1.warpCharacter(__instance, "Farm", outdoorAreas[__instance.Name].NpcPos(__instance.Name));
-                    __instance.popOffAnyNonEssentialItems();
-                    __instance.currentMarriageDialogue.Clear();
-                    __instance.addMarriageDialogue("MarriageDialogue", "patio_" + __instance.Name, false, new string[0]);
-                    __instance.shouldPlaySpousePatioAnimation.Value = true;
-                    return false;
                 }
-                if (Game1.player.spouse == __instance.Name && outdoorAreas.Count == 0)
+                else if (Game1.player.spouse == __instance.Name && outdoorAreas.Count == 0)
                 {
                     SMonitor.Log($"Placing main spouse {__instance.Name} outdoors");
-                    Point point = Config.DefaultSpouseAreaLocation;
+                    point = Config.DefaultSpouseAreaLocation;
                     if (spousePatioLocations.ContainsKey(__instance.Name))
                     {
                         point = new Point(69 + spousePatioLocations[__instance.Name][0], 6 + spousePatioLocations[__instance.Name][1]);
                     }
-
-                    Game1.warpCharacter(__instance, "Farm", point);
-                    __instance.popOffAnyNonEssentialItems();
-                    __instance.currentMarriageDialogue.Clear();
-                    __instance.addMarriageDialogue("MarriageDialogue", "patio_" + __instance.Name, false, new string[0]);
-                    __instance.shouldPlaySpousePatioAnimation.Value = true;
+                }
+                else
+                {
+                    __instance.shouldPlaySpousePatioAnimation.Value = false;
                     return false;
                 }
-                __instance.shouldPlaySpousePatioAnimation.Value = false;
+                Game1.warpCharacter(__instance, "Farm", point);
+                __instance.popOffAnyNonEssentialItems();
+                __instance.currentMarriageDialogue.Clear();
+                __instance.addMarriageDialogue("MarriageDialogue", "patio_" + __instance.Name, false, new string[0]);
+                __instance.shouldPlaySpousePatioAnimation.Value = true;
                 return false;
             }
             catch (Exception ex)

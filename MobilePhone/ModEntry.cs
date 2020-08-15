@@ -103,6 +103,8 @@ namespace MobilePhone
         internal static NetPosition callPosition;
         internal static xTile.Dimensions.Location callViewportLocation;
         internal static NPC invitedNPC;
+        internal static Texture2D ringListBackgroundTexture;
+        internal static Texture2D ringListHighlightTexture;
 
         public static event EventHandler OnScreenRotated;
 

@@ -1,8 +1,10 @@
 ﻿{
 	"phone-book": "Phone Book",
-	"themes": "Themes",
+	"themes": "Customize",
+	"customize": "Customize",
 	"skins": "Case",
 	"backs": "Screen",
+	"rings": "Ring",
 	"no-answer": "There's no answer...",
 	"answer": "Answer",
 	"decline": "Decline",

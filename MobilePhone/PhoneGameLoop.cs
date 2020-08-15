@@ -1,4 +1,5 @@
 ﻿using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Audio;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using StardewModdingAPI;
@@ -111,6 +112,30 @@ namespace MobilePhone
                             Monitor.Log($"Added background {Path.GetFileName(backFile).Replace("_landscape.png", "")} from {contentPack.DirectoryPath}");
                         }
                         catch { }
+                    }
+                }
+                if (Directory.Exists(Path.Combine(contentPack.DirectoryPath, "assets", "ringtones")))
+                {
+                    Monitor.Log($"Adding ringtones");
+                    string[] rings = Directory.GetFiles(Path.Combine(contentPack.DirectoryPath, "assets", "ringtones"), "*.wav");
+                    Monitor.Log($"CP has {rings.Length} ringtones");
+                    foreach (string path in rings)
+                    {
+                        try
+                        {
+                            SoundEffect ring = SoundEffect.FromStream(new FileStream(path, FileMode.Open));
+                            if (ring != null)
+                            {
+                                ThemeApp.ringDict.Add(string.Concat(contentPack.Manifest.UniqueID,":", Path.GetFileName(path).Replace(".wav", "")), ring);
+                                Monitor.Log($"loaded ring {path}");
+                            }
+                            else
+                                Monitor.Log($"Couldn't load ring {path}");
+                        }
+                        catch (Exception ex)
+                        {
+                            Monitor.Log($"Couldn't load ring {path}:\r\n{ex}");
+                        }
                     }
                 }
             }

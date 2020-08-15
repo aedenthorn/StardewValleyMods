@@ -132,6 +132,8 @@ namespace MobilePhone
             Vector2 screenSize = GetScreenSize();
             ModEntry.phoneBookTexture = PhoneVisuals.MakeColorTexture(Config.PhoneBookBackgroundColor, screenSize);
             ModEntry.phoneBookHeaderTexture = PhoneVisuals.MakeColorTexture(Config.PhoneBookHeaderColor, new Vector2(screenSize.X, Config.AppHeaderHeight));
+            ModEntry.ringListBackgroundTexture = PhoneVisuals.MakeColorTexture(Config.RingListBackgroundColor, new Vector2(screenSize.X, Config.RingListItemHeight));
+            ModEntry.ringListHighlightTexture = PhoneVisuals.MakeColorTexture(Config.RingListHighlightColor, new Vector2(screenSize.X, Config.RingListItemHeight));
             ModEntry.themesHeaderTexture = PhoneVisuals.MakeColorTexture(Config.ThemesHeaderColor, new Vector2(screenSize.X, Config.AppHeaderHeight));
             ModEntry.themesHighlightTexture = PhoneVisuals.MakeColorTexture(Config.ThemesFooterHighlightColor, new Vector2(screenSize.X / 2, Config.AppHeaderHeight));
             ModEntry.answerTexture = PhoneVisuals.MakeColorTexture(Config.AnswerColor, new Vector2(screenSize.X / 2, Config.AppHeaderHeight));
@@ -176,7 +178,12 @@ namespace MobilePhone
             {
                 try
                 {
-                    string filePath = Path.Combine(Helper.DirectoryPath, "assets", tone);
+                    string filePath;
+                    if (tone.Contains("/") || tone.Contains("\\"))
+                        filePath = Path.Combine(Helper.DirectoryPath, tone);
+                    else
+                        filePath = Path.Combine(Helper.DirectoryPath, "assets", tone);
+
                     if (File.Exists(filePath))
                     {
                         ModEntry.ringSound = SoundEffect.FromStream(new FileStream(filePath, FileMode.Open));

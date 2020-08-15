@@ -70,11 +70,18 @@ namespace MobilePhone
         public int ThemeItemHeight { get; set; } = 128;
         public int ThemeItemMarginX { get; set; } = 16;
         public int ThemeItemMarginY { get; set; } = 16;
-
+        public int RingListItemMarginX { get; set; } = 4;
+        public int RingListItemMarginY { get; set; } = 8;
+        public int RingListItemHeight { get; set; } = 32;
+        public float RingListItemScale { get; set; } = 0.5f;
+        public Color RingListItemColor { get; set; } = Color.Black;
+        public Color RingListBackgroundColor { get; set; } = Color.White;
+        public Color RingListHighlightColor { get; set; } = new Color(200,200,200);
         public Color ThemesHeaderColor { get; set; } = Color.DeepSkyBlue;
         public Color ThemesFooterHighlightColor { get; set; } = Color.AliceBlue;
         public Color ThemesHeaderTextColor { get; set; } = Color.White;
         public Color ThemesHeaderHighlightedTextColor { get; set; } = Color.DarkSlateBlue;
+
 
 
         // phone call

@@ -1,4 +1,5 @@
 ﻿using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Audio;
 using Microsoft.Xna.Framework.Graphics;
 using StardewModdingAPI;
 using StardewValley;
@@ -20,10 +21,13 @@ namespace MobilePhone
         private static int lastMousePositionY;
         private static float skinListHeight;
         private static float backListHeight;
+        private static int ringListHeight;
         private static bool clicked;
         public static Dictionary<string, Texture2D[]> skinDict = new Dictionary<string, Texture2D[]>();
         public static Dictionary<string, Texture2D[]> backgroundDict = new Dictionary<string, Texture2D[]>();
-        private static bool skinsNotBacks = true;
+        public static Dictionary<string, SoundEffect> ringDict = new Dictionary<string, SoundEffect>();
+        private static int whichTab = 0;
+        private static List<string> ringList;
         public static List<string> skinList = new List<string>();
         public static List<string> backgroundList = new List<string>();
 
@@ -39,16 +43,17 @@ namespace MobilePhone
 
         private static MobileApp GetApp()
         {
-            return new MobileApp("Themes", OpenThemesApp, appIcon);
+            return new MobileApp(Helper.Translation.Get("customize"), OpenThemesApp, appIcon);
         }
 
         public static void OpenThemesApp()
         {
-            Monitor.Log($"opening themes app");
+            Monitor.Log($"opening customize app");
             ModEntry.appRunning = true;
             ModEntry.runningApp = Helper.ModRegistry.ModID;
             skinListHeight = Config.ThemeItemMarginY + (int)Math.Ceiling(skinDict.Count / (float)ModEntry.themeGridWidth) * (Config.ThemeItemHeight + Config.ThemeItemMarginY) + Config.AppHeaderHeight;
             backListHeight = Config.ThemeItemMarginY + (int)Math.Ceiling(backgroundList.Count / (float)ModEntry.themeGridWidth) * (Config.ThemeItemHeight + Config.ThemeItemMarginY) + Config.AppHeaderHeight;
+            ringListHeight = Config.RingListItemMarginY + ringList.Count * (Config.RingListItemHeight + Config.RingListItemMarginY) + Config.AppHeaderHeight;
             Helper.Events.Display.RenderedWorld += Display_RenderedWorld;
             Helper.Events.Input.ButtonPressed += Input_ButtonPressed;
         }
@@ -99,6 +104,26 @@ namespace MobilePhone
                     Monitor.Log($"Couldn't load background {path.Replace("_landscape", "")}: {ex}");
                 }
             }
+            string[] rings = Directory.GetFiles(Path.Combine(Helper.DirectoryPath, "assets", "ringtones"), "*.wav");
+            foreach (string path in rings)
+            {
+                try
+                {
+                    SoundEffect ring = SoundEffect.FromStream(new FileStream(path, FileMode.Open));
+                    if (ring != null)
+                    {
+                        ringDict.Add(Path.GetFileName(path).Replace(".wav",""), ring);
+                        Monitor.Log($"loaded ring {path}");
+                    }
+                    else
+                        Monitor.Log($"Couldn't load ring {path}");
+                }
+                catch (Exception ex)
+                {
+                    Monitor.Log($"Couldn't load ring {path}:\r\n{ex}");
+                }
+            }
+            ringList = ringDict.Keys.ToList();
             skinList = skinDict.Keys.ToList();
             backgroundList = backgroundDict.Keys.ToList();
         }
@@ -142,6 +167,16 @@ namespace MobilePhone
             Helper.WriteConfig(Config);
         }
 
+        private static void SetRing(string ringName)
+        {
+            if (!ringDict.ContainsKey(ringName))
+                return;
+            ModEntry.ringSound = ringDict[ringName];
+            ModEntry.ringSound.Play();
+            Config.PhoneRingTone = ringName;
+            Helper.WriteConfig(Config);
+        }
+
         private static void Display_RenderedWorld(object sender, StardewModdingAPI.Events.RenderedWorldEventArgs e)
         {
             if (ModEntry.callingNPC != null)
@@ -169,7 +204,14 @@ namespace MobilePhone
                 }
                 if (dragging)
                 {
-                    yOffset = (int)Math.Max(Math.Min(0, yOffset + dy), -1 * Math.Max(0, (skinsNotBacks ? skinListHeight : backListHeight) - (screenSize.Y - Config.AppHeaderHeight)));
+                    float listHeight;
+                    if (whichTab == 0)
+                        listHeight = skinListHeight;
+                    else if (whichTab == 1)
+                        listHeight = backListHeight;
+                    else 
+                        listHeight = ringListHeight;
+                    yOffset = (int)Math.Max(Math.Min(0, yOffset + dy), -1 * Math.Max(0, listHeight - (screenSize.Y - Config.AppHeaderHeight)));
                 }
             }
 
@@ -193,17 +235,17 @@ namespace MobilePhone
                     }
                     else if(footerRect.Contains(mousePos))
                     {
-                        bool sorb = mousePos.X < screenPos.X + screenSize.X / 2;
-                        if(sorb != skinsNotBacks)
+                        int newTab = (int)((mousePos.X - screenPos.X) / (screenSize.X / 3));
+                        if(whichTab != newTab)
                         {
-                            skinsNotBacks = sorb;
+                            whichTab = newTab;
                             yOffset = 0;
                         }
                         
                     }
                     else
                     {
-                        if (skinsNotBacks)
+                        if (whichTab == 0)
                         {
                             for(int i = 0; i < skinList.Count; i++)
                             {
@@ -217,7 +259,7 @@ namespace MobilePhone
                             }
 
                         }
-                        else
+                        else if (whichTab == 1)
                         {
                             for(int i = 0; i < backgroundList.Count; i++)
                             {
@@ -229,7 +271,19 @@ namespace MobilePhone
                                     SetBackground(backgroundList[i]);
                                 }
                             }
-
+                        }
+                        else if (whichTab == 2)
+                        {
+                            for(int i = 0; i < ringList.Count; i++)
+                            {
+                                Vector2 pos = GetItemPos(i);
+                                Rectangle r = new Rectangle((int)pos.X, (int)pos.Y, ModEntry.phoneWidth, Config.RingListItemHeight);
+                                if (r.Contains(mousePos))
+                                {
+                                    Monitor.Log($"switching to {ringList[i]}");
+                                    SetRing(ringList[i]);
+                                }
+                            }
                         }
                     }
                 }
@@ -250,61 +304,88 @@ namespace MobilePhone
 
             int screenBottom = (int)(screenPos.Y + screenSize.Y);
 
-            int count = skinsNotBacks ? skinList.Count : backgroundList.Count;
+            int count = whichTab == 0 ? skinList.Count : (whichTab == 1 ? backgroundList.Count : ringList.Count );
 
             for (int i = 0; i < count; i++)
             {
                 Vector2 itemPos = GetItemPos(i);
-                Rectangle r = new Rectangle(0,0,Config.PhoneWidth,Config.PhoneHeight);
-                Rectangle destRect = new Rectangle((int)itemPos.X, (int)itemPos.Y, Config.ThemeItemWidth, Config.ThemeItemHeight);
-                float yScale = Config.ThemeItemHeight / (float) Config.PhoneHeight;
-                if (itemPos.Y < startListY - r.Height * yScale || itemPos.Y >= screenBottom)
-                {
-                    continue;
-                }
+                Rectangle r = ModEntry.phoneRect;
                 Rectangle sourceRect = r;
-                int cutTop = 0;
-                int cutBottom = 0;
-                if(itemPos.Y < startListY)
+                Rectangle destRect;
+                if (whichTab < 2)
                 {
-                    cutTop = (int)Math.Ceiling((startListY - itemPos.Y ) / yScale);
-                    sourceRect = new Rectangle(r.X, (int)(r.Y + cutTop), r.Width, (int)(r.Height - cutTop));
-                    destRect.Y = startListY;
-                    destRect.Height -= (int)(cutTop * yScale);
-                    itemPos = new Vector2(itemPos.X, startListY);
+                    destRect = new Rectangle((int)itemPos.X, (int)itemPos.Y, Config.ThemeItemWidth, Config.ThemeItemHeight);
+                    float yScale = Config.ThemeItemHeight / (float)Config.PhoneHeight;
+                    if (itemPos.Y < startListY - r.Height * yScale || itemPos.Y >= screenBottom)
+                    {
+                        continue;
+                    }
+                    int cutTop = 0;
+                    int cutBottom = 0;
+                    if (itemPos.Y < startListY)
+                    {
+                        cutTop = (int)Math.Ceiling((startListY - itemPos.Y) / yScale);
+                        sourceRect = new Rectangle(r.X, (int)(r.Y + cutTop), r.Width, (int)(r.Height - cutTop));
+                        destRect.Y = startListY;
+                        destRect.Height -= (int)(cutTop * yScale);
+                        itemPos = new Vector2(itemPos.X, startListY);
+                    }
+                    else if (itemPos.Y > screenBottom - r.Height * yScale - Config.AppHeaderHeight)
+                    {
+                        cutBottom = (int)Math.Ceiling((screenBottom - Config.AppHeaderHeight - r.Height * yScale - itemPos.Y) / yScale);
+                        destRect.Height += (int)(cutBottom * yScale);
+                        sourceRect = new Rectangle(r.X, r.Y, r.Width, r.Height + cutBottom);
+                    }
+                    Texture2D texture = whichTab == 0 ? skinDict[skinList[i]][0] : backgroundDict[backgroundList[i]][0];
+
+                    e.SpriteBatch.Draw(texture, destRect, sourceRect, Color.White);
                 }
-                else if(itemPos.Y > screenBottom - r.Height * yScale - Config.AppHeaderHeight)
+                else
                 {
-                    cutBottom = (int)Math.Ceiling((screenBottom - Config.AppHeaderHeight - r.Height * yScale - itemPos.Y) / yScale);
-                    destRect.Height += (int)(cutBottom * yScale);
-                    sourceRect = new Rectangle(r.X, r.Y, r.Width, r.Height + cutBottom);
+                    if (itemPos.Y < screenPos.Y || itemPos.Y >= screenBottom - Config.AppHeaderHeight)
+                    {
+                        continue;
+                    }
+                    if (ringList[i] == Config.PhoneRingTone)
+                        e.SpriteBatch.Draw(ModEntry.ringListHighlightTexture, new Rectangle((int)(itemPos.X), (int)itemPos.Y, (int)(screenSize.X), Config.RingListItemHeight), Color.White);
+                    else
+                        e.SpriteBatch.Draw(ModEntry.ringListBackgroundTexture, new Rectangle((int)(itemPos.X), (int)itemPos.Y, (int)(screenSize.X), Config.RingListItemHeight), Color.White);
+                    e.SpriteBatch.DrawString(Game1.dialogueFont, ringList[i], itemPos, Config.RingListItemColor, 0, Vector2.Zero, Config.RingListItemScale, SpriteEffects.None, 0.86f);
                 }
-
-                Texture2D texture = skinsNotBacks ? skinDict[skinList[i]][0] : backgroundDict[backgroundList[i]][0];
-
-                e.SpriteBatch.Draw(texture, destRect, sourceRect, Color.White);
             }
             e.SpriteBatch.Draw(ModEntry.themesHeaderTexture, headerRect, Color.White);
             e.SpriteBatch.Draw(ModEntry.themesHeaderTexture, footerRect, Color.White);
-            e.SpriteBatch.Draw(ModEntry.themesHighlightTexture, new Rectangle((int)(screenPos.X + (skinsNotBacks?0:screenSize.X/2f)),screenBottom - Config.AppHeaderHeight, (int)(screenSize.X / 2f), Config.AppHeaderHeight), Color.White);
+            e.SpriteBatch.Draw(ModEntry.themesHighlightTexture, new Rectangle((int)(screenPos.X + (screenSize.X/3f) * whichTab),screenBottom - Config.AppHeaderHeight, (int)(screenSize.X / 3f), Config.AppHeaderHeight), Color.White);
             string headerText = Helper.Translation.Get("themes");
             string skinsText = Helper.Translation.Get("skins");
             string backsText = Helper.Translation.Get("backs");
+            string ringsText = Helper.Translation.Get("rings");
             Vector2 headerTextSize = Game1.dialogueFont.MeasureString(headerText) * Config.HeaderTextScale;
             Vector2 skinsTextSize = Game1.dialogueFont.MeasureString(skinsText) * Config.HeaderTextScale;
             Vector2 backsTextSize = Game1.dialogueFont.MeasureString(backsText) * Config.HeaderTextScale;
+            Vector2 ringsTextSize = Game1.dialogueFont.MeasureString(ringsText) * Config.HeaderTextScale;
             e.SpriteBatch.DrawString(Game1.dialogueFont, headerText, screenPos + new Vector2(screenSize.X / 2f - headerTextSize.X / 2f, Config.AppHeaderHeight / 2f - headerTextSize.Y / 2f ), Config.PhoneBookHeaderTextColor, 0, Vector2.Zero, Config.HeaderTextScale, SpriteEffects.None, 0.86f);
             e.SpriteBatch.DrawString(Game1.dialogueFont, "x", screenPos + new Vector2(screenSize.X - Config.AppHeaderHeight / 2f - Game1.dialogueFont.MeasureString("x").X * Config.HeaderTextScale / 2f, Config.AppHeaderHeight / 2f - headerTextSize.Y / 2f), Config.PhoneBookHeaderTextColor, 0, Vector2.Zero, Config.HeaderTextScale, SpriteEffects.None, 0.86f);
-            e.SpriteBatch.DrawString(Game1.dialogueFont, skinsText, screenPos + new Vector2(screenSize.X / 4f - skinsTextSize.X / 2f, screenSize.Y - Config.AppHeaderHeight / 2f - headerTextSize.Y / 2f), skinsNotBacks ? Config.ThemesHeaderHighlightedTextColor : Config.ThemesHeaderTextColor, 0, Vector2.Zero, Config.HeaderTextScale, SpriteEffects.None, 0.86f);
-            e.SpriteBatch.DrawString(Game1.dialogueFont, backsText, screenPos + new Vector2(screenSize.X * 3f / 4f - backsTextSize.X / 2f, screenSize.Y - Config.AppHeaderHeight / 2f - headerTextSize.Y / 2f), skinsNotBacks ? Config.ThemesHeaderTextColor : Config.ThemesHeaderHighlightedTextColor, 0, Vector2.Zero, Config.HeaderTextScale, SpriteEffects.None, 0.86f);
+            e.SpriteBatch.DrawString(Game1.dialogueFont, skinsText, screenPos + new Vector2(screenSize.X / 6f - skinsTextSize.X / 2f, screenSize.Y - Config.AppHeaderHeight / 2f - headerTextSize.Y / 2f), whichTab == 0 ? Config.ThemesHeaderHighlightedTextColor : Config.ThemesHeaderTextColor, 0, Vector2.Zero, Config.HeaderTextScale, SpriteEffects.None, 0.86f);
+            e.SpriteBatch.DrawString(Game1.dialogueFont, backsText, screenPos + new Vector2(screenSize.X / 2f - backsTextSize.X / 2f, screenSize.Y - Config.AppHeaderHeight / 2f - headerTextSize.Y / 2f), whichTab == 1 ? Config.ThemesHeaderTextColor : Config.ThemesHeaderHighlightedTextColor, 0, Vector2.Zero, Config.HeaderTextScale, SpriteEffects.None, 0.86f);
+            e.SpriteBatch.DrawString(Game1.dialogueFont, ringsText, screenPos + new Vector2(screenSize.X * 2f / 3f - ringsTextSize.X / 2f, screenSize.Y - Config.AppHeaderHeight / 2f - headerTextSize.Y / 2f), whichTab == 2 ? Config.ThemesHeaderTextColor : Config.ThemesHeaderHighlightedTextColor, 0, Vector2.Zero, Config.HeaderTextScale, SpriteEffects.None, 0.86f);
 
         }
 
         private static Vector2 GetItemPos(int i)
         {
-            float x = ModEntry.screenPosition.X + Config.ContactMarginX + ((i % ModEntry.themeGridWidth) * (Config.ThemeItemWidth + Config.ThemeItemMarginX));
-            float y = ModEntry.screenPosition.Y + Config.AppHeaderHeight + Config.ContactMarginY + ((i / ModEntry.themeGridWidth) * (Config.ThemeItemHeight + Config.ThemeItemMarginY));
-
+            float x;
+            float y;
+            if(whichTab < 2)
+            {
+                x = ModEntry.screenPosition.X + Config.ContactMarginX + ((i % ModEntry.themeGridWidth) * (Config.ThemeItemWidth + Config.ThemeItemMarginX));
+                y = ModEntry.screenPosition.Y + Config.AppHeaderHeight + Config.ContactMarginY + ((i / ModEntry.themeGridWidth) * (Config.ThemeItemHeight + Config.ThemeItemMarginY));
+            }
+            else
+            {
+                x = ModEntry.screenPosition.X;
+                y = ModEntry.screenPosition.Y + Config.AppHeaderHeight + Config.RingListItemMarginY + (i * (Config.RingListItemHeight + Config.ThemeItemMarginY));
+            }
             return new Vector2(x, y + yOffset);
         }
     }

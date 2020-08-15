@@ -144,7 +144,7 @@ namespace Familiars
 				}
 				else if(f.currentLocation == "Slime Hutch")
                 {
-					l = Game1.getFarm().buildings.FirstOrDefault(b => b.indoors != null && b.indoors.Value != null && b.indoors.Value.Name == "Slime Hutch").indoors.Value;
+					l = Game1.getFarm().buildings.FirstOrDefault(b => b.nameOfIndoors == "Slime Hutch")?.indoors.Value;
                 }
 				if (l == null)
 					continue;
@@ -173,7 +173,7 @@ namespace Familiars
 				}
 				else if (f.currentLocation == "Slime Hutch")
 				{
-					l = Game1.getFarm().buildings.FirstOrDefault(b => b.nameOfIndoors == "Slime Hutch").indoors.Value;
+					l = Game1.getFarm().buildings.FirstOrDefault(b => b.nameOfIndoors == "Slime Hutch")?.indoors.Value;
 				}
 				if (l == null)
 					continue;
@@ -201,7 +201,7 @@ namespace Familiars
 				}
 				else if (f.currentLocation == "Slime Hutch")
 				{
-					l = Game1.getFarm().buildings.FirstOrDefault(b => b.nameOfIndoors == "Slime Hutch").indoors.Value;
+					l = Game1.getFarm().buildings.FirstOrDefault(b => b.nameOfIndoors == "Slime Hutch")?.indoors.Value;
 				}
 				if (l == null)
 					continue;
@@ -229,7 +229,7 @@ namespace Familiars
 				}
 				else if (f.currentLocation == "Slime Hutch")
 				{
-					l = Game1.getFarm().buildings.FirstOrDefault(b => b.nameOfIndoors == "Slime Hutch").indoors.Value;
+					l = Game1.getFarm().buildings.FirstOrDefault(b => b.nameOfIndoors == "Slime Hutch")?.indoors.Value;
 				}
 				if (l == null)
 					continue;
