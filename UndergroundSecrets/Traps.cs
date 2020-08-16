@@ -87,14 +87,14 @@ namespace UndergroundSecrets
                 {
                     float x = position.X - v.X;
                     float y = position.Y - v.Y;
-                    BasicProjectile projectile = new BasicProjectile(25 + shaft.mineLevel / 3, 10, 0, 1, 0.5f, x, y, v * Game1.tileSize, "", "", false, false, shaft, Game1.player, false, null);
+                    BasicProjectile projectile = new BasicProjectile((int)Math.Ceiling(Math.Sqrt(shaft.mineLevel * config.TrapDamageMult)), 10, 0, 1, 0.5f, x, y, v * Game1.tileSize, "", "", false, false, shaft, Game1.player, false, null);
                     projectile.ignoreTravelGracePeriod.Value = true;
                     projectile.maxTravelDistance.Value = 100;
                     shaft.projectiles.Add(projectile);
                 }
                 catch(Exception ex) 
                 { 
-                    //monitor.Log($"error creating fire: {ex}"); 
+                    monitor.Log($"error creating fire: {ex}"); 
                 }
             }
 
@@ -147,7 +147,7 @@ namespace UndergroundSecrets
             {
                 if (enumerator.Current.currentLocation == shaft && enumerator.Current.GetBoundingBox().Intersects(new Rectangle((int)Math.Round(position.X - 32), (int)Math.Round(position.Y - 32), 64, 64)))
                 {
-                    enumerator.Current.takeDamage((int)Math.Round(25f + shaft.mineLevel  / 3), true, null);
+                    enumerator.Current.takeDamage((int)Math.Ceiling(Math.Sqrt(shaft.mineLevel * config.TrapDamageMult)), true, null);
                 }
             }
         }

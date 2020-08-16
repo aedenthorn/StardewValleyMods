@@ -283,7 +283,6 @@ namespace Familiars
 
                         Game1.player.currentLocation.playSound("dwop");
                         Monitor.Log($"familiar following player: {f.followingOwner}");
-                        Helper.Input.Suppress(e.Button);
                         return;
                     }
                 }
