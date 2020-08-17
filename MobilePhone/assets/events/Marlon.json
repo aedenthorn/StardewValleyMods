@@ -1,0 +1,55 @@
+{
+	"events":
+	[
+		{
+			"name": "GUILD INITIATION",
+			"location": "adventureguild",
+			"eventId":"1000034"
+		},
+		{
+			"name": "1 Heart",
+			"location": "adventureguild",
+			"eventId":"1050034"
+		},
+		{
+			"name": "4 Heart",
+			"location": "railroad",
+			"eventId":"1004200"
+		},
+		{
+			"name": "Krobus intro",
+			"location": "adventureguild",
+			"eventId":"1090501"
+		},
+		{
+			"name": "8 Heart",
+			"location": "summit",
+			"eventId":"0002577"
+		},
+		{
+			"name": "SLIME HUTCH EGGS",
+			"location": "farm",
+			"eventId":"690006"
+		},
+		{
+			"name": "MINE ALTERATION",
+			"location": "mine",
+			"eventId":"100162"
+		},
+		{
+			"name": "GALAXY SWORD",
+			"location": "adventureguild",
+			"eventId":"1337098"
+		},
+		{
+			"name": "VOID SHARD EVENT",
+			"location": "adventureguild",
+			"eventId":"1579123"
+		},
+		{
+			"name": "VOID SHARD EVENT WIZARD END",
+			"location": "wizardhouse",
+			"eventId":"1579124"
+		},
+	]
+}

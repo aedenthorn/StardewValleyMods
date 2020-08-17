@@ -36,6 +36,8 @@ namespace MagnetMod
 			this.noLootBounce = Config.NoLootBounce;
 			this.noLootWave = Config.NoLootWave;
 
+			ObjectPatches.Initialize(Monitor);
+
 			ObjectPatches.magnetRangeMult = this.magnetRangeMult;
 			var harmony = HarmonyInstance.Create(this.ModManifest.UniqueID);
 

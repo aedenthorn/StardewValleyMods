@@ -265,7 +265,6 @@ namespace MultipleSpouses
                postfix: new HarmonyMethod(typeof(EventPatches), nameof(EventPatches.Event_setUpCharacters_Postfix))
             );
 
-
         }
 
         /// <summary>Get whether this instance can load the initial version of the given asset.</summary>

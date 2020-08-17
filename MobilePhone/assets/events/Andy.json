@@ -1,0 +1,35 @@
+{
+	"events":
+	[
+		{
+			"name": "1/2 Heart Event - 'Darn Crows",
+			"location": "farm",
+			"eventId":"1111101"
+		},
+		{
+			"name": "2 Heart Event - 'New Regulations'",
+			"location": "Town",
+			"eventId":"5000001"
+		},
+		{
+			"name": "6 Heart Event - 'Aurora Vineyard'",
+			"location": "forest",
+			"eventId":"5000002"
+		},
+		{
+			"name": "8 Heart Event - 'Thank You'",
+			"location": "forest",
+			"eventId":"5000003"
+		},
+		{
+			"name": "Community Center Event - 'The Better Life'",
+			"location": "andyhouse",
+			"eventId":"5000005"
+		},
+		{
+			"name": "10 Heart Event - 'Old Friends",
+			"location": "andyhouse",
+			"eventId":"5000006"
+		},		
+	]
+}

@@ -101,7 +101,7 @@ namespace UndergroundSecrets
 
         internal static bool MineShaft_addLevelChests_prefix(MineShaft __instance)
         {
-            if(config.OverrideTreasureRooms && !Game1.player.chestConsumedMineLevels.ContainsKey(__instance.mineLevel) && (helper.Reflection.GetField<NetBool>(__instance, "netIsTreasureRoom").GetValue().Value || (__instance.mineLevel < 121 && __instance.mineLevel % 20 == 0) || __instance.mineLevel == 10 || __instance.mineLevel == 50 || __instance.mineLevel == 70 ||__instance.mineLevel == 90 ||__instance.mineLevel == 110))
+            if(config.OverrideTreasureRooms && !Game1.player.chestConsumedMineLevels.ContainsKey(__instance.mineLevel) && (helper.Reflection.GetField<NetBool>(__instance, "netIsTreasureRoom").GetValue().Value || (__instance.mineLevel < 120 && __instance.mineLevel % 20 == 0) || __instance.mineLevel == 10 || __instance.mineLevel == 50 || __instance.mineLevel == 70 ||__instance.mineLevel == 90 ||__instance.mineLevel == 110))
             {
                 Vector2 spot = new Vector2(9, 9);
                 if (__instance.mineLevel % 20 == 0 && __instance.mineLevel % 40 != 0)

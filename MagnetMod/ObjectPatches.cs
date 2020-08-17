@@ -1,7 +1,9 @@
-﻿using MagnetMod;
+﻿using Harmony;
+using MagnetMod;
 using Microsoft.Xna.Framework;
 using StardewModdingAPI;
 using StardewValley;
+using StardewValley.TerrainFeatures;
 using System;
 
 public static class ObjectPatches
@@ -31,4 +33,5 @@ public static class ObjectPatches
             return true;
         }
     }
+
 }

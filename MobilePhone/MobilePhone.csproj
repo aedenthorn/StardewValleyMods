@@ -68,6 +68,8 @@
   <ItemGroup>
     <None Include="assets\events\Abigail.json" />
     <None Include="assets\events\Alex.json" />
+    <None Include="assets\events\Andy.json" />
+    <None Include="assets\events\Apples.json" />
     <None Include="assets\events\Caroline.json" />
     <None Include="assets\events\Clint.json" />
     <None Include="assets\events\Demetrius.json" />
@@ -84,8 +86,12 @@
     <None Include="assets\events\Leah.json" />
     <None Include="assets\events\Lewis.json" />
     <None Include="assets\events\Linus.json" />
+    <None Include="assets\events\Marlon.json" />
     <None Include="assets\events\Marnie.json" />
     <None Include="assets\events\Maru.json" />
+    <None Include="assets\events\Morgan.json" />
+    <None Include="assets\events\Morris.json" />
+    <None Include="assets\events\Olivia.json" />
     <None Include="assets\events\Pam.json" />
     <None Include="assets\events\Penny.json" />
     <None Include="assets\events\Pierre.json" />
@@ -94,6 +100,9 @@
     <None Include="assets\events\Sandy.json" />
     <None Include="assets\events\Sebastian.json" />
     <None Include="assets\events\Shane.json" />
+    <None Include="assets\events\Sophia.json" />
+    <None Include="assets\events\Susan.json" />
+    <None Include="assets\events\Victor.json" />
     <None Include="assets\events\Vincent.json" />
     <None Include="assets\events\Willy.json" />
     <None Include="assets\events\Wizard.json" />

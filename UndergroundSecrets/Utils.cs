@@ -97,7 +97,8 @@ namespace UndergroundSecrets
             OfferingPuzzles.Start(shaft, ref superClearCenters, ref clearCenters, ref clearSpots);
             Altars.Start(shaft, ref superClearCenters, ref clearCenters, ref clearSpots);
             Traps.Start(shaft, ref superClearCenters, ref clearCenters, ref clearSpots);
-            CollapsingFloors.Start(shaft, ref superClearCenters, ref clearCenters, ref clearSpots);
+            if(shaft.mineLevel > 120)
+                CollapsingFloors.Start(shaft, ref superClearCenters, ref clearCenters, ref clearSpots);
             MushroomTrees.Start(shaft, ref superClearCenters, ref clearCenters, ref clearSpots);
         }
         public static void DropChest(MineShaft shaft, Vector2 spot)

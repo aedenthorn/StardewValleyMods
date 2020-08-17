@@ -169,7 +169,7 @@ namespace Familiars
 
         public static void Object_minutesElapsed_Postfix(Object __instance, int minutes, GameLocation environment)
 		{
-			if (__instance.name.Equals("Slime Incubator") && __instance.heldObject.Value != null && __instance.heldObject.Value.name.EndsWith("Familiar Egg") && __instance.minutesUntilReady <= 0)
+			if (__instance.name.Equals("Slime Incubator") && __instance.heldObject?.Value?.name?.EndsWith("Familiar Egg") == true && __instance.minutesUntilReady <= 0)
 			{
 				Vector2 v = new Vector2((float)((int)__instance.tileLocation.X), (float)((int)__instance.tileLocation.Y + 1)) * 64f;
 				string name = __instance.heldObject.Value.name;

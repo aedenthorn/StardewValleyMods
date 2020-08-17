@@ -52,7 +52,7 @@ namespace MobilePhone
                 return;
             }
 
-            if (e.Button == SButton.MouseLeft && ModEntry.inCall && Game1.activeClickableMenu != null && Game1.activeClickableMenu.GetType() == typeof(DialogueBox) && Game1.player.currentLocation != null && Game1.player.currentLocation.lastQuestionKey != null && Game1.player.currentLocation.lastQuestionKey.StartsWith("PhoneApp_InCall_"))
+            if (e.Button == SButton.MouseLeft && ModEntry.inCall && Game1.activeClickableMenu?.GetType() == typeof(DialogueBox) && Game1.player.currentLocation?.lastQuestionKey?.StartsWith("PhoneApp_InCall_") == true)
             {
                 IClickableMenu menu = Game1.activeClickableMenu;
                 int resp = (int)typeof(DialogueBox).GetField("selectedResponse", BindingFlags.NonPublic | BindingFlags.Instance).GetValue(menu);
