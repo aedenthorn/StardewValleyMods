@@ -142,10 +142,10 @@ namespace Familiars
 				{
 					l = Game1.getLocationFromName(f.currentLocation);
 				}
-				else if(f.currentLocation == "Slime Hutch")
-                {
-					l = Game1.getFarm().buildings.FirstOrDefault(b => b.nameOfIndoors == "Slime Hutch")?.indoors.Value;
-                }
+				else
+				{
+					l = Game1.getFarm().buildings.FirstOrDefault(b => b.buildingType == "Slime Hutch")?.indoors.Value;
+				}
 				if (l == null)
 					continue;
 
@@ -171,9 +171,9 @@ namespace Familiars
 				{
 					l = Game1.getLocationFromName(f.currentLocation);
 				}
-				else if (f.currentLocation == "Slime Hutch")
+				else
 				{
-					l = Game1.getFarm().buildings.FirstOrDefault(b => b.nameOfIndoors == "Slime Hutch")?.indoors.Value;
+					l = Game1.getFarm().buildings.FirstOrDefault(b => b.buildingType == "Slime Hutch")?.indoors.Value;
 				}
 				if (l == null)
 					continue;
@@ -199,9 +199,9 @@ namespace Familiars
 				{
 					l = Game1.getLocationFromName(f.currentLocation);
 				}
-				else if (f.currentLocation == "Slime Hutch")
+				else
 				{
-					l = Game1.getFarm().buildings.FirstOrDefault(b => b.nameOfIndoors == "Slime Hutch")?.indoors.Value;
+					l = Game1.getFarm().buildings.FirstOrDefault(b => b.buildingType == "Slime Hutch")?.indoors.Value;
 				}
 				if (l == null)
 					continue;
@@ -227,9 +227,9 @@ namespace Familiars
 				{
 					l = Game1.getLocationFromName(f.currentLocation);
 				}
-				else if (f.currentLocation == "Slime Hutch")
+				else
 				{
-					l = Game1.getFarm().buildings.FirstOrDefault(b => b.nameOfIndoors == "Slime Hutch")?.indoors.Value;
+					l = Game1.getFarm().buildings.FirstOrDefault(b => b.buildingType == "Slime Hutch")?.indoors.Value;
 				}
 				if (l == null)
 					continue;
@@ -263,9 +263,9 @@ namespace Familiars
 				{
 					l = Game1.getLocationFromName(f.currentLocation);
 				}
-				else if (f.currentLocation == "Slime Hutch")
+				else
 				{
-					l = Game1.getFarm().buildings.FirstOrDefault(b => b.indoors.Value is SlimeHutch)?.indoors.Value;
+					l = Game1.getFarm().buildings.FirstOrDefault(b => b.buildingType == "Slime Hutch")?.indoors.Value;
 				}
 				if (l == null)
 					continue;

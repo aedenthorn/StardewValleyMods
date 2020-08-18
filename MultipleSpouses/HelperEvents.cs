@@ -264,7 +264,7 @@ namespace MultipleSpouses
 			foreach(GameLocation location in Game1.locations)
             {
 
-				if(ReferenceEquals(location.GetType(), typeof(FarmHouse)))
+				if(location is FarmHouse)
                 {
 					FarmHouse fh = location as FarmHouse;
 					if (fh.owner == null)
@@ -275,6 +275,9 @@ namespace MultipleSpouses
 
 					foreach (NPC character in fh.characters)
 					{
+						if (!(character.currentLocation is FarmHouse))
+							continue;
+
 						if (allSpouses.Contains(character.Name))
 						{
 
