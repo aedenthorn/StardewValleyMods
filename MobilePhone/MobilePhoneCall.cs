@@ -62,7 +62,7 @@ namespace MobilePhone
                     }
                 }
             }
-            if (ModEntry.npcAdventureModApi != null && ModEntry.npcAdventureModApi.IsPossibleCompanion(npc) && ModEntry.npcAdventureModApi.CanAskToFollow(npc))
+            if (ModEntry.npcAdventureModApi != null && ModEntry.npcAdventureModApi.IsPossibleCompanion(npc) && ModEntry.npcAdventureModApi.CanAskToFollow(npc) && !npc.isSleeping)
             {
                 answers.Add(new Response("PhoneApp_InCall_Recruit", Helper.Translation.Get("recruit")));
             }

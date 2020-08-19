@@ -81,6 +81,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Murdercrows", "Murdercrows\
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CustomSpousePatio", "CustomSpousePatio\CustomSpousePatio.csproj", "{C6719EE7-0B8B-4C05-A6D5-BA94DAA8C032}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CustomResourceClumps", "CustomResourceClumps\CustomResourceClumps.csproj", "{5BE0FDBC-2CCF-406D-B690-B15F15302438}"
+EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
 		_releases\_releases.projitems*{047040e0-3d07-46e5-852b-d1d45cd57bb8}*SharedItemsImports = 13
@@ -396,6 +398,14 @@ Global
 		{C6719EE7-0B8B-4C05-A6D5-BA94DAA8C032}.Release|Any CPU.Build.0 = Release|Any CPU
 		{C6719EE7-0B8B-4C05-A6D5-BA94DAA8C032}.Release|x86.ActiveCfg = Release|Any CPU
 		{C6719EE7-0B8B-4C05-A6D5-BA94DAA8C032}.Release|x86.Build.0 = Release|Any CPU
+		{5BE0FDBC-2CCF-406D-B690-B15F15302438}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5BE0FDBC-2CCF-406D-B690-B15F15302438}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5BE0FDBC-2CCF-406D-B690-B15F15302438}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{5BE0FDBC-2CCF-406D-B690-B15F15302438}.Debug|x86.Build.0 = Debug|Any CPU
+		{5BE0FDBC-2CCF-406D-B690-B15F15302438}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5BE0FDBC-2CCF-406D-B690-B15F15302438}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5BE0FDBC-2CCF-406D-B690-B15F15302438}.Release|x86.ActiveCfg = Release|Any CPU
+		{5BE0FDBC-2CCF-406D-B690-B15F15302438}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

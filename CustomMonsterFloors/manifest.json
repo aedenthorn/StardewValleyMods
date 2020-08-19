@@ -1,11 +1,16 @@
 ﻿{
   "Name": "Custom Dungeon Floors",
   "Author": "aedenthorn",
-  "Version": "0.6.1",
+  "Version": "0.7.0",
   "Description": "Customize type and nature of floors in mines and Skull Cave.",
   "UniqueID": "Aedenthorn.CustomMonsterFloors",
   "EntryDll": "CustomMonsterFloors.dll",
   "MinimumApiVersion": "3.4.0",
-  "UpdateKeys": ["Nexus:5894"]
-
+  "UpdateKeys": ["Nexus:5894"],
+  "ModUpdater": {
+    "Repository": "StardewValleyMods",
+    "User": "aedenthorn",
+    "Directory": "_releases",
+    "ModFolder": "CustomMonsterFloors"
+  },
 }

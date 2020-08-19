@@ -9,6 +9,7 @@ using StardewValley.Network;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Reflection.Emit;
 using System.Text;
 using System.Threading;
@@ -63,6 +64,10 @@ namespace CustomMonsterFloors
 				harmony.Patch(
 				   original: AccessTools.Method(typeof(MineShaft), "tryToAddAreaUniques"),
 				   transpiler: new HarmonyMethod(typeof(ModEntry), nameof(ModEntry.MineShaft_tryToAddAreaUniques_Transpiler))
+				);
+				harmony.Patch(
+				   original: AccessTools.Method(typeof(MineShaft), "populateLevel"),
+				   transpiler: new HarmonyMethod(typeof(ModEntry), nameof(ModEntry.MineShaft_populateLevel_Transpiler))
 				);
 			}
 		}
@@ -422,17 +427,19 @@ namespace CustomMonsterFloors
 		{
 
 			var codes = new List<CodeInstruction>(instructions);
+			bool start = false;
 			for (int i = 0; i < codes.Count; i++)
 			{
-				if (codes[i].opcode == OpCodes.Ldc_R8)
-				{
-					context.Monitor.Log("got R8 opcode pop");
-					if ((double)codes[i].operand == 0.15)
-                    {
-						context.Monitor.Log("got 0.15 opcode pop");
-						//codes[i].operand = Config.WeedsChance; 
-						break;
-					}
+				if (start && codes[i].opcode == OpCodes.Ldc_R8 && (double)codes[i].operand == 0.005)
+                {
+					context.Monitor.Log("got 0.005 opcode");
+					codes[i].operand = Config.ResourceClumpChance; 
+					break;
+				}
+				else if (!start && codes[i].opcode == OpCodes.Call && (codes[i].operand as MethodInfo)?.Name == nameof(MineShaft.getRandomItemForThisLevel))
+                {
+					context.Monitor.Log($"got call: {codes[i].operand}");
+					start = true;
 				}
 			}
 

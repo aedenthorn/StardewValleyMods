@@ -34,6 +34,7 @@ namespace CustomMonsterFloors
         public float ChanceForIronMultiplier { get; set; } = 1f;
         public float PurpleStoneMultiplier { get; set; } = 1f;
         public float MysticStoneMultiplier { get; set; } = 1f;
+        public double ResourceClumpChance { get; set; } = 0.005;
         public double WeedsChance { get; set; } = 0.1;
         public double WeedsMultiplier { get; set; } = 1.0;
         public float ChanceForLadderInStoneMultiplier { get; set; } = 1f;

@@ -11,7 +11,9 @@
   <ItemGroup>
     <None Include="$(MSBuildThisFileDirectory)BossCreatures 1.0.2.zip" />
     <None Include="$(MSBuildThisFileDirectory)CustomFixedDialogue 0.4.2.zip" />
+    <None Include="$(MSBuildThisFileDirectory)CustomMonsterFloors 0.7.0.zip" />
     <None Include="$(MSBuildThisFileDirectory)CustomOreNodes 0.5.3.zip" />
+    <None Include="$(MSBuildThisFileDirectory)CustomResourceClumps 0.1.0.zip" />
     <None Include="$(MSBuildThisFileDirectory)CustomSpousePatio 0.1.0.zip" />
     <None Include="$(MSBuildThisFileDirectory)CustomSpousePatio 0.1.1.zip" />
     <None Include="$(MSBuildThisFileDirectory)Familiars 0.9.5.zip" />
@@ -54,6 +56,8 @@
     <None Include="$(MSBuildThisFileDirectory)UndergroundSecrets 0.2.3.zip" />
     <None Include="$(MSBuildThisFileDirectory)UndergroundSecrets 0.2.4.zip" />
     <None Include="$(MSBuildThisFileDirectory)UndergroundSecrets 0.2.5.zip" />
+    <None Include="$(MSBuildThisFileDirectory)UndergroundSecrets 0.2.6.zip" />
+    <None Include="$(MSBuildThisFileDirectory)UndergroundSecrets 0.2.7.zip" />
     <None Include="$(MSBuildThisFileDirectory)VideoPlayer 0.2.5.zip" />
     <None Include="$(MSBuildThisFileDirectory)YAJM 0.4.1.zip" />
   </ItemGroup>

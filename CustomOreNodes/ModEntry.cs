@@ -215,14 +215,17 @@ namespace CustomOreNodes
 			List<int> ores = new List<int>() { 765, 764, 290, 751 };
 			if (!ores.Contains(__result.ParentSheetIndex))
 			{
-				for(int i = 0; i < CustomOreNodes.Count; i++)
+				float currentChance = 0;
+				for (int i = 0; i < CustomOreNodes.Count; i++)
 				{
 					CustomOreNode node = CustomOreNodes[i];
 					if (node.minLevel > -1 && __instance.mineLevel < node.minLevel || node.maxLevel > -1 && __instance.mineLevel > node.maxLevel)
 					{
 						continue;
 					}
-					if(Game1.random.NextDouble() < node.spawnChance/100f)
+					currentChance += node.spawnChance;
+
+					if (Game1.random.NextDouble() < currentChance / 100f)
 					{
 						int index = (SpringObjectsHeight / 16 * SpringObjectsWidth / 16) + (Config.SpriteSheetOffsetRows * SpringObjectsWidth / 16) + i;
 						//SMonitor.Log($"Displaying stone at index {index}", LogLevel.Debug);
@@ -247,13 +250,15 @@ namespace CustomOreNodes
 			}
 			if (Givenname == "Stone" || parentSheetIndex == 294 || parentSheetIndex == 295)
             {
+				float currentChance = 0;
 				for (int i = 0; i < CustomOreNodes.Count; i++)
 				{
 					if (CustomOreNodes[i].minLevel > 0)
 					{
 						continue;
 					}
-					if (Game1.random.NextDouble() < CustomOreNodes[i].spawnChance / 100f)
+					currentChance += CustomOreNodes[i].spawnChance;
+					if (Game1.random.NextDouble() < currentChance / 100f)
 					{
 						int index = (SpringObjectsHeight / 16 * SpringObjectsWidth / 16) + (Config.SpriteSheetOffsetRows * SpringObjectsWidth / 16) + i;
 						parentSheetIndex = index;
@@ -324,7 +329,7 @@ namespace CustomOreNodes
 						}
 					}
 
-					Game1.createMultipleObjectDebris(itemId, x, y, addedOres + r.Next(item.minAmount, item.maxAmount+1) + ((r.NextDouble() < (double)((float)who.LuckLevel / 100f)) ? item.luckyAmount : 0) + ((r.NextDouble() < (double)((float)who.MiningLevel / 100f)) ? item.minerAmount : 0), who.uniqueMultiplayerID, __instance);
+					Game1.createMultipleObjectDebris(itemId, x, y, addedOres + r.Next(item.minAmount, Math.Max(item.minAmount + 1, item.maxAmount + 1)) + ((r.NextDouble() < (double)((float)who.LuckLevel / 100f)) ? item.luckyAmount : 0) + ((r.NextDouble() < (double)((float)who.MiningLevel / 100f)) ? item.minerAmount : 0), who.uniqueMultiplayerID, __instance);
 				}
 			}
 			experience = node.exp;
