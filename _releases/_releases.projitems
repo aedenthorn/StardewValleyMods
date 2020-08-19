@@ -39,6 +39,7 @@
     <None Include="$(MSBuildThisFileDirectory)MobilePhone 1.4.0.zip" />
     <None Include="$(MSBuildThisFileDirectory)MobilePhone 1.4.1.zip" />
     <None Include="$(MSBuildThisFileDirectory)MobilePhone 1.5.1.zip" />
+    <None Include="$(MSBuildThisFileDirectory)MobilePhone 1.6.2.zip" />
     <None Include="$(MSBuildThisFileDirectory)MobileTelevision 0.1.0.zip" />
     <None Include="$(MSBuildThisFileDirectory)MultipleSpouses 1.6.0.zip" />
     <None Include="$(MSBuildThisFileDirectory)MultipleSpouses 1.6.1.zip" />

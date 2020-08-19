@@ -318,10 +318,7 @@ namespace MobilePhone
             (Game1.activeClickableMenu as DialogueBox).closeDialogue();
             Game1.player.currentLocation.lastQuestionKey = "";
             LocationRequest l = Game1.getLocationRequest(r.location);
-            if (r.night)
-            {
-
-            }
+            ModEntry.isReminiscingAtNight = r.night;
             if (r.mail != null)
             {
                 foreach (string m in r.mail.Split(','))
@@ -478,6 +475,8 @@ namespace MobilePhone
         }
         private static async void ReturnToReminisce()
         {
+            Game1.outdoorLight = Color.White;
+            ModEntry.isReminiscing = false;
             await Task.Delay(1000);
             Monitor.Log($"Returning to reminisce menu");
 
@@ -486,8 +485,6 @@ namespace MobilePhone
                 Monitor.Log($"Not in call, exiting");
                 return;
             }
-
-            ModEntry.isReminiscing = false;
             ReminisceOnPhone(ModEntry.callingNPC);
         }
         public static void EndCall()

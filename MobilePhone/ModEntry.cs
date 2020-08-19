@@ -105,6 +105,7 @@ namespace MobilePhone
         internal static NPC invitedNPC;
         internal static Texture2D ringListBackgroundTexture;
         internal static Texture2D ringListHighlightTexture;
+        internal static bool isReminiscingAtNight;
 
         public static event EventHandler OnScreenRotated;
 
@@ -138,6 +139,10 @@ namespace MobilePhone
             harmony.Patch(
                 original: AccessTools.Method(typeof(Farmer), nameof(Farmer.changeFriendship)),
                 prefix: new HarmonyMethod(typeof(PhonePatches), nameof(PhonePatches.Farmer_changeFriendship_prefix))
+            );
+            harmony.Patch(
+                original: AccessTools.Method(typeof(GameLocation), "resetLocalState"),
+                postfix: new HarmonyMethod(typeof(PhonePatches), nameof(PhonePatches.GameLocation_resetLocalState_postfix))
             );
             harmony.Patch(
                 original: AccessTools.Method(typeof(Event), nameof(Event.command_awardFestivalPrize)),

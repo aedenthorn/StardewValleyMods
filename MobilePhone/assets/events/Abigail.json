@@ -14,7 +14,8 @@
 		{
 			"name": "Cemetary (Six Hearts)",
 			"location": "Town",
-			"eventId":"4"
+			"eventId":"4",
+			"night": true
 		},
 		{
 			"name": "Spirit Board Therapy (Eight Hearts)",
@@ -29,7 +30,8 @@
 		{
 			"name": "Backwoods (Fourteen Hearts)",
 			"location": "Backwoods",
-			"eventId":"6963327"
+			"eventId":"6963327",
+			"night": true
 		},
 	]
 }

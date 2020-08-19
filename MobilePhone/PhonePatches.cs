@@ -3,11 +3,13 @@ using Microsoft.Xna.Framework;
 using StardewModdingAPI;
 using StardewValley;
 using StardewValley.Buildings;
+using StardewValley.Locations;
 using StardewValley.Menus;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
 using xTile.Dimensions;
+using xTile.ObjectModel;
 
 namespace MobilePhone
 {
@@ -32,6 +34,66 @@ namespace MobilePhone
                 return false;
             }
             return true;
+        }
+        internal static void GameLocation_resetLocalState_postfix(GameLocation __instance)
+        {
+            if (ModEntry.isReminiscing)
+            {
+                if (ModEntry.isReminiscingAtNight)
+                {
+                    Monitor.Log($"Reminiscing at night");
+                    __instance.LightLevel = 0f;
+                    Game1.globalOutdoorLighting = 1f;
+                    float transparency = Math.Min(0.93f, 0.75f + ((float)(2400 - Game1.getTrulyDarkTime()) + (float)Game1.gameTimeInterval / 7000f * 16.6f) * 0.000625f);
+                    Game1.outdoorLight = Game1.eveningColor * transparency;
+                    if (!(__instance is MineShaft) && !(__instance is Woods))
+                    {
+                        __instance.lightGlows.Clear();
+                    }
+                    PropertyValue nightTiles;
+                    __instance.map.Properties.TryGetValue("NightTiles", out nightTiles);
+                    if (nightTiles != null)
+                    {
+                        string[] split6 = nightTiles.ToString().Split(new char[]
+                        {
+                        ' '
+                        });
+                        for (int i3 = 0; i3 < split6.Length; i3 += 4)
+                        {
+                            if ((!split6[i3 + 3].Equals("726") || !Game1.MasterPlayer.mailReceived.Contains("pamHouseUpgrade")) && __instance.map.GetLayer(split6[i3]).Tiles[int.Parse(split6[i3 + 1]), int.Parse(split6[i3 + 2])] != null)
+                            {
+                                __instance.map.GetLayer(split6[i3]).Tiles[int.Parse(split6[i3 + 1]), int.Parse(split6[i3 + 2])].TileIndex = int.Parse(split6[i3 + 3]);
+                            }
+                        }
+                    }
+                }
+                else
+                {
+                    Monitor.Log($"Reminiscing during the day");
+                    return;
+                    __instance.LightLevel = 1f;
+                    Game1.globalOutdoorLighting = 1f;
+                    Game1.outdoorLight = Color.White;
+                    Game1.ambientLight = Color.White;
+                    PropertyValue dayTiles;
+                    __instance.map.Properties.TryGetValue("DayTiles", out dayTiles);
+                    if (dayTiles != null)
+                    {
+                        string[] split5 = dayTiles.ToString().Trim().Split(new char[]
+                        {
+                        ' '
+                        });
+                        for (int i2 = 0; i2 < split5.Length; i2 += 4)
+                        {
+                            if ((!split5[i2 + 3].Equals("720") || !Game1.MasterPlayer.mailReceived.Contains("pamHouseUpgrade")) && __instance.map.GetLayer(split5[i2]).Tiles[Convert.ToInt32(split5[i2 + 1]), Convert.ToInt32(split5[i2 + 2])] != null)
+                            {
+                                __instance.map.GetLayer(split5[i2]).Tiles[Convert.ToInt32(split5[i2 + 1]), Convert.ToInt32(split5[i2 + 2])].TileIndex = Convert.ToInt32(split5[i2 + 3]);
+                            }
+                        }
+                    }
+
+                }
+            }
         }
         internal static bool Event_command_cutscene_prefix(ref Event __instance, GameLocation location, GameTime time, string[] split, ref ICustomEventScript ___currentCustomEventScript)
         {
