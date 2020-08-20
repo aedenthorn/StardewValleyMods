@@ -26,24 +26,21 @@ namespace MobilePhone
             Config = config;
         }
 
-        public static void Input_ButtonReleased(object sender, StardewModdingAPI.Events.ButtonReleasedEventArgs e)
-        {
-            if (e.Button == SButton.MouseLeft)
-            {
-
-            }
-        }
-
         public static void Input_ButtonPressed(object sender, StardewModdingAPI.Events.ButtonPressedEventArgs e)
         {
             if (!Context.IsWorldReady)
                 return;
 
-            if (e.Button == Config.OpenPhoneKey || (ModEntry.phoneOpen && e.Button == SButton.Escape))
+            if (Game1.activeClickableMenu == null && ModEntry.phoneOpen && e.Button == SButton.Escape)
             {
                 PhoneUtils.TogglePhone();
-                if (!ModEntry.phoneOpen && e.Button == SButton.Escape)
-                    Helper.Input.Suppress(SButton.Escape);
+                Helper.Input.Suppress(SButton.Escape);
+                return;
+            }
+
+            if (e.Button == Config.OpenPhoneKey)
+            {
+                PhoneUtils.TogglePhone();
                 return;
             }
             if(e.Button == Config.RotatePhoneKey)

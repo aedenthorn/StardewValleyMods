@@ -55,6 +55,8 @@ namespace MobilePhone
             {
                 Game1.playSound("dwop");
                 ModEntry.appRunning = false;
+                ModEntry.phoneAppRunning = false;
+                ModEntry.runningApp = null;
                 return;
             }
             TogglePhone(!ModEntry.phoneOpen);

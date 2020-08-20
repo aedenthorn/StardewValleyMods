@@ -56,7 +56,6 @@
     <Compile Include="Reminiscence.cs" />
     <Compile Include="ThemeApp.cs" />
     <Compile Include="MobilePhoneApp.cs" />
-    <Compile Include="MobilePhoneMenu.cs" />
     <Compile Include="ModConfig.cs" />
     <Compile Include="PhoneUtils.cs" />
     <Compile Include="PhoneGameLoop.cs" />

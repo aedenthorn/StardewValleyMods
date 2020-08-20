@@ -3,6 +3,7 @@ using Microsoft.Xna.Framework;
 using StardewModdingAPI;
 using StardewValley;
 using StardewValley.Buildings;
+using StardewValley.Characters;
 using StardewValley.Locations;
 using StardewValley.Menus;
 using System;
@@ -25,6 +26,14 @@ namespace MobilePhone
             Monitor = monitor;
             Helper = helper;
             Config = config;
+        }
+        internal static bool Game1_pressSwitchToolButton_prefix()
+        {
+            if (ModEntry.screenRect.Contains(Game1.getMousePosition()))
+            {
+                return false;
+            }
+            return true;
         }
         internal static bool Farmer_changeFriendship_prefix(int amount, NPC n)
         {
@@ -182,6 +191,45 @@ namespace MobilePhone
             {
                 Monitor.Log($"Reminiscing, will not execute end behaviors {string.Join(" ", split)}");
                 __instance.exitEvent();
+                return false;
+            }
+            return true;
+        }
+        internal static bool Event_namePet_prefix(Event __instance, string name)
+        {
+            if (ModEntry.isReminiscing)
+            {
+                Monitor.Log($"Reminiscing, renaming pet to {name}");
+                if (Game1.player.catPerson)
+                {
+                    Cat cat = Game1.getFarm().characters.FirstOrDefault(n => n is Cat) as Cat;
+                    if(cat == null)
+                    {
+                        cat = Utility.getHomeOfFarmer(Game1.player).characters.FirstOrDefault(n => n is Cat) as Cat;
+                    }
+                    if (cat != null)
+                    {
+                        cat.Name = name;
+                        cat.displayName = cat.name;
+                    }
+                }
+                else
+                {
+                    Dog dog = Game1.getFarm().characters.FirstOrDefault(n => n is Dog) as Dog;
+                    if (dog == null)
+                    {
+                        dog = Utility.getHomeOfFarmer(Game1.player).characters.FirstOrDefault(n => n is Dog) as Dog;
+                    }
+                    if (dog != null)
+                    {
+                        dog.Name = name;
+                        dog.displayName = dog.name;
+                    }
+
+                }
+                Game1.exitActiveMenu();
+                int num = __instance.CurrentCommand;
+                __instance.CurrentCommand = num + 1;
                 return false;
             }
             return true;

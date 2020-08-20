@@ -444,6 +444,7 @@ namespace MobilePhone
                     Vector2 targetPos = PhoneUtils.GetOpenSurroundingPosition();
                     Monitor.Log($"Recruiting {npc.Name} to {targetPos} (player: {Game1.player.getTileLocation()})");
                     Game1.warpCharacter(npc, Game1.player.currentLocation, targetPos);
+                    npc.Sprite.StopAnimation();
                     EndCall();
                 }
                 else

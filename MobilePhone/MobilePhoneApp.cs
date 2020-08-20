@@ -51,6 +51,20 @@ namespace MobilePhone
             listHeight = Config.ContactMarginY + (int)Math.Ceiling(callableList.Count / (float)ModEntry.gridWidth) * (Config.ContactHeight + Config.ContactMarginY);
             Helper.Events.Display.RenderedWorld += Display_RenderedWorld;
             Helper.Events.Input.ButtonPressed += Input_ButtonPressed;
+            Helper.Events.Input.MouseWheelScrolled += Input_MouseWheelScrolled;
+        }
+
+        private static void Input_MouseWheelScrolled(object sender, StardewModdingAPI.Events.MouseWheelScrolledEventArgs e)
+        {
+            if (ModEntry.screenRect.Contains(Game1.getMousePosition()))
+            {
+                AddYOffset(e.Delta);
+            }
+        }
+
+        private static void AddYOffset(int delta)
+        {
+            yOffset = (int)Math.Max(Math.Min(0, yOffset + delta), -1 * Math.Max(0, listHeight - (ModEntry.screenHeight - Config.AppHeaderHeight)));
         }
 
         private static void Input_ButtonPressed(object sender, StardewModdingAPI.Events.ButtonPressedEventArgs e)
@@ -71,7 +85,16 @@ namespace MobilePhone
 
         public static void CallNPC(NPC npc)
         {
+            if (npc.isSleeping)
+            {
+                Monitor.Log($"{npc.Name} is sleeping");
+                Game1.activeClickableMenu = new DialogueBox(Helper.Translation.Get("no-answer"));
+                return;
+            }
             MobilePhoneCall.inCallReminiscence = null;
+            ModEntry.isReminiscing = false;
+            ModEntry.isReminiscingAtNight = false;
+            ModEntry.isInviting = false;
             ModEntry.inCall = true;
             ModEntry.callingNPC = npc;
 
@@ -121,6 +144,7 @@ namespace MobilePhone
                 ModEntry.phoneAppRunning = false;
                 Helper.Events.Display.RenderedWorld -= Display_RenderedWorld;
                 Helper.Events.Input.ButtonPressed -= Input_ButtonPressed;
+                Helper.Events.Input.MouseWheelScrolled -= Input_MouseWheelScrolled;
                 return;
             }
             Vector2 screenPos = PhoneUtils.GetScreenPosition();
@@ -137,7 +161,7 @@ namespace MobilePhone
                 }
                 if (dragging)
                 {
-                    yOffset = (int)Math.Max(Math.Min(0, yOffset + dy), -1 * Math.Max(0, listHeight - (screenSize.Y - Config.AppHeaderHeight)));
+                    AddYOffset(dy);
                 }
             }
 

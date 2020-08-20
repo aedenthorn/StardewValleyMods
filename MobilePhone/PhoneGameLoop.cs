@@ -203,7 +203,7 @@ namespace MobilePhone
         }
         public static void GameLoop_OneSecondUpdateTicked(object sender, OneSecondUpdateTickedEventArgs e)
         {
-            if (ModEntry.callingNPC != null)
+            if (ModEntry.callingNPC != null && Game1.activeClickableMenu == null)
             {
                 if (ModEntry.currentCallRings < ModEntry.currentCallMaxRings && !ModEntry.inCall)
                 {

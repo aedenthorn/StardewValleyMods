@@ -133,6 +133,10 @@ namespace MobilePhone
             var harmony = HarmonyInstance.Create(ModManifest.UniqueID);
 
             harmony.Patch(
+                original: AccessTools.Method(typeof(Game1), nameof(Game1.pressSwitchToolButton)),
+                prefix: new HarmonyMethod(typeof(PhonePatches), nameof(PhonePatches.Game1_pressSwitchToolButton_prefix))
+            );
+            harmony.Patch(
                 original: AccessTools.Method(typeof(Event), nameof(Event.endBehaviors)),
                 prefix: new HarmonyMethod(typeof(PhonePatches), nameof(PhonePatches.Event_endBehaviors_prefix))
             );
@@ -184,6 +188,10 @@ namespace MobilePhone
                 original: AccessTools.Method(typeof(Event), nameof(Event.command_cutscene)),
                 prefix: new HarmonyMethod(typeof(PhonePatches), nameof(PhonePatches.Event_command_cutscene_prefix))
             );
+            harmony.Patch(
+                original: AccessTools.Method(typeof(Event), "namePet"),
+                prefix: new HarmonyMethod(typeof(PhonePatches), nameof(PhonePatches.Event_namePet_prefix))
+            );
 
             harmony.Patch(
                 original: AccessTools.Method(typeof(CarpenterMenu), nameof(CarpenterMenu.returnToCarpentryMenu)),
@@ -195,7 +203,6 @@ namespace MobilePhone
             );
 
             Helper.Events.Input.ButtonPressed += PhoneInput.Input_ButtonPressed;
-            Helper.Events.Input.ButtonReleased += PhoneInput.Input_ButtonReleased;
             Helper.Events.GameLoop.SaveLoaded += PhoneGameLoop.GameLoop_SaveLoaded;
             Helper.Events.GameLoop.GameLaunched += PhoneGameLoop.GameLoop_GameLaunched;
             Helper.Events.GameLoop.ReturnedToTitle += PhoneGameLoop.ReturnedToTitle;
