@@ -63,6 +63,7 @@
     <None Include="$(MSBuildThisFileDirectory)UndergroundSecrets 0.2.6.zip" />
     <None Include="$(MSBuildThisFileDirectory)UndergroundSecrets 0.2.7.zip" />
     <None Include="$(MSBuildThisFileDirectory)UndergroundSecrets 0.3.0.zip" />
+    <None Include="$(MSBuildThisFileDirectory)UndergroundSecrets 0.3.1.zip" />
     <None Include="$(MSBuildThisFileDirectory)VideoPlayer 0.2.5.zip" />
     <None Include="$(MSBuildThisFileDirectory)YAJM 0.4.1.zip" />
   </ItemGroup>

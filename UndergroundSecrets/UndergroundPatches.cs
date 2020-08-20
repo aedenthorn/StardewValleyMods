@@ -101,7 +101,7 @@ namespace UndergroundSecrets
 
         internal static bool MineShaft_addLevelChests_prefix(MineShaft __instance)
         {
-            if(config.OverrideTreasureRooms && !Game1.player.chestConsumedMineLevels.ContainsKey(__instance.mineLevel) && (helper.Reflection.GetField<NetBool>(__instance, "netIsTreasureRoom").GetValue().Value || (__instance.mineLevel < 120 && __instance.mineLevel % 20 == 0) || __instance.mineLevel == 10 || __instance.mineLevel == 50 || __instance.mineLevel == 70 ||__instance.mineLevel == 90 ||__instance.mineLevel == 110))
+            if(config.OverrideTreasureRooms && !Game1.player.chestConsumedMineLevels.ContainsKey(__instance.mineLevel) && (helper.Reflection.GetField<NetBool>(__instance, "netIsTreasureRoom").GetValue().Value || (__instance.mineLevel < 120 && __instance.mineLevel % 20 == 0) || __instance.mineLevel == 10 || __instance.mineLevel == 50 || __instance.mineLevel == 70 ||__instance.mineLevel == 90 || __instance.mineLevel == 110))
             {
                 Vector2 spot = new Vector2(9, 9);
                 if (__instance.mineLevel % 20 == 0 && __instance.mineLevel % 40 != 0)
@@ -109,13 +109,21 @@ namespace UndergroundSecrets
                     spot.Y += 4f;
                 }
 
-                if (Game1.random.NextDouble() < 1 / 3f)
-                    LightPuzzles.CreatePuzzle(spot, __instance);
-                else if (Game1.random.NextDouble() < 2 / 3f)
-                    OfferingPuzzles.CreatePuzzle(spot, __instance);
-                else
-                    TilePuzzles.CreatePuzzle(spot, __instance);
-
+                switch (Game1.random.Next(4))
+                {
+                    case 0:
+                        LightPuzzles.CreatePuzzle(spot, __instance);
+                        break;
+                    case 1:
+                        OfferingPuzzles.CreatePuzzle(spot, __instance);
+                        break;
+                    case 2:
+                        Riddles.CreatePuzzle(spot, __instance);
+                        break;
+                    case 3:
+                        TilePuzzles.CreatePuzzle(spot, __instance);
+                        break;
+                }
                 return false;
             }
             return true;

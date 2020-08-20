@@ -40,17 +40,8 @@ namespace UndergroundSecrets
 
             Vector2 spot = clearCenters[Game1.random.Next(0, clearCenters.Count)];
 
-            Layer front = shaft.map.GetLayer("Front");
-            Layer buildings = shaft.map.GetLayer("Buildings");
-            if (shaft.map.TileSheets.FirstOrDefault(s => s.Id == ModEntry.tileSheetId) == null)
-                shaft.map.AddTileSheet(new TileSheet(ModEntry.tileSheetId, shaft.map, ModEntry.tileSheetPath, new Size(16, 18), new Size(16, 16)));
-            TileSheet tilesheet = shaft.map.GetTileSheet(ModEntry.tileSheetId);
+            CreatePuzzle(spot, shaft);
 
-            front.Tiles[(int)spot.X, (int)spot.Y - 1] = new StaticTile(front, tilesheet, BlendMode.Alpha, tileIndex: litEyes);
-            buildings.Tiles[(int)spot.X, (int)spot.Y] = new StaticTile(buildings, tilesheet, BlendMode.Alpha, tileIndex: litEyes + 32);
-
-            shaft.setTileProperty((int)spot.X, (int)spot.Y, "Buildings", "Action", $"undergroundRiddles");
-            
             foreach (Vector2 v in Utils.GetSurroundingTiles(spot, 3))
             {
                 superClearCenters.Remove(v);
@@ -61,6 +52,20 @@ namespace UndergroundSecrets
                         clearSpots.Remove(v);
                 }
             }
+        }
+
+        public static void CreatePuzzle(Vector2 spot, MineShaft shaft)
+        {
+            Layer front = shaft.map.GetLayer("Front");
+            Layer buildings = shaft.map.GetLayer("Buildings");
+            if (shaft.map.TileSheets.FirstOrDefault(s => s.Id == ModEntry.tileSheetId) == null)
+                shaft.map.AddTileSheet(new TileSheet(ModEntry.tileSheetId, shaft.map, ModEntry.tileSheetPath, new Size(16, 18), new Size(16, 16)));
+            TileSheet tilesheet = shaft.map.GetTileSheet(ModEntry.tileSheetId);
+
+            front.Tiles[(int)spot.X, (int)spot.Y - 1] = new StaticTile(front, tilesheet, BlendMode.Alpha, tileIndex: litEyes);
+            buildings.Tiles[(int)spot.X, (int)spot.Y] = new StaticTile(buildings, tilesheet, BlendMode.Alpha, tileIndex: litEyes + 32);
+
+            shaft.setTileProperty((int)spot.X, (int)spot.Y, "Buildings", "Action", $"undergroundRiddles");
         }
 
         internal static void Interact(MineShaft shaft, Location tileLocation, Farmer who)
