@@ -36,6 +36,7 @@ namespace UndergroundSecrets
             OfferingPuzzles.Initialize(Helper, Monitor, Config);
             LightPuzzles.Initialize(Helper, Monitor, Config);
             Altars.Initialize(Helper, Monitor, Config);
+            Riddles.Initialize(Helper, Monitor, Config);
             CollapsingFloors.Initialize(Helper, Monitor, Config);
             Traps.Initialize(Helper, Monitor, Config);
             MushroomTrees.Initialize(Helper, Monitor, Config);

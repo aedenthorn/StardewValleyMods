@@ -45,7 +45,7 @@ namespace MobilePhone
                 Monitor.Log($"Total Reminisces: {r.events.Count}");
                 r.WeedOutUnseen();
                 Monitor.Log($"Seen Reminisces: {r.events.Count}");
-                inCallReminiscence = r.events;
+                inCallReminiscence = new List<Reminisce>(r.events);
             }
             if (inCallReminiscence != null && inCallReminiscence.Count > 0)
             {

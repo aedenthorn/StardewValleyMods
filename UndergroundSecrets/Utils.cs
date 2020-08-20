@@ -96,6 +96,7 @@ namespace UndergroundSecrets
             LightPuzzles.Start(shaft, ref superClearCenters, ref clearCenters, ref clearSpots);
             OfferingPuzzles.Start(shaft, ref superClearCenters, ref clearCenters, ref clearSpots);
             Altars.Start(shaft, ref superClearCenters, ref clearCenters, ref clearSpots);
+            Riddles.Start(shaft, ref superClearCenters, ref clearCenters, ref clearSpots);
             Traps.Start(shaft, ref superClearCenters, ref clearCenters, ref clearSpots);
             if(shaft.mineLevel > 120)
                 CollapsingFloors.Start(shaft, ref superClearCenters, ref clearCenters, ref clearSpots);
@@ -173,16 +174,16 @@ namespace UndergroundSecrets
             return Math.Max(min, Math.Min(max, val));
         }
 
-        internal static List<Vector2> GetSurroundingTiles(Vector2 spot, int v, bool skipCenter = false)
+        internal static List<Vector2> GetSurroundingTiles(Vector2 spot, int radius, bool skipCenter = false)
         {
             List<Vector2> spots = new List<Vector2>();
-            int diam = v * 2 + 1;
+            int diam = radius * 2 + 1;
             for (int x = 0; x < diam; x++)
             {
                 for (int y = 0; y < diam; y++)
                 {
-                    if (!skipCenter || x != v || y != v)
-                        spots.Add(new Vector2((int)spot.X - v + x, (int)spot.Y - v + y));
+                    if (!skipCenter || x != radius || y != radius)
+                        spots.Add(new Vector2((int)spot.X - radius + x, (int)spot.Y - radius + y));
                 }
             }
             return spots;

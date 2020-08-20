@@ -176,7 +176,6 @@ namespace CustomResourceClumps
 						continue;
 					}
 					currentChance += clump.baseSpawnChance + clump.additionalChancePerLevel * __instance.mineLevel;
-					SMonitor.Log($"Current chance: {currentChance} for {clump.index} ");
 
 					if (Game1.random.NextDouble() < currentChance / 100f)
 					{

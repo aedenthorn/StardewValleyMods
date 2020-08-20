@@ -16,7 +16,6 @@ namespace MobileArcade
         public static ModEntry context;
 
         internal static ModConfig Config;
-        private Random myRand;
 
         private IMobilePhoneApi api;
 
@@ -29,7 +28,6 @@ namespace MobileArcade
             if (!Config.EnableMod)
                 return;
 
-            myRand = new Random(Guid.NewGuid().GetHashCode());
             Helper.Events.GameLoop.GameLaunched += GameLoop_GameLaunched;
         }
 

@@ -143,6 +143,10 @@ namespace UndergroundSecrets
                     {
                         Altars.OfferObject(__instance, action, tileLocation, who);
                     }
+                    else if (action == "undergroundRiddles")
+                    {
+                        Riddles.Interact(__instance, tileLocation, who);
+                    }
                 }
             }
             return true;

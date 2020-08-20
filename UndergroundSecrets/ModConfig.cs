@@ -7,6 +7,7 @@
         public float LightPuzzleBaseChance { get; set; } = 0.001f;
         public float OfferingPuzzleBaseChance { get; set; } = 0.001f;
         public float AltarBaseChance { get; set; } = 0.001f;
+        public float RiddlesBaseChance { get; set; } = 0.001f;
         public float CollapsedBaseFloorMaxPortion { get; set; } = 0.0001f;
         public float TrapsBaseMaxPortion { get; set; } = 0.0001f;
         public float MushroomTreesMaxPortion { get; set; } = 0.005f;

@@ -146,5 +146,24 @@ namespace MultipleSpouses
 				Monitor.Log($"Failed in {nameof(Event_answerDialogueQuestion_Prefix)}:\n{ex}", LogLevel.Error);
 			}
 		}
-    }
+
+        public static bool Event_command_playSound_Prefix(Event __instance, string[] split)
+        {
+			try
+			{
+				if (split[1] == "dwop" && __instance.isWedding && ModEntry.config.RealKissSound && Kissing.kissEffect != null)
+                {
+					Kissing.kissEffect.Play();
+					int num = __instance.CurrentCommand;
+					__instance.CurrentCommand = num + 1;
+					return false;
+				}
+			}
+			catch (Exception ex)
+			{
+				Monitor.Log($"Failed in {nameof(Event_command_playSound_Prefix)}:\n{ex}", LogLevel.Error);
+			}
+			return true;
+		}
+	}
 }

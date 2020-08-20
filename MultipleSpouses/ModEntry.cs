@@ -265,6 +265,11 @@ namespace MultipleSpouses
                postfix: new HarmonyMethod(typeof(EventPatches), nameof(EventPatches.Event_setUpCharacters_Postfix))
             );
 
+            harmony.Patch(
+               original: AccessTools.Method(typeof(Event), nameof(Event.command_playSound)),
+               prefix: new HarmonyMethod(typeof(EventPatches), nameof(EventPatches.Event_command_playSound_Prefix))
+            );
+
         }
 
         /// <summary>Get whether this instance can load the initial version of the given asset.</summary>
