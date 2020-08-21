@@ -147,16 +147,17 @@ namespace CustomFixedDialogue
             }
         }
 
-        public static void Dialogue_parseDialogueString_Prefix(Dialogue __instance, ref string masterString)
+        public static void Dialogue_Prefix(Dialogue __instance, ref string masterDialogue)
         {
+            Monitor.Log($"fixing string: {masterDialogue}");
             try
             {
-                FixString(__instance.speaker, ref masterString);
+                FixString(__instance.speaker, ref masterDialogue);
 
             }
             catch (Exception ex)
             {
-                Monitor.Log($"Failed in {nameof(Dialogue_parseDialogueString_Prefix)}:\n{ex}", LogLevel.Error);
+                Monitor.Log($"Failed in {nameof(Dialogue_Prefix)}:\n{ex}", LogLevel.Error);
             }
         }
 
@@ -189,18 +190,19 @@ namespace CustomFixedDialogue
             if (path.StartsWith(extraPrefix) && !extraExceptions.Contains(path.Substring(extraPrefix.Length)))
             {
                 text = $"{prefix}{path.Replace("Data\\ExtraDialogue:", "ExtraDialogue_")}^{text}^{suffix}{path.Replace("Data\\ExtraDialogue:", "ExtraDialogue_")}";
+                Monitor.Log($"edited string: {text}");
             }
             else if ((path.StartsWith(NPCPrefix) && !NPCexceptions.Contains(path.Substring(NPCPrefix.Length))) || (path.StartsWith(eventPrefix) && eventChanges.Contains(path.Substring(eventPrefix.Length))) || (path.StartsWith(utilityPrefix) && utilityChanges.Contains(path.Substring(utilityPrefix.Length))))
             {
                 text = $"{prefix}{path.Replace("Strings\\StringsFromCSFiles:", "")}^{text}^{suffix}{path.Replace("Strings\\StringsFromCSFiles:", "")}";
-                //Monitor.Log($"edited string: {text}");
+                Monitor.Log($"edited string: {text}");
             }
         }
 
         public static void FixString(NPC speaker, ref string input)
         {
 
-            //Monitor.Log($"checking string: {input}");
+            Monitor.Log($"checking string: {input}");
 
             Regex pattern1 = new Regex(prefix + @"(?<key>[^\^]+)", RegexOptions.Compiled);
 
@@ -217,7 +219,6 @@ namespace CustomFixedDialogue
                 }
 
                 string key = match.Groups["key"].Value;
-                string text = match.Groups["word"].Value;
 
                 if (dialogueDic != null && dialogueDic.ContainsKey(key))
                 {

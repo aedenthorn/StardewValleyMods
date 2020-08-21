@@ -96,7 +96,7 @@ namespace UndergroundSecrets
             LightPuzzles.Start(shaft, ref superClearCenters, ref clearCenters, ref clearSpots);
             OfferingPuzzles.Start(shaft, ref superClearCenters, ref clearCenters, ref clearSpots);
             Altars.Start(shaft, ref superClearCenters, ref clearCenters, ref clearSpots);
-            Riddles.Start(shaft, ref superClearCenters, ref clearCenters, ref clearSpots);
+            RiddlePuzzles.Start(shaft, ref superClearCenters, ref clearCenters, ref clearSpots);
             Traps.Start(shaft, ref superClearCenters, ref clearCenters, ref clearSpots);
             if(shaft.mineLevel > 120)
                 CollapsingFloors.Start(shaft, ref superClearCenters, ref clearCenters, ref clearSpots);

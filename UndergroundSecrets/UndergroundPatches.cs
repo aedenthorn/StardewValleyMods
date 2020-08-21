@@ -118,7 +118,7 @@ namespace UndergroundSecrets
                         OfferingPuzzles.CreatePuzzle(spot, __instance);
                         break;
                     case 2:
-                        Riddles.CreatePuzzle(spot, __instance);
+                        RiddlePuzzles.CreatePuzzle(spot, __instance);
                         break;
                     case 3:
                         TilePuzzles.CreatePuzzle(spot, __instance);
@@ -153,7 +153,7 @@ namespace UndergroundSecrets
                     }
                     else if (action == "undergroundRiddles")
                     {
-                        Riddles.Interact(__instance, tileLocation, who);
+                        RiddlePuzzles.Interact(__instance, tileLocation, who);
                     }
                 }
             }

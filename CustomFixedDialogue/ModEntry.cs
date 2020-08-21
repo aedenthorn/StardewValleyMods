@@ -29,9 +29,11 @@ namespace CustomFixedDialogue
 
 			var harmony = HarmonyInstance.Create(ModManifest.UniqueID); 
 
+			HarmonyMethod hm = new HarmonyMethod(typeof(DialoguePatches), nameof(DialoguePatches.Dialogue_Prefix));
+			hm.prioritiy = Priority.First;
 			harmony.Patch(
-				original: AccessTools.Method(typeof(Dialogue), "parseDialogueString"),
-				prefix: new HarmonyMethod(typeof(DialoguePatches), nameof(DialoguePatches.Dialogue_parseDialogueString_Prefix))
+				original: AccessTools.Constructor(typeof(Dialogue), new Type[] { typeof(string), typeof(NPC) }),
+				prefix: hm
 			);
 
 			harmony.Patch(

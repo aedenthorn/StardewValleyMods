@@ -15,7 +15,7 @@ using static StardewValley.Network.NetAudio;
 
 namespace UndergroundSecrets
 {
-    internal class Riddles
+    internal class RiddlePuzzles
     {
         private static IModHelper helper;
         private static IMonitor monitor;
