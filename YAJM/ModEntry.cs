@@ -141,7 +141,14 @@ namespace YAJM
 					}
 					box.X += ox * Game1.tileSize * i;
 					box.Y += oy * Game1.tileSize * i;
-					collisions.Add(l.isCollidingPosition(box, Game1.viewport, true, 0, false, Game1.player) || box.X >= l.map.Layers[0].LayerWidth * Game1.tileSize || box.Y >= l.map.Layers[0].LayerHeight * Game1.tileSize || box.X < 0 || box.Y < 0);
+					collisions.Add(
+						l.isCollidingPosition(box, Game1.viewport, true, 0, false, Game1.player) 
+						|| box.X >= l.map.Layers[0].LayerWidth * Game1.tileSize 
+						|| box.Y >= l.map.Layers[0].LayerHeight * Game1.tileSize 
+						|| box.X < 0 
+						|| box.Y < 0
+						|| (l.waterTiles?[box.X / Game1.tileSize, box.Y / Game1.tileSize] == true && !Helper.ModRegistry.IsLoaded("aedenthorn.Swim"))
+					);
 				}
 
 				playerJumpingWithHorse = Game1.player.isRidingHorse();

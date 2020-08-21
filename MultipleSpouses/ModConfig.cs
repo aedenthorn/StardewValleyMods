@@ -37,7 +37,7 @@ namespace MultipleSpouses
         public int MaxChildren { get; set; } = 2;
         public bool ChildrenHaveHairOfSpouse { get; set; } = true;
         public int ChildGrowthMultiplier { get; set; } = 1;
-        public bool ShowParentNames { get; set; } = true;
+        public bool ShowParentNames { get; set; } = false;
 
         public bool BuildAllSpousesRooms { get; set; } = true;
         public string SpouseRoomOrder { get; set; } = "";

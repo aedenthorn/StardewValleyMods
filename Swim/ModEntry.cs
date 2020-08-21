@@ -215,8 +215,8 @@ namespace Swim
             throw new InvalidDataException(); 
         }
 
-                /// <summary>Get whether this instance can edit the given asset.</summary>
-                /// <param name="asset">Basic metadata about the asset being loaded.</param>
+        /// <summary>Get whether this instance can edit the given asset.</summary>
+        /// <param name="asset">Basic metadata about the asset being loaded.</param>
         public bool CanEdit<T>(IAssetInfo asset)
         {
             if (!config.EnableMod)

@@ -149,7 +149,6 @@ namespace CustomFixedDialogue
 
         public static void Dialogue_Prefix(Dialogue __instance, ref string masterDialogue)
         {
-            Monitor.Log($"fixing string: {masterDialogue}");
             try
             {
                 FixString(__instance.speaker, ref masterDialogue);
@@ -202,7 +201,7 @@ namespace CustomFixedDialogue
         public static void FixString(NPC speaker, ref string input)
         {
 
-            Monitor.Log($"checking string: {input}");
+            //Monitor.Log($"checking string: {input}");
 
             Regex pattern1 = new Regex(prefix + @"(?<key>[^\^]+)", RegexOptions.Compiled);
 

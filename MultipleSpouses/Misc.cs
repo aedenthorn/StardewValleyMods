@@ -175,7 +175,7 @@ namespace MultipleSpouses
 
             List<string> allBedSpouses = new List<string>(GetSpouses(farmer, 1).Keys.ToList());
 
-            List<NPC> roomSpouses = GetSpouses(farmer, -1).Values.ToList().FindAll((s) => (Maps.roomIndexes.ContainsKey(s.Name) || Maps.tmxSpouseRooms.ContainsKey(s.Name)) && !farmer.friendshipData[s.Name].IsEngaged());
+            List<string> roomSpouses = ReorderSpousesForRooms(GetSpouses(farmer, -1).Keys.ToList().FindAll(s => (Maps.roomIndexes.ContainsKey(s) || Maps.tmxSpouseRooms.ContainsKey(s)) && !farmer.friendshipData[s].IsEngaged()));
 
             foreach (NPC j in allSpouses) { 
                 Monitor.Log("placing " + j.Name);
@@ -216,7 +216,7 @@ namespace MultipleSpouses
                 else
                 {
 
-                    if (!roomSpouses.Contains(j))
+                    if (!roomSpouses.Contains(j.Name))
                     {
                         j.setTilePosition(farmHouse.getRandomOpenPointInHouse(ModEntry.myRand));
                         j.faceDirection(ModEntry.myRand.Next(0, 4));
@@ -225,7 +225,7 @@ namespace MultipleSpouses
                     }
                     else
                     {
-                        int offset = roomSpouses.IndexOf(j) * 7;
+                        int offset = roomSpouses.IndexOf(j.Name) * 7;
                         j.setTilePosition((int)spot.X + offset, (int)spot.Y);
                         j.faceDirection(ModEntry.myRand.Next(0, 4));
                         j.setSpouseRoomMarriageDialogue();
