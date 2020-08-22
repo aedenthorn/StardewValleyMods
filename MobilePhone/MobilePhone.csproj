@@ -105,6 +105,7 @@
     <None Include="assets\events\Vincent.json" />
     <None Include="assets\events\Willy.json" />
     <None Include="assets\events\Wizard.json" />
+    <None Include="i18n\es.json" />
     <None Include="i18n\default.json" />
     <None Include="manifest.json" />
     <None Include="packages.config" />

@@ -61,11 +61,13 @@ namespace Murdercrows
             Helper.Events.GameLoop.GameLaunched += GameLoop_GameLaunched;
             Helper.Events.GameLoop.UpdateTicked += GameLoop_UpdateTicked;
             Helper.Events.GameLoop.DayStarted += GameLoop_DayStarted;
+            Helper.Events.GameLoop.DayEnding += GameLoop_DayEnding; 
             Helper.Events.GameLoop.OneSecondUpdateTicked += GameLoop_OneSecondUpdateTicked;
             if(Config.EnableMonsterWaves)
                 Helper.Events.GameLoop.TimeChanged += GameLoop_TimeChanged;
 
         }
+
         private void GameLoop_GameLaunched(object sender, StardewModdingAPI.Events.GameLaunchedEventArgs e)
         {
             JsonAssets = Helper.ModRegistry.GetApi<IJsonAssetsApi>("spacechase0.JsonAssets");
@@ -97,6 +99,7 @@ namespace Murdercrows
                 waitingSeconds = 0;
                 if (thisWave.totalMonsters() <= 0)
                 {
+                    ClearMonsters();
                     thisWave = null;
                     waveStarted = false;
                     return;
@@ -194,7 +197,7 @@ namespace Murdercrows
                 for (int y = 0; y < farm.map.Layers[0].LayerHeight; y++)
                 {
                     Tile tile = farm.map.GetLayer("Back").PickTile(new Location(x, y) * Game1.tileSize, Game1.viewport.Size);
-                    if (tile != null && farm.map.GetLayer("Buildings").PickTile(new Location(x, y) * Game1.tileSize, Game1.viewport.Size) == null && farm.map.GetLayer("Front").PickTile(new Location(x, y) * Game1.tileSize, Game1.viewport.Size) == null && !farm.waterTiles[x,y] && Vector2.Distance(Game1.player.getTileLocation(), new Vector2(x,y)) < Config.MaxDistanceSpawn)
+                    if (Vector2.Distance(Game1.player.getTileLocation(), new Vector2(x, y)) < Config.MaxDistanceSpawn && tile != null && farm.map.GetLayer("Buildings").PickTile(new Location(x, y) * Game1.tileSize, Game1.viewport.Size) == null && farm.map.GetLayer("Front").PickTile(new Location(x, y) * Game1.tileSize, Game1.viewport.Size) == null && !farm.waterTiles[x,y] && !farm.objects.ContainsKey(new Vector2(x, y)))
                     {
                         clearSpots.Add(new Vector2(x, y));
                     }
@@ -242,6 +245,10 @@ namespace Murdercrows
         private void GameLoop_DayStarted(object sender, StardewModdingAPI.Events.DayStartedEventArgs e)
         {
             ticksSinceMorning = 0;
+        }
+        private void GameLoop_DayEnding(object sender, StardewModdingAPI.Events.DayEndingEventArgs e)
+        {
+            ClearMonsters();
         }
 
         private void GameLoop_UpdateTicked(object sender, StardewModdingAPI.Events.UpdateTickedEventArgs e)
