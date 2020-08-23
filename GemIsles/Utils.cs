@@ -2,6 +2,7 @@
 using StardewModdingAPI;
 using StardewValley;
 using StardewValley.Locations;
+using StardewValley.Monsters;
 using StardewValley.Objects;
 using StardewValley.TerrainFeatures;
 using System;
@@ -336,10 +337,8 @@ namespace GemIsles
             }
             location.map = map;
 
-            // add water tiles, get free points
+            // add water tiles
 
-            List<Vector2> freeSpots = new List<Vector2>();
-            List<Vector2> freeCenters = new List<Vector2>();
             location.waterTiles = new bool[location.map.Layers[0].LayerWidth, location.map.Layers[0].LayerHeight];
             bool foundAnyWater = false;
             for (int x = 0; x < location.map.Layers[0].LayerWidth; x++)
@@ -351,23 +350,6 @@ namespace GemIsles
                         foundAnyWater = true;
                         location.waterTiles[x, y] = true;
                     }
-                    else
-                    {
-                        freeSpots.Add(new Vector2(x,y));
-                        if(
-                            location.doesTileHaveProperty(x - 1, y - 1, "Water", "Back") == null
-                            && location.doesTileHaveProperty(x, y - 1, "Water", "Back") == null
-                            && location.doesTileHaveProperty(x + 1, y - 1, "Water", "Back") == null
-                            && location.doesTileHaveProperty(x - 1, y, "Water", "Back") == null
-                            && location.doesTileHaveProperty(x + 1, y, "Water", "Back") == null
-                            && location.doesTileHaveProperty(x - 1, y + 1, "Water", "Back") == null
-                            && location.doesTileHaveProperty(x, y + 1, "Water", "Back") == null
-                            && location.doesTileHaveProperty(x + 1, y + 1, "Water", "Back") == null
-                        )
-                        {
-                            freeCenters.Add(new Vector2(x, y));
-                        }
-                    }
                 }
             }
             if (!foundAnyWater)
@@ -375,152 +357,241 @@ namespace GemIsles
                 location.waterTiles = null;
             }
 
-            List<Vector2> randFreeSpots = new List<Vector2>(freeSpots);
-
-            int n = randFreeSpots.Count;
-            while (n > 1)
+            foreach (Rectangle isleBox in isleBoxes)
             {
-                n--;
-                int k = Game1.random.Next(n + 1);
-                var value = randFreeSpots[k];
-                randFreeSpots[k] = randFreeSpots[n];
-                randFreeSpots[n] = value;
-            }
-
-            List<Vector2> randFreeCenters = new List<Vector2>(freeCenters);
-
-            n = randFreeCenters.Count;
-            while (n > 1)
-            {
-                n--;
-                int k = Game1.random.Next(n + 1);
-                var value = randFreeCenters[k];
-                randFreeCenters[k] = randFreeCenters[n];
-                randFreeCenters[n] = value;
-            }
-
-            // add terrain features
-
-            int taken = 0;
-            if (Game1.random.NextDouble() < Config.TreasureChance)
-            {
-                location.overlayObjects[randFreeSpots[taken]] = new Chest(0, new List<Item>() { MineShaft.getTreasureRoomItem() }, randFreeSpots[taken], false, 0);
-                taken++;
-            }
-            if (Game1.random.NextDouble() < Config.TreesChance)
-            {
-                int trees = Math.Min(freeSpots.Count - taken, (int)(freeSpots.Count * Math.Min(1, Config.TreesPortion)));
-                for(int i = 0; i < trees; i++)
+                List<Vector2> freeSpots = new List<Vector2>();
+                List<Vector2> freeCenters = new List<Vector2>();
+                for (int x = isleBox.X; x < isleBox.Right; x++)
                 {
-                    location.terrainFeatures.Add(randFreeSpots[i + taken], new Tree(6, 5));
+                    for (int y = isleBox.Y; y < isleBox.Bottom; y++)
+                    {
+                        if (location.doesTileHaveProperty(x, y, "Water", "Back") == null)
+                        {
+                            freeSpots.Add(new Vector2(x, y));
+                            if (
+                                location.doesTileHaveProperty(x - 1, y - 1, "Water", "Back") == null
+                                && location.doesTileHaveProperty(x, y - 1, "Water", "Back") == null
+                                && location.doesTileHaveProperty(x + 1, y - 1, "Water", "Back") == null
+                                && location.doesTileHaveProperty(x - 1, y, "Water", "Back") == null
+                                && location.doesTileHaveProperty(x + 1, y, "Water", "Back") == null
+                                && location.doesTileHaveProperty(x - 1, y + 1, "Water", "Back") == null
+                                && location.doesTileHaveProperty(x, y + 1, "Water", "Back") == null
+                                && location.doesTileHaveProperty(x + 1, y + 1, "Water", "Back") == null
+                            )
+                            {
+                                freeCenters.Add(new Vector2(x, y));
+                            }
+                        }
+                    }
                 }
-                taken += trees;
-                if (Game1.random.NextDouble() < Config.CoconutChance)
+                Monitor.Log($"Island has {freeSpots.Count} free spots, {freeCenters.Count} centers");
+
+                List<Vector2> randFreeSpots = new List<Vector2>(freeSpots);
+
+                int n = randFreeSpots.Count;
+                while (n > 1)
                 {
-                    int nuts = Math.Min(freeSpots.Count - taken, (int)(freeSpots.Count * Math.Min(1, Config.CoconutPortion)));
-                    for (int i = 0; i < nuts; i++)
+                    n--;
+                    int k = Game1.random.Next(n + 1);
+                    var value = randFreeSpots[k];
+                    randFreeSpots[k] = randFreeSpots[n];
+                    randFreeSpots[n] = value;
+                }
+
+                List<Vector2> randFreeCenters = new List<Vector2>(freeCenters);
+
+                n = randFreeCenters.Count;
+                while (n > 1)
+                {
+                    n--;
+                    int k = Game1.random.Next(n + 1);
+                    var value = randFreeCenters[k];
+                    randFreeCenters[k] = randFreeCenters[n];
+                    randFreeCenters[n] = value;
+                }
+
+                // add terrain features
+
+                int taken = 0;
+                if (Game1.random.NextDouble() < Config.TreasureChance)
+                {
+                    Monitor.Log($"Island has treasure chest");
+                    location.overlayObjects[randFreeSpots[taken]] = new Chest(0, new List<Item>() { MineShaft.getTreasureRoomItem() }, randFreeSpots[taken], false, 0);
+                    taken++;
+                }
+                if (Game1.random.NextDouble() < Config.TreesChance)
+                {
+                    Monitor.Log($"Island has trees");
+                    int trees = Math.Min(freeSpots.Count - taken, (int)(freeSpots.Count * Math.Min(1, Config.TreesPortion)));
+                    for (int i = 0; i < trees; i++)
+                    {
+                        location.terrainFeatures.Add(randFreeSpots[i + taken], new Tree(6, 5));
+                    }
+                    taken += trees;
+                    if (Game1.random.NextDouble() < Config.CoconutChance)
+                    {
+                        Monitor.Log($"Island has coconuts");
+                        int nuts = Math.Min(freeSpots.Count - taken, (int)(freeSpots.Count * Math.Min(1, Config.CoconutPortion)));
+                        for (int i = 0; i < nuts; i++)
+                        {
+                            Vector2 position = randFreeSpots[i + taken];
+                            location.dropObject(new Object(88, 1, false, -1, 0), position * 64f, Game1.viewport, true, null);
+                        }
+                        taken += nuts;
+                    }
+                }
+                if (Game1.random.NextDouble() < Config.FaunaChance)
+                {
+                    Monitor.Log($"Island has fauna");
+                    int fauna = Math.Min(freeSpots.Count - taken, (int)(freeSpots.Count * Math.Min(1, Config.FaunaPortion)));
+                    for (int i = 0; i < fauna; i++)
                     {
                         Vector2 position = randFreeSpots[i + taken];
-                        location.dropObject(new Object(88, 1, false, -1, 0), position * 64f, Game1.viewport, true, null);
-                    }
-                    taken += nuts;
-                }
-            }
-            if (Game1.random.NextDouble() < Config.FaunaChance)
-            {
-                int fauna = Math.Min(freeSpots.Count - taken,(int)(freeSpots.Count * Math.Min(1, Config.FaunaPortion)));
-                for(int i = 0; i < fauna; i++)
-                {
-                    Vector2 position = randFreeSpots[i + taken];
-                    int index = 393;
-                    if (Game1.random.NextDouble() < 0.2)
-                    {
-                        index = 397;
-                    }
-                    else if (Game1.random.NextDouble() < 0.1)
-                    {
-                        index = 152;
-                    }
-                    location.dropObject(new Object(index, 1, false, -1, 0), position * 64f, Game1.viewport, true, null);
-                }
-                taken += fauna;
-            }
-            if (Game1.random.NextDouble() < Config.GrassChance)
-            {
-                int grass = Math.Min(freeSpots.Count - taken,(int)(freeSpots.Count * Math.Min(1, Config.GrassPortion)));
-                for(int i = 0; i < grass; i++)
-                {
-                    location.terrainFeatures.Add(randFreeSpots[i + taken], new Grass(Game1.random.Next(2,5), Game1.random.Next(1, 3)));
-                }
-                taken += grass;
-            }
-            if (Game1.random.NextDouble() < Config.MineralChance)
-            {
-                int minerals = Math.Min(freeSpots.Count - taken,(int)(freeSpots.Count * Math.Min(1, Config.MineralPortion)));
-                for(int i = 0; i < minerals; i++)
-                {
-                    Vector2 position = randFreeSpots[i + taken];
-                    if (Game1.random.NextDouble() < 0.06)
-                    {
-                        location.terrainFeatures.Add(position, new Tree(1 + Game1.random.Next(2), 1));
-                    }
-                    else if (Game1.random.NextDouble() < 0.02)
-                    {
-                        if (Game1.random.NextDouble() < 0.1)
+                        int index = 393;
+                        if (Game1.random.NextDouble() < 0.2)
                         {
-                            location.objects.Add(position, new Object(position, 46, "Stone", true, false, false, false)
-                            {
-                                MinutesUntilReady = 12
-                            });
-                        }
-                        else
-                        {
-                            location.objects.Add(position, new Object(position, (Game1.random.Next(7) + 1) * 2, "Stone", true, false, false, false)
-                            {
-                                MinutesUntilReady = 5
-                            });
-                        }
-                    }
-                    else if (Game1.random.NextDouble() < 0.1)
-                    {
-                        if (Game1.random.NextDouble() < 0.001)
-                        {
-                            location.objects.Add(position, new Object(position, 765, 1)
-                            {
-                                MinutesUntilReady = 16
-                            });
+                            index = 397;
                         }
                         else if (Game1.random.NextDouble() < 0.1)
                         {
-                            location.objects.Add(position, new Object(position, 764, 1)
-                            {
-                                MinutesUntilReady = 8
-                            });
+                            index = 152;
                         }
-                        else if (Game1.random.NextDouble() < 0.33)
-                        {
-                            location.objects.Add(position, new Object(position, 290, 1)
-                            {
-                                MinutesUntilReady = 5
-                            });
-                        }
-                        else
-                        {
-                            location.objects.Add(position, new Object(position, 751, 1)
-                            {
-                                MinutesUntilReady = 3
-                            });
-                        }
+                        location.dropObject(new Object(index, 1, false, -1, 0), position * 64f, Game1.viewport, true, null);
+                    }
+                    taken += fauna;
+                }
+                if (Game1.random.NextDouble() < Config.ArtifactChance)
+                {
+                    Monitor.Log($"Island has artifacts");
+                    int artifacts = Math.Min(freeSpots.Count - taken, (int)(freeSpots.Count * Math.Min(1, Config.ArtifactPortion)));
+                    for (int i = 0; i < artifacts; i++)
+                    {
+                        Vector2 position = randFreeSpots[i + taken];
+                        location.objects.Add(position, new Object(position, 590, 1));
+                    }
+                    taken += artifacts;
+                }
+                if (Game1.random.NextDouble() < Config.MonsterChance)
+                {
+                    int monsters = Math.Min(freeSpots.Count - taken, (int)(freeSpots.Count * Math.Min(1, Config.MonsterPortion)));
+                    double type = Game1.random.NextDouble();
+                    if (type < 0.2)
+                    {
+                        Monitor.Log($"Island has skeletons");
+                    }
+                    else if (type < 0.3)
+                    {
+                        Monitor.Log($"Island has dinos");
+                    }
+                    else if (type < 0.5)
+                    {
+                        Monitor.Log($"Island has golems");
                     }
                     else
                     {
-                        Object obj = new Object(position, (Game1.random.NextDouble() < 0.25) ? 32 : ((Game1.random.NextDouble() < 0.33) ? 38 : ((Game1.random.NextDouble() < 0.5) ? 40 : 42)), 1);
-                        obj.minutesUntilReady.Value = 2;
-                        obj.Name = "Stone";
-                        location.objects.Add(position, obj);
+                        Monitor.Log($"Island has crabs");
                     }
+                    for (int i = 0; i < monsters; i++)
+                    {
+                        Vector2 position = randFreeSpots[i + taken];
+                        if (type < 0.2)
+                        {
+                            location.characters.Add(new Skeleton(position * Game1.tileSize));
+                        }
+                        else if (type < 0.3)
+                        {
+                            location.characters.Add(new DinoMonster(position * Game1.tileSize));
+                        }
+                        else if (type < 0.5)
+                        {
+                            location.characters.Add(new RockGolem(position * Game1.tileSize, 10));
+                        }
+                        else
+                        {
+                            location.characters.Add(new RockCrab(position * Game1.tileSize));
+                        }
+                    }
+                    taken += monsters;
                 }
-                taken += minerals;
+                if (Game1.random.NextDouble() < Config.GrassChance)
+                {
+                    Monitor.Log($"Island has grass");
+                    int grass = Math.Min(freeSpots.Count - taken, (int)(freeSpots.Count * Math.Min(1, Config.GrassPortion)));
+                    for (int i = 0; i < grass; i++)
+                    {
+                        location.terrainFeatures.Add(randFreeSpots[i + taken], new Grass(Game1.random.Next(2, 5), Game1.random.Next(1, 3)));
+                    }
+                    taken += grass;
+                }
+                if (Game1.random.NextDouble() < Config.MineralChance)
+                {
+                    Monitor.Log($"Island has minerals");
+                    int minerals = Math.Min(freeSpots.Count - taken, (int)(freeSpots.Count * Math.Min(1, Config.MineralPortion)));
+                    for (int i = 0; i < minerals; i++)
+                    {
+                        Vector2 position = randFreeSpots[i + taken];
+                        if (Game1.random.NextDouble() < 0.06)
+                        {
+                            location.terrainFeatures.Add(position, new Tree(1 + Game1.random.Next(2), 1));
+                        }
+                        else if (Game1.random.NextDouble() < 0.02)
+                        {
+                            if (Game1.random.NextDouble() < 0.1)
+                            {
+                                location.objects.Add(position, new Object(position, 46, "Stone", true, false, false, false)
+                                {
+                                    MinutesUntilReady = 12
+                                });
+                            }
+                            else
+                            {
+                                location.objects.Add(position, new Object(position, (Game1.random.Next(7) + 1) * 2, "Stone", true, false, false, false)
+                                {
+                                    MinutesUntilReady = 5
+                                });
+                            }
+                        }
+                        else if (Game1.random.NextDouble() < 0.1)
+                        {
+                            if (Game1.random.NextDouble() < 0.001)
+                            {
+                                location.objects.Add(position, new Object(position, 765, 1)
+                                {
+                                    MinutesUntilReady = 16
+                                });
+                            }
+                            else if (Game1.random.NextDouble() < 0.1)
+                            {
+                                location.objects.Add(position, new Object(position, 764, 1)
+                                {
+                                    MinutesUntilReady = 8
+                                });
+                            }
+                            else if (Game1.random.NextDouble() < 0.33)
+                            {
+                                location.objects.Add(position, new Object(position, 290, 1)
+                                {
+                                    MinutesUntilReady = 5
+                                });
+                            }
+                            else
+                            {
+                                location.objects.Add(position, new Object(position, 751, 1)
+                                {
+                                    MinutesUntilReady = 3
+                                });
+                            }
+                        }
+                        else
+                        {
+                            Object obj = new Object(position, (Game1.random.NextDouble() < 0.25) ? 32 : ((Game1.random.NextDouble() < 0.33) ? 38 : ((Game1.random.NextDouble() < 0.5) ? 40 : 42)), 1);
+                            obj.minutesUntilReady.Value = 2;
+                            obj.Name = "Stone";
+                            location.objects.Add(position, obj);
+                        }
+                    }
+                    taken += minerals;
+                }
             }
         }
 

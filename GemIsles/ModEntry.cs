@@ -3,19 +3,20 @@ using StardewModdingAPI;
 using StardewModdingAPI.Events;
 using StardewValley;
 using StardewValley.Locations;
+using StardewValley.Monsters;
 using System.Collections.Generic;
 using System.Linq;
 using xTile;
 
 namespace GemIsles
 {
-    public class ModEntry : Mod
-	{
+    public class ModEntry : Mod, IAssetEditor
+    {
 
-		public static ModEntry context;
+        public static ModEntry context;
 
-		internal static ModConfig Config;
-		private static IMonitor SMonitor;
+        internal static ModConfig Config;
+        private static IMonitor SMonitor;
 
         private static int mapX;
         private static int mapY;
@@ -24,10 +25,10 @@ namespace GemIsles
         private string mapAssetKey;
 
         public override void Entry(IModHelper helper)
-		{
-			context = this;
-			Config = Helper.ReadConfig<ModConfig>();
-			SMonitor = Monitor;
+        {
+            context = this;
+            Config = Helper.ReadConfig<ModConfig>();
+            SMonitor = Monitor;
 
             Utils.Initialize(Config, Monitor, Helper);
 
@@ -35,7 +36,7 @@ namespace GemIsles
             helper.Events.GameLoop.SaveLoaded += GameLoop_SaveLoaded;
             helper.Events.GameLoop.UpdateTicked += GameLoop_UpdateTicked;
             helper.Events.Player.Warped += Player_Warped;
-		}
+        }
 
         private void GameLoop_DayEnding(object sender, DayEndingEventArgs e)
         {
@@ -62,7 +63,7 @@ namespace GemIsles
         private void GameLoop_UpdateTicked(object sender, UpdateTickedEventArgs e)
         {
             if (!Context.IsPlayerFree || !Game1.player.swimming || (!(Game1.player.currentLocation is Beach) && !(Game1.player.currentLocation is Forest) && !Game1.currentLocation.Name.StartsWith("GemIsles_")))
-                    return;
+                return;
 
             Point pos = Game1.player.getTileLocationPoint();
             if (Game1.player.position.Y > Game1.viewport.Y + Game1.viewport.Height - 20)
@@ -98,7 +99,7 @@ namespace GemIsles
                 }
                 else
                 {
-                    if(true || mapX > 0)
+                    if (true || mapX > 0)
                     {
                         pos.X = pos.X * 104 / 128;
                         Game1.warpFarmer("Beach", pos.X, Game1.getLocationFromName("Beach").map.DisplaySize.Height / Game1.tileSize - 2, false);
@@ -128,16 +129,38 @@ namespace GemIsles
         private void WarpToGemIsles(int x, int y)
         {
             string name = $"GemIsles_{mapX}_{mapY}";
-            Monitor.Log($"Warping to location: {name}");
             if (Game1.getLocationFromName(name) == null)
             {
+                isleMaps.Add(name);
                 GameLocation location = new GameLocation(mapAssetKey, name) { IsOutdoors = true, IsFarm = false };
                 Game1.locations.Add(location);
+                Helper.Content.InvalidateCache("Data/Locations");
                 Utils.CreateIslesMap(location);
             }
             Game1.warpFarmer(name, x, y, false);
         }
 
+
+        public bool CanEdit<T>(IAssetInfo asset)
+        {
+            if (!Config.EnableMod)
+                return false;
+            if (asset.AssetNameEquals("Data/Locations"))
+                return true;
+
+            return false;
+        }
+        public void Edit<T>(IAssetData asset)
+        {
+            if (asset.AssetNameEquals("Data/Locations"))
+            {
+                var editor = asset.AsDictionary<string, string>();
+                foreach(string isle in Game1.locations.Where(l => l.Name.StartsWith("GemIsles_")).Select(l => l.Name))
+                {
+                    editor.Data[isle] = editor.Data["Beach"];
+                }
+            }
+        }
     }
 }
  
