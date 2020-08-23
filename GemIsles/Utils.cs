@@ -203,64 +203,64 @@ namespace GemIsles
                                 {
                                     if (!surround[3])
                                     {
-                                        back.Tiles[isleBox.X + x, isleBox.Y + y] = new StaticTile(back, sheet, BlendMode.Alpha, 51);
+                                        build.Tiles[isleBox.X + x, isleBox.Y + y] = new StaticTile(build, sheet, BlendMode.Alpha, 51);
                                     }
                                     else if (!surround[4])
                                     {
-                                        back.Tiles[isleBox.X + x, isleBox.Y + y] = new StaticTile(back, sheet, BlendMode.Alpha, 54);
+                                        build.Tiles[isleBox.X + x, isleBox.Y + y] = new StaticTile(build, sheet, BlendMode.Alpha, 54);
                                     }
                                     else if(build.Tiles[isleBox.X + x - 1, isleBox.Y + y]?.TileIndex == 52)
                                     {
-                                        back.Tiles[isleBox.X + x, isleBox.Y + y] = new StaticTile(back, sheet, BlendMode.Alpha, 53);
+                                        build.Tiles[isleBox.X + x, isleBox.Y + y] = new StaticTile(build, sheet, BlendMode.Alpha, 53);
                                     }
                                     else
                                     {
-                                        back.Tiles[isleBox.X + x, isleBox.Y + y] = new StaticTile(back, sheet, BlendMode.Alpha, 52);
+                                        build.Tiles[isleBox.X + x, isleBox.Y + y] = new StaticTile(build, sheet, BlendMode.Alpha, 52);
                                     }
                                 }
                                 else if (!surround[6])
                                 {
                                     if (!surround[3])
                                     {
-                                        back.Tiles[isleBox.X + x, isleBox.Y + y] = new StaticTile(back, sheet, BlendMode.Alpha, 51);
+                                        build.Tiles[isleBox.X + x, isleBox.Y + y] = new StaticTile(build, sheet, BlendMode.Alpha, 51);
                                     }
                                     else if (!surround[4])
                                     {
-                                        back.Tiles[isleBox.X + x, isleBox.Y + y] = new StaticTile(back, sheet, BlendMode.Alpha, 54);
+                                        build.Tiles[isleBox.X + x, isleBox.Y + y] = new StaticTile(build, sheet, BlendMode.Alpha, 54);
                                     }
                                     else if(build.Tiles[isleBox.X + x - 1, isleBox.Y + y]?.TileIndex == 52)
                                     {
-                                        back.Tiles[isleBox.X + x, isleBox.Y + y] = new StaticTile(back, sheet, BlendMode.Alpha, 53);
+                                        build.Tiles[isleBox.X + x, isleBox.Y + y] = new StaticTile(build, sheet, BlendMode.Alpha, 53);
                                     }
                                     else
                                     {
-                                        back.Tiles[isleBox.X + x, isleBox.Y + y] = new StaticTile(back, sheet, BlendMode.Alpha, 52);
+                                        build.Tiles[isleBox.X + x, isleBox.Y + y] = new StaticTile(build, sheet, BlendMode.Alpha, 52);
                                     }
-                                    back.Tiles[isleBox.X + x, isleBox.Y + y].Properties.Add("@Flip", 2);
+                                    build.Tiles[isleBox.X + x, isleBox.Y + y].Properties.Add("@Flip", 2);
                                 }
                                 else if (!surround[3])
                                 {
-                                    back.Tiles[isleBox.X + x, isleBox.Y + y] = new StaticTile(back, sheet, BlendMode.Alpha, 68);
+                                    build.Tiles[isleBox.X + x, isleBox.Y + y] = new StaticTile(build, sheet, BlendMode.Alpha, 68);
                                 }
                                 else if (!surround[4])
                                 {
-                                    back.Tiles[isleBox.X + x, isleBox.Y + y] = new StaticTile(back, sheet, BlendMode.Alpha, 71);
+                                    build.Tiles[isleBox.X + x, isleBox.Y + y] = new StaticTile(build, sheet, BlendMode.Alpha, 71);
                                 }
                                 else if (!surround[0])
                                 {
-                                    back.Tiles[isleBox.X + x, isleBox.Y + y] = new StaticTile(back, sheet, BlendMode.Alpha, 70);
+                                    build.Tiles[isleBox.X + x, isleBox.Y + y] = new StaticTile(build, sheet, BlendMode.Alpha, 70);
                                 }
                                 else if (!surround[2])
                                 {
-                                    back.Tiles[isleBox.X + x, isleBox.Y + y] = new StaticTile(back, sheet, BlendMode.Alpha, 69);
+                                    build.Tiles[isleBox.X + x, isleBox.Y + y] = new StaticTile(build, sheet, BlendMode.Alpha, 69);
                                 }
                                 else if (!surround[5])
                                 {
-                                    back.Tiles[isleBox.X + x, isleBox.Y + y] = new StaticTile(back, sheet, BlendMode.Alpha, 87);
+                                    build.Tiles[isleBox.X + x, isleBox.Y + y] = new StaticTile(build, sheet, BlendMode.Alpha, 87);
                                 }
                                 else if (!surround[7])
                                 {
-                                    back.Tiles[isleBox.X + x, isleBox.Y + y] = new StaticTile(back, sheet, BlendMode.Alpha, 86);
+                                    build.Tiles[isleBox.X + x, isleBox.Y + y] = new StaticTile(build, sheet, BlendMode.Alpha, 86);
                                 }
                             }
                         }
