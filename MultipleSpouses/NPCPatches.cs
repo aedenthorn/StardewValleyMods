@@ -336,11 +336,62 @@ namespace MultipleSpouses
             return true;
         }
 
+        internal static bool NPC_tryToRetrieveDialogue_Prefix(NPC __instance, ref Dialogue __result, string appendToEnd)
+        {
+            try
+            {
+                if (appendToEnd.Contains("_inlaw_") && Game1.player.friendshipData.ContainsKey(__instance.Name) && Game1.player.friendshipData[__instance.Name].IsMarried())
+                {
+                    __result = null;
+                    return false;
+                }
+            }
+            catch (Exception ex)
+            {
+                Monitor.Log($"Failed in {nameof(NPC_tryToRetrieveDialogue_Prefix)}:\n{ex}", LogLevel.Error);
+            }
+            return true;
+        }
+
+        internal static void NPC_GetDispositionModifiedString_Prefix(NPC __instance, ref bool __state)
+        {
+            try
+            {
+                if (Game1.player.isMarried() && Game1.player.friendshipData.ContainsKey(__instance.Name) &&  Game1.player.friendshipData[__instance.Name].IsMarried() && Game1.player.spouse != __instance.Name)
+                {
+                    ModEntry.tempOfficialSpouse = __instance;
+                    __state = true;
+                }
+            }
+            catch (Exception ex)
+            {
+                Monitor.Log($"Failed in {nameof(NPC_GetDispositionModifiedString_Prefix)}:\n{ex}", LogLevel.Error);
+            }
+        }
+
+        internal static void NPC_GetDispositionModifiedString_Postfix(bool __state)
+        {
+            try
+            {
+                if (__state)
+                {
+                    ModEntry.tempOfficialSpouse = null;
+                }
+            }
+            catch (Exception ex)
+            {
+                Monitor.Log($"Failed in {nameof(NPC_GetDispositionModifiedString_Postfix)}:\n{ex}", LogLevel.Error);
+            }
+        }
+
         public static void NPC_marriageDuties_Prefix(NPC __instance)
         {
             try
             {
-
+                if (Misc.GetSpouses(Game1.player, 0).ContainsKey(__instance.Name))
+                {
+                    ModEntry.tempOfficialSpouse = __instance;
+                }
             }
             catch (Exception ex)
             {
@@ -352,6 +403,10 @@ namespace MultipleSpouses
         {
             try
             {
+                if (ModEntry.tempOfficialSpouse == __instance)
+                {
+                    ModEntry.tempOfficialSpouse = null;
+                }
 
                 // custom dialogues
 
@@ -598,32 +653,31 @@ namespace MultipleSpouses
             return true;
         }
 
-        public static void NPC_loadCurrentDialogue_Postfix(NPC __instance, ref Stack<Dialogue> __result)
+
+        internal static void NPC_loadCurrentDialogue_Prefix(NPC __instance, ref string __state)
         {
             try
             {
                 if (Misc.GetSpouses(Game1.player, 0).ContainsKey(__instance.Name))
                 {
-                    if (!Game1.newDay && __instance.marriageDefaultDialogue.Value != null && !__instance.shouldSayMarriageDialogue.Value)
-                    {
-                        __result.Push(__instance.marriageDefaultDialogue.Value.GetDialogue(__instance));
-                        __instance.marriageDefaultDialogue.Value = null;
-                    }
-                    if (__instance.marriageDefaultDialogue.Value.GetDialogue(__instance).getCurrentDialogue() == "")
-                    {
-                        Monitor.Log($"missing marriage dialogue for {__instance.Name}");
-                        Friendship friends;
-                        int heartLevel = Game1.player.friendshipData.TryGetValue(__instance.Name, out friends) ? (friends.Points / 250) : 0;
-                        Dialogue d = __instance.tryToRetrieveDialogue(Game1.currentSeason + "_", heartLevel, "");
-                        if (d == null)
-                        {
-                            d = __instance.tryToRetrieveDialogue("", heartLevel, "");
-                        }
-                        if (d != null)
-                        {
-                            __result.Push(d);
-                        }
-                    }
+                    __state = Game1.player.spouse;
+                    Game1.player.spouse = __instance.Name;
+                }
+            }
+            catch (Exception ex)
+            {
+                Monitor.Log($"Failed in {nameof(NPC_loadCurrentDialogue_Prefix)}:\n{ex}", LogLevel.Error);
+            }
+        }
+
+
+        public static void NPC_loadCurrentDialogue_Postfix(string __state)
+        {
+            try
+            {
+                if (__state != null)
+                {
+                    Game1.player.spouse = __state;
                 }
             }
             catch (Exception ex)

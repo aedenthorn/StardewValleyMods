@@ -266,7 +266,14 @@ namespace MobilePhone
 
         public static Vector2 GetScreenSize()
         {
-            return new Vector2(ModEntry.screenWidth, ModEntry.screenHeight);
+            if (ModEntry.phoneRotated)
+            {
+                return new Vector2(Config.ScreenRotatedWidth, Config.ScreenRotatedHeight);
+            }
+            else
+            {
+                return new Vector2(Config.ScreenWidth, Config.ScreenHeight);
+            }
         }
         public static Vector2 GetScreenSize(bool rotated)
         {
@@ -279,6 +286,7 @@ namespace MobilePhone
                 return new Vector2(Config.ScreenWidth, Config.ScreenHeight);
             }
         }
+
         public static Vector2 GetAppPos(int i, bool initial = false)
         {
             float x = ModEntry.screenPosition.X + Config.IconMarginX + (( i % ModEntry.appColumns) * (Config.IconWidth + Config.IconMarginX));

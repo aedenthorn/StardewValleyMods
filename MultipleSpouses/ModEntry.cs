@@ -29,6 +29,7 @@ namespace MultipleSpouses
         public static int bedSleepOffset = 140;
         public static int divorceHeartsLost;
         public static string farmHelperSpouse = null;
+        internal static NPC tempOfficialSpouse;
 
         /// <summary>The mod entry point, called after the mod is first loaded.</summary>
         /// <param name="helper">Provides simplified APIs for writing mods.</param>
@@ -120,6 +121,26 @@ namespace MultipleSpouses
                original: AccessTools.Method(typeof(NPC), nameof(NPC.playSleepingAnimation)),
                postfix: new HarmonyMethod(typeof(NPCPatches), nameof(NPCPatches.NPC_playSleepingAnimation_Postfix))
             );
+
+            harmony.Patch(
+               original: AccessTools.Method(typeof(NPC), nameof(NPC.GetDispositionModifiedString)),
+               prefix: new HarmonyMethod(typeof(NPCPatches), nameof(NPCPatches.NPC_GetDispositionModifiedString_Prefix)),
+               postfix: new HarmonyMethod(typeof(NPCPatches), nameof(NPCPatches.NPC_GetDispositionModifiedString_Postfix))
+            );
+
+            harmony.Patch(
+               original: AccessTools.Method(typeof(NPC), "loadCurrentDialogue"),
+               prefix: new HarmonyMethod(typeof(NPCPatches), nameof(NPCPatches.NPC_loadCurrentDialogue_Prefix)),
+               postfix: new HarmonyMethod(typeof(NPCPatches), nameof(NPCPatches.NPC_loadCurrentDialogue_Postfix))
+            );
+
+            harmony.Patch(
+               original: AccessTools.Method(typeof(NPC), nameof(NPC.tryToRetrieveDialogue)),
+               prefix: new HarmonyMethod(typeof(NPCPatches), nameof(NPCPatches.NPC_tryToRetrieveDialogue_Prefix))
+            );
+
+
+            // Child patches
 
             harmony.Patch(
                original: AccessTools.Method(typeof(Child), nameof(Child.reloadSprite)),
@@ -231,9 +252,20 @@ namespace MultipleSpouses
             );
 
             harmony.Patch(
+               original: AccessTools.Method(typeof(Farmer), nameof(Farmer.getSpouse)),
+               prefix: new HarmonyMethod(typeof(FarmerPatches), nameof(FarmerPatches.Farmer_getSpouse_Prefix))
+            );
+
+            harmony.Patch(
                original: AccessTools.Method(typeof(Farmer), nameof(Farmer.checkAction)),
                prefix: new HarmonyMethod(typeof(FarmerPatches), nameof(FarmerPatches.Farmer_checkAction_Prefix))
             );
+
+            harmony.Patch(
+               original: AccessTools.Method(typeof(Farmer), nameof(Farmer.GetSpouseFriendship)),
+               prefix: new HarmonyMethod(typeof(FarmerPatches), nameof(FarmerPatches.Farmer_GetSpouseFriendship_Prefix))
+            );
+
 
             // UI patches
 

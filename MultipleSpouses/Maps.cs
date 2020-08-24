@@ -71,7 +71,7 @@ namespace MultipleSpouses
 
 				List<string> spousesWithRooms = new List<string>();
 
-				foreach (string spouse in Misc.GetSpouses(f, 0).Keys)
+				foreach (string spouse in Misc.GetSpouses(f, 1).Keys)
 				{
 					Monitor.Log($"checking {spouse} for spouse room");
 					if (roomIndexes.ContainsKey(spouse) || tmxSpouseRooms.ContainsKey(spouse))

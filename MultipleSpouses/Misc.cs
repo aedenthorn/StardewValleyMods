@@ -400,7 +400,7 @@ namespace MultipleSpouses
                 }
                 if (f.friendshipData[name].IsMarried() && f.spouse != name)
                 {
-                    Monitor.Log($"{f.Name} is married to: {name}");
+                    //Monitor.Log($"{f.Name} is married to: {name}");
                     if (f.spouse != null && f.friendshipData[f.spouse] != null && !f.friendshipData[f.spouse].IsMarried() && !f.friendshipData[f.spouse].IsEngaged())
                     {
                         Monitor.Log("invalid ospouse, setting ospouse to " + name);

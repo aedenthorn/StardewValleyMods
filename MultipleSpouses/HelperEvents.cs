@@ -66,6 +66,14 @@ namespace MultipleSpouses
 				Game1.getFarm().addSpouseOutdoorArea(Game1.player.spouse == null ? "" : Game1.player.spouse);
 				ModEntry.farmHelperSpouse = Misc.GetRandomSpouse(Game1.MasterPlayer);
 			}
+			foreach(Farmer f in Game1.getAllFarmers())
+            {
+				IEnumerable<string> spouses = Misc.GetSpouses(f, -1).Keys;
+				foreach(string s in spouses)
+                {
+					Monitor.Log($"{f.Name} is married to {s}");
+                }
+            }
 		}
 
 		public static void GameLoop_ReturnedToTitle(object sender, ReturnedToTitleEventArgs e)
