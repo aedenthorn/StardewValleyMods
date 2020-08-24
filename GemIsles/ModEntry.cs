@@ -23,6 +23,7 @@ namespace GemIsles
 
         private static List<string> isleMaps = new List<string>();
         private string mapAssetKey;
+        private string locationPrefix = "GemIsles_";
 
         public override void Entry(IModHelper helper)
         {
@@ -42,8 +43,9 @@ namespace GemIsles
         {
             for (int i = 0; i < Game1.locations.Count; i++)
             {
-                if (Game1.locations[i].Name.StartsWith("GemIsles_"))
+                if (Game1.locations[i].Name.StartsWith(locationPrefix))
                 {
+                    Game1.locations[i].characters.Clear();
                     Game1.locations.RemoveAt(i);
                 }
             }
@@ -62,7 +64,7 @@ namespace GemIsles
 
         private void GameLoop_UpdateTicked(object sender, UpdateTickedEventArgs e)
         {
-            if (!Context.IsPlayerFree || !Game1.player.swimming || (!(Game1.player.currentLocation is Beach) && !(Game1.player.currentLocation is Forest) && !Game1.currentLocation.Name.StartsWith("GemIsles_")))
+            if (!Context.IsPlayerFree || !Game1.player.swimming || (!(Game1.player.currentLocation is Beach) && !(Game1.player.currentLocation is Forest) && !Game1.currentLocation.Name.StartsWith(locationPrefix)))
                 return;
 
             Point pos = Game1.player.getTileLocationPoint();
@@ -86,7 +88,7 @@ namespace GemIsles
                 WarpToGemIsles(pos.X, 0);
                 return;
             }
-            if (!Game1.currentLocation.Name.StartsWith("GemIsles_"))
+            if (!Game1.currentLocation.Name.StartsWith(locationPrefix))
                 return;
             if (Game1.player.position.Y < Game1.viewport.Y - 12)
             {
@@ -155,7 +157,7 @@ namespace GemIsles
             if (asset.AssetNameEquals("Data/Locations"))
             {
                 var editor = asset.AsDictionary<string, string>();
-                foreach(string isle in Game1.locations.Where(l => l.Name.StartsWith("GemIsles_")).Select(l => l.Name))
+                foreach(string isle in Game1.locations.Where(l => l.Name.StartsWith(locationPrefix)).Select(l => l.Name))
                 {
                     editor.Data[isle] = editor.Data["Beach"];
                 }

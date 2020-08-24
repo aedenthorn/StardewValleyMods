@@ -329,7 +329,8 @@ namespace GemIsles
                                     build.Tiles[isleBox.X + x, isleBox.Y + y] = CreateAnimatedTile(build, sheet, 192);
                                     build.Tiles[isleBox.X + x, isleBox.Y + y].Properties.Add("@Flip", 2);
                                 }
-                                //build.Tiles[isleBox.X + x, isleBox.Y + y].Properties["Passable"] = "F";
+                                build.Tiles[isleBox.X + x, isleBox.Y + y].Properties["Passable"] = "T";
+                                //back.Tiles[isleBox.X + x, isleBox.Y + y].TileIndexProperties["NPCBarrier"] = "t";
                             }
                         }
                     }
@@ -357,8 +358,12 @@ namespace GemIsles
                 location.waterTiles = null;
             }
 
+            // add terrain features
+
             foreach (Rectangle isleBox in isleBoxes)
             {
+                // get free spots
+
                 List<Vector2> freeSpots = new List<Vector2>();
                 List<Vector2> freeCenters = new List<Vector2>();
                 for (int x = isleBox.X; x < isleBox.Right; x++)
@@ -410,7 +415,6 @@ namespace GemIsles
                     randFreeCenters[n] = value;
                 }
 
-                // add terrain features
 
                 int taken = 0;
                 if (Game1.random.NextDouble() < Config.TreasureChance)

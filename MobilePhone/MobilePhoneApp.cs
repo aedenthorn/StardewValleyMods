@@ -262,7 +262,7 @@ namespace MobilePhone
                 Monitor.Log($"You have no friends.", LogLevel.Debug);
                 return;
             }
-            CallableNPC[] callers = callableList.Where(s => s.npc.CurrentDialogue.Count >= 1 || s.npc.endOfRouteMessage.Value != null).ToArray();
+            CallableNPC[] callers = callableList.Where(s => (s.npc.CurrentDialogue.Count >= 1 || s.npc.endOfRouteMessage.Value != null) && !s.npc.isSleeping).ToArray();
             if (callers.Length == 0)
             {
                 Monitor.Log($"None of your friends want to talk to you.", LogLevel.Debug);

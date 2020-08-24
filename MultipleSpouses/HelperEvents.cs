@@ -87,6 +87,7 @@ namespace MultipleSpouses
 		{
 			if ((e.Button != SButton.MouseLeft && e.Button != SButton.MouseRight) || Game1.currentLocation == null || !(Game1.currentLocation is ManorHouse) || Game1.currentLocation.lastQuestionKey == null || !Game1.currentLocation.lastQuestionKey.StartsWith("divorce"))
 				return;
+			Monitor.Log("Got divorce answer");
 
 			IClickableMenu menu = Game1.activeClickableMenu;
 			if (menu == null || !ReferenceEquals(menu.GetType(), typeof(DialogueBox)))
