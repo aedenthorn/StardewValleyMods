@@ -54,6 +54,9 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="assets\summer_beach.png" />
+    <Content Include="assets\fall_beach.png" />
+    <Content Include="assets\winter_beach.png" />
     <Content Include="assets\spring_beach.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
