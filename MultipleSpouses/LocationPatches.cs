@@ -308,7 +308,8 @@ namespace MultipleSpouses
                             responses.Add(new Response(spouse.name, spouse.displayName));
                         }
                         responses.Add(new Response("No", Game1.content.LoadString("Strings\\Lexicon:QuestionDialogue_No")));
-                        __instance.createQuestionDialogue(s2, responses.ToArray(), "divorce");
+                        __instance.createQuestionDialogue(s2, responses.ToArray(), Divorce.afterDialogueBehavior);
+                        //__instance.createQuestionDialogue(s2, responses.ToArray(), "divorce");
                         __result = true;
                         return false;
                     }
@@ -321,26 +322,21 @@ namespace MultipleSpouses
             return true;
         }
 
-        public static bool Event_endBehaviors_Postfix(string[] split)
+        internal static void GameLocation_answerDialogue_prefix(GameLocation __instance, Response answer)
         {
             try
             {
-                if (split != null && split.Length > 1)
-                {
-                    string text = split[1];
-                    if (text == "wedding")
-                    {
-                        Misc.PlaceSpousesInFarmhouse(Utility.getHomeOfFarmer(Game1.player));
-                    }
-                }
+                if (answer.responseKey.StartsWith("divorce_"))
+                    __instance.afterQuestion = Divorce.afterDialogueBehavior;
+
             }
             catch (Exception ex)
             {
-                Monitor.Log($"Failed in {nameof(Event_endBehaviors_Postfix)}:\n{ex}", LogLevel.Error);
+                Monitor.Log($"Failed in {nameof(GameLocation_answerDialogue_prefix)}:\n{ex}", LogLevel.Error);
             }
-            return true;
         }
-    
+
+   
         public static void GameLocation_checkEventPrecondition_Prefix(ref string precondition)
         {
             try

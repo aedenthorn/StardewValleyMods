@@ -165,5 +165,24 @@ namespace MultipleSpouses
 			}
 			return true;
 		}
+
+		public static void Event_endBehaviors_Postfix(string[] split)
+		{
+			try
+			{
+				if (split != null && split.Length > 1)
+				{
+					string text = split[1];
+					if (text == "wedding")
+					{
+						Misc.PlaceSpousesInFarmhouse(Utility.getHomeOfFarmer(Game1.player));
+					}
+				}
+			}
+			catch (Exception ex)
+			{
+				Monitor.Log($"Failed in {nameof(Event_endBehaviors_Postfix)}:\n{ex}", LogLevel.Error);
+			}
+		}
 	}
 }

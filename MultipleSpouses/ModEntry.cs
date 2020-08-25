@@ -63,6 +63,7 @@ namespace MultipleSpouses
             HelperEvents.Initialize(Monitor, Helper);
             FileIO.Initialize(Monitor, Helper);
             Misc.Initialize(Monitor, Helper);
+            Divorce.Initialize(Monitor, Helper);
 
             var harmony = HarmonyInstance.Create(this.ModManifest.UniqueID);
 
@@ -190,6 +191,10 @@ namespace MultipleSpouses
                original: AccessTools.Method(typeof(GameLocation), nameof(GameLocation.performAction)),
                prefix: new HarmonyMethod(typeof(LocationPatches), nameof(LocationPatches.GameLocation_performAction_Prefix))
             );
+            harmony.Patch(
+               original: AccessTools.Method(typeof(GameLocation), nameof(GameLocation.answerDialogue)),
+               prefix: new HarmonyMethod(typeof(LocationPatches), nameof(LocationPatches.GameLocation_answerDialogue_prefix))
+            );
 
             harmony.Patch(
                original: AccessTools.Method(typeof(Beach), "resetLocalState"),
@@ -301,6 +306,7 @@ namespace MultipleSpouses
                original: AccessTools.Method(typeof(Event), nameof(Event.command_playSound)),
                prefix: new HarmonyMethod(typeof(EventPatches), nameof(EventPatches.Event_command_playSound_Prefix))
             );
+
 
         }
 
