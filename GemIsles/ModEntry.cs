@@ -36,12 +36,11 @@ namespace GemIsles
             helper.Events.GameLoop.DayEnding += GameLoop_DayEnding;
             helper.Events.GameLoop.SaveLoaded += GameLoop_SaveLoaded;
             helper.Events.GameLoop.UpdateTicked += GameLoop_UpdateTicked;
-            helper.Events.Player.Warped += Player_Warped;
         }
 
         private void GameLoop_DayEnding(object sender, DayEndingEventArgs e)
         {
-            for (int i = 0; i < Game1.locations.Count; i++)
+            for (int i = Game1.locations.Count - 1; i >= 0; i--)
             {
                 if (Game1.locations[i].Name.StartsWith(locationPrefix))
                 {
@@ -57,10 +56,6 @@ namespace GemIsles
             mapAssetKey = Helper.Content.GetActualAssetKey("assets/isles.tbin", ContentSource.ModFolder);
         }
 
-        private void Player_Warped(object sender, WarpedEventArgs e)
-        {
-            //e.NewLocation.resetForPlayerEntry();
-        }
 
         private void GameLoop_UpdateTicked(object sender, UpdateTickedEventArgs e)
         {
@@ -130,7 +125,7 @@ namespace GemIsles
         }
         private void WarpToGemIsles(int x, int y)
         {
-            string name = $"GemIsles_{mapX}_{mapY}";
+            string name = $"{locationPrefix}{mapX}_{mapY}";
             if (Game1.getLocationFromName(name) == null)
             {
                 isleMaps.Add(name);

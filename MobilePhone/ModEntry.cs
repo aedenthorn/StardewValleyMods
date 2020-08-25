@@ -185,6 +185,10 @@ namespace MobilePhone
                 prefix: new HarmonyMethod(typeof(PhonePatches), nameof(PhonePatches.Event_command_prefix))
             );
             harmony.Patch(
+                original: AccessTools.Method(typeof(Event), nameof(Event.command_addQuest)),
+                prefix: new HarmonyMethod(typeof(PhonePatches), nameof(PhonePatches.Event_command_prefix))
+            );
+            harmony.Patch(
                 original: AccessTools.Method(typeof(Event), nameof(Event.command_cutscene)),
                 prefix: new HarmonyMethod(typeof(PhonePatches), nameof(PhonePatches.Event_command_cutscene_prefix))
             );
