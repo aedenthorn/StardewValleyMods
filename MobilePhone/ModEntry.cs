@@ -149,6 +149,10 @@ namespace MobilePhone
                 postfix: new HarmonyMethod(typeof(PhonePatches), nameof(PhonePatches.GameLocation_resetLocalState_postfix))
             );
             harmony.Patch(
+                original: AccessTools.Method(typeof(GameLocation), nameof(GameLocation.answerDialogue)),
+                prefix: new HarmonyMethod(typeof(PhonePatches), nameof(PhonePatches.GameLocation_answerDialogue_prefix))
+            );
+            harmony.Patch(
                 original: AccessTools.Method(typeof(Event), nameof(Event.command_awardFestivalPrize)),
                 prefix: new HarmonyMethod(typeof(PhonePatches), nameof(PhonePatches.Event_command_prefix))
             );

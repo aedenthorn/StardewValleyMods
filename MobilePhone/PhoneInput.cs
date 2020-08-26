@@ -49,23 +49,6 @@ namespace MobilePhone
                 return;
             }
 
-            if (e.Button == SButton.MouseLeft && ModEntry.inCall && Game1.activeClickableMenu?.GetType() == typeof(DialogueBox) && Game1.player.currentLocation?.lastQuestionKey?.StartsWith("PhoneApp_InCall_") == true)
-            {
-                IClickableMenu menu = Game1.activeClickableMenu;
-                int resp = (int)typeof(DialogueBox).GetField("selectedResponse", BindingFlags.NonPublic | BindingFlags.Instance).GetValue(menu);
-                List<Response> resps = (List<Response>)typeof(DialogueBox).GetField("responses", BindingFlags.NonPublic | BindingFlags.Instance).GetValue(menu);
-
-                if (resp >= 0 && resps != null && resp < resps.Count && resps[resp] != null)
-                {
-                    Helper.Input.Suppress(SButton.MouseLeft);
-                    Game1.player.currentLocation.lastQuestionKey = "";
-                    Monitor.Log($"clicked on response {resps[resp].responseKey} calling npc: {ModEntry.callingNPC} inCall {ModEntry.inCall}");
-                    MobilePhoneCall.CallDialogueAnswer(resps[resp].responseKey, ModEntry.callingNPC);
-
-                    return;
-                }
-            }
-
             Point mousePos = Game1.getMousePosition();
 
             if (!ModEntry.phoneOpen)

@@ -324,5 +324,19 @@ namespace MobilePhone
             }
             MobilePhoneCall.ShowMainCallDialogue(ModEntry.callingNPC);
         }
+
+        internal static void GameLocation_answerDialogue_prefix(GameLocation __instance, Response answer)
+        {
+            try
+            {
+                if (answer.responseKey.StartsWith("PhoneApp_InCall_"))
+                    __instance.afterQuestion = MobilePhoneCall.CallDialogueAnswer;
+
+            }
+            catch (Exception ex)
+            {
+                Monitor.Log($"Failed in {nameof(GameLocation_answerDialogue_prefix)}:\n{ex}", LogLevel.Error);
+            }
+        }
     }
 }

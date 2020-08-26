@@ -32,7 +32,7 @@ namespace RandomNPC
             {
                 mHour = int.Parse(morningEarliest.Substring(0,morningEarliest.Length == 4?2:1));
                 mM = (int.Parse(morningEarliest) % 100) / 10;
-                mH = Game1.random.Next(mHour, Math.Min(mHour,9));
+                mH = Game1.random.Next(mHour, Math.Max(7, Math.Min(mHour,9)));
                 mM = Game1.random.Next(mH == mHour?mM:0, 5);
             }
             else

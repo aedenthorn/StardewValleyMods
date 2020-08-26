@@ -25,61 +25,10 @@ namespace MobilePhone
             Config = config;
         }
 
-        public static void ShowMainCallDialogue(NPC npc)
+        public static void CallDialogueAnswer(Farmer who, string whichAnswer)
         {
-            Monitor.Log($"Showing Main Call Dialogue");
+            NPC npc = ModEntry.callingNPC;
 
-            if (!ModEntry.inCall)
-            {
-                Monitor.Log($"Not in call, exiting");
-                return;
-            }
-
-            List<Response> answers = new List<Response>();
-            if (npc.CurrentDialogue != null && npc.CurrentDialogue.Count > 0)
-                answers.Add(new Response("PhoneApp_InCall_Chat", Helper.Translation.Get("chat")));
-
-            if (inCallReminiscence == null)
-            {
-                Reminiscence r = Helper.Data.ReadJsonFile<Reminiscence>(Path.Combine("assets", "events", $"{npc.Name}.json")) ?? new Reminiscence();
-                Monitor.Log($"Total Reminisces: {r.events.Count}");
-                r.WeedOutUnseen();
-                Monitor.Log($"Seen Reminisces: {r.events.Count}");
-                inCallReminiscence = new List<Reminisce>(r.events);
-            }
-            if (inCallReminiscence != null && inCallReminiscence.Count > 0)
-            {
-                answers.Add(new Response("PhoneApp_InCall_Reminisce", Helper.Translation.Get("reminisce")));
-            }
-            if (eventInvites.Count > 0)
-            {
-                foreach (EventInvite ei in eventInvites)
-                {
-                    if (ei.CanInvite(npc))
-                    {
-                        answers.Add(new Response("PhoneApp_InCall_Invite", Helper.Translation.Get("invite")));
-                        break;
-                    }
-                }
-            }
-            if (ModEntry.npcAdventureModApi != null && ModEntry.npcAdventureModApi.IsPossibleCompanion(npc) && ModEntry.npcAdventureModApi.CanAskToFollow(npc) && !npc.isSleeping)
-            {
-                answers.Add(new Response("PhoneApp_InCall_Recruit", Helper.Translation.Get("recruit")));
-            }
-            if (npc.Name == "Robin" && Game1.player.daysUntilHouseUpgrade < 0 && !Game1.getFarm().isThereABuildingUnderConstruction())
-            {
-                if (Game1.player.houseUpgradeLevel < 3)
-                    answers.Add(new Response("PhoneApp_InCall_Upgrade", Helper.Translation.Get("upgrade-house")));
-                answers.Add(new Response("PhoneApp_InCall_Build", Helper.Translation.Get("build-buildings")));
-            }
-            answers.Add(new Response("PhoneApp_InCall_GoodBye", Helper.Translation.Get("goodbye")));
-
-            Game1.player.currentLocation.createQuestionDialogue(GetCallGreeting(npc), answers.ToArray(), "PhoneApp_InCall_Begin");
-            Game1.objectDialoguePortraitPerson = npc;
-        }
-
-        public static void CallDialogueAnswer(string whichAnswer, NPC npc)
-        {
             Monitor.Log($"Showing Call Dialogue based on answer {whichAnswer}");
 
             if (!ModEntry.inCall)
@@ -145,6 +94,60 @@ namespace MobilePhone
             }
         }
 
+        public static void ShowMainCallDialogue(NPC npc)
+        {
+            Monitor.Log($"Showing Main Call Dialogue");
+
+            if (!ModEntry.inCall)
+            {
+                Monitor.Log($"Not in call, exiting");
+                return;
+            }
+
+            List<Response> answers = new List<Response>();
+            if (npc.CurrentDialogue != null && npc.CurrentDialogue.Count > 0)
+                answers.Add(new Response("PhoneApp_InCall_Chat", Helper.Translation.Get("chat")));
+
+            if (inCallReminiscence == null)
+            {
+                Reminiscence r = Helper.Data.ReadJsonFile<Reminiscence>(Path.Combine("assets", "events", $"{npc.Name}.json")) ?? new Reminiscence();
+                Monitor.Log($"Total Reminisces: {r.events.Count}");
+                r.WeedOutUnseen();
+                Monitor.Log($"Seen Reminisces: {r.events.Count}");
+                inCallReminiscence = new List<Reminisce>(r.events);
+            }
+            if (inCallReminiscence != null && inCallReminiscence.Count > 0)
+            {
+                answers.Add(new Response("PhoneApp_InCall_Reminisce", Helper.Translation.Get("reminisce")));
+            }
+            if (eventInvites.Count > 0)
+            {
+                foreach (EventInvite ei in eventInvites)
+                {
+                    if (ei.CanInvite(npc))
+                    {
+                        answers.Add(new Response("PhoneApp_InCall_Invite", Helper.Translation.Get("invite")));
+                        break;
+                    }
+                }
+            }
+            if (ModEntry.npcAdventureModApi != null && ModEntry.npcAdventureModApi.IsPossibleCompanion(npc) && ModEntry.npcAdventureModApi.CanAskToFollow(npc) && !npc.isSleeping)
+            {
+                answers.Add(new Response("PhoneApp_InCall_Recruit", Helper.Translation.Get("recruit")));
+            }
+            if (npc.Name == "Robin" && Game1.player.daysUntilHouseUpgrade < 0 && !Game1.getFarm().isThereABuildingUnderConstruction())
+            {
+                if (Game1.player.houseUpgradeLevel < 3)
+                    answers.Add(new Response("PhoneApp_InCall_Upgrade", Helper.Translation.Get("upgrade-house")));
+                answers.Add(new Response("PhoneApp_InCall_Build", Helper.Translation.Get("build-buildings")));
+            }
+            answers.Add(new Response("PhoneApp_InCall_GoodBye", Helper.Translation.Get("goodbye")));
+
+            Game1.player.currentLocation.createQuestionDialogue(GetCallGreeting(npc), answers.ToArray(), CallDialogueAnswer);
+            Game1.objectDialoguePortraitPerson = npc;
+        }
+
+
         private static async void ChatOnPhone(NPC npc)
         {
             Monitor.Log($"Showing chat dialogue");
@@ -187,7 +190,7 @@ namespace MobilePhone
 
             responses.Add(new Response("PhoneApp_InCall_Return", Helper.Translation.Get("back")));
 
-            Game1.player.currentLocation.createQuestionDialogue(GetReminiscePrefix(npc), responses.ToArray(), "PhoneApp_InCall_Reminisce_Question");
+            Game1.player.currentLocation.createQuestionDialogue(GetReminiscePrefix(npc), responses.ToArray(), CallDialogueAnswer);
         }
         private static void InviteOnPhone(NPC npc)
         {
@@ -211,7 +214,7 @@ namespace MobilePhone
 
             responses.Add(new Response("PhoneApp_InCall_Return", Helper.Translation.Get("back")));
 
-            Game1.player.currentLocation.createQuestionDialogue(GetInvitePrefix(npc), responses.ToArray(), "PhoneApp_InCall_Invite_Question");
+            Game1.player.currentLocation.createQuestionDialogue(GetInvitePrefix(npc), responses.ToArray(), CallDialogueAnswer);
         }
         private static void RecruitOnPhone(NPC npc)
         {
@@ -229,7 +232,7 @@ namespace MobilePhone
                 new Response("PhoneApp_InCall_Recruit_Yes", Game1.content.LoadString("Strings\\Lexicon:QuestionDialogue_Yes")),
                 new Response("PhoneApp_InCall_No", Game1.content.LoadString("Strings\\Lexicon:QuestionDialogue_No"))
             };
-            Game1.player.currentLocation.createQuestionDialogue(ModEntry.npcAdventureModApi.LoadString("Strings/Strings:askToFollow", npc.Name), responses, "PhoneApp_InCall_Recruit_Question");
+            Game1.player.currentLocation.createQuestionDialogue(ModEntry.npcAdventureModApi.LoadString("Strings/Strings:askToFollow", npc.Name), responses, CallDialogueAnswer);
         }
         private static void BuildOnPhone()
         {
@@ -277,7 +280,7 @@ namespace MobilePhone
                     ShowMainCallDialogue(npc);
                     return;
             }
-            Game1.player.currentLocation.createQuestionDialogue(question, responses, "PhoneApp_InCall_Upgrade");
+            Game1.player.currentLocation.createQuestionDialogue(question, responses, CallDialogueAnswer);
 
         }
         private static void DoReminisce(int which, NPC npc)
