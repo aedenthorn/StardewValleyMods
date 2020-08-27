@@ -15,6 +15,7 @@ namespace MobilePhone
         private static IMonitor Monitor;
         private static IModHelper Helper;
         private static ModConfig Config;
+        private static int ringingTicks;
 
         // call this method from your Entry class
         public static void Initialize(IModHelper helper, IMonitor monitor, ModConfig config)
@@ -60,7 +61,26 @@ namespace MobilePhone
                             ModEntry.draggingPhoneIcon = false;
                         }
                     }
-                    e.SpriteBatch.Draw(ModEntry.iconTexture, ModEntry.phoneIconPosition, Color.White);
+                    float rot = 0;
+                    int speed = 3;
+                    if (ModEntry.callingNPC != null && Config.VibratePhoneIcon)
+                    {
+                        ringingTicks++;
+
+                        rot = ringingTicks % (speed * 4);
+                        if (rot < speed)
+                            rot *= -1;
+                        else if (rot < speed * 3)
+                            rot -= speed * 2;
+                        else
+                            rot = speed * 4 - rot;
+                        rot /= 20f;
+                    }
+                    else
+                    {
+                        ringingTicks = 0;
+                    }
+                    e.SpriteBatch.Draw(ModEntry.iconTexture, new Vector2((int)ModEntry.phoneIconPosition.X + ModEntry.iconTexture.Width / 2, (int)ModEntry.phoneIconPosition.Y + ModEntry.iconTexture.Height / 2), null, Color.White, rot, new Vector2(ModEntry.iconTexture.Width / 2, ModEntry.iconTexture.Height / 2), 1f, SpriteEffects.None, 0.86f);
                 }
 
                 return;

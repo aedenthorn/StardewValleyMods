@@ -207,6 +207,9 @@ namespace MobilePhone
             {
                 if (ModEntry.currentCallRings < ModEntry.currentCallMaxRings && !ModEntry.inCall)
                 {
+                    if(ModEntry.currentCallRings == 0 && Config.NotifyOnRing)
+                        Game1.addHUDMessage(new HUDMessage(Helper.Translation.Get("phone-ringing"), 2));
+
                     if (ModEntry.ringToggle == Config.PhoneRingInterval)
                     {
                         Monitor.Log($"Phone ringing, {ModEntry.callingNPC.displayName} calling", LogLevel.Debug);

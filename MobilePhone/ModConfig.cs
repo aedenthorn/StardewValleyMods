@@ -9,7 +9,8 @@ namespace MobilePhone
         public bool EnableMod { get; set; } = true;
         public SButton OpenPhoneKey { get; set; } = SButton.End;
         public SButton RotatePhoneKey { get; set; } = SButton.PageDown;
-        public bool ShowPhoneIcon { get; set; } = false;
+        public bool ShowPhoneIcon { get; set; } = true;
+        public bool VibratePhoneIcon { get; set; } = true;
         public string PhoneSkinPath { get; set; } = Path.Combine("assets", "skins", "black.png");
         public string BackgroundPath { get; set; } = Path.Combine("assets", "backgrounds", "clouds.png");
         public string UpArrowTexturePath { get; set; } = "up_arrow.png";
@@ -94,6 +95,7 @@ namespace MobilePhone
         public Color DeclineColor { get; set; } = Color.DarkRed;
         public int IncomingCallMinRings { get; set; } = 3;
         public int IncomingCallMaxRings { get; set; } = 5;
+        public bool NotifyOnRing { get; set; } = false;
         public int PhoneRingInterval { get; set; } = 3;
         public string BuiltInRingTones { get; set; } = "phone,fishBite";
         public string BuiltInNotificationTones { get; set; } = "cavedrip,jingle1";
