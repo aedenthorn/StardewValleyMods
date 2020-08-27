@@ -261,7 +261,12 @@ namespace MobilePhone
                         Rectangle r = new Rectangle((int)pos.X, (int)pos.Y, Config.IconWidth, Config.IconHeight);
                         if (r.Contains(mousePos))
                         {
-                            if (ModEntry.apps[keys[i]].keyPress != null)
+                            if(keys[i] == Helper.ModRegistry.ModID + "_Rotate")
+                            {
+                                Monitor.Log($"rotating phone app");
+                                PhoneUtils.RotatePhone();
+                            }
+                            else if (ModEntry.apps[keys[i]].keyPress != null)
                             {
                                 Monitor.Log($"pressing key {ModEntry.apps[keys[i]].keyPress}");
                                 PhoneInput.PressKey(ModEntry.apps[keys[i]]);
@@ -269,7 +274,7 @@ namespace MobilePhone
                             else
                             {
                                 Monitor.Log($"starting app {ModEntry.apps[keys[i]].name}");
-                                ModEntry.apps[keys[i]].action.Invoke();
+                                ModEntry.apps[keys[i]].action?.Invoke();
                             }
                         }
                     }

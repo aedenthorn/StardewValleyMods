@@ -40,13 +40,8 @@ namespace MobileCalendar
                 appIcon = Helper.Content.Load<Texture2D>(Path.Combine("assets", "app_icon.png"));
                 success = api.AddApp(Helper.ModRegistry.ModID, Helper.Translation.Get("calendar"), OpenApp, appIcon);
                 Monitor.Log($"loaded app successfully: {success}", LogLevel.Debug);
-                Game1.chatBox.chatBox.OnEnterPressed += ChatBox_OnEnterPressed;
+                
             }
-        }
-
-        private void ChatBox_OnEnterPressed(TextBox sender)
-        {
-            Monitor.Log($"text: {sender.Text}");
         }
 
         private void OpenApp()

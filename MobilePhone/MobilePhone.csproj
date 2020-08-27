@@ -121,6 +121,7 @@
     <Content Include="assets\down_arrow.png" />
     <None Include="assets\events\Emily.json" />
     <Content Include="assets\phone_icon.png" />
+    <Content Include="assets\rotate_icon.png" />
     <Content Include="assets\skins\black.png" />
     <Content Include="assets\skins\black_landscape.png" />
     <Content Include="assets\skins\pink.png" />

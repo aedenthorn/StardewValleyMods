@@ -1,0 +1,26 @@
+﻿{
+  "Name": "Zombie Virus",
+  "Author": "aedenthorn",
+  "Version": "0.1.0",
+  "Description": "Raaarrgh.",
+  "UniqueID": "aedenthorn.ZombieVirus",
+  "EntryDll": "ZombieVirus.dll",
+  "MinimumApiVersion": "3.5.0",
+  "UpdateKeys": ["Nexus:"],
+  "ModUpdater": {
+    "Repository": "StardewValleyMods",
+    "User": "aedenthorn",
+    "Directory": "_releases",
+    "ModFolder": "ZombieVirus"
+  },
+  "Dependencies": [
+      {
+        "UniqueID": "Platonymous.ModUpdater",
+        "IsRequired": false
+      },
+      {
+        "UniqueID": "spacechase0.JsonAssets",
+        "IsRequired": true
+      },
+  ]
+}

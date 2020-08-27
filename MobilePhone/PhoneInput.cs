@@ -38,12 +38,12 @@ namespace MobilePhone
                 return;
             }
 
-            if (e.Button == Config.OpenPhoneKey)
+            if (e.Button == Config.OpenPhoneKey && Config.EnableOpenPhoneKey)
             {
                 PhoneUtils.TogglePhone();
                 return;
             }
-            if(e.Button == Config.RotatePhoneKey)
+            if(e.Button == Config.RotatePhoneKey && Config.EnableRotatePhoneKey)
             {
                 PhoneUtils.RotatePhone();
                 return;

@@ -130,6 +130,9 @@ namespace MobilePhone
             PhoneUtils.Initialize(Helper, Monitor, Config);
             PhonePatches.Initialize(Helper, Monitor, Config);
 
+            if(Config.AddRotateApp)
+                apps.Add(Helper.ModRegistry.ModID+"_Rotate", new MobileApp(helper.Translation.Get("rotate-phone"), null, helper.Content.Load<Texture2D>("assets/rotate_icon.png")));
+
             var harmony = HarmonyInstance.Create(ModManifest.UniqueID);
 
             harmony.Patch(
