@@ -10,7 +10,7 @@ namespace MobilePhone
         public bool EnableOpenPhoneKey { get; set; } = true;
         public SButton OpenPhoneKey { get; set; } = SButton.End;
         public bool EnableRotatePhoneKey { get; set; } = true;
-        public SButton RotatePhoneKey { get; set; } = SButton.PageDown;
+        public SButton RotatePhoneKey { get; set; } = SButton.PageDown; 
         public bool AddRotateApp { get; set; } = true;
         public bool ShowPhoneIcon { get; set; } = true;
         public bool VibratePhoneIcon { get; set; } = true;

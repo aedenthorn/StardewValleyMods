@@ -7,7 +7,7 @@ using System.Text.RegularExpressions;
 
 namespace CustomFixedDialogue
 {
-    public class DialoguePatches
+    internal class DialoguePatches
     {
         private static IMonitor Monitor;
         private static IModHelper Helper;
@@ -16,17 +16,7 @@ namespace CustomFixedDialogue
         private static string NPCPrefix = "Strings\\StringsFromCSFiles:NPC.cs.";
         private static string eventPrefix = "Strings\\StringsFromCSFiles:Event.cs.";
         private static string utilityPrefix = "Strings\\StringsFromCSFiles:Utility.cs.";
-
-        public static void warpToPathControllerDestination1()
-        {
-        }
-
         private static string extraPrefix = "Data\\ExtraDialogue:";
-
-        public static void warpToPathControllerDestination2()
-        {
-        }
-
         private static List<string> NPCexceptions = new List<string>() 
         {
             "3954",
@@ -105,7 +95,7 @@ namespace CustomFixedDialogue
             "Morris_NoMoreCD"
         };
 
-        internal static void NPC_showTextAboveHead_Prefix()
+        internal static void NPC_showTextAboveHead_Prefix2()
         {
         }
 

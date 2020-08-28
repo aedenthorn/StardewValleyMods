@@ -7,9 +7,9 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 
-namespace ZombieVirus
+namespace ZombieOutbreak
 {
-    public class ModEntry : Mod, IAssetEditor
+    public class ModEntry : Mod, IAssetEditor 
     {
         
         public static ModConfig config;
@@ -22,7 +22,6 @@ namespace ZombieVirus
         internal static List<long> curedFarmers = new List<long>();
         internal static IEnumerable<string> villagerNames;
         private static IJsonAssetsApi JsonAssets;
-        internal static bool playerIsZombie;
 
         public override void Entry(IModHelper helper)
         {
@@ -47,13 +46,24 @@ namespace ZombieVirus
             );
             
             harmony.Patch(
+                original: AccessTools.Method(typeof(Farmer), nameof(Farmer.draw), new Type[] { typeof(SpriteBatch) }),
+                prefix: new HarmonyMethod(typeof(ZombiePatches), nameof(ZombiePatches.Farmer_draw_prefix))
+            );
+            
+            harmony.Patch(
+                original: AccessTools.Method(typeof(Farmer), nameof(Farmer.eatObject)),
+                prefix: new HarmonyMethod(typeof(ZombiePatches), nameof(ZombiePatches.Farmer_eatObject_prefix))
+            );
+            
+           
+            harmony.Patch(
                 original: AccessTools.Constructor(typeof(DialogueBox), new Type[] { typeof(string), typeof(List<Response>), typeof(int) }),
                 prefix: new HarmonyMethod(typeof(ZombiePatches), nameof(ZombiePatches.DialogueBox_complex_prefix))
             );
 
             harmony.Patch(
                 original: AccessTools.Method(typeof(Dialogue), "parseDialogueString"),
-                prefix: new HarmonyMethod(typeof(ZombiePatches), "Dialogue_prefix")
+                prefix: new HarmonyMethod(typeof(ZombiePatches), nameof(ZombiePatches.Dialogue_prefix))
             );
 
             harmony.Patch(
@@ -93,7 +103,7 @@ namespace ZombieVirus
         private void GameLoop_DayStarted(object sender, StardewModdingAPI.Events.DayStartedEventArgs e)
         {
             curedNPCs.Clear();
-            Utils.MakeZombieTexture("Alex");
+            Utils.AddZombiePlayer(Game1.player.uniqueMultiplayerID);
 
             if (Game1.random.NextDouble() < config.DailyZombificationChance)
                 Utils.MakeRandomZombie();
@@ -106,6 +116,7 @@ namespace ZombieVirus
             villagerNames = Helper.Content.Load<Dictionary<string, string>>("Data/NPCDispositions", ContentSource.GameContent).Keys;
 
             zombieTextures.Clear();
+            playerZombies.Clear();
             Monitor.Log($"Loading zombie textures");
             List<string> zombies = Helper.Data.ReadSaveData<List<string>>("zombies") ?? new List<string>();
             List<long> zombiePlayers = Helper.Data.ReadSaveData<List<long>>("zombiePlayers") ?? new List<long>();

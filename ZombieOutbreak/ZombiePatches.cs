@@ -1,12 +1,15 @@
-﻿using Microsoft.Xna.Framework.Graphics;
+﻿using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using StardewModdingAPI;
 using StardewValley;
 using StardewValley.Menus;
 using StardewValley.Network;
 using System;
+using System.CodeDom;
 using System.Collections.Generic;
+using Object = StardewValley.Object;
 
-namespace ZombieVirus
+namespace ZombieOutbreak
 {
     internal class ZombiePatches
     {
@@ -31,7 +34,11 @@ namespace ZombieVirus
         {
             if (ModEntry.playerZombies.ContainsKey(__instance.UniqueMultiplayerID) && ModEntry.playerZombies[__instance.uniqueMultiplayerID] != null)
             {
-                helper.Reflection.GetField<Texture2D>(__instance.sprite.Value, "spriteTexture").SetValue(ModEntry.playerZombies[__instance.uniqueMultiplayerID]);
+                Texture2D texture = new Texture2D(Game1.graphics.GraphicsDevice, ModEntry.playerZombies[__instance.uniqueMultiplayerID].Width, ModEntry.playerZombies[__instance.uniqueMultiplayerID].Height);
+                Color[] data = new Color[ModEntry.playerZombies[__instance.uniqueMultiplayerID].Width * ModEntry.playerZombies[__instance.uniqueMultiplayerID].Height];
+                ModEntry.playerZombies[__instance.uniqueMultiplayerID].GetData(data);
+                texture.SetData(data);
+                helper.Reflection.GetField<Texture2D>(__instance.FarmerRenderer, "baseTexture").SetValue(texture);
             }
         }
 
@@ -48,8 +55,16 @@ namespace ZombieVirus
             {
                 for(int i = 0; i < responses.Count; i++)
                 {
-                    //Utils.MakeZombieSpeak(ref responses[i].responseText);
+                    Utils.MakeZombieSpeak(ref responses[i].responseText, true);
                 }
+            }
+        }
+
+        internal static void Farmer_eatObject_prefix(Farmer __instance, Object o)
+        {
+            if(o.Name == "Zombie Cure" && ModEntry.playerZombies.ContainsKey(__instance.uniqueMultiplayerID))
+            {
+                Utils.RemoveZombiePlayer(__instance.uniqueMultiplayerID);
             }
         }
 
@@ -58,6 +73,34 @@ namespace ZombieVirus
             if (ModEntry.zombieTextures.ContainsKey(__instance.speaker.Name))
             {
                 Utils.MakeZombieSpeak(ref masterString);
+            }
+        }
+
+        public static void NPC_showTextAboveHead_Prefix(NPC __instance, ref string Text)
+        {
+            try
+            {
+                Utils.MakeZombieSpeak(ref Text);
+            }
+            catch (Exception ex)
+            {
+                monitor.Log($"Failed in {nameof(NPC_showTextAboveHead_Prefix)}:\n{ex}", LogLevel.Error);
+            }
+        }
+
+        public static void NPC_showTextAboveHead_Prefix2()
+        {
+        }
+
+        public static void NPC_getHi_Postfix(NPC __instance, ref string __result)
+        {
+            try
+            {
+                Utils.MakeZombieSpeak(ref __result);
+            }
+            catch (Exception ex)
+            {
+                monitor.Log($"Failed in {nameof(NPC_getHi_Postfix)}:\n{ex}", LogLevel.Error);
             }
         }
 
