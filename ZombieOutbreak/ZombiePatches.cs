@@ -62,10 +62,14 @@ namespace ZombieOutbreak
 
         internal static void Farmer_eatObject_prefix(Farmer __instance, Object o)
         {
-            if(o.Name == "Zombie Cure" && ModEntry.playerZombies.ContainsKey(__instance.uniqueMultiplayerID))
+            if(o.Name == "Zombie Cure")
             {
-                monitor.Log($"zombie farmer {__instance.Name} ate zombie cure");
-                Utils.RemoveZombiePlayer(__instance.uniqueMultiplayerID);
+                ModEntry.curedFarmers.Add(__instance.uniqueMultiplayerID);
+                if (ModEntry.playerZombies.ContainsKey(__instance.uniqueMultiplayerID))
+                {
+                    monitor.Log($"zombie farmer {__instance.Name} ate zombie cure");
+                    Utils.RemoveZombiePlayer(__instance.uniqueMultiplayerID);
+                }
             }
         }
 

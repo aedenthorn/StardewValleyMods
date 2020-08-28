@@ -103,6 +103,7 @@ namespace ZombieOutbreak
         private void GameLoop_DayStarted(object sender, StardewModdingAPI.Events.DayStartedEventArgs e)
         {
             curedNPCs.Clear();
+            curedFarmers.Clear();
             //Utils.AddZombiePlayer(Game1.player.uniqueMultiplayerID);
 
             if (Game1.random.NextDouble() < config.DailyZombificationChance)
