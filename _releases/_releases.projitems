@@ -84,6 +84,7 @@
     <None Include="$(MSBuildThisFileDirectory)VideoPlayer 0.2.5.zip" />
     <None Include="$(MSBuildThisFileDirectory)YAJM 0.4.1.zip" />
     <None Include="$(MSBuildThisFileDirectory)ZombieOutbreak 0.2.0.zip" />
+    <None Include="$(MSBuildThisFileDirectory)ZombieOutbreak 0.2.1.zip" />
     <None Include="$(MSBuildThisFileDirectory)ZombieVirus 0.1.0.zip" />
     <None Include="$(MSBuildThisFileDirectory)ZombieVirus 0.1.1.zip" />
   </ItemGroup>

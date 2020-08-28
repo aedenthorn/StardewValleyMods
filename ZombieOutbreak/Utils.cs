@@ -98,21 +98,29 @@ namespace ZombieOutbreak
                     NPC npc = Game1.getCharacterFromName(name);
                     if (npc == null)
                         continue;
-                    foreach (NPC onpc in npc.currentLocation.characters.Where(n => ModEntry.villagerNames.Contains(n.Name) && !ModEntry.zombieTextures.ContainsKey(n.Name)))
+                    foreach (NPC onpc in npc.currentLocation.characters.Where(
+                            n => ModEntry.villagerNames.Contains(n.Name) 
+                            && !ModEntry.zombieTextures.ContainsKey(n.Name)
+                            && !ModEntry.curedNPCs.Contains(n.Name)
+                            && Vector2.Distance(n.position, npc.position) < config.InfectionDistance 
+                            && Game1.random.NextDouble() < config.InfectionChancePerSecond
+                        )
+                    )
                     {
-                        if (Vector2.Distance(onpc.position, npc.position) < config.InfectionDistance && Game1.random.NextDouble() < config.InfectionChancePerSecond)
-                        {
-                            monitor.Log($"{name} turned {onpc.Name} into a zombie! (distance {Vector2.Distance(onpc.position, npc.position)})");
-                            AddZombie(onpc.Name);
-                        }
+                        monitor.Log($"{name} turned {onpc.Name} into a zombie! (distance {Vector2.Distance(onpc.position, npc.position)})");
+                        AddZombie(onpc.Name);
                     }
-                    foreach (Farmer f in Game1.getAllFarmers().Where(f => !ModEntry.playerZombies.ContainsKey(f.uniqueMultiplayerID) && f.currentLocation == npc.currentLocation))
+                    foreach (Farmer f in Game1.getAllFarmers().Where(f => 
+                            !ModEntry.playerZombies.ContainsKey(f.uniqueMultiplayerID) 
+                            && f.currentLocation == npc.currentLocation 
+                            && !ModEntry.curedFarmers.Contains(f.uniqueMultiplayerID)
+                            && Vector2.Distance(f.position, npc.position) < config.InfectionDistance
+                            && Game1.random.NextDouble() < config.InfectionChancePerSecond
+                        )
+                    )
                     {
-                        if (Vector2.Distance(f.position, npc.position) < config.InfectionDistance && Game1.random.NextDouble() < config.InfectionChancePerSecond)
-                        {
-                            monitor.Log($"{npc.name} turned farmer {f.Name} into a zombie! (distance {Vector2.Distance(npc.position, npc.position)})");
-                            AddZombiePlayer(f.uniqueMultiplayerID);
-                        }
+                        monitor.Log($"{npc.name} turned farmer {f.Name} into a zombie! (distance {Vector2.Distance(npc.position, npc.position)})");
+                        AddZombiePlayer(f.uniqueMultiplayerID);
                     }
                 }
                 else if (ModEntry.playerZombies.Count > 0)
@@ -120,15 +128,34 @@ namespace ZombieOutbreak
                     NPC npc = Game1.getCharacterFromName(name);
                     if (npc == null)
                         continue;
-                    foreach (Farmer f in Game1.getAllFarmers().Where(f => ModEntry.playerZombies.ContainsKey(f.uniqueMultiplayerID) && f.currentLocation == npc.currentLocation))
+                    foreach (Farmer f in Game1.getAllFarmers().Where(
+                            f => ModEntry.playerZombies.ContainsKey(f.uniqueMultiplayerID) 
+                            && f.currentLocation == npc.currentLocation
+                            && Vector2.Distance(f.position, npc.position) < config.InfectionDistance 
+                            && Game1.random.NextDouble() < config.InfectionChancePerSecond
+                        )
+                    )
                     {
-                        //monitor.Log($"checking farmer {f.name} and {npc.Name} (distance {Vector2.Distance(f.position, npc.position)})");
-
-                        if (Vector2.Distance(f.position, npc.position) < config.InfectionDistance && Game1.random.NextDouble() < config.InfectionChancePerSecond)
-                        {
-                            monitor.Log($"farmer {f.name} turned {npc.Name} into a zombie! (distance {Vector2.Distance(f.position, npc.position)})");
-                            AddZombie(npc.Name);
-                        }
+                        monitor.Log($"farmer {f.name} turned {npc.Name} into a zombie! (distance {Vector2.Distance(f.position, npc.position)})");
+                        AddZombie(npc.Name);
+                    }
+                }
+            }
+            if (ModEntry.playerZombies.Count > 0)
+            {
+                foreach (Farmer f1 in Game1.getAllFarmers().Where(f => ModEntry.playerZombies.ContainsKey(f.uniqueMultiplayerID)))
+                {
+                    foreach (Farmer f2 in Game1.getAllFarmers().Where(f =>
+                            !ModEntry.playerZombies.ContainsKey(f.uniqueMultiplayerID)
+                            && f.currentLocation == f1.currentLocation
+                            && !ModEntry.curedFarmers.Contains(f.uniqueMultiplayerID)
+                            && Vector2.Distance(f.position, f1.position) < config.InfectionDistance
+                            && Game1.random.NextDouble() < config.InfectionChancePerSecond
+                        )
+                    )
+                    {
+                        monitor.Log($"farmer {f1.name} turned {f2.Name} into a zombie! (distance {Vector2.Distance(f1.position, f2.position)})");
+                        AddZombie(f2.Name);
                     }
                 }
             }

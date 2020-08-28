@@ -64,6 +64,7 @@ namespace ZombieOutbreak
         {
             if(o.Name == "Zombie Cure" && ModEntry.playerZombies.ContainsKey(__instance.uniqueMultiplayerID))
             {
+                monitor.Log($"zombie farmer {__instance.Name} ate zombie cure");
                 Utils.RemoveZombiePlayer(__instance.uniqueMultiplayerID);
             }
         }
