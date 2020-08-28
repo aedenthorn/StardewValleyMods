@@ -38,6 +38,10 @@ namespace ZombieOutbreak
             Helper.Events.GameLoop.DayStarted += GameLoop_DayStarted;
             Helper.Events.GameLoop.OneSecondUpdateTicked += GameLoop_OneSecondUpdateTicked;
 
+            Helper.ConsoleCommands.Add("infect", "Infect an NPC with zombie virus. Usage: infect <npc>", new Action<string, string[]>(Utils.InfectNPC));
+            Helper.ConsoleCommands.Add("infectplayer", "Infect local player with zombie virus.", new Action<string, string[]>(Utils.InfectPlayer));
+
+
             var harmony = HarmonyInstance.Create(ModManifest.UniqueID); 
 
             harmony.Patch(

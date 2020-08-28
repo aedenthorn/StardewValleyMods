@@ -193,6 +193,22 @@ namespace MobilePhone
                 Monitor.Log($"Couldn't play ring sound {tone}: {ex}", LogLevel.Error);
             }
         }
+        public static void StopRingTone()
+        {
+            string tone = Config.PhoneRingTone;
+
+            try
+            {
+                if (ThemeApp.ringDict.ContainsKey(tone) && ThemeApp.ringDict[tone] != null)
+                {
+                    ThemeApp.ringDict[tone].Stop();
+                }
+            }
+            catch(Exception ex)
+            {
+                Monitor.Log($"Couldn't stop ring sound {tone}: {ex}", LogLevel.Error);
+            }
+        }
 
         public static void PlayNotificationTone()
         {

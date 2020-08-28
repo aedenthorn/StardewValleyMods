@@ -180,11 +180,15 @@ namespace MobilePhone
                     {
                         if (answerRect.Contains(mousePos))
                         {
+                            PhoneUtils.StopRingTone();
+
                             MobilePhoneApp.CallNPC(ModEntry.callingNPC);
                             ModEntry.currentCallRings = 0;
                         }
                         else if (declineRect.Contains(mousePos))
                         {
+                            PhoneUtils.StopRingTone();
+
                             ModEntry.currentCallRings = 0;
                             ModEntry.callingNPC = null;
                         }

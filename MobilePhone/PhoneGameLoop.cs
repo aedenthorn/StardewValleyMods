@@ -9,6 +9,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Media;
 using System.Reflection;
 
 namespace MobilePhone
@@ -123,7 +124,7 @@ namespace MobilePhone
                     {
                         try
                         {
-                            SoundEffect ring = SoundEffect.FromStream(new FileStream(path, FileMode.Open));
+                            SoundPlayer ring = new SoundPlayer(path);
                             if (ring != null)
                             {
                                 ThemeApp.ringDict.Add(string.Concat(contentPack.Manifest.UniqueID,":", Path.GetFileName(path).Replace(".wav", "")), ring);
@@ -222,7 +223,8 @@ namespace MobilePhone
                 }
                 else
                 {
-                    if(!ModEntry.inCall)
+                    PhoneUtils.StopRingTone();
+                    if (!ModEntry.inCall)
                         ModEntry.callingNPC = null;
                     ModEntry.currentCallRings = 0;
                 }

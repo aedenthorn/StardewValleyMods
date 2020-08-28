@@ -191,7 +191,7 @@ namespace MobilePhone
                             if (r.Contains(mousePos))
                             {
                                 Monitor.Log($"calling {callableList[i].npc.Name}");
-                                PhoneUtils.PlayRingTone();
+                                //PhoneUtils.PlayRingTone();
                                 CallNPC(callableList[i].npc);
                             }
                         }

@@ -7,6 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Media;
 
 namespace MobilePhone
 {
@@ -25,7 +26,7 @@ namespace MobilePhone
         private static bool clicked;
         public static Dictionary<string, Texture2D[]> skinDict = new Dictionary<string, Texture2D[]>();
         public static Dictionary<string, Texture2D[]> backgroundDict = new Dictionary<string, Texture2D[]>();
-        public static Dictionary<string, SoundEffect> ringDict = new Dictionary<string, SoundEffect>();
+        public static Dictionary<string, SoundPlayer> ringDict = new Dictionary<string, SoundPlayer>();
         public static List<string> ringList;
         public static List<string> skinList = new List<string>();
         public static List<string> backgroundList = new List<string>();
@@ -117,7 +118,7 @@ namespace MobilePhone
                 {
                     try
                     {
-                        SoundEffect ring = SoundEffect.FromStream(new FileStream(path, FileMode.Open));
+                        SoundPlayer ring = new SoundPlayer(path);
                         if (ring != null)
                         {
                             ringDict.Add(Path.GetFileName(path).Replace(".wav", ""), ring);

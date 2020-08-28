@@ -73,6 +73,16 @@ namespace ZombieOutbreak
 
         }
 
+        internal static void InfectNPC(string arg1, string[] arg2)
+        {
+            if (arg2.Any() && ModEntry.villagerNames.Contains(arg2[0]))
+                AddZombie(arg2[0]);
+        }
+        internal static void InfectPlayer(string arg1, string[] arg2)
+        {
+            AddZombiePlayer(Game1.player.uniqueMultiplayerID);
+        }
+
         internal static void CheckForInfection()
         {
             if (ModEntry.villagerNames == null)
