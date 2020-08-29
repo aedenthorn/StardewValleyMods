@@ -138,7 +138,7 @@ namespace Familiars
 			}
 
 			chargingMonster = false;
-			if(lastHitCounter < 0)
+			if(lastHitCounter < 0 && !(currentLocation is SlimeHutch))
             {
 				foreach (NPC npc in currentLocation.characters)
 				{

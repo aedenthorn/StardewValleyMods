@@ -31,10 +31,11 @@ namespace GemIsles
         }
         internal static void CreateIslesMap(GameLocation location)
         {
-            Map map = Helper.Content.Load<Map>("assets/isles.tbin");
-            Layer back = map.GetLayer("Back");
-            Layer build = map.GetLayer("Buildings");
-            TileSheet sheet = map.TileSheets[0];
+            
+            location.map = Helper.Content.Load<Map>("assets/isles.tbin");
+            Layer back = location.map.GetLayer("Back");
+            Layer build = location.map.GetLayer("Buildings");
+            TileSheet sheet = location.map.TileSheets[0];
 
             int isles = Game1.random.Next(1, Math.Max(1, Config.MaxIsles) + 1);
             List<Point> points = new List<Point>();
@@ -336,7 +337,6 @@ namespace GemIsles
                     }
                 }
             }
-            location.map = map;
 
             // add water tiles
 
