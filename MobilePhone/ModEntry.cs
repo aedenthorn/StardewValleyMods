@@ -201,6 +201,10 @@ namespace MobilePhone
                 prefix: new HarmonyMethod(typeof(PhonePatches), nameof(PhonePatches.Event_command_cutscene_prefix))
             );
             harmony.Patch(
+                original: AccessTools.Method(typeof(Event), nameof(Event.skipEvent)),
+                prefix: new HarmonyMethod(typeof(PhonePatches), nameof(PhonePatches.Event_skipEvent_prefix))
+            );
+            harmony.Patch(
                 original: AccessTools.Method(typeof(Event), "namePet"),
                 prefix: new HarmonyMethod(typeof(PhonePatches), nameof(PhonePatches.Event_namePet_prefix))
             );

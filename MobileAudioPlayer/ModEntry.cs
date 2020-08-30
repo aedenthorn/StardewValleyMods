@@ -50,11 +50,18 @@ namespace MobileAudioPlayer
 
             try
             {
-                audio = Directory.GetFiles(Path.Combine(Helper.DirectoryPath, "audio"));
+                if (Directory.Exists(Path.Combine(Helper.DirectoryPath, "audio")))
+                    audio = Directory.GetFiles(Path.Combine(Helper.DirectoryPath, "audio"));
+                else
+                {
+                    Directory.CreateDirectory(Path.Combine(Helper.DirectoryPath, "audio"));
+                    Monitor.Log($"No audio files found. Please put audio files in {Path.Combine(Helper.DirectoryPath, "audio")}.", LogLevel.Warn);
+                    return;
+                }
             }
             catch (Exception ex)
             {
-                Monitor.Log($"Error loading audio files:\r\n{ex}");
+                Monitor.Log($"Error loading audio files:\r\n{ex}", LogLevel.Error);
                 return;
             }
 

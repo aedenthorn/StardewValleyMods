@@ -191,6 +191,12 @@ namespace MobilePhone
 
                             ModEntry.currentCallRings = 0;
                             ModEntry.callingNPC = null;
+                            if (ModEntry.isReminiscing)
+                            {
+                                Game1.CurrentEvent.skipEvent();
+                                ModEntry.isReminiscing = false;
+                            }
+
                         }
                     }
                 }
