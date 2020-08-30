@@ -191,11 +191,6 @@ namespace MobilePhone
 
                             ModEntry.currentCallRings = 0;
                             ModEntry.callingNPC = null;
-                            if (ModEntry.isReminiscing)
-                            {
-                                Game1.CurrentEvent.skipEvent();
-                                ModEntry.isReminiscing = false;
-                            }
 
                         }
                     }
@@ -212,6 +207,12 @@ namespace MobilePhone
                     {
                         if (endRect.Contains(mousePos))
                         {
+                            if (ModEntry.isReminiscing)
+                            {
+                                Game1.CurrentEvent?.skipEvent();
+                                //ModEntry.reminisceEvent = null;
+                                ModEntry.isReminiscing = false;
+                            }
                             MobilePhoneCall.EndCall();
                             if (Game1.activeClickableMenu is DialogueBox)
                                 Game1.activeClickableMenu = null;

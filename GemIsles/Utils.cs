@@ -31,8 +31,8 @@ namespace GemIsles
         }
         internal static void CreateIslesMap(GameLocation location)
         {
-            
-            location.map = Helper.Content.Load<Map>("assets/isles.tbin");
+
+            location.loadMap(ModEntry.mapAssetKey, true);
             Layer back = location.map.GetLayer("Back");
             Layer build = location.map.GetLayer("Buildings");
             TileSheet sheet = location.map.TileSheets[0];

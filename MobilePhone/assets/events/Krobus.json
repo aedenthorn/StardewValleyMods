@@ -4,17 +4,17 @@
 		{
 			"name": "Stranger",
 			"location": "BusStop",
-			"eventString":"520702"
+			"eventId":"520702"
 		},
 		{
 			"name": "Fight",
 			"location": "Sewer",
-			"eventString":"691039"
+			"eventId":"691039"
 		},
 		{
 			"name": "Ocean (Fourteen Hearts)",
 			"location": "Beach",
-			"eventString":"7771191"
+			"eventId":"7771191"
 		},
 	]
 }

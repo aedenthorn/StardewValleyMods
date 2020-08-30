@@ -22,7 +22,7 @@ namespace GemIsles
         private static int mapY;
 
         private static List<string> isleMaps = new List<string>();
-        private string mapAssetKey;
+        public static string mapAssetKey;
         private string locationPrefix = "GemIsles_";
 
         public override void Entry(IModHelper helper)

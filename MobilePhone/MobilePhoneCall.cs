@@ -344,6 +344,7 @@ namespace MobilePhone
                 Monitor.Log($"Event finished");
                 ReturnToReminisce();
             };
+            ModEntry.reminisceEvent = e;
             Game1.warpFarmer(l, 0, 0, 0);
             l.Location.startEvent(e);
             Game1.player.positionBeforeEvent = exitPos;

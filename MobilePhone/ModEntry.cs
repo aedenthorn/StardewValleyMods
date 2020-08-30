@@ -107,6 +107,7 @@ namespace MobilePhone
         internal static Texture2D ringListBackgroundTexture;
         internal static Texture2D ringListHighlightTexture;
         internal static bool isReminiscingAtNight;
+        internal static Event reminisceEvent;
 
         public static event EventHandler OnScreenRotated;
 
