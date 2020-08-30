@@ -44,10 +44,11 @@ namespace MultipleSpouses
 			}
 			else if (whichAnswer.StartsWith("divorce_Yes_"))
 			{
-				string spouse = whichAnswer.Substring(4);
-				ModEntry.spouseToDivorce = spouse;
+				Monitor.Log("confirmed " + whichAnswer);
+				string spouse = whichAnswer.Split('_')[2];
 				if (Game1.player.Money >= 50000 || spouse == "Krobus")
 				{
+					Monitor.Log("divorce initiated successfully");
 					if (!Game1.player.isRoommate(spouse))
 					{
 						Game1.player.Money -= 50000;
@@ -57,6 +58,7 @@ namespace MultipleSpouses
 					{
 						ModEntry.divorceHeartsLost = 0;
 					}
+					ModEntry.spouseToDivorce = spouse;
 					Game1.player.divorceTonight.Value = true;
 					string s = Game1.content.LoadStringReturnNullIfNotFound("Strings\\Locations:ManorHouse_DivorceBook_Filed_" + spouse);
 					if (s == null)
@@ -74,6 +76,7 @@ namespace MultipleSpouses
 				}
 				else
 				{
+					Monitor.Log("not enough money to divorce");
 					Game1.drawObjectDialogue(Game1.content.LoadString("Strings\\UI:NotEnoughMoney1"));
 				}
 			}

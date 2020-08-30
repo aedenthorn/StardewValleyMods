@@ -2,12 +2,11 @@
 using StardewValley;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text.RegularExpressions;
 
 namespace CustomFixedDialogue
 {
-    internal class DialoguePatches
+    public class DialoguePatches
     {
         private static IMonitor Monitor;
         private static IModHelper Helper;
@@ -16,8 +15,18 @@ namespace CustomFixedDialogue
         private static string NPCPrefix = "Strings\\StringsFromCSFiles:NPC.cs.";
         private static string eventPrefix = "Strings\\StringsFromCSFiles:Event.cs.";
         private static string utilityPrefix = "Strings\\StringsFromCSFiles:Utility.cs.";
+
+        public static void warpToPathControllerDestination1()
+        {
+        }
+
         private static string extraPrefix = "Data\\ExtraDialogue:";
-        private static List<string> NPCexceptions = new List<string>() 
+
+        public static void warpToPathControllerDestination2()
+        {
+        }
+
+        private static List<string> NPCexceptions = new List<string>()
         {
             "3954",
             "3955",
@@ -25,7 +34,7 @@ namespace CustomFixedDialogue
             "3987",
             "3969",
         };
-        private static List<string> extraExceptions = new List<string>() 
+        private static List<string> extraExceptions = new List<string>()
         {
             "Farm_RobinWorking_ReadyTomorrow",
             "Farm_RobinWorking1",
@@ -95,11 +104,7 @@ namespace CustomFixedDialogue
             "Morris_NoMoreCD"
         };
 
-        internal static void NPC_showTextAboveHead_Prefix2()
-        {
-        }
-
-        private static List<string> eventChanges = new List<string>() 
+        private static List<string> eventChanges = new List<string>()
         {
             "1497",
             "1498",
@@ -117,7 +122,7 @@ namespace CustomFixedDialogue
             "1801",
         };
 
-        private static List<string> utilityChanges = new List<string>() 
+        private static List<string> utilityChanges = new List<string>()
         {
             "5348",
             "5349",
@@ -175,6 +180,10 @@ namespace CustomFixedDialogue
                 Monitor.Log($"Failed in {nameof(NPC_showTextAboveHead_Prefix)}:\n{ex}", LogLevel.Error);
             }
         }
+        internal static void NPC_showTextAboveHead_Prefix2()
+        {
+        }
+
         public static void NPC_getHi_Postfix(NPC __instance, ref string __result)
         {
             try
@@ -232,7 +241,7 @@ namespace CustomFixedDialogue
                 else
                 {
                     //Monitor.Log($"edited input: {input}");
-                    input = input.Replace($"^{suffix}{key}", "").Replace($"{prefix}{key}^","");
+                    input = input.Replace($"^{suffix}{key}", "").Replace($"{prefix}{key}^", "");
                     Monitor.Log($"reverted input: {input}");
                 }
             }

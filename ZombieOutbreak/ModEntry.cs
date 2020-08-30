@@ -64,7 +64,14 @@ namespace ZombieOutbreak
                 original: AccessTools.Constructor(typeof(DialogueBox), new Type[] { typeof(string), typeof(List<Response>), typeof(int) }),
                 prefix: new HarmonyMethod(typeof(ZombiePatches), nameof(ZombiePatches.DialogueBox_complex_prefix))
             );
-
+            harmony.Patch(
+                original: AccessTools.Method(typeof(NPC), nameof(NPC.showTextAboveHead)),
+                prefix: new HarmonyMethod(typeof(ZombiePatches), nameof(ZombiePatches.NPC_showTextAboveHead_Prefix))
+            );
+            harmony.Patch(
+                original: AccessTools.Method(typeof(NPC), nameof(NPC.getHi)),
+                postfix: new HarmonyMethod(typeof(ZombiePatches), nameof(ZombiePatches.NPC_getHi_Postfix))
+            );
             harmony.Patch(
                 original: AccessTools.Method(typeof(Dialogue), "parseDialogueString"),
                 prefix: new HarmonyMethod(typeof(ZombiePatches), nameof(ZombiePatches.Dialogue_prefix))

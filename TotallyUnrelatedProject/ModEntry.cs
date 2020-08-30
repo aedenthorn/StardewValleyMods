@@ -3,32 +3,18 @@ using StardewModdingAPI;
 using StardewValley;
 using System;
 
-namespace CustomFixedDialogue
+namespace CustomFixedDialogue 
 {
     public class ModEntry : Mod
-	{
-		public static ModEntry context;
+    {
 
-		internal static ModConfig Config;
-
-
-		/// <summary>The mod entry point, called after the mod is first loaded.</summary>
-		/// <param name="helper">Provides simplified APIs for writing mods.</param>
-		public override void Entry(IModHelper helper)
-		{
-			context = this;
-			Config = Helper.ReadConfig<ModConfig>();
-
+        public override void Entry(IModHelper helper)
+        {
 			DialoguePatches.Initialize(Monitor, helper);
 
-			//string test = "CustomFixedDialogueNPC.cs.4279^Oh... It's for my birthday? ... Thanks.$s/Oh... It's for my birthday? ... Thanks.$s^EndCustomFixedDialogueNPC.cs.4279";
-			//DialoguePatches.FixString(new NPC() { Name = "Jas" }, ref test);
-			//Monitor.Log($"test dialogue {test}");
+			var harmony = HarmonyInstance.Create(ModManifest.UniqueID);
 
-
-			var harmony = HarmonyInstance.Create(ModManifest.UniqueID); 
-
-			HarmonyMethod hm = new HarmonyMethod(typeof(DialoguePatches), "Dialogue_Prefix");
+			HarmonyMethod hm = new HarmonyMethod(typeof(DialoguePatches), nameof(DialoguePatches.Dialogue_Prefix));
 			hm.prioritiy = Priority.First;
 			harmony.Patch(
 				original: AccessTools.Constructor(typeof(Dialogue), new Type[] { typeof(string), typeof(NPC) }),
@@ -48,5 +34,12 @@ namespace CustomFixedDialogue
 				postfix: new HarmonyMethod(typeof(DialoguePatches), nameof(DialoguePatches.NPC_getHi_Postfix))
 			);
 		}
-	}
+
+        private static void Farmer_isMarried1()
+        {
+        }
+        private static void Farmer_isMarried2()
+        {
+        }
+    }
 }

@@ -4,16 +4,17 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{5CFBC975-48DC-40A0-9478-E81F76D7C8C2}</ProjectGuid>
+    <ProjectGuid>{C0C5B46C-0BE0-4854-9CB7-2B045A46A0AC}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>CustomFixedDialogue</RootNamespace>
-    <AssemblyName>CustomFixedDialogue</AssemblyName>
+    <AssemblyName>Custom_Fixed_Dialogue</AssemblyName>
     <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <Deterministic>true</Deterministic>
     <NuGetPackageImportStamp>
     </NuGetPackageImportStamp>
+    <EnableHarmony>true</EnableHarmony>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -33,12 +34,6 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="0Harmony">
-      <HintPath>G:\ga\Stardew Valley\smapi-internal\0Harmony.dll</HintPath>
-    </Reference>
-    <Reference Include="StardewModdingAPI">
-      <HintPath>G:\ga\Stardew Valley\StardewModdingAPI.exe</HintPath>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
@@ -50,7 +45,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="DialoguePatches.cs" />
-    <Compile Include="ModConfig.cs" />
     <Compile Include="ModEntry.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

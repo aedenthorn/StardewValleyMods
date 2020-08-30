@@ -93,10 +93,6 @@ namespace ZombieOutbreak
             }
         }
 
-        public static void NPC_showTextAboveHead_Prefix2()
-        {
-        }
-
         public static void NPC_getHi_Postfix(NPC __instance, ref string __result)
         {
             try

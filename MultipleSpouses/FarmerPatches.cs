@@ -23,7 +23,9 @@ namespace MultipleSpouses
         {
             try
             {
-                __instance.divorceTonight.Value = false;if (!__instance.isMarried() || ModEntry.spouseToDivorce == null)
+                Monitor.Log("Trying to divorce");
+                __instance.divorceTonight.Value = false;
+                if (!__instance.isMarried() || ModEntry.spouseToDivorce == null)
                 {
                     Monitor.Log("Tried to divorce but no spouse to divorce!");
                     return false;
