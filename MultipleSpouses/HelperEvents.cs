@@ -59,6 +59,7 @@ namespace MultipleSpouses
 					(location as FarmHouse).showSpouseRoom();
 					Maps.BuildSpouseRooms((location as FarmHouse));
 					Misc.PlaceSpousesInFarmhouse((location as FarmHouse));
+					location.resetForPlayerEntry();
 				}
 			}
             if (Game1.IsMasterGame)

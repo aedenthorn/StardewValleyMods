@@ -99,6 +99,10 @@ namespace Familiars
 				prefix: new HarmonyMethod(typeof(FamiliarsPatches), nameof(FamiliarsPatches.NPC_isVillager_Prefix))
 			);
 			harmony.Patch(
+				original: AccessTools.Method(typeof(NPC), nameof(NPC.checkAction)),
+				prefix: new HarmonyMethod(typeof(FamiliarsPatches), nameof(FamiliarsPatches.NPC_checkAction_Prefix))
+			);
+			harmony.Patch(
 				original: AccessTools.Method(typeof(Character), nameof(Character.checkForFootstep)),
 				prefix: new HarmonyMethod(typeof(FamiliarsPatches), nameof(FamiliarsPatches.Character_checkForFootstep_Prefix))
 			);
@@ -110,6 +114,10 @@ namespace Familiars
 			harmony.Patch(
 				original: AccessTools.Method(typeof(GameLocation), "updateCharacters"),
 				prefix: new HarmonyMethod(typeof(FamiliarsPatches), nameof(FamiliarsPatches.GameLocation_updateCharacters_Prefix))
+			);
+			harmony.Patch(
+				original: AccessTools.Method(typeof(GameLocation), nameof(GameLocation.isCharacterAtTile)),
+				postfix: new HarmonyMethod(typeof(FamiliarsPatches), nameof(FamiliarsPatches.GameLocation_isCharacterAtTile_Postfix))
 			);
 			harmony.Patch(
 				original: AccessTools.Method(typeof(GameLocation), "drawCharacters"),

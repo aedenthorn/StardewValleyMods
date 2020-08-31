@@ -281,6 +281,16 @@ namespace Familiars
             }
 			return true;
 		}
+		public static bool NPC_checkAction_Prefix(NPC __instance, ref bool __result)
+		{
+			if(__instance is Familiar)
+            {
+				ModEntry.SMonitor.Log("Clicking on familiar");
+				__result = false;
+				return false;
+            }
+			return true;
+		}
 		public static bool Character_checkForFootstep_Prefix(Character __instance)
 		{
 			if(__instance is Familiar)
@@ -289,7 +299,7 @@ namespace Familiars
             }
 			return true;
 		}
-		public static bool Bush_shake_Prefix(Bush __instance, Vector2 tileLocation, bool doEvenIfStillShaking, float ___maxShake)
+		public static bool Bush_shake_Prefix(Vector2 tileLocation, bool doEvenIfStillShaking, float ___maxShake)
 		{
 			if (!ModEntry.receivedJunimoEggToday && (___maxShake == 0f || doEvenIfStillShaking) && Game1.player.currentLocation.Name == "Town" && tileLocation.X == 20f && tileLocation.Y == 8f && Game1.player.mailReceived.Contains("junimoPlush") && Game1.dayOfMonth == 28 && Game1.timeOfDay == 1200)
 			{
@@ -301,6 +311,11 @@ namespace Familiars
 			return true;
 		}
 
+		public static void GameLocation_isCharacterAtTile_Postfix(ref NPC __result)
+		{
+			if (__result is Familiar)
+				__result = null;
+		}
 		public static void GameLocation_updateCharacters_Prefix(GameLocation __instance)
 		{
 			foreach (Character c in __instance.characters)
