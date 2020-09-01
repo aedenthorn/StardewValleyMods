@@ -85,7 +85,10 @@ namespace ZombieOutbreak
         {
             try
             {
-                Utils.MakeZombieSpeak(ref Text);
+                if (ModEntry.zombieTextures.ContainsKey(__instance.Name))
+                {
+                    Utils.MakeZombieSpeak(ref Text, true);
+                }
             }
             catch (Exception ex)
             {
@@ -97,7 +100,10 @@ namespace ZombieOutbreak
         {
             try
             {
-                Utils.MakeZombieSpeak(ref __result);
+                if (ModEntry.zombieTextures.ContainsKey(__instance.Name))
+                {
+                    Utils.MakeZombieSpeak(ref __result, true);
+                }
             }
             catch (Exception ex)
             {

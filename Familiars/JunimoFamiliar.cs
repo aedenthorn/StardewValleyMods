@@ -19,28 +19,28 @@ namespace Familiars
 		{
 			get
 			{
-				return this.eventActor;
+				return eventActor;
 			}
 			set
 			{
-				this.eventActor.Value = value;
+				eventActor.Value = value;
 			}
 		}
 
 		public JunimoFamiliar()
 		{
-			this.forceUpdateTimer = 9999;
+			forceUpdateTimer = 9999;
 		}
 
 		public JunimoFamiliar(Vector2 position, long ownerId) : base("Junimo", position, new AnimatedSprite("Characters\\Junimo", 0, 16, 16))
 		{
-			this.friendly.Value = true;
-			this.nextPosition.Value = this.GetBoundingBox();
-			base.Breather = false;
-			base.speed = 3;
-			this.forceUpdateTimer = 9999;
-			this.collidesWithOtherCharacters.Value = true;
-			this.farmerPassesThrough = true;
+			friendly.Value = true;
+			nextPosition.Value = GetBoundingBox();
+            Breather = false;
+            speed = 3;
+			forceUpdateTimer = 9999;
+			collidesWithOtherCharacters.Value = true;
+			farmerPassesThrough = true;
 			ignoreMovementAnimations = true;
 
 			color.Value = FamiliarsUtils.GetJunimoColor();
@@ -50,32 +50,32 @@ namespace Familiars
 		protected override void initNetFields()
 		{
 			base.initNetFields();
-			base.NetFields.AddFields(new INetSerializable[]
+            NetFields.AddFields(new INetSerializable[]
 			{
-				this.friendly,
-				this.holdingStar,
-				this.holdingBundle,
-				this.stayPut,
-				this.eventActor,
-				this.motion,
-				this.nextPosition,
-				this.color,
-				this.bundleColor,
+				friendly,
+				holdingStar,
+				holdingBundle,
+				stayPut,
+				eventActor,
+				motion,
+				nextPosition,
+				color,
+				bundleColor,
 			});
-			base.NetFields.AddFields(new INetSerializable[]
+            NetFields.AddFields(new INetSerializable[]
 			{
-				this.setReturnToJunimoHutToFetchStarControllerEvent,
-				this.setBringBundleBackToHutControllerEvent,
-				this.setJunimoReachedHutToFetchStarControllerEvent,
-				this.starDoneSpinningEvent,
-				this.returnToJunimoHutToFetchFinalStarEvent
+				setReturnToJunimoHutToFetchStarControllerEvent,
+				setBringBundleBackToHutControllerEvent,
+				setJunimoReachedHutToFetchStarControllerEvent,
+				starDoneSpinningEvent,
+				returnToJunimoHutToFetchFinalStarEvent
 			});
-			this.setReturnToJunimoHutToFetchStarControllerEvent.onEvent += this.setReturnToJunimoHutToFetchStarController;
-			this.setBringBundleBackToHutControllerEvent.onEvent += this.setBringBundleBackToHutController;
-			this.setJunimoReachedHutToFetchStarControllerEvent.onEvent += this.setJunimoReachedHutToFetchStarController;
-			this.starDoneSpinningEvent.onEvent += this.performStartDoneSpinning;
-			this.returnToJunimoHutToFetchFinalStarEvent.onEvent += this.returnToJunimoHutToFetchFinalStar;
-			this.position.Field.AxisAlignedMovement = false;
+			setReturnToJunimoHutToFetchStarControllerEvent.onEvent += setReturnToJunimoHutToFetchStarController;
+			setBringBundleBackToHutControllerEvent.onEvent += setBringBundleBackToHutController;
+			setJunimoReachedHutToFetchStarControllerEvent.onEvent += setJunimoReachedHutToFetchStarController;
+			starDoneSpinningEvent.onEvent += performStartDoneSpinning;
+			returnToJunimoHutToFetchFinalStarEvent.onEvent += returnToJunimoHutToFetchFinalStar;
+			position.Field.AxisAlignedMovement = false;
 		}
 		public override void MovePosition(GameTime time, xTile.Dimensions.Rectangle viewport, GameLocation currentLocation)
 		{
@@ -99,8 +99,8 @@ namespace Familiars
 
 		public void setMoving(int xSpeed, int ySpeed)
 		{
-			this.motion.X = (float)xSpeed;
-			this.motion.Y = (float)ySpeed;
+			motion.X = xSpeed;
+			motion.Y = ySpeed;
 		}
 
 		public void setMoving(Vector2 motion)
@@ -111,25 +111,25 @@ namespace Familiars
 		public override void Halt()
 		{
 			base.Halt();
-			this.motion.Value = Vector2.Zero;
+			motion.Value = Vector2.Zero;
 		}
 
 		public void stayStill()
 		{
-			this.stayPut.Value = true;
-			this.motion.Value = Vector2.Zero;
+			stayPut.Value = true;
+			motion.Value = Vector2.Zero;
 		}
 
 		public void allowToMoveAgain()
 		{
-			this.stayPut.Value = false;
+			stayPut.Value = false;
 		}
 
 		private void returnToJunimoHutToFetchFinalStar()
 		{
-			if (base.currentLocation == Game1.currentLocation)
+			if (currentLocation == Game1.currentLocation)
 			{
-				Game1.globalFadeToBlack(new Game1.afterFadeFunction(this.finalCutscene), 0.005f);
+				Game1.globalFadeToBlack(new Game1.afterFadeFunction(finalCutscene), 0.005f);
 				Game1.freezeControls = true;
 				Game1.flashAlpha = 1f;
 			}
@@ -137,15 +137,15 @@ namespace Familiars
 
 		public void returnToJunimoHutToFetchStar(GameLocation location)
 		{
-			base.currentLocation = location;
-			this.friendly.Value = true;
+            currentLocation = location;
+			friendly.Value = true;
 			if (((CommunityCenter)Game1.getLocationFromName("CommunityCenter")).areAllAreasComplete())
 			{
-				this.returnToJunimoHutToFetchFinalStarEvent.Fire();
-				this.collidesWithOtherCharacters.Value = false;
-				this.farmerPassesThrough = false;
-				this.stayStill();
-				this.faceDirection(0);
+				returnToJunimoHutToFetchFinalStarEvent.Fire();
+				collidesWithOtherCharacters.Value = false;
+				farmerPassesThrough = false;
+				stayStill();
+				faceDirection(0);
 				GameLocation cc = Game1.getLocationFromName("CommunityCenter");
 				if (!Game1.player.mailReceived.Contains("ccIsComplete"))
 				{
@@ -160,13 +160,13 @@ namespace Familiars
 			else
 			{
 				DelayedAction.textAboveHeadAfterDelay((Game1.random.NextDouble() < 0.5) ? Game1.content.LoadString("Strings\\Characters:JunimoTextAboveHead1") : Game1.content.LoadString("Strings\\Characters:JunimoTextAboveHead2"), this, Game1.random.Next(3000, 6000));
-				this.setReturnToJunimoHutToFetchStarControllerEvent.Fire();
+				setReturnToJunimoHutToFetchStarControllerEvent.Fire();
 				if (ModEntry.Config.JunimoSoundEffects)
 					location.playSound("junimoMeep1", NetAudio.SoundContext.Default);
-				this.collidesWithOtherCharacters.Value = false;
-				this.farmerPassesThrough = false;
-				this.holdingBundle.Value = true;
-				base.speed = 3;
+				collidesWithOtherCharacters.Value = false;
+				farmerPassesThrough = false;
+				holdingBundle.Value = true;
+                speed = 3;
 			}
 		}
 
@@ -176,13 +176,13 @@ namespace Familiars
 			{
 				return;
 			}
-			this.controller = new PathFindController(this, base.currentLocation, new Point(25, 10), 0, new PathFindController.endBehavior(this.junimoReachedHutToFetchStar));
+			controller = new PathFindController(this, currentLocation, new Point(25, 10), 0, new PathFindController.endBehavior(junimoReachedHutToFetchStar));
 		}
 
 		private void finalCutscene()
 		{
-			this.collidesWithOtherCharacters.Value = false;
-			this.farmerPassesThrough = false;
+			collidesWithOtherCharacters.Value = false;
+			farmerPassesThrough = false;
 			(Game1.getLocationFromName("CommunityCenter") as CommunityCenter).prepareForJunimoDance();
 			Game1.player.Position = new Vector2(29f, 11f) * 64f;
 			Game1.player.completelyStopAnimatingOrDoingAction();
@@ -193,21 +193,21 @@ namespace Familiars
 			Game1.viewportTarget = Vector2.Zero;
 			Game1.viewportCenter = new Point(Game1.player.getStandingX(), Game1.player.getStandingY());
 			Game1.moveViewportTo(new Vector2(32.5f, 6f) * 64f, 2f, 999999, null, null);
-			Game1.globalFadeToClear(new Game1.afterFadeFunction(this.goodbyeDance), 0.005f);
+			Game1.globalFadeToClear(new Game1.afterFadeFunction(goodbyeDance), 0.005f);
 			Game1.pauseTime = 1000f;
 			Game1.freezeControls = true;
 		}
 
 		public void bringBundleBackToHut(Color bundleColor, GameLocation location)
 		{
-			base.currentLocation = location;
-			if (!this.holdingBundle)
+            currentLocation = location;
+			if (!holdingBundle)
 			{
-				base.Position = Utility.getRandomAdjacentOpenTile(Game1.player.getTileLocation(), location) * 64f;
+                Position = Utility.getRandomAdjacentOpenTile(Game1.player.getTileLocation(), location) * 64f;
 				int iter = 0;
-				while (location.isCollidingPosition(this.GetBoundingBox(), Game1.viewport, this) && iter < 5)
+				while (location.isCollidingPosition(GetBoundingBox(), Game1.viewport, this) && iter < 5)
 				{
-					base.Position = Utility.getRandomAdjacentOpenTile(Game1.player.getTileLocation(), location) * 64f;
+                    Position = Utility.getRandomAdjacentOpenTile(Game1.player.getTileLocation(), location) * 64f;
 					iter++;
 				}
 				if (iter >= 5)
@@ -219,11 +219,11 @@ namespace Familiars
 					DelayedAction.textAboveHeadAfterDelay((Game1.random.NextDouble() < 0.5) ? Game1.content.LoadString("Strings\\Characters:JunimoThankYou1") : Game1.content.LoadString("Strings\\Characters:JunimoThankYou2"), this, Game1.random.Next(3000, 6000));
 				}
 				this.bundleColor.Value = bundleColor;
-				this.setBringBundleBackToHutControllerEvent.Fire();
-				this.collidesWithOtherCharacters.Value = false;
-				this.farmerPassesThrough = false;
-				this.holdingBundle.Value = true;
-				base.speed = 3;
+				setBringBundleBackToHutControllerEvent.Fire();
+				collidesWithOtherCharacters.Value = false;
+				farmerPassesThrough = false;
+				holdingBundle.Value = true;
+                speed = 3;
 			}
 		}
 
@@ -233,29 +233,29 @@ namespace Familiars
 			{
 				return;
 			}
-			this.controller = new PathFindController(this, base.currentLocation, new Point(25, 10), 0, new PathFindController.endBehavior(this.junimoReachedHutToReturnBundle));
+			controller = new PathFindController(this, currentLocation, new Point(25, 10), 0, new PathFindController.endBehavior(junimoReachedHutToReturnBundle));
 		}
 
 		private void junimoReachedHutToReturnBundle(Character c, GameLocation l)
 		{
-			base.currentLocation = l;
-			this.holdingBundle.Value = false;
-			this.collidesWithOtherCharacters.Value = true;
-			this.farmerPassesThrough = true;
+            currentLocation = l;
+			holdingBundle.Value = false;
+			collidesWithOtherCharacters.Value = true;
+			farmerPassesThrough = true;
 			l.playSound("Ship", NetAudio.SoundContext.Default);
 		}
 
 		private void junimoReachedHutToFetchStar(Character c, GameLocation l)
 		{
-			base.currentLocation = l;
-			this.holdingStar.Value = true;
-			this.holdingBundle.Value = false;
-			base.speed = 3;
-			this.collidesWithOtherCharacters.Value = false;
-			this.farmerPassesThrough = false;
-			this.setJunimoReachedHutToFetchStarControllerEvent.Fire();
+            currentLocation = l;
+			holdingStar.Value = true;
+			holdingBundle.Value = false;
+            speed = 3;
+			collidesWithOtherCharacters.Value = false;
+			farmerPassesThrough = false;
+			setJunimoReachedHutToFetchStarControllerEvent.Fire();
 			l.playSound("dwop", NetAudio.SoundContext.Default);
-			this.farmerPassesThrough = false;
+			farmerPassesThrough = false;
 		}
 
 		private void setJunimoReachedHutToFetchStarController()
@@ -264,23 +264,23 @@ namespace Familiars
 			{
 				return;
 			}
-			this.controller = new PathFindController(this, base.currentLocation, new Point(32, 9), 2, new PathFindController.endBehavior(this.placeStar));
+			controller = new PathFindController(this, currentLocation, new Point(32, 9), 2, new PathFindController.endBehavior(placeStar));
 		}
 
 		private void placeStar(Character c, GameLocation l)
 		{
-			base.currentLocation = l;
-			this.collidesWithOtherCharacters.Value = false;
-			this.farmerPassesThrough = true;
-			this.holdingStar.Value = false;
+            currentLocation = l;
+			collidesWithOtherCharacters.Value = false;
+			farmerPassesThrough = true;
+			holdingStar.Value = false;
 			l.playSound("tinyWhip", NetAudio.SoundContext.Default);
-			this.friendly.Value = true;
-			base.speed = 3;
+			friendly.Value = true;
+            speed = 3;
 			ModEntry.mp.broadcastSprites(l, new TemporaryAnimatedSprite[]
 			{
-				new TemporaryAnimatedSprite(this.Sprite.textureName, new Rectangle(0, 109, 16, 19), 40f, 8, 10, base.Position + new Vector2(0f, -64f), false, false, 1f, 0f, Color.White, 4f * this.scale, 0f, 0f, 0f, false)
+				new TemporaryAnimatedSprite(Sprite.textureName, new Rectangle(0, 109, 16, 19), 40f, 8, 10, Position + new Vector2(0f, -64f), false, false, 1f, 0f, Color.White, 4f * scale, 0f, 0f, 0f, false)
 				{
-					endFunction = new TemporaryAnimatedSprite.endBehavior(this.starDoneSpinning),
+					endFunction = new TemporaryAnimatedSprite.endBehavior(starDoneSpinning),
 					motion = new Vector2(0.22f, -2f),
 					acceleration = new Vector2(0f, 0.01f),
 					id = 777f
@@ -296,8 +296,8 @@ namespace Familiars
 
 		private void starDoneSpinning(int extraInfo)
 		{
-			this.starDoneSpinningEvent.Fire();
-			(base.currentLocation as CommunityCenter).addStarToPlaque();
+			starDoneSpinningEvent.Fire();
+			(currentLocation as CommunityCenter).addStarToPlaque();
 		}
 
 		private void performStartDoneSpinning()
@@ -312,47 +312,47 @@ namespace Familiars
 
 		public override void drawAboveAlwaysFrontLayer(SpriteBatch b)
 		{
-			if (this.textAboveHeadTimer > 0 && this.textAboveHead != null)
+			if (textAboveHeadTimer > 0 && textAboveHead != null)
 			{
-				Vector2 local = Game1.GlobalToLocal(new Vector2((float)base.getStandingX(), (float)base.getStandingY() - 128f + (float)this.yJumpOffset));
-				if (this.textAboveHeadStyle == 0)
+				Vector2 local = Game1.GlobalToLocal(new Vector2(getStandingX(), getStandingY() - 128f + yJumpOffset));
+				if (textAboveHeadStyle == 0)
 				{
-					local += new Vector2((float)Game1.random.Next(-1, 2), (float)Game1.random.Next(-1, 2));
+					local += new Vector2(Game1.random.Next(-1, 2), Game1.random.Next(-1, 2));
 				}
-				SpriteText.drawStringWithScrollCenteredAt(b, this.textAboveHead, (int)local.X, (int)local.Y, "", this.textAboveHeadAlpha, this.textAboveHeadColor, 1, (float)(base.getTileY() * 64) / 10000f + 0.001f + (float)base.getTileX() / 10000f, true);
+				SpriteText.drawStringWithScrollCenteredAt(b, textAboveHead, (int)local.X, (int)local.Y, "", textAboveHeadAlpha, textAboveHeadColor, 1, getTileY() * 64 / 10000f + 0.001f + getTileX() / 10000f, true);
 			}
 		}
 
 		protected override void updateSlaveAnimation(GameTime time)
 		{
-			if (this.holdingStar || this.holdingBundle)
+			if (holdingStar || holdingBundle)
 			{
-				this.Sprite.Animate(time, 44, 4, 200f);
+				Sprite.Animate(time, 44, 4, 200f);
 				return;
 			}
-			if (!this.position.IsInterpolating())
+			if (!position.IsInterpolating())
 			{
-				this.Sprite.Animate(time, 8, 4, 100f);
+				Sprite.Animate(time, 8, 4, 100f);
 				return;
 			}
-			if (base.FacingDirection == 1)
+			if (FacingDirection == 1)
 			{
-				this.flip = false;
-				this.Sprite.Animate(time, 16, 8, 50f);
+				flip = false;
+				Sprite.Animate(time, 16, 8, 50f);
 				return;
 			}
-			if (base.FacingDirection == 3)
+			if (FacingDirection == 3)
 			{
-				this.Sprite.Animate(time, 16, 8, 50f);
-				this.flip = true;
+				Sprite.Animate(time, 16, 8, 50f);
+				flip = true;
 				return;
 			}
-			if (base.FacingDirection == 0)
+			if (FacingDirection == 0)
 			{
-				this.Sprite.Animate(time, 32, 8, 50f);
+				Sprite.Animate(time, 32, 8, 50f);
 				return;
 			}
-			this.Sprite.Animate(time, 0, 8, 50f);
+			Sprite.Animate(time, 0, 8, 50f);
 		}
 
         public override void behaviorAtGameTick(GameTime time)
@@ -372,68 +372,68 @@ namespace Familiars
 
         public override void update(GameTime time, GameLocation location)
 		{
-			base.currentLocation = location;
+            currentLocation = location;
 			base.update(time, location);
-			this.forceUpdateTimer = 99999;
+			forceUpdateTimer = 99999;
 
-			if (this.eventActor)
+			if (eventActor)
 			{
 				return;
 			}
 			soundTimer--;
-			this.farmerCloseCheckTimer -= time.ElapsedGameTime.Milliseconds;
+			farmerCloseCheckTimer -= time.ElapsedGameTime.Milliseconds;
 
 			if (followingOwner)
 			{
-				this.farmerCloseCheckTimer = 100;
-				if (this.holdingStar.Value)
+				farmerCloseCheckTimer = 100;
+				if (holdingStar.Value)
 				{
-					this.setJunimoReachedHutToFetchStarController();
+					setJunimoReachedHutToFetchStarController();
 				}
 				else
 				{
 					Farmer f = Game1.getFarmer(ownerId);
 					if (f != null && f.currentLocation == currentLocation)
 					{
-						if (Vector2.Distance(base.Position, f.Position) > (float)(base.speed * 4))
+						if (Vector2.Distance(Position, f.Position) > speed * 4 + 32)
 						{
-							if (this.motion.Equals(Vector2.Zero) && soundTimer <= 0)
+							if (motion.Equals(Vector2.Zero) && soundTimer <= 0)
 							{
-								this.jump((int)(5 + Game1.random.Next(1, 4) * scale));
+								jump((int)(5 + Game1.random.Next(1, 4) * scale));
 								location.localSound("junimoMeep1");
 								soundTimer = 400;
 							}
 							if (Game1.random.NextDouble() < 0.007)
 							{
-								this.jumpWithoutSound((int)(5 + Game1.random.Next(1, 4) * scale));
+								jumpWithoutSound((int)(5 + Game1.random.Next(1, 4) * scale));
 							}
-							this.setMoving(Utility.getVelocityTowardPlayer(new Point((int)base.Position.X, (int)base.Position.Y), (float)base.speed, f));
+							setMoving(Utility.getVelocityTowardPlayer(new Point((int)Position.X, (int)Position.Y), speed, f));
 						}
 						else
 						{
-							this.motion.Value = Vector2.Zero;
+							motion.Value = Vector2.Zero;
 						}
 					}
 					else
 					{
-						this.motion.Value = Vector2.Zero;
+						motion.Value = Vector2.Zero;
 					}
 				}
 			}
-			if (!base.IsInvisible && this.controller == null)
+			if (!IsInvisible && controller == null)
 			{
 				Farmer f = Game1.getFarmer(ownerId);
-				this.nextPosition.Value = this.GetBoundingBox();
-				this.nextPosition.X += (int)this.motion.X;
-				if (!location.isCollidingPosition(this.nextPosition, Game1.viewport, this))
+				nextPosition.Value = GetBoundingBox();
+				nextPosition.X += (int)motion.X;
+				if (!location.isCollidingPosition(nextPosition, Game1.viewport, this))
 				{
-					this.position.X += (float)((int)this.motion.X);
+					position.X += (int)motion.X;
 				}
-				this.nextPosition.X -= (int)this.motion.X;
-				this.nextPosition.Y += (int)this.motion.Y;
-				if (!location.isCollidingPosition(this.nextPosition, Game1.viewport, this))
+				nextPosition.X -= (int)motion.X;
+				nextPosition.Y += (int)motion.Y;
+				if (!location.isCollidingPosition(nextPosition, Game1.viewport, this))
 				{
-					this.position.Y += (float)((int)this.motion.Y);
+					position.Y += (int)motion.Y;
 				}
 
 				lastHeal -= time.ElapsedGameTime.Milliseconds;
@@ -441,9 +441,9 @@ namespace Familiars
 				if (Vector2.Distance(f.getTileLocation(), getTileLocation()) < 3 && lastHeal < 0 && Game1.random.NextDouble() < HealChance())
 				{
 					bool heal = Game1.random.NextDouble() < 0.5;
-					location.temporarySprites.Add(new TemporaryAnimatedSprite((Game1.random.NextDouble() < 0.5) ? 10 : 11, base.Position, (heal ? Color.Red : Color.LawnGreen), 8, false, 100f, 0, -1, -1f, -1, 0)
+					location.temporarySprites.Add(new TemporaryAnimatedSprite((Game1.random.NextDouble() < 0.5) ? 10 : 11, Position, (heal ? Color.Red : Color.LawnGreen), 8, false, 100f, 0, -1, -1f, -1, 0)
 					{
-						motion = this.motion.Value / 4f,
+						motion = motion.Value / 4f,
 						alphaFade = 0.01f,
 						layerDepth = 0.8f,
 						scale = 0.75f,
@@ -462,34 +462,34 @@ namespace Familiars
 					lastHeal = HealInterval();
 				}
 			}
-			if (this.controller == null && this.motion.Equals(Vector2.Zero))
+			if (controller == null && motion.Equals(Vector2.Zero))
 			{
-				this.Sprite.Animate(time, 8, 4, 100f);
+				Sprite.Animate(time, 8, 4, 100f);
 				return;
 			}
-			if (this.holdingStar || this.holdingBundle)
+			if (holdingStar || holdingBundle)
 			{
-				this.Sprite.Animate(time, 44, 4, 200f);
+				Sprite.Animate(time, 44, 4, 200f);
 				return;
 			}
-			if (this.moveRight || (Math.Abs(this.motion.X) > Math.Abs(this.motion.Y) && this.motion.X > 0f))
+			if (moveRight || (Math.Abs(motion.X) > Math.Abs(motion.Y) && motion.X > 0f))
 			{
-				this.flip = false;
-				this.Sprite.Animate(time, 16, 8, 50f);
+				flip = false;
+				Sprite.Animate(time, 16, 8, 50f);
 				return;
 			}
-			if (this.moveLeft || (Math.Abs(this.motion.X) > Math.Abs(this.motion.Y) && this.motion.X < 0f))
+			if (moveLeft || (Math.Abs(motion.X) > Math.Abs(motion.Y) && motion.X < 0f))
 			{
-				this.Sprite.Animate(time, 16, 8, 50f);
-				this.flip = true;
+				Sprite.Animate(time, 16, 8, 50f);
+				flip = true;
 				return;
 			}
-			if (this.moveUp || (Math.Abs(this.motion.Y) > Math.Abs(this.motion.X) && this.motion.Y < 0f))
+			if (moveUp || (Math.Abs(motion.Y) > Math.Abs(motion.X) && motion.Y < 0f))
 			{
-				this.Sprite.Animate(time, 32, 8, 50f);
+				Sprite.Animate(time, 32, 8, 50f);
 				return;
 			}
-			this.Sprite.Animate(time, 0, 8, 50f);
+			Sprite.Animate(time, 0, 8, 50f);
 		}
 		private void AddExp(int v)
 		{
@@ -512,19 +512,19 @@ namespace Familiars
 
         public override void draw(SpriteBatch b, float alpha = 1f)
 		{
-			if (!base.IsInvisible)
+			if (!IsInvisible)
 			{
-				this.Sprite.UpdateSourceRect();
-				b.Draw(this.Sprite.Texture, base.getLocalPosition(Game1.viewport) + new Vector2((float)(this.Sprite.SpriteWidth * 4 / 2), (float)this.Sprite.SpriteHeight * 3f / 4f * 4f / (float)Math.Pow((double)(this.Sprite.SpriteHeight / 16), 2.0) + (float)this.yJumpOffset - 8f) + ((this.shakeTimer > 0) ? new Vector2((float)Game1.random.Next(-1, 2), (float)Game1.random.Next(-1, 2)) : Vector2.Zero) + new Vector2(0,-24), new Rectangle?(this.Sprite.SourceRect), this.color.Value * alpha, this.rotation, new Vector2((float)(this.Sprite.SpriteWidth * 4 / 2), (float)(this.Sprite.SpriteHeight * 4) * 3f / 4f) / 4f, Math.Max(0.2f, this.scale) * 4f, this.flip ? SpriteEffects.FlipHorizontally : SpriteEffects.None, Math.Max(0f, this.drawOnTop ? 0.991f : ((float)base.getStandingY() / 10000f)));
+				Sprite.UpdateSourceRect();
+				b.Draw(Sprite.Texture, getLocalPosition(Game1.viewport) + new Vector2(Sprite.SpriteWidth * 4 / 2, Sprite.SpriteHeight * 3f / 4f * 4f / (float)Math.Pow(Sprite.SpriteHeight / 16, 2.0) + yJumpOffset - 8f) + ((shakeTimer > 0) ? new Vector2(Game1.random.Next(-1, 2), Game1.random.Next(-1, 2)) : Vector2.Zero) + new Vector2(0,-24), new Rectangle?(Sprite.SourceRect), color.Value * alpha, rotation, new Vector2(Sprite.SpriteWidth * 4 / 2, Sprite.SpriteHeight * 4 * 3f / 4f) / 4f, Math.Max(0.2f, scale) * 4f, flip ? SpriteEffects.FlipHorizontally : SpriteEffects.None, Math.Max(0f, drawOnTop ? 0.991f : (getStandingY() / 10000f)));
 
-				if (this.holdingStar)
+				if (holdingStar)
 				{
-					b.Draw(this.Sprite.Texture, Game1.GlobalToLocal(Game1.viewport, base.Position + new Vector2(8f, -64f * this.scale + 4f + (float)this.yJumpOffset)), new Rectangle?(new Rectangle(0, 109, 16, 19)), Color.White * alpha, 0f, Vector2.Zero, 4f * this.scale, SpriteEffects.None, base.Position.Y / 10000f + 0.0001f);
+					b.Draw(Sprite.Texture, Game1.GlobalToLocal(Game1.viewport, Position + new Vector2(8f, -64f * scale + 4f + yJumpOffset)), new Rectangle?(new Rectangle(0, 109, 16, 19)), Color.White * alpha, 0f, Vector2.Zero, 4f * scale, SpriteEffects.None, Position.Y / 10000f + 0.0001f);
 					return;
 				}
-				if (this.holdingBundle)
+				if (holdingBundle)
 				{
-					b.Draw(this.Sprite.Texture, Game1.GlobalToLocal(Game1.viewport, base.Position + new Vector2(8f, -64f * this.scale + 20f + (float)this.yJumpOffset)), new Rectangle?(new Rectangle(0, 96, 16, 13)), this.bundleColor.Value * alpha, 0f, Vector2.Zero, 4f * this.scale, SpriteEffects.None, base.Position.Y / 10000f + 0.0001f);
+					b.Draw(Sprite.Texture, Game1.GlobalToLocal(Game1.viewport, Position + new Vector2(8f, -64f * scale + 20f + yJumpOffset)), new Rectangle?(new Rectangle(0, 96, 16, 13)), bundleColor.Value * alpha, 0f, Vector2.Zero, 4f * scale, SpriteEffects.None, Position.Y / 10000f + 0.0001f);
 				}
 			}
 		}

@@ -125,6 +125,8 @@ namespace GemIsles
         }
         private void WarpToGemIsles(int x, int y)
         {
+            if (Game1.eventUp)
+                return;
             string name = $"{locationPrefix}{mapX}_{mapY}";
             if (Game1.getLocationFromName(name) == null)
             {

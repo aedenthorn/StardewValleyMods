@@ -22,7 +22,7 @@ namespace ZombieOutbreak
             monitor = _monitor;
             config = _config;
         }
-        internal static void MakeZombieSpeak(ref string dialogue, bool player = false)
+        internal static void MakeZombieSpeak(ref string dialogue, bool dontAngry = false)
         {
             monitor.Log($"input {dialogue}");
 
@@ -62,7 +62,7 @@ namespace ZombieOutbreak
                 str = r3a.Replace(str, "gh");
                 str = r4a.Replace(str, "a");
 
-                if(!player && (i == 0 || !strs[i - 1].StartsWith("$r ")))
+                if(!dontAngry && (i == 0 || !strs[i - 1].StartsWith("$r ")))
                     str += "$a";
                 strs[i] = str;
             }

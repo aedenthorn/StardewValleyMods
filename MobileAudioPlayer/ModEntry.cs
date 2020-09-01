@@ -17,21 +17,22 @@ namespace MobileAudioPlayer
 		public static ModEntry context;
 
 		public static ModConfig Config;
-        private string[] audio;
         private IMobilePhoneApi api;
+        WindowsMediaPlayer Player;
+
+        private Texture2D backgroundTexture;
+        private Texture2D hightlightTexture;
+        private Texture2D buttonBarTexture;
+        private Texture2D buttonsTexture;
+        private Texture2D volumeBarTexture;
+
+        private string[] audio;
         private Vector2 screenPos;
         private Vector2 screenSize;
         private Point lastMousePosition;
         private bool dragging;
         private int offsetY;
         private int trackPlaying = 0;
-
-        private Texture2D backgroundTexture;
-        private Texture2D hightlightTexture;
-        private Texture2D buttonBarTexture;
-        private Texture2D buttonsTexture;
-
-        WindowsMediaPlayer Player;
         private int currentState;
         private bool ended;
         private bool clicking;
@@ -68,6 +69,7 @@ namespace MobileAudioPlayer
             Player = new WindowsMediaPlayer();
             Player.PlayStateChange += new _WMPOCXEvents_PlayStateChangeEventHandler(Player_PlayStateChange);
             Player.MediaError += new _WMPOCXEvents_MediaErrorEventHandler(Player_MediaError);
+            Player.settings.volume = Config.VolumeLevel;
 
             Helper.Events.GameLoop.GameLaunched += GameLoop_GameLaunched;
             Helper.Events.Input.ButtonPressed += Input_ButtonPressed;
@@ -122,7 +124,7 @@ namespace MobileAudioPlayer
 
                 Vector2 screenPos = api.GetScreenPosition();
                 Vector2 screenSize = api.GetScreenSize();
-                if (new Rectangle((int)screenPos.X, (int)(screenPos.Y + screenSize.Y - 32), (int)screenSize.X, 32).Contains(mousePos))
+                if (new Rectangle((int)screenPos.X, (int)(screenPos.Y + screenSize.Y - 32), (int)screenSize.X - Config.VolumeBarWidth - 2, 32).Contains(mousePos))
                 {
                     int space = (int)Math.Round((screenSize.X - 168) / 8f);
                     int offset = mousePos.X - (int)screenPos.X - space / 2;
@@ -131,10 +133,22 @@ namespace MobileAudioPlayer
                     ClickButton(idx);
                     return;
                 }
+                else if (new Rectangle((int)(screenPos.X + screenSize.X - Config.VolumeBarWidth - 2), (int)(screenPos.Y + screenSize.Y - 31), Config.VolumeBarWidth + 2, 30).Contains(mousePos))
+                {
+                    SetVolume(screenPos.Y + screenSize.Y - mousePos.Y - 1);
+                }
 
                 clicking = true;
                 lastMousePosition = mousePos;
             }
+        }
+
+        private void SetVolume(float v)
+        {
+            Monitor.Log($"Volume set to: {(int)(v * 100 / 30)}");
+            Config.VolumeLevel = (int)(v * 100 / 30);
+            Helper.WriteConfig(Config);
+            Player.settings.volume = Config.VolumeLevel;
         }
 
         private void ClickButton(int idx)
@@ -225,6 +239,15 @@ namespace MobileAudioPlayer
             buttonBarTexture = texture;
 
             buttonsTexture = Helper.Content.Load<Texture2D>(Path.Combine("assets", "buttons.png"));
+
+            texture = new Texture2D(Game1.graphics.GraphicsDevice, Config.VolumeBarWidth, 30);
+            data = new Color[texture.Width * texture.Height];
+            for (int pixel = 0; pixel < data.Length; pixel++)
+            {
+                data[pixel] = Config.VolumeBarColor;
+            }
+            texture.SetData(data);
+            volumeBarTexture = texture;
         }
 
         private void Display_RenderedWorld(object sender, RenderedWorldEventArgs e)
@@ -310,7 +333,7 @@ namespace MobileAudioPlayer
                     e.SpriteBatch.DrawString(Game1.dialogueFont, lineTwo, new Vector2(screenPos.X + Config.MarginX, posY + Game1.dialogueFont.LineSpacing * Config.LineOneScale), Config.LineTwoColor, 0f, Vector2.Zero, Config.LineTwoScale, SpriteEffects.None, 0.86f);
             }
             Vector2 barPos = screenPos + new Vector2(0, screenSize.Y - 32);
-            int space = (int)Math.Round((screenSize.X - 168) / 8f);
+            int space = (int)Math.Round((screenSize.X - 168 - Config.VolumeBarWidth - 2) / 8f);
             e.SpriteBatch.Draw(buttonBarTexture, new Rectangle((int)barPos.X, (int)barPos.Y, (int)screenSize.X, 32), Color.White);
             for (int i = 0; i < 7; i++)
             {
@@ -328,6 +351,7 @@ namespace MobileAudioPlayer
 
                 e.SpriteBatch.Draw(buttonsTexture, barPos + new Vector2(space + (space + 24) * i, 4), new Rectangle(24 * j, 0, 24, 24), Color.White);
             }
+            e.SpriteBatch.Draw(volumeBarTexture, new Rectangle((int)(screenPos.X + screenSize.X - Config.VolumeBarWidth - 1), (int)barPos.Y + 31 - (Config.VolumeLevel * 30 / 100), Config.VolumeBarWidth, Config.VolumeLevel * 30 / 100), Color.White);
         }
 
         private void MakeListString(string a, ref string line, float scale)
