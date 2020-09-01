@@ -15,16 +15,8 @@ namespace CustomFixedDialogue
         private static string NPCPrefix = "Strings\\StringsFromCSFiles:NPC.cs.";
         private static string eventPrefix = "Strings\\StringsFromCSFiles:Event.cs.";
         private static string utilityPrefix = "Strings\\StringsFromCSFiles:Utility.cs.";
-
-        public static void warpToPathControllerDestination1()
-        {
-        }
-
         private static string extraPrefix = "Data\\ExtraDialogue:";
-
-        public static void warpToPathControllerDestination2()
-        {
-        }
+        private static string charactersPrefix = "Strings\\Characters:";
 
         private static List<string> NPCexceptions = new List<string>()
         {
@@ -103,6 +95,35 @@ namespace CustomFixedDialogue
             "Morris_TheaterBought",
             "Morris_NoMoreCD"
         };
+        private static List<string> charactersAllowed = new List<string>()
+        {
+            "WipedMemory",
+            "Divorced_bouquet",
+            "Divorced_gift",
+            "Saloon_goodEvent_0",
+            "Saloon_goodEvent_1",
+            "Saloon_goodEvent_2",
+            "Saloon_goodEvent_3",
+            "Saloon_goodEvent_4",
+            "Saloon_badEvent_0",
+            "Saloon_badEvent_1",
+            "Saloon_badEvent_2",
+            "Saloon_badEvent_3",
+            "Saloon_badEvent_4",
+            "Saloon_neutralEvent_0",
+            "Saloon_neutralEvent_1",
+            "Saloon_neutralEvent_2",
+            "Saloon_neutralEvent_3",
+            "Saloon_neutralEvent_4",
+            "MovieInvite_InvitedBySomeoneElse",
+            "MovieInvite_FarmerAlreadySeen",
+            "MovieInvite_AlreadySeen",
+            "MovieInvite_Invited",
+            "MovieInvite_Invited_Rude",
+            "MovieInvite_Invited_Child",
+            "MovieInvite_Reject_Child",
+            "MovieInvite_Reject",
+         };
 
         private static List<string> eventChanges = new List<string>()
         {
@@ -201,10 +222,20 @@ namespace CustomFixedDialogue
         {
             if (path.StartsWith(extraPrefix) && !extraExceptions.Contains(path.Substring(extraPrefix.Length)))
             {
-                text = $"{prefix}{path.Replace("Data\\ExtraDialogue:", "ExtraDialogue_")}^{text}^{suffix}{path.Replace("Data\\ExtraDialogue:", "ExtraDialogue_")}";
+                text = $"{prefix}{path.Replace(extraPrefix, "ExtraDialogue_")}^{text}^{suffix}{path.Replace(extraPrefix, "ExtraDialogue_")}";
                 Monitor.Log($"edited string: {text}");
             }
-            else if ((path.StartsWith(NPCPrefix) && !NPCexceptions.Contains(path.Substring(NPCPrefix.Length))) || (path.StartsWith(eventPrefix) && eventChanges.Contains(path.Substring(eventPrefix.Length))) || (path.StartsWith(utilityPrefix) && utilityChanges.Contains(path.Substring(utilityPrefix.Length))))
+            else if (path.StartsWith(charactersPrefix) && charactersAllowed.Contains(path.Substring(charactersPrefix.Length))
+)
+            {
+                text = $"{prefix}{path.Replace(charactersPrefix, "Characters_")}^{text}^{suffix}{path.Replace(charactersPrefix, "Characters_")}";
+                Monitor.Log($"edited string: {text}");
+            }
+            else if (
+                (path.StartsWith(NPCPrefix) && !NPCexceptions.Contains(path.Substring(NPCPrefix.Length))) 
+                || (path.StartsWith(eventPrefix) && eventChanges.Contains(path.Substring(eventPrefix.Length))) 
+                || (path.StartsWith(utilityPrefix) && utilityChanges.Contains(path.Substring(utilityPrefix.Length)))
+                )
             {
                 text = $"{prefix}{path.Replace("Strings\\StringsFromCSFiles:", "")}^{text}^{suffix}{path.Replace("Strings\\StringsFromCSFiles:", "")}";
                 Monitor.Log($"edited string: {text}");

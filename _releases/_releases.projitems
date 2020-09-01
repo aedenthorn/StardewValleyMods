@@ -12,6 +12,7 @@
     <None Include="$(MSBuildThisFileDirectory)BossCreatures 1.0.2.zip" />
     <None Include="$(MSBuildThisFileDirectory)CustomFixedDialogue 0.4.2.zip" />
     <None Include="$(MSBuildThisFileDirectory)CustomFixedDialogue 0.5.0.zip" />
+    <None Include="$(MSBuildThisFileDirectory)CustomFixedDialogue 0.5.3.zip" />
     <None Include="$(MSBuildThisFileDirectory)CustomMonsterFloors 0.7.0.zip" />
     <None Include="$(MSBuildThisFileDirectory)CustomOreNodes 0.5.3.zip" />
     <None Include="$(MSBuildThisFileDirectory)CustomResourceClumps 0.1.0.zip" />
