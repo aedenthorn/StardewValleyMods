@@ -1,6 +1,5 @@
 ﻿using Harmony;
 using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Audio;
 using Microsoft.Xna.Framework.Graphics;
 using StardewModdingAPI;
 using StardewValley;
@@ -108,6 +107,7 @@ namespace MobilePhone
         internal static Texture2D ringListHighlightTexture;
         internal static bool isReminiscingAtNight;
         internal static Event reminisceEvent;
+        internal static bool buildingInCall;
 
         public static event EventHandler OnScreenRotated;
 

@@ -201,9 +201,6 @@ namespace CustomFixedDialogue
                 Monitor.Log($"Failed in {nameof(NPC_showTextAboveHead_Prefix)}:\n{ex}", LogLevel.Error);
             }
         }
-        internal static void NPC_showTextAboveHead_Prefix2()
-        {
-        }
 
         public static void NPC_getHi_Postfix(NPC __instance, ref string __result)
         {

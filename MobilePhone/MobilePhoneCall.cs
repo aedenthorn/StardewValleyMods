@@ -98,6 +98,8 @@ namespace MobilePhone
         {
             Monitor.Log($"Showing Main Call Dialogue");
 
+            ModEntry.buildingInCall = false;
+
             if (!ModEntry.inCall)
             {
                 Monitor.Log($"Not in call, exiting");
@@ -243,6 +245,7 @@ namespace MobilePhone
                 Monitor.Log($"Not in call, exiting");
                 return;
             }
+            ModEntry.buildingInCall = true;
             (Game1.activeClickableMenu as DialogueBox).closeDialogue();
             ModEntry.callLocation = Game1.getLocationRequest(Game1.player.currentLocation.Name, false);
             ModEntry.callPosition = Game1.player.position;
@@ -498,6 +501,7 @@ namespace MobilePhone
             ModEntry.inCall = false;
             ModEntry.callingNPC = null;
             ModEntry.isReminiscing = false;
+            ModEntry.buildingInCall = false;
             inCallDialogue = null;
             inCallReminiscence = null;
         }
