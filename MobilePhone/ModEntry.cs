@@ -8,7 +8,6 @@ using StardewValley.Network;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Media;
 
 namespace MobilePhone
 {
@@ -93,8 +92,8 @@ namespace MobilePhone
         public static int ringToggle;
         public static NPC callingNPC;
         public static bool inCall;
-        public static SoundPlayer ringSound;
-        public static SoundPlayer notificationSound;
+        public static object ringSound;
+        public static object notificationSound;
         internal static bool isReminiscing;
         internal static bool isInviting;
         internal static INpcAdventureModApi npcAdventureModApi;

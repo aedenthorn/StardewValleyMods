@@ -1,16 +1,9 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Audio;
-using Microsoft.Xna.Framework.Graphics;
-using Microsoft.Xna.Framework.Input;
 using StardewModdingAPI;
 using StardewValley;
-using StardewValley.Events;
-using StardewValley.Network;
 using System;
 using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Reflection;
 
 namespace MobilePhone
 {
@@ -181,7 +174,7 @@ namespace MobilePhone
             {
                 if (ThemeApp.ringDict.ContainsKey(tone) && ThemeApp.ringDict[tone] != null)
                 {
-                    ThemeApp.ringDict[tone].Play();
+                    Helper.Reflection.GetMethod(ThemeApp.ringDict[tone], "Play").Invoke(new object[] { });
                 }
                 else if(Config.BuiltInRingTones.Contains(tone))
                 {
@@ -199,9 +192,9 @@ namespace MobilePhone
 
             try
             {
-                if (ThemeApp.ringDict.ContainsKey(tone) && ThemeApp.ringDict[tone] != null)
+                if (Constants.TargetPlatform != GamePlatform.Android && ThemeApp.ringDict.ContainsKey(tone) && ThemeApp.ringDict[tone] != null)
                 {
-                    ThemeApp.ringDict[tone].Stop();
+                    Helper.Reflection.GetMethod(ThemeApp.ringDict[tone], "Stop").Invoke(new object[] { });
                 }
             }
             catch(Exception ex)
@@ -218,7 +211,7 @@ namespace MobilePhone
             {
                 if (tone.Contains("."))
                 {
-                    ModEntry.notificationSound.Play(); 
+                    (ThemeApp.ringDict[tone] as SoundEffect).Play();
                 }
                 else
                 {

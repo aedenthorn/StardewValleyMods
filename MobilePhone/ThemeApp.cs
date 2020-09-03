@@ -26,7 +26,7 @@ namespace MobilePhone
         private static bool clicked;
         public static Dictionary<string, Texture2D[]> skinDict = new Dictionary<string, Texture2D[]>();
         public static Dictionary<string, Texture2D[]> backgroundDict = new Dictionary<string, Texture2D[]>();
-        public static Dictionary<string, SoundPlayer> ringDict = new Dictionary<string, SoundPlayer>();
+        public static Dictionary<string, object> ringDict = new Dictionary<string, object>();
         public static List<string> ringList;
         public static List<string> skinList = new List<string>();
         public static List<string> backgroundList = new List<string>();
@@ -118,7 +118,16 @@ namespace MobilePhone
                 {
                     try
                     {
-                        SoundPlayer ring = new SoundPlayer(path);
+                        object ring;
+                        try
+                        {
+                            var type = Type.GetType("System.Media.SoundPlayer, System");
+                            ring = Activator.CreateInstance(type, new object[] { path });
+                        }
+                        catch 
+                        {
+                            ring = SoundEffect.FromStream(new FileStream(path, FileMode.Open));
+                        }
                         if (ring != null)
                         {
                             ringDict.Add(Path.GetFileName(path).Replace(".wav", ""), ring);
@@ -188,7 +197,7 @@ namespace MobilePhone
                 return;
             ModEntry.ringSound = ringDict[ringName];
             if (ModEntry.ringSound != null)
-                ModEntry.ringSound.Play();
+                Helper.Reflection.GetMethod(ModEntry.ringSound, "Play").Invoke(new object[] { });
             else if(Config.BuiltInRingTones.Split(',').Contains(ringName))
                 Game1.playSound(ringName);
             Config.PhoneRingTone = ringName;

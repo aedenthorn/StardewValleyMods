@@ -1,16 +1,11 @@
-﻿using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Audio;
+﻿using Microsoft.Xna.Framework.Audio;
 using Microsoft.Xna.Framework.Graphics;
-using Microsoft.Xna.Framework.Input;
 using StardewModdingAPI;
 using StardewModdingAPI.Events;
 using StardewValley;
 using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Media;
-using System.Reflection;
 
 namespace MobilePhone
 {
@@ -20,7 +15,6 @@ namespace MobilePhone
         private static IModHelper Helper;
         private static ModConfig Config;
 
-        // call this method from your Entry class
         public static void Initialize(IModHelper helper, IMonitor monitor, ModConfig config)
         {
             Monitor = monitor;
@@ -124,7 +118,16 @@ namespace MobilePhone
                     {
                         try
                         {
-                            SoundPlayer ring = new SoundPlayer(path);
+                            object ring;
+                            try
+                            {
+                                var type = Type.GetType("System.Media.SoundPlayer, System");
+                                ring = Activator.CreateInstance(type, new object[] { path });
+                            }
+                            catch
+                            {
+                                ring = SoundEffect.FromStream(new FileStream(path, FileMode.Open));
+                            }
                             if (ring != null)
                             {
                                 ThemeApp.ringDict.Add(string.Concat(contentPack.Manifest.UniqueID,":", Path.GetFileName(path).Replace(".wav", "")), ring);
