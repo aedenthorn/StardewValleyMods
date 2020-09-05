@@ -139,7 +139,7 @@ namespace MobilePhone
                         }
                         catch (Exception ex)
                         {
-                            Monitor.Log($"Couldn't load ring {path}:\r\n{ex}");
+                            Monitor.Log($"Couldn't load ring {path}:\r\n{ex}", LogLevel.Error);
                         }
                     }
                 }

@@ -80,7 +80,8 @@ namespace MobilePhone
                     {
                         ringingTicks = 0;
                     }
-                    e.SpriteBatch.Draw(ModEntry.iconTexture, new Vector2((int)ModEntry.phoneIconPosition.X + ModEntry.iconTexture.Width / 2, (int)ModEntry.phoneIconPosition.Y + ModEntry.iconTexture.Height / 2), null, Color.White, rot, new Vector2(ModEntry.iconTexture.Width / 2, ModEntry.iconTexture.Height / 2), 1f, SpriteEffects.None, 0.86f);
+                    e.SpriteBatch.Draw(ModEntry.backgroundTexture, new Vector2((int)ModEntry.phoneIconPosition.X + ModEntry.phoneTexture.Width / 20, (int)ModEntry.phoneIconPosition.Y + ModEntry.phoneTexture.Height / 20), null, Color.White, rot, new Vector2(ModEntry.phoneTexture.Width / 2, ModEntry.phoneTexture.Height / 2), 0.1f, SpriteEffects.None, 0.86f);
+                    e.SpriteBatch.Draw(ModEntry.phoneTexture, new Vector2((int)ModEntry.phoneIconPosition.X + ModEntry.phoneTexture.Width / 20, (int)ModEntry.phoneIconPosition.Y + ModEntry.phoneTexture.Height / 20), null, Color.White, rot, new Vector2(ModEntry.phoneTexture.Width / 2, ModEntry.phoneTexture.Height / 2), 0.1f, SpriteEffects.None, 0.86f);
                 }
 
                 return;

@@ -524,7 +524,7 @@ namespace RandomNPC
 			}
 
 			string d = potentialDialogue[Game1.random.Next(0, potentialDialogue.Count)];
-			//Monitor.Log($"{npc.nameID} gift taste: {d}");
+			Monitor.Log($"{npc.nameID} gift taste: {d}");
 			return d;
 		}
 

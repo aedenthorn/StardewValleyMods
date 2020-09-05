@@ -140,6 +140,15 @@ namespace MultipleSpouses
                prefix: new HarmonyMethod(typeof(NPCPatches), nameof(NPCPatches.NPC_tryToRetrieveDialogue_Prefix))
             );
 
+            harmony.Patch(
+               original: AccessTools.Method(typeof(NPC), nameof(NPC.setSpouseRoomMarriageDialogue)),
+               prefix: new HarmonyMethod(typeof(NPCPatches), nameof(NPCPatches.NPC_setSpouseRoomMarriageDialogue_Prefix))
+            );
+
+            harmony.Patch(
+               original: AccessTools.Method(typeof(NPC), nameof(NPC.setRandomAfternoonMarriageDialogue)),
+               prefix: new HarmonyMethod(typeof(NPCPatches), nameof(NPCPatches.NPC_setRandomAfternoonMarriageDialogue_Prefix))
+            );
 
             // Child patches
 

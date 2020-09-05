@@ -77,11 +77,11 @@ namespace MobilePhone
                             Monitor.Log($"loaded skin {path.Replace("_landscape", "")}");
                         }
                         else
-                            Monitor.Log($"Couldn't load skin {path.Replace("_landscape", "")}: texture was null");
+                            Monitor.Log($"Couldn't load skin {path.Replace("_landscape", "")}: texture was null", LogLevel.Error);
                     }
                     catch (Exception ex)
                     {
-                        Monitor.Log($"Couldn't load skin {path.Replace("_landscape", "")}: {ex}");
+                        Monitor.Log($"Couldn't load skin {path.Replace("_landscape", "")}: {ex}", LogLevel.Error);
                     }
                 }
             }
@@ -101,11 +101,11 @@ namespace MobilePhone
                             Monitor.Log($"loaded background {path.Replace("_landscape", "")}");
                         }
                         else
-                            Monitor.Log($"Couldn't load background {path.Replace("_landscape", "")}: texture was null");
+                            Monitor.Log($"Couldn't load background {path.Replace("_landscape", "")}: texture was null", LogLevel.Error);
                     }
                     catch (Exception ex)
                     {
-                        Monitor.Log($"Couldn't load background {path.Replace("_landscape", "")}: {ex}");
+                        Monitor.Log($"Couldn't load background {path.Replace("_landscape", "")}: {ex}", LogLevel.Error);
                     }
                 }
             }
@@ -134,11 +134,11 @@ namespace MobilePhone
                             Monitor.Log($"loaded ring {path}");
                         }
                         else
-                            Monitor.Log($"Couldn't load ring {path}");
+                            Monitor.Log($"Couldn't load ring {path}", LogLevel.Error);
                     }
                     catch (Exception ex)
                     {
-                        Monitor.Log($"Couldn't load ring {path}:\r\n{ex}");
+                        Monitor.Log($"Couldn't load ring {path}:\r\n{ex}", LogLevel.Error);
                     }
                 }
                 rings = Config.BuiltInRingTones.Split(',');

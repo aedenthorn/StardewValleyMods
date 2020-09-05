@@ -208,10 +208,12 @@ namespace MultipleSpouses
                 {
                     Monitor.Log($"{j.Name} is in kitchen");
                     j.setTilePosition(farmHouse.getKitchenStandingSpot());
+                    j.setRandomAfternoonMarriageDialogue(Game1.timeOfDay, farmHouse, false);
                 }
                 else if (!ModEntry.config.BuildAllSpousesRooms && farmer.spouse != j.Name)
                 {
                     j.setTilePosition(farmHouse.getRandomOpenPointInHouse(ModEntry.myRand));
+                    j.setRandomAfternoonMarriageDialogue(Game1.timeOfDay, farmHouse, false);
                 }
                 else
                 {
@@ -221,6 +223,7 @@ namespace MultipleSpouses
                         j.setTilePosition(farmHouse.getRandomOpenPointInHouse(ModEntry.myRand));
                         j.faceDirection(ModEntry.myRand.Next(0, 4));
                         Monitor.Log($"{j.Name} spouse random loc");
+                        j.setRandomAfternoonMarriageDialogue(Game1.timeOfDay, farmHouse, false);
                         continue;
                     }
                     else
@@ -234,6 +237,15 @@ namespace MultipleSpouses
                 }
             }
 
+        }
+
+        internal static Point GetSpouseRoomTilePosition(NPC npc, FarmHouse farmHouse)
+        {
+            List<string> roomSpouses = ReorderSpousesForRooms(GetSpouses(npc.getSpouse(), -1).Keys.ToList().FindAll(s => (Maps.roomIndexes.ContainsKey(s) || Maps.tmxSpouseRooms.ContainsKey(s)) && !npc.getSpouse().friendshipData[s].IsEngaged()));
+
+            Point spot = (farmHouse.upgradeLevel == 1) ? new Point(32, 5) : new Point(38, 14);
+            int offset = roomSpouses.IndexOf(npc.Name) * 7;
+            return new Point(spot.X + offset, spot.Y);
         }
 
         internal static void NPCDoAnimation(NPC npc, string npcAnimation)

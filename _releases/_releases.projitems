@@ -63,6 +63,7 @@
     <None Include="$(MSBuildThisFileDirectory)MobilePhone 1.8.4.zip" />
     <None Include="$(MSBuildThisFileDirectory)MobilePhone 1.8.5.zip" />
     <None Include="$(MSBuildThisFileDirectory)MobilePhone 1.8.6.zip" />
+    <None Include="$(MSBuildThisFileDirectory)MobilePhone 1.9.0.zip" />
     <None Include="$(MSBuildThisFileDirectory)MobileTelevision 0.1.0.zip" />
     <None Include="$(MSBuildThisFileDirectory)MultipleSpouses 1.6.0.zip" />
     <None Include="$(MSBuildThisFileDirectory)MultipleSpouses 1.6.1.zip" />
@@ -72,6 +73,7 @@
     <None Include="$(MSBuildThisFileDirectory)MultipleSpouses 1.7.0.zip" />
     <None Include="$(MSBuildThisFileDirectory)MultipleSpouses 1.7.1.zip" />
     <None Include="$(MSBuildThisFileDirectory)MultipleSpouses 1.7.3.zip" />
+    <None Include="$(MSBuildThisFileDirectory)MultipleSpouses 1.8.0.zip" />
     <None Include="$(MSBuildThisFileDirectory)Murdercrows 0.2.0.zip" />
     <None Include="$(MSBuildThisFileDirectory)Murdercrows 0.2.2.zip" />
     <None Include="$(MSBuildThisFileDirectory)NonRandomPrairieKing 0.1.0.zip" />

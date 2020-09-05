@@ -52,20 +52,22 @@ namespace MobilePhone
 
         // Phone book
 
+        public int MinPointsToCall { get; set; } = 1000;
+        public string CallBlackList { get; set; } = "";
+        public string CallWhiteList { get; set; } = "";
+        public bool ShowNamesInPhoneBook { get; set; } = true;
+        public bool UseRealNamesInPhoneBook { get; set; } = true;
+        public Color PhoneBookBackgroundColor { get; set; } = Color.White;
+        public Color PhoneBookHeaderColor { get; set; } = Color.DeepSkyBlue;
+        public Color PhoneBookHeaderTextColor { get; set; } = Color.White;
         public int ContactWidth { get; set; } = 64;
         public int ContactHeight { get; set; } = 64;
         public int ContactMarginX { get; set; } = 16;
         public int ContactMarginY { get; set; } = 16;
         public int ContactArrowWidth { get; set; } = 16;
         public int ContactArrowHeight { get; set; } = 16;
-        public Color PhoneBookBackgroundColor { get; set; } = Color.White;
-        public Color PhoneBookHeaderColor { get; set; } = Color.DeepSkyBlue;
-        public Color PhoneBookHeaderTextColor { get; set; } = Color.White;
         public int AppHeaderHeight { get; set; } = 32;
         public float HeaderTextScale { get; set; } = 0.6f;
-        public int MinPointsToCall { get; set; } = 1000;
-        public bool ShowNamesInPhoneBook { get; set; } = true;
-        public bool UseRealNamesInPhoneBook { get; set; } = true;
 
 
         // Themes

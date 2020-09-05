@@ -352,6 +352,41 @@ namespace MultipleSpouses
             }
             return true;
         }
+        
+        internal static bool NPC_setSpouseRoomMarriageDialogue_Prefix(NPC __instance)
+        {
+            try
+            {
+                List<string> roomSpouses = Misc.ReorderSpousesForRooms(Misc.GetSpouses(__instance.getSpouse(), -1).Keys.ToList().FindAll(s => (Maps.roomIndexes.ContainsKey(s) || Maps.tmxSpouseRooms.ContainsKey(s)) && !__instance.getSpouse().friendshipData[s].IsEngaged()));
+                Point spot = (Utility.getHomeOfFarmer(__instance.getSpouse()).upgradeLevel == 1) ? new Point(32, 5) : new Point(38, 14);
+                int offset = roomSpouses.IndexOf(__instance.Name) * 7;
+
+                if (!roomSpouses.Contains(__instance.Name) || __instance.getTileLocationPoint() != new Point(spot.X + offset, spot.Y))
+                {
+                    Monitor.Log($"Cancelling spouse room dialogue for {__instance.Name}");
+                    return false;
+                }
+                Monitor.Log($"Setting spouse room dialogue for {__instance.Name}");
+            }
+            catch (Exception ex)
+            {
+                Monitor.Log($"Failed in {nameof(NPC_setSpouseRoomMarriageDialogue_Prefix)}:\n{ex}", LogLevel.Error);
+            }
+            return true;
+        }
+
+        internal static bool NPC_setRandomAfternoonMarriageDialogue_Prefix(NPC __instance)
+        {
+            try
+            {
+                Monitor.Log($"Setting random afternoon marriage dialogue for {__instance.Name}");
+            }
+            catch (Exception ex)
+            {
+                Monitor.Log($"Failed in {nameof(NPC_setRandomAfternoonMarriageDialogue_Prefix)}:\n{ex}", LogLevel.Error);
+            }
+            return true;
+        }
 
         internal static void NPC_GetDispositionModifiedString_Prefix(NPC __instance, ref bool __state)
         {
@@ -509,6 +544,8 @@ namespace MultipleSpouses
                         }
                     }
                 }
+/*
+                return;
                 if (ModEntry.config.RemoveSpouseOrdinaryDialogue && __instance.Name != Game1.player.spouse && __instance.currentMarriageDialogue.Count > 0)
                 {
                     __instance.CurrentDialogue.Clear();
@@ -518,6 +555,7 @@ namespace MultipleSpouses
                         __instance.currentMarriageDialogue.Clear();
                     }
                 }
+*/
             }
             catch (Exception ex)
             {
