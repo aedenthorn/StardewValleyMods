@@ -109,8 +109,8 @@ namespace MobilePhone
             Monitor.Log($"Creating Callable List");
 
             callableList.Clear();
-            string[] blackList = Config.CallBlackList.Length > 0 ? Config.CallBlackList.Split(',') : null;
-            string[] whiteList = Config.CallWhiteList.Length > 0 ? Config.CallWhiteList.Split(',') : null;
+            string[] blackList = Config.CallBlockList.Length > 0 ? Config.CallBlockList.Split(',') : null;
+            string[] whiteList = Config.CallAllowList.Length > 0 ? Config.CallAllowList.Split(',') : null;
             foreach(KeyValuePair<string,Netcode.NetRef<Friendship>> kvp in Game1.player.friendshipData.FieldDict)
             {
                 try
