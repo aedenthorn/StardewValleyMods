@@ -30,4 +30,32 @@
     "SkillUnlockName": "Combat",
     "SkillUnlockLevel": 8,
   },
+  "NameLocalization":
+  {
+	// "es": "",
+    "ko": "먼지 정령 패밀리어 알",
+    // "de": "",
+    // "fr": "",
+    // "hu": "",
+    // "it": "",
+    // "ja": "",
+    // "pt": "",
+    // "ru": "",
+    // "tr": "",
+    //"zh":"",
+  },
+  "DescriptionLocalization":
+  {
+	// "es": "",
+    "ko": "당신의 먼지 정령 패밀리어를 부화시키세요.",
+    // "de": "",
+    // "fr": "",
+    // "hu": "",
+    // "it": "",
+    // "ja": "",
+    // "pt": "",
+    // "ru": "",
+    // "tr": "",
+    //"zh":"",
+  },
 }

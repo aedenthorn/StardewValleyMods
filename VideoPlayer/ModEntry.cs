@@ -1,12 +1,10 @@
 ﻿using AsfMojo.Parsing;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using Microsoft.Xna.Framework.Input;
 using Microsoft.Xna.Framework.Media;
 using StardewModdingAPI;
 using StardewValley;
 using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -23,7 +21,6 @@ namespace VideoPlayerMod
         private string[] videoFiles;
         private IMobilePhoneApi api;
         private Texture2D backgroundTexture;
-        private Texture2D backgroundRotatedTexture;
         private Texture2D xTexture;
         private Texture2D buttonsTexture;
         private Texture2D playTexture;

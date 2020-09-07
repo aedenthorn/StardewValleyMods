@@ -82,10 +82,10 @@ namespace FriendlyDivorce
 							s2 = Game1.content.LoadStringReturnNullIfNotFound("Strings\\Locations:ManorHouse_DivorceBook_Question");
 						}
 						List<Response> responses = new List<Response>();
-						responses.Add(new Response("Yes", Game1.content.LoadString("Strings\\Lexicon:QuestionDialogue_Yes")));
-						responses.Add(new Response("Complex", ModEntry.PHelper.Translation.Get("divorce_complex")));
-						responses.Add(new Response("No", Game1.content.LoadString("Strings\\Lexicon:QuestionDialogue_No")));
-						__instance.createQuestionDialogue(s2, responses.ToArray(), "divorce");
+						responses.Add(new Response("divorce_Yes", Game1.content.LoadString("Strings\\Lexicon:QuestionDialogue_Yes")));
+						responses.Add(new Response("divorce_Complex", ModEntry.PHelper.Translation.Get("divorce_complex")));
+						responses.Add(new Response("divorce_No", Game1.content.LoadString("Strings\\Lexicon:QuestionDialogue_No")));
+						__instance.createQuestionDialogue(s2, responses.ToArray(), ModEntry.AnswerDialogue);
 						__result = true;
 						return false;
 					}
@@ -96,6 +96,20 @@ namespace FriendlyDivorce
 				Monitor.Log($"Failed in {nameof(ManorHouse_performAction_Prefix)}:\n{ex}", LogLevel.Error);
 			}
 			return true;
+		}
+
+		public static void GameLocation_answerDialogue_prefix(GameLocation __instance, Response answer)
+		{
+			try
+			{
+				if (answer.responseKey.StartsWith("divorce_"))
+					__instance.afterQuestion = ModEntry.AnswerDialogue;
+
+			}
+			catch (Exception ex)
+			{
+				Monitor.Log($"Failed in {nameof(GameLocation_answerDialogue_prefix)}:\n{ex}", LogLevel.Error);
+			}
 		}
 	}
 }

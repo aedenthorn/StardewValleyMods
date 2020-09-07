@@ -9,5 +9,33 @@
   "IsColored": false,
   "GiftTastes": {
 	"Hate": ["Alex", "Abigail", "Caroline", "Clint", "Demetrius", "Dwarf", "Elliott", "Evelyn", "George", "Gus", "Jodi", "Kent", "Krobus", "Lewis", "Linus", "Maru", "Pam", "Penny", "Pierre", "Robin", "Sam", "Sandy", "Shane", "Willy", "Wizard", "Vincent", "Emily", "Haley", "Harvey", "Jas", "Leah", "Marnie", "Sebastian"],
-  }
+  },
+  "NameLocalization":
+  {
+	// "es": "",
+    "ko": "나비 인분",
+    // "de": "",
+    // "fr": "",
+    // "hu": "",
+    // "it": "",
+    // "ja": "",
+    // "pt": "",
+    // "ru": "",
+    // "tr": "",
+    //"zh":"",
+  },
+  "DescriptionLocalization":
+  {
+	// "es": "",
+    "ko": "나비에게서 떨어진 가루. 어떻게 활용할 수 있을까요?",
+    // "de": "",
+    // "fr": "",
+    // "hu": "",
+    // "it": "",
+    // "ja": "",
+    // "pt": "",
+    // "ru": "",
+    // "tr": "",
+    //"zh":"",
+  },
 }

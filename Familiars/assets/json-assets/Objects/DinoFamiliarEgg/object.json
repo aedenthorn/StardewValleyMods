@@ -10,4 +10,32 @@
   "GiftTastes": {
 	"Hate": ["Alex", "Abigail", "Caroline", "Clint", "Demetrius", "Dwarf", "Elliott", "Evelyn", "George", "Gus", "Jodi", "Kent", "Krobus", "Lewis", "Linus", "Maru", "Pam", "Penny", "Pierre", "Robin", "Sam", "Sandy", "Shane", "Willy", "Wizard", "Vincent", "Emily", "Haley", "Harvey", "Jas", "Leah", "Marnie", "Sebastian"],
   },
+  "NameLocalization":
+  {
+	// "es": "",
+    "ko": "공룡 패밀리어 알",
+    // "de": "",
+    // "fr": "",
+    // "hu": "",
+    // "it": "",
+    // "ja": "",
+    // "pt": "",
+    // "ru": "",
+    // "tr": "",
+    //"zh":"",
+  },
+  "DescriptionLocalization":
+  {
+	// "es": "",
+    "ko": "당신의 공룡 패밀리어를 부화시키세요.",
+    // "de": "",
+    // "fr": "",
+    // "hu": "",
+    // "it": "",
+    // "ja": "",
+    // "pt": "",
+    // "ru": "",
+    // "tr": "",
+    //"zh":"",
+  },
 }

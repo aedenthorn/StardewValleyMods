@@ -30,7 +30,7 @@ namespace MobilePhone
         }
         internal static bool Game1_pressSwitchToolButton_prefix()
         {
-            if (ModEntry.screenRect.Contains(Game1.getMousePosition()))
+            if (ModEntry.phoneOpen && ModEntry.screenRect.Contains(Game1.getMousePosition()))
             {
                 return false;
             }

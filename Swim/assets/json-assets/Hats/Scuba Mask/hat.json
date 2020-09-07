@@ -3,5 +3,33 @@
 	"Description": "A respirator for your scuba tank.",
 	"PurchasePrice": "50000",
 	"ShowHair": true,
-	"IgnoreHairstyleOffset": true
+	"IgnoreHairstyleOffset": true,
+  "NameLocalization":
+  {
+	// "es": "",
+    "ko": "스쿠버 마스크",
+    // "de": "",
+    // "fr": "",
+    // "hu": "",
+    // "it": "",
+    // "ja": "",
+    // "pt": "",
+    // "ru": "",
+    // "tr": "",
+    //"zh":"",
+  },
+  "DescriptionLocalization":
+  {
+	// "es": "",
+    "ko": "물 속에서 호흡하기 위한 스쿠버 마스크.",
+    // "de": "",
+    // "fr": "",
+    // "hu": "",
+    // "it": "",
+    // "ja": "",
+    // "pt": "",
+    // "ru": "",
+    // "tr": "",
+    //"zh":"",
+  },
 }

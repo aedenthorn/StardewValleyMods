@@ -42,11 +42,13 @@ namespace FriendlyDivorce
 
 			if (Config.ComplexDivorce)
 			{
-				helper.Events.Input.ButtonPressed += Input_ButtonPressed;
-
 				harmony.Patch(
 				   original: AccessTools.Method(typeof(ManorHouse), nameof(ManorHouse.performAction)),
 				   prefix: new HarmonyMethod(typeof(ObjectPatches), nameof(ObjectPatches.ManorHouse_performAction_Prefix))
+				);
+				harmony.Patch(
+				   original: AccessTools.Method(typeof(GameLocation), nameof(GameLocation.answerDialogue)),
+				   prefix: new HarmonyMethod(typeof(ObjectPatches), nameof(ObjectPatches.GameLocation_answerDialogue_prefix))
 				);
 			}
 
@@ -57,27 +59,13 @@ namespace FriendlyDivorce
 			);
 		}
 
-		private void Input_ButtonPressed(object sender, ButtonPressedEventArgs e)
+		public static void AnswerDialogue(Farmer who, string whichAnswer)
 		{
-			if ((e.Button != SButton.MouseLeft && e.Button != SButton.MouseRight) || Game1.currentLocation == null || !(Game1.currentLocation is ManorHouse) || !Game1.currentLocation.lastQuestionKey.StartsWith("divorce"))
-				return;
-
-
-			IClickableMenu menu = Game1.activeClickableMenu;
-			if (menu == null || menu.GetType() != typeof(DialogueBox))
-				return;
-			int resp = (int)typeof(DialogueBox).GetField("selectedResponse", BindingFlags.NonPublic | BindingFlags.Instance).GetValue(menu);
-			List<Response> resps = (List<Response>)typeof(DialogueBox).GetField("responses", BindingFlags.NonPublic | BindingFlags.Instance).GetValue(menu);
-
-			if (resp < 0 || resps == null || resp >= resps.Count || resps[resp] == null)
-				return;
-
-			string whichAnswer = resps[resp].responseKey;
 
 			Game1.currentLocation.lastQuestionKey = "";
 
 			PMonitor.Log("answer " + whichAnswer);
-			if (whichAnswer == "Yes")
+			if (whichAnswer == "divorce_Yes")
 			{
 				if (Game1.player.Money >= 50000 || Game1.player.spouse == "Krobus")
 				{
@@ -105,7 +93,7 @@ namespace FriendlyDivorce
 					Game1.drawObjectDialogue(Game1.content.LoadString("Strings\\UI:NotEnoughMoney1"));
 				}
 			}
-			else if (whichAnswer == "Complex")
+			else if (whichAnswer == "divorce_Complex")
 			{
 				heartsLost = 1;
 				ShowNextDialogue("divorce_fault_", Game1.currentLocation);
@@ -190,7 +178,9 @@ namespace FriendlyDivorce
 				}
 			}
 		}
-		private static void ShowNextDialogue(string key, GameLocation l)
+
+
+        private static void ShowNextDialogue(string key, GameLocation l)
 		{
 			Translation s2 = PHelper.Translation.Get($"{key}q");
 			if (!s2.HasValue())
