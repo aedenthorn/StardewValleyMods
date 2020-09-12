@@ -116,17 +116,21 @@ namespace CustomSpousePatio
         private void LoadSpouseAreaData()
         {
 			string path = Path.Combine("assets", "outdoor-areas.json");
-			SMonitor.Log($"loading outdoor patios");
+
+            if(!File.Exists(Path.Combine(SHelper.DirectoryPath, path)))
+                path = "content.json";
+
+            SMonitor.Log($"loading outdoor patios");
 			try
 			{
 				OutdoorAreaData json = SHelper.Data.ReadJsonFile<OutdoorAreaData>(path) ?? null;
 
-				if (json != null)
-				{
-					if (json.areas != null && json.areas.Count > 0)
-					{
-						foreach (KeyValuePair<string, OutdoorArea> area in json.areas)
-						{
+                if (json != null)
+                {
+                    if (json.areas != null && json.areas.Count > 0)
+                    {
+                        foreach (KeyValuePair<string, OutdoorArea> area in json.areas)
+                        {
                             if (area.Key == "default")
                             {
                                 if (Game1.MasterPlayer.spouse != null)
@@ -143,9 +147,13 @@ namespace CustomSpousePatio
                             }
                         }
                     }
-				}
+                }
+                else
+                {
+                    SMonitor.Log($"Couldn't get spouse areas from {path}", LogLevel.Debug);
+                }
 
-			}
+            }
 			catch (Exception ex)
 			{
 				SMonitor.Log($"Error reading {path}:\r\n {ex}", LogLevel.Error);

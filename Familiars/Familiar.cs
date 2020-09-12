@@ -193,7 +193,7 @@ namespace Familiars
 
         public void SetScale()
         {
-			Scale = (float)Math.Min(2, 0.5f + (daysOld * 0.01));
+			Scale = (float)Math.Min(ModEntry.Config.MaxScale, ModEntry.Config.StartScale + (daysOld * ModEntry.Config.ScalePerDay));
 		}
 
 		protected override Farmer findPlayer()

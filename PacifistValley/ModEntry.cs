@@ -111,6 +111,7 @@ namespace PacifistValley
 					var editor = asset.AsDictionary<string, string>();
 					editor.Data["ItemHover_Damage"] = "{0}-{1} Love Points";
 					editor.Data["ItemHover_Buff3"] = "{0} Loving";
+					editor.Data["ItemHover_Buff11"] = "{0} Love";
 					editor.Data["Character_combat"] = "loving";
 					editor.Data["LevelUp_ProfessionName_Fighter"] = "Lover";
 					editor.Data["LevelUp_ProfessionName_Brute"] = "Adorer";
@@ -140,6 +141,8 @@ namespace PacifistValley
 				{
 					var editor = asset.AsDictionary<string, string>();
 					editor.Data["SkillsPage.cs.11608"] = "Loving";
+					editor.Data["Buff.cs.463"] = "-8 Love";
+					editor.Data["Buff.cs.469"] = "+10 Love";
 					editor.Data["Farmer.cs.1996"] = "Loving";
 					editor.Data["Event.cs.1205"] = "Battered Heart";
 					editor.Data["Event.cs.1209"] = "You got the Battered Heart! It was sent home to your toolbox.";

@@ -41,6 +41,9 @@ namespace Familiars
         public Color ButterflyRedColor { get; set; } = new Color(1f, 0, 1f);
         public Color ButterflyGreenColor { get; set; } = new Color(0, 0.5f, 0.5f);
         public Color ButterflyBlueColor { get; set; } = new Color(0, 0.5f, 0.5f);
+        public float StartScale { get; set; } = 0.5f;
+        public float MaxScale { get; set; } = 1f;
+        public float ScalePerDay { get; set; } = 0.01f;
         public bool IAmAStinkyCheater { get; set; } = false;
         public int FamiliarHatchMinutes { get; set; } = 4000;
         public int FamiliarEggMinutes { get;  set; } = 1200;

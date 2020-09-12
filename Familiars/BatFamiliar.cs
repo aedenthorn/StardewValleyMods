@@ -22,11 +22,11 @@ namespace Familiars
 			Name = "BatFamiliar";
 			ownerId = _owner;
 
-			base.Slipperiness = 20 + Game1.random.Next(-5, 6);
+            Slipperiness = 20 + Game1.random.Next(-5, 6);
 			farmerPassesThrough = true;
-			this.Halt();
-			base.IsWalkingTowardPlayer = false;
-			base.HideShadow = true;
+			Halt();
+            IsWalkingTowardPlayer = false;
+            HideShadow = true;
 			damageToFarmer.Value = 0;
 
 			if (ModEntry.Config.BatColorType.ToLower() == "random")
@@ -50,7 +50,7 @@ namespace Familiars
 		protected override void initNetFields()
 		{
 			base.initNetFields();
-			base.NetFields.AddFields(new INetSerializable[]
+            NetFields.AddFields(new INetSerializable[]
 			{
 				this.wasHitCounter,
 				this.lastHitCounter,
@@ -81,7 +81,7 @@ namespace Familiars
 			{
 				typeof(AnimatedSprite).GetField("spriteTexture", BindingFlags.NonPublic | BindingFlags.Instance).SetValue(Sprite, FamiliarsUtils.ColorFamiliar(Sprite.Texture, mainColor, redColor, greenColor, blueColor));
 			}
-			base.HideShadow = true;
+            HideShadow = true;
 		}
 
 		public override int takeDamage(int damage, int xTrajectory, int yTrajectory, bool isBomb, double addedPrecision, Farmer who)
@@ -95,18 +95,18 @@ namespace Familiars
 
 		public override void shedChunks(int number, float scale)
 		{
-			Game1.createRadialDebris(base.currentLocation, this.Sprite.textureName, new Rectangle(0, 384, 64, 64), 32, this.GetBoundingBox().Center.X, this.GetBoundingBox().Center.Y, number, (int)base.getTileLocation().Y, Color.White, scale);
+			Game1.createRadialDebris(currentLocation, this.Sprite.textureName, new Rectangle(0, 384, 64, 64), 32, this.GetBoundingBox().Center.X, this.GetBoundingBox().Center.Y, number, (int)getTileLocation().Y, Color.White, scale);
 		}
 		public override void drawAboveAllLayers(SpriteBatch b)
 		{
-			if (Utility.isOnScreen(base.Position, 128))
+			if (Utility.isOnScreen(Position, 128))
 			{
 
-				b.Draw(this.Sprite.Texture, base.getLocalPosition(Game1.viewport) + new Vector2(32f, 32f), new Rectangle?(this.Sprite.SourceRect), (this.shakeTimer > 0) ? Color.Red : Color.White, 0f, new Vector2(8f, 16f), Math.Max(0.2f, this.scale) * 4f, this.flip ? SpriteEffects.FlipHorizontally : SpriteEffects.None, 0.92f);
-				b.Draw(Game1.shadowTexture, base.getLocalPosition(Game1.viewport) + new Vector2(32f, 64f), new Rectangle?(Game1.shadowTexture.Bounds), Color.White, 0f, new Vector2((float)Game1.shadowTexture.Bounds.Center.X, (float)Game1.shadowTexture.Bounds.Center.Y), 4f * scale, SpriteEffects.None, base.wildernessFarmMonster ? 0.0001f : ((float)(base.getStandingY() - 1) / 10000f));
+				b.Draw(this.Sprite.Texture, getLocalPosition(Game1.viewport) + new Vector2(32f, 32f), new Rectangle?(this.Sprite.SourceRect), (this.shakeTimer > 0) ? Color.Red : Color.White, 0f, new Vector2(8f, 16f), Math.Max(0.2f, this.scale) * 4f, this.flip ? SpriteEffects.FlipHorizontally : SpriteEffects.None, 0.92f);
+				b.Draw(Game1.shadowTexture, getLocalPosition(Game1.viewport) + new Vector2(32f, 64f), new Rectangle?(Game1.shadowTexture.Bounds), Color.White, 0f, new Vector2((float)Game1.shadowTexture.Bounds.Center.X, (float)Game1.shadowTexture.Bounds.Center.Y), 4f * scale, SpriteEffects.None, wildernessFarmMonster ? 0.0001f : ((float)(getStandingY() - 1) / 10000f));
 				if (this.isGlowing)
 				{
-					b.Draw(this.Sprite.Texture, base.getLocalPosition(Game1.viewport) + new Vector2(32f, 32f), new Rectangle?(this.Sprite.SourceRect), this.glowingColor * this.glowingTransparency, 0f, new Vector2(8f, 16f), Math.Max(0.2f, this.scale) * 4f, this.flip ? SpriteEffects.FlipHorizontally : SpriteEffects.None, Math.Max(0f, this.drawOnTop ? 0.99f : ((float)base.getStandingY() / 10000f + 0.001f)));
+					b.Draw(this.Sprite.Texture, getLocalPosition(Game1.viewport) + new Vector2(32f, 32f), new Rectangle?(this.Sprite.SourceRect), this.glowingColor * this.glowingTransparency, 0f, new Vector2(8f, 16f), Math.Max(0.2f, this.scale) * 4f, this.flip ? SpriteEffects.FlipHorizontally : SpriteEffects.None, Math.Max(0f, this.drawOnTop ? 0.99f : ((float)getStandingY() / 10000f + 0.001f)));
 				}
 			}
 		}
@@ -265,7 +265,7 @@ namespace Familiars
 			if (followingOwner)
 			{
 				this.Sprite.Animate(time, 0, 4, 80f);
-				if (this.Sprite.currentFrame % 3 == 0 && Utility.isOnScreen(base.Position, 512) && (this.batFlap == null || !this.batFlap.IsPlaying) && Game1.soundBank != null && base.currentLocation == Game1.currentLocation && !this.cursedDoll)
+				if (this.Sprite.currentFrame % 3 == 0 && Utility.isOnScreen(Position, 512) && (this.batFlap == null || !this.batFlap.IsPlaying) && Game1.soundBank != null && currentLocation == Game1.currentLocation && !this.cursedDoll)
 				{
 					batFlap = Game1.soundBank.GetCue("batFlap");
 					//batFlap.Play();
@@ -277,14 +277,14 @@ namespace Familiars
 					{
 						if (!this.hauntedSkull.Value)
 						{
-							base.currentLocation.temporarySprites.Add(new TemporaryAnimatedSprite("Maps\\springobjects", Game1.getSourceRectForStandardTileSheet(Game1.objectSpriteSheet, 103, 16, 16), this.position + new Vector2(0f, -32f), false, 0.1f, new Color(255, 50, 255) * 0.8f)
+                            currentLocation.temporarySprites.Add(new TemporaryAnimatedSprite("Maps\\springobjects", Game1.getSourceRectForStandardTileSheet(Game1.objectSpriteSheet, 103, 16, 16), this.position + new Vector2(0f, -32f), false, 0.1f, new Color(255, 50, 255) * 0.8f)
 							{
 								scale = 4f
 							});
 						}
 						this.shakeTimer = 50;
 					}
-					this.previousPositions.Add(base.Position);
+					this.previousPositions.Add(Position);
 					if (this.previousPositions.Count > 8)
 					{
 						this.previousPositions.RemoveAt(0);
@@ -296,7 +296,7 @@ namespace Familiars
 				this.Sprite.currentFrame = 4;
 				this.Halt();
 			}
-			base.resetAnimationSpeed();
+            resetAnimationSpeed();
 		}
 
 		private readonly NetInt wasHitCounter = new NetInt(0);

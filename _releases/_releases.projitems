@@ -25,6 +25,7 @@
     <None Include="$(MSBuildThisFileDirectory)Familiars 0.9.8.zip" />
     <None Include="$(MSBuildThisFileDirectory)Familiars 0.9.9.zip" />
     <None Include="$(MSBuildThisFileDirectory)Familiars 1.0.0.zip" />
+    <None Include="$(MSBuildThisFileDirectory)Familiars 1.1.0.zip" />
     <None Include="$(MSBuildThisFileDirectory)FruitTreeShaker 1.1.0.zip" />
     <None Include="$(MSBuildThisFileDirectory)GemIsles 0.1.0.zip" />
     <None Include="$(MSBuildThisFileDirectory)GemIsles 0.2.0.zip" />

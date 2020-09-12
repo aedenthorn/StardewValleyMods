@@ -19,7 +19,6 @@ namespace GemIsles
         private static int mapX;
         private static int mapY;
 
-        private static List<string> isleMaps = new List<string>();
         public static string mapAssetKey;
         private string locationPrefix = "GemIsles_";
 
@@ -46,7 +45,6 @@ namespace GemIsles
                     Game1.locations.RemoveAt(i);
                 }
             }
-            isleMaps.Clear();
         }
 
         private void GameLoop_SaveLoaded(object sender, SaveLoadedEventArgs e)
@@ -128,7 +126,6 @@ namespace GemIsles
             string name = $"{locationPrefix}{mapX}_{mapY}";
             if (Game1.getLocationFromName(name) == null)
             {
-                isleMaps.Add(name);
                 GameLocation location = new GameLocation(mapAssetKey, name) { IsOutdoors = true, IsFarm = false };
                 Game1.locations.Add(location);
                 Helper.Content.InvalidateCache("Data/Locations");
