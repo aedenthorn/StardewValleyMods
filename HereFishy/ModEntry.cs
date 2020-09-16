@@ -335,6 +335,10 @@ namespace HereFishy
 			context.Monitor.Log($"caught fish end");
 			fishCaught = true;
 			fishQuality = Game1.random.Next(0, 5);
+			if (fishQuality == 3)
+			{
+				fishQuality = 0;
+			}
 			lastUser.Halt();
 			lastUser.armOffset = Vector2.Zero;
 
