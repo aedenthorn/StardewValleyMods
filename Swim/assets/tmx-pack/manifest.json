@@ -5,7 +5,6 @@
 	"Description": "Adds underwater maps.",
 	"UniqueID": "aedenthorn.SwimDiveMaps",
 	"MinimumApiVersion": "3.0",
-	"UpdateKeys": [ "Nexus:???" ],
 	"ContentPackFor": {
 		"UniqueID": "Platonymous.TMXLoader",
 		"MinimumVersion": "1.3.4"

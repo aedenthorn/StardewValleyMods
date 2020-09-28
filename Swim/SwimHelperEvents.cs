@@ -1054,7 +1054,7 @@ namespace Swim
             }
             else
             {
-                if (Game1.random.NextDouble() < 0.04)
+                if (Game1.random.NextDouble() < 0.03)
                 {
                     int which = Game1.random.Next(3);
                     Point p = new Point();

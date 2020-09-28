@@ -237,8 +237,8 @@ namespace MobilePhone
                     cutBottom = (int)Math.Round((screenBottom - r.Height * 2 - (int)npcPos.Y) / 2f);
                     sourceRect = new Rectangle(r.X, r.Y, r.Width, r.Height + cutBottom);
                 }
-
-                e.SpriteBatch.Draw(callableList[i].portrait, npcPos + new Vector2((Config.ContactWidth - 32) / 2f,0), sourceRect, Color.White, 0, Vector2.Zero, 2, SpriteEffects.None, 0.86f);
+                int alpha = callableList[i].npc.CurrentDialogue.Any() && !callableList[i].npc.isSleeping ? 255 : Config.UncallableNPCAlpha;
+                e.SpriteBatch.Draw(callableList[i].portrait, npcPos + new Vector2((Config.ContactWidth - 32) / 2f,0), sourceRect, new Color(255,255,255,alpha), 0, Vector2.Zero, 2, SpriteEffects.None, 0.86f);
                 if(Config.ShowNamesInPhoneBook && npcPos.Y < screenBottom - Config.ContactHeight - callableList[i].nameSize.Y * 0.4f + 6)
                     e.SpriteBatch.DrawString(Game1.dialogueFont, callableList[i].name, GetNPCPos(i) + new Vector2(Config.ContactWidth / 2f - callableList[i].nameSize.X * 0.2f, Config.ContactHeight - 6 ), Color.Black, 0, Vector2.Zero, 0.4f, SpriteEffects.None, 0.86f);
             }

@@ -118,7 +118,7 @@ namespace HereFishy
 			{
 				animations[i].draw(e.SpriteBatch, false, 0, 0, 1f);
 			}
-			if (sparklingText != null)
+			if (sparklingText != null && lastUser != null)
 			{
 				sparklingText.draw(e.SpriteBatch, Game1.GlobalToLocal(Game1.viewport, lastUser.Position + new Vector2(-64f, -352f)));
 			}

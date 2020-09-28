@@ -57,6 +57,7 @@ namespace MobilePhone
         public string CallAllowList { get; set; } = "";
         public bool ShowNamesInPhoneBook { get; set; } = true;
         public bool UseRealNamesInPhoneBook { get; set; } = true;
+        public int UncallableNPCAlpha { get; set; } = 255;
         public Color PhoneBookBackgroundColor { get; set; } = Color.White;
         public Color PhoneBookHeaderColor { get; set; } = Color.DeepSkyBlue;
         public Color PhoneBookHeaderTextColor { get; set; } = Color.White;

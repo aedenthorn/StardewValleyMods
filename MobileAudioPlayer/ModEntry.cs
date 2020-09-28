@@ -390,7 +390,9 @@ namespace MobileAudioPlayer
                         Player.controls.play();
                     }
                     else
+                    {
                         PlayFile(audio[trackPlaying]);
+                    }
                 }
                 else
                 {
@@ -431,8 +433,10 @@ namespace MobileAudioPlayer
         {
             if (off)
             {
-                currentMusicVolume = Game1.musicPlayerVolume;
-                currentAmbientVolume = Game1.ambientPlayerVolume;
+                if(Game1.musicPlayerVolume != 0)
+                    currentMusicVolume = Game1.musicPlayerVolume;
+                if (Game1.ambientPlayerVolume != 0)
+                    currentAmbientVolume = Game1.ambientPlayerVolume;
                 if (Config.MuteGameMusicWhilePlaying)
                 {
                     Game1.currentSong.Stop(AudioStopOptions.Immediate);

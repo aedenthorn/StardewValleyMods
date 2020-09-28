@@ -67,7 +67,7 @@ namespace PlaceShaft
 		public override void Entry(IModHelper helper)
 		{
 			context = this;
-			Config = this.Helper.ReadConfig<ModConfig>();
+			Config = Helper.ReadConfig<ModConfig>();
 			var harmony = HarmonyInstance.Create(this.ModManifest.UniqueID);
 
 			harmony.Patch(
