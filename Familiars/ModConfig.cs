@@ -64,5 +64,6 @@ namespace Familiars
         public double DinoFireDistanceMult { get; set; } = 1;
         public double DinoDamageMult { get; set; } = 1;
         public bool TryToFixOldBugs { get; set; } = false;
+        public bool Invincible { get; set; } = true;
     }
 }

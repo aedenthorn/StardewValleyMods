@@ -394,6 +394,8 @@ namespace Familiars
 
 		public virtual int takeDamage(int damage, int xTrajectory, int yTrajectory, bool isBomb, double addedPrecision, Farmer who)
 		{
+			if (ModEntry.Config.Invincible)
+				return 0;
 			return this.takeDamage(damage, xTrajectory, yTrajectory, isBomb, addedPrecision, "hitEnemy");
 		}
 

@@ -82,7 +82,7 @@ namespace CustomSpousePatio
             {
                 Farmer farmer = Game1.player;
                 //Game1.getFarm().addSpouseOutdoorArea(Game1.player.spouse == null ? "" : Game1.player.spouse);
-                IEnumerable<string> spouses = farmer.friendshipData.Pairs.Where(f => f.Value.IsMarried() && f.Key != "Krobus").Select(f => f.Key);
+                IEnumerable<string> spouses = farmer.friendshipData.Pairs.Where(f => f.Value.IsMarried()).Select(f => f.Key);
                 NPC ospouse = farmer.getSpouse();
                 if (ospouse != null)
                 {
@@ -92,7 +92,7 @@ namespace CustomSpousePatio
                 {
                     NPC npc = Game1.getCharacterFromName(name);
 
-                    if (outdoorAreas.ContainsKey(name) || farmer.spouse.Equals(npc.Name))
+                    if (outdoorAreas.ContainsKey(name) || (farmer.spouse.Equals(npc.Name) && name != "Krobus"))
                     {
                         SMonitor.Log($"placing {name} outdoors");
                         npc.setUpForOutdoorPatioActivity();
@@ -374,7 +374,7 @@ namespace CustomSpousePatio
                 {
                     TileSheet tilesheet = farm.Map.GetTileSheet("z_"+tile.tilesheet);
                     int idx = farm.Map.TileSheets.IndexOf(tilesheet);
-                    SMonitor.Log($"Adding specialTile at {tile.location}, {tile.tilesheet}, idx {idx}");
+                    SMonitor.Log($"Adding specialTile at {tile.location}, {tile.tilesheet}, tilesheet idx {idx}");
                     farm.setMapTileIndex(tile.location.X, tile.location.Y, tile.tileIndex, tile.layer, idx);
                 }
             }

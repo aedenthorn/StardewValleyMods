@@ -87,6 +87,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ZombieOutbreak", "ZombieOut
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CustomFixedDialogue", "TotallyUnrelatedProject\CustomFixedDialogue.csproj", "{C0C5B46C-0BE0-4854-9CB7-2B045A46A0AC}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SixtyNine", "SixtyNine\SixtyNine.csproj", "{2DB43C71-42E1-4D5C-AA75-CB76223421E5}"
+EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
 		_releases\_releases.projitems*{047040e0-3d07-46e5-852b-d1d45cd57bb8}*SharedItemsImports = 13
@@ -426,6 +428,14 @@ Global
 		{C0C5B46C-0BE0-4854-9CB7-2B045A46A0AC}.Release|Any CPU.Build.0 = Release|Any CPU
 		{C0C5B46C-0BE0-4854-9CB7-2B045A46A0AC}.Release|x86.ActiveCfg = Release|Any CPU
 		{C0C5B46C-0BE0-4854-9CB7-2B045A46A0AC}.Release|x86.Build.0 = Release|Any CPU
+		{2DB43C71-42E1-4D5C-AA75-CB76223421E5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2DB43C71-42E1-4D5C-AA75-CB76223421E5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2DB43C71-42E1-4D5C-AA75-CB76223421E5}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{2DB43C71-42E1-4D5C-AA75-CB76223421E5}.Debug|x86.Build.0 = Debug|Any CPU
+		{2DB43C71-42E1-4D5C-AA75-CB76223421E5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2DB43C71-42E1-4D5C-AA75-CB76223421E5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2DB43C71-42E1-4D5C-AA75-CB76223421E5}.Release|x86.ActiveCfg = Release|Any CPU
+		{2DB43C71-42E1-4D5C-AA75-CB76223421E5}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

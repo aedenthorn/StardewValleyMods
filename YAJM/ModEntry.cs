@@ -10,7 +10,7 @@ using System.IO;
 using System.Threading;
 using xTile.Dimensions;
 
-namespace YAJM
+namespace SixtyNine
 {
 	public class ModEntry : Mod, IAssetEditor
 	{
