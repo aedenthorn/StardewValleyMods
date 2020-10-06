@@ -19,6 +19,7 @@
     <None Include="$(MSBuildThisFileDirectory)CustomSpousePatio 0.1.0.zip" />
     <None Include="$(MSBuildThisFileDirectory)CustomSpousePatio 0.1.1.zip" />
     <None Include="$(MSBuildThisFileDirectory)CustomSpousePatio 0.2.0.zip" />
+    <None Include="$(MSBuildThisFileDirectory)CustomSpousePatio 0.3.0.zip" />
     <None Include="$(MSBuildThisFileDirectory)Familiars 0.9.10.zip" />
     <None Include="$(MSBuildThisFileDirectory)Familiars 0.9.5.zip" />
     <None Include="$(MSBuildThisFileDirectory)Familiars 0.9.6.zip" />

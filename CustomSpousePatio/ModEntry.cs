@@ -56,6 +56,7 @@ namespace CustomSpousePatio
 
             Helper.Events.GameLoop.SaveLoaded += GameLoop_SaveLoaded;
             Helper.Events.GameLoop.DayStarted += GameLoop_DayStarted;
+            Helper.Events.GameLoop.ReturnedToTitle += GameLoop_ReturnedToTitle;
 
             var harmony = HarmonyInstance.Create(this.ModManifest.UniqueID);
 
@@ -76,9 +77,28 @@ namespace CustomSpousePatio
 
         }
 
+        private void GameLoop_ReturnedToTitle(object sender, ReturnedToTitleEventArgs e)
+        {
+            RemoveAllSpouseAreas();
+            outdoorAreas.Clear();
+        }
+        private void GameLoop_SaveLoaded(object sender, SaveLoadedEventArgs e)
+        {
+            if (!Context.IsMainPlayer)
+            {
+                SMonitor.Log($"Not the host player, this copy of the mod will not do anything.", LogLevel.Warn);
+                return;
+            }
+            LoadSpouseAreaData();
+            if (outdoorAreas.Count > 0)
+                SetupSpouseAreas();
+        }
+
         public static void GameLoop_DayStarted(object sender, DayStartedEventArgs e)
         {
-            if (Context.IsMainPlayer && !Game1.isRaining && !Game1.IsWinter && Game1.shortDayNameFromDayOfSeason(Game1.dayOfMonth).Equals("Sat"))
+            if (!Context.IsMainPlayer)
+                return;
+            if (!Game1.isRaining && !Game1.IsWinter && Game1.shortDayNameFromDayOfSeason(Game1.dayOfMonth).Equals("Sat"))
             {
                 Farmer farmer = Game1.player;
                 //Game1.getFarm().addSpouseOutdoorArea(Game1.player.spouse == null ? "" : Game1.player.spouse);
@@ -99,18 +119,9 @@ namespace CustomSpousePatio
                     }
                 }
             }
-        }
-
-        private void GameLoop_SaveLoaded(object sender, SaveLoadedEventArgs e)
-        {
-            if (!Context.IsMainPlayer)
-            {
-                SMonitor.Log($"Not the host player, this copy of the mod will not do anything.", LogLevel.Warn);
-                return;
-            }
-            LoadSpouseAreaData();
+            RemoveAllSpouseAreas();
             if (outdoorAreas.Count > 0)
-                SetupSpouseAreas();
+                ShowSpouseAreas();
         }
 
         private void LoadSpouseAreaData()
@@ -215,20 +226,9 @@ namespace CustomSpousePatio
 
 
 
-        private static void SetupSpouseAreas()
+        private static void RemoveAllSpouseAreas()
         {
             Farm farm = Game1.getFarm();
-
-            Farmer f = Game1.MasterPlayer;
-
-            foreach(KeyValuePair<string,TileSheetInfo> kvp in tileSheetsToAdd)
-            {
-                if (farm.map.TileSheets.FirstOrDefault(s => s.Id == kvp.Key) == null)
-                {
-                    farm.map.AddTileSheet(new TileSheet(kvp.Key, farm.map, kvp.Value.realPath, new Size(kvp.Value.width, kvp.Value.height), new Size(kvp.Value.tileWidth, kvp.Value.tileHeight)));
-                    SMonitor.Log($"Added tilesheet {kvp.Key} to farm map", LogLevel.Debug);
-                }
-            }
 
             farm.removeTile(70, 9, "Buildings");
             farm.removeTile(71, 9, "Buildings");
@@ -246,6 +246,57 @@ namespace CustomSpousePatio
             farm.removeTile(71, 6, "AlwaysFront");
             farm.removeTile(72, 6, "AlwaysFront");
             farm.removeTile(69, 6, "AlwaysFront");
+
+            foreach (KeyValuePair<string, OutdoorArea> kvp in outdoorAreas)
+            {
+                OutdoorArea area = kvp.Value;
+                int x = area.GetLocation().X;
+                int y = area.GetLocation().Y;
+
+                if (farm.map.Layers[0].LayerWidth <= x + 3 || farm.map.Layers[0].LayerHeight <= y + 3)
+                {
+                    SMonitor.Log($"Invalid spouse area coordinates {x},{y} for {kvp.Key}", LogLevel.Error);
+                    continue;
+                }
+
+                farm.removeTile(x + 1, y + 3, "Buildings");
+                farm.removeTile(x + 2, y + 3, "Buildings");
+                farm.removeTile(x + 3, y + 3, "Buildings");
+                farm.removeTile(x, y + 3, "Buildings");
+                farm.removeTile(x + 1, y + 2, "Buildings");
+                farm.removeTile(x + 2, y + 2, "Buildings");
+                farm.removeTile(x + 3, y + 2, "Buildings");
+                farm.removeTile(x, y + 2, "Buildings");
+                farm.removeTile(x + 1, y + 1, "Front");
+                farm.removeTile(x + 2, y + 1, "Front");
+                farm.removeTile(x + 3, y + 1, "Front");
+                farm.removeTile(x, y + 1, "Front");
+                farm.removeTile(x + 1, y, "AlwaysFront");
+                farm.removeTile(x + 2, y, "AlwaysFront");
+                farm.removeTile(x + 3, y, "AlwaysFront");
+                farm.removeTile(x, y, "AlwaysFront");
+            }
+
+        }
+        private static void SetupSpouseAreas()
+        {
+            Farm farm = Game1.getFarm();
+
+            Farmer f = Game1.MasterPlayer;
+
+            foreach (KeyValuePair<string, TileSheetInfo> kvp in tileSheetsToAdd)
+            {
+                if (farm.map.TileSheets.FirstOrDefault(s => s.Id == kvp.Key) == null)
+                {
+                    farm.map.AddTileSheet(new TileSheet(kvp.Key, farm.map, kvp.Value.realPath, new Size(kvp.Value.width, kvp.Value.height), new Size(kvp.Value.tileWidth, kvp.Value.tileHeight)));
+                    SMonitor.Log($"Added tilesheet {kvp.Key} to farm map", LogLevel.Debug);
+                }
+            }
+        }
+        private static void ShowSpouseAreas() {
+            Farm farm = Game1.getFarm();
+
+            Farmer f = Game1.MasterPlayer;
 
             foreach (KeyValuePair<string, Friendship> spouse in f.friendshipData.Pairs.Where(s => s.Value.IsMarried()))
             {
