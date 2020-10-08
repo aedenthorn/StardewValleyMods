@@ -18,6 +18,8 @@ namespace MobilePhone
         public static List<Reminisce> inCallReminiscence;
         public static Dictionary<string, string> inCallDialogue;
         internal static List<EventInvite> eventInvites = new List<EventInvite>();
+        internal static Dictionary<string, Reminiscence> contentPackReminiscences = new Dictionary<string, Reminiscence>();
+
         public static void Initialize(IModHelper helper, IMonitor monitor, ModConfig config)
         {
             Helper = helper;
@@ -112,7 +114,15 @@ namespace MobilePhone
 
             if (inCallReminiscence == null)
             {
-                Reminiscence r = Helper.Data.ReadJsonFile<Reminiscence>(Path.Combine("assets", "events", $"{npc.Name}.json")) ?? new Reminiscence();
+                Reminiscence r;
+                if (contentPackReminiscences.ContainsKey(npc.Name))
+                {
+                    r = contentPackReminiscences[npc.Name];
+                }
+                else
+                {
+                    r = Helper.Data.ReadJsonFile<Reminiscence>(Path.Combine("assets", "events", $"{npc.Name}.json")) ?? new Reminiscence();
+                }
                 Monitor.Log($"Total Reminisces: {r.events.Count}");
                 r.WeedOutUnseen();
                 Monitor.Log($"Seen Reminisces: {r.events.Count}");

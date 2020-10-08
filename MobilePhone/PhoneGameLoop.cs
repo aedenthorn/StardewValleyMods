@@ -69,6 +69,24 @@ namespace MobilePhone
                 {
                     Monitor.Log($"error reading content.json file in content pack {contentPack.Manifest.Name}.\r\n{ex}", LogLevel.Error);
                 }
+                if (Directory.Exists(Path.Combine(contentPack.DirectoryPath, "assets", "events")))
+                {
+                    Monitor.Log($"Adding events");
+                    string[] events = Directory.GetFiles(Path.Combine(contentPack.DirectoryPath, "assets", "events"), "*.json");
+                    Monitor.Log($"CP has {events.Length} events");
+                    foreach (string eventFile in events)
+                    {
+                        try
+                        {
+                            string eventPath = Path.Combine("assets", "events", Path.GetFileName(eventFile));
+                            Monitor.Log($"Adding events {Path.GetFileName(eventFile)} from {contentPack.DirectoryPath}");
+                            Reminiscence r = contentPack.ReadJsonFile<Reminiscence>(eventPath);
+                            MobilePhoneCall.contentPackReminiscences.Add(Path.GetFileName(eventFile).Replace(".json", ""), r);
+                            Monitor.Log($"Added event {Path.GetFileName(eventFile)} from {contentPack.DirectoryPath}");
+                        }
+                        catch { }
+                    }
+                }
                 if (Directory.Exists(Path.Combine(contentPack.DirectoryPath, "assets", "skins")))
                 {
                     Monitor.Log($"Adding skins");
