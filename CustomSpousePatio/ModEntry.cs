@@ -1,4 +1,5 @@
 ﻿using Harmony;
+using Microsoft.Build.Utilities;
 using Microsoft.Xna.Framework;
 using StardewModdingAPI;
 using StardewModdingAPI.Events;
@@ -9,8 +10,10 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 using xTile.Dimensions;
 using xTile.Tiles;
+using Task = System.Threading.Tasks.Task;
 
 namespace CustomSpousePatio
 {
@@ -57,6 +60,7 @@ namespace CustomSpousePatio
             Helper.Events.GameLoop.SaveLoaded += GameLoop_SaveLoaded;
             Helper.Events.GameLoop.DayStarted += GameLoop_DayStarted;
             Helper.Events.GameLoop.ReturnedToTitle += GameLoop_ReturnedToTitle;
+            Helper.Events.Player.Warped += Player_Warped;
 
             var harmony = HarmonyInstance.Create(this.ModManifest.UniqueID);
 
@@ -77,6 +81,21 @@ namespace CustomSpousePatio
 
         }
 
+        private void Player_Warped(object sender, WarpedEventArgs e)
+        {
+            if(e.NewLocation is Farm)
+                DelayedShowAreas();    
+        }
+
+        private async void DelayedShowAreas()
+        {
+            await Task.Delay(10);
+            AddTileSheets();
+            RemoveAllSpouseAreas();
+            if (outdoorAreas.Count > 0)
+                ShowSpouseAreas();
+        }
+
         private void GameLoop_ReturnedToTitle(object sender, ReturnedToTitleEventArgs e)
         {
             RemoveAllSpouseAreas();
@@ -90,8 +109,6 @@ namespace CustomSpousePatio
                 return;
             }
             LoadSpouseAreaData();
-            if (outdoorAreas.Count > 0)
-                SetupSpouseAreas();
         }
 
         public static void GameLoop_DayStarted(object sender, DayStartedEventArgs e)
@@ -119,9 +136,6 @@ namespace CustomSpousePatio
                     }
                 }
             }
-            RemoveAllSpouseAreas();
-            if (outdoorAreas.Count > 0)
-                ShowSpouseAreas();
         }
 
         private void LoadSpouseAreaData()
@@ -228,6 +242,8 @@ namespace CustomSpousePatio
 
         private static void RemoveAllSpouseAreas()
         {
+            SMonitor.Log($"Removing all spouse areas", LogLevel.Debug);
+
             Farm farm = Game1.getFarm();
 
             farm.removeTile(70, 9, "Buildings");
@@ -278,11 +294,9 @@ namespace CustomSpousePatio
             }
 
         }
-        private static void SetupSpouseAreas()
+        private static void AddTileSheets()
         {
             Farm farm = Game1.getFarm();
-
-            Farmer f = Game1.MasterPlayer;
 
             foreach (KeyValuePair<string, TileSheetInfo> kvp in tileSheetsToAdd)
             {
@@ -318,7 +332,7 @@ namespace CustomSpousePatio
                     SMonitor.Log($"Invalid spouse area coordinates {x},{y} for {spouse.Key}", LogLevel.Error);
                     continue;
                 }
-
+                /*
                 farm.removeTile(x + 1, y + 3, "Buildings");
                 farm.removeTile(x + 2, y + 3, "Buildings");
                 farm.removeTile(x + 3, y + 3, "Buildings");
@@ -335,7 +349,7 @@ namespace CustomSpousePatio
                 farm.removeTile(x + 2, y, "AlwaysFront");
                 farm.removeTile(x + 3, y, "AlwaysFront");
                 farm.removeTile(x, y, "AlwaysFront");
-
+                */
                 if (area.useDefaultTiles)
                 {
                     switch (spouse.Key)
@@ -416,6 +430,9 @@ namespace CustomSpousePatio
                             farm.setMapTileIndex(x, y + 2, 1098, "Buildings", 1);
                             farm.setMapTileIndex(x + 1, y + 2, 1123, "Buildings", 1);
                             farm.setMapTileIndex(x + 3, y + 2, 1098, "Buildings", 1);
+                            break;
+                        default:
+                            SMonitor.Log($"No default tiles for {spouse.Key}", LogLevel.Warn);
                             break;
 
                     }

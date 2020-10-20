@@ -2,6 +2,7 @@
 using StardewValley;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text.RegularExpressions;
 
 namespace CustomFixedDialogue
@@ -177,11 +178,11 @@ namespace CustomFixedDialogue
             }
         }
 
-        public static void Dialogue_Prefix(Dialogue __instance, ref string masterDialogue)
+        public static void Dialogue_Prefix(Dialogue __instance, ref string masterDialogue, NPC speaker)
         {
             try
             {
-                FixString(__instance.speaker, ref masterDialogue);
+                FixString(speaker, ref masterDialogue);
 
             }
             catch (Exception ex)
@@ -219,13 +220,22 @@ namespace CustomFixedDialogue
         {
             if (path.StartsWith(extraPrefix) && !extraExceptions.Contains(path.Substring(extraPrefix.Length)))
             {
-                text = $"{prefix}{path.Replace(extraPrefix, "ExtraDialogue_")}^{text}^{suffix}{path.Replace(extraPrefix, "ExtraDialogue_")}";
+                string[] array = text.Split('/');
+                for(int i = 0; i < array.Length; i++)
+                {
+                    array[i] = $"{prefix}{path.Replace(extraPrefix, "ExtraDialogue_")}^{array[i]}^{suffix}{path.Replace(extraPrefix, "ExtraDialogue_")}";
+                }
+                text = string.Join("/", array);
                 Monitor.Log($"edited string: {text}");
             }
-            else if (path.StartsWith(charactersPrefix) && charactersAllowed.Contains(path.Substring(charactersPrefix.Length))
-)
+            else if (path.StartsWith(charactersPrefix) && charactersAllowed.Contains(path.Substring(charactersPrefix.Length)))
             {
-                text = $"{prefix}{path.Replace(charactersPrefix, "Characters_")}^{text}^{suffix}{path.Replace(charactersPrefix, "Characters_")}";
+                string[] array = text.Split('/');
+                for (int i = 0; i < array.Length; i++)
+                {
+                    array[i] = $"{prefix}{path.Replace(charactersPrefix, "Characters_")}^{array[i]}^{suffix}{path.Replace(charactersPrefix, "Characters_")}";
+                }
+                text = string.Join("/", array);
                 Monitor.Log($"edited string: {text}");
             }
             else if (
@@ -234,7 +244,12 @@ namespace CustomFixedDialogue
                 || (path.StartsWith(utilityPrefix) && utilityChanges.Contains(path.Substring(utilityPrefix.Length)))
                 )
             {
-                text = $"{prefix}{path.Replace("Strings\\StringsFromCSFiles:", "")}^{text}^{suffix}{path.Replace("Strings\\StringsFromCSFiles:", "")}";
+                string[] array = text.Split('/');
+                for (int i = 0; i < array.Length; i++)
+                {
+                    array[i] = $"{prefix}{path.Replace("Strings\\StringsFromCSFiles:", "")}^{array[i]}^{suffix}{path.Replace("Strings\\StringsFromCSFiles:", "")}";
+                }
+                text = string.Join("/", array);
                 Monitor.Log($"edited string: {text}");
             }
         }
@@ -242,20 +257,22 @@ namespace CustomFixedDialogue
         public static void FixString(NPC speaker, ref string input)
         {
 
-            //Monitor.Log($"checking string: {input}");
+           Monitor.Log($"checking string: {input}");
 
             Regex pattern1 = new Regex(prefix + @"(?<key>[^\^]+)", RegexOptions.Compiled);
 
             while (pattern1.IsMatch(input))
             {
+                string oldput = input;
                 var match = pattern1.Match(input);
                 Dictionary<string, string> dialogueDic = null;
                 try
                 {
                     dialogueDic = Helper.Content.Load<Dictionary<string, string>>($"Characters/Dialogue/{speaker.Name}", ContentSource.GameContent);
                 }
-                catch
+                catch(Exception ex)
                 {
+                    Monitor.Log($"Error loading character dictionary for {speaker.Name}:\r\n{ex}");
                 }
 
                 string key = match.Groups["key"].Value;
@@ -271,6 +288,12 @@ namespace CustomFixedDialogue
                     //Monitor.Log($"edited input: {input}");
                     input = input.Replace($"^{suffix}{key}", "").Replace($"{prefix}{key}^", "");
                     Monitor.Log($"reverted input: {input}");
+                }
+                Monitor.Log($"edited string: {input}");
+                if (input == oldput)
+                {
+                    Monitor.Log($"Error editing input, aborting.", LogLevel.Error);
+                    break;
                 }
             }
         }
