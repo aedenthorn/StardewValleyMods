@@ -144,16 +144,17 @@ namespace FriendlyDivorce
 					}
 				}
 
-				if (Game1.player.Money >= 50000 || Game1.player.spouse == "Krobus")
+				int money = 50000;
+				if (int.TryParse(r.Split('#')[r.Split('#').Length - 2], out int mult))
+				{
+					money = (int)Math.Round(money * mult / 100f);
+				}
+				PMonitor.Log($"money cost {money}");
+
+				if (Game1.player.Money >= money || Game1.player.spouse == "Krobus")
 				{
 					if (!Game1.player.isRoommate(Game1.player.spouse))
 					{
-						int money = 50000;
-						if (int.TryParse(r.Split('#')[r.Split('#').Length - 2], out int mult))
-						{
-							money = (int)Math.Round(money * mult / 100f);
-						}
-						PMonitor.Log($"money cost {money}");
 						Game1.player.Money -= money;
 					}
 					Game1.player.divorceTonight.Value = true;

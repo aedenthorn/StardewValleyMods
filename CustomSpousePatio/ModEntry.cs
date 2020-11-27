@@ -1,16 +1,12 @@
 ﻿using Harmony;
-using Microsoft.Build.Utilities;
 using Microsoft.Xna.Framework;
 using StardewModdingAPI;
 using StardewModdingAPI.Events;
 using StardewValley;
-using StardewValley.Locations;
-using StardewValley.TerrainFeatures;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Threading.Tasks;
 using xTile.Dimensions;
 using xTile.Tiles;
 using Task = System.Threading.Tasks.Task;
@@ -60,7 +56,6 @@ namespace CustomSpousePatio
             Helper.Events.GameLoop.SaveLoaded += GameLoop_SaveLoaded;
             Helper.Events.GameLoop.DayStarted += GameLoop_DayStarted;
             Helper.Events.GameLoop.ReturnedToTitle += GameLoop_ReturnedToTitle;
-            Helper.Events.Player.Warped += Player_Warped;
 
             var harmony = HarmonyInstance.Create(this.ModManifest.UniqueID);
 
@@ -79,21 +74,6 @@ namespace CustomSpousePatio
                prefix: new HarmonyMethod(typeof(ModEntry), nameof(ModEntry.Farm_addSpouseOutdoorArea_Prefix))
             );
 
-        }
-
-        private void Player_Warped(object sender, WarpedEventArgs e)
-        {
-            if(e.NewLocation is Farm)
-                DelayedShowAreas();    
-        }
-
-        private async void DelayedShowAreas()
-        {
-            await Task.Delay(10);
-            AddTileSheets();
-            RemoveAllSpouseAreas();
-            if (outdoorAreas.Count > 0)
-                ShowSpouseAreas();
         }
 
         private void GameLoop_ReturnedToTitle(object sender, ReturnedToTitleEventArgs e)
@@ -136,6 +116,7 @@ namespace CustomSpousePatio
                     }
                 }
             }
+            SetupSpouseAreas();
         }
 
         private void LoadSpouseAreaData()
@@ -239,6 +220,27 @@ namespace CustomSpousePatio
 		}
 
 
+        private static void SetupSpouseAreas()
+        {
+            AddTileSheets();
+            RemoveAllSpouseAreas();
+            if (outdoorAreas.Count > 0)
+                ShowSpouseAreas();
+        }
+
+        private static void AddTileSheets()
+        {
+            Farm farm = Game1.getFarm();
+
+            foreach (KeyValuePair<string, TileSheetInfo> kvp in tileSheetsToAdd)
+            {
+                if (farm.map.TileSheets.FirstOrDefault(s => s.Id == kvp.Key) == null)
+                {
+                    farm.map.AddTileSheet(new TileSheet(kvp.Key, farm.map, kvp.Value.realPath, new Size(kvp.Value.width, kvp.Value.height), new Size(kvp.Value.tileWidth, kvp.Value.tileHeight)));
+                    SMonitor.Log($"Added tilesheet {kvp.Key} to farm map", LogLevel.Debug);
+                }
+            }
+        }
 
         private static void RemoveAllSpouseAreas()
         {
@@ -293,19 +295,6 @@ namespace CustomSpousePatio
                 farm.removeTile(x, y, "AlwaysFront");
             }
 
-        }
-        private static void AddTileSheets()
-        {
-            Farm farm = Game1.getFarm();
-
-            foreach (KeyValuePair<string, TileSheetInfo> kvp in tileSheetsToAdd)
-            {
-                if (farm.map.TileSheets.FirstOrDefault(s => s.Id == kvp.Key) == null)
-                {
-                    farm.map.AddTileSheet(new TileSheet(kvp.Key, farm.map, kvp.Value.realPath, new Size(kvp.Value.width, kvp.Value.height), new Size(kvp.Value.tileWidth, kvp.Value.tileHeight)));
-                    SMonitor.Log($"Added tilesheet {kvp.Key} to farm map", LogLevel.Debug);
-                }
-            }
         }
         private static void ShowSpouseAreas() {
             Farm farm = Game1.getFarm();
@@ -507,7 +496,10 @@ namespace CustomSpousePatio
         {
             try
             {
-                return outdoorAreas.Count == 0;
+                if (!outdoorAreas.Any())
+                    return true;
+                SetupSpouseAreas();
+                return false;
             }
             catch (Exception ex)
             {
@@ -515,6 +507,7 @@ namespace CustomSpousePatio
             }
             return true;
         }
+
 
         private static void NPCDoAnimation(NPC npc, string npcAnimation)
         {

@@ -123,6 +123,7 @@ namespace ZombieOutbreak
         {
             if (who.ActiveObject.Name == "Zombie Cure" && ModEntry.zombieTextures.ContainsKey(__instance.Name))
             {
+                monitor.Log($"Gave Zombie Cure to {__instance.Name}");
                 who.currentLocation.playSound("slimedead", NetAudio.SoundContext.Default);
                 Utils.RemoveZombie(__instance.Name);
                 __instance.CurrentDialogue.Clear();

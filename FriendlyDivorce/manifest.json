@@ -1,10 +1,22 @@
 ﻿{
   "Name": "Friendly Divorce",
   "Author": "aedenthorn",
-  "Version": "0.2.2",
+  "Version": "0.2.3",
   "Description": "Allows you to stay friends (or not) after the divorce.",
   "UniqueID": "aedenthorn.FriendlyDivorce",
   "EntryDll": "FriendlyDivorce.dll",
   "MinimumApiVersion": "3.4.0",
-  "UpdateKeys": ["Nexus:6241"]
+  "UpdateKeys": ["Nexus:6241"],
+  "ModUpdater": {
+    "Repository": "StardewValleyMods",
+    "User": "aedenthorn",
+    "Directory": "_releases",
+    "ModFolder": "FriendlyDivorce"
+  },
+  "Dependencies": [
+      {
+        "UniqueID": "Platonymous.ModUpdater",
+        "IsRequired": false
+      },
+  ]
 }

@@ -95,7 +95,7 @@ namespace ZombieOutbreak
             JsonAssets = Helper.ModRegistry.GetApi<IJsonAssetsApi>("spacechase0.JsonAssets");
             if (JsonAssets == null)
             {
-                Monitor.Log("Can't load Json Assets API for Familiars mod");
+                Monitor.Log("Can't load Json Assets API for Zombie Outbreak mod");
             }
             else
             {
@@ -132,8 +132,6 @@ namespace ZombieOutbreak
             Monitor.Log($"Loading zombie textures");
             List<string> zombies = Helper.Data.ReadSaveData<List<string>>("zombies") ?? new List<string>();
             List<long> zombiePlayers = Helper.Data.ReadSaveData<List<long>>("zombiePlayers") ?? new List<long>();
-            Monitor.Log($"Got {zombieTextures.Count} zombie(s)");
-            Monitor.Log($"Got {zombiePlayers.Count} zombie player(s)");
             foreach(string z in zombies)
             {
                 Utils.MakeZombieTexture(z);
@@ -142,6 +140,8 @@ namespace ZombieOutbreak
             {
                 Utils.MakeZombiePlayer(z);
             }
+            Monitor.Log($"Got {zombieTextures.Count} zombie(s)");
+            Monitor.Log($"Got {zombiePlayers.Count} zombie player(s)");
         }
 
 
