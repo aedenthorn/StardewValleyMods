@@ -414,7 +414,7 @@ namespace MobilePhone
 
             if (ModEntry.npcAdventureModApi.CanRecruit(Game1.player, npc))
             {
-                Game1.drawDialogue(npc, ModEntry.npcAdventureModApi.LoadString($"Dialogues/{npc.Name}:companionAccepted"));
+                Game1.drawDialogue(npc, ModEntry.npcAdventureModApi.LoadString($"Dialogue/{npc.Name}:companionAccepted"));
                 while (Game1.activeClickableMenu is DialogueBox)
                 {
                     await Task.Delay(50);
@@ -423,7 +423,7 @@ namespace MobilePhone
             }
             else
             {
-                Game1.drawDialogue(npc, ModEntry.npcAdventureModApi.LoadString($"Dialogues/{npc.Name}:" + (Game1.timeOfDay >= 2200 ? "companionRejectedNight" : "companionRejected")));
+                Game1.drawDialogue(npc, ModEntry.npcAdventureModApi.LoadString($"Dialogue/{npc.Name}:" + (Game1.timeOfDay >= 2200 ? "companionRejectedNight" : "companionRejected")));
                 while (Game1.activeClickableMenu is DialogueBox)
                 {
                     await Task.Delay(50);
