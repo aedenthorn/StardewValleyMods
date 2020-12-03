@@ -220,7 +220,6 @@ namespace MobilePhone
                 if (eventInvites[i].CanInvite(npc))
                 {
                     responses.Add(new Response($"PhoneApp_InCall_Invitation_{i}", eventInvites[i].name));
-                    break;
                 }
             }
 

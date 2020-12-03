@@ -52,6 +52,7 @@
     <None Include="$(MSBuildThisFileDirectory)MobilePhone 1.10.0.zip" />
     <None Include="$(MSBuildThisFileDirectory)MobilePhone 2.0.0.zip" />
     <None Include="$(MSBuildThisFileDirectory)MobilePhone 2.0.1.zip" />
+    <None Include="$(MSBuildThisFileDirectory)MobilePhone 2.0.2.zip" />
     <None Include="$(MSBuildThisFileDirectory)MobileTelevision 0.1.0.zip" />
     <None Include="$(MSBuildThisFileDirectory)MultipleSpouses 1.6.0.zip" />
     <None Include="$(MSBuildThisFileDirectory)MultipleSpouses 1.6.1.zip" />
@@ -72,6 +73,7 @@
     <None Include="$(MSBuildThisFileDirectory)ShowPlayerBehind 0.1.3.zip" />
     <None Include="$(MSBuildThisFileDirectory)SixtyNine 0.1.0.zip" />
     <None Include="$(MSBuildThisFileDirectory)Swim 1.3.14.zip" />
+    <None Include="$(MSBuildThisFileDirectory)Swim 1.4.1.zip" />
     <None Include="$(MSBuildThisFileDirectory)TransparentObjects 0.2.1.zip" />
     <None Include="$(MSBuildThisFileDirectory)UndergroundSecrets 0.2.1.zip" />
     <None Include="$(MSBuildThisFileDirectory)UndergroundSecrets 0.2.2.zip" />
