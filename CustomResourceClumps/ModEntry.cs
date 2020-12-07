@@ -34,7 +34,7 @@ namespace CustomResourceClumps
 			{ "axe", typeof(Axe) },
 			{ "pick", typeof(Pickaxe) },
 			{ "hoe", typeof(Hoe) },
-			{ "sword", typeof(Sword) },
+			{ "weapon", typeof(MeleeWeapon) },
 			{ "wateringcan", typeof(WateringCan) },
 			{ "wand", typeof(Wand) },
 		};
@@ -203,13 +203,14 @@ namespace CustomResourceClumps
 			{
 				return false;
 			}
-			SMonitor.Log($"hitting custom clump {indexOfClump}");
+			SMonitor.Log($"hitting custom clump {indexOfClump} with {t.GetType()} (should be {(tools.ContainsKey(clump.toolType) ? tools[clump.toolType].ToString() + " (not in dictionary!)" : clump.toolType)})");
 
 			if (!tools.ContainsKey(clump.toolType) || t.GetType() != tools[clump.toolType])
             {
 				return false;
-            }
-			if(t.upgradeLevel < clump.toolMinLevel)
+            } 
+			SMonitor.Log($"tooltype is correct");
+			if (t.upgradeLevel < clump.toolMinLevel)
             {
 				foreach (string sound in clump.failSounds)
 					location.playSound(sound, NetAudio.SoundContext.Default);
