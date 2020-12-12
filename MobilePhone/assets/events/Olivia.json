@@ -1,35 +1,46 @@
 {
-	"events":
-	[
-		{
-			"name": "2 Heart",
-			"location": "JenkinsHouse",
-			"eventId":"4000001"
-		},
-		{
-			"name": "4 Heart",
-			"location": "Town",
-			"eventId":"4000002"
-		},
-		{
-			"name": "6 Heart",
-			"location": "Saloon",
-			"eventId":"4000003"
-		},
-		{
-			"name": "8 Heart",
-			"location": "OliviaCellar",
-			"eventId":"4000004"
-		},
-		{
-			"name": "Start romance",
-			"location": "JenkinsHouse",
-			"eventId":"8982805"
-		},
-		{
-			"name": "House Party",
-			"location": "JenkinsHouse",
-			"eventId":"8982806"
-		},		
-	]
+  "events": [
+    {
+      "name": "Olivia-event-0",
+      "location": "JenkinsHouse",
+      "eventId": "4000001",
+      "night": false,
+      "mail": null
+    },
+    {
+      "name": "Olivia-event-1",
+      "location": "Town",
+      "eventId": "4000002",
+      "night": false,
+      "mail": null
+    },
+    {
+      "name": "Olivia-event-2",
+      "location": "Saloon",
+      "eventId": "4000003",
+      "night": false,
+      "mail": null
+    },
+    {
+      "name": "Olivia-event-3",
+      "location": "OliviaCellar",
+      "eventId": "4000004",
+      "night": false,
+      "mail": null
+    },
+    {
+      "name": "Olivia-event-4",
+      "location": "JenkinsHouse",
+      "eventId": "8982805",
+      "night": false,
+      "mail": null
+    },
+    {
+      "name": "Olivia-event-5",
+      "location": "JenkinsHouse",
+      "eventId": "8982806",
+      "night": false,
+      "mail": null
+    }
+  ]
 }

@@ -1,16 +1,18 @@
-﻿{
-	"events":
-	[
-		{
-			"name": "Community Center",
-			"location": "Town",
-			"eventId":"611439"
-		},
-		{
-			"name": "Affair (Six Hearts)",
-			"location": "Town",
-			"eventId":"639373",
-			"night": true
-		},
-	]
+{
+  "events": [
+    {
+      "name": "Lewis-event-0",
+      "location": "Town",
+      "eventId": "611439",
+      "night": false,
+      "mail": null
+    },
+    {
+      "name": "Lewis-event-1",
+      "location": "Town",
+      "eventId": "639373",
+      "night": true,
+      "mail": null
+    }
+  ]
 }

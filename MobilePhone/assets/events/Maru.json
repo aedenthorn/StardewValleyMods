@@ -1,35 +1,46 @@
-﻿{
-	"events":
-	[
-		{
-			"name": "Science (Two Hearts)",
-			"location": "ScienceHouse",
-			"eventId":"6"
-		},
-		{
-			"name": "Samples (Four Hearts)",
-			"location": "Hospital",
-			"eventId":"7"
-		},
-		{
-			"name": "Stars (Six Hearts)",
-			"location": "Mountain",
-			"eventId":"8"
-		},
-		{
-			"name": "Science Project (Eight Hearts)",
-			"location": "ScienceHouse",
-			"eventId":"9"
-		},
-		{
-			"name": "Mr. Robot (Ten Hearts)",
-			"location": "ScienceHouse",
-			"eventId":"10"
-		},
-		{
-			"name": "Wish Upon a Star (Fourteen Hearts)",
-			"location": "Mountain",
-			"eventId":"5183338"
-		},
-	]
+{
+  "events": [
+    {
+      "name": "Maru-event-0",
+      "location": "ScienceHouse",
+      "eventId": "6",
+      "night": false,
+      "mail": null
+    },
+    {
+      "name": "Maru-event-1",
+      "location": "Hospital",
+      "eventId": "7",
+      "night": false,
+      "mail": null
+    },
+    {
+      "name": "Maru-event-2",
+      "location": "Mountain",
+      "eventId": "8",
+      "night": false,
+      "mail": null
+    },
+    {
+      "name": "Maru-event-3",
+      "location": "ScienceHouse",
+      "eventId": "9",
+      "night": false,
+      "mail": null
+    },
+    {
+      "name": "Maru-event-4",
+      "location": "ScienceHouse",
+      "eventId": "10",
+      "night": false,
+      "mail": null
+    },
+    {
+      "name": "Maru-event-5",
+      "location": "Mountain",
+      "eventId": "5183338",
+      "night": false,
+      "mail": null
+    }
+  ]
 }

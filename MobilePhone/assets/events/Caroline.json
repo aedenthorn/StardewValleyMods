@@ -1,15 +1,18 @@
-﻿{
-	"events":
-	[
-		{
-			"name": "Sunroom (Two Hearts)",
-			"location": "Sunroom",
-			"eventId":"719926"
-		},
-		{
-			"name": "Abigail (Six Hearts)",
-			"location": "SeedShop",
-			"eventId":"Caroline"
-		},
-	]
+{
+  "events": [
+    {
+      "name": "Caroline-event-0",
+      "location": "Sunroom",
+      "eventId": "719926",
+      "night": false,
+      "mail": null
+    },
+    {
+      "name": "Caroline-event-1",
+      "location": "SeedShop",
+      "eventId": "Caroline",
+      "night": false,
+      "mail": null
+    }
+  ]
 }

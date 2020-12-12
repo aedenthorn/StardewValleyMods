@@ -1,30 +1,39 @@
 {
-	"events":
-	[
-		{
-			"name": "Intro",
-			"location": "farm",
-			"eventId":"1000077"
-		},
-		{
-			"name": "2 Heart event'",
-			"location": "Railroad",
-			"eventId":"1000078"
-		},
-		{
-			"name": "4 Heart event",
-			"location": "Railroad",
-			"eventId":"1000079"
-		},
-		{
-			"name": "6 Heart event",
-			"location": "Railroad",
-			"eventId":"1000080"
-		},
-		{
-			"name": "8 Heart event",
-			"location": "ShearwaterBridge",
-			"eventId":"1000081"
-		},
-	]
+  "events": [
+    {
+      "name": "Susan-event-0",
+      "location": "farm",
+      "eventId": "1000077",
+      "night": false,
+      "mail": null
+    },
+    {
+      "name": "Susan-event-1",
+      "location": "Railroad",
+      "eventId": "1000078",
+      "night": false,
+      "mail": null
+    },
+    {
+      "name": "Susan-event-2",
+      "location": "Railroad",
+      "eventId": "1000079",
+      "night": false,
+      "mail": null
+    },
+    {
+      "name": "Susan-event-3",
+      "location": "Railroad",
+      "eventId": "1000080",
+      "night": false,
+      "mail": null
+    },
+    {
+      "name": "Susan-event-4",
+      "location": "ShearwaterBridge",
+      "eventId": "1000081",
+      "night": false,
+      "mail": null
+    }
+  ]
 }

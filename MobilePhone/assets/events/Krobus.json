@@ -1,20 +1,25 @@
-﻿{
-	"events":
-	[
-		{
-			"name": "Stranger",
-			"location": "BusStop",
-			"eventId":"520702"
-		},
-		{
-			"name": "Fight",
-			"location": "Sewer",
-			"eventId":"691039"
-		},
-		{
-			"name": "Ocean (Fourteen Hearts)",
-			"location": "Beach",
-			"eventId":"7771191"
-		},
-	]
+{
+  "events": [
+    {
+      "name": "Krobus-event-0",
+      "location": "BusStop",
+      "eventId": "520702",
+      "night": false,
+      "mail": null
+    },
+    {
+      "name": "Krobus-event-1",
+      "location": "Sewer",
+      "eventId": "691039",
+      "night": false,
+      "mail": null
+    },
+    {
+      "name": "Krobus-event-2",
+      "location": "Beach",
+      "eventId": "7771191",
+      "night": false,
+      "mail": null
+    }
+  ]
 }

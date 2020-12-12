@@ -1,20 +1,25 @@
-﻿{
-	"events":
-	[
-		{
-			"name": "Furnace",
-			"location": "Farm",
-			"eventId":"992553"
-		},
-		{
-			"name": "Emily (Three Hearts)",
-			"location": "Saloon",
-			"eventId":"97"
-		},
-		{
-			"name": "Date (Six Hearts)",
-			"location": "Town",
-			"eventId":"101"
-		},
-	]
+{
+  "events": [
+    {
+      "name": "Clint-event-0",
+      "location": "Farm",
+      "eventId": "992553",
+      "night": false,
+      "mail": null
+    },
+    {
+      "name": "Clint-event-1",
+      "location": "Saloon",
+      "eventId": "97",
+      "night": false,
+      "mail": null
+    },
+    {
+      "name": "Clint-event-2",
+      "location": "Town",
+      "eventId": "101",
+      "night": false,
+      "mail": null
+    }
+  ]
 }

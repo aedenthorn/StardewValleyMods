@@ -1,35 +1,46 @@
-﻿{
-	"events":
-	[
-		{
-			"name": "George (Two Hearts)",
-			"location": "JoshHouse",
-			"eventId":"56"
-		},
-		{
-			"name": "Checkup (Four Hearts)",
-			"location": "Hospital",
-			"eventId":"57"
-		},
-		{
-			"name": "Aerobics (Six Hearts)",
-			"location": "SeedShop",
-			"eventId":"58"
-		},
-		{
-			"name": "Radio (Eight Hearts)",
-			"location": "Hospital",
-			"eventId":"571102"
-		},
-		{
-			"name": "Balloon Ride (Ten Hearts)",
-			"location": "Railroad",
-			"eventId":"528052"
-		},
-		{
-			"name": "Homemade Dinner (Fourteen Hearts)",
-			"location": "FarmHouse",
-			"eventId":"3917626"
-		},
-	]
+{
+  "events": [
+    {
+      "name": "Harvey-event-0",
+      "location": "JoshHouse",
+      "eventId": "56",
+      "night": false,
+      "mail": null
+    },
+    {
+      "name": "Harvey-event-1",
+      "location": "Hospital",
+      "eventId": "57",
+      "night": false,
+      "mail": null
+    },
+    {
+      "name": "Harvey-event-2",
+      "location": "SeedShop",
+      "eventId": "58",
+      "night": false,
+      "mail": null
+    },
+    {
+      "name": "Harvey-event-3",
+      "location": "Hospital",
+      "eventId": "571102",
+      "night": false,
+      "mail": null
+    },
+    {
+      "name": "Harvey-event-4",
+      "location": "Railroad",
+      "eventId": "528052",
+      "night": false,
+      "mail": null
+    },
+    {
+      "name": "Harvey-event-5",
+      "location": "FarmHouse",
+      "eventId": "3917626",
+      "night": false,
+      "mail": null
+    }
+  ]
 }

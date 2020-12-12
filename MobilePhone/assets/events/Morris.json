@@ -1,30 +1,39 @@
 {
-	"events":
-	[
-		{
-			"name": "2 Heart event",
-			"location": "town",
-			"eventId":"6663501"
-		},
-		{
-			"name": "4 Heart event",
-			"location": "jojamart",
-			"eventId":"6663411"
-		},
-		{
-			"name": "6 Heart event",
-			"location": "town",
-			"eventId":"6663915"
-		},
-		{
-			"name": "8 Heart event",
-			"location": "town",
-			"eventId":"6665290"
-		},
-		{
-			"name": "JOJA WAREHOUSE",
-			"location": "town",
-			"eventId":"502261"
-		},
-	]
+  "events": [
+    {
+      "name": "Morris-event-0",
+      "location": "town",
+      "eventId": "6663501",
+      "night": false,
+      "mail": null
+    },
+    {
+      "name": "Morris-event-1",
+      "location": "jojamart",
+      "eventId": "6663411",
+      "night": false,
+      "mail": null
+    },
+    {
+      "name": "Morris-event-2",
+      "location": "town",
+      "eventId": "6663915",
+      "night": false,
+      "mail": null
+    },
+    {
+      "name": "Morris-event-3",
+      "location": "town",
+      "eventId": "6665290",
+      "night": false,
+      "mail": null
+    },
+    {
+      "name": "Morris-event-4",
+      "location": "town",
+      "eventId": "502261",
+      "night": false,
+      "mail": null
+    }
+  ]
 }

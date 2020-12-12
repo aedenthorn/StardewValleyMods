@@ -1,10 +1,11 @@
-﻿{
-	"events":
-	[
-		{
-			"name": "Spwing Onion (Eight Hearts)",
-			"location": "Forest",
-			"eventId":"3910979"
-		},
-	]
+{
+  "events": [
+    {
+      "name": "Vincent-event-0",
+      "location": "Forest",
+      "eventId": "3910979",
+      "night": false,
+      "mail": null
+    }
+  ]
 }

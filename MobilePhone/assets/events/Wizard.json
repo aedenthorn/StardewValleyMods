@@ -1,20 +1,25 @@
-﻿{
-	"events":
-	[
-		{
-			"name": "Magic Ink Quest",
-			"location": "Railroad",
-			"eventId":"529952"
-		},
-		{
-			"name": "Junimo",
-			"location": "WizardHouse",
-			"eventId":"112"
-		},
-		{
-			"name": "Magic Ink Returned",
-			"location": "WizardHouse",
-			"eventId":"418172"
-		},
-	]
+{
+  "events": [
+    {
+      "name": "Wizard-event-0",
+      "location": "Railroad",
+      "eventId": "529952",
+      "night": false,
+      "mail": null
+    },
+    {
+      "name": "Wizard-event-1",
+      "location": "WizardHouse",
+      "eventId": "112",
+      "night": false,
+      "mail": null
+    },
+    {
+      "name": "Wizard-event-2",
+      "location": "WizardHouse",
+      "eventId": "418172",
+      "night": false,
+      "mail": null
+    }
+  ]
 }

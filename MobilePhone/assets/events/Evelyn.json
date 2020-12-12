@@ -1,15 +1,18 @@
-﻿{
-	"events":
-	[
-		{
-			"name": "Farm Visit",
-			"location": "Farm",
-			"eventId":"900553"
-		},
-		{
-			"name": "Cookies (Four Hearts)",
-			"location": "JoshHouse",
-			"eventId":"19"
-		},
-	]
+{
+  "events": [
+    {
+      "name": "Evelyn-event-0",
+      "location": "Farm",
+      "eventId": "900553",
+      "night": false,
+      "mail": null
+    },
+    {
+      "name": "Evelyn-event-1",
+      "location": "JoshHouse",
+      "eventId": "19",
+      "night": false,
+      "mail": null
+    }
+  ]
 }

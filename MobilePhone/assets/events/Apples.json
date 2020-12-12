@@ -1,35 +1,46 @@
 {
-	"events":
-	[
-		{
-			"name": "2 Heart Event - 'Other Friends",
-			"location": "forestwest",
-			"eventId":"7776002"
-		},
-		{
-			"name": "4 Heart Event - 'Play With Me'",
-			"location": "forestwest",
-			"eventId":"7776003"
-		},
-		{
-			"name": "6 Heart Event Part 1 - 'The New Home'",
-			"location": "farm",
-			"eventId":"7776004"
-		},
-		{
-			"name": "6 Heart Event Part 2 - 'The New Home'",
-			"location": "AuroraVineyard",
-			"eventId":"7776005"
-		},
-		{
-			"name": "8 Heart Event Part 1 - 'Mother Starfruit Tree'",
-			"location": "ForestWest",
-			"eventId":"7776006"
-		},
-		{
-			"name": "8 Heart Event Part 2 - 'Mother Starfruit Tree'",
-			"location": "AuroraVineyard",
-			"eventId":"7776007"
-		},
-	]
+  "events": [
+    {
+      "name": "Apples-event-0",
+      "location": "forestwest",
+      "eventId": "7776002",
+      "night": false,
+      "mail": null
+    },
+    {
+      "name": "Apples-event-1",
+      "location": "forestwest",
+      "eventId": "7776003",
+      "night": false,
+      "mail": null
+    },
+    {
+      "name": "Apples-event-2",
+      "location": "farm",
+      "eventId": "7776004",
+      "night": false,
+      "mail": null
+    },
+    {
+      "name": "Apples-event-3",
+      "location": "AuroraVineyard",
+      "eventId": "7776005",
+      "night": false,
+      "mail": null
+    },
+    {
+      "name": "Apples-event-4",
+      "location": "ForestWest",
+      "eventId": "7776006",
+      "night": false,
+      "mail": null
+    },
+    {
+      "name": "Apples-event-5",
+      "location": "AuroraVineyard",
+      "eventId": "7776007",
+      "night": false,
+      "mail": null
+    }
+  ]
 }

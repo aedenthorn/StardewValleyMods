@@ -1,15 +1,18 @@
-﻿{
-	"events":
-	[
-		{
-			"name": "Fish Dinner (Four Hearts)",
-			"location": "SamHouse",
-			"eventId":"94"
-		},
-		{
-			"name": "Fish Dinner with Kent  (Four Hearts)",
-			"location": "SamHouse",
-			"eventId":"95"
-		},
-	]
+{
+  "events": [
+    {
+      "name": "Jodi-event-0",
+      "location": "SamHouse",
+      "eventId": "94",
+      "night": false,
+      "mail": null
+    },
+    {
+      "name": "Jodi-event-1",
+      "location": "SamHouse",
+      "eventId": "95",
+      "night": false,
+      "mail": null
+    }
+  ]
 }

@@ -7,6 +7,7 @@ using StardewValley.Menus;
 using StardewValley.Network;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 
 namespace MobilePhone
@@ -225,6 +226,21 @@ namespace MobilePhone
             Helper.Events.GameLoop.TimeChanged += PhoneGameLoop.GameLoop_TimeChanged;
             Helper.Events.GameLoop.OneSecondUpdateTicked += PhoneGameLoop.GameLoop_OneSecondUpdateTicked;
             Helper.Events.Display.WindowResized += PhoneVisuals.Display_WindowResized;
+
+            /*
+            var files = Directory.GetFiles(Path.Combine(Helper.DirectoryPath, Path.Combine("assets", "events")));
+            foreach(string file in files)
+            {
+                Reminiscence r = Helper.Data.ReadJsonFile<Reminiscence>(Path.Combine("assets", Path.Combine("events", Path.GetFileName(file))));
+                for(int i = 0; i < r.events.Count; i++)
+                {
+                    string t = $"{Path.GetFileName(file).Replace(".json", "")}-event-{i}";
+                    Monitor.Log($"\"{t}\":\"{r.events[i].name}\"");
+                    r.events[i].name = t;
+                }
+                Helper.Data.WriteJsonFile(Path.Combine("tmp", Path.GetFileName(file)),r);
+            }
+            */
         }
 
         public override object GetApi()

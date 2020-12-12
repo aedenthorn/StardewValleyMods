@@ -198,7 +198,7 @@ namespace MobilePhone
 
             List<Response> responses = new List<Response>();
             for (int i = 0; i < inCallReminiscence.Count; i++)
-                responses.Add(new Response($"PhoneApp_InCall_Reminiscence_{i}", inCallReminiscence[i].name));
+                responses.Add(new Response($"PhoneApp_InCall_Reminiscence_{i}", Helper.Translation.Get(inCallReminiscence[i].name)));  
 
             responses.Add(new Response("PhoneApp_InCall_Return", Helper.Translation.Get("back")));
 
