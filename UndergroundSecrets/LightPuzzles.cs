@@ -104,13 +104,24 @@ namespace UndergroundSecrets
             back.Tiles[(int)spot.X + 1, (int)spot.Y - 1] = new StaticTile(back, tilesheet, BlendMode.Alpha, tileIndex: 176);
             back.Tiles[(int)spot.X + 1, (int)spot.Y + 1] = new StaticTile(back, tilesheet, BlendMode.Alpha, tileIndex: 176);
 
-            int[] vals = Utils.ShuffleList(new List<int> { 1, 2, 3, 4 }).ToArray();
+            int[][] solvable = {
+                new int[]{ 1,3,2,4 },
+                new int[]{ 3,2,4,1 },
+                new int[]{ 2,4,1,3 },
+                new int[]{ 4,1,3,2 },
+                new int[]{ 2,3,1,4 },
+                new int[]{ 3,1,4,2 },
+                new int[]{ 1,4,2,3 },
+                new int[]{ 4,2,3,1 }
+            };
+
+            int[] vals = solvable[Game1.random.Next(0,solvable.Length)];
 
 
             shaft.setTileProperty((int)spot.X - 1, (int)spot.Y - 1, "Back", "TouchAction", $"lightPuzzle_{vals[0]}_{spot.X}_{spot.Y}");
-            shaft.setTileProperty((int)spot.X - 1, (int)spot.Y + 1, "Back", "TouchAction", $"lightPuzzle_{vals[1]}_{spot.X}_{spot.Y}");
-            shaft.setTileProperty((int)spot.X + 1, (int)spot.Y - 1, "Back", "TouchAction", $"lightPuzzle_{vals[2]}_{spot.X}_{spot.Y}");
-            shaft.setTileProperty((int)spot.X + 1, (int)spot.Y + 1, "Back", "TouchAction", $"lightPuzzle_{vals[3]}_{spot.X}_{spot.Y}");
+            shaft.setTileProperty((int)spot.X + 1, (int)spot.Y - 1, "Back", "TouchAction", $"lightPuzzle_{vals[1]}_{spot.X}_{spot.Y}");
+            shaft.setTileProperty((int)spot.X + 1, (int)spot.Y + 1, "Back", "TouchAction", $"lightPuzzle_{vals[2]}_{spot.X}_{spot.Y}");
+            shaft.setTileProperty((int)spot.X - 1, (int)spot.Y + 1, "Back", "TouchAction", $"lightPuzzle_{vals[3]}_{spot.X}_{spot.Y}");
         }
 
         internal static void pressTile(MineShaft shaft, Vector2 pos, string action)

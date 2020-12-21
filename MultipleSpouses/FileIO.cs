@@ -28,7 +28,14 @@ namespace MultipleSpouses
             Monitor.Log("Kissing audio path: " + filePath);
             if (File.Exists(filePath))
             {
-                Kissing.kissEffect = SoundEffect.FromStream(new FileStream(filePath, FileMode.Open));
+                try
+                {
+                    Kissing.kissEffect = SoundEffect.FromStream(new FileStream(filePath, FileMode.Open));
+                }
+                catch(Exception ex)
+                {
+                    Monitor.Log("Error loading kissing audio: " + ex, LogLevel.Error);
+                }
             }
             else
             {
