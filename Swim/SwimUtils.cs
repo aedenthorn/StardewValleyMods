@@ -453,7 +453,7 @@ namespace Swim
             Tile tile = location.map.GetLayer("Buildings").PickTile(new Location(tileLocation.X * 64, tileLocation.Y * 64), viewport.Size);
             if (location.largeTerrainFeatures != null)
             {
-                using (NetCollection<LargeTerrainFeature>.Enumerator enumerator = location.largeTerrainFeatures.GetEnumerator())
+                using (List<LargeTerrainFeature>.Enumerator enumerator = location.largeTerrainFeatures.GetEnumerator())
                 {
                     while (enumerator.MoveNext())
                     {

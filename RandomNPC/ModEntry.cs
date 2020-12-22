@@ -165,8 +165,8 @@ namespace RandomNPC
 				IClickableMenu menu = Game1.activeClickableMenu;
 				if (menu == null || menu.GetType() != typeof(DialogueBox))
 					return;
-				int resp = (int)typeof(DialogueBox).GetField("selectedResponse", BindingFlags.NonPublic | BindingFlags.Instance).GetValue(menu);
-				List<Response> resps = (List<Response>)typeof(DialogueBox).GetField("responses", BindingFlags.NonPublic | BindingFlags.Instance).GetValue(menu);
+				int resp = (menu as DialogueBox).selectedResponse;
+				List<Response> resps = (menu as DialogueBox).responses;
 				
 				if (resp < 0 || resp >= resps.Count || resps[resp] == null)
 					return;

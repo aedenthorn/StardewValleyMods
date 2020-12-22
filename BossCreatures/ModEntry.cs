@@ -287,7 +287,7 @@ namespace BossCreatures
 
         public static Monster BossHere(GameLocation location)
         {
-            using (NetCollection<NPC>.Enumerator enumerator = location.characters.GetEnumerator())
+            using (List<NPC>.Enumerator enumerator = location.characters.GetEnumerator())
             {
                 while (enumerator.MoveNext())
                 {

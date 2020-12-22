@@ -23,7 +23,7 @@ namespace PlaceShaft
 		/// <param name="asset">Basic metadata about the asset being loaded.</param>
 		public bool CanEdit<T>(IAssetInfo asset)
 		{
-			if (asset.AssetNameEquals("Maps/Mines/mine") || asset.AssetNameEquals("Maps/Mines/mine_dark") || asset.AssetNameEquals("Maps/Mines/mine_dino") || asset.AssetNameEquals("Maps/Mines/mine_frost") || asset.AssetNameEquals("Maps/Mines/mine_lava") || asset.AssetNameEquals("Maps/Mines/mine_frost_dark") || asset.AssetNameEquals("Maps/Mines/minequarryshaft") || asset.AssetNameEquals("Maps/Mines/mine_lava_dark") || asset.AssetNameEquals("Maps/Mines/mine_slime") || asset.AssetNameEquals("Mines/mine") || asset.AssetNameEquals("Mines/mine_dark") || asset.AssetNameEquals("TileSheets/Craftables") || asset.AssetNameEquals("Data/CraftingRecipes") || asset.AssetNameEquals("Data/BigCraftablesInformation"))
+			if (asset.AssetNameEquals("Maps/Mines/mine") || asset.AssetNameEquals("Maps/Mines/mine_dark") || asset.AssetNameEquals("Maps/Mines/mine_dino") || asset.AssetNameEquals("Maps/Mines/mine_frost") || asset.AssetNameEquals("Maps/Mines/mine_lava") || asset.AssetNameEquals("Maps/Mines/mine_frost_dark") || asset.AssetNameEquals("Maps/Mines/minequarryshaft") || asset.AssetNameEquals("Maps/Mines/mine_lava_dark") || asset.AssetNameEquals("Maps/Mines/mine_slime") || asset.AssetNameEquals("Maps/Mines/mine") || asset.AssetNameEquals("Maps/Mines/mine_dark") || asset.AssetNameEquals("TileSheets/Craftables") || asset.AssetNameEquals("Data/CraftingRecipes") || asset.AssetNameEquals("Data/BigCraftablesInformation"))
 			{
 				return true;
 			}
@@ -35,16 +35,16 @@ namespace PlaceShaft
 		/// <param name="asset">A helper which encapsulates metadata about an asset and enables changes to it.</param>
 		public void Edit<T>(IAssetData asset)
 		{
-			if (asset.AssetNameEquals("Maps/Mines/mine") || asset.AssetNameEquals("Maps/Mines/mine_dark") || asset.AssetNameEquals("Maps/Mines/mine_dino") || asset.AssetNameEquals("Maps/Mines/mine_frost") || asset.AssetNameEquals("Maps/Mines/mine_lava") || asset.AssetNameEquals("Maps/Mines/mine_frost_dark") || asset.AssetNameEquals("Maps/Mines/minequarryshaft") || asset.AssetNameEquals("Maps/Mines/mine_lava_dark") || asset.AssetNameEquals("Maps/Mines/mine_slime") || asset.AssetNameEquals("Mines/mine") || asset.AssetNameEquals("Mines/mine_dark"))
+			if (asset.AssetNameEquals("Maps/Mines/mine") || asset.AssetNameEquals("Maps/Mines/mine_dark") || asset.AssetNameEquals("Maps/Mines/mine_dino") || asset.AssetNameEquals("Maps/Mines/mine_frost") || asset.AssetNameEquals("Maps/Mines/mine_lava") || asset.AssetNameEquals("Maps/Mines/mine_frost_dark") || asset.AssetNameEquals("Maps/Mines/minequarryshaft") || asset.AssetNameEquals("Maps/Mines/mine_lava_dark") || asset.AssetNameEquals("Maps/Mines/mine_slime") || asset.AssetNameEquals("Maps/Mines/mine") || asset.AssetNameEquals("Maps/Mines/mine_dark"))
 			{
-				Texture2D customTexture = this.Helper.Content.Load<Texture2D>("Mines/mine_desert", ContentSource.GameContent);
+				Texture2D customTexture = this.Helper.Content.Load<Texture2D>("Maps/Mines/mine_desert", ContentSource.GameContent);
 				asset
 					.AsImage()
 					.PatchImage(customTexture, sourceArea: new Rectangle(224, 160, 16, 16), targetArea: new Rectangle(224, 160, 16, 16));
 			}
 			else if (asset.AssetNameEquals("TileSheets/Craftables"))
 			{
-				Texture2D customTexture = this.Helper.Content.Load<Texture2D>("Mines/mine_desert", ContentSource.GameContent);
+				Texture2D customTexture = this.Helper.Content.Load<Texture2D>("Maps/Mines/mine_desert", ContentSource.GameContent);
 				asset
 					.AsImage()
 					.PatchImage(customTexture, sourceArea: new Rectangle(224, 160, 16, 16), targetArea: new Rectangle(112, 144, 16, 16));

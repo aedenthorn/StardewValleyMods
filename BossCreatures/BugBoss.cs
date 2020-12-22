@@ -7,6 +7,7 @@ using StardewValley.Locations;
 using StardewValley.Monsters;
 using StardewValley.Projectiles;
 using System;
+using System.Collections.Generic;
 
 namespace BossCreatures
 {
@@ -64,7 +65,7 @@ namespace BossCreatures
 				if (lastFly == 0f)
 				{
 					int flies = 0;
-					using (NetCollection<NPC>.Enumerator enumerator = currentLocation.characters.GetEnumerator())
+					using (List<NPC>.Enumerator enumerator = currentLocation.characters.GetEnumerator())
 					{
 						while (enumerator.MoveNext())
 						{

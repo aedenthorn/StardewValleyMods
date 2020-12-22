@@ -241,7 +241,7 @@ namespace MultipleSpouses
                         Monitor.Log($"Acting on crib {crib+1}");
 
                         Microsoft.Xna.Framework.Rectangle rect = new Microsoft.Xna.Framework.Rectangle((ModEntry.config.ExistingKidsRoomOffsetX+15)*64 + (3 * crib * 64),(ModEntry.config.ExistingKidsRoomOffsetY+2)*64,3*64,4*64);
-                        using (NetCollection<NPC>.Enumerator enumerator = __instance.characters.GetEnumerator())
+                        using (List<NPC>.Enumerator enumerator = __instance.characters.GetEnumerator())
                         {
                             while (enumerator.MoveNext())
                             {
