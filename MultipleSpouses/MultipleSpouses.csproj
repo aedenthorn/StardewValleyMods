@@ -71,6 +71,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Divorce.cs" />
+    <Compile Include="FurniturePatches.cs" />
     <Compile Include="HelperEvents.cs" />
     <Compile Include="FileIO.cs" />
     <Compile Include="Misc.cs" />

@@ -165,9 +165,10 @@ namespace RandomNPC
 				IClickableMenu menu = Game1.activeClickableMenu;
 				if (menu == null || menu.GetType() != typeof(DialogueBox))
 					return;
-				int resp = (menu as DialogueBox).selectedResponse;
-				List<Response> resps = (menu as DialogueBox).responses;
-				
+				DialogueBox db = menu as DialogueBox;
+				int resp = db.selectedResponse;
+				List<Response> resps = db.responses;
+
 				if (resp < 0 || resp >= resps.Count || resps[resp] == null)
 					return;
 				string key = resps[resp].responseKey;

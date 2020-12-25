@@ -81,8 +81,10 @@ namespace UndergroundSecrets
                 IClickableMenu menu = Game1.activeClickableMenu;
                 if (menu == null || menu.GetType() != typeof(DialogueBox))
                     return;
-                int resp = (int)typeof(DialogueBox).GetField("selectedResponse", BindingFlags.NonPublic | BindingFlags.Instance).GetValue(menu);
-                List<Response> resps = (List<Response>)typeof(DialogueBox).GetField("responses", BindingFlags.NonPublic | BindingFlags.Instance).GetValue(menu);
+                
+                DialogueBox db = menu as DialogueBox;
+                int resp = db.selectedResponse;
+                List<Response> resps = db.responses;
 
                 if (resp < 0 || resps == null || resp >= resps.Count || resps[resp] == null)
                     return;

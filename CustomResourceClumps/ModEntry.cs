@@ -179,7 +179,7 @@ namespace CustomResourceClumps
 
 					if (Game1.random.NextDouble() < currentChance / 100f)
 					{
-						SMonitor.Log($"Converting clump at {__instance.resourceClumps[i].currentTileLocation} to {clump.index} ");
+						//SMonitor.Log($"Converting clump at {__instance.resourceClumps[i].currentTileLocation} to {clump.index} ");
 						__instance.resourceClumps[i] = new ResourceClump(clump.index, clump.tileWidth, clump.tileHeight, __instance.resourceClumps[i].tile.Value);
 						__instance.resourceClumps[i].health.Value = clump.durability;
 						break;

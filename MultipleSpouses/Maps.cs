@@ -502,6 +502,7 @@ namespace MultipleSpouses
 
 		public static void ReplaceBed(FarmHouse farmHouse)
 		{
+			return;
 			try
 			{
 				Monitor.Log("Replacing bed");
