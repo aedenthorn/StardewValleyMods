@@ -434,9 +434,9 @@ namespace MultipleSpouses
                                     int bedWidth = Misc.GetBedWidth(__instance);
                                     bool up = upgradeLevel > 1;
 
-                                    Point bedStart = new Point(21 - (up ? (bedWidth / 2) - 1 : 0) + (up ? 6 : 0), 2 + (up ? 9 : 0));
-                                    int x = 1 + (int)((bedSpouses.IndexOf(spouseName) + 1) / (float)(bedSpouses.Count + 1) * (bedWidth - 2));
-                                    bedSpot = new Point(bedStart.X + x, bedStart.Y + 2);
+                                    Point bedStart = __instance.GetSpouseBed().GetBedSpot();
+                                    int x = (int)((bedSpouses.IndexOf(spouseName) + 1) / (float)(bedSpouses.Count + 1) * (bedWidth - 2));
+                                    bedSpot = new Point(bedStart.X + x, bedStart.Y);
 
                                 }
 
