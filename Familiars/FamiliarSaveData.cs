@@ -1,6 +1,4 @@
 ﻿using Microsoft.Xna.Framework;
-using StardewValley.Monsters;
-using StardewValley.Network;
 using System.Collections.Generic;
 
 namespace Familiars

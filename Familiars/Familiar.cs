@@ -1,17 +1,16 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Xml.Serialization;
-using Microsoft.Xna.Framework;
+﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Netcode;
 using StardewValley;
 using StardewValley.Network;
-using xTile.Dimensions;
+using System;
+using System.Collections.Generic;
+using System.Xml.Serialization;
 using Rectangle = Microsoft.Xna.Framework.Rectangle;
 
 namespace Familiars
 {
-	public class Familiar : NPC
+    public class Familiar : NPC
 	{
 		[XmlIgnore]
 		public Farmer Player

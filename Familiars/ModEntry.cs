@@ -1,40 +1,33 @@
 ﻿using Harmony;
-using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using StardewModdingAPI;
 using StardewValley;
 using StardewValley.Buildings;
-using StardewValley.Characters;
-using StardewValley.Locations;
 using StardewValley.Monsters;
-using StardewValley.Objects;
-using StardewValley.Quests;
 using StardewValley.TerrainFeatures;
 using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Xml.Serialization;
 using Object = StardewValley.Object;
 
 namespace Familiars
 {
-	/// <summary>The mod entry point.</summary>
-	public class ModEntry : Mod, IAssetLoader, IAssetEditor
+    /// <summary>The mod entry point.</summary>
+    public class ModEntry : Mod, IAssetLoader, IAssetEditor
 	{
 		public static ModEntry context;
 		public static ModConfig Config;
 		public static IModHelper SHelper;
 		public static IMonitor SMonitor;
 		public static Multiplayer mp;
-        internal static IJsonAssetsApi JsonAssets;
+		public static IJsonAssetsApi JsonAssets;
 		public static int BatFamiliarEgg = -1;
 		public static int DustFamiliarEgg = -1;
 		public static int DinoFamiliarEgg = -1;
 		public static int JunimoFamiliarEgg = -1;
 		public static int ButterflyFamiliarEgg = -1;
 		public static int ButterflyDust = -1;
-        internal static bool receivedJunimoEggToday = false;
+		public static bool receivedJunimoEggToday = false;
 
         /// <summary>The mod entry point, called after the mod is first loaded.</summary>
         /// <param name="helper">Provides simplified APIs for writing mods.</param>

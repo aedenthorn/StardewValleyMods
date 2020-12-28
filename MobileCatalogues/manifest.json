@@ -1,11 +1,11 @@
 ﻿{
   "Name": "Mobile Catalogues",
   "Author": "aedenthorn",
-  "Version": "0.5.2",
+  "Version": "0.6.0",
   "Description": "Online shopping for your mobile phone.",
   "UniqueID": "aedenthorn.MobileCatalogues",
   "EntryDll": "MobileCatalogues.dll",
-  "MinimumApiVersion": "3.5.0",
+  "MinimumApiVersion": "3.8.0",
   "UpdateKeys": ["Nexus:6543"],
   "ModUpdater": {
     "Repository": "StardewValleyMods",

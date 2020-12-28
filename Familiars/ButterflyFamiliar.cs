@@ -4,10 +4,8 @@ using Netcode;
 using StardewValley;
 using StardewValley.Menus;
 using StardewValley.Monsters;
-using StardewValley.Network;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Reflection;
 
 namespace Familiars

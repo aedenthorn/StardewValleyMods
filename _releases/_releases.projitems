@@ -27,6 +27,7 @@
     <None Include="$(MSBuildThisFileDirectory)MobileAudioPlayer 0.4.1.zip" />
     <None Include="$(MSBuildThisFileDirectory)MobileCalendar 0.2.0.zip" />
     <None Include="$(MSBuildThisFileDirectory)MobileCatalogues 0.5.2.zip" />
+    <None Include="$(MSBuildThisFileDirectory)MobileCatalogues 0.6.0.zip" />
     <None Include="$(MSBuildThisFileDirectory)MobilePhone 2.2.0.zip" />
     <None Include="$(MSBuildThisFileDirectory)MobileTelevision 0.1.0.zip" />
     <None Include="$(MSBuildThisFileDirectory)MultipleSpouses 2.0.0.zip" />

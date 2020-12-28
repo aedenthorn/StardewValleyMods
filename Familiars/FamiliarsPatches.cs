@@ -1,15 +1,10 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using Netcode;
 using StardewModdingAPI;
 using StardewValley;
-using StardewValley.Buildings;
 using StardewValley.Monsters;
 using StardewValley.Network;
-using StardewValley.TerrainFeatures;
 using System;
-using System.Linq;
-using xTile.Dimensions;
 using Object = StardewValley.Object;
 
 namespace Familiars

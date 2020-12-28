@@ -162,42 +162,23 @@ namespace MobileCatalogues
             Furniture f;
             foreach (KeyValuePair<int, string> v in Game1.content.Load<Dictionary<int, string>>("Data\\Furniture"))
             {
-                if (true)
-                {
+                if(v.Value.Split('/')[1] == "fishtank")
+                    f = new FishTankFurniture(v.Key, Vector2.Zero);
+                else if(v.Value.Split('/')[1] == "bed")
+                    f = new BedFurniture(v.Key, Vector2.Zero);
+                else if(v.Value.Split('/')[0].EndsWith("TV"))
+                    f = new TV(v.Key, Vector2.Zero);
+                else
                     f = new Furniture(v.Key, Vector2.Zero);
-                    decors.Add(f, new int[]
-                    {
-                        Config.FreeFurnitureCatalogue ? 0 : (int)Math.Round(f.salePrice() * Config.PriceMult),
-                        int.MaxValue
-                    });
-                }
+                decors.Add(f, new int[]
+                {
+                    Config.FreeFurnitureCatalogue ? 0 : (int)Math.Round(f.salePrice() * Config.PriceMult),
+                    int.MaxValue
+                });
             }
-            f = new Furniture(1402, Vector2.Zero);
-            decors.Add(f, new int[]
-            {
-                Config.FreeFurnitureCatalogue  ? 0 :  (int)Math.Round(f.salePrice() * Config.PriceMult),
-                int.MaxValue
-            });
-            f = new TV(1680, Vector2.Zero);
-            decors.Add(f, new int[]
-            {
-                Config.FreeFurnitureCatalogue  ? 0 : (int)Math.Round(f.salePrice() * Config.PriceMult),
-                int.MaxValue
-            });
-            f = new TV(1466, Vector2.Zero);
-            decors.Add(f, new int[]
-            {
-                Config.FreeFurnitureCatalogue  ? 0 :  (int)Math.Round(f.salePrice() * Config.PriceMult),
-                int.MaxValue
-            });
-            f = new TV(1468, Vector2.Zero);
-            decors.Add(f, new int[]
-            {
-                Config.FreeFurnitureCatalogue  ? 0 :  (int)Math.Round(f.salePrice() * Config.PriceMult),
-                int.MaxValue
-            });
             return decors;
         }
+
         private static Dictionary<ISalable, int[]> GetAllSeeds()
         {
             Dictionary<ISalable, int[]> items = new Dictionary<ISalable, int[]>();

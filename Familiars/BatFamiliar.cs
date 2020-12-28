@@ -7,7 +7,6 @@ using StardewValley.Network;
 using System;
 using System.Collections.Generic;
 using System.Reflection;
-using System.Security.Policy;
 
 namespace Familiars
 {

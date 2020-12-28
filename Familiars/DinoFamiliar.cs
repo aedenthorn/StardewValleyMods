@@ -7,7 +7,6 @@ using StardewValley.Projectiles;
 using System;
 using System.Collections.Generic;
 using System.Reflection;
-using System.Threading;
 
 namespace StardewValley.Monsters
 {
