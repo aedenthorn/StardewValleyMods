@@ -8,12 +8,11 @@ using StardewValley.Network;
 using System;
 using System.Collections.Generic;
 using System.Reflection;
-using static Harmony.AccessTools;
 
 namespace PlaceShaft
 {
-	/// <summary>The mod entry point.</summary>
-	public class ModEntry : Mod, IAssetEditor
+    /// <summary>The mod entry point.</summary>
+    public class ModEntry : Mod, IAssetEditor
 	{
 
 		public static ModEntry context;

@@ -128,12 +128,15 @@ namespace MobilePhone
             }
 
             // get SMAPI's input handler
-            object input = typeof(Game1).GetField("input", BindingFlags.NonPublic | BindingFlags.Static)?.GetValue(null)
-               ?? throw new InvalidOperationException("Can't find 'Game1.input' field.");
+            var input = Game1.input;
 
             // get OverrideButton method
-            var method = input.GetType().GetMethod("OverrideButton")
-               ?? throw new InvalidOperationException("Can't find 'OverrideButton' method on SMAPI's input class.");
+            var method = input.GetType().GetMethod("OverrideButton");
+            if (method == null)
+            {
+                Monitor.Log("Can't find 'OverrideButton' method on SMAPI's input class.", LogLevel.Error);
+                return;
+            }
 
             // call method
             // The arguments are the button to override, and whether to mark the button pressed (true) or raised (false)

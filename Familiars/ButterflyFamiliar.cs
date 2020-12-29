@@ -207,47 +207,47 @@ namespace Familiars
 				float xSlope = (float)(-(float)(playerCenter.X - center.X));
 				float ySlope = (float)(playerCenter.Y - center.Y);
 				float t = Math.Max(1f, Math.Abs(xSlope) + Math.Abs(ySlope));
-				if (t < (float)((this.extraVelocity > 0f) ? 192 : 64))
+				if (t < (float)((extraVelocity > 0f) ? 192 : 64))
 				{
-					this.xVelocity = Math.Max(-this.maxSpeed, Math.Min(this.maxSpeed, this.xVelocity * 1.05f));
-					this.yVelocity = Math.Max(-this.maxSpeed, Math.Min(this.maxSpeed, this.yVelocity * 1.05f));
+					xVelocity = Math.Max(-maxSpeed, Math.Min(maxSpeed, xVelocity * 1.05f));
+					yVelocity = Math.Max(-maxSpeed, Math.Min(maxSpeed, yVelocity * 1.05f));
 				}
 				xSlope /= t;
 				ySlope /= t;
-				if (this.wasHitCounter <= 0)
+				if (wasHitCounter <= 0)
 				{
-					this.targetRotation = (float)Math.Atan2((double)(-(double)ySlope), (double)xSlope) - 1.57079637f;
-					if ((double)(Math.Abs(this.targetRotation) - Math.Abs(this.rotation)) > 2.748893571891069 && Game1.random.NextDouble() < 0.5)
+					targetRotation = (float)Math.Atan2((double)(-(double)ySlope), (double)xSlope) - 1.57079637f;
+					if ((double)(Math.Abs(targetRotation) - Math.Abs(rotation)) > 2.748893571891069 && Game1.random.NextDouble() < 0.5)
 					{
-						this.turningRight.Value = true;
+						turningRight.Value = true;
 					}
-					else if ((double)(Math.Abs(this.targetRotation) - Math.Abs(this.rotation)) < 0.39269908169872414)
+					else if ((double)(Math.Abs(targetRotation) - Math.Abs(rotation)) < 0.39269908169872414)
 					{
-						this.turningRight.Value = false;
+						turningRight.Value = false;
 					}
-					if (this.turningRight)
+					if (turningRight)
 					{
-						this.rotation -= (float)Math.Sign(this.targetRotation - this.rotation) * 0.0490873866f;
+						rotation -= (float)Math.Sign(targetRotation - rotation) * 0.0490873866f;
 					}
 					else
 					{
-						this.rotation += (float)Math.Sign(this.targetRotation - this.rotation) * 0.0490873866f;
+						rotation += (float)Math.Sign(targetRotation - rotation) * 0.0490873866f;
 					}
-					this.rotation %= 6.28318548f;
-					this.wasHitCounter.Value = 0;
+					rotation %= 6.28318548f;
+					wasHitCounter.Value = 0;
 				}
-				float maxAccel = Math.Min(5f, Math.Max(1f, 5f - t / 64f / 2f)) + this.extraVelocity;
-				xSlope = (float)Math.Cos((double)this.rotation + 1.5707963267948966);
-				ySlope = -(float)Math.Sin((double)this.rotation + 1.5707963267948966);
-				this.xVelocity += -xSlope * maxAccel / 6f + (float)Game1.random.Next(-10, 10) / 100f;
-				this.yVelocity += -ySlope * maxAccel / 6f + (float)Game1.random.Next(-10, 10) / 100f;
-				if (Math.Abs(this.xVelocity) > Math.Abs(-xSlope * this.maxSpeed))
+				float maxAccel = Math.Min(5f, Math.Max(1f, 5f - t / 64f / 2f)) + extraVelocity;
+				xSlope = (float)Math.Cos((double)rotation + 1.5707963267948966);
+				ySlope = -(float)Math.Sin((double)rotation + 1.5707963267948966);
+				xVelocity += -xSlope * maxAccel / 6f + (float)Game1.random.Next(-10, 10) / 100f;
+				yVelocity += -ySlope * maxAccel / 6f + (float)Game1.random.Next(-10, 10) / 100f;
+				if (Math.Abs(xVelocity) > Math.Abs(-xSlope * maxSpeed))
 				{
-					this.xVelocity -= -xSlope * maxAccel / 6f;
+					xVelocity -= -xSlope * maxAccel / 6f;
 				}
-				if (Math.Abs(this.yVelocity) > Math.Abs(-ySlope * this.maxSpeed))
+				if (Math.Abs(yVelocity) > Math.Abs(-ySlope * maxSpeed))
 				{
-					this.yVelocity -= -ySlope * maxAccel / 6f;
+					yVelocity -= -ySlope * maxAccel / 6f;
 				}
 				if (lastBuff <= 0 && Vector2.Distance(GetOwner().getTileLocation(), getTileLocation()) < 3)
 				{

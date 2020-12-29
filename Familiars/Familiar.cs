@@ -17,7 +17,7 @@ namespace Familiars
 		{
 			get
 			{
-				return this.findPlayer();
+				return findPlayer();
 			}
 		}
 
@@ -26,11 +26,11 @@ namespace Familiars
 		{
 			get
 			{
-				return this.damageToFarmer;
+				return damageToFarmer;
 			}
 			set
 			{
-				this.damageToFarmer.Value = value;
+				damageToFarmer.Value = value;
 			}
 		}
 
@@ -39,11 +39,11 @@ namespace Familiars
 		{
 			get
 			{
-				return this.health;
+				return health;
 			}
 			set
 			{
-				this.health.Value = value;
+				health.Value = value;
 			}
 		}
 
@@ -52,11 +52,11 @@ namespace Familiars
 		{
 			get
 			{
-				return this.maxHealth;
+				return maxHealth;
 			}
 			set
 			{
-				this.maxHealth.Value = value;
+				maxHealth.Value = value;
 			}
 		}
 
@@ -65,11 +65,11 @@ namespace Familiars
 		{
 			get
 			{
-				return this.experienceGained;
+				return experienceGained;
 			}
 			set
 			{
-				this.experienceGained.Value = value;
+				experienceGained.Value = value;
 			}
 		}
 
@@ -78,11 +78,11 @@ namespace Familiars
 		{
 			get
 			{
-				return this.slipperiness;
+				return slipperiness;
 			}
 			set
 			{
-				this.slipperiness.Value = value;
+				slipperiness.Value = value;
 			}
 		}
 
@@ -91,11 +91,11 @@ namespace Familiars
 		{
 			get
 			{
-				return this.netFocusedOnFarmers;
+				return netFocusedOnFarmers;
 			}
 			set
 			{
-				this.netFocusedOnFarmers.Value = value;
+				netFocusedOnFarmers.Value = value;
 			}
 		}
 
@@ -104,11 +104,11 @@ namespace Familiars
 		{
 			get
 			{
-				return this.netWildernessFarmMonster;
+				return netWildernessFarmMonster;
 			}
 			set
 			{
-				this.netWildernessFarmMonster.Value = value;
+				netWildernessFarmMonster.Value = value;
 			}
 		}
 
@@ -131,18 +131,18 @@ namespace Familiars
         {
 			return new FamiliarData()
 			{
-				daysOld = this.daysOld,
-				followingOwner = this.followingOwner,
-				exp = this.exp,
-				ownerId = this.ownerId,
-				mainColor = this.mainColor,
-				redColor = this.redColor,
-				greenColor = this.greenColor,
-				blueColor = this.blueColor,
+				daysOld = daysOld,
+				followingOwner = followingOwner,
+				exp = exp,
+				ownerId = ownerId,
+				mainColor = mainColor,
+				redColor = redColor,
+				greenColor = greenColor,
+				blueColor = blueColor,
 				currentLocation = gameLocation.Name,
-				position = this.position,
-				baseFrame = this.baseFrame,
-				color = this.color
+				position = position,
+				baseFrame = baseFrame,
+				color = color
 			};
         }
 
@@ -156,32 +156,32 @@ namespace Familiars
 			base.initNetFields();
 			base.NetFields.AddFields(new INetSerializable[]
 			{
-				this.damageToFarmer,
-				this.health,
-				this.maxHealth,
-				this.coinsToDrop,
-				this.durationOfRandomMovements,
-				this.resilience,
-				this.slipperiness,
-				this.experienceGained,
-				this.jitteriness,
-				this.missChance,
-				this.isGlider,
-				this.mineMonster,
-				this.hasSpecialItem,
-				this.objectsToDrop,
-				this.defaultAnimationInterval,
-				this.netFocusedOnFarmers,
-				this.netWildernessFarmMonster,
-				this.deathAnimEvent,
-				this.daysOld,
-				this.exp,
-				this.trajectoryEvent
+				damageToFarmer,
+				health,
+				maxHealth,
+				coinsToDrop,
+				durationOfRandomMovements,
+				resilience,
+				slipperiness,
+				experienceGained,
+				jitteriness,
+				missChance,
+				isGlider,
+				mineMonster,
+				hasSpecialItem,
+				objectsToDrop,
+				defaultAnimationInterval,
+				netFocusedOnFarmers,
+				netWildernessFarmMonster,
+				deathAnimEvent,
+				daysOld,
+				exp,
+				trajectoryEvent
 			});
-			this.position.Field.AxisAlignedMovement = false;
-			this.deathAnimEvent.onEvent += this.localDeathAnimation;
-			this.trajectoryEvent.onEvent += this.doSetTrajectory;
-			this.trajectoryEvent.InterpolationWait = false;
+			position.Field.AxisAlignedMovement = false;
+			deathAnimEvent.onEvent += localDeathAnimation;
+			trajectoryEvent.onEvent += doSetTrajectory;
+			trajectoryEvent.InterpolationWait = false;
 		}
         public override void dayUpdate(int dayOfMonth)
         {
@@ -207,7 +207,7 @@ namespace Familiars
 			{
 				if (!f.hidden)
 				{
-					double priority = this.findPlayerPriority(f);
+					double priority = findPlayerPriority(f);
 					if (priority < bestPriority)
 					{
 						bestPriority = priority;
@@ -234,7 +234,7 @@ namespace Familiars
 
 		public override bool withinPlayerThreshold()
 		{
-			return this.focusedOnFarmers || this.withinPlayerThreshold(this.moveTowardPlayerThreshold);
+			return focusedOnFarmers || withinPlayerThreshold(moveTowardPlayerThreshold);
 		}
 
 		public override bool IsMonster
@@ -251,7 +251,7 @@ namespace Familiars
 		public Familiar(string name, Vector2 position, int facingDir, AnimatedSprite animatedSprite) : base(animatedSprite, position, facingDir, name, null)
 		{
 			
-			this.parseMonsterInfo(name);
+			parseMonsterInfo(name);
 			base.Breather = false;
 		}
 
@@ -265,7 +265,7 @@ namespace Familiars
 
 		public override void draw(SpriteBatch b)
 		{
-			if (!this.isGlider)
+			if (!isGlider)
 			{
 				base.draw(b);
 			}
@@ -273,14 +273,14 @@ namespace Familiars
 
 		public bool isInvincible()
 		{
-			return this.invincibleCountdown > 0;
+			return invincibleCountdown > 0;
 		}
 
 		public void setInvincibleCountdown(int time)
 		{
-			this.invincibleCountdown = time;
+			invincibleCountdown = time;
 			base.startGlowing(new Color(255, 0, 0), false, 0.25f);
-			this.glowingTransparency = 1f;
+			glowingTransparency = 1f;
 		}
 
 		protected int maxTimesReachedMineBottom()
@@ -299,50 +299,50 @@ namespace Familiars
 			{
 				'/'
 			});
-			this.Health = Convert.ToInt32(monsterInfo[0]);
-			this.MaxHealth = this.Health;
-			this.DamageToFarmer = Convert.ToInt32(monsterInfo[1]);
-			this.coinsToDrop.Value = Game1.random.Next(Convert.ToInt32(monsterInfo[2]), Convert.ToInt32(monsterInfo[3]) + 1);
-			this.isGlider.Value = Convert.ToBoolean(monsterInfo[4]);
-			this.durationOfRandomMovements.Value = Convert.ToInt32(monsterInfo[5]);
+			Health = Convert.ToInt32(monsterInfo[0]);
+			MaxHealth = Health;
+			DamageToFarmer = Convert.ToInt32(monsterInfo[1]);
+			coinsToDrop.Value = Game1.random.Next(Convert.ToInt32(monsterInfo[2]), Convert.ToInt32(monsterInfo[3]) + 1);
+			isGlider.Value = Convert.ToBoolean(monsterInfo[4]);
+			durationOfRandomMovements.Value = Convert.ToInt32(monsterInfo[5]);
 			string[] objectsSplit = monsterInfo[6].Split(new char[]
 			{
 				' '
 			});
-			this.objectsToDrop.Clear();
+			objectsToDrop.Clear();
 			for (int i = 0; i < objectsSplit.Length; i += 2)
 			{
 				if (Game1.random.NextDouble() < Convert.ToDouble(objectsSplit[i + 1]))
 				{
-					this.objectsToDrop.Add(Convert.ToInt32(objectsSplit[i]));
+					objectsToDrop.Add(Convert.ToInt32(objectsSplit[i]));
 				}
 			}
-			this.resilience.Value = Convert.ToInt32(monsterInfo[7]);
-			this.jitteriness.Value = Convert.ToDouble(monsterInfo[8]);
+			resilience.Value = Convert.ToInt32(monsterInfo[7]);
+			jitteriness.Value = Convert.ToDouble(monsterInfo[8]);
 			base.willDestroyObjectsUnderfoot = false;
 			base.moveTowardPlayer(Convert.ToInt32(monsterInfo[9]));
 			base.speed = Convert.ToInt32(monsterInfo[10]);
-			this.missChance.Value = Convert.ToDouble(monsterInfo[11]);
-			this.mineMonster.Value = Convert.ToBoolean(monsterInfo[12]);
-			if (this.maxTimesReachedMineBottom() >= 1 && this.mineMonster)
+			missChance.Value = Convert.ToDouble(monsterInfo[11]);
+			mineMonster.Value = Convert.ToBoolean(monsterInfo[12]);
+			if (maxTimesReachedMineBottom() >= 1 && mineMonster)
 			{
-				this.resilience.Value += this.resilience.Value / 2;
-				this.missChance.Value *= 2.0;
-				this.Health += Game1.random.Next(0, this.Health);
-				this.DamageToFarmer += Game1.random.Next(0, this.DamageToFarmer / 2);
-				this.coinsToDrop.Value += Game1.random.Next(0, this.coinsToDrop + 1);
+				resilience.Value += resilience.Value / 2;
+				missChance.Value *= 2.0;
+				Health += Game1.random.Next(0, Health);
+				DamageToFarmer += Game1.random.Next(0, DamageToFarmer / 2);
+				coinsToDrop.Value += Game1.random.Next(0, coinsToDrop + 1);
 				if (Game1.random.NextDouble() < 0.001)
 				{
-					this.objectsToDrop.Add((Game1.random.NextDouble() < 0.5) ? 72 : 74);
+					objectsToDrop.Add((Game1.random.NextDouble() < 0.5) ? 72 : 74);
 				}
 			}
 			try
 			{
-				this.ExperienceGained = Convert.ToInt32(monsterInfo[13]);
+				ExperienceGained = Convert.ToInt32(monsterInfo[13]);
 			}
 			catch (Exception)
 			{
-				this.ExperienceGained = 1;
+				ExperienceGained = 1;
 			}
 			if (LocalizedContentManager.CurrentLanguageCode != LocalizedContentManager.LanguageCode.en)
 			{
@@ -352,19 +352,19 @@ namespace Familiars
 
 		public override void reloadSprite()
 		{
-			this.Sprite = new AnimatedSprite((name == "Junimo" ? "Characters\\" : "Characters\\Monsters\\") + base.Name, 0, 16, 16);
+			Sprite = new AnimatedSprite((name == "Junimo" ? "Characters\\" : "Characters\\Monsters\\") + base.Name, 0, 16, 16);
 		}
 
 		public virtual void shedChunks(int number)
 		{
-			this.shedChunks(number, 0.75f);
+			shedChunks(number, 0.75f);
 		}
 
 		public virtual void shedChunks(int number, float scale)
 		{
-			if (this.Sprite.Texture.Height > this.Sprite.getHeight() * 4)
+			if (Sprite.Texture.Height > Sprite.getHeight() * 4)
 			{
-				Game1.createRadialDebris(base.currentLocation, this.Sprite.textureName, new Microsoft.Xna.Framework.Rectangle(0, this.Sprite.getHeight() * 4 + 16, 16, 16), 8, this.GetBoundingBox().Center.X, this.GetBoundingBox().Center.Y, number, (int)base.getTileLocation().Y, Color.White, 4f * scale);
+				Game1.createRadialDebris(base.currentLocation, Sprite.textureName, new Microsoft.Xna.Framework.Rectangle(0, Sprite.getHeight() * 4 + 16, 16, 16), 8, GetBoundingBox().Center.X, GetBoundingBox().Center.Y, number, (int)base.getTileLocation().Y, Color.White, 4f * scale);
 			}
 		}
 
@@ -377,13 +377,13 @@ namespace Familiars
 
 		public void deathAnimation()
 		{
-			this.sharedDeathAnimation();
-			this.deathAnimEvent.Fire();
+			sharedDeathAnimation();
+			deathAnimEvent.Fire();
 		}
 
 		protected virtual void sharedDeathAnimation()
 		{
-			this.shedChunks(Game1.random.Next(4, 9), 0.75f);
+			shedChunks(Game1.random.Next(4, 9), 0.75f);
 		}
 
 		protected virtual void localDeathAnimation()
@@ -395,25 +395,25 @@ namespace Familiars
 		{
 			if (ModEntry.Config.Invincible)
 				return 0;
-			return this.takeDamage(damage, xTrajectory, yTrajectory, isBomb, addedPrecision, "hitEnemy");
+			return takeDamage(damage, xTrajectory, yTrajectory, isBomb, addedPrecision, "hitEnemy");
 		}
 
 		public int takeDamage(int damage, int xTrajectory, int yTrajectory, bool isBomb, double addedPrecision, string hitSound)
 		{
-			int actualDamage = Math.Max(1, damage - this.resilience);
-			this.slideAnimationTimer = 0;
-			if (Game1.random.NextDouble() < this.missChance - this.missChance * addedPrecision)
+			int actualDamage = Math.Max(1, damage - resilience);
+			slideAnimationTimer = 0;
+			if (Game1.random.NextDouble() < missChance - missChance * addedPrecision)
 			{
 				actualDamage = -1;
 			}
 			else
 			{
-				this.Health -= actualDamage;
+				Health -= actualDamage;
 				base.currentLocation.playSound(hitSound, NetAudio.SoundContext.Default);
 				base.setTrajectory(xTrajectory / 3, yTrajectory / 3);
-				if (this.Health <= 0)
+				if (Health <= 0)
 				{
-					this.deathAnimation();
+					deathAnimation();
 				}
 			}
 			return actualDamage;
@@ -421,7 +421,7 @@ namespace Familiars
 
 		public override void setTrajectory(Vector2 trajectory)
 		{
-			this.trajectoryEvent.Fire(trajectory);
+			trajectoryEvent.Fire(trajectory);
 		}
 
 		private void doSetTrajectory(Vector2 trajectory)
@@ -430,44 +430,44 @@ namespace Familiars
 			{
 				return;
 			}
-			if (Math.Abs(trajectory.X) > Math.Abs(this.xVelocity))
+			if (Math.Abs(trajectory.X) > Math.Abs(xVelocity))
 			{
-				this.xVelocity = trajectory.X;
+				xVelocity = trajectory.X;
 			}
-			if (Math.Abs(trajectory.Y) > Math.Abs(this.yVelocity))
+			if (Math.Abs(trajectory.Y) > Math.Abs(yVelocity))
 			{
-				this.yVelocity = trajectory.Y;
+				yVelocity = trajectory.Y;
 			}
 		}
 
 		public virtual void behaviorAtGameTick(GameTime time)
 		{
-			if (this.timeBeforeAIMovementAgain > 0f)
+			if (timeBeforeAIMovementAgain > 0f)
 			{
-				this.timeBeforeAIMovementAgain -= (float)time.ElapsedGameTime.Milliseconds;
+				timeBeforeAIMovementAgain -= (float)time.ElapsedGameTime.Milliseconds;
 			}
-			if (this.Player.isRafting && this.withinPlayerThreshold(4))
+			if (Player.isRafting && withinPlayerThreshold(4))
 			{
-				if (Math.Abs(this.Player.GetBoundingBox().Center.Y - this.GetBoundingBox().Center.Y) > 192)
+				if (Math.Abs(Player.GetBoundingBox().Center.Y - GetBoundingBox().Center.Y) > 192)
 				{
-					if (this.Player.GetBoundingBox().Center.X - this.GetBoundingBox().Center.X > 0)
+					if (Player.GetBoundingBox().Center.X - GetBoundingBox().Center.X > 0)
 					{
-						this.SetMovingLeft(true);
+						SetMovingLeft(true);
 					}
 					else
 					{
-						this.SetMovingRight(true);
+						SetMovingRight(true);
 					}
 				}
-				else if (this.Player.GetBoundingBox().Center.Y - this.GetBoundingBox().Center.Y > 0)
+				else if (Player.GetBoundingBox().Center.Y - GetBoundingBox().Center.Y > 0)
 				{
-					this.SetMovingUp(true);
+					SetMovingUp(true);
 				}
 				else
 				{
-					this.SetMovingDown(true);
+					SetMovingDown(true);
 				}
-				this.MovePosition(time, Game1.viewport, base.currentLocation);
+				MovePosition(time, Game1.viewport, base.currentLocation);
 			}
 		}
 
@@ -499,13 +499,13 @@ namespace Familiars
 				return;
             }
 
-			this.trajectoryEvent.Poll();
-			this.deathAnimEvent.Poll();
-			this.position.UpdateExtrapolation((float)(base.speed + base.addedSpeed));
-			if (this.invincibleCountdown > 0)
+			trajectoryEvent.Poll();
+			deathAnimEvent.Poll();
+			position.UpdateExtrapolation((float)(base.speed + base.addedSpeed));
+			if (invincibleCountdown > 0)
 			{
-				this.invincibleCountdown -= time.ElapsedGameTime.Milliseconds;
-				if (this.invincibleCountdown <= 0)
+				invincibleCountdown -= time.ElapsedGameTime.Milliseconds;
+				if (invincibleCountdown <= 0)
 				{
 					base.stopGlowing();
 				}
@@ -518,23 +518,23 @@ namespace Familiars
 			
 			if (Game1.IsMasterGame)
 			{
-				this.behaviorAtGameTick(time);
+				behaviorAtGameTick(time);
 			}
 			
 			if(!(this is ButterflyFamiliar))
-				this.updateAnimation(time);
+				updateAnimation(time);
 
-			if (this.controller != null && this.withinPlayerThreshold(3))
+			if (controller != null && withinPlayerThreshold(3))
 			{
-				this.controller = null;
+				controller = null;
 			}
 		}
 
 		protected void resetAnimationSpeed()
 		{
-			if (!this.ignoreMovementAnimations)
+			if (!ignoreMovementAnimations)
 			{
-				this.Sprite.interval = (float)this.defaultAnimationInterval - (float)(base.speed + base.addedSpeed - 2) * 20f;
+				Sprite.interval = (float)defaultAnimationInterval - (float)(base.speed + base.addedSpeed - 2) * 20f;
 			}
 		}
 
@@ -542,9 +542,9 @@ namespace Familiars
 		{
 			if (!Game1.IsMasterGame)
 			{
-				this.updateMonsterSlaveAnimation(time);
+				updateMonsterSlaveAnimation(time);
 			}
-			this.resetAnimationSpeed();
+			resetAnimationSpeed();
 		}
 
 		protected override void updateSlaveAnimation(GameTime time)
@@ -553,67 +553,67 @@ namespace Familiars
 
 		protected virtual void updateMonsterSlaveAnimation(GameTime time)
 		{
-			this.Sprite.animateOnce(time);
+			Sprite.animateOnce(time);
 		}
 
 		private bool doHorizontalMovement(GameLocation location)
 		{
 			bool wasAbleToMoveHorizontally = false;
-			if (base.Position.X > this.Player.Position.X + 8f || (this.skipHorizontal > 0 && this.Player.getStandingX() < base.getStandingX() - 8))
+			if (base.Position.X > Player.Position.X + 8f || (skipHorizontal > 0 && Player.getStandingX() < base.getStandingX() - 8))
 			{
 				base.SetMovingOnlyLeft();
-				if (!location.isCollidingPosition(this.nextPosition(3), Game1.viewport, false, this.DamageToFarmer, this.isGlider, this))
+				if (!location.isCollidingPosition(nextPosition(3), Game1.viewport, false, DamageToFarmer, isGlider, this))
 				{
-					this.MovePosition(Game1.currentGameTime, Game1.viewport, location);
+					MovePosition(Game1.currentGameTime, Game1.viewport, location);
 					wasAbleToMoveHorizontally = true;
 				}
 				else
 				{
-					this.faceDirection(3);
-					if (this.durationOfRandomMovements > 0 && Game1.random.NextDouble() < this.jitteriness)
+					faceDirection(3);
+					if (durationOfRandomMovements > 0 && Game1.random.NextDouble() < jitteriness)
 					{
 						if (Game1.random.NextDouble() < 0.5)
 						{
-							base.tryToMoveInDirection(2, false, this.DamageToFarmer, this.isGlider);
+							base.tryToMoveInDirection(2, false, DamageToFarmer, isGlider);
 						}
 						else
 						{
-							base.tryToMoveInDirection(0, false, this.DamageToFarmer, this.isGlider);
+							base.tryToMoveInDirection(0, false, DamageToFarmer, isGlider);
 						}
-						this.timeBeforeAIMovementAgain = (float)this.durationOfRandomMovements;
+						timeBeforeAIMovementAgain = (float)durationOfRandomMovements;
 					}
 				}
 			}
-			else if (base.Position.X < this.Player.Position.X - 8f)
+			else if (base.Position.X < Player.Position.X - 8f)
 			{
 				base.SetMovingOnlyRight();
-				if (!location.isCollidingPosition(this.nextPosition(1), Game1.viewport, false, this.DamageToFarmer, this.isGlider, this))
+				if (!location.isCollidingPosition(nextPosition(1), Game1.viewport, false, DamageToFarmer, isGlider, this))
 				{
-					this.MovePosition(Game1.currentGameTime, Game1.viewport, location);
+					MovePosition(Game1.currentGameTime, Game1.viewport, location);
 					wasAbleToMoveHorizontally = true;
 				}
 				else
 				{
-					this.faceDirection(1);
-					if (this.durationOfRandomMovements > 0 && Game1.random.NextDouble() < this.jitteriness)
+					faceDirection(1);
+					if (durationOfRandomMovements > 0 && Game1.random.NextDouble() < jitteriness)
 					{
 						if (Game1.random.NextDouble() < 0.5)
 						{
-							base.tryToMoveInDirection(2, false, this.DamageToFarmer, this.isGlider);
+							base.tryToMoveInDirection(2, false, DamageToFarmer, isGlider);
 						}
 						else
 						{
-							base.tryToMoveInDirection(0, false, this.DamageToFarmer, this.isGlider);
+							base.tryToMoveInDirection(0, false, DamageToFarmer, isGlider);
 						}
-						this.timeBeforeAIMovementAgain = (float)this.durationOfRandomMovements;
+						timeBeforeAIMovementAgain = (float)durationOfRandomMovements;
 					}
 				}
 			}
 			else
 			{
-				base.faceGeneralDirection(this.Player.getStandingPosition(), 0, false);
+				base.faceGeneralDirection(Player.getStandingPosition(), 0, false);
 				base.setMovingInFacingDirection();
-				this.skipHorizontal = 500;
+				skipHorizontal = 500;
 			}
 			return wasAbleToMoveHorizontally;
 		}
@@ -624,14 +624,14 @@ namespace Familiars
 			{
 				base.SetMovingOnlyRight();
 				setMoving = true;
-				if (!location.isCollidingPosition(this.nextPosition(1), Game1.viewport, false, this.DamageToFarmer, this.isGlider, this))
+				if (!location.isCollidingPosition(nextPosition(1), Game1.viewport, false, DamageToFarmer, isGlider, this))
 				{
 					success = true;
 				}
 				else
 				{
-					this.MovePosition(Game1.currentGameTime, Game1.viewport, location);
-					if (!base.Position.Equals(this.lastPosition))
+					MovePosition(Game1.currentGameTime, Game1.viewport, location);
+					if (!base.Position.Equals(lastPosition))
 					{
 						scootSuccess = true;
 					}
@@ -641,13 +641,13 @@ namespace Familiars
 			{
 				base.SetMovingOnlyLeft();
 				setMoving = true;
-				if (!location.isCollidingPosition(this.nextPosition(3), Game1.viewport, false, this.DamageToFarmer, this.isGlider, this))
+				if (!location.isCollidingPosition(nextPosition(3), Game1.viewport, false, DamageToFarmer, isGlider, this))
 				{
 					success = true;
 					return;
 				}
-				this.MovePosition(Game1.currentGameTime, Game1.viewport, location);
-				if (!base.Position.Equals(this.lastPosition))
+				MovePosition(Game1.currentGameTime, Game1.viewport, location);
+				if (!base.Position.Equals(lastPosition))
 				{
 					scootSuccess = true;
 				}
@@ -660,14 +660,14 @@ namespace Familiars
 			{
 				base.SetMovingOnlyUp();
 				setMoving = true;
-				if (!location.isCollidingPosition(this.nextPosition(0), Game1.viewport, false, this.DamageToFarmer, this.isGlider, this))
+				if (!location.isCollidingPosition(nextPosition(0), Game1.viewport, false, DamageToFarmer, isGlider, this))
 				{
 					success = true;
 				}
 				else
 				{
-					this.MovePosition(Game1.currentGameTime, Game1.viewport, location);
-					if (!base.Position.Equals(this.lastPosition))
+					MovePosition(Game1.currentGameTime, Game1.viewport, location);
+					if (!base.Position.Equals(lastPosition))
 					{
 						scootSuccess = true;
 					}
@@ -677,13 +677,13 @@ namespace Familiars
 			{
 				base.SetMovingOnlyDown();
 				setMoving = true;
-				if (!location.isCollidingPosition(this.nextPosition(2), Game1.viewport, false, this.DamageToFarmer, this.isGlider, this))
+				if (!location.isCollidingPosition(nextPosition(2), Game1.viewport, false, DamageToFarmer, isGlider, this))
 				{
 					success = true;
 					return;
 				}
-				this.MovePosition(Game1.currentGameTime, Game1.viewport, location);
-				if (!base.Position.Equals(this.lastPosition))
+				MovePosition(Game1.currentGameTime, Game1.viewport, location);
+				if (!base.Position.Equals(lastPosition))
 				{
 					scootSuccess = true;
 				}
@@ -694,11 +694,11 @@ namespace Familiars
 		{
 			if (base.IsWalkingTowardPlayer)
 			{
-				if ((this.moveTowardPlayerThreshold == -1 || this.withinPlayerThreshold()) && this.timeBeforeAIMovementAgain <= 0f && !this.isGlider && location.map.GetLayer("Back").Tiles[(int)this.Player.getTileLocation().X, (int)this.Player.getTileLocation().Y] != null && !location.map.GetLayer("Back").Tiles[(int)this.Player.getTileLocation().X, (int)this.Player.getTileLocation().Y].Properties.ContainsKey("NPCBarrier"))
+				if ((moveTowardPlayerThreshold == -1 || withinPlayerThreshold()) && timeBeforeAIMovementAgain <= 0f && !isGlider && location.map.GetLayer("Back").Tiles[(int)Player.getTileLocation().X, (int)Player.getTileLocation().Y] != null && !location.map.GetLayer("Back").Tiles[(int)Player.getTileLocation().X, (int)Player.getTileLocation().Y].Properties.ContainsKey("NPCBarrier"))
 				{
-					if (this.skipHorizontal <= 0)
+					if (skipHorizontal <= 0)
 					{
-						if (this.lastPosition.Equals(base.Position) && Game1.random.NextDouble() < 0.001)
+						if (lastPosition.Equals(base.Position) && Game1.random.NextDouble() < 0.001)
 						{
 							switch (base.FacingDirection)
 							{
@@ -725,30 +725,30 @@ namespace Familiars
 									}
 									break;
 							}
-							this.skipHorizontal = 700;
+							skipHorizontal = 700;
 							return;
 						}
 						bool success = false;
 						bool setMoving = false;
 						bool scootSuccess = false;
-						if (this.lastPosition.X == base.Position.X)
+						if (lastPosition.X == base.Position.X)
 						{
-							this.checkHorizontalMovement(ref success, ref setMoving, ref scootSuccess, this.Player, location);
-							this.checkVerticalMovement(ref success, ref setMoving, ref scootSuccess, this.Player, location);
+							checkHorizontalMovement(ref success, ref setMoving, ref scootSuccess, Player, location);
+							checkVerticalMovement(ref success, ref setMoving, ref scootSuccess, Player, location);
 						}
 						else
 						{
-							this.checkVerticalMovement(ref success, ref setMoving, ref scootSuccess, this.Player, location);
-							this.checkHorizontalMovement(ref success, ref setMoving, ref scootSuccess, this.Player, location);
+							checkVerticalMovement(ref success, ref setMoving, ref scootSuccess, Player, location);
+							checkHorizontalMovement(ref success, ref setMoving, ref scootSuccess, Player, location);
 						}
 						if (!success && !setMoving)
 						{
-							this.Halt();
-							base.faceGeneralDirection(this.Player.getStandingPosition(), 0, false);
+							Halt();
+							base.faceGeneralDirection(Player.getStandingPosition(), 0, false);
 						}
 						if (success)
 						{
-							this.skipHorizontal = 500;
+							skipHorizontal = 500;
 						}
 						if (scootSuccess)
 						{
@@ -757,30 +757,30 @@ namespace Familiars
 					}
 					else
 					{
-						this.skipHorizontal -= time.ElapsedGameTime.Milliseconds;
+						skipHorizontal -= time.ElapsedGameTime.Milliseconds;
 					}
 				}
 			}
 			else
 			{
-				this.defaultMovementBehavior(time);
+				defaultMovementBehavior(time);
 			}
-			this.MovePosition(time, Game1.viewport, location);
-			if (base.Position.Equals(this.lastPosition) && base.IsWalkingTowardPlayer && this.withinPlayerThreshold())
+			MovePosition(time, Game1.viewport, location);
+			if (base.Position.Equals(lastPosition) && base.IsWalkingTowardPlayer && withinPlayerThreshold())
 			{
-				this.noMovementProgressNearPlayerBehavior();
+				noMovementProgressNearPlayerBehavior();
 			}
 		}
 
 		public virtual void noMovementProgressNearPlayerBehavior()
 		{
-			this.Halt();
-			base.faceGeneralDirection(this.Player.getStandingPosition(), 0, false);
+			Halt();
+			base.faceGeneralDirection(Player.getStandingPosition(), 0, false);
 		}
 
 		public virtual void defaultMovementBehavior(GameTime time)
 		{
-			if (Game1.random.NextDouble() < this.jitteriness * 1.8 && this.skipHorizontal <= 0)
+			if (Game1.random.NextDouble() < jitteriness * 1.8 && skipHorizontal <= 0)
 			{
 				switch (Game1.random.Next(6))
 				{
@@ -797,7 +797,7 @@ namespace Familiars
 						base.SetMovingOnlyLeft();
 						return;
 					default:
-						this.Halt();
+						Halt();
 						break;
 				}
 			}
@@ -812,40 +812,40 @@ namespace Familiars
 
 		public override void MovePosition(GameTime time, xTile.Dimensions.Rectangle viewport, GameLocation currentLocation)
 		{
-			this.lastPosition = base.Position;
-			if (this.xVelocity != 0f || this.yVelocity != 0f)
+			lastPosition = base.Position;
+			if (xVelocity != 0f || yVelocity != 0f)
 			{
-				if (double.IsNaN((double)this.xVelocity) || double.IsNaN((double)this.yVelocity))
+				if (double.IsNaN((double)xVelocity) || double.IsNaN((double)yVelocity))
 				{
-					this.xVelocity = 0f;
-					this.yVelocity = 0f;
+					xVelocity = 0f;
+					yVelocity = 0f;
 				}
-				Microsoft.Xna.Framework.Rectangle nextPosition = this.GetBoundingBox();
-				nextPosition.X += (int)this.xVelocity;
-				nextPosition.Y -= (int)this.yVelocity;
-				if (!currentLocation.isCollidingPosition(nextPosition, viewport, false, this.DamageToFarmer, this.isGlider, this))
+				Microsoft.Xna.Framework.Rectangle nextPosition = GetBoundingBox();
+				nextPosition.X += (int)xVelocity;
+				nextPosition.Y -= (int)yVelocity;
+				if (!currentLocation.isCollidingPosition(nextPosition, viewport, false, DamageToFarmer, isGlider, this))
 				{
-					this.position.X += this.xVelocity;
-					this.position.Y -= this.yVelocity;
-					if (this.Slipperiness < 1000)
+					position.X += xVelocity;
+					position.Y -= yVelocity;
+					if (Slipperiness < 1000)
 					{
-						this.xVelocity -= this.xVelocity / (float)this.Slipperiness;
-						this.yVelocity -= this.yVelocity / (float)this.Slipperiness;
-						if (Math.Abs(this.xVelocity) <= 0.05f)
+						xVelocity -= xVelocity / (float)Slipperiness;
+						yVelocity -= yVelocity / (float)Slipperiness;
+						if (Math.Abs(xVelocity) <= 0.05f)
 						{
-							this.xVelocity = 0f;
+							xVelocity = 0f;
 						}
-						if (Math.Abs(this.yVelocity) <= 0.05f)
+						if (Math.Abs(yVelocity) <= 0.05f)
 						{
-							this.yVelocity = 0f;
+							yVelocity = 0f;
 						}
 					}
-					if (!this.isGlider && this.invincibleCountdown > 0)
+					if (!isGlider && invincibleCountdown > 0)
 					{
-						this.slideAnimationTimer -= time.ElapsedGameTime.Milliseconds;
-						if (this.slideAnimationTimer < 0 && (Math.Abs(this.xVelocity) >= 3f || Math.Abs(this.yVelocity) >= 3f))
+						slideAnimationTimer -= time.ElapsedGameTime.Milliseconds;
+						if (slideAnimationTimer < 0 && (Math.Abs(xVelocity) >= 3f || Math.Abs(yVelocity) >= 3f))
 						{
-							this.slideAnimationTimer = 100 - (int)(Math.Abs(this.xVelocity) * 2f + Math.Abs(this.yVelocity) * 2f);
+							slideAnimationTimer = 100 - (int)(Math.Abs(xVelocity) * 2f + Math.Abs(yVelocity) * 2f);
 							ModEntry.mp.broadcastSprites(currentLocation, new TemporaryAnimatedSprite[]
 							{
 								new TemporaryAnimatedSprite(6, base.getStandingPosition() + new Vector2(-32f, -32f), Color.White * 0.75f, 8, Game1.random.NextDouble() < 0.5, 20f, 0, -1, -1f, -1, 0)
@@ -856,279 +856,279 @@ namespace Familiars
 						}
 					}
 				}
-				else if (this.isGlider || this.Slipperiness >= 8)
+				else if (isGlider || Slipperiness >= 8)
 				{
 					bool[] array = Utility.horizontalOrVerticalCollisionDirections(nextPosition, this, false);
 					if (array[0])
 					{
-						this.xVelocity = -this.xVelocity;
-						this.position.X += (float)Math.Sign(this.xVelocity);
-						this.rotation += (float)(3.1415926535897931 + (double)Game1.random.Next(-10, 11) * 3.1415926535897931 / 500.0);
+						xVelocity = -xVelocity;
+						position.X += (float)Math.Sign(xVelocity);
+						rotation += (float)(3.1415926535897931 + (double)Game1.random.Next(-10, 11) * 3.1415926535897931 / 500.0);
 					}
 					if (array[1])
 					{
-						this.yVelocity = -this.yVelocity;
-						this.position.Y -= (float)Math.Sign(this.yVelocity);
-						this.rotation += (float)(3.1415926535897931 + (double)Game1.random.Next(-10, 11) * 3.1415926535897931 / 500.0);
+						yVelocity = -yVelocity;
+						position.Y -= (float)Math.Sign(yVelocity);
+						rotation += (float)(3.1415926535897931 + (double)Game1.random.Next(-10, 11) * 3.1415926535897931 / 500.0);
 					}
-					if (this.Slipperiness < 1000)
+					if (Slipperiness < 1000)
 					{
-						this.xVelocity -= this.xVelocity / (float)this.Slipperiness / 4f;
-						this.yVelocity -= this.yVelocity / (float)this.Slipperiness / 4f;
-						if (Math.Abs(this.xVelocity) <= 0.05f)
+						xVelocity -= xVelocity / (float)Slipperiness / 4f;
+						yVelocity -= yVelocity / (float)Slipperiness / 4f;
+						if (Math.Abs(xVelocity) <= 0.05f)
 						{
-							this.xVelocity = 0f;
+							xVelocity = 0f;
 						}
-						if (Math.Abs(this.yVelocity) <= 0.051f)
+						if (Math.Abs(yVelocity) <= 0.051f)
 						{
-							this.yVelocity = 0f;
+							yVelocity = 0f;
 						}
 					}
 				}
 				else
 				{
-					this.xVelocity -= this.xVelocity / (float)this.Slipperiness;
-					this.yVelocity -= this.yVelocity / (float)this.Slipperiness;
-					if (Math.Abs(this.xVelocity) <= 0.05f)
+					xVelocity -= xVelocity / (float)Slipperiness;
+					yVelocity -= yVelocity / (float)Slipperiness;
+					if (Math.Abs(xVelocity) <= 0.05f)
 					{
-						this.xVelocity = 0f;
+						xVelocity = 0f;
 					}
-					if (Math.Abs(this.yVelocity) <= 0.05f)
+					if (Math.Abs(yVelocity) <= 0.05f)
 					{
-						this.yVelocity = 0f;
+						yVelocity = 0f;
 					}
 				}
-				if (this.isGlider)
+				if (isGlider)
 				{
 					return;
 				}
 			}
-			if (this.moveUp)
+			if (moveUp)
 			{
-				if (((!Game1.eventUp || Game1.IsMultiplayer) && !currentLocation.isCollidingPosition(this.nextPosition(0), viewport, false, this.DamageToFarmer, this.isGlider, this)) || this.isCharging)
+				if (((!Game1.eventUp || Game1.IsMultiplayer) && !currentLocation.isCollidingPosition(nextPosition(0), viewport, false, DamageToFarmer, isGlider, this)) || isCharging)
 				{
-					this.position.Y -= (float)(base.speed + base.addedSpeed);
-					if (!this.ignoreMovementAnimations)
+					position.Y -= (float)(base.speed + base.addedSpeed);
+					if (!ignoreMovementAnimations)
 					{
-						this.Sprite.AnimateUp(time, 0, "");
+						Sprite.AnimateUp(time, 0, "");
 					}
 					base.FacingDirection = 0;
-					this.faceDirection(0);
+					faceDirection(0);
 				}
 				else
 				{
-					Microsoft.Xna.Framework.Rectangle tmp = this.nextPosition(0);
+					Microsoft.Xna.Framework.Rectangle tmp = nextPosition(0);
 					tmp.Width /= 4;
-					bool leftCorner = currentLocation.isCollidingPosition(tmp, viewport, false, this.DamageToFarmer, this.isGlider, this);
+					bool leftCorner = currentLocation.isCollidingPosition(tmp, viewport, false, DamageToFarmer, isGlider, this);
 					tmp.X += tmp.Width * 3;
-					bool rightCorner = currentLocation.isCollidingPosition(tmp, viewport, false, this.DamageToFarmer, this.isGlider, this);
-					if (leftCorner && !rightCorner && !currentLocation.isCollidingPosition(this.nextPosition(1), viewport, false, this.DamageToFarmer, this.isGlider, this))
+					bool rightCorner = currentLocation.isCollidingPosition(tmp, viewport, false, DamageToFarmer, isGlider, this);
+					if (leftCorner && !rightCorner && !currentLocation.isCollidingPosition(nextPosition(1), viewport, false, DamageToFarmer, isGlider, this))
 					{
-						this.position.X += (float)base.speed * ((float)time.ElapsedGameTime.Milliseconds / 64f);
+						position.X += (float)base.speed * ((float)time.ElapsedGameTime.Milliseconds / 64f);
 					}
-					else if (rightCorner && !leftCorner && !currentLocation.isCollidingPosition(this.nextPosition(3), viewport, false, this.DamageToFarmer, this.isGlider, this))
+					else if (rightCorner && !leftCorner && !currentLocation.isCollidingPosition(nextPosition(3), viewport, false, DamageToFarmer, isGlider, this))
 					{
-						this.position.X -= (float)base.speed * ((float)time.ElapsedGameTime.Milliseconds / 64f);
+						position.X -= (float)base.speed * ((float)time.ElapsedGameTime.Milliseconds / 64f);
 					}
-					if (!currentLocation.isTilePassable(this.nextPosition(0), viewport) || !base.willDestroyObjectsUnderfoot)
+					if (!currentLocation.isTilePassable(nextPosition(0), viewport) || !base.willDestroyObjectsUnderfoot)
 					{
-						this.Halt();
+						Halt();
 					}
 					else if (base.willDestroyObjectsUnderfoot)
 					{
 						new Vector2((float)(base.getStandingX() / 64), (float)(base.getStandingY() / 64 - 1));
-						if (currentLocation.characterDestroyObjectWithinRectangle(this.nextPosition(0), true))
+						if (currentLocation.characterDestroyObjectWithinRectangle(nextPosition(0), true))
 						{
 							currentLocation.playSound("stoneCrack", NetAudio.SoundContext.Default);
-							this.position.Y -= (float)(base.speed + base.addedSpeed);
+							position.Y -= (float)(base.speed + base.addedSpeed);
 						}
 						else
 						{
-							this.blockedInterval += time.ElapsedGameTime.Milliseconds;
+							blockedInterval += time.ElapsedGameTime.Milliseconds;
 						}
 					}
-					if (this.onCollision != null)
+					if (onCollision != null)
 					{
-						this.onCollision(currentLocation);
+						onCollision(currentLocation);
 					}
 				}
 			}
-			else if (this.moveRight)
+			else if (moveRight)
 			{
-				if (((!Game1.eventUp || Game1.IsMultiplayer) && !currentLocation.isCollidingPosition(this.nextPosition(1), viewport, false, this.DamageToFarmer, this.isGlider, this)) || this.isCharging)
+				if (((!Game1.eventUp || Game1.IsMultiplayer) && !currentLocation.isCollidingPosition(nextPosition(1), viewport, false, DamageToFarmer, isGlider, this)) || isCharging)
 				{
-					this.position.X += (float)(base.speed + base.addedSpeed);
-					if (!this.ignoreMovementAnimations)
+					position.X += (float)(base.speed + base.addedSpeed);
+					if (!ignoreMovementAnimations)
 					{
-						this.Sprite.AnimateRight(time, 0, "");
+						Sprite.AnimateRight(time, 0, "");
 					}
 					base.FacingDirection = 1;
-					this.faceDirection(1);
+					faceDirection(1);
 				}
 				else
 				{
-					Microsoft.Xna.Framework.Rectangle tmp2 = this.nextPosition(1);
+					Microsoft.Xna.Framework.Rectangle tmp2 = nextPosition(1);
 					tmp2.Height /= 4;
-					bool topCorner = currentLocation.isCollidingPosition(tmp2, viewport, false, this.DamageToFarmer, this.isGlider, this);
+					bool topCorner = currentLocation.isCollidingPosition(tmp2, viewport, false, DamageToFarmer, isGlider, this);
 					tmp2.Y += tmp2.Height * 3;
-					bool bottomCorner = currentLocation.isCollidingPosition(tmp2, viewport, false, this.DamageToFarmer, this.isGlider, this);
-					if (topCorner && !bottomCorner && !currentLocation.isCollidingPosition(this.nextPosition(2), viewport, false, this.DamageToFarmer, this.isGlider, this))
+					bool bottomCorner = currentLocation.isCollidingPosition(tmp2, viewport, false, DamageToFarmer, isGlider, this);
+					if (topCorner && !bottomCorner && !currentLocation.isCollidingPosition(nextPosition(2), viewport, false, DamageToFarmer, isGlider, this))
 					{
-						this.position.Y += (float)base.speed * ((float)time.ElapsedGameTime.Milliseconds / 64f);
+						position.Y += (float)base.speed * ((float)time.ElapsedGameTime.Milliseconds / 64f);
 					}
-					else if (bottomCorner && !topCorner && !currentLocation.isCollidingPosition(this.nextPosition(0), viewport, false, this.DamageToFarmer, this.isGlider, this))
+					else if (bottomCorner && !topCorner && !currentLocation.isCollidingPosition(nextPosition(0), viewport, false, DamageToFarmer, isGlider, this))
 					{
-						this.position.Y -= (float)base.speed * ((float)time.ElapsedGameTime.Milliseconds / 64f);
+						position.Y -= (float)base.speed * ((float)time.ElapsedGameTime.Milliseconds / 64f);
 					}
-					if (!currentLocation.isTilePassable(this.nextPosition(1), viewport) || !base.willDestroyObjectsUnderfoot)
+					if (!currentLocation.isTilePassable(nextPosition(1), viewport) || !base.willDestroyObjectsUnderfoot)
 					{
-						this.Halt();
+						Halt();
 					}
 					else if (base.willDestroyObjectsUnderfoot)
 					{
 						new Vector2((float)(base.getStandingX() / 64 + 1), (float)(base.getStandingY() / 64));
-						if (currentLocation.characterDestroyObjectWithinRectangle(this.nextPosition(1), true))
+						if (currentLocation.characterDestroyObjectWithinRectangle(nextPosition(1), true))
 						{
 							currentLocation.playSound("stoneCrack", NetAudio.SoundContext.Default);
-							this.position.X += (float)(base.speed + base.addedSpeed);
+							position.X += (float)(base.speed + base.addedSpeed);
 						}
 						else
 						{
-							this.blockedInterval += time.ElapsedGameTime.Milliseconds;
+							blockedInterval += time.ElapsedGameTime.Milliseconds;
 						}
 					}
-					if (this.onCollision != null)
+					if (onCollision != null)
 					{
-						this.onCollision(currentLocation);
+						onCollision(currentLocation);
 					}
 				}
 			}
-			else if (this.moveDown)
+			else if (moveDown)
 			{
-				if (((!Game1.eventUp || Game1.IsMultiplayer) && !currentLocation.isCollidingPosition(this.nextPosition(2), viewport, false, this.DamageToFarmer, this.isGlider, this)) || this.isCharging)
+				if (((!Game1.eventUp || Game1.IsMultiplayer) && !currentLocation.isCollidingPosition(nextPosition(2), viewport, false, DamageToFarmer, isGlider, this)) || isCharging)
 				{
-					this.position.Y += (float)(base.speed + base.addedSpeed);
-					if (!this.ignoreMovementAnimations)
+					position.Y += (float)(base.speed + base.addedSpeed);
+					if (!ignoreMovementAnimations)
 					{
-						this.Sprite.AnimateDown(time, 0, "");
+						Sprite.AnimateDown(time, 0, "");
 					}
 					base.FacingDirection = 2;
-					this.faceDirection(2);
+					faceDirection(2);
 				}
 				else
 				{
-					Microsoft.Xna.Framework.Rectangle tmp3 = this.nextPosition(2);
+					Microsoft.Xna.Framework.Rectangle tmp3 = nextPosition(2);
 					tmp3.Width /= 4;
-					bool leftCorner2 = currentLocation.isCollidingPosition(tmp3, viewport, false, this.DamageToFarmer, this.isGlider, this);
+					bool leftCorner2 = currentLocation.isCollidingPosition(tmp3, viewport, false, DamageToFarmer, isGlider, this);
 					tmp3.X += tmp3.Width * 3;
-					bool rightCorner2 = currentLocation.isCollidingPosition(tmp3, viewport, false, this.DamageToFarmer, this.isGlider, this);
-					if (leftCorner2 && !rightCorner2 && !currentLocation.isCollidingPosition(this.nextPosition(1), viewport, false, this.DamageToFarmer, this.isGlider, this))
+					bool rightCorner2 = currentLocation.isCollidingPosition(tmp3, viewport, false, DamageToFarmer, isGlider, this);
+					if (leftCorner2 && !rightCorner2 && !currentLocation.isCollidingPosition(nextPosition(1), viewport, false, DamageToFarmer, isGlider, this))
 					{
-						this.position.X += (float)base.speed * ((float)time.ElapsedGameTime.Milliseconds / 64f);
+						position.X += (float)base.speed * ((float)time.ElapsedGameTime.Milliseconds / 64f);
 					}
-					else if (rightCorner2 && !leftCorner2 && !currentLocation.isCollidingPosition(this.nextPosition(3), viewport, false, this.DamageToFarmer, this.isGlider, this))
+					else if (rightCorner2 && !leftCorner2 && !currentLocation.isCollidingPosition(nextPosition(3), viewport, false, DamageToFarmer, isGlider, this))
 					{
-						this.position.X -= (float)base.speed * ((float)time.ElapsedGameTime.Milliseconds / 64f);
+						position.X -= (float)base.speed * ((float)time.ElapsedGameTime.Milliseconds / 64f);
 					}
-					if (!currentLocation.isTilePassable(this.nextPosition(2), viewport) || !base.willDestroyObjectsUnderfoot)
+					if (!currentLocation.isTilePassable(nextPosition(2), viewport) || !base.willDestroyObjectsUnderfoot)
 					{
-						this.Halt();
+						Halt();
 					}
 					else if (base.willDestroyObjectsUnderfoot)
 					{
 						new Vector2((float)(base.getStandingX() / 64), (float)(base.getStandingY() / 64 + 1));
-						if (currentLocation.characterDestroyObjectWithinRectangle(this.nextPosition(2), true))
+						if (currentLocation.characterDestroyObjectWithinRectangle(nextPosition(2), true))
 						{
 							currentLocation.playSound("stoneCrack", NetAudio.SoundContext.Default);
-							this.position.Y += (float)(base.speed + base.addedSpeed);
+							position.Y += (float)(base.speed + base.addedSpeed);
 						}
 						else
 						{
-							this.blockedInterval += time.ElapsedGameTime.Milliseconds;
+							blockedInterval += time.ElapsedGameTime.Milliseconds;
 						}
 					}
-					if (this.onCollision != null)
+					if (onCollision != null)
 					{
-						this.onCollision(currentLocation);
+						onCollision(currentLocation);
 					}
 				}
 			}
-			else if (this.moveLeft)
+			else if (moveLeft)
 			{
-				if (((!Game1.eventUp || Game1.IsMultiplayer) && !currentLocation.isCollidingPosition(this.nextPosition(3), viewport, false, this.DamageToFarmer, this.isGlider, this)) || this.isCharging)
+				if (((!Game1.eventUp || Game1.IsMultiplayer) && !currentLocation.isCollidingPosition(nextPosition(3), viewport, false, DamageToFarmer, isGlider, this)) || isCharging)
 				{
-					this.position.X -= (float)(base.speed + base.addedSpeed);
+					position.X -= (float)(base.speed + base.addedSpeed);
 					base.FacingDirection = 3;
-					if (!this.ignoreMovementAnimations)
+					if (!ignoreMovementAnimations)
 					{
-						this.Sprite.AnimateLeft(time, 0, "");
+						Sprite.AnimateLeft(time, 0, "");
 					}
-					this.faceDirection(3);
+					faceDirection(3);
 				}
 				else
 				{
-					Microsoft.Xna.Framework.Rectangle tmp4 = this.nextPosition(3);
+					Microsoft.Xna.Framework.Rectangle tmp4 = nextPosition(3);
 					tmp4.Height /= 4;
-					bool topCorner2 = currentLocation.isCollidingPosition(tmp4, viewport, false, this.DamageToFarmer, this.isGlider, this);
+					bool topCorner2 = currentLocation.isCollidingPosition(tmp4, viewport, false, DamageToFarmer, isGlider, this);
 					tmp4.Y += tmp4.Height * 3;
-					bool bottomCorner2 = currentLocation.isCollidingPosition(tmp4, viewport, false, this.DamageToFarmer, this.isGlider, this);
-					if (topCorner2 && !bottomCorner2 && !currentLocation.isCollidingPosition(this.nextPosition(2), viewport, false, this.DamageToFarmer, this.isGlider, this))
+					bool bottomCorner2 = currentLocation.isCollidingPosition(tmp4, viewport, false, DamageToFarmer, isGlider, this);
+					if (topCorner2 && !bottomCorner2 && !currentLocation.isCollidingPosition(nextPosition(2), viewport, false, DamageToFarmer, isGlider, this))
 					{
-						this.position.Y += (float)base.speed * ((float)time.ElapsedGameTime.Milliseconds / 64f);
+						position.Y += (float)base.speed * ((float)time.ElapsedGameTime.Milliseconds / 64f);
 					}
-					else if (bottomCorner2 && !topCorner2 && !currentLocation.isCollidingPosition(this.nextPosition(0), viewport, false, this.DamageToFarmer, this.isGlider, this))
+					else if (bottomCorner2 && !topCorner2 && !currentLocation.isCollidingPosition(nextPosition(0), viewport, false, DamageToFarmer, isGlider, this))
 					{
-						this.position.Y -= (float)base.speed * ((float)time.ElapsedGameTime.Milliseconds / 64f);
+						position.Y -= (float)base.speed * ((float)time.ElapsedGameTime.Milliseconds / 64f);
 					}
-					if (!currentLocation.isTilePassable(this.nextPosition(3), viewport) || !base.willDestroyObjectsUnderfoot)
+					if (!currentLocation.isTilePassable(nextPosition(3), viewport) || !base.willDestroyObjectsUnderfoot)
 					{
-						this.Halt();
+						Halt();
 					}
 					else if (base.willDestroyObjectsUnderfoot)
 					{
 						new Vector2((float)(base.getStandingX() / 64 - 1), (float)(base.getStandingY() / 64));
-						if (currentLocation.characterDestroyObjectWithinRectangle(this.nextPosition(3), true))
+						if (currentLocation.characterDestroyObjectWithinRectangle(nextPosition(3), true))
 						{
 							currentLocation.playSound("stoneCrack", NetAudio.SoundContext.Default);
-							this.position.X -= (float)(base.speed + base.addedSpeed);
+							position.X -= (float)(base.speed + base.addedSpeed);
 						}
 						else
 						{
-							this.blockedInterval += time.ElapsedGameTime.Milliseconds;
+							blockedInterval += time.ElapsedGameTime.Milliseconds;
 						}
 					}
-					if (this.onCollision != null)
+					if (onCollision != null)
 					{
-						this.onCollision(currentLocation);
+						onCollision(currentLocation);
 					}
 				}
 			}
-			else if (!this.ignoreMovementAnimations)
+			else if (!ignoreMovementAnimations)
 			{
-				if (this.moveUp)
+				if (moveUp)
 				{
-					this.Sprite.AnimateUp(time, 0, "");
+					Sprite.AnimateUp(time, 0, "");
 				}
-				else if (this.moveRight)
+				else if (moveRight)
 				{
-					this.Sprite.AnimateRight(time, 0, "");
+					Sprite.AnimateRight(time, 0, "");
 				}
-				else if (this.moveDown)
+				else if (moveDown)
 				{
-					this.Sprite.AnimateDown(time, 0, "");
+					Sprite.AnimateDown(time, 0, "");
 				}
-				else if (this.moveLeft)
+				else if (moveLeft)
 				{
-					this.Sprite.AnimateLeft(time, 0, "");
+					Sprite.AnimateLeft(time, 0, "");
 				}
 			}
-			if ((this.blockedInterval < 3000 || (float)this.blockedInterval > 3750f) && this.blockedInterval >= 5000)
+			if ((blockedInterval < 3000 || (float)blockedInterval > 3750f) && blockedInterval >= 5000)
 			{
 				base.speed = 4;
-				this.isCharging = true;
-				this.blockedInterval = 0;
+				isCharging = true;
+				blockedInterval = 0;
 			}
-			if (this.DamageToFarmer > 0 && Game1.random.NextDouble() < 0.00033333333333333332)
+			if (DamageToFarmer > 0 && Game1.random.NextDouble() < 0.00033333333333333332)
 			{
 				if (base.Name.Equals("Shadow Guy") && Game1.random.NextDouble() < 0.3)
 				{

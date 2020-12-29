@@ -51,13 +51,13 @@ namespace Familiars
 			base.initNetFields();
             NetFields.AddFields(new INetSerializable[]
 			{
-				this.wasHitCounter,
-				this.lastHitCounter,
-				this.lastScreechCounter,
-				this.turningRight,
-				this.seenPlayer,
-				this.cursedDoll,
-				this.hauntedSkull
+				wasHitCounter,
+				lastHitCounter,
+				lastScreechCounter,
+				turningRight,
+				seenPlayer,
+				cursedDoll,
+				hauntedSkull
 			});
 		}
 
@@ -66,15 +66,15 @@ namespace Familiars
 		{
 			ModEntry.SMonitor.Log($"reloading bat familiar sprite for {Name} {ModEntry.Config.BatTexture}");
 
-			if (this.Sprite == null)
+			if (Sprite == null)
 			{
 				ModEntry.SMonitor.Log($"creating new sprite");
-				this.Sprite = new AnimatedSprite(ModEntry.Config.BatTexture);
+				Sprite = new AnimatedSprite(ModEntry.Config.BatTexture);
 			}
 			else
 			{
 				ModEntry.SMonitor.Log($"updating sprite texture");
-				this.Sprite.textureName.Value = ModEntry.Config.BatTexture;
+				Sprite.textureName.Value = ModEntry.Config.BatTexture;
 			}
 			if (ModEntry.Config.BatColorType.ToLower() != "default")
 			{
@@ -94,18 +94,18 @@ namespace Familiars
 
 		public override void shedChunks(int number, float scale)
 		{
-			Game1.createRadialDebris(currentLocation, this.Sprite.textureName, new Rectangle(0, 384, 64, 64), 32, this.GetBoundingBox().Center.X, this.GetBoundingBox().Center.Y, number, (int)getTileLocation().Y, Color.White, scale);
+			Game1.createRadialDebris(currentLocation, Sprite.textureName, new Rectangle(0, 384, 64, 64), 32, GetBoundingBox().Center.X, GetBoundingBox().Center.Y, number, (int)getTileLocation().Y, Color.White, scale);
 		}
 		public override void drawAboveAllLayers(SpriteBatch b)
 		{
 			if (Utility.isOnScreen(Position, 128))
 			{
 
-				b.Draw(this.Sprite.Texture, getLocalPosition(Game1.viewport) + new Vector2(32f, 32f), new Rectangle?(this.Sprite.SourceRect), (this.shakeTimer > 0) ? Color.Red : Color.White, 0f, new Vector2(8f, 16f), Math.Max(0.2f, this.scale) * 4f, this.flip ? SpriteEffects.FlipHorizontally : SpriteEffects.None, 0.92f);
+				b.Draw(Sprite.Texture, getLocalPosition(Game1.viewport) + new Vector2(32f, 32f), new Rectangle?(Sprite.SourceRect), (shakeTimer > 0) ? Color.Red : Color.White, 0f, new Vector2(8f, 16f), Math.Max(0.2f, scale) * 4f, flip ? SpriteEffects.FlipHorizontally : SpriteEffects.None, 0.92f);
 				b.Draw(Game1.shadowTexture, getLocalPosition(Game1.viewport) + new Vector2(32f, 64f), new Rectangle?(Game1.shadowTexture.Bounds), Color.White, 0f, new Vector2((float)Game1.shadowTexture.Bounds.Center.X, (float)Game1.shadowTexture.Bounds.Center.Y), 4f * scale, SpriteEffects.None, wildernessFarmMonster ? 0.0001f : ((float)(getStandingY() - 1) / 10000f));
-				if (this.isGlowing)
+				if (isGlowing)
 				{
-					b.Draw(this.Sprite.Texture, getLocalPosition(Game1.viewport) + new Vector2(32f, 32f), new Rectangle?(this.Sprite.SourceRect), this.glowingColor * this.glowingTransparency, 0f, new Vector2(8f, 16f), Math.Max(0.2f, this.scale) * 4f, this.flip ? SpriteEffects.FlipHorizontally : SpriteEffects.None, Math.Max(0f, this.drawOnTop ? 0.99f : ((float)getStandingY() / 10000f + 0.001f)));
+					b.Draw(Sprite.Texture, getLocalPosition(Game1.viewport) + new Vector2(32f, 32f), new Rectangle?(Sprite.SourceRect), glowingColor * glowingTransparency, 0f, new Vector2(8f, 16f), Math.Max(0.2f, scale) * 4f, flip ? SpriteEffects.FlipHorizontally : SpriteEffects.None, Math.Max(0f, drawOnTop ? 0.99f : ((float)getStandingY() / 10000f + 0.001f)));
 				}
 			}
 		}
@@ -117,9 +117,9 @@ namespace Familiars
 		public override void behaviorAtGameTick(GameTime time)
 		{
 			invincibleCountdown = 1000;
-			if (this.timeBeforeAIMovementAgain > 0f)
+			if (timeBeforeAIMovementAgain > 0f)
 			{
-				this.timeBeforeAIMovementAgain -= (float)time.ElapsedGameTime.Milliseconds;
+				timeBeforeAIMovementAgain -= (float)time.ElapsedGameTime.Milliseconds;
 			}
 			if (lastHitCounter >= 0)
             {
@@ -174,14 +174,14 @@ namespace Familiars
 				}
 			}
 
-			if (this.wasHitCounter >= 0)
+			if (wasHitCounter >= 0)
 			{
-				this.wasHitCounter.Value -= time.ElapsedGameTime.Milliseconds;
+				wasHitCounter.Value -= time.ElapsedGameTime.Milliseconds;
 			}
 
 			if (chargingMonster || followingOwner)
 			{
-				this.seenPlayer.Value = true;
+				seenPlayer.Value = true;
 
 				Vector2 center = Position + new Vector2(8, 8);
 				Vector2 playerCenter = GetOwner().position + new Vector2(64, 92);
@@ -194,47 +194,47 @@ namespace Familiars
 				float xSlope = (float)(-(float)(playerCenter.X - center.X));
 				float ySlope = (float)(playerCenter.Y - center.Y);
 				float t = Math.Max(1f, Math.Abs(xSlope) + Math.Abs(ySlope));
-				if (t < (float)((this.extraVelocity > 0f) ? 192 : 64))
+				if (t < (float)((extraVelocity > 0f) ? 192 : 64))
 				{
-					this.xVelocity = Math.Max(-this.maxSpeed, Math.Min(this.maxSpeed, this.xVelocity * 1.05f));
-					this.yVelocity = Math.Max(-this.maxSpeed, Math.Min(this.maxSpeed, this.yVelocity * 1.05f));
+					xVelocity = Math.Max(-maxSpeed, Math.Min(maxSpeed, xVelocity * 1.05f));
+					yVelocity = Math.Max(-maxSpeed, Math.Min(maxSpeed, yVelocity * 1.05f));
 				}
 				xSlope /= t;
 				ySlope /= t;
-				if (this.wasHitCounter <= 0)
+				if (wasHitCounter <= 0)
 				{
-					this.targetRotation = (float)Math.Atan2((double)(-(double)ySlope), (double)xSlope) - 1.57079637f;
-					if ((double)(Math.Abs(this.targetRotation) - Math.Abs(this.rotation)) > 2.748893571891069 && Game1.random.NextDouble() < 0.5)
+					targetRotation = (float)Math.Atan2((double)(-(double)ySlope), (double)xSlope) - 1.57079637f;
+					if ((double)(Math.Abs(targetRotation) - Math.Abs(rotation)) > 2.748893571891069 && Game1.random.NextDouble() < 0.5)
 					{
-						this.turningRight.Value = true;
+						turningRight.Value = true;
 					}
-					else if ((double)(Math.Abs(this.targetRotation) - Math.Abs(this.rotation)) < 0.39269908169872414)
+					else if ((double)(Math.Abs(targetRotation) - Math.Abs(rotation)) < 0.39269908169872414)
 					{
-						this.turningRight.Value = false;
+						turningRight.Value = false;
 					}
-					if (this.turningRight)
+					if (turningRight)
 					{
-						this.rotation -= (float)Math.Sign(this.targetRotation - this.rotation) * 0.0490873866f;
+						rotation -= (float)Math.Sign(targetRotation - rotation) * 0.0490873866f;
 					}
 					else
 					{
-						this.rotation += (float)Math.Sign(this.targetRotation - this.rotation) * 0.0490873866f;
+						rotation += (float)Math.Sign(targetRotation - rotation) * 0.0490873866f;
 					}
-					this.rotation %= 6.28318548f;
-					this.wasHitCounter.Value = 0;
+					rotation %= 6.28318548f;
+					wasHitCounter.Value = 0;
 				}
-				float maxAccel = Math.Min(5f, Math.Max(1f, 5f - t / 64f / 2f)) + this.extraVelocity;
-				xSlope = (float)Math.Cos((double)this.rotation + 1.5707963267948966);
-				ySlope = -(float)Math.Sin((double)this.rotation + 1.5707963267948966);
-				this.xVelocity += -xSlope * maxAccel / 6f + (float)Game1.random.Next(-10, 10) / 100f;
-				this.yVelocity += -ySlope * maxAccel / 6f + (float)Game1.random.Next(-10, 10) / 100f;
-				if (Math.Abs(this.xVelocity) > Math.Abs(-xSlope * this.maxSpeed))
+				float maxAccel = Math.Min(5f, Math.Max(1f, 5f - t / 64f / 2f)) + extraVelocity;
+				xSlope = (float)Math.Cos((double)rotation + 1.5707963267948966);
+				ySlope = -(float)Math.Sin((double)rotation + 1.5707963267948966);
+				xVelocity += -xSlope * maxAccel / 6f + (float)Game1.random.Next(-10, 10) / 100f;
+				yVelocity += -ySlope * maxAccel / 6f + (float)Game1.random.Next(-10, 10) / 100f;
+				if (Math.Abs(xVelocity) > Math.Abs(-xSlope * maxSpeed))
 				{
-					this.xVelocity -= -xSlope * maxAccel / 6f;
+					xVelocity -= -xSlope * maxAccel / 6f;
 				}
-				if (Math.Abs(this.yVelocity) > Math.Abs(-ySlope * this.maxSpeed))
+				if (Math.Abs(yVelocity) > Math.Abs(-ySlope * maxSpeed))
 				{
-					this.yVelocity -= -ySlope * maxAccel / 6f;
+					yVelocity -= -ySlope * maxAccel / 6f;
 				}
 			}
 		}
@@ -263,37 +263,37 @@ namespace Familiars
 		{
 			if (followingOwner)
 			{
-				this.Sprite.Animate(time, 0, 4, 80f);
-				if (this.Sprite.currentFrame % 3 == 0 && Utility.isOnScreen(Position, 512) && (this.batFlap == null || !this.batFlap.IsPlaying) && Game1.soundBank != null && currentLocation == Game1.currentLocation && !this.cursedDoll)
+				Sprite.Animate(time, 0, 4, 80f);
+				if (Sprite.currentFrame % 3 == 0 && Utility.isOnScreen(Position, 512) && (batFlap == null || !batFlap.IsPlaying) && Game1.soundBank != null && currentLocation == Game1.currentLocation && !cursedDoll)
 				{
 					batFlap = Game1.soundBank.GetCue("batFlap");
 					//batFlap.Play();
 				}
-				if (this.cursedDoll.Value)
+				if (cursedDoll.Value)
 				{
-					this.shakeTimer -= time.ElapsedGameTime.Milliseconds;
-					if (this.shakeTimer < 0)
+					shakeTimer -= time.ElapsedGameTime.Milliseconds;
+					if (shakeTimer < 0)
 					{
-						if (!this.hauntedSkull.Value)
+						if (!hauntedSkull.Value)
 						{
-                            currentLocation.temporarySprites.Add(new TemporaryAnimatedSprite("Maps\\springobjects", Game1.getSourceRectForStandardTileSheet(Game1.objectSpriteSheet, 103, 16, 16), this.position + new Vector2(0f, -32f), false, 0.1f, new Color(255, 50, 255) * 0.8f)
+                            currentLocation.temporarySprites.Add(new TemporaryAnimatedSprite("Maps\\springobjects", Game1.getSourceRectForStandardTileSheet(Game1.objectSpriteSheet, 103, 16, 16), position + new Vector2(0f, -32f), false, 0.1f, new Color(255, 50, 255) * 0.8f)
 							{
 								scale = 4f
 							});
 						}
-						this.shakeTimer = 50;
+						shakeTimer = 50;
 					}
-					this.previousPositions.Add(Position);
-					if (this.previousPositions.Count > 8)
+					previousPositions.Add(Position);
+					if (previousPositions.Count > 8)
 					{
-						this.previousPositions.RemoveAt(0);
+						previousPositions.RemoveAt(0);
 					}
 				}
 			}
 			else
 			{
-				this.Sprite.currentFrame = 4;
-				this.Halt();
+				Sprite.currentFrame = 4;
+				Halt();
 			}
             resetAnimationSpeed();
 		}
