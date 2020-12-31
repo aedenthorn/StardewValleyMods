@@ -1,11 +1,11 @@
 ﻿{
   "Name": "Custom Ore Nodes",
   "Author": "aedenthorn",
-  "Version": "0.5.3",
+  "Version": "0.6.1",
   "Description": "Spawns custom ore nodes in mines.",
   "UniqueID": "aedenthorn.CustomOreNodes",
   "EntryDll": "CustomOreNodes.dll",
-  "MinimumApiVersion": "3.4.0",
+  "MinimumApiVersion": "3.8.1",
   "UpdateKeys": ["Nexus:5966"],
   "ModUpdater": {
     "Repository": "StardewValleyMods",

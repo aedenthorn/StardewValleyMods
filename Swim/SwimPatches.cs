@@ -213,6 +213,35 @@ namespace Swim
                 Monitor.Log($"Failed in {nameof(Farmer_changeIntoSwimsuit_Postfix)}:\n{ex}", LogLevel.Error);
             }
         }
+        
+        public static void Farmer_setRunning_Prefix(Farmer __instance, ref bool __state)
+        {
+            try
+            {
+                if (__instance.bathingClothes.Value && Config.AllowRunningWhileInSwimsuit)
+                {
+                    __instance.bathingClothes.Value = false;
+                    __state = true;
+                }
+            }
+            catch (Exception ex)
+            {
+                Monitor.Log($"Failed in {nameof(Farmer_changeIntoSwimsuit_Postfix)}:\n{ex}", LogLevel.Error);
+            }
+        }
+        public static void Farmer_setRunning_Postfix(Farmer __instance, bool __state)
+        {
+            try
+            {
+                if(!__instance.bathingClothes.Value && Config.AllowRunningWhileInSwimsuit && __state == true)
+                    __instance.bathingClothes.Value = true;
+            }
+            catch (Exception ex)
+            {
+                Monitor.Log($"Failed in {nameof(Farmer_setRunning_Postfix)}:\n{ex}", LogLevel.Error);
+            }
+        }
+
         public static bool Toolbar_draw_Prefix()
         {
             try

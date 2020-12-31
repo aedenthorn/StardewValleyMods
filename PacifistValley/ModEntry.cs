@@ -11,8 +11,9 @@ using StardewValley.Network;
 using StardewValley.Tools;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
-using System.Runtime.CompilerServices;
+using System.Reflection.Emit;
 
 namespace PacifistValley
 {
@@ -174,8 +175,8 @@ namespace PacifistValley
 				}
 				else if (asset.AssetNameEquals("Data/TV/TipChannel"))
 				{
-					var editor = asset.AsDictionary<int, string>();
-					editor.Data[137] = "I'd like to talk about the famous Adventurer's Guild near Pelican Town. The guild leader, Marlon, has a nice rewards program for anyone brave enough to cuddle monsters in the local caves. Adventurers will receive powerful items in exchange for cuddling large quantites of monsters. There's a poster on the wall with more details. Very cool!";
+					var editor = asset.AsDictionary<string, string>();
+					editor.Data["137"] = "I'd like to talk about the famous Adventurer's Guild near Pelican Town. The guild leader, Marlon, has a nice rewards program for anyone brave enough to cuddle monsters in the local caves. Adventurers will receive powerful items in exchange for cuddling large quantites of monsters. There's a poster on the wall with more details. Very cool!";
 				}
 			}
 
@@ -278,7 +279,9 @@ namespace PacifistValley
 			);
 			harmony.Patch(
 			   original: AccessTools.Method(typeof(GameLocation), "damageMonster", new Type[] { typeof(Microsoft.Xna.Framework.Rectangle), typeof(int), typeof(int), typeof(bool), typeof(float), typeof(int), typeof(float), typeof(float), typeof(bool), typeof(Farmer) }),
-			   prefix: new HarmonyMethod(typeof(ModEntry), nameof(ModEntry.damageMonster_prefix))
+			   transpiler: new HarmonyMethod(typeof(ModEntry), nameof(ModEntry.damageMonster_Transpiler)),
+			   postfix: new HarmonyMethod(typeof(ModEntry), nameof(ModEntry.damageMonster_Postfix))
+			   //prefix: new HarmonyMethod(typeof(ModEntry), nameof(ModEntry.damageMonster_prefix))
 			);
 			harmony.Patch(
 			   original: AccessTools.Method(typeof(GameLocation), "drawCharacters"),
@@ -542,142 +545,55 @@ namespace PacifistValley
 			}
 			return false;
 		}
-
-		private static bool damageMonster_prefix(GameLocation __instance, ref bool __result, Microsoft.Xna.Framework.Rectangle areaOfEffect, int minDamage, int maxDamage, bool isBomb, float knockBackModifier, int addedPrecision, float critChance, float critMultiplier, bool triggerMonsterInvincibleTimer, Farmer who)
+		public static IEnumerable<CodeInstruction> damageMonster_Transpiler(IEnumerable<CodeInstruction> instructions)
 		{
-			bool didAnyDamage = false;
+			SMonitor.Log($"Transpiling GameLocation.damageMonster!");
+
+			var codes = new List<CodeInstruction>(instructions);
+			var newCodes = new List<CodeInstruction>();
+			bool startLooking = false;
+			bool startSkipping = false;
+			bool stopLooking = false;
+			for (int i = 0; i < codes.Count; i++)
+			{
+				if (startLooking && !stopLooking)
+				{
+					if (startSkipping && codes[i].opcode == OpCodes.Pop)
+					{
+						SMonitor.Log($"popped!");
+						newCodes.Add(codes[i]);
+						stopLooking = true;
+					}
+					else if (!startSkipping && codes[i].opcode == OpCodes.Ldarg_0)
+					{
+						SMonitor.Log($"start skipping!");
+						startSkipping = true;
+					}
+                    if (startSkipping)
+                    {
+						codes[i].opcode = OpCodes.Nop;
+						codes[i].operand = null;
+						SMonitor.Log($"nullifying {codes[i].opcode}");
+					}
+				}
+				else if (!stopLooking && codes[i].opcode == OpCodes.Ldstr && (codes[i].operand as string) == "hardModeMonstersKilled")
+				{
+					SMonitor.Log($"got hardModeMonstersKilled!");
+					startLooking = true;
+				}
+				newCodes.Add(codes[i]);
+			}
+
+			return newCodes.AsEnumerable();
+		}
+		private static void damageMonster_Postfix(GameLocation __instance)
+		{
 			for (int i = __instance.characters.Count - 1; i >= 0; i--)
 			{
 				Monster monster;
-				if (i < __instance.characters.Count && (monster = (__instance.characters[i] as Monster)) != null && monster.IsMonster && monster.Health > 0 && monster.GetBoundingBox().Intersects(areaOfEffect) && !monster.IsInvisible && !monster.isInvincible())
-				{
-					bool isDagger = who != null && who.CurrentTool != null && who.CurrentTool is MeleeWeapon && (who.CurrentTool as MeleeWeapon).type == 1;
-					didAnyDamage = true;
-					monster.doEmote(20, true);
-					if (Game1.currentLocation == __instance)
-					{
-						Rumble.rumble(0.1f + (float)(Game1.random.NextDouble() / 8.0), (float)(200 + Game1.random.Next(-50, 50)));
-					}
-					Microsoft.Xna.Framework.Rectangle monsterBox = monster.GetBoundingBox();
-					Vector2 trajectory = Utility.getAwayFromPlayerTrajectory(monsterBox, who);
-					if (knockBackModifier > 0f)
-					{
-						trajectory *= knockBackModifier;
-					}
-					else
-					{
-						trajectory = new Vector2(monster.xVelocity, monster.yVelocity);
-					}
-					if (monster.Slipperiness == -1)
-					{
-						trajectory = Vector2.Zero;
-					}
-					bool crit = false;
-					if (who != null && who.CurrentTool != null && monster.hitWithTool(who.CurrentTool))
-					{
-						return false;
-					}
-					if (who.professions.Contains(25))
-					{
-						critChance += critChance * 0.5f;
-					}
-					int damageAmount;
-					if (maxDamage >= 0)
-					{
-						damageAmount = Game1.random.Next(minDamage, maxDamage + 1);
-						if (who != null && Game1.random.NextDouble() < (double)(critChance + (float)who.LuckLevel * (critChance / 40f)))
-						{
-							crit = true;
-							__instance.playSound("crit", NetAudio.SoundContext.Default);
-						}
-						damageAmount = (crit ? ((int)((float)damageAmount * critMultiplier)) : damageAmount);
-						damageAmount = Math.Max(1, damageAmount + ((who != null) ? (who.attack * 3) : 0));
-						if (who != null && who.professions.Contains(24))
-						{
-							damageAmount = (int)Math.Ceiling((double)((float)damageAmount * 1.1f));
-						}
-						if (who != null && who.professions.Contains(26))
-						{
-							damageAmount = (int)Math.Ceiling((double)((float)damageAmount * 1.15f));
-						}
-						if (who != null && crit && who.professions.Contains(29))
-						{
-							damageAmount *= 3;
-						}
-						damageAmount = monster.takeDamage(damageAmount, (int)trajectory.X, (int)trajectory.Y, isBomb, (double)addedPrecision / 10.0, who);
-						if (damageAmount == -1)
-						{
-							__instance.debris.Add(new Debris("Miss", 1, new Vector2((float)monsterBox.Center.X, (float)monsterBox.Center.Y), Color.LightGray, 1f, 0f));
-						}
-						else
-						{
-							__instance.debris.Filter((Debris d) => d.toHover == null || !d.toHover.Equals(monster) || d.nonSpriteChunkColor.Equals(Color.Yellow) || d.timeSinceDoneBouncing <= 900f);
-							__instance.debris.Add(new Debris(damageAmount, new Vector2((float)(monsterBox.Center.X + 16), (float)monsterBox.Center.Y), crit ? Color.Yellow : new Color(255, 130, 0), crit ? (1f + (float)damageAmount / 300f) : 1f, monster));
-						}
-						if (triggerMonsterInvincibleTimer)
-						{
-							monster.setInvincibleCountdown(450 / (isDagger ? 3 : 2));
-						}
-					}
-					else
-					{
-						damageAmount = -2;
-						monster.setTrajectory(trajectory);
-						if (monster.Slipperiness > 10)
-						{
-							monster.xVelocity /= 2f;
-							monster.yVelocity /= 2f;
-						}
-					}
-					if (monster.Health <= 0)
-					{
-						if (!__instance.isFarm)
-						{
-							who.checkForQuestComplete(null, 1, 1, null, monster.Name, 4, -1);
-						}
-						if (who != null && who.leftRing.Value != null)
-						{
-							who.leftRing.Value.onMonsterSlay(monster, __instance, who);
-						}
-						if (who != null && who.rightRing.Value != null)
-						{
-							who.rightRing.Value.onMonsterSlay(monster, __instance, who);
-						}
-						if (who != null && !__instance.isFarm && (!(monster is GreenSlime) || (monster as GreenSlime).firstGeneration))
-						{
-							if (who.IsLocalPlayer)
-							{
-								Game1.stats.monsterKilled(monster.Name);
-							}
-							else if (Game1.IsMasterGame)
-							{
-								who.queueMessage(25, Game1.player, new object[]
-								{
-									monster.Name
-								});
-							}
-						}
-						__instance.monsterDrop(monster, monsterBox.Center.X, monsterBox.Center.Y, who);
-						if (who != null && !__instance.isFarm)
-						{
-							who.gainExperience(4, monster.ExperienceGained);
-						}
-						Stats stats = Game1.stats;
-						uint monstersKilled = stats.MonstersKilled;
-						stats.MonstersKilled = monstersKilled + 1u;
-						monster.farmerPassesThrough = true;
-					}
-					if (damageAmount > 0 && who != null && damageAmount > 1 && Game1.player.CurrentTool != null && Game1.player.CurrentTool.Name.Equals("Dark Sword") && Game1.random.NextDouble() < 0.08)
-					{
-						who.health = Math.Min(who.maxHealth, Game1.player.health + damageAmount / 2);
-						__instance.debris.Add(new Debris(damageAmount / 2, new Vector2((float)Game1.player.getStandingX(), (float)Game1.player.getStandingY()), Color.Lime, 1f, who));
-						__instance.playSound("healSound", NetAudio.SoundContext.Default);
-					}
-				}
+				if ((monster = (__instance.characters[i] as Monster)) != null && monster.Health <= 0)
+					monster.farmerPassesThrough = true;
 			}
-			__result = didAnyDamage;
-
-			return false;
 		}
 
 		private static bool updateCharacters_prefix(GameLocation __instance, GameTime time)

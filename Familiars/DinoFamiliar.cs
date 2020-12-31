@@ -99,7 +99,7 @@ namespace StardewValley.Monsters
 			}
 			if (ModEntry.Config.DinoColorType.ToLower() != "default")
 			{
-				typeof(AnimatedSprite).GetField("spriteTexture", BindingFlags.NonPublic | BindingFlags.Instance).SetValue(Sprite, FamiliarsUtils.ColorFamiliar(Sprite.Texture, mainColor, redColor, greenColor, blueColor));
+				Sprite.spriteTexture = FamiliarsUtils.ColorFamiliar(Sprite.Texture, mainColor, redColor, greenColor, blueColor);
 			}
 			Sprite.SpriteWidth = 32;
 			Sprite.SpriteHeight = 32;

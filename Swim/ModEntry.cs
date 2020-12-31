@@ -110,6 +110,12 @@ namespace Swim
             );
             
             harmony.Patch(
+               original: AccessTools.Method(typeof(Farmer), nameof(Farmer.setRunning)),
+               prefix: new HarmonyMethod(typeof(SwimPatches), nameof(SwimPatches.Farmer_setRunning_Prefix)),
+               postfix: new HarmonyMethod(typeof(SwimPatches), nameof(SwimPatches.Farmer_setRunning_Postfix))
+            );
+
+            harmony.Patch(
                original: AccessTools.Method(typeof(Farmer), nameof(Farmer.changeIntoSwimsuit)),
                postfix: new HarmonyMethod(typeof(SwimPatches), nameof(SwimPatches.Farmer_changeIntoSwimsuit_Postfix))
             );

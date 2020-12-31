@@ -78,7 +78,7 @@ namespace Familiars
 			}
 			if (ModEntry.Config.BatColorType.ToLower() != "default")
 			{
-				typeof(AnimatedSprite).GetField("spriteTexture", BindingFlags.NonPublic | BindingFlags.Instance).SetValue(Sprite, FamiliarsUtils.ColorFamiliar(Sprite.Texture, mainColor, redColor, greenColor, blueColor));
+				Sprite.spriteTexture = FamiliarsUtils.ColorFamiliar(Sprite.Texture, mainColor, redColor, greenColor, blueColor);
 			}
             HideShadow = true;
 		}

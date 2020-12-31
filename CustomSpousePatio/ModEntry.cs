@@ -198,7 +198,7 @@ namespace CustomSpousePatio
                         {
                             foreach(KeyValuePair<string,TileSheetInfo> kvp in json.tileSheetsToAdd)
                             {
-                                string name = "z_" + kvp.Key;
+                                string name = "zzz_custom_spouse_patio_" + kvp.Key;
                                 if (tileSheetsToAdd.ContainsKey(name))
                                 {
                                     SMonitor.Log($"Duplicate tilesheet {name} in list of tilesheets to add", LogLevel.Warn);
@@ -429,7 +429,7 @@ namespace CustomSpousePatio
 
                 foreach (SpecialTile tile in area.specialTiles)
                 {
-                    TileSheet tilesheet = farm.Map.GetTileSheet("z_"+tile.tilesheet);
+                    TileSheet tilesheet = farm.Map.GetTileSheet("zzz_custom_spouse_patio_"+tile.tilesheet);
                     int idx = farm.Map.TileSheets.IndexOf(tilesheet);
                     SMonitor.Log($"Adding specialTile at {tile.location}, {tile.tilesheet}, tilesheet idx {idx}");
                     farm.setMapTileIndex(tile.location.X, tile.location.Y, tile.tileIndex, tile.layer, idx);

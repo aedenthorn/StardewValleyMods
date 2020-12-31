@@ -25,8 +25,8 @@ namespace CustomOreNodes
 		private static List<CustomOreNode> CustomOreNodes = new List<CustomOreNode>();
 		private static IMonitor SMonitor;
 		
-		private static int FirstIndex = 816;
-		private static int SpringObjectsHeight = 544;
+		private static int FirstIndex = 936;
+		private static int SpringObjectsHeight = 624;
 		private static int SpringObjectsWidth = 384;
 
 
@@ -70,7 +70,7 @@ namespace CustomOreNodes
 				var editor = asset.AsDictionary<int, string>();
 				for (int i = 0; i < CustomOreNodes.Count; i++)
 				{
-					editor.Data[i + 816] = $"Stone/0/15/Basic/Stone/{CustomOreNodes[i].nodeDesc}";
+					editor.Data[i + FirstIndex] = $"Stone/0/15/Basic/Stone/{CustomOreNodes[i].nodeDesc}";
 				}
 			}
 		}
