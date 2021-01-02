@@ -100,7 +100,7 @@ namespace SixtyNine
 
 		private void Input_ButtonPressed(object sender, StardewModdingAPI.Events.ButtonPressedEventArgs e)
 		{
-			if (e.Button == Config.JumpButton && Context.IsPlayerFree && Game1.player.yJumpVelocity == 0)
+			if (e.Button == Config.JumpButton && Context.IsPlayerFree && !Game1.player.IsSitting() && !Game1.player.swimming && Game1.currentMinigame == null && Game1.player.yJumpVelocity == 0)
 			{
 				playerJumpingOver = false;
 				playerJumpingWithHorse = false;

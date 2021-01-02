@@ -32,7 +32,7 @@ namespace CustomSpousePatio
         {
             if (location.X != -1)
                 return location;
-            return ModEntry.Config.DefaultSpouseAreaLocation;
+            return ModEntry.DefaultSpouseAreaLocation;
         }
         public Point NpcPos(string name)
         {

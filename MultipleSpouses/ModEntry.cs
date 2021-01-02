@@ -369,9 +369,17 @@ namespace MultipleSpouses
                 Monitor.Log($"loading child asset for {asset.AssetName}");
 
                 string[] names = asset.AssetName.Split('_');
-                string parent = names[names.Length - 1];
-                Texture2D parentTexSheet = Helper.Content.Load<Texture2D>($"Characters/{parent}", ContentSource.GameContent);
                 Texture2D babySheet = Helper.Content.Load<Texture2D>(string.Join("_", names.Take(names.Length - 1)), ContentSource.GameContent);
+                Texture2D parentTexSheet = null;
+                string parent = names[names.Length - 1];
+                try
+                {
+                    parentTexSheet = Helper.Content.Load<Texture2D>($"Characters/{parent}", ContentSource.GameContent);
+                }
+                catch
+                {
+                    return (T)(object)babySheet;
+                }
                 if (parentTexSheet == null)
                 {
                     Monitor.Log($"couldn't find parent sheet for {asset.AssetName}");

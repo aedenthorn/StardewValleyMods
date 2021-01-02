@@ -365,8 +365,9 @@ namespace MultipleSpouses
 
         public static Point GetBedStart(FarmHouse fh)
         {
-            bool up = fh.upgradeLevel > 1;
-            return new Point(21 - (up ? (GetBedWidth(fh) / 2) - 1: 0) + (up ? 6 : 0), 2 + (up?9:0));
+            if (fh?.GetSpouseBed()?.GetBedSpot() == null)
+                return Point.Zero;
+            return new Point(fh.GetSpouseBed().GetBedSpot().X, fh.GetSpouseBed().GetBedSpot().Y - 1);
         }
 
         public static int GetBedWidth(FarmHouse fh)

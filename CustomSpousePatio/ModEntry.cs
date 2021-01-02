@@ -39,6 +39,8 @@ namespace CustomSpousePatio
         };
         private static Dictionary<string, TileSheetInfo> tileSheetsToAdd = new Dictionary<string, TileSheetInfo>();
 
+        public static Point DefaultSpouseAreaLocation { get; set; }
+
 
         /*********
         ** Public methods
@@ -88,6 +90,7 @@ namespace CustomSpousePatio
                 SMonitor.Log($"Not the host player, this copy of the mod will not do anything.", LogLevel.Warn);
                 return;
             }
+            DefaultSpouseAreaLocation = Utility.Vector2ToPoint(Game1.getFarm().GetSpouseOutdoorAreaCorner());
             LoadSpouseAreaData();
         }
 
@@ -248,22 +251,25 @@ namespace CustomSpousePatio
 
             Farm farm = Game1.getFarm();
 
-            farm.removeTile(70, 9, "Buildings");
-            farm.removeTile(71, 9, "Buildings");
-            farm.removeTile(72, 9, "Buildings");
-            farm.removeTile(69, 9, "Buildings");
-            farm.removeTile(70, 8, "Buildings");
-            farm.removeTile(71, 8, "Buildings");
-            farm.removeTile(72, 8, "Buildings");
-            farm.removeTile(69, 8, "Buildings");
-            farm.removeTile(70, 7, "Front");
-            farm.removeTile(71, 7, "Front");
-            farm.removeTile(72, 7, "Front");
-            farm.removeTile(69, 7, "Front");
-            farm.removeTile(70, 6, "AlwaysFront");
-            farm.removeTile(71, 6, "AlwaysFront");
-            farm.removeTile(72, 6, "AlwaysFront");
-            farm.removeTile(69, 6, "AlwaysFront");
+            Point patio_corner = Utility.Vector2ToPoint(farm.GetSpouseOutdoorAreaCorner());
+            string above_always_layer = "AlwaysFront";
+            farm.removeTile(patio_corner.X + 1, patio_corner.Y + 3, "Buildings");
+            farm.removeTile(patio_corner.X + 2, patio_corner.Y + 3, "Buildings");
+            farm.removeTile(patio_corner.X + 3, patio_corner.Y + 3, "Buildings");
+            farm.removeTile(patio_corner.X, patio_corner.Y + 3, "Buildings");
+            farm.removeTile(patio_corner.X + 1, patio_corner.Y + 2, "Buildings");
+            farm.removeTile(patio_corner.X + 2, patio_corner.Y + 2, "Buildings");
+            farm.removeTile(patio_corner.X + 3, patio_corner.Y + 2, "Buildings");
+            farm.removeTile(patio_corner.X, patio_corner.Y + 2, "Buildings");
+            farm.removeTile(patio_corner.X + 1, patio_corner.Y + 1, "Front");
+            farm.removeTile(patio_corner.X + 2, patio_corner.Y + 1, "Front");
+            farm.removeTile(patio_corner.X + 3, patio_corner.Y + 1, "Front");
+            farm.removeTile(patio_corner.X, patio_corner.Y + 1, "Front");
+            farm.removeTile(patio_corner.X + 1, patio_corner.Y, above_always_layer);
+            farm.removeTile(patio_corner.X + 2, patio_corner.Y, above_always_layer);
+            farm.removeTile(patio_corner.X + 3, patio_corner.Y, above_always_layer);
+            farm.removeTile(patio_corner.X, patio_corner.Y, above_always_layer);
+
 
             foreach (KeyValuePair<string, OutdoorArea> kvp in outdoorAreas)
             {
@@ -451,7 +457,7 @@ namespace CustomSpousePatio
                 else if (Game1.player.spouse == __instance.Name && outdoorAreas.Count == 0)
                 {
                     SMonitor.Log($"Placing main spouse {__instance.Name} outdoors");
-                    point = Config.DefaultSpouseAreaLocation;
+                    point = DefaultSpouseAreaLocation;
                     if (spousePatioLocations.ContainsKey(__instance.Name))
                     {
                         point = new Point(69 + spousePatioLocations[__instance.Name][0], 6 + spousePatioLocations[__instance.Name][1]);
@@ -464,7 +470,7 @@ namespace CustomSpousePatio
                 }
                 Game1.warpCharacter(__instance, "Farm", point);
                 __instance.popOffAnyNonEssentialItems();
-                __instance.currentMarriageDialogue.Clear();
+                __instance.currentMarriageDialogue.Clear(); 
                 __instance.addMarriageDialogue("MarriageDialogue", "patio_" + __instance.Name, false, new string[0]);
                 __instance.shouldPlaySpousePatioAnimation.Value = true;
                 return false;
