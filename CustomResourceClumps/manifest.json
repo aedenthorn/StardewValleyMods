@@ -1,7 +1,7 @@
 ﻿{
   "Name": "Custom Resource Clumps",
   "Author": "aedenthorn",
-  "Version": "0.3.0",
+  "Version": "0.3.1",
   "Description": "Spawns custom resource clumps in mines.",
   "UniqueID": "aedenthorn.CustomResourceClumps",
   "EntryDll": "CustomResourceClumps.dll",

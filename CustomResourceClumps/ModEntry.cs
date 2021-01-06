@@ -25,8 +25,6 @@ namespace CustomResourceClumps
 		public static IMonitor SMonitor;
         private static IModHelper SHelper;
         public static int firstIndex = 816;
-		public static int springObjectsHeight = 544;
-		public static int springObjectsWidth = 384;
         private int addedHeight;
 		public bool finishedLoadingClumps = false;
 		public static Dictionary<string, Type> tools = new Dictionary<string, Type>()
@@ -299,11 +297,11 @@ namespace CustomResourceClumps
 		{
 			if (asset.AssetNameEquals("Maps/springobjects") && finishedLoadingClumps && customClumps.Count > 0)
 			{
-				CalculatePositions();
 				var editor = asset.AsImage();
 				int extension = (Config.SpriteSheetOffsetRows * 16) + addedHeight * 16;
-				editor.ExtendImage(minWidth: editor.Data.Width, minHeight: springObjectsHeight + extension);
+				editor.ExtendImage(minWidth: editor.Data.Width, minHeight: editor.Data.Height + extension);
 				SMonitor.Log($"extended springobjects by {extension}");
+				CalculatePositions(editor.Data.Width);
 				foreach (CustomResourceClump clump in customClumps)
 				{
 					SMonitor.Log($"Patching springobjects with {clump.spritePath}, index {clump.index}");
@@ -317,14 +315,15 @@ namespace CustomResourceClumps
 			}
 		}
 
-		private void CalculatePositions()
+		private void CalculatePositions(int width)
 		{
 			addedHeight = 0;
 			int currentAddedHeight = 0;
 			int offsetX = 0;
+
 			for (int i = 0; i < customClumps.Count; i++)
 			{
-				if (offsetX + customClumps[i].tileWidth > springObjectsWidth / 16)
+				if (offsetX + customClumps[i].tileWidth > width / 16)
 				{
 					addedHeight += currentAddedHeight;
 					currentAddedHeight = 0;
@@ -334,7 +333,7 @@ namespace CustomResourceClumps
 				{
 					currentAddedHeight = customClumps[i].tileHeight;
 				}
-				customClumps[i].index = firstIndex + (Config.SpriteSheetOffsetRows + addedHeight) * (springObjectsWidth / 16) + offsetX;
+				customClumps[i].index = firstIndex + (Config.SpriteSheetOffsetRows + addedHeight) * (width / 16) + offsetX;
 				SMonitor.Log($"clump index {customClumps[i].index}");
 				offsetX += customClumps[i].tileWidth;
 			}

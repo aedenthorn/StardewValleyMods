@@ -50,6 +50,8 @@ namespace CustomOreNodes
 			{
 
 				var editor = asset.AsImage();
+				SpringObjectsWidth = editor.Data.Width;
+				SpringObjectsHeight = editor.Data.Height;
 				int extension = (Config.SpriteSheetOffsetRows * 16) + ((CustomOreNodes.Count / (editor.Data.Width / 16) + 1) * 16);
 				editor.ExtendImage(minWidth: editor.Data.Width, minHeight: SpringObjectsHeight + extension);
 				SMonitor.Log($"extended springobjects by {extension}");
