@@ -215,7 +215,7 @@ namespace CustomOreNodes
 			List<int> ores = new List<int>() { 765, 764, 290, 751 };
 			if (!ores.Contains(__result.ParentSheetIndex))
 			{
-				float currentChance = 0;
+				float totalChance = 0;
 				for (int i = 0; i < CustomOreNodes.Count; i++)
 				{
 					CustomOreNode node = CustomOreNodes[i];
@@ -223,20 +223,36 @@ namespace CustomOreNodes
 					{
 						continue;
 					}
-					currentChance += node.spawnChance;
+					totalChance += node.spawnChance;
 
-					if (Game1.random.NextDouble() < currentChance / 100f)
+				}
+				double ourChance = Game1.random.NextDouble() * 100;
+				if (ourChance < totalChance)
+				{
+					// SMonitor.Log($"Chance of custom ore: {ourChance}%");
+					float cumulativeChance = 0f;
+					for (int i = 0; i < CustomOreNodes.Count; i++)
 					{
-						int index = (SpringObjectsHeight / 16 * SpringObjectsWidth / 16) + (Config.SpriteSheetOffsetRows * SpringObjectsWidth / 16) + i;
-						//SMonitor.Log($"Displaying stone at index {index}", LogLevel.Debug);
-						__result = new Object(tile, index, "Stone", true, false, false, false)
+						CustomOreNode node = CustomOreNodes[i];
+						if (node.minLevel > -1 && __instance.mineLevel < node.minLevel || node.maxLevel > -1 && __instance.mineLevel > node.maxLevel)
 						{
-							MinutesUntilReady = node.durability
-						};
+							continue;
+						}
+						cumulativeChance += node.spawnChance;
+						if (ourChance < cumulativeChance)
+						{
+							SMonitor.Log($"Displaying custom ore \"{node.nodeDesc}\": {cumulativeChance}% / {ourChance}% (rolled)");
 
-						//SMonitor.Log(__result.DisplayName);
+							int index = (SpringObjectsHeight / 16 * SpringObjectsWidth / 16) + (Config.SpriteSheetOffsetRows * SpringObjectsWidth / 16) + i;
+							//SMonitor.Log($"Displaying stone at index {index}", LogLevel.Debug);
+							__result = new Object(tile, index, "Stone", true, false, false, false)
+							{
+								MinutesUntilReady = node.durability
+							};
+							//SMonitor.Log(__result.DisplayName);
 
-						return;
+							return;
+						}
 					}
 				}
 			}

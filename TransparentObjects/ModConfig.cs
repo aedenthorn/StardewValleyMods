@@ -8,6 +8,10 @@ namespace TransparentObjects
         public bool EnableMod { get; set; } = true;
         public float MinTransparency { get; set; } = 0.1f;
         public int TransparencyMaxDistance { get; set; } = 192;
-
+        public string[] Exceptions { get; set; } = {
+            "Ornamental Hay Bale",
+            "Log Section",
+            "Campfire",
+        };
     }
 }

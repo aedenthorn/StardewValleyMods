@@ -1,5 +1,6 @@
 ﻿using Harmony;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using StardewModdingAPI;
 using StardewModdingAPI.Events;
 using StardewValley;
@@ -233,7 +234,14 @@ namespace CustomSpousePatio
 
         private static void AddTileSheets()
         {
+            
             Farm farm = Game1.getFarm();
+            if (farm.map.TileSheets.FirstOrDefault(s => s.Id == "zzz_custom_spouse_default_patio") == null)
+            {
+                Texture2D tex = SHelper.Content.Load<Texture2D>("Maps/spring_outdoorsTileSheet", ContentSource.GameContent);
+                farm.map.AddTileSheet(new TileSheet("zzz_custom_spouse_default_patio", farm.map, SHelper.Content.GetActualAssetKey("Maps/spring_outdoorsTileSheet", ContentSource.GameContent), new Size(tex.Width / 16, tex.Height / 16), new Size(16, 16)));
+                SMonitor.Log($"Added default tilesheet zzz_custom_spouse_default_patio to farm map", LogLevel.Debug);
+            }
 
             foreach (KeyValuePair<string, TileSheetInfo> kvp in tileSheetsToAdd)
             {
@@ -347,84 +355,87 @@ namespace CustomSpousePatio
                 */
                 if (area.useDefaultTiles)
                 {
+                    TileSheet defaultTilesheet = farm.Map.GetTileSheet("zzz_custom_spouse_default_patio");
+                    int sheetIdx = farm.Map.TileSheets.IndexOf(defaultTilesheet);
+
                     switch (spouse.Key)
                     {
                         case "Sam":
-                            farm.setMapTileIndex(x, y + 2, 1173, "Buildings", 1);
-                            farm.setMapTileIndex(x + 3, y + 2, 1174, "Buildings", 1);
-                            farm.setMapTileIndex(x + 1, y + 2, 1198, "Buildings", 1);
-                            farm.setMapTileIndex(x + 2, y + 2, 1199, "Buildings", 1);
-                            farm.setMapTileIndex(x, y + 1, 1148, "Front", 1);
-                            farm.setMapTileIndex(x + 3, y + 1, 1149, "Front", 1);
+                            farm.setMapTileIndex(x, y + 2, 1173, "Buildings", sheetIdx);
+                            farm.setMapTileIndex(x + 3, y + 2, 1174, "Buildings", sheetIdx);
+                            farm.setMapTileIndex(x + 1, y + 2, 1198, "Buildings", sheetIdx);
+                            farm.setMapTileIndex(x + 2, y + 2, 1199, "Buildings", sheetIdx);
+                            farm.setMapTileIndex(x, y + 1, 1148, "Front", sheetIdx);
+                            farm.setMapTileIndex(x + 3, y + 1, 1149, "Front", sheetIdx);
                             break;
                         case "Penny":
-                            farm.setMapTileIndex(x, y + 2, 1098, "Buildings", 1);
-                            farm.setMapTileIndex(x + 1, y + 2, 1123, "Buildings", 1);
-                            farm.setMapTileIndex(x + 3, y + 2, 1098, "Buildings", 1);
+                            farm.setMapTileIndex(x, y + 2, 1098, "Buildings", sheetIdx);
+                            farm.setMapTileIndex(x + 1, y + 2, 1123, "Buildings", sheetIdx);
+                            farm.setMapTileIndex(x + 3, y + 2, 1098, "Buildings", sheetIdx);
                             break;
                         case "Sebastian":
-                            farm.setMapTileIndex(x + 1, y + 2, 1927, "Buildings", 1);
-                            farm.setMapTileIndex(x + 2, y + 2, 1928, "Buildings", 1);
-                            farm.setMapTileIndex(x + 3, y + 2, 1929, "Buildings", 1);
-                            farm.setMapTileIndex(x + 1, y + 1, 1902, "Front", 1);
-                            farm.setMapTileIndex(x + 2, y + 1, 1903, "Front", 1);
+                            farm.setMapTileIndex(x + 1, y + 2, 1927, "Buildings", sheetIdx);
+                            farm.setMapTileIndex(x + 2, y + 2, 1928, "Buildings", sheetIdx);
+                            farm.setMapTileIndex(x + 3, y + 2, 1929, "Buildings", sheetIdx);
+                            farm.setMapTileIndex(x + 1, y + 1, 1902, "Front", sheetIdx);
+                            farm.setMapTileIndex(x + 2, y + 1, 1903, "Front", sheetIdx);
                             break;
                         case "Shane":
-                            farm.setMapTileIndex(x + 1, y + 3, 1940, "Buildings", 1);
-                            farm.setMapTileIndex(x + 2, y + 3, 1941, "Buildings", 1);
-                            farm.setMapTileIndex(x + 3, y + 3, 1942, "Buildings", 1);
-                            farm.setMapTileIndex(x + 1, y + 2, 1915, "Buildings", 1);
-                            farm.setMapTileIndex(x + 2, y + 2, 1916, "Buildings", 1);
-                            farm.setMapTileIndex(x + 3, y + 2, 1917, "Buildings", 1);
-                            farm.setMapTileIndex(x + 1, y + 1, 1772, "Front", 1);
-                            farm.setMapTileIndex(x + 2, y + 1, 1773, "Front", 1);
-                            farm.setMapTileIndex(x + 3, y + 1, 1774, "Front", 1);
-                            farm.setMapTileIndex(x + 1, y, 1747, "AlwaysFront", 1);
-                            farm.setMapTileIndex(x + 2, y, 1748, "AlwaysFront", 1);
-                            farm.setMapTileIndex(x + 3, y, 1749, "AlwaysFront", 1);
+                            farm.setMapTileIndex(x + 1, y + 3, 1940, "Buildings", sheetIdx);
+                            farm.setMapTileIndex(x + 2, y + 3, 1941, "Buildings", sheetIdx);
+                            farm.setMapTileIndex(x + 3, y + 3, 1942, "Buildings", sheetIdx);
+                            farm.setMapTileIndex(x + 1, y + 2, 1915, "Buildings", sheetIdx);
+                            farm.setMapTileIndex(x + 2, y + 2, 1916, "Buildings", sheetIdx);
+                            farm.setMapTileIndex(x + 3, y + 2, 1917, "Buildings", sheetIdx);
+                            farm.setMapTileIndex(x + 1, y + 1, 1772, "Front", sheetIdx);
+                            farm.setMapTileIndex(x + 2, y + 1, 1773, "Front", sheetIdx);
+                            farm.setMapTileIndex(x + 3, y + 1, 1774, "Front", sheetIdx);
+                            farm.setMapTileIndex(x + 1, y, 1747, "AlwaysFront", sheetIdx);
+                            farm.setMapTileIndex(x + 2, y, 1748, "AlwaysFront", sheetIdx);
+                            farm.setMapTileIndex(x + 3, y, 1749, "AlwaysFront", sheetIdx);
                             break;
                         case "Alex":
-                            farm.setMapTileIndex(x, y + 2, 1099, "Buildings", 1);
+                            farm.setMapTileIndex(x, y + 2, 1099, "Buildings", sheetIdx);
                             break;
                         case "Maru":
-                            farm.setMapTileIndex(x + 2, y + 2, 1124, "Buildings", 1);
+                            farm.setMapTileIndex(x + 2, y + 2, 1124, "Buildings", sheetIdx);
                             break;
                         case "Emily":
-                            farm.setMapTileIndex(x, y + 2, 1867, "Buildings", 1);
-                            farm.setMapTileIndex(x + 3, y + 2, 1867, "Buildings", 1);
-                            farm.setMapTileIndex(x, y + 1, 1842, "Front", 1);
-                            farm.setMapTileIndex(x + 3, y + 1, 1842, "Front", 1);
-                            farm.setMapTileIndex(x, y + 3, 1866, "Buildings", 1);
-                            farm.setMapTileIndex(x + 2, y + 2, 1866, "Buildings", 1);
-                            farm.setMapTileIndex(x + 3, y + 3, 1967, "Buildings", 1);
-                            farm.setMapTileIndex(x + 1, y + 2, 1967, "Buildings", 1);
+                            farm.setMapTileIndex(x, y + 2, 1867, "Buildings", sheetIdx);
+                            farm.setMapTileIndex(x + 3, y + 2, 1867, "Buildings", sheetIdx);
+                            farm.setMapTileIndex(x, y + 1, 1842, "Front", sheetIdx);
+                            farm.setMapTileIndex(x + 3, y + 1, 1842, "Front", sheetIdx);
+                            farm.setMapTileIndex(x, y + 3, 1866, "Buildings", sheetIdx);
+                            farm.setMapTileIndex(x + 2, y + 2, 1866, "Buildings", sheetIdx);
+                            farm.setMapTileIndex(x + 3, y + 3, 1967, "Buildings", sheetIdx);
+                            farm.setMapTileIndex(x + 1, y + 2, 1967, "Buildings", sheetIdx);
                             break;
                         case "Haley":
-                            farm.setMapTileIndex(x, y + 2, 1074, "Buildings", 1);
-                            farm.setMapTileIndex(x, y + 1, 1049, "Front", 1);
-                            farm.setMapTileIndex(x, y, 1024, "AlwaysFront", 1);
-                            farm.setMapTileIndex(x + 3, y + 2, 1074, "Buildings", 1);
-                            farm.setMapTileIndex(x + 3, y + 1, 1049, "Front", 1);
-                            farm.setMapTileIndex(x + 3, y, 1024, "AlwaysFront", 1);
+                            farm.setMapTileIndex(x, y + 2, 1074, "Buildings", sheetIdx);
+                            farm.setMapTileIndex(x, y + 1, 1049, "Front", sheetIdx);
+                            farm.setMapTileIndex(x, y, 1024, "AlwaysFront", sheetIdx);
+                            farm.setMapTileIndex(x + 3, y + 2, 1074, "Buildings", sheetIdx);
+                            farm.setMapTileIndex(x + 3, y + 1, 1049, "Front", sheetIdx);
+                            farm.setMapTileIndex(x + 3, y, 1024, "AlwaysFront", sheetIdx);
                             break;
                         case "Harvey":
-                            farm.setMapTileIndex(x, y + 2, 1098, "Buildings", 1);
-                            farm.setMapTileIndex(x + 1, y + 2, 1123, "Buildings", 1);
-                            farm.setMapTileIndex(x + 3, y + 2, 1098, "Buildings", 1);
+                            farm.setMapTileIndex(x, y + 2, 1098, "Buildings", sheetIdx);
+                            farm.setMapTileIndex(x + 1, y + 2, 1123, "Buildings", sheetIdx);
+                            farm.setMapTileIndex(x + 3, y + 2, 1098, "Buildings", sheetIdx);
                             break;
                         case "Elliott":
-                            farm.setMapTileIndex(x, y + 2, 1098, "Buildings", 1);
-                            farm.setMapTileIndex(x + 1, y + 2, 1123, "Buildings", 1);
-                            farm.setMapTileIndex(x + 3, y + 2, 1098, "Buildings", 1);
+                            farm.setMapTileIndex(x, y + 2, 1098, "Buildings", sheetIdx);
+                            farm.setMapTileIndex(x + 1, y + 2, 1123, "Buildings", sheetIdx);
+                            farm.setMapTileIndex(x + 3, y + 2, 1098, "Buildings", sheetIdx);
                             break;
                         case "Leah":
-                            farm.setMapTileIndex(x + 1, y + 2, 1122, "Buildings", 1);
-                            farm.setMapTileIndex(x + 1, y + 1, 1097, "Front", 1);
+                            farm.setMapTileIndex(x + 1, y + 2, 1122, "Buildings", sheetIdx);
+                            farm.setMapTileIndex(x + 1, y + 1, 1097, "Front", sheetIdx);
                             break;
                         case "Abigail":
-                            farm.setMapTileIndex(x, y + 2, 1098, "Buildings", 1);
-                            farm.setMapTileIndex(x + 1, y + 2, 1123, "Buildings", 1);
-                            farm.setMapTileIndex(x + 3, y + 2, 1098, "Buildings", 1);
+                            farm.setMapTileIndex(x, y + 2, 1098, "Buildings", sheetIdx);
+                            farm.setMapTileIndex(x + 1, y + 2, 1123, "Buildings", sheetIdx);
+                            farm.setMapTileIndex(x + 3, y + 2, 1098, "Buildings", sheetIdx);
                             break;
                         default:
                             SMonitor.Log($"No default tiles for {spouse.Key}", LogLevel.Warn);

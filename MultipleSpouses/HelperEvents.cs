@@ -104,7 +104,7 @@ namespace MultipleSpouses
 
 					foreach (NPC character in fh.characters)
 					{
-						if (!(character.currentLocation is FarmHouse))
+						if (!(character.currentLocation == fh))
 							continue;
 
 						if (allSpouses.Contains(character.Name))

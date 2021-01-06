@@ -1,16 +1,7 @@
 ﻿using Harmony;
-using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using StardewModdingAPI;
-using StardewValley;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Reflection;
-using xTile.Dimensions;
-using xTile.Layers;
-using xTile.ObjectModel;
-using xTile.Tiles;
 
 namespace TransparentObjects
 {
@@ -19,7 +10,6 @@ namespace TransparentObjects
         
         public static ModConfig config;
         public static IMonitor SMonitor;
-
 
         public override void Entry(IModHelper helper)
         {

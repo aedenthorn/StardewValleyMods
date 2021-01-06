@@ -268,9 +268,10 @@ namespace Swim
                 {
                     if (codes[i].opcode == OpCodes.Ret)
                     {
-                        start = i + 1;
-                        return codes.Skip(start).AsEnumerable();
+                        codes[i].opcode = OpCodes.Nop;
+                        return codes.AsEnumerable();
                     }
+                    codes[i].opcode = OpCodes.Nop;
                 }
             }
             catch (Exception ex)
@@ -441,14 +442,22 @@ namespace Swim
         {
             try
             {
-                if (__result == false || !isFarmer || !character.Equals(Game1.player) || !Game1.player.swimming || ModEntry.isUnderwater)
+                IEnumerable<Farmer> farmers = Game1.getAllFarmers();
+                if (!farmers.Any())
                     return;
-
-                Vector2 next = SwimUtils.GetNextTile();
-                //Monitor.Log($"Checking collide {SwimUtils.doesTileHaveProperty(__instance.map, (int)next.X, (int)next.Y, "Water", "Back") != null}");
-                if ((int)next.X <= 0 || (int)next.Y <= 0 || __instance.Map.Layers[0].LayerWidth <= (int)next.X || __instance.Map.Layers[0].LayerHeight <= (int)next.Y || SwimUtils.doesTileHaveProperty(__instance.map, (int)next.X, (int)next.Y, "Water", "Back") != null)
+                foreach (Farmer farmer in farmers)
                 {
-                    __result = false;
+                    if (!farmer.IsLocalPlayer || farmer.currentLocation == null || farmer == null || !Game1.displayFarmer || farmer.position == null)
+                        return;
+                    if (__result == false || !isFarmer || !character.Equals(farmer) || !farmer.swimming || SwimHelperEvents.swimmerData[farmer.uniqueMultiplayerID].isUnderwater)
+                        return;
+
+                    Vector2 next = SwimUtils.GetNextTile(farmer);
+                    //Monitor.Log($"Checking collide {SwimUtils.doesTileHaveProperty(__instance.map, (int)next.X, (int)next.Y, "Water", "Back") != null}");
+                    if ((int)next.X <= 0 || (int)next.Y <= 0 || __instance.Map.Layers[0].LayerWidth <= (int)next.X || __instance.Map.Layers[0].LayerHeight <= (int)next.Y || SwimUtils.doesTileHaveProperty(__instance.map, (int)next.X, (int)next.Y, "Water", "Back") != null)
+                    {
+                        __result = false;
+                    }
                 }
             }
             catch (Exception ex)

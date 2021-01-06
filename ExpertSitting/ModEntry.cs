@@ -17,9 +17,7 @@ namespace ExpertSitting
 
 		internal static ModConfig Config;
 		private static IMonitor SMonitor;
-        private static string[] seatTypes = { 
-			"Stone"
-		};
+
 
         /// <summary>The mod entry point, called after the mod is first loaded.</summary>
         /// <param name="helper">Provides simplified APIs for writing mods.</param>
@@ -34,9 +32,20 @@ namespace ExpertSitting
 			   original: AccessTools.Method(typeof(GameLocation), nameof(GameLocation.checkAction)),
 			   postfix: new HarmonyMethod(typeof(ModEntry), nameof(ModEntry.checkAction_Postfix))
 			);
+			harmony.Patch(
+			   original: AccessTools.Method(typeof(MapSeat), nameof(MapSeat.RemoveSittingFarmer)),
+			   postfix: new HarmonyMethod(typeof(ModEntry), nameof(ModEntry.RemoveSittingFarmer_Postfix))
+			);
 
-		} 
+		}
 
+        private static void RemoveSittingFarmer_Postfix(MapSeat __instance, Farmer farmer)
+        {
+			if(__instance.seatType == "stool expert sitting mod")
+            {
+				farmer.currentLocation.mapSeats.Remove(__instance);
+            }
+		}
 
 		private static void checkAction_Postfix(GameLocation __instance, ref bool __result, Location tileLocation, xTile.Dimensions.Rectangle viewport, Farmer who)
 		{
@@ -47,12 +56,12 @@ namespace ExpertSitting
 
 			foreach(Object obj in __instance.objects.Values)
             {
-				if(obj.TileLocation == new Vector2(tileLocation.X, tileLocation.Y) && seatTypes.Contains(obj.name))
+				if(obj.TileLocation == new Vector2(tileLocation.X, tileLocation.Y) && Config.SeatTypes.Contains(obj.name))
                 {
 					SMonitor.Log($"Got object seat");
 					MapSeat ms = new MapSeat();
 					ms.tilePosition.Value = new Vector2(tileLocation.X, tileLocation.Y);
-					ms.seatType.Value = "stool";
+					ms.seatType.Value = "stool expert sitting mod";
 					ms.size.Value = new Vector2(1,1);
 					__instance.mapSeats.Add(ms);
 					who.BeginSitting(ms);

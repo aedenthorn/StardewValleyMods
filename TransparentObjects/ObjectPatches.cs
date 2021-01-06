@@ -1,13 +1,8 @@
 ﻿using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
 using StardewModdingAPI;
 using StardewValley;
 using System;
-using System.Collections.Generic;
-using xTile.Dimensions;
-using xTile.Display;
-using xTile.Layers;
-using xTile.Tiles;
+using System.Linq;
 
 namespace TransparentObjects
 {
@@ -25,6 +20,10 @@ namespace TransparentObjects
         }
         public static void Object_draw_Prefix(StardewValley.Object __instance, ref float alpha)
         {
+
+            if (Config.Exceptions.Contains(__instance.name))
+                return;
+
             float maxDistance = Config.TransparencyMaxDistance;
             float minAlpha = Math.Min(1f, Math.Max(0, Config.MinTransparency));
             Vector2 playerCenter = new Vector2(Game1.player.position.X + 32, Game1.player.position.Y + 32);
