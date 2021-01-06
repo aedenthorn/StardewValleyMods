@@ -28,6 +28,6 @@ namespace CustomResourceClumps
         public string expType;
         public int exp;
         public Texture2D texture;
-        public int index = -1;
+        public int index;
     }
 }

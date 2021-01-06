@@ -15,7 +15,7 @@ using System.Linq;
 namespace CustomResourceClumps
 {
     /// <summary>The mod entry point.</summary>
-    public class ModEntry : Mod, IAssetEditor
+    public class ModEntry : Mod
 	{
 
 		public static ModEntry context;
@@ -24,8 +24,6 @@ namespace CustomResourceClumps
 		public static List<CustomResourceClump> customClumps = new List<CustomResourceClump>();
 		public static IMonitor SMonitor;
         private static IModHelper SHelper;
-        public static int firstIndex = 816;
-        private int addedHeight;
 		public bool finishedLoadingClumps = false;
 		public static Dictionary<string, Type> tools = new Dictionary<string, Type>()
 		{
@@ -64,6 +62,11 @@ namespace CustomResourceClumps
 			   prefix: new HarmonyMethod(typeof(ModEntry), nameof(ModEntry.ResourceClump_performToolAction_prefix))
 			);
 
+			harmony.Patch(
+			   original: AccessTools.Method(typeof(ResourceClump), nameof(ResourceClump.draw)),
+			   prefix: new HarmonyMethod(typeof(ModEntry), nameof(ModEntry.ResourceClump_draw_prefix))
+			);
+
             if (Config.AllowCustomResourceClumpsAboveGround)
             {
 
@@ -73,7 +76,8 @@ namespace CustomResourceClumps
 			helper.Events.GameLoop.GameLaunched += GameLoop_GameLaunched;
 		}
 
-		private void GameLoop_GameLaunched(object sender, StardewModdingAPI.Events.GameLaunchedEventArgs e)
+
+        private void GameLoop_GameLaunched(object sender, StardewModdingAPI.Events.GameLaunchedEventArgs e)
 		{
 			customClumps.Clear();
 			CustomResourceClumpData data;
@@ -103,6 +107,7 @@ namespace CustomResourceClumps
 							}
 							clump.texture = gameTextures[clump.spritePath];
 						}
+						clump.index = -(customClumps.Count + 1);
 						customClumps.Add(clump);
 					}
 					Monitor.Log($"Got {customClumps.Count} clumps from mod", LogLevel.Debug);
@@ -144,6 +149,7 @@ namespace CustomResourceClumps
 							}
 							clump.texture = gameTextures[clump.spritePath];
 						}
+						clump.index = -(customClumps.Count + 1);
 						customClumps.Add(clump);
 
 					}
@@ -156,40 +162,75 @@ namespace CustomResourceClumps
 			}
 			finishedLoadingClumps = true;
 			Monitor.Log($"Got {customClumps.Count} clumps total", LogLevel.Debug);
-			Helper.Content.InvalidateCache("Maps/springobjects");
 		}
 
 		private static void MineShaft_populateLevel_Postfix(MineShaft __instance)
 		{
-			SMonitor.Log($"checking for custom clumps after populate level. clumps: {__instance.resourceClumps.Count}");
+			SMonitor.Log($"checking for custom clumps after populateLevel. total resource clumps: {__instance.resourceClumps.Count}");
+			float totalChance = 0;
 
+			for (int j = 0; j < customClumps.Count; j++)
+			{
+				CustomResourceClump clump = customClumps[j];
+				if (clump.minLevel > -1 && __instance.mineLevel < clump.minLevel || clump.maxLevel > -1 && __instance.mineLevel > clump.maxLevel)
+				{
+					continue;
+				}
+				totalChance += clump.baseSpawnChance + clump.additionalChancePerLevel * __instance.mineLevel;
+			}
+			if (totalChance > 100)
+			{
+				SMonitor.Log($"Total chance of a custom clump is greater than 100%", LogLevel.Warn);
+			}
 			for (int i = 0; i < __instance.resourceClumps.Count; i++)
 			{
-				float currentChance = 0;
-
-				foreach (CustomResourceClump clump in customClumps)
-                {
-					if (clump.minLevel > -1 && __instance.mineLevel < clump.minLevel || clump.maxLevel > -1 && __instance.mineLevel > clump.maxLevel)
+				double ourChance = Game1.random.NextDouble();
+				if (ourChance < totalChance / 100f)
+				{
+					float cumulativeChance = 0;
+					for (int j = 0; j < customClumps.Count; j++)
 					{
-						continue;
-					}
-					currentChance += clump.baseSpawnChance + clump.additionalChancePerLevel * __instance.mineLevel;
-
-					if (Game1.random.NextDouble() < currentChance / 100f)
-					{
-						//SMonitor.Log($"Converting clump at {__instance.resourceClumps[i].currentTileLocation} to {clump.index} ");
-						__instance.resourceClumps[i] = new ResourceClump(clump.index, clump.tileWidth, clump.tileHeight, __instance.resourceClumps[i].tile.Value);
-						__instance.resourceClumps[i].health.Value = clump.durability;
-						break;
+						CustomResourceClump clump = customClumps[j];
+						if (clump.minLevel > -1 && __instance.mineLevel < clump.minLevel || clump.maxLevel > -1 && __instance.mineLevel > clump.maxLevel)
+						{
+							continue;
+						}
+						cumulativeChance += clump.baseSpawnChance + clump.additionalChancePerLevel * __instance.mineLevel;
+						if (ourChance < cumulativeChance / 100f)
+                        {
+							SMonitor.Log($"Converting clump at {__instance.resourceClumps[i].currentTileLocation} to {clump.index} {clump.clumpDesc} ");
+							__instance.resourceClumps[i] = new ResourceClump(clump.index, clump.tileWidth, clump.tileHeight, __instance.resourceClumps[i].tile.Value);
+							__instance.resourceClumps[i].health.Value = clump.durability;
+							break;
+						}
 					}
 				}
 			}
 		}
-
-		private static bool ResourceClump_performToolAction_prefix(ref ResourceClump __instance, Tool t, int damage, Vector2 tileLocation, GameLocation location, ref bool __result)
+		private static bool ResourceClump_draw_prefix(ResourceClump __instance, SpriteBatch spriteBatch, float ___shakeTimer)
 		{
 			int indexOfClump = __instance.parentSheetIndex;
-			if (indexOfClump - firstIndex < 0)
+			if (indexOfClump >= 0)
+			{
+				return true;
+			}
+			CustomResourceClump clump = customClumps.FirstOrDefault(c => c.index == indexOfClump);
+
+			Rectangle sourceRect = new Rectangle(0, 0, 32, 32);
+
+			Vector2 position = __instance.tile.Value * 64f;
+			if (___shakeTimer > 0f)
+			{
+				position.X += (float)Math.Sin(6.2831853071795862 / (double)___shakeTimer) * 4f;
+			}
+			spriteBatch.Draw(clump.texture, Game1.GlobalToLocal(Game1.viewport, position), new Rectangle?(sourceRect), Color.White, 0f, Vector2.Zero, 4f, SpriteEffects.None, (__instance.tile.Y + 1f) * 64f / 10000f + __instance.tile.X / 100000f);
+			return false;
+		}
+
+		private static bool ResourceClump_performToolAction_prefix(ref ResourceClump __instance, Tool t, Vector2 tileLocation, GameLocation location, ref bool __result)
+		{
+			int indexOfClump = __instance.parentSheetIndex;
+			if (indexOfClump >= 0)
 			{
 				return true;
 			}
@@ -201,7 +242,7 @@ namespace CustomResourceClumps
 			{
 				return false;
 			}
-			SMonitor.Log($"hitting custom clump {indexOfClump} with {t.GetType()} (should be {(tools.ContainsKey(clump.toolType) ? tools[clump.toolType].ToString() + " (not in dictionary!)" : clump.toolType)})");
+			SMonitor.Log($"hitting custom clump {indexOfClump} with {t.GetType()} (should be {tools[clump.toolType]} {(!tools.ContainsKey(clump.toolType) ? " (not in dictionary!)" : "")})");
 
 			if (!tools.ContainsKey(clump.toolType) || t.GetType() != tools[clump.toolType])
             {
@@ -276,69 +317,6 @@ namespace CustomResourceClumps
 				SMonitor.Log($"Invalid experience type {clump.expType}", LogLevel.Warn);
             }
 			return false;
-		}
-
-
-		/// <summary>Get whether this instance can edit the given asset.</summary>
-		/// <param name="asset">Basic metadata about the asset being loaded.</param>
-		public bool CanEdit<T>(IAssetInfo asset)
-		{
-			if (asset.AssetNameEquals("Maps/springobjects"))
-			{
-				return true;
-			}
-
-			return false;
-		}
-
-		/// <summary>Edit a matched asset.</summary>
-		/// <param name="asset">A helper which encapsulates metadata about an asset and enables changes to it.</param>
-		public void Edit<T>(IAssetData asset)
-		{
-			if (asset.AssetNameEquals("Maps/springobjects") && finishedLoadingClumps && customClumps.Count > 0)
-			{
-				var editor = asset.AsImage();
-				int extension = (Config.SpriteSheetOffsetRows * 16) + addedHeight * 16;
-				editor.ExtendImage(minWidth: editor.Data.Width, minHeight: editor.Data.Height + extension);
-				SMonitor.Log($"extended springobjects by {extension}");
-				CalculatePositions(editor.Data.Width);
-				foreach (CustomResourceClump clump in customClumps)
-				{
-					SMonitor.Log($"Patching springobjects with {clump.spritePath}, index {clump.index}");
-					Texture2D customTexture = clump.texture;
-					int x = (clump.index % (editor.Data.Width / 16)) * 16;
-					int y = clump.index / (editor.Data.Width / 16) * 16;
-					SMonitor.Log($"clump pos {x},{y}");
-					editor.PatchImage(customTexture, sourceArea: new Rectangle(clump.spriteX, clump.spriteY, clump.tileWidth * 16, clump.tileHeight * 16), targetArea: new Rectangle(x, y, 16 * clump.tileWidth, 16 * clump.tileHeight));
-					SMonitor.Log($"patched springobjects with {clump.spritePath}");
-				}
-			}
-		}
-
-		private void CalculatePositions(int width)
-		{
-			addedHeight = 0;
-			int currentAddedHeight = 0;
-			int offsetX = 0;
-
-			for (int i = 0; i < customClumps.Count; i++)
-			{
-				if (offsetX + customClumps[i].tileWidth > width / 16)
-				{
-					addedHeight += currentAddedHeight;
-					currentAddedHeight = 0;
-					offsetX = 0;
-				}
-				if (customClumps[i].tileHeight > currentAddedHeight)
-				{
-					currentAddedHeight = customClumps[i].tileHeight;
-				}
-				customClumps[i].index = firstIndex + (Config.SpriteSheetOffsetRows + addedHeight) * (width / 16) + offsetX;
-				SMonitor.Log($"clump index {customClumps[i].index}");
-				offsetX += customClumps[i].tileWidth;
-			}
-			addedHeight += currentAddedHeight;
-			SMonitor.Log($"added height {addedHeight}");
 		}
 
 	}

@@ -16,6 +16,7 @@
     <None Include="$(MSBuildThisFileDirectory)CustomOreNodes 0.7.0.zip" />
     <None Include="$(MSBuildThisFileDirectory)CustomResourceClumps 0.2.0.zip" />
     <None Include="$(MSBuildThisFileDirectory)CustomResourceClumps 0.3.1.zip" />
+    <None Include="$(MSBuildThisFileDirectory)CustomResourceClumps 0.4.0.zip" />
     <None Include="$(MSBuildThisFileDirectory)CustomSpousePatio 0.4.4.zip" />
     <None Include="$(MSBuildThisFileDirectory)CustomSpousePatio 0.4.5.zip" />
     <None Include="$(MSBuildThisFileDirectory)ExpertSitting 0.2.0.zip" />
