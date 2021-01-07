@@ -119,7 +119,7 @@ namespace Swim
 
         public static void CheckIfMyButtonDown()
         {
-            if (Game1.player == null || Game1.player.currentLocation == null || !Config.ReadyToSwim || Game1.player.currentLocation.waterTiles == null || !Context.IsPlayerFree || Helper.Input.IsDown(SButton.LeftShift))
+            if (Game1.player == null || Game1.player.currentLocation == null || !ModEntry.swimmerData[Game1.player.uniqueMultiplayerID].readyToSwim || Game1.player.currentLocation.waterTiles == null || !Context.IsPlayerFree || Helper.Input.IsDown(SButton.LeftShift))
             {
                 ModEntry.myButtonDown = false;
                 return;

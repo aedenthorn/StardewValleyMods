@@ -75,11 +75,20 @@ namespace Swim
         {
             try
             {
-                if (Game1.player.swimming)
+                IEnumerable<Farmer> farmers = Game1.getAllFarmers();
+                if (!farmers.Any())
+                    return;
+                foreach (Farmer farmer in farmers)
                 {
-                    Game1.player.swimming.Value = false;
-                    if (!Config.SwimSuitAlways)
-                        Game1.player.changeOutOfSwimSuit();
+                    if (!ModEntry.swimmerData.ContainsKey(farmer.uniqueMultiplayerID))
+                        ModEntry.swimmerData[farmer.uniqueMultiplayerID] = new SwimmerData();
+                    if (farmer.swimming)
+                    {
+                        farmer.swimming.Value = false;
+
+                        if (!ModEntry.swimmerData[farmer.uniqueMultiplayerID].swimSuitAlways)
+                            farmer.changeOutOfSwimSuit();
+                    }
                 }
             }
             catch (Exception ex)
@@ -116,7 +125,10 @@ namespace Swim
         {
             try
             {
-                if (__instance.swimming && (!Config.ReadyToSwim || Config.SwimRestoresVitals) && __instance.timerSinceLastMovement > 0 && !Game1.eventUp && (Game1.activeClickableMenu == null || Game1.IsMultiplayer) && !Game1.paused)
+                if (!ModEntry.swimmerData.ContainsKey(__instance.uniqueMultiplayerID))
+                    ModEntry.swimmerData[__instance.uniqueMultiplayerID] = new SwimmerData();
+                SwimmerData data = ModEntry.swimmerData[__instance.uniqueMultiplayerID];
+                if (__instance.swimming && (!data.readyToSwim || Config.SwimRestoresVitals) && __instance.timerSinceLastMovement > 0 && !Game1.eventUp && (Game1.activeClickableMenu == null || Game1.IsMultiplayer) && !Game1.paused)
                 {
                     if (__instance.timerSinceLastMovement > 800)
                     {
@@ -137,7 +149,9 @@ namespace Swim
         {
             try
             {
-                if (__instance.swimming && (!Config.ReadyToSwim || Config.SwimRestoresVitals) && __instance.timerSinceLastMovement > 0 && !Game1.eventUp && (Game1.activeClickableMenu == null || Game1.IsMultiplayer) && !Game1.paused)
+                if (!ModEntry.swimmerData.ContainsKey(__instance.uniqueMultiplayerID))
+                    ModEntry.swimmerData[__instance.uniqueMultiplayerID] = new SwimmerData();
+                if (__instance.swimming && (!ModEntry.swimmerData[__instance.uniqueMultiplayerID].readyToSwim || Config.SwimRestoresVitals) && __instance.timerSinceLastMovement > 0 && !Game1.eventUp && (Game1.activeClickableMenu == null || Game1.IsMultiplayer) && !Game1.paused)
                 {
                     if (__instance.swimTimer < 0)
                     {
@@ -373,7 +387,7 @@ namespace Swim
                 {
                     if (!Game1.player.swimming)
                     {
-                        Config.ReadyToSwim = false;
+                        ModEntry.swimmerData[Game1.player.uniqueMultiplayerID].readyToSwim = false;
                     }
                 }
             }
@@ -447,9 +461,9 @@ namespace Swim
                     return;
                 foreach (Farmer farmer in farmers)
                 {
-                    if (!farmer.IsLocalPlayer || farmer.currentLocation == null || farmer == null || !Game1.displayFarmer || farmer.position == null)
+                    if (farmer.currentLocation == null || farmer == null || !Game1.displayFarmer || farmer.position == null)
                         return;
-                    if (__result == false || !isFarmer || !character.Equals(farmer) || !farmer.swimming || SwimHelperEvents.swimmerData[farmer.uniqueMultiplayerID].isUnderwater)
+                    if (!__result || !isFarmer || !character.Equals(farmer) || !farmer.swimming || ModEntry.swimmerData[farmer.uniqueMultiplayerID].isUnderwater)
                         return;
 
                     Vector2 next = SwimUtils.GetNextTile(farmer);

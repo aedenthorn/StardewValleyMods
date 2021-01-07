@@ -51,6 +51,7 @@ namespace Swim
             "ScubaAbigailCave",
             "ScubaCrystalCave",
         };
+        public static Dictionary<long, SwimmerData> swimmerData = new Dictionary<long, SwimmerData>();
 
 
         public override void Entry(IModHelper helper)

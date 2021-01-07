@@ -15,5 +15,7 @@ namespace Swim
         public int bubbleOffset = 0;
         public int lastBreatheSound;
         public bool surfacing;
+        public bool swimSuitAlways;
+        public bool readyToSwim = true;
     }
 }
