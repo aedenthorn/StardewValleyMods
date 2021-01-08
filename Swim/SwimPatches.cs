@@ -128,7 +128,7 @@ namespace Swim
                 if (!ModEntry.swimmerData.ContainsKey(__instance.uniqueMultiplayerID))
                     ModEntry.swimmerData[__instance.uniqueMultiplayerID] = new SwimmerData();
                 SwimmerData data = ModEntry.swimmerData[__instance.uniqueMultiplayerID];
-                if (__instance.swimming && (!data.readyToSwim || Config.SwimRestoresVitals) && __instance.timerSinceLastMovement > 0 && !Game1.eventUp && (Game1.activeClickableMenu == null || Game1.IsMultiplayer) && !Game1.paused)
+                if (__instance.swimming && (!Config.ReadyToSwim || !ModEntry.swimmerData[Game1.player.uniqueMultiplayerID].readyToSwim || Config.SwimRestoresVitals) && __instance.timerSinceLastMovement > 0 && !Game1.eventUp && (Game1.activeClickableMenu == null || Game1.IsMultiplayer) && !Game1.paused)
                 {
                     if (__instance.timerSinceLastMovement > 800)
                     {
@@ -151,7 +151,7 @@ namespace Swim
             {
                 if (!ModEntry.swimmerData.ContainsKey(__instance.uniqueMultiplayerID))
                     ModEntry.swimmerData[__instance.uniqueMultiplayerID] = new SwimmerData();
-                if (__instance.swimming && (!ModEntry.swimmerData[__instance.uniqueMultiplayerID].readyToSwim || Config.SwimRestoresVitals) && __instance.timerSinceLastMovement > 0 && !Game1.eventUp && (Game1.activeClickableMenu == null || Game1.IsMultiplayer) && !Game1.paused)
+                if (__instance.swimming && (!Config.ReadyToSwim || !ModEntry.swimmerData[__instance.uniqueMultiplayerID].readyToSwim || Config.SwimRestoresVitals) && __instance.timerSinceLastMovement > 0 && !Game1.eventUp && (Game1.activeClickableMenu == null || Game1.IsMultiplayer) && !Game1.paused)
                 {
                     if (__instance.swimTimer < 0)
                     {

@@ -12,6 +12,7 @@ namespace Swim
         public SButton DiveKey { get; set; }
         public int OxygenMult { get; set; }
         public int BubbleMult { get; set; }
+        public bool ReadyToSwim { get; set; }
         public bool AllowActionsWhileInSwimsuit { get; set; }
         public bool AllowRunningWhileInSwimsuit { get; set; }
         public bool AddFishies { get; set; }
@@ -33,7 +34,6 @@ namespace Swim
         public int MaxOceanChests { get; set; }
         public bool SwimRestoresVitals { get; set; }
 
-
         public ModConfig()
         {
             SwimKey = SButton.J;
@@ -43,6 +43,7 @@ namespace Swim
             JumpTimeInMilliseconds = 500;
             OxygenMult = 2;
             BubbleMult = 1;
+            ReadyToSwim = true;
             AllowActionsWhileInSwimsuit = true;
             AllowRunningWhileInSwimsuit = false;
             AddFishies = true;

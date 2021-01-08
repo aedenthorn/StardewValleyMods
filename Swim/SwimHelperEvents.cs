@@ -464,11 +464,11 @@ namespace Swim
             if (!ModEntry.swimmerData.ContainsKey(Game1.player.uniqueMultiplayerID))
                 ModEntry.swimmerData[Game1.player.uniqueMultiplayerID] = new SwimmerData();
             SwimmerData data = ModEntry.swimmerData[Game1.player.uniqueMultiplayerID];
-            if (e.Button == Config.SwimKey && (!Game1.player.swimming || !data.readyToSwim) && !ModEntry.swimmerData[Game1.player.uniqueMultiplayerID].isJumping)
+            if (e.Button == Config.SwimKey && (!Game1.player.swimming || !Config.ReadyToSwim || !data.readyToSwim) && !ModEntry.swimmerData[Game1.player.uniqueMultiplayerID].isJumping)
             {
-                data.readyToSwim = !data.readyToSwim;
+                Config.ReadyToSwim = !Config.ReadyToSwim;
                 Helper.WriteConfig<ModConfig>(Config);
-                Monitor.Log($"Ready to swim: {data.readyToSwim}");
+                Monitor.Log($"Ready to swim: {Config.ReadyToSwim}");
                 return;
             }
 
@@ -490,58 +490,57 @@ namespace Swim
 
         public static void GameLoop_UpdateTicked(object sender, UpdateTickedEventArgs e)
         {
-            IEnumerable<Farmer> farmers = Game1.getAllFarmers();
-            if (!farmers.Any())
+
+            Farmer farmer = Game1.player;
+            if (farmer.currentLocation == null || farmer == null || !Game1.displayFarmer || farmer.position == null)
                 return;
-            foreach(Farmer farmer in farmers)
+
+            if (!ModEntry.swimmerData.ContainsKey(farmer.uniqueMultiplayerID))
+                ModEntry.swimmerData[farmer.uniqueMultiplayerID] = new SwimmerData();
+            SwimmerData data = ModEntry.swimmerData[farmer.uniqueMultiplayerID];
+            data.isUnderwater = SwimUtils.IsMapUnderwater(farmer.currentLocation.Name);
+
+            if (farmer.currentLocation.Name == "ScubaAbigailCave")
             {
-                if (farmer.currentLocation == null || farmer == null || !Game1.displayFarmer || farmer.position == null)
-                    return;
+                AbigailCaveTick();
+            }
 
-                if (!ModEntry.swimmerData.ContainsKey(farmer.uniqueMultiplayerID))
-                    ModEntry.swimmerData[farmer.uniqueMultiplayerID] = new SwimmerData();
-                SwimmerData data = ModEntry.swimmerData[farmer.uniqueMultiplayerID];
-                data.isUnderwater = SwimUtils.IsMapUnderwater(farmer.currentLocation.Name);
-
-                if (farmer.currentLocation.Name == "ScubaAbigailCave")
+            if (Game1.activeClickableMenu == null)
+            {
+                if (data.isUnderwater)
                 {
-                    AbigailCaveTick();
-                }
-
-                if (Game1.activeClickableMenu == null)
-                {
-                    if (data.isUnderwater)
+                    if (data.oxygen >= 0)
                     {
-                        if (data.oxygen >= 0)
+                        if (!SwimUtils.IsWearingScubaGear(farmer))
+                            data.oxygen--;
+                        else
                         {
-                            if (!SwimUtils.IsWearingScubaGear(farmer))
-                                data.oxygen--;
-                            else
-                            {
-                                if (data.oxygen < SwimUtils.MaxOxygen())
-                                    data.oxygen++;
-                                if (data.oxygen < SwimUtils.MaxOxygen())
-                                    data.oxygen++;
-                            }
-                        }
-                        if (data.oxygen < 0 && !data.surfacing)
-                        {
-                            data.surfacing = true;
-                            Game1.playSound("pullItemFromWater");
-                            DiveLocation diveLocation = ModEntry.diveMaps[farmer.currentLocation.Name].DiveLocations.Last();
-                            SwimUtils.DiveTo(diveLocation, farmer);
+                            if (data.oxygen < SwimUtils.MaxOxygen())
+                                data.oxygen++;
+                            if (data.oxygen < SwimUtils.MaxOxygen())
+                                data.oxygen++;
                         }
                     }
-                    else
+                    if (data.oxygen < 0 && !data.surfacing)
                     {
-                        data.surfacing = false;
-                        if (data.oxygen < SwimUtils.MaxOxygen())
-                            data.oxygen++;
-                        if (data.oxygen < SwimUtils.MaxOxygen())
-                            data.oxygen++;
+                        data.surfacing = true;
+                        Game1.playSound("pullItemFromWater");
+                        DiveLocation diveLocation = ModEntry.diveMaps[farmer.currentLocation.Name].DiveLocations.Last();
+                        SwimUtils.DiveTo(diveLocation, farmer);
                     }
                 }
+                else
+                {
+                    data.surfacing = false;
+                    if (data.oxygen < SwimUtils.MaxOxygen())
+                        data.oxygen++;
+                    if (data.oxygen < SwimUtils.MaxOxygen())
+                        data.oxygen++;
+                }
+            }
 
+            if(farmer == Game1.player)
+            {
                 if (SwimUtils.IsWearingScubaGear(farmer))
                 {
                     data.ticksWearingScubaGear++;
@@ -562,334 +561,333 @@ namespace Swim
                     data.lastBreatheSound = 0;
                     data.ticksWearingScubaGear = 0;
                 }
+            }
 
-                if (data.isJumping)
+            if (data.isJumping)
+            {
+                float difx = data.endJumpLoc.X - data.startJumpLoc.X;
+                float dify = data.endJumpLoc.Y - data.startJumpLoc.Y;
+                float completed = farmer.freezePause / (float)Config.JumpTimeInMilliseconds;
+                if (farmer.freezePause <= 0)
                 {
-                    float difx = data.endJumpLoc.X - data.startJumpLoc.X;
-                    float dify = data.endJumpLoc.Y - data.startJumpLoc.Y;
-                    float completed = farmer.freezePause / (float)Config.JumpTimeInMilliseconds;
-                    if (farmer.freezePause <= 0)
+                    Monitor.Log("ending jump");
+                    farmer.position.Value = data.endJumpLoc;
+                    data.isJumping = false;
+                    if (ModEntry.willSwim)
                     {
-                        Monitor.Log("ending jump");
-                        farmer.position.Value = data.endJumpLoc;
-                        data.isJumping = false;
-                        if (ModEntry.willSwim)
-                        {
-                            farmer.currentLocation.playSound("waterSlosh", NetAudio.SoundContext.Default);
-                            farmer.swimming.Value = true;
-                        }
-                        else
-                        {
-                            if (!data.swimSuitAlways)
-                                farmer.changeOutOfSwimSuit();
-                        }
-                        return;
-                    }
-                    farmer.position.Value = new Vector2(data.endJumpLoc.X - (difx * completed), data.endJumpLoc.Y - (dify * completed) - (float)Math.Sin(completed * Math.PI) * 64);
-                    return;
-                }
-
-                // only if ready to swim from here on!
-
-                if (!data.readyToSwim || !Context.IsPlayerFree || farmer.currentLocation is BeachNightMarket)
-                {
-                    return;
-                }
-
-                if (farmer.swimming)
-                {
-                    if (!SwimUtils.IsInWater(farmer) && !data.isJumping)
-                    {
-                        Monitor.Log("Swimming out of water");
-                        ModEntry.willSwim = false;
-                        farmer.freezePause = Config.JumpTimeInMilliseconds;
-                        farmer.currentLocation.playSound("dwop", NetAudio.SoundContext.Default);
                         farmer.currentLocation.playSound("waterSlosh", NetAudio.SoundContext.Default);
-                        data.isJumping = true;
-                        data.startJumpLoc = farmer.position.Value;
-                        data.endJumpLoc = farmer.position.Value;
-
-                        farmer.swimming.Value = false;
-                        if (farmer.bathingClothes && !data.swimSuitAlways)
-                            farmer.changeOutOfSwimSuit();
-                    }
-
-                    DiveMap dm = null;
-                    Point edgePos = farmer.getTileLocationPoint();
-
-                    if (ModEntry.diveMaps.ContainsKey(farmer.currentLocation.Name))
-                    {
-                        dm = ModEntry.diveMaps[farmer.currentLocation.Name];
-                    }
-
-                    if (farmer.position.Y > Game1.viewport.Y + Game1.viewport.Height - 16)
-                    {
-
-                        farmer.position.Value = new Vector2(farmer.position.X, Game1.viewport.Y + Game1.viewport.Height - 17);
-                        if (dm != null)
-                        {
-                            EdgeWarp edge = dm.EdgeWarps.Find((x) => x.ThisMapEdge == "Bottom" && x.FirstTile <= edgePos.X && x.LastTile >= edgePos.X);
-                            if (edge != null)
-                            {
-                                Point pos = SwimUtils.GetEdgeWarpDestination(edgePos.X, edge);
-                                if (pos != Point.Zero)
-                                {
-                                    Monitor.Log("warping south");
-                                    Game1.warpFarmer(edge.OtherMapName, pos.X, pos.Y, false);
-                                }
-                            }
-                        }
-                    }
-                    else if (farmer.position.Y < Game1.viewport.Y - 16)
-                    {
-                        farmer.position.Value = new Vector2(farmer.position.X, Game1.viewport.Y - 15);
-
-                        if (dm != null)
-                        {
-                            EdgeWarp edge = dm.EdgeWarps.Find((x) => x.ThisMapEdge == "Top" && x.FirstTile <= edgePos.X && x.LastTile >= edgePos.X);
-                            if (edge != null)
-                            {
-                                Point pos = SwimUtils.GetEdgeWarpDestination(edgePos.X, edge);
-                                if (pos != Point.Zero)
-                                {
-                                    Monitor.Log("warping north");
-                                    Game1.warpFarmer(edge.OtherMapName, pos.X, pos.Y, false);
-                                }
-                            }
-                        }
-                    }
-                    else if (farmer.position.X > Game1.viewport.X + Game1.viewport.Width - 32)
-                    {
-                        farmer.position.Value = new Vector2(Game1.viewport.X + Game1.viewport.Width - 33, farmer.position.Y);
-
-                        if (dm != null)
-                        {
-                            EdgeWarp edge = dm.EdgeWarps.Find((x) => x.ThisMapEdge == "Right" && x.FirstTile <= edgePos.Y && x.LastTile >= edgePos.Y);
-                            if (edge != null)
-                            {
-                                Point pos = SwimUtils.GetEdgeWarpDestination(edgePos.Y, edge);
-                                if (pos != Point.Zero)
-                                {
-                                    Monitor.Log("warping east");
-                                    Game1.warpFarmer(edge.OtherMapName, pos.X, pos.Y, false);
-                                }
-                            }
-                        }
-
-                        if (farmer.currentLocation.Name == "Forest")
-                        {
-                            if (farmer.position.Y / 64 > 74)
-                                Game1.warpFarmer("Beach", 0, 13, false);
-                            else
-                                Game1.warpFarmer("Town", 0, 100, false);
-                        }
-                    }
-                    else if (farmer.position.X < Game1.viewport.X - 32)
-                    {
-                        farmer.position.Value = new Vector2(Game1.viewport.X - 31, farmer.position.Y);
-
-                        if (dm != null)
-                        {
-                            EdgeWarp edge = dm.EdgeWarps.Find((x) => x.ThisMapEdge == "Left" && x.FirstTile <= edgePos.X && x.LastTile >= edgePos.X);
-                            if (edge != null)
-                            {
-                                Point pos = SwimUtils.GetEdgeWarpDestination(edgePos.Y, edge);
-                                if (pos != Point.Zero)
-                                {
-                                    Monitor.Log("warping west");
-                                    Game1.warpFarmer(edge.OtherMapName, pos.X, pos.Y, false);
-                                }
-                            }
-                        }
-
-                        if (farmer.currentLocation.Name == "Town")
-                        {
-                            Game1.warpFarmer("Forest", 119, 43, false);
-                        }
-                        else if (farmer.currentLocation.Name == "Beach")
-                        {
-                            Game1.warpFarmer("Forest", 119, 111, false);
-                        }
-                    }
-
-                    if (farmer.bathingClothes && SwimUtils.IsWearingScubaGear(farmer) && !data.swimSuitAlways)
-                        farmer.changeOutOfSwimSuit();
-                    else if (!farmer.bathingClothes && (!SwimUtils.IsWearingScubaGear(farmer) || data.swimSuitAlways))
-                        farmer.changeIntoSwimsuit();
-
-                    if (farmer.boots.Value != null && ModEntry.scubaFinsID != -1 && farmer.boots.Value.indexInTileSheet == ModEntry.scubaFinsID)
-                    {
-                        int buffId = 42883167;
-                        Buff buff = Game1.buffsDisplay.otherBuffs.FirstOrDefault((Buff p) => p.which == buffId);
-                        if (buff == null)
-                        {
-                            BuffsDisplay buffsDisplay = Game1.buffsDisplay;
-                            Buff buff2 = new Buff(0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 1, "Scuba Fins", Helper.Translation.Get("scuba-fins"));
-                            buff2.which = buffId;
-                            buff = buff2;
-                            buffsDisplay.addOtherBuff(buff2);
-                        }
-                        buff.millisecondsDuration = 50;
-                    }
-                }
-                else
-                {
-                    if (SwimUtils.IsInWater(farmer) && !data.isJumping)
-                    {
-                        Monitor.Log("In water not swimming");
-
-                        ModEntry.willSwim = true;
-                        farmer.freezePause = Config.JumpTimeInMilliseconds;
-                        farmer.currentLocation.playSound("dwop", NetAudio.SoundContext.Default);
-                        data.isJumping = true;
-                        data.startJumpLoc = farmer.position.Value;
-                        data.endJumpLoc = farmer.position.Value;
-
-
                         farmer.swimming.Value = true;
-                        if (!farmer.bathingClothes && !SwimUtils.IsWearingScubaGear(farmer))
-                            farmer.changeIntoSwimsuit();
-                    }
-
-                }
-
-                SwimUtils.CheckIfMyButtonDown();
-
-                if (!ModEntry.myButtonDown || farmer.millisecondsPlayed - ModEntry.swimmerData[farmer.uniqueMultiplayerID].lastJump < 250 || SwimUtils.IsMapUnderwater(farmer.currentLocation.Name))
-                    return;
-
-                if (Helper.Input.IsDown(SButton.MouseLeft) && !farmer.swimming && (farmer.CurrentTool is WateringCan || farmer.CurrentTool is FishingRod))
-                    return;
-
-
-                List<Vector2> tiles = SwimUtils.GetTilesInDirection(5, farmer);
-                Vector2 jumpLocation = Vector2.Zero;
-
-                double distance = -1;
-                int maxDistance = 0;
-                switch (farmer.FacingDirection)
-                {
-                    case 0:
-                        distance = Math.Abs(farmer.position.Y - tiles.Last().Y * Game1.tileSize);
-                        maxDistance = 72;
-                        break;
-                    case 2:
-                        distance = Math.Abs(farmer.position.Y - tiles.Last().Y * Game1.tileSize);
-                        maxDistance = 48;
-                        break;
-                    case 1:
-                    case 3:
-                        distance = Math.Abs(farmer.position.X - tiles.Last().X * Game1.tileSize);
-                        maxDistance = 65;
-                        break;
-                }
-                if (Helper.Input.IsDown(SButton.MouseLeft))
-                {
-                    try
-                    {
-                        int xTile = (Game1.viewport.X + Game1.getOldMouseX()) / 64;
-                        int yTile = (Game1.viewport.Y + Game1.getOldMouseY()) / 64;
-                        bool water = farmer.currentLocation.waterTiles[xTile, yTile];
-                        if (farmer.swimming != water)
-                        {
-                            distance = -1;
-                        }
-                    }
-                    catch
-                    {
-
-                    }
-                }
-                //Monitor.Log("Distance: " + distance);
-
-                bool nextToLand = farmer.swimming && !farmer.currentLocation.isTilePassable(new Location((int)tiles.Last().X, (int)tiles.Last().Y), Game1.viewport) && !SwimUtils.IsWaterTile(tiles[tiles.Count - 2]) && distance < maxDistance;
-
-                bool nextToWater = false;
-                try
-                {
-                    nextToWater = !farmer.swimming &&
-                        !SwimUtils.IsTilePassable(farmer.currentLocation, new Location((int)tiles.Last().X, (int)tiles.Last().Y), Game1.viewport) &&
-                        (farmer.currentLocation.waterTiles[(int)tiles.Last().X, (int)tiles.Last().Y]
-                            || SwimUtils.IsWaterTile(tiles[tiles.Count - 2]))
-                        && distance < maxDistance;
-                }
-                catch
-                {
-                    //Monitor.Log($"exception trying to get next to water: {ex}");
-                }
-
-                //Monitor.Log($"next passable {farmer.currentLocation.isTilePassable(new Location((int)tiles.Last().X, (int)tiles.Last().Y), Game1.viewport)} next to land: {nextToLand}, next to water: {nextToWater}");
-
-
-                if (Helper.Input.IsDown(Config.SwimKey) || nextToLand || nextToWater)
-                {
-                    //Monitor.Log("okay to jump");
-                    for (int i = 0; i < tiles.Count; i++)
-                    {
-                        Vector2 tileV = tiles[i];
-                        bool isWater = false;
-                        bool isPassable = false;
-                        try
-                        {
-                            Tile tile = farmer.currentLocation.map.GetLayer("Buildings").PickTile(new Location((int)tileV.X * Game1.tileSize, (int)tileV.Y * Game1.tileSize), Game1.viewport.Size);
-                            isWater = SwimUtils.IsWaterTile(tileV);
-                            isPassable = (nextToLand && !isWater && SwimUtils.IsTilePassable(farmer.currentLocation, new Location((int)tileV.X, (int)tileV.Y), Game1.viewport)) || (nextToWater && isWater && (tile == null || tile.TileIndex == 76));
-                            //Monitor.Log($"Trying {tileV} is passable {isPassable} isWater {isWater}");
-                            if (!SwimUtils.IsTilePassable(farmer.currentLocation, new Location((int)tileV.X, (int)tileV.Y), Game1.viewport) && !isWater && nextToLand)
-                            {
-                                //Monitor.Log($"Nixing {tileV}");
-                                jumpLocation = Vector2.Zero;
-                            }
-                        }
-                        catch (Exception ex)
-                        {
-                            Monitor.Log("" + ex);
-                        }
-                        if (nextToLand && !isWater && isPassable)
-                        {
-                            Monitor.Log($"Jumping to {tileV}");
-                            jumpLocation = tileV;
-
-                        }
-
-                        if (nextToWater && isWater && isPassable)
-                        {
-                            Monitor.Log($"Jumping to {tileV}");
-                            jumpLocation = tileV;
-
-                        }
-
-
-                    }
-                }
-
-                if (jumpLocation != Vector2.Zero)
-                {
-                    ModEntry.swimmerData[farmer.uniqueMultiplayerID].lastJump = farmer.millisecondsPlayed;
-                    //Monitor.Log("got swim location");
-                    if (farmer.swimming)
-                    {
-                        ModEntry.willSwim = false;
-                        farmer.swimming.Value = false;
-                        farmer.freezePause = Config.JumpTimeInMilliseconds;
-                        farmer.currentLocation.playSound("dwop", NetAudio.SoundContext.Default);
-                        farmer.currentLocation.playSound("waterSlosh", NetAudio.SoundContext.Default);
                     }
                     else
                     {
-                        ModEntry.willSwim = true;
-                        if (!SwimUtils.IsWearingScubaGear(farmer))
-                            farmer.changeIntoSwimsuit();
-
-                        farmer.freezePause = Config.JumpTimeInMilliseconds;
-                        farmer.currentLocation.playSound("dwop", NetAudio.SoundContext.Default);
+                        if (!data.swimSuitAlways)
+                            farmer.changeOutOfSwimSuit();
                     }
-                    ModEntry.swimmerData[farmer.uniqueMultiplayerID].isJumping = true;
-                    ModEntry.swimmerData[farmer.uniqueMultiplayerID].startJumpLoc = farmer.position.Value;
-                    ModEntry.swimmerData[farmer.uniqueMultiplayerID].endJumpLoc = new Vector2(jumpLocation.X * Game1.tileSize, jumpLocation.Y * Game1.tileSize);
+                    return;
+                }
+                farmer.position.Value = new Vector2(data.endJumpLoc.X - (difx * completed), data.endJumpLoc.Y - (dify * completed) - (float)Math.Sin(completed * Math.PI) * 64);
+                return;
+            }
+
+            // only if ready to swim from here on!
+
+            if (!Config.ReadyToSwim || !ModEntry.swimmerData[farmer.uniqueMultiplayerID].readyToSwim || !ModEntry.swimmerData[Game1.player.uniqueMultiplayerID].readyToSwim || !Context.IsPlayerFree || farmer.currentLocation is BeachNightMarket)
+            {
+                return;
+            }
+
+            if (farmer.swimming)
+            {
+                if (!SwimUtils.IsInWater(farmer) && !data.isJumping)
+                {
+                    Monitor.Log("Swimming out of water");
+                    ModEntry.willSwim = false;
+                    farmer.freezePause = Config.JumpTimeInMilliseconds;
+                    farmer.currentLocation.playSound("dwop", NetAudio.SoundContext.Default);
+                    farmer.currentLocation.playSound("waterSlosh", NetAudio.SoundContext.Default);
+                    data.isJumping = true;
+                    data.startJumpLoc = farmer.position.Value;
+                    data.endJumpLoc = farmer.position.Value;
+
+                    farmer.swimming.Value = false;
+                    if (farmer.bathingClothes && !data.swimSuitAlways)
+                        farmer.changeOutOfSwimSuit();
+                }
+
+                DiveMap dm = null;
+                Point edgePos = farmer.getTileLocationPoint();
+
+                if (ModEntry.diveMaps.ContainsKey(farmer.currentLocation.Name))
+                {
+                    dm = ModEntry.diveMaps[farmer.currentLocation.Name];
+                }
+
+                if (farmer.position.Y > Game1.viewport.Y + Game1.viewport.Height - 16)
+                {
+
+                    farmer.position.Value = new Vector2(farmer.position.X, Game1.viewport.Y + Game1.viewport.Height - 17);
+                    if (dm != null)
+                    {
+                        EdgeWarp edge = dm.EdgeWarps.Find((x) => x.ThisMapEdge == "Bottom" && x.FirstTile <= edgePos.X && x.LastTile >= edgePos.X);
+                        if (edge != null)
+                        {
+                            Point pos = SwimUtils.GetEdgeWarpDestination(edgePos.X, edge);
+                            if (pos != Point.Zero)
+                            {
+                                Monitor.Log("warping south");
+                                Game1.warpFarmer(edge.OtherMapName, pos.X, pos.Y, false);
+                            }
+                        }
+                    }
+                }
+                else if (farmer.position.Y < Game1.viewport.Y - 16)
+                {
+                    farmer.position.Value = new Vector2(farmer.position.X, Game1.viewport.Y - 15);
+
+                    if (dm != null)
+                    {
+                        EdgeWarp edge = dm.EdgeWarps.Find((x) => x.ThisMapEdge == "Top" && x.FirstTile <= edgePos.X && x.LastTile >= edgePos.X);
+                        if (edge != null)
+                        {
+                            Point pos = SwimUtils.GetEdgeWarpDestination(edgePos.X, edge);
+                            if (pos != Point.Zero)
+                            {
+                                Monitor.Log("warping north");
+                                Game1.warpFarmer(edge.OtherMapName, pos.X, pos.Y, false);
+                            }
+                        }
+                    }
+                }
+                else if (farmer.position.X > Game1.viewport.X + Game1.viewport.Width - 32)
+                {
+                    farmer.position.Value = new Vector2(Game1.viewport.X + Game1.viewport.Width - 33, farmer.position.Y);
+
+                    if (dm != null)
+                    {
+                        EdgeWarp edge = dm.EdgeWarps.Find((x) => x.ThisMapEdge == "Right" && x.FirstTile <= edgePos.Y && x.LastTile >= edgePos.Y);
+                        if (edge != null)
+                        {
+                            Point pos = SwimUtils.GetEdgeWarpDestination(edgePos.Y, edge);
+                            if (pos != Point.Zero)
+                            {
+                                Monitor.Log("warping east");
+                                Game1.warpFarmer(edge.OtherMapName, pos.X, pos.Y, false);
+                            }
+                        }
+                    }
+
+                    if (farmer.currentLocation.Name == "Forest")
+                    {
+                        if (farmer.position.Y / 64 > 74)
+                            Game1.warpFarmer("Beach", 0, 13, false);
+                        else
+                            Game1.warpFarmer("Town", 0, 100, false);
+                    }
+                }
+                else if (farmer.position.X < Game1.viewport.X - 32)
+                {
+                    farmer.position.Value = new Vector2(Game1.viewport.X - 31, farmer.position.Y);
+
+                    if (dm != null)
+                    {
+                        EdgeWarp edge = dm.EdgeWarps.Find((x) => x.ThisMapEdge == "Left" && x.FirstTile <= edgePos.X && x.LastTile >= edgePos.X);
+                        if (edge != null)
+                        {
+                            Point pos = SwimUtils.GetEdgeWarpDestination(edgePos.Y, edge);
+                            if (pos != Point.Zero)
+                            {
+                                Monitor.Log("warping west");
+                                Game1.warpFarmer(edge.OtherMapName, pos.X, pos.Y, false);
+                            }
+                        }
+                    }
+
+                    if (farmer.currentLocation.Name == "Town")
+                    {
+                        Game1.warpFarmer("Forest", 119, 43, false);
+                    }
+                    else if (farmer.currentLocation.Name == "Beach")
+                    {
+                        Game1.warpFarmer("Forest", 119, 111, false);
+                    }
+                }
+
+                if (farmer.bathingClothes && SwimUtils.IsWearingScubaGear(farmer) && !data.swimSuitAlways)
+                    farmer.changeOutOfSwimSuit();
+                else if (!farmer.bathingClothes && (!SwimUtils.IsWearingScubaGear(farmer) || data.swimSuitAlways))
+                    farmer.changeIntoSwimsuit();
+
+                if (farmer.boots.Value != null && ModEntry.scubaFinsID != -1 && farmer.boots.Value.indexInTileSheet == ModEntry.scubaFinsID)
+                {
+                    int buffId = 42883167;
+                    Buff buff = Game1.buffsDisplay.otherBuffs.FirstOrDefault((Buff p) => p.which == buffId);
+                    if (buff == null)
+                    {
+                        BuffsDisplay buffsDisplay = Game1.buffsDisplay;
+                        Buff buff2 = new Buff(0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 1, "Scuba Fins", Helper.Translation.Get("scuba-fins"));
+                        buff2.which = buffId;
+                        buff = buff2;
+                        buffsDisplay.addOtherBuff(buff2);
+                    }
+                    buff.millisecondsDuration = 50;
+                }
+            }
+            else
+            {
+                if (SwimUtils.IsInWater(farmer) && !data.isJumping)
+                {
+                    Monitor.Log("In water not swimming");
+
+                    ModEntry.willSwim = true;
+                    farmer.freezePause = Config.JumpTimeInMilliseconds;
+                    farmer.currentLocation.playSound("dwop", NetAudio.SoundContext.Default);
+                    data.isJumping = true;
+                    data.startJumpLoc = farmer.position.Value;
+                    data.endJumpLoc = farmer.position.Value;
+
+
+                    farmer.swimming.Value = true;
+                    if (!farmer.bathingClothes && !SwimUtils.IsWearingScubaGear(farmer))
+                        farmer.changeIntoSwimsuit();
+                }
+
+            }
+
+            SwimUtils.CheckIfMyButtonDown();
+
+            if (!ModEntry.myButtonDown || farmer.millisecondsPlayed - ModEntry.swimmerData[farmer.uniqueMultiplayerID].lastJump < 250 || SwimUtils.IsMapUnderwater(farmer.currentLocation.Name))
+                return;
+
+            if (Helper.Input.IsDown(SButton.MouseLeft) && !farmer.swimming && (farmer.CurrentTool is WateringCan || farmer.CurrentTool is FishingRod))
+                return;
+
+
+            List<Vector2> tiles = SwimUtils.GetTilesInDirection(5, farmer);
+            Vector2 jumpLocation = Vector2.Zero;
+
+            double distance = -1;
+            int maxDistance = 0;
+            switch (farmer.FacingDirection)
+            {
+                case 0:
+                    distance = Math.Abs(farmer.position.Y - tiles.Last().Y * Game1.tileSize);
+                    maxDistance = 72;
+                    break;
+                case 2:
+                    distance = Math.Abs(farmer.position.Y - tiles.Last().Y * Game1.tileSize);
+                    maxDistance = 48;
+                    break;
+                case 1:
+                case 3:
+                    distance = Math.Abs(farmer.position.X - tiles.Last().X * Game1.tileSize);
+                    maxDistance = 65;
+                    break;
+            }
+            if (Helper.Input.IsDown(SButton.MouseLeft))
+            {
+                try
+                {
+                    int xTile = (Game1.viewport.X + Game1.getOldMouseX()) / 64;
+                    int yTile = (Game1.viewport.Y + Game1.getOldMouseY()) / 64;
+                    bool water = farmer.currentLocation.waterTiles[xTile, yTile];
+                    if (farmer.swimming != water)
+                    {
+                        distance = -1;
+                    }
+                }
+                catch
+                {
+
+                }
+            }
+            //Monitor.Log("Distance: " + distance);
+
+            bool nextToLand = farmer.swimming && !farmer.currentLocation.isTilePassable(new Location((int)tiles.Last().X, (int)tiles.Last().Y), Game1.viewport) && !SwimUtils.IsWaterTile(tiles[tiles.Count - 2]) && distance < maxDistance;
+
+            bool nextToWater = false;
+            try
+            {
+                nextToWater = !farmer.swimming &&
+                    !SwimUtils.IsTilePassable(farmer.currentLocation, new Location((int)tiles.Last().X, (int)tiles.Last().Y), Game1.viewport) &&
+                    (farmer.currentLocation.waterTiles[(int)tiles.Last().X, (int)tiles.Last().Y]
+                        || SwimUtils.IsWaterTile(tiles[tiles.Count - 2]))
+                    && distance < maxDistance;
+            }
+            catch
+            {
+                //Monitor.Log($"exception trying to get next to water: {ex}");
+            }
+
+            //Monitor.Log($"next passable {farmer.currentLocation.isTilePassable(new Location((int)tiles.Last().X, (int)tiles.Last().Y), Game1.viewport)} next to land: {nextToLand}, next to water: {nextToWater}");
+
+
+            if (Helper.Input.IsDown(Config.SwimKey) || nextToLand || nextToWater)
+            {
+                //Monitor.Log("okay to jump");
+                for (int i = 0; i < tiles.Count; i++)
+                {
+                    Vector2 tileV = tiles[i];
+                    bool isWater = false;
+                    bool isPassable = false;
+                    try
+                    {
+                        Tile tile = farmer.currentLocation.map.GetLayer("Buildings").PickTile(new Location((int)tileV.X * Game1.tileSize, (int)tileV.Y * Game1.tileSize), Game1.viewport.Size);
+                        isWater = SwimUtils.IsWaterTile(tileV);
+                        isPassable = (nextToLand && !isWater && SwimUtils.IsTilePassable(farmer.currentLocation, new Location((int)tileV.X, (int)tileV.Y), Game1.viewport)) || (nextToWater && isWater && (tile == null || tile.TileIndex == 76));
+                        //Monitor.Log($"Trying {tileV} is passable {isPassable} isWater {isWater}");
+                        if (!SwimUtils.IsTilePassable(farmer.currentLocation, new Location((int)tileV.X, (int)tileV.Y), Game1.viewport) && !isWater && nextToLand)
+                        {
+                            //Monitor.Log($"Nixing {tileV}");
+                            jumpLocation = Vector2.Zero;
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        Monitor.Log("" + ex);
+                    }
+                    if (nextToLand && !isWater && isPassable)
+                    {
+                        Monitor.Log($"Jumping to {tileV}");
+                        jumpLocation = tileV;
+
+                    }
+
+                    if (nextToWater && isWater && isPassable)
+                    {
+                        Monitor.Log($"Jumping to {tileV}");
+                        jumpLocation = tileV;
+
+                    }
+
+
                 }
             }
 
+            if (jumpLocation != Vector2.Zero)
+            {
+                ModEntry.swimmerData[farmer.uniqueMultiplayerID].lastJump = farmer.millisecondsPlayed;
+                //Monitor.Log("got swim location");
+                if (farmer.swimming)
+                {
+                    ModEntry.willSwim = false;
+                    farmer.swimming.Value = false;
+                    farmer.freezePause = Config.JumpTimeInMilliseconds;
+                    farmer.currentLocation.playSound("dwop", NetAudio.SoundContext.Default);
+                    farmer.currentLocation.playSound("waterSlosh", NetAudio.SoundContext.Default);
+                }
+                else
+                {
+                    ModEntry.willSwim = true;
+                    if (!SwimUtils.IsWearingScubaGear(farmer))
+                        farmer.changeIntoSwimsuit();
+
+                    farmer.freezePause = Config.JumpTimeInMilliseconds;
+                    farmer.currentLocation.playSound("dwop", NetAudio.SoundContext.Default);
+                }
+                ModEntry.swimmerData[farmer.uniqueMultiplayerID].isJumping = true;
+                ModEntry.swimmerData[farmer.uniqueMultiplayerID].startJumpLoc = farmer.position.Value;
+                ModEntry.swimmerData[farmer.uniqueMultiplayerID].endJumpLoc = new Vector2(jumpLocation.X * Game1.tileSize, jumpLocation.Y * Game1.tileSize);
+            }
 
         }
 

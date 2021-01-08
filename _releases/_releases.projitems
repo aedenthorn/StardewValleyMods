@@ -11,6 +11,8 @@
   <ItemGroup>
     <None Include="$(MSBuildThisFileDirectory)BossCreatures 1.2.0.zip" />
     <None Include="$(MSBuildThisFileDirectory)CustomFixedDialogue 0.6.0.zip" />
+    <None Include="$(MSBuildThisFileDirectory)CustomFixedDialogue 0.6.1.zip" />
+    <None Include="$(MSBuildThisFileDirectory)CustomFixedDialogue 0.6.2.zip" />
     <None Include="$(MSBuildThisFileDirectory)CustomMonsterFloors 0.7.0.zip" />
     <None Include="$(MSBuildThisFileDirectory)CustomOreNodes 0.6.1.zip" />
     <None Include="$(MSBuildThisFileDirectory)CustomOreNodes 0.7.0.zip" />

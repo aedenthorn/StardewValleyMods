@@ -22,6 +22,11 @@ namespace CustomFixedDialogue
 			);
 
 			harmony.Patch(
+				original: AccessTools.Method(typeof(Dialogue), nameof(Dialogue.convertToDwarvish)),
+				prefix: new HarmonyMethod(typeof(DialoguePatches), nameof(DialoguePatches.convertToDwarvish_Prefix))
+			);
+
+			harmony.Patch(
 				original: AccessTools.Method(typeof(LocalizedContentManager), nameof(LocalizedContentManager.LoadString), new Type[] { typeof(string) }),
 				postfix: new HarmonyMethod(typeof(DialoguePatches), nameof(DialoguePatches.LocalizedContentManager_LoadString_Postfix))
 			);
@@ -34,12 +39,5 @@ namespace CustomFixedDialogue
 				postfix: new HarmonyMethod(typeof(DialoguePatches), nameof(DialoguePatches.NPC_getHi_Postfix))
 			);
 		}
-
-        private static void Farmer_isMarried1()
-        {
-        }
-        private static void Farmer_isMarried2()
-        {
-        }
     }
 }
