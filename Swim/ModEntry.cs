@@ -127,7 +127,8 @@ namespace Swim
 
             harmony.Patch(
                original: AccessTools.Method(typeof(Wand), nameof(Wand.DoFunction)),
-               transpiler: new HarmonyMethod(typeof(SwimPatches), nameof(SwimPatches.Wand_DoFunction_Transpiler))
+               prefix: new HarmonyMethod(typeof(SwimPatches), nameof(SwimPatches.Wand_DoFunction_Prefix)),
+               postfix: new HarmonyMethod(typeof(SwimPatches), nameof(SwimPatches.Wand_DoFunction_Postfix))
             );
 
             harmony.Patch(

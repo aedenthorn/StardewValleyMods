@@ -375,7 +375,7 @@ namespace MultipleSpouses
             if (ModEntry.config.CustomBed)
             {
                 bool up = fh.upgradeLevel > 1;
-                return Math.Min(up ? 9 : 6, Math.Max(ModEntry.config.BedWidth, 3));
+                return Math.Min(up ? 8 : 5, Math.Max(ModEntry.config.BedWidth, 3));
             }
             else
             {

@@ -208,9 +208,10 @@ namespace MultipleSpouses
 		{
 
 			NPC spouse = Game1.getCharacterFromName(name);
-			string back = "Back";
-			string buildings = "Buildings";
-			string front = "Front";
+			Layer back = null;
+			Layer buildings = null;
+			Layer front = null;
+			Layer alwaysFront = null;
 			if (spouse != null || name == "")
 			{
 				if (farmHouse.owner.friendshipData[spouse.Name] != null && farmHouse.owner.friendshipData[spouse.Name].IsEngaged())
@@ -228,6 +229,10 @@ namespace MultipleSpouses
 
                 if (roomIndexes.ContainsKey(name))
                 {
+					back = refurbishedMap.GetLayer("Back");
+					buildings = refurbishedMap.GetLayer("Buildings");
+					front = refurbishedMap.GetLayer("Front");
+
 					indexInSpouseMapSheet = roomIndexes[name];
 					if(name == "Emily")
                     {
@@ -255,9 +260,11 @@ namespace MultipleSpouses
 					}
                     try 
 					{
-						back = refurbishedMap.Layers[0].Id;
-						buildings = refurbishedMap.Layers[1].Id;
-						front = refurbishedMap.Layers[2].Id;
+						back = refurbishedMap.Layers[0];
+						buildings = refurbishedMap.Layers[1];
+						front = refurbishedMap.Layers[2];
+						if(refurbishedMap.Layers.Count > 3)
+							alwaysFront = refurbishedMap.Layers[3];
 					}
 					catch(Exception ex)
                     {
@@ -359,28 +366,42 @@ namespace MultipleSpouses
 					for (int y = 0; y < areaToRefurbish.Height; y++)
 					{
 						//PMonitor.Log($"x {x}, y {y}", LogLevel.Debug);
-						if (refurbishedMap.GetLayer(back)?.Tiles[mapReader.X + x, mapReader.Y + y] != null)
+						if (back?.Tiles[mapReader.X + x, mapReader.Y + y] != null)
 						{
-							farmHouse.map.GetLayer("Back").Tiles[areaToRefurbish.X + x, areaToRefurbish.Y + y] = new StaticTile(farmHouse.map.GetLayer("Back"), farmHouse.map.GetTileSheet(refurbishedMap.GetLayer(back).Tiles[mapReader.X + x, mapReader.Y + y].TileSheet.Id), BlendMode.Alpha, refurbishedMap.GetLayer(back).Tiles[mapReader.X + x, mapReader.Y + y].TileIndex);
+							farmHouse.map.GetLayer("Back").Tiles[areaToRefurbish.X + x, areaToRefurbish.Y + y] = new StaticTile(farmHouse.map.GetLayer("Back"), farmHouse.map.GetTileSheet(back.Tiles[mapReader.X + x, mapReader.Y + y].TileSheet.Id), BlendMode.Alpha, back.Tiles[mapReader.X + x, mapReader.Y + y].TileIndex);
 						}
-						if (refurbishedMap.GetLayer(buildings)?.Tiles[mapReader.X + x, mapReader.Y + y] != null)
+						if (buildings?.Tiles[mapReader.X + x, mapReader.Y + y] != null)
 						{
-							farmHouse.map.GetLayer("Buildings").Tiles[areaToRefurbish.X + x, areaToRefurbish.Y + y] = new StaticTile(farmHouse.map.GetLayer("Buildings"), farmHouse.map.GetTileSheet(refurbishedMap.GetLayer(buildings).Tiles[mapReader.X + x, mapReader.Y + y].TileSheet.Id), BlendMode.Alpha, refurbishedMap.GetLayer(buildings).Tiles[mapReader.X + x, mapReader.Y + y].TileIndex);
+							farmHouse.map.GetLayer("Buildings").Tiles[areaToRefurbish.X + x, areaToRefurbish.Y + y] = new StaticTile(farmHouse.map.GetLayer("Buildings"), farmHouse.map.GetTileSheet(buildings.Tiles[mapReader.X + x, mapReader.Y + y].TileSheet.Id), BlendMode.Alpha, buildings.Tiles[mapReader.X + x, mapReader.Y + y].TileIndex);
 
-							typeof(GameLocation).GetMethod("adjustMapLightPropertiesForLamp", BindingFlags.NonPublic | BindingFlags.Instance).Invoke(farmHouse, new object[] { refurbishedMap.GetLayer(buildings).Tiles[mapReader.X + x, mapReader.Y + y].TileIndex, areaToRefurbish.X + x, areaToRefurbish.Y + y, "Buildings" });
+							typeof(GameLocation).GetMethod("adjustMapLightPropertiesForLamp", BindingFlags.NonPublic | BindingFlags.Instance).Invoke(farmHouse, new object[] { buildings.Tiles[mapReader.X + x, mapReader.Y + y].TileIndex, areaToRefurbish.X + x, areaToRefurbish.Y + y, "Buildings" });
 						}
 						else
 						{
 							farmHouse.map.GetLayer("Buildings").Tiles[areaToRefurbish.X + x, areaToRefurbish.Y + y] = null;
 						}
-						if (y < areaToRefurbish.Height - 1 && refurbishedMap.GetLayer(front)?.Tiles[mapReader.X + x, mapReader.Y + y] != null)
+						if (y < areaToRefurbish.Height - 1 && front?.Tiles[mapReader.X + x, mapReader.Y + y] != null)
 						{
-							farmHouse.map.GetLayer("Front").Tiles[areaToRefurbish.X + x, areaToRefurbish.Y + y] = new StaticTile(farmHouse.map.GetLayer("Front"), farmHouse.map.GetTileSheet(refurbishedMap.GetLayer(front).Tiles[mapReader.X + x, mapReader.Y + y].TileSheet.Id), BlendMode.Alpha, refurbishedMap.GetLayer(front).Tiles[mapReader.X + x, mapReader.Y + y].TileIndex);
-							typeof(GameLocation).GetMethod("adjustMapLightPropertiesForLamp", BindingFlags.NonPublic | BindingFlags.Instance).Invoke(farmHouse, new object[] { refurbishedMap.GetLayer(front).Tiles[mapReader.X + x, mapReader.Y + y].TileIndex, areaToRefurbish.X + x, areaToRefurbish.Y + y, "Front" });
+							farmHouse.map.GetLayer("Front").Tiles[areaToRefurbish.X + x, areaToRefurbish.Y + y] = new StaticTile(farmHouse.map.GetLayer("Front"), farmHouse.map.GetTileSheet(front.Tiles[mapReader.X + x, mapReader.Y + y].TileSheet.Id), BlendMode.Alpha, front.Tiles[mapReader.X + x, mapReader.Y + y].TileIndex);
+							typeof(GameLocation).GetMethod("adjustMapLightPropertiesForLamp", BindingFlags.NonPublic | BindingFlags.Instance).Invoke(farmHouse, new object[] { front.Tiles[mapReader.X + x, mapReader.Y + y].TileIndex, areaToRefurbish.X + x, areaToRefurbish.Y + y, "Front" });
 						}
 						else if (y < areaToRefurbish.Height - 1)
 						{
 							farmHouse.map.GetLayer("Front").Tiles[areaToRefurbish.X + x, areaToRefurbish.Y + y] = null;
+						}
+						if (y < areaToRefurbish.Height - 2 && alwaysFront?.Tiles[mapReader.X + x, mapReader.Y + y] != null)
+						{
+							if(farmHouse.map.GetLayer("AlwaysFront") == null)
+                            {
+								farmHouse.map.AddLayer(new Layer("AlwaysFront", farmHouse.map, farmHouse.map.GetLayer("Front").LayerSize, farmHouse.map.GetLayer("Front").TileSize));
+
+							}
+							farmHouse.map.GetLayer("AlwaysFront").Tiles[areaToRefurbish.X + x, areaToRefurbish.Y + y] = new StaticTile(farmHouse.map.GetLayer("AlwaysFront"), farmHouse.map.GetTileSheet(alwaysFront.Tiles[mapReader.X + x, mapReader.Y + y].TileSheet.Id), BlendMode.Alpha, alwaysFront.Tiles[mapReader.X + x, mapReader.Y + y].TileIndex);
+							typeof(GameLocation).GetMethod("adjustMapLightPropertiesForLamp", BindingFlags.NonPublic | BindingFlags.Instance).Invoke(farmHouse, new object[] { alwaysFront.Tiles[mapReader.X + x, mapReader.Y + y].TileIndex, areaToRefurbish.X + x, areaToRefurbish.Y + y, "AlwaysFront" });
+						}
+						else if (y < areaToRefurbish.Height - 2 && farmHouse.map.GetLayer("AlwaysFront") != null)
+						{
+							farmHouse.map.GetLayer("AlwaysFront").Tiles[areaToRefurbish.X + x, areaToRefurbish.Y + y] = null;
 						}
 						if (x == 4 && y == 4)
 						{
