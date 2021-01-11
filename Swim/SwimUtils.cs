@@ -82,20 +82,20 @@ namespace Swim
             return Point.Zero;
         }
 
-        public static void DiveTo(DiveLocation diveLocation, Farmer farmer)
+        public static void DiveTo(DiveLocation diveLocation)
         {
             DivePosition dp = diveLocation.OtherMapPos;
             if (dp == null)
             {
                 Monitor.Log($"Diving to existing tile position");
-                Point pos = farmer.getTileLocationPoint();
+                Point pos = Game1.player.getTileLocationPoint();
                 dp = new DivePosition()
                 {
                     X = pos.X,
                     Y = pos.Y
                 };
             }
-            if (!IsMapUnderwater(farmer.currentLocation.Name))
+            if (!IsMapUnderwater(Game1.player.currentLocation.Name))
             {
                 ModEntry.bubbles.Clear();
             }
@@ -119,7 +119,7 @@ namespace Swim
 
         public static void CheckIfMyButtonDown()
         {
-            if (Game1.player == null || Game1.player.currentLocation == null || !ModEntry.swimmerData[Game1.player.uniqueMultiplayerID].readyToSwim || Game1.player.currentLocation.waterTiles == null || !Context.IsPlayerFree || Helper.Input.IsDown(SButton.LeftShift))
+            if (Game1.player == null || Game1.player.currentLocation == null || !Config.ReadyToSwim || Game1.player.currentLocation.waterTiles == null || !Context.IsPlayerFree || Helper.Input.IsDown(SButton.LeftShift))
             {
                 ModEntry.myButtonDown = false;
                 return;
@@ -242,23 +242,23 @@ namespace Swim
             return objectIndex;
         }
 
-        public static bool IsWearingScubaGear(Farmer farmer)
+        public static bool IsWearingScubaGear()
         {
-            bool tank = ModEntry.scubaTankID != -1 && farmer.shirtItem != null && farmer.shirtItem.Value != null && farmer.shirtItem.Value.parentSheetIndex != null && farmer.shirtItem.Value.parentSheetIndex == ModEntry.scubaTankID;
-            bool mask = ModEntry.scubaMaskID != -1 && farmer.hat != null && farmer.hat.Value != null && farmer.hat.Value.which != null && farmer.hat.Value.which == ModEntry.scubaMaskID;
+            bool tank = ModEntry.scubaTankID != -1 && Game1.player.shirtItem != null && Game1.player.shirtItem.Value != null && Game1.player.shirtItem.Value.parentSheetIndex != null && Game1.player.shirtItem.Value.parentSheetIndex == ModEntry.scubaTankID;
+            bool mask = ModEntry.scubaMaskID != -1 && Game1.player.hat != null && Game1.player.hat.Value != null && Game1.player.hat.Value.which != null && Game1.player.hat.Value.which == ModEntry.scubaMaskID;
 
             return tank && mask;
         }
 
-        public static bool IsInWater(Farmer farmer)
+        public static bool IsInWater()
         {
-            var tiles = farmer.currentLocation.waterTiles;
-            Point p = farmer.getTileLocationPoint();
+            var tiles = Game1.player.currentLocation.waterTiles;
+            Point p = Game1.player.getTileLocationPoint();
 
-            if (!farmer.swimming && farmer.currentLocation.map.GetLayer("Buildings").PickTile(new Location(p.X, p.Y) * Game1.tileSize, Game1.viewport.Size) != null)
+            if (!Game1.player.swimming && Game1.player.currentLocation.map.GetLayer("Buildings").PickTile(new Location(p.X, p.Y) * Game1.tileSize, Game1.viewport.Size) != null)
                 return false;
 
-            return IsMapUnderwater(farmer.currentLocation.Name)
+            return IsMapUnderwater(Game1.player.currentLocation.Name)
                 ||
                 (
                     tiles != null
@@ -267,7 +267,7 @@ namespace Swim
                         (p.X >= 0 && p.Y >= 0 && tiles.GetLength(0) > p.X && tiles.GetLength(1) > p.Y && tiles[p.X, p.Y])
                         ||
                         (
-                            farmer.swimming 
+                            Game1.player.swimming 
                             &&
                             (p.X < 0 || p.Y < 0 || tiles.GetLength(0) <= p.X || tiles.GetLength(1) <= p.Y)
                         )
@@ -275,16 +275,16 @@ namespace Swim
                 );
         }
 
-        public static List<Vector2> GetTilesInDirection(int count, Farmer farmer)
+        public static List<Vector2> GetTilesInDirection(int count)
         {
             List<Vector2> tiles = new List<Vector2>();
-            int dir = farmer.facingDirection;
+            int dir = Game1.player.facingDirection;
             if (dir == 1)
             {
 
                 for (int i = count; i > 0; i--)
                 {
-                    tiles.Add(farmer.getTileLocation() + new Vector2(i, 0));
+                    tiles.Add(Game1.player.getTileLocation() + new Vector2(i, 0));
                 }
 
             }
@@ -294,7 +294,7 @@ namespace Swim
 
                 for (int i = count; i > 0; i--)
                 {
-                    tiles.Add(farmer.getTileLocation() + new Vector2(0, i));
+                    tiles.Add(Game1.player.getTileLocation() + new Vector2(0, i));
                 }
 
             }
@@ -304,7 +304,7 @@ namespace Swim
 
                 for (int i = count; i > 0; i--)
                 {
-                    tiles.Add(farmer.getTileLocation() - new Vector2(i, 0));
+                    tiles.Add(Game1.player.getTileLocation() - new Vector2(i, 0));
                 }
 
             }
@@ -314,7 +314,7 @@ namespace Swim
 
                 for (int i = count; i > 0; i--)
                 {
-                    tiles.Add(farmer.getTileLocation() - new Vector2(0, i));
+                    tiles.Add(Game1.player.getTileLocation() - new Vector2(0, i));
                 }
 
             }
@@ -323,34 +323,34 @@ namespace Swim
 
         }
 
-        public static Vector2 GetNextTile(Farmer farmer)
+        public static Vector2 GetNextTile()
         {
-            int dir = farmer.facingDirection;
+            int dir = Game1.player.facingDirection;
             if (dir == 1)
             {
 
-                return farmer.getTileLocation() + new Vector2(1, 0);
+                return Game1.player.getTileLocation() + new Vector2(1, 0);
 
             }
 
             if (dir == 2)
             {
 
-                return farmer.getTileLocation() + new Vector2(0, 1);
+                return Game1.player.getTileLocation() + new Vector2(0, 1);
 
             }
 
             if (dir == 3)
             {
 
-                return farmer.getTileLocation() - new Vector2(1, 0);
+                return Game1.player.getTileLocation() - new Vector2(1, 0);
 
             }
 
             if (dir == 0)
             {
 
-                return farmer.getTileLocation() - new Vector2(0, 1);
+                return Game1.player.getTileLocation() - new Vector2(0, 1);
             }
             return Vector2.Zero;
         }

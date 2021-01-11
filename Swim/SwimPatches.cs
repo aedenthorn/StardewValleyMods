@@ -75,20 +75,11 @@ namespace Swim
         {
             try
             {
-                IEnumerable<Farmer> farmers = Game1.getAllFarmers();
-                if (!farmers.Any())
-                    return;
-                foreach (Farmer farmer in farmers)
+                if (Game1.player.swimming)
                 {
-                    if (!ModEntry.swimmerData.ContainsKey(farmer.uniqueMultiplayerID))
-                        ModEntry.swimmerData[farmer.uniqueMultiplayerID] = new SwimmerData();
-                    if (farmer.swimming)
-                    {
-                        farmer.swimming.Value = false;
-
-                        if (!ModEntry.swimmerData[farmer.uniqueMultiplayerID].swimSuitAlways)
-                            farmer.changeOutOfSwimSuit();
-                    }
+                    Game1.player.swimming.Value = false;
+                    if (!Config.SwimSuitAlways)
+                        Game1.player.changeOutOfSwimSuit();
                 }
             }
             catch (Exception ex)
@@ -125,10 +116,7 @@ namespace Swim
         {
             try
             {
-                if (!ModEntry.swimmerData.ContainsKey(__instance.uniqueMultiplayerID))
-                    ModEntry.swimmerData[__instance.uniqueMultiplayerID] = new SwimmerData();
-                SwimmerData data = ModEntry.swimmerData[__instance.uniqueMultiplayerID];
-                if (__instance.swimming && (!Config.ReadyToSwim || !ModEntry.swimmerData[Game1.player.uniqueMultiplayerID].readyToSwim || Config.SwimRestoresVitals) && __instance.timerSinceLastMovement > 0 && !Game1.eventUp && (Game1.activeClickableMenu == null || Game1.IsMultiplayer) && !Game1.paused)
+                if (__instance.swimming && (!Config.ReadyToSwim || Config.SwimRestoresVitals) && __instance.timerSinceLastMovement > 0 && !Game1.eventUp && (Game1.activeClickableMenu == null || Game1.IsMultiplayer) && !Game1.paused)
                 {
                     if (__instance.timerSinceLastMovement > 800)
                     {
@@ -149,9 +137,7 @@ namespace Swim
         {
             try
             {
-                if (!ModEntry.swimmerData.ContainsKey(__instance.uniqueMultiplayerID))
-                    ModEntry.swimmerData[__instance.uniqueMultiplayerID] = new SwimmerData();
-                if (__instance.swimming && (!Config.ReadyToSwim || !ModEntry.swimmerData[__instance.uniqueMultiplayerID].readyToSwim || Config.SwimRestoresVitals) && __instance.timerSinceLastMovement > 0 && !Game1.eventUp && (Game1.activeClickableMenu == null || Game1.IsMultiplayer) && !Game1.paused)
+                if (__instance.swimming && (!Config.ReadyToSwim || Config.SwimRestoresVitals) && __instance.timerSinceLastMovement > 0 && !Game1.eventUp && (Game1.activeClickableMenu == null || Game1.IsMultiplayer) && !Game1.paused)
                 {
                     if (__instance.swimTimer < 0)
                     {
@@ -282,10 +268,9 @@ namespace Swim
                 {
                     if (codes[i].opcode == OpCodes.Ret)
                     {
-                        codes[i].opcode = OpCodes.Nop;
-                        return codes.AsEnumerable();
+                        start = i + 1;
+                        return codes.Skip(start).AsEnumerable();
                     }
-                    codes[i].opcode = OpCodes.Nop;
                 }
             }
             catch (Exception ex)
@@ -387,7 +372,7 @@ namespace Swim
                 {
                     if (!Game1.player.swimming)
                     {
-                        ModEntry.swimmerData[Game1.player.uniqueMultiplayerID].readyToSwim = false;
+                        Config.ReadyToSwim = false;
                     }
                 }
             }
@@ -456,22 +441,14 @@ namespace Swim
         {
             try
             {
-                IEnumerable<Farmer> farmers = Game1.getAllFarmers();
-                if (!farmers.Any())
+                if (__result == false || !isFarmer || !character.Equals(Game1.player) || !Game1.player.swimming || ModEntry.isUnderwater)
                     return;
-                foreach (Farmer farmer in farmers)
-                {
-                    if (farmer.currentLocation == null || farmer == null || !Game1.displayFarmer || farmer.position == null)
-                        return;
-                    if (!__result || !isFarmer || !character.Equals(farmer) || !farmer.swimming || ModEntry.swimmerData[farmer.uniqueMultiplayerID].isUnderwater)
-                        return;
 
-                    Vector2 next = SwimUtils.GetNextTile(farmer);
-                    //Monitor.Log($"Checking collide {SwimUtils.doesTileHaveProperty(__instance.map, (int)next.X, (int)next.Y, "Water", "Back") != null}");
-                    if ((int)next.X <= 0 || (int)next.Y <= 0 || __instance.Map.Layers[0].LayerWidth <= (int)next.X || __instance.Map.Layers[0].LayerHeight <= (int)next.Y || SwimUtils.doesTileHaveProperty(__instance.map, (int)next.X, (int)next.Y, "Water", "Back") != null)
-                    {
-                        __result = false;
-                    }
+                Vector2 next = SwimUtils.GetNextTile();
+                //Monitor.Log($"Checking collide {SwimUtils.doesTileHaveProperty(__instance.map, (int)next.X, (int)next.Y, "Water", "Back") != null}");
+                if ((int)next.X <= 0 || (int)next.Y <= 0 || __instance.Map.Layers[0].LayerWidth <= (int)next.X || __instance.Map.Layers[0].LayerHeight <= (int)next.Y || SwimUtils.doesTileHaveProperty(__instance.map, (int)next.X, (int)next.Y, "Water", "Back") != null)
+                {
+                    __result = false;
                 }
             }
             catch (Exception ex)

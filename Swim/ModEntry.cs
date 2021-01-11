@@ -26,8 +26,10 @@ namespace Swim
         public static int scubaFinsID = -1;
         public static int scubaTankID = -1;
         public static bool myButtonDown = false;
+        public static int oxygen = 0;
         public static int lastUpdateMs = 0;
         public static bool willSwim = false;
+        public static bool isUnderwater = false;
         public static NPC oldMariner;
         public static bool marinerQuestionsWrongToday = false;
         public static Random myRand;
@@ -51,7 +53,6 @@ namespace Swim
             "ScubaAbigailCave",
             "ScubaCrystalCave",
         };
-        public static Dictionary<long, SwimmerData> swimmerData = new Dictionary<long, SwimmerData>();
 
 
         public override void Entry(IModHelper helper)
@@ -124,14 +125,10 @@ namespace Swim
                prefix: new HarmonyMethod(typeof(SwimPatches), nameof(SwimPatches.Toolbar_draw_Prefix))
             );
 
-            /*
-
             harmony.Patch(
                original: AccessTools.Method(typeof(Wand), nameof(Wand.DoFunction)),
                transpiler: new HarmonyMethod(typeof(SwimPatches), nameof(SwimPatches.Wand_DoFunction_Transpiler))
             );
-
-            */
 
             harmony.Patch(
                original: AccessTools.Method(typeof(GameLocation), nameof(GameLocation.draw)),
