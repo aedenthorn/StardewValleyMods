@@ -48,6 +48,7 @@
     <None Include="$(MSBuildThisFileDirectory)Swim 1.5.1.zip" />
     <None Include="$(MSBuildThisFileDirectory)Swim 1.6.2.zip" />
     <None Include="$(MSBuildThisFileDirectory)Swim 1.7.0.zip" />
+    <None Include="$(MSBuildThisFileDirectory)Swim 1.8.0.zip" />
     <None Include="$(MSBuildThisFileDirectory)TransparentObjects 0.2.1.zip" />
     <None Include="$(MSBuildThisFileDirectory)UndergroundSecrets 0.3.2.zip" />
     <None Include="$(MSBuildThisFileDirectory)VideoPlayer 0.2.5.zip" />
