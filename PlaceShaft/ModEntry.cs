@@ -2,63 +2,25 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using StardewModdingAPI;
+using StardewModdingAPI.Events;
 using StardewValley;
 using StardewValley.Locations;
 using StardewValley.Network;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Reflection;
 
 namespace PlaceShaft
 {
     /// <summary>The mod entry point.</summary>
-    public class ModEntry : Mod, IAssetEditor
+    public class ModEntry : Mod
 	{
 
 		public static ModEntry context;
 
-		internal static ModConfig Config;
-		/// <summary>Get whether this instance can edit the given asset.</summary>
-		/// <param name="asset">Basic metadata about the asset being loaded.</param>
-		public bool CanEdit<T>(IAssetInfo asset)
-		{
-			if (asset.AssetNameEquals("Maps/Mines/mine") || asset.AssetNameEquals("Maps/Mines/mine_dark") || asset.AssetNameEquals("Maps/Mines/mine_dino") || asset.AssetNameEquals("Maps/Mines/mine_frost") || asset.AssetNameEquals("Maps/Mines/mine_lava") || asset.AssetNameEquals("Maps/Mines/mine_frost_dark") || asset.AssetNameEquals("Maps/Mines/minequarryshaft") || asset.AssetNameEquals("Maps/Mines/mine_lava_dark") || asset.AssetNameEquals("Maps/Mines/mine_slime") || asset.AssetNameEquals("Maps/Mines/mine") || asset.AssetNameEquals("Maps/Mines/mine_dark") || asset.AssetNameEquals("TileSheets/Craftables") || asset.AssetNameEquals("Data/CraftingRecipes") || asset.AssetNameEquals("Data/BigCraftablesInformation"))
-			{
-				return true;
-			}
-
-			return false;
-		}
-
-		/// <summary>Edit a matched asset.</summary>
-		/// <param name="asset">A helper which encapsulates metadata about an asset and enables changes to it.</param>
-		public void Edit<T>(IAssetData asset)
-		{
-			if (asset.AssetNameEquals("Maps/Mines/mine") || asset.AssetNameEquals("Maps/Mines/mine_dark") || asset.AssetNameEquals("Maps/Mines/mine_dino") || asset.AssetNameEquals("Maps/Mines/mine_frost") || asset.AssetNameEquals("Maps/Mines/mine_lava") || asset.AssetNameEquals("Maps/Mines/mine_frost_dark") || asset.AssetNameEquals("Maps/Mines/minequarryshaft") || asset.AssetNameEquals("Maps/Mines/mine_lava_dark") || asset.AssetNameEquals("Maps/Mines/mine_slime") || asset.AssetNameEquals("Maps/Mines/mine") || asset.AssetNameEquals("Maps/Mines/mine_dark"))
-			{
-				Texture2D customTexture = this.Helper.Content.Load<Texture2D>("Maps/Mines/mine_desert", ContentSource.GameContent);
-				asset
-					.AsImage()
-					.PatchImage(customTexture, sourceArea: new Rectangle(224, 160, 16, 16), targetArea: new Rectangle(224, 160, 16, 16));
-			}
-			else if (asset.AssetNameEquals("TileSheets/Craftables"))
-			{
-				Texture2D customTexture = this.Helper.Content.Load<Texture2D>("Maps/Mines/mine_desert", ContentSource.GameContent);
-				asset
-					.AsImage()
-					.PatchImage(customTexture, sourceArea: new Rectangle(224, 160, 16, 16), targetArea: new Rectangle(112, 144, 16, 16));
-			}
-			else if (asset.AssetNameEquals("Data/CraftingRecipes"))
-			{
-				IDictionary<string, string> data = asset.AsDictionary<string, string>().Data;
-				data.Add("Mine Shaft", $"{Config.ShaftCost}/Field/39/true/{Config.SkillReq}");
-			}
-			else if (asset.AssetNameEquals("Data/BigCraftablesInformation"))
-			{
-				IDictionary<int, string> data = asset.AsDictionary<int, string>().Data;
-				data.Add(39, "Mine Shaft/0/-300/Crafting -9/Use this to move down several levels in the mines./true/false/1/Mine Shaft");
-			}
-		}
+		public static ModConfig Config;
+		public IJsonAssetsApi JsonAssets { get; private set; }
 
 
 		/// <summary>The mod entry point, called after the mod is first loaded.</summary>
@@ -67,6 +29,8 @@ namespace PlaceShaft
 		{
 			context = this;
 			Config = Helper.ReadConfig<ModConfig>();
+			helper.Events.GameLoop.GameLaunched += this.GameLoop_GameLaunched;
+
 			var harmony = HarmonyInstance.Create(this.ModManifest.UniqueID);
 
 			harmony.Patch(
@@ -81,6 +45,18 @@ namespace PlaceShaft
 			   original: AccessTools.Method(typeof(GameLocation), nameof(GameLocation.createQuestionDialogue),new Type[] { typeof(string),typeof (Response[]), typeof(string) }),
 			   prefix: new HarmonyMethod(typeof(ModEntry), nameof(ModEntry.createQuestionDialogue_prefix))
 			);
+		}
+		public void GameLoop_GameLaunched(object sender, GameLaunchedEventArgs e)
+		{
+			this.JsonAssets = base.Helper.ModRegistry.GetApi<IJsonAssetsApi>("spacechase0.JsonAssets");
+			if (JsonAssets == null)
+			{
+				Monitor.Log("Can't load Json Assets API for Placeable Mine Shaft", 0);
+			}
+			else
+			{
+				JsonAssets.LoadAssets(Path.Combine(Helper.DirectoryPath, "assets/json-assets"));
+			}
 		}
 
 		private static bool createQuestionDialogue_prefix(GameLocation __instance, string dialogKey)
@@ -143,8 +119,7 @@ namespace PlaceShaft
 
 		private static bool placementAction_prefix(StardewValley.Object __instance, ref bool __result, GameLocation location, int x, int y)
 		{
-			int num = __instance.ParentSheetIndex;
-			if (num != 39)
+			if (__instance.name != "Mine Shaft")
 				return true;
 
 			Vector2 placementTile = new Vector2((float)(x / 64), (float)(y / 64));

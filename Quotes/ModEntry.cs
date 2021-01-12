@@ -54,12 +54,15 @@ namespace Quotes
 
         private void GameLoop_GameLaunched(object sender, StardewModdingAPI.Events.GameLaunchedEventArgs e)
         {
-            api = Helper.ModRegistry.GetApi<IMobilePhoneApi>("aedenthorn.MobilePhone");
-            if (api != null)
+            if (Config.EnableApp)
             {
-                Texture2D appIcon = Helper.Content.Load<Texture2D>(Path.Combine("assets", "app_icon.png"));
-                bool success = api.AddApp(Helper.ModRegistry.ModID, "Random Quote", ShowRandomQuote, appIcon);
-                Monitor.Log($"loaded phone app successfully: {success}", LogLevel.Debug);
+                api = Helper.ModRegistry.GetApi<IMobilePhoneApi>("aedenthorn.MobilePhone");
+                if (api != null)
+                {
+                    Texture2D appIcon = Helper.Content.Load<Texture2D>(Path.Combine("assets", "app_icon.png"));
+                    bool success = api.AddApp(Helper.ModRegistry.ModID, "Random Quote", ShowRandomQuote, appIcon);
+                    Monitor.Log($"loaded phone app successfully: {success}", LogLevel.Debug);
+                }
             }
         }
 

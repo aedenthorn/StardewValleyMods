@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace PlaceShaft
 {
-    class ModConfig
+    public class ModConfig
     {
         public string ShaftCost { get; set; } = "390 200";
         public string SkillReq { get; set; } = "Mining 6";

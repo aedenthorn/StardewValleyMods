@@ -11,6 +11,7 @@ namespace Quotes
     public class ModConfig
     {
         public bool EnableMod { get; set; } = true;
+        public bool EnableApp { get; set; } = true;
         public Color QuoteColor { get; set; } = Color.DarkSeaGreen;
         public int QuoteCharPerLine { get; set; } = 50;
         public float QuoteDurationPerLineMult { get; set; } = 1f;
