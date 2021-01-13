@@ -80,6 +80,7 @@
     <None Include="assets\tmx-pack\manifest.json" />
     <None Include="assets\swim-map-content.json" />
     <None Include="i18n\ko.json" />
+    <None Include="i18n\zh.json" />
     <None Include="manifest.json" />
     <None Include="packages.config" />
   </ItemGroup>
