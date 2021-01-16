@@ -41,7 +41,7 @@ namespace ExpertSitting
 
         private static void RemoveSittingFarmer_Postfix(MapSeat __instance, Farmer farmer)
         {
-			if(__instance.seatType == "stool expert sitting mod")
+			if(__instance.seatType.Value.EndsWith("expert sitting mod"))
             {
 				farmer.currentLocation.mapSeats.Remove(__instance);
             }
@@ -52,7 +52,7 @@ namespace ExpertSitting
 			if (!Config.EnableMod || __result)
 				return;
 
-			SMonitor.Log($"Checking for seat");
+			//SMonitor.Log($"Checking for seat");
 
 			foreach(Object obj in __instance.objects.Values)
             {
@@ -79,7 +79,7 @@ namespace ExpertSitting
 					SMonitor.Log($"Got clump seat");
 					MapSeat ms = new MapSeat();
 					ms.tilePosition.Value = new Vector2(tileLocation.X, tileLocation.Y);
-					ms.seatType.Value = "clump";
+					ms.seatType.Value = "clump expert sitting mod";
                     switch (who.FacingDirection)
                     {
 						case 0:
@@ -104,13 +104,13 @@ namespace ExpertSitting
 			if (__result)
 				return;
 
-			if (Config.AllowMapSit && __instance.map.GetLayer("Buildings")?.PickTile(tileLocation * Game1.tileSize, Game1.viewport.Size) != null && __instance.map.GetLayer("Building")?.PickTile(new Location(tileLocation.X, tileLocation.Y + 1) * Game1.tileSize, Game1.viewport.Size) == null)
+			if (Config.AllowMapSit && (Config.MapSitModKey == SButton.None || context.Helper.Input.IsDown(Config.MapSitModKey)) && __instance.map.GetLayer("Buildings")?.PickTile(tileLocation * Game1.tileSize, Game1.viewport.Size) != null && __instance.map.GetLayer("Building")?.PickTile(new Location(tileLocation.X, tileLocation.Y + 1) * Game1.tileSize, Game1.viewport.Size) == null)
 			{
 				SMonitor.Log($"Got map seat");
 				MapSeat ms = new MapSeat();
 				ms.tilePosition.Value = new Vector2(tileLocation.X, tileLocation.Y);
 				ms.size.Value = new Vector2(1, 1);
-				ms.seatType.Value = "map";
+				ms.seatType.Value = "map expert sitting mod";
 				__instance.mapSeats.Add(ms);
 				ms.direction.Value = 2;
 				who.BeginSitting(ms);

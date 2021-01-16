@@ -1,11 +1,11 @@
 ﻿{
   "Name": "Expert Sitting",
   "Author": "aedenthorn",
-  "Version": "0.2.0",
+  "Version": "0.3.0",
   "Description": "Teaches the farmer the advanced skill of how to sit on stuff.",
   "UniqueID": "aedenthorn.ExpertSitting",
   "EntryDll": "ExpertSitting.dll",
-  "MinimumApiVersion": "3.8.1",
+  "MinimumApiVersion": "3.8.2",
   "UpdateKeys": ["Nexus:7435"],
   "ModUpdater": {
     "Repository": "StardewValleyMods",
