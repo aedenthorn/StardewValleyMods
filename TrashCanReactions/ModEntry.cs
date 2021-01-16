@@ -47,6 +47,7 @@ namespace TrashCanReactions
 
             var codes = new List<CodeInstruction>(instructions); 
             bool startLooking = false;
+            bool stopLooking = false;
             int emote = Config.LinusEmote;
             int points = Config.LinusPoints;
             for (int i = 0; i < codes.Count; i++)
@@ -55,13 +56,15 @@ namespace TrashCanReactions
                 {
                     if (codes[i].opcode == OpCodes.Ldloc_S && codes[i+2].opcode == OpCodes.Ldc_I4_1 && codes[i+3].opcode == OpCodes.Callvirt)
                     {
-                        PMonitor.Log($"got emote!");
+                        PMonitor.Log($"changing emote from {codes[i + 1].opcode}:{codes[i + 1].operand} to {emote}");
                         codes[i+1] = new CodeInstruction(OpCodes.Ldc_I4_S, emote);
                     }
                     else if (codes[i].opcode == OpCodes.Ldarg_3 && codes[i+2].opcode == OpCodes.Ldloc_S && codes[i+3].opcode == OpCodes.Isinst)
                     {
-                        PMonitor.Log($"got int friendship change!");
-                        codes[i+1] = new CodeInstruction(OpCodes.Ldc_I4_S, points);
+                        PMonitor.Log($"changing friendship from {codes[i+1].opcode}:{codes[i + 1].operand} to {points}");
+                        codes[i+1] = new CodeInstruction(OpCodes.Ldc_I8, points);
+                        if (stopLooking)
+                            break;
                     }
                     else if (codes[i].operand as string == "Data\\ExtraDialogue:Town_DumpsterDiveComment_Linus")
                     {
@@ -88,6 +91,7 @@ namespace TrashCanReactions
                     {
                         PMonitor.Log($"got dialogue string {codes[i].operand}!");
                         codes[i].operand = Config.AdultDialogue;
+                        stopLooking = true;
                     }
                 }
                 else if ((codes[i].operand as string) == "TrashCan")
