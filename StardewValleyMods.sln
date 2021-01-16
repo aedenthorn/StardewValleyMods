@@ -95,6 +95,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ExpertSitting", "ExpertSitt
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TrashCanReactions", "TrashCanReactions\TrashCanReactions.csproj", "{971004EC-DD8C-4CCA-9481-34434CE2BB1B}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MapTeleport", "MapTeleport\MapTeleport.csproj", "{ECD0BD18-2DA9-4909-963B-1F713B4986A9}"
+EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
 		_releases\_releases.projitems*{047040e0-3d07-46e5-852b-d1d45cd57bb8}*SharedItemsImports = 13
@@ -466,6 +468,14 @@ Global
 		{971004EC-DD8C-4CCA-9481-34434CE2BB1B}.Release|Any CPU.Build.0 = Release|Any CPU
 		{971004EC-DD8C-4CCA-9481-34434CE2BB1B}.Release|x86.ActiveCfg = Release|Any CPU
 		{971004EC-DD8C-4CCA-9481-34434CE2BB1B}.Release|x86.Build.0 = Release|Any CPU
+		{ECD0BD18-2DA9-4909-963B-1F713B4986A9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{ECD0BD18-2DA9-4909-963B-1F713B4986A9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{ECD0BD18-2DA9-4909-963B-1F713B4986A9}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{ECD0BD18-2DA9-4909-963B-1F713B4986A9}.Debug|x86.Build.0 = Debug|Any CPU
+		{ECD0BD18-2DA9-4909-963B-1F713B4986A9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{ECD0BD18-2DA9-4909-963B-1F713B4986A9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{ECD0BD18-2DA9-4909-963B-1F713B4986A9}.Release|x86.ActiveCfg = Release|Any CPU
+		{ECD0BD18-2DA9-4909-963B-1F713B4986A9}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

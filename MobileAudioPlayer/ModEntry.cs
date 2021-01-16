@@ -10,7 +10,7 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using WMPLib;
 
-namespace MobileAudioPlayer
+namespace MapTeleport
 {
     public class ModEntry : Mod 
 	{

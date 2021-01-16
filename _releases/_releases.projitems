@@ -30,6 +30,7 @@
     <None Include="$(MSBuildThisFileDirectory)FruitTreeShaker 1.1.0.zip" />
     <None Include="$(MSBuildThisFileDirectory)GemIsles 0.2.3.zip" />
     <None Include="$(MSBuildThisFileDirectory)HereFishy 0.3.2.zip" />
+    <None Include="$(MSBuildThisFileDirectory)MapTeleport 0.1.0.zip" />
     <None Include="$(MSBuildThisFileDirectory)MobileArcade 0.1.2.zip" />
     <None Include="$(MSBuildThisFileDirectory)MobileAudioPlayer 0.4.1.zip" />
     <None Include="$(MSBuildThisFileDirectory)MobileCalendar 0.2.0.zip" />

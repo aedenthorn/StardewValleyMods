@@ -3,7 +3,7 @@ using Microsoft.Xna.Framework.Graphics;
 using StardewValley;
 using StardewValley.Menus;
 
-namespace MobileAudioPlayer
+namespace MapTeleport
 {
     public class AudioPlayerMenu : IClickableMenu
     {

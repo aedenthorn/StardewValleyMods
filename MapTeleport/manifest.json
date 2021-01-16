@@ -1,0 +1,22 @@
+﻿{
+  "Name": "Map Teleport",
+  "Author": "aedenthorn",
+  "Version": "0.1.0",
+  "Description": "Teleport using the map.",
+  "UniqueID": "aedenthorn.MapTeleport",
+  "EntryDll": "MapTeleport.dll",
+  "MinimumApiVersion": "3.5.0",
+  "UpdateKeys": ["Nexus:6568"],
+  "ModUpdater": {
+    "Repository": "StardewValleyMods",
+    "User": "aedenthorn",
+    "Directory": "_releases",
+    "ModFolder": "MapTeleport"
+  },
+  "Dependencies": [
+      {
+        "UniqueID": "Platonymous.ModUpdater",
+        "IsRequired": false
+      },
+  ]
+}
