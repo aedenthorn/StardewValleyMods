@@ -3,6 +3,7 @@
     public class ModConfig
     {
         public bool EnableMod { get; set; } = true;
+        public float PuzzleChanceIncreaseRate { get; set; } = 0.3f;
         public float TilePuzzleBaseChance { get; set; } = 0.01f;
         public float LightPuzzleBaseChance { get; set; } = 0.01f;
         public float OfferingPuzzleBaseChance { get; set; } = 0.001f;

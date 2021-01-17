@@ -56,7 +56,7 @@ namespace UndergroundSecrets
             return true;
         }
 
-        internal static void GameLocation_loadMap_postfix(GameLocation __instance)
+        public static void GameLocation_loadMap_postfix(GameLocation __instance)
         {
             if (!(__instance is MineShaft) || !Context.IsWorldReady)
                 return;
@@ -99,9 +99,9 @@ namespace UndergroundSecrets
             return codes.AsEnumerable();
         }
 
-        internal static bool MineShaft_addLevelChests_prefix(MineShaft __instance)
+        public static bool MineShaft_addLevelChests_prefix(MineShaft __instance)
         {
-            if(config.OverrideTreasureRooms && !Game1.player.chestConsumedMineLevels.ContainsKey(__instance.mineLevel) && (helper.Reflection.GetField<NetBool>(__instance, "netIsTreasureRoom").GetValue().Value || (__instance.mineLevel < 120 && __instance.mineLevel % 20 == 0) || __instance.mineLevel == 10 || __instance.mineLevel == 50 || __instance.mineLevel == 70 ||__instance.mineLevel == 90 || __instance.mineLevel == 110))
+            if(config.OverrideTreasureRooms && !Game1.player.chestConsumedMineLevels.ContainsKey(__instance.mineLevel) && __instance.loadedMapNumber == 10 && __instance.mapPath.Value == "Maps\\Mines\\10" && (helper.Reflection.GetField<NetBool>(__instance, "netIsTreasureRoom").GetValue().Value || (__instance.mineLevel < 120 && __instance.mineLevel % 20 == 0) || __instance.mineLevel == 10 || __instance.mineLevel == 50 || __instance.mineLevel == 70 ||__instance.mineLevel == 90 || __instance.mineLevel == 110))
             {
                 Vector2 spot = new Vector2(9, 9);
                 if (__instance.mineLevel % 20 == 0 && __instance.mineLevel % 40 != 0)
@@ -129,7 +129,7 @@ namespace UndergroundSecrets
             return true;
         }
 
-        internal static bool MineShaft_checkAction_prefix(MineShaft __instance, Location tileLocation, xTile.Dimensions.Rectangle viewport, Farmer who)
+        public static bool MineShaft_checkAction_prefix(MineShaft __instance, Location tileLocation, xTile.Dimensions.Rectangle viewport, Farmer who)
         {
             Tile tile = __instance.map.GetLayer("Buildings").PickTile(new Location(tileLocation.X * 64, tileLocation.Y * 64), viewport.Size);
             if (tile != null && who.IsLocalPlayer)

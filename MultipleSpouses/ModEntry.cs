@@ -27,7 +27,7 @@ namespace MultipleSpouses
         public static string spouseToDivorce = null;
         public static Multiplayer mp;
         public static Random myRand;
-        public static int bedSleepOffset = 140;
+        public static int bedSleepOffset = 76;
         public static int divorceHeartsLost;
         public static string farmHelperSpouse = null;
         internal static NPC tempOfficialSpouse;
@@ -326,6 +326,13 @@ namespace MultipleSpouses
             harmony.Patch(
                original: AccessTools.Method(typeof(BedFurniture), nameof(BedFurniture.draw), new Type[] { typeof(SpriteBatch), typeof(int), typeof(int), typeof(float) }),
                prefix: new HarmonyMethod(typeof(FurniturePatches), nameof(FurniturePatches.BedFurniture_draw_Prefix))
+            );
+
+            // Game1 patches
+
+            harmony.Patch(
+               original: AccessTools.Method(typeof(Game1), nameof(Game1.prepareSpouseForWedding)),
+               prefix: new HarmonyMethod(typeof(Game1Patches), nameof(Game1Patches.prepareSpouseForWedding_Prefix))
             );
 
         }

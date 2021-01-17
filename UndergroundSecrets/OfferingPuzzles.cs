@@ -31,7 +31,7 @@ namespace UndergroundSecrets
 
         public static void Start(MineShaft shaft, ref List<Vector2> superClearCenters, ref List<Vector2> clearCenters, ref List<Vector2> clearSpots)
         {
-            if (Game1.random.NextDouble() >= config.OfferingPuzzleBaseChance * Math.Sqrt(shaft.mineLevel) || clearCenters.Count == 0)
+            if (Game1.random.NextDouble() >= config.OfferingPuzzleBaseChance * Math.Pow(shaft.mineLevel, config.PuzzleChanceIncreaseRate) || clearCenters.Count == 0)
                 return;
 
 

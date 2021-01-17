@@ -97,6 +97,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TrashCanReactions", "TrashC
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MapTeleport", "MapTeleport\MapTeleport.csproj", "{ECD0BD18-2DA9-4909-963B-1F713B4986A9}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TreasureChestsExpanded", "TreasureChestsExpanded\TreasureChestsExpanded.csproj", "{4A988D67-791A-4556-9CE1-E7B93A273E46}"
+EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
 		_releases\_releases.projitems*{047040e0-3d07-46e5-852b-d1d45cd57bb8}*SharedItemsImports = 13
@@ -476,6 +478,14 @@ Global
 		{ECD0BD18-2DA9-4909-963B-1F713B4986A9}.Release|Any CPU.Build.0 = Release|Any CPU
 		{ECD0BD18-2DA9-4909-963B-1F713B4986A9}.Release|x86.ActiveCfg = Release|Any CPU
 		{ECD0BD18-2DA9-4909-963B-1F713B4986A9}.Release|x86.Build.0 = Release|Any CPU
+		{4A988D67-791A-4556-9CE1-E7B93A273E46}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4A988D67-791A-4556-9CE1-E7B93A273E46}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4A988D67-791A-4556-9CE1-E7B93A273E46}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{4A988D67-791A-4556-9CE1-E7B93A273E46}.Debug|x86.Build.0 = Debug|Any CPU
+		{4A988D67-791A-4556-9CE1-E7B93A273E46}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4A988D67-791A-4556-9CE1-E7B93A273E46}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4A988D67-791A-4556-9CE1-E7B93A273E46}.Release|x86.ActiveCfg = Release|Any CPU
+		{4A988D67-791A-4556-9CE1-E7B93A273E46}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

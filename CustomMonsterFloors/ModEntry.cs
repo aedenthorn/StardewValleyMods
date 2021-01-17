@@ -81,7 +81,7 @@ namespace CustomMonsterFloors
 		public static List<int> monsterFloors = new List<int>();
 		public static List<int> treasureFloors = new List<int>();
 
-		public static void loadLevel_Postfix(ref MineShaft __instance, int level, ref NetBool ___netIsTreasureRoom, ref NetBool ___netIsMonsterArea, ref NetBool ___netIsSlimeArea, ref NetBool ___netIsDinoArea, NetBool ___netIsQuarryArea, ref NetString ___mapImageSource, bool ___loadedDarkArea, Random ___mineRandom)
+		public static void loadLevel_Postfix(ref MineShaft __instance, int level, ref NetBool ___netIsTreasureRoom, ref NetBool ___netIsMonsterArea, ref NetBool ___netIsSlimeArea, ref NetBool ___netIsDinoArea, NetBool ___netIsQuarryArea, ref NetString ___mapImageSource, bool ___loadedDarkArea, Random ___mineRandom, ref NetString ___mapPath)
 		{
 			GotShaft = false;
 
@@ -94,13 +94,16 @@ namespace CustomMonsterFloors
 				treasureFloors.Add(level);
 				return;
 			}
+			context.Monitor.Log($"Loaded level postfix {__instance.getMineArea(level)} {level}");
 
-			if (__instance.getMineArea(level) == 121 && level >= 130)
+			if (__instance.getMineArea(level) == 121)
 			{
 				double treasureChance = 0.01;
 				treasureChance += Game1.player.team.AverageDailyLuck(Game1.currentLocation) / 10.0 + Game1.player.team.AverageLuckLevel(Game1.currentLocation) / 100.0;
+				context.Monitor.Log($"checking for treasure level chance: {treasureChance * Config.TreasureChestFloorMultiplier - treasureChance}");
 				if (Game1.random.NextDouble() < treasureChance * Config.TreasureChestFloorMultiplier - treasureChance)
 				{
+					context.Monitor.Log("Creating treasure floor");
 					treasureFloors.Add(level);
 					___netIsTreasureRoom.Value = true;
 					__instance.loadedMapNumber = 10;
@@ -175,6 +178,12 @@ namespace CustomMonsterFloors
 						}
 					}
 				}
+			}
+            else
+            {
+				___netIsMonsterArea.Value = false;
+				___netIsDinoArea.Value = false;
+				___netIsSlimeArea.Value = false;
 			}
 		}
 

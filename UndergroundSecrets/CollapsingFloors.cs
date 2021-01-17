@@ -29,7 +29,7 @@ namespace UndergroundSecrets
         public static void Start(MineShaft shaft, ref List<Vector2> superClearCenters, ref List<Vector2> clearCenters, ref List<Vector2> clearSpots)
         {
 
-            int max =  (int)Math.Round(clearCenters.Count * Math.Min(Math.Max(0, config.CollapsedBaseFloorMaxPortion * Math.Sqrt(shaft.mineLevel)),1));
+            int max =  (int)Math.Round(clearCenters.Count * Math.Min(Math.Max(0, config.CollapsedBaseFloorMaxPortion * Math.Pow(shaft.mineLevel, config.PuzzleChanceIncreaseRate)),1));
 
             int num = Math.Min(clearCenters.Count - 1, Game1.random.Next(0, max));
 

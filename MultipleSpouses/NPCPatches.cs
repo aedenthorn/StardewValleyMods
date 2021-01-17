@@ -92,6 +92,8 @@ namespace MultipleSpouses
             },
         };
 
+        // currently unused
+
         public static string[][] marriageDialogues = new string[][]
         {
             new string[]{

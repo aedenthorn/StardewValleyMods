@@ -1,12 +1,9 @@
 ﻿using Harmony;
-using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using StardewModdingAPI;
 using StardewValley;
 using StardewValley.Locations;
-using System.Collections.Generic;
 using System.IO;
-using xTile;
 
 namespace UndergroundSecrets
 {

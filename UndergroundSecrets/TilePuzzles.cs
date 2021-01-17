@@ -28,7 +28,7 @@ namespace UndergroundSecrets
 
         public static void Start(MineShaft shaft, ref List<Vector2> superClearCenters, ref List<Vector2> clearCenters, ref List<Vector2> clearSpots)
         {
-            if (Game1.random.NextDouble() >= config.TilePuzzleBaseChance * Math.Sqrt(shaft.mineLevel) || superClearCenters.Count == 0)
+            if (Game1.random.NextDouble() >= config.TilePuzzleBaseChance * Math.Pow(shaft.mineLevel, config.PuzzleChanceIncreaseRate) || superClearCenters.Count == 0)
                 return;
 
             monitor.Log($"adding a tile puzzle");

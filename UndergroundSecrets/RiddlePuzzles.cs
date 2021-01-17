@@ -33,7 +33,7 @@ namespace UndergroundSecrets
 
         internal static void Start(MineShaft shaft, ref List<Vector2> superClearCenters, ref List<Vector2> clearCenters, ref List<Vector2> clearSpots)
         {
-            if (Game1.random.NextDouble() >= config.RiddlesBaseChance * Math.Sqrt(shaft.mineLevel) || clearCenters.Count == 0)
+            if (Game1.random.NextDouble() >= config.RiddlesBaseChance * Math.Pow(shaft.mineLevel, config.PuzzleChanceIncreaseRate) || clearCenters.Count == 0)
                 return;
 
             monitor.Log($"adding a riddler");
