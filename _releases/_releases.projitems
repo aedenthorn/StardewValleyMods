@@ -27,6 +27,7 @@
     <None Include="$(MSBuildThisFileDirectory)Familiars 1.2.0.zip" />
     <None Include="$(MSBuildThisFileDirectory)Familiars 1.3.1.zip" />
     <None Include="$(MSBuildThisFileDirectory)FireBreath 0.1.0.zip" />
+    <None Include="$(MSBuildThisFileDirectory)FishingChestsExpanded 0.1.0.zip" />
     <None Include="$(MSBuildThisFileDirectory)FruitTreeShaker 1.1.0.zip" />
     <None Include="$(MSBuildThisFileDirectory)GemIsles 0.2.3.zip" />
     <None Include="$(MSBuildThisFileDirectory)HereFishy 0.3.2.zip" />
@@ -58,6 +59,7 @@
     <None Include="$(MSBuildThisFileDirectory)TransparentObjects 0.2.1.zip" />
     <None Include="$(MSBuildThisFileDirectory)TrashCanReactions 0.1.1.zip" />
     <None Include="$(MSBuildThisFileDirectory)TrashCanReactions 0.2.0.zip" />
+    <None Include="$(MSBuildThisFileDirectory)TreasureChestsExpanded 0.1.1.zip" />
     <None Include="$(MSBuildThisFileDirectory)UndergroundSecrets 0.3.2.zip" />
     <None Include="$(MSBuildThisFileDirectory)VideoPlayer 0.2.5.zip" />
     <None Include="$(MSBuildThisFileDirectory)YAJM 0.4.1.zip" />

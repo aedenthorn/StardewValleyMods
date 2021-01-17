@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-
+﻿
 namespace MultipleSpouses
 {
     public class ModConfig
@@ -48,8 +47,6 @@ namespace MultipleSpouses
         public bool SleepOnCovers { get; set; } = false;
         public bool TransparentSheets { get; set; } = true;
         public float SheetTransparency { get; set; } = 0.75f;
-        public int ExistingBedOffsetX { get; set; } = 0;
-        public int ExistingBedOffsetY { get; set; } = 0;
         public int ExtraCribs { get; set; } = 0;
         public int ExtraKidsBeds { get; set; } = 0;
         public int ExtraKidsRoomWidth { get; set; } = 0;

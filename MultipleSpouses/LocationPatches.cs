@@ -157,10 +157,6 @@ namespace MultipleSpouses
                 {
                     f.position.Value = Misc.GetFarmerBedPosition(__instance);
                 }
-                if (ModEntry.config.CustomBed && __instance.upgradeLevel > 0)
-                {
-                    Maps.ReplaceBed(__instance);
-                }
                 if(__instance.upgradeLevel > 0 && __instance.upgradeLevel < 4)
                 {
                     Maps.BuildSpouseRooms(__instance);
@@ -170,8 +166,8 @@ namespace MultipleSpouses
                 {
                     if(__instance.upgradeLevel > 1 && __instance.upgradeLevel < 4)
                     {
-                        NPCPatches.SetCribs(__instance);
-                        Maps.ExpandKidsRoom(__instance);
+                        //NPCPatches.SetCribs(__instance);
+                        //Maps.ExpandKidsRoom(__instance);
                     }
                 }
                 if(Misc.GetSpouses(f,0).ContainsKey("Sebastian") && Game1.netWorldState.Value.hasWorldStateID("sebastianFrog"))
