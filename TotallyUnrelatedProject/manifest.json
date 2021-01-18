@@ -6,6 +6,7 @@
   "UniqueID": "aedenthorn.CustomFixedDialogue",
   "EntryDll": "Custom_Fixed_Dialogue.dll",
   "MinimumApiVersion": "3.5.0",
+  "UpdateKeys": [ "Nexus:6358" ], 
   "ModUpdater": {
     "Repository": "StardewValleyMods",
     "User": "aedenthorn",

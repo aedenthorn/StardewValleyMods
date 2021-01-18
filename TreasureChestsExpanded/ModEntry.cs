@@ -5,12 +5,10 @@ using StardewModdingAPI;
 using StardewModdingAPI.Events;
 using StardewValley;
 using StardewValley.Locations;
-using StardewValley.Menus;
 using StardewValley.Objects;
 using StardewValley.Tools;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using Object = StardewValley.Object;
 
 namespace TreasureChestsExpanded
@@ -51,7 +49,10 @@ namespace TreasureChestsExpanded
 			);
 
 		}
-
+        public override object GetApi()
+        {
+            return new TreasureChestsExpandedApi();
+        }
         private static void Chest_ShowMenu_Prefix(Chest __instance)
         {
             if (!__instance.playerChest || __instance.coins <= 0)
@@ -208,7 +209,7 @@ namespace TreasureChestsExpanded
             {
                 foreach (KeyValuePair<int, string> kvp in Game1.content.Load<Dictionary<int, string>>("Data\\hats"))
                 {
-                    treasures.Add(new Treasure(kvp.Key, 0, "Hat"));
+                    TryToAddTreasure(kvp.Key, 1000, "Hat");
                 }
 
                 Monitor.Log($"Added {treasures.Count - currentCount} hats");
@@ -229,7 +230,7 @@ namespace TreasureChestsExpanded
             {
                 foreach (KeyValuePair<int, string> kvp in Game1.bigCraftablesInformation)
                 {
-                    treasures.Add(new Treasure(kvp.Key, 0, "BigCraftable"));
+                    TryToAddTreasure(kvp.Key, new Object(Vector2.Zero, kvp.Key, false).sellToStorePrice(), "BigCraftable");
                 }
                 Monitor.Log($"Added {treasures.Count - currentCount} boots");
                 currentCount = treasures.Count;
@@ -280,6 +281,7 @@ namespace TreasureChestsExpanded
 
         private void TryToAddTreasure(int index, int price, string type)
         {
+
             if (Config.ItemMinValue > 0 && Config.ItemMinValue > price)
                 return;
             if (Config.ItemMaxValue > 0 && Config.ItemMaxValue < price)

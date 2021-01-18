@@ -1,16 +1,13 @@
 ﻿using Harmony;
 using Microsoft.Xna.Framework;
-using Netcode;
 using StardewModdingAPI;
 using StardewModdingAPI.Events;
 using StardewValley;
-using StardewValley.Locations;
 using StardewValley.Menus;
 using StardewValley.Objects;
 using StardewValley.Tools;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Reflection;
 using Object = StardewValley.Object;
 
@@ -146,7 +143,7 @@ namespace FishingChestsExpanded
             int currentCount = 0;
             if (Config.IncludeWeapons)
             {
-                foreach(KeyValuePair<int,string> kvp in Game1.content.Load<Dictionary<int, string>>("Data\\weapons"))
+                foreach (KeyValuePair<int, string> kvp in Game1.content.Load<Dictionary<int, string>>("Data\\weapons"))
                 {
                     int price = new MeleeWeapon(kvp.Key).salePrice();
                     TryToAddTreasure(kvp.Key, price, "MeleeWeapon");
@@ -179,7 +176,7 @@ namespace FishingChestsExpanded
             {
                 foreach (KeyValuePair<int, string> kvp in Game1.content.Load<Dictionary<int, string>>("Data\\hats"))
                 {
-                    treasures.Add(new Treasure(kvp.Key, 0, "Hat"));
+                    TryToAddTreasure(kvp.Key, 1000, "Hat");
                 }
 
                 Monitor.Log($"Added {treasures.Count - currentCount} hats");
@@ -200,7 +197,7 @@ namespace FishingChestsExpanded
             {
                 foreach (KeyValuePair<int, string> kvp in Game1.bigCraftablesInformation)
                 {
-                    treasures.Add(new Treasure(kvp.Key, 0, "BigCraftable"));
+                    TryToAddTreasure(kvp.Key, new Object(Vector2.Zero, kvp.Key, false).sellToStorePrice(), "BigCraftable");
                 }
                 Monitor.Log($"Added {treasures.Count - currentCount} boots");
                 currentCount = treasures.Count;

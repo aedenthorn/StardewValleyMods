@@ -7,11 +7,7 @@ namespace TreasureChestsExpanded
 {
     public class TreasureChestsExpandedApi
     {
-        public List<Treasure> GetTreasureList()
-        {
-            return ModEntry.treasures;
-        }
-        public List<Item> GetChestItems(int mult)
+        public List<Item> GetChestItems(int mult) 
         {
             return ModEntry.GetChestItems(mult);
         }

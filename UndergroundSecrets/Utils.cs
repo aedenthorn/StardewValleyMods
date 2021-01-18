@@ -106,12 +106,21 @@ namespace UndergroundSecrets
             monitor.Log($"solved, dropping chest!");
             shaft.playSound("yoba");
 
-            if (config.OverrideTreasureRooms && (helper.Reflection.GetField<NetBool>(shaft, "netIsTreasureRoom").GetValue().Value || (shaft.mineLevel < 121 && shaft.mineLevel % 20 == 0) || shaft.mineLevel == 10 || shaft.mineLevel == 50 || shaft.mineLevel == 70 || shaft.mineLevel == 90 || shaft.mineLevel == 110))
+            if (config.OverrideTreasureRooms && ((shaft.mineLevel < 121 && shaft.mineLevel % 20 == 0) || shaft.mineLevel == 10 || shaft.mineLevel == 50 || shaft.mineLevel == 70 || shaft.mineLevel == 90 || shaft.mineLevel == 110))
             {
                 addLevelChests(shaft);
                 return;
             }
-            shaft.overlayObjects[spot] = new Chest(0, new List<Item>() { MineShaft.getTreasureRoomItem() }, spot, false, 0);
+            if (ModEntry.treasureChestsExpandedApi == null)
+            {
+                shaft.overlayObjects[spot] = new Chest(0, new List<Item>() { MineShaft.getTreasureRoomItem() }, spot, false, 0);
+            }
+            else
+            {
+                monitor.Log($"dropping expanded chest!");
+
+                shaft.overlayObjects[spot] = ModEntry.treasureChestsExpandedApi.MakeChest(shaft.mineLevel, spot);
+            }
         }
 
         private static void addLevelChests(MineShaft shaft)
@@ -122,7 +131,6 @@ namespace UndergroundSecrets
             Color tint = Color.White;
             if (shaft.mineLevel % 20 == 0 && shaft.mineLevel % 40 != 0)
                 chestSpot.Y += 4f;
-            int coins = 0;
             int mineLevel = shaft.mineLevel;
             if (mineLevel == 10)
                 chestItem.Add(new Boots(506));
@@ -159,27 +167,14 @@ namespace UndergroundSecrets
             }
             else if (helper.Reflection.GetField<NetBool>(shaft, "netIsTreasureRoom").GetValue().Value)
             {
-                if(ModEntry.treasureChestsExpandedApi != null)
-                {
-                    chestItem = ModEntry.treasureChestsExpandedApi.GetChestItems(shaft.mineLevel);
-                    coins = ModEntry.treasureChestsExpandedApi.GetChestCoins(shaft.mineLevel);
-                }
-                else
-                    chestItem.Add(MineShaft.getTreasureRoomItem());
+                chestItem.Add(MineShaft.getTreasureRoomItem());
             }
             if (chestItem.Count > 0 && !Game1.player.chestConsumedMineLevels.ContainsKey(shaft.mineLevel))
             {
-                if(ModEntry.treasureChestsExpandedApi == null)
+                shaft.overlayObjects[chestSpot] = new Chest(0, chestItem, chestSpot, false, 0)
                 {
-                    shaft.overlayObjects[chestSpot] = new Chest(0, chestItem, chestSpot, false, 0)
-                    {
-                        Tint = tint
-                    };
-                }
-                else
-                {
-                    shaft.overlayObjects[chestSpot] = ModEntry.treasureChestsExpandedApi.MakeChest(shaft.mineLevel, chestSpot);
-                }
+                    Tint = tint
+                };
             }
         }
 

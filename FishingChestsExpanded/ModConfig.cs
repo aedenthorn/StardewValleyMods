@@ -7,13 +7,13 @@ namespace FishingChestsExpanded
     {
         public bool EnableMod { get; set; } = true;
         public float BaseTreasureChance { get; set; } = 0.15f;
-        public int TreasureBaseValue { get; set; } = 500;
+        public int TreasureBaseValue { get; set; } = 100;
         public float TreasureIncreaseRate { get; set; } = 0.3f;
-        public int ItemMinValue { get; set; } = 100;
+        public int ItemMinValue { get; set; } = 20;
         public int ItemMaxValue { get; set; } = -1;
         public bool IncludeCoins { get; set; } = true;
-        public int BaseCoinsMin { get; set; } = 500;
-        public int BaseCoinsMax { get; set; } = 2000;
+        public int BaseCoinsMin { get; set; } = 100;
+        public int BaseCoinsMax { get; set; } = 500;
         public float CoinsIncreaseRate { get; set; } = 0.3f;
         public bool IncludeHats { get; set; } = true;
         public bool IncludeRings { get; set; } = true;
