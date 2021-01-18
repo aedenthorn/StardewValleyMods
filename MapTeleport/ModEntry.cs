@@ -39,9 +39,9 @@ namespace MapTeleport
             if (Game1.activeClickableMenu is GameMenu && (Game1.activeClickableMenu as GameMenu).tabs[(Game1.activeClickableMenu as GameMenu).currentTab].name == "map" && e.Button == Config.TeleportKey)
             {
                 MapPage mp = (Game1.activeClickableMenu as GameMenu).pages[(Game1.activeClickableMenu as GameMenu).currentTab] as MapPage;
-                Monitor.Log("Trying to teleport");
-                int x = Game1.getMouseX();
-                int y = Game1.getMouseY();
+                int x = Game1.getMouseX(true);
+                int y = Game1.getMouseY(true);
+                Monitor.Log($"Trying to teleport, mouse pos {x},{y}; raw {Game1.getMouseX(false)},{Game1.getMouseY(false)}");
 
                 foreach (ClickableComponent c in mp.points)
                 {

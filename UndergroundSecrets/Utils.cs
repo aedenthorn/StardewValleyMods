@@ -19,7 +19,6 @@ namespace UndergroundSecrets
         private static IMonitor monitor;
         private static ModConfig config;
 
-
         public static void Initialize(IModHelper _helper, IMonitor _monitor, ModConfig _config)
         {
             helper = _helper;
@@ -123,7 +122,7 @@ namespace UndergroundSecrets
             Color tint = Color.White;
             if (shaft.mineLevel % 20 == 0 && shaft.mineLevel % 40 != 0)
                 chestSpot.Y += 4f;
-
+            int coins = 0;
             int mineLevel = shaft.mineLevel;
             if (mineLevel == 10)
                 chestItem.Add(new Boots(506));
@@ -159,13 +158,28 @@ namespace UndergroundSecrets
                 tint = Color.Pink;
             }
             else if (helper.Reflection.GetField<NetBool>(shaft, "netIsTreasureRoom").GetValue().Value)
-                chestItem.Add(MineShaft.getTreasureRoomItem());
+            {
+                if(ModEntry.treasureChestsExpandedApi != null)
+                {
+                    chestItem = ModEntry.treasureChestsExpandedApi.GetChestItems(shaft.mineLevel);
+                    coins = ModEntry.treasureChestsExpandedApi.GetChestCoins(shaft.mineLevel);
+                }
+                else
+                    chestItem.Add(MineShaft.getTreasureRoomItem());
+            }
             if (chestItem.Count > 0 && !Game1.player.chestConsumedMineLevels.ContainsKey(shaft.mineLevel))
             {
-                shaft.overlayObjects[chestSpot] = new Chest(0, chestItem, chestSpot, false, 0)
+                if(ModEntry.treasureChestsExpandedApi == null)
                 {
-                    Tint = tint
-                };
+                    shaft.overlayObjects[chestSpot] = new Chest(0, chestItem, chestSpot, false, 0)
+                    {
+                        Tint = tint
+                    };
+                }
+                else
+                {
+                    shaft.overlayObjects[chestSpot] = ModEntry.treasureChestsExpandedApi.MakeChest(shaft.mineLevel, chestSpot);
+                }
             }
         }
 

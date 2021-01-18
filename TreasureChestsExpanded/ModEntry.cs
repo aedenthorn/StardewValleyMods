@@ -20,10 +20,10 @@ namespace TreasureChestsExpanded
 		public static ModEntry context;
 
 		private static ModConfig Config;
-        private static System.Random myRand;
+        private static Random myRand;
         private static IMonitor SMonitor;
         private static IModHelper SHelper;
-        private static List<Treasure> treasures = new List<Treasure>();
+        public static List<Treasure> treasures = new List<Treasure>();
 
         public override void Entry(IModHelper helper)
 		{
@@ -67,76 +67,96 @@ namespace TreasureChestsExpanded
 
             Vector2 chestSpot = new Vector2(9f, 9f);
 
-
             NetBool treasureRoom = SHelper.Reflection.GetField<NetBool>(__instance, "netIsTreasureRoom").GetValue();
 
             if (treasureRoom.Value && __instance.overlayObjects.ContainsKey(chestSpot))
             {
-                double maxValue = Math.Pow(__instance.mineLevel - 120, Config.TreasureIncreaseRate) * Config.TreasureBaseValue;
-                int currentValue = 0;
-                List<Item> chestItems = new List<Item>();
+                List<Item> chestItems = GetChestItems(__instance.mineLevel - 120);
 
-                List<Treasure> list = new List<Treasure>(treasures);
+                int coins = GetChestCoins(__instance.mineLevel - 120);
 
-                // shuffle list
-
-                int n = list.Count;
-                while (n > 1)
-                {
-                    n--;
-                    int k = myRand.Next(n + 1);
-                    var value = list[k];
-                    list[k] = list[n];
-                    list[n] = value;
-                }
-
-                foreach (Treasure t in list)
-                {
-                    if(currentValue + t.value <= maxValue)
-                    {
-                        SMonitor.Log($"adding {t.type} {t.index} {t.value} to chest");
-                        switch (t.type)
-                        {
-                            case "MeleeWeapon":
-                                chestItems.Add(new MeleeWeapon(t.index));
-                                break;
-                            case "Clothing":
-                                chestItems.Add(new Clothing(t.index));
-                                break;
-                            case "Boots":
-                                chestItems.Add(new Boots(t.index));
-                                break;
-                            case "Hat":
-                                chestItems.Add(new Hat(t.index));
-                                break;
-                            case "Ring":
-                                chestItems.Add(new Ring(t.index));
-                                break;
-                            case "BigCraftable":
-                                chestItems.Add(new Object(Vector2.Zero, t.index, false));
-                                break;
-                            default:
-                                int number = GetNumberOfObjects(t.value,maxValue);
-                                chestItems.Add(new Object(t.index, number));
-                                currentValue += t.value * number;
-                                continue;
-                        }
-                        currentValue += t.value;
-                    }
-                    if (maxValue - currentValue < Config.ItemMinValue)
-                        break;
-                }
-                int coins = (int)Math.Round(Math.Pow(__instance.mineLevel - 120, Config.CoinsIncreaseRate) * myRand.Next(Config.BaseCoinsMin, Config.BaseCoinsMax));
-
-                __instance.overlayObjects[chestSpot] = new Chest(true);
-                (__instance.overlayObjects[chestSpot] as Chest).coins.Value = coins;
-                (__instance.overlayObjects[chestSpot] as Chest).items.Clear();
-                (__instance.overlayObjects[chestSpot] as Chest).items.AddRange(chestItems);
-                (__instance.overlayObjects[chestSpot] as Chest).tileLocation.Value = chestSpot;
-                __instance.overlayObjects[chestSpot].bigCraftable.Value = true;
-
-                SMonitor.Log($"chest contains {chestItems.Count} items valued at {currentValue}, and {coins} coins");
+                __instance.overlayObjects[chestSpot] = MakeChest(chestItems, coins, chestSpot);
             }
+        }
+
+        public static List<Item> GetChestItems(int mult)
+        {
+
+            List<Treasure> list = new List<Treasure>(treasures);
+
+            // shuffle list
+
+            int n = list.Count;
+            while (n > 1)
+            {
+                n--;
+                int k = myRand.Next(n + 1);
+                var value = list[k];
+                list[k] = list[n];
+                list[n] = value;
+            }
+
+            List<Item> chestItems = new List<Item>();
+
+            double maxValue = Math.Pow(mult, Config.TreasureIncreaseRate) * Config.TreasureBaseValue;
+            int currentValue = 0;
+
+            foreach (Treasure t in list)
+            {
+                if (currentValue + t.value <= maxValue)
+                {
+                    SMonitor.Log($"adding {t.type} {t.index} {t.value} to chest");
+                    switch (t.type)
+                    {
+                        case "MeleeWeapon":
+                            chestItems.Add(new MeleeWeapon(t.index));
+                            break;
+                        case "Clothing":
+                            chestItems.Add(new Clothing(t.index));
+                            break;
+                        case "Boots":
+                            chestItems.Add(new Boots(t.index));
+                            break;
+                        case "Hat":
+                            chestItems.Add(new Hat(t.index));
+                            break;
+                        case "Ring":
+                            chestItems.Add(new Ring(t.index));
+                            break;
+                        case "BigCraftable":
+                            chestItems.Add(new Object(Vector2.Zero, t.index, false));
+                            break;
+                        default:
+                            int number = GetNumberOfObjects(t.value, maxValue);
+                            chestItems.Add(new Object(t.index, number));
+                            currentValue += t.value * number;
+                            continue;
+                    }
+                    currentValue += t.value;
+                }
+                if (maxValue - currentValue < Config.ItemMinValue)
+                    break;
+            }
+            SMonitor.Log($"chest contains {chestItems.Count} items valued at {currentValue}");
+            return chestItems;
+        }
+
+        public static int GetChestCoins(int mult)
+        {
+            int coins = (int)Math.Round(Math.Pow(mult, Config.CoinsIncreaseRate) * myRand.Next(Config.BaseCoinsMin, Config.BaseCoinsMax));
+            SMonitor.Log($"chest contains {coins} coins");
+            return coins;
+        }
+
+        public static Chest MakeChest(List<Item> chestItems, int coins, Vector2 chestSpot)
+        {
+            Chest chest = new Chest(true);
+            chest.coins.Value = coins;
+            chest.items.Clear();
+            chest.items.AddRange(chestItems);
+            chest.tileLocation.Value = chestSpot;
+            chest.bigCraftable.Value = true;
+            return chest;
         }
 
         private static int GetNumberOfObjects(int value, double maxValue)

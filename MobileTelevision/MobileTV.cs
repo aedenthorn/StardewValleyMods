@@ -72,7 +72,7 @@ namespace MobileTelevision
             {
                 spriteBatch.Draw(backgroundTexture, ModEntry.api.GetScreenRectangle(), Color.White);
                 sprite.scale = GetScale(sprite.sourceRect);
-                typeof(TV).GetField("screen", BindingFlags.NonPublic | BindingFlags.Instance).SetValue(this,sprite);
+                typeof(TV).GetField("screen", BindingFlags.NonPublic | BindingFlags.Instance).SetValue(this, sprite);
                 sprite.update(Game1.currentGameTime);
                 sprite.draw(spriteBatch, true, 0, 0, 1f);
                 TemporaryAnimatedSprite  sprite2 = (TemporaryAnimatedSprite)typeof(TV).GetField("screenOverlay", BindingFlags.NonPublic | BindingFlags.Instance).GetValue(this);

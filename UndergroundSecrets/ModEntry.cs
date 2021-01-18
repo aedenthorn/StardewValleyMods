@@ -15,6 +15,7 @@ namespace UndergroundSecrets
 		internal static ModConfig Config;
         public static string tileSheetPath;
         internal static string tileSheetId = "z_underground_secrets";
+        public static ITreasureChestsExpandedApi treasureChestsExpandedApi = null;
 
         public override void Entry(IModHelper helper)
 		{
@@ -40,6 +41,7 @@ namespace UndergroundSecrets
 
             //Helper.Events.Player.Warped += HelperEvents.Player_Warped;
             Helper.Events.GameLoop.UpdateTicked += HelperEvents.GameLoop_UpdateTicked;
+            Helper.Events.GameLoop.GameLaunched += GameLoop_GameLaunched; 
 
             var harmony = HarmonyInstance.Create(ModManifest.UniqueID);
 
@@ -69,6 +71,15 @@ namespace UndergroundSecrets
             );
 
 		}
+
+        private void GameLoop_GameLaunched(object sender, StardewModdingAPI.Events.GameLaunchedEventArgs e)
+        {
+            treasureChestsExpandedApi = context.Helper.ModRegistry.GetApi<ITreasureChestsExpandedApi>("aedenthorn.TreasureChestsExpanded");
+            if (treasureChestsExpandedApi != null)
+            {
+                Monitor.Log($"loaded TreasureChestsExpanded API", LogLevel.Debug);
+            }
+        }
 
         /// <summary>Get whether this instance can load the initial version of the given asset.</summary>
         /// <param name="asset">Basic metadata about the asset being loaded.</param>
