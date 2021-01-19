@@ -157,6 +157,7 @@ namespace TreasureChestsExpanded
             chest.items.AddRange(chestItems);
             chest.tileLocation.Value = chestSpot;
             chest.bigCraftable.Value = true;
+            chest.modData["Pathoschild.ChestsAnywhere/IsIgnored"] = "true";
             return chest;
         }
 

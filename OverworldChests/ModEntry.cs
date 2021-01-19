@@ -75,8 +75,9 @@ namespace OverworldChests
         {
 			foreach(GameLocation l in Game1.locations)
             {
-				if (l is FarmHouse || l is Cabin)
+				if (l is FarmHouse || l is Cabin || (!Config.AllowIndoorSpawns && !l.IsOutdoors))
 					continue;
+
 				Monitor.Log($"Respawning chests in {l.name}");
 				int rem = 0;
 				for (int i = l.overlayObjects.Keys.Count - 1; i >= 0; i--)
@@ -132,6 +133,7 @@ namespace OverworldChests
 						chest.playerChoiceColor.Value = MakeTint(fraction);
 					}
 					chest.name = namePrefix;
+					chest.modData["Pathoschild.ChestsAnywhere/IsIgnored"] = "true";
 					l.overlayObjects[freeTiles[i]] = chest;
 				}
 			}
