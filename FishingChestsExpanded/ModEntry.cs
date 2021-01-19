@@ -60,7 +60,13 @@ namespace FishingChestsExpanded
 
             int coins = (int)Math.Round(Math.Pow(difficulty, Config.CoinsIncreaseRate) * myRand.Next(Config.BaseCoinsMin, Config.BaseCoinsMax));
 
-            inventory = GetTreasure(difficulty);
+            IList<Item> items = GetTreasure(difficulty);
+            foreach(Item item in inventory)
+            {
+                if (item.parentSheetIndex == fish)
+                    items.Add(item);
+            }
+            inventory = items;
             Game1.player.Money += coins;
             SMonitor.Log($"chest contains {coins} gold");
         }
