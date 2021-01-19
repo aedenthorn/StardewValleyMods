@@ -37,6 +37,7 @@
     <None Include="$(MSBuildThisFileDirectory)HereFishy 0.3.2.zip" />
     <None Include="$(MSBuildThisFileDirectory)InstantGrowthPowder 0.1.1.zip" />
     <None Include="$(MSBuildThisFileDirectory)InstantGrowthPowder 0.2.0.zip" />
+    <None Include="$(MSBuildThisFileDirectory)InstantGrowthPowder 0.3.0.zip" />
     <None Include="$(MSBuildThisFileDirectory)MapTeleport 0.1.0.zip" />
     <None Include="$(MSBuildThisFileDirectory)MapTeleport 0.1.2.zip" />
     <None Include="$(MSBuildThisFileDirectory)MobileArcade 0.1.2.zip" />

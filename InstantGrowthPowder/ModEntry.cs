@@ -1,9 +1,11 @@
 ﻿using Harmony;
 using Microsoft.Xna.Framework;
+using Netcode;
 using StardewModdingAPI;
 using StardewModdingAPI.Events;
 using StardewValley;
 using StardewValley.Characters;
+using StardewValley.Network;
 using StardewValley.TerrainFeatures;
 using System.Collections.Generic;
 using System.IO;
@@ -51,7 +53,7 @@ namespace InstantGrowthPowder
 
         private static bool checkAction_Prefix(GameLocation __instance, Location tileLocation, Farmer who, ref bool __result)
         {
-            if (who?.CurrentItem != null && who.CurrentItem.Name != "Instant Growth Powder")
+            if (who?.CurrentItem == null || who.CurrentItem.Name != "Instant Growth Powder")
                 return true;
 
             if(__instance.isCropAtTile(tileLocation.X, tileLocation.Y))
@@ -74,6 +76,30 @@ namespace InstantGrowthPowder
                     return true;
                 }
             }
+
+            try
+            {
+                NetLongDictionary<FarmAnimal, NetRef<FarmAnimal>> dict = SHelper.Reflection.GetField<NetLongDictionary<FarmAnimal, NetRef<FarmAnimal>>>(__instance, "animals").GetValue();
+                foreach (KeyValuePair<long, FarmAnimal> i in dict.Pairs)
+                {
+                    if (i.Value.age < i.Value.ageWhenMature)
+                    {
+                        i.Value.age.Value = i.Value.ageWhenMature;
+                        i.Value.Sprite.LoadTexture("Animals\\" + i.Value.type.Value);
+                        if (i.Value.type.Value.Contains("Sheep"))
+                        {
+                            i.Value.currentProduce.Value = i.Value.defaultProduceIndex;
+                        }
+                        i.Value.daysSinceLastLay.Value = 99;
+
+                        who.CurrentItem.Stack--;
+                        __instance.playSound("yoba");
+                        return true;
+                    }
+                }
+            }
+            catch { }
+
 
             foreach (KeyValuePair<Vector2, TerrainFeature> v in __instance.terrainFeatures.Pairs)
             {
