@@ -51,7 +51,7 @@ namespace InstantGrowthPowder
 
         private static bool checkAction_Prefix(GameLocation __instance, Location tileLocation, Farmer who, ref bool __result)
         {
-            if (who.CurrentItem.Name != "Instant Growth Powder")
+            if (who?.CurrentItem != null && who.CurrentItem.Name != "Instant Growth Powder")
                 return true;
 
             if(__instance.isCropAtTile(tileLocation.X, tileLocation.Y))
@@ -81,6 +81,17 @@ namespace InstantGrowthPowder
                 {
                     Tree tree = v.Value as Tree;
                     tree.growthStage.Value = 5;
+                    __instance.terrainFeatures[v.Key] = tree;
+
+                    who.CurrentItem.Stack--;
+                    __instance.playSound("yoba");
+                    return true;
+                }
+                if (v.Value.getBoundingBox(v.Key).Intersects(tileRect) && v.Value is FruitTree && (v.Value as FruitTree).growthStage < 4)
+                {
+                    FruitTree tree = v.Value as FruitTree;
+                    tree.daysUntilMature.Value = 0;
+                    tree.growthStage.Value = 4;
                     __instance.terrainFeatures[v.Key] = tree;
 
                     who.CurrentItem.Stack--;
