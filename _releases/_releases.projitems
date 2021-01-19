@@ -44,6 +44,7 @@
     <None Include="$(MSBuildThisFileDirectory)MobileTelevision 0.1.0.zip" />
     <None Include="$(MSBuildThisFileDirectory)MultipleSpouses 2.1.2.zip" />
     <None Include="$(MSBuildThisFileDirectory)MultipleSpouses 2.2.0.zip" />
+    <None Include="$(MSBuildThisFileDirectory)MultipleSpouses 2.2.1.zip" />
     <None Include="$(MSBuildThisFileDirectory)Murdercrows 0.2.2.zip" />
     <None Include="$(MSBuildThisFileDirectory)NonRandomPrairieKing 0.1.0.zip" />
     <None Include="$(MSBuildThisFileDirectory)OverworldChests 0.1.0.zip" />

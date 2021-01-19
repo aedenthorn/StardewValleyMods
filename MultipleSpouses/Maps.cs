@@ -260,11 +260,57 @@ namespace MultipleSpouses
 					}
                     try 
 					{
-						back = refurbishedMap.Layers[0];
-						buildings = refurbishedMap.Layers[1];
-						front = refurbishedMap.Layers[2];
-						if(refurbishedMap.Layers.Count > 3)
-							alwaysFront = refurbishedMap.Layers[3];
+						foreach(Layer l in refurbishedMap.Layers)
+						{
+							ModEntry.PMonitor.Log($"layer ID: {l.Id}");
+
+							if(l.Id != "Back" && l.Id.StartsWith("Back")){
+								back = l;
+								ModEntry.PMonitor.Log($"Using {l.Id} for back in TMX spouse room layers for spouse {name}.");
+							}
+							else if(back == null && l.Id == "Back"){
+								back = l;
+								ModEntry.PMonitor.Log($"Using {l.Id} for back in TMX spouse room layers for spouse {name}.");
+							}
+							else if(l.Id != "Buildings" && l.Id.StartsWith("Buildings"))
+							{
+								buildings = l;
+								ModEntry.PMonitor.Log($"Using {l.Id} for buildings in TMX spouse room layers for spouse {name}.");
+							}
+							else if(buildings == null && l.Id == "Buildings")
+							{
+								buildings = l;
+								ModEntry.PMonitor.Log($"Using {l.Id} for buildings in TMX spouse room layers for spouse {name}.");
+							}
+							else if (l.Id != "Front" && l.Id.StartsWith("Front"))
+							{
+								front = l;
+								ModEntry.PMonitor.Log($"Using {l.Id} for front in TMX spouse room layers for spouse {name}.");
+							}
+							else if(front == null && l.Id == "Front")
+							{
+								front = l;
+								ModEntry.PMonitor.Log($"Using {l.Id} for front in TMX spouse room layers for spouse {name}.");
+							}
+							else if (l.Id != "AlwaysFront" && l.Id.StartsWith("AlwaysFront"))
+							{
+								alwaysFront = l;
+								ModEntry.PMonitor.Log($"Using {l.Id} for alwaysFront in TMX spouse room layers for spouse {name}.");
+							}
+							else if(alwaysFront == null && l.Id == "AlwaysFront")
+							{
+								alwaysFront = l;
+								ModEntry.PMonitor.Log($"Using {l.Id} for alwaysFront in TMX spouse room layers for spouse {name}.");
+							}
+                        }
+						if(back == null)
+							back = refurbishedMap.Layers[0];
+						if (buildings == null)
+							buildings = refurbishedMap.Layers[1];
+						if (front == null)
+							front = refurbishedMap.Layers[2];
+						if(alwaysFront == null && refurbishedMap.Layers.Count > 3)
+							alwaysFront = refurbishedMap.Layers[3]; 
 					}
 					catch(Exception ex)
                     {
