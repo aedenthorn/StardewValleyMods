@@ -1,20 +1,28 @@
 {
-  "Name": "Mine Shaft",
-  "Description": "It's a hole.",
-  "Price": 0,
+  "Name": "Instant Growth Powder",
+  "Description": "Sprinkle it on something that can grow.",
   "Category": "Crafting",
-  "Recipe":
+  "Edibility": -300,
+  "Price": 500,
+  "IsColored": false,
+  "Recipe":     
   {
-    "ResultCount": 1,
+    "ResultCount": 5,
     "Ingredients": [
         {
-        "Object": 390,
-        "Count": 200,
+            "Object": 74,
+            "Count": 1,
+        },
+        {
+            "Object": 768,
+            "Count": 10,
+        },
+        {
+            "Object": 769,
+            "Count": 10,
         },
     ],
-    "CanPurchase": false,
-    "SkillUnlockName": "Mining",
-    "SkillUnlockLevel": 6,
+	"IsDefault": true,
   },
   "NameLocalization":
   {

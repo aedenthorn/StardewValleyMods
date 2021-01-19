@@ -358,7 +358,9 @@ namespace CustomSpousePatio
                     TileSheet defaultTilesheet = farm.Map.GetTileSheet("zzz_custom_spouse_default_patio");
                     int sheetIdx = farm.Map.TileSheets.IndexOf(defaultTilesheet);
 
-                    switch (spouse.Key)
+                    string which = area.useTilesOf != null ? area.useTilesOf : spouse.Key;
+
+                    switch (which)
                     {
                         case "Sam":
                             farm.setMapTileIndex(x, y + 2, 1173, "Buildings", sheetIdx);

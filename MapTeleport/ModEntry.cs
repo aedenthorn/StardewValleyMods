@@ -36,7 +36,7 @@ namespace MapTeleport
 
         private void Input_ButtonReleased(object sender, ButtonReleasedEventArgs e)
         {
-            if (Game1.activeClickableMenu is GameMenu && (Game1.activeClickableMenu as GameMenu).tabs[(Game1.activeClickableMenu as GameMenu).currentTab].name == "map" && e.Button == Config.TeleportKey)
+            if (Game1.activeClickableMenu is GameMenu && (Game1.activeClickableMenu as GameMenu).currentTab >= 0 && (Game1.activeClickableMenu as GameMenu).currentTab < (Game1.activeClickableMenu as GameMenu).tabs.Count && (Game1.activeClickableMenu as GameMenu).tabs[(Game1.activeClickableMenu as GameMenu).currentTab].name == "map" && e.Button == Config.TeleportKey)
             {
                 MapPage mp = (Game1.activeClickableMenu as GameMenu).pages[(Game1.activeClickableMenu as GameMenu).currentTab] as MapPage;
                 int x = Game1.getMouseX(true);

@@ -354,7 +354,7 @@ namespace MultipleSpouses
         {
             int bedWidth = GetBedWidth(fh);
             Point bedStart = GetBedStart(fh);
-            int x = 64 + (int)((allBedmates.IndexOf(name) + 1) / (float)(allBedmates.Count + 1) * (bedWidth - 2) * 64);
+            int x = 64 + (int)((allBedmates.IndexOf(name)) / (float)(allBedmates.Count) * (bedWidth - 1) * 64);
             return new Vector2(bedStart.X * 64 + x, bedStart.Y * 64 + ModEntry.bedSleepOffset - (GetTopOfHeadSleepOffset(name) * 4));
         }
         public static Vector2 GetFarmerBedPosition(FarmHouse fh)

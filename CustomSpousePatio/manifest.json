@@ -1,7 +1,7 @@
 ﻿{
   "Name": "Custom Spouse Patio",
   "Author": "aedenthorn",
-  "Version": "0.4.5",
+  "Version": "0.5.0",
   "Description": "Lets you create a custom spouse patio.",
   "UniqueID": "aedenthorn.CustomSpousePatio",
   "EntryDll": "CustomSpousePatio.dll",

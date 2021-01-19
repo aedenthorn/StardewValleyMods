@@ -410,7 +410,7 @@ namespace Swim
                 //Game1.player.currentLocation.overlayObjects[Game1.player.getTileLocation() + new Vector2(0, 1)] = new Chest(0, new List<Item>() { Helper.Input.IsDown(SButton.LeftShift) ? (Item)(new StardewValley.Object(434, 1)) : (new Hat(ModEntry.scubaMaskID)) }, Game1.player.getTileLocation() + new Vector2(0, 1), false, 0);
             }
 
-            if (e.Button == Config.DiveKey && !Game1.player.UsingTool && ModEntry.diveMaps.ContainsKey(Game1.player.currentLocation.Name) && ModEntry.diveMaps[Game1.player.currentLocation.Name].DiveLocations.Count > 0)
+            if (e.Button == Config.DiveKey && Game1.activeClickableMenu == null && !Game1.player.UsingTool && ModEntry.diveMaps.ContainsKey(Game1.player.currentLocation.Name) && ModEntry.diveMaps[Game1.player.currentLocation.Name].DiveLocations.Count > 0)
             {
                 Point pos = Game1.player.getTileLocationPoint();
                 Location loc = new Location(pos.X, pos.Y);
@@ -448,7 +448,7 @@ namespace Swim
                 return; 
             }
             
-            if (e.Button == Config.SwimKey && (!Game1.player.swimming || !Config.ReadyToSwim) && !isJumping)
+            if (e.Button == Config.SwimKey && Game1.activeClickableMenu == null && (!Game1.player.swimming || !Config.ReadyToSwim) && !isJumping)
             {
                 Config.ReadyToSwim = !Config.ReadyToSwim;
                 Helper.WriteConfig<ModConfig>(Config);
@@ -456,7 +456,7 @@ namespace Swim
                 return;
             }
 
-            if (e.Button == Config.SwimSuitKey)
+            if (e.Button == Config.SwimSuitKey && Game1.activeClickableMenu == null)
             {
                 Config.SwimSuitAlways = !Config.SwimSuitAlways;
                 Helper.WriteConfig<ModConfig>(Config);

@@ -28,6 +28,8 @@ namespace CustomSpousePatio
         public List<SpecialTile> specialTiles = new List<SpecialTile>();
         public Point npcOffset = new Point(-1,-1);
         public string npcAnimation = null;
+        public string useTilesOf = null;
+
         public Point GetLocation()
         {
             if (location.X != -1)

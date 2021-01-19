@@ -1,25 +1,21 @@
 ﻿{
-  "Name": "Swim Mod",
+  "Name": "Farm Anywhere",
   "Author": "aedenthorn",
-  "Version": "1.8.2",
-  "Description": "Allows you to swim.",
-  "UniqueID": "aedenthorn.Swim",
-  "EntryDll": "Swim.dll",
+  "Version": "0.1.0",
+  "Description": "Lets you plant and grow seeds anywhere.",
+  "UniqueID": "aedenthorn.FarmAnywhere",
+  "EntryDll": "FarmAnywhere.dll",
   "MinimumApiVersion": "3.8.0",
-  "UpdateKeys": ["Nexus:6326"],
+  "UpdateKeys": ["Nexus:7726"],
   "ModUpdater": {
     "Repository": "StardewValleyMods",
     "User": "aedenthorn",
     "Directory": "_releases",
-    "ModFolder": "Swim"
+    "ModFolder": "FarmAnywhere"
   },
   "Dependencies": [
       {
         "UniqueID": "Platonymous.ModUpdater",
-        "IsRequired": false
-      },
-      {
-      "UniqueID": "spacechase0.JsonAssets",
         "IsRequired": false
       },
   ]

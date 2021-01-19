@@ -62,11 +62,14 @@ namespace OverworldChests
 
 		private void GameLoop_DayStarted(object sender, StardewModdingAPI.Events.DayStartedEventArgs e)
         {
-			Monitor.Log($"Total days: {Game1.Date.TotalDays}, days since respawn {Game1.Date.TotalDays % Config.RespawnInterval}");
-			if (Config.RespawnInterval > 0 && Game1.Date.TotalDays % Config.RespawnInterval == 0)
+			var spawn = Helper.Data.ReadSaveData<LastOverWorldChestSpawn>("lastOverworldChestSpawn") ?? new LastOverWorldChestSpawn();
+			int days = Game1.Date.TotalDays - spawn.lastOverworldChestSpawn;
+			Monitor.Log($"Last spawn: {days} days ago");
+			if (spawn.lastOverworldChestSpawn < 1 || (Config.RespawnInterval > 0 && days >= Config.RespawnInterval))
 			{
 				Monitor.Log($"Respawning chests", LogLevel.Debug);
-
+				spawn.lastOverworldChestSpawn = Game1.Date.TotalDays;
+				Helper.Data.WriteSaveData("lastOverworldChestSpawn", spawn);
 				RespawnChests();
             }
         }
@@ -75,7 +78,7 @@ namespace OverworldChests
         {
 			foreach(GameLocation l in Game1.locations)
             {
-				if (l is FarmHouse || l is Cabin || (!Config.AllowIndoorSpawns && !l.IsOutdoors))
+				if (l is FarmHouse || l is Cabin || (!Config.AllowIndoorSpawns && !l.IsOutdoors) || !IsLocationAllowed(l))
 					continue;
 
 				Monitor.Log($"Respawning chests in {l.name}");
@@ -97,7 +100,7 @@ namespace OverworldChests
                     {
 						bool water = false;
 						try { water = l.waterTiles[x, y]; } catch { }
-						if (!l.isTileOccupiedForPlacement(new Vector2(x, y)) && !water)
+						if (!l.isTileOccupiedForPlacement(new Vector2(x, y)) && !water && !l.isCropAtTile(x, y))
 							freeTiles.Add(new Vector2(x, y));
 
                     }
@@ -139,7 +142,14 @@ namespace OverworldChests
 			}
         }
 
-        private Color MakeTint(double fraction)
+        private bool IsLocationAllowed(GameLocation l)
+        {
+			if(Config.OnlyAllowLocations.Length > 0)
+				return Config.OnlyAllowLocations.Split(',').Contains(l.name);
+			return !Config.DisallowLocations.Split(',').Contains(l.name);
+		}
+
+		private Color MakeTint(double fraction)
         {
 			Color color = tintColors[(int)Math.Floor(fraction * tintColors.Length)];
 			return color;

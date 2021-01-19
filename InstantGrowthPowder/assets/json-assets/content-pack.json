@@ -1,0 +1,10 @@
+{
+   "Name": "Instant Growth Powder for JsonAssets",
+   "Author": "aedenthorn",
+   "Version": "0.1.0",
+   "Description": "Instant Growth Powder for JsonAssets.",
+   "UniqueID": "aedenthorn.InstantGrowthPowderJSONAssets",
+   "ContentPackFor": {
+    	"UniqueID": "spacechase0.JsonAssets"
+    },
+}

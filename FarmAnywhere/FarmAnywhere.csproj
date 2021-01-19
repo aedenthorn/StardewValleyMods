@@ -4,11 +4,11 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{A52D3C87-C4FD-4A05-A145-D4EE5E515074}</ProjectGuid>
+    <ProjectGuid>{A37057B5-2BB9-4567-9691-70DC9A2E3B94}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>OverworldChests</RootNamespace>
-    <AssemblyName>OverworldChests</AssemblyName>
+    <RootNamespace>FarmAnywhere</RootNamespace>
+    <AssemblyName>FarmAnywhere</AssemblyName>
     <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <Deterministic>true</Deterministic>
@@ -49,8 +49,6 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="ITreasureChestsExpandedApi.cs" />
-    <Compile Include="LastOverWorldChestSpawn.cs" />
     <Compile Include="ModConfig.cs" />
     <Compile Include="ModEntry.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

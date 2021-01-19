@@ -77,6 +77,8 @@ namespace MultipleSpouses
 						&& distance < ModEntry.config.MaxDistanceToKiss 
 						&& !kissingSpouses.Contains(npc1.Name) 
 						&& !kissingSpouses.Contains(npc2.Name) 
+						&& !npc1.isSleeping 
+						&& !npc2.isSleeping 
 						&& owner.getFriendshipHeartLevelForNPC(npc1.Name) >= ModEntry.config.MinHeartsForKiss
 						&& owner.getFriendshipHeartLevelForNPC(npc2.Name) >= ModEntry.config.MinHeartsForKiss
 						&& lastKissTime > ModEntry.config.MinSpouseKissInterval 
