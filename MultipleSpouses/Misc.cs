@@ -313,16 +313,17 @@ namespace MultipleSpouses
 
         public static bool HasSleepingAnimation(string name)
         {
-            Texture2D tex = Helper.Content.Load<Texture2D>($"Characters/{name}", ContentSource.GameContent);
-
             int sleepidx;
             string sleepAnim = SleepAnimation(name);
             if (sleepAnim == null)
                 return false;
-            else
-                sleepidx = int.Parse(sleepAnim.Split('/')[0]);
 
-            if ((sleepidx * 16) / 64 * 32 >= tex.Height)
+            sleepidx = int.Parse(sleepAnim.Split('/')[0]);
+
+            Texture2D tex = Helper.Content.Load<Texture2D>($"Characters/{name}", ContentSource.GameContent);
+            //Monitor.Log($"tex height for {name}: {tex.Height}");
+
+            if (sleepidx / 4 * 32 >= tex.Height)
             {
                 return false;
             }
@@ -347,7 +348,7 @@ namespace MultipleSpouses
         {
             int bedWidth = GetBedWidth(fh);
             Point bedStart = GetBedStart(fh);
-            Rectangle bed = new Rectangle(bedStart.X * 64, bedStart.Y * 64 + 64, bedWidth * 64, 3 * 64);
+            Rectangle bed = new Rectangle(bedStart.X * 64, bedStart.Y * 64, bedWidth * 64, 3 * 64);
             return box.Intersects(bed);
         }
         public static Vector2 GetSpouseBedPosition(FarmHouse fh, List<string> allBedmates, string name)
@@ -367,7 +368,7 @@ namespace MultipleSpouses
         {
             if (fh?.GetSpouseBed()?.GetBedSpot() == null)
                 return Point.Zero;
-            return new Point(fh.GetSpouseBed().GetBedSpot().X, fh.GetSpouseBed().GetBedSpot().Y - 1);
+            return new Point(fh.GetSpouseBed().GetBedSpot().X - 1, fh.GetSpouseBed().GetBedSpot().Y - 1);
         }
 
         public static int GetBedWidth(FarmHouse fh)

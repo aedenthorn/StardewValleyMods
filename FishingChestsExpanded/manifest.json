@@ -1,7 +1,7 @@
 ﻿{
   "Name": "Fishing Chests Expanded",
   "Author": "aedenthorn",
-  "Version": "0.1.3",
+  "Version": "0.2.0",
   "Description": "Expands the pool of rewards from fishing chests.",
   "UniqueID": "aedenthorn.FishingChestsExpanded",
   "EntryDll": "FishingChestsExpanded.dll",
@@ -17,6 +17,10 @@
       {
         "UniqueID": "Platonymous.ModUpdater",
         "IsRequired": false
+      },
+      {
+        "UniqueID": "aedenthorn.AdvancedLootFramework",
+        "IsRequired": true
       },
   ]
 }

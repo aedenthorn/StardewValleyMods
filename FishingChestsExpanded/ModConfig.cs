@@ -1,32 +1,29 @@
 ﻿using Microsoft.Xna.Framework;
 using StardewModdingAPI;
+using System.Collections.Generic;
 
 namespace FishingChestsExpanded
 {
     public class ModConfig
     {
         public bool EnableMod { get; set; } = true;
-        public float BaseTreasureChance { get; set; } = 0.15f;
-        public int TreasureBaseValue { get; set; } = 100;
-        public float TreasureIncreaseRate { get; set; } = 0.3f;
-        public int ItemMinValue { get; set; } = 20;
-        public int ItemMaxValue { get; set; } = -1;
-        public bool IncludeCoins { get; set; } = true;
-        public int BaseCoinsMin { get; set; } = 100;
-        public int BaseCoinsMax { get; set; } = 500;
-        public float CoinsIncreaseRate { get; set; } = 0.3f;
-        public bool IncludeHats { get; set; } = true;
-        public bool IncludeRings { get; set; } = true;
-        public bool IncludePants { get; set; } = true;
-        public bool IncludeShirts { get; set; } = true;
-        public bool IncludeBoots { get; set; } = true;
-        public bool IncludeWeapons { get; set; } = true;
-        public bool IncludeBigCraftables { get; set; } = true;
-        public bool IncludeRelics { get; set; } = true;
-        public bool IncludeSeeds { get; set; } = true;
-        public bool IncludeMinerals { get; set; } = true;
-        public bool IncludeFood { get; set; } = false;
-        public bool IncludeFish { get; set; } = false;
-        public bool IncludeBasicObjects { get; set; } = false;
+        public float BaseChanceForTreasureChest { get; set; } = -1f;
+        public int Mult { get; set; } = 10;
+        public int MaxItems { get; set; } = 5;
+        public int ItemsBaseMaxValue { get; set; } = 100;
+        public int MinItemValue { get; set; } = 20;
+        public int MaxItemValue { get; set; } = -1;
+        public int CoinBaseMin { get; set; } = 20;
+        public int CoinBaseMax { get; set; } = 100;
+        public float RarityChance { get; set; } = 0.01f;
+        public float IncreaseRate { get; set; } = 0.2f;
+        public List<string> ItemListTypes { get; set; } = new List<string>
+        {
+            "Weapon", "Shirt", "Pants", "Hat", "Boots", "BigCraftable", "Ring", "Seed", "Mineral", "Relic"
+        };
+        public List<string> ItemListAllTypesDoNotEditJustCopyFromHere { get; set; } = new List<string>
+        {
+            "Weapon", "Shirt", "Pants", "Hat", "Boots", "BigCraftable", "Ring", "Cooking", "Seed", "Mineral", "Fish", "Relic", "BasicObject"
+        };
     }
 }

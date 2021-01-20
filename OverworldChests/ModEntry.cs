@@ -18,7 +18,7 @@ namespace OverworldChests
 
 		public static ModConfig Config;
         private List<string> niceNPCs = new List<string>();
-		public static ITreasureChestsExpandedApi treasureChestsExpandedApi = null;
+		public static IAdvancedLootFrameworkApi advancedLootFrameworkApi = null;
         private Random myRand;
 		private Color[] tintColors = new Color[]
 		{
@@ -29,6 +29,7 @@ namespace OverworldChests
 			Color.Purple,
 		};
         private static string namePrefix = "Overworld Chest";
+        private List<object> treasuresList;
 
         /// <summary>The mod entry point, called after the mod is first loaded.</summary>
         /// <param name="helper">Provides simplified APIs for writing mods.</param>
@@ -51,6 +52,19 @@ namespace OverworldChests
 				prefix: new HarmonyMethod(typeof(ModEntry), nameof(Chest_draw_Prefix))
 			);
 		}
+
+		private void GameLoop_GameLaunched(object sender, StardewModdingAPI.Events.GameLaunchedEventArgs e)
+		{
+			advancedLootFrameworkApi = context.Helper.ModRegistry.GetApi<IAdvancedLootFrameworkApi>("aedenthorn.AdvancedLootFramework");
+			if (advancedLootFrameworkApi != null)
+			{
+				Monitor.Log($"loaded AdvancedLootFramework API", LogLevel.Debug);
+			}
+			treasuresList = advancedLootFrameworkApi.LoadPossibleTreasures(Config.ItemListTypes, Config.MinItemValue, Config.MaxItemValue);
+			Monitor.Log($"Got {treasuresList.Count} possible treasures");
+
+		}
+
 		private static bool Chest_draw_Prefix(Chest __instance)
 		{
 			if (!__instance.name.StartsWith(namePrefix) || !Game1.player.currentLocation.overlayObjects.ContainsKey(__instance.tileLocation) || __instance.items.Any() || __instance.coins > 0)
@@ -117,22 +131,23 @@ namespace OverworldChests
 					freeTiles[k] = freeTiles[n];
 					freeTiles[n] = value;
 				}
-				int maxChests = Math.Min(freeTiles.Count, (int)Math.Ceiling(freeTiles.Count * Config.ChestDensity));
+				int maxChests = Math.Min(freeTiles.Count, (int)Math.Floor(freeTiles.Count * Config.ChestDensity) + (Config.RoundNumberOfChestsUp ? 1 : 0));
 				Monitor.Log($"Max chests: {maxChests}");
+
 				for (int i = 0; i < maxChests; i++)
                 {
 					Chest chest;
-					if (treasureChestsExpandedApi == null)
+					if (advancedLootFrameworkApi == null)
 					{
-						Monitor.Log($"Adding ordinary chest");
+						//Monitor.Log($"Adding ordinary chest");
 						chest = new Chest(0, new List<Item>() { MineShaft.getTreasureRoomItem() }, freeTiles[i], false, 0);
 					}
 					else
 					{
-						double fraction = Math.Pow(myRand.NextDouble(), 1 / Config.ChestsExtendedRarity);
-						int level = (int)Math.Ceiling(fraction * Config.ChestsExtentedMaxLevel);
-						Monitor.Log($"Adding expanded chest of value {level} to {l.name}");
-						chest = treasureChestsExpandedApi.MakeChest(level, freeTiles[i]);
+						double fraction = Math.Pow(myRand.NextDouble(), 1 / Config.RarityChance);
+						int level = (int)Math.Ceiling(fraction * Config.Mult);
+						//Monitor.Log($"Adding expanded chest of value {level} to {l.name}");
+						chest = advancedLootFrameworkApi.MakeChest(treasuresList, Config.MaxItems, Config.MinItemValue, Config.MaxItemValue, level, Config.IncreaseRate, Config.ItemsBaseMaxValue, Config.CoinBaseMin, Config.CoinBaseMax, freeTiles[i]);
 						chest.playerChoiceColor.Value = MakeTint(fraction);
 					}
 					chest.name = namePrefix;
@@ -140,7 +155,7 @@ namespace OverworldChests
 					l.overlayObjects[freeTiles[i]] = chest;
 				}
 			}
-        }
+		}
 
         private bool IsLocationAllowed(GameLocation l)
         {
@@ -155,13 +170,5 @@ namespace OverworldChests
 			return color;
         }
 
-        private void GameLoop_GameLaunched(object sender, StardewModdingAPI.Events.GameLaunchedEventArgs e)
-		{
-			treasureChestsExpandedApi = context.Helper.ModRegistry.GetApi<ITreasureChestsExpandedApi>("aedenthorn.TreasureChestsExpanded");
-			if (treasureChestsExpandedApi != null)
-			{
-				Monitor.Log($"loaded TreasureChestsExpanded API", LogLevel.Debug);
-			}
-		}
 	}
 }

@@ -1,4 +1,4 @@
-﻿namespace FishingChestsExpanded
+﻿namespace AdvancedLootFramework
 {
     public class Treasure
     {
@@ -6,10 +6,10 @@
         public int value;
         public string type;
 
-        public Treasure(int key, int price, string type)
+        public Treasure(int index, int value, string type)
         {
-            this.index = key;
-            this.value = price;
+            this.index = index;
+            this.value = value;
             this.type = type;
         }
     }

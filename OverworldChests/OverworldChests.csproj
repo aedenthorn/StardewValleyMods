@@ -49,7 +49,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="ITreasureChestsExpandedApi.cs" />
+    <Compile Include="IAdvancedLootFrameworkApi.cs" />
     <Compile Include="LastOverWorldChestSpawn.cs" />
     <Compile Include="ModConfig.cs" />
     <Compile Include="ModEntry.cs" />

@@ -52,13 +52,15 @@ namespace MultipleSpouses
 			Helper.Events.GameLoop.OneSecondUpdateTicked += GameLoop_OneSecondUpdateTicked;
             Misc.ResetSpouses(Game1.player);
 
-			foreach(GameLocation location in Game1.locations)
+
+			foreach (GameLocation location in Game1.locations)
             {
 				if(ReferenceEquals(location.GetType(),typeof(FarmHouse)))
                 {
-					(location as FarmHouse).showSpouseRoom();
-					Maps.BuildSpouseRooms((location as FarmHouse));
-					Misc.PlaceSpousesInFarmhouse((location as FarmHouse));
+					FarmHouse fh = (location as FarmHouse);
+					fh.showSpouseRoom();
+					Maps.BuildSpouseRooms(fh);
+					Misc.PlaceSpousesInFarmhouse(fh);
 					location.resetForPlayerEntry();
 				}
 			}
@@ -121,7 +123,12 @@ namespace MultipleSpouses
                                     {
 										if (!character.isSleeping)
                                         {
+											Monitor.Log($"putting {character.Name} to sleep");
 											character.isSleeping.Value = true;
+
+										}
+										if(character.Sprite.CurrentAnimation == null)
+                                        {
 											if (!Misc.HasSleepingAnimation(character.name.Value))
 											{
 												character.Sprite.StopAnimation();

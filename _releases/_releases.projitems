@@ -9,6 +9,7 @@
     <Import_RootNamespace>_releases</Import_RootNamespace>
   </PropertyGroup>
   <ItemGroup>
+    <None Include="$(MSBuildThisFileDirectory)AdvancedLootFramework 0.1.0.zip" />
     <None Include="$(MSBuildThisFileDirectory)BossCreatures 1.2.0.zip" />
     <None Include="$(MSBuildThisFileDirectory)CustomFixedDialogue 0.6.0.zip" />
     <None Include="$(MSBuildThisFileDirectory)CustomFixedDialogue 0.6.1.zip" />

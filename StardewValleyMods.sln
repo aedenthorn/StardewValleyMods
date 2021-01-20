@@ -107,6 +107,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FarmAnywhere", "FarmAnywher
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "InstantGrowthPowder", "InstantGrowthPowder\InstantGrowthPowder.csproj", "{9F931EBE-941F-4F44-8E91-B676FF804217}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AdvancedLootFramework", "AdvancedLootFramework\AdvancedLootFramework.csproj", "{F3EEC0C9-B708-4B94-B01C-63F650C4A29B}"
+EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
 		_releases\_releases.projitems*{047040e0-3d07-46e5-852b-d1d45cd57bb8}*SharedItemsImports = 13
@@ -526,6 +528,14 @@ Global
 		{9F931EBE-941F-4F44-8E91-B676FF804217}.Release|Any CPU.Build.0 = Release|Any CPU
 		{9F931EBE-941F-4F44-8E91-B676FF804217}.Release|x86.ActiveCfg = Release|Any CPU
 		{9F931EBE-941F-4F44-8E91-B676FF804217}.Release|x86.Build.0 = Release|Any CPU
+		{F3EEC0C9-B708-4B94-B01C-63F650C4A29B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F3EEC0C9-B708-4B94-B01C-63F650C4A29B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F3EEC0C9-B708-4B94-B01C-63F650C4A29B}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{F3EEC0C9-B708-4B94-B01C-63F650C4A29B}.Debug|x86.Build.0 = Debug|Any CPU
+		{F3EEC0C9-B708-4B94-B01C-63F650C4A29B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F3EEC0C9-B708-4B94-B01C-63F650C4A29B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F3EEC0C9-B708-4B94-B01C-63F650C4A29B}.Release|x86.ActiveCfg = Release|Any CPU
+		{F3EEC0C9-B708-4B94-B01C-63F650C4A29B}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

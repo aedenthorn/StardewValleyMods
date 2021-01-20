@@ -1,0 +1,22 @@
+﻿{
+  "Name": "Advanced Loot Framework",
+  "Author": "aedenthorn",
+  "Version": "0.1.0",
+  "Description": "Creates custom loot lists for other mods.",
+  "UniqueID": "aedenthorn.AdvancedLootFramework",
+  "EntryDll": "AdvancedLootFramework.dll",
+  "MinimumApiVersion": "3.8.0",
+  "UpdateKeys": ["Nexus:7739"],
+  "ModUpdater": {
+    "Repository": "StardewValleyMods",
+    "User": "aedenthorn",
+    "Directory": "_releases",
+    "ModFolder": "AdvancedLootFramework"
+  },
+  "Dependencies": [
+      {
+        "UniqueID": "Platonymous.ModUpdater",
+        "IsRequired": false
+      },
+  ]
+}
