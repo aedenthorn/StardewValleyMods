@@ -50,6 +50,9 @@ namespace MultipleSpouses
 
 		public static void BuildSpouseRooms(FarmHouse farmHouse)
 		{
+			if (config.DisableCustomSpousesRooms)
+				return;
+
 			try
 			{
 				if(farmHouse is Cabin)

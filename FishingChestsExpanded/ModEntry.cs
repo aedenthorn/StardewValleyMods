@@ -14,7 +14,6 @@ namespace FishingChestsExpanded
 		public static ModEntry context;
 
 		private static ModConfig Config;
-        private static System.Random myRand;
         private static IMonitor SMonitor;
         private static IModHelper SHelper;
         private static List<object> treasuresList = new List<object>();
@@ -67,8 +66,18 @@ namespace FishingChestsExpanded
         {
             if (!(context is FishingRod))
                 return;
+
             FishingRod fr = context as FishingRod;
             int fish = SHelper.Reflection.GetField<int>(fr, "whichFish").GetValue();
+            bool treasure = false;
+            foreach (Item item in inventory)
+            {
+                if (item.parentSheetIndex != fish)
+                    treasure = true;
+            }
+            if (!treasure)
+                return;
+
             Dictionary<int, string> data = Game1.content.Load<Dictionary<int, string>>("Data\\Fish");
             int difficulty = 5;
             if(data.ContainsKey(fish))

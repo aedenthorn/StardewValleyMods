@@ -18,7 +18,7 @@ namespace OverworldChests
         public int MaxItemValue { get; set; } = -1;
         public int CoinBaseMin { get; set; } = 20;
         public int CoinBaseMax { get; set; } = 100;
-        public float RarityChance { get; set; } = 0.01f;
+        public float RarityChance { get; set; } = 0.1f;
         public float IncreaseRate { get; set; } = 0.3f;
         public List<string> ItemListTypes { get; set; } = new List<string>
         {

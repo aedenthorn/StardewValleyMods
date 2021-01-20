@@ -1,14 +1,12 @@
 ﻿using Harmony;
 using Microsoft.Xna.Framework;
-using Netcode;
 using StardewModdingAPI;
-using StardewModdingAPI.Events;
 using StardewValley;
-using StardewValley.Locations;
 using StardewValley.Objects;
 using StardewValley.Tools;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using Object = StardewValley.Object;
 
 namespace AdvancedLootFramework
@@ -16,11 +14,14 @@ namespace AdvancedLootFramework
     public class ModEntry : Mod 
 	{
 		public static ModEntry context;
-
 		private static ModConfig Config;
         private static Random myRand;
         private static IMonitor SMonitor;
         private static IModHelper SHelper;
+        private static int[] forbiddenWeapons = new int[] 
+        {
+            34
+        };
 
         public override void Entry(IModHelper helper)
 		{
@@ -49,8 +50,9 @@ namespace AdvancedLootFramework
 
         private static void Chest_ShowMenu_Prefix(Chest __instance)
         {
-            if (__instance.coins <= 0)
+            if (__instance.coins.Value <= 0)
                 return;
+            context.Monitor.Log($"Giving {__instance.coins} gold to player from chest");
             Game1.player.Money += __instance.coins;
             __instance.coins.Value = 0;
         }
@@ -64,6 +66,8 @@ namespace AdvancedLootFramework
             {
                 foreach (KeyValuePair<int, string> kvp in Game1.content.Load<Dictionary<int, string>>("Data\\weapons"))
                 {
+                    if (forbiddenWeapons.Contains(kvp.Key))
+                        continue;
                     int price = new MeleeWeapon(kvp.Key).salePrice();
                     if (CanAddTreasure(price, minItemValue, maxItemValue))
                         treasures.Add(new Treasure(kvp.Key, price, "MeleeWeapon"));

@@ -38,6 +38,7 @@ namespace MultipleSpouses
         public int ChildGrowthMultiplier { get; set; } = 1;
         public bool ShowParentNames { get; set; } = false;
 
+        public bool DisableCustomSpousesRooms { get; set; } = false;
         public bool BuildAllSpousesRooms { get; set; } = true;
         public string SpouseRoomOrder { get; set; } = "";
         public int ExistingSpouseRoomOffsetX { get; set; } = 0;

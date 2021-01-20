@@ -1,7 +1,4 @@
-﻿using Microsoft.Xna.Framework;
-using StardewModdingAPI;
-
-namespace AdvancedLootFramework
+﻿namespace AdvancedLootFramework
 {
     public class ModConfig
     {

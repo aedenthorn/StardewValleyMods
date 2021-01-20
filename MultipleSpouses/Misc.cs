@@ -215,25 +215,20 @@ namespace MultipleSpouses
                     j.setTilePosition(farmHouse.getRandomOpenPointInHouse(ModEntry.myRand));
                     j.setRandomAfternoonMarriageDialogue(Game1.timeOfDay, farmHouse, false);
                 }
+                else if(ModEntry.config.BuildAllSpousesRooms && roomSpouses.Contains(j.Name))
+                {
+                    int offset = roomSpouses.IndexOf(j.Name) * 7;
+                    j.setTilePosition((int)spot.X + offset, (int)spot.Y);
+                    j.faceDirection(ModEntry.myRand.Next(0, 4));
+                    j.setSpouseRoomMarriageDialogue();
+                    Monitor.Log($"{j.Name} loc: {(spot.X + offset)},{spot.Y}");
+                }
                 else
                 {
-
-                    if (!roomSpouses.Contains(j.Name))
-                    {
-                        j.setTilePosition(farmHouse.getRandomOpenPointInHouse(ModEntry.myRand));
-                        j.faceDirection(ModEntry.myRand.Next(0, 4));
-                        Monitor.Log($"{j.Name} spouse random loc");
-                        j.setRandomAfternoonMarriageDialogue(Game1.timeOfDay, farmHouse, false);
-                        continue;
-                    }
-                    else
-                    {
-                        int offset = roomSpouses.IndexOf(j.Name) * 7;
-                        j.setTilePosition((int)spot.X + offset, (int)spot.Y);
-                        j.faceDirection(ModEntry.myRand.Next(0, 4));
-                        j.setSpouseRoomMarriageDialogue();
-                        Monitor.Log($"{j.Name} loc: {(spot.X + offset)},{spot.Y}");
-                    }
+                    j.setTilePosition(farmHouse.getRandomOpenPointInHouse(ModEntry.myRand));
+                    j.faceDirection(ModEntry.myRand.Next(0, 4));
+                    Monitor.Log($"{j.Name} spouse random loc");
+                    j.setRandomAfternoonMarriageDialogue(Game1.timeOfDay, farmHouse, false);
                 }
             }
 

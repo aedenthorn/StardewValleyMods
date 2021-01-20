@@ -28,7 +28,7 @@ namespace OverworldChests
 			Color.Gold,
 			Color.Purple,
 		};
-        private static string namePrefix = "Overworld Chest";
+        private static string namePrefix = "Overworld Chest Mod Chest";
         private List<object> treasuresList;
 
         /// <summary>The mod entry point, called after the mod is first loaded.</summary>
@@ -67,8 +67,12 @@ namespace OverworldChests
 
 		private static bool Chest_draw_Prefix(Chest __instance)
 		{
-			if (!__instance.name.StartsWith(namePrefix) || !Game1.player.currentLocation.overlayObjects.ContainsKey(__instance.tileLocation) || __instance.items.Any() || __instance.coins > 0)
+			if (!__instance.name.StartsWith(namePrefix))
 				return true;
+
+			if (!Game1.player.currentLocation.overlayObjects.ContainsKey(__instance.tileLocation) || (__instance.items.Count > 0 && __instance.items[0] != null) || __instance.coins > 0)
+				return true;
+
 			context.Monitor.Log($"removing chest at {__instance.tileLocation}");
 			Game1.player.currentLocation.overlayObjects.Remove(__instance.tileLocation);
 			return false;
