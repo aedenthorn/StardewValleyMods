@@ -50,7 +50,7 @@ namespace AdvancedLootFramework
 
         private static void Chest_ShowMenu_Prefix(Chest __instance)
         {
-            if (__instance.coins.Value <= 0)
+            if (!__instance.playerChest || __instance.coins.Value <= 0)
                 return;
             context.Monitor.Log($"Giving {__instance.coins} gold to player from chest");
             Game1.player.Money += __instance.coins;

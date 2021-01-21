@@ -4,11 +4,11 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{D4990B31-2700-490E-9AF4-6D0ACF59FBAA}</ProjectGuid>
+    <ProjectGuid>{F862B037-5435-4963-89C5-449A6A3631A8}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>MultipleSpouses</RootNamespace>
-    <AssemblyName>MultipleSpouses</AssemblyName>
+    <RootNamespace>CustomChestTypes</RootNamespace>
+    <AssemblyName>CustomChestTypes</AssemblyName>
     <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <Deterministic>true</Deterministic>
@@ -33,27 +33,6 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x86'">
-    <DebugSymbols>true</DebugSymbols>
-    <OutputPath>bin\x86\Debug\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
-    <DebugType>pdbonly</DebugType>
-    <PlatformTarget>x86</PlatformTarget>
-    <LangVersion>7.3</LangVersion>
-    <ErrorReport>prompt</ErrorReport>
-    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x86'">
-    <DebugSymbols>true</DebugSymbols>
-    <OutputPath>bin\x86\Release\</OutputPath>
-    <DefineConstants>TRACE</DefineConstants>
-    <Optimize>true</Optimize>
-    <DebugType>pdbonly</DebugType>
-    <PlatformTarget>x86</PlatformTarget>
-    <LangVersion>7.3</LangVersion>
-    <ErrorReport>prompt</ErrorReport>
-    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
-  </PropertyGroup>
   <ItemGroup>
     <Reference Include="Microsoft.Build" />
     <Reference Include="Microsoft.Build.Framework" />
@@ -70,47 +49,12 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Divorce.cs" />
-    <Compile Include="FurniturePatches.cs" />
-    <Compile Include="HelperEvents.cs" />
-    <Compile Include="FileIO.cs" />
-    <Compile Include="Misc.cs" />
-    <Compile Include="EventPatches.cs" />
-    <Compile Include="Game1Patches.cs" />
-    <Compile Include="ObjectPatches.cs" />
-    <Compile Include="UIPatches.cs" />
-    <Compile Include="Maps.cs" />
+    <Compile Include="CustomChestTypeData.cs" />
     <Compile Include="ModConfig.cs" />
-    <Compile Include="Kissing.cs" />
     <Compile Include="ModEntry.cs" />
-    <Compile Include="FarmerPatches.cs" />
-    <Compile Include="Pregnancy.cs" />
-    <Compile Include="NPCPatches.cs" />
-    <Compile Include="LocationPatches.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="assets\Baby.png" />
-    <Content Include="assets\Baby_dark.png" />
-    <Content Include="assets\beds.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="assets\hair\Baby.png" />
-    <Content Include="assets\hair\Toddler.png" />
-    <Content Include="assets\hair\Toddler_girl.png" />
-    <Content Include="assets\kiss.wav">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="assets\Toddler.png" />
-    <Content Include="assets\Toddler_dark.png" />
-    <Content Include="assets\Toddler_girl.png" />
-    <Content Include="assets\Toddler_girl_dark.png" />
-    <None Include="assets\CustomBed.tmx" />
-    <None Include="assets\kiss.ogg" />
-    <None Include="i18n\fr.json" />
-    <None Include="i18n\es.json" />
-    <None Include="i18n\default.json" />
-    <None Include="i18n\zh.json" />
     <None Include="manifest.json" />
     <None Include="packages.config" />
   </ItemGroup>

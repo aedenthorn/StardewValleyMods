@@ -54,15 +54,6 @@ namespace TreasureChestsExpanded
             Monitor.Log($"Got {treasuresList.Count} possible treasures");
         }
 
-
-        private static void Chest_ShowMenu_Prefix(Chest __instance)
-        {
-            if (!__instance.playerChest || __instance.coins <= 0)
-                return;
-            Game1.player.Money += __instance.coins;
-            __instance.coins.Value = 0;
-        }
-
         private static void MineShaft_addLevelChests_postfix(MineShaft __instance)
         {
             if (__instance.mineLevel < 121)

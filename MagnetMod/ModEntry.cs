@@ -29,17 +29,17 @@ namespace MagnetMod
 		/// <param name="helper">Provides simplified APIs for writing mods.</param>
 		public override void Entry(IModHelper helper)
         {
-            helper.Events.GameLoop.UpdateTicking += this.UpdateTicking;
-            this.Config = this.Helper.ReadConfig<ModConfig>();
-			this.magnetRangeMult = Config.MagnetRangeMult;
-			this.magnetSpeedMult = Config.MagnetSpeedMult;
-			this.noLootBounce = Config.NoLootBounce;
-			this.noLootWave = Config.NoLootWave;
+            helper.Events.GameLoop.UpdateTicking += UpdateTicking;
+            Config = Helper.ReadConfig<ModConfig>();
+			magnetRangeMult = Config.MagnetRangeMult;
+			magnetSpeedMult = Config.MagnetSpeedMult;
+			noLootBounce = Config.NoLootBounce;
+			noLootWave = Config.NoLootWave;
 
 			ObjectPatches.Initialize(Monitor);
 
-			ObjectPatches.magnetRangeMult = this.magnetRangeMult;
-			var harmony = HarmonyInstance.Create(this.ModManifest.UniqueID);
+			ObjectPatches.magnetRangeMult = magnetRangeMult;
+			var harmony = HarmonyInstance.Create(ModManifest.UniqueID);
 
 			harmony.Patch(
 			   original: AccessTools.Method(typeof(Debris), "playerInRange"),
@@ -54,11 +54,11 @@ namespace MagnetMod
 			GameLocation location = Game1.getPlayerOrEventFarmer().currentLocation;
 			Netcode.NetCollection<Debris> debris = location.debris;
 			GameTime time = new GameTime();
-			float rangeMult = this.magnetRangeMult;
+			float rangeMult = magnetRangeMult;
 			bool infRange = (rangeMult < 0 ? true : false);
-			int speedMult = this.magnetSpeedMult; 
-			bool noBounce = this.noLootBounce;
-			bool noWave = this.noLootWave;
+			int speedMult = magnetSpeedMult; 
+			bool noBounce = noLootBounce;
+			bool noWave = noLootWave;
 
 			for (int j = 0; j < debris.Count; j++)
             {

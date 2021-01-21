@@ -1,7 +1,7 @@
 ﻿{
   "Name": "Advanced Loot Framework",
   "Author": "aedenthorn",
-  "Version": "0.1.1",
+  "Version": "0.1.2",
   "Description": "Creates custom loot lists for other mods.",
   "UniqueID": "aedenthorn.AdvancedLootFramework",
   "EntryDll": "AdvancedLootFramework.dll",

@@ -13,6 +13,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
 using xTile;
+using Object = StardewValley.Object;
 
 namespace MultipleSpouses
 {
@@ -320,6 +321,12 @@ namespace MultipleSpouses
                prefix: new HarmonyMethod(typeof(EventPatches), nameof(EventPatches.Event_command_playSound_Prefix))
             );
 
+            // Object patches
+
+            harmony.Patch(
+               original: AccessTools.Method(typeof(Object), nameof(Object.draw), new Type[] { typeof(SpriteBatch), typeof(int), typeof(int), typeof(float) }),
+               prefix: new HarmonyMethod(typeof(ObjectPatches), nameof(ObjectPatches.Object_draw_Prefix))
+            );
 
             // Furniture patches
 

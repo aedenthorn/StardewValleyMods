@@ -228,8 +228,7 @@ namespace CustomSpousePatio
         {
             AddTileSheets();
             RemoveAllSpouseAreas();
-            if (outdoorAreas.Count > 0)
-                ShowSpouseAreas();
+            ShowSpouseAreas();
         }
 
         private static void AddTileSheets()
@@ -315,24 +314,51 @@ namespace CustomSpousePatio
 
             Farmer f = Game1.MasterPlayer;
 
+
+            List<string> customAreaSpouses = new List<string>();
+            string aSpouse = null;
             foreach (KeyValuePair<string, Friendship> spouse in f.friendshipData.Pairs.Where(s => s.Value.IsMarried()))
             {
-                if (!outdoorAreas.ContainsKey(spouse.Key))
+                if (outdoorAreas.ContainsKey(spouse.Key))
+                    customAreaSpouses.Add(spouse.Key);
+                aSpouse = spouse.Key;
+            }
+
+            if(customAreaSpouses.Count == 0)
+            {
+                SMonitor.Log($"no custom spouse areas", LogLevel.Debug);
+                if (f.spouse != null)
+                    aSpouse = f.spouse;
+                if(aSpouse != null)
                 {
-                    SMonitor.Log($"no spouse area for {spouse.Key}", LogLevel.Warn);
-                    continue;
+                    customAreaSpouses.Add(aSpouse);
+                    SMonitor.Log($"Adding spouse {aSpouse} for default area", LogLevel.Debug);
                 }
-                OutdoorArea area = outdoorAreas[spouse.Key];
+            }
 
-                SMonitor.Log($"Adding spouse area for {spouse.Key}: use default tiles: {area.useDefaultTiles}, special tiles: {area.specialTiles.Count}", LogLevel.Debug);
+            foreach (string spouse in customAreaSpouses)
+            {
+                bool useDefaultTiles = true;
+                OutdoorArea area = new OutdoorArea();
+                List<SpecialTile> specialTiles = new List<SpecialTile>();
+                int x = DefaultSpouseAreaLocation.X;
+                int y = DefaultSpouseAreaLocation.Y;
+                if (outdoorAreas.ContainsKey(spouse))
+                {
+                    area = outdoorAreas[spouse];
+                    x = area.GetLocation().X;
+                    y = area.GetLocation().Y;
+                    useDefaultTiles = area.useDefaultTiles;
+                    specialTiles = new List<SpecialTile>(area.specialTiles);
+                }
+
+                SMonitor.Log($"Adding spouse area for {spouse}: use default tiles: {useDefaultTiles}, special tiles: {specialTiles.Count}", LogLevel.Debug);
 
 
-                int x = area.GetLocation().X;
-                int y = area.GetLocation().Y;
 
                 if (farm.map.Layers[0].LayerWidth <= x + 3 || farm.map.Layers[0].LayerHeight <= y + 3)
                 {
-                    SMonitor.Log($"Invalid spouse area coordinates {x},{y} for {spouse.Key}", LogLevel.Error);
+                    SMonitor.Log($"Invalid spouse area coordinates {x},{y} for {spouse}", LogLevel.Error);
                     continue;
                 }
                 /*
@@ -353,12 +379,12 @@ namespace CustomSpousePatio
                 farm.removeTile(x + 3, y, "AlwaysFront");
                 farm.removeTile(x, y, "AlwaysFront");
                 */
-                if (area.useDefaultTiles)
+                if (useDefaultTiles)
                 {
                     TileSheet defaultTilesheet = farm.Map.GetTileSheet("zzz_custom_spouse_default_patio");
                     int sheetIdx = farm.Map.TileSheets.IndexOf(defaultTilesheet);
 
-                    string which = area.useTilesOf != null ? area.useTilesOf : spouse.Key;
+                    string which = area.useTilesOf != null ? area.useTilesOf : spouse;
 
                     switch (which)
                     {
@@ -440,7 +466,7 @@ namespace CustomSpousePatio
                             farm.setMapTileIndex(x + 3, y + 2, 1098, "Buildings", sheetIdx);
                             break;
                         default:
-                            SMonitor.Log($"No default tiles for {spouse.Key}", LogLevel.Warn);
+                            SMonitor.Log($"No default tiles for {spouse}", LogLevel.Warn);
                             break;
 
                     }

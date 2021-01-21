@@ -98,7 +98,7 @@ namespace CustomFixedDialogue
             "Morris_JojaCDConfirm",
             "Morris_BuyMovieTheater",
             "Morris_TheaterBought",
-            "Morris_NoMoreCD"
+            "Morris_NoMoreCD",
         };
         private static List<string> charactersAllowed = new List<string>()
         {
@@ -121,7 +121,6 @@ namespace CustomFixedDialogue
             "Saloon_neutralEvent_3",
             "Saloon_neutralEvent_4",
             "MovieInvite_InvitedBySomeoneElse",
-            "MovieInvite_FarmerAlreadySeen",
             "MovieInvite_AlreadySeen",
             "MovieInvite_Invited",
             "MovieInvite_Invited_Rude",
@@ -233,6 +232,11 @@ namespace CustomFixedDialogue
 
         public static void AddWrapperToString(string path, ref string text)
         {
+            if (text.Contains("\""))
+            {
+                Monitor.Log($"event string, not adding wrapper: {text}");
+                return;
+            }
             if (path.StartsWith(extraPrefix) && !extraExceptions.Contains(path.Substring(extraPrefix.Length)))
             {
                 string[] array = text.Split('/');
