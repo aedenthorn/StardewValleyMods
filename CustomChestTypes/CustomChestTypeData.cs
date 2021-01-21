@@ -14,6 +14,8 @@ namespace CustomChestTypes
         public string name;
         public int id;
         public int capacity;
+        public int rows;
+        public int price;
         public Texture2D texture;
         public string texturePath;
         public string description;

@@ -57,6 +57,7 @@
     <None Include="$(MSBuildThisFileDirectory)MultipleSpouses 2.2.1.zip" />
     <None Include="$(MSBuildThisFileDirectory)MultipleSpouses 2.3.0.zip" />
     <None Include="$(MSBuildThisFileDirectory)MultipleSpouses 2.4.0.zip" />
+    <None Include="$(MSBuildThisFileDirectory)MultipleSpouses 2.4.1.zip" />
     <None Include="$(MSBuildThisFileDirectory)Murdercrows 0.2.2.zip" />
     <None Include="$(MSBuildThisFileDirectory)NonRandomPrairieKing 0.1.0.zip" />
     <None Include="$(MSBuildThisFileDirectory)OverworldChests 0.1.0.zip" />
@@ -66,6 +67,7 @@
     <None Include="$(MSBuildThisFileDirectory)PacifistValley 0.6.4.zip" />
     <None Include="$(MSBuildThisFileDirectory)PacifistValley 0.7.2.zip" />
     <None Include="$(MSBuildThisFileDirectory)PlaceShaft 2.0.0.zip" />
+    <None Include="$(MSBuildThisFileDirectory)QuickLoad 0.1.0.zip" />
     <None Include="$(MSBuildThisFileDirectory)QuickResponses 0.2.0.zip" />
     <None Include="$(MSBuildThisFileDirectory)Quotes 0.4.0.zip" />
     <None Include="$(MSBuildThisFileDirectory)Quotes 0.4.1.zip" />

@@ -25,9 +25,8 @@ namespace MultipleSpouses
 
 		public static bool Object_draw_Prefix(Object __instance, SpriteBatch spriteBatch, float alpha)
 		{
-			if (!Config.EnableMod || !Config.CustomBed || !(__instance is BedFurniture) || (__instance as BedFurniture).bedType != BedFurniture.BedType.Double)
+			if (!Config.EnableMod || !Config.CustomBed || !(__instance is BedFurniture) || (__instance is BedFurniture && (__instance as BedFurniture)?.bedType != BedFurniture.BedType.Double))
 				return true;
-			Monitor.Log("Drawing object");
 
 			int bedWidth = Misc.GetBedWidth(Utility.getHomeOfFarmer(Game1.getFarmer(__instance.owner)));
 			NetVector2 drawPosition = Helper.Reflection.GetField<NetVector2>(__instance as BedFurniture, "drawPosition").GetValue();

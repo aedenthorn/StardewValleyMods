@@ -67,6 +67,7 @@ namespace MultipleSpouses
             Misc.Initialize(Monitor, Helper);
             Divorce.Initialize(Monitor, Helper);
             FurniturePatches.Initialize(Monitor, Helper, config);
+            ObjectPatches.Initialize(Monitor, Helper, config);
 
             var harmony = HarmonyInstance.Create(this.ModManifest.UniqueID);
 

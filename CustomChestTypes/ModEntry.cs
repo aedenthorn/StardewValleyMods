@@ -4,10 +4,12 @@ using Microsoft.Xna.Framework.Graphics;
 using Netcode;
 using StardewModdingAPI;
 using StardewValley;
+using StardewValley.Menus;
 using StardewValley.Network;
 using StardewValley.Objects;
 using System;
 using System.Collections.Generic;
+using System.Reflection;
 using Object = StardewValley.Object;
 
 namespace CustomChestTypes
@@ -43,10 +45,20 @@ namespace CustomChestTypes
 				original: AccessTools.Method(typeof(Debris), nameof(Debris.collect)),
 				prefix: new HarmonyMethod(typeof(ModEntry), nameof(Debris_collect_Prefix))
 			);
+
+			harmony.Patch(
+				original: AccessTools.Method(typeof(Object), "loadDisplayName"),
+			   prefix: new HarmonyMethod(typeof(ModEntry), nameof(Object_loadDisplayName_Prefix))
+			);
 			harmony.Patch(
 				original: AccessTools.Method(typeof(Object), nameof(Object.placementAction)),
 				prefix: new HarmonyMethod(typeof(ModEntry), nameof(Object_placementAction_Prefix))
 			);
+			harmony.Patch(
+				original: AccessTools.Method(typeof(Object), nameof(Object.drawInMenu), new Type[] { typeof(SpriteBatch), typeof(Vector2),  typeof(float),  typeof(float),  typeof(float),  typeof(StackDrawType),  typeof(Color),  typeof(bool)}),
+				prefix: new HarmonyMethod(typeof(ModEntry), nameof(Object_drawInMenu_Prefix))
+			);
+
 			harmony.Patch(
 				original: AccessTools.Method(typeof(Chest), nameof(Chest.draw), new Type[] { typeof(SpriteBatch), typeof(int), typeof(int), typeof(float) }),
 				prefix: new HarmonyMethod(typeof(ModEntry), nameof(Chest_draw_Prefix))
@@ -55,12 +67,46 @@ namespace CustomChestTypes
 				original: AccessTools.Method(typeof(Chest), nameof(Chest.checkForAction)),
 				prefix: new HarmonyMethod(typeof(ModEntry), nameof(Chest_checkForAction_Prefix))
 			);
-			harmony.Patch(
-				original: AccessTools.Method(typeof(Object), nameof(Object.drawInMenu), new Type[] { typeof(SpriteBatch), typeof(Vector2),  typeof(float),  typeof(float),  typeof(float),  typeof(StackDrawType),  typeof(Color),  typeof(bool)}),
-				prefix: new HarmonyMethod(typeof(ModEntry), nameof(Object_drawInMenu_Prefix))
-			);
-			return;
 
+
+			harmony.Patch(
+				original: AccessTools.Method(typeof(Utility), nameof(Utility.getCarpenterStock)),
+				postfix: new HarmonyMethod(typeof(ModEntry), nameof(Utility_getCarpenterStock_Postfix))
+			);
+			
+			ConstructorInfo ci2 = typeof(ItemGrabMenu).GetConstructor(new Type[] { typeof(IList<Item>), typeof(bool), typeof(bool), typeof(InventoryMenu.highlightThisItem), typeof(ItemGrabMenu.behaviorOnItemSelect), typeof(string), typeof(ItemGrabMenu.behaviorOnItemSelect), typeof(bool), typeof(bool), typeof(bool), typeof(bool), typeof(bool), typeof(int), typeof(Item), typeof(int), typeof(object) });
+			harmony.Patch(
+			   original: ci2,
+			   postfix: new HarmonyMethod(typeof(ModEntry), nameof(ModEntry.ItemGrabMenu_Postfix))
+			);
+		}
+
+		/// <summary>Get whether this instance can edit the given asset.</summary>
+		/// <param name="asset">Basic metadata about the asset being loaded.</param>
+		public bool CanEdit<T>(IAssetInfo asset)
+		{
+			if (asset.AssetNameEquals("Data/BigCraftablesInformation"))
+			{
+				return true;
+			}
+
+			return false;
+		}
+
+		/// <summary>Edit a matched asset.</summary>
+		/// <param name="asset">A helper which encapsulates metadata about an asset and enables changes to it.</param>
+		public void Edit<T>(IAssetData asset)
+		{
+			if (asset.AssetNameEquals("Data/BigCraftablesInformation") && customChestTypesDict.Count > 0)
+			{
+
+				var editor = asset.AsDictionary<int, string>();
+				SMonitor.Log($"Patching BigCraftablesInformation");
+				foreach (KeyValuePair<int, CustomChestType> kvp in customChestTypesDict)
+				{
+					editor.Data[kvp.Key] = $"{kvp.Value.name}/0/-300/Crafting -9/{kvp.Value.description}/true/true/0/Chest";
+				}
+			}
 		}
 
 		private void GameLoop_GameLaunched(object sender, StardewModdingAPI.Events.GameLaunchedEventArgs e)
@@ -135,6 +181,13 @@ namespace CustomChestTypes
 			return true;
         }		
 
+		private static bool Object_loadDisplayName_Prefix(Object __instance, ref string __result)
+        {
+            if (!customChestTypesDict.ContainsKey(__instance.ParentSheetIndex))
+                return true;
+			__result = customChestTypesDict[__instance.ParentSheetIndex].name;
+			return false;
+        }		
 		private static bool Object_placementAction_Prefix(Object __instance, ref bool __result, GameLocation location, int x, int y, Farmer who)
         {
             if (!customChestTypesDict.ContainsKey(__instance.ParentSheetIndex))
@@ -195,44 +248,32 @@ namespace CustomChestTypes
 			return false;
         }		
 		
-		private static bool Chest_Prefix(Chest __instance, bool playerChest, int parentSheedIndex)
+		private static void Chest_Postfix(Chest __instance, int parent_sheet_index)
         {
-            if (!customChestTypesDict.ContainsKey(parentSheedIndex))
-                return true;
-			__instance.Name = $"Custom Chest Type {parentSheedIndex}: {customChestTypesDict[parentSheedIndex]}";
-			__instance.type.Value = "Crafting";
-			__instance.playerChest.Value = playerChest;
-			__instance.bigCraftable.Value = true;
-			__instance.canBeSetDown.Value = true;
+            if (!customChestTypesDict.ContainsKey(parent_sheet_index))
+                return;
+			__instance.Name = $"{customChestTypesDict[parent_sheet_index].name}";
 			SMonitor.Log($"Created chest {__instance.Name}"); 
-			return false;
         }
 
-		/// <summary>Get whether this instance can edit the given asset.</summary>
-		/// <param name="asset">Basic metadata about the asset being loaded.</param>
-		public bool CanEdit<T>(IAssetInfo asset)
+		private static void ItemGrabMenu_Postfix(ItemGrabMenu __instance, object context)
 		{
-			if (asset.AssetNameEquals("Data/BigCraftablesInformation"))
-			{
-				return true;
-			}
+			if (!(context is Chest) || ((context is Chest) || (context as Chest)?.ParentSheetIndex == null || !customChestTypesDict.ContainsKey((context as Chest).ParentSheetIndex)))
+				return;
 
-			return false;
+			CustomChestType cct = customChestTypesDict[(context as Chest).ParentSheetIndex];
+			__instance.ItemsToGrabMenu.capacity = cct.capacity;
+			__instance.ItemsToGrabMenu.rows = cct.rows;
+
 		}
-
-		/// <summary>Edit a matched asset.</summary>
-		/// <param name="asset">A helper which encapsulates metadata about an asset and enables changes to it.</param>
-		public void Edit<T>(IAssetData asset)
+		private static void Utility_getCarpenterStock_Postfix(ref Dictionary<ISalable, int[]> __result)
 		{
-			if (asset.AssetNameEquals("Data/BigCraftablesInformation") && customChestTypesDict.Count > 0)
-			{
-
-				var editor = asset.AsDictionary<int, string>();
-				SMonitor.Log($"Patching BigCraftablesInformation");
-				foreach (KeyValuePair<int, CustomChestType> kvp in customChestTypesDict)
-				{
-					editor.Data[kvp.Key] = $"{kvp.Value.name}/0/-300/Crafting -9/{kvp.Value.description}/true/true/0/Chest";
-				}
+			foreach(KeyValuePair<int, CustomChestType> kvp in customChestTypesDict)
+            {
+				Chest chest = new Chest(kvp.Value.id, Vector2.Zero, 217, 2);
+				chest.Price = kvp.Value.price;
+				chest.name = kvp.Value.name;
+				__result.Add(chest, new int[] { kvp.Value.price, int.MaxValue});
 			}
 		}
 	}
