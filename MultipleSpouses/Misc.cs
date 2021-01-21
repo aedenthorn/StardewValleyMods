@@ -469,7 +469,7 @@ namespace MultipleSpouses
             }
         }
 
-
+        /*
         public static Point getChildBed(FarmHouse farmhouse, string name)
         {
             List<NPC> children = farmhouse.characters.ToList().FindAll((n) => n is Child && n.Age == 3);
@@ -481,10 +481,13 @@ namespace MultipleSpouses
             }
             return new Point(22 + offset, 5);
         }
+        */
         public static bool ChangingKidsRoom()
         {
-            return ModEntry.config.ExtraCribs != 0 || ModEntry.config.ExtraKidsBeds != 0 || ModEntry.config.ExtraKidsRoomWidth != 0;
+            //return ModEntry.config.ExtraCribs != 0 || ModEntry.config.ExtraKidsBeds != 0 || ModEntry.config.ExtraKidsRoomWidth != 0;
+            return ModEntry.config.ExtraKidsRoomWidth != 0;
         }
+        
         
         public static int GetTopOfHeadSleepOffset(string name)
         {

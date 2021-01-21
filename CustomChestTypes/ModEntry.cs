@@ -256,15 +256,17 @@ namespace CustomChestTypes
 			SMonitor.Log($"Created chest {__instance.Name}"); 
         }
 
-		private static void ItemGrabMenu_Postfix(ItemGrabMenu __instance, object context)
+		private static void ItemGrabMenu_Postfix(ItemGrabMenu __instance, InventoryMenu.highlightThisItem highlightFunction, object context)
 		{
-			if (!(context is Chest) || ((context is Chest) || (context as Chest)?.ParentSheetIndex == null || !customChestTypesDict.ContainsKey((context as Chest).ParentSheetIndex)))
+			if (!(context is Chest) || (context as Chest)?.ParentSheetIndex == null || !customChestTypesDict.ContainsKey((context as Chest).ParentSheetIndex))
 				return;
 
 			CustomChestType cct = customChestTypesDict[(context as Chest).ParentSheetIndex];
-			__instance.ItemsToGrabMenu.capacity = cct.capacity;
-			__instance.ItemsToGrabMenu.rows = cct.rows;
+			SMonitor.Log($"Creating inventory menu for chest {cct.name}, rows: {cct.rows}, cap: {cct.capacity}, ");
+			int containerWidth = 64 * (cct.capacity / cct.rows);
 
+			__instance.ItemsToGrabMenu = new InventoryMenu(Game1.uiViewport.Width / 2 - containerWidth / 2, __instance.yPositionOnScreen + 64, false, __instance.ItemsToGrabMenu.actualInventory, highlightFunction, cct.capacity, cct.rows, 0, 0, true);
+			__instance.ItemsToGrabMenu.populateClickableComponentList();
 		}
 		private static void Utility_getCarpenterStock_Postfix(ref Dictionary<ISalable, int[]> __result)
 		{

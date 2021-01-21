@@ -28,13 +28,13 @@ namespace MultipleSpouses
             {
                 if (__instance.owner == null)
                     return;
-                int ecribs = Math.Max(ModEntry.config.ExtraCribs, 0);
+                //int ecribs = Math.Max(ModEntry.config.ExtraCribs, 0);
                 int espace = Math.Max(ModEntry.config.ExtraKidsRoomWidth, 0);
-                int ebeds = Math.Max(ModEntry.config.ExtraKidsBeds, 0);
+                //int ebeds = Math.Max(ModEntry.config.ExtraKidsBeds, 0);
 
-                if (__instance.upgradeLevel > 1 && ecribs + espace + ebeds > 0)
+                if (__instance.upgradeLevel > 1 && espace > 0)
                 {
-                    int x = (ecribs * 3) + espace + (ebeds * 4);
+                    int x = espace;
                     __result.Remove(new Microsoft.Xna.Framework.Rectangle(15, 1, 13, 3));
                     __result.Add(new Microsoft.Xna.Framework.Rectangle(15, 1, 13 + x, 3));
                 }
@@ -70,12 +70,12 @@ namespace MultipleSpouses
             {
                 if (__instance.owner == null)
                     return;
-                int ecribs = Math.Max(ModEntry.config.ExtraCribs, 0);
+                //int ecribs = Math.Max(ModEntry.config.ExtraCribs, 0);
                 int espace = Math.Max(ModEntry.config.ExtraKidsRoomWidth, 0);
-                int ebeds = Math.Max(ModEntry.config.ExtraKidsBeds, 0);
-                if (__instance.upgradeLevel > 1 && ecribs + espace + ebeds > 0)
+                //int ebeds = Math.Max(ModEntry.config.ExtraKidsBeds, 0);
+                if (__instance.upgradeLevel > 1 && espace > 0)
                 {
-                    int x = (ecribs * 3) + espace + (ebeds * 4);
+                    int x = espace;
                     __result.Remove(new Microsoft.Xna.Framework.Rectangle(15, 3, 13, 6));
                     __result.Add(new Microsoft.Xna.Framework.Rectangle(15, 3, 13 + x, 6));
                 }
@@ -167,7 +167,7 @@ namespace MultipleSpouses
                     if(__instance.upgradeLevel > 1 && __instance.upgradeLevel < 4)
                     {
                         //NPCPatches.SetCribs(__instance);
-                        //Maps.ExpandKidsRoom(__instance);
+                        Maps.ExpandKidsRoom(__instance);
                     }
                 }
                 if(Misc.GetSpouses(f,0).ContainsKey("Sebastian") && Game1.netWorldState.Value.hasWorldStateID("sebastianFrog"))

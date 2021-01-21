@@ -48,8 +48,8 @@ namespace MultipleSpouses
         public bool SleepOnCovers { get; set; } = false;
         public bool TransparentSheets { get; set; } = true;
         public float SheetTransparency { get; set; } = 0.75f;
-        public int ExtraCribs { get; set; } = 0;
-        public int ExtraKidsBeds { get; set; } = 0;
+        //public int ExtraCribs { get; set; } = 0;
+        //public int ExtraKidsBeds { get; set; } = 0;
         public int ExtraKidsRoomWidth { get; set; } = 0;
         public int ExistingKidsRoomOffsetX { get; set; } = 0;
         public int ExistingKidsRoomOffsetY { get; set; } = 0;

@@ -1050,7 +1050,7 @@ namespace MultipleSpouses
         }
 
 
-
+        /*
         public static void Child_resetForPlayerEntry_Postfix(ref Child __instance, GameLocation l)
         {
             try
@@ -1065,7 +1065,8 @@ namespace MultipleSpouses
                 Monitor.Log($"Failed in {nameof(Child_resetForPlayerEntry_Postfix)}:\n{ex}", LogLevel.Error);
             }
         }
-
+        */
+        /*
         public static void SetCribs(GameLocation location)
         {
 
@@ -1090,6 +1091,7 @@ namespace MultipleSpouses
                 }
             }
         }
+        */
         public static void Child_dayUpdate_Prefix(Child __instance)
         {
             try
@@ -1102,6 +1104,7 @@ namespace MultipleSpouses
                 Monitor.Log($"Failed in {nameof(Child_dayUpdate_Prefix)}:\n{ex}", LogLevel.Error);
             }
         }
+        /*
         public static void Child_tenMinuteUpdate_Postfix(Child __instance)
         {
             try
@@ -1127,6 +1130,6 @@ namespace MultipleSpouses
                 Monitor.Log($"Failed in {nameof(Child_tenMinuteUpdate_Postfix)}:\n{ex}", LogLevel.Error);
             }
         }
-
+        */
     }
 }

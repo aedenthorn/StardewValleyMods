@@ -69,7 +69,7 @@ namespace MultipleSpouses
             FurniturePatches.Initialize(Monitor, Helper, config);
             ObjectPatches.Initialize(Monitor, Helper, config);
 
-            var harmony = HarmonyInstance.Create(this.ModManifest.UniqueID);
+            var harmony = HarmonyInstance.Create(ModManifest.UniqueID);
 
 
             // npc patches
@@ -161,22 +161,22 @@ namespace MultipleSpouses
                original: AccessTools.Method(typeof(Child), nameof(Child.reloadSprite)),
                postfix: new HarmonyMethod(typeof(NPCPatches), nameof(NPCPatches.Child_reloadSprite_Postfix))
             );
-
+/*
             harmony.Patch(
                original: AccessTools.Method(typeof(Child), nameof(Child.resetForPlayerEntry)),
                postfix: new HarmonyMethod(typeof(NPCPatches), nameof(NPCPatches.Child_resetForPlayerEntry_Postfix))
             );
-
+*/
             harmony.Patch(
                original: AccessTools.Method(typeof(Child), nameof(Child.dayUpdate)),
                prefix: new HarmonyMethod(typeof(NPCPatches), nameof(NPCPatches.Child_dayUpdate_Prefix))
             );
-
+            /*
             harmony.Patch(
                original: AccessTools.Method(typeof(Child), nameof(Child.tenMinuteUpdate)),
                postfix: new HarmonyMethod(typeof(NPCPatches), nameof(NPCPatches.Child_tenMinuteUpdate_Postfix))
             );
-
+            */
 
             // Location patches
 

@@ -12,6 +12,7 @@
     <None Include="$(MSBuildThisFileDirectory)AdvancedLootFramework 0.1.0.zip" />
     <None Include="$(MSBuildThisFileDirectory)AdvancedLootFramework 0.1.1.zip" />
     <None Include="$(MSBuildThisFileDirectory)BossCreatures 1.2.0.zip" />
+    <None Include="$(MSBuildThisFileDirectory)CustomChestTypes 0.2.0.zip" />
     <None Include="$(MSBuildThisFileDirectory)CustomFixedDialogue 0.6.0.zip" />
     <None Include="$(MSBuildThisFileDirectory)CustomFixedDialogue 0.6.1.zip" />
     <None Include="$(MSBuildThisFileDirectory)CustomFixedDialogue 0.6.2.zip" />
@@ -58,6 +59,7 @@
     <None Include="$(MSBuildThisFileDirectory)MultipleSpouses 2.3.0.zip" />
     <None Include="$(MSBuildThisFileDirectory)MultipleSpouses 2.4.0.zip" />
     <None Include="$(MSBuildThisFileDirectory)MultipleSpouses 2.4.1.zip" />
+    <None Include="$(MSBuildThisFileDirectory)MultipleSpouses 2.5.0.zip" />
     <None Include="$(MSBuildThisFileDirectory)Murdercrows 0.2.2.zip" />
     <None Include="$(MSBuildThisFileDirectory)NonRandomPrairieKing 0.1.0.zip" />
     <None Include="$(MSBuildThisFileDirectory)OverworldChests 0.1.0.zip" />

@@ -598,10 +598,10 @@ namespace MultipleSpouses
 		}
 		internal static void ExpandKidsRoom(FarmHouse farmHouse)
 		{
-			return;
 			ModEntry.PMonitor.Log("Expanding kids room");
 
-			int extraWidth = Math.Max(ModEntry.config.ExtraCribs,0) * 3 + Math.Max(ModEntry.config.ExtraKidsRoomWidth, 0) + Math.Max(ModEntry.config.ExtraKidsBeds, 0) * 4;
+			//int extraWidth = Math.Max(ModEntry.config.ExtraCribs,0) * 3 + Math.Max(ModEntry.config.ExtraKidsRoomWidth, 0) + Math.Max(ModEntry.config.ExtraKidsBeds, 0) * 4;
+			int extraWidth = Math.Max(ModEntry.config.ExtraKidsRoomWidth, 0);
 			int width = 14;
 			int height = 9;
 			int startx = 15;
@@ -641,13 +641,13 @@ namespace MultipleSpouses
 				ExtendMap(farmHouse, 29 + ox + extraWidth);
 			}
 
-			int cribsWidth = (Math.Max(ModEntry.config.ExtraCribs, 0) + 1)* 3;
-			int bedsWidth = (Math.Max(ModEntry.config.ExtraKidsBeds, 0) + 1) * 4;
+			//int cribsWidth = (Math.Max(ModEntry.config.ExtraCribs, 0) + 1)* 3;
+			//int bedsWidth = (Math.Max(ModEntry.config.ExtraKidsBeds, 0) + 1) * 4;
 			int spaceWidth = Math.Max(ModEntry.config.ExtraKidsRoomWidth, 0) + 3;
 
 			// cribs
 			int k = 0;
-
+			/*
 			if (ModEntry.config.ExtraCribs >= 0)
             {
 				for (int j = 0; j < ModEntry.config.ExtraCribs + 1; j++)
@@ -695,7 +695,7 @@ namespace MultipleSpouses
 			{
 				k %= (3 * height);
 
-				int x = cribsWidth + ox + startx + i % 3;
+				int x = ox + startx + i % 3;
 				int y = oy + starty + i / 3;
 				int xt = 3 + (k % 3);
 				int yt = k / 3;
@@ -705,8 +705,9 @@ namespace MultipleSpouses
 				setupTile(x, y, xt, yt, farmHouse, backIndexes, backSheets, 14, 2);
 				k++;
 			}
+			*/
 
-			if(ModEntry.config.ExtraKidsRoomWidth > 0)
+			if (ModEntry.config.ExtraKidsRoomWidth > 0)
             {
 				k = 0;
 				for (int j = 0; j < ModEntry.config.ExtraKidsRoomWidth / 3; j++)
@@ -716,7 +717,7 @@ namespace MultipleSpouses
 					{
 						k %= (3 * height);
 
-						int x = cribsWidth + 3 + ox + startx + (3 * j) + i % 3;
+						int x = 6 + ox + startx + (3 * j) + i % 3;
 						int y = oy + starty + i / 3;
 						int xt = 3 + (k % 3);
 						int yt = k / 3;
@@ -733,7 +734,7 @@ namespace MultipleSpouses
 					for (int i = 0; i < height; i++)
 					{
 
-						int x = cribsWidth + 3 + (3 * (ModEntry.config.ExtraKidsRoomWidth / 3)) + ox + startx + j;
+						int x = 6 + (3 * (ModEntry.config.ExtraKidsRoomWidth / 3)) + ox + startx + j;
 						int y = oy + starty + i;
 						int xt = 3 + j;
 						int yt = i;
@@ -745,7 +746,7 @@ namespace MultipleSpouses
 				}
 			}
 
-
+			/*
 			// beds
 			if (ModEntry.config.ExtraKidsBeds >= 0)
 			{
@@ -821,13 +822,14 @@ namespace MultipleSpouses
 			}
 			else
 			{
+			*/
 				// remove both beds
 				k = 0;
 				for (int i = 0; i < 3 * height; i++)
 				{
 					k %= (3 * height);
 
-					int x = cribsWidth + spaceWidth + ox + startx + i % 3;
+					int x = 3 + spaceWidth + ox + startx + i % 3;
 					int y = oy + starty + i / 3;
 					int xt = 3 + (k % 3);
 					int yt = k / 3;
@@ -842,7 +844,7 @@ namespace MultipleSpouses
 				{
 					k %= (3 * height);
 
-					int x = cribsWidth + spaceWidth + 3 + ox + startx + i % 3;
+					int x = 3 + spaceWidth + 3 + ox + startx + i % 3;
 					int y = oy + starty + i / 3;
 					int xt = 3 + (k % 3);
 					int yt = k / 3;
@@ -857,21 +859,21 @@ namespace MultipleSpouses
 
 				for (int i = 0; i < height; i++)
 				{
-					setupTile(cribsWidth + spaceWidth + 6 + ox + startx, oy + starty + i, i == height - 1 ? 12 : 3, i, farmHouse, frontIndexes, frontSheets, 14, 0);
-					setupTile(cribsWidth + spaceWidth + 6 + ox + startx, oy + starty + i, 3, i, farmHouse, buildIndexes, buildSheets, 14, 1);
-					setupTile(cribsWidth + spaceWidth + 6 + ox + startx, oy + starty + i, 3, i, farmHouse, backIndexes, backSheets, 14, 2);
+					setupTile(3 + spaceWidth + 6 + ox + startx, oy + starty + i, i == height - 1 ? 12 : 3, i, farmHouse, frontIndexes, frontSheets, 14, 0);
+					setupTile(3 + spaceWidth + 6 + ox + startx, oy + starty + i, 3, i, farmHouse, buildIndexes, buildSheets, 14, 1);
+					setupTile(3 + spaceWidth + 6 + ox + startx, oy + starty + i, 3, i, farmHouse, backIndexes, backSheets, 14, 2);
 				}
 
 				// far wall
 
 				for (int i = 0; i < height; i++)
 				{
-					setupTile(cribsWidth + spaceWidth + 7 + ox + startx, oy + starty + i, 13, i, farmHouse, frontIndexes, frontSheets, 14, 0);
-					setupTile(cribsWidth + spaceWidth + 7 + ox + startx, oy + starty + i, 13, i, farmHouse, buildIndexes, buildSheets, 14, 1);
-					setupTile(cribsWidth + spaceWidth + 7 + ox + startx, oy + starty + i, 13, i, farmHouse, backIndexes, backSheets, 14, 2);
+					setupTile(3 + spaceWidth + 7 + ox + startx, oy + starty + i, 13, i, farmHouse, frontIndexes, frontSheets, 14, 0);
+					setupTile(3 + spaceWidth + 7 + ox + startx, oy + starty + i, 13, i, farmHouse, buildIndexes, buildSheets, 14, 1);
+					setupTile(3 + spaceWidth + 7 + ox + startx, oy + starty + i, 13, i, farmHouse, backIndexes, backSheets, 14, 2);
 				}
 
-			}
+			//}
 			// bottom
 			for (int i = 0; i < extraWidth; i++)
 			{
