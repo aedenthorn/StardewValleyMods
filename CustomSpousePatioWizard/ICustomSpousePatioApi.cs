@@ -13,5 +13,6 @@ namespace CustomSpousePatioWizard
         void ReloadPatios();
         bool RemoveSpousePatio(string spouse);
         void AddSpousePatioHere(string spouse_tilesOf);
+        bool MoveSpousePatio(string whichAnswer);
     }
 }

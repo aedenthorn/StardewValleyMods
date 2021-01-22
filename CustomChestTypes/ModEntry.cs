@@ -240,11 +240,12 @@ namespace CustomChestTypes
         }				
 		private static bool Chest_checkForAction_Prefix(Chest __instance, ref bool __result, Farmer who, bool justCheckingForActivity)
         {
-			if (justCheckingForActivity)
+			if (justCheckingForActivity || !customChestTypesDict.ContainsKey(__instance.ParentSheetIndex))
 				return true;
+
 			SMonitor.Log($"clicked on chest {__instance.name}");
 			__instance.ShowMenu();
-			__result = true;
+			__result = true; 
 			return false;
         }		
 		

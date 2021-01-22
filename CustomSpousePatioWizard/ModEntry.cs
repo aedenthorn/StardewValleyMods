@@ -71,9 +71,15 @@ namespace CustomSpousePatioWizard
 
 		public void StartWizard()
 		{
+			var pairs = Game1.player.friendshipData.Pairs.Where(s => s.Value.IsMarried());
+            if (!pairs.Any())
+            {
+				Monitor.Log("You don't have any spouses.", LogLevel.Warn);
+            }
+
 			customAreaSpouses = new List<string>();
 			noCustomAreaSpouses = new List<string>();
-			foreach (KeyValuePair<string, Friendship> spouse in Game1.player.friendshipData.Pairs.Where(s => s.Value.IsMarried()))
+			foreach (KeyValuePair<string, Friendship> spouse in pairs)
 			{
 				if (customSpousePatioApi.GetCurrentSpouseAreas().ContainsKey(spouse.Key))
 					customAreaSpouses.Add(spouse.Key);
@@ -83,10 +89,11 @@ namespace CustomSpousePatioWizard
 
 			List<Response> responses = new List<Response>();
 			if (noCustomAreaSpouses.Any())
-				responses.Add(new Response("CSP_Wizard_Questions_AddPatio", Helper.Translation.Get("add-new-patio")));
+				responses.Add(new Response("CSP_Wizard_Questions_AddPatio", Helper.Translation.Get("new-patio")));
 			if (customAreaSpouses.Any())
 			{
 				responses.Add(new Response("CSP_Wizard_Questions_RemovePatio", Helper.Translation.Get("remove-patio")));
+				responses.Add(new Response("CSP_Wizard_Questions_MovePatio", Helper.Translation.Get("move-patio")));
 				responses.Add(new Response("CSP_Wizard_Questions_ListPatios", Helper.Translation.Get("list-patios")));
 			}
 			responses.Add(new Response("CSP_Wizard_Questions_ReloadPatios", Helper.Translation.Get("reload-patios")));
@@ -116,6 +123,13 @@ namespace CustomSpousePatioWizard
 								responses.Add(new Response(spouse, spouse));
 							}
 							break;
+						case "CSP_Wizard_Questions_MovePatio":
+							header = Helper.Translation.Get("move-patio-which");
+							foreach (string spouse in customAreaSpouses)
+							{
+								responses.Add(new Response(spouse, spouse));
+							}
+							break;
 						case "CSP_Wizard_Questions_RemovePatio":
 							header = Helper.Translation.Get("remove-patio-which");
 							foreach (string spouse in customAreaSpouses)
@@ -134,15 +148,30 @@ namespace CustomSpousePatioWizard
 					break;
 				case "CSP_Wizard_Questions_AddPatio":
 					header = Helper.Translation.Get("new-patio-use-tiles");
-					foreach (string spouse in customSpousePatioApi.GetCurrentSpouseAreas().Keys)
+					newQuestion = "CSP_Wizard_Questions_AddPatio_2";
+					Monitor.Log($"potential tiles: {customSpousePatioApi.GetDefaultSpouseOffsets().Keys.Count}");
+					foreach (string spouse in customSpousePatioApi.GetDefaultSpouseOffsets().Keys)
 					{
 						responses.Add(new Response($"{whichAnswer}_{spouse}", spouse));
 					}
-					newQuestion = "CSP_Wizard_Questions_AddPatio_2";
 					break;
 				case "CSP_Wizard_Questions_AddPatio_2":
 					customSpousePatioApi.AddSpousePatioHere(whichAnswer);
 					Game1.drawObjectDialogue(Helper.Translation.Get("created-patio"));
+					return;
+				case "CSP_Wizard_Questions_MovePatio":
+					header = Helper.Translation.Get("move-patio-which-way");
+					newQuestion = "CSP_Wizard_Questions_MovePatio_2";
+					responses.Add(new Response($"{whichAnswer}_up", Helper.Translation.Get("up")));
+					responses.Add(new Response($"{whichAnswer}_down", Helper.Translation.Get("down")));
+					responses.Add(new Response($"{whichAnswer}_left", Helper.Translation.Get("left")));
+					responses.Add(new Response($"{whichAnswer}_right", Helper.Translation.Get("right")));
+					break; ;
+				case "CSP_Wizard_Questions_MovePatio_2":
+					if (customSpousePatioApi.MoveSpousePatio(whichAnswer))
+						Game1.drawObjectDialogue(string.Format(Helper.Translation.Get("moved-patio"), whichAnswer.Split('_')[0]));
+					else
+						Game1.drawObjectDialogue(string.Format(Helper.Translation.Get("not-moved-patio"), whichAnswer.Split('_')[0]));
 					return;
 				case "CSP_Wizard_Questions_RemovePatio":
 					if (customSpousePatioApi.RemoveSpousePatio(whichAnswer))

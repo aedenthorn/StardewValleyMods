@@ -36,11 +36,64 @@ namespace CustomSpousePatio
 		public void ReloadPatios()
 		{
 			RemoveAllSpouseAreas();
+			Game1.getFarm().loadMap(Game1.getFarm().mapPath, true);
 			ReloadSpouseAreaData();
 			AddTileSheets();
 			ShowSpouseAreas();
 
 		}
+		public bool MoveSpousePatio(string spouse_dir)
+        {
+			RemoveAllSpouseAreas();
+			Game1.getFarm().loadMap(Game1.getFarm().mapPath, true);
+			string spouse = spouse_dir.Split('_')[0];
+			string dir = spouse_dir.Split('_')[1];
+			bool success = false;
+			OutdoorArea outdoorArea = (OutdoorArea)ModEntry.outdoorAreas[spouse];
+            switch (dir)
+            {
+				case "up":
+					if (outdoorArea.location.Y <= 0)
+						break;
+					outdoorArea.location.Y--;
+					success = true;
+					break;
+				case "down":
+					if (outdoorArea.location.Y >= Game1.getFarm().map.Layers[0].LayerHeight - 1)
+						break;
+					outdoorArea.location.Y++;
+					success = true;
+					break;
+				case "left":
+					if (outdoorArea.location.X == 0)
+						break;
+					outdoorArea.location.X--;
+					success = true;
+					break;
+				case "right":
+					if (outdoorArea.location.X >= Game1.getFarm().map.Layers[0].LayerWidth - 1)
+						break;
+					outdoorArea.location.X++;
+					success = true;
+					break;
+            }
+			string path = Path.Combine("assets", "outdoor-areas.json");
+
+			if (!File.Exists(Path.Combine(ModEntry.SHelper.DirectoryPath, path)))
+				path = "outdoor-areas.json";
+
+			OutdoorAreaData json = ModEntry.SHelper.Data.ReadJsonFile<OutdoorAreaData>(path) ?? new OutdoorAreaData();
+			json.areas[spouse] = outdoorArea;
+			ModEntry.SHelper.Data.WriteJsonFile(path, json);
+
+			ReloadSpouseAreaData();
+			AddTileSheets();
+			ShowSpouseAreas();
+
+			ModEntry.SMonitor.Log($"Added spouse {spouse} to {path}");
+			return success;
+        }
+
 		public bool RemoveSpousePatio(string spouse)
 		{
 			string path = Path.Combine("assets", "outdoor-areas.json");
