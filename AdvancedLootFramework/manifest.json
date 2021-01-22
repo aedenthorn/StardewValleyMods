@@ -1,17 +1,17 @@
 ﻿{
-  "Name": "Advanced Loot Framework",
+  "Name": "SMAPI Log Getter",
   "Author": "aedenthorn",
-  "Version": "0.1.2",
-  "Description": "Creates custom loot lists for other mods.",
-  "UniqueID": "aedenthorn.AdvancedLootFramework",
-  "EntryDll": "AdvancedLootFramework.dll",
+  "Version": "0.1.0",
+  "Description": "Gets your SMAPI log file.",
+  "UniqueID": "aedenthorn.SMAPILogGetter",
+  "EntryDll": "SMAPILogGetter.dll",
   "MinimumApiVersion": "3.8.0",
-  "UpdateKeys": ["Nexus:7739"],
+  "UpdateKeys": ["Nexus:"],
   "ModUpdater": {
     "Repository": "StardewValleyMods",
     "User": "aedenthorn",
     "Directory": "_releases",
-    "ModFolder": "AdvancedLootFramework"
+    "ModFolder": "SMAPILogGetter"
   },
   "Dependencies": [
       {

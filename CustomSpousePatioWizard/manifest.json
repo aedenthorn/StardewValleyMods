@@ -1,0 +1,27 @@
+﻿{
+    "Name": "Custom Spouse Patio Wizard",
+    "Author": "aedenthorn",
+    "Version": "0.1.0",
+    "Description": "Provides an in-game wizard for adding custom spouse patios.",
+    "UniqueID": "aedenthorn.CustomSpousePatioWizard",
+    "EntryDll": "CustomSpousePatioWizard.dll",
+    "MinimumApiVersion": "3.8.0",
+    "ModUpdater": {
+        "Repository": "StardewValleyMods",
+        "User": "aedenthorn",
+        "Directory": "_releases",
+        "ModFolder": "CustomSpousePatioWizard"
+    },
+    "UpdateKeys": ["Nexus:"], 
+    "Dependencies": [
+        {
+            "UniqueID": "Platonymous.ModUpdater",
+            "IsRequired": false
+        },
+        {
+            "UniqueID": "aedenthorn.CustomSpousePatio",
+            "IsRequired": true,
+            "MinimumVersion": "0.7.0"
+        },
+    ]
+}

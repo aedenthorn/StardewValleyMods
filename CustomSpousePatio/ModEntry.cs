@@ -4,13 +4,13 @@ using Microsoft.Xna.Framework.Graphics;
 using StardewModdingAPI;
 using StardewModdingAPI.Events;
 using StardewValley;
+using StardewValley.Menus;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using xTile.Dimensions;
 using xTile.Tiles;
-using Task = System.Threading.Tasks.Task;
 
 namespace CustomSpousePatio
 {
@@ -18,11 +18,11 @@ namespace CustomSpousePatio
     public class ModEntry : Mod
     {
         public static ModConfig Config;
-        private static Dictionary<string, OutdoorArea> outdoorAreas = new Dictionary<string, OutdoorArea>();
-        private static IMonitor SMonitor;
-        private static IModHelper SHelper;
+        public static Dictionary<string, object> outdoorAreas = new Dictionary<string, object>();
+        public static IMonitor SMonitor;
+        public static IModHelper SHelper;
 
-        public static Dictionary<string, int[]> spousePatioLocations = new Dictionary<string, int[]>()
+        public static Dictionary<string, int[]> spousePatioOffsets = new Dictionary<string, int[]>()
         {
             {"Sam", new int[]{2,2}},
             {"Penny", new int[]{2,2}},
@@ -78,7 +78,10 @@ namespace CustomSpousePatio
             );
 
         }
-
+        public override object GetApi()
+        {
+            return new CustomSpousePatioApi();
+        }
         private void GameLoop_ReturnedToTitle(object sender, ReturnedToTitleEventArgs e)
         {
             RemoveAllSpouseAreas();
@@ -123,12 +126,14 @@ namespace CustomSpousePatio
             SetupSpouseAreas();
         }
 
-        private void LoadSpouseAreaData()
+        public static void LoadSpouseAreaData()
         {
-			string path = Path.Combine("assets", "outdoor-areas.json");
+            outdoorAreas.Clear();
+
+            string path = Path.Combine("assets", "outdoor-areas.json");
 
             if(!File.Exists(Path.Combine(SHelper.DirectoryPath, path)))
-                path = "content.json";
+                path = "outdoor-areas.json";
 
             SMonitor.Log($"loading outdoor patios");
 			try
@@ -169,9 +174,9 @@ namespace CustomSpousePatio
 				SMonitor.Log($"Error reading {path}:\r\n {ex}", LogLevel.Error);
 			}
 
-			foreach (IContentPack contentPack in Helper.ContentPacks.GetOwned())
+			foreach (IContentPack contentPack in SHelper.ContentPacks.GetOwned())
 			{
-				Monitor.Log($"Reading content pack: {contentPack.Manifest.Name} {contentPack.Manifest.Version} from {contentPack.DirectoryPath}", LogLevel.Debug);
+				SMonitor.Log($"Reading content pack: {contentPack.Manifest.Name} {contentPack.Manifest.Version} from {contentPack.DirectoryPath}", LogLevel.Debug);
 				try
 				{
 					OutdoorAreaData json = contentPack.ReadJsonFile<OutdoorAreaData>("content.json") ?? null;
@@ -218,20 +223,20 @@ namespace CustomSpousePatio
 				}
 				catch (Exception ex)
 				{
-					Monitor.Log($"error reading content.json file in content pack {contentPack.Manifest.Name}.\r\n{ex}", LogLevel.Error);
+					SMonitor.Log($"error reading content.json file in content pack {contentPack.Manifest.Name}.\r\n{ex}", LogLevel.Error);
 				}
 			}
 		}
 
 
-        private static void SetupSpouseAreas()
+        public static void SetupSpouseAreas()
         {
             AddTileSheets();
             RemoveAllSpouseAreas();
             ShowSpouseAreas();
         }
 
-        private static void AddTileSheets()
+        public static void AddTileSheets()
         {
             
             Farm farm = Game1.getFarm();
@@ -252,7 +257,7 @@ namespace CustomSpousePatio
             }
         }
 
-        private static void RemoveAllSpouseAreas()
+        public static void RemoveAllSpouseAreas()
         {
             SMonitor.Log($"Removing all spouse areas", LogLevel.Debug);
 
@@ -278,9 +283,9 @@ namespace CustomSpousePatio
             farm.removeTile(patio_corner.X, patio_corner.Y, above_always_layer);
 
 
-            foreach (KeyValuePair<string, OutdoorArea> kvp in outdoorAreas)
+            foreach(KeyValuePair<string, object> kvp in outdoorAreas)
             {
-                OutdoorArea area = kvp.Value;
+                OutdoorArea area = kvp.Value as OutdoorArea;
                 int x = area.GetLocation().X;
                 int y = area.GetLocation().Y;
 
@@ -309,7 +314,7 @@ namespace CustomSpousePatio
             }
 
         }
-        private static void ShowSpouseAreas() {
+        public static void ShowSpouseAreas() {
             Farm farm = Game1.getFarm();
 
             Farmer f = Game1.MasterPlayer;
@@ -345,7 +350,7 @@ namespace CustomSpousePatio
                 int y = DefaultSpouseAreaLocation.Y;
                 if (outdoorAreas.ContainsKey(spouse))
                 {
-                    area = outdoorAreas[spouse];
+                    area = outdoorAreas[spouse] as OutdoorArea;
                     x = area.GetLocation().X;
                     y = area.GetLocation().Y;
                     useDefaultTiles = area.useDefaultTiles;
@@ -490,16 +495,16 @@ namespace CustomSpousePatio
                 Point point;
                 if (outdoorAreas.ContainsKey(__instance.Name))
                 {
-                    point = outdoorAreas[__instance.Name].NpcPos(__instance.Name);
+                    point = (outdoorAreas[__instance.Name] as OutdoorArea).NpcPos(__instance.Name);
                     SMonitor.Log($"Placing {__instance.Name} outdoors");
                 }
                 else if (Game1.player.spouse == __instance.Name && outdoorAreas.Count == 0)
                 {
                     SMonitor.Log($"Placing main spouse {__instance.Name} outdoors");
                     point = DefaultSpouseAreaLocation;
-                    if (spousePatioLocations.ContainsKey(__instance.Name))
+                    if (spousePatioOffsets.ContainsKey(__instance.Name))
                     {
-                        point = new Point(69 + spousePatioLocations[__instance.Name][0], 6 + spousePatioLocations[__instance.Name][1]);
+                        point = new Point(69 + spousePatioOffsets[__instance.Name][0], 6 + spousePatioOffsets[__instance.Name][1]);
                     }
                 }
                 else
@@ -525,10 +530,10 @@ namespace CustomSpousePatio
         {
             try
             {
-                if (outdoorAreas.ContainsKey(__instance.Name) && outdoorAreas[__instance.Name].npcAnimation != null)
+                if (outdoorAreas.ContainsKey(__instance.Name) && (outdoorAreas[__instance.Name] as OutdoorArea).npcAnimation != null)
                 {
                     SMonitor.Log($"got animation for {__instance.Name}");
-                    NPCDoAnimation(__instance, outdoorAreas[__instance.Name].npcAnimation);
+                    NPCDoAnimation(__instance, (outdoorAreas[__instance.Name] as OutdoorArea).npcAnimation);
                 }
             }
             catch (Exception ex)

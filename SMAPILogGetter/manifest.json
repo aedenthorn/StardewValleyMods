@@ -1,17 +1,17 @@
 ﻿{
-  "Name": "Custom Spouse Patio",
+  "Name": "CustomChestTypes",
   "Author": "aedenthorn",
-  "Version": "0.7.0",
-  "Description": "Lets you create a custom spouse patio.",
-  "UniqueID": "aedenthorn.CustomSpousePatio",
-  "EntryDll": "CustomSpousePatio.dll",
+  "Version": "0.2.0",
+  "Description": "Creates custom chest types.",
+  "UniqueID": "aedenthorn.CustomChestTypes",
+  "EntryDll": "CustomChestTypes.dll",
   "MinimumApiVersion": "3.8.0",
-  "UpdateKeys": ["Nexus:6630"],
+  "UpdateKeys": ["Nexus:"],
   "ModUpdater": {
     "Repository": "StardewValleyMods",
     "User": "aedenthorn",
     "Directory": "_releases",
-    "ModFolder": "CustomSpousePatio"
+    "ModFolder": "CustomChestTypes"
   },
   "Dependencies": [
       {

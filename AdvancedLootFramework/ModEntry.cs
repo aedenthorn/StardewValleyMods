@@ -20,6 +20,7 @@ namespace AdvancedLootFramework
         private static IModHelper SHelper;
         private static int[] forbiddenWeapons = new int[] 
         {
+            32,
             34
         };
 

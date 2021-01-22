@@ -59,8 +59,8 @@ namespace QuickLoad
                 {
                     if (Game1.activeClickableMenu is TitleMenu)
                     {
-                        SaveGame.Load(Config.SaveFolder);
                         Game1.activeClickableMenu.exitThisMenu(false);
+                        SaveGame.Load(Config.SaveFolder);
                     }
 
                 }

@@ -4,17 +4,16 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{C6719EE7-0B8B-4C05-A6D5-BA94DAA8C032}</ProjectGuid>
+    <ProjectGuid>{810A9C88-312C-4AFD-A3D8-1C2B155AC581}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>CustomSpousePatio</RootNamespace>
-    <AssemblyName>CustomSpousePatio</AssemblyName>
+    <RootNamespace>SMAPILogGetter</RootNamespace>
+    <AssemblyName>SMAPILogGetter</AssemblyName>
     <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <Deterministic>true</Deterministic>
     <NuGetPackageImportStamp>
     </NuGetPackageImportStamp>
-    <EnableHarmony>true</EnableHarmony>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -49,10 +48,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="CustomSpousePatioApi.cs" />
     <Compile Include="ModConfig.cs" />
     <Compile Include="ModEntry.cs" />
-    <Compile Include="OutdoorAreaData.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
