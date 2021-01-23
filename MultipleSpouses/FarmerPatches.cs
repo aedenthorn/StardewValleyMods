@@ -166,15 +166,15 @@ namespace MultipleSpouses
         {
             try
             {
-                if (EventPatches.startingLoadActors && Game1Patches.lastGotCharacter != null)
+                if (EventPatches.startingLoadActors && Game1Patches.lastGotCharacter != null && __instance != null)
                 {
-                    __result = Utility.getHomeOfFarmer(__instance).getChildren().FindAll(c => c.Name.EndsWith($"({Game1Patches.lastGotCharacter})"));
+                    __result = Utility.getHomeOfFarmer(__instance)?.getChildren()?.FindAll(c => c.Name.EndsWith($"({Game1Patches.lastGotCharacter})")) ?? new List<Child>();
                     return false;
                 }
             }
             catch (Exception ex)
             {
-                Monitor.Log($"Failed in {nameof(Farmer_getChildren_Prefix)}:\n{ex}", LogLevel.Error);
+                Monitor.Log($"Failed in {nameof(Farmer_getChildren_Prefix)}:\n{ex}", LogLevel.Error); 
             }
             return true;
         }

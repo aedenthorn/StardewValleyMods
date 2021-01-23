@@ -30,7 +30,7 @@ namespace MultipleSpouses
                 }
             }
         }
-        public static void getCharacterFromName_Prefix(string name, bool mustBeVillager, bool useLocationsListOnly)
+        public static void getCharacterFromName_Prefix(string name)
         {
             if (EventPatches.startingLoadActors)
                 lastGotCharacter = name;

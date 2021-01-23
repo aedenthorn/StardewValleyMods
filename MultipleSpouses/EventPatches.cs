@@ -1,16 +1,13 @@
 ﻿using Microsoft.Xna.Framework;
-using Netcode;
 using StardewModdingAPI;
 using StardewValley;
-using StardewValley.Characters;
-using StardewValley.Menus;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 
 namespace MultipleSpouses
 {
-	public static class EventPatches
+    public static class EventPatches
 	{
 		private static IMonitor Monitor;
 		private static IModHelper Helper;
@@ -21,7 +18,7 @@ namespace MultipleSpouses
 			new int[]{25,63,1},
 			new int[]{30,63,3}
 		};
-        public static bool startingLoadActors;
+        public static bool startingLoadActors = false;
 
         // call this method from your Entry class
         public static void Initialize(IMonitor monitor, IModHelper helper)
@@ -194,11 +191,11 @@ namespace MultipleSpouses
 			}
 			catch (Exception ex)
 			{
-				Monitor.Log($"Failed in {nameof(Event_endBehaviors_Postfix)}:\n{ex}", LogLevel.Error);
+				Monitor.Log($"Failed in {nameof(Event_command_loadActors_Prefix)}:\n{ex}", LogLevel.Error);
 			}
 		}
 
-		public static void Event_command_loadActors_Postfix(string[] split)
+		public static void Event_command_loadActors_Postfix()
 		{
 			try
 			{
@@ -208,7 +205,7 @@ namespace MultipleSpouses
 			}
 			catch (Exception ex)
 			{
-				Monitor.Log($"Failed in {nameof(Event_endBehaviors_Postfix)}:\n{ex}", LogLevel.Error);
+				Monitor.Log($"Failed in {nameof(Event_command_loadActors_Postfix)}:\n{ex}", LogLevel.Error);
 			}
 		}
 	}
