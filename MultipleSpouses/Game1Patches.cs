@@ -6,6 +6,7 @@ namespace MultipleSpouses
     public static class Game1Patches
     {
         private static IMonitor Monitor;
+        public static string lastGotCharacter = null;
 
         // call this method from your Entry class
         public static void Initialize(IMonitor monitor)
@@ -28,6 +29,11 @@ namespace MultipleSpouses
                     }
                 }
             }
+        }
+        public static void getCharacterFromName_Prefix(string name, bool mustBeVillager, bool useLocationsListOnly)
+        {
+            if (EventPatches.startingLoadActors)
+                lastGotCharacter = name;
         }
     }
 }

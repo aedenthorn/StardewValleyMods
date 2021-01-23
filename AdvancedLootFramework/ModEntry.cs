@@ -81,7 +81,7 @@ namespace AdvancedLootFramework
                 foreach (KeyValuePair<int, string> kvp in Game1.clothingInformation)
                 {
                     int price = 0;
-                    if (includeList.Contains("Shirts") && kvp.Value.Split('/')[8].ToLower().Trim() == "shirt")
+                    if (includeList.Contains("Shirt") && kvp.Value.Split('/')[8].ToLower().Trim() == "shirt")
                     {
                         price = Convert.ToInt32(kvp.Value.Split('/')[5]);
                     }
@@ -120,7 +120,7 @@ namespace AdvancedLootFramework
                 currentCount = treasures.Count;
             }
 
-            if (includeList.Contains("BigCraftables"))
+            if (includeList.Contains("BigCraftable"))
             {
                 foreach (KeyValuePair<int, string> kvp in Game1.bigCraftablesInformation)
                 {
@@ -129,7 +129,7 @@ namespace AdvancedLootFramework
                         treasures.Add(new Treasure(kvp.Key, price, "BigCraftable"));
                 }
                 //Monitor.Log($"Added {treasures.Count - currentCount} boots");
-                currentCount = treasures.Count;
+                currentCount = treasures.Count; 
             }
 
             foreach (KeyValuePair<int, string> kvp in Game1.objectInformation)
@@ -137,13 +137,12 @@ namespace AdvancedLootFramework
                 if (kvp.Value.Split('/')[5] == "...")
                     continue;
                 string type = "";
-                int price = 0;
-                price = Convert.ToInt32(kvp.Value.Split('/')[1]);
+                int price = Convert.ToInt32(kvp.Value.Split('/')[1]);
                 if (includeList.Contains("Ring") && kvp.Value.Split('/')[3] == "Ring")
                 {
                     type = "Ring";
                 }
-                else if (includeList.Contains("Food") && kvp.Value.Split('/')[3].StartsWith("Cooking"))
+                else if (includeList.Contains("Cooking") && kvp.Value.Split('/')[3].StartsWith("Cooking"))
                 {
                     type = "Cooking";
                 }
@@ -157,7 +156,7 @@ namespace AdvancedLootFramework
                 }
                 else if (includeList.Contains("Fish") && kvp.Value.Split('/')[3].StartsWith("Fish"))
                 {
-                    type = "Fish";
+                    type = "Fish"; 
                 }
                 else if (includeList.Contains("Relic") && kvp.Value.Split('/')[3].StartsWith("Arch"))
                 {
@@ -170,7 +169,7 @@ namespace AdvancedLootFramework
                 if (type != "" && CanAddTreasure(price, minItemValue, maxItemValue))
                     treasures.Add(new Treasure(kvp.Key, price, type));
             }
-            //Monitor.Log($"Added {treasures.Count - currentCount} objects");
+            //Monitor.Log($"Added {treasures.Count - currentCount} objects"); 
             return treasures;
         }
 
@@ -193,7 +192,7 @@ namespace AdvancedLootFramework
 
             double maxValue = Math.Pow(mult, increaseRate) * baseValue;
 
-            SMonitor.Log($"Max chest value: {maxValue}");
+            //SMonitor.Log($"Max chest value: {maxValue}");
 
             int currentValue = 0;
 

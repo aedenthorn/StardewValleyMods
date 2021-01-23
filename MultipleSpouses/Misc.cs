@@ -150,6 +150,7 @@ namespace MultipleSpouses
 
             foreach (NPC spouse in allSpouses)
             {
+
                 int type = ModEntry.myRand.Next(0, 100);
 
                 Monitor.Log($"spouse rand {type}, bed: {ModEntry.config.PercentChanceForSpouseInBed} kitchen {ModEntry.config.PercentChanceForSpouseInKitchen}");
@@ -185,6 +186,7 @@ namespace MultipleSpouses
 
                 if (!farmHouse.Equals(j.currentLocation))
                 {
+                    Monitor.Log("not in farm house");
                     continue;
                 }
 

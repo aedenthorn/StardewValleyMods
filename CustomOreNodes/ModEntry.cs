@@ -221,12 +221,14 @@ namespace CustomOreNodes
 				for (int i = 0; i < CustomOreNodes.Count; i++)
 				{
 					CustomOreNode node = CustomOreNodes[i];
-					if (node.minLevel > -1 && __instance.mineLevel < node.minLevel || node.maxLevel > -1 && __instance.mineLevel > node.maxLevel)
-					{
-						continue;
+					foreach(OreLevelRange range in node.oreLevelRanges)
+                    {
+						if ((range.minLevel < 1 || __instance.mineLevel >= range.minLevel) && (range.maxLevel < 1 || __instance.mineLevel <= range.maxLevel))
+						{
+							totalChance += node.spawnChance * range.spawnChanceMult;
+							break;
+						}
 					}
-					totalChance += node.spawnChance;
-
 				}
 				double ourChance = Game1.random.NextDouble() * 100;
 				if (ourChance < totalChance)
@@ -236,11 +238,20 @@ namespace CustomOreNodes
 					for (int i = 0; i < CustomOreNodes.Count; i++)
 					{
 						CustomOreNode node = CustomOreNodes[i];
-						if (node.minLevel > -1 && __instance.mineLevel < node.minLevel || node.maxLevel > -1 && __instance.mineLevel > node.maxLevel)
+						OreLevelRange gotRange = null;
+						foreach (OreLevelRange range in node.oreLevelRanges)
+						{
+							if ((range.minLevel < 1 || __instance.mineLevel >= range.minLevel) && (range.maxLevel < 1 || __instance.mineLevel <= range.maxLevel))
+							{
+								gotRange = range;
+								break;
+							}
+						}
+						if (gotRange == null)
 						{
 							continue;
 						}
-						cumulativeChance += node.spawnChance;
+						cumulativeChance += node.spawnChance * gotRange.spawnChanceMult;
 						if (ourChance < cumulativeChance)
 						{
 							SMonitor.Log($"Displaying custom ore \"{node.nodeDesc}\": {cumulativeChance}% / {ourChance}% (rolled)");
@@ -271,11 +282,21 @@ namespace CustomOreNodes
 				float currentChance = 0;
 				for (int i = 0; i < CustomOreNodes.Count; i++)
 				{
-					if (CustomOreNodes[i].minLevel > 0)
+					CustomOreNode node = CustomOreNodes[i];
+					OreLevelRange gotRange = null;
+					foreach (OreLevelRange range in node.oreLevelRanges)
+					{
+						if (range.minLevel < 1)
+						{
+							gotRange = range;
+							break;
+						}
+					}
+					if (gotRange == null)
 					{
 						continue;
 					}
-					currentChance += CustomOreNodes[i].spawnChance;
+					currentChance += node.spawnChance * gotRange.spawnChanceMult;
 					if (Game1.random.NextDouble() < currentChance / 100f)
 					{
 						int index = (SpringObjectsHeight / 16 * SpringObjectsWidth / 16) + (Config.SpriteSheetOffsetRows * SpringObjectsWidth / 16) + i;
@@ -312,26 +333,25 @@ namespace CustomOreNodes
 			}
 
 			CustomOreNode node = CustomOreNodes[indexOfStone - firstIndex];
-
-			if (node.minLevel > 0 && !(__instance is MineShaft))
+			OreLevelRange gotRange = null;
+			foreach (OreLevelRange range in node.oreLevelRanges)
 			{
-				return;
+				if ((range.minLevel < 1 && !(__instance is MineShaft)) || (range.minLevel > 0 && __instance is MineShaft && ((__instance as MineShaft).mineLevel <= range.maxLevel)))
+				{
+					gotRange = range;
+					break;
+				}
 			}
-			if(node.minLevel > 0 && (__instance as MineShaft).mineLevel < node.minLevel)
-			{
-				return;
-			}
-			if(__instance is MineShaft && node.maxLevel > 0 && (__instance as MineShaft).mineLevel > node.maxLevel)
+			if (gotRange == null)
 			{
 				return;
 			}
 
 			int addedOres = who.professions.Contains(18) ? 1 : 0;
-			int experience = 0;
 			SMonitor.Log($"custom node has {node.dropItems.Count} potential items.");
 			foreach (DropItem item in node.dropItems)
 			{
-				if (Game1.random.NextDouble() < item.dropChance/100) 
+				if (Game1.random.NextDouble() < item.dropChance * gotRange.dropChanceMult/100) 
 				{
 					SMonitor.Log($"dropping item {item.itemIdOrName}");
 
@@ -347,10 +367,10 @@ namespace CustomOreNodes
 						}
 					}
 
-					Game1.createMultipleObjectDebris(itemId, x, y, addedOres + r.Next(item.minAmount, Math.Max(item.minAmount + 1, item.maxAmount + 1)) + ((r.NextDouble() < (double)((float)who.LuckLevel / 100f)) ? item.luckyAmount : 0) + ((r.NextDouble() < (double)((float)who.MiningLevel / 100f)) ? item.minerAmount : 0), who.uniqueMultiplayerID, __instance);
+					Game1.createMultipleObjectDebris(itemId, x, y, addedOres + (int)Math.Round(r.Next(item.minAmount, (Math.Max(item.minAmount + 1, item.maxAmount + 1)) + ((r.NextDouble() < (double)((float)who.LuckLevel / 100f)) ? item.luckyAmount : 0) + ((r.NextDouble() < (double)((float)who.MiningLevel / 100f)) ? item.minerAmount : 0)) * gotRange.dropMult), who.uniqueMultiplayerID, __instance);
 				}
 			}
-			experience = node.exp;
+			int experience = (int)Math.Round(node.exp * gotRange.expMult);
 			who.gainExperience(3, experience);
 			__result = experience > 0;
 		}

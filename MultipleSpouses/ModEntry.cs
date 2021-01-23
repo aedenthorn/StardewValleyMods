@@ -285,6 +285,11 @@ namespace MultipleSpouses
                prefix: new HarmonyMethod(typeof(FarmerPatches), nameof(FarmerPatches.Farmer_GetSpouseFriendship_Prefix))
             );
 
+            harmony.Patch(
+               original: AccessTools.Method(typeof(Farmer), nameof(Farmer.getChildren)),
+               prefix: new HarmonyMethod(typeof(FarmerPatches), nameof(FarmerPatches.Farmer_getChildren_Prefix))
+            );
+
 
             // UI patches
 
@@ -322,6 +327,13 @@ namespace MultipleSpouses
                prefix: new HarmonyMethod(typeof(EventPatches), nameof(EventPatches.Event_command_playSound_Prefix))
             );
 
+            harmony.Patch(
+               original: AccessTools.Method(typeof(Event), nameof(Event.command_loadActors)),
+               prefix: new HarmonyMethod(typeof(EventPatches), nameof(EventPatches.Event_command_loadActors_Prefix)),
+               postfix: new HarmonyMethod(typeof(EventPatches), nameof(EventPatches.Event_command_loadActors_Postfix))
+            );
+
+
             // Object patches
 
             harmony.Patch(
@@ -341,6 +353,11 @@ namespace MultipleSpouses
             harmony.Patch(
                original: AccessTools.Method(typeof(Game1), nameof(Game1.prepareSpouseForWedding)),
                prefix: new HarmonyMethod(typeof(Game1Patches), nameof(Game1Patches.prepareSpouseForWedding_Prefix))
+            );
+
+            harmony.Patch(
+               original: AccessTools.Method(typeof(Game1), nameof(Game1.getCharacterFromName)),
+               prefix: new HarmonyMethod(typeof(Game1Patches), nameof(Game1Patches.getCharacterFromName_Prefix))
             );
 
         }

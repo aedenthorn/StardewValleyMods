@@ -134,7 +134,7 @@ namespace CustomSpousePatio
 			{
 				useDefaultTiles = true,
 				location = playerLocation,
-				npcOffset = new Point(playerLocation.X + 2, playerLocation.Y + 4),
+				npcOffset = new Point(2, 4),
 				useTilesOf = tilesOf,
 			};
 			string path = Path.Combine("assets", "outdoor-areas.json");

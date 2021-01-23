@@ -56,6 +56,7 @@ namespace CustomSpousePatio
             SMonitor = Monitor;
             SHelper = Helper;
 
+            Helper.Events.GameLoop.GameLaunched += GameLoop_GameLaunched;
             Helper.Events.GameLoop.SaveLoaded += GameLoop_SaveLoaded;
             Helper.Events.GameLoop.DayStarted += GameLoop_DayStarted;
             Helper.Events.GameLoop.ReturnedToTitle += GameLoop_ReturnedToTitle;
@@ -78,6 +79,12 @@ namespace CustomSpousePatio
             );
 
         }
+
+        private void GameLoop_GameLaunched(object sender, GameLaunchedEventArgs e)
+        {
+            LoadSpouseAreaData();
+        }
+
         public override object GetApi()
         {
             return new CustomSpousePatioApi();
@@ -85,6 +92,7 @@ namespace CustomSpousePatio
         private void GameLoop_ReturnedToTitle(object sender, ReturnedToTitleEventArgs e)
         {
             RemoveAllSpouseAreas();
+            SMonitor.Log($"Clearing spouse areas on return to title.");
             outdoorAreas.Clear();
         }
         private void GameLoop_SaveLoaded(object sender, SaveLoadedEventArgs e)
@@ -95,7 +103,6 @@ namespace CustomSpousePatio
                 return;
             }
             DefaultSpouseAreaLocation = Utility.Vector2ToPoint(Game1.getFarm().GetSpouseOutdoorAreaCorner());
-            LoadSpouseAreaData();
         }
 
         public static void GameLoop_DayStarted(object sender, DayStartedEventArgs e)
@@ -128,6 +135,7 @@ namespace CustomSpousePatio
 
         public static void LoadSpouseAreaData()
         {
+            SMonitor.Log($"loading outdoor patios, clearing outdoorAreas {outdoorAreas.Count}");
             outdoorAreas.Clear();
 
             string path = Path.Combine("assets", "outdoor-areas.json");
@@ -135,7 +143,6 @@ namespace CustomSpousePatio
             if(!File.Exists(Path.Combine(SHelper.DirectoryPath, path)))
                 path = "outdoor-areas.json";
 
-            SMonitor.Log($"loading outdoor patios");
 			try
 			{
 				OutdoorAreaData json = SHelper.Data.ReadJsonFile<OutdoorAreaData>(path) ?? null;
@@ -230,11 +237,14 @@ namespace CustomSpousePatio
 					SMonitor.Log($"error reading content.json file in content pack {contentPack.Manifest.Name}.\r\n{ex}", LogLevel.Error);
 				}
 			}
-		}
+            SMonitor.Log($"Total outdoor spouse areas: {outdoorAreas.Count}", LogLevel.Debug);
+        }
 
 
         public static void SetupSpouseAreas()
         {
+            SMonitor.Log($"SetupSpouseAreas Total outdoor spouse areas: {outdoorAreas.Count}");
+
             AddTileSheets();
             RemoveAllSpouseAreas();
             ShowSpouseAreas();
@@ -242,7 +252,8 @@ namespace CustomSpousePatio
 
         public static void AddTileSheets()
         {
-            
+            SMonitor.Log($"AddTileSheets Total outdoor spouse areas: {outdoorAreas.Count}");
+
             Farm farm = Game1.getFarm();
             if (farm.map.TileSheets.FirstOrDefault(s => s.Id == "zzz_custom_spouse_default_patio") == null)
             {
@@ -264,7 +275,7 @@ namespace CustomSpousePatio
 
         public static void RemoveAllSpouseAreas()
         {
-            SMonitor.Log($"Removing all spouse areas", LogLevel.Debug);
+            SMonitor.Log($"Removing all spouse areas {outdoorAreas.Count}");
 
             Farm farm = Game1.getFarm();
 
@@ -320,6 +331,8 @@ namespace CustomSpousePatio
 
         }
         public static void ShowSpouseAreas() {
+            SMonitor.Log($"ShowSpouseAreas Total outdoor spouse areas: {outdoorAreas.Count}");
+
             Farm farm = Game1.getFarm();
 
             Farmer f = Game1.MasterPlayer;
@@ -498,15 +511,16 @@ namespace CustomSpousePatio
         }
 
 
-        public static bool NPC_setUpForOutdoorPatioActivity_Prefix(NPC __instance)
+        public static bool NPC_setUpForOutdoorPatioActivity_Prefix(NPC __instance) 
         {
             try
             {
+                SMonitor.Log($"Checking {__instance.Name} for spouse patio. {outdoorAreas.Count} total areas");
                 Point point;
                 if (outdoorAreas.ContainsKey(__instance.Name))
                 {
                     point = (outdoorAreas[__instance.Name] as OutdoorArea).NpcPos(__instance.Name);
-                    SMonitor.Log($"Placing {__instance.Name} outdoors");
+                    SMonitor.Log($"{__instance.Name} location: {(outdoorAreas[__instance.Name] as OutdoorArea).location} offset: {(outdoorAreas[__instance.Name] as OutdoorArea).npcOffset}");
                 }
                 else if (Game1.player.spouse == __instance.Name && outdoorAreas.Count == 0)
                 {
@@ -519,6 +533,7 @@ namespace CustomSpousePatio
                 }
                 else
                 {
+                    SMonitor.Log($"NPC not in outdoorAreas and not main spouse");
                     __instance.shouldPlaySpousePatioAnimation.Value = false;
                     return false;
                 }
@@ -527,6 +542,7 @@ namespace CustomSpousePatio
                 __instance.currentMarriageDialogue.Clear(); 
                 __instance.addMarriageDialogue("MarriageDialogue", "patio_" + __instance.Name, false, new string[0]);
                 __instance.shouldPlaySpousePatioAnimation.Value = true;
+                SMonitor.Log($"placed spouse {__instance.Name} at {point}");
                 return false;
             }
             catch (Exception ex)

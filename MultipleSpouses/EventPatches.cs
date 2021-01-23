@@ -21,6 +21,7 @@ namespace MultipleSpouses
 			new int[]{25,63,1},
 			new int[]{30,63,3}
 		};
+        public static bool startingLoadActors;
 
         // call this method from your Entry class
         public static void Initialize(IMonitor monitor, IModHelper helper)
@@ -178,6 +179,32 @@ namespace MultipleSpouses
 						Misc.PlaceSpousesInFarmhouse(Utility.getHomeOfFarmer(Game1.player));
 					}
 				}
+			}
+			catch (Exception ex)
+			{
+				Monitor.Log($"Failed in {nameof(Event_endBehaviors_Postfix)}:\n{ex}", LogLevel.Error);
+			}
+		}
+
+		public static void Event_command_loadActors_Prefix()
+		{
+			try
+			{
+				startingLoadActors = true;
+			}
+			catch (Exception ex)
+			{
+				Monitor.Log($"Failed in {nameof(Event_endBehaviors_Postfix)}:\n{ex}", LogLevel.Error);
+			}
+		}
+
+		public static void Event_command_loadActors_Postfix(string[] split)
+		{
+			try
+			{
+				startingLoadActors = false;
+				Game1Patches.lastGotCharacter = null;
+
 			}
 			catch (Exception ex)
 			{
