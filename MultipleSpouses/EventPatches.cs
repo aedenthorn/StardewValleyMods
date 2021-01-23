@@ -22,8 +22,8 @@ namespace MultipleSpouses
 			new int[]{30,63,3}
 		};
 
-        // call this method from your Entry class
-        public static void Initialize(IMonitor monitor, IModHelper helper)
+		// call this method from your Entry class
+		public static void Initialize(IMonitor monitor, IModHelper helper)
 		{
 			Monitor = monitor;
 			Helper = helper;
@@ -83,8 +83,8 @@ namespace MultipleSpouses
 			return true;
 		}
 
-        public static void Event_setUpCharacters_Postfix(Event __instance, GameLocation location)
-        {
+		public static void Event_setUpCharacters_Postfix(Event __instance, GameLocation location)
+		{
 			try
 			{
 				if (!__instance.isWedding || !ModEntry.config.AllSpousesJoinWeddings)
@@ -109,24 +109,24 @@ namespace MultipleSpouses
 							pos = new Vector2(x * Game1.tileSize, y * Game1.tileSize);
 						}
 						actor.position.Value = pos;
-                        if (ModEntry.config.AllSpousesWearMarriageClothesAtWeddings)
-                        {
+						if (ModEntry.config.AllSpousesWearMarriageClothesAtWeddings)
+						{
 							bool flipped = false;
 							int frame = 37;
-							if(pos.Y < 62 * Game1.tileSize)
-                            {
+							if (pos.Y < 62 * Game1.tileSize)
+							{
 								if (pos.X == 25 * Game1.tileSize)
-                                {
+								{
 									flipped = true;
-                                }
+								}
 								else if (pos.X < 30 * Game1.tileSize)
-                                {
+								{
 									frame = 36;
-                                }
+								}
 
 							}
-							else if(pos.X < 28 * Game1.tileSize)
-                            {
+							else if (pos.X < 28 * Game1.tileSize)
+							{
 								flipped = true;
 							}
 
@@ -135,7 +135,7 @@ namespace MultipleSpouses
 								new FarmerSprite.AnimationFrame(frame, 0, false, flipped, null, true)
 							});
 						}
-						else 
+						else
 							Utility.facePlayerEndBehavior(actor, location);
 					}
 				}
@@ -147,12 +147,12 @@ namespace MultipleSpouses
 			}
 		}
 
-        public static bool Event_command_playSound_Prefix(Event __instance, string[] split)
-        {
+		public static bool Event_command_playSound_Prefix(Event __instance, string[] split)
+		{
 			try
 			{
 				if (split[1] == "dwop" && __instance.isWedding && ModEntry.config.RealKissSound && Kissing.kissEffect != null)
-                {
+				{
 					Kissing.kissEffect.Play();
 					int num = __instance.CurrentCommand;
 					__instance.CurrentCommand = num + 1;
@@ -182,6 +182,41 @@ namespace MultipleSpouses
 			catch (Exception ex)
 			{
 				Monitor.Log($"Failed in {nameof(Event_endBehaviors_Postfix)}:\n{ex}", LogLevel.Error);
+			}
+		}
+
+		// fix the duplicate kids at events
+		public static void Event_command_loadActors_Postfix(Event __instance)
+		{
+			if (__instance.isFestival &&
+				__instance.farmer.getChildrenCount() > 0)
+			{
+				// list to hold which kids were already seen in actor list during loop
+				List<string> childrenPresent = new List<string>();
+
+				// loop through present actors
+				foreach (NPC actor in __instance.actors)
+				{
+					if (actor is Child)
+					{
+						string npcName = actor.getName();
+						// check if kid was already present
+						if (!childrenPresent.Contains(npcName))
+                        {
+							// if not, add to presence list
+							childrenPresent.Add(npcName);
+						}
+                        else
+                        {
+							// move duplicate kid off screen
+							actor.setTileLocation(new Vector2(-30, -30));
+                        }
+                    }
+                    else
+                    {
+						continue;
+                    }
+				}
 			}
 		}
 	}

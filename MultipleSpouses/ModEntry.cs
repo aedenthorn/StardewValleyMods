@@ -322,6 +322,12 @@ namespace MultipleSpouses
                prefix: new HarmonyMethod(typeof(EventPatches), nameof(EventPatches.Event_command_playSound_Prefix))
             );
 
+            // fix the kid duplicates
+            harmony.Patch(
+               original: AccessTools.Method(typeof(Event), nameof(Event.command_loadActors)),
+               postfix: new HarmonyMethod(typeof(EventPatches), nameof(EventPatches.Event_command_loadActors_Postfix))
+            );
+
             // Object patches
 
             harmony.Patch(
