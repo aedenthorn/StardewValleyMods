@@ -356,7 +356,7 @@ namespace MultipleSpouses
             );
 
             harmony.Patch(
-               original: AccessTools.Method(typeof(Game1), nameof(Game1.getCharacterFromName)),
+               original: AccessTools.Method(typeof(Game1), nameof(Game1.getCharacterFromName), new Type[] { typeof(string), typeof(bool), typeof(bool) }), 
                prefix: new HarmonyMethod(typeof(Game1Patches), nameof(Game1Patches.getCharacterFromName_Prefix))
             );
 
