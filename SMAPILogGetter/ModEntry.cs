@@ -12,7 +12,7 @@ using System.IO;
 using System.Reflection;
 using Object = StardewValley.Object;
 
-namespace CustomChestTypes
+namespace SMAPILogGetter
 {
     public class ModEntry : Mod
 	{
@@ -33,15 +33,46 @@ namespace CustomChestTypes
 
         private void GetLogFile(string arg1, string[] arg2)
         {
-			string logPath = Path.Combine(Constants.DataPath, "SMAPI-latest.txt");
+			string logPath = Path.Combine(Constants.DataPath, "ErrorLogs", "SMAPI-latest.txt");
 			
-			if (!Directory.Exists(logPath))
+			if (!File.Exists(logPath))
 			{
 				Monitor.Log($"SMAPI log not found at {logPath}.", LogLevel.Error);
 				return;
 			}
-			File.Copy(logPath, Helper.DirectoryPath);
-			Monitor.Log($"SMAPI log not found at {logPath}.", LogLevel.Error);
+
+			if (arg2.Length == 0)
+			{
+				File.Copy(logPath, Environment.CurrentDirectory);
+				Monitor.Log($"Copied SMAPI log to game folder {Environment.CurrentDirectory}.", LogLevel.Alert);
+
+			}
+			else 
+			{
+				string cmd = arg2[0].ToLower();
+                switch (cmd)
+                {
+					case "desktop":
+					case "dt":
+						File.Copy(logPath, Environment.GetFolderPath(Environment.SpecialFolder.Desktop));
+						Monitor.Log($"Copied SMAPI log to Desktop {Environment.GetFolderPath(Environment.SpecialFolder.Desktop)}.", LogLevel.Alert);
+						break;
+					case "copy":
+					case "cp":
+						string log = File.ReadAllText(logPath);
+                        if (DesktopClipboard.SetText(log))
+                        {
+							Monitor.Log($"Copied SMAPI log to Clipboard.", LogLevel.Alert);
+						}
+						else
+						{
+							Monitor.Log($"Coulding copy SMAPI log to Clipboard!", LogLevel.Error);
+						}
+
+						break;
+				}
+			}
+
 		}
 
 	}

@@ -30,11 +30,10 @@ namespace MapTeleport
             else
                 coordinates = Helper.Data.ReadJsonFile<CoordinatesList>("assets/coordinates.json");
 
-            Helper.Events.Input.ButtonReleased += Input_ButtonReleased;
+            Helper.Events.Input.ButtonPressed += Input_ButtonPressed;
         }
 
-
-        private void Input_ButtonReleased(object sender, ButtonReleasedEventArgs e)
+        private void Input_ButtonPressed(object sender, ButtonPressedEventArgs e)
         {
             if (Game1.activeClickableMenu is GameMenu && (Game1.activeClickableMenu as GameMenu).currentTab == GameMenu.mapTab && e.Button == Config.TeleportKey)
             {

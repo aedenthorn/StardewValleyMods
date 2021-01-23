@@ -1,4 +1,4 @@
-﻿namespace CustomChestTypes
+﻿namespace SMAPILogGetter
 {
     public class ModConfig
     {

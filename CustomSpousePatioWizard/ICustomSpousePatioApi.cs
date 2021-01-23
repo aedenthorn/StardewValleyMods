@@ -7,7 +7,7 @@ namespace CustomSpousePatioWizard
         Dictionary<string, object> GetCurrentSpouseAreas();
         Dictionary<string, int[]> GetDefaultSpouseOffsets();
         void RemoveAllSpouseAreas();
-        void ReloadSpouseAreaData();
+        void ReloadSpouseAreaData(); 
         void AddTileSheets();
         void ShowSpouseAreas();
         void ReloadPatios();

@@ -196,10 +196,14 @@ namespace CustomSpousePatio
 
                                     }
                                 }
-                                else
+                                else if(!outdoorAreas.ContainsKey(area.Key))
                                 {
                                     outdoorAreas[area.Key] = area.Value;
                                     SMonitor.Log($"Added outdoor area at {area.Value.location} or {area.Value.GetLocation()} for {area.Key}", LogLevel.Debug);
+                                }
+                                else
+                                {
+                                    SMonitor.Log($"Outdoor area already exists for {area.Key}, not adding duplicate from content pack", LogLevel.Debug);
                                 }
                             }
                         }
@@ -244,6 +248,7 @@ namespace CustomSpousePatio
             {
                 Texture2D tex = SHelper.Content.Load<Texture2D>("Maps/spring_outdoorsTileSheet", ContentSource.GameContent);
                 farm.map.AddTileSheet(new TileSheet("zzz_custom_spouse_default_patio", farm.map, SHelper.Content.GetActualAssetKey("Maps/spring_outdoorsTileSheet", ContentSource.GameContent), new Size(tex.Width / 16, tex.Height / 16), new Size(16, 16)));
+                farm.map.LoadTileSheets(Game1.mapDisplayDevice);
                 SMonitor.Log($"Added default tilesheet zzz_custom_spouse_default_patio to farm map", LogLevel.Debug);
             }
 
@@ -357,15 +362,14 @@ namespace CustomSpousePatio
                     specialTiles = new List<SpecialTile>(area.specialTiles);
                 }
 
-                SMonitor.Log($"Adding spouse area for {spouse}: use default tiles: {useDefaultTiles}, special tiles: {specialTiles.Count}", LogLevel.Debug);
-
-
+                SMonitor.Log($"Adding spouse area for {spouse}: use default tiles: {useDefaultTiles}, special tiles: {specialTiles.Count}");
 
                 if (farm.map.Layers[0].LayerWidth <= x + 3 || farm.map.Layers[0].LayerHeight <= y + 3)
                 {
-                    SMonitor.Log($"Invalid spouse area coordinates {x},{y} for {spouse}", LogLevel.Error);
+                    SMonitor.Log($"Invalid spouse area coordinates {x},{y} for {spouse}", LogLevel.Error); 
                     continue;
                 }
+
                 /*
                 farm.removeTile(x + 1, y + 3, "Buildings");
                 farm.removeTile(x + 2, y + 3, "Buildings");
@@ -388,6 +392,12 @@ namespace CustomSpousePatio
                 {
                     TileSheet defaultTilesheet = farm.Map.GetTileSheet("zzz_custom_spouse_default_patio");
                     int sheetIdx = farm.Map.TileSheets.IndexOf(defaultTilesheet);
+                    SMonitor.Log($"Default custom tilesheet index: {sheetIdx}");
+                    if(sheetIdx == -1)
+                    {
+                        AddTileSheets();
+                        sheetIdx = farm.Map.TileSheets.IndexOf(defaultTilesheet);
+                    }
 
                     string which = area.useTilesOf != null ? area.useTilesOf : spouse;
 
