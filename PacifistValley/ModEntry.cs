@@ -134,6 +134,8 @@ namespace PacifistValley
 					editor.Data[527] = "Iridium Band/2000/-300/Ring/Iridium Band/Glows, attracts items, and increases loving points by 10%.";
 					editor.Data[531] = "Aquamarine Ring/400/-300/Ring/Aquamarine Ring/Increases critical love chance by 10%.";
 					editor.Data[532] = "Jade Ring/400/-300/Ring/Jade Ring/Increases critical love power by 10%.";
+					editor.Data[533] = "Emerald Ring/600/-300/Ring/Emerald Ring/Increases loving speed by 10%.";
+					editor.Data[534] = "Ruby Ring/600/-300/Ring/Ruby Ring/Increases love by 10%.";
 					editor.Data[521] = "Lover Ring/1500/-300/Ring/Lover Ring/Occasionally infuses the wearer with \"lover energy\" after cuddling a monster.";
 					editor.Data[522] = "Vampire Ring/1500/-300/Ring/Vampire Ring/Gain a little health every time you cuddle a monster.";
 					editor.Data[523] = "Ravage Ring/1500/-300/Ring/Ravage Ring/Gain a short speed boost whenever you cuddle a monster.";
@@ -144,6 +146,7 @@ namespace PacifistValley
 					editor.Data["SkillsPage.cs.11608"] = "Loving";
 					editor.Data["Buff.cs.463"] = "-8 Love";
 					editor.Data["Buff.cs.469"] = "+10 Love";
+					editor.Data["Buff.cs.504"] = "Love";
 					editor.Data["Farmer.cs.1996"] = "Loving";
 					editor.Data["Event.cs.1205"] = "Battered Heart";
 					editor.Data["Event.cs.1209"] = "You got the Battered Heart! It was sent home to your toolbox.";

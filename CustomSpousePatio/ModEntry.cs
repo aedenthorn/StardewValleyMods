@@ -22,20 +22,20 @@ namespace CustomSpousePatio
         public static IMonitor SMonitor;
         public static IModHelper SHelper;
 
-        public static Dictionary<string, int[]> spousePatioOffsets = new Dictionary<string, int[]>()
+        public static Dictionary<string, Point> spousePatioOffsets = new Dictionary<string, Point>()
         {
-            {"Sam", new int[]{2,2}},
-            {"Penny", new int[]{2,2}},
-            {"Sebastian", new int[]{2,3}},
-            {"Shane", new int[]{0,3}},
-            {"Alex", new int[]{2,2}},
-            {"Maru", new int[]{1,2}},
-            {"Emily", new int[]{1,3}},
-            {"Haley", new int[]{1,2}},
-            {"Harvey", new int[]{2,2}},
-            {"Elliott", new int[]{2,2}},
-            {"Leah", new int[]{2,2}},
-            {"Abigail", new int[]{2,2}},
+            {"Sam", new Point(2,2)},
+            {"Penny", new Point(2,2)},
+            {"Sebastian", new Point(2,3)},
+            {"Shane", new Point(0,3)},
+            {"Alex", new Point(2,2)},
+            {"Maru", new Point(1,2)},
+            {"Emily", new Point(1,3)},
+            {"Haley", new Point(1,2)},
+            {"Harvey", new Point(2,2)},
+            {"Elliott", new Point(2,2)},
+            {"Leah", new Point(2,2)},
+            {"Abigail", new Point(2,2)},
 
         };
         private static Dictionary<string, TileSheetInfo> tileSheetsToAdd = new Dictionary<string, TileSheetInfo>();
@@ -528,7 +528,7 @@ namespace CustomSpousePatio
                     point = DefaultSpouseAreaLocation;
                     if (spousePatioOffsets.ContainsKey(__instance.Name))
                     {
-                        point = new Point(69 + spousePatioOffsets[__instance.Name][0], 6 + spousePatioOffsets[__instance.Name][1]);
+                        point = new Point(DefaultSpouseAreaLocation.X + spousePatioOffsets[__instance.Name].X, DefaultSpouseAreaLocation.Y + spousePatioOffsets[__instance.Name].Y);
                     }
                 }
                 else
@@ -602,5 +602,19 @@ namespace CustomSpousePatio
             SMonitor.Log($"playing animation {npcAnimation} for {npc.Name}");
             npc.Sprite.setCurrentAnimation(anim);
         }
+        public static bool IsSpousePatioDay(NPC npc)
+        {
+            return !Game1.isRaining && !Game1.IsWinter && Game1.shortDayNameFromDayOfSeason(Game1.dayOfMonth).Equals("Sat") && npc.getSpouse() == Game1.MasterPlayer && !npc.Name.Equals("Krobus");
+        }
+        public static void PlaceSpouses()
+        {
+            foreach(KeyValuePair<string, Friendship> kvp in Game1.MasterPlayer.friendshipData.Pairs.Where(n => n.Value.IsMarried() && !n.Value.IsEngaged()))
+            {
+                NPC npc = Game1.getCharacterFromName(kvp.Key);
+                if (IsSpousePatioDay(npc))
+                    npc.setUpForOutdoorPatioActivity();
+            }
+        }
     }
+
 }

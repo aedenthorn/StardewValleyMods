@@ -73,12 +73,13 @@ namespace CustomChestTypes
 				original: AccessTools.Method(typeof(Utility), nameof(Utility.getCarpenterStock)),
 				postfix: new HarmonyMethod(typeof(ModEntry), nameof(Utility_getCarpenterStock_Postfix))
 			);
-			
+			/*
 			ConstructorInfo ci2 = typeof(ItemGrabMenu).GetConstructor(new Type[] { typeof(IList<Item>), typeof(bool), typeof(bool), typeof(InventoryMenu.highlightThisItem), typeof(ItemGrabMenu.behaviorOnItemSelect), typeof(string), typeof(ItemGrabMenu.behaviorOnItemSelect), typeof(bool), typeof(bool), typeof(bool), typeof(bool), typeof(bool), typeof(int), typeof(Item), typeof(int), typeof(object) });
 			harmony.Patch(
 			   original: ci2,
 			   postfix: new HarmonyMethod(typeof(ModEntry), nameof(ModEntry.ItemGrabMenu_Postfix))
 			);
+			*/
 		}
 
 		/// <summary>Get whether this instance can edit the given asset.</summary>
@@ -259,6 +260,7 @@ namespace CustomChestTypes
 
 		private static void ItemGrabMenu_Postfix(ItemGrabMenu __instance, InventoryMenu.highlightThisItem highlightFunction, object context)
 		{
+			return;
 			if (!(context is Chest) || (context as Chest)?.ParentSheetIndex == null || !customChestTypesDict.ContainsKey((context as Chest).ParentSheetIndex))
 				return;
 

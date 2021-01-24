@@ -42,7 +42,7 @@ namespace CustomSpousePatioWizard
             if (npcOffset.X != -1)
                 return new Point(location.X + npcOffset.X, location.Y + +npcOffset.Y);
             if (ModEntry.customSpousePatioApi.GetCurrentSpouseAreas().ContainsKey(name))
-                return new Point(location.X + ModEntry.customSpousePatioApi.GetDefaultSpouseOffsets()[name][0], location.Y + ModEntry.customSpousePatioApi.GetDefaultSpouseOffsets()[name][1]);
+                return new Point(location.X + ModEntry.customSpousePatioApi.GetDefaultSpouseOffsets()[name].X, location.Y + ModEntry.customSpousePatioApi.GetDefaultSpouseOffsets()[name].Y);
             return new Point(location.X + 2, location.Y + 4);
         }
     }

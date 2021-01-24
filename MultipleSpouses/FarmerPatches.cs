@@ -166,7 +166,8 @@ namespace MultipleSpouses
         {
             try
             {
-                if (EventPatches.startingLoadActors && Game1Patches.lastGotCharacter != null && __instance != null)
+
+                if (EventPatches.startingLoadActors && Environment.StackTrace.Contains("command_loadActors") && !Environment.StackTrace.Contains("addActor") && !Environment.StackTrace.Contains("Dialogue") && !Environment.StackTrace.Contains("checkForSpecialCharacters") && Game1Patches.lastGotCharacter != null && __instance != null)
                 {
                     __result = Utility.getHomeOfFarmer(__instance)?.getChildren()?.FindAll(c => c.Name.EndsWith($"({Game1Patches.lastGotCharacter})")) ?? new List<Child>();
                     return false;

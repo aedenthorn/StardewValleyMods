@@ -1,7 +1,7 @@
 ﻿{
   "Name": "CustomChestTypes",
   "Author": "aedenthorn",
-  "Version": "0.2.1",
+  "Version": "0.3.0",
   "Description": "Creates custom chest types.",
   "UniqueID": "aedenthorn.CustomChestTypes",
   "EntryDll": "CustomChestTypes.dll",
@@ -18,5 +18,5 @@
         "UniqueID": "Platonymous.ModUpdater",
         "IsRequired": false
       },
-  ]
+  ],
 }

@@ -41,7 +41,7 @@ namespace CustomSpousePatio
             if (npcOffset.X != -1)
                 return new Point(location.X + npcOffset.X, location.Y + +npcOffset.Y);
             if (ModEntry.spousePatioOffsets.ContainsKey(name))
-                return new Point(location.X + ModEntry.spousePatioOffsets[name][0], location.Y + ModEntry.spousePatioOffsets[name][1]);
+                return new Point(location.X + ModEntry.spousePatioOffsets[name].X, location.Y + ModEntry.spousePatioOffsets[name].Y);
             return new Point(location.X + 2, location.Y + 4);
         }
     }

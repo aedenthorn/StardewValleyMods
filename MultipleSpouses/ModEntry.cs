@@ -192,6 +192,11 @@ namespace MultipleSpouses
             );
 
             harmony.Patch(
+               original: AccessTools.Method(typeof(FarmHouse), nameof(FarmHouse.checkAction)),
+               postfix: new HarmonyMethod(typeof(LocationPatches), nameof(LocationPatches.FarmHouse_checkAction_Postfix))
+            );
+
+            harmony.Patch(
                original: AccessTools.Method(typeof(FarmHouse), nameof(FarmHouse.getWalls)),
                postfix: new HarmonyMethod(typeof(LocationPatches), nameof(LocationPatches.FarmHouse_getWalls_Postfix))
             );

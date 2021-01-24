@@ -12,7 +12,7 @@ namespace CustomSpousePatio
         {
             return ModEntry.outdoorAreas;
         }
-        public Dictionary<string, int[]> GetDefaultSpouseOffsets()
+        public Dictionary<string, Point> GetDefaultSpouseOffsets()
         {
             return ModEntry.spousePatioOffsets;
         }
@@ -32,6 +32,10 @@ namespace CustomSpousePatio
         {
             ModEntry.ShowSpouseAreas();
         }
+        public void PlaceSpouses()
+        {
+            ModEntry.PlaceSpouses();
+        }
 		public void ReloadPatios()
 		{
 			RemoveAllSpouseAreas();
@@ -39,9 +43,32 @@ namespace CustomSpousePatio
 			ReloadSpouseAreaData();
 			AddTileSheets();
 			ShowSpouseAreas();
+			PlaceSpouses();
+		}
+		public void AddSpousePatioHere(string spouse_tilesOf, Point cursorLoc)
+		{
+			string spouse = spouse_tilesOf.Split('_')[0];
+			string tilesOf = spouse_tilesOf.Split('_')[1];
+			OutdoorArea outdoorArea = new OutdoorArea()
+			{
+				useDefaultTiles = true,
+				location = cursorLoc,
+				npcOffset = ModEntry.spousePatioOffsets.ContainsKey(spouse) ? ModEntry.spousePatioOffsets[spouse] : new Point( 2, 4),
+				useTilesOf = tilesOf,
+			};
+			string path = Path.Combine("assets", "outdoor-areas.json");
+
+			if (!File.Exists(Path.Combine(ModEntry.SHelper.DirectoryPath, path)))
+				path = "outdoor-areas.json";
+
+			OutdoorAreaData json = ModEntry.SHelper.Data.ReadJsonFile<OutdoorAreaData>(path) ?? new OutdoorAreaData();
+			json.areas[spouse] = outdoorArea;
+			ModEntry.SHelper.Data.WriteJsonFile(path, json);
+			ModEntry.SMonitor.Log($"Added spouse {spouse} to {path}");
+			ReloadPatios();
 
 		}
-		public bool MoveSpousePatio(string spouse_dir)
+		public bool MoveSpousePatio(string spouse_dir, Point cursorLoc)
         {
 			RemoveAllSpouseAreas();
 			Game1.getFarm().loadMap(Game1.getFarm().mapPath, true);
@@ -51,6 +78,10 @@ namespace CustomSpousePatio
 			OutdoorArea outdoorArea = (OutdoorArea)ModEntry.outdoorAreas[spouse];
             switch (dir)
             {
+				case "cursorLoc":
+					outdoorArea.location = cursorLoc;
+					success = true;
+					break;
 				case "up":
 					if (outdoorArea.location.Y <= 0)
 						break;
@@ -88,7 +119,7 @@ namespace CustomSpousePatio
 			ReloadSpouseAreaData();
 			AddTileSheets();
 			ShowSpouseAreas();
-
+			PlaceSpouses();
 			ModEntry.SMonitor.Log($"Added spouse {spouse} to {path}");
 			return success;
         }
@@ -125,29 +156,10 @@ namespace CustomSpousePatio
 			return true;
 		}
 
-		public void AddSpousePatioHere(string spouse_tilesOf)
-		{
-			string spouse = spouse_tilesOf.Split('_')[0];
-			string tilesOf = spouse_tilesOf.Split('_')[1];
-			Point playerLocation = Utility.Vector2ToPoint(Game1.player.getTileLocation());
-			OutdoorArea outdoorArea = new OutdoorArea()
-			{
-				useDefaultTiles = true,
-				location = playerLocation,
-				npcOffset = new Point(2, 4),
-				useTilesOf = tilesOf,
-			};
-			string path = Path.Combine("assets", "outdoor-areas.json");
 
-			if (!File.Exists(Path.Combine(ModEntry.SHelper.DirectoryPath, path)))
-				path = "outdoor-areas.json";
-
-			OutdoorAreaData json = ModEntry.SHelper.Data.ReadJsonFile<OutdoorAreaData>(path) ?? new OutdoorAreaData();
-			json.areas[spouse] = outdoorArea;
-			ModEntry.SHelper.Data.WriteJsonFile(path, json);
-			ModEntry.SMonitor.Log($"Added spouse {spouse} to {path}");
-			ReloadPatios();
-
+		public bool IsSpousePatioDay(NPC npc)
+        {
+			return ModEntry.IsSpousePatioDay(npc);
 		}
 	}
 }

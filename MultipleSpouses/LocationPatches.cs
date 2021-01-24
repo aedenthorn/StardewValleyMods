@@ -2,6 +2,7 @@
 using Netcode;
 using StardewModdingAPI;
 using StardewValley;
+using StardewValley.BellsAndWhistles;
 using StardewValley.Characters;
 using StardewValley.Locations;
 using System;
@@ -22,6 +23,29 @@ namespace MultipleSpouses
             Monitor = monitor;
         }
 
+        public static void FarmHouse_checkAction_Postfix(FarmHouse __instance, Location tileLocation)
+        {
+            try
+            {
+                if (__instance.map.GetLayer("Buildings").Tiles[tileLocation] != null)
+                {
+                    int tileIndex = __instance.map.GetLayer("Buildings").Tiles[tileLocation].TileIndex;
+                    if (tileIndex == 2173 && Game1.player.eventsSeen.Contains(463391) && Game1.player.friendshipData.ContainsKey("Emily") && Game1.player.friendshipData["Emily"].IsMarried())
+                    {
+                        TemporaryAnimatedSprite t = __instance.getTemporarySpriteByID(5858585);
+                        if (t != null && t is EmilysParrot)
+                        {
+                            (t as EmilysParrot).doAction();
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Monitor.Log($"Failed in {nameof(FarmHouse_getWalls_Postfix)}:\n{ex}", LogLevel.Error);
+            }
+        }
+        
         public static void FarmHouse_getWalls_Postfix(FarmHouse __instance, ref List<Microsoft.Xna.Framework.Rectangle> __result)
         {
             try

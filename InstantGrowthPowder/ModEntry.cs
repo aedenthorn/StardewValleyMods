@@ -6,6 +6,7 @@ using StardewModdingAPI.Events;
 using StardewValley;
 using StardewValley.Characters;
 using StardewValley.Network;
+using StardewValley.Objects;
 using StardewValley.TerrainFeatures;
 using System.Collections.Generic;
 using System.IO;
@@ -56,7 +57,7 @@ namespace InstantGrowthPowder
             if (who?.CurrentItem == null || who.CurrentItem.Name != "Instant Growth Powder")
                 return true;
 
-            if(__instance.isCropAtTile(tileLocation.X, tileLocation.Y))
+            if(__instance.isCropAtTile(tileLocation.X, tileLocation.Y) && !(__instance.terrainFeatures[new Vector2(tileLocation.X, tileLocation.Y)] as HoeDirt).crop.fullyGrown)
             {
                 (__instance.terrainFeatures[new Vector2(tileLocation.X, tileLocation.Y)] as HoeDirt).crop.growCompletely();
                 who.CurrentItem.Stack--;
@@ -105,9 +106,10 @@ namespace InstantGrowthPowder
             {
                 if (v.Value.getBoundingBox(v.Key).Intersects(tileRect) && v.Value is Tree && (v.Value as Tree).growthStage < 5)
                 {
-                    Tree tree = v.Value as Tree;
-                    tree.growthStage.Value = 5;
-                    __instance.terrainFeatures[v.Key] = tree;
+                    (__instance.terrainFeatures[v.Key] as Tree).growthStage.Value = 5;
+                    (__instance.terrainFeatures[v.Key] as Tree).fertilized.Value = true;
+                    (__instance.terrainFeatures[v.Key] as Tree).dayUpdate(Game1.currentLocation, v.Key);
+                    (__instance.terrainFeatures[v.Key] as Tree).fertilized.Value = false;
 
                     who.CurrentItem.Stack--;
                     __instance.playSound("yoba");
@@ -115,10 +117,22 @@ namespace InstantGrowthPowder
                 }
                 if (v.Value.getBoundingBox(v.Key).Intersects(tileRect) && v.Value is FruitTree && (v.Value as FruitTree).growthStage < 4)
                 {
-                    FruitTree tree = v.Value as FruitTree;
+                    FruitTree tree = v.Value as FruitTree; 
                     tree.daysUntilMature.Value = 0;
                     tree.growthStage.Value = 4;
                     __instance.terrainFeatures[v.Key] = tree;
+
+                    who.CurrentItem.Stack--;
+                    __instance.playSound("yoba");
+                    return true;
+                }
+            }
+            
+            foreach (KeyValuePair<Vector2, Object> v in __instance.objects.Pairs)
+            {
+                if (v.Value.getBoundingBox(v.Key).Intersects(tileRect) && v.Value is IndoorPot && !(v.Value as IndoorPot).hoeDirt.Value.crop.fullyGrown)
+                {
+                    (v.Value as IndoorPot).hoeDirt.Value.crop.growCompletely();
 
                     who.CurrentItem.Stack--;
                     __instance.playSound("yoba");

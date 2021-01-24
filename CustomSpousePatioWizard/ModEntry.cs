@@ -17,6 +17,7 @@ namespace CustomSpousePatioWizard
 		private static List<string> customAreaSpouses;
 		private static List<string> noCustomAreaSpouses;
         public static ICustomSpousePatioApi customSpousePatioApi;
+        public static Point cursorLoc;
 
         /*********
         ** Public methods
@@ -71,6 +72,7 @@ namespace CustomSpousePatioWizard
 
 		public void StartWizard()
 		{
+			cursorLoc = Utility.Vector2ToPoint(Game1.GetPlacementGrabTile());
 			var pairs = Game1.player.friendshipData.Pairs.Where(s => s.Value.IsMarried());
             if (!pairs.Any())
             {
@@ -89,7 +91,7 @@ namespace CustomSpousePatioWizard
 
 			List<Response> responses = new List<Response>();
 			if (noCustomAreaSpouses.Any())
-				responses.Add(new Response("CSP_Wizard_Questions_AddPatio", Helper.Translation.Get("new-patio")));
+				responses.Add(new Response("CSP_Wizard_Questions_AddPatio", string.Format(Helper.Translation.Get("new-patio"), cursorLoc.X, cursorLoc.Y)));
 			if (customAreaSpouses.Any())
 			{
 				responses.Add(new Response("CSP_Wizard_Questions_RemovePatio", Helper.Translation.Get("remove-patio")));
@@ -156,19 +158,20 @@ namespace CustomSpousePatioWizard
 					}
 					break;
 				case "CSP_Wizard_Questions_AddPatio_2":
-					customSpousePatioApi.AddSpousePatioHere(whichAnswer);
-					Game1.drawObjectDialogue(Helper.Translation.Get("created-patio"));
+					customSpousePatioApi.AddSpousePatioHere(whichAnswer, cursorLoc);
+					Game1.drawObjectDialogue(string.Format(Helper.Translation.Get("created-patio"), cursorLoc.X, cursorLoc.Y));
 					return;
 				case "CSP_Wizard_Questions_MovePatio":
 					header = Helper.Translation.Get("move-patio-which-way");
 					newQuestion = "CSP_Wizard_Questions_MovePatio_2";
+					responses.Add(new Response($"{whichAnswer}_cursorLoc", string.Format(Helper.Translation.Get("cursor-location"), cursorLoc.X, cursorLoc.Y)));
 					responses.Add(new Response($"{whichAnswer}_up", Helper.Translation.Get("up")));
 					responses.Add(new Response($"{whichAnswer}_down", Helper.Translation.Get("down")));
 					responses.Add(new Response($"{whichAnswer}_left", Helper.Translation.Get("left")));
 					responses.Add(new Response($"{whichAnswer}_right", Helper.Translation.Get("right")));
 					break; ;
 				case "CSP_Wizard_Questions_MovePatio_2":
-					if (customSpousePatioApi.MoveSpousePatio(whichAnswer))
+					if (customSpousePatioApi.MoveSpousePatio(whichAnswer, cursorLoc))
 						Game1.drawObjectDialogue(string.Format(Helper.Translation.Get("moved-patio"), whichAnswer.Split('_')[0]));
 					else
 						Game1.drawObjectDialogue(string.Format(Helper.Translation.Get("not-moved-patio"), whichAnswer.Split('_')[0]));
