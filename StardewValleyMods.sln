@@ -115,6 +115,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "QuickLoad", "QuickLoad\Quic
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CustomSpousePatioWizard", "CustomSpousePatioWizard\CustomSpousePatioWizard.csproj", "{71A75702-CEC2-4BF0-8961-0C5C733B8721}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ModThis", "ModThis\ModThis.csproj", "{B6C96C2D-6200-402F-8B68-5E761C431F75}"
+EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
 		_releases\_releases.projitems*{047040e0-3d07-46e5-852b-d1d45cd57bb8}*SharedItemsImports = 13
@@ -566,6 +568,14 @@ Global
 		{71A75702-CEC2-4BF0-8961-0C5C733B8721}.Release|Any CPU.Build.0 = Release|Any CPU
 		{71A75702-CEC2-4BF0-8961-0C5C733B8721}.Release|x86.ActiveCfg = Release|Any CPU
 		{71A75702-CEC2-4BF0-8961-0C5C733B8721}.Release|x86.Build.0 = Release|Any CPU
+		{B6C96C2D-6200-402F-8B68-5E761C431F75}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B6C96C2D-6200-402F-8B68-5E761C431F75}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B6C96C2D-6200-402F-8B68-5E761C431F75}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{B6C96C2D-6200-402F-8B68-5E761C431F75}.Debug|x86.Build.0 = Debug|Any CPU
+		{B6C96C2D-6200-402F-8B68-5E761C431F75}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B6C96C2D-6200-402F-8B68-5E761C431F75}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B6C96C2D-6200-402F-8B68-5E761C431F75}.Release|x86.ActiveCfg = Release|Any CPU
+		{B6C96C2D-6200-402F-8B68-5E761C431F75}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

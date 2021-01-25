@@ -1,0 +1,18 @@
+{
+    "welcome": "What do you want to do with {0}?",
+    "remove": "Remove it.",
+    "move": "Move it.",
+    "take": "Take it.",
+    "grow": "Grow it.",
+    "kill": "Kill it.",
+    
+    "confirm-remove": "Really remove this from the game?",
+    "confirm-move": "Move in which direction?",
+
+    "up": "Up",
+    "down": "Down",
+    "left": "Left",
+    "right": "Right",
+
+    "cancel": "Cancel",
+}

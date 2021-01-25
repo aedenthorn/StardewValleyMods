@@ -215,7 +215,7 @@ namespace CustomChestTypes
                 return true;
             __result = customChestTypesDict[__instance.ParentSheetIndex].name;
             return false;
-        }		
+        }
         private static bool Object_placementAction_Prefix(Object __instance, ref bool __result, GameLocation location, int x, int y, Farmer who)
         {
             if (!customChestTypesDict.TryGetValue(__instance.ParentSheetIndex, out var chestInfo))
@@ -226,8 +226,9 @@ namespace CustomChestTypes
 
             Chest chest = new Chest(__instance.ParentSheetIndex, placementTile, 1, chestInfo.frames)
             {
-                shakeTimer = 50
+                shakeTimer = 50,
             };
+            chest.modData["aedenthorn.CustomChestTypes/IsCustomChest"] = "true";
             chest.resetLidFrame();
             Texture2D texture = chestInfo.texture.First();
             Rectangle bb = chestInfo.boundingBox;

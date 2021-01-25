@@ -169,7 +169,7 @@ namespace CustomSpousePatioWizard
 					responses.Add(new Response($"{whichAnswer}_down", Helper.Translation.Get("down")));
 					responses.Add(new Response($"{whichAnswer}_left", Helper.Translation.Get("left")));
 					responses.Add(new Response($"{whichAnswer}_right", Helper.Translation.Get("right")));
-					break; ;
+					break;
 				case "CSP_Wizard_Questions_MovePatio_2":
 					if (customSpousePatioApi.MoveSpousePatio(whichAnswer, cursorLoc))
 						Game1.drawObjectDialogue(string.Format(Helper.Translation.Get("moved-patio"), whichAnswer.Split('_')[0]));

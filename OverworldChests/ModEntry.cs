@@ -155,7 +155,7 @@ namespace OverworldChests
 						chest.playerChoiceColor.Value = MakeTint(fraction);
 					}
 					chest.name = namePrefix;
-					chest.modData["Pathoschild.ChestsAnywhere/IsIgnored"] = "true";
+					chest.resetLidFrame();
 					l.overlayObjects[freeTiles[i]] = chest;
 				}
 			}
