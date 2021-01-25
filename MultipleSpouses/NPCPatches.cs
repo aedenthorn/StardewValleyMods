@@ -11,6 +11,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Reflection.Emit;
+using System.Text.RegularExpressions;
 
 namespace MultipleSpouses
 {
@@ -1024,11 +1025,11 @@ namespace MultipleSpouses
             }
         }
         
-        public static void Child_reloadSprite_Postfix(ref Child __instance)
+        public static void Character_displayName_Getter_Postfix(ref Child __instance, ref string __result)
         {
             try
             {
-                if (__instance.Name == null || !ModEntry.config.ChildrenHaveHairOfSpouse)
+                if (__instance.Name == null || !(__instance is Child))
                     return;
                 string[] names = __instance.Name.Split(' ');
                 if (names.Length < 2 || names[names.Length - 1].Length < 3)
@@ -1037,8 +1038,34 @@ namespace MultipleSpouses
                 }
                 if (!ModEntry.config.ShowParentNames && __instance.Name.EndsWith(")"))
                 {
-                    __instance.displayName = string.Join(" ", names.Take(names.Length - 1));
+                    __result = Regex.Replace(string.Join(" ", names), @" \([^)]+\)", "");
+                    Monitor.Log($"set child display name to: {__result}");
                 }
+            }
+            catch (Exception ex)
+            {
+                Monitor.Log($"Failed in {nameof(Child_reloadSprite_Postfix)}:\n{ex}", LogLevel.Error);
+            }
+        }
+        public static void Child_reloadSprite_Postfix(ref Child __instance)
+        {
+            try
+            {
+                if (__instance.Name == null)
+                    return;
+                string[] names = __instance.Name.Split(' ');
+                if (names.Length < 2 || names[names.Length - 1].Length < 3)
+                {
+                    return;
+                }
+                if (!ModEntry.config.ShowParentNames && __instance.displayName.EndsWith(")"))
+                {
+                    __instance.displayName = Regex.Replace(string.Join(" ", names), @" \([^)]+\)", "");
+                }
+
+                if (!ModEntry.config.ChildrenHaveHairOfSpouse)
+                    return;
+
                 string parent = names[names.Length - 1].Substring(1, names[names.Length - 1].Length - 2);
                 __instance.Sprite.textureName.Value += $"_{parent}";
                 Monitor.Log($"set child texture to: {__instance.Sprite.textureName.Value}");

@@ -38,7 +38,6 @@ namespace CustomSpousePatio
         }
 		public void ReloadPatios()
 		{
-			RemoveAllSpouseAreas();
 			Game1.getFarm().loadMap(Game1.getFarm().mapPath, true);
 			ReloadSpouseAreaData();
 			AddTileSheets();
@@ -70,7 +69,6 @@ namespace CustomSpousePatio
 		}
 		public bool MoveSpousePatio(string spouse_dir, Point cursorLoc)
         {
-			RemoveAllSpouseAreas();
 			Game1.getFarm().loadMap(Game1.getFarm().mapPath, true);
 			string spouse = spouse_dir.Split('_')[0];
 			string dir = spouse_dir.Split('_')[1];

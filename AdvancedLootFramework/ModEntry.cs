@@ -18,11 +18,6 @@ namespace AdvancedLootFramework
         private static Random myRand;
         private static IMonitor SMonitor;
         private static IModHelper SHelper;
-        private static int[] forbiddenWeapons = new int[] 
-        {
-            32,
-            34
-        };
 
         public override void Entry(IModHelper helper)
 		{
@@ -67,7 +62,7 @@ namespace AdvancedLootFramework
             {
                 foreach (KeyValuePair<int, string> kvp in Game1.content.Load<Dictionary<int, string>>("Data\\weapons"))
                 {
-                    if (forbiddenWeapons.Contains(kvp.Key))
+                    if (Config.ForbiddenWeapons.Contains(kvp.Key))
                         continue;
                     int price = new MeleeWeapon(kvp.Key).salePrice();
                     if (CanAddTreasure(price, minItemValue, maxItemValue))
@@ -124,6 +119,8 @@ namespace AdvancedLootFramework
             {
                 foreach (KeyValuePair<int, string> kvp in Game1.bigCraftablesInformation)
                 {
+                    if (Config.ForbiddenBigCraftables.Contains(kvp.Key))
+                        continue;
                     int price = new Object(Vector2.Zero, kvp.Key, false).sellToStorePrice();
                     if (CanAddTreasure(price, minItemValue, maxItemValue))
                         treasures.Add(new Treasure(kvp.Key, price, "BigCraftable"));
@@ -134,6 +131,8 @@ namespace AdvancedLootFramework
 
             foreach (KeyValuePair<int, string> kvp in Game1.objectInformation)
             {
+                if (Config.ForbiddenObjects.Contains(kvp.Key))
+                    continue;
                 if (kvp.Value.Split('/')[5] == "...")
                     continue;
                 string type = "";
@@ -252,6 +251,8 @@ namespace AdvancedLootFramework
             chest.tileLocation.Value = chestSpot;
             chest.bigCraftable.Value = true;
             chest.modData["Pathoschild.ChestsAnywhere/IsIgnored"] = "true";
+            chest.modData["Pathoschild.Automate/StoreItems"] = "Disable";
+            chest.modData["Pathoschild.Automate/TakeItems"] = "Disable";
             return chest;
         }
 

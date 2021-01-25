@@ -158,6 +158,7 @@ namespace MultipleSpouses
                     {
                         Age = 0,
                         Position = new Vector2(16f, 4f) * 64f + new Vector2(0f + ModEntry.myRand.Next(-64, 48), -24f + ModEntry.myRand.Next(-24, 24)),
+                        displayName = $"{newBabyName}"
                     };
 
                     Utility.getHomeOfFarmer(Game1.player).characters.Add(baby);

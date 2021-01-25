@@ -11,6 +11,7 @@ using StardewValley.Objects;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Text.RegularExpressions;
 using xTile;
 using Object = StardewValley.Object;
@@ -158,9 +159,15 @@ namespace MultipleSpouses
             // Child patches
 
             harmony.Patch(
+               original: typeof(Character).GetProperty("displayName").GetMethod,
+               postfix: new HarmonyMethod(typeof(NPCPatches), nameof(NPCPatches.Character_displayName_Getter_Postfix))
+            );
+
+            harmony.Patch(
                original: AccessTools.Method(typeof(Child), nameof(Child.reloadSprite)),
                postfix: new HarmonyMethod(typeof(NPCPatches), nameof(NPCPatches.Child_reloadSprite_Postfix))
             );
+
 /*
             harmony.Patch(
                original: AccessTools.Method(typeof(Child), nameof(Child.resetForPlayerEntry)),
