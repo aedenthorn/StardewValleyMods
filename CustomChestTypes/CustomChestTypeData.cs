@@ -16,7 +16,8 @@ namespace CustomChestTypes
         public int capacity;
         public int rows;
         public int price;
-        public Texture2D texture;
+        public IList<Texture2D> texture = new List<Texture2D>();
+        public int frames = 1;
         public string texturePath;
         public string description;
         public Rectangle boundingBox;

@@ -9,7 +9,7 @@ using StardewValley.Network;
 using StardewValley.Objects;
 using System;
 using System.Collections.Generic;
-using System.Reflection;
+using System.Linq;
 using Object = StardewValley.Object;
 
 namespace CustomChestTypes
@@ -126,7 +126,11 @@ namespace CustomChestTypes
 						try
 						{
 							chestInfo.id = id++;
-							chestInfo.texture = contentPack.LoadAsset<Texture2D>(chestInfo.texturePath);
+							for (int frame = 1; frame <= chestInfo.frames; frame++)
+							{
+								var texturePath = chestInfo.texturePath.Replace("{frame}", frame.ToString());
+								chestInfo.texture.Add(contentPack.LoadAsset<Texture2D>(texturePath));
+							}
 							customChestTypesDict.Add(chestInfo.id, chestInfo);
 							add++;
 						}
@@ -191,19 +195,19 @@ namespace CustomChestTypes
         }		
 		private static bool Object_placementAction_Prefix(Object __instance, ref bool __result, GameLocation location, int x, int y, Farmer who)
         {
-            if (!customChestTypesDict.ContainsKey(__instance.ParentSheetIndex))
+            if (!customChestTypesDict.TryGetValue(__instance.ParentSheetIndex, out var chestInfo))
                 return true;
 			SMonitor.Log($"placing chest {__instance.name}");
 
 			Vector2 placementTile = new Vector2((float)(x / 64), (float)(y / 64));
 
-			Chest chest = new Chest(__instance.ParentSheetIndex, placementTile, 217, 2)
+			Chest chest = new Chest(__instance.ParentSheetIndex, placementTile, 1, chestInfo.frames)
 			{
 				shakeTimer = 50
 			};
-
-			Texture2D texture = customChestTypesDict[__instance.ParentSheetIndex].texture;
-			Rectangle bb = customChestTypesDict[__instance.ParentSheetIndex].boundingBox;
+			chest.resetLidFrame();
+			Texture2D texture = chestInfo.texture.First();
+			Rectangle bb = chestInfo.boundingBox;
 			chest.boundingBox.Value = new Rectangle((int)chest.tileLocation.X * 64 + bb.X * 4, (int)chest.tileLocation.Y * 64 + 64 - texture.Height * 4 + bb.Y * 4, bb.Width * 4, bb.Height * 4);
 			SMonitor.Log($"bounding box: {chest.boundingBox}");
 			location.objects.Add(placementTile, chest);
@@ -213,26 +217,31 @@ namespace CustomChestTypes
         }		
 		private static bool Chest_draw_Prefix(Chest __instance, SpriteBatch spriteBatch, int x, int y, float alpha)
         {
-            if (!customChestTypesDict.ContainsKey(__instance.ParentSheetIndex))
-                return true;
+	        if (!customChestTypesDict.TryGetValue(__instance.ParentSheetIndex, out var chestInfo))
+		        return true;
 
 			float base_sort_order = Math.Max(0f, ((y + 1f) * 64f - 24f) / 10000f) + y * 1E-05f;
-			spriteBatch.Draw(customChestTypesDict[__instance.ParentSheetIndex].texture, Game1.GlobalToLocal(Game1.viewport, new Vector2(x * 64f + (float)((__instance.shakeTimer > 0) ? Game1.random.Next(-1, 2) : 0), (y - customChestTypesDict[__instance.ParentSheetIndex].texture.Height / 16 + 1) * 64f)), new Rectangle(0,0, customChestTypesDict[__instance.ParentSheetIndex].texture.Width, customChestTypesDict[__instance.ParentSheetIndex].texture.Height), __instance.tint.Value * alpha, 0f, Vector2.Zero, 4f, SpriteEffects.None, base_sort_order);
+			int currentFrame = (int) MathHelper.Clamp(SHelper.Reflection.GetField<int>(__instance, "currentLidFrame").GetValue(), 1, chestInfo.frames);
+			if (currentFrame > 1)
+			{
+				SMonitor.Log($"{currentFrame}");
+			}
+			Texture2D texture = chestInfo.texture.ElementAt(currentFrame-1);
+			spriteBatch.Draw(texture, Game1.GlobalToLocal(Game1.viewport, new Vector2(x * 64f + (float)((__instance.shakeTimer > 0) ? Game1.random.Next(-1, 2) : 0), (y - texture.Height / 16 + 1) * 64f)), new Rectangle(0,0, texture.Width, texture.Height), __instance.tint.Value * alpha, 0f, Vector2.Zero, 4f, SpriteEffects.None, base_sort_order);
 
 			return false;
         }		
 		
 		private static bool Object_drawInMenu_Prefix(Object __instance, SpriteBatch spriteBatch, Vector2 location, float scaleSize, float transparency, float layerDepth, StackDrawType drawStackNumber, Color color, bool drawShadow)
         {
-			if (!customChestTypesDict.ContainsKey(__instance.ParentSheetIndex))
-				return true;
+	        if (!customChestTypesDict.TryGetValue(__instance.ParentSheetIndex, out var chestInfo))
+		        return true;
 
-
-			bool shouldDrawStackNumber = ((drawStackNumber == StackDrawType.Draw && __instance.maximumStackSize() > 1 && __instance.Stack > 1) || drawStackNumber == StackDrawType.Draw_OneInclusive) && scaleSize > 0.3 && __instance.Stack != int.MaxValue;
-
-			float extraSize = (customChestTypesDict[__instance.ParentSheetIndex].texture.Height > customChestTypesDict[__instance.ParentSheetIndex].texture.Width ? customChestTypesDict[__instance.ParentSheetIndex].texture.Height : customChestTypesDict[__instance.ParentSheetIndex].texture.Width) / 32f;
-			Rectangle sourceRect = new Rectangle(0, 0, customChestTypesDict[__instance.ParentSheetIndex].texture.Width, customChestTypesDict[__instance.ParentSheetIndex].texture.Height);
-			spriteBatch.Draw(customChestTypesDict[__instance.ParentSheetIndex].texture, location + new Vector2(32f / extraSize, 32f / extraSize), new Microsoft.Xna.Framework.Rectangle?(sourceRect), color * transparency, 0f, new Vector2(8f, 16f), 4f * (((double)scaleSize < 0.2) ? scaleSize : (scaleSize / 2f)) / extraSize, SpriteEffects.None, layerDepth);
+	        bool shouldDrawStackNumber = ((drawStackNumber == StackDrawType.Draw && __instance.maximumStackSize() > 1 && __instance.Stack > 1) || drawStackNumber == StackDrawType.Draw_OneInclusive) && scaleSize > 0.3 && __instance.Stack != int.MaxValue;
+			Texture2D texture = chestInfo.texture.First();
+			float extraSize = Math.Max(texture.Height, texture.Width) / 32f;
+			Rectangle sourceRect = new Rectangle(0, 0, texture.Width, texture.Height);
+			spriteBatch.Draw(texture, location + new Vector2(32f / extraSize, 32f / extraSize), sourceRect, color * transparency, 0f, new Vector2(8f, 16f), 4f * (((double)scaleSize < 0.2) ? scaleSize : (scaleSize / 2f)) / extraSize, SpriteEffects.None, layerDepth);
 			if (shouldDrawStackNumber)
 			{
 				Utility.drawTinyDigits(__instance.stack, spriteBatch, location + new Vector2((float)(64 - Utility.getWidthOfTinyDigitString(__instance.stack, 3f * scaleSize)) + 3f * scaleSize, 64f - 18f * scaleSize + 2f), 3f * scaleSize, 1f, color);
@@ -241,11 +250,16 @@ namespace CustomChestTypes
         }				
 		private static bool Chest_checkForAction_Prefix(Chest __instance, ref bool __result, Farmer who, bool justCheckingForActivity)
         {
-			if (justCheckingForActivity || !customChestTypesDict.ContainsKey(__instance.ParentSheetIndex))
+			if (justCheckingForActivity || !customChestTypesDict.TryGetValue(__instance.ParentSheetIndex, out var chestInfo))
 				return true;
 
 			SMonitor.Log($"clicked on chest {__instance.name}");
-			__instance.ShowMenu();
+			__instance.GetMutex().RequestLock(delegate
+			{
+				__instance.frameCounter.Value = chestInfo.frames;
+				Game1.player.Halt();
+				Game1.player.freezePause = 1000;
+			});
 			__result = true; 
 			return false;
         }		
