@@ -49,6 +49,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="CustomChestTypeConfig.cs" />
     <Compile Include="CustomChestTypeData.cs" />
     <Compile Include="ModConfig.cs" />
     <Compile Include="ModEntry.cs" />
