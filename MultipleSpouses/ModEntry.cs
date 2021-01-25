@@ -185,8 +185,8 @@ namespace MultipleSpouses
             );
             */
 
-            // Location patches
 
+            // Location patches
 
             harmony.Patch(
                original: AccessTools.Method(typeof(Beach), nameof(Beach.checkAction)),
@@ -201,6 +201,11 @@ namespace MultipleSpouses
             harmony.Patch(
                original: AccessTools.Method(typeof(FarmHouse), nameof(FarmHouse.checkAction)),
                postfix: new HarmonyMethod(typeof(LocationPatches), nameof(LocationPatches.FarmHouse_checkAction_Postfix))
+            );
+
+            harmony.Patch(
+               original: AccessTools.Method(typeof(FarmHouse), nameof(FarmHouse.updateFarmLayout)),
+               postfix: new HarmonyMethod(typeof(LocationPatches), nameof(LocationPatches.FarmHouse_updateFarmLayout_Postfix))
             );
 
             harmony.Patch(

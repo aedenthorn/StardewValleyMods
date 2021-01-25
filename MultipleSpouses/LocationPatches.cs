@@ -161,8 +161,26 @@ namespace MultipleSpouses
                 Monitor.Log($"Failed in {nameof(Beach_resetLocalState_Postfix)}:\n{ex}", LogLevel.Error);
             }
         }
+        
 
-
+        public static void FarmHouse_updateFarmLayout_Postfix(ref FarmHouse __instance)
+        {
+            try
+            {
+                if (Misc.ChangingKidsRoom())
+                {
+                    if (__instance.upgradeLevel > 1 && __instance.upgradeLevel < 4)
+                    {
+                        //NPCPatches.SetCribs(__instance);
+                        Maps.ExpandKidsRoom(__instance);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Monitor.Log($"Failed in {nameof(FarmHouse_resetLocalState_Postfix)}:\n{ex}", LogLevel.Error);
+            }
+        }
         public static void FarmHouse_resetLocalState_Postfix(ref FarmHouse __instance)
         {
             try

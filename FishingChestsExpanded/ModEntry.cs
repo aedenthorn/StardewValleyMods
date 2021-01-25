@@ -83,7 +83,7 @@ namespace FishingChestsExpanded
             if(data.ContainsKey(fish))
                 int.TryParse(data[fish].Split('/')[1], out difficulty);
 
-            int coins = advancedLootFrameworkApi.GetChestCoins(Config.Mult, Config.IncreaseRate, Config.CoinBaseMin, Config.CoinBaseMax);
+            int coins = advancedLootFrameworkApi.GetChestCoins(difficulty, Config.IncreaseRate, Config.CoinBaseMin, Config.CoinBaseMax);
 
             IList<Item> items = advancedLootFrameworkApi.GetChestItems(treasuresList, Config.MaxItems, Config.MinItemValue, Config.MaxItemValue, difficulty, Config.IncreaseRate, Config.ItemsBaseMaxValue);
             foreach(Item item in inventory)

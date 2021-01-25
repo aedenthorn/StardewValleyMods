@@ -17,6 +17,7 @@
     <None Include="$(MSBuildThisFileDirectory)CustomMonsterFloors 0.7.0.zip" />
     <None Include="$(MSBuildThisFileDirectory)CustomOreNodes 0.6.1.zip" />
     <None Include="$(MSBuildThisFileDirectory)CustomOreNodes 0.7.0.zip" />
+    <None Include="$(MSBuildThisFileDirectory)CustomOreNodes 0.8.0.zip" />
     <None Include="$(MSBuildThisFileDirectory)CustomResourceClumps 0.4.0.zip" />
     <None Include="$(MSBuildThisFileDirectory)CustomSpousePatio 0.7.0.zip" />
     <None Include="$(MSBuildThisFileDirectory)CustomSpousePatio 0.7.3.zip" />
@@ -32,6 +33,7 @@
     <None Include="$(MSBuildThisFileDirectory)FarmAnywhere 0.1.0.zip" />
     <None Include="$(MSBuildThisFileDirectory)FireBreath 0.1.0.zip" />
     <None Include="$(MSBuildThisFileDirectory)FishingChestsExpanded 0.2.0.zip" />
+    <None Include="$(MSBuildThisFileDirectory)FishingChestsExpanded 0.2.1.zip" />
     <None Include="$(MSBuildThisFileDirectory)FruitTreeShaker 1.1.0.zip" />
     <None Include="$(MSBuildThisFileDirectory)GemIsles 0.2.3.zip" />
     <None Include="$(MSBuildThisFileDirectory)HereFishy 0.3.2.zip" />
@@ -48,6 +50,7 @@
     <None Include="$(MSBuildThisFileDirectory)MobilePhone 2.2.2.zip" />
     <None Include="$(MSBuildThisFileDirectory)MobileTelevision 0.1.0.zip" />
     <None Include="$(MSBuildThisFileDirectory)MultipleSpouses 2.5.0.zip" />
+    <None Include="$(MSBuildThisFileDirectory)MultipleSpouses 2.7.0.zip" />
     <None Include="$(MSBuildThisFileDirectory)Murdercrows 0.2.2.zip" />
     <None Include="$(MSBuildThisFileDirectory)NonRandomPrairieKing 0.1.0.zip" />
     <None Include="$(MSBuildThisFileDirectory)OverworldChests 0.4.1.zip" />

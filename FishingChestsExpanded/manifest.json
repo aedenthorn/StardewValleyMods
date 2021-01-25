@@ -1,7 +1,7 @@
 ﻿{
   "Name": "Fishing Chests Expanded",
   "Author": "aedenthorn",
-  "Version": "0.2.0",
+  "Version": "0.2.1",
   "Description": "Expands the pool of rewards from fishing chests.",
   "UniqueID": "aedenthorn.FishingChestsExpanded",
   "EntryDll": "FishingChestsExpanded.dll",

@@ -487,7 +487,7 @@ namespace MultipleSpouses
         public static bool ChangingKidsRoom()
         {
             //return ModEntry.config.ExtraCribs != 0 || ModEntry.config.ExtraKidsBeds != 0 || ModEntry.config.ExtraKidsRoomWidth != 0;
-            return ModEntry.config.ExtraKidsRoomWidth != 0;
+            return ModEntry.config.ExtraKidsRoomWidth > 0;
         }
         
         

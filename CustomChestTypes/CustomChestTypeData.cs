@@ -14,10 +14,10 @@ namespace CustomChestTypes
         public string name;
         public int id;
         public int capacity;
-        public int rows;
         public int price;
         public IList<Texture2D> texture = new List<Texture2D>();
         public int frames = 1;
+        public string openSound = "openChest";
         public string texturePath;
         public string description;
         public Rectangle boundingBox;

@@ -67,19 +67,15 @@ namespace CustomChestTypes
 				original: AccessTools.Method(typeof(Chest), nameof(Chest.checkForAction)),
 				prefix: new HarmonyMethod(typeof(ModEntry), nameof(Chest_checkForAction_Prefix))
 			);
-
+			harmony.Patch(
+				original: AccessTools.Method(typeof(Chest), nameof(Chest.GetActualCapacity)),
+				prefix: new HarmonyMethod(typeof(ModEntry), nameof(Chest_GetActualCapacity_Prefix))
+			);
 
 			harmony.Patch(
 				original: AccessTools.Method(typeof(Utility), nameof(Utility.getCarpenterStock)),
 				postfix: new HarmonyMethod(typeof(ModEntry), nameof(Utility_getCarpenterStock_Postfix))
 			);
-			/*
-			ConstructorInfo ci2 = typeof(ItemGrabMenu).GetConstructor(new Type[] { typeof(IList<Item>), typeof(bool), typeof(bool), typeof(InventoryMenu.highlightThisItem), typeof(ItemGrabMenu.behaviorOnItemSelect), typeof(string), typeof(ItemGrabMenu.behaviorOnItemSelect), typeof(bool), typeof(bool), typeof(bool), typeof(bool), typeof(bool), typeof(int), typeof(Item), typeof(int), typeof(object) });
-			harmony.Patch(
-			   original: ci2,
-			   postfix: new HarmonyMethod(typeof(ModEntry), nameof(ModEntry.ItemGrabMenu_Postfix))
-			);
-			*/
 		}
 
 		/// <summary>Get whether this instance can edit the given asset.</summary>
@@ -221,11 +217,7 @@ namespace CustomChestTypes
 		        return true;
 
 			float base_sort_order = Math.Max(0f, ((y + 1f) * 64f - 24f) / 10000f) + y * 1E-05f;
-			int currentFrame = (int) MathHelper.Clamp(SHelper.Reflection.GetField<int>(__instance, "currentLidFrame").GetValue(), 1, chestInfo.frames);
-			if (currentFrame > 1)
-			{
-				SMonitor.Log($"{currentFrame}");
-			}
+			int currentFrame = alpha < 1 ? 1 : (int) MathHelper.Clamp(SHelper.Reflection.GetField<int>(__instance, "currentLidFrame").GetValue(), 1, chestInfo.frames);
 			Texture2D texture = chestInfo.texture.ElementAt(currentFrame-1);
 			spriteBatch.Draw(texture, Game1.GlobalToLocal(Game1.viewport, new Vector2(x * 64f + (float)((__instance.shakeTimer > 0) ? Game1.random.Next(-1, 2) : 0), (y - texture.Height / 16 + 1) * 64f)), new Rectangle(0,0, texture.Width, texture.Height), __instance.tint.Value * alpha, 0f, Vector2.Zero, 4f, SpriteEffects.None, base_sort_order);
 
@@ -250,17 +242,27 @@ namespace CustomChestTypes
         }				
 		private static bool Chest_checkForAction_Prefix(Chest __instance, ref bool __result, Farmer who, bool justCheckingForActivity)
         {
-			if (justCheckingForActivity || !customChestTypesDict.TryGetValue(__instance.ParentSheetIndex, out var chestInfo))
+			if (justCheckingForActivity || !customChestTypesDict.TryGetValue(__instance.ParentSheetIndex, out CustomChestType chestInfo))
 				return true;
 
 			SMonitor.Log($"clicked on chest {__instance.name}");
 			__instance.GetMutex().RequestLock(delegate
 			{
 				__instance.frameCounter.Value = chestInfo.frames;
+				Game1.playSound(chestInfo.openSound);
 				Game1.player.Halt();
 				Game1.player.freezePause = 1000;
+
 			});
 			__result = true; 
+			return false;
+        }		
+		private static bool Chest_GetActualCapacity_Prefix(Chest __instance, ref int __result)
+        {
+			if (!customChestTypesDict.TryGetValue(__instance.ParentSheetIndex, out CustomChestType chestInfo))
+				return true;
+
+			__result = chestInfo.capacity; 
 			return false;
         }		
 		
@@ -272,19 +274,6 @@ namespace CustomChestTypes
 			SMonitor.Log($"Created chest {__instance.Name}"); 
         }
 
-		private static void ItemGrabMenu_Postfix(ItemGrabMenu __instance, InventoryMenu.highlightThisItem highlightFunction, object context)
-		{
-			return;
-			if (!(context is Chest) || (context as Chest)?.ParentSheetIndex == null || !customChestTypesDict.ContainsKey((context as Chest).ParentSheetIndex))
-				return;
-
-			CustomChestType cct = customChestTypesDict[(context as Chest).ParentSheetIndex];
-			SMonitor.Log($"Creating inventory menu for chest {cct.name}, rows: {cct.rows}, cap: {cct.capacity}, ");
-			int containerWidth = 64 * (cct.capacity / cct.rows);
-
-			__instance.ItemsToGrabMenu = new InventoryMenu(Game1.uiViewport.Width / 2 - containerWidth / 2, __instance.yPositionOnScreen + 64, false, __instance.ItemsToGrabMenu.actualInventory, highlightFunction, cct.capacity, cct.rows, 0, 0, true);
-			__instance.ItemsToGrabMenu.populateClickableComponentList();
-		}
 		private static void Utility_getCarpenterStock_Postfix(ref Dictionary<ISalable, int[]> __result)
 		{
 			foreach(KeyValuePair<int, CustomChestType> kvp in customChestTypesDict)

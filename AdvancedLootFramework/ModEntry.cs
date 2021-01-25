@@ -194,6 +194,7 @@ namespace AdvancedLootFramework
             //SMonitor.Log($"Max chest value: {maxValue}");
 
             int currentValue = 0;
+            chestItems.Add(new Object(Vector2.Zero, 101, false));
 
             foreach (Treasure t in treasures)
             {
