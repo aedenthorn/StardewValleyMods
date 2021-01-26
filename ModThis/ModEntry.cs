@@ -80,13 +80,17 @@ namespace ModThis
 			List<Response> responses = new List<Response>();
 
 			responses.Add(new Response("ModThis_Wizard_Questions_Remove", Helper.Translation.Get("remove")));
-			if(thing is Object)
+
+			if(thing is Object || thing is TerrainFeature || thing is LargeTerrainFeature || thing is ResourceClump)
 				responses.Add(new Response("ModThis_Wizard_Questions_Move", Helper.Translation.Get("move")));
 			
-			if(thing is Tree || thing is FruitTree)
+			if(thing is Tree || thing is FruitTree || Game1.currentLocation.isCropAtTile((int)cursorLoc.X, (int)cursorLoc.Y) || thing is IndoorPot)
 				responses.Add(new Response("ModThis_Wizard_Questions_Grow", Helper.Translation.Get("grow")));
-			
-			if(thing is Monster)
+
+			if (Game1.currentLocation.isCropAtTile((int)cursorLoc.X, (int)cursorLoc.Y) || thing is IndoorPot)
+				responses.Add(new Response("ModThis_Wizard_Questions_Water", Helper.Translation.Get("water")));
+
+			if (thing is Monster)
 				responses.Add(new Response("ModThis_Wizard_Questions_Kill", Helper.Translation.Get("kill")));
 			
 			responses.Add(new Response("cancel", Helper.Translation.Get("cancel")));
@@ -100,9 +104,13 @@ namespace ModThis
 				return location.objects[cursorLoc];
 			if (location.overlayObjects.ContainsKey(cursorLoc))
 				return location.overlayObjects[cursorLoc];
+			if (location.resourceClumps.FirstOrDefault(f => f.occupiesTile((int)cursorLoc.X, (int)cursorLoc.Y)) != null)
+				return location.resourceClumps.FirstOrDefault(f => f.occupiesTile((int)cursorLoc.X, (int)cursorLoc.Y));
 			if (location.terrainFeatures.ContainsKey(cursorLoc))
 				return location.terrainFeatures[cursorLoc];
-			foreach(NPC character in location.characters)
+			if (location.largeTerrainFeatures.FirstOrDefault(f => f.getBoundingBox().Contains(new Point((int)cursorLoc.X * 64, (int)cursorLoc.Y * 64))) != null)
+				return location.largeTerrainFeatures.FirstOrDefault(f => f.getBoundingBox().Contains(new Point((int)cursorLoc.X * 64, (int)cursorLoc.Y * 64)));
+			foreach (NPC character in location.characters)
             {
 				if (character.getTileLocation() == cursorLoc)
 					return character;
@@ -137,6 +145,9 @@ namespace ModThis
 							break;
 						case "ModThis_Wizard_Questions_Grow":
 							GrowThis();
+							return;
+						case "ModThis_Wizard_Questions_Water":
+							WaterThis();
 							return;
 						case "ModThis_Wizard_Questions_Kill":
 							KillThis();
@@ -175,6 +186,26 @@ namespace ModThis
 					return;
 				}
 			}
+			if (thing is ResourceClump) 
+			{
+				Monitor.Log($"thing is a ResourceClump");
+				if (Game1.currentLocation.resourceClumps.Contains(thing))
+                {
+					Game1.currentLocation.resourceClumps.Remove(thing as ResourceClump);
+					Monitor.Log($"removed {(thing as ResourceClump).GetType()} from resourceClumps");
+					return;
+                }
+			}
+			if (thing is LargeTerrainFeature) 
+			{
+				Monitor.Log($"thing is a LargeTerrainFeature");
+				if (Game1.currentLocation.largeTerrainFeatures.Contains(thing))
+                {
+					Game1.currentLocation.largeTerrainFeatures.Remove(thing as LargeTerrainFeature);
+					Monitor.Log($"removed {(thing as LargeTerrainFeature).GetType()} from largeTerrainFeature");
+					return;
+                }
+			}
 			if (thing is TerrainFeature) 
 			{
 				Monitor.Log($"thing is a terrain feature");
@@ -199,46 +230,75 @@ namespace ModThis
 		private void MoveThis(string dir)
 		{
 			Monitor.Log($"Moving");
-			Vector2 newLoc = Vector2.Zero;
+			Vector2 shiftV = Vector2.Zero;
             switch (dir)
             {
 				case "up":
-					newLoc = cursorLoc + new Vector2(0, -1);
+					shiftV = new Vector2(0, -1);
 					break;
 				case "down":
-					newLoc = cursorLoc + new Vector2(0, 1);
+					shiftV = new Vector2(0, 1);
 					break;
 				case "left":
-					newLoc = cursorLoc + new Vector2(-1, 0);
+					shiftV = new Vector2(-1, 0);
 					break;
 				case "right":
-					newLoc = cursorLoc + new Vector2(1, 0);
+					shiftV = new Vector2(1, 0);
 					break;
             }
 			if (thing is Object)
 			{
 				Monitor.Log($"{(thing as Object).name} is an object");
-				if (Game1.currentLocation.objects.ContainsKey(cursorLoc) && !Game1.currentLocation.objects.ContainsKey(newLoc))
+				if (Game1.currentLocation.objects.ContainsKey(cursorLoc) && !Game1.currentLocation.objects.ContainsKey(cursorLoc + shiftV))
 				{
-					Game1.currentLocation.objects[newLoc] = Game1.currentLocation.objects[cursorLoc];
+					Game1.currentLocation.objects[cursorLoc + shiftV] = Game1.currentLocation.objects[cursorLoc];
 					Game1.currentLocation.objects.Remove(cursorLoc);
 					Monitor.Log($"moved {(thing as Object).name} {dir}");
 					return;
 				}
-				if (Game1.currentLocation.overlayObjects.ContainsKey(cursorLoc))
+				if (Game1.currentLocation.overlayObjects.ContainsKey(cursorLoc) && !Game1.currentLocation.objects.ContainsKey(cursorLoc + shiftV))
 				{
-					Game1.currentLocation.overlayObjects[newLoc] = Game1.currentLocation.overlayObjects[cursorLoc];
+					Game1.currentLocation.overlayObjects[cursorLoc + shiftV] = Game1.currentLocation.overlayObjects[cursorLoc];
 					Game1.currentLocation.overlayObjects.Remove(cursorLoc);
 					Monitor.Log($"moved {(thing as Object).name} {dir}");
+					return;
+				}
+			}
+			if (thing is ResourceClump)
+			{
+				Monitor.Log($"thing is a ResourceClump");
+				if (Game1.currentLocation.resourceClumps.Contains(thing))
+				{
+					Game1.currentLocation.resourceClumps.Remove(thing as ResourceClump);
+					(thing as ResourceClump).currentTileLocation += shiftV;
+					(thing as ResourceClump).tile.Value += shiftV;
+					Game1.currentLocation.resourceClumps.Add(thing as ResourceClump);
+					Monitor.Log($"moved {(thing as ResourceClump).GetType()} {dir}");
+					return;
+				}
+			}
+			if (thing is LargeTerrainFeature)
+			{
+				Monitor.Log($"thing is a LargeTerrainFeature");
+				if (Game1.currentLocation.largeTerrainFeatures.Contains(thing))
+				{
+					Game1.currentLocation.largeTerrainFeatures.Remove(thing as LargeTerrainFeature);
+					Monitor.Log($"old loc: {(thing as LargeTerrainFeature).currentTileLocation} old pos: {(thing as LargeTerrainFeature).tilePosition}");
+					(thing as LargeTerrainFeature).currentTileLocation += shiftV;
+					(thing as LargeTerrainFeature).tilePosition.Value += shiftV;
+					Monitor.Log($"new loc: {(thing as LargeTerrainFeature).currentTileLocation} new pos: {(thing as LargeTerrainFeature).tilePosition}");
+					Game1.currentLocation.largeTerrainFeatures.Add(thing as LargeTerrainFeature);
+
+					Monitor.Log($"moved {(thing as LargeTerrainFeature).GetType()} {dir}");
 					return;
 				}
 			}
 			if (thing is TerrainFeature)
 			{
 				Monitor.Log($"thing is a terrain feature");
-				if (Game1.currentLocation.terrainFeatures.ContainsKey(cursorLoc))
+				if (Game1.currentLocation.terrainFeatures.ContainsKey(cursorLoc) && !Game1.currentLocation.terrainFeatures.ContainsKey(cursorLoc + shiftV))
 				{
-					Game1.currentLocation.terrainFeatures[newLoc] = Game1.currentLocation.terrainFeatures[cursorLoc];
+					Game1.currentLocation.terrainFeatures[cursorLoc + shiftV] = Game1.currentLocation.terrainFeatures[cursorLoc];
 					Game1.currentLocation.terrainFeatures.Remove(cursorLoc);
 					Monitor.Log($"moved {(thing as TerrainFeature).GetType()} {dir}");
 					return;
@@ -320,6 +380,30 @@ namespace ModThis
 					(v.Value as IndoorPot).hoeDirt.Value.crop.growCompletely();
 
 					Monitor.Log($"Grew pot crop");
+					return;
+				}
+			}
+		}
+		private void WaterThis()
+		{
+			Monitor.Log($"Watering");
+			if (Game1.currentLocation.terrainFeatures[new Vector2(cursorLoc.X, cursorLoc.Y)] is HoeDirt && (Game1.currentLocation.terrainFeatures[new Vector2(cursorLoc.X, cursorLoc.Y)] as HoeDirt).state != 1)
+			{
+				(Game1.currentLocation.terrainFeatures[new Vector2((int)cursorLoc.X, (int)cursorLoc.Y)] as HoeDirt).state.Value = 1;
+				Monitor.Log($"Watered crop");
+				return;
+			}
+
+			Microsoft.Xna.Framework.Rectangle tileRect = new Microsoft.Xna.Framework.Rectangle((int)cursorLoc.X * 64, (int)cursorLoc.Y * 64, 64, 64);
+
+
+			foreach (KeyValuePair<Vector2, Object> v in Game1.currentLocation.objects.Pairs)
+			{
+				if (v.Value.getBoundingBox(v.Key).Intersects(tileRect) && v.Value is IndoorPot && (v.Value as IndoorPot).hoeDirt.Value.state.Value != 1)
+				{
+					(v.Value as IndoorPot).hoeDirt.Value.state.Value = 1;
+
+					Monitor.Log($"Watered pot crop");
 					return;
 				}
 			}

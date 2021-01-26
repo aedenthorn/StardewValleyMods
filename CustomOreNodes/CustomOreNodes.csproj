@@ -70,6 +70,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="CustomOreConfig.cs" />
     <Compile Include="CustomOreData.cs" />
     <Compile Include="CustomOreNode.cs" />
     <Compile Include="DropItem.cs" />
