@@ -72,6 +72,8 @@ namespace InstantGrowthPowder
                 if (i != null && i is Child && i.GetBoundingBox().Intersects(tileRect) && (i.Age < 3))
                 {
                     i.Age = 3;
+                    SHelper.Reflection.GetField<int>(i, "daysOld").SetValue(55);
+
                     who.CurrentItem.Stack--;
                     __instance.playSound("yoba");
                     __result = true;
@@ -84,7 +86,7 @@ namespace InstantGrowthPowder
                 NetLongDictionary<FarmAnimal, NetRef<FarmAnimal>> dict = SHelper.Reflection.GetField<NetLongDictionary<FarmAnimal, NetRef<FarmAnimal>>>(__instance, "animals").GetValue();
                 foreach (KeyValuePair<long, FarmAnimal> i in dict.Pairs)
                 {
-                    if (i.Value.age < i.Value.ageWhenMature)
+                    if (i.Value.GetCursorPetBoundingBox().Intersects(tileRect) && i.Value.age < i.Value.ageWhenMature)
                     {
                         i.Value.age.Value = i.Value.ageWhenMature;
                         i.Value.Sprite.LoadTexture("Animals\\" + i.Value.type.Value);
@@ -130,17 +132,42 @@ namespace InstantGrowthPowder
                     __result = true;
                     return false;
                 }
-            }
-            
-            foreach (KeyValuePair<Vector2, Object> v in __instance.objects.Pairs)
-            {
-                if (v.Value.getBoundingBox(v.Key).Intersects(tileRect) && v.Value is IndoorPot && !(v.Value as IndoorPot).hoeDirt.Value.crop.fullyGrown)
+                if (v.Value.getBoundingBox(v.Key).Intersects(tileRect) && v.Value is Bush && (v.Value as Bush).size == 3 && (v.Value as Bush).getAge() < 20)
                 {
-                    (v.Value as IndoorPot).hoeDirt.Value.crop.growCompletely();
+                    Bush bush = v.Value as Bush;
+                    bush.datePlanted.Value -= 20 - bush.getAge();
+                    Game1.currentLocation.terrainFeatures[v.Key] = bush;
+                    Game1.currentLocation.terrainFeatures[v.Key].loadSprite();
+
                     who.CurrentItem.Stack--;
                     __instance.playSound("yoba");
                     __result = true;
                     return false;
+                }
+            }
+            
+            foreach (KeyValuePair<Vector2, Object> v in __instance.objects.Pairs)
+            {
+                if (v.Value.getBoundingBox(v.Key).Intersects(tileRect) && v.Value is IndoorPot && (v.Value as IndoorPot).hoeDirt.Value?.crop != null && !(v.Value as IndoorPot).hoeDirt.Value.crop.fullyGrown)
+                {
+                    (v.Value as IndoorPot).hoeDirt.Value.crop.growCompletely();
+
+                    who.CurrentItem.Stack--;
+                    __instance.playSound("yoba");
+                    __result = true;
+                    return false;
+
+                }
+                if (v.Value.getBoundingBox(v.Key).Intersects(tileRect) && v.Value is IndoorPot && (v.Value as IndoorPot).bush.Value?.getAge() < 20)
+                {
+                    (v.Value as IndoorPot).bush.Value.datePlanted.Value -= 20 - (v.Value as IndoorPot).bush.Value.getAge();
+                    (v.Value as IndoorPot).bush.Value.loadSprite();
+
+                    who.CurrentItem.Stack--;
+                    __instance.playSound("yoba");
+                    __result = true;
+                    return false;
+
                 }
             }
             

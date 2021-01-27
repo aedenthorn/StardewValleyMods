@@ -1,16 +1,14 @@
 ﻿using Microsoft.Xna.Framework;
-using Netcode;
 using StardewModdingAPI;
 using StardewModdingAPI.Events;
 using StardewValley;
+using StardewValley.Buildings;
 using StardewValley.Characters;
 using StardewValley.Menus;
 using StardewValley.Monsters;
-using StardewValley.Network;
 using StardewValley.Objects;
 using StardewValley.TerrainFeatures;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 
 namespace ModThis
@@ -85,10 +83,10 @@ namespace ModThis
 
             responses.Add(new Response("ModThis_Wizard_Questions_Remove", Helper.Translation.Get("remove")));
 
-            if(thing is Object || thing is TerrainFeature || thing is LargeTerrainFeature || thing is ResourceClump)
+            if(thing is Object || thing is Building || thing is TerrainFeature || thing is LargeTerrainFeature || thing is ResourceClump)
                 responses.Add(new Response("ModThis_Wizard_Questions_Move", Helper.Translation.Get("move")));
             
-            if(thing is Tree || thing is FruitTree || (thing is FarmAnimal && (thing as FarmAnimal).age < (thing as FarmAnimal).ageWhenMature) || Game1.currentLocation.isCropAtTile((int)cursorLoc.X, (int)cursorLoc.Y) || thing is IndoorPot)
+            if(thing is Tree || thing is FruitTree || (thing is Bush && (thing as Bush).size == 3) || (thing is FarmAnimal && (thing as FarmAnimal).age < (thing as FarmAnimal).ageWhenMature) || Game1.currentLocation.isCropAtTile((int)cursorLoc.X, (int)cursorLoc.Y) || thing is IndoorPot)
                 responses.Add(new Response("ModThis_Wizard_Questions_Grow", Helper.Translation.Get("grow")));
 
             if(thing is FarmAnimal)
@@ -125,7 +123,7 @@ namespace ModThis
                     return (location as Farm).Animals.Pairs.FirstOrDefault(f => f.Value.GetCursorPetBoundingBox().Contains(new Point((int)cursorLoc.X * 64, (int)cursorLoc.Y * 64))).Value;
 
             }
-            if(location is AnimalHouse)
+            if (location is AnimalHouse)
             {
                 Monitor.Log("is animal house");
 
@@ -138,6 +136,10 @@ namespace ModThis
                 if (character.getTileLocation() == cursorLoc)
                     return character;
             }
+
+            if(location is Farm && (location as Farm).buildings.FirstOrDefault(b => b.occupiesTile(cursorLoc)) != null)
+                    return (location as Farm).buildings.FirstOrDefault(b => b.occupiesTile(cursorLoc));
+
             return null;
         }
 
@@ -313,6 +315,11 @@ namespace ModThis
                     return;
                 }
             }
+            if (thing is Building)
+            {
+                Building building = (Game1.currentLocation as Farm).buildings.FirstOrDefault(b => b.occupiesTile(cursorLoc));
+                (Game1.currentLocation as Farm).buildings.Remove(thing as Building);
+            }
         }
         private void RenameThis()
         {
@@ -425,6 +432,14 @@ namespace ModThis
                     return;
                 }
             }
+            if (thing is Building)
+            {
+                Building building = (Game1.currentLocation as Farm).buildings.FirstOrDefault(b => b.occupiesTile(cursorLoc));
+                building.tileX.Value += (int)shiftV.X;
+                building.tileY.Value += (int)shiftV.Y;
+                (Game1.currentLocation as Farm).buildings.Remove(thing as Building);
+                (Game1.currentLocation as Farm).buildings.Add(building);
+            }
         }
         private void GrowThis()
         {
@@ -516,15 +531,33 @@ namespace ModThis
                     Monitor.Log($"Grew fruit tree");
                     return;
                 }
+                if (v.Value.getBoundingBox(v.Key).Intersects(tileRect) && v.Value is Bush && (v.Value as Bush).size == 3 && (v.Value as Bush).getAge() < 20)
+                {
+                    Bush bush = v.Value as Bush;
+                    bush.datePlanted.Value -= 20 - bush.getAge();
+                    Game1.currentLocation.terrainFeatures[v.Key] = bush;
+                    Game1.currentLocation.terrainFeatures[v.Key].loadSprite();
+
+                    Monitor.Log($"Grew tea bush tree");
+                    return;
+                }
             }
 
             foreach (KeyValuePair<Vector2, Object> v in Game1.currentLocation.objects.Pairs)
             {
-                if (v.Value.getBoundingBox(v.Key).Intersects(tileRect) && v.Value is IndoorPot && !(v.Value as IndoorPot).hoeDirt.Value.crop.fullyGrown)
+                if (v.Value.getBoundingBox(v.Key).Intersects(tileRect) && v.Value is IndoorPot && (v.Value as IndoorPot).hoeDirt.Value?.crop != null && !(v.Value as IndoorPot).hoeDirt.Value.crop.fullyGrown)
                 {
                     (v.Value as IndoorPot).hoeDirt.Value.crop.growCompletely();
 
                     Monitor.Log($"Grew pot crop");
+                    return;
+                }
+                if (v.Value.getBoundingBox(v.Key).Intersects(tileRect) && v.Value is IndoorPot && (v.Value as IndoorPot).bush.Value?.getAge() < 20)
+                {
+                    (v.Value as IndoorPot).bush.Value.datePlanted.Value -= 20 - (v.Value as IndoorPot).bush.Value.getAge();
+                    (v.Value as IndoorPot).bush.Value.loadSprite();
+
+                    Monitor.Log($"Grew pot bush");
                     return;
                 }
             }

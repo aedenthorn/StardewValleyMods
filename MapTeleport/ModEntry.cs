@@ -53,7 +53,7 @@ namespace MapTeleport
                             return;
                         }
                         Monitor.Log($"Teleporting to {c.name}, {co.mapName}, {co.x},{co.y}", LogLevel.Debug);
-                        Game1.activeClickableMenu.exitThisMenu(true);
+                        Game1.activeClickableMenu?.exitThisMenu(true);
                         Game1.warpFarmer(co.mapName, co.x, co.y, false);
                     }
                 }
