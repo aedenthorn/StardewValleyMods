@@ -80,7 +80,7 @@ namespace ModThis
             List<Response> responses = new List<Response>();
 
 
-            if (thing is Object && ((thing as Object).type.Equals("Crafting") || (thing as Object).Type.Equals("interactive")))
+            if (thing is Object && ((thing as Object).type.Equals("Crafting") || (thing as Object).Type.Equals("interactive")) && (!(thing is Chest) || !(thing as Chest).items.Any()))
                 responses.Add(new Response("ModThis_Wizard_Questions_Pickup", Helper.Translation.Get("pickup")));
 
             responses.Add(new Response("ModThis_Wizard_Questions_Remove", Helper.Translation.Get("remove")));
