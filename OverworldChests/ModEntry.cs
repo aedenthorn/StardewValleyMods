@@ -94,71 +94,55 @@ namespace OverworldChests
 
         private void RespawnChests()
         {
-            foreach(GameLocation l in Game1.locations)
+            Utility.ForAllLocations(delegate(GameLocation l)
             {
-                if (l is FarmHouse || l is Cabin || (!Config.AllowIndoorSpawns && !l.IsOutdoors) || !IsLocationAllowed(l))
-                    continue;
+                if (l is FarmHouse || (!Config.AllowIndoorSpawns && !l.IsOutdoors) || !IsLocationAllowed(l))
+                    return;
 
                 Monitor.Log($"Respawning chests in {l.name}");
-                int rem = 0;
-                for (int i = l.overlayObjects.Keys.Count - 1; i >= 0; i--)
+                IList<Vector2> objectsToRemovePos = l.overlayObjects
+                    .Where(o => o.Value is Chest && o.Value.Name.StartsWith(namePrefix))
+                    .Select(o => o.Key)
+                    .ToList();
+                int rem = objectsToRemovePos.Count;
+                foreach (var pos in objectsToRemovePos)
                 {
-                    Object obj = l.overlayObjects[l.overlayObjects.Keys.ToArray()[i]];
-                    if (obj is Chest && obj.Name.StartsWith(namePrefix))
-                    {
-                        rem++;
-                        l.overlayObjects.Remove(l.overlayObjects.Keys.ToArray()[i]);
-                    }
+                    l.overlayObjects.Remove(pos);
                 }
                 Monitor.Log($"Removed {rem} chests");
-                List<Vector2> freeTiles = new List<Vector2>();
-                for (int x = 0; x < l.map.Layers[0].LayerWidth; x++)
-                {
-                    for (int y = 0; y < l.map.Layers[0].LayerHeight; y++)
-                    {
-                        bool water = false;
-                        try { water = l.waterTiles[x, y]; } catch { }
-                        if (!l.isTileOccupiedForPlacement(new Vector2(x, y)) && !water && !l.isCropAtTile(x, y))
-                            freeTiles.Add(new Vector2(x, y));
-
-                    }
-                }
-                Monitor.Log($"Got {freeTiles.Count} free tiles");
-
-                // shuffle list
-                int n = freeTiles.Count;
-                while (n > 1)
-                {
-                    n--;
-                    int k = myRand.Next(n + 1);
-                    var value = freeTiles[k];
-                    freeTiles[k] = freeTiles[n];
-                    freeTiles[n] = value;
-                }
-                int maxChests = Math.Min(freeTiles.Count, (int)Math.Floor(freeTiles.Count * Config.ChestDensity) + (Config.RoundNumberOfChestsUp ? 1 : 0));
+                int width = l.map.Layers[0].LayerWidth;
+                int height = l.map.Layers[0].LayerHeight;
+                bool IsValid(Vector2 v) => !l.isWaterTile((int)v.X, (int)v.Y) && !l.isTileOccupiedForPlacement(v) && !l.isCropAtTile((int)v.X, (int)v.Y);
+                bool IsValidIndex(int i) => IsValid(new Vector2(i % width, i / width));
+                int freeTiles = Enumerable.Range(0, width * height).Count(IsValidIndex);
+                Monitor.Log($"Got {freeTiles} free tiles");
+                int maxChests = Math.Min(freeTiles, (int)Math.Floor(freeTiles * Config.ChestDensity) + (Config.RoundNumberOfChestsUp ? 1 : 0));
                 Monitor.Log($"Max chests: {maxChests}");
-
-                for (int i = 0; i < maxChests; i++)
+                while (maxChests > 0)
                 {
+                    Vector2 freeTile = l.getRandomTile();
+                    if (!IsValid(freeTile))
+                        continue;
                     Chest chest;
                     if (advancedLootFrameworkApi == null)
                     {
                         //Monitor.Log($"Adding ordinary chest");
-                        chest = new Chest(0, new List<Item>() { MineShaft.getTreasureRoomItem() }, freeTiles[i], false, 0);
+                        chest = new Chest(0, new List<Item>() { MineShaft.getTreasureRoomItem() }, freeTile, false, 0);
                     }
                     else
                     {
                         double fraction = Math.Pow(myRand.NextDouble(), 1 / Config.RarityChance);
                         int level = (int)Math.Ceiling(fraction * Config.Mult);
                         //Monitor.Log($"Adding expanded chest of value {level} to {l.name}");
-                        chest = advancedLootFrameworkApi.MakeChest(treasuresList, Config.MaxItems, Config.MinItemValue, Config.MaxItemValue, level, Config.IncreaseRate, Config.ItemsBaseMaxValue, Config.CoinBaseMin, Config.CoinBaseMax, freeTiles[i]);
+                        chest = advancedLootFrameworkApi.MakeChest(treasuresList, Config.MaxItems, Config.MinItemValue, Config.MaxItemValue, level, Config.IncreaseRate, Config.ItemsBaseMaxValue, Config.CoinBaseMin, Config.CoinBaseMax, freeTile);
                         chest.playerChoiceColor.Value = MakeTint(fraction);
                     }
                     chest.name = namePrefix;
-                    chest.resetLidFrame();
-                    l.overlayObjects[freeTiles[i]] = chest;
+                    chest.modData["Pathoschild.ChestsAnywhere/IsIgnored"] = "true";
+                    l.overlayObjects[freeTile] = chest;
+                    maxChests--;
                 }
-            }
+            });
         }
 
         private bool IsLocationAllowed(GameLocation l)
