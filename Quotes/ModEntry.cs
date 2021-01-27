@@ -9,10 +9,10 @@ using System.IO;
 namespace Quotes
 {
     public class ModEntry : Mod 
-	{
-		public static ModEntry context;
+    {
+        public static ModEntry context;
 
-		public static ModConfig Config;
+        public static ModConfig Config;
         private Random myRand;
 
         public static string[] quotestrings = new string[0];
@@ -33,13 +33,13 @@ namespace Quotes
         /// <summary>The mod entry point, called after the mod is first loaded.</summary>
         /// <param name="helper">Provides simplified APIs for writing mods.</param>
         public override void Entry(IModHelper helper)
-		{
-			context = this;
-			Config = Helper.ReadConfig<ModConfig>();
-			if (!Config.EnableMod)
-				return;
+        {
+            context = this;
+            Config = Helper.ReadConfig<ModConfig>();
+            if (!Config.EnableMod)
+                return;
 
-			myRand = new Random(Guid.NewGuid().GetHashCode());
+            myRand = new Random(Guid.NewGuid().GetHashCode());
 
             LoadQuotes();
 

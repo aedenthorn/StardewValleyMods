@@ -1,24 +1,24 @@
 ﻿{
-	"addMaps": [
-		{
-			"name": "UnderwaterBeach",
-			"file": "assets/UnderwaterBeach.tbin"
-		},
-		{
-			"name": "UnderwaterMountain",
-			"file": "assets/UnderwaterMountain.tbin"
-		},
-		{
-			"name": "ScubaCave",
-			"file": "assets/Cave.tbin"
-		},
-		{
-			"name": "ScubaCrystalCave",
-			"file": "assets/CrystalCaveDark.tbin"
-		},
-		{
-			"name": "ScubaAbigailCave",
-			"file": "assets/Abigail.tbin"
-		}
-	]
+    "addMaps": [
+        {
+            "name": "UnderwaterBeach",
+            "file": "assets/UnderwaterBeach.tbin"
+        },
+        {
+            "name": "UnderwaterMountain",
+            "file": "assets/UnderwaterMountain.tbin"
+        },
+        {
+            "name": "ScubaCave",
+            "file": "assets/Cave.tbin"
+        },
+        {
+            "name": "ScubaCrystalCave",
+            "file": "assets/CrystalCaveDark.tbin"
+        },
+        {
+            "name": "ScubaAbigailCave",
+            "file": "assets/Abigail.tbin"
+        }
+    ]
 }

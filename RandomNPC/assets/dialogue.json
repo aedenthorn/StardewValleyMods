@@ -1,9 +1,9 @@
 {
   "introductions": [
-	// age/manner/anxiety/optimism/gender/datable/traits/string
-	
-	// introductions
-	
+    // age/manner/anxiety/optimism/gender/datable/traits/string
+    
+    // introductions
+    
     "adult/polite|neutral/outgoing|neutral/any/positive/any/any/Oh, hello. Nice to meet you!$h",
     "teen/polite|neutral/outgoing/any/positive/any/any/Oh, hi! Nice to meet you!$h",
     "any/polite|neutral/outgoing|neutral/any/neutral/any/any/Hello, there! Nice to meet you.$h",
@@ -20,7 +20,7 @@
 
   ],
   "questions": [
-	// age/manner/anxiety/optimism/gender/datable/traits/string
+    // age/manner/anxiety/optimism/gender/datable/traits/string
     "any/any/any/any/any/any/any/What can I do for you?",
   ],
   "farmer_questions": [
@@ -32,7 +32,7 @@
     "Nevermind.",
   ],
   "rejections": [
-	// age/manner/anxiety/optimism/gender/datable/traits/string
+    // age/manner/anxiety/optimism/gender/datable/traits/string
     "adult/rude/any/any/any/any/any/Mind your own business.",
     "teen/rude/any/any/any/any/any/Mind your own bee's wax.",
     "any/neutral/any/any/any/any/any/I don't know you well enough for that.",
@@ -45,7 +45,7 @@
   ],
   
   "manner": [
-	// age/manner/anxiety/optimism/gender/datable/traits/string
+    // age/manner/anxiety/optimism/gender/datable/traits/string
     "adult/polite/any/neutral/any/any/any/I'm generally polite",
     "teen/polite/any/neutral/any/any/any/I'm polite",
     "adult/polite/any/positive/any/any/any/I'm pretty polite",
@@ -68,10 +68,10 @@
     "teen/neutral/any/negative/any/any/any/I'm kinda dull",
   ],
   "anxiety": [
-	// age/manner/anxiety/optimism/gender/datable/any/traits/string
+    // age/manner/anxiety/optimism/gender/datable/any/traits/string
 
-	// shy
-	
+    // shy
+    
     "adult/neutral/shy/neutral/any/any/any/I'm introverted",
     "teen/neutral/shy/neutral/any/any/any/I keep to myself",
     "adult/neutral/shy/positive/any/any/any/I like to be alone",
@@ -93,7 +93,7 @@
     "adult/rude/shy/negative/any/any/any/I hate crowds",
     "teen/rude/shy/negative/any/any/any/I totally can't deal with crowds and crowds of people",
 
-	// outgoing
+    // outgoing
 
     "adult/neutral/outgoing/neutral/any/any/any/I'm an extrovert",
     "teen/neutral/outgoing/neutral/any/any/any/I'm an outgoing person",
@@ -116,7 +116,7 @@
     "adult/rude/outgoing/negative/any/any/any/I hate being alone",
     "teen/rude/outgoing/negative/any/any/any/I totally hate being alone",
 
-	// neutral
+    // neutral
 
     "adult/neutral/neutral/neutral/any/any/any/I'm okay being alone or with other people",
     "teen/neutral/neutral/neutral/any/any/any/I'm okay all by myself but sometimes I like being around other people",
@@ -142,9 +142,9 @@
 
   ],
   "optimism": [
-	// age/manner/anxiety/optimism/gender/datable/any/traits/string
-	// positive
-	
+    // age/manner/anxiety/optimism/gender/datable/any/traits/string
+    // positive
+    
     "adult/neutral/any/positive/any/any/any/I'm a positive sort of person",
     "teen/neutral/any/positive/any/any/any/I'm pretty positive",
     "adult/polite/any/positive/any/any/any/I'm a generally positive sort of person",
@@ -152,7 +152,7 @@
     "adult/rude/any/positive/any/any/any/I always look on the bright side",
     "teen/rude/any/positive/any/any/any/I always try to see the good in things",
 
-	// negative
+    // negative
 
     "adult/neutral/any/negative/any/any/any/I'm a negative sort of person",
     "teen/neutral/any/negative/any/any/any/I'm pretty negative",
@@ -161,7 +161,7 @@
     "adult/rude/any/negative/any/any/any/I mostly see the bad side of things",
     "teen/rude/any/negative/any/any/any/I always obsess over my problems",
 
-	// neutral
+    // neutral
 
     "adult/neutral/any/neutral/any/any/any/I'm a neutral sort of person",
     "teen/neutral/any/neutral/any/any/any/I'm pretty neutral",
@@ -177,34 +177,34 @@
     "teen/any/any/any/any/any/any/Today I was going to visit @ in the morning and # in the afternoon.",
   ],
   
-	"places": {
-		"ArchaeologyHouse": [
-			"any/any/any/any/any/any/any/the library",
-		],
+    "places": {
+        "ArchaeologyHouse": [
+            "any/any/any/any/any/any/any/the library",
+        ],
 
-		"Beach": [
-			"any/any/any/any/any/any/any/the beach",
-		],
+        "Beach": [
+            "any/any/any/any/any/any/any/the beach",
+        ],
 
-		"SeedShop": [
-			"any/any/any/any/any/any/any/the general store",
-		],
+        "SeedShop": [
+            "any/any/any/any/any/any/any/the general store",
+        ],
 
-		"Saloon": [
-			"any/any/any/any/any/any/any/the saloon",
-		],
+        "Saloon": [
+            "any/any/any/any/any/any/any/the saloon",
+        ],
 
-		"Town": [
-			"any/any/any/any/any/any/any/the town",
-		],
+        "Town": [
+            "any/any/any/any/any/any/any/the town",
+        ],
 
-		"Mountain": [
-			"any/any/any/any/any/any/any/the mountain",
-		],
-	},  
+        "Mountain": [
+            "any/any/any/any/any/any/any/the mountain",
+        ],
+    },  
 
   "advice": [
-	// age/manner/anxiety/optimism/gender/datable/any/traits/string
+    // age/manner/anxiety/optimism/gender/datable/any/traits/string
     "any/rude/any/positive/any/any/any/Ain't nothin' sexier than creativity.",
     "any/rude/any/positive/any/any/any/If they don't find you handsome, they should at least find you handy.", // Red Green
     "any/rude/any/any/any/any/any/When in doubt, figure it out.",
@@ -235,129 +235,129 @@
     "any/rude/any/any/any/any/any/The early bird gets the worm, but the second mouse gets the cheese.", // Steven Wright  
   ],
 
-	"quiz_types": {
-		"where": [
-			"any/any/any/any/any/any/any/Can you tell me where $who lives?",
-		],
-		"when": [
-			"any/any/any/any/any/any/any/Can you tell me when $where $openclose?|opens|closes|At $time|AM|PM",
-		],
-		"howmuch": [
-			"any/any/any/any/any/any/any/Can you tell me how much $what cost at $where?|They cost $gold gold.",
-		],
-		"who":[
-			"any/any/any/any/any/any/any/Can you tell me who is the $what in Stardew Valley?|$who is the $what in Stardew Valley.",
-		],
-		"quest":[ // criteria/request|answerYes|answerNo|responseY|responseN|reactionComplete
-			"any/polite/any/any/any/any/any/Would you be able to bring me a $what?|Sure I can!|Sorry, I can't!|I appreciate it!|Oh, well, that's okay.",
-			"any/neutral/any/any/any/any/any/Could you bring me a $what?|Sure I can!|Sorry, I can't!|Thanks!|Oh, well, never mind then.",
-			"any/rude/any/any/any/any/any/Can you get me a $what?|Sure I can!|Sorry, I can't!|Thanks!|Oh, well, whatever.",
-		],
-	},
-	"quiz_where_answers": [
-		"Caroline|In the general store.",
-		"Pierre|In the general store.",
-		"Abigail|In the general store.",
-		"Robin|In the carpenter's shop.",
-		"Demetrius|In the carpenter's shop.",
-		"Elliott|In a hut on the beach.",
-		"Maru|In the carpenter's shop.",
-		"Sabrina|In the carpenter's shop basement.",
-		"Emily|With her sister, Haley.",
-		"Evelyn|In the centre of town.",
-		"George|In the centre of town.",
-		"Alex|With his grandparents.",
-		"Pam|In the trailer by the river.",
-		"Penny|In the trailer by the river.",
-		"Haley|With her sister, Emily.",
-		"Jodi|In the southwest corner of town.",
-		"Sam|In the southwest corner of town.",
-		"Shane|In the farm store.",
-		"Vincent|In the southwest corner of town.",
-		"Marnie|In the farm store.",
-		"Jas|In the farm store.",
-		"Sebastian|In the farm store.",
-		"Harvey|Above the clinic.",
-		"Krobus|In the sewer.",
-		"Sandy|In the desert.",
-	],
-	"quiz_when_answers": [
-		"the clinic|9|15",
-		"the general store|9|17",
-		"the animal store|9|17",
-		"the saloon|12|24",
-		"the library|9|17",
-	],	
-	"quiz_howmuch_places": [
-		"the general store",
-		"Joja Mart",
-		"the animal shop",
-		"the blacksmith",
-		"the saloon",
-	],
-	"quiz_howmuch_items": [ // name|Pierre's|Joja|AnimalShop|Blacksmith|Saloon
-		"Jazz Seeds|30|37",
-		"Cauliflower Seeds|80|100",
-		"Bean Starters|60|75",
-		"Kale Seeds|70|87",
-		"Parsnip Seeds|20|25",
-		"Potato Seeds|50|62",
-		"Tulip Bulbs|20|25",
-		"Corn Seeds|150|187",
-		"Hops Starters|60|75",
-		"Pepper Seeds|40|50",
-		"Melon Seeds|80|100",
-		"Poppy Seeds|100|125",
-		"Radish Seeds|40|50",
-		"Spangle Seeds|50|62",
-		"Sunflower Seeds|200|125",
-		"Tomato Seeds|50|62",
-		"Wheat Seeds|10|12",
-		"Amaranth Seeds|70|87",
-		"Bok Choy Seeds|50|62",
-		"Cranberry Seeds|240|300",
-		"Eggplant Seeds|20|25",
-		"Fairy Seeds|200|250",
-		"Grape Starters|60|75",
-		"Pumpkin Seeds|100|125",
-		"Yam Seeds|60|75",
-	],
-	
-	"quiz_who_answers": [
-		"doctor|Harvey",
-		"carpenter|Robin",
-		"mayor|Lewis",
-		"blacksmith|Clint",
-		"museum curator|Gunther",
-		"nurse|Abigail",
-		"male bartender|Gus",
-		"female bartender|Emily",
-	],
-	"quiz_dont_know": "I don't know.",
+    "quiz_types": {
+        "where": [
+            "any/any/any/any/any/any/any/Can you tell me where $who lives?",
+        ],
+        "when": [
+            "any/any/any/any/any/any/any/Can you tell me when $where $openclose?|opens|closes|At $time|AM|PM",
+        ],
+        "howmuch": [
+            "any/any/any/any/any/any/any/Can you tell me how much $what cost at $where?|They cost $gold gold.",
+        ],
+        "who":[
+            "any/any/any/any/any/any/any/Can you tell me who is the $what in Stardew Valley?|$who is the $what in Stardew Valley.",
+        ],
+        "quest":[ // criteria/request|answerYes|answerNo|responseY|responseN|reactionComplete
+            "any/polite/any/any/any/any/any/Would you be able to bring me a $what?|Sure I can!|Sorry, I can't!|I appreciate it!|Oh, well, that's okay.",
+            "any/neutral/any/any/any/any/any/Could you bring me a $what?|Sure I can!|Sorry, I can't!|Thanks!|Oh, well, never mind then.",
+            "any/rude/any/any/any/any/any/Can you get me a $what?|Sure I can!|Sorry, I can't!|Thanks!|Oh, well, whatever.",
+        ],
+    },
+    "quiz_where_answers": [
+        "Caroline|In the general store.",
+        "Pierre|In the general store.",
+        "Abigail|In the general store.",
+        "Robin|In the carpenter's shop.",
+        "Demetrius|In the carpenter's shop.",
+        "Elliott|In a hut on the beach.",
+        "Maru|In the carpenter's shop.",
+        "Sabrina|In the carpenter's shop basement.",
+        "Emily|With her sister, Haley.",
+        "Evelyn|In the centre of town.",
+        "George|In the centre of town.",
+        "Alex|With his grandparents.",
+        "Pam|In the trailer by the river.",
+        "Penny|In the trailer by the river.",
+        "Haley|With her sister, Emily.",
+        "Jodi|In the southwest corner of town.",
+        "Sam|In the southwest corner of town.",
+        "Shane|In the farm store.",
+        "Vincent|In the southwest corner of town.",
+        "Marnie|In the farm store.",
+        "Jas|In the farm store.",
+        "Sebastian|In the farm store.",
+        "Harvey|Above the clinic.",
+        "Krobus|In the sewer.",
+        "Sandy|In the desert.",
+    ],
+    "quiz_when_answers": [
+        "the clinic|9|15",
+        "the general store|9|17",
+        "the animal store|9|17",
+        "the saloon|12|24",
+        "the library|9|17",
+    ],    
+    "quiz_howmuch_places": [
+        "the general store",
+        "Joja Mart",
+        "the animal shop",
+        "the blacksmith",
+        "the saloon",
+    ],
+    "quiz_howmuch_items": [ // name|Pierre's|Joja|AnimalShop|Blacksmith|Saloon
+        "Jazz Seeds|30|37",
+        "Cauliflower Seeds|80|100",
+        "Bean Starters|60|75",
+        "Kale Seeds|70|87",
+        "Parsnip Seeds|20|25",
+        "Potato Seeds|50|62",
+        "Tulip Bulbs|20|25",
+        "Corn Seeds|150|187",
+        "Hops Starters|60|75",
+        "Pepper Seeds|40|50",
+        "Melon Seeds|80|100",
+        "Poppy Seeds|100|125",
+        "Radish Seeds|40|50",
+        "Spangle Seeds|50|62",
+        "Sunflower Seeds|200|125",
+        "Tomato Seeds|50|62",
+        "Wheat Seeds|10|12",
+        "Amaranth Seeds|70|87",
+        "Bok Choy Seeds|50|62",
+        "Cranberry Seeds|240|300",
+        "Eggplant Seeds|20|25",
+        "Fairy Seeds|200|250",
+        "Grape Starters|60|75",
+        "Pumpkin Seeds|100|125",
+        "Yam Seeds|60|75",
+    ],
+    
+    "quiz_who_answers": [
+        "doctor|Harvey",
+        "carpenter|Robin",
+        "mayor|Lewis",
+        "blacksmith|Clint",
+        "museum curator|Gunther",
+        "nurse|Abigail",
+        "male bartender|Gus",
+        "female bartender|Emily",
+    ],
+    "quiz_dont_know": "I don't know.",
 
-	"quizRight": [
-		"any/polite/any/any/any/any/any/Thank you very much!$h",
-		"any/neutral/any/any/any/any/any/Thank you!$h",
-		"any/rude/any/any/any/any/any/Thanks!$h",
-	],
-	"quizWrong": [
-		"any/neutral/any/any/any/any/any/That doesn't sound right!$u",
-		"any/polite/any/any/any/any/any/I think you're mistaken!$u",
-		"any/rude/any/any/any/any/any/That's not right!$a",
-	],
-	"quizUnknown": [
-		"any/neutral/any/any/any/any/any/Oh well, I thought you might know.",
-		"any/polite/any/any/any/any/any/Well, thanks anyways.$u",
-		"any/rude/any/any/any/any/any/Oh, well never mind then.$u",
-	],
-	"quiz_quest": [
-		"any/polite/any/any/any/any/any/$name wants a $what|Bring $name a $what.|Thank you very much!$h",
-		"any/neutral/any/any/any/any/any/$name wants a $what|Bring $name a $what.|Thank you so much!$h",
-		"any/rude/any/any/any/any/any/$name wants a $what|Bring $name a $what.|Awesome, thanks!$h",
-	],
+    "quizRight": [
+        "any/polite/any/any/any/any/any/Thank you very much!$h",
+        "any/neutral/any/any/any/any/any/Thank you!$h",
+        "any/rude/any/any/any/any/any/Thanks!$h",
+    ],
+    "quizWrong": [
+        "any/neutral/any/any/any/any/any/That doesn't sound right!$u",
+        "any/polite/any/any/any/any/any/I think you're mistaken!$u",
+        "any/rude/any/any/any/any/any/That's not right!$a",
+    ],
+    "quizUnknown": [
+        "any/neutral/any/any/any/any/any/Oh well, I thought you might know.",
+        "any/polite/any/any/any/any/any/Well, thanks anyways.$u",
+        "any/rude/any/any/any/any/any/Oh, well never mind then.$u",
+    ],
+    "quiz_quest": [
+        "any/polite/any/any/any/any/any/$name wants a $what|Bring $name a $what.|Thank you very much!$h",
+        "any/neutral/any/any/any/any/any/$name wants a $what|Bring $name a $what.|Thank you so much!$h",
+        "any/rude/any/any/any/any/any/$name wants a $what|Bring $name a $what.|Awesome, thanks!$h",
+    ],
 
   "datable": [
-	// age/manner/anxiety/optimism/gender/datable/any/traits/yesstring^nostring
+    // age/manner/anxiety/optimism/gender/datable/any/traits/yesstring^nostring
     "any/any/any/any/any/any/any/I'm not seeing anyone at the moment.^I'm seeing someone at the moment, yes.",
   ],
 }

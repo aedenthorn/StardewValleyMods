@@ -6,19 +6,19 @@ using StardewValley.Menus;
 namespace MapTeleport
 {
     public class ModEntry : Mod 
-	{
-		public static ModEntry context;
+    {
+        public static ModEntry context;
 
-		public static ModConfig Config;
+        public static ModConfig Config;
         private CoordinatesList coordinates;
         private bool isSVE;
 
         public override void Entry(IModHelper helper)
-		{
+        {
             context = this;
-			Config = Helper.ReadConfig<ModConfig>();
-			if (!Config.EnableMod)
-				return;
+            Config = Helper.ReadConfig<ModConfig>();
+            if (!Config.EnableMod)
+                return;
 
             
             isSVE = Helper.ModRegistry.IsLoaded("FlashShifter.SVECode");

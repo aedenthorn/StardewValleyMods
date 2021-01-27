@@ -13,10 +13,10 @@ using WMPLib;
 namespace MapTeleport
 {
     public class ModEntry : Mod 
-	{
-		public static ModEntry context;
+    {
+        public static ModEntry context;
 
-		public static ModConfig Config;
+        public static ModConfig Config;
         private IMobilePhoneApi api;
         WindowsMediaPlayer Player;
 
@@ -43,11 +43,11 @@ namespace MapTeleport
         /// <summary>The mod entry point, called after the mod is first loaded.</summary>
         /// <param name="helper">Provides simplified APIs for writing mods.</param>
         public override void Entry(IModHelper helper)
-		{
+        {
             context = this;
-			Config = Helper.ReadConfig<ModConfig>();
-			if (!Config.EnableMod)
-				return;
+            Config = Helper.ReadConfig<ModConfig>();
+            if (!Config.EnableMod)
+                return;
 
             try
             {

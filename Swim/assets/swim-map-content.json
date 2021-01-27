@@ -1,222 +1,222 @@
 ﻿{
-	"maps":[
-		{
-			"Name":"UnderwaterBeach",
-			"Features":[
-				"SmolFishies",
-				"Crabs",
-				"OceanTreasure",
-				"OceanResources",
-				"Underwater"
-			],
-			"DiveLocations": [
-				{
-					"StartX":3,
-					"StartY":27,
-					"Width":4,
-					"Height":2,
-					"OtherMapName":"ScubaCrystalCave",
-					"OtherMapPos":{
+    "maps":[
+        {
+            "Name":"UnderwaterBeach",
+            "Features":[
+                "SmolFishies",
+                "Crabs",
+                "OceanTreasure",
+                "OceanResources",
+                "Underwater"
+            ],
+            "DiveLocations": [
+                {
+                    "StartX":3,
+                    "StartY":27,
+                    "Width":4,
+                    "Height":2,
+                    "OtherMapName":"ScubaCrystalCave",
+                    "OtherMapPos":{
                         "X":10,
                         "Y":12,
                     }
-				},
-				{
-					"OtherMapName":"Beach",
-				},
-			],
-		},
-		{
-			"Name":"Beach",
-			"DiveLocations": [
-				{
-					"OtherMapName":"UnderwaterBeach",
-				},
-			],
-			"EdgeWarps":[
-				{
-					"ThisMapEdge":"Top",
-					"FirstTile": 57,
-					"LastTile": 62,
-					"DestinationHorizontal": true,
-					"OtherMapIndex": 109,
-					"OtherMapFirstTile": 88,
-					"OtherMapLastTile": 92,
-					"OtherMapName":"Town",
-				},
-				{
-					"ThisMapEdge":"Right",
-					"FirstTile": 14,
-					"LastTile": 26,
-					"DestinationHorizontal": false,
-					"OtherMapIndex": 119,
-					"OtherMapFirstTile": 106,
-					"OtherMapLastTile": 119,
-					"OtherMapName":"Beach",
-				},
-			]
-		},
-		{
-			"Name":"ScubaCrystalCave",
-			"Features":[
-				"WaterTiles",
-			],
-			"DiveLocations": [
-				{
-					"OtherMapName":"UnderwaterBeach",
-					"OtherMapPos":{
+                },
+                {
+                    "OtherMapName":"Beach",
+                },
+            ],
+        },
+        {
+            "Name":"Beach",
+            "DiveLocations": [
+                {
+                    "OtherMapName":"UnderwaterBeach",
+                },
+            ],
+            "EdgeWarps":[
+                {
+                    "ThisMapEdge":"Top",
+                    "FirstTile": 57,
+                    "LastTile": 62,
+                    "DestinationHorizontal": true,
+                    "OtherMapIndex": 109,
+                    "OtherMapFirstTile": 88,
+                    "OtherMapLastTile": 92,
+                    "OtherMapName":"Town",
+                },
+                {
+                    "ThisMapEdge":"Right",
+                    "FirstTile": 14,
+                    "LastTile": 26,
+                    "DestinationHorizontal": false,
+                    "OtherMapIndex": 119,
+                    "OtherMapFirstTile": 106,
+                    "OtherMapLastTile": 119,
+                    "OtherMapName":"Beach",
+                },
+            ]
+        },
+        {
+            "Name":"ScubaCrystalCave",
+            "Features":[
+                "WaterTiles",
+            ],
+            "DiveLocations": [
+                {
+                    "OtherMapName":"UnderwaterBeach",
+                    "OtherMapPos":{
                         "X":5,
                         "Y":28,
                     }
                 },
-			],
-		},
-		{
-			"Name":"Forest",
-			"DiveLocations": [
-				{
-					"StartX":37,
-					"StartY":29,
-					"Width":3,
-					"Height":8,
-					"OtherMapName":"ScubaCave",
-					"OtherMapPos":{
+            ],
+        },
+        {
+            "Name":"Forest",
+            "DiveLocations": [
+                {
+                    "StartX":37,
+                    "StartY":29,
+                    "Width":3,
+                    "Height":8,
+                    "OtherMapName":"ScubaCave",
+                    "OtherMapPos":{
                         "X":9,
                         "Y":6,
                     }
                 },
-			],
-			"EdgeWarps":[
-				{
-					"ThisMapEdge":"Right",
-					"FirstTile": 39,
-					"LastTile": 48,
-					"DestinationHorizontal": false,
-					"OtherMapIndex": 0,
-					"OtherMapFirstTile": 96,
-					"OtherMapLastTile": 103,
-					"OtherMapName":"Town",
-				},
-				{
-					"ThisMapEdge":"Right",
-					"FirstTile": 106,
-					"LastTile": 119,
-					"DestinationHorizontal": false,
-					"OtherMapIndex": 0,
-					"OtherMapFirstTile": 14,
-					"OtherMapLastTile": 26,
-					"OtherMapName":"Beach",
-				},
-			]
-		},    
-		{
-			"Name":"ScubaCave",
-			"Features":[
-				"WaterTiles",
-			],
-			"DiveLocations": [
-				{
-					"OtherMapName":"Forest",
-					"OtherMapPos":{
+            ],
+            "EdgeWarps":[
+                {
+                    "ThisMapEdge":"Right",
+                    "FirstTile": 39,
+                    "LastTile": 48,
+                    "DestinationHorizontal": false,
+                    "OtherMapIndex": 0,
+                    "OtherMapFirstTile": 96,
+                    "OtherMapLastTile": 103,
+                    "OtherMapName":"Town",
+                },
+                {
+                    "ThisMapEdge":"Right",
+                    "FirstTile": 106,
+                    "LastTile": 119,
+                    "DestinationHorizontal": false,
+                    "OtherMapIndex": 0,
+                    "OtherMapFirstTile": 14,
+                    "OtherMapLastTile": 26,
+                    "OtherMapName":"Beach",
+                },
+            ]
+        },    
+        {
+            "Name":"ScubaCave",
+            "Features":[
+                "WaterTiles",
+            ],
+            "DiveLocations": [
+                {
+                    "OtherMapName":"Forest",
+                    "OtherMapPos":{
                         "X":38,
                         "Y":33,
                     }
                 },
-			],
-		},
-		{
-			"Name":"ScubaAbigailCave",
-			"DiveLocations": [
-				{
-					"OtherMapName":"UnderwaterMountain",
-					"OtherMapPos":{
+            ],
+        },
+        {
+            "Name":"ScubaAbigailCave",
+            "DiveLocations": [
+                {
+                    "OtherMapName":"UnderwaterMountain",
+                    "OtherMapPos":{
                         "X":48,
                         "Y":5,
                     }
                 },
-			],
-		},
-		{
-			"Name":"UnderwaterMountain",
-			"Features":[
-				"BigFishies",
-				"Minerals",
-				"Underwater"
-			],
-			"DiveLocations": [
-				{
-					"StartX":47,
-					"StartY":4,
-					"Width":2,
-					"Height":1,
-					"OtherMapName":"ScubaAbigailCave",
-					"OtherMapPos":{
+            ],
+        },
+        {
+            "Name":"UnderwaterMountain",
+            "Features":[
+                "BigFishies",
+                "Minerals",
+                "Underwater"
+            ],
+            "DiveLocations": [
+                {
+                    "StartX":47,
+                    "StartY":4,
+                    "Width":2,
+                    "Height":1,
+                    "OtherMapName":"ScubaAbigailCave",
+                    "OtherMapPos":{
                         "X":8,
                         "Y":9,
                     }
                 },
-				{
-					"OtherMapName":"Mountain",
+                {
+                    "OtherMapName":"Mountain",
                 },
-			],
-		},
-		{
-			"Name":"Mountain",
-			"Features":[
-				"FixWaterTiles"
-			],
-			"DiveLocations": [
-				{
-					"OtherMapName":"UnderwaterMountain",
+            ],
+        },
+        {
+            "Name":"Mountain",
+            "Features":[
+                "FixWaterTiles"
+            ],
+            "DiveLocations": [
+                {
+                    "OtherMapName":"UnderwaterMountain",
                 },
-			],
-			"EdgeWarps":[
-				{
-					"ThisMapEdge":"Bottom",
-					"FirstTile": 64,
-					"LastTile": 78,
-					"DestinationHorizontal": true,
-					"OtherMapIndex": 0,
-					"OtherMapFirstTile": 92,
-					"OtherMapLastTile": 96,
-					"OtherMapName":"Town",
-				},
-			],
-		},
-		{
-			"Name":"Town",
-			"EdgeWarps":[
-				{
-					"ThisMapEdge":"Bottom",
-					"FirstTile": 88,
-					"LastTile": 92,
-					"DestinationHorizontal": true,
-					"OtherMapIndex": 0,
-					"OtherMapFirstTile": 57,
-					"OtherMapLastTile": 62,
-					"OtherMapName":"Beach",
-				},
-				{
-					"ThisMapEdge":"Top",
-					"FirstTile": 92,
-					"LastTile": 96,
-					"DestinationHorizontal": true,
-					"OtherMapIndex": 40,
-					"OtherMapFirstTile": 64,
-					"OtherMapLastTile": 78,
-					"OtherMapName":"Mountain",
-				},
-				{
-					"ThisMapEdge":"Left",
-					"FirstTile": 96,
-					"LastTile": 103,
-					"DestinationHorizontal": false,
-					"OtherMapIndex": 119,
-					"OtherMapFirstTile": 39,
-					"OtherMapLastTile": 48,
-					"OtherMapName":"Town",
-				},
-			]
-		},
-	]
+            ],
+            "EdgeWarps":[
+                {
+                    "ThisMapEdge":"Bottom",
+                    "FirstTile": 64,
+                    "LastTile": 78,
+                    "DestinationHorizontal": true,
+                    "OtherMapIndex": 0,
+                    "OtherMapFirstTile": 92,
+                    "OtherMapLastTile": 96,
+                    "OtherMapName":"Town",
+                },
+            ],
+        },
+        {
+            "Name":"Town",
+            "EdgeWarps":[
+                {
+                    "ThisMapEdge":"Bottom",
+                    "FirstTile": 88,
+                    "LastTile": 92,
+                    "DestinationHorizontal": true,
+                    "OtherMapIndex": 0,
+                    "OtherMapFirstTile": 57,
+                    "OtherMapLastTile": 62,
+                    "OtherMapName":"Beach",
+                },
+                {
+                    "ThisMapEdge":"Top",
+                    "FirstTile": 92,
+                    "LastTile": 96,
+                    "DestinationHorizontal": true,
+                    "OtherMapIndex": 40,
+                    "OtherMapFirstTile": 64,
+                    "OtherMapLastTile": 78,
+                    "OtherMapName":"Mountain",
+                },
+                {
+                    "ThisMapEdge":"Left",
+                    "FirstTile": 96,
+                    "LastTile": 103,
+                    "DestinationHorizontal": false,
+                    "OtherMapIndex": 119,
+                    "OtherMapFirstTile": 39,
+                    "OtherMapLastTile": 48,
+                    "OtherMapName":"Town",
+                },
+            ]
+        },
+    ]
 }

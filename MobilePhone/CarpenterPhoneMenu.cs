@@ -17,14 +17,14 @@ namespace MobilePhone
 
         public CarpenterPhoneMenu(bool magicalConstruction, Farmer farmer, IModHelper helper) : base(magicalConstruction)
         {
-			this.helper = helper;
-			exitFunction = OnExit;
+            this.helper = helper;
+            exitFunction = OnExit;
 
-		}
+        }
 
         private void OnExit()
         {
-			MobilePhoneCall.ShowMainCallDialogue(ModEntry.callingNPC);
+            MobilePhoneCall.ShowMainCallDialogue(ModEntry.callingNPC);
         }
     }
 }

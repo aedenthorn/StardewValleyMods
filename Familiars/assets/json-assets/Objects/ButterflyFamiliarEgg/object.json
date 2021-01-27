@@ -8,11 +8,11 @@
   "Price": 10000,
   "IsColored": false,
   "GiftTastes": {
-	"Hate": ["Alex", "Abigail", "Caroline", "Clint", "Demetrius", "Dwarf", "Elliott", "Evelyn", "George", "Gus", "Jodi", "Kent", "Krobus", "Lewis", "Linus", "Maru", "Pam", "Penny", "Pierre", "Robin", "Sam", "Sandy", "Shane", "Willy", "Wizard", "Vincent", "Emily", "Haley", "Harvey", "Jas", "Leah", "Marnie", "Sebastian"],
+    "Hate": ["Alex", "Abigail", "Caroline", "Clint", "Demetrius", "Dwarf", "Elliott", "Evelyn", "George", "Gus", "Jodi", "Kent", "Krobus", "Lewis", "Linus", "Maru", "Pam", "Penny", "Pierre", "Robin", "Sam", "Sandy", "Shane", "Willy", "Wizard", "Vincent", "Emily", "Haley", "Harvey", "Jas", "Leah", "Marnie", "Sebastian"],
   },
   "NameLocalization":
   {
-	// "es": "",
+    // "es": "",
     "ko": "나비 패밀리어 알",
     // "de": "",
     // "fr": "",
@@ -26,7 +26,7 @@
   },
   "DescriptionLocalization":
   {
-	// "es": "",
+    // "es": "",
     "ko": "당신의 나비 패밀리어를 부화시키세요.",
     // "de": "",
     // "fr": "",

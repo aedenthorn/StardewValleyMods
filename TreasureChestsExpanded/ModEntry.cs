@@ -12,10 +12,10 @@ using System.Collections.Generic;
 namespace TreasureChestsExpanded
 {
     public class ModEntry : Mod 
-	{
-		public static ModEntry context;
+    {
+        public static ModEntry context;
 
-		private static ModConfig Config;
+        private static ModConfig Config;
         private static Random myRand;
         private static IMonitor SMonitor;
         private static IModHelper SHelper;
@@ -23,11 +23,11 @@ namespace TreasureChestsExpanded
         public static IAdvancedLootFrameworkApi advancedLootFrameworkApi = null;
 
         public override void Entry(IModHelper helper)
-		{
+        {
             context = this;
-			Config = Helper.ReadConfig<ModConfig>();
-			if (!Config.EnableMod)
-				return;
+            Config = Helper.ReadConfig<ModConfig>();
+            if (!Config.EnableMod)
+                return;
 
             SMonitor = Monitor;
             SHelper = Helper;
@@ -36,13 +36,13 @@ namespace TreasureChestsExpanded
 
             Helper.Events.GameLoop.GameLaunched += GameLoop_GameLaunched;
 
-			var harmony = HarmonyInstance.Create(this.ModManifest.UniqueID);
+            var harmony = HarmonyInstance.Create(this.ModManifest.UniqueID);
 
-			harmony.Patch(
+            harmony.Patch(
                 original: AccessTools.Method(typeof(MineShaft), "addLevelChests"),
                 postfix: new HarmonyMethod(typeof(ModEntry), nameof(MineShaft_addLevelChests_postfix))
-			);
-		}
+            );
+        }
         private void GameLoop_GameLaunched(object sender, GameLaunchedEventArgs e)
         {
             advancedLootFrameworkApi = context.Helper.ModRegistry.GetApi<IAdvancedLootFrameworkApi>("aedenthorn.AdvancedLootFramework");

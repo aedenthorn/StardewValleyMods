@@ -1,5 +1,6 @@
 {
-    "welcome": "What do you want to do with {0}?",
+    "welcome": "What do you want to do with this {0}?",
+    "pickup": "Pick it up.",
     "remove": "Remove it.",
     "move": "Move it.",
     "take": "Take it.",

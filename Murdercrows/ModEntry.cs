@@ -15,10 +15,10 @@ using Object = StardewValley.Object;
 namespace Murdercrows
 {
     public class ModEntry : Mod 
-	{
-		public static ModEntry context;
+    {
+        public static ModEntry context;
 
-		public static ModConfig Config;
+        public static ModConfig Config;
         private Dictionary<string, MurderCrow> murderCrows = new Dictionary<string, MurderCrow>
         {
            {"Scarecrow", new MurderCrow("Scarecrow", 4, 10, 10, 391, "Cowboy_monsterDie","Cowboy_gunshot", true, false)},
@@ -52,11 +52,11 @@ namespace Murdercrows
         /// <summary>The mod entry point, called after the mod is first loaded.</summary>
         /// <param name="helper">Provides simplified APIs for writing mods.</param>
         public override void Entry(IModHelper helper)
-		{
-			context = this;
-			Config = Helper.ReadConfig<ModConfig>();
-			if (!Config.EnableMod)
-				return;
+        {
+            context = this;
+            Config = Helper.ReadConfig<ModConfig>();
+            if (!Config.EnableMod)
+                return;
 
             Helper.Events.GameLoop.GameLaunched += GameLoop_GameLaunched;
             Helper.Events.GameLoop.UpdateTicked += GameLoop_UpdateTicked;

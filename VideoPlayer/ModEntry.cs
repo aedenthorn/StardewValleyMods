@@ -12,8 +12,8 @@ using System.Reflection;
 namespace VideoPlayerMod
 {
     public class ModEntry : Mod
-	{
-		public static ModEntry context;
+    {
+        public static ModEntry context;
         public static ModConfig Config;
         public int currentTrack = 0;
         public VideoPlayer videoPlayer = new VideoPlayer();
@@ -30,11 +30,11 @@ namespace VideoPlayerMod
         private Vector2 screenSize;
 
         public override void Entry(IModHelper helper)
-		{
-			context = this;
-			Config = Helper.ReadConfig<ModConfig>();
-			if (!Config.EnableMod)
-				return;
+        {
+            context = this;
+            Config = Helper.ReadConfig<ModConfig>();
+            if (!Config.EnableMod)
+                return;
 
             string path = Path.Combine(Helper.DirectoryPath, "assets");
             if (!Directory.Exists(path))
