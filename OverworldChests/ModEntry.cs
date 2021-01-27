@@ -138,7 +138,6 @@ namespace OverworldChests
                         chest.playerChoiceColor.Value = MakeTint(fraction);
                     }
                     chest.name = namePrefix;
-                    chest.modData["Pathoschild.ChestsAnywhere/IsIgnored"] = "true";
                     l.overlayObjects[freeTile] = chest;
                     maxChests--;
                 }
