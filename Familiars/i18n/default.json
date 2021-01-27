@@ -1,10 +1,10 @@
 ﻿{
-	"familiar-hatched": "A {0} has hatched!",
-	"DinoFamiliar": "Dino Familiar",
-	"BatFamiliar": "Bat Familiar",
-	"DustSpriteFamiliar": "Dust Sprite Familiar",
-	"Junimo": "Junimo Familiar",
-	"ButterflyFamiliar": "Butterfly Familiar",
-	"butterfly-familiar": "Butterfly Familiar",
-	"chat-dino-familiar-egg": "{0} found a Dino Familiar Egg.",
+    "familiar-hatched": "A {0} has hatched!",
+    "DinoFamiliar": "Dino Familiar",
+    "BatFamiliar": "Bat Familiar",
+    "DustSpriteFamiliar": "Dust Sprite Familiar",
+    "Junimo": "Junimo Familiar",
+    "ButterflyFamiliar": "Butterfly Familiar",
+    "butterfly-familiar": "Butterfly Familiar",
+    "chat-dino-familiar-egg": "{0} found a Dino Familiar Egg.",
 }

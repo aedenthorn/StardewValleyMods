@@ -8,19 +8,19 @@ using System.IO;
 namespace UndergroundSecrets
 {
     public class ModEntry : Mod
-	{
+    {
 
-		public static ModEntry context;
+        public static ModEntry context;
 
-		internal static ModConfig Config;
+        internal static ModConfig Config;
         public static string tileSheetPath;
         internal static string tileSheetId = "z_underground_secrets";
         public static ITreasureChestsExpandedApi treasureChestsExpandedApi = null;
 
         public override void Entry(IModHelper helper)
-		{
-			context = this;
-			Config = this.Helper.ReadConfig<ModConfig>();
+        {
+            context = this;
+            Config = this.Helper.ReadConfig<ModConfig>();
             if (!Config.EnableMod)
                 return;
 
@@ -70,7 +70,7 @@ namespace UndergroundSecrets
                 prefix: new HarmonyMethod(typeof(UndergroundPatches), nameof(UndergroundPatches.MineShaft_addLevelChests_prefix))
             );
 
-		}
+        }
 
         private void GameLoop_GameLaunched(object sender, StardewModdingAPI.Events.GameLaunchedEventArgs e)
         {

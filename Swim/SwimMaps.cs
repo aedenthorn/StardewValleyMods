@@ -154,7 +154,7 @@ namespace Swim
                     int[] gems = { 4,6,8,10,12,14,40 };
                     int whichGem = gems[Game1.random.Next(gems.Length)];
                     l.overlayObjects[tile] = new StardewValley.Object(tile, whichGem, "Stone", true, false, false, false)
-				    {
+                    {
                         MinutesUntilReady = 5
 
                     };

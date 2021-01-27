@@ -1,230 +1,230 @@
 ﻿{
-	"clumps": [
-		{
-			"clumpDesc": "A dense piece of stone with copper in it.",
-			"debrisType": 14,
-			"failSounds": [
-				"clubhit",
-				"clank"
-			],
-			"hitSounds": [
-				"hammer"
-			],
-			"breakSounds": [
-				"boulderBreak"
-			],
-			"shake": 100,
-			"toolType": "pick",
-			"toolMinLevel": 1,
-			"tileWidth": 2,
-			"tileHeight": 2,
-			"spritePath": "assets\\copper.png",
-			"spriteType": "mod",
-			"spriteX": 0,
-			"spriteY": 0,
-			"minLevel": -1,
-			"maxLevel": -1,
-			"baseSpawnChance": 1,
-			"additionalChancePerLevel": 0.01,
-			"durability": 10,
-			"expType": "mining",
-			"exp": 25,
-			"dropItems": [
-				{
-					"itemIdOrName": "378",
-					"dropChance": 100,
-					"minAmount": 5,
-					"MaxAmount": 10
-				},
-				{
-					"itemIdOrName": "390",
-					"dropChance": 100,
-					"minAmount": 5,
-					"MaxAmount": 10
-				}
-			]
-		},
-		{
-			"clumpDesc": "A dense piece of stone with iron in it.",
-			"debrisType": 14,
-			"failSounds": [
-				"clubhit",
-				"clank"
-			],
-			"hitSounds": [
-				"hammer"
-			],
-			"breakSounds": [
-				"boulderBreak"
-			],
-			"shake": 100,
-			"toolType": "pick",
-			"toolMinLevel": 2,
-			"tileWidth": 2,
-			"tileHeight": 2,
-			"spritePath": "assets\\iron.png",
-			"spriteType": "mod",
-			"spriteX": 0,
-			"spriteY": 0,
-			"minLevel": -1,
-			"maxLevel": -1,
-			"baseSpawnChance": 0.5,
-			"additionalChancePerLevel": 0.01,
-			"durability": 12,
-			"expType": "mining",
-			"exp": 25,
-			"dropItems": [
-				{
-					"itemIdOrName": "380",
-					"dropChance": 100,
-					"minAmount": 5,
-					"MaxAmount": 10
-				},
-				{
-					"itemIdOrName": "390",
-					"dropChance": 100,
-					"minAmount": 5,
-					"MaxAmount": 10
-				}
-			]
-		},
-		{
-			"clumpDesc": "An extremely dense piece of stone with gold in it.",
-			"debrisType": 14,
-			"failSounds": [
-				"clubhit",
-				"clank"
-			],
-			"hitSounds": [
-				"hammer"
-			],
-			"breakSounds": [
-				"boulderBreak"
-			],
-			"shake": 100,
-			"toolType": "pick",
-			"toolMinLevel": 2,
-			"tileWidth": 2,
-			"tileHeight": 2,
-			"spritePath": "assets\\gold.png",
-			"spriteType": "mod",
-			"spriteX": 0,
-			"spriteY": 0,
-			"minLevel": -1,
-			"maxLevel": -1,
-			"baseSpawnChance": 0.1,
-			"additionalChancePerLevel": 0.01,
-			"durability": 15,
-			"expType": "mining",
-			"exp": 25,
-			"dropItems": [
-				{
-					"itemIdOrName": "384",
-					"dropChance": 100,
-					"minAmount": 5,
-					"MaxAmount": 10
-				},
-				{
-					"itemIdOrName": "390",
-					"dropChance": 100,
-					"minAmount": 5,
-					"MaxAmount": 10
-				}
-			]
-		},
-		{
-			"clumpDesc": "An extremely dense piece of stone with diamonds in it.",
-			"debrisType": 14,
-			"failSounds": [
-				"clubhit",
-				"clank"
-			],
-			"hitSounds": [
-				"hammer"
-			],
-			"breakSounds": [
-				"boulderBreak"
-			],
-			"shake": 100,
-			"toolType": "pick",
-			"toolMinLevel": 3,
-			"tileWidth": 2,
-			"tileHeight": 2,
-			"spritePath": "assets\\diamond.png",
-			"spriteType": "mod",
-			"spriteX": 0,
-			"spriteY": 0,
-			"minLevel": -1,
-			"maxLevel": -1,
-			"baseSpawnChance": 0.01,
-			"additionalChancePerLevel": 0.01,
-			"durability": 20,
-			"expType": "mining",
-			"exp": 25,
-			"dropItems": [
-				{
-					"itemIdOrName": "Diamond",
-					"dropChance": 100,
-					"minAmount": 3,
-					"MaxAmount": 6
-				},
-				{
-					"itemIdOrName": "390",
-					"dropChance": 100,
-					"minAmount": 5,
-					"MaxAmount": 10
-				}
-			]
-		},
-		{
-			"clumpDesc": "An extremely dense piece of stone with iridium in it.",
-			"debrisType": 14,
-			"failSounds": [
-				"clubhit",
-				"clank"
-			],
-			"hitSounds": [
-				"hammer"
-			],
-			"breakSounds": [
-				"boulderBreak"
-			],
-			"shake": 100,
-			"toolType": "pick",
-			"toolMinLevel": 3,
-			"tileWidth": 2,
-			"tileHeight": 2,
-			"spritePath": "Maps\\springobjects",
-			"spriteType": "game",
-			"spriteX": 352,
-			"spriteY": 400,
-			"minLevel": -1,
-			"maxLevel": -1,
-			"baseSpawnChance": 0.001,
-			"additionalChancePerLevel": 0.001,
-			"durability": 20,
-			"expType": "mining",
-			"exp": 25,
-			"dropItems": [
-				{
-					"itemIdOrName": "386",
-					"dropChance": 100,
-					"minAmount": 5,
-					"MaxAmount": 10
-				},
-				{
-					"itemIdOrName": "390",
-					"dropChance": 100,
-					"minAmount": 5,
-					"MaxAmount": 10
-				},
-				{
-					"itemIdOrName": "535",
-					"dropChance": 100,
-					"minAmount": 2,
-					"MaxAmount": 2
-				}
-			]
-		}
-	]
+    "clumps": [
+        {
+            "clumpDesc": "A dense piece of stone with copper in it.",
+            "debrisType": 14,
+            "failSounds": [
+                "clubhit",
+                "clank"
+            ],
+            "hitSounds": [
+                "hammer"
+            ],
+            "breakSounds": [
+                "boulderBreak"
+            ],
+            "shake": 100,
+            "toolType": "pick",
+            "toolMinLevel": 1,
+            "tileWidth": 2,
+            "tileHeight": 2,
+            "spritePath": "assets\\copper.png",
+            "spriteType": "mod",
+            "spriteX": 0,
+            "spriteY": 0,
+            "minLevel": -1,
+            "maxLevel": -1,
+            "baseSpawnChance": 1,
+            "additionalChancePerLevel": 0.01,
+            "durability": 10,
+            "expType": "mining",
+            "exp": 25,
+            "dropItems": [
+                {
+                    "itemIdOrName": "378",
+                    "dropChance": 100,
+                    "minAmount": 5,
+                    "MaxAmount": 10
+                },
+                {
+                    "itemIdOrName": "390",
+                    "dropChance": 100,
+                    "minAmount": 5,
+                    "MaxAmount": 10
+                }
+            ]
+        },
+        {
+            "clumpDesc": "A dense piece of stone with iron in it.",
+            "debrisType": 14,
+            "failSounds": [
+                "clubhit",
+                "clank"
+            ],
+            "hitSounds": [
+                "hammer"
+            ],
+            "breakSounds": [
+                "boulderBreak"
+            ],
+            "shake": 100,
+            "toolType": "pick",
+            "toolMinLevel": 2,
+            "tileWidth": 2,
+            "tileHeight": 2,
+            "spritePath": "assets\\iron.png",
+            "spriteType": "mod",
+            "spriteX": 0,
+            "spriteY": 0,
+            "minLevel": -1,
+            "maxLevel": -1,
+            "baseSpawnChance": 0.5,
+            "additionalChancePerLevel": 0.01,
+            "durability": 12,
+            "expType": "mining",
+            "exp": 25,
+            "dropItems": [
+                {
+                    "itemIdOrName": "380",
+                    "dropChance": 100,
+                    "minAmount": 5,
+                    "MaxAmount": 10
+                },
+                {
+                    "itemIdOrName": "390",
+                    "dropChance": 100,
+                    "minAmount": 5,
+                    "MaxAmount": 10
+                }
+            ]
+        },
+        {
+            "clumpDesc": "An extremely dense piece of stone with gold in it.",
+            "debrisType": 14,
+            "failSounds": [
+                "clubhit",
+                "clank"
+            ],
+            "hitSounds": [
+                "hammer"
+            ],
+            "breakSounds": [
+                "boulderBreak"
+            ],
+            "shake": 100,
+            "toolType": "pick",
+            "toolMinLevel": 2,
+            "tileWidth": 2,
+            "tileHeight": 2,
+            "spritePath": "assets\\gold.png",
+            "spriteType": "mod",
+            "spriteX": 0,
+            "spriteY": 0,
+            "minLevel": -1,
+            "maxLevel": -1,
+            "baseSpawnChance": 0.1,
+            "additionalChancePerLevel": 0.01,
+            "durability": 15,
+            "expType": "mining",
+            "exp": 25,
+            "dropItems": [
+                {
+                    "itemIdOrName": "384",
+                    "dropChance": 100,
+                    "minAmount": 5,
+                    "MaxAmount": 10
+                },
+                {
+                    "itemIdOrName": "390",
+                    "dropChance": 100,
+                    "minAmount": 5,
+                    "MaxAmount": 10
+                }
+            ]
+        },
+        {
+            "clumpDesc": "An extremely dense piece of stone with diamonds in it.",
+            "debrisType": 14,
+            "failSounds": [
+                "clubhit",
+                "clank"
+            ],
+            "hitSounds": [
+                "hammer"
+            ],
+            "breakSounds": [
+                "boulderBreak"
+            ],
+            "shake": 100,
+            "toolType": "pick",
+            "toolMinLevel": 3,
+            "tileWidth": 2,
+            "tileHeight": 2,
+            "spritePath": "assets\\diamond.png",
+            "spriteType": "mod",
+            "spriteX": 0,
+            "spriteY": 0,
+            "minLevel": -1,
+            "maxLevel": -1,
+            "baseSpawnChance": 0.01,
+            "additionalChancePerLevel": 0.01,
+            "durability": 20,
+            "expType": "mining",
+            "exp": 25,
+            "dropItems": [
+                {
+                    "itemIdOrName": "Diamond",
+                    "dropChance": 100,
+                    "minAmount": 3,
+                    "MaxAmount": 6
+                },
+                {
+                    "itemIdOrName": "390",
+                    "dropChance": 100,
+                    "minAmount": 5,
+                    "MaxAmount": 10
+                }
+            ]
+        },
+        {
+            "clumpDesc": "An extremely dense piece of stone with iridium in it.",
+            "debrisType": 14,
+            "failSounds": [
+                "clubhit",
+                "clank"
+            ],
+            "hitSounds": [
+                "hammer"
+            ],
+            "breakSounds": [
+                "boulderBreak"
+            ],
+            "shake": 100,
+            "toolType": "pick",
+            "toolMinLevel": 3,
+            "tileWidth": 2,
+            "tileHeight": 2,
+            "spritePath": "Maps\\springobjects",
+            "spriteType": "game",
+            "spriteX": 352,
+            "spriteY": 400,
+            "minLevel": -1,
+            "maxLevel": -1,
+            "baseSpawnChance": 0.001,
+            "additionalChancePerLevel": 0.001,
+            "durability": 20,
+            "expType": "mining",
+            "exp": 25,
+            "dropItems": [
+                {
+                    "itemIdOrName": "386",
+                    "dropChance": 100,
+                    "minAmount": 5,
+                    "MaxAmount": 10
+                },
+                {
+                    "itemIdOrName": "390",
+                    "dropChance": 100,
+                    "minAmount": 5,
+                    "MaxAmount": 10
+                },
+                {
+                    "itemIdOrName": "535",
+                    "dropChance": 100,
+                    "minAmount": 2,
+                    "MaxAmount": 2
+                }
+            ]
+        }
+    ]
 }

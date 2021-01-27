@@ -17,19 +17,19 @@ using System.Threading;
 namespace BiggerMineFloors
 {
     public class ModEntry : Mod 
-	{
-		public static ModEntry context;
+    {
+        public static ModEntry context;
 
-		public static ModConfig Config;
+        public static ModConfig Config;
 
         /// <summary>The mod entry point, called after the mod is first loaded.</summary>
         /// <param name="helper">Provides simplified APIs for writing mods.</param>
         public override void Entry(IModHelper helper)
-		{
-			context = this;
-			Config = Helper.ReadConfig<ModConfig>();
-			if (!Config.EnableMod)
-				return;
+        {
+            context = this;
+            Config = Helper.ReadConfig<ModConfig>();
+            if (!Config.EnableMod)
+                return;
 
             var harmony = HarmonyInstance.Create(this.ModManifest.UniqueID);
 
@@ -929,12 +929,12 @@ namespace BiggerMineFloors
         private void ResizeMap(ref Map map)
         {
             int mult = Config.FloorSizeMult;
-			Monitor.Log($"Multiplying map size by {mult}x");
-			Point newSize = new Point(map.Layers[0].LayerWidth * mult, map.Layers[0].LayerHeight * mult);
+            Monitor.Log($"Multiplying map size by {mult}x");
+            Point newSize = new Point(map.Layers[0].LayerWidth * mult, map.Layers[0].LayerHeight * mult);
             Monitor.Log($"old size {map.Layers[0].LayerWidth},{map.Layers[0].LayerHeight} new size {newSize.X},{newSize.Y}");
-			for (int i = 0; i < map.Layers.Count; i++)
-			{
-				FieldRefAccess<Layer, Size>(map.Layers[i], "m_layerSize") = new Size(newSize.X, newSize.Y);
+            for (int i = 0; i < map.Layers.Count; i++)
+            {
+                FieldRefAccess<Layer, Size>(map.Layers[i], "m_layerSize") = new Size(newSize.X, newSize.Y);
                 Tile[,] tiles = FieldRefAccess<Layer, Tile[,]>(map.Layers[i], "m_tiles");
 
                 Tile[,] newTiles = new Tile[newSize.X, newSize.Y];
@@ -947,8 +947,8 @@ namespace BiggerMineFloors
                 }
 
                 FieldRefAccess<Layer, Tile[,]>(map.Layers[i], "m_tiles") = newTiles;
-				FieldRefAccess<Layer, TileArray>(map.Layers[i], "m_tileArray") = new TileArray(map.Layers[i], newTiles);
-			}
+                FieldRefAccess<Layer, TileArray>(map.Layers[i], "m_tileArray") = new TileArray(map.Layers[i], newTiles);
+            }
             Monitor.Log($"map new size {map.Layers[0].LayerWidth},{map.Layers[0].LayerHeight}");
         }
     }

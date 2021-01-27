@@ -13,34 +13,34 @@ using System.Reflection.Emit;
 namespace TrashCanReactions
 {
     public class ModEntry : Mod
-	{
+    {
 
-		public static ModConfig Config;
+        public static ModConfig Config;
         private static IMonitor PMonitor;
         private static IModHelper PHelper;
 
         public override void Entry(IModHelper helper)
-		{
-			Config = Helper.ReadConfig<ModConfig>();
+        {
+            Config = Helper.ReadConfig<ModConfig>();
 
-			if (!Config.Enabled)
-				return;
+            if (!Config.Enabled)
+                return;
 
-			PMonitor = Monitor;
-			PHelper = Helper;
+            PMonitor = Monitor;
+            PHelper = Helper;
 
-			var harmony = HarmonyInstance.Create(this.ModManifest.UniqueID);
+            var harmony = HarmonyInstance.Create(this.ModManifest.UniqueID);
 
-			harmony.Patch(
-			    original: AccessTools.Method(typeof(Town), nameof(Town.checkAction)),
-			    transpiler: new HarmonyMethod(typeof(ModEntry), nameof(Town_checkAction_transpiler))
-			);
+            harmony.Patch(
+                original: AccessTools.Method(typeof(Town), nameof(Town.checkAction)),
+                transpiler: new HarmonyMethod(typeof(ModEntry), nameof(Town_checkAction_transpiler))
+            );
 
-			harmony.Patch(
-			    original: AccessTools.Method(typeof(Utility), nameof(Utility.isThereAFarmerOrCharacterWithinDistance)),
-			    postfix: new HarmonyMethod(typeof(ModEntry), nameof(Utility_isThereAFarmerOrCharacterWithinDistance_postfix))
-			);
-		}
+            harmony.Patch(
+                original: AccessTools.Method(typeof(Utility), nameof(Utility.isThereAFarmerOrCharacterWithinDistance)),
+                postfix: new HarmonyMethod(typeof(ModEntry), nameof(Utility_isThereAFarmerOrCharacterWithinDistance_postfix))
+            );
+        }
 
         public static void Utility_isThereAFarmerOrCharacterWithinDistance_postfix(ref Character __result, Vector2 tileLocation, int tilesAway, GameLocation environment)
         {

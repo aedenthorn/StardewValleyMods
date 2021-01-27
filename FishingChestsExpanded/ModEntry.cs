@@ -10,28 +10,28 @@ using System.Reflection;
 namespace FishingChestsExpanded
 {
     public class ModEntry : Mod 
-	{
-		public static ModEntry context;
+    {
+        public static ModEntry context;
 
-		private static ModConfig Config;
+        private static ModConfig Config;
         private static IMonitor SMonitor;
         private static IModHelper SHelper;
         private static List<object> treasuresList = new List<object>();
         private static IAdvancedLootFrameworkApi advancedLootFrameworkApi;
 
         public override void Entry(IModHelper helper)
-		{
+        {
             context = this;
-			Config = Helper.ReadConfig<ModConfig>();
-			if (!Config.EnableMod)
-				return;
+            Config = Helper.ReadConfig<ModConfig>();
+            if (!Config.EnableMod)
+                return;
 
             SMonitor = Monitor;
             SHelper = Helper;
 
             Helper.Events.GameLoop.GameLaunched += GameLoop_GameLaunched;
 
-			var harmony = HarmonyInstance.Create(this.ModManifest.UniqueID);
+            var harmony = HarmonyInstance.Create(this.ModManifest.UniqueID);
 
             ConstructorInfo ci = typeof(ItemGrabMenu).GetConstructor(new Type[] { typeof(IList<Item>), typeof(object) });
             harmony.Patch(
@@ -95,5 +95,5 @@ namespace FishingChestsExpanded
             Game1.player.Money += coins;
             SMonitor.Log($"chest contains {coins} gold");
         }
-	}
+    }
 }

@@ -12,33 +12,33 @@ using Object = StardewValley.Object;
 namespace AdvancedLootFramework
 {
     public class ModEntry : Mod 
-	{
-		public static ModEntry context;
-		private static ModConfig Config;
+    {
+        public static ModEntry context;
+        private static ModConfig Config;
         private static Random myRand;
         private static IMonitor SMonitor;
         private static IModHelper SHelper;
 
         public override void Entry(IModHelper helper)
-		{
+        {
             context = this;
-			Config = Helper.ReadConfig<ModConfig>();
-			if (!Config.EnableMod)
-				return;
+            Config = Helper.ReadConfig<ModConfig>();
+            if (!Config.EnableMod)
+                return;
 
             SMonitor = Monitor;
             SHelper = Helper;
 
             myRand = new Random();
 
-			var harmony = HarmonyInstance.Create(this.ModManifest.UniqueID);
+            var harmony = HarmonyInstance.Create(this.ModManifest.UniqueID);
 
-			harmony.Patch(
+            harmony.Patch(
                 original: AccessTools.Method(typeof(Chest), nameof(Chest.ShowMenu)),
                 prefix: new HarmonyMethod(typeof(ModEntry), nameof(Chest_ShowMenu_Prefix))
-			);
+            );
 
-		}
+        }
         public override object GetApi()
         {
             return new AdvancedLootFrameworkApi();
@@ -182,7 +182,7 @@ namespace AdvancedLootFramework
             {
                 n--;
                 int k = myRand.Next(n + 1);
-                var value = treasures[k];
+                var value = treasures[k]; 
                 treasures[k] = treasures[n];
                 treasures[n] = value;
             }
@@ -194,7 +194,6 @@ namespace AdvancedLootFramework
             //SMonitor.Log($"Max chest value: {maxValue}");
 
             int currentValue = 0;
-            chestItems.Add(new Object(Vector2.Zero, 101, false));
 
             foreach (Treasure t in treasures)
             {
@@ -254,6 +253,7 @@ namespace AdvancedLootFramework
             chest.modData["Pathoschild.ChestsAnywhere/IsIgnored"] = "true";
             chest.modData["Pathoschild.Automate/StoreItems"] = "Disable";
             chest.modData["Pathoschild.Automate/TakeItems"] = "Disable";
+            chest.modData["aedenthorn.AdvancedLootFramework/IsAdvancedLootFrameworkChest"] = "true";
             return chest;
         }
 
@@ -273,5 +273,5 @@ namespace AdvancedLootFramework
             return true;
         }
 
-	}
+    }
 }

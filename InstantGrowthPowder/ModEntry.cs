@@ -74,7 +74,8 @@ namespace InstantGrowthPowder
                     i.Age = 3;
                     who.CurrentItem.Stack--;
                     __instance.playSound("yoba");
-                    return true;
+                    __result = true;
+                    return false;
                 }
             }
 
@@ -95,7 +96,8 @@ namespace InstantGrowthPowder
 
                         who.CurrentItem.Stack--;
                         __instance.playSound("yoba");
-                        return true;
+                        __result = true;
+                        return false;
                     }
                 }
             }
@@ -113,7 +115,8 @@ namespace InstantGrowthPowder
 
                     who.CurrentItem.Stack--;
                     __instance.playSound("yoba");
-                    return true;
+                    __result = true;
+                    return false;
                 }
                 if (v.Value.getBoundingBox(v.Key).Intersects(tileRect) && v.Value is FruitTree && (v.Value as FruitTree).growthStage < 4)
                 {
@@ -124,7 +127,8 @@ namespace InstantGrowthPowder
 
                     who.CurrentItem.Stack--;
                     __instance.playSound("yoba");
-                    return true;
+                    __result = true;
+                    return false;
                 }
             }
             
@@ -133,10 +137,10 @@ namespace InstantGrowthPowder
                 if (v.Value.getBoundingBox(v.Key).Intersects(tileRect) && v.Value is IndoorPot && !(v.Value as IndoorPot).hoeDirt.Value.crop.fullyGrown)
                 {
                     (v.Value as IndoorPot).hoeDirt.Value.crop.growCompletely();
-
                     who.CurrentItem.Stack--;
                     __instance.playSound("yoba");
-                    return true;
+                    __result = true;
+                    return false;
                 }
             }
             

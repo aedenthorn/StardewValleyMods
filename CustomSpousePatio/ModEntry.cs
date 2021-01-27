@@ -143,9 +143,9 @@ namespace CustomSpousePatio
             if(!File.Exists(Path.Combine(SHelper.DirectoryPath, path)))
                 path = "outdoor-areas.json";
 
-			try
-			{
-				OutdoorAreaData json = SHelper.Data.ReadJsonFile<OutdoorAreaData>(path) ?? null;
+            try
+            {
+                OutdoorAreaData json = SHelper.Data.ReadJsonFile<OutdoorAreaData>(path) ?? null;
 
                 if (json != null)
                 {
@@ -176,24 +176,24 @@ namespace CustomSpousePatio
                 }
 
             }
-			catch (Exception ex)
-			{
-				SMonitor.Log($"Error reading {path}:\r\n {ex}", LogLevel.Error);
-			}
+            catch (Exception ex)
+            {
+                SMonitor.Log($"Error reading {path}:\r\n {ex}", LogLevel.Error);
+            }
 
-			foreach (IContentPack contentPack in SHelper.ContentPacks.GetOwned())
-			{
-				SMonitor.Log($"Reading content pack: {contentPack.Manifest.Name} {contentPack.Manifest.Version} from {contentPack.DirectoryPath}", LogLevel.Debug);
-				try
-				{
-					OutdoorAreaData json = contentPack.ReadJsonFile<OutdoorAreaData>("content.json") ?? null;
+            foreach (IContentPack contentPack in SHelper.ContentPacks.GetOwned())
+            {
+                SMonitor.Log($"Reading content pack: {contentPack.Manifest.Name} {contentPack.Manifest.Version} from {contentPack.DirectoryPath}", LogLevel.Debug);
+                try
+                {
+                    OutdoorAreaData json = contentPack.ReadJsonFile<OutdoorAreaData>("content.json") ?? null;
 
-					if (json != null)
-					{
-						if (json.areas != null && json.areas.Count > 0)
-						{
-							foreach (KeyValuePair<string,OutdoorArea> area in json.areas)
-							{
+                    if (json != null)
+                    {
+                        if (json.areas != null && json.areas.Count > 0)
+                        {
+                            foreach (KeyValuePair<string,OutdoorArea> area in json.areas)
+                            {
                                 if (area.Key == "default")
                                 {
                                     if (Game1.MasterPlayer.spouse != null)
@@ -231,12 +231,12 @@ namespace CustomSpousePatio
                         }
 
                     }
-				}
-				catch (Exception ex)
-				{
-					SMonitor.Log($"error reading content.json file in content pack {contentPack.Manifest.Name}.\r\n{ex}", LogLevel.Error);
-				}
-			}
+                }
+                catch (Exception ex)
+                {
+                    SMonitor.Log($"error reading content.json file in content pack {contentPack.Manifest.Name}.\r\n{ex}", LogLevel.Error);
+                }
+            }
             SMonitor.Log($"Total outdoor spouse areas: {outdoorAreas.Count}", LogLevel.Debug);
         }
 
