@@ -88,8 +88,11 @@ namespace ModThis
             if(thing is Object || thing is TerrainFeature || thing is LargeTerrainFeature || thing is ResourceClump)
                 responses.Add(new Response("ModThis_Wizard_Questions_Move", Helper.Translation.Get("move")));
             
-            if(thing is Tree || thing is FruitTree || Game1.currentLocation.isCropAtTile((int)cursorLoc.X, (int)cursorLoc.Y) || thing is IndoorPot)
+            if(thing is Tree || thing is FruitTree || (thing is FarmAnimal && (thing as FarmAnimal).age < (thing as FarmAnimal).ageWhenMature) || Game1.currentLocation.isCropAtTile((int)cursorLoc.X, (int)cursorLoc.Y) || thing is IndoorPot)
                 responses.Add(new Response("ModThis_Wizard_Questions_Grow", Helper.Translation.Get("grow")));
+
+            if(thing is FarmAnimal)
+                responses.Add(new Response("ModThis_Wizard_Questions_Rename", Helper.Translation.Get("rename")));
 
             if (Game1.currentLocation.isCropAtTile((int)cursorLoc.X, (int)cursorLoc.Y) || thing is IndoorPot)
                 responses.Add(new Response("ModThis_Wizard_Questions_Water", Helper.Translation.Get("water")));
@@ -114,6 +117,22 @@ namespace ModThis
                 return location.terrainFeatures[cursorLoc];
             if (location.largeTerrainFeatures.FirstOrDefault(f => f.getBoundingBox().Contains(new Point((int)cursorLoc.X * 64, (int)cursorLoc.Y * 64))) != null)
                 return location.largeTerrainFeatures.FirstOrDefault(f => f.getBoundingBox().Contains(new Point((int)cursorLoc.X * 64, (int)cursorLoc.Y * 64)));
+            if(location is Farm)
+            {
+                Monitor.Log("is farm");
+
+                if ((location as Farm).Animals.Pairs.FirstOrDefault(f => f.Value.GetCursorPetBoundingBox().Contains(new Point((int)cursorLoc.X * 64, (int)cursorLoc.Y * 64))).Value != null)
+                    return (location as Farm).Animals.Pairs.FirstOrDefault(f => f.Value.GetCursorPetBoundingBox().Contains(new Point((int)cursorLoc.X * 64, (int)cursorLoc.Y * 64))).Value;
+
+            }
+            if(location is AnimalHouse)
+            {
+                Monitor.Log("is animal house");
+
+                if ((location as AnimalHouse).Animals.Pairs.FirstOrDefault(f => f.Value.GetCursorPetBoundingBox().Contains(new Point((int)cursorLoc.X * 64, (int)cursorLoc.Y * 64))).Value != null)
+                    return (location as AnimalHouse).Animals.Pairs.FirstOrDefault(f => f.Value.GetCursorPetBoundingBox().Contains(new Point((int)cursorLoc.X * 64, (int)cursorLoc.Y * 64))).Value;
+
+            }
             foreach (NPC character in location.characters)
             {
                 if (character.getTileLocation() == cursorLoc)
@@ -133,6 +152,9 @@ namespace ModThis
                     return new Object((thing as HoeDirt).crop.indexOfHarvest, 1).Name;
                 }
             }
+            if (thing is NPC || thing is FarmAnimal)
+                return (thing as Character).Name;
+
             return thing.GetType().Name;
         }
         public void WizardDialogue(string whichQuestion, string whichAnswer)
@@ -163,6 +185,9 @@ namespace ModThis
                             responses.Add(new Response($"left", Helper.Translation.Get("left")));
                             responses.Add(new Response($"right", Helper.Translation.Get("right")));
                             break;
+                        case "ModThis_Wizard_Questions_Rename":
+                            RenameThis();
+                            return;
                         case "ModThis_Wizard_Questions_Grow":
                             GrowThis();
                             return;
@@ -255,6 +280,29 @@ namespace ModThis
                     return;
                 }
             }
+
+            if(thing is FarmAnimal)
+            {
+                if (Game1.currentLocation is Farm)
+                {
+                    if ((Game1.currentLocation as Farm).Animals.Pairs.FirstOrDefault(f => f.Value == thing).Value != null)
+                    {
+                        long id = (Game1.currentLocation as Farm).Animals.Pairs.FirstOrDefault(f => f.Value == thing).Key;
+                        (Game1.currentLocation as Farm).Animals.Remove(id);
+                        return;
+                    }
+                }
+                if (Game1.currentLocation is AnimalHouse)
+                {
+                    if ((Game1.currentLocation as AnimalHouse).Animals.Pairs.FirstOrDefault(f => f.Value == thing).Value != null)
+                    {
+                        long id = (Game1.currentLocation as AnimalHouse).Animals.Pairs.FirstOrDefault(f => f.Value == thing).Key;
+                        (Game1.currentLocation as AnimalHouse).Animals.Remove(id);
+                        return;
+                    }
+                }
+            }
+
             if (thing is NPC) 
             {
                 Monitor.Log($"thing is an NPC");
@@ -266,6 +314,40 @@ namespace ModThis
                 }
             }
         }
+        private void RenameThis()
+        {
+            Monitor.Log($"Renaming");
+            Game1.activeClickableMenu = new NamingMenu(new NamingMenu.doneNamingBehavior(ReturnName), Helper.Translation.Get("what-name"));
+        }
+
+        private void ReturnName(string s)
+        {
+            if(s != null && s.Length > 0)
+            {
+                if (thing is FarmAnimal)
+                {
+                    if (Game1.currentLocation is Farm)
+                    {
+                        if ((Game1.currentLocation as Farm).Animals.Pairs.FirstOrDefault(f => f.Value == thing).Value != null)
+                        {
+                            long id = (Game1.currentLocation as Farm).Animals.Pairs.FirstOrDefault(f => f.Value == thing).Key;
+                            (Game1.currentLocation as Farm).Animals[id].Name = s;
+                        }
+                    }
+                    else if (Game1.currentLocation is AnimalHouse)
+                    {
+                        if ((Game1.currentLocation as AnimalHouse).Animals.Pairs.FirstOrDefault(f => f.Value == thing).Value != null)
+                        {
+                            long id = (Game1.currentLocation as AnimalHouse).Animals.Pairs.FirstOrDefault(f => f.Value == thing).Key;
+                            (Game1.currentLocation as AnimalHouse).Animals[id].Name = s;
+                            Game1.exitActiveMenu();
+                        }
+                    }
+                }
+            }
+            Game1.exitActiveMenu();
+        }
+
         private void MoveThis(string dir)
         {
             Monitor.Log($"Moving");
@@ -366,27 +448,51 @@ namespace ModThis
                 }
             }
 
-            try
+            if (thing is FarmAnimal)
             {
-                NetLongDictionary<FarmAnimal, NetRef<FarmAnimal>> dict = Helper.Reflection.GetField<NetLongDictionary<FarmAnimal, NetRef<FarmAnimal>>>(Game1.currentLocation, "animals").GetValue();
-                foreach (KeyValuePair<long, FarmAnimal> i in dict.Pairs)
+                if (Game1.currentLocation is Farm)
                 {
-                    if (i.Value.age < i.Value.ageWhenMature)
+                    if ((Game1.currentLocation as Farm).Animals.Pairs.FirstOrDefault(f => f.Value == thing).Value != null)
                     {
-                        i.Value.age.Value = i.Value.ageWhenMature;
-                        i.Value.Sprite.LoadTexture("Animals\\" + i.Value.type.Value);
-                        if (i.Value.type.Value.Contains("Sheep"))
+                        long id = (Game1.currentLocation as Farm).Animals.Pairs.FirstOrDefault(f => f.Value == thing).Key;
+                        FarmAnimal fa = (thing as FarmAnimal);
+                        if (fa.age < fa.ageWhenMature)
                         {
-                            i.Value.currentProduce.Value = i.Value.defaultProduceIndex;
+                            fa.age.Value = fa.ageWhenMature;
+                            fa.Sprite.LoadTexture("Animals\\" + fa.type.Value);
+                            if (fa.type.Value.Contains("Sheep"))
+                            {
+                                fa.currentProduce.Value = fa.defaultProduceIndex;
+                            }
+                            fa.daysSinceLastLay.Value = 99;
+                            (Game1.currentLocation as Farm).Animals[id] = fa;
+                            Monitor.Log($"Grew animal");
+                            return;
                         }
-                        i.Value.daysSinceLastLay.Value = 99;
-                        Monitor.Log($"Grew animal");
-                        return;
+                    }
+                }
+                if (Game1.currentLocation is AnimalHouse)
+                {
+                    if ((Game1.currentLocation as AnimalHouse).Animals.Pairs.FirstOrDefault(f => f.Value == thing).Value != null)
+                    {
+                        long id = (Game1.currentLocation as AnimalHouse).Animals.Pairs.FirstOrDefault(f => f.Value == thing).Key;
+                        FarmAnimal fa = (thing as FarmAnimal);
+                        if (fa.age < fa.ageWhenMature)
+                        {
+                            fa.age.Value = fa.ageWhenMature;
+                            fa.Sprite.LoadTexture("Animals\\" + fa.type.Value);
+                            if (fa.type.Value.Contains("Sheep"))
+                            {
+                                fa.currentProduce.Value = fa.defaultProduceIndex;
+                            }
+                            fa.daysSinceLastLay.Value = 99;
+                            (Game1.currentLocation as AnimalHouse).Animals[id] = fa;
+                            Monitor.Log($"Grew animal");
+                            return;
+                        }
                     }
                 }
             }
-            catch { }
-
 
             foreach (KeyValuePair<Vector2, TerrainFeature> v in Game1.currentLocation.terrainFeatures.Pairs)
             {

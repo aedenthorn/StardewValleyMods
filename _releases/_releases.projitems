@@ -55,6 +55,7 @@
     <None Include="$(MSBuildThisFileDirectory)ModThis 0.1.0.zip" />
     <None Include="$(MSBuildThisFileDirectory)ModThis 0.4.0.zip" />
     <None Include="$(MSBuildThisFileDirectory)ModThis 0.5.0.zip" />
+    <None Include="$(MSBuildThisFileDirectory)ModThis 0.6.0.zip" />
     <None Include="$(MSBuildThisFileDirectory)MoveableMailbox 0.1.1.zip" />
     <None Include="$(MSBuildThisFileDirectory)MultipleSpouses 2.5.0.zip" />
     <None Include="$(MSBuildThisFileDirectory)MultipleSpouses 2.7.0.zip" />
