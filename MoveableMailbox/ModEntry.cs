@@ -19,7 +19,7 @@ namespace MoveableMailbox
         public static IMonitor PMonitor;
         public static IModHelper PHelper;
         public static ModConfig config;
-        private IJsonAssetsApi mJsonAssets;
+        private static IJsonAssetsApi mJsonAssets;
 
         /// <summary>The mod entry point, called after the mod is first loaded.</summary>
         /// <param name="helper">Provides simplified APIs for writing mods.</param>
@@ -40,6 +40,11 @@ namespace MoveableMailbox
             var harmony = HarmonyInstance.Create(ModManifest.UniqueID);
 
             harmony.Patch(
+               original: AccessTools.Method(typeof(Game1), nameof(Game1.loadForNewGame)),
+               postfix: new HarmonyMethod(typeof(ModEntry), nameof(loadForNewGame_Postfix))
+            );
+
+            harmony.Patch(
                original: AccessTools.Method(typeof(Object), nameof(Object.checkForAction)),
                prefix: new HarmonyMethod(typeof(ModEntry), nameof(checkForAction_Prefix))
             );
@@ -58,24 +63,18 @@ namespace MoveableMailbox
 
         private void GameLoop_SaveLoaded(object sender, StardewModdingAPI.Events.SaveLoadedEventArgs e)
         {
-            if (!config.AllowNoMailbox)
+            Farm farm = Game1.getFarm();
+            foreach (KeyValuePair<Vector2, Object> kvp in farm.objects.Pairs)
             {
-                Farm farm = Game1.getFarm();
-
-                foreach (Object obj in farm.Objects.Values)
+                if (kvp.Value.Name.EndsWith("Mailbox"))
                 {
-                    if (obj.Name.EndsWith("Mailbox"))
-                    {
-                        Monitor.Log($"Farm has mailbox");
-                        return;
-                    }
-                }
-                if (mJsonAssets != null)
-                {
-                    int id = mJsonAssets.GetBigCraftableId("Mailbox");
-                    farm.Objects.Add(Utility.PointToVector2(farm.GetMainMailboxPosition()), new Object(Utility.PointToVector2(farm.GetMainMailboxPosition()), id));
+                    (farm as Farm).mapMainMailboxPosition = Utility.Vector2ToPoint(kvp.Key);
+                    PMonitor.Log($"Set mailbox location to {kvp.Key}");
+                    return;
                 }
             }
+            farm.mapMainMailboxPosition = Point.Zero;
+            PMonitor.Log("Set mailbox location to 0,0");
         }
 
         private void GameLoop_GameLaunched(object sender, StardewModdingAPI.Events.GameLaunchedEventArgs e)
@@ -121,6 +120,18 @@ namespace MoveableMailbox
             {
                 mJsonAssets.LoadAssets(Path.Combine(Helper.DirectoryPath, "json-assets"));
             }
+        }
+        private static void loadForNewGame_Postfix()
+        {
+            Farm farm = Game1.getFarm();
+
+            if (mJsonAssets != null)
+            {
+                int id = mJsonAssets.GetBigCraftableId("Mailbox");
+                farm.Objects.Add(Utility.PointToVector2(farm.GetMainMailboxPosition()), new Object(Utility.PointToVector2(farm.GetMainMailboxPosition()), id));
+                PMonitor.Log("Added mailbox to farm");
+            }
+
         }
 
         private static void placementAction_Postfix(Object __instance, bool __result, int x, int y, Farmer who)
