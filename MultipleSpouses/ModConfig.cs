@@ -18,6 +18,7 @@ namespace MultipleSpouses
 
         public int PercentChanceForSpouseInBed { get; set; } = 25;
         public int PercentChanceForSpouseInKitchen { get; set; } = 25;
+        public int PercentChanceForSpouseAtPatio { get; set; } = 25;
         public int MaxGiftsPerDay { get; set; } = 1;
         //public bool RemoveSpouseOrdinaryDialogue { get; set; } = false;
         public int MinHeartsForKiss { get; set; } = 9;

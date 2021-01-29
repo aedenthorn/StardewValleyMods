@@ -204,7 +204,8 @@ namespace MultipleSpouses
             {
                 Monitor.Log($"Failed in {nameof(BuildSpouseRooms)}:\n{ex}", LogLevel.Error);
             }
-
+            farmHouse.getWalls();
+            farmHouse.getFloors();
         }
 
         public static void BuildOneSpouseRoom(FarmHouse farmHouse, string name, int count)

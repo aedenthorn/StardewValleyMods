@@ -185,7 +185,6 @@ namespace MultipleSpouses
             );
             */
 
-
             // Location patches
 
             harmony.Patch(

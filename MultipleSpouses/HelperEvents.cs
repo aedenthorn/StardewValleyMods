@@ -3,12 +3,8 @@ using StardewModdingAPI;
 using StardewModdingAPI.Events;
 using StardewValley;
 using StardewValley.Locations;
-using StardewValley.Menus;
-using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
-using System.Reflection;
 
 namespace MultipleSpouses
 {
@@ -61,7 +57,7 @@ namespace MultipleSpouses
                     fh.showSpouseRoom();
                     Maps.BuildSpouseRooms(fh);
                     Misc.PlaceSpousesInFarmhouse(fh);
-                    location.resetForPlayerEntry();
+                    //location.resetForPlayerEntry();
                 }
             }
             if (Game1.IsMasterGame)
@@ -166,8 +162,6 @@ namespace MultipleSpouses
                     }
                 }
             }
-
-
         }
     }
 }

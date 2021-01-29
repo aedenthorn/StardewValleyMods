@@ -50,6 +50,7 @@ namespace MultipleSpouses
         {
             try
             {
+                //Monitor.Log($"Getting walls for {__instance}");
                 if (__instance.owner == null)
                     return;
                 //int ecribs = Math.Max(ModEntry.config.ExtraCribs, 0);
@@ -92,6 +93,7 @@ namespace MultipleSpouses
         {
             try
             {
+                //Monitor.Log($"Getting floors for {__instance}");
                 if (__instance.owner == null)
                     return;
                 //int ecribs = Math.Max(ModEntry.config.ExtraCribs, 0);
@@ -169,6 +171,7 @@ namespace MultipleSpouses
             {
                 if (Misc.ChangingKidsRoom())
                 {
+                    Monitor.Log($"Changing kids room for {__instance}");
                     if (__instance.upgradeLevel > 1 && __instance.upgradeLevel < 4)
                     {
                         //NPCPatches.SetCribs(__instance);
