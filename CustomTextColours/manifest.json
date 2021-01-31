@@ -1,22 +1,22 @@
 ﻿{
-  "Name": "CustomChestTypes",
+  "Name": "Custom Text Colours",
   "Author": "aedenthorn",
-  "Version": "0.6.0",
-  "Description": "Creates custom chest types.",
-  "UniqueID": "aedenthorn.CustomChestTypes",
-  "EntryDll": "CustomChestTypes.dll",
+  "Version": "0.1.0",
+  "Description": "Allows you to customize the text colours.",
+  "UniqueID": "aedenthorn.CustomTextColours",
+  "EntryDll": "CustomTextColours.dll",
   "MinimumApiVersion": "3.8.0",
   "UpdateKeys": ["Nexus:"],
   "ModUpdater": {
     "Repository": "StardewValleyMods",
     "User": "aedenthorn",
     "Directory": "_releases",
-    "ModFolder": "CustomChestTypes"
+    "ModFolder": "CustomTextColours"
   },
   "Dependencies": [
       {
         "UniqueID": "Platonymous.ModUpdater",
         "IsRequired": false
-      },
-  ],
+      }
+  ]
 }

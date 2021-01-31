@@ -36,6 +36,8 @@ namespace MobileCatalogues
                 catalogueList.Add("desert-catalogue");
             if (Config.EnableHatCatalogue)
                 catalogueList.Add("hat-catalogue");
+            if (Config.EnableClothingCatalogue)
+                catalogueList.Add("clothing-catalogue");
         }
         internal static void OpenCatalogueApp()
         {
@@ -90,6 +92,8 @@ namespace MobileCatalogues
                     return Config.PriceDesertCatalogue;
                 case "hat-catalogue":
                     return Config.PriceHatCatalogue;
+                case "clothing-catalogue":
+                    return Config.PriceClothingCatalogue;
             }
             return 0;
         }

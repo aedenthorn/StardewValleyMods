@@ -1,16 +1,11 @@
 ﻿using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
 using StardewModdingAPI;
-using StardewModdingAPI.Events;
 using StardewValley;
-using StardewValley.GameData.Movies;
 using StardewValley.Locations;
 using StardewValley.Menus;
 using StardewValley.Objects;
-using StardewValley.Util;
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Object = StardewValley.Object;
@@ -51,6 +46,9 @@ namespace MobileCatalogues
                     break;
                 case "hat-catalogue":
                     OpenHatMouseCatalogue();
+                    break;
+                case "clothing-catalogue":
+                    OpenClothingCatalogue();
                     break;
             }
         }
@@ -116,6 +114,12 @@ namespace MobileCatalogues
 
             Monitor.Log("Opening hat catalogue");
             DelayedOpen(new ShopMenu(dict, 0, "HatMouse", null, null, null));
+        }
+
+        public static void OpenClothingCatalogue()
+        {
+            Monitor.Log("Opening clothing catalogue");
+            DelayedOpen(new ShopMenu(GetAllClothing(), 0, "Clothing", null, null, null));
         }
 
         private static async void DelayedOpen(ShopMenu menu)
@@ -228,6 +232,21 @@ namespace MobileCatalogues
                 }
             }
             return items;
+        }
+
+        private static Dictionary<ISalable, int[]> GetAllClothing()
+        {
+            Dictionary<ISalable, int[]> stock = new Dictionary<ISalable, int[]>();
+            foreach (KeyValuePair<int, string> v in Game1.content.Load<Dictionary<int, string>>("Data\\ClothingInformation"))
+            {
+                Clothing c = new Clothing(v.Key);
+                stock.Add(c, new int[]
+                {
+                    Config.FreeClothingCatalogue ? 0 : (int)Math.Round(c.salePrice() * Config.PriceMult),
+                    int.MaxValue
+                });
+            }
+            return stock;
         }
 
         private static void AdjustPrices(ref Dictionary<ISalable, int[]> dict, bool free)

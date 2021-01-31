@@ -13,6 +13,7 @@ namespace MobileCatalogues
         public bool EnableDesertCatalogue { get; set; } = true;
         public bool LimitDesertCatalogToBusFixed { get; set; } = true;
         public bool EnableHatCatalogue { get; set; } = true;
+        public bool EnableClothingCatalogue { get; set; } = true;
         public bool RequireCataloguePurchase { get; set; } = true;
         public int PriceCatalogue { get; set; } = 30000;
         public int PriceFurnitureCatalogue { get; set; } = 100000;
@@ -20,12 +21,14 @@ namespace MobileCatalogues
         public int PriceTravelingCatalogue { get; set; } = 500000;
         public int PriceDesertCatalogue { get; set; } = 500000;
         public int PriceHatCatalogue { get; set; } = 10000;
+        public int PriceClothingCatalogue { get; set; } = 50000;
         public bool FreeCatalogue { get; set; } = false;
         public bool FreeFurnitureCatalogue { get; set; } = false;
         public bool FreeSeedCatalogue { get; set; } = false;
         public bool FreeDesertCatalogue { get; set; } = false;
         public bool FreeTravelingCatalogue { get; set; } = false;
         public bool FreeHatCatalogue { get; set; } = false;
+        public bool FreeClothingCatalogue { get; set; } = false;
         public string SeedsToInclude { get; set; } = "season";
         public float PriceMult { get; set; } = 1f;
         public int AppHeaderHeight { get; set; } = 32;

@@ -121,6 +121,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MoveableMailbox", "Moveable
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SocialPageOrderButton", "SocialPageOrderButton\SocialPageOrderButton.csproj", "{B29914E4-9637-412C-B9E9-0747981BF0AD}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CustomTextColours", "CustomTextColours\CustomTextColours.csproj", "{FDB19233-8029-4CA4-9C80-C74391F2547A}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AdvancedMeleeFramework", "AdvancedMeleeFramework\AdvancedMeleeFramework.csproj", "{DDD72137-FBD6-4EDA-AE6F-8D3AAB6BE48E}"
+EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
 		_releases\_releases.projitems*{047040e0-3d07-46e5-852b-d1d45cd57bb8}*SharedItemsImports = 13
@@ -596,6 +600,22 @@ Global
 		{B29914E4-9637-412C-B9E9-0747981BF0AD}.Release|Any CPU.Build.0 = Release|Any CPU
 		{B29914E4-9637-412C-B9E9-0747981BF0AD}.Release|x86.ActiveCfg = Release|Any CPU
 		{B29914E4-9637-412C-B9E9-0747981BF0AD}.Release|x86.Build.0 = Release|Any CPU
+		{FDB19233-8029-4CA4-9C80-C74391F2547A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FDB19233-8029-4CA4-9C80-C74391F2547A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FDB19233-8029-4CA4-9C80-C74391F2547A}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{FDB19233-8029-4CA4-9C80-C74391F2547A}.Debug|x86.Build.0 = Debug|Any CPU
+		{FDB19233-8029-4CA4-9C80-C74391F2547A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FDB19233-8029-4CA4-9C80-C74391F2547A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FDB19233-8029-4CA4-9C80-C74391F2547A}.Release|x86.ActiveCfg = Release|Any CPU
+		{FDB19233-8029-4CA4-9C80-C74391F2547A}.Release|x86.Build.0 = Release|Any CPU
+		{DDD72137-FBD6-4EDA-AE6F-8D3AAB6BE48E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DDD72137-FBD6-4EDA-AE6F-8D3AAB6BE48E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DDD72137-FBD6-4EDA-AE6F-8D3AAB6BE48E}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{DDD72137-FBD6-4EDA-AE6F-8D3AAB6BE48E}.Debug|x86.Build.0 = Debug|Any CPU
+		{DDD72137-FBD6-4EDA-AE6F-8D3AAB6BE48E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DDD72137-FBD6-4EDA-AE6F-8D3AAB6BE48E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DDD72137-FBD6-4EDA-AE6F-8D3AAB6BE48E}.Release|x86.ActiveCfg = Release|Any CPU
+		{DDD72137-FBD6-4EDA-AE6F-8D3AAB6BE48E}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
