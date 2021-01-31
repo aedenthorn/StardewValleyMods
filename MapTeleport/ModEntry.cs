@@ -6,19 +6,19 @@ using StardewValley.Menus;
 namespace MapTeleport
 {
     public class ModEntry : Mod 
-	{
-		public static ModEntry context;
+    {
+        public static ModEntry context;
 
-		public static ModConfig Config;
+        public static ModConfig Config;
         private CoordinatesList coordinates;
         private bool isSVE;
 
         public override void Entry(IModHelper helper)
-		{
+        {
             context = this;
-			Config = Helper.ReadConfig<ModConfig>();
-			if (!Config.EnableMod)
-				return;
+            Config = Helper.ReadConfig<ModConfig>();
+            if (!Config.EnableMod)
+                return;
 
             
             isSVE = Helper.ModRegistry.IsLoaded("FlashShifter.SVECode");
@@ -53,7 +53,7 @@ namespace MapTeleport
                             return;
                         }
                         Monitor.Log($"Teleporting to {c.name}, {co.mapName}, {co.x},{co.y}", LogLevel.Debug);
-                        Game1.activeClickableMenu.exitThisMenu(true);
+                        Game1.activeClickableMenu?.exitThisMenu(true);
                         Game1.warpFarmer(co.mapName, co.x, co.y, false);
                     }
                 }

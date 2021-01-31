@@ -6,18 +6,18 @@ using System;
 namespace QuickLoad
 {
     public class ModEntry : Mod
-	{
-		public static ModEntry context;
-		private static ModConfig Config;
+    {
+        public static ModEntry context;
+        private static ModConfig Config;
         private static IMonitor SMonitor;
         private static IModHelper SHelper;
 
         public override void Entry(IModHelper helper)
-		{
+        {
             context = this;
-			Config = Helper.ReadConfig<ModConfig>();
-			if (!Config.EnableMod)
-				return;
+            Config = Helper.ReadConfig<ModConfig>();
+            if (!Config.EnableMod)
+                return;
 
             SMonitor = Monitor;
             SHelper = Helper;
@@ -33,7 +33,7 @@ namespace QuickLoad
             {
                 Helper.Events.GameLoop.Saved += GameLoop_Saved;
             }
-		}
+        }
 
         private void GameLoop_Saved(object sender, StardewModdingAPI.Events.SavedEventArgs e)
         {

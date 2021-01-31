@@ -22,11 +22,11 @@
             "Count": 10,
         },
     ],
-	"IsDefault": true,
+    "IsDefault": true,
   },
   "NameLocalization":
   {
-	// "es": "",
+    // "es": "",
     // "ko": "",
     // "de": "",
     // "fr": "",
@@ -40,7 +40,7 @@
   },
   "DescriptionLocalization":
   {
-	// "es": "",
+    // "es": "",
     // "ko": "",
     // "de": "",
     // "fr": "",

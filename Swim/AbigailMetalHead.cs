@@ -10,19 +10,19 @@ using System.Threading.Tasks;
 
 namespace Swim
 {
-	public class AbigailMetalHead : MetalHead
-	{
-		public AbigailMetalHead() : base()
-		{
-		}
+    public class AbigailMetalHead : MetalHead
+    {
+        public AbigailMetalHead() : base()
+        {
+        }
 
-		public AbigailMetalHead(Vector2 position, int mineArea) : base(position, mineArea)
-		{
-			DamageToFarmer = 100000;
-			Health = 1;
-			moveTowardPlayerThreshold.Value = 50;
-			objectsToDrop.Clear();
-		}
+        public AbigailMetalHead(Vector2 position, int mineArea) : base(position, mineArea)
+        {
+            DamageToFarmer = 100000;
+            Health = 1;
+            moveTowardPlayerThreshold.Value = 50;
+            objectsToDrop.Clear();
+        }
 
         public override void shedChunks(int number, float scale)
         {
@@ -30,14 +30,14 @@ namespace Swim
         }
         public override int takeDamage(int damage, int xTrajectory, int yTrajectory, bool isBomb, double addedPrecision, Farmer who)
         {
-			objectsToDrop.Clear();
-			if(currentLocation.characters.Contains(this))
-				currentLocation.characters.Remove(this);
-			return 1000;
-		}
+            objectsToDrop.Clear();
+            if(currentLocation.characters.Contains(this))
+                currentLocation.characters.Remove(this);
+            return 1000;
+        }
         public override List<Item> getExtraDropItems()
         {
-			return new List<Item>();
+            return new List<Item>();
         }
 
         public override void Removed()
@@ -45,8 +45,8 @@ namespace Swim
         }
         public override void onDealContactDamage(Farmer who)
         {
-			Game1.playSound("cowboy_dead");
-			SwimHelperEvents.abigailTicks = -1;
-		}
-	}
+            Game1.playSound("cowboy_dead");
+            SwimHelperEvents.abigailTicks = -1;
+        }
+    }
 }

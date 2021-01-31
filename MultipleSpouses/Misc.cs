@@ -172,6 +172,14 @@ namespace MultipleSpouses
                         kitchenSpouse = spouse.Name;
                     }
                 }
+                else if(type < ModEntry.config.PercentChanceForSpouseInBed + ModEntry.config.PercentChanceForSpouseInKitchen + ModEntry.config.PercentChanceForSpouseAtPatio)
+                {
+                    if (!Game1.isRaining && !Game1.IsWinter && !spouse.Name.Equals("Krobus") && spouse.Schedule == null)
+                    {
+                        Monitor.Log("made patio spouse: " + spouse.Name);
+                        spouse.setUpForOutdoorPatioActivity();
+                    }
+                }
             }
 
             List<string> allBedSpouses = new List<string>(GetSpouses(farmer, 1).Keys.ToList());

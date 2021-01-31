@@ -56,7 +56,7 @@ namespace CustomSpousePatio
             SMonitor = Monitor;
             SHelper = Helper;
 
-            Helper.Events.GameLoop.GameLaunched += GameLoop_GameLaunched;
+            //Helper.Events.GameLoop.GameLaunched += GameLoop_GameLaunched;
             Helper.Events.GameLoop.SaveLoaded += GameLoop_SaveLoaded;
             Helper.Events.GameLoop.DayStarted += GameLoop_DayStarted;
             Helper.Events.GameLoop.ReturnedToTitle += GameLoop_ReturnedToTitle;
@@ -80,11 +80,6 @@ namespace CustomSpousePatio
 
         }
 
-        private void GameLoop_GameLaunched(object sender, GameLaunchedEventArgs e)
-        {
-            LoadSpouseAreaData();
-        }
-
         public override object GetApi()
         {
             return new CustomSpousePatioApi();
@@ -97,6 +92,7 @@ namespace CustomSpousePatio
         }
         private void GameLoop_SaveLoaded(object sender, SaveLoadedEventArgs e)
         {
+            LoadSpouseAreaData();
             if (!Context.IsMainPlayer)
             {
                 SMonitor.Log($"Not the host player, this copy of the mod will not do anything.", LogLevel.Warn);
@@ -143,9 +139,9 @@ namespace CustomSpousePatio
             if(!File.Exists(Path.Combine(SHelper.DirectoryPath, path)))
                 path = "outdoor-areas.json";
 
-			try
-			{
-				OutdoorAreaData json = SHelper.Data.ReadJsonFile<OutdoorAreaData>(path) ?? null;
+            try
+            {
+                OutdoorAreaData json = SHelper.Data.ReadJsonFile<OutdoorAreaData>(path) ?? null;
 
                 if (json != null)
                 {
@@ -169,31 +165,45 @@ namespace CustomSpousePatio
                             }
                         }
                     }
+                    if (json.tileSheetsToAdd != null)
+                    {
+                        foreach (KeyValuePair<string, TileSheetInfo> kvp in json.tileSheetsToAdd)
+                        {
+                            string name = "zzz_custom_spouse_patio_" + kvp.Key;
+                            if (tileSheetsToAdd.ContainsKey(name))
+                            {
+                                SMonitor.Log($"Duplicate tilesheet {name} in list of tilesheets to add", LogLevel.Warn);
+                                continue;
+                            }
+                            tileSheetsToAdd.Add(name, kvp.Value);
+                            tileSheetsToAdd[name].realPath = SHelper.Content.GetActualAssetKey(FixTileSheetPath(kvp.Value.path));
+                            SMonitor.Log($"Added tilesheet {name} to list of tilesheets to add", LogLevel.Debug);
+                        }
+                    }
                 }
                 else
                 {
                     SMonitor.Log($"Couldn't get spouse areas from {path}", LogLevel.Debug);
                 }
-
             }
-			catch (Exception ex)
-			{
-				SMonitor.Log($"Error reading {path}:\r\n {ex}", LogLevel.Error);
-			}
+            catch (Exception ex)
+            {
+                SMonitor.Log($"Error reading {path}:\r\n {ex}", LogLevel.Error);
+            }
 
-			foreach (IContentPack contentPack in SHelper.ContentPacks.GetOwned())
-			{
-				SMonitor.Log($"Reading content pack: {contentPack.Manifest.Name} {contentPack.Manifest.Version} from {contentPack.DirectoryPath}", LogLevel.Debug);
-				try
-				{
-					OutdoorAreaData json = contentPack.ReadJsonFile<OutdoorAreaData>("content.json") ?? null;
+            foreach (IContentPack contentPack in SHelper.ContentPacks.GetOwned())
+            {
+                SMonitor.Log($"Reading content pack: {contentPack.Manifest.Name} {contentPack.Manifest.Version} from {contentPack.DirectoryPath}", LogLevel.Debug);
+                try
+                {
+                    OutdoorAreaData json = contentPack.ReadJsonFile<OutdoorAreaData>("content.json") ?? null;
 
-					if (json != null)
-					{
-						if (json.areas != null && json.areas.Count > 0)
-						{
-							foreach (KeyValuePair<string,OutdoorArea> area in json.areas)
-							{
+                    if (json != null)
+                    {
+                        if (json.areas != null && json.areas.Count > 0)
+                        {
+                            foreach (KeyValuePair<string,OutdoorArea> area in json.areas)
+                            {
                                 if (area.Key == "default")
                                 {
                                     if (Game1.MasterPlayer.spouse != null)
@@ -225,21 +235,25 @@ namespace CustomSpousePatio
                                     continue;
                                 }
                                 tileSheetsToAdd.Add(name, kvp.Value);
-                                tileSheetsToAdd[name].realPath = contentPack.GetActualAssetKey(kvp.Value.path);
+                                tileSheetsToAdd[name].realPath = contentPack.GetActualAssetKey(FixTileSheetPath(kvp.Value.path));
                                 SMonitor.Log($"Added tilesheet {name} to list of tilesheets to add", LogLevel.Debug);
                             }
                         }
 
                     }
-				}
-				catch (Exception ex)
-				{
-					SMonitor.Log($"error reading content.json file in content pack {contentPack.Manifest.Name}.\r\n{ex}", LogLevel.Error);
-				}
-			}
+                }
+                catch (Exception ex)
+                {
+                    SMonitor.Log($"error reading content.json file in content pack {contentPack.Manifest.Name}.\r\n{ex}", LogLevel.Error);
+                }
+            }
             SMonitor.Log($"Total outdoor spouse areas: {outdoorAreas.Count}", LogLevel.Debug);
         }
 
+        private static string FixTileSheetPath(string path)
+        {
+            return path.Replace("{season}", Game1.Date.Season.ToLower());
+        }
 
         public static void SetupSpouseAreas()
         {
@@ -257,8 +271,9 @@ namespace CustomSpousePatio
             Farm farm = Game1.getFarm();
             if (farm.map.TileSheets.FirstOrDefault(s => s.Id == "zzz_custom_spouse_default_patio") == null)
             {
-                Texture2D tex = SHelper.Content.Load<Texture2D>("Maps/spring_outdoorsTileSheet", ContentSource.GameContent);
-                farm.map.AddTileSheet(new TileSheet("zzz_custom_spouse_default_patio", farm.map, SHelper.Content.GetActualAssetKey("Maps/spring_outdoorsTileSheet", ContentSource.GameContent), new Size(tex.Width / 16, tex.Height / 16), new Size(16, 16)));
+                string season = Game1.Date.Season.ToLower();
+                Texture2D tex = SHelper.Content.Load<Texture2D>($"Maps/{season}_outdoorsTileSheet", ContentSource.GameContent);
+                farm.map.AddTileSheet(new TileSheet("zzz_custom_spouse_default_patio", farm.map, SHelper.Content.GetActualAssetKey($"Maps/{season}_outdoorsTileSheet", ContentSource.GameContent), new Size(tex.Width / 16, tex.Height / 16), new Size(16, 16)));
                 farm.map.LoadTileSheets(Game1.mapDisplayDevice);
                 SMonitor.Log($"Added default tilesheet zzz_custom_spouse_default_patio to farm map", LogLevel.Debug);
             }

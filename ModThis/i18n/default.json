@@ -1,13 +1,16 @@
 {
     "welcome": "What do you want to do with {0}?",
+    "pickup": "Pick it up.",
     "remove": "Remove it.",
+    "rename": "Rename it.",
     "move": "Move it.",
     "take": "Take it.",
     "grow": "Grow it.",
     "water": "Water it.",
     "kill": "Kill it.",
     
-    "confirm-remove": "Really remove this from the game?",
+    "what-name": "What do you want to rename it to?",
+    "confirm-remove": "Really remove it from the game?",
     "confirm-move": "Move in which direction?",
 
     "up": "Up",

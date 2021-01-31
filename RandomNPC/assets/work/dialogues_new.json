@@ -1,9 +1,9 @@
 {
   "introductions": [
-	// age`manner`anxiety`optimism`gender`datable`traits`key`string
-	
-	// introductions
-	
+    // age`manner`anxiety`optimism`gender`datable`traits`key`string
+    
+    // introductions
+    
     "adult`polite|neutral`outgoing|neutral`any`positive`any`any`Introduction`Oh, hello. Nice to meet you!$h",
     "teen`polite|neutral`outgoing`any`positive`any`any`Introduction`Oh, hi! Nice to meet you!$h",
     "any`polite|neutral`outgoing|neutral`any`neutral`any`any`Introduction`Hello, there! Nice to meet you.$h",
@@ -20,15 +20,15 @@
 
   ],
   "questions": [
-	// age`manner`anxiety`optimism`gender`datable`traits`string
+    // age`manner`anxiety`optimism`gender`datable`traits`string
     "any`any`any`any`any`any`What can I do for you?",
   ]
   "advice": [
-	// age`manner`anxiety`optimism`gender`datable`traits`string
+    // age`manner`anxiety`optimism`gender`datable`traits`string
     "any`any`any`any`any`any`Don't follow leaders, watch your parking meters.",
   ]
   "datable": [
-	// age`manner`anxiety`optimism`gender`datable`traits`yesstring`nostring
+    // age`manner`anxiety`optimism`gender`datable`traits`yesstring`nostring
     "any`any`any`any`any`any`I'm not seeing anyone at the moment.`I'm seeing someone at the moment, yes.",
   ]
 }

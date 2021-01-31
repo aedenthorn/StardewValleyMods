@@ -6,7 +6,7 @@
     "Dyeable": true,
   "NameLocalization":
   {
-	// "es": "",
+    // "es": "",
     "ko": "스쿠버 탱크",
     // "de": "",
     // "fr": "",
@@ -20,7 +20,7 @@
   },
   "DescriptionLocalization":
   {
-	// "es": "",
+    // "es": "",
     "ko": "물 속에서 호흡하기 위한 스쿠버 탱크.",
     // "de": "",
     // "fr": "",

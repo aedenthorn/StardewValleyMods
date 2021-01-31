@@ -183,7 +183,7 @@ namespace CustomChestTypes
             }
             
             return true;
-        }	
+        }    
 
         private static bool Debris_collect_Prefix(Debris __instance, ref bool __result, NetObjectShrinkList<Chunk> ___chunks, Farmer farmer, Chunk chunk)
         {
@@ -207,7 +207,7 @@ namespace CustomChestTypes
                 return false;
             }
             return true;
-        }		
+        }        
 
         private static bool Object_loadDisplayName_Prefix(Object __instance, ref string __result)
         {
@@ -238,7 +238,7 @@ namespace CustomChestTypes
             location.playSound("hammer", NetAudio.SoundContext.Default);
             __result = true;
             return false;
-        }		
+        }        
         private static bool Chest_draw_Prefix(Chest __instance, SpriteBatch spriteBatch, int x, int y, float alpha)
         {
             if (!customChestTypesDict.TryGetValue(__instance.ParentSheetIndex, out var chestInfo))
@@ -250,7 +250,7 @@ namespace CustomChestTypes
             spriteBatch.Draw(texture, Game1.GlobalToLocal(Game1.viewport, new Vector2(x * 64f + (float)((__instance.shakeTimer > 0) ? Game1.random.Next(-1, 2) : 0), (y - texture.Height / 16 + 1) * 64f)), new Rectangle(0,0, texture.Width, texture.Height), __instance.tint.Value * alpha, 0f, Vector2.Zero, 4f, SpriteEffects.None, base_sort_order);
 
             return false;
-        }		
+        }        
         
         private static bool Object_drawInMenu_Prefix(Object __instance, SpriteBatch spriteBatch, Vector2 location, float scaleSize, float transparency, float layerDepth, StackDrawType drawStackNumber, Color color, bool drawShadow)
         {
@@ -267,7 +267,7 @@ namespace CustomChestTypes
                 Utility.drawTinyDigits(__instance.stack, spriteBatch, location + new Vector2((float)(64 - Utility.getWidthOfTinyDigitString(__instance.stack, 3f * scaleSize)) + 3f * scaleSize, 64f - 18f * scaleSize + 2f), 3f * scaleSize, 1f, color);
             }
             return false;
-        }				
+        }                
         private static bool Chest_checkForAction_Prefix(Chest __instance, ref bool __result, Farmer who, bool justCheckingForActivity)
         {
             if (justCheckingForActivity || !customChestTypesDict.TryGetValue(__instance.ParentSheetIndex, out CustomChestType chestInfo))
@@ -284,7 +284,7 @@ namespace CustomChestTypes
             });
             __result = true; 
             return false;
-        }		
+        }        
         private static bool Chest_GetActualCapacity_Prefix(Chest __instance, ref int __result)
         {
             if (!customChestTypesDict.TryGetValue(__instance.ParentSheetIndex, out CustomChestType chestInfo))
@@ -292,7 +292,7 @@ namespace CustomChestTypes
 
             __result = chestInfo.capacity; 
             return false;
-        }		
+        }        
         
         private static void Chest_Postfix(Chest __instance, int parent_sheet_index)
         {

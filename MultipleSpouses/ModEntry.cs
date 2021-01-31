@@ -185,7 +185,6 @@ namespace MultipleSpouses
             );
             */
 
-
             // Location patches
 
             harmony.Patch(
@@ -659,7 +658,7 @@ namespace MultipleSpouses
                 List<string> keys = new List<string>(data.Keys);
                 foreach (string key in keys)
                 {
-                    data.Add($"marriage_{key}", data[key]);
+                    data[$"marriage_{key}"] = data[key]; 
                 }
             }
         }

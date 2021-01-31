@@ -12,33 +12,33 @@ using Object = StardewValley.Object;
 namespace AdvancedLootFramework
 {
     public class ModEntry : Mod 
-	{
-		public static ModEntry context;
-		private static ModConfig Config;
+    {
+        public static ModEntry context;
+        private static ModConfig Config;
         private static Random myRand;
         private static IMonitor SMonitor;
         private static IModHelper SHelper;
 
         public override void Entry(IModHelper helper)
-		{
+        {
             context = this;
-			Config = Helper.ReadConfig<ModConfig>();
-			if (!Config.EnableMod)
-				return;
+            Config = Helper.ReadConfig<ModConfig>();
+            if (!Config.EnableMod)
+                return;
 
             SMonitor = Monitor;
             SHelper = Helper;
 
             myRand = new Random();
 
-			var harmony = HarmonyInstance.Create(this.ModManifest.UniqueID);
+            var harmony = HarmonyInstance.Create(this.ModManifest.UniqueID);
 
-			harmony.Patch(
+            harmony.Patch(
                 original: AccessTools.Method(typeof(Chest), nameof(Chest.ShowMenu)),
                 prefix: new HarmonyMethod(typeof(ModEntry), nameof(Chest_ShowMenu_Prefix))
-			);
+            );
 
-		}
+        }
         public override object GetApi()
         {
             return new AdvancedLootFrameworkApi();
@@ -121,7 +121,10 @@ namespace AdvancedLootFramework
                 {
                     if (Config.ForbiddenBigCraftables.Contains(kvp.Key))
                         continue;
-                    int price = new Object(Vector2.Zero, kvp.Key, false).sellToStorePrice();
+                    //int price = GetStorePrice(kvp.Key);
+                    //if(price == 0)
+                    
+                    int price = new Object(Vector2.Zero, kvp.Key, false).price;
                     if (CanAddTreasure(price, minItemValue, maxItemValue))
                         treasures.Add(new Treasure(kvp.Key, price, "BigCraftable"));
                 }
@@ -170,6 +173,52 @@ namespace AdvancedLootFramework
             }
             //Monitor.Log($"Added {treasures.Count - currentCount} objects"); 
             return treasures;
+        }
+
+        private static int GetStorePrice(int idx)
+        {
+            Dictionary<ISalable, int[]> stock = Utility.getAnimalShopStock();
+            KeyValuePair<ISalable, int[]> item = stock.FirstOrDefault(i => (i.Key as Item)?.ParentSheetIndex == idx);
+            if ((item.Key as Item)?.ParentSheetIndex == idx)
+            {
+                SMonitor.Log($"Setting price for {idx} at {item.Value[0]} from animal shop");
+                return item.Value[0];
+            }
+
+            stock = Utility.getCarpenterStock();
+            item = stock.FirstOrDefault(i => (i.Key as Item)?.ParentSheetIndex == idx);
+            if ((item.Key as Item)?.ParentSheetIndex == idx)
+            {
+                SMonitor.Log($"Setting price for {idx} at {item.Value[0]} from carpenter shop");
+                return item.Value[0];
+            }
+
+            stock = Utility.getCarpenterStock();
+            item = stock.FirstOrDefault(i => (i.Key as Item)?.ParentSheetIndex == idx);
+            if ((item.Key as Item)?.ParentSheetIndex == idx)
+            {
+                SMonitor.Log($"Setting price for {idx} at {item.Value[0]} from carpenter shop");
+                return item.Value[0];
+            }
+
+            stock = Utility.getDwarfShopStock();
+            item = stock.FirstOrDefault(i => (i.Key as Item)?.ParentSheetIndex == idx);
+            if ((item.Key as Item)?.ParentSheetIndex == idx)
+            {
+                SMonitor.Log($"Setting price for {idx} at {item.Value[0]} from dawrf shop");
+                return item.Value[0];
+            }
+
+            stock = Utility.getDwarfShopStock();
+            item = stock.FirstOrDefault(i => (i.Key as Item)?.ParentSheetIndex == idx);
+            if ((item.Key as Item)?.ParentSheetIndex == idx)
+            {
+                SMonitor.Log($"Setting price for {idx} at {item.Value[0]} from dawrf shop");
+                return item.Value[0];
+            }
+
+
+            return 0;
         }
 
         public static List<Item> GetChestItems(List<object> treasures, int maxItems, int minItemValue, int maxItemValue, int mult, float increaseRate, int baseValue)
@@ -273,5 +322,5 @@ namespace AdvancedLootFramework
             return true;
         }
 
-	}
+    }
 }

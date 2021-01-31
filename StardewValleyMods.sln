@@ -117,6 +117,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CustomSpousePatioWizard", "
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ModThis", "ModThis\ModThis.csproj", "{B6C96C2D-6200-402F-8B68-5E761C431F75}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MoveableMailbox", "MoveableMailbox\MoveableMailbox.csproj", "{680B9D13-8720-4A52-BC6E-DB4F2DACD865}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SocialPageOrderButton", "SocialPageOrderButton\SocialPageOrderButton.csproj", "{B29914E4-9637-412C-B9E9-0747981BF0AD}"
+EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
 		_releases\_releases.projitems*{047040e0-3d07-46e5-852b-d1d45cd57bb8}*SharedItemsImports = 13
@@ -576,6 +580,22 @@ Global
 		{B6C96C2D-6200-402F-8B68-5E761C431F75}.Release|Any CPU.Build.0 = Release|Any CPU
 		{B6C96C2D-6200-402F-8B68-5E761C431F75}.Release|x86.ActiveCfg = Release|Any CPU
 		{B6C96C2D-6200-402F-8B68-5E761C431F75}.Release|x86.Build.0 = Release|Any CPU
+		{680B9D13-8720-4A52-BC6E-DB4F2DACD865}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{680B9D13-8720-4A52-BC6E-DB4F2DACD865}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{680B9D13-8720-4A52-BC6E-DB4F2DACD865}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{680B9D13-8720-4A52-BC6E-DB4F2DACD865}.Debug|x86.Build.0 = Debug|Any CPU
+		{680B9D13-8720-4A52-BC6E-DB4F2DACD865}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{680B9D13-8720-4A52-BC6E-DB4F2DACD865}.Release|Any CPU.Build.0 = Release|Any CPU
+		{680B9D13-8720-4A52-BC6E-DB4F2DACD865}.Release|x86.ActiveCfg = Release|Any CPU
+		{680B9D13-8720-4A52-BC6E-DB4F2DACD865}.Release|x86.Build.0 = Release|Any CPU
+		{B29914E4-9637-412C-B9E9-0747981BF0AD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B29914E4-9637-412C-B9E9-0747981BF0AD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B29914E4-9637-412C-B9E9-0747981BF0AD}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{B29914E4-9637-412C-B9E9-0747981BF0AD}.Debug|x86.Build.0 = Debug|Any CPU
+		{B29914E4-9637-412C-B9E9-0747981BF0AD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B29914E4-9637-412C-B9E9-0747981BF0AD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B29914E4-9637-412C-B9E9-0747981BF0AD}.Release|x86.ActiveCfg = Release|Any CPU
+		{B29914E4-9637-412C-B9E9-0747981BF0AD}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

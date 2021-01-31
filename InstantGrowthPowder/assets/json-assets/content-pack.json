@@ -5,6 +5,6 @@
    "Description": "Instant Growth Powder for JsonAssets.",
    "UniqueID": "aedenthorn.InstantGrowthPowderJSONAssets",
    "ContentPackFor": {
-    	"UniqueID": "spacechase0.JsonAssets"
+        "UniqueID": "spacechase0.JsonAssets"
     },
 }

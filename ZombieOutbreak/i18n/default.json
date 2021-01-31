@@ -1,6 +1,6 @@
 ﻿{
-	"zombie-cure-letter": "@,^^In response to the recent outbreak and with the help of Demetrius, I've come up with a potential cure for zombification.^^Unfortunately, I don't have all the ingredients on hand, but here's a list of what you will need.^^-Dr. Harvey%item craftingRecipe Zombie_Cure %%[#]From The Office Of Dr. Harvey",
-	"cured": "Thank you for curing me!",
-	"zombification": "Zombification",
-	"zombification-source": "zombie bite",
+    "zombie-cure-letter": "@,^^In response to the recent outbreak and with the help of Demetrius, I've come up with a potential cure for zombification.^^Unfortunately, I don't have all the ingredients on hand, but here's a list of what you will need.^^-Dr. Harvey%item craftingRecipe Zombie_Cure %%[#]From The Office Of Dr. Harvey",
+    "cured": "Thank you for curing me!",
+    "zombification": "Zombification",
+    "zombification-source": "zombie bite",
 }

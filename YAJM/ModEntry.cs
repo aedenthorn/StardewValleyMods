@@ -12,213 +12,213 @@ using xTile.Dimensions;
 
 namespace SixtyNine
 {
-	public class ModEntry : Mod, IAssetEditor
-	{
-		public static ModEntry context;
+    public class ModEntry : Mod, IAssetEditor
+    {
+        public static ModEntry context;
 
-		public static ModConfig Config;
-		private float lastYJumpVelocity;
-		private float velX;
-		private float velY;
-		private  Texture2D horseShadow;
+        public static ModConfig Config;
+        private float lastYJumpVelocity;
+        private float velX;
+        private float velY;
+        private  Texture2D horseShadow;
         private  Texture2D horse;
         private  bool playerJumping;
-		private  bool playerJumpingOver;
+        private  bool playerJumpingOver;
         private  bool playerJumpingWithHorse;
         private static bool blockedJump;
 
         /// <summary>The mod entry point, called after the mod is first loaded.</summary>
         /// <param name="helper">Provides simplified APIs for writing mods.</param>
         public override void Entry(IModHelper helper)
-		{
-			context = this;
-			Config = Helper.ReadConfig<ModConfig>();
-			if (!Config.EnableMod)
-				return;
+        {
+            context = this;
+            Config = Helper.ReadConfig<ModConfig>();
+            if (!Config.EnableMod)
+                return;
 
-			Helper.Events.Input.ButtonPressed += Input_ButtonPressed;
+            Helper.Events.Input.ButtonPressed += Input_ButtonPressed;
 
-			HarmonyInstance harmony = HarmonyInstance.Create(Helper.ModRegistry.ModID);
+            HarmonyInstance harmony = HarmonyInstance.Create(Helper.ModRegistry.ModID);
 
-			harmony.Patch(
-			   original: AccessTools.Method(typeof(Farmer), nameof(Farmer.getDrawLayer)),
-			   prefix: new HarmonyMethod(typeof(ModEntry), nameof(ModEntry.Farmer_getDrawLayer_prefix))
-			);
-			harmony.Patch(
-			   original: AccessTools.Method(typeof(NPC), nameof(NPC.draw), new Type[] { typeof(SpriteBatch), typeof(float) }),
-			   prefix: new HarmonyMethod(typeof(ModEntry), nameof(ModEntry.NPC_draw_prefix))
-			);
-			harmony.Patch(
-			   original: AccessTools.Method(typeof(GameLocation), nameof(GameLocation.isCollidingPosition), new Type[] { typeof(Microsoft.Xna.Framework.Rectangle), typeof(xTile.Dimensions.Rectangle), typeof(bool), typeof(int), typeof(bool), typeof(Character), typeof(bool), typeof(bool), typeof(bool) }),
-			   prefix: new HarmonyMethod(typeof(ModEntry), nameof(ModEntry.GameLocation_isCollidingPosition_prefix))
-			);
+            harmony.Patch(
+               original: AccessTools.Method(typeof(Farmer), nameof(Farmer.getDrawLayer)),
+               prefix: new HarmonyMethod(typeof(ModEntry), nameof(ModEntry.Farmer_getDrawLayer_prefix))
+            );
+            harmony.Patch(
+               original: AccessTools.Method(typeof(NPC), nameof(NPC.draw), new Type[] { typeof(SpriteBatch), typeof(float) }),
+               prefix: new HarmonyMethod(typeof(ModEntry), nameof(ModEntry.NPC_draw_prefix))
+            );
+            harmony.Patch(
+               original: AccessTools.Method(typeof(GameLocation), nameof(GameLocation.isCollidingPosition), new Type[] { typeof(Microsoft.Xna.Framework.Rectangle), typeof(xTile.Dimensions.Rectangle), typeof(bool), typeof(int), typeof(bool), typeof(Character), typeof(bool), typeof(bool), typeof(bool) }),
+               prefix: new HarmonyMethod(typeof(ModEntry), nameof(ModEntry.GameLocation_isCollidingPosition_prefix))
+            );
 
-			horseShadow = Helper.Content.Load<Texture2D>(Path.Combine("assets", "horse_shadow.png"));
-			horse = Helper.Content.Load<Texture2D>(Path.Combine("assets", "horse.png"));
-			
-		}
+            horseShadow = Helper.Content.Load<Texture2D>(Path.Combine("assets", "horse_shadow.png"));
+            horse = Helper.Content.Load<Texture2D>(Path.Combine("assets", "horse.png"));
+            
+        }
 
         private static bool Farmer_getDrawLayer_prefix(ref Farmer __instance, ref float __result)
         {
-			if(__instance.UniqueMultiplayerID == Game1.player.UniqueMultiplayerID && context.playerJumpingWithHorse)
+            if(__instance.UniqueMultiplayerID == Game1.player.UniqueMultiplayerID && context.playerJumpingWithHorse)
             {
-				__result = 0.992f;
-				return false;
-			}
-			return true;
+                __result = 0.992f;
+                return false;
+            }
+            return true;
         }
 
         private static bool GameLocation_isCollidingPosition_prefix(bool isFarmer, ref bool __result)
         {
-			if (isFarmer && context.playerJumpingWithHorse && !blockedJump)
-			{
-				__result = false;
-				return false;
-			}
-			return true;
-		}
+            if (isFarmer && context.playerJumpingWithHorse && !blockedJump)
+            {
+                __result = false;
+                return false;
+            }
+            return true;
+        }
 
-		private static void NPC_draw_prefix(ref NPC __instance, SpriteBatch b, float alpha)
-		{
-			if (__instance is Horse)
-			{
-				b.Draw(context.horseShadow, __instance.getLocalPosition(Game1.viewport) + new Vector2((float)(__instance.Sprite.SpriteWidth * 4 / 2), (float)(__instance.GetBoundingBox().Height / 2)), new Microsoft.Xna.Framework.Rectangle?(__instance.Sprite.SourceRect), Color.White * alpha, __instance.rotation, new Vector2((float)(__instance.Sprite.SpriteWidth / 2), (float)__instance.Sprite.SpriteHeight * 3f / 4f), Math.Max(0.2f, __instance.scale) * 4f, (__instance.flip || (__instance.Sprite.CurrentAnimation != null && __instance.Sprite.CurrentAnimation[__instance.Sprite.currentAnimationIndex].flip)) ? SpriteEffects.FlipHorizontally : SpriteEffects.None, 0);
-				if ((__instance as Horse).rider != null)
+        private static void NPC_draw_prefix(ref NPC __instance, SpriteBatch b, float alpha)
+        {
+            if (__instance is Horse)
+            {
+                b.Draw(context.horseShadow, __instance.getLocalPosition(Game1.viewport) + new Vector2((float)(__instance.Sprite.SpriteWidth * 4 / 2), (float)(__instance.GetBoundingBox().Height / 2)), new Microsoft.Xna.Framework.Rectangle?(__instance.Sprite.SourceRect), Color.White * alpha, __instance.rotation, new Vector2((float)(__instance.Sprite.SpriteWidth / 2), (float)__instance.Sprite.SpriteHeight * 3f / 4f), Math.Max(0.2f, __instance.scale) * 4f, (__instance.flip || (__instance.Sprite.CurrentAnimation != null && __instance.Sprite.CurrentAnimation[__instance.Sprite.currentAnimationIndex].flip)) ? SpriteEffects.FlipHorizontally : SpriteEffects.None, 0);
+                if ((__instance as Horse).rider != null)
                 {
                     if (context.playerJumpingWithHorse)
                     {
-						__instance.Position += new Vector2(0, (__instance as Horse).rider.yJumpOffset * 2);
-						__instance.drawOnTop = true;
-					}
-					else
-					{
-						__instance.drawOnTop = false;
-					}
-				}
-			}
-		}
+                        __instance.Position += new Vector2(0, (__instance as Horse).rider.yJumpOffset * 2);
+                        __instance.drawOnTop = true;
+                    }
+                    else
+                    {
+                        __instance.drawOnTop = false;
+                    }
+                }
+            }
+        }
 
-		private void Input_ButtonPressed(object sender, StardewModdingAPI.Events.ButtonPressedEventArgs e)
-		{
-			if (e.Button == Config.JumpButton && Context.IsPlayerFree && !Game1.player.IsSitting() && !Game1.player.swimming && Game1.currentMinigame == null && Game1.player.yJumpVelocity == 0)
-			{
-				playerJumpingOver = false;
-				playerJumpingWithHorse = false;
-				blockedJump = false;
+        private void Input_ButtonPressed(object sender, StardewModdingAPI.Events.ButtonPressedEventArgs e)
+        {
+            if (e.Button == Config.JumpButton && Context.IsPlayerFree && !Game1.player.IsSitting() && !Game1.player.swimming && Game1.currentMinigame == null && Game1.player.yJumpVelocity == 0)
+            {
+                playerJumpingOver = false;
+                playerJumpingWithHorse = false;
+                blockedJump = false;
 
-				if (Config.PlayJumpSound)
-					Game1.playSound("dwop");
-				velX = 0;
-				velY = 0;
-				int ox = 0;
-				int oy = 0;
-				switch (Game1.player.facingDirection.Value)
-				{
-					case 0:
-						oy = -1;
-						break;
-					case 1:
-						ox = 1;
-						break;
-					case 2:
-						oy = 1;
-						break;
-					case 3:
-						ox = -1;
-						break;
-				}
+                if (Config.PlayJumpSound)
+                    Game1.playSound("dwop");
+                velX = 0;
+                velY = 0;
+                int ox = 0;
+                int oy = 0;
+                switch (Game1.player.facingDirection.Value)
+                {
+                    case 0:
+                        oy = -1;
+                        break;
+                    case 1:
+                        ox = 1;
+                        break;
+                    case 2:
+                        oy = 1;
+                        break;
+                    case 3:
+                        ox = -1;
+                        break;
+                }
 
-				int maxJumpDistance = Math.Max(2, Config.MaxJumpDistance);
-				GameLocation l = Game1.player.currentLocation;
-				List<bool> collisions = new List<bool>();
-				for (int i = 0; i < maxJumpDistance; i++)
-				{
+                int maxJumpDistance = Math.Max(2, Config.MaxJumpDistance);
+                GameLocation l = Game1.player.currentLocation;
+                List<bool> collisions = new List<bool>();
+                for (int i = 0; i < maxJumpDistance; i++)
+                {
                     Microsoft.Xna.Framework.Rectangle box = Game1.player.GetBoundingBox();
                     if (Game1.player.isRidingHorse())
                     {
-						box.X += ox * Game1.tileSize / 2;
-						box.Y += oy * Game1.tileSize / 2;
-					}
-					box.X += ox * Game1.tileSize * i;
-					box.Y += oy * Game1.tileSize * i;
-					collisions.Add(
-						l.isCollidingPosition(box, Game1.viewport, true, 0, false, Game1.player) 
-						|| box.X >= l.map.Layers[0].LayerWidth * Game1.tileSize 
-						|| box.Y >= l.map.Layers[0].LayerHeight * Game1.tileSize 
-						|| box.X < 0 
-						|| box.Y < 0
-						|| (l.waterTiles?[box.X / Game1.tileSize, box.Y / Game1.tileSize] == true && !Helper.ModRegistry.IsLoaded("aedenthorn.Swim"))
-					);
-				}
+                        box.X += ox * Game1.tileSize / 2;
+                        box.Y += oy * Game1.tileSize / 2;
+                    }
+                    box.X += ox * Game1.tileSize * i;
+                    box.Y += oy * Game1.tileSize * i;
+                    collisions.Add(
+                        l.isCollidingPosition(box, Game1.viewport, true, 0, false, Game1.player) 
+                        || box.X >= l.map.Layers[0].LayerWidth * Game1.tileSize 
+                        || box.Y >= l.map.Layers[0].LayerHeight * Game1.tileSize 
+                        || box.X < 0 
+                        || box.Y < 0
+                        || (l.waterTiles?[box.X / Game1.tileSize, box.Y / Game1.tileSize] == true && !Helper.ModRegistry.IsLoaded("aedenthorn.Swim"))
+                    );
+                }
 
-				playerJumpingWithHorse = Game1.player.isRidingHorse();
-				if (!collisions[0] && !collisions[1])
-				{
-					PlayerJump(Config.OrdinaryJumpHeight);
-					return;
-				}
+                playerJumpingWithHorse = Game1.player.isRidingHorse();
+                if (!collisions[0] && !collisions[1])
+                {
+                    PlayerJump(Config.OrdinaryJumpHeight);
+                    return;
+                }
 
-				for (int i = 1; i < collisions.Count; i++)
-				{
-					if (!collisions[i])
-					{
-						velX = ox * (float)Math.Sqrt(i * 16);
-						velY = oy * (float)Math.Sqrt(i * 16);
-						lastYJumpVelocity = 0;
-						Game1.player.canMove = false;
-						playerJumpingOver = true;
-						PlayerJump((float)Math.Sqrt(i * 16));
-						return;
-					}
-				}
-				blockedJump = true;
-				PlayerJump(Config.OrdinaryJumpHeight);
-			}
-		}
+                for (int i = 1; i < collisions.Count; i++)
+                {
+                    if (!collisions[i])
+                    {
+                        velX = ox * (float)Math.Sqrt(i * 16);
+                        velY = oy * (float)Math.Sqrt(i * 16);
+                        lastYJumpVelocity = 0;
+                        Game1.player.canMove = false;
+                        playerJumpingOver = true;
+                        PlayerJump((float)Math.Sqrt(i * 16));
+                        return;
+                    }
+                }
+                blockedJump = true;
+                PlayerJump(Config.OrdinaryJumpHeight);
+            }
+        }
 
         private void PlayerJump(float v)
-		{
-			playerJumping = true;
-			Game1.player.synchronizedJump(v);
-			Helper.Events.GameLoop.UpdateTicked += GameLoop_UpdateTicked;
-		}
+        {
+            playerJumping = true;
+            Game1.player.synchronizedJump(v);
+            Helper.Events.GameLoop.UpdateTicked += GameLoop_UpdateTicked;
+        }
 
-		private void GameLoop_UpdateTicked(object sender, StardewModdingAPI.Events.UpdateTickedEventArgs e)
-		{
-			if (Game1.player.yJumpVelocity == 0f && lastYJumpVelocity < 0f)
-			{
-				playerJumping = false;
-				playerJumpingOver = false;
-				playerJumpingWithHorse = false;
-				blockedJump = false;
-				Game1.player.canMove = true;
-				Helper.Events.GameLoop.UpdateTicked -= GameLoop_UpdateTicked;
-				return;
-			}
-			Game1.player.position.X += velX;
-			Game1.player.position.Y += velY;
-			lastYJumpVelocity = Game1.player.yJumpVelocity;
-		}
+        private void GameLoop_UpdateTicked(object sender, StardewModdingAPI.Events.UpdateTickedEventArgs e)
+        {
+            if (Game1.player.yJumpVelocity == 0f && lastYJumpVelocity < 0f)
+            {
+                playerJumping = false;
+                playerJumpingOver = false;
+                playerJumpingWithHorse = false;
+                blockedJump = false;
+                Game1.player.canMove = true;
+                Helper.Events.GameLoop.UpdateTicked -= GameLoop_UpdateTicked;
+                return;
+            }
+            Game1.player.position.X += velX;
+            Game1.player.position.Y += velY;
+            lastYJumpVelocity = Game1.player.yJumpVelocity;
+        }
 
 
-		public bool CanEdit<T>(IAssetInfo asset)
-		{
-			if (!Config.EnableMod)
-				return false;
-			if (asset.AssetNameEquals("Animals/Horse"))
-			{
-				return true;
-			}
+        public bool CanEdit<T>(IAssetInfo asset)
+        {
+            if (!Config.EnableMod)
+                return false;
+            if (asset.AssetNameEquals("Animals/Horse"))
+            {
+                return true;
+            }
 
-			return false;
-		}
-		/// <summary>Edit a matched asset.</summary>
-		/// <param name="asset">A helper which encapsulates metadata about an asset and enables changes to it.</param>
-		public void Edit<T>(IAssetData asset)
-		{
-			//Texture2D customTexture = this.Helper.Content.Load<Texture2D>(Path.Combine("assets","horse.png");
-			if(!Config.CustomHorseTexture)
-				asset.AsImage().ReplaceWith(horse);
-		}
-	}
+            return false;
+        }
+        /// <summary>Edit a matched asset.</summary>
+        /// <param name="asset">A helper which encapsulates metadata about an asset and enables changes to it.</param>
+        public void Edit<T>(IAssetData asset)
+        {
+            //Texture2D customTexture = this.Helper.Content.Load<Texture2D>(Path.Combine("assets","horse.png");
+            if(!Config.CustomHorseTexture)
+                asset.AsImage().ReplaceWith(horse);
+        }
+    }
 }

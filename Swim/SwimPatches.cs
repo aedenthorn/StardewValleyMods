@@ -15,17 +15,17 @@ using xTile.Tiles;
 namespace Swim
 {
     internal class SwimPatches
-	{
-		private static IMonitor Monitor;
-		private static ModConfig Config;
-		private static IModHelper Helper;
+    {
+        private static IMonitor Monitor;
+        private static ModConfig Config;
+        private static IModHelper Helper;
 
-		public static void Initialize(IMonitor monitor, IModHelper helper, ModConfig config)
-		{
-			Monitor = monitor;
-			Config = config;
-			Helper = helper;
-		}
+        public static void Initialize(IMonitor monitor, IModHelper helper, ModConfig config)
+        {
+            Monitor = monitor;
+            Config = config;
+            Helper = helper;
+        }
         public static void FarmerRenderer_draw_Prefix(Farmer who, ref bool __state)
         {
             try
