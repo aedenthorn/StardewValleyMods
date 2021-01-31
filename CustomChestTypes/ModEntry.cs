@@ -4,7 +4,6 @@ using Microsoft.Xna.Framework.Graphics;
 using Netcode;
 using StardewModdingAPI;
 using StardewValley;
-using StardewValley.Menus;
 using StardewValley.Network;
 using StardewValley.Objects;
 using System;
@@ -55,10 +54,18 @@ namespace CustomChestTypes
                 prefix: new HarmonyMethod(typeof(ModEntry), nameof(Object_placementAction_Prefix))
             );
             harmony.Patch(
+                original: AccessTools.Method(typeof(Object), nameof(Object.draw), new Type[] { typeof(SpriteBatch), typeof(int), typeof(int), typeof(float) }),
+                prefix: new HarmonyMethod(typeof(ModEntry), nameof(Object_draw_Prefix))
+            );
+            harmony.Patch(
                 original: AccessTools.Method(typeof(Object), nameof(Object.drawInMenu), new Type[] { typeof(SpriteBatch), typeof(Vector2),  typeof(float),  typeof(float),  typeof(float),  typeof(StackDrawType),  typeof(Color),  typeof(bool)}),
                 prefix: new HarmonyMethod(typeof(ModEntry), nameof(Object_drawInMenu_Prefix))
             );
-
+            harmony.Patch(
+                original: AccessTools.Method(typeof(Object), nameof(Object.drawWhenHeld)),
+                prefix: new HarmonyMethod(typeof(ModEntry), nameof(Object_drawWhenHeld_Prefix))
+            );
+            
             harmony.Patch(
                 original: AccessTools.Method(typeof(Chest), nameof(Chest.draw), new Type[] { typeof(SpriteBatch), typeof(int), typeof(int), typeof(float) }),
                 prefix: new HarmonyMethod(typeof(ModEntry), nameof(Chest_draw_Prefix))
@@ -247,7 +254,7 @@ namespace CustomChestTypes
             float base_sort_order = Math.Max(0f, ((y + 1f) * 64f - 24f) / 10000f) + y * 1E-05f;
             int currentFrame = alpha < 1 ? 1 : (int) MathHelper.Clamp(SHelper.Reflection.GetField<int>(__instance, "currentLidFrame").GetValue(), 1, chestInfo.frames);
             Texture2D texture = chestInfo.texture.ElementAt(currentFrame-1);
-            spriteBatch.Draw(texture, Game1.GlobalToLocal(Game1.viewport, new Vector2(x * 64f + (float)((__instance.shakeTimer > 0) ? Game1.random.Next(-1, 2) : 0), (y - texture.Height / 16 + 1) * 64f)), new Rectangle(0,0, texture.Width, texture.Height), __instance.tint.Value * alpha, 0f, Vector2.Zero, 4f, SpriteEffects.None, base_sort_order);
+            spriteBatch.Draw(texture, Game1.GlobalToLocal(Game1.viewport, new Vector2(x * 64f + (float)((__instance.shakeTimer > 0) ? Game1.random.Next(-1, 2) : 0), (y - texture.Height / 16 + 1) * 64f)), new Rectangle(0,0, texture.Width, texture.Height), __instance.Tint * alpha, 0f, Vector2.Zero, 4f, SpriteEffects.None, base_sort_order);
 
             return false;
         }        
@@ -267,7 +274,33 @@ namespace CustomChestTypes
                 Utility.drawTinyDigits(__instance.stack, spriteBatch, location + new Vector2((float)(64 - Utility.getWidthOfTinyDigitString(__instance.stack, 3f * scaleSize)) + 3f * scaleSize, 64f - 18f * scaleSize + 2f), 3f * scaleSize, 1f, color);
             }
             return false;
-        }                
+        }
+
+        private static bool Object_draw_Prefix(Object __instance, SpriteBatch spriteBatch, int x, int y, float alpha)
+        {
+            if (!customChestTypesDict.TryGetValue(__instance.ParentSheetIndex, out var chestInfo))
+                return true;
+            
+            float base_sort_order = Math.Max(0f, ((y + 1f) * 64f - 24f) / 10000f) + y * 1E-05f;
+            int currentFrame = alpha < 1 ? 1 : (int) MathHelper.Clamp(SHelper.Reflection.GetField<int>(__instance, "currentLidFrame").GetValue(), 1, chestInfo.frames);
+            Texture2D texture = chestInfo.texture.ElementAt(currentFrame-1);
+            spriteBatch.Draw(texture, Game1.GlobalToLocal(Game1.viewport, new Vector2(x * 64f + (float)((__instance.shakeTimer > 0) ? Game1.random.Next(-1, 2) : 0), (y - texture.Height / 16 + 1) * 64f)), new Rectangle(0,0, texture.Width, texture.Height), Color.White * alpha, 0f, Vector2.Zero, 4f, SpriteEffects.None, base_sort_order);
+
+            return false;
+        }
+        
+        private static bool Object_drawWhenHeld_Prefix(Object __instance, SpriteBatch spriteBatch, Vector2 objectPosition, Farmer f)
+        {
+            if (!customChestTypesDict.TryGetValue(__instance.ParentSheetIndex, out var chestInfo))
+                return true;
+            Texture2D texture = chestInfo.texture.First();
+            objectPosition.X -= texture.Width * 2f - 32;
+            objectPosition.Y -= (texture.Height - chestInfo.boundingBox.Height) * 4f - 64;
+            var tint = __instance is Chest chest ? chest.Tint : Color.White;
+            spriteBatch.Draw(texture, objectPosition, new Rectangle(0,0, texture.Width, texture.Height), tint, 0f, Vector2.Zero, 4f, SpriteEffects.None, 0.9f);
+            return false;
+        }
+        
         private static bool Chest_checkForAction_Prefix(Chest __instance, ref bool __result, Farmer who, bool justCheckingForActivity)
         {
             if (justCheckingForActivity || !customChestTypesDict.TryGetValue(__instance.ParentSheetIndex, out CustomChestType chestInfo))
