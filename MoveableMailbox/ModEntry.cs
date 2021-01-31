@@ -9,6 +9,7 @@ using System.IO;
 using xTile;
 using xTile.Dimensions;
 using Object = StardewValley.Object;
+using Rectangle = Microsoft.Xna.Framework.Rectangle;
 
 namespace MoveableMailbox
 {
@@ -61,8 +62,56 @@ namespace MoveableMailbox
 
         }
 
+        private void GameLoop_GameLaunched(object sender, StardewModdingAPI.Events.GameLaunchedEventArgs e)
+        {
+            
+            mJsonAssets = base.Helper.ModRegistry.GetApi<IJsonAssetsApi>("spacechase0.JsonAssets");
+            if (mJsonAssets == null)
+            {
+                Monitor.Log("Can't load Json Assets API for Moveable Mailbox", LogLevel.Warn);
+            }
+            else
+            {
+                mJsonAssets.LoadAssets(Path.Combine(Helper.DirectoryPath, "json-assets"));
+            }
+        }
+
         private void GameLoop_SaveLoaded(object sender, StardewModdingAPI.Events.SaveLoadedEventArgs e)
         {
+            if (config.CustomMailbox)
+            {
+                try
+                {
+                    Texture2D tex = new Texture2D(Game1.graphics.GraphicsDevice, 16, 32);
+                    Color[] data = new Color[tex.Width * tex.Height];
+                    tex.GetData(data);
+
+                    Texture2D source = Helper.Content.Load<Texture2D>($"Maps/{Game1.currentSeason.ToLower()}_outdoorsTileSheet", ContentSource.GameContent);
+                    Color[] srcData = new Color[source.Width * source.Height];
+                    source.GetData(srcData);
+
+                    int width = 400;
+                    int startx = 80;
+                    int starty = 1232;
+                    int start = starty * width + startx;
+                    for (int i = 0; i < data.Length; i++)
+                    {
+                        int srcIdx = start + (i / 16 * width + i % 16); 
+                        data[i] = srcData[srcIdx];
+                    }
+                    tex.SetData(data);
+                    Stream stream = File.Create(Path.Combine(Helper.DirectoryPath, "json-assets", "BigCraftables", "Mailbox", "big-craftable.png"));
+                    tex.SaveAsPng(stream, tex.Width, tex.Height);
+                    stream.Close();
+                    Monitor.Log($"Wrote custom mailbox texture from Maps/{ Game1.currentSeason.ToLower()}_outdoorsTileSheet to {Path.Combine(Helper.DirectoryPath, "json-assets", "BigCraftables", "Mailbox", "big-craftable.png")}.", LogLevel.Debug);
+                    Helper.Content.InvalidateCache("Tilesheets/Craftables");
+                }
+                catch (Exception ex)
+                {
+                    Monitor.Log($"Error writing mailbox texture.\n{ex}", LogLevel.Warn);
+                }
+            }
+
             Farm farm = Game1.getFarm();
             foreach (KeyValuePair<Vector2, Object> kvp in farm.objects.Pairs)
             {
@@ -77,50 +126,6 @@ namespace MoveableMailbox
             PMonitor.Log("Set mailbox location to 0,0");
         }
 
-        private void GameLoop_GameLaunched(object sender, StardewModdingAPI.Events.GameLaunchedEventArgs e)
-        {
-            
-            if (config.CustomMailbox)
-            {
-                try
-                {
-                    Texture2D tex = new Texture2D(Game1.graphics.GraphicsDevice, 16, 32);
-                    Color[] data = new Color[tex.Width * tex.Height];
-                    tex.GetData(data);
-
-                    Texture2D source = Helper.Content.Load<Texture2D>("Maps/spring_outdoorsTileSheet", ContentSource.GameContent);
-                    Color[] srcData = new Color[source.Width * source.Height];
-                    source.GetData(srcData);
-
-                    int width = 400;
-                    int startx = 80;
-                    int starty = 1232;
-                    int start = starty * width + startx;
-                    for (int i = 0; i < data.Length; i++)
-                    {
-                        int srcIdx = start + (i / 16 * width + i % 16);
-                        data[i] = srcData[srcIdx];
-                    }
-                    tex.SetData(data);
-                    Stream stream = File.Create(Path.Combine(Helper.DirectoryPath, "json-assets", "BigCraftables", "Mailbox", "big-craftable.png"));
-                    tex.SaveAsPng(stream, tex.Width, tex.Height);
-                    stream.Close();
-                }
-                catch(Exception ex)
-                {
-                    Monitor.Log($"Error writing mailbox texture.\n{ex}", LogLevel.Warn);
-                }
-            }
-            mJsonAssets = base.Helper.ModRegistry.GetApi<IJsonAssetsApi>("spacechase0.JsonAssets");
-            if (mJsonAssets == null)
-            {
-                Monitor.Log("Can't load Json Assets API for Moveable Mailbox", LogLevel.Warn);
-            }
-            else
-            {
-                mJsonAssets.LoadAssets(Path.Combine(Helper.DirectoryPath, "json-assets"));
-            }
-        }
         private static void loadForNewGame_Postfix()
         {
             Farm farm = Game1.getFarm();
@@ -191,6 +196,10 @@ namespace MoveableMailbox
             if (!config.EnableMod)
                 return false;
 
+            if (mJsonAssets != null && asset.AssetNameEquals("Tilesheets/Craftables"))
+            {
+                return true;
+            }
             if (asset.AssetNameEquals("Maps/Farm") || asset.AssetNameEquals("Maps/Farm_Combat") || asset.AssetNameEquals("Maps/Farm_Fishing") || asset.AssetNameEquals("Maps/Farm_Foraging") || asset.AssetNameEquals("Maps/Farm_FourCorners") || asset.AssetNameEquals("Maps/Farm_Island") || asset.AssetNameEquals("Maps/Farm_Mining"))
             {
                 return true;
@@ -204,34 +213,50 @@ namespace MoveableMailbox
         public void Edit<T>(IAssetData asset)
         {
             Monitor.Log("Editing asset" + asset.AssetName);
-            try
-            {
-                var mapData = asset.AsMap();
-                for (int x = 0; x < mapData.Data.Layers[0].LayerWidth; x++)
-                {
-                    for (int y = 0; y < mapData.Data.Layers[0].LayerHeight; y++)
-                    {
-                        //Monitor.Log($"{x},{y},{map.GetLayer("Buildings").Tiles[x, y]?.TileIndex},{map.GetLayer("Front").Tiles[x, y]?.TileIndex}",LogLevel.Warn);
 
-                        if (mapData.Data.GetLayer("Buildings").Tiles[x, y]?.TileIndex == 1955)
+            if (asset.AssetName.StartsWith("Maps"))
+            {
+                try
+                {
+                    var mapData = asset.AsMap();
+                    for (int x = 0; x < mapData.Data.Layers[0].LayerWidth; x++)
+                    {
+                        for (int y = 0; y < mapData.Data.Layers[0].LayerHeight; y++)
                         {
-                            Monitor.Log("Removing existing mailbox stand.");
-                            mapData.Data.GetLayer("Buildings").Tiles[x, y] = null;
-                        }
-                        if (mapData.Data.GetLayer("Front").Tiles[x, y]?.TileIndex == 1930)
-                        {
-                            Monitor.Log("Removing existing mailbox top.");
-                            mapData.Data.GetLayer("Front").Tiles[x, y] = null;
+                            //Monitor.Log($"{x},{y},{map.GetLayer("Buildings").Tiles[x, y]?.TileIndex},{map.GetLayer("Front").Tiles[x, y]?.TileIndex}",LogLevel.Warn);
+
+                            if (mapData.Data.GetLayer("Buildings").Tiles[x, y]?.TileIndex == 1955)
+                            {
+                                Monitor.Log("Removing existing mailbox stand.");
+                                mapData.Data.GetLayer("Buildings").Tiles[x, y] = null;
+                            }
+                            if (mapData.Data.GetLayer("Front").Tiles[x, y]?.TileIndex == 1930)
+                            {
+                                Monitor.Log("Removing existing mailbox top.");
+                                mapData.Data.GetLayer("Front").Tiles[x, y] = null;
+                            }
                         }
                     }
-                }
 
+                }
+                catch (Exception ex)
+                {
+                    Monitor.Log($"Exception removing existing mailbox.\n{ex}", LogLevel.Error);
+                }
+                return;
             }
-            catch (Exception ex)
+            if (asset.AssetNameEquals("Tilesheets/Craftables"))
             {
-                Monitor.Log($"Exception removing existing mailbox.\n{ex}", LogLevel.Error);
+                int id = mJsonAssets.GetBigCraftableId("Mailbox");
+                Monitor.Log($"mailbox id {id}");
+                if (id > 0)
+                {
+                    int x = id % 8 * 16;
+                    int y = id / 8 * 32;
+                    asset.AsImage().PatchImage(Helper.Content.Load<Texture2D>($"json-assets/BigCraftables/Mailbox/big-craftable.png"), targetArea: new Rectangle(x, y, 16, 32));
+                    Monitor.Log("patched craftables.");
+                }
             }
         }
-
     }
 }

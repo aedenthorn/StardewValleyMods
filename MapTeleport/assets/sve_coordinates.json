@@ -146,9 +146,9 @@
         },
         {
             "id": 1025, // adventurer's guild
-            "mapName": "Mountain",
-            "x":76,
-            "y":9
+            "mapName": "Town",
+            "x":33,
+            "y":101
         },
         {
             "id": 1026,

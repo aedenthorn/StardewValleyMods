@@ -5,6 +5,7 @@ using StardewValley.Menus;
 using StardewValley.Tools;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 
 namespace FishingChestsExpanded
@@ -52,7 +53,7 @@ namespace FishingChestsExpanded
             {
                 Monitor.Log($"loaded AdvancedLootFramework API", LogLevel.Debug);
             }
-            treasuresList = advancedLootFrameworkApi.LoadPossibleTreasures(Config.ItemListTypes, Config.MinItemValue, Config.MaxItemValue);
+            treasuresList = advancedLootFrameworkApi.LoadPossibleTreasures(Config.ItemListChances.Where(p => p.Value > 0).ToDictionary(s => s.Key, s => s.Value).Keys.ToArray(), Config.MinItemValue, Config.MaxItemValue);
             Monitor.Log($"Got {treasuresList.Count} possible treasures");
         }
 
@@ -85,7 +86,7 @@ namespace FishingChestsExpanded
 
             int coins = advancedLootFrameworkApi.GetChestCoins(difficulty, Config.IncreaseRate, Config.CoinBaseMin, Config.CoinBaseMax);
 
-            IList<Item> items = advancedLootFrameworkApi.GetChestItems(treasuresList, Config.MaxItems, Config.MinItemValue, Config.MaxItemValue, difficulty, Config.IncreaseRate, Config.ItemsBaseMaxValue);
+            IList<Item> items = advancedLootFrameworkApi.GetChestItems(treasuresList, Config.ItemListChances, Config.MaxItems, Config.MinItemValue, Config.MaxItemValue, difficulty, Config.IncreaseRate, Config.ItemsBaseMaxValue);
             foreach(Item item in inventory)
             {
                 if (item.parentSheetIndex == fish)

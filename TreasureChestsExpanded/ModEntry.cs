@@ -8,6 +8,7 @@ using StardewValley.Locations;
 using StardewValley.Objects;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace TreasureChestsExpanded
 {
@@ -50,7 +51,7 @@ namespace TreasureChestsExpanded
             {
                 Monitor.Log($"loaded AdvancedLootFramework API", LogLevel.Debug);
             }
-            treasuresList = advancedLootFrameworkApi.LoadPossibleTreasures(Config.ItemListTypes, Config.MinItemValue, Config.MaxItemValue);
+            treasuresList = advancedLootFrameworkApi.LoadPossibleTreasures(Config.ItemListChances.Where(p => p.Value > 0).ToDictionary(s => s.Key, s => s.Value).Keys.ToArray(), Config.MinItemValue, Config.MaxItemValue);
             Monitor.Log($"Got {treasuresList.Count} possible treasures");
         }
 
@@ -66,7 +67,7 @@ namespace TreasureChestsExpanded
             if (treasureRoom.Value && __instance.overlayObjects.ContainsKey(chestSpot))
             {
 
-                __instance.overlayObjects[chestSpot] = advancedLootFrameworkApi.MakeChest(treasuresList, Config.MaxItems, Config.MinItemValue, Config.MaxItemValue, __instance.mineLevel, Config.IncreaseRate, Config.ItemsBaseMaxValue, Config.CoinBaseMin, Config.CoinBaseMax, chestSpot);
+                __instance.overlayObjects[chestSpot] = advancedLootFrameworkApi.MakeChest(treasuresList, Config.ItemListChances, Config.MaxItems, Config.MinItemValue, Config.MaxItemValue, __instance.mineLevel, Config.IncreaseRate, Config.ItemsBaseMaxValue, Config.CoinBaseMin, Config.CoinBaseMax, chestSpot);
             }
         }
 

@@ -53,12 +53,12 @@ namespace AdvancedLootFramework
             __instance.coins.Value = 0;
         }
 
-        public static List<object> LoadPossibleTreasures(List<string> includeList, int minItemValue, int maxItemValue)
+        public static List<object> LoadPossibleTreasures(string[] includeList, int minItemValue, int maxItemValue)
         {
             List<object> treasures = new List<object>();
 
             int currentCount = 0;
-            if (includeList.Contains("Weapon"))
+            if (includeList.Contains("MeleeWeapon"))
             {
                 foreach (KeyValuePair<int, string> kvp in Game1.content.Load<Dictionary<int, string>>("Data\\weapons"))
                 {
@@ -79,15 +79,17 @@ namespace AdvancedLootFramework
                     if (includeList.Contains("Shirt") && kvp.Value.Split('/')[8].ToLower().Trim() == "shirt")
                     {
                         price = Convert.ToInt32(kvp.Value.Split('/')[5]);
+                        if (CanAddTreasure(price, minItemValue, maxItemValue))
+                            treasures.Add(new Treasure(kvp.Key, price, "Shirt"));
                     }
                     else if (includeList.Contains("Pants") && kvp.Value.Split('/')[8].ToLower().Trim() == "pants")
                     {
                         price = Convert.ToInt32(kvp.Value.Split('/')[5]);
+                        if (CanAddTreasure(price, minItemValue, maxItemValue))
+                            treasures.Add(new Treasure(kvp.Key, price, "Pants"));
                     }
                     else
                         continue;
-                    if (CanAddTreasure(price, minItemValue, maxItemValue))
-                        treasures.Add(new Treasure(kvp.Key, price, "Clothing"));
                 }
                 //Monitor.Log($"Added {treasures.Count - currentCount} clothes");
                 currentCount = treasures.Count;
@@ -158,7 +160,7 @@ namespace AdvancedLootFramework
                 }
                 else if (includeList.Contains("Fish") && kvp.Value.Split('/')[3].StartsWith("Fish"))
                 {
-                    type = "Fish"; 
+                    type = "Fish";
                 }
                 else if (includeList.Contains("Relic") && kvp.Value.Split('/')[3].StartsWith("Arch"))
                 {
@@ -168,7 +170,9 @@ namespace AdvancedLootFramework
                 {
                     type = "BasicObject";
                 }
-                if (type != "" && CanAddTreasure(price, minItemValue, maxItemValue))
+                else
+                    continue;
+                if (CanAddTreasure(price, minItemValue, maxItemValue))
                     treasures.Add(new Treasure(kvp.Key, price, type));
             }
             //Monitor.Log($"Added {treasures.Count - currentCount} objects"); 
@@ -221,7 +225,7 @@ namespace AdvancedLootFramework
             return 0;
         }
 
-        public static List<Item> GetChestItems(List<object> treasures, int maxItems, int minItemValue, int maxItemValue, int mult, float increaseRate, int baseValue)
+        public static List<Item> GetChestItems(List<object> treasures, Dictionary<string, int> itemChances, int maxItems, int minItemValue, int maxItemValue, int mult, float increaseRate, int baseValue)
         {
 
             // shuffle list
@@ -248,26 +252,36 @@ namespace AdvancedLootFramework
             {
                 if (CanAddTreasure(t.value, minItemValue, maxItemValue) && currentValue + t.value <= maxValue)
                 {
-                    SMonitor.Log($"adding {t.type} {t.index} {t.value} to chest");
+                    //SMonitor.Log($"adding {t.type} {t.index} {t.value} to chest");
                     switch (t.type)
                     {
                         case "MeleeWeapon":
-                            chestItems.Add(new MeleeWeapon(t.index));
+                            if(myRand.NextDouble() < itemChances["MeleeWeapon"] / 100f)
+                                chestItems.Add(new MeleeWeapon(t.index));
                             break;
-                        case "Clothing":
-                            chestItems.Add(new Clothing(t.index));
+                        case "Shirt":
+                            if (myRand.NextDouble() < itemChances["Shirt"] / 100f)
+                                chestItems.Add(new Clothing(t.index));
+                            break;
+                        case "Pants":
+                            if (myRand.NextDouble() < itemChances["Pants"] / 100f)
+                                chestItems.Add(new Clothing(t.index));
                             break;
                         case "Boots":
-                            chestItems.Add(new Boots(t.index));
+                            if (myRand.NextDouble() < itemChances["Boots"] / 100f)
+                                chestItems.Add(new Boots(t.index));
                             break;
                         case "Hat":
-                            chestItems.Add(new Hat(t.index));
+                            if (myRand.NextDouble() < itemChances["Hat"] / 100f)
+                                chestItems.Add(new Hat(t.index));
                             break;
                         case "Ring":
-                            chestItems.Add(new Ring(t.index));
+                            if (myRand.NextDouble() < itemChances["Ring"] / 100f)
+                                chestItems.Add(new Ring(t.index));
                             break;
                         case "BigCraftable":
-                            chestItems.Add(new Object(Vector2.Zero, t.index, false));
+                            if (myRand.NextDouble() < itemChances["BigCraftable"] / 100f)
+                                chestItems.Add(new Object(Vector2.Zero, t.index, false));
                             break;
                         default:
                             int number = GetNumberOfObjects(t.value, maxValue - currentValue);

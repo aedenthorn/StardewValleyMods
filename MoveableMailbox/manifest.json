@@ -1,7 +1,7 @@
 ﻿{
   "Name": "Moveable Mailbox",
   "Author": "aedenthorn",
-  "Version": "0.1.3",
+  "Version": "0.2.0",
   "Description": "Converts the mailbox into a movable object.",
   "UniqueID": "aedenthorn.MoveableMailbox",
   "EntryDll": "MoveableMailbox.dll",

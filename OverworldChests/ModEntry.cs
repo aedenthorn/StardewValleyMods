@@ -60,7 +60,7 @@ namespace OverworldChests
             {
                 Monitor.Log($"loaded AdvancedLootFramework API", LogLevel.Debug);
             }
-            treasuresList = advancedLootFrameworkApi.LoadPossibleTreasures(Config.ItemListTypes, Config.MinItemValue, Config.MaxItemValue);
+            treasuresList = advancedLootFrameworkApi.LoadPossibleTreasures(Config.ItemListChances.Where(p => p.Value > 0).ToDictionary(s => s.Key, s => s.Value).Keys.ToArray(), Config.MinItemValue, Config.MaxItemValue);
             Monitor.Log($"Got {treasuresList.Count} possible treasures");
 
         }
@@ -134,7 +134,7 @@ namespace OverworldChests
                         double fraction = Math.Pow(myRand.NextDouble(), 1 / Config.RarityChance);
                         int level = (int)Math.Ceiling(fraction * Config.Mult);
                         //Monitor.Log($"Adding expanded chest of value {level} to {l.name}");
-                        chest = advancedLootFrameworkApi.MakeChest(treasuresList, Config.MaxItems, Config.MinItemValue, Config.MaxItemValue, level, Config.IncreaseRate, Config.ItemsBaseMaxValue, Config.CoinBaseMin, Config.CoinBaseMax, freeTile);
+                        chest = advancedLootFrameworkApi.MakeChest(treasuresList, Config.ItemListChances, Config.MaxItems, Config.MinItemValue, Config.MaxItemValue, level, Config.IncreaseRate, Config.ItemsBaseMaxValue, Config.CoinBaseMin, Config.CoinBaseMax, freeTile);
                         chest.playerChoiceColor.Value = MakeTint(fraction);
                     }
                     chest.name = namePrefix;

@@ -72,7 +72,9 @@ namespace InstantGrowthPowder
                 if (i != null && i is Child && i.GetBoundingBox().Intersects(tileRect) && (i.Age < 3))
                 {
                     i.Age = 3;
-                    SHelper.Reflection.GetField<int>(i, "daysOld").SetValue(55);
+                    (i as Child).daysOld.Value = 55;
+                    i.speed = 4;
+                    i.reloadSprite();
 
                     who.CurrentItem.Stack--;
                     __instance.playSound("yoba");

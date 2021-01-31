@@ -20,7 +20,8 @@
       },
       {
         "UniqueID": "aedenthorn.AdvancedLootFramework",
-        "IsRequired": true
+        "IsRequired": true,
+        "MinimumVersion": "0.4.0"
       },
   ]
 }
