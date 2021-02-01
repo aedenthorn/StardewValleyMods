@@ -21,7 +21,7 @@ namespace MobileCatalogues
         public int PriceTravelingCatalogue { get; set; } = 500000;
         public int PriceDesertCatalogue { get; set; } = 500000;
         public int PriceHatCatalogue { get; set; } = 10000;
-        public int PriceClothingCatalogue { get; set; } = 50000;
+        public int PriceClothingCatalogue { get; set; } = 200000;
         public bool FreeCatalogue { get; set; } = false;
         public bool FreeFurnitureCatalogue { get; set; } = false;
         public bool FreeSeedCatalogue { get; set; } = false;

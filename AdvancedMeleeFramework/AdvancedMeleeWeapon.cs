@@ -6,6 +6,8 @@ namespace AdvancedMeleeFramework
     public class AdvancedMeleeWeapon
     {
         public string id = "none";
+        public int type = 0;
+        public int skillLevel = 0;
         public int cooldown = 1500;
         public List<MeleeActionFrame> frames = new List<MeleeActionFrame>();
     }

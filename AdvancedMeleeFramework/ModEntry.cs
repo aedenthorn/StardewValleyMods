@@ -3,13 +3,11 @@ using Microsoft.Xna.Framework;
 using StardewModdingAPI;
 using StardewValley;
 using StardewValley.Network;
-using StardewValley.Objects;
 using StardewValley.Projectiles;
 using StardewValley.Tools;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Object = StardewValley.Object;
 
 namespace AdvancedMeleeFramework
 {
@@ -20,11 +18,18 @@ namespace AdvancedMeleeFramework
         private static Random myRand;
         private static IMonitor SMonitor;
         private static IModHelper SHelper;
-        private static Dictionary<int,AdvancedMeleeWeapon> advancedMeleeWeapons = new Dictionary<int, AdvancedMeleeWeapon>();
+        private static Dictionary<int, List<AdvancedMeleeWeapon>> advancedMeleeWeapons = new Dictionary<int, List<AdvancedMeleeWeapon>>();
+        private static Dictionary<int, List<AdvancedMeleeWeapon>> advancedMeleeWeaponsByType = new Dictionary<int, List<AdvancedMeleeWeapon>>() 
+        {
+            {1, new List<AdvancedMeleeWeapon>() },
+            {2, new List<AdvancedMeleeWeapon>() },
+            {3, new List<AdvancedMeleeWeapon>() }
+        };
         private static int weaponAnimationFrame = -1;
         private int weaponAnimationTicks;
         private static MeleeWeapon weaponAnimating;
         private static int weaponStartFacingDirection;
+        private static AdvancedMeleeWeapon advancedWeaponAnimating = null;
 
         public override void Entry(IModHelper helper)
         {
@@ -51,6 +56,72 @@ namespace AdvancedMeleeFramework
 
         }
 
+        private void GameLoop_GameLaunched(object sender, StardewModdingAPI.Events.GameLaunchedEventArgs e)
+        {
+            LoadAdvancedMeleeWeapons();
+        }
+
+        private void LoadAdvancedMeleeWeapons()
+        {
+            advancedMeleeWeapons.Clear();
+            advancedMeleeWeaponsByType[1].Clear();
+            advancedMeleeWeaponsByType[2].Clear();
+            advancedMeleeWeaponsByType[3].Clear();
+            foreach (IContentPack contentPack in SHelper.ContentPacks.GetOwned())
+            {
+                SMonitor.Log($"Reading content pack: {contentPack.Manifest.Name} {contentPack.Manifest.Version} from {contentPack.DirectoryPath}", LogLevel.Debug);
+                try
+                {
+                    AdvancedMeleeWeaponData json = contentPack.ReadJsonFile<AdvancedMeleeWeaponData>("content.json") ?? null;
+
+                    if (json != null)
+                    {
+                        if (json.weapons != null && json.weapons.Count > 0)
+                        {
+                            foreach (AdvancedMeleeWeapon weapon in json.weapons)
+                            {
+                                if (weapon.type == 0)
+                                {
+                                    if (!int.TryParse(weapon.id, out int id))
+                                    {
+                                        try
+                                        {
+                                            id = Helper.Content.Load<Dictionary<int, string>>("Data/weapons", ContentSource.GameContent).First(p => p.Value.StartsWith($"{weapon.id}/")).Key;
+                                        }
+                                        catch
+                                        {
+                                            SMonitor.Log($"error getting weapon {weapon.id}", LogLevel.Error);
+                                            continue;
+                                        }
+
+                                    }
+                                    if (!advancedMeleeWeapons.ContainsKey(id))
+                                        advancedMeleeWeapons[id] = new List<AdvancedMeleeWeapon>();
+                                    advancedMeleeWeapons[id].Add(weapon);
+                                }
+                                else
+                                {
+                                    advancedMeleeWeaponsByType[weapon.type].Add(weapon);
+                                }
+                            }
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    SMonitor.Log($"error reading content.json file in content pack {contentPack.Manifest.Name}.\r\n{ex}", LogLevel.Error);
+                }
+            }
+            SMonitor.Log($"Total advanced melee weapons: {advancedMeleeWeapons.Count}", LogLevel.Debug);
+            SMonitor.Log($"Total advanced melee dagger attacks: {advancedMeleeWeaponsByType[1].Count}", LogLevel.Debug);
+            SMonitor.Log($"Total advanced melee club attacks: {advancedMeleeWeaponsByType[2].Count}", LogLevel.Debug);
+            SMonitor.Log($"Total advanced melee sword attacks: {advancedMeleeWeaponsByType[3].Count}", LogLevel.Debug);
+        }
+
+        public override object GetApi()
+        {
+            return new AdvancedMeleeFrameworkApi();
+        }
         private void Input_ButtonPressed(object sender, StardewModdingAPI.Events.ButtonPressedEventArgs e)
         {
             if(e.Button == Config.ReloadButton)
@@ -63,10 +134,9 @@ namespace AdvancedMeleeFramework
         {
 
             //SMonitor.Log($"player sprite frame {Game1.player.Sprite.currentFrame}");
-            if (weaponAnimationFrame > -1)
+            if (weaponAnimationFrame > -1 && advancedWeaponAnimating != null)
             {
-                AdvancedMeleeWeapon weapon = advancedMeleeWeapons[weaponAnimating.InitialParentTileIndex];
-                MeleeActionFrame frame = weapon.frames[weaponAnimationFrame];
+                MeleeActionFrame frame = advancedWeaponAnimating.frames[weaponAnimationFrame];
                 Farmer user = weaponAnimating.getLastFarmerToUse();
 
                 if (weaponAnimationFrame == 0 && weaponAnimationTicks == 0)
@@ -81,6 +151,7 @@ namespace AdvancedMeleeFramework
                     weaponAnimating = null;
                     weaponAnimationFrame = -1; 
                     weaponAnimationTicks = 0;
+                    advancedWeaponAnimating = null;
                     return;
                 }
                 
@@ -128,9 +199,11 @@ namespace AdvancedMeleeFramework
                         TranslateVector(ref xVelocity, ref yVelocity, user.FacingDirection);
                         TranslateVector(ref startingPositionX, ref startingPositionY, user.FacingDirection);
 
-                        SMonitor.Log($"player position: {user.Position}, start position: { new Vector2(startingPositionX, startingPositionY) }");
+                        int damage = advancedWeaponAnimating.type > 0 ? p.damage * myRand.Next(weaponAnimating.minDamage, weaponAnimating.maxDamage) : p.damage;
 
-                        user.currentLocation.projectiles.Add(new BasicProjectile(p.damage, p.parentSheetIndex, p.bouncesTillDestruct, p.tailLength, p.rotationVelocity, xVelocity, yVelocity, user.Position + new Vector2(0, -64) + new Vector2(startingPositionX,startingPositionY), p.collisionSound, p.firingSound, p.explode, p.damagesMonsters, user.currentLocation, user, p.spriteFromObjectSheet));
+                        //SMonitor.Log($"player position: {user.Position}, start position: { new Vector2(startingPositionX, startingPositionY) }");
+
+                        user.currentLocation.projectiles.Add(new BasicProjectile(damage, p.parentSheetIndex, p.bouncesTillDestruct, p.tailLength, p.rotationVelocity, xVelocity, yVelocity, user.Position + new Vector2(0, -64) + new Vector2(startingPositionX,startingPositionY), p.collisionSound, p.firingSound, p.explode, p.damagesMonsters, user.currentLocation, user, p.spriteFromObjectSheet));
                     }
                 }
                 if (++weaponAnimationTicks >= frame.frameTicks)
@@ -139,16 +212,17 @@ namespace AdvancedMeleeFramework
                     weaponAnimationTicks = 0;
                     SMonitor.Log($"Advancing to frame {weaponAnimationFrame}");
                 }
-                if (weaponAnimationFrame >= weapon.frames.Count)
+                if (weaponAnimationFrame >= advancedWeaponAnimating.frames.Count)
                 {
                     SMonitor.Log($"Ending weapon animation");
                     user.completelyStopAnimatingOrDoingAction();
                     user.CanMove = true;
                     user.UsingTool = false;
+                    user.setTrajectory(Vector2.Zero);
 
                     if (user.IsLocalPlayer)
                     {
-                        int cd = weapon.cooldown;
+                        int cd = advancedWeaponAnimating.cooldown;
                         if (user.professions.Contains(28))
                         {
                             cd /= 2;
@@ -164,8 +238,8 @@ namespace AdvancedMeleeFramework
                                 MeleeWeapon.daggerCooldown = cd;
                                 break;
                             case 2:
-                                break;
                                 MeleeWeapon.clubCooldown = cd;
+                                break;
                             case 3:
                                 MeleeWeapon.defenseCooldown = cd;
                                 break;
@@ -173,6 +247,7 @@ namespace AdvancedMeleeFramework
                     }
                     weaponAnimationFrame = -1;
                     weaponAnimating = null;
+                    advancedWeaponAnimating  = null;
                     weaponAnimationTicks = 0;
                 }
 
@@ -206,62 +281,16 @@ namespace AdvancedMeleeFramework
             y = outy;
         }
 
-        private void GameLoop_GameLaunched(object sender, StardewModdingAPI.Events.GameLaunchedEventArgs e)
-        {
-            LoadAdvancedMeleeWeapons();
-        }
-
-        private void LoadAdvancedMeleeWeapons()
-        {
-            advancedMeleeWeapons.Clear();
-            foreach (IContentPack contentPack in SHelper.ContentPacks.GetOwned())
-            {
-                SMonitor.Log($"Reading content pack: {contentPack.Manifest.Name} {contentPack.Manifest.Version} from {contentPack.DirectoryPath}", LogLevel.Debug);
-                try
-                {
-                    AdvancedMeleeWeaponData json = contentPack.ReadJsonFile<AdvancedMeleeWeaponData>("content.json") ?? null;
-
-                    if (json != null)
-                    {
-                        if (json.weapons != null && json.weapons.Count > 0)
-                        {
-                            foreach (AdvancedMeleeWeapon weapon in json.weapons)
-                            {
-                                if (!int.TryParse(weapon.id, out int id))
-                                {
-                                    try
-                                    {
-                                        id = Helper.Content.Load<Dictionary<int, string>>("Data/weapons", ContentSource.GameContent).First(p => p.Value.StartsWith($"{weapon.id}/")).Key;
-                                        advancedMeleeWeapons.Add(id, weapon);
-                                    }
-                                    catch
-                                    {
-                                        SMonitor.Log($"error getting weapon {weapon.id}", LogLevel.Error);
-                                        continue;
-                                    }
-                                }
-                                advancedMeleeWeapons.Add(id, weapon);
-                            }
-                        }
-                    }
-                }
-                catch (Exception ex)
-                {
-                    SMonitor.Log($"error reading content.json file in content pack {contentPack.Manifest.Name}.\r\n{ex}", LogLevel.Error);
-                }
-            }
-            SMonitor.Log($"Total advanced melee weapons: {advancedMeleeWeapons.Count}", LogLevel.Debug);
-        }
-
-        public override object GetApi()
-        {
-            return new AdvancedMeleeFrameworkApi();
-        }
         private static bool doAnimateSpecialMove_Prefix(MeleeWeapon __instance, Farmer ___lastUser)
         {
             SMonitor.Log($"Special move for {__instance.Name}, id {__instance.InitialParentTileIndex}");
 
-            if (!advancedMeleeWeapons.ContainsKey(__instance.InitialParentTileIndex) || weaponAnimationFrame > -1 || (Config.RequireModKey && !SHelper.Input.IsDown(Config.ModKey)))
+            if (Config.RequireModKey && !SHelper.Input.IsDown(Config.ModKey))
+                return true;
+
+            advancedWeaponAnimating = GetAdvancedWeapon(__instance, ___lastUser);
+
+            if (weaponAnimationFrame > -1 || advancedWeaponAnimating == null)
                 return true;
 
             if (___lastUser == null || ___lastUser.CurrentTool != __instance)
@@ -281,5 +310,34 @@ namespace AdvancedMeleeFramework
             return false;
         }
 
+        private static AdvancedMeleeWeapon GetAdvancedWeapon(MeleeWeapon weapon, Farmer user)
+        {
+            AdvancedMeleeWeapon advancedMeleeWeapon = null;
+            if (advancedMeleeWeapons.ContainsKey(weapon.InitialParentTileIndex))
+            {
+                int skillLevel = -1;
+                foreach (AdvancedMeleeWeapon amw in advancedMeleeWeapons[weapon.initialParentTileIndex])
+                {
+                    if (amw.skillLevel <= user.getEffectiveSkillLevel(4) && amw.skillLevel > skillLevel)
+                    {
+                        skillLevel = amw.skillLevel;
+                        advancedMeleeWeapon = amw;
+                    }
+                }
+            }
+            if (advancedMeleeWeapon == null && advancedMeleeWeaponsByType.ContainsKey(weapon.type))
+            {
+                int skillLevel = -1;
+                foreach(AdvancedMeleeWeapon amw in advancedMeleeWeaponsByType[weapon.type])
+                {
+                    if(amw.skillLevel <= user.getEffectiveSkillLevel(4) && amw.skillLevel > skillLevel)
+                    {
+                        skillLevel = amw.skillLevel;
+                        advancedMeleeWeapon = amw;
+                    }
+                }
+            }
+            return advancedMeleeWeapon;
+        }
     }
 }

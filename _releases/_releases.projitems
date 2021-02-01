@@ -14,6 +14,7 @@
     <None Include="$(MSBuildThisFileDirectory)AdvancedLootFramework 0.3.4.zip" />
     <None Include="$(MSBuildThisFileDirectory)AdvancedLootFramework 0.4.0.zip" />
     <None Include="$(MSBuildThisFileDirectory)AdvancedMeleeFramework 0.1.0.zip" />
+    <None Include="$(MSBuildThisFileDirectory)AdvancedMeleeFramework 0.2.0.zip" />
     <None Include="$(MSBuildThisFileDirectory)BossCreatures 1.2.0.zip" />
     <None Include="$(MSBuildThisFileDirectory)CustomChestTypes 0.2.0.zip" />
     <None Include="$(MSBuildThisFileDirectory)CustomChestTypes 0.2.1.zip" />
@@ -61,6 +62,7 @@
     <None Include="$(MSBuildThisFileDirectory)MobileAudioPlayer 0.4.1.zip" />
     <None Include="$(MSBuildThisFileDirectory)MobileCalendar 0.2.0.zip" />
     <None Include="$(MSBuildThisFileDirectory)MobileCatalogues 0.6.0.zip" />
+    <None Include="$(MSBuildThisFileDirectory)MobileCatalogues 0.7.0.zip" />
     <None Include="$(MSBuildThisFileDirectory)MobilePhone 2.2.2.zip" />
     <None Include="$(MSBuildThisFileDirectory)MobileTelevision 0.1.0.zip" />
     <None Include="$(MSBuildThisFileDirectory)ModThis 0.1.0.zip" />
