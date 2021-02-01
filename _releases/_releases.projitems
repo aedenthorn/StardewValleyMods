@@ -15,6 +15,7 @@
     <None Include="$(MSBuildThisFileDirectory)AdvancedLootFramework 0.4.0.zip" />
     <None Include="$(MSBuildThisFileDirectory)AdvancedMeleeFramework 0.1.0.zip" />
     <None Include="$(MSBuildThisFileDirectory)AdvancedMeleeFramework 0.2.0.zip" />
+    <None Include="$(MSBuildThisFileDirectory)AdvancedMeleeFramework 0.2.2.zip" />
     <None Include="$(MSBuildThisFileDirectory)BossCreatures 1.2.0.zip" />
     <None Include="$(MSBuildThisFileDirectory)CustomChestTypes 0.2.0.zip" />
     <None Include="$(MSBuildThisFileDirectory)CustomChestTypes 0.2.1.zip" />
