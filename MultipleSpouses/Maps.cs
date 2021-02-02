@@ -22,7 +22,7 @@ namespace MultipleSpouses
     {
         private static IMonitor Monitor;
         private static ModConfig config;
-        private static IModHelper PHelper;
+        private static IModHelper Helper;
         public static Dictionary<string, Map> tmxSpouseRooms = new Dictionary<string, Map>();
         public static Dictionary<string, int> roomIndexes = new Dictionary<string, int>{
             { "Abigail", 0 },
@@ -45,7 +45,7 @@ namespace MultipleSpouses
         {
             Monitor = monitor;
             config = ModEntry.config;
-            PHelper = ModEntry.PHelper;
+            Helper = ModEntry.PHelper;
         }
 
         public static void BuildSpouseRooms(FarmHouse farmHouse)
@@ -223,11 +223,11 @@ namespace MultipleSpouses
                 Map refurbishedMap;
                 if (name == "")
                 {
-                    refurbishedMap = PHelper.Content.Load<Map>("Maps\\" + farmHouse.Name + ((farmHouse.upgradeLevel == 0) ? "" : ((farmHouse.upgradeLevel == 3) ? "2" : string.Concat(farmHouse.upgradeLevel))) + "_marriage", ContentSource.GameContent);
+                    refurbishedMap = Helper.Content.Load<Map>("Maps\\" + farmHouse.Name + ((farmHouse.upgradeLevel == 0) ? "" : ((farmHouse.upgradeLevel == 3) ? "2" : string.Concat(farmHouse.upgradeLevel))) + "_marriage", ContentSource.GameContent);
                 }
                 else
                 {
-                    refurbishedMap = PHelper.Content.Load<Map>("Maps\\spouseRooms", ContentSource.GameContent);
+                    refurbishedMap = Helper.Content.Load<Map>("Maps\\spouseRooms", ContentSource.GameContent);
                 }
                 int indexInSpouseMapSheet = -1;
 
@@ -626,10 +626,12 @@ namespace MultipleSpouses
             int height = 9;
             int startx = 15;
             int starty = 0;
-            int ox = ModEntry.config.ExistingKidsRoomOffsetX;
-            int oy = ModEntry.config.ExistingKidsRoomOffsetY;
+            //int ox = ModEntry.config.ExistingKidsRoomOffsetX;
+            int ox = 0;
+            //int oy = ModEntry.config.ExistingKidsRoomOffsetY;
+            int oy = 0;
 
-            Map map = PHelper.Content.Load<Map>("Maps\\" + farmHouse.Name + "2"+ (Misc.GetSpouses(farmHouse.owner,1).Count > 0? "_marriage":""), ContentSource.GameContent);
+            Map map = Helper.Content.Load<Map>("Maps\\" + farmHouse.Name + "2"+ (Misc.GetSpouses(farmHouse.owner,1).Count > 0? "_marriage":""), ContentSource.GameContent);
 
             List<string> sheets = new List<string>();
             for (int i = 0; i < map.TileSheets.Count; i++)
@@ -716,6 +718,22 @@ namespace MultipleSpouses
                 {
                     Monitor.Log($"Adding building tile at {startx + roomWidth + ox + i},{ 9 + oy}");
                     farmHouse.setMapTileIndex(x, 9 + oy, 0, "Buildings");
+                }
+            }
+
+            Microsoft.Xna.Framework.Rectangle? crib_location = farmHouse.GetCribBounds();
+            if(crib_location != null)
+            {
+                Monitor.Log($"Adding cribs");
+                for (int i = 0; i < Misc.GetExtraCribs(); i++)
+                {
+                    Microsoft.Xna.Framework.Rectangle rect = new Microsoft.Xna.Framework.Rectangle(crib_location.Value.X + i * 3, crib_location.Value.Y, crib_location.Value.Width, crib_location.Value.Height); 
+                    Monitor.Log($"Adding crib at {rect}");
+                    Map override_map = Game1.game1.xTileContent.Load<Map>("Maps\\FarmHouse_Crib_" + farmHouse.cribStyle.Value);
+                    HashSet<string> amo = Helper.Reflection.GetField<HashSet<string>>(farmHouse, "_appliedMapOverrides").GetValue();
+                    amo.Remove($"crib{i + 2}");
+                    Helper.Reflection.GetField<HashSet<string>>(farmHouse, "_appliedMapOverrides").SetValue(amo);
+                    farmHouse.ApplyMapOverride(override_map, $"crib{i+2}", null, rect);
                 }
             }
         }

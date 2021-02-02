@@ -30,6 +30,7 @@ namespace AdvancedMeleeFramework
         private static MeleeWeapon weaponAnimating;
         private static int weaponStartFacingDirection;
         private static AdvancedMeleeWeapon advancedWeaponAnimating = null;
+        private static IJsonAssetsApi mJsonAssets;
 
         public override void Entry(IModHelper helper)
         {
@@ -42,6 +43,7 @@ namespace AdvancedMeleeFramework
             SHelper = Helper;
 
             Helper.Events.GameLoop.GameLaunched += GameLoop_GameLaunched;
+            Helper.Events.GameLoop.SaveLoaded += GameLoop_SaveLoaded;
             Helper.Events.GameLoop.UpdateTicking += GameLoop_UpdateTicking;
             Helper.Events.Input.ButtonPressed += Input_ButtonPressed;
 
@@ -57,6 +59,12 @@ namespace AdvancedMeleeFramework
         }
 
         private void GameLoop_GameLaunched(object sender, StardewModdingAPI.Events.GameLaunchedEventArgs e)
+        {
+            mJsonAssets = Helper.ModRegistry.GetApi<IJsonAssetsApi>("spacechase0.JsonAssets");
+
+        }
+
+        private void GameLoop_SaveLoaded(object sender, StardewModdingAPI.Events.SaveLoadedEventArgs e)
         {
             LoadAdvancedMeleeWeapons();
         }
@@ -82,18 +90,34 @@ namespace AdvancedMeleeFramework
                             {
                                 if (weapon.type == 0)
                                 {
+                                    SMonitor.Log($"Adding specific weapon {weapon.id}");
                                     if (!int.TryParse(weapon.id, out int id))
                                     {
+                                        SMonitor.Log($"Got name instead of id {weapon.id}");
                                         try
                                         {
                                             id = Helper.Content.Load<Dictionary<int, string>>("Data/weapons", ContentSource.GameContent).First(p => p.Value.StartsWith($"{weapon.id}/")).Key;
+                                            SMonitor.Log($"Got name-based id {id}");
                                         }
-                                        catch
+                                        catch (Exception ex)
                                         {
-                                            SMonitor.Log($"error getting weapon {weapon.id}", LogLevel.Error);
-                                            continue;
+                                            if (mJsonAssets != null)
+                                            {
+                                                id = mJsonAssets.GetWeaponId(weapon.id);
+                                                if(id == -1)
+                                                {
+                                                    SMonitor.Log($"error getting JSON Assets weapon {weapon.id}\n{ex}", LogLevel.Error);
+                                                    continue;
+                                                }
+                                                SMonitor.Log($"Added JA weapon {weapon.id}, id {id}");
+                                            }
+                                            else
+                                            {
+                                                SMonitor.Log($"error getting weapon {weapon.id}\n{ex}", LogLevel.Error);
+                                                continue;
+                                            }
                                         }
-
+                                        
                                     }
                                     if (!advancedMeleeWeapons.ContainsKey(id))
                                         advancedMeleeWeapons[id] = new List<AdvancedMeleeWeapon>();
@@ -132,7 +156,6 @@ namespace AdvancedMeleeFramework
 
         private void GameLoop_UpdateTicking(object sender, StardewModdingAPI.Events.UpdateTickingEventArgs e)
         {
-
             //SMonitor.Log($"player sprite frame {Game1.player.Sprite.currentFrame}");
             if (weaponAnimationFrame > -1 && advancedWeaponAnimating != null)
             {
@@ -145,7 +168,7 @@ namespace AdvancedMeleeFramework
                     SMonitor.Log($"Starting animation, facing {weaponStartFacingDirection}");
                 }
 
-                if (false && user.CurrentTool != weaponAnimating)
+                if (user.CurrentTool != weaponAnimating)
                 {
                     SMonitor.Log($"Switched tools to {Game1.player.CurrentTool?.DisplayName}");
                     weaponAnimating = null;

@@ -125,6 +125,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CustomTextColours", "Custom
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AdvancedMeleeFramework", "AdvancedMeleeFramework\AdvancedMeleeFramework.csproj", "{DDD72137-FBD6-4EDA-AE6F-8D3AAB6BE48E}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CustomPaintings", "CustomPaintings\CustomPaintings.csproj", "{5EA80D01-0BA0-4279-86AE-330AF8C9BF7F}"
+EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
 		_releases\_releases.projitems*{047040e0-3d07-46e5-852b-d1d45cd57bb8}*SharedItemsImports = 13
@@ -616,6 +618,14 @@ Global
 		{DDD72137-FBD6-4EDA-AE6F-8D3AAB6BE48E}.Release|Any CPU.Build.0 = Release|Any CPU
 		{DDD72137-FBD6-4EDA-AE6F-8D3AAB6BE48E}.Release|x86.ActiveCfg = Release|Any CPU
 		{DDD72137-FBD6-4EDA-AE6F-8D3AAB6BE48E}.Release|x86.Build.0 = Release|Any CPU
+		{5EA80D01-0BA0-4279-86AE-330AF8C9BF7F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5EA80D01-0BA0-4279-86AE-330AF8C9BF7F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5EA80D01-0BA0-4279-86AE-330AF8C9BF7F}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{5EA80D01-0BA0-4279-86AE-330AF8C9BF7F}.Debug|x86.Build.0 = Debug|Any CPU
+		{5EA80D01-0BA0-4279-86AE-330AF8C9BF7F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5EA80D01-0BA0-4279-86AE-330AF8C9BF7F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5EA80D01-0BA0-4279-86AE-330AF8C9BF7F}.Release|x86.ActiveCfg = Release|Any CPU
+		{5EA80D01-0BA0-4279-86AE-330AF8C9BF7F}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

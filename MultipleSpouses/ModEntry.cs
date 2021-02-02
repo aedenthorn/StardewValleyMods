@@ -56,7 +56,7 @@ namespace MultipleSpouses
             helper.Events.GameLoop.DayEnding += HelperEvents.GameLoop_DayEnding;
             helper.Events.GameLoop.ReturnedToTitle += HelperEvents.GameLoop_ReturnedToTitle;
 
-            NPCPatches.Initialize(Monitor);
+            NPCPatches.Initialize(Monitor, config);
             LocationPatches.Initialize(Monitor);
             FarmerPatches.Initialize(Monitor, Helper);
             Maps.Initialize(Monitor);
@@ -65,7 +65,7 @@ namespace MultipleSpouses
             EventPatches.Initialize(Monitor, Helper);
             HelperEvents.Initialize(Monitor, Helper);
             FileIO.Initialize(Monitor, Helper);
-            Misc.Initialize(Monitor, Helper);
+            Misc.Initialize(Monitor, Helper, config);
             Divorce.Initialize(Monitor, Helper);
             FurniturePatches.Initialize(Monitor, Helper, config);
             ObjectPatches.Initialize(Monitor, Helper, config);
@@ -168,15 +168,19 @@ namespace MultipleSpouses
                postfix: new HarmonyMethod(typeof(NPCPatches), nameof(NPCPatches.Child_reloadSprite_Postfix))
             );
 
-/*
             harmony.Patch(
                original: AccessTools.Method(typeof(Child), nameof(Child.resetForPlayerEntry)),
                postfix: new HarmonyMethod(typeof(NPCPatches), nameof(NPCPatches.Child_resetForPlayerEntry_Postfix))
             );
-*/
+
             harmony.Patch(
                original: AccessTools.Method(typeof(Child), nameof(Child.dayUpdate)),
                prefix: new HarmonyMethod(typeof(NPCPatches), nameof(NPCPatches.Child_dayUpdate_Prefix))
+            );
+
+            harmony.Patch(
+               original: AccessTools.Method(typeof(Child), nameof(Child.isInCrib)),
+               prefix: new HarmonyMethod(typeof(NPCPatches), nameof(NPCPatches.Child_isInCrib_Prefix))
             );
             /*
             harmony.Patch(
@@ -558,6 +562,11 @@ namespace MultipleSpouses
             {
                 return true;
             }
+            if (asset.AssetNameEquals("Maps/FarmHouse1_marriage") || asset.AssetNameEquals("Maps/FarmHouse2_marriage"))
+            {
+                Monitor.Log($"can edit farmhouse map");
+                return true;
+            }
             if (config.CustomBed && asset.AssetNameEquals("Maps/farmhouse_tiles"))
             {
                 Monitor.Log($"can edit farmhouse tiles");
@@ -646,9 +655,14 @@ namespace MultipleSpouses
                     }
                 }
             }
+            else if (asset.AssetNameEquals("Maps/FarmHouse1_marriage") || asset.AssetNameEquals("Maps/FarmHouse2_marriage"))
+            {
+                //Monitor.Log($"editing farmhouse map");
+                //Maps.ExpandKidsRoom(asset);
+            }
             else if (asset.AssetNameEquals("Maps/farmhouse_tiles"))
             {
-                asset.AsImage().PatchImage(Helper.Content.Load<Texture2D>("assets/beds.png"), new Rectangle(!config.TransparentSheets && config.SleepOnCovers ? 48 : config.TransparentSheets? 96 : 0, 0, 48, 96), new Rectangle(128, 192, 48, 96));
+                //asset.AsImage().PatchImage(Helper.Content.Load<Texture2D>("assets/beds.png"), new Rectangle(96, 0, 48, 96), new Rectangle(128, 192, 48, 96));
             }
             else if (asset.AssetName.StartsWith("Characters/schedules") || asset.AssetName.StartsWith("Characters\\schedules"))
             {

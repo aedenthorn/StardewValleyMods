@@ -4,11 +4,11 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{DDD72137-FBD6-4EDA-AE6F-8D3AAB6BE48E}</ProjectGuid>
+    <ProjectGuid>{5EA80D01-0BA0-4279-86AE-330AF8C9BF7F}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>AdvancedMeleeFramework</RootNamespace>
-    <AssemblyName>AdvancedMeleeFramework</AssemblyName>
+    <RootNamespace>CustomPaintings</RootNamespace>
+    <AssemblyName>CustomPaintings</AssemblyName>
     <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <Deterministic>true</Deterministic>
@@ -49,10 +49,6 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="AdvancedMeleeFrameworkApi.cs" />
-    <Compile Include="AdvancedMeleeWeapon.cs" />
-    <Compile Include="AdvancedMeleeWeaponData.cs" />
-    <Compile Include="IJsonAssetsApi.cs" />
     <Compile Include="ModConfig.cs" />
     <Compile Include="ModEntry.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

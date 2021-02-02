@@ -148,22 +148,6 @@ namespace MultipleSpouses
         }
         
 
-        public static void Beach_resetLocalState_Postfix(Beach __instance)
-        {
-            try
-            {
-
-                if (ModEntry.config.BuyPendantsAnytime)
-                {
-                    ModEntry.PHelper.Reflection.GetField<NPC>(__instance, "oldMariner").SetValue(new NPC(new AnimatedSprite("Characters\\Mariner", 0, 16, 32), new Vector2(80f, 5f) * 64f, 2, "Old Mariner", null));
-                }
-            }
-            catch (Exception ex)
-            {
-                Monitor.Log($"Failed in {nameof(Beach_resetLocalState_Postfix)}:\n{ex}", LogLevel.Error);
-            }
-        }
-        
 
         public static void FarmHouse_updateFarmLayout_Postfix(ref FarmHouse __instance)
         {
@@ -229,6 +213,22 @@ namespace MultipleSpouses
             }
         }
 
+        public static void Beach_resetLocalState_Postfix(Beach __instance)
+        {
+            try
+            {
+
+                if (ModEntry.config.BuyPendantsAnytime)
+                {
+                    ModEntry.PHelper.Reflection.GetField<NPC>(__instance, "oldMariner").SetValue(new NPC(new AnimatedSprite("Characters\\Mariner", 0, 16, 32), new Vector2(80f, 5f) * 64f, 2, "Old Mariner", null));
+                }
+            }
+            catch (Exception ex)
+            {
+                Monitor.Log($"Failed in {nameof(Beach_resetLocalState_Postfix)}:\n{ex}", LogLevel.Error);
+            }
+        }
+
         public static bool Beach_checkAction_Prefix(Beach __instance, Location tileLocation, xTile.Dimensions.Rectangle viewport, Farmer who, ref bool __result, NPC ___oldMariner)
         {
             try
@@ -268,53 +268,57 @@ namespace MultipleSpouses
         {
             try
             {
-                if (action != null && who.IsLocalPlayer)
+                if (action.Split(' ')[0] == "Crib" && who.IsLocalPlayer)
                 {
-                    string[] actionParams = action.Split(new char[]
-                    {
-                    ' '
-                    });
-                    string text = actionParams[0];
-                    Regex pattern = new Regex(@"Crib[0-9][0-9]*");
-                    if (pattern.IsMatch(text))
-                    {
-                        int crib = int.Parse(text.Substring(4));
-                        Monitor.Log($"Acting on crib {crib+1}");
+                    Monitor.Log($"Acting on crib tile {tileLocation}");
 
-                        Microsoft.Xna.Framework.Rectangle rect = new Microsoft.Xna.Framework.Rectangle((ModEntry.config.ExistingKidsRoomOffsetX+15)*64 + (3 * crib * 64),(ModEntry.config.ExistingKidsRoomOffsetY+2)*64,3*64,4*64);
-                        using (List<NPC>.Enumerator enumerator = __instance.characters.GetEnumerator())
+                    FarmHouse farmHouse = __instance as FarmHouse;
+                    Microsoft.Xna.Framework.Rectangle? crib_location = farmHouse.GetCribBounds();
+
+                    if (crib_location == null)
+                        return true;
+
+                    for (int i = 0; i < Misc.GetExtraCribs(); i++)
+                    {
+                        Microsoft.Xna.Framework.Rectangle rect = new Microsoft.Xna.Framework.Rectangle(crib_location.Value.X + i * 3, crib_location.Value.Y, crib_location.Value.Width, crib_location.Value.Height);
+                        if(rect.Contains(tileLocation.X, tileLocation.Y))
                         {
-                            while (enumerator.MoveNext())
+                            Monitor.Log($"Acting on crib idx {i}");
+                            using (List<NPC>.Enumerator enumerator = __instance.characters.GetEnumerator())
                             {
-                                NPC j = enumerator.Current;
-                                if (j is Child)
+                                while (enumerator.MoveNext())
                                 {
-                                    if (rect.Intersects(j.GetBoundingBox()))
+                                    NPC j = enumerator.Current;
+                                    if (j is Child)
                                     {
-                                        if ((j as Child).Age == 1)
+                                        if (rect.Contains(j.getTileLocationPoint()))
                                         {
-                                            Monitor.Log($"Tossing {j.Name}");
-                                            (j as Child).toss(who);
+                                            if ((j as Child).Age == 1)
+                                            {
+                                                Monitor.Log($"Tossing {j.Name}");
+                                                (j as Child).toss(who);
+                                            }
+                                            else if ((j as Child).Age == 0)
+                                            {
+                                                Monitor.Log($"{j.Name} is sleeping");
+                                                Game1.drawObjectDialogue(Game1.parseText(Game1.content.LoadString("Strings\\Locations:FarmHouse_Crib_NewbornSleeping", j.displayName)));
+                                            }
+                                            else if ((j as Child).isInCrib() && (j as Child).Age == 2)
+                                            {
+                                                Monitor.Log($"acting on {j.Name}");
+                                                return j.checkAction(who, __instance);
+                                            }
+                                            __result = true;
+                                            return false;
                                         }
-                                        else if ((j as Child).Age == 0)
-                                        {
-                                            Monitor.Log($"{j.Name} is sleeping");
-                                            Game1.drawObjectDialogue(Game1.parseText(Game1.content.LoadString("Strings\\Locations:FarmHouse_Crib_NewbornSleeping", j.displayName)));
-                                        }
-                                        else if ((j as Child).isInCrib() && (j as Child).Age == 2)
-                                        {
-                                            Monitor.Log($"acting on {j.Name}");
-                                            return j.checkAction(who, __instance);
-                                        }
-                                        __result = true;
-                                        return false;
                                     }
                                 }
                             }
+                            __result = true;
+                            return false;
                         }
-                        __result = true;
-                        return false;
                     }
+
                 }
             }
             catch (Exception ex)

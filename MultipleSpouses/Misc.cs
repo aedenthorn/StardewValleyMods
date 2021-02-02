@@ -15,13 +15,16 @@ namespace MultipleSpouses
     {
         private static Dictionary<string, int> topOfHeadOffsets = new Dictionary<string, int>();
 
-        public static IMonitor Monitor;
-        public static IModHelper Helper;
+        private static IMonitor Monitor;
+        private static IModHelper Helper;
+        private static ModConfig Config;
+
         // call this method from your Entry class
-        public static void Initialize(IMonitor monitor, IModHelper helper)
+        public static void Initialize(IMonitor monitor, IModHelper helper, ModConfig config)
         {
             Monitor = monitor;
             Helper = helper;
+            Config = config;
         }
 
         public static Dictionary<string, NPC> GetSpouses(Farmer farmer, int all)
@@ -553,6 +556,11 @@ namespace MultipleSpouses
             }
             topOfHeadOffsets.Add(name, top);
             return top;
+        }
+
+        public static int GetExtraCribs()
+        {
+            return Math.Min(Config.ExtraCribs, (10 + Config.ExtraKidsRoomWidth) / 3);
         }
     }
 }

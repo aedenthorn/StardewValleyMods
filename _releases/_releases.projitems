@@ -16,6 +16,7 @@
     <None Include="$(MSBuildThisFileDirectory)AdvancedMeleeFramework 0.1.0.zip" />
     <None Include="$(MSBuildThisFileDirectory)AdvancedMeleeFramework 0.2.0.zip" />
     <None Include="$(MSBuildThisFileDirectory)AdvancedMeleeFramework 0.2.2.zip" />
+    <None Include="$(MSBuildThisFileDirectory)AdvancedMeleeFramework 0.3.0.zip" />
     <None Include="$(MSBuildThisFileDirectory)BossCreatures 1.2.0.zip" />
     <None Include="$(MSBuildThisFileDirectory)CustomChestTypes 0.2.0.zip" />
     <None Include="$(MSBuildThisFileDirectory)CustomChestTypes 0.2.1.zip" />
@@ -80,6 +81,7 @@
     <None Include="$(MSBuildThisFileDirectory)MultipleSpouses 2.7.1.zip" />
     <None Include="$(MSBuildThisFileDirectory)MultipleSpouses 2.8.1.zip" />
     <None Include="$(MSBuildThisFileDirectory)MultipleSpouses 2.8.2.zip" />
+    <None Include="$(MSBuildThisFileDirectory)MultipleSpouses 2.9.1.zip" />
     <None Include="$(MSBuildThisFileDirectory)Murdercrows 0.2.2.zip" />
     <None Include="$(MSBuildThisFileDirectory)NonRandomPrairieKing 0.1.0.zip" />
     <None Include="$(MSBuildThisFileDirectory)OverworldChests 0.4.1.zip" />
