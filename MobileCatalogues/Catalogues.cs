@@ -50,8 +50,18 @@ namespace MobileCatalogues
                 case "clothing-catalogue":
                     OpenClothingCatalogue();
                     break;
+                case "dwarf-catalogue":
+                    OpenDwarfCatalogue();
+                    break;
+                case "krobus-catalogue":
+                    OpenKrobusCatalogue();
+                    break;
+                case "guild-catalogue":
+                    OpenGuildCatalogue();
+                    break;
             }
         }
+
         public static void OpenCatalogue()
         {
             Monitor.Log("Opening catalogue");
@@ -121,6 +131,29 @@ namespace MobileCatalogues
             Monitor.Log("Opening clothing catalogue");
             DelayedOpen(new ShopMenu(GetAllClothing(), 0, "Clothing", null, null, null));
         }
+
+
+        private static void OpenDwarfCatalogue()
+        {
+            var dict = Utility.getDwarfShopStock();
+            AdjustPrices(ref dict, false);
+            Game1.activeClickableMenu = new ShopMenu(dict, 0, "Dwarf", null, null, null);
+        }
+
+        private static void OpenKrobusCatalogue()
+        {
+            var dict = new Sewer().getShadowShopStock();
+            AdjustPrices(ref dict, false);
+            Game1.activeClickableMenu = new ShopMenu(dict, 0, "Krobus", null, null, null);
+        }
+
+        private static void OpenGuildCatalogue()
+        {
+            var dict = Utility.getAdventureShopStock();
+            AdjustPrices(ref dict, false);
+            Game1.activeClickableMenu = new ShopMenu(dict, 0, "Marlon", null, null, null);
+        }
+
 
         private static async void DelayedOpen(ShopMenu menu)
         {
@@ -265,5 +298,6 @@ namespace MobileCatalogues
             }
             return false;
         }
+
     }
 }

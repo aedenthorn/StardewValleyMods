@@ -229,14 +229,14 @@ namespace MultipleSpouses
                original: AccessTools.Method(typeof(GameLocation), nameof(GameLocation.answerDialogue)),
                prefix: new HarmonyMethod(typeof(LocationPatches), nameof(LocationPatches.GameLocation_answerDialogue_prefix))
             );
+            harmony.Patch(
+               original: AccessTools.Method(typeof(FarmHouse), "resetLocalState"),
+               postfix: new HarmonyMethod(typeof(LocationPatches), nameof(LocationPatches.FarmHouse_resetLocalState_Postfix))
+            );
 
             harmony.Patch(
                original: AccessTools.Method(typeof(Beach), "resetLocalState"),
                postfix: new HarmonyMethod(typeof(LocationPatches), nameof(LocationPatches.Beach_resetLocalState_Postfix))
-            );
-            harmony.Patch(
-               original: AccessTools.Method(typeof(FarmHouse), "resetLocalState"),
-               postfix: new HarmonyMethod(typeof(LocationPatches), nameof(LocationPatches.FarmHouse_resetLocalState_Postfix))
             );
 
             harmony.Patch(
@@ -562,16 +562,6 @@ namespace MultipleSpouses
             {
                 return true;
             }
-            if (asset.AssetNameEquals("Maps/FarmHouse1_marriage") || asset.AssetNameEquals("Maps/FarmHouse2_marriage"))
-            {
-                Monitor.Log($"can edit farmhouse map");
-                return true;
-            }
-            if (config.CustomBed && asset.AssetNameEquals("Maps/farmhouse_tiles"))
-            {
-                Monitor.Log($"can edit farmhouse tiles");
-                return true;
-            }
             if (config.RomanceAllVillagers && (asset.AssetName.StartsWith("Characters/schedules") || asset.AssetName.StartsWith("Characters\\schedules")))
             {
                 string name = asset.AssetName.Replace("Characters/schedules/","").Replace("Characters\\schedules\\","");
@@ -654,15 +644,6 @@ namespace MultipleSpouses
                         data[friend + "1"] = "";
                     }
                 }
-            }
-            else if (asset.AssetNameEquals("Maps/FarmHouse1_marriage") || asset.AssetNameEquals("Maps/FarmHouse2_marriage"))
-            {
-                //Monitor.Log($"editing farmhouse map");
-                //Maps.ExpandKidsRoom(asset);
-            }
-            else if (asset.AssetNameEquals("Maps/farmhouse_tiles"))
-            {
-                //asset.AsImage().PatchImage(Helper.Content.Load<Texture2D>("assets/beds.png"), new Rectangle(96, 0, 48, 96), new Rectangle(128, 192, 48, 96));
             }
             else if (asset.AssetName.StartsWith("Characters/schedules") || asset.AssetName.StartsWith("Characters\\schedules"))
             {

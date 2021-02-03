@@ -38,6 +38,12 @@ namespace MobileCatalogues
                 catalogueList.Add("hat-catalogue");
             if (Config.EnableClothingCatalogue)
                 catalogueList.Add("clothing-catalogue");
+            if (Config.EnableDwarfCatalogue)
+                catalogueList.Add("dwarf-catalogue");
+            if (Config.EnableKrobusCatalogue)
+                catalogueList.Add("krobus-catalogue");
+            if (Config.EnableGuildCatalogue)
+                catalogueList.Add("guild-catalogue");
         }
         internal static void OpenCatalogueApp()
         {
@@ -94,6 +100,12 @@ namespace MobileCatalogues
                     return Config.PriceHatCatalogue;
                 case "clothing-catalogue":
                     return Config.PriceClothingCatalogue;
+                case "dwarf-catalogue":
+                    return Config.PriceDwarfCatalogue;
+                case "krobus-catalogue":
+                    return Config.PriceKrobusCatalogue;
+                case "guild-catalogue":
+                    return Config.PriceGuildCatalogue;
             }
             return 0;
         }

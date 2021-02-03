@@ -14,6 +14,9 @@ namespace MobileCatalogues
         public bool LimitDesertCatalogToBusFixed { get; set; } = true;
         public bool EnableHatCatalogue { get; set; } = true;
         public bool EnableClothingCatalogue { get; set; } = true;
+        public bool EnableDwarfCatalogue { get; set; } = true;
+        public bool EnableKrobusCatalogue { get; set; } = true;
+        public bool EnableGuildCatalogue { get; set; } = true;
         public bool RequireCataloguePurchase { get; set; } = true;
         public int PriceCatalogue { get; set; } = 30000;
         public int PriceFurnitureCatalogue { get; set; } = 100000;
@@ -22,6 +25,9 @@ namespace MobileCatalogues
         public int PriceDesertCatalogue { get; set; } = 500000;
         public int PriceHatCatalogue { get; set; } = 10000;
         public int PriceClothingCatalogue { get; set; } = 200000;
+        public int PriceDwarfCatalogue { get; set; } = 200000;
+        public int PriceKrobusCatalogue { get; set; } = 200000;
+        public int PriceGuildCatalogue { get; set; } = 100000;
         public bool FreeCatalogue { get; set; } = false;
         public bool FreeFurnitureCatalogue { get; set; } = false;
         public bool FreeSeedCatalogue { get; set; } = false;
