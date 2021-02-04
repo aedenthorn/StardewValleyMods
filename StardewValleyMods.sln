@@ -127,6 +127,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AdvancedMeleeFramework", "A
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CustomPaintings", "CustomPaintings\CustomPaintings.csproj", "{5EA80D01-0BA0-4279-86AE-330AF8C9BF7F}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ProceduralDialogue", "ProceduralDialogue\ProceduralDialogue.csproj", "{1AD85C37-97E5-4141-B825-56804440E744}"
+EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
 		_releases\_releases.projitems*{047040e0-3d07-46e5-852b-d1d45cd57bb8}*SharedItemsImports = 13
@@ -626,6 +628,14 @@ Global
 		{5EA80D01-0BA0-4279-86AE-330AF8C9BF7F}.Release|Any CPU.Build.0 = Release|Any CPU
 		{5EA80D01-0BA0-4279-86AE-330AF8C9BF7F}.Release|x86.ActiveCfg = Release|Any CPU
 		{5EA80D01-0BA0-4279-86AE-330AF8C9BF7F}.Release|x86.Build.0 = Release|Any CPU
+		{1AD85C37-97E5-4141-B825-56804440E744}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1AD85C37-97E5-4141-B825-56804440E744}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1AD85C37-97E5-4141-B825-56804440E744}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{1AD85C37-97E5-4141-B825-56804440E744}.Debug|x86.Build.0 = Debug|Any CPU
+		{1AD85C37-97E5-4141-B825-56804440E744}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1AD85C37-97E5-4141-B825-56804440E744}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1AD85C37-97E5-4141-B825-56804440E744}.Release|x86.ActiveCfg = Release|Any CPU
+		{1AD85C37-97E5-4141-B825-56804440E744}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

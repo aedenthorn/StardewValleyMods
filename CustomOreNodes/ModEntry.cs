@@ -8,6 +8,7 @@ using StardewValley.Network;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Reflection;
 using System.Threading;
 using static Harmony.AccessTools;
@@ -116,37 +117,37 @@ namespace CustomOreNodes
                     int add = 0;
                     data = Helper.Content.Load<CustomOreData>("custom_ore_nodes.json", ContentSource.ModFolder);
                     conf = Helper.Data.ReadJsonFile<CustomOreConfig>("ore_config.json") ?? new CustomOreConfig();
-                    foreach (string nodeInfo in data.nodes)
+                    if (data.nodes.Any() && !data.data.Any())
                     {
-                        try
+                        foreach (string str in data.nodes)
                         {
-                            CustomOreNode node = new CustomOreNode(nodeInfo);
-                            if (node.spriteType == "mod")
-                            {
-                                node.texture = Helper.Content.Load<Texture2D>(node.spritePath, ContentSource.ModFolder);
-                            }
-                            else
-                            {
-                                node.texture = Helper.Content.Load<Texture2D>(node.spritePath, ContentSource.GameContent);
-                            }
-                            if (conf.parentSheetIndexes.ContainsKey(add))
-                            {
-                                node.parentSheetIndex = conf.parentSheetIndexes[add];
-                            }
-                            else
-                            {
-                                while (existingPSIs.ContainsKey(id))
-                                    id++;
-                                node.parentSheetIndex = id++;
-                            }
-                            conf.parentSheetIndexes[add] = node.parentSheetIndex;
+                            data.data.Add(new CustomOreNode(str));
+                        }
+                        Helper.Data.WriteJsonFile("custom_ore_nodes.json", data);
+                    }
+                    foreach (CustomOreNode node in data.data)
+                    {
+                        if (node.spriteType == "mod")
+                        {
+                            node.texture = Helper.Content.Load<Texture2D>(node.spritePath, ContentSource.ModFolder);
+                        }
+                        else
+                        {
+                            node.texture = Helper.Content.Load<Texture2D>(node.spritePath, ContentSource.GameContent);
+                        }
+                        if (conf.parentSheetIndexes.ContainsKey(add))
+                        {
+                            node.parentSheetIndex = conf.parentSheetIndexes[add];
+                        }
+                        else
+                        {
+                            while (existingPSIs.ContainsKey(id))
+                                id++;
+                            node.parentSheetIndex = id++;
+                        }
+                        conf.parentSheetIndexes[add] = node.parentSheetIndex;
 
-                            CustomOreNodes.Add(node);
-                        }
-                        catch(Exception ex)
-                        {
-                            SMonitor.Log($"Error parsing node {nodeInfo}: {ex}", LogLevel.Error);
-                        }
+                        CustomOreNodes.Add(node);
                         add++;
                     }
                     Monitor.Log($"Got {CustomOreNodes.Count} ores from mod", LogLevel.Debug);
@@ -171,38 +172,38 @@ namespace CustomOreNodes
                     conf = contentPack.ReadJsonFile<CustomOreConfig>("ore_config.json") ?? new CustomOreConfig();
                     Monitor.Log($"Reading content pack: {contentPack.Manifest.Name} {contentPack.Manifest.Version} from {contentPack.DirectoryPath}");
                     data = contentPack.ReadJsonFile<CustomOreData>("custom_ore_nodes.json");
-                    foreach (string nodeInfo in data.nodes)
+                    if (data.nodes.Any() && !data.data.Any())
                     {
-                        try
+                        foreach(string str in data.nodes)
                         {
-                            CustomOreNode node = new CustomOreNode(nodeInfo);
-                            if (node.spriteType == "mod")
-                            {
-                                node.texture = contentPack.LoadAsset<Texture2D>(node.spritePath);
-
-                            }
-                            else
-                            {
-                                node.texture = Helper.Content.Load<Texture2D>(node.spritePath, ContentSource.GameContent);
-
-                            }
-                            if (conf.parentSheetIndexes.ContainsKey(add))
-                            {
-                                node.parentSheetIndex = conf.parentSheetIndexes[add];
-                            }
-                            else
-                            {
-                                while (existingPSIs.ContainsKey(id))
-                                    id++;
-                                node.parentSheetIndex = id++;
-                            }
-                            conf.parentSheetIndexes[add] = node.parentSheetIndex;
-                            CustomOreNodes.Add(node);
+                            data.data.Add(new CustomOreNode(str));
                         }
-                        catch (Exception ex)
+                        contentPack.WriteJsonFile("custom_ore_nodes.json", data);
+                    }
+                    foreach (CustomOreNode node in data.data)
+                    {
+                        if (node.spriteType == "mod")
                         {
-                            SMonitor.Log($"Error parsing node {nodeInfo}: {ex}", LogLevel.Error);
+                            node.texture = contentPack.LoadAsset<Texture2D>(node.spritePath);
+
                         }
+                        else
+                        {
+                            node.texture = Helper.Content.Load<Texture2D>(node.spritePath, ContentSource.GameContent);
+
+                        }
+                        if (conf.parentSheetIndexes.ContainsKey(add))
+                        {
+                            node.parentSheetIndex = conf.parentSheetIndexes[add];
+                        }
+                        else
+                        {
+                            while (existingPSIs.ContainsKey(id))
+                                id++;
+                            node.parentSheetIndex = id++;
+                        }
+                        conf.parentSheetIndexes[add] = node.parentSheetIndex;
+                        CustomOreNodes.Add(node);
                         add++;
                     }
                     contentPack.WriteJsonFile("ore_config.json", conf);

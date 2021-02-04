@@ -102,6 +102,7 @@
     <None Include="$(MSBuildThisFileDirectory)SixtyNine 0.1.0.zip" />
     <None Include="$(MSBuildThisFileDirectory)SocialPageOrderButton 0.1.0.zip" />
     <None Include="$(MSBuildThisFileDirectory)Swim 1.8.2.zip" />
+    <None Include="$(MSBuildThisFileDirectory)Swim 1.8.3.zip" />
     <None Include="$(MSBuildThisFileDirectory)TransparentObjects 0.2.1.zip" />
     <None Include="$(MSBuildThisFileDirectory)TrashCanReactions 0.1.1.zip" />
     <None Include="$(MSBuildThisFileDirectory)TrashCanReactions 0.2.0.zip" />
