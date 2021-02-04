@@ -28,6 +28,7 @@
     <None Include="$(MSBuildThisFileDirectory)CustomOreNodes 0.8.0.zip" />
     <None Include="$(MSBuildThisFileDirectory)CustomOreNodes 1.0.0.zip" />
     <None Include="$(MSBuildThisFileDirectory)CustomResourceClumps 0.4.0.zip" />
+    <None Include="$(MSBuildThisFileDirectory)CustomResourceClumps 0.4.1.zip" />
     <None Include="$(MSBuildThisFileDirectory)CustomSpousePatio 0.7.0.zip" />
     <None Include="$(MSBuildThisFileDirectory)CustomSpousePatio 0.7.3.zip" />
     <None Include="$(MSBuildThisFileDirectory)CustomSpousePatio 0.8.0.zip" />

@@ -221,6 +221,8 @@ namespace CustomOreNodes
             if (__result == null || __result.parentSheetIndex == null)
                 return;
 
+            int difficulty = __instance.mineLevel > 120 ? Game1.netWorldState.Value.SkullCavesDifficulty : Game1.netWorldState.Value.MinesDifficulty;
+
             List<int> ores = new List<int>() { 765, 764, 290, 751 };
             if (!ores.Contains(__result.ParentSheetIndex))
             {
@@ -230,7 +232,7 @@ namespace CustomOreNodes
                     CustomOreNode node = CustomOreNodes[i];
                     foreach(OreLevelRange range in node.oreLevelRanges)
                     {
-                        if ((range.minLevel < 1 || __instance.mineLevel >= range.minLevel) && (range.maxLevel < 1 || __instance.mineLevel <= range.maxLevel))
+                        if ((range.minLevel < 1 || __instance.mineLevel >= range.minLevel) && (range.maxLevel < 1 || __instance.mineLevel <= range.maxLevel) && (range.minDifficulty <= difficulty) && (range.maxDifficulty < 0 || range.maxDifficulty >= difficulty))
                         {
                             totalChance += node.spawnChance * range.spawnChanceMult;
                             break;
@@ -315,7 +317,7 @@ namespace CustomOreNodes
         
         private static void Object_Postfix(Object __instance, ref int parentSheetIndex, ref string Givenname)
         {
-            if (Givenname == "Stone" || parentSheetIndex == 294 || parentSheetIndex == 295)
+            if (Givenname == "Stone")
             {
                 for (int i = 0; i < CustomOreNodes.Count; i++)
                 {
@@ -387,7 +389,10 @@ namespace CustomOreNodes
 
         private static bool IsInRange(OreLevelRange range, GameLocation location, bool mineOnly)
         {
-            return (range.minLevel < 1 && !(location is MineShaft) && !mineOnly) || (location is MineShaft && (range.minLevel <= (location as MineShaft).mineLevel && (range.maxLevel < 0 || (location as MineShaft).mineLevel <= range.maxLevel)));
+
+            int difficulty = (location is MineShaft) ? ((location as MineShaft).mineLevel > 120 ? Game1.netWorldState.Value.SkullCavesDifficulty : Game1.netWorldState.Value.MinesDifficulty) : 0;
+
+            return (range.minLevel < 1 && !(location is MineShaft) && !mineOnly) || (location is MineShaft && (range.minLevel <= (location as MineShaft).mineLevel && (range.maxLevel < 0 || (location as MineShaft).mineLevel <= range.maxLevel))) && (range.minDifficulty <= difficulty) && (range.maxDifficulty < 0 || range.maxDifficulty >= difficulty);
         }
     }
 }

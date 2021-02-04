@@ -60,6 +60,8 @@ namespace CustomOreNodes
         public float expMult = 1f;
         public float dropChanceMult = 1f;
         public float dropMult = 1f;
+        public int minDifficulty = -1;
+        public int maxDifficulty = -1;
         public OreLevelRange(string infos)
         {
             string[] infoa = infos.Split(',');

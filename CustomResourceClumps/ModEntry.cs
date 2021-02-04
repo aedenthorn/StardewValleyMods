@@ -216,7 +216,7 @@ namespace CustomResourceClumps
             }
             CustomResourceClump clump = customClumps.FirstOrDefault(c => c.index == indexOfClump);
 
-            Rectangle sourceRect = new Rectangle(0, 0, 32, 32);
+            Rectangle sourceRect = new Rectangle(clump.spriteX, clump.spriteY, 32, 32);
 
             Vector2 position = __instance.tile.Value * 64f;
             if (___shakeTimer > 0f)
