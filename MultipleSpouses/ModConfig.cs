@@ -42,6 +42,7 @@ namespace MultipleSpouses
         public bool DisableCustomSpousesRooms { get; set; } = false;
         public bool BuildAllSpousesRooms { get; set; } = true;
         public string SpouseRoomOrder { get; set; } = "";
+        public string SpouseSleepOrder { get; set; } = "";
         public int ExistingSpouseRoomOffsetX { get; set; } = 0;
         public int ExistingSpouseRoomOffsetY { get; set; } = 0;
         public bool CustomBed { get; set; } = false;

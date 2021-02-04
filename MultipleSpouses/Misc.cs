@@ -71,7 +71,7 @@ namespace MultipleSpouses
 
         public static List<string> ReorderSpousesForRooms(List<string> spousesWithRooms)
         {
-            List<string> configSpouses = ModEntry.config.SpouseRoomOrder.Split(',').ToList();
+            List<string> configSpouses = ModEntry.config.SpouseRoomOrder.Split(',').Where(s => s.Length > 0).ToList();
             List<string> spouses = new List<string>();
             foreach(string s in configSpouses)
             {
@@ -91,6 +91,34 @@ namespace MultipleSpouses
             if(configString != ModEntry.config.SpouseRoomOrder)
             {
                 ModEntry.config.SpouseRoomOrder = configString;
+                Helper.WriteConfig(ModEntry.config);
+            }
+
+            return spouses;
+        }
+
+        public static List<string> ReorderSpousesForSleeping(List<string> sleepSpouses)
+        {
+            List<string> configSpouses = ModEntry.config.SpouseSleepOrder.Split(',').Where(s => s.Length > 0).ToList();
+            List<string> spouses = new List<string>();
+            foreach(string s in configSpouses)
+            {
+                if (sleepSpouses.Contains(s))
+                    spouses.Add(s);
+            }
+
+            foreach (string s in sleepSpouses)
+            {
+                if (!spouses.Contains(s))
+                {
+                    spouses.Add(s);
+                    configSpouses.Add(s);
+                }
+            }
+            string configString = string.Join(",", configSpouses);
+            if(configString != ModEntry.config.SpouseSleepOrder)
+            {
+                ModEntry.config.SpouseSleepOrder = configString;
                 Helper.WriteConfig(ModEntry.config);
             }
 

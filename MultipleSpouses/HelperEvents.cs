@@ -98,7 +98,7 @@ namespace MultipleSpouses
                         continue;
 
                     List<string> allSpouses = Misc.GetSpouses(fh.owner, 1).Keys.ToList();
-                    List<string> bedSpouses = allSpouses.FindAll((s) => ModEntry.config.RoommateRomance || !fh.owner.friendshipData[s].RoommateMarriage);
+                    List<string> bedSpouses = Misc.ReorderSpousesForSleeping(allSpouses.FindAll((s) => ModEntry.config.RoommateRomance || !fh.owner.friendshipData[s].RoommateMarriage));
 
                     foreach (NPC character in fh.characters)
                     {
