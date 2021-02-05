@@ -129,6 +129,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CustomPaintings", "CustomPa
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ProceduralDialogue", "ProceduralDialogue\ProceduralDialogue.csproj", "{1AD85C37-97E5-4141-B825-56804440E744}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ParrotPerch", "ParrotPerch\ParrotPerch.csproj", "{B2A2DDC0-6F97-4326-86B8-92ED3D2F0624}"
+EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
 		_releases\_releases.projitems*{047040e0-3d07-46e5-852b-d1d45cd57bb8}*SharedItemsImports = 13
@@ -636,6 +638,14 @@ Global
 		{1AD85C37-97E5-4141-B825-56804440E744}.Release|Any CPU.Build.0 = Release|Any CPU
 		{1AD85C37-97E5-4141-B825-56804440E744}.Release|x86.ActiveCfg = Release|Any CPU
 		{1AD85C37-97E5-4141-B825-56804440E744}.Release|x86.Build.0 = Release|Any CPU
+		{B2A2DDC0-6F97-4326-86B8-92ED3D2F0624}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B2A2DDC0-6F97-4326-86B8-92ED3D2F0624}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B2A2DDC0-6F97-4326-86B8-92ED3D2F0624}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{B2A2DDC0-6F97-4326-86B8-92ED3D2F0624}.Debug|x86.Build.0 = Debug|Any CPU
+		{B2A2DDC0-6F97-4326-86B8-92ED3D2F0624}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B2A2DDC0-6F97-4326-86B8-92ED3D2F0624}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B2A2DDC0-6F97-4326-86B8-92ED3D2F0624}.Release|x86.ActiveCfg = Release|Any CPU
+		{B2A2DDC0-6F97-4326-86B8-92ED3D2F0624}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

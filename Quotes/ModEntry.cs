@@ -95,9 +95,10 @@ namespace Quotes
             {
                 Monitor.Log($"Today's quote: {dailyQuote.quote}\r\n\r\n-- {dailyQuote.author}", LogLevel.Debug);
                 Helper.Events.Display.Rendering += Display_Rendering;
-                Helper.Events.Display.Rendered += Display_Rendered;
+                Helper.Events.Display.RenderedHud += Display_RenderedHud;
             }
         }
+
 
         private void Display_Rendering(object sender, StardewModdingAPI.Events.RenderingEventArgs e)
         {
@@ -117,13 +118,13 @@ namespace Quotes
             {
                 Monitor.Log($"fade in completed");
                 Helper.Events.Display.Rendering -= Display_Rendering;
-                Helper.Events.Display.Rendered -= Display_Rendered;
+                Helper.Events.Display.RenderedHud -= Display_RenderedHud;
                 lastFadeAlpha = 1f;
                 displayTicks = 0;
                 clickedOnQuote = true;
             }
         }
-        private void Display_Rendered(object sender, StardewModdingAPI.Events.RenderedEventArgs e)
+        private void Display_RenderedHud(object sender, StardewModdingAPI.Events.RenderedHudEventArgs e)
         {
             Color thisColor = Config.QuoteColor;
             thisColor.A = (byte)Math.Round(255 * Game1.fadeToBlackAlpha);

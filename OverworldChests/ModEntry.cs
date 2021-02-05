@@ -62,7 +62,6 @@ namespace OverworldChests
             }
             treasuresList = advancedLootFrameworkApi.LoadPossibleTreasures(Config.ItemListChances.Where(p => p.Value > 0).ToDictionary(s => s.Key, s => s.Value).Keys.ToArray(), Config.MinItemValue, Config.MaxItemValue);
             Monitor.Log($"Got {treasuresList.Count} possible treasures");
-
         }
 
         private static bool Chest_draw_Prefix(Chest __instance)

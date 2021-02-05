@@ -3,13 +3,17 @@ namespace CustomOreNodes
 {
     public class DropItem
     {
-        public string v;
         public string itemIdOrName;
         public float dropChance;
         public int minAmount;
         public int maxAmount;
         public int luckyAmount;
         public int minerAmount;
+
+        public DropItem()
+        {
+
+        }
 
         public DropItem(string itemInfo)
         {

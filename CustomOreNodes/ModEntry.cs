@@ -26,10 +26,6 @@ namespace CustomOreNodes
         private static List<CustomOreNode> CustomOreNodes = new List<CustomOreNode>();
         private static IMonitor SMonitor;
         
-        private static int FirstIndex = 936;
-        private static int SpringObjectsHeight = 624;
-        private static int SpringObjectsWidth = 384;
-
 
         /// <summary>The mod entry point, called after the mod is first loaded.</summary>
         /// <param name="helper">Provides simplified APIs for writing mods.</param>
@@ -115,18 +111,27 @@ namespace CustomOreNodes
                 if(File.Exists(Path.Combine(Helper.DirectoryPath, "custom_ore_nodes.json")))
                 {
                     int add = 0;
-                    data = Helper.Content.Load<CustomOreData>("custom_ore_nodes.json", ContentSource.ModFolder);
-                    conf = Helper.Data.ReadJsonFile<CustomOreConfig>("ore_config.json") ?? new CustomOreConfig();
-                    if (data.nodes.Any() && !data.data.Any())
+                    try
                     {
-                        foreach (string str in data.nodes)
+                        data = Helper.Content.Load<CustomOreData>("custom_ore_nodes.json", ContentSource.ModFolder);
+
+                    }
+                    catch
+                    {
+                        var tempData = Helper.Content.Load<CustomOreDataOld>("custom_ore_nodes.json", ContentSource.ModFolder);
+                        data = new CustomOreData();
+                        for (int i = 0; i < tempData.nodes.Count; i++)
                         {
-                            data.data.Add(new CustomOreNode(str));
+                            data.nodes.Add(new CustomOreNode(tempData.nodes[i]));
                         }
+                        Monitor.Log($"Rewriting custom_ore_nodes.json", LogLevel.Debug);
                         Helper.Data.WriteJsonFile("custom_ore_nodes.json", data);
                     }
-                    foreach (CustomOreNode node in data.data)
+                    conf = Helper.Data.ReadJsonFile<CustomOreConfig>("ore_config.json") ?? new CustomOreConfig();
+                    foreach (object nodeObj in data.nodes)
                     {
+                        CustomOreNode node = (CustomOreNode) nodeObj;
+
                         if (node.spriteType == "mod")
                         {
                             node.texture = Helper.Content.Load<Texture2D>(node.spritePath, ContentSource.ModFolder);
@@ -164,23 +169,32 @@ namespace CustomOreNodes
                 SMonitor.Log("Error processing custom_ore_nodes.json: "+ex, LogLevel.Error);
             }
 
-            foreach (IContentPack contentPack in Helper.ContentPacks.GetOwned())
+            foreach (IContentPack contentPack in Helper.ContentPacks.GetOwned()) 
             {
                 try
                 {
                     int add = 0;
                     conf = contentPack.ReadJsonFile<CustomOreConfig>("ore_config.json") ?? new CustomOreConfig();
                     Monitor.Log($"Reading content pack: {contentPack.Manifest.Name} {contentPack.Manifest.Version} from {contentPack.DirectoryPath}");
-                    data = contentPack.ReadJsonFile<CustomOreData>("custom_ore_nodes.json");
-                    if (data.nodes.Any() && !data.data.Any())
+
+                    try
                     {
-                        foreach(string str in data.nodes)
+                        data = contentPack.ReadJsonFile<CustomOreData>("custom_ore_nodes.json");
+                    }
+                    catch(Exception ex)
+                    {
+                        Monitor.Log($"exception {ex}", LogLevel.Error);
+                        var tempData = contentPack.ReadJsonFile<CustomOreDataOld>("custom_ore_nodes.json");
+                        data = new CustomOreData();
+                        for (int i = 0; i < tempData.nodes.Count; i++)
                         {
-                            data.data.Add(new CustomOreNode(str));
+                            data.nodes.Add(new CustomOreNode(tempData.nodes[i]));
                         }
+                        Monitor.Log($"Rewriting custom_ore_nodes.json", LogLevel.Debug);
                         contentPack.WriteJsonFile("custom_ore_nodes.json", data);
                     }
-                    foreach (CustomOreNode node in data.data)
+
+                    foreach (CustomOreNode node in data.nodes)
                     {
                         if (node.spriteType == "mod")
                         {

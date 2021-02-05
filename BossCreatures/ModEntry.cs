@@ -10,6 +10,7 @@ using StardewValley.Monsters;
 using StardewValley.Network;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using xTile.Dimensions;
 using xTile.Layers;
@@ -507,8 +508,15 @@ namespace BossCreatures
                 string[] loota = loot.Split('/');
                 if (!int.TryParse(loota[0], out int objectToAdd))
                 {
-                    PMonitor.Log($"loot object {loota[0]} is invalid", LogLevel.Error);
-                    continue;
+                    try
+                    {
+                        objectToAdd = Game1.objectInformation.First(p => p.Value.StartsWith($"{loota[0]}/")).Key;
+                    }
+                    catch
+                    {
+                        PMonitor.Log($"loot object {loota[0]} is invalid", LogLevel.Error);
+                        continue;
+                    }
                 }
                 Object o = new Object(objectToAdd, 1);
                 if (objectToAdd >= 0)

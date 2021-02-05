@@ -17,6 +17,7 @@ using System.Linq;
 using System.Reflection;
 using xTile.Dimensions;
 using xTile.Tiles;
+using Rectangle = Microsoft.Xna.Framework.Rectangle;
 
 namespace Swim
 {
@@ -214,6 +215,10 @@ namespace Swim
         {
             if(Game1.player.currentLocation.Name == "ScubaAbigailCave")
             {
+                if(abigailTicks > 0 && abigailTicks < 30 * 5)
+                {
+                    e.SpriteBatch.Draw(Game1.mouseCursors, new Vector2(Game1.viewport.Width, Game1.viewport.Height) / 2 - new Vector2(78, 31) / 2, new Rectangle?(new Rectangle(353, 1649, 78, 31)), new Color(255,255,255,abigailTicks > 30 * 3 ? (int)Math.Round(255 * (abigailTicks - 90) / 60f) : 255), 0f, Vector2.Zero, 3f, SpriteEffects.None, 0.99f);
+                }
                 if (abigailTicks > 0 && abigailTicks < 80000 / 16)
                     SwimUtils.MakeOxygenBar((80000 / 16) - abigailTicks, 80000 / 16);
                 e.SpriteBatch.Draw(ModEntry.OxygenBarTexture, new Vector2((int)Math.Round(Game1.viewport.Width * 0.13f), 100), Color.White);
@@ -1023,7 +1028,7 @@ namespace Swim
                     }
                 }
             }
-             
+
 
             abigailTicks++;
             if(abigailTicks > 80000 / 16f)

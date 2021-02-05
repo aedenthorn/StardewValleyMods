@@ -736,6 +736,7 @@ namespace MultipleSpouses
             {
                 if (Misc.GetSpouses(who,1).ContainsKey(__instance.Name))
                 {
+                    Monitor.Log($"Gift to spouse {__instance.name}");
                     __state = new List<int> { 
                         who.friendshipData[__instance.Name].GiftsThisWeek,
                         who.friendshipData[__instance.Name].GiftsToday,
@@ -754,6 +755,7 @@ namespace MultipleSpouses
                 }
                 if (who.ActiveObject.ParentSheetIndex == 808 && __instance.Name.Equals("Krobus"))
                 {
+                    Monitor.Log($"Pendant to {__instance.name}");
                     if (who.getFriendshipHeartLevelForNPC(__instance.Name) >= 10 && who.houseUpgradeLevel >= 1 && !who.isEngaged())
                     {
                         typeof(NPC).GetMethod("engagementResponse", BindingFlags.NonPublic | BindingFlags.Instance).Invoke(__instance, new object[] { who, true });
@@ -762,6 +764,8 @@ namespace MultipleSpouses
                 }
                 if (who.ActiveObject.ParentSheetIndex == 458)
                 {
+                    Monitor.Log($"Try give bouquet to {__instance.name}");
+
                     if (Misc.GetSpouses(who, 1).ContainsKey(__instance.Name))
                     {
                         who.spouse = __instance.Name;
@@ -841,6 +845,7 @@ namespace MultipleSpouses
                 }
                 else if (who.ActiveObject.ParentSheetIndex == 460)
                 {
+                    Monitor.Log($"Try give pendant to {__instance.name}");
                     if (who.isEngaged())
                     {
                         Monitor.Log($"Tried to give pendant while engaged");
@@ -900,7 +905,7 @@ namespace MultipleSpouses
                 }
                 else if (who.ActiveObject.parentSheetIndex == 809 && !who.ActiveObject.bigCraftable)
                 {
-                    Monitor.Log($"Tried to give movie ticket");
+                    Monitor.Log($"Tried to give movie ticket to {__instance.name}");
                     if (Misc.GetSpouses(who, 1).ContainsKey(__instance.Name) && Utility.doesMasterPlayerHaveMailReceivedButNotMailForTomorrow("ccMovieTheater") && !__instance.Name.Equals("Krobus") && who.lastSeenMovieWeek.Value < Game1.Date.TotalWeeks && !Utility.isFestivalDay(Game1.dayOfMonth, Game1.currentSeason) && Game1.timeOfDay <= 2100 && __instance.lastSeenMovieWeek.Value < Game1.Date.TotalWeeks && MovieTheater.GetResponseForMovie(__instance) != "reject")
                     {
                         Monitor.Log($"Tried to give movie ticket to spouse");
