@@ -1046,7 +1046,7 @@ namespace MultipleSpouses
                 if (!Config.ShowParentNames && __instance.Name.EndsWith(")"))
                 {
                     __result = Regex.Replace(string.Join(" ", names), @" \([^)]+\)", "");
-                    Monitor.Log($"set child display name to: {__result}");
+                    //Monitor.Log($"set child display name to: {__result}");
                 }
             }
             catch (Exception ex)

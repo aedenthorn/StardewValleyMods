@@ -46,6 +46,7 @@
     <None Include="$(MSBuildThisFileDirectory)FishingChestsExpanded 0.2.0.zip" />
     <None Include="$(MSBuildThisFileDirectory)FishingChestsExpanded 0.2.1.zip" />
     <None Include="$(MSBuildThisFileDirectory)FishingChestsExpanded 0.3.0.zip" />
+    <None Include="$(MSBuildThisFileDirectory)FishingChestsExpanded 0.4.0.zip" />
     <None Include="$(MSBuildThisFileDirectory)FruitTreeShaker 1.1.0.zip" />
     <None Include="$(MSBuildThisFileDirectory)GemIsles 0.2.3.zip" />
     <None Include="$(MSBuildThisFileDirectory)HereFishy 0.3.2.zip" />
@@ -89,9 +90,11 @@
     <None Include="$(MSBuildThisFileDirectory)NonRandomPrairieKing 0.1.0.zip" />
     <None Include="$(MSBuildThisFileDirectory)OverworldChests 0.4.1.zip" />
     <None Include="$(MSBuildThisFileDirectory)OverworldChests 0.5.0.zip" />
+    <None Include="$(MSBuildThisFileDirectory)OverworldChests 0.5.1.zip" />
     <None Include="$(MSBuildThisFileDirectory)PacifistValley 0.6.4.zip" />
     <None Include="$(MSBuildThisFileDirectory)PacifistValley 0.7.2.zip" />
     <None Include="$(MSBuildThisFileDirectory)ParrotPerch 0.1.0.zip" />
+    <None Include="$(MSBuildThisFileDirectory)PersisitentGrangeDisplay 0.1.0.zip" />
     <None Include="$(MSBuildThisFileDirectory)PlaceShaft 2.0.0.zip" />
     <None Include="$(MSBuildThisFileDirectory)QuickLoad 0.1.0.zip" />
     <None Include="$(MSBuildThisFileDirectory)QuickResponses 0.2.0.zip" />
@@ -104,6 +107,7 @@
     <None Include="$(MSBuildThisFileDirectory)SocialPageOrderButton 0.1.0.zip" />
     <None Include="$(MSBuildThisFileDirectory)Swim 1.8.2.zip" />
     <None Include="$(MSBuildThisFileDirectory)Swim 1.8.3.zip" />
+    <None Include="$(MSBuildThisFileDirectory)Swim 1.8.4.zip" />
     <None Include="$(MSBuildThisFileDirectory)TransparentObjects 0.2.1.zip" />
     <None Include="$(MSBuildThisFileDirectory)TrashCanReactions 0.1.1.zip" />
     <None Include="$(MSBuildThisFileDirectory)TrashCanReactions 0.2.0.zip" />

@@ -4,11 +4,11 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{D06D6A79-D6AA-45E4-9E39-9D150F8A5365}</ProjectGuid>
+    <ProjectGuid>{C7A7C77B-C11A-4C84-B5A1-6C2D6BF5B04B}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Swim</RootNamespace>
-    <AssemblyName>Swim</AssemblyName>
+    <RootNamespace>PersisitentGrangeDisplay</RootNamespace>
+    <AssemblyName>PersisitentGrangeDisplay</AssemblyName>
     <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <Deterministic>true</Deterministic>
@@ -49,68 +49,16 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="AbigailProjectile.cs" />
-    <Compile Include="DiveMapData.cs" />
-    <Compile Include="SwimHelperEvents.cs" />
-    <Compile Include="SwimMaps.cs" />
-    <Compile Include="SeaCrab.cs" />
-    <Compile Include="BigFishie.cs" />
-    <Compile Include="AbigailMetalHead.cs" />
-    <Compile Include="IJsonAssetsApi.cs" />
+    <Compile Include="GrangePatches.cs" />
     <Compile Include="ModConfig.cs" />
     <Compile Include="ModEntry.cs" />
+    <Compile Include="PersistentGrangeDisplayData.cs" />
+    <Compile Include="PersistentItem.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Fishie.cs" />
-    <Compile Include="SwimDialog.cs" />
-    <Compile Include="SwimModApi.cs" />
-    <Compile Include="SwimUtils.cs" />
-    <Compile Include="SwimPatches.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="assets\json-assets\Boots\Scuba Fins\boots.json" />
-    <None Include="assets\json-assets\content-pack.json" />
-    <None Include="assets\json-assets\Hats\Scuba Mask\hat.json" />
-    <None Include="assets\json-assets\Shirts\Scuba Tank\shirt.json" />
-    <None Include="assets\wavebank.json" />
-    <None Include="assets\tmx-pack\assets\Cave.tbin" />
-    <None Include="assets\tmx-pack\assets\UnderwaterBeach.tbin" />
-    <None Include="assets\tmx-pack\assets\UnderwaterMountain.tbin" />
-    <None Include="assets\tmx-pack\assets\UnderwaterTown.tbin" />
-    <None Include="assets\tmx-pack\content.json" />
-    <None Include="assets\tmx-pack\manifest.json" />
-    <None Include="assets\swim-map-content.json" />
-    <None Include="i18n\es.json" />
-    <None Include="i18n\ko.json" />
-    <None Include="i18n\pt.json" />
-    <None Include="i18n\ru.json" />
-    <None Include="i18n\zh.json" />
     <None Include="manifest.json" />
     <None Include="packages.config" />
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="assets\breathe.wav" />
-    <Content Include="assets\Fishies\BigFishBlack.png" />
-    <Content Include="assets\Fishies\BigFishBlue.png" />
-    <Content Include="assets\Fishies\BigFishGold.png" />
-    <Content Include="assets\Fishies\BigFishGreen.png" />
-    <Content Include="assets\Fishies\BigFishGreenWhite.png" />
-    <Content Include="assets\Fishies\BigFishGrey.png" />
-    <Content Include="assets\Fishies\BigFishRed.png" />
-    <Content Include="assets\Fishies\BigFishWhite.png" />
-    <Content Include="assets\Fishies\BlueFish.png" />
-    <Content Include="assets\Fishies\ChestCrab.png" />
-    <Content Include="assets\Fishies\HermitCrab.png" />
-    <Content Include="assets\json-assets\Boots\Scuba Fins\boots.png" />
-    <Content Include="assets\json-assets\Boots\Scuba Fins\color.png" />
-    <Content Include="assets\json-assets\Hats\Scuba Mask\hat.png" />
-    <Content Include="assets\json-assets\Shirts\Scuba Tank\male.png" />
-    <Content Include="assets\seamonster.png" />
-    <Content Include="assets\tmx-pack\assets\mine.png" />
-    <Content Include="assets\tmx-pack\assets\spring_beach.png" />
-    <Content Include="assets\Fishies\GreenFish.png" />
-    <Content Include="assets\Fishies\PinkFish.png" />
-    <Content Include="assets\scuba.png" />
-    <None Include="i18n\default.json" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="..\packages\Pathoschild.Stardew.ModBuildConfig.3.2.2\build\Pathoschild.Stardew.ModBuildConfig.targets" Condition="Exists('..\packages\Pathoschild.Stardew.ModBuildConfig.3.2.2\build\Pathoschild.Stardew.ModBuildConfig.targets')" />

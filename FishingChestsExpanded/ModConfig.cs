@@ -5,7 +5,8 @@ namespace FishingChestsExpanded
     public class ModConfig
     {
         public bool EnableMod { get; set; } = true;
-        public float BaseChanceForTreasureChest { get; set; } = -1f;
+        public int VanillaLootChance { get; set; } = 0;
+        public int ChanceForTreasureChest { get; set; } = -1;
         public int MaxItems { get; set; } = 5;
         public int ItemsBaseMaxValue { get; set; } = 100;
         public int MinItemValue { get; set; } = 20;

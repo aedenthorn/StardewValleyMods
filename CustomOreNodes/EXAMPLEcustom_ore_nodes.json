@@ -1,10 +1,164 @@
 ﻿{
-    nodes:[
-        // nodes: Description/texturePath/relativeTexturePathLocation/spriteX,spriteY/spriteWidth,SpriteHeight/minMineLevel,maxMineLevel/spawnChance/durability/experience/dropItems
-        // dropItems(seperated by "|"): objectIndexOrName;dropChance;minDrop,maxDrop;luckyAdditionalDropNum;minerAdditionalDropNum
-        "This stone is rich in coal./assets\\CoalStone.png/mod/0,0/16,16/1,120/5/4/12/382;100;1,4;1;1|390;75;1,2;1;1", // 5% chance of coal stone in mine levels 1-120
-        "This stone is rich in coal./assets\\CoalStone.png/mod/0,0/16,16/121,-1/10/4/12/382;100;1,4;1;1|390;75;1,2;1;1", // 10% chance of coal stone in mine levels 120+
-        "This stone smells like pizza./Maps\\springobjects/game/160,432/16,16/-1,-1/0/2/12/206;100;1,2;1;1", // no chance of pizza stone
-        "This stone shines like stardust./LooseSprites\\Cursors/game/597,1888/16,16/-1,-1/0/12/48/Prismatic Shard;100;1,1;0;0" // no chance of rainbow stone
-    ]
+  "nodes": [
+    {
+      "parentSheetIndex": 0,
+      "dropItems": [
+        {
+          "itemIdOrName": "382",
+          "dropChance": 100.0,
+          "minAmount": 1,
+          "maxAmount": 4,
+          "luckyAmount": 1,
+          "minerAmount": 1
+        },
+        {
+          "itemIdOrName": "390",
+          "dropChance": 75.0,
+          "minAmount": 1,
+          "maxAmount": 2,
+          "luckyAmount": 1,
+          "minerAmount": 1
+        }
+      ],
+      "oreLevelRanges": [
+        {
+          "minLevel": 1,
+          "maxLevel": 120,
+          "spawnChanceMult": 1.0,
+          "expMult": 1.0,
+          "dropChanceMult": 1.0,
+          "dropMult": 1.0,
+          "minDifficulty": -1,
+          "maxDifficulty": -1
+        }
+      ],
+      "nodeDesc": "This stone is rich in coal.",
+      "spritePath": "assets\\CoalStone.png",
+      "spriteType": "mod",
+      "spriteX": 0,
+      "spriteY": 0,
+      "spriteW": 16,
+      "spriteH": 16,
+      "spawnChance": 5.0,
+      "durability": 4,
+      "exp": 12,
+      "texture": null
+    },
+    {
+      "parentSheetIndex": 0,
+      "dropItems": [
+        {
+          "itemIdOrName": "382",
+          "dropChance": 100.0,
+          "minAmount": 1,
+          "maxAmount": 4,
+          "luckyAmount": 1,
+          "minerAmount": 1
+        },
+        {
+          "itemIdOrName": "390",
+          "dropChance": 75.0,
+          "minAmount": 1,
+          "maxAmount": 2,
+          "luckyAmount": 1,
+          "minerAmount": 1
+        }
+      ],
+      "oreLevelRanges": [
+        {
+          "minLevel": 121,
+          "maxLevel": -1,
+          "spawnChanceMult": 1.0,
+          "expMult": 1.0,
+          "dropChanceMult": 1.0,
+          "dropMult": 1.0,
+          "minDifficulty": -1,
+          "maxDifficulty": -1
+        }
+      ],
+      "nodeDesc": "This stone is rich in coal.",
+      "spritePath": "assets\\CoalStone.png",
+      "spriteType": "mod",
+      "spriteX": 0,
+      "spriteY": 0,
+      "spriteW": 16,
+      "spriteH": 16,
+      "spawnChance": 10.0,
+      "durability": 4,
+      "exp": 12,
+      "texture": null
+    },
+    {
+      "parentSheetIndex": 0,
+      "dropItems": [
+        {
+          "itemIdOrName": "206",
+          "dropChance": 100.0,
+          "minAmount": 1,
+          "maxAmount": 2,
+          "luckyAmount": 1,
+          "minerAmount": 1
+        }
+      ],
+      "oreLevelRanges": [
+        {
+          "minLevel": -1,
+          "maxLevel": -1,
+          "spawnChanceMult": 1.0,
+          "expMult": 1.0,
+          "dropChanceMult": 1.0,
+          "dropMult": 1.0,
+          "minDifficulty": -1,
+          "maxDifficulty": -1
+        }
+      ],
+      "nodeDesc": "This stone smells like pizza.",
+      "spritePath": "Maps\\springobjects",
+      "spriteType": "game",
+      "spriteX": 160,
+      "spriteY": 432,
+      "spriteW": 16,
+      "spriteH": 16,
+      "spawnChance": 0.0,
+      "durability": 2,
+      "exp": 12,
+      "texture": null
+    },
+    {
+      "parentSheetIndex": 0,
+      "dropItems": [
+        {
+          "itemIdOrName": "Prismatic Shard",
+          "dropChance": 100.0,
+          "minAmount": 1,
+          "maxAmount": 1,
+          "luckyAmount": 0,
+          "minerAmount": 0
+        }
+      ],
+      "oreLevelRanges": [
+        {
+          "minLevel": -1,
+          "maxLevel": -1,
+          "spawnChanceMult": 1.0,
+          "expMult": 1.0,
+          "dropChanceMult": 1.0,
+          "dropMult": 1.0,
+          "minDifficulty": -1,
+          "maxDifficulty": -1
+        }
+      ],
+      "nodeDesc": "This stone shines like stardust.",
+      "spritePath": "LooseSprites\\Cursors",
+      "spriteType": "game",
+      "spriteX": 597,
+      "spriteY": 1888,
+      "spriteW": 16,
+      "spriteH": 16,
+      "spawnChance": 0.0,
+      "durability": 12,
+      "exp": 48,
+      "texture": null
+    }
+  ]
 }
