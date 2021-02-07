@@ -7,6 +7,7 @@ namespace AdvancedMeleeFramework
     {
         public string id = "none";
         public int type = 0;
+        public List<AdvancedEnchantmentData> enchantments = null;
         public int skillLevel = 0;
         public int cooldown = 1500;
         public List<MeleeActionFrame> frames = new List<MeleeActionFrame>();
@@ -15,13 +16,26 @@ namespace AdvancedMeleeFramework
     public class MeleeActionFrame
     {
         public int frameTicks;
+        public bool? invincible = null;
+        public SpecialEffect special = null;
         public WeaponFarmerAnimation animation;
         public WeaponAction action;
         public string sound;
         public List<WeaponProjectile> projectiles = new List<WeaponProjectile>();
         public int relativeFacingDirection = 0;
-        public int trajectoryX = 0;
-        public int trajectoryY = 0;
+        public float trajectoryX = 0;
+        public float trajectoryY = 0;
+    }
+
+    public class SpecialEffect
+    {
+        public string name;
+        public Dictionary<string, string> parameters;
+    }
+    public class AdvancedEnchantmentData
+    {
+        public string type;
+        public Dictionary<string, string> parameters;
     }
 
     public enum WeaponAction

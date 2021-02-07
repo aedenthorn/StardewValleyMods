@@ -1,13 +1,16 @@
 ﻿using Harmony;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using StardewModdingAPI;
 using StardewValley;
+using StardewValley.Monsters;
 using StardewValley.Network;
 using StardewValley.Projectiles;
 using StardewValley.Tools;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 
 namespace AdvancedMeleeFramework
 {
@@ -54,6 +57,23 @@ namespace AdvancedMeleeFramework
             harmony.Patch(
                 original: AccessTools.Method(typeof(MeleeWeapon), "doAnimateSpecialMove"),
                 prefix: new HarmonyMethod(typeof(ModEntry), nameof(doAnimateSpecialMove_Prefix))
+            );
+
+            ConstructorInfo ci = typeof(MeleeWeapon).GetConstructor(new Type[] { typeof(int) });
+            harmony.Patch(
+               original: ci,
+               postfix: new HarmonyMethod(typeof(ModEntry), nameof(ModEntry.MeleeWeapon_Postfix))
+            );
+            ci = typeof(MeleeWeapon).GetConstructor(new Type[] { });
+            harmony.Patch(
+               original: ci,
+               postfix: new HarmonyMethod(typeof(ModEntry), nameof(ModEntry.MeleeWeapon_Postfix))
+            );
+            
+            harmony.Patch(
+                original: AccessTools.Method(typeof(MeleeWeapon), nameof(MeleeWeapon.drawInMenu), new Type[] { typeof(SpriteBatch), typeof(Vector2), typeof(float), typeof(float), typeof(float), typeof(StackDrawType), typeof(Color), typeof(bool) }),
+                prefix: new HarmonyMethod(typeof(ModEntry), nameof(drawInMenu_Prefix)),
+                postfix: new HarmonyMethod(typeof(ModEntry), nameof(drawInMenu_Postfix))
             );
 
         }
@@ -165,29 +185,54 @@ namespace AdvancedMeleeFramework
                 if (weaponAnimationFrame == 0 && weaponAnimationTicks == 0)
                 {
                     weaponStartFacingDirection = user.facingDirection.Value;
-                    SMonitor.Log($"Starting animation, facing {weaponStartFacingDirection}");
+                    //SMonitor.Log($"Starting animation, facing {weaponStartFacingDirection}");
                 }
 
                 if (user.CurrentTool != weaponAnimating)
                 {
-                    SMonitor.Log($"Switched tools to {Game1.player.CurrentTool?.DisplayName}");
+                    //SMonitor.Log($"Switched tools to {Game1.player.CurrentTool?.DisplayName}");
                     weaponAnimating = null;
                     weaponAnimationFrame = -1; 
                     weaponAnimationTicks = 0;
                     advancedWeaponAnimating = null;
                     return;
                 }
-                
+                if (frame.invincible != null)
+                {
+                    //SMonitor.Log($"Setting invincible as {frame.invincible}");
+                    user.temporarilyInvincible = (bool)frame.invincible;
+                }
+
                 if (weaponAnimationTicks == 0)
                 {
-                    SMonitor.Log($"Starting frame {weaponAnimationFrame}");
+                    //SMonitor.Log($"Starting frame {weaponAnimationFrame}");
 
                     user.faceDirection((weaponStartFacingDirection + frame.relativeFacingDirection) % 4);
-                    SMonitor.Log($"facing {user.getFacingDirection()}, relative {frame.relativeFacingDirection}");
+                    //SMonitor.Log($"facing {user.getFacingDirection()}, relative {frame.relativeFacingDirection}");
+
+                    if(frame.special != null)
+                    {
+                        try
+                        {
+                            switch (frame.special.name)
+                            {
+                                case "lightning":
+                                    LightningStrike(user, weaponAnimating, frame.special.parameters);
+                                    break;
+                                case "explosion":
+                                    Explosion(user, weaponAnimating, frame.special.parameters);
+                                    break;
+                            }
+                        }
+                        catch (Exception ex)
+                        {
+                            Monitor.Log($"Exception thrown on special effect:\n{ex}", LogLevel.Error);
+                        }
+                    }
 
                     if (frame.action == WeaponAction.NORMAL)
                     {
-                        SMonitor.Log($"Starting normal attack");
+                        //SMonitor.Log($"Starting normal attack");
                         user.completelyStopAnimatingOrDoingAction();
                         user.CanMove = false;
                         user.UsingTool = true;
@@ -196,7 +241,7 @@ namespace AdvancedMeleeFramework
                     }
                     else if (frame.action == WeaponAction.SPECIAL)
                     {
-                        SMonitor.Log($"Starting special attack");
+                        //SMonitor.Log($"Starting special attack");
                         weaponAnimating.animateSpecialMove(user); 
                     }
 
@@ -204,40 +249,37 @@ namespace AdvancedMeleeFramework
                     {
                         float trajectoryX = frame.trajectoryX;
                         float trajectoryY = frame.trajectoryY;
-                        TranslateVector(ref trajectoryX, ref trajectoryY, user.FacingDirection);
-                        user.setTrajectory(new Vector2(trajectoryX, -trajectoryY));
+                        Vector2 rawTrajectory = TranslateVector(new Vector2(trajectoryX, trajectoryY), user.FacingDirection);
+                        user.setTrajectory(new Vector2(rawTrajectory.X, -rawTrajectory.Y)); // game trajectory y is backwards idek
+                        //SMonitor.Log($"player trajectory {user.xVelocity},{user.yVelocity}");
                     }
 
                     if (frame.sound != null)
                     {
-                        SMonitor.Log($"Playing sound {frame.sound}");
+                        //SMonitor.Log($"Playing sound {frame.sound}");
                         user.currentLocation.playSound(frame.sound, NetAudio.SoundContext.Default);
                     }
                     foreach(WeaponProjectile p in frame.projectiles)
                     {
-                        float xVelocity = p.xVelocity;
-                        float yVelocity = p.yVelocity;
-                        float startingPositionX = p.startingPositionX;
-                        float startingPositionY = p.startingPositionY;
-                        TranslateVector(ref xVelocity, ref yVelocity, user.FacingDirection);
-                        TranslateVector(ref startingPositionX, ref startingPositionY, user.FacingDirection);
+                        Vector2 velocity = TranslateVector(new Vector2(p.xVelocity, p.yVelocity), user.FacingDirection);
+                        Vector2 startPos = TranslateVector(new Vector2(p.startingPositionX, p.startingPositionY), user.FacingDirection);
 
                         int damage = advancedWeaponAnimating.type > 0 ? p.damage * myRand.Next(weaponAnimating.minDamage, weaponAnimating.maxDamage) : p.damage;
 
                         //SMonitor.Log($"player position: {user.Position}, start position: { new Vector2(startingPositionX, startingPositionY) }");
 
-                        user.currentLocation.projectiles.Add(new BasicProjectile(damage, p.parentSheetIndex, p.bouncesTillDestruct, p.tailLength, p.rotationVelocity, xVelocity, yVelocity, user.Position + new Vector2(0, -64) + new Vector2(startingPositionX,startingPositionY), p.collisionSound, p.firingSound, p.explode, p.damagesMonsters, user.currentLocation, user, p.spriteFromObjectSheet));
+                        user.currentLocation.projectiles.Add(new BasicProjectile(damage, p.parentSheetIndex, p.bouncesTillDestruct, p.tailLength, p.rotationVelocity, velocity.X, velocity.Y, user.Position + new Vector2(0, -64) + startPos, p.collisionSound, p.firingSound, p.explode, p.damagesMonsters, user.currentLocation, user, p.spriteFromObjectSheet));
                     }
                 }
                 if (++weaponAnimationTicks >= frame.frameTicks)
                 {
                     weaponAnimationFrame++;
                     weaponAnimationTicks = 0;
-                    SMonitor.Log($"Advancing to frame {weaponAnimationFrame}");
+                    //SMonitor.Log($"Advancing to frame {weaponAnimationFrame}");
                 }
                 if (weaponAnimationFrame >= advancedWeaponAnimating.frames.Count)
                 {
-                    SMonitor.Log($"Ending weapon animation");
+                    //SMonitor.Log($"Ending weapon animation");
                     user.completelyStopAnimatingOrDoingAction();
                     user.CanMove = true;
                     user.UsingTool = false;
@@ -278,32 +320,60 @@ namespace AdvancedMeleeFramework
             }
         }
 
-        private void TranslateVector(ref float x, ref float y, int facingDirection)
+        private static void MeleeWeapon_Postfix(MeleeWeapon __instance)
         {
+            //context.Monitor.Log($"created melee weapon {__instance.Name} {__instance.InitialParentTileIndex} {__instance.ParentSheetIndex}");
 
-            float outx = x;
-            float outy = y;
-            switch (facingDirection)
+            AdvancedMeleeWeapon amw = GetAdvancedWeapon(__instance, null);
+            if(amw != null && amw.enchantments != null)
             {
-                case 2:
-                    break;
-                case 3:
-                    outx = -y;
-                    outy = x;
-                    break;
-                case 0:
-                    outx = -x;
-                    outy = -y;
-                    break;
-                case 1:
-                    outx = y;
-                    outy = -x;
-                    break;
+                foreach(AdvancedEnchantmentData aed in amw.enchantments)
+                {
+                    switch (aed.type)
+                    {
+                        case "vampiric":
+                            __instance.enchantments.Add(new VampiricEnchantment());
+                            break;
+                        case "jade":
+                            __instance.enchantments.Add(new JadeEnchantment());
+                            break;
+                        case "aquamarine":
+                            __instance.enchantments.Add(new AquamarineEnchantment());
+                            break;
+                        case "topaz":
+                            __instance.enchantments.Add(new TopazEnchantment());
+                            break;
+                        case "amethyst":
+                            __instance.enchantments.Add(new AmethystEnchantment());
+                            break;
+                        case "ruby":
+                            __instance.enchantments.Add(new RubyEnchantment());
+                            break;
+                        case "emerald":
+                            __instance.enchantments.Add(new EmeraldEnchantment());
+                            break;
+                        case "haymaker":
+                            __instance.enchantments.Add(new HaymakerEnchantment());
+                            break;
+                        case "bugkiller":
+                            __instance.enchantments.Add(new BugKillerEnchantment());
+                            break;
+                        case "crusader":
+                            __instance.enchantments.Add(new CrusaderEnchantment());
+                            break;
+                        case "magic":
+                            __instance.enchantments.Add(new MagicEnchantment());
+                            break;
+                        default:
+                            AdvancedEnchantment ae = new AdvancedEnchantment(__instance, amw, aed);
+                            __instance.enchantments.Add(ae);
+                            break;
+                    }
+                    context.Monitor.Log($"added enchantment {aed.type} to {__instance.Name} {__instance.enchantments.Count}");
+                }
             }
-            x = outx;
-            y = outy;
         }
-
+        
         private static bool doAnimateSpecialMove_Prefix(MeleeWeapon __instance, Farmer ___lastUser)
         {
             SMonitor.Log($"Special move for {__instance.Name}, id {__instance.InitialParentTileIndex}");
@@ -332,6 +402,142 @@ namespace AdvancedMeleeFramework
             weaponAnimating = __instance;
             return false;
         }
+        private static void drawInMenu_Prefix(MeleeWeapon __instance, ref int __state)
+        {
+            __state = 0;
+            switch (__instance.type)
+            {
+                case 0:
+                case 3:
+                    if (MeleeWeapon.defenseCooldown > 1500)
+                    {
+                        __state = MeleeWeapon.defenseCooldown;
+                        MeleeWeapon.defenseCooldown = 1500;
+                    }
+                    break;
+                case 1:
+                    if (MeleeWeapon.daggerCooldown > 3000)
+                    {
+                        __state = MeleeWeapon.daggerCooldown;
+                        MeleeWeapon.daggerCooldown = 3000;
+                    }
+                    break;
+                case 2:
+                    if (MeleeWeapon.clubCooldown > 6000)
+                    {
+                        __state = MeleeWeapon.clubCooldown;
+                        MeleeWeapon.clubCooldown = 6000;
+                    }
+                    break;
+            }
+        }
+        private static void drawInMenu_Postfix(MeleeWeapon __instance, int __state)
+        {
+            if (__state == 0)
+                return;
+
+            switch (__instance.type)
+            {
+                case 0:
+                case 3:
+                    MeleeWeapon.defenseCooldown = __state;
+                    break;
+                case 1:
+                    MeleeWeapon.daggerCooldown = __state;
+                    break;
+                case 2:
+                    MeleeWeapon.clubCooldown = __state;
+                    break;
+            }
+
+        }
+
+        private Vector2 TranslateVector(Vector2 vector, int facingDirection)
+        {
+
+            float outx = vector.X;
+            float outy = vector.Y;
+            switch (facingDirection)
+            {
+                case 2:
+                    break;
+                case 3:
+                    outx = -vector.Y;
+                    outy = vector.X;
+                    break;
+                case 0:
+                    outx = -vector.X;
+                    outy = -vector.Y;
+                    break;
+                case 1:
+                    outx = vector.Y;
+                    outy = -vector.X;
+                    break;
+            }
+            return new Vector2(outx, outy);
+        }
+        private void LightningStrike(Farmer who, MeleeWeapon weapon, Dictionary<string, string> parameters)
+        {
+            int minDamage = weapon.minDamage;
+            int maxDamage = weapon.maxDamage;
+            if (parameters.ContainsKey("damageMult"))
+            {
+                minDamage = (int)Math.Round(weapon.minDamage * float.Parse(parameters["damageMult"]));
+                maxDamage = (int)Math.Round(weapon.maxDamage * float.Parse(parameters["damageMult"]));
+            }
+            else if (parameters.ContainsKey("minDamage") && parameters.ContainsKey("maxDamage"))
+            {
+                minDamage = int.Parse(parameters["minDamage"]);
+                maxDamage = int.Parse(parameters["maxDamage"]);
+            }
+
+            int radius = int.Parse(parameters["radius"]);
+
+            Vector2 playerLocation = who.position;
+            GameLocation currentLocation = who.currentLocation;
+            Farm.LightningStrikeEvent lightningEvent = new Farm.LightningStrikeEvent();
+            lightningEvent.bigFlash = true;
+            lightningEvent.createBolt = true;
+
+            Vector2 offset = Vector2.Zero;
+            if (parameters.ContainsKey("offsetX") && parameters.ContainsKey("offsetY"))
+            {
+                float x = float.Parse(parameters["offsetX"]);
+                float y = float.Parse(parameters["offsetY"]);
+                offset = TranslateVector(new Vector2(x, y), who.FacingDirection);
+            }
+            lightningEvent.boltPosition = playerLocation + new Vector2(32f, 32f) + offset;
+            Game1.flashAlpha = (float)(0.5 + Game1.random.NextDouble());
+            
+            if(parameters.ContainsKey("sound"))
+                Game1.playSound(parameters["sound"]);
+            
+            Utility.drawLightningBolt(lightningEvent.boltPosition, currentLocation);
+
+            currentLocation.damageMonster(new Rectangle((int)Math.Round(playerLocation.X - radius), (int)Math.Round(playerLocation.Y - radius), radius * 2, radius * 2), minDamage, maxDamage, false, who);
+        }
+        private void Explosion(Farmer user, MeleeWeapon weapon, Dictionary<string, string> parameters)
+        {
+            Vector2 tileLocation = user.getTileLocation();
+            if(parameters.ContainsKey("tileOffsetX") && parameters.ContainsKey("tileOffsetY")) 
+                tileLocation += TranslateVector(new Vector2(float.Parse(parameters["tileOffsetX"]), float.Parse(parameters["tileOffsetY"])), user.facingDirection);
+            int radius = int.Parse(parameters["radius"]);
+            
+            int damage;
+            if (parameters.ContainsKey("damageMult"))
+            {
+                damage = (int)Math.Round(Game1.random.Next(weapon.minDamage, weapon.maxDamage + 1) * float.Parse(parameters["damageMult"]));
+            }
+            else if (parameters.ContainsKey("minDamage") && parameters.ContainsKey("maxDamage"))
+            {
+                damage = Game1.random.Next(int.Parse(parameters["minDamage"]), int.Parse(parameters["maxDamage"]) + 1);
+
+            }
+            else
+                damage = Game1.random.Next(weapon.minDamage, weapon.maxDamage + 1);
+
+            user.currentLocation.explode(tileLocation, radius, user, false, damage);
+        }
 
         private static AdvancedMeleeWeapon GetAdvancedWeapon(MeleeWeapon weapon, Farmer user)
         {
@@ -341,14 +547,14 @@ namespace AdvancedMeleeFramework
                 int skillLevel = -1;
                 foreach (AdvancedMeleeWeapon amw in advancedMeleeWeapons[weapon.initialParentTileIndex])
                 {
-                    if (amw.skillLevel <= user.getEffectiveSkillLevel(4) && amw.skillLevel > skillLevel)
+                    if (user == null || (amw.skillLevel <= user.getEffectiveSkillLevel(4) && amw.skillLevel > skillLevel))
                     {
                         skillLevel = amw.skillLevel;
                         advancedMeleeWeapon = amw;
                     }
                 }
             }
-            if (advancedMeleeWeapon == null && advancedMeleeWeaponsByType.ContainsKey(weapon.type))
+            if (advancedMeleeWeapon == null && advancedMeleeWeaponsByType.ContainsKey(weapon.type) && user != null)
             {
                 int skillLevel = -1;
                 foreach(AdvancedMeleeWeapon amw in advancedMeleeWeaponsByType[weapon.type])
@@ -360,6 +566,7 @@ namespace AdvancedMeleeFramework
                     }
                 }
             }
+
             return advancedMeleeWeapon;
         }
     }

@@ -4,14 +4,10 @@ using Microsoft.Xna.Framework.Graphics;
 using StardewModdingAPI;
 using StardewValley;
 using StardewValley.Locations;
-using StardewValley.Network;
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Reflection;
-using System.Threading;
-using static Harmony.AccessTools;
 using Object = StardewValley.Object;
 
 namespace CustomOreNodes
@@ -294,7 +290,7 @@ namespace CustomOreNodes
             }
         }
 
-        private static void Object_Prefix(ref int parentSheetIndex, ref string Givenname)
+        private static void Object_Prefix(ref int parentSheetIndex, string Givenname)
         {
             if (Environment.StackTrace.Contains("chooseStoneType"))
             {
