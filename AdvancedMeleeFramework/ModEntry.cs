@@ -101,6 +101,7 @@ namespace AdvancedMeleeFramework
                 try
                 {
                     AdvancedMeleeWeaponData json = contentPack.ReadJsonFile<AdvancedMeleeWeaponData>("content.json") ?? null;
+                    WeaponPackConfigData config = contentPack.ReadJsonFile<WeaponPackConfigData>("config.json") ?? new WeaponPackConfigData();
 
                     if (json != null)
                     {
@@ -108,6 +109,119 @@ namespace AdvancedMeleeFramework
                         {
                             foreach (AdvancedMeleeWeapon weapon in json.weapons)
                             {
+                                foreach(KeyValuePair<string, string> kvp in weapon.config)
+                                {
+                                    FieldInfo fi = weapon.GetType().GetField(kvp.Key);
+
+                                    if(fi == null)
+                                    {
+                                        Monitor.Log($"Error getting field {kvp.Key} in AdvancedMeleeWeapon class.", LogLevel.Error);
+                                        continue;
+                                    }
+
+                                    if (config.variables.ContainsKey(kvp.Value))
+                                    {
+                                        var val = config.variables[kvp.Value];
+                                        if (val.GetType() == typeof(Int64))
+                                            fi.SetValue(weapon, Convert.ToInt32(config.variables[kvp.Value]));
+                                        else
+                                            fi.SetValue(weapon, config.variables[kvp.Value]);
+                                    }
+                                    else
+                                    {
+                                        config.variables.Add(kvp.Value, fi.GetValue(weapon));
+                                    }
+                                }
+                                foreach(MeleeActionFrame frame in weapon.frames)
+                                {
+                                    foreach (KeyValuePair<string, string> kvp in frame.config)
+                                    {
+                                        FieldInfo fi = frame.GetType().GetField(kvp.Key);
+
+                                        if (fi == null)
+                                        {
+                                            Monitor.Log($"Error getting field {kvp.Key} in MeleeActionFrame class.", LogLevel.Error);
+                                            continue;
+                                        }
+
+                                        if (config.variables.ContainsKey(kvp.Value))
+                                        {
+                                            fi.SetValue(frame, config.variables[kvp.Value]);
+                                        }
+                                        else
+                                        {
+                                            config.variables.Add(kvp.Value, fi.GetValue(frame));
+                                        }
+                                    }
+                                    foreach (AdvancedWeaponProjectile entry in frame.projectiles)
+                                    {
+                                        foreach (KeyValuePair<string, string> kvp in entry.config)
+                                        {
+                                            FieldInfo fi = entry.GetType().GetField(kvp.Key);
+
+                                            if (fi == null)
+                                            {
+                                                Monitor.Log($"Error getting field {kvp.Key} in AdvancedWeaponProjectile class.", LogLevel.Error);
+                                                continue;
+                                            }
+
+                                            if (config.variables.ContainsKey(kvp.Value))
+                                            {
+                                                fi.SetValue(entry, config.variables[kvp.Value]);
+                                            }
+                                            else
+                                            {
+                                                config.variables.Add(kvp.Value, fi.GetValue(entry));
+                                            }
+                                        }
+                                    }
+                                    if(frame.special != null)
+                                    {
+                                        foreach (KeyValuePair<string, string> kvp in frame.special.config)
+                                        {
+                                            if (!frame.special.parameters.ContainsKey(kvp.Key))
+                                            {
+                                                Monitor.Log($"Error getting key {kvp.Key} in SpecialEffects.parameters", LogLevel.Error);
+                                                continue;
+                                            }
+                                            if (config.variables.ContainsKey(kvp.Value))
+                                            {
+                                                frame.special.parameters[kvp.Key] = config.variables[kvp.Value].ToString();
+                                            }
+                                            else
+                                            {
+                                                config.variables.Add(kvp.Value, frame.special.parameters[kvp.Key]);
+                                            }
+
+                                        }
+                                    }
+                                }
+                                foreach (AdvancedEnchantmentData entry in weapon.enchantments)
+                                {
+                                    foreach (KeyValuePair<string, string> kvp in entry.config)
+                                    {
+                                        if (!entry.parameters.ContainsKey(kvp.Key))
+                                        {
+                                            Monitor.Log($"Error getting key {kvp.Key} in AdvancedEnchantmentData.parameters", LogLevel.Error);
+                                            continue;
+                                        }
+
+                                        if (config.variables.ContainsKey(kvp.Value))
+                                        {
+                                            entry.parameters[kvp.Key]  = config.variables[kvp.Value].ToString();
+                                        }
+                                        else
+                                        {
+                                            config.variables.Add(kvp.Value, entry.parameters[kvp.Key]);
+                                        }
+                                    }
+                                }
+                                if (config.variables.Any())
+                                {
+                                    contentPack.WriteJsonFile("config.json", config);
+                                }
+
+
                                 if (weapon.type == 0)
                                 {
                                     SMonitor.Log($"Adding specific weapon {weapon.id}");
@@ -259,7 +373,7 @@ namespace AdvancedMeleeFramework
                         //SMonitor.Log($"Playing sound {frame.sound}");
                         user.currentLocation.playSound(frame.sound, NetAudio.SoundContext.Default);
                     }
-                    foreach(WeaponProjectile p in frame.projectiles)
+                    foreach(AdvancedWeaponProjectile p in frame.projectiles)
                     {
                         Vector2 velocity = TranslateVector(new Vector2(p.xVelocity, p.yVelocity), user.FacingDirection);
                         Vector2 startPos = TranslateVector(new Vector2(p.startingPositionX, p.startingPositionY), user.FacingDirection);
@@ -325,7 +439,7 @@ namespace AdvancedMeleeFramework
             //context.Monitor.Log($"created melee weapon {__instance.Name} {__instance.InitialParentTileIndex} {__instance.ParentSheetIndex}");
 
             AdvancedMeleeWeapon amw = GetAdvancedWeapon(__instance, null);
-            if(amw != null && amw.enchantments != null)
+            if(amw != null)
             {
                 foreach(AdvancedEnchantmentData aed in amw.enchantments)
                 {
@@ -373,7 +487,6 @@ namespace AdvancedMeleeFramework
                 }
             }
         }
-        
         private static bool doAnimateSpecialMove_Prefix(MeleeWeapon __instance, Farmer ___lastUser)
         {
             SMonitor.Log($"Special move for {__instance.Name}, id {__instance.InitialParentTileIndex}");
@@ -383,7 +496,7 @@ namespace AdvancedMeleeFramework
 
             advancedWeaponAnimating = GetAdvancedWeapon(__instance, ___lastUser);
 
-            if (weaponAnimationFrame > -1 || advancedWeaponAnimating == null)
+            if (weaponAnimationFrame > -1 || advancedWeaponAnimating == null || !advancedWeaponAnimating.frames.Any())
                 return true;
 
             if (___lastUser == null || ___lastUser.CurrentTool != __instance)

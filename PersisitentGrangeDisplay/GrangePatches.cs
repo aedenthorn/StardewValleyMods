@@ -38,8 +38,8 @@ namespace PersisitentGrangeDisplay
 
             if (ModEntry.Config.ShowCurrentScoreOnGrange)
             {
-                string score = ModEntry.GetGrangeScore().ToString();
-                spriteBatch.DrawString(Game1.smallFont, score, new Vector2(start.X + 24 * 4 - score.Length * 8, start.Y + 51 * 4), ModEntry.GetPointsColor(), 0f, Vector2.Zero, 1f, SpriteEffects.None, layerDepth + 0.0202f);
+                int score = ModEntry.GetGrangeScore();
+                spriteBatch.DrawString(Game1.smallFont, score.ToString(), new Vector2(start.X + 24 * 4 - score.ToString().Length * 8, start.Y + 51 * 4), ModEntry.GetPointsColor(score), 0f, Vector2.Zero, 1f, SpriteEffects.None, layerDepth + 0.0202f);
             }
 
             start.X += 4f;
@@ -97,11 +97,11 @@ namespace PersisitentGrangeDisplay
         {
             if (ModEntry.isGrangeMenu && ModEntry.Config.ShowCurrentScoreInMenu)
             {
-                string score = ModEntry.GetGrangeScore().ToString();
-                b.DrawString(Game1.smallFont, score, new Vector2(__instance.ItemsToGrabMenu.xPositionOnScreen + 24 * 4 - score.Length * 8, __instance.ItemsToGrabMenu.yPositionOnScreen + 48 * 4), ModEntry.GetPointsColor(), 0f, Vector2.Zero, 1f, SpriteEffects.None, 0.001f);
+                int score = ModEntry.GetGrangeScore();
+                b.DrawString(Game1.smallFont, score.ToString(), new Vector2(__instance.ItemsToGrabMenu.xPositionOnScreen + 24 * 4 - score.ToString().Length * 8, __instance.ItemsToGrabMenu.yPositionOnScreen + 48 * 4), ModEntry.GetPointsColor(score), 0f, Vector2.Zero, 1f, SpriteEffects.None, 0.001f);
             }
         }
-
+        
         public static void Game1_exitActiveMenu_Postfix()
         {
             ModEntry.isGrangeMenu = false;

@@ -1,13 +1,11 @@
 ﻿using Harmony;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using Netcode;
 using StardewModdingAPI;
 using StardewValley;
 using StardewValley.Menus;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using Object = StardewValley.Object;
 
 namespace PersisitentGrangeDisplay
@@ -219,11 +217,10 @@ namespace PersisitentGrangeDisplay
             return pointsEarned;
         }
 
-        public static Color GetPointsColor()
+        public static Color GetPointsColor(int score)
         {
-            int score = GetGrangeScore();
             if (score >= 90)
-                return new Color(155, 255, 155);
+                return new Color(120, 255, 120);
             if (score >= 75)
                 return Color.Yellow;
             if (score >= 60)

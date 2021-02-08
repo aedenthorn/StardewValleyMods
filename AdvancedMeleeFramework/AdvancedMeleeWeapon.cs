@@ -7,10 +7,11 @@ namespace AdvancedMeleeFramework
     {
         public string id = "none";
         public int type = 0;
-        public List<AdvancedEnchantmentData> enchantments = null;
+        public List<AdvancedEnchantmentData> enchantments = new List<AdvancedEnchantmentData>();
         public int skillLevel = 0;
         public int cooldown = 1500;
         public List<MeleeActionFrame> frames = new List<MeleeActionFrame>();
+        public Dictionary<string, string> config = new Dictionary<string, string>();
     }
 
     public class MeleeActionFrame
@@ -21,21 +22,24 @@ namespace AdvancedMeleeFramework
         public WeaponFarmerAnimation animation;
         public WeaponAction action;
         public string sound;
-        public List<WeaponProjectile> projectiles = new List<WeaponProjectile>();
+        public List<AdvancedWeaponProjectile> projectiles = new List<AdvancedWeaponProjectile>();
         public int relativeFacingDirection = 0;
         public float trajectoryX = 0;
         public float trajectoryY = 0;
+        public Dictionary<string, string> config = new Dictionary<string, string>();
     }
 
     public class SpecialEffect
     {
         public string name;
         public Dictionary<string, string> parameters;
+        public Dictionary<string, string> config = new Dictionary<string, string>();
     }
     public class AdvancedEnchantmentData
     {
         public string type;
         public Dictionary<string, string> parameters;
+        public Dictionary<string, string> config = new Dictionary<string, string>();
     }
 
     public enum WeaponAction
@@ -45,7 +49,7 @@ namespace AdvancedMeleeFramework
         SPECIAL
     }
 
-    public class WeaponProjectile
+    public class AdvancedWeaponProjectile
     {
         public int damage = 0;
         public int parentSheetIndex = 0;
@@ -61,6 +65,7 @@ namespace AdvancedMeleeFramework
         public bool explode = false;
         public bool damagesMonsters = true;
         public bool spriteFromObjectSheet = false;
+        public Dictionary<string, string> config = new Dictionary<string, string>();
     }
 
     public class WeaponFarmerAnimation
