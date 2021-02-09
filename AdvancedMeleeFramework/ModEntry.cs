@@ -585,7 +585,7 @@ namespace AdvancedMeleeFramework
         
         private static bool _OnDealDamage_Prefix(BaseEnchantment __instance, string ____displayName, Monster monster, GameLocation location, Farmer who, ref int amount)
         {
-            if (!(__instance is BaseWeaponEnchantment) || !advancedEnchantments.ContainsKey(____displayName))
+            if (!(__instance is BaseWeaponEnchantment) || ____displayName == null || !advancedEnchantments.ContainsKey(____displayName))
                 return true;
             AdvancedEnchantmentData enchantment = advancedEnchantments[____displayName];
 

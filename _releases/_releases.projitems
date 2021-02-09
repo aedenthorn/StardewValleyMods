@@ -21,6 +21,7 @@
     <None Include="$(MSBuildThisFileDirectory)AdvancedMeleeFramework 0.5.0.zip" />
     <None Include="$(MSBuildThisFileDirectory)AdvancedMeleeFramework 0.5.1.zip" />
     <None Include="$(MSBuildThisFileDirectory)AdvancedMeleeFramework 0.5.2.zip" />
+    <None Include="$(MSBuildThisFileDirectory)AdvancedMeleeFramework 0.5.3.zip" />
     <None Include="$(MSBuildThisFileDirectory)BossCreatures 1.2.0.zip" />
     <None Include="$(MSBuildThisFileDirectory)CustomChestTypes 0.2.0.zip" />
     <None Include="$(MSBuildThisFileDirectory)CustomChestTypes 0.2.1.zip" />
@@ -51,6 +52,7 @@
     <None Include="$(MSBuildThisFileDirectory)FishingChestsExpanded 0.2.1.zip" />
     <None Include="$(MSBuildThisFileDirectory)FishingChestsExpanded 0.3.0.zip" />
     <None Include="$(MSBuildThisFileDirectory)FishingChestsExpanded 0.4.0.zip" />
+    <None Include="$(MSBuildThisFileDirectory)FishingChestsExpanded 0.4.2.zip" />
     <None Include="$(MSBuildThisFileDirectory)FruitTreeShaker 1.1.0.zip" />
     <None Include="$(MSBuildThisFileDirectory)GemIsles 0.2.3.zip" />
     <None Include="$(MSBuildThisFileDirectory)HereFishy 0.3.2.zip" />

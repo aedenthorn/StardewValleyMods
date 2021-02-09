@@ -90,21 +90,17 @@ namespace FishingChestsExpanded
             int coins = advancedLootFrameworkApi.GetChestCoins(difficulty, Config.IncreaseRate, Config.CoinBaseMin, Config.CoinBaseMax);
 
             IList<Item> items = advancedLootFrameworkApi.GetChestItems(treasuresList, Config.ItemListChances, Config.MaxItems, Config.MinItemValue, Config.MaxItemValue, difficulty, Config.IncreaseRate, Config.ItemsBaseMaxValue);
-            foreach(Item item in inventory)
-            {
-                if (item.parentSheetIndex == fish)
+
+			bool vanilla = Game1.random.NextDouble() < Config.VanillaLootChance / 100f;
+			foreach (Item item in inventory)
+			{
+				if (item.parentSheetIndex == fish || vanilla) 
                     items.Add(item);
             }
 
 			if (Game1.random.NextDouble() <= 0.33 && Game1.player.team.SpecialOrderRuleActive("DROP_QI_BEANS", null))
 			{
 				items.Add(new Object(890, Game1.random.Next(1, 3) + ((Game1.random.NextDouble() < 0.25) ? 2 : 0), false, -1, 0));
-			}
-
-			if (Game1.random.NextDouble() < Config.VanillaLootChance / 100f)
-            {
-                IList<Item> vItems = GetVanillaLoot(fr);
-				items.Concat(vItems);
 			}
 
 			inventory = items;
