@@ -13,6 +13,9 @@ namespace AdvancedMeleeFramework
         private MeleeWeapon weapon;
         private AdvancedEnchantmentData enchantment;
 
+        public AdvancedEnchantment()
+        {
+        }
         public AdvancedEnchantment(MeleeWeapon w, AdvancedMeleeWeapon amw, AdvancedEnchantmentData aed)
         {
             weapon = w;

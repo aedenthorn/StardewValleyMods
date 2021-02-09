@@ -11,6 +11,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using Object = StardewValley.Object;
 
 namespace AdvancedMeleeFramework
 {
@@ -34,6 +35,7 @@ namespace AdvancedMeleeFramework
         private static int weaponStartFacingDirection;
         private static AdvancedMeleeWeapon advancedWeaponAnimating = null;
         private static IJsonAssetsApi mJsonAssets;
+        private static Dictionary<string, AdvancedEnchantmentData> advancedEnchantments = new Dictionary<string, AdvancedEnchantmentData>();
 
         public override void Entry(IModHelper helper)
         {
@@ -74,6 +76,15 @@ namespace AdvancedMeleeFramework
                 original: AccessTools.Method(typeof(MeleeWeapon), nameof(MeleeWeapon.drawInMenu), new Type[] { typeof(SpriteBatch), typeof(Vector2), typeof(float), typeof(float), typeof(float), typeof(StackDrawType), typeof(Color), typeof(bool) }),
                 prefix: new HarmonyMethod(typeof(ModEntry), nameof(drawInMenu_Prefix)),
                 postfix: new HarmonyMethod(typeof(ModEntry), nameof(drawInMenu_Postfix))
+            );
+
+            harmony.Patch(
+                original: AccessTools.Method(typeof(BaseEnchantment), "_OnDealDamage"),
+                prefix: new HarmonyMethod(typeof(ModEntry), nameof(_OnDealDamage_Prefix))
+            );
+            harmony.Patch(
+                original: AccessTools.Method(typeof(BaseEnchantment), "_OnMonsterSlay"),
+                prefix: new HarmonyMethod(typeof(ModEntry), nameof(_OnMonsterSlay_Prefix))
             );
 
         }
@@ -198,6 +209,7 @@ namespace AdvancedMeleeFramework
                                 }
                                 foreach (AdvancedEnchantmentData entry in weapon.enchantments)
                                 {
+                                    int count = 0;
                                     foreach (KeyValuePair<string, string> kvp in entry.config)
                                     {
                                         if (!entry.parameters.ContainsKey(kvp.Key))
@@ -215,6 +227,8 @@ namespace AdvancedMeleeFramework
                                             config.variables.Add(kvp.Value, entry.parameters[kvp.Key]);
                                         }
                                     }
+                                    advancedEnchantments[entry.name] = entry;
+                                    count++;
                                 }
                                 if (config.variables.Any())
                                 {
@@ -441,6 +455,7 @@ namespace AdvancedMeleeFramework
             AdvancedMeleeWeapon amw = GetAdvancedWeapon(__instance, null);
             if(amw != null)
             {
+                int scount = 0;
                 foreach(AdvancedEnchantmentData aed in amw.enchantments)
                 {
                     switch (aed.type)
@@ -479,10 +494,13 @@ namespace AdvancedMeleeFramework
                             __instance.enchantments.Add(new MagicEnchantment());
                             break;
                         default:
-                            AdvancedEnchantment ae = new AdvancedEnchantment(__instance, amw, aed);
-                            __instance.enchantments.Add(ae);
+                            BaseWeaponEnchantment we = new BaseWeaponEnchantment();
+                            string key = aed.name;
+                            context.Helper.Reflection.GetField<string>(we, "_displayName").SetValue(key);
+                            __instance.enchantments.Add(we);
                             break;
                     }
+                    scount++;
                     context.Monitor.Log($"added enchantment {aed.type} to {__instance.Name} {__instance.enchantments.Count}");
                 }
             }
@@ -563,6 +581,112 @@ namespace AdvancedMeleeFramework
                     break;
             }
 
+        }
+        
+        private static bool _OnDealDamage_Prefix(BaseEnchantment __instance, string ____displayName, Monster monster, GameLocation location, Farmer who, ref int amount)
+        {
+            if (!(__instance is BaseWeaponEnchantment) || !advancedEnchantments.ContainsKey(____displayName))
+                return true;
+            AdvancedEnchantmentData enchantment = advancedEnchantments[____displayName];
+
+            if (enchantment.parameters["trigger"] == "damage" || (enchantment.parameters["trigger"] == "crit" && amount > (who.CurrentTool as MeleeWeapon).maxDamage))
+            {
+                context.Monitor.Log($"Triggered enchantment {enchantment.name} on {enchantment.parameters["trigger"]}");
+                if (enchantment.type == "heal")
+                {
+                    if (Game1.random.NextDouble() < float.Parse(enchantment.parameters["chance"]) / 100f)
+                    {
+                        int heal = Math.Max(1, (int)(amount * float.Parse(enchantment.parameters["amountMult"])));
+                        who.health = Math.Min(who.maxHealth, Game1.player.health + heal);
+                        location.debris.Add(new Debris(heal, new Vector2((float)Game1.player.getStandingX(), (float)Game1.player.getStandingY()), Color.Lime, 1f, who));
+                        if (enchantment.parameters.ContainsKey("sound"))
+                            Game1.playSound(enchantment.parameters["sound"]);
+                    }
+                }
+                else if (enchantment.type == "coins")
+                {
+                    if (Game1.random.NextDouble() < float.Parse(enchantment.parameters["chance"]) / 100f)
+                    {
+                        float mult = float.Parse(enchantment.parameters["amountMult"]);
+                        int coins = (int)Math.Round(mult * amount);
+                        who.Money += coins;
+                        if (enchantment.parameters.ContainsKey("sound"))
+                            Game1.playSound(enchantment.parameters["sound"]);
+                    }
+                }
+            }
+            return false;
+        }
+        private static bool _OnMonsterSlay_Prefix(BaseEnchantment __instance, string ____displayName, Monster m, GameLocation location, Farmer who)
+        {
+            if (!(__instance is BaseWeaponEnchantment) || !advancedEnchantments.ContainsKey(____displayName))
+                return true;
+            AdvancedEnchantmentData enchantment = advancedEnchantments[____displayName];
+            if (enchantment.parameters["trigger"] == "slay")
+            {
+                context.Monitor.Log($"Triggered enchantment {enchantment.name} on slay");
+                if (enchantment.type == "heal")
+                {
+                    if (Game1.random.NextDouble() < float.Parse(enchantment.parameters["chance"]) / 100f)
+                    {
+                        int heal = Math.Max(1, (int)(m.Health * float.Parse(enchantment.parameters["amountMult"])));
+                        who.health = Math.Min(who.maxHealth, Game1.player.health + heal);
+                        location.debris.Add(new Debris(heal, new Vector2((float)Game1.player.getStandingX(), (float)Game1.player.getStandingY()), Color.Lime, 1f, who));
+                        if (enchantment.parameters.ContainsKey("sound"))
+                            Game1.playSound(enchantment.parameters["sound"]);
+                    }
+                }
+                else if (enchantment.type == "loot")
+                {
+                    if (Game1.random.NextDouble() < float.Parse(enchantment.parameters["chance"]) / 100f)
+                    {
+                        if (enchantment.parameters.ContainsKey("extraDropChecks"))
+                        {
+                            int extraChecks = Math.Max(1, int.Parse(enchantment.parameters["extraDropChecks"]));
+                            for (int i = 0; i < extraChecks; i++)
+                            {
+                                location.monsterDrop(m, m.GetBoundingBox().Center.X, m.GetBoundingBox().Center.Y, who);
+                            }
+                        }
+                        else if (enchantment.parameters.ContainsKey("extraDropItems"))
+                        {
+                            string[] items = enchantment.parameters["extraDropItems"].Split(',');
+                            foreach (string item in items)
+                            {
+                                string[] ic = item.Split('_');
+                                if (ic.Length == 1)
+                                    Game1.createItemDebris(new Object(int.Parse(item), 1, false, -1, 0), m.Position, Game1.random.Next(4), m.currentLocation, -1);
+                                else if (ic.Length == 2)
+                                {
+                                    float chance = int.Parse(ic[1]) / 100f;
+                                    if (Game1.random.NextDouble() < chance)
+                                        Game1.createItemDebris(new Object(int.Parse(ic[0]), 1, false, -1, 0), m.Position, Game1.random.Next(4), m.currentLocation, -1);
+                                }
+                                else if (ic.Length == 4)
+                                {
+                                    float chance = int.Parse(ic[3]) / 100f;
+                                    if (Game1.random.NextDouble() < chance)
+                                        Game1.createItemDebris(new Object(int.Parse(ic[0]), Game1.random.Next(int.Parse(ic[1]), int.Parse(ic[2]))), m.Position, Game1.random.Next(4), m.currentLocation, -1);
+                                }
+                            }
+                        }
+                        if (enchantment.parameters.ContainsKey("sound"))
+                            Game1.playSound(enchantment.parameters["sound"]);
+                    }
+                }
+                else if (enchantment.type == "coins")
+                {
+                    if (Game1.random.NextDouble() < float.Parse(enchantment.parameters["chance"]) / 100f)
+                    {
+                        float mult = float.Parse(enchantment.parameters["amountMult"]);
+                        int amount = (int)Math.Round(mult * m.maxHealth);
+                        who.Money += amount;
+                        if (enchantment.parameters.ContainsKey("sound"))
+                            Game1.playSound(enchantment.parameters["sound"]);
+                    }
+                }
+            }
+            return false;
         }
 
         private Vector2 TranslateVector(Vector2 vector, int facingDirection)
