@@ -3,7 +3,6 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using StardewModdingAPI;
 using StardewValley;
-using StardewValley.Monsters;
 using StardewValley.Network;
 using StardewValley.Projectiles;
 using StardewValley.Tools;
@@ -11,41 +10,35 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using Object = StardewValley.Object;
 
 namespace AdvancedMeleeFramework
 {
     public class ModEntry : Mod 
     {
-        public static ModEntry context;
-        private static ModConfig Config;
-        private static Random myRand;
-        private static IMonitor SMonitor;
-        private static IModHelper SHelper;
-        private static Dictionary<int, List<AdvancedMeleeWeapon>> advancedMeleeWeapons = new Dictionary<int, List<AdvancedMeleeWeapon>>();
-        private static Dictionary<int, List<AdvancedMeleeWeapon>> advancedMeleeWeaponsByType = new Dictionary<int, List<AdvancedMeleeWeapon>>() 
+        public ModConfig Config;
+        public static Random myRand;
+        public static Dictionary<int, List<AdvancedMeleeWeapon>> advancedMeleeWeapons = new Dictionary<int, List<AdvancedMeleeWeapon>>();
+        public static Dictionary<int, List<AdvancedMeleeWeapon>> advancedMeleeWeaponsByType = new Dictionary<int, List<AdvancedMeleeWeapon>>() 
         {
             {1, new List<AdvancedMeleeWeapon>() },
             {2, new List<AdvancedMeleeWeapon>() },
             {3, new List<AdvancedMeleeWeapon>() }
         };
-        private static int weaponAnimationFrame = -1;
-        private int weaponAnimationTicks;
-        private static MeleeWeapon weaponAnimating;
-        private static int weaponStartFacingDirection;
-        private static AdvancedMeleeWeapon advancedWeaponAnimating = null;
-        private static IJsonAssetsApi mJsonAssets;
-        private static Dictionary<string, AdvancedEnchantmentData> advancedEnchantments = new Dictionary<string, AdvancedEnchantmentData>();
+        public static int weaponAnimationFrame = -1;
+        public int weaponAnimationTicks;
+        public static MeleeWeapon weaponAnimating;
+        public static int weaponStartFacingDirection;
+        public static AdvancedMeleeWeapon advancedWeaponAnimating = null;
+        public static IJsonAssetsApi mJsonAssets;
+        public static Dictionary<string, AdvancedEnchantmentData> advancedEnchantments = new Dictionary<string, AdvancedEnchantmentData>();
 
         public override void Entry(IModHelper helper)
         {
-            context = this;
             Config = Helper.ReadConfig<ModConfig>();
             if (!Config.EnableMod)
                 return;
 
-            SMonitor = Monitor;
-            SHelper = Helper;
+            AMFPatches.Initialize(this);
 
             Helper.Events.GameLoop.GameLaunched += GameLoop_GameLaunched;
             Helper.Events.GameLoop.SaveLoaded += GameLoop_SaveLoaded;
@@ -58,57 +51,57 @@ namespace AdvancedMeleeFramework
 
             harmony.Patch(
                 original: AccessTools.Method(typeof(MeleeWeapon), "doAnimateSpecialMove"),
-                prefix: new HarmonyMethod(typeof(ModEntry), nameof(doAnimateSpecialMove_Prefix))
+                prefix: new HarmonyMethod(typeof(AMFPatches), nameof(AMFPatches.doAnimateSpecialMove_Prefix))
             );
 
             ConstructorInfo ci = typeof(MeleeWeapon).GetConstructor(new Type[] { typeof(int) });
             harmony.Patch(
                original: ci,
-               postfix: new HarmonyMethod(typeof(ModEntry), nameof(ModEntry.MeleeWeapon_Postfix))
+               postfix: new HarmonyMethod(typeof(AMFPatches), nameof(AMFPatches.MeleeWeapon_Postfix))
             );
             ci = typeof(MeleeWeapon).GetConstructor(new Type[] { });
             harmony.Patch(
                original: ci,
-               postfix: new HarmonyMethod(typeof(ModEntry), nameof(ModEntry.MeleeWeapon_Postfix))
+               postfix: new HarmonyMethod(typeof(AMFPatches), nameof(AMFPatches.MeleeWeapon_Postfix))
             );
             
             harmony.Patch(
                 original: AccessTools.Method(typeof(MeleeWeapon), nameof(MeleeWeapon.drawInMenu), new Type[] { typeof(SpriteBatch), typeof(Vector2), typeof(float), typeof(float), typeof(float), typeof(StackDrawType), typeof(Color), typeof(bool) }),
-                prefix: new HarmonyMethod(typeof(ModEntry), nameof(drawInMenu_Prefix)),
-                postfix: new HarmonyMethod(typeof(ModEntry), nameof(drawInMenu_Postfix))
+                prefix: new HarmonyMethod(typeof(AMFPatches), nameof(AMFPatches.drawInMenu_Prefix)),
+                postfix: new HarmonyMethod(typeof(AMFPatches), nameof(AMFPatches.drawInMenu_Postfix))
             );
 
             harmony.Patch(
                 original: AccessTools.Method(typeof(BaseEnchantment), "_OnDealDamage"),
-                prefix: new HarmonyMethod(typeof(ModEntry), nameof(_OnDealDamage_Prefix))
+                prefix: new HarmonyMethod(typeof(AMFPatches), nameof(AMFPatches._OnDealDamage_Prefix))
             );
             harmony.Patch(
                 original: AccessTools.Method(typeof(BaseEnchantment), "_OnMonsterSlay"),
-                prefix: new HarmonyMethod(typeof(ModEntry), nameof(_OnMonsterSlay_Prefix))
+                prefix: new HarmonyMethod(typeof(AMFPatches), nameof(AMFPatches._OnMonsterSlay_Prefix))
             );
 
         }
 
-        private void GameLoop_GameLaunched(object sender, StardewModdingAPI.Events.GameLaunchedEventArgs e)
+        public void GameLoop_GameLaunched(object sender, StardewModdingAPI.Events.GameLaunchedEventArgs e)
         {
             mJsonAssets = Helper.ModRegistry.GetApi<IJsonAssetsApi>("spacechase0.JsonAssets");
 
         }
 
-        private void GameLoop_SaveLoaded(object sender, StardewModdingAPI.Events.SaveLoadedEventArgs e)
+        public void GameLoop_SaveLoaded(object sender, StardewModdingAPI.Events.SaveLoadedEventArgs e)
         {
             LoadAdvancedMeleeWeapons();
         }
 
-        private void LoadAdvancedMeleeWeapons()
+        public void LoadAdvancedMeleeWeapons()
         {
             advancedMeleeWeapons.Clear();
             advancedMeleeWeaponsByType[1].Clear();
             advancedMeleeWeaponsByType[2].Clear();
             advancedMeleeWeaponsByType[3].Clear();
-            foreach (IContentPack contentPack in SHelper.ContentPacks.GetOwned())
+            foreach (IContentPack contentPack in Helper.ContentPacks.GetOwned())
             {
-                SMonitor.Log($"Reading content pack: {contentPack.Manifest.Name} {contentPack.Manifest.Version} from {contentPack.DirectoryPath}", LogLevel.Debug);
+                Monitor.Log($"Reading content pack: {contentPack.Manifest.Name} {contentPack.Manifest.Version} from {contentPack.DirectoryPath}", LogLevel.Debug);
                 try
                 {
                     AdvancedMeleeWeaponData json = contentPack.ReadJsonFile<AdvancedMeleeWeaponData>("content.json") ?? null;
@@ -238,14 +231,14 @@ namespace AdvancedMeleeFramework
 
                                 if (weapon.type == 0)
                                 {
-                                    SMonitor.Log($"Adding specific weapon {weapon.id}");
+                                    Monitor.Log($"Adding specific weapon {weapon.id}");
                                     if (!int.TryParse(weapon.id, out int id))
                                     {
-                                        SMonitor.Log($"Got name instead of id {weapon.id}");
+                                        Monitor.Log($"Got name instead of id {weapon.id}");
                                         try
                                         {
                                             id = Helper.Content.Load<Dictionary<int, string>>("Data/weapons", ContentSource.GameContent).First(p => p.Value.StartsWith($"{weapon.id}/")).Key;
-                                            SMonitor.Log($"Got name-based id {id}");
+                                            Monitor.Log($"Got name-based id {id}");
                                         }
                                         catch (Exception ex)
                                         {
@@ -254,14 +247,14 @@ namespace AdvancedMeleeFramework
                                                 id = mJsonAssets.GetWeaponId(weapon.id);
                                                 if(id == -1)
                                                 {
-                                                    SMonitor.Log($"error getting JSON Assets weapon {weapon.id}\n{ex}", LogLevel.Error);
+                                                    Monitor.Log($"error getting JSON Assets weapon {weapon.id}\n{ex}", LogLevel.Error);
                                                     continue;
                                                 }
-                                                SMonitor.Log($"Added JA weapon {weapon.id}, id {id}");
+                                                Monitor.Log($"Added JA weapon {weapon.id}, id {id}");
                                             }
                                             else
                                             {
-                                                SMonitor.Log($"error getting weapon {weapon.id}\n{ex}", LogLevel.Error);
+                                                Monitor.Log($"error getting weapon {weapon.id}\n{ex}", LogLevel.Error);
                                                 continue;
                                             }
                                         }
@@ -281,20 +274,20 @@ namespace AdvancedMeleeFramework
                 }
                 catch (Exception ex)
                 {
-                    SMonitor.Log($"error reading content.json file in content pack {contentPack.Manifest.Name}.\r\n{ex}", LogLevel.Error);
+                    Monitor.Log($"error reading content.json file in content pack {contentPack.Manifest.Name}.\r\n{ex}", LogLevel.Error);
                 }
             }
-            SMonitor.Log($"Total advanced melee weapons: {advancedMeleeWeapons.Count}", LogLevel.Debug);
-            SMonitor.Log($"Total advanced melee dagger attacks: {advancedMeleeWeaponsByType[1].Count}", LogLevel.Debug);
-            SMonitor.Log($"Total advanced melee club attacks: {advancedMeleeWeaponsByType[2].Count}", LogLevel.Debug);
-            SMonitor.Log($"Total advanced melee sword attacks: {advancedMeleeWeaponsByType[3].Count}", LogLevel.Debug);
+            Monitor.Log($"Total advanced melee weapons: {advancedMeleeWeapons.Count}", LogLevel.Debug);
+            Monitor.Log($"Total advanced melee dagger attacks: {advancedMeleeWeaponsByType[1].Count}", LogLevel.Debug);
+            Monitor.Log($"Total advanced melee club attacks: {advancedMeleeWeaponsByType[2].Count}", LogLevel.Debug);
+            Monitor.Log($"Total advanced melee sword attacks: {advancedMeleeWeaponsByType[3].Count}", LogLevel.Debug);
         }
 
         public override object GetApi()
         {
             return new AdvancedMeleeFrameworkApi();
         }
-        private void Input_ButtonPressed(object sender, StardewModdingAPI.Events.ButtonPressedEventArgs e)
+        public void Input_ButtonPressed(object sender, StardewModdingAPI.Events.ButtonPressedEventArgs e)
         {
             if(e.Button == Config.ReloadButton)
             {
@@ -302,9 +295,9 @@ namespace AdvancedMeleeFramework
             }
         }
 
-        private void GameLoop_UpdateTicking(object sender, StardewModdingAPI.Events.UpdateTickingEventArgs e)
+        public void GameLoop_UpdateTicking(object sender, StardewModdingAPI.Events.UpdateTickingEventArgs e)
         {
-            //SMonitor.Log($"player sprite frame {Game1.player.Sprite.currentFrame}");
+            //Monitor.Log($"player sprite frame {Game1.player.Sprite.currentFrame}");
             if (weaponAnimationFrame > -1 && advancedWeaponAnimating != null)
             {
                 MeleeActionFrame frame = advancedWeaponAnimating.frames[weaponAnimationFrame];
@@ -313,12 +306,12 @@ namespace AdvancedMeleeFramework
                 if (weaponAnimationFrame == 0 && weaponAnimationTicks == 0)
                 {
                     weaponStartFacingDirection = user.facingDirection.Value;
-                    //SMonitor.Log($"Starting animation, facing {weaponStartFacingDirection}");
+                    //Monitor.Log($"Starting animation, facing {weaponStartFacingDirection}");
                 }
 
                 if (user.CurrentTool != weaponAnimating)
                 {
-                    //SMonitor.Log($"Switched tools to {Game1.player.CurrentTool?.DisplayName}");
+                    //Monitor.Log($"Switched tools to {Game1.player.CurrentTool?.DisplayName}");
                     weaponAnimating = null;
                     weaponAnimationFrame = -1; 
                     weaponAnimationTicks = 0;
@@ -327,16 +320,16 @@ namespace AdvancedMeleeFramework
                 }
                 if (frame.invincible != null)
                 {
-                    //SMonitor.Log($"Setting invincible as {frame.invincible}");
+                    //Monitor.Log($"Setting invincible as {frame.invincible}");
                     user.temporarilyInvincible = (bool)frame.invincible;
                 }
 
                 if (weaponAnimationTicks == 0)
                 {
-                    //SMonitor.Log($"Starting frame {weaponAnimationFrame}");
+                    //Monitor.Log($"Starting frame {weaponAnimationFrame}");
 
                     user.faceDirection((weaponStartFacingDirection + frame.relativeFacingDirection) % 4);
-                    //SMonitor.Log($"facing {user.getFacingDirection()}, relative {frame.relativeFacingDirection}");
+                    //Monitor.Log($"facing {user.getFacingDirection()}, relative {frame.relativeFacingDirection}");
 
                     if(frame.special != null)
                     {
@@ -360,7 +353,7 @@ namespace AdvancedMeleeFramework
 
                     if (frame.action == WeaponAction.NORMAL)
                     {
-                        //SMonitor.Log($"Starting normal attack");
+                        //Monitor.Log($"Starting normal attack");
                         user.completelyStopAnimatingOrDoingAction();
                         user.CanMove = false;
                         user.UsingTool = true;
@@ -369,7 +362,7 @@ namespace AdvancedMeleeFramework
                     }
                     else if (frame.action == WeaponAction.SPECIAL)
                     {
-                        //SMonitor.Log($"Starting special attack");
+                        //Monitor.Log($"Starting special attack");
                         weaponAnimating.animateSpecialMove(user); 
                     }
 
@@ -379,12 +372,12 @@ namespace AdvancedMeleeFramework
                         float trajectoryY = frame.trajectoryY;
                         Vector2 rawTrajectory = TranslateVector(new Vector2(trajectoryX, trajectoryY), user.FacingDirection);
                         user.setTrajectory(new Vector2(rawTrajectory.X, -rawTrajectory.Y)); // game trajectory y is backwards idek
-                        //SMonitor.Log($"player trajectory {user.xVelocity},{user.yVelocity}");
+                        //Monitor.Log($"player trajectory {user.xVelocity},{user.yVelocity}");
                     }
 
                     if (frame.sound != null)
                     {
-                        //SMonitor.Log($"Playing sound {frame.sound}");
+                        //Monitor.Log($"Playing sound {frame.sound}");
                         user.currentLocation.playSound(frame.sound, NetAudio.SoundContext.Default);
                     }
                     foreach(AdvancedWeaponProjectile p in frame.projectiles)
@@ -394,7 +387,7 @@ namespace AdvancedMeleeFramework
 
                         int damage = advancedWeaponAnimating.type > 0 ? p.damage * myRand.Next(weaponAnimating.minDamage, weaponAnimating.maxDamage) : p.damage;
 
-                        //SMonitor.Log($"player position: {user.Position}, start position: { new Vector2(startingPositionX, startingPositionY) }");
+                        //Monitor.Log($"player position: {user.Position}, start position: { new Vector2(startingPositionX, startingPositionY) }");
 
                         user.currentLocation.projectiles.Add(new BasicProjectile(damage, p.parentSheetIndex, p.bouncesTillDestruct, p.tailLength, p.rotationVelocity, velocity.X, velocity.Y, user.Position + new Vector2(0, -64) + startPos, p.collisionSound, p.firingSound, p.explode, p.damagesMonsters, user.currentLocation, user, p.spriteFromObjectSheet));
                     }
@@ -403,11 +396,11 @@ namespace AdvancedMeleeFramework
                 {
                     weaponAnimationFrame++;
                     weaponAnimationTicks = 0;
-                    //SMonitor.Log($"Advancing to frame {weaponAnimationFrame}");
+                    //Monitor.Log($"Advancing to frame {weaponAnimationFrame}");
                 }
                 if (weaponAnimationFrame >= advancedWeaponAnimating.frames.Count)
                 {
-                    //SMonitor.Log($"Ending weapon animation");
+                    //Monitor.Log($"Ending weapon animation");
                     user.completelyStopAnimatingOrDoingAction();
                     user.CanMove = true;
                     user.UsingTool = false;
@@ -448,248 +441,7 @@ namespace AdvancedMeleeFramework
             }
         }
 
-        private static void MeleeWeapon_Postfix(MeleeWeapon __instance)
-        {
-            //context.Monitor.Log($"created melee weapon {__instance.Name} {__instance.InitialParentTileIndex} {__instance.ParentSheetIndex}");
-
-            AdvancedMeleeWeapon amw = GetAdvancedWeapon(__instance, null);
-            if(amw != null)
-            {
-                int scount = 0;
-                foreach(AdvancedEnchantmentData aed in amw.enchantments)
-                {
-                    switch (aed.type)
-                    {
-                        case "vampiric":
-                            __instance.enchantments.Add(new VampiricEnchantment());
-                            break;
-                        case "jade":
-                            __instance.enchantments.Add(new JadeEnchantment());
-                            break;
-                        case "aquamarine":
-                            __instance.enchantments.Add(new AquamarineEnchantment());
-                            break;
-                        case "topaz":
-                            __instance.enchantments.Add(new TopazEnchantment());
-                            break;
-                        case "amethyst":
-                            __instance.enchantments.Add(new AmethystEnchantment());
-                            break;
-                        case "ruby":
-                            __instance.enchantments.Add(new RubyEnchantment());
-                            break;
-                        case "emerald":
-                            __instance.enchantments.Add(new EmeraldEnchantment());
-                            break;
-                        case "haymaker":
-                            __instance.enchantments.Add(new HaymakerEnchantment());
-                            break;
-                        case "bugkiller":
-                            __instance.enchantments.Add(new BugKillerEnchantment());
-                            break;
-                        case "crusader":
-                            __instance.enchantments.Add(new CrusaderEnchantment());
-                            break;
-                        case "magic":
-                            __instance.enchantments.Add(new MagicEnchantment());
-                            break;
-                        default:
-                            BaseWeaponEnchantment we = new BaseWeaponEnchantment();
-                            string key = aed.name;
-                            context.Helper.Reflection.GetField<string>(we, "_displayName").SetValue(key);
-                            __instance.enchantments.Add(we);
-                            break;
-                    }
-                    scount++;
-                    context.Monitor.Log($"added enchantment {aed.type} to {__instance.Name} {__instance.enchantments.Count}");
-                }
-            }
-        }
-        private static bool doAnimateSpecialMove_Prefix(MeleeWeapon __instance, Farmer ___lastUser)
-        {
-            SMonitor.Log($"Special move for {__instance.Name}, id {__instance.InitialParentTileIndex}");
-
-            if (Config.RequireModKey && !SHelper.Input.IsDown(Config.ModKey))
-                return true;
-
-            advancedWeaponAnimating = GetAdvancedWeapon(__instance, ___lastUser);
-
-            if (weaponAnimationFrame > -1 || advancedWeaponAnimating == null || !advancedWeaponAnimating.frames.Any())
-                return true;
-
-            if (___lastUser == null || ___lastUser.CurrentTool != __instance)
-            {
-                return false;
-            }
-
-            SMonitor.Log($"Animating {__instance.DisplayName}");
-
-            if (___lastUser.isEmoteAnimating)
-            {
-                ___lastUser.EndEmoteAnimation();
-            }
-            weaponStartFacingDirection = ___lastUser.getFacingDirection();
-            weaponAnimationFrame = 0;
-            weaponAnimating = __instance;
-            return false;
-        }
-        private static void drawInMenu_Prefix(MeleeWeapon __instance, ref int __state)
-        {
-            __state = 0;
-            switch (__instance.type)
-            {
-                case 0:
-                case 3:
-                    if (MeleeWeapon.defenseCooldown > 1500)
-                    {
-                        __state = MeleeWeapon.defenseCooldown;
-                        MeleeWeapon.defenseCooldown = 1500;
-                    }
-                    break;
-                case 1:
-                    if (MeleeWeapon.daggerCooldown > 3000)
-                    {
-                        __state = MeleeWeapon.daggerCooldown;
-                        MeleeWeapon.daggerCooldown = 3000;
-                    }
-                    break;
-                case 2:
-                    if (MeleeWeapon.clubCooldown > 6000)
-                    {
-                        __state = MeleeWeapon.clubCooldown;
-                        MeleeWeapon.clubCooldown = 6000;
-                    }
-                    break;
-            }
-        }
-        private static void drawInMenu_Postfix(MeleeWeapon __instance, int __state)
-        {
-            if (__state == 0)
-                return;
-
-            switch (__instance.type)
-            {
-                case 0:
-                case 3:
-                    MeleeWeapon.defenseCooldown = __state;
-                    break;
-                case 1:
-                    MeleeWeapon.daggerCooldown = __state;
-                    break;
-                case 2:
-                    MeleeWeapon.clubCooldown = __state;
-                    break;
-            }
-
-        }
-        
-        private static bool _OnDealDamage_Prefix(BaseEnchantment __instance, string ____displayName, Monster monster, GameLocation location, Farmer who, ref int amount)
-        {
-            if (!(__instance is BaseWeaponEnchantment) || ____displayName == null || !advancedEnchantments.ContainsKey(____displayName))
-                return true;
-            AdvancedEnchantmentData enchantment = advancedEnchantments[____displayName];
-
-            if (enchantment.parameters["trigger"] == "damage" || (enchantment.parameters["trigger"] == "crit" && amount > (who.CurrentTool as MeleeWeapon).maxDamage))
-            {
-                context.Monitor.Log($"Triggered enchantment {enchantment.name} on {enchantment.parameters["trigger"]}");
-                if (enchantment.type == "heal")
-                {
-                    if (Game1.random.NextDouble() < float.Parse(enchantment.parameters["chance"]) / 100f)
-                    {
-                        int heal = Math.Max(1, (int)(amount * float.Parse(enchantment.parameters["amountMult"])));
-                        who.health = Math.Min(who.maxHealth, Game1.player.health + heal);
-                        location.debris.Add(new Debris(heal, new Vector2((float)Game1.player.getStandingX(), (float)Game1.player.getStandingY()), Color.Lime, 1f, who));
-                        if (enchantment.parameters.ContainsKey("sound"))
-                            Game1.playSound(enchantment.parameters["sound"]);
-                    }
-                }
-                else if (enchantment.type == "coins")
-                {
-                    if (Game1.random.NextDouble() < float.Parse(enchantment.parameters["chance"]) / 100f)
-                    {
-                        float mult = float.Parse(enchantment.parameters["amountMult"]);
-                        int coins = (int)Math.Round(mult * amount);
-                        who.Money += coins;
-                        if (enchantment.parameters.ContainsKey("sound"))
-                            Game1.playSound(enchantment.parameters["sound"]);
-                    }
-                }
-            }
-            return false;
-        }
-        private static bool _OnMonsterSlay_Prefix(BaseEnchantment __instance, string ____displayName, Monster m, GameLocation location, Farmer who)
-        {
-            if (!(__instance is BaseWeaponEnchantment) || !advancedEnchantments.ContainsKey(____displayName))
-                return true;
-            AdvancedEnchantmentData enchantment = advancedEnchantments[____displayName];
-            if (enchantment.parameters["trigger"] == "slay")
-            {
-                context.Monitor.Log($"Triggered enchantment {enchantment.name} on slay");
-                if (enchantment.type == "heal")
-                {
-                    if (Game1.random.NextDouble() < float.Parse(enchantment.parameters["chance"]) / 100f)
-                    {
-                        int heal = Math.Max(1, (int)(m.Health * float.Parse(enchantment.parameters["amountMult"])));
-                        who.health = Math.Min(who.maxHealth, Game1.player.health + heal);
-                        location.debris.Add(new Debris(heal, new Vector2((float)Game1.player.getStandingX(), (float)Game1.player.getStandingY()), Color.Lime, 1f, who));
-                        if (enchantment.parameters.ContainsKey("sound"))
-                            Game1.playSound(enchantment.parameters["sound"]);
-                    }
-                }
-                else if (enchantment.type == "loot")
-                {
-                    if (Game1.random.NextDouble() < float.Parse(enchantment.parameters["chance"]) / 100f)
-                    {
-                        if (enchantment.parameters.ContainsKey("extraDropChecks"))
-                        {
-                            int extraChecks = Math.Max(1, int.Parse(enchantment.parameters["extraDropChecks"]));
-                            for (int i = 0; i < extraChecks; i++)
-                            {
-                                location.monsterDrop(m, m.GetBoundingBox().Center.X, m.GetBoundingBox().Center.Y, who);
-                            }
-                        }
-                        else if (enchantment.parameters.ContainsKey("extraDropItems"))
-                        {
-                            string[] items = enchantment.parameters["extraDropItems"].Split(',');
-                            foreach (string item in items)
-                            {
-                                string[] ic = item.Split('_');
-                                if (ic.Length == 1)
-                                    Game1.createItemDebris(new Object(int.Parse(item), 1, false, -1, 0), m.Position, Game1.random.Next(4), m.currentLocation, -1);
-                                else if (ic.Length == 2)
-                                {
-                                    float chance = int.Parse(ic[1]) / 100f;
-                                    if (Game1.random.NextDouble() < chance)
-                                        Game1.createItemDebris(new Object(int.Parse(ic[0]), 1, false, -1, 0), m.Position, Game1.random.Next(4), m.currentLocation, -1);
-                                }
-                                else if (ic.Length == 4)
-                                {
-                                    float chance = int.Parse(ic[3]) / 100f;
-                                    if (Game1.random.NextDouble() < chance)
-                                        Game1.createItemDebris(new Object(int.Parse(ic[0]), Game1.random.Next(int.Parse(ic[1]), int.Parse(ic[2]))), m.Position, Game1.random.Next(4), m.currentLocation, -1);
-                                }
-                            }
-                        }
-                        if (enchantment.parameters.ContainsKey("sound"))
-                            Game1.playSound(enchantment.parameters["sound"]);
-                    }
-                }
-                else if (enchantment.type == "coins")
-                {
-                    if (Game1.random.NextDouble() < float.Parse(enchantment.parameters["chance"]) / 100f)
-                    {
-                        float mult = float.Parse(enchantment.parameters["amountMult"]);
-                        int amount = (int)Math.Round(mult * m.maxHealth);
-                        who.Money += amount;
-                        if (enchantment.parameters.ContainsKey("sound"))
-                            Game1.playSound(enchantment.parameters["sound"]);
-                    }
-                }
-            }
-            return false;
-        }
-
-        private Vector2 TranslateVector(Vector2 vector, int facingDirection)
+        public Vector2 TranslateVector(Vector2 vector, int facingDirection)
         {
 
             float outx = vector.X;
@@ -713,7 +465,7 @@ namespace AdvancedMeleeFramework
             }
             return new Vector2(outx, outy);
         }
-        private void LightningStrike(Farmer who, MeleeWeapon weapon, Dictionary<string, string> parameters)
+        public void LightningStrike(Farmer who, MeleeWeapon weapon, Dictionary<string, string> parameters)
         {
             int minDamage = weapon.minDamage;
             int maxDamage = weapon.maxDamage;
@@ -753,7 +505,7 @@ namespace AdvancedMeleeFramework
 
             currentLocation.damageMonster(new Rectangle((int)Math.Round(playerLocation.X - radius), (int)Math.Round(playerLocation.Y - radius), radius * 2, radius * 2), minDamage, maxDamage, false, who);
         }
-        private void Explosion(Farmer user, MeleeWeapon weapon, Dictionary<string, string> parameters)
+        public void Explosion(Farmer user, MeleeWeapon weapon, Dictionary<string, string> parameters)
         {
             Vector2 tileLocation = user.getTileLocation();
             if(parameters.ContainsKey("tileOffsetX") && parameters.ContainsKey("tileOffsetY")) 
@@ -776,7 +528,7 @@ namespace AdvancedMeleeFramework
             user.currentLocation.explode(tileLocation, radius, user, false, damage);
         }
 
-        private static AdvancedMeleeWeapon GetAdvancedWeapon(MeleeWeapon weapon, Farmer user)
+        public static AdvancedMeleeWeapon GetAdvancedWeapon(MeleeWeapon weapon, Farmer user)
         {
             AdvancedMeleeWeapon advancedMeleeWeapon = null;
             if (advancedMeleeWeapons.ContainsKey(weapon.InitialParentTileIndex))

@@ -10,7 +10,7 @@ namespace OverworldChests
         public string DisallowLocations { get; set; } = "";
         public bool RoundNumberOfChestsUp { get; set; } = false;
         public int RespawnInterval { get; set; } = 7;
-        public float ChestDensity { get; set; } = 0.0001f;
+        public float ChestDensity { get; set; } = 0.001f;
         public int Mult { get; set; } = 100;
         public int MaxItems { get; set; } = 5;
         public int ItemsBaseMaxValue { get; set; } = 100;

@@ -1,6 +1,6 @@
 {
-  "Name": "Jungle Parrot Perch",
-  "Description": "A jungle perch for a parrot.",
+  "Name": "Terrarium",
+  "Description": "A terrarium for frogs.",
   "Price": 0,
   "Category": "Crafting",
   "Recipe":
@@ -8,12 +8,16 @@
     "ResultCount": 1,
     "Ingredients": [
         {
-            "Object": 388,
+            "Object": 338,
             "Count": 20,
         },
         {
+            "Object": 390,
+            "Count": 10,
+        },
+        {
             "Object": 771,
-            "Count": 20,
+            "Count": 10,
         },
     ],
     "IsDefault": true,
