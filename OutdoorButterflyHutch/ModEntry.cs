@@ -103,7 +103,7 @@ namespace OutdoorButterflyHutch
                         location.instantiateCrittersList();
                         location.addCritter(new Butterfly(location.getRandomTile()).setStayInbounds(true));
                         int num1 = (int)(Config.MinButterfliesDensity * location.map.Layers[0].TileSize.Area);
-                        int num2 = (int)(Math.Max(Config.MinButterfliesDensity,Config.MaxButterfliesDensity)*location.map.Layers[0].TileSize.Area);
+                        int num2 = (int)(Math.Max(Config.MinButterfliesDensity,Config.MaxButterfliesDensity)*location.map.Layers[0].TileSize.Area)+1;
                         int num = myRand.Next(num1, Math.Max(num1+1,num2));
                         Monitor.Log($"{num1} {num2} Number of butterflies: {num}");
                         int count = 0;

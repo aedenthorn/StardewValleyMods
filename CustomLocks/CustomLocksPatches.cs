@@ -1,13 +1,14 @@
 ﻿using Microsoft.Xna.Framework;
 using StardewModdingAPI;
 using StardewValley;
+using StardewValley.Locations;
 using StardewValley.Network;
 using System;
 using xTile.Dimensions;
 
 namespace CustomLocks
 {
-    public static class ObjectPatches
+    public static class CustomLocksPatches
     {
         private static IMonitor Monitor;
 
@@ -17,6 +18,27 @@ namespace CustomLocks
             Monitor = monitor;
         }
 
+        public static bool Mountain_checkAction_Prefix(Mountain __instance, Location tileLocation, xTile.Dimensions.Rectangle viewport, Farmer who)
+        {
+            try
+            {
+                if (__instance.map.GetLayer("Buildings").Tiles[tileLocation] != null)
+                {
+                    int tileIndex = __instance.map.GetLayer("Buildings").Tiles[tileLocation].TileIndex;
+                    if (tileIndex == 1136 && !who.mailReceived.Contains("guildMember") && !who.hasQuest(16) && ModEntry.Config.AllowAdventureGuildEntry)
+                    {
+                        __instance.playSoundAt("doorClose", new Vector2(tileLocation.X, tileLocation.Y), NetAudio.SoundContext.Default);
+                        Game1.warpFarmer("AdventureGuild", 6, 19, false);
+                        return false;
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Monitor.Log($"Failed in {nameof(Mountain_checkAction_Prefix)}:\n{ex}", LogLevel.Error);
+            }
+            return true;
+        }
         public static bool GameLocation_performAction_Prefix(GameLocation __instance, string action, Farmer who, Location tileLocation)
         {
             try
@@ -30,7 +52,7 @@ namespace CustomLocks
                     string text = actionParams[0];
                     if (text == "WizardHatch" && (!who.friendshipData.ContainsKey("Wizard") || who.friendshipData["Wizard"].Points < 1000) && ModEntry.Config.AllowStrangerRoomEntry)
                     {
-                        __instance.playSoundAt("doorClose", new Vector2((float)tileLocation.X, (float)tileLocation.Y), NetAudio.SoundContext.Default);
+                        __instance.playSoundAt("doorClose", new Vector2(tileLocation.X, tileLocation.Y), NetAudio.SoundContext.Default);
                         Game1.warpFarmer("WizardHouseBasement", 4, 4, true);
                         return false;
                     }

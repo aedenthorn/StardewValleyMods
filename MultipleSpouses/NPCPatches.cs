@@ -1061,10 +1061,18 @@ namespace MultipleSpouses
                 if (__instance.Name == null)
                     return;
                 string[] names = __instance.Name.Split(' ');
-                if (names.Length < 2 || names[names.Length - 1].Length < 3)
+                string parent;
+                if (names.Length > 1 && __instance.displayName.EndsWith(")"))
                 {
-                    return;
+                    parent = names[names.Length - 1].Substring(1, names[names.Length - 1].Length - 2);
+                    __instance.modData["aedenthorn.MultipleSpouses/OtherParent"] = parent;
                 }
+
+                if (!__instance.modData.ContainsKey("aedenthorn.MultipleSpouses/OtherParent"))
+                    return;
+
+                parent = __instance.modData["aedenthorn.MultipleSpouses/OtherParent"];
+
                 if (!Config.ShowParentNames && __instance.displayName.EndsWith(")"))
                 {
                     __instance.displayName = Regex.Replace(string.Join(" ", names), @" \([^)]+\)", "");
@@ -1073,9 +1081,8 @@ namespace MultipleSpouses
                 if (!Config.ChildrenHaveHairOfSpouse)
                     return;
 
-                string parent = names[names.Length - 1].Substring(1, names[names.Length - 1].Length - 2);
                 __instance.Sprite.textureName.Value += $"_{parent}";
-                Monitor.Log($"set child texture to: {__instance.Sprite.textureName.Value}");
+                Monitor.Log($"set child {__instance.name}, parent {parent} texture to: {__instance.Sprite.textureName.Value}");
             }
             catch (Exception ex)
             {

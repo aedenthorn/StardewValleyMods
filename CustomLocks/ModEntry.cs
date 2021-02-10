@@ -1,6 +1,7 @@
 ﻿using Harmony;
 using StardewModdingAPI;
 using StardewValley;
+using StardewValley.Locations;
 using StardewValley.Network;
 using System;
 
@@ -25,20 +26,24 @@ namespace CustomLocks
                 return;
 
 
-            ObjectPatches.Initialize(Monitor);
+            CustomLocksPatches.Initialize(Monitor);
             var harmony = HarmonyInstance.Create(this.ModManifest.UniqueID);
 
             harmony.Patch(
+               original: AccessTools.Method(typeof(Mountain), nameof(Mountain.checkAction)),
+               prefix: new HarmonyMethod(typeof(CustomLocksPatches), nameof(CustomLocksPatches.Mountain_checkAction_Prefix))
+            );
+            harmony.Patch(
                original: AccessTools.Method(typeof(GameLocation), nameof(GameLocation.performTouchAction)),
-               prefix: new HarmonyMethod(typeof(ObjectPatches), nameof(ObjectPatches.GameLocation_performTouchAction_Prefix))
+               prefix: new HarmonyMethod(typeof(CustomLocksPatches), nameof(CustomLocksPatches.GameLocation_performTouchAction_Prefix))
             );
             harmony.Patch(
                original: AccessTools.Method(typeof(GameLocation), nameof(GameLocation.performAction)),
-               prefix: new HarmonyMethod(typeof(ObjectPatches), nameof(ObjectPatches.GameLocation_performAction_Prefix))
+               prefix: new HarmonyMethod(typeof(CustomLocksPatches), nameof(CustomLocksPatches.GameLocation_performAction_Prefix))
             );
             harmony.Patch(
                original: AccessTools.Method(typeof(GameLocation), nameof(GameLocation.lockedDoorWarp)),
-               prefix: new HarmonyMethod(typeof(ObjectPatches), nameof(ObjectPatches.GameLocation_lockedDoorWarp))
+               prefix: new HarmonyMethod(typeof(CustomLocksPatches), nameof(CustomLocksPatches.GameLocation_lockedDoorWarp))
             );
         }
 

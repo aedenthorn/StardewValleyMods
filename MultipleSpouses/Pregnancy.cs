@@ -154,12 +154,12 @@ namespace MultipleSpouses
                         }
                     }
                     while (collision_found);
-                    Child baby = new Child($"{newBabyName} ({lastBirthingSpouse.Name})", ___isMale, isDarkSkinned, Game1.player)
+                    Child baby = new Child(newBabyName, ___isMale, isDarkSkinned, Game1.player)
                     {
                         Age = 0,
                         Position = new Vector2(16f, 4f) * 64f + new Vector2(0f + ModEntry.myRand.Next(-64, 48), -24f + ModEntry.myRand.Next(-24, 24)),
-                        displayName = $"{newBabyName}"
                     };
+                    baby.modData["aedenthorn.MultipleSpouses/OtherParent"] = lastBirthingSpouse.Name;
 
                     Utility.getHomeOfFarmer(Game1.player).characters.Add(baby);
                     Game1.playSound("smallSelect");

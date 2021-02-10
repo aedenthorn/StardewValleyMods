@@ -1,0 +1,45 @@
+{
+  "Name": "Prismatic Pet Bowl",
+  "Description": "The ultimate bowl for feeding water to your pet.",
+  "Price": 0,
+  "Category": "Crafting",
+  "Recipe":
+  {
+    "ResultCount": 1,
+    "Ingredients": [
+        {
+            "Object": 74,
+            "Count": 10,
+        },
+    ],
+    "IsDefault": true,
+  },
+  "NameLocalization":
+  {
+    // "es": "",
+    // "ko": "",
+    // "de": "",
+    // "fr": "",
+    // "hu": "",
+    // "it": "",
+    // "ja": "",
+    // "pt": "",
+    // "ru": "",
+    // "tr": "",
+    // "zh":"",
+  },
+  "DescriptionLocalization":
+  {
+    // "es": "",
+    // "ko": "",
+    // "de": "",
+    // "fr": "",
+    // "hu": "",
+    // "it": "",
+    // "ja": "",
+    // "pt": "",
+    // "ru": "",
+    // "tr": "",
+    // "zh":"",
+  },
+}

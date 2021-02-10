@@ -1,0 +1,26 @@
+﻿{
+  "Name": "Moveable Pet Bowl",
+  "Author": "aedenthorn",
+  "Version": "0.1.0",
+  "Description": "Converts the pet bowl into a movable object.",
+  "UniqueID": "aedenthorn.MoveablePetBowl",
+  "EntryDll": "MoveablePetBowl.dll",
+  "MinimumApiVersion": "3.8.0",
+  "ModUpdater": {
+    "Repository": "StardewValleyMods",
+    "User": "aedenthorn",
+    "Directory": "_releases",
+    "ModFolder": "MoveablePetBowl"
+  },
+  "UpdateKeys": ["Nexus:"],
+  "Dependencies": [
+      {
+        "UniqueID": "Platonymous.ModUpdater",
+        "IsRequired": false
+      },
+      {
+      "UniqueID": "spacechase0.JsonAssets",
+        "IsRequired": true
+      },
+  ]
+}

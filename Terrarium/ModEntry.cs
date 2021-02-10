@@ -53,45 +53,47 @@ namespace Terrarium
                prefix: new HarmonyMethod(typeof(ModEntry), nameof(Object_isPassable_Prefix))
             );
 
-            try
+            if (Config.LoadCustomTerrarium)
             {
-                Monitor.Log("Trying to load lively frog sanctuary for Terrarium", LogLevel.Debug);
-                string path = Directory.GetParent(helper.DirectoryPath).GetDirectories().Where(f => f.FullName.EndsWith("[CP] Lively Frog Sanctuary")).FirstOrDefault()?.FullName;
-                if (path != null)
+                try
                 {
-                    Monitor.Log("Loading lively frog sanctuary for Terrarium", LogLevel.Debug);
-                    Texture2D tex = new Texture2D(Game1.graphics.GraphicsDevice, 48, 48);
-                    Color[] data = new Color[tex.Width * tex.Height];
-                    tex.GetData(data);
-
-                    FileStream setStream = File.Open(Path.Combine(path, "assets", "frog-vivarium.png"), FileMode.Open);
-                    Texture2D source = Texture2D.FromStream(Game1.graphics.GraphicsDevice, setStream);
-                    setStream.Dispose();
-                    Color[] srcData = new Color[source.Width * source.Height];
-                    source.GetData(srcData);
-
-                    for (int i = 0; i < srcData.Length; i++)
+                    string path = Directory.GetParent(helper.DirectoryPath).GetDirectories().Where(f => f.FullName.EndsWith("[CP] Lively Frog Sanctuary")).FirstOrDefault()?.FullName;
+                    if (path != null)
                     {
-                        if (data.Length <= i + 48 * 12)
-                            break;
-                        data[i + 48 * 12] = srcData[i];
+                        Texture2D tex = new Texture2D(Game1.graphics.GraphicsDevice, 48, 48);
+                        Color[] data = new Color[tex.Width * tex.Height];
+                        tex.GetData(data);
+
+                        FileStream setStream = File.Open(Path.Combine(path, "assets", "frog-vivarium.png"), FileMode.Open);
+                        Texture2D source = Texture2D.FromStream(Game1.graphics.GraphicsDevice, setStream);
+                        setStream.Dispose();
+                        Color[] srcData = new Color[source.Width * source.Height];
+                        source.GetData(srcData);
+
+                        for (int i = 0; i < srcData.Length; i++)
+                        {
+                            if (data.Length <= i + 48 * 12)
+                                break;
+                            data[i + 48 * 12] = srcData[i];
+                        }
+                        tex.SetData(data);
+                        string outDir = Directory.GetParent(helper.DirectoryPath).GetDirectories().Where(f => f.FullName.EndsWith("[BC] Terrarium")).FirstOrDefault()?.FullName;
+                        Stream stream = File.Create(Path.Combine(outDir, "assets", "terrarium.png"));
+                        tex.SaveAsPng(stream, tex.Width, tex.Height);
+                        stream.Dispose();
+                        Monitor.Log("Terrarium overwritten with lively frog sanctuary", LogLevel.Debug);
                     }
-                    tex.SetData(data);
-                    string outDir = Directory.GetParent(helper.DirectoryPath).GetDirectories().Where(f => f.FullName.EndsWith("[BC] Terrarium")).FirstOrDefault()?.FullName;
-                    Stream stream = File.Create(Path.Combine(outDir, "assets", "terrarium.png"));
-                    tex.SaveAsPng(stream, tex.Width, tex.Height);
-                    stream.Dispose();
                 }
-            }
-            catch(Exception ex)
-            {
-                Monitor.Log($"Can't load lively frog sanctuary for Terrarium\n{ex}", LogLevel.Error);
+                catch (Exception ex)
+                {
+                    Monitor.Log($"Can't load lively frog sanctuary for Terrarium\n{ex}", LogLevel.Error);
+                }
             }
         }
 
         private void GameLoop_DayStarted(object sender, DayStartedEventArgs e)
         {
-            ShowTerrariums(Game1.player.currentLocation);
+            ShowFrogs(Game1.player.currentLocation);
         }
 
         public void GameLoop_GameLaunched(object sender, GameLaunchedEventArgs e)
@@ -109,14 +111,14 @@ namespace Terrarium
 
         private void Player_Warped(object sender, WarpedEventArgs e)
         {
-            ShowTerrariums(e.NewLocation);
+            ShowFrogs(e.NewLocation);
         }
 
         private static void placementAction_Postfix(Object __instance, GameLocation location)
         {
             if(__instance.bigCraftable && IsTerrarium(__instance))
             {
-                ShowTerrariums(location);
+                ShowFrogs(location);
             }
         }
         private static void performRemoveAction_Postfix(Object __instance, GameLocation environment)
@@ -164,10 +166,10 @@ namespace Terrarium
         private static async void DelayedShowTerrariums(GameLocation environment)
         {
             await Task.Delay(100);
-            ShowTerrariums(environment);
+            ShowFrogs(environment);
         }
 
-        private static void ShowTerrariums(GameLocation location, Object excluded = null)
+        private static void ShowFrogs(GameLocation location, Object excluded = null)
         {
             if (JsonAssets == null)
                 return;
@@ -194,13 +196,13 @@ namespace Terrarium
                         position = kvp.Key * 64f + new Vector2(((Game1.random.NextDouble() < 0.5) ? 22 : 25), ((Game1.random.NextDouble() < 0.5) ? 2 : 1)) * 4f  + new Vector2(0, 42 + 42 / Config.Frogs * i),
                         scale = 4f,
                         flipped = (Game1.random.NextDouble() < 0.5),
-                        layerDepth = (kvp.Key.Y + 2f + 0.11f + 0.01f * i) * 64f / 10000f + 0.02f,
+                        layerDepth = (kvp.Key.Y + 2f + 0.11f + 0.01f * i) * 64f / 10000f + 0.005f,
                         Parent = location
                     });
                 }
-                if (Game1.random.NextDouble() < 0.05 && Game1.timeOfDay > 610)
+                if (Config.PlaySound != null && Config.PlaySound.Length > 0 && Game1.random.NextDouble() < 0.05 && Game1.timeOfDay > 610)
                 {
-                    DelayedAction.playSoundAfterDelay("croak", Game1.random.Next(1000,3000), null, -1);
+                    DelayedAction.playSoundAfterDelay(Config.PlaySound, Game1.random.Next(1000,3000), null, -1);
                 }
             }
         }

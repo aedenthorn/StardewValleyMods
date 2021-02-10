@@ -1,0 +1,45 @@
+{
+  "Name": "Wooden Pet Bowl",
+  "Description": "A wooden bowl used to give water to your pet.",
+  "Price": 0,
+  "Category": "Crafting",
+  "Recipe":
+  {
+    "ResultCount": 1,
+    "Ingredients": [
+        {
+            "Object": 388,
+            "Count": 10,
+        },
+    ],
+    "IsDefault": true,
+  },
+  "NameLocalization":
+  {
+    // "es": "",
+    // "ko": "",
+    // "de": "",
+    // "fr": "",
+    // "hu": "",
+    // "it": "",
+    // "ja": "",
+    // "pt": "",
+    // "ru": "",
+    // "tr": "",
+    // "zh":"",
+  },
+  "DescriptionLocalization":
+  {
+    // "es": "",
+    // "ko": "",
+    // "de": "",
+    // "fr": "",
+    // "hu": "",
+    // "it": "",
+    // "ja": "",
+    // "pt": "",
+    // "ru": "",
+    // "tr": "",
+    // "zh":"",
+  },
+}
