@@ -3,11 +3,16 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using StardewModdingAPI;
 using StardewValley;
+using StardewValley.Characters;
+using StardewValley.Tools;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
+using System.Reflection;
 using xTile;
 using xTile.Dimensions;
+using xTile.Layers;
 using Object = StardewValley.Object;
 using Rectangle = Microsoft.Xna.Framework.Rectangle;
 
@@ -21,6 +26,9 @@ namespace MoveablePetBowl
         public static IModHelper PHelper;
         public static ModConfig config;
         private static IJsonAssetsApi mJsonAssets;
+        private static Texture2D tilesTexture;
+        private static Texture2D waterTexture;
+        private static bool playerWatered = false;
 
         /// <summary>The mod entry point, called after the mod is first loaded.</summary>
         /// <param name="helper">Provides simplified APIs for writing mods.</param>
@@ -38,7 +46,26 @@ namespace MoveablePetBowl
             
             Helper.Events.GameLoop.SaveLoaded += GameLoop_SaveLoaded;
 
+            Helper.Events.GameLoop.DayStarted += GameLoop_DayStarted;
+
+            tilesTexture = Helper.Content.Load<Texture2D>("assets/tiles.png");
+            waterTexture = Helper.Content.Load<Texture2D>("assets/water.png");
+
             var harmony = HarmonyInstance.Create(ModManifest.UniqueID);
+            
+            ConstructorInfo ci = typeof(Farm).GetConstructor(new Type[] { typeof(string), typeof(string) });
+            harmony.Patch(
+               original: ci,
+               postfix: new HarmonyMethod(typeof(ModEntry), nameof(Farm_Postfix))
+            );
+            harmony.Patch(
+               original: AccessTools.Method(typeof(Farm), "_UpdateWaterBowl"),
+               postfix: new HarmonyMethod(typeof(ModEntry), nameof(_UpdateWaterBowl_Postfix))
+            );
+            harmony.Patch(
+               original: AccessTools.Method(typeof(Pet), nameof(Pet.setAtFarmPosition)),
+               prefix: new HarmonyMethod(typeof(ModEntry), nameof(setAtFarmPosition_Prefix))
+            );
 
             harmony.Patch(
                original: AccessTools.Method(typeof(Game1), nameof(Game1.loadForNewGame)),
@@ -60,6 +87,19 @@ namespace MoveablePetBowl
                prefix: new HarmonyMethod(typeof(ModEntry), nameof(performRemoveAction_Prefix)) { prioritiy = Priority.First }
             );
 
+            harmony.Patch(
+               original: AccessTools.Method(typeof(Object), nameof(Object.performToolAction)),
+               postfix: new HarmonyMethod(typeof(ModEntry), nameof(performToolAction_Postfix)) { prioritiy = Priority.First }
+            );
+            harmony.Patch(
+               original: AccessTools.Method(typeof(Object), nameof(Object.draw), new Type[] { typeof(SpriteBatch), typeof(int), typeof(int), typeof(float), typeof(float) }),
+               postfix: new HarmonyMethod(typeof(ModEntry), nameof(ModEntry.Object_draw_Postfix))
+            );
+            harmony.Patch(
+               original: AccessTools.Method(typeof(Object), nameof(Object.draw), new Type[] { typeof(SpriteBatch), typeof(int), typeof(int), typeof(float) }),
+               postfix: new HarmonyMethod(typeof(ModEntry), nameof(ModEntry.Object_draw_Postfix2))
+            );
+
         }
 
         private void GameLoop_GameLaunched(object sender, StardewModdingAPI.Events.GameLaunchedEventArgs e)
@@ -78,54 +118,111 @@ namespace MoveablePetBowl
 
         private void GameLoop_SaveLoaded(object sender, StardewModdingAPI.Events.SaveLoadedEventArgs e)
         {
-            if (false && config.CustomPetBowl)
-            {
-                try
-                {
-                    Texture2D tex = new Texture2D(Game1.graphics.GraphicsDevice, 16, 32);
-                    Color[] data = new Color[tex.Width * tex.Height];
-                    tex.GetData(data);
-
-                    Texture2D source = Helper.Content.Load<Texture2D>($"Maps/{Game1.currentSeason.ToLower()}_outdoorsTileSheet", ContentSource.GameContent);
-                    Color[] srcData = new Color[source.Width * source.Height];
-                    source.GetData(srcData);
-
-                    int width = 400;
-                    int startx = 80;
-                    int starty = 1232;
-                    int start = starty * width + startx;
-                    for (int i = 0; i < data.Length; i++)
-                    {
-                        int srcIdx = start + (i / 16 * width + i % 16); 
-                        data[i] = srcData[srcIdx];
-                    }
-                    tex.SetData(data);
-                    Stream stream = File.Create(Path.Combine(Helper.DirectoryPath, "json-assets", "BigCraftables", "Pet Bowl", "big-craftable.png"));
-                    tex.SaveAsPng(stream, tex.Width, tex.Height);
-                    stream.Close();
-                    Monitor.Log($"Wrote custom mailbox texture from Maps/{ Game1.currentSeason.ToLower()}_outdoorsTileSheet to {Path.Combine(Helper.DirectoryPath, "json-assets", "BigCraftables", "Mailbox", "big-craftable.png")}.", LogLevel.Debug);
-                    Helper.Content.InvalidateCache("Tilesheets/Craftables");
-                }
-                catch (Exception ex)
-                {
-                    Monitor.Log($"Error writing mailbox texture.\n{ex}", LogLevel.Warn);
-                }
-            }
 
             Farm farm = Game1.getFarm();
-            foreach (KeyValuePair<Vector2, Object> kvp in farm.objects.Pairs)
+            PMonitor.Log($"Vanilla pet bowl location {farm.petBowlPosition}");
+            ResetPetBowlLocation(farm, Vector2.Zero);
+        }
+        private void GameLoop_DayStarted(object sender, StardewModdingAPI.Events.DayStartedEventArgs e)
+        {
+            Farm farm = Game1.getFarm();
+            if (Game1.isRaining)
             {
-                if (kvp.Value.Name.EndsWith("Pet Bowl"))
+                foreach (KeyValuePair<Vector2, Object> kvp in farm.objects.Pairs)
                 {
-                    farm.petBowlPosition.Value = Utility.Vector2ToPoint(kvp.Key);
-                    PMonitor.Log($"Set petbowl location to {kvp.Key}");
-                    return;
+                    if (kvp.Value.bigCraftable && kvp.Value.Name.EndsWith("Pet Bowl"))
+                    {
+                        kvp.Value.modData["aedenthorn.PetBowl/Watered"] = "true";
+                    }
                 }
             }
-            //farm.petBowlPosition.Value = Point.Zero;
-            PMonitor.Log("No pet bowl in farm", LogLevel.Debug);
+        }
+        private static void ResetPetBowlLocation(Farm farm, Vector2 exception)
+        {
+            List<Vector2> potentialBowls = new List<Vector2>();
+            foreach (KeyValuePair<Vector2, Object> kvp in farm.objects.Pairs)
+            {
+                if (kvp.Value.Name.EndsWith("Pet Bowl") && kvp.Key != exception)
+                {
+                    potentialBowls.Add(kvp.Key);
+                }
+            }
+
+            if (potentialBowls.Any())
+            {
+                Vector2 bowlLoc = potentialBowls[Game1.random.Next(potentialBowls.Count)];
+                farm.petBowlPosition.Value = Utility.Vector2ToPoint(bowlLoc);
+                PMonitor.Log($"Set pet bowl location to {bowlLoc}");
+                return;
+            }
+
+            PMonitor.Log("No pet bowl on farm, setting default", LogLevel.Debug);
+            Layer back_layer = farm.map.GetLayer("Back");
+            for (int x = 0; x < back_layer.LayerWidth; x++)
+            {
+                for (int y = 0; y < back_layer.LayerHeight; y++)
+                {
+                    if (back_layer.Tiles[x, y] != null && back_layer.Tiles[x, y].TileIndex == 1938)
+                    {
+                        farm.petBowlPosition.Set(x, y);
+                        PMonitor.Log($"Set pet bowl position to {x}, {y}", LogLevel.Debug);
+                        return;
+                    }
+                }
+            }
+
         }
 
+        private static void Farm_Postfix(Farm __instance)
+        {
+            ResetPetBowlLocation(__instance, Vector2.Zero);
+        }
+
+        private static void _UpdateWaterBowl_Postfix(Farm __instance)
+        {
+
+            Vector2 closestBowl = Vector2.Zero;
+            float closestDistance = 4;
+            foreach (KeyValuePair<Vector2, Object> kvp in __instance.objects.Pairs)
+            {
+                if(kvp.Value.bigCraftable && kvp.Value.Name.EndsWith("Pet Bowl"))
+                {
+                    if (__instance.petBowlWatered && !playerWatered)
+                    {
+                        kvp.Value.modData["aedenthorn.PetBowl/Watered"] = "true";
+                    }
+                    else if(kvp.Value.modData.ContainsKey("aedenthorn.PetBowl/Watered") && kvp.Value.modData["aedenthorn.PetBowl/Watered"] == "true")
+                    {
+                        foreach (Character c in __instance.characters)
+                        {
+                            if (c is Pet)
+                            {
+                                float distance = Vector2.Distance(c.getTileLocation(), kvp.Key);
+                                if (distance < closestDistance)
+                                {
+                                    closestBowl = kvp.Key;
+                                    closestDistance = distance;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            if (closestDistance < 4)
+            {
+                __instance.objects[closestBowl].modData["aedenthorn.PetBowl/Watered"] = "false";
+            }
+            playerWatered = false;
+        }
+
+        private static void setAtFarmPosition_Prefix()
+        {
+            if (Game1.IsMasterGame)
+            {
+                Farm farm = Game1.getFarm();
+                ResetPetBowlLocation(farm, Vector2.Zero);
+            }
+        }
         private static void loadForNewGame_Postfix()
         {
             Farm farm = Game1.getFarm();
@@ -154,16 +251,8 @@ namespace MoveablePetBowl
             if (__instance.Name.EndsWith("Pet Bowl") && who.currentLocation is Farm && !justCheckingForActivity)
             {
                 PMonitor.Log("Clicked on pet bowl");
+                who.currentLocation.playSound("slosh");
                 return true;
-                Point mailbox_position = Game1.player.getMailboxPosition();
-                if (__instance.tileLocation.X != mailbox_position.X || __instance.tileLocation.Y != mailbox_position.Y)
-                {
-                    PMonitor.Log("Not our mailbox", LogLevel.Debug);
-                    Game1.drawObjectDialogue(Game1.content.LoadString("Strings\\Locations:Farm_OtherPlayerMailbox"));
-                    __result = true;
-                    return false;
-                }
-                who.currentLocation.mailbox();
                 __result = true;
                 return false;
             }
@@ -175,18 +264,43 @@ namespace MoveablePetBowl
             if (__instance.Name.EndsWith("Pet Bowl") && environment is Farm)
             {
                 PMonitor.Log("Removed pet bowl");
-                foreach (KeyValuePair<Vector2, Object> kvp in environment.objects.Pairs)
-                {
-                    if (kvp.Value.Name.EndsWith("Pet Bowl") && kvp.Key != tileLocation)
-                    {
-                        (environment as Farm).petBowlPosition.Value = Utility.Vector2ToPoint(kvp.Key);
-                        PMonitor.Log($"Set pet bowl location to {kvp.Key}");
-                        return;
-                    }
-                }
-                //(environment as Farm).mapMainMailboxPosition = Point.Zero;
-                PMonitor.Log("No pet bowl on farm", LogLevel.Debug);
+                ResetPetBowlLocation(environment as Farm, tileLocation);
             }
+        }
+
+        private static void performToolAction_Postfix(Object __instance, Tool t, GameLocation location)
+        {
+            if (__instance.Name.EndsWith("Pet Bowl") && location is Farm && t is WateringCan && (t as WateringCan).WaterLeft > 0)
+            {
+                PMonitor.Log("Watered pet bowl");
+                __instance.modData["aedenthorn.PetBowl/Watered"] = "true";
+                playerWatered = true;
+                (location as Farm).petBowlWatered.Set(true);
+            }
+        }
+        public static void Object_draw_Postfix(Object __instance, SpriteBatch spriteBatch, float layerDepth, int xNonTile, int yNonTile, float alpha)
+        {
+            if (!__instance.name.EndsWith("Pet Bowl") || !__instance.modData.ContainsKey("aedenthorn.PetBowl/Watered") || __instance.modData["aedenthorn.PetBowl/Watered"] != "true")
+                return;
+            Vector2 scaleFactor = __instance.getScale();
+            scaleFactor *= 4f;
+            Vector2 position = Game1.GlobalToLocal(Game1.viewport, new Vector2((float)xNonTile, (float)yNonTile));
+            Rectangle destination = new Rectangle((int)(position.X - scaleFactor.X / 2f) + ((__instance.shakeTimer > 0) ? Game1.random.Next(-1, 2) : 0), (int)(position.Y - scaleFactor.Y / 2f) + ((__instance.shakeTimer > 0) ? Game1.random.Next(-1, 2) : 0), (int)(64f + scaleFactor.X), (int)(128f + scaleFactor.Y / 2f));
+            spriteBatch.Draw(waterTexture, destination, new Rectangle(0,0,16,32), Color.White * alpha, 0f, Vector2.Zero, SpriteEffects.None, layerDepth + 0.00001f);
+
+        }
+
+        public static void Object_draw_Postfix2(Object __instance, SpriteBatch spriteBatch, int x, int y)
+        {
+            if (!__instance.name.EndsWith("Pet Bowl") || !__instance.modData.ContainsKey("aedenthorn.PetBowl/Watered") || __instance.modData["aedenthorn.PetBowl/Watered"] != "true")
+                return;
+
+            Vector2 position = Game1.GlobalToLocal(Game1.viewport, new Vector2((float)(x * 64), (float)(y * 64 - 64)));
+
+            float draw_layer = Math.Max(0f, ((y + 1) * 64 - 24 + 1) / 10000f) + (x + 1) * 1E-05f;
+
+            spriteBatch.Draw(waterTexture, position, new Rectangle(0, 0, waterTexture.Width, waterTexture.Height), Color.White, 0f, Vector2.Zero, 4f, SpriteEffects.None, draw_layer);
+
         }
 
 
@@ -201,7 +315,10 @@ namespace MoveablePetBowl
             {
                 return true;
             }
-
+            if (asset.AssetName.EndsWith("outdoorsTileSheet"))
+            {
+                return true;
+            }
             return false;
         }
 
@@ -210,8 +327,31 @@ namespace MoveablePetBowl
         public void Edit<T>(IAssetData asset)
         {
             Monitor.Log("Editing asset" + asset.AssetName);
+            if (asset.AssetName.EndsWith("outdoorsTileSheet"))
+            {
+                var image = asset.AsImage();
+                int y = 0;
+                if (asset.AssetName.EndsWith("summer_outdoorsTileSheet"))
+                {
+                    y = 1;
+                }
+                else if (asset.AssetName.EndsWith("fall_outdoorsTileSheet"))
+                {
+                    y = 2;
 
-            if (asset.AssetName.StartsWith("Maps"))
+                }
+                else if (asset.AssetName.EndsWith("winter_outdoorsTileSheet"))
+                {
+                    y = 3;
+
+                }
+                Rectangle rect = new Rectangle(0, y * 16, 32, 16);
+
+                image.PatchImage(tilesTexture, rect, new Rectangle(208, 1232, 32, 16));
+
+                return;
+            }
+            else if (asset.AssetName.StartsWith("Maps"))
             {
                 try
                 {
@@ -226,6 +366,7 @@ namespace MoveablePetBowl
                             {
                                 Monitor.Log("Removing existing pet bowl.");
                                 mapData.Data.GetLayer("Buildings").Tiles[x, y] = null;
+                                mapData.Data.GetLayer("Back").Tiles[x, y].TileIndex = 1938;
                                 try
                                 {
                                     mapData.Data.GetLayer("Back").Tiles[x-1, y].Properties.Remove("NoFurniture");
@@ -264,6 +405,7 @@ namespace MoveablePetBowl
                 }
                 return;
             }
+
         }
     }
 }

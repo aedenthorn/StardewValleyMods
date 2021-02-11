@@ -12,6 +12,10 @@
 
 ## Objects
 
+**[Moveable Pet Bowl](https://www.nexusmods.com/stardewvalley/mods/8038)**
+
+**[Terrarium](https://www.nexusmods.com/stardewvalley/mods/8031)**
+
 **[Persistent Grange Display](https://www.nexusmods.com/stardewvalley/mods/7977)**
 
 **[Animated Parrot and Perch](https://www.nexusmods.com/stardewvalley/mods/7957)**

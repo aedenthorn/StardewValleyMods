@@ -37,6 +37,7 @@ namespace MoveableMailbox
             Helper.Events.GameLoop.GameLaunched += GameLoop_GameLaunched;
             
             Helper.Events.GameLoop.SaveLoaded += GameLoop_SaveLoaded;
+            Helper.Events.GameLoop.SaveLoaded += GameLoop_SaveLoaded;
 
             var harmony = HarmonyInstance.Create(ModManifest.UniqueID);
 
@@ -134,7 +135,7 @@ namespace MoveableMailbox
             {
                 int id = mJsonAssets.GetBigCraftableId("Mailbox");
                 farm.Objects.Add(Utility.PointToVector2(farm.GetMainMailboxPosition()), new Object(Utility.PointToVector2(farm.GetMainMailboxPosition()), id));
-                PMonitor.Log("Added mailbox to farm");
+                PMonitor.Log($"Added mailbox to farm, id {id}");
             }
 
         }

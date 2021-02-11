@@ -80,6 +80,8 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="assets\tiles.png" />
+    <Content Include="assets\water.png" />
     <Content Include="json-assets\BigCraftables\Diamond Pet Bowl\big-craftable.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>

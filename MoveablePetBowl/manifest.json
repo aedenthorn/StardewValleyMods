@@ -12,7 +12,7 @@
     "Directory": "_releases",
     "ModFolder": "MoveablePetBowl"
   },
-  "UpdateKeys": ["Nexus:"],
+  "UpdateKeys": ["Nexus:8038"],
   "Dependencies": [
       {
         "UniqueID": "Platonymous.ModUpdater",
