@@ -85,20 +85,19 @@ namespace CustomOreNodes
         {
             CustomOreNodes.Clear();
             CustomOreData data;
-            CustomOreConfig conf = new CustomOreConfig();
             int id = 42424000;
             Dictionary<int, int> existingPSIs = new Dictionary<int, int>();
-            conf = Helper.Data.ReadJsonFile<CustomOreConfig>("ore_config.json") ?? new CustomOreConfig();
+            CustomOreConfig conf = Helper.Data.ReadJsonFile<CustomOreConfig>("ore_config.json") ?? new CustomOreConfig();
             foreach (KeyValuePair<int, int> psi in conf.parentSheetIndexes)
             {
-                existingPSIs.Add(psi.Value, psi.Key);
+                existingPSIs[psi.Value] = psi.Key;
             }
             foreach (IContentPack contentPack in Helper.ContentPacks.GetOwned())
             {
                 conf = contentPack.ReadJsonFile<CustomOreConfig>("ore_config.json") ?? new CustomOreConfig();
                 foreach (KeyValuePair<int, int> psi in conf.parentSheetIndexes)
                 {
-                    existingPSIs.Add(psi.Value, psi.Key);
+                    existingPSIs[psi.Value] = psi.Key;
                 }
 
             }

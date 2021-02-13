@@ -25,7 +25,7 @@ namespace CustomResourceClumps
         public static IMonitor SMonitor;
         private static IModHelper SHelper;
         public bool finishedLoadingClumps = false;
-        public static Dictionary<string, Type> tools = new Dictionary<string, Type>()
+        public static Dictionary<string, Type> ToolTypes { get; set; } = new Dictionary<string, Type>()
         {
             { "axe", typeof(Axe) },
             { "pick", typeof(Pickaxe) },
@@ -242,9 +242,9 @@ namespace CustomResourceClumps
             {
                 return false;
             }
-            SMonitor.Log($"hitting custom clump {indexOfClump} with {t.GetType()} (should be {tools[clump.toolType]} {(!tools.ContainsKey(clump.toolType) ? " (not in dictionary!)" : "")})");
+            SMonitor.Log($"hitting custom clump {indexOfClump} with {t.GetType()} (should be {ToolTypes[clump.toolType]})");
 
-            if (!tools.ContainsKey(clump.toolType) || t.GetType() != tools[clump.toolType])
+            if (!CheckToolType(clump, t))
             {
                 return false;
             } 
@@ -319,6 +319,21 @@ namespace CustomResourceClumps
             return false;
         }
 
+        private static bool CheckToolType(CustomResourceClump clump, Tool t)
+        {
+            if (clump.toolType.Contains(","))
+            {
+                string[] tools = clump.toolType.Split(',');
+                foreach(string tool in tools)
+                {
+                    if (ToolTypes.ContainsKey(tool) && t.GetType() == ToolTypes[tool])
+                        return true;
+                }
+                return false;
+            }
+
+            return ToolTypes.ContainsKey(clump.toolType) && t.GetType() == ToolTypes[clump.toolType];
+        }
     }
 }
  

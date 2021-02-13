@@ -315,7 +315,7 @@ namespace MoveablePetBowl
             {
                 return true;
             }
-            if (asset.AssetName.EndsWith("outdoorsTileSheet"))
+            if (asset.AssetName.EndsWith("outdoorsTileSheet") && config.FixTilesheet)
             {
                 return true;
             }
