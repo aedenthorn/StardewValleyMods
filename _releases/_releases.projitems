@@ -35,6 +35,7 @@
     <None Include="$(MSBuildThisFileDirectory)CustomOreNodes 0.7.0.zip" />
     <None Include="$(MSBuildThisFileDirectory)CustomOreNodes 0.8.0.zip" />
     <None Include="$(MSBuildThisFileDirectory)CustomOreNodes 1.0.0.zip" />
+    <None Include="$(MSBuildThisFileDirectory)CustomOreNodes 2.0.2.zip" />
     <None Include="$(MSBuildThisFileDirectory)CustomResourceClumps 0.4.0.zip" />
     <None Include="$(MSBuildThisFileDirectory)CustomResourceClumps 0.4.1.zip" />
     <None Include="$(MSBuildThisFileDirectory)CustomSpousePatio 0.7.0.zip" />
@@ -96,6 +97,8 @@
     <None Include="$(MSBuildThisFileDirectory)MultipleSpouses 2.8.2.zip" />
     <None Include="$(MSBuildThisFileDirectory)MultipleSpouses 2.9.1.zip" />
     <None Include="$(MSBuildThisFileDirectory)MultipleSpouses 3.0.0.zip" />
+    <None Include="$(MSBuildThisFileDirectory)MultiStoryFarmhouse 0.1.0.zip" />
+    <None Include="$(MSBuildThisFileDirectory)MultiStoryFarmhouse 0.1.1.zip" />
     <None Include="$(MSBuildThisFileDirectory)Murdercrows 0.2.2.zip" />
     <None Include="$(MSBuildThisFileDirectory)NonRandomPrairieKing 0.1.0.zip" />
     <None Include="$(MSBuildThisFileDirectory)OverworldChests 0.4.1.zip" />

@@ -1,0 +1,26 @@
+﻿{
+  "Name": "Multiple Floor Farmhouse",
+  "Author": "aedenthorn",
+  "Version": "0.1.1",
+  "Description": "MultiStoryFarmhouse.",
+  "UniqueID": "aedenthorn.MultiStoryFarmhouse",
+  "EntryDll": "MultiStoryFarmhouse.dll",
+  "MinimumApiVersion": "3.8.0",
+  "ModUpdater": {
+    "Repository": "StardewValleyMods",
+    "User": "aedenthorn",
+    "Directory": "_releases",
+    "ModFolder": "MultiStoryFarmhouse"
+  },
+  "UpdateKeys": ["Nexus:8077"],
+  "Dependencies": [
+      {
+        "UniqueID": "Platonymous.ModUpdater",
+        "IsRequired": false
+      },
+      {
+      "UniqueID": "spacechase0.JsonAssets",
+        "IsRequired": true
+      },
+  ]
+}
