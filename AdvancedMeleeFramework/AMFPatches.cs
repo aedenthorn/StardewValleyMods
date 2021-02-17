@@ -19,61 +19,12 @@ namespace AdvancedMeleeFramework
         }
         public static void MeleeWeapon_Postfix(MeleeWeapon __instance)
         {
-            //context.Monitor.Log($"created melee weapon {__instance.Name} {__instance.InitialParentTileIndex} {__instance.ParentSheetIndex}");
+            //context.Monitor.Log($"0 created melee weapon {__instance.Name} {__instance.InitialParentTileIndex} {__instance.ParentSheetIndex} {Environment.StackTrace}");
 
-            AdvancedMeleeWeapon amw = ModEntry.GetAdvancedWeapon(__instance, null);
-            if (amw != null)
-            {
-                int scount = 0;
-                foreach (AdvancedEnchantmentData aed in amw.enchantments)
-                {
-                    switch (aed.type)
-                    {
-                        case "vampiric":
-                            __instance.enchantments.Add(new VampiricEnchantment());
-                            break;
-                        case "jade":
-                            __instance.enchantments.Add(new JadeEnchantment());
-                            break;
-                        case "aquamarine":
-                            __instance.enchantments.Add(new AquamarineEnchantment());
-                            break;
-                        case "topaz":
-                            __instance.enchantments.Add(new TopazEnchantment());
-                            break;
-                        case "amethyst":
-                            __instance.enchantments.Add(new AmethystEnchantment());
-                            break;
-                        case "ruby":
-                            __instance.enchantments.Add(new RubyEnchantment());
-                            break;
-                        case "emerald":
-                            __instance.enchantments.Add(new EmeraldEnchantment());
-                            break;
-                        case "haymaker":
-                            __instance.enchantments.Add(new HaymakerEnchantment());
-                            break;
-                        case "bugkiller":
-                            __instance.enchantments.Add(new BugKillerEnchantment());
-                            break;
-                        case "crusader":
-                            __instance.enchantments.Add(new CrusaderEnchantment());
-                            break;
-                        case "magic":
-                            __instance.enchantments.Add(new MagicEnchantment());
-                            break;
-                        default:
-                            BaseWeaponEnchantment we = new BaseWeaponEnchantment();
-                            string key = aed.name;
-                            context.Helper.Reflection.GetField<string>(we, "_displayName").SetValue(key);
-                            __instance.enchantments.Add(we);
-                            break;
-                    }
-                    scount++;
-                    context.Monitor.Log($"added enchantment {aed.type} to {__instance.Name} {__instance.enchantments.Count}");
-                }
-            }
+            ModEntry.AddEnchantments(__instance);
         }
+
+
         public static bool doAnimateSpecialMove_Prefix(MeleeWeapon __instance, Farmer ___lastUser)
         {
             context.Monitor.Log($"Special move for {__instance.Name}, id {__instance.InitialParentTileIndex}");
@@ -154,13 +105,14 @@ namespace AdvancedMeleeFramework
 
         public static bool _OnDealDamage_Prefix(BaseEnchantment __instance, string ____displayName, Monster monster, GameLocation location, Farmer who, ref int amount)
         {
-            if (!(__instance is BaseWeaponEnchantment) || ____displayName == null || !ModEntry.advancedEnchantments.ContainsKey(____displayName))
+            if (!(__instance is BaseWeaponEnchantment) || ____displayName == null  || ____displayName == "" || !ModEntry.advancedEnchantments.ContainsKey(____displayName) || (ModEntry.EnchantmentTriggers.ContainsKey(who.uniqueMultiplayerID + ____displayName) && ModEntry.EnchantmentTriggers[who.uniqueMultiplayerID + ____displayName] == Game1.ticks))
                 return true;
             AdvancedEnchantmentData enchantment = ModEntry.advancedEnchantments[____displayName];
 
-            if (enchantment.parameters["trigger"] == "damage" || (enchantment.parameters["trigger"] == "crit" && amount > (who.CurrentTool as MeleeWeapon).maxDamage))
+            if (enchantment.parameters["trigger"] == "damage" || (enchantment.parameters["trigger"] == "crit" && amount > (who.CurrentTool as MeleeWeapon).maxDamage) && !Environment.StackTrace.Contains("OnCalculateDamage"))
             {
-                context.Monitor.Log($"Triggered enchantment {enchantment.name} on {enchantment.parameters["trigger"]}");
+                context.Monitor.Log($"Triggered enchantment {enchantment.name} on {enchantment.parameters["trigger"]} {amount} {(who.CurrentTool as MeleeWeapon).enchantments.Count}");
+                ModEntry.EnchantmentTriggers[who.uniqueMultiplayerID + ____displayName] = Game1.ticks;
                 if (enchantment.type == "heal")
                 {
                     if (Game1.random.NextDouble() < float.Parse(enchantment.parameters["chance"]) / 100f)
@@ -182,18 +134,19 @@ namespace AdvancedMeleeFramework
                         if (enchantment.parameters.ContainsKey("sound"))
                             Game1.playSound(enchantment.parameters["sound"]);
                     }
-                }
+                } 
             }
             return false;
         }
         public static bool _OnMonsterSlay_Prefix(BaseEnchantment __instance, string ____displayName, Monster m, GameLocation location, Farmer who)
         {
-            if (!(__instance is BaseWeaponEnchantment) || ____displayName == null || !ModEntry.advancedEnchantments.ContainsKey(____displayName))
+            if (!(__instance is BaseWeaponEnchantment) || ____displayName == null || !ModEntry.advancedEnchantments.ContainsKey(____displayName) || (ModEntry.EnchantmentTriggers.ContainsKey(who.uniqueMultiplayerID + ____displayName) && ModEntry.EnchantmentTriggers[who.uniqueMultiplayerID + ____displayName] == Game1.ticks))
                 return true;
             AdvancedEnchantmentData enchantment = ModEntry.advancedEnchantments[____displayName];
             if (enchantment.parameters["trigger"] == "slay")
             {
                 context.Monitor.Log($"Triggered enchantment {enchantment.name} on slay");
+                ModEntry.EnchantmentTriggers[who.uniqueMultiplayerID + ____displayName] = Game1.ticks;
                 if (enchantment.type == "heal")
                 {
                     if (Game1.random.NextDouble() < float.Parse(enchantment.parameters["chance"]) / 100f)

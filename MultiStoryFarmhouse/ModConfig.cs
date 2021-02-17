@@ -11,5 +11,7 @@ namespace MultiStoryFarmhouse
             "ManyRooms",
             "EmptyHall"
         };
+        public int MainFloorStairsX { get; set; } = 7;
+        public int MainFloorStairsY { get; set; } = 22;
     }
 }

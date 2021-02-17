@@ -23,6 +23,7 @@
     <None Include="$(MSBuildThisFileDirectory)AdvancedMeleeFramework 0.5.2.zip" />
     <None Include="$(MSBuildThisFileDirectory)AdvancedMeleeFramework 0.5.3.zip" />
     <None Include="$(MSBuildThisFileDirectory)AdvancedMeleeFramework 0.6.0.zip" />
+    <None Include="$(MSBuildThisFileDirectory)AdvancedMeleeFramework 0.7.0.zip" />
     <None Include="$(MSBuildThisFileDirectory)ATerrarium 0.1.2.zip" />
     <None Include="$(MSBuildThisFileDirectory)BossCreatures 1.2.0.zip" />
     <None Include="$(MSBuildThisFileDirectory)CustomChestTypes 0.2.0.zip" />

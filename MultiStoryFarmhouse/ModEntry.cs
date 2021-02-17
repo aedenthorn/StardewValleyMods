@@ -190,11 +190,11 @@ namespace MultiStoryFarmhouse
             int x = (int)stairs.X;
             int y = (int)stairs.Y;
 
-            Warp warp = new Warp(8, 25, "MultipleFloors0", x + 1, y + 2, true, false);
+            Warp warp = new Warp(config.MainFloorStairsX + 1, config.MainFloorStairsY + 3, "MultipleFloors0", x + 1, y + 2, true, false);
             if (!Utility.getHomeOfFarmer(Game1.player).warps.Contains(warp))
                 Utility.getHomeOfFarmer(Game1.player).warps.Add(warp);
             warp.TargetName = "MultipleFloors0";
-            warp = new Warp(9, 25, "MultipleFloors0", x + 2, y + 2, true, false);
+            warp = new Warp(config.MainFloorStairsX + 2, config.MainFloorStairsY + 3, "MultipleFloors0", x + 2, y + 2, true, false);
             if (!Utility.getHomeOfFarmer(Game1.player).warps.Contains(warp))
                 Utility.getHomeOfFarmer(Game1.player).warps.Add(warp);
             warp.TargetName = "MultipleFloors0";
@@ -409,45 +409,48 @@ namespace MultiStoryFarmhouse
                 {
                     var mapData = asset.AsMap();
 
-                    mapData.Data.GetLayer("Front").Tiles[7,22].TileIndex = 162;
-                    mapData.Data.GetLayer("Front").Tiles[8,22] = null;
-                    mapData.Data.GetLayer("Front").Tiles[9,22] = null;
-                    mapData.Data.GetLayer("Front").Tiles[8,23] = null;
-                    mapData.Data.GetLayer("Front").Tiles[9,23] = null;
+                    int x = config.MainFloorStairsX;
+                    int y = config.MainFloorStairsY;
 
-                    mapData.Data.GetLayer("Buildings").Tiles[10,22].TileIndex = 68;
-                    mapData.Data.GetLayer("Front").Tiles[10,22].TileIndex = 68;
+                    mapData.Data.GetLayer("Front").Tiles[x,y].TileIndex = 162;
+                    mapData.Data.GetLayer("Front").Tiles[x + 1,y] = null;
+                    mapData.Data.GetLayer("Front").Tiles[x + 2,y] = null;
+                    mapData.Data.GetLayer("Front").Tiles[x + 1,y + 1] = null;
+                    mapData.Data.GetLayer("Front").Tiles[x + 2,y + 1] = null;
+
+                    mapData.Data.GetLayer("Buildings").Tiles[x + 3,y].TileIndex = 68;
+                    mapData.Data.GetLayer("Front").Tiles[x + 3,y].TileIndex = 68;
                     
-                    mapData.Data.GetLayer("Buildings").Tiles[7,23] = new StaticTile(mapData.Data.GetLayer("Buildings"), mapData.Data.TileSheets[0], BlendMode.Alpha, 64);
-                    mapData.Data.GetLayer("Front").Tiles[7, 23] = new StaticTile(mapData.Data.GetLayer("Front"), mapData.Data.TileSheets[0], BlendMode.Alpha, 64);
+                    mapData.Data.GetLayer("Buildings").Tiles[x,y + 1] = new StaticTile(mapData.Data.GetLayer("Buildings"), mapData.Data.TileSheets[0], BlendMode.Alpha, 64);
+                    mapData.Data.GetLayer("Front").Tiles[x, y + 1] = new StaticTile(mapData.Data.GetLayer("Front"), mapData.Data.TileSheets[0], BlendMode.Alpha, 64);
 
-                    mapData.Data.GetLayer("Buildings").Tiles[7, 24] = new StaticTile(mapData.Data.GetLayer("Buildings"), mapData.Data.TileSheets[0], BlendMode.Alpha, 96);
+                    mapData.Data.GetLayer("Buildings").Tiles[x, y + 2] = new StaticTile(mapData.Data.GetLayer("Buildings"), mapData.Data.TileSheets[0], BlendMode.Alpha, 96);
 
-                    mapData.Data.GetLayer("Front").Tiles[8, 24] = new StaticTile(mapData.Data.GetLayer("Front"), mapData.Data.TileSheets[0], BlendMode.Alpha, 165);
-                    mapData.Data.GetLayer("Front").Tiles[9, 24] = new StaticTile(mapData.Data.GetLayer("Front"), mapData.Data.TileSheets[0], BlendMode.Alpha, 165);
+                    mapData.Data.GetLayer("Front").Tiles[x + 1, y + 2] = new StaticTile(mapData.Data.GetLayer("Front"), mapData.Data.TileSheets[0], BlendMode.Alpha, 165);
+                    mapData.Data.GetLayer("Front").Tiles[x + 2, y + 2] = new StaticTile(mapData.Data.GetLayer("Front"), mapData.Data.TileSheets[0], BlendMode.Alpha, 165);
 
 
-                    mapData.Data.GetLayer("Back").Tiles[8, 23] = new StaticTile(mapData.Data.GetLayer("Back"), mapData.Data.TileSheets[2], BlendMode.Alpha, 181);
-                    mapData.Data.GetLayer("Back").Tiles[9, 23] = new StaticTile(mapData.Data.GetLayer("Back"), mapData.Data.TileSheets[2], BlendMode.Alpha, 181);
-                    mapData.Data.GetLayer("Back").Tiles[8,23].Properties["NoFurniture"] = "t";
-                    mapData.Data.GetLayer("Back").Tiles[9,23].Properties["NoFurniture"] = "t";
-                    mapData.Data.GetLayer("Back").Tiles[8,23].Properties["NPCBarrier"] = "t";
-                    mapData.Data.GetLayer("Back").Tiles[9,23].Properties["NPCBarrier"] = "t";
+                    mapData.Data.GetLayer("Back").Tiles[x + 1, y + 1] = new StaticTile(mapData.Data.GetLayer("Back"), mapData.Data.TileSheets[2], BlendMode.Alpha, 181);
+                    mapData.Data.GetLayer("Back").Tiles[x + 2, y + 1] = new StaticTile(mapData.Data.GetLayer("Back"), mapData.Data.TileSheets[2], BlendMode.Alpha, 181);
+                    mapData.Data.GetLayer("Back").Tiles[x + 1,y + 1].Properties["NoFurniture"] = "t";
+                    mapData.Data.GetLayer("Back").Tiles[x + 2,y + 1].Properties["NoFurniture"] = "t";
+                    mapData.Data.GetLayer("Back").Tiles[x + 1,y + 1].Properties["NPCBarrier"] = "t";
+                    mapData.Data.GetLayer("Back").Tiles[x + 2,y + 1].Properties["NPCBarrier"] = "t";
 
-                    mapData.Data.GetLayer("Back").Tiles[8, 24] = new StaticTile(mapData.Data.GetLayer("Back"), mapData.Data.TileSheets[2], BlendMode.Alpha, 181);
-                    mapData.Data.GetLayer("Back").Tiles[9, 24] = new StaticTile(mapData.Data.GetLayer("Back"), mapData.Data.TileSheets[2], BlendMode.Alpha, 181);
-                    mapData.Data.GetLayer("Back").Tiles[8,24].Properties["NoFurniture"] = "t";
-                    mapData.Data.GetLayer("Back").Tiles[9,24].Properties["NoFurniture"] = "t";
+                    mapData.Data.GetLayer("Back").Tiles[x + 1, y + 2] = new StaticTile(mapData.Data.GetLayer("Back"), mapData.Data.TileSheets[2], BlendMode.Alpha, 181);
+                    mapData.Data.GetLayer("Back").Tiles[x + 2, y + 2] = new StaticTile(mapData.Data.GetLayer("Back"), mapData.Data.TileSheets[2], BlendMode.Alpha, 181);
+                    mapData.Data.GetLayer("Back").Tiles[x + 1,y + 2].Properties["NoFurniture"] = "t";
+                    mapData.Data.GetLayer("Back").Tiles[x + 2,y + 2].Properties["NoFurniture"] = "t";
 
-                    mapData.Data.GetLayer("Buildings").Tiles[10, 23] = new StaticTile(mapData.Data.GetLayer("Buildings"), mapData.Data.TileSheets[0], BlendMode.Alpha, 68);
-                    mapData.Data.GetLayer("Front").Tiles[10, 23] = new StaticTile(mapData.Data.GetLayer("Front"), mapData.Data.TileSheets[0], BlendMode.Alpha, 68);
-                    mapData.Data.GetLayer("Buildings").Tiles[10, 24] = new StaticTile(mapData.Data.GetLayer("Buildings"), mapData.Data.TileSheets[0], BlendMode.Alpha, 130);
+                    mapData.Data.GetLayer("Buildings").Tiles[x + 3, y + 1] = new StaticTile(mapData.Data.GetLayer("Buildings"), mapData.Data.TileSheets[0], BlendMode.Alpha, 68);
+                    mapData.Data.GetLayer("Front").Tiles[x + 3, y + 1] = new StaticTile(mapData.Data.GetLayer("Front"), mapData.Data.TileSheets[0], BlendMode.Alpha, 68);
+                    mapData.Data.GetLayer("Buildings").Tiles[x + 3, y + 2] = new StaticTile(mapData.Data.GetLayer("Buildings"), mapData.Data.TileSheets[0], BlendMode.Alpha, 130);
 
-                    mapData.Data.GetLayer("Front").Tiles[8, 25] = new StaticTile(mapData.Data.GetLayer("Front"), mapData.Data.TileSheets[0], BlendMode.Alpha, 0);
-                    mapData.Data.GetLayer("Front").Tiles[9, 25] = new StaticTile(mapData.Data.GetLayer("Front"), mapData.Data.TileSheets[0], BlendMode.Alpha, 0);
+                    mapData.Data.GetLayer("Front").Tiles[x + 1, y + 3] = new StaticTile(mapData.Data.GetLayer("Front"), mapData.Data.TileSheets[0], BlendMode.Alpha, 0);
+                    mapData.Data.GetLayer("Front").Tiles[x + 2, y + 3] = new StaticTile(mapData.Data.GetLayer("Front"), mapData.Data.TileSheets[0], BlendMode.Alpha, 0);
 
-                    mapData.Data.GetLayer("Buildings").Tiles[8,23] = null;
-                    mapData.Data.GetLayer("Buildings").Tiles[9,23] = null;
+                    mapData.Data.GetLayer("Buildings").Tiles[x + 1,y + 1] = null;
+                    mapData.Data.GetLayer("Buildings").Tiles[x + 2,y + 1] = null;
 
                 }
                 catch (Exception ex)

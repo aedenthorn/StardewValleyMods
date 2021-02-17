@@ -15,6 +15,7 @@ namespace AdvancedMeleeFramework
 {
     public class ModEntry : Mod 
     {
+        public static ModEntry context;
         public ModConfig Config;
         public static Random myRand;
         public static Dictionary<int, List<AdvancedMeleeWeapon>> advancedMeleeWeapons = new Dictionary<int, List<AdvancedMeleeWeapon>>();
@@ -31,9 +32,11 @@ namespace AdvancedMeleeFramework
         public static AdvancedMeleeWeapon advancedWeaponAnimating = null;
         public static IJsonAssetsApi mJsonAssets;
         public static Dictionary<string, AdvancedEnchantmentData> advancedEnchantments = new Dictionary<string, AdvancedEnchantmentData>();
+        public static Dictionary<string, int> EnchantmentTriggers = new Dictionary<string, int>();
 
         public override void Entry(IModHelper helper)
         {
+            context = this;
             Config = Helper.ReadConfig<ModConfig>();
             if (!Config.EnableMod)
                 return;
@@ -44,6 +47,8 @@ namespace AdvancedMeleeFramework
             Helper.Events.GameLoop.SaveLoaded += GameLoop_SaveLoaded;
             Helper.Events.GameLoop.UpdateTicking += GameLoop_UpdateTicking;
             Helper.Events.Input.ButtonPressed += Input_ButtonPressed;
+            Helper.Events.Player.InventoryChanged += Player_InventoryChanged;
+
 
             myRand = new Random();
 
@@ -53,7 +58,6 @@ namespace AdvancedMeleeFramework
                 original: AccessTools.Method(typeof(MeleeWeapon), "doAnimateSpecialMove"),
                 prefix: new HarmonyMethod(typeof(AMFPatches), nameof(AMFPatches.doAnimateSpecialMove_Prefix))
             );
-
             ConstructorInfo ci = typeof(MeleeWeapon).GetConstructor(new Type[] { typeof(int) });
             harmony.Patch(
                original: ci,
@@ -64,7 +68,11 @@ namespace AdvancedMeleeFramework
                original: ci,
                postfix: new HarmonyMethod(typeof(AMFPatches), nameof(AMFPatches.MeleeWeapon_Postfix))
             );
-            
+            ci = typeof(MeleeWeapon).GetConstructor(new Type[] { typeof(int), typeof(int) });
+            harmony.Patch(
+               original: ci,
+               postfix: new HarmonyMethod(typeof(AMFPatches), nameof(AMFPatches.MeleeWeapon_Postfix))
+            );
             harmony.Patch(
                 original: AccessTools.Method(typeof(MeleeWeapon), nameof(MeleeWeapon.drawInMenu), new Type[] { typeof(SpriteBatch), typeof(Vector2), typeof(float), typeof(float), typeof(float), typeof(StackDrawType), typeof(Color), typeof(bool) }),
                 prefix: new HarmonyMethod(typeof(AMFPatches), nameof(AMFPatches.drawInMenu_Prefix)),
@@ -82,17 +90,93 @@ namespace AdvancedMeleeFramework
 
         }
 
+        private void Player_InventoryChanged(object sender, StardewModdingAPI.Events.InventoryChangedEventArgs e)
+        {
+            foreach(Item item in e.Player.items)
+            {
+                if(item is MeleeWeapon)
+                {
+                    AddEnchantments(item as MeleeWeapon);
+                }
+            }
+        }
+
+
         public void GameLoop_GameLaunched(object sender, StardewModdingAPI.Events.GameLaunchedEventArgs e)
         {
             mJsonAssets = Helper.ModRegistry.GetApi<IJsonAssetsApi>("spacechase0.JsonAssets");
-
         }
 
         public void GameLoop_SaveLoaded(object sender, StardewModdingAPI.Events.SaveLoadedEventArgs e)
         {
             LoadAdvancedMeleeWeapons();
+            foreach (Item item in Game1.player.items)
+            {
+                if (item is MeleeWeapon)
+                {
+                    AddEnchantments(item as MeleeWeapon);
+                }
+            }
         }
 
+        public static void AddEnchantments(MeleeWeapon weapon)
+        {
+            AdvancedMeleeWeapon amw = GetAdvancedWeapon(weapon, null);
+            if (amw != null && amw.enchantments.Any())
+            {
+                weapon.enchantments.Clear();
+                foreach (AdvancedEnchantmentData aed in amw.enchantments)
+                {
+                    BaseWeaponEnchantment bwe = null;
+                    switch (aed.type)
+                    {
+                        case "vampiric":
+                            bwe = new VampiricEnchantment();
+                            break;
+                        case "jade":
+                            bwe = new JadeEnchantment();
+                            break;
+                        case "aquamarine":
+                            bwe = new AquamarineEnchantment();
+                            break;
+                        case "topaz":
+                            bwe = new TopazEnchantment();
+                            break;
+                        case "amethyst":
+                            bwe = new AmethystEnchantment();
+                            break;
+                        case "ruby":
+                            bwe = new RubyEnchantment();
+                            break;
+                        case "emerald":
+                            bwe = new EmeraldEnchantment();
+                            break;
+                        case "haymaker":
+                            bwe = new HaymakerEnchantment();
+                            break;
+                        case "bugkiller":
+                            bwe = new BugKillerEnchantment();
+                            break;
+                        case "crusader":
+                            bwe = new CrusaderEnchantment();
+                            break;
+                        case "magic":
+                            bwe = new MagicEnchantment();
+                            break;
+                        default:
+                            bwe = new BaseWeaponEnchantment();
+                            string key = aed.name;
+                            context.Helper.Reflection.GetField<string>(bwe, "_displayName").SetValue(key);
+                            break;
+                    }
+                    if(bwe != null)
+                    {
+                        weapon.enchantments.Add(bwe);
+                        //context.Monitor.Log($"added enchantment {aed.type} to {weapon.Name} {weapon.enchantments.Count}");
+                    }
+                }
+            }
+        }
         public void LoadAdvancedMeleeWeapons()
         {
             advancedMeleeWeapons.Clear();
