@@ -23,14 +23,20 @@ namespace MultipleSpouses
         }
         public static bool BedFurniture_draw_Prefix(BedFurniture __instance, SpriteBatch spriteBatch, int x, int y, float alpha, NetVector2 ___drawPosition)
         {
-            if (!Config.EnableMod || !Config.CustomBed || __instance.isTemporarilyInvisible || __instance.bedType != BedFurniture.BedType.Double)
+            if (!Config.EnableMod || __instance.isTemporarilyInvisible || __instance.bedType != BedFurniture.BedType.Double)
                 return true;
+
+            if (!Config.CustomBed)
+            {
+                __instance.boundingBox.Width = 3 * 64;
+                return true;
+            }
+
 
             Vector2 drawPosition = Furniture.isDrawingLocationFurniture ? ___drawPosition : new Vector2(x * 64, y * 64 - (__instance.sourceRect.Height * 4 - __instance.boundingBox.Height));
 
             int bedWidth = Misc.GetBedWidth(Utility.getHomeOfFarmer(Game1.getFarmer(__instance.owner)));
-
-            __instance.boundingBox.Width = (bedWidth + 1)* 64;
+            __instance.boundingBox.Width = (bedWidth + 1) * 64;
 
             Rectangle drawn_rect = __instance.sourceRect.Value; 
             int third = drawn_rect.Width / 3;

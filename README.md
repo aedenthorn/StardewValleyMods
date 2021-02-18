@@ -108,6 +108,8 @@
 
 **[Multiple Spouses](https://www.nexusmods.com/stardewvalley/mods/6227)**
 
+**[Multiple Floor Farmhouse](https://www.nexusmods.com/stardewvalley/mods/8077)**
+
 **[Boss Creatures](https://www.nexusmods.com/stardewvalley/mods/5864)**
 
 **[Witcher Mod](https://www.nexusmods.com/stardewvalley/mods/5797)**
