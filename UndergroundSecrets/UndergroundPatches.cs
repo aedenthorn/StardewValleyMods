@@ -159,5 +159,13 @@ namespace UndergroundSecrets
             }
             return true;
         }
+
+        public static void MineShaft_enterMineShaft_postfix(MineShaft __instance, ref int ___lastLevelsDownFallen)
+        {
+            if (__instance.mineLevel < 121 && __instance.mineLevel + ___lastLevelsDownFallen > 120)
+            {
+                ___lastLevelsDownFallen = 120 - __instance.mineLevel;
+            }
+        }
     }
 }

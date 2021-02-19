@@ -70,6 +70,11 @@ namespace UndergroundSecrets
                 prefix: new HarmonyMethod(typeof(UndergroundPatches), nameof(UndergroundPatches.MineShaft_addLevelChests_prefix))
             );
 
+            harmony.Patch(
+                original: AccessTools.Method(typeof(MineShaft), nameof(MineShaft.enterMineShaft)),
+                postfix: new HarmonyMethod(typeof(UndergroundPatches), nameof(UndergroundPatches.MineShaft_enterMineShaft_postfix))
+            );
+
         }
 
         private void GameLoop_GameLaunched(object sender, StardewModdingAPI.Events.GameLaunchedEventArgs e)

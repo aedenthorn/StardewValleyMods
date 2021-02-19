@@ -480,7 +480,7 @@ namespace MultipleSpouses
                                     bool up = upgradeLevel > 1;
 
                                     Point bedStart = __instance.GetSpouseBed().GetBedSpot();
-                                    int x = (int)((bedSpouses.IndexOf(spouseName) + 1) / (float)(bedSpouses.Count + 1) * (bedWidth - 2));
+                                    int x = 1 + (int)(bedSpouses.IndexOf(spouseName) / (float)(bedSpouses.Count) * (bedWidth - 1));
                                     bedSpot = new Point(bedStart.X + x, bedStart.Y);
 
                                 }

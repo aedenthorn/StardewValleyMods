@@ -188,7 +188,7 @@ namespace MultipleSpouses
                 
                 if(type < ModEntry.config.PercentChanceForSpouseInBed)
                 {
-                    if (bedSpouses.Count < GetBedWidth(farmHouse) && (ModEntry.config.RoommateRomance || !farmer.friendshipData[spouse.Name].IsRoommate()) && HasSleepingAnimation(spouse.Name))
+                    if (bedSpouses.Count < GetBedWidth(farmHouse) - 1 && (ModEntry.config.RoommateRomance || !farmer.friendshipData[spouse.Name].IsRoommate()) && HasSleepingAnimation(spouse.Name))
                     {
                         Monitor.Log("made bed spouse: " + spouse.Name);
                         bedSpouses.Add(spouse.Name);
@@ -412,7 +412,7 @@ namespace MultipleSpouses
             if (ModEntry.config.CustomBed)
             {
                 bool up = fh.upgradeLevel > 1;
-                return Math.Min(up ? 8 : 5, Math.Max(ModEntry.config.BedWidth, 3));
+                return Math.Min(up ? 9 : 6, Math.Max(ModEntry.config.BedWidth, 3));
             }
             else
             {
