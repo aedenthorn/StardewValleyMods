@@ -101,6 +101,7 @@
     <None Include="$(MSBuildThisFileDirectory)MultiStoryFarmhouse 0.1.0.zip" />
     <None Include="$(MSBuildThisFileDirectory)MultiStoryFarmhouse 0.1.1.zip" />
     <None Include="$(MSBuildThisFileDirectory)MultiStoryFarmhouse 0.1.2.zip" />
+    <None Include="$(MSBuildThisFileDirectory)MultiStoryFarmhouse 0.2.0.zip" />
     <None Include="$(MSBuildThisFileDirectory)Murdercrows 0.2.2.zip" />
     <None Include="$(MSBuildThisFileDirectory)NonRandomPrairieKing 0.1.0.zip" />
     <None Include="$(MSBuildThisFileDirectory)OverworldChests 0.4.1.zip" />

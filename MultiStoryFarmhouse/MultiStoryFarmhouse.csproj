@@ -49,6 +49,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="CodePatches.cs" />
     <Compile Include="FloorsData.cs" />
     <Compile Include="ModConfig.cs" />
     <Compile Include="ModEntry.cs" />

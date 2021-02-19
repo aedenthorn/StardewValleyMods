@@ -8,7 +8,6 @@ using System.Collections.Generic;
 using System.Linq;
 using xTile;
 using xTile.Tiles;
-using Rectangle = Microsoft.Xna.Framework.Rectangle;
 
 namespace MultiStoryFarmhouse
 {
@@ -18,10 +17,10 @@ namespace MultiStoryFarmhouse
 
         public static IMonitor PMonitor;
         public static IModHelper PHelper;
-        private static ModEntry context;
+        public static ModEntry context;
         public static ModConfig config;
-        private static Dictionary<string, Floor> floorsList = new Dictionary<string, Floor>();
-        private static Dictionary<int, Map> floorMaps = new Dictionary<int, Map>();
+        public static Dictionary<string, Floor> floorsList = new Dictionary<string, Floor>();
+        public static Dictionary<int, Map> floorMaps = new Dictionary<int, Map>();
 
         /// <summary>The mod entry point, called after the mod is first loaded.</summary>
         /// <param name="helper">Provides simplified APIs for writing mods.</param>
@@ -45,139 +44,38 @@ namespace MultiStoryFarmhouse
 
             harmony.Patch(
                original: AccessTools.Method(typeof(DecoratableLocation), nameof(DecoratableLocation.getWalls)),
-               prefix: new HarmonyMethod(typeof(ModEntry), nameof(getWalls_Prefix))
+               prefix: new HarmonyMethod(typeof(CodePatches), nameof(CodePatches.getWalls_Prefix))
             );
 
             harmony.Patch(
                original: AccessTools.Method(typeof(DecoratableLocation), nameof(DecoratableLocation.getFloors)),
-               prefix: new HarmonyMethod(typeof(ModEntry), nameof(getFloors_Prefix))
+               prefix: new HarmonyMethod(typeof(CodePatches), nameof(CodePatches.getFloors_Prefix))
             );
 
             harmony.Patch(
                original: AccessTools.Method(typeof(SaveGame), nameof(SaveGame.loadDataToLocations)),
-               prefix: new HarmonyMethod(typeof(ModEntry), nameof(loadDataToLocations_Prefix))
+               prefix: new HarmonyMethod(typeof(CodePatches), nameof(CodePatches.loadDataToLocations_Prefix))
             );
 
             harmony.Patch(
                original: AccessTools.Method(typeof(FarmHouse), "resetLocalState"),
-               prefix: new HarmonyMethod(typeof(ModEntry), nameof(resetLocalState_Prefix)),
-               postfix: new HarmonyMethod(typeof(ModEntry), nameof(resetLocalState_Postfix))
+               prefix: new HarmonyMethod(typeof(CodePatches), nameof(CodePatches.resetLocalState_Prefix)),
+               postfix: new HarmonyMethod(typeof(CodePatches), nameof(CodePatches.resetLocalState_Postfix))
+            );
+
+            harmony.Patch(
+               original: AccessTools.Method(typeof(GameLocation), nameof(GameLocation.CanPlaceThisFurnitureHere)),
+               prefix: new HarmonyMethod(typeof(CodePatches), nameof(CodePatches.CanPlaceThisFurnitureHere_Prefix))
             );
         }
 
-        private static void resetLocalState_Prefix(ref Vector2 __state)
-        {
-            __state = new Vector2(-1,-1);
-            if (Game1.isWarping && Game1.player.previousLocationName == "MultipleFloors0")
-            {
-                __state = new Vector2(Game1.xLocationAfterWarp, Game1.yLocationAfterWarp);
-            }
-        }
-        private static void resetLocalState_Postfix(Vector2 __state)
-        {
-            if(__state.X >= 0)
-            {
-                Game1.player.Position = __state * 64f;
-                Game1.xLocationAfterWarp = Game1.player.getTileX();
-                Game1.yLocationAfterWarp = Game1.player.getTileY();
-            }
-        }
-
-        private static void loadDataToLocations_Prefix(List<GameLocation> gamelocations)
-        {
-            context.Monitor.Log($"Checking save for multiple floors");
-
-            for (int i = 0; i < config.FloorNames.Count; i++)
-            {
-                DecoratableLocation location = (DecoratableLocation)Game1.locations.FirstOrDefault(l => l.Name == $"MultipleFloors{i}");
-                if (location == null)
-                {
-                    Vector2 stairs = floorsList[config.FloorNames[i]].stairsStart;
-                    int x = (int)stairs.X;
-                    int y = (int)stairs.Y;
-
-                    context.Monitor.Log($"adding floor MultipleFloors{i}");
-                    location = new DecoratableLocation($"Maps/MultipleFloorsMap{i}", $"MultipleFloors{i}");
-                    Warp warp;
-                    if (i < config.FloorNames.Count - 1)
-                    {
-                        Vector2 stairs1 = floorsList[config.FloorNames[i+1]].stairsStart;
-                        int x1 = (int)stairs1.X;
-                        int y1 = (int)stairs1.Y;
-                        context.Monitor.Log($"adding upstairs warps");
-
-                        warp = new Warp(x + 4, y + 3, $"MultipleFloors{i + 1}", x1 + 1, y1 + 2, true, false);
-                        if (!location.warps.Contains(warp))
-                            location.warps.Add(warp);
-                        warp.TargetName = $"MultipleFloors{i + 1}";
-                        warp = new Warp(x + 5, y + 3, $"MultipleFloors{i + 1}", x1 + 2, y1 + 2, true, false);
-                        if (!location.warps.Contains(warp))
-                            location.warps.Add(warp);
-                        warp.TargetName = $"MultipleFloors{i + 1}";
-                    }
-                    if (i > 0)
-                    {
-                        Vector2 stairs0 = floorsList[config.FloorNames[i-1]].stairsStart;
-                        int x0 = (int)stairs0.X;
-                        int y0 = (int)stairs0.Y;
-                        context.Monitor.Log($"adding downstairs warps");
-                        warp = new Warp(x + 1, y + 3, $"MultipleFloors{i - 1}", x0 + 4, y0 + 2, true, false);
-                        if (!location.warps.Contains(warp))
-                            location.warps.Add(warp);
-                        warp.TargetName = $"MultipleFloors0";
-                        warp = new Warp(x + 2, y + 3, $"MultipleFloors{i - 1}", x0 + 5, y0 + 2, true, false);
-                        if (!location.warps.Contains(warp))
-                            location.warps.Add(warp);
-                        warp.TargetName = $"MultipleFloors0";
-                    }
-                    else
-                    {
-                        context.Monitor.Log($"adding farmhouse warps");
-                        warp = new Warp(x + 1, y + 3, "FarmHouse", 8, 24, true, false);
-                        if (!location.warps.Contains(warp))
-                            location.warps.Add(warp);
-                        warp.TargetName = "FarmHouse";
-                        warp = new Warp(x + 2, y + 3, "FarmHouse", 9, 24, true, false);
-                        if (!location.warps.Contains(warp))
-                            location.warps.Add(warp);
-                        warp.TargetName = "FarmHouse";
-                    }
-
-                    Game1.locations.Add(location);
-
-                }
-                else
-                    context.Monitor.Log($"Game already has floor MultipleFloors{i}");
-            }
-
-        }
-
-        private static bool getFloors_Prefix(DecoratableLocation __instance, ref List<Rectangle> __result)
-        {
-            if (!__instance.Name.StartsWith("MultipleFloors"))
-                return true;
-            Floor floor = GetFloor(__instance.Name);
-            __result = floor.floors;
-
-            return false;
-        }
-
-        private static bool getWalls_Prefix(DecoratableLocation __instance, ref List<Rectangle> __result)
-        {
-            if (!__instance.Name.StartsWith("MultipleFloors"))
-                return true;
-            Floor floor = GetFloor(__instance.Name);
-            __result = floor.walls;
-
-            return false;
-        }
-        private static Floor GetFloor(string name)
+        public static Floor GetFloor(string name)
         {
             int floorNo = int.Parse(name[name.Length - 1].ToString());
             return floorsList[config.FloorNames[floorNo]];
         }
 
-        private void GameLoop_DayStarted(object sender, StardewModdingAPI.Events.DayStartedEventArgs e)
+        public void GameLoop_DayStarted(object sender, StardewModdingAPI.Events.DayStartedEventArgs e)
         {
             Helper.Events.GameLoop.OneSecondUpdateTicked += GameLoop_OneSecondUpdateTicked;
         }

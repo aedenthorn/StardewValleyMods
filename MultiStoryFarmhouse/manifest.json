@@ -1,7 +1,7 @@
 ﻿{
   "Name": "Multiple Floor Farmhouse",
   "Author": "aedenthorn",
-  "Version": "0.1.2",
+  "Version": "0.2.0",
   "Description": "MultiStoryFarmhouse.",
   "UniqueID": "aedenthorn.MultiStoryFarmhouse",
   "EntryDll": "MultiStoryFarmhouse.dll",
