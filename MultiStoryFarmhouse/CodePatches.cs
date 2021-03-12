@@ -33,21 +33,25 @@ namespace MultiStoryFarmhouse
         {
             ModEntry.context.Monitor.Log($"Checking save for multiple floors");
 
-            for (int i = 0; i < ModEntry.config.FloorNames.Count; i++)
+            List<string> possibleFloors = ModEntry.GetPossibleFloors();
+
+            for (int i = 0; i < possibleFloors.Count(); i++)
             {
+                string floorName = possibleFloors[i];
                 DecoratableLocation location = (DecoratableLocation)Game1.locations.FirstOrDefault(l => l.Name == $"MultipleFloors{i}");
                 if (location == null)
                 {
-                    Vector2 stairs = ModEntry.floorsList[ModEntry.config.FloorNames[i]].stairsStart;
+                    Vector2 stairs = ModEntry.floorsList[floorName].stairsStart;
                     int x = (int)stairs.X;
                     int y = (int)stairs.Y;
 
                     ModEntry.context.Monitor.Log($"adding floor MultipleFloors{i}");
                     location = new DecoratableLocation($"Maps/MultipleFloorsMap{i}", $"MultipleFloors{i}");
                     Warp warp;
-                    if (i < ModEntry.config.FloorNames.Count - 1)
+                    Warp warp2;
+                    if (i < possibleFloors.Count - 1)
                     {
-                        Vector2 stairs1 = ModEntry.floorsList[ModEntry.config.FloorNames[i + 1]].stairsStart;
+                        Vector2 stairs1 = ModEntry.floorsList[possibleFloors[i + 1]].stairsStart;
                         int x1 = (int)stairs1.X;
                         int y1 = (int)stairs1.Y;
                         ModEntry.context.Monitor.Log($"adding upstairs warps");
@@ -55,26 +59,22 @@ namespace MultiStoryFarmhouse
                         warp = new Warp(x + 4, y + 3, $"MultipleFloors{i + 1}", x1 + 1, y1 + 2, true, false);
                         if (!location.warps.Contains(warp))
                             location.warps.Add(warp);
-                        warp.TargetName = $"MultipleFloors{i + 1}";
-                        warp = new Warp(x + 5, y + 3, $"MultipleFloors{i + 1}", x1 + 2, y1 + 2, true, false);
-                        if (!location.warps.Contains(warp))
-                            location.warps.Add(warp);
-                        warp.TargetName = $"MultipleFloors{i + 1}";
+                        warp2 = new Warp(x + 5, y + 3, $"MultipleFloors{i + 1}", x1 + 2, y1 + 2, true, false);
+                        if (!location.warps.Contains(warp2))
+                            location.warps.Add(warp2);
                     }
                     if (i > 0)
                     {
-                        Vector2 stairs0 = ModEntry.floorsList[ModEntry.config.FloorNames[i - 1]].stairsStart;
+                        Vector2 stairs0 = ModEntry.floorsList[possibleFloors[i - 1]].stairsStart;
                         int x0 = (int)stairs0.X;
                         int y0 = (int)stairs0.Y;
                         ModEntry.context.Monitor.Log($"adding downstairs warps");
                         warp = new Warp(x + 1, y + 3, $"MultipleFloors{i - 1}", x0 + 4, y0 + 2, true, false);
                         if (!location.warps.Contains(warp))
                             location.warps.Add(warp);
-                        warp.TargetName = $"MultipleFloors0";
-                        warp = new Warp(x + 2, y + 3, $"MultipleFloors{i - 1}", x0 + 5, y0 + 2, true, false);
-                        if (!location.warps.Contains(warp))
-                            location.warps.Add(warp);
-                        warp.TargetName = $"MultipleFloors0";
+                        warp2 = new Warp(x + 2, y + 3, $"MultipleFloors{i - 1}", x0 + 5, y0 + 2, true, false);
+                        if (!location.warps.Contains(warp2))
+                            location.warps.Add(warp2);
                     }
                     else
                     {
@@ -82,11 +82,9 @@ namespace MultiStoryFarmhouse
                         warp = new Warp(x + 1, y + 3, "FarmHouse", 8, 24, true, false);
                         if (!location.warps.Contains(warp))
                             location.warps.Add(warp);
-                        warp.TargetName = "FarmHouse";
-                        warp = new Warp(x + 2, y + 3, "FarmHouse", 9, 24, true, false);
-                        if (!location.warps.Contains(warp))
-                            location.warps.Add(warp);
-                        warp.TargetName = "FarmHouse";
+                        warp2 = new Warp(x + 2, y + 3, "FarmHouse", 9, 24, true, false);
+                        if (!location.warps.Contains(warp2))
+                            location.warps.Add(warp2);
                     }
 
                     Game1.locations.Add(location);

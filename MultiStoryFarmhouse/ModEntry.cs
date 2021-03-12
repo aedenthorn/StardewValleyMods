@@ -39,6 +39,7 @@ namespace MultiStoryFarmhouse
             
             Helper.Events.GameLoop.SaveLoaded += GameLoop_SaveLoaded;
             Helper.Events.GameLoop.DayStarted += GameLoop_DayStarted;
+            Helper.Events.GameLoop.DayEnding += GameLoop_DayEnding;
 
             var harmony = HarmonyInstance.Create(ModManifest.UniqueID);
 
@@ -69,33 +70,52 @@ namespace MultiStoryFarmhouse
             );
         }
 
+
         public static Floor GetFloor(string name)
         {
             int floorNo = int.Parse(name[name.Length - 1].ToString());
-            return floorsList[config.FloorNames[floorNo]];
+            return floorsList[GetPossibleFloors()[floorNo]];
+        }
+
+        public static List<string> GetPossibleFloors()
+        {
+            return config.FloorNames.Where(s => floorsList.ContainsKey(s)).ToList();
         }
 
         public void GameLoop_DayStarted(object sender, StardewModdingAPI.Events.DayStartedEventArgs e)
         {
-            Helper.Events.GameLoop.OneSecondUpdateTicked += GameLoop_OneSecondUpdateTicked;
+            Helper.Events.GameLoop.UpdateTicked += GameLoop_UpdateTicked;
+        }
+        private void GameLoop_DayEnding(object sender, StardewModdingAPI.Events.DayEndingEventArgs e)
+        {
+            Helper.Events.GameLoop.UpdateTicked -= GameLoop_UpdateTicked;
         }
 
-        private void GameLoop_OneSecondUpdateTicked(object sender, StardewModdingAPI.Events.OneSecondUpdateTickedEventArgs e)
+        private void GameLoop_UpdateTicked(object sender, StardewModdingAPI.Events.UpdateTickedEventArgs e)
         {
             if (!floorsList.Any())
                 return;
-            Vector2 stairs = floorsList[config.FloorNames[0]].stairsStart;
+
+            var warps = Utility.getHomeOfFarmer(Game1.player).warps;
+            if (warps.Where(w => w.TargetName == "MultipleFloors0").Any())
+            {
+                return;
+            }
+            Monitor.Log("Doesn't have warp");
+
+            Vector2 stairs = floorsList[GetPossibleFloors()[0]].stairsStart;
             int x = (int)stairs.X;
             int y = (int)stairs.Y;
 
             Warp warp = new Warp(config.MainFloorStairsX + 1, config.MainFloorStairsY + 3, "MultipleFloors0", x + 1, y + 2, true, false);
-            if (!Utility.getHomeOfFarmer(Game1.player).warps.Contains(warp))
-                Utility.getHomeOfFarmer(Game1.player).warps.Add(warp);
-            warp.TargetName = "MultipleFloors0";
-            warp = new Warp(config.MainFloorStairsX + 2, config.MainFloorStairsY + 3, "MultipleFloors0", x + 2, y + 2, true, false);
-            if (!Utility.getHomeOfFarmer(Game1.player).warps.Contains(warp))
-                Utility.getHomeOfFarmer(Game1.player).warps.Add(warp);
-            warp.TargetName = "MultipleFloors0";
+            Utility.getHomeOfFarmer(Game1.player).warps.Add(warp);
+
+            Warp warp2 = new Warp(config.MainFloorStairsX + 2, config.MainFloorStairsY + 3, "MultipleFloors0", x + 2, y + 2, true, false);
+            Utility.getHomeOfFarmer(Game1.player).warps.Add(warp2);
+        }
+
+        private void GameLoop_OneSecondUpdateTicked(object sender, StardewModdingAPI.Events.OneSecondUpdateTickedEventArgs e)
+        {
             Helper.Events.GameLoop.OneSecondUpdateTicked -= GameLoop_OneSecondUpdateTicked;
         }
 
@@ -176,7 +196,7 @@ namespace MultiStoryFarmhouse
             {
                 TileSheet indoor = map.TileSheets.First(s => s.Id == "indoor");
                 TileSheet untitled = map.TileSheets.First(s => s.Id == "untitled tile sheet");
-                Vector2 stairs = floorsList[config.FloorNames[floorNo]].stairsStart;
+                Vector2 stairs = floorsList[GetPossibleFloors()[floorNo]].stairsStart;
                 int x = (int)stairs.X;
                 int y = (int)stairs.Y;
                 // left 
@@ -219,9 +239,9 @@ namespace MultiStoryFarmhouse
                 map.GetLayer("Front").Tiles[x + 2, y + 3] = new StaticTile(map.GetLayer("Front"), indoor, BlendMode.Alpha, 0);
 
 
-                if (floorNo < config.FloorNames.Count - 1)
+                if (floorNo < GetPossibleFloors().Count - 1)
                 {
-                    Monitor.Log($"adding upstairs for floor {floorNo} / {config.FloorNames.Count}");
+                    Monitor.Log($"adding upstairs for floor {floorNo} / {GetPossibleFloors().Count}");
 
                     // right 
 

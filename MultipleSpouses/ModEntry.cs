@@ -7,6 +7,7 @@ using StardewValley.Characters;
 using StardewValley.Events;
 using StardewValley.Locations;
 using StardewValley.Menus;
+using StardewValley.Network;
 using StardewValley.Objects;
 using System;
 using System.Collections.Generic;
@@ -69,6 +70,7 @@ namespace MultipleSpouses
             Divorce.Initialize(Monitor, Helper);
             FurniturePatches.Initialize(Monitor, Helper, config);
             ObjectPatches.Initialize(Monitor, Helper, config);
+            NetWorldStatePatches.Initialize(Monitor, Helper, config);
 
             var harmony = HarmonyInstance.Create(ModManifest.UniqueID);
 
@@ -378,6 +380,14 @@ namespace MultipleSpouses
             harmony.Patch(
                original: AccessTools.Method(typeof(Game1), nameof(Game1.getCharacterFromName), new Type[] { typeof(string), typeof(bool), typeof(bool) }), 
                prefix: new HarmonyMethod(typeof(Game1Patches), nameof(Game1Patches.getCharacterFromName_Prefix))
+            );
+
+
+            // NetWorldState patch 
+
+            harmony.Patch(
+               original: AccessTools.Method(typeof(NetWorldState), nameof(NetWorldState.hasWorldStateID)), 
+               prefix: new HarmonyMethod(typeof(NetWorldStatePatches), nameof(NetWorldStatePatches.hasWorldStateID_Prefix))
             );
 
         }

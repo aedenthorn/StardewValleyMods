@@ -349,12 +349,12 @@ namespace MultipleSpouses
 
         public static bool HasSleepingAnimation(string name)
         {
-            int sleepidx;
             string sleepAnim = SleepAnimation(name);
-            if (sleepAnim == null)
+            if (sleepAnim == null || !sleepAnim.Contains("/"))
                 return false;
 
-            sleepidx = int.Parse(sleepAnim.Split('/')[0]);
+            if(!int.TryParse(sleepAnim.Split('/')[0], out int sleepidx))
+                return false;
 
             Texture2D tex = Helper.Content.Load<Texture2D>($"Characters/{name}", ContentSource.GameContent);
             //Monitor.Log($"tex height for {name}: {tex.Height}");
@@ -546,10 +546,8 @@ namespace MultipleSpouses
 
             int sleepidx;
             string sleepAnim = SleepAnimation(name);
-            if (sleepAnim == null)
+            if (sleepAnim == null || !int.TryParse(sleepAnim.Split('/')[0], out sleepidx))
                 sleepidx = 8;
-            else
-                sleepidx = int.Parse(sleepAnim.Split('/')[0]);
 
             if ((sleepidx * 16) / 64 * 32 >= tex.Height)
             {

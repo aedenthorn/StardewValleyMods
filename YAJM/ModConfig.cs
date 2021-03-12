@@ -18,5 +18,6 @@ namespace SixtyNine
         public bool PlayJumpSound { get; set; } = true;
         public bool CustomHorseTexture { get; set; } = false;
         public float OrdinaryJumpHeight { get; set; } = 8f;
+        public Vector2 HorseShadowOffset { get; set; } = Vector2.Zero;
     }
 }

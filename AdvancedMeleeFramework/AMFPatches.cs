@@ -109,6 +109,9 @@ namespace AdvancedMeleeFramework
                 return true;
             AdvancedEnchantmentData enchantment = ModEntry.advancedEnchantments[____displayName];
 
+            if (enchantment?.parameters?.ContainsKey("trigger") != true)
+                return true;
+
             if (enchantment.parameters["trigger"] == "damage" || (enchantment.parameters["trigger"] == "crit" && amount > (who.CurrentTool as MeleeWeapon).maxDamage) && !Environment.StackTrace.Contains("OnCalculateDamage"))
             {
                 context.Monitor.Log($"Triggered enchantment {enchantment.name} on {enchantment.parameters["trigger"]} {amount} {(who.CurrentTool as MeleeWeapon).enchantments.Count}");

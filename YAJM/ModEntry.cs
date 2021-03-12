@@ -82,7 +82,7 @@ namespace SixtyNine
         {
             if (__instance is Horse)
             {
-                b.Draw(context.horseShadow, __instance.getLocalPosition(Game1.viewport) + new Vector2((float)(__instance.Sprite.SpriteWidth * 4 / 2), (float)(__instance.GetBoundingBox().Height / 2)), new Microsoft.Xna.Framework.Rectangle?(__instance.Sprite.SourceRect), Color.White * alpha, __instance.rotation, new Vector2((float)(__instance.Sprite.SpriteWidth / 2), (float)__instance.Sprite.SpriteHeight * 3f / 4f), Math.Max(0.2f, __instance.scale) * 4f, (__instance.flip || (__instance.Sprite.CurrentAnimation != null && __instance.Sprite.CurrentAnimation[__instance.Sprite.currentAnimationIndex].flip)) ? SpriteEffects.FlipHorizontally : SpriteEffects.None, 0);
+                b.Draw(context.horseShadow, __instance.getLocalPosition(Game1.viewport) + Config.HorseShadowOffset + new Vector2((float)(__instance.Sprite.SpriteWidth * 4 / 2), (float)(__instance.GetBoundingBox().Height / 2)), new Microsoft.Xna.Framework.Rectangle?(__instance.Sprite.SourceRect), Color.White * alpha, __instance.rotation, new Vector2((float)(__instance.Sprite.SpriteWidth / 2), (float)__instance.Sprite.SpriteHeight * 3f / 4f), Math.Max(0.2f, __instance.scale) * 4f, (__instance.flip || (__instance.Sprite.CurrentAnimation != null && __instance.Sprite.CurrentAnimation[__instance.Sprite.currentAnimationIndex].flip)) ? SpriteEffects.FlipHorizontally : SpriteEffects.None, 0);
                 if ((__instance as Horse).rider != null)
                 {
                     if (context.playerJumpingWithHorse)
