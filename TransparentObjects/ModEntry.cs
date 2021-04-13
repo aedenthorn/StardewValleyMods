@@ -8,22 +8,21 @@ namespace TransparentObjects
     public class ModEntry : Mod
     {
         
-        public static ModConfig config;
+        public static ModConfig Config;
         public static IMonitor SMonitor;
+        public static IModHelper SHelper;
 
         public override void Entry(IModHelper helper)
         {
-            config = Helper.ReadConfig<ModConfig>();
-            if (!config.EnableMod)
+            Config = helper.ReadConfig<ModConfig>();
+            if (!Config.EnableMod)
                 return;
-
-            //HarmonyInstance.DEBUG = true;
-
 
             SMonitor = Monitor;
 
-            
-            ObjectPatches.Initialize(Monitor, helper, config);
+            SHelper = helper;
+
+            ObjectPatches.Initialize(Monitor, helper, Config);
 
             var harmony = HarmonyInstance.Create(ModManifest.UniqueID);
 
@@ -32,6 +31,23 @@ namespace TransparentObjects
                prefix: new HarmonyMethod(typeof(ObjectPatches), nameof(ObjectPatches.Object_draw_Prefix))
             );
 
+            helper.Events.Input.ButtonPressed += Input_ButtonPressed;
         }
-     }
+
+        private void Input_ButtonPressed(object sender, StardewModdingAPI.Events.ButtonPressedEventArgs e)
+        {
+            if (e.Button == Config.ToggleButton && !Config.RequireButtonDown)
+            {
+                Config.MakeTransparent = !Config.MakeTransparent;
+                Helper.WriteConfig(Config);
+                Monitor.Log($"Toggled transparency to {Config.MakeTransparent}");
+            }
+        }
+
+
+        public static bool IsOff()
+        {
+            return (Config.RequireButtonDown && !SHelper.Input.IsDown(Config.ToggleButton)) || (!Config.RequireButtonDown && !Config.MakeTransparent);
+        }
+    }
 }

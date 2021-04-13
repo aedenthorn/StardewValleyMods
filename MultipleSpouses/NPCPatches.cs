@@ -447,6 +447,7 @@ namespace MultipleSpouses
                 {
                     ModEntry.tempOfficialSpouse = null;
                 }
+                return;
 
                 // custom dialogues
 
@@ -592,6 +593,22 @@ namespace MultipleSpouses
             {
                 Monitor.Log($"Failed in {nameof(NPC_spouseObstacleCheck_Postfix)}:\n{ex}", LogLevel.Error);
             }
+        }
+        public static bool NPC_engagementResponse_Prefix(NPC __instance, Farmer who, bool asRoommate = false)
+        {
+            Monitor.Log($"engagement response");
+            Monitor.Log($"engagement response for {__instance.Name}");
+            if (asRoommate)
+            {
+                Monitor.Log($"{__instance.Name} is roomate");
+                return true;
+            }
+            if (!who.friendshipData.ContainsKey(__instance.Name))
+            {
+                Monitor.Log($"{who.Name} has no friendship data for {__instance.Name}", LogLevel.Error);
+                return false;
+            }
+            return true;
         }
         public static void NPC_engagementResponse_Postfix(NPC __instance, Farmer who, bool asRoommate = false)
         {
@@ -1018,12 +1035,14 @@ namespace MultipleSpouses
                 Dictionary<string, string> animationDescriptions = Game1.content.Load<Dictionary<string, string>>("Data\\animationDescriptions");
                 if (!animationDescriptions.ContainsKey(__instance.name.Value.ToLower() + "_sleep") && animationDescriptions.ContainsKey(__instance.name.Value + "_Sleep"))
                 {
-                    int sleep_frame = Convert.ToInt32(animationDescriptions[__instance.name.Value + "_Sleep"].Split('/')[0]);
-                    __instance.Sprite.setCurrentAnimation(new List<FarmerSprite.AnimationFrame>
+                    if(int.TryParse(animationDescriptions[__instance.name.Value + "_Sleep"].Split('/')[0], out int sleep_frame))
                     {
-                        new FarmerSprite.AnimationFrame(sleep_frame, 100, false, false, null, false)
-                    });
-                    __instance.Sprite.loop = true;
+                        __instance.Sprite.setCurrentAnimation(new List<FarmerSprite.AnimationFrame>
+                        {
+                            new FarmerSprite.AnimationFrame(sleep_frame, 100, false, false, null, false)
+                        });
+                        __instance.Sprite.loop = true;
+                    }
                 }
             }
             catch (Exception ex)

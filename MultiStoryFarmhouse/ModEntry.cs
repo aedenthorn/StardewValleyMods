@@ -40,6 +40,7 @@ namespace MultiStoryFarmhouse
             Helper.Events.GameLoop.SaveLoaded += GameLoop_SaveLoaded;
             Helper.Events.GameLoop.DayStarted += GameLoop_DayStarted;
             Helper.Events.GameLoop.DayEnding += GameLoop_DayEnding;
+            Helper.Events.GameLoop.ReturnedToTitle += GameLoop_ReturnedToTitle;
 
             var harmony = HarmonyInstance.Create(ModManifest.UniqueID);
 
@@ -70,6 +71,10 @@ namespace MultiStoryFarmhouse
             );
         }
 
+        private void GameLoop_ReturnedToTitle(object sender, StardewModdingAPI.Events.ReturnedToTitleEventArgs e)
+        {
+            Helper.Events.GameLoop.UpdateTicked -= GameLoop_UpdateTicked;
+        }
 
         public static Floor GetFloor(string name)
         {
@@ -93,7 +98,7 @@ namespace MultiStoryFarmhouse
 
         private void GameLoop_UpdateTicked(object sender, StardewModdingAPI.Events.UpdateTickedEventArgs e)
         {
-            if (!floorsList.Any())
+            if (!floorsList.Any() || Game1.player == null || Utility.getHomeOfFarmer(Game1.player) == null)
                 return;
 
             var warps = Utility.getHomeOfFarmer(Game1.player).warps;
@@ -338,6 +343,16 @@ namespace MultiStoryFarmhouse
                     mapData.Data.GetLayer("Front").Tiles[x + 2,y] = null;
                     mapData.Data.GetLayer("Front").Tiles[x + 1,y + 1] = null;
                     mapData.Data.GetLayer("Front").Tiles[x + 2,y + 1] = null;
+                    mapData.Data.GetLayer("Front").Tiles[x + 1,y + 2] = null;
+                    mapData.Data.GetLayer("Front").Tiles[x + 2,y + 2] = null;
+                    mapData.Data.GetLayer("Buildings").Tiles[x + 1,y + 1] = null;
+                    mapData.Data.GetLayer("Buildings").Tiles[x + 2,y + 1] = null;
+                    mapData.Data.GetLayer("Buildings").Tiles[x + 1,y + 2] = null;
+                    mapData.Data.GetLayer("Buildings").Tiles[x + 2,y + 2] = null;
+                    mapData.Data.GetLayer("Back").Tiles[x + 1,y + 1] = null;
+                    mapData.Data.GetLayer("Back").Tiles[x + 2,y + 1] = null;
+                    mapData.Data.GetLayer("Back").Tiles[x + 1,y + 2] = null;
+                    mapData.Data.GetLayer("Back").Tiles[x + 2,y + 2] = null;
 
                     mapData.Data.GetLayer("Buildings").Tiles[x + 3,y].TileIndex = 68;
                     mapData.Data.GetLayer("Front").Tiles[x + 3,y].TileIndex = 68;

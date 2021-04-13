@@ -1,6 +1,7 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Audio;
 using Microsoft.Xna.Framework.Graphics;
+using Netcode;
 using StardewModdingAPI;
 using StardewModdingAPI.Events;
 using StardewValley;
@@ -602,7 +603,6 @@ namespace Swim
 
                 if (Game1.player.position.Y > Game1.viewport.Y + Game1.viewport.Height - 16)
                 {
-
                     Game1.player.position.Value = new Vector2(Game1.player.position.X, Game1.viewport.Y + Game1.viewport.Height - 17);
                     if (dm != null)
                     {
@@ -668,7 +668,7 @@ namespace Swim
 
                     if (dm != null)
                     {
-                        EdgeWarp edge = dm.EdgeWarps.Find((x) => x.ThisMapEdge == "Left" && x.FirstTile <= edgePos.X && x.LastTile >= edgePos.X);
+                        EdgeWarp edge = dm.EdgeWarps.Find((x) => x.ThisMapEdge == "Left" && x.FirstTile <= edgePos.Y && x.LastTile >= edgePos.Y);
                         if (edge != null)
                         {
                             Point pos = SwimUtils.GetEdgeWarpDestination(edgePos.Y, edge);

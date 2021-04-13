@@ -57,9 +57,15 @@ namespace InstantGrowthPowder
             if (who?.CurrentItem == null || who.CurrentItem.Name != "Instant Growth Powder")
                 return true;
 
-            if(__instance.isCropAtTile(tileLocation.X, tileLocation.Y) && !(__instance.terrainFeatures[new Vector2(tileLocation.X, tileLocation.Y)] as HoeDirt).crop.fullyGrown)
+            if(__instance.isCropAtTile(tileLocation.X, tileLocation.Y))
             {
-                (__instance.terrainFeatures[new Vector2(tileLocation.X, tileLocation.Y)] as HoeDirt).crop.growCompletely();
+                if (!(__instance.terrainFeatures[new Vector2(tileLocation.X, tileLocation.Y)] as HoeDirt).crop.fullyGrown)
+                    (__instance.terrainFeatures[new Vector2(tileLocation.X, tileLocation.Y)] as HoeDirt).crop.growCompletely();
+                else if ((__instance.terrainFeatures[new Vector2(tileLocation.X, tileLocation.Y)] as HoeDirt).crop.regrowAfterHarvest >= 0 && (__instance.terrainFeatures[new Vector2(tileLocation.X, tileLocation.Y)] as HoeDirt).crop.dayOfCurrentPhase.Value > 0)
+                    (__instance.terrainFeatures[new Vector2(tileLocation.X, tileLocation.Y)] as HoeDirt).crop.dayOfCurrentPhase.Value = 0;
+                else
+                    return true;
+
                 who.reduceActiveItemByOne();
                 __instance.playSound("yoba");
                 __result = true;
@@ -150,9 +156,14 @@ namespace InstantGrowthPowder
             
             foreach (KeyValuePair<Vector2, Object> v in __instance.objects.Pairs)
             {
-                if (v.Value.getBoundingBox(v.Key).Intersects(tileRect) && v.Value is IndoorPot && (v.Value as IndoorPot).hoeDirt.Value?.crop != null && !(v.Value as IndoorPot).hoeDirt.Value.crop.fullyGrown)
+                if (v.Value.getBoundingBox(v.Key).Intersects(tileRect) && v.Value is IndoorPot && (v.Value as IndoorPot).hoeDirt.Value?.crop != null)
                 {
-                    (v.Value as IndoorPot).hoeDirt.Value.crop.growCompletely();
+                    if (!(v.Value as IndoorPot).hoeDirt.Value.crop.fullyGrown)
+                        (v.Value as IndoorPot).hoeDirt.Value.crop.growCompletely();
+                    else if ((v.Value as IndoorPot).hoeDirt.Value.crop.regrowAfterHarvest >= 0 && (v.Value as IndoorPot).hoeDirt.Value.crop.dayOfCurrentPhase.Value > 0)
+                        (v.Value as IndoorPot).hoeDirt.Value.crop.dayOfCurrentPhase.Value = 0;
+                    else 
+                        return true;
 
                     who.reduceActiveItemByOne();
                     __instance.playSound("yoba");

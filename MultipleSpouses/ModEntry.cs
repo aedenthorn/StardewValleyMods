@@ -122,6 +122,7 @@ namespace MultipleSpouses
 
             harmony.Patch(
                original: AccessTools.Method(typeof(NPC), "engagementResponse"),
+               prefix: new HarmonyMethod(typeof(NPCPatches), nameof(NPCPatches.NPC_engagementResponse_Prefix)),
                postfix: new HarmonyMethod(typeof(NPCPatches), nameof(NPCPatches.NPC_engagementResponse_Postfix))
             );
 
@@ -574,16 +575,23 @@ namespace MultipleSpouses
             }
             if (config.RomanceAllVillagers && (asset.AssetName.StartsWith("Characters/schedules") || asset.AssetName.StartsWith("Characters\\schedules")))
             {
-                string name = asset.AssetName.Replace("Characters/schedules/","").Replace("Characters\\schedules\\","");
-                NPC npc = Game1.getCharacterFromName(name);
-                if (npc != null && npc.Age < 2 && !(npc is Child))
+                try
                 {
-                    string dispo = Helper.Content.Load<Dictionary<string, string>>("Data/NPCDispositions", ContentSource.GameContent)[name];
-                    if(dispo.Split('/')[5] != "datable")
+                    string name = asset.AssetName.Replace("Characters/schedules/", "").Replace("Characters\\schedules\\", "");
+                    NPC npc = Game1.getCharacterFromName(name);
+                    if (npc != null && npc.Age < 2 && !(npc is Child))
                     {
-                        Monitor.Log($"can edit schedule for {name}");
-                        return true;
+                        string dispo = Helper.Content.Load<Dictionary<string, string>>("Data/NPCDispositions", ContentSource.GameContent)[name];
+                        if (dispo.Split('/')[5] != "datable")
+                        {
+                            Monitor.Log($"can edit schedule for {name}");
+                            return true;
+                        }
                     }
+                }
+                catch
+                {
+                    return false;
                 }
             }
 
@@ -594,7 +602,7 @@ namespace MultipleSpouses
         /// <param name="asset">A helper which encapsulates metadata about an asset and enables changes to it.</param>
         public void Edit<T>(IAssetData asset)
         {
-            Monitor.Log("Editing asset" + asset.AssetName);
+            Monitor.Log("Editing asset " + asset.AssetName);
             if (asset.AssetNameEquals("Data/Events/HaleyHouse"))
             {
                 IDictionary<string, string> data = asset.AsDictionary<string, string>().Data;

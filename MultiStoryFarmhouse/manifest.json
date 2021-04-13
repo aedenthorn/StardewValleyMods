@@ -1,7 +1,7 @@
 ﻿{
   "Name": "Multiple Floor Farmhouse",
   "Author": "aedenthorn",
-  "Version": "0.2.2",
+  "Version": "0.2.5",
   "Description": "MultiStoryFarmhouse.",
   "UniqueID": "aedenthorn.MultiStoryFarmhouse",
   "EntryDll": "MultiStoryFarmhouse.dll",
@@ -17,10 +17,6 @@
       {
         "UniqueID": "Platonymous.ModUpdater",
         "IsRequired": false
-      },
-      {
-      "UniqueID": "spacechase0.JsonAssets",
-        "IsRequired": true
-      },
+      }
   ]
 }
