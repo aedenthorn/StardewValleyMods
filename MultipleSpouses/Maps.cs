@@ -698,6 +698,8 @@ namespace MultipleSpouses
                 }
             }
 
+
+
             // far wall
             for (int i = 0; i < height; i++)
             {
@@ -726,16 +728,16 @@ namespace MultipleSpouses
             Microsoft.Xna.Framework.Rectangle? crib_location = farmHouse.GetCribBounds();
             if(crib_location != null)
             {
-                Monitor.Log($"Adding cribs");
-                for (int i = 0; i < Misc.GetExtraCribs(); i++)
+                Monitor.Log($"Adding {Misc.GetExtraCribs()} cribs");
+                for (int i = 1; i <= Misc.GetExtraCribs(); i++)
                 {
                     Microsoft.Xna.Framework.Rectangle rect = new Microsoft.Xna.Framework.Rectangle(crib_location.Value.X + i * 3, crib_location.Value.Y, crib_location.Value.Width, crib_location.Value.Height); 
                     Monitor.Log($"Adding crib at {rect}");
                     Map override_map = Game1.game1.xTileContent.Load<Map>("Maps\\FarmHouse_Crib_" + farmHouse.cribStyle.Value);
                     HashSet<string> amo = Helper.Reflection.GetField<HashSet<string>>(farmHouse, "_appliedMapOverrides").GetValue();
-                    amo.Remove($"crib{i + 2}");
+                    amo.Remove($"crib{i + 1}");
                     Helper.Reflection.GetField<HashSet<string>>(farmHouse, "_appliedMapOverrides").SetValue(amo);
-                    farmHouse.ApplyMapOverride(override_map, $"crib{i+2}", null, rect);
+                    farmHouse.ApplyMapOverride(override_map, $"crib{i+1}", null, rect);
                 }
             }
         }

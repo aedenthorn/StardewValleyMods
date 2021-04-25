@@ -278,7 +278,7 @@ namespace MultipleSpouses
                     if (crib_location == null)
                         return true;
 
-                    for (int i = 0; i < Misc.GetExtraCribs(); i++)
+                    for (int i = 0; i <= Misc.GetExtraCribs(); i++)
                     {
                         Microsoft.Xna.Framework.Rectangle rect = new Microsoft.Xna.Framework.Rectangle(crib_location.Value.X + i * 3, crib_location.Value.Y, crib_location.Value.Width, crib_location.Value.Height);
                         if(rect.Contains(tileLocation.X, tileLocation.Y))
