@@ -205,6 +205,18 @@ namespace CustomFixedDialogue
                 Monitor.Log($"Failed in {nameof(NPC_showTextAboveHead_Prefix)}:\n{ex}", LogLevel.Error);
             }
         }
+        
+        public static void NPC_getTermOfSpousalEndearment_Postfix(NPC __instance, ref string __result)
+        {
+            try
+            {
+                FixString(__instance, ref __result);
+            }
+            catch (Exception ex)
+            {
+                Monitor.Log($"Failed in {nameof(NPC_getTermOfSpousalEndearment_Postfix)}:\n{ex}", LogLevel.Error);
+            }
+        }
 
         public static void NPC_getHi_Postfix(NPC __instance, ref string __result)
         {

@@ -38,6 +38,10 @@ namespace CustomFixedDialogue
                 original: AccessTools.Method(typeof(NPC), nameof(NPC.getHi)),
                 postfix: new HarmonyMethod(typeof(DialoguePatches), nameof(DialoguePatches.NPC_getHi_Postfix))
             );
+            harmony.Patch(
+                original: AccessTools.Method(typeof(NPC), nameof(NPC.getTermOfSpousalEndearment)),
+                postfix: new HarmonyMethod(typeof(DialoguePatches), nameof(DialoguePatches.NPC_getTermOfSpousalEndearment_Postfix))
+            );
 
             helper.Events.GameLoop.DayStarted += GameLoop_DayStarted;
 
