@@ -60,6 +60,7 @@
     <None Include="$(MSBuildThisFileDirectory)MobileCatalogues 0.6.0.zip" />
     <None Include="$(MSBuildThisFileDirectory)MobileCatalogues 0.7.0.zip" />
     <None Include="$(MSBuildThisFileDirectory)MobileCatalogues 0.8.0.zip" />
+    <None Include="$(MSBuildThisFileDirectory)MobileCatalogues 0.8.1.zip" />
     <None Include="$(MSBuildThisFileDirectory)MobilePhone 2.2.2.zip" />
     <None Include="$(MSBuildThisFileDirectory)MobileTelevision 0.1.0.zip" />
     <None Include="$(MSBuildThisFileDirectory)ModThis 0.1.0.zip" />
