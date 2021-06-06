@@ -1,0 +1,22 @@
+﻿{
+  "Name": "Map Edit",
+  "Author": "aedenthorn",
+  "Version": "0.1.0",
+  "Description": "Enables in-game editing of map tiles.",
+  "UniqueID": "aedenthorn.MapEdit",
+  "EntryDll": "MapEdit.dll",
+  "MinimumApiVersion": "3.5.0",
+  "UpdateKeys": [ "Nexus:8876" ],
+  "ModUpdater": {
+    "Repository": "StardewValleyMods",
+    "User": "aedenthorn",
+    "Directory": "_releases",
+    "ModFolder": "MapEdit"
+  },
+  "Dependencies": [
+    {
+      "UniqueID": "Platonymous.ModUpdater",
+      "IsRequired": false
+    }
+  ]
+}

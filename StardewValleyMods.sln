@@ -144,6 +144,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MoveablePetBowl", "Moveable
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MultiStoryFarmhouse", "MultiStoryFarmhouse\MultiStoryFarmhouse.csproj", "{9A35505B-D142-4974-B836-4D9488643FBA}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MapEdit", "MapEdit\MapEdit.csproj", "{4F5DE0AF-8A9C-4336-B4C1-1DEBDAD7D797}"
+EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
 		_releases\_releases.projitems*{047040e0-3d07-46e5-852b-d1d45cd57bb8}*SharedItemsImports = 13
@@ -691,6 +693,14 @@ Global
 		{9A35505B-D142-4974-B836-4D9488643FBA}.Release|Any CPU.Build.0 = Release|Any CPU
 		{9A35505B-D142-4974-B836-4D9488643FBA}.Release|x86.ActiveCfg = Release|Any CPU
 		{9A35505B-D142-4974-B836-4D9488643FBA}.Release|x86.Build.0 = Release|Any CPU
+		{4F5DE0AF-8A9C-4336-B4C1-1DEBDAD7D797}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4F5DE0AF-8A9C-4336-B4C1-1DEBDAD7D797}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4F5DE0AF-8A9C-4336-B4C1-1DEBDAD7D797}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{4F5DE0AF-8A9C-4336-B4C1-1DEBDAD7D797}.Debug|x86.Build.0 = Debug|Any CPU
+		{4F5DE0AF-8A9C-4336-B4C1-1DEBDAD7D797}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4F5DE0AF-8A9C-4336-B4C1-1DEBDAD7D797}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4F5DE0AF-8A9C-4336-B4C1-1DEBDAD7D797}.Release|x86.ActiveCfg = Release|Any CPU
+		{4F5DE0AF-8A9C-4336-B4C1-1DEBDAD7D797}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
