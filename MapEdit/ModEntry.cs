@@ -4,8 +4,8 @@ using Microsoft.Xna.Framework.Graphics;
 using StardewModdingAPI;
 using StardewModdingAPI.Events;
 using StardewValley;
-using System;
 using System.Collections.Generic;
+using System.IO;
 using xTile.Layers;
 using xTile.Tiles;
 
@@ -27,35 +27,66 @@ namespace MapEdit
         private static Vector2 pastedTileLoc = new Vector2(-1, -1);
         private static Dictionary<string, Tile> currentTileDict = new Dictionary<string, Tile>();
         private static int currentLayer = 0;
+        private static string jsonFileName;
+        private static List<string> cleanMaps = new List<string>();
 
         public override void Entry(IModHelper helper)
         {
             context = this;
             Config = Helper.ReadConfig<ModConfig>();
 
-
-            GetMapCollectionData();
-
             CreateTextures();
 
             Helper.Events.Display.RenderedWorld += Display_RenderedWorld;
             Helper.Events.Input.ButtonPressed += Input_ButtonPressed;
             Helper.Events.GameLoop.UpdateTicked += GameLoop_UpdateTicked;
+            Helper.Events.GameLoop.SaveLoaded += GameLoop_SaveLoaded;
+            Helper.Events.GameLoop.ReturnedToTitle += GameLoop_ReturnedToTitle;
             Helper.Events.Player.Warped += Player_Warped;
 
             var harmony = HarmonyInstance.Create(ModManifest.UniqueID);
-
+            
             harmony.Patch(
                original: AccessTools.Method(typeof(Game1), nameof(Game1.pressSwitchToolButton)),
                prefix: new HarmonyMethod(typeof(ModEntry), nameof(ModEntry.pressSwitchToolButton_Prefix))
             );
         }
 
+        private void GameLoop_ReturnedToTitle(object sender, ReturnedToTitleEventArgs e)
+        {
+            DeactivateMod();
+            cleanMaps.Clear();
+        }
+
+        private void GameLoop_SaveLoaded(object sender, SaveLoadedEventArgs e)
+        {
+            GetMapCollectionData();
+        }
+
+        private void GameLoop_DayStarted(object sender, DayStartedEventArgs e)
+        {
+            GetMapCollectionData();
+        }
+
+
         private static void GetMapCollectionData()
         {
+
+            jsonFileName = Path.Combine("data", Constants.SaveFolderName + "_map_data.json");
+
+            string modPath = context.Helper.DirectoryPath;
+
+            if (!File.Exists(Path.Combine(modPath, jsonFileName)) && File.Exists(Path.Combine(modPath, "map_data.json")))
+            {
+                if (!Directory.Exists(Path.Combine(modPath, "data")))
+                    Directory.CreateDirectory(Path.Combine(modPath, "data"));
+                context.Monitor.Log("Migrated global data to save-specific data");
+                File.Move(Path.Combine(modPath, "map_data.json"), Path.Combine(modPath, jsonFileName));
+            }
+
             try // convert legacy
             {
-                MapCollectionDataOld oldData = context.Helper.Data.ReadJsonFile<MapCollectionDataOld>("map_data.json");
+                MapCollectionDataOld oldData = context.Helper.Data.ReadJsonFile<MapCollectionDataOld>(jsonFileName);
                 mapCollectionData = new MapCollectionData();
                 foreach(var kvp in oldData.mapDataDict)
                 {
@@ -70,17 +101,16 @@ namespace MapEdit
                         }
                     }
                 }
+                context.Monitor.Log($"Converted legacy data from file {jsonFileName}");
                 SaveMapData();
             }
             catch
             {
-                mapCollectionData = context.Helper.Data.ReadJsonFile<MapCollectionData>("map_data.json") ?? new MapCollectionData();
+                context.Monitor.Log($"Loading map data from file {jsonFileName}");
+                mapCollectionData = context.Helper.Data.ReadJsonFile<MapCollectionData>(jsonFileName) ?? new MapCollectionData();
             }
-            finally
-            {
-                context.Monitor.Log("Couldn't load map data.", LogLevel.Warn);
-                mapCollectionData = new MapCollectionData();
-            }
+            context.Monitor.Log($"Loaded map data for {mapCollectionData.mapDataDict.Count} maps");
+
         }
 
         private static bool pressSwitchToolButton_Prefix()
@@ -247,17 +277,34 @@ namespace MapEdit
                 PasteCurrentTile();
                 
             }
+            else if (modActive && e.Button == Config.RevertButton && MapHasTile(Game1.currentCursorTile))
+            {
+                Helper.Input.Suppress(e.Button);
+                mapCollectionData.mapDataDict[Game1.player.currentLocation.Name].tileDataDict.Remove(Game1.currentCursorTile);
+                if (mapCollectionData.mapDataDict[Game1.player.currentLocation.Name].tileDataDict.Count == 0)
+                    mapCollectionData.mapDataDict.Remove(Game1.player.currentLocation.Name);
+                cleanMaps.Remove(Game1.player.currentLocation.Name);
+                SaveMapData();
+                UpdateCurrentMap(true);
+            }
             else if (modActive && e.Button == SButton.Escape)
             {
                 Helper.Input.Suppress(e.Button);
-                modActive = !modActive;
-                copiedTileLoc = new Vector2(-1, -1);
-                currentTileDict.Clear();
+                if (copiedTileLoc.X > -1)
+                {
+                    copiedTileLoc = new Vector2(-1, -1);
+                    pastedTileLoc = new Vector2(-1, -1);
+                    currentLayer = 0;
+                    currentTileDict.Clear();
+                }
+                else
+                    DeactivateMod();
             }
             else if (modActive && e.Button == Config.RefreshButton)
             {
                 Helper.Input.Suppress(e.Button);
-                mapCollectionData = Helper.Data.ReadJsonFile<MapCollectionData>("map_data.json") ?? new MapCollectionData();
+                cleanMaps.Clear();
+                mapCollectionData = Helper.Data.ReadJsonFile<MapCollectionData>(jsonFileName) ?? new MapCollectionData();
                 SaveMapData();
                 Monitor.Log($"Refreshed map edits, {mapCollectionData.mapDataDict.Count} maps edited");
                 UpdateCurrentMap(true);
@@ -402,6 +449,7 @@ namespace MapEdit
                 mapCollectionData.mapDataDict[Game1.player.currentLocation.Name] = new MapData();
 
             mapCollectionData.mapDataDict[Game1.player.currentLocation.Name].tileDataDict[Game1.currentCursorTile] = new TileData(currentTileDict);
+            cleanMaps.Remove(Game1.player.currentLocation.Name);
             UpdateCurrentMap(false);
             SaveMapData();
             pastedTileLoc = Game1.currentCursorTile;
@@ -411,12 +459,12 @@ namespace MapEdit
 
         private static void SaveMapData()
         {
-            context.Helper.Data.WriteJsonFile("map_data.json", mapCollectionData);
+            context.Helper.Data.WriteJsonFile(jsonFileName, mapCollectionData);
         }
 
         private void UpdateCurrentMap(bool force)
         {
-            if (!Config.EnableMod || (!force && !mapCollectionData.mapDataDict.ContainsKey(Game1.player.currentLocation.Name)))
+            if (!Config.EnableMod || (!force && (!mapCollectionData.mapDataDict.ContainsKey(Game1.player.currentLocation.Name) || cleanMaps.Contains(Game1.player.currentLocation.Name))))
                 return;
 
             Helper.Content.InvalidateCache("Maps/" + Game1.player.currentLocation.Name);
@@ -514,6 +562,7 @@ namespace MapEdit
                         }
                     }
                     Monitor.Log($"Added {count} custom tiles to map {name}");
+                    cleanMaps.Add(name);
                 }
             }
         }

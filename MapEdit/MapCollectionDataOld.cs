@@ -25,10 +25,11 @@ namespace MapEdit
 
     public class TileLayerDataOld
     {
-        public int index { get; set; }
-        public string tileSheet { get; set; }
-        public BlendMode blendMode { get; set; }
-        public Dictionary<string, string> properties { get; set; }
+        public int tiles = 0;
+        public int index = 0;
+        public string tileSheet = "";
+        public BlendMode blendMode = BlendMode.Alpha;
+        public Dictionary<string, string> properties = new Dictionary<string, string>();
         public TileLayerDataOld()
         { 
         }
