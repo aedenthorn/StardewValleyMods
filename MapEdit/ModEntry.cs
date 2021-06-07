@@ -18,6 +18,7 @@ namespace MapEdit
         internal static ModConfig Config;
         private static Texture2D existsTexture;
         private static Texture2D activeTexture;
+        private static Texture2D copiedTexture;
         private static bool modActive = false;
         private static int modNumber = 189017541;
         private static MapCollectionData mapCollectionData = new MapCollectionData();
@@ -118,6 +119,7 @@ namespace MapEdit
                     }
                     TileSheet tileSheet = sheets[tileSheetIndex];
                     context.Helper.Reflection.GetField<TileSheet>(tile, "m_tileSheet").SetValue(tileSheet);
+                    tile.TileIndex = 0;
                     string text = string.Format(context.Helper.Translation.Get("current-tilesheet"), tileSheet.Id);
                     context.Monitor.Log(text);
                     context.ShowMessage(text);
@@ -127,8 +129,9 @@ namespace MapEdit
                     Tile tile = currentTileDict[layers[currentLayer]];
                     if (tile == null)
                     {
+                        context.Monitor.Log($"Layer {layers[currentLayer]} copied tile is null, creating empty tile");
                         Layer layer = Game1.player.currentLocation.map.GetLayer(layers[currentLayer]);
-                        tile = new StaticTile(layer, Game1.player.currentLocation.map.TileSheets[0], BlendMode.Alpha, -1);
+                        currentTileDict[layers[currentLayer]] = new StaticTile(layer, Game1.player.currentLocation.map.TileSheets[0], BlendMode.Alpha, -1);
                     }
                     if (delta > 0)
                     {
@@ -237,15 +240,8 @@ namespace MapEdit
 
             Vector2 mouseTile = Game1.currentCursorTile;
             Vector2 mouseTilePos = mouseTile * Game1.tileSize - new Vector2(Game1.viewport.X, Game1.viewport.Y);
-            if (copiedTileLoc.X == -1)
-            {
-                if (MapHasTile(mouseTile))
-                    e.SpriteBatch.Draw(existsTexture, mouseTilePos, Color.White);
-                else
-                    e.SpriteBatch.Draw(activeTexture, mouseTilePos, Color.White);
-            }
-            else
-            {
+            if (copiedTileLoc.X > -1)
+            { 
                 foreach (var kvp in currentTileDict)
                 {
                     int offset = kvp.Key.Equals("Front") ? (16 * Game1.pixelZoom) : 0;
@@ -271,7 +267,14 @@ namespace MapEdit
                     if (texture2D != null)
                         e.SpriteBatch.Draw(texture2D, mouseTilePos, sourceRectangle, Color.White, 0f, Vector2.Zero, Layer.zoom, SpriteEffects.None, layerDepth);
                 }
+                e.SpriteBatch.Draw(copiedTexture, mouseTilePos, Color.White);
+                
             }
+            else if (MapHasTile(mouseTile))
+                e.SpriteBatch.Draw(existsTexture, mouseTilePos, Color.White);
+            else
+                e.SpriteBatch.Draw(activeTexture, mouseTilePos, Color.White);
+
         }
         private void DeactivateMod()
         {
@@ -284,10 +287,10 @@ namespace MapEdit
 
         private void CreateTextures()
         {
+            int thickness = Config.BorderThickness;
+
             existsTexture = new Texture2D(Game1.graphics.GraphicsDevice, Game1.tileSize, Game1.tileSize);
             Color[] data = new Color[Game1.tileSize * Game1.tileSize];
-            existsTexture.GetData(data);
-            int thickness = 4;
             for (int i = 0; i < data.Length; i++)
             {
                 if (i < Game1.tileSize * thickness || i % Game1.tileSize < thickness || i % Game1.tileSize >= Game1.tileSize - thickness || i >= data.Length - Game1.tileSize * thickness)
@@ -299,7 +302,6 @@ namespace MapEdit
 
             activeTexture = new Texture2D(Game1.graphics.GraphicsDevice, Game1.tileSize, Game1.tileSize);
             data = new Color[Game1.tileSize * Game1.tileSize];
-            activeTexture.GetData(data);
             for (int i = 0; i < data.Length; i++)
             {
                 if (i < Game1.tileSize * thickness || i % Game1.tileSize < thickness || i % Game1.tileSize >= Game1.tileSize - thickness || i >= data.Length - Game1.tileSize * thickness)
@@ -308,6 +310,17 @@ namespace MapEdit
                     data[i] = Color.Transparent;
             }
             activeTexture.SetData(data);
+
+            copiedTexture = new Texture2D(Game1.graphics.GraphicsDevice, Game1.tileSize, Game1.tileSize);
+            data = new Color[Game1.tileSize * Game1.tileSize];
+            for (int i = 0; i < data.Length; i++)
+            {
+                if (i < Game1.tileSize * thickness || i % Game1.tileSize < thickness || i % Game1.tileSize >= Game1.tileSize - thickness || i >= data.Length - Game1.tileSize * thickness)
+                    data[i] = Config.CopiedColor;
+                else
+                    data[i] = Color.Transparent;
+            }
+            copiedTexture.SetData(data);
 
         }
 
