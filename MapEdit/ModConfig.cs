@@ -13,5 +13,6 @@ namespace MapEdit
         public SButton PasteButton { get; set; } = SButton.MouseLeft;
         public SButton RefreshButton { get; set; } = SButton.F5;
         public SButton LayerModButton { get; set; } = SButton.LeftShift;
+        public SButton SheetModButton { get; set; } = SButton.LeftAlt;
     }
 }

@@ -1,5 +1,6 @@
 ﻿{
   "mod-active": "Map Edit activated, press {0} to disable.",
   "mod-inactive": "Map Edit deactivated.",
-  "current-layer": "Switched to layer {0}."
+  "current-layer": "Switched to layer {0}.",
+  "current-tilesheet": "Switched to tile sheet {0}."
 }

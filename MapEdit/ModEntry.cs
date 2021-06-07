@@ -1,10 +1,9 @@
-﻿using Microsoft.Xna.Framework;
+﻿using Harmony;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using Microsoft.Xna.Framework.Input;
 using StardewModdingAPI;
 using StardewModdingAPI.Events;
 using StardewValley;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using xTile.Layers;
@@ -17,15 +16,15 @@ namespace MapEdit
         public static ModEntry context;
 
         internal static ModConfig Config;
-        private Texture2D existsTexture;
-        private Texture2D activeTexture;
-        private bool modActive = false;
+        private static Texture2D existsTexture;
+        private static Texture2D activeTexture;
+        private static bool modActive = false;
         private static int modNumber = 189017541;
-        private MapCollectionData mapCollectionData = new MapCollectionData();
-        private Vector2 copiedTileLoc = new Vector2(-1, -1);
-        private Vector2 pastedTileLoc = new Vector2(-1, -1);
-        private Dictionary<string, Tile> currentTileDict = new Dictionary<string, Tile>();
-        private int currentLayer = 0;
+        private static MapCollectionData mapCollectionData = new MapCollectionData();
+        private static Vector2 copiedTileLoc = new Vector2(-1, -1);
+        private static Vector2 pastedTileLoc = new Vector2(-1, -1);
+        private static Dictionary<string, Tile> currentTileDict = new Dictionary<string, Tile>();
+        private static int currentLayer = 0;
 
         /// <summary>The mod entry point, called after the mod is first loaded.</summary>
         /// <param name="helper">Provides simplified APIs for writing mods.</param>
@@ -41,36 +40,33 @@ namespace MapEdit
 
             Helper.Events.Display.RenderedWorld += Display_RenderedWorld;
             Helper.Events.Input.ButtonPressed += Input_ButtonPressed;
-            //Helper.Events.Input.MouseWheelScrolled += Input_MouseWheelScrolled;
             Helper.Events.GameLoop.UpdateTicked += GameLoop_UpdateTicked;
+            Helper.Events.GameLoop.UpdateTicking += GameLoop_UpdateTicking;
             Helper.Events.Player.Warped += Player_Warped;
+
+            var harmony = HarmonyInstance.Create(ModManifest.UniqueID);
+
+            harmony.Patch(
+               original: AccessTools.Method(typeof(Game1), nameof(Game1.pressSwitchToolButton)),
+               prefix: new HarmonyMethod(typeof(ModEntry), nameof(ModEntry.pressSwitchToolButton_Prefix))
+            );
         }
 
-        private void GameLoop_UpdateTicked(object sender, UpdateTickedEventArgs e)
+        private static bool pressSwitchToolButton_Prefix()
         {
-            if(modActive && (Helper.Input.IsDown(Config.PasteButton) || Helper.Input.IsSuppressed(Config.PasteButton)) && pastedTileLoc.X > -1 && pastedTileLoc != Game1.currentCursorTile)
+            if (Context.IsPlayerFree && Game1.input.GetMouseState().ScrollWheelValue != Game1.oldMouseState.ScrollWheelValue && modActive && copiedTileLoc.X > -1)
             {
-                PasteCurrentTile();
-            }
+                if (!Config.EnableMod)
+                    return true;
 
-        }
-
-        private void Input_MouseWheelScrolled(object sender, MouseWheelScrolledEventArgs e)
-        {
-            if (!Config.EnableMod)
-                return;
-
-            if (modActive && copiedTileLoc.X > -1)
-            {
-                //var mouseState = Helper.Reflection.GetField<MouseState>(Game1.input, "_currentMouseState").GetValue();
-                //Helper.Reflection.GetField<int>(mouseState, "wheel").SetValue(Helper.Reflection.GetField<int>(Game1.game1, "_oldScrollWheelValue").GetValue());
-
-                Monitor.Log(e.Delta+" layers: "+currentTileDict.Keys.Count);
+                int delta = Game1.input.GetMouseState().ScrollWheelValue;
 
                 var layers = currentTileDict.Keys.ToArray();
-                if (Helper.Input.IsDown(Config.LayerModButton))
+                if (context.Helper.Input.IsDown(Config.LayerModButton))
                 {
-                    if (e.Delta > 0)
+                    if (currentTileDict.Count < 2)
+                        return true;
+                    if (delta > 0)
                     {
                         if (currentLayer >= layers.Length - 1)
                             currentLayer = 0;
@@ -84,19 +80,59 @@ namespace MapEdit
                         else
                             currentLayer--;
                     }
-                    string text = string.Format(Helper.Translation.Get("current-layer"), layers[currentLayer]);
-                    Monitor.Log(text);
-                    ShowMessage(text);
+                    string text = string.Format(context.Helper.Translation.Get("current-layer"), layers[currentLayer]);
+                    context.Monitor.Log(text);
+                    context.ShowMessage(text);
+                }
+                else if (context.Helper.Input.IsDown(Config.SheetModButton))
+                {
+                    List<TileSheet> sheets = new List<TileSheet>();
+                    foreach (TileSheet sheet in Game1.player.currentLocation.map.TileSheets)
+                    {
+                        if (sheet.Id != "Paths")
+                            sheets.Add(sheet);
+                    }
+                    if (sheets.Count < 2)
+                        return true;
+                    Tile tile = currentTileDict[layers[currentLayer]];
+                    if (tile == null)
+                    {
+                        Layer layer = Game1.player.currentLocation.map.GetLayer(layers[currentLayer]);
+                        tile = new StaticTile(layer, sheets[0], BlendMode.Alpha, -1);
+                    }
+                    int tileSheetIndex = sheets.IndexOf(tile.TileSheet);
+                    if (delta > 0)
+                    {
+                        if (tileSheetIndex >= sheets.Count - 1)
+                            tileSheetIndex = 0;
+                        else
+                            tileSheetIndex++;
+                    }
+                    else
+                    {
+                        if (tileSheetIndex < 1)
+                            tileSheetIndex = sheets.Count - 1;
+                        else
+                            tileSheetIndex--;
+                    }
+                    TileSheet tileSheet = sheets[tileSheetIndex];
+                    context.Helper.Reflection.GetField<TileSheet>(tile, "m_tileSheet").SetValue(tileSheet);
+                    string text = string.Format(context.Helper.Translation.Get("current-tilesheet"), tileSheet.Id);
+                    context.Monitor.Log(text);
+                    context.ShowMessage(text);
                 }
                 else
                 {
                     Tile tile = currentTileDict[layers[currentLayer]];
                     if (tile == null)
-                        return;
-                    if (e.Delta > 0)
+                    {
+                        Layer layer = Game1.player.currentLocation.map.GetLayer(layers[currentLayer]);
+                        tile = new StaticTile(layer, Game1.player.currentLocation.map.TileSheets[0], BlendMode.Alpha, -1);
+                    }
+                    if (delta > 0)
                     {
                         if (tile.TileIndex >= tile.TileSheet.TileCount - 1)
-                            tile.TileIndex = 0;
+                            tile.TileIndex = -1;
                         else
                             tile.TileIndex++;
                     }
@@ -107,22 +143,43 @@ namespace MapEdit
                         else
                             tile.TileIndex--;
                     }
-                    Monitor.Log($"layer {layers[currentLayer]} new tile index {tile.TileIndex}");
+                    //Monitor.Log($"layer {layers[currentLayer]} new tile index {tile.TileIndex}");
                 }
+                return false;
             }
+            return true;
         }
+
+        private void GameLoop_UpdateTicking(object sender, UpdateTickingEventArgs e)
+        {
+
+        }
+
+        private void GameLoop_UpdateTicked(object sender, UpdateTickedEventArgs e)
+        {
+            if(modActive && (Helper.Input.IsDown(Config.PasteButton) || Helper.Input.IsSuppressed(Config.PasteButton)) && pastedTileLoc.X > -1 && pastedTileLoc != Game1.currentCursorTile)
+            {
+                PasteCurrentTile();
+            }
+
+        }
+
 
         private void Player_Warped(object sender, WarpedEventArgs e)
         {
             if (!Config.EnableMod)
                 return;
+            DeactivateMod();
             UpdateCurrentMap();
         }
 
         private void Input_ButtonPressed(object sender, ButtonPressedEventArgs e)
         {
-            if (!Config.EnableMod)
+            if (!Config.EnableMod || !Context.IsPlayerFree)
+            {
+                DeactivateMod();
                 return;
+            }
 
             if (e.Button == Config.ToggleButton)
             {
@@ -214,6 +271,14 @@ namespace MapEdit
                 }
             }
         }
+        private void DeactivateMod()
+        {
+            modActive = false;
+            copiedTileLoc = new Vector2(-1, -1);
+            pastedTileLoc = new Vector2(-1, -1);
+            currentTileDict.Clear();
+            currentLayer = 0;
+        }
 
         private void CreateTextures()
         {
@@ -239,6 +304,9 @@ namespace MapEdit
 
         private void CopyCurrentTile()
         {
+            if (!Utility.isOnScreen(Game1.currentCursorTile * Game1.tileSize, 0))
+                return;
+
             currentTileDict.Clear();
             foreach (Layer layer in Game1.player.currentLocation.map.Layers)
             {
@@ -247,11 +315,9 @@ namespace MapEdit
                 try
                 {
                     Tile tile = layer.Tiles[(int)Game1.currentCursorTile.X, (int)Game1.currentCursorTile.Y];
-                    if (tile == null)
-                        continue;
                     copiedTileLoc = Game1.currentCursorTile;
                     pastedTileLoc = Game1.currentCursorTile;
-                    currentTileDict.Add(layer.Id, tile);
+                    currentTileDict.Add(layer.Id, tile.Clone(layer));
                 }
                 catch { }
             }
@@ -260,6 +326,9 @@ namespace MapEdit
 
         private void PasteCurrentTile()
         {
+            if (!Utility.isOnScreen(Game1.currentCursorTile * Game1.tileSize, 0))
+                return;
+
             if (!mapCollectionData.mapDataDict.ContainsKey(Game1.player.currentLocation.Name))
                 mapCollectionData.mapDataDict[Game1.player.currentLocation.Name] = new MapData();
             mapCollectionData.mapDataDict[Game1.player.currentLocation.Name].tileDataDict[Game1.currentCursorTile] = new TileData(currentTileDict);
@@ -271,7 +340,7 @@ namespace MapEdit
 
         private void SaveMapData()
         {
-            Helper.Data.WriteJsonFile<MapCollectionData>("map_data.json", mapCollectionData);
+            Helper.Data.WriteJsonFile("map_data.json", mapCollectionData);
         }
 
         private void UpdateCurrentMap()
