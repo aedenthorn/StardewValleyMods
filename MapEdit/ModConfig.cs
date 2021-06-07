@@ -14,5 +14,8 @@ namespace MapEdit
         public SButton RefreshButton { get; set; } = SButton.F5;
         public SButton LayerModButton { get; set; } = SButton.LeftShift;
         public SButton SheetModButton { get; set; } = SButton.LeftAlt;
+        public string CopySound { get; set; } = "bigSelect";
+        public string PasteSound { get; set; } = "hoeHit";
+        public string ScrollSound { get; set; } = "toolSwap";
     }
 }

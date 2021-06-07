@@ -21,6 +21,7 @@ namespace MapEdit
         private static bool modActive = false;
         private static int modNumber = 189017541;
         private static MapCollectionData mapCollectionData = new MapCollectionData();
+
         private static Vector2 copiedTileLoc = new Vector2(-1, -1);
         private static Vector2 pastedTileLoc = new Vector2(-1, -1);
         private static Dictionary<string, Tile> currentTileDict = new Dictionary<string, Tile>();
@@ -138,13 +139,14 @@ namespace MapEdit
                     }
                     else
                     {
-                        if (tile.TileIndex < 1)
+                        if (tile.TileIndex < 0)
                             tile.TileIndex = tile.TileSheet.TileCount - 1;
                         else
                             tile.TileIndex--;
                     }
-                    //Monitor.Log($"layer {layers[currentLayer]} new tile index {tile.TileIndex}");
+                    //context.Monitor.Log($"layer {layers[currentLayer]} new tile index {tile.TileIndex}");
                 }
+                Game1.playSound(Config.ScrollSound);
                 return false;
             }
             return true;
@@ -169,7 +171,7 @@ namespace MapEdit
             if (!Config.EnableMod)
                 return;
             DeactivateMod();
-            UpdateCurrentMap();
+            UpdateCurrentMap(false);
         }
 
         private void Input_ButtonPressed(object sender, ButtonPressedEventArgs e)
@@ -214,10 +216,11 @@ namespace MapEdit
             }
             else if (modActive && e.Button == Config.RefreshButton)
             {
-                Monitor.Log($"Refreshed map edits");
                 Helper.Input.Suppress(e.Button);
                 mapCollectionData = Helper.Data.ReadJsonFile<MapCollectionData>("map_data.json") ?? new MapCollectionData();
-                UpdateCurrentMap();
+                SaveMapData();
+                Monitor.Log($"Refreshed map edits, {mapCollectionData.mapDataDict.Count} maps edited");
+                UpdateCurrentMap(true);
             }
         }
 
@@ -287,7 +290,7 @@ namespace MapEdit
             int thickness = 4;
             for (int i = 0; i < data.Length; i++)
             {
-                if (i < Game1.tileSize * thickness || i % Game1.tileSize < thickness || i % Game1.tileSize >= Game1.tileSize - thickness)
+                if (i < Game1.tileSize * thickness || i % Game1.tileSize < thickness || i % Game1.tileSize >= Game1.tileSize - thickness || i >= data.Length - Game1.tileSize * thickness)
                     data[i] = Config.ExistsColor;
                 else
                     data[i] = Color.Transparent;
@@ -299,7 +302,7 @@ namespace MapEdit
             activeTexture.GetData(data);
             for (int i = 0; i < data.Length; i++)
             {
-                if (i < Game1.tileSize * thickness || i % Game1.tileSize < thickness || i % Game1.tileSize >= Game1.tileSize - thickness)
+                if (i < Game1.tileSize * thickness || i % Game1.tileSize < thickness || i % Game1.tileSize >= Game1.tileSize - thickness || i >= data.Length - Game1.tileSize * thickness)
                     data[i] = Config.ActiveColor;
                 else
                     data[i] = Color.Transparent;
@@ -327,6 +330,7 @@ namespace MapEdit
                 }
                 catch { }
             }
+            Game1.playSound(Config.CopySound);
             Monitor.Log($"Copied tile at {Game1.currentCursorTile}");
         }
 
@@ -337,10 +341,12 @@ namespace MapEdit
 
             if (!mapCollectionData.mapDataDict.ContainsKey(Game1.player.currentLocation.Name))
                 mapCollectionData.mapDataDict[Game1.player.currentLocation.Name] = new MapData();
+
             mapCollectionData.mapDataDict[Game1.player.currentLocation.Name].tileDataDict[Game1.currentCursorTile] = new TileData(currentTileDict);
-            UpdateCurrentMap();
+            UpdateCurrentMap(false);
             SaveMapData();
             pastedTileLoc = Game1.currentCursorTile;
+            Game1.playSound(Config.PasteSound);
             Monitor.Log($"Pasted tile to {Game1.currentCursorTile}");
         }
 
@@ -349,9 +355,9 @@ namespace MapEdit
             Helper.Data.WriteJsonFile("map_data.json", mapCollectionData);
         }
 
-        private void UpdateCurrentMap()
+        private void UpdateCurrentMap(bool force)
         {
-            if (!Config.EnableMod || !mapCollectionData.mapDataDict.ContainsKey(Game1.player.currentLocation.Name))
+            if (!Config.EnableMod || (!force && !mapCollectionData.mapDataDict.ContainsKey(Game1.player.currentLocation.Name)))
                 return;
 
             Helper.Content.InvalidateCache("Maps/" + Game1.player.currentLocation.Name);
@@ -412,18 +418,31 @@ namespace MapEdit
                         {
                             if (layer.Id == "Paths")
                                 continue;
-                            //Monitor.Log($"old tile {kvp.Key}, layer {layer.Id}, index {layer.Tiles[(int)kvp.Key.X, (int)kvp.Key.Y]?.TileIndex}", LogLevel.Warn);
-                            layer.Tiles[(int)kvp.Key.X, (int)kvp.Key.Y] = null;
+                            try
+                            {
+                                layer.Tiles[(int)kvp.Key.X, (int)kvp.Key.Y] = null;
+                            }
+                            catch
+                            {
+
+                            }
                         }
                         foreach (var kvp2 in kvp.Value.tileDict)
                         {
-                            mapData.Data.GetLayer(kvp2.Key).Tiles[(int)kvp.Key.X, (int)kvp.Key.Y] = new StaticTile(mapData.Data.GetLayer(kvp2.Key), mapData.Data.GetTileSheet(kvp2.Value.tileSheet), kvp2.Value.blendMode, kvp2.Value.index);
-                            foreach (var prop in kvp2.Value.properties)
+                            try
                             {
-                                mapData.Data.GetLayer(kvp2.Key).Tiles[(int)kvp.Key.X, (int)kvp.Key.Y].Properties[prop.Key] = prop.Value;
+                                mapData.Data.GetLayer(kvp2.Key).Tiles[(int)kvp.Key.X, (int)kvp.Key.Y] = new StaticTile(mapData.Data.GetLayer(kvp2.Key), mapData.Data.GetTileSheet(kvp2.Value.tileSheet), kvp2.Value.blendMode, kvp2.Value.index);
+                                foreach (var prop in kvp2.Value.properties)
+                                {
+                                    mapData.Data.GetLayer(kvp2.Key).Tiles[(int)kvp.Key.X, (int)kvp.Key.Y].Properties[prop.Key] = prop.Value;
+                                }
+                                //Monitor.Log($"new tile {kvp.Key}, layer {kvp2.Key}, index {mapData.Data.GetLayer(kvp2.Key).Tiles[(int)kvp.Key.X, (int)kvp.Key.Y]?.TileIndex}", LogLevel.Info);
+                                count++;
                             }
-                            //Monitor.Log($"new tile {kvp.Key}, layer {kvp2.Key}, index {mapData.Data.GetLayer(kvp2.Key).Tiles[(int)kvp.Key.X, (int)kvp.Key.Y]?.TileIndex}", LogLevel.Info);
-                            count++;
+                            catch
+                            {
+
+                            }
                         }
                     }
                     Monitor.Log($"Added {count} custom tiles to map {name}");

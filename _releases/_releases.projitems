@@ -56,6 +56,8 @@
     <None Include="$(MSBuildThisFileDirectory)MapEdit 0.1.0.zip" />
     <None Include="$(MSBuildThisFileDirectory)MapEdit 0.2.0.zip" />
     <None Include="$(MSBuildThisFileDirectory)MapEdit 0.2.1.zip" />
+    <None Include="$(MSBuildThisFileDirectory)MapEdit 0.2.2.zip" />
+    <None Include="$(MSBuildThisFileDirectory)MapEdit 0.2.3.zip" />
     <None Include="$(MSBuildThisFileDirectory)MapTeleport 0.2.3.zip" />
     <None Include="$(MSBuildThisFileDirectory)MobileArcade 0.1.2.zip" />
     <None Include="$(MSBuildThisFileDirectory)MobileAudioPlayer 0.4.1.zip" />
