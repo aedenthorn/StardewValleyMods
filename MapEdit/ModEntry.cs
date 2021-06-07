@@ -453,7 +453,19 @@ namespace MapEdit
                         {
                             try
                             {
-                                mapData.Data.GetLayer(kvp2.Key).Tiles[(int)kvp.Key.X, (int)kvp.Key.Y] = new StaticTile(mapData.Data.GetLayer(kvp2.Key), mapData.Data.GetTileSheet(kvp2.Value.tileSheet), kvp2.Value.blendMode, kvp2.Value.index);
+                                if(kvp2.Value.tiles.Count == 0) // legacy
+                                    mapData.Data.GetLayer(kvp2.Key).Tiles[(int)kvp.Key.X, (int)kvp.Key.Y] = new StaticTile(mapData.Data.GetLayer(kvp2.Key), mapData.Data.GetTileSheet(kvp2.Value.tileSheet), kvp2.Value.blendMode, kvp2.Value.index);
+                                else if(kvp2.Value.tiles.Count == 1)
+                                    mapData.Data.GetLayer(kvp2.Key).Tiles[(int)kvp.Key.X, (int)kvp.Key.Y] = new StaticTile(mapData.Data.GetLayer(kvp2.Key), mapData.Data.GetTileSheet(kvp2.Value.tiles[0].tileSheet), kvp2.Value.tiles[0].blendMode, kvp2.Value.tiles[0].tileIndex);
+                                else
+                                {
+                                    List<StaticTile> tiles = new List<StaticTile>();
+                                    foreach(TileInfo tile in kvp2.Value.tiles)
+                                    {
+                                        tiles.Add(new StaticTile(mapData.Data.GetLayer(kvp2.Key), mapData.Data.GetTileSheet(tile.tileSheet), tile.blendMode, tile.tileIndex));
+                                    }
+                                    mapData.Data.GetLayer(kvp2.Key).Tiles[(int)kvp.Key.X, (int)kvp.Key.Y] = new AnimatedTile(mapData.Data.GetLayer(kvp2.Key), tiles.ToArray(), kvp2.Value.frameInterval);
+                                }
                                 foreach (var prop in kvp2.Value.properties)
                                 {
                                     mapData.Data.GetLayer(kvp2.Key).Tiles[(int)kvp.Key.X, (int)kvp.Key.Y].Properties[prop.Key] = prop.Value;
