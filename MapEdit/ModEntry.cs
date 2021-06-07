@@ -5,7 +5,6 @@ using StardewModdingAPI;
 using StardewModdingAPI.Events;
 using StardewValley;
 using System.Collections.Generic;
-using System.Linq;
 using xTile.Layers;
 using xTile.Tiles;
 
@@ -53,102 +52,113 @@ namespace MapEdit
 
         private static bool pressSwitchToolButton_Prefix()
         {
-            if (Context.IsPlayerFree && Game1.input.GetMouseState().ScrollWheelValue != Game1.oldMouseState.ScrollWheelValue && modActive && copiedTileLoc.X > -1)
+            if (!Config.EnableMod || !Context.IsPlayerFree || Game1.input.GetMouseState().ScrollWheelValue == Game1.oldMouseState.ScrollWheelValue || !modActive || copiedTileLoc.X < 0)
+                return true;
+
+            SwitchTile(Game1.input.GetMouseState().ScrollWheelValue - Game1.oldMouseState.ScrollWheelValue > 0);
+
+            return false;
+        }
+
+        private static void SwitchTile(bool increase)
+        {
+            List<string> layers = new List<string>();
+            foreach(Layer layer in Game1.player.currentLocation.map.Layers)
             {
-                if (!Config.EnableMod)
-                    return true;
-
-                int delta = Game1.input.GetMouseState().ScrollWheelValue - Game1.oldMouseState.ScrollWheelValue;
-
-                var layers = currentTileDict.Keys.ToArray();
-                if (context.Helper.Input.IsDown(Config.LayerModButton))
+                if (currentTileDict.ContainsKey(layer.Id))
+                    layers.Add(layer.Id);
+            }
+            
+            if (context.Helper.Input.IsDown(Config.LayerModButton))
+            {
+                if (currentTileDict.Count < 2)
+                    return;
+                if (increase)
                 {
-                    if (currentTileDict.Count < 2)
-                        return false;
-                    if (delta > 0)
-                    {
-                        if (currentLayer >= layers.Length - 1)
-                            currentLayer = 0;
-                        else
-                            currentLayer++;
-                    }
+                    if (currentLayer >= layers.Count - 1)
+                        currentLayer = 0;
                     else
-                    {
-                        if (currentLayer < 1)
-                            currentLayer = layers.Length - 1;
-                        else
-                            currentLayer--;
-                    }
-                    string text = string.Format(context.Helper.Translation.Get("current-layer"), layers[currentLayer]);
-                    context.Monitor.Log(text);
-                    context.ShowMessage(text);
-                }
-                else if (context.Helper.Input.IsDown(Config.SheetModButton))
-                {
-                    List<TileSheet> sheets = new List<TileSheet>();
-                    foreach (TileSheet sheet in Game1.player.currentLocation.map.TileSheets)
-                    {
-                        if (sheet.Id != "Paths")
-                            sheets.Add(sheet);
-                    }
-                    if (sheets.Count < 2)
-                        return false;
-                    Tile tile = currentTileDict[layers[currentLayer]];
-                    if (tile == null)
-                    {
-                        Layer layer = Game1.player.currentLocation.map.GetLayer(layers[currentLayer]);
-                        tile = new StaticTile(layer, sheets[0], BlendMode.Alpha, -1);
-                    }
-                    int tileSheetIndex = sheets.IndexOf(tile.TileSheet);
-                    if (delta > 0)
-                    {
-                        if (tileSheetIndex >= sheets.Count - 1)
-                            tileSheetIndex = 0;
-                        else
-                            tileSheetIndex++;
-                    }
-                    else
-                    {
-                        if (tileSheetIndex < 1)
-                            tileSheetIndex = sheets.Count - 1;
-                        else
-                            tileSheetIndex--;
-                    }
-                    TileSheet tileSheet = sheets[tileSheetIndex];
-                    context.Helper.Reflection.GetField<TileSheet>(tile, "m_tileSheet").SetValue(tileSheet);
-                    tile.TileIndex = 0;
-                    string text = string.Format(context.Helper.Translation.Get("current-tilesheet"), tileSheet.Id);
-                    context.Monitor.Log(text);
-                    context.ShowMessage(text);
+                        currentLayer++;
                 }
                 else
                 {
-                    Tile tile = currentTileDict[layers[currentLayer]];
-                    if (tile == null)
-                    {
-                        context.Monitor.Log($"Layer {layers[currentLayer]} copied tile is null, creating empty tile");
-                        Layer layer = Game1.player.currentLocation.map.GetLayer(layers[currentLayer]);
-                        currentTileDict[layers[currentLayer]] = new StaticTile(layer, Game1.player.currentLocation.map.TileSheets[0], BlendMode.Alpha, -1);
-                    }
-                    if (delta > 0)
-                    {
-                        if (tile.TileIndex >= tile.TileSheet.TileCount - 1)
-                            tile.TileIndex = -1;
-                        else
-                            tile.TileIndex++;
-                    }
+                    if (currentLayer < 1)
+                        currentLayer = layers.Count - 1;
                     else
-                    {
-                        if (tile.TileIndex < 0)
-                            tile.TileIndex = tile.TileSheet.TileCount - 1;
-                        else
-                            tile.TileIndex--;
-                    }
+                        currentLayer--;
                 }
-                Game1.playSound(Config.ScrollSound);
-                return false;
+                string text = string.Format(context.Helper.Translation.Get("current-layer"), layers[currentLayer]);
+                context.Monitor.Log(text);
+                context.ShowMessage(text);
             }
-            return true;
+            else if (context.Helper.Input.IsDown(Config.SheetModButton))
+            {
+                List<TileSheet> sheets = new List<TileSheet>();
+                foreach (TileSheet sheet in Game1.player.currentLocation.map.TileSheets)
+                {
+                    if (sheet.Id != "Paths")
+                        sheets.Add(sheet);
+                }
+                if (sheets.Count < 2)
+                    return;
+                Tile tile = currentTileDict[layers[currentLayer]];
+                if (tile == null)
+                {
+                    Layer layer = Game1.player.currentLocation.map.GetLayer(layers[currentLayer]);
+                    tile = new StaticTile(layer, sheets[0], BlendMode.Alpha, -1);
+                }
+                int tileSheetIndex = sheets.IndexOf(tile.TileSheet);
+                if (increase)
+                {
+                    if (tileSheetIndex >= sheets.Count - 1)
+                        tileSheetIndex = 0;
+                    else
+                        tileSheetIndex++;
+                }
+                else
+                {
+                    if (tileSheetIndex < 1)
+                        tileSheetIndex = sheets.Count - 1;
+                    else
+                        tileSheetIndex--;
+                }
+                TileSheet tileSheet = sheets[tileSheetIndex];
+                context.Helper.Reflection.GetField<TileSheet>(tile, "m_tileSheet").SetValue(tileSheet);
+                tile.TileIndex = 0;
+                string text = string.Format(context.Helper.Translation.Get("current-tilesheet"), tileSheet.Id);
+                context.Monitor.Log(text);
+                context.ShowMessage(text);
+            }
+            else
+            {
+                if (currentTileDict[layers[currentLayer]] is AnimatedTile)
+                    return;
+
+                Tile tile = currentTileDict[layers[currentLayer]];
+                //context.Monitor.Log($"old index {tile.TileIndex}");
+                if (tile == null)
+                {
+                    context.Monitor.Log($"Layer {layers[currentLayer]} copied tile is null, creating empty tile");
+                    Layer layer = Game1.player.currentLocation.map.GetLayer(layers[currentLayer]);
+                    currentTileDict[layers[currentLayer]] = new StaticTile(layer, Game1.player.currentLocation.map.TileSheets[0], BlendMode.Alpha, -1);
+                }
+                if (increase)
+                {
+                    if (tile.TileIndex >= tile.TileSheet.TileCount - 1)
+                        tile.TileIndex = -1;
+                    else
+                        tile.TileIndex++;
+                }
+                else
+                {
+                    if (tile.TileIndex < 0)
+                        tile.TileIndex = tile.TileSheet.TileCount - 1;
+                    else
+                        tile.TileIndex--;
+                }
+                //context.Monitor.Log($"new index {tile.TileIndex}");
+            }
+            Game1.playSound(Config.ScrollSound);
         }
 
         private void GameLoop_UpdateTicked(object sender, UpdateTickedEventArgs e)
@@ -215,6 +225,16 @@ namespace MapEdit
                 SaveMapData();
                 Monitor.Log($"Refreshed map edits, {mapCollectionData.mapDataDict.Count} maps edited");
                 UpdateCurrentMap(true);
+            }
+            else if (modActive && e.Button == Config.ScrollUpButton)
+            {
+                Helper.Input.Suppress(e.Button);
+                SwitchTile(true);
+            }
+            else if (modActive && e.Button == Config.ScrollDownButton)
+            {
+                Helper.Input.Suppress(e.Button);
+                SwitchTile(false);
             }
         }
 
@@ -317,7 +337,7 @@ namespace MapEdit
         {
             if (!Utility.isOnScreen(Game1.currentCursorTile * Game1.tileSize, 0))
                 return;
-
+            currentLayer = 0;
             currentTileDict.Clear();
             foreach (Layer layer in Game1.player.currentLocation.map.Layers)
             {
@@ -329,6 +349,7 @@ namespace MapEdit
                     copiedTileLoc = Game1.currentCursorTile;
                     pastedTileLoc = Game1.currentCursorTile;
                     currentTileDict.Add(layer.Id, tile.Clone(layer));
+                    Monitor.Log($"Copied layer {layer.Id} tile index {tile.TileIndex}");
                 }
                 catch { }
             }
