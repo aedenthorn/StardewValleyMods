@@ -28,8 +28,6 @@ namespace MapEdit
         private static Dictionary<string, Tile> currentTileDict = new Dictionary<string, Tile>();
         private static int currentLayer = 0;
 
-        /// <summary>The mod entry point, called after the mod is first loaded.</summary>
-        /// <param name="helper">Provides simplified APIs for writing mods.</param>
         public override void Entry(IModHelper helper)
         {
             context = this;
@@ -43,7 +41,6 @@ namespace MapEdit
             Helper.Events.Display.RenderedWorld += Display_RenderedWorld;
             Helper.Events.Input.ButtonPressed += Input_ButtonPressed;
             Helper.Events.GameLoop.UpdateTicked += GameLoop_UpdateTicked;
-            Helper.Events.GameLoop.UpdateTicking += GameLoop_UpdateTicking;
             Helper.Events.Player.Warped += Player_Warped;
 
             var harmony = HarmonyInstance.Create(ModManifest.UniqueID);
@@ -147,17 +144,11 @@ namespace MapEdit
                         else
                             tile.TileIndex--;
                     }
-                    //context.Monitor.Log($"layer {layers[currentLayer]} new tile index {tile.TileIndex}");
                 }
                 Game1.playSound(Config.ScrollSound);
                 return false;
             }
             return true;
-        }
-
-        private void GameLoop_UpdateTicking(object sender, UpdateTickingEventArgs e)
-        {
-
         }
 
         private void GameLoop_UpdateTicked(object sender, UpdateTickedEventArgs e)
@@ -252,8 +243,6 @@ namespace MapEdit
 
                     var xRect = tile.TileSheet.GetTileImageBounds(tile.TileIndex);
                     Rectangle sourceRectangle = new Rectangle(xRect.X, xRect.Y, xRect.Width, xRect.Height);
-
-                    //Monitor.Log($"{layer.Id} {tile.TileSheet.Id} {tile.TileIndex} {xRect}");
 
                     Texture2D texture2D;
                     try
@@ -392,8 +381,6 @@ namespace MapEdit
             return mapCollectionData.mapDataDict.ContainsKey(Game1.player.currentLocation.Name) && mapCollectionData.mapDataDict[Game1.player.currentLocation.Name].tileDataDict.ContainsKey(tileLoc);
         }
 
-        /// <summary>Get whether this instance can edit the given asset.</summary>
-        /// <param name="asset">Basic metadata about the asset being loaded.</param>
         public bool CanEdit<T>(IAssetInfo asset)
         {
             if (!Config.EnableMod)
@@ -413,8 +400,6 @@ namespace MapEdit
             return false;
         }
 
-        /// <summary>Edit a matched asset.</summary>
-        /// <param name="asset">A helper which encapsulates metadata about an asset and enables changes to it.</param>
         public void Edit<T>(IAssetData asset)
         {
             foreach (string name in mapCollectionData.mapDataDict.Keys)
@@ -449,7 +434,6 @@ namespace MapEdit
                                 {
                                     mapData.Data.GetLayer(kvp2.Key).Tiles[(int)kvp.Key.X, (int)kvp.Key.Y].Properties[prop.Key] = prop.Value;
                                 }
-                                //Monitor.Log($"new tile {kvp.Key}, layer {kvp2.Key}, index {mapData.Data.GetLayer(kvp2.Key).Tiles[(int)kvp.Key.X, (int)kvp.Key.Y]?.TileIndex}", LogLevel.Info);
                                 count++;
                             }
                             catch
