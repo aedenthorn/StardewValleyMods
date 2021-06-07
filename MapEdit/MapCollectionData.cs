@@ -34,10 +34,6 @@ namespace MapEdit
     {
         public List<TileInfo> tiles { get; set; } = new List<TileInfo>();
         public long frameInterval { get; set; }
-        public int index { get; set; }
-        public string tileSheet { get; set; }
-        public BlendMode blendMode { get; set; }
-        public Dictionary<string, string> properties { get; set; }
         public TileLayerData()
         { 
         }

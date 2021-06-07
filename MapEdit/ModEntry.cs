@@ -4,6 +4,7 @@ using Microsoft.Xna.Framework.Graphics;
 using StardewModdingAPI;
 using StardewModdingAPI.Events;
 using StardewValley;
+using System;
 using System.Collections.Generic;
 using xTile.Layers;
 using xTile.Tiles;
@@ -33,7 +34,7 @@ namespace MapEdit
             Config = Helper.ReadConfig<ModConfig>();
 
 
-            mapCollectionData = Helper.Data.ReadJsonFile<MapCollectionData>("map_data.json") ?? new MapCollectionData();
+            GetMapCollectionData();
 
             CreateTextures();
 
@@ -48,6 +49,38 @@ namespace MapEdit
                original: AccessTools.Method(typeof(Game1), nameof(Game1.pressSwitchToolButton)),
                prefix: new HarmonyMethod(typeof(ModEntry), nameof(ModEntry.pressSwitchToolButton_Prefix))
             );
+        }
+
+        private static void GetMapCollectionData()
+        {
+            try // convert legacy
+            {
+                MapCollectionDataOld oldData = context.Helper.Data.ReadJsonFile<MapCollectionDataOld>("map_data.json");
+                mapCollectionData = new MapCollectionData();
+                foreach(var kvp in oldData.mapDataDict)
+                {
+                    mapCollectionData.mapDataDict.Add(kvp.Key, new MapData());
+                    foreach(var kvp2 in kvp.Value.tileDataDict)
+                    {
+                        mapCollectionData.mapDataDict[kvp.Key].tileDataDict.Add(kvp2.Key, new TileData());
+                        foreach (var kvp3 in kvp2.Value.tileDict)
+                        {
+                            mapCollectionData.mapDataDict[kvp.Key].tileDataDict[kvp2.Key].tileDict.Add(kvp3.Key, new TileLayerData());
+                            mapCollectionData.mapDataDict[kvp.Key].tileDataDict[kvp2.Key].tileDict[kvp3.Key].tiles.Add(new TileInfo() { properties = kvp3.Value.properties, blendMode = kvp3.Value.blendMode, tileIndex = kvp3.Value.index, tileSheet = kvp3.Value.tileSheet});
+                        }
+                    }
+                }
+                SaveMapData();
+            }
+            catch
+            {
+                mapCollectionData = context.Helper.Data.ReadJsonFile<MapCollectionData>("map_data.json") ?? new MapCollectionData();
+            }
+            finally
+            {
+                context.Monitor.Log("Couldn't load map data.", LogLevel.Warn);
+                mapCollectionData = new MapCollectionData();
+            }
         }
 
         private static bool pressSwitchToolButton_Prefix()
@@ -376,9 +409,9 @@ namespace MapEdit
             Monitor.Log($"Pasted tile to {Game1.currentCursorTile}");
         }
 
-        private void SaveMapData()
+        private static void SaveMapData()
         {
-            Helper.Data.WriteJsonFile("map_data.json", mapCollectionData);
+            context.Helper.Data.WriteJsonFile("map_data.json", mapCollectionData);
         }
 
         private void UpdateCurrentMap(bool force)
@@ -453,22 +486,24 @@ namespace MapEdit
                         {
                             try
                             {
-                                if(kvp2.Value.tiles.Count == 0) // legacy
-                                    mapData.Data.GetLayer(kvp2.Key).Tiles[(int)kvp.Key.X, (int)kvp.Key.Y] = new StaticTile(mapData.Data.GetLayer(kvp2.Key), mapData.Data.GetTileSheet(kvp2.Value.tileSheet), kvp2.Value.blendMode, kvp2.Value.index);
-                                else if(kvp2.Value.tiles.Count == 1)
-                                    mapData.Data.GetLayer(kvp2.Key).Tiles[(int)kvp.Key.X, (int)kvp.Key.Y] = new StaticTile(mapData.Data.GetLayer(kvp2.Key), mapData.Data.GetTileSheet(kvp2.Value.tiles[0].tileSheet), kvp2.Value.tiles[0].blendMode, kvp2.Value.tiles[0].tileIndex);
+                                List<StaticTile> tiles = new List<StaticTile>();
+                                for(int i = 0; i < kvp2.Value.tiles.Count; i++)
+                                {
+                                    TileInfo tile = kvp2.Value.tiles[i];
+                                    tiles.Add(new StaticTile(mapData.Data.GetLayer(kvp2.Key), mapData.Data.GetTileSheet(tile.tileSheet), tile.blendMode, tile.tileIndex));
+                                    foreach (var prop in kvp2.Value.tiles[i].properties)
+                                    {
+                                        tiles[i].Properties[prop.Key] = prop.Value;
+                                    }
+                                }
+
+                                if (kvp2.Value.tiles.Count == 1)
+                                {
+                                    mapData.Data.GetLayer(kvp2.Key).Tiles[(int)kvp.Key.X, (int)kvp.Key.Y] = tiles[0];
+                                }
                                 else
                                 {
-                                    List<StaticTile> tiles = new List<StaticTile>();
-                                    foreach(TileInfo tile in kvp2.Value.tiles)
-                                    {
-                                        tiles.Add(new StaticTile(mapData.Data.GetLayer(kvp2.Key), mapData.Data.GetTileSheet(tile.tileSheet), tile.blendMode, tile.tileIndex));
-                                    }
                                     mapData.Data.GetLayer(kvp2.Key).Tiles[(int)kvp.Key.X, (int)kvp.Key.Y] = new AnimatedTile(mapData.Data.GetLayer(kvp2.Key), tiles.ToArray(), kvp2.Value.frameInterval);
-                                }
-                                foreach (var prop in kvp2.Value.properties)
-                                {
-                                    mapData.Data.GetLayer(kvp2.Key).Tiles[(int)kvp.Key.X, (int)kvp.Key.Y].Properties[prop.Key] = prop.Value;
                                 }
                                 count++;
                             }
