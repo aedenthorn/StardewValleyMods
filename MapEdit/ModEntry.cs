@@ -93,6 +93,9 @@ namespace MapEdit
             }
             else if (context.Helper.Input.IsDown(Config.SheetModButton))
             {
+                if (currentTileDict[layers[currentLayer]] is AnimatedTile)
+                    return;
+
                 List<TileSheet> sheets = new List<TileSheet>();
                 foreach (TileSheet sheet in Game1.player.currentLocation.map.TileSheets)
                 {
