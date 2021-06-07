@@ -59,13 +59,13 @@ namespace MapEdit
                 if (!Config.EnableMod)
                     return true;
 
-                int delta = Game1.input.GetMouseState().ScrollWheelValue;
+                int delta = Game1.input.GetMouseState().ScrollWheelValue - Game1.oldMouseState.ScrollWheelValue;
 
                 var layers = currentTileDict.Keys.ToArray();
                 if (context.Helper.Input.IsDown(Config.LayerModButton))
                 {
                     if (currentTileDict.Count < 2)
-                        return true;
+                        return false;
                     if (delta > 0)
                     {
                         if (currentLayer >= layers.Length - 1)
@@ -93,7 +93,7 @@ namespace MapEdit
                             sheets.Add(sheet);
                     }
                     if (sheets.Count < 2)
-                        return true;
+                        return false;
                     Tile tile = currentTileDict[layers[currentLayer]];
                     if (tile == null)
                     {
@@ -161,7 +161,6 @@ namespace MapEdit
             {
                 PasteCurrentTile();
             }
-
         }
 
 
@@ -285,9 +284,13 @@ namespace MapEdit
             existsTexture = new Texture2D(Game1.graphics.GraphicsDevice, Game1.tileSize, Game1.tileSize);
             Color[] data = new Color[Game1.tileSize * Game1.tileSize];
             existsTexture.GetData(data);
+            int thickness = 4;
             for (int i = 0; i < data.Length; i++)
             {
-                data[i] = Config.ExistsColor;
+                if (i < Game1.tileSize * thickness || i % Game1.tileSize < thickness || i % Game1.tileSize >= Game1.tileSize - thickness)
+                    data[i] = Config.ExistsColor;
+                else
+                    data[i] = Color.Transparent;
             }
             existsTexture.SetData(data);
 
@@ -296,7 +299,10 @@ namespace MapEdit
             activeTexture.GetData(data);
             for (int i = 0; i < data.Length; i++)
             {
-                data[i] = Config.ActiveColor;
+                if (i < Game1.tileSize * thickness || i % Game1.tileSize < thickness || i % Game1.tileSize >= Game1.tileSize - thickness)
+                    data[i] = Config.ActiveColor;
+                else
+                    data[i] = Color.Transparent;
             }
             activeTexture.SetData(data);
 
