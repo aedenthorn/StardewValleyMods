@@ -24,7 +24,6 @@ namespace MapEdit
         public static Texture2D activeTexture;
         public static Texture2D copiedTexture;
 
-        public static string jsonFileName;
         public static List<string> cleanMaps = new List<string>();
         public static MapCollectionData mapCollectionData = new MapCollectionData();
 
@@ -37,6 +36,9 @@ namespace MapEdit
         {
             context = this;
             Config = Helper.ReadConfig<ModConfig>();
+
+            SHelper = Helper;
+            SMonitor = Monitor;
 
             HelperEvents.Initialize(Config, Monitor, Helper);
 

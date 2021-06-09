@@ -6,7 +6,8 @@ namespace MapEdit
     public class ModConfig
     {
         public bool EnableMod { get; set; } = true;
-        public bool GlobalChanges { get; set; } = false;
+        public bool UseSaveSpecificEdits { get; set; } = true;
+        public bool IncludeGlobalEdits { get; set; } = true;
         public Color ExistsColor { get; set; } = new Color(1, 0, 0, 1f);
         public Color ActiveColor { get; set; } = new Color(0, 0, 1, 1f);
         public Color CopiedColor { get; set; } = new Color(0, 1, 0, 1f);

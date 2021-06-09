@@ -12,16 +12,16 @@ namespace MapEdit
 
     public class MapData
     {
-        public Dictionary<Vector2, TileData> tileDataDict { get; set; } = new Dictionary<Vector2, TileData>();
+        public Dictionary<Vector2, TileLayers> tileDataDict { get; set; } = new Dictionary<Vector2, TileLayers>();
     }
 
-    public class TileData
+    public class TileLayers
     {
         public Dictionary<string, TileLayerData> tileDict { get; set; } = new Dictionary<string, TileLayerData>();
-        public TileData()
+        public TileLayers()
         {
         }
-        public TileData(Dictionary<string, Tile> currentTile)
+        public TileLayers(Dictionary<string, Tile> currentTile)
         {
             foreach (var kvp in currentTile)
             {

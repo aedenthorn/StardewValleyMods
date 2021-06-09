@@ -109,10 +109,8 @@ namespace MapEdit
             {
                 Helper.Input.Suppress(e.Button);
                 ModEntry.cleanMaps.Clear();
-                ModEntry.mapCollectionData = Helper.Data.ReadJsonFile<MapCollectionData>(ModEntry.jsonFileName) ?? new MapCollectionData();
-                MapActions.SaveMapData();
+                MapActions.GetMapCollectionData();
                 MapActions.UpdateCurrentMap(true);
-                Monitor.Log($"Refreshed map edits, {ModEntry.mapCollectionData.mapDataDict.Count} maps edited");
             }
             else if (ModEntry.modActive && e.Button == Config.ScrollUpButton)
             {

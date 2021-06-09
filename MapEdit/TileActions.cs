@@ -1,4 +1,5 @@
-﻿using StardewValley;
+﻿using Microsoft.Xna.Framework;
+using StardewValley;
 using xTile.Layers;
 using xTile.Tiles;
 
@@ -8,11 +9,8 @@ namespace MapEdit
     {
         public static void RevertCurrentTile()
         {
-            ModEntry.mapCollectionData.mapDataDict[Game1.player.currentLocation.Name].tileDataDict.Remove(Game1.currentCursorTile);
-            if (ModEntry.mapCollectionData.mapDataDict[Game1.player.currentLocation.Name].tileDataDict.Count == 0)
-                ModEntry.mapCollectionData.mapDataDict.Remove(Game1.player.currentLocation.Name);
-            ModEntry.cleanMaps.Remove(Game1.player.currentLocation.Name);
-            MapActions.SaveMapData();
+            ModEntry.pastedTileLoc = new Vector2(-1, -1);
+            MapActions.SaveMapTile(Game1.player.currentLocation.Name, Game1.currentCursorTile, null);
             MapActions.UpdateCurrentMap(true);
         }
 
@@ -42,19 +40,15 @@ namespace MapEdit
 
         public static void PasteCurrentTile()
         {
-            if (!Utility.isOnScreen(Game1.currentCursorTile * Game1.tileSize, 0))
+            if (!Utility.isOnScreen(Game1.currentCursorTile * Game1.tileSize, Game1.tileSize))
                 return;
 
-            if (!ModEntry.mapCollectionData.mapDataDict.ContainsKey(Game1.player.currentLocation.Name))
-                ModEntry.mapCollectionData.mapDataDict[Game1.player.currentLocation.Name] = new MapData();
-
-            ModEntry.mapCollectionData.mapDataDict[Game1.player.currentLocation.Name].tileDataDict[Game1.currentCursorTile] = new TileData(ModEntry.currentTileDict);
-            ModEntry.SMonitor.Log($"Pasted tile to {Game1.currentCursorTile}");
+            MapActions.SaveMapTile(Game1.player.currentLocation.Name, Game1.currentCursorTile, new TileLayers(ModEntry.currentTileDict));
             ModEntry.cleanMaps.Remove(Game1.player.currentLocation.Name);
             MapActions.UpdateCurrentMap(false);
-            MapActions.SaveMapData();
             ModEntry.pastedTileLoc = Game1.currentCursorTile;
             Game1.playSound(ModEntry.Config.PasteSound);
+            ModEntry.SMonitor.Log($"Pasted tile to {Game1.currentCursorTile}");
         }
     }
 }

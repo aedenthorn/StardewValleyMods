@@ -1,6 +1,8 @@
 ﻿using Microsoft.Xna.Framework;
 using StardewModdingAPI;
 using StardewValley;
+using System;
+using System.Collections.Generic;
 using System.IO;
 
 namespace MapEdit
@@ -9,45 +11,180 @@ namespace MapEdit
     {
         public static void GetMapCollectionData()
         {
-
-            ModEntry.mapCollectionData = new MapCollectionData();
-            ModEntry.jsonFileName = ModEntry.Config.GlobalChanges ? "map_data.json" : Path.Combine("data", Constants.SaveFolderName + "_map_data.json");
-
             string modPath = ModEntry.SHelper.DirectoryPath;
+            ModEntry.mapCollectionData = new MapCollectionData();
 
-            if (!ModEntry.Config.GlobalChanges && !Directory.Exists(Path.Combine(modPath, "data")))
-                Directory.CreateDirectory(Path.Combine(modPath, "data"));
+            var mapEdits = new List<MapCollectionData>();
 
-            try // convert legacy
+            if (ModEntry.Config.IncludeGlobalEdits && File.Exists(Path.Combine(modPath, "map_data.json")))
             {
-                MapCollectionDataOld oldData = ModEntry.SHelper.Data.ReadJsonFile<MapCollectionDataOld>(ModEntry.jsonFileName);
-                foreach (var kvp in oldData.mapDataDict)
+                mapEdits.Add(GetMapEdits("map_data.json"));
+            }
+
+            if (Directory.Exists(Path.Combine(ModEntry.SHelper.DirectoryPath, "custom")))
+            {
+                foreach (string file in Directory.GetFiles(Path.Combine(ModEntry.SHelper.DirectoryPath, "custom"), "*.json"))
                 {
-                    ModEntry.mapCollectionData.mapDataDict.Add(kvp.Key, new MapData());
-                    foreach (var kvp2 in kvp.Value.tileDataDict)
+                    mapEdits.Add(GetMapEdits(Path.Combine("custom", Path.GetFileName(file))));
+                }
+            }
+
+            if (ModEntry.Config.UseSaveSpecificEdits)
+            {
+                if (!Directory.Exists(Path.Combine(modPath, "data")))
+                    Directory.CreateDirectory(Path.Combine(modPath, "data"));
+                mapEdits.Add(GetMapEdits(Path.Combine("data", Constants.SaveFolderName + "_map_data.json")));
+            }
+
+            foreach(MapCollectionData data in mapEdits)
+            {
+                foreach(var map in data.mapDataDict)
+                {
+                    if (!ModEntry.mapCollectionData.mapDataDict.ContainsKey(map.Key))
                     {
-                        ModEntry.mapCollectionData.mapDataDict[kvp.Key].tileDataDict.Add(kvp2.Key, new TileData());
-                        foreach (var kvp3 in kvp2.Value.tileDict)
+                        ModEntry.mapCollectionData.mapDataDict[map.Key] = map.Value;
+                    }
+                    else
+                    {
+                        foreach(var tile in map.Value.tileDataDict)
                         {
-                            ModEntry.mapCollectionData.mapDataDict[kvp.Key].tileDataDict[kvp2.Key].tileDict.Add(kvp3.Key, new TileLayerData());
-                            ModEntry.mapCollectionData.mapDataDict[kvp.Key].tileDataDict[kvp2.Key].tileDict[kvp3.Key].tiles.Add(new TileInfo() { properties = kvp3.Value.properties, blendMode = kvp3.Value.blendMode, tileIndex = kvp3.Value.index, tileSheet = kvp3.Value.tileSheet });
+                            ModEntry.mapCollectionData.mapDataDict[map.Key].tileDataDict[tile.Key] = tile.Value;
                         }
                     }
                 }
-                ModEntry.SMonitor.Log($"Converted legacy data from file {ModEntry.jsonFileName}");
-                SaveMapData();
+            }
+
+            ModEntry.SMonitor.Log($"Loaded map data for {ModEntry.mapCollectionData.mapDataDict.Count} maps");
+        }
+
+        private static MapCollectionData GetMapEdits(string path)
+        {
+            MapCollectionData collection = new MapCollectionData();
+            try // convert legacy
+            {
+                MapCollectionDataOld oldData = ModEntry.SHelper.Data.ReadJsonFile<MapCollectionDataOld>(path);
+                foreach (var kvp in oldData.mapDataDict)
+                {
+                    collection.mapDataDict.Add(kvp.Key, new MapData());
+                    foreach (var kvp2 in kvp.Value.tileDataDict)
+                    {
+                        collection.mapDataDict[kvp.Key].tileDataDict.Add(kvp2.Key, new TileLayers());
+                        foreach (var kvp3 in kvp2.Value.tileDict)
+                        {
+                            collection.mapDataDict[kvp.Key].tileDataDict[kvp2.Key].tileDict.Add(kvp3.Key, new TileLayerData());
+                            collection.mapDataDict[kvp.Key].tileDataDict[kvp2.Key].tileDict[kvp3.Key].tiles.Add(new TileInfo() { properties = kvp3.Value.properties, blendMode = kvp3.Value.blendMode, tileIndex = kvp3.Value.index, tileSheet = kvp3.Value.tileSheet });
+                        }
+                    }
+                }
+                ModEntry.SMonitor.Log($"Converted legacy data from file {path}");
+                SaveMapData(path, collection);
             }
             catch
             {
-                ModEntry.SMonitor.Log($"Loading map data from file {ModEntry.jsonFileName}");
-                ModEntry.mapCollectionData = ModEntry.SHelper.Data.ReadJsonFile<MapCollectionData>(ModEntry.jsonFileName) ?? new MapCollectionData();
+                ModEntry.SMonitor.Log($"Loading map data from file {path}");
+                collection = ModEntry.SHelper.Data.ReadJsonFile<MapCollectionData>(path) ?? new MapCollectionData();
             }
-            ModEntry.SMonitor.Log($"Loaded map data for {ModEntry.mapCollectionData.mapDataDict.Count} maps");
-
+            return collection;
         }
-        public static void SaveMapData()
+
+        public static void SaveMapData(string path, MapCollectionData collection)
         {
-            ModEntry.SHelper.Data.WriteJsonFile(ModEntry.jsonFileName, ModEntry.mapCollectionData);
+            ModEntry.SHelper.Data.WriteJsonFile(path, collection);
+            ModEntry.SMonitor.Log($"Saved edits to file {path}");
+        }
+
+        public static void SaveMapTile(string map, Vector2 tileLoc, TileLayers tile)
+        {
+            if(tile == null)
+            {
+                ModEntry.mapCollectionData.mapDataDict[map].tileDataDict.Remove(tileLoc);
+                if (ModEntry.mapCollectionData.mapDataDict[map].tileDataDict.Count == 0)
+                    ModEntry.mapCollectionData.mapDataDict.Remove(map);
+            }
+            else
+            {
+                if (!ModEntry.mapCollectionData.mapDataDict.ContainsKey(Game1.player.currentLocation.Name))
+                    ModEntry.mapCollectionData.mapDataDict[Game1.player.currentLocation.Name] = new MapData();
+
+                ModEntry.mapCollectionData.mapDataDict[Game1.player.currentLocation.Name].tileDataDict[Game1.currentCursorTile] = new TileLayers(ModEntry.currentTileDict);
+            }
+
+            string modPath = ModEntry.SHelper.DirectoryPath;
+            if (ModEntry.Config.IncludeGlobalEdits)
+            {
+                var mapData = GetMapEdits("map_data.json");
+                if (tile == null)
+                {
+                    if (mapData.mapDataDict.ContainsKey(map) && mapData.mapDataDict[map].tileDataDict.ContainsKey(tileLoc))
+                    {
+                        mapData.mapDataDict[map].tileDataDict.Remove(tileLoc);
+                        if (mapData.mapDataDict[map].tileDataDict.Count == 0)
+                            mapData.mapDataDict.Remove(map);
+                        SaveMapData(Path.Combine("map_data.json"), mapData);
+                    }
+                }
+                else if (!ModEntry.Config.UseSaveSpecificEdits || (mapData.mapDataDict.ContainsKey(map) && mapData.mapDataDict[map].tileDataDict.ContainsKey(tileLoc))) // save new to global if not using save specific
+                {
+                    if (!mapData.mapDataDict.ContainsKey(map))
+                        mapData.mapDataDict[map] = new MapData();
+
+                    mapData.mapDataDict[map].tileDataDict[tileLoc] = tile;
+                    SaveMapData(Path.Combine("map_data.json"), mapData);
+                }
+            }
+
+            if (Directory.Exists(Path.Combine(modPath, "custom")))
+            {
+                foreach (string file in Directory.GetFiles(Path.Combine(modPath, "custom"), "*.json"))
+                {
+                    string relPath = Path.Combine("custom", Path.GetFileName(file));
+                    var mapData = GetMapEdits(relPath);
+
+                    if (mapData.mapDataDict.ContainsKey(map) && mapData.mapDataDict[map].tileDataDict.ContainsKey(tileLoc)) // only edit if custom file contains this
+                    {
+                        if (tile == null)
+                        {
+                            mapData.mapDataDict[map].tileDataDict.Remove(tileLoc);
+                            if (mapData.mapDataDict[map].tileDataDict.Count == 0)
+                                mapData.mapDataDict.Remove(map);
+                        }
+                        else
+                        {
+                            mapData.mapDataDict[map].tileDataDict[tileLoc] = tile;
+                        }
+                        SaveMapData(relPath, mapData);
+                    }
+                }
+            }
+
+            if (ModEntry.Config.UseSaveSpecificEdits)
+            {
+                string relPath = Path.Combine("data", Constants.SaveFolderName + "_map_data.json");
+                var mapData = new MapCollectionData();
+
+                if (!Directory.Exists(Path.Combine(modPath, "data")))
+                    Directory.CreateDirectory(Path.Combine(modPath, "data"));
+                else
+                    mapData = GetMapEdits(relPath);
+
+                if (tile == null)
+                {
+                    if (mapData.mapDataDict.ContainsKey(map) && mapData.mapDataDict[map].tileDataDict.ContainsKey(tileLoc))
+                    {
+                        mapData.mapDataDict[map].tileDataDict.Remove(tileLoc);
+                        if (mapData.mapDataDict[map].tileDataDict.Count == 0)
+                            mapData.mapDataDict.Remove(map);
+                    }
+                }
+                else // always save new to save specific
+                {
+                    if (!mapData.mapDataDict.ContainsKey(map))
+                        mapData.mapDataDict[map] = new MapData();
+                    mapData.mapDataDict[map].tileDataDict[tileLoc] = tile;
+                }
+                SaveMapData(relPath, mapData);
+            }
+            ModEntry.cleanMaps.Remove(map);
         }
 
         public static void UpdateCurrentMap(bool force)
