@@ -150,14 +150,14 @@ namespace MapEdit
                     var xRect = tile.TileSheet.GetTileImageBounds(tile.TileIndex);
                     Rectangle sourceRectangle = new Rectangle(xRect.X, xRect.Y, xRect.Width, xRect.Height);
 
-                    Texture2D texture2D;
+                    Texture2D texture2D = null;
                     try
                     {
-                        texture2D = Helper.Reflection.GetField<Dictionary<TileSheet, Texture2D>>(Game1.mapDisplayDevice, "m_tileSheetTextures", true)?.GetValue()?[tile.TileSheet];
+                        Helper.Reflection.GetField<Dictionary<TileSheet, Texture2D>>(Game1.mapDisplayDevice, "m_tileSheetTextures", true)?.GetValue()?.TryGetValue(tile.TileSheet, out texture2D);
                     }
                     catch
                     {
-                        texture2D = Helper.Reflection.GetField<Dictionary<TileSheet, Texture2D>>(Game1.mapDisplayDevice, "m_tileSheetTextures2", true)?.GetValue()?[tile.TileSheet];
+                        Helper.Reflection.GetField<Dictionary<TileSheet, Texture2D>>(Game1.mapDisplayDevice, "m_tileSheetTextures2", false)?.GetValue()?.TryGetValue(tile.TileSheet, out texture2D);
                     }
                     if (texture2D != null)
                         e.SpriteBatch.Draw(texture2D, mouseTilePos, sourceRectangle, Color.White, 0f, Vector2.Zero, Layer.zoom, SpriteEffects.None, layerDepth);

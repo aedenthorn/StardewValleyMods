@@ -20,7 +20,7 @@ namespace MapEdit
 
             if (ModEntry.SHelper.Input.IsDown(ModEntry.Config.LayerModButton))
             {
-                if (ModEntry.currentTileDict.Count < 2)
+                if (layers.Count < 2)
                     return;
                 if (increase)
                 {
@@ -36,6 +36,7 @@ namespace MapEdit
                     else
                         ModEntry.currentLayer--;
                 }
+
                 string text = string.Format(ModEntry.SHelper.Translation.Get("current-layer"), layers[ModEntry.currentLayer]);
                 ModEntry.SMonitor.Log(text);
                 ModActions.ShowMessage(text);
@@ -83,6 +84,10 @@ namespace MapEdit
             }
             else
             {
+                if (ModEntry.currentTileDict[layers[ModEntry.currentLayer]] == null)
+                {
+                    ModEntry.currentTileDict[layers[ModEntry.currentLayer]] = new StaticTile(Game1.player.currentLocation.map.GetLayer(layers[ModEntry.currentLayer]), Game1.player.currentLocation.map.TileSheets[0], BlendMode.Alpha, -1);
+                }
                 if (ModEntry.currentTileDict[layers[ModEntry.currentLayer]] is AnimatedTile)
                     return;
 

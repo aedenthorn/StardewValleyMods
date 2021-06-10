@@ -10,7 +10,7 @@ namespace MapEdit
         public static void RevertCurrentTile()
         {
             ModEntry.pastedTileLoc = new Vector2(-1, -1);
-            MapActions.SaveMapTile(Game1.player.currentLocation.Name, Game1.currentCursorTile, null);
+            MapActions.SaveMapTile(Game1.player.currentLocation.mapPath.Value.Replace("Maps\\", ""), Game1.currentCursorTile, null);
             MapActions.UpdateCurrentMap(true);
         }
 
@@ -43,8 +43,10 @@ namespace MapEdit
             if (!Utility.isOnScreen(Game1.currentCursorTile * Game1.tileSize, Game1.tileSize))
                 return;
 
-            MapActions.SaveMapTile(Game1.player.currentLocation.Name, Game1.currentCursorTile, new TileLayers(ModEntry.currentTileDict));
-            ModEntry.cleanMaps.Remove(Game1.player.currentLocation.Name);
+            string mapName = Game1.player.currentLocation.mapPath.Value.Replace("Maps\\", "");
+
+            MapActions.SaveMapTile(mapName, Game1.currentCursorTile, new TileLayers(ModEntry.currentTileDict));
+            ModEntry.cleanMaps.Remove(mapName);
             MapActions.UpdateCurrentMap(false);
             ModEntry.pastedTileLoc = Game1.currentCursorTile;
             Game1.playSound(ModEntry.Config.PasteSound);

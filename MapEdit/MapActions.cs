@@ -95,7 +95,7 @@ namespace MapEdit
 
         public static void SaveMapTile(string map, Vector2 tileLoc, TileLayers tile)
         {
-            if(tile == null)
+            if (tile == null)
             {
                 ModEntry.mapCollectionData.mapDataDict[map].tileDataDict.Remove(tileLoc);
                 if (ModEntry.mapCollectionData.mapDataDict[map].tileDataDict.Count == 0)
@@ -103,10 +103,10 @@ namespace MapEdit
             }
             else
             {
-                if (!ModEntry.mapCollectionData.mapDataDict.ContainsKey(Game1.player.currentLocation.Name))
-                    ModEntry.mapCollectionData.mapDataDict[Game1.player.currentLocation.Name] = new MapData();
+                if (!ModEntry.mapCollectionData.mapDataDict.ContainsKey(map))
+                    ModEntry.mapCollectionData.mapDataDict[map] = new MapData();
 
-                ModEntry.mapCollectionData.mapDataDict[Game1.player.currentLocation.Name].tileDataDict[Game1.currentCursorTile] = new TileLayers(ModEntry.currentTileDict);
+                ModEntry.mapCollectionData.mapDataDict[map].tileDataDict[Game1.currentCursorTile] = new TileLayers(ModEntry.currentTileDict);
             }
 
             string modPath = ModEntry.SHelper.DirectoryPath;
@@ -189,15 +189,18 @@ namespace MapEdit
 
         public static void UpdateCurrentMap(bool force)
         {
-            if (!ModEntry.Config.EnableMod || (!force && (!ModEntry.mapCollectionData.mapDataDict.ContainsKey(Game1.player.currentLocation.Name) || ModEntry.cleanMaps.Contains(Game1.player.currentLocation.Name))))
+            string mapName = Game1.player.currentLocation.mapPath.Value.Replace("Maps\\", "");
+
+            if (!ModEntry.Config.EnableMod || (!force && (!ModEntry.mapCollectionData.mapDataDict.ContainsKey(mapName) || ModEntry.cleanMaps.Contains(mapName))))
                 return;
 
-            ModEntry.SHelper.Content.InvalidateCache("Maps/" + Game1.player.currentLocation.Name);
+            ModEntry.SHelper.Content.InvalidateCache("Maps/" + mapName);
             Game1.player.currentLocation.reloadMap();
         }
         public static bool MapHasTile(Vector2 tileLoc)
         {
-            return ModEntry.mapCollectionData.mapDataDict.ContainsKey(Game1.player.currentLocation.Name) && ModEntry.mapCollectionData.mapDataDict[Game1.player.currentLocation.Name].tileDataDict.ContainsKey(tileLoc);
+            string mapName = Game1.player.currentLocation.mapPath.Value.Replace("Maps\\", "");
+            return ModEntry.mapCollectionData.mapDataDict.ContainsKey(mapName) && ModEntry.mapCollectionData.mapDataDict[mapName].tileDataDict.ContainsKey(tileLoc);
         }
     }
 }
