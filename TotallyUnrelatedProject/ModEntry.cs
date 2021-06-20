@@ -1,6 +1,7 @@
 ﻿using Harmony;
 using StardewModdingAPI;
 using StardewValley;
+using StardewValley.Locations;
 using System;
 
 namespace CustomFixedDialogue 
@@ -42,15 +43,19 @@ namespace CustomFixedDialogue
                 original: AccessTools.Method(typeof(NPC), nameof(NPC.getTermOfSpousalEndearment)),
                 postfix: new HarmonyMethod(typeof(DialoguePatches), nameof(DialoguePatches.NPC_getTermOfSpousalEndearment_Postfix))
             );
+            harmony.Patch(
+                original: AccessTools.Method(typeof(Summit), nameof(Summit.GetSummitDialogue)),
+                postfix: new HarmonyMethod(typeof(DialoguePatches), nameof(DialoguePatches.GetSummitDialogue_Patch))
+            );
 
-            helper.Events.GameLoop.DayStarted += GameLoop_DayStarted;
+            //helper.Events.GameLoop.DayStarted += GameLoop_DayStarted;
 
 
         }
 
         private void GameLoop_DayStarted(object sender, StardewModdingAPI.Events.DayStartedEventArgs e)
         {
-            string text = "I was just thinking about the last %year years...\"/pause 1000/speak spouse \"We've been through a lot together, haven't we?$h";
+            string text = "This is a test";
             DialoguePatches.AddWrapperToString("Data\\ExtraDialogue:SummitEvent_Dialogue2_Spouse", ref text);
             Monitor.Log($"prefixed: {text}");
             DialoguePatches.FixString(Game1.getCharacterFromName("Shane"), ref text);

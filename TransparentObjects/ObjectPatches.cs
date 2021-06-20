@@ -21,7 +21,7 @@ namespace TransparentObjects
         public static void Object_draw_Prefix(StardewValley.Object __instance, ref float alpha)
         {
 
-            if (Config.Exceptions.Contains(__instance.name) || ModEntry.IsOff())
+            if (!ModEntry.IsAllowed(__instance.name) || ModEntry.IsOff())
                 return;
 
             float maxDistance = Config.TransparencyMaxDistance;

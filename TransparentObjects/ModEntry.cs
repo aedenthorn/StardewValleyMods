@@ -2,6 +2,7 @@
 using Microsoft.Xna.Framework.Graphics;
 using StardewModdingAPI;
 using System;
+using System.Linq;
 
 namespace TransparentObjects
 {
@@ -44,10 +45,13 @@ namespace TransparentObjects
             }
         }
 
-
         public static bool IsOff()
         {
             return (Config.RequireButtonDown && !SHelper.Input.IsDown(Config.ToggleButton)) || (!Config.RequireButtonDown && !Config.MakeTransparent);
+        }
+        public static bool IsAllowed(string name)
+        {
+            return (Config.Exceptions.Length > 0 && !Config.Exceptions.Contains(name)) || (Config.Allowed.Length > 0 && Config.Allowed.Contains(name));
         }
     }
 }
