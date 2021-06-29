@@ -40,7 +40,6 @@ namespace MultipleSpouses
             { "Krobus", 12 },
         };
 
-        // call this method from your Entry class
         public static void Initialize(IMonitor monitor)
         {
             Monitor = monitor;

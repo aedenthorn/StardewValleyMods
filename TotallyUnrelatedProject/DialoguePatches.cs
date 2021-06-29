@@ -97,8 +97,6 @@ namespace CustomFixedDialogue
             "1633",
             "1634",
             "1635",
-            "1736",
-            "1738",
             "1801",
         };
 

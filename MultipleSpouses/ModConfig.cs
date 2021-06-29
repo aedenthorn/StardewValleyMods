@@ -46,7 +46,7 @@ namespace MultipleSpouses
         public int ExistingSpouseRoomOffsetX { get; set; } = 0;
         public int ExistingSpouseRoomOffsetY { get; set; } = 0;
         public bool CustomBed { get; set; } = true;
-        public int BedWidth { get; set; } = 8;
+        public int BedWidth { get; set; } = 5;
         public float SheetTransparency { get; set; } = 1f;
         public int ExtraKidsRoomWidth { get; set; } = 0;
         public int ExtraCribs { get; set; } = 0;
