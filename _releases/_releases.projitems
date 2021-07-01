@@ -29,6 +29,7 @@
     <None Include="$(MSBuildThisFileDirectory)FarmAnywhere 0.1.0.zip" />
     <None Include="$(MSBuildThisFileDirectory)FireBreath 0.1.0.zip" />
     <None Include="$(MSBuildThisFileDirectory)FishingChestsExpanded 0.4.2.zip" />
+    <None Include="$(MSBuildThisFileDirectory)FlowingMineRocks 0.1.1.zip" />
     <None Include="$(MSBuildThisFileDirectory)FruitTreeShaker 1.1.0.zip" />
     <None Include="$(MSBuildThisFileDirectory)GemIsles 0.2.3.zip" />
     <None Include="$(MSBuildThisFileDirectory)HereFishy 0.3.2.zip" />
