@@ -49,6 +49,7 @@
     <None Include="$(MSBuildThisFileDirectory)MoveableMailbox 0.2.0.zip" />
     <None Include="$(MSBuildThisFileDirectory)MoveablePetBowl 0.1.1.zip" />
     <None Include="$(MSBuildThisFileDirectory)MultipleSpouses 3.1.7.zip" />
+    <None Include="$(MSBuildThisFileDirectory)MultipleSpouses 3.1.9.zip" />
     <None Include="$(MSBuildThisFileDirectory)MultiStoryFarmhouse 0.2.1.zip" />
     <None Include="$(MSBuildThisFileDirectory)Murdercrows 0.2.2.zip" />
     <None Include="$(MSBuildThisFileDirectory)NonRandomPrairieKing 0.1.0.zip" />

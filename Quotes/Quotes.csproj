@@ -60,6 +60,7 @@
   </ItemGroup>
   <ItemGroup />
   <ItemGroup>
+    <Content Include="assets\quotes_portuguese.txt" />
     <Content Include="assets\quotes_default.txt" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
