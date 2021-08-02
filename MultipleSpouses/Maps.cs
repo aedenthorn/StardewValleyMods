@@ -14,7 +14,7 @@ using xTile.Dimensions;
 using xTile.Layers;
 using xTile.ObjectModel;
 using xTile.Tiles;
-using static Harmony.AccessTools;
+using HarmonyLib;
 
 namespace MultipleSpouses
 {
@@ -563,16 +563,16 @@ namespace MultipleSpouses
         private static void ExtendMap(FarmHouse farmHouse, int v)
         {
             ModEntry.PMonitor.Log($"Extending map width to {v}");
-            List<Layer> layers = FieldRefAccess<Map, List<Layer>>(farmHouse.map, "m_layers");
+            List<Layer> layers = AccessTools.Field(typeof(Map), "m_layers").GetValue(farmHouse.map) as List<Layer>;
             for (int i = 0; i < layers.Count; i++)
             {
-                Tile[,] tiles = FieldRefAccess<Layer, Tile[,]>(layers[i], "m_tiles");
-                Size size = FieldRefAccess<Layer, Size>(layers[i], "m_layerSize");
+                Tile[,] tiles = AccessTools.Field(typeof(Layer), "m_tiles").GetValue(layers[i]) as Tile[,];
+                Size size = (Size)AccessTools.Field(typeof(Layer), "m_layerSize").GetValue(layers[i]);
                 if (size.Width >= v)
                     continue;
                 size = new Size(v, size.Height);
-                FieldRefAccess<Layer, Size>(layers[i], "m_layerSize") = size;
-                FieldRefAccess<Map, List<Layer>>(farmHouse.map, "m_layers") = layers;
+                AccessTools.Field(typeof(Layer), "m_layerSize").SetValue(layers[i], size);
+                AccessTools.Field(typeof(Map), "m_layers").SetValue(farmHouse.map, layers);
 
                 Tile[,] newTiles = new Tile[v, tiles.GetLength(1)];
 
@@ -583,11 +583,11 @@ namespace MultipleSpouses
                         newTiles[k, l] = tiles[k, l];
                     }
                 }
+                AccessTools.Field(typeof(Layer), "m_tiles").SetValue(layers[i], newTiles);
+                AccessTools.Field(typeof(Layer), "m_tileArray").SetValue(layers[i], new TileArray(layers[i], newTiles));
 
-                FieldRefAccess<Layer, Tile[,]>(layers[i], "m_tiles") = newTiles;
-                FieldRefAccess<Layer, TileArray>(layers[i], "m_tileArray") = new TileArray(layers[i], newTiles);
             }
-            FieldRefAccess<Map, List<Layer>>(farmHouse.map, "m_layers") = layers;
+            AccessTools.Field(typeof(Map), "m_layers").SetValue(farmHouse.map, layers);
         }
 
 

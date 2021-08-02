@@ -1,7 +1,7 @@
 ﻿{
   "Name": "Custom Locks",
   "Author": "aedenthorn",
-  "Version": "0.2.0",
+  "Version": "0.3.0",
   "Description": "Allows you enter some or all locked doors in Pelican Town.",
   "UniqueID": "aedenthorn.CustomLocks",
   "EntryDll": "CustomLocks.dll",

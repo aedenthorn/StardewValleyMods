@@ -6,7 +6,7 @@
   "UniqueID": "aedenthorn.ProceduralDialogue",
   "EntryDll": "ProceduralDialogue.dll",
   "MinimumApiVersion": "3.5.0",
-  "UpdateKeys": ["Nexus:"]
+  "UpdateKeys": ["Nexus:"],
   "ModUpdater": {
     "Repository": "StardewValleyMods",
     "User": "aedenthorn",

@@ -67,7 +67,7 @@ namespace MultipleSpouses
             }
             foreach(Farmer f in Game1.getAllFarmers())
             {
-                IEnumerable<string> spouses = Misc.GetSpouses(f, -1).Keys;
+                var spouses = Misc.GetSpouses(f, -1).Keys;
                 foreach(string s in spouses)
                 {
                     Monitor.Log($"{f.Name} is married to {s}");

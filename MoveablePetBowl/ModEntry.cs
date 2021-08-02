@@ -1,4 +1,4 @@
-﻿using Harmony;
+﻿using HarmonyLib;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using StardewModdingAPI;
@@ -51,7 +51,7 @@ namespace MoveablePetBowl
             tilesTexture = Helper.Content.Load<Texture2D>("assets/tiles.png");
             waterTexture = Helper.Content.Load<Texture2D>("assets/water.png");
 
-            var harmony = HarmonyInstance.Create(ModManifest.UniqueID);
+            var harmony = new Harmony(ModManifest.UniqueID);
             
             ConstructorInfo ci = typeof(Farm).GetConstructor(new Type[] { typeof(string), typeof(string) });
             harmony.Patch(
@@ -82,15 +82,25 @@ namespace MoveablePetBowl
                postfix: new HarmonyMethod(typeof(ModEntry), nameof(placementAction_Postfix))
             );
 
+
+            var hm = new HarmonyMethod(typeof(ModEntry), nameof(performRemoveAction_Prefix));
+            hm.priority = Priority.First;
+
             harmony.Patch(
                original: AccessTools.Method(typeof(Object), nameof(Object.performRemoveAction)),
-               prefix: new HarmonyMethod(typeof(ModEntry), nameof(performRemoveAction_Prefix)) { prioritiy = Priority.First }
+               prefix: hm
             );
+
+
+            hm = new HarmonyMethod(typeof(ModEntry), nameof(performToolAction_Postfix));
+            hm.priority = Priority.First;
 
             harmony.Patch(
                original: AccessTools.Method(typeof(Object), nameof(Object.performToolAction)),
-               postfix: new HarmonyMethod(typeof(ModEntry), nameof(performToolAction_Postfix)) { prioritiy = Priority.First }
+               postfix: hm
             );
+
+
             harmony.Patch(
                original: AccessTools.Method(typeof(Object), nameof(Object.draw), new Type[] { typeof(SpriteBatch), typeof(int), typeof(int), typeof(float), typeof(float) }),
                postfix: new HarmonyMethod(typeof(ModEntry), nameof(ModEntry.Object_draw_Postfix))

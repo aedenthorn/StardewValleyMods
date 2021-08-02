@@ -1,4 +1,4 @@
-﻿using Harmony;
+﻿using HarmonyLib;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using StardewModdingAPI;
@@ -82,7 +82,7 @@ namespace Swim
             helper.Events.Player.InventoryChanged += SwimHelperEvents.Player_InventoryChanged;
             helper.Events.Player.Warped += SwimHelperEvents.Player_Warped;
 
-            var harmony = HarmonyInstance.Create(this.ModManifest.UniqueID);
+            var harmony = new Harmony(this.ModManifest.UniqueID);
 
             harmony.Patch(
                original: AccessTools.Method(typeof(FarmerRenderer), nameof(FarmerRenderer.draw), new Type[] { typeof(SpriteBatch), typeof(FarmerSprite.AnimationFrame), typeof(int), typeof(Rectangle), typeof(Vector2), typeof(Vector2), typeof(float), typeof(int), typeof(Color), typeof(float), typeof(float), typeof(Farmer) }),

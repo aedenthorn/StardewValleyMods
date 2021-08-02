@@ -1,4 +1,4 @@
-﻿using Harmony;
+﻿using HarmonyLib;
 using Microsoft.Xna.Framework;
 using Netcode;
 using StardewModdingAPI;
@@ -31,7 +31,7 @@ namespace InstantGrowthPowder
             SHelper = Helper;
             helper.Events.GameLoop.GameLaunched += GameLoop_GameLaunched;
 
-            var harmony = HarmonyInstance.Create(ModManifest.UniqueID);
+            var harmony = new Harmony(ModManifest.UniqueID);
 
             harmony.Patch(
                original: AccessTools.Method(typeof(GameLocation), nameof(GameLocation.checkAction)),

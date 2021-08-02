@@ -1,4 +1,4 @@
-﻿using Harmony;
+﻿using HarmonyLib;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using StardewModdingAPI;
@@ -61,7 +61,7 @@ namespace CustomSpousePatio
             Helper.Events.GameLoop.DayStarted += GameLoop_DayStarted;
             Helper.Events.GameLoop.ReturnedToTitle += GameLoop_ReturnedToTitle;
 
-            var harmony = HarmonyInstance.Create(this.ModManifest.UniqueID);
+            var harmony = new  Harmony(this.ModManifest.UniqueID);
 
             harmony.Patch(
                original: AccessTools.Method(typeof(NPC), nameof(NPC.setUpForOutdoorPatioActivity)),
@@ -109,7 +109,7 @@ namespace CustomSpousePatio
             {
                 Farmer farmer = Game1.player;
                 //Game1.getFarm().addSpouseOutdoorArea(Game1.player.spouse == null ? "" : Game1.player.spouse);
-                IEnumerable<string> spouses = farmer.friendshipData.Pairs.Where(f => f.Value.IsMarried()).Select(f => f.Key);
+                var spouses = farmer.friendshipData.Pairs.Where(f => f.Value.IsMarried()).Select(f => f.Key).ToList();
                 NPC ospouse = farmer.getSpouse();
                 if (ospouse != null)
                 {

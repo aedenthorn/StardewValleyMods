@@ -1,7 +1,7 @@
 ﻿{
   "Name": "Moveable Pet Bowl",
   "Author": "aedenthorn",
-  "Version": "0.1.1",
+  "Version": "0.2.0",
   "Description": "Converts the pet bowl into a movable object.",
   "UniqueID": "aedenthorn.MoveablePetBowl",
   "EntryDll": "MoveablePetBowl.dll",
