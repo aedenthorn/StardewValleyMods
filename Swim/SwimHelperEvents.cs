@@ -733,12 +733,14 @@ namespace Swim
 
             SwimUtils.CheckIfMyButtonDown();
 
+            if(ModEntry.myButtonDown)
+                Monitor.Log($"My button down");
+
             if (!ModEntry.myButtonDown || Game1.player.millisecondsPlayed - lastJump < 250 || SwimUtils.IsMapUnderwater(Game1.player.currentLocation.Name))
                 return;
 
             if (Helper.Input.IsDown(SButton.MouseLeft) && !Game1.player.swimming && (Game1.player.CurrentTool is WateringCan || Game1.player.CurrentTool is FishingRod))
                 return;
-
 
             List<Vector2> tiles = SwimUtils.GetTilesInDirection(5);
             Vector2 jumpLocation = Vector2.Zero;

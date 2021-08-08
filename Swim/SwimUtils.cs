@@ -1,5 +1,6 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using Microsoft.Xna.Framework.Input;
 using Netcode;
 using StardewModdingAPI;
 using StardewValley;
@@ -126,34 +127,13 @@ namespace Swim
                 return;
             }
 
-            List<SButton> dirButtons = new List<SButton>();
-            foreach (InputButton ib in Game1.options.moveUpButton)
+            if (Game1.isOneOfTheseKeysDown(Game1.input.GetKeyboardState(), Game1.options.moveUpButton) || (Game1.options.gamepadControls && ((double)Game1.input.GetGamePadState().ThumbSticks.Left.Y > 0.25 || Game1.input.GetGamePadState().IsButtonDown(Buttons.DPadUp))) || Game1.isOneOfTheseKeysDown(Game1.input.GetKeyboardState(), Game1.options.moveDownButton) || (Game1.options.gamepadControls && ((double)Game1.input.GetGamePadState().ThumbSticks.Left.Y < -0.25 || Game1.input.GetGamePadState().IsButtonDown(Buttons.DPadDown))) || Game1.isOneOfTheseKeysDown(Game1.input.GetKeyboardState(), Game1.options.moveLeftButton) || (Game1.options.gamepadControls && ((double)Game1.input.GetGamePadState().ThumbSticks.Left.X < -0.25 || Game1.input.GetGamePadState().IsButtonDown(Buttons.DPadLeft))) || Game1.isOneOfTheseKeysDown(Game1.input.GetKeyboardState(), Game1.options.moveRightButton) || (Game1.options.gamepadControls && ((double)Game1.input.GetGamePadState().ThumbSticks.Left.X > 0.25 || Game1.input.GetGamePadState().IsButtonDown(Buttons.DPadRight))))
             {
-                dirButtons.Add(ib.ToSButton());
-            }
-            foreach (InputButton ib in Game1.options.moveDownButton)
-            {
-                dirButtons.Add(ib.ToSButton());
-            }
-            foreach (InputButton ib in Game1.options.moveRightButton)
-            {
-                dirButtons.Add(ib.ToSButton());
-            }
-            foreach (InputButton ib in Game1.options.moveLeftButton)
-            {
-                dirButtons.Add(ib.ToSButton());
+                ModEntry.myButtonDown = true;
+                return;
             }
 
-            foreach (SButton b in dirButtons)
-            {
-                if (Helper.Input.IsDown(b))
-                {
-                    ModEntry.myButtonDown = true;
-                    return;
-                }
-            }
-
-            if (Helper.Input.IsDown(SButton.MouseLeft) && !(Game1.player.CurrentTool is StardewValley.Tools.Pan) && !(Game1.player.CurrentTool is StardewValley.Tools.FishingRod) && Config.EnableClickToSwim)
+            if (Helper.Input.IsDown(Config.ManualJumpButton) && !(Game1.player.CurrentTool is StardewValley.Tools.Pan) && !(Game1.player.CurrentTool is StardewValley.Tools.FishingRod) && Config.EnableClickToSwim)
             {
                 ModEntry.myButtonDown = true;
                 return;
