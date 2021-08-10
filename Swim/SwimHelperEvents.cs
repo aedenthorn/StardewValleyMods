@@ -4,6 +4,7 @@ using Microsoft.Xna.Framework.Graphics;
 using Netcode;
 using StardewModdingAPI;
 using StardewModdingAPI.Events;
+using StardewModdingAPI.Utilities;
 using StardewValley;
 using StardewValley.Locations;
 using StardewValley.Menus;
@@ -29,25 +30,35 @@ namespace Swim
         private static ModConfig Config;
         private static IModHelper Helper;
 
-        public static bool isJumping = false;
-        public static Vector2 startJumpLoc;
-        public static Vector2 endJumpLoc;
-        public static ulong lastJump = 0;
-        public static ulong lastProjectile = 0;
-        public static int abigailTicks;
-        public static SoundEffect breatheEffect = null;
-        public static int ticksUnderwater = 0;
-        public static int ticksWearingScubaGear = 0;
-        public static int bubbleOffset = 0;
-        private static int lastBreatheSound; 
+        public static readonly PerScreen<bool> isJumping = new PerScreen<bool>(() => false);
+        public static readonly PerScreen<Vector2> startJumpLoc = new PerScreen<Vector2>();
+        public static readonly PerScreen<Vector2> endJumpLoc = new PerScreen<Vector2>();     
+        public static readonly PerScreen<ulong> lastJump = new PerScreen<ulong>(() => 0);
+        public static readonly PerScreen<ulong> lastProjectile = new PerScreen<ulong>(() => 0);
+        public static readonly PerScreen<int> abigailTicks = new PerScreen<int>();
+        public static readonly PerScreen<SoundEffect> breatheEffect = new PerScreen<SoundEffect>(() => null);
+        public static readonly PerScreen<int> ticksUnderwater = new PerScreen<int>(() => 0);
+        public static readonly PerScreen<int> ticksWearingScubaGear = new PerScreen<int>(() => 0);
+        public static readonly PerScreen<int> bubbleOffset = new PerScreen<int>(() => 0);
+        //public static readonly PerScreen<SButton[]> abigailShootButtons = new PerScreen<SButton[]>(() =>
+        //   new SButton[] {
+        //        SButton.Left,
+        //        SButton.Right,
+        //        SButton.Up,
+        //        SButton.Down
+        //   }
+        //);
         public static SButton[] abigailShootButtons = new SButton[] {
             SButton.Left,
             SButton.Right,
             SButton.Up,
             SButton.Down
         };
+
         internal static Texture2D bubbleTexture;
-        private static bool surfacing;
+
+        private static readonly PerScreen<int> lastBreatheSound = new PerScreen<int>();
+        private static readonly PerScreen<bool> surfacing = new PerScreen<bool>();
 
         public static void Initialize(IMonitor monitor, IModHelper helper, ModConfig config)
         {
@@ -60,7 +71,7 @@ namespace Swim
         {
             if (e.NewLocation.Name == "ScubaAbigailCave")
             {
-                abigailTicks = 0;
+                abigailTicks.Value = 0;
                 e.NewLocation.characters.Clear();
 
 
@@ -81,17 +92,17 @@ namespace Swim
             if (e.Player != Game1.player)
                 return;
 
-            if (!Game1.player.mailReceived.Contains("ScubaTank") && ModEntry.scubaTankID != -1 && e.Added != null && e.Added.Count() > 0 && e.Added.FirstOrDefault() != null && e.Added.FirstOrDefault().parentSheetIndex != null && e.Added.FirstOrDefault().GetType() == typeof(Clothing) && e.Added.FirstOrDefault().parentSheetIndex == ModEntry.scubaTankID)
+            if (!Game1.player.mailReceived.Contains("ScubaTank") && ModEntry.scubaTankID.Value != -1 && e.Added != null && e.Added.Count() > 0 && e.Added.FirstOrDefault() != null && e.Added.FirstOrDefault().parentSheetIndex != null && e.Added.FirstOrDefault().GetType() == typeof(Clothing) && e.Added.FirstOrDefault().parentSheetIndex == ModEntry.scubaTankID.Value)
             {
                 Monitor.Log("Player found scuba tank");
                 Game1.player.mailReceived.Add("ScubaTank");
             }
-            if (!Game1.player.mailReceived.Contains("ScubaMask") && ModEntry.scubaMaskID != -1 && e.Added != null && e.Added.Count() > 0 && e.Added.FirstOrDefault() != null && e.Added.FirstOrDefault().parentSheetIndex != null && e.Added.FirstOrDefault().GetType() == typeof(Hat) && (e.Added.FirstOrDefault() as Hat).which == ModEntry.scubaMaskID)
+            if (!Game1.player.mailReceived.Contains("ScubaMask") && ModEntry.scubaMaskID.Value != -1 && e.Added != null && e.Added.Count() > 0 && e.Added.FirstOrDefault() != null && e.Added.FirstOrDefault().parentSheetIndex != null && e.Added.FirstOrDefault().GetType() == typeof(Hat) && (e.Added.FirstOrDefault() as Hat).which == ModEntry.scubaMaskID.Value)
             {
                 Monitor.Log("Player found scuba mask");
                 Game1.player.mailReceived.Add("ScubaMask");
             }
-            if (!Game1.player.mailReceived.Contains("ScubaFins") && ModEntry.scubaFinsID != -1 && e.Added != null && e.Added.Count() > 0 && e.Added.FirstOrDefault() != null && e.Added.FirstOrDefault().parentSheetIndex != null && e.Added.FirstOrDefault().GetType() == typeof(Boots) && e.Added.FirstOrDefault().parentSheetIndex == ModEntry.scubaFinsID)
+            if (!Game1.player.mailReceived.Contains("ScubaFins") && ModEntry.scubaFinsID.Value != -1 && e.Added != null && e.Added.Count() > 0 && e.Added.FirstOrDefault() != null && e.Added.FirstOrDefault().parentSheetIndex != null && e.Added.FirstOrDefault().GetType() == typeof(Boots) && e.Added.FirstOrDefault().parentSheetIndex == ModEntry.scubaFinsID.Value)
             {
                 Monitor.Log("Player found scuba fins");
                 Game1.player.mailReceived.Add("ScubaFins");
@@ -103,41 +114,41 @@ namespace Swim
 
             if (ModEntry.JsonAssets != null)
             {
-                ModEntry.scubaMaskID = ModEntry.JsonAssets.GetHatId("Scuba Mask");
-                ModEntry.scubaTankID = ModEntry.JsonAssets.GetClothingId("Scuba Tank");
+                ModEntry.scubaMaskID.Value = ModEntry.JsonAssets.GetHatId("Scuba Mask");
+                ModEntry.scubaTankID.Value = ModEntry.JsonAssets.GetClothingId("Scuba Tank");
 
-                if (ModEntry.scubaMaskID == -1)
+                if (ModEntry.scubaMaskID.Value == -1)
                 {
                     Monitor.Log("Can't get ID for Swim mod item #1. Some functionality will be lost.");
                 }
                 else
                 {
-                    Monitor.Log(string.Format("Swim mod item #1 ID is {0}.", ModEntry.scubaMaskID));
+                    Monitor.Log(string.Format("Swim mod item #1 ID is {0}.", ModEntry.scubaMaskID.Value));
                 }
 
-                if (ModEntry.scubaTankID == -1)
+                if (ModEntry.scubaTankID.Value == -1)
                 {
                     Monitor.Log("Can't get ID for Swim mod item #2. Some functionality will be lost.");
                 }
                 else
                 {
-                    Monitor.Log(string.Format("Swim mod item #2 ID is {0}.", ModEntry.scubaTankID));
+                    Monitor.Log(string.Format("Swim mod item #2 ID is {0}.", ModEntry.scubaTankID.Value));
                 }
 
                 try
                 {
-                    ModEntry.scubaFinsID = Helper.Content.Load<Dictionary<int, string>>(@"Data/Boots", ContentSource.GameContent).First(x => x.Value.StartsWith("Scuba Fins")).Key;
+                    ModEntry.scubaFinsID.Value = Helper.Content.Load<Dictionary<int, string>>(@"Data/Boots", ContentSource.GameContent).First(x => x.Value.StartsWith("Scuba Fins")).Key;
                 }
                 catch
                 {
                     Monitor.Log("Can't get ID for Swim mod item #3. Some functionality will be lost.");
                 }
-                if (ModEntry.scubaFinsID != -1)
+                if (ModEntry.scubaFinsID.Value != -1)
                 {
-                    Monitor.Log(string.Format("Swim mod item #3 ID is {0}.", ModEntry.scubaFinsID));
-                    if(Game1.player.boots != null && Game1.player.boots.Value != null && Game1.player.boots.Value.Name == "Scuba Fins" && Game1.player.boots.Value.parentSheetIndex != ModEntry.scubaFinsID)
+                    Monitor.Log(string.Format("Swim mod item #3 ID is {0}.", ModEntry.scubaFinsID.Value));
+                    if(Game1.player.boots != null && Game1.player.boots.Value != null && Game1.player.boots.Value.Name == "Scuba Fins" && Game1.player.boots.Value.parentSheetIndex != ModEntry.scubaFinsID.Value)
                     {
-                        Game1.player.boots.Value = new Boots(ModEntry.scubaFinsID);
+                        Game1.player.boots.Value = new Boots(ModEntry.scubaFinsID.Value);
                     }
                 }
             }
@@ -182,33 +193,33 @@ namespace Swim
 
         public static void Display_RenderedWorld(object sender, RenderedWorldEventArgs e)
         {
-            if (ModEntry.isUnderwater && SwimUtils.IsMapUnderwater(Game1.player.currentLocation.Name))
+            if (ModEntry.isUnderwater.Value && SwimUtils.IsMapUnderwater(Game1.player.currentLocation.Name))
             {
-                if ((ticksUnderwater % 100 / Math.Min(100, Config.BubbleMult)) - bubbleOffset == 0)
+                if ((ticksUnderwater.Value % 100 / Math.Min(100, Config.BubbleMult)) - bubbleOffset.Value == 0)
                 {
                     Game1.playSound("tinyWhip");
-                    ModEntry.bubbles.Add(new Vector2(Game1.player.position.X + Game1.random.Next(-24,25), Game1.player.position.Y - 96));
-                    if (ModEntry.bubbles.Count > 100)
+                    ModEntry.bubbles.Value.Add(new Vector2(Game1.player.position.X + Game1.random.Next(-24,25), Game1.player.position.Y - 96));
+                    if (ModEntry.bubbles.Value.Count > 100)
                     {
-                        ModEntry.bubbles = ModEntry.bubbles.Skip(1).ToList();
+                        ModEntry.bubbles.Value = ModEntry.bubbles.Value.Skip(1).ToList();
                     }
-                    bubbleOffset = Game1.random.Next(30/ Math.Min(100, Config.BubbleMult));
+                    bubbleOffset.Value = Game1.random.Next(30/ Math.Min(100, Config.BubbleMult));
                 }
 
-                for (int k = 0; k < ModEntry.bubbles.Count; k++) 
+                for (int k = 0; k < ModEntry.bubbles.Value.Count; k++) 
                 {
-                    ModEntry.bubbles[k] = new Vector2(ModEntry.bubbles[k].X, ModEntry.bubbles[k].Y - 2);
+                    ModEntry.bubbles.Value[k] = new Vector2(ModEntry.bubbles.Value[k].X, ModEntry.bubbles.Value[k].Y - 2);
                 }
 
-                foreach (Vector2 v in ModEntry.bubbles)
+                foreach (Vector2 v in ModEntry.bubbles.Value)
                 {
-                    e.SpriteBatch.Draw(bubbleTexture, v + new Vector2((float)Math.Sin(ticksUnderwater / 20f) * 10f - Game1.viewport.X, -Game1.viewport.Y), new Microsoft.Xna.Framework.Rectangle?(new Microsoft.Xna.Framework.Rectangle(132, 20, 8, 8)), new Color(1,1,1,0.5f), 0f, Vector2.Zero, 4f, SpriteEffects.None, 0.001f);
+                    e.SpriteBatch.Draw(bubbleTexture, v + new Vector2((float)Math.Sin(ticksUnderwater.Value / 20f) * 10f - Game1.viewport.X, -Game1.viewport.Y), new Microsoft.Xna.Framework.Rectangle?(new Microsoft.Xna.Framework.Rectangle(132, 20, 8, 8)), new Color(1,1,1,0.5f), 0f, Vector2.Zero, 4f, SpriteEffects.None, 0.001f);
                 }
-                ticksUnderwater++;
+                ticksUnderwater.Value++;
             }
             else
             {
-                ticksUnderwater = 0;
+                ticksUnderwater.Value = 0;
             }
         }
 
@@ -216,20 +227,20 @@ namespace Swim
         {
             if(Game1.player.currentLocation.Name == "ScubaAbigailCave")
             {
-                if(abigailTicks > 0 && abigailTicks < 30 * 5)
+                if(abigailTicks.Value > 0 && abigailTicks.Value < 30 * 5)
                 {
-                    e.SpriteBatch.Draw(Game1.mouseCursors, new Vector2(Game1.viewport.Width, Game1.viewport.Height) / 2 - new Vector2(78, 31) / 2, new Rectangle?(new Rectangle(353, 1649, 78, 31)), new Color(255,255,255,abigailTicks > 30 * 3 ? (int)Math.Round(255 * (abigailTicks - 90) / 60f) : 255), 0f, Vector2.Zero, 3f, SpriteEffects.None, 0.99f);
+                    e.SpriteBatch.Draw(Game1.mouseCursors, new Vector2(Game1.viewport.Width, Game1.viewport.Height) / 2 - new Vector2(78, 31) / 2, new Rectangle?(new Rectangle(353, 1649, 78, 31)), new Color(255,255,255,abigailTicks.Value > 30 * 3 ? (int)Math.Round(255 * (abigailTicks.Value - 90) / 60f) : 255), 0f, Vector2.Zero, 3f, SpriteEffects.None, 0.99f);
                 }
-                if (abigailTicks > 0 && abigailTicks < 80000 / 16)
-                    SwimUtils.MakeOxygenBar((80000 / 16) - abigailTicks, 80000 / 16);
-                e.SpriteBatch.Draw(ModEntry.OxygenBarTexture, new Vector2((int)Math.Round(Game1.viewport.Width * 0.13f), 100), Color.White);
+                if (abigailTicks.Value > 0 && abigailTicks.Value < 80000 / 16)
+                    SwimUtils.MakeOxygenBar((80000 / 16) - abigailTicks.Value, 80000 / 16);
+                e.SpriteBatch.Draw(ModEntry.OxygenBarTexture.Value, new Vector2((int)Math.Round(Game1.viewport.Width * 0.13f), 100), Color.White);
                 return;
             }
             int maxOx = SwimUtils.MaxOxygen();
-            if (ModEntry.oxygen < maxOx)
+            if (ModEntry.oxygen.Value < maxOx)
             {
-                SwimUtils.MakeOxygenBar(ModEntry.oxygen, maxOx);
-                e.SpriteBatch.Draw(ModEntry.OxygenBarTexture, new Vector2((int)Math.Round(Game1.viewport.Width * 0.13f), 100), Color.White);
+                SwimUtils.MakeOxygenBar(ModEntry.oxygen.Value, maxOx);
+                e.SpriteBatch.Draw(ModEntry.OxygenBarTexture.Value, new Vector2((int)Math.Round(Game1.viewport.Width * 0.13f), 100), Color.White);
             }
         }
 
@@ -293,7 +304,7 @@ namespace Swim
             string filePath = Path.Combine(Helper.DirectoryPath, "assets", "breathe.wav");
             if (File.Exists(filePath))
             {
-                breatheEffect = SoundEffect.FromStream(new FileStream(filePath, FileMode.Open));
+                breatheEffect.Value = SoundEffect.FromStream(new FileStream(filePath, FileMode.Open));
                 Monitor.Log("Loaded breathing sound.");
             }
         }
@@ -363,15 +374,15 @@ namespace Swim
             {
                 SwimMaps.AddScubaChest(Game1.getLocationFromName("ScubaCave"), new Vector2(10,14), "ScubaMask");
             }
-            ModEntry.marinerQuestionsWrongToday = false;
-            ModEntry.oxygen = SwimUtils.MaxOxygen();
+            ModEntry.marinerQuestionsWrongToday.Value = false;
+            ModEntry.oxygen.Value = SwimUtils.MaxOxygen();
         }
 
         public static void Input_ButtonReleased(object sender, ButtonReleasedEventArgs e)
         {
             if(Game1.player == null)
             {
-                ModEntry.myButtonDown = false;
+                ModEntry.myButtonDown.Value = false;
                 return;
             }
             SwimUtils.CheckIfMyButtonDown();
@@ -382,7 +393,7 @@ namespace Swim
         {
             if (Game1.player == null || Game1.player.currentLocation == null)
             {
-                ModEntry.myButtonDown = false;
+                ModEntry.myButtonDown.Value = false;
                 return;
             }
 
@@ -413,7 +424,7 @@ namespace Swim
             {
                 var v1 = Game1.game1;
                 return;
-                //Game1.player.currentLocation.overlayObjects[Game1.player.getTileLocation() + new Vector2(0, 1)] = new Chest(0, new List<Item>() { Helper.Input.IsDown(SButton.LeftShift) ? (Item)(new StardewValley.Object(434, 1)) : (new Hat(ModEntry.scubaMaskID)) }, Game1.player.getTileLocation() + new Vector2(0, 1), false, 0);
+                //Game1.player.currentLocation.overlayObjects[Game1.player.getTileLocation() + new Vector2(0, 1)] = new Chest(0, new List<Item>() { Helper.Value.Input.IsDown(SButton.LeftShift) ? (Item)(new StardewValley.Object(434, 1)) : (new Hat(ModEntry.scubaMaskID.Value)) }, Game1.player.getTileLocation() + new Vector2(0, 1), false, 0);
             }
 
             if (e.Button == Config.DiveKey && Game1.activeClickableMenu == null && !Game1.player.UsingTool && ModEntry.diveMaps.ContainsKey(Game1.player.currentLocation.Name) && ModEntry.diveMaps[Game1.player.currentLocation.Name].DiveLocations.Count > 0)
@@ -454,7 +465,7 @@ namespace Swim
                 return; 
             }
             
-            if (e.Button == Config.SwimKey && Game1.activeClickableMenu == null && (!Game1.player.swimming || !Config.ReadyToSwim) && !isJumping)
+            if (e.Button == Config.SwimKey && Game1.activeClickableMenu == null && (!Game1.player.swimming || !Config.ReadyToSwim) && !isJumping.Value)
             {
                 Config.ReadyToSwim = !Config.ReadyToSwim;
                 Helper.WriteConfig<ModConfig>(Config);
@@ -483,7 +494,7 @@ namespace Swim
             if (Game1.player.currentLocation == null || Game1.player == null || !Game1.displayFarmer || Game1.player.position == null)
                 return;
 
-            ModEntry.isUnderwater = SwimUtils.IsMapUnderwater(Game1.player.currentLocation.Name);
+            ModEntry.isUnderwater.Value = SwimUtils.IsMapUnderwater(Game1.player.currentLocation.Name);
 
             if (Game1.player.currentLocation.Name == "ScubaAbigailCave")
             {
@@ -492,22 +503,22 @@ namespace Swim
 
             if (Game1.activeClickableMenu == null)
             {
-                if (ModEntry.isUnderwater)
+                if (ModEntry.isUnderwater.Value)
                 {
-                    if (ModEntry.oxygen >= 0)
+                    if (ModEntry.oxygen.Value >= 0)
                     {
                         if (!SwimUtils.IsWearingScubaGear())
-                            ModEntry.oxygen--;
+                            ModEntry.oxygen.Value--;
                         else {
-                            if (ModEntry.oxygen < SwimUtils.MaxOxygen())
-                                ModEntry.oxygen++;
-                            if (ModEntry.oxygen < SwimUtils.MaxOxygen())
-                                ModEntry.oxygen++;
+                            if (ModEntry.oxygen.Value < SwimUtils.MaxOxygen())
+                                ModEntry.oxygen.Value++;
+                            if (ModEntry.oxygen.Value < SwimUtils.MaxOxygen())
+                                ModEntry.oxygen.Value++;
                         }
                     }
-                    if(ModEntry.oxygen < 0 && !surfacing)
+                    if(ModEntry.oxygen.Value < 0 && !surfacing.Value)
                     {
-                        surfacing = true;
+                        surfacing.Value = true;
                         Game1.playSound("pullItemFromWater");
                         DiveLocation diveLocation = ModEntry.diveMaps[Game1.player.currentLocation.Name].DiveLocations.Last();
                         SwimUtils.DiveTo(diveLocation);
@@ -515,45 +526,45 @@ namespace Swim
                 }
                 else
                 {
-                    surfacing = false;
-                    if (ModEntry.oxygen < SwimUtils.MaxOxygen())
-                        ModEntry.oxygen++;
-                    if (ModEntry.oxygen < SwimUtils.MaxOxygen())
-                        ModEntry.oxygen++;
+                    surfacing.Value = false;
+                    if (ModEntry.oxygen.Value < SwimUtils.MaxOxygen())
+                        ModEntry.oxygen.Value++;
+                    if (ModEntry.oxygen.Value < SwimUtils.MaxOxygen())
+                        ModEntry.oxygen.Value++;
                 }
             }
 
             if (SwimUtils.IsWearingScubaGear())
             {
-                ticksWearingScubaGear++;
-                if (Config.BreatheSound && breatheEffect != null && (lastBreatheSound == 0 || ticksWearingScubaGear - lastBreatheSound > 6000 / 16))
+                ticksWearingScubaGear.Value++;
+                if (Config.BreatheSound && breatheEffect.Value != null && (lastBreatheSound.Value == 0 || ticksWearingScubaGear.Value - lastBreatheSound.Value > 6000 / 16))
                 {
                     Monitor.Log("Playing breathe sound");
-                    lastBreatheSound = ticksWearingScubaGear;
-                    breatheEffect.Play(0.5f * Game1.options.soundVolumeLevel, 0f, 0f);
+                    lastBreatheSound.Value = ticksWearingScubaGear.Value;
+                    breatheEffect.Value.Play(0.5f * Game1.options.soundVolumeLevel, 0f, 0f);
                 }
             }
             else
             {
-                if (breatheEffect != null && lastBreatheSound != 0)
+                if (breatheEffect.Value != null && lastBreatheSound.Value != 0)
                 {
-                    breatheEffect.Dispose();
+                    breatheEffect.Value.Dispose();
                     LoadBreatheSound();
                 }
-                lastBreatheSound = 0;
-                ticksWearingScubaGear = 0;
+                lastBreatheSound.Value = 0;
+                ticksWearingScubaGear.Value = 0;
             }
 
-            if (isJumping)
+            if (isJumping.Value)
             {
-                float difx = endJumpLoc.X - startJumpLoc.X;
-                float dify = endJumpLoc.Y - startJumpLoc.Y;
+                float difx = endJumpLoc.Value.X - startJumpLoc.Value.X;
+                float dify = endJumpLoc.Value.Y - startJumpLoc.Value.Y;
                 float completed = Game1.player.freezePause / (float)Config.JumpTimeInMilliseconds;
                 if (Game1.player.freezePause <= 0)
                 {
-                    Game1.player.position.Value = endJumpLoc;
-                    isJumping = false;
-                    if (ModEntry.willSwim)
+                    Game1.player.position.Value = endJumpLoc.Value;
+                    isJumping.Value = false;
+                    if (ModEntry.willSwim.Value)
                     {
                         Game1.player.currentLocation.playSound("waterSlosh", NetAudio.SoundContext.Default);
                         Game1.player.swimming.Value = true;
@@ -565,7 +576,7 @@ namespace Swim
                     }
                     return;
                 }
-                Game1.player.position.Value = new Vector2(endJumpLoc.X - (difx * completed), endJumpLoc.Y - (dify * completed) - (float)Math.Sin(completed * Math.PI) * 64);
+                Game1.player.position.Value = new Vector2(endJumpLoc.Value.X - (difx * completed), endJumpLoc.Value.Y - (dify * completed) - (float)Math.Sin(completed * Math.PI) * 64);
                 return;
             }
 
@@ -577,16 +588,16 @@ namespace Swim
             }
 
             if (Game1.player.swimming) {
-                if (!SwimUtils.IsInWater() && !isJumping)
+                if (!SwimUtils.IsInWater() && !isJumping.Value)
                 {
                     Monitor.Log("Swimming out of water");
-                    ModEntry.willSwim = false;
+                    ModEntry.willSwim.Value = false;
                     Game1.player.freezePause = Config.JumpTimeInMilliseconds;
                     Game1.player.currentLocation.playSound("dwop", NetAudio.SoundContext.Default);
                     Game1.player.currentLocation.playSound("waterSlosh", NetAudio.SoundContext.Default);
-                    isJumping = true;
-                    startJumpLoc = Game1.player.position.Value;
-                    endJumpLoc = Game1.player.position.Value;
+                    isJumping.Value = true;
+                    startJumpLoc.Value = Game1.player.position.Value;
+                    endJumpLoc.Value = Game1.player.position.Value;
 
                     Game1.player.swimming.Value = false;
                     if (Game1.player.bathingClothes && !Config.SwimSuitAlways)
@@ -695,7 +706,7 @@ namespace Swim
                 else if (!Game1.player.bathingClothes && (!SwimUtils.IsWearingScubaGear() || Config.SwimSuitAlways))
                     Game1.player.changeIntoSwimsuit();
 
-                if (Game1.player.boots.Value != null && ModEntry.scubaFinsID != -1 && Game1.player.boots.Value.indexInTileSheet == ModEntry.scubaFinsID)
+                if (Game1.player.boots.Value != null && ModEntry.scubaFinsID.Value != -1 && Game1.player.boots.Value.indexInTileSheet == ModEntry.scubaFinsID.Value)
                 {
                     int buffId = 42883167;
                     Buff buff = Game1.buffsDisplay.otherBuffs.FirstOrDefault((Buff p) => p.which == buffId);
@@ -712,16 +723,16 @@ namespace Swim
             }
             else
             {
-                if (SwimUtils.IsInWater() && !isJumping)
+                if (SwimUtils.IsInWater() && !isJumping.Value)
                 {
                     Monitor.Log("In water not swimming");
 
-                    ModEntry.willSwim = true;
+                    ModEntry.willSwim.Value = true;
                     Game1.player.freezePause = Config.JumpTimeInMilliseconds;
                     Game1.player.currentLocation.playSound("dwop", NetAudio.SoundContext.Default);
-                    isJumping = true;
-                    startJumpLoc = Game1.player.position.Value;
-                    endJumpLoc = Game1.player.position.Value;
+                    isJumping.Value = true;
+                    startJumpLoc.Value = Game1.player.position.Value;
+                    endJumpLoc.Value = Game1.player.position.Value;
 
 
                     Game1.player.swimming.Value = true;
@@ -733,10 +744,10 @@ namespace Swim
 
             SwimUtils.CheckIfMyButtonDown();
 
-            if(ModEntry.myButtonDown)
+            if(ModEntry.myButtonDown.Value)
                 Monitor.Log($"My button down");
 
-            if (!ModEntry.myButtonDown || Game1.player.millisecondsPlayed - lastJump < 250 || SwimUtils.IsMapUnderwater(Game1.player.currentLocation.Name))
+            if (!ModEntry.myButtonDown.Value || Game1.player.millisecondsPlayed - lastJump.Value < 250 || SwimUtils.IsMapUnderwater(Game1.player.currentLocation.Name))
                 return;
 
             if (Helper.Input.IsDown(SButton.MouseLeft) && !Game1.player.swimming && (Game1.player.CurrentTool is WateringCan || Game1.player.CurrentTool is FishingRod))
@@ -780,7 +791,7 @@ namespace Swim
 
                 }
             }
-            //Monitor.Log("Distance: " + distance);
+            //Monitor.Value.Log("Distance: " + distance);
 
             bool nextToLand = Game1.player.swimming && !Game1.player.currentLocation.isTilePassable(new Location((int)tiles.Last().X, (int)tiles.Last().Y), Game1.viewport) && !SwimUtils.IsWaterTile(tiles[tiles.Count - 2]) && distance < maxDistance;
             
@@ -795,15 +806,15 @@ namespace Swim
             }
             catch
             {
-                //Monitor.Log($"exception trying to get next to water: {ex}");
+                //Monitor.Value.Log($"exception trying to get next to water: {ex}");
             }
 
-            //Monitor.Log($"next passable {Game1.player.currentLocation.isTilePassable(new Location((int)tiles.Last().X, (int)tiles.Last().Y), Game1.viewport)} next to land: {nextToLand}, next to water: {nextToWater}");
+            //Monitor.Value.Log($"next passable {Game1.player.currentLocation.isTilePassable(new Location((int)tiles.Last().X, (int)tiles.Last().Y), Game1.viewport)} next to land: {nextToLand}, next to water: {nextToWater}");
 
 
             if (Helper.Input.IsDown(Config.SwimKey) || nextToLand || nextToWater)
             {
-                //Monitor.Log("okay to jump");
+                //Monitor.Value.Log("okay to jump");
                 for(int i = 0; i < tiles.Count; i++)
                 {
                     Vector2 tileV = tiles[i];
@@ -814,10 +825,10 @@ namespace Swim
                         Tile tile = Game1.player.currentLocation.map.GetLayer("Buildings").PickTile(new Location((int)tileV.X * Game1.tileSize, (int)tileV.Y * Game1.tileSize), Game1.viewport.Size);
                         isWater = SwimUtils.IsWaterTile(tileV);
                         isPassable = (nextToLand && !isWater && SwimUtils.IsTilePassable(Game1.player.currentLocation, new Location((int)tileV.X, (int)tileV.Y), Game1.viewport)) || (nextToWater && isWater && (tile == null || tile.TileIndex == 76));
-                        //Monitor.Log($"Trying {tileV} is passable {isPassable} isWater {isWater}");
+                        //Monitor.Value.Log($"Trying {tileV} is passable {isPassable} isWater {isWater}");
                         if (!SwimUtils.IsTilePassable(Game1.player.currentLocation, new Location((int)tileV.X, (int)tileV.Y), Game1.viewport) && !isWater && nextToLand)
                         {
-                            //Monitor.Log($"Nixing {tileV}");
+                            //Monitor.Value.Log($"Nixing {tileV}");
                             jumpLocation = Vector2.Zero;
                         }
                     }
@@ -845,11 +856,11 @@ namespace Swim
 
             if (jumpLocation != Vector2.Zero)
             {
-                lastJump = Game1.player.millisecondsPlayed;
-                //Monitor.Log("got swim location");
+                lastJump.Value = Game1.player.millisecondsPlayed;
+                //Monitor.Value.Log("got swim location");
                 if (Game1.player.swimming)
                 {
-                    ModEntry.willSwim = false;
+                    ModEntry.willSwim.Value = false;
                     Game1.player.swimming.Value = false;
                     Game1.player.freezePause = Config.JumpTimeInMilliseconds;
                     Game1.player.currentLocation.playSound("dwop", NetAudio.SoundContext.Default);
@@ -857,16 +868,16 @@ namespace Swim
                 }
                 else
                 {
-                    ModEntry.willSwim = true;
+                    ModEntry.willSwim.Value = true;
                     if(!SwimUtils.IsWearingScubaGear())
                         Game1.player.changeIntoSwimsuit();
                     
                     Game1.player.freezePause = Config.JumpTimeInMilliseconds;
                     Game1.player.currentLocation.playSound("dwop", NetAudio.SoundContext.Default);
                 }
-                isJumping = true;
-                startJumpLoc = Game1.player.position.Value;
-                endJumpLoc = new Vector2(jumpLocation.X * Game1.tileSize, jumpLocation.Y * Game1.tileSize);
+                isJumping.Value = true;
+                startJumpLoc.Value = Game1.player.position.Value;
+                endJumpLoc.Value = new Vector2(jumpLocation.X * Game1.tileSize, jumpLocation.Y * Game1.tileSize);
             }
 
         }
@@ -882,13 +893,13 @@ namespace Swim
                 Game1.player.currentLocation.characters.Remove(n);
             }
 
-            if (abigailTicks < 0)
+            if (abigailTicks.Value < 0)
             {
                 return;
             }
             Game1.exitActiveMenu();
 
-            if (abigailTicks == 0)
+            if (abigailTicks.Value == 0)
             {
                 FieldInfo f1 = Game1.player.currentLocation.characters.GetType().GetField("OnValueRemoved", BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static);
                 f1.SetValue(Game1.player.currentLocation.characters, null);
@@ -896,27 +907,27 @@ namespace Swim
 
             Vector2 v = Vector2.Zero;
             float yrt = (float)(1/Math.Sqrt(2));
-            if (Helper.Input.IsDown(SButton.Up))
+            if (Helper.Input.IsDown(SButton.Up) || Helper.Input.IsDown(SButton.RightThumbstickUp))
             {
-                if(Helper.Input.IsDown(SButton.Right))
+                if(Helper.Input.IsDown(SButton.Right) || Helper.Input.IsDown(SButton.RightThumbstickRight))
                     v = new Vector2(yrt, -yrt);
-                else if(Helper.Input.IsDown(SButton.Left))
+                else if(Helper.Input.IsDown(SButton.Left) || Helper.Input.IsDown(SButton.RightThumbstickLeft))
                     v = new Vector2(-yrt, -yrt);
                 else 
                     v = new Vector2(0, -1);
             }
-            else if (Helper.Input.IsDown(SButton.Down))
+            else if (Helper.Input.IsDown(SButton.Down) || Helper.Input.IsDown(SButton.RightThumbstickDown))
             {
-                if(Helper.Input.IsDown(SButton.Right))
+                if(Helper.Input.IsDown(SButton.Right) || Helper.Input.IsDown(SButton.RightThumbstickRight))
                     v = new Vector2(yrt, yrt);
-                else if(Helper.Input.IsDown(SButton.Left))
+                else if(Helper.Input.IsDown(SButton.Left) || Helper.Input.IsDown(SButton.RightThumbstickLeft))
                     v = new Vector2(-yrt, yrt);
                 else 
                     v = new Vector2(0, 1);
             }
-            else if (Helper.Input.IsDown(SButton.Right))
+            else if (Helper.Input.IsDown(SButton.Right) || Helper.Input.IsDown(SButton.RightThumbstickDown))
                 v = new Vector2(1, 0);
-            else if (Helper.Input.IsDown(SButton.Left))
+            else if (Helper.Input.IsDown(SButton.Left) || Helper.Input.IsDown(SButton.RightThumbstickLeft))
                 v = new Vector2(-1, 0);
             else if (Helper.Input.IsDown(SButton.MouseLeft))
             {
@@ -1004,10 +1015,10 @@ namespace Swim
                 }
             }
 
-            if (v != Vector2.Zero && Game1.player.millisecondsPlayed - lastProjectile > 350)
+            if (v != Vector2.Zero && Game1.player.millisecondsPlayed - lastProjectile.Value > 350)
             {
                 Game1.player.currentLocation.projectiles.Add(new AbigailProjectile(1, 383, 0, 0, 0, v.X * 6, v.Y * 6, new Vector2(Game1.player.getStandingX() - 24, Game1.player.getStandingY() - 48), "Cowboy_monsterDie", "Cowboy_gunshot", false, true, Game1.player.currentLocation, Game1.player, true)); 
-                lastProjectile = Game1.player.millisecondsPlayed;
+                lastProjectile.Value = Game1.player.millisecondsPlayed;
             }
 
             foreach (SButton button in abigailShootButtons)
@@ -1032,13 +1043,13 @@ namespace Swim
             }
 
 
-            abigailTicks++;
-            if(abigailTicks > 80000 / 16f)
+            abigailTicks.Value++;
+            if(abigailTicks.Value > 80000 / 16f)
             {
                 if (Game1.player.currentLocation.characters.ToList().FindAll((n) => (n is Monster)).Count > 0)
                     return;
 
-                abigailTicks = -1;
+                abigailTicks.Value = -1;
                 Game1.player.hat.Value = null;
                 Game1.stopMusicTrack(Game1.MusicContext.Default);
 
