@@ -12,13 +12,16 @@ namespace Swim
         private static ModConfig Config;
         private static IModHelper Helper;
         private static Multiplayer mp;
-        private static List<int> marinerQuestions = new List<int>();
+        private static List<int> marinerQuestions;
 
         public static void Initialize(IMonitor monitor, IModHelper helper, ModConfig config)
         {
             Monitor = monitor;
             Config = config;
             Helper = helper;
+
+            //mp
+            marinerQuestions = new List<int>();
 
         }
 
@@ -52,12 +55,12 @@ namespace Swim
                     case "N":
                         preface = string.Format(Helper.Translation.Get("SwimMod_Mariner_Answer_N"), playerTerm);
                         Game1.drawObjectDialogue(preface);
-                        ModEntry.marinerQuestionsWrongToday = true;
+                        ModEntry.marinerQuestionsWrongToday.Value = true;
                         return;
                     case "S":
                         preface = string.Format(Helper.Translation.Get("SwimMod_Mariner_Answer_S"), playerTerm);
                         Game1.drawObjectDialogue(preface);
-                        ModEntry.marinerQuestionsWrongToday = true;
+                        ModEntry.marinerQuestionsWrongToday.Value = true;
                         return;
                 }
                 int next = int.Parse(keys[keys.Length - 2]) + 1;
@@ -89,7 +92,7 @@ namespace Swim
             while (n > 1)
             {
                 n--;
-                int k = ModEntry.myRand.Next(n + 1);
+                int k = ModEntry.myRand.Value.Next(n + 1);
                 var value = marinerQuestions[k];
                 marinerQuestions[k] = marinerQuestions[n];
                 marinerQuestions[n] = value;
@@ -105,7 +108,7 @@ namespace Swim
                 Monitor.Log("no dialogue: " + s2.ToString(), LogLevel.Error);
                 return;
             }
-            //Monitor.Log("has dialogue: " + s2.ToString());
+            //Monitor.Value.Log("has dialogue: " + s2.ToString());
             List<Response> responses = new List<Response>();
             int i = 1;
             while (true)
@@ -119,7 +122,7 @@ namespace Swim
                 responses.Add(new Response($"SwimMod_Mariner_Question_{qi}_{index}_{r.ToString().Split('#')[1]}", str));
                 i++;
             }
-            //Monitor.Log($"next question: {preface}{s2}");
+            //Monitor.Value.Log($"next question: {preface}{s2}");
             Game1.player.currentLocation.createQuestionDialogue($"{preface}{s2}", responses.ToArray(), $"SwimMod_Mariner_Question_{qi}");
         }
         private static void CompleteEvent()

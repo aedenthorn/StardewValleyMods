@@ -30,15 +30,15 @@ namespace Swim
         {
             if (which == "ScubaTank" && !Game1.player.mailReceived.Contains(which))
             {
-                gameLocation.overlayObjects[pos] = new Chest(0, new List<Item>() { new Clothing(ModEntry.scubaTankID) }, pos, false, 0);
+                gameLocation.overlayObjects[pos] = new Chest(0, new List<Item>() { new Clothing(ModEntry.scubaTankID.Value) }, pos, false, 0);
             }
             else if (which == "ScubaMask" && !Game1.player.mailReceived.Contains(which))
             {
-                gameLocation.overlayObjects[pos] = new Chest(0, new List<Item>() { new Hat(ModEntry.scubaMaskID) }, pos, false, 0);
+                gameLocation.overlayObjects[pos] = new Chest(0, new List<Item>() { new Hat(ModEntry.scubaMaskID.Value) }, pos, false, 0);
             }
             else if (which == "ScubaFins" && !Game1.player.mailReceived.Contains(which))
             {
-                gameLocation.overlayObjects[pos] = new Chest(0, new List<Item>() { new Boots(ModEntry.scubaFinsID) }, pos, false, 0);
+                gameLocation.overlayObjects[pos] = new Chest(0, new List<Item>() { new Boots(ModEntry.scubaFinsID.Value) }, pos, false, 0);
             }
         }
         public static void AddWaterTiles(GameLocation gameLocation)
@@ -571,7 +571,7 @@ namespace Swim
                 if (treasures.Count > 0)
                 {
                     Color tint = Color.White;
-                    l.overlayObjects[v] = new Chest(Game1.random.Next(0, 1000), new List<Item>() { treasures[ModEntry.myRand.Next(treasures.Count)] }, v, false, 0)
+                    l.overlayObjects[v] = new Chest(Game1.random.Next(0, 1000), new List<Item>() { treasures[ModEntry.myRand.Value.Next(treasures.Count)] }, v, false, 0)
                     {
                         Tint = tint
                     };

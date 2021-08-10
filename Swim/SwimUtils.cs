@@ -49,6 +49,7 @@ namespace Swim
             {"Y","fallDown"},
             {"Z","harvest"},
         };
+
         public static void Initialize(IMonitor monitor, IModHelper helper, ModConfig config)
         {
             Monitor = monitor;
@@ -98,7 +99,7 @@ namespace Swim
             }
             if (!IsMapUnderwater(Game1.player.currentLocation.Name))
             {
-                ModEntry.bubbles.Clear();
+                ModEntry.bubbles.Value.Clear();
             }
             else
             {
@@ -123,23 +124,31 @@ namespace Swim
         {
             if (Game1.player == null || Game1.player.currentLocation == null || !Config.ReadyToSwim || Game1.player.currentLocation.waterTiles == null || !Context.IsPlayerFree || Helper.Input.IsDown(SButton.LeftShift))
             {
-                ModEntry.myButtonDown = false;
+                ModEntry.myButtonDown.Value = false;
                 return;
             }
 
-            if (Game1.isOneOfTheseKeysDown(Game1.input.GetKeyboardState(), Game1.options.moveUpButton) || (Game1.options.gamepadControls && ((double)Game1.input.GetGamePadState().ThumbSticks.Left.Y > 0.25 || Game1.input.GetGamePadState().IsButtonDown(Buttons.DPadUp))) || Game1.isOneOfTheseKeysDown(Game1.input.GetKeyboardState(), Game1.options.moveDownButton) || (Game1.options.gamepadControls && ((double)Game1.input.GetGamePadState().ThumbSticks.Left.Y < -0.25 || Game1.input.GetGamePadState().IsButtonDown(Buttons.DPadDown))) || Game1.isOneOfTheseKeysDown(Game1.input.GetKeyboardState(), Game1.options.moveLeftButton) || (Game1.options.gamepadControls && ((double)Game1.input.GetGamePadState().ThumbSticks.Left.X < -0.25 || Game1.input.GetGamePadState().IsButtonDown(Buttons.DPadLeft))) || Game1.isOneOfTheseKeysDown(Game1.input.GetKeyboardState(), Game1.options.moveRightButton) || (Game1.options.gamepadControls && ((double)Game1.input.GetGamePadState().ThumbSticks.Left.X > 0.25 || Game1.input.GetGamePadState().IsButtonDown(Buttons.DPadRight))))
-            {
-                ModEntry.myButtonDown = true;
+            if (Game1.isOneOfTheseKeysDown(
+                Game1.input.GetKeyboardState(), Game1.options.moveUpButton) ||
+                (Game1.options.gamepadControls && ((double)Game1.input.GetGamePadState().ThumbSticks.Left.Y > 0.25 || Game1.input.GetGamePadState().IsButtonDown(Buttons.DPadUp))) ||
+                Game1.isOneOfTheseKeysDown(Game1.input.GetKeyboardState(), Game1.options.moveDownButton) ||
+                (Game1.options.gamepadControls && ((double)Game1.input.GetGamePadState().ThumbSticks.Left.Y < -0.25 || Game1.input.GetGamePadState().IsButtonDown(Buttons.DPadDown))) ||
+                Game1.isOneOfTheseKeysDown(Game1.input.GetKeyboardState(), Game1.options.moveLeftButton) ||
+                (Game1.options.gamepadControls && ((double)Game1.input.GetGamePadState().ThumbSticks.Left.X < -0.25 || Game1.input.GetGamePadState().IsButtonDown(Buttons.DPadLeft))) ||
+                Game1.isOneOfTheseKeysDown(Game1.input.GetKeyboardState(), Game1.options.moveRightButton) ||
+                (Game1.options.gamepadControls && ((double)Game1.input.GetGamePadState().ThumbSticks.Left.X > 0.25 || Game1.input.GetGamePadState().IsButtonDown(Buttons.DPadRight)))) {
+
+                ModEntry.myButtonDown.Value = true;
                 return;
             }
 
             if (Helper.Input.IsDown(Config.ManualJumpButton) && !(Game1.player.CurrentTool is StardewValley.Tools.Pan) && !(Game1.player.CurrentTool is StardewValley.Tools.FishingRod) && Config.EnableClickToSwim)
             {
-                ModEntry.myButtonDown = true;
+                ModEntry.myButtonDown.Value = true;
                 return;
             }
 
-            ModEntry.myButtonDown = false;
+            ModEntry.myButtonDown.Value = false;
         }
 
         public static int CheckForBuriedItem(Farmer who)
@@ -225,8 +234,8 @@ namespace Swim
 
         public static bool IsWearingScubaGear()
         {
-            bool tank = ModEntry.scubaTankID != -1 && Game1.player.shirtItem != null && Game1.player.shirtItem.Value != null && Game1.player.shirtItem.Value.parentSheetIndex != null && Game1.player.shirtItem.Value.parentSheetIndex == ModEntry.scubaTankID;
-            bool mask = ModEntry.scubaMaskID != -1 && Game1.player.hat != null && Game1.player.hat.Value != null && Game1.player.hat.Value.which != null && Game1.player.hat.Value.which == ModEntry.scubaMaskID;
+            bool tank = ModEntry.scubaTankID.Value != -1 && Game1.player.shirtItem != null && Game1.player.shirtItem.Value != null && Game1.player.shirtItem.Value.parentSheetIndex != null && Game1.player.shirtItem.Value.parentSheetIndex == ModEntry.scubaTankID.Value;
+            bool mask = ModEntry.scubaMaskID.Value != -1 && Game1.player.hat != null && Game1.player.hat.Value != null && Game1.player.hat.Value.which != null && Game1.player.hat.Value.which == ModEntry.scubaMaskID.Value;
 
             return tank && mask;
         }
@@ -338,29 +347,29 @@ namespace Swim
 
         public static void MakeOxygenBar(int current, int max)
         {
-            ModEntry.OxygenBarTexture = new Texture2D(Game1.graphics.GraphicsDevice, (int)Math.Round(Game1.viewport.Width * 0.74f), 30);
-            Color[] data = new Color[ModEntry.OxygenBarTexture.Width * ModEntry.OxygenBarTexture.Height];
-            ModEntry.OxygenBarTexture.GetData(data);
+            ModEntry.OxygenBarTexture.Value = new Texture2D(Game1.graphics.GraphicsDevice, (int)Math.Round(Game1.viewport.Width * 0.74f), 30);
+            Color[] data = new Color[ModEntry.OxygenBarTexture.Value.Width * ModEntry.OxygenBarTexture.Value.Height];
+            ModEntry.OxygenBarTexture.Value.GetData(data);
             for (int i = 0; i < data.Length; i++)
             {
-                if (i <= ModEntry.OxygenBarTexture.Width || i % ModEntry.OxygenBarTexture.Width == ModEntry.OxygenBarTexture.Width - 1)
+                if (i <= ModEntry.OxygenBarTexture.Value.Width || i % ModEntry.OxygenBarTexture.Value.Width == ModEntry.OxygenBarTexture.Value.Width - 1)
                 {
                     data[i] = new Color(0.5f, 1f, 0.5f);
                 }
-                else if (data.Length - i < ModEntry.OxygenBarTexture.Width || i % ModEntry.OxygenBarTexture.Width == 0)
+                else if (data.Length - i < ModEntry.OxygenBarTexture.Value.Width || i % ModEntry.OxygenBarTexture.Value.Width == 0)
                 {
                     data[i] = new Color(0, 0.5f, 0);
                 }
-                else if ((i % ModEntry.OxygenBarTexture.Width) / (float)ModEntry.OxygenBarTexture.Width < (float)current / (float)max)
+                else if ((i % ModEntry.OxygenBarTexture.Value.Width) / (float)ModEntry.OxygenBarTexture.Value.Width < (float)current / (float)max)
                 {
-                    data[i] = Color.Green;
+                    data[i] = Color.GhostWhite;
                 }
                 else
                 {
                     data[i] = Color.Black;
                 }
             }
-            ModEntry.OxygenBarTexture.SetData<Color>(data);
+            ModEntry.OxygenBarTexture.Value.SetData<Color>(data);
         }
 
         public static string doesTileHaveProperty(Map map, int xTile, int yTile, string propertyName, string layerName)
