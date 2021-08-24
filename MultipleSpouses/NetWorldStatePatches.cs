@@ -18,8 +18,14 @@ namespace MultipleSpouses
             Config = config;
         }
 
-        public static bool hasWorldStateID_Prefix(string id, ref bool __result)
+        public static bool hasWorldStateID_Prefix(ref string id, ref bool __result)
         {
+            if(Config.EnableMod && id == "sebastianFrogReal")
+            {
+                Monitor.Log($"Allowing frogs");
+                id = "sebastianFrog";
+                return true;
+            }
             if(Config.EnableMod && Config.BuildAllSpousesRooms && id == "sebastianFrog")
             {
                 Monitor.Log($"Preventing frogs");

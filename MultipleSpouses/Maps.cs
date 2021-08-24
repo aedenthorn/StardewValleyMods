@@ -485,7 +485,7 @@ namespace MultipleSpouses
                     }
                 }
 
-                if(name == "Sebastian" && Game1.netWorldState.Value.hasWorldStateID("sebastianFrog"))
+                if(name == "Sebastian" && Game1.netWorldState.Value.hasWorldStateID("sebastianFrogReal"))
                 {
                     Monitor.Log("building Sebastian's terrarium");
                     Vector2 spot = new Vector2(startx + 8 + (7 * count) + ox, 7 + oy);
