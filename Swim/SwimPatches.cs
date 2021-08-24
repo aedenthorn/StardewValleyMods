@@ -308,7 +308,7 @@ namespace Swim
                     else
                     {
                         __instance.mapPath.Value = "Maps\\CrystalCave";
-                        ModEntry.oldMariner = new NPC(new AnimatedSprite("Characters\\Mariner", 0, 16, 32), new Vector2(10f, 7f) * 64f, 2, "Old Mariner", null);
+                        ModEntry.oldMariner.Value = new NPC(new AnimatedSprite("Characters\\Mariner", 0, 16, 32), new Vector2(10f, 7f) * 64f, 2, "Old Mariner", null);
 
                     }
                     //__instance.updateMap();
@@ -327,7 +327,7 @@ namespace Swim
                 {
                     if (!Game1.player.mailReceived.Contains("SwimMod_Mariner_Completed"))
                     {
-                        ModEntry.oldMariner.draw(b);
+                        ModEntry.oldMariner.Value.draw(b);
                     }
                 }
             }
@@ -342,7 +342,7 @@ namespace Swim
             {
                 if(__instance.Name == "ScubaCrystalCave")
                 {
-                    if (!Game1.player.mailReceived.Contains("SwimMod_Mariner_Completed") && ModEntry.oldMariner != null && position.Intersects(ModEntry.oldMariner.GetBoundingBox()))
+                    if (!Game1.player.mailReceived.Contains("SwimMod_Mariner_Completed") && ModEntry.oldMariner != null && position.Intersects(ModEntry.oldMariner.Value.GetBoundingBox()))
                     {
                         __result = true;
                         return false;
@@ -365,7 +365,7 @@ namespace Swim
                     {
                         if (ModEntry.oldMariner != null)
                         {
-                            ModEntry.oldMariner.update(time, __instance);
+                            ModEntry.oldMariner.Value.update(time, __instance);
                         }
                     }
                 }
@@ -425,11 +425,11 @@ namespace Swim
                 {
                     if (!who.mailReceived.Contains("SwimMod_Mariner_Completed"))
                     {
-                        if (ModEntry.oldMariner != null && ModEntry.oldMariner.getTileX() == tileLocation.X && ModEntry.oldMariner.getTileY() == tileLocation.Y)
+                        if (ModEntry.oldMariner != null && ModEntry.oldMariner.Value.getTileX() == tileLocation.X && ModEntry.oldMariner.Value.getTileY() == tileLocation.Y)
                         {
                             string playerTerm = Game1.content.LoadString("Strings\\Locations:Beach_Mariner_Player_" + (who.IsMale ? "Male" : "Female"));
 
-                            if (ModEntry.marinerQuestionsWrongToday)
+                            if (ModEntry.marinerQuestionsWrongToday.Value)
                             {
                                 string preface = Helper.Translation.Get("SwimMod_Mariner_Wrong_Today");
                                 Game1.drawObjectDialogue(string.Format(preface, playerTerm));
@@ -456,7 +456,7 @@ namespace Swim
         {
             try
             {
-                if (__result == false || !isFarmer || !character.Equals(Game1.player) || !Game1.player.swimming || ModEntry.isUnderwater)
+                if (__result == false || !isFarmer || !character.Equals(Game1.player) || !Game1.player.swimming || ModEntry.isUnderwater.Value)
                     return;
 
                 Vector2 next = SwimUtils.GetNextTile();

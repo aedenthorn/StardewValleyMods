@@ -2,6 +2,7 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using StardewModdingAPI;
+using StardewModdingAPI.Utilities;
 using StardewValley;
 using StardewValley.Menus;
 using StardewValley.Tools;
@@ -21,19 +22,23 @@ namespace Swim
         public static ModConfig config;
         public static IMonitor SMonitor;
         public static IJsonAssetsApi JsonAssets;
-        public static Texture2D OxygenBarTexture;
-        public static int scubaMaskID = -1;
-        public static int scubaFinsID = -1;
-        public static int scubaTankID = -1;
-        public static bool myButtonDown = false;
-        public static int oxygen = 0;
-        public static int lastUpdateMs = 0;
-        public static bool willSwim = false;
-        public static bool isUnderwater = false;
-        public static NPC oldMariner;
-        public static bool marinerQuestionsWrongToday = false;
-        public static Random myRand;
+
+        public static PerScreen<Texture2D> OxygenBarTexture = new PerScreen<Texture2D>();
+        public static readonly PerScreen<int> scubaMaskID = new PerScreen<int>(() => -1);
+        public static readonly PerScreen<int> scubaFinsID = new PerScreen<int>(() => -1);
+        public static readonly PerScreen<int> scubaTankID = new PerScreen<int>(() => -1);
+        public static readonly PerScreen<bool> myButtonDown = new PerScreen<bool>(() => false);
+        public static readonly PerScreen<int> oxygen = new PerScreen<int>(() => 0);
+        public static readonly PerScreen<int> lastUpdateMs = new PerScreen<int>(() => 0);
+        public static readonly PerScreen<bool> willSwim = new PerScreen<bool>(() => false);
+        public static readonly PerScreen<bool> isUnderwater = new PerScreen<bool>(() => false);
+        public static readonly PerScreen<NPC> oldMariner = new PerScreen<NPC>();
+        public static readonly PerScreen<bool> marinerQuestionsWrongToday = new PerScreen<bool>(() => false);
+        public static readonly PerScreen<Random> myRand = new PerScreen<Random>(() => new Random());
+
+        //public static readonly PerScreen<Dictionary<string, DiveMap>> diveMaps = new PerScreen<Dictionary<string, DiveMap>>(() => new Dictionary<string, DiveMap>());
         public static Dictionary<string, DiveMap> diveMaps = new Dictionary<string, DiveMap>();
+
         public static Dictionary<string,bool> changeLocations = new Dictionary<string, bool> {
             {"UnderwaterMountain", false },
             {"Mountain", false },
@@ -42,7 +47,9 @@ namespace Swim
             {"UnderwaterBeach", false },
             {"Beach", false },
         };
-        public static List<Vector2> bubbles = new List<Vector2>();
+
+        public static readonly PerScreen<List<Vector2>> bubbles = new PerScreen<List<Vector2>>(() => new List<Vector2>());
+
         private string[] diveLocations = new string[] {
             "Beach",
             "Forest",
@@ -54,17 +61,14 @@ namespace Swim
             "ScubaCrystalCave",
         };
 
-
         public override void Entry(IModHelper helper)
-        {
+        {           
             config = Helper.ReadConfig<ModConfig>();
             if (!config.EnableMod)
                 return;
 
             SMonitor = Monitor;
-
-            myRand = new Random();
-            
+           
             SwimPatches.Initialize(Monitor, helper, config);
             SwimDialog.Initialize(Monitor, helper, config);
             SwimMaps.Initialize(Monitor, helper, config);
