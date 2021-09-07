@@ -1,0 +1,26 @@
+﻿{
+  "Name": "Dialogue Trees",
+  "Author": "aedenthorn",
+  "Version": "0.1.0",
+  "Description": "Framework for branching NPC dialogue.",
+  "UniqueID": "aedenthorn.DialogueTrees",
+  "EntryDll": "DialogueTrees.dll",
+  "MinimumApiVersion": "3.5.0",
+  "UpdateKeys": [ "Nexus:" ],
+  "ModUpdater": {
+    "Repository": "StardewValleyMods",
+    "User": "aedenthorn",
+    "Directory": "_releases",
+    "ModFolder": "DialogueTrees"
+  },
+  "Dependencies": [
+    {
+      "UniqueID": "Pathoschild.ContentPatcher",
+      "IsRequired": true
+    },
+    {
+      "UniqueID": "Platonymous.ModUpdater",
+      "IsRequired": false
+    }
+  ]
+}

@@ -7,8 +7,8 @@
     <ProjectGuid>{1AD85C37-97E5-4141-B825-56804440E744}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>ProceduralDialogue</RootNamespace>
-    <AssemblyName>ProceduralDialogue</AssemblyName>
+    <RootNamespace>DialogueTrees</RootNamespace>
+    <AssemblyName>DialogueTrees</AssemblyName>
     <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <Deterministic>true</Deterministic>
@@ -49,12 +49,15 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="CharacterDataModel.cs" />
+    <Compile Include="DialogueTreeResponse.cs" />
     <Compile Include="ModConfig.cs" />
     <Compile Include="ModEntry.cs" />
-    <Compile Include="ProceduralDialogueData.cs" />
+    <Compile Include="DialogueTreeData.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="i18n\default.json" />
     <None Include="manifest.json" />
     <None Include="packages.config" />
   </ItemGroup>

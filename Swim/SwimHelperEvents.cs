@@ -744,9 +744,6 @@ namespace Swim
 
             SwimUtils.CheckIfMyButtonDown();
 
-            if(ModEntry.myButtonDown.Value)
-                Monitor.Log($"My button down");
-
             if (!ModEntry.myButtonDown.Value || Game1.player.millisecondsPlayed - lastJump.Value < 250 || SwimUtils.IsMapUnderwater(Game1.player.currentLocation.Name))
                 return;
 

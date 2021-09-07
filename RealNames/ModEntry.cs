@@ -1,4 +1,4 @@
-﻿using Harmony;
+﻿using HarmonyLib;
 using StardewModdingAPI;
 using StardewValley;
 using StardewValley.Menus;
@@ -42,7 +42,7 @@ namespace RealNames
 
             LoadNames();
 
-            var harmony = HarmonyInstance.Create(this.ModManifest.UniqueID);
+            var harmony = new Harmony(this.ModManifest.UniqueID);
 
             /*
             harmony.Patch(

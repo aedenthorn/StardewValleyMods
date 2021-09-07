@@ -127,8 +127,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AdvancedMeleeFramework", "A
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CustomPaintings", "CustomPaintings\CustomPaintings.csproj", "{5EA80D01-0BA0-4279-86AE-330AF8C9BF7F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ProceduralDialogue", "ProceduralDialogue\ProceduralDialogue.csproj", "{1AD85C37-97E5-4141-B825-56804440E744}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ParrotPerch", "ParrotPerch\ParrotPerch.csproj", "{B2A2DDC0-6F97-4326-86B8-92ED3D2F0624}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PersisitentGrangeDisplay", "PersisitentGrangeDisplay\PersisitentGrangeDisplay.csproj", "{C7A7C77B-C11A-4C84-B5A1-6C2D6BF5B04B}"
@@ -147,6 +145,8 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MapEdit", "MapEdit\MapEdit.csproj", "{4F5DE0AF-8A9C-4336-B4C1-1DEBDAD7D797}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FlowingMineRocks", "FlowingMineRocks\FlowingMineRocks.csproj", "{8750645C-63BF-4C8B-B956-3A6F41C2FF42}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DialogueTrees", "DialogueTrees\DialogueTrees.csproj", "{1AD85C37-97E5-4141-B825-56804440E744}"
 EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
@@ -647,14 +647,6 @@ Global
 		{5EA80D01-0BA0-4279-86AE-330AF8C9BF7F}.Release|Any CPU.Build.0 = Release|Any CPU
 		{5EA80D01-0BA0-4279-86AE-330AF8C9BF7F}.Release|x86.ActiveCfg = Release|Any CPU
 		{5EA80D01-0BA0-4279-86AE-330AF8C9BF7F}.Release|x86.Build.0 = Release|Any CPU
-		{1AD85C37-97E5-4141-B825-56804440E744}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{1AD85C37-97E5-4141-B825-56804440E744}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{1AD85C37-97E5-4141-B825-56804440E744}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{1AD85C37-97E5-4141-B825-56804440E744}.Debug|x86.Build.0 = Debug|Any CPU
-		{1AD85C37-97E5-4141-B825-56804440E744}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{1AD85C37-97E5-4141-B825-56804440E744}.Release|Any CPU.Build.0 = Release|Any CPU
-		{1AD85C37-97E5-4141-B825-56804440E744}.Release|x86.ActiveCfg = Release|Any CPU
-		{1AD85C37-97E5-4141-B825-56804440E744}.Release|x86.Build.0 = Release|Any CPU
 		{B2A2DDC0-6F97-4326-86B8-92ED3D2F0624}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{B2A2DDC0-6F97-4326-86B8-92ED3D2F0624}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B2A2DDC0-6F97-4326-86B8-92ED3D2F0624}.Debug|x86.ActiveCfg = Debug|Any CPU
@@ -711,6 +703,14 @@ Global
 		{8750645C-63BF-4C8B-B956-3A6F41C2FF42}.Release|Any CPU.Build.0 = Release|Any CPU
 		{8750645C-63BF-4C8B-B956-3A6F41C2FF42}.Release|x86.ActiveCfg = Release|Any CPU
 		{8750645C-63BF-4C8B-B956-3A6F41C2FF42}.Release|x86.Build.0 = Release|Any CPU
+		{1AD85C37-97E5-4141-B825-56804440E744}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1AD85C37-97E5-4141-B825-56804440E744}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1AD85C37-97E5-4141-B825-56804440E744}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{1AD85C37-97E5-4141-B825-56804440E744}.Debug|x86.Build.0 = Debug|Any CPU
+		{1AD85C37-97E5-4141-B825-56804440E744}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1AD85C37-97E5-4141-B825-56804440E744}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1AD85C37-97E5-4141-B825-56804440E744}.Release|x86.ActiveCfg = Release|Any CPU
+		{1AD85C37-97E5-4141-B825-56804440E744}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

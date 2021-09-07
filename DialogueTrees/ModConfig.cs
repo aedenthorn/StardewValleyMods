@@ -1,6 +1,6 @@
 ﻿using StardewModdingAPI;
 
-namespace ProceduralDialogue
+namespace DialogueTrees
 {
     public class ModConfig
     {
