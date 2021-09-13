@@ -5,7 +5,7 @@ using StardewValley.Objects;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace MultiStoryFarmhouse
+namespace CustomWallsAndFloors
 {
     internal class CodePatches
     {

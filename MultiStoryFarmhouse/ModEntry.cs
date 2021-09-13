@@ -9,7 +9,7 @@ using System.Linq;
 using xTile;
 using xTile.Tiles;
 
-namespace MultiStoryFarmhouse
+namespace CustomWallsAndFloors
 {
     /// <summary>The mod entry point.</summary>
     public class ModEntry : Mod, IAssetEditor, IAssetLoader

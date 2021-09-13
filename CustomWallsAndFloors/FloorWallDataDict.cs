@@ -4,19 +4,18 @@ using System.Collections.Generic;
 
 namespace CustomWallsAndFloors
 {
-    public class FloorsData
+    public class FloorWallDataDict
     {
-        public List<Floor> floors = new List<Floor>();
-        public FloorsData()
-        {
-        }
+        public List<FloorWallData> data = new List<FloorWallData>();
     }
 
-    public class Floor
+    public class FloorWallData
     {
         public string name;
-        public string mapPath;
-        public Vector2 stairsStart;
+        public bool replaceWalls;
+        public bool replaceFloors;
+        public string getFloorsFromFile;
+        public string getWallsFromFile;
         public List<Rectangle> floors = new List<Rectangle>();
         public List<Rectangle> walls = new List<Rectangle>();
     }

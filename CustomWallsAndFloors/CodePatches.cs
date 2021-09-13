@@ -1,0 +1,212 @@
+﻿using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
+using Netcode;
+using StardewModdingAPI;
+using StardewValley;
+using StardewValley.Locations;
+using System.Collections.Generic;
+using xTile.Dimensions;
+using xTile.Layers;
+using xTile.Tiles;
+using Rectangle = Microsoft.Xna.Framework.Rectangle;
+
+namespace CustomWallsAndFloors
+{
+    internal class CodePatches
+    {
+
+        public static void getFloors_Postfix(DecoratableLocation __instance, ref List<Rectangle> __result)
+        {
+            if (!ModEntry.config.EnableMod || !ModEntry.floorsWallsDataDict.ContainsKey(__instance.name))
+                return;
+            FloorWallData data = ModEntry.floorsWallsDataDict[__instance.name];
+            if (data.getFloorsFromFile?.Length > 0)
+                data.floors = ModEntry.PHelper.Content.Load<List<Rectangle>>(data.getFloorsFromFile, ContentSource.GameContent);
+            if (data.replaceFloors)
+                __result = data.floors;
+            else
+                __result.AddRange(data.floors);
+        }
+
+        public static void getWalls_Postfix(DecoratableLocation __instance, ref List<Rectangle> __result)
+        {
+            if (!ModEntry.config.EnableMod || !ModEntry.floorsWallsDataDict.ContainsKey(__instance.name))
+                return;
+            FloorWallData data = ModEntry.floorsWallsDataDict[__instance.name];
+            if (data.getWallsFromFile?.Length > 0)
+                data.walls = ModEntry.PHelper.Content.Load<List<Rectangle>>(data.getWallsFromFile, ContentSource.GameContent);
+            if (data.replaceWalls)
+                __result = data.walls;
+            else
+                __result.AddRange(data.walls);
+        }
+        public static void loadForNewGame_Postfix()
+        {
+            if (!ModEntry.config.EnableMod)
+                return;
+            for(int i = Game1.locations.Count - 1; i>= 0; i--)
+            {
+                if (Game1.locations[i].GetType() == typeof(GameLocation) && ModEntry.floorsWallsDataDict.ContainsKey(Game1.locations[i].name))
+                {
+                    GameLocation gl = Game1.locations[i];
+                    ModEntry.PMonitor.Log($"Converting {gl.name} to decoratable");
+                    DecoratableLocation dl = new DecoratableLocation(gl.mapPath, gl.name);
+                    if (dl.map.GetTileSheet("walls_and_floors") == null)
+                    {
+                        Texture2D tex = ModEntry.PHelper.Content.Load<Texture2D>($"Maps/walls_and_floors", ContentSource.GameContent);
+                        dl.map.AddTileSheet(new TileSheet("walls_and_floors", dl.map, ModEntry.PHelper.Content.GetActualAssetKey($"Maps/walls_and_floors", ContentSource.GameContent), new Size(tex.Width / 16, tex.Height / 16), new Size(16, 16)));
+                    }
+                    Game1._locationLookup.Remove(gl.name);
+                    Game1.locations.RemoveAt(i);
+                    Game1.locations.Add(dl);
+                    if (gl.characters.Count > 0)
+                    {
+                        for (int j = gl.characters.Count - 1; j >= 0; j--)
+                        {
+                            NPC npc = gl.characters[j];
+                            NPC newNPC = new NPC(new AnimatedSprite(npc.sprite.Value.textureName.Value, npc.sprite.Value.currentFrame, npc.sprite.Value.spriteWidth, npc.sprite.Value.SpriteHeight), ModEntry.PHelper.Reflection.GetField<NetVector2>(npc, "defaultPosition").GetValue().Value, Game1.locations[i].name, ModEntry.PHelper.Reflection.GetField<int>(npc, "defaultFacingDirection").GetValue(), npc.Name, npc.datable.Value, null, Game1.content.Load<Texture2D>($"Portraits\\{npc.Name}"));
+                            ModEntry.PMonitor.Log($"Adding {newNPC.name}, sprite {newNPC.sprite.Value.textureName.Value}");
+                            Game1.locations[Game1.locations.Count - 1].addCharacter(newNPC);
+                        }
+                    }
+                    foreach (Vector2 key in gl.objects.Keys)
+                        dl.objects.Add(key, gl.objects[key]);
+
+                    ModEntry.convertedLocations.Add(dl.name);
+                }
+            }
+        }
+
+        public static bool doSetVisibleFloor_Prefix(DecoratableLocation __instance, int whichRoom, int which)
+        {
+            if (!ModEntry.config.EnableMod || !ModEntry.floorsWallsDataDict.ContainsKey(__instance.name))
+                return true;
+
+            List<Rectangle> rooms = __instance.getFloors();
+            int tileSheetIndex = 336 + which % 8 * 2 + which / 8 * 32;
+            if (whichRoom == -1)
+            {
+                using (List<Rectangle>.Enumerator enumerator = rooms.GetEnumerator())
+                {
+                    while (enumerator.MoveNext())
+                    {
+                        Rectangle r = enumerator.Current;
+                        for (int x = r.X; x < r.Right; x += 2)
+                        {
+                            for (int y = r.Y; y < r.Bottom; y += 2)
+                            {
+                                if (r.Contains(x, y) && IsFloorableTile(x, y, "Back", __instance))
+                                {
+                                    SetFlooringTile(tileSheetIndex, x, y, r, __instance);
+                                }
+                                if (r.Contains(x + 1, y) && IsFloorableTile(x + 1, y, "Back", __instance))
+                                {
+                                    SetFlooringTile(tileSheetIndex, x + 1, y, r, __instance);
+                                }
+                                if (r.Contains(x, y + 1) && IsFloorableTile(x, y + 1, "Back", __instance))
+                                {
+                                    SetFlooringTile(tileSheetIndex, x, y + 1, r, __instance);
+                                }
+                                if (r.Contains(x + 1, y + 1) && IsFloorableTile(x + 1, y + 1, "Back", __instance))
+                                {
+                                    SetFlooringTile(tileSheetIndex, x + 1, y + 1, r, __instance);
+                                }
+                            }
+                        }
+                    }
+                    return false;
+                }
+            }
+            if (rooms.Count > whichRoom)
+            {
+                Rectangle r2 = rooms[whichRoom];
+                for (int x2 = r2.X; x2 < r2.Right; x2 += 2)
+                {
+                    for (int y2 = r2.Y; y2 < r2.Bottom; y2 += 2)
+                    {
+                        if (r2.Contains(x2, y2) && IsFloorableTile(x2, y2, "Back", __instance))
+                        {
+                            SetFlooringTile(tileSheetIndex, x2, y2, r2, __instance);
+                        }
+                        if (r2.Contains(x2 + 1, y2) && IsFloorableTile(x2 + 1, y2, "Back", __instance))
+                        {
+                            SetFlooringTile(tileSheetIndex, x2 + 1, y2, r2, __instance);
+                        }
+                        if (r2.Contains(x2, y2 + 1) && IsFloorableTile(x2, y2 + 1, "Back", __instance))
+                        {
+                            SetFlooringTile(tileSheetIndex, x2, y2 + 1, r2, __instance);
+                        }
+                        if (r2.Contains(x2 + 1, y2 + 1) && IsFloorableTile(x2 + 1, y2 + 1, "Back", __instance))
+                        {
+                            SetFlooringTile(tileSheetIndex, x2 + 1, y2 + 1, r2, __instance);
+                        }
+                    }
+                }
+            }
+            return false;
+        }
+
+        public static void SetFlooringTile(int base_tile_sheet, int tile_x, int tile_y, Rectangle r, DecoratableLocation location)
+        {
+            Layer layer = location.map.GetLayer("Back");
+
+            int replaced_tile_index = 0;
+            if(layer.Tiles[tile_x, tile_y].TileSheet.Id == "walls_and_floors")
+            {
+                replaced_tile_index = location.getTileIndexAt(tile_x, tile_y, "Back");
+            }
+            else
+            {
+                replaced_tile_index = base_tile_sheet + (tile_x - r.X) % 2 + (tile_y - r.Y) % 2 * 16;
+            }
+            if (replaced_tile_index < 336)
+            {
+                return;
+            }
+            replaced_tile_index -= 336;
+
+            int x_offset = replaced_tile_index % 2;
+            int y_offset = replaced_tile_index % 32 / 16;
+            int idx = -1;
+            for (int i = 0; i < location.map.TileSheets.Count; i++)
+            {
+                if (location.map.TileSheets[i].Id == "walls_and_floors")
+                {
+                    idx = i;
+                    break;
+                }
+            }
+            if (idx == -1)
+            {
+                return;
+            }
+
+            location.setMapTile(tile_x, tile_y, base_tile_sheet + x_offset + 16 * y_offset, "Back", null, idx);
+
+        }
+
+        public static bool IsFloorableTile(int x, int y, string layer, DecoratableLocation location)
+        {
+            int tile_index = location.getTileIndexAt(x, y, "Buildings");
+            return (tile_index < 197 || tile_index > 199 || !(location.getTileSheetIDAt(x, y, "Buildings") == "untitled tile sheet")) && IsFloorableOrWallpaperableTile(x, y, layer, location);
+        }
+
+        public static bool IsFloorableOrWallpaperableTile_Prefix(DecoratableLocation __instance, ref bool __result, int x, int y, string layer_name)
+        {
+            if (!ModEntry.config.EnableMod || !ModEntry.floorsWallsDataDict.ContainsKey(__instance.name))
+                return true;
+            __result = IsFloorableOrWallpaperableTile(x, y, layer_name, __instance);
+            return false;
+
+        }
+        public static bool IsFloorableOrWallpaperableTile(int x, int y, string layer_name, DecoratableLocation location)
+        {
+            Layer layer = location.map.GetLayer(layer_name);
+
+            if (layer == null || x >= layer.LayerWidth || y >= layer.LayerHeight || layer.Tiles[x, y] == null || layer.Tiles[x, y].TileSheet == null)
+                return false;
+
+            return true;
+        }
+    }
+}
