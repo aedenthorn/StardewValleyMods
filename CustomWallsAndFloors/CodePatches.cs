@@ -82,6 +82,21 @@ namespace CustomWallsAndFloors
             if (!ModEntry.config.EnableMod || !ModEntry.floorsWallsDataDict.ContainsKey(__instance.name))
                 return true;
 
+            int idx = -1;
+
+            for (int i = 0; i < __instance.map.TileSheets.Count; i++)
+            {
+                if (__instance.map.TileSheets[i].Id == "walls_and_floors")
+                {
+                    idx = i;
+                    break;
+                }
+            }
+            if (idx == -1)
+            {
+                return true;
+            }
+
             List<Rectangle> rooms = __instance.getFloors();
             int tileSheetIndex = 336 + which % 8 * 2 + which / 8 * 32;
             if (whichRoom == -1)
@@ -97,19 +112,19 @@ namespace CustomWallsAndFloors
                             {
                                 if (r.Contains(x, y) && IsFloorableTile(x, y, "Back", __instance))
                                 {
-                                    SetFlooringTile(tileSheetIndex, x, y, r, __instance);
+                                    SetFlooringTile(tileSheetIndex, x, y, r, __instance, idx);
                                 }
                                 if (r.Contains(x + 1, y) && IsFloorableTile(x + 1, y, "Back", __instance))
                                 {
-                                    SetFlooringTile(tileSheetIndex, x + 1, y, r, __instance);
+                                    SetFlooringTile(tileSheetIndex, x + 1, y, r, __instance, idx);
                                 }
                                 if (r.Contains(x, y + 1) && IsFloorableTile(x, y + 1, "Back", __instance))
                                 {
-                                    SetFlooringTile(tileSheetIndex, x, y + 1, r, __instance);
+                                    SetFlooringTile(tileSheetIndex, x, y + 1, r, __instance, idx);
                                 }
                                 if (r.Contains(x + 1, y + 1) && IsFloorableTile(x + 1, y + 1, "Back", __instance))
                                 {
-                                    SetFlooringTile(tileSheetIndex, x + 1, y + 1, r, __instance);
+                                    SetFlooringTile(tileSheetIndex, x + 1, y + 1, r, __instance, idx);
                                 }
                             }
                         }
@@ -126,19 +141,103 @@ namespace CustomWallsAndFloors
                     {
                         if (r2.Contains(x2, y2) && IsFloorableTile(x2, y2, "Back", __instance))
                         {
-                            SetFlooringTile(tileSheetIndex, x2, y2, r2, __instance);
+                            SetFlooringTile(tileSheetIndex, x2, y2, r2, __instance, idx);
                         }
                         if (r2.Contains(x2 + 1, y2) && IsFloorableTile(x2 + 1, y2, "Back", __instance))
                         {
-                            SetFlooringTile(tileSheetIndex, x2 + 1, y2, r2, __instance);
+                            SetFlooringTile(tileSheetIndex, x2 + 1, y2, r2, __instance, idx);
                         }
                         if (r2.Contains(x2, y2 + 1) && IsFloorableTile(x2, y2 + 1, "Back", __instance))
                         {
-                            SetFlooringTile(tileSheetIndex, x2, y2 + 1, r2, __instance);
+                            SetFlooringTile(tileSheetIndex, x2, y2 + 1, r2, __instance, idx);
                         }
                         if (r2.Contains(x2 + 1, y2 + 1) && IsFloorableTile(x2 + 1, y2 + 1, "Back", __instance))
                         {
-                            SetFlooringTile(tileSheetIndex, x2 + 1, y2 + 1, r2, __instance);
+                            SetFlooringTile(tileSheetIndex, x2 + 1, y2 + 1, r2, __instance, idx);
+                        }
+                    }
+                }
+            }
+            return false;
+        }
+        public static bool doSetVisibleWallpaper_Prefix(DecoratableLocation __instance, int whichRoom, int which)
+        {
+            if (!ModEntry.config.EnableMod || !ModEntry.floorsWallsDataDict.ContainsKey(__instance.name))
+                return true;
+
+            int idx = -1;
+
+            for (int i = 0; i < __instance.map.TileSheets.Count; i++)
+            {
+                if (__instance.map.TileSheets[i].Id == "walls_and_floors")
+                {
+                    idx = i;
+                    break;
+                }
+            }
+            if (idx == -1)
+            {
+                return true;
+            }
+
+            __instance.updateMap();
+            List<Rectangle> rooms = __instance.getWalls();
+            int tileSheetIndex = which % 16 + which / 16 * 48;
+            if (whichRoom == -1)
+            {
+                using (List<Rectangle>.Enumerator enumerator = rooms.GetEnumerator())
+                {
+                    while (enumerator.MoveNext())
+                    {
+                        Rectangle r = enumerator.Current;
+                        for (int x = r.X; x < r.Right; x++)
+                        {
+                            if (IsFloorableOrWallpaperableTile(x, r.Y, "Back", __instance))
+                            {
+                                SetWallpaperTile(x, r.Y, tileSheetIndex, "Back", __instance, idx);
+                            }
+                            if (IsFloorableOrWallpaperableTile(x, r.Y + 1, "Back", __instance))
+                            {
+                                SetWallpaperTile(x, r.Y + 1, tileSheetIndex + 16, "Back", __instance, idx);
+                            }
+                            if (r.Height >= 3)
+                            {
+                                if (IsFloorableOrWallpaperableTile(x, r.Y + 2, "Buildings", __instance))
+                                {
+                                    SetWallpaperTile(x, r.Y + 2, tileSheetIndex + 32, "Buildings", __instance, idx);
+                                }
+                                if (IsFloorableOrWallpaperableTile(x, r.Y + 2, "Back", __instance))
+                                {
+                                    SetWallpaperTile(x, r.Y + 2, tileSheetIndex + 32, "Back", __instance, idx);
+                                }
+                            }
+                        }
+                    }
+                    return false;
+                }
+            }
+            if (rooms.Count > whichRoom)
+            {
+                Rectangle r2 = rooms[whichRoom];
+                for (int x2 = r2.X; x2 < r2.Right; x2++)
+                {
+                    if (IsFloorableOrWallpaperableTile(x2, r2.Y, "Back", __instance))
+                    {
+                        SetWallpaperTile(x2, r2.Y, tileSheetIndex, "Back", __instance, idx);
+                    }
+                    if (IsFloorableOrWallpaperableTile(x2, r2.Y + 1, "Back", __instance))
+                    {
+                        SetWallpaperTile(x2, r2.Y + 1, tileSheetIndex + 16, "Back", __instance, idx);
+                    }
+                    if (r2.Height >= 3)
+                    {
+                        if (IsFloorableOrWallpaperableTile(x2, r2.Y + 2, "Buildings", __instance))
+                        {
+                            SetWallpaperTile(x2, r2.Y + 2, tileSheetIndex + 32, "Buildings", __instance, idx);
+                        }
+                        else if (IsFloorableOrWallpaperableTile(x2, r2.Y + 2, "Back", __instance))
+                        {
+                            SetWallpaperTile(x2, r2.Y + 2, tileSheetIndex + 32, "Back", __instance, idx);
                         }
                     }
                 }
@@ -146,17 +245,42 @@ namespace CustomWallsAndFloors
             return false;
         }
 
-        public static void SetFlooringTile(int base_tile_sheet, int tile_x, int tile_y, Rectangle r, DecoratableLocation location)
+        public static void SetWallpaperTile(int tile_x, int tile_y, int tileIndex, string layerName,  DecoratableLocation location, int sheetIndex)
         {
+
+            foreach(Rectangle omit in ModEntry.floorsWallsDataDict[location.name].floorsOmit)
+            {
+                if (omit.Contains(tile_x, tile_y))
+                    return;
+            }
+
+            Layer layer = location.map.GetLayer(layerName);
+
+            if(!ModEntry.floorsWallsDataDict[location.name].replaceNonDecorationTiles && layer.Tiles[tile_x, tile_y].TileSheet.Id != "walls_and_floors")
+                return;
+            location.setMapTile(tile_x, tile_y, tileIndex, layerName, null, sheetIndex);
+
+        }
+        public static void SetFlooringTile(int base_tile_sheet, int tile_x, int tile_y, Rectangle r, DecoratableLocation location, int sheetIndex)
+        {
+
+            foreach(Rectangle omit in ModEntry.floorsWallsDataDict[location.name].floorsOmit)
+            {
+                if (omit.Contains(tile_x, tile_y))
+                    return;
+            }
+
             Layer layer = location.map.GetLayer("Back");
 
-            int replaced_tile_index = 0;
+            int replaced_tile_index;
             if(layer.Tiles[tile_x, tile_y].TileSheet.Id == "walls_and_floors")
             {
                 replaced_tile_index = location.getTileIndexAt(tile_x, tile_y, "Back");
             }
             else
             {
+                if (!ModEntry.floorsWallsDataDict[location.name].replaceNonDecorationTiles)
+                    return;
                 replaced_tile_index = base_tile_sheet + (tile_x - r.X) % 2 + (tile_y - r.Y) % 2 * 16;
             }
             if (replaced_tile_index < 336)
@@ -167,21 +291,8 @@ namespace CustomWallsAndFloors
 
             int x_offset = replaced_tile_index % 2;
             int y_offset = replaced_tile_index % 32 / 16;
-            int idx = -1;
-            for (int i = 0; i < location.map.TileSheets.Count; i++)
-            {
-                if (location.map.TileSheets[i].Id == "walls_and_floors")
-                {
-                    idx = i;
-                    break;
-                }
-            }
-            if (idx == -1)
-            {
-                return;
-            }
 
-            location.setMapTile(tile_x, tile_y, base_tile_sheet + x_offset + 16 * y_offset, "Back", null, idx);
+            location.setMapTile(tile_x, tile_y, base_tile_sheet + x_offset + 16 * y_offset, "Back", null, sheetIndex);
 
         }
 

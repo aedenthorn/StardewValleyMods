@@ -74,6 +74,10 @@ namespace CustomWallsAndFloors
                prefix: new HarmonyMethod(typeof(CodePatches), nameof(CodePatches.doSetVisibleFloor_Prefix))
             );
             harmony.Patch(
+               original: AccessTools.Method(typeof(DecoratableLocation), "doSetVisibleWallpaper"),
+               prefix: new HarmonyMethod(typeof(CodePatches), nameof(CodePatches.doSetVisibleWallpaper_Prefix))
+            );
+            harmony.Patch(
                original: AccessTools.Method(typeof(DecoratableLocation), "IsFloorableOrWallpaperableTile"),
                prefix: new HarmonyMethod(typeof(CodePatches), nameof(CodePatches.IsFloorableOrWallpaperableTile_Prefix))
             );

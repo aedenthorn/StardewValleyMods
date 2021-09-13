@@ -1,7 +1,7 @@
 ﻿{
   "Name": "Custom Walls and Floors",
   "Author": "aedenthorn",
-  "Version": "0.1.0",
+  "Version": "0.3.0",
   "Description": "Lets you define custom wall and floor areas.",
   "UniqueID": "aedenthorn.CustomWallsAndFloors",
   "EntryDll": "CustomWallsAndFloors.dll",
@@ -12,7 +12,7 @@
     "Directory": "_releases",
     "ModFolder": "CustomWallsAndFloors"
   },
-  "UpdateKeys": [ "Nexus:" ],
+  "UpdateKeys": [ "Nexus:9626" ],
   "Dependencies": [
     {
       "UniqueID": "Platonymous.ModUpdater",
