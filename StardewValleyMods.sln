@@ -148,7 +148,11 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FlowingMineRocks", "Flowing
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DialogueTrees", "DialogueTrees\DialogueTrees.csproj", "{1AD85C37-97E5-4141-B825-56804440E744}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CustomWallsAndFloors", "CustomWallsAndFloors\CustomWallsAndFloors.csproj", "{D505B178-43FC-4BA9-9DC8-F1C494BAC0AA}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ExtraMapLayers", "ExtraMapLayers\ExtraMapLayers.csproj", "{0AC40A31-126C-46EF-810E-F669979078D9}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CustomDecorationAreas", "CustomDecorationAreas\CustomDecorationAreas.csproj", "{D505B178-43FC-4BA9-9DC8-F1C494BAC0AA}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CustomWarpPoints", "CustomWarpPoints\CustomWarpPoints.csproj", "{C44A5E2B-DB1A-41C8-9A18-F55507AA8FF5}"
 EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
@@ -713,6 +717,14 @@ Global
 		{1AD85C37-97E5-4141-B825-56804440E744}.Release|Any CPU.Build.0 = Release|Any CPU
 		{1AD85C37-97E5-4141-B825-56804440E744}.Release|x86.ActiveCfg = Release|Any CPU
 		{1AD85C37-97E5-4141-B825-56804440E744}.Release|x86.Build.0 = Release|Any CPU
+		{0AC40A31-126C-46EF-810E-F669979078D9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0AC40A31-126C-46EF-810E-F669979078D9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0AC40A31-126C-46EF-810E-F669979078D9}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{0AC40A31-126C-46EF-810E-F669979078D9}.Debug|x86.Build.0 = Debug|Any CPU
+		{0AC40A31-126C-46EF-810E-F669979078D9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0AC40A31-126C-46EF-810E-F669979078D9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0AC40A31-126C-46EF-810E-F669979078D9}.Release|x86.ActiveCfg = Release|Any CPU
+		{0AC40A31-126C-46EF-810E-F669979078D9}.Release|x86.Build.0 = Release|Any CPU
 		{D505B178-43FC-4BA9-9DC8-F1C494BAC0AA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{D505B178-43FC-4BA9-9DC8-F1C494BAC0AA}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D505B178-43FC-4BA9-9DC8-F1C494BAC0AA}.Debug|x86.ActiveCfg = Debug|Any CPU
@@ -721,6 +733,14 @@ Global
 		{D505B178-43FC-4BA9-9DC8-F1C494BAC0AA}.Release|Any CPU.Build.0 = Release|Any CPU
 		{D505B178-43FC-4BA9-9DC8-F1C494BAC0AA}.Release|x86.ActiveCfg = Release|Any CPU
 		{D505B178-43FC-4BA9-9DC8-F1C494BAC0AA}.Release|x86.Build.0 = Release|Any CPU
+		{C44A5E2B-DB1A-41C8-9A18-F55507AA8FF5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C44A5E2B-DB1A-41C8-9A18-F55507AA8FF5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C44A5E2B-DB1A-41C8-9A18-F55507AA8FF5}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{C44A5E2B-DB1A-41C8-9A18-F55507AA8FF5}.Debug|x86.Build.0 = Debug|Any CPU
+		{C44A5E2B-DB1A-41C8-9A18-F55507AA8FF5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C44A5E2B-DB1A-41C8-9A18-F55507AA8FF5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C44A5E2B-DB1A-41C8-9A18-F55507AA8FF5}.Release|x86.ActiveCfg = Release|Any CPU
+		{C44A5E2B-DB1A-41C8-9A18-F55507AA8FF5}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

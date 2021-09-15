@@ -1,16 +1,16 @@
 ﻿{
-  "Name": "Custom Walls and Floors",
+  "Name": "Custom Decoration Areas",
   "Author": "aedenthorn",
-  "Version": "0.3.0",
-  "Description": "Lets you define custom wall and floor areas.",
+  "Version": "0.4.1",
+  "Description": "Lets you define custom decoratable wall and floor areas.",
   "UniqueID": "aedenthorn.CustomWallsAndFloors",
-  "EntryDll": "CustomWallsAndFloors.dll",
+  "EntryDll": "CustomDecorationAreas.dll",
   "MinimumApiVersion": "3.12.0",
   "ModUpdater": {
     "Repository": "StardewValleyMods",
     "User": "aedenthorn",
     "Directory": "_releases",
-    "ModFolder": "CustomWallsAndFloors"
+    "ModFolder": "CustomDecorationAreas"
   },
   "UpdateKeys": [ "Nexus:9626" ],
   "Dependencies": [

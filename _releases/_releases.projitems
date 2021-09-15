@@ -23,6 +23,8 @@
     <None Include="$(MSBuildThisFileDirectory)CustomSpousePatioWizard 0.3.0.zip" />
     <None Include="$(MSBuildThisFileDirectory)CustomWallsAndFloors 0.1.0.zip" />
     <None Include="$(MSBuildThisFileDirectory)CustomWallsAndFloors 0.3.0.zip" />
+    <None Include="$(MSBuildThisFileDirectory)CustomWallsAndFloors 0.3.1.zip" />
+    <None Include="$(MSBuildThisFileDirectory)CustomWarpPoints 0.1.0.zip" />
     <None Include="$(MSBuildThisFileDirectory)ExpertSitting 0.2.0.zip" />
     <None Include="$(MSBuildThisFileDirectory)ExpertSitting 0.3.0.zip" />
     <None Include="$(MSBuildThisFileDirectory)ExpertSitting 0.3.1.zip" />

@@ -1,0 +1,22 @@
+﻿{
+  "Name": "Custom Warp Points",
+  "Author": "aedenthorn",
+  "Version": "0.1.0",
+  "Description": "Lets you change the default warp points between maps.",
+  "UniqueID": "aedenthorn.CustomWarpPoints",
+  "EntryDll": "CustomWarpPoints.dll",
+  "MinimumApiVersion": "3.12.0",
+  "ModUpdater": {
+    "Repository": "StardewValleyMods",
+    "User": "aedenthorn",
+    "Directory": "_releases",
+    "ModFolder": "CustomWarpPoints"
+  },
+  "UpdateKeys": [ "Nexus:9651" ],
+  "Dependencies": [
+    {
+      "UniqueID": "Platonymous.ModUpdater",
+      "IsRequired": false
+    }
+  ]
+}

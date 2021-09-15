@@ -10,7 +10,7 @@ using xTile.Layers;
 using xTile.Tiles;
 using Rectangle = Microsoft.Xna.Framework.Rectangle;
 
-namespace CustomWallsAndFloors
+namespace CustomDecorationAreas
 {
     internal class CodePatches
     {
@@ -258,8 +258,12 @@ namespace CustomWallsAndFloors
 
             if(!ModEntry.floorsWallsDataDict[location.name].replaceNonDecorationTiles && layer.Tiles[tile_x, tile_y].TileSheet.Id != "walls_and_floors")
                 return;
+            Dictionary<string,xTile.ObjectModel.PropertyValue> props = new Dictionary<string, xTile.ObjectModel.PropertyValue>(location.map.GetLayer(layerName).Tiles[tile_x, tile_y].Properties);
             location.setMapTile(tile_x, tile_y, tileIndex, layerName, null, sheetIndex);
-
+            foreach(var kvp in props)
+            {
+                location.map.GetLayer(layerName).Tiles[tile_x, tile_y].Properties.Add(kvp.Key, kvp.Value);
+            }
         }
         public static void SetFlooringTile(int base_tile_sheet, int tile_x, int tile_y, Rectangle r, DecoratableLocation location, int sheetIndex)
         {
@@ -292,7 +296,12 @@ namespace CustomWallsAndFloors
             int x_offset = replaced_tile_index % 2;
             int y_offset = replaced_tile_index % 32 / 16;
 
+            Dictionary<string, xTile.ObjectModel.PropertyValue> props = new Dictionary<string, xTile.ObjectModel.PropertyValue>(location.map.GetLayer("Back").Tiles[tile_x, tile_y].Properties);
             location.setMapTile(tile_x, tile_y, base_tile_sheet + x_offset + 16 * y_offset, "Back", null, sheetIndex);
+            foreach (var kvp in props)
+            {
+                location.map.GetLayer("Back").Tiles[tile_x, tile_y].Properties.Add(kvp.Key, kvp.Value);
+            }
 
         }
 

@@ -2,7 +2,7 @@
 using Microsoft.Xna.Framework;
 using System.Collections.Generic;
 
-namespace CustomWallsAndFloors
+namespace CustomDecorationAreas
 {
     public class FloorWallDataDict
     {

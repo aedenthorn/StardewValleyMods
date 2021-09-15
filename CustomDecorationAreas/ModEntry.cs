@@ -1,15 +1,11 @@
 ﻿using HarmonyLib;
-using Microsoft.Xna.Framework;
 using StardewModdingAPI;
 using StardewValley;
 using StardewValley.Locations;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using xTile;
-using xTile.Tiles;
 
-namespace CustomWallsAndFloors
+namespace CustomDecorationAreas
 {
     /// <summary>The mod entry point.</summary>
     public class ModEntry : Mod

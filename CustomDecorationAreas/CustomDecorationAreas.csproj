@@ -7,8 +7,8 @@
     <ProjectGuid>{D505B178-43FC-4BA9-9DC8-F1C494BAC0AA}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>CustomWallsAndFloors</RootNamespace>
-    <AssemblyName>CustomWallsAndFloors</AssemblyName>
+    <RootNamespace>CustomDecorationAreas</RootNamespace>
+    <AssemblyName>CustomDecorationAreas</AssemblyName>
     <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <Deterministic>true</Deterministic>
