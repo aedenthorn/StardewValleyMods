@@ -12,7 +12,7 @@
     "Directory": "_releases",
     "ModFolder": "Renovations"
   },
-  "UpdateKeys": [ "Nexus:" ],
+  "UpdateKeys": [ "Nexus:9687" ],
   "Dependencies": [
     {
       "UniqueID": "Platonymous.ModUpdater",

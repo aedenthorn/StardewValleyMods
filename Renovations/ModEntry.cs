@@ -3,6 +3,7 @@ using Microsoft.Xna.Framework;
 using StardewModdingAPI;
 using StardewValley;
 using StardewValley.Locations;
+using StardewValley.Menus;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -42,12 +43,17 @@ namespace Renovations
 
             harmony.Patch(
                original: AccessTools.Method(typeof(GameLocation), nameof(GameLocation.MakeMapModifications)),
-               postfix: new HarmonyMethod(typeof(CodePatches), nameof(CodePatches.GameLocation_MakeMapModifications_Postfix))
+               prefix: new HarmonyMethod(typeof(CodePatches), nameof(CodePatches.GameLocation_MakeMapModifications_Prefix))
             );
 
             harmony.Patch(
                original: AccessTools.Method(typeof(Farmer), nameof(Farmer.performRenovation)),
                prefix: new HarmonyMethod(typeof(CodePatches), nameof(CodePatches.Farmer_performRenovation_Prefix))
+            );
+
+            harmony.Patch(
+               original: AccessTools.Method(typeof(FarmHouse), nameof(FarmHouse.UpdateForRenovation)),
+               prefix: new HarmonyMethod(typeof(CodePatches), nameof(CodePatches.UpdateForRenovation_Prefix))
             );
         }
 

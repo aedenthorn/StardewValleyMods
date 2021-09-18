@@ -1,4 +1,4 @@
-﻿using Harmony;
+﻿using HarmonyLib;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Netcode;
@@ -39,7 +39,7 @@ namespace MagnetMod
             ObjectPatches.Initialize(Monitor);
 
             ObjectPatches.magnetRangeMult = magnetRangeMult;
-            var harmony = HarmonyInstance.Create(ModManifest.UniqueID);
+            var harmony = new Harmony(ModManifest.UniqueID);
 
             harmony.Patch(
                original: AccessTools.Method(typeof(Debris), "playerInRange"),
