@@ -9,7 +9,7 @@ using System.Linq;
 using xTile;
 using xTile.Tiles;
 
-namespace CustomWallsAndFloors
+namespace MultiStoryFarmhouse
 {
     /// <summary>The mod entry point.</summary>
     public class ModEntry : Mod, IAssetEditor, IAssetLoader
@@ -45,7 +45,7 @@ namespace CustomWallsAndFloors
             var harmony = new Harmony(ModManifest.UniqueID);
 
             harmony.Patch(
-               original: AccessTools.Method(typeof(DecoratableLocation), nameof(DecoratableLocation.getWalls)),
+               original: AccessTools.Method(typeof(GameLocation), nameof(GameLocation.getWalls)),
                prefix: new HarmonyMethod(typeof(CodePatches), nameof(CodePatches.getWalls_Prefix))
             );
 

@@ -1,7 +1,7 @@
 ﻿
 using System.Collections.Generic;
 
-namespace CustomWallsAndFloors
+namespace MultiStoryFarmhouse
 {
     public class ModConfig
     {

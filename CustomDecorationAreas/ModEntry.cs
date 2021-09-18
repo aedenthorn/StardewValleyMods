@@ -7,7 +7,6 @@ using System.Collections.Generic;
 
 namespace CustomDecorationAreas
 {
-    /// <summary>The mod entry point.</summary>
     public class ModEntry : Mod
     {
 

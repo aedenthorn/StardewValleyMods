@@ -1,0 +1,22 @@
+﻿{
+  "Name": "Renovations",
+  "Author": "aedenthorn",
+  "Version": "0.1.0",
+  "Description": "Renovations",
+  "UniqueID": "aedenthorn.Renovations",
+  "EntryDll": "Renovations.dll",
+  "MinimumApiVersion": "3.8.0",
+  "ModUpdater": {
+    "Repository": "StardewValleyMods",
+    "User": "aedenthorn",
+    "Directory": "_releases",
+    "ModFolder": "Renovations"
+  },
+  "UpdateKeys": [ "Nexus:" ],
+  "Dependencies": [
+    {
+      "UniqueID": "Platonymous.ModUpdater",
+      "IsRequired": false
+    }
+  ]
+}

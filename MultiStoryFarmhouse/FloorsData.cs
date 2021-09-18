@@ -2,7 +2,7 @@
 using Microsoft.Xna.Framework;
 using System.Collections.Generic;
 
-namespace CustomWallsAndFloors
+namespace MultiStoryFarmhouse
 {
     public class FloorsData
     {

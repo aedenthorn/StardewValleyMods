@@ -4,12 +4,12 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{D505B178-43FC-4BA9-9DC8-F1C494BAC0AA}</ProjectGuid>
+    <ProjectGuid>{2DB37627-A172-49CE-9BA5-EFB0AAF8A79C}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>CustomDecorationAreas</RootNamespace>
-    <AssemblyName>CustomDecorationAreas</AssemblyName>
-    <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
+    <RootNamespace>Renovations</RootNamespace>
+    <AssemblyName>Renovations</AssemblyName>
+    <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <Deterministic>true</Deterministic>
     <NuGetPackageImportStamp>
@@ -50,7 +50,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CodePatches.cs" />
-    <Compile Include="FloorWallDataDict.cs" />
+    <Compile Include="CustomRenovationData.cs" />
     <Compile Include="ModConfig.cs" />
     <Compile Include="ModEntry.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

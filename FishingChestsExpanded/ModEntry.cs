@@ -39,13 +39,13 @@ namespace FishingChestsExpanded
 
             ConstructorInfo ci = typeof(ItemGrabMenu).GetConstructor(new Type[] { typeof(IList<Item>), typeof(object) });
             harmony.Patch(
-               original: ci,
-               prefix: new HarmonyMethod(typeof(ModEntry), nameof(ModEntry.ItemGrabMenu_Prefix))
+				original: ci,
+				prefix: new HarmonyMethod(typeof(ModEntry), nameof(ModEntry.ItemGrabMenu_Prefix))
             );
             harmony.Patch(
-                original: AccessTools.Method(typeof(FishingRod), nameof(FishingRod.startMinigameEndFunction)),
-               prefix: new HarmonyMethod(typeof(ModEntry), nameof(ModEntry.startMinigameEndFunction_Prefix))
-            );
+				original: AccessTools.Method(typeof(FishingRod), nameof(FishingRod.startMinigameEndFunction)),
+				prefix: new HarmonyMethod(typeof(ModEntry), nameof(ModEntry.startMinigameEndFunction_Prefix))
+			);
 
         }
 
@@ -89,7 +89,7 @@ namespace FishingChestsExpanded
 
             int coins = advancedLootFrameworkApi.GetChestCoins(difficulty, Config.IncreaseRate, Config.CoinBaseMin, Config.CoinBaseMax);
 
-            IList<Item> items = advancedLootFrameworkApi.GetChestItems(treasuresList, Config.ItemListChances, Config.MaxItems, Config.MinItemValue, Config.MaxItemValue, difficulty, Config.IncreaseRate, Config.ItemsBaseMaxValue);
+			IList<Item> items = advancedLootFrameworkApi.GetChestItems(treasuresList, Config.ItemListChances, Config.MaxItems, Config.MinItemValue, Config.MaxItemValue, difficulty, Config.IncreaseRate, Config.ItemsBaseMaxValue);
 
 			bool vanilla = Game1.random.NextDouble() < Config.VanillaLootChance / 100f;
 			foreach (Item item in inventory)
@@ -107,6 +107,7 @@ namespace FishingChestsExpanded
             Game1.player.Money += coins;
             SMonitor.Log($"chest contains {coins} gold");
         }
+
 
         private static IList<Item> GetVanillaLoot(FishingRod fr)
 		{
