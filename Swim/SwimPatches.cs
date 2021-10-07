@@ -30,7 +30,7 @@ namespace Swim
         {
             try
             {
-                if(who.swimming && Game1.player.currentLocation.Name.StartsWith("Underwater"))
+                if(who.swimming.Value && Game1.player.currentLocation.Name.StartsWith("Underwater"))
                 {
                     who.swimming.Value = false;
                     __state = true;
@@ -45,7 +45,7 @@ namespace Swim
         {
             try
             {
-                if(Game1.player.swimming)
+                if(Game1.player.swimming.Value)
                 {
                     return false;
                 }
@@ -75,7 +75,7 @@ namespace Swim
         {
             try
             {
-                if (Game1.player.swimming)
+                if (Game1.player.swimming.Value)
                 {
                     Game1.player.swimming.Value = false;
                     if (!Config.SwimSuitAlways)
@@ -92,7 +92,7 @@ namespace Swim
             try
             {
                 Monitor.Log($"exiting event");
-                if (__instance.exitLocation != null && __instance.exitLocation != null && __instance.exitLocation.Location.waterTiles != null && Game1.player.positionBeforeEvent != null && __instance.exitLocation.Location.waterTiles[(int)(Game1.player.positionBeforeEvent.X),(int)(Game1.player.positionBeforeEvent.Y)])
+                if (__instance.exitLocation != null && __instance.exitLocation != null && __instance.exitLocation.Location.waterTiles != null && __instance.exitLocation.Location.waterTiles[(int)(Game1.player.positionBeforeEvent.X),(int)(Game1.player.positionBeforeEvent.Y)])
                 {
                     Monitor.Log($"swimming again");
                     ChangeAfterEvent();
@@ -116,7 +116,7 @@ namespace Swim
         {
             try
             {
-                if (__instance.swimming && (!Config.ReadyToSwim || Config.SwimRestoresVitals) && __instance.timerSinceLastMovement > 0 && !Game1.eventUp && (Game1.activeClickableMenu == null || Game1.IsMultiplayer) && !Game1.paused)
+                if (__instance.swimming.Value && (!Config.ReadyToSwim || Config.SwimRestoresVitals) && __instance.timerSinceLastMovement > 0 && !Game1.eventUp && (Game1.activeClickableMenu == null || Game1.IsMultiplayer) && !Game1.paused)
                 {
                     if (__instance.timerSinceLastMovement > 800)
                     {
@@ -137,12 +137,12 @@ namespace Swim
         {
             try
             {
-                if (__instance.swimming && (!Config.ReadyToSwim || Config.SwimRestoresVitals) && __instance.timerSinceLastMovement > 0 && !Game1.eventUp && (Game1.activeClickableMenu == null || Game1.IsMultiplayer) && !Game1.paused)
+                if (__instance.swimming.Value && (!Config.ReadyToSwim || Config.SwimRestoresVitals) && __instance.timerSinceLastMovement > 0 && !Game1.eventUp && (Game1.activeClickableMenu == null || Game1.IsMultiplayer) && !Game1.paused)
                 {
                     if (__instance.swimTimer < 0)
                     {
                         __instance.swimTimer = 100;
-                        if (__instance.stamina < (float)__instance.maxStamina)
+                        if (__instance.stamina < (float)__instance.maxStamina.Value)
                         {
                             float stamina = __instance.stamina;
                             __instance.stamina = stamina + 1f;
@@ -259,7 +259,7 @@ namespace Swim
 
         public static void Wand_DoFunction_Prefix(ref Farmer who, ref bool __state)
         {
-            if (who.bathingClothes)
+            if (who.bathingClothes.Value)
             {
                 who.bathingClothes.Value = false;
                 __state = true;
@@ -385,7 +385,7 @@ namespace Swim
                 })[0];
                 if (text == "PoolEntrance")
                 {
-                    if (!Game1.player.swimming)
+                    if (!Game1.player.swimming.Value)
                     {
                         Config.ReadyToSwim = false;
                     }
@@ -406,7 +406,7 @@ namespace Swim
                 })[0];
                 if (text == "PoolEntrance")
                 {
-                    if (Game1.player.swimming)
+                    if (Game1.player.swimming.Value)
                     {
                         Config = Helper.ReadConfig<ModConfig>();
                     }
@@ -456,7 +456,7 @@ namespace Swim
         {
             try
             {
-                if (__result == false || !isFarmer || !character.Equals(Game1.player) || !Game1.player.swimming || ModEntry.isUnderwater.Value)
+                if (__result == false || !isFarmer || !character.Equals(Game1.player) || !Game1.player.swimming.Value || ModEntry.isUnderwater.Value)
                     return;
 
                 Vector2 next = SwimUtils.GetNextTile();
@@ -514,7 +514,7 @@ namespace Swim
                         {
                             Monitor.Log($"sink debris: creating copy of debris {debris.debrisType} chunk {chunk.debrisType} item {debris.item != null} on {diveLocation.OtherMapName}");
 
-                            if (debris.debrisType != Debris.DebrisType.ARCHAEOLOGY && debris.debrisType != Debris.DebrisType.OBJECT && chunk.debrisType % 2 != 0)
+                            if (debris.debrisType.Value != Debris.DebrisType.ARCHAEOLOGY && debris.debrisType.Value != Debris.DebrisType.OBJECT && chunk.debrisType % 2 != 0)
                             {
                                 Monitor.Log($"sink debris: non-item debris");
                                 break;

@@ -12,7 +12,7 @@ namespace Swim
         private string myCollisionSound;
         private bool myExplode;
 
-        public AbigailProjectile(int damageToFarmer, int parentSheetIndex, int bouncesTillDestruct, int tailLength, float rotationVelocity, float xVelocity, float yVelocity, Vector2 startingPosition, string collisionSound, string firingSound, bool explode, bool damagesMonsters = false, GameLocation location = null, Character firer = null, bool spriteFromObjectSheet = false, BasicProjectile.onCollisionBehavior collisionBehavior = null) : base(damageToFarmer, parentSheetIndex, bouncesTillDestruct, tailLength, rotationVelocity, xVelocity, yVelocity, startingPosition, collisionSound, firingSound, explode, true, location, firer, true, null)
+        public AbigailProjectile(int damageToFarmer, int ParentSheetIndex, int bouncesTillDestruct, int tailLength, float rotationVelocity, float xVelocity, float yVelocity, Vector2 startingPosition, string collisionSound, string firingSound, bool explode, bool damagesMonsters = false, GameLocation location = null, Character firer = null, bool spriteFromObjectSheet = false, BasicProjectile.onCollisionBehavior collisionBehavior = null) : base(damageToFarmer, ParentSheetIndex, bouncesTillDestruct, tailLength, rotationVelocity, xVelocity, yVelocity, startingPosition, collisionSound, firingSound, explode, true, location, firer, true, null)
         {
             IgnoreLocationCollision = true;
             myCollisionSound = collisionSound;
@@ -21,7 +21,7 @@ namespace Swim
 
         public override void behaviorOnCollisionWithMonster(NPC n, GameLocation location)
         {
-            this.explosionAnimation(location);
+            explosionAnimation(location);
             if (n is Monster)
             {
                 location.characters.Remove(n);
@@ -30,13 +30,13 @@ namespace Swim
         }
         private void explosionAnimation(GameLocation location)
         {
-            Rectangle sourceRect = Game1.getSourceRectForStandardTileSheet(this.spriteFromObjectSheet ? Game1.objectSpriteSheet : Projectile.projectileSheet, this.currentTileSheetIndex, -1, -1);
+            Rectangle sourceRect = Game1.getSourceRectForStandardTileSheet(spriteFromObjectSheet.Value ? Game1.objectSpriteSheet : Projectile.projectileSheet, currentTileSheetIndex.Value, -1, -1);
             sourceRect.X += 28;
             sourceRect.Y += 28;
             sourceRect.Width = 8;
             sourceRect.Height = 8;
             int whichDebris = 12;
-            int value = this.currentTileSheetIndex.Value;
+            int value = currentTileSheetIndex.Value;
             switch (value)
             {
                 case 378:
@@ -66,17 +66,17 @@ namespace Swim
                     }
                     break;
             }
-            if (this.spriteFromObjectSheet)
+            if (spriteFromObjectSheet.Value)
             {
-                Game1.createRadialDebris(location, whichDebris, (int)(this.position.X + 32f) / 64, (int)(this.position.Y + 32f) / 64, 6, false, -1, false, -1);
+                Game1.createRadialDebris(location, whichDebris, (int)(position.X + 32f) / 64, (int)(position.Y + 32f) / 64, 6, false, -1, false, -1);
             }
             else
             {
-                Game1.createRadialDebris(location, "TileSheets\\Projectiles", sourceRect, 4, (int)this.position.X + 32, (int)this.position.Y + 32, 12, (int)(this.position.Y / 64f) + 1);
+                Game1.createRadialDebris(location, "TileSheets\\Projectiles", sourceRect, 4, (int)position.X + 32, (int)position.Y + 32, 12, (int)(position.Y / 64f) + 1);
             }
-            if (myCollisionSound != null && !this.myCollisionSound.Equals(""))
+            if (myCollisionSound != null && !myCollisionSound.Equals(""))
             {
-                location.playSound(this.myCollisionSound, NetAudio.SoundContext.Default);
+                location.playSound(myCollisionSound, NetAudio.SoundContext.Default);
             }
             destroyMe = true;
 

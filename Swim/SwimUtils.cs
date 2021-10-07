@@ -164,7 +164,7 @@ namespace Swim
                             objectIndex = 96;
                             break;
                         case 1:
-                            objectIndex = (who.hasOrWillReceiveMail("lostBookFound") ? ((Game1.netWorldState.Value.LostBooksFound < 21) ? 102 : 770) : 770);
+                            objectIndex = (who.hasOrWillReceiveMail("lostBookFound") ? ((Game1.netWorldState.Value.LostBooksFound.Value < 21) ? 102 : 770) : 770);
                             break;
                         case 2:
                             objectIndex = 110;
@@ -234,8 +234,8 @@ namespace Swim
 
         public static bool IsWearingScubaGear()
         {
-            bool tank = ModEntry.scubaTankID.Value != -1 && Game1.player.shirtItem != null && Game1.player.shirtItem.Value != null && Game1.player.shirtItem.Value.parentSheetIndex != null && Game1.player.shirtItem.Value.parentSheetIndex == ModEntry.scubaTankID.Value;
-            bool mask = ModEntry.scubaMaskID.Value != -1 && Game1.player.hat != null && Game1.player.hat.Value != null && Game1.player.hat.Value.which != null && Game1.player.hat.Value.which == ModEntry.scubaMaskID.Value;
+            bool tank = ModEntry.scubaTankID.Value != -1 && Game1.player.shirtItem.Value != null && Game1.player.shirtItem.Value != null && Game1.player.shirtItem.Value.ParentSheetIndex == ModEntry.scubaTankID.Value;
+            bool mask = ModEntry.scubaMaskID.Value != -1 && Game1.player.hat.Value != null && Game1.player.hat.Value != null && Game1.player.hat.Value.which?.Value == ModEntry.scubaMaskID.Value;
 
             return tank && mask;
         }
@@ -245,7 +245,7 @@ namespace Swim
             var tiles = Game1.player.currentLocation.waterTiles;
             Point p = Game1.player.getTileLocationPoint();
 
-            if (!Game1.player.swimming && Game1.player.currentLocation.map.GetLayer("Buildings").PickTile(new Location(p.X, p.Y) * Game1.tileSize, Game1.viewport.Size) != null)
+            if (!Game1.player.swimming.Value && Game1.player.currentLocation.map.GetLayer("Buildings").PickTile(new Location(p.X, p.Y) * Game1.tileSize, Game1.viewport.Size) != null)
                 return false;
 
             return IsMapUnderwater(Game1.player.currentLocation.Name)
@@ -254,12 +254,12 @@ namespace Swim
                     tiles != null
                     && 
                     (
-                        (p.X >= 0 && p.Y >= 0 && tiles.GetLength(0) > p.X && tiles.GetLength(1) > p.Y && tiles[p.X, p.Y])
+                        (p.X >= 0 && p.Y >= 0 && tiles.waterTiles.GetLength(0) > p.X && tiles.waterTiles.GetLength(1) > p.Y && tiles[p.X, p.Y])
                         ||
                         (
-                            Game1.player.swimming 
+                            Game1.player.swimming.Value
                             &&
-                            (p.X < 0 || p.Y < 0 || tiles.GetLength(0) <= p.X || tiles.GetLength(1) <= p.Y)
+                            (p.X < 0 || p.Y < 0 || tiles.waterTiles.GetLength(0) <= p.X || tiles.waterTiles.GetLength(1) <= p.Y)
                         )
                     )
                 );
@@ -424,7 +424,7 @@ namespace Swim
 
         public static bool IsWaterTile(Vector2 tilePos)
         {
-            if (Game1.player.currentLocation != null && Game1.player.currentLocation.waterTiles != null && tilePos.X >= 0 && tilePos.Y >= 0 && Game1.player.currentLocation.waterTiles.GetLength(0) > tilePos.X && Game1.player.currentLocation.waterTiles.GetLength(1) > tilePos.Y)
+            if (Game1.player.currentLocation != null && Game1.player.currentLocation.waterTiles != null && tilePos.X >= 0 && tilePos.Y >= 0 && Game1.player.currentLocation.waterTiles.waterTiles.GetLength(0) > tilePos.X && Game1.player.currentLocation.waterTiles.waterTiles.GetLength(1) > tilePos.Y)
             {
                 return Game1.player.currentLocation.waterTiles[(int)tilePos.X, (int)tilePos.Y];
             }
@@ -464,7 +464,7 @@ namespace Swim
         }
         public static bool DebrisIsAnItem(Debris debris)
         {
-            return debris.debrisType == Debris.DebrisType.OBJECT || debris.debrisType == Debris.DebrisType.ARCHAEOLOGY || debris.debrisType == Debris.DebrisType.RESOURCE || debris.item != null;
+            return debris.debrisType.Value == Debris.DebrisType.OBJECT || debris.debrisType.Value == Debris.DebrisType.ARCHAEOLOGY || debris.debrisType.Value == Debris.DebrisType.RESOURCE || debris.item != null;
         }
     }
 }

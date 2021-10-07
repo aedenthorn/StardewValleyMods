@@ -1,4 +1,4 @@
-﻿using Harmony;
+﻿using HarmonyLib;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using StardewModdingAPI;
@@ -30,7 +30,7 @@ namespace CustomOreNodes
             context = this;
             Config = Helper.ReadConfig<ModConfig>();
             SMonitor = Monitor;
-            var harmony = HarmonyInstance.Create(ModManifest.UniqueID);
+            var harmony = new Harmony(ModManifest.UniqueID);
 
             harmony.Patch(
                original: AccessTools.Method(typeof(MineShaft), "chooseStoneType"),
@@ -67,7 +67,7 @@ namespace CustomOreNodes
             if (node == null)
                 return true;
 
-            if (__instance.fragility != 2)
+            if (__instance.Fragility != 2)
             {
                 spriteBatch.Draw(Game1.shadowTexture, Game1.GlobalToLocal(Game1.viewport, new Vector2(x * 64 + 32, y * 64 + 51 + 4)), new Rectangle?(Game1.shadowTexture.Bounds), Color.White * alpha, 0f, new Vector2(Game1.shadowTexture.Bounds.Center.X, Game1.shadowTexture.Bounds.Center.Y), 4f, SpriteEffects.None, __instance.getBoundingBox(new Vector2(x, y)).Bottom / 15000f);
             }
@@ -77,7 +77,7 @@ namespace CustomOreNodes
             float rotation2 = 0f;
             Vector2 origin2 = new Vector2(8f, 8f);
             Vector2 vector2 = __instance.scale;
-            spriteBatch.Draw(node.texture, position3, sourceRectangle2, color2, rotation2, origin2, (__instance.scale.Y > 1f) ? __instance.getScale().Y : 4f, __instance.flipped ? SpriteEffects.FlipHorizontally : SpriteEffects.None, (__instance.isPassable() ? __instance.getBoundingBox(new Vector2(x, y)).Top : __instance.getBoundingBox(new Vector2(x, y)).Bottom) / 10000f);
+            spriteBatch.Draw(node.texture, position3, sourceRectangle2, color2, rotation2, origin2, (__instance.scale.Y > 1f) ? __instance.getScale().Y : 4f, __instance.Flipped ? SpriteEffects.FlipHorizontally : SpriteEffects.None, (__instance.isPassable() ? __instance.getBoundingBox(new Vector2(x, y)).Top : __instance.getBoundingBox(new Vector2(x, y)).Bottom) / 10000f);
             return false;
         }
 
@@ -228,7 +228,7 @@ namespace CustomOreNodes
 
         private static void chooseStoneType_Postfix(MineShaft __instance, ref Object __result, Vector2 tile)
         {
-            if (__result == null || __result.parentSheetIndex == null)
+            if (__result == null || __result.ParentSheetIndex == null)
                 return;
 
             int difficulty = __instance.mineLevel > 120 ? Game1.netWorldState.Value.SkullCavesDifficulty : Game1.netWorldState.Value.MinesDifficulty;

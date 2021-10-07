@@ -41,30 +41,30 @@ namespace Swim
         public override void behaviorAtGameTick(GameTime time)
         {
             base.IsWalkingTowardPlayer = false;
-            this.nextChangeDirectionTime -= time.ElapsedGameTime.Milliseconds;
-            this.nextWanderTime -= time.ElapsedGameTime.Milliseconds;
-            if (this.nextChangeDirectionTime < 0)
+            nextChangeDirectionTime -= time.ElapsedGameTime.Milliseconds;
+            nextWanderTime -= time.ElapsedGameTime.Milliseconds;
+            if (nextChangeDirectionTime < 0)
             {
-                this.nextChangeDirectionTime = Game1.random.Next(500, 1000);
+                nextChangeDirectionTime = Game1.random.Next(500, 1000);
                 int facingDirection = base.FacingDirection;
                 this.facingDirection.Value = (this.facingDirection.Value + (Game1.random.Next(0, 3) - 1) + 4) % 4;
             }
-            if (this.nextWanderTime < 0)
+            if (nextWanderTime < 0)
             {
-                if (this.wanderState)
+                if (wanderState)
                 {
-                    this.nextWanderTime = Game1.random.Next(1000, 2000);
+                    nextWanderTime = Game1.random.Next(1000, 2000);
                 }
                 else
                 {
-                    this.nextWanderTime = Game1.random.Next(1000, 3000);
+                    nextWanderTime = Game1.random.Next(1000, 3000);
                 }
-                this.wanderState = !this.wanderState;
+                wanderState = !wanderState;
             }
-            if (this.wanderState)
+            if (wanderState)
             {
-                this.moveLeft = (this.moveUp = (this.moveRight = (this.moveDown = false)));
-                base.tryToMoveInDirection(this.facingDirection.Value, false, base.DamageToFarmer, this.isGlider);
+                moveLeft = (moveUp = (moveRight = (moveDown = false)));
+                base.tryToMoveInDirection(facingDirection.Value, false, base.DamageToFarmer, isGlider.Value);
             }
         }
     }

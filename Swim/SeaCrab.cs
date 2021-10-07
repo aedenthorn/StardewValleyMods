@@ -32,12 +32,12 @@ namespace Swim
         protected override void initNetFields()
         {
             base.initNetFields();
-            base.NetFields.AddFields(new INetSerializable[]
+            NetFields.AddFields(new INetSerializable[]
             {
-                this.shellGone,
-                this.shellHealth,
+                shellGone,
+                shellHealth,
             });
-            this.position.Field.AxisAlignedMovement = true;
+            position.Field.AxisAlignedMovement = true;
         }
 
         public override int takeDamage(int damage, int xTrajectory, int yTrajectory, bool isBomb, double addedPrecision, Farmer who)
@@ -46,21 +46,21 @@ namespace Swim
         }
         public override bool hitWithTool(Tool t)
         {
-            if (t is Pickaxe && t.getLastFarmerToUse() != null && this.shellHealth > 0)
+            if (t is Pickaxe && t.getLastFarmerToUse() != null && shellHealth.Value > 0)
             {
-                base.currentLocation.playSound("hammer", NetAudio.SoundContext.Default);
-                NetInt netInt = this.shellHealth;
+                currentLocation.playSound("hammer", NetAudio.SoundContext.Default);
+                NetInt netInt = shellHealth;
                 int value = netInt.Value;
                 netInt.Value = value - 1;
-                base.shake(500);
-                this.setTrajectory(Utility.getAwayFromPlayerTrajectory(this.GetBoundingBox(), t.getLastFarmerToUse()));
-                if (this.shellHealth <= 0)
+                shake(500);
+                setTrajectory(Utility.getAwayFromPlayerTrajectory(GetBoundingBox(), t.getLastFarmerToUse()));
+                if (shellHealth.Value <= 0)
                 {
-                    this.shellGone.Value = true;
-                    base.moveTowardPlayer(-1);
-                    base.currentLocation.playSound("stoneCrack", NetAudio.SoundContext.Default);
-                    Game1.createRadialDebris(base.currentLocation, 14, base.getTileX(), base.getTileY(), Game1.random.Next(2, 7), false, -1, false, -1);
-                    Game1.createRadialDebris(base.currentLocation, 14, base.getTileX(), base.getTileY(), Game1.random.Next(2, 7), false, -1, false, -1);
+                    shellGone.Value = true;
+                    moveTowardPlayer(-1);
+                    currentLocation.playSound("stoneCrack", NetAudio.SoundContext.Default);
+                    Game1.createRadialDebris(currentLocation, 14, getTileX(), getTileY(), Game1.random.Next(2, 7), false, -1, false, -1);
+                    Game1.createRadialDebris(currentLocation, 14, getTileX(), getTileY(), Game1.random.Next(2, 7), false, -1, false, -1);
                 }
                 return true;
             }
@@ -70,28 +70,28 @@ namespace Swim
         {
             if (shellGone)
             {
-                Sprite.CurrentFrame = 16 + this.Sprite.currentFrame % 4;
+                Sprite.CurrentFrame = 16 + Sprite.currentFrame % 4;
             }
             if (withinPlayerThreshold())
             {
-                if (Math.Abs(base.Player.GetBoundingBox().Center.Y - this.GetBoundingBox().Center.Y) < Math.Abs(base.Player.GetBoundingBox().Center.X - this.GetBoundingBox().Center.X))
+                if (Math.Abs(Player.GetBoundingBox().Center.Y - GetBoundingBox().Center.Y) < Math.Abs(Player.GetBoundingBox().Center.X - GetBoundingBox().Center.X))
                 {
-                    if (base.Player.GetBoundingBox().Center.X - this.GetBoundingBox().Center.X > 0 && getTileLocationPoint().X > 0)
+                    if (Player.GetBoundingBox().Center.X - GetBoundingBox().Center.X > 0 && getTileLocationPoint().X > 0)
                     {
-                        this.SetMovingLeft(true);
+                        SetMovingLeft(true);
                     }
-                    else if (base.Player.GetBoundingBox().Center.X - this.GetBoundingBox().Center.X < 0 && getTileLocationPoint().X < currentLocation.map.Layers[0].TileWidth)
+                    else if (Player.GetBoundingBox().Center.X - GetBoundingBox().Center.X < 0 && getTileLocationPoint().X < currentLocation.map.Layers[0].TileWidth)
                     {
-                        this.SetMovingRight(true);
+                        SetMovingRight(true);
                     }
                 }
-                else if (base.Player.GetBoundingBox().Center.Y - this.GetBoundingBox().Center.Y > 0 && getTileLocationPoint().Y > 0)
+                else if (Player.GetBoundingBox().Center.Y - GetBoundingBox().Center.Y > 0 && getTileLocationPoint().Y > 0)
                 {
-                    this.SetMovingUp(true);
+                    SetMovingUp(true);
                 }
-                else if (base.Player.GetBoundingBox().Center.Y - this.GetBoundingBox().Center.Y < 0 && getTileLocationPoint().Y < currentLocation.map.Layers[0].TileHeight)
+                else if (Player.GetBoundingBox().Center.Y - GetBoundingBox().Center.Y < 0 && getTileLocationPoint().Y < currentLocation.map.Layers[0].TileHeight)
                 {
-                    this.SetMovingDown(true);
+                    SetMovingDown(true);
                 }
                 MovePosition(time, Game1.viewport, currentLocation);
             }
@@ -103,47 +103,47 @@ namespace Swim
 
         protected override void updateMonsterSlaveAnimation(GameTime time)
         {
-            if (this.isMoving())
+            if (isMoving())
             {
                 if (base.FacingDirection == 0)
                 {
-                    this.Sprite.AnimateUp(time, 0, "");
+                    Sprite.AnimateUp(time, 0, "");
                 }
                 else if (base.FacingDirection == 3)
                 {
-                    this.Sprite.AnimateLeft(time, 0, "");
+                    Sprite.AnimateLeft(time, 0, "");
                 }
                 else if (base.FacingDirection == 1)
                 {
-                    this.Sprite.AnimateRight(time, 0, "");
+                    Sprite.AnimateRight(time, 0, "");
                 }
                 else if (base.FacingDirection == 2)
                 {
-                    this.Sprite.AnimateDown(time, 0, "");
+                    Sprite.AnimateDown(time, 0, "");
                 }
             }
             else
             {
-                this.Sprite.StopAnimation();
+                Sprite.StopAnimation();
             }
-            if (this.isMoving() && this.Sprite.currentFrame % 4 == 0)
+            if (isMoving() && Sprite.currentFrame % 4 == 0)
             {
-                this.Sprite.currentFrame++;
-                this.Sprite.UpdateSourceRect();
+                Sprite.currentFrame++;
+                Sprite.UpdateSourceRect();
             }
-            if (this.shellGone)
+            if (shellGone.Value)
             {
-                base.updateGlow();
-                if (this.invincibleCountdown > 0)
+                updateGlow();
+                if (invincibleCountdown > 0)
                 {
-                    this.glowingColor = Color.Cyan;
-                    this.invincibleCountdown -= time.ElapsedGameTime.Milliseconds;
-                    if (this.invincibleCountdown <= 0)
+                    glowingColor = Color.Cyan;
+                    invincibleCountdown -= time.ElapsedGameTime.Milliseconds;
+                    if (invincibleCountdown <= 0)
                     {
-                        base.stopGlowing();
+                        stopGlowing();
                     }
                 }
-                this.Sprite.currentFrame = 16 + this.Sprite.currentFrame % 4;
+                Sprite.currentFrame = 16 + Sprite.currentFrame % 4;
             }
         }
     }

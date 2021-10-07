@@ -259,7 +259,10 @@ namespace MultipleSpouses
                 else if(ModEntry.config.BuildAllSpousesRooms && roomSpouses.Contains(j.Name))
                 {
                     int offset = roomSpouses.IndexOf(j.Name) * 7;
-                    j.setTilePosition((int)spot.X + offset, (int)spot.Y);
+                    if (j.Name == "Sebastian" && Game1.netWorldState.Value.hasWorldStateID("sebastianFrog"))
+                        j.setTilePosition((int)spot.X + offset - 1, (int)spot.Y + 1);
+                    else
+                        j.setTilePosition((int)spot.X + offset, (int)spot.Y);
                     j.faceDirection(ModEntry.myRand.Next(0, 4));
                     j.setSpouseRoomMarriageDialogue();
                     Monitor.Log($"{j.Name} loc: {(spot.X + offset)},{spot.Y}");

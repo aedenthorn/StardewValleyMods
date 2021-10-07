@@ -1,11 +1,11 @@
 ﻿{
   "Name": "Yet Another Jump Mod",
   "Author": "aedenthorn",
-  "Version": "0.6.0",
+  "Version": "0.7.0",
   "Description": "Advanced Jumping.",
   "UniqueID": "aedenthorn.YAJM",
   "EntryDll": "YAJM.dll",
-  "MinimumApiVersion": "3.8.0",
+  "MinimumApiVersion": "3.12.6",
   "UpdateKeys": ["Nexus:6546"],
   "ModUpdater": {
     "Repository": "StardewValleyMods",

@@ -1,4 +1,4 @@
-﻿using Harmony;
+﻿using HarmonyLib;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using StardewModdingAPI;
@@ -7,10 +7,8 @@ using StardewValley.Characters;
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Threading;
-using xTile.Dimensions;
 
-namespace SixtyNine
+namespace YAJM
 {
     public class ModEntry : Mod, IAssetEditor
     {
@@ -22,8 +20,6 @@ namespace SixtyNine
         private float velY;
         private  Texture2D horseShadow;
         private  Texture2D horse;
-        private  bool playerJumping;
-        private  bool playerJumpingOver;
         private  bool playerJumpingWithHorse;
         private static bool blockedJump;
 
@@ -38,7 +34,7 @@ namespace SixtyNine
 
             Helper.Events.Input.ButtonPressed += Input_ButtonPressed;
 
-            HarmonyInstance harmony = HarmonyInstance.Create(Helper.ModRegistry.ModID);
+            Harmony harmony = new Harmony(Helper.ModRegistry.ModID);
 
             harmony.Patch(
                original: AccessTools.Method(typeof(Farmer), nameof(Farmer.getDrawLayer)),
@@ -82,7 +78,7 @@ namespace SixtyNine
         {
             if (__instance is Horse)
             {
-                b.Draw(context.horseShadow, __instance.getLocalPosition(Game1.viewport) + Config.HorseShadowOffset + new Vector2((float)(__instance.Sprite.SpriteWidth * 4 / 2), (float)(__instance.GetBoundingBox().Height / 2)), new Microsoft.Xna.Framework.Rectangle?(__instance.Sprite.SourceRect), Color.White * alpha, __instance.rotation, new Vector2((float)(__instance.Sprite.SpriteWidth / 2), (float)__instance.Sprite.SpriteHeight * 3f / 4f), Math.Max(0.2f, __instance.scale) * 4f, (__instance.flip || (__instance.Sprite.CurrentAnimation != null && __instance.Sprite.CurrentAnimation[__instance.Sprite.currentAnimationIndex].flip)) ? SpriteEffects.FlipHorizontally : SpriteEffects.None, 0);
+                b.Draw(context.horseShadow, __instance.getLocalPosition(Game1.viewport) + Config.HorseShadowOffset + new Vector2((float)(__instance.Sprite.SpriteWidth * 4 / 2), (float)(__instance.GetBoundingBox().Height / 2)), new Microsoft.Xna.Framework.Rectangle?(__instance.Sprite.SourceRect), Color.White * alpha, __instance.rotation, new Vector2((float)(__instance.Sprite.SpriteWidth / 2), (float)__instance.Sprite.SpriteHeight * 3f / 4f), Math.Max(0.2f, __instance.Scale) * 4f, (__instance.flip || (__instance.Sprite.CurrentAnimation != null && __instance.Sprite.CurrentAnimation[__instance.Sprite.currentAnimationIndex].flip)) ? SpriteEffects.FlipHorizontally : SpriteEffects.None, 0);
                 if ((__instance as Horse).rider != null)
                 {
                     if (context.playerJumpingWithHorse)
@@ -100,9 +96,8 @@ namespace SixtyNine
 
         private void Input_ButtonPressed(object sender, StardewModdingAPI.Events.ButtonPressedEventArgs e)
         {
-            if (e.Button == Config.JumpButton && Context.IsPlayerFree && !Game1.player.IsSitting() && !Game1.player.swimming && Game1.currentMinigame == null && Game1.player.yJumpVelocity == 0)
+            if (e.Button == Config.JumpButton && Context.IsPlayerFree && !Game1.player.IsSitting() && !Game1.player.swimming.Value && Game1.currentMinigame == null && Game1.player.yJumpVelocity == 0)
             {
-                playerJumpingOver = false;
                 playerJumpingWithHorse = false;
                 blockedJump = false;
 
@@ -147,7 +142,7 @@ namespace SixtyNine
                         || box.Y >= l.map.Layers[0].LayerHeight * Game1.tileSize 
                         || box.X < 0 
                         || box.Y < 0
-                        || (l.waterTiles?[box.X / Game1.tileSize, box.Y / Game1.tileSize] == true && !Helper.ModRegistry.IsLoaded("aedenthorn.Swim"))
+                        || (l.waterTiles?.waterTiles[box.X / Game1.tileSize, box.Y / Game1.tileSize].isWater == true && !Helper.ModRegistry.IsLoaded("aedenthorn.Swim"))
                     );
                 }
 
@@ -166,7 +161,6 @@ namespace SixtyNine
                         velY = oy * (float)Math.Sqrt(i * 16);
                         lastYJumpVelocity = 0;
                         Game1.player.canMove = false;
-                        playerJumpingOver = true;
                         PlayerJump((float)Math.Sqrt(i * 16));
                         return;
                     }
@@ -178,7 +172,6 @@ namespace SixtyNine
 
         private void PlayerJump(float v)
         {
-            playerJumping = true;
             Game1.player.synchronizedJump(v);
             Helper.Events.GameLoop.UpdateTicked += GameLoop_UpdateTicked;
         }
@@ -187,8 +180,6 @@ namespace SixtyNine
         {
             if (Game1.player.yJumpVelocity == 0f && lastYJumpVelocity < 0f)
             {
-                playerJumping = false;
-                playerJumpingOver = false;
                 playerJumpingWithHorse = false;
                 blockedJump = false;
                 Game1.player.canMove = true;

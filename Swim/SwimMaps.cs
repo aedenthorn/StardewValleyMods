@@ -401,7 +401,7 @@ namespace Swim
                                     possibles.Add(390);
                                 }
                                 possibles.Add(382);
-                                treasures.Add(new StardewValley.Object(possibles.ElementAt(Game1.random.Next(possibles.Count)), Game1.random.Next(2, 7) * ((Game1.random.NextDouble() < 0.05 + (double)Game1.player.luckLevel * 0.015) ? 2 : 1), false, -1, 0));
+                                treasures.Add(new StardewValley.Object(possibles.ElementAt(Game1.random.Next(possibles.Count)), Game1.random.Next(2, 7) * ((Game1.random.NextDouble() < 0.05 + (double)Game1.player.luckLevel.Value * 0.015) ? 2 : 1), false, -1, 0));
                                 if (Game1.random.NextDouble() < 0.05 + (double)Game1.player.LuckLevel * 0.03)
                                 {
                                     treasures.Last<Item>().Stack *= 2;
@@ -423,7 +423,7 @@ namespace Swim
                             }
                             break;
                         case 2:
-                            if (Game1.random.NextDouble() < 0.1 && Game1.netWorldState.Value.LostBooksFound < 21 && Game1.player.hasOrWillReceiveMail("lostBookFound"))
+                            if (Game1.random.NextDouble() < 0.1 && Game1.netWorldState.Value.LostBooksFound.Value < 21 && Game1.player.hasOrWillReceiveMail("lostBookFound"))
                             {
                                 treasures.Add(new StardewValley.Object(102, 1, false, -1, 0));
                             }

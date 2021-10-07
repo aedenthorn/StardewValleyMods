@@ -17,9 +17,9 @@ namespace CustomDecorationAreas
 
         public static void getFloors_Postfix(DecoratableLocation __instance, ref List<Rectangle> __result)
         {
-            if (!ModEntry.config.EnableMod || !ModEntry.floorsWallsDataDict.ContainsKey(__instance.name))
+            if (!ModEntry.config.EnableMod || !ModEntry.floorsWallsDataDict.ContainsKey(__instance.Name))
                 return;
-            FloorWallData data = ModEntry.floorsWallsDataDict[__instance.name];
+            FloorWallData data = ModEntry.floorsWallsDataDict[__instance.Name];
             if (data.getFloorsFromFile?.Length > 0)
                 data.floors = ModEntry.PHelper.Content.Load<List<Rectangle>>(data.getFloorsFromFile, ContentSource.GameContent);
             if (data.replaceFloors)
@@ -30,9 +30,9 @@ namespace CustomDecorationAreas
 
         public static void getWalls_Postfix(DecoratableLocation __instance, ref List<Rectangle> __result)
         {
-            if (!ModEntry.config.EnableMod || !ModEntry.floorsWallsDataDict.ContainsKey(__instance.name))
+            if (!ModEntry.config.EnableMod || !ModEntry.floorsWallsDataDict.ContainsKey(__instance.Name))
                 return;
-            FloorWallData data = ModEntry.floorsWallsDataDict[__instance.name];
+            FloorWallData data = ModEntry.floorsWallsDataDict[__instance.Name];
             if (data.getWallsFromFile?.Length > 0)
                 data.walls = ModEntry.PHelper.Content.Load<List<Rectangle>>(data.getWallsFromFile, ContentSource.GameContent);
             if (data.replaceWalls)
@@ -46,11 +46,11 @@ namespace CustomDecorationAreas
                 return;
             for(int i = Game1.locations.Count - 1; i>= 0; i--)
             {
-                if (Game1.locations[i].GetType() == typeof(GameLocation) && ModEntry.floorsWallsDataDict.ContainsKey(Game1.locations[i].name))
+                if (Game1.locations[i].GetType() == typeof(GameLocation) && ModEntry.floorsWallsDataDict.ContainsKey(Game1.locations[i].Name))
                 {
                     GameLocation gl = Game1.locations[i];
                     ModEntry.PMonitor.Log($"Converting {gl.name} to decoratable");
-                    DecoratableLocation dl = new DecoratableLocation(gl.mapPath, gl.name);
+                    DecoratableLocation dl = new DecoratableLocation(gl.mapPath.Value, gl.Name);
                     if (dl.map.GetTileSheet("walls_and_floors") == null)
                     {
                         Texture2D tex = ModEntry.PHelper.Content.Load<Texture2D>($"Maps/walls_and_floors", ContentSource.GameContent);
@@ -64,22 +64,22 @@ namespace CustomDecorationAreas
                         for (int j = gl.characters.Count - 1; j >= 0; j--)
                         {
                             NPC npc = gl.characters[j];
-                            NPC newNPC = new NPC(new AnimatedSprite(npc.sprite.Value.textureName.Value, npc.sprite.Value.currentFrame, npc.sprite.Value.spriteWidth, npc.sprite.Value.SpriteHeight), ModEntry.PHelper.Reflection.GetField<NetVector2>(npc, "defaultPosition").GetValue().Value, Game1.locations[i].name, ModEntry.PHelper.Reflection.GetField<int>(npc, "defaultFacingDirection").GetValue(), npc.Name, npc.datable.Value, null, Game1.content.Load<Texture2D>($"Portraits\\{npc.Name}"));
-                            ModEntry.PMonitor.Log($"Adding {newNPC.name}, sprite {newNPC.sprite.Value.textureName.Value}");
+                            NPC newNPC = new NPC(new AnimatedSprite(npc.sprite.Value.textureName.Value, npc.sprite.Value.currentFrame, npc.sprite.Value.SpriteWidth, npc.sprite.Value.SpriteHeight), ModEntry.PHelper.Reflection.GetField<NetVector2>(npc, "defaultPosition").GetValue().Value, Game1.locations[i].Name, ModEntry.PHelper.Reflection.GetField<int>(npc, "defaultFacingDirection").GetValue(), npc.Name, npc.datable.Value, null, Game1.content.Load<Texture2D>($"Portraits\\{npc.Name}"));
+                            ModEntry.PMonitor.Log($"Adding {newNPC.Name}, sprite {newNPC.Sprite.textureName.Value}");
                             Game1.locations[Game1.locations.Count - 1].addCharacter(newNPC);
                         }
                     }
                     foreach (Vector2 key in gl.objects.Keys)
                         dl.objects.Add(key, gl.objects[key]);
 
-                    ModEntry.convertedLocations.Add(dl.name);
+                    ModEntry.convertedLocations.Add(dl.Name);
                 }
             }
         }
 
         public static bool doSetVisibleFloor_Prefix(DecoratableLocation __instance, int whichRoom, int which)
         {
-            if (!ModEntry.config.EnableMod || !ModEntry.floorsWallsDataDict.ContainsKey(__instance.name))
+            if (!ModEntry.config.EnableMod || !ModEntry.floorsWallsDataDict.ContainsKey(__instance.Name))
                 return true;
 
             int idx = -1;
@@ -162,7 +162,7 @@ namespace CustomDecorationAreas
         }
         public static bool doSetVisibleWallpaper_Prefix(DecoratableLocation __instance, int whichRoom, int which)
         {
-            if (!ModEntry.config.EnableMod || !ModEntry.floorsWallsDataDict.ContainsKey(__instance.name))
+            if (!ModEntry.config.EnableMod || !ModEntry.floorsWallsDataDict.ContainsKey(__instance.Name))
                 return true;
 
             int idx = -1;
@@ -313,7 +313,7 @@ namespace CustomDecorationAreas
 
         public static bool IsFloorableOrWallpaperableTile_Prefix(DecoratableLocation __instance, ref bool __result, int x, int y, string layer_name)
         {
-            if (!ModEntry.config.EnableMod || !ModEntry.floorsWallsDataDict.ContainsKey(__instance.name))
+            if (!ModEntry.config.EnableMod || !ModEntry.floorsWallsDataDict.ContainsKey(__instance.Name))
                 return true;
             __result = IsFloorableOrWallpaperableTile(x, y, layer_name, __instance);
             return false;
