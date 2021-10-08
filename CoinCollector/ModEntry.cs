@@ -183,7 +183,7 @@ namespace CoinCollector
                 float pan = nearest.X * 64 > playerLocation.X ? 1f : (nearest.X * 64 < playerLocation.X ? -1f : 0f);
                 float vol = Math.Clamp((1 - Vector2.Distance(playerLocation, nearest * 64) / (config.MaxPixelPingDistance > 0 ? config.MaxPixelPingDistance : Game1.viewport.Width) * config.BlipAudioVolume), 0, 1);
                 float pitch = config.BlipAudioIncreasePitch ? vol * 2 - 1 : 0;
-                if (vol > 0)
+                if (vol > 0 && blipEffect != null)
                 {
                     var sei = blipEffect.CreateInstance();
                     sei.Volume = (float)Math.Pow(vol, 2);
@@ -222,10 +222,16 @@ namespace CoinCollector
 
             apiDGA.AddEmbeddedPack(manifest, $"{Helper.DirectoryPath}/dga");
 
-            string filePath = $"{Helper.DirectoryPath}/{config.BlipAudioPath}";
+            if(config.BlipAudioPath.Length > 0)
+            {
+                string filePath = $"{Helper.DirectoryPath}/{config.BlipAudioPath}";
+                try
+                {
+                    blipEffect = SoundEffect.FromStream(new FileStream(filePath, FileMode.Open));
+                }
+                catch { }
+            }
 
-            //blipEffect = new SoundEffect(File.ReadAllBytes(filePath), 44000, AudioChannels.Stereo);
-            blipEffect = SoundEffect.FromStream(new FileStream(filePath, FileMode.Open));
             totalRarities = 0;
 
             foreach (IContentPack contentPack in Helper.ContentPacks.GetOwned())
