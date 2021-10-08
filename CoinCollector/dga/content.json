@@ -1,0 +1,20 @@
+[
+	{
+		"$ItemType": "MeleeWeapon",
+		"ID": "MetalDetector",
+		"Texture": "assets/metaldetector.png",
+		"Type": "Club",
+		"MinimumDamage": 1,
+		"MaximumDamage": 10
+	},
+	{
+		"$ItemType": "ShopEntry",
+		"Item": {
+			"Type": "DGAItem",
+			"Value": "aedenthorn.CoinCollectorDGA/MetalDetector"
+		},
+		"MaxSold": 1,
+		"ShopId": "SeedShop",
+		"Cost": 1000
+	}
+]

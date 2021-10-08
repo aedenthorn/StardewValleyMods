@@ -19,13 +19,13 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BossCreatures", "BossCreatu
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CustomMonsterFloors", "CustomMonsterFloors\CustomMonsterFloors.csproj", "{0C291A20-8560-4D6A-AB96-3AEE72E30B29}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CustomOreNodes", "CustomOreNodes\CustomOreNodes.csproj", "{80AA7B9A-03DE-4B2C-BB26-9F9514127A2E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CustomOreNodes", "CustomOreNodes\CustomOreNodes.csproj", "{80AA7B9A-03DE-4B2C-BB26-9F9514127A2E}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LooseAudioFiles", "LooseAudioFiles\LooseAudioFiles.csproj", "{433F98A0-8055-41CA-A109-9A8ADEE74615}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ProceduralDungeons", "ProceduralDungeons\ProceduralDungeons.csproj", "{2934EA4F-F6A9-4B5F-A266-2EDF8F610499}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MultipleSpouses", "MultipleSpouses\MultipleSpouses.csproj", "{D4990B31-2700-490E-9AF4-6D0ACF59FBAA}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MultipleSpouses", "MultipleSpouses\MultipleSpouses.csproj", "{D4990B31-2700-490E-9AF4-6D0ACF59FBAA}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FriendlyDivorce", "FriendlyDivorce\FriendlyDivorce.csproj", "{E5A23657-6AC8-419F-BFB7-12A2F23B81D6}"
 EndProject
@@ -35,7 +35,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RealNames", "RealNames\Real
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OutdoorButterflyHutch", "OutdoorButterflyHutch\OutdoorButterflyHutch.csproj", "{6F0A031A-4FCC-4629-BC5F-4915C7395E3C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Swim", "Swim\Swim.csproj", "{D06D6A79-D6AA-45E4-9E39-9D150F8A5365}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Swim", "Swim\Swim.csproj", "{D06D6A79-D6AA-45E4-9E39-9D150F8A5365}"
 EndProject
 Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "_releases", "_releases\_releases.shproj", "{047040E0-3D07-46E5-852B-D1D45CD57BB8}"
 EndProject
@@ -61,7 +61,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MobileCatalogues", "MobileC
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "QuickResponses", "QuickResponses\QuickResponses.csproj", "{DCE56041-C1C9-4059-8283-2BD9BF13F331}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "YAJM", "YAJM\YAJM.csproj", "{DCAFD059-562A-47E1-810B-4C0C2793E2FC}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "YAJM", "YAJM\YAJM.csproj", "{DCAFD059-562A-47E1-810B-4C0C2793E2FC}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BiggerMineFloors", "BiggerMineFloors\BiggerMineFloors.csproj", "{7265B2A9-67F7-49F9-84C0-0294E7FC86CC}"
 EndProject
@@ -95,7 +95,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ExpertSitting", "ExpertSitt
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TrashCanReactions", "TrashCanReactions\TrashCanReactions.csproj", "{971004EC-DD8C-4CCA-9481-34434CE2BB1B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MapTeleport", "MapTeleport\MapTeleport.csproj", "{ECD0BD18-2DA9-4909-963B-1F713B4986A9}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MapTeleport", "MapTeleport\MapTeleport.csproj", "{ECD0BD18-2DA9-4909-963B-1F713B4986A9}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TreasureChestsExpanded", "TreasureChestsExpanded\TreasureChestsExpanded.csproj", "{4A988D67-791A-4556-9CE1-E7B93A273E46}"
 EndProject
@@ -150,11 +150,13 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DialogueTrees", "DialogueTr
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ExtraMapLayers", "ExtraMapLayers\ExtraMapLayers.csproj", "{0AC40A31-126C-46EF-810E-F669979078D9}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CustomDecorationAreas", "CustomDecorationAreas\CustomDecorationAreas.csproj", "{D505B178-43FC-4BA9-9DC8-F1C494BAC0AA}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CustomDecorationAreas", "CustomDecorationAreas\CustomDecorationAreas.csproj", "{D505B178-43FC-4BA9-9DC8-F1C494BAC0AA}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CustomWarpPoints", "CustomWarpPoints\CustomWarpPoints.csproj", "{C44A5E2B-DB1A-41C8-9A18-F55507AA8FF5}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Renovations", "Renovations\Renovations.csproj", "{2DB37627-A172-49CE-9BA5-EFB0AAF8A79C}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CoinCollector", "CoinCollector\CoinCollector.csproj", "{B06B4F8E-FCA6-4D55-A761-7E93F6FAB3D5}"
 EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
@@ -751,6 +753,14 @@ Global
 		{2DB37627-A172-49CE-9BA5-EFB0AAF8A79C}.Release|Any CPU.Build.0 = Release|Any CPU
 		{2DB37627-A172-49CE-9BA5-EFB0AAF8A79C}.Release|x86.ActiveCfg = Release|Any CPU
 		{2DB37627-A172-49CE-9BA5-EFB0AAF8A79C}.Release|x86.Build.0 = Release|Any CPU
+		{B06B4F8E-FCA6-4D55-A761-7E93F6FAB3D5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B06B4F8E-FCA6-4D55-A761-7E93F6FAB3D5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B06B4F8E-FCA6-4D55-A761-7E93F6FAB3D5}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{B06B4F8E-FCA6-4D55-A761-7E93F6FAB3D5}.Debug|x86.Build.0 = Debug|Any CPU
+		{B06B4F8E-FCA6-4D55-A761-7E93F6FAB3D5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B06B4F8E-FCA6-4D55-A761-7E93F6FAB3D5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B06B4F8E-FCA6-4D55-A761-7E93F6FAB3D5}.Release|x86.ActiveCfg = Release|Any CPU
+		{B06B4F8E-FCA6-4D55-A761-7E93F6FAB3D5}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
