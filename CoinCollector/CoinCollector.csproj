@@ -22,6 +22,12 @@
     <None Update="assets\blip.wav">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <None Update="assets\blip_left.wav">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="assets\blip_right.wav">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Update="dga\assets\metaldetector.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>

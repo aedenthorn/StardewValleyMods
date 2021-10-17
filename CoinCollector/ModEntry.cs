@@ -5,14 +5,12 @@ using Netcode;
 using StardewModdingAPI;
 using StardewModdingAPI.Toolkit.Serialization.Models;
 using StardewValley;
-using StardewValley.Locations;
 using StardewValley.Projectiles;
 using StardewValley.Tools;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using xTile.Dimensions;
-using xTile.Tiles;
 using Object = StardewValley.Object;
 
 namespace CoinCollector
@@ -29,7 +27,9 @@ namespace CoinCollector
         public static Dictionary<string, Dictionary<Vector2, string>> coinLocationDict = new Dictionary<string, Dictionary<Vector2, string>>();
         
         public static int deltaTime;
-        private static SoundEffect blipEffect;
+        private static SoundEffect blipEffectCenter;
+        private static SoundEffect blipEffectLeft;
+        private static SoundEffect blipEffectRight;
         private float totalRarities;
         private static IDynamicGameAssetsApi apiDGA;
 
@@ -183,15 +183,25 @@ namespace CoinCollector
                 float pan = nearest.X * 64 > playerLocation.X ? 1f : (nearest.X * 64 < playerLocation.X ? -1f : 0f);
                 float vol = Math.Clamp((1 - Vector2.Distance(playerLocation, nearest * 64) / (config.MaxPixelPingDistance > 0 ? config.MaxPixelPingDistance : Game1.viewport.Width) * config.BlipAudioVolume), 0, 1);
                 float pitch = config.BlipAudioIncreasePitch ? vol * 2 - 1 : 0;
+
+                SoundEffect blipEffect;
+
+                if (pan == 0)
+                {
+                    blipEffect = blipEffectCenter;
+                }
+                else if (pan > 0)
+                {
+                    blipEffect = blipEffectRight;
+                }
+                else
+                {
+                    blipEffect = blipEffectLeft;
+                }
+
                 if (vol > 0 && blipEffect != null)
                 {
-                    var sei = blipEffect.CreateInstance();
-                    sei.Volume = (float)Math.Pow(vol, 2);
-                    sei.Pitch = pitch;
-                    sei.Pan = pan;
-
-                    //Monitor.Log($"blipping vol {sei.Volume}, pan {sei.Pan}");
-                    sei.Play();
+                    blipEffect.Play(vol, pitch, pan);
                 }
                 Vector2 velocity = nearest * 64 - playerLocation;
                 velocity.Normalize();
@@ -224,10 +234,11 @@ namespace CoinCollector
 
             if(config.BlipAudioPath.Length > 0)
             {
-                string filePath = $"{Helper.DirectoryPath}/{config.BlipAudioPath}";
                 try
                 {
-                    blipEffect = SoundEffect.FromStream(new FileStream(filePath, FileMode.Open));
+                    blipEffectCenter = SoundEffect.FromStream(new FileStream($"{Helper.DirectoryPath}/{config.BlipAudioPath}", FileMode.Open));
+                    blipEffectLeft = SoundEffect.FromStream(new FileStream($"{Helper.DirectoryPath}/{config.BlipAudioPathLeft}", FileMode.Open));
+                    blipEffectRight = SoundEffect.FromStream(new FileStream($"{Helper.DirectoryPath}/{config.BlipAudioPathRight}", FileMode.Open));
                 }
                 catch { }
             }

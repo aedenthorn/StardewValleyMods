@@ -1,4 +1,4 @@
-﻿using Harmony;
+﻿using HarmonyLib;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using StardewModdingAPI;
@@ -135,7 +135,7 @@ namespace MobilePhone
             if(Config.AddRotateApp)
                 apps.Add(Helper.ModRegistry.ModID+"_Rotate", new MobileApp(helper.Translation.Get("rotate-phone"), null, helper.Content.Load<Texture2D>("assets/rotate_icon.png")));
 
-            var harmony = HarmonyInstance.Create(ModManifest.UniqueID);
+            var harmony = new Harmony(ModManifest.UniqueID);
 
             harmony.Patch(
                 original: AccessTools.Method(typeof(Game1), nameof(Game1.pressSwitchToolButton)),

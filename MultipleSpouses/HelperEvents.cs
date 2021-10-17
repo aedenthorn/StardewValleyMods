@@ -113,11 +113,12 @@ namespace MultipleSpouses
                                 character.farmerPassesThrough = true;
                                 if (!character.isMoving() && !Kissing.kissingSpouses.Contains(character.Name))
                                 {
-                                    Vector2 bedPos = Misc.GetSpouseBedPosition(fh, bedSpouses, character.name);
-                                    character.position.Value = bedPos;
+                                    Vector2 bedPos = Misc.GetSpouseBedPosition(fh, bedSpouses, character.Name);
                                     if(Game1.timeOfDay >= 2000 || Game1.timeOfDay <= 600)
                                     {
-                                        if (!character.isSleeping)
+                                        character.position.Value = bedPos;
+                                        character.ignoreScheduleToday = true;
+                                        if (!character.isSleeping.Value)
                                         {
                                             Monitor.Log($"putting {character.Name} to sleep");
                                             character.isSleeping.Value = true;
@@ -125,7 +126,7 @@ namespace MultipleSpouses
                                         }
                                         if(character.Sprite.CurrentAnimation == null)
                                         {
-                                            if (!Misc.HasSleepingAnimation(character.name.Value))
+                                            if (!Misc.HasSleepingAnimation(character.Name))
                                             {
                                                 character.Sprite.StopAnimation();
                                                 character.faceDirection(0);
@@ -148,7 +149,7 @@ namespace MultipleSpouses
                                 }
                                 character.HideShadow = true;
                             }
-                            else
+                            else if (Game1.timeOfDay < 2000 && Game1.timeOfDay > 600)
                             {
                                 character.farmerPassesThrough = false;
                                 character.HideShadow = false;

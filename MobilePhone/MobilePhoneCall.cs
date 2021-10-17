@@ -143,13 +143,13 @@ namespace MobilePhone
                     }
                 }
             }
-            if (ModEntry.npcAdventureModApi != null && ModEntry.npcAdventureModApi.IsPossibleCompanion(npc) && ModEntry.npcAdventureModApi.CanAskToFollow(npc) && !npc.isSleeping)
+            if (ModEntry.npcAdventureModApi != null && ModEntry.npcAdventureModApi.IsPossibleCompanion(npc) && ModEntry.npcAdventureModApi.CanAskToFollow(npc) && !npc.isSleeping.Value)
             {
                 answers.Add(new Response("PhoneApp_InCall_Recruit", Helper.Translation.Get("recruit")));
             }
-            if (npc.Name == "Robin" && Game1.player.daysUntilHouseUpgrade < 0 && !Game1.getFarm().isThereABuildingUnderConstruction())
+            if (npc.Name == "Robin" && Game1.player.daysUntilHouseUpgrade.Value < 0 && !Game1.getFarm().isThereABuildingUnderConstruction())
             {
-                if (Game1.player.houseUpgradeLevel < 3)
+                if (Game1.player.HouseUpgradeLevel < 3)
                     answers.Add(new Response("PhoneApp_InCall_Upgrade", Helper.Translation.Get("upgrade-house")));
                 answers.Add(new Response("PhoneApp_InCall_Build", Helper.Translation.Get("build-buildings")));
             }
@@ -282,7 +282,7 @@ namespace MobilePhone
             };
 
             string question;
-            switch (Game1.player.houseUpgradeLevel)
+            switch (Game1.player.HouseUpgradeLevel)
             {
                 case 0:
                     question = Game1.parseText(Game1.content.LoadString("Strings\\Locations:ScienceHouse_Carpenter_UpgradeHouse1"));
@@ -353,7 +353,7 @@ namespace MobilePhone
 
             Event e = new Event(eventString)
             {
-                exitLocation = new LocationRequest(Game1.player.currentLocation.Name, Game1.player.currentLocation.isStructure, Game1.player.currentLocation)
+                exitLocation = new LocationRequest(Game1.player.currentLocation.Name, Game1.player.currentLocation.isStructure.Value, Game1.player.currentLocation)
             };
             Vector2 exitPos = Game1.player.getTileLocation();
             e.onEventFinished += delegate ()
@@ -386,7 +386,7 @@ namespace MobilePhone
 
             Event e = new Event(CreateEventString(ei.nodes, npc))
             {
-                exitLocation = new LocationRequest(Game1.player.currentLocation.Name, Game1.player.currentLocation.isStructure, Game1.player.currentLocation)
+                exitLocation = new LocationRequest(Game1.player.currentLocation.Name, Game1.player.currentLocation.isStructure.Value, Game1.player.currentLocation)
             };
             Vector2 exitPos = Game1.player.getTileLocation();
             e.onEventFinished += delegate ()
@@ -523,7 +523,7 @@ namespace MobilePhone
         {
             try
             {
-                Dictionary<string, string> dict = Helper.Content.Load<Dictionary<string, string>>($"Characters/Dialogue/{npc.name}", ContentSource.GameContent);
+                Dictionary<string, string> dict = Helper.Content.Load<Dictionary<string, string>>($"Characters/Dialogue/{npc.Name}", ContentSource.GameContent);
                 inCallDialogue = new Dictionary<string, string>(dict);
                 if (dict.ContainsKey("MobilePhoneGreeting"))
                     return string.Format(dict["MobilePhoneGreeting"], Game1.player.displayName);

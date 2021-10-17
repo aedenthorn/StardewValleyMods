@@ -183,7 +183,7 @@ namespace MultipleSpouses
                     {
                         __instance.faceDirection(-3);
                     }
-                    if (__instance.Sprite.CurrentAnimation == null && who.friendshipData.ContainsKey(__instance.name) && who.friendshipData[__instance.name].Points >= 3125 && !who.mailReceived.Contains("CF_Spouse"))
+                    if (__instance.Sprite.CurrentAnimation == null && who.friendshipData.ContainsKey(__instance.Name) && who.friendshipData[__instance.Name].Points >= 3125 && !who.mailReceived.Contains("CF_Spouse"))
                     {
                         __instance.CurrentDialogue.Push(new Dialogue(Game1.content.LoadString(Game1.player.isRoommate(who.spouse) ? "Strings\\StringsFromCSFiles:Krobus_Stardrop" : "Strings\\StringsFromCSFiles:NPC.cs.4001"), __instance));
                         Game1.player.addItemByMenuIfNecessary(new StardewValley.Object(Vector2.Zero, 434, "Cosmic Fruit", false, false, false, false), null);
@@ -193,7 +193,7 @@ namespace MultipleSpouses
                         __result = true;
                         return false;
                     }
-                    if (__instance.Sprite.CurrentAnimation == null && !__instance.hasTemporaryMessageAvailable() && __instance.currentMarriageDialogue.Count == 0 && __instance.CurrentDialogue.Count == 0 && Game1.timeOfDay < 2200 && !__instance.isMoving() && who.ActiveObject == null && (!__instance.hasBeenKissedToday || Config.UnlimitedDailyKisses))
+                    if (__instance.Sprite.CurrentAnimation == null && !__instance.hasTemporaryMessageAvailable() && __instance.currentMarriageDialogue.Count == 0 && __instance.CurrentDialogue.Count == 0 && Game1.timeOfDay < 2200 && !__instance.isMoving() && who.ActiveObject == null && (!__instance.hasBeenKissedToday.Value || Config.UnlimitedDailyKisses))
                     {
                         __instance.faceGeneralDirection(who.getStandingPosition(), 0, false);
                         who.faceGeneralDirection(__instance.getStandingPosition(), 0, false);
@@ -904,7 +904,7 @@ namespace MultipleSpouses
                     else
                     {
                         Monitor.Log($"Tried to give pendant to someone marriable");
-                        if (!__instance.datable || who.houseUpgradeLevel >= 1)
+                        if (!__instance.datable.Value || who.HouseUpgradeLevel >= 1)
                         {
                             typeof(NPC).GetMethod("engagementResponse", BindingFlags.NonPublic | BindingFlags.Instance).Invoke(__instance, new object[] { who, false });
                             return false;
@@ -920,9 +920,9 @@ namespace MultipleSpouses
                         return false;
                     }
                 }
-                else if (who.ActiveObject.parentSheetIndex == 809 && !who.ActiveObject.bigCraftable)
+                else if (who.ActiveObject.ParentSheetIndex == 809 && !who.ActiveObject.bigCraftable.Value)
                 {
-                    Monitor.Log($"Tried to give movie ticket to {__instance.name}");
+                    Monitor.Log($"Tried to give movie ticket to {__instance.Name}");
                     if (Misc.GetSpouses(who, 1).ContainsKey(__instance.Name) && Utility.doesMasterPlayerHaveMailReceivedButNotMailForTomorrow("ccMovieTheater") && !__instance.Name.Equals("Krobus") && who.lastSeenMovieWeek.Value < Game1.Date.TotalWeeks && !Utility.isFestivalDay(Game1.dayOfMonth, Game1.currentSeason) && Game1.timeOfDay <= 2100 && __instance.lastSeenMovieWeek.Value < Game1.Date.TotalWeeks && MovieTheater.GetResponseForMovie(__instance) != "reject")
                     {
                         Monitor.Log($"Tried to give movie ticket to spouse");
@@ -945,7 +945,7 @@ namespace MultipleSpouses
 
                         if (LocalizedContentManager.CurrentLanguageCode == LocalizedContentManager.LanguageCode.en)
                         {
-                            __instance.CurrentDialogue.Push(new Dialogue(__instance.GetDispositionModifiedString("Strings\\Characters:MovieInvite_Spouse_" + __instance.name, new object[0]), __instance));
+                            __instance.CurrentDialogue.Push(new Dialogue(__instance.GetDispositionModifiedString("Strings\\Characters:MovieInvite_Spouse_" + __instance.Name, new object[0]), __instance));
                         }
                         else if (LocalizedContentManager.CurrentLanguageCode == LocalizedContentManager.LanguageCode.en && ___dialogue != null && ___dialogue.ContainsKey("MovieInvitation"))
                         {
@@ -1033,9 +1033,9 @@ namespace MultipleSpouses
             try
             {
                 Dictionary<string, string> animationDescriptions = Game1.content.Load<Dictionary<string, string>>("Data\\animationDescriptions");
-                if (!animationDescriptions.ContainsKey(__instance.name.Value.ToLower() + "_sleep") && animationDescriptions.ContainsKey(__instance.name.Value + "_Sleep"))
+                if (!animationDescriptions.ContainsKey(__instance.Name.ToLower() + "_sleep") && animationDescriptions.ContainsKey(__instance.Name + "_Sleep"))
                 {
-                    if(int.TryParse(animationDescriptions[__instance.name.Value + "_Sleep"].Split('/')[0], out int sleep_frame))
+                    if(int.TryParse(animationDescriptions[__instance.Name + "_Sleep"].Split('/')[0], out int sleep_frame))
                     {
                         __instance.Sprite.setCurrentAnimation(new List<FarmerSprite.AnimationFrame>
                         {
@@ -1114,7 +1114,7 @@ namespace MultipleSpouses
         {
             try
             {
-                if (l is FarmHouse && (__instance.age == 0 || __instance.age == 1))
+                if (l is FarmHouse && (__instance.Age == 0 || __instance.Age == 1))
                 {
                     SetCribs(l as FarmHouse);
                 }

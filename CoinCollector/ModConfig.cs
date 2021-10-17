@@ -7,6 +7,8 @@ namespace CoinCollector
     {
         public bool EnableMod { get; set; } = true;
         public string BlipAudioPath { get; set; } = "assets/blip.wav";
+        public string BlipAudioPathLeft { get; set; } = "assets/blip_left.wav";
+        public string BlipAudioPathRight { get; set; } = "assets/blip_right.wav";
         public float BlipAudioVolume { get; set; } = 1f;
         public bool BlipAudioIncreasePitch { get; set; } = true;
         public bool RequireMetalDetector { get; set; } = true;

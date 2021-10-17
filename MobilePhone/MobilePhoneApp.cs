@@ -85,7 +85,7 @@ namespace MobilePhone
 
         public static void CallNPC(NPC npc)
         {
-            if (npc.isSleeping)
+            if (npc.isSleeping.Value)
             {
                 Monitor.Log($"{npc.Name} is sleeping");
                 Game1.activeClickableMenu = new DialogueBox(Helper.Translation.Get("no-answer"));
@@ -237,7 +237,7 @@ namespace MobilePhone
                     cutBottom = (int)Math.Round((screenBottom - r.Height * 2 - (int)npcPos.Y) / 2f);
                     sourceRect = new Rectangle(r.X, r.Y, r.Width, r.Height + cutBottom);
                 }
-                int alpha = callableList[i].npc.CurrentDialogue.Any() && !callableList[i].npc.isSleeping ? 255 : Config.UncallableNPCAlpha;
+                int alpha = callableList[i].npc.CurrentDialogue.Any() && !callableList[i].npc.isSleeping.Value ? 255 : Config.UncallableNPCAlpha;
                 e.SpriteBatch.Draw(callableList[i].portrait, npcPos + new Vector2((Config.ContactWidth - 32) / 2f,0), sourceRect, new Color(255,255,255,alpha), 0, Vector2.Zero, 2, SpriteEffects.None, 0.86f);
                 if(Config.ShowNamesInPhoneBook && npcPos.Y < screenBottom - Config.ContactHeight - callableList[i].nameSize.Y * 0.4f + 6)
                     e.SpriteBatch.DrawString(Game1.dialogueFont, callableList[i].name, GetNPCPos(i) + new Vector2(Config.ContactWidth / 2f - callableList[i].nameSize.X * 0.2f, Config.ContactHeight - 6 ), Color.Black, 0, Vector2.Zero, 0.4f, SpriteEffects.None, 0.86f);
@@ -264,7 +264,7 @@ namespace MobilePhone
                 Monitor.Log($"You have no friends.", LogLevel.Debug);
                 return;
             }
-            CallableNPC[] callers = callableList.Where(s => (s.npc.CurrentDialogue.Count >= 1 || s.npc.endOfRouteMessage.Value != null) && !s.npc.isSleeping).ToArray();
+            CallableNPC[] callers = callableList.Where(s => (s.npc.CurrentDialogue.Count >= 1 || s.npc.endOfRouteMessage.Value != null) && !s.npc.isSleeping.Value).ToArray();
             if (callers.Length == 0)
             {
                 Monitor.Log($"None of your friends want to talk to you.", LogLevel.Debug);

@@ -1,11 +1,11 @@
 ﻿{
   "Name": "Mobile Phone",
   "Author": "aedenthorn",
-  "Version": "2.3.0",
+  "Version": "2.4.0",
   "Description": "Gives you a mobile phone.",
   "UniqueID": "aedenthorn.MobilePhone",
   "EntryDll": "MobilePhone.dll",
-  "MinimumApiVersion": "3.8.1",
+  "MinimumApiVersion": "3.12.0",
   "UpdateKeys": ["Nexus:6523"],
   "ModUpdater": {
     "Repository": "StardewValleyMods",

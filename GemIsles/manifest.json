@@ -1,12 +1,12 @@
 ﻿{
   "Name": "Gem Isles",
   "Author": "aedenthorn",
-  "Version": "0.2.5",
+  "Version": "0.3.0",
   "Description": "Swim to procedurally generated islands in the Gem Sea",
   "UniqueID": "aedenthorn.GemIsles",
   "EntryDll": "GemIsles.dll",
-  "MinimumApiVersion": "3.4.0",
-  "UpdateKeys": ["Nexus:6692"],
+  "MinimumApiVersion": "3.12.0",
+  "UpdateKeys": [ "Nexus:6692" ],
   "ModUpdater": {
     "Repository": "StardewValleyMods",
     "User": "aedenthorn",
@@ -14,13 +14,13 @@
     "ModFolder": "GemIsles"
   },
   "Dependencies": [
-      {
-        "UniqueID": "Platonymous.ModUpdater",
-        "IsRequired": false
-      },
-      {
-        "UniqueID": "aedenthorn.Swim",
-        "IsRequired": false
-      },
+    {
+      "UniqueID": "Platonymous.ModUpdater",
+      "IsRequired": false
+    },
+    {
+      "UniqueID": "aedenthorn.Swim",
+      "IsRequired": false
+    }
   ]
 }

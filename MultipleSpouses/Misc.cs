@@ -40,7 +40,7 @@ namespace MultipleSpouses
             }
             foreach (string friend in farmer.friendshipData.Keys)
             {
-                if (farmer.friendshipData[friend].IsMarried() && (all > 0 || friend != farmer.spouse))
+                if (Game1.getCharacterFromName(friend, true) != null && farmer.friendshipData[friend].IsMarried() && (all > 0 || friend != farmer.spouse))
                 {
                     spouses.Add(friend, Game1.getCharacterFromName(friend, true));
                 }
@@ -414,7 +414,6 @@ namespace MultipleSpouses
         {
             if (ModEntry.config.CustomBed)
             {
-                bool up = fh.upgradeLevel > 1;
                 return Math.Max(ModEntry.config.BedWidth, 3);
             }
             else

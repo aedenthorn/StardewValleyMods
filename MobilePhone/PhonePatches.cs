@@ -1,5 +1,4 @@
-﻿using Harmony;
-using Microsoft.Xna.Framework;
+﻿using Microsoft.Xna.Framework;
 using StardewModdingAPI;
 using StardewValley;
 using StardewValley.Buildings;
@@ -40,7 +39,7 @@ namespace MobilePhone
         {
             if (ModEntry.isReminiscing)
             {
-                Monitor.Log($"Reminiscing, will not change friendship with {n.name} by {amount}");
+                Monitor.Log($"Reminiscing, will not change friendship with {n.Name} by {amount}");
                 return false;
             }
             return true;
@@ -211,7 +210,7 @@ namespace MobilePhone
                     if (cat != null)
                     {
                         cat.Name = name;
-                        cat.displayName = cat.name;
+                        cat.displayName = cat.Name;
                     }
                 }
                 else
@@ -224,7 +223,7 @@ namespace MobilePhone
                     if (dog != null)
                     {
                         dog.Name = name;
-                        dog.displayName = dog.name;
+                        dog.displayName = dog.Name;
                     }
 
                 }

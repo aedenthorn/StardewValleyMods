@@ -4,6 +4,7 @@ using StardewModdingAPI;
 using StardewValley;
 using System;
 using System.Collections.Generic;
+using HarmonyLib;
 
 namespace MobilePhone
 {
@@ -174,7 +175,7 @@ namespace MobilePhone
             {
                 if (ThemeApp.ringDict.ContainsKey(tone) && ThemeApp.ringDict[tone] != null)
                 {
-                    Helper.Reflection.GetMethod(ThemeApp.ringDict[tone], "Play").Invoke(new object[] { });
+                    AccessTools.Method(ThemeApp.ringDict[tone].GetType(), "Play").Invoke(ThemeApp.ringDict[tone], new object[] { });
                 }
                 else if(Config.BuiltInRingTones.Contains(tone))
                 {
