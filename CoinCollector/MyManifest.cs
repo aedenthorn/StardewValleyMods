@@ -4,8 +4,8 @@ using System.Runtime.Serialization;
 
 namespace CoinCollector
 {
-    public class MyManifest : IManifest
-    {
+	public class MyManifest : IManifest
+	{
 		public MyManifest(string uniqueID, string name, string author, string description, ISemanticVersion version, string contentPackFor = null)
 		{
 			Name = name;
@@ -14,10 +14,10 @@ namespace CoinCollector
 			Version = version;
 			UniqueID = uniqueID;
 			UpdateKeys = new string[0];
-            ContentPackFor = new MyManifestContentPackFor
-            {
-                UniqueID = contentPackFor
-            };
+			ContentPackFor = new MyManifestContentPackFor
+			{
+				UniqueID = contentPackFor
+			};
 		}
 
 		[OnDeserialized]
@@ -33,26 +33,26 @@ namespace CoinCollector
 			}
 		}
 
-		public string Name {get; set;}
+		public string Name { get; set; }
 
-        public string Description {get; set;}
+		public string Description { get; set; }
 
-        public string Author {get; set;}
+		public string Author { get; set; }
 
-        public ISemanticVersion Version {get; set;}
+		public ISemanticVersion Version { get; set; }
 
-        public ISemanticVersion MinimumApiVersion {get; set;}
+		public ISemanticVersion MinimumApiVersion { get; set; }
 
-        public string UniqueID {get; set;}
+		public string UniqueID { get; set; }
 
-        public string EntryDll {get; set;}
+		public string EntryDll { get; set; }
 
-        public IManifestContentPackFor ContentPackFor {get; set;}
+		public IManifestContentPackFor ContentPackFor { get; set; }
 
-        public IManifestDependency[] Dependencies {get; set;}
+		public IManifestDependency[] Dependencies { get; set; }
 
-        public string[] UpdateKeys {get; set;}
+		public string[] UpdateKeys { get; set; }
 
-        public IDictionary<string, object> ExtraFields {get; set;}
-    }
+		public IDictionary<string, object> ExtraFields { get; set; }
+	}
 }
