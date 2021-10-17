@@ -11,13 +11,6 @@
   <ItemGroup>
     <PackageReference Include="Pathoschild.Stardew.ModBuildConfig" Version="4.0.0-beta.20210916" />
   </ItemGroup>
-
-  <ItemGroup>
-    <Reference Include="SMAPI.Toolkit">
-      <HintPath>..\SMAPILibs\SMAPI.Toolkit.dll</HintPath>
-      <Private>false</Private>
-    </Reference>
-  </ItemGroup>
   <ItemGroup>
     <None Update="assets\blip.wav">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>

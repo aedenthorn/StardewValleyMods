@@ -3,7 +3,6 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Audio;
 using Netcode;
 using StardewModdingAPI;
-using StardewModdingAPI.Toolkit.Serialization.Models;
 using StardewValley;
 using StardewValley.Projectiles;
 using StardewValley.Tools;
@@ -221,9 +220,9 @@ namespace CoinCollector
         private void GameLoop_GameLaunched(object sender, StardewModdingAPI.Events.GameLaunchedEventArgs e)
         {
             apiDGA = Helper.ModRegistry.GetApi<IDynamicGameAssetsApi>("spacechase0.DynamicGameAssets");
-            IManifest manifest = new Manifest("aedenthorn.CoinCollectorDGA", "CoinCollectorDGA", "aedenthorn", "CoinCollectorDGA", new SemanticVersion("0.1.0"))
+            IManifest manifest = new MyManifest("aedenthorn.CoinCollectorDGA", "CoinCollectorDGA", "aedenthorn", "CoinCollectorDGA", new SemanticVersion("0.1.0"))
             {
-                ContentPackFor = new ManifestContentPackFor
+                ContentPackFor = new MyManifestContentPackFor
                 {
                     UniqueID = "spacechase0.DynamicGameAssets"
                 },
@@ -248,8 +247,8 @@ namespace CoinCollector
             foreach (IContentPack contentPack in Helper.ContentPacks.GetOwned())
             {
 
-                CoinDataDict floorWallDataDict = contentPack.ReadJsonFile<CoinDataDict>("content.json") ?? new CoinDataDict();
-                foreach (CoinData data in floorWallDataDict.data)
+                CoinDataDict dict = contentPack.ReadJsonFile<CoinDataDict>("content.json") ?? new CoinDataDict();
+                foreach (CoinData data in dict.data)
                 {
                     try
                     {
