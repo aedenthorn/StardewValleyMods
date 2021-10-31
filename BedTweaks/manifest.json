@@ -1,0 +1,26 @@
+﻿{
+  "Name": "Bed Tweaks",
+  "Author": "aedenthorn",
+  "Version": "0.1.0",
+  "Description": "Tweaks the bed.",
+  "UniqueID": "aedenthorn.BedTweaks",
+  "EntryDll": "BedTweaks.dll",
+  "MinimumApiVersion": "3.13.0-beta.20211018",
+  "ModUpdater": {
+    "Repository": "StardewValleyMods",
+    "User": "aedenthorn",
+    "Directory": "_releases",
+    "ModFolder": "BedTweaks"
+  },
+  "UpdateKeys": [ "Nexus:10023" ],
+  "Dependencies": [
+    {
+      "UniqueID": "Platonymous.ModUpdater",
+      "IsRequired": false
+    },
+    {
+      "UniqueID": "aedenthorn.FreeLove",
+      "IsRequired": false
+    }
+  ]
+}

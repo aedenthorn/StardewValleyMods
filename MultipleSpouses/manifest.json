@@ -1,7 +1,7 @@
 ﻿{
   "Name": "Multiple Spouses",
   "Author": "aedenthorn",
-  "Version": "4.0.0",
+  "Version": "4.0.0-beta",
   "Description": "Allows you to have multiple spouses at once.",
   "UniqueID": "aedenthorn.MultipleSpouses",
   "EntryDll": "MultipleSpouses.dll",
@@ -12,15 +12,15 @@
     "Directory": "_releases",
     "ModFolder": "MultipleSpouses"
   },
-  "UpdateKeys": ["Nexus:6227"],
+  "UpdateKeys": [ "Nexus:6227" ],
   "Dependencies": [
-      {
-        "UniqueID": "Platonymous.ModUpdater",
-        "IsRequired": false
-      },
-      {
-        "UniqueID": "aedenthorn.CustomSpousePatio",
-        "IsRequired": false
-      },
+    {
+      "UniqueID": "Platonymous.ModUpdater",
+      "IsRequired": false
+    },
+    {
+      "UniqueID": "aedenthorn.CustomSpousePatio",
+      "IsRequired": false
+    }
   ]
 }

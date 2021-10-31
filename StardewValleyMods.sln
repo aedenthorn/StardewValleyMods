@@ -49,7 +49,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VideoPlayer", "VideoPlayer\
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NonRandomPrairieKing", "NonRandomPrairieKing\NonRandomPrairieKing.csproj", "{66F87E22-D4A4-423B-BAE3-70130FFAD5F9}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MobilePhone", "MobilePhone\MobilePhone.csproj", "{99168FC5-D48E-465C-8A95-155F60FE0995}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MobilePhone", "MobilePhone\MobilePhone.csproj", "{99168FC5-D48E-465C-8A95-155F60FE0995}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SocialNetwork", "SocialNetwork\SocialNetwork.csproj", "{D4056EE7-7B0C-4A97-BB15-CCFAF924A4F5}"
 EndProject
@@ -81,7 +81,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CustomSpousePatio", "Custom
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CustomResourceClumps", "CustomResourceClumps\CustomResourceClumps.csproj", "{5BE0FDBC-2CCF-406D-B690-B15F15302438}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GemIsles", "GemIsles\GemIsles.csproj", "{C1507CF8-507E-475E-8387-9E1E5D148BB1}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GemIsles", "GemIsles\GemIsles.csproj", "{C1507CF8-507E-475E-8387-9E1E5D148BB1}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ZombieOutbreak", "ZombieOutbreak\ZombieOutbreak.csproj", "{7A0BE63C-79D4-44F5-A5E5-DB40160B6B7A}"
 EndProject
@@ -156,7 +156,11 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CustomWarpPoints", "CustomW
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Renovations", "Renovations\Renovations.csproj", "{2DB37627-A172-49CE-9BA5-EFB0AAF8A79C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CoinCollector", "CoinCollector\CoinCollector.csproj", "{B06B4F8E-FCA6-4D55-A761-7E93F6FAB3D5}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CoinCollector", "CoinCollector\CoinCollector.csproj", "{B06B4F8E-FCA6-4D55-A761-7E93F6FAB3D5}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FreeLove", "FreeLove\FreeLove.csproj", "{4A748784-319D-4012-B6A1-7055FEEEEB13}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BedTweaks", "BedTweaks\BedTweaks.csproj", "{5E4A2991-B1F6-4BAF-B794-CD6703CEA19B}"
 EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
@@ -761,6 +765,22 @@ Global
 		{B06B4F8E-FCA6-4D55-A761-7E93F6FAB3D5}.Release|Any CPU.Build.0 = Release|Any CPU
 		{B06B4F8E-FCA6-4D55-A761-7E93F6FAB3D5}.Release|x86.ActiveCfg = Release|Any CPU
 		{B06B4F8E-FCA6-4D55-A761-7E93F6FAB3D5}.Release|x86.Build.0 = Release|Any CPU
+		{4A748784-319D-4012-B6A1-7055FEEEEB13}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4A748784-319D-4012-B6A1-7055FEEEEB13}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4A748784-319D-4012-B6A1-7055FEEEEB13}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{4A748784-319D-4012-B6A1-7055FEEEEB13}.Debug|x86.Build.0 = Debug|Any CPU
+		{4A748784-319D-4012-B6A1-7055FEEEEB13}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4A748784-319D-4012-B6A1-7055FEEEEB13}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4A748784-319D-4012-B6A1-7055FEEEEB13}.Release|x86.ActiveCfg = Release|Any CPU
+		{4A748784-319D-4012-B6A1-7055FEEEEB13}.Release|x86.Build.0 = Release|Any CPU
+		{5E4A2991-B1F6-4BAF-B794-CD6703CEA19B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5E4A2991-B1F6-4BAF-B794-CD6703CEA19B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5E4A2991-B1F6-4BAF-B794-CD6703CEA19B}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{5E4A2991-B1F6-4BAF-B794-CD6703CEA19B}.Debug|x86.Build.0 = Debug|Any CPU
+		{5E4A2991-B1F6-4BAF-B794-CD6703CEA19B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5E4A2991-B1F6-4BAF-B794-CD6703CEA19B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5E4A2991-B1F6-4BAF-B794-CD6703CEA19B}.Release|x86.ActiveCfg = Release|Any CPU
+		{5E4A2991-B1F6-4BAF-B794-CD6703CEA19B}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

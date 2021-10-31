@@ -196,8 +196,8 @@ namespace MobilePhone
             if (!ringDict.ContainsKey(ringName))
                 return;
             ModEntry.ringSound = ringDict[ringName];
-            if (ModEntry.ringSound != null)
-                Helper.Reflection.GetMethod(ModEntry.ringSound, "Play").Invoke(new object[] { });
+            if (ModEntry.ringSound != null && ModEntry.ringSound is SoundEffect)
+                (ModEntry.ringSound as SoundEffect).Play();
             else if(Config.BuiltInRingTones.Split(',').Contains(ringName))
                 Game1.playSound(ringName);
             Config.PhoneRingTone = ringName;

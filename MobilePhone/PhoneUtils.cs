@@ -195,7 +195,7 @@ namespace MobilePhone
             {
                 if (Constants.TargetPlatform != GamePlatform.Android && ThemeApp.ringDict.ContainsKey(tone) && ThemeApp.ringDict[tone] != null)
                 {
-                    Helper.Reflection.GetMethod(ThemeApp.ringDict[tone], "Stop").Invoke(new object[] { });
+                    AccessTools.Method(ThemeApp.ringDict[tone].GetType(), "Stop").Invoke(ThemeApp.ringDict[tone], new object[] { });
                 }
             }
             catch(Exception ex)
