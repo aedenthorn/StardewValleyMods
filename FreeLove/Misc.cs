@@ -161,8 +161,16 @@ namespace FreeLove
             { 
                 Monitor.Log("placing " + j.Name);
 
-                Point kitchenSpot = farmHouse.getKitchenStandingSpot();
-                Vector2 spouseRoomSpot = (farmHouse.upgradeLevel == 1) ? new Vector2(32f, 5f) : new Vector2(38f, 14f);
+                Point spouseRoomSpot = new Point(-1, -1); 
+                
+                if(Integrations.customSpouseRoomsAPI != null)
+                {
+                    spouseRoomSpot = Integrations.customSpouseRoomsAPI.GetSpouseTile(j);
+                }
+                else if(farmer.spouse == j.Name)
+                {
+                    spouseRoomSpot = farmHouse.GetSpouseRoomSpot();
+                }
 
                 if (!farmHouse.Equals(j.currentLocation))
                 {
@@ -177,11 +185,6 @@ namespace FreeLove
                 {
                     Monitor.Log($"putting {j.Name} in bed");
                     j.position.Value = GetSpouseBedPosition(farmHouse, j.Name);
-
-                    if (HasSleepingAnimation(j.Name) && Game1.timeOfDay >= 2000)
-                    {
-                        j.playSleepingAnimation();
-                    }
                 }
                 else if (kitchenSpouse == j.Name)
                 {
@@ -189,8 +192,14 @@ namespace FreeLove
                     j.setTilePosition(farmHouse.getKitchenStandingSpot());
                     j.setRandomAfternoonMarriageDialogue(Game1.timeOfDay, farmHouse, false);
                 }
-                else
+                else if (spouseRoomSpot.X > -1)
                 {
+                    Monitor.Log($"{j.Name} is in spouse room");
+                    j.setTilePosition(spouseRoomSpot);
+                    j.setSpouseRoomMarriageDialogue();
+                }
+                else 
+                { 
                     j.setTilePosition(farmHouse.getRandomOpenPointInHouse(ModEntry.myRand));
                     j.faceDirection(ModEntry.myRand.Next(0, 4));
                     Monitor.Log($"{j.Name} spouse random loc {j.getTileLocationPoint()}");

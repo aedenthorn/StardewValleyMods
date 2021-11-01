@@ -27,6 +27,9 @@ namespace FreeLove
         internal static NPC tempOfficialSpouse;
         public static int bedSleepOffset = 76;
 
+        public static string spouseToDivorce = null;
+        public static int divorceHeartsLost;
+
         /// <summary>The mod entry point, called after the mod is first loaded.</summary>
         /// <param name="helper">Provides simplified APIs for writing mods.</param>
         public override void Entry(IModHelper helper)
@@ -49,6 +52,7 @@ namespace FreeLove
 
             PathFindControllerPatches.Initialize(Monitor, config, helper);
             Integrations.Initialize(Monitor, config, helper);
+            Divorce.Initialize(Monitor, config, helper);
             NPCPatches.Initialize(Monitor, config, helper);
             LocationPatches.Initialize(Monitor, config, helper);
             FarmerPatches.Initialize(Monitor, Helper);
@@ -160,6 +164,7 @@ namespace FreeLove
                original: AccessTools.Method(typeof(FarmHouse), nameof(FarmHouse.GetSpouseBed)),
                postfix: new HarmonyMethod(typeof(LocationPatches), nameof(LocationPatches.FarmHouse_GetSpouseBed_Postfix))
             );
+
             harmony.Patch(
                original: AccessTools.Method(typeof(FarmHouse), nameof(FarmHouse.getSpouseBedSpot)),
                prefix: new HarmonyMethod(typeof(LocationPatches), nameof(LocationPatches.FarmHouse_getSpouseBedSpot_Prefix))
@@ -185,6 +190,15 @@ namespace FreeLove
                postfix: new HarmonyMethod(typeof(LocationPatches), nameof(LocationPatches.Desert_getDesertMerchantTradeStock_Postfix))
             );
 
+            harmony.Patch(
+               original: AccessTools.Method(typeof(ManorHouse), nameof(ManorHouse.performAction)),
+               prefix: new HarmonyMethod(typeof(LocationPatches), nameof(LocationPatches.ManorHouse_performAction_Prefix))
+            );
+
+            harmony.Patch(
+               original: AccessTools.Method(typeof(GameLocation), nameof(GameLocation.answerDialogue)),
+               prefix: new HarmonyMethod(typeof(LocationPatches), nameof(LocationPatches.GameLocation_answerDialogue_prefix))
+            );
 
 
             // pregnancy patches
@@ -210,6 +224,11 @@ namespace FreeLove
 
 
             // Farmer patches
+
+            harmony.Patch(
+               original: AccessTools.Method(typeof(Farmer), nameof(Farmer.doDivorce)),
+               prefix: new HarmonyMethod(typeof(FarmerPatches), nameof(FarmerPatches.Farmer_doDivorce_Prefix))
+            );
 
             harmony.Patch(
                original: AccessTools.Method(typeof(Farmer), nameof(Farmer.isMarried)),

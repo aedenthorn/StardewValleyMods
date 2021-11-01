@@ -1,7 +1,7 @@
 ﻿using Microsoft.Xna.Framework;
 using StardewValley;
 
-namespace FreeLove
+namespace CustomSpouseRooms
 {
     public interface ICustomSpouseRoomsAPI
     {

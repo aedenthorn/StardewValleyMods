@@ -158,9 +158,11 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Renovations", "Renovations\
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CoinCollector", "CoinCollector\CoinCollector.csproj", "{B06B4F8E-FCA6-4D55-A761-7E93F6FAB3D5}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FreeLove", "FreeLove\FreeLove.csproj", "{4A748784-319D-4012-B6A1-7055FEEEEB13}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FreeLove", "FreeLove\FreeLove.csproj", "{4A748784-319D-4012-B6A1-7055FEEEEB13}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BedTweaks", "BedTweaks\BedTweaks.csproj", "{5E4A2991-B1F6-4BAF-B794-CD6703CEA19B}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CustomSpouseRooms", "CustomSpouseRooms\CustomSpouseRooms.csproj", "{31158FDA-77BD-4F51-BB76-3B581BFC31FA}"
 EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
@@ -781,6 +783,14 @@ Global
 		{5E4A2991-B1F6-4BAF-B794-CD6703CEA19B}.Release|Any CPU.Build.0 = Release|Any CPU
 		{5E4A2991-B1F6-4BAF-B794-CD6703CEA19B}.Release|x86.ActiveCfg = Release|Any CPU
 		{5E4A2991-B1F6-4BAF-B794-CD6703CEA19B}.Release|x86.Build.0 = Release|Any CPU
+		{31158FDA-77BD-4F51-BB76-3B581BFC31FA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{31158FDA-77BD-4F51-BB76-3B581BFC31FA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{31158FDA-77BD-4F51-BB76-3B581BFC31FA}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{31158FDA-77BD-4F51-BB76-3B581BFC31FA}.Debug|x86.Build.0 = Debug|Any CPU
+		{31158FDA-77BD-4F51-BB76-3B581BFC31FA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{31158FDA-77BD-4F51-BB76-3B581BFC31FA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{31158FDA-77BD-4F51-BB76-3B581BFC31FA}.Release|x86.ActiveCfg = Release|Any CPU
+		{31158FDA-77BD-4F51-BB76-3B581BFC31FA}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

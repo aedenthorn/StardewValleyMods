@@ -17,6 +17,10 @@
     {
       "UniqueID": "Platonymous.ModUpdater",
       "IsRequired": false
+    },
+    {
+      "UniqueID": "spacechase0.DynamicGameAssets",
+      "IsRequired": true
     }
   ]
 }

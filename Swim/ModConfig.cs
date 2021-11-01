@@ -8,6 +8,7 @@ namespace Swim
         public bool EnableMod{ get; set; }
         public bool ReadyToSwim { get; set; }
         public bool SwimSuitAlways { get; set; }
+        public bool NoAutoSwimSuit { get; set; }
         public int JumpTimeInMilliseconds { get; set; }
         public SButton SwimKey{ get; set; }
         public SButton SwimSuitKey { get; set; }

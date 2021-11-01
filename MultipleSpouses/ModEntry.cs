@@ -28,10 +28,10 @@ namespace MultipleSpouses
         public static ModConfig config;
 
         public static string spouseToDivorce = null;
+        public static int divorceHeartsLost;
         public static Multiplayer mp;
         public static Random myRand;
         public static int bedSleepOffset = 76;
-        public static int divorceHeartsLost;
         public static string farmHelperSpouse = null;
         internal static NPC tempOfficialSpouse;
 

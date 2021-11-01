@@ -12,7 +12,7 @@ using System.IO;
 using xTile;
 using xTile.Dimensions;
 using xTile.Tiles;
-using Rectangle = Microsoft.Xna.Framework.Rectangle;
+using Rectangle = Microsoft.Xna.Framework.Rectangle; 
 
 namespace Swim
 {

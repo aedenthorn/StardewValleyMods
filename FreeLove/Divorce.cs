@@ -4,18 +4,21 @@ using StardewValley.Menus;
 using System;
 using System.Collections.Generic;
 
-namespace MultipleSpouses
+namespace FreeLove
 {
     internal class Divorce
     {
-        private static IMonitor Monitor;
-        private static IModHelper Helper;
         public static string complexDivorceSpouse;
 
+        private static IMonitor Monitor;
+        private static ModConfig Config;
+        private static IModHelper Helper;
+
         // call this method from your Entry class
-        public static void Initialize(IMonitor monitor, IModHelper helper)
+        public static void Initialize(IMonitor monitor, ModConfig config, IModHelper helper)
         {
             Monitor = monitor;
+            Config = config;
             Helper = helper;
         }
 
@@ -24,17 +27,17 @@ namespace MultipleSpouses
 
             Monitor.Log("answer " + whichAnswer);
 
-            if (Misc.GetSpouses(Game1.player, 1).ContainsKey(whichAnswer))
+            if (Misc.GetSpouses(who, 1).ContainsKey(whichAnswer))
             {
                 Monitor.Log("divorcing " + whichAnswer);
-                string s2 = Game1.content.LoadString("Strings\\Locations:ManorHouse_DivorceBook_Question_" + Game1.player.spouse);
+                string s2 = Game1.content.LoadString("Strings\\Locations:ManorHouse_DivorceBook_Question_" + whichAnswer, whichAnswer);
                 if (s2 == null)
                 {
                     s2 = Game1.content.LoadStringReturnNullIfNotFound("Strings\\Locations:ManorHouse_DivorceBook_Question");
                 }
                 List<Response> responses = new List<Response>();
                 responses.Add(new Response($"divorce_Yes_{whichAnswer}", Game1.content.LoadString("Strings\\Lexicon:QuestionDialogue_Yes")));
-                if (ModEntry.config.ComplexDivorce)
+                if (Config.ComplexDivorce)
                 {
                     responses.Add(new Response($"divorce_complex_{whichAnswer}", Helper.Translation.Get("divorce_complex")));
                 }
@@ -52,7 +55,7 @@ namespace MultipleSpouses
                     if (!Game1.player.isRoommate(spouse))
                     {
                         Game1.player.Money -= 50000;
-                        ModEntry.divorceHeartsLost = ModEntry.config.FriendlyDivorce ? 0 : -1;
+                        ModEntry.divorceHeartsLost = Config.PreventHostileDivorces ? 0 : -1;
                     }
                     else
                     {
@@ -146,7 +149,7 @@ namespace MultipleSpouses
                         Game1.player.Money -= money;
                     }
                     Game1.player.divorceTonight.Value = true;
-                    string s = Game1.content.LoadStringReturnNullIfNotFound("Strings\\Locations:ManorHouse_DivorceBook_Filed_" + complexDivorceSpouse);
+                    string s = Game1.content.LoadString("Strings\\Locations:ManorHouse_DivorceBook_Filed_" + complexDivorceSpouse, complexDivorceSpouse);
                     if (s == null)
                     {
                         s = Game1.content.LoadStringReturnNullIfNotFound("Strings\\Locations:ManorHouse_DivorceBook_Filed");

@@ -184,5 +184,55 @@ namespace FreeLove
             }
         }
 
+
+        public static bool ManorHouse_performAction_Prefix(ManorHouse __instance, string action, Farmer who, ref bool __result)
+        {
+            try
+            {
+                Misc.ResetSpouses(who);
+                Dictionary<string, NPC> spouses = Misc.GetSpouses(who, -1);
+                if (action != null && who.IsLocalPlayer && !Game1.player.divorceTonight.Value && (Game1.player.isMarried() || spouses.Count > 0))
+                {
+                    string a = action.Split(new char[]
+                    {
+                    ' '
+                    })[0];
+                    if (a == "DivorceBook")
+                    {
+                        string str = Helper.Translation.Get("divorce_who");
+                        List<Response> responses = new List<Response>();
+                        foreach (NPC spouse in spouses.Values)
+                        {
+                            responses.Add(new Response(spouse.Name, spouse.displayName));
+                        }
+                        responses.Add(new Response("No", Game1.content.LoadString("Strings\\Lexicon:QuestionDialogue_No")));
+                        __instance.createQuestionDialogue(str, responses.ToArray(), Divorce.afterDialogueBehavior);
+                        //__instance.createQuestionDialogue(s2, responses.ToArray(), "divorce");
+                        __result = true;
+                        return false;
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Monitor.Log($"Failed in {nameof(ManorHouse_performAction_Prefix)}:\n{ex}", LogLevel.Error);
+            }
+            return true;
+        }
+
+        public static void GameLocation_answerDialogue_prefix(GameLocation __instance, Response answer)
+        {
+            try
+            {
+                if (answer.responseKey.StartsWith("divorce_"))
+                    __instance.afterQuestion = Divorce.afterDialogueBehavior;
+
+            }
+            catch (Exception ex)
+            {
+                Monitor.Log($"Failed in {nameof(GameLocation_answerDialogue_prefix)}:\n{ex}", LogLevel.Error);
+            }
+        }
+
     }
 }

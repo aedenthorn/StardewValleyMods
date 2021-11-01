@@ -8,7 +8,8 @@ namespace FreeLove
         public int MinPointsToMarry { get; set; } = 2500;
         public int MinPointsToDate { get; set; } = 2000;
         public int DaysUntilMarriage { get; set; } = 3;
-        public bool PreventHostileDivorces { get; set; } = false;
+        public bool PreventHostileDivorces { get; set; } = true;
+        public bool ComplexDivorce { get; set; } = true;
         public bool RoommateRomance { get; set; } = true;
         public bool RomanceAllVillagers { get; set; } = false;
         public bool ShowParentNames { get; set; } = false;

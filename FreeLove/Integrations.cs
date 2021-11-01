@@ -8,8 +8,8 @@ namespace FreeLove
         private static ModConfig Config;
         private static IModHelper Helper;
         public static IKissingAPI kissingAPI;
-        internal static ICustomSpouseRoomsAPI customSpouseRoomsAPI;
-        internal static IBedTweaksAPI bedTweaksAPI;
+        public static IBedTweaksAPI bedTweaksAPI;
+        public static ICustomSpouseRoomsAPI customSpouseRoomsAPI;
 
         // call this method from your Entry class
         public static void Initialize(IMonitor monitor, ModConfig config, IModHelper helper)
@@ -20,9 +20,21 @@ namespace FreeLove
         }
         public static void LoadModApis()
         {
-            kissingAPI = Helper.ModRegistry.GetApi<IKissingAPI>("aedenthorn.FreeKisses");
-            bedTweaksAPI = Helper.ModRegistry.GetApi<IBedTweaksAPI>("aedenthorn.BedTweaks");
-            customSpouseRoomsAPI = Helper.ModRegistry.GetApi<ICustomSpouseRoomsAPI>("aedenthorn.CustomSpouseRooms");
+            try 
+            { 
+                kissingAPI = Helper.ModRegistry.GetApi<IKissingAPI>("aedenthorn.FreeKisses");
+            }
+            catch { }
+            try 
+            { 
+                bedTweaksAPI = Helper.ModRegistry.GetApi<IBedTweaksAPI>("aedenthorn.BedTweaks");
+            }
+            catch { }
+            try 
+            { 
+                customSpouseRoomsAPI = Helper.ModRegistry.GetApi<ICustomSpouseRoomsAPI>("aedenthorn.CustomSpouseRooms");
+            }
+            catch { }
 
             if (kissingAPI != null)
             {
@@ -34,9 +46,8 @@ namespace FreeLove
             }
             if (customSpouseRoomsAPI != null)
             {
-                Monitor.Log("Custom Spouse Room API loaded");
+                Monitor.Log("customSpouseRooms API loaded");
             }
-
         }
     }
 }

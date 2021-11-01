@@ -45,9 +45,7 @@ namespace FreeLove
             {
                 if(ReferenceEquals(location.GetType(),typeof(FarmHouse)))
                 {
-                    FarmHouse fh = (location as FarmHouse);
-                    Misc.PlaceSpousesInFarmhouse(fh);
-                    //location.resetForPlayerEntry();
+                    Misc.PlaceSpousesInFarmhouse(location as FarmHouse);
                 }
             }
             if (Game1.IsMasterGame)
