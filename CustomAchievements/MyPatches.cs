@@ -1,0 +1,80 @@
+﻿using HarmonyLib;
+using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
+using StardewModdingAPI;
+using StardewValley;
+using StardewValley.Menus;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+
+namespace CustomAchievements
+{
+    public class MyPatches
+    {
+        public static IMonitor Monitor { get; private set; }
+        public static IModHelper Helper { get; private set; }
+        public static ModConfig Config { get; private set; }
+
+        public static void Initialize(IMonitor monitor, IModHelper helper, ModConfig config)
+        {
+            Monitor = monitor;
+            Helper = helper;
+            Config = config;
+        }
+        public static void MakePatches(string id)
+        {
+
+            var harmony = new Harmony(id);
+
+            // CollectionsPage patches
+
+            harmony.Patch(
+               original: AccessTools.Constructor(typeof(CollectionsPage), new Type[] { typeof(int), typeof(int), typeof(int), typeof(int) }),
+               postfix: new HarmonyMethod(typeof(MyPatches), nameof(MyPatches.CollectionsPage_Postfix))
+            );
+            harmony.Patch(
+               original: AccessTools.Method(typeof(CollectionsPage), nameof(CollectionsPage.createDescription)),
+               prefix: new HarmonyMethod(typeof(MyPatches), nameof(MyPatches.CollectionsPage_createDescription_Prefix))
+            );
+        }
+        private static void CollectionsPage_Postfix(CollectionsPage __instance)
+        {
+            if (!Config.EnableMod)
+                return;
+
+            int widthUsed = __instance.collections[5][0].Count;
+            int baseX = __instance.xPositionOnScreen + IClickableMenu.borderWidth + IClickableMenu.spaceToClearSideBorder;
+            int baseY = __instance.yPositionOnScreen + IClickableMenu.borderWidth + IClickableMenu.spaceToClearTopBorder - 16;
+
+            using var dict = Helper.Content.Load<Dictionary<string, CustomAcheivementData>>(ModEntry.dictPath, ContentSource.GameContent).GetEnumerator();
+            while (dict.MoveNext())
+            {
+                var a = dict.Current.Value;
+                int hash = a.name.GetHashCode();
+                ModEntry.currentAchievements[hash] = a;
+
+                int xPos = baseX + widthUsed % 10 * 68;
+                int yPos = baseY + widthUsed / 10 * 68;
+                if (a.iconPath.Length > 0)
+                {
+                    var icon = Game1.content.Load<Texture2D>(Helper.Content.GetActualAssetKey(a.iconPath, ContentSource.GameContent));
+                    __instance.collections[5][0].Add(new ClickableTextureComponent($"{hash} {a.achieved}", new Rectangle(xPos, yPos, 64, 64), null, "", icon, a.iconRect == null ? new Rectangle(0, 0, icon.Width, icon.Height) : (Rectangle)a.iconRect, 1f, false));
+                }
+                else
+                {
+                    __instance.collections[5][0].Add(new ClickableTextureComponent($"{hash} {a.achieved}", new Rectangle(xPos, yPos, 64, 64), null, "", Game1.mouseCursors, Game1.getSourceRectForStandardTileSheet(Game1.mouseCursors, 25, -1, -1), 1f, false));
+                }
+                widthUsed++;
+            }
+        }
+
+        private static bool CollectionsPage_createDescription_Prefix(CollectionsPage __instance, int index, ref string __result)
+        {
+            if (!Config.EnableMod || __instance.currentTab != 5 || !ModEntry.currentAchievements.ContainsKey(index))
+                return true;
+            __result = ModEntry.currentAchievements[index].name + "\n\n" + ModEntry.currentAchievements[index].description;
+            return false;
+        }
+    }
+}

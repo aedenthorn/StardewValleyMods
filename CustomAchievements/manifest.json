@@ -1,0 +1,24 @@
+﻿{
+	"Name": "Custom Achievements",
+	"Author": "aedenthorn",
+	"Version": "0.1.0",
+	"Description": "Custom achievements framework.",
+	"UniqueID": "aedenthorn.CustomAchievements",
+	"EntryDll": "CustomAchievements.dll",
+	"MinimumApiVersion": "3.13.0-beta.20211018",
+	"ModUpdater": {
+		"Repository": "StardewValleyMods",
+		"User": "aedenthorn",
+		"Directory": "_releases",
+		"ModFolder": "CustomAchievements"
+	},
+	"UpdateKeys": [
+		"Nexus:10047"
+	],
+	"Dependencies": [
+		{
+			"UniqueID": "Platonymous.ModUpdater",
+			"IsRequired": false
+		}
+	]
+}

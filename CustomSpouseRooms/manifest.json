@@ -12,7 +12,7 @@
     "Directory": "_releases",
     "ModFolder": "CustomSpouseRooms"
   },
-  "UpdateKeys": [ "Nexus:" ],
+  "UpdateKeys": [ "Nexus:10029" ],
   "Dependencies": [
     {
       "UniqueID": "Platonymous.ModUpdater",
