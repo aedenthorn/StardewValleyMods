@@ -7,6 +7,7 @@ using StardewValley.Menus;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection.Emit;
 
 namespace CustomAchievements
 {
@@ -37,6 +38,14 @@ namespace CustomAchievements
                original: AccessTools.Method(typeof(CollectionsPage), nameof(CollectionsPage.createDescription)),
                prefix: new HarmonyMethod(typeof(MyPatches), nameof(MyPatches.CollectionsPage_createDescription_Prefix))
             );
+
+            if (Config.AllowFaceSkipping)
+            {
+                harmony.Patch(
+                   original: AccessTools.Method(typeof(CollectionsPage), nameof(CollectionsPage.draw), new Type[] { typeof(SpriteBatch) }),
+                   transpiler: new HarmonyMethod(typeof(MyPatches), nameof(MyPatches.CollectionsPage_draw_Transpiler))
+                );
+            }
         }
         private static void CollectionsPage_Postfix(CollectionsPage __instance)
         {
@@ -66,6 +75,49 @@ namespace CustomAchievements
                     __instance.collections[5][0].Add(new ClickableTextureComponent($"{hash} {a.achieved}", new Rectangle(xPos, yPos, 64, 64), null, "", Game1.mouseCursors, Game1.getSourceRectForStandardTileSheet(Game1.mouseCursors, 25, -1, -1), 1f, false));
                 }
                 widthUsed++;
+            }
+        }
+
+        private static IEnumerable<CodeInstruction> CollectionsPage_draw_Transpiler(IEnumerable<CodeInstruction> instructions)
+        {
+
+            var codes = new List<CodeInstruction>(instructions);
+            var newCodes = new List<CodeInstruction>();
+            bool skipping = false;
+            for (int i = 0; i < codes.Count; i++)
+            {
+                if (skipping)
+                {
+                    if (codes[i].opcode == OpCodes.Ldc_R4 && codes[i-1].opcode == OpCodes.Ldc_I4_0)
+                    {
+                        Monitor.Log("Stopped skipping");
+                        skipping = false;
+                        i++;
+                        newCodes.Add(new CodeInstruction(OpCodes.Ldarg_1, null));
+                        newCodes.Add(new CodeInstruction(OpCodes.Ldloc_3, null));
+                        newCodes.Add(new CodeInstruction(OpCodes.Call, AccessTools.Method(typeof(MyPatches), "DrawFace")));
+                    }
+                    continue;
+                }
+                Monitor.Log($"{codes[i].opcode.Name}");
+                newCodes.Add(codes[i]);
+                if (codes[i].opcode == OpCodes.Stloc_S && ((LocalBuilder)codes[i].operand).LocalType == typeof(int))
+                {
+                    Monitor.Log("Started skipping");
+                    skipping = true;
+                }
+            }
+
+            return newCodes.AsEnumerable();
+        }
+
+        public static void DrawFace(SpriteBatch b, ClickableTextureComponent c)
+        {
+            int id = Convert.ToInt32(c.name.Split(' ')[0]);
+            if (!Config.EnableMod || !ModEntry.currentAchievements.ContainsKey(id) || ModEntry.currentAchievements[id].drawFace)
+            {
+                int StarPos = new Random(id).Next(12);
+                b.Draw(Game1.mouseCursors, new Vector2((float)(c.bounds.X + 16 + 16), (float)(c.bounds.Y + 20 + 16)), new Rectangle?(new Rectangle(256 + StarPos % 6 * 64 / 2, 128 + StarPos / 6 * 64 / 2, 32, 32)), Color.White, 0f, new Vector2(16f, 16f), c.scale, SpriteEffects.None, 0.88f);
             }
         }
 

@@ -10,5 +10,6 @@ namespace CustomAchievements
         public string iconPath = "";
         public Rectangle? iconRect;
         public bool achieved = false;
+        public bool drawFace = true;
     }
 }
