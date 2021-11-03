@@ -64,7 +64,7 @@ namespace CustomSpouseRooms
                 if (size.Width >= w && size.Height >= h)
                     continue;
 
-                ModEntry.PMonitor.Log($"Extending layer {layers[i].Id} to {w},{h}");
+                ModEntry.PMonitor.Log($"Extending layer {layers[i].Id} from {size.Width},{size.Height} ({tiles.GetLength(0)},{tiles.GetLength(1)}) to {w},{h}");
 
                 size = new Size(w, h);
                 AccessTools.Field(typeof(Layer), "m_layerSize").SetValue(layers[i], size);

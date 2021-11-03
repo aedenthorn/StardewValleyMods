@@ -9,7 +9,7 @@ namespace CustomAchievements
         public string description;
         public string iconPath = "";
         public Rectangle? iconRect;
-        public bool achieved = false;
         public bool drawFace = true;
+        public bool achieved = false;
     }
 }

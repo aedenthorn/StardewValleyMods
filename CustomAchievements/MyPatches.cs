@@ -68,7 +68,7 @@ namespace CustomAchievements
                 if (a.iconPath.Length > 0)
                 {
                     var icon = Game1.content.Load<Texture2D>(Helper.Content.GetActualAssetKey(a.iconPath, ContentSource.GameContent));
-                    __instance.collections[5][0].Add(new ClickableTextureComponent($"{hash} {a.achieved}", new Rectangle(xPos, yPos, 64, 64), null, "", icon, a.iconRect == null ? new Rectangle(0, 0, icon.Width, icon.Height) : (Rectangle)a.iconRect, 1f, false));
+                    __instance.collections[5][0].Add(new ClickableTextureComponent($"{hash} {a.achieved}", new Rectangle(xPos, yPos, 64, 64), null, "", icon, a.iconRect == null ? new Rectangle(0, 0, icon.Width, icon.Height) : a.iconRect.Value, 1f, false));
                 }
                 else
                 {
@@ -90,7 +90,6 @@ namespace CustomAchievements
                 {
                     if (codes[i].opcode == OpCodes.Ldc_R4 && codes[i-1].opcode == OpCodes.Ldc_I4_0)
                     {
-                        Monitor.Log("Stopped skipping");
                         skipping = false;
                         i++;
                         newCodes.Add(new CodeInstruction(OpCodes.Ldarg_1, null));
@@ -99,11 +98,9 @@ namespace CustomAchievements
                     }
                     continue;
                 }
-                Monitor.Log($"{codes[i].opcode.Name}");
                 newCodes.Add(codes[i]);
                 if (codes[i].opcode == OpCodes.Stloc_S && ((LocalBuilder)codes[i].operand).LocalType == typeof(int))
                 {
-                    Monitor.Log("Started skipping");
                     skipping = true;
                 }
             }

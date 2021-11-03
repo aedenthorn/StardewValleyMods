@@ -14,6 +14,7 @@
     <None Include="$(MSBuildThisFileDirectory)ATerrarium 0.1.2.zip" />
     <None Include="$(MSBuildThisFileDirectory)BossCreatures 1.2.0.zip" />
     <None Include="$(MSBuildThisFileDirectory)CoinCollector 0.1.1.zip" />
+    <None Include="$(MSBuildThisFileDirectory)CustomAchievements 0.2.1.zip" />
     <None Include="$(MSBuildThisFileDirectory)CustomChestTypes 0.6.0.zip" />
     <None Include="$(MSBuildThisFileDirectory)CustomFixedDialogue 0.8.1.zip" />
     <None Include="$(MSBuildThisFileDirectory)CustomLocks 0.2.0.zip" />
