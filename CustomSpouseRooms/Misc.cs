@@ -1,13 +1,9 @@
 ﻿using HarmonyLib;
-using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
 using StardewModdingAPI;
 using StardewValley;
-using StardewValley.Characters;
 using StardewValley.Locations;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using xTile;
 using xTile.Dimensions;
 using xTile.Layers;
@@ -61,8 +57,11 @@ namespace CustomSpouseRooms
             {
                 Tile[,] tiles = AccessTools.Field(typeof(Layer), "m_tiles").GetValue(layers[i]) as Tile[,];
                 Size size = (Size)AccessTools.Field(typeof(Layer), "m_layerSize").GetValue(layers[i]);
-                if (size.Width >= w && size.Height >= h)
+                if (tiles.GetLength(0) >= w && tiles.GetLength(1) >= h)
                     continue;
+
+                w = Math.Max(w, tiles.GetLength(0));
+                h = Math.Max(h, tiles.GetLength(1));
 
                 ModEntry.PMonitor.Log($"Extending layer {layers[i].Id} from {size.Width},{size.Height} ({tiles.GetLength(0)},{tiles.GetLength(1)}) to {w},{h}");
 

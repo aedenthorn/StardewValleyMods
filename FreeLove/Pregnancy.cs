@@ -153,7 +153,7 @@ namespace FreeLove
                     Age = 0,
                     Position = new Vector2(16f, 4f) * 64f + new Vector2(0f + ModEntry.myRand.Next(-64, 48), -24f + ModEntry.myRand.Next(-24, 24)),
                 };
-                baby.modData["aedenthorn.MultipleSpouses/OtherParent"] = lastBirthingSpouse.Name;
+                baby.modData["aedenthorn.FreeLove/OtherParent"] = lastBirthingSpouse.Name;
 
                 Utility.getHomeOfFarmer(Game1.player).characters.Add(baby);
                 Game1.playSound("smallSelect");

@@ -3,7 +3,6 @@ using Microsoft.Xna.Framework.Graphics;
 using StardewModdingAPI;
 using StardewModdingAPI.Events;
 using StardewValley;
-using StardewValley.Objects;
 using System.IO;
 using System.Threading.Tasks;
 

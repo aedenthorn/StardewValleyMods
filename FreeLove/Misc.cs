@@ -20,7 +20,7 @@ namespace FreeLove
         private static ModConfig Config;
 
         // call this method from your Entry class
-        public static void Initialize(IMonitor monitor, IModHelper helper, ModConfig config)
+        public static void Initialize(IMonitor monitor, ModConfig config, IModHelper helper)
         {
             Monitor = monitor;
             Helper = helper;

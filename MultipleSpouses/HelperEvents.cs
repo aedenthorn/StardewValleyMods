@@ -21,7 +21,6 @@ namespace MultipleSpouses
             Helper = helper;
         }
 
-
         public static void GameLoop_SaveLoaded(object sender, SaveLoadedEventArgs e)
         {
             ModEntry.spouseToDivorce = null;
@@ -30,7 +29,6 @@ namespace MultipleSpouses
             Misc.ResetSpouses(Game1.player);
             Misc.SetNPCRelations();
         }
-
 
         public static void GameLoop_GameLaunched(object sender, GameLaunchedEventArgs e)
         {

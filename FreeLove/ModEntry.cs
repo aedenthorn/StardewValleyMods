@@ -55,11 +55,11 @@ namespace FreeLove
             Divorce.Initialize(Monitor, config, helper);
             NPCPatches.Initialize(Monitor, config, helper);
             LocationPatches.Initialize(Monitor, config, helper);
-            FarmerPatches.Initialize(Monitor, Helper);
-            UIPatches.Initialize(Monitor, Helper);
-            EventPatches.Initialize(Monitor, Helper);
-            HelperEvents.Initialize(Monitor, Helper, config);
-            Misc.Initialize(Monitor, Helper, config);
+            FarmerPatches.Initialize(Monitor, config, helper);
+            UIPatches.Initialize(Monitor, config, helper);
+            EventPatches.Initialize(Monitor, config, helper);
+            HelperEvents.Initialize(Monitor, config, helper);
+            Misc.Initialize(Monitor, config, helper);
 
             var harmony = new Harmony(ModManifest.UniqueID);
 
@@ -135,11 +135,6 @@ namespace FreeLove
             harmony.Patch(
                original: typeof(Character).GetProperty("displayName").GetMethod,
                postfix: new HarmonyMethod(typeof(NPCPatches), nameof(NPCPatches.Character_displayName_Getter_Postfix))
-            );
-
-            harmony.Patch(
-               original: AccessTools.Method(typeof(Child), nameof(Child.reloadSprite)),
-               postfix: new HarmonyMethod(typeof(NPCPatches), nameof(NPCPatches.Child_reloadSprite_Postfix))
             );
 
             // Path patches

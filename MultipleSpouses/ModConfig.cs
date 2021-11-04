@@ -27,7 +27,7 @@ namespace MultipleSpouses
         public float SpouseKissChance { get; set; } = 0.1f;
         public bool RealKissSound { get; set; } = true;
         public float MaxDistanceToKiss { get; set; } = 200f;
-        public double MinSpouseKissInterval { get; set; } = 5;
+        public double MinSpouseKissInterval { get; set; } = 20;
         public bool PreventRelativesFromKissing { get; set; } = true;
 
         public double BabyRequestChance { get; set; } = 0.05f;

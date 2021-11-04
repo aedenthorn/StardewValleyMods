@@ -935,60 +935,18 @@ namespace FreeLove
             }
         }
         
-        public static void Character_displayName_Getter_Postfix(ref Child __instance, ref string __result)
+        public static void Character_displayName_Getter_Postfix(ref Character __instance, ref string __result)
         {
             try
             {
-                if (__instance.Name == null || !(__instance is Child))
+                if (__instance.Name == null || !(__instance is Child) || !Config.ShowParentNames || !__instance.modData.ContainsKey("aedenthorn.FreeLove/OtherParent"))
                     return;
-                string[] names = __instance.Name.Split(' ');
-                if (names.Length < 2 || names[names.Length - 1].Length < 3)
-                {
-                    return;
-                }
-                if (!Config.ShowParentNames && __instance.Name.EndsWith(")"))
-                {
-                    __result = Regex.Replace(string.Join(" ", names), @" \([^)]+\)", "");
-                    //Monitor.Log($"set child display name to: {__result}");
-                }
+                __result = $"{__result} ({__instance.modData["aedenthorn.FreeLove/OtherParent"]})";
             }
             catch (Exception ex)
             {
-                Monitor.Log($"Failed in {nameof(Child_reloadSprite_Postfix)}:\n{ex}", LogLevel.Error);
+                Monitor.Log($"Failed in {nameof(Character_displayName_Getter_Postfix)}:\n{ex}", LogLevel.Error);
             }
         }
-        public static void Child_reloadSprite_Postfix(ref Child __instance)
-        {
-            try
-            {
-                if (__instance.Name == null)
-                    return;
-                string[] names = __instance.Name.Split(' ');
-                string parent;
-                if (names.Length > 1 && __instance.displayName.EndsWith(")"))
-                {
-                    parent = names[names.Length - 1].Substring(1, names[names.Length - 1].Length - 2);
-                    __instance.modData["aedenthorn.MultipleSpouses/OtherParent"] = parent;
-                }
-
-                if (!__instance.modData.ContainsKey("aedenthorn.MultipleSpouses/OtherParent"))
-                    return;
-
-                parent = __instance.modData["aedenthorn.MultipleSpouses/OtherParent"];
-
-                if (!Config.ShowParentNames && __instance.displayName.EndsWith(")"))
-                {
-                    __instance.displayName = Regex.Replace(string.Join(" ", names), @" \([^)]+\)", "");
-                }
-
-                __instance.Sprite.textureName.Value += $"_{parent}";
-                Monitor.Log($"set child {__instance.name}, parent {parent} texture to: {__instance.Sprite.textureName.Value}");
-            }
-            catch (Exception ex)
-            {
-                Monitor.Log($"Failed in {nameof(Child_reloadSprite_Postfix)}:\n{ex}", LogLevel.Error);
-            }
-        }
-
     }
 }

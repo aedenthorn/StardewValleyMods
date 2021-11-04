@@ -1,12 +1,7 @@
-﻿using Microsoft.Xna.Framework;
-using StardewModdingAPI;
+﻿using StardewModdingAPI;
 using StardewValley;
-using StardewValley.Characters;
-using StardewValley.Locations;
 using StardewValley.Menus;
 using System;
-using System.Collections.Generic;
-using System.Reflection;
 
 namespace FreeLove
 {
@@ -16,7 +11,7 @@ namespace FreeLove
         private static IModHelper Helper;
 
         // call this method from your Entry class
-        public static void Initialize(IMonitor monitor, IModHelper helper)
+        public static void Initialize(IMonitor monitor, ModConfig config, IModHelper helper)
         {
             Monitor = monitor;
             Helper = helper;

@@ -21,7 +21,7 @@ namespace FreeLove
         public static bool startingLoadActors = false;
 
         // call this method from your Entry class
-        public static void Initialize(IMonitor monitor, IModHelper helper)
+        public static void Initialize(IMonitor monitor, ModConfig config, IModHelper helper)
         {
             Monitor = monitor;
             Helper = helper;
