@@ -1,4 +1,5 @@
 ﻿using StardewModdingAPI;
+using System;
 
 namespace FreeLove
 {
@@ -22,9 +23,9 @@ namespace FreeLove
         {
             try 
             { 
-                kissingAPI = Helper.ModRegistry.GetApi<IKissingAPI>("aedenthorn.FreeKisses");
+                kissingAPI = Helper.ModRegistry.GetApi<IKissingAPI>("aedenthorn.HugsAndKisses");
             }
-            catch { }
+            catch(Exception ex) { Monitor.Log($"kissapi: {ex}"); }
             try 
             { 
                 bedTweaksAPI = Helper.ModRegistry.GetApi<IBedTweaksAPI>("aedenthorn.BedTweaks");

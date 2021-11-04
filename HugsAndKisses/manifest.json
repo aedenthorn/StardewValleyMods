@@ -12,7 +12,7 @@
     "Directory": "_releases",
     "ModFolder": "HugsAndKisses"
   },
-  "UpdateKeys": [ "Nexus:" ],
+  "UpdateKeys": [ "Nexus:10062" ],
   "Dependencies": [
     {
       "UniqueID": "Platonymous.ModUpdater",

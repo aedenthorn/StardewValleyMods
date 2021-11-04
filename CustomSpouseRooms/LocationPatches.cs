@@ -333,7 +333,7 @@ namespace CustomSpouseRooms
 				ModEntry.PMonitor.Log($"Building Emily's parrot at {parrotSpot}");
 				fh.temporarySprites.Add(new EmilysParrot(parrotSpot));
 			}
-			else if (srd.name == "Penny" || (srd.name == "Sebastian" && Game1.netWorldState.Value.hasWorldStateID("sebastianFrogReal")))
+			else if (srd.name == "Sebastian" && Game1.netWorldState.Value.hasWorldStateID("sebastianFrogReal"))
 			{
 				Vector2 spot = Utility.PointToVector2(srd.startPos + new Point(2, 7));
 				Monitor.Log($"building Sebastian's terrarium at {spot}");

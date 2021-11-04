@@ -100,7 +100,7 @@ namespace FreeLove
                                 if (Misc.IsInBed(fh, character.GetBoundingBox()))
                                 {
                                     character.farmerPassesThrough = true;
-                                    if (!character.isMoving() && (Integrations.kissingAPI == null || !Integrations.kissingAPI.IsKissing(character.Name)))
+                                    if (!character.isMoving() && (Integrations.kissingAPI == null || Integrations.kissingAPI.LastKissed(character.Name) > 2))
                                     {
                                         Vector2 bedPos = Misc.GetSpouseBedPosition(fh, character.Name);
                                         if (Game1.timeOfDay >= 2000 || Game1.timeOfDay <= 600)

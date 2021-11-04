@@ -10,9 +10,9 @@ namespace HugsAndKisses
     public class ModEntry : Mod
     {
 
-        public static IMonitor PMonitor;
+        public static IMonitor SMonitor;
         public static IModHelper PHelper;
-        public static ModConfig config;
+        public static ModConfig SConfig;
         
         public static Multiplayer mp;
         public static Random myRand;
@@ -24,12 +24,12 @@ namespace HugsAndKisses
         /// <param name="helper">Provides simplified APIs for writing mods.</param>
         public override void Entry(IModHelper helper)
         {
-            config = Helper.ReadConfig<ModConfig>();
+            SConfig = Helper.ReadConfig<ModConfig>();
 
-            if (!config.EnableMod)
+            if (!SConfig.EnableMod)
                 return;
 
-            PMonitor = Monitor;
+            SMonitor = Monitor;
             PHelper = helper;
 
             mp = helper.Reflection.GetField<Multiplayer>(typeof(Game1), "multiplayer").GetValue();
@@ -39,20 +39,11 @@ namespace HugsAndKisses
             helper.Events.GameLoop.OneSecondUpdateTicked += HelperEvents.GameLoop_OneSecondUpdateTicked;
             helper.Events.GameLoop.SaveLoaded += HelperEvents.GameLoop_SaveLoaded;
 
-            HelperEvents.Initialize(Monitor, config, helper);
-            NPCPatches.Initialize(Monitor, config, helper);
-            Misc.Initialize(Monitor, config, helper);
-            Kissing.Initialize(Monitor, config, helper);
+            HelperEvents.Initialize(Monitor, SConfig, helper);
+            Misc.Initialize(Monitor, SConfig, helper);
+            Kissing.Initialize(Monitor, SConfig, helper);
 
             var harmony = new Harmony(ModManifest.UniqueID);
-
-
-            // npc patches
-
-            harmony.Patch(
-               original: AccessTools.Method(typeof(NPC), nameof(NPC.checkAction)),
-               prefix: new HarmonyMethod(typeof(NPCPatches), nameof(NPCPatches.NPC_checkAction_Prefix))
-            );
 
 
             // Event patches
@@ -62,6 +53,11 @@ namespace HugsAndKisses
                prefix: new HarmonyMethod(typeof(EventPatches), nameof(EventPatches.Event_command_playSound_Prefix))
             );
 
+        }
+
+        public override object GetApi()
+        {
+            return new KissingAPI();
         }
     }
 }

@@ -166,6 +166,7 @@ namespace FreeLove
                 if(Integrations.customSpouseRoomsAPI != null)
                 {
                     spouseRoomSpot = Integrations.customSpouseRoomsAPI.GetSpouseTile(j);
+                    Monitor.Log($"Got custom spouse spot {spouseRoomSpot}");
                 }
                 else if(farmer.spouse == j.Name)
                 {
@@ -186,13 +187,14 @@ namespace FreeLove
                     Monitor.Log($"putting {j.Name} in bed");
                     j.position.Value = GetSpouseBedPosition(farmHouse, j.Name);
                 }
-                else if (kitchenSpouse == j.Name)
+                else if (kitchenSpouse == j.Name && !IsTileOccupied(farmHouse, farmHouse.getKitchenStandingSpot(), j.Name))
                 {
                     Monitor.Log($"{j.Name} is in kitchen");
+
                     j.setTilePosition(farmHouse.getKitchenStandingSpot());
                     j.setRandomAfternoonMarriageDialogue(Game1.timeOfDay, farmHouse, false);
                 }
-                else if (spouseRoomSpot.X > -1)
+                else if (spouseRoomSpot.X > -1 && !IsTileOccupied(farmHouse, spouseRoomSpot, j.Name))
                 {
                     Monitor.Log($"{j.Name} is in spouse room");
                     j.setTilePosition(spouseRoomSpot);
@@ -206,6 +208,22 @@ namespace FreeLove
                     j.setRandomAfternoonMarriageDialogue(Game1.timeOfDay, farmHouse, false);
                 }
             }
+        }
+
+        private static bool IsTileOccupied(GameLocation location, Point tileLocation, string characterToIgnore)
+        {
+            Rectangle tileLocationRect = new Rectangle(tileLocation.X * 64 + 1, tileLocation.Y * 64 + 1, 62, 62);
+
+            for (int i = 0; i < location.characters.Count; i++)
+            {
+                if (location.characters[i] != null && !location.characters[i].Name.Equals(characterToIgnore) && location.characters[i].GetBoundingBox().Intersects(tileLocationRect))
+                {
+                    Monitor.Log($"Tile {tileLocation} is occupied by {location.characters[i].Name}");
+
+                    return true;
+                }
+            }
+            return false;
         }
 
         public static Point GetSpouseBedEndPoint(FarmHouse fh, string name)

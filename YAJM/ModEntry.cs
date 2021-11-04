@@ -64,7 +64,7 @@ namespace YAJM
             return true;
         }
 
-        private static bool GameLocation_isCollidingPosition_prefix(bool isFarmer, ref bool __result)
+        private static bool GameLocation_isCollidingPosition_prefix(GameLocation __instance, bool isFarmer, ref bool __result)
         {
             if (isFarmer && context.playerJumpingWithHorse && !blockedJump)
             {
@@ -160,7 +160,7 @@ namespace YAJM
                         velX = ox * (float)Math.Sqrt(i * 16);
                         velY = oy * (float)Math.Sqrt(i * 16);
                         lastYJumpVelocity = 0;
-                        Game1.player.canMove = false;
+                        Game1.player.CanMove = false;
                         PlayerJump((float)Math.Sqrt(i * 16));
                         return;
                     }

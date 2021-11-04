@@ -19,7 +19,7 @@ namespace HugsAndKisses
         {
             try
             {
-                if (split[1] == "dwop" && __instance.isWedding && ModEntry.config.CustomKissSound.Length > 0 && Kissing.kissEffect != null)
+                if (split[1] == "dwop" && __instance.isWedding && ModEntry.SConfig.CustomKissSound.Length > 0 && Kissing.kissEffect != null)
                 {
                     Kissing.kissEffect.Play();
                     int num = __instance.CurrentCommand;

@@ -1,7 +1,7 @@
 ﻿using Microsoft.Xna.Framework.Audio;
 using StardewValley;
 
-namespace FreeLove
+namespace HugsAndKisses
 {
     public interface IKissingAPI
     {

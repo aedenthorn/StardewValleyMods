@@ -1,4 +1,5 @@
-﻿using StardewModdingAPI;
+﻿using Microsoft.Xna.Framework;
+using StardewModdingAPI;
 using StardewValley;
 using System.Collections.Generic;
 using System.Linq;
@@ -18,6 +19,105 @@ namespace HugsAndKisses
             Monitor = monitor;
             Helper = helper;
             Config = config;
+        }
+
+
+        public static bool GetFacingRight(string name)
+        {
+            switch (name)
+            {
+                case "Sam":
+                    return true;
+                case "Penny":
+                    return true;
+                case "Sebastian":
+                    return false;
+                case "Alex":
+                    return true;
+                case "Krobus":
+                    return true;
+                case "Maru":
+                    return false;
+                case "Emily":
+                    return false;
+                case "Harvey":
+                    return false;
+                case "Shane":
+                    return false;
+                case "Elliott":
+                    return false;
+                case "Leah":
+                    return true;
+                case "Abigail":
+                    return false;
+                default:
+                    return true;
+            }
+        }
+
+        public static int GetKissingFrame(string name)
+        {
+            List<string> customFrames = Config.CustomKissFrames.Split(',').ToList();
+            foreach (string nameframe in customFrames)
+            {
+                if (nameframe.StartsWith(name + ":"))
+                {
+                    if (int.TryParse(nameframe.Substring(name.Length + 1), out int frame))
+                        return frame;
+                }
+            }
+
+            switch (name)
+            {
+                case "Sam":
+                    return 36;
+                case "Penny":
+                    return 35;
+                case "Sebastian":
+                    return 40;
+                case "Alex":
+                    return 42;
+                case "Krobus":
+                    return 16;
+                case "Maru":
+                    return 28;
+                case "Emily":
+                    return 33;
+                case "Harvey":
+                    return 31;
+                case "Shane":
+                    return 34;
+                case "Elliott":
+                    return 35;
+                case "Leah":
+                    return 25;
+                case "Abigail":
+                    return 33;
+                default:
+                    return 28;
+            }
+        }
+        public static void ShowHeart(NPC npc)
+        {
+            ModEntry.mp.broadcastSprites(npc.currentLocation, new TemporaryAnimatedSprite[]
+            {
+                new TemporaryAnimatedSprite("LooseSprites\\Cursors", new Rectangle(211, 428, 7, 6), 2000f, 1, 0, new Vector2(npc.getTileX(), npc.getTileY()) * 64f + new Vector2(16f, -64f), false, false, 1f, 0f, Color.White, 4f, 0f, 0f, 0f, false)
+                {
+                    motion = new Vector2(0f, -0.5f),
+                    alphaFade = 0.01f
+                }
+            });
+        }
+        public static void ShowSmiley(NPC npc)
+        {
+            ModEntry.mp.broadcastSprites(npc.currentLocation, new TemporaryAnimatedSprite[]
+            {
+                    new TemporaryAnimatedSprite("LooseSprites\\emojis", new Rectangle(0, 0, 9, 9), 2000f, 1, 0, new Vector2(npc.getTileX(), npc.getTileY()) * 64f + new Vector2(16f, -64f), false, false, 1f, 0f, Color.White, 4f, 0f, 0f, 0f, false)
+                    {
+                        motion = new Vector2(0f, -0.5f),
+                        alphaFade = 0.01f
+                    }
+            });
         }
 
         public static Dictionary<string, NPC> GetSpouses(Farmer farmer, int all)

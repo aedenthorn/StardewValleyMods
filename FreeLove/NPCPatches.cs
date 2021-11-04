@@ -519,39 +519,52 @@ namespace FreeLove
 
         public static bool NPC_checkAction_Prefix(ref NPC __instance, ref Farmer who, GameLocation l, ref bool __result)
         {
+            if (!Config.EnableMod || __instance.IsInvisible || __instance.isSleeping.Value || !who.canMove || who.checkForQuestComplete(__instance, -1, -1, who.ActiveObject, null, -1, 5) || (who.pantsItem.Value?.ParentSheetIndex == 15 && (__instance.Name.Equals("Lewis") || __instance.Name.Equals("Marnie"))) || (__instance.Name.Equals("Krobus") && who.hasQuest(28)))
+                return true;
+
             try
             {
-                if(__instance.IsInvisible || __instance.isSleeping.Value || !who.CanMove)
-
                 Misc.ResetSpouses(who);
 
-                if (((__instance.Name.Equals(who.spouse) && Integrations.kissingAPI != null) || Misc.GetSpouses(who, 1).ContainsKey(__instance.Name)) && who.IsLocalPlayer)
+                if ((__instance.Name.Equals(who.spouse) || Misc.GetSpouses(who, 1).ContainsKey(__instance.Name)) && __instance.Sprite.CurrentAnimation == null && who.IsLocalPlayer)
                 {
-                    int timeOfDay = Game1.timeOfDay;
-                    if (__instance.Sprite.CurrentAnimation == null)
+                    Monitor.Log($"{__instance.Name} is married to {who.Name}");
+
+                    __instance.faceDirection(-3);
+
+                    if (who.friendshipData.ContainsKey(__instance.Name) && who.friendshipData[__instance.Name].Points >= 3125 && !who.mailReceived.Contains("CF_Spouse"))
                     {
-                        __instance.faceDirection(-3);
-                    }
-                    if (__instance.Sprite.CurrentAnimation == null && who.friendshipData.ContainsKey(__instance.Name) && who.friendshipData[__instance.Name].Points >= 3125 && !who.mailReceived.Contains("CF_Spouse"))
-                    {
+                        Monitor.Log($"getting starfruit");
                         __instance.CurrentDialogue.Push(new Dialogue(Game1.content.LoadString(Game1.player.isRoommate(who.spouse) ? "Strings\\StringsFromCSFiles:Krobus_Stardrop" : "Strings\\StringsFromCSFiles:NPC.cs.4001"), __instance));
                         Game1.player.addItemByMenuIfNecessary(new Object(Vector2.Zero, 434, "Cosmic Fruit", false, false, false, false), null);
                         __instance.shouldSayMarriageDialogue.Value = false;
                         __instance.currentMarriageDialogue.Clear();
                         who.mailReceived.Add("CF_Spouse");
-                        return true;
+                        __result = true;
+                        return false;
                     }
                     if (__instance.Sprite.CurrentAnimation == null && !__instance.hasTemporaryMessageAvailable() && __instance.currentMarriageDialogue.Count == 0 && __instance.CurrentDialogue.Count == 0 && Game1.timeOfDay < 2200 && !__instance.isMoving() && who.ActiveObject == null)
                     {
-                        if (Integrations.kissingAPI != null)
-                        {
-                            Integrations.kissingAPI.FarmerKiss(who, __instance);
-                            return false;
-                        }
-                        __instance.faceGeneralDirection(who.getStandingPosition(), 0, false, false);
-                        who.faceGeneralDirection(__instance.getStandingPosition(), 0, false, false);
+                        Monitor.Log($"Trying to kiss/hug {__instance.Name}");
+
+                        __instance.faceGeneralDirection(who.getStandingPosition(), 0, false);
+                        who.faceGeneralDirection(__instance.getStandingPosition(), 0, false);
                         if (__instance.FacingDirection == 3 || __instance.FacingDirection == 1)
                         {
+                            if (Integrations.kissingAPI != null)
+                            {
+                                Monitor.Log($"Handing over to Hugs and Kisses");
+
+                                Integrations.kissingAPI.PlayerNPCKiss(who, __instance);
+                                __result = true;
+                                return false;
+                            }
+                            if (!__instance.hasBeenKissedToday.Value)
+                            {
+                                Monitor.Log($"{__instance.Name} has been kissed today");
+                                return true;
+                            }
+
                             int spouseFrame = 28;
                             bool facingRight = true;
                             string name = __instance.Name;
@@ -616,48 +629,55 @@ namespace FreeLove
                                 facingRight = false;
                             }
                             bool flip = (facingRight && __instance.FacingDirection == 3) || (!facingRight && __instance.FacingDirection == 1);
-                            if (who.getFriendshipHeartLevelForNPC(__instance.Name) > 9 && __instance.sleptInBed.Value)
+                            if (who.getFriendshipHeartLevelForNPC(__instance.Name) >= 9 && __instance.sleptInBed.Value)
                             {
+                                Monitor.Log($"Can kiss/hug {__instance.Name}");
+
                                 int delay = Game1.IsMultiplayer ? 1000 : 10;
                                 __instance.movementPause = delay;
                                 __instance.Sprite.setCurrentAnimation(new List<FarmerSprite.AnimationFrame>
-                            {
-                                new FarmerSprite.AnimationFrame(spouseFrame, delay, false, flip, new AnimatedSprite.endOfAnimationBehavior(__instance.haltMe), true)
-                            });
+                                {
+                                    new FarmerSprite.AnimationFrame(spouseFrame, delay, false, flip, new AnimatedSprite.endOfAnimationBehavior(__instance.haltMe), true)
+                                });
                                 if (!__instance.hasBeenKissedToday.Value)
                                 {
                                     who.changeFriendship(10, __instance);
-                                    if (who.hasCurrentOrPendingRoommate())
+                                    if (who.friendshipData[__instance.Name].RoommateMarriage)
                                     {
+                                        Monitor.Log($"Hugging {__instance.Name}");
                                         ModEntry.mp.broadcastSprites(who.currentLocation, new TemporaryAnimatedSprite[]
                                         {
-                                        new TemporaryAnimatedSprite("LooseSprites\\emojis", new Microsoft.Xna.Framework.Rectangle(0, 0, 9, 9), 2000f, 1, 0, new Vector2((float)__instance.getTileX(), (float)__instance.getTileY()) * 64f + new Vector2(16f, -64f), false, false, 1f, 0f, Color.White, 4f, 0f, 0f, 0f, false)
-                                        {
-                                            motion = new Vector2(0f, -0.5f),
-                                            alphaFade = 0.01f
-                                        }
+                                            new TemporaryAnimatedSprite("LooseSprites\\emojis", new Microsoft.Xna.Framework.Rectangle(0, 0, 9, 9), 2000f, 1, 0, new Vector2((float)__instance.getTileX(), (float)__instance.getTileY()) * 64f + new Vector2(16f, -64f), false, false, 1f, 0f, Color.White, 4f, 0f, 0f, 0f, false)
+                                            {
+                                                motion = new Vector2(0f, -0.5f),
+                                                alphaFade = 0.01f
+                                            }
                                         });
                                     }
                                     else
                                     {
+                                        Monitor.Log($"Kissing {__instance.Name}");
                                         ModEntry.mp.broadcastSprites(who.currentLocation, new TemporaryAnimatedSprite[]
                                         {
-                                        new TemporaryAnimatedSprite("LooseSprites\\Cursors", new Microsoft.Xna.Framework.Rectangle(211, 428, 7, 6), 2000f, 1, 0, new Vector2((float)__instance.getTileX(), (float)__instance.getTileY()) * 64f + new Vector2(16f, -64f), false, false, 1f, 0f, Color.White, 4f, 0f, 0f, 0f, false)
-                                        {
-                                            motion = new Vector2(0f, -0.5f),
-                                            alphaFade = 0.01f
-                                        }
+                                            new TemporaryAnimatedSprite("LooseSprites\\Cursors", new Microsoft.Xna.Framework.Rectangle(211, 428, 7, 6), 2000f, 1, 0, new Vector2((float)__instance.getTileX(), (float)__instance.getTileY()) * 64f + new Vector2(16f, -64f), false, false, 1f, 0f, Color.White, 4f, 0f, 0f, 0f, false)
+                                            {
+                                                motion = new Vector2(0f, -0.5f),
+                                                alphaFade = 0.01f
+                                            }
                                         });
                                     }
-                                    l.playSound("dwop", NetAudio.SoundContext.NPC);
+                                    __instance.currentLocation.playSound("dwop", NetAudio.SoundContext.NPC);
                                     who.exhausted.Value = false;
+
                                 }
                                 __instance.hasBeenKissedToday.Value = true;
                                 __instance.Sprite.UpdateSourceRect();
                             }
                             else
                             {
-                                __instance.faceDirection((Game1.random.NextDouble() < 0.5) ? 2 : 0);
+                                Monitor.Log($"Kiss/hug rejected by {__instance.Name}");
+
+                                __instance.faceDirection((ModEntry.myRand.NextDouble() < 0.5) ? 2 : 0);
                                 __instance.doEmote(12, true);
                             }
                             int playerFaceDirection = 1;
@@ -671,7 +691,6 @@ namespace FreeLove
                         }
                     }
                 }
-                return true;
             }
             catch (Exception ex)
             {

@@ -1,13 +1,9 @@
-﻿using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Audio;
+﻿using Microsoft.Xna.Framework.Audio;
 using StardewModdingAPI;
 using StardewModdingAPI.Events;
 using StardewValley;
-using StardewValley.Locations;
 using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 
 namespace HugsAndKisses
 {
@@ -34,7 +30,7 @@ namespace HugsAndKisses
 
             if(Config.CustomKissSound.Length > 0)
             {
-                string filePath = Path.Combine(Helper.DirectoryPath, "assets", $"{Config.CustomKissSound}.wav");
+                string filePath = Path.Combine(Helper.DirectoryPath, "assets", $"{Config.CustomKissSound}");
                 Monitor.Log("Kissing audio path: " + filePath);
                 if (File.Exists(filePath))
                 {
