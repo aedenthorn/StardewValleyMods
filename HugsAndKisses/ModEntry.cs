@@ -42,6 +42,7 @@ namespace HugsAndKisses
             HelperEvents.Initialize(Monitor, SConfig, helper);
             Misc.Initialize(Monitor, SConfig, helper);
             Kissing.Initialize(Monitor, SConfig, helper);
+            NPCPatches.Initialize(Monitor, SConfig, helper);
 
             var harmony = new Harmony(ModManifest.UniqueID);
 
@@ -51,6 +52,13 @@ namespace HugsAndKisses
             harmony.Patch(
                original: AccessTools.Method(typeof(Event), nameof(Event.command_playSound)),
                prefix: new HarmonyMethod(typeof(EventPatches), nameof(EventPatches.Event_command_playSound_Prefix))
+            );
+
+            // NPC patches
+
+            harmony.Patch(
+               original: AccessTools.Method(typeof(NPC), nameof(NPC.checkAction)),
+               prefix: new HarmonyMethod(typeof(NPCPatches), nameof(NPCPatches.NPC_checkAction_Prefix))
             );
 
         }

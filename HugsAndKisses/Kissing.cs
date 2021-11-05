@@ -71,7 +71,7 @@ namespace HugsAndKisses
                         npc1.getSpouse() == npc2.getSpouse() &&
                         npc1.getSpouse().friendshipData.ContainsKey(npc1.Name) && npc1.getSpouse().friendshipData.ContainsKey(npc2.Name) &&
                         (Config.RoommateKisses || !npc1.getSpouse().friendshipData[npc1.Name].RoommateMarriage) && (Config.RoommateKisses || !npc1.getSpouse().friendshipData[npc2.Name].RoommateMarriage) &&
-                        npc1.getSpouse().getFriendshipHeartLevelForNPC(npc1.Name) >= Config.MinHeartsForKiss && npc1.getSpouse().getFriendshipHeartLevelForNPC(npc2.Name) >= Config.MinHeartsForKiss &&
+                        npc1.getSpouse().getFriendshipHeartLevelForNPC(npc1.Name) >= Config.MinHeartsForMarriageKiss && npc1.getSpouse().getFriendshipHeartLevelForNPC(npc2.Name) >= Config.MinHeartsForMarriageKiss &&
                         (Config.AllowRelativesToKiss || !Misc.AreNPCsRelated(npc1.Name, npc2.Name));
 
                     // check if spouses
@@ -201,7 +201,7 @@ namespace HugsAndKisses
             bool facingRight = Misc.GetFacingRight(name);
 
             bool flip = (facingRight && npc.FacingDirection == 3) || (!facingRight && npc.FacingDirection == 1);
-            if (player.getFriendshipHeartLevelForNPC(npc.Name) >= Config.MinHeartsForKiss && (!npc.hasBeenKissedToday.Value || Config.UnlimitedDailyKisses) && npc.sleptInBed.Value)
+            if (player.getFriendshipHeartLevelForNPC(npc.Name) >= Config.MinHeartsForMarriageKiss && (!npc.hasBeenKissedToday.Value || Config.UnlimitedDailyKisses) && npc.sleptInBed.Value)
             {
                 ModEntry.SMonitor.Log($"Can kiss/hug {npc.Name}");
 
@@ -227,13 +227,16 @@ namespace HugsAndKisses
                     ModEntry.SMonitor.Log($"Kissing {npc.Name}");
                     Misc.ShowHeart(npc);
                 }
-                if (Config.CustomKissSound.Length > 0 && kissEffect != null && (Config.RoommateKisses || !player.friendshipData[npc.Name].RoommateMarriage))
+                if (Config.RoommateKisses || !player.friendshipData[npc.Name].RoommateMarriage)
                 {
-                    kissEffect.Play();
-                }
-                else
-                {
-                    npc.currentLocation.playSound("dwop", NetAudio.SoundContext.NPC);
+                    if (Config.CustomKissSound.Length > 0 && kissEffect != null)
+                    {
+                        kissEffect.Play();
+                    }
+                    else
+                    {
+                        npc.currentLocation.playSound("dwop", NetAudio.SoundContext.NPC);
+                    }
                 }
                 player.exhausted.Value = false;
                 npc.hasBeenKissedToday.Value = true;
@@ -246,6 +249,41 @@ namespace HugsAndKisses
                 npc.faceDirection((ModEntry.myRand.NextDouble() < 0.5) ? 2 : 0);
                 npc.doEmote(12, true);
             }
+            int playerFaceDirection = 1;
+            if ((facingRight && !flip) || (!facingRight && flip))
+            {
+                playerFaceDirection = 3;
+            }
+            player.PerformKiss(playerFaceDirection);
+        }
+        public static void PlayerNPCHug(Farmer player, NPC npc)
+        {
+            string name = npc.Name;
+            int spouseFrame = Misc.GetKissingFrame(name);
+            bool facingRight = Misc.GetFacingRight(name);
+
+            bool flip = (facingRight && npc.FacingDirection == 3) || (!facingRight && npc.FacingDirection == 1);
+
+            ModEntry.SMonitor.Log($"Can hug {npc.Name}");
+
+            int delay = Game1.IsMultiplayer ? 1000 : 10;
+            npc.movementPause = delay;
+            npc.Sprite.setCurrentAnimation(new List<FarmerSprite.AnimationFrame>
+                    {
+                        new FarmerSprite.AnimationFrame(spouseFrame, delay, false, flip, new AnimatedSprite.endOfAnimationBehavior(npc.haltMe), true)
+                    }
+            );
+
+            ModEntry.SMonitor.Log($"Hugging {npc.Name}");
+            Misc.ShowSmiley(npc);
+            if (Config.CustomHugSound.Length > 0 && hugEffect != null)
+            {
+                hugEffect.Play();
+            }
+            player.exhausted.Value = false;
+            npc.hasBeenKissedToday.Value = true;
+            npc.Sprite.UpdateSourceRect();
+
             int playerFaceDirection = 1;
             if ((facingRight && !flip) || (!facingRight && flip))
             {

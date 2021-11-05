@@ -6,8 +6,11 @@ namespace HugsAndKisses
         public bool EnableMod { get; set; } = true;
 
         public bool RoommateKisses { get; set; } = false;
-        public int MinHeartsForKiss { get; set; } = 9;
+        public int MinHeartsForMarriageKiss { get; set; } = 9;
+        public int HeartsForFriendship { get; set; } = 5;
         public bool UnlimitedDailyKisses { get; set; } = false;
+        public bool DatingKisses { get; set; } = true;
+        public bool FriendHugs { get; set; } = true;
         public float SpouseKissChance0to1 { get; set; } = 0.1f;
         public string CustomKissSound { get; set; } = "kiss.wav";
         public string CustomHugSound { get; set; } = "";
