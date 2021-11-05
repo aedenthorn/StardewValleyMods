@@ -11,6 +11,7 @@ using xTile;
 using xTile.Dimensions;
 using xTile.Layers;
 using xTile.Tiles;
+using Rectangle = Microsoft.Xna.Framework.Rectangle;
 
 namespace CustomSpouseRooms
 {
@@ -50,6 +51,22 @@ namespace CustomSpouseRooms
                 Monitor.Log($"Failed in {nameof(FarmHouse_checkAction_Postfix)}:\n{ex}", LogLevel.Error);
             }
         }
+        
+        public static bool DecoratableLocation_IsFloorableOrWallpaperableTile_Prefix(DecoratableLocation __instance, int x, int y, ref bool __result)
+		{
+			if (!Config.EnableMod || !(__instance is FarmHouse))
+				return true;
+			foreach(var room in ModEntry.currentRoomData.Values)
+            {
+                Rectangle rect = new Rectangle(room.startPos.X + 1, room.startPos.Y + 1, (__instance as FarmHouse).GetSpouseRoomWidth(), (__instance as FarmHouse).GetSpouseRoomHeight());
+				if (rect.Contains(x, y))
+                {
+					__result = true;
+					return false;
+                }
+			}
+			return true;
+		}
         
         public static bool FarmHouse_loadSpouseRoom_Prefix(FarmHouse __instance, HashSet<string> ____appliedMapOverrides)
         {
@@ -182,7 +199,7 @@ namespace CustomSpouseRooms
 			var indexInSpouseMapSheet = srd.templateIndex;
 			var spouseSpot = srd.startPos + srd.spousePosOffset;
 
-			Microsoft.Xna.Framework.Rectangle shellAreaToRefurbish = new Microsoft.Xna.Framework.Rectangle(corner.X - 1, corner.Y - 1, 8, 12);
+            Rectangle shellAreaToRefurbish = new Rectangle(corner.X - 1, corner.Y - 1, 8, 12);
 			Misc.ExtendMap(fh, shellAreaToRefurbish.X + shellAreaToRefurbish.Width, shellAreaToRefurbish.Y + shellAreaToRefurbish.Height);
 
 			// load shell
@@ -192,7 +209,18 @@ namespace CustomSpouseRooms
 				appliedMapOverrides.Remove("spouse_room_" + spouse + "_shell");
 			}
 
-			fh.ApplyMapOverride(shellPath, "spouse_room_" + spouse + "_shell", new Microsoft.Xna.Framework.Rectangle?(new Microsoft.Xna.Framework.Rectangle(0, 0, shellAreaToRefurbish.Width, shellAreaToRefurbish.Height)), new Microsoft.Xna.Framework.Rectangle?(shellAreaToRefurbish));
+			fh.ApplyMapOverride(shellPath, "spouse_room_" + spouse + "_shell", new Rectangle?(new Rectangle(0, 0, shellAreaToRefurbish.Width, shellAreaToRefurbish.Height)), new Rectangle?(shellAreaToRefurbish));
+
+			for (int x = 0; x < shellAreaToRefurbish.Width; x++)
+			{
+				for (int y = 0; y < shellAreaToRefurbish.Height; y++)
+				{
+					if (fh.map.GetLayer("Back").Tiles[shellAreaToRefurbish.X + x, shellAreaToRefurbish.Y + y] != null)
+					{
+						fh.map.GetLayer("Back").Tiles[shellAreaToRefurbish.X + x, shellAreaToRefurbish.Y + y].Properties["FloorID"] = "spouse_hall_" + (Config.DecorateHallsIndividually ? spouse : "floor");
+					}
+				}
+			}
 
 
 			Dictionary<string, string> room_data = Game1.content.Load<Dictionary<string, string>>("Data\\SpouseRooms");
@@ -221,7 +249,7 @@ namespace CustomSpouseRooms
 			int width = fh.GetSpouseRoomWidth();
 			int height = fh.GetSpouseRoomHeight();
 
-			Microsoft.Xna.Framework.Rectangle areaToRefurbish = new Microsoft.Xna.Framework.Rectangle(corner.X, corner.Y, width, height);
+            Rectangle areaToRefurbish = new Rectangle(corner.X, corner.Y, width, height);
 			Map refurbishedMap = Game1.game1.xTileContent.Load<Map>("Maps\\" + map_path);
 			int columns = refurbishedMap.Layers[0].LayerWidth / width;
 			int num2 = refurbishedMap.Layers[0].LayerHeight / height;
@@ -243,7 +271,7 @@ namespace CustomSpouseRooms
 				appliedMapOverrides.Remove("spouse_room_" + spouse);
 			}
 
-			fh.ApplyMapOverride(map_path, "spouse_room_" + spouse, new Microsoft.Xna.Framework.Rectangle?(new Microsoft.Xna.Framework.Rectangle(mapReader.X, mapReader.Y, areaToRefurbish.Width, areaToRefurbish.Height)), new Microsoft.Xna.Framework.Rectangle?(areaToRefurbish));
+			fh.ApplyMapOverride(map_path, "spouse_room_" + spouse, new Rectangle?(new Rectangle(mapReader.X, mapReader.Y, areaToRefurbish.Width, areaToRefurbish.Height)), new Rectangle?(areaToRefurbish));
 			for (int x = 0; x < areaToRefurbish.Width; x++)
 			{
 				for (int y = 0; y < areaToRefurbish.Height; y++)
@@ -256,8 +284,15 @@ namespace CustomSpouseRooms
 					{
 						Helper.Reflection.GetMethod(fh, "adjustMapLightPropertiesForLamp").Invoke(refurbishedMap.GetLayer("Front").Tiles[mapReader.X + x, mapReader.Y + y].TileIndex, areaToRefurbish.X + x, areaToRefurbish.Y + y, "Front");
 					}
+					/*
+					if (fh.map.GetLayer("Back").Tiles[corner.X + x, corner.Y + y] != null)
+					{
+						fh.setTileProperty(corner.X + x, corner.Y + y, "Back", "FloorID", $"spouse_room_{spouse}");
+					}
+					*/
 				}
 			}
+			fh.ReadWallpaperAndFloorTileData();
 			bool spot_found = false;
 			for (int x3 = areaToRefurbish.Left; x3 < areaToRefurbish.Right; x3++)
 			{
@@ -343,7 +378,7 @@ namespace CustomSpouseRooms
 				fh.temporarySprites.Add(new TemporaryAnimatedSprite
 				{
 					texture = Game1.mouseCursors,
-					sourceRect = new Microsoft.Xna.Framework.Rectangle(641, 1534, 48, 37),
+					sourceRect = new Rectangle(641, 1534, 48, 37),
 					animationLength = 1,
 					sourceRectStartingPos = new Vector2(641f, 1534f),
 					interval = 5000f,
@@ -358,7 +393,7 @@ namespace CustomSpouseRooms
 					fh.TemporarySprites.Add(new SebsFrogs
 					{
 						texture = crittersText2,
-						sourceRect = new Microsoft.Xna.Framework.Rectangle(64, 224, 16, 16),
+						sourceRect = new Rectangle(64, 224, 16, 16),
 						animationLength = 1,
 						sourceRectStartingPos = new Vector2(64f, 224f),
 						interval = 100f,
@@ -376,7 +411,7 @@ namespace CustomSpouseRooms
 					fh.TemporarySprites.Add(new SebsFrogs
 					{
 						texture = crittersText3,
-						sourceRect = new Microsoft.Xna.Framework.Rectangle(64, 240, 16, 16),
+						sourceRect = new Rectangle(64, 240, 16, 16),
 						animationLength = 1,
 						sourceRectStartingPos = new Vector2(64f, 240f),
 						interval = 150f,

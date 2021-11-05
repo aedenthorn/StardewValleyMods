@@ -69,7 +69,12 @@ namespace CustomSpouseRooms
                original: AccessTools.Method(typeof(FarmHouse), nameof(FarmHouse.loadSpouseRoom)),
                prefix: new HarmonyMethod(typeof(LocationPatches), nameof(LocationPatches.FarmHouse_loadSpouseRoom_Prefix))
             );
-
+            /*
+            harmony.Patch(
+               original: AccessTools.Method(typeof(DecoratableLocation), "IsFloorableOrWallpaperableTile"),
+               prefix: new HarmonyMethod(typeof(LocationPatches), nameof(LocationPatches.DecoratableLocation_IsFloorableOrWallpaperableTile_Prefix))
+            );
+            */
 
             // NetWorldState patch 
 
