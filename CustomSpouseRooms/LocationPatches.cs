@@ -225,6 +225,18 @@ namespace CustomSpouseRooms
 
 			Dictionary<string, string> room_data = Game1.content.Load<Dictionary<string, string>>("Data\\SpouseRooms");
 			string map_path = "spouseRooms";
+			if (indexInSpouseMapSheet == -1 && room_data != null && srd.templateName != null && room_data.ContainsKey(srd.templateName))
+			{
+				try
+				{
+					string[] array = room_data[srd.templateName].Split('/', StringSplitOptions.None);
+					map_path = array[0];
+					indexInSpouseMapSheet = int.Parse(array[1]);
+				}
+				catch (Exception)
+				{
+				}
+			}
 			if (indexInSpouseMapSheet == -1 && room_data != null && room_data.ContainsKey(spouse))
 			{
 				try
@@ -239,12 +251,19 @@ namespace CustomSpouseRooms
 			}
 			if (indexInSpouseMapSheet == -1)
 			{
-				if (!ModEntry.roomIndexes.ContainsKey(spouse))
+				if (srd.templateName != null && ModEntry.roomIndexes.ContainsKey(srd.templateName))
+				{
+					indexInSpouseMapSheet = ModEntry.roomIndexes[srd.templateName];
+				}
+				else if (ModEntry.roomIndexes.ContainsKey(spouse))
+				{
+					indexInSpouseMapSheet = ModEntry.roomIndexes[spouse];
+				}
+				else
 				{
 					Monitor.Log($"Could not find spouse room map for {spouse}", LogLevel.Debug);
 					return;
 				}
-				indexInSpouseMapSheet = ModEntry.roomIndexes[spouse];
 			}
 			int width = fh.GetSpouseRoomWidth();
 			int height = fh.GetSpouseRoomHeight();

@@ -1,12 +1,12 @@
 ﻿{
   "Name": "Mobile Calendar",
   "Author": "aedenthorn",
-  "Version": "0.2.0",
+  "Version": "0.3.0-beta",
   "Description": "A Calendar app for your mobile phone.",
   "UniqueID": "aedenthorn.MobileCalendar",
   "EntryDll": "MobileCalendar.dll",
-  "MinimumApiVersion": "3.5.0",
-  "UpdateKeys": ["Nexus:6601"],
+  "MinimumApiVersion": "3.13.0-beta.20211018",
+  "UpdateKeys": [ "Nexus:6601" ],
   "ModUpdater": {
     "Repository": "StardewValleyMods",
     "User": "aedenthorn",
@@ -14,13 +14,13 @@
     "ModFolder": "MobileCalendar"
   },
   "Dependencies": [
-      {
-        "UniqueID": "Platonymous.ModUpdater",
-        "IsRequired": false
-      },
-      {
-        "UniqueID": "aedenthorn.MobilePhone",
-        "IsRequired": true
-      },
+    {
+      "UniqueID": "Platonymous.ModUpdater",
+      "IsRequired": false
+    },
+    {
+      "UniqueID": "aedenthorn.MobilePhone",
+      "IsRequired": true
+    }
   ]
 }

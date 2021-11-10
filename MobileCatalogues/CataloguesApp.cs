@@ -1,9 +1,7 @@
 ﻿using Microsoft.Xna.Framework;
 using StardewModdingAPI;
-using StardewModdingAPI.Events;
 using StardewValley;
 using StardewValley.Menus;
-using System;
 using System.Collections.Generic;
 
 namespace MobileCatalogues
