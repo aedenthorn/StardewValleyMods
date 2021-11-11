@@ -1,18 +1,18 @@
 ﻿{
-  "Name": "Custom Ore Nodes",
+  "Name": "Longer Seasons",
   "Author": "aedenthorn",
-  "Version": "2.1.1",
-  "Description": "Spawns custom ore nodes in mines.",
-  "UniqueID": "aedenthorn.CustomOreNodes",
-  "EntryDll": "CustomOreNodes.dll",
+  "Version": "0.1.3",
+  "Description": "Longer seasons.",
+  "UniqueID": "aedenthorn.LongerSeasons",
+  "EntryDll": "LongerSeasons.dll",
   "MinimumApiVersion": "3.13.0-beta.20211018",
-  "UpdateKeys": [ "Nexus:5966" ],
   "ModUpdater": {
     "Repository": "StardewValleyMods",
     "User": "aedenthorn",
     "Directory": "_releases",
-    "ModFolder": "CustomOreNodes"
+    "ModFolder": "LongerSeasons"
   },
+  "UpdateKeys": [ "Nexus:10108" ],
   "Dependencies": [
     {
       "UniqueID": "Platonymous.ModUpdater",

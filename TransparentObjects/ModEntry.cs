@@ -1,8 +1,11 @@
-﻿using Harmony;
+﻿using HarmonyLib;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using StardewModdingAPI;
+using StardewValley;
 using System;
 using System.Linq;
+using Object = StardewValley.Object;
 
 namespace TransparentObjects
 {
@@ -25,10 +28,15 @@ namespace TransparentObjects
 
             ObjectPatches.Initialize(Monitor, helper, Config);
 
-            var harmony = HarmonyInstance.Create(ModManifest.UniqueID);
+            var harmony = new Harmony(ModManifest.UniqueID);
 
             harmony.Patch(
-               original: AccessTools.Method(typeof(StardewValley.Object), nameof(StardewValley.Object.draw), new Type[] { typeof(SpriteBatch), typeof(int), typeof(int), typeof(float) }),
+               original: AccessTools.Method(typeof(Crop), nameof(Crop.draw), new Type[] { typeof(SpriteBatch), typeof(Vector2), typeof(Color), typeof(float) }),
+               prefix: new HarmonyMethod(typeof(ObjectPatches), nameof(ObjectPatches.Crop_draw_Prefix))
+            );
+
+            harmony.Patch(
+               original: AccessTools.Method(typeof(Object), nameof(Object.draw), new Type[] { typeof(SpriteBatch), typeof(int), typeof(int), typeof(float) }),
                prefix: new HarmonyMethod(typeof(ObjectPatches), nameof(ObjectPatches.Object_draw_Prefix))
             );
 

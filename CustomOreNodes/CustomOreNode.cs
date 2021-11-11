@@ -5,6 +5,7 @@ namespace CustomOreNodes
 {
     public class CustomOreNode
     {
+        public string id;
         public int parentSheetIndex;
         public List<DropItem> dropItems = new List<DropItem>();
         public List<OreLevelRange> oreLevelRanges = new List<OreLevelRange>();
