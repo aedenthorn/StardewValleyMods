@@ -28,17 +28,22 @@ namespace LongerSeasons
                 if (codes[i].opcode == OpCodes.Ldsfld && (FieldInfo)codes[i].operand == typeof(Game1).GetField(nameof(Game1.dayOfMonth), BindingFlags.Public | BindingFlags.Static) && codes[i + 1].opcode == OpCodes.Ldc_I4_S && (sbyte)codes[i + 1].operand == 29)
                 {
                     SMonitor.Log($"Changing days per month to {Config.DaysPerMonth}");
-                    codes[i + 1].operand = (sbyte)(Config.DaysPerMonth + 1);
-                    codes[i + 2].opcode = OpCodes.Blt_S;
+                    codes[i + 1].operand = Config.DaysPerMonth + 1;
+                    codes[i + 2].opcode = OpCodes.Blt_Un_S;
                     break;
                 }
             }
 
             return codes.AsEnumerable();
         }
-        
+
+        private static void Game1__newDayAfterFade_Prefix()
+        {
+            SMonitor.Log($"dom {Game1.dayOfMonth}, year {Game1.year}, season {Game1.currentSeason}");
+        }
         private static bool Game1_newSeason_Prefix()
         {
+            SMonitor.Log($"{Environment.StackTrace} dom {Game1.dayOfMonth}, year {Game1.year}, season {Game1.currentSeason}");
 
             var model = SHelper.Data.ReadSaveData<SeasonMonth>(context.GetType().Namespace) ?? new SeasonMonth();
             if (model.month >= Config.MonthsPerSeason)

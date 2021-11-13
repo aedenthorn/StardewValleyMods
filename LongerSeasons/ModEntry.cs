@@ -42,6 +42,13 @@ namespace LongerSeasons
 
             var harmony = new Harmony(ModManifest.UniqueID);
 
+            // Game1 Patches
+
+            harmony.Patch(
+               original: AccessTools.Method(typeof(Game1), "_newDayAfterFade"),
+               prefix: new HarmonyMethod(typeof(ModEntry), nameof(ModEntry.Game1__newDayAfterFade_Prefix))
+            );
+            
             harmony.Patch(
                original: AccessTools.Method(typeof(Game1), "newSeason"),
                prefix: new HarmonyMethod(typeof(ModEntry), nameof(ModEntry.Game1_newSeason_Prefix))
@@ -51,7 +58,9 @@ namespace LongerSeasons
                original: AccessTools.Method(AccessTools.TypeByName("StardewValley.Game1+<_newDayAfterFade>d__715"), "MoveNext"),
                transpiler: new HarmonyMethod(typeof(ModEntry), nameof(ModEntry.Game1__newDayAfterFade_Transpiler))
             );
-            
+
+            // SDate Patches
+
             harmony.Patch(
                original: AccessTools.Constructor(typeof(SDate), new Type[] { typeof(int), typeof(string), typeof(int), typeof(bool) }),
                transpiler: new HarmonyMethod(typeof(ModEntry), nameof(ModEntry.SDate_Transpiler)),
@@ -66,22 +75,40 @@ namespace LongerSeasons
                postfix: new HarmonyMethod(typeof(ModEntry), nameof(ModEntry.SDate_Postfix))
             );
 
+            // Utility Patches
+
+
             harmony.Patch(
                original: AccessTools.Method(typeof(Utility), nameof(Utility.getDateStringFor)),
                transpiler: new HarmonyMethod(typeof(ModEntry), nameof(ModEntry.Utility_getDateStringFor_Transpiler))
             );
+
+            harmony.Patch(
+               original: AccessTools.Method(typeof(Utility), nameof(Utility.getSeasonNameFromNumber)),
+               postfix: new HarmonyMethod(typeof(ModEntry), nameof(ModEntry.Utility_getSeasonNameFromNumber_Postfix))
+            );
+
+
+            // Billboard Patches
+
             harmony.Patch(
                original: AccessTools.Constructor(typeof(Billboard), new Type[]{ typeof(bool) }),
                postfix: new HarmonyMethod(typeof(ModEntry), nameof(ModEntry.Billboard_Postfix))
             );
             harmony.Patch(
-               original: AccessTools.Method(typeof(Utility), nameof(Utility.getSeasonNameFromNumber)),
-               postfix: new HarmonyMethod(typeof(ModEntry), nameof(ModEntry.Utility_getSeasonNameFromNumber_Postfix))
-            );
-            harmony.Patch(
                original: AccessTools.Method(typeof(Billboard), nameof(Billboard.draw), new Type[] { typeof(SpriteBatch) }),
                transpiler: new HarmonyMethod(typeof(ModEntry), nameof(ModEntry.Billboard_draw_Transpiler)),
                postfix: new HarmonyMethod(typeof(ModEntry), nameof(ModEntry.Billboard_draw_Postfix))
+            );
+
+            // WorldDate Patches
+            harmony.Patch(
+               original: AccessTools.PropertyGetter(typeof(WorldDate), nameof(WorldDate.TotalDays)),
+               prefix: new HarmonyMethod(typeof(ModEntry), nameof(ModEntry.WorldDate_TotalDays_Getter_Prefix))
+            );
+            harmony.Patch(
+               original: AccessTools.PropertySetter(typeof(WorldDate), nameof(WorldDate.TotalDays)),
+               prefix: new HarmonyMethod(typeof(ModEntry), nameof(ModEntry.WorldDate_TotalDays_Setter_Prefix))
             );
         }
 
