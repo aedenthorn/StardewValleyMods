@@ -56,7 +56,6 @@ namespace FreeLove
             NPCPatches.Initialize(Monitor, config, helper);
             LocationPatches.Initialize(Monitor, config, helper);
             FarmerPatches.Initialize(Monitor, config, helper);
-            Game1Patches.Initialize(Monitor, config, helper);
             UIPatches.Initialize(Monitor, config, helper);
             EventPatches.Initialize(Monitor, config, helper);
             HelperEvents.Initialize(Monitor, config, helper);
@@ -245,10 +244,6 @@ namespace FreeLove
                original: AccessTools.Method(typeof(Farmer), nameof(Farmer.GetSpouseFriendship)),
                prefix: new HarmonyMethod(typeof(FarmerPatches), nameof(FarmerPatches.Farmer_GetSpouseFriendship_Prefix))
             );
-            harmony.Patch(
-               original: AccessTools.Method(typeof(Farmer), nameof(Farmer.getChildren)),
-               prefix: new HarmonyMethod(typeof(FarmerPatches), nameof(FarmerPatches.Farmer_getChildren_Prefix))
-            );
 
             // UI patches
 
@@ -276,28 +271,10 @@ namespace FreeLove
                prefix: new HarmonyMethod(typeof(EventPatches), nameof(EventPatches.Event_answerDialogueQuestion_Prefix))
             );
 
-            harmony.Patch(
-               original: AccessTools.Method(typeof(Event), "setUpCharacters"),
-               postfix: new HarmonyMethod(typeof(EventPatches), nameof(EventPatches.Event_setUpCharacters_Postfix))
-            );
-
-            harmony.Patch(
-               original: AccessTools.Method(typeof(Event), nameof(Event.command_loadActors)),
-               prefix: new HarmonyMethod(typeof(EventPatches), nameof(EventPatches.Event_command_loadActors_Prefix)),
-               postfix: new HarmonyMethod(typeof(EventPatches), nameof(EventPatches.Event_command_loadActors_Postfix))
-            );
-
-            // Game1 patches
-
-            harmony.Patch(
-               original: AccessTools.Method(typeof(Game1), nameof(Game1.prepareSpouseForWedding)),
-               prefix: new HarmonyMethod(typeof(Game1Patches), nameof(Game1Patches.prepareSpouseForWedding_Prefix))
-            );
-
-            harmony.Patch(
-               original: AccessTools.Method(typeof(Game1), nameof(Game1.getCharacterFromName), new Type[] { typeof(string), typeof(bool), typeof(bool) }),
-               prefix: new HarmonyMethod(typeof(Game1Patches), nameof(Game1Patches.getCharacterFromName_Prefix))
-            );
+        }
+        public override object GetApi()
+        {
+            return new FreeLoveAPI();
         }
 
         /// <summary>Get whether this instance can edit the given asset.</summary>

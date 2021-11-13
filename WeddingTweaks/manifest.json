@@ -1,17 +1,17 @@
 ﻿{
-  "Name": "Free Love",
+  "Name": "Wedding Tweaks",
   "Author": "aedenthorn",
-  "Version": "0.4.0",
-  "Description": "Free Love",
-  "UniqueID": "aedenthorn.FreeLove",
-  "EntryDll": "FreeLove.dll",
+  "Version": "0.1.0",
+  "Description": "Wedding Tweaks",
+  "UniqueID": "aedenthorn.WeddingTweaks",
+  "EntryDll": "WeddingTweaks.dll",
   "MinimumApiVersion": "3.13.0-beta.20211018",
-  "UpdateKeys": [ "Nexus:10021" ],
+  "UpdateKeys": [ "Nexus:10117" ],
   "ModUpdater": {
     "Repository": "StardewValleyMods",
     "User": "aedenthorn",
     "Directory": "_releases",
-    "ModFolder": "FreeLove"
+    "ModFolder": "WeddingTweaks"
   },
   "Dependencies": [
     {

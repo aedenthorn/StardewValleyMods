@@ -25,7 +25,7 @@ namespace FreeLove
             { 
                 kissingAPI = Helper.ModRegistry.GetApi<IKissingAPI>("aedenthorn.HugsAndKisses");
             }
-            catch(Exception ex) { Monitor.Log($"kissapi: {ex}"); }
+            catch {}
             try 
             { 
                 bedTweaksAPI = Helper.ModRegistry.GetApi<IBedTweaksAPI>("aedenthorn.BedTweaks");

@@ -5,7 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace FreeLove
+namespace WeddingTweaks
 {
     public static class EventPatches
     {
@@ -31,66 +31,11 @@ namespace FreeLove
         public static bool startingLoadActors = false;
 
 
-        public static bool Event_answerDialogueQuestion_Prefix(Event __instance, NPC who, string answerKey)
-        {
-            try
-            {
-
-                if (answerKey == "danceAsk" && !who.HasPartnerForDance && Game1.player.friendshipData[who.Name].IsMarried())
-                {
-                    string accept = "";
-                    int gender = who.Gender;
-                    if (gender != 0)
-                    {
-                        if (gender == 1)
-                        {
-                            accept = Game1.content.LoadString("Strings\\StringsFromCSFiles:Event.cs.1634");
-                        }
-                    }
-                    else
-                    {
-                        accept = Game1.content.LoadString("Strings\\StringsFromCSFiles:Event.cs.1633");
-                    }
-                    try
-                    {
-                        Game1.player.changeFriendship(250, Game1.getCharacterFromName(who.Name, true));
-                    }
-                    catch
-                    {
-                    }
-                    Game1.player.dancePartner.Value = who;
-                    who.setNewDialogue(accept, false, false);
-                    using (List<NPC>.Enumerator enumerator = __instance.actors.GetEnumerator())
-                    {
-                        while (enumerator.MoveNext())
-                        {
-                            NPC j = enumerator.Current;
-                            if (j.CurrentDialogue != null && j.CurrentDialogue.Count > 0 && j.CurrentDialogue.Peek().getCurrentDialogue().Equals("..."))
-                            {
-                                j.CurrentDialogue.Clear();
-                            }
-                        }
-                    }
-                    Game1.drawDialogue(who);
-                    who.immediateSpeak = true;
-                    who.facePlayer(Game1.player);
-                    who.Halt();
-                    return false;
-                }
-            }
-
-            catch (Exception ex)
-            {
-                Monitor.Log($"Failed in {nameof(Event_answerDialogueQuestion_Prefix)}:\n{ex}", LogLevel.Error);
-            }
-            return true;
-        }
-
         public static void Event_setUpCharacters_Postfix(Event __instance, GameLocation location)
         {
             try
             {
-                if (!__instance.isWedding || !Config.AllSpousesJoinWeddings)
+                if (!__instance.isWedding || !Config.AllSpousesJoinWeddings || Misc.GetSpouses(Game1.player, 0).Count == 0 || ModEntry.freeLoveAPI == null)
                     return;
 
                 List<string> spouses = Misc.GetSpouses(Game1.player, 0).Keys.ToList();
@@ -112,7 +57,7 @@ namespace FreeLove
                             pos = new Vector2(x * Game1.tileSize, y * Game1.tileSize);
                         }
                         actor.position.Value = pos;
-                        if (ModEntry.config.AllSpousesWearMarriageClothesAtWeddings)
+                        if (ModEntry.Config.AllSpousesWearMarriageClothesAtWeddings)
                         {
                             bool flipped = false;
                             int frame = 37;
@@ -146,7 +91,7 @@ namespace FreeLove
 
             catch (Exception ex)
             {
-                Monitor.Log($"Failed in {nameof(Event_answerDialogueQuestion_Prefix)}:\n{ex}", LogLevel.Error);
+                Monitor.Log($"Failed in {nameof(Event_setUpCharacters_Postfix)}:\n{ex}", LogLevel.Error);
             }
         }
 
@@ -154,12 +99,14 @@ namespace FreeLove
         {
             try
             {
+                if (!Config.AllSpousesJoinWeddings || ModEntry.freeLoveAPI == null)
+                    return;
                 if (split != null && split.Length > 1)
                 {
                     string text = split[1];
                     if (text == "wedding")
                     {
-                        Misc.PlaceSpousesInFarmhouse(Utility.getHomeOfFarmer(Game1.player));
+                        ModEntry.freeLoveAPI.PlaceSpousesInFarmhouse(Utility.getHomeOfFarmer(Game1.player));
                     }
                 }
             }

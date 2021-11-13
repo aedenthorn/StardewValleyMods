@@ -385,26 +385,7 @@ namespace FreeLove
         }
         public static void NPC_engagementResponse_Postfix(NPC __instance, Farmer who, bool asRoommate = false)
         {
-            Monitor.Log($"engagement response for {__instance.Name}");
-            if (asRoommate)
-            {
-                Monitor.Log($"{__instance.Name} is roomate");
-                return;
-            }
-            if (!who.friendshipData.ContainsKey(__instance.Name))
-            {
-                Monitor.Log($"{who.Name} has no friendship data for {__instance.Name}", LogLevel.Error);
-                return;
-            }
             Misc.ResetSpouses(who);
-            Friendship friendship = who.friendshipData[__instance.Name];
-            WorldDate weddingDate = new WorldDate(Game1.Date);
-            weddingDate.TotalDays += Math.Max(1,Config.DaysUntilMarriage);
-            while (!Game1.canHaveWeddingOnDay(weddingDate.DayOfMonth, weddingDate.Season))
-            {
-                weddingDate.TotalDays++;
-            }
-            friendship.WeddingDate = weddingDate;
         }
 
         public static bool NPC_isRoommate_Prefix(NPC __instance, ref bool __result)

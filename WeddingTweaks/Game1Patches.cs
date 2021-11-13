@@ -1,8 +1,7 @@
-﻿using FreeLove;
-using StardewModdingAPI;
+﻿using StardewModdingAPI;
 using StardewValley;
 
-namespace FreeLove
+namespace WeddingTweaks
 {
     public static class Game1Patches
     {

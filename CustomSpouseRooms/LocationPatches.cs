@@ -375,10 +375,10 @@ namespace CustomSpouseRooms
             }
         }
 
-        private static void CheckSpouseThing(FarmHouse fh, SpouseRoomData srd)
+        public static void CheckSpouseThing(FarmHouse fh, SpouseRoomData srd)
         {
-			Monitor.Log($"Checking spouse thing for {srd.name}");
-			if (srd.name == "Emily")
+			//Monitor.Log($"Checking spouse thing for {srd.name}");
+			if (srd.name == "Emily" && (srd.templateName == "Emily" || srd.templateName == null || srd.templateName == "") && Game1.player.eventsSeen.Contains(463391))
 			{
 				fh.temporarySprites.RemoveAll((s) => s is EmilysParrot);
 
@@ -387,7 +387,7 @@ namespace CustomSpouseRooms
 				ModEntry.PMonitor.Log($"Building Emily's parrot at {parrotSpot}");
 				fh.temporarySprites.Add(new EmilysParrot(parrotSpot));
 			}
-			else if (srd.name == "Sebastian" && Game1.netWorldState.Value.hasWorldStateID("sebastianFrogReal"))
+			else if (srd.name == "Sebastian" && (srd.templateName == "Sebastian" || srd.templateName == null || srd.templateName == "") && Game1.netWorldState.Value.hasWorldStateID("sebastianFrogReal"))
 			{
 				Vector2 spot = Utility.PointToVector2(srd.startPos + new Point(2, 7));
 				Monitor.Log($"building Sebastian's terrarium at {spot}");

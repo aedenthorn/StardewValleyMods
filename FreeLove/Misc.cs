@@ -476,7 +476,7 @@ namespace FreeLove
             foreach (string friend in f.friendshipData.Keys)
             {
                 NPC npc = Game1.getCharacterFromName(friend);
-                if (npc != null && !npc.datable && npc is NPC && !(npc is Child) && (npc.Age == 0 || npc.Age == 1))
+                if (npc != null && !npc.datable.Value && npc is NPC && !(npc is Child) && (npc.Age == 0 || npc.Age == 1))
                 {
                     Monitor.Log($"Making {npc.Name} datable.");
                     npc.datable.Value = true;
