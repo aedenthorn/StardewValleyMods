@@ -252,7 +252,7 @@ namespace FreeLove
 
                 // dialogues
 
-                if (__instance.currentMarriageDialogue == null || __instance.currentMarriageDialogue.Count == 0)
+                if (__instance.currentMarriageDialogue is null || __instance.currentMarriageDialogue.Count == 0)
                     return;
 
                 bool gotDialogue = false;
@@ -685,6 +685,34 @@ namespace FreeLove
         {
             try
             {
+                if (Misc.GetSpouses(who, 1).ContainsKey(__instance.Name) && Game1.NPCGiftTastes.ContainsKey(__instance.Name))
+                {
+                    Monitor.Log($"Gift to spouse {__instance.Name}");
+                    __state = new List<int> {
+                        who.friendshipData[__instance.Name].GiftsToday,
+                        who.friendshipData[__instance.Name].GiftsThisWeek,
+                        0,
+                        0
+                    };
+                    if (Config.MaxGiftsPerSpousePerDay < 0 || who.friendshipData[__instance.Name].GiftsToday < Config.MaxGiftsPerSpousePerDay)
+                    {
+                        who.friendshipData[__instance.Name].GiftsToday = 0;
+                    }
+                    else
+                    {
+                        who.friendshipData[__instance.Name].GiftsToday = 1;
+                        __state[2] = 1; // flag to say we set it to 1
+                    }
+                    if (Config.MaxGiftsPerSpousePerWeek < 0 || who.friendshipData[__instance.Name].GiftsThisWeek < Config.MaxGiftsPerSpousePerWeek)
+                    {
+                        who.friendshipData[__instance.Name].GiftsThisWeek = 0;
+                    }
+                    else
+                    {
+                        who.friendshipData[__instance.Name].GiftsThisWeek = 2;
+                        __state[3] = 1; // flag to say we set it to 1
+                    }
+                }
                 if (who.ActiveObject.ParentSheetIndex == 808 && __instance.Name.Equals("Krobus"))
                 {
                     Monitor.Log($"Void pendant to {__instance.Name}");
@@ -694,7 +722,7 @@ namespace FreeLove
                         return false;
                     }
                 }
-                if (who.ActiveObject.ParentSheetIndex == 458)
+                else if (who.ActiveObject.ParentSheetIndex == 458)
                 {
                     Monitor.Log($"Try give bouquet to {__instance.Name}");
 
@@ -877,13 +905,29 @@ namespace FreeLove
                     }
                     return true;
                 }
-
             }
             catch (Exception ex)
             {
                 Monitor.Log($"Failed in {nameof(NPC_tryToReceiveActiveObject_Prefix)}:\n{ex}", LogLevel.Error);
             }
             return true;
+        }
+        public static void NPC_tryToReceiveActiveObject_Postfix(NPC __instance, ref Farmer who, List<int> __state)
+        {
+            try
+            {
+                if (__state != null && __state.Count > 0)
+                {
+                    who.friendshipData[__instance.Name].GiftsToday += __state[0] - (__state[2] == 1 ? 1 : 0);
+                    who.friendshipData[__instance.Name].GiftsThisWeek += __state[1] - (__state[3] == 1 ? 2 : 0);
+                    Monitor.Log($"gifts this week {who.friendshipData[__instance.Name].GiftsThisWeek}");
+                    Monitor.Log($"gifts today {who.friendshipData[__instance.Name].GiftsToday}");
+                }
+            }
+            catch (Exception ex)
+            {
+                Monitor.Log($"Failed in {nameof(NPC_tryToReceiveActiveObject_Postfix)}:\n{ex}", LogLevel.Error);
+            }
         }
 
         public static IEnumerable<CodeInstruction> NPC_tryToReceiveActiveObject_Transpiler(IEnumerable<CodeInstruction> instructions)
@@ -898,7 +942,7 @@ namespace FreeLove
                     if(codes[i].opcode == OpCodes.Ldc_I4_S && int.Parse(codes[i].operand.ToString()) < -10)
                     {
                         Monitor.Log($"got int!");
-                        codes[i] = new CodeInstruction(OpCodes.Ldc_I4_S, 30);
+                        codes[i] = new CodeInstruction(OpCodes.Ldc_I4_S, 10);
                         break;
                     }
                 }

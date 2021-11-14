@@ -22,7 +22,7 @@ namespace FreeLove
             Helper = helper;
         }
 
-        internal static void afterDialogueBehavior(Farmer who, string whichAnswer)
+        public static void afterDialogueBehavior(Farmer who, string whichAnswer)
         {
 
             Monitor.Log("answer " + whichAnswer);

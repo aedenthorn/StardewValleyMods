@@ -7,6 +7,8 @@ namespace FreeLove
         public bool BuyPendantsAnytime { get; set; } = false;
         public int MinPointsToMarry { get; set; } = 2500;
         public int MinPointsToDate { get; set; } = 2000;
+        public int MaxGiftsPerSpousePerDay { get; set; } = 1;
+        public int MaxGiftsPerSpousePerWeek { get; set; } = 2;
         public bool PreventHostileDivorces { get; set; } = true;
         public bool ComplexDivorce { get; set; } = true;
         public bool RoommateRomance { get; set; } = true;
