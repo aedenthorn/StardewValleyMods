@@ -1,18 +1,18 @@
 ﻿{
-  "Name": "Map Teleport",
+  "Name": "Groundhog Day",
   "Author": "aedenthorn",
-  "Version": "0.3.0",
-  "Description": "Teleport using the map.",
-  "UniqueID": "aedenthorn.MapTeleport",
-  "EntryDll": "MapTeleport.dll",
+  "Version": "0.1.0",
+  "Description": "Groundhog Day.",
+  "UniqueID": "aedenthorn.GroundhogDay",
+  "EntryDll": "GroundhogDay.dll",
   "MinimumApiVersion": "3.13.0-beta.20211018",
-  "UpdateKeys": [ "Nexus:7675" ],
   "ModUpdater": {
     "Repository": "StardewValleyMods",
     "User": "aedenthorn",
     "Directory": "_releases",
-    "ModFolder": "MapTeleport"
+    "ModFolder": "GroundhogDay"
   },
+  "UpdateKeys": [ "Nexus:10151" ],
   "Dependencies": [
     {
       "UniqueID": "Platonymous.ModUpdater",

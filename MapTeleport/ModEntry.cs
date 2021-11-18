@@ -20,7 +20,6 @@ namespace MapTeleport
             if (!Config.EnableMod)
                 return;
 
-            
             isSVE = Helper.ModRegistry.IsLoaded("FlashShifter.SVECode");
             if (isSVE)
             {
@@ -49,12 +48,13 @@ namespace MapTeleport
                         Coordinates co = coordinates.coordinates.Find(o => o.id == c.myID);
                         if (co == null)
                         {
-                            Monitor.Log($"Teleport location {c.name} not found!", LogLevel.Warn);
-                            return;
+                            Monitor.Log($"Teleport location {c.myID} {c.name} not found!", LogLevel.Warn);
+                            break;
                         }
-                        Monitor.Log($"Teleporting to {c.name}, {co.mapName}, {co.x},{co.y}", LogLevel.Debug);
+                        Monitor.Log($"Teleporting to {c.name} ({c.myID}), {co.mapName}, {co.x},{co.y}", LogLevel.Debug);
                         Game1.activeClickableMenu?.exitThisMenu(true);
                         Game1.warpFarmer(co.mapName, co.x, co.y, false);
+                        break;
                     }
                 }
             }

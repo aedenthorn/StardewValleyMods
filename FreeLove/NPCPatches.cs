@@ -610,7 +610,7 @@ namespace FreeLove
                                 facingRight = false;
                             }
                             bool flip = (facingRight && __instance.FacingDirection == 3) || (!facingRight && __instance.FacingDirection == 1);
-                            if (who.getFriendshipHeartLevelForNPC(__instance.Name) >= 9 && __instance.sleptInBed.Value)
+                            if (who.getFriendshipHeartLevelForNPC(__instance.Name) >= 9)
                             {
                                 Monitor.Log($"Can kiss/hug {__instance.Name}");
 

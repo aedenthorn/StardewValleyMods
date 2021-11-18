@@ -1,18 +1,6 @@
-﻿using HarmonyLib;
-using Microsoft.Xna.Framework;
-using Netcode;
-using StardewModdingAPI;
+﻿using StardewModdingAPI;
 using StardewValley;
-using StardewValley.Characters;
-using StardewValley.Locations;
-using StardewValley.Network;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Reflection;
-using System.Reflection.Emit;
-using System.Text.RegularExpressions;
-using Object = StardewValley.Object;
 
 namespace HugsAndKisses
 {
@@ -38,7 +26,7 @@ namespace HugsAndKisses
                 if (!Config.EnableMod || __instance.IsInvisible || __instance.isSleeping.Value || !who.canMove || who.checkForQuestComplete(__instance, -1, -1, who.ActiveObject, null, -1, 5) || (who.pantsItem.Value?.ParentSheetIndex == 15 && (__instance.Name.Equals("Lewis") || __instance.Name.Equals("Marnie"))) || (__instance.Name.Equals("Krobus") && who.hasQuest(28)) || !who.IsLocalPlayer)
                     return true;
 
-                if (who.friendshipData.ContainsKey(__instance.Name) && !who.friendshipData[__instance.Name].IsMarried() && !who.friendshipData[__instance.Name].IsEngaged() && ((who.friendshipData[__instance.Name].IsDating() && Config.DatingKisses) || (who.getFriendshipHeartLevelForNPC(__instance.Name) >= Config.HeartsForFriendship && Config.FriendHugs)))
+                if ((__instance.datable.Value || Config.AllowNonDateableNPCsToHugAndKiss) && who.friendshipData.ContainsKey(__instance.Name) && !who.friendshipData[__instance.Name].IsMarried() && !who.friendshipData[__instance.Name].IsEngaged() && ((who.friendshipData[__instance.Name].IsDating() && Config.DatingKisses) || (who.getFriendshipHeartLevelForNPC(__instance.Name) >= Config.HeartsForFriendship && Config.FriendHugs)))
                 {
                     __instance.faceDirection(-3);
 
