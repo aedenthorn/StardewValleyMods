@@ -1,0 +1,9 @@
+﻿{
+  "too-late": "[Late] {0}",
+  "too-late-message": "Too late to plant {0}!",
+  "animals-outside": "{0} You have animals still outside!",
+  "animals-need-petting": "{0} You have animals still to pet!",
+  "animals-need-harvesting": "{0} You have animals that still need harvesting!",
+  "plants-need-watering": "{0} You have plants that need watering!",
+  "plants-ready-for-harvest": "{0} You have plants ready for harvest!"
+}

@@ -78,12 +78,6 @@ namespace CustomObjectProduction
                 getValue: () => Config.EnableMod,
                 setValue: value => Config.EnableMod = value
             );
-            configMenu.AddKeybind(
-                mod: ModManifest,
-                name: () => "Toggle Mod Key",
-                getValue: () => Config.ToggleModKey,
-                setValue: value => Config.ToggleModKey = value
-            );
         }
 
         /// <summary>Get whether this instance can load the initial version of the given asset.</summary>

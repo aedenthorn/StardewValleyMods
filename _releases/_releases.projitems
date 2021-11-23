@@ -70,6 +70,7 @@
     <None Include="$(MSBuildThisFileDirectory)Quotes 0.4.1.zip" />
     <None Include="$(MSBuildThisFileDirectory)RandomNPC 0.4.0.zip" />
     <None Include="$(MSBuildThisFileDirectory)RealNames 0.1.4.zip" />
+    <None Include="$(MSBuildThisFileDirectory)Screenshot 0.1.1.zip" />
     <None Include="$(MSBuildThisFileDirectory)ShowPlayerBehind 0.1.3.zip" />
     <None Include="$(MSBuildThisFileDirectory)SixtyNine 0.1.0.zip" />
     <None Include="$(MSBuildThisFileDirectory)SocialPageOrderButton 0.1.0.zip" />
