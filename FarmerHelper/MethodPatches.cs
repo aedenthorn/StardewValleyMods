@@ -52,7 +52,7 @@ namespace FarmerHelper
         }
         private static void IClickableMenu_drawToolTip_Prefix(string hoverText, ref string hoverTitle, Item hoveredItem)
         {
-            if (!Config.EnableMod || !Config.LabelLatePlanting)
+            if (!Config.EnableMod || !Config.LabelLatePlanting || hoveredItem == null)
                 return;
 
             Crop crop = new Crop(hoveredItem.ParentSheetIndex, 0, 0);

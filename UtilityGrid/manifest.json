@@ -1,18 +1,18 @@
 ﻿{
-  "Name": "Farmer Helper",
+  "Name": "Utility Grid",
   "Author": "aedenthorn",
-  "Version": "0.1.1",
-  "Description": "Farmer Helper.",
-  "UniqueID": "aedenthorn.FarmerHelper",
-  "EntryDll": "FarmerHelper.dll",
+  "Version": "0.1.0",
+  "Description": "Utility grid.",
+  "UniqueID": "aedenthorn.UtilityGrid",
+  "EntryDll": "UtilityGrid.dll",
   "MinimumApiVersion": "3.13.0-beta.20211018",
   "ModUpdater": {
     "Repository": "StardewValleyMods",
     "User": "aedenthorn",
     "Directory": "_releases",
-    "ModFolder": "FarmerHelper"
+    "ModFolder": "UtilityGrid"
   },
-  "UpdateKeys": [ "Nexus:10179" ],
+  "UpdateKeys": [ "Nexus:" ],
   "Dependencies": [
     {
       "UniqueID": "Platonymous.ModUpdater",

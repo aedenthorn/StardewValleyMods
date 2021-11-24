@@ -182,6 +182,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FarmerHelper", "FarmerHelpe
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Screenshot", "Screenshot\Screenshot.csproj", "{9A912B3A-946D-4D9F-8144-031A5B7669EC}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "UtilityGrid", "UtilityGrid\UtilityGrid.csproj", "{528604C2-9C7D-4161-BB3F-D2175CC21432}"
+EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
 		_releases\_releases.projitems*{047040e0-3d07-46e5-852b-d1d45cd57bb8}*SharedItemsImports = 13
@@ -881,6 +883,14 @@ Global
 		{9A912B3A-946D-4D9F-8144-031A5B7669EC}.Release|Any CPU.Build.0 = Release|Any CPU
 		{9A912B3A-946D-4D9F-8144-031A5B7669EC}.Release|x86.ActiveCfg = Release|Any CPU
 		{9A912B3A-946D-4D9F-8144-031A5B7669EC}.Release|x86.Build.0 = Release|Any CPU
+		{528604C2-9C7D-4161-BB3F-D2175CC21432}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{528604C2-9C7D-4161-BB3F-D2175CC21432}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{528604C2-9C7D-4161-BB3F-D2175CC21432}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{528604C2-9C7D-4161-BB3F-D2175CC21432}.Debug|x86.Build.0 = Debug|Any CPU
+		{528604C2-9C7D-4161-BB3F-D2175CC21432}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{528604C2-9C7D-4161-BB3F-D2175CC21432}.Release|Any CPU.Build.0 = Release|Any CPU
+		{528604C2-9C7D-4161-BB3F-D2175CC21432}.Release|x86.ActiveCfg = Release|Any CPU
+		{528604C2-9C7D-4161-BB3F-D2175CC21432}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
