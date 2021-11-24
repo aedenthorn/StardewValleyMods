@@ -61,12 +61,15 @@ namespace GroundhogDay
                 if (!Directory.Exists(Config.ScreenshotFolder))
                     Directory.CreateDirectory(Config.ScreenshotFolder);
 
-                Color[] data = new Color[Game1.viewport.Width * Game1.viewport.Height];
+                var width = Game1.graphics.GraphicsDevice.PresentationParameters.BackBufferWidth;
+                var height = Game1.graphics.GraphicsDevice.PresentationParameters.BackBufferHeight;
+
+                Color[] data = new Color[width * height];
                 Game1.graphics.GraphicsDevice.GetBackBufferData(data);
-                Texture2D tex = new Texture2D(Game1.graphics.GraphicsDevice, Game1.viewport.Width, Game1.viewport.Height);
+                Texture2D tex = new Texture2D(Game1.graphics.GraphicsDevice, width, height);
                 tex.SetData(data);
                 Stream stream = File.Create(Path.Combine(Config.ScreenshotFolder, screenshot_name));
-                tex.SaveAsPng(stream, tex.Width, tex.Height);
+                tex.SaveAsPng(stream, width, height);
                 stream.Close();
 
                 if(Config.Message.Length > 0)
