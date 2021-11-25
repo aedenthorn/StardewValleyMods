@@ -15,5 +15,6 @@ namespace UtilityGrid
         public SButton PlaceTile { get; set; } = SButton.MouseLeft;
         public Color WaterColor { get; set; } = Color.Aqua;
         public Color ElectricityColor { get; set; } = Color.Yellow;
+        public Color InsufficientColor { get; set; } = Color.Red;
     }
 }

@@ -13,35 +13,17 @@ namespace UtilityGrid
     public partial class ModEntry
     {
 
-        private void DrawTile(SpriteBatch b, Vector2 tile, Point which, bool electric, Color color)
+        public static void DrawTile(SpriteBatch b, Vector2 tile, GridPipe which, Color color)
         {
             float layerDepth = (tile.Y * (16 * Game1.pixelZoom) + 16 * Game1.pixelZoom) / 10000f;
 
-            b.Draw(pipeTexture, Game1.GlobalToLocal(Game1.viewport, tile * 64), new Rectangle(which.Y * 64, which.X * 64, 64, 64), color, 0, Vector2.Zero, 1, SpriteEffects.None, layerDepth);
+            b.Draw(pipeTexture, Game1.GlobalToLocal(Game1.viewport, tile * 64), new Rectangle(which.rotation * 64, which.index * 64, 64, 64), color, 0, Vector2.Zero, 1, SpriteEffects.None, layerDepth);
         }
 
-        private bool PipeIsPowered(Vector2 tile, bool electric)
+        public static bool PipesAreJoined(Vector2 tile, Vector2 tile2, GridType gridType)
         {
-            List<PipeGroup> groupList;
-            if (electric)
-            {
-                groupList = electricGroups;
-            }
-            else
-            {
-                groupList = waterGroups;
-            }
-            foreach (var g in groupList)
-            {
-                if (g.pipes.Contains(tile))
-                    return g.power > 0;
-            }
-            return false;
-        }
-        private bool PipesAreJoined(Vector2 tile, Vector2 tile2, bool electric)
-        {
-            Dictionary<Vector2, Point> pipeDict;
-            if (electric)
+            Dictionary<Vector2, GridPipe> pipeDict;
+            if (gridType == GridType.electric)
             {
                 pipeDict = electricPipes;
             }
@@ -69,22 +51,27 @@ namespace UtilityGrid
             return false;
         }
 
-        private bool HasIntake(Point pipeRot, int which)
+        public static bool HasIntake(GridPipe pipe, int which)
         {
-            return intakeArray[pipeRot.X][(which + pipeRot.Y) % 4] == 1;
+            return intakeArray[pipe.index][(which + pipe.rotation) % 4] == 1;
         }
-        private void RemakeGroups(bool electric)
+        public static void RemakeAllGroups()
         {
-            Dictionary<Vector2, Point> pipeDict;
+            RemakeGroups(GridType.water);
+            RemakeGroups(GridType.electric);
+        }
+        public static void RemakeGroups(GridType gridType)
+        {
+            Dictionary<Vector2, GridPipe> pipeDict;
             List<PipeGroup> groupList;
-            if (electric)
+            if (gridType == GridType.electric)
             {
-                pipeDict = new Dictionary<Vector2, Point>(electricPipes);
+                pipeDict = new Dictionary<Vector2, GridPipe>(electricPipes);
                 groupList = electricGroups;
             }
             else
             {
-                pipeDict = new Dictionary<Vector2, Point>(waterPipes);
+                pipeDict = new Dictionary<Vector2, GridPipe>(waterPipes);
                 groupList = waterGroups;
             }
             groupList.Clear();
@@ -92,15 +79,21 @@ namespace UtilityGrid
             while(pipeDict.Count > 0)
             {
                 var tile = pipeDict.Keys.ToArray()[0];
-                var group = new PipeGroup { pipes = new List<Vector2>() { tile }, power = PipePower(tile, electric) };
-                Monitor.Log($"Creating new group; power: {group.power}");
+                var group = new PipeGroup { pipes = new List<Vector2>() { tile } };
+                var obj = GetUtilityObjectAtTile(tile);
+                if(obj != null)
+                {
+                    group.objects[tile] = obj;
+                }
+
+                //SMonitor.Log($"Creating new group; power: {group.input}");
                 pipeDict.Remove(tile);
-                AddTilesToGroup(tile, ref group, pipeDict, electric);
+                AddTilesToGroup(tile, ref group, pipeDict, gridType);
                 groupList.Add(group);
             }
         }
 
-        private void AddTilesToGroup(Vector2 tile, ref PipeGroup group, Dictionary<Vector2, Point> pipeDict, bool electric)
+        public static void AddTilesToGroup(Vector2 tile, ref PipeGroup group, Dictionary<Vector2, GridPipe> pipeDict, GridType gridType)
         {
             Vector2[] adjecents = new Vector2[] { tile + new Vector2(0,1),tile + new Vector2(1,0),tile + new Vector2(-1,0),tile + new Vector2(0,-1)};
 
@@ -108,31 +101,138 @@ namespace UtilityGrid
             {
                 if (group.pipes.Contains(a) || !pipeDict.ContainsKey(a))
                     continue;
-                if (PipesAreJoined(tile, a, electric))
+                if (PipesAreJoined(tile, a, gridType))
                 {
                     group.pipes.Add(a);
-                    group.power += PipePower(a, electric);
+                    var obj = GetUtilityObjectAtTile(a);
+                    if (obj != null)
+                    {
+                        group.objects[a] = obj;
+                    }
                     pipeDict.Remove(a);
-                    Monitor.Log($"Adding pipe to group; {group.pipes.Count} pipes in group; total power: {group.power}");
-                    AddTilesToGroup(a, ref group, pipeDict, electric);
+                    //SMonitor.Log($"Adding pipe to group; {group.pipes.Count} pipes in group; total power: {group.input}");
+                    AddTilesToGroup(a, ref group, pipeDict, gridType);
                 }
             }
         }
-
-        private float PipePower(Vector2 key, bool electric)
+        public Vector2 GetGroupPower(PipeGroup group, GridType gridType)
         {
-            if (!Game1.getFarm().Objects.ContainsKey(key))
-                return 0;
-            var obj = Game1.getFarm().Objects[key];
-            if (electric && obj.bigCraftable.Value && obj.ParentSheetIndex == 13)
+            if (gridType == GridType.water)
+                return GetGroupWaterPower(group);
+
+            return GetGroupElectricPower(group);
+        }
+        public static float GetTileNetElectricPower(Vector2 tile)
+        {
+            Vector2 power = GetTileElectricPower(tile);
+            return power.X + power.Y;
+        }
+        public static float GetTileNetWaterPower(Vector2 tile)
+        {
+            Vector2 power = GetTileWaterPower(tile);
+            return power.X + power.Y;
+        }
+        public static Vector2 GetTileElectricPower(Vector2 tile)
+        {
+            Vector2 power = Vector2.Zero;
+            foreach (var group in electricGroups)
             {
-                obj.modData["aedenthorn.UtilityGrid/type"] = "electric";
-                obj.modData["aedenthorn.UtilityGrid/power"] = "1";
+                if (group.objects.ContainsKey(tile))
+                {
+
+                    return GetGroupElectricPower(group);
+                }
             }
-            else if (!obj.modData.ContainsKey("aedenthorn.UtilityGrid/type") || (obj.modData["aedenthorn.UtilityGrid/type"] == "electric") != electric)
-                return 0;
-                
-            return float.Parse(obj.modData["aedenthorn.UtilityGrid/power"], CultureInfo.InvariantCulture);
+            return power;
+        }
+        public static Vector2 GetGroupElectricPower(PipeGroup group)
+        {
+            Vector2 power = Vector2.Zero;
+            foreach (var obj in group.objects.Values)
+            {
+                if (obj.mustBeOn && !obj.worldObj.IsOn)
+                    continue;
+                if (obj.electric > 0)
+                    power.X += obj.electric;
+                else if (obj.electric < 0)
+                    power.Y += obj.electric;
+            }
+            return power;
+        }
+        public static Vector2 GetTileWaterPower(Vector2 tile)
+        {
+            Vector2 power = Vector2.Zero;
+            foreach (var group in waterGroups)
+            {
+                if (group.objects.ContainsKey(tile))
+                {
+                    return GetGroupWaterPower(group);
+                }
+            }
+            return power;
+        }
+        public static Vector2 GetGroupWaterPower(PipeGroup group)
+        {
+            Vector2 power = Vector2.Zero;
+            foreach (var kvp in group.objects)
+            {
+                if (kvp.Value.electric < 0)
+                {
+                    Vector2 ePower = GetTileElectricPower(kvp.Key);
+                    if (ePower.X + ePower.Y < 0) // unpowered
+                        continue;
+                }
+                var obj = kvp.Value;
+
+                if (obj.water > 0)
+                    power.X += obj.water;
+                else if (obj.water < 0)
+                    power.Y += obj.water;
+            }
+            return power;
+        }
+
+        public static bool IsObjectPowered(Vector2 tile, UtilityObject obj)
+        {
+            if(obj.water < 0)
+            {
+                var netPower = GetTileNetWaterPower(tile);
+                if (netPower < 0)
+                    return false;
+            }
+            if(obj.electric < 0)
+            {
+                var netPower = GetTileNetElectricPower(tile);
+                if (netPower < 0)
+                    return false;
+            }
+            return true;
+        }
+
+        public static UtilityObject GetUtilityObjectAtTile(Vector2 tile)
+        {
+            if (!Game1.getFarm().Objects.ContainsKey(tile))
+                return null;
+            var obj = Game1.getFarm().Objects[tile];
+            if (!objectDict.ContainsKey(obj.Name) && (obj.modData.ContainsKey("aedenthorn.UtilityGrid/" + GridType.water) || obj.modData.ContainsKey("aedenthorn.UtilityGrid/" + GridType.electric)))
+            {
+                objectDict[obj.Name] = new UtilityObject();
+                if (obj.modData.ContainsKey("aedenthorn.UtilityGrid/" + GridType.water))
+                {
+                    objectDict[obj.Name].water = float.Parse(obj.modData["aedenthorn.UtilityGrid/" + GridType.water], CultureInfo.InvariantCulture);
+                }
+                if (obj.modData.ContainsKey("aedenthorn.UtilityGrid/" + GridType.electric))
+                {
+                    objectDict[obj.Name].electric = float.Parse(obj.modData["aedenthorn.UtilityGrid/" + GridType.electric], CultureInfo.InvariantCulture);
+                }
+            }
+            if (objectDict.ContainsKey(obj.Name))
+            {
+                UtilityObject outObj = objectDict[obj.Name];
+                outObj.worldObj = obj;
+                return outObj;
+            }
+            return null;
         }
     }
 }
