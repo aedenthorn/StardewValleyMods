@@ -1,6 +1,5 @@
 ﻿using HarmonyLib;
 using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
 using StardewModdingAPI;
 using StardewValley;
 using System;
@@ -15,28 +14,35 @@ namespace UtilityGrid
 
         public void Input_ButtonPressed(object sender, StardewModdingAPI.Events.ButtonPressedEventArgs e)
         {
-            if (!Config.EnableMod || !(Game1.currentLocation is Farm) || !Game1.currentLocation.IsOutdoors || Game1.activeClickableMenu != null)
+            if (!Config.EnableMod || !Context.IsWorldReady || Game1.activeClickableMenu != null)
                 return;
+
+            string location = Game1.player.currentLocation.Name;
 
             if (e.Button == Config.ToggleGrid)
             {
                 Helper.Input.Suppress(e.Button);
                 ShowingGrid = !ShowingGrid;
                 Monitor.Log($"Showing grid: {ShowingGrid}");
+                return;
             }
             if (!ShowingGrid)
                 return;
+
             if (e.Button == Config.SwitchGrid)
             {
                 Helper.Input.Suppress(e.Button);
                 CurrentGrid = CurrentGrid == GridType.water ? GridType.electric : GridType.water;
                 Monitor.Log($"Showing grid: {CurrentGrid}");
+                return;
             }
-            else if (e.Button == Config.SwitchTile)
+            if (Game1.player.IsCarrying())
+                return;
+            if (e.Button == Config.SwitchTile)
             {
                 Helper.Input.Suppress(e.Button);
                 CurrentTile++;
-                CurrentTile %= 6;
+                CurrentTile %= 5;
                 CurrentRotation = 0;
                 //Monitor.Log($"Showing tile: {CurrentTile},{CurrentRotation}");
             }
@@ -58,140 +64,196 @@ namespace UtilityGrid
                 Dictionary<Vector2, GridPipe> pipeDict;
                 if (CurrentGrid == GridType.electric)
                 {
-                    pipeDict = electricPipes;
+                    pipeDict = utilitySystemDict[location].electricPipes;
                 }
                 else
                 {
-                    pipeDict = waterPipes;
+                    pipeDict = utilitySystemDict[location].waterPipes;
                 }
-                if(CurrentTile == 5)
+
+                if (pipeDict.ContainsKey(Game1.lastCursorTile))
                 {
+                    if (!PayForPipe(true))
+                        return;
                     Monitor.Log($"Removing tile at {Game1.currentCursorTile}");
-                    pipeDict.Remove(Game1.lastCursorTile);
+                }
+                else if (!PayForPipe(false))
+                    return;
+
+                Monitor.Log($"Placing tile {CurrentTile},{CurrentRotation} at {Game1.currentCursorTile}");
+                pipeDict[Game1.lastCursorTile] = new GridPipe() { index = CurrentTile, rotation = CurrentRotation };
+                if (Config.PipeSound?.Length > 0)
+                {
+                    Game1.player.currentLocation.playSound(Config.PipeSound);
+                }
+                RemakeGroups(location, CurrentGrid);
+            }
+            else if (e.Button == Config.DestroyTile)
+            {
+                Helper.Input.Suppress(e.Button);
+                Dictionary<Vector2, GridPipe> pipeDict;
+                if (CurrentGrid == GridType.electric)
+                {
+                    pipeDict = utilitySystemDict[location].electricPipes;
                 }
                 else
                 {
-                    Monitor.Log($"Placing tile {CurrentTile},{CurrentRotation} at {Game1.currentCursorTile}");
-                    pipeDict[Game1.lastCursorTile] = new GridPipe() { index = CurrentTile, rotation = CurrentRotation };
+                    pipeDict = utilitySystemDict[location].waterPipes;
                 }
-                RemakeGroups(CurrentGrid);
+                if (!pipeDict.ContainsKey(Game1.lastCursorTile))
+                {
+                    Monitor.Log($"No tile to remove at {Game1.currentCursorTile}");
+                    return;
+                }
+                Monitor.Log($"Removing tile at {Game1.currentCursorTile}");
+                pipeDict.Remove(Game1.lastCursorTile);
+                PipeDestroyed();
+                if (Config.DestroySound?.Length > 0)
+                {
+                    Game1.player.currentLocation.playSound(Config.DestroySound);
+                }
+                RemakeGroups(location, CurrentGrid);
             }
         }
         public void Display_RenderedWorld(object sender, StardewModdingAPI.Events.RenderedWorldEventArgs e)
         {
-            if (!Config.EnableMod || !ShowingGrid)
+            if (!Config.EnableMod || !ShowingGrid || Game1.activeClickableMenu != null)
                 return;
 
-            if(!(Game1.currentLocation is Farm) || !Game1.currentLocation.IsOutdoors || Game1.activeClickableMenu != null)
+            string location = Game1.player.currentLocation.Name;
+
+            if (!utilitySystemDict.ContainsKey(location))
             {
-                ShowingGrid = false;
-                return;
+                utilitySystemDict[location] = new UtilitySystem();
+                RemakeAllGroups(Game1.player.currentLocation.Name);
             }
-
             List<PipeGroup> groupList;
-            Color color;
             Dictionary<Vector2, GridPipe> pipeDict;
+            Dictionary<Vector2, UtilityObject> objectDict;
+            Color color;
             if (CurrentGrid == GridType.electric)
             {
-                groupList = electricGroups;
-                pipeDict = electricPipes;
+                groupList = utilitySystemDict[location].electricGroups;
+                pipeDict = utilitySystemDict[location].electricPipes;
+                objectDict = utilitySystemDict[location].electricUnconnectedObjects;
                 color = Config.ElectricityColor;
             }
             else
             {
-                groupList = waterGroups;
-                pipeDict = waterPipes;
+                groupList = utilitySystemDict[location].waterGroups;
+                pipeDict = utilitySystemDict[location].waterPipes;
+                objectDict = utilitySystemDict[location].waterUnconnectedObjects;
                 color = Config.WaterColor;
             }
+
+            bool carrying = Game1.player.IsCarrying();
+
             foreach (var group in groupList)
             {
-                Vector2 power = GetGroupPower(group, CurrentGrid);
+                Vector2 power = GetGroupPower(location, group, CurrentGrid);
                 float netPower = power.X + power.Y;
                 bool powered = power.X > 0 && netPower >= 0;
                 foreach (var pipe in group.pipes)
                 {
                     if (Utility.isOnScreen(new Vector2(pipe.X * 64 + 32, pipe.Y * 64 + 32), 32))
                     {
-                        if (pipe != Game1.currentCursorTile)
-                        {
-                            if (pipeDict[pipe].index == 4)
-                                DrawTile(e.SpriteBatch, pipe, new GridPipe() { index = 1, rotation = 2 }, powered ? color : Color.White);
-                            else
-                                DrawTile(e.SpriteBatch, pipe, pipeDict[pipe], powered ? color : Color.White);
-                        }
+                        if (pipeDict[pipe].index == 4)
+                            DrawTile(e.SpriteBatch, pipe, new GridPipe() { index = 1, rotation = 2 }, powered ? color : Config.UnpoweredGridColor);
+                        else
+                            DrawTile(e.SpriteBatch, pipe, pipeDict[pipe], powered ? color : Config.UnpoweredGridColor);
                     }
                 }
                 foreach (var kvp in group.objects)
                 {
-                    float objPower;
-                    bool enough = netPower >= 0;
-                    if (CurrentGrid == GridType.electric)
-                    {
-                        objPower = kvp.Value.electric;
-                    }
-                    else
-                    {
-                        objPower = kvp.Value.water;
-                        if (kvp.Value.electric < 0 && GetTileNetElectricPower(kvp.Key) < 0)
-                            enough = false;
-                    }
-
-                    if (objPower == 0)
-                        continue;
-
-
-                    string str = "" + Math.Round(objPower);
-
-                    e.SpriteBatch.DrawString(Game1.dialogueFont, str, Game1.GlobalToLocal(Game1.viewport, kvp.Key * 64) - new Vector2(16, 16) + new Vector2(-2, 2), Color.Black, 0, Vector2.Zero, 1f, SpriteEffects.None, 0.999999f);
-                    e.SpriteBatch.DrawString(Game1.dialogueFont, str, Game1.GlobalToLocal(Game1.viewport, kvp.Key * 64) - new Vector2(16, 16), enough ? color : Config.InsufficientColor, 0, Vector2.Zero, 1f, SpriteEffects.None, 0.9999999f);
+                    DrawAmount(e.SpriteBatch, kvp, netPower, color);
                 }
 
             }
-            if (CurrentTile == 4)
-                DrawTile(e.SpriteBatch, Game1.currentCursorTile, new GridPipe() { index = 1, rotation = 2 }, color);
-            else if(CurrentTile != 5)
-                DrawTile(e.SpriteBatch, Game1.currentCursorTile, new GridPipe() { index = CurrentTile, rotation = CurrentRotation }, color);
-        }
-
-        private void GameLoop_OneSecondUpdateTicked(object sender, StardewModdingAPI.Events.OneSecondUpdateTickedEventArgs e)
-        {
-            if (!Config.EnableMod || !(Game1.currentLocation is Farm))
-                return;
-
-            RemakeAllGroups();
-
+            foreach (var kvp in objectDict)
+            {
+                DrawAmount(e.SpriteBatch, kvp, CurrentGrid == GridType.electric ? kvp.Value.electric : kvp.Value.water, color);
+            }
+            if (!carrying)
+            {
+                if (CurrentTile == 4)
+                {
+                    DrawTile(e.SpriteBatch, Game1.currentCursorTile + new Vector2(-2, 2) / 64, new GridPipe() { index = 1, rotation = 2 }, Config.ShadowColor);
+                    DrawTile(e.SpriteBatch, Game1.currentCursorTile + new Vector2(-2,-2) / 64, new GridPipe() { index = 1, rotation = 2 }, Config.ShadowColor);
+                    DrawTile(e.SpriteBatch, Game1.currentCursorTile + new Vector2(2, -2) / 64, new GridPipe() { index = 1, rotation = 2 }, Config.ShadowColor);
+                    DrawTile(e.SpriteBatch, Game1.currentCursorTile + new Vector2(2, 2) / 64, new GridPipe() { index = 1, rotation = 2 }, Config.ShadowColor);
+                    DrawTile(e.SpriteBatch, Game1.currentCursorTile, new GridPipe() { index = 1, rotation = 2 }, color);
+                }
+                else if (CurrentTile != 5)
+                {
+                    DrawTile(e.SpriteBatch, Game1.currentCursorTile + new Vector2(-2, 2) / 64, new GridPipe() { index = CurrentTile, rotation = CurrentRotation }, Config.ShadowColor);
+                    DrawTile(e.SpriteBatch, Game1.currentCursorTile + new Vector2(-2, -2) / 64, new GridPipe() { index = CurrentTile, rotation = CurrentRotation }, Config.ShadowColor);
+                    DrawTile(e.SpriteBatch, Game1.currentCursorTile + new Vector2(2, -2) / 64, new GridPipe() { index = CurrentTile, rotation = CurrentRotation }, Config.ShadowColor);
+                    DrawTile(e.SpriteBatch, Game1.currentCursorTile + new Vector2(2, 2) / 64, new GridPipe() { index = CurrentTile, rotation = CurrentRotation }, Config.ShadowColor);
+                    DrawTile(e.SpriteBatch, Game1.currentCursorTile, new GridPipe() { index = CurrentTile, rotation = CurrentRotation }, color);
+                }
+            }
         }
 
         private void GameLoop_SaveLoaded(object sender, StardewModdingAPI.Events.SaveLoadedEventArgs e)
         {
-            waterPipes = new Dictionary<Vector2, GridPipe>();
-            electricPipes = new Dictionary<Vector2, GridPipe>();
+            utilitySystemDict = new Dictionary<string, UtilitySystem>();
             ShowingGrid = false;
             CurrentRotation = 0;
             CurrentTile = 0;
+            try
+            {
+                objectDict = SHelper.Content.Load<Dictionary<string, UtilityObject>>(dictPath, ContentSource.GameContent);
+                UtilitySystemDictData systemDataDict = Helper.Data.ReadSaveData<UtilitySystemDictData>(saveKey) ?? new UtilitySystemDictData();
 
-            objectDict = SHelper.Content.Load<Dictionary<string, UtilityObject>>(dictPath, ContentSource.GameContent);
-            UtilityGridData gridData = Helper.Data.ReadSaveData<UtilityGridData>(saveKey) ?? new UtilityGridData();
-            Monitor.Log($"reading {gridData.electricData.Count} ep and {gridData.waterData.Count} wp from save");
-            foreach (var arr in gridData.waterData)
-            {
-                waterPipes[new Vector2(arr[0], arr[1])] = new GridPipe() { index = arr[2], rotation = arr[3] };
+                Monitor.Log($"reading grid data for {systemDataDict.dict.Count} locations from save");
+                foreach (var kvp in systemDataDict.dict)
+                {
+                    Monitor.Log($"reading {kvp.Value.electricData.Count} ep and {kvp.Value.waterData.Count} wp for location {kvp.Key}");
+                    utilitySystemDict[kvp.Key] = new UtilitySystem();
+                    foreach (var arr in kvp.Value.waterData)
+                    {
+                        utilitySystemDict[kvp.Key].waterPipes[new Vector2(arr[0], arr[1])] = new GridPipe() { index = arr[2], rotation = arr[3] };
+                    }
+                    foreach (var arr in kvp.Value.electricData)
+                    {
+                        utilitySystemDict[kvp.Key].electricPipes[new Vector2(arr[0], arr[1])] = new GridPipe() { index = arr[2], rotation = arr[3] };
+                    }
+                    RemakeAllGroups(kvp.Key);
+                }
             }
-            foreach(var arr in gridData.electricData)
+            catch 
             {
-                electricPipes[new Vector2(arr[0], arr[1])] = new GridPipe() { index = arr[2], rotation = arr[3] };
+                Monitor.Log("Invalid utility system in save file... starting fresh", LogLevel.Warn);
             }
-            RemakeAllGroups();
         }
         private void GameLoop_Saving(object sender, StardewModdingAPI.Events.SavingEventArgs e)
         {
-
-            UtilityGridData gridData = new UtilityGridData(waterPipes, electricPipes);
-            Monitor.Log($"writing {gridData.electricData.Count} ep and {gridData.waterData.Count} wp to save");
-            Helper.Data.WriteSaveData(saveKey, gridData);
+            UtilitySystemDictData dict = new UtilitySystemDictData();
+            Monitor.Log($"writing grid data for {utilitySystemDict.Count} locations from save");
+            foreach (var kvp in utilitySystemDict)
+            {
+                UtilitySystemData gridData = new UtilitySystemData(kvp.Value.waterPipes, kvp.Value.electricPipes);
+                dict.dict[kvp.Key] = gridData;
+                Monitor.Log($"writing {gridData.electricData.Count} ep and {gridData.waterData.Count} wp for location {kvp.Key} to save");
+            }
+            Helper.Data.WriteSaveData(saveKey, dict);
         }
         public void GameLoop_GameLaunched(object sender, StardewModdingAPI.Events.GameLaunchedEventArgs e)
         {
+            if (Helper.ModRegistry.IsLoaded("spacechase0.DynamicGameAssets"))
+            {
+                Monitor.Log($"patching DGA methods");
+                harmony.Patch(
+                   original: AccessTools.Method(Helper.ModRegistry.GetApi("spacechase0.DynamicGameAssets").GetType().Assembly.GetType("DynamicGameAssets.Game.CustomBigCraftable"), "minutesElapsed"),
+                   prefix: new HarmonyMethod(typeof(ModEntry), nameof(ModEntry.Object_minutesElapsed_Prefix)),
+                   postfix: new HarmonyMethod(typeof(ModEntry), nameof(ModEntry.Object_Method_Postfix))
+                );
+                harmony.Patch(
+                   original: AccessTools.Method(Helper.ModRegistry.GetApi("spacechase0.DynamicGameAssets").GetType().Assembly.GetType("DynamicGameAssets.Game.CustomObject"), "placementAction"),
+                   postfix: new HarmonyMethod(typeof(ModEntry), nameof(ModEntry.Object_placementAction_Postfix))
+                );
+            }
+
             // get Generic Mod Config Menu's API (if it's installed)
             var configMenu = Helper.ModRegistry.GetApi<IGenericModConfigMenuApi>("spacechase0.GenericModConfigMenu");
             if (configMenu is null)
@@ -204,12 +266,69 @@ namespace UtilityGrid
                 save: () => Helper.WriteConfig(Config)
             );
 
+            configMenu.AddSectionTitle(
+                mod: ModManifest,
+                text: () => "Options"
+            );
+
             configMenu.AddBoolOption(
                 mod: ModManifest,
                 name: () => "Mod Enabled?",
                 getValue: () => Config.EnableMod,
                 setValue: value => Config.EnableMod = value
             );
+            configMenu.AddTextOption(
+                mod: ModManifest,
+                name: () => "Pipe Create Sound",
+                getValue: () => Config.PipeSound,
+                setValue: value => Config.PipeSound = value
+            );
+            configMenu.AddTextOption(
+                mod: ModManifest,
+                name: () => "Pipe Destroy Sound",
+                getValue: () => Config.DestroySound,
+                setValue: value => Config.DestroySound = value
+            );
+
+            configMenu.AddSectionTitle(
+                mod: ModManifest,
+                text: () => "Pipe Costs"
+            );
+
+            configMenu.AddNumberOption(
+                mod: ModManifest,
+                name: () => "Pipe Gold Cost",
+                getValue: () => Config.PipeCostGold,
+                setValue: value => Config.PipeCostGold  = value
+            );
+            configMenu.AddNumberOption(
+                mod: ModManifest,
+                name: () => "Pipe Gold Destroy",
+                getValue: () => Config.PipeDestroyGold,
+                setValue: value => Config.PipeDestroyGold = value
+            );
+            
+            configMenu.AddTextOption(
+                mod: ModManifest,
+                name: () => "Pipe Item Cost",
+                tooltip: () => "Comma-separated pairs of index:amount",
+                getValue: () => Config.PipeCostItems,
+                setValue: value => Config.PipeCostItems = value
+            );
+
+            configMenu.AddTextOption(
+                mod: ModManifest,
+                name: () => "Pipe Item Destroy",
+                tooltip: () => "Comma-separated pairs of index:amount",
+                getValue: () => Config.PipeCostItems,
+                setValue: value => Config.PipeCostItems = value
+            );
+
+            configMenu.AddSectionTitle(
+                mod: ModManifest,
+                text: () => "Keys"
+            );
+
             configMenu.AddKeybind(
                 mod: ModManifest,
                 name: () => "Toggle Grid Key",
@@ -219,8 +338,8 @@ namespace UtilityGrid
             configMenu.AddKeybind(
                 mod: ModManifest,
                 name: () => "Switch Grid Key",
-                getValue: () => Config.ToggleGrid,
-                setValue: value => Config.ToggleGrid = value
+                getValue: () => Config.SwitchGrid,
+                setValue: value => Config.SwitchGrid = value
             );
             configMenu.AddKeybind(
                 mod: ModManifest,
@@ -239,6 +358,12 @@ namespace UtilityGrid
                 name: () => "Place Tile Key",
                 getValue: () => Config.PlaceTile,
                 setValue: value => Config.PlaceTile = value
+            );
+            configMenu.AddKeybind(
+                mod: ModManifest,
+                name: () => "Destroy Tile Key",
+                getValue: () => Config.DestroyTile,
+                setValue: value => Config.DestroyTile = value
             );
         }
     }

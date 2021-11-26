@@ -829,7 +829,7 @@ namespace FreeLove
                             who.friendshipData[__instance.Name].ProposalRejected = true;
                             return false;
                         }
-                        __instance.CurrentDialogue.Push(new Dialogue((ModEntry.myRand.NextDouble() < 0.5) ? Game1.LoadStringByGender(__instance.gender, "Strings\\StringsFromCSFiles:NPC.cs.3974") : Game1.LoadStringByGender(__instance.gender, "Strings\\StringsFromCSFiles:NPC.cs.3975"), __instance));
+                        __instance.CurrentDialogue.Push(new Dialogue((ModEntry.myRand.NextDouble() < 0.5) ? Game1.LoadStringByGender(__instance.Gender, "Strings\\StringsFromCSFiles:NPC.cs.3974") : Game1.LoadStringByGender(__instance.Gender, "Strings\\StringsFromCSFiles:NPC.cs.3975"), __instance));
                         Game1.drawDialogue(__instance);
                         who.changeFriendship(-50, __instance);
                         return false;

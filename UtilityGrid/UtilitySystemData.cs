@@ -3,16 +3,20 @@ using System.Collections.Generic;
 
 namespace UtilityGrid
 {
-    public class UtilityGridData
+    public class UtilitySystemDictData
+    {
+        public Dictionary<string, UtilitySystemData> dict = new Dictionary<string, UtilitySystemData>();
+    }
+    public class UtilitySystemData
     {
         public List<int[]> waterData = new List<int[]>();
         public List<int[]> electricData = new List<int[]>();
 
-        public UtilityGridData()
+        public UtilitySystemData()
         {
         }
 
-        public UtilityGridData(Dictionary<Vector2, GridPipe> waterPipes, Dictionary<Vector2, GridPipe> electricPipes)
+        public UtilitySystemData(Dictionary<Vector2, GridPipe> waterPipes, Dictionary<Vector2, GridPipe> electricPipes)
         {
             foreach (var kvp in waterPipes)
             {

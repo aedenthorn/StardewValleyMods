@@ -40,12 +40,10 @@ namespace UtilityGrid
             new int[] { 1, 1, 1, 1 }
         };
 
-        public static Dictionary<Vector2, GridPipe> waterPipes = new Dictionary<Vector2, GridPipe>();
-        public static Dictionary<Vector2, GridPipe> electricPipes = new Dictionary<Vector2, GridPipe>();
+        public static Dictionary<string, UtilitySystem> utilitySystemDict = new Dictionary<string, UtilitySystem>();
         public static Dictionary<string, UtilityObject> objectDict = new Dictionary<string, UtilityObject>();
-        
-        public static List<PipeGroup> waterGroups = new List<PipeGroup>();
-        public static List<PipeGroup> electricGroups = new List<PipeGroup>();
+
+        public static Harmony harmony;
 
         /// <summary>The mod entry point, called after the mod is first loaded.</summary>
         /// <param name="helper">Provides simplified APIs for writing mods.</param>
@@ -66,23 +64,44 @@ namespace UtilityGrid
             helper.Events.GameLoop.SaveLoaded += GameLoop_SaveLoaded;
             helper.Events.GameLoop.Saving += GameLoop_Saving;
             helper.Events.Display.RenderedWorld += Display_RenderedWorld;
-            helper.Events.GameLoop.OneSecondUpdateTicked += GameLoop_OneSecondUpdateTicked;
 
-            var harmony = new Harmony(ModManifest.UniqueID);
+            harmony = new Harmony(ModManifest.UniqueID);
 
             harmony.Patch(
                original: AccessTools.Method(typeof(Utility), nameof(Utility.playerCanPlaceItemHere)),
                prefix: new HarmonyMethod(typeof(ModEntry), nameof(ModEntry.Utility_playerCanPlaceItemHere_Prefix))
             );
             harmony.Patch(
-               original: AccessTools.Method(typeof(Object), nameof(Object.IsSprinkler)),
-               postfix: new HarmonyMethod(typeof(ModEntry), nameof(ModEntry.Object_IsSprinkler_Postfix))
-            );
-            harmony.Patch(
-               original: AccessTools.Method(typeof(Object), nameof(Object.updateWhenCurrentLocation)),
-               prefix: new HarmonyMethod(typeof(ModEntry), nameof(ModEntry.Object_updateWhenCurrentLocation_Prefix))
+               original: AccessTools.Method(typeof(Object), nameof(Object.minutesElapsed)),
+               prefix: new HarmonyMethod(typeof(ModEntry), nameof(ModEntry.Object_minutesElapsed_Prefix)),
+               postfix: new HarmonyMethod(typeof(ModEntry), nameof(ModEntry.Object_Method_Postfix))
             );
 
+            harmony.Patch(
+               original: AccessTools.Method(typeof(Object), nameof(Object.DayUpdate)),
+               prefix: new HarmonyMethod(typeof(ModEntry), nameof(ModEntry.Object_DayUpdate_Prefix)),
+               postfix: new HarmonyMethod(typeof(ModEntry), nameof(ModEntry.Object_Method_Postfix))
+            );
+            harmony.Patch(
+               original: AccessTools.Method(typeof(Object), nameof(Object.getScale)),
+               prefix: new HarmonyMethod(typeof(ModEntry), nameof(ModEntry.Object_getScale_Prefix))
+            );
+            harmony.Patch(
+               original: AccessTools.Method(typeof(Object), nameof(Object.placementAction)),
+               postfix: new HarmonyMethod(typeof(ModEntry), nameof(ModEntry.Object_placementAction_Postfix))
+            );
+
+            /*
+            harmony.Patch(
+               original: AccessTools.Method(typeof(GameLocation), nameof(GameLocation.numberOfObjectsWithName)),
+               prefix: new HarmonyMethod(typeof(ModEntry), nameof(ModEntry.GameLocation_numberOfObjectsWithName_Prefix))
+            );
+            harmony.Patch(
+               original: AccessTools.Method(typeof(FarmAnimal), nameof(FarmAnimal.dayUpdate)),
+               prefix: new HarmonyMethod(typeof(ModEntry), nameof(ModEntry.FarmAnimal_dayUpdate_Prefix)),
+               postfix: new HarmonyMethod(typeof(ModEntry), nameof(ModEntry.FarmAnimal_dayUpdate_Postfix))
+            );
+            */
             pipeTexture = Helper.Content.Load<Texture2D>("assets/pipes.png");
 
         }

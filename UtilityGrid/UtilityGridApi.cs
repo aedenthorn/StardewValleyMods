@@ -2,24 +2,32 @@
 
 namespace UtilityGrid
 {
+    public interface IUtilityGridApi
+    {
+        public Vector2 ElectricityToFromTile(string location, int x, int y);
+        public Vector2 WaterToFromTile(string location, int x, int y);
+        public void RefreshElectricGrid(string location);
+        public void RefreshWaterGrid(string location);
+    }
+
     public class UtilityGridApi
     {
-        public Vector2 ElectricityToFromTile(int x, int y)
+        public Vector2 ElectricityToFromTile(string location, int x, int y)
         {
-            return ModEntry.GetTileElectricPower(new Vector2(x, y));
+            return ModEntry.GetTileElectricPower(location, new Vector2(x, y));
         }
-        public Vector2 WaterToFromTile(int x, int y)
+        public Vector2 WaterToFromTile(string location, int x, int y)
         {
-            return ModEntry.GetTileWaterPower(new Vector2(x, y));
+            return ModEntry.GetTileWaterPower(location, new Vector2(x, y));
 
         }
-        public void RefreshElectricGrid()
+        public void RefreshElectricGrid(string location)
         {
-            ModEntry.RemakeGroups(ModEntry.GridType.electric);
+            ModEntry.RemakeGroups(location, ModEntry.GridType.electric);
         }
-        public void RefreshWaterGrid()
+        public void RefreshWaterGrid(string location)
         {
-            ModEntry.RemakeGroups(ModEntry.GridType.water);
+            ModEntry.RemakeGroups(location, ModEntry.GridType.water);
         }
     }
 }
