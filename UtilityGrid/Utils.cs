@@ -232,10 +232,12 @@ namespace UtilityGrid
                 objectDict = utilitySystemDict[location].waterUnconnectedObjects;
             }
             objectDict.Clear();
-
-            foreach (var kvp in Game1.getFarm().Objects.Pairs)
+            GameLocation gl = Game1.getLocationFromName(location);
+            if (gl == null)
+                return;
+            foreach (var kvp in gl.Objects.Pairs)
             {
-                var obj = GetUtilityObjectAtTile(kvp.Key);
+                var obj = GetUtilityObjectAtTile(gl, kvp.Key);
                 if (obj == null)
                     continue;
                 if (gridType == GridType.water && obj.water == 0)
@@ -322,6 +324,11 @@ namespace UtilityGrid
             {
                 power += GetPowerVector(location, obj, obj.electric);
             }
+            foreach (var func in powerFuctionList)
+            {
+                power += func(location, (int)GridType.electric, group.pipes);
+            }
+
             return power;
         }
         public static Vector2 GetGroupWaterPower(string location, PipeGroup group)
@@ -338,9 +345,13 @@ namespace UtilityGrid
                 var obj = kvp.Value;
                 power += GetPowerVector(location, obj, obj.water);
             }
+            foreach (var func in powerFuctionList)
+            {
+                power += func(location, (int)GridType.water, group.pipes);
+            }
             return power;
         }
-        private static Vector2 GetPowerVector(string location, UtilityObject obj, float amount)
+        public static Vector2 GetPowerVector(string location, UtilityObject obj, float amount)
         {
             var power = Vector2.Zero;
             if (amount == 0 || !IsObjectWorking(Game1.getLocationFromName(location), obj))
@@ -352,7 +363,7 @@ namespace UtilityGrid
             return power;
         }
 
-        private static bool IsObjectWorking(GameLocation location, UtilityObject obj)
+        public static bool IsObjectWorking(GameLocation location, UtilityObject obj)
         {
             return (!obj.mustBeOn || obj.worldObj.IsOn) &&
             (!obj.mustBeFull || obj.worldObj.heldObject.Value != null) &&
@@ -383,11 +394,11 @@ namespace UtilityGrid
             return obj.water < 0 || obj.electric < 0;
         }
 
-        public static UtilityObject GetUtilityObjectAtTile(Vector2 tile)
+        public static UtilityObject GetUtilityObjectAtTile(GameLocation location, Vector2 tile)
         {
-            if (!Game1.getFarm().Objects.ContainsKey(tile))
+            if (location == null || !location.Objects.ContainsKey(tile))
                 return null;
-            var obj = Game1.getFarm().Objects[tile];
+            var obj = location.Objects[tile];
             if (!objectDict.ContainsKey(obj.Name) && (obj.modData.ContainsKey("aedenthorn.UtilityGrid/" + GridType.water) || obj.modData.ContainsKey("aedenthorn.UtilityGrid/" + GridType.electric)))
             {
                 objectDict[obj.Name] = new UtilityObject();

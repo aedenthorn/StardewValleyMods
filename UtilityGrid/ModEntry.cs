@@ -42,7 +42,7 @@ namespace UtilityGrid
 
         public static Dictionary<string, UtilitySystem> utilitySystemDict = new Dictionary<string, UtilitySystem>();
         public static Dictionary<string, UtilityObject> objectDict = new Dictionary<string, UtilityObject>();
-
+        public static List<Func<string, int, List<Vector2>, Vector2>> powerFuctionList = new List<Func<string, int, List<Vector2>, Vector2>>();
         public static Harmony harmony;
 
         /// <summary>The mod entry point, called after the mod is first loaded.</summary>
