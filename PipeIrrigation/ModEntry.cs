@@ -115,6 +115,12 @@ namespace PipeIrrigation
                     getValue: () => Config.ShowWateredTilesLabelOnGrid,
                     setValue: value => Config.ShowWateredTilesLabelOnGrid = value
                 );
+                configMenu.AddBoolOption(
+                    mod: ModManifest,
+                    name: () => "Show Sprinkler Animations?",
+                    getValue: () => Config.ShowSprinklerAnimations,
+                    setValue: value => Config.ShowSprinklerAnimations = value
+                );
                 configMenu.AddNumberOption(
                     mod: ModManifest,
                     name: () => "% Water Per Tile",
@@ -200,22 +206,28 @@ namespace PipeIrrigation
                         {
                             sprinkler.ApplySprinkler(__instance, pipe + tile);
                         }
-                        __instance.temporarySprites.Add(new TemporaryAnimatedSprite("TileSheets\\animations", new Rectangle(0, 1984, 192, 192), 60f, 3, 100, pipe * 64f + new Vector2(-64f, -64f), false, false)
+                        if (Config.ShowSprinklerAnimations)
                         {
-                            color = Color.White * 0.4f,
-                            delayBeforeAnimationStart = Game1.random.Next(1000),
-                            id = pipe.X * 4000f + pipe.Y
-                        });
+                            __instance.temporarySprites.Add(new TemporaryAnimatedSprite("TileSheets\\animations", new Rectangle(0, 1984, 192, 192), 60f, 3, 100, pipe * 64f + new Vector2(-64f, -64f), false, false)
+                            {
+                                color = Color.White * 0.4f,
+                                delayBeforeAnimationStart = Game1.random.Next(1000),
+                                id = pipe.X * 4000f + pipe.Y
+                            });
+                        }
                     }
                     else
                     {
                         sprinkler.ApplySprinkler(__instance, pipe);
-                        int delay = Game1.random.Next(1000);
-                        __instance.temporarySprites.Add(new TemporaryAnimatedSprite(29, pipe * 64f + new Vector2(0f, -48f), Color.White * 0.5f, 4, false, 60f, 100, -1, -1f, -1, 0)
+                        if (Config.ShowSprinklerAnimations)
                         {
-                            delayBeforeAnimationStart = delay,
-                            id = pipe.X * 4000f + pipe.Y
-                        });
+                            int delay = Game1.random.Next(1000);
+                            __instance.temporarySprites.Add(new TemporaryAnimatedSprite(29, pipe * 64f + new Vector2(0f, -48f), Color.White * 0.5f, 4, false, 60f, 100, -1, -1f, -1, 0)
+                            {
+                                delayBeforeAnimationStart = delay,
+                                id = pipe.X * 4000f + pipe.Y
+                            });
+                        }
                     }
                 });
             }
