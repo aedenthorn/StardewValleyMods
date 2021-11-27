@@ -10,8 +10,6 @@ namespace UtilityGrid
     /// <summary>The mod entry point.</summary>
     public partial class ModEntry
     {
-
-
         public void Input_ButtonPressed(object sender, StardewModdingAPI.Events.ButtonPressedEventArgs e)
         {
             if (!Config.EnableMod || !Context.IsWorldReady || Game1.activeClickableMenu != null)
@@ -24,6 +22,21 @@ namespace UtilityGrid
                 Helper.Input.Suppress(e.Button);
                 ShowingGrid = !ShowingGrid;
                 Monitor.Log($"Showing grid: {ShowingGrid}");
+                EventHandler<KeyValuePair<GameLocation, int>> handler = null;
+                if (ShowingGrid)
+                {
+                     handler = showEventHandler;
+                }
+                else
+                {
+                     handler = hideEventHandler;
+                }
+                if (handler != null)
+                {
+                    KeyValuePair<GameLocation, int> args = new KeyValuePair<GameLocation, int>(Game1.getLocationFromName(location), (int)CurrentGrid);
+                    handler(context, args);
+                }
+
                 return;
             }
             if (!ShowingGrid)

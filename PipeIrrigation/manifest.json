@@ -1,0 +1,27 @@
+﻿{
+  "Name": "Pipe Irrigation",
+  "Author": "aedenthorn",
+  "Version": "0.1.0",
+  "Description": "Pipe Irrigation.",
+  "UniqueID": "aedenthorn.PipeIrrigation",
+  "EntryDll": "PipeIrrigation.dll",
+  "MinimumApiVersion": "3.13.0-beta.20211018",
+  "ModUpdater": {
+    "Repository": "StardewValleyMods",
+    "User": "aedenthorn",
+    "Directory": "_releases",
+    "ModFolder": "PipeIrrigation"
+  },
+  "UpdateKeys": [ "Nexus:" ],
+  "Dependencies": [
+    {
+      "UniqueID": "aedenthorn.UtilityGrid",
+      "MinimumVersion": "0.3.0",
+      "IsRequired": true
+    },
+    {
+      "UniqueID": "Platonymous.ModUpdater",
+      "IsRequired": false
+    }
+  ]
+}

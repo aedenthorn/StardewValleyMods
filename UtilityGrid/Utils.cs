@@ -211,6 +211,12 @@ namespace UtilityGrid
 
             AddObjectsToGrid(location, gridType);
 
+            EventHandler<KeyValuePair<GameLocation, int>> handler = refreshEventHandler;
+            if (handler != null)
+            {
+                KeyValuePair<GameLocation, int> e = new KeyValuePair<GameLocation, int>(Game1.getLocationFromName(location), (int)gridType);
+                handler(context, e);
+            }
         }
 
         private static void AddObjectsToGrid(string location, GridType gridType)
