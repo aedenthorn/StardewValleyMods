@@ -188,6 +188,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PipeIrrigation", "PipeIrrig
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FurnitureAdjustment", "FurnitureAdjustment\FurnitureAdjustment.csproj", "{E1658623-1548-4702-B82D-73911D9523A4}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FurnitureRecolor", "FurnitureRecolor\FurnitureRecolor.csproj", "{5228AAB6-E623-4328-A0F2-56510C84248C}"
+EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
 		_releases\_releases.projitems*{047040e0-3d07-46e5-852b-d1d45cd57bb8}*SharedItemsImports = 13
@@ -911,6 +913,14 @@ Global
 		{E1658623-1548-4702-B82D-73911D9523A4}.Release|Any CPU.Build.0 = Release|Any CPU
 		{E1658623-1548-4702-B82D-73911D9523A4}.Release|x86.ActiveCfg = Release|Any CPU
 		{E1658623-1548-4702-B82D-73911D9523A4}.Release|x86.Build.0 = Release|Any CPU
+		{5228AAB6-E623-4328-A0F2-56510C84248C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5228AAB6-E623-4328-A0F2-56510C84248C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5228AAB6-E623-4328-A0F2-56510C84248C}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{5228AAB6-E623-4328-A0F2-56510C84248C}.Debug|x86.Build.0 = Debug|Any CPU
+		{5228AAB6-E623-4328-A0F2-56510C84248C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5228AAB6-E623-4328-A0F2-56510C84248C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5228AAB6-E623-4328-A0F2-56510C84248C}.Release|x86.ActiveCfg = Release|Any CPU
+		{5228AAB6-E623-4328-A0F2-56510C84248C}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -45,19 +45,19 @@ namespace FurnitureAdjustment
             if (++ticks < Config.MoveSpeed)
                 return;
             ticks = 0;
-            if (Helper.Input.IsDown(Config.RaiseButton))
+            if (Helper.Input.IsDown(Config.RaiseButton) || Helper.Input.IsSuppressed(Config.RaiseButton))
             {
                 MoveWallHanging(0, -1, Config.RaiseButton);
             }
-            else if (Helper.Input.IsDown(Config.LowerButton))
+            else if (Helper.Input.IsDown(Config.LowerButton) || Helper.Input.IsSuppressed(Config.LowerButton))
             {
                 MoveWallHanging(0, 1, Config.LowerButton);
             }
-            else if (Helper.Input.IsDown(Config.LeftButton))
+            else if (Helper.Input.IsDown(Config.LeftButton) || Helper.Input.IsSuppressed(Config.LeftButton))
             {
                 MoveWallHanging(-1, 0, Config.LeftButton);
             }
-            else if (Helper.Input.IsDown(Config.RightButton))
+            else if (Helper.Input.IsDown(Config.RightButton) || Helper.Input.IsSuppressed(Config.RightButton))
             {
                 MoveWallHanging(1, 0, Config.RightButton);
             }
@@ -94,9 +94,13 @@ namespace FurnitureAdjustment
             {
                 if (f.boundingBox.Value.Contains(Game1.viewport.X + Game1.getOldMouseX(), Game1.viewport.Y + Game1.getOldMouseY()))
                 {
+                    f.RemoveLightGlow(Game1.currentLocation);
                     f.boundingBox.Value = new Rectangle(f.boundingBox.Value.Location + shift, f.boundingBox.Value.Size);
                     f.updateDrawPosition();
                     Game1.input.SetMousePosition(Game1.getMousePosition().X + shift.X, Game1.getMousePosition().Y + shift.Y);
+                    f.removeLights(Game1.currentLocation);
+
+                    Helper.Input.Suppress(button);
                     /*
                     var ptr = typeof(Object).GetMethod("placementAction", System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Instance).MethodHandle.GetFunctionPointer();
                     var basePlacementAction = (Func<GameLocation, int, int, Farmer, bool>)Activator.CreateInstance(typeof(Func<GameLocation, int, int, Farmer, bool>), f, ptr);
