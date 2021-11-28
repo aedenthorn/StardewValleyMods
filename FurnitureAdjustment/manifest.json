@@ -1,0 +1,22 @@
+﻿{
+  "Name": "Furniture Adjustment",
+  "Author": "aedenthorn",
+  "Version": "0.2.0",
+  "Description": "Furniture Adjustment.",
+  "UniqueID": "aedenthorn.FurnitureAdjustment",
+  "EntryDll": "FurnitureAdjustment.dll",
+  "MinimumApiVersion": "3.13.0-beta.20211018",
+  "ModUpdater": {
+    "Repository": "StardewValleyMods",
+    "User": "aedenthorn",
+    "Directory": "_releases",
+    "ModFolder": "FurnitureAdjustment"
+  },
+  "UpdateKeys": [ "Nexus:10213" ],
+  "Dependencies": [
+    {
+      "UniqueID": "Platonymous.ModUpdater",
+      "IsRequired": false
+    }
+  ]
+}
