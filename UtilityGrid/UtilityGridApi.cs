@@ -21,6 +21,8 @@ namespace UtilityGrid
         public Vector2 ObjectWaterElectricityVector(GameLocation location, int x, int y);
         public void RefreshElectricGrid(GameLocation location);
         public void RefreshWaterGrid(GameLocation location);
+        public bool SetObjectElectricity(GameLocation location, int x, int y, int amount);
+        public bool SetObjectWater(GameLocation location, int x, int y, int amount);
         public bool ShowingElectrictyGrid();
         public bool ShowingWaterGrid();
         public List<Vector2> TileGroupElectricityObjects(GameLocation location, int x, int y);
@@ -195,6 +197,46 @@ namespace UtilityGrid
         public bool ShowingElectrictyGrid()
         {
             return ModEntry.ShowingGrid && ModEntry.CurrentGrid == ModEntry.GridType.electric;
+        }
+        public bool SetObjectWater(GameLocation location, int x, int y, float amount)
+        {
+            if (!ModEntry.utilitySystemDict.ContainsKey(location.Name))
+                return false;
+            var v = new Vector2(x, y);
+            foreach (var group in ModEntry.utilitySystemDict[location.Name].waterGroups)
+            {
+                if (group.objects.ContainsKey(v))
+                {
+                    float current = group.objects[v].water;
+                    float change = amount - current;
+                    Vector2 power = TileGroupWaterVector(location, x, y);
+                    if (change < 0 && power.X + power.Y - change < 0)
+                        return false;
+                    group.objects[v].water = amount;
+                    return true;
+                }
+            }
+            return false;
+        }
+        public bool SetObjectElectricity(GameLocation location, int x, int y, int amount)
+        {
+            if (!ModEntry.utilitySystemDict.ContainsKey(location.Name))
+                return false;
+            var v = new Vector2(x, y);
+            foreach (var group in ModEntry.utilitySystemDict[location.Name].electricGroups)
+            {
+                if (group.pipes.Contains(v))
+                {
+                    float current = group.objects[v].electric;
+                    float change = amount - current;
+                    Vector2 power = TileGroupElectricityVector(location, x, y);
+                    if (change < 0 && power.X + power.Y - change < 0)
+                        return false;
+                    group.objects[v].electric = amount;
+                    return true;
+                }
+            }
+            return false;
         }
     }
 }
