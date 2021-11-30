@@ -190,6 +190,10 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FurnitureAdjustment", "Furn
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FurnitureRecolor", "FurnitureRecolor\FurnitureRecolor.csproj", "{5228AAB6-E623-4328-A0F2-56510C84248C}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PelicanXVASynth", "PelicanXVASynth\PelicanXVASynth.csproj", "{8AB1D4BF-D4E9-409C-84FC-1B5F604C4F15}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SoundEffectReplacement", "SoundEffectReplacement\SoundEffectReplacement.csproj", "{BCFB85CA-BD9E-42C6-B01E-6486DE6C40E1}"
+EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
 		_releases\_releases.projitems*{047040e0-3d07-46e5-852b-d1d45cd57bb8}*SharedItemsImports = 13
@@ -921,6 +925,22 @@ Global
 		{5228AAB6-E623-4328-A0F2-56510C84248C}.Release|Any CPU.Build.0 = Release|Any CPU
 		{5228AAB6-E623-4328-A0F2-56510C84248C}.Release|x86.ActiveCfg = Release|Any CPU
 		{5228AAB6-E623-4328-A0F2-56510C84248C}.Release|x86.Build.0 = Release|Any CPU
+		{8AB1D4BF-D4E9-409C-84FC-1B5F604C4F15}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8AB1D4BF-D4E9-409C-84FC-1B5F604C4F15}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8AB1D4BF-D4E9-409C-84FC-1B5F604C4F15}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{8AB1D4BF-D4E9-409C-84FC-1B5F604C4F15}.Debug|x86.Build.0 = Debug|Any CPU
+		{8AB1D4BF-D4E9-409C-84FC-1B5F604C4F15}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8AB1D4BF-D4E9-409C-84FC-1B5F604C4F15}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8AB1D4BF-D4E9-409C-84FC-1B5F604C4F15}.Release|x86.ActiveCfg = Release|Any CPU
+		{8AB1D4BF-D4E9-409C-84FC-1B5F604C4F15}.Release|x86.Build.0 = Release|Any CPU
+		{BCFB85CA-BD9E-42C6-B01E-6486DE6C40E1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BCFB85CA-BD9E-42C6-B01E-6486DE6C40E1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BCFB85CA-BD9E-42C6-B01E-6486DE6C40E1}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{BCFB85CA-BD9E-42C6-B01E-6486DE6C40E1}.Debug|x86.Build.0 = Debug|Any CPU
+		{BCFB85CA-BD9E-42C6-B01E-6486DE6C40E1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BCFB85CA-BD9E-42C6-B01E-6486DE6C40E1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BCFB85CA-BD9E-42C6-B01E-6486DE6C40E1}.Release|x86.ActiveCfg = Release|Any CPU
+		{BCFB85CA-BD9E-42C6-B01E-6486DE6C40E1}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

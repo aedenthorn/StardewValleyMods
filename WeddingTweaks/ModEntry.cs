@@ -158,7 +158,12 @@ namespace WeddingTweaks
                     reset: () => Config = new ModConfig(),
                     save: () => Helper.WriteConfig(Config)
                 );
-
+                configMenu.AddBoolOption(
+                    mod: ModManifest,
+                    name: () => "Mod Enabled",
+                    getValue: () => Config.EnableMod,
+                    setValue: value => Config.EnableMod = value
+                );
                 configMenu.AddNumberOption(
                     mod: ModManifest,
                     name: () => "Days between proposal and wedding",

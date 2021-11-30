@@ -41,7 +41,7 @@ namespace UtilityGrid
         };
 
         public static Dictionary<string, UtilitySystem> utilitySystemDict = new Dictionary<string, UtilitySystem>();
-        public static Dictionary<string, UtilityObject> objectDict = new Dictionary<string, UtilityObject>();
+        public static Dictionary<string, UtilityObject> utilityObjectDict = new Dictionary<string, UtilityObject>();
         public static List<Func<string, int, List<Vector2>, Vector2>> powerFuctionList = new List<Func<string, int, List<Vector2>, Vector2>>();
         public static EventHandler<KeyValuePair<GameLocation, int>> refreshEventHandler;
         public static EventHandler<KeyValuePair<GameLocation, int>> showEventHandler;
@@ -68,6 +68,8 @@ namespace UtilityGrid
             helper.Events.GameLoop.SaveLoaded += GameLoop_SaveLoaded;
             helper.Events.GameLoop.Saving += GameLoop_Saving;
             helper.Events.Display.RenderedWorld += Display_RenderedWorld;
+            helper.Events.GameLoop.TimeChanged += GameLoop_TimeChanged;
+            helper.Events.GameLoop.DayEnding += GameLoop_DayEnding;
 
             harmony = new Harmony(ModManifest.UniqueID);
 
@@ -94,6 +96,10 @@ namespace UtilityGrid
                original: AccessTools.Method(typeof(Object), nameof(Object.placementAction)),
                postfix: new HarmonyMethod(typeof(ModEntry), nameof(ModEntry.Object_placementAction_Postfix))
             );
+             harmony.Patch(
+               original: AccessTools.Method(typeof(Object), nameof(Object.performRemoveAction)),
+               postfix: new HarmonyMethod(typeof(ModEntry), nameof(ModEntry.Object_performRemoveAction_Postfix))
+            );
 
             /*
             harmony.Patch(
@@ -109,7 +115,6 @@ namespace UtilityGrid
             pipeTexture = Helper.Content.Load<Texture2D>("assets/pipes.png");
 
         }
-
 
         public override object GetApi()
         {

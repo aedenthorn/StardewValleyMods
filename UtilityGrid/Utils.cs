@@ -42,11 +42,43 @@ namespace UtilityGrid
                 enough = false;
 
             string str = "" + Math.Round(objPower);
-            b.DrawString(Game1.dialogueFont, str, Game1.GlobalToLocal(Game1.viewport, kvp.Key * 64) + new Vector2(-2, 2), Config.ShadowColor, 0, Vector2.Zero, 1f, SpriteEffects.None, 0.999999f);
-            b.DrawString(Game1.dialogueFont, str, Game1.GlobalToLocal(Game1.viewport, kvp.Key * 64) + new Vector2(2, -2), Config.ShadowColor, 0, Vector2.Zero, 1f, SpriteEffects.None, 0.999999f);
-            b.DrawString(Game1.dialogueFont, str, Game1.GlobalToLocal(Game1.viewport, kvp.Key * 64) + new Vector2(-2, -2), Config.ShadowColor, 0, Vector2.Zero, 1f, SpriteEffects.None, 0.999999f);
-            b.DrawString(Game1.dialogueFont, str, Game1.GlobalToLocal(Game1.viewport, kvp.Key * 64) + new Vector2(2, 2), Config.ShadowColor, 0, Vector2.Zero, 1f, SpriteEffects.None, 0.999999f);
-            b.DrawString(Game1.dialogueFont, str, Game1.GlobalToLocal(Game1.viewport, kvp.Key * 64), enough ? color : Config.InsufficientColor, 0, Vector2.Zero, 1f, SpriteEffects.None, 0.9999999f);
+            Vector2 pos = Game1.GlobalToLocal(Game1.viewport, kvp.Key * 64);
+            b.DrawString(Game1.dialogueFont, str, pos + new Vector2(-2, 2), Config.ShadowColor, 0, Vector2.Zero, 1f, SpriteEffects.None, 0.999999f);
+            b.DrawString(Game1.dialogueFont, str, pos + new Vector2(2, -2), Config.ShadowColor, 0, Vector2.Zero, 1f, SpriteEffects.None, 0.999999f);
+            b.DrawString(Game1.dialogueFont, str, pos + new Vector2(-2, -2), Config.ShadowColor, 0, Vector2.Zero, 1f, SpriteEffects.None, 0.999999f);
+            b.DrawString(Game1.dialogueFont, str, pos + new Vector2(2, 2), Config.ShadowColor, 0, Vector2.Zero, 1f, SpriteEffects.None, 0.999999f);
+            b.DrawString(Game1.dialogueFont, str, pos, enough ? color : Config.InsufficientColor, 0, Vector2.Zero, 1f, SpriteEffects.None, 0.9999999f);
+        }
+        private void DrawCharge(SpriteBatch b, KeyValuePair<Vector2, UtilityObject> kvp, Color color)
+        {
+            float charge = 0;
+            int capacity;
+            if (CurrentGrid == GridType.electric)
+            {
+                if (kvp.Value.electricChargeCapacity <= 0)
+                    return;
+                capacity = kvp.Value.electricChargeCapacity;
+                if (kvp.Value.worldObj.modData.ContainsKey("aedenthorn.UtilityGrid/electricCharge"))
+                    float.TryParse(kvp.Value.worldObj.modData["aedenthorn.UtilityGrid/electricCharge"], NumberStyles.Float, CultureInfo.InvariantCulture, out charge);
+            }
+            else
+            {
+                if (kvp.Value.waterChargeCapacity <= 0)
+                    return;
+                if (kvp.Value.worldObj.modData.ContainsKey("aedenthorn.UtilityGrid/waterCharge"))
+                    float.TryParse(kvp.Value.worldObj.modData["aedenthorn.UtilityGrid/waterCharge"], NumberStyles.Float, CultureInfo.InvariantCulture, out charge);
+
+                capacity = kvp.Value.waterChargeCapacity;
+            }
+
+
+            string str = Math.Round(charge, 2) + "\n" + capacity;
+            Vector2 pos = Game1.GlobalToLocal(Game1.viewport, kvp.Key * 64) + new Vector2(16, -16);
+            b.DrawString(Game1.dialogueFont, str, pos + new Vector2(-1, 1), Config.ShadowColor, 0, Vector2.Zero, 0.5f, SpriteEffects.None, 0.999999f);
+            b.DrawString(Game1.dialogueFont, str, pos + new Vector2(1, -1), Config.ShadowColor, 0, Vector2.Zero, 0.5f, SpriteEffects.None, 0.999999f);
+            b.DrawString(Game1.dialogueFont, str, pos + new Vector2(-1, -1), Config.ShadowColor, 0, Vector2.Zero, 0.5f, SpriteEffects.None, 0.999999f);
+            b.DrawString(Game1.dialogueFont, str, pos + new Vector2(1, 1), Config.ShadowColor, 0, Vector2.Zero, 0.5f, SpriteEffects.None, 0.999999f);
+            b.DrawString(Game1.dialogueFont, str, pos, color, 0, Vector2.Zero, 0.5f, SpriteEffects.None, 0.9999999f);
         }
         public bool PayForPipe(bool destroying)
         {
@@ -246,9 +278,9 @@ namespace UtilityGrid
                 var obj = GetUtilityObjectAtTile(gl, kvp.Key);
                 if (obj == null)
                     continue;
-                if (gridType == GridType.water && obj.water == 0)
+                if (gridType == GridType.water && obj.water == 0 && obj.waterChargeCapacity <= 0)
                     continue;
-                if (gridType == GridType.electric && obj.electric == 0)
+                if (gridType == GridType.electric && obj.electric == 0 && obj.electricChargeCapacity <= 0)
                     continue;
                 bool found = false;
                 foreach (var group in groupList)
@@ -323,7 +355,7 @@ namespace UtilityGrid
             }
             return power;
         }
-        public static Vector2 GetGroupElectricPower(string location, PipeGroup group)
+        public static Vector2 GetGroupElectricPower(string location, PipeGroup group, bool tick = false)
         {
             Vector2 power = Vector2.Zero;
             foreach (var obj in group.objects.Values)
@@ -334,10 +366,45 @@ namespace UtilityGrid
             {
                 power += func(location, (int)GridType.electric, group.pipes);
             }
+            Dictionary<Object, float> objectsToDischarge = new Dictionary<Object, float>();
+            foreach (var obj in group.objects.Values)
+            {
+                var netPower = power.X + power.Y;
+                if (netPower == 0)
+                    break;
+
+                if (obj.electricChargeCapacity == 0)
+                    continue;
+                float charge = 0;
+                if (obj.worldObj.modData.ContainsKey("aedenthorn.UtilityGrid/electricCharge"))
+                    float.TryParse(obj.worldObj.modData["aedenthorn.UtilityGrid/electricCharge"], NumberStyles.Float, CultureInfo.InvariantCulture, out charge);
+                if (netPower > 0)
+                {
+                    float add = Math.Min(obj.electricChargeCapacity - charge, Math.Min(obj.electricChargeRate, netPower));
+                    if (tick)
+                        obj.worldObj.modData["aedenthorn.UtilityGrid/electricCharge"] = Math.Min(obj.electricChargeCapacity, charge + add).ToString();
+                    power.X -= add;
+                }
+                else
+                {
+                    float add = Math.Min(charge, obj.electricDischargeRate <= 0 ? -netPower : Math.Min(-netPower, obj.electricDischargeRate));
+                    if (tick)
+                    {
+                        objectsToDischarge.Add(obj.worldObj, Math.Max(0, charge - add));
+                    }
+
+                    power.X += add;
+                }
+            }
+            if (objectsToDischarge.Count > 0 && power.X + power.Y >= 0)
+            {
+                foreach (var kvp in objectsToDischarge)
+                    kvp.Key.modData["aedenthorn.UtilityGrid/electricCharge"] = kvp.Value.ToString();
+            }
 
             return power;
         }
-        public static Vector2 GetGroupWaterPower(string location, PipeGroup group)
+        public static Vector2 GetGroupWaterPower(string location, PipeGroup group, bool tick = false)
         {
             Vector2 power = Vector2.Zero;
             foreach (var kvp in group.objects)
@@ -354,6 +421,41 @@ namespace UtilityGrid
             foreach (var func in powerFuctionList)
             {
                 power += func(location, (int)GridType.water, group.pipes);
+            }
+            Dictionary<Object, float> objectsToDischarge = new Dictionary<Object, float>();
+            foreach (var obj in group.objects.Values)
+            {
+                var netPower = power.X + power.Y;
+                if (netPower == 0)
+                    break;
+
+                if (obj.waterChargeCapacity == 0)
+                    continue;
+                float charge = 0;
+                if (obj.worldObj.modData.ContainsKey("aedenthorn.UtilityGrid/waterCharge"))
+                    float.TryParse(obj.worldObj.modData["aedenthorn.UtilityGrid/waterCharge"], NumberStyles.Float, CultureInfo.InvariantCulture, out charge);
+                if (netPower > 0)
+                {
+                    float add = Math.Min(obj.waterChargeCapacity - charge, Math.Min(obj.waterChargeRate, netPower));
+                    if (tick)
+                        obj.worldObj.modData["aedenthorn.UtilityGrid/waterCharge"] = Math.Min(obj.waterChargeCapacity, charge + add).ToString();
+                    power.X -= add;
+                }
+                else
+                {
+                    float add = Math.Min(charge, obj.waterDischargeRate <= 0 ? -netPower : Math.Min(-netPower, obj.waterDischargeRate));
+                    if (tick)
+                    {
+                        objectsToDischarge.Add(obj.worldObj, Math.Max(0, charge - add));
+                    }
+                        
+                    power.X += add;
+                }
+            }
+            if(objectsToDischarge.Count > 0 && power.X + power.Y >= 0)
+            {
+                foreach(var kvp in objectsToDischarge)
+                    kvp.Key.modData["aedenthorn.UtilityGrid/waterCharge"] = kvp.Value.ToString();
             }
             return power;
         }
@@ -405,41 +507,65 @@ namespace UtilityGrid
             if (location == null || !location.Objects.ContainsKey(tile))
                 return null;
             var obj = location.Objects[tile];
-            if (!objectDict.ContainsKey(obj.Name) && (obj.modData.ContainsKey("aedenthorn.UtilityGrid/" + GridType.water) || obj.modData.ContainsKey("aedenthorn.UtilityGrid/" + GridType.electric)))
+            if (!utilityObjectDict.ContainsKey(obj.Name) && (obj.modData.ContainsKey("aedenthorn.UtilityGrid/" + GridType.water) || obj.modData.ContainsKey("aedenthorn.UtilityGrid/" + GridType.electric) || obj.modData.ContainsKey("aedenthorn.UtilityGrid/electricChargeCapacity") || obj.modData.ContainsKey("aedenthorn.UtilityGrid/waterChargeCapacity")))
             {
-                objectDict[obj.Name] = new UtilityObject();
+                utilityObjectDict[obj.Name] = new UtilityObject();
                 if (obj.modData.ContainsKey("aedenthorn.UtilityGrid/" + GridType.water))
                 {
-                    objectDict[obj.Name].water = float.Parse(obj.modData["aedenthorn.UtilityGrid/" + GridType.water], CultureInfo.InvariantCulture);
+                    utilityObjectDict[obj.Name].water = float.Parse(obj.modData["aedenthorn.UtilityGrid/" + GridType.water], CultureInfo.InvariantCulture);
                 }
                 if (obj.modData.ContainsKey("aedenthorn.UtilityGrid/" + GridType.electric))
                 {
-                    objectDict[obj.Name].electric = float.Parse(obj.modData["aedenthorn.UtilityGrid/" + GridType.electric], CultureInfo.InvariantCulture);
+                    utilityObjectDict[obj.Name].electric = float.Parse(obj.modData["aedenthorn.UtilityGrid/" + GridType.electric], CultureInfo.InvariantCulture);
                 }
                 if (obj.modData.ContainsKey("aedenthorn.UtilityGrid/mustBeOn"))
                 {
-                    objectDict[obj.Name].mustBeOn = bool.Parse(obj.modData["aedenthorn.UtilityGrid/mustBeOn"]);
+                    utilityObjectDict[obj.Name].mustBeOn = bool.Parse(obj.modData["aedenthorn.UtilityGrid/mustBeOn"]);
                 }
                 if (obj.modData.ContainsKey("aedenthorn.UtilityGrid/mustBeWorking"))
                 {
-                    objectDict[obj.Name].mustBeWorking = bool.Parse(obj.modData["aedenthorn.UtilityGrid/mustBeWorking"]);
+                    utilityObjectDict[obj.Name].mustBeWorking = bool.Parse(obj.modData["aedenthorn.UtilityGrid/mustBeWorking"]);
                 }
                 if (obj.modData.ContainsKey("aedenthorn.UtilityGrid/mustBeFull"))
                 {
-                    objectDict[obj.Name].mustBeFull = bool.Parse(obj.modData["aedenthorn.UtilityGrid/mustBeFull"]);
+                    utilityObjectDict[obj.Name].mustBeFull = bool.Parse(obj.modData["aedenthorn.UtilityGrid/mustBeFull"]);
                 }
                 if (obj.modData.ContainsKey("aedenthorn.UtilityGrid/onlyInWater"))
                 {
-                    objectDict[obj.Name].onlyInWater = bool.Parse(obj.modData["aedenthorn.UtilityGrid/onlyInWater"]);
+                    utilityObjectDict[obj.Name].onlyInWater = bool.Parse(obj.modData["aedenthorn.UtilityGrid/onlyInWater"]);
                 }
                 if (obj.modData.ContainsKey("aedenthorn.UtilityGrid/mustContain"))
                 {
-                    objectDict[obj.Name].mustContain = obj.modData["aedenthorn.UtilityGrid/mustContain"];
+                    utilityObjectDict[obj.Name].mustContain = obj.modData["aedenthorn.UtilityGrid/mustContain"];
+                }
+                if (obj.modData.ContainsKey("aedenthorn.UtilityGrid/electricChargeCapacity"))
+                {
+                    utilityObjectDict[obj.Name].electricChargeCapacity = int.Parse(obj.modData["aedenthorn.UtilityGrid/electricChargeCapacity"]);
+                }
+                if (obj.modData.ContainsKey("aedenthorn.UtilityGrid/waterChargeCapacity"))
+                {
+                    utilityObjectDict[obj.Name].waterChargeCapacity = int.Parse(obj.modData["aedenthorn.UtilityGrid/waterChargeCapacity"]);
+                }
+                if (obj.modData.ContainsKey("aedenthorn.UtilityGrid/electricChargeRate"))
+                {
+                    utilityObjectDict[obj.Name].electricChargeRate = int.Parse(obj.modData["aedenthorn.UtilityGrid/electricChargeRate"]);
+                }
+                if (obj.modData.ContainsKey("aedenthorn.UtilityGrid/waterChargeRate"))
+                {
+                    utilityObjectDict[obj.Name].waterChargeRate = int.Parse(obj.modData["aedenthorn.UtilityGrid/waterChargeRate"]);
+                }
+                if (obj.modData.ContainsKey("aedenthorn.UtilityGrid/electricDischargeRate"))
+                {
+                    utilityObjectDict[obj.Name].electricDischargeRate = int.Parse(obj.modData["aedenthorn.UtilityGrid/electricDischargeRate"]);
+                }
+                if (obj.modData.ContainsKey("aedenthorn.UtilityGrid/waterDischargeRate"))
+                {
+                    utilityObjectDict[obj.Name].waterDischargeRate = int.Parse(obj.modData["aedenthorn.UtilityGrid/waterDischargeRate"]);
                 }
             }
-            if (objectDict.ContainsKey(obj.Name))
+            if (utilityObjectDict.ContainsKey(obj.Name))
             {
-                UtilityObject outObj = objectDict[obj.Name];
+                UtilityObject outObj = utilityObjectDict[obj.Name];
                 outObj.worldObj = obj;
                 return outObj;
             }

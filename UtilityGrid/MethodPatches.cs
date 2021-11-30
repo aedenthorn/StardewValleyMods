@@ -7,11 +7,11 @@ namespace UtilityGrid
 {
     public partial class ModEntry
     {
-        // dga_add "aedenthorn.SimpleIrrigationSystemDGA/Bronze Water Pump" 1
+        // dga_add "aedenthorn.UtilityGridStorageDGA/Utility Grid Battery" 1
         public static bool Utility_playerCanPlaceItemHere_Prefix(GameLocation location, Item item, int x, int y, ref bool __result)
         {
             //SMonitor.Log($"placing {item.Name}, {objectDict.ContainsKey(item.Name)}");
-            if (!Config.EnableMod || !objectDict.ContainsKey(item.Name) || !(location is Farm) || !objectDict[item.Name].onlyInWater || location.Objects.ContainsKey(new Vector2(x, y)))
+            if (!Config.EnableMod || !utilityObjectDict.ContainsKey(item.Name) || !(location is Farm) || !utilityObjectDict[item.Name].onlyInWater || location.Objects.ContainsKey(new Vector2(x, y)))
                 return true;
             __result = location.isWaterTile(x / 64, y / 64);
             return false;
@@ -21,7 +21,7 @@ namespace UtilityGrid
         public static bool Object_DayUpdate_Prefix(Object __instance, GameLocation location, ref int ___health, ref bool __state)
         {
             //SMonitor.Log($"placing {item.Name}, {objectDict.ContainsKey(item.Name)}");
-            if (!Config.EnableMod || !objectDict.ContainsKey(__instance.Name))
+            if (!Config.EnableMod || !utilityObjectDict.ContainsKey(__instance.Name))
                 return true;
 
             if (!utilitySystemDict.ContainsKey(location.Name))
@@ -33,12 +33,12 @@ namespace UtilityGrid
             ___health = 10;
             if (__instance.IsSprinkler())
             {
-                return !ObjectNeedsPower(objectDict[__instance.Name]) || IsObjectPowered(location.Name, __instance.TileLocation, objectDict[__instance.Name]);
+                return !ObjectNeedsPower(utilityObjectDict[__instance.Name]) || IsObjectPowered(location.Name, __instance.TileLocation, utilityObjectDict[__instance.Name]);
             }
-            SMonitor.Log($"Day update for {__instance.Name}, needs power {ObjectNeedsPower(objectDict[__instance.Name])}, is powered {IsObjectPowered(location.Name, __instance.TileLocation, objectDict[__instance.Name])}");
-            if(!ObjectNeedsPower(objectDict[__instance.Name]) || IsObjectPowered(location.Name, __instance.TileLocation, objectDict[__instance.Name]))
+            SMonitor.Log($"Day update for {__instance.Name}, needs power {ObjectNeedsPower(utilityObjectDict[__instance.Name])}, is powered {IsObjectPowered(location.Name, __instance.TileLocation, utilityObjectDict[__instance.Name])}");
+            if(!ObjectNeedsPower(utilityObjectDict[__instance.Name]) || IsObjectPowered(location.Name, __instance.TileLocation, utilityObjectDict[__instance.Name]))
             {
-                if (objectDict.ContainsKey(__instance.Name))
+                if (utilityObjectDict.ContainsKey(__instance.Name))
                 {
                     if (__instance.heldObject.Value == null && __instance.MinutesUntilReady <= 0)
                         __instance.readyForHarvest.Value = true;
@@ -55,16 +55,16 @@ namespace UtilityGrid
 
         public static void Object_minutesElapsed_Prefix(Object __instance, GameLocation environment, ref bool __state)
         {
-            if (!Config.EnableMod || !objectDict.ContainsKey(__instance.Name))
+            if (!Config.EnableMod || !utilityObjectDict.ContainsKey(__instance.Name))
                 return;
             if (!utilitySystemDict.ContainsKey(environment.Name))
             {
                 utilitySystemDict[environment.Name] = new UtilitySystem();
                 RemakeAllGroups(environment.Name);
             }
-            if (!ObjectNeedsPower(objectDict[__instance.Name]) || IsObjectPowered(environment.Name, __instance.TileLocation, objectDict[__instance.Name]))
+            if (!ObjectNeedsPower(utilityObjectDict[__instance.Name]) || IsObjectPowered(environment.Name, __instance.TileLocation, utilityObjectDict[__instance.Name]))
             {
-                if (objectDict.ContainsKey(__instance.Name))
+                if (utilityObjectDict.ContainsKey(__instance.Name))
                 {
                     if (__instance.heldObject.Value == null && __instance.MinutesUntilReady <= 0)
                         __instance.readyForHarvest.Value = true;
@@ -89,24 +89,34 @@ namespace UtilityGrid
         public static bool Object_getScale_Prefix(Object __instance, ref Vector2 __result)
         {
             //SMonitor.Log($"placing {item.Name}, {objectDict.ContainsKey(item.Name)}");
-            if (!Config.EnableMod || !objectDict.ContainsKey(__instance.Name))
+            if (!Config.EnableMod || !utilityObjectDict.ContainsKey(__instance.Name))
                 return true;
             if (!utilitySystemDict.ContainsKey(Game1.player.currentLocation.Name))
             {
                 utilitySystemDict[Game1.player.currentLocation.Name] = new UtilitySystem();
                 RemakeAllGroups(Game1.player.currentLocation.Name);
             }
-            if (!ObjectNeedsPower(objectDict[__instance.Name]) || IsObjectPowered(Game1.player.currentLocation.Name, __instance.TileLocation, objectDict[__instance.Name]) )
+            if (!ObjectNeedsPower(utilityObjectDict[__instance.Name]) || IsObjectPowered(Game1.player.currentLocation.Name, __instance.TileLocation, utilityObjectDict[__instance.Name]) )
                 return true;
             __result = Vector2.Zero;
             return false;
         }
         public static void Object_placementAction_Postfix(Object __instance, GameLocation location)
         {
-            if (!Config.EnableMod || !objectDict.ContainsKey(__instance.Name))
+            if (!Config.EnableMod || !utilityObjectDict.ContainsKey(__instance.Name))
                 return;
             SMonitor.Log($"Placing object {__instance} in {location.Name}");
             RemakeAllGroups(location.Name);
+        }
+        public static void Object_performRemoveAction_Postfix(Object __instance, GameLocation environment)
+        {
+            if (!Config.EnableMod || !utilityObjectDict.ContainsKey(__instance.Name))
+                return;
+            SMonitor.Log($"Removing object {__instance} in {environment.Name}");
+            DelayedAction.functionAfterDelay(delegate
+            {
+                RemakeAllGroups(environment.Name);
+            }, 50); 
         }
 
 
