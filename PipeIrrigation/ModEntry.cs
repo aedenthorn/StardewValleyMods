@@ -7,6 +7,7 @@ using StardewValley;
 using StardewValley.TerrainFeatures;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using Object = StardewValley.Object;
 
 namespace PipeIrrigation
@@ -177,7 +178,28 @@ namespace PipeIrrigation
                         }
                     }
                 }
-                if (hoeDirtList.Count * Config.PercentWaterPerTile / 100f <= netExcess)
+                bool enough = hoeDirtList.Count * Config.PercentWaterPerTile / 100f <= netExcess;
+                if (!enough)
+                {
+                    float lacking = hoeDirtList.Count * Config.PercentWaterPerTile / 100f - netExcess;
+
+                    foreach (var obj in utilityGridAPI.TileGroupElectricityObjects(location, (int)group[0].X, (int)group[0].Y))
+                    {
+                        if(location.objects.ContainsKey(obj) && location.objects[obj].modData.ContainsKey("aedenthorn.UtilityGrid/electricCharge"))
+                        {
+                            float charge = float.Parse(location.objects[obj].modData["aedenthorn.UtilityGrid/electricCharge"], CultureInfo.InvariantCulture);
+                            float change = Math.Min(charge, lacking);
+                            lacking -= change;
+                            location.objects[obj].modData["aedenthorn.UtilityGrid/electricCharge"] = (charge - change).ToString();
+                            if (lacking <= 0)
+                            {
+                                enough = true;
+                                break;
+                            }
+                        }
+                    }
+                }
+                if (enough)
                 {
                     wateringPipeDict[location.Name].AddRange(pipeList);
                     wateringTileDict[location.Name].AddRange(hoeDirtList);

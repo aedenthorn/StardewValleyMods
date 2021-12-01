@@ -431,9 +431,16 @@ namespace UtilityGrid
 
                 if (obj.waterChargeCapacity == 0)
                     continue;
+
                 float charge = 0;
                 if (obj.worldObj.modData.ContainsKey("aedenthorn.UtilityGrid/waterCharge"))
                     float.TryParse(obj.worldObj.modData["aedenthorn.UtilityGrid/waterCharge"], NumberStyles.Float, CultureInfo.InvariantCulture, out charge);
+
+                if (tick && obj.fillWaterFromRain)
+                {
+                    charge = Math.Min(charge + obj.waterChargeCapacity, obj.waterChargeCapacity);
+                }
+
                 if (netPower > 0)
                 {
                     float add = Math.Min(obj.waterChargeCapacity - charge, Math.Min(obj.waterChargeRate, netPower));
@@ -561,6 +568,10 @@ namespace UtilityGrid
                 if (obj.modData.ContainsKey("aedenthorn.UtilityGrid/waterDischargeRate"))
                 {
                     utilityObjectDict[obj.Name].waterDischargeRate = int.Parse(obj.modData["aedenthorn.UtilityGrid/waterDischargeRate"]);
+                }
+                if (obj.modData.ContainsKey("aedenthorn.UtilityGrid/fillWaterFromRain"))
+                {
+                    utilityObjectDict[obj.Name].fillWaterFromRain = bool.Parse(obj.modData["aedenthorn.UtilityGrid/fillWaterFromRain"]);
                 }
             }
             if (utilityObjectDict.ContainsKey(obj.Name))

@@ -20,6 +20,7 @@ namespace UtilityGrid
         public float electricChargeRate;
         public float waterDischargeRate;
         public float electricDischargeRate;
+        public bool fillWaterFromRain;
         public Object worldObj;
     }
 }

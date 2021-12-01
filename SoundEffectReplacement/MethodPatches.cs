@@ -50,7 +50,10 @@ namespace SoundEffectReplacement
             string newName = replacementDict[name];
             if (newName.Length == 0)
             {
-                cue_definition2.sounds = null;
+                cue_definition2.sounds = new List<XactSoundBankSound>()
+                {
+                    new XactSoundBankSound(new SoundEffect[]{ silentSound }, cat, false, reverb )
+                };
             }
             else if (soundEffectDict.ContainsKey(newName))
             {

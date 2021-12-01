@@ -21,6 +21,7 @@ namespace SoundEffectReplacement
         public static readonly string dictPath = "sound_effect_replacement_dictionary";
         public static Dictionary<string, string> replacementDict = new Dictionary<string, string>();
         public static Dictionary<string, SoundEffect> soundEffectDict = new Dictionary<string, SoundEffect>();
+        public static SoundEffect silentSound;
         /// <summary>The mod entry point, called after the mod is first loaded.</summary>
         /// <param name="helper">Provides simplified APIs for writing mods.</param>
         public override void Entry(IModHelper helper)
@@ -117,6 +118,10 @@ namespace SoundEffectReplacement
                 getValue: () => Config.EnableMod,
                 setValue: value => Config.EnableMod = value
             );
+            string path = Path.Combine(Helper.DirectoryPath, "assets", "silent.wav");
+            FileStream fs = new FileStream(path, FileMode.Open);
+            silentSound = SoundEffect.FromStream(fs);
+            fs.Dispose();
         }
 
         /// <summary>Get whether this instance can load the initial version of the given asset.</summary>
