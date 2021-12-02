@@ -22,6 +22,7 @@ namespace Swim
         public static ModConfig config;
         public static IMonitor SMonitor;
         public static IJsonAssetsApi JsonAssets;
+        public static ModEntry context;
 
         public static PerScreen<Texture2D> OxygenBarTexture = new PerScreen<Texture2D>();
         public static readonly PerScreen<int> scubaMaskID = new PerScreen<int>(() => -1);
@@ -66,6 +67,8 @@ namespace Swim
             config = Helper.ReadConfig<ModConfig>();
             if (!config.EnableMod)
                 return;
+
+            context = this;
 
             SMonitor = Monitor;
            

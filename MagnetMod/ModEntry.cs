@@ -70,13 +70,13 @@ namespace MagnetMod
                     continue;
                 }
                 d.timeSinceDoneBouncing += (float)time.ElapsedGameTime.Milliseconds;
-                if (d.timeSinceDoneBouncing >= (d.floppingFish ? 2500f : ((d.debrisType == Debris.DebrisType.SPRITECHUNKS || d.debrisType == Debris.DebrisType.NUMBERS) ? 1800f : (noBounce ? 0f : 600f))))
+                if (d.timeSinceDoneBouncing >= (d.floppingFish.Value ? 2500f : ((d.debrisType.Value == Debris.DebrisType.SPRITECHUNKS || d.debrisType.Value == Debris.DebrisType.NUMBERS) ? 1800f : (noBounce ? 0f : 600f))))
                 {
-                    if (d.debrisType == Debris.DebrisType.LETTERS || d.debrisType == Debris.DebrisType.NUMBERS || d.debrisType == Debris.DebrisType.SQUARES || d.debrisType == Debris.DebrisType.SPRITECHUNKS || (d.debrisType == Debris.DebrisType.CHUNKS && chunks[0].debrisType - chunks[0].debrisType % 2 != 8))
+                    if (d.debrisType.Value == Debris.DebrisType.LETTERS || d.debrisType.Value == Debris.DebrisType.NUMBERS || d.debrisType.Value == Debris.DebrisType.SQUARES || d.debrisType.Value == Debris.DebrisType.SPRITECHUNKS || (d.debrisType.Value == Debris.DebrisType.CHUNKS && chunks[0].debrisType - chunks[0].debrisType % 2 != 8))
                     {
                         continue;
                     }
-                    if (d.debrisType == Debris.DebrisType.ARCHAEOLOGY || d.debrisType == Debris.DebrisType.OBJECT || d.debrisType == Debris.DebrisType.RESOURCE || d.debrisType == Debris.DebrisType.CHUNKS)
+                    if (d.debrisType.Value == Debris.DebrisType.ARCHAEOLOGY || d.debrisType.Value == Debris.DebrisType.OBJECT || d.debrisType.Value == Debris.DebrisType.RESOURCE || d.debrisType.Value == Debris.DebrisType.CHUNKS)
                     {
                         d.chunksMoveTowardPlayer = true;
                     }
@@ -104,10 +104,10 @@ namespace MagnetMod
                     foreach (Farmer f in location.farmers)
                     {
                         bool pir = infRange || (Math.Abs(position.X + 32f - (float)f.getStandingX()) <= (float)f.MagneticRadius * rangeMult && Math.Abs(position.Y + 32f - (float)f.getStandingY()) <= (float)f.MagneticRadius * rangeMult);
-                        if ((f.UniqueMultiplayerID != d.DroppedByPlayerID || bestFarmer == null) && pir)
+                        if ((f.UniqueMultiplayerID != d.DroppedByPlayerID.Value || bestFarmer == null) && pir)
                         {
                             float distance = (f.Position - position).LengthSquared();
-                            if (distance < bestDistance || (bestFarmer != null && bestFarmer.UniqueMultiplayerID == d.DroppedByPlayerID))
+                            if (distance < bestDistance || (bestFarmer != null && bestFarmer.UniqueMultiplayerID == d.DroppedByPlayerID.Value))
                             {
                                 bestFarmer = f;
                                 bestDistance = distance;
@@ -122,7 +122,7 @@ namespace MagnetMod
                 {
                     Chunk chunk = chunks[i];
                     chunk.position.UpdateExtrapolation(chunk.getSpeed());
-                    if (chunk.alpha > 0.1f && (d.debrisType == Debris.DebrisType.SPRITECHUNKS || d.debrisType == Debris.DebrisType.NUMBERS) && d.timeSinceDoneBouncing > 600f)
+                    if (chunk.alpha > 0.1f && (d.debrisType.Value == Debris.DebrisType.SPRITECHUNKS || d.debrisType.Value == Debris.DebrisType.NUMBERS) && d.timeSinceDoneBouncing > 600f)
                     {
                         chunk.alpha = (1800f - d.timeSinceDoneBouncing) / 1000f;
                     }
@@ -154,7 +154,7 @@ namespace MagnetMod
                                 {
                                     canMoveTowardPlayer = farmer.couldInventoryAcceptThisObject(chunk.debrisType, 1, d.itemQuality);
                                 }
-                                if (chunk.debrisType == 102 && farmer.hasMenuOpen)
+                                if (chunk.debrisType == 102 && farmer.hasMenuOpen.Value)
                                 {
                                     canMoveTowardPlayer = false;
                                 }
@@ -200,23 +200,23 @@ namespace MagnetMod
                                         else {
                                             if (chunk.position.X < d.player.Value.Position.X - 12f)
                                             {
-                                                chunk.xVelocity.Value = Math.Min(chunk.xVelocity + 0.8f, 8f);
+                                                chunk.xVelocity.Value = Math.Min(chunk.xVelocity.Value + 0.8f, 8f);
                                             }
                                             else if (chunk.position.X > d.player.Value.Position.X + 12f)
                                             {
-                                                chunk.xVelocity.Value = Math.Max(chunk.xVelocity - 0.8f, -8f);
+                                                chunk.xVelocity.Value = Math.Max(chunk.xVelocity.Value - 0.8f, -8f);
                                             }
                                             if (chunk.position.Y + 32f < (float)(d.player.Value.getStandingY() - 12))
                                             {
-                                                chunk.yVelocity.Value = Math.Max(chunk.yVelocity - 0.8f, -8f);
+                                                chunk.yVelocity.Value = Math.Max(chunk.yVelocity.Value - 0.8f, -8f);
                                             }
                                             else if (chunk.position.Y + 32f > (float)(d.player.Value.getStandingY() + 12))
                                             {
-                                                chunk.yVelocity.Value = Math.Min(chunk.yVelocity + 0.8f, 8f);
+                                                chunk.yVelocity.Value = Math.Min(chunk.yVelocity.Value + 0.8f, 8f);
                                             }
                                         }
-                                        chunk.position.X += chunk.xVelocity;
-                                        chunk.position.Y -= chunk.yVelocity;
+                                        chunk.position.X += chunk.xVelocity.Value;
+                                        chunk.position.Y -= chunk.yVelocity.Value;
                                     }
                                 }
                             }

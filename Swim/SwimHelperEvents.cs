@@ -1,4 +1,5 @@
-﻿using Microsoft.Xna.Framework;
+﻿using HarmonyLib;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Audio;
 using Microsoft.Xna.Framework.Graphics;
 using Netcode;
@@ -92,17 +93,17 @@ namespace Swim
             if (e.Player != Game1.player)
                 return;
 
-            if (!Game1.player.mailReceived.Contains("ScubaTank") && ModEntry.scubaTankID.Value != -1 && e.Added != null && e.Added.Count() > 0 && e.Added.FirstOrDefault() != null && e.Added.FirstOrDefault().ParentSheetIndex != null && e.Added.FirstOrDefault().GetType() == typeof(Clothing) && e.Added.FirstOrDefault().ParentSheetIndex == ModEntry.scubaTankID.Value)
+            if (!Game1.player.mailReceived.Contains("ScubaTank") && ModEntry.scubaTankID.Value != -1 && e.Added != null && e.Added.Count() > 0 && e.Added.FirstOrDefault() != null && e.Added.FirstOrDefault().GetType() == typeof(Clothing) && e.Added.FirstOrDefault().ParentSheetIndex == ModEntry.scubaTankID.Value)
             {
                 Monitor.Log("Player found scuba tank");
                 Game1.player.mailReceived.Add("ScubaTank");
             }
-            if (!Game1.player.mailReceived.Contains("ScubaMask") && ModEntry.scubaMaskID.Value != -1 && e.Added != null && e.Added.Count() > 0 && e.Added.FirstOrDefault() != null && e.Added.FirstOrDefault().ParentSheetIndex != null && e.Added.FirstOrDefault().GetType() == typeof(Hat) && (e.Added.FirstOrDefault() as Hat).which.Value == ModEntry.scubaMaskID.Value)
+            if (!Game1.player.mailReceived.Contains("ScubaMask") && ModEntry.scubaMaskID.Value != -1 && e.Added != null && e.Added.Count() > 0 && e.Added.FirstOrDefault() != null && e.Added.FirstOrDefault().GetType() == typeof(Hat) && (e.Added.FirstOrDefault() as Hat).which.Value == ModEntry.scubaMaskID.Value)
             {
                 Monitor.Log("Player found scuba mask");
                 Game1.player.mailReceived.Add("ScubaMask");
             }
-            if (!Game1.player.mailReceived.Contains("ScubaFins") && ModEntry.scubaFinsID.Value != -1 && e.Added != null && e.Added.Count() > 0 && e.Added.FirstOrDefault() != null && e.Added.FirstOrDefault().ParentSheetIndex != null && e.Added.FirstOrDefault().GetType() == typeof(Boots) && e.Added.FirstOrDefault().ParentSheetIndex == ModEntry.scubaFinsID.Value)
+            if (!Game1.player.mailReceived.Contains("ScubaFins") && ModEntry.scubaFinsID.Value != -1 && e.Added != null && e.Added.Count() > 0 && e.Added.FirstOrDefault() != null && e.Added.FirstOrDefault().GetType() == typeof(Boots) && e.Added.FirstOrDefault().ParentSheetIndex == ModEntry.scubaFinsID.Value)
             {
                 Monitor.Log("Player found scuba fins");
                 Game1.player.mailReceived.Add("ScubaFins");
@@ -296,6 +297,223 @@ namespace Swim
             if (Config.BreatheSound)
             {
                 LoadBreatheSound();
+            }
+
+            // get Generic Mod Config Menu's API (if it's installed)
+            var configMenu = Helper.ModRegistry.GetApi<IGenericModConfigMenuApi>("spacechase0.GenericModConfigMenu");
+            if (configMenu != null)
+            {
+
+                // register mod
+                configMenu.Register(
+                    mod: ModEntry.context.ModManifest,
+                    reset: () => Config = new ModConfig(),
+                    save: () => Helper.WriteConfig(Config)
+                );
+
+                configMenu.AddSectionTitle(
+                    mod: ModEntry.context.ModManifest,
+                    text: () => "Basic Options"
+                );
+                configMenu.AddBoolOption(
+                    mod: ModEntry.context.ModManifest,
+                    name: () => "Mod Enabled?",
+                    getValue: () => Config.EnableMod,
+                    setValue: value => Config.EnableMod = value
+                );
+                configMenu.AddBoolOption(
+                    mod: ModEntry.context.ModManifest,
+                    name: () => "ReadyToSwim",
+                    getValue: () => Config.ReadyToSwim,
+                    setValue: value => Config.ReadyToSwim = value
+                );
+                configMenu.AddBoolOption(
+                    mod: ModEntry.context.ModManifest,
+                    name: () => "SwimSuitAlways",
+                    getValue: () => Config.SwimSuitAlways,
+                    setValue: value => Config.SwimSuitAlways = value
+                );
+                configMenu.AddBoolOption(
+                    mod: ModEntry.context.ModManifest,
+                    name: () => "NoAutoSwimSuit",
+                    getValue: () => Config.NoAutoSwimSuit,
+                    setValue: value => Config.NoAutoSwimSuit = value
+                );
+                configMenu.AddBoolOption(
+                    mod: ModEntry.context.ModManifest,
+                    name: () => "AllowActionsWhileInSwimsuit",
+                    getValue: () => Config.AllowActionsWhileInSwimsuit,
+                    setValue: value => Config.AllowActionsWhileInSwimsuit = value
+                );
+                configMenu.AddBoolOption(
+                    mod: ModEntry.context.ModManifest,
+                    name: () => "AllowRunningWhileInSwimsuit",
+                    getValue: () => Config.AllowRunningWhileInSwimsuit,
+                    setValue: value => Config.AllowRunningWhileInSwimsuit = value
+                );
+                configMenu.AddBoolOption(
+                    mod: ModEntry.context.ModManifest,
+                    name: () => "EnableClickToSwim",
+                    getValue: () => Config.EnableClickToSwim,
+                    setValue: value => Config.EnableClickToSwim = value
+                );
+                configMenu.AddBoolOption(
+                    mod: ModEntry.context.ModManifest,
+                    name: () => "SwimRestoresVitals",
+                    getValue: () => Config.SwimRestoresVitals,
+                    setValue: value => Config.SwimRestoresVitals = value
+                );
+
+                configMenu.AddSectionTitle(
+                    mod: ModEntry.context.ModManifest,
+                    text: () => "Key Binds"
+                );
+
+                configMenu.AddKeybind(
+                    mod: ModEntry.context.ModManifest,
+                    name: () => "Enable Swimming",
+                    getValue: () => Config.SwimKey,
+                    setValue: value => Config.SwimKey = value
+                );
+                configMenu.AddKeybind(
+                    mod: ModEntry.context.ModManifest,
+                    name: () => "Toggle Swimsuit",
+                    getValue: () => Config.SwimSuitKey,
+                    setValue: value => Config.SwimSuitKey = value
+                );
+                configMenu.AddKeybind(
+                    mod: ModEntry.context.ModManifest,
+                    name: () => "Dive",
+                    getValue: () => Config.DiveKey,
+                    setValue: value => Config.DiveKey = value
+                );
+                configMenu.AddKeybind(
+                    mod: ModEntry.context.ModManifest,
+                    name: () => "Manual Jump",
+                    getValue: () => Config.ManualJumpButton,
+                    setValue: value => Config.ManualJumpButton = value
+                );
+
+
+                configMenu.AddSectionTitle(
+                    mod: ModEntry.context.ModManifest,
+                    text: () => "Advanced Tweaks"
+                );
+                configMenu.AddNumberOption(
+                    mod: ModEntry.context.ModManifest,
+                    name: () => "JumpTimeInMilliseconds",
+                    getValue: () => Config.JumpTimeInMilliseconds,
+                    setValue: value => Config.JumpTimeInMilliseconds = value
+                );
+
+                configMenu.AddNumberOption(
+                    mod: ModEntry.context.ModManifest,
+                    name: () => "OxygenMult",
+                    getValue: () => Config.OxygenMult,
+                    setValue: value => Config.OxygenMult = value
+                );
+                configMenu.AddNumberOption(
+                    mod: ModEntry.context.ModManifest,
+                    name: () => "BubbleMult",
+                    getValue: () => Config.BubbleMult,
+                    setValue: value => Config.BubbleMult = value
+                );
+                configMenu.AddBoolOption(
+                    mod: ModEntry.context.ModManifest,
+                    name: () => "AddFishies",
+                    getValue: () => Config.AddFishies,
+                    setValue: value => Config.AddFishies = value
+                );
+                configMenu.AddBoolOption(
+                    mod: ModEntry.context.ModManifest,
+                    name: () => "AddCrabs",
+                    getValue: () => Config.AddCrabs,
+                    setValue: value => Config.AddCrabs = value
+                );
+                configMenu.AddBoolOption(
+                    mod: ModEntry.context.ModManifest,
+                    name: () => "BreatheSound",
+                    getValue: () => Config.BreatheSound,
+                    setValue: value => Config.BreatheSound = value
+                );
+                configMenu.AddNumberOption(
+                    mod: ModEntry.context.ModManifest,
+                    name: () => "MineralPerThousandMin",
+                    getValue: () => Config.MineralPerThousandMin,
+                    setValue: value => Config.MineralPerThousandMin = value
+                );
+                configMenu.AddNumberOption(
+                    mod: ModEntry.context.ModManifest,
+                    name: () => "MineralPerThousandMax",
+                    getValue: () => Config.MineralPerThousandMax,
+                    setValue: value => Config.MineralPerThousandMax = value
+                );
+                configMenu.AddNumberOption(
+                    mod: ModEntry.context.ModManifest,
+                    name: () => "CrabsPerThousandMin",
+                    getValue: () => Config.CrabsPerThousandMin,
+                    setValue: value => Config.CrabsPerThousandMin = value
+                );
+                configMenu.AddNumberOption(
+                    mod: ModEntry.context.ModManifest,
+                    name: () => "CrabsPerThousandMax",
+                    getValue: () => Config.CrabsPerThousandMax,
+                    setValue: value => Config.CrabsPerThousandMax = value
+                );
+                configMenu.AddNumberOption(
+                    mod: ModEntry.context.ModManifest,
+                    name: () => "PercentChanceCrabIsMimic",
+                    getValue: () => Config.PercentChanceCrabIsMimic,
+                    setValue: value => Config.PercentChanceCrabIsMimic = value
+                );
+                configMenu.AddNumberOption(
+                    mod: ModEntry.context.ModManifest,
+                    name: () => "MinSmolFishies",
+                    getValue: () => Config.MinSmolFishies,
+                    setValue: value => Config.MinSmolFishies = value
+                );
+                configMenu.AddNumberOption(
+                    mod: ModEntry.context.ModManifest,
+                    name: () => "MaxSmolFishies",
+                    getValue: () => Config.MaxSmolFishies,
+                    setValue: value => Config.MaxSmolFishies = value
+                );
+                configMenu.AddNumberOption(
+                    mod: ModEntry.context.ModManifest,
+                    name: () => "BigFishiesPerThousandMin",
+                    getValue: () => Config.BigFishiesPerThousandMin,
+                    setValue: value => Config.BigFishiesPerThousandMin = value
+                );
+                configMenu.AddNumberOption(
+                    mod: ModEntry.context.ModManifest,
+                    name: () => "BigFishiesPerThousandMax",
+                    getValue: () => Config.BigFishiesPerThousandMax,
+                    setValue: value => Config.BigFishiesPerThousandMax = value
+                );
+                configMenu.AddNumberOption(
+                    mod: ModEntry.context.ModManifest,
+                    name: () => "OceanForagePerThousandMin",
+                    getValue: () => Config.OceanForagePerThousandMin,
+                    setValue: value => Config.OceanForagePerThousandMin = value
+                );
+                configMenu.AddNumberOption(
+                    mod: ModEntry.context.ModManifest,
+                    name: () => "OceanForagePerThousandMax",
+                    getValue: () => Config.OceanForagePerThousandMax,
+                    setValue: value => Config.OceanForagePerThousandMax = value
+                );
+                configMenu.AddNumberOption(
+                    mod: ModEntry.context.ModManifest,
+                    name: () => "MinOceanChests",
+                    getValue: () => Config.MinOceanChests,
+                    setValue: value => Config.MinOceanChests = value
+                );
+                configMenu.AddNumberOption(
+                    mod: ModEntry.context.ModManifest,
+                    name: () => "MaxOceanChests",
+                    getValue: () => Config.MaxOceanChests,
+                    setValue: value => Config.MaxOceanChests = value
+                );
             }
         }
 
@@ -882,7 +1100,7 @@ namespace Swim
         public static void AbigailCaveTick()
         {
 
-            Game1.player.CurrentToolIndex = Game1.player.items.Count;
+            Game1.player.CurrentToolIndex = Game1.player.Items.Count;
 
             List<NPC> list = Game1.player.currentLocation.characters.ToList().FindAll((n) => (n is Monster) && (n as Monster).Health <= 0);
             foreach(NPC n in list)
@@ -898,8 +1116,7 @@ namespace Swim
 
             if (abigailTicks.Value == 0)
             {
-                FieldInfo f1 = Game1.player.currentLocation.characters.GetType().GetField("OnValueRemoved", BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static);
-                f1.SetValue(Game1.player.currentLocation.characters, null);
+                AccessTools.Field(Game1.player.currentLocation.characters.GetType(), "OnValueRemoved").SetValue(Game1.player.currentLocation.characters, null);
             }
 
             Vector2 v = Vector2.Zero;
