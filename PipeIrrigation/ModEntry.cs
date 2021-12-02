@@ -136,10 +136,10 @@ namespace PipeIrrigation
         {
             if (!Config.EnableMod || !(e.Key is Farm) || e.Value != 0)
                 return;
-            RefreshWateringTiles(e.Key);
+            RefreshWateringTiles(e.Key, false);
         }
 
-        private static void RefreshWateringTiles(GameLocation location)
+        private static void RefreshWateringTiles(GameLocation location, bool use)
         {
             wateringPipeDict[location.Name] = new List<Vector2>();
             wateringTileDict[location.Name] = new List<Vector2>();
@@ -169,13 +169,10 @@ namespace PipeIrrigation
                             hoeDirtList.AddRange(tileHoeDirtList);
                         }
                     }
-                    else
+                    else if (location.terrainFeatures.ContainsKey(tile) && location.terrainFeatures[tile] is HoeDirt)
                     {
-                        if (location.terrainFeatures.ContainsKey(tile) && location.terrainFeatures[tile] is HoeDirt)
-                        {
-                            pipeList.Add(tile);
-                            hoeDirtList.Add(tile);
-                        }
+                        pipeList.Add(tile);
+                        hoeDirtList.Add(tile);
                     }
                 }
                 bool enough = hoeDirtList.Count * Config.PercentWaterPerTile / 100f <= netExcess;
@@ -190,7 +187,8 @@ namespace PipeIrrigation
                             float charge = float.Parse(location.objects[obj].modData["aedenthorn.UtilityGrid/electricCharge"], CultureInfo.InvariantCulture);
                             float change = Math.Min(charge, lacking);
                             lacking -= change;
-                            location.objects[obj].modData["aedenthorn.UtilityGrid/electricCharge"] = (charge - change).ToString();
+                            if(use)
+                                location.objects[obj].modData["aedenthorn.UtilityGrid/electricCharge"] = (charge - change).ToString();
                             if (lacking <= 0)
                             {
                                 enough = true;
@@ -211,7 +209,7 @@ namespace PipeIrrigation
         {
             if (!Config.EnableMod || !wateringPipeDict.ContainsKey(__instance.Name))
                 return;
-            RefreshWateringTiles(__instance);
+            RefreshWateringTiles(__instance, true);
             SMonitor.Log($"{wateringPipeDict[__instance.Name].Count} pipes watering {wateringTileDict[__instance.Name].Count} tiles in {__instance.Name}");
             foreach(Vector2 pipe in wateringPipeDict[__instance.Name])
             {

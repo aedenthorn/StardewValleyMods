@@ -39,11 +39,11 @@ namespace BossCreatures
             Scale = ModEntry.Config.SlimeBossScale;
 
             this.difficulty = difficulty;
-            Health = (int)Math.Round(base.Health * 10 * difficulty);
+            Health = (int)Math.Round(Health * 10 * difficulty);
             MaxHealth = Health;
-            DamageToFarmer = (int)Math.Round(base.damageToFarmer * 2 * difficulty);
+            DamageToFarmer = (int)Math.Round(damageToFarmer * 2 * difficulty);
             timeUntilNextAttack = 100;
-            this.moveTowardPlayerThreshold.Value = 20;
+            moveTowardPlayerThreshold.Value = 20;
 
             //this.willDestroyObjectsUnderfoot = true;
         }
@@ -51,13 +51,13 @@ namespace BossCreatures
         public override void reloadSprite()
         {
             typeof(Monster).GetMethod("reloadSprite").Invoke(this, new object[] { });
-            this.Sprite.SpriteWidth = width;
-            this.Sprite.SpriteHeight = height;
-            this.Sprite.interval = 300f;
-            this.Sprite.ignoreStopAnimation = true;
-            this.ignoreMovementAnimations = true;
-            base.HideShadow = true;
-            this.Sprite.framesPerAnimation = 8;
+            Sprite.SpriteWidth = width;
+            Sprite.SpriteHeight = height;
+            Sprite.interval = 300f;
+            Sprite.ignoreStopAnimation = true;
+            ignoreMovementAnimations = true;
+            HideShadow = true;
+            Sprite.framesPerAnimation = 8;
         }
 
         protected override void updateAnimation(GameTime time)
@@ -67,10 +67,10 @@ namespace BossCreatures
 
         protected override void initNetFields()
         {
-            base.NetFields.AddFields(new INetSerializable[]
+            NetFields.AddFields(new INetSerializable[]
             {
-                this.attackState,
-                this.firing
+                attackState,
+                firing
             });
             base.initNetFields();
         }
@@ -85,7 +85,7 @@ namespace BossCreatures
 
             // fire!
 
-            this.timeUntilNextAttack -= time.ElapsedGameTime.Milliseconds;
+            timeUntilNextAttack -= time.ElapsedGameTime.Milliseconds;
 
             List<Farmer> farmers = new List<Farmer>();
             FarmerCollection.Enumerator enumerator = currentLocation.farmers.GetEnumerator();
@@ -94,49 +94,49 @@ namespace BossCreatures
                 if (enumerator.Current.currentLocation == currentLocation && enumerator.Current.GetBoundingBox().Intersects(GetBoundingBox()))
                 {
                     enumerator.Current.takeDamage((int)Math.Round(20 * difficulty), true, null);
-                    this.totalFireTime = 0;
-                    this.nextFireTime = 10;
-                    this.attackState.Set(0);
+                    totalFireTime = 0;
+                    nextFireTime = 10;
+                    attackState.Set(0);
                     timeUntilNextAttack = Game1.random.Next(1000, 2000);
                 }
             }
 
-            if (this.attackState.Value == 0 && this.withinPlayerThreshold(20))
+            if (attackState.Value == 0 && withinPlayerThreshold(20))
             {
-                this.firing.Set(false);
-                if (this.timeUntilNextAttack < 0)
+                firing.Set(false);
+                if (timeUntilNextAttack < 0)
                 {
-                    this.timeUntilNextAttack = 0;
-                    this.attackState.Set(1);
-                    this.nextFireTime = 50;
-                    this.totalFireTime = 3000;
+                    timeUntilNextAttack = 0;
+                    attackState.Set(1);
+                    nextFireTime = 50;
+                    totalFireTime = 3000;
                     return;
                 }
             }
-            else if (this.totalFireTime > 0)
+            else if (totalFireTime > 0)
             {
-                Farmer player = base.Player;
-                if (!this.firing)
+                Farmer player = Player;
+                if (!firing.Value)
                 {
                     if (player != null)
                     {
-                        base.faceGeneralDirection(player.Position, 0, false);
+                        faceGeneralDirection(player.Position, 0, false);
                     }
                 }
-                this.totalFireTime -= time.ElapsedGameTime.Milliseconds;
-                if (this.nextFireTime > 0)
+                totalFireTime -= time.ElapsedGameTime.Milliseconds;
+                if (nextFireTime > 0)
                 {
-                    this.nextFireTime -= time.ElapsedGameTime.Milliseconds;
-                    if (this.nextFireTime <= 0)
+                    nextFireTime -= time.ElapsedGameTime.Milliseconds;
+                    if (nextFireTime <= 0)
                     {
-                        if (!this.firing.Value)
+                        if (!firing.Value)
                         {
-                            this.firing.Set(true);
+                            firing.Set(true);
                         }
                         float fire_angle = 0f;
-                        Vector2 shot_origin = new Vector2((float)this.GetBoundingBox().Center.X, (float)this.GetBoundingBox().Center.Y);
-                        base.faceGeneralDirection(player.Position, 0, false);
-                        switch (this.facingDirection.Value)
+                        Vector2 shot_origin = new Vector2((float)GetBoundingBox().Center.X, (float)GetBoundingBox().Center.Y);
+                        faceGeneralDirection(player.Position, 0, false);
+                        switch (facingDirection.Value)
                         {
                             case 0:
                                 fire_angle = 90f;
@@ -151,7 +151,7 @@ namespace BossCreatures
                                 fire_angle = 180f;
                                 break;
                         }
-                        fire_angle += (float)Math.Sin((double)((float)this.totalFireTime / 1000f * 180f) * 3.1415926535897931 / 180.0) * 25f;
+                        fire_angle += (float)Math.Sin((double)((float)totalFireTime / 1000f * 180f) * 3.1415926535897931 / 180.0) * 25f;
                         Vector2 shot_velocity = new Vector2((float)Math.Cos((double)fire_angle * 3.1415926535897931 / 180.0), -(float)Math.Sin((double)fire_angle * 3.1415926535897931 / 180.0));
                         shot_velocity *= 5f;
 
@@ -164,11 +164,11 @@ namespace BossCreatures
 
                             Vector2 v = new Vector2((three ? shot_velocity.X : shot_velocity.Y) * (one ? -1 : 1), (three ? shot_velocity.Y : shot_velocity.X) * (two ? -1 : 1));
                             //v = ModEntry.RotateVector(v, j);
-                            BasicProjectile projectile = new BossProjectile((int)(5 * difficulty), 766, 0, 1, 0.196349546f, v.X, v.Y, shot_origin, "", "", false, false, base.currentLocation, this, true, null, 13, true);
-                            projectile.ignoreLocationCollision.Value = true;
+                            BasicProjectile projectile = new BossProjectile((int)(5 * difficulty), 766, 0, 1, 0.196349546f, v.X, v.Y, shot_origin, "", "", false, false, currentLocation, this, true, null, 13, true);
+                            projectile.IgnoreLocationCollision = true;
                             projectile.ignoreTravelGracePeriod.Value = true;
                             projectile.maxTravelDistance.Value = 512;
-                            base.currentLocation.projectiles.Add(projectile);
+                            currentLocation.projectiles.Add(projectile);
 
                             if (!ModEntry.IsLessThanHalfHealth(this))
                             {
@@ -183,14 +183,14 @@ namespace BossCreatures
                         j %= 360;
 
 
-                        this.nextFireTime = 10;
+                        nextFireTime = 10;
                     }
                 }
-                if (this.totalFireTime <= 0)
+                if (totalFireTime <= 0)
                 {
-                    this.totalFireTime = 0;
-                    this.nextFireTime = 10;
-                    this.attackState.Set(0);
+                    totalFireTime = 0;
+                    nextFireTime = 10;
+                    attackState.Set(0);
 
                     timeUntilNextAttack = 0;
                 }
@@ -198,7 +198,7 @@ namespace BossCreatures
         }
         public override Rectangle GetBoundingBox()
         {
-            return new Rectangle((int)(base.Position.X + 8 * Scale), (int)(base.Position.Y + 16 * Scale), (int)(this.Sprite.SpriteWidth * 4 * 3 / 4 * Scale), (int)(32 * Scale));
+            return new Rectangle((int)(Position.X + 8 * Scale), (int)(Position.Y + 16 * Scale), (int)(Sprite.SpriteWidth * 4 * 3 / 4 * Scale), (int)(32 * Scale));
             Rectangle r = new Rectangle((int)(Position.X - Scale*width/2), (int)(Position.Y - Scale * height/2), (int)(Scale*width), (int)(Scale*height));
             return r;
         }
@@ -213,11 +213,11 @@ namespace BossCreatures
             else
             {
                 if(Game1.random.NextDouble() < 0.5f)
-                    base.currentLocation.characters.Add(new GreenSlime(base.Position, (int)(120*difficulty)));
+                    currentLocation.characters.Add(new GreenSlime(Position, (int)(120*difficulty)));
 
-                base.currentLocation.characters[base.currentLocation.characters.Count - 1].setTrajectory(xTrajectory / 8 + Game1.random.Next(-20, 20), yTrajectory / 8 + Game1.random.Next(-20, 20));
-                base.currentLocation.characters[base.currentLocation.characters.Count - 1].willDestroyObjectsUnderfoot = false;
-                base.currentLocation.characters[base.currentLocation.characters.Count - 1].moveTowardPlayer(20);
+                currentLocation.characters[currentLocation.characters.Count - 1].setTrajectory(xTrajectory / 8 + Game1.random.Next(-20, 20), yTrajectory / 8 + Game1.random.Next(-20, 20));
+                currentLocation.characters[currentLocation.characters.Count - 1].willDestroyObjectsUnderfoot = false;
+                currentLocation.characters[currentLocation.characters.Count - 1].moveTowardPlayer(20);
             }
             ModEntry.MakeBossHealthBar(Health, MaxHealth);
             return result;

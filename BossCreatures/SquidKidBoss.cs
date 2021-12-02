@@ -34,13 +34,13 @@ namespace BossCreatures
             Sprite.SpriteHeight = height;
             Sprite.LoadTexture(ModEntry.GetBossTexture(GetType()));
 
-            this.difficulty = _difficulty;
-            Health = (int)Math.Round(base.Health * 1500 * difficulty);
+            difficulty = _difficulty;
+            Health = (int)Math.Round(Health * 1500 * difficulty);
             MaxHealth = Health;
             DamageToFarmer = (int)Math.Round(damageToFarmer * 2 * difficulty);
 
             Scale = ModEntry.Config.SquidKidBossScale;
-            this.moveTowardPlayerThreshold.Value = 20;
+            moveTowardPlayerThreshold.Value = 20;
         }
         public override void MovePosition(GameTime time, xTile.Dimensions.Rectangle viewport, GameLocation currentLocation)
         {
@@ -62,10 +62,10 @@ namespace BossCreatures
                 return;
             }
 
-            if (this.withinPlayerThreshold(20))
+            if (withinPlayerThreshold(20))
             {
-                this.lastIceBall = Math.Max(0f, this.lastIceBall - (float)time.ElapsedGameTime.Milliseconds);
-                this.lastLightning = Math.Max(0f, this.lastLightning - (float)time.ElapsedGameTime.Milliseconds);
+                lastIceBall = Math.Max(0f, lastIceBall - (float)time.ElapsedGameTime.Milliseconds);
+                lastLightning = Math.Max(0f, lastLightning - (float)time.ElapsedGameTime.Milliseconds);
 
                 if (!startedLightning && lastLightning < (ModEntry.IsLessThanHalfHealth(this) ? 500f : 1000f))
                 {
@@ -117,7 +117,7 @@ namespace BossCreatures
                     if (lastIceBall != 0f && Game1.random.NextDouble() < 0.05)
                     {
                         Halt();
-                        setTrajectory((int)Utility.getVelocityTowardPlayer(Utility.Vector2ToPoint(base.getStandingPosition()), 8f, base.Player).X, (int)(-(int)Utility.getVelocityTowardPlayer(Utility.Vector2ToPoint(base.getStandingPosition()), 8f, base.Player).Y));
+                        setTrajectory((int)Utility.getVelocityTowardPlayer(Utility.Vector2ToPoint(getStandingPosition()), 8f, Player).X, (int)(-(int)Utility.getVelocityTowardPlayer(Utility.Vector2ToPoint(getStandingPosition()), 8f, Player).Y));
                     }
                 }
 
@@ -148,16 +148,16 @@ namespace BossCreatures
         }
         public override Rectangle GetBoundingBox()
         {
-            return new Rectangle((int)(base.Position.X + 8 * Scale), (int)(base.Position.Y + 16 * Scale), (int)(this.Sprite.SpriteWidth * 4 * 3 / 4 * Scale), (int)(32 * Scale));
-            return new Microsoft.Xna.Framework.Rectangle((int)this.Position.X + 8, (int)this.Position.Y + 16, this.Sprite.SpriteWidth * 4 * 3 / 4, 32);
+            return new Rectangle((int)(Position.X + 8 * Scale), (int)(Position.Y + 16 * Scale), (int)(Sprite.SpriteWidth * 4 * 3 / 4 * Scale), (int)(32 * Scale));
+            return new Microsoft.Xna.Framework.Rectangle((int)Position.X + 8, (int)Position.Y + 16, Sprite.SpriteWidth * 4 * 3 / 4, 32);
 
             Rectangle r = new Rectangle((int)(Position.X - Scale * width / 2), (int)(Position.Y - Scale * height / 2), (int)(Scale * width), (int)(Scale * height));
             return r;
         }
         public override void drawAboveAllLayers(SpriteBatch b)
         {
-            b.Draw(this.Sprite.Texture, base.getLocalPosition(Game1.viewport) + new Vector2(width*2, (float)(21 + this.yOffset)), new Rectangle?(this.Sprite.SourceRect), Color.White, 0f, new Vector2(width/2, height), scale * 4f, this.flip ? SpriteEffects.FlipHorizontally : SpriteEffects.None, Math.Max(0f, this.drawOnTop ? 0.991f : ((float)base.getStandingY() / 10000f)));
-            b.Draw(Game1.shadowTexture, base.getLocalPosition(Game1.viewport) + new Vector2(width*2, height*4), new Rectangle?(Game1.shadowTexture.Bounds), Color.White, 0f, new Vector2((float)Game1.shadowTexture.Bounds.Center.X, (float)Game1.shadowTexture.Bounds.Center.Y), 3f + (float)this.yOffset / 20f, SpriteEffects.None, (float)(base.getStandingY() - 1) / 10000f);
+            b.Draw(Sprite.Texture, getLocalPosition(Game1.viewport) + new Vector2(width*2, (float)(21 + yOffset)), new Rectangle?(Sprite.SourceRect), Color.White, 0f, new Vector2(width/2, height), scale * 4f, flip ? SpriteEffects.FlipHorizontally : SpriteEffects.None, Math.Max(0f, drawOnTop ? 0.991f : ((float)getStandingY() / 10000f)));
+            b.Draw(Game1.shadowTexture, getLocalPosition(Game1.viewport) + new Vector2(width*2, height*4), new Rectangle?(Game1.shadowTexture.Bounds), Color.White, 0f, new Vector2((float)Game1.shadowTexture.Bounds.Center.X, (float)Game1.shadowTexture.Bounds.Center.Y), 3f + (float)yOffset / 20f, SpriteEffects.None, (float)(getStandingY() - 1) / 10000f);
         }
 
         public override int takeDamage(int damage, int xTrajectory, int yTrajectory, bool isBomb, double addedPrecision, Farmer who)

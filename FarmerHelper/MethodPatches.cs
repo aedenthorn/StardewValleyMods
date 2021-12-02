@@ -40,6 +40,9 @@ namespace FarmerHelper
             if ((new int[] { 495, 496, 497, 498, 770 }).Contains(__instance.ParentSheetIndex))
                 return true;
 
+            if (location.SeedsIgnoreSeasonsHere())
+                return true;
+
             Crop c = new Crop(__instance.ParentSheetIndex, x, y);
             if (c == null)
                 return true;

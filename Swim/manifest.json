@@ -5,7 +5,7 @@
   "Description": "Allows you to swim.",
   "UniqueID": "aedenthorn.Swim",
   "EntryDll": "Swim.dll",
-  "MinimumApiVersion": "3.12.6",
+  "MinimumApiVersion": "3.13.0",
   "UpdateKeys": ["Nexus:6326"],
   "ModUpdater": {
     "Repository": "StardewValleyMods",

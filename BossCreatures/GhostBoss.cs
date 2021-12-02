@@ -28,23 +28,23 @@ namespace BossCreatures
             height = ModEntry.Config.GhostBossHeight;
             Sprite.SpriteWidth = width;
             Sprite.SpriteHeight = height;
-            this.Sprite.LoadTexture(ModEntry.GetBossTexture(GetType()));
+            Sprite.LoadTexture(ModEntry.GetBossTexture(GetType()));
             Scale = ModEntry.Config.GhostBossScale;
 
             this.difficulty = difficulty;
 
-            Health = (int)Math.Round(base.Health * 20 * difficulty);
+            Health = (int)Math.Round(Health * 20 * difficulty);
             MaxHealth = Health;
-            DamageToFarmer = (int)Math.Round(base.damageToFarmer * difficulty);
+            DamageToFarmer = (int)Math.Round(DamageToFarmer * difficulty);
             MaxGhosts = 4;
 
-            this.moveTowardPlayerThreshold.Value = 20;
+            moveTowardPlayerThreshold.Value = 20;
         }
 
         public override void reloadSprite()
         {
-            this.Sprite = new AnimatedSprite("Characters\\Monsters\\Ghost");
-            this.Sprite.LoadTexture(ModEntry.GetBossTexture(GetType()));
+            Sprite = new AnimatedSprite("Characters\\Monsters\\Ghost");
+            Sprite.LoadTexture(ModEntry.GetBossTexture(GetType()));
         }
 
         public override void behaviorAtGameTick(GameTime time)
@@ -57,14 +57,14 @@ namespace BossCreatures
                 return;
             }
 
-            this.lastGhost = Math.Max(0f, this.lastGhost - (float)time.ElapsedGameTime.Milliseconds);
-            this.lastDebuff = Math.Max(0f, this.lastDebuff - (float)time.ElapsedGameTime.Milliseconds);
+            lastGhost = Math.Max(0f, lastGhost - (float)time.ElapsedGameTime.Milliseconds);
+            lastDebuff = Math.Max(0f, lastDebuff - (float)time.ElapsedGameTime.Milliseconds);
 
             if (withinPlayerThreshold(10))
             {
                 if(lastDebuff == 0f)
                 {
-                    Vector2 velocityTowardPlayer = Utility.getVelocityTowardPlayer(this.GetBoundingBox().Center, 15f, base.Player);
+                    Vector2 velocityTowardPlayer = Utility.getVelocityTowardPlayer(GetBoundingBox().Center, 15f, Player);
                     if (ModEntry.IsLessThanHalfHealth(this))
                     {
                         for (int i = 0; i < 12; i++)
@@ -79,7 +79,7 @@ namespace BossCreatures
                     }
 
 
-                    this.lastDebuff = Game1.random.Next(3000, 6000);
+                    lastDebuff = Game1.random.Next(3000, 6000);
                 }
                 if (lastGhost == 0f)
                 {
@@ -95,21 +95,21 @@ namespace BossCreatures
                             }
                         }
                     }
-                    if (ghosts < (Health < MaxHealth / 2 ? this.MaxGhosts * 2 : this.MaxGhosts))
+                    if (ghosts < (Health < MaxHealth / 2 ? MaxGhosts * 2 : MaxGhosts))
                     {
                         GameLocation aLocation = currentLocation;
                         currentLocation.characters.Add(new ToughGhost(Position, difficulty)
                         {
                             focusedOnFarmers = true
                         });
-                        this.lastGhost = (float)Game1.random.Next(3000, 80000);
+                        lastGhost = (float)Game1.random.Next(3000, 80000);
                     }
                 }
             }
         }
         public override Rectangle GetBoundingBox()
         {
-            return new Rectangle((int)(base.Position.X + 8 * Scale), (int)(base.Position.Y + 16 * Scale), (int)(this.Sprite.SpriteWidth * 4 * 3 / 4 * Scale), (int)(32 * Scale));
+            return new Rectangle((int)(Position.X + 8 * Scale), (int)(Position.Y + 16 * Scale), (int)(Sprite.SpriteWidth * 4 * 3 / 4 * Scale), (int)(32 * Scale));
             Rectangle r = new Rectangle((int)(Position.X - Scale * width / 2), (int)(Position.Y - Scale * height / 2), (int)(Scale * width), (int)(Scale * height));
             return r;
         }
@@ -117,8 +117,8 @@ namespace BossCreatures
         {
             int offset  = (int)GetType().BaseType.GetField("yOffset", BindingFlags.NonPublic | BindingFlags.Instance).GetValue(this);
 
-            b.Draw(this.Sprite.Texture, base.getLocalPosition(Game1.viewport) + new Vector2(width*2, (float)(21 + offset)), new Microsoft.Xna.Framework.Rectangle?(this.Sprite.SourceRect), Color.White, 0f, new Vector2(width/2, width), scale * 4f, this.flip ? SpriteEffects.FlipHorizontally : SpriteEffects.None, Math.Max(0f, drawOnTop ? 0.991f : (getStandingY() / 10000f)));
-            b.Draw(Game1.shadowTexture, base.getLocalPosition(Game1.viewport) + new Vector2(width*2, width*4), new Microsoft.Xna.Framework.Rectangle?(Game1.shadowTexture.Bounds), Color.White, 0f, new Vector2((float)Game1.shadowTexture.Bounds.Center.X, (float)Game1.shadowTexture.Bounds.Center.Y), 3f + offset / 20f * width/16, SpriteEffects.None, (getStandingY() - 1) / 10000f);
+            b.Draw(Sprite.Texture, getLocalPosition(Game1.viewport) + new Vector2(width*2, (float)(21 + offset)), new Microsoft.Xna.Framework.Rectangle?(Sprite.SourceRect), Color.White, 0f, new Vector2(width/2, width), scale * 4f, flip ? SpriteEffects.FlipHorizontally : SpriteEffects.None, Math.Max(0f, drawOnTop ? 0.991f : (getStandingY() / 10000f)));
+            b.Draw(Game1.shadowTexture, getLocalPosition(Game1.viewport) + new Vector2(width*2, width*4), new Microsoft.Xna.Framework.Rectangle?(Game1.shadowTexture.Bounds), Color.White, 0f, new Vector2((float)Game1.shadowTexture.Bounds.Center.X, (float)Game1.shadowTexture.Bounds.Center.Y), 3f + offset / 20f * width/16, SpriteEffects.None, (getStandingY() - 1) / 10000f);
         }
 
         public override int takeDamage(int damage, int xTrajectory, int yTrajectory, bool isBomb, double addedPrecision, Farmer who)

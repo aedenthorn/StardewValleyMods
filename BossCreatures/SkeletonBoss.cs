@@ -36,18 +36,18 @@ namespace BossCreatures
 
             this.difficulty = difficulty;
 
-            Health = (int)Math.Round(base.Health * 20 * difficulty);
+            Health = (int)Math.Round(Health * 20 * difficulty);
             MaxHealth = Health;
-            DamageToFarmer = (int)Math.Round(base.damageToFarmer * 2 * difficulty);
+            DamageToFarmer = (int)Math.Round(damageToFarmer * 2 * difficulty);
 
             Scale = ModEntry.Config.SkeletonBossScale;
-            this.moveTowardPlayerThreshold.Value = 20;
+            moveTowardPlayerThreshold.Value = 20;
         }
         protected override void initNetFields()
         {
             base.initNetFields();
-            base.NetFields.AddField(this.throwing);
-            this.position.Field.AxisAlignedMovement = true;
+            NetFields.AddField(throwing);
+            position.Field.AxisAlignedMovement = true;
         }
         public override void MovePosition(GameTime time, xTile.Dimensions.Rectangle viewport, GameLocation currentLocation)
         {
@@ -57,49 +57,49 @@ namespace BossCreatures
 
         public override void behaviorAtGameTick(GameTime time)
         {
-            if (!this.throwing)
+            if (!throwing.Value)
             {
-                this.throwTimer -= time.ElapsedGameTime.Milliseconds;
+                throwTimer -= time.ElapsedGameTime.Milliseconds;
                 base.behaviorAtGameTick(time);
             }
             if (Health <= 0)
             {
                 return;
             }
-            if (!this.spottedPlayer && !base.wildernessFarmMonster && Utility.doesPointHaveLineOfSightInMine(base.currentLocation, base.getTileLocation(), base.Player.getTileLocation(), 8))
+            if (!spottedPlayer && !wildernessFarmMonster && Utility.doesPointHaveLineOfSightInMine(currentLocation, getTileLocation(), Player.getTileLocation(), 8))
             {
-                this.controller = new PathFindController(this, base.currentLocation, new Point(base.Player.getStandingX() / 64, base.Player.getStandingY() / 64), Game1.random.Next(4), null, 200);
-                this.spottedPlayer = true;
-                base.facePlayer(base.Player);
+                controller = new PathFindController(this, currentLocation, new Point(Player.getStandingX() / 64, Player.getStandingY() / 64), Game1.random.Next(4), null, 200);
+                spottedPlayer = true;
+                facePlayer(Player);
                 //base.currentLocation.playSound("skeletonStep", NetAudio.SoundContext.Default);
-                base.IsWalkingTowardPlayer = true;
+                IsWalkingTowardPlayer = true;
             }
-            else if (this.throwing)
+            else if (throwing)
             {
-                if (this.invincibleCountdown > 0)
+                if (invincibleCountdown > 0)
                 {
-                    this.invincibleCountdown -= time.ElapsedGameTime.Milliseconds;
-                    if (this.invincibleCountdown <= 0)
+                    invincibleCountdown -= time.ElapsedGameTime.Milliseconds;
+                    if (invincibleCountdown <= 0)
                     {
-                        base.stopGlowing();
+                        stopGlowing();
                     }
                 }
-                this.Sprite.Animate(time, 20, 5, 150f);
-                if (this.Sprite.currentFrame == 24)
+                Sprite.Animate(time, 20, 5, 150f);
+                if (Sprite.currentFrame == 24)
                 {
 
-                    this.throwing.Value = false;
-                    this.Sprite.currentFrame = 0;
-                    this.faceDirection(2);
-                    Vector2 v = Utility.getVelocityTowardPlayer(new Point((int)base.Position.X, (int)base.Position.Y), 8f, base.Player);
+                    throwing.Value = false;
+                    Sprite.currentFrame = 0;
+                    faceDirection(2);
+                    Vector2 v = Utility.getVelocityTowardPlayer(new Point((int)Position.X, (int)Position.Y), 8f, Player);
                     if(Health < MaxHealth / 2)
                     {
                         if(throws == 0)
                         {
-                            base.currentLocation.playSound("fireball", NetAudio.SoundContext.Default);
+                            currentLocation.playSound("fireball", NetAudio.SoundContext.Default);
                         }
-                        base.currentLocation.projectiles.Add(new BasicProjectile(DamageToFarmer, 4, 0, 0, 0.196349546f, v.X, v.Y, new Vector2(base.Position.X, base.Position.Y), "", "", false, false, base.currentLocation, this, false, null));
-                        base.currentLocation.projectiles.Add(new BasicProjectile(DamageToFarmer, 10, 0, 4, 0.196349546f, v.X, v.Y, new Vector2(base.Position.X, base.Position.Y), "", "", true, false, base.currentLocation, this, false, null));
+                        currentLocation.projectiles.Add(new BasicProjectile(DamageToFarmer, 4, 0, 0, 0.196349546f, v.X, v.Y, new Vector2(Position.X, Position.Y), "", "", false, false, currentLocation, this, false, null));
+                        currentLocation.projectiles.Add(new BasicProjectile(DamageToFarmer, 10, 0, 4, 0.196349546f, v.X, v.Y, new Vector2(Position.X, Position.Y), "", "", true, false, currentLocation, this, false, null));
                         if (++throws > throwBurst *2)
                         {
                             throwTimer = 1000;
@@ -112,7 +112,7 @@ namespace BossCreatures
                     }
                     else
                     {
-                        base.currentLocation.projectiles.Add(new BasicProjectile(DamageToFarmer, 4, 0, 0, 0.196349546f, v.X, v.Y, new Vector2(base.Position.X, base.Position.Y), "skeletonHit", "skeletonStep", false, false, base.currentLocation, this, false, null));
+                        currentLocation.projectiles.Add(new BasicProjectile(DamageToFarmer, 4, 0, 0, 0.196349546f, v.X, v.Y, new Vector2(Position.X, Position.Y), "skeletonHit", "skeletonStep", false, false, currentLocation, this, false, null));
                         if (++throws > throwBurst)
                         {
                             throwTimer = 1000;
@@ -126,28 +126,28 @@ namespace BossCreatures
                     }
                 }
             }
-            else if (this.spottedPlayer && this.controller == null && Game1.random.NextDouble() < 0.5 && !base.wildernessFarmMonster && Utility.doesPointHaveLineOfSightInMine(base.currentLocation, base.getTileLocation(), base.Player.getTileLocation(), 8) && throwTimer <= 0)
+            else if (spottedPlayer && controller == null && Game1.random.NextDouble() < 0.5 && !wildernessFarmMonster && Utility.doesPointHaveLineOfSightInMine(currentLocation, getTileLocation(), Player.getTileLocation(), 8) && throwTimer <= 0)
             {
-                this.throwing.Value = true;
-                this.Sprite.currentFrame = 20;
+                throwing.Value = true;
+                Sprite.currentFrame = 20;
                 //base.shake(750);
             }
-            else if (this.withinPlayerThreshold(20))
+            else if (withinPlayerThreshold(20))
             {
-                this.controller = null;
+                controller = null;
             }
-            else if (this.spottedPlayer && this.controller == null && this.controllerAttemptTimer <= 0)
+            else if (spottedPlayer && controller == null && controllerAttemptTimer <= 0)
             {
-                this.controller = new PathFindController(this, base.currentLocation, new Point(base.Player.getStandingX() / 64, base.Player.getStandingY() / 64), Game1.random.Next(4), null, 200);
-                base.facePlayer(base.Player);
-                this.controllerAttemptTimer = 2000;
+                controller = new PathFindController(this, currentLocation, new Point(Player.getStandingX() / 64, Player.getStandingY() / 64), Game1.random.Next(4), null, 200);
+                facePlayer(Player);
+                controllerAttemptTimer = 2000;
             }
-            else if (base.wildernessFarmMonster)
+            else if (wildernessFarmMonster)
             {
-                this.spottedPlayer = true;
-                base.IsWalkingTowardPlayer = true;
+                spottedPlayer = true;
+                IsWalkingTowardPlayer = true;
             }
-            this.controllerAttemptTimer -= time.ElapsedGameTime.Milliseconds;
+            controllerAttemptTimer -= time.ElapsedGameTime.Milliseconds;
             
         }
         public override Rectangle GetBoundingBox()
@@ -161,7 +161,7 @@ namespace BossCreatures
         }
         public override void shedChunks(int number)
         {
-            Game1.createRadialDebris(base.currentLocation, this.Sprite.textureName, new Rectangle(0, height*4, width, width), 8, this.GetBoundingBox().Center.X, this.GetBoundingBox().Center.Y, number, (int)base.getTileLocation().Y, Color.White, 4f);
+            Game1.createRadialDebris(currentLocation, Sprite.textureName.Value, new Rectangle(0, height*4, width, width), 8, GetBoundingBox().Center.X, GetBoundingBox().Center.Y, number, (int)getTileLocation().Y, Color.White, 4f);
         }
 
         public override int takeDamage(int damage, int xTrajectory, int yTrajectory, bool isBomb, double addedPrecision, Farmer who)

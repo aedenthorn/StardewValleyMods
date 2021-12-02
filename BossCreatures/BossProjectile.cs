@@ -13,7 +13,6 @@ namespace BossCreatures
     {
         private Vector2 startingPosition;
         private bool pullPlayerIn;
-        int debuff;
 
         public BossProjectile()
         {
@@ -21,10 +20,10 @@ namespace BossCreatures
         }
         public BossProjectile(int damageToFarmer, int parentSheetIndex, int bouncesTillDestruct, int tailLength, float rotationVelocity, float xVelocity, float yVelocity, Vector2 startingPosition, string collisionSound, string firingSound, bool explode, bool damagesMonsters = false, GameLocation location = null, Character firer = null, bool spriteFromObjectSheet = false, BasicProjectile.onCollisionBehavior collisionBehavior = null, int debuff = -1, bool pullIn = false) : base(damageToFarmer, parentSheetIndex, bouncesTillDestruct, tailLength, rotationVelocity, xVelocity, yVelocity, startingPosition, collisionSound, firingSound, explode, damagesMonsters, location, firer, spriteFromObjectSheet, collisionBehavior)
         {
-            this.debuff = debuff;
+            this.debuff.Value = debuff;
             this.startingPosition = startingPosition;
 
-            this.pullPlayerIn = pullIn;
+            pullPlayerIn = pullIn;
 
         }
 
