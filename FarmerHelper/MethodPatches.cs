@@ -1,11 +1,8 @@
 ﻿using Microsoft.Xna.Framework;
-using StardewModdingAPI;
 using StardewValley;
 using StardewValley.Buildings;
-using StardewValley.Menus;
 using StardewValley.TerrainFeatures;
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using Object = StardewValley.Object;
 
@@ -17,6 +14,8 @@ namespace FarmerHelper
         private static bool Utility_tryToPlaceItem_Prefix(GameLocation location, Item item, ref bool __result )
         {
             if (!Config.EnableMod || !Config.PreventLatePlant || (new int[] { 495, 496, 497, 498, 770 }).Contains(item.ParentSheetIndex))
+                return true;
+            if (location.SeedsIgnoreSeasonsHere())
                 return true;
             Crop c = new Crop(item.ParentSheetIndex, 0, 0);
             if (c == null)
