@@ -7,6 +7,7 @@ using StardewValley.Menus;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace PelicanXVASynth
@@ -81,35 +82,41 @@ namespace PelicanXVASynth
                     getValue: () => Config.EnableMod,
                     setValue: value => Config.EnableMod = value
                 );
-                /*
                 configMenu.AddSectionTitle(
                     mod: ModManifest,
                     text: () => "Voices"
                 );
                 var voiceStrings = new Dictionary<string, string>();
-                foreach(var kvp in gameVoices.games)
+                voiceStrings.Add("","none");
+                foreach (var kvp in gameVoices.games)
                 {
                     foreach(var v in kvp.Value)
                     {
                         voiceStrings[kvp.Key + ":" + v.id] = $"{v.name} ({kvp.Key})";
                     }
                 }
-                foreach (var k in new List<string>(voiceDict.Keys))
+                Monitor.Log($"list of {voiceStrings.Count} game voices");
+                foreach (var kvp in Helper.Content.Load<Dictionary<string, string>>("Data\\NPCDispositions", ContentSource.GameContent))
                 {
-                    configMenu.AddParagraph(
-                        mod: ModManifest,
-                        text: () => k
-                    );
                     configMenu.AddTextOption(
                         mod: ModManifest,
-                        name: () => "Game Voice",
-                        getValue: () => voiceDict[k].game + ":" + voiceDict[k].id,
-                        setValue: delegate(string value) { var parts = value.Split(':');  voiceDict[k].game = parts[0]; voiceDict[k].id = parts[1]; },
+                        name: () => kvp.Key,
+                        getValue: () => voiceDict.ContainsKey(kvp.Key) ? voiceDict[kvp.Key].game + ":" + voiceDict[kvp.Key].id : "",
+                        setValue: delegate(string value) { 
+                            var parts = value.Split(':'); 
+                            if (parts.Length != 2) 
+                            { 
+                                voiceDict.Remove(kvp.Key); 
+                                return; 
+                            } 
+                            voiceDict[kvp.Key] = new GameVoice(parts[0], parts[1]); 
+                            SaveGameVoices(); 
+                        },
                         allowedValues: voiceStrings.Keys.ToArray(),
                         formatAllowedValue: delegate(string value) { return voiceStrings[value]; } 
                     );
                 }
-                */
+                
                 configMenu.AddNumberOption(
                     mod: ModManifest,
                     name: () => "Max Seconds Wait ",
@@ -136,6 +143,16 @@ namespace PelicanXVASynth
             }
         }
 
+        private void SaveGameVoices()
+        {
+            List<string> output = new List<string>();
+            foreach(var kvp in voiceDict)
+            {
+                output.Add($"{kvp.Key}:{kvp.Value.game}:{kvp.Value.id}");
+            }
+            Config.NPCGameVoices = string.Join(",", output);
+        }
+
         private void LoadGameVoices()
         {
             string voicesPath = Path.Combine(xVaSynthPath, "xVASynthVoices.json");
@@ -149,7 +166,13 @@ namespace PelicanXVASynth
             {
                 JsonSerializer serializer = new JsonSerializer();
                 gameVoices = (GameVoices)serializer.Deserialize(reader, typeof(GameVoices));
-                Monitor.Log($"Loaded voices for {gameVoices.games.Count} games", LogLevel.Debug);
+                int count = 0;
+                foreach (var kvp in gameVoices.games)
+                {
+                    count += kvp.Value.Count;
+                    Monitor.Log($"Loaded {kvp.Value.Count} voices for {kvp.Key}");
+                }
+                Monitor.Log($"Loaded {count} voices for {gameVoices.games.Count} games", LogLevel.Debug);
             }
             foreach(var ss in Config.NPCGameVoices.Split(','))
             {
@@ -216,15 +239,16 @@ namespace PelicanXVASynth
                 File.Delete(Path.Combine(xVaSynthPath, "output.wav"));
             }
             string speechPath = Path.Combine(xVaSynthPath, "xVASynthText.json");
-            if(dialogue.Length <= Config.MaxLettersToPrepare && Config.MillisecondsPrepare > 0)
+            using (StreamWriter file = File.CreateText(speechPath))
             {
-                using (StreamWriter file = File.CreateText(speechPath))
-                {
-                    JsonSerializer serializer = new JsonSerializer();
-                    serializer.Serialize(file, text);
-                }
-                if (dialogue == null || dialogue.Length == 0)
-                    return;
+                JsonSerializer serializer = new JsonSerializer();
+                serializer.Serialize(file, text);
+            }
+            if (dialogue == null || dialogue.Length == 0)
+                return;
+
+            if (dialogue.Length <= Config.MaxLettersToPrepare && Config.MillisecondsPrepare > 0)
+            {
 
                 await Task.Delay(Config.MillisecondsPrepare);
             }

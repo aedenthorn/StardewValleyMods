@@ -124,8 +124,11 @@ namespace FarmerHelper
             Helper.Content.InvalidateCache("Data/ObjectInformation");
         }
 
+        public static string[] seasons = new string[] { "spring", "summer", "fall", "winter" };
         private static bool EnoughDaysLeft(Crop c)
         {
+            if (c.seasonsToGrowIn.Contains(seasons[(Utility.getSeasonNumber(Game1.currentSeason) + 1) % 4]))
+                return true;
             int days = 0;
             for (int i = 0; i < c.phaseDays.Count - 1; i++)
             {
