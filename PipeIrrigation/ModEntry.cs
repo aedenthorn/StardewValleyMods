@@ -166,13 +166,18 @@ namespace PipeIrrigation
                         if (tileHoeDirtList.Count > 0)
                         {
                             pipeList.Add(tile);
-                            hoeDirtList.AddRange(tileHoeDirtList);
+                            foreach(var v in tileHoeDirtList)
+                            {
+                                if(!hoeDirtList.Contains(v))
+                                    hoeDirtList.Add(v);
+                            }
                         }
                     }
                     else if (location.terrainFeatures.ContainsKey(tile) && location.terrainFeatures[tile] is HoeDirt)
                     {
                         pipeList.Add(tile);
-                        hoeDirtList.Add(tile);
+                        if (!hoeDirtList.Contains(tile))
+                            hoeDirtList.Add(tile);
                     }
                 }
                 bool enough = hoeDirtList.Count * Config.PercentWaterPerTile / 100f <= netExcess;
@@ -180,15 +185,15 @@ namespace PipeIrrigation
                 {
                     float lacking = hoeDirtList.Count * Config.PercentWaterPerTile / 100f - netExcess;
 
-                    foreach (var obj in utilityGridAPI.TileGroupElectricityObjects(location, (int)group[0].X, (int)group[0].Y))
+                    foreach (var obj in utilityGridAPI.TileGroupWaterObjects(location, (int)group[0].X, (int)group[0].Y))
                     {
-                        if(location.objects.ContainsKey(obj) && location.objects[obj].modData.ContainsKey("aedenthorn.UtilityGrid/electricCharge"))
+                        if(location.objects.ContainsKey(obj) && location.objects[obj].modData.ContainsKey("aedenthorn.UtilityGrid/waterCharge"))
                         {
-                            float charge = float.Parse(location.objects[obj].modData["aedenthorn.UtilityGrid/electricCharge"], CultureInfo.InvariantCulture);
-                            float change = Math.Min(charge, lacking);
-                            lacking -= change;
+                            float charge = float.Parse(location.objects[obj].modData["aedenthorn.UtilityGrid/waterCharge"], CultureInfo.InvariantCulture);
+                            float required = Math.Min(charge, lacking);
+                            lacking -= required;
                             if(use)
-                                location.objects[obj].modData["aedenthorn.UtilityGrid/electricCharge"] = (charge - change).ToString();
+                                location.objects[obj].modData["aedenthorn.UtilityGrid/waterCharge"] = (charge - required).ToString();
                             if (lacking <= 0)
                             {
                                 enough = true;

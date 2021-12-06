@@ -109,7 +109,9 @@ namespace FarmerHelper
                 {
                     foreach (Building building in Game1.getFarm().buildings)
                     {
-                        if (found || !(building.indoors.Value is AnimalHouse))
+                        if (found)
+                            break;
+                        if(!(building.indoors.Value is AnimalHouse))
                             continue;
                         foreach(FarmAnimal animal in (building.indoors.Value as AnimalHouse).animals.Values)
                         {
@@ -139,7 +141,9 @@ namespace FarmerHelper
                 {
                     foreach (Building building in Game1.getFarm().buildings)
                     {
-                        if (found || !(building.indoors.Value is AnimalHouse))
+                        if (found)
+                            break;
+                        if(!(building.indoors.Value is AnimalHouse))
                             continue;
                         foreach(FarmAnimal animal in (building.indoors.Value as AnimalHouse).animals.Values)
                         {

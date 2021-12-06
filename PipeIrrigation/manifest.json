@@ -1,7 +1,7 @@
 ﻿{
   "Name": "Pipe Irrigation",
   "Author": "aedenthorn",
-  "Version": "0.2.0",
+  "Version": "0.2.1",
   "Description": "Pipe Irrigation.",
   "UniqueID": "aedenthorn.PipeIrrigation",
   "EntryDll": "PipeIrrigation.dll",
