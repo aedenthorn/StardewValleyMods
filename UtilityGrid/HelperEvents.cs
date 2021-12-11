@@ -41,7 +41,13 @@ namespace UtilityGrid
             }
             if (!ShowingGrid)
                 return;
-
+            if(e.Button == Config.ToggleEdit)
+            {
+                Helper.Input.Suppress(e.Button);
+                ShowingEdit = !ShowingEdit;
+                Monitor.Log($"Showing edit: {ShowingEdit}");
+                return;
+            }
             if (e.Button == Config.SwitchGrid)
             {
                 Helper.Input.Suppress(e.Button);
@@ -49,7 +55,7 @@ namespace UtilityGrid
                 Monitor.Log($"Showing grid: {CurrentGrid}");
                 return;
             }
-            if (Game1.player.IsCarrying())
+            if (!ShowingEdit || Game1.player.IsCarrying())
                 return;
             if (e.Button == Config.SwitchTile)
             {
@@ -188,7 +194,7 @@ namespace UtilityGrid
                 DrawAmount(e.SpriteBatch, kvp, CurrentGrid == GridType.electric ? kvp.Value.electric : kvp.Value.water, color);
                 DrawCharge(e.SpriteBatch, kvp, color);
             }
-            if (!carrying)
+            if (ShowingEdit && !carrying)
             {
                 if (CurrentTile == 4)
                 {

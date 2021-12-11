@@ -8,6 +8,7 @@ namespace UtilityGrid
     public partial class ModEntry
     {
         // dga_add "aedenthorn.UtilityGridStorageDGA/Utility Grid Battery" 1
+        // dga_add "aedenthorn.SimpleIrrigationSystemDGA/Iridium Water Pump" 1
         public static bool Utility_playerCanPlaceItemHere_Prefix(GameLocation location, Item item, int x, int y, ref bool __result)
         {
             //SMonitor.Log($"placing {item.Name}, {objectDict.ContainsKey(item.Name)}");

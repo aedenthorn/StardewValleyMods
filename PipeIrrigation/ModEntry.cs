@@ -149,8 +149,7 @@ namespace PipeIrrigation
                     continue;
                 Vector2 power = utilityGridAPI.TileGroupWaterVector(location, (int)group[0].X, (int)group[0].Y);
                 float netExcess = power.X + power.Y;
-                if (netExcess < Config.PercentWaterPerTile / 100f)
-                    continue;
+
                 List<Vector2> pipeList = new List<Vector2>();
                 List<Vector2> hoeDirtList = new List<Vector2>();
                 foreach (Vector2 tile in group)
@@ -181,6 +180,8 @@ namespace PipeIrrigation
                     }
                 }
                 bool enough = hoeDirtList.Count * Config.PercentWaterPerTile / 100f <= netExcess;
+                if (use)
+                    SMonitor.Log($"tiles {hoeDirtList.Count}, percent {Config.PercentWaterPerTile / 100f}, vector {power}, excess {netExcess}");
                 if (!enough)
                 {
                     float lacking = hoeDirtList.Count * Config.PercentWaterPerTile / 100f - netExcess;

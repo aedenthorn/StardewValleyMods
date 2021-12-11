@@ -9,6 +9,7 @@ namespace UtilityGrid
         public bool EnableMod { get; set; } = true;
 
         public SButton ToggleGrid { get; set; } = SButton.Home;
+        public SButton ToggleEdit { get; set; } = SButton.End;
         public SButton SwitchGrid { get; set; } = SButton.Delete;
         public SButton SwitchTile { get; set; } = SButton.PageUp;
         public SButton RotateTile { get; set; } = SButton.PageDown;
