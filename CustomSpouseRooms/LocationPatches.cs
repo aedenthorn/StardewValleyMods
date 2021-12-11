@@ -312,24 +312,27 @@ namespace CustomSpouseRooms
 				}
 			}
 			fh.ReadWallpaperAndFloorTileData();
-			bool spot_found = false;
-			for (int x3 = areaToRefurbish.Left; x3 < areaToRefurbish.Right; x3++)
-			{
-				for (int y2 = areaToRefurbish.Top; y2 < areaToRefurbish.Bottom; y2++)
+			if(fh.map.GetLayer("Paths") != null)
+            {
+				bool spot_found = false;
+				for (int x3 = areaToRefurbish.Left; x3 < areaToRefurbish.Right; x3++)
 				{
-					if (fh.getTileIndexAt(new Point(x3, y2), "Paths") == 7)
+					for (int y2 = areaToRefurbish.Top; y2 < areaToRefurbish.Bottom; y2++)
 					{
-						spot_found = true;
-						if (first)
-							fh.spouseRoomSpot = new Point(x3, y2);
-						spouseSpot = new Point(x3, y2);
-						srd.spousePosOffset = spouseSpot - srd.startPos;
+						if (fh.getTileIndexAt(new Point(x3, y2), "Paths") == 7)
+						{
+							spot_found = true;
+							if (first)
+								fh.spouseRoomSpot = new Point(x3, y2);
+							spouseSpot = new Point(x3, y2);
+							srd.spousePosOffset = spouseSpot - srd.startPos;
+							break;
+						}
+					}
+					if (spot_found)
+					{
 						break;
 					}
-				}
-				if (spot_found)
-				{
-					break;
 				}
 			}
 			fh.setTileProperty(spouseSpot.X, spouseSpot.Y, "Back", "NoFurniture", "T");
