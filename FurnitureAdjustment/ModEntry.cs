@@ -47,19 +47,19 @@ namespace FurnitureAdjustment
             ticks = 0;
             if (Helper.Input.IsDown(Config.RaiseButton) || Helper.Input.IsSuppressed(Config.RaiseButton))
             {
-                MoveWallHanging(0, -1, Config.RaiseButton);
+                MoveFurniture(0, -1, Config.RaiseButton);
             }
             else if (Helper.Input.IsDown(Config.LowerButton) || Helper.Input.IsSuppressed(Config.LowerButton))
             {
-                MoveWallHanging(0, 1, Config.LowerButton);
+                MoveFurniture(0, 1, Config.LowerButton);
             }
             else if (Helper.Input.IsDown(Config.LeftButton) || Helper.Input.IsSuppressed(Config.LeftButton))
             {
-                MoveWallHanging(-1, 0, Config.LeftButton);
+                MoveFurniture(-1, 0, Config.LeftButton);
             }
             else if (Helper.Input.IsDown(Config.RightButton) || Helper.Input.IsSuppressed(Config.RightButton))
             {
-                MoveWallHanging(1, 0, Config.RightButton);
+                MoveFurniture(1, 0, Config.RightButton);
             }
         }
 
@@ -69,24 +69,24 @@ namespace FurnitureAdjustment
                 return;
             if (e.Button == Config.RaiseButton)
             {
-                MoveWallHanging(0, -1, e.Button);
+                MoveFurniture(0, -1, e.Button);
             }
             else if (e.Button == Config.LowerButton)
             {
-                MoveWallHanging(0, 1, e.Button);
+                MoveFurniture(0, 1, e.Button);
             }
             else if (e.Button == Config.LeftButton)
             {
-                MoveWallHanging(-1, 0, e.Button);
+                MoveFurniture(-1, 0, e.Button);
             }
             else if (e.Button == Config.RightButton)
             {
-                MoveWallHanging(1, 0, e.Button);
+                MoveFurniture(1, 0, e.Button);
             }
 
         }
 
-        private void MoveWallHanging(int x, int y, SButton button)
+        private void MoveFurniture(int x, int y, SButton button)
         {
             int mod = (Helper.Input.IsDown(Config.ModKey) ? Config.ModSpeed : 1);
             Point shift = new Point(x * mod, y * mod);
@@ -97,7 +97,8 @@ namespace FurnitureAdjustment
                     f.RemoveLightGlow(Game1.currentLocation);
                     f.boundingBox.Value = new Rectangle(f.boundingBox.Value.Location + shift, f.boundingBox.Value.Size);
                     f.updateDrawPosition();
-                    Game1.input.SetMousePosition(Game1.getMousePosition().X + shift.X, Game1.getMousePosition().Y + shift.Y);
+                    if(Config.MoveCursor)
+                        Game1.input.SetMousePosition(Game1.getMousePosition().X + shift.X, Game1.getMousePosition().Y + shift.Y);
                     f.removeLights(Game1.currentLocation);
 
                     Helper.Input.Suppress(button);
@@ -131,6 +132,12 @@ namespace FurnitureAdjustment
                 name: () => "Mod Enabled?",
                 getValue: () => Config.EnableMod,
                 setValue: value => Config.EnableMod = value
+            );
+            configMenu.AddBoolOption(
+                mod: ModManifest,
+                name: () => "Move Cursor with Furniture?",
+                getValue: () => Config.MoveCursor,
+                setValue: value => Config.MoveCursor = value
             );
             configMenu.AddKeybind(
                 mod: ModManifest,

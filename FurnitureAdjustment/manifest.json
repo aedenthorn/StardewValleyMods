@@ -1,7 +1,7 @@
 ﻿{
   "Name": "Furniture Adjustment",
   "Author": "aedenthorn",
-  "Version": "0.2.1",
+  "Version": "0.2.2",
   "Description": "Furniture Adjustment.",
   "UniqueID": "aedenthorn.FurnitureAdjustment",
   "EntryDll": "FurnitureAdjustment.dll",

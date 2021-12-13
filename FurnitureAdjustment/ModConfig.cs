@@ -6,6 +6,7 @@ namespace FurnitureAdjustment
     public class ModConfig
     {
         public bool EnableMod { get; set; } = true;
+        public bool MoveCursor { get; set; } = true;
 
         public SButton RaiseButton { get; set; } = SButton.NumPad8;
         public SButton LowerButton { get; set; } = SButton.NumPad2;

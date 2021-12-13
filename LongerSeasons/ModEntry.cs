@@ -5,6 +5,7 @@ using StardewModdingAPI;
 using StardewModdingAPI.Utilities;
 using StardewValley;
 using StardewValley.Menus;
+using StardewValley.TerrainFeatures;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -110,6 +111,12 @@ namespace LongerSeasons
                original: AccessTools.PropertySetter(typeof(WorldDate), nameof(WorldDate.TotalDays)),
                prefix: new HarmonyMethod(typeof(ModEntry), nameof(ModEntry.WorldDate_TotalDays_Setter_Prefix))
             );
+
+            // Bush Patches
+            harmony.Patch(
+               original: AccessTools.PropertyGetter(typeof(Bush), nameof(Bush.inBloom)),
+               prefix: new HarmonyMethod(typeof(ModEntry), nameof(ModEntry.Bush_inBloom_Prefix))
+            );
         }
 
         private void GameLoop_GameLaunched(object sender, StardewModdingAPI.Events.GameLaunchedEventArgs e)
@@ -126,20 +133,29 @@ namespace LongerSeasons
                 save: () => Helper.WriteConfig(Config)
             );
 
+            configMenu.AddBoolOption(
+                mod: ModManifest,
+                name: () => "Enable Mod",
+                getValue: () => Config.EnableMod,
+                setValue: value => Config.EnableMod = value
+            );
+            configMenu.AddBoolOption(
+                mod: ModManifest,
+                name: () => "Extend Berry Seasons",
+                getValue: () => Config.ExtendBerry,
+                setValue: value => Config.ExtendBerry = value
+            );
             configMenu.AddNumberOption(
                 mod: ModManifest,
                 name: () => "Days per Month",
                 getValue: () => Config.DaysPerMonth,
-                setValue: value => Config.DaysPerMonth = value,
-                min: 28,
-                max: 999
+                setValue: value => Config.DaysPerMonth = value
             );
             configMenu.AddNumberOption(
                 mod: ModManifest,
                 name: () => "Months per Season",
                 getValue: () => Config.MonthsPerSeason,
-                setValue: value => Config.MonthsPerSeason = value,
-                min: 1
+                setValue: value => Config.MonthsPerSeason = value
             );
         }
 
