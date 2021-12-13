@@ -114,7 +114,7 @@ namespace LongerSeasons
 
             // Bush Patches
             harmony.Patch(
-               original: AccessTools.PropertyGetter(typeof(Bush), nameof(Bush.inBloom)),
+               original: AccessTools.Method(typeof(Bush), nameof(Bush.inBloom)),
                prefix: new HarmonyMethod(typeof(ModEntry), nameof(ModEntry.Bush_inBloom_Prefix))
             );
         }
