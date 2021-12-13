@@ -68,11 +68,9 @@ namespace FarmerHelper
             if (!Config.EnableMod || dialogKey != "Sleep")
                 return;
 
-            foreach (var obj in Game1.getFarm().terrainFeatures.Values)
+            foreach (var terrainFeature in Game1.getFarm().terrainFeatures.Values)
             {
-                if (!(obj is HoeDirt))
-                    continue;
-                if (Config.WarnAboutPlantsUnwateredBeforeSleep && (obj as HoeDirt).needsWatering())
+                if (terrainFeature is HoeDirt && Config.WarnAboutPlantsUnwateredBeforeSleep && (terrainFeature as HoeDirt).crop != null && !(terrainFeature as HoeDirt).hasPaddyCrop() && (terrainFeature as HoeDirt).state.Value == 0)
                 {
                     question = string.Format(SHelper.Translation.Get("plants-need-watering"), question);
                     break;

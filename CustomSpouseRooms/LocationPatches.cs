@@ -232,6 +232,7 @@ namespace CustomSpouseRooms
 					string[] array = room_data[srd.templateName].Split('/', StringSplitOptions.None);
 					map_path = array[0];
 					indexInSpouseMapSheet = int.Parse(array[1]);
+					Monitor.Log($"Got Data\\SpouseRooms room for template {srd.templateName}: room {map_path}, index {indexInSpouseMapSheet}");
 				}
 				catch (Exception)
 				{
@@ -244,6 +245,7 @@ namespace CustomSpouseRooms
 					string[] array = room_data[spouse].Split('/', StringSplitOptions.None);
 					map_path = array[0];
 					indexInSpouseMapSheet = int.Parse(array[1]);
+					Monitor.Log($"Got Data\\SpouseRooms room for spouse {spouse}: room {map_path}, index {indexInSpouseMapSheet}");
 				}
 				catch (Exception)
 				{
@@ -254,10 +256,12 @@ namespace CustomSpouseRooms
 				if (srd.templateName != null && ModEntry.roomIndexes.ContainsKey(srd.templateName))
 				{
 					indexInSpouseMapSheet = ModEntry.roomIndexes[srd.templateName];
+					Monitor.Log($"Got vanilla index for template {srd.templateName}: {indexInSpouseMapSheet}");
 				}
 				else if (ModEntry.roomIndexes.ContainsKey(spouse))
 				{
 					indexInSpouseMapSheet = ModEntry.roomIndexes[spouse];
+					Monitor.Log($"Got vanilla index for spouse {spouse}: {indexInSpouseMapSheet}");
 				}
 				else
 				{
@@ -278,7 +282,7 @@ namespace CustomSpouseRooms
 			for (int x = areaToRefurbish.Left; x < areaToRefurbish.Right; x++)
 			{
 				Point point = new Point(x, areaToRefurbish.Bottom - 1);
-				Tile tile = front_layer.Tiles[point.X, point.Y];
+				Tile tile = front_layer?.Tiles[point.X, point.Y];
 				if (tile != null)
 				{
 					bottom_row_tiles.Add(new KeyValuePair<Point, Tile>(point, tile));
