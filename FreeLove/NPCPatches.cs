@@ -524,7 +524,7 @@ namespace FreeLove
                         __result = true;
                         return false;
                     }
-                    if (__instance.Sprite.CurrentAnimation == null && !__instance.hasTemporaryMessageAvailable() && __instance.currentMarriageDialogue.Count == 0 && __instance.CurrentDialogue.Count == 0 && Game1.timeOfDay < 2200 && !__instance.isMoving() && who.ActiveObject == null)
+                    if (__instance.Sprite.CurrentAnimation == null && !__instance.hasTemporaryMessageAvailable() && __instance.currentMarriageDialogue.Count == 0 && __instance.CurrentDialogue.Count == 0 && Game1.timeOfDay < 2200 && !__instance.isMoving() && who.ActiveObject == null && Integrations.kissingAPI == null)
                     {
                         Monitor.Log($"Trying to kiss/hug {__instance.Name}");
 
@@ -532,15 +532,8 @@ namespace FreeLove
                         who.faceGeneralDirection(__instance.getStandingPosition(), 0, false);
                         if (__instance.FacingDirection == 3 || __instance.FacingDirection == 1)
                         {
-                            if (Integrations.kissingAPI != null)
-                            {
-                                Monitor.Log($"Handing over to Hugs and Kisses");
 
-                                Integrations.kissingAPI.PlayerNPCKiss(who, __instance);
-                                __result = true;
-                                return false;
-                            }
-                            if (!__instance.hasBeenKissedToday.Value)
+                            if (__instance.hasBeenKissedToday.Value)
                             {
                                 Monitor.Log($"{__instance.Name} has been kissed today");
                                 return true;

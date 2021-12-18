@@ -8,21 +8,11 @@ using System.IO;
 namespace HugsAndKisses
 {
     /// <summary>The mod entry point.</summary>
-    public class HelperEvents
+    public partial class ModEntry
     {
-        private static IMonitor Monitor;
-        private static IModHelper Helper;
-        private static ModConfig Config;
 
-        // call this method from your Entry class
-        public static void Initialize(IMonitor monitor, ModConfig config, IModHelper helper)
-        {
-            Monitor = monitor;
-            Helper = helper;
-            Config = config;
-        }
 
-        public static void GameLoop_GameLaunched(object sender, GameLaunchedEventArgs e)
+        public void GameLoop_GameLaunched(object sender, GameLaunchedEventArgs e)
         {
             if (!Config.EnableMod)
                 return;
@@ -67,6 +57,135 @@ namespace HugsAndKisses
                 {
                     Monitor.Log("Hug audio not found at path: " + filePath);
                 }
+            }
+
+            // get Generic Mod Config Menu's API (if it's installed)
+            var configMenu = Helper.ModRegistry.GetApi<IGenericModConfigMenuApi>("spacechase0.GenericModConfigMenu");
+            if (configMenu != null)
+            {
+
+                // register mod
+                configMenu.Register(
+                    mod: ModManifest,
+                    reset: () => Config = new ModConfig(),
+                    save: () => Helper.WriteConfig(Config)
+                );
+                configMenu.AddBoolOption(
+                    mod: ModManifest,
+                    name: () => "Mod Enabled",
+                    getValue: () => Config.EnableMod,
+                    setValue: value => Config.EnableMod = value
+                );
+                configMenu.AddBoolOption(
+                    mod: ModManifest,
+                    name: () => "Roommate kisses",
+                    getValue: () => Config.RoommateKisses,
+                    setValue: value => Config.RoommateKisses = value
+                );
+                configMenu.AddNumberOption(
+                    mod: ModManifest,
+                    name: () => "Min Hearts For Marriage Kiss",
+                    getValue: () => Config.MinHeartsForMarriageKiss,
+                    setValue: value => Config.MinHeartsForMarriageKiss = value
+                );
+                configMenu.AddNumberOption(
+                    mod: ModManifest,
+                    name: () => "Hearts For Friendship",
+                    getValue: () => Config.HeartsForFriendship,
+                    setValue: value => Config.HeartsForFriendship = value
+                );
+                configMenu.AddBoolOption(
+                    mod: ModManifest,
+                    name: () => "Unlimited Kisses",
+                    getValue: () => Config.UnlimitedDailyKisses,
+                    setValue: value => Config.UnlimitedDailyKisses = value
+                );
+                configMenu.AddBoolOption(
+                    mod: ModManifest,
+                    name: () => "Unlimited Kisses",
+                    getValue: () => Config.UnlimitedDailyKisses,
+                    setValue: value => Config.UnlimitedDailyKisses = value
+                );
+                configMenu.AddBoolOption(
+                    mod: ModManifest,
+                    name: () => "Dating Kisses",
+                    getValue: () => Config.DatingKisses,
+                    setValue: value => Config.DatingKisses = value
+                );
+                configMenu.AddBoolOption(
+                    mod: ModManifest,
+                    name: () => "Friend Hugs",
+                    getValue: () => Config.FriendHugs,
+                    setValue: value => Config.FriendHugs = value
+                );
+                configMenu.AddNumberOption(
+                    mod: ModManifest,
+                    name: () => "NPC Kiss Chance",
+                    getValue: () => (int)Config.SpouseKissChance0to1*100,
+                    setValue: value => Config.SpouseKissChance0to1 = value / 100f,
+                    min: 0,
+                    max: 100
+                );
+                configMenu.AddTextOption(
+                    mod: ModManifest,
+                    name: () => "Custom Kiss Sound",
+                    getValue: () => Config.CustomKissSound,
+                    setValue: value => Config.CustomKissSound = value
+                );
+                configMenu.AddTextOption(
+                    mod: ModManifest,
+                    name: () => "Custom Hug Sound",
+                    getValue: () => Config.CustomHugSound,
+                    setValue: value => Config.CustomHugSound = value
+                );
+                configMenu.AddTextOption(
+                    mod: ModManifest,
+                    name: () => "Custom Kiss Frames",
+                    getValue: () => Config.CustomKissFrames,
+                    setValue: value => Config.CustomKissFrames = value
+                );
+                configMenu.AddNumberOption(
+                    mod: ModManifest,
+                    name: () => "Max NPC Kiss Distance",
+                    getValue: () => (int)Config.MaxDistanceToKiss,
+                    setValue: value => Config.MaxDistanceToKiss = value
+                );
+                configMenu.AddNumberOption(
+                    mod: ModManifest,
+                    name: () => "Min Spouse Kiss Interval (s)",
+                    getValue: () => (int)Config.MinSpouseKissIntervalSeconds,
+                    setValue: value => Config.MinSpouseKissIntervalSeconds = value
+                );
+                configMenu.AddBoolOption(
+                    mod: ModManifest,
+                    name: () => "Multiple Spouses Kiss",
+                    getValue: () => Config.AllowPlayerSpousesToKiss,
+                    setValue: value => Config.AllowPlayerSpousesToKiss = value
+                );
+                configMenu.AddBoolOption(
+                    mod: ModManifest,
+                    name: () => "Allow Relatives To Hug",
+                    getValue: () => Config.AllowNPCRelativesToHug,
+                    setValue: value => Config.AllowNPCRelativesToHug = value
+                );
+                configMenu.AddBoolOption(
+                    mod: ModManifest,
+                    name: () => "Allow NPC Spouses To Kiss",
+                    getValue: () => Config.AllowNPCSpousesToKiss,
+                    setValue: value => Config.AllowNPCSpousesToKiss = value
+                );
+                configMenu.AddBoolOption(
+                    mod: ModManifest,
+                    name: () => "Allow Relatives To Kiss",
+                    getValue: () => Config.AllowRelativesToKiss,
+                    setValue: value => Config.AllowRelativesToKiss = value
+                );
+                configMenu.AddBoolOption(
+                    mod: ModManifest,
+                    name: () => "Allow Non-datable",
+                    getValue: () => Config.AllowNonDateableNPCsToHugAndKiss,
+                    setValue: value => Config.AllowNonDateableNPCsToHugAndKiss = value
+                );
             }
         }
 

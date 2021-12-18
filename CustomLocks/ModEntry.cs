@@ -25,6 +25,8 @@ namespace CustomLocks
             if (!Config.Enabled)
                 return;
 
+            Helper.Events.GameLoop.GameLaunched += GameLoop_GameLaunched;
+
 
             CustomLocksPatches.Initialize(Monitor);
             var harmony = new Harmony(this.ModManifest.UniqueID);
@@ -44,6 +46,65 @@ namespace CustomLocks
             harmony.Patch(
                original: AccessTools.Method(typeof(GameLocation), nameof(GameLocation.lockedDoorWarp)),
                prefix: new HarmonyMethod(typeof(CustomLocksPatches), nameof(CustomLocksPatches.GameLocation_lockedDoorWarp))
+            );
+        }
+
+
+        private void GameLoop_GameLaunched(object sender, StardewModdingAPI.Events.GameLaunchedEventArgs e)
+        {
+            // get Generic Mod Config Menu's API (if it's installed)
+            var configMenu = Helper.ModRegistry.GetApi<IGenericModConfigMenuApi>("spacechase0.GenericModConfigMenu");
+            if (configMenu is null)
+                return;
+
+            // register mod
+            configMenu.Register(
+                mod: ModManifest,
+                reset: () => Config = new ModConfig(),
+                save: () => Helper.WriteConfig(Config)
+            );
+
+            configMenu.AddBoolOption(
+                mod: ModManifest,
+                name: () => "Mod Enabled?",
+                getValue: () => Config.Enabled,
+                setValue: value => Config.Enabled = value
+            );
+            configMenu.AddBoolOption(
+                mod: ModManifest,
+                name: () => "Allow Seed Shop on Wed?",
+                getValue: () => Config.AllowSeedShopWed,
+                setValue: value => Config.AllowSeedShopWed = value
+            );
+            configMenu.AddBoolOption(
+                mod: ModManifest,
+                name: () => "Allow Outside Hours?",
+                getValue: () => Config.AllowOutsideTime,
+                setValue: value => Config.AllowOutsideTime = value
+            );
+            configMenu.AddBoolOption(
+                mod: ModManifest,
+                name: () => "Allow Stranger Home Entry?",
+                getValue: () => Config.AllowStrangerHomeEntry,
+                setValue: value => Config.AllowStrangerHomeEntry = value
+            );
+            configMenu.AddBoolOption(
+                mod: ModManifest,
+                name: () => "Allow Stranger Room Entry?",
+                getValue: () => Config.AllowStrangerRoomEntry,
+                setValue: value => Config.AllowStrangerRoomEntry = value
+            );
+            configMenu.AddBoolOption(
+                mod: ModManifest,
+                name: () => "Allow Adventure Guild Entry?",
+                getValue: () => Config.AllowAdventureGuildEntry,
+                setValue: value => Config.AllowAdventureGuildEntry = value
+            );
+            configMenu.AddBoolOption(
+                mod: ModManifest,
+                name: () => "Ignore Events?",
+                getValue: () => Config.IgnoreEvents,
+                setValue: value => Config.IgnoreEvents = value
             );
         }
 

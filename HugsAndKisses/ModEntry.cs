@@ -7,12 +7,12 @@ using System.Collections.Generic;
 namespace HugsAndKisses
 {
     /// <summary>The mod entry point.</summary>
-    public class ModEntry : Mod
+    public partial class ModEntry : Mod
     {
 
         public static IMonitor SMonitor;
         public static IModHelper PHelper;
-        public static ModConfig SConfig;
+        public static ModConfig Config;
         
         public static Multiplayer mp;
         public static Random myRand;
@@ -24,9 +24,9 @@ namespace HugsAndKisses
         /// <param name="helper">Provides simplified APIs for writing mods.</param>
         public override void Entry(IModHelper helper)
         {
-            SConfig = Helper.ReadConfig<ModConfig>();
+            Config = Helper.ReadConfig<ModConfig>();
 
-            if (!SConfig.EnableMod)
+            if (!Config.EnableMod)
                 return;
 
             SMonitor = Monitor;
@@ -35,14 +35,13 @@ namespace HugsAndKisses
             mp = helper.Reflection.GetField<Multiplayer>(typeof(Game1), "multiplayer").GetValue();
             myRand = new Random();
 
-            helper.Events.GameLoop.GameLaunched += HelperEvents.GameLoop_GameLaunched;
-            helper.Events.GameLoop.OneSecondUpdateTicked += HelperEvents.GameLoop_OneSecondUpdateTicked;
-            helper.Events.GameLoop.SaveLoaded += HelperEvents.GameLoop_SaveLoaded;
+            helper.Events.GameLoop.GameLaunched += GameLoop_GameLaunched;
+            helper.Events.GameLoop.OneSecondUpdateTicked += GameLoop_OneSecondUpdateTicked;
+            helper.Events.GameLoop.SaveLoaded += GameLoop_SaveLoaded;
 
-            HelperEvents.Initialize(Monitor, SConfig, helper);
-            Misc.Initialize(Monitor, SConfig, helper);
-            Kissing.Initialize(Monitor, SConfig, helper);
-            NPCPatches.Initialize(Monitor, SConfig, helper);
+            Misc.Initialize(Monitor, Config, helper);
+            Kissing.Initialize(Monitor, Config, helper);
+            NPCPatches.Initialize(Monitor, Config, helper);
 
             var harmony = new Harmony(ModManifest.UniqueID);
 

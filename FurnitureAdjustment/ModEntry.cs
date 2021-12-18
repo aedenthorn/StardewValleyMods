@@ -1,9 +1,6 @@
-﻿using HarmonyLib;
-using Microsoft.Xna.Framework;
+﻿using Microsoft.Xna.Framework;
 using StardewModdingAPI;
 using StardewValley;
-using System;
-using Object = StardewValley.Object;
 
 namespace FurnitureAdjustment
 {
@@ -98,7 +95,7 @@ namespace FurnitureAdjustment
                     f.boundingBox.Value = new Rectangle(f.boundingBox.Value.Location + shift, f.boundingBox.Value.Size);
                     f.updateDrawPosition();
                     if(Config.MoveCursor)
-                        Game1.input.SetMousePosition(Game1.getMousePosition().X + shift.X, Game1.getMousePosition().Y + shift.Y);
+                        Game1.input.SetMousePosition(Game1.getOldMouseX() + shift.X, Game1.getOldMouseY() + shift.Y);
                     f.removeLights(Game1.currentLocation);
 
                     Helper.Input.Suppress(button);
