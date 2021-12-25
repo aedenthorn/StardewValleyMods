@@ -28,7 +28,7 @@ namespace UtilityGrid
         public static readonly string saveKey = "utility-grid-data";
 
         public static bool ShowingGrid { get; set; } = false;
-        public static bool ShowingEdit { get; set; } = false;
+        public static bool ShowingEdit { get; set; } = true;
         public static GridType CurrentGrid { get; set; } = GridType.water;
         public static int CurrentTile { get; set; } = 0;
         public static int CurrentRotation { get; set; } = 0;

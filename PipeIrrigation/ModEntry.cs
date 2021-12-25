@@ -56,6 +56,7 @@ namespace PipeIrrigation
             SHelper = helper;
 
             helper.Events.GameLoop.GameLaunched += GameLoop_GameLaunched;
+            helper.Events.GameLoop.TimeChanged += GameLoop_TimeChanged;
             helper.Events.Display.RenderedWorld += Display_RenderedWorld;
 
             harmony = new Harmony(ModManifest.UniqueID);
@@ -64,6 +65,13 @@ namespace PipeIrrigation
                postfix: new HarmonyMethod(typeof(ModEntry), nameof(ModEntry.Farm_DayUpdate_Postfix))
             );
             dropTexture = Helper.Content.Load<Texture2D>("assets/drop.png");
+        }
+
+        private void GameLoop_TimeChanged(object sender, TimeChangedEventArgs e)
+        {
+            if (!Config.EnableMod || !(Game1.player.currentLocation is Farm))
+                return;
+            RefreshWateringTiles(Game1.player.currentLocation, false);
         }
 
         private void Display_RenderedWorld(object sender, RenderedWorldEventArgs e)

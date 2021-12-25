@@ -366,7 +366,7 @@ namespace UtilityGrid
             {
                 power += func(location, (int)GridType.electric, group.pipes);
             }
-            Dictionary<Object, float> objectsToDischarge = new Dictionary<Object, float>();
+            Dictionary<Vector2, float> objectsToDischarge = new Dictionary<Vector2, float>();
             foreach (var obj in group.objects.Values)
             {
                 var netPower = power.X + power.Y;
@@ -390,7 +390,7 @@ namespace UtilityGrid
                     float add = Math.Min(charge, obj.electricDischargeRate <= 0 ? -netPower : Math.Min(-netPower, obj.electricDischargeRate));
                     if (tick)
                     {
-                        objectsToDischarge.Add(obj.worldObj, Math.Max(0, charge - add));
+                        objectsToDischarge[obj.worldObj.TileLocation] = Math.Max(0, charge - add);
                     }
 
                     power.X += add;
@@ -398,8 +398,20 @@ namespace UtilityGrid
             }
             if (objectsToDischarge.Count > 0 && power.X + power.Y >= 0)
             {
+                GameLocation gl = Game1.getLocationFromName(location);
+                if(gl == null)
+                {
+                    SMonitor.Log($"Invalid game location {location}", StardewModdingAPI.LogLevel.Error);
+                    return power;
+                }
+
                 foreach (var kvp in objectsToDischarge)
-                    kvp.Key.modData["aedenthorn.UtilityGrid/electricCharge"] = kvp.Value.ToString();
+                {
+                    if (gl.objects.ContainsKey(kvp.Key))
+                    {
+                        gl.objects[kvp.Key].modData["aedenthorn.UtilityGrid/electricCharge"] = kvp.Value.ToString();
+                    }
+                }
             }
 
             return power;
@@ -422,7 +434,7 @@ namespace UtilityGrid
             {
                 power += func(location, (int)GridType.water, group.pipes);
             }
-            Dictionary<Object, float> objectsToDischarge = new Dictionary<Object, float>();
+            Dictionary<Vector2, float> objectsToDischarge = new Dictionary<Vector2, float>();
             foreach (var obj in group.objects.Values)
             {
                 var netPower = power.X + power.Y;
@@ -453,16 +465,28 @@ namespace UtilityGrid
                     float add = Math.Min(charge, obj.waterDischargeRate <= 0 ? -netPower : Math.Min(-netPower, obj.waterDischargeRate));
                     if (tick)
                     {
-                        objectsToDischarge.Add(obj.worldObj, Math.Max(0, charge - add));
+                        objectsToDischarge[obj.worldObj.TileLocation] = Math.Max(0, charge - add);
                     }
                         
                     power.X += add;
                 }
             }
-            if(objectsToDischarge.Count > 0 && power.X + power.Y >= 0)
+            if (objectsToDischarge.Count > 0 && power.X + power.Y >= 0)
             {
-                foreach(var kvp in objectsToDischarge)
-                    kvp.Key.modData["aedenthorn.UtilityGrid/waterCharge"] = kvp.Value.ToString();
+                GameLocation gl = Game1.getLocationFromName(location);
+                if (gl == null)
+                {
+                    SMonitor.Log($"Invalid game location {location}", StardewModdingAPI.LogLevel.Error);
+                    return power;
+                }
+
+                foreach (var kvp in objectsToDischarge)
+                {
+                    if (gl.objects.ContainsKey(kvp.Key))
+                    {
+                        gl.objects[kvp.Key].modData["aedenthorn.UtilityGrid/waterCharge"] = kvp.Value.ToString();
+                    }
+                }
             }
             return power;
         }
