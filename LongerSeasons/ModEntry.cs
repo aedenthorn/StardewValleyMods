@@ -56,7 +56,7 @@ namespace LongerSeasons
             );
 
             harmony.Patch(
-               original: AccessTools.Method(AccessTools.TypeByName("StardewValley.Game1+<_newDayAfterFade>d__715"), "MoveNext"),
+               original: AccessTools.Method(AccessTools.TypeByName("StardewValley.Game1+<_newDayAfterFade>d__716"), "MoveNext"),
                transpiler: new HarmonyMethod(typeof(ModEntry), nameof(ModEntry.Game1__newDayAfterFade_Transpiler))
             );
 
