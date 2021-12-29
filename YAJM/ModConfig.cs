@@ -18,6 +18,7 @@ namespace YAJM
         public bool PlayJumpSound { get; set; } = true;
         public bool CustomHorseTexture { get; set; } = false;
         public float OrdinaryJumpHeight { get; set; } = 8f;
+        public string JumpSound { get; set; } = "dwop";
         public Vector2 HorseShadowOffset { get; set; } = Vector2.Zero;
     }
 }

@@ -382,8 +382,8 @@ namespace UtilityGrid
                 mod: ModManifest,
                 name: () => "Pipe Item Destroy",
                 tooltip: () => "Comma-separated pairs of index:amount",
-                getValue: () => Config.PipeCostItems,
-                setValue: value => Config.PipeCostItems = value
+                getValue: () => Config.PipeDestroyItems,
+                setValue: value => Config.PipeDestroyItems = value
             );
 
             configMenu.AddSectionTitle(

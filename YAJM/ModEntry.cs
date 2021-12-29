@@ -33,6 +33,7 @@ namespace YAJM
                 return;
 
             Helper.Events.Input.ButtonPressed += Input_ButtonPressed;
+            Helper.Events.GameLoop.GameLaunched += GameLoop_GameLaunched;
 
             Harmony harmony = new Harmony(Helper.ModRegistry.ModID);
 
@@ -52,6 +53,69 @@ namespace YAJM
             horseShadow = Helper.Content.Load<Texture2D>(Path.Combine("assets", "horse_shadow.png"));
             horse = Helper.Content.Load<Texture2D>(Path.Combine("assets", "horse.png"));
             
+        }
+
+        private void GameLoop_GameLaunched(object sender, StardewModdingAPI.Events.GameLaunchedEventArgs e)
+        {
+            var configMenu = Helper.ModRegistry.GetApi<IGenericModConfigMenuApi>("spacechase0.GenericModConfigMenu");
+            if (configMenu != null)
+            {
+                // register mod
+                configMenu.Register(
+                    mod: ModManifest,
+                    reset: () => Config = new ModConfig(),
+                    save: () => Helper.WriteConfig(Config)
+                );
+
+                configMenu.AddBoolOption(
+                    mod: ModManifest,
+                    name: () => "Mod Enabled?",
+                    getValue: () => Config.EnableMod,
+                    setValue: value => Config.EnableMod = value
+                );
+                configMenu.AddBoolOption(
+                    mod: ModManifest,
+                    name: () => "Multi Jump?",
+                    getValue: () => Config.EnableMultiJump,
+                    setValue: value => Config.EnableMultiJump = value
+                );
+                configMenu.AddKeybind(
+                    mod: ModManifest,
+                    name: () => "Jump Button",
+                    getValue: () => Config.JumpButton,
+                    setValue: value => Config.JumpButton = value
+                );
+                configMenu.AddNumberOption(
+                    mod: ModManifest,
+                    name: () => "Ordinary Jump Height",
+                    getValue: () => (int)Config.OrdinaryJumpHeight,
+                    setValue: value => Config.OrdinaryJumpHeight = value
+                );
+                configMenu.AddNumberOption(
+                    mod: ModManifest,
+                    name: () => "Max Jump Distance",
+                    getValue: () => Config.MaxJumpDistance,
+                    setValue: value => Config.MaxJumpDistance = value
+                );
+                configMenu.AddBoolOption(
+                    mod: ModManifest,
+                    name: () => "Play Jump Sound",
+                    getValue: () => Config.PlayJumpSound,
+                    setValue: value => Config.PlayJumpSound = value
+                );
+                configMenu.AddTextOption(
+                    mod: ModManifest,
+                    name: () => "Jump Sound",
+                    getValue: () => Config.JumpSound,
+                    setValue: value => Config.JumpSound = value
+                );
+                configMenu.AddBoolOption(
+                    mod: ModManifest,
+                    name: () => "Custom Horse Texture?",
+                    getValue: () => Config.CustomHorseTexture,
+                    setValue: value => Config.CustomHorseTexture = value
+                );
+            }
         }
 
         private static bool Farmer_getDrawLayer_prefix(ref Farmer __instance, ref float __result)
@@ -101,8 +165,8 @@ namespace YAJM
                 playerJumpingWithHorse = false;
                 blockedJump = false;
 
-                if (Config.PlayJumpSound)
-                    Game1.playSound("dwop");
+                if (Config.PlayJumpSound && Config.JumpSound.Length > 0)
+                    Game1.playSound(Config.JumpSound);
                 velX = 0;
                 velY = 0;
                 int ox = 0;
