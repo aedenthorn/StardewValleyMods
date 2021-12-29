@@ -55,10 +55,19 @@ namespace LongerSeasons
                prefix: new HarmonyMethod(typeof(ModEntry), nameof(ModEntry.Game1_newSeason_Prefix))
             );
 
-            harmony.Patch(
-               original: AccessTools.Method(AccessTools.TypeByName("StardewValley.Game1+<_newDayAfterFade>d__716"), "MoveNext"),
-               transpiler: new HarmonyMethod(typeof(ModEntry), nameof(ModEntry.Game1__newDayAfterFade_Transpiler))
-            );
+            foreach(var type in typeof(Game1).Assembly.GetTypes())
+            {
+                if (type.FullName.StartsWith("StardewValley.Game1+<_newDayAfterFade>"))
+                {
+                    Monitor.Log($"Found {type}");
+                    harmony.Patch(
+                       original: AccessTools.Method(type, "MoveNext"),
+                       transpiler: new HarmonyMethod(typeof(ModEntry), nameof(ModEntry.Game1__newDayAfterFade_Transpiler))
+                    );
+                    break;
+                }
+            }
+            
 
             // SDate Patches
 

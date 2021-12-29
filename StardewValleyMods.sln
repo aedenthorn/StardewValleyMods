@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.31424.327
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MagnetMod", "MagnetMod\MagnetMod.csproj", "{7EA4E49D-D5FF-4A36-8755-D9F6B1F4A3C3}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MagnetMod", "MagnetMod\MagnetMod.csproj", "{7EA4E49D-D5FF-4A36-8755-D9F6B1F4A3C3}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FruitTreeShaker", "FruitTreeShaker\FruitTreeShaker.csproj", "{4E24EB5E-0477-49BD-92F8-BB849064C7E3}"
 EndProject
@@ -15,7 +15,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PacifistValley", "PacifistV
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WitcherMod", "WitcherMod\WitcherMod.csproj", "{AD598A93-4EAE-4672-83CD-C7D5DCA4925F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BossCreatures", "BossCreatures\BossCreatures.csproj", "{189F99D8-9BF1-4FDC-9A53-33A97ACD86D2}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BossCreatures", "BossCreatures\BossCreatures.csproj", "{189F99D8-9BF1-4FDC-9A53-33A97ACD86D2}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CustomMonsterFloors", "CustomMonsterFloors\CustomMonsterFloors.csproj", "{0C291A20-8560-4D6A-AB96-3AEE72E30B29}"
 EndProject
@@ -29,7 +29,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MultipleSpouses", "Multiple
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FriendlyDivorce", "FriendlyDivorce\FriendlyDivorce.csproj", "{E5A23657-6AC8-419F-BFB7-12A2F23B81D6}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CustomLocks", "CustomLocks\CustomLocks.csproj", "{7217CC9A-7D3B-4F41-A829-FE9DA4831778}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CustomLocks", "CustomLocks\CustomLocks.csproj", "{7217CC9A-7D3B-4F41-A829-FE9DA4831778}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RealNames", "RealNames\RealNames.csproj", "{2A84C8A1-0465-4D2A-984A-AD5D4A1C8927}"
 EndProject
@@ -85,7 +85,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GemIsles", "GemIsles\GemIsl
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ZombieOutbreak", "ZombieOutbreak\ZombieOutbreak.csproj", "{7A0BE63C-79D4-44F5-A5E5-DB40160B6B7A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CustomFixedDialogue", "TotallyUnrelatedProject\CustomFixedDialogue.csproj", "{C0C5B46C-0BE0-4854-9CB7-2B045A46A0AC}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CustomFixedDialogue", "TotallyUnrelatedProject\CustomFixedDialogue.csproj", "{C0C5B46C-0BE0-4854-9CB7-2B045A46A0AC}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SixtyNine", "SixtyNine\SixtyNine.csproj", "{2DB43C71-42E1-4D5C-AA75-CB76223421E5}"
 EndProject
@@ -109,7 +109,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "InstantGrowthPowder", "Inst
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AdvancedLootFramework", "AdvancedLootFramework\AdvancedLootFramework.csproj", "{F3EEC0C9-B708-4B94-B01C-63F650C4A29B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CustomChestTypes", "CustomChestTypes\CustomChestTypes.csproj", "{F862B037-5435-4963-89C5-449A6A3631A8}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CustomChestTypes", "CustomChestTypes\CustomChestTypes.csproj", "{F862B037-5435-4963-89C5-449A6A3631A8}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "QuickLoad", "QuickLoad\QuickLoad.csproj", "{BFD18E09-430C-46A7-A9A3-2C394B95BE44}"
 EndProject
@@ -193,6 +193,8 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PelicanXVASynth", "PelicanXVASynth\PelicanXVASynth.csproj", "{8AB1D4BF-D4E9-409C-84FC-1B5F604C4F15}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SoundEffectReplacement", "SoundEffectReplacement\SoundEffectReplacement.csproj", "{BCFB85CA-BD9E-42C6-B01E-6486DE6C40E1}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PetBed", "PetBed\PetBed.csproj", "{354427A3-8BE8-4E4D-A41C-741257371F81}"
 EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
@@ -941,6 +943,14 @@ Global
 		{BCFB85CA-BD9E-42C6-B01E-6486DE6C40E1}.Release|Any CPU.Build.0 = Release|Any CPU
 		{BCFB85CA-BD9E-42C6-B01E-6486DE6C40E1}.Release|x86.ActiveCfg = Release|Any CPU
 		{BCFB85CA-BD9E-42C6-B01E-6486DE6C40E1}.Release|x86.Build.0 = Release|Any CPU
+		{354427A3-8BE8-4E4D-A41C-741257371F81}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{354427A3-8BE8-4E4D-A41C-741257371F81}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{354427A3-8BE8-4E4D-A41C-741257371F81}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{354427A3-8BE8-4E4D-A41C-741257371F81}.Debug|x86.Build.0 = Debug|Any CPU
+		{354427A3-8BE8-4E4D-A41C-741257371F81}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{354427A3-8BE8-4E4D-A41C-741257371F81}.Release|Any CPU.Build.0 = Release|Any CPU
+		{354427A3-8BE8-4E4D-A41C-741257371F81}.Release|x86.ActiveCfg = Release|Any CPU
+		{354427A3-8BE8-4E4D-A41C-741257371F81}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
