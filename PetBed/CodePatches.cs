@@ -1,10 +1,5 @@
-﻿using Microsoft.Xna.Framework;
-using StardewValley;
+﻿using StardewValley;
 using StardewValley.Characters;
-using StardewValley.Locations;
-using StardewValley.Objects;
-using System;
-using System.Collections.Generic;
 
 namespace PetBed
 {
@@ -22,6 +17,21 @@ namespace PetBed
         {
             SMonitor.Log("Setting pet to farm position");
             return !Config.EnableMod || Game1.random.NextDouble() > Config.BedChance / 100f || !Game1.IsMasterGame || Game1.isRaining || !WarpPetToBed(__instance, Game1.getFarm(), ref ____currentBehavior, true);
+        }       
+        private static void Pet_dayUpdate_Prefix(Pet __instance, ref bool __state)
+        {
+            if(Config.EnableMod && __instance.currentLocation is Farm && !Game1.isRaining && Game1.random.NextDouble() < Config.BedChance / 100f && Game1.IsMasterGame)
+            {
+                __state = true;
+            }
+        }
+        private static void Pet_dayUpdate_Postfix(Pet __instance, bool __state, ref int ____currentBehavior)
+        {
+            if(__state)
+            {
+                SMonitor.Log("Setting pet to farm position");
+                WarpPetToBed(__instance, Game1.getFarm(), ref ____currentBehavior, true);
+            }
         }
     }
 }
