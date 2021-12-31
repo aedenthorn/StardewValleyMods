@@ -10,7 +10,7 @@ namespace PlantAll
 
         private static void Utility_tryToPlaceItem_Postfix(GameLocation location, Item item, int x, int y, bool __result)
         {
-            if (!Config.EnableMod || !__result || !SHelper.Input.IsDown(Config.ModButton) || !(item is Object) || (((Object)item).Category != -74 && ((Object)item).Category != -19) || item.Stack <= 0)
+            if (!Config.EnableMod || !__result || !SHelper.Input.IsDown(Config.ModButton) || !IsValidItem(item))
                 return;
             SMonitor.Log($"Planting all");
 
@@ -24,10 +24,15 @@ namespace PlantAll
             {
                 if(((Object)Game1.player.CurrentItem).placementAction(Game1.player.currentLocation, p.X * 64, p.Y * 64, Game1.player))              
                     Game1.player.reduceActiveItemByOne();
-                if (Game1.player.CurrentItem == null || (Game1.player.CurrentItem.Category != -74 && Game1.player.CurrentItem.Category != -19) || Game1.player.CurrentItem.Stack <= 0)
+                if (!IsValidItem(Game1.player.CurrentItem) || item.ParentSheetIndex != Game1.player.CurrentItem.ParentSheetIndex)
                     return;
             }
 
+        }
+
+        private static bool IsValidItem(Item item)
+        {
+            return item != null && item.Stack > 0 && (item.Category == -74 || item.Category == -19) && !(item as Object).isSapling() && !Object.isWildTreeSeed(item.ParentSheetIndex);
         }
 
         private static void GetPlaceable(int x, int y, List<Point> placeables)
