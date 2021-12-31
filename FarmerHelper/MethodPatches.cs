@@ -13,7 +13,7 @@ namespace FarmerHelper
     {
         private static bool Utility_tryToPlaceItem_Prefix(GameLocation location, Item item, ref bool __result )
         {
-            if (!Config.EnableMod || !Config.PreventLatePlant || (new int[] { 495, 496, 497, 498, 770 }).Contains(item.ParentSheetIndex) || !(item is Object) || (item as Object).bigCraftable.Value)
+            if (!Config.EnableMod || !Config.PreventLatePlant || (new int[] { 495, 496, 497, 498, 770 }).Contains(item.ParentSheetIndex) || !(item is Object) || ((Object)item).Category != -74)
                 return true;
             if (location.SeedsIgnoreSeasonsHere())
                 return true;
@@ -28,7 +28,7 @@ namespace FarmerHelper
         }
         private static bool Object_placementAction_Prefix(Object __instance, GameLocation location, int x, int y, Farmer who, ref bool __result)
         {
-            if (!Config.EnableMod || !Config.PreventLatePlant)
+            if (!Config.EnableMod || !Config.PreventLatePlant || __instance.Category != -74)
                 return true;
 
             Vector2 placementTile = new Vector2((float)(x / 64), (float)(y / 64));

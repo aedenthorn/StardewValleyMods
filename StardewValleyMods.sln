@@ -196,6 +196,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SoundEffectReplacement", "S
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PetBed", "PetBed\PetBed.csproj", "{354427A3-8BE8-4E4D-A41C-741257371F81}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PlantAll", "PlantAll\PlantAll.csproj", "{096CD792-CAC6-40C1-92FF-00593AA84C8F}"
+EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
 		_releases\_releases.projitems*{047040e0-3d07-46e5-852b-d1d45cd57bb8}*SharedItemsImports = 13
@@ -951,6 +953,14 @@ Global
 		{354427A3-8BE8-4E4D-A41C-741257371F81}.Release|Any CPU.Build.0 = Release|Any CPU
 		{354427A3-8BE8-4E4D-A41C-741257371F81}.Release|x86.ActiveCfg = Release|Any CPU
 		{354427A3-8BE8-4E4D-A41C-741257371F81}.Release|x86.Build.0 = Release|Any CPU
+		{096CD792-CAC6-40C1-92FF-00593AA84C8F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{096CD792-CAC6-40C1-92FF-00593AA84C8F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{096CD792-CAC6-40C1-92FF-00593AA84C8F}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{096CD792-CAC6-40C1-92FF-00593AA84C8F}.Debug|x86.Build.0 = Debug|Any CPU
+		{096CD792-CAC6-40C1-92FF-00593AA84C8F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{096CD792-CAC6-40C1-92FF-00593AA84C8F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{096CD792-CAC6-40C1-92FF-00593AA84C8F}.Release|x86.ActiveCfg = Release|Any CPU
+		{096CD792-CAC6-40C1-92FF-00593AA84C8F}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

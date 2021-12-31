@@ -1,0 +1,22 @@
+﻿{
+  "Name": "Plant All",
+  "Author": "aedenthorn",
+  "Version": "0.1.0",
+  "Description": "Plant All.",
+  "UniqueID": "aedenthorn.PlantAll",
+  "EntryDll": "PlantAll.dll",
+  "MinimumApiVersion": "3.13.0",
+  "ModUpdater": {
+    "Repository": "StardewValleyMods",
+    "User": "aedenthorn",
+    "Directory": "_releases",
+    "ModFolder": "PlantAll"
+  },
+  "UpdateKeys": [ "Nexus:10482" ],
+  "Dependencies": [
+    {
+      "UniqueID": "Platonymous.ModUpdater",
+      "IsRequired": false
+    }
+  ]
+}
