@@ -14,20 +14,81 @@ namespace FarmCaveFramework
         public static List<string> answerIds = new List<string>();
         private static bool Event_answerDialogue_Prefix(string questionKey, int answerChoice)
         {
+
             if (!Config.EnableMod || questionKey != "cave")
                 return true;
-
             CaveChoice choice = SHelper.Content.Load<Dictionary<string,CaveChoice>>(frameworkPath, ContentSource.GameContent)[answerIds[answerChoice]];
+            SMonitor.Log($"Chose {choice.choice}, objects {choice.objects.Count}");
             SHelper.Data.WriteSaveData("farm-cave-framework-choice", choice.id);
             if (choice.objects.Count > 0)
             {
                 FarmCave cave = Game1.getLocationFromName("FarmCave") as FarmCave;
                 foreach (var o in choice.objects)
                 {
-                    cave.setObject(new Vector2(o.X, o.Y), new Object(new Vector2(o.X, o.Y), o.index, false));
+                    Object obj = GetObjectFromID(o.id, new Vector2(o.X, o.Y));
+                    if(obj != null)
+                    {
+                        cave.setObject(new Vector2(o.X, o.Y), obj);
+                    }
                 }
             }
             return false;
+        }
+
+        private static Object GetObjectFromID(string id, Vector2 tile, int amount = 1, bool spawned = false)
+        {
+            SMonitor.Log($"Trying to get object {id}, DGA {apiDGA != null}, JA {apiJA != null}");
+
+            Object obj = null;
+            try
+            {
+
+                if (int.TryParse(id, out int index))
+                {
+                    SMonitor.Log($"Spawning object with index {id}");
+                    return spawned ? new Object(index, amount, false, -1, 0)
+                    {
+                        IsSpawnedObject = true
+                    } : new Object(tile, index, false);
+                }
+                if (apiDGA != null && id.Contains("/"))
+                {
+                    object o = apiDGA.SpawnDGAItem(id);
+                    if (o is Object)
+                    {
+                        SMonitor.Log($"Spawning DGA object {id}");
+                        obj = (Object)o;
+                        if (spawned)
+                        {
+                            obj.IsSpawnedObject = true;
+                            obj.Stack = amount;
+                        }
+                        else
+                        {
+                            obj.TileLocation = tile;
+                        }
+                        return obj;
+                    }
+                }
+                if (apiJA != null)
+                {
+                    int idx = apiJA.GetObjectId(id);
+                    if (idx != -1)
+                    {
+                        SMonitor.Log($"Spawning JA object {id}");
+                        obj = spawned ? new Object(index, amount, false, -1, 0)
+                        {
+                            IsSpawnedObject = true
+                        } : new Object(tile, idx, false);
+                        return obj;
+                    }
+                }
+            }
+            catch
+            {
+            }
+            SMonitor.Log($"Couldn't find item with id {id}");
+            return obj;
         }
 
         private static bool Event_command_cave_Prefix()
@@ -114,10 +175,13 @@ namespace FarmCaveFramework
             baseMethod();
             if (choice.resources.Count > 0)
             {
-                while(Game1.random.NextDouble() < choice.resourceChance / 100f)
+                float totalWeight = 0;
+                foreach (var r in choice.resources)
                 {
-                    float totalWeight = 0;
-
+                    totalWeight += r.weight;
+                }
+                while (Game1.random.NextDouble() < choice.resourceChance / 100f)
+                {
                     int currentWeight = 0;
                     double chance = Game1.random.NextDouble();
                     foreach (var r in choice.resources)
@@ -128,10 +192,9 @@ namespace FarmCaveFramework
                             Vector2 v = new Vector2((float)Game1.random.Next(1, __instance.map.Layers[0].LayerWidth - 1), (float)Game1.random.Next(1, __instance.map.Layers[0].LayerHeight - 4));
                             if (__instance.isTileLocationTotallyClearAndPlaceable(v))
                             {
-                                __instance.setObject(v, new Object(r.index, 1, false, -1, 0)
-                                {
-                                    IsSpawnedObject = true
-                                });
+                                int amount = Game1.random.Next(r.min, r.max + 1);
+                                Object obj = GetObjectFromID(r.id, Vector2.Zero, amount, true);
+                                __instance.setObject(v, obj);
                             }
                             break;
                         }
@@ -165,7 +228,7 @@ namespace FarmCaveFramework
                     flag_value = true;
                     break;
                 }
-                if (o.bigCraftable.Value && o.heldObject.Value != null && o.MinutesUntilReady <= 0 && choice.objects.Exists(i => i.index == o.ParentSheetIndex))
+                if (o.bigCraftable.Value && o.heldObject.Value != null && o.MinutesUntilReady <= 0)
                 {
                     flag_value = true;
                     break;

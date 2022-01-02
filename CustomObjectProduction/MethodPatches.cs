@@ -30,23 +30,22 @@ namespace CustomObjectProduction
                 ProductData product = null;
                 if (objectProductionDataDict.ContainsKey(__instance.objects[vect].ParentSheetIndex + ""))
                 {
-                    SMonitor.Log("1");
                     product = objectProductionDataDict[__instance.objects[vect].ParentSheetIndex + ""];
                 }
                 else if (objectProductionDataDict.ContainsKey(__instance.objects[vect].Name))
                 {
-                    SMonitor.Log("2");
                     product = objectProductionDataDict[__instance.objects[vect].Name];
                 }
                 else
                 {
-                    SMonitor.Log("3");
                     return true;
                 }
 
                 __result = true;
 
-                SMonitor.Log($"Trying to take product {product.id} from {__instance.objects[vect].Name} ");
+
+
+                SMonitor.Log($"Trying to take product from {__instance.objects[vect].Name} ");
 
                 Object objectThatWasHeld = __instance.objects[vect].heldObject.Value;
                 __instance.objects[vect].heldObject.Value = null;
@@ -77,10 +76,40 @@ namespace CustomObjectProduction
             else 
                 return;
 
-            if (int.TryParse(product.id, out int productID))
+            if(product.infoList.Count > 0)
             {
-
-                if(productID == -1)
+                float totalWeight = 0;
+                foreach (var r in product.infoList)
+                {
+                    totalWeight += r.weight;
+                }
+                int currentWeight = 0;
+                double chance = Game1.random.NextDouble();
+                foreach (var r in product.infoList)
+                {
+                    currentWeight += r.weight;
+                    if (chance < currentWeight / totalWeight)
+                    {
+                        int amount = Game1.random.Next(r.min, r.max + 1);
+                        int quality = Game1.random.Next(r.minQuality, r.maxQuality+ 1);
+                        Object obj = GetObjectFromID(r.id, amount, quality);
+                        if(obj == null)
+                        {
+                            __instance.MinutesUntilReady = 0;
+                            __instance.readyForHarvest.Value = false;
+                            __instance.heldObject.Value = null;
+                            return;
+                        }
+                        __instance.MinutesUntilReady = 0;
+                        __instance.readyForHarvest.Value = true;
+                        __instance.heldObject.Value = obj;
+                        return;
+                    }
+                }
+            }
+            else if(int.TryParse(product.id, out int productID))
+            {
+                if (productID == -1)
                 {
                     __instance.MinutesUntilReady = 0;
                     __instance.readyForHarvest.Value = false;
@@ -92,7 +121,6 @@ namespace CustomObjectProduction
                 __instance.readyForHarvest.Value = true;
                 __instance.heldObject.Value = new Object(productID, product.amount, false, -1, product.quality);
             }
-            return;
         }
     }
 }

@@ -15,13 +15,13 @@ namespace FarmCaveFramework
 
     public class CaveObject
     {
-        public int index;
+        public string id;
         public int X;
         public int Y;
     }
     public class CaveResource
     {
-        public int index;
+        public string id;
         public int weight;
         public int min = 1;
         public int max = 1;

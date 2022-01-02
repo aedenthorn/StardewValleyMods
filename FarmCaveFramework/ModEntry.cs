@@ -15,6 +15,9 @@ namespace FarmCaveFramework
         public static ModConfig Config;
 
         public static ModEntry context;
+        private static IDynamicGameAssetsApi apiDGA;
+        private static IJsonAssetsApi apiJA;
+
         public static readonly string frameworkPath = "farm_cave_choices";
         /// <summary>The mod entry point, called after the mod is first loaded.</summary>
         /// <param name="helper">Provides simplified APIs for writing mods.</param>
@@ -30,6 +33,7 @@ namespace FarmCaveFramework
             SMonitor = Monitor;
             SHelper = helper;
             helper.Events.GameLoop.GameLaunched += GameLoop_GameLaunched;
+            helper.Events.GameLoop.SaveLoaded += GameLoop_SaveLoaded;
 
 
             var harmony = new Harmony(ModManifest.UniqueID);
@@ -62,8 +66,25 @@ namespace FarmCaveFramework
 
         }
 
+        private void GameLoop_SaveLoaded(object sender, StardewModdingAPI.Events.SaveLoadedEventArgs e)
+        {
+            if(Config.EnableMod && Config.ResetEvent)
+            {
+                Config.ResetEvent = false;
+                Helper.WriteConfig(Config);
+                FarmCave cave = Game1.getLocationFromName("FarmCave") as FarmCave;
+                cave.objects.Clear();
+                Game1.player.eventsSeen.Remove(65);
+                Monitor.Log("Reset farm cave and event");
+            }
+        }
+
         private void GameLoop_GameLaunched(object sender, StardewModdingAPI.Events.GameLaunchedEventArgs e)
         {
+            apiDGA = Helper.ModRegistry.GetApi<IDynamicGameAssetsApi>("spacechase0.DynamicGameAssets");
+            apiJA = Helper.ModRegistry.GetApi<IJsonAssetsApi>("spacechase0.JsonAssets");
+
+
             // get Generic Mod Config Menu's API (if it's installed)
             var configMenu = Helper.ModRegistry.GetApi<IGenericModConfigMenuApi>("spacechase0.GenericModConfigMenu");
             if (configMenu is null)
@@ -81,6 +102,13 @@ namespace FarmCaveFramework
                 name: () => "Mod Enabled?",
                 getValue: () => Config.EnableMod,
                 setValue: value => Config.EnableMod = value
+            );
+            configMenu.AddBoolOption(
+                mod: ModManifest,
+                name: () => "Reset Farm Cave Event",
+                tooltip: () => "Will reset the cave the next time you load a save",
+                getValue: () => Config.ResetEvent,
+                setValue: value => Config.ResetEvent = value
             );
         }
 
@@ -142,52 +170,52 @@ namespace FarmCaveFramework
                         {
                             new CaveResource()
                             {
-                                index = 296,
+                                id = "296",
                                 weight = 450
                             },
                             new CaveResource()
                             {
-                                index = 396,
+                                id = "396",
                                 weight = 450
                             },
                             new CaveResource()
                             {
-                                index = 406,
+                                id = "406",
                                 weight = 450
                             },
                             new CaveResource()
                             {
-                                index = 410,
+                                id = "410",
                                 weight = 450
                             },
                             new CaveResource()
                             {
-                                index = 613,
+                                id = "613",
                                 weight = 45
                             },
                             new CaveResource()
                             {
-                                index = 634,
+                                id = "634",
                                 weight = 81
                             },
                             new CaveResource()
                             {
-                                index = 635,
+                                id = "635",
                                 weight = 81
                             },
                             new CaveResource()
                             {
-                                index = 636,
+                                id = "636",
                                 weight = 81
                             },
                             new CaveResource()
                             {
-                                index = 637,
+                                id = "637",
                                 weight = 81
                             },
                             new CaveResource()
                             {
-                                index = 638,
+                                id = "638",
                                 weight = 81
                             },
                         }
@@ -206,37 +234,37 @@ namespace FarmCaveFramework
                             {
                                 X = 4,
                                 Y = 5,
-                                index = 128
+                                id = "128"
                             },
                             new CaveObject()
                             {
                                 X = 6,
                                 Y = 5,
-                                index = 128
+                                id = "128"
                             },
                             new CaveObject()
                             {
                                 X = 8,
                                 Y = 5,
-                                index = 128
+                                id = "128"
                             },
                             new CaveObject()
                             {
                                 X = 4,
                                 Y = 7,
-                                index = 128
+                                id = "128"
                             },
                             new CaveObject()
                             {
                                 X = 6,
                                 Y = 7,
-                                index = 128
+                                id = "128"
                             },
                             new CaveObject()
                             {
                                 X = 8,
                                 Y = 7,
-                                index = 128
+                                id = "128"
                             }
                         }
                     }

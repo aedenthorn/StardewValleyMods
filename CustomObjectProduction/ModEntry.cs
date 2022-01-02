@@ -1,4 +1,5 @@
 ﻿using HarmonyLib;
+using Microsoft.Xna.Framework;
 using StardewModdingAPI;
 using StardewValley;
 using System.Collections.Generic;
@@ -17,6 +18,8 @@ namespace CustomObjectProduction
 
         public static readonly string dictPath = "custom_object_production_dictionary";
         public static Dictionary<string, ProductData> objectProductionDataDict = new Dictionary<string, ProductData>();
+        private static IDynamicGameAssetsApi apiDGA;
+        private static IJsonAssetsApi apiJA;
 
         /// <summary>The mod entry point, called after the mod is first loaded.</summary>
         /// <param name="helper">Provides simplified APIs for writing mods.</param>
@@ -78,6 +81,48 @@ namespace CustomObjectProduction
                 getValue: () => Config.EnableMod,
                 setValue: value => Config.EnableMod = value
             );
+        }
+
+        private static Object GetObjectFromID(string id, int amount, int quality)
+        {
+            SMonitor.Log($"Trying to get object {id}, DGA {apiDGA != null}, JA {apiJA != null}");
+
+            Object obj = null;
+            try
+            {
+
+                if (int.TryParse(id, out int index))
+                {
+                    SMonitor.Log($"Spawning object with index {id}");
+                    return new Object(index, amount, false, -1, quality);
+                }
+                if (apiDGA != null && id.Contains("/"))
+                {
+                    object o = apiDGA.SpawnDGAItem(id);
+                    if (o is Object)
+                    {
+                        SMonitor.Log($"Spawning DGA object {id}");
+                        obj.Stack = amount;
+                        obj.Quality = quality;
+                        return obj;
+                    }
+                }
+                if (apiJA != null)
+                {
+                    int idx = apiJA.GetObjectId(id);
+                    if (idx != -1)
+                    {
+                        SMonitor.Log($"Spawning JA object {id}");
+                        return new Object(idx, amount, false, -1, quality);
+
+                    }
+                }
+            }
+            catch
+            {
+            }
+            SMonitor.Log($"Couldn't find item with id {id}");
+            return obj;
         }
 
         /// <summary>Get whether this instance can load the initial version of the given asset.</summary>
