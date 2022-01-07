@@ -17,13 +17,13 @@ namespace FarmCaveFramework
 
             if (!Config.EnableMod || questionKey != "cave")
                 return true;
-            CaveChoice choice = SHelper.Content.Load<Dictionary<string,CaveChoice>>(frameworkPath, ContentSource.GameContent)[answerIds[answerChoice]];
-            SMonitor.Log($"Chose {choice.choice}, objects {choice.objects.Count}");
-            SHelper.Data.WriteSaveData("farm-cave-framework-choice", choice.id);
-            if (choice.objects.Count > 0)
+            caveChoice = SHelper.Content.Load<Dictionary<string,CaveChoice>>(frameworkPath, ContentSource.GameContent)[answerIds[answerChoice]];
+            SMonitor.Log($"Chose {caveChoice.choice}, objects {caveChoice.objects.Count}");
+            SHelper.Data.WriteSaveData("farm-cave-framework-choice", caveChoice.id);
+            if (caveChoice.objects.Count > 0)
             {
                 FarmCave cave = Game1.getLocationFromName("FarmCave") as FarmCave;
-                foreach (var o in choice.objects)
+                foreach (var o in caveChoice.objects)
                 {
                     Object obj = GetObjectFromID(o.id, new Vector2(o.X, o.Y));
                     if(obj != null)
@@ -110,25 +110,15 @@ namespace FarmCaveFramework
         }
         private static bool FarmCave_UpdateWhenCurrentLocation_Prefix(FarmCave __instance, GameTime time)
         {
-            if (!Config.EnableMod || Game1.MasterPlayer.caveChoice.Value < 1)
+            if (!Config.EnableMod || caveChoice == null)
                 return true;
             var ptr = typeof(GameLocation).GetMethod("UpdateWhenCurrentLocation", System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Instance).MethodHandle.GetFunctionPointer();
             var baseMethod = (Func<GameTime, GameLocation>)Activator.CreateInstance(typeof(Func<GameTime, GameLocation>), __instance, ptr);
             baseMethod(time);
 
-            string choiceId = SHelper.Data.ReadSaveData<string>("farm-cave-framework-choice");
-            if (choiceId == null)
-                return true;
-            Dictionary<string, CaveChoice> choices = SHelper.Content.Load<Dictionary<string, CaveChoice>>(frameworkPath, ContentSource.GameContent);
-            if (!choices.ContainsKey(choiceId))
+            if (caveChoice.periodics.Count > 0)
             {
-                return true;
-            }
-            CaveChoice choice = choices[choiceId];
-
-            if (choice.periodics.Count > 0 && Game1.currentLocation == __instance)
-            {
-                foreach(var p in choice.periodics)
+                foreach(var p in caveChoice.periodics)
                 {
                     if (Game1.random.NextDouble() < p.chance / 100f)
                     {
@@ -180,25 +170,18 @@ namespace FarmCaveFramework
         {
             if (!Config.EnableMod)
                 return true;
-            string choiceId = SHelper.Data.ReadSaveData<string>("farm-cave-framework-choice");
-            if (choiceId == null)
+            LoadCaveChoice();
+            if (caveChoice == null)
                 return true;
-            Dictionary<string, CaveChoice> choices = SHelper.Content.Load<Dictionary<string, CaveChoice>>(frameworkPath, ContentSource.GameContent);
-            if (!choices.ContainsKey(choiceId))
-            {
-                SMonitor.Log($"Choice key {choiceId} not found");
-                return true;
-            }
-            CaveChoice choice = choices[choiceId];
 
             var ptr = typeof(GameLocation).GetMethod("resetLocalState", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance).MethodHandle.GetFunctionPointer();
             var baseMethod = (Func<GameLocation>)Activator.CreateInstance(typeof(Func<GameLocation>), __instance, ptr);
             baseMethod();
 
 
-            if (choice.animations.Count > 0)
+            if (caveChoice.animations.Count > 0)
             {
-                foreach (var a in choice.animations)
+                foreach (var a in caveChoice.animations)
                 {
                     __instance.temporarySprites.Add(new TemporaryAnimatedSprite(a.sourceFile, new Rectangle(a.sourceX, a.sourceY, a.width, a.height), new Vector2(a.right ? __instance.map.Layers[0].LayerWidth * 64 + a.X : a.X, a.bottom ? __instance.map.Layers[0].LayerHeight * 64 + a.Y : a.Y), false, 0f, Color.White)
                     {
@@ -213,42 +196,34 @@ namespace FarmCaveFramework
                     });
                 }
             }
-            Game1.ambientLight = choice.ambientLight;
+            Game1.ambientLight = caveChoice.ambientLight;
             return false;
         }
         private static bool FarmCave_DayUpdate_Prefix(FarmCave __instance, int dayOfMonth)
         {
             if (!Config.EnableMod)
                 return true;
-            string choiceId = SHelper.Data.ReadSaveData<string>("farm-cave-framework-choice");
-            if (choiceId == null)
+            LoadCaveChoice();
+            if (caveChoice == null)
                 return true;
-            Dictionary<string, CaveChoice> choices = SHelper.Content.Load<Dictionary<string, CaveChoice>>(frameworkPath, ContentSource.GameContent);
-            if (!choices.ContainsKey(choiceId))
-            {
-                SMonitor.Log($"Choice key {choiceId} not found");
-                return true;
-            }
-            SMonitor.Log($"Day update for {choiceId} farm cave");
-            CaveChoice choice = choices[choiceId];
 
             var ptr = typeof(GameLocation).GetMethod("DayUpdate", System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Instance).MethodHandle.GetFunctionPointer();
             var baseMethod = (Func<GameLocation>)Activator.CreateInstance(typeof(Func<GameLocation>), __instance, ptr);
             baseMethod();
-            if (choice.resources.Count > 0)
+            if (caveChoice.resources.Count > 0)
             {
                 SMonitor.Log($"Spawning resources");
                 float totalWeight = 0;
-                foreach (var r in choice.resources)
+                foreach (var r in caveChoice.resources)
                 {
                     totalWeight += r.weight;
                 }
                 int spawned = 0;
-                while (Game1.random.NextDouble() < Math.Min(0.99,choice.resourceChance / 100f))
+                while (Game1.random.NextDouble() < Math.Min(0.99, caveChoice.resourceChance / 100f))
                 {
                     int currentWeight = 0;
                     double chance = Game1.random.NextDouble();
-                    foreach (var r in choice.resources)
+                    foreach (var r in caveChoice.resources)
                     {
                         currentWeight += r.weight;
                         if(chance < currentWeight / totalWeight)
@@ -274,7 +249,7 @@ namespace FarmCaveFramework
         {
             if (!Config.EnableMod)
                 return true;
-
+            /*
             string choiceId = SHelper.Data.ReadSaveData<string>("farm-cave-framework-choice");
             if (choiceId == null)
                 return true;
@@ -285,7 +260,7 @@ namespace FarmCaveFramework
                 return true;
             }
             CaveChoice choice = choices[choiceId];
-
+            */
             bool flag_value = false;
             foreach (Object o in __instance.objects.Values)
             {

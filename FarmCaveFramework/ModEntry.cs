@@ -3,6 +3,7 @@ using Microsoft.Xna.Framework;
 using StardewModdingAPI;
 using StardewValley;
 using StardewValley.Locations;
+using System;
 using System.Collections.Generic;
 
 namespace FarmCaveFramework
@@ -18,6 +19,8 @@ namespace FarmCaveFramework
         public static ModEntry context;
         private static IDynamicGameAssetsApi apiDGA;
         private static IJsonAssetsApi apiJA;
+
+        public static CaveChoice caveChoice;
 
         public static readonly string frameworkPath = "farm_cave_choices";
         /// <summary>The mod entry point, called after the mod is first loaded.</summary>
@@ -69,6 +72,7 @@ namespace FarmCaveFramework
 
         private void GameLoop_SaveLoaded(object sender, StardewModdingAPI.Events.SaveLoadedEventArgs e)
         {
+            caveChoice = null;
             if(Config.EnableMod && Config.ResetEvent)
             {
                 Config.ResetEvent = false;
@@ -76,7 +80,22 @@ namespace FarmCaveFramework
                 FarmCave cave = Game1.getLocationFromName("FarmCave") as FarmCave;
                 cave.objects.Clear();
                 Game1.player.eventsSeen.Remove(65);
+                SHelper.Data.WriteSaveData("farm-cave-framework-choice", "");
                 Monitor.Log("Reset farm cave and event");
+            }
+            LoadCaveChoice();
+        }
+
+        private static void LoadCaveChoice()
+        {
+            string choiceId = SHelper.Data.ReadSaveData<string>("farm-cave-framework-choice");
+            if (choiceId != null && choiceId.Length > 0)
+            {
+                Dictionary<string, CaveChoice> choices = SHelper.Content.Load<Dictionary<string, CaveChoice>>(frameworkPath, ContentSource.GameContent);
+                if (choices.ContainsKey(choiceId))
+                {
+                    caveChoice = choices[choiceId];
+                }
             }
         }
 
