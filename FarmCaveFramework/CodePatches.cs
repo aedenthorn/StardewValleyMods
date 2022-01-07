@@ -278,7 +278,5 @@ namespace FarmCaveFramework
             Game1.getFarm().farmCaveReady.Value = flag_value;
             return false;
         }
-
-
     }
 }
