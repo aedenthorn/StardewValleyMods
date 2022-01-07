@@ -108,13 +108,72 @@ namespace FarmCaveFramework
             Game1.dialogueTyping = false;
             return false;
         }
-        private static bool FarmCave_UpdateWhenCurrentLocation_Prefix(FarmCave __instance)
+        private static bool FarmCave_UpdateWhenCurrentLocation_Prefix(FarmCave __instance, GameTime time)
         {
             if (!Config.EnableMod || Game1.MasterPlayer.caveChoice.Value < 1)
                 return true;
             var ptr = typeof(GameLocation).GetMethod("UpdateWhenCurrentLocation", System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Instance).MethodHandle.GetFunctionPointer();
-            var baseMethod = (Func<GameLocation>)Activator.CreateInstance(typeof(Func<GameLocation>), __instance, ptr);
-            baseMethod();
+            var baseMethod = (Func<GameTime, GameLocation>)Activator.CreateInstance(typeof(Func<GameTime, GameLocation>), __instance, ptr);
+            baseMethod(time);
+
+            string choiceId = SHelper.Data.ReadSaveData<string>("farm-cave-framework-choice");
+            if (choiceId == null)
+                return true;
+            Dictionary<string, CaveChoice> choices = SHelper.Content.Load<Dictionary<string, CaveChoice>>(frameworkPath, ContentSource.GameContent);
+            if (!choices.ContainsKey(choiceId))
+            {
+                return true;
+            }
+            CaveChoice choice = choices[choiceId];
+
+            if (choice.periodics.Count > 0 && Game1.currentLocation == __instance)
+            {
+                foreach(var p in choice.periodics)
+                {
+                    if (Game1.random.NextDouble() < p.chance / 100f)
+                    {
+                        if (p.animations.Count > 0)
+                        {
+                            var a = p.animations[Game1.random.Next(p.animations.Count)];
+                            __instance.TemporarySprites.Add(new TemporaryAnimatedSprite(a.sourceFile, new Rectangle(a.sourceX, a.sourceY, a.width, a.height), a.interval, a.length, a.loops, new Vector2(!a.randomX ? (a.right ? __instance.map.Layers[0].LayerWidth * 64 + a.X : a.X) : Game1.random.Next(__instance.map.Layers[0].LayerWidth) * 64f, !a.randomY ? (a.bottom ? __instance.map.Layers[0].LayerHeight * 64 + a.Y : a.Y) : Game1.random.Next(__instance.map.Layers[0].LayerHeight) * 64f), a.flicker, a.flipped, 1f, a.alphaFade, a.color, a.scale, a.scaleChange, a.rotation, a.rotationChange, false)
+                            {
+                                xPeriodic = true,
+                                xPeriodicLoopTime = a.loopTIme,
+                                xPeriodicRange = a.range,
+                                motion = new Vector2(a.motionX, a.motionY)
+                            });
+                        }
+                        if (p.randomSounds.Count > 0)
+                        {
+                            var s = p.randomSounds[Game1.random.Next(p.randomSounds.Count)];
+                            if (Game1.random.NextDouble() < s.chance / 100f)
+                            {
+                                __instance.localSound(s.id);
+                            }
+                        }
+                        if (p.repeatedSounds.Count > 0)
+                        {
+                            var s = p.repeatedSounds[Game1.random.Next(p.repeatedSounds.Count)];
+                            if (Game1.random.NextDouble() < s.chance / 100f)
+                            {
+                                for (int i = 1; i < s.count; i++)
+                                {
+                                    DelayedAction.playSoundAfterDelay(s.id, s.delayMult * i + s.delayAdd, null, s.pitch);
+                                }
+                            }
+                        }
+                        if (p.specials.Count > 0)
+                        {
+                            var s = p.specials[Game1.random.Next(p.specials.Count)];
+                            if (s == "BatTemporarySprite")
+                            {
+                                __instance.temporarySprites.Add(new BatTemporarySprite(new Vector2((float)((Game1.random.NextDouble() < 0.5) ? 0 : (__instance.map.DisplayWidth - 64)), (float)(__instance.map.DisplayHeight - 64))));
+                            }
+                        }
+                    }
+                }
+            }
+
             return false;
         }
         private static bool FarmCave_resetLocalState_Prefix(FarmCave __instance)
@@ -141,18 +200,20 @@ namespace FarmCaveFramework
             {
                 foreach (var a in choice.animations)
                 {
-                    __instance.temporarySprites.Add(new TemporaryAnimatedSprite(a.sourceFile, new Rectangle(a.sourceX, a.sourceY, 1, 1), new Vector2(a.X, a.Y), false, 0f, Color.White)
+                    __instance.temporarySprites.Add(new TemporaryAnimatedSprite(a.sourceFile, new Rectangle(a.sourceX, a.sourceY, a.width, a.height), new Vector2(a.right ? __instance.map.Layers[0].LayerWidth * 64 + a.X : a.X, a.bottom ? __instance.map.Layers[0].LayerHeight * 64 + a.Y : a.Y), false, 0f, Color.White)
                     {
                         interval = a.interval,
                         animationLength = a.length,
                         totalNumberOfLoops = a.loops,
                         scale = a.scale,
+                        delayBeforeAnimationStart = a.delay,
                         layerDepth = 1f,
                         light = a.light,
                         lightRadius = a.lightRadius
                     });
                 }
             }
+            Game1.ambientLight = choice.ambientLight;
             return false;
         }
         private static bool FarmCave_DayUpdate_Prefix(FarmCave __instance, int dayOfMonth)
@@ -168,6 +229,7 @@ namespace FarmCaveFramework
                 SMonitor.Log($"Choice key {choiceId} not found");
                 return true;
             }
+            SMonitor.Log($"Day update for {choiceId} farm cave");
             CaveChoice choice = choices[choiceId];
 
             var ptr = typeof(GameLocation).GetMethod("DayUpdate", System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Instance).MethodHandle.GetFunctionPointer();
@@ -175,12 +237,14 @@ namespace FarmCaveFramework
             baseMethod();
             if (choice.resources.Count > 0)
             {
+                SMonitor.Log($"Spawning resources");
                 float totalWeight = 0;
                 foreach (var r in choice.resources)
                 {
                     totalWeight += r.weight;
                 }
-                while (Game1.random.NextDouble() < choice.resourceChance / 100f)
+                int spawned = 0;
+                while (Game1.random.NextDouble() < Math.Min(0.99,choice.resourceChance / 100f))
                 {
                     int currentWeight = 0;
                     double chance = Game1.random.NextDouble();
@@ -192,6 +256,7 @@ namespace FarmCaveFramework
                             Vector2 v = new Vector2((float)Game1.random.Next(1, __instance.map.Layers[0].LayerWidth - 1), (float)Game1.random.Next(1, __instance.map.Layers[0].LayerHeight - 4));
                             if (__instance.isTileLocationTotallyClearAndPlaceable(v))
                             {
+                                spawned++;
                                 int amount = Game1.random.Next(r.min, r.max + 1);
                                 Object obj = GetObjectFromID(r.id, Vector2.Zero, amount, true);
                                 __instance.setObject(v, obj);
@@ -200,6 +265,7 @@ namespace FarmCaveFramework
                         }
                     }
                 }
+                SMonitor.Log($"Spawned {spawned} resources, total weight {totalWeight}");
             }
             __instance.UpdateReadyFlag();
             return false;

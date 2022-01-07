@@ -1,4 +1,5 @@
 ﻿using HarmonyLib;
+using Microsoft.Xna.Framework;
 using StardewModdingAPI;
 using StardewValley;
 using StardewValley.Locations;
@@ -218,7 +219,294 @@ namespace FarmCaveFramework
                                 id = "638",
                                 weight = 81
                             },
-                        }
+                        },
+                        animations = new List<CaveAnimation>()
+                        {
+                            new CaveAnimation()
+                            {
+                                sourceFile = "LooseSprites\\Cursors",
+                                sourceX = 374,
+                                sourceY = 358,
+                                width = 1,
+                                height = 1,
+                                X = 0,
+                                Y = 0,
+                                interval = 3000,
+                                length = 3,
+                                loops = 99999,
+                                scale = 4,
+                                light = true,
+                                lightRadius = 0.5f
+                            },
+                            new CaveAnimation()
+                            {
+                                sourceFile = "LooseSprites\\Cursors",
+                                sourceX = 374,
+                                sourceY = 358,
+                                width = 1,
+                                height = 1,
+                                X = 8,
+                                Y = 0,
+                                interval = 3000,
+                                length = 3,
+                                loops = 99999,
+                                scale = 4,
+                            },
+                            new CaveAnimation()
+                            {
+                                sourceFile = "LooseSprites\\Cursors",
+                                sourceX = 374,
+                                sourceY = 358,
+                                width = 1,
+                                height = 1,
+                                X = 320,
+                                Y = -64,
+                                interval = 2000,
+                                length = 3,
+                                loops = 99999,
+                                scale = 4,
+                                delay = 500,
+                                light = true,
+                                lightRadius = 0.5f
+                            },
+                            new CaveAnimation()
+                            {
+                                sourceFile = "LooseSprites\\Cursors",
+                                sourceX = 374,
+                                sourceY = 358,
+                                width = 1,
+                                height = 1,
+                                X = 328,
+                                Y = -64,
+                                interval = 2000,
+                                length = 3,
+                                loops = 99999,
+                                scale = 4,
+                                delay = 500
+                            },
+                            new CaveAnimation()
+                            {
+                                sourceFile = "LooseSprites\\Cursors",
+                                sourceX = 374,
+                                sourceY = 358,
+                                width = 1,
+                                height = 1,
+                                X = 128,
+                                Y = -64,
+                                interval = 1600,
+                                length = 3,
+                                loops = 99999,
+                                scale = 4,
+                                delay = 250,
+                                light = true,
+                                lightRadius = 0.5f,
+                                bottom = true
+                            },
+                            new CaveAnimation()
+                            {
+                                sourceFile = "LooseSprites\\Cursors",
+                                sourceX = 374,
+                                sourceY = 358,
+                                width = 1,
+                                height = 1,
+                                X = 136,
+                                Y = -64,
+                                interval = 1600,
+                                length = 3,
+                                loops = 99999,
+                                scale = 4,
+                                delay = 250,
+                                bottom = true
+                            },
+                            new CaveAnimation()
+                            {
+                                sourceFile = "LooseSprites\\Cursors",
+                                sourceX = 374,
+                                sourceY = 358,
+                                width = 1,
+                                height = 1,
+                                X = 68,
+                                Y = 192,
+                                interval = 2800,
+                                length = 3,
+                                loops = 99999,
+                                scale = 4,
+                                delay = 750,
+                                light = true,
+                                lightRadius = 0.5f,
+                                right = true
+                            },
+                            new CaveAnimation()
+                            {
+                                sourceFile = "LooseSprites\\Cursors",
+                                sourceX = 374,
+                                sourceY = 358,
+                                width = 1,
+                                height = 1,
+                                X = 76,
+                                Y = 192,
+                                interval = 2800,
+                                length = 3,
+                                loops = 99999,
+                                scale = 4,
+                                delay = 750,
+                                right = true
+                            },
+                            new CaveAnimation()
+                            {
+                                sourceFile = "LooseSprites\\Cursors",
+                                sourceX = 374,
+                                sourceY = 358,
+                                width = 1,
+                                height = 1,
+                                X = 68,
+                                Y = 576,
+                                interval = 2200,
+                                length = 3,
+                                loops = 99999,
+                                scale = 4,
+                                delay = 750,
+                                light = true,
+                                lightRadius = 0.5f,
+                                right = true
+                            },
+                            new CaveAnimation()
+                            {
+                                sourceFile = "LooseSprites\\Cursors",
+                                sourceX = 374,
+                                sourceY = 358,
+                                width = 1,
+                                height = 1,
+                                X = 76,
+                                Y = 576,
+                                interval = 2200,
+                                length = 3,
+                                loops = 99999,
+                                scale = 4,
+                                delay = 750,
+                                right = true
+                            },
+                            new CaveAnimation()
+                            {
+                                sourceFile = "LooseSprites\\Cursors",
+                                sourceX = 374,
+                                sourceY = 358,
+                                width = 1,
+                                height = 1,
+                                X = -60,
+                                Y = 128,
+                                interval = 2600,
+                                length = 3,
+                                loops = 99999,
+                                scale = 4,
+                                delay = 750,
+                                light = true,
+                                lightRadius = 0.5f
+                            },
+                            new CaveAnimation()
+                            {
+                                sourceFile = "LooseSprites\\Cursors",
+                                sourceX = 374,
+                                sourceY = 358,
+                                width = 1,
+                                height = 1,
+                                X = -52,
+                                Y = 128,
+                                interval = 2600,
+                                length = 3,
+                                loops = 99999,
+                                scale = 4,
+                                delay = 750
+                            },
+                            new CaveAnimation()
+                            {
+                                sourceFile = "LooseSprites\\Cursors",
+                                sourceX = 374,
+                                sourceY = 358,
+                                width = 1,
+                                height = 1,
+                                X = -64,
+                                Y = 384,
+                                interval = 3400,
+                                length = 3,
+                                loops = 99999,
+                                scale = 4,
+                                delay = 650,
+                                light = true,
+                                lightRadius = 0.5f
+                            },
+                            new CaveAnimation()
+                            {
+                                sourceFile = "LooseSprites\\Cursors",
+                                sourceX = 374,
+                                sourceY = 358,
+                                width = 1,
+                                height = 1,
+                                X = -52,
+                                Y = 384,
+                                interval = 3400,
+                                length = 3,
+                                loops = 99999,
+                                scale = 4,
+                                delay = 650
+                            },
+
+                        },
+                        periodics = new List<CavePeriodicEffect>()
+                        {
+                            new CavePeriodicEffect()
+                            {
+                                randomSounds = new List<CaveSound>()
+                                {
+                                    new CaveSound()
+                                    {
+                                        id = "batScreech",
+                                        chance = 15
+                                    }
+                                },
+                                animations = new List<CaveAnimation>()
+                                {
+                                    new CaveAnimation()
+                                    {
+                                        sourceFile = "LooseSprites\\Cursors",
+                                        sourceX = 640,
+                                        sourceY = 1664,
+                                        width = 16,
+                                        height = 16,
+                                        interval = 80,
+                                        length = 4,
+                                        loops = 9999,
+                                        randomX = true,
+                                        bottom = true,
+                                        loopTIme = 2000,
+                                        range = 64,
+                                        motionX = 0,
+                                        motionY = -8
+                                    }
+                                },
+                                chance = 0.2f,
+                                repeatedSounds = new List<CaveSound>()
+                                {
+                                    new CaveSound()
+                                    {
+                                        id = "batFlap",
+                                        chance = 100,
+                                        delayMult = 320,
+                                        delayAdd = -80,
+                                        count = 5
+                                    }
+                                }
+                            },
+                            new CavePeriodicEffect()
+                            {
+                                chance = 0.5f,
+                                specials = new List<string>()
+                                {
+                                    "BatTemporarySprite"
+                                }
+                            }
+                        },
+                        ambientLight = new Color(70, 90, 0)
                     }
                 },
                 {
