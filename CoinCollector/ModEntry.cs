@@ -9,6 +9,7 @@ using StardewValley.Tools;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using xTile.Dimensions;
 using Object = StardewValley.Object;
 
@@ -129,12 +130,12 @@ namespace CoinCollector
                     {
                         coinLocationDict.Add(gl.Name, new Dictionary<Vector2, string>());
                     }
-
-                    for(int i = 0; i < coins; i++)
+                    var locationCoins = coinDataDict.Values.ToList().FindAll(c => c.locations == null || c.locations.Count == 0 || c.locations.Contains(gl.Name));
+                    for (int i = 0; i < coins; i++)
                     {
                         double whichRarity = Game1.random.NextDouble() * totalRarities;
                         float rarities = 0;
-                        foreach (var coin in coinDataDict.Values)
+                        foreach (var coin in locationCoins)
                         {
                             rarities += coin.rarity;
                             if(whichRarity < rarities)

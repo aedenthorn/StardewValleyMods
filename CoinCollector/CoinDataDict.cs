@@ -1,6 +1,4 @@
-﻿//using Harmony;
-using Microsoft.Xna.Framework.Graphics;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 
 namespace CoinCollector
 {
@@ -13,6 +11,7 @@ namespace CoinCollector
     {
         public string id;
         public string setName;
+        public List<string> locations;
         public float rarity;
         public int parentSheetIndex;
         public bool isDGA = false;
