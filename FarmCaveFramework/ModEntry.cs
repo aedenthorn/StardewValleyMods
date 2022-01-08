@@ -77,13 +77,17 @@ namespace FarmCaveFramework
             {
                 Config.ResetEvent = false;
                 Helper.WriteConfig(Config);
-                FarmCave cave = Game1.getLocationFromName("FarmCave") as FarmCave;
-                cave.objects.Clear();
                 Game1.player.eventsSeen.Remove(65);
-                SHelper.Data.WriteSaveData("farm-cave-framework-choice", "");
+                string choiceId = SHelper.Data.ReadSaveData<string>("farm-cave-framework-choice");
+                if (choiceId != null && choiceId.Length > 0)
+                {
+                    (Game1.getLocationFromName("FarmCave") as FarmCave).objects.Clear();
+                    SHelper.Data.WriteSaveData("farm-cave-framework-choice", "");
+                }
                 Monitor.Log("Reset farm cave and event");
             }
-            LoadCaveChoice();
+            else
+                LoadCaveChoice();
         }
 
         private static void LoadCaveChoice()
@@ -126,7 +130,7 @@ namespace FarmCaveFramework
             configMenu.AddBoolOption(
                 mod: ModManifest,
                 name: () => "Reset Farm Cave Event",
-                tooltip: () => "Will reset the cave the next time you load a save",
+                tooltip: () => "Will reset the cave the next time you load a save. REMOVES ALL OBJECTS IN CAVE",
                 getValue: () => Config.ResetEvent,
                 setValue: value => Config.ResetEvent = value
             );
