@@ -1,18 +1,18 @@
 ﻿{
-  "Name": "Pet Bed",
+  "Name": "Better Lightning Rods",
   "Author": "aedenthorn",
-  "Version": "0.2.1",
-  "Description": "Pet Bed.",
-  "UniqueID": "aedenthorn.PetBed",
-  "EntryDll": "PetBed.dll",
+  "Version": "0.1.0",
+  "Description": "Better Lightning Rods.",
+  "UniqueID": "aedenthorn.BetterLightningRods",
+  "EntryDll": "BetterLightningRods.dll",
   "MinimumApiVersion": "3.13.0",
   "ModUpdater": {
     "Repository": "StardewValleyMods",
     "User": "aedenthorn",
     "Directory": "_releases",
-    "ModFolder": "PetBed"
+    "ModFolder": "BetterLightningRods"
   },
-  "UpdateKeys": [ "Nexus:10462" ],
+  "UpdateKeys": [ "Nexus:10631" ],
   "Dependencies": [
     {
       "UniqueID": "Platonymous.ModUpdater",

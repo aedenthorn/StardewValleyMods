@@ -219,16 +219,16 @@ namespace FarmCaveFramework
                     totalWeight += r.weight;
                 }
                 int spawned = 0;
-                while (Game1.random.NextDouble() < Math.Min(0.99, caveChoice.resourceChance / 100f))
+                while (Game1.random.NextDouble() < Math.Min(0.99f, caveChoice.resourceChance / 100f))
                 {
-                    int currentWeight = 0;
+                    float currentWeight = 0;
                     double chance = Game1.random.NextDouble();
                     foreach (var r in caveChoice.resources)
                     {
                         currentWeight += r.weight;
                         if(chance < currentWeight / totalWeight)
                         {
-                            Vector2 v = new Vector2((float)Game1.random.Next(1, __instance.map.Layers[0].LayerWidth - 1), (float)Game1.random.Next(1, __instance.map.Layers[0].LayerHeight - 4));
+                            Vector2 v = new Vector2(Game1.random.Next(1, __instance.map.Layers[0].LayerWidth - 1), Game1.random.Next(1, __instance.map.Layers[0].LayerHeight - 4));
                             if (__instance.isTileLocationTotallyClearAndPlaceable(v))
                             {
                                 spawned++;

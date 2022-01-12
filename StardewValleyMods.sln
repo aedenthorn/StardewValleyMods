@@ -69,7 +69,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MobileAudioPlayer", "Mobile
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MobileTelevision", "MobileTelevision\MobileTelevision.csproj", "{FA66B275-23EF-4E2F-A597-F37601DA3A33}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HereFishy", "HereFishy\HereFishy.csproj", "{6C0EF6FF-4CE7-4A21-AC71-2E45C342727B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HereFishy", "HereFishy\HereFishy.csproj", "{6C0EF6FF-4CE7-4A21-AC71-2E45C342727B}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UndergroundSecrets", "UndergroundSecrets\UndergroundSecrets.csproj", "{858DA3C6-AF61-435B-B9B3-0CAFD337FE29}"
 EndProject
@@ -201,6 +201,8 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tent", "Tent\Tent.csproj", "{3981826D-6DFE-4830-BD18-343F5D0CEAA4}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FarmCaveFramework", "FarmCaveFramework\FarmCaveFramework.csproj", "{0D52774F-FA5C-4C7C-BFD1-BB1771600DB1}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BetterLightningRods", "BetterLightningRods\BetterLightningRods.csproj", "{6422F3DB-5CDE-4490-B933-F4199F1D9BA7}"
 EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
@@ -981,6 +983,14 @@ Global
 		{0D52774F-FA5C-4C7C-BFD1-BB1771600DB1}.Release|Any CPU.Build.0 = Release|Any CPU
 		{0D52774F-FA5C-4C7C-BFD1-BB1771600DB1}.Release|x86.ActiveCfg = Release|Any CPU
 		{0D52774F-FA5C-4C7C-BFD1-BB1771600DB1}.Release|x86.Build.0 = Release|Any CPU
+		{6422F3DB-5CDE-4490-B933-F4199F1D9BA7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6422F3DB-5CDE-4490-B933-F4199F1D9BA7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6422F3DB-5CDE-4490-B933-F4199F1D9BA7}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{6422F3DB-5CDE-4490-B933-F4199F1D9BA7}.Debug|x86.Build.0 = Debug|Any CPU
+		{6422F3DB-5CDE-4490-B933-F4199F1D9BA7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6422F3DB-5CDE-4490-B933-F4199F1D9BA7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6422F3DB-5CDE-4490-B933-F4199F1D9BA7}.Release|x86.ActiveCfg = Release|Any CPU
+		{6422F3DB-5CDE-4490-B933-F4199F1D9BA7}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

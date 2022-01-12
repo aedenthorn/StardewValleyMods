@@ -81,6 +81,7 @@ namespace SoundEffectReplacement
         {
  
             replacementDict = SHelper.Content.Load<Dictionary<string, string>>(dictPath, ContentSource.GameContent) ?? new Dictionary<string, string>();
+            //SMonitor.Log($"Loaded {replacementDict.Count} replacements");
             foreach(string replacement in replacementDict.Values)
             {
                 if (replacement.Contains("."))
