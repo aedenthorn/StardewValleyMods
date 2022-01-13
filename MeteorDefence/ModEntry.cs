@@ -87,6 +87,13 @@ namespace MeteorDefence
                 getValue: () => Config.MaxMeteorites,
                 setValue: value => Config.MaxMeteorites = value
             );
+            configMenu.AddNumberOption(
+                mod: ModManifest,
+                name: () => "Meteors / Object",
+                tooltip: () => "Set to -1 to let one object destroy all meteors",
+                getValue: () => Config.MeteorsPerObject,
+                setValue: value => Config.MeteorsPerObject = value
+            );
             configMenu.AddTextOption(
                 mod: ModManifest,
                 name: () => "Defence Object",

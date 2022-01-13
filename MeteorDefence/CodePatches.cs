@@ -33,7 +33,7 @@ namespace MeteorDefence
             struck = 0;
             struckSound = 0;
             total = r.Next(Config.MinMeteorites, Config.MaxMeteorites + 1);
-            defence = Game1.getFarm().objects.Values.ToList().FindAll(o => o.ParentSheetIndex + "" == Config.DefenceObject || o.Name == Config.DefenceObject).Count;
+            defence = Game1.getFarm().objects.Values.ToList().FindAll(o => o.ParentSheetIndex + "" == Config.DefenceObject || o.Name == Config.DefenceObject || o.Name.EndsWith("/"+Config.DefenceObject)).Count * Config.MeteorsPerObject;
 
             ___soundName = "Meteorite";
             ___message = Game1.content.LoadString("Strings\\Events:SoundInTheNight_Meteorite");
@@ -63,12 +63,15 @@ namespace MeteorDefence
                 strikeLocations.Add(target);
                 __result = false;
             }
-            SMonitor.Log($"Starting meteorite strike with {strikeLocations.Count}/{total} meteorites, {defence} defence objects found");
+            if(!__result)
+                SMonitor.Log($"Starting meteorite strike with {strikeLocations.Count}/{total} meteorites, {defence} defence objects found");
+            else
+                SMonitor.Log($"Cancelling meteorite strike with {strikeLocations.Count}/{total} meteorites, {defence} defence objects found");
             return false;
         }
         public static bool SoundInTheNightEvent_makeChangesToLocation_Prefix(SoundInTheNightEvent __instance, NetInt ___behavior, ref Vector2 ___targetLocation)
         {
-            if (!Config.EnableMod || ___behavior != 1 || struck >= defence)
+            if (!Config.EnableMod || ___behavior != 1 || (defence > -1 && struck >= defence))
             {
                 SMonitor.Log($"dropping meteor {struck} at {___targetLocation}");
                 return true;
@@ -93,19 +96,19 @@ namespace MeteorDefence
                 return;
 
             var e = time.ElapsedGameTime.Milliseconds;
-            if(___timer + e > 4000 && !playedDefence && defence > struckSound)
+            if(___timer + e > 3500 && !playedDefence && (defence < 0 || defence > struckSound))
             {
                 SMonitor.Log("Playing defence sound");
                 Game1.playSound(Config.DefenceSound);
                 playedDefence = true;
             }
-            if(___timer + e > 5000 && !playedExplode && defence > struckSound)
+            if(___timer + e > 5300 && !playedExplode && (defence < 0 || defence > struckSound))
             {
                 SMonitor.Log("Playing explode sound");
                 Game1.playSound(Config.ExplodeSound);
                 playedExplode = true;
             }
-            if (___timer + e > 5000 && struckSound < total - 1)
+            if (___timer + e > 5300 && struckSound < strikeLocations.Count - 1)
             {
                 struckSound++;
                 playedDefence = false;
