@@ -77,7 +77,10 @@ namespace WeddingTweaks
                             {
                                 flipped = true;
                             }
-
+                            if (actor.Gender == 0)
+                            {
+                                frame += 12;
+                            }
                             actor.Sprite.setCurrentAnimation(new List<FarmerSprite.AnimationFrame>
                             {
                                 new FarmerSprite.AnimationFrame(frame, 0, false, flipped, null, true)
