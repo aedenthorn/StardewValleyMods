@@ -105,7 +105,7 @@ namespace MeteorDefence
                 Game1.playSound(Config.ExplodeSound);
                 playedExplode = true;
             }
-            if (___timer + e > 5000 && struckSound < total)
+            if (___timer + e > 5000 && struckSound < total - 1)
             {
                 struckSound++;
                 playedDefence = false;
