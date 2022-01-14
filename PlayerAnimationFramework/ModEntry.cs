@@ -3,6 +3,7 @@ using StardewModdingAPI;
 using StardewModdingAPI.Utilities;
 using StardewValley;
 using StardewValley.Menus;
+using System;
 using System.Collections.Generic;
 
 namespace PlayerAnimationFramework
@@ -49,7 +50,7 @@ namespace PlayerAnimationFramework
                 return;
             foreach(var kvp in animationDict)
             {
-                if (kvp.Value.keyTrigger != null && KeybindList.TryParse(kvp.Value.keyTrigger, out KeybindList keybind, out string[] errors))
+                if (kvp.Value.keyTrigger != null && KeybindList.TryParse(kvp.Value.keyTrigger, out KeybindList keybind, out string[] errors) && keybind.JustPressed())
                 {
                     PlayAnimation(kvp.Key, kvp.Value);
                 }
@@ -58,8 +59,13 @@ namespace PlayerAnimationFramework
 
         private void GameLoop_SaveLoaded(object sender, StardewModdingAPI.Events.SaveLoadedEventArgs e)
         {
-            animationDict = Helper.Content.Load<Dictionary<string, PlayerAnimation>>(dictPath, ContentSource.GameContent);
-            Monitor.Log($"Loaded {animationDict.Count} animations");
+            LoadAnimations();
+        }
+
+        private static void LoadAnimations()
+        {
+            animationDict = SHelper.Content.Load<Dictionary<string, PlayerAnimation>>(dictPath, ContentSource.GameContent);
+            SMonitor.Log($"Loaded {animationDict.Count} animations");
         }
 
         private void GameLoop_GameLaunched(object sender, StardewModdingAPI.Events.GameLaunchedEventArgs e)
@@ -84,27 +90,40 @@ namespace PlayerAnimationFramework
             );
         }
 
-        public static void PlayAnimation(string id, PlayerAnimation data)
+        public static async void PlayAnimation(string id, PlayerAnimation data)
         {
             SMonitor.Log($"Playing animation {id}");
-            foreach(PlayerAnimationFrame pa in data.animations)
+            foreach(PlayerAnimationFrame frame in data.animations)
             {
-                PlayFrame(pa);
+                Farmer who = Game1.player;
+                who.completelyStopAnimatingOrDoingAction();
+                int direction = who.FacingDirection;
+                if (frame.facing > -1)
+                    who.FacingDirection = frame.facing;
+
+                PlayFrame(frame);
+
+                await System.Threading.Tasks.Task.Delay(frame.length);
+
+                if (frame.facing > -1)
+                    who.FacingDirection = direction;
+                who.stopJittering();
+                who.completelyStopAnimatingOrDoingAction();
+                who.forceCanMove();
             }
         }
-        public static async void PlayFrame(PlayerAnimationFrame frame)
+        public static void PlayFrame(PlayerAnimationFrame frame)
         {
             Farmer who = Game1.player;
 
-            who.completelyStopAnimatingOrDoingAction();
-            int direction = who.FacingDirection;
-            if (frame.facing > -1)
-                who.FacingDirection = frame.facing;
-            if(frame.frame > -1)
+            if (frame.music != null && frame.music.Length > 0)
+                Game1.changeMusicTrack(frame.music);
+
+            if (frame.frame > -1)
             {
                 who.jitterStrength = frame.jitter;
                 List<FarmerSprite.AnimationFrame> animationFrames = new List<FarmerSprite.AnimationFrame>(){
-                new FarmerSprite.AnimationFrame(frame.frame, 100, frame.secondaryArm, frame.flip, null, false).AddFrameAction(delegate (Farmer f)
+                    new FarmerSprite.AnimationFrame(frame.frame, 100, frame.secondaryArm, frame.flip, null, false).AddFrameAction(delegate (Farmer f)
                     {
                         f.jitterStrength = frame.jitter;
                     })
@@ -123,14 +142,6 @@ namespace PlayerAnimationFramework
             {
                 who.synchronizedJump(frame.jump);
             }
-
-            await System.Threading.Tasks.Task.Delay(frame.length);
-
-            if (frame.facing > -1)
-                who.FacingDirection = direction;
-            who.stopJittering();
-            who.completelyStopAnimatingOrDoingAction();
-            who.forceCanMove();
         }
 
         /// <summary>Get whether this instance can load the initial version of the given asset.</summary>

@@ -17,6 +17,7 @@ namespace PlayerAnimationFramework
         public int frame = -1;
         public int facing = -1;
         public string sound;
+        public string music;
         public int length;
         public bool secondaryArm;
         public bool flip;

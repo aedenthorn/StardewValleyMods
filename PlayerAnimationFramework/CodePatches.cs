@@ -28,15 +28,18 @@ namespace PlayerAnimationFramework
                         }
                     };
                     PlayAnimation(command, pad);
+                    return false;
                 }
 
             }
 
+            LoadAnimations();
             foreach (var kvp in animationDict)
             {
                 if (kvp.Value.chatTrigger != null && kvp.Value.chatTrigger == command)
                 {
                     PlayAnimation(kvp.Key, kvp.Value);
+                    return false;
                 }
             }
             return true;
