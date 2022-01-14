@@ -1,0 +1,22 @@
+﻿{
+  "Name": "Player Animation Framework",
+  "Author": "aedenthorn",
+  "Version": "0.1.0",
+  "Description": "Player Animation Framework.",
+  "UniqueID": "aedenthorn.PlayerAnimationFramework",
+  "EntryDll": "PlayerAnimationFramework.dll",
+  "MinimumApiVersion": "3.13.0",
+  "ModUpdater": {
+    "Repository": "StardewValleyMods",
+    "User": "aedenthorn",
+    "Directory": "_releases",
+    "ModFolder": "PlayerAnimationFramework"
+  },
+  "UpdateKeys": [ "Nexus:" ],
+  "Dependencies": [
+    {
+      "UniqueID": "Platonymous.ModUpdater",
+      "IsRequired": false
+    }
+  ]
+}
