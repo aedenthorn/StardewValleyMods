@@ -1,0 +1,22 @@
+﻿{
+  "Name": "Tappable Palm Trees",
+  "Author": "aedenthorn",
+  "Version": "0.1.0",
+  "Description": "Tappable Palm Trees.",
+  "UniqueID": "aedenthorn.TappablePalmTrees",
+  "EntryDll": "TappablePalmTrees.dll",
+  "MinimumApiVersion": "3.13.0",
+  "ModUpdater": {
+    "Repository": "StardewValleyMods",
+    "User": "aedenthorn",
+    "Directory": "_releases",
+    "ModFolder": "TappablePalmTrees"
+  },
+  "UpdateKeys": [ "Nexus:" ],
+  "Dependencies": [
+    {
+      "UniqueID": "Platonymous.ModUpdater",
+      "IsRequired": false
+    }
+  ]
+}

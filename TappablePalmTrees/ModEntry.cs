@@ -1,13 +1,14 @@
 ﻿using HarmonyLib;
-using Microsoft.Xna.Framework;
 using StardewModdingAPI;
 using StardewValley;
+using StardewValley.TerrainFeatures;
 using System.Collections.Generic;
+using System.Linq;
 
-namespace CustomObjectProduction
+namespace TappablePalmTrees
 {
     /// <summary>The mod entry point.</summary>
-    public partial class ModEntry : Mod, IAssetLoader
+    public partial class ModEntry : Mod
     {
 
         public static IMonitor SMonitor;
@@ -15,9 +16,6 @@ namespace CustomObjectProduction
         public static ModConfig Config;
 
         public static ModEntry context;
-
-        public static readonly string dictPath = "custom_object_production_dictionary";
-        public static Dictionary<string, ProductData> objectProductionDataDict = new Dictionary<string, ProductData>();
         private static IDynamicGameAssetsApi apiDGA;
         private static IJsonAssetsApi apiJA;
 
@@ -27,38 +25,20 @@ namespace CustomObjectProduction
         {
             Config = Helper.ReadConfig<ModConfig>();
 
-            if (!Config.EnableMod)
-                return;
-
             context = this;
 
             SMonitor = Monitor;
             SHelper = helper;
-
             helper.Events.GameLoop.GameLaunched += GameLoop_GameLaunched;
-            helper.Events.GameLoop.SaveLoaded += GameLoop_SaveLoaded;
+
 
             var harmony = new Harmony(ModManifest.UniqueID);
 
             harmony.Patch(
-               original: AccessTools.Method(typeof(Object), nameof(Object.DayUpdate)),
-               postfix: new HarmonyMethod(typeof(ModEntry), nameof(ModEntry.Object_DayUpdate_Postfix))
+               original: AccessTools.Method(typeof(Tree), nameof(Tree.UpdateTapperProduct)),
+               prefix: new HarmonyMethod(typeof(ModEntry), nameof(ModEntry.Tree_UpdateTapperProduct_Prefix))
             );
-            harmony.Patch(
-               original: AccessTools.Method(typeof(GameLocation), nameof(GameLocation.checkAction)),
-               prefix: new HarmonyMethod(typeof(ModEntry), nameof(ModEntry.GameLocation_checkAction_Prefix))
-            );
-            harmony.Patch(
-               original: AccessTools.Method(typeof(Game1), "_newDayAfterFade"),
-               prefix: new HarmonyMethod(typeof(ModEntry), nameof(ModEntry.Game1__newDayAfterFade_Prefix))
-            );
-            
-        }
 
-        private void GameLoop_SaveLoaded(object sender, StardewModdingAPI.Events.SaveLoadedEventArgs e)
-        {
-            objectProductionDataDict = SHelper.Content.Load<Dictionary<string, ProductData>>(dictPath, ContentSource.GameContent) ?? new Dictionary<string, ProductData>();
-            SMonitor.Log($"Loaded {objectProductionDataDict.Count} products for today");
         }
 
         private void GameLoop_GameLaunched(object sender, StardewModdingAPI.Events.GameLaunchedEventArgs e)
@@ -84,9 +64,21 @@ namespace CustomObjectProduction
                 getValue: () => Config.EnableMod,
                 setValue: value => Config.EnableMod = value
             );
+            configMenu.AddNumberOption(
+                mod: ModManifest,
+                name: () => "Days to fill",
+                getValue: () => Config.DaysToFill,
+                setValue: value => Config.DaysToFill = value
+            );
+            configMenu.AddTextOption(
+                mod: ModManifest,
+                name: () => "Product Object",
+                tooltip: () => "index or name (JA and DGA should work)",
+                getValue: () => Config.Product,
+                setValue: value => Config.Product = value
+            );
         }
-
-        private static Object GetObjectFromID(string id, int amount, int quality)
+        private static Object GetObjectFromID(string id)
         {
             SMonitor.Log($"Trying to get object {id}, DGA {apiDGA != null}, JA {apiJA != null}");
 
@@ -96,16 +88,15 @@ namespace CustomObjectProduction
 
                 if (int.TryParse(id, out int index))
                 {
-                    SMonitor.Log($"Spawning object with index {id}");
-                    return new Object(index, amount, false, -1, quality);
+                    return new Object(index, 1, false, -1, 0);
                 }
                 else
                 {
                     var dict = SHelper.Content.Load<Dictionary<int, string>>("Data/ObjectInformation", ContentSource.GameContent);
-                    foreach (var kvp in dict)
+                    foreach(var kvp in dict)
                     {
-                        if (kvp.Value.StartsWith(id + "/"))
-                            return new Object(kvp.Key, amount, false, -1, quality);
+                        if (kvp.Value.StartsWith(id+"/"))
+                            return new Object(kvp.Key, 1, false, -1, 0);
                     }
                 }
                 if (apiDGA != null && id.Contains("/"))
@@ -113,9 +104,6 @@ namespace CustomObjectProduction
                     object o = apiDGA.SpawnDGAItem(id);
                     if (o is Object)
                     {
-                        SMonitor.Log($"Spawning DGA object {id}");
-                        obj.Stack = amount;
-                        obj.Quality = quality;
                         return obj;
                     }
                 }
@@ -124,8 +112,7 @@ namespace CustomObjectProduction
                     int idx = apiJA.GetObjectId(id);
                     if (idx != -1)
                     {
-                        SMonitor.Log($"Spawning JA object {id}");
-                        return new Object(idx, amount, false, -1, quality);
+                        return new Object(idx, 1, false, -1, 0);
 
                     }
                 }
@@ -136,24 +123,6 @@ namespace CustomObjectProduction
             SMonitor.Log($"Couldn't find item with id {id}");
             return obj;
         }
-
-        /// <summary>Get whether this instance can load the initial version of the given asset.</summary>
-        /// <param name="asset">Basic metadata about the asset being loaded.</param>
-        public bool CanLoad<T>(IAssetInfo asset)
-        {
-            if (!Config.EnableMod)
-                return false;
-
-            return asset.AssetNameEquals(dictPath);
-        }
-
-        /// <summary>Load a matched asset.</summary>
-        /// <param name="asset">Basic metadata about the asset being loaded.</param>
-        public T Load<T>(IAssetInfo asset)
-        {
-            Monitor.Log("Loading dictionary");
-
-            return (T)(object)new Dictionary<string, ProductData>();
-        }
     }
+
 }
