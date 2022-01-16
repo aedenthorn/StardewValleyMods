@@ -2,7 +2,9 @@
 using Microsoft.Xna.Framework;
 using StardewModdingAPI;
 using StardewValley;
+using System;
 using System.Collections.Generic;
+using Object = StardewValley.Object;
 
 namespace CustomObjectProduction
 {
@@ -114,9 +116,9 @@ namespace CustomObjectProduction
                     if (o is Object)
                     {
                         SMonitor.Log($"Spawning DGA object {id}");
-                        obj.Stack = amount;
-                        obj.Quality = quality;
-                        return obj;
+                        (o as Object).Stack = amount;
+                        (o as Object).Quality = quality;
+                        return (o as Object);
                     }
                 }
                 if (apiJA != null)
@@ -130,8 +132,9 @@ namespace CustomObjectProduction
                     }
                 }
             }
-            catch
+            catch(Exception ex)
             {
+                SMonitor.Log($"Exception: {ex}", LogLevel.Error);
             }
             SMonitor.Log($"Couldn't find item with id {id}");
             return obj;

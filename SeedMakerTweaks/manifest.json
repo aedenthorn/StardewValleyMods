@@ -1,18 +1,18 @@
 ﻿{
-  "Name": "Tappable Palm Trees",
+  "Name": "Seed Maker Tweaks",
   "Author": "aedenthorn",
   "Version": "0.1.0",
-  "Description": "Tappable Palm Trees.",
-  "UniqueID": "aedenthorn.TappablePalmTrees",
-  "EntryDll": "TappablePalmTrees.dll",
+  "Description": "Seed Maker Tweaks.",
+  "UniqueID": "aedenthorn.SeedMakerTweaks",
+  "EntryDll": "SeedMakerTweaks.dll",
   "MinimumApiVersion": "3.13.0",
   "ModUpdater": {
     "Repository": "StardewValleyMods",
     "User": "aedenthorn",
     "Directory": "_releases",
-    "ModFolder": "TappablePalmTrees"
+    "ModFolder": "SeedMakerTweaks"
   },
-  "UpdateKeys": [ "Nexus:10661" ],
+  "UpdateKeys": [ "Nexus:10681" ],
   "Dependencies": [
     {
       "UniqueID": "Platonymous.ModUpdater",

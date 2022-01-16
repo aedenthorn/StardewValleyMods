@@ -212,6 +212,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PlayerAnimationFramework", 
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TappablePalmTrees", "TappablePalmTrees\TappablePalmTrees.csproj", "{29CFBE50-D3DD-4B1C-B8F6-FC0058B65AB1}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SeedMakerTweaks", "SeedMakerTweaks\SeedMakerTweaks.csproj", "{CCC60DCA-0F73-40EF-9570-C1EF5A3BEAB5}"
+EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
 		_releases\_releases.projitems*{047040e0-3d07-46e5-852b-d1d45cd57bb8}*SharedItemsImports = 13
@@ -1031,6 +1033,14 @@ Global
 		{29CFBE50-D3DD-4B1C-B8F6-FC0058B65AB1}.Release|Any CPU.Build.0 = Release|Any CPU
 		{29CFBE50-D3DD-4B1C-B8F6-FC0058B65AB1}.Release|x86.ActiveCfg = Release|Any CPU
 		{29CFBE50-D3DD-4B1C-B8F6-FC0058B65AB1}.Release|x86.Build.0 = Release|Any CPU
+		{CCC60DCA-0F73-40EF-9570-C1EF5A3BEAB5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CCC60DCA-0F73-40EF-9570-C1EF5A3BEAB5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CCC60DCA-0F73-40EF-9570-C1EF5A3BEAB5}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{CCC60DCA-0F73-40EF-9570-C1EF5A3BEAB5}.Debug|x86.Build.0 = Debug|Any CPU
+		{CCC60DCA-0F73-40EF-9570-C1EF5A3BEAB5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CCC60DCA-0F73-40EF-9570-C1EF5A3BEAB5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CCC60DCA-0F73-40EF-9570-C1EF5A3BEAB5}.Release|x86.ActiveCfg = Release|Any CPU
+		{CCC60DCA-0F73-40EF-9570-C1EF5A3BEAB5}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
