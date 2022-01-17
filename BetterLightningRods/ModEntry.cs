@@ -48,7 +48,7 @@ namespace BetterLightningRods
 
         private void Input_ButtonPressed(object sender, StardewModdingAPI.Events.ButtonPressedEventArgs e)
         {
-            if(e.Button == Config.LightningButton)
+            if(Context.IsWorldReady && e.Button == Config.LightningButton)
             {
                 Monitor.Log("Lightning strike!");
                 Utility.performLightningUpdate(Game1.timeOfDay);

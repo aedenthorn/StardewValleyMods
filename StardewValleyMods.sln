@@ -214,6 +214,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TappablePalmTrees", "Tappab
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SeedMakerTweaks", "SeedMakerTweaks\SeedMakerTweaks.csproj", "{CCC60DCA-0F73-40EF-9570-C1EF5A3BEAB5}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CustomPictureFrames", "CustomPictureFrames\CustomPictureFrames.csproj", "{D93BF1D5-F447-4C32-B66A-F38874C021D5}"
+EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
 		_releases\_releases.projitems*{047040e0-3d07-46e5-852b-d1d45cd57bb8}*SharedItemsImports = 13
@@ -1041,6 +1043,14 @@ Global
 		{CCC60DCA-0F73-40EF-9570-C1EF5A3BEAB5}.Release|Any CPU.Build.0 = Release|Any CPU
 		{CCC60DCA-0F73-40EF-9570-C1EF5A3BEAB5}.Release|x86.ActiveCfg = Release|Any CPU
 		{CCC60DCA-0F73-40EF-9570-C1EF5A3BEAB5}.Release|x86.Build.0 = Release|Any CPU
+		{D93BF1D5-F447-4C32-B66A-F38874C021D5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D93BF1D5-F447-4C32-B66A-F38874C021D5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D93BF1D5-F447-4C32-B66A-F38874C021D5}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{D93BF1D5-F447-4C32-B66A-F38874C021D5}.Debug|x86.Build.0 = Debug|Any CPU
+		{D93BF1D5-F447-4C32-B66A-F38874C021D5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D93BF1D5-F447-4C32-B66A-F38874C021D5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D93BF1D5-F447-4C32-B66A-F38874C021D5}.Release|x86.ActiveCfg = Release|Any CPU
+		{D93BF1D5-F447-4C32-B66A-F38874C021D5}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
