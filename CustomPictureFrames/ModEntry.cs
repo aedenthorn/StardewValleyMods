@@ -259,43 +259,47 @@ namespace CustomPictureFrames
             // get inner pixels
 
             bool[] innerPixels = new bool[frameData.Length];
-            for (int y = 0; y < frameHeight; y++)
+            for (int i = 0; i < frameData.Length; i++)
             {
-                var transparent = true;
-                List<List<int>> transparentPixels = new List<List<int>>();
-                transparentPixels.Add(new List<int>());
-                for (int x = 0; x < frameWidth; x++)
+                int x = i % frameWidth;
+                int y = i / frameWidth;
+                if (frameData[i] != Color.Transparent || x == 0 || y == 0 || x == frameWidth - 1 || y == frameHeight - 1)
+                    continue;
+                bool top = false;
+                bool bottom = false;
+                bool left = false;
+                bool right = false;
+                for (int x1 = 0; x1 < frameWidth; x1++)
                 {
-                    if (frameData[y * frameWidth + x] == Color.Transparent)
+                    int i1 = i - x + x1;
+                    if (frameData[i1] != Color.Transparent)
                     {
-                        if (!transparent)
-                        {
-
-                            transparent = true;
-                            transparentPixels.Add(new List<int>() { y * frameWidth + x });
-                        }
-                        else
-                        {
-                            transparentPixels[transparentPixels.Count - 1].Add(y * frameWidth + x);
-                        }
+                        if (i1 < i)
+                            left = true;
+                        else if (i1 > i)
+                            right = true;
                     }
-                    else
-                        transparent = false;
+                    if (left && right)
+                        break;
                 }
-                if (!transparent)
-                    transparentPixels.Add(new List<int>());
-                //Monitor.Log($"{transparentPixels.Count} transparent groups for y = {y}");
-                if (transparentPixels.Count > 2)
+                if (!left || !right)
+                    continue;
+                for (int y1 = 0; y1 < frameHeight; y1++)
                 {
-                    for(int i = 1; i < transparentPixels.Count - 1; i++)
+                    int i1 = i - (y * frameWidth) + (y1 * frameWidth);
+                    if (frameData[i1] != Color.Transparent)
                     {
-                        foreach (var p in transparentPixels[i])
-                            innerPixels[p] = true;
+                        if (i1 < i)
+                            top = true;
+                        else if (i1 > i)
+                            bottom = true;
                     }
+                    if (bottom && top)
+                        break;
                 }
+                if (left && right && bottom && top)
+                    innerPixels[i] = true;
             }
-
-
 
             var screenWidth = Game1.graphics.GraphicsDevice.PresentationParameters.BackBufferWidth;
             var screenHeight = Game1.graphics.GraphicsDevice.PresentationParameters.BackBufferHeight;
