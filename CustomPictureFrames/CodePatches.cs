@@ -17,14 +17,26 @@ namespace CustomPictureFrames
 
             foreach (Furniture f in __instance.furniture)
             {
-                Texture2D texture;
+                if (!f.modData.ContainsKey("aedenthorn.CustomPictureFrames/index"))
+                    continue;
+                if (!int.TryParse(f.modData["aedenthorn.CustomPictureFrames/index"], out int index))
+                    continue;
+
+                if (index == -1)
+                    continue;
+
+                string key;
                 if (pictureDict.ContainsKey(f.Name))
-                    texture = pictureDict[f.Name];
+                    key = f.Name;
                 else if (f.Name.Contains("/") && pictureDict.ContainsKey(f.Name.Split('/')[1]))
-                    texture = pictureDict[f.Name.Split('/')[1]];
+                    key = f.Name.Split('/')[1];
                 else 
                     continue;
-                b.Draw(texture, Game1.GlobalToLocal(Game1.viewport, SHelper.Reflection.GetField<NetVector2>(f, "drawPosition").GetValue() + ((f.shakeTimer > 0) ? new Vector2((float)Game1.random.Next(-1, 2), (float)Game1.random.Next(-1, 2)) : Vector2.Zero)), new Rectangle(0, 0, texture.Width, texture.Height), Color.White, 0f, Vector2.Zero, 1f, f.Flipped ? SpriteEffects.FlipHorizontally : SpriteEffects.None, (f.furniture_type.Value == 12) ? (2E-09f + f.TileLocation.Y / 100000f) : ((float)(f.boundingBox.Value.Bottom - ((f.furniture_type.Value == 6 || f.furniture_type.Value == 17 || f.furniture_type.Value == 13) ? 48 : 8)) / 10000f));
+                if (pictureDict[key].Count <= index)
+                    index = 0;
+                Texture2D texture = pictureDict[key][index];
+
+                b.Draw(texture, Game1.GlobalToLocal(Game1.viewport, SHelper.Reflection.GetField<NetVector2>(f, "drawPosition").GetValue() + ((f.shakeTimer > 0) ? new Vector2(Game1.random.Next(-1, 2), Game1.random.Next(-1, 2)) : Vector2.Zero)), new Rectangle(0, 0, texture.Width, texture.Height), Color.White, 0f, Vector2.Zero, 1f, f.Flipped ? SpriteEffects.FlipHorizontally : SpriteEffects.None, (f.furniture_type.Value == 12) ? (2E-09f + f.TileLocation.Y / 100000f) : ((f.boundingBox.Value.Bottom - ((f.furniture_type.Value == 6 || f.furniture_type.Value == 17 || f.furniture_type.Value == 13) ? 48 : 8)) / 10000f));
             }
         } 
         private static void Furniture_placementAction_Postfix(Furniture __instance)
