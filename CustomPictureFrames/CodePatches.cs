@@ -19,10 +19,7 @@ namespace CustomPictureFrames
             {
                 if (!f.modData.ContainsKey("aedenthorn.CustomPictureFrames/index"))
                     continue;
-                if (!int.TryParse(f.modData["aedenthorn.CustomPictureFrames/index"], out int index))
-                    continue;
-
-                if (index == -1)
+                if (f.modData["aedenthorn.CustomPictureFrames/index"] == "-1" || !int.TryParse(f.modData["aedenthorn.CustomPictureFrames/index"], out int index))
                     continue;
 
                 string key;
@@ -33,7 +30,10 @@ namespace CustomPictureFrames
                 else 
                     continue;
                 if (pictureDict[key].Count <= index)
-                    index = 0;
+                {
+                    f.modData["aedenthorn.CustomPictureFrames/index"] = "-1";
+                    return;
+                }
                 Texture2D texture = pictureDict[key][index];
 
                 b.Draw(texture, Game1.GlobalToLocal(Game1.viewport, SHelper.Reflection.GetField<NetVector2>(f, "drawPosition").GetValue() + ((f.shakeTimer > 0) ? new Vector2(Game1.random.Next(-1, 2), Game1.random.Next(-1, 2)) : Vector2.Zero)), new Rectangle(0, 0, texture.Width, texture.Height), Color.White, 0f, Vector2.Zero, 1f, f.Flipped ? SpriteEffects.FlipHorizontally : SpriteEffects.None, (f.furniture_type.Value == 12) ? (2E-09f + f.TileLocation.Y / 100000f) : ((f.boundingBox.Value.Bottom - ((f.furniture_type.Value == 6 || f.furniture_type.Value == 17 || f.furniture_type.Value == 13) ? 48 : 8)) / 10000f));

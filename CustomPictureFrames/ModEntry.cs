@@ -24,8 +24,6 @@ namespace CustomPictureFrames
         public static List<FrameData> frameList = new List<FrameData>();
         public static Dictionary<string, List<Texture2D>> pictureDict = new Dictionary<string, List<Texture2D>>();
         public bool framing = false;
-        private Color oldAmbientLight;
-        private bool takingPicture;
         public static readonly string frameworkPath = "custom_picture_frame_dictionary";
 
         /// <summary>The mod entry point, called after the mod is first loaded.</summary>
@@ -51,23 +49,13 @@ namespace CustomPictureFrames
             );
         }
 
-        private void GameLoop_UpdateTicked(object sender, StardewModdingAPI.Events.UpdateTickedEventArgs e)
-        {
-            if (takingPicture)
-            {
-                TakePicture();
-                Game1.ambientLight = oldAmbientLight;
-                takingPicture = false;
-                Helper.Events.GameLoop.UpdateTicked -= GameLoop_UpdateTicked;
-            }
-        }
 
         private void Display_RenderedWorld(object sender, StardewModdingAPI.Events.RenderedWorldEventArgs e)
         {
 
             if (Config.EnableMod && framing && frameList.Count > 0)
             {
-                var pos = Game1.getMousePosition() - new Point(frameList[currentFrame].texture.Width * 4, frameList[currentFrame].texture.Width * 4);
+                var pos = Game1.getMousePosition() - new Point(frameList[currentFrame].texture.Width * 4, frameList[currentFrame].texture.Height * 4);
                 if (pos.X < 0)
                     pos.X = 0;
                 if (pos.Y < 0)
@@ -121,6 +109,12 @@ namespace CustomPictureFrames
                 getValue: () => Config.SwitchPictureKey,
                 setValue: value => Config.SwitchPictureKey = value
             );
+            configMenu.AddKeybind(
+                mod: ModManifest,
+                name: () => "Delete Picture Key",
+                getValue: () => Config.DeletePictureKey,
+                setValue: value => Config.DeletePictureKey = value
+            );
 
         }
 
@@ -151,6 +145,7 @@ namespace CustomPictureFrames
                     {
                         string name = Path.GetFileNameWithoutExtension(file);
                         var tex = Texture2D.FromFile(Game1.graphics.GraphicsDevice, file);
+                        tex.Name = file;
                         textures.Add(tex);
                         Monitor.Log($"added picture {name}");
                     }
@@ -183,6 +178,38 @@ namespace CustomPictureFrames
                             index = -1;
                         f.modData["aedenthorn.CustomPictureFrames/index"] = index.ToString();
                         Monitor.Log($"Set picture index for {f.Name} to {index}");
+                        Helper.Input.Suppress(e.Button);
+                        return;
+                    }
+                }
+            }
+            if(!framing && Game1.activeClickableMenu == null && e.Button == Config.DeletePictureKey)
+            {
+                foreach (var f in Game1.currentLocation.furniture)
+                {
+                    if (f.boundingBox.Value.Contains(Game1.viewport.X + Game1.getOldMouseX(), Game1.viewport.Y + Game1.getOldMouseY()))
+                    {
+                        string key;
+                        if (pictureDict.ContainsKey(f.Name))
+                            key = f.Name;
+                        else if (f.Name.Contains("/") && pictureDict.ContainsKey(f.Name.Split('/')[1]))
+                            key = f.Name.Split('/')[1];
+                        else
+                            continue;
+                        if (!f.modData.ContainsKey("aedenthorn.CustomPictureFrames/index"))
+                            return;
+                            
+                        int index = int.Parse(f.modData["aedenthorn.CustomPictureFrames/index"]);
+                        if (index == -1 || index >= pictureDict[key].Count)
+                            return;
+                        Monitor.Log($"Deleting picture index {index} for {f.Name} at {pictureDict[key][index].Name}");
+                        File.Delete(pictureDict[key][index].Name);
+                        pictureDict[key].RemoveAt(index);
+                        if (index >= pictureDict[key].Count)
+                        {
+                            f.modData["aedenthorn.CustomPictureFrames/index"] = "-1";
+                        }
+                            
                         Helper.Input.Suppress(e.Button);
                         return;
                     }
@@ -272,7 +299,7 @@ namespace CustomPictureFrames
 
             var screenWidth = Game1.graphics.GraphicsDevice.PresentationParameters.BackBufferWidth;
             var screenHeight = Game1.graphics.GraphicsDevice.PresentationParameters.BackBufferHeight;
-            var pos = Game1.getMousePosition() - new Point(frameWidth * 4, frameHeight * 4);
+            var pos = Game1.getMousePosition(true) - new Point(frameWidth * 4, frameHeight * 4);
             if (pos.X < 0)
                 pos.X = 0;
             if (pos.Y < 0)
@@ -283,7 +310,7 @@ namespace CustomPictureFrames
 
 
             Color[] pictureData = new Color[frameWidth * frameHeight * 16];
-            //Monitor.Log($"pos {pos}, mousepos {mousePos}, screen {screenWidth},{screenHeight}, framedata {frameData.Length}, pictureData{pictureData.Length}");
+            Monitor.Log($"pos {pos}, mousepos {Game1.getMousePosition()}, screen {screenWidth},{screenHeight}, framedata {frameData.Length}, pictureData{pictureData.Length}");
 
             // compose picture
             int innerCount = 0;
