@@ -5,6 +5,7 @@ namespace FreeLove
     {
         public bool EnableMod { get; set; } = true;
         public bool BuyPendantsAnytime { get; set; } = false;
+        public int PendantPrice { get; set; } = 5000;
         public int MinPointsToMarry { get; set; } = 2500;
         public int MinPointsToDate { get; set; } = 2000;
         public int MaxGiftsPerSpousePerDay { get; set; } = 1;
