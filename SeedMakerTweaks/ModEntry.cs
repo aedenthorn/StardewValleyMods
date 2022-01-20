@@ -19,6 +19,7 @@ namespace SeedMakerTweaks
         public static ModEntry context;
         private static IDynamicGameAssetsApi apiDGA;
         private static IJsonAssetsApi apiJA;
+        private Harmony harmony;
 
         /// <summary>The mod entry point, called after the mod is first loaded.</summary>
         /// <param name="helper">Provides simplified APIs for writing mods.</param>
@@ -33,7 +34,7 @@ namespace SeedMakerTweaks
             helper.Events.GameLoop.GameLaunched += GameLoop_GameLaunched;
 
 
-            var harmony = new Harmony(ModManifest.UniqueID);
+            harmony = new Harmony(ModManifest.UniqueID);
 
             harmony.Patch(
                original: AccessTools.Method(typeof(Object), nameof(Object.performObjectDropInAction)),
@@ -46,6 +47,17 @@ namespace SeedMakerTweaks
         {
             apiDGA = Helper.ModRegistry.GetApi<IDynamicGameAssetsApi>("spacechase0.DynamicGameAssets");
             apiJA = Helper.ModRegistry.GetApi<IJsonAssetsApi>("spacechase0.JsonAssets");
+            
+            var obj = Helper.ModRegistry.GetApi("Pathoschild.Automate");
+            if (obj != null)
+            {
+                SMonitor.Log($"patching automate");
+
+                harmony.Patch(
+                   original: AccessTools.Method(obj.GetType().Assembly.GetType("Pathoschild.Stardew.Automate.Framework.Machines.Objects.SeedMakerMachine"), "SetInput"),
+                   transpiler: new HarmonyMethod(typeof(ModEntry), nameof(ModEntry.SeedMakerMachine_SetInput_Transpiler))
+                );
+            }
 
             // get Generic Mod Config Menu's API (if it's installed)
             var configMenu = Helper.ModRegistry.GetApi<IGenericModConfigMenuApi>("spacechase0.GenericModConfigMenu");

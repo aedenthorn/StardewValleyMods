@@ -60,7 +60,7 @@ namespace MoveablePetBowl
             );
             harmony.Patch(
                original: AccessTools.Method(typeof(Farm), "_UpdateWaterBowl"),
-               postfix: new HarmonyMethod(typeof(ModEntry), nameof(_UpdateWaterBowl_Postfix))
+               prefix: new HarmonyMethod(typeof(ModEntry), nameof(_UpdateWaterBowl_Prefix))
             );
             harmony.Patch(
                original: AccessTools.Method(typeof(Pet), nameof(Pet.setAtFarmPosition)),
@@ -140,7 +140,7 @@ namespace MoveablePetBowl
             {
                 foreach (KeyValuePair<Vector2, Object> kvp in farm.objects.Pairs)
                 {
-                    if (kvp.Value.bigCraftable && kvp.Value.Name.EndsWith("Pet Bowl"))
+                    if (kvp.Value.bigCraftable.Value && kvp.Value.Name.EndsWith("Pet Bowl"))
                     {
                         kvp.Value.modData["aedenthorn.PetBowl/Watered"] = "true";
                     }
@@ -188,16 +188,17 @@ namespace MoveablePetBowl
             ResetPetBowlLocation(__instance, Vector2.Zero);
         }
 
-        private static void _UpdateWaterBowl_Postfix(Farm __instance)
+        private static bool _UpdateWaterBowl_Prefix(Farm __instance)
         {
-
+            if (!config.EnableMod)
+                return true;
             Vector2 closestBowl = Vector2.Zero;
             float closestDistance = 4;
             foreach (KeyValuePair<Vector2, Object> kvp in __instance.objects.Pairs)
             {
-                if(kvp.Value.bigCraftable && kvp.Value.Name.EndsWith("Pet Bowl"))
+                if(kvp.Value.bigCraftable.Value && kvp.Value.Name.EndsWith("Pet Bowl"))
                 {
-                    if (__instance.petBowlWatered && !playerWatered)
+                    if (__instance.petBowlWatered.Value && !playerWatered)
                     {
                         kvp.Value.modData["aedenthorn.PetBowl/Watered"] = "true";
                     }
@@ -223,6 +224,7 @@ namespace MoveablePetBowl
                 __instance.objects[closestBowl].modData["aedenthorn.PetBowl/Watered"] = "false";
             }
             playerWatered = false;
+            return false;
         }
 
         private static void setAtFarmPosition_Prefix()
@@ -240,7 +242,7 @@ namespace MoveablePetBowl
             if (mJsonAssets != null)
             {
                 int id = mJsonAssets.GetBigCraftableId("Wooden Pet Bowl");
-                farm.Objects.Add(Utility.PointToVector2(farm.petBowlPosition), new Object(Utility.PointToVector2(farm.petBowlPosition), id));
+                farm.Objects.Add(Utility.PointToVector2(farm.petBowlPosition.Value), new Object(Utility.PointToVector2(farm.petBowlPosition.Value), id));
                 PMonitor.Log("Added wooden pet bowl to farm");
             }
 

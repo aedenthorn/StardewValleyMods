@@ -1,4 +1,4 @@
-﻿using Harmony;
+﻿using HarmonyLib;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using StardewModdingAPI;
@@ -51,7 +51,7 @@ namespace MapEdit
             Helper.Events.GameLoop.ReturnedToTitle += HelperEvents.GameLoop_ReturnedToTitle;
             Helper.Events.Player.Warped += HelperEvents.Player_Warped;
 
-            var harmony = HarmonyInstance.Create(ModManifest.UniqueID);
+            var harmony = new Harmony(ModManifest.UniqueID);
             
             harmony.Patch(
                original: AccessTools.Method(typeof(Game1), nameof(Game1.pressSwitchToolButton)),

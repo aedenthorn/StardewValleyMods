@@ -30,7 +30,7 @@ namespace MapEdit
                     ModEntry.copiedTileLoc = Game1.currentCursorTile;
                     ModEntry.pastedTileLoc = Game1.currentCursorTile;
                     ModEntry.currentTileDict.Add(layer.Id, tile.Clone(layer));
-                    //Monitor.Log($"Copied layer {layer.Id} tile index {tile.TileIndex}");
+                    ModEntry.SMonitor.Log($"Copied layer {layer.Id} tile index {tile.TileIndex}");
                 }
                 catch { }
             }

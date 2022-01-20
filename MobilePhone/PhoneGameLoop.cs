@@ -3,6 +3,7 @@ using Microsoft.Xna.Framework.Graphics;
 using StardewModdingAPI;
 using StardewModdingAPI.Events;
 using StardewValley;
+using StardewValley.Locations;
 using System;
 using System.IO;
 using System.Linq;
@@ -214,10 +215,10 @@ namespace MobilePhone
 
         public static void GameLoop_TimeChanged(object sender, TimeChangedEventArgs e)
         {
-            if (e.OldTime >= e.NewTime || ModEntry.callingNPC != null || !Config.EnableIncomingCalls)
+            if (e.OldTime >= e.NewTime || ModEntry.callingNPC != null || ModEntry.inCall || !Config.EnableIncomingCalls || (!Config.ReceiveCallsUnderground && Game1.player.currentLocation is MineShaft))
                 return;
 
-            if(ModEntry.callingNPC == null && !ModEntry.inCall && Game1.random.NextDouble() < Config.FriendCallChance)
+            if(Game1.random.NextDouble() < Config.FriendCallChance)
             {
                 Monitor.Log($"Receiving random call", LogLevel.Debug);
                 MobilePhoneApp.ReceiveRandomCall();
