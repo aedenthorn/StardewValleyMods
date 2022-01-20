@@ -195,6 +195,11 @@ namespace FreeLove
                original: AccessTools.Method(typeof(GameLocation), nameof(GameLocation.answerDialogue)),
                prefix: new HarmonyMethod(typeof(LocationPatches), nameof(LocationPatches.GameLocation_answerDialogue_prefix))
             );
+            
+            harmony.Patch(
+               original: AccessTools.Method(typeof(GameLocation), nameof(GameLocation.answerDialogueAction)),
+               prefix: new HarmonyMethod(typeof(LocationPatches), nameof(LocationPatches.GameLocation_answerDialogueAction_Prefix))
+            );
 
 
             // pregnancy patches

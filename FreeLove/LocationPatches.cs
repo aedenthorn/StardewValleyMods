@@ -1,11 +1,15 @@
-﻿using Microsoft.Xna.Framework;
+﻿using HarmonyLib;
+using Microsoft.Xna.Framework;
 using StardewModdingAPI;
 using StardewValley;
 using StardewValley.Locations;
 using StardewValley.Objects;
 using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Reflection;
 using xTile.Dimensions;
+using Object = StardewValley.Object;
 
 namespace FreeLove
 {
@@ -232,6 +236,30 @@ namespace FreeLove
             {
                 Monitor.Log($"Failed in {nameof(GameLocation_answerDialogue_prefix)}:\n{ex}", LogLevel.Error);
             }
+        }
+        public static bool GameLocation_answerDialogueAction_Prefix(string questionAndAnswer, string[] questionParams, ref bool __result)
+        {
+            if (!Config.EnableMod || questionAndAnswer != "mariner_Buy")
+                return true;
+
+            if (Game1.player.Money < Config.PendantPrice)
+            {
+                Game1.drawObjectDialogue(Game1.content.LoadString("Strings\\UI:NotEnoughMoney1"));
+            }
+            else
+            {
+                Game1.player.Money -= Config.PendantPrice;
+                Game1.player.addItemByMenuIfNecessary(new Object(460, 1, false, -1, 0)
+                {
+                    specialItem = true
+                }, null);
+                if (Game1.activeClickableMenu == null)
+                {
+                    Game1.player.holdUpItemThenMessage(new Object(460, 1, false, -1, 0), true);
+                }
+            }
+            __result = true;
+            return false;
         }
 
     }

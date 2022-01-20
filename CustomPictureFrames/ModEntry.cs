@@ -263,42 +263,17 @@ namespace CustomPictureFrames
             {
                 int x = i % frameWidth;
                 int y = i / frameWidth;
-                if (frameData[i] != Color.Transparent || x == 0 || y == 0 || x == frameWidth - 1 || y == frameHeight - 1)
+                if (frameData[i] != Color.Transparent || innerPixels[i])
                     continue;
-                bool top = false;
-                bool bottom = false;
-                bool left = false;
-                bool right = false;
-                for (int x1 = 0; x1 < frameWidth; x1++)
+
+                List<Point> connected = new List<Point>() {new Point(x, y) };  
+                if(IsEnclosed(x, y, frameData, frameWidth, frameHeight, connected))
                 {
-                    int i1 = i - x + x1;
-                    if (frameData[i1] != Color.Transparent)
+                    foreach(var p in connected)
                     {
-                        if (i1 < i)
-                            left = true;
-                        else if (i1 > i)
-                            right = true;
+                        innerPixels[p.Y * frameWidth + p.X] = true;
                     }
-                    if (left && right)
-                        break;
                 }
-                if (!left || !right)
-                    continue;
-                for (int y1 = 0; y1 < frameHeight; y1++)
-                {
-                    int i1 = i - (y * frameWidth) + (y1 * frameWidth);
-                    if (frameData[i1] != Color.Transparent)
-                    {
-                        if (i1 < i)
-                            top = true;
-                        else if (i1 > i)
-                            bottom = true;
-                    }
-                    if (bottom && top)
-                        break;
-                }
-                if (left && right && bottom && top)
-                    innerPixels[i] = true;
             }
 
             var screenWidth = Game1.graphics.GraphicsDevice.PresentationParameters.BackBufferWidth;
@@ -367,6 +342,21 @@ namespace CustomPictureFrames
             {
                 Game1.addHUDMessage(new HUDMessage(string.Format(Config.Message, picture_name)));
             }
+        }
+
+        private bool IsEnclosed(int x, int y, Color[] frameData, int frameWidth, int frameHeight, List<Point> connected)
+        {
+            if (x == 0 || x == frameWidth - 1 || y == 0 || y == frameHeight - 1)
+                return false;
+            connected.Add(new Point(x, y));
+            Point left = new Point(x - 1, y);
+            Point right = new Point(x + 1, y);
+            Point up = new Point(x, y - 1);
+            Point down = new Point(x, y + 1);
+            return (connected.Contains(left) || frameData[left.Y * frameWidth + left.X] != Color.Transparent || IsEnclosed(left.X, left.Y, frameData, frameWidth, frameHeight, connected)) &&
+                (connected.Contains(right) || frameData[right.Y * frameWidth + right.X] != Color.Transparent || IsEnclosed(right.X, right.Y, frameData, frameWidth, frameHeight, connected)) &&
+                (connected.Contains(up) || frameData[up.Y * frameWidth + up.X] != Color.Transparent || IsEnclosed(up.X, up.Y, frameData, frameWidth, frameHeight, connected)) &&
+                (connected.Contains(down) || frameData[down.Y * frameWidth + down.X] != Color.Transparent || IsEnclosed(down.X, down.Y, frameData, frameWidth, frameHeight, connected));
         }
 
 
