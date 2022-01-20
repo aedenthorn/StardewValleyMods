@@ -55,13 +55,13 @@ namespace CustomPictureFrames
 
             if (Config.EnableMod && framing && frameList.Count > 0)
             {
-                var pos = Game1.getMousePosition() - new Point(frameList[currentFrame].texture.Width * 4, frameList[currentFrame].texture.Height * 4);
+                var pos = Game1.getMousePosition(false) - Utility.Vector2ToPoint(new Vector2(frameList[currentFrame].texture.Width * 4 / Game1.options.zoomLevel, frameList[currentFrame].texture.Height * 4 / Game1.options.zoomLevel));
                 if (pos.X < 0)
                     pos.X = 0;
                 if (pos.Y < 0)
                     pos.Y = 0;
 
-                e.SpriteBatch.Draw(frameList[currentFrame].texture, Utility.PointToVector2(pos), null, Color.White, 0, Vector2.Zero, 4, SpriteEffects.None, 1);
+                e.SpriteBatch.Draw(frameList[currentFrame].texture, Utility.PointToVector2(pos), null, Color.White, 0, Vector2.Zero, 4 / Game1.options.zoomLevel, SpriteEffects.None, 1);
             }
         }
 
@@ -303,7 +303,7 @@ namespace CustomPictureFrames
 
             var screenWidth = Game1.graphics.GraphicsDevice.PresentationParameters.BackBufferWidth;
             var screenHeight = Game1.graphics.GraphicsDevice.PresentationParameters.BackBufferHeight;
-            var pos = Game1.getMousePosition(true) - new Point(frameWidth * 4, frameHeight * 4);
+            var pos = Game1.getMousePositionRaw() - Utility.Vector2ToPoint(new Vector2(frameList[currentFrame].texture.Width * 4, frameList[currentFrame].texture.Height * 4));
             if (pos.X < 0)
                 pos.X = 0;
             if (pos.Y < 0)
@@ -314,7 +314,7 @@ namespace CustomPictureFrames
 
 
             Color[] pictureData = new Color[frameWidth * frameHeight * 16];
-            Monitor.Log($"pos {pos}, mousepos {Game1.getMousePosition()}, screen {screenWidth},{screenHeight}, framedata {frameData.Length}, pictureData{pictureData.Length}");
+            //Monitor.Log($"pos {pos}, mousepos {Game1.getMousePositionRaw()}, screen {screenWidth},{screenHeight}, framedata {frameData.Length}, pictureData{pictureData.Length}");
 
             // compose picture
             int innerCount = 0;
@@ -358,6 +358,7 @@ namespace CustomPictureFrames
 
             Stream stream = File.Create(file);
             tex.SaveAsPng(stream, frameWidth * 4, frameHeight * 4);
+            tex.Name = picture_name;
             stream.Close();
             if (!pictureDict.ContainsKey(picture_name))
                 pictureDict[picture_name] = new List<Texture2D>();

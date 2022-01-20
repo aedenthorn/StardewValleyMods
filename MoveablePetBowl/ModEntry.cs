@@ -381,30 +381,30 @@ namespace MoveablePetBowl
                                 mapData.Data.GetLayer("Back").Tiles[x, y].TileIndex = 1938;
                                 try
                                 {
-                                    mapData.Data.GetLayer("Back").Tiles[x-1, y].Properties.Remove("NoFurniture");
-                                    mapData.Data.GetLayer("Back").Tiles[x-1, y].Properties.Remove("Placeable");
+                                    mapData.Data.GetLayer("Back").Tiles[x - 1, y].TileIndexProperties.Remove("NoFurniture");
+                                    mapData.Data.GetLayer("Back").Tiles[x - 1, y].Properties.Remove("NoFurniture");
+                                    mapData.Data.GetLayer("Back").Tiles[x - 1, y].Properties.Remove("Placeable");
                                 }
                                 catch
                                 {
-
                                 }
                                 try
                                 {
-                                    mapData.Data.GetLayer("Back").Tiles[x-1, y+1].Properties.Remove("NoFurniture");
-                                    mapData.Data.GetLayer("Back").Tiles[x-1, y+1].Properties.Remove("Placeable");
+                                    mapData.Data.GetLayer("Back").Tiles[x - 1, y + 1].TileIndexProperties.Remove("NoFurniture");
+                                    mapData.Data.GetLayer("Back").Tiles[x - 1, y + 1].Properties.Remove("NoFurniture");
+                                    mapData.Data.GetLayer("Back").Tiles[x - 1, y + 1].Properties.Remove("Placeable");
                                 }
                                 catch
                                 {
-
                                 }
                                 try
                                 {
-                                    mapData.Data.GetLayer("Back").Tiles[x, y+1].Properties.Remove("NoFurniture");
-                                    mapData.Data.GetLayer("Back").Tiles[x, y+1].Properties.Remove("Placeable");
+                                    mapData.Data.GetLayer("Back").Tiles[x, y + 1].TileIndexProperties.Remove("NoFurniture");
+                                    mapData.Data.GetLayer("Back").Tiles[x, y + 1].Properties.Remove("NoFurniture");
+                                    mapData.Data.GetLayer("Back").Tiles[x, y + 1].Properties.Remove("Placeable");
                                 }
                                 catch
                                 {
-
                                 }
                             }
                         }

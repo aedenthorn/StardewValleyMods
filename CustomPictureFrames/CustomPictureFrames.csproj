@@ -4,6 +4,11 @@
     <TargetFramework>net5.0</TargetFramework>
 	<EnableHarmony>true</EnableHarmony>
   </PropertyGroup>
+  <ItemGroup>
+    <Compile Remove="pictures\**" />
+    <EmbeddedResource Remove="pictures\**" />
+    <None Remove="pictures\**" />
+  </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="Pathoschild.Stardew.ModBuildConfig" Version="4.0.0" />
@@ -43,9 +48,5 @@
     <None Update="manifest.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="pictures\" />
   </ItemGroup>
 </Project>
