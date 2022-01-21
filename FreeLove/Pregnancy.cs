@@ -57,7 +57,7 @@ namespace FreeLove
             foreach (NPC spouse in allSpouses)
             {
                 Farmer f = spouse.getSpouse();
-                if (!ModEntry.config.RoommateRomance && f.friendshipData[spouse.Name].RoommateMarriage)
+                if (!ModEntry.Config.RoommateRomance && f.friendshipData[spouse.Name].RoommateMarriage)
                     continue;
 
                 int heartsWithSpouse = f.getFriendshipHeartLevelForNPC(spouse.Name);
@@ -111,7 +111,7 @@ namespace FreeLove
 
         public static bool BirthingEvent_tickUpdate_Prefix(GameTime time, BirthingEvent __instance, ref bool __result, ref int ___timer, string ___soundName, ref bool ___playedSound, string ___message, ref bool ___naming, bool ___getBabyName, bool ___isMale, string ___babyName)
         {
-            if (!ModEntry.config.EnableMod || !___getBabyName)
+            if (!ModEntry.Config.EnableMod || !___getBabyName)
                 return true;
 
             Game1.player.CanMove = false;

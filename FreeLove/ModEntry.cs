@@ -14,12 +14,12 @@ using System.Text.RegularExpressions;
 namespace FreeLove
 {
     /// <summary>The mod entry point.</summary>
-    public class ModEntry : Mod, IAssetEditor
+    public partial class ModEntry : Mod, IAssetEditor
     {
 
         public static IMonitor PMonitor;
         public static IModHelper PHelper;
-        public static ModConfig config;
+        public static ModConfig Config;
         
         public static Multiplayer mp;
         public static Random myRand;
@@ -34,9 +34,9 @@ namespace FreeLove
         /// <param name="helper">Provides simplified APIs for writing mods.</param>
         public override void Entry(IModHelper helper)
         {
-            config = Helper.ReadConfig<ModConfig>();
+            Config = Helper.ReadConfig<ModConfig>();
 
-            if (!config.EnableMod)
+            if (!Config.EnableMod)
                 return;
 
             PMonitor = Monitor;
@@ -45,21 +45,20 @@ namespace FreeLove
             mp = helper.Reflection.GetField<Multiplayer>(typeof(Game1), "multiplayer").GetValue();
             myRand = new Random();
 
-            helper.Events.GameLoop.GameLaunched += HelperEvents.GameLoop_GameLaunched;
-            helper.Events.GameLoop.SaveLoaded += HelperEvents.GameLoop_SaveLoaded;
-            helper.Events.GameLoop.DayStarted += HelperEvents.GameLoop_DayStarted;
-            helper.Events.GameLoop.OneSecondUpdateTicked += HelperEvents.GameLoop_OneSecondUpdateTicked;
+            helper.Events.GameLoop.GameLaunched += GameLoop_GameLaunched;
+            helper.Events.GameLoop.SaveLoaded += GameLoop_SaveLoaded;
+            helper.Events.GameLoop.DayStarted += GameLoop_DayStarted;
+            helper.Events.GameLoop.OneSecondUpdateTicked += GameLoop_OneSecondUpdateTicked;
 
-            PathFindControllerPatches.Initialize(Monitor, config, helper);
-            Integrations.Initialize(Monitor, config, helper);
-            Divorce.Initialize(Monitor, config, helper);
-            NPCPatches.Initialize(Monitor, config, helper);
-            LocationPatches.Initialize(Monitor, config, helper);
-            FarmerPatches.Initialize(Monitor, config, helper);
-            UIPatches.Initialize(Monitor, config, helper);
-            EventPatches.Initialize(Monitor, config, helper);
-            HelperEvents.Initialize(Monitor, config, helper);
-            Misc.Initialize(Monitor, config, helper);
+            PathFindControllerPatches.Initialize(Monitor, Config, helper);
+            Integrations.Initialize(Monitor, Config, helper);
+            Divorce.Initialize(Monitor, Config, helper);
+            NPCPatches.Initialize(Monitor, Config, helper);
+            LocationPatches.Initialize(Monitor, Config, helper);
+            FarmerPatches.Initialize(Monitor, Config, helper);
+            UIPatches.Initialize(Monitor, Config, helper);
+            EventPatches.Initialize(Monitor, Config, helper);
+            Misc.Initialize(Monitor, Config, helper);
 
             var harmony = new Harmony(ModManifest.UniqueID);
 
@@ -287,14 +286,14 @@ namespace FreeLove
         /// <param name="asset">Basic metadata about the asset being loaded.</param>
         public bool CanEdit<T>(IAssetInfo asset)
         {
-            if (!config.EnableMod)
+            if (!Config.EnableMod)
                 return false;
 
-            if (asset.AssetNameEquals("Data/Events/HaleyHouse") || asset.AssetNameEquals("Data/Events/Saloon") || asset.AssetNameEquals("Data/EngagementDialogue") || asset.AssetNameEquals("Strings/StringsFromCSFiles") || asset.AssetNameEquals("Data/animationDescriptions"))
+            if (asset.AssetNameEquals("Data/Events/HaleyHouse") || asset.AssetNameEquals("Data/Events/Saloon") || asset.AssetNameEquals("Data/EngagementDialogue") || asset.AssetNameEquals("Strings/StringsFromCSFiles") || asset.AssetNameEquals("Data/animationDescriptions") || asset.AssetNameEquals("Strings/Locations"))
             {
                 return true;
             }
-            if (config.RomanceAllVillagers && (asset.AssetName.StartsWith("Characters/schedules") || asset.AssetName.StartsWith("Characters\\schedules")))
+            if (Config.RomanceAllVillagers && (asset.AssetName.StartsWith("Characters/schedules") || asset.AssetName.StartsWith("Characters\\schedules")))
             {
                 try
                 {
@@ -363,7 +362,7 @@ namespace FreeLove
             }
             else if (asset.AssetNameEquals("Data/EngagementDialogue"))
             {
-                if (!config.RomanceAllVillagers)
+                if (!Config.RomanceAllVillagers)
                     return;
                 IDictionary<string, string> data = asset.AsDictionary<string, string>().Data;
                 Farmer f = Game1.player;
@@ -392,6 +391,13 @@ namespace FreeLove
                     if(!data.ContainsKey($"marriage_{key}"))
                         data[$"marriage_{key}"] = data[key]; 
                 }
+            }
+            else if (asset.AssetNameEquals("Strings/Locations"))
+            {
+                IDictionary<string, string> data = asset.AsDictionary<string, string>().Data;
+                data["Beach_Mariner_PlayerBuyItem_AnswerYes"] = data["Beach_Mariner_PlayerBuyItem_AnswerYes"].Replace("5000", Config.PendantPrice+"");
+
+
             }
         }
     }

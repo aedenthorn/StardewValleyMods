@@ -79,6 +79,8 @@ namespace SoundEffectReplacement
 
         private void ReloadDict()
         {
+            if (!Config.EnableMod)
+                return;
  
             replacementDict = SHelper.Content.Load<Dictionary<string, string>>(dictPath, ContentSource.GameContent) ?? new Dictionary<string, string>();
             //SMonitor.Log($"Loaded {replacementDict.Count} replacements");

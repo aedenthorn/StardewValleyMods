@@ -9,22 +9,122 @@ using System.Linq;
 namespace FreeLove
 {
     /// <summary>The mod entry point.</summary>
-    public class HelperEvents
+    public partial class ModEntry
     {
-        private static IMonitor Monitor;
-        private static IModHelper Helper;
-        private static ModConfig Config;
 
-        // call this method from your Entry class
-        public static void Initialize(IMonitor monitor, ModConfig config, IModHelper helper)
+        private void GameLoop_GameLaunched(object sender, StardewModdingAPI.Events.GameLaunchedEventArgs e)
         {
-            Monitor = monitor;
-            Helper = helper;
-            Config = config;
-        }
+            // get Generic Mod Config Menu's API (if it's installed)
+            var configMenu = Helper.ModRegistry.GetApi<IGenericModConfigMenuApi>("spacechase0.GenericModConfigMenu");
+            if (configMenu is null)
+                return;
 
-        public static void GameLoop_GameLaunched(object sender, GameLaunchedEventArgs e)
-        {
+            // register mod
+            configMenu.Register(
+                mod: ModManifest,
+                reset: () => Config = new ModConfig(),
+                save: () => Helper.WriteConfig(Config)
+            );
+            configMenu.AddBoolOption(
+                mod: ModManifest,
+                name: () => "Mod Enabled?",
+                getValue: () => Config.EnableMod,
+                setValue: value => Config.EnableMod = value
+            );
+            configMenu.AddNumberOption(
+                mod: ModManifest,
+                name: () => "Min Points To Marry",
+                getValue: () => Config.MinPointsToMarry,
+                setValue: value => Config.MinPointsToMarry = value
+            );
+            configMenu.AddNumberOption(
+                mod: ModManifest,
+                name: () => "Min Points To Date",
+                getValue: () => Config.MinPointsToDate,
+                setValue: value => Config.MinPointsToDate = value
+            );
+            
+            configMenu.AddNumberOption(
+                mod: ModManifest,
+                name: () => "Max Gifts Per Day",
+                getValue: () => Config.MaxGiftsPerSpousePerDay,
+                setValue: value => Config.MaxGiftsPerSpousePerDay = value
+            );
+            
+            configMenu.AddNumberOption(
+                mod: ModManifest,
+                name: () => "Max Gifts Per Week",
+                getValue: () => Config.MaxGiftsPerSpousePerWeek,
+                setValue: value => Config.MaxGiftsPerSpousePerWeek = value
+            );
+
+            configMenu.AddBoolOption(
+                mod: ModManifest,
+                name: () => "Prevent Hostile Divorces",
+                getValue: () => Config.PreventHostileDivorces,
+                setValue: value => Config.PreventHostileDivorces = value
+            );
+
+            configMenu.AddBoolOption(
+                mod: ModManifest,
+                name: () => "Complex Divorces",
+                getValue: () => Config.ComplexDivorce,
+                setValue: value => Config.ComplexDivorce = value
+            );
+
+            configMenu.AddBoolOption(
+                mod: ModManifest,
+                name: () => "Roommate Romance",
+                getValue: () => Config.RoommateRomance,
+                setValue: value => Config.RoommateRomance = value
+            );
+
+            configMenu.AddBoolOption(
+                mod: ModManifest,
+                name: () => "Show Parent Names",
+                getValue: () => Config.ShowParentNames,
+                setValue: value => Config.ShowParentNames = value
+            );
+            configMenu.AddBoolOption(
+                mod: ModManifest,
+                name: () => "Buy Pendants Anytime",
+                getValue: () => Config.BuyPendantsAnytime,
+                setValue: value => Config.BuyPendantsAnytime = value
+            );
+            configMenu.AddNumberOption(
+                mod: ModManifest,
+                name: () => "Pendant Price",
+                getValue: () => Config.PendantPrice,
+                setValue: value => Config.PendantPrice = value
+            );
+
+            configMenu.AddNumberOption(
+                mod: ModManifest,
+                name: () => "Percent Chance For In Bed",
+                getValue: () => Config.PercentChanceForSpouseInBed,
+                setValue: value => Config.PercentChanceForSpouseInBed = value,
+                min: 0,
+                max:100
+            );
+
+            configMenu.AddNumberOption(
+                mod: ModManifest,
+                name: () => "Chance For In Kitchen",
+                getValue: () => Config.PercentChanceForSpouseInKitchen,
+                setValue: value => Config.PercentChanceForSpouseInKitchen = value,
+                min: 0,
+                max:100
+            );
+
+            configMenu.AddNumberOption(
+                mod: ModManifest,
+                name: () => "Chance For In Patio",
+                getValue: () => Config.PercentChanceForSpouseAtPatio,
+                setValue: value => Config.PercentChanceForSpouseAtPatio = value,
+                min: 0,
+                max:100
+            );
+
             Integrations.LoadModApis();
         }
 
@@ -58,7 +158,7 @@ namespace FreeLove
                 var spouses = Misc.GetSpouses(f, -1).Keys;
                 foreach(string s in spouses)
                 {
-                    Monitor.Log($"{f.Name} is married to {s}");
+                    PMonitor.Log($"{f.Name} is married to {s}");
                 }
             }
         }
@@ -79,7 +179,7 @@ namespace FreeLove
                         continue;
 
                     List<string> allSpouses = Misc.GetSpouses(fh.owner, 1).Keys.ToList();
-                    List<string> bedSpouses = Misc.ReorderSpousesForSleeping(allSpouses.FindAll((s) => ModEntry.config.RoommateRomance || !fh.owner.friendshipData[s].RoommateMarriage));
+                    List<string> bedSpouses = Misc.ReorderSpousesForSleeping(allSpouses.FindAll((s) => ModEntry.Config.RoommateRomance || !fh.owner.friendshipData[s].RoommateMarriage));
 
                     using(IEnumerator<NPC> characters = fh.characters.GetEnumerator())
                     {

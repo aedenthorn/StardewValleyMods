@@ -51,7 +51,7 @@ namespace FreeLove
 
         internal static void ResetDivorces()
         {
-            if (!ModEntry.config.PreventHostileDivorces)
+            if (!ModEntry.Config.PreventHostileDivorces)
                 return;
             List<string> friends = Game1.player.friendshipData.Keys.ToList();
             foreach(string f in friends)
@@ -128,18 +128,18 @@ namespace FreeLove
 
                 int type = ModEntry.myRand.Next(0, 100);
 
-                Monitor.Log($"spouse rand {type}, bed: {ModEntry.config.PercentChanceForSpouseInBed} kitchen {ModEntry.config.PercentChanceForSpouseInKitchen}");
+                Monitor.Log($"spouse rand {type}, bed: {ModEntry.Config.PercentChanceForSpouseInBed} kitchen {ModEntry.Config.PercentChanceForSpouseInKitchen}");
                 
-                if(type < ModEntry.config.PercentChanceForSpouseInBed)
+                if(type < ModEntry.Config.PercentChanceForSpouseInBed)
                 {
-                    if (bedSpouses.Count < 1 && (ModEntry.config.RoommateRomance || !farmer.friendshipData[spouse.Name].IsRoommate()) && HasSleepingAnimation(spouse.Name))
+                    if (bedSpouses.Count < 1 && (ModEntry.Config.RoommateRomance || !farmer.friendshipData[spouse.Name].IsRoommate()) && HasSleepingAnimation(spouse.Name))
                     {
                         Monitor.Log("made bed spouse: " + spouse.Name);
                         bedSpouses.Add(spouse.Name);
                     }
 
                 }
-                else if(type < ModEntry.config.PercentChanceForSpouseInBed + ModEntry.config.PercentChanceForSpouseInKitchen)
+                else if(type < ModEntry.Config.PercentChanceForSpouseInBed + ModEntry.Config.PercentChanceForSpouseInKitchen)
                 {
                     if (kitchenSpouse == null)
                     {
@@ -147,65 +147,70 @@ namespace FreeLove
                         kitchenSpouse = spouse.Name;
                     }
                 }
-                else if(type < ModEntry.config.PercentChanceForSpouseInBed + ModEntry.config.PercentChanceForSpouseInKitchen + ModEntry.config.PercentChanceForSpouseAtPatio)
+                else if(type < ModEntry.Config.PercentChanceForSpouseInBed + ModEntry.Config.PercentChanceForSpouseInKitchen + ModEntry.Config.PercentChanceForSpouseAtPatio)
                 {
                     if (!Game1.isRaining && !Game1.IsWinter && !spouse.Name.Equals("Krobus") && spouse.Schedule == null)
                     {
                         Monitor.Log("made patio spouse: " + spouse.Name);
                         spouse.setUpForOutdoorPatioActivity();
+                        Monitor.Log($"{spouse.Name} at {spouse.currentLocation.Name} {spouse.getTileLocation()}");
                     }
                 }
             }
 
-            foreach (NPC j in allSpouses) 
+            foreach (NPC spouse in allSpouses) 
             { 
-                Monitor.Log("placing " + j.Name);
+                Monitor.Log("placing " + spouse.Name);
 
                 Point spouseRoomSpot = new Point(-1, -1); 
                 
                 if(Integrations.customSpouseRoomsAPI != null)
                 {
-                    spouseRoomSpot = Integrations.customSpouseRoomsAPI.GetSpouseTile(j);
-                    Monitor.Log($"Got custom spouse spot {spouseRoomSpot}");
+                    spouseRoomSpot = Integrations.customSpouseRoomsAPI.GetSpouseTile(spouse);
+                    if(spouseRoomSpot.X >= 0)
+                        Monitor.Log($"Got custom spouse spot {spouseRoomSpot}");
                 }
-                else if(farmer.spouse == j.Name)
+                if(spouseRoomSpot.X < 0 && farmer.spouse == spouse.Name)
                 {
                     spouseRoomSpot = farmHouse.GetSpouseRoomSpot();
+                    Monitor.Log($"Using default spouse spot {spouseRoomSpot}");
                 }
 
-                if (!farmHouse.Equals(j.currentLocation))
+                if (!farmHouse.Equals(spouse.currentLocation))
                 {
-                    Monitor.Log("not in farm house");
+                    Monitor.Log($"{spouse.Name} is not in farm house ({spouse.currentLocation.Name})");
                     continue;
                 }
 
                 Monitor.Log("in farm house");
-                j.shouldPlaySpousePatioAnimation.Value = false;
+                spouse.shouldPlaySpousePatioAnimation.Value = false;
 
-                if (bedSpouses.Count > 0 && bedSpouses.Contains(j.Name))
-                {
-                    Monitor.Log($"putting {j.Name} in bed");
-                    j.position.Value = GetSpouseBedPosition(farmHouse, j.Name);
-                }
-                else if (kitchenSpouse == j.Name && !IsTileOccupied(farmHouse, farmHouse.getKitchenStandingSpot(), j.Name))
-                {
-                    Monitor.Log($"{j.Name} is in kitchen");
+                Vector2 bedPos = GetSpouseBedPosition(farmHouse, spouse.Name);
 
-                    j.setTilePosition(farmHouse.getKitchenStandingSpot());
-                    j.setRandomAfternoonMarriageDialogue(Game1.timeOfDay, farmHouse, false);
-                }
-                else if (spouseRoomSpot.X > -1 && !IsTileOccupied(farmHouse, spouseRoomSpot, j.Name))
+                if (bedSpouses.Count > 0 && bedSpouses.Contains(spouse.Name) && bedPos != Vector2.Zero)
                 {
-                    Monitor.Log($"{j.Name} is in spouse room");
-                    j.setTilePosition(spouseRoomSpot);
-                    j.setSpouseRoomMarriageDialogue();
+                    Monitor.Log($"putting {spouse.Name} in bed");
+                    spouse.position.Value = GetSpouseBedPosition(farmHouse, spouse.Name);
+                }
+                else if (kitchenSpouse == spouse.Name && !IsTileOccupied(farmHouse, farmHouse.getKitchenStandingSpot(), spouse.Name))
+                {
+                    Monitor.Log($"{spouse.Name} is in kitchen");
+
+                    spouse.setTilePosition(farmHouse.getKitchenStandingSpot());
+                    spouse.setRandomAfternoonMarriageDialogue(Game1.timeOfDay, farmHouse, false);
+                }
+                else if (spouseRoomSpot.X > -1 && !IsTileOccupied(farmHouse, spouseRoomSpot, spouse.Name))
+                {
+                    Monitor.Log($"{spouse.Name} is in spouse room");
+                    spouse.setTilePosition(spouseRoomSpot);
+                    spouse.setSpouseRoomMarriageDialogue();
                 }
                 else 
                 { 
-                    j.setTilePosition(farmHouse.getRandomOpenPointInHouse(ModEntry.myRand));
-                    j.faceDirection(ModEntry.myRand.Next(0, 4));
-                    Monitor.Log($"{j.Name} spouse random loc {j.getTileLocationPoint()}");
-                    j.setRandomAfternoonMarriageDialogue(Game1.timeOfDay, farmHouse, false);
+                    spouse.setTilePosition(farmHouse.getRandomOpenPointInHouse(ModEntry.myRand));
+                    spouse.faceDirection(ModEntry.myRand.Next(0, 4));
+                    Monitor.Log($"{spouse.Name} spouse random loc {spouse.getTileLocationPoint()}");
+                    spouse.setRandomAfternoonMarriageDialogue(Game1.timeOfDay, farmHouse, false);
                 }
             }
         }
@@ -278,7 +283,7 @@ namespace FreeLove
         }
         public static List<string> GetBedSpouses(FarmHouse fh)
         {
-            if (ModEntry.config.RoommateRomance)
+            if (ModEntry.Config.RoommateRomance)
                 return GetSpouses(fh.owner, 1).Keys.ToList();
 
             return GetSpouses(fh.owner, 1).Keys.ToList().FindAll(s => !fh.owner.friendshipData[s].RoommateMarriage);
@@ -286,7 +291,7 @@ namespace FreeLove
 
         public static List<string> ReorderSpousesForSleeping(List<string> sleepSpouses)
         {
-            List<string> configSpouses = ModEntry.config.SpouseSleepOrder.Split(',').Where(s => s.Length > 0).ToList();
+            List<string> configSpouses = ModEntry.Config.SpouseSleepOrder.Split(',').Where(s => s.Length > 0).ToList();
             List<string> spouses = new List<string>();
             foreach (string s in configSpouses)
             {
@@ -303,10 +308,10 @@ namespace FreeLove
                 }
             }
             string configString = string.Join(",", configSpouses);
-            if (configString != ModEntry.config.SpouseSleepOrder)
+            if (configString != ModEntry.Config.SpouseSleepOrder)
             {
-                ModEntry.config.SpouseSleepOrder = configString;
-                Helper.WriteConfig(ModEntry.config);
+                ModEntry.Config.SpouseSleepOrder = configString;
+                Helper.WriteConfig(ModEntry.Config);
             }
 
             return spouses;
@@ -466,7 +471,7 @@ namespace FreeLove
         }
         public static void SetAllNPCsDatable()
         {
-            if (!ModEntry.config.RomanceAllVillagers)
+            if (!ModEntry.Config.RomanceAllVillagers)
                 return;
             Farmer f = Game1.player;
             if (f == null)

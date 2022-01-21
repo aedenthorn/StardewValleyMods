@@ -201,7 +201,7 @@ namespace HugsAndKisses
             bool facingRight = Misc.GetFacingRight(name);
 
             bool flip = (facingRight && npc.FacingDirection == 3) || (!facingRight && npc.FacingDirection == 1);
-            if (player.getFriendshipHeartLevelForNPC(npc.Name) >= Config.MinHeartsForMarriageKiss && (!npc.hasBeenKissedToday.Value || Config.UnlimitedDailyKisses) && npc.sleptInBed.Value)
+            if (player.getFriendshipHeartLevelForNPC(npc.Name) >= Config.MinHeartsForMarriageKiss && (!npc.hasBeenKissedToday.Value || Config.UnlimitedDailyKisses))
             {
                 ModEntry.SMonitor.Log($"Can kiss/hug {npc.Name}");
 
