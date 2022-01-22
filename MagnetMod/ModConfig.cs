@@ -8,6 +8,7 @@ namespace MagnetMod
 {
     class ModConfig
     {
+        public bool EnableMod { get; set; } = true;
         public float MagnetRangeMult { get; set; } = -1;
         public int MagnetSpeedMult { get; set; } = 2;
         public bool NoLootBounce { get; set; } = false;

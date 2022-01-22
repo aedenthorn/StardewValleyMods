@@ -1,0 +1,22 @@
+﻿{
+  "Name": "Log Spam Filter",
+  "Author": "aedenthorn",
+  "Version": "0.1.0",
+  "Description": "A simple mod that throttles identical messages from spamming in the SMAPI log. Can be configured to throttle similar messages, or just messages from the same mod.",
+  "UniqueID": "aedenthorn.LogSpamFilter",
+  "EntryDll": "LogSpamFilter.dll",
+  "MinimumApiVersion": "3.13.0",
+  "ModUpdater": {
+    "Repository": "StardewValleyMods",
+    "User": "aedenthorn",
+    "Directory": "_releases",
+    "ModFolder": "LogSpamFilter"
+  },
+  "UpdateKeys": [ "Nexus:10760" ],
+  "Dependencies": [
+    {
+      "UniqueID": "Platonymous.ModUpdater",
+      "IsRequired": false
+    }
+  ]
+}

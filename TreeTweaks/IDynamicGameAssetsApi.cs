@@ -1,6 +1,6 @@
 ﻿using StardewModdingAPI;
 
-namespace CustomTreeDrops
+namespace LogSpamFilter
 {
     public interface IDynamicGameAssetsApi
     {

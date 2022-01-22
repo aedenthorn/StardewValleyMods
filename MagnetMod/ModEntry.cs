@@ -8,6 +8,7 @@ using StardewValley;
 using StardewValley.TerrainFeatures;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Reflection;
 
 namespace MagnetMod
@@ -29,12 +30,13 @@ namespace MagnetMod
         /// <param name="helper">Provides simplified APIs for writing mods.</param>
         public override void Entry(IModHelper helper)
         {
-            helper.Events.GameLoop.UpdateTicking += UpdateTicking;
             Config = Helper.ReadConfig<ModConfig>();
             magnetRangeMult = Config.MagnetRangeMult;
             magnetSpeedMult = Config.MagnetSpeedMult;
             noLootBounce = Config.NoLootBounce;
             noLootWave = Config.NoLootWave;
+
+            helper.Events.GameLoop.GameLaunched += GameLoop_GameLaunched;
 
             ObjectPatches.Initialize(Monitor);
 
@@ -47,9 +49,55 @@ namespace MagnetMod
             );
         }
 
+        private void GameLoop_GameLaunched(object sender, GameLaunchedEventArgs e)
+        {
+            // get Generic Mod Config Menu's API (if it's installed)
+            var configMenu = Helper.ModRegistry.GetApi<IGenericModConfigMenuApi>("spacechase0.GenericModConfigMenu");
+            if (configMenu is null)
+                return;
+
+            // register mod
+            configMenu.Register(
+                mod: ModManifest,
+                reset: () => Config = new ModConfig(),
+                save: () => Helper.WriteConfig(Config)
+            );
+
+            configMenu.AddBoolOption(
+                mod: ModManifest,
+                name: () => "Mod Enabled?",
+                getValue: () => Config.EnableMod,
+                setValue: value => Config.EnableMod = value
+            );
+            configMenu.AddBoolOption(
+                mod: ModManifest,
+                name: () => "Disable Bounce?",
+                getValue: () => Config.NoLootBounce,
+                setValue: value => Config.NoLootBounce = value
+            );
+            configMenu.AddBoolOption(
+                mod: ModManifest,
+                name: () => "Disable Wave?",
+                getValue: () => Config.NoLootWave,
+                setValue: value => Config.NoLootWave = value
+            );
+            configMenu.AddTextOption(
+                mod: ModManifest,
+                name: () => "Range Mult",
+                getValue: () => "" + Config.MagnetRangeMult,
+                setValue: delegate (string value) { try { Config.MagnetRangeMult = float.Parse(value, CultureInfo.InvariantCulture); } catch { } }
+            );
+            configMenu.AddNumberOption(
+                mod: ModManifest,
+                name: () => "Speed Mult",
+                getValue: () => Config.MagnetSpeedMult,
+                setValue: value => Config.MagnetSpeedMult = value
+            );
+        }
+
         private void UpdateTicking(object sender, UpdateTickingEventArgs e)
         {
-            if (!Context.IsWorldReady)
+            if (!Context.IsWorldReady || !Config.EnableMod)
                 return;
             GameLocation location = Game1.getPlayerOrEventFarmer().currentLocation;
             Netcode.NetCollection<Debris> debris = location.debris;

@@ -1,18 +1,18 @@
 ﻿{
-  "Name": "More Wood",
+  "Name": "Tree Tweaks",
   "Author": "aedenthorn",
-  "Version": "0.1.0",
-  "Description": "More Wood.",
-  "UniqueID": "aedenthorn.CustomTreeDrops",
-  "EntryDll": "CustomTreeDrops.dll",
+  "Version": "0.1.1",
+  "Description": "Tree Tweaks.",
+  "UniqueID": "aedenthorn.TreeTweaks",
+  "EntryDll": "TreeTweaks.dll",
   "MinimumApiVersion": "3.13.0",
   "ModUpdater": {
     "Repository": "StardewValleyMods",
     "User": "aedenthorn",
     "Directory": "_releases",
-    "ModFolder": "CustomTreeDrops"
+    "ModFolder": "TreeTweaks"
   },
-  "UpdateKeys": [ "Nexus:" ],
+  "UpdateKeys": [ "Nexus:10760" ],
   "Dependencies": [
     {
       "UniqueID": "Platonymous.ModUpdater",

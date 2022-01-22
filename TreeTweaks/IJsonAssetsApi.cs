@@ -1,4 +1,4 @@
-﻿namespace CustomTreeDrops
+﻿namespace LogSpamFilter
 {
     public interface IJsonAssetsApi
     {

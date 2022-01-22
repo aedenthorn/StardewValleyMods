@@ -1,7 +1,7 @@
 ﻿{
   "Name": "Magnet Mod",
   "Author": "Aedenthorn",
-  "Version": "1.2.0",
+  "Version": "1.3.0",
   "Description": "Increase loot magnet radius and speed.",
   "UniqueID": "Aedenthorn.MagnetMod",
   "EntryDll": "MagnetMod.dll",
