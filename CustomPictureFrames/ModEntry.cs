@@ -64,7 +64,10 @@ namespace CustomPictureFrames
                 e.SpriteBatch.Draw(frameList[currentFrame].texture, Utility.PointToVector2(pos), null, Color.White, 0, Vector2.Zero, 4 / Game1.options.zoomLevel, SpriteEffects.None, 1);
             }
         }
-
+        public override object GetApi()
+        {
+            return new CustomPictureFramesApi();
+        }
         private void GameLoop_GameLaunched(object sender, StardewModdingAPI.Events.GameLaunchedEventArgs e)
         {
             // get Generic Mod Config Menu's API (if it's installed)

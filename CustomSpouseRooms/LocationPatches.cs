@@ -389,15 +389,20 @@ namespace CustomSpouseRooms
 			{
 				fh.temporarySprites.RemoveAll((s) => s is EmilysParrot);
 
-				Vector2 parrotSpot = Utility.PointToVector2(srd.startPos + new Point(4, 2)) * 64;
-				parrotSpot += new Vector2(16, 32);
-				ModEntry.PMonitor.Log($"Building Emily's parrot at {parrotSpot}");
-				fh.temporarySprites.Add(new EmilysParrot(parrotSpot));
+				Vector2 spot = Utility.PointToVector2(srd.startPos + new Point(4, 2)) * 64;
+				spot += new Vector2(16, 32);
+				ModEntry.PMonitor.Log($"Building Emily's parrot at {spot}");
+				fh.temporarySprites.Add(new EmilysParrot(spot));
 			}
 			else if (srd.name == "Sebastian" && (srd.templateName == "Sebastian" || srd.templateName == null || srd.templateName == "") && Game1.netWorldState.Value.hasWorldStateID("sebastianFrogReal"))
 			{
 				Vector2 spot = Utility.PointToVector2(srd.startPos + new Point(2, 7));
 				Monitor.Log($"building Sebastian's terrarium at {spot}");
+				if(spot.X < 0 || spot.Y - 1 < 0 || spot.X + 2 >= fh.Map.GetLayer("Front").LayerWidth || spot.Y -1 >= fh.Map.GetLayer("Front").LayerHeight)
+                {
+					Monitor.Log("Spot is outside of map!");
+					return;
+				}
 				fh.removeTile((int)spot.X, (int)spot.Y - 1, "Front");
 				fh.removeTile((int)spot.X + 1, (int)spot.Y - 1, "Front");
 				fh.removeTile((int)spot.X + 2, (int)spot.Y - 1, "Front");

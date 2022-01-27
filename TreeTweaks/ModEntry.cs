@@ -149,6 +149,33 @@ namespace LogSpamFilter
             spriteBatch.Draw(texture, position, sourceRectangle, color, rotation, origin, newScale, effects, layerDepth);
         }
 
+        private static void DrawTree2(SpriteBatch spriteBatch, Texture2D texture, Vector2 position, Rectangle? sourceRectangle, Color color, float rotation, Vector2 origin, float scale, SpriteEffects effects, float layerDepth, int count, Tree tree, Vector2 tileLocation)
+        {
+            Rectangle? newSourceRectangle = sourceRectangle;
+            if (texture.Width % 48 == 0)
+            {
+                float sourceScale = texture.Width / 48f;
+                Vector2 sourceStart = new Vector2(sourceRectangle.Value.X, sourceRectangle.Value.Y) * sourceScale;
+                Vector2 sourceSize = new Vector2(sourceRectangle.Value.Width, sourceRectangle.Value.Height) * sourceScale;
+                newSourceRectangle = new Rectangle?(new Rectangle(Utility.Vector2ToPoint(sourceStart), Utility.Vector2ToPoint(sourceSize)));
+            }
+
+            if (!Config.EnableMod || tree.growthStage.Value <= 5 || count == 0)
+            {
+                spriteBatch.Draw(texture, new Rectangle(Utility.Vector2ToPoint(position), Utility.Vector2ToPoint(new Vector2(sourceRectangle.Value.Width, sourceRectangle.Value.Height) * scale)), newSourceRectangle, color, rotation, origin, SpriteEffects.None, layerDepth);
+                return;
+            }
+
+            var newScale = scale * (1 + GetTreeGrowth(tree));
+            if (count != 5)
+            {
+                var size = GetTreePartSize(tree, count);
+                position -= size * (newScale - scale) / 2;
+            }
+            layerDepth = GetLayerDepth(tree, layerDepth, count, tileLocation);
+            spriteBatch.Draw(texture, new Rectangle(Utility.Vector2ToPoint(position), Utility.Vector2ToPoint(new Vector2(sourceRectangle.Value.Width, sourceRectangle.Value.Height) * newScale)), newSourceRectangle, color, rotation, origin, SpriteEffects.None, layerDepth);
+        }
+
         private static float GetLayerDepth(Tree tree, float layerDepth, int count, Vector2 tileLocation)
         {
             float growth = GetTreeGrowth(tree);

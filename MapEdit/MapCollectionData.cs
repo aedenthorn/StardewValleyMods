@@ -7,17 +7,17 @@ namespace MapEdit
 {
     public class MapCollectionData
     {
-        public Dictionary<string, MapData> mapDataDict { get; set; } = new Dictionary<string, MapData>();
+        public Dictionary<string, MapData> mapDataDict = new Dictionary<string, MapData>();
     }
 
     public class MapData
     {
-        public Dictionary<Vector2, TileLayers> tileDataDict { get; set; } = new Dictionary<Vector2, TileLayers>();
+        public Dictionary<Vector2, TileLayers> tileDataDict = new Dictionary<Vector2, TileLayers>();
     }
 
     public class TileLayers
     {
-        public Dictionary<string, TileLayerData> tileDict { get; set; } = new Dictionary<string, TileLayerData>();
+        public Dictionary<string, TileLayerData> tileDict = new Dictionary<string, TileLayerData>();
         public TileLayers()
         {
         }
@@ -32,8 +32,8 @@ namespace MapEdit
 
     public class TileLayerData
     {
-        public List<TileInfo> tiles { get; set; } = new List<TileInfo>();
-        public long frameInterval { get; set; }
+        public List<TileInfo> tiles = new List<TileInfo>();
+        public long frameInterval;
         public TileLayerData()
         { 
         }
@@ -75,10 +75,10 @@ namespace MapEdit
         {
         }
 
-        public int tileIndex { get; set; } = -1;
-        public string tileSheet { get; set; } = "";
-        public BlendMode blendMode { get; set; } = BlendMode.Alpha;
-        public Dictionary<string, string> properties { get; set; } = new Dictionary<string, string>();
+        public int tileIndex = -1;
+        public string tileSheet = "";
+        public BlendMode blendMode = BlendMode.Alpha;
+        public Dictionary<string, string> properties = new Dictionary<string, string>();
 
     }
 }
