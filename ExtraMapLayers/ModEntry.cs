@@ -1,20 +1,14 @@
 ﻿using HarmonyLib;
-using Microsoft.Xna.Framework;
 using StardewModdingAPI;
 using StardewValley;
-using StardewValley.Locations;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Reflection.Emit;
 using System.Text.RegularExpressions;
-using xTile;
 using xTile.Dimensions;
-using xTile.Display;
 using xTile.Layers;
-using xTile.Tiles;
-using Rectangle = xTile.Dimensions.Rectangle;
 
 namespace ExtraMapLayers
 {
