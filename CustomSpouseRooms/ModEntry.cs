@@ -69,6 +69,10 @@ namespace CustomSpouseRooms
                original: AccessTools.Method(typeof(FarmHouse), nameof(FarmHouse.loadSpouseRoom)),
                prefix: new HarmonyMethod(typeof(LocationPatches), nameof(LocationPatches.FarmHouse_loadSpouseRoom_Prefix))
             );
+            harmony.Patch(
+               original: AccessTools.Method(typeof(FarmHouse), nameof(FarmHouse.updateFarmLayout)),
+               prefix: new HarmonyMethod(typeof(LocationPatches), nameof(LocationPatches.FarmHouse_updateFarmLayout_Prefix))
+            );
             /*
             harmony.Patch(
                original: AccessTools.Method(typeof(DecoratableLocation), "IsFloorableOrWallpaperableTile"),
@@ -89,7 +93,6 @@ namespace CustomSpouseRooms
 
         private void GameLoop_SaveLoaded(object sender, StardewModdingAPI.Events.SaveLoadedEventArgs e)
         {
-            currentRoomData.Clear();
         }
 
         private void GameLoop_GameLaunched(object sender, StardewModdingAPI.Events.GameLaunchedEventArgs e)
@@ -100,7 +103,10 @@ namespace CustomSpouseRooms
                 Monitor.Log($"Reading content pack: {contentPack.Manifest.Name} {contentPack.Manifest.Version} from {contentPack.DirectoryPath}");
                 SpouseRoomDataObject obj = contentPack.ReadJsonFile<SpouseRoomDataObject>("content.json");
                 foreach (var srd in obj.data)
+                {
                     customRoomData.Add(srd.name, srd);
+                    Monitor.Log($"Added {srd.name} room data, start pose{srd.startPos}");
+                }
 
                 Monitor.Log($"Added {obj.data.Count} room datas from {contentPack.Manifest.Name}");
             }

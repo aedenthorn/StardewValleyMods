@@ -1,18 +1,18 @@
 ﻿{
-  "Name": "Custom Picture Frames",
+  "Name": "FurnitureDisplayFramework",
   "Author": "aedenthorn",
-  "Version": "0.4.0",
-  "Description": "Custom Picture Frames.",
-  "UniqueID": "aedenthorn.CustomPictureFrames",
-  "EntryDll": "CustomPictureFrames.dll",
+  "Version": "0.1.0",
+  "Description": "FurnitureDisplayFramework.",
+  "UniqueID": "aedenthorn.FurnitureDisplayFramework",
+  "EntryDll": "FurnitureDisplayFramework.dll",
   "MinimumApiVersion": "3.13.0",
   "ModUpdater": {
     "Repository": "StardewValleyMods",
     "User": "aedenthorn",
     "Directory": "_releases",
-    "ModFolder": "CustomPictureFrames"
+    "ModFolder": "FurnitureDisplayFramework"
   },
-  "UpdateKeys": [ "Nexus:10704" ],
+  "UpdateKeys": [ "Nexus:10855" ],
   "Dependencies": [
     {
       "UniqueID": "Platonymous.ModUpdater",

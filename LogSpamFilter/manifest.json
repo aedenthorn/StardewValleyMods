@@ -12,7 +12,7 @@
     "Directory": "_releases",
     "ModFolder": "LogSpamFilter"
   },
-  "UpdateKeys": [ "Nexus:10760" ],
+  "UpdateKeys": [ "Nexus:" ],
   "Dependencies": [
     {
       "UniqueID": "Platonymous.ModUpdater",

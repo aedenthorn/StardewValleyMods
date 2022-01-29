@@ -12,16 +12,17 @@ namespace LogSpamFilter
                 return true;
             if (messageData.ContainsKey(source))
             {
-                var s = messageData[source];
-                if (s.throttled)
+                if (messageData[source].throttled)
                 {
-                    if (Config.MSSpawnThrottle > DateTime.Now.Subtract(s.lastMessageTime).TotalMilliseconds)
-                        return false;
-                    messageData[source].throttled = false;
+                    if (Config.MSSpawnThrottle <= DateTime.Now.Subtract(messageData[source].lastMessageTime).TotalMilliseconds)
+                    {
+                        messageData[source].throttled = false;
+                    }
                 }
+                var s = messageData[source];
                 if (Config.MSBetweenMessages > 0 && Config.MSBetweenMessages > DateTime.Now.Subtract(s.lastMessageTime).TotalMilliseconds)
                 {
-                    if (Config.IsDebug)
+                    if (Config.IsDebug && !messageData[source].throttled)
                         SMonitor.Log($"Throttling {source} for ms between messages");
                     messageData[source].throttled = true;
                     messageData[source].throttledTime = DateTime.Now;
@@ -29,7 +30,7 @@ namespace LogSpamFilter
                 }
                 if (Config.MSBetweenIdenticalMessages > 0 && s.lastMessage == message && Config.MSBetweenIdenticalMessages > DateTime.Now.Subtract(s.lastMessageTime).TotalMilliseconds)
                 {
-                    if (Config.IsDebug)
+                    if (Config.IsDebug && !messageData[source].throttled)
                         SMonitor.Log($"Throttling {source} for ms between identical messages");
 
                     messageData[source].throttled = true;
@@ -48,7 +49,7 @@ namespace LogSpamFilter
                     }
                     if(count / (float)s.lastMessage.Length >= Config.PercentSimilarity / 100f)
                     {
-                        if (Config.IsDebug)
+                        if (Config.IsDebug && !messageData[source].throttled)
                             SMonitor.Log($"Throttling {source} for ms between similar ({(int)(count / (float)s.lastMessage.Length * 100)}) messages");
                         messageData[source].throttled = true;
                         messageData[source].throttledTime = DateTime.Now;

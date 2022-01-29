@@ -166,6 +166,8 @@ namespace FreeLove
                 
                 if(Integrations.customSpouseRoomsAPI != null)
                 {
+                    Monitor.Log($"Getting spouse spot from Custom Spouse Rooms");
+
                     spouseRoomSpot = Integrations.customSpouseRoomsAPI.GetSpouseTile(spouse);
                     if(spouseRoomSpot.X >= 0)
                         Monitor.Log($"Got custom spouse spot {spouseRoomSpot}");

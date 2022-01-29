@@ -67,20 +67,33 @@ namespace CustomSpouseRooms
 			}
 			return true;
 		}
-        
+
+		public static void FarmHouse_updateFarmLayout_Prefix(FarmHouse __instance, ref bool ___displayingSpouseRoom)
+		{
+			if (!Config.EnableMod)
+				return;
+			var allSpouses = Misc.GetSpouses(__instance.owner, -1).Keys.ToList();
+			if (allSpouses.Count == 0)
+				return;
+			___displayingSpouseRoom = false;
+		}      
         public static bool FarmHouse_loadSpouseRoom_Prefix(FarmHouse __instance, HashSet<string> ____appliedMapOverrides)
         {
 			if (!Config.EnableMod)
 				return true;
 			try
             {
+				Monitor.Log("Loading spouse rooms, clearing current room data");
 				ModEntry.currentRoomData.Clear();
 				var allSpouses = Misc.GetSpouses(__instance.owner, -1).Keys.ToList();
 				if (allSpouses.Count == 0)
 					return true;
 
-				if (ModEntry.customRoomData.Count == 0 && allSpouses.Count == 1) // single spouse, no customizations
+				if (ModEntry.customRoomData.Count == 0 && allSpouses.Count == 1)// single spouse, no customizations
+				{
+					Monitor.Log("Single uncustomized spouse room, letting vanilla game take over");
 					return true;
+				}
 
 				GetSpouseRooms(__instance, allSpouses, out List<string> orderedSpouses, out List<string> customSpouses);
 
@@ -139,7 +152,14 @@ namespace CustomSpouseRooms
 						};
 
 					}
+
 					srd.shellType = i < orderedSpouses.Count - 1 ? "custom_spouse_room_open_right" : "custom_spouse_room_closed_right";
+					if (i == 0 && __instance.upgradeLevel > 1)
+					{
+						srd.shellType += "_2";
+					}
+					Monitor.Log($"Using shell {srd.shellType} for {srd.name}");
+
 					srd.startPos = shellStart;
 
 					MakeSpouseRoom(__instance, ____appliedMapOverrides, srd, i == 0);
@@ -155,6 +175,7 @@ namespace CustomSpouseRooms
 
         private static void GetSpouseRooms(FarmHouse fh, List<string> orderableSpouses, out List<string> orderedSpouses, out List<string> customSpouses)
 		{
+			Monitor.Log($"Getting {orderableSpouses.Count} spouse rooms");
 			customSpouses = new List<string>();
 			for (int i = orderableSpouses.Count - 1; i >= 0; i--)
 			{
@@ -163,6 +184,7 @@ namespace CustomSpouseRooms
 					ModEntry.customRoomData[orderableSpouses[i]].startPos.X > -1
 				)
 				{
+					Monitor.Log($"{orderableSpouses[i]} has custom spouse room");
 					customSpouses.Add(orderableSpouses[i]);
 					orderableSpouses.RemoveAt(i);
 				}
@@ -175,12 +197,14 @@ namespace CustomSpouseRooms
 				string s = str.Trim();
 				if (orderableSpouses.Contains(s))
 				{
+					Monitor.Log($"{s} has custom room order");
 					orderedSpouses.Add(s);
 					orderableSpouses.Remove(s);
 				}
 			}
 			foreach (string str in orderableSpouses)
 			{
+				Monitor.Log($"{str} has no customization");
 				orderedSpouses.Add(str);
 				Config.SpouseRoomOrder += (Config.SpouseRoomOrder.Trim().Length > 0 ? "," : "") + str;
 			}
@@ -189,7 +213,6 @@ namespace CustomSpouseRooms
 
         private static void MakeSpouseRoom(FarmHouse fh, HashSet<string> appliedMapOverrides, SpouseRoomData srd, bool first = false)
         {
-
 
 			Monitor.Log($"Loading spouse room for {srd.name}. shellStart {srd.startPos}, spouse offset {srd.spousePosOffset}. Type: {srd.shellType}");
 
@@ -384,7 +407,7 @@ namespace CustomSpouseRooms
 
         public static void CheckSpouseThing(FarmHouse fh, SpouseRoomData srd)
         {
-			//Monitor.Log($"Checking spouse thing for {srd.name}");
+			Monitor.Log($"Checking spouse thing for {srd.name}");
 			if (srd.name == "Emily" && (srd.templateName == "Emily" || srd.templateName == null || srd.templateName == "") && Game1.player.eventsSeen.Contains(463391))
 			{
 				fh.temporarySprites.RemoveAll((s) => s is EmilysParrot);

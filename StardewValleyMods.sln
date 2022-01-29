@@ -148,7 +148,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FlowingMineRocks", "Flowing
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DialogueTrees", "DialogueTrees\DialogueTrees.csproj", "{1AD85C37-97E5-4141-B825-56804440E744}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ExtraMapLayers", "ExtraMapLayers\ExtraMapLayers.csproj", "{0AC40A31-126C-46EF-810E-F669979078D9}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ExtraMapLayers", "ExtraMapLayers\ExtraMapLayers.csproj", "{0AC40A31-126C-46EF-810E-F669979078D9}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CustomDecorationAreas", "CustomDecorationAreas\CustomDecorationAreas.csproj", "{D505B178-43FC-4BA9-9DC8-F1C494BAC0AA}"
 EndProject
@@ -219,6 +219,8 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TreeTweaks", "TreeTweaks\TreeTweaks.csproj", "{284214E8-0780-48A2-9952-952894700364}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LogSpamFilter", "LogSpamFilter\LogSpamFilter.csproj", "{1ED10763-2353-420B-ADC2-697BC0F5DFC1}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FurnitureDisplayFramework", "FurnitureDisplayFramework\FurnitureDisplayFramework.csproj", "{7E8E8864-D140-41F4-AA27-3A0BB697EC95}"
 EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
@@ -1071,6 +1073,14 @@ Global
 		{1ED10763-2353-420B-ADC2-697BC0F5DFC1}.Release|Any CPU.Build.0 = Release|Any CPU
 		{1ED10763-2353-420B-ADC2-697BC0F5DFC1}.Release|x86.ActiveCfg = Release|Any CPU
 		{1ED10763-2353-420B-ADC2-697BC0F5DFC1}.Release|x86.Build.0 = Release|Any CPU
+		{7E8E8864-D140-41F4-AA27-3A0BB697EC95}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7E8E8864-D140-41F4-AA27-3A0BB697EC95}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7E8E8864-D140-41F4-AA27-3A0BB697EC95}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{7E8E8864-D140-41F4-AA27-3A0BB697EC95}.Debug|x86.Build.0 = Debug|Any CPU
+		{7E8E8864-D140-41F4-AA27-3A0BB697EC95}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7E8E8864-D140-41F4-AA27-3A0BB697EC95}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7E8E8864-D140-41F4-AA27-3A0BB697EC95}.Release|x86.ActiveCfg = Release|Any CPU
+		{7E8E8864-D140-41F4-AA27-3A0BB697EC95}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
