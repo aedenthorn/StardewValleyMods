@@ -7,6 +7,7 @@ using StardewValley.Menus;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using xTile.Layers;
 using xTile.Tiles;
 
 namespace CustomSpousePatioRedux
@@ -15,7 +16,7 @@ namespace CustomSpousePatioRedux
     public partial class ModEntry : Mod
     {
         public static ModConfig Config;
-        public static OutdoorAreaData outdoorAreas = new OutdoorAreaData();
+        public static OutdoorAreaData outdoorAreas;
         public static IMonitor SMonitor;
         public static IModHelper SHelper;
 
@@ -66,23 +67,62 @@ namespace CustomSpousePatioRedux
                original: AccessTools.Method(typeof(Farm), nameof(Farm.ReapplyBasePatioArea)),
                prefix: new HarmonyMethod(typeof(ModEntry), nameof(ModEntry.Farm_ReapplyBasePatioArea_Prefix))
             );
+            
+            harmony.Patch(
+               original: AccessTools.Method(typeof(NPC), nameof(NPC.setUpForOutdoorPatioActivity)),
+               prefix: new HarmonyMethod(typeof(ModEntry), nameof(ModEntry.NPC_setUpForOutdoorPatioActivity_Prefix))
+            );
 
         }
 
         public static void LoadSpouseAreaData()
         {
             if (!Config.EnableMod)
+                return; 
+            if (!Context.IsMainPlayer)
+            {
+                SMonitor.Log($"Not the host player, this copy of the mod will not do anything.", LogLevel.Warn);
                 return;
+            }
             outdoorAreas = SHelper.Data.ReadSaveData<OutdoorAreaData>(saveKey) ?? new OutdoorAreaData();
-
-            SMonitor.Log($"Total outdoor spouse areas: {outdoorAreas.areas.Count}", LogLevel.Debug);
+            if(outdoorAreas.areas != null)
+            {
+                foreach(var area in outdoorAreas.areas)
+                {
+                    outdoorAreas.dict.Add(area.Key, new OutdoorArea(Game1.getFarm(), area.Value));
+                }
+            }
+            foreach (var area in outdoorAreas.dict)
+            {
+                CacheOffBasePatioArea(area.Key);
+            }
+            SMonitor.Log($"Total outdoor spouse areas: {outdoorAreas.dict.Count}", LogLevel.Debug);
         }
         private static Vector2 GetSpouseOutdoorAreaCorner(string spouseName)
         {
-            if (!Config.EnableMod || outdoorAreas == null || outdoorAreas.areas.Count == 0)
+            if (!Config.EnableMod || outdoorAreas == null || outdoorAreas.dict.Count == 0)
                 return Game1.getFarm().GetSpouseOutdoorAreaCorner();
 
-            return outdoorAreas.areas.TryGetValue(spouseName, out Vector2 value) ? value : Game1.getFarm().GetSpouseOutdoorAreaCorner();
+            return outdoorAreas.dict.TryGetValue(spouseName, out OutdoorArea value) ? value.corner : Game1.getFarm().GetSpouseOutdoorAreaCorner();
+        }
+        
+        private static void ApplyMapOverride(string spouseName, string map_name, string override_key_name, Rectangle? source_rect = null, Rectangle? destination_rect = null)
+        {
+            if (Config.EnableMod && outdoorAreas == null)
+                return;
+            GameLocation l = Game1.getLocationFromName(Config.EnableMod && outdoorAreas.dict.TryGetValue(spouseName, out OutdoorArea area) ? area.location : "Farm");
+            if (l == null)
+                l = Game1.getFarm();
+            SMonitor.Log($"Applying patio map override for {spouseName} in {l.Name}");
+            if (AccessTools.FieldRefAccess<GameLocation, HashSet<string>>(l, "_appliedMapOverrides").Contains("spouse_patio"))
+            {
+                AccessTools.FieldRefAccess<GameLocation, HashSet<string>>(l, "_appliedMapOverrides").Remove("spouse_patio");
+            }
+            if (AccessTools.FieldRefAccess<GameLocation, HashSet<string>>(l, "_appliedMapOverrides").Contains(spouseName+"_spouse_patio"))
+            {
+                AccessTools.FieldRefAccess<GameLocation, HashSet<string>>(l, "_appliedMapOverrides").Remove(spouseName + "_spouse_patio");
+            }
+            l.ApplyMapOverride(map_name, spouseName + "_spouse_patio", source_rect, destination_rect);
         }
 
 
@@ -98,14 +138,14 @@ namespace CustomSpousePatioRedux
             noCustomAreaSpouses = new List<string>();
             foreach (KeyValuePair<string, Friendship> spouse in pairs)
             {
-                if(!outdoorAreas.areas.ContainsKey(spouse.Key))
+                if(!outdoorAreas.dict.ContainsKey(spouse.Key))
                     noCustomAreaSpouses.Add(spouse.Key);
             }
 
             List<Response> responses = new List<Response>();
             if (noCustomAreaSpouses.Any())
                 responses.Add(new Response("CSP_Wizard_Questions_AddPatio", string.Format(Helper.Translation.Get("new-patio"), cursorLoc.X, cursorLoc.Y)));
-            if (outdoorAreas.areas.Any())
+            if (outdoorAreas.dict.Any())
             {
                 responses.Add(new Response("CSP_Wizard_Questions_RemovePatio", Helper.Translation.Get("remove-patio")));
                 responses.Add(new Response("CSP_Wizard_Questions_MovePatio", Helper.Translation.Get("move-patio")));
@@ -140,31 +180,37 @@ namespace CustomSpousePatioRedux
                             break;
                         case "CSP_Wizard_Questions_MovePatio":
                             header = Helper.Translation.Get("move-patio-which");
-                            foreach (string spouse in outdoorAreas.areas.Keys)
+                            foreach (string spouse in outdoorAreas.dict.Keys)
                             {
                                 responses.Add(new Response(spouse, spouse));
                             }
                             break;
                         case "CSP_Wizard_Questions_RemovePatio":
                             header = Helper.Translation.Get("remove-patio-which");
-                            foreach (string spouse in outdoorAreas.areas.Keys)
+                            foreach (string spouse in outdoorAreas.dict.Keys)
                             {
                                 responses.Add(new Response(spouse, spouse));
                             }
                             break;
                         case "CSP_Wizard_Questions_ListPatios":
-                            Game1.drawObjectDialogue(string.Format(Helper.Translation.Get("patios-exist-for"), string.Join(", ", outdoorAreas.areas.Keys)));
+                            Game1.drawObjectDialogue(string.Format(Helper.Translation.Get("patios-exist-for"), string.Join(", ", outdoorAreas.dict.Keys)));
                             return;
                         case "CSP_Wizard_Questions_ReloadPatios":
                             outdoorAreas = Helper.Data.ReadSaveData<OutdoorAreaData>(saveKey);
                             Game1.getFarm().UpdatePatio();
-                            Game1.drawObjectDialogue(string.Format(Helper.Translation.Get("reloaded-patios"), outdoorAreas.areas.Count));
+                            Game1.drawObjectDialogue(string.Format(Helper.Translation.Get("reloaded-patios"), outdoorAreas.dict.Count));
                             return;
                     }
                     break;
                 case "CSP_Wizard_Questions_AddPatio":
-                    outdoorAreas.areas.Add(whichAnswer, cursorLoc.ToVector2());
+                    outdoorAreas.dict.Add(whichAnswer, new OutdoorArea(Game1.player.currentLocation, cursorLoc.ToVector2()));
+                    CacheOffBasePatioArea(whichAnswer);
                     Game1.getFarm().UpdatePatio();
+                    if (Game1.getCharacterFromName(whichAnswer)?.shouldPlaySpousePatioAnimation.Value == true)
+                    {
+                        Game1.getCharacterFromName(whichAnswer).setUpForOutdoorPatioActivity();
+                    }
+
                     Game1.drawObjectDialogue(string.Format(Helper.Translation.Get("created-patio"), cursorLoc.X, cursorLoc.Y));
                     return;
                 case "CSP_Wizard_Questions_MovePatio":
@@ -183,8 +229,13 @@ namespace CustomSpousePatioRedux
                         Game1.drawObjectDialogue(string.Format(Helper.Translation.Get("not-moved-patio"), whichAnswer.Split('_')[0]));
                     return;
                 case "CSP_Wizard_Questions_RemovePatio":
-                    if (outdoorAreas.areas.Remove(whichAnswer))
+                    if (outdoorAreas.dict.ContainsKey(whichAnswer))
+                    {
+                        ReapplyBasePatioArea(whichAnswer);
+                        outdoorAreas.dict.Remove(whichAnswer);
+                        baseSpouseAreaTiles.Remove(whichAnswer);
                         Game1.drawObjectDialogue(string.Format(Helper.Translation.Get("removed-patio"), whichAnswer));
+                    }
                     else
                         Game1.drawObjectDialogue(string.Format(Helper.Translation.Get("not-removed-patio"), whichAnswer));
                     return;
@@ -197,15 +248,16 @@ namespace CustomSpousePatioRedux
 
         public bool MoveSpousePatio(string spouse_dir, Point cursorLoc)
         {
-            Game1.getFarm().loadMap(Game1.getFarm().mapPath.Value, true);
             string spouse = spouse_dir.Split('_')[0];
             string dir = spouse_dir.Split('_')[1];
             bool success = false;
-            Vector2 outdoorArea = outdoorAreas.areas[spouse];
+            Vector2 outdoorArea = outdoorAreas.dict[spouse].corner;
+            string location = outdoorAreas.dict[spouse].location;
             switch (dir)
             {
                 case "cursorLoc":
                     outdoorArea = cursorLoc.ToVector2();
+                    location = Game1.player.currentLocation.Name;
                     success = true;
                     break;
                 case "up":
@@ -235,13 +287,86 @@ namespace CustomSpousePatioRedux
             }
             if (success)
             {
-                outdoorAreas.areas[spouse] = outdoorArea;
+                ReapplyBasePatioArea(spouse);
+                outdoorAreas.dict[spouse].corner = outdoorArea;
+                outdoorAreas.dict[spouse].location = location;
                 SMonitor.Log($"Moved spouse patio for {spouse} to {outdoorArea}");
+                CacheOffBasePatioArea(spouse);
                 Game1.getFarm().UpdatePatio();
+                if(Game1.getCharacterFromName(spouse)?.shouldPlaySpousePatioAnimation.Value == true)
+                {
+                    Game1.getCharacterFromName(spouse).setUpForOutdoorPatioActivity();
+                }
             }
             return success;
         }
 
+        private static void ReapplyBasePatioArea(string spouse)
+        {
+            if (!baseSpouseAreaTiles.ContainsKey(spouse))
+            {
+                SMonitor.Log($"No cached tiles to reapply for {spouse}", LogLevel.Error);
+                return;
+            }
+            GameLocation l = Game1.getLocationFromName(outdoorAreas.dict.TryGetValue(spouse, out OutdoorArea area) ? area.location : "Farm");
+            if (l == null)
+                l = Game1.getFarm();
+            SMonitor.Log($"Reapplying base patio area for {spouse} in {l.Name} at {area.corner}");
+
+            foreach (string layer in baseSpouseAreaTiles[spouse].Keys)
+            {
+                Layer map_layer = l.map.GetLayer(layer);
+                foreach (Point location in baseSpouseAreaTiles[spouse][layer].Keys)
+                {
+                    Tile base_tile = baseSpouseAreaTiles[spouse][layer][location];
+                    if (map_layer != null)
+                    {
+                        map_layer.Tiles[location.X, location.Y] = base_tile;
+                    }
+                }
+            }
+        }
+
+        private static void CacheOffBasePatioArea(string spouse)
+        {
+            GameLocation l = Game1.getLocationFromName(outdoorAreas.dict.TryGetValue(spouse, out OutdoorArea area) ? area.location : "Farm");
+            if (l == null)
+                l = Game1.getFarm();
+            SMonitor.Log($"Caching base patio area for {spouse} in {l.Name} at {area.corner}");
+            baseSpouseAreaTiles[spouse] = new Dictionary<string, Dictionary<Point, Tile>>();
+
+            List<string> layers_to_cache = new List<string>();
+            foreach (Layer layer in l.map.Layers)
+            {
+                layers_to_cache.Add(layer.Id);
+            }
+            foreach (string layer_name in layers_to_cache)
+            {
+                Layer original_layer = l.map.GetLayer(layer_name);
+                Dictionary<Point, Tile> tiles = new Dictionary<Point, Tile>();
+                baseSpouseAreaTiles[spouse][layer_name] = tiles;
+                Vector2 spouse_area_corner = area.corner;
+                for (int x = (int)spouse_area_corner.X; x < (int)spouse_area_corner.X + 4; x++)
+                {
+                    for (int y = (int)spouse_area_corner.Y; y < (int)spouse_area_corner.Y + 4; y++)
+                    {
+                        if (original_layer == null)
+                        {
+                            tiles[new Point(x, y)] = null;
+                        }
+                        else
+                        {
+                            tiles[new Point(x, y)] = original_layer.Tiles[x, y];
+                        }
+                    }
+                }
+            }
+        }
+
+        public static string GetSpousePatioName(string spouseName)
+        {
+            return spouseName + "_spouse_patio";
+        }
         public static bool IsSpousePatioDay(NPC npc)
         {
             return !Game1.isRaining && !Game1.IsWinter && Game1.shortDayNameFromDayOfSeason(Game1.dayOfMonth).Equals("Sat") && npc.getSpouse() == Game1.MasterPlayer && !npc.Name.Equals("Krobus");

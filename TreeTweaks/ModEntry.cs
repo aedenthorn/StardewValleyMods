@@ -134,7 +134,7 @@ namespace LogSpamFilter
 
         private static void DrawTree(SpriteBatch spriteBatch, Texture2D texture, Vector2 position, Rectangle? sourceRectangle, Color color, float rotation, Vector2 origin, float scale, SpriteEffects effects, float layerDepth, int count, Tree tree, Vector2 tileLocation)
         {
-            if (!Config.EnableMod || tree.growthStage.Value <= 5 || count == 0)
+            if (!Config.EnableMod || tree.growthStage.Value <= 5 || Config.MaxDaysSizeIncrease <= 0 || count == 0)
             {
                 spriteBatch.Draw(texture, position, sourceRectangle, color, rotation, origin, scale, effects, layerDepth);
                 return;

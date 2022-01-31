@@ -49,7 +49,7 @@ namespace CustomSpousePatioRedux
                 {
                     NPC npc = Game1.getCharacterFromName(name);
 
-                    if (outdoorAreas.areas.ContainsKey(name) || (farmer.spouse.Equals(npc.Name) && name != "Krobus"))
+                    if (outdoorAreas.dict.ContainsKey(name) || (farmer.spouse.Equals(npc.Name) && name != "Krobus"))
                     {
                         SMonitor.Log($"placing {name} outdoors");
                         npc.setUpForOutdoorPatioActivity();
@@ -62,9 +62,9 @@ namespace CustomSpousePatioRedux
         {
             //Monitor.Log($"last question key: {Game1.player?.currentLocation?.lastQuestionKey}");
 
-            if (Context.CanPlayerMove && e.Button == Config.PatioWizardKey && Game1.player?.currentLocation == Game1.getFarm())
+            if (Context.CanPlayerMove && e.Button == Config.PatioWizardKey)
                 StartWizard();
-            else if (Game1.activeClickableMenu != null && Game1.player?.currentLocation?.lastQuestionKey?.StartsWith("CSP_Wizard_Questions") == true && Game1.player?.currentLocation == Game1.getFarm())
+            else if (Game1.activeClickableMenu != null && Game1.player?.currentLocation?.lastQuestionKey?.StartsWith("CSP_Wizard_Questions") == true)
             {
 
                 IClickableMenu menu = Game1.activeClickableMenu;

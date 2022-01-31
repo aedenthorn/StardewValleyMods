@@ -10,72 +10,34 @@ using xTile.Tiles;
 
 namespace CustomSpousePatioRedux
 {
-    /// <summary>The mod entry point.</summary>
     public partial class ModEntry
     {
 
 
         public static bool Farm_CacheOffBasePatioArea_Prefix(Farm __instance)
         {
-            if (!Config.EnableMod || outdoorAreas == null || outdoorAreas.areas.Count == 0)
+            if (!Config.EnableMod || outdoorAreas == null || outdoorAreas.dict.Count == 0)
                 return true;
 
-            baseSpouseAreaTiles = new Dictionary<string, Dictionary<string, Dictionary<Point, xTile.Tiles.Tile>>>();
-            foreach(var data in outdoorAreas.areas)
+            baseSpouseAreaTiles = new Dictionary<string, Dictionary<string, Dictionary<Point, Tile>>>();
+            foreach(var data in outdoorAreas.dict)
             {
-                baseSpouseAreaTiles[data.Key] = new Dictionary<string, Dictionary<Point, Tile>>();
-
-                List<string> layers_to_cache = new List<string>();
-                foreach (Layer layer in __instance.map.Layers)
-                {
-                    layers_to_cache.Add(layer.Id);
-                }
-                foreach (string layer_name in layers_to_cache)
-                {
-                    Layer original_layer = __instance.map.GetLayer(layer_name);
-                    Dictionary<Point, Tile> tiles = new Dictionary<Point, Tile>();
-                    baseSpouseAreaTiles[data.Key][layer_name] = tiles;
-                    Vector2 spouse_area_corner = data.Value;
-                    for (int x = (int)spouse_area_corner.X; x < (int)spouse_area_corner.X + 4; x++)
-                    {
-                        for (int y = (int)spouse_area_corner.Y; y < (int)spouse_area_corner.Y + 4; y++)
-                        {
-                            if (original_layer == null)
-                            {
-                                tiles[new Point(x, y)] = null;
-                            }
-                            else
-                            {
-                                tiles[new Point(x, y)] = original_layer.Tiles[x, y];
-                            }
-                        }
-                    }
-                }
+                CacheOffBasePatioArea(data.Key);
             }
 
             return false;
         }
+
         public static bool Farm_ReapplyBasePatioArea_Prefix(Farm __instance)
         {
-            if (!Config.EnableMod || outdoorAreas == null || outdoorAreas.areas.Count == 0)
+            if (!Config.EnableMod || outdoorAreas == null || outdoorAreas.dict.Count == 0)
                 return true;
             if (addingExtraAreas)
                 return false;
 
             foreach (var kvp in baseSpouseAreaTiles)
             {
-                foreach (string layer in baseSpouseAreaTiles[kvp.Key].Keys)
-                {
-                    Layer map_layer = __instance.map.GetLayer(layer);
-                    foreach (Point location in baseSpouseAreaTiles[kvp.Key][layer].Keys)
-                    {
-                        Tile base_tile = baseSpouseAreaTiles[kvp.Key][layer][location];
-                        if (map_layer != null)
-                        {
-                            map_layer.Tiles[location.X, location.Y] = base_tile;
-                        }
-                    }
-                }
+                ReapplyBasePatioArea(kvp.Key);
             }
             return false;
         }
@@ -92,6 +54,12 @@ namespace CustomSpousePatioRedux
                     codes[i - 1] = new CodeInstruction(OpCodes.Ldarg_1);
                     codes[i] = new CodeInstruction(OpCodes.Call, AccessTools.Method(typeof(ModEntry), nameof(ModEntry.GetSpouseOutdoorAreaCorner)));
                 }
+                else if (i < codes.Count - 15 && codes[i].opcode == OpCodes.Call && codes[i].operand is MethodInfo && (MethodInfo)codes[i].operand == AccessTools.Method(typeof(GameLocation), nameof(GameLocation.ApplyMapOverride), new System.Type[] {typeof(string), typeof(string), typeof(Rectangle?), typeof(Rectangle?) }))
+                {
+                    SMonitor.Log("Overriding GameLocation.ApplyMapOverride");
+                    codes[i - 15].opcode = OpCodes.Ldarg_1;
+                    codes[i].operand = AccessTools.Method(typeof(ModEntry), nameof(ModEntry.ApplyMapOverride));
+                }
             }
 
             return codes.AsEnumerable();
@@ -101,13 +69,13 @@ namespace CustomSpousePatioRedux
 
         public static void Farm_addSpouseOutdoorArea_Postfix(Farm __instance, string spouseName)
         {
-            if (!Config.EnableMod || outdoorAreas == null || outdoorAreas.areas.Count == 0 || spouseName == "" || spouseName == null)
+            if (!Config.EnableMod || outdoorAreas == null || outdoorAreas.dict.Count == 0 || spouseName == "" || spouseName == null)
                 return;
             spousePositions[spouseName] = __instance.spousePatioSpot;
             if (addingExtraAreas)
                 return;
             addingExtraAreas = true;
-            foreach(var name in outdoorAreas.areas.Keys)
+            foreach(var name in outdoorAreas.dict.Keys)
             {
                 if(name != spouseName)
                     __instance.addSpouseOutdoorArea(name);
@@ -116,9 +84,29 @@ namespace CustomSpousePatioRedux
         }
 
         
+        public static bool NPC_setUpForOutdoorPatioActivity_Prefix(NPC __instance)
+        {
+            if (!Config.EnableMod || outdoorAreas == null || outdoorAreas.dict.Count == 0 || !outdoorAreas.dict.ContainsKey(__instance.Name))
+                return true;
+
+            Vector2 patio_location = __instance.GetSpousePatioPosition();
+            if (NPC.checkTileOccupancyForSpouse(Game1.getLocationFromName(outdoorAreas.dict[__instance.Name].location), patio_location, ""))
+            {
+                return false;
+            }
+            Game1.warpCharacter(__instance, outdoorAreas.dict[__instance.Name].location, patio_location);
+            __instance.popOffAnyNonEssentialItems();
+            __instance.currentMarriageDialogue.Clear();
+            __instance.addMarriageDialogue("MarriageDialogue", "patio_" + __instance.Name, false, new string[0]);
+            __instance.Schedule = new Dictionary<int, SchedulePathDescription>();
+            __instance.setTilePosition((int)patio_location.X, (int)patio_location.Y);
+            __instance.shouldPlaySpousePatioAnimation.Value = true;
+
+            return false;
+        }
         public static bool NPC_GetSpousePatioPosition_Prefix(NPC __instance, ref Vector2 __result)
         {
-            if (!Config.EnableMod || outdoorAreas == null || outdoorAreas.areas.Count == 0 || !spousePositions.ContainsKey(__instance.Name))
+            if (!Config.EnableMod || outdoorAreas == null || outdoorAreas.dict.Count == 0 || !spousePositions.ContainsKey(__instance.Name))
                 return true;
             __result = spousePositions[__instance.Name].ToVector2();
             return false;
