@@ -22,5 +22,6 @@ namespace HugsAndKisses
         public bool AllowNPCSpousesToKiss { get; set; } = true;
         public bool AllowRelativesToKiss { get; set; } = false;
         public bool AllowNonDateableNPCsToHugAndKiss { get; set; } = false;
+        public bool UseNonDateableNPCsKissFrames { get; set; } = false;
     }
 }

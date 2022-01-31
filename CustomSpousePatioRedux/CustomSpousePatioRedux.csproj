@@ -4,6 +4,14 @@
     <TargetFramework>net5.0</TargetFramework>
 	<EnableHarmony>true</EnableHarmony>
   </PropertyGroup>
+  <ItemGroup>
+    <None Remove="i18n\default.json" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="i18n\default.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="Pathoschild.Stardew.ModBuildConfig" Version="4.0.0" />

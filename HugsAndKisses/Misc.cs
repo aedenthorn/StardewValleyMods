@@ -57,6 +57,8 @@ namespace HugsAndKisses
 
         public static int GetKissingFrame(string name)
         {
+            if (Game1.getCharacterFromName(name)?.datable.Value == false && !Config.UseNonDateableNPCsKissFrames)
+                return 0;
             List<string> customFrames = Config.CustomKissFrames.Split(',').ToList();
             foreach (string nameframe in customFrames)
             {

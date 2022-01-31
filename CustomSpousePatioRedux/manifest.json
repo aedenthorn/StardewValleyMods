@@ -1,0 +1,22 @@
+﻿{
+  "Name": "Custom Spouse Patio Redux",
+  "Author": "aedenthorn",
+  "Version": "0.1.0",
+  "Description": "Lets you create a custom spouse patio.",
+  "UniqueID": "aedenthorn.CustomSpousePatioRedux",
+  "EntryDll": "CustomSpousePatioRedux.dll",
+  "MinimumApiVersion": "3.8.0",
+  "UpdateKeys": [ "Nexus:10889" ],
+  "ModUpdater": {
+    "Repository": "StardewValleyMods",
+    "User": "aedenthorn",
+    "Directory": "_releases",
+    "ModFolder": "CustomSpousePatioRedux"
+  },
+  "Dependencies": [
+    {
+      "UniqueID": "Platonymous.ModUpdater",
+      "IsRequired": false
+    }
+  ]
+}

@@ -332,7 +332,7 @@ namespace FreeLove
             if (name == "Krobus")
                 return 8;
 
-            Texture2D tex = Helper.Content.Load<Texture2D>($"Characters/{name}", ContentSource.GameContent);
+            Texture2D tex = Game1.content.Load<Texture2D>($"Characters\\{name}");
 
             int sleepidx;
             string sleepAnim = SleepAnimation(name);

@@ -17,10 +17,12 @@ namespace FurnitureDisplayFramework
 
             foreach (Furniture f in __instance.furniture)
             {
-                if (!furnitureDisplayDict.ContainsKey(f.Name))
+                var name = f.rotations.Value > 1 ? f.Name + ":" + f.currentRotation.Value : f.Name;
+
+                if (!furnitureDisplayDict.ContainsKey(name))
                     continue;
 
-                for(int i = 0; i < furnitureDisplayDict[f.Name].slots.Length; i++)
+                for(int i = 0; i < furnitureDisplayDict[name].slots.Length; i++)
                 {
                     if (!f.modData.ContainsKey("aedenthorn.FurnitureDisplayFramework/" + i) || f.modData["aedenthorn.FurnitureDisplayFramework/" + i].Length == 0)
                         continue;
@@ -29,7 +31,7 @@ namespace FurnitureDisplayFramework
                     if (obj == null)
                         continue;
                     float scale = 4;
-                    var itemRect = new Rectangle(Utility.Vector2ToPoint(f.getLocalPosition(Game1.viewport) + new Vector2(furnitureDisplayDict[f.Name].slots[i].itemRect.X, furnitureDisplayDict[f.Name].slots[i].itemRect.Y) * scale), Utility.Vector2ToPoint(new Vector2(furnitureDisplayDict[f.Name].slots[i].itemRect.Width, furnitureDisplayDict[f.Name].slots[i].itemRect.Height) * scale));
+                    var itemRect = new Rectangle(Utility.Vector2ToPoint(f.getLocalPosition(Game1.viewport) + new Vector2(furnitureDisplayDict[name].slots[i].itemRect.X, furnitureDisplayDict[name].slots[i].itemRect.Y) * scale), Utility.Vector2ToPoint(new Vector2(furnitureDisplayDict[name].slots[i].itemRect.Width, furnitureDisplayDict[name].slots[i].itemRect.Height) * scale));
                     var layerDepth = ((f.furniture_type.Value == 12) ? (2E-09f + f.TileLocation.Y / 100000f) : ((f.boundingBox.Value.Bottom - ((f.furniture_type.Value == 6 || f.furniture_type.Value == 17 || f.furniture_type.Value == 13) ? 48 : 8)) + 1) / 10000f);
                     if (obj.bigCraftable.Value)
                     {

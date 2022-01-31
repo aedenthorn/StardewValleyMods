@@ -1,0 +1,22 @@
+﻿{
+  "Name": "Food on the Table",
+  "Author": "aedenthorn",
+  "Version": "0.1.0",
+  "Description": "FoodOnTheTable.",
+  "UniqueID": "aedenthorn.FoodOnTheTable",
+  "EntryDll": "FoodOnTheTable.dll",
+  "MinimumApiVersion": "3.13.0",
+  "ModUpdater": {
+    "Repository": "StardewValleyMods",
+    "User": "aedenthorn",
+    "Directory": "_releases",
+    "ModFolder": "FoodOnTheTable"
+  },
+  "UpdateKeys": [ "Nexus:10886" ],
+  "Dependencies": [
+    {
+      "UniqueID": "Platonymous.ModUpdater",
+      "IsRequired": false
+    }
+  ]
+}
