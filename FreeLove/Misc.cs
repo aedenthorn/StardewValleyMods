@@ -136,7 +136,11 @@ namespace FreeLove
 
             foreach (NPC spouse in allSpouses)
             {
-
+                if (!farmHouse.Equals(spouse.currentLocation))
+                {
+                    Monitor.Log($"{spouse.Name} is not in farm house ({spouse.currentLocation.Name})");
+                    continue;
+                }
                 int type = ModEntry.myRand.Next(0, 100);
 
                 Monitor.Log($"spouse rand {type}, bed: {ModEntry.Config.PercentChanceForSpouseInBed} kitchen {ModEntry.Config.PercentChanceForSpouseInKitchen}");
@@ -160,7 +164,7 @@ namespace FreeLove
                 }
                 else if(type < ModEntry.Config.PercentChanceForSpouseInBed + ModEntry.Config.PercentChanceForSpouseInKitchen + ModEntry.Config.PercentChanceForSpouseAtPatio)
                 {
-                    if (!Game1.isRaining && !Game1.IsWinter && !spouse.Name.Equals("Krobus") && spouse.Schedule == null)
+                    if (!Game1.isRaining && !Game1.IsWinter && !Game1.shortDayNameFromDayOfSeason(Game1.dayOfMonth).Equals("Sat") && !spouse.Name.Equals("Krobus") && spouse.Schedule == null)
                     {
                         Monitor.Log("made patio spouse: " + spouse.Name);
                         spouse.setUpForOutdoorPatioActivity();

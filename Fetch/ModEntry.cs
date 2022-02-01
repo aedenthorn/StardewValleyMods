@@ -40,6 +40,16 @@ namespace Fetch
                original: AccessTools.Method(typeof(Character), nameof(Character.MovePosition)),
                prefix: new HarmonyMethod(typeof(ModEntry), nameof(ModEntry.Character_MovePosition_Prefix))
             );
+            /*
+            harmony.Patch(
+               original: AccessTools.Method(typeof(Pet), nameof(Pet.shouldCollideWithBuildingLayer)),
+               prefix: new HarmonyMethod(typeof(ModEntry), nameof(ModEntry.Pet_shouldCollideWithBuildingLayer_Prefix))
+            );
+            harmony.Patch(
+               original: AccessTools.Method(typeof(Pet), nameof(Pet.canPassThroughActionTiles)),
+               prefix: new HarmonyMethod(typeof(ModEntry), nameof(ModEntry.Pet_canPassThroughActionTiles_Prefix))
+            );
+            */
         }
 
         private void GameLoop_GameLaunched(object sender, StardewModdingAPI.Events.GameLaunchedEventArgs e)
@@ -63,5 +73,50 @@ namespace Fetch
                 setValue: value => Config.EnableMod = value
             );
         }
+        private static List<Vector2> GetShortestPath(Vector2 tile1, Vector2 tile2, GameLocation location)
+        {
+            List<List<Vector2>> steps = new List<List<Vector2>>();
+            SMonitor.Log($"Trying to get path from {tile1} to {tile2}");
+            GetPossiblePath(steps, new List<Vector2>(), tile1, tile2, location);
+            if (steps.Count == 0)
+                return null;
+            steps.Sort(delegate (List<Vector2> a, List<Vector2> b) { return a.Count.CompareTo(b.Count); });
+            SMonitor.Log($"Got shortest path from {tile1} to {tile2}: {steps[0].Count}-steps");
+            return steps[0];
+        }
+
+        private static Vector2[] adjacent = new Vector2[]
+        {
+            new Vector2(0,-1),
+            new Vector2(1,0),
+            new Vector2(0,1),
+            new Vector2(-1,0)
+        };
+
+        private static void GetPossiblePath(List<List<Vector2>> steps, List<Vector2> tempSteps, Vector2 tile1, Vector2 tile2, GameLocation location)
+        {
+            if (tempSteps.Count > Config.MaxSteps || steps.Exists(v => v.Count == tempSteps.Count - 1))
+                return;
+            foreach(var a in adjacent)
+            {
+                Vector2 adjTile = tile1 + a;
+                if (tempSteps.Contains(adjTile) || (tempSteps.Count > 1 && Vector2.Distance(tempSteps[tempSteps.Count - 1], tile2) < Vector2.Distance(adjTile, tile2) && Vector2.Distance(tempSteps[tempSteps.Count - 2], tile2) < Vector2.Distance(tempSteps[tempSteps.Count - 1], tile2)))
+                    continue;
+                var newTempSteps = new List<Vector2>(tempSteps);
+                newTempSteps.Add(adjTile);
+                if (adjTile == tile2)
+                {
+                    SMonitor.Log($"Got {newTempSteps.Count}-step path from {tile1} to {tile2}");
+                    steps.Add(newTempSteps);
+                    return;
+                }
+                if (location.objects.ContainsKey(adjTile) || location.terrainFeatures.ContainsKey(adjTile) || adjTile.X < 0 || adjTile.Y < 0 || adjTile.X >= location.Map.Layers[0].LayerWidth || adjTile.Y >= location.Map.Layers[0].LayerHeight || location.getTileIndexAt((int)adjTile.X, (int)adjTile.Y, "Buildings") > -1)
+                    continue;
+                //SMonitor.Log($"Continuing path {string.Join(" | ",newTempSteps)}");
+
+                GetPossiblePath(steps, newTempSteps, adjTile, tile2, location);
+            }
+        }
+
     }
 }

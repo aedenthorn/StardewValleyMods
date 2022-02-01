@@ -87,7 +87,14 @@ namespace CustomSpousePatioRedux
         public static bool NPC_setUpForOutdoorPatioActivity_Prefix(NPC __instance)
         {
             if (!Config.EnableMod || outdoorAreas == null || outdoorAreas.dict.Count == 0 || !outdoorAreas.dict.ContainsKey(__instance.Name))
+            {
+                if(Game1.shortDayNameFromDayOfSeason(Game1.dayOfMonth).Equals("Sat") && Game1.MasterPlayer.spouse != __instance.Name)
+                {
+                    SMonitor.Log($"preventing {__instance.Name} from going to spouse patio");
+                    return false;
+                }
                 return true;
+            }
 
             Vector2 patio_location = __instance.GetSpousePatioPosition();
             if (NPC.checkTileOccupancyForSpouse(Game1.getLocationFromName(outdoorAreas.dict[__instance.Name].location), patio_location, ""))

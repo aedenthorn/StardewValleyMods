@@ -382,6 +382,15 @@ namespace FreeLove
             }
             return true;
         }
+        public static bool NPC_setUpForOutdoorPatioActivity_Prefix(NPC __instance)
+        {
+            if (!Helper.ModRegistry.IsLoaded("aedenthorn.CustomSpousePatioRedux") && Game1.shortDayNameFromDayOfSeason(Game1.dayOfMonth).Equals("Sat") && Game1.MasterPlayer.spouse != __instance.Name)
+            {
+                Monitor.Log($"preventing {__instance.Name} from going to spouse patio");
+                return false;
+            }
+            return true;
+        }
         public static void NPC_engagementResponse_Postfix(NPC __instance, Farmer who, bool asRoommate = false)
         {
             Misc.ResetSpouses(who);
