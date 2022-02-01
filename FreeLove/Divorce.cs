@@ -27,7 +27,7 @@ namespace FreeLove
 
             Monitor.Log("answer " + whichAnswer);
 
-            if (Misc.GetSpouses(who, 1).ContainsKey(whichAnswer))
+            if (Misc.GetSpouses(who, true).ContainsKey(whichAnswer))
             {
                 Monitor.Log("divorcing " + whichAnswer);
                 string s2 = Game1.content.LoadString("Strings\\Locations:ManorHouse_DivorceBook_Question_" + whichAnswer, whichAnswer);

@@ -224,7 +224,7 @@ namespace FreeLove
         {
             try
             {
-                if (Misc.GetSpouses(Game1.player, 0).ContainsKey(__instance.Name))
+                if (Misc.GetSpouses(Game1.player, false).ContainsKey(__instance.Name))
                 {
                     ModEntry.tempOfficialSpouse = __instance;
                 }
@@ -469,7 +469,7 @@ namespace FreeLove
         {
             try
             {
-                if (Misc.GetSpouses(Game1.player, 0).ContainsKey(__instance.Name))
+                if (Misc.GetSpouses(Game1.player, false).ContainsKey(__instance.Name))
                 {
                     __state = Game1.player.spouse;
                     Game1.player.spouse = __instance.Name;
@@ -506,7 +506,7 @@ namespace FreeLove
             {
                 Misc.ResetSpouses(who);
 
-                if ((__instance.Name.Equals(who.spouse) || Misc.GetSpouses(who, 1).ContainsKey(__instance.Name)) && __instance.Sprite.CurrentAnimation == null && who.IsLocalPlayer)
+                if ((__instance.Name.Equals(who.spouse) || Misc.GetSpouses(who, true).ContainsKey(__instance.Name)) && __instance.Sprite.CurrentAnimation == null && who.IsLocalPlayer)
                 {
                     Monitor.Log($"{__instance.Name} is married to {who.Name}");
 
@@ -677,7 +677,7 @@ namespace FreeLove
         {
             try
             {
-                if (Misc.GetSpouses(who, 1).ContainsKey(__instance.Name) && Game1.NPCGiftTastes.ContainsKey(__instance.Name))
+                if (Misc.GetSpouses(who, true).ContainsKey(__instance.Name) && Game1.NPCGiftTastes.ContainsKey(__instance.Name))
                 {
                     Monitor.Log($"Gift to spouse {__instance.Name}");
                     __state = new List<int> {
@@ -718,7 +718,7 @@ namespace FreeLove
                 {
                     Monitor.Log($"Try give bouquet to {__instance.Name}");
 
-                    if (Misc.GetSpouses(who, 1).ContainsKey(__instance.Name))
+                    if (Misc.GetSpouses(who, true).ContainsKey(__instance.Name))
                     {
                         who.spouse = __instance.Name;
                         Misc.ResetSpouses(who);
@@ -851,7 +851,7 @@ namespace FreeLove
                 else if (who.ActiveObject.ParentSheetIndex == 809 && !who.ActiveObject.bigCraftable.Value)
                 {
                     Monitor.Log($"Tried to give movie ticket to {__instance.Name}");
-                    if (Misc.GetSpouses(who, 1).ContainsKey(__instance.Name) && Utility.doesMasterPlayerHaveMailReceivedButNotMailForTomorrow("ccMovieTheater") && !__instance.Name.Equals("Krobus") && who.lastSeenMovieWeek.Value < Game1.Date.TotalWeeks && !Utility.isFestivalDay(Game1.dayOfMonth, Game1.currentSeason) && Game1.timeOfDay <= 2100 && __instance.lastSeenMovieWeek.Value < Game1.Date.TotalWeeks && MovieTheater.GetResponseForMovie(__instance) != "reject")
+                    if (Misc.GetSpouses(who, true).ContainsKey(__instance.Name) && Utility.doesMasterPlayerHaveMailReceivedButNotMailForTomorrow("ccMovieTheater") && !__instance.Name.Equals("Krobus") && who.lastSeenMovieWeek.Value < Game1.Date.TotalWeeks && !Utility.isFestivalDay(Game1.dayOfMonth, Game1.currentSeason) && Game1.timeOfDay <= 2100 && __instance.lastSeenMovieWeek.Value < Game1.Date.TotalWeeks && MovieTheater.GetResponseForMovie(__instance) != "reject")
                     {
                         Monitor.Log($"Tried to give movie ticket to spouse");
                         foreach (MovieInvitation invitation in who.team.movieInvitations)

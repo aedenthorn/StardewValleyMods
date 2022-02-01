@@ -47,7 +47,7 @@ namespace FreeLove
             {
                 if (!Config.EnableMod)
                     return true;
-                var spouses = Misc.GetSpouses(__instance.owner, 1);
+                var spouses = Misc.GetSpouses(__instance.owner, true);
                 
                 if (!spouses.ContainsKey(spouseName) || spouses[spouseName].isMoving() || !Misc.IsInBed(__instance, spouses[spouseName].GetBoundingBox()))
                     return true;
@@ -132,7 +132,7 @@ namespace FreeLove
                 {
                     return;
                 }
-                Dictionary<string, NPC> spouses = Misc.GetSpouses(Game1.player, -1);
+                Dictionary<string, NPC> spouses = Misc.GetSpouses(Game1.player, true);
                 for (int i = 1; i < split.Length; i++)
                 {
                     if (split[i].Length == 0)
@@ -194,7 +194,7 @@ namespace FreeLove
             try
             {
                 Misc.ResetSpouses(who);
-                Dictionary<string, NPC> spouses = Misc.GetSpouses(who, -1);
+                Dictionary<string, NPC> spouses = Misc.GetSpouses(who, true);
                 if (action != null && who.IsLocalPlayer && !Game1.player.divorceTonight.Value && (Game1.player.isMarried() || spouses.Count > 0))
                 {
                     string a = action.Split(new char[]

@@ -226,6 +226,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FoodOnTheTable", "FoodOnThe
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CustomSpousePatioRedux", "CustomSpousePatioRedux\CustomSpousePatioRedux.csproj", "{A82F760A-5419-4E99-B7D8-DC83F788966B}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Fetch", "Fetch\Fetch.csproj", "{1A90E383-DE96-4C0F-A3F6-5628DA37C986}"
+EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
 		_releases\_releases.projitems*{047040e0-3d07-46e5-852b-d1d45cd57bb8}*SharedItemsImports = 13
@@ -1101,6 +1103,14 @@ Global
 		{A82F760A-5419-4E99-B7D8-DC83F788966B}.Release|Any CPU.Build.0 = Release|Any CPU
 		{A82F760A-5419-4E99-B7D8-DC83F788966B}.Release|x86.ActiveCfg = Release|Any CPU
 		{A82F760A-5419-4E99-B7D8-DC83F788966B}.Release|x86.Build.0 = Release|Any CPU
+		{1A90E383-DE96-4C0F-A3F6-5628DA37C986}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1A90E383-DE96-4C0F-A3F6-5628DA37C986}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1A90E383-DE96-4C0F-A3F6-5628DA37C986}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{1A90E383-DE96-4C0F-A3F6-5628DA37C986}.Debug|x86.Build.0 = Debug|Any CPU
+		{1A90E383-DE96-4C0F-A3F6-5628DA37C986}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1A90E383-DE96-4C0F-A3F6-5628DA37C986}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1A90E383-DE96-4C0F-A3F6-5628DA37C986}.Release|x86.ActiveCfg = Release|Any CPU
+		{1A90E383-DE96-4C0F-A3F6-5628DA37C986}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -32,7 +32,7 @@ namespace FreeLove
                 return false;
             }
 
-            List<NPC> allSpouses = Misc.GetSpouses(Game1.player,1).Values.ToList();
+            List<NPC> allSpouses = Misc.GetSpouses(Game1.player,true).Values.ToList();
 
             Misc.ShuffleList(ref allSpouses);
             

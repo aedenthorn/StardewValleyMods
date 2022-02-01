@@ -128,6 +128,11 @@ namespace FreeLove
             Integrations.LoadModApis();
         }
 
+        private void GameLoop_ReturnedToTitle(object sender, StardewModdingAPI.Events.ReturnedToTitleEventArgs e)
+        {
+            currentSpouses.Clear();
+            currentUnofficialSpouses.Clear();
+        }
         public static void GameLoop_SaveLoaded(object sender, SaveLoadedEventArgs e)
         {
             Misc.SetAllNPCsDatable();
@@ -155,7 +160,7 @@ namespace FreeLove
             }
             foreach(Farmer f in Game1.getAllFarmers())
             {
-                var spouses = Misc.GetSpouses(f, -1).Keys;
+                var spouses = Misc.GetSpouses(f, true).Keys;
                 foreach(string s in spouses)
                 {
                     PMonitor.Log($"{f.Name} is married to {s}");
@@ -178,7 +183,7 @@ namespace FreeLove
                     if (fh.owner == null)
                         continue;
 
-                    List<string> allSpouses = Misc.GetSpouses(fh.owner, 1).Keys.ToList();
+                    List<string> allSpouses = Misc.GetSpouses(fh.owner, true).Keys.ToList();
                     List<string> bedSpouses = Misc.ReorderSpousesForSleeping(allSpouses.FindAll((s) => ModEntry.Config.RoommateRomance || !fh.owner.friendshipData[s].RoommateMarriage));
 
                     using(IEnumerator<NPC> characters = fh.characters.GetEnumerator())
