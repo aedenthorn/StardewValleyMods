@@ -1,6 +1,7 @@
 ﻿using Microsoft.Xna.Framework;
 using StardewValley;
 using StardewValley.Characters;
+using System;
 
 namespace Fetch
 {
@@ -16,6 +17,8 @@ namespace Fetch
             if (!Config.EnableMod || !(__instance is Pet))
                 return;
 
+            SMonitor.Log("Pet is moving");
+
             if (!isFetching && !isBringing)
             {
                 Farmer tfetchee = null;
@@ -24,6 +27,7 @@ namespace Fetch
                     if (farmer.currentLocation.Name == currentLocation.Name)
                     {
                         tfetchee = farmer;
+                        SMonitor.Log("Got fetchee");
                         break;
                     }
                 }
@@ -32,13 +36,14 @@ namespace Fetch
                 Debris tfetched = null;
                 foreach (var debris in currentLocation.debris)
                 {
-                    if (debris.item != null)
+                    if (debris.debrisType.Value == Debris.DebrisType.RESOURCE)
                     {
                         tfetched = debris;
+                        SMonitor.Log($"Got debris {debris.debrisType} {debris.chunkType}");
                         break;
                     }
                 }
-                if (tfetchee == null)
+                if (tfetched == null)
                     return;
                 SMonitor.Log("Fetching");
 
@@ -55,22 +60,57 @@ namespace Fetch
                 if(distance <= Config.GrabDistance)
                 {
                     SMonitor.Log("Bringing to fetchee");
+                    isFetching = false;
                     isBringing = true;
-                    direction = Vector2.Normalize(fetchee.position - __instance.getTileLocation() * 64);
-                }
-                else
-                {
-                    direction = Vector2.Normalize(fetched.Chunks[0].position - __instance.getTileLocation() * 64);
                 }
             }
-            else if (isBringing)
+            Vector2 diff = Vector2.Zero;
+            if (isBringing)
             {
-                fetched.Chunks[0].xVelocity.Value = direction.X;
-                fetched.Chunks[0].xVelocity.Value = direction.Y;
-                direction = Vector2.Normalize(fetchee.position - __instance.getTileLocation() * 64);
+                fetched.Chunks[0].position.Value = __instance.getTileLocation() * 64;
+                float distance = Vector2.Distance(fetched.Chunks[0].position, fetchee.getTileLocation() * 64);
+                if (distance <= Config.GrabDistance)
+                {
+                    SMonitor.Log("Brought to fetchee");
+                    isFetching = false;
+                    isBringing = false;
+                    return;
+                }
+                diff = fetchee.getTileLocation() - __instance.getTileLocation();
             }
-            __instance.xVelocity = direction.X;
-            __instance.yVelocity = direction.Y;
+            else if (isFetching)
+            {
+                diff = fetched.Chunks[0].position.Value - __instance.getTileLocation();
+            }
+            if (Math.Abs(diff.X) > Math.Abs(diff.Y))
+            {
+                if (diff.X > 0)
+                    __instance.SetMovingRight(true);
+                else
+                    __instance.SetMovingLeft(true);
+            }
+            else if (Math.Abs(diff.Y) > Math.Abs(diff.X))
+            {
+                if (diff.Y > 0)
+                    __instance.SetMovingDown(true);
+                else
+                    __instance.SetMovingUp(true);
+            }
+            else if (Game1.random.NextDouble() > 0.5)
+            {
+                if (diff.Y > 0)
+                    __instance.SetMovingDown(true);
+                else
+                    __instance.SetMovingUp(true);
+            }
+            else
+            {
+                if (diff.X > 0)
+                    __instance.SetMovingRight(true);
+                else
+                    __instance.SetMovingLeft(true);
+            }
+
         }
 
     }
