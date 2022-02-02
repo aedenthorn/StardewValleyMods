@@ -1,11 +1,11 @@
 ﻿{
   "Name": "Wedding Tweaks",
   "Author": "aedenthorn",
-  "Version": "0.1.1",
+  "Version": "0.1.2",
   "Description": "Wedding Tweaks",
   "UniqueID": "aedenthorn.WeddingTweaks",
   "EntryDll": "WeddingTweaks.dll",
-  "MinimumApiVersion": "3.13.0-beta.20211018",
+  "MinimumApiVersion": "3.13.0",
   "UpdateKeys": [ "Nexus:10117" ],
   "ModUpdater": {
     "Repository": "StardewValleyMods",

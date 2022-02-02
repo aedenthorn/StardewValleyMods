@@ -1,4 +1,4 @@
-﻿using Harmony;
+﻿using HarmonyLib;
 using Microsoft.Xna.Framework;
 using Netcode;
 using StardewModdingAPI;
@@ -37,7 +37,7 @@ namespace CustomMonsterFloors
 
             helper.Events.GameLoop.DayStarted += OnDayStarted;
 
-            var harmony = HarmonyInstance.Create(this.ModManifest.UniqueID);
+            var harmony = new Harmony(this.ModManifest.UniqueID);
 
             if (Config.EnableFloorTypeChanges)
             {

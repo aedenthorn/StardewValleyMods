@@ -16,10 +16,15 @@ namespace CustomSpousePatioRedux
 
         public static bool Farm_CacheOffBasePatioArea_Prefix(Farm __instance)
         {
-            if (!Config.EnableMod || outdoorAreas == null || outdoorAreas.dict.Count == 0)
+            if (!Config.EnableMod)
                 return true;
 
             baseSpouseAreaTiles = new Dictionary<string, Dictionary<string, Dictionary<Point, Tile>>>();
+            CacheOffBasePatioArea("default", __instance, __instance.GetSpouseOutdoorAreaCorner());
+
+            if (outdoorAreas == null || outdoorAreas.dict.Count == 0)
+                return false;
+
             foreach(var data in outdoorAreas.dict)
             {
                 CacheOffBasePatioArea(data.Key);

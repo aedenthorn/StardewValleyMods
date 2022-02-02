@@ -8,6 +8,7 @@ using System.Reflection;
 using System.Reflection.Emit;
 using System.Text.RegularExpressions;
 using xTile.Dimensions;
+using xTile.Display;
 using xTile.Layers;
 
 namespace ExtraMapLayers
@@ -90,7 +91,7 @@ namespace ExtraMapLayers
         }
 
         public static int thisLayerDepth = 0;
-        public static void Layer_Draw_Postfix(Layer __instance)
+        public static void Layer_Draw_Postfix(Layer __instance, IDisplayDevice displayDevice, Rectangle mapViewport, Location displayOffset, bool wrapAround, int pixelZoom)
         {
             if (!config.EnableMod || Regex.IsMatch(__instance.Id, "[0-9]$"))
                 return;
@@ -100,11 +101,13 @@ namespace ExtraMapLayers
                 if (layer.Id.StartsWith(__instance.Id) && int.TryParse(layer.Id.Substring(__instance.Id.Length), out int layerIndex))
                 {
                     thisLayerDepth = layerIndex;
-                    layer.Draw(Game1.mapDisplayDevice, Game1.viewport, Location.Origin, false, 4);
+                    layer.Draw(displayDevice, mapViewport, displayOffset, wrapAround, pixelZoom);
                     thisLayerDepth = 0;
                 }
             }
         }
+
+
         public static int lastLayerDepth = 0;
         public static void DrawTile_Prefix(ref float layerDepth)
         {

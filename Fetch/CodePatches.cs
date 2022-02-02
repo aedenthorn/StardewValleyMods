@@ -11,12 +11,22 @@ namespace Fetch
 
         private static Dictionary<string, FetchData> fetchDataDict = new Dictionary<string, FetchData>();
 
-        private static void Character_MovePosition_Prefix(Character __instance, GameTime time, xTile.Dimensions.Rectangle viewport, GameLocation currentLocation)
+        private static void Pet_update_Prefix(Pet __instance)
+        { 
+            if(Config.EnableMod && fetchDataDict.TryGetValue(__instance.Name, out FetchData data) && data.isBringing && data.fetched.Chunks.Count > 0)
+            {
+                data.fetched.Chunks[0].position.Value = __instance.getTileLocation() * 64;
+            }
+        }
+        private static void Character_MovePosition_Prefix(Character __instance, ref bool ___moveUp, ref bool ___moveLeft, ref bool ___moveRight, ref bool ___moveDown, GameLocation currentLocation)
         {
             if (!Config.EnableMod || !(__instance is Pet))
                 return;
+
             if (!fetchDataDict.ContainsKey(__instance.Name))
             {
+                SMonitor.Log("Not in dict");
+
                 Farmer tfetchee = null;
                 foreach (var farmer in Game1.getAllFarmers())
                 {
@@ -59,7 +69,8 @@ namespace Fetch
                                 isBringing = false,
                                 fetched = debris,
                                 fetchee = tfetchee,
-                                path = path
+                                path = path,
+                                nextTile = 0
                             };
                             fetching = true;
                             break;
@@ -69,6 +80,8 @@ namespace Fetch
 
                 if (!fetching)
                 {
+                    SMonitor.Log("No fetch object");
+
                     fetchDataDict.Remove(__instance.Name);
                     return;
                 }
@@ -80,6 +93,8 @@ namespace Fetch
 
             if(fetchData.fetched.Chunks.Count == 0 || fetchData.fetchee.currentLocation.Name != __instance.currentLocation.Name)
             {
+                SMonitor.Log("Fetchee not in location or no chunks");
+
                 fetchDataDict.Remove(__instance.Name);
                 return;
             }
@@ -93,36 +108,26 @@ namespace Fetch
                     var path = GetShortestPath(__instance.getTileLocation(), fetchData.fetchee.getTileLocation(), __instance.currentLocation);
                     if (path != null)
                     {
-                        fetchDataDict[__instance.Name].isFetching = false;
-                        fetchDataDict[__instance.Name].isBringing = true;
-                        fetchDataDict[__instance.Name].path = path;
+                        fetchData.isFetching = false;
+                        fetchData.isBringing = true;
+                        fetchData.path = path;
+                        fetchData.nextTile = 0;
+                        fetchDataDict[__instance.Name] = fetchData;
+                        SMonitor.Log("got path to fetchee");
                     }
                     else
                     {
+                        SMonitor.Log("no path to fetchee");
                         fetchDataDict.Remove(__instance.Name);
                         return;
                     }
                     SMonitor.Log("Bringing to fetchee");
                 }
             }
-            Vector2 next = new Vector2(-1, -1);
-            for (int i = 0; i < fetchData.path.Count; i++)
-            {
-                if (__instance.getTileLocation() == fetchData.path[i])
-                {
-                    if (i < fetchData.path.Count - 1)
-                        next = fetchData.path[i + 1];
-                    else next = fetchData.path[i];
-                }
-            }
-            if (next.X < 0)
-            {
-                fetchDataDict.Remove(__instance.Name);
-                return;
-            }
+
             if (fetchData.isBringing)
             {
-                fetchData.fetched.Chunks[0].position.Value = __instance.getTileLocation() * 64;
+                //fetchData.fetched.Chunks[0].position.Value = __instance.getTileLocation() * 64;
                 float distance = Vector2.Distance(fetchData.fetched.Chunks[0].position, fetchData.fetchee.getTileLocation() * 64);
                 if (distance <= Config.GrabDistance)
                 {
@@ -131,34 +136,57 @@ namespace Fetch
                     return;
                 }
             }
-            else
+            else if(!fetchData.isFetching)
             {
+                SMonitor.Log("not fetching or bringing");
                 fetchDataDict.Remove(__instance.Name);
                 return;
             }
-            __instance.SetMovingUp(false);
-            __instance.SetMovingDown(false);
-            __instance.SetMovingLeft(false);
-            __instance.SetMovingRight(false);
 
-            if (__instance.getTileLocation() == next)
-                return;
-            SMonitor.Log($"Moving to {next}");
-            if (__instance.getTileLocation().X < next.X)
+            if (__instance.getTileLocation() == fetchData.path[fetchData.nextTile])
             {
-                __instance.SetMovingRight(true);
+                if (fetchData.path.Count > fetchData.nextTile + 1)
+                {
+                    SMonitor.Log($"advancing to next tile from {fetchData.path[fetchData.nextTile]} to {fetchData.path[fetchData.nextTile+1]}");
+                    fetchData.nextTile++;
+                    fetchDataDict[__instance.Name] = fetchData;
+                }
+                else
+                {
+                    SMonitor.Log($"At last tile");
+                    return;
+                }
+
             }
-            else if (__instance.getTileLocation().X > next.X)
+
+            SMonitor.Log($"Moving from {__instance.getTileLocation()} to {fetchData.path[fetchData.nextTile]}");
+            if (__instance.getTileLocation().X < fetchData.path[fetchData.nextTile].X)
             {
-                __instance.SetMovingLeft(true);
+                ___moveDown = false;
+                ___moveUp = false;
+                ___moveLeft = false;
+                ___moveRight = true;
             }
-            else if (__instance.getTileLocation().Y > next.Y)
+            else if (__instance.getTileLocation().X > fetchData.path[fetchData.nextTile].X)
             {
-                __instance.SetMovingUp(true);
+                ___moveDown = false;
+                ___moveUp = false;
+                ___moveLeft = true;
+                ___moveRight = false;
             }
-            else if (__instance.getTileLocation().Y < next.Y)
+            else if (__instance.getTileLocation().Y > fetchData.path[fetchData.nextTile].Y)
             {
-                __instance.SetMovingDown(true);
+                ___moveDown = false;
+                ___moveUp = true;
+                ___moveLeft = false;
+                ___moveRight = false;
+            }
+            else if (__instance.getTileLocation().Y < fetchData.path[fetchData.nextTile].Y)
+            {
+                ___moveDown = true;
+                ___moveUp = false;
+                ___moveLeft = false;
+                ___moveRight = false;
             }
         }
     }

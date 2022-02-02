@@ -7,7 +7,7 @@ namespace WeddingTweaks
     public interface IFreeLoveAPI
     {
         public void PlaceSpousesInFarmhouse(FarmHouse farmHouse);
-        public Dictionary<string, NPC> GetSpouses(Farmer farmer, int all = -1);
+        public Dictionary<string, NPC> GetSpouses(Farmer farmer, bool all = true);
 
     }
 }

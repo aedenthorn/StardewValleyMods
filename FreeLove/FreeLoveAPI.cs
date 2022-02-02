@@ -14,5 +14,9 @@ namespace FreeLove
         {
             return Misc.GetSpouses(farmer, all);
         }
+        public static Dictionary<string, NPC> GetSpouses(Farmer farmer, int all = -1)
+        {
+            return Misc.GetSpouses(farmer, all != 0);
+        }
     }
 }

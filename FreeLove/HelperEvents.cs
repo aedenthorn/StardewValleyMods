@@ -184,7 +184,7 @@ namespace FreeLove
                         continue;
 
                     List<string> allSpouses = Misc.GetSpouses(fh.owner, true).Keys.ToList();
-                    List<string> bedSpouses = Misc.ReorderSpousesForSleeping(allSpouses.FindAll((s) => ModEntry.Config.RoommateRomance || !fh.owner.friendshipData[s].RoommateMarriage));
+                    List<string> bedSpouses = Misc.ReorderSpousesForSleeping(allSpouses.FindAll((s) => Config.RoommateRomance || !fh.owner.friendshipData[s].RoommateMarriage));
 
                     using(IEnumerator<NPC> characters = fh.characters.GetEnumerator())
                     {

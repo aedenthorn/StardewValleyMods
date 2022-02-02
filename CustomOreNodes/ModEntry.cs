@@ -13,13 +13,14 @@ using Object = StardewValley.Object;
 namespace CustomOreNodes
 {
     /// <summary>The mod entry point.</summary>
-    public class ModEntry : Mod
+    public class ModEntry : Mod, IAssetLoader
     {
 
         public static ModEntry context;
 
         public static ModConfig Config;
         public static List<CustomOreNode> customOreNodesList = new List<CustomOreNode>();
+        public static readonly string dictPath = "Mods/aedenthorn.CustomOreNodes/dict";
         public static IMonitor SMonitor;
         
 
@@ -408,6 +409,23 @@ namespace CustomOreNodes
             int difficulty = (location is MineShaft) ? ((location as MineShaft).mineLevel > 120 ? Game1.netWorldState.Value.SkullCavesDifficulty : Game1.netWorldState.Value.MinesDifficulty) : 0;
 
             return (range.minLevel < 1 && !(location is MineShaft) && !mineOnly) || (location is MineShaft && (range.minLevel <= (location as MineShaft).mineLevel && (range.maxLevel < 0 || (location as MineShaft).mineLevel <= range.maxLevel))) && (range.minDifficulty <= difficulty) && (range.maxDifficulty < 0 || range.maxDifficulty >= difficulty);
+        }
+
+        /// <summary>Get whether this instance can load the initial version of the given asset.</summary>
+        /// <param name="asset">Basic metadata about the asset being loaded.</param>
+        public bool CanLoad<T>(IAssetInfo asset)
+        {
+
+            return asset.AssetNameEquals(dictPath);
+        }
+
+        /// <summary>Load a matched asset.</summary>
+        /// <param name="asset">Basic metadata about the asset being loaded.</param>
+        public T Load<T>(IAssetInfo asset)
+        {
+            Monitor.Log("Loading dictionary");
+
+            return (T)(object)new Dictionary<string, List<CustomOreNode>>();
         }
     }
 }

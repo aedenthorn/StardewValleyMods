@@ -1,18 +1,18 @@
 ﻿{
-  "Name": "Free Love",
+  "Name": "Painting Display",
   "Author": "aedenthorn",
-  "Version": "0.8.2",
-  "Description": "Free Love",
-  "UniqueID": "aedenthorn.FreeLove",
-  "EntryDll": "FreeLove.dll",
+  "Version": "0.1.0",
+  "Description": "Painting Display.",
+  "UniqueID": "aedenthorn.PaintingDisplay",
+  "EntryDll": "PaintingDisplay.dll",
   "MinimumApiVersion": "3.13.0",
-  "UpdateKeys": [ "Nexus:10021" ],
   "ModUpdater": {
     "Repository": "StardewValleyMods",
     "User": "aedenthorn",
     "Directory": "_releases",
-    "ModFolder": "FreeLove"
+    "ModFolder": "PaintingDisplay"
   },
+  "UpdateKeys": [ "Nexus:" ],
   "Dependencies": [
     {
       "UniqueID": "Platonymous.ModUpdater",
