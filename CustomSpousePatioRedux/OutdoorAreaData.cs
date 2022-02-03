@@ -14,11 +14,5 @@ namespace CustomSpousePatioRedux
     {
         public Vector2 corner;
         public string location;
-
-        public OutdoorArea(string currentLocation, Vector2 vector2)
-        {
-            location = currentLocation;
-            corner = vector2;
-        }
     }
 }

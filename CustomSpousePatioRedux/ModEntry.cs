@@ -89,7 +89,7 @@ namespace CustomSpousePatioRedux
             {
                 foreach(var area in outdoorAreas.areas)
                 {
-                    outdoorAreas.dict.Add(area.Key, new OutdoorArea(Game1.getFarm().Name, area.Value));
+                    outdoorAreas.dict.Add(area.Key, new OutdoorArea() { location = Game1.getFarm().Name, corner = area.Value});
                 }
             }
             foreach (var area in outdoorAreas.dict)
@@ -128,11 +128,18 @@ namespace CustomSpousePatioRedux
 
         public void StartWizard()
         {
+            if (outdoorAreas == null)
+            {
+                Monitor.Log("Outdoor ares is null.", LogLevel.Warn);
+                return;
+            }
+
             cursorLoc = Utility.Vector2ToPoint(Game1.GetPlacementGrabTile());
             var pairs = Game1.player.friendshipData.Pairs.Where(s => s.Value.IsMarried());
             if (!pairs.Any())
             {
                 Monitor.Log("You don't have any spouses.", LogLevel.Warn);
+                return;
             }
 
             noCustomAreaSpouses = new List<string>();
@@ -222,7 +229,7 @@ namespace CustomSpousePatioRedux
                     {
                         AccessTools.FieldRefAccess<GameLocation, HashSet<string>>(Game1.getFarm(), "_appliedMapOverrides").Remove(whichAnswer + "_spouse_patio");
                     }
-                    outdoorAreas.dict[whichAnswer] = new OutdoorArea(Game1.player.currentLocation.Name, cursorLoc.ToVector2());
+                    outdoorAreas.dict[whichAnswer] = new OutdoorArea() { location = Game1.player.currentLocation.Name, corner = cursorLoc.ToVector2() };
                     CacheOffBasePatioArea(whichAnswer);
                     Game1.getFarm().UpdatePatio();
                     if (Game1.getCharacterFromName(whichAnswer)?.shouldPlaySpousePatioAnimation.Value == true)

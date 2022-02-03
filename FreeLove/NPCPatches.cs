@@ -714,14 +714,19 @@ namespace FreeLove
                         __state[3] = 1; // flag to say we set it to 2
                     }
                 }
-                if (who.ActiveObject.ParentSheetIndex == 808 && __instance.Name.Equals("Krobus"))
+                string safe_name = __instance.Name.ToLower().Replace(' ', '_');
+                if (who.ActiveObject.HasContextTag("propose_roommate_" + safe_name))
                 {
-                    Monitor.Log($"Void pendant to {__instance.Name}");
-                    if (who.getFriendshipHeartLevelForNPC(__instance.Name) >= 10 && who.HouseUpgradeLevel >= 1 && !who.isEngaged())
+                    Monitor.Log($"Roommate proposal item {who.ActiveObject.Name} to {__instance.Name}");
+
+                    if (who.getFriendshipHeartLevelForNPC(__instance.Name) >= 10 && who.HouseUpgradeLevel >= 1)
                     {
-                        typeof(NPC).GetMethod("engagementResponse", BindingFlags.NonPublic | BindingFlags.Instance).Invoke(__instance, new object[] { who, true });
+                        Monitor.Log($"proposal success!");
+                        AccessTools.Method(typeof(NPC), "engagementResponse").Invoke(__instance, new object[] { who, true });
                         return false;
                     }
+                    Game1.drawObjectDialogue(Game1.parseText(Game1.content.LoadString("Strings\\Characters:MovieInvite_NoTheater", __instance.displayName)));
+                    return false;
                 }
                 else if (who.ActiveObject.ParentSheetIndex == 458)
                 {
@@ -754,24 +759,24 @@ namespace FreeLove
                     }
                     else
                     {
-                        if (__instance.datable.Value && who.friendshipData.ContainsKey(__instance.Name) && who.friendshipData[__instance.Name].IsDating())
+                        if (who.friendshipData.ContainsKey(__instance.Name) && who.friendshipData[__instance.Name].IsDating())
                         {
                             Game1.drawObjectDialogue(Game1.content.LoadString("Strings\\UI:AlreadyDatingBouquet", __instance.displayName));
                             return false;
                         }
-                        if (__instance.datable.Value && who.friendshipData.ContainsKey(__instance.Name) && who.friendshipData[__instance.Name].IsDivorced())
+                        if (who.friendshipData.ContainsKey(__instance.Name) && who.friendshipData[__instance.Name].IsDivorced())
                         {
                             __instance.CurrentDialogue.Push(new Dialogue(Game1.content.LoadString("Strings\\Characters:Divorced_bouquet"), __instance));
                             Game1.drawDialogue(__instance);
                             return false;
                         }
-                        if (__instance.datable.Value && who.friendshipData.ContainsKey(__instance.Name) && who.friendshipData[__instance.Name].Points < Config.MinPointsToDate / 2f)
+                        if (who.friendshipData.ContainsKey(__instance.Name) && who.friendshipData[__instance.Name].Points < Config.MinPointsToDate / 2f)
                         {
                             __instance.CurrentDialogue.Push(new Dialogue((ModEntry.myRand.NextDouble() < 0.5) ? Game1.content.LoadString("Strings\\StringsFromCSFiles:NPC.cs.3958") : Game1.LoadStringByGender(__instance.Gender, "Strings\\StringsFromCSFiles:NPC.cs.3959"), __instance));
                             Game1.drawDialogue(__instance);
                             return false;
                         }
-                        if (__instance.datable.Value && who.friendshipData.ContainsKey(__instance.Name) && who.friendshipData[__instance.Name].Points < Config.MinPointsToDate)
+                        if (who.friendshipData.ContainsKey(__instance.Name) && who.friendshipData[__instance.Name].Points < Config.MinPointsToDate)
                         {
                             __instance.CurrentDialogue.Push(new Dialogue((ModEntry.myRand.NextDouble() < 0.5) ? Game1.content.LoadString("Strings\\StringsFromCSFiles:NPC.cs.3960") : Game1.content.LoadString("Strings\\StringsFromCSFiles:NPC.cs.3961"), __instance));
                             Game1.drawDialogue(__instance);
