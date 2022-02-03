@@ -728,6 +728,14 @@ namespace FreeLove
                     Game1.drawObjectDialogue(Game1.parseText(Game1.content.LoadString("Strings\\Characters:MovieInvite_NoTheater", __instance.displayName)));
                     return false;
                 }
+                else if (who.ActiveObject.ParentSheetIndex == 808 && __instance.Name.Equals("Krobus"))
+                {
+                    if (who.getFriendshipHeartLevelForNPC(__instance.Name) >= 10 && who.HouseUpgradeLevel >= 1)
+                    {
+                        AccessTools.Method(typeof(NPC), "engagementResponse").Invoke(__instance, new object[] { who, true });
+                        return false;
+                    }
+                }
                 else if (who.ActiveObject.ParentSheetIndex == 458)
                 {
                     Monitor.Log($"Try give bouquet to {__instance.Name}");

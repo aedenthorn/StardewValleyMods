@@ -113,9 +113,22 @@ namespace TrainTracks
                 {
                     if(!Game1.player.currentLocation.terrainFeatures.TryGetValue(Game1.currentCursorTile, out TerrainFeature oldFeature) || (oldFeature is Flooring && oldFeature.modData.ContainsKey(trackKey)))
                     {
-                        Flooring f = new Flooring(-42) { modData = new ModDataDictionary() { { trackKey, currentTrackIndex + "" } } };
-                        Game1.player.currentLocation.terrainFeatures[Game1.currentCursorTile] = f;
-                        if(Config.PlaceTrackSound.Length > 0)
+                        if (Config.PlaceTrackSound.Length > 0)
+                            Game1.player.currentLocation.playSound(Config.PlaceTrackSound);
+                        if (oldFeature == null)
+                        {
+                            Flooring f = new Flooring(-42) { modData = new ModDataDictionary() { { trackKey, currentTrackIndex + "" } } };
+                            Game1.player.currentLocation.terrainFeatures[Game1.currentCursorTile] = f;
+                        }
+                        else
+                        {
+                            Game1.player.currentLocation.terrainFeatures[Game1.currentCursorTile].modData[trackKey] = currentTrackIndex + "";
+                        }
+                    }
+                    else if (oldFeature != null && oldFeature is Flooring)
+                    {
+                        Game1.player.currentLocation.terrainFeatures[Game1.currentCursorTile].modData[trackKey] = currentTrackIndex + "";
+                        if (Config.PlaceTrackSound.Length > 0)
                             Game1.player.currentLocation.playSound(Config.PlaceTrackSound);
                     }
                     Helper.Input.Suppress(e.Button);
@@ -125,7 +138,14 @@ namespace TrainTracks
                 {
                     if(Game1.player.currentLocation.terrainFeatures.TryGetValue(Game1.currentCursorTile, out TerrainFeature oldFeature) && oldFeature is Flooring && oldFeature.modData.ContainsKey(trackKey))
                     {
-                        Game1.player.currentLocation.terrainFeatures.Remove(Game1.currentCursorTile);
+                        if ((oldFeature as Flooring).whichFloor.Value != -42)
+                        {
+                            Game1.player.currentLocation.terrainFeatures[Game1.currentCursorTile].modData.Remove(trackKey);
+                        }
+                        else
+                        {
+                            Game1.player.currentLocation.terrainFeatures.Remove(Game1.currentCursorTile);
+                        }
                         if(Config.PlaceTrackSound.Length > 0)
                             Game1.player.currentLocation.playSound(Config.RemoveSound);
                     }
@@ -135,11 +155,11 @@ namespace TrainTracks
             }
             if (e.Button == Config.SpeedUpKey && Game1.player.mount?.modData.ContainsKey(trainKey) == true)
             {
-                if (currentSpeed < 16)
+                if(currentSpeed < Config.MaxSpeed)
                 {
                     if (Config.SpeedSound.Length > 0)
                         Game1.player.currentLocation.playSound(Config.SpeedSound);
-                    currentSpeed = Math.Min(16, currentSpeed + 1);
+                    currentSpeed = Math.Min(Config.MaxSpeed, currentSpeed + 0.5f);
                     Monitor.Log($"Current speed {currentSpeed}");
                 }
                 Helper.Input.Suppress(e.Button);
@@ -149,7 +169,7 @@ namespace TrainTracks
             {
                 if(currentSpeed > 0)
                 {
-                    currentSpeed = Math.Max(0, currentSpeed - 1);
+                    currentSpeed = Math.Max(0, currentSpeed - 0.5f);
                     Monitor.Log($"Current speed {currentSpeed}");
                     if (Config.SpeedSound.Length > 0)
                         Game1.player.currentLocation.playSound(Config.SpeedSound);
@@ -331,7 +351,6 @@ namespace TrainTracks
                 setValue: value => Config.PlaceTrackSound = value
             );
         }
-        private static Vector2 lastTilePos;
 
         private void GameLoop_UpdateTicked(object sender, StardewModdingAPI.Events.UpdateTickedEventArgs e)
         {
@@ -339,358 +358,362 @@ namespace TrainTracks
                 placingTracks = false;
             if (!Config.EnableMod || Game1.player.mount == null || !Game1.player.mount.modData.ContainsKey(trainKey))
                 return;
-            Game1.player.canMove = false;
-
-            Vector2 offset = GetOffset(Game1.player.FacingDirection);
-            var tilePos = new Vector2((int)((Game1.player.Position.X + offset.X) / 64), (int)((Game1.player.Position.Y + offset.Y) / 64));
-            if (Game1.player.currentLocation.terrainFeatures.TryGetValue(tilePos, out TerrainFeature feature) && feature is Flooring && feature.modData.TryGetValue(trackKey, out string indexString) && int.TryParse(indexString, out int index))
+            if (Helper.Input.IsDown(Config.SpeedUpKey) || Helper.Input.IsSuppressed(Config.SpeedUpKey))
             {
-                int facing = Game1.player.FacingDirection;
-                Vector2 pos = new Vector2((float)Math.Round(Game1.player.Position.X), (float)Math.Round(Game1.player.Position.Y));
-                Vector2 tPos = feature.currentTileLocation * 64;
-                int dir = -1;
-
-                switch(index)
+                currentSpeed = Math.Min(Config.MaxSpeed, currentSpeed + 0.5f);
+                Helper.Input.Suppress(Config.SpeedUpKey);
+            }
+            else if (Helper.Input.IsDown(Config.SlowDownKey) || Helper.Input.IsSuppressed(Config.SlowDownKey))
+            {
+                currentSpeed = Math.Max(0, currentSpeed - 0.5f);
+                Helper.Input.Suppress(Config.SlowDownKey);
+            }
+            Game1.player.canMove = false;
+            for(int i = 0; i < currentSpeed; i++)
+            {
+                Vector2 offset = GetOffset(Game1.player.FacingDirection);
+                var tilePos = new Vector2((int)((Game1.player.Position.X + offset.X) / 64), (int)((Game1.player.Position.Y + offset.Y) / 64));
+                if (Game1.player.currentLocation.terrainFeatures.TryGetValue(tilePos, out TerrainFeature feature) && feature is Flooring && feature.modData.TryGetValue(trackKey, out string indexString) && int.TryParse(indexString, out int index))
                 {
-                    case 0:
-                    case 2:
-                        if (facing == 0)
-                        {
-                            pos.X = tPos.X - offset.X;
-                            dir = 0;
-                        }
-                        else if (facing == 1)
-                        {
-                            pos.X = tPos.X - GetOffset(2).X;
-                            facing = 2;
-                            dir = 2;
-                        }
-                        else if (facing == 2)
-                        {
-                            pos.X = tPos.X - offset.X;
-                            dir = 2;
-                        }
-                        else if (facing == 3)
-                        {
-                            pos.X = tPos.X - GetOffset(0).X;
-                            facing = 0;
-                            dir = 0;
-                        }
-                        break;
-                    case 1:
-                    case 3:
-                        if (facing == 0)
-                        {
-                            pos.Y = tPos.Y - GetOffset(1).Y;
-                            facing = 1;
-                            dir = 1;
-                        }
-                        else if (facing == 1)
-                        {
-                            pos.Y = tPos.Y - offset.Y;
-                            dir = 1;
-                        }
-                        else if (facing == 2)
-                        {
-                            pos.Y = tPos.Y - GetOffset(3).Y;
-                            facing = 3;
-                            dir = 3;
-                        }
-                        else if (facing == 3)
-                        {
-                            pos.Y = tPos.Y - offset.Y;
-                            dir = 3;
-                        }
-                        break;
-                    case 4:
-                        if (facing == 0)
-                        {
-                            if (pos.Y > tPos.Y - GetOffset(1).Y)
+                    int facing = Game1.player.FacingDirection;
+                    Vector2 pos = new Vector2((float)Math.Round(Game1.player.Position.X), (float)Math.Round(Game1.player.Position.Y));
+                    Vector2 tPos = feature.currentTileLocation * 64;
+                    int dir = -1;
+
+                    switch (index)
+                    {
+                        case 0:
+                        case 2:
+                            if (facing == 0)
                             {
                                 pos.X = tPos.X - offset.X;
                                 dir = 0;
                             }
-                            else
+                            else if (facing == 1)
                             {
-                                Monitor.Log($"turning right, pos {pos}, tPos {tPos}");
-                                pos.Y = tPos.Y - GetOffset(1).Y;
-                                facing = 1;
-                                dir = 1;
-                            }
-                        }
-                        else if (facing == 1)
-                        {
-                            pos.Y = tPos.Y - offset.Y;
-                            dir = 1;
-                        }
-                        else if (facing == 2)
-                        {
-                            pos.X = tPos.X - offset.X;
-                            dir = 2;
-                        }
-                        else if (facing == 3)
-                        {
-                            if (pos.X > tPos.X)
-                            {
-                                pos.Y = tPos.Y - offset.Y;
-                                dir = 3;
-                            }
-                            else
-                            {
-                                Monitor.Log($"turning down, pos {pos}, tPos {tPos}");
-
-                                pos.X = tPos.X + - GetOffset(2).X;
+                                pos.X = tPos.X - GetOffset(2).X;
                                 facing = 2;
                                 dir = 2;
                             }
-                        }
-                        break;
-                    case 5:
-                        if (facing == 0)
-                        {
-                            if (pos.Y > tPos.Y - GetOffset(3).Y)
+                            else if (facing == 2)
                             {
                                 pos.X = tPos.X - offset.X;
-                                dir = 0;
+                                dir = 2;
                             }
-                            else
+                            else if (facing == 3)
                             {
-                                Monitor.Log($"turning left, pos {pos}, tPos {tPos}");
-                                pos.Y = tPos.Y - GetOffset(3).Y;
-                                facing = 3;
-                                dir = 3;
-                            }
-                        }
-                        else if (facing == 1)
-                        {
-                            Monitor.Log($"turning down, pos {pos}, tPos {tPos}");
-                            pos.X = tPos.X - GetOffset(2).X;
-                            facing = 2;
-                            dir = 2;
-                        }
-                        else if (facing == 2)
-                        {
-                            pos.X = tPos.X - offset.X;
-                            dir = 2;
-                        }
-                        else if (facing == 3)
-                        {
-                            pos.Y = tPos.Y - offset.Y;
-                            dir = 3;
-                        }
-                        break;
-                    case 6:
-                        if (facing == 0)
-                        {
-                            pos.X = tPos.X - offset.X;
-                            dir = 0;
-                        }
-                        else if (facing == 1)
-                        {
-                            Monitor.Log($"turning up, pos {pos}, tPos {tPos}");
-                            pos.X = tPos.X - GetOffset(0).X;
-                            facing = 0;
-                            dir = 0;
-                        }
-                        else if (facing == 2)
-                        {
-                            Monitor.Log($"turning left, pos {pos}, tPos {tPos}");
-                            pos.Y = tPos.Y - GetOffset(3).Y;
-                            facing = 3;
-                            dir = 3;
-                        }
-                        else if (facing == 3)
-                        {
-                            pos.Y = tPos.Y - offset.Y;
-                            dir = 3;
-                        }
-                        break;
-                    case 7:
-                        if (facing == 0)
-                        {
-                            pos.X = tPos.X - offset.X;
-                            dir = 0;
-                        }
-                        else if (facing == 1)
-                        {
-                            pos.Y = tPos.Y - offset.Y;
-                            dir = 1;
-                        }
-                        else if (facing == 2)
-                        {
-                            Monitor.Log($"turning right, pos {pos}, tPos {tPos}");
-                            pos.Y = tPos.Y - GetOffset(1).Y;
-                            facing = 1;
-                            dir = 1;
-                        }
-                        else if (facing == 3)
-                        {
-                            if (pos.X > tPos.X)
-                            {
-                                pos.Y = tPos.Y - offset.Y;
-                                dir = 3;
-                            }
-                            else
-                            {
-                                Monitor.Log($"turning up, pos {pos}, tPos {tPos}");
                                 pos.X = tPos.X - GetOffset(0).X;
                                 facing = 0;
                                 dir = 0;
                             }
-                        }
-                        break;
-                    case 8:
-                        if (facing == 0)
-                        {
-                            pos.X = tPos.X - offset.X;
-                            if (pos.Y > tPos.Y + 4)
+                            break;
+                        case 1:
+                        case 3:
+                            if (facing == 0)
                             {
-                                dir = 0;
-                            }
-                        }
-                        else if (facing == 1)
-                        {
-                            pos.X = tPos.X - GetOffset(2).X;
-                            facing = 2;
-                            dir = 2;
-                        }
-                        else if (facing == 2)
-                        {
-                            pos.X = tPos.X - offset.X;
-                            dir = 2;
-                        }
-                        else if (facing == 3)
-                        {
-                            pos.X = tPos.X - GetOffset(0).X;
-                            facing = 0;
-                            if (pos.Y > tPos.Y + 4)
-                            {
-                                dir = 0;
-                            }
-                        }
-                        break;
-                    case 9:
-                        if (facing == 0)
-                        {
-                            pos.X = tPos.X - offset.X;
-                            dir = 0;
-                        }
-                        else if (facing == 1)
-                        {
-                            pos.X = tPos.X - GetOffset(2).X;
-                            facing = 2;
-                            if (pos.Y > tPos.Y - 4)
-                            {
-                                dir = 2;
-                            }
-                        }
-                        else if (facing == 2)
-                        {
-                            pos.X = tPos.X - offset.X;
-                            if (pos.Y < tPos.Y + 16)
-                            {
-                                dir = 2;
-                            }
-                        }
-                        else if (facing == 3)
-                        {
-                            pos.X = tPos.X - GetOffset(0).X;
-                            facing = 0;
-                            dir = 0;
-                        }
-                        break;
-                    case 10:
-                        if (facing == 0)
-                        {
-                            pos.Y = tPos.Y - GetOffset(1).Y;
-                            facing = 1;
-                            if (pos.X < tPos.X - 4)
-                            {
+                                pos.Y = tPos.Y - GetOffset(1).Y;
+                                facing = 1;
                                 dir = 1;
                             }
-                        }
-                        else if (facing == 1)
-                        {
-                            pos.Y = tPos.Y - offset.Y;
-                            if (pos.X < tPos.X - 4)
+                            else if (facing == 1)
                             {
+                                pos.Y = tPos.Y - offset.Y;
                                 dir = 1;
                             }
-                        }
-                        else if (facing == 2)
-                        {
-                            pos.Y = tPos.Y - GetOffset(3).Y;
-                            facing = 3;
-                            dir = 3;
-                        }
-                        else if (facing == 3)
-                        {
-                            pos.Y = tPos.Y - offset.Y;
-                            dir = 3;
-                        }
-                        break;
-                    case 11:
-                        if (facing == 0)
-                        {
-                            pos.Y = tPos.Y - GetOffset(1).Y;
-                            facing = 1;
-                            dir = 1;
-                        }
-                        else if (facing == 1)
-                        {
-                            pos.Y = tPos.Y - offset.Y;
-                            dir = 1;
-                        }
-                        else if (facing == 2)
-                        {
-                            pos.Y = tPos.Y - GetOffset(3).Y;
-                            facing = 3;
-                            if (pos.X < tPos.X + 4)
+                            else if (facing == 2)
                             {
+                                pos.Y = tPos.Y - GetOffset(3).Y;
+                                facing = 3;
                                 dir = 3;
                             }
-                        }
-                        else if (facing == 3)
-                        {
-                            pos.Y = tPos.Y - offset.Y;
-                            if (pos.X > tPos.X - 16)
+                            else if (facing == 3)
                             {
+                                pos.Y = tPos.Y - offset.Y;
                                 dir = 3;
                             }
-                        }
-                        break;
+                            break;
+                        case 4:
+                            if (facing == 0)
+                            {
+                                if (pos.Y > tPos.Y - GetOffset(1).Y)
+                                {
+                                    pos.X = tPos.X - offset.X;
+                                    dir = 0;
+                                }
+                                else
+                                {
+                                    //Monitor.Log($"turning right, pos {pos}, tPos {tPos}");
+                                    pos.Y = tPos.Y - GetOffset(1).Y;
+                                    facing = 1;
+                                    dir = 1;
+                                }
+                            }
+                            else if (facing == 1)
+                            {
+                                pos.Y = tPos.Y - offset.Y;
+                                dir = 1;
+                            }
+                            else if (facing == 2)
+                            {
+                                pos.X = tPos.X - offset.X;
+                                dir = 2;
+                            }
+                            else if (facing == 3)
+                            {
+                                if (pos.X > tPos.X)
+                                {
+                                    pos.Y = tPos.Y - offset.Y;
+                                    dir = 3;
+                                }
+                                else
+                                {
+                                    //Monitor.Log($"turning down, pos {pos}, tPos {tPos}");
 
-                }
-                Vector2 move = Vector2.Zero;
-                switch (dir)
-                {
-                    case 0:
-                        move = new Vector2(0, -1);
-                        break;
-                    case 1:
-                        move = new Vector2(1, 0);
-                        break;
-                    case 2:
-                        move = new Vector2(0, 1);
-                        break;
-                    case 3:
-                        move = new Vector2(-1, 0);
-                        break;
-                }
-                Game1.player.Position = pos + move * currentSpeed;
-                Game1.player.FacingDirection = facing;
-            }
-            if (false && tilePos != lastTilePos)
-            {
-                if(feature is Flooring && (feature as Flooring).whichFloor.Value < 12)
-                {
-                    Monitor.Log($"floor {(feature as Flooring).whichFloor.Value}, pos {Game1.player.Position}, old tile {tilePos}, new tile { new Vector2((int)((Game1.player.Position.X) / 64), (int)((Game1.player.Position.Y) / 64))}, offset {Game1.player.Position - new Vector2((int)((Game1.player.Position.X) / 64) * 64, (int)((Game1.player.Position.Y) / 64) * 64)}, floor tile {feature.currentTileLocation}, pos {feature.currentTileLocation * 64}");
+                                    pos.X = tPos.X + -GetOffset(2).X;
+                                    facing = 2;
+                                    dir = 2;
+                                }
+                            }
+                            break;
+                        case 5:
+                            if (facing == 0)
+                            {
+                                if (pos.Y > tPos.Y - GetOffset(3).Y)
+                                {
+                                    pos.X = tPos.X - offset.X;
+                                    dir = 0;
+                                }
+                                else
+                                {
+                                    //Monitor.Log($"turning left, pos {pos}, tPos {tPos}");
+                                    pos.Y = tPos.Y - GetOffset(3).Y;
+                                    facing = 3;
+                                    dir = 3;
+                                }
+                            }
+                            else if (facing == 1)
+                            {
+                                //Monitor.Log($"turning down, pos {pos}, tPos {tPos}");
+                                pos.X = tPos.X - GetOffset(2).X;
+                                facing = 2;
+                                dir = 2;
+                            }
+                            else if (facing == 2)
+                            {
+                                pos.X = tPos.X - offset.X;
+                                dir = 2;
+                            }
+                            else if (facing == 3)
+                            {
+                                pos.Y = tPos.Y - offset.Y;
+                                dir = 3;
+                            }
+                            break;
+                        case 6:
+                            if (facing == 0)
+                            {
+                                pos.X = tPos.X - offset.X;
+                                dir = 0;
+                            }
+                            else if (facing == 1)
+                            {
+                                //Monitor.Log($"turning up, pos {pos}, tPos {tPos}");
+                                pos.X = tPos.X - GetOffset(0).X;
+                                facing = 0;
+                                dir = 0;
+                            }
+                            else if (facing == 2)
+                            {
+                                //Monitor.Log($"turning left, pos {pos}, tPos {tPos}");
+                                pos.Y = tPos.Y - GetOffset(3).Y;
+                                facing = 3;
+                                dir = 3;
+                            }
+                            else if (facing == 3)
+                            {
+                                pos.Y = tPos.Y - offset.Y;
+                                dir = 3;
+                            }
+                            break;
+                        case 7:
+                            if (facing == 0)
+                            {
+                                pos.X = tPos.X - offset.X;
+                                dir = 0;
+                            }
+                            else if (facing == 1)
+                            {
+                                pos.Y = tPos.Y - offset.Y;
+                                dir = 1;
+                            }
+                            else if (facing == 2)
+                            {
+                                //Monitor.Log($"turning right, pos {pos}, tPos {tPos}");
+                                pos.Y = tPos.Y - GetOffset(1).Y;
+                                facing = 1;
+                                dir = 1;
+                            }
+                            else if (facing == 3)
+                            {
+                                if (pos.X > tPos.X)
+                                {
+                                    pos.Y = tPos.Y - offset.Y;
+                                    dir = 3;
+                                }
+                                else
+                                {
+                                    //Monitor.Log($"turning up, pos {pos}, tPos {tPos}");
+                                    pos.X = tPos.X - GetOffset(0).X;
+                                    facing = 0;
+                                    dir = 0;
+                                }
+                            }
+                            break;
+                        case 8:
+                            if (facing == 0)
+                            {
+                                pos.X = tPos.X - offset.X;
+                                if (pos.Y > tPos.Y + 4)
+                                {
+                                    dir = 0;
+                                }
+                            }
+                            else if (facing == 1)
+                            {
+                                pos.X = tPos.X - GetOffset(2).X;
+                                facing = 2;
+                                dir = 2;
+                            }
+                            else if (facing == 2)
+                            {
+                                pos.X = tPos.X - offset.X;
+                                dir = 2;
+                            }
+                            else if (facing == 3)
+                            {
+                                pos.X = tPos.X - GetOffset(0).X;
+                                facing = 0;
+                                if (pos.Y > tPos.Y + 4)
+                                {
+                                    dir = 0;
+                                }
+                            }
+                            break;
+                        case 9:
+                            if (facing == 0)
+                            {
+                                pos.X = tPos.X - offset.X;
+                                dir = 0;
+                            }
+                            else if (facing == 1)
+                            {
+                                pos.X = tPos.X - GetOffset(2).X;
+                                facing = 2;
+                                if (pos.Y > tPos.Y - 4)
+                                {
+                                    dir = 2;
+                                }
+                            }
+                            else if (facing == 2)
+                            {
+                                pos.X = tPos.X - offset.X;
+                                if (pos.Y < tPos.Y + 16)
+                                {
+                                    dir = 2;
+                                }
+                            }
+                            else if (facing == 3)
+                            {
+                                pos.X = tPos.X - GetOffset(0).X;
+                                facing = 0;
+                                dir = 0;
+                            }
+                            break;
+                        case 10:
+                            if (facing == 0)
+                            {
+                                pos.Y = tPos.Y - GetOffset(1).Y;
+                                facing = 1;
+                                if (pos.X < tPos.X - 4)
+                                {
+                                    dir = 1;
+                                }
+                            }
+                            else if (facing == 1)
+                            {
+                                pos.Y = tPos.Y - offset.Y;
+                                if (pos.X < tPos.X - 4)
+                                {
+                                    dir = 1;
+                                }
+                            }
+                            else if (facing == 2)
+                            {
+                                pos.Y = tPos.Y - GetOffset(3).Y;
+                                facing = 3;
+                                dir = 3;
+                            }
+                            else if (facing == 3)
+                            {
+                                pos.Y = tPos.Y - offset.Y;
+                                dir = 3;
+                            }
+                            break;
+                        case 11:
+                            if (facing == 0)
+                            {
+                                pos.Y = tPos.Y - GetOffset(1).Y;
+                                facing = 1;
+                                dir = 1;
+                            }
+                            else if (facing == 1)
+                            {
+                                pos.Y = tPos.Y - offset.Y;
+                                dir = 1;
+                            }
+                            else if (facing == 2)
+                            {
+                                pos.Y = tPos.Y - GetOffset(3).Y;
+                                facing = 3;
+                                if (pos.X < tPos.X + 4)
+                                {
+                                    dir = 3;
+                                }
+                            }
+                            else if (facing == 3)
+                            {
+                                pos.Y = tPos.Y - offset.Y;
+                                if (pos.X > tPos.X - 16)
+                                {
+                                    dir = 3;
+                                }
+                            }
+                            break;
+
+                    }
+                    Vector2 move = Vector2.Zero;
+                    switch (dir)
+                    {
+                        case 0:
+                            move = new Vector2(0, -1);
+                            break;
+                        case 1:
+                            move = new Vector2(1, 0);
+                            break;
+                        case 2:
+                            move = new Vector2(0, 1);
+                            break;
+                        case 3:
+                            move = new Vector2(-1, 0);
+                            break;
+                    }
+                    Game1.player.Position = pos + move;
+                    Game1.player.FacingDirection = facing;
                 }
                 else
                 {
-                    Monitor.Log($"pos {Game1.player.Position}, old tile {lastTilePos}, new tile { new Vector2((int)((Game1.player.Position.X) / 64), (int)((Game1.player.Position.Y) / 64))}, offset {Game1.player.Position - new Vector2((int)((Game1.player.Position.X) / 64) * 64, (int)((Game1.player.Position.Y) / 64) * 64)}");
+                    return;
                 }
-                lastTilePos = tilePos;
             }
         }
 

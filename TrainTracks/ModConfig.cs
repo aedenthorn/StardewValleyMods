@@ -7,6 +7,7 @@ namespace TrainTracks
     {
         public bool EnableMod { get; set; } = true;
         public int DefaultSpeed { get; set; } = 3;
+        public int MaxSpeed { get; set; } = 20;
         public SButton PlaceTrackKey { get; set; } = SButton.MouseLeft;
         public SButton RemoveTrackKey { get; set; } = SButton.MouseRight;
         public SButton PrevTrackKey { get; set; } = SButton.PageUp;

@@ -13,16 +13,15 @@ namespace TrainTracks
 
         private static bool Flooring_draw_Prefix(Flooring __instance, SpriteBatch spriteBatch, Vector2 tileLocation)
         {
-            if (!Config.EnableMod || __instance.whichFloor.Value != -42 || !__instance.modData.TryGetValue(trackKey, out string indexString) || !int.TryParse(indexString, out int index ))
+            if (!Config.EnableMod || !__instance.modData.TryGetValue(trackKey, out string indexString) || !int.TryParse(indexString, out int index ))
                 return true;
 
-            spriteBatch.Draw(trackTexture, Game1.GlobalToLocal(Game1.viewport, new Vector2(tileLocation.X * 64f, tileLocation.Y * 64f)), new Rectangle?(new Rectangle(index * 16, 0, 16, 16)), Color.White, 0f, Vector2.Zero, 4f, SpriteEffects.None, 1E-09f);
-
-            return false;
+            spriteBatch.Draw(trackTexture, Game1.GlobalToLocal(Game1.viewport, new Vector2(tileLocation.X * 64f, tileLocation.Y * 64f)), new Rectangle?(new Rectangle(index * 16, 0, 16, 16)), Color.White, 0f, Vector2.Zero, 4f, SpriteEffects.None, 1E-09f + 0.0000001f);
+            return __instance.whichFloor.Value != -42;
         }
         private static bool Flooring_performToolAction_Prefix(Flooring __instance, Tool t, int damage, Vector2 tileLocation, GameLocation location, ref bool __result)
         {
-            if (!Config.EnableMod || !__instance.modData.ContainsKey(trackKey))
+            if (!Config.EnableMod || __instance.whichFloor.Value != -42 || !__instance.modData.ContainsKey(trackKey))
                 return true;
             if (location == null)
             {
@@ -38,11 +37,11 @@ namespace TrainTracks
                 __result = false;
             return false;
         }
-        private static void Horse_dismount_Prefix(Horse __instance)
+        private static void Horse_dismount_Prefix(Horse __instance, ref bool from_demolish)
         {
             if (!Config.EnableMod || !__instance.modData.ContainsKey(trainKey))
                 return;
-
+            from_demolish = true;
             __instance.rider.canMove = true;
         }
         private static void Horse_checkAction_Prefix(Horse __instance, Farmer who)

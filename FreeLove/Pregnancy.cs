@@ -11,21 +11,14 @@ using System.Linq;
 
 namespace FreeLove
 {
-    public static class Pregnancy
+    public partial class ModEntry
     {
-        private static IMonitor Monitor;
-
-        // call this method from your Entry class
-        public static void Initialize(IMonitor monitor)
-        {
-            Monitor = monitor;
-        }
 
         public static bool Utility_pickPersonalFarmEvent_Prefix(ref FarmEvent __result)
         {
             lastBirthingSpouse = null;
             lastPregnantSpouse = null;
-            ModEntry.PMonitor.Log("picking event");
+            PMonitor.Log("picking event");
             if (Game1.weddingToday)
             {
                 __result = null;
@@ -40,7 +33,7 @@ namespace FreeLove
             {
                 if (spouse == null)
                 {
-                    Monitor.Log($"Utility_pickPersonalFarmEvent_Prefix spouse is null");
+                    PMonitor.Log($"Utility_pickPersonalFarmEvent_Prefix spouse is null");
                     continue;
                 }
                 Farmer f = spouse.getSpouse();
