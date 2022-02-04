@@ -29,6 +29,8 @@ namespace TrainTracks
         private static int currentTrackIndex;
         private static int trackLength = 17;
         private static Vector2 lastTile = new Vector2(-1, -1);
+        private static string lastLocation = "";
+        private static bool canWarp = true;
         private static bool turnedThisTile;
 
         /// <summary>The mod entry point, called after the mod is first loaded.</summary>
@@ -219,7 +221,7 @@ namespace TrainTracks
                 Helper.Input.Suppress(e.Button);
                 return;
             }
-            if (e.Button == SButton.Enter && Game1.player.mount == null && Game1.player.currentLocation.terrainFeatures.TryGetValue(Game1.currentCursorTile, out TerrainFeature feature) && feature is Flooring && feature.modData.TryGetValue(trackKey, out string indexString) && int.TryParse(indexString, out int index))
+            if (e.Button == Config.PlaceTrainKey && Game1.player.mount == null && Game1.player.currentLocation.terrainFeatures.TryGetValue(Game1.currentCursorTile, out TerrainFeature feature) && feature is Flooring && feature.modData.TryGetValue(trackKey, out string indexString) && int.TryParse(indexString, out int index))
             {
                 currentSpeed = Config.DefaultSpeed;
 
@@ -334,9 +336,21 @@ namespace TrainTracks
             );
             configMenu.AddKeybind(
                 mod: ModManifest,
-                name: () => "Speed Up",
+                name: () => "Slow Down",
                 getValue: () => Config.SlowDownKey,
                 setValue: value => Config.SlowDownKey = value
+            );
+            configMenu.AddKeybind(
+                mod: ModManifest,
+                name: () => "Turn Right",
+                getValue: () => Config.TurnRightKey,
+                setValue: value => Config.TurnRightKey = value
+            );
+            configMenu.AddKeybind(
+                mod: ModManifest,
+                name: () => "Turn Left",
+                getValue: () => Config.TurnLeftKey,
+                setValue: value => Config.TurnLeftKey = value
             );
             configMenu.AddSectionTitle(
                 mod: ModManifest,
@@ -391,23 +405,41 @@ namespace TrainTracks
                 Helper.Input.Suppress(Config.SlowDownKey);
             }
             Game1.player.canMove = false;
-            for(int i = 0; i < currentSpeed; i++)
+            if (canWarp && Game1.currentLocation.Name != lastLocation)
+            {
+                Monitor.Log($"Moved to new map, disallowing warp");
+                canWarp = false;
+            }
+            for (int i = 0; i < currentSpeed; i++)
             {
                 Vector2 offset = GetOffset(Game1.player.FacingDirection);
                 var tilePos = new Vector2((int)((Game1.player.Position.X + offset.X) / 64), (int)((Game1.player.Position.Y + offset.Y) / 64));
                 if(tilePos != lastTile)
                 {
+                    if (lastLocation != Game1.currentLocation.Name)
+                    {
+                        Monitor.Log($"Moved to new tile in new map, setting last map to new map");
+                        lastLocation = Game1.currentLocation.Name;
+                    }
+                    else if(!canWarp)
+                    {
+                        Monitor.Log($"Moved to second tile in new map, allowing warp");
+                        canWarp = true;
+                    }
                     lastTile = tilePos;
                     turnedThisTile = false;
                 }
                 if (Game1.player.currentLocation.terrainFeatures.TryGetValue(tilePos, out TerrainFeature feature) && feature is Flooring && feature.modData.TryGetValue(trackKey, out string indexString) && int.TryParse(indexString, out int index))
                 {
-                    Warp warp = Game1.player.currentLocation.isCollidingWithWarp(Game1.player.GetBoundingBox(), Game1.player);
-                    if(warp != null)
+                    if (canWarp)
                     {
-                        Monitor.Log($"warping to {warp.TargetName}");
-                        Game1.player.warpFarmer(warp);
-                        return;
+                        Warp warp = Game1.player.currentLocation.isCollidingWithWarp(Game1.player.GetBoundingBox(), Game1.player);
+                        if (warp != null)
+                        {
+                            Monitor.Log($"warping to {warp.TargetName}");
+                            Game1.player.warpFarmer(warp);
+                            return;
+                        }
                     }
                     int facing = Game1.player.FacingDirection;
                     Vector2 pos = new Vector2((float)Math.Round(Game1.player.Position.X), (float)Math.Round(Game1.player.Position.Y));
