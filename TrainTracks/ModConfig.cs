@@ -14,6 +14,8 @@ namespace TrainTracks
         public SButton NextTrackKey { get; set; } = SButton.PageDown;
         public SButton SpeedUpKey { get; set; } = SButton.Up;
         public SButton SlowDownKey { get; set; } = SButton.Down;
+        public SButton TurnLeftKey { get; set; } = SButton.Left;
+        public SButton TurnRightKey { get; set; } = SButton.Right;
         public SButton ReverseKey { get; set; } = SButton.R;
         public SButton TogglePlacingKey { get; set; } = SButton.Insert;
         public SButton PlaceTrainKey { get; set; } = SButton.Enter;

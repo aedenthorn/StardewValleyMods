@@ -1,18 +1,18 @@
 ﻿{
-  "Name": "Train Tracks",
+  "Name": "Advanced Flute Blocks",
   "Author": "aedenthorn",
-  "Version": "0.4.0",
-  "Description": "Train Tracks.",
-  "UniqueID": "aedenthorn.TrainTracks",
-  "EntryDll": "TrainTracks.dll",
+  "Version": "0.1.0",
+  "Description": "Advanced Flute Blocks.",
+  "UniqueID": "aedenthorn.AdvancedFluteBlocks",
+  "EntryDll": "AdvancedFluteBlocks.dll",
   "MinimumApiVersion": "3.13.0",
   "ModUpdater": {
     "Repository": "StardewValleyMods",
     "User": "aedenthorn",
     "Directory": "_releases",
-    "ModFolder": "TrainTracks"
+    "ModFolder": "AdvancedFluteBlocks"
   },
-  "UpdateKeys": [ "Nexus:10927" ],
+  "UpdateKeys": [ "Nexus:10934" ],
   "Dependencies": [
     {
       "UniqueID": "Platonymous.ModUpdater",

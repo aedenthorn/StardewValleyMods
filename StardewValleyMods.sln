@@ -17,7 +17,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WitcherMod", "WitcherMod\Wi
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BossCreatures", "BossCreatures\BossCreatures.csproj", "{189F99D8-9BF1-4FDC-9A53-33A97ACD86D2}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CustomMonsterFloors", "CustomMonsterFloors\CustomMonsterFloors.csproj", "{0C291A20-8560-4D6A-AB96-3AEE72E30B29}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CustomMonsterFloors", "CustomMonsterFloors\CustomMonsterFloors.csproj", "{0C291A20-8560-4D6A-AB96-3AEE72E30B29}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CustomOreNodes", "CustomOreNodes\CustomOreNodes.csproj", "{80AA7B9A-03DE-4B2C-BB26-9F9514127A2E}"
 EndProject
@@ -123,13 +123,13 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SocialPageOrderButton", "So
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CustomTextColours", "CustomTextColours\CustomTextColours.csproj", "{FDB19233-8029-4CA4-9C80-C74391F2547A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AdvancedMeleeFramework", "AdvancedMeleeFramework\AdvancedMeleeFramework.csproj", "{DDD72137-FBD6-4EDA-AE6F-8D3AAB6BE48E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AdvancedMeleeFramework", "AdvancedMeleeFramework\AdvancedMeleeFramework.csproj", "{DDD72137-FBD6-4EDA-AE6F-8D3AAB6BE48E}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CustomPaintings", "CustomPaintings\CustomPaintings.csproj", "{5EA80D01-0BA0-4279-86AE-330AF8C9BF7F}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ParrotPerch", "ParrotPerch\ParrotPerch.csproj", "{B2A2DDC0-6F97-4326-86B8-92ED3D2F0624}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PersisitentGrangeDisplay", "PersisitentGrangeDisplay\PersisitentGrangeDisplay.csproj", "{C7A7C77B-C11A-4C84-B5A1-6C2D6BF5B04B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PersisitentGrangeDisplay", "PersisitentGrangeDisplay\PersisitentGrangeDisplay.csproj", "{C7A7C77B-C11A-4C84-B5A1-6C2D6BF5B04B}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ATerrarium", "Terrarium\ATerrarium.csproj", "{0069E881-7D4C-48AD-944E-3AD0504C7FDD}"
 EndProject
@@ -231,6 +231,8 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PaintingDisplay", "PaintingDisplay\PaintingDisplay.csproj", "{928E3B41-4571-4A6C-9784-8216945E06C8}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TrainTracks", "TrainTracks\TrainTracks.csproj", "{ED97F625-9D1B-445E-B081-FD576368F769}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AdvancedFluteBlocks", "AdvancedFluteBlocks\AdvancedFluteBlocks.csproj", "{5911F6CC-8FDE-4BA7-8041-565D865CC713}"
 EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
@@ -1131,6 +1133,14 @@ Global
 		{ED97F625-9D1B-445E-B081-FD576368F769}.Release|Any CPU.Build.0 = Release|Any CPU
 		{ED97F625-9D1B-445E-B081-FD576368F769}.Release|x86.ActiveCfg = Release|Any CPU
 		{ED97F625-9D1B-445E-B081-FD576368F769}.Release|x86.Build.0 = Release|Any CPU
+		{5911F6CC-8FDE-4BA7-8041-565D865CC713}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5911F6CC-8FDE-4BA7-8041-565D865CC713}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5911F6CC-8FDE-4BA7-8041-565D865CC713}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{5911F6CC-8FDE-4BA7-8041-565D865CC713}.Debug|x86.Build.0 = Debug|Any CPU
+		{5911F6CC-8FDE-4BA7-8041-565D865CC713}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5911F6CC-8FDE-4BA7-8041-565D865CC713}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5911F6CC-8FDE-4BA7-8041-565D865CC713}.Release|x86.ActiveCfg = Release|Any CPU
+		{5911F6CC-8FDE-4BA7-8041-565D865CC713}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

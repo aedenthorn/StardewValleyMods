@@ -3,6 +3,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using StardewModdingAPI;
 using StardewValley;
+using StardewValley.Objects;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -24,6 +25,7 @@ namespace CustomPictureFrames
         public static List<FrameData> frameList = new List<FrameData>();
         public static Dictionary<string, List<Texture2D>> pictureDict = new Dictionary<string, List<Texture2D>>();
         public bool framing = false;
+        private Harmony harmony;
         public static readonly string frameworkPath = "custom_picture_frame_dictionary";
 
         /// <summary>The mod entry point, called after the mod is first loaded.</summary>
@@ -42,7 +44,7 @@ namespace CustomPictureFrames
             helper.Events.GameLoop.SaveLoaded += GameLoop_SaveLoaded;
             helper.Events.Display.RenderedWorld += Display_RenderedWorld;
 
-            var harmony = new Harmony(ModManifest.UniqueID);
+            harmony = new Harmony(ModManifest.UniqueID);
             harmony.Patch(
                original: AccessTools.Method(typeof(GameLocation), nameof(GameLocation.draw), new Type[] {typeof(SpriteBatch)}),
                postfix: new HarmonyMethod(typeof(ModEntry), nameof(GameLocation_draw_Postfix))
@@ -70,6 +72,14 @@ namespace CustomPictureFrames
         }
         private void GameLoop_GameLaunched(object sender, StardewModdingAPI.Events.GameLaunchedEventArgs e)
         {
+            if (Helper.ModRegistry.IsLoaded("aedenthorn.PaintingDisplay"))
+            { 
+                harmony.Patch(
+                   original: AccessTools.Method(typeof(Sign), nameof(Sign.draw), new System.Type[] { typeof(SpriteBatch), typeof(int), typeof(int), typeof(float) }),
+                   postfix: new HarmonyMethod(typeof(ModEntry), nameof(ModEntry.Sign_draw_Postfix))
+                );
+            }
+
             // get Generic Mod Config Menu's API (if it's installed)
             var configMenu = Helper.ModRegistry.GetApi<IGenericModConfigMenuApi>("spacechase0.GenericModConfigMenu");
             if (configMenu is null)

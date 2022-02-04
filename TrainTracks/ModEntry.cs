@@ -22,10 +22,15 @@ namespace TrainTracks
 
         public static ModEntry context;
         private static Texture2D trackTexture;
+        private static Texture2D frontTexture;
 
         private static float currentSpeed = 1;
         private static bool placingTracks;
         private static int currentTrackIndex;
+        private static int trackLength = 17;
+        private static Vector2 lastTile = new Vector2(-1, -1);
+        private static bool turnedThisTile;
+
         /// <summary>The mod entry point, called after the mod is first loaded.</summary>
         /// <param name="helper">Provides simplified APIs for writing mods.</param>
         public override void Entry(IModHelper helper)
@@ -40,6 +45,7 @@ namespace TrainTracks
             SMonitor = Monitor;
             SHelper = helper;
             helper.Events.GameLoop.GameLaunched += GameLoop_GameLaunched;
+            helper.Events.GameLoop.SaveLoaded += GameLoop_SaveLoaded;
             helper.Events.GameLoop.UpdateTicked += GameLoop_UpdateTicked;
             helper.Events.Display.RenderedWorld += Display_RenderedWorld;
             helper.Events.Input.ButtonPressed += Input_ButtonPressed;
@@ -47,6 +53,10 @@ namespace TrainTracks
 
             var harmony = new Harmony(ModManifest.UniqueID);
 
+            harmony.Patch(
+               original: AccessTools.Method(typeof(Horse), nameof(Horse.draw), new Type[] { typeof(SpriteBatch)}),
+               postfix: new HarmonyMethod(typeof(ModEntry), nameof(ModEntry.Horse_draw_Postfix))
+            );
             harmony.Patch(
                original: AccessTools.Method(typeof(Flooring), nameof(Flooring.draw), new Type[] { typeof(SpriteBatch), typeof(Vector2) }),
                prefix: new HarmonyMethod(typeof(ModEntry), nameof(ModEntry.Flooring_draw_Prefix))
@@ -64,6 +74,27 @@ namespace TrainTracks
                prefix: new HarmonyMethod(typeof(ModEntry), nameof(ModEntry.Horse_dismount_Prefix))
             );
 
+        }
+
+        private void GameLoop_SaveLoaded(object sender, StardewModdingAPI.Events.SaveLoadedEventArgs e)
+        {
+            try
+            {
+                trackTexture = Game1.content.Load<Texture2D>("Mods/aedenthorn.TrainTracks/Tracks");
+            }
+            catch
+            {
+                trackTexture = Helper.Content.Load<Texture2D>("assets/tracks.png");
+            }
+
+            try
+            {
+                frontTexture = Game1.content.Load<Texture2D>("Mods/aedenthorn.TrainTracks/TrainFront");
+            }
+            catch
+            {
+                frontTexture = Helper.Content.Load<Texture2D>("assets/horse_front.png");
+            }
         }
 
         public void Display_RenderedWorld(object sender, StardewModdingAPI.Events.RenderedWorldEventArgs e)
@@ -95,7 +126,7 @@ namespace TrainTracks
             {
                 if (e.Button == Config.NextTrackKey)
                 {
-                    currentTrackIndex = (currentTrackIndex + 1) % 12;
+                    currentTrackIndex = (currentTrackIndex + 1) % trackLength;
                     if (Config.SwitchSound.Length > 0)
                         Game1.player.currentLocation.playSound(Config.SwitchSound);
                     Helper.Input.Suppress(e.Button);
@@ -103,7 +134,7 @@ namespace TrainTracks
                 }
                 if (e.Button == Config.PrevTrackKey)
                 {
-                    currentTrackIndex = currentTrackIndex == 0 ? 11 : currentTrackIndex - 1;
+                    currentTrackIndex = currentTrackIndex == 0 ? trackLength - 1 : currentTrackIndex - 1;
                     if (Config.SwitchSound.Length > 0)
                         Game1.player.currentLocation.playSound(Config.SwitchSound);
                     Helper.Input.Suppress(e.Button);
@@ -229,15 +260,6 @@ namespace TrainTracks
 
         private void GameLoop_GameLaunched(object sender, StardewModdingAPI.Events.GameLaunchedEventArgs e)
         {
-            try
-            {
-                trackTexture = Game1.content.Load<Texture2D>("Mods/aedenthorn.TrainTracks/Tracks");
-            }
-            catch
-            {
-                trackTexture = Helper.Content.Load<Texture2D>("assets/tracks.png");
-            }
-
             // get Generic Mod Config Menu's API (if it's installed)
             var configMenu = Helper.ModRegistry.GetApi<IGenericModConfigMenuApi>("spacechase0.GenericModConfigMenu");
             if (configMenu is null)
@@ -356,7 +378,7 @@ namespace TrainTracks
         {
             if (placingTracks && Game1.activeClickableMenu != null)
                 placingTracks = false;
-            if (!Config.EnableMod || Game1.player.mount == null || !Game1.player.mount.modData.ContainsKey(trainKey))
+            if (!Config.EnableMod || Game1.player.mount == null || !Game1.player.mount.modData.ContainsKey(trainKey) || Game1.isWarping)
                 return;
             if (Helper.Input.IsDown(Config.SpeedUpKey) || Helper.Input.IsSuppressed(Config.SpeedUpKey))
             {
@@ -373,8 +395,20 @@ namespace TrainTracks
             {
                 Vector2 offset = GetOffset(Game1.player.FacingDirection);
                 var tilePos = new Vector2((int)((Game1.player.Position.X + offset.X) / 64), (int)((Game1.player.Position.Y + offset.Y) / 64));
+                if(tilePos != lastTile)
+                {
+                    lastTile = tilePos;
+                    turnedThisTile = false;
+                }
                 if (Game1.player.currentLocation.terrainFeatures.TryGetValue(tilePos, out TerrainFeature feature) && feature is Flooring && feature.modData.TryGetValue(trackKey, out string indexString) && int.TryParse(indexString, out int index))
                 {
+                    Warp warp = Game1.player.currentLocation.isCollidingWithWarp(Game1.player.GetBoundingBox(), Game1.player);
+                    if(warp != null)
+                    {
+                        Monitor.Log($"warping to {warp.TargetName}");
+                        Game1.player.warpFarmer(warp);
+                        return;
+                    }
                     int facing = Game1.player.FacingDirection;
                     Vector2 pos = new Vector2((float)Math.Round(Game1.player.Position.X), (float)Math.Round(Game1.player.Position.Y));
                     Vector2 tPos = feature.currentTileLocation * 64;
@@ -689,6 +723,368 @@ namespace TrainTracks
                                 }
                             }
                             break;
+                        case 12:
+                            if (facing == 0)
+                            {
+                                pos.X = tPos.X - offset.X;
+                                dir = 0;
+                            }
+                            else if (facing == 1)
+                            {
+                                if (Helper.Input.IsDown(Config.TurnLeftKey) && !turnedThisTile)
+                                {
+                                    turnedThisTile = true;
+                                    pos.X = tPos.X - GetOffset(0).X;
+                                    dir = 0;
+                                    facing = 0;
+                                }
+                                else
+                                {
+                                    pos.Y = tPos.Y - offset.Y;
+                                    dir = 1;
+                                }
+                            }
+                            else if (facing == 2)
+                            {
+                                if (Helper.Input.IsDown(Config.TurnLeftKey) && !turnedThisTile)
+                                {
+                                    turnedThisTile = true;
+                                    pos.Y = tPos.Y - GetOffset(1).Y;
+                                    dir = 1;
+                                    facing = 1;
+                                }
+                                else if (Helper.Input.IsDown(Config.TurnRightKey) && !turnedThisTile)
+                                {
+                                    turnedThisTile = true;
+
+                                    pos.Y = tPos.Y - GetOffset(3).Y;
+                                    dir = 3;
+                                    facing = 3;
+                                }
+                                else
+                                {
+                                    pos.X = tPos.X - offset.X;
+                                    if (pos.Y < tPos.Y - GetOffset(3).Y)
+                                    {
+                                        dir = 2;
+                                    }
+                                }
+                            }
+                            else if (facing == 3)
+                            {
+                                if (Helper.Input.IsDown(Config.TurnRightKey) && !turnedThisTile)
+                                {
+                                    turnedThisTile = true;
+
+                                    pos.X = tPos.X - GetOffset(0).X;
+                                    dir = 0;
+                                    facing = 0;
+                                }
+                                else
+                                {
+                                    pos.Y = tPos.Y - offset.Y;
+                                    dir = 3;
+                                }
+                            }
+                            break;
+                        case 13:
+                            if (facing == 0)
+                            {
+                                if (Helper.Input.IsDown(Config.TurnLeftKey) && !turnedThisTile)
+                                {
+                                    turnedThisTile = true;
+
+                                    pos.Y = tPos.Y - GetOffset(3).Y;
+                                    dir = 3;
+                                    facing = 3;
+                                }
+                                else if (Helper.Input.IsDown(Config.TurnRightKey) && !turnedThisTile)
+                                {
+                                    turnedThisTile = true;
+
+                                    pos.Y = tPos.Y - GetOffset(1).Y;
+                                    dir = 1;
+                                    facing = 1;
+                                }
+                                else
+                                {
+                                    pos.X = tPos.X - offset.X;
+                                    if (pos.Y > tPos.Y - GetOffset(3).Y)
+                                    {
+                                        dir = 0;
+                                    }
+                                }
+                            }
+                            else if (facing == 1)
+                            {
+                                if (Helper.Input.IsDown(Config.TurnRightKey) && !turnedThisTile)
+                                {
+                                    turnedThisTile = true;
+
+                                    pos.X = tPos.X - GetOffset(2).X;
+                                    dir = 2;
+                                    facing = 2;
+                                }
+                                else
+                                {
+                                    pos.Y = tPos.Y - offset.Y;
+                                    dir = 1;
+                                }
+                            }
+                            else if (facing == 2)
+                            {
+                                pos.X = tPos.X - offset.X;
+                                dir = 2;
+                            }
+                            else if (facing == 3)
+                            {
+                                if (Helper.Input.IsDown(Config.TurnLeftKey) && !turnedThisTile)
+                                {
+                                    turnedThisTile = true;
+
+                                    pos.X = tPos.X - GetOffset(2).X;
+                                    dir = 2;
+                                    facing = 2;
+                                }
+                                else
+                                {
+                                    pos.Y = tPos.Y - offset.Y;
+                                    dir = 3;
+                                }
+                            }
+                            break;
+                        case 14:
+                            if (facing == 0)
+                            {
+                                if (Helper.Input.IsDown(Config.TurnLeftKey) && !turnedThisTile)
+                                {
+                                    turnedThisTile = true;
+
+                                    pos.Y = tPos.Y - GetOffset(3).Y;
+                                    dir = 3;
+                                    facing = 3;
+                                }
+                                else
+                                {
+                                    pos.X = tPos.X - offset.X;
+                                    dir = 0;
+                                }
+                            }
+                            else if (facing == 1)
+                            {
+                                if (Helper.Input.IsDown(Config.TurnLeftKey) && !turnedThisTile)
+                                {
+                                    turnedThisTile = true;
+
+                                    pos.X = tPos.X - GetOffset(0).X;
+                                    dir = 0;
+                                    facing = 0;
+                                }
+                                else if (Helper.Input.IsDown(Config.TurnRightKey) && !turnedThisTile)
+                                {
+                                    turnedThisTile = true;
+
+                                    pos.X = tPos.X - GetOffset(2).X;
+                                    dir = 2;
+                                    facing = 2;
+                                }
+                                else
+                                {
+                                    pos.Y = tPos.Y - offset.Y;
+                                    if (pos.X < tPos.X - GetOffset(0).X)
+                                    {
+                                        dir = 1;
+                                    }
+                                }
+                            }
+                            else if (facing == 2)
+                            {
+                                if (Helper.Input.IsDown(Config.TurnRightKey) && !turnedThisTile)
+                                {
+                                    turnedThisTile = true;
+
+                                    pos.Y = tPos.Y - GetOffset(3).Y;
+                                    dir = 3;
+                                    facing = 3;
+                                }
+                                else
+                                {
+                                    pos.X = tPos.X - offset.X;
+                                    dir = 2;
+                                }
+                            }
+                            else if (facing == 3)
+                            {
+                                pos.Y = tPos.Y - offset.Y;
+                                dir = 3;
+                            }
+                            break;
+                        case 15:
+                            if (facing == 0)
+                            {
+                                if (Helper.Input.IsDown(Config.TurnRightKey) && !turnedThisTile)
+                                {
+                                    turnedThisTile = true;
+
+                                    pos.Y = tPos.Y - GetOffset(1).Y;
+                                    dir = 1;
+                                    facing = 1;
+                                }
+                                else
+                                {
+                                    pos.X = tPos.X - offset.X;
+                                    dir = 0;
+                                }
+                            }
+                            else if (facing == 1)
+                            {
+                                pos.Y = tPos.Y - offset.Y;
+                                dir = 1;
+                            }
+                            else if (facing == 2)
+                            {
+                                if (Helper.Input.IsDown(Config.TurnLeftKey) && !turnedThisTile)
+                                {
+                                    turnedThisTile = true;
+
+                                    pos.Y = tPos.Y - GetOffset(1).Y;
+                                    dir = 1;
+                                    facing = 1;
+                                }
+                                else
+                                {
+                                    pos.X = tPos.X - offset.X;
+                                    dir = 2;
+                                }
+                            }
+                            else if (facing == 3)
+                            {
+                                if (Helper.Input.IsDown(Config.TurnRightKey) && !turnedThisTile)
+                                {
+                                    turnedThisTile = true;
+
+                                    pos.X = tPos.X - GetOffset(0).X;
+                                    dir = 0;
+                                    facing = 0;
+                                }
+                                else if (Helper.Input.IsDown(Config.TurnLeftKey) && !turnedThisTile)
+                                {
+                                    turnedThisTile = true;
+
+                                    pos.X = tPos.X - GetOffset(2).X;
+                                    dir = 2;
+                                    facing = 2;
+                                }
+                                else
+                                {
+                                    pos.Y = tPos.Y - offset.Y;
+                                    if (pos.X > tPos.X - GetOffset(0).X)
+                                    {
+                                        dir = 3;
+                                    }
+                                }
+                            }
+                            break;
+                        case 16:
+
+                            if (facing == 0)
+                            {
+                                if (Helper.Input.IsDown(Config.TurnRightKey) && !turnedThisTile)
+                                {
+                                    turnedThisTile = true;
+
+                                    pos.Y = tPos.Y - GetOffset(1).Y;
+                                    dir = 1;
+                                    facing = 1;
+                                }
+                                else if (Helper.Input.IsDown(Config.TurnLeftKey) && !turnedThisTile)
+                                {
+                                    turnedThisTile = true;
+
+                                    pos.Y = tPos.Y - GetOffset(3).Y;
+                                    dir = 3;
+                                    facing = 3;
+                                }
+                                else
+                                {
+                                    pos.X = tPos.X - offset.X;
+                                    dir = 0;
+                                }
+                            }
+                            else if (facing == 1)
+                            {
+                                if (Helper.Input.IsDown(Config.TurnRightKey) && !turnedThisTile)
+                                {
+                                    turnedThisTile = true;
+
+                                    pos.X = tPos.X - GetOffset(2).X;
+                                    dir = 2;
+                                    facing = 2;
+                                }
+                                else if (Helper.Input.IsDown(Config.TurnLeftKey) && !turnedThisTile)
+                                {
+                                    turnedThisTile = true;
+
+                                    pos.X = tPos.X - GetOffset(0).X;
+                                    dir = 0;
+                                    facing = 0;
+                                }
+                                else
+                                {
+                                    pos.Y = tPos.Y - offset.Y;
+                                    dir = 1;
+                                }
+
+                            }
+                            else if (facing == 2)
+                            {
+                                if (Helper.Input.IsDown(Config.TurnRightKey) && !turnedThisTile)
+                                {
+                                    turnedThisTile = true;
+
+                                    pos.Y = tPos.Y - GetOffset(3).Y;
+                                    dir = 3;
+                                    facing = 3;
+                                }
+                                else if (Helper.Input.IsDown(Config.TurnLeftKey) && !turnedThisTile)
+                                {
+                                    turnedThisTile = true;
+
+                                    pos.Y = tPos.Y - GetOffset(1).Y;
+                                    dir = 1;
+                                    facing = 1;
+                                }
+                                else
+                                {
+                                    pos.X = tPos.X - offset.X;
+                                    dir = 2;
+                                }
+                            }
+                            else if (facing == 3)
+                            {
+                                if (Helper.Input.IsDown(Config.TurnRightKey) && !turnedThisTile)
+                                {
+                                    turnedThisTile = true;
+
+                                    pos.X = tPos.X - GetOffset(0).X;
+                                    dir = 0;
+                                    facing = 0;
+                                }
+                                else if (Helper.Input.IsDown(Config.TurnLeftKey) && !turnedThisTile)
+                                {
+                                    turnedThisTile = true;
+
+                                    pos.X = tPos.X - GetOffset(2).X;
+                                    dir = 2;
+                                    facing = 2;
+                                }
+                                else
+                                {
+                                    pos.Y = tPos.Y - offset.Y;
+                                    dir = 3;
+                                }
+                            }
+                            break;
 
                     }
                     Vector2 move = Vector2.Zero;
@@ -746,7 +1142,7 @@ namespace TrainTracks
             if (!Config.EnableMod)
                 return false;
 
-            return asset.AssetNameEquals("Mods/aedenthorn.TrainTracks/TrainInternal");
+            return asset.AssetNameEquals("Mods/aedenthorn.TrainTracks/TrainInternal") || asset.AssetNameEquals("Mods/aedenthorn.TrainTracks/TrainFrontInternal");
         }
 
         /// <summary>Load a matched asset.</summary>
@@ -754,15 +1150,28 @@ namespace TrainTracks
         public T Load<T>(IAssetInfo asset)
         {
             Texture2D tex;
-            try
+            if (asset.AssetNameEquals("Mods/aedenthorn.TrainTracks/TrainInternal"))
             {
-                tex = Game1.content.Load<Texture2D>("Mods/aedenthorn.TrainTracks/Train");
+                try
+                {
+                    tex = Game1.content.Load<Texture2D>("Mods/aedenthorn.TrainTracks/Train");
+                }
+                catch
+                {
+                    tex = Helper.Content.Load<Texture2D>("assets/horse.png");
+                }
             }
-            catch
+            else
             {
-                tex = Helper.Content.Load<Texture2D>("assets/horse.png");
+                try
+                {
+                    tex = Game1.content.Load<Texture2D>("Mods/aedenthorn.TrainTracks/TrainFront");
+                }
+                catch
+                {
+                    tex = Helper.Content.Load<Texture2D>("assets/horse_front.png");
+                }
             }
-
             return (T)(object)tex;
         }
     }
