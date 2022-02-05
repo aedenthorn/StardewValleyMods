@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.31424.327
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.31903.59
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MagnetMod", "MagnetMod\MagnetMod.csproj", "{7EA4E49D-D5FF-4A36-8755-D9F6B1F4A3C3}"
 EndProject
@@ -234,9 +234,14 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TrainTracks", "TrainTracks\
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AdvancedFluteBlocks", "AdvancedFluteBlocks\AdvancedFluteBlocks.csproj", "{5911F6CC-8FDE-4BA7-8041-565D865CC713}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CJBInventory", "CJBInventory\CJBInventory.csproj", "{C97A6D00-7DF8-4144-9F2D-478E4CB8D7C0}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WateringCanTweaks", "WateringCanTweaks\WateringCanTweaks.csproj", "{2AC8555C-D115-41A6-8A05-CF51778F966E}"
+EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
 		_releases\_releases.projitems*{047040e0-3d07-46e5-852b-d1d45cd57bb8}*SharedItemsImports = 13
+		..\CJBSDV-Mods\Common\Common.projitems*{c97a6d00-7df8-4144-9f2d-478e4cb8d7c0}*SharedItemsImports = 5
 	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -1141,6 +1146,22 @@ Global
 		{5911F6CC-8FDE-4BA7-8041-565D865CC713}.Release|Any CPU.Build.0 = Release|Any CPU
 		{5911F6CC-8FDE-4BA7-8041-565D865CC713}.Release|x86.ActiveCfg = Release|Any CPU
 		{5911F6CC-8FDE-4BA7-8041-565D865CC713}.Release|x86.Build.0 = Release|Any CPU
+		{C97A6D00-7DF8-4144-9F2D-478E4CB8D7C0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C97A6D00-7DF8-4144-9F2D-478E4CB8D7C0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C97A6D00-7DF8-4144-9F2D-478E4CB8D7C0}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{C97A6D00-7DF8-4144-9F2D-478E4CB8D7C0}.Debug|x86.Build.0 = Debug|Any CPU
+		{C97A6D00-7DF8-4144-9F2D-478E4CB8D7C0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C97A6D00-7DF8-4144-9F2D-478E4CB8D7C0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C97A6D00-7DF8-4144-9F2D-478E4CB8D7C0}.Release|x86.ActiveCfg = Release|Any CPU
+		{C97A6D00-7DF8-4144-9F2D-478E4CB8D7C0}.Release|x86.Build.0 = Release|Any CPU
+		{2AC8555C-D115-41A6-8A05-CF51778F966E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2AC8555C-D115-41A6-8A05-CF51778F966E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2AC8555C-D115-41A6-8A05-CF51778F966E}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{2AC8555C-D115-41A6-8A05-CF51778F966E}.Debug|x86.Build.0 = Debug|Any CPU
+		{2AC8555C-D115-41A6-8A05-CF51778F966E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2AC8555C-D115-41A6-8A05-CF51778F966E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2AC8555C-D115-41A6-8A05-CF51778F966E}.Release|x86.ActiveCfg = Release|Any CPU
+		{2AC8555C-D115-41A6-8A05-CF51778F966E}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

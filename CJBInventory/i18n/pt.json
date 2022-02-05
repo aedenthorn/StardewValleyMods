@@ -1,0 +1,32 @@
+﻿{
+    /*********
+    ** Sort button
+    *********/
+    "sort.by-name": "Nome",
+    "sort.by-type": "Categoria",
+    "sort.by-id": "ID",
+
+
+    /*********
+    ** Category dropdown
+    *********/
+    // TODO
+    "filter.all": "Todos",
+    "filter.artisan-and-cooking": "Artesanaise Receitas ",
+    "filter.crafting.products": "Criação: produtos",
+    "filter.crafting.resources": "Criação: recursos",
+    "filter.decor.furniture": "Decor: móveis",
+    "filter.decor.other": "Decor: outros",
+    "filter.equipment-boots": "Equipamento: botas",
+    "filter.equipment-clothes": "Equipamento: roupas",
+    "filter.equipment-hats": "Equipamento: chapéus",
+    "filter.equipment-rings": "Equipamento: anéis",
+    "filter.equipment-tools": "Equipamento: ferramentas",
+    "filter.equipment-weapons": "Equipamento: armas",
+    "filter.farm-animal-drops": "Fazenda: produção animal",
+    "filter.farm-crops": "Fazenda: colheita",
+    "filter.farm-seeds": "Fazenda: sementes",
+    "filter.fish": "Peixes",
+    "filter.minerals-and-artifacts": "Minerais e artefatos",
+    "filter.miscellaneous": "Outros"
+}

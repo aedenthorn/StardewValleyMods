@@ -1,0 +1,31 @@
+﻿{
+    /*********
+    ** Sort button
+    *********/
+    "sort.by-name": "Name",
+    "sort.by-type": "Kategorie",
+    "sort.by-id": "ID",
+
+
+    /*********
+    ** Category dropdown
+    *********/
+    "filter.all": "Alles",
+    "filter.artisan-and-cooking": "Handwerkswaren & Kochen",
+    "filter.crafting.products": "Herstellung: Produkte",
+    "filter.crafting.resources": "Herstellung: Ressourcen",
+    "filter.decor.furniture": "Dekoration: Möbel",
+    "filter.decor.other": "Dekoration: Andere",
+    "filter.equipment-boots": "Ausrüstung: Schuhe",
+    "filter.equipment-clothes": "Ausrüstung: Kleidung",
+    "filter.equipment-hats": "Ausrüstung: Hüte",
+    "filter.equipment-rings": "Ausrüstung: Ringe",
+    "filter.equipment-tools": "Ausrüstung: Werkzeuge",
+    "filter.equipment-weapons": "Ausrüstung: Waffen",
+    "filter.farm-animal-drops": "Hof: Tierprodukte",
+    "filter.farm-crops": "Hof: Nutzpflanzen",
+    "filter.farm-seeds": "Hof: Saatgut",
+    "filter.fish": "Fische",
+    "filter.minerals-and-artifacts": "Mineralien & Artefakte",
+    "filter.miscellaneous": "Andere"
+}

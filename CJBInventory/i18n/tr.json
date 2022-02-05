@@ -1,0 +1,31 @@
+﻿{
+    /*********
+    ** Sort button
+    *********/
+    "sort.by-name": "İsme",
+    "sort.by-type": "Kategoriye",
+    "sort.by-id": "ID'ye",
+
+
+    /*********
+    ** Category dropdown
+    *********/
+    "filter.all": "Hepsi",
+    "filter.artisan-and-cooking": "Zanaat ve Yemekler",
+    "filter.crafting.products": "El yapımı ürünler",
+    "filter.crafting.resources": "El yapım malzemeleri",
+    "filter.decor.furniture": "Dekor: mobilyalar",
+    "filter.decor.other": "Dekor: diğer",
+    "filter.equipment-boots": "Ekipman: Ayakkabılar",
+    "filter.equipment-clothes": "Ekipman: Kıyafetler",
+    "filter.equipment-hats": "Ekipman: Şapkalar",
+    "filter.equipment-rings": "Ekipman: Yüzükler",
+    "filter.equipment-tools": "Ekipman: Aletler",
+    "filter.equipment-weapons": "Ekipman: Silahlar",
+    "filter.farm-animal-drops": "Çiftlik: hayvan ürünleri",
+    "filter.farm-crops": "Çiftlik: ekinler",
+    "filter.farm-seeds": "Çiftlik: tohumlar",
+    "filter.fish": "Balık",
+    "filter.minerals-and-artifacts": "Mineraller ve eserler",
+    "filter.miscellaneous": "Diğer"
+}

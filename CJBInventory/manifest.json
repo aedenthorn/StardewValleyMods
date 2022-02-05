@@ -1,0 +1,10 @@
+﻿{
+    "Name": "CJB Inventory",
+    "Author": "CJBok and Pathoschild and aedenthorn",
+    "Version": "0.1.0",
+    "Description": "Simple in-game Inventory!",
+    "UniqueID": "aedenthorn.CJBInventory",
+    "EntryDll": "CJBInventory.dll",
+    "MinimumApiVersion": "3.13.0",
+    "UpdateKeys": [ "Nexus:" ]
+}

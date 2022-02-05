@@ -1,0 +1,22 @@
+﻿{
+  "Name": "Watering Can Tweaks",
+  "Author": "aedenthorn",
+  "Version": "0.1.0",
+  "Description": "Watering Can Tweaks.",
+  "UniqueID": "aedenthorn.WateringCanTweaks",
+  "EntryDll": "WateringCanTweaks.dll",
+  "MinimumApiVersion": "3.13.0",
+  "ModUpdater": {
+    "Repository": "StardewValleyMods",
+    "User": "aedenthorn",
+    "Directory": "_releases",
+    "ModFolder": "WateringCanTweaks"
+  },
+  "UpdateKeys": [ "Nexus:10947" ],
+  "Dependencies": [
+    {
+      "UniqueID": "Platonymous.ModUpdater",
+      "IsRequired": false
+    }
+  ]
+}
