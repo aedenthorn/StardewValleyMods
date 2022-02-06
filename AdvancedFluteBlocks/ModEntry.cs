@@ -1,15 +1,9 @@
 ﻿using HarmonyLib;
-using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Audio;
 using Microsoft.Xna.Framework.Graphics;
 using StardewModdingAPI;
 using StardewValley;
-using StardewValley.Characters;
-using StardewValley.Menus;
-using StardewValley.TerrainFeatures;
-using System;
 using System.Collections.Generic;
-using System.IO;
 using Object = StardewValley.Object;
 
 namespace AdvancedFluteBlocks
@@ -57,6 +51,10 @@ namespace AdvancedFluteBlocks
                original: AccessTools.Method(typeof(Game1), nameof(Game1.pressSwitchToolButton)),
                prefix: new HarmonyMethod(typeof(ModEntry), nameof(ModEntry.Game1_pressSwitchToolButton_Prefix))
             );
+        }
+        public override object GetApi()
+        {
+            return new AdvancedFluteBlocksApi();
         }
 
         private void Input_MouseWheelScrolled(object sender, StardewModdingAPI.Events.MouseWheelScrolledEventArgs e)

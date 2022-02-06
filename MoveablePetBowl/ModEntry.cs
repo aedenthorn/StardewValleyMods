@@ -292,7 +292,7 @@ namespace MoveablePetBowl
         }
         public static void Object_draw_Postfix(Object __instance, SpriteBatch spriteBatch, float layerDepth, int xNonTile, int yNonTile, float alpha)
         {
-            if (!__instance.name.EndsWith("Pet Bowl") || !__instance.modData.ContainsKey("aedenthorn.PetBowl/Watered") || __instance.modData["aedenthorn.PetBowl/Watered"] != "true")
+            if (__instance == null || !__instance.Name?.EndsWith("Pet Bowl") == true || !__instance.modData.ContainsKey("aedenthorn.PetBowl/Watered") || __instance.modData["aedenthorn.PetBowl/Watered"] != "true")
                 return;
             Vector2 scaleFactor = __instance.getScale();
             scaleFactor *= 4f;
@@ -304,7 +304,7 @@ namespace MoveablePetBowl
 
         public static void Object_draw_Postfix2(Object __instance, SpriteBatch spriteBatch, int x, int y)
         {
-            if (!__instance.name.EndsWith("Pet Bowl") || !__instance.modData.ContainsKey("aedenthorn.PetBowl/Watered") || __instance.modData["aedenthorn.PetBowl/Watered"] != "true")
+            if (__instance == null || !__instance.Name?.EndsWith("Pet Bowl") == true || !__instance.modData.ContainsKey("aedenthorn.PetBowl/Watered") || __instance.modData["aedenthorn.PetBowl/Watered"] != "true")
                 return;
 
             Vector2 position = Game1.GlobalToLocal(Game1.viewport, new Vector2((float)(x * 64), (float)(y * 64 - 64)));

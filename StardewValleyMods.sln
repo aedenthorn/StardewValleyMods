@@ -238,6 +238,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CJBInventory", "CJBInventor
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WateringCanTweaks", "WateringCanTweaks\WateringCanTweaks.csproj", "{2AC8555C-D115-41A6-8A05-CF51778F966E}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ImportMap", "ImportMap\ImportMap.csproj", "{E9E32B45-3E10-4F50-A02E-A9339E99250A}"
+EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
 		_releases\_releases.projitems*{047040e0-3d07-46e5-852b-d1d45cd57bb8}*SharedItemsImports = 13
@@ -1162,6 +1164,14 @@ Global
 		{2AC8555C-D115-41A6-8A05-CF51778F966E}.Release|Any CPU.Build.0 = Release|Any CPU
 		{2AC8555C-D115-41A6-8A05-CF51778F966E}.Release|x86.ActiveCfg = Release|Any CPU
 		{2AC8555C-D115-41A6-8A05-CF51778F966E}.Release|x86.Build.0 = Release|Any CPU
+		{E9E32B45-3E10-4F50-A02E-A9339E99250A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E9E32B45-3E10-4F50-A02E-A9339E99250A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E9E32B45-3E10-4F50-A02E-A9339E99250A}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{E9E32B45-3E10-4F50-A02E-A9339E99250A}.Debug|x86.Build.0 = Debug|Any CPU
+		{E9E32B45-3E10-4F50-A02E-A9339E99250A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E9E32B45-3E10-4F50-A02E-A9339E99250A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E9E32B45-3E10-4F50-A02E-A9339E99250A}.Release|x86.ActiveCfg = Release|Any CPU
+		{E9E32B45-3E10-4F50-A02E-A9339E99250A}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
