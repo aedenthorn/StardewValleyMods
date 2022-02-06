@@ -240,6 +240,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WateringCanTweaks", "Wateri
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ImportMap", "ImportMap\ImportMap.csproj", "{E9E32B45-3E10-4F50-A02E-A9339E99250A}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AdvancedDrumBlocks", "AdvancedDrumBlocks\AdvancedDrumBlocks.csproj", "{D7280B45-2A83-4B8E-876A-06FF2427E7F3}"
+EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
 		_releases\_releases.projitems*{047040e0-3d07-46e5-852b-d1d45cd57bb8}*SharedItemsImports = 13
@@ -1172,6 +1174,14 @@ Global
 		{E9E32B45-3E10-4F50-A02E-A9339E99250A}.Release|Any CPU.Build.0 = Release|Any CPU
 		{E9E32B45-3E10-4F50-A02E-A9339E99250A}.Release|x86.ActiveCfg = Release|Any CPU
 		{E9E32B45-3E10-4F50-A02E-A9339E99250A}.Release|x86.Build.0 = Release|Any CPU
+		{D7280B45-2A83-4B8E-876A-06FF2427E7F3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D7280B45-2A83-4B8E-876A-06FF2427E7F3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D7280B45-2A83-4B8E-876A-06FF2427E7F3}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{D7280B45-2A83-4B8E-876A-06FF2427E7F3}.Debug|x86.Build.0 = Debug|Any CPU
+		{D7280B45-2A83-4B8E-876A-06FF2427E7F3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D7280B45-2A83-4B8E-876A-06FF2427E7F3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D7280B45-2A83-4B8E-876A-06FF2427E7F3}.Release|x86.ActiveCfg = Release|Any CPU
+		{D7280B45-2A83-4B8E-876A-06FF2427E7F3}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

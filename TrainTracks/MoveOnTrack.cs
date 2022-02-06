@@ -81,32 +81,11 @@ namespace TrainTracks
                 }
                 int facing = Game1.player.FacingDirection;
 
-                int currentSwitch = -1;
-                if (!turnedThisTile && feature.modData.TryGetValue(switchDataKey, out string switchString))
-                {
-                    Monitor.Log($"Got switch data for tile {tilePos}: {switchString}");
-                    SwitchData switchData = new(switchString);
-                    if (switchData.trackSwitches[facing] != null)
-                    {
-                        if (feature.modData.TryGetValue(currentSwitchKey, out string switchIndexString) && int.TryParse(switchIndexString, out int switchIndex) && switchIndex < switchData.trackSwitches[facing].Length)
-                        {
-                            currentSwitch = switchData.trackSwitches[facing][switchIndex];
-                            feature.modData[currentSwitchKey] = (switchIndex + 1) % switchData.trackSwitches[facing].Length +"";
-                        }
-                        else
-                        {
-                            currentSwitch = switchData.trackSwitches[facing][0];
-                            feature.modData[currentSwitchKey] = 1 % switchData.trackSwitches[facing].Length + "";
-                        }
-                        Monitor.Log($"Current switch: {currentSwitch}");
-                    }
-                }
-
                 Vector2 pos = new Vector2((float)Math.Round(Game1.player.Position.X), (float)Math.Round(Game1.player.Position.Y));
                 Vector2 tPos = feature.currentTileLocation * 64;
                 int dir = -1;
 
-                GetDirection(ref pos, tPos, ref dir, ref facing, currentSwitch, trackTileDataDict[index]);
+                GetDirection(ref pos, tPos, ref dir, ref facing, feature, trackTileDataDict[index]);
 
                 Vector2 move = Vector2.Zero;
                 switch (dir)
@@ -129,37 +108,59 @@ namespace TrainTracks
             }
         }
 
-        private void GetDirection(ref Vector2 pos, Vector2 tPos, ref int dir, ref int facing, int currentSwitch, bool[] trackData)
+        private void GetDirection(ref Vector2 pos, Vector2 tPos, ref int dir, ref int facing, TerrainFeature feature, bool[] trackData)
         {
             int leftTurn = facing == 0 ? 3 : facing - 1;
             int rightTurn = (facing + 1) % 4;
 
-
             // check forced turn
 
-            if (!turnedThisTile && currentSwitch >= 0 && currentSwitch < trackData.Length && trackData[currentSwitch] && ReachedTurnPos(pos, tPos, currentSwitch, facing))
+            if (!turnedThisTile && feature.modData.TryGetValue(switchDataKey, out string switchString))
             {
-                SetDir(ref pos, tPos, ref facing, ref dir, currentSwitch);
-                return;
+                int currentSwitch = -1;
+
+                SwitchData switchData = new(switchString);
+                int switchIndex = 0;
+                if (switchData.trackSwitches[facing] != null)
+                {
+                    if (feature.modData.TryGetValue(currentSwitchKey, out string switchIndexString) && int.TryParse(switchIndexString, out switchIndex) && switchIndex < switchData.trackSwitches[facing].Length)
+                    {
+                        Monitor.Log($"got switch {switchIndex}");
+                        currentSwitch = switchData.trackSwitches[facing][switchIndex];
+                    }
+                    else
+                    {
+                        Monitor.Log($"no switch index");
+                        currentSwitch = switchData.trackSwitches[facing][0];
+                    }
+                }
+                if (currentSwitch >= 0 && currentSwitch < trackData.Length && trackData[currentSwitch] && ReachedTurnPos(pos, tPos, currentSwitch, facing))
+                {
+                    Game1.currentLocation.terrainFeatures[feature.currentTileLocation].modData[currentSwitchKey] = ((switchIndex + 1) % switchData.trackSwitches[facing].Length) + "";
+                    Monitor.Log($"Turning on switch {switchIndex}/{switchData.trackSwitches[facing].Length}: {currentSwitch}; next switch {Game1.currentLocation.terrainFeatures[feature.currentTileLocation].modData[currentSwitchKey]}");
+                    SetDir(ref pos, tPos, ref facing, ref dir, currentSwitch);
+                    turnedThisTile = true;
+                    return;
+                }
             }
 
             // check input turn
 
             if (!turnedThisTile && Helper.Input.IsDown(Config.TurnLeftKey))
             {
-
                 if (trackData[leftTurn] && ReachedTurnPos(pos, tPos, leftTurn, facing))
                 {
                     SetDir(ref pos, tPos, ref facing, ref dir, leftTurn);
+                    turnedThisTile = true;
                     return;
                 }
             }
             if (!turnedThisTile && Helper.Input.IsDown(Config.TurnRightKey))
             {
-
                 if (trackData[rightTurn] && ReachedTurnPos(pos, tPos, rightTurn, facing))
                 {
                     SetDir(ref pos, tPos, ref facing, ref dir, rightTurn);
+                    turnedThisTile = true;
                     return;
                 }
             }
@@ -179,17 +180,13 @@ namespace TrainTracks
 
             if(trackData[leftTurn] && !trackData[rightTurn] && ReachedTurnPos(pos, tPos, leftTurn, facing))
             { 
-                Monitor.Log($"before {pos}");
                 SetDir(ref pos, tPos, ref facing, ref dir, leftTurn);
-                Monitor.Log($"after {pos}");
                 return;
             }
             
             if(!trackData[leftTurn] && trackData[rightTurn] && ReachedTurnPos(pos, tPos, rightTurn, facing))
             { 
-                Monitor.Log($"before {pos}");
                 SetDir(ref pos, tPos, ref facing, ref dir, rightTurn);
-                Monitor.Log($"after {pos}");
                 return;
             }
 

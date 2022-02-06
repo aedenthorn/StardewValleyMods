@@ -54,19 +54,23 @@ namespace ExtraMapLayers
         {
             Monitor.Log($"device type {Game1.mapDisplayDevice?.GetType()}");
 
-            harmony.Patch(
-               original: AccessTools.Method(Game1.mapDisplayDevice.GetType(), "DrawTile"),
-               prefix: new HarmonyMethod(typeof(ModEntry), nameof(ModEntry.DrawTile_Prefix))
-            );
             var pytkapi = Helper.ModRegistry.GetApi("Platonymous.Toolkit");
             if(pytkapi != null)
             {
                 Monitor.Log($"patching pytk");
                 harmony.Patch(
+                   original: AccessTools.Method(pytkapi.GetType().Assembly.GetType("PyTK.Extensions.PyMaps"), "drawLayer", new Type[] { typeof(Layer), typeof(IDisplayDevice), typeof(Rectangle), typeof(int), typeof(Location), typeof(bool) }),
+                   prefix: new HarmonyMethod(typeof(ModEntry), nameof(ModEntry.PyTK_drawLayer_Prefix))
+                );
+                harmony.Patch(
                    original: AccessTools.Method(pytkapi.GetType().Assembly.GetType("PyTK.Types.PyDisplayDevice"), "DrawTile"),
                    prefix: new HarmonyMethod(typeof(ModEntry), nameof(ModEntry.DrawTile_Prefix))
                 );
             }
+            harmony.Patch(
+               original: AccessTools.Method(Game1.mapDisplayDevice.GetType(), "DrawTile"),
+               prefix: new HarmonyMethod(typeof(ModEntry), nameof(ModEntry.DrawTile_Prefix))
+            );
         }
 
         public static IEnumerable<CodeInstruction> Layer_DrawNormal_Transpiler(IEnumerable<CodeInstruction> instructions)
@@ -107,7 +111,6 @@ namespace ExtraMapLayers
             }
         }
 
-
         public static int lastLayerDepth = 0;
         public static void DrawTile_Prefix(ref float layerDepth)
         {
@@ -118,6 +121,10 @@ namespace ExtraMapLayers
                 lastLayerDepth = thisLayerDepth;
             }
             layerDepth += thisLayerDepth / 10000f;
+        }
+       public static bool PyTK_drawLayer_Prefix(Layer layer)
+        {
+            return (!config.EnableMod || !Regex.IsMatch(layer.Id, "[0-9]$"));
         }
     }
 }

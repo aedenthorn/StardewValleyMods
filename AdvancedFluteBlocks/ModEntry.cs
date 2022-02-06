@@ -145,6 +145,12 @@ namespace AdvancedFluteBlocks
                 getValue: () => Config.ToneModKey,
                 setValue: value => Config.ToneModKey = value
             );
+            configMenu.AddNumberOption(
+                mod: ModManifest,
+                name: () => "Pitch Step",
+                getValue: () => Config.PitchStep,
+                setValue: value => Config.PitchStep = value
+            );
         }
     }
 }

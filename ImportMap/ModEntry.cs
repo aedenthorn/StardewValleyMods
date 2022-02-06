@@ -147,6 +147,26 @@ namespace ImportMap
                     }
                 }
             }
+            if (layersById.TryGetValue("DrumBlocks", out Layer drumLayer))
+            {
+                foreach (var v in Game1.player.currentLocation.objects.Keys)
+                {
+                    if (Game1.player.currentLocation.objects[v] is not null && Game1.player.currentLocation.objects[v].Name == "Drum Block")
+                        Game1.player.currentLocation.objects.Remove(v);
+                }
+                for (int y = 0; y < drumLayer.LayerHeight; y++)
+                {
+                    for (int x = 0; x < drumLayer.LayerWidth; x++)
+                    {
+                        if(drumLayer.Tiles[x, y] != null && drumLayer.Tiles[x, y].TileIndex >= 0 && !Game1.player.currentLocation.objects.ContainsKey(new Vector2(x, y)))
+                        {
+                            var block = new Object(new Vector2(x, y), 463, 1);
+                            block.preservedParentSheetIndex.Value = drumLayer.Tiles[x, y].TileIndex;
+                            Game1.player.currentLocation.objects[new Vector2(x, y)] = block;
+                        }
+                    }
+                }
+            }
             if (layersById.TryGetValue("Objects", out Layer objLayer))
             {
                 for (int y = 0; y < objLayer.LayerHeight; y++)

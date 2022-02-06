@@ -31,6 +31,7 @@ namespace TrainTracks
         public static int currentTrackIndex;
         public static int trackLength = 17;
         public static Vector2 lastTile = new Vector2(-1, -1);
+        public static Vector2 lastPlacementTile = new Vector2(-1, -1);
         public static string lastLocation = "";
         public static bool canWarp = true;
         public static bool turnedThisTile;
@@ -150,7 +151,7 @@ namespace TrainTracks
                 }
                 if (e.Button == Config.PlaceTrackKey)
                 {
-                    TryPlaceTrack(Game1.player.currentLocation, Game1.currentCursorTile, currentTrackIndex, null);
+                    lastPlacementTile = new Vector2(-1, -1);
                     Helper.Input.Suppress(e.Button);
                     return;
                 }
@@ -180,7 +181,6 @@ namespace TrainTracks
                     if (Config.SpeedSound.Length > 0)
                         Game1.player.currentLocation.playSound(Config.SpeedSound);
                     currentSpeed = Math.Min(Config.MaxSpeed, currentSpeed + 0.5f);
-                    Monitor.Log($"Current speed {currentSpeed}");
                 }
                 Helper.Input.Suppress(e.Button);
                 return;
@@ -190,7 +190,6 @@ namespace TrainTracks
                 if(currentSpeed > 0)
                 {
                     currentSpeed = Math.Max(0, currentSpeed - 0.5f);
-                    Monitor.Log($"Current speed {currentSpeed}");
                     if (Config.SpeedSound.Length > 0)
                         Game1.player.currentLocation.playSound(Config.SpeedSound);
                 }
@@ -379,7 +378,14 @@ namespace TrainTracks
         {
             if (placingTracks && Game1.activeClickableMenu != null)
                 placingTracks = false;
-            if (Config.EnableMod && Game1.player.mount != null && Game1.player.mount.modData.ContainsKey(trainKey) && !Game1.isWarping)
+            if (!Config.EnableMod)
+                return;
+            if (placingTracks && (Helper.Input.IsDown(Config.PlaceTrackKey) || Helper.Input.IsSuppressed(Config.PlaceTrackKey)) && Game1.currentCursorTile != lastPlacementTile)
+            {
+                lastPlacementTile = Game1.currentCursorTile;
+                TryPlaceTrack(Game1.player.currentLocation, Game1.currentCursorTile, currentTrackIndex, null);
+            }
+            if (Game1.player.mount != null && Game1.player.mount.modData.ContainsKey(trainKey) && !Game1.isWarping)
                 MoveOnTrack();
         }
 
