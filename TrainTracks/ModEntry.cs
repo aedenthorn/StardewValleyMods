@@ -20,6 +20,7 @@ namespace TrainTracks
         public static readonly string trainKey = "aedenthorn.TrainTracks/Train";
         public static readonly string trackKey = "aedenthorn.TrainTracks/index";
         public static readonly string switchDataKey = "aedenthorn.TrainTracks/switchData";
+        public static readonly string speedDataKey = "aedenthorn.TrainTracks/speedData";
         public static readonly string currentSwitchKey = "aedenthorn.TrainTracks/switch";
 
         public static ModEntry context;
@@ -82,7 +83,7 @@ namespace TrainTracks
         }
         public override object GetApi()
         {
-            return new TrainTrackApi();
+            return new TrainTracksApi();
         }
 
         private void GameLoop_SaveLoaded(object sender, StardewModdingAPI.Events.SaveLoadedEventArgs e)
@@ -383,7 +384,7 @@ namespace TrainTracks
             if (placingTracks && (Helper.Input.IsDown(Config.PlaceTrackKey) || Helper.Input.IsSuppressed(Config.PlaceTrackKey)) && Game1.currentCursorTile != lastPlacementTile)
             {
                 lastPlacementTile = Game1.currentCursorTile;
-                TryPlaceTrack(Game1.player.currentLocation, Game1.currentCursorTile, currentTrackIndex, null);
+                TryPlaceTrack(Game1.player.currentLocation, Game1.currentCursorTile, currentTrackIndex);
             }
             if (Game1.player.mount != null && Game1.player.mount.modData.ContainsKey(trainKey) && !Game1.isWarping)
                 MoveOnTrack();

@@ -29,6 +29,8 @@ namespace TrainTracks
             new bool[] { true, true, true, false }, // 15
             new bool[] { true, true, true, true }
         };
+        private TerrainFeature currentFeature;
+        private int trackIndex;
 
         private void MoveOnTrack()
         {
@@ -52,6 +54,7 @@ namespace TrainTracks
             {
                 Vector2 offset = GetOffset(Game1.player.FacingDirection);
                 var tilePos = new Vector2((int)((Game1.player.Position.X + offset.X) / 64), (int)((Game1.player.Position.Y + offset.Y) / 64));
+                
                 if (tilePos != lastTile)
                 {
                     if (lastLocation != Game1.currentLocation.Name)
@@ -66,9 +69,19 @@ namespace TrainTracks
                     }
                     lastTile = tilePos;
                     turnedThisTile = false;
+                    currentFeature = null;
+                    if (!Game1.player.currentLocation.terrainFeatures.TryGetValue(tilePos, out TerrainFeature feature) || feature is not Flooring || !feature.modData.TryGetValue(trackKey, out string indexString) || !int.TryParse(indexString, out trackIndex))
+                    {
+                        Monitor.Log($"Off track", StardewModdingAPI.LogLevel.Warn);
+                        return;
+                    }
+                    if(feature.modData.TryGetValue(speedDataKey, out string speedString) && int.TryParse(speedString, out int speed))
+                    {
+                        currentSpeed = speed;
+                        Monitor.Log($"Tile set speed to {speed}");
+                    }
+                    currentFeature = feature;
                 }
-                if (!Game1.player.currentLocation.terrainFeatures.TryGetValue(tilePos, out TerrainFeature feature) || feature is not Flooring || !feature.modData.TryGetValue(trackKey, out string indexString) || !int.TryParse(indexString, out int index))
-                    return;
                 if (canWarp)
                 {
                     Warp warp = Game1.player.currentLocation.isCollidingWithWarp(Game1.player.GetBoundingBox(), Game1.player);
@@ -79,13 +92,16 @@ namespace TrainTracks
                         return;
                     }
                 }
+                if (currentFeature == null)
+                    return;
+
                 int facing = Game1.player.FacingDirection;
 
                 Vector2 pos = new Vector2((float)Math.Round(Game1.player.Position.X), (float)Math.Round(Game1.player.Position.Y));
-                Vector2 tPos = feature.currentTileLocation * 64;
+                Vector2 tPos = currentFeature.currentTileLocation * 64;
                 int dir = -1;
 
-                GetDirection(ref pos, tPos, ref dir, ref facing, feature, trackTileDataDict[index]);
+                GetDirection(ref pos, tPos, ref dir, ref facing, currentFeature, trackTileDataDict[trackIndex]);
 
                 Vector2 move = Vector2.Zero;
                 switch (dir)
@@ -125,19 +141,19 @@ namespace TrainTracks
                 {
                     if (feature.modData.TryGetValue(currentSwitchKey, out string switchIndexString) && int.TryParse(switchIndexString, out switchIndex) && switchIndex < switchData.trackSwitches[facing].Length)
                     {
-                        Monitor.Log($"got switch {switchIndex}");
+                        //Monitor.Log($"got switch {switchIndex}");
                         currentSwitch = switchData.trackSwitches[facing][switchIndex];
                     }
                     else
                     {
-                        Monitor.Log($"no switch index");
+                        //Monitor.Log($"no switch index");
                         currentSwitch = switchData.trackSwitches[facing][0];
                     }
                 }
                 if (currentSwitch >= 0 && currentSwitch < trackData.Length && trackData[currentSwitch] && ReachedTurnPos(pos, tPos, currentSwitch, facing))
                 {
-                    Game1.currentLocation.terrainFeatures[feature.currentTileLocation].modData[currentSwitchKey] = ((switchIndex + 1) % switchData.trackSwitches[facing].Length) + "";
-                    Monitor.Log($"Turning on switch {switchIndex}/{switchData.trackSwitches[facing].Length}: {currentSwitch}; next switch {Game1.currentLocation.terrainFeatures[feature.currentTileLocation].modData[currentSwitchKey]}");
+                    feature.modData[currentSwitchKey] = ((switchIndex + 1) % switchData.trackSwitches[facing].Length) + "";
+                    //Monitor.Log($"Turning on switch {switchIndex}/{switchData.trackSwitches[facing].Length}: {currentSwitch}; next switch {Game1.currentLocation.terrainFeatures[feature.currentTileLocation].modData[currentSwitchKey]}");
                     SetDir(ref pos, tPos, ref facing, ref dir, currentSwitch);
                     turnedThisTile = true;
                     return;

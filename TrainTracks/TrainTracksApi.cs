@@ -4,11 +4,11 @@ using StardewValley.TerrainFeatures;
 
 namespace TrainTracks
 {
-    public class TrainTrackApi
+    public class TrainTracksApi
     {
-        public bool TryPlaceTrack(GameLocation location, Vector2 tile, int index, string switchData, bool force = false)
+        public bool TryPlaceTrack(GameLocation location, Vector2 tile, int index, string switchData, int speed, bool force = false)
         {
-            return ModEntry.TryPlaceTrack(location, tile, index, switchData, force);
+            return ModEntry.TryPlaceTrack(location, tile, index, switchData, speed, force);
 
         }
         public bool IsTrackAt(GameLocation location, Vector2 tile)

@@ -22,6 +22,9 @@
     <None Update="assets\horse.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <None Update="assets\EXAMPLE_import.tmx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Update="assets\numbers.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>

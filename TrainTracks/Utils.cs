@@ -9,7 +9,7 @@ namespace TrainTracks
     public partial class ModEntry : Mod, IAssetLoader
     {
 
-        public static bool TryPlaceTrack(GameLocation location, Vector2 tile, int index, string switchData, bool force = false)
+        public static bool TryPlaceTrack(GameLocation location, Vector2 tile, int index, string switchData = null, int speed = -1, bool force = false)
         {
             if (!location.terrainFeatures.TryGetValue(tile, out TerrainFeature oldFeature) || (force && oldFeature is not Flooring) || (oldFeature is Flooring && oldFeature.modData.ContainsKey(trackKey)))
             {
@@ -37,6 +37,12 @@ namespace TrainTracks
             {
                 SMonitor.Log($"Adding switch data to track {tile}: {switchData}");
                 location.terrainFeatures[tile].modData[switchDataKey] = switchData;
+            }
+            
+            if(speed > -1)
+            {
+                SMonitor.Log($"Adding speed to track {tile}: {speed}");
+                location.terrainFeatures[tile].modData[speedDataKey] = speed+"";
             }
 
             return true;
