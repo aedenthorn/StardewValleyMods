@@ -45,14 +45,14 @@ namespace FreeLove
         {
             try
             {
-                if (!Config.EnableMod)
+                if (spouseName == null || !Config.EnableMod)
                     return true;
                 var spouses = Misc.GetSpouses(__instance.owner, true);
                 
-                if (!spouses.ContainsKey(spouseName) || spouses[spouseName].isMoving() || !Misc.IsInBed(__instance, spouses[spouseName].GetBoundingBox()))
+                if (!spouses.TryGetValue(spouseName, out NPC spouse) || spouse is null || spouse.isMoving() || !Misc.IsInBed(__instance, spouse.GetBoundingBox()))
                     return true;
 
-                __result = spouses[spouseName].getTileLocationPoint();
+                __result = spouse.getTileLocationPoint();
                 return false;
             }
             catch (Exception ex)

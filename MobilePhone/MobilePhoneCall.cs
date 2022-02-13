@@ -114,14 +114,10 @@ namespace MobilePhone
 
             if (inCallReminiscence == null)
             {
-                Reminiscence r;
-                if (contentPackReminiscences.ContainsKey(npc.Name))
+                Reminiscence r = Helper.Data.ReadJsonFile<Reminiscence>(Path.Combine("assets", "events", $"{npc.Name}.json")) ?? new Reminiscence();
+                if (contentPackReminiscences.TryGetValue(npc.Name, out Reminiscence cr))
                 {
-                    r = contentPackReminiscences[npc.Name];
-                }
-                else
-                {
-                    r = Helper.Data.ReadJsonFile<Reminiscence>(Path.Combine("assets", "events", $"{npc.Name}.json")) ?? new Reminiscence();
+                    r.events.AddRange(cr.events);
                 }
                 Monitor.Log($"Total Reminisces: {r.events.Count}");
                 r.WeedOutUnseen();

@@ -30,7 +30,7 @@
     },
     {
       "name": "Susan-event-4",
-      "location": "ShearwaterBridge",
+      "location": "Custom_ShearwaterBridge",
       "eventId": "1000081",
       "night": false,
       "mail": null

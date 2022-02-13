@@ -1,18 +1,18 @@
 ﻿{
-  "Name": "Free Love",
+  "Name": "Instance Editor",
   "Author": "aedenthorn",
-  "Version": "0.8.4",
-  "Description": "Free Love",
-  "UniqueID": "aedenthorn.FreeLove",
-  "EntryDll": "FreeLove.dll",
+  "Version": "0.1.0",
+  "Description": "Instance Editor.",
+  "UniqueID": "aedenthorn.InstanceEditor",
+  "EntryDll": "InstanceEditor.dll",
   "MinimumApiVersion": "3.13.0",
-  "UpdateKeys": [ "Nexus:10021" ],
   "ModUpdater": {
     "Repository": "StardewValleyMods",
     "User": "aedenthorn",
     "Directory": "_releases",
-    "ModFolder": "FreeLove"
+    "ModFolder": "InstanceEditor"
   },
+  "UpdateKeys": [ "Nexus:" ],
   "Dependencies": [
     {
       "UniqueID": "Platonymous.ModUpdater",

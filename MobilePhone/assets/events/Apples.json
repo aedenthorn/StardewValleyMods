@@ -2,14 +2,14 @@
   "events": [
     {
       "name": "Apples-event-0",
-      "location": "forestwest",
+      "location": "custom_forestwest",
       "eventId": "7776002",
       "night": false,
       "mail": null
     },
     {
       "name": "Apples-event-1",
-      "location": "forestwest",
+      "location": "custom_forestwest",
       "eventId": "7776003",
       "night": false,
       "mail": null
@@ -23,21 +23,21 @@
     },
     {
       "name": "Apples-event-3",
-      "location": "AuroraVineyard",
+      "location": "Custom_AuroraVineyard",
       "eventId": "7776005",
       "night": false,
       "mail": null
     },
     {
       "name": "Apples-event-4",
-      "location": "ForestWest",
+      "location": "custom_forestwest",
       "eventId": "7776006",
       "night": false,
       "mail": null
     },
     {
       "name": "Apples-event-5",
-      "location": "AuroraVineyard",
+      "location": "Custom_AuroraVineyard",
       "eventId": "7776007",
       "night": false,
       "mail": null

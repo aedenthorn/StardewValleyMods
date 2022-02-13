@@ -82,7 +82,10 @@ namespace MobilePhone
                             string eventPath = Path.Combine("assets", "events", Path.GetFileName(eventFile));
                             Monitor.Log($"Adding events {Path.GetFileName(eventFile)} from {contentPack.DirectoryPath}");
                             Reminiscence r = contentPack.ReadJsonFile<Reminiscence>(eventPath);
-                            MobilePhoneCall.contentPackReminiscences.Add(Path.GetFileName(eventFile).Replace(".json", ""), r);
+                            var key = Path.GetFileName(eventFile).Replace(".json", "");
+                            MobilePhoneCall.contentPackReminiscences.TryAdd(key, new Reminiscence());
+                            MobilePhoneCall.contentPackReminiscences[key].events.AddRange(r.events);
+
                             Monitor.Log($"Added event {Path.GetFileName(eventFile)} from {contentPack.DirectoryPath}");
                         }
                         catch { }

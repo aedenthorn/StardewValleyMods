@@ -49,6 +49,8 @@ namespace FreeLove
             }
             foreach (NPC spouse in allSpouses)
             {
+                if (spouse == null)
+                    continue;
                 Farmer f = spouse.getSpouse();
                 if (!ModEntry.Config.RoommateRomance && f.friendshipData[spouse.Name].RoommateMarriage)
                     continue;

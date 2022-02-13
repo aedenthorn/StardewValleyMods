@@ -2,14 +2,14 @@
   "events": [
     {
       "name": "Victor-event-0",
-      "location": "JenkinsHouse",
+      "location": "Custom_JenkinsHouse",
       "eventId": "2000000",
       "night": false,
       "mail": null
     },
     {
       "name": "Victor-event-1",
-      "location": "hearwaterBridge",
+      "location": "Custom_ShearwaterBridge",
       "eventId": "2000050",
       "night": false,
       "mail": null
@@ -30,7 +30,7 @@
     },
     {
       "name": "Victor-event-4",
-      "location": "JenkinsHouse",
+      "location": "Custom_JenkinsHouse",
       "eventId": "2000003",
       "night": false,
       "mail": null
