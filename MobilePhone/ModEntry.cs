@@ -98,6 +98,7 @@ namespace MobilePhone
         internal static bool isReminiscing;
         internal static bool isInviting;
         internal static INpcAdventureModApi npcAdventureModApi;
+        internal static IHDPortraitsAPI iHDPortraitsAPI;
 
         public static LocationRequest callLocation;
         internal static NetPosition callPosition;

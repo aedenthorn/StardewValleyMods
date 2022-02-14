@@ -148,20 +148,27 @@ namespace MobilePhone
             if (ModEntry.callingNPC != null)
             {
                 Rectangle destRect;
-                Rectangle portraitSource = Game1.getSourceRectForStandardTileSheet(ModEntry.callingNPC.Portrait, 0, 64, 64);
                 float scale;
-                if ((float)portraitSource.Height * screenSize.X / (float)portraitSource.Width > screenSize.Y - Config.AppHeaderHeight)
+                if (screenSize.X > screenSize.Y - Config.AppHeaderHeight)
                 {
-                    scale = (screenSize.Y - Config.AppHeaderHeight) / (float)portraitSource.Height;
-                    destRect = new Rectangle((int)(screenPos.X + screenSize.X / 2f - portraitSource.Width * scale / 2f), (int)screenPos.Y, (int)(portraitSource.Width * scale), (int)screenSize.Y - Config.AppHeaderHeight);
+                    scale = screenSize.Y - Config.AppHeaderHeight;
+                    destRect = new Rectangle((int)(screenPos.X + screenSize.X / 2f - scale / 2f), (int)screenPos.Y, (int)scale, (int)screenSize.Y - Config.AppHeaderHeight);
                 }
                 else
                 {
-                    scale = screenSize.X / (float)portraitSource.Width;
-                    //Monitor.Log($"{screenSize} {portraitSource.Width},{portraitSource.Height} {scale}");
-                    destRect = new Rectangle((int)(screenPos.X), (int)(screenPos.Y + (screenSize.Y - Config.AppHeaderHeight) / 2f - portraitSource.Height * scale / 2f), (int)screenSize.X, (int)(portraitSource.Height * scale));
+                    scale = screenSize.X;
+                    destRect = new Rectangle((int)(screenPos.X), (int)(screenPos.Y + (screenSize.Y - Config.AppHeaderHeight) / 2f - scale / 2f), (int)screenSize.X, (int)scale);
                 }
-                e.SpriteBatch.Draw(ModEntry.callingNPC.Portrait, destRect, new Rectangle?(portraitSource), Color.White);
+                if (ModEntry.iHDPortraitsAPI == null)
+                {
+                    Rectangle portraitSource = new Rectangle(0, 0, 64, 64);
+                    e.SpriteBatch.Draw(ModEntry.callingNPC.Portrait, destRect, new Rectangle?(portraitSource), Color.White);
+                }
+                else
+                {
+                    ModEntry.iHDPortraitsAPI.DrawPortrait(e.SpriteBatch, ModEntry.callingNPC, 0, destRect);
+                }
+
                 SpriteText.drawStringHorizontallyCenteredAt(e.SpriteBatch, ModEntry.callingNPC.getName(), destRect.X + destRect.Width / 2, destRect.Bottom + 16, 999999, -1, 999999, 1f, 0.88f, false, -1, 99999);
 
                 if (!ModEntry.inCall)

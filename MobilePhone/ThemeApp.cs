@@ -359,7 +359,7 @@ namespace MobilePhone
                     if (itemPos.Y < startListY)
                     {
                         cutTop = (int)Math.Ceiling((startListY - itemPos.Y) / yScale);
-                        sourceRect = new Rectangle(r.X, (int)(r.Y + cutTop), r.Width, (int)(r.Height - cutTop));
+                        sourceRect = new Rectangle(r.X, r.Y + cutTop, r.Width, r.Height - cutTop);
                         destRect.Y = startListY;
                         destRect.Height -= (int)(cutTop * yScale);
                         itemPos = new Vector2(itemPos.X, startListY);

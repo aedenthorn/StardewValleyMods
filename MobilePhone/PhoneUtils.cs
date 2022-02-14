@@ -116,7 +116,7 @@ namespace MobilePhone
             ModEntry.phonePosition = GetPhonePosition();
             ModEntry.screenPosition = GetScreenPosition();
             ModEntry.phoneIconPosition = GetPhoneIconPosition();
-            ModEntry.screenRect = new Rectangle((int)ModEntry.screenPosition.X, (int)ModEntry.screenPosition.Y, (int)ModEntry.screenWidth, (int)ModEntry.screenHeight);
+            ModEntry.screenRect = new Rectangle((int)ModEntry.screenPosition.X, (int)ModEntry.screenPosition.Y, ModEntry.screenWidth, ModEntry.screenHeight);
             ModEntry.phoneRect = new Rectangle((int)ModEntry.phonePosition.X, (int)ModEntry.phonePosition.Y, ModEntry.phoneWidth, ModEntry.phoneHeight);
             GetArrowPositions();
             ModEntry.appColumns = (ModEntry.screenWidth - Config.IconMarginX) / (Config.IconWidth + Config.IconMarginX);

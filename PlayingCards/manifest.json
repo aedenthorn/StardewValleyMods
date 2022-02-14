@@ -1,18 +1,18 @@
 ﻿{
-  "Name": "Mobile Phone",
+  "Name": "Playing Cards",
   "Author": "aedenthorn",
-  "Version": "2.7.0",
-  "Description": "Gives you a mobile phone.",
-  "UniqueID": "aedenthorn.MobilePhone",
-  "EntryDll": "MobilePhone.dll",
+  "Version": "0.1.0",
+  "Description": "Playing Cards.",
+  "UniqueID": "aedenthorn.PlayingCards",
+  "EntryDll": "PlayingCards.dll",
   "MinimumApiVersion": "3.13.0",
-  "UpdateKeys": [ "Nexus:6523" ],
   "ModUpdater": {
     "Repository": "StardewValleyMods",
     "User": "aedenthorn",
     "Directory": "_releases",
-    "ModFolder": "MobilePhone"
+    "ModFolder": "PlayingCards"
   },
+  "UpdateKeys": [ "Nexus:" ],
   "Dependencies": [
     {
       "UniqueID": "Platonymous.ModUpdater",

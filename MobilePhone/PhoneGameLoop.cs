@@ -180,6 +180,15 @@ namespace MobilePhone
                     ModEntry.npcAdventureModApi = api;
                 }
             }
+            if (Helper.ModRegistry.IsLoaded("tlitookilakin.HDPortraits"))
+            {
+                IHDPortraitsAPI api = Helper.ModRegistry.GetApi<IHDPortraitsAPI>("tlitookilakin.HDPortraits");
+                if (api != null)
+                {
+                    Monitor.Log("Loaded HD Portraits api successfully");
+                    ModEntry.iHDPortraitsAPI = api;
+                }
+            }
         }
 
 

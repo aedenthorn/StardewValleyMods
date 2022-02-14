@@ -53,7 +53,7 @@ namespace MobilePhone
                     Monitor.Log($"Reminiscing at night");
                     __instance.LightLevel = 0f;
                     Game1.globalOutdoorLighting = 1f;
-                    float transparency = Math.Min(0.93f, 0.75f + ((float)(2400 - Game1.getTrulyDarkTime()) + (float)Game1.gameTimeInterval / 7000f * 16.6f) * 0.000625f);
+                    float transparency = Math.Min(0.93f, 0.75f + (2400 - Game1.getTrulyDarkTime() + Game1.gameTimeInterval / 7000f * 16.6f) * 0.000625f);
                     Game1.outdoorLight = Game1.eveningColor * transparency;
                     if (!(__instance is MineShaft) && !(__instance is Woods))
                     {

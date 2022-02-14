@@ -67,7 +67,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BiggerMineFloors", "BiggerM
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MobileAudioPlayer", "MobileAudioPlayer\MobileAudioPlayer.csproj", "{15A69600-5DB0-4F21-B3ED-C68D9BB0A993}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MobileTelevision", "MobileTelevision\MobileTelevision.csproj", "{FA66B275-23EF-4E2F-A597-F37601DA3A33}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MobileTelevision", "MobileTelevision\MobileTelevision.csproj", "{FA66B275-23EF-4E2F-A597-F37601DA3A33}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HereFishy", "HereFishy\HereFishy.csproj", "{6C0EF6FF-4CE7-4A21-AC71-2E45C342727B}"
 EndProject
@@ -245,6 +245,8 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "InstanceEditor", "InstanceEditor\InstanceEditor.csproj", "{7082C817-661D-4865-8DEC-81982F46E8C1}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FieldHarvest", "FieldHarvest\FieldHarvest.csproj", "{54E200E6-6508-4645-A125-89EE23DE6FB8}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PlayingCards", "PlayingCards\PlayingCards.csproj", "{CE1B7FE7-8837-4817-AABF-9FE5A43CA212}"
 EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
@@ -1202,6 +1204,14 @@ Global
 		{54E200E6-6508-4645-A125-89EE23DE6FB8}.Release|Any CPU.Build.0 = Release|Any CPU
 		{54E200E6-6508-4645-A125-89EE23DE6FB8}.Release|x86.ActiveCfg = Release|Any CPU
 		{54E200E6-6508-4645-A125-89EE23DE6FB8}.Release|x86.Build.0 = Release|Any CPU
+		{CE1B7FE7-8837-4817-AABF-9FE5A43CA212}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CE1B7FE7-8837-4817-AABF-9FE5A43CA212}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CE1B7FE7-8837-4817-AABF-9FE5A43CA212}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{CE1B7FE7-8837-4817-AABF-9FE5A43CA212}.Debug|x86.Build.0 = Debug|Any CPU
+		{CE1B7FE7-8837-4817-AABF-9FE5A43CA212}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CE1B7FE7-8837-4817-AABF-9FE5A43CA212}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CE1B7FE7-8837-4817-AABF-9FE5A43CA212}.Release|x86.ActiveCfg = Release|Any CPU
+		{CE1B7FE7-8837-4817-AABF-9FE5A43CA212}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
