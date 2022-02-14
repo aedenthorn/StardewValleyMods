@@ -1,0 +1,22 @@
+﻿{
+  "Name": "Field Harvest",
+  "Author": "aedenthorn",
+  "Version": "0.2.0",
+  "Description": "Field Harvest.",
+  "UniqueID": "aedenthorn.FieldHarvest",
+  "EntryDll": "FieldHarvest.dll",
+  "MinimumApiVersion": "3.13.0",
+  "ModUpdater": {
+    "Repository": "StardewValleyMods",
+    "User": "aedenthorn",
+    "Directory": "_releases",
+    "ModFolder": "FieldHarvest"
+  },
+  "UpdateKeys": [ "Nexus:11019" ],
+  "Dependencies": [
+    {
+      "UniqueID": "Platonymous.ModUpdater",
+      "IsRequired": false
+    }
+  ]
+}

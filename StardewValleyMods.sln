@@ -244,6 +244,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AdvancedDrumBlocks", "Advan
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "InstanceEditor", "InstanceEditor\InstanceEditor.csproj", "{7082C817-661D-4865-8DEC-81982F46E8C1}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FieldHarvest", "FieldHarvest\FieldHarvest.csproj", "{54E200E6-6508-4645-A125-89EE23DE6FB8}"
+EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
 		_releases\_releases.projitems*{047040e0-3d07-46e5-852b-d1d45cd57bb8}*SharedItemsImports = 13
@@ -1192,6 +1194,14 @@ Global
 		{7082C817-661D-4865-8DEC-81982F46E8C1}.Release|Any CPU.Build.0 = Release|Any CPU
 		{7082C817-661D-4865-8DEC-81982F46E8C1}.Release|x86.ActiveCfg = Release|Any CPU
 		{7082C817-661D-4865-8DEC-81982F46E8C1}.Release|x86.Build.0 = Release|Any CPU
+		{54E200E6-6508-4645-A125-89EE23DE6FB8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{54E200E6-6508-4645-A125-89EE23DE6FB8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{54E200E6-6508-4645-A125-89EE23DE6FB8}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{54E200E6-6508-4645-A125-89EE23DE6FB8}.Debug|x86.Build.0 = Debug|Any CPU
+		{54E200E6-6508-4645-A125-89EE23DE6FB8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{54E200E6-6508-4645-A125-89EE23DE6FB8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{54E200E6-6508-4645-A125-89EE23DE6FB8}.Release|x86.ActiveCfg = Release|Any CPU
+		{54E200E6-6508-4645-A125-89EE23DE6FB8}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

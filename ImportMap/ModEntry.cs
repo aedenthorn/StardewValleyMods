@@ -215,7 +215,7 @@ namespace ImportMap
                             {
                                 Crop crop = new Crop(objLayer.Tiles[x, y].TileIndex, x, y);
                                 HoeDirt dirt = new HoeDirt(1, crop);
-                                Game1.player.currentLocation.terrainFeatures[new Vector2(x, y)] = dirt;
+                                Game1.player.currentLocation.terrainFeatures.Add(new Vector2(x, y), dirt);
                                 continue;
                             }
                             var cropkvp = dict.FirstOrDefault(kvp => kvp.Value.Split('/')[3] == objLayer.Tiles[x, y].TileIndex + "");
@@ -224,7 +224,7 @@ namespace ImportMap
                                 Crop crop = new Crop(cropkvp.Key, x, y);
                                 crop.growCompletely();
                                 HoeDirt dirt = new HoeDirt(1, crop);
-                                Game1.player.currentLocation.terrainFeatures[new Vector2(x, y)] = dirt;
+                                Game1.player.currentLocation.terrainFeatures.Add(new Vector2(x, y), dirt);
                             }
                             else
                             {
