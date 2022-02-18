@@ -104,12 +104,12 @@ namespace FurnitureDisplayFramework
                             var rots = parts[1].Split(',');
                             foreach(var rot in rots)
                             {
-                                furnitureDisplayDict.Add(parts[0]+":"+rot, kvp.Value);
+                                furnitureDisplayDict.TryAdd(parts[0]+":"+rot, kvp.Value);
                             }
                         }
                         else
                         {
-                            furnitureDisplayDict.Add(name, kvp.Value);
+                            furnitureDisplayDict.TryAdd(name, kvp.Value);
                         }
                         Monitor.Log($"Loaded furniture display template for {name}");
                     }
@@ -122,12 +122,12 @@ namespace FurnitureDisplayFramework
                         var rots = parts[1].Split(',');
                         foreach (var rot in rots)
                         {
-                            furnitureDisplayDict.Add(parts[0] + ":" + rot, kvp.Value);
+                            furnitureDisplayDict.TryAdd(parts[0] + ":" + rot, kvp.Value);
                         }
                     }
                     else
                     {
-                        furnitureDisplayDict.Add(kvp.Key, kvp.Value);
+                        furnitureDisplayDict.TryAdd(kvp.Key, kvp.Value);
                     }
                     Monitor.Log($"Loaded furniture display template for {kvp.Key}");
                 }

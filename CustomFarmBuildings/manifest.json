@@ -1,18 +1,18 @@
 ﻿{
-  "Name": "Sound Effect Replacement",
+  "Name": "Custom Farm Buildings",
   "Author": "aedenthorn",
-  "Version": "0.2.0",
-  "Description": "Sound Effect Replacement.",
-  "UniqueID": "aedenthorn.SoundEffectReplacement",
-  "EntryDll": "SoundEffectReplacement.dll",
+  "Version": "0.1.0",
+  "Description": "Custom Farm Buildings.",
+  "UniqueID": "aedenthorn.CustomFarmBuildings",
+  "EntryDll": "CustomFarmBuildings.dll",
   "MinimumApiVersion": "3.13.0",
   "ModUpdater": {
     "Repository": "StardewValleyMods",
     "User": "aedenthorn",
     "Directory": "_releases",
-    "ModFolder": "SoundEffectReplacement"
+    "ModFolder": "CustomFarmBuildings"
   },
-  "UpdateKeys": [ "Nexus:10232" ],
+  "UpdateKeys": [ "Nexus:" ],
   "Dependencies": [
     {
       "UniqueID": "Platonymous.ModUpdater",

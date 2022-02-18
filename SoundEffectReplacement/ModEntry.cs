@@ -84,18 +84,22 @@ namespace SoundEffectReplacement
  
             replacementDict = SHelper.Content.Load<Dictionary<string, string>>(dictPath, ContentSource.GameContent) ?? new Dictionary<string, string>();
             //SMonitor.Log($"Loaded {replacementDict.Count} replacements");
-            foreach(string replacement in replacementDict.Values)
+            foreach(string replacementList in replacementDict.Values)
             {
-                if (replacement.Contains("."))
+                var parts = replacementList.Split('|');
+                foreach(string replacement in parts)
                 {
-                    if (soundEffectDict.ContainsKey(replacement))
-                        continue;
-                    string path = Path.Combine(Helper.DirectoryPath, replacement);
-                    if (File.Exists(path))
+                    if (replacement.Contains("."))
                     {
-                        FileStream fs = new FileStream(path, FileMode.Open);
-                        soundEffectDict[replacement] = SoundEffect.FromStream(fs);
-                        fs.Dispose();
+                        if (soundEffectDict.ContainsKey(replacement))
+                            continue;
+                        string path = Path.Combine(Helper.DirectoryPath, replacement);
+                        if (File.Exists(path))
+                        {
+                            FileStream fs = new FileStream(path, FileMode.Open);
+                            soundEffectDict[replacement] = SoundEffect.FromStream(fs);
+                            fs.Dispose();
+                        }
                     }
                 }
             }
