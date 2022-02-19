@@ -7,6 +7,7 @@ using StardewValley.BellsAndWhistles;
 using StardewValley.Menus;
 using System;
 using System.Collections.Generic;
+using System.IO;
 
 namespace StardewRPG
 {
@@ -49,6 +50,11 @@ namespace StardewRPG
             harmony.Patch(
                original: AccessTools.Method(typeof(Farmer), "performBeginUsingTool"),
                prefix: new HarmonyMethod(typeof(ModEntry), nameof(ModEntry.Farmer_performBeginUsingTool_Prefix))
+            );
+            
+            harmony.Patch(
+               original: AccessTools.PropertyGetter(typeof(Farmer), "Level"),
+               prefix: new HarmonyMethod(typeof(ModEntry), nameof(ModEntry.Farmer_Level_Prefix))
             );
             
             harmony.Patch(

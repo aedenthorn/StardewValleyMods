@@ -15,30 +15,36 @@
 - Str
     - B: Melee Damage
     - B: Mining / Tree Damage
+    - B: Hammer Attack Speed
+    - B: Fishing catch meter speed
     - B: Crit Damage
 
 - Con
     - B: Health / Level
+    - B: Stamina / Level
+    - B: Sword Attack Speed
     - B: Debuff Length
     - V: Prevent Debuff Chance
 
 - Dex
     - B: Defense
-    - B: Attack Speed
+    - B: Dagger Attack Speed
+    - B: Ranged Damage
+    - B: Fishing target size
     - B: Crit Chance
 
 - Int
     - B: Bonus Skill Levels
-    - V: Craft Succeed Chance 
+    - V: Craft Succeed Chance
 
  - Wis:
     - B: Craft Resource Usage
     - B: Exp Gain
-    - V: Artifact Spot Transparency / Glow (-/+)
+    - V: Artifact / Fishing / Panning Spot Transparency / Glow (-/+)
  
  - Cha
     - B: Talk Reward
-    - B: Store Price
+    - B: Buy / Sell Price
     - B: Romance Chance
     - V: Gift Tier Change Chance (-/+)
 

@@ -66,6 +66,15 @@ namespace StardewRPG
             return !Config.ManualSkillUpgrades;
         }
 		
+        private static bool Farmer_Level_Prefix(Farmer __instance, ref int __result)
+        {
+            if (!Config.EnableMod)
+                return true;
+
+			__result = GetExperienceLevel(__instance);
+			return false;
+		}
+		
         private static void Farmer_doneEating_Postfix(Farmer __instance)
         {
             if (!Config.EnableMod)
@@ -192,14 +201,20 @@ namespace StardewRPG
             if (!Config.EnableMod || !Config.ManualSkillUpgrades)
                 return;
 
-            int x = ((LocalizedContentManager.CurrentLanguageCode == LocalizedContentManager.LanguageCode.ru || LocalizedContentManager.CurrentLanguageCode == LocalizedContentManager.LanguageCode.it) ? (__instance.xPositionOnScreen + __instance.width - 448 - 48) : (__instance.xPositionOnScreen + IClickableMenu.borderWidth + IClickableMenu.spaceToClearTopBorder + 256 - 8));
-            int y = __instance.yPositionOnScreen + IClickableMenu.spaceToClearTopBorder + IClickableMenu.borderWidth - 8;
+			int totalLevels = GetTotalSkillLevels(Game1.player);
+			int newLevels = Math.Max(0, GetExperienceLevel(Game1.player) - totalLevels - 1);
 
+			string pointString = string.Format(SHelper.Translation.Get("x-points"), newLevels);
+			b.DrawString(Game1.smallFont, pointString, new Vector2((float)(__instance.xPositionOnScreen + 64 - 12 + 64) - Game1.smallFont.MeasureString(pointString).X / 2f, __instance.yPositionOnScreen + IClickableMenu.borderWidth + IClickableMenu.spaceToClearTopBorder - 28), Game1.textColor);
 
-            int totalLevels = GetTotalSkillLevels(Game1.player);
-            int newLevels = GetExperienceLevel(Game1.player) - totalLevels - 1;
-            if (newLevels <= 0)
+			string levelString = string.Format(SHelper.Translation.Get("level-x"), GetExperienceLevel(Game1.player));
+			b.DrawString(Game1.smallFont, levelString, new Vector2((float)(__instance.xPositionOnScreen + 64 - 12 + 64) - Game1.smallFont.MeasureString(levelString).X / 2f, __instance.yPositionOnScreen + IClickableMenu.borderWidth + IClickableMenu.spaceToClearTopBorder + 4 + 252), Game1.textColor);
+
+			if (newLevels <= 0)
                 return;
+			int x = ((LocalizedContentManager.CurrentLanguageCode == LocalizedContentManager.LanguageCode.ru || LocalizedContentManager.CurrentLanguageCode == LocalizedContentManager.LanguageCode.it) ? (__instance.xPositionOnScreen + __instance.width - 448 - 48) : (__instance.xPositionOnScreen + IClickableMenu.borderWidth + IClickableMenu.spaceToClearTopBorder + 256 - 8));
+			int y = __instance.yPositionOnScreen + IClickableMenu.spaceToClearTopBorder + IClickableMenu.borderWidth - 8;
+
 			int addedX = 0;
 			for (int i = 0; i < 10; i++)
 			{

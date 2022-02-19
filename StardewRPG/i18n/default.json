@@ -1,6 +1,8 @@
 ﻿{
   "stardew-rpg": "Stardew RPG",
   "x-points-left": "Points Remaining: {0}",
+  "x-points": "Points: {0}",
+  "level-x": "Level {0}",
   "farmer-level-up-#": "Level Up! You are now level {0}",
   "need-#-level-x-skill": "You need level {0} {1} skill to use this.",
   "str": "Str",
