@@ -1,18 +1,18 @@
 ﻿{
-  "Name": "Utility Grid",
+  "Name": "Stardew RPG",
   "Author": "aedenthorn",
-  "Version": "0.6.0",
-  "Description": "Utility grid.",
-  "UniqueID": "aedenthorn.UtilityGrid",
-  "EntryDll": "UtilityGrid.dll",
+  "Version": "0.1.0",
+  "Description": "Stardew RPG.",
+  "UniqueID": "aedenthorn.StardewRPG",
+  "EntryDll": "StardewRPG.dll",
   "MinimumApiVersion": "3.13.0",
   "ModUpdater": {
     "Repository": "StardewValleyMods",
     "User": "aedenthorn",
     "Directory": "_releases",
-    "ModFolder": "UtilityGrid"
+    "ModFolder": "StardewRPG"
   },
-  "UpdateKeys": [ "Nexus:10197" ],
+  "UpdateKeys": [ "Nexus:" ],
   "Dependencies": [
     {
       "UniqueID": "Platonymous.ModUpdater",

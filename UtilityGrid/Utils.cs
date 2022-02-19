@@ -506,10 +506,14 @@ namespace UtilityGrid
         public static bool IsObjectWorking(GameLocation location, UtilityObject obj)
         {
             return (!obj.mustBeOn || obj.worldObj.IsOn) &&
+            (!obj.onlyDay || Game1.timeOfDay < 1800) &&
+            (!obj.onlyNight || Game1.timeOfDay >= 1800) &&
+            (!obj.worldObj.IsSprinkler() || Game1.timeOfDay == 600) &&
+            (!obj.onlyMorning || Game1.timeOfDay == 600) &&
             (!obj.mustBeFull || obj.worldObj.heldObject.Value != null) &&
             (!obj.mustBeWorking || obj.worldObj.MinutesUntilReady > 0) &&
             (obj.mustContain == null || obj.mustContain.Length == 0 || obj.worldObj.heldObject.Value?.Name == obj.mustContain) &&
-            (!obj.mustHaveSun || (location.IsOutdoors && !Game1.netWorldState.Value.GetWeatherForLocation(location.GetLocationContext()).isRaining.Value)) &&
+            (!obj.mustHaveSun || ((location.IsOutdoors || location.IsGreenhouse) && !Game1.netWorldState.Value.GetWeatherForLocation(location.GetLocationContext()).isRaining.Value)) &&
             (!obj.mustHaveRain || (location.IsOutdoors && Game1.netWorldState.Value.GetWeatherForLocation(location.GetLocationContext()).isRaining.Value)) &&
             (!obj.mustHaveLightning || (location.IsOutdoors && !Game1.netWorldState.Value.GetWeatherForLocation(location.GetLocationContext()).isLightning.Value));
         }

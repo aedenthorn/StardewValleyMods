@@ -59,31 +59,8 @@ namespace MapEdit
 
         private static MapCollectionData GetMapEdits(string path)
         {
-            MapCollectionData collection = new MapCollectionData();
-            try // convert legacy
-            {
-                MapCollectionDataOld oldData = ModEntry.SHelper.Data.ReadJsonFile<MapCollectionDataOld>(path);
-                foreach (var kvp in oldData.mapDataDict)
-                {
-                    collection.mapDataDict.Add(kvp.Key, new MapData());
-                    foreach (var kvp2 in kvp.Value.tileDataDict)
-                    {
-                        collection.mapDataDict[kvp.Key].tileDataDict.Add(kvp2.Key, new TileLayers());
-                        foreach (var kvp3 in kvp2.Value.tileDict)
-                        {
-                            collection.mapDataDict[kvp.Key].tileDataDict[kvp2.Key].tileDict.Add(kvp3.Key, new TileLayerData());
-                            collection.mapDataDict[kvp.Key].tileDataDict[kvp2.Key].tileDict[kvp3.Key].tiles.Add(new TileInfo() { properties = kvp3.Value.properties, blendMode = kvp3.Value.blendMode, tileIndex = kvp3.Value.index, tileSheet = kvp3.Value.tileSheet });
-                        }
-                    }
-                }
-                ModEntry.SMonitor.Log($"Converted legacy data from file {path}");
-                SaveMapData(path, collection);
-            }
-            catch
-            {
-                ModEntry.SMonitor.Log($"Loading map data from file {path}");
-                collection = ModEntry.SHelper.Data.ReadJsonFile<MapCollectionData>(path) ?? new MapCollectionData();
-            }
+            ModEntry.SMonitor.Log($"Loading map data from file {path}");
+            MapCollectionData collection = ModEntry.SHelper.Data.ReadJsonFile<MapCollectionData>(path) ?? new MapCollectionData();
             return collection;
         }
 

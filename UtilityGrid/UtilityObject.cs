@@ -7,6 +7,9 @@ namespace UtilityGrid
         public float water;
         public float electric;
         public bool mustBeOn;
+        public bool onlyMorning;
+        public bool onlyDay;
+        public bool onlyNight;
         public bool mustBeFull;
         public string mustContain;
         public bool mustBeWorking;
