@@ -106,6 +106,11 @@ namespace StardewRPG
                original: AccessTools.Method(typeof(CharacterCustomization), "selectionClick"),
                prefix: new HarmonyMethod(typeof(ModEntry), nameof(ModEntry.CharacterCustomization_selectionClick_Prefix))
             );
+
+            harmony.Patch(
+               original: AccessTools.Method(typeof(ChatBox), "runCommand"),
+               prefix: new HarmonyMethod(typeof(ModEntry), nameof(ModEntry.ChatBox_runCommand_Prefix))
+            );
         }
 
         private void Display_RenderedWorld(object sender, StardewModdingAPI.Events.RenderedWorldEventArgs e)

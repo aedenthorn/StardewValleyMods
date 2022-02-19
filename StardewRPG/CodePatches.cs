@@ -277,5 +277,17 @@ namespace StardewRPG
 				}
 			}
 		}
+		public static bool ChatBox_runCommand_Prefix(string command)
+		{
+			if (!Config.EnableMod)
+				return true;
+
+			if (command.Equals("levelup"))
+			{
+				LevelUp();
+				return false;
+			}
+			return true;
+		}
     }
 }

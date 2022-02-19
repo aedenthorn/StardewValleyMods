@@ -148,5 +148,21 @@ namespace StardewRPG
 		{
 			return player.FarmingLevel + player.MiningLevel + player.MiningLevel + player.ForagingLevel + player.FishingLevel + player.CombatLevel;
 		}
+
+
+		private static void LevelUp()
+		{
+			var levels = GetExperienceLevels();
+			var exp = GetStatValue(Game1.player, "exp");
+			for (int i = 0; i < levels.Length; i++)
+            {
+				if(exp < levels[i])
+                {
+					GainExperience(Game1.player, levels[i] - exp);
+					SMonitor.Log($"Added {levels[i] - exp} exp");
+					return;
+				}
+            }
+		}
 	}
 }
