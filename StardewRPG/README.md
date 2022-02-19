@@ -55,7 +55,7 @@
 =
 
 - Skill experience isn't applied to the given skill
-- Character level adds a single skill point to be added by the player
+- Character level adds a single skill point to be assigned to a skill by the player
 
 
 **Tool Skill Requirements**
