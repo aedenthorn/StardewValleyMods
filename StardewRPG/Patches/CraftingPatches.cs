@@ -1,0 +1,59 @@
+﻿using HarmonyLib;
+using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
+using StardewValley;
+using StardewValley.Menus;
+using StardewValley.Tools;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Reflection.Emit;
+
+namespace StardewRPG
+{
+    public partial class ModEntry
+    {
+        public static IEnumerable<CodeInstruction> CraftingRecipe_consumeIngredients_Transpiler(IEnumerable<CodeInstruction> instructions)
+        {
+            SMonitor.Log($"Transpiling CraftingRecipe.consumeIngredients");
+
+            var codes = new List<CodeInstruction>(instructions);
+            if (codes[15].opcode == OpCodes.Stloc_1)
+            {
+                SMonitor.Log("Overriding required amount");
+                codes.Insert(15, new CodeInstruction(OpCodes.Call, AccessTools.Method(typeof(ModEntry), nameof(ModEntry.GetRecipeRequiredAmount))));
+            }
+            else
+            {
+                SMonitor.Log("Couldn't override required amount", StardewModdingAPI.LogLevel.Error);
+            }
+            return codes.AsEnumerable();
+        }
+        
+        public static IEnumerable<CodeInstruction> CraftingRecipe_doesFarmerHaveIngredientsInInventory_Transpiler(IEnumerable<CodeInstruction> instructions)
+        {
+            SMonitor.Log($"Transpiling CraftingRecipe.doesFarmerHaveIngredientsInInventory");
+
+            var codes = new List<CodeInstruction>(instructions);
+            if (codes[10].opcode == OpCodes.Stloc_2)
+            {
+                SMonitor.Log("Overriding required amount");
+                codes.Insert(10, new CodeInstruction(OpCodes.Call, AccessTools.Method(typeof(ModEntry), nameof(ModEntry.GetRecipeRequiredAmount))));
+            }
+            else
+            {
+                SMonitor.Log("Couldn't override required amount", StardewModdingAPI.LogLevel.Error);
+            }
+            return codes.AsEnumerable();
+        }
+
+        private static int GetRecipeRequiredAmount(int amount)
+        {
+            if (!Config.EnableMod)
+                return amount;
+
+            return (int)Math.Min(1,Math.Round(amount * (1 - GetStatMod(GetStatValue(Game1.player, "wis", Config.DefaultStatValue)) * Config.WisCraftResourceReqBonus)));
+
+        }
+    }
+}

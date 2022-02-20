@@ -5,7 +5,7 @@
 - Character Level System
 - Skill Points System
 - Tool Skill Requirements
-
+- Permadeath
 
 **Character Stats**
 =
@@ -14,41 +14,46 @@
 - Bonus for stats range from -3 to +3 following D&D
 - Stats start at 9 for new farmers with 20 points to distribute
 - Stats start at 12 for pre-RPG farmers
-- Eating a Stardrop adds a single distributable point, no longer increases stamina directly
+- Eating a Stardrop adds a single distributable point, no longer increases stamina directly [TODO: method of assigning skill]
 - Stats provide (B)onuses / penalties and new gameplay based on (V)alues as follows:
 
-- Str
-    - B: Melee Damage
+- Str [TODO]
     - B: Mining / Tree Damage
-    - B: Hammer Attack Speed
-    - B: Fishing catch meter speed
-    - B: Crit Damage
+    - B: Hammer Damage [DONE]
+    - B: Hammer Attack Speed [DONE]
+    - B: Fishing Catch Meter Speed [DONE]
+    - B: Crit Damage [DONE]
 
-- Con
-    - B: Health / Level
-    - B: Stamina / Level
-    - B: Sword Attack Speed
+- Con [TODO]
+    - B: Health / Level [DONE]
+    - B: Stamina / Level [DONE]
+    - B: Sword Damage [DONE]
+    - B: Sword Attack Speed [DONE]
     - B: Debuff Length
     - V: Prevent Debuff Chance
 
-- Dex
+- Dex [TODO]
     - B: Defense
-    - B: Dagger Attack Speed
+    - B: Dagger Damage [DONE]
+    - B: Dagger Attack Speed [DONE]
     - B: Ranged Damage
-    - B: Fishing target size
-    - B: Crit Chance
+    - B: Fishing Bobber Bar Size [DONE]
+    - B: Crit Chance [DONE]
 
-- Int
+- Int [TODO]
     - B: Bonus Skill Levels
+    - B: Craft Quality Level
+    - B: Artifact / Fishing / Panning / Foraging Spot Number
     - V: Craft Succeed Chance
 
- - Wis:
-    - B: Craft Resource Usage
-    - B: Exp Gain
+ - Wis [TODO]
+    - B: Craft Station Speed [DONE]
+    - B: Craft Resource Usage [DONE]
+    - B: Exp Gain [DONE]
     - V: Artifact / Fishing / Panning Spot Transparency / Glow (-/+)
  
- - Cha
-    - B: Talk Reward
+ - Cha [TODO]
+    - B: Friendship Reward
     - B: Buy / Sell Price
     - B: Romance Chance
     - V: Gift Tier Change Chance (-/+)
@@ -79,3 +84,9 @@
     - Fishing Rod depends on Fishing skill
 
 - Weapon use requires combat skill level compared to weapon level
+
+
+**Permadeath**
+=
+
+- Option to return to main menu on death  [TODO: check if it works]

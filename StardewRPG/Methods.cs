@@ -29,7 +29,7 @@ namespace StardewRPG
 		private static void GainExperience(Farmer instance, int howMuch)
 		{
 			int currentXP = GetStatValue(instance, "exp");
-			int newXP = currentXP + howMuch;
+			int newXP = currentXP + (int)Math.Round(howMuch * (1 + GetStatMod(GetStatValue(Game1.player, "wis", Config.DefaultStatValue)) * Config.WisExpBonus));
 			SetModData(instance, "exp", newXP);
 			bool levelUp = false;
 			foreach (int level in GetExperienceLevels())
@@ -66,13 +66,13 @@ namespace StardewRPG
 				}
 				skillSet[name] = skill;
 			}
-            if (newFarmer)
+            if (newFarmer || GetStatValue(instance, "exp") < 0)
             {
-				SetModData(instance, "level", 1);
 				SetModData(instance, "exp", 0);
             }
-			instance.maxHealth = (int)Math.Max(1, GetStatValue(instance, "level") * Config.BaseHealthPerLevel * (1 + 0.1 * GetStatMod(skillSet["con"])));
-			instance.MaxStamina = (int)Math.Max(1, GetStatValue(instance, "level") * Config.BaseStaminaPerLevel * (1 + 0.1 * GetStatMod(skillSet["con"])));
+			int level = GetExperienceLevel(instance);
+			instance.maxHealth = (int)Math.Max(1, level * Config.BaseHealthPerLevel * (1 + Config.ConHealthBonus * GetStatMod(skillSet["con"])));
+			instance.MaxStamina = (int)Math.Max(1, level * Config.BaseStaminaPerLevel * (1 + Config.ConStaminaBonus * GetStatMod(skillSet["con"])));
 			if (newFarmer)
             {
 				instance.health = instance.maxHealth;
@@ -80,11 +80,11 @@ namespace StardewRPG
             }
 		}
 
-        private static int GetStatValue(Farmer instance, string key)
+        private static int GetStatValue(Farmer instance, string key, int defaultValue = -1)
         {
 			string value = GetModData(instance, key);
 			if (value == null || !int.TryParse(value, out int output))
-				return -1;
+				return defaultValue;
 			return output;
 		}
 

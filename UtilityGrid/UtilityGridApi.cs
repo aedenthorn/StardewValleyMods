@@ -117,7 +117,7 @@ namespace UtilityGrid
                 return Vector2.Zero;
             var obj = ModEntry.GetUtilityObjectAtTile(location, new Vector2(x, y));
             if (obj != null)
-                return new Vector2(obj.water, obj.electric);
+                return new Vector2(obj.Template.water, obj.Template.electric);
             return Vector2.Zero;
         }
         public bool IsObjectPowered(GameLocation location, int x, int y)
@@ -129,7 +129,7 @@ namespace UtilityGrid
             if (obj == null)
                 return false;
 
-            return ModEntry.IsObjectPowered(location.Name, tile, obj);
+            return ModEntry.IsObjectPowered(location.Name, tile, obj.Template);
         }
         public bool IsObjectWorking(GameLocation location, int x, int y)
         {
@@ -207,12 +207,12 @@ namespace UtilityGrid
             {
                 if (group.objects.ContainsKey(v))
                 {
-                    float current = group.objects[v].water;
+                    float current = group.objects[v].Template.water;
                     float change = amount - current;
                     Vector2 power = TileGroupWaterVector(location, x, y);
                     if (change < 0 && power.X + power.Y - change < 0)
                         return false;
-                    group.objects[v].water = amount;
+                    group.objects[v].Template.water = amount;
                     return true;
                 }
             }
@@ -227,12 +227,12 @@ namespace UtilityGrid
             {
                 if (group.pipes.Contains(v))
                 {
-                    float current = group.objects[v].electric;
+                    float current = group.objects[v].Template.electric;
                     float change = amount - current;
                     Vector2 power = TileGroupElectricityVector(location, x, y);
                     if (change < 0 && power.X + power.Y - change < 0)
                         return false;
-                    group.objects[v].electric = amount;
+                    group.objects[v].Template.electric = amount;
                     return true;
                 }
             }

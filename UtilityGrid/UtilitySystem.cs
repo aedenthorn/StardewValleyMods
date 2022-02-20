@@ -10,8 +10,8 @@ namespace UtilityGrid
 
         public List<PipeGroup> waterGroups = new List<PipeGroup>();
         public List<PipeGroup> electricGroups = new List<PipeGroup>();
-        public Dictionary<Vector2, UtilityObject> waterUnconnectedObjects = new Dictionary<Vector2, UtilityObject>();
-        public Dictionary<Vector2, UtilityObject> electricUnconnectedObjects = new Dictionary<Vector2, UtilityObject>();
+        public Dictionary<Vector2, UtilityObjectInstance> waterUnconnectedObjects = new Dictionary<Vector2, UtilityObjectInstance>();
+        public Dictionary<Vector2, UtilityObjectInstance> electricUnconnectedObjects = new Dictionary<Vector2, UtilityObjectInstance>();
 
     }
 }

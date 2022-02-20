@@ -5,9 +5,11 @@ using StardewModdingAPI;
 using StardewValley;
 using StardewValley.BellsAndWhistles;
 using StardewValley.Menus;
+using StardewValley.Tools;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using Object = StardewValley.Object;
 
 namespace StardewRPG
 {
@@ -48,18 +50,8 @@ namespace StardewRPG
             // Farmer Patches
 
             harmony.Patch(
-               original: AccessTools.Method(typeof(Farmer), "performBeginUsingTool"),
-               prefix: new HarmonyMethod(typeof(ModEntry), nameof(ModEntry.Farmer_performBeginUsingTool_Prefix))
-            );
-            
-            harmony.Patch(
-               original: AccessTools.PropertyGetter(typeof(Farmer), "Level"),
-               prefix: new HarmonyMethod(typeof(ModEntry), nameof(ModEntry.Farmer_Level_Prefix))
-            );
-            
-            harmony.Patch(
-               original: AccessTools.Method(typeof(Farmer), nameof(Farmer.gainExperience)),
-               prefix: new HarmonyMethod(typeof(ModEntry), nameof(ModEntry.Farmer_gainExperience_Prefix))
+               original: AccessTools.Constructor(typeof(Farmer), new Type[] { typeof(FarmerSprite), typeof(Vector2), typeof(int), typeof(string), typeof(List<Item>), typeof(bool) }),
+               postfix: new HarmonyMethod(typeof(ModEntry), nameof(ModEntry.Farmer_Postfix))
             );
             
             harmony.Patch(
@@ -68,11 +60,78 @@ namespace StardewRPG
             );
             
             harmony.Patch(
-               original: AccessTools.Constructor(typeof(Farmer), new Type[] { typeof(FarmerSprite), typeof(Vector2), typeof(int), typeof(string), typeof(List<Item>), typeof(bool) }),
-               postfix: new HarmonyMethod(typeof(ModEntry), nameof(ModEntry.Farmer_Postfix))
+               original: AccessTools.Method(typeof(Farmer), nameof(Farmer.gainExperience)),
+               prefix: new HarmonyMethod(typeof(ModEntry), nameof(ModEntry.Farmer_gainExperience_Prefix))
+            );
+            
+            harmony.Patch(
+               original: AccessTools.PropertyGetter(typeof(Farmer), nameof(Farmer.Level)),
+               prefix: new HarmonyMethod(typeof(ModEntry), nameof(ModEntry.Farmer_Level_Prefix))
+            );
+            
+            harmony.Patch(
+               original: AccessTools.Method(typeof(Farmer), "performBeginUsingTool"),
+               prefix: new HarmonyMethod(typeof(ModEntry), nameof(ModEntry.Farmer_performBeginUsingTool_Prefix))
+            );
+            
+
+            // Tool patches
+
+            harmony.Patch(
+               original: AccessTools.Method(typeof(MeleeWeapon), nameof(MeleeWeapon.setFarmerAnimating)),
+               transpiler: new HarmonyMethod(typeof(ModEntry), nameof(ModEntry.MeleeWeapon_setFarmerAnimating_Transpiler))
+            );
+            
+            
+            // Crafting patches
+
+            harmony.Patch(
+               original: AccessTools.Method(typeof(CraftingRecipe), nameof(CraftingRecipe.consumeIngredients)),
+               transpiler: new HarmonyMethod(typeof(ModEntry), nameof(ModEntry.CraftingRecipe_consumeIngredients_Transpiler))
+            );
+            
+            harmony.Patch(
+               original: AccessTools.Method(typeof(CraftingRecipe), nameof(CraftingRecipe.doesFarmerHaveIngredientsInInventory)),
+               transpiler: new HarmonyMethod(typeof(ModEntry), nameof(ModEntry.CraftingRecipe_doesFarmerHaveIngredientsInInventory_Transpiler))
             );
 
 
+            // Object patches
+
+            harmony.Patch(
+               original: AccessTools.Method(typeof(Object), nameof(Object.performObjectDropInAction)),
+               prefix: new HarmonyMethod(typeof(ModEntry), nameof(ModEntry.Object_performObjectDropInAction_Prefix)),
+               postfix: new HarmonyMethod(typeof(ModEntry), nameof(ModEntry.Object_performObjectDropInAction_Postfix))
+            );
+            
+            harmony.Patch(
+               original: AccessTools.Method(typeof(Object), nameof(Object.performDropDownAction)),
+               prefix: new HarmonyMethod(typeof(ModEntry), nameof(ModEntry.Object_performObjectDropInAction_Prefix)),
+               postfix: new HarmonyMethod(typeof(ModEntry), nameof(ModEntry.Object_performObjectDropInAction_Postfix))
+            );
+
+
+            // Fishing patches
+
+            harmony.Patch(
+               original: AccessTools.Constructor(typeof(BobberBar),new Type[] { typeof(int), typeof(float), typeof(bool), typeof(int) }),
+               postfix: new HarmonyMethod(typeof(ModEntry), nameof(ModEntry.BobberBar_Postfix))
+            );
+
+            harmony.Patch(
+               original: AccessTools.Method(typeof(BobberBar), nameof(BobberBar.update)),
+               postfix: new HarmonyMethod(typeof(ModEntry), nameof(ModEntry.BobberBar_update_Postfix))
+            );
+
+
+            // GameLocation patches
+
+            harmony.Patch(
+               original: AccessTools.Method(typeof(GameLocation), nameof(GameLocation.damageMonster)),
+               prefix: new HarmonyMethod(typeof(ModEntry), nameof(ModEntry.GameLocation_damageMonster_Prefix))
+            );
+            
+            
             // Game1 patches
 
             harmony.Patch(
