@@ -14,7 +14,7 @@
 - Bonus for stats range from -3 to +3 following D&D
 - Stats start at 9 for new farmers with 20 points to distribute
 - Stats start at 12 for pre-RPG farmers
-- Eating a Stardrop adds a single distributable point, no longer increases stamina directly [TODO: method of assigning skill]
+- Eating a Stardrop adds a single distributable point, no longer increases stamina directly
 - Stats provide (B)onuses / penalties and new gameplay based on (V)alues as follows:
 
 - Str [TODO]
