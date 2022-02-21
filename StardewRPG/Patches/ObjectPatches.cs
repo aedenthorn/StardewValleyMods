@@ -16,7 +16,7 @@ namespace StardewRPG
         {
             if (!Config.EnableMod || !__instance.bigCraftable.Value || __state >= __instance.MinutesUntilReady)
                 return;
-            __instance.MinutesUntilReady = (int)Math.Round(__instance.MinutesUntilReady * (1 - GetStatMod(GetStatValue(Game1.player, "wis", Config.DefaultStatValue)) * Config.WisCraftTimeBonus));
+            __instance.MinutesUntilReady = (int)Math.Round(__instance.MinutesUntilReady * (1 - GetStatMod(GetStatValue(Game1.player, "wis", Config.BaseStatValue)) * Config.WisCraftTimeBonus));
         }
     }
 }

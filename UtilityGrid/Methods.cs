@@ -395,47 +395,71 @@ namespace UtilityGrid
                     obj.modData[chargeKey] = charge + "";
                 }
 
-
                 if (netPower != 0)
                 {
+                    if(netPower > 0)
+                        kvp.Value.CurrentPowerDiff = Math.Min(capacity - charge, type == GridType.water ? objT.waterChargeRate : objT.electricChargeRate);
+                    else
+                        kvp.Value.CurrentPowerDiff = Math.Min(charge, type == GridType.water ? objT.waterDischargeRate : objT.electricDischargeRate);
                     changeObjects.Add(kvp.Key, kvp.Value);
                 }
             }
 
+            if (netPower == 0 || changeObjects.Count == 0)
+                return power;
+
+            // check if charge will be sufficient
+
+            if(netPower < 0 && changeObjects.Count > 0)
+            {
+                float total = 0;
+                foreach (var o in changeObjects.Values)
+                {
+                    total += o.CurrentPowerDiff;
+                }
+                if (total + netPower < 0)
+                    return power;
+            }
+
+            // change charges
+
             while (changeObjects != null && changeObjects.Count > 0 && netPower != 0)
             {
-                var powerToEach = netPower / changeObjects.Count;
+                var eachPower = netPower / changeObjects.Count;
                 foreach (var v in changeObjects.Keys.ToArray())
                 {
                     var obj = changeObjects[v].WorldObject;
                     var objT = changeObjects[v].Template;
-                    float charge = 0;
+                    var diff = changeObjects[v].CurrentPowerDiff;
+                    float currentCharge = 0;
                     if (obj.modData.TryGetValue(chargeKey, out string chargeString))
                     {
-                        float.TryParse(chargeString, NumberStyles.Float, CultureInfo.InvariantCulture, out charge);
+                        float.TryParse(chargeString, NumberStyles.Float, CultureInfo.InvariantCulture, out currentCharge);
                     }
-                    if (powerToEach > 0)
+                    if (eachPower > 0)
                     {
                         var capacity = type == GridType.water ? objT.waterChargeCapacity : objT.electricChargeCapacity;
-                        var rate = type == GridType.water ? objT.waterChargeRate : objT.electricChargeRate;
-                        var add = Math.Min(capacity - charge, Math.Min(rate, powerToEach));
-                        if(hours > 0)
-                            obj.modData[chargeKey] = Math.Min(capacity, charge + add * hours) + "";
-                        if (add != powerToEach)
-                            changeObjects.Remove(v);
+                        var add = Math.Min(capacity - currentCharge, Math.Min(diff, eachPower));
                         power.X -= add;
+                        changeObjects[v].CurrentPowerDiff -= add;
+                        if (hours > 0)
+                            obj.modData[chargeKey] = Math.Min(capacity, currentCharge + add * hours) + "";
+                        if (add != eachPower)
+                            changeObjects.Remove(v);
                     }
                     else
                     {
-                        var rate = type == GridType.water ? objT.waterDischargeRate : objT.electricDischargeRate;
-                        var subtract = Math.Min(charge, Math.Min(rate, -powerToEach));
-                        if (hours > 0)
-                            obj.modData[chargeKey] = Math.Max(0, charge - subtract * hours) + "";
-                        if (subtract != -powerToEach)
-                            changeObjects.Remove(v);
+                        float subtract = Math.Min(currentCharge, Math.Min(diff, -eachPower));
                         power.Y += subtract;
+                        changeObjects[v].CurrentPowerDiff -= subtract;
+                        if (hours > 0)
+                            obj.modData[chargeKey] = Math.Max(0, currentCharge - subtract * hours) + "";
+                        if (subtract != -eachPower)
+                            changeObjects.Remove(v);
                     }
                 }
+                power.X = (float)Math.Round(power.X, 5);
+                power.Y = (float)Math.Round(power.Y, 5);
                 netPower = power.X + power.Y;
             }
 

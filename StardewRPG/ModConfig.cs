@@ -22,7 +22,6 @@ namespace StardewRPG
 
         // stats
         public int BaseStatValue { get; set; } = 9;
-        public int DefaultStatValue { get; set; } = 12;
         public int StartStatExtraPoints { get; set; } = 20;
         public int StatPointsPerStardrop { get; set; } = 3;
         public int MinStatValue { get; set; } = 2;

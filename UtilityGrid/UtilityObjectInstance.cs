@@ -10,6 +10,7 @@ namespace UtilityGrid
             WorldObject = obj;
         }
 
+        public float CurrentPowerDiff { get; set; }
         public UtilityObject Template { get; }
         public Object WorldObject { get; }
     }

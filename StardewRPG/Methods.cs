@@ -29,7 +29,7 @@ namespace StardewRPG
 		private static void GainExperience(Farmer instance, int howMuch)
 		{
 			int currentXP = GetStatValue(instance, "exp");
-			int newXP = currentXP + (int)Math.Round(howMuch * (1 + GetStatMod(GetStatValue(Game1.player, "wis", Config.DefaultStatValue)) * Config.WisExpBonus));
+			int newXP = currentXP + (int)Math.Round(howMuch * (1 + GetStatMod(GetStatValue(Game1.player, "wis", Config.BaseStatValue)) * Config.WisExpBonus));
 			SetModData(instance, "exp", newXP);
 			bool levelUp = false;
 			foreach (int level in GetExperienceLevels())
@@ -61,7 +61,7 @@ namespace StardewRPG
             {
 				if (!instance.modData.TryGetValue(modDataKey + name, out string skillString) || !int.TryParse(skillString, out int skill))
                 {
-					skill = newFarmer ? Config.BaseStatValue : Config.DefaultStatValue;
+					skill = Config.BaseStatValue;
 					SetModData(instance, name, skill);
 				}
 				skillSet[name] = skill;
@@ -163,6 +163,26 @@ namespace StardewRPG
 					return;
 				}
             }
+		}
+		private static void Respec()
+		{
+			Game1.player.FarmingLevel = 0;
+			Game1.player.FishingLevel = 0;
+			Game1.player.ForagingLevel = 0;
+			Game1.player.MiningLevel = 0;
+			Game1.player.CombatLevel = 0;
+			Game1.player.experiencePoints[0] = 0;
+			Game1.player.experiencePoints[1] = 0;
+			Game1.player.experiencePoints[2] = 0;
+			Game1.player.experiencePoints[3] = 0;
+			Game1.player.experiencePoints[4] = 0;
+			var totalPoints = 0;
+			foreach(var name in skillNames)
+            {
+				totalPoints += GetStatValue(Game1.player, name, Config.BaseStatValue) - Config.BaseStatValue;
+				SetModData(Game1.player, name, Config.BaseStatValue);
+            }
+			SetModData(Game1.player, "points", totalPoints);
 		}
 	}
 }

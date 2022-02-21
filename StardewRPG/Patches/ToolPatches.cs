@@ -39,9 +39,9 @@ namespace StardewRPG
             if (Config.EnableMod && who == Game1.player)
             {
                 int speedMod = 0;
-                var str = GetStatValue(who, "str", Config.DefaultStatValue);
-                var con = GetStatValue(who, "con", Config.DefaultStatValue);
-                var dex = GetStatValue(who, "dex", Config.DefaultStatValue);
+                var str = GetStatValue(who, "str", Config.BaseStatValue);
+                var con = GetStatValue(who, "con", Config.BaseStatValue);
+                var dex = GetStatValue(who, "dex", Config.BaseStatValue);
                 switch (weapon.type.Value)
                 {
                     case 1: // dagger

@@ -52,7 +52,7 @@ namespace StardewRPG
             if (!Config.EnableMod)
                 return amount;
 
-            return (int)Math.Min(1,Math.Round(amount * (1 - GetStatMod(GetStatValue(Game1.player, "wis", Config.DefaultStatValue)) * Config.WisCraftResourceReqBonus)));
+            return (int)Math.Min(1,Math.Round(amount * (1 - GetStatMod(GetStatValue(Game1.player, "wis", Config.BaseStatValue)) * Config.WisCraftResourceReqBonus)));
 
         }
     }

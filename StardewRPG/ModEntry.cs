@@ -127,7 +127,7 @@ namespace StardewRPG
             // GameLocation patches
 
             harmony.Patch(
-               original: AccessTools.Method(typeof(GameLocation), nameof(GameLocation.damageMonster)),
+               original: AccessTools.Method(typeof(GameLocation), nameof(GameLocation.damageMonster), new Type[] { typeof(Rectangle), typeof(int), typeof(int), typeof(bool), typeof(float), typeof(int), typeof(float), typeof(float), typeof(bool), typeof(Farmer) }),
                prefix: new HarmonyMethod(typeof(ModEntry), nameof(ModEntry.GameLocation_damageMonster_Prefix))
             );
             
@@ -150,8 +150,25 @@ namespace StardewRPG
             // UI Patches
 
             harmony.Patch(
+               original: AccessTools.Constructor(typeof(SkillsPage), new Type[] { typeof(int), typeof(int), typeof(int), typeof(int) }),
+               postfix: new HarmonyMethod(typeof(ModEntry), nameof(ModEntry.SkillsPage_Postfix))
+            );
+            harmony.Patch(
                original: AccessTools.Method(typeof(SkillsPage), nameof(SkillsPage.draw), new Type[] { typeof(SpriteBatch) }),
+               prefix: new HarmonyMethod(typeof(ModEntry), nameof(ModEntry.SkillsPage_draw_Prefix)),
                postfix: new HarmonyMethod(typeof(ModEntry), nameof(ModEntry.SkillsPage_draw_Postfix))
+            );
+            harmony.Patch(
+               original: AccessTools.Method(typeof(SkillsPage), nameof(SkillsPage.receiveLeftClick)),
+               postfix: new HarmonyMethod(typeof(ModEntry), nameof(ModEntry.SkillsPage_receiveLeftClick_Postfix))
+            );
+            harmony.Patch(
+               original: AccessTools.Method(typeof(SkillsPage), nameof(SkillsPage.performHoverAction)),
+               postfix: new HarmonyMethod(typeof(ModEntry), nameof(ModEntry.SkillsPage_performHoverAction_Postfix))
+            );
+            harmony.Patch(
+               original: AccessTools.Method(typeof(CharacterCustomization), nameof(CharacterCustomization.performHoverAction)),
+               postfix: new HarmonyMethod(typeof(ModEntry), nameof(ModEntry.CharacterCustomization_performHoverAction_Postfix))
             );
             harmony.Patch(
                original: AccessTools.Method(typeof(CharacterCustomization), nameof(CharacterCustomization.draw), new Type[] { typeof(SpriteBatch) }),
@@ -170,6 +187,7 @@ namespace StardewRPG
                original: AccessTools.Method(typeof(ChatBox), "runCommand"),
                prefix: new HarmonyMethod(typeof(ModEntry), nameof(ModEntry.ChatBox_runCommand_Prefix))
             );
+            Monitor.Log("Mod loaded");
         }
 
         private void Display_RenderedWorld(object sender, StardewModdingAPI.Events.RenderedWorldEventArgs e)
