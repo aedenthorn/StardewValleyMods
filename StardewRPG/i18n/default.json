@@ -22,5 +22,6 @@
   "dex-desc": "A measure of one's physical agility. Affects defense, dagger and ranged attacks, critical chance, and fishing bobber size.",
   "int-desc": "A measure of one's scholarly learning. Affects skill level gain, crafting quality, number of artifact, fishing, and panning spots, and crafting success chance.",
   "wis-desc": "A measure of one's understanding. Affects crafting speed, crafting resource usage, experience gain, and artifact, fishing, and panning spot visibility.",
-  "cha-desc": "A measure of one's influence. Affects friendship rewards, store prices, romance chances, and gift reactions."
+  "cha-desc": "A measure of one's influence. Affects friendship rewards, store prices, romance chances, and gift reactions.",
+  "miss":  "Miss"
 }

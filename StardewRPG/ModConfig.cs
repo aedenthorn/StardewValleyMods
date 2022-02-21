@@ -33,6 +33,8 @@ namespace StardewRPG
         // bonuses
         public float StrClubDamageBonus { get; set; } = 0.1f;
         public int StrClubSpeedBonus { get; set; } = 20;
+        public int StrPickaxeDamageBonus { get; set; } = 1;
+        public int StrAxeDamageBonus { get; set; } = 1;
         public float StrCritDamageBonus { get; set; } = 0.1f;
         public float StrFishingReelSpeedBonus { get; set; } = 0.001f;
         public float StrFishingTreasureSpeedBonus { get; set; } = 0.00625f;
@@ -41,11 +43,14 @@ namespace StardewRPG
         public int ConSwordSpeedBonus { get; set; } = 20;
         public float ConHealthBonus { get; set; } = 0.1f;
         public float ConStaminaBonus { get; set; } = 0.1f;
+        public int ConDefenseBonus { get; set; } = 1;
         
         public float DexDaggerDamageBonus { get; set; } = 0.1f;
+        public float DexRangedDamageBonus { get; set; } = 0.1f;
         public int DexDaggerSpeedBonus { get; set; } = 20;
         public int DexFishingBobberSizeBonus { get; set; } = 8;
         public float DexCritChanceBonus { get; set; } = 0.1f;
+        public bool DexRollForMiss { get; set; } = true;
         
         public float WisCraftResourceReqBonus { get; set; } = 0.1f;
         public float WisCraftTimeBonus { get; set; } = 0.1f;

@@ -5,6 +5,7 @@ using StardewModdingAPI;
 using StardewValley;
 using StardewValley.BellsAndWhistles;
 using StardewValley.Menus;
+using StardewValley.Projectiles;
 using StardewValley.Tools;
 using System;
 using System.Collections.Generic;
@@ -73,6 +74,11 @@ namespace StardewRPG
                original: AccessTools.Method(typeof(Farmer), "performBeginUsingTool"),
                prefix: new HarmonyMethod(typeof(ModEntry), nameof(ModEntry.Farmer_performBeginUsingTool_Prefix))
             );
+
+            harmony.Patch(
+               original: AccessTools.Method(typeof(Farmer), nameof(Farmer.CanBeDamaged)),
+               prefix: new HarmonyMethod(typeof(ModEntry), nameof(ModEntry.Farmer_CanBeDamaged_Prefix))
+            );
             
 
             // Tool patches
@@ -80,6 +86,23 @@ namespace StardewRPG
             harmony.Patch(
                original: AccessTools.Method(typeof(MeleeWeapon), nameof(MeleeWeapon.setFarmerAnimating)),
                transpiler: new HarmonyMethod(typeof(ModEntry), nameof(ModEntry.MeleeWeapon_setFarmerAnimating_Transpiler))
+            );            
+            
+            harmony.Patch(
+               original: AccessTools.Method(typeof(Pickaxe), nameof(Pickaxe.DoFunction)),
+               prefix: new HarmonyMethod(typeof(ModEntry), nameof(ModEntry.Pickaxe_DoFunction_Prefix)),
+               postfix: new HarmonyMethod(typeof(ModEntry), nameof(ModEntry.Pickaxe_DoFunction_Postfix))
+            );
+            
+            harmony.Patch(
+               original: AccessTools.Method(typeof(Axe), nameof(Axe.DoFunction)),
+               prefix: new HarmonyMethod(typeof(ModEntry), nameof(ModEntry.Axe_DoFunction_Prefix)),
+               postfix: new HarmonyMethod(typeof(ModEntry), nameof(ModEntry.Axe_DoFunction_Postfix))
+            );
+            
+            harmony.Patch(
+               original: AccessTools.Constructor(typeof(BasicProjectile), new Type[] { typeof(int), typeof(int), typeof(int), typeof(int), typeof(float), typeof(float), typeof(float), typeof(Vector2), typeof(string), typeof(string), typeof(bool), typeof(bool), typeof(GameLocation), typeof(Character), typeof(bool), typeof(BasicProjectile.onCollisionBehavior) }),
+               postfix: new HarmonyMethod(typeof(ModEntry), nameof(ModEntry.BasicProjectile_Postfix))
             );
             
             

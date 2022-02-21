@@ -17,28 +17,29 @@
 - Eating a Stardrop adds a single distributable point, no longer increases stamina directly
 - Stats provide (B)onuses / penalties and new gameplay based on (V)alues as follows:
 
-- Str [TODO]
+- Str [TODO: TEST]
     - B: Mining / Tree Damage
-    - B: Hammer Damage [DONE]
-    - B: Hammer Attack Speed [DONE]
-    - B: Fishing Catch Meter Speed [DONE]
-    - B: Crit Damage [DONE]
+    - B: Hammer Damage
+    - B: Hammer Attack Speed
+    - B: Fishing Catch Meter Speed
+    - B: Crit Damage
 
 - Con [TODO]
     - B: Health / Level [DONE]
     - B: Stamina / Level [DONE]
     - B: Sword Damage [DONE]
     - B: Sword Attack Speed [DONE]
+    - B: Defense [DONE]
     - B: Debuff Length
     - V: Prevent Debuff Chance
 
-- Dex [TODO]
-    - B: Defense
-    - B: Dagger Damage [DONE]
-    - B: Dagger Attack Speed [DONE]
-    - B: Ranged Damage
-    - B: Fishing Bobber Bar Size [DONE]
-    - B: Crit Chance [DONE]
+- Dex [TODO: TEST]
+    - B: Dagger Damage 
+    - B: Dagger Attack Speed
+    - B: Ranged Damage 
+    - B: Fishing Bobber Bar Size
+    - B: Crit Chance 
+    - V: Miss Chance 
 
 - Int [TODO]
     - B: Bonus Skill Levels

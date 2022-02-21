@@ -3,6 +3,8 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using StardewValley;
 using StardewValley.Menus;
+using StardewValley.Network;
+using StardewValley.Projectiles;
 using StardewValley.Tools;
 using System;
 using System.Collections.Generic;
@@ -59,5 +61,41 @@ namespace StardewRPG
             return speed;
         }
 
-	}
+        private static void Pickaxe_DoFunction_Prefix(Pickaxe __instance, Farmer who, ref int __state)
+        {
+            if (!Config.EnableMod || who == null)
+                return;
+            __state = __instance.additionalPower.Value;
+            __instance.additionalPower.Value += GetStatMod(GetStatValue(who, "str", Config.BaseStatValue)) * Config.StrPickaxeDamageBonus;
+        }
+
+        private static void Pickaxe_DoFunction_Postfix(Pickaxe __instance, int __state)
+        {
+            if (!Config.EnableMod)
+                return;
+            __instance.additionalPower.Value = __state;
+        }
+
+        private static void Axe_DoFunction_Prefix(Axe __instance, Farmer who, ref int __state)
+        {
+            if (!Config.EnableMod || who == null)
+                return;
+            __state = __instance.additionalPower.Value;
+            __instance.additionalPower.Value += GetStatMod(GetStatValue(who, "str", Config.BaseStatValue)) * Config.StrAxeDamageBonus;
+        }
+
+        private static void Axe_DoFunction_Postfix(Axe __instance, int __state)
+        {
+            if (!Config.EnableMod)
+                return;
+            __instance.additionalPower.Value = __state;
+        }
+
+        private static void BasicProjectile_Postfix(BasicProjectile __instance, Character firer)
+        {
+            if (!Config.EnableMod || firer is not Farmer)
+                return;
+            __instance.damageToFarmer.Value = (int)Math.Max(0, Math.Round(__instance.damageToFarmer.Value * (1 + GetStatMod(GetStatValue(firer as Farmer, "dex", Config.BaseStatValue)) * Config.DexRangedDamageBonus)));
+        }
+    }
 }

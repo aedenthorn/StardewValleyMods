@@ -66,6 +66,19 @@ namespace StardewRPG
             return !Config.ManualSkillUpgrades;
         }
 		
+        private static bool Farmer_CanBeDamaged_Prefix(Farmer __instance, ref bool __result)
+        {
+            if (!Config.EnableMod || !Config.DexRollForMiss)
+                return true;
+			if (Game1.random.NextDouble() < 0.5 && Game1.random.Next(20) < GetStatValue(__instance, "dex", Config.BaseStatValue))
+            {
+				__instance.currentLocation.debris.Add(new Debris(SHelper.Translation.Get("miss"), 1, __instance.GetBoundingBox().Center.ToVector2(), Color.LightGray, 1f, 0f));
+				__result = false;
+				return false;
+            }
+			return true;
+        }
+		
         private static bool Farmer_Level_Prefix(Farmer __instance, ref int __result)
         {
             if (!Config.EnableMod)
@@ -94,5 +107,20 @@ namespace StardewRPG
                 return;
             SetStats(ref __instance, true);
         }
+        private static void Farmer_takeDamage_Prefix(Farmer __instance, ref int __state)
+        {
+            if (!Config.EnableMod)
+                return;
+			__state = __instance.resilience;
+			__instance.resilience += GetStatMod(GetStatValue(__instance, "con", Config.BaseStatValue)) * Config.ConDefenseBonus;
+
+		}
+        private static void Farmer_takeDamage_Prefix(Farmer __instance, int __state)
+        {
+            if (!Config.EnableMod)
+                return;
+			__instance.resilience = __state;
+
+		}
    }
 }
