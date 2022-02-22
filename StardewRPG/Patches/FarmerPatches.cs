@@ -67,7 +67,7 @@ namespace StardewRPG
         {
             if (!Config.EnableMod || !Config.DexRollForMiss)
                 return true;
-			if (Game1.random.NextDouble() < 0.5 && Game1.random.Next(20) < GetStatValue(__instance, "dex", Config.BaseStatValue))
+			if (Game1.random.Next(20) < GetStatValue(__instance, "dex", Config.BaseStatValue))
             {
 				__instance.currentLocation.debris.Add(new Debris(SHelper.Translation.Get("miss"), 1, __instance.GetBoundingBox().Center.ToVector2(), Color.LightGray, 1f, 0f));
 				__result = false;

@@ -5,6 +5,8 @@ using HarmonyLib;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection.Emit;
+using Microsoft.Xna.Framework.Graphics;
+using Microsoft.Xna.Framework;
 
 namespace StardewRPG
 {
@@ -113,6 +115,39 @@ namespace StardewRPG
             maxDamage = (int)Math.Round(maxDamage * (1 + damageMod));
             critChance *= 1 + GetStatMod(dex) * Config.DexCritChanceBonus;
             critMultiplier *= 1 + GetStatMod(str) * Config.StrCritDamageBonus;
+        }
+
+        private static void GameLocation_draw_Prefix(GameLocation __instance, SpriteBatch b)
+        {
+            if (!Config.EnableMod)
+                return;
+            int wis = GetStatValue(Game1.player, "wis", Config.BaseStatValue);
+            if (wis == 10)
+                return;
+            float val = (wis - 10) * Config.WisSpotVisibility;
+            double tick = Game1.currentGameTime.TotalGameTime.TotalMilliseconds % 1200;
+            if (__instance.fishSplashAnimation != null)
+            {
+                if (val < 0)
+                    __instance.fishSplashAnimation.color *= 1 + val;
+                else if (tick < 400)
+                    __instance.fishSplashAnimation.color = new Color(1, 1 - val / 2, 1 - val / 2);
+                else if (tick < 800)
+                    __instance.fishSplashAnimation.color = new Color(1 - val / 2, 1, 1 - val / 2);
+                else
+                    __instance.fishSplashAnimation.color = new Color(1 - val / 2, 1 - val / 2, 1);
+            }
+            if (__instance.orePanAnimation != null)
+            {
+                if (val < 0)
+                    __instance.orePanAnimation.color *= 1 + val;
+                else if (tick < 400)
+                    __instance.orePanAnimation.color = new Color(1, 1 - val / 2, 1 - val / 2);
+                else if (tick < 800)
+                    __instance.orePanAnimation.color = new Color(1 - val / 2, 1, 1 - val / 2);
+                else
+                    __instance.orePanAnimation.color = new Color(1 - val / 2, 1 - val / 2, 1);
+            }
         }
     }
 }

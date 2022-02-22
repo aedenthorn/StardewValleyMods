@@ -18,6 +18,7 @@
   "wis-full": "Wisdom",
   "cha-full": "Charisma",
   "int-check-failed": "Intelligence check failed!",
+  "cha-check-failed": "Charisma check failed!",
   "str-desc": "A measure of one's raw power. Affects hammer attacks and tool attacks, critical damage, and fishing reel-in speed.",
   "con-desc": "A measure of one's physical fortitude. Affects health, stamina, sword attacks, and debuffs.",
   "dex-desc": "A measure of one's physical agility. Affects defense, dagger and ranged attacks, critical chance, and fishing bobber size.",

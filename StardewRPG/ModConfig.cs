@@ -65,6 +65,7 @@ namespace StardewRPG
         public float WisCraftResourceReqBonus { get; set; } = 0.1f;
         public float WisCraftTimeBonus { get; set; } = 0.1f;
         public float WisExpBonus { get; set; } = 0.1f;
+        public float WisSpotVisibility { get; set; } = 0.1f;
         
         public float ChaFriendshipBonus { get; set; } = 0.1f;
         public float ChaPriceBonus { get; set; } = 0.1f;

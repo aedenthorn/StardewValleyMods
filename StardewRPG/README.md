@@ -39,7 +39,7 @@
     - B: Ranged Damage 
     - B: Fishing Bobber Bar Size
     - B: Crit Chance 
-    - V: Miss Chance 
+    - V: Dodge Chance 
 
 - Int [TODO: TEST]
     - B: Bonus Skill Levels
@@ -47,15 +47,16 @@
     - B: Artifact / Fishing / Panning / Foraging Spot Number
     - V: Craft Succeed Chance
 
- - Wis [TODO]
-    - B: Craft Station Speed [DONE]
-    - B: Craft Resource Usage [DONE]
-    - B: Exp Gain [DONE]
+ - Wis [TODO: TEST]
+    - B: Craft Station Speed
+    - B: Craft Resource Usage
+    - B: Exp Gain
     - V: Artifact / Fishing / Panning, Foraging Spot Transparency / Glow (-/+)
  
  - Cha [TODO: TEST]
     - B: Friendship Reward
     - B: Buy / Sell Price
+    - V: Romance Chance
 
 
 **Character Level System**

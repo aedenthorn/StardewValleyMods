@@ -37,5 +37,26 @@ namespace StardewRPG
             SMonitor.Log($"Modifying sell price of {__result} by {mult}x");
             __result = (int)Math.Round(__result * (1 + mult));
         }
+        private static void Object_draw_Prefix(Object __instance, float alpha, int x, int y)
+        {
+            if (!Config.EnableMod || __instance.ParentSheetIndex != 590)
+                return;
+
+            int wis = GetStatValue(Game1.player, "wis", Config.BaseStatValue);
+            if (wis == 10)
+                return;
+            float val = (wis - 10) * Config.WisSpotVisibility;
+            double tick = Game1.currentGameTime.TotalGameTime.TotalMilliseconds % 1200;
+            if (val < 0)
+                alpha *= 1 + val;
+            else if (tick < 300)
+                __instance.scale.Y = 4;
+            else if (tick < 600)
+                __instance.scale.Y = 4 + val;
+            else if (tick < 900)
+                __instance.scale.Y = 4 + val * 2;
+            else
+                __instance.scale.Y = 4 + val;
+        }
     }
 }

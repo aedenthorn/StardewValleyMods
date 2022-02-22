@@ -48,70 +48,14 @@ namespace StardewRPG
             var harmony = new Harmony(ModManifest.UniqueID);
 
 
-            // Farmer Patches
+
+            // Buff patches
 
             harmony.Patch(
-               original: AccessTools.Constructor(typeof(Farmer), new Type[] { typeof(FarmerSprite), typeof(Vector2), typeof(int), typeof(string), typeof(List<Item>), typeof(bool) }),
-               postfix: new HarmonyMethod(typeof(ModEntry), nameof(ModEntry.Farmer_Postfix))
-            );
-            
-            harmony.Patch(
-               original: AccessTools.Method(typeof(Farmer), nameof(Farmer.doneEating)),
-               postfix: new HarmonyMethod(typeof(ModEntry), nameof(ModEntry.Farmer_doneEating_Postfix))
-            );
-            
-            harmony.Patch(
-               original: AccessTools.Method(typeof(Farmer), nameof(Farmer.gainExperience)),
-               prefix: new HarmonyMethod(typeof(ModEntry), nameof(ModEntry.Farmer_gainExperience_Prefix))
-            );
-            
-            harmony.Patch(
-               original: AccessTools.PropertyGetter(typeof(Farmer), nameof(Farmer.Level)),
-               prefix: new HarmonyMethod(typeof(ModEntry), nameof(ModEntry.Farmer_Level_Prefix))
-            );
-            
-            harmony.Patch(
-               original: AccessTools.Method(typeof(Farmer), "performBeginUsingTool"),
-               prefix: new HarmonyMethod(typeof(ModEntry), nameof(ModEntry.Farmer_performBeginUsingTool_Prefix))
+               original: AccessTools.Method(typeof(BuffsDisplay), nameof(BuffsDisplay.addOtherBuff)),
+               prefix: new HarmonyMethod(typeof(ModEntry), nameof(ModEntry.BuffsDisplay_addOtherBuff_Prefix))
             );
 
-            harmony.Patch(
-               original: AccessTools.Method(typeof(Farmer), nameof(Farmer.CanBeDamaged)),
-               prefix: new HarmonyMethod(typeof(ModEntry), nameof(ModEntry.Farmer_CanBeDamaged_Prefix))
-            );
-            
-
-            harmony.Patch(
-               original: AccessTools.Method(typeof(Farmer), nameof(Farmer.changeFriendship)),
-               prefix: new HarmonyMethod(typeof(ModEntry), nameof(ModEntry.Farmer_changeFriendship_Prefix))
-            );
-            
-
-            // Tool patches
-
-            harmony.Patch(
-               original: AccessTools.Method(typeof(MeleeWeapon), nameof(MeleeWeapon.setFarmerAnimating)),
-               transpiler: new HarmonyMethod(typeof(ModEntry), nameof(ModEntry.MeleeWeapon_setFarmerAnimating_Transpiler))
-            );            
-            
-            harmony.Patch(
-               original: AccessTools.Method(typeof(Pickaxe), nameof(Pickaxe.DoFunction)),
-               prefix: new HarmonyMethod(typeof(ModEntry), nameof(ModEntry.Pickaxe_DoFunction_Prefix)),
-               postfix: new HarmonyMethod(typeof(ModEntry), nameof(ModEntry.Pickaxe_DoFunction_Postfix))
-            );
-            
-            harmony.Patch(
-               original: AccessTools.Method(typeof(Axe), nameof(Axe.DoFunction)),
-               prefix: new HarmonyMethod(typeof(ModEntry), nameof(ModEntry.Axe_DoFunction_Prefix)),
-               postfix: new HarmonyMethod(typeof(ModEntry), nameof(ModEntry.Axe_DoFunction_Postfix))
-            );
-            
-            harmony.Patch(
-               original: AccessTools.Constructor(typeof(BasicProjectile), new Type[] { typeof(int), typeof(int), typeof(int), typeof(int), typeof(float), typeof(float), typeof(float), typeof(Vector2), typeof(string), typeof(string), typeof(bool), typeof(bool), typeof(GameLocation), typeof(Character), typeof(bool), typeof(BasicProjectile.onCollisionBehavior) }),
-               postfix: new HarmonyMethod(typeof(ModEntry), nameof(ModEntry.BasicProjectile_Postfix))
-            );
-            
-            
             // Crafting patches
 
             harmony.Patch(
@@ -128,27 +72,6 @@ namespace StardewRPG
                prefix: new HarmonyMethod(typeof(ModEntry), nameof(ModEntry.CraftingPage_clickCraftingRecipe_Prefix))
             );
 
-
-            // Object patches
-
-            harmony.Patch(
-               original: AccessTools.Method(typeof(Object), nameof(Object.performObjectDropInAction)),
-               prefix: new HarmonyMethod(typeof(ModEntry), nameof(ModEntry.Object_performObjectDropInAction_Prefix)),
-               postfix: new HarmonyMethod(typeof(ModEntry), nameof(ModEntry.Object_performObjectDropInAction_Postfix))
-            );
-            
-            harmony.Patch(
-               original: AccessTools.Method(typeof(Object), nameof(Object.performDropDownAction)),
-               prefix: new HarmonyMethod(typeof(ModEntry), nameof(ModEntry.Object_performObjectDropInAction_Prefix)),
-               postfix: new HarmonyMethod(typeof(ModEntry), nameof(ModEntry.Object_performObjectDropInAction_Postfix))
-            );
-            
-            harmony.Patch(
-               original: AccessTools.Method(typeof(Object), nameof(Object.sellToStorePrice)),
-               postfix: new HarmonyMethod(typeof(ModEntry), nameof(ModEntry.Object_sellToStorePrice_Postfix))
-            );
-
-
             // Crop Patches
 
             harmony.Patch(
@@ -157,10 +80,49 @@ namespace StardewRPG
             );
 
 
+            // Farmer Patches
+
+            harmony.Patch(
+               original: AccessTools.Constructor(typeof(Farmer), new Type[] { typeof(FarmerSprite), typeof(Vector2), typeof(int), typeof(string), typeof(List<Item>), typeof(bool) }),
+               postfix: new HarmonyMethod(typeof(ModEntry), nameof(ModEntry.Farmer_Postfix))
+            );
+
+            harmony.Patch(
+               original: AccessTools.Method(typeof(Farmer), nameof(Farmer.doneEating)),
+               postfix: new HarmonyMethod(typeof(ModEntry), nameof(ModEntry.Farmer_doneEating_Postfix))
+            );
+
+            harmony.Patch(
+               original: AccessTools.Method(typeof(Farmer), nameof(Farmer.gainExperience)),
+               prefix: new HarmonyMethod(typeof(ModEntry), nameof(ModEntry.Farmer_gainExperience_Prefix))
+            );
+
+            harmony.Patch(
+               original: AccessTools.PropertyGetter(typeof(Farmer), nameof(Farmer.Level)),
+               prefix: new HarmonyMethod(typeof(ModEntry), nameof(ModEntry.Farmer_Level_Prefix))
+            );
+
+            harmony.Patch(
+               original: AccessTools.Method(typeof(Farmer), "performBeginUsingTool"),
+               prefix: new HarmonyMethod(typeof(ModEntry), nameof(ModEntry.Farmer_performBeginUsingTool_Prefix))
+            );
+
+            harmony.Patch(
+               original: AccessTools.Method(typeof(Farmer), nameof(Farmer.CanBeDamaged)),
+               prefix: new HarmonyMethod(typeof(ModEntry), nameof(ModEntry.Farmer_CanBeDamaged_Prefix))
+            );
+
+
+            harmony.Patch(
+               original: AccessTools.Method(typeof(Farmer), nameof(Farmer.changeFriendship)),
+               prefix: new HarmonyMethod(typeof(ModEntry), nameof(ModEntry.Farmer_changeFriendship_Prefix))
+            );
+
+
             // Fishing patches
 
             harmony.Patch(
-               original: AccessTools.Constructor(typeof(BobberBar),new Type[] { typeof(int), typeof(float), typeof(bool), typeof(int) }),
+               original: AccessTools.Constructor(typeof(BobberBar), new Type[] { typeof(int), typeof(float), typeof(bool), typeof(int) }),
                postfix: new HarmonyMethod(typeof(ModEntry), nameof(ModEntry.BobberBar_Postfix))
             );
 
@@ -177,6 +139,10 @@ namespace StardewRPG
                prefix: new HarmonyMethod(typeof(ModEntry), nameof(ModEntry.GameLocation_damageMonster_Prefix))
             );
 
+            harmony.Patch(
+               original: AccessTools.Method(typeof(GameLocation), nameof(GameLocation.draw), new Type[] { typeof(SpriteBatch) }),
+               prefix: new HarmonyMethod(typeof(ModEntry), nameof(ModEntry.GameLocation_draw_Prefix))
+            );
 
             harmony.Patch(
                original: AccessTools.Method(typeof(GameLocation), nameof(GameLocation.spawnObjects)),
@@ -194,21 +160,78 @@ namespace StardewRPG
                prefix: new HarmonyMethod(typeof(ModEntry), nameof(ModEntry.Game1_updatePause_Prefix))
             );
 
-            
+
             harmony.Patch(
                original: AccessTools.Method(typeof(Game1), "drawHUD"),
                prefix: new HarmonyMethod(typeof(ModEntry), nameof(ModEntry.Game1_drawHUD_Prefix)),
                postfix: new HarmonyMethod(typeof(ModEntry), nameof(ModEntry.Game1_drawHUD_Postfix))
             );
 
-            // Buff patches
+
+            // NPC patches
 
             harmony.Patch(
-               original: AccessTools.Method(typeof(BuffsDisplay), nameof(BuffsDisplay.addOtherBuff)),
-               prefix: new HarmonyMethod(typeof(ModEntry), nameof(ModEntry.BuffsDisplay_addOtherBuff_Prefix))
+               original: AccessTools.Method(typeof(NPC), nameof(NPC.tryToReceiveActiveObject)),
+               transpiler: new HarmonyMethod(typeof(ModEntry), nameof(ModEntry.NPC_tryToReceiveActiveObject_Transpiler))
+            );
+
+            harmony.Patch(
+               original: AccessTools.Method(typeof(NPC), "engagementResponse"),
+               prefix: new HarmonyMethod(typeof(ModEntry), nameof(ModEntry.NPC_engagementResponse_Prefix))
             );
 
 
+            // Object patches
+
+            harmony.Patch(
+               original: AccessTools.Method(typeof(Object), nameof(Object.performObjectDropInAction)),
+               prefix: new HarmonyMethod(typeof(ModEntry), nameof(ModEntry.Object_performObjectDropInAction_Prefix)),
+               postfix: new HarmonyMethod(typeof(ModEntry), nameof(ModEntry.Object_performObjectDropInAction_Postfix))
+            );
+
+            harmony.Patch(
+               original: AccessTools.Method(typeof(Object), nameof(Object.performDropDownAction)),
+               prefix: new HarmonyMethod(typeof(ModEntry), nameof(ModEntry.Object_performObjectDropInAction_Prefix)),
+               postfix: new HarmonyMethod(typeof(ModEntry), nameof(ModEntry.Object_performObjectDropInAction_Postfix))
+            );
+
+            harmony.Patch(
+               original: AccessTools.Method(typeof(Object), nameof(Object.sellToStorePrice)),
+               postfix: new HarmonyMethod(typeof(ModEntry), nameof(ModEntry.Object_sellToStorePrice_Postfix))
+            );
+
+            harmony.Patch(
+               original: AccessTools.Method(typeof(Object), nameof(Object.draw), new Type[] { typeof(SpriteBatch), typeof(int), typeof(int), typeof(float) }),
+               prefix: new HarmonyMethod(typeof(ModEntry), nameof(ModEntry.Object_draw_Prefix))
+            );
+
+
+            // Tool patches
+
+            harmony.Patch(
+               original: AccessTools.Method(typeof(MeleeWeapon), nameof(MeleeWeapon.setFarmerAnimating)),
+               transpiler: new HarmonyMethod(typeof(ModEntry), nameof(ModEntry.MeleeWeapon_setFarmerAnimating_Transpiler))
+            );
+
+            harmony.Patch(
+               original: AccessTools.Method(typeof(Pickaxe), nameof(Pickaxe.DoFunction)),
+               prefix: new HarmonyMethod(typeof(ModEntry), nameof(ModEntry.Pickaxe_DoFunction_Prefix)),
+               postfix: new HarmonyMethod(typeof(ModEntry), nameof(ModEntry.Pickaxe_DoFunction_Postfix))
+            );
+
+            harmony.Patch(
+               original: AccessTools.Method(typeof(Axe), nameof(Axe.DoFunction)),
+               prefix: new HarmonyMethod(typeof(ModEntry), nameof(ModEntry.Axe_DoFunction_Prefix)),
+               postfix: new HarmonyMethod(typeof(ModEntry), nameof(ModEntry.Axe_DoFunction_Postfix))
+            );
+
+            harmony.Patch(
+               original: AccessTools.Constructor(typeof(BasicProjectile), new Type[] { typeof(int), typeof(int), typeof(int), typeof(int), typeof(float), typeof(float), typeof(float), typeof(Vector2), typeof(string), typeof(string), typeof(bool), typeof(bool), typeof(GameLocation), typeof(Character), typeof(bool), typeof(BasicProjectile.onCollisionBehavior) }),
+               postfix: new HarmonyMethod(typeof(ModEntry), nameof(ModEntry.BasicProjectile_Postfix))
+            );
+
+
+            
             // UI Patches
 
             harmony.Patch(
