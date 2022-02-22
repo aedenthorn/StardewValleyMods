@@ -97,6 +97,7 @@ namespace StardewRPG
 		private static void SetModData(Farmer instance, string key, object value)
 		{
 			instance.modData[modDataKey + key] = value.ToString();
+			SetStats(ref instance);
 		}
 
 		private static int GetStatMod(int v)

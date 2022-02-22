@@ -71,5 +71,22 @@ namespace StardewRPG
         /// <summary>Remove a mod from the config UI and delete all its options and pages.</summary>
         /// <param name="mod">The mod's manifest.</param>
         void Unregister(IManifest mod);
+
+        /****
+        ** Multi-page management
+        ****/
+        /// <summary>Start a new page in the mod's config UI, or switch to that page if it already exists. All options registered after this will be part of that page.</summary>
+        /// <param name="mod">The mod's manifest.</param>
+        /// <param name="pageId">The unique page ID.</param>
+        /// <param name="pageTitle">The page title shown in its UI, or <c>null</c> to show the <paramref name="pageId"/> value.</param>
+        /// <remarks>You must also call <see cref="AddPageLink"/> to make the page accessible. This is only needed to set up a multi-page config UI. If you don't call this method, all options will be part of the mod's main config UI instead.</remarks>
+        void AddPage(IManifest mod, string pageId, Func<string> pageTitle = null);
+
+        /// <summary>Add a link to a page added via <see cref="AddPage"/> at the current position in the form.</summary>
+        /// <param name="mod">The mod's manifest.</param>
+        /// <param name="pageId">The unique ID of the page to open when the link is clicked.</param>
+        /// <param name="text">The link text shown in the form.</param>
+        /// <param name="tooltip">The tooltip text shown when the cursor hovers on the link, or <c>null</c> to disable the tooltip.</param>
+        void AddPageLink(IManifest mod, string pageId, Func<string> text, Func<string> tooltip = null);
     }
 }

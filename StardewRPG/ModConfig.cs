@@ -5,14 +5,8 @@ namespace StardewRPG
     {
         public bool EnableMod { get; set; } = true;
 
-        // death
-        public bool PermaDeath { get; set; } = true;
-        public int PermaDeathScreenTicks { get; set; } = 1500;
-        public float ExperienceLossPercentOnDeath { get; set; } = 1f;
-        public bool OnlyLoseExpToNextLevel { get; set; } = true;
 
-
-        // levelling
+        // leveling
         public bool ManualSkillUpgrades { get; set; } = true;
         public bool NotifyOnLevelUp { get; set; } = true;
         public float LevelIncrementExpMult { get; set; } = 1f;
@@ -59,8 +53,8 @@ namespace StardewRPG
         public float IntArtifactSpotChanceBonus { get; set; } = 0.1f;
         public int IntForagingSpotChanceBonus { get; set; } = 1;
         public float IntPanSpotChanceBonus { get; set; } = 0.1f;
-        public bool IntRollObjectQualityBonus { get; set; } = true;
         public bool IntRollCraftingChance { get; set; } = true;
+        //public bool IntRollObjectQualityBonus { get; set; } = true;
 
         public float WisCraftResourceReqBonus { get; set; } = 0.1f;
         public float WisCraftTimeBonus { get; set; } = 0.1f;
@@ -70,6 +64,11 @@ namespace StardewRPG
         public float ChaFriendshipBonus { get; set; } = 0.1f;
         public float ChaPriceBonus { get; set; } = 0.1f;
 
+
+        // death
+        public bool PermaDeath { get; set; } = true;
+        public int PermaDeathScreenTicks { get; set; } = 1500;
+        public float ExperienceLossPercentOnDeath { get; set; } = 100f;
 
         // tools
         public float ToolLevelReqMult { get; set; } = 2f;

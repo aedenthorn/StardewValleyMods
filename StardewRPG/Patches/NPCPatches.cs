@@ -27,21 +27,23 @@ namespace StardewRPG
             who.friendshipData[__instance.Name].ProposalRejected = true;
             return false;
         }
-        public static IEnumerable<CodeInstruction> NPC_tryToReceiveActiveObject_Transpiler(IEnumerable<CodeInstruction> instructions)
+        public static IEnumerable<CodeInstruction> NPC_tryToReceiveActiveObject_Transpiler(IEnumerable<CodeInstruction> instructions, ILGenerator generator)
         {
             SMonitor.Log($"Transpiling NPC.tryToReceiveActiveObject");
 
             var codes = new List<CodeInstruction>(instructions);
+            var label = generator.DefineLabel();
             for (int i = 0; i < codes.Count; i++)
             {
                 if (i < codes.Count - 2 && codes[i].opcode == OpCodes.Stloc_S && codes[i + 1].opcode == OpCodes.Ldloc_S && codes[i].operand == codes[i + 1].operand && codes[i + 2].opcode == OpCodes.Callvirt && (MethodInfo)codes[i + 2].operand == AccessTools.Method(typeof(Friendship), nameof(Friendship.IsDating)))
                 {
                     SMonitor.Log("Adding bouquet fail");
-                    codes.Insert(i, new CodeInstruction(OpCodes.Ret));
-                    codes.Insert(i, new CodeInstruction(OpCodes.Brtrue_S, 1));
-                    codes.Insert(i, new CodeInstruction(OpCodes.Call, AccessTools.Method(typeof(ModEntry), nameof(ModEntry.CheckDatingChance))));
-                    codes.Insert(i, new CodeInstruction(OpCodes.Ldarg_1));
-                    codes.Insert(i, new CodeInstruction(OpCodes.Ldarg_0));
+                    codes[i + 1].labels.Add(label);
+                    codes.Insert(i + 1, new CodeInstruction(OpCodes.Ret));
+                    codes.Insert(i + 1, new CodeInstruction(OpCodes.Brtrue_S, label));
+                    codes.Insert(i + 1, new CodeInstruction(OpCodes.Call, AccessTools.Method(typeof(ModEntry), nameof(ModEntry.CheckDatingChance))));
+                    codes.Insert(i + 1, new CodeInstruction(OpCodes.Ldarg_1));
+                    codes.Insert(i + 1, new CodeInstruction(OpCodes.Ldarg_0));
                     break;
                 }
             }

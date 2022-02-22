@@ -37,11 +37,35 @@ namespace StardewRPG
 
 		}
 
-		private static bool Game1_updatePause_Prefix()
+		private static bool Game1_updatePause_Prefix(ref bool __state)
         {
             if (!Config.EnableMod || !Game1.killScreen || !Config.PermaDeath)
+            {
+                __state = Game1.killScreen;
                 return true;
+            }
             return false;
+        }
+        
+		private static void Game1_updatePause_Postfix(bool __state)
+        {
+            if (!Config.EnableMod || !__state || Config.PermaDeath)
+                return;
+            if (!Game1.killScreen)
+            {
+                SMonitor.Log("Kill screen finished");
+                var currentExp = GetStatValue(Game1.player, "exp");
+                var level = GetExperienceLevel(Game1.player);
+                var extraExp = currentExp;
+                if (level > 1)
+                {
+                    extraExp -= GetExperienceLevels()[level - 2];
+                }
+                var expToLose = extraExp * Config.ExperienceLossPercentOnDeath / 100;
+
+                SetModData(Game1.player, "exp", currentExp - expToLose);
+                SMonitor.Log($"Exp lost {expToLose}; remaining {currentExp - expToLose}");
+            }
         }
         
     }

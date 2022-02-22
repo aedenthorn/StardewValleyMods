@@ -9,6 +9,7 @@ using StardewValley.Projectiles;
 using StardewValley.Tools;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using Object = StardewValley.Object;
 
@@ -308,12 +309,443 @@ namespace StardewRPG
                 reset: () => Config = new ModConfig(),
                 save: () => Helper.WriteConfig(Config)
             );
-
             configMenu.AddBoolOption(
                 mod: ModManifest,
-                name: () => "Mod Enabled",
+                name: () => Helper.Translation.Get("mod-enabled"),
                 getValue: () => Config.EnableMod,
                 setValue: value => Config.EnableMod = value
+            );
+
+            configMenu.AddPageLink(
+                mod: ModManifest,
+                pageId: "leveling",
+                text: () => Helper.Translation.Get("leveling")
+            );
+            configMenu.AddPageLink(
+                mod: ModManifest,
+                pageId: "stats",
+                text: () => Helper.Translation.Get("stats")
+            );
+            configMenu.AddPageLink(
+                mod: ModManifest,
+                pageId: "bonuses",
+                text: () => Helper.Translation.Get("bonuses")
+            );
+            configMenu.AddPageLink(
+                mod: ModManifest,
+                pageId: "death",
+                text: () => Helper.Translation.Get("death")
+            );
+            configMenu.AddPageLink(
+                mod: ModManifest,
+                pageId: "tools",
+                text: () => Helper.Translation.Get("tools")
+            );
+
+            configMenu.AddPage(
+                mod: ModManifest,
+                pageId: "leveling",
+                pageTitle: () => Helper.Translation.Get("leveling")
+            );
+            configMenu.AddBoolOption(
+                mod: ModManifest,
+                name: () => Helper.Translation.Get("manual-skills"),
+                tooltip: () => Helper.Translation.Get("manual-skills-desc"),
+                getValue: () => Config.ManualSkillUpgrades,
+                setValue: value => Config.ManualSkillUpgrades = value
+            );
+            configMenu.AddBoolOption(
+                mod: ModManifest,
+                name: () => Helper.Translation.Get("level-notify"),
+                tooltip: () => Helper.Translation.Get("level-notify-desc"),
+                getValue: () => Config.NotifyOnLevelUp,
+                setValue: value => Config.NotifyOnLevelUp= value
+            );
+            configMenu.AddTextOption(
+                mod: ModManifest,
+                name: () => Helper.Translation.Get("level-exp-mult"),
+                tooltip: () => Helper.Translation.Get("level-exp-mult-desc"),
+                getValue: () => Config.LevelIncrementExpMult+"",
+                setValue: delegate (string value) { try { Config.LevelIncrementExpMult = float.Parse(value, CultureInfo.InvariantCulture); } catch { } }
+            );
+            configMenu.AddNumberOption(
+                mod: ModManifest,
+                name: () => Helper.Translation.Get("health-per-level"),
+                tooltip: () => Helper.Translation.Get("health-per-level-desc"),
+                getValue: () => Config.BaseHealthPerLevel,
+                setValue: value => Config.BaseHealthPerLevel = value
+            );
+            configMenu.AddNumberOption(
+                mod: ModManifest,
+                name: () => Helper.Translation.Get("stamina-per-level"),
+                tooltip: () => Helper.Translation.Get("stamina-per-level-desc"),
+                getValue: () => Config.BaseStaminaPerLevel,
+                setValue: value => Config.BaseStaminaPerLevel = value
+            );
+
+            configMenu.AddPage(
+                mod: ModManifest,
+                pageId: "stats",
+                pageTitle: () => Helper.Translation.Get("stats")
+            );
+            configMenu.AddNumberOption(
+                mod: ModManifest,
+                name: () => Helper.Translation.Get("base-value"),
+                tooltip: () => Helper.Translation.Get("base-value-desc"),
+                getValue: () => Config.BaseStatValue,
+                setValue: value => Config.BaseStatValue = value,
+                min:Config.MinStatValue,
+                max:Config.MaxStatValue
+            );
+            configMenu.AddNumberOption(
+                mod: ModManifest,
+                name: () => Helper.Translation.Get("min-value"),
+                tooltip: () => Helper.Translation.Get("min-value-desc"),
+                getValue: () => Config.MinStatValue,
+                setValue: value => Config.MinStatValue = value
+            );
+            configMenu.AddNumberOption(
+                mod: ModManifest,
+                name: () => Helper.Translation.Get("max-value"),
+                tooltip: () => Helper.Translation.Get("max-value-desc"),
+                getValue: () => Config.MaxStatValue,
+                setValue: value => Config.MaxStatValue = value
+            );
+            configMenu.AddTextOption(
+                mod: ModManifest,
+                name: () => Helper.Translation.Get("bonus-levels"),
+                tooltip: () => Helper.Translation.Get("bonus-levels-desc"),
+                getValue: () => Config.StatBonusLevels,
+                setValue: value => Config.StatBonusLevels = value
+            );
+            configMenu.AddTextOption(
+                mod: ModManifest,
+                name: () => Helper.Translation.Get("bonus-levels"),
+                tooltip: () => Helper.Translation.Get("bonus-levels-desc"),
+                getValue: () => Config.StatPenaltyLevels,
+                setValue: value => Config.StatPenaltyLevels = value
+            );
+            configMenu.AddNumberOption(
+                mod: ModManifest,
+                name: () => Helper.Translation.Get("start-points"),
+                tooltip: () => Helper.Translation.Get("start-points-desc"),
+                getValue: () => Config.StartStatExtraPoints,
+                setValue: value => Config.StartStatExtraPoints = value
+            );
+            configMenu.AddNumberOption(
+                mod: ModManifest,
+                name: () => Helper.Translation.Get("points-per-stardrop"),
+                tooltip: () => Helper.Translation.Get("points-per-stardrop-desc"),
+                getValue: () => Config.StatPointsPerStardrop,
+                setValue: value => Config.StatPointsPerStardrop = value
+            );
+
+            configMenu.AddPage(
+                mod: ModManifest,
+                pageId: "bonuses",
+                pageTitle: () => Helper.Translation.Get("bonuses")
+            );
+
+            configMenu.AddSectionTitle(
+                mod: ModManifest,
+                text: () => Helper.Translation.Get("str-full")
+            );
+            configMenu.AddTextOption(
+                mod: ModManifest,
+                name: () => Helper.Translation.Get("club-damage"),
+                tooltip: () => Helper.Translation.Get("stat-bonus-desc"),
+                getValue: () => Config.StrClubDamageBonus +"",
+                setValue: delegate (string value) { try { Config.StrClubDamageBonus = float.Parse(value, CultureInfo.InvariantCulture); } catch { } }
+            );
+            configMenu.AddNumberOption(
+                mod: ModManifest,
+                name: () => Helper.Translation.Get("club-speed"),
+                tooltip: () => Helper.Translation.Get("stat-bonus-desc"),
+                getValue: () => Config.StrClubSpeedBonus,
+                setValue: value => Config.StrClubSpeedBonus = value
+            );
+            configMenu.AddNumberOption(
+                mod: ModManifest,
+                name: () => Helper.Translation.Get("pickaxe-damage"),
+                tooltip: () => Helper.Translation.Get("stat-bonus-desc"),
+                getValue: () => Config.StrPickaxeDamageBonus,
+                setValue: value => Config.StrPickaxeDamageBonus = value
+            );
+            configMenu.AddNumberOption(
+                mod: ModManifest,
+                name: () => Helper.Translation.Get("axe-damage"),
+                tooltip: () => Helper.Translation.Get("stat-bonus-desc"),
+                getValue: () => Config.StrAxeDamageBonus,
+                setValue: value => Config.StrAxeDamageBonus = value
+            );
+            configMenu.AddTextOption(
+                mod: ModManifest,
+                name: () => Helper.Translation.Get("crit-damage"),
+                tooltip: () => Helper.Translation.Get("stat-bonus-desc"),
+                getValue: () => Config.StrCritDamageBonus+ "",
+                setValue: delegate (string value) { try { Config.StrCritDamageBonus = float.Parse(value, CultureInfo.InvariantCulture); } catch { } }
+            );
+            configMenu.AddTextOption(
+                mod: ModManifest,
+                name: () => Helper.Translation.Get("fish-reel-speed"),
+                tooltip: () => Helper.Translation.Get("stat-bonus-desc"),
+                getValue: () => Config.StrFishingReelSpeedBonus+ "",
+                setValue: delegate (string value) { try { Config.StrFishingReelSpeedBonus = float.Parse(value, CultureInfo.InvariantCulture); } catch { } }
+            );
+            configMenu.AddTextOption(
+                mod: ModManifest,
+                name: () => Helper.Translation.Get("fish-treasure-speed"),
+                tooltip: () => Helper.Translation.Get("stat-bonus-desc"),
+                getValue: () => Config.StrFishingTreasureSpeedBonus+ "",
+                setValue: delegate (string value) { try { Config.StrFishingTreasureSpeedBonus = float.Parse(value, CultureInfo.InvariantCulture); } catch { } }
+            );
+
+            configMenu.AddSectionTitle(
+                mod: ModManifest,
+                text: () => Helper.Translation.Get("con-full")
+            );
+            configMenu.AddTextOption(
+                mod: ModManifest,
+                name: () => Helper.Translation.Get("sword-damage"),
+                tooltip: () => Helper.Translation.Get("stat-bonus-desc"),
+                getValue: () => Config.ConSwordDamageBonus+ "",
+                setValue: delegate (string value) { try { Config.ConSwordDamageBonus = float.Parse(value, CultureInfo.InvariantCulture); } catch { } }
+            );
+            configMenu.AddNumberOption(
+                mod: ModManifest,
+                name: () => Helper.Translation.Get("sword-speed"),
+                tooltip: () => Helper.Translation.Get("stat-bonus-desc"),
+                getValue: () => Config.ConSwordSpeedBonus,
+                setValue: value => Config.ConSwordSpeedBonus = value
+            );
+            configMenu.AddNumberOption(
+                mod: ModManifest,
+                name: () => Helper.Translation.Get("defense-bonus"),
+                tooltip: () => Helper.Translation.Get("stat-bonus-desc"),
+                getValue: () => Config.ConDefenseBonus,
+                setValue: value => Config.ConDefenseBonus = value
+            );
+            configMenu.AddTextOption(
+                mod: ModManifest,
+                name: () => Helper.Translation.Get("health-bonus"),
+                tooltip: () => Helper.Translation.Get("stat-bonus-desc"),
+                getValue: () => Config.ConHealthBonus + "",
+                setValue: delegate (string value) { try { Config.ConHealthBonus = float.Parse(value, CultureInfo.InvariantCulture); } catch { } }
+            );
+            configMenu.AddTextOption(
+                mod: ModManifest,
+                name: () => Helper.Translation.Get("stamina-bonus"),
+                tooltip: () => Helper.Translation.Get("stat-bonus-desc"),
+                getValue: () => Config.ConStaminaBonus + "",
+                setValue: delegate (string value) { try { Config.ConStaminaBonus = float.Parse(value, CultureInfo.InvariantCulture); } catch { } }
+            );
+            configMenu.AddBoolOption(
+                mod: ModManifest,
+                name: () => Helper.Translation.Get("resist-buff-roll"),
+                tooltip: () => Helper.Translation.Get("resist-buff-roll-desc"),
+                getValue: () => Config.ConRollToResistDebuff,
+                setValue: value => Config.ConRollToResistDebuff = value
+            );
+            configMenu.AddTextOption(
+                mod: ModManifest,
+                name: () => Helper.Translation.Get("debuff-dur"),
+                tooltip: () => Helper.Translation.Get("stat-bonus-desc"),
+                getValue: () => Config.ConDebuffDurationBonus + "",
+                setValue: delegate (string value) { try { Config.ConDebuffDurationBonus = float.Parse(value, CultureInfo.InvariantCulture); } catch { } }
+            );
+
+            configMenu.AddSectionTitle(
+                mod: ModManifest,
+                text: () => Helper.Translation.Get("dex-full")
+            );
+            configMenu.AddTextOption(
+                mod: ModManifest,
+                name: () => Helper.Translation.Get("dagger-damage"),
+                tooltip: () => Helper.Translation.Get("stat-bonus-desc"),
+                getValue: () => Config.DexDaggerDamageBonus + "",
+                setValue: delegate (string value) { try { Config.DexDaggerDamageBonus = float.Parse(value, CultureInfo.InvariantCulture); } catch { } }
+            );
+            configMenu.AddTextOption(
+                mod: ModManifest,
+                name: () => Helper.Translation.Get("ranged-damage"),
+                tooltip: () => Helper.Translation.Get("stat-bonus-desc"),
+                getValue: () => Config.DexRangedDamageBonus + "",
+                setValue: delegate (string value) { try { Config.DexRangedDamageBonus = float.Parse(value, CultureInfo.InvariantCulture); } catch { } }
+            );
+            configMenu.AddNumberOption(
+                mod: ModManifest,
+                name: () => Helper.Translation.Get("dagger-speed"),
+                tooltip: () => Helper.Translation.Get("stat-bonus-desc"),
+                getValue: () => Config.DexDaggerSpeedBonus,
+                setValue: value => Config.DexDaggerSpeedBonus = value
+            );
+            configMenu.AddTextOption(
+                mod: ModManifest,
+                name: () => Helper.Translation.Get("crit-chance"),
+                tooltip: () => Helper.Translation.Get("stat-bonus-desc"),
+                getValue: () => Config.DexCritChanceBonus+ "",
+                setValue: delegate (string value) { try { Config.DexCritChanceBonus = float.Parse(value, CultureInfo.InvariantCulture); } catch { } }
+            );
+            configMenu.AddNumberOption(
+                mod: ModManifest,
+                name: () => Helper.Translation.Get("bobber-size"),
+                tooltip: () => Helper.Translation.Get("stat-bonus-desc"),
+                getValue: () => Config.DexFishingBobberSizeBonus,
+                setValue: value => Config.DexFishingBobberSizeBonus= value
+            );
+            configMenu.AddBoolOption(
+                mod: ModManifest,
+                name: () => Helper.Translation.Get("dodge-roll"),
+                tooltip: () => Helper.Translation.Get("dodge-roll-desc"),
+                getValue: () => Config.DexRollForMiss,
+                setValue: value => Config.DexRollForMiss = value
+            );
+
+            configMenu.AddSectionTitle(
+                mod: ModManifest,
+                text: () => Helper.Translation.Get("int-full")
+            );
+            configMenu.AddTextOption(
+                mod: ModManifest,
+                name: () => Helper.Translation.Get("skill-bonus"),
+                tooltip: () => Helper.Translation.Get("stat-bonus-desc"),
+                getValue: () => Config.IntSkillLevelsBonus + "",
+                setValue: delegate (string value) { try { Config.IntSkillLevelsBonus = float.Parse(value, CultureInfo.InvariantCulture); } catch { } }
+            );
+            configMenu.AddTextOption(
+                mod: ModManifest,
+                name: () => Helper.Translation.Get("crop-quality"),
+                tooltip: () => Helper.Translation.Get("stat-bonus-desc"),
+                getValue: () => Config.IntCropQualityBonus + "",
+                setValue: delegate (string value) { try { Config.IntCropQualityBonus = float.Parse(value, CultureInfo.InvariantCulture); } catch { } }
+            );
+            configMenu.AddTextOption(
+                mod: ModManifest,
+                name: () => Helper.Translation.Get("artifact-chance"),
+                tooltip: () => Helper.Translation.Get("stat-bonus-desc"),
+                getValue: () => Config.IntArtifactSpotChanceBonus + "",
+                setValue: delegate (string value) { try { Config.IntArtifactSpotChanceBonus = float.Parse(value, CultureInfo.InvariantCulture); } catch { } }
+            );
+            configMenu.AddTextOption(
+                mod: ModManifest,
+                name: () => Helper.Translation.Get("pan-chance"),
+                tooltip: () => Helper.Translation.Get("stat-bonus-desc"),
+                getValue: () => Config.IntPanSpotChanceBonus + "",
+                setValue: delegate (string value) { try { Config.IntPanSpotChanceBonus = float.Parse(value, CultureInfo.InvariantCulture); } catch { } }
+            );
+            configMenu.AddNumberOption(
+                mod: ModManifest,
+                name: () => Helper.Translation.Get("forage-chance"),
+                tooltip: () => Helper.Translation.Get("stat-bonus-desc"),
+                getValue: () => Config.IntForagingSpotChanceBonus,
+                setValue: value => Config.IntForagingSpotChanceBonus = value
+            );
+            configMenu.AddBoolOption(
+                mod: ModManifest,
+                name: () => Helper.Translation.Get("craft-roll"),
+                tooltip: () => Helper.Translation.Get("craft-roll-desc"),
+                getValue: () => Config.IntRollCraftingChance,
+                setValue: value => Config.IntRollCraftingChance = value
+            );
+
+            configMenu.AddSectionTitle(
+                mod: ModManifest,
+                text: () => Helper.Translation.Get("wis-full")
+            );
+            configMenu.AddTextOption(
+                mod: ModManifest,
+                name: () => Helper.Translation.Get("craft-resource-bonus"),
+                tooltip: () => Helper.Translation.Get("stat-bonus-desc"),
+                getValue: () => Config.WisCraftResourceReqBonus + "",
+                setValue: delegate (string value) { try { Config.WisCraftResourceReqBonus = float.Parse(value, CultureInfo.InvariantCulture); } catch { } }
+            );
+            configMenu.AddTextOption(
+                mod: ModManifest,
+                name: () => Helper.Translation.Get("craft-time-bonus"),
+                tooltip: () => Helper.Translation.Get("stat-bonus-desc"),
+                getValue: () => Config.WisCraftTimeBonus + "",
+                setValue: delegate (string value) { try { Config.WisCraftTimeBonus = float.Parse(value, CultureInfo.InvariantCulture); } catch { } }
+            );
+            configMenu.AddTextOption(
+                mod: ModManifest,
+                name: () => Helper.Translation.Get("exp-bonus"),
+                tooltip: () => Helper.Translation.Get("stat-bonus-desc"),
+                getValue: () => Config.WisExpBonus + "",
+                setValue: delegate (string value) { try { Config.WisExpBonus = float.Parse(value, CultureInfo.InvariantCulture); } catch { } }
+            );
+            configMenu.AddTextOption(
+                mod: ModManifest,
+                name: () => Helper.Translation.Get("spot-visibility-bonus"),
+                tooltip: () => Helper.Translation.Get("stat-bonus-desc"),
+                getValue: () => Config.WisSpotVisibility + "",
+                setValue: delegate (string value) { try { Config.WisSpotVisibility = float.Parse(value, CultureInfo.InvariantCulture); } catch { } }
+            );
+
+            configMenu.AddSectionTitle(
+                mod: ModManifest,
+                text: () => Helper.Translation.Get("cha-full")
+            );
+            configMenu.AddTextOption(
+                mod: ModManifest,
+                name: () => Helper.Translation.Get("friend-bonus"),
+                tooltip: () => Helper.Translation.Get("stat-bonus-desc"),
+                getValue: () => Config.ChaFriendshipBonus + "",
+                setValue: delegate (string value) { try { Config.ChaFriendshipBonus = float.Parse(value, CultureInfo.InvariantCulture); } catch { } }
+            );
+            configMenu.AddTextOption(
+                mod: ModManifest,
+                name: () => Helper.Translation.Get("price-bonus"),
+                tooltip: () => Helper.Translation.Get("stat-bonus-desc"),
+                getValue: () => Config.ChaPriceBonus + "",
+                setValue: delegate (string value) { try { Config.ChaPriceBonus = float.Parse(value, CultureInfo.InvariantCulture); } catch { } }
+            );
+
+
+            configMenu.AddPage(
+                mod: ModManifest,
+                pageId: "death",
+                pageTitle: () => Helper.Translation.Get("death")
+            );
+            configMenu.AddBoolOption(
+                mod: ModManifest,
+                name: () => Helper.Translation.Get("perma-death"),
+                tooltip: () => Helper.Translation.Get("perma-death-desc"),
+                getValue: () => Config.PermaDeath,
+                setValue: value => Config.PermaDeath = value
+            ); ;
+            configMenu.AddNumberOption(
+                mod: ModManifest,
+                name: () => Helper.Translation.Get("perma-death-ticks"),
+                tooltip: () => Helper.Translation.Get("perma-death-ticks-desc"),
+                getValue: () => Config.PermaDeathScreenTicks,
+                setValue: value => Config.PermaDeathScreenTicks = value
+            );
+            configMenu.AddTextOption(
+                mod: ModManifest,
+                name: () => Helper.Translation.Get("exp-lost-on-death"),
+                tooltip: () => Helper.Translation.Get("exp-lost-on-death-desc"),
+                getValue: () => Config.ExperienceLossPercentOnDeath + "",
+                setValue: delegate (string value) { try { Config.ExperienceLossPercentOnDeath = float.Parse(value, CultureInfo.InvariantCulture); } catch { } }
+            );
+
+            configMenu.AddPage(
+                mod: ModManifest,
+                pageId: "tools",
+                pageTitle: () => Helper.Translation.Get("tools")
+            );
+            configMenu.AddTextOption(
+                mod: ModManifest,
+                name: () => Helper.Translation.Get("tool-level-req"),
+                tooltip: () => Helper.Translation.Get("tool-level-req-desc"),
+                getValue: () => Config.ToolLevelReqMult + "",
+                setValue: delegate (string value) { try { Config.ToolLevelReqMult = float.Parse(value, CultureInfo.InvariantCulture); } catch { } }
+            );
+            configMenu.AddTextOption(
+                mod: ModManifest,
+                name: () => Helper.Translation.Get("weapon-level-req"),
+                tooltip: () => Helper.Translation.Get("weapon-level-req-desc"),
+                getValue: () => Config.WeaponLevelReqMult + "",
+                setValue: delegate (string value) { try { Config.WeaponLevelReqMult = float.Parse(value, CultureInfo.InvariantCulture); } catch { } }
             );
         }
     }
