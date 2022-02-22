@@ -43,6 +43,8 @@ namespace StardewRPG
         public int ConSwordSpeedBonus { get; set; } = 20;
         public float ConHealthBonus { get; set; } = 0.1f;
         public float ConStaminaBonus { get; set; } = 0.1f;
+        public bool ConRollToResistDebuff { get; set; } = true;
+        public float ConDebuffDurationBonus { get; set; } = 0.1f;
         public int ConDefenseBonus { get; set; } = 1;
         
         public float DexDaggerDamageBonus { get; set; } = 0.1f;
@@ -52,9 +54,20 @@ namespace StardewRPG
         public float DexCritChanceBonus { get; set; } = 0.1f;
         public bool DexRollForMiss { get; set; } = true;
         
+        public float IntSkillLevelsBonus { get; set; } = 0.334f;
+        public float IntCropQualityBonus { get; set; } = 0.1f;
+        public float IntArtifactSpotChanceBonus { get; set; } = 0.1f;
+        public int IntForagingSpotChanceBonus { get; set; } = 1;
+        public float IntPanSpotChanceBonus { get; set; } = 0.1f;
+        public bool IntRollObjectQualityBonus { get; set; } = true;
+        public bool IntRollCraftingChance { get; set; } = true;
+
         public float WisCraftResourceReqBonus { get; set; } = 0.1f;
         public float WisCraftTimeBonus { get; set; } = 0.1f;
         public float WisExpBonus { get; set; } = 0.1f;
+        
+        public float ChaFriendshipBonus { get; set; } = 0.1f;
+        public float ChaPriceBonus { get; set; } = 0.1f;
 
 
         // tools

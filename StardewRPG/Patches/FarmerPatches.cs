@@ -1,11 +1,7 @@
 ﻿using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
 using StardewValley;
-using StardewValley.Characters;
-using StardewValley.Menus;
 using StardewValley.Tools;
 using System;
-using System.Collections.Generic;
 using Object = StardewValley.Object;
 
 namespace StardewRPG
@@ -63,7 +59,8 @@ namespace StardewRPG
             if (!Config.EnableMod)
                 return true;
             GainExperience(__instance, howMuch);
-            return !Config.ManualSkillUpgrades;
+			SMonitor.Log($"Gained {howMuch} exp, new total {GetModData(__instance, "exp")}");
+			return !Config.ManualSkillUpgrades;
         }
 		
         private static bool Farmer_CanBeDamaged_Prefix(Farmer __instance, ref bool __result)
@@ -74,6 +71,7 @@ namespace StardewRPG
             {
 				__instance.currentLocation.debris.Add(new Debris(SHelper.Translation.Get("miss"), 1, __instance.GetBoundingBox().Center.ToVector2(), Color.LightGray, 1f, 0f));
 				__result = false;
+				SMonitor.Log($"successful dex roll, missed!");
 				return false;
             }
 			return true;
@@ -113,14 +111,22 @@ namespace StardewRPG
                 return;
 			__state = __instance.resilience;
 			__instance.resilience += GetStatMod(GetStatValue(__instance, "con", Config.BaseStatValue)) * Config.ConDefenseBonus;
-
+			SMonitor.Log($"Modifying resilience {__state} => {__instance.resilience }");
 		}
-        private static void Farmer_takeDamage_Prefix(Farmer __instance, int __state)
+		private static void Farmer_takeDamage_Prefix(Farmer __instance, int __state)
         {
             if (!Config.EnableMod)
                 return;
 			__instance.resilience = __state;
 
 		}
-   }
+		private static void Farmer_changeFriendship_Prefix(Farmer __instance, ref int amount)
+		{
+			if (!Config.EnableMod)
+				return;
+			int add = (int)Math.Round(Math.Abs(amount) * GetStatMod(GetStatValue(Game1.player, "cha", Config.BaseStatValue)) * Config.ChaFriendshipBonus);
+			SMonitor.Log($"Modifying friendship change {amount} + {add}");
+			amount += add;
+		}
+	}
 }

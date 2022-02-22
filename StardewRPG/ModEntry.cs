@@ -81,6 +81,12 @@ namespace StardewRPG
             );
             
 
+            harmony.Patch(
+               original: AccessTools.Method(typeof(Farmer), nameof(Farmer.changeFriendship)),
+               prefix: new HarmonyMethod(typeof(ModEntry), nameof(ModEntry.Farmer_changeFriendship_Prefix))
+            );
+            
+
             // Tool patches
 
             harmony.Patch(
@@ -117,6 +123,10 @@ namespace StardewRPG
                original: AccessTools.Method(typeof(CraftingRecipe), nameof(CraftingRecipe.doesFarmerHaveIngredientsInInventory)),
                transpiler: new HarmonyMethod(typeof(ModEntry), nameof(ModEntry.CraftingRecipe_doesFarmerHaveIngredientsInInventory_Transpiler))
             );
+            harmony.Patch(
+               original: AccessTools.Method(typeof(CraftingPage), "clickCraftingRecipe"),
+               prefix: new HarmonyMethod(typeof(ModEntry), nameof(ModEntry.CraftingPage_clickCraftingRecipe_Prefix))
+            );
 
 
             // Object patches
@@ -131,6 +141,19 @@ namespace StardewRPG
                original: AccessTools.Method(typeof(Object), nameof(Object.performDropDownAction)),
                prefix: new HarmonyMethod(typeof(ModEntry), nameof(ModEntry.Object_performObjectDropInAction_Prefix)),
                postfix: new HarmonyMethod(typeof(ModEntry), nameof(ModEntry.Object_performObjectDropInAction_Postfix))
+            );
+            
+            harmony.Patch(
+               original: AccessTools.Method(typeof(Object), nameof(Object.sellToStorePrice)),
+               postfix: new HarmonyMethod(typeof(ModEntry), nameof(ModEntry.Object_sellToStorePrice_Postfix))
+            );
+
+
+            // Crop Patches
+
+            harmony.Patch(
+               original: AccessTools.Method(typeof(Crop), nameof(Crop.harvest)),
+               transpiler: new HarmonyMethod(typeof(ModEntry), nameof(ModEntry.Crop_harvest_Transpiler))
             );
 
 
@@ -153,8 +176,17 @@ namespace StardewRPG
                original: AccessTools.Method(typeof(GameLocation), nameof(GameLocation.damageMonster), new Type[] { typeof(Rectangle), typeof(int), typeof(int), typeof(bool), typeof(float), typeof(int), typeof(float), typeof(float), typeof(bool), typeof(Farmer) }),
                prefix: new HarmonyMethod(typeof(ModEntry), nameof(ModEntry.GameLocation_damageMonster_Prefix))
             );
-            
-            
+
+
+            harmony.Patch(
+               original: AccessTools.Method(typeof(GameLocation), nameof(GameLocation.spawnObjects)),
+               transpiler: new HarmonyMethod(typeof(ModEntry), nameof(ModEntry.GameLocation_spawnObjects_Transpiler))
+            );
+            harmony.Patch(
+               original: AccessTools.Method(typeof(GameLocation), nameof(GameLocation.performOrePanTenMinuteUpdate)),
+               transpiler: new HarmonyMethod(typeof(ModEntry), nameof(ModEntry.GameLocation_performOrePanTenMinuteUpdate_Transpiler))
+            );
+
             // Game1 patches
 
             harmony.Patch(
@@ -167,6 +199,13 @@ namespace StardewRPG
                original: AccessTools.Method(typeof(Game1), "drawHUD"),
                prefix: new HarmonyMethod(typeof(ModEntry), nameof(ModEntry.Game1_drawHUD_Prefix)),
                postfix: new HarmonyMethod(typeof(ModEntry), nameof(ModEntry.Game1_drawHUD_Postfix))
+            );
+
+            // Buff patches
+
+            harmony.Patch(
+               original: AccessTools.Method(typeof(BuffsDisplay), nameof(BuffsDisplay.addOtherBuff)),
+               prefix: new HarmonyMethod(typeof(ModEntry), nameof(ModEntry.BuffsDisplay_addOtherBuff_Prefix))
             );
 
 
@@ -205,7 +244,7 @@ namespace StardewRPG
                original: AccessTools.Method(typeof(CharacterCustomization), "selectionClick"),
                prefix: new HarmonyMethod(typeof(ModEntry), nameof(ModEntry.CharacterCustomization_selectionClick_Prefix))
             );
-
+            
             harmony.Patch(
                original: AccessTools.Method(typeof(ChatBox), "runCommand"),
                prefix: new HarmonyMethod(typeof(ModEntry), nameof(ModEntry.ChatBox_runCommand_Prefix))

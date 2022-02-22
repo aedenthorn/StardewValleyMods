@@ -8,7 +8,9 @@ namespace StardewRPG
 		{
 			if (!Config.EnableMod)
 				return;
-			___bobberBarHeight += GetStatMod(GetStatValue(Game1.player, "dex", Config.BaseStatValue)) * Config.DexDaggerSpeedBonus;
+			var add = GetStatMod(GetStatValue(Game1.player, "dex", Config.BaseStatValue)) * Config.DexDaggerSpeedBonus;
+			SMonitor.Log($"Modifying bobber height {___bobberBarHeight} + {add}");
+			___bobberBarHeight += add;
 			___bobberBarPos = 568 - ___bobberBarHeight;
 		}
 		private static void BobberBar_update_Postfix(bool ___bobberInBar, bool ___treasure, bool ___treasureCaught, float ___treasurePosition, int ___bobberBarHeight, float ___bobberBarPos, ref float ___treasureCatchLevel, ref float ___distanceFromCatching)

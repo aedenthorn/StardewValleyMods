@@ -4,6 +4,7 @@ using StardewValley;
 using StardewValley.Menus;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace StardewRPG
 {
@@ -225,7 +226,7 @@ namespace StardewRPG
 
 
 			int totalLevels = GetTotalSkillLevels(Game1.player);
-			int newLevels = Math.Max(0, GetExperienceLevel(Game1.player) - totalLevels - 1);
+			int newLevels = Math.Max(0, (int)(GetExperienceLevel(Game1.player) * (1 + Config.IntSkillLevelsBonus)) - totalLevels - 1);
 			if (newLevels <= 0 || !Config.ManualSkillUpgrades)
                 return;
 			int x = __instance.xPositionOnScreen + __instance.width - 24;
@@ -301,17 +302,18 @@ namespace StardewRPG
 				}
 			}
 		}
+
 		public static bool ChatBox_runCommand_Prefix(string command)
 		{
 			if (!Config.EnableMod)
 				return true;
 
-			if (command.Equals("rpglevelup"))
+			if (command.Equals("levelup"))
 			{
 				LevelUp();
 				return false;
 			}
-			if (command.Equals("rpgrespec"))
+			if (command.Equals("respec"))
 			{
 				Respec();
 				return false;

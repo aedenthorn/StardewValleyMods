@@ -51,9 +51,24 @@ namespace StardewRPG
         {
             if (!Config.EnableMod)
                 return amount;
+            var sub = GetStatMod(GetStatValue(Game1.player, "wis", Config.BaseStatValue)) * Config.WisCraftResourceReqBonus;
+            SMonitor.Log($"Modifying craft resource amount {amount} - {sub}");
+            return (int)Math.Min(1,Math.Round(amount * (1 - sub)));
 
-            return (int)Math.Min(1,Math.Round(amount * (1 - GetStatMod(GetStatValue(Game1.player, "wis", Config.BaseStatValue)) * Config.WisCraftResourceReqBonus)));
-
+        }
+        private static bool CraftingPage_clickCraftingRecipe_Prefix(CraftingPage __instance, ClickableTextureComponent c, int ___currentCraftingPage)
+        {
+            if (!Config.EnableMod || !Config.IntRollCraftingChance)
+                return true;
+            if (Game1.random.Next(20) >= GetStatValue(Game1.player, "int"))
+            {
+                __instance.pagesOfCraftingRecipes[___currentCraftingPage][c].createItem();
+                SMonitor.Log("Int check failed on craft");
+                Game1.addHUDMessage(new HUDMessage(SHelper.Translation.Get("int-check-failed"), 3));
+                Game1.playSound("cancel");
+                return false;
+            }
+            return true;
         }
     }
 }

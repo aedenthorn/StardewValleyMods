@@ -24,12 +24,12 @@
     - B: Fishing Catch Meter Speed
     - B: Crit Damage
 
-- Con [TODO]
-    - B: Health / Level [DONE]
-    - B: Stamina / Level [DONE]
-    - B: Sword Damage [DONE]
-    - B: Sword Attack Speed [DONE]
-    - B: Defense [DONE]
+- Con [TODO: TEST]
+    - B: Health / Level 
+    - B: Stamina / Level 
+    - B: Sword Damage 
+    - B: Sword Attack Speed 
+    - B: Defense 
     - B: Debuff Length
     - V: Prevent Debuff Chance
 
@@ -41,9 +41,9 @@
     - B: Crit Chance 
     - V: Miss Chance 
 
-- Int [TODO]
+- Int [TODO: TEST]
     - B: Bonus Skill Levels
-    - B: Craft Quality Level
+    - B: Crop Quality Level Bonus
     - B: Artifact / Fishing / Panning / Foraging Spot Number
     - V: Craft Succeed Chance
 
@@ -51,13 +51,11 @@
     - B: Craft Station Speed [DONE]
     - B: Craft Resource Usage [DONE]
     - B: Exp Gain [DONE]
-    - V: Artifact / Fishing / Panning Spot Transparency / Glow (-/+)
+    - V: Artifact / Fishing / Panning, Foraging Spot Transparency / Glow (-/+)
  
- - Cha [TODO]
+ - Cha [TODO: TEST]
     - B: Friendship Reward
     - B: Buy / Sell Price
-    - B: Romance Chance
-    - V: Gift Tier Change Chance (-/+)
 
 
 **Character Level System**
