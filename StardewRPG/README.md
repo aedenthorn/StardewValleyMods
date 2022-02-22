@@ -65,6 +65,7 @@
 - All skill experience gained adds to player experience
 - Level increments are based on vanilla skill level increments, basically subdivided into 50 levels
 - Level increases max health and max stamina
+- Extra experience is lost on death
 
 
 **Skill Points System**
@@ -86,7 +87,7 @@
 - Weapon use requires combat skill level compared to weapon level
 
 
-**Permadeath**
+**Death**
 =
 
 - Option to return to main menu on death  [TODO: check if it works]
