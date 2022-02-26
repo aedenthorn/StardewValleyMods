@@ -12,7 +12,7 @@
     "Directory": "_releases",
     "ModFolder": "StardewRPG"
   },
-  "UpdateKeys": [ "Nexus:" ],
+  "UpdateKeys": [ "Nexus:11132" ],
   "Dependencies": [
     {
       "UniqueID": "Platonymous.ModUpdater",

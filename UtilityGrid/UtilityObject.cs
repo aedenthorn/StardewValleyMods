@@ -11,6 +11,7 @@ namespace UtilityGrid
         public bool onlyDay;
         public bool onlyNight;
         public bool mustBeFull;
+        public bool mustNeedOther;
         public string mustContain;
         public bool mustBeWorking;
         public bool onlyInWater;

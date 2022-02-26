@@ -25,19 +25,18 @@ namespace UtilityGrid
             if (!Config.EnableMod || !utilityObjectDict.ContainsKey(__instance.Name))
                 return true;
 
-            if (!utilitySystemDict.ContainsKey(location.Name))
+            if (!utilitySystemDict.ContainsKey(location.NameOrUniqueName))
             {
-                utilitySystemDict[location.Name] = new UtilitySystem();
-                RemakeAllGroups(location.Name);
+                RemakeAllGroups(location.NameOrUniqueName);
             }
 
             ___health = 10;
             if (__instance.IsSprinkler())
             {
-                return !ObjectNeedsPower(utilityObjectDict[__instance.Name]) || IsObjectPowered(location.Name, __instance.TileLocation, utilityObjectDict[__instance.Name]);
+                return !ObjectNeedsPower(utilityObjectDict[__instance.Name]) || IsObjectPowered(location.NameOrUniqueName, __instance.TileLocation, utilityObjectDict[__instance.Name]);
             }
-            SMonitor.Log($"Day update for {__instance.Name}, needs power {ObjectNeedsPower(utilityObjectDict[__instance.Name])}, is powered {IsObjectPowered(location.Name, __instance.TileLocation, utilityObjectDict[__instance.Name])}");
-            if(!ObjectNeedsPower(utilityObjectDict[__instance.Name]) || IsObjectPowered(location.Name, __instance.TileLocation, utilityObjectDict[__instance.Name]))
+            SMonitor.Log($"Day update for {__instance.Name}, needs power {ObjectNeedsPower(utilityObjectDict[__instance.Name])}, is powered {IsObjectPowered(location.NameOrUniqueName, __instance.TileLocation, utilityObjectDict[__instance.Name])}");
+            if(!ObjectNeedsPower(utilityObjectDict[__instance.Name]) || IsObjectPowered(location.NameOrUniqueName, __instance.TileLocation, utilityObjectDict[__instance.Name]))
             {
                 if (utilityObjectDict.ContainsKey(__instance.Name))
                 {
@@ -60,7 +59,6 @@ namespace UtilityGrid
                 return;
             if (!utilitySystemDict.ContainsKey(environment.Name))
             {
-                utilitySystemDict[environment.Name] = new UtilitySystem();
                 RemakeAllGroups(environment.Name);
             }
             if (!ObjectNeedsPower(utilityObjectDict[__instance.Name]) || IsObjectPowered(environment.Name, __instance.TileLocation, utilityObjectDict[__instance.Name]))
@@ -92,12 +90,11 @@ namespace UtilityGrid
             //SMonitor.Log($"placing {item.Name}, {objectDict.ContainsKey(item.Name)}");
             if (!Config.EnableMod || !utilityObjectDict.ContainsKey(__instance.Name))
                 return true;
-            if (!utilitySystemDict.ContainsKey(Game1.player.currentLocation.Name))
+            if (!utilitySystemDict.ContainsKey(Game1.player.currentLocation.NameOrUniqueName))
             {
-                utilitySystemDict[Game1.player.currentLocation.Name] = new UtilitySystem();
-                RemakeAllGroups(Game1.player.currentLocation.Name);
+                RemakeAllGroups(Game1.player.currentLocation.NameOrUniqueName);
             }
-            if (!ObjectNeedsPower(utilityObjectDict[__instance.Name]) || IsObjectPowered(Game1.player.currentLocation.Name, __instance.TileLocation, utilityObjectDict[__instance.Name]) )
+            if (!ObjectNeedsPower(utilityObjectDict[__instance.Name]) || IsObjectPowered(Game1.player.currentLocation.NameOrUniqueName, __instance.TileLocation, utilityObjectDict[__instance.Name]) )
                 return true;
             __result = Vector2.Zero;
             return false;
@@ -106,14 +103,14 @@ namespace UtilityGrid
         {
             if (!Config.EnableMod || !utilityObjectDict.ContainsKey(__instance.Name))
                 return;
-            SMonitor.Log($"Placing object {__instance} in {location.Name}");
-            RemakeAllGroups(location.Name);
+            SMonitor.Log($"Placing object {__instance} in {location.NameOrUniqueName}");
+            RemakeAllGroups(location.NameOrUniqueName);
         }
         public static void Object_performRemoveAction_Postfix(Object __instance, GameLocation environment)
         {
             if (!Config.EnableMod || !utilityObjectDict.ContainsKey(__instance.Name))
                 return;
-            SMonitor.Log($"Removing object {__instance} in {environment.Name}");
+            SMonitor.Log($"Removing object {__instance} in {environment.NameOrUniqueName}");
             DelayedAction.functionAfterDelay(delegate
             {
                 RemakeAllGroups(environment.Name);

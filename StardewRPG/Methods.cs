@@ -51,7 +51,7 @@ namespace StardewRPG
         private static void AlertLevelUp(string name, int level)
 		{
             if (Config.NotifyOnLevelUp)
-				Game1.addHUDMessage(new HUDMessage(string.Format(SHelper.Translation.Get("farmer-level-up-#"), name, level)));
+				Game1.addHUDMessage(new HUDMessage(string.Format(SHelper.Translation.Get("farmer-level-up-#"), level)));
 		}
 
 		private static void SetStats(ref Farmer instance, bool newFarmer = false)
@@ -78,6 +78,7 @@ namespace StardewRPG
 				instance.health = instance.maxHealth;
 				instance.stamina = instance.MaxStamina;
             }
+			//SMonitor.Log($"Farmer health {instance.health}/{instance.maxHealth}, stamina {instance.stamina}/{instance.MaxStamina}");
 		}
 
         private static int GetStatValue(Farmer instance, string key, int defaultValue = -1)
@@ -184,6 +185,9 @@ namespace StardewRPG
 				SetModData(Game1.player, name, Config.BaseStatValue);
             }
 			SetModData(Game1.player, "points", totalPoints);
+			Farmer f = Game1.player;
+			SetStats(ref f, true);
+			Game1.player = f;
 		}
 	}
 }

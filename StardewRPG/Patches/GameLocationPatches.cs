@@ -7,11 +7,35 @@ using System.Linq;
 using System.Reflection.Emit;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework;
+using System.Reflection;
 
 namespace StardewRPG
 {
     public partial class ModEntry
     {
+        public static IEnumerable<CodeInstruction> GameLocation_performTenMinuteUpdate_Transpiler(IEnumerable<CodeInstruction> instructions)
+        {
+            SMonitor.Log($"Transpiling GameLocation.performTenMinuteUpdate");
+
+            var codes = new List<CodeInstruction>(instructions);
+            for (int i = 0; i < codes.Count; i++)
+            {
+                if (i > 9 && codes[i].opcode == OpCodes.Ldc_R8 && (double)codes[i].operand == 0.5 && codes[i - 9].opcode == OpCodes.Ldfld && (FieldInfo)codes[i - 9].operand == AccessTools.Field(typeof(GameLocation), nameof(GameLocation.fishSplashPoint)))
+                {
+                    SMonitor.Log("Overriding chance for fish splash spot");
+                    codes[i].opcode = OpCodes.Call;
+                    codes[i].operand = AccessTools.Method(typeof(ModEntry), nameof(ModEntry.GetFishSplashPointChance));
+                    break;
+                }
+            }
+            return codes.AsEnumerable();
+        }
+
+        private static double GetFishSplashPointChance()
+        {
+            return 0.5 + GetStatMod(GetStatValue(Game1.player, "int", Config.BaseStatValue)) * Config.IntFishSpotChanceBonus;
+        }
+
         public static IEnumerable<CodeInstruction> GameLocation_performOrePanTenMinuteUpdate_Transpiler(IEnumerable<CodeInstruction> instructions)
         {
             SMonitor.Log($"Transpiling GameLocation.performOrePanTenMinuteUpdate");
@@ -58,9 +82,9 @@ namespace StardewRPG
                     codes[i+1].opcode = OpCodes.Call;
                     codes[i+1].operand = AccessTools.Method(typeof(ModEntry), nameof(ModEntry.GetMinForagingSpots));
                     codes[i+2].opcode = OpCodes.Call;
-                    codes[i+2].operand = AccessTools.Method(typeof(ModEntry), nameof(ModEntry.GetMinForagingSpots));
+                    codes[i+2].operand = AccessTools.Method(typeof(ModEntry), nameof(ModEntry.GetMaxForagingSpots1));
                     codes[i+3].opcode = OpCodes.Call;
-                    codes[i+3].operand = AccessTools.Method(typeof(ModEntry), nameof(ModEntry.GetMinForagingSpots));
+                    codes[i+3].operand = AccessTools.Method(typeof(ModEntry), nameof(ModEntry.GetMaxForagingSpots2));
                     found2 = true;
                 }
                 if (found1 && found2)
@@ -103,18 +127,23 @@ namespace StardewRPG
             {
                 case 1: // dagger
                     damageMod = Config.DexDaggerDamageBonus * GetStatMod(dex);
+                    SMonitor.Log($"modify dagger damage {damageMod}");
                     break;
                 case 2: // club
                     damageMod = Config.StrClubDamageBonus * GetStatMod(str);
+                    SMonitor.Log($"modify club damage {damageMod}");
                     break;
                 case 3: // sword
                     damageMod = Config.ConSwordDamageBonus * GetStatMod(con);
+                    SMonitor.Log($"modify sword damage {damageMod}");
                     break;
             }
+            SMonitor.Log($"old min {minDamage}, max {maxDamage}, crit chance {critChance}, {critMultiplier}");
             minDamage = (int)Math.Round(minDamage * (1 + damageMod));
             maxDamage = (int)Math.Round(maxDamage * (1 + damageMod));
             critChance *= 1 + GetStatMod(dex) * Config.DexCritChanceBonus;
             critMultiplier *= 1 + GetStatMod(str) * Config.StrCritDamageBonus;
+            SMonitor.Log($"new min {minDamage}, max {maxDamage}, crit chance {critChance}, {critMultiplier}");
         }
 
         private static void GameLocation_draw_Prefix(GameLocation __instance, SpriteBatch b)
@@ -130,23 +159,39 @@ namespace StardewRPG
             {
                 if (val < 0)
                     __instance.fishSplashAnimation.color *= 1 + val;
-                else if (tick < 400)
-                    __instance.fishSplashAnimation.color = new Color(1, 1 - val / 2, 1 - val / 2);
-                else if (tick < 800)
-                    __instance.fishSplashAnimation.color = new Color(1 - val / 2, 1, 1 - val / 2);
+                else if (tick < 300)
+                {
+                    __instance.fishSplashAnimation.position = new Vector2((float)Math.Ceiling(__instance.fishSplashAnimation.position.X / 64) * 64, (float)Math.Ceiling(__instance.fishSplashAnimation.position.Y / 64) * 64);
+                    __instance.fishSplashAnimation.scale = 1;
+                }
+                else if (tick < 600)
+                {
+                    __instance.fishSplashAnimation.position = new Vector2((float)Math.Ceiling(__instance.fishSplashAnimation.position.X / 64) * 64 - val / 4 * 32, (float)Math.Ceiling(__instance.fishSplashAnimation.position.Y / 64) * 64 - val / 4 * 32);
+                    __instance.fishSplashAnimation.scale = 1 + val / 4;
+                }
+                else if (tick < 900)
+                {
+                    __instance.fishSplashAnimation.position = new Vector2((float)Math.Ceiling(__instance.fishSplashAnimation.position.X / 64) * 64 - val / 2 * 32, (float)Math.Ceiling(__instance.fishSplashAnimation.position.Y / 64) * 64 - val / 2 * 32);
+                    __instance.fishSplashAnimation.scale = 1 + val / 2;
+                }
                 else
-                    __instance.fishSplashAnimation.color = new Color(1 - val / 2, 1 - val / 2, 1);
+                {
+                    __instance.fishSplashAnimation.position = new Vector2((float)Math.Ceiling(__instance.fishSplashAnimation.position.X / 64) * 64 - val / 4 * 32, (float)Math.Ceiling(__instance.fishSplashAnimation.position.Y / 64) * 64 - val / 4 * 32);
+                    __instance.fishSplashAnimation.scale = 1 + val / 4;
+                }
             }
             if (__instance.orePanAnimation != null)
             {
                 if (val < 0)
                     __instance.orePanAnimation.color *= 1 + val;
-                else if (tick < 400)
-                    __instance.orePanAnimation.color = new Color(1, 1 - val / 2, 1 - val / 2);
-                else if (tick < 800)
-                    __instance.orePanAnimation.color = new Color(1 - val / 2, 1, 1 - val / 2);
+                else if (tick < 300)
+                    __instance.orePanAnimation.scale = 1;
+                else if (tick < 600)
+                    __instance.orePanAnimation.scale = 1 + val / 2;
+                else if (tick < 900)
+                    __instance.orePanAnimation.scale = 1 + val;
                 else
-                    __instance.orePanAnimation.color = new Color(1 - val / 2, 1 - val / 2, 1);
+                    __instance.orePanAnimation.scale = 1 + val / 2;
             }
         }
     }

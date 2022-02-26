@@ -29,7 +29,7 @@ namespace StardewRPG
         public int StrClubSpeedBonus { get; set; } = 20;
         public int StrPickaxeDamageBonus { get; set; } = 1;
         public int StrAxeDamageBonus { get; set; } = 1;
-        public float StrCritDamageBonus { get; set; } = 0.1f;
+        public float StrCritDamageBonus { get; set; } = 1f;
         public float StrFishingReelSpeedBonus { get; set; } = 0.001f;
         public float StrFishingTreasureSpeedBonus { get; set; } = 0.00625f;
         
@@ -37,6 +37,8 @@ namespace StardewRPG
         public int ConSwordSpeedBonus { get; set; } = 20;
         public float ConHealthBonus { get; set; } = 0.1f;
         public float ConStaminaBonus { get; set; } = 0.1f;
+        public int ConHealthRegen { get; set; } = 1;
+        public float ConStaminaRegen { get; set; } = 1f;
         public bool ConRollToResistDebuff { get; set; } = true;
         public float ConDebuffDurationBonus { get; set; } = 0.1f;
         public int ConDefenseBonus { get; set; } = 1;
@@ -45,13 +47,14 @@ namespace StardewRPG
         public float DexRangedDamageBonus { get; set; } = 0.1f;
         public int DexDaggerSpeedBonus { get; set; } = 20;
         public int DexFishingBobberSizeBonus { get; set; } = 8;
-        public float DexCritChanceBonus { get; set; } = 0.1f;
+        public float DexCritChanceBonus { get; set; } = 1f;
         public bool DexRollForMiss { get; set; } = true;
         
         public float IntSkillLevelsBonus { get; set; } = 0.334f;
         public float IntCropQualityBonus { get; set; } = 0.1f;
         public float IntArtifactSpotChanceBonus { get; set; } = 0.1f;
         public int IntForagingSpotChanceBonus { get; set; } = 1;
+        public float IntFishSpotChanceBonus { get; set; } = 0.1f;
         public float IntPanSpotChanceBonus { get; set; } = 0.1f;
         public bool IntRollCraftingChance { get; set; } = true;
         //public bool IntRollObjectQualityBonus { get; set; } = true;
@@ -63,11 +66,12 @@ namespace StardewRPG
         
         public float ChaFriendshipBonus { get; set; } = 0.1f;
         public float ChaPriceBonus { get; set; } = 0.1f;
+        public bool ChaRollRomanceChance { get; set; } = true;
 
 
         // death
         public bool PermaDeath { get; set; } = true;
-        public int PermaDeathScreenTicks { get; set; } = 1500;
+        public int PermaDeathScreenTicks { get; set; } = 60000;
         public float ExperienceLossPercentOnDeath { get; set; } = 100f;
 
         // tools

@@ -21,7 +21,6 @@ namespace UtilityGrid
         private void DrawAmount(SpriteBatch b, KeyValuePair<Vector2, UtilityObjectInstance> kvp, float netPower, Color color)
         {
             float objPower;
-            bool enough = netPower >= 0;
             if (CurrentGrid == GridType.electric)
             {
                 objPower = kvp.Value.Template.electric;
@@ -29,17 +28,13 @@ namespace UtilityGrid
             else
             {
                 objPower = kvp.Value.Template.water;
-                if (!IsObjectPowered(Game1.player.currentLocation.Name, kvp.Key, kvp.Value.Template))
-                {
-                    enough = false;
-                }
             }
-
             if (objPower == 0)
                 return;
+            bool enough = IsObjectPowered(Game1.player.currentLocation.NameOrUniqueName, kvp.Key, kvp.Value.Template);
 
-            if (enough && !IsObjectWorking(Game1.getLocationFromName(Game1.player.currentLocation.Name), kvp.Value))
-                enough = false;
+            var name = Game1.getLocationFromName(Game1.player.currentLocation.NameOrUniqueName);
+            color = IsObjectWorking(name, kvp.Value) && (objPower > 0 || !kvp.Value.Template.mustNeedOther || IsObjectNeeded(name, kvp.Value, CurrentGrid)) ? (enough ? color : Config.InsufficientColor) : Config.IdleColor;
 
             string str = "" + Math.Round(objPower);
             Vector2 pos = Game1.GlobalToLocal(Game1.viewport, kvp.Key * 64);
@@ -47,7 +42,7 @@ namespace UtilityGrid
             b.DrawString(Game1.dialogueFont, str, pos + new Vector2(2, -2), Config.ShadowColor, 0, Vector2.Zero, 1f, SpriteEffects.None, 0.999999f);
             b.DrawString(Game1.dialogueFont, str, pos + new Vector2(-2, -2), Config.ShadowColor, 0, Vector2.Zero, 1f, SpriteEffects.None, 0.999999f);
             b.DrawString(Game1.dialogueFont, str, pos + new Vector2(2, 2), Config.ShadowColor, 0, Vector2.Zero, 1f, SpriteEffects.None, 0.999999f);
-            b.DrawString(Game1.dialogueFont, str, pos, enough ? color : Config.InsufficientColor, 0, Vector2.Zero, 1f, SpriteEffects.None, 0.9999999f);
+            b.DrawString(Game1.dialogueFont, str, pos, color, 0, Vector2.Zero, 1f, SpriteEffects.None, 0.9999999f);
         }
         private void DrawCharge(SpriteBatch b, KeyValuePair<Vector2, UtilityObjectInstance> kvp, Color color)
         {
@@ -167,15 +162,7 @@ namespace UtilityGrid
                 return false;
             }
 
-            Dictionary<Vector2, GridPipe> pipeDict;
-            if (gridType == GridType.electric)
-            {
-                pipeDict = utilitySystemDict[location].electricPipes;
-            }
-            else
-            {
-                pipeDict = utilitySystemDict[location].waterPipes;
-            }
+            Dictionary<Vector2, GridPipe> pipeDict = utilitySystemDict[location][gridType].pipes;
 
             if (!pipeDict.ContainsKey(tile2))
                 return false;
@@ -204,7 +191,9 @@ namespace UtilityGrid
         {
             if (!utilitySystemDict.ContainsKey(location))
             {
-                utilitySystemDict[location] = new UtilitySystem();
+                utilitySystemDict[location] = new Dictionary<GridType, UtilitySystem>();
+                utilitySystemDict[location][GridType.water] = new UtilitySystem();
+                utilitySystemDict[location][GridType.electric] = new UtilitySystem();
             }
             RemakeGroups(location, GridType.water);
             RemakeGroups(location, GridType.electric);
@@ -213,21 +202,11 @@ namespace UtilityGrid
         {
             if (!utilitySystemDict.ContainsKey(location))
             {
-                utilitySystemDict[location] = new UtilitySystem();
+                utilitySystemDict[location] = new Dictionary<GridType, UtilitySystem>();
             }
 
-            Dictionary<Vector2, GridPipe> pipeDict;
-            List<PipeGroup> groupList;
-            if (gridType == GridType.electric)
-            {
-                pipeDict = new Dictionary<Vector2, GridPipe>(utilitySystemDict[location].electricPipes);
-                groupList = utilitySystemDict[location].electricGroups;
-            }
-            else
-            {
-                pipeDict = new Dictionary<Vector2, GridPipe>(utilitySystemDict[location].waterPipes);
-                groupList = utilitySystemDict[location].waterGroups;
-            }
+            Dictionary<Vector2, GridPipe> pipeDict = new Dictionary<Vector2, GridPipe>(utilitySystemDict[location][gridType].pipes);
+            List<PipeGroup> groupList = utilitySystemDict[location][gridType].groups;
             groupList.Clear();
 
             while(pipeDict.Count > 0)
@@ -245,7 +224,14 @@ namespace UtilityGrid
             EventHandler<KeyValuePair<GameLocation, int>> handler = refreshEventHandler;
             if (handler != null)
             {
-                KeyValuePair<GameLocation, int> e = new KeyValuePair<GameLocation, int>(Game1.getLocationFromName(location), (int)gridType);
+                GameLocation gl = Game1.getLocationFromName(location);
+                if (gl == null)
+                {
+                    gl = Game1.getLocationFromName(location, true);
+                    if (gl == null)
+                        return;
+                }
+                KeyValuePair<GameLocation, int> e = new KeyValuePair<GameLocation, int>(gl, (int)gridType);
                 handler(context, e);
             }
         }
@@ -256,22 +242,16 @@ namespace UtilityGrid
             {
                 return;
             }
-            List<PipeGroup> groupList;
-            Dictionary<Vector2, UtilityObjectInstance> objectDict;
-            if (gridType == GridType.electric)
-            {
-                groupList = utilitySystemDict[location].electricGroups;
-                objectDict = utilitySystemDict[location].electricUnconnectedObjects;
-            }
-            else
-            {
-                groupList = utilitySystemDict[location].waterGroups;
-                objectDict = utilitySystemDict[location].waterUnconnectedObjects;
-            }
+            List<PipeGroup> groupList = utilitySystemDict[location][gridType].groups;
+            Dictionary<Vector2, UtilityObjectInstance> objectDict = utilitySystemDict[location][gridType].objects;
             objectDict.Clear();
             GameLocation gl = Game1.getLocationFromName(location);
             if (gl == null)
-                return;
+            {
+                gl = Game1.getLocationFromName(location, true);
+                if (gl == null)
+                    return;
+            }
             foreach (var kvp in gl.Objects.Pairs)
             {
                 var obj = GetUtilityObjectAtTile(gl, kvp.Key);
@@ -281,18 +261,15 @@ namespace UtilityGrid
                     continue;
                 if (gridType == GridType.electric && obj.Template.electric == 0 && obj.Template.electricChargeCapacity <= 0)
                     continue;
-                bool found = false;
                 foreach (var group in groupList)
                 {
                     if (group.pipes.Contains(kvp.Key))
                     {
-                        group.objects[kvp.Key] = obj;
-                        found = true;
+                        obj.Group = group;
                         break;
                     }
                 }
-                if (!found)
-                    objectDict[kvp.Key] = obj;
+                objectDict[kvp.Key] = obj;
             }
         }
         public static void AddTilesToGroup(string location, Vector2 tile, ref PipeGroup group, Dictionary<Vector2, GridPipe> pipeDict, GridType gridType)
@@ -324,101 +301,116 @@ namespace UtilityGrid
         }
         public static Vector2 GetTileElectricPower(string location, Vector2 tile)
         {
-            Vector2 power = Vector2.Zero;
-            foreach (var group in utilitySystemDict[location].electricGroups)
-            {
-                if (group.objects.ContainsKey(tile))
-                {
-
-                    return GetGroupPower(location, group, GridType.electric);
-                }
-            }
+            if (!utilitySystemDict[location][GridType.electric].objects.TryGetValue(tile, out UtilityObjectInstance obj) || obj.Group == null)
+                return Vector2.Zero;
+            var power = GetGroupPower(location, obj.Group, GridType.electric);
+            power.X += GetGroupStoragePower(location, obj.Group, GridType.electric).X;
             return power;
         }
         public static Vector2 GetTileWaterPower(string location, Vector2 tile)
         {
-            Vector2 power = Vector2.Zero;
-            foreach (var group in utilitySystemDict[location].waterGroups)
-            {
-                if (group.objects.ContainsKey(tile))
-                {
-                    return GetGroupPower(location, group, GridType.water);
-                }
-            }
+            if (!utilitySystemDict[location][GridType.water].objects.TryGetValue(tile, out UtilityObjectInstance obj) || obj.Group == null)
+                return Vector2.Zero;
+            var power = GetGroupPower(location, obj.Group, GridType.water);
+            power.X += GetGroupStoragePower(location, obj.Group, GridType.water).X;
             return power;
         }
-        public static Vector2 GetGroupPower(string location, PipeGroup group, GridType type, float hours = 0)
+        public static Vector2 GetGroupPower(string location, PipeGroup group, GridType type)
         {
             Vector2 power = Vector2.Zero;
-            foreach (var kvp in group.objects)
+            foreach (var tile in group.pipes)
             {
-                var objT = kvp.Value.Template;
+                if (!utilitySystemDict[location][type].objects.TryGetValue(tile, out UtilityObjectInstance obj))
+                    continue;
+                var objT = obj.Template;
                 if (type == GridType.water && objT.electric < 0)
                 {
-                    Vector2 ePower = GetTileElectricPower(location, kvp.Key);
+                    Vector2 ePower = GetTileElectricPower(location, tile);
                     if (ePower.X == 0 || ePower.X + ePower.Y < 0) // unpowered
                         continue;
                 }
-                power += GetPowerVector(location, kvp.Value, type == GridType.water ? objT.water : objT.electric);
+                power += GetPowerVector(location, obj, type == GridType.water ? objT.water : objT.electric);
             }
             foreach (var func in powerFuctionList)
             {
                 power += func(location, (int)type, group.pipes);
             }
 
-            GameLocation gl = Game1.getLocationFromName(location);
-            if (gl == null)
+            foreach (var v in utilitySystemDict[location][type].objects.Keys.ToArray())
             {
-                SMonitor.Log($"Invalid game location {location}", StardewModdingAPI.LogLevel.Error);
-                return power;
+                if (group.pipes.Contains(v))
+                    utilitySystemDict[location][type].objects[v].CurrentPowerVector = power;
             }
-
-            Dictionary<Vector2, UtilityObjectInstance> changeObjects = new Dictionary<Vector2, UtilityObjectInstance>();
-            var netPower = power.X + power.Y;
+            return power;
+        }
+        public static Vector2 GetGroupStoragePower(string location, PipeGroup group, GridType type)
+        {
             var chargeKey = type == GridType.water ? "aedenthorn.UtilityGrid/waterCharge" : "aedenthorn.UtilityGrid/electricCharge";
-
-            foreach (var kvp in group.objects)
+            Vector2 power = Vector2.Zero;
+            foreach (var v in utilitySystemDict[location][type].objects.Keys.ToArray())
             {
-                var obj = kvp.Value.WorldObject;
-                var objT = kvp.Value.Template;
+                if (!group.pipes.Contains(v))
+                    continue;
+                var obj = utilitySystemDict[location][type].objects[v];
+                var objW = obj.WorldObject;
+                var objT = obj.Template;
                 var capacity = type == GridType.water ? objT.waterChargeCapacity : objT.electricChargeCapacity;
                 if (capacity == 0)
                     continue;
 
                 float charge = 0;
-                if (obj.modData.TryGetValue(chargeKey, out string chargeString))
+                if (objW.modData.TryGetValue(chargeKey, out string chargeString))
                     float.TryParse(chargeString, NumberStyles.Float, CultureInfo.InvariantCulture, out charge);
 
-                if (type == GridType.water && hours > 0 && objT.fillWaterFromRain && gl.IsOutdoors && Game1.netWorldState.Value.GetWeatherForLocation(gl.GetLocationContext()).isRaining.Value) 
-                {
-                    charge = Math.Min(charge + objT.waterChargeRate * hours, objT.waterChargeCapacity);
-                    obj.modData[chargeKey] = charge + "";
-                }
+                power.X += Math.Min(charge, type == GridType.water ? objT.waterDischargeRate : objT.electricDischargeRate);
+                power.Y -= Math.Min(capacity - charge, type == GridType.water ? objT.waterChargeRate : objT.electricChargeRate);
+            }
+            return power; // X is providable, Y is receivable
+        }
+        public static void ChangeStorageObjects(string location, PipeGroup group, GridType type, float hours)
+        {
+            var netPower = group.powerVector.X + group.powerVector.Y;
 
-                if (netPower != 0)
+            if (group.storageVector.X + netPower < 0) // not enough stored power
+                return;
+
+            GameLocation gl = Game1.getLocationFromName(location, false);
+            if (gl == null)
+            {
+                gl = Game1.getLocationFromName(location, true);
+                if (gl == null)
                 {
-                    if(netPower > 0)
-                        kvp.Value.CurrentPowerDiff = Math.Min(capacity - charge, type == GridType.water ? objT.waterChargeRate : objT.electricChargeRate);
-                    else
-                        kvp.Value.CurrentPowerDiff = Math.Min(charge, type == GridType.water ? objT.waterDischargeRate : objT.electricDischargeRate);
-                    changeObjects.Add(kvp.Key, kvp.Value);
+                    SMonitor.Log($"Invalid game location {location}", StardewModdingAPI.LogLevel.Error);
+                    return;
                 }
             }
-
-            if (netPower == 0 || changeObjects.Count == 0)
-                return power;
-
-            // check if charge will be sufficient
-
-            if(netPower < 0 && changeObjects.Count > 0)
+            var chargeKey = type == GridType.water ? "aedenthorn.UtilityGrid/waterCharge" : "aedenthorn.UtilityGrid/electricCharge";
+            var changeObjects = new Dictionary<Vector2, float>();
+            foreach (var v in utilitySystemDict[location][type].objects.Keys.ToArray())
             {
-                float total = 0;
-                foreach (var o in changeObjects.Values)
+                if (!group.pipes.Contains(v))
+                    continue;
+                var obj = utilitySystemDict[location][type].objects[v];
+                var objW = obj.WorldObject;
+                var objT = obj.Template;
+                var capacity = type == GridType.water ? objT.waterChargeCapacity : objT.electricChargeCapacity;
+                if (capacity == 0)
+                    continue;
+                float charge = 0;
+                if (obj.WorldObject.modData.TryGetValue(chargeKey, out string chargeString))
+                    float.TryParse(chargeString, NumberStyles.Float, CultureInfo.InvariantCulture, out charge);
+                if (type == GridType.water && hours > 0 && objT.fillWaterFromRain && gl.IsOutdoors && Game1.netWorldState.Value.GetWeatherForLocation(gl.GetLocationContext()).isRaining.Value)
                 {
-                    total += o.CurrentPowerDiff;
+                    charge = Math.Min(charge + objT.waterChargeRate * hours, objT.waterChargeCapacity);
+                    objW.modData[chargeKey] = charge + "";
                 }
-                if (total + netPower < 0)
-                    return power;
+                if(netPower != 0)
+                {
+                    if(netPower > 0)
+                        changeObjects.Add(v, Math.Min(capacity - charge, type == GridType.water ? objT.waterChargeRate : objT.electricChargeRate));
+                    else
+                        changeObjects.Add(v, Math.Min(charge, type == GridType.water ? objT.waterDischargeRate : objT.electricDischargeRate));
+                }
             }
 
             // change charges
@@ -428,10 +420,10 @@ namespace UtilityGrid
                 var eachPower = netPower / changeObjects.Count;
                 foreach (var v in changeObjects.Keys.ToArray())
                 {
-                    var obj = changeObjects[v].WorldObject;
-                    var objT = changeObjects[v].Template;
-                    var diff = changeObjects[v].CurrentPowerDiff;
+                    var obj = utilitySystemDict[location][type].objects[v].WorldObject;
+                    var objT = utilitySystemDict[location][type].objects[v].Template;
                     float currentCharge = 0;
+                    float diff = changeObjects[v];
                     if (obj.modData.TryGetValue(chargeKey, out string chargeString))
                     {
                         float.TryParse(chargeString, NumberStyles.Float, CultureInfo.InvariantCulture, out currentCharge);
@@ -440,35 +432,44 @@ namespace UtilityGrid
                     {
                         var capacity = type == GridType.water ? objT.waterChargeCapacity : objT.electricChargeCapacity;
                         var add = Math.Min(capacity - currentCharge, Math.Min(diff, eachPower));
-                        power.X -= add;
-                        changeObjects[v].CurrentPowerDiff -= add;
                         if (hours > 0)
+                        {
+                            SMonitor.Log($"adding {add * hours} {type} energy to {obj.Name} at {v}");
                             obj.modData[chargeKey] = Math.Min(capacity, currentCharge + add * hours) + "";
+                        }
+                        changeObjects[v] -= add;
                         if (add != eachPower)
                             changeObjects.Remove(v);
                     }
                     else
                     {
                         float subtract = Math.Min(currentCharge, Math.Min(diff, -eachPower));
-                        power.Y += subtract;
-                        changeObjects[v].CurrentPowerDiff -= subtract;
                         if (hours > 0)
+                        {
+                            SMonitor.Log($"subtracting {subtract * hours} {type} energy from {obj.Name} at {v}");
                             obj.modData[chargeKey] = Math.Max(0, currentCharge - subtract * hours) + "";
+                        }
+                        changeObjects[v] -= subtract;
                         if (subtract != -eachPower)
                             changeObjects.Remove(v);
                     }
                 }
-                power.X = (float)Math.Round(power.X, 5);
-                power.Y = (float)Math.Round(power.Y, 5);
-                netPower = power.X + power.Y;
             }
-
-            return power;
         }
+
         public static Vector2 GetPowerVector(string location, UtilityObjectInstance obj, float amount)
         {
             var power = Vector2.Zero;
-            if (amount == 0 || !IsObjectWorking(Game1.getLocationFromName(location), obj))
+            GameLocation gl = Game1.getLocationFromName(location);
+            if(gl == null)
+            {
+                gl = Game1.getLocationFromName(location, true);
+                if (gl == null)
+                {
+                    return power;
+                }
+            }
+            if (amount == 0 || !IsObjectWorking(gl, obj))
                 return power;
             if (amount > 0)
                 power.X += amount;
@@ -490,6 +491,19 @@ namespace UtilityGrid
             (!obj.Template.mustHaveSun || ((location.IsOutdoors || location.IsGreenhouse) && !Game1.netWorldState.Value.GetWeatherForLocation(location.GetLocationContext()).isRaining.Value)) &&
             (!obj.Template.mustHaveRain || (location.IsOutdoors && Game1.netWorldState.Value.GetWeatherForLocation(location.GetLocationContext()).isRaining.Value)) &&
             (!obj.Template.mustHaveLightning || (location.IsOutdoors && !Game1.netWorldState.Value.GetWeatherForLocation(location.GetLocationContext()).isLightning.Value));
+        }
+
+        private static bool IsObjectNeeded(GameLocation location, UtilityObjectInstance obj, GridType checkType)
+        {
+            var type = checkType == GridType.water ? GridType.electric : GridType.water;
+            foreach(var group in utilitySystemDict[location.NameOrUniqueName][type].groups)
+            {
+                if (group.pipes.Contains(obj.WorldObject.TileLocation))
+                {
+                    return group.powerVector.Y < 0 || group.storageVector.Y < 0;
+                }
+            }
+            return false;
         }
 
         public static bool IsObjectPowered(string location, Vector2 tile, UtilityObject obj)

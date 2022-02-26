@@ -41,7 +41,7 @@ namespace UtilityGrid
             new int[] { 1, 1, 1, 1 }
         };
 
-        public static Dictionary<string, UtilitySystem> utilitySystemDict = new Dictionary<string, UtilitySystem>();
+        public static Dictionary<string, Dictionary<GridType, UtilitySystem>> utilitySystemDict = new Dictionary<string, Dictionary<GridType, UtilitySystem>>();
         public static Dictionary<string, UtilityObject> utilityObjectDict = new Dictionary<string, UtilityObject>();
         public static List<Func<string, int, List<Vector2>, Vector2>> powerFuctionList = new List<Func<string, int, List<Vector2>, Vector2>>();
         public static EventHandler<KeyValuePair<GameLocation, int>> refreshEventHandler;

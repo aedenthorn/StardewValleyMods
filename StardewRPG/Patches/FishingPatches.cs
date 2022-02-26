@@ -13,9 +13,9 @@ namespace StardewRPG
 			___bobberBarHeight += add;
 			___bobberBarPos = 568 - ___bobberBarHeight;
 		}
-		private static void BobberBar_update_Postfix(bool ___bobberInBar, bool ___treasure, bool ___treasureCaught, float ___treasurePosition, int ___bobberBarHeight, float ___bobberBarPos, ref float ___treasureCatchLevel, ref float ___distanceFromCatching)
+		private static void BobberBar_update_Postfix(bool ___bobberInBar, bool ___fadeIn, bool ___fadeOut, bool ___treasure, bool ___treasureCaught, float ___treasurePosition, int ___bobberBarHeight, float ___bobberBarPos, ref float ___treasureCatchLevel, ref float ___distanceFromCatching)
 		{
-			if (!Config.EnableMod || (!___bobberInBar && (!___treasure || ___treasureCaught)))
+			if (!Config.EnableMod || ___fadeIn || ___fadeOut || (!___bobberInBar && (!___treasure || ___treasureCaught)))
 				return;
             if (___bobberInBar)
             {

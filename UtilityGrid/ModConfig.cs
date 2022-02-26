@@ -19,6 +19,7 @@ namespace UtilityGrid
         public Color UnpoweredGridColor { get; set; } = Color.White;
         public Color ElectricityColor { get; set; } = Color.Yellow;
         public Color InsufficientColor { get; set; } = Color.Red;
+        public Color IdleColor { get; set; } = Color.LightGray;
         public Color ShadowColor { get; set; } = Color.Black;
         public int PipeCostGold { get; set; } = 100;
         public int PipeDestroyGold { get; set; } = 50;

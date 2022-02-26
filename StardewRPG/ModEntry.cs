@@ -110,13 +110,19 @@ namespace StardewRPG
 
             harmony.Patch(
                original: AccessTools.Method(typeof(Farmer), nameof(Farmer.CanBeDamaged)),
-               prefix: new HarmonyMethod(typeof(ModEntry), nameof(ModEntry.Farmer_CanBeDamaged_Prefix))
+               postfix: new HarmonyMethod(typeof(ModEntry), nameof(ModEntry.Farmer_CanBeDamaged_Postfix))
             );
 
 
             harmony.Patch(
                original: AccessTools.Method(typeof(Farmer), nameof(Farmer.changeFriendship)),
                prefix: new HarmonyMethod(typeof(ModEntry), nameof(ModEntry.Farmer_changeFriendship_Prefix))
+            );
+
+
+            harmony.Patch(
+               original: AccessTools.Method(typeof(Farmer), nameof(Farmer.performTenMinuteUpdate)),
+               postfix: new HarmonyMethod(typeof(ModEntry), nameof(ModEntry.Farmer_performTenMinuteUpdate_Postfix))
             );
 
 
@@ -152,6 +158,10 @@ namespace StardewRPG
             harmony.Patch(
                original: AccessTools.Method(typeof(GameLocation), nameof(GameLocation.performOrePanTenMinuteUpdate)),
                transpiler: new HarmonyMethod(typeof(ModEntry), nameof(ModEntry.GameLocation_performOrePanTenMinuteUpdate_Transpiler))
+            );
+            harmony.Patch(
+               original: AccessTools.Method(typeof(GameLocation), nameof(GameLocation.performTenMinuteUpdate)),
+               transpiler: new HarmonyMethod(typeof(ModEntry), nameof(ModEntry.GameLocation_performTenMinuteUpdate_Transpiler))
             );
 
             // Game1 patches
@@ -194,6 +204,11 @@ namespace StardewRPG
                original: AccessTools.Method(typeof(Object), nameof(Object.performDropDownAction)),
                prefix: new HarmonyMethod(typeof(ModEntry), nameof(ModEntry.Object_performObjectDropInAction_Prefix)),
                postfix: new HarmonyMethod(typeof(ModEntry), nameof(ModEntry.Object_performObjectDropInAction_Postfix))
+            );
+
+            harmony.Patch(
+               original: AccessTools.Method(typeof(Object), nameof(Object.salePrice)),
+               postfix: new HarmonyMethod(typeof(ModEntry), nameof(ModEntry.Object_salePrice_Postfix))
             );
 
             harmony.Patch(
@@ -276,7 +291,8 @@ namespace StardewRPG
             Monitor.Log("Mod loaded");
         }
 
-        private void Display_RenderedWorld(object sender, StardewModdingAPI.Events.RenderedWorldEventArgs e)
+
+        private static void Display_RenderedWorld(object sender, StardewModdingAPI.Events.RenderedWorldEventArgs e)
         {
             if(Config.EnableMod && Config.PermaDeath && Game1.killScreen)
             {
@@ -285,13 +301,13 @@ namespace StardewRPG
                 {
                     deathScreenTimer = 0;
                     Game1.killScreen = false;
+                    SHelper.Events.Display.RenderedWorld -= Display_RenderedWorld;
                     Game1.ExitToTitle();
                 }
                 else
                 {
                     e.SpriteBatch.Draw(blackTexture, new Rectangle(0, 0, Game1.viewport.Width, Game1.viewport.Height), Color.White);
-                    e.SpriteBatch.DrawString(Game1.dialogueFont, "YOU DIED", new Vector2(Game1.viewport.Width / 2 - SpriteText.getWidthOfString("YOU DIED") * 8, Game1.viewport.Height / 2), Color.Red, 0, Vector2.Zero, 16, SpriteEffects.None, 1);
-                    e.SpriteBatch.Draw(blackTexture, new Rectangle(0, 0, Game1.viewport.Width, Game1.viewport.Height), Color.White * Math.Min(0, 1 - deathScreenTimer / (Config.PermaDeathScreenTicks / 4)));
+                    e.SpriteBatch.DrawString(Game1.dialogueFont, "YOU DIED", new Vector2(Game1.viewport.Width / 2 - Game1.dialogueFont.MeasureString("YOU DIED").X * 4, Game1.viewport.Height / 2 - Game1.dialogueFont.MeasureString("YOU DIED").Y * 4), Color.Red * Math.Min(1, deathScreenTimer / (Config.PermaDeathScreenTicks / 2f)), 0, Vector2.Zero, 8, SpriteEffects.None, 1);
                 }
             }
         }
@@ -539,6 +555,20 @@ namespace StardewRPG
                 getValue: () => Config.ConStaminaBonus + "",
                 setValue: delegate (string value) { try { Config.ConStaminaBonus = float.Parse(value, CultureInfo.InvariantCulture); } catch { } }
             );
+            configMenu.AddNumberOption(
+                mod: ModManifest,
+                name: () => Helper.Translation.Get("health-regen"),
+                tooltip: () => Helper.Translation.Get("stat-bonus-desc"),
+                getValue: () => Config.ConHealthRegen,
+                setValue: value => Config.ConHealthRegen = value
+            );
+            configMenu.AddTextOption(
+                mod: ModManifest,
+                name: () => Helper.Translation.Get("stamina-regen"),
+                tooltip: () => Helper.Translation.Get("stat-bonus-desc"),
+                getValue: () => Config.ConStaminaRegen + "",
+                setValue: delegate (string value) { try { Config.ConStaminaRegen = float.Parse(value, CultureInfo.InvariantCulture); } catch { } }
+            );
             configMenu.AddBoolOption(
                 mod: ModManifest,
                 name: () => Helper.Translation.Get("resist-buff-roll"),
@@ -633,6 +663,13 @@ namespace StardewRPG
                 getValue: () => Config.IntPanSpotChanceBonus + "",
                 setValue: delegate (string value) { try { Config.IntPanSpotChanceBonus = float.Parse(value, CultureInfo.InvariantCulture); } catch { } }
             );
+            configMenu.AddTextOption(
+                mod: ModManifest,
+                name: () => Helper.Translation.Get("fish-spot-chance"),
+                tooltip: () => Helper.Translation.Get("stat-bonus-desc"),
+                getValue: () => Config.IntFishSpotChanceBonus + "",
+                setValue: delegate (string value) { try { Config.IntFishSpotChanceBonus = float.Parse(value, CultureInfo.InvariantCulture); } catch { } }
+            );
             configMenu.AddNumberOption(
                 mod: ModManifest,
                 name: () => Helper.Translation.Get("forage-chance"),
@@ -699,6 +736,14 @@ namespace StardewRPG
                 getValue: () => Config.ChaPriceBonus + "",
                 setValue: delegate (string value) { try { Config.ChaPriceBonus = float.Parse(value, CultureInfo.InvariantCulture); } catch { } }
             );
+            configMenu.AddBoolOption(
+                mod: ModManifest,
+                name: () => Helper.Translation.Get("romance-roll"),
+                tooltip: () => Helper.Translation.Get("romance-roll-desc"),
+                getValue: () => Config.ChaRollRomanceChance,
+                setValue: value => Config.ChaRollRomanceChance = value
+            );
+
 
 
             configMenu.AddPage(

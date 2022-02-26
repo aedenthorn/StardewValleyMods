@@ -17,43 +17,43 @@
 - Eating a Stardrop adds a single distributable point, no longer increases stamina directly
 - Stats provide (B)onuses / penalties and new gameplay based on (V)alues as follows:
 
-- Str [TODO: TEST]
+- Str
     - B: Mining / Tree Damage
     - B: Hammer Damage
     - B: Hammer Attack Speed
     - B: Fishing Catch Meter Speed
     - B: Crit Damage
 
-- Con [TODO: TEST]
-    - B: Health / Level 
-    - B: Stamina / Level 
-    - B: Sword Damage 
-    - B: Sword Attack Speed 
+- Con
+    - B: Health / Stamina per Level
+    - B: Health / Stamina Regen
+    - B: Sword Damage
+    - B: Sword Attack Speed
     - B: Defense 
     - B: Debuff Length
     - V: Prevent Debuff Chance
 
-- Dex [TODO: TEST]
-    - B: Dagger Damage 
+- Dex
+    - B: Dagger Damage
     - B: Dagger Attack Speed
     - B: Ranged Damage 
     - B: Fishing Bobber Bar Size
-    - B: Crit Chance 
-    - V: Dodge Chance 
+    - B: Crit Chance
+    - V: Dodge Chance
 
-- Int [TODO: TEST]
-    - B: Bonus Skill Levels
+- Int
+    - B: Bonus Skill Level
     - B: Crop Quality Level Bonus
     - B: Artifact / Fishing / Panning / Foraging Spot Number
     - V: Craft Succeed Chance
 
- - Wis [TODO: TEST]
+ - Wis
     - B: Craft Station Speed
     - B: Craft Resource Usage
     - B: Exp Gain
     - V: Artifact / Fishing / Panning, Foraging Spot Transparency / Glow (-/+)
  
- - Cha [TODO: TEST]
+ - Cha
     - B: Friendship Reward
     - B: Buy / Sell Price
     - V: Romance Chance

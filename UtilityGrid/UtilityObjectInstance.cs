@@ -1,4 +1,7 @@
-﻿using StardewValley;
+﻿using Microsoft.Xna.Framework;
+using StardewValley;
+using System.Collections.Generic;
+using static UtilityGrid.ModEntry;
 
 namespace UtilityGrid
 {
@@ -10,8 +13,9 @@ namespace UtilityGrid
             WorldObject = obj;
         }
 
-        public float CurrentPowerDiff { get; set; }
-        public UtilityObject Template { get; }
-        public Object WorldObject { get; }
+        public Vector2 CurrentPowerVector { get; set; }
+        public PipeGroup Group { get; set; }
+        public UtilityObject Template { get; set; }
+        public Object WorldObject { get; set; }
     }
 }

@@ -52,8 +52,8 @@ namespace StardewRPG
             if (!Config.EnableMod)
                 return amount;
             var sub = GetStatMod(GetStatValue(Game1.player, "wis", Config.BaseStatValue)) * Config.WisCraftResourceReqBonus;
-            SMonitor.Log($"Modifying craft resource amount {amount} - {sub}");
-            return (int)Math.Min(1,Math.Round(amount * (1 - sub)));
+            //aSMonitor.Log($"Modifying craft resource amount {amount} => {amount * (1 - sub)}");
+            return (int)Math.Max(1,Math.Round(amount * (1 - sub)));
 
         }
         private static bool CraftingPage_clickCraftingRecipe_Prefix(CraftingPage __instance, ClickableTextureComponent c, int ___currentCraftingPage)

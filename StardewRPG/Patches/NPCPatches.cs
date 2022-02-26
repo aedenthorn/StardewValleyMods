@@ -12,7 +12,7 @@ namespace StardewRPG
     {
         private static bool NPC_engagementResponse_Prefix(NPC __instance, Farmer who)
         {
-            if (!Config.EnableMod)
+            if (!Config.EnableMod || !Config.ChaRollRomanceChance)
                 return true;
             bool success = Game1.random.Next(20) < GetStatValue(who, "cha", Config.BaseStatValue);
             if (success)
@@ -52,7 +52,7 @@ namespace StardewRPG
 
         private static bool CheckDatingChance(NPC npc, Farmer who)
         {
-            if (!Config.EnableMod)
+            if (!Config.EnableMod || !Config.ChaRollRomanceChance)
                 return true;
             bool success = Game1.random.Next(20) < GetStatValue(who, "cha", Config.BaseStatValue);
             if (success)

@@ -137,7 +137,7 @@ namespace StardewRPG
 		}
 		private static void SkillsPage_receiveLeftClick_Postfix(SkillsPage __instance, int x, int y, bool playSound = true)
 		{
-			if (!Config.EnableMod)
+			if (!Config.EnableMod || GetStatValue(Game1.player, "points") <= 0)
 				return;
 			foreach (ClickableTextureComponent c in increaseButtons)
 			{
@@ -220,13 +220,19 @@ namespace StardewRPG
         {
             if (!Config.EnableMod)
                 return;
-
-			string levelString = string.Format(SHelper.Translation.Get("level-x"), GetExperienceLevel(Game1.player));
+			int playerLevel = GetExperienceLevel(Game1.player);
+			string levelString = string.Format(SHelper.Translation.Get("level-x"), playerLevel);
 			b.DrawString(Game1.smallFont, levelString, new Vector2((float)(__instance.xPositionOnScreen + 64 - 12 + 64) - Game1.smallFont.MeasureString(levelString).X / 2f, __instance.yPositionOnScreen + IClickableMenu.borderWidth + IClickableMenu.spaceToClearTopBorder + 4 + 252), Game1.textColor);
+			var levels = GetExperienceLevels();
+			if (playerLevel < levels.Length)
+            {
+				string expString = string.Format(SHelper.Translation.Get("x/y-exp-to-next"), GetStatValue(Game1.player, "exp", 0), levels[playerLevel]);
+				b.DrawString(Game1.smallFont, expString, new Vector2((float)(__instance.xPositionOnScreen + 64 - 12 + 64) - Game1.smallFont.MeasureString(expString).X / 2f, __instance.yPositionOnScreen + IClickableMenu.borderWidth + IClickableMenu.spaceToClearTopBorder + 4 + 280), Game1.textColor);
+			}
 
 
 			int totalLevels = GetTotalSkillLevels(Game1.player);
-			int newLevels = Math.Max(0, (int)(GetExperienceLevel(Game1.player) * (1 + Config.IntSkillLevelsBonus)) - totalLevels - 1);
+			int newLevels = Math.Max(0, (int)(playerLevel * (1 + Config.IntSkillLevelsBonus)) - totalLevels - 1);
 			if (newLevels <= 0 || !Config.ManualSkillUpgrades)
                 return;
 			int x = __instance.xPositionOnScreen + __instance.width - 24;

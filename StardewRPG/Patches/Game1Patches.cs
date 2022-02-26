@@ -1,12 +1,5 @@
-﻿using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
-using StardewValley;
-using StardewValley.Characters;
-using StardewValley.Menus;
-using StardewValley.Tools;
+﻿using StardewValley;
 using System;
-using System.Collections.Generic;
-using Object = StardewValley.Object;
 
 namespace StardewRPG
 {
@@ -17,9 +10,12 @@ namespace StardewRPG
         {
             if (!Config.EnableMod)
                 return;
-			__state = new float[] { Game1.player.health, Game1.player.maxHealth, Game1.player.stamina, Game1.player.MaxStamina };
-			float health = 100 * Game1.player.health / Game1.player.maxHealth;
+            float healthFraction  = Math.Min(1, (float)Game1.player.health / Game1.player.maxHealth);
+            Game1.player.maxHealth = (int)Math.Max(1, GetExperienceLevel(Game1.player) * Config.BaseHealthPerLevel * (1 + Config.ConHealthBonus * GetStatMod(GetStatValue(Game1.player, "con", Config.BaseStatValue))));
+            Game1.player.health = (int)Math.Round(Game1.player.maxHealth * healthFraction); 
+            float health = 100 * healthFraction;
 			float stamina = 270 * Game1.player.stamina / Game1.player.MaxStamina;
+            __state = new float[] { Game1.player.health, Game1.player.maxHealth, Game1.player.stamina, Game1.player.MaxStamina };
 			Game1.player.health = (int)health;
 			Game1.player.maxHealth = 100;
 			Game1.player.stamina = stamina;
@@ -44,6 +40,7 @@ namespace StardewRPG
                 __state = Game1.killScreen;
                 return true;
             }
+            SHelper.Events.Display.RenderedWorld += Display_RenderedWorld;
             return false;
         }
         

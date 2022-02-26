@@ -26,16 +26,16 @@ namespace StardewRPG
             if (!Config.EnableMod)
                 return;
             var mult = GetStatMod(GetStatValue(Game1.player, "cha", Config.BaseStatValue)) * Config.ChaPriceBonus;
-            SMonitor.Log($"Modifying sell price of {__result} by {mult}x");
+            //SMonitor.Log($"Modifying buy price of {__instance.Name}: {__result} by {-mult}x");
             __result = (int)Math.Round(__result * (1 - mult));
         }
-        private static void Object_sellToStorePrice_Postfix(ref int __result)
+        private static void Object_sellToStorePrice_Postfix(Object __instance, ref int __result)
         {
             if (!Config.EnableMod)
                 return;
             var mult = GetStatMod(GetStatValue(Game1.player, "cha", Config.BaseStatValue)) * Config.ChaPriceBonus;
-            SMonitor.Log($"Modifying sell price of {__result} by {mult}x");
-            __result = (int)Math.Round(__result * (1 + mult));
+            //SMonitor.Log($"Modifying sell price of of {__instance.Name}: {__result} by {-mult}x");
+            __result = (int)Math.Min(__instance.salePrice(), Math.Round(__result * (1 + mult)));
         }
         private static void Object_draw_Prefix(Object __instance, float alpha, int x, int y)
         {
