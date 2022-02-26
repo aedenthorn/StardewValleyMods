@@ -139,10 +139,6 @@ namespace MobilePhone
                     }
                 }
             }
-            Monitor.Log($"{ModEntry.npcAdventureModApi != null}");
-            Monitor.Log($"{ModEntry.npcAdventureModApi.IsPossibleCompanion(npc) }");
-            Monitor.Log($"{ModEntry.npcAdventureModApi.CanAskToFollow(npc) }");
-            Monitor.Log($"{!npc.isSleeping.Value}");
             if (ModEntry.npcAdventureModApi != null && ModEntry.npcAdventureModApi.IsPossibleCompanion(npc) && ModEntry.npcAdventureModApi.CanAskToFollow(npc) && !npc.isSleeping.Value)
             {
                 answers.Add(new Response("PhoneApp_InCall_Recruit", Helper.Translation.Get("recruit")));
