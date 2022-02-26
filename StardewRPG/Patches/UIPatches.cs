@@ -224,9 +224,9 @@ namespace StardewRPG
 			string levelString = string.Format(SHelper.Translation.Get("level-x"), playerLevel);
 			b.DrawString(Game1.smallFont, levelString, new Vector2((float)(__instance.xPositionOnScreen + 64 - 12 + 64) - Game1.smallFont.MeasureString(levelString).X / 2f, __instance.yPositionOnScreen + IClickableMenu.borderWidth + IClickableMenu.spaceToClearTopBorder + 4 + 252), Game1.textColor);
 			var levels = GetExperienceLevels();
-			if (playerLevel < levels.Length)
+			if (playerLevel < levels.Length + 1)
             {
-				string expString = string.Format(SHelper.Translation.Get("x/y-exp-to-next"), GetStatValue(Game1.player, "exp", 0), levels[playerLevel]);
+				string expString = string.Format(SHelper.Translation.Get("x/y-exp-to-next"), GetStatValue(Game1.player, "exp", 0), levels[playerLevel - 1]);
 				b.DrawString(Game1.smallFont, expString, new Vector2((float)(__instance.xPositionOnScreen + 64 - 12 + 64) - Game1.smallFont.MeasureString(expString).X / 2f, __instance.yPositionOnScreen + IClickableMenu.borderWidth + IClickableMenu.spaceToClearTopBorder + 4 + 280), Game1.textColor);
 			}
 
