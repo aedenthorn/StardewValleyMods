@@ -133,7 +133,6 @@ namespace CustomFixedDialogue
                 Monitor.Log($"Failed in {nameof(LocalizedContentManager_LoadString_Postfix)}:\n{ex}", LogLevel.Error);
             }
         }
-
         public static void Dialogue_Prefix(Dialogue __instance, ref string masterDialogue, NPC speaker)
         {
             try

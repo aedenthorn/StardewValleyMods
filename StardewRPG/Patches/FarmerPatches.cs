@@ -61,7 +61,7 @@ namespace StardewRPG
 				return true;
 			if (howMuch > 0)
 			{
-				GainExperience(__instance, howMuch);
+				GainExperience(ref __instance, howMuch);
 				//SMonitor.Log($"Gained {howMuch} exp, new total {GetModData(__instance, "exp")}");
 			}
 			return !Config.ManualSkillUpgrades;
@@ -142,14 +142,10 @@ namespace StardewRPG
 			SetStats(ref __instance);
 			
 			int mod = GetStatMod(GetStatValue(__instance, "con"));
-			if (mod > 0)
-			{
-				if (__instance.health < __instance.maxHealth)
-					__instance.health = Math.Min(__instance.maxHealth, __instance.health + GetStatMod(GetStatValue(__instance, "con")) * Config.ConHealthRegen);
-				if (__instance.Stamina < __instance.MaxStamina)
-					__instance.Stamina = Math.Min(__instance.MaxStamina, __instance.Stamina + GetStatMod(GetStatValue(__instance, "con")) * Config.ConStaminaRegen);
-				//SMonitor.Log($"Increased health by { GetStatMod(GetStatValue(__instance, "con")) * Config.ConHealthRegen}, stamina by { GetStatMod(GetStatValue(__instance, "con")) * Config.ConStaminaRegen}");
-			}
-		} 
+			if (__instance.health < __instance.maxHealth)
+				__instance.health = Math.Min(__instance.maxHealth, __instance.health + Config.HealthRegen + mod * Config.ConHealthRegenBonus);
+			if (__instance.Stamina < __instance.MaxStamina)
+				__instance.Stamina = Math.Min(__instance.MaxStamina, __instance.Stamina + Config.StaminaRegen + mod * Config.ConStaminaRegenBonus);
+		}
 	}
 }

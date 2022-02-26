@@ -235,16 +235,14 @@ namespace StardewRPG
 			int newLevels = Math.Max(0, (int)(playerLevel * (1 + Config.IntSkillLevelsBonus)) - totalLevels - 1);
 			if (newLevels <= 0 || !Config.ManualSkillUpgrades)
                 return;
-			int x = __instance.xPositionOnScreen + __instance.width - 24;
-			int y = __instance.yPositionOnScreen;
 
 			// draw skill changes
 
 			string pointString = string.Format(SHelper.Translation.Get("x-points"), newLevels);
 			b.DrawString(Game1.smallFont, pointString, new Vector2((float)(__instance.xPositionOnScreen + 64 - 12 + 64) - Game1.smallFont.MeasureString(pointString).X / 2f, __instance.yPositionOnScreen + IClickableMenu.borderWidth + IClickableMenu.spaceToClearTopBorder - 28), Game1.textColor);
 
-			x = ((LocalizedContentManager.CurrentLanguageCode == LocalizedContentManager.LanguageCode.ru || LocalizedContentManager.CurrentLanguageCode == LocalizedContentManager.LanguageCode.it) ? (__instance.xPositionOnScreen + __instance.width - 448 - 48) : (__instance.xPositionOnScreen + IClickableMenu.borderWidth + IClickableMenu.spaceToClearTopBorder + 256 - 8));
-			y = __instance.yPositionOnScreen + IClickableMenu.spaceToClearTopBorder + IClickableMenu.borderWidth - 8;
+			int x = ((LocalizedContentManager.CurrentLanguageCode == LocalizedContentManager.LanguageCode.ru || LocalizedContentManager.CurrentLanguageCode == LocalizedContentManager.LanguageCode.it) ? (__instance.xPositionOnScreen + __instance.width - 448 - 48) : (__instance.xPositionOnScreen + IClickableMenu.borderWidth + IClickableMenu.spaceToClearTopBorder + 256 - 8));
+			int y = __instance.yPositionOnScreen + IClickableMenu.spaceToClearTopBorder + IClickableMenu.borderWidth - 8;
 
 			int addedX = 0;
 			for (int i = 0; i < 10; i++)
@@ -254,7 +252,12 @@ namespace StardewRPG
 					Rectangle boundary = (i + 1) % 5 == 0 ? new Rectangle(new Point(addedX + x - 4 + i * 36, y + j * 56), new Point(14 * 4, 9 * 4)) : new Rectangle(new Point(addedX + x - 4 + i * 36, y + j * 56), new Point(8 * 4, 9 * 4));
 					if(!boundary.Contains(Game1.getMousePosition(true)))
 						continue;
-					bool clickable = Game1.player.GetSkillLevel(j) == i;
+					int which = j;
+					if (which == 1)
+						which = 3;
+					else if (which == 3)
+						which = 1;
+					bool clickable = Game1.player.GetSkillLevel(which) == i;
 					if (!clickable)
 						return;
 					if (SHelper.Input.IsDown(StardewModdingAPI.SButton.MouseLeft))
@@ -262,30 +265,27 @@ namespace StardewRPG
 						int newLevel = 1;
 						foreach (int level in skillLevels)
 						{
-							if (Game1.player.experiencePoints[j] < level)
+							if (Game1.player.experiencePoints[which] < level)
 							{
-								Game1.player.experiencePoints[j] = level;
-								Game1.player.newLevels.Add(new Point(j, newLevel));
+								Game1.player.experiencePoints[which] = level;
+								Game1.player.newLevels.Add(new Point(which, newLevel));
 
-								switch (j)
+								switch (which)
 								{
 									case 0:
 										Game1.player.FarmingLevel++;
 										break;
 									case 1:
-										Game1.player.MiningLevel++;
+										Game1.player.FishingLevel++;
 										break;
 									case 2:
 										Game1.player.ForagingLevel++;
 										break;
 									case 3:
-										Game1.player.FishingLevel++;
+										Game1.player.MiningLevel++;
 										break;
 									case 4:
 										Game1.player.CombatLevel++;
-										break;
-									case 5:
-										Game1.player.LuckLevel++;
 										break;
 								}
 								return;

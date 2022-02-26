@@ -26,7 +26,7 @@ namespace StardewRPG
 			"str", "con", "dex", "int","wis", "cha"
 		};
 
-		private static void GainExperience(Farmer instance, int howMuch)
+		public static void GainExperience(ref Farmer instance, int howMuch)
 		{
 			int currentXP = GetStatValue(instance, "exp");
 			int newXP = currentXP + (int)Math.Round(howMuch * (1 + GetStatMod(GetStatValue(Game1.player, "wis", Config.BaseStatValue)) * Config.WisExpBonus));
@@ -44,6 +44,8 @@ namespace StardewRPG
 			if (levelUp)
             {
 				SetStats(ref instance);
+				instance.health = instance.maxHealth;
+				instance.stamina = instance.MaxStamina;
 				AlertLevelUp(instance.displayName, GetExperienceLevel(instance));
 			}
 		}
@@ -81,7 +83,7 @@ namespace StardewRPG
 			//SMonitor.Log($"Farmer health {instance.health}/{instance.maxHealth}, stamina {instance.stamina}/{instance.MaxStamina}");
 		}
 
-        private static int GetStatValue(Farmer instance, string key, int defaultValue = -1)
+        public static int GetStatValue(Farmer instance, string key, int defaultValue = -1)
         {
 			string value = GetModData(instance, key);
 			if (value == null || !int.TryParse(value, out int output))
@@ -101,7 +103,7 @@ namespace StardewRPG
 			SetStats(ref instance);
 		}
 
-		private static int GetStatMod(int v)
+		public static int GetStatMod(int v)
         {
 			int mod = 0;
 			foreach(string bonus in Config.StatBonusLevels.Split(','))
@@ -160,7 +162,9 @@ namespace StardewRPG
             {
 				if(exp < levels[i])
                 {
-					GainExperience(Game1.player, levels[i] - exp);
+					Farmer f = Game1.player;
+					GainExperience(ref f, levels[i] - exp);
+					Game1.player = f;
 					SMonitor.Log($"Added {levels[i] - exp} exp");
 					return;
 				}

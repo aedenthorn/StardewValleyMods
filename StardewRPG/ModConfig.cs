@@ -12,6 +12,8 @@ namespace StardewRPG
         public float LevelIncrementExpMult { get; set; } = 1f;
         public int BaseHealthPerLevel { get; set; } = 5;
         public int BaseStaminaPerLevel { get; set; } = 10;
+        public int HealthRegen { get; set; } = 1;
+        public float StaminaRegen { get; set; } = 1f;
 
 
         // stats
@@ -37,8 +39,8 @@ namespace StardewRPG
         public int ConSwordSpeedBonus { get; set; } = 20;
         public float ConHealthBonus { get; set; } = 0.1f;
         public float ConStaminaBonus { get; set; } = 0.1f;
-        public int ConHealthRegen { get; set; } = 1;
-        public float ConStaminaRegen { get; set; } = 1f;
+        public int ConHealthRegenBonus { get; set; } = 1;
+        public float ConStaminaRegenBonus { get; set; } = 1f;
         public bool ConRollToResistDebuff { get; set; } = true;
         public float ConDebuffDurationBonus { get; set; } = 0.1f;
         public int ConDefenseBonus { get; set; } = 1;
