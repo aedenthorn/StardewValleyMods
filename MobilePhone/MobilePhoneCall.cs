@@ -139,6 +139,10 @@ namespace MobilePhone
                     }
                 }
             }
+            Monitor.Log($"{ModEntry.npcAdventureModApi != null}");
+            Monitor.Log($"{ModEntry.npcAdventureModApi.IsPossibleCompanion(npc) }");
+            Monitor.Log($"{ModEntry.npcAdventureModApi.CanAskToFollow(npc) }");
+            Monitor.Log($"{!npc.isSleeping.Value}");
             if (ModEntry.npcAdventureModApi != null && ModEntry.npcAdventureModApi.IsPossibleCompanion(npc) && ModEntry.npcAdventureModApi.CanAskToFollow(npc) && !npc.isSleeping.Value)
             {
                 answers.Add(new Response("PhoneApp_InCall_Recruit", Helper.Translation.Get("recruit")));
@@ -402,7 +406,7 @@ namespace MobilePhone
             l.Location.startEvent(e);
             Game1.player.positionBeforeEvent = exitPos;
         }
-        private static async void StartRecruit(NPC npc)
+        private static void StartRecruit(NPC npc)
         {
             Monitor.Log($"Showing recruit response");
 
@@ -416,20 +420,18 @@ namespace MobilePhone
             if (ModEntry.npcAdventureModApi.CanRecruit(Game1.player, npc))
             {
                 Game1.drawDialogue(npc, ModEntry.npcAdventureModApi.LoadString($"Dialogue/{npc.Name}:companionAccepted"));
-                while (Game1.activeClickableMenu is DialogueBox)
+                Game1.afterDialogues = delegate ()
                 {
-                    await Task.Delay(50);
-                }
-                DoRecruit(npc);
+                    DoRecruit(npc);
+                };
             }
             else
             {
                 Game1.drawDialogue(npc, ModEntry.npcAdventureModApi.LoadString($"Dialogue/{npc.Name}:" + (Game1.timeOfDay >= 2200 ? "companionRejectedNight" : "companionRejected")));
-                while (Game1.activeClickableMenu is DialogueBox)
+                Game1.afterDialogues = delegate ()
                 {
-                    await Task.Delay(50);
-                }
-                ShowMainCallDialogue(npc);
+                    ShowMainCallDialogue(npc);
+                };
             }
         }
 
