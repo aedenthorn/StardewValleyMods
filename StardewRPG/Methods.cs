@@ -150,7 +150,7 @@ namespace StardewRPG
 
 		private static int GetTotalSkillLevels(Farmer player)
 		{
-			return player.FarmingLevel + player.MiningLevel + player.MiningLevel + player.ForagingLevel + player.FishingLevel + player.CombatLevel;
+			return player.FarmingLevel + player.MiningLevel + player.ForagingLevel + player.FishingLevel + player.CombatLevel;
 		}
 
 
