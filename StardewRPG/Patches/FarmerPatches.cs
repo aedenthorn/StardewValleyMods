@@ -55,9 +55,9 @@ namespace StardewRPG
 			}
 			return can;
 		}
-		private static bool Farmer_gainExperience_Prefix(Farmer __instance, int howMuch)
+		private static bool Farmer_gainExperience_Prefix(Farmer __instance, int howMuch, int which)
 		{
-			if (!Config.EnableMod)
+			if (!Config.EnableMod || which > 4)
 				return true;
 			if (howMuch > 0)
 			{
