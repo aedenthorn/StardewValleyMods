@@ -261,6 +261,7 @@ namespace PacifistValley
                 return;
 
             Helper.Events.GameLoop.DayEnding += GameLoop_DayEnding;
+            Helper.Events.GameLoop.GameLaunched += GameLoop_GameLaunched;
 
             var harmony = new Harmony(ModManifest.UniqueID);
 
@@ -278,7 +279,7 @@ namespace PacifistValley
             );
             harmony.Patch(
                original: AccessTools.Method(typeof(GameLocation), "updateCharacters"),
-               prefix: new HarmonyMethod(typeof(ModEntry), nameof(ModEntry.updateCharacters_prefix))
+               transpiler: new HarmonyMethod(typeof(ModEntry), nameof(ModEntry.updateCharacters_Transpiler))
             );
             harmony.Patch(
                original: AccessTools.Method(typeof(GameLocation), "damageMonster", new Type[] { typeof(Microsoft.Xna.Framework.Rectangle), typeof(int), typeof(int), typeof(bool), typeof(float), typeof(int), typeof(float), typeof(float), typeof(bool), typeof(Farmer) }),
@@ -347,6 +348,71 @@ namespace PacifistValley
                 harmony.Patch(
                    original: AccessTools.Method(typeof(Skeleton), nameof(Skeleton.behaviorAtGameTick)),
                    postfix: new HarmonyMethod(typeof(ModEntry), nameof(ModEntry.Skeleton_behaviorAtGameTick_postfix))
+                );
+            }
+        }
+
+        private void GameLoop_GameLaunched(object sender, StardewModdingAPI.Events.GameLaunchedEventArgs e)
+        {
+
+            // get Generic Mod Config Menu's API (if it's installed)
+            var configMenu = Helper.ModRegistry.GetApi<IGenericModConfigMenuApi>("spacechase0.GenericModConfigMenu");
+            if (configMenu is not null)
+            {
+
+                // register mod
+                configMenu.Register(
+                    mod: ModManifest,
+                    reset: () => Config = new ModConfig(),
+                    save: () => Helper.WriteConfig(Config)
+                );
+                configMenu.AddBoolOption(
+                    mod: ModManifest,
+                    name: () => Helper.Translation.Get("mod-enabled"),
+                    getValue: () => Config.EnableMod,
+                    setValue: value => Config.EnableMod = value
+                );
+                configMenu.AddBoolOption(
+                    mod: ModManifest,
+                    name: () => Helper.Translation.Get("prevent-unloved-damage"),
+                    getValue: () => Config.PreventUnlovedMonsterDamage,
+                    setValue: value => Config.PreventUnlovedMonsterDamage = value
+                );
+                configMenu.AddBoolOption(
+                    mod: ModManifest,
+                    name: () => Helper.Translation.Get("show-emote"),
+                    getValue: () => Config.ShowMonsterHeartEmote,
+                    setValue: value => Config.ShowMonsterHeartEmote = value
+                );
+                configMenu.AddBoolOption(
+                    mod: ModManifest,
+                    name: () => Helper.Translation.Get("loved-swarm"),
+                    getValue: () => Config.LovedMonstersStillSwarm,
+                    setValue: value => Config.LovedMonstersStillSwarm = value
+                );
+                configMenu.AddBoolOption(
+                    mod: ModManifest,
+                    name: () => Helper.Translation.Get("monsters-ignore-player"),
+                    getValue: () => Config.MonstersIgnorePlayer,
+                    setValue: value => Config.MonstersIgnorePlayer = value
+                );
+                configMenu.AddNumberOption(
+                    mod: ModManifest,
+                    name: () => Helper.Translation.Get("ms-per-love"),
+                    getValue: () => Config.MillisecondsPerLove,
+                    setValue: value => Config.MillisecondsPerLove = value
+                );
+                configMenu.AddNumberOption(
+                    mod: ModManifest,
+                    name: () => Helper.Translation.Get("device-speed-factor"),
+                    getValue: () => Config.DeviceSpeedFactor,
+                    setValue: value => Config.DeviceSpeedFactor = value
+                );
+                configMenu.AddNumberOption(
+                    mod: ModManifest,
+                    name: () => Helper.Translation.Get("area-of-effect-mod"),
+                    getValue: () => Config.AreaOfKissEffectModifier,
+                    setValue: value => Config.AreaOfKissEffectModifier = value
                 );
             }
         }
@@ -483,7 +549,7 @@ namespace PacifistValley
             if (___pupating && ___metamorphCounter <= time.ElapsedGameTime.Milliseconds)
             {
                     __instance.Health = -500;
-                    __instance.currentLocation.characters.Add(new Fly(__instance.Position, __instance.hard)
+                    __instance.currentLocation.characters.Add(new Fly(__instance.Position, __instance.hard.Value)
                     {
                         currentLocation = __instance.currentLocation
                     });
@@ -500,7 +566,7 @@ namespace PacifistValley
                 int monsters = 0;
                 foreach(Character c in __instance.characters)
                 {
-                    if(c is Monster && (c as Monster).health > 0)
+                    if(c is Monster && (c as Monster).Health > 0)
                     {
                         monsters++;
                     }
@@ -599,25 +665,30 @@ namespace PacifistValley
             }
         }
 
-        private static bool updateCharacters_prefix(GameLocation __instance, GameTime time)
+        public static IEnumerable<CodeInstruction> updateCharacters_Transpiler(IEnumerable<CodeInstruction> instructions)
         {
-            for (int i = __instance.characters.Count - 1; i >= 0; i--)
+            SMonitor.Log($"Transpiling GameLocation.spawnObjects");
+
+            var codes = new List<CodeInstruction>(instructions);
+            for (int i = 0; i < codes.Count; i++)
             {
-                if (__instance.characters[i] != null && (Game1.shouldTimePass() || __instance.characters[i] is Horse || __instance.characters[i].forceUpdateTimer > 0))
+                if (i > 3 && codes[i].opcode == OpCodes.Callvirt && (MethodInfo)codes[i].operand == AccessTools.Method(typeof(NetCollection<NPC>), nameof(NetCollection<NPC>.RemoveAt)))
                 {
-                    __instance.characters[i].currentLocation = __instance;
-                    __instance.characters[i].update(time, __instance);
-                    if (i < __instance.characters.Count && __instance.characters[i] is Monster && ((Monster)__instance.characters[i]).Health <= 0)
-                    {
-                        __instance.characters[i].doEmote(20, true);
-                    }
-                }
-                else if (__instance.characters[i] != null)
-                {
-                    __instance.characters[i].updateEmote(time);
+                    SMonitor.Log("Overriding remove dead monster");
+                    codes[i - 2].opcode = OpCodes.Ldloc_2;
+                    codes[i - 2].operand = null;
+                    codes[i].opcode = OpCodes.Call;
+                    codes[i].operand = AccessTools.Method(typeof(ModEntry), nameof(ModEntry.EmoteMonster));
+                    break;
                 }
             }
-            return false;
+            return codes.AsEnumerable();
+        }
+
+        private static void EmoteMonster(GameLocation location, NPC monster, int i)
+        {
+            if (Config.EnableMod && Config.ShowMonsterHeartEmote)
+                monster.doEmote(20, true);
         }
 
         private static bool setFarmerAnimating_prefix(MeleeWeapon __instance, Farmer who, ref bool ___hasBegunWeaponEndPause, ref bool ___anotherClick, Farmer ___lastUser)
@@ -631,7 +702,7 @@ namespace PacifistValley
             Vector2 tileLocation2 = Vector2.Zero;
             Rectangle areaOfEffect = __instance.getAreaOfEffect((int)actionTile.X, (int)actionTile.Y, who.FacingDirection, ref tileLocation, ref tileLocation2, who.GetBoundingBox(), 666);
             areaOfEffect.Inflate(Config.AreaOfKissEffectModifier, Config.AreaOfKissEffectModifier);
-            who.currentLocation.damageMonster(areaOfEffect, (int)((float)__instance.minDamage * (1f + who.attackIncreaseModifier)), (int)((float)__instance.maxDamage * (1f + who.attackIncreaseModifier)), false, __instance.knockback * (1f + who.knockbackModifier), (int)((float)__instance.addedPrecision * (1f + who.weaponPrecisionModifier)), __instance.critChance * (1f + who.critChanceModifier), __instance.critMultiplier * (1f + who.critPowerModifier), __instance.type != 1 || !__instance.isOnSpecial, ___lastUser);
+            who.currentLocation.damageMonster(areaOfEffect, (int)((float)__instance.minDamage.Value * (1f + who.attackIncreaseModifier)), (int)((float)__instance.maxDamage.Value * (1f + who.attackIncreaseModifier)), false, __instance.knockback.Value * (1f + who.knockbackModifier), (int)((float)__instance.addedPrecision.Value * (1f + who.weaponPrecisionModifier)), __instance.critChance.Value * (1f + who.critChanceModifier), __instance.critMultiplier.Value * (1f + who.critPowerModifier), __instance.type.Value != 1 || !__instance.isOnSpecial, ___lastUser);
 
             GameLocation location = who.currentLocation;
 
@@ -654,7 +725,7 @@ namespace PacifistValley
             ___anotherClick = false;
             location.playSound("dwop", NetAudio.SoundContext.Default);
 
-            int speed = (int)Math.Round((Config.MillisecondsPerLove - __instance.speed*Config.DeviceSpeedFactor*10)/10f)*10;
+            int speed = (int)Math.Round((Config.MillisecondsPerLove - __instance.speed.Value * Config.DeviceSpeedFactor*10)/10f)*10;
 
             who.faceDirection(who.facingDirection);
             who.FarmerSprite.PauseForSingleAnimation = false;

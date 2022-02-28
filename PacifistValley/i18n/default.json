@@ -1,0 +1,11 @@
+﻿{
+  "mod-enabled": "Mod Enabled",
+  "prevent-unloved-damage": "Prevent Unloved Damage",
+  "show-emote": "Show Heart Emote",
+  "loved-swarm": "Loved Still Swarm",
+  "monsters-ignore-player": "Monsters Ignore Players",
+  "ms-per-love": "Milliseconds per love",
+  "device-speed-factor": "Device Speed Factor",
+  "area-of-effect-mod": "AOE Modifier"
+
+}
