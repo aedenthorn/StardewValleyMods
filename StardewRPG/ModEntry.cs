@@ -255,6 +255,7 @@ namespace StardewRPG
             harmony.Patch(
                original: AccessTools.Method(typeof(SkillsPage), nameof(SkillsPage.draw), new Type[] { typeof(SpriteBatch) }),
                prefix: new HarmonyMethod(typeof(ModEntry), nameof(ModEntry.SkillsPage_draw_Prefix)),
+               transpiler: new HarmonyMethod(typeof(ModEntry), nameof(ModEntry.SkillsPage_draw_Transpiler)),
                postfix: new HarmonyMethod(typeof(ModEntry), nameof(ModEntry.SkillsPage_draw_Postfix))
             );
             harmony.Patch(

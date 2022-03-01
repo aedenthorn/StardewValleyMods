@@ -4,7 +4,10 @@ using StardewValley;
 using StardewValley.Menus;
 using System;
 using System.Collections.Generic;
+using HarmonyLib;
 using System.Linq;
+using System.Reflection.Emit;
+using System.Reflection;
 
 namespace StardewRPG
 {
@@ -216,7 +219,29 @@ namespace StardewRPG
 			}
 
 		}
-		private static void SkillsPage_draw_Postfix(SkillsPage __instance, SpriteBatch b)
+		public static IEnumerable<CodeInstruction> SkillsPage_draw_Transpiler(IEnumerable<CodeInstruction> instructions)
+		{
+			SMonitor.Log($"Transpiling GameLocation.spawnObjects");
+
+			var codes = new List<CodeInstruction>(instructions);
+			for (int i = 0; i < codes.Count; i++)
+			{
+				if (i > 2 && codes[i].opcode == OpCodes.Ldfld && (FieldInfo)codes[i].operand == AccessTools.Field(typeof(SkillsPage), "hoverText") && codes[i - 1].opcode == OpCodes.Ldarg_0 && codes[i - 2].opcode == OpCodes.Ldarg_1)
+				{
+					SMonitor.Log("Overriding hovertext");
+					codes.Insert(i + 1, new CodeInstruction(OpCodes.Call, AccessTools.Method(typeof(ModEntry), nameof(ModEntry.SkillsPageGetHoverText))));
+					break;
+				}
+			}
+			return codes.AsEnumerable();
+		}
+
+        private static string SkillsPageGetHoverText(string hoverText)
+        {
+			return !Config.EnableMod ? hoverText : Game1.parseText(hoverText, Game1.smallFont, 256);
+		}
+
+        private static void SkillsPage_draw_Postfix(SkillsPage __instance, SpriteBatch b)
         {
             if (!Config.EnableMod)
                 return;
