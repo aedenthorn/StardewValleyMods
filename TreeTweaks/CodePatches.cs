@@ -70,7 +70,7 @@ namespace LogSpamFilter
                     codes[i + 23].operand = AccessTools.Method(typeof(ModEntry), nameof(ModEntry.StumpDropWoodFake));
 
                 }
-                else if (i < codes.Count - 9 && codes[i].opcode == OpCodes.Ldc_I4_S && (sbyte)codes[i].operand == 92 && codes[i + 9].opcode == OpCodes.Call && (MethodInfo)codes[i + 9].operand == AccessTools.Method(typeof(Game1), nameof(Game1.createMultipleObjectDebris), new System.Type[] { typeof(int), typeof(int), typeof(int), typeof(int), typeof(GameLocation) }))
+                else if (i < codes.Count - 9 && codes[i].opcode == OpCodes.Ldc_I4_S && codes[i].operand is sbyte && (sbyte)codes[i].operand == 92 && codes[i + 9].opcode == OpCodes.Call && (MethodInfo)codes[i + 9].operand == AccessTools.Method(typeof(Game1), nameof(Game1.createMultipleObjectDebris), new System.Type[] { typeof(int), typeof(int), typeof(int), typeof(int), typeof(GameLocation) }))
                 {
                     SMonitor.Log($"Switching extra drop 2 method non-farmer");
                     var ci = new CodeInstruction(OpCodes.Ldarg_0);
@@ -79,7 +79,7 @@ namespace LogSpamFilter
                     newCodes.Add(codes[i]);
                     codes[i + 9].operand = AccessTools.Method(typeof(ModEntry), nameof(ModEntry.StumpDrop2ExtraNF));
                 }
-                else if (false && i < codes.Count - 13 && codes[i].opcode == OpCodes.Ldc_I4_S && (sbyte)codes[i].operand == 92 && codes[i + 12].opcode == OpCodes.Call && (MethodInfo)codes[i + 12].operand == AccessTools.Method(typeof(Game1), nameof(Game1.createItemDebris), new System.Type[] { typeof(Item), typeof(Vector2), typeof(int), typeof(GameLocation), typeof(int) }))
+                else if (false && i < codes.Count - 13 && codes[i].opcode == OpCodes.Ldc_I4_S && codes[i].operand is sbyte && (sbyte)codes[i].operand == 92 && codes[i + 12].opcode == OpCodes.Call && (MethodInfo)codes[i + 12].operand == AccessTools.Method(typeof(Game1), nameof(Game1.createItemDebris), new System.Type[] { typeof(Item), typeof(Vector2), typeof(int), typeof(GameLocation), typeof(int) }))
                 {
                     if (codes[i - 1].opcode != OpCodes.Pop)
                     {
@@ -168,7 +168,7 @@ namespace LogSpamFilter
                         codes[i + 39].operand = AccessTools.Method(typeof(ModEntry), nameof(ModEntry.DropWoodFake));
                     }
                 }
-                else if (i < codes.Count - 20 && codes[i].opcode == OpCodes.Ldc_I4_S && (sbyte)codes[i].operand == 92 && codes[i + 20].opcode == OpCodes.Call && (MethodInfo)codes[i + 20].operand == AccessTools.Method(typeof(Game1), nameof(Game1.createMultipleObjectDebris), new System.Type[] { typeof(int), typeof(int),typeof(int),typeof(int),typeof(long),typeof(GameLocation)}))
+                else if (i < codes.Count - 20 && codes[i].opcode == OpCodes.Ldc_I4_S && codes[i].operand is sbyte && (sbyte)codes[i].operand == 92 && codes[i + 20].opcode == OpCodes.Call && (MethodInfo)codes[i + 20].operand == AccessTools.Method(typeof(Game1), nameof(Game1.createMultipleObjectDebris), new System.Type[] { typeof(int), typeof(int),typeof(int),typeof(int),typeof(long),typeof(GameLocation)}))
                 {
                     SMonitor.Log($"Switching mp drop sap method");
                     var ci = new CodeInstruction(OpCodes.Ldarg_0);
@@ -206,7 +206,7 @@ namespace LogSpamFilter
                     newCodes.Add(codes[i]);
                     codes[i+ 23].operand = AccessTools.Method(typeof(ModEntry), nameof(ModEntry.DropSeedMP2));
                 }
-                else if (i < codes.Count - 17 && codes[i].opcode == OpCodes.Ldc_I4_S && (sbyte)codes[i].operand == 92 && codes[i + 17].opcode == OpCodes.Call && (MethodInfo)codes[i + 17].operand == AccessTools.Method(typeof(Game1), nameof(Game1.createMultipleObjectDebris), new System.Type[] { typeof(int), typeof(int), typeof(int), typeof(int), typeof(GameLocation) }))
+                else if (i < codes.Count - 17 && codes[i].opcode == OpCodes.Ldc_I4_S && codes[i].operand is sbyte && (sbyte)codes[i].operand == 92 && codes[i + 17].opcode == OpCodes.Call && (MethodInfo)codes[i + 17].operand == AccessTools.Method(typeof(Game1), nameof(Game1.createMultipleObjectDebris), new System.Type[] { typeof(int), typeof(int), typeof(int), typeof(int), typeof(GameLocation) }))
                 {
                     SMonitor.Log($"Switching sp drop sap method");
                     var ci = new CodeInstruction(OpCodes.Ldarg_0);

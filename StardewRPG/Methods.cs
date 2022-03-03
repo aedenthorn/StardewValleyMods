@@ -129,7 +129,7 @@ namespace StardewRPG
 				int toNextLevel = skillLevels[i + 1] - skillLevels[i];
 				for (int j = 0; j < 6; j++)
                 {
-					levels.Add((int)Math.Round((skillLevels[i] + toNextLevel * j / 6) * Config.LevelIncrementExpMult));
+					levels.Add((int)Math.Round((levels.Count > 0 ? levels[levels.Count - 1] : 0) + (skillLevels[i] + toNextLevel * j / 6) * Config.LevelIncrementExpMult));
                 }
 			}
 			return levels.ToArray();
@@ -154,21 +154,24 @@ namespace StardewRPG
 		}
 
 
-		private static void LevelUp()
+		private static void LevelUp(int num)
 		{
 			var levels = GetExperienceLevels();
 			var exp = GetStatValue(Game1.player, "exp");
-			for (int i = 0; i < levels.Length; i++)
+			for(int j = 0; j < num; j++)
             {
-				if(exp < levels[i])
-                {
-					Farmer f = Game1.player;
-					GainExperience(ref f, levels[i] - exp);
-					Game1.player = f;
-					SMonitor.Log($"Added {levels[i] - exp} exp");
-					return;
+				for (int i = 0; i < levels.Length; i++)
+				{
+					if (exp < levels[i])
+					{
+						Farmer f = Game1.player;
+						GainExperience(ref f, levels[i] - exp);
+						Game1.player = f;
+						SMonitor.Log($"Added {levels[i] - exp} exp");
+						break;
+					}
 				}
-            }
+			}
 		}
 		private static void Respec()
 		{

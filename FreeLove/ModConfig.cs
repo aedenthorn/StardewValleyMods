@@ -12,7 +12,7 @@ namespace FreeLove
         public int MaxGiftsPerSpousePerWeek { get; set; } = 2;
         public bool PreventHostileDivorces { get; set; } = true;
         public bool ComplexDivorce { get; set; } = true;
-        public bool RoommateRomance { get; set; } = true;
+        public bool RoommateRomance { get; set; } = false;
         public bool RomanceAllVillagers { get; set; } = false;
         public bool ShowParentNames { get; set; } = false;
         public string SpouseSleepOrder { get; set; } = "";

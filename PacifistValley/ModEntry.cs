@@ -58,7 +58,13 @@ namespace PacifistValley
         {
             if (!Config.EnableMod)
                 return false;
-            if (asset.AssetNameEquals("Data/mail") ||asset.AssetNameEquals("Data/Quests") || asset.AssetNameEquals("Strings/UI") || asset.AssetNameEquals("Strings/StringsFromCSFiles") || asset.AssetNameEquals("Data/ObjectInformation") || asset.AssetNameEquals("Data/TV/TipChannel") || asset.AssetNameEquals("LooseSprites/Cursors")
+            return (asset.AssetNameEquals("Data/mail") 
+                || asset.AssetNameEquals("Data/Quests") 
+                || asset.AssetNameEquals("Strings/UI") 
+                || asset.AssetNameEquals("Strings/StringsFromCSFiles") 
+                || asset.AssetNameEquals("Data/ObjectInformation") 
+                || asset.AssetNameEquals("Data/TV/TipChannel") 
+                || asset.AssetNameEquals("LooseSprites/Cursors")
                 || asset.AssetNameEquals("Characters/Monsters/Dust Spirit") // 1t
                 || asset.AssetNameEquals("Characters/Monsters/Duggy") //3t
                 || asset.AssetNameEquals("Characters/Monsters/Armored Bug") // 4
@@ -80,12 +86,7 @@ namespace PacifistValley
                 || asset.AssetNameEquals("Characters/Monsters/Skeleton Mage") // 4x
                 || asset.AssetNameEquals("Characters/Monsters/Stone Golem") // 6t
                 || asset.AssetNameEquals("Characters/Monsters/Wilderness Golem") // 6t
-                )
-            {
-                return true;
-            }
-
-            return false;
+                );
         }
         /// <summary>Edit a matched asset.</summary>
         /// <param name="asset">A helper which encapsulates metadata about an asset and enables changes to it.</param>
@@ -96,6 +97,7 @@ namespace PacifistValley
                 {
                     var editor = asset.AsDictionary<string, string>();
                     editor.Data["guildQuest"] = "I see you've been exploring the old mine. You've got the lover's spirit, that much I can tell.^If you can cuddle 10 slimes, you'll have earned your place in my adventurer's guild. ^Be careful.    -Marlon %item quest 15 true %%[#]Quest To Cuddle Slimes";
+                    editor.Data["Kent"] = editor.Data["Kent"].Replace("286 1 287 1 288 1 787 1", "787 1");
                 }
                 else if (asset.AssetNameEquals("Data/Quests"))
                 {
