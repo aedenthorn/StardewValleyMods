@@ -10,11 +10,11 @@ namespace FreeLove
         {
             Misc.PlaceSpousesInFarmhouse(farmHouse);
         }
-        public static Dictionary<string, NPC> GetSpouses(Farmer farmer, bool all = true)
+        public Dictionary<string, NPC> GetSpouses(Farmer farmer, bool all = true)
         {
             return Misc.GetSpouses(farmer, all);
         }
-        public static Dictionary<string, NPC> GetSpouses(Farmer farmer, int all = -1)
+        public Dictionary<string, NPC> GetSpouses(Farmer farmer, int all = -1)
         {
             return Misc.GetSpouses(farmer, all != 0);
         }

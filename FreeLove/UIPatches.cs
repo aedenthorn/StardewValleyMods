@@ -40,6 +40,26 @@ namespace FreeLove
                 Monitor.Log($"Failed in {nameof(SocialPage_drawNPCSlot_prefix)}:\n{ex}", LogLevel.Error);
             }
         }
+        public static bool SocialPage_isMarriedToAnyone_Prefix(string name, ref bool __result)
+        {
+            try
+            {
+                foreach (Farmer farmer in Game1.getAllFarmers())
+                {
+                    if (farmer.spouse == name && farmer.friendshipData.TryGetValue(name, out Friendship friendship) && friendship.IsMarried())
+                    {
+                        __result = true;
+                    }
+                }
+                __result = false;
+                return false;
+            }
+            catch (Exception ex)
+            {
+                Monitor.Log($"Failed in {nameof(SocialPage_isMarriedToAnyone_Prefix)}:\n{ex}", LogLevel.Error);
+            }
+            return true;
+        }
         public static IEnumerable<CodeInstruction> SocialPage_drawSlot_transpiler(IEnumerable<CodeInstruction> instructions)
         {
             List<CodeInstruction> codes = instructions.ToList();

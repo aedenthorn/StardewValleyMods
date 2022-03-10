@@ -270,6 +270,11 @@ namespace FreeLove
                original: AccessTools.Method(typeof(SocialPage), "drawFarmerSlot"),
                transpiler: new HarmonyMethod(typeof(UIPatches), nameof(UIPatches.SocialPage_drawSlot_transpiler))
             );
+            
+            harmony.Patch(
+               original: AccessTools.Method(typeof(SocialPage), nameof(SocialPage.isMarriedToAnyone)),
+               prefix: new HarmonyMethod(typeof(UIPatches), nameof(UIPatches.SocialPage_isMarriedToAnyone_Prefix))
+            );
 
             harmony.Patch(
                original: typeof(DialogueBox).GetConstructor(new Type[] { typeof(List<string>) }),

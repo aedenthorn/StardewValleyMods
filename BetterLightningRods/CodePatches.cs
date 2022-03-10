@@ -25,14 +25,15 @@ namespace BetterLightningRods
             {
                 if (!rodsFound && i < codes.Count - 2 && codes[i + 2].opcode == OpCodes.Blt && codes[i + 1].opcode == OpCodes.Ldc_I4_2 && codes[i].opcode == OpCodes.Ldloc_S)
                 {
-                    SMonitor.Log($"Setting number of lightning rods to check to {Config.RodsToCheck}");
-                    codes[i + 1] = new CodeInstruction(OpCodes.Ldc_I4, Config.RodsToCheck);
+                    SMonitor.Log($"Overriding number of lightning rods to check");
+                    codes[i + 1] = new CodeInstruction(OpCodes.Call, AccessTools.Method(typeof(ModEntry), nameof(ModEntry.GetRodsToCheck)));
                     rodsFound = true;
                 }
                 else if (!chanceFound && codes[i].opcode == OpCodes.Ldc_R8 && (double)codes[i].operand == 0.125)
                 {
-                    SMonitor.Log($"Setting lightning chance to {Config.LightningChance}%");
-                    codes[i].operand = (double)(Config.LightningChance / 100f);
+                    SMonitor.Log($"Overriding lightning chance");
+                    codes[i].opcode = OpCodes.Call;
+                    codes[i].operand = AccessTools.Method(typeof(ModEntry), nameof(ModEntry.GetLightningChance));
                     chanceFound = true;
                 }
                 else if (!shuffleFound && Config.UniqueCheck && i < codes.Count - 2 && codes[i + 2].opcode == OpCodes.Ble && codes[i + 1].opcode == OpCodes.Ldc_I4_0 && codes[i].opcode == OpCodes.Callvirt && codes[i - 1].opcode == OpCodes.Ldloc_3)
@@ -58,5 +59,14 @@ namespace BetterLightningRods
             return newCodes.AsEnumerable();
         }
 
+        private static double GetLightningChance()
+        {
+            return Config.EnableMod ? (double)(Config.LightningChance / 100f) : 0.125;
+        }
+
+        private static int GetRodsToCheck()
+        {
+            return Config.EnableMod ? Config.RodsToCheck : 2;
+        }
     }
 }

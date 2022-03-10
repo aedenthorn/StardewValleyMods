@@ -1,7 +1,7 @@
 ﻿{
   "Name": "Better Lightning Rods",
   "Author": "aedenthorn",
-  "Version": "0.1.0",
+  "Version": "0.1.1",
   "Description": "Better Lightning Rods.",
   "UniqueID": "aedenthorn.BetterLightningRods",
   "EntryDll": "BetterLightningRods.dll",
