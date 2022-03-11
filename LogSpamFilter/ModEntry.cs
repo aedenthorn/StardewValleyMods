@@ -20,9 +20,9 @@ namespace LogSpamFilter
         public static IMonitor SMonitor;
         public static IModHelper SHelper;
         public static ModConfig Config;
-
         public static ModEntry context;
         private Harmony harmony;
+        public static int throttled = 0;
 
         private static Dictionary<string, ModMessageData> messageData = new Dictionary<string, ModMessageData>();
         private static List<string> allowList = new List<string>();
@@ -66,17 +66,51 @@ namespace LogSpamFilter
                 save: () => Helper.WriteConfig(Config)
             );
 
+            configMenu.AddSectionTitle(
+                mod: ModManifest,
+                text: () => $"Total Messages Throttled: {throttled}"
+            );
             configMenu.AddBoolOption(
                 mod: ModManifest,
                 name: () => "Mod Enabled?",
                 getValue: () => Config.EnableMod,
                 setValue: value => Config.EnableMod = value
             );
+            configMenu.AddBoolOption(
+                mod: ModManifest,
+                name: () => "Show Debug Messages?",
+                getValue: () => Config.IsDebug,
+                setValue: value => Config.IsDebug = value
+            );
             configMenu.AddNumberOption(
                 mod: ModManifest,
-                name: () => "Max Oversize Days",
+                name: () => "Min Interval",
+                tooltip: () => "In milliseconds",
+                getValue: () => Config.MSBetweenMessages,
+                setValue: value => Config.MSBetweenMessages = value
+            );
+            configMenu.AddNumberOption(
+                mod: ModManifest,
+                name: () => "Min Identical Interval",
+                tooltip: () => "In milliseconds",
                 getValue: () => Config.MSBetweenIdenticalMessages,
                 setValue: value => Config.MSBetweenIdenticalMessages = value
+            );
+            configMenu.AddNumberOption(
+                mod: ModManifest,
+                name: () => "Min Similar Interval",
+                tooltip: () => "In milliseconds",
+                getValue: () => Config.MSBetweenSimilarMessages,
+                setValue: value => Config.MSBetweenSimilarMessages = value
+            );
+            configMenu.AddNumberOption(
+                mod: ModManifest,
+                name: () => "Min Similarity",
+                tooltip: () => "In percent",
+                getValue: () => Config.PercentSimilarity,
+                setValue: value => Config.PercentSimilarity = value,
+                min: 0,
+                max: 100
             );
         }
 

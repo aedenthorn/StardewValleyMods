@@ -26,6 +26,7 @@ namespace LogSpamFilter
                         SMonitor.Log($"Throttling {source} for ms between messages");
                     messageData[source].throttled = true;
                     messageData[source].throttledTime = DateTime.Now;
+                    throttled++;
                     return false;
                 }
                 if (Config.MSBetweenIdenticalMessages > 0 && s.lastMessage == message && Config.MSBetweenIdenticalMessages > DateTime.Now.Subtract(s.lastMessageTime).TotalMilliseconds)
@@ -35,8 +36,9 @@ namespace LogSpamFilter
 
                     messageData[source].throttled = true;
                     messageData[source].throttledTime = DateTime.Now;
+                    throttled++;
                     return false;
-                }
+                } 
                 if (Config.MSBetweenSimilarMessages > 0 && s.lastMessage.StartsWith(message[0]) && Config.MSBetweenSimilarMessages > DateTime.Now.Subtract(s.lastMessageTime).TotalMilliseconds)
                 {
                     int count = 0;
@@ -53,6 +55,7 @@ namespace LogSpamFilter
                             SMonitor.Log($"Throttling {source} for ms between similar ({(int)(count / (float)s.lastMessage.Length * 100)}) messages");
                         messageData[source].throttled = true;
                         messageData[source].throttledTime = DateTime.Now;
+                        throttled++;
                         return false;
                     }
                 }

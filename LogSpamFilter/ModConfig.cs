@@ -9,7 +9,7 @@
         public int MSBetweenMessages { get; set; } = 0;
         public int MSBetweenIdenticalMessages { get; set; } = 1000;
         public int MSBetweenSimilarMessages { get; set; } = 0;
-        public int PercentSimilarity { get; set; } = 50;
+        public int PercentSimilarity { get; set; } = 80;
 
     }
 }

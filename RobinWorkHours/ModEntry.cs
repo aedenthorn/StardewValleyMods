@@ -56,7 +56,7 @@ namespace RobinWorkHours
         private void GameLoop_DayStarted(object sender, StardewModdingAPI.Events.DayStartedEventArgs e)
         {
             startedWalking = false;
-            if (!Config.EnableMod)
+            if (!Config.EnableMod || Utility.isFestivalDay(Game1.dayOfMonth, Game1.currentSeason))
                 return;
             var robin = Game1.getCharacterFromName("Robin");
             if (robin is null)
@@ -74,7 +74,7 @@ namespace RobinWorkHours
 
         private void GameLoop_TimeChanged(object sender, StardewModdingAPI.Events.TimeChangedEventArgs e)
         {
-            if (!Config.EnableMod || !Game1.IsMasterGame || (!Game1.getFarm().isThereABuildingUnderConstruction() && Game1.player.daysUntilHouseUpgrade.Value <= 0 && (Game1.getLocationFromName("Town") as Town).daysUntilCommunityUpgrade.Value <= 0))
+            if (!Config.EnableMod || !Game1.IsMasterGame || Utility.isFestivalDay(Game1.dayOfMonth, Game1.currentSeason) || (!Game1.getFarm().isThereABuildingUnderConstruction() && Game1.player.daysUntilHouseUpgrade.Value <= 0 && (Game1.getLocationFromName("Town") as Town).daysUntilCommunityUpgrade.Value <= 0))
                 return;
             var robin = Game1.getCharacterFromName("Robin");
             if(robin is null)
@@ -332,14 +332,14 @@ namespace RobinWorkHours
                 name: () => "Start Time",
                 tooltip: () => "Use 24h #### format",
                 getValue: () => Config.StartTime+"",
-                setValue: delegate(string value) { if(int.TryParse(value, out int result) && result < Config.EndTime  && result % 100 < 60) Config.StartTime = result; }
+                setValue: delegate(string value) { if(int.TryParse(value, out int result) && result % 100 < 60) Config.StartTime = result; }
             );
             configMenu.AddTextOption(
                 mod: ModManifest,
                 name: () => "End Time",
                 tooltip: () => "Use 24h #### format",
                 getValue: () => Config.EndTime+"",
-                setValue: delegate (string value) { if (int.TryParse(value, out int result) && result > Config.StartTime && result % 100 < 60) Config.EndTime = result; }
+                setValue: delegate (string value) { if (int.TryParse(value, out int result) && result % 100 < 60) Config.EndTime = result; }
             );
             configMenu.AddTextOption(
                 mod: ModManifest,

@@ -65,6 +65,10 @@ namespace Screenshot
 
                 Color[] data = new Color[width * height];
                 Game1.graphics.GraphicsDevice.GetBackBufferData(data);
+                for(int i = 0; i < data.Length; i++)
+                {
+                    data[i].A = 255;
+                }
                 Texture2D tex = new Texture2D(Game1.graphics.GraphicsDevice, width, height);
                 tex.SetData(data);
                 Stream stream = File.Create(Path.Combine(Config.ScreenshotFolder, screenshot_name));

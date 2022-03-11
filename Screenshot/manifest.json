@@ -1,7 +1,7 @@
 ﻿{
   "Name": "Screenshot",
   "Author": "aedenthorn",
-  "Version": "0.2.0",
+  "Version": "0.2.1",
   "Description": "Screenshot.",
   "UniqueID": "aedenthorn.Screenshot",
   "EntryDll": "Screenshot.dll",
