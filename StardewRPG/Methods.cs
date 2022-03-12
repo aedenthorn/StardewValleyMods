@@ -80,7 +80,7 @@ namespace StardewRPG
 				instance.health = instance.maxHealth;
 				instance.stamina = instance.MaxStamina;
             }
-			//SMonitor.Log($"Farmer health {instance.health}/{instance.maxHealth}, stamina {instance.stamina}/{instance.MaxStamina}");
+			SMonitor.Log($"Farmer health {instance.health}/{instance.maxHealth}, stamina {instance.stamina}/{instance.MaxStamina}");
 		}
 
         public static int GetStatValue(Farmer instance, string key, int defaultValue = -1)

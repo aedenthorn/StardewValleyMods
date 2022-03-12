@@ -1,18 +1,18 @@
 ﻿{
-  "Name": "Robin Work Hours",
+  "Name": "Advanced Cooking",
   "Author": "aedenthorn",
-  "Version": "0.1.4",
-  "Description": "Robin Work Hours.",
-  "UniqueID": "aedenthorn.RobinWorkHours",
-  "EntryDll": "RobinWorkHours.dll",
+  "Version": "0.1.0",
+  "Description": "Advanced Cooking.",
+  "UniqueID": "aedenthorn.AdvancedCooking",
+  "EntryDll": "AdvancedCooking.dll",
   "MinimumApiVersion": "3.13.0",
   "ModUpdater": {
     "Repository": "StardewValleyMods",
     "User": "aedenthorn",
     "Directory": "_releases",
-    "ModFolder": "RobinWorkHours"
+    "ModFolder": "AdvancedCooking"
   },
-  "UpdateKeys": [ "Nexus:11244" ],
+  "UpdateKeys": [ "Nexus:" ],
   "Dependencies": [
     {
       "UniqueID": "Platonymous.ModUpdater",

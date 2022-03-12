@@ -254,6 +254,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "StardewRPG", "StardewRPG\St
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RobinWorkHours", "RobinWorkHours\RobinWorkHours.csproj", "{9AD9ED7E-AE7C-4957-AEBE-87CA6185003D}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AdvancedCooking", "AdvancedCooking\AdvancedCooking.csproj", "{7F511034-4B99-45C4-AB89-AD55E8FDF254}"
+EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
 		_releases\_releases.projitems*{047040e0-3d07-46e5-852b-d1d45cd57bb8}*SharedItemsImports = 13
@@ -1242,6 +1244,14 @@ Global
 		{9AD9ED7E-AE7C-4957-AEBE-87CA6185003D}.Release|Any CPU.Build.0 = Release|Any CPU
 		{9AD9ED7E-AE7C-4957-AEBE-87CA6185003D}.Release|x86.ActiveCfg = Release|Any CPU
 		{9AD9ED7E-AE7C-4957-AEBE-87CA6185003D}.Release|x86.Build.0 = Release|Any CPU
+		{7F511034-4B99-45C4-AB89-AD55E8FDF254}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7F511034-4B99-45C4-AB89-AD55E8FDF254}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7F511034-4B99-45C4-AB89-AD55E8FDF254}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{7F511034-4B99-45C4-AB89-AD55E8FDF254}.Debug|x86.Build.0 = Debug|Any CPU
+		{7F511034-4B99-45C4-AB89-AD55E8FDF254}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7F511034-4B99-45C4-AB89-AD55E8FDF254}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7F511034-4B99-45C4-AB89-AD55E8FDF254}.Release|x86.ActiveCfg = Release|Any CPU
+		{7F511034-4B99-45C4-AB89-AD55E8FDF254}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

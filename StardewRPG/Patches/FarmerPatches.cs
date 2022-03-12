@@ -141,11 +141,12 @@ namespace StardewRPG
 				return;
 			SetStats(ref __instance);
 			
-			int mod = GetStatMod(GetStatValue(__instance, "con"));
+			int mod = Math.Max(0, GetStatMod(GetStatValue(__instance, "con")));
 			if (__instance.health < __instance.maxHealth)
 				__instance.health = Math.Min(__instance.maxHealth, __instance.health + Config.HealthRegen + mod * Config.ConHealthRegenBonus);
 			if (__instance.Stamina < __instance.MaxStamina)
 				__instance.Stamina = Math.Min(__instance.MaxStamina, __instance.Stamina + Config.StaminaRegen + mod * Config.ConStaminaRegenBonus);
+			return;
 		}
 	}
 }

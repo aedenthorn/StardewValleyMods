@@ -35,7 +35,7 @@ namespace RobinWorkHours
         }
         private static void GameLocation_isCollidingWithWarp_Postfix(GameLocation __instance, Character character, ref Warp __result)
         {
-            if (!Config.EnableMod || character is not NPC || !character.Name.Equals("Robin") || __instance is not BusStop || __result is null || !__result.TargetName.Equals("Farm"))
+            if (!Config.EnableMod || character is not NPC || !character.Name.Equals("Robin") || __instance is not BusStop || __result is null || !__result.TargetName.Equals(Game1.getFarm().Name))
                 return;
             isWarping = true;
             (character as NPC).clearSchedule();
