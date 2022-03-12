@@ -20,7 +20,17 @@ namespace AdvancedCooking
         public static ModConfig Config;
         public static ModEntry context;
         public static bool startedWalking;
-        private static Dictionary<string, int> currentCookables;
+        private static Dictionary<string, int> currentCookables; 
+        private static bool isCookingMenu;
+        private static ClickableTextureComponent cookButton;
+        private static ClickableTextureComponent fridgeRightButton;
+        private static ClickableTextureComponent fridgeLeftButton;
+        private static List<Chest> containers;
+        private static NetList<Item, NetRef<Item>> ingredients;
+        private static Item[] oldIngredients;
+        private static InventoryMenu ingredientMenu;
+        private static int fridgeIndex = 0;
+        private Harmony harmony;
 
         /// <summary>The mod entry point, called after the mod is first loaded.</summary>
         /// <param name="helper">Provides simplified APIs for writing mods.</param>
@@ -38,8 +48,9 @@ namespace AdvancedCooking
 
             helper.Events.GameLoop.GameLaunched += GameLoop_GameLaunched;
             helper.Events.GameLoop.SaveLoaded += GameLoop_SaveLoaded;
+            helper.Events.Input.ButtonPressed += Input_ButtonPressed;
 
-            Harmony harmony = new Harmony(ModManifest.UniqueID);
+            harmony = new Harmony(ModManifest.UniqueID);
 
             harmony.Patch(
                original: AccessTools.Constructor(typeof(CraftingPage), new Type[] { typeof(int), typeof(int), typeof(int), typeof(int), typeof(bool), typeof(bool), typeof(List<Chest>) }),
@@ -58,12 +69,26 @@ namespace AdvancedCooking
                postfix: new HarmonyMethod(typeof(ModEntry), nameof(ModEntry.Game1_drawDialogueBox_Postfix))
             );
 
-            ingredients.OnElementChanged += Ingredients_OnElementChanged;
+        }
+
+        private void Input_ButtonPressed(object sender, StardewModdingAPI.Events.ButtonPressedEventArgs e)
+        {
+            if (Config.EnableMod && Game1.activeClickableMenu is CraftingPage && AccessTools.FieldRefAccess<CraftingPage, bool>(Game1.activeClickableMenu as CraftingPage, "cooking"))
+            {
+                for(int i = 0; i < oldIngredients.Length; i++)
+                {
+                    if(ingredients[i] is null != oldIngredients is null || ingredients[i]?.Stack != oldIngredients[i]?.Stack || ingredients[i]?.ParentSheetIndex != oldIngredients[i]?.ParentSheetIndex)
+                        UpdateCurrentCookables();
+                }
+            }
         }
 
         private void GameLoop_SaveLoaded(object sender, StardewModdingAPI.Events.SaveLoadedEventArgs e)
         {
+            currentCookables = null;
             ingredients = new NetList<Item, NetRef<Item>>() { null, null, null, null, null, null, null, null, null, null, null };
+            oldIngredients = new Item[]{ null, null, null, null, null, null, null, null, null, null, null };
+            ingredients.OnElementChanged += Ingredients_OnElementChanged;
         }
 
         private void Ingredients_OnElementChanged(NetList<Item, NetRef<Item>> list, int index, Item oldValue, Item newValue)
@@ -73,6 +98,14 @@ namespace AdvancedCooking
 
         private void GameLoop_GameLaunched(object sender, StardewModdingAPI.Events.GameLaunchedEventArgs e)
         {
+            if (false && Helper.ModRegistry.IsLoaded("blueberry.LoveOfCooking"))
+            {
+                harmony.Patch(
+                   original: AccessTools.Method("LoveOfCooking.Objects.CookingMenu:DrawActualInventory"),
+                   postfix: new HarmonyMethod(typeof(ModEntry), nameof(CookingMenu_DrawActualInventory_Postfix))
+                );
+            }
+
             // get Generic Mod Config Menu's API (if it's installed)
             var configMenu = Helper.ModRegistry.GetApi<IGenericModConfigMenuApi>("spacechase0.GenericModConfigMenu");
             if (configMenu is null)
@@ -128,12 +161,50 @@ namespace AdvancedCooking
             );
             configMenu.AddBoolOption(
                 mod: ModManifest,
+                name: () => "Show Product Info",
+                getValue: () => Config.ShowProductInfo,
+                setValue: value => Config.ShowProductInfo = value
+            );
+            configMenu.AddBoolOption(
+                mod: ModManifest,
                 name: () => "Show Cook Tooltip",
                 getValue: () => Config.ShowCookTooltip,
                 setValue: value => Config.ShowCookTooltip = value
             );
+            configMenu.AddBoolOption(
+                mod: ModManifest,
+                name: () => "Show Products In Tooltip",
+                getValue: () => Config.ShowProductsInTooltip,
+                setValue: value => Config.ShowProductsInTooltip = value
+            );
+            configMenu.AddNumberOption(
+                mod: ModManifest,
+                name: () => "Height Offset",
+                getValue: () => Config.YOffset,
+                setValue: value => Config.YOffset = value
+            );
         }
 
+        private static void DrawCookButtonTooltip()
+        {
+            List<string> text = new List<string>();
+            if (Config.ShowProductsInTooltip)
+            {
+                var keys = currentCookables.Keys.ToArray();
+                for (int i = 0; i < keys.Length; i++)
+                {
+                    if (i > Config.MaxTypesInTooltip)
+                    {
+                        text.Add(string.Format(SHelper.Translation.Get("plus-x-more"), keys.Length - i));
+                        break;
+                    }
+                    text.Add(string.Format(SHelper.Translation.Get("x-of-y"), !SHelper.Input.IsDown(Config.CookAllModKey) ? 1 : currentCookables[keys[i]], keys[i]));
+                    if (!SHelper.Input.IsDown(Config.CookAllModKey))
+                        break;
+                }
+            }
+            IClickableMenu.drawHoverText(Game1.spriteBatch, string.Join("\n", text), Game1.smallFont, 0, 0, -1, SHelper.Translation.Get("cook"), -1, null, null, 0, -1, -1, -1, -1, 1f, null, null);
+        }
         private static void TryCookRecipe(CraftingPage cookingMenu, ref Item heldItem)
         {
             SMonitor.Log("Trying to cook recipe");
@@ -302,6 +373,7 @@ namespace AdvancedCooking
 
         private static void UpdateCurrentCookables()
         {
+            oldIngredients = ingredients.ToArray();
             Dictionary<string, int> dict = new Dictionary<string, int>();
             if (Game1.activeClickableMenu is not CraftingPage)
             {

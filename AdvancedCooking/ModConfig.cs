@@ -14,6 +14,9 @@ namespace AdvancedCooking
         public bool AllowUnknownRecipes { get; set; } = true;
         public bool LearnUnknownRecipes { get; set; } = true;
         public bool ShowCookTooltip { get; set; } = true;
+        public bool ShowProductsInTooltip { get; set; } = true;
+        public bool ShowProductInfo { get; set; } = true;
         public int MaxTypesInTooltip { get; set; } = 3;
+        public int YOffset { get; set; } = 532;
     }
 }
