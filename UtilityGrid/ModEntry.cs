@@ -114,7 +114,6 @@ namespace UtilityGrid
             );
             */
             pipeTexture = Helper.Content.Load<Texture2D>("assets/pipes.png");
-
         }
 
         public override object GetApi()

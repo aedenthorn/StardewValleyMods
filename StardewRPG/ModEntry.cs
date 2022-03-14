@@ -330,7 +330,7 @@ namespace StardewRPG
                     if (!Context.IsWorldReady)
                         return null;
 
-                    return new[] { GetStatValue(Game1.player, "str", Config.BaseStatValue) +"" };
+                    return new[] { GetStatValue(Game1.player, "con", Config.BaseStatValue) +"" };
                 });
                 cpapi.RegisterToken(ModManifest, "PlayerDex", () =>
                 {
@@ -338,7 +338,7 @@ namespace StardewRPG
                     if (!Context.IsWorldReady)
                         return null;
 
-                    return new[] { GetStatValue(Game1.player, "con", Config.BaseStatValue) +"" };
+                    return new[] { GetStatValue(Game1.player, "dex", Config.BaseStatValue) +"" };
                 });
                 cpapi.RegisterToken(ModManifest, "PlayerInt", () =>
                 {

@@ -27,7 +27,7 @@ namespace StardewRPG
                 return;
             var mult = GetStatMod(GetStatValue(Game1.player, "cha", Config.BaseStatValue)) * Config.ChaPriceBonus;
             //SMonitor.Log($"Modifying buy price of {__instance.Name}: {__result} by {-mult}x");
-            __result = (int)Math.Round(__result * (1 - mult));
+            __result = (int)Math.Round(__result * Math.Max(0, 1 - mult));
         }
         private static void Object_sellToStorePrice_Postfix(Object __instance, ref int __result)
         {

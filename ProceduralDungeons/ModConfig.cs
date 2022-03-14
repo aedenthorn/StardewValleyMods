@@ -6,13 +6,12 @@ using System.Threading.Tasks;
 
 namespace ProceduralDungeons
 {
-    class ModConfig
+    public class ModConfig
     {
-        public string ShaftCost { get; set; } = "390 200";
-        public string SkillReq { get; set; } = "Mining 6";
-        public int PercentDamage { get; set; } = 100;
-        public int PercentLevels { get; set; } = 100;
-        public bool PreventGoingToSkullCave { get; set; } = true;
-        public bool SkipConfirmOnShaftJump { get; set; } = false;
+        public bool EnableMod { get; set; } = true;
+        public int MapWidth { get; set; } = 100;
+        public int MapHeight { get; set; } = 100;
+        public int RoomSizeFactor { get; set; } = 10;
+        public int RoomAmountFactor { get; set; } = 50;
     }
 }
