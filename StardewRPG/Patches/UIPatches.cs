@@ -180,9 +180,10 @@ namespace StardewRPG
 			if (points > 0)
 			{
 				Utility.drawTextWithShadow(b, string.Format(SHelper.Translation.Get("x-points-left"), points), Game1.smallFont, new Vector2(x + statsX, y + 128 + 39), Color.Black, 1f, -1f, -1, -1, 1f, 3);
-				foreach (ClickableTextureComponent clickableTextureComponent in increaseButtons)
+				for (int i = 0; i < increaseButtons.Count; i++)
 				{
-					clickableTextureComponent.draw(b);
+					increaseButtons[i].bounds = new Rectangle(new Point(x + statsX + 134, y + skillStatsY + i * skillStatY + 17), new Point(64, 64));
+					increaseButtons[i].draw(b);
 				}
 			}
 
