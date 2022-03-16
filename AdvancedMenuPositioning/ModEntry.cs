@@ -22,11 +22,8 @@ namespace AdvancedMenuPositioning
         public static ModConfig Config;
         public static ModEntry context;
         private static Point lastMousePosition;
-        private static Point totalDelta = Point.Zero;
-        private static bool clickingDetached;
-        private static Item lastHeldItem;
-        private static Harmony harmony;
-        private static List<Type> menuTypes = new List<Type>();
+        private static IClickableMenu currentlyDragging;
+
         private static List<ClickableComponent> adjustedComponents = new List<ClickableComponent>();
         private static List<IClickableMenu> adjustedMenus = new List<IClickableMenu>();
         private static List<IClickableMenu> detachedMenus = new List<IClickableMenu>();
@@ -48,32 +45,6 @@ namespace AdvancedMenuPositioning
             helper.Events.Input.MouseWheelScrolled += Input_MouseWheelScrolled;
             helper.Events.Display.RenderedWorld += Display_RenderedWorld;
 
-            harmony = new Harmony(ModManifest.UniqueID);
-            harmony.Patch(
-                original: AccessTools.Method(typeof(InventoryMenu), nameof(InventoryMenu.leftClick)),
-                prefix: new HarmonyMethod(AccessTools.Method(typeof(ModEntry), nameof(ModEntry.InventoryMenu_leftClick_Prefix)))
-            );/*
-            harmony.Patch(
-                original: AccessTools.Method(typeof(ItemGrabMenu), nameof(ItemGrabMenu.receiveLeftClick)),
-                postfix: new HarmonyMethod(AccessTools.Method(typeof(ModEntry), nameof(ModEntry.ItemGrabMenu_Change_HeldItem)))
-            );
-            harmony.Patch(
-                original: AccessTools.Method(typeof(ItemGrabMenu), nameof(ItemGrabMenu.receiveRightClick)),
-                postfix: new HarmonyMethod(AccessTools.Method(typeof(ModEntry), nameof(ModEntry.ItemGrabMenu_Change_HeldItem)))
-            );
-            harmony.Patch(
-                original: AccessTools.Method(typeof(ItemGrabMenu), nameof(ItemGrabMenu.receiveKeyPress)),
-                postfix: new HarmonyMethod(AccessTools.Method(typeof(ModEntry), nameof(ModEntry.ItemGrabMenu_Change_HeldItem)))
-            );
-            harmony.Patch(
-                original: AccessTools.Method(typeof(ItemGrabMenu), nameof(ItemGrabMenu.receiveGamePadButton)),
-                postfix: new HarmonyMethod(AccessTools.Method(typeof(ModEntry), nameof(ModEntry.ItemGrabMenu_Change_HeldItem)))
-            );
-            harmony.Patch(
-                original: AccessTools.Method(typeof(ItemGrabMenu), nameof(ItemGrabMenu.DropHeldItem)),
-                postfix: new HarmonyMethod(AccessTools.Method(typeof(ModEntry), nameof(ModEntry.ItemGrabMenu_Change_HeldItem)))
-            );
-            */
         }
 
         private void Input_MouseWheelScrolled(object sender, StardewModdingAPI.Events.MouseWheelScrolledEventArgs e)
@@ -115,7 +86,6 @@ namespace AdvancedMenuPositioning
             }
             else if(detachedMenus.Count > 0)
             {
-                clickingDetached = true;
                 if (Helper.Input.IsDown(Config.CloseModKey) && e.Button == Config.CloseKey)
                 {
                     for (int i = 0; i < detachedMenus.Count; i++)
@@ -203,38 +173,56 @@ namespace AdvancedMenuPositioning
                         }
                     }
                 }
-                clickingDetached = false;
             }
         }
 
         private void GameLoop_UpdateTicking(object sender, StardewModdingAPI.Events.UpdateTickingEventArgs e)
         {
-            if(Game1.activeClickableMenu == null)
-                totalDelta = Point.Zero;
             if(Config.EnableMod && Helper.Input.IsDown(Config.MoveModKey) && (Helper.Input.IsDown(Config.MoveKey) || Helper.Input.IsSuppressed(Config.MoveKey)))
             {
-                if(Game1.activeClickableMenu != null && Game1.activeClickableMenu.isWithinBounds(Game1.getMouseX(), Game1.getMouseY()))
+                if(Game1.activeClickableMenu != null)
                 {
-                    AdjustMenu(Game1.activeClickableMenu, Game1.getMousePosition() - lastMousePosition, true);
-                    Helper.Input.Suppress(Config.MoveKey);
-                    if (Game1.activeClickableMenu is ItemGrabMenu && Helper.ModRegistry.IsLoaded("Pathoschild.ChestsAnywhere"))
+                    if (currentlyDragging == Game1.activeClickableMenu || Game1.activeClickableMenu.isWithinBounds(Game1.getMouseX(), Game1.getMouseY()))
                     {
-                        Game1.activeClickableMenu = Game1.activeClickableMenu.ShallowClone();
+                        currentlyDragging = Game1.activeClickableMenu;
+                        AdjustMenu(Game1.activeClickableMenu, Game1.getMousePosition() - lastMousePosition, true);
+                        Helper.Input.Suppress(Config.MoveKey);
+                        if (Game1.activeClickableMenu is ItemGrabMenu && Helper.ModRegistry.IsLoaded("Pathoschild.ChestsAnywhere"))
+                        {
+                            Game1.activeClickableMenu = Game1.activeClickableMenu.ShallowClone();
+                        }
+                        goto next;
                     }
                 }
-                else
+                foreach (var menu in Game1.onScreenMenus)
                 {
-                    foreach(var menu in detachedMenus)
+                    if (menu is null)
+                        continue;
+                    if (currentlyDragging == menu || menu.isWithinBounds(Game1.getMouseX(), Game1.getMouseY()))
                     {
-                        if (menu.isWithinBounds(Game1.getMouseX(), Game1.getMouseY()))
-                        {
-                            AdjustMenu(menu, Game1.getMousePosition() - lastMousePosition, true);
-                            Helper.Input.Suppress(Config.MoveKey);
-                            break;
-                        }
+                        currentlyDragging = menu;
+
+                        AdjustMenu(menu, Game1.getMousePosition() - lastMousePosition, true);
+                        Helper.Input.Suppress(Config.MoveKey);
+                        goto next;
+                    }
+                }
+                foreach (var menu in detachedMenus)
+                {
+                    if (menu is null)
+                        continue;
+                    if (currentlyDragging == menu || menu.isWithinBounds(Game1.getMouseX(), Game1.getMouseY()))
+                    {
+                        currentlyDragging = menu;
+
+                        AdjustMenu(menu, Game1.getMousePosition() - lastMousePosition, true);
+                        Helper.Input.Suppress(Config.MoveKey);
+                        goto next;
                     }
                 }
             }
+            currentlyDragging = null;
+        next:
             lastMousePosition = Game1.getMousePosition();
             foreach (var menu in detachedMenus)
             {

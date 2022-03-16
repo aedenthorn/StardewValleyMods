@@ -11,6 +11,7 @@ using StardewValley.Util;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using xTile.Dimensions;
 using Object = StardewValley.Object;
 
 namespace SelfServe
@@ -19,6 +20,43 @@ namespace SelfServe
     public partial class ModEntry
     {
 
+        private static bool IslandSouth_checkAction_Prefix(IslandSouth __instance, Location tileLocation)
+        {
+            if (!Config.EnableMod)
+                return true;
+            if (tileLocation.X == 14 && tileLocation.Y == 22)
+            {
+                Dictionary<ISalable, int[]> stock = new Dictionary<ISalable, int[]>();
+                Utility.AddStock(stock, new Object(Vector2.Zero, 873, int.MaxValue), 300, -1);
+                Utility.AddStock(stock, new Object(Vector2.Zero, 346, int.MaxValue), 250, -1);
+                Utility.AddStock(stock, new Object(Vector2.Zero, 303, int.MaxValue), 500, -1);
+                Utility.AddStock(stock, new Object(Vector2.Zero, 459, int.MaxValue), 400, -1);
+                Utility.AddStock(stock, new Object(Vector2.Zero, 612, int.MaxValue), 200, -1);
+                Object wine = new Object(Vector2.Zero, 348, int.MaxValue);
+                Object mango = new Object(834, 1, false, -1, 0);
+                wine.Price = mango.Price * 3;
+                wine.Name = mango.Name + " Wine";
+                wine.preserve.Value = new Object.PreserveType?(Object.PreserveType.Wine);
+                wine.preservedParentSheetIndex.Value = mango.ParentSheetIndex;
+                wine.Quality = 2;
+                Utility.AddStock(stock, wine, 2500, -1);
+                if (!Game1.player.cookingRecipes.ContainsKey("Tropical Curry"))
+                {
+                    Utility.AddStock(stock, new Object(907, 1, true, -1, 0), 1000, -1);
+                }
+                string name = null;
+                foreach (var c in __instance.characters)
+                {
+                    if (c.Name == "Gus")
+                    {
+                        name = "Gus";
+                        break;
+                    }
+                }
+                Game1.activeClickableMenu = new ShopMenu(stock, 0, name, null, null, "ResortBar");
+            }
+            return true;
+        }
         private static bool GameLocation_performAction_Prefix(GameLocation __instance, string action, ref bool __result)
         {
             if (!Config.EnableMod)
@@ -240,7 +278,7 @@ namespace SelfServe
                             break;
                         }
                     }
-                    Game1.activeClickableMenu = new ShopMenu((Dictionary<ISalable, int[]>)AccessTools.Method(typeof(GameLocation), "sandyShopStock").Invoke(__instance, new object[0]), 0, name, (Func<ISalable, Farmer, int, bool>)Delegate.CreateDelegate(typeof(Func<ISalable, Farmer, int, bool>), AccessTools.Method(typeof(GameLocation), "onSandyShopPurchase")), null, null);
+                    Game1.activeClickableMenu = new ShopMenu((Dictionary<ISalable, int[]>)AccessTools.Method(typeof(GameLocation), "sandyShopStock").Invoke(__instance, new object[] { }), 0, name, (Func<ISalable, Farmer, int, bool>)Delegate.CreateDelegate(typeof(Func<ISalable, Farmer, int, bool>), __instance, AccessTools.Method(typeof(GameLocation), "onSandyShopPurchase")), null, null);
                     __result = true;
                     return false;
 

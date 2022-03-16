@@ -1,18 +1,18 @@
 ﻿{
-  "Name": "Self Serve",
+  "Name": "Custom Toolbar",
   "Author": "aedenthorn",
-  "Version": "0.1.2",
-  "Description": "Self Serve.",
-  "UniqueID": "aedenthorn.SelfServe",
-  "EntryDll": "SelfServe.dll",
+  "Version": "0.1.1",
+  "Description": "Custom Toolbar.",
+  "UniqueID": "aedenthorn.CustomToolbar",
+  "EntryDll": "CustomToolbar.dll",
   "MinimumApiVersion": "3.13.0",
   "ModUpdater": {
     "Repository": "StardewValleyMods",
     "User": "aedenthorn",
     "Directory": "_releases",
-    "ModFolder": "SelfServe"
+    "ModFolder": "CustomToolbar"
   },
-  "UpdateKeys": [ "Nexus:11313" ],
+  "UpdateKeys": [ "Nexus:11322" ],
   "Dependencies": [
     {
       "UniqueID": "Platonymous.ModUpdater",

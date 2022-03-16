@@ -2,6 +2,7 @@
 using Netcode;
 using StardewModdingAPI;
 using StardewValley;
+using StardewValley.Locations;
 using StardewValley.Menus;
 using StardewValley.Objects;
 using System;
@@ -39,6 +40,10 @@ namespace SelfServe
             harmony.Patch(
                original: AccessTools.Method(typeof(GameLocation), nameof(GameLocation.performAction)),
                prefix: new HarmonyMethod(typeof(ModEntry), nameof(ModEntry.GameLocation_performAction_Prefix))
+            );
+            harmony.Patch(
+               original: AccessTools.Method(typeof(IslandSouth), nameof(IslandSouth.checkAction)),
+               prefix: new HarmonyMethod(typeof(ModEntry), nameof(ModEntry.IslandSouth_checkAction_Prefix))
             );
             harmony.Patch(
                original: AccessTools.Method(typeof(GameLocation), nameof(GameLocation.openShopMenu)),
