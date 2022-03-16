@@ -1,4 +1,4 @@
-﻿using Harmony;
+﻿using HarmonyLib;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using StardewModdingAPI;
@@ -39,7 +39,7 @@ namespace MoveableMailbox
             Helper.Events.GameLoop.SaveLoaded += GameLoop_SaveLoaded;
             Helper.Events.GameLoop.SaveLoaded += GameLoop_SaveLoaded;
 
-            var harmony = HarmonyInstance.Create(ModManifest.UniqueID);
+            var harmony = new Harmony(ModManifest.UniqueID);
 
             harmony.Patch(
                original: AccessTools.Method(typeof(Game1), nameof(Game1.loadForNewGame)),
@@ -58,7 +58,7 @@ namespace MoveableMailbox
 
             harmony.Patch(
                original: AccessTools.Method(typeof(Object), nameof(Object.performRemoveAction)),
-               prefix: new HarmonyMethod(typeof(ModEntry), nameof(performRemoveAction_Prefix)) { prioritiy = Priority.First }
+               prefix: new HarmonyMethod(typeof(ModEntry), nameof(performRemoveAction_Prefix))
             );
 
         }
@@ -142,7 +142,7 @@ namespace MoveableMailbox
 
         private static void placementAction_Postfix(Object __instance, bool __result, int x, int y, Farmer who)
         {
-            if (!__result || !__instance.Name.EndsWith("Mailbox") || who == null || !(who.currentLocation is Farm))
+            if (!__result || !__instance.Name.EndsWith("Mailbox") || who == null)
                 return;
 
             (who.currentLocation as Farm).mapMainMailboxPosition = new Point(x / 64, y / 64);
@@ -152,7 +152,7 @@ namespace MoveableMailbox
         private static bool checkForAction_Prefix(Object __instance, ref bool __result, Farmer who, bool justCheckingForActivity)
         {
 
-            if (__instance.Name.EndsWith("Mailbox") && who.currentLocation is Farm && !justCheckingForActivity)
+            if (__instance.Name.EndsWith("Mailbox") && !justCheckingForActivity)
             {
                 PMonitor.Log("Clicked on mailbox");
                 Point mailbox_position = Game1.player.getMailboxPosition();
