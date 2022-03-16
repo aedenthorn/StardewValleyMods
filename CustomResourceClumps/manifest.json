@@ -1,11 +1,11 @@
 ﻿{
   "Name": "Custom Resource Clumps",
   "Author": "aedenthorn",
-  "Version": "0.4.1",
+  "Version": "0.5.0",
   "Description": "Spawns custom resource clumps in mines.",
   "UniqueID": "aedenthorn.CustomResourceClumps",
   "EntryDll": "CustomResourceClumps.dll",
-  "MinimumApiVersion": "3.8.0",
+  "MinimumApiVersion": "3.13.0",
   "UpdateKeys": ["Nexus:6669"],
   "ModUpdater": {
     "Repository": "StardewValleyMods",

@@ -1,4 +1,4 @@
-﻿using Harmony;
+﻿using HarmonyLib;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using StardewModdingAPI;
@@ -50,7 +50,7 @@ namespace CustomResourceClumps
             Config = Helper.ReadConfig<ModConfig>();
             SMonitor = Monitor;
             SHelper = Helper;
-            var harmony = HarmonyInstance.Create(ModManifest.UniqueID);
+            var harmony = new Harmony(ModManifest.UniqueID);
 
             harmony.Patch(
                original: AccessTools.Method(typeof(MineShaft), "populateLevel"),
@@ -209,7 +209,7 @@ namespace CustomResourceClumps
         }
         private static bool ResourceClump_draw_prefix(ResourceClump __instance, SpriteBatch spriteBatch, float ___shakeTimer)
         {
-            int indexOfClump = __instance.parentSheetIndex;
+            int indexOfClump = __instance.parentSheetIndex.Value;
             if (indexOfClump >= 0)
             {
                 return true;
@@ -229,7 +229,7 @@ namespace CustomResourceClumps
 
         private static bool ResourceClump_performToolAction_prefix(ref ResourceClump __instance, Tool t, Vector2 tileLocation, GameLocation location, ref bool __result)
         {
-            int indexOfClump = __instance.parentSheetIndex;
+            int indexOfClump = __instance.parentSheetIndex.Value;
             if (indexOfClump >= 0)
             {
                 return true;
@@ -249,7 +249,7 @@ namespace CustomResourceClumps
                 return false;
             } 
             SMonitor.Log($"tooltype is correct");
-            if (t.upgradeLevel < clump.toolMinLevel)
+            if (t.UpgradeLevel < clump.toolMinLevel)
             {
                 foreach (string sound in clump.failSounds)
                     location.playSound(sound, NetAudio.SoundContext.Default);
@@ -260,11 +260,11 @@ namespace CustomResourceClumps
                 return false;
             }
 
-            float power = Math.Max(1f, (float)(t.upgradeLevel + 1) * 0.75f);
+            float power = Math.Max(1f, (float)(t.UpgradeLevel + 1) * 0.75f);
             __instance.health.Value -= power;
-            Game1.createRadialDebris(Game1.currentLocation, clump.debrisType, (int)tileLocation.X + Game1.random.Next(__instance.width / 2 + 1), (int)tileLocation.Y + Game1.random.Next(__instance.height / 2 + 1), Game1.random.Next(4, 9), false, -1, false, -1);
+            Game1.createRadialDebris(Game1.currentLocation, clump.debrisType, (int)tileLocation.X + Game1.random.Next(__instance.width.Value / 2 + 1), (int)tileLocation.Y + Game1.random.Next(__instance.height.Value / 2 + 1), Game1.random.Next(4, 9), false, -1, false, -1);
 
-            if (__instance.health > 0f)
+            if (__instance.health.Value > 0f)
             {
                 foreach (string sound in clump.hitSounds)
                     location.playSound(sound, NetAudio.SoundContext.Default);
@@ -304,7 +304,7 @@ namespace CustomResourceClumps
                         }
                     }
                     int amount = addedItems + Game1.random.Next(item.minAmount, Math.Max(item.minAmount + 1, item.maxAmount + 1)) + ((Game1.random.NextDouble() < (double)((float)who.LuckLevel / 100f)) ? item.luckyAmount : 0);
-                    Game1.createMultipleObjectDebris(itemId, (int)tileLocation.X, (int)tileLocation.Y, amount, who.uniqueMultiplayerID, location);
+                    Game1.createMultipleObjectDebris(itemId, (int)tileLocation.X, (int)tileLocation.Y, amount, who.UniqueMultiplayerID, location);
                 }
             }
             if (expTypes.ContainsKey(clump.expType))

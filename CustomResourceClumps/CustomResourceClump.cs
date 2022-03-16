@@ -6,6 +6,7 @@ namespace CustomResourceClumps
     public class CustomResourceClump
     {
         public List<DropItem> dropItems = new List<DropItem>();
+        public string id;
         public string clumpDesc;
         public int debrisType;
         public string[] hitSounds;
