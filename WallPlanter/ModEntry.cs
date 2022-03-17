@@ -42,9 +42,31 @@ namespace WallPlanter
             SHelper = helper;
 
             helper.Events.GameLoop.GameLaunched += GameLoop_GameLaunched;
+            helper.Events.GameLoop.SaveLoaded += GameLoop_SaveLoaded;
             helper.Events.GameLoop.UpdateTicking += GameLoop_UpdateTicking;
             var harmony = new Harmony(ModManifest.UniqueID);
             harmony.PatchAll();
+        }
+
+        private void GameLoop_SaveLoaded(object sender, SaveLoadedEventArgs e)
+        {
+            try
+            {
+                wallPotTexture = Game1.content.Load<Texture2D>("aedenthorn.WallPlanter/wall_pot");
+            }
+            catch
+            {
+                wallPotTexture = Helper.Content.Load<Texture2D>("assets/wall_pot.png");
+            }
+
+            try
+            {
+                wallPotTextureWet = Game1.content.Load<Texture2D>("aedenthorn.WallPlanter/wall_pot_wet");
+            }
+            catch
+            {
+                wallPotTextureWet = Helper.Content.Load<Texture2D>("assets/wall_pot_wet.png");
+            }
         }
 
         private void GameLoop_UpdateTicking(object sender, UpdateTickingEventArgs e)
@@ -71,8 +93,7 @@ namespace WallPlanter
 
         private void GameLoop_GameLaunched(object sender, GameLaunchedEventArgs e)
         {
-            wallPotTexture = Helper.Content.Load<Texture2D>("assets/wall_pot.png");
-            wallPotTextureWet = Helper.Content.Load<Texture2D>("assets/wall_pot_wet.png");
+
             // get Generic Mod Config Menu's API (if it's installed)
             var configMenu = Helper.ModRegistry.GetApi<IGenericModConfigMenuApi>("spacechase0.GenericModConfigMenu");
             if (configMenu is null)

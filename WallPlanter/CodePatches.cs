@@ -20,6 +20,7 @@ namespace WallPlanter
         public static bool drawingWallPot;
         public static int drawingWallPotOffset;
         public static int drawingWallPotInnerOffset;
+
         [HarmonyPatch(typeof(Utility), nameof(Utility.playerCanPlaceItemHere))]
         public class playerCanPlaceItemHere_Patch
         {
@@ -128,7 +129,8 @@ namespace WallPlanter
         {
             if (drawingWallPot)
             {
-                position -= new Vector2(0, drawingWallPotOffset + drawingWallPotInnerOffset);
+                position -= new Vector2(0, drawingWallPotOffset + drawingWallPotInnerOffset - 24);
+                sourceRectangle = new Rectangle(sourceRectangle.Value.Location, new Point(13, 5));
             }
             spriteBatch.Draw(texture, position, sourceRectangle, color, rotation, origin, scale, effects, layerDepth);
         }
