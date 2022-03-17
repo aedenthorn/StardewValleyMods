@@ -1,0 +1,22 @@
+﻿{
+  "Name": "Wall Planter",
+  "Author": "aedenthorn",
+  "Version": "0.1.0",
+  "Description": "Wall Planter.",
+  "UniqueID": "aedenthorn.WallPlanter",
+  "EntryDll": "WallPlanter.dll",
+  "MinimumApiVersion": "3.13.0",
+  "ModUpdater": {
+    "Repository": "StardewValleyMods",
+    "User": "aedenthorn",
+    "Directory": "_releases",
+    "ModFolder": "WallPlanter"
+  },
+  "UpdateKeys": [ "Nexus:" ],
+  "Dependencies": [
+    {
+      "UniqueID": "Platonymous.ModUpdater",
+      "IsRequired": false
+    }
+  ]
+}

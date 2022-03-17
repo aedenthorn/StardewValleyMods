@@ -79,7 +79,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Murdercrows", "Murdercrows\
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CustomSpousePatio", "CustomSpousePatio\CustomSpousePatio.csproj", "{C6719EE7-0B8B-4C05-A6D5-BA94DAA8C032}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CustomResourceClumps", "CustomResourceClumps\CustomResourceClumps.csproj", "{5BE0FDBC-2CCF-406D-B690-B15F15302438}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CustomResourceClumps", "CustomResourceClumps\CustomResourceClumps.csproj", "{5BE0FDBC-2CCF-406D-B690-B15F15302438}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GemIsles", "GemIsles\GemIsles.csproj", "{C1507CF8-507E-475E-8387-9E1E5D148BB1}"
 EndProject
@@ -265,6 +265,10 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CustomToolbar", "CustomToolbar\CustomToolbar.csproj", "{8AD9149E-CA85-4C62-B549-6CA594FE5AA2}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Email", "Email\Email.csproj", "{9C00F8E7-2094-454F-8F95-955E9EFBDA3C}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CustomSigns", "CustomSigns\CustomSigns.csproj", "{B370CE30-5831-487F-8B20-1343161705E5}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WallPlanter", "WallPlanter\WallPlanter.csproj", "{2B4DD4DB-22E9-4448-87AD-8A1384FF4CF4}"
 EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
@@ -1301,6 +1305,22 @@ Global
 		{9C00F8E7-2094-454F-8F95-955E9EFBDA3C}.Release|Any CPU.Build.0 = Release|Any CPU
 		{9C00F8E7-2094-454F-8F95-955E9EFBDA3C}.Release|x86.ActiveCfg = Release|Any CPU
 		{9C00F8E7-2094-454F-8F95-955E9EFBDA3C}.Release|x86.Build.0 = Release|Any CPU
+		{B370CE30-5831-487F-8B20-1343161705E5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B370CE30-5831-487F-8B20-1343161705E5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B370CE30-5831-487F-8B20-1343161705E5}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{B370CE30-5831-487F-8B20-1343161705E5}.Debug|x86.Build.0 = Debug|Any CPU
+		{B370CE30-5831-487F-8B20-1343161705E5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B370CE30-5831-487F-8B20-1343161705E5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B370CE30-5831-487F-8B20-1343161705E5}.Release|x86.ActiveCfg = Release|Any CPU
+		{B370CE30-5831-487F-8B20-1343161705E5}.Release|x86.Build.0 = Release|Any CPU
+		{2B4DD4DB-22E9-4448-87AD-8A1384FF4CF4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2B4DD4DB-22E9-4448-87AD-8A1384FF4CF4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2B4DD4DB-22E9-4448-87AD-8A1384FF4CF4}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{2B4DD4DB-22E9-4448-87AD-8A1384FF4CF4}.Debug|x86.Build.0 = Debug|Any CPU
+		{2B4DD4DB-22E9-4448-87AD-8A1384FF4CF4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2B4DD4DB-22E9-4448-87AD-8A1384FF4CF4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2B4DD4DB-22E9-4448-87AD-8A1384FF4CF4}.Release|x86.ActiveCfg = Release|Any CPU
+		{2B4DD4DB-22E9-4448-87AD-8A1384FF4CF4}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
