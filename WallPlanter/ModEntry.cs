@@ -1,18 +1,10 @@
-﻿using Force.DeepCloner;
-using HarmonyLib;
-using Microsoft.Xna.Framework;
+﻿using HarmonyLib;
 using Microsoft.Xna.Framework.Graphics;
-using Microsoft.Xna.Framework.Input;
 using StardewModdingAPI;
 using StardewModdingAPI.Events;
 using StardewValley;
 using StardewValley.Locations;
-using StardewValley.Menus;
 using StardewValley.Objects;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using Rectangle = Microsoft.Xna.Framework.Rectangle;
 using Object = StardewValley.Object;
 
 namespace WallPlanter
@@ -26,7 +18,6 @@ namespace WallPlanter
         public static ModConfig Config;
         public static ModEntry context;
 
-        private static List<string> loadedContentPacks = new List<string>();
         private static Texture2D wallPotTexture;
         private static Texture2D wallPotTextureWet;
 
