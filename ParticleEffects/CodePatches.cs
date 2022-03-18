@@ -15,6 +15,16 @@ namespace ParticleEffects
         {
             if (!Config.EnableMod)
                 return;
+            if (farmerDict.ContainsKey(__instance.UniqueMultiplayerID))
+            {
+                foreach(var effect in farmerDict[__instance.UniqueMultiplayerID])
+                {
+                    if (effectDict.ContainsKey(effect))
+                    {
+                        ShowFarmerParticleEffect(b, __instance, effect, effectDict[effect]);
+                    }
+                }
+            }
             foreach(var kvp in effectDict)
             {
                 switch (kvp.Value.type.ToLower())
@@ -56,7 +66,7 @@ namespace ParticleEffects
         {
             if (!Config.EnableMod)
                 return;
-            foreach(var kvp in effectDict)
+            foreach (var kvp in effectDict)
             {
                 if(kvp.Value.type.ToLower() == "object" && kvp.Value.name == __instance.Name)
                 {
@@ -68,9 +78,19 @@ namespace ParticleEffects
         {
             if (!Config.EnableMod)
                 return;
-            foreach(var kvp in effectDict)
+            if (NPCDict.ContainsKey(__instance.Name))
             {
-                if(kvp.Value.type.ToLower() == "npc" && kvp.Value.name == __instance.Name)
+                foreach (var effect in NPCDict[__instance.Name])
+                {
+                    if (effectDict.ContainsKey(effect))
+                    {
+                        ShowNPCParticleEffect(b, __instance, effect, effectDict[effect]);
+                    }
+                }
+            }
+            foreach (var kvp in effectDict)
+            {
+                if (kvp.Value.type.ToLower() == "npc" && kvp.Value.name == __instance.Name)
                 {
                     ShowNPCParticleEffect(b, __instance, kvp.Key, kvp.Value);
                 }

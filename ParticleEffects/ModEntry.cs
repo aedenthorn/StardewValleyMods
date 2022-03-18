@@ -1,4 +1,5 @@
 ﻿using HarmonyLib;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using StardewModdingAPI;
 using StardewValley;
@@ -22,6 +23,9 @@ namespace ParticleEffects
         public static Dictionary<string, EntityParticleData> npcEffectDict = new Dictionary<string, EntityParticleData>();
         public static Dictionary<string, EntityParticleData> locationEffectDict = new Dictionary<string, EntityParticleData>();
         public static Dictionary<string, EntityParticleData> objectEffectDict = new Dictionary<string, EntityParticleData>();
+        public static Dictionary<string, List<string>> NPCDict = new Dictionary<string, List<string>>();
+        public static Dictionary<long, List<string>> farmerDict = new Dictionary<long, List<string>>();
+        public static Dictionary<string, Dictionary<Point, List<string>>> locationDict = new Dictionary<string, Dictionary<Point, List<string>>>();
 
         /// <summary>The mod entry point, called after the mod is first loaded.</summary>
         /// <param name="helper">Provides simplified APIs for writing mods.</param>
@@ -55,6 +59,10 @@ namespace ParticleEffects
                postfix: new HarmonyMethod(typeof(ModEntry), nameof(ModEntry.NPC_draw_postfix))
             );
         }
+        public override object GetApi()
+        {
+            return new ParticleEffectsAPI();
+        }
 
         private void GameLoop_TimeChanged(object sender, StardewModdingAPI.Events.TimeChangedEventArgs e)
         {
@@ -75,6 +83,22 @@ namespace ParticleEffects
         {
             if (!Config.EnableMod)
                 return;
+            if (locationDict.ContainsKey(Game1.currentLocation.Name))
+            {
+                foreach (var kvp in locationDict[Game1.currentLocation.Name])
+                {
+                    foreach(var effect in kvp.Value)
+                    {
+                        if (effectDict.ContainsKey(effect))
+                        {
+                            ParticleEffectData ped = effectDict[effect];
+                            ped.fieldOffsetX = kvp.Key.X;
+                            ped.fieldOffsetY = kvp.Key.Y;
+                            ShowLocationParticleEffect(e.SpriteBatch, Game1.currentLocation, effect, ped);
+                        }
+                    }
+                }
+            }
             foreach (var key in effectDict.Keys)
             {
                 var ped = effectDict[key];
