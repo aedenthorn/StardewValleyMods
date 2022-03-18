@@ -35,6 +35,16 @@ namespace MobilePhone
             }
             return true;
         }
+        internal static bool Farmer_addItemToInventory_prefix(Item item, ref Item __result)
+        {
+            if (ModEntry.isReminiscing)
+            {
+                Monitor.Log($"Reminiscing, will not add item {item.Name}");
+                __result = null;
+                return false;
+            }
+            return true;
+        }
         internal static bool Farmer_changeFriendship_prefix(int amount, NPC n)
         {
             if (ModEntry.isReminiscing)

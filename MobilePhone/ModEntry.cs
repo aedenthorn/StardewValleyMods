@@ -147,6 +147,10 @@ namespace MobilePhone
                 prefix: new HarmonyMethod(typeof(PhonePatches), nameof(PhonePatches.Event_endBehaviors_prefix))
             );
             harmony.Patch(
+                original: AccessTools.Method(typeof(Farmer), nameof(Farmer.addItemToInventory), new Type[] {typeof(Item), typeof(List<Item>) }),
+                prefix: new HarmonyMethod(typeof(PhonePatches), nameof(PhonePatches.Farmer_addItemToInventory_prefix))
+            );
+            harmony.Patch(
                 original: AccessTools.Method(typeof(Farmer), nameof(Farmer.changeFriendship)),
                 prefix: new HarmonyMethod(typeof(PhonePatches), nameof(PhonePatches.Farmer_changeFriendship_prefix))
             );
