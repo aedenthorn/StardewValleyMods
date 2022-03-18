@@ -55,17 +55,18 @@ namespace ParticleEffects
             ShowParticleEffect(b, particleList, ped, instance.getBoundingBox(new Vector2(x, y)).Center.ToVector2() + new Vector2(ped.fieldOffsetX, ped.fieldOffsetY), Math.Max(0f, ((y + 1) * 64 - 24) / 10000f) + x * 1E-05f);
             objectEffectDict[oKey] = entityParticleData;
         }
-        private static void ShowLocationParticleEffect(SpriteBatch b, GameLocation instance, string key, ParticleEffectData ped)
+        private static void ShowLocationParticleEffect(SpriteBatch b, GameLocation instance, ParticleEffectData ped)
         {
             if (!locationEffectDict.TryGetValue(instance.Name, out EntityParticleData entityParticleData))
             {
                 entityParticleData = new EntityParticleData();
                 locationEffectDict[instance.Name] = entityParticleData;
             }
-            if (!entityParticleData.particleDict.TryGetValue(key, out var particleList))
+            List<ParticleData> particleList;
+            if (!entityParticleData.particleDict.TryGetValue(ped.key, out particleList))
             {
                 particleList = new List<ParticleData>();
-                locationEffectDict[instance.Name].particleDict[key] = particleList;
+                locationEffectDict[instance.Name].particleDict[ped.key] = particleList;
             }
             ShowParticleEffect(b, particleList, ped, new Vector2(ped.fieldOffsetX, ped.fieldOffsetY), 1f);
             locationEffectDict[instance.Name] = entityParticleData;
@@ -211,6 +212,7 @@ namespace ParticleEffects
             effectDict = Game1.content.Load<Dictionary<string, ParticleEffectData>>(dictPath);
             foreach (var key in effectDict.Keys)
             {
+                effectDict[key].key = key;
                 effectDict[key].spriteSheet = Game1.content.Load<Texture2D>(effectDict[key].spriteSheetPath);
             }
         }

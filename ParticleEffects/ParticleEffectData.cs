@@ -5,6 +5,7 @@ namespace ParticleEffects
 {
     public class ParticleEffectData
     {
+        public string key;
         public string type;
         public string name;
         public string movementType = "none";

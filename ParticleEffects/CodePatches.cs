@@ -1,9 +1,7 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using StardewValley;
-using System;
 using System.Collections.Generic;
-using System.Linq;
 using Object = StardewValley.Object;
 
 namespace ParticleEffects
@@ -54,10 +52,6 @@ namespace ParticleEffects
                             ShowFarmerParticleEffect(b, __instance, kvp.Key, kvp.Value);
                         else if (__instance.rightRing.Value != null && __instance.rightRing.Value.Name == kvp.Value.name)
                             ShowFarmerParticleEffect(b, __instance, kvp.Key, kvp.Value);
-                        break;
-                    default:
-                        if(farmerEffectDict.ContainsKey(__instance.UniqueMultiplayerID))
-                            farmerEffectDict[__instance.UniqueMultiplayerID].particleDict.Remove(kvp.Key);
                         break;
                 }
             }

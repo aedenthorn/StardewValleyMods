@@ -4,14 +4,14 @@ namespace ObjectTriggers
 {
     public class ObjectTriggerInstance
     {
-        public ObjectTriggerInstance(string triggerKey, Vector2 tile)
+        public ObjectTriggerInstance(string key, Vector2 tile)
         {
-            TriggerKey = triggerKey;
-            Tile = tile;
+            triggerKey = key;
+            tilePosition = tile;
         }
 
-        public string TriggerKey { get; }
-        public Vector2 Tile { get; }
-        public int elapsed { get; set; }
+        public string triggerKey;
+        public Vector2 tilePosition;
+        public int elapsed;
     }
 }

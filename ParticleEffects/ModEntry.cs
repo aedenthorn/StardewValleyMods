@@ -25,7 +25,7 @@ namespace ParticleEffects
         public static Dictionary<string, EntityParticleData> objectEffectDict = new Dictionary<string, EntityParticleData>();
         public static Dictionary<string, List<string>> NPCDict = new Dictionary<string, List<string>>();
         public static Dictionary<long, List<string>> farmerDict = new Dictionary<long, List<string>>();
-        public static Dictionary<string, Dictionary<Point, List<string>>> locationDict = new Dictionary<string, Dictionary<Point, List<string>>>();
+        public static Dictionary<string, Dictionary<Point, List<ParticleEffectData>>> locationDict = new Dictionary<string, Dictionary<Point, List<ParticleEffectData>>>();
 
         /// <summary>The mod entry point, called after the mod is first loaded.</summary>
         /// <param name="helper">Provides simplified APIs for writing mods.</param>
@@ -59,6 +59,34 @@ namespace ParticleEffects
                postfix: new HarmonyMethod(typeof(ModEntry), nameof(ModEntry.NPC_draw_postfix))
             );
         }
+
+        private void Display_RenderedWorld(object sender, StardewModdingAPI.Events.RenderedWorldEventArgs e)
+        {
+            if (!Config.EnableMod)
+                return;
+            if (locationDict.TryGetValue(Game1.currentLocation.Name, out Dictionary<Point, List<ParticleEffectData>> dict))
+            {
+                foreach (var kvp in dict)
+                {
+                    foreach (var effect in kvp.Value)
+                    {
+                        ShowLocationParticleEffect(e.SpriteBatch, Game1.currentLocation, effect);
+                    }
+                }
+            }
+            foreach (var key in effectDict.Keys)
+            {
+                var ped = effectDict[key];
+                switch (ped.type.ToLower())
+                {
+                    case "location":
+                        if (Game1.currentLocation.Name == ped.name)
+                            ShowLocationParticleEffect(e.SpriteBatch, Game1.currentLocation, ped);
+                        break;
+                }
+            }
+        }
+
         public override object GetApi()
         {
             return new ParticleEffectsAPI();
@@ -77,43 +105,6 @@ namespace ParticleEffects
         private void GameLoop_SaveLoaded(object sender, StardewModdingAPI.Events.SaveLoadedEventArgs e)
         {
             LoadEffects();
-        }
-
-        private void Display_RenderedWorld(object sender, StardewModdingAPI.Events.RenderedWorldEventArgs e)
-        {
-            if (!Config.EnableMod)
-                return;
-            if (locationDict.ContainsKey(Game1.currentLocation.Name))
-            {
-                foreach (var kvp in locationDict[Game1.currentLocation.Name])
-                {
-                    foreach(var effect in kvp.Value)
-                    {
-                        if (effectDict.ContainsKey(effect))
-                        {
-                            ParticleEffectData ped = effectDict[effect];
-                            ped.fieldOffsetX = kvp.Key.X;
-                            ped.fieldOffsetY = kvp.Key.Y;
-                            ShowLocationParticleEffect(e.SpriteBatch, Game1.currentLocation, effect, ped);
-                        }
-                    }
-                }
-            }
-            foreach (var key in effectDict.Keys)
-            {
-                var ped = effectDict[key];
-                switch (ped.type.ToLower())
-                {
-                    case "location":
-                        if (Game1.currentLocation.Name == ped.name)
-                            ShowLocationParticleEffect(e.SpriteBatch, Game1.currentLocation, key, ped);
-                        break;
-                    default:
-                        if (locationEffectDict.ContainsKey(Game1.currentLocation.Name))
-                            locationEffectDict[Game1.currentLocation.Name].particleDict.Remove(key);
-                        break;
-                }
-            }
         }
 
 

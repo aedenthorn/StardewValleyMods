@@ -9,36 +9,37 @@ namespace ObjectTriggers
 {
     public partial class ModEntry {
 
-        private void CheckTrigger(Farmer farmer, string triggerKey, ObjectTriggerData data)
+        private void CheckTrigger(object tripper, GameLocation location, Vector2 tripperTile, string triggerKey)
         {
-            foreach (var kvp in farmer.currentLocation.objects.Pairs)
+            foreach (var kvp in location.objects.Pairs)
             {
-                if (kvp.Value.Name == data.objectID)
+                if (kvp.Value.Name == objectTriggerDataDict[triggerKey].objectID)
                 {
-                    CheckObjectTrigger(farmer, triggerKey, data, kvp.Key, kvp.Value);
+                    if (CheckObjectTrigger(location, tripperTile, triggerKey, kvp.Key))
+                        TripTrigger(tripper, triggerKey, kvp.Key, kvp.Value);
                 }
             }
-
         }
 
-        private void CheckObjectTrigger(Farmer farmer, string triggerKey, ObjectTriggerData data, Vector2 tile, Object obj)
+        private bool CheckObjectTrigger(GameLocation location, Vector2 tripperTile, string triggerKey, Vector2 objectTile)
         {
-            switch (data.triggerType)
+            if (!location.objects.ContainsKey(objectTile))
+                return false;
+            switch (objectTriggerDataDict[triggerKey].triggerType)
             {
                 case "range":
-                    if (Vector2.Distance(farmer.Position, tile * 64) < data.radius)
+                    if (Vector2.Distance(tripperTile * 64, objectTile * 64) < objectTriggerDataDict[triggerKey].radius)
                     {
-                        TripTrigger(farmer, triggerKey, data, tile, obj);
+                        return true;
                     }
-                    else
-                        ResetTrigger(farmer, triggerKey, data, tile, obj);
                     break;
             }
+            return false;
         }
 
-        private void ResetTrigger(object tripper, string triggerKey, ObjectTriggerData data, Vector2 tile, Object obj)
+        private void ResetTrigger(object tripper, Vector2 tile, string triggerKey)
         {
-            switch (data.tripperType)
+            switch (objectTriggerDataDict[triggerKey].tripperType)
             {
                 case "farmer":
                     var id = (tripper as Farmer).UniqueMultiplayerID;
@@ -46,15 +47,19 @@ namespace ObjectTriggers
                     {
                         for(int i = 0; i < farmerTrippingDict[id].Count; i++)
                         {
-                            if (farmerTrippingDict[id][i].TriggerKey == triggerKey && farmerTrippingDict[id][i].Tile == tile)
+                            if (farmerTrippingDict[id][i].triggerKey == triggerKey && farmerTrippingDict[id][i].tilePosition == tile)
                             {
+                                Monitor.Log($"Resetting trigger {triggerKey} for farmer {(tripper as Farmer).Name}");
+                                farmerTrippingDict[id].RemoveAt(i);
                                 switch (objectTriggerDataDict[triggerKey].triggerEffectType)
                                 {
                                     case "particle":
-                                        particleEffectAPI.EndFarmerParticleEffect((tripper as Farmer).UniqueMultiplayerID, data.triggerEffectName);
+                                        if (objectTriggerDataDict[triggerKey].targetTripper)
+                                            particleEffectAPI.EndFarmerParticleEffect((tripper as Farmer).UniqueMultiplayerID, objectTriggerDataDict[triggerKey].triggerEffectName);
+                                        else
+                                            particleEffectAPI.EndLocationParticleEffect((tripper as Farmer).currentLocation.Name, (int)tile.X * 64 + 32, (int)tile.Y * 64, objectTriggerDataDict[triggerKey].triggerEffectName);
                                         break;
                                 }
-                                farmerTrippingDict[id].RemoveAt(i);
                                 return;
                             }
 
@@ -65,31 +70,37 @@ namespace ObjectTriggers
 
         }
 
-        private void TripTrigger(object tripper, string triggerKey, ObjectTriggerData data, Vector2 tile, Object obj)
+        private void TripTrigger(object tripper, string triggerKey, Vector2 tile, Object obj)
         {
-            switch (data.triggerEffectType)
+            switch (objectTriggerDataDict[triggerKey].tripperType)
+            {
+                case "farmer":
+                    var id = (tripper as Farmer).UniqueMultiplayerID;
+                    if (!farmerTrippingDict.ContainsKey(id))
+                        farmerTrippingDict.Add(id, new List<ObjectTriggerInstance>());
+                    foreach (var oti in farmerTrippingDict[id])
+                    {
+                        if (oti.triggerKey == triggerKey && oti.tilePosition == tile)
+                            return;
+                    }
+                    farmerTrippingDict[id].Add(new ObjectTriggerInstance(triggerKey, tile));
+                    Monitor.Log($"Tripping trigger {triggerKey} for farmer {(tripper as Farmer).Name}");
+                    break;
+            }
+
+            switch (objectTriggerDataDict[triggerKey].triggerEffectType)
             {
                 case "particle":
-                    if (particleEffectAPI != null && particleEffectAPI.GetEffectNames().Contains(data.triggerEffectName))
+                    if (particleEffectAPI != null && particleEffectAPI.GetEffectNames().Contains(objectTriggerDataDict[triggerKey].triggerEffectName))
                     {
-
-                        if (data.targetTripper)
+                        switch (objectTriggerDataDict[triggerKey].tripperType)
                         {
-                            switch (data.tripperType)
-                            {
-                                case "farmer":
-                                    var id = (tripper as Farmer).UniqueMultiplayerID;
-                                    if (!farmerTrippingDict.ContainsKey(id))
-                                        farmerTrippingDict.Add(id, new List<ObjectTriggerInstance>());
-                                    foreach(var oti in farmerTrippingDict[id])
-                                    {
-                                        if (oti.TriggerKey == triggerKey && oti.Tile == tile)
-                                            return;
-                                    }
-                                    farmerTrippingDict[id].Add(new ObjectTriggerInstance(triggerKey, tile));
-                                    particleEffectAPI.BeginFarmerParticleEffect((tripper as Farmer).UniqueMultiplayerID, data.triggerEffectName);
-                                    break;
-                            }
+                            case "farmer":
+                                if(objectTriggerDataDict[triggerKey].targetTripper)
+                                    particleEffectAPI.BeginFarmerParticleEffect((tripper as Farmer).UniqueMultiplayerID, objectTriggerDataDict[triggerKey].triggerEffectName);
+                                else
+                                    particleEffectAPI.BeginLocationParticleEffect((tripper as Farmer).currentLocation.Name, (int)tile.X * 64 + 32, (int)tile.Y * 64, objectTriggerDataDict[triggerKey].triggerEffectName);
+                                break;
                         }
                     }
                     break;

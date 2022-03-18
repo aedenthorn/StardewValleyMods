@@ -1,4 +1,5 @@
 ﻿using HarmonyLib;
+using Microsoft.Xna.Framework;
 using StardewModdingAPI;
 using StardewModdingAPI.Events;
 using StardewValley;
@@ -56,12 +57,22 @@ namespace ObjectTriggers
                     case "farmer":
                         foreach(var farmer in Game1.getAllFarmers())
                         {
-                            CheckTrigger(farmer, kvp.Key, kvp.Value);
+                            CheckTrigger(farmer, farmer.currentLocation, farmer.getTileLocation(), kvp.Key);
                         }
                         break;
 
                 }
             }
+            foreach (var key in farmerTrippingDict.Keys.ToArray())
+            {
+                for (int j = farmerTrippingDict[key].Count - 1; j >= 0; j--)
+                {
+                    Farmer farmer = Game1.getFarmer(key);
+                    if (farmer != null && !CheckObjectTrigger(farmer.currentLocation, farmer.getTileLocation(), farmerTrippingDict[farmer.UniqueMultiplayerID][j].triggerKey, farmerTrippingDict[farmer.UniqueMultiplayerID][j].tilePosition))
+                        ResetTrigger(farmer, farmerTrippingDict[farmer.UniqueMultiplayerID][j].tilePosition, farmerTrippingDict[farmer.UniqueMultiplayerID][j].triggerKey);
+                }
+            }
+
             var keyArray = farmerTrippingDict.Keys.ToArray();
             for (int i = 0; i < keyArray.Length; i++)
             {
@@ -69,26 +80,40 @@ namespace ObjectTriggers
                 Farmer farmer = Game1.getFarmer(key);
                 if (farmer == null)
                     continue;
-                for (int j = 0; j < farmerTrippingDict[key].Count; i++)
+                for (int j = 0; j < farmerTrippingDict[key].Count; j++)
                 {
                     var oti = farmerTrippingDict[key][j];
-                    var otd = objectTriggerDataDict[oti.TriggerKey];
+                    var otd = objectTriggerDataDict[oti.triggerKey];
                     if (otd.interval <= 0)
                         continue;
                     oti.elapsed++;
                     if (oti.elapsed > otd.interval) 
                     {
+                        oti.elapsed = 0;
                         farmerTrippingDict[key][j].elapsed = 0;
+                        float amount;
                         switch (otd.triggerEffectType)
                         {
                             case "damage":
-                                farmer.takeDamage((int)objectTriggerDataDict[oti.TriggerKey].effectAmount, true, null);
+                                farmer.takeDamage((int)objectTriggerDataDict[oti.triggerKey].effectAmount, true, null);
                                 break;
                             case "heal":
-                                farmer.health = Math.Min(farmer.maxHealth, farmer.health + (int)objectTriggerDataDict[oti.TriggerKey].effectAmount);
+                                amount = Math.Min(farmer.maxHealth - farmer.health, objectTriggerDataDict[oti.triggerKey].effectAmount);
+                                if(amount > 0)
+                                {
+                                    farmer.currentLocation.playSound("yoba");
+                                    farmer.health += (int)amount;
+                                    farmer.currentLocation.debris.Add(new Debris((int)amount, new Vector2((farmer.getStandingX() + 8), farmer.getStandingY()), Color.Green, 1f, farmer));
+                                }
                                 break;
-                            case "stamina":
-                                farmer.Stamina = Math.Max(0, Math.Min(farmer.MaxStamina, farmer.Stamina + (int)objectTriggerDataDict[oti.TriggerKey].effectAmount));
+                            case "energize":
+                                amount = Math.Min(farmer.MaxStamina - farmer.Stamina, objectTriggerDataDict[oti.triggerKey].effectAmount);
+                                if (amount > 0)
+                                {
+                                    farmer.currentLocation.playSound("yoba");
+                                    farmer.Stamina += amount;
+                                    farmer.currentLocation.debris.Add(new Debris((int)amount, new Vector2((farmer.getStandingX() + 8), farmer.getStandingY()), Color.Green, 1f, farmer));
+                                }
                                 break;
                         }
                     }
