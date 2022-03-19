@@ -1,6 +1,5 @@
 ﻿using StardewModdingAPI;
 using StardewValley;
-using StardewValley.Locations;
 using System;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
@@ -48,12 +47,7 @@ namespace CustomFixedDialogue
             "PurchasedItem_Teen",
             "Town_DumpsterDiveComment_Child",
             "Town_DumpsterDiveComment_Teen",
-            "Town_DumpsterDiveComment_Adult",
-            "SummitEvent_Intro_Spouse",
-            "SummitEvent_Intro2_Spouse",
-            "SummitEvent_Intro2_Spouse_Gruff",
-            "SummitEvent_Dialogue1_Spouse",
-            "SummitEvent_Dialogue2_Spouse"
+            "Town_DumpsterDiveComment_Adult"
         };
         private static List<string> charactersAllowed = new List<string>()
         {
@@ -228,13 +222,28 @@ namespace CustomFixedDialogue
                 Monitor.Log($"Failed in {nameof(convertToDwarvish_Prefix)}:\n{ex}", LogLevel.Error);
             }
         }
-        public static void GetSummitDialogue_Patch(Summit __instance, string file, string key, ref string __result)
+        public static void GetSummitDialogue_Patch(string key, ref string __result)
         {
             try
             {
-                if (key.Contains("Spouse") && Game1.player.getSpouse() != null)
+                var spouse = Game1.player.getSpouse();
+                if (key.Contains("Spouse") && spouse != null)
                 {
-                    FixString(Game1.player.getSpouse(), ref __result);
+                    Dictionary<string, string> dialogueDic = null;
+                    try
+                    {
+                        dialogueDic = Game1.content.Load<Dictionary<string, string>>($"Characters/Dialogue/{spouse.Name}");
+                    }
+                    catch (Exception ex)
+                    {
+                        Monitor.Log($"Error loading character dictionary for {spouse.Name}:\r\n{ex}");
+                    }
+
+                    if (dialogueDic != null && dialogueDic.ContainsKey(key))
+                    {
+                        Monitor.Log($"{spouse.Name} has dialogue for {key}", LogLevel.Debug);
+                        __result = dialogueDic[key];
+                    }
                 }
             }
             catch (Exception ex)
@@ -286,13 +295,13 @@ namespace CustomFixedDialogue
         public static void FixString(NPC speaker, ref string input)
         {
 
-           Monitor.Log($"checking string: {input}");
+            //Monitor.Log($"checking string: {input}");
 
             Regex pattern1 = new Regex(@"^"+prefix + @"(?<key>[^`\^]+)(?<subs>[^\^]*)\^", RegexOptions.Compiled);
 
             if (pattern1.IsMatch(input))
             {
-                Monitor.Log($"matched string: {input}");
+                //Monitor.Log($"matched string: {input}");
                 string oldput = input;
                 var match = pattern1.Match(input);
                 string key = match.Groups["key"].Value;
@@ -305,7 +314,7 @@ namespace CustomFixedDialogue
                 {
                     Monitor.Log($"Error loading character dictionary for {speaker.Name}:\r\n{ex}");
                     input = input.Replace($"{prefix}{key}^", "");
-                    Monitor.Log($"reverted input: {input}");
+                    //Monitor.Log($"reverted input: {input}");
                 }
 
                 if (dialogueDic != null && dialogueDic.ContainsKey(key))
@@ -324,8 +333,8 @@ namespace CustomFixedDialogue
                     Monitor.Log($"Error editing input, aborting.", LogLevel.Error);
                     return;
                 }
-                Monitor.Log($"edited input: {input}");
-                Monitor.Log($"Subs: {match.Groups["subs"].Value}");
+                //Monitor.Log($"edited input: {input}");
+                //Monitor.Log($"Subs: {match.Groups["subs"].Value}");
                 if (match.Groups["subs"].Value.Length > 0)
                 {
                     var subs = match.Groups["subs"].Value.Substring(1).Split('`');
@@ -343,6 +352,7 @@ namespace CustomFixedDialogue
                         input = input.Substring(input.IndexOf("¦") + 1);
                     }
                 }
+                Monitor.Log($"Final edited input: {input}");
             }
         }
     }
