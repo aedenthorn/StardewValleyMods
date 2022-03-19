@@ -26,6 +26,18 @@ namespace CustomFixedDialogue
             );
 
             harmony.Patch(
+                original: AccessTools.Method(typeof(LocalizedContentManager), nameof(LocalizedContentManager.LoadString), new Type[] { typeof(string), typeof(object), typeof(object), typeof(object) }),
+                postfix: new HarmonyMethod(typeof(DialoguePatches), nameof(DialoguePatches.LocalizedContentManager_LoadString_Postfix3))
+            );
+            harmony.Patch(
+                original: AccessTools.Method(typeof(LocalizedContentManager), nameof(LocalizedContentManager.LoadString), new Type[] { typeof(string), typeof(object), typeof(object) }),
+                postfix: new HarmonyMethod(typeof(DialoguePatches), nameof(DialoguePatches.LocalizedContentManager_LoadString_Postfix2))
+            );
+            harmony.Patch(
+                original: AccessTools.Method(typeof(LocalizedContentManager), nameof(LocalizedContentManager.LoadString), new Type[] { typeof(string), typeof(object) }),
+                postfix: new HarmonyMethod(typeof(DialoguePatches), nameof(DialoguePatches.LocalizedContentManager_LoadString_Postfix1))
+            );
+            harmony.Patch(
                 original: AccessTools.Method(typeof(LocalizedContentManager), nameof(LocalizedContentManager.LoadString), new Type[] { typeof(string) }),
                 postfix: new HarmonyMethod(typeof(DialoguePatches), nameof(DialoguePatches.LocalizedContentManager_LoadString_Postfix))
             );
@@ -46,18 +58,18 @@ namespace CustomFixedDialogue
                 postfix: new HarmonyMethod(typeof(DialoguePatches), nameof(DialoguePatches.GetSummitDialogue_Patch))
             );
 
-            //helper.Events.GameLoop.DayStarted += GameLoop_DayStarted;
-
-
+            //helper.Events.Input.ButtonPressed += Input_ButtonPressed;
         }
-        
-        private void GameLoop_DayStarted(object sender, StardewModdingAPI.Events.DayStartedEventArgs e)
+
+        private void Input_ButtonPressed(object sender, StardewModdingAPI.Events.ButtonPressedEventArgs e)
         {
-            string text = "This is a test";
-            DialoguePatches.AddWrapperToString("Data\\ExtraDialogue:SummitEvent_Dialogue2_Spouse", ref text);
-            Monitor.Log($"prefixed: {text}");
-            DialoguePatches.FixString(Game1.getCharacterFromName("Shane"), ref text);
-            Monitor.Log($"fixed: {text}");
+            if (e.Button != SButton.F2)
+                return;
+
+            var shane = Game1.getCharacterFromName("Shane");
+            Game1.warpCharacter(shane, Game1.player.currentLocation, Game1.player.getTileLocation() + new Microsoft.Xna.Framework.Vector2(0, 1));
+            shane.setNewDialogue(Game1.content.LoadString("Strings\\StringsFromCSFiles:Event.cs.1738", shane.displayName), true, false);
+            return;
         }
     }
 }

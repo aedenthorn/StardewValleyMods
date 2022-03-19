@@ -1,18 +1,18 @@
 ﻿{
-  "Name": "Wall Planter",
+  "Name": "Ranged Weapons",
   "Author": "aedenthorn",
-  "Version": "0.1.1",
-  "Description": "Wall Planter.",
-  "UniqueID": "aedenthorn.WallPlanter",
-  "EntryDll": "WallPlanter.dll",
+  "Version": "0.1.0",
+  "Description": "Ranged Weapons.",
+  "UniqueID": "aedenthorn.RangedWeapons",
+  "EntryDll": "RangedWeapons.dll",
   "MinimumApiVersion": "3.13.0",
   "ModUpdater": {
     "Repository": "StardewValleyMods",
     "User": "aedenthorn",
     "Directory": "_releases",
-    "ModFolder": "WallPlanter"
+    "ModFolder": "RangedWeapons"
   },
-  "UpdateKeys": [ "Nexus:11339" ],
+  "UpdateKeys": [ "Nexus:" ],
   "Dependencies": [
     {
       "UniqueID": "Platonymous.ModUpdater",

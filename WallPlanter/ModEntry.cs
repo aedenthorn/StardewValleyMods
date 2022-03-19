@@ -62,7 +62,7 @@ namespace WallPlanter
 
         private void GameLoop_UpdateTicking(object sender, UpdateTickingEventArgs e)
         {
-            if (!Config.EnableMod)
+            if (!Config.EnableMod || !Context.IsWorldReady)
                 return;
             int delta = Helper.Input.IsDown(Config.UpButton) ? 1 : (Helper.Input.IsDown(Config.DownButton) ? -1 : 0);
             if (delta != 0 && typeof(DecoratableLocation).IsAssignableFrom(Game1.currentLocation.GetType()) && Game1.currentLocation.objects.TryGetValue(Game1.currentCursorTile, out Object obj) && obj is IndoorPot && (Game1.currentLocation as DecoratableLocation).isTileOnWall((int)obj.TileLocation.X, (int)obj.TileLocation.Y))

@@ -16,7 +16,9 @@ namespace ObjectTriggers
                 if (kvp.Value.Name == objectTriggerDataDict[triggerKey].objectID)
                 {
                     if (CheckObjectTrigger(location, tripperTile, triggerKey, kvp.Key))
+                    {
                         TripTrigger(tripper, triggerKey, kvp.Key, kvp.Value);
+                    }
                 }
             }
         }
@@ -54,6 +56,8 @@ namespace ObjectTriggers
                                 switch (objectTriggerDataDict[triggerKey].triggerEffectType)
                                 {
                                     case "particle":
+                                        if (particleEffectAPI == null)
+                                            break;
                                         if (objectTriggerDataDict[triggerKey].targetTripper)
                                             particleEffectAPI.EndFarmerParticleEffect((tripper as Farmer).UniqueMultiplayerID, objectTriggerDataDict[triggerKey].triggerEffectName);
                                         else

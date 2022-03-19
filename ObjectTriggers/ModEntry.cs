@@ -37,8 +37,23 @@ namespace ObjectTriggers
             helper.Events.GameLoop.GameLaunched += GameLoop_GameLaunched;
             helper.Events.GameLoop.SaveLoaded += GameLoop_SaveLoaded;
             helper.Events.GameLoop.UpdateTicking += GameLoop_UpdateTicking;
+            helper.Events.GameLoop.TimeChanged += GameLoop_TimeChanged;
             var harmony = new Harmony(ModManifest.UniqueID);
             harmony.PatchAll();
+        }
+
+        private void GameLoop_TimeChanged(object sender, TimeChangedEventArgs e)
+        {
+            foreach (var kvp in objectTriggerDataDict)
+            {
+                switch (kvp.Value.tripperType)
+                {
+                    case "time":
+
+                        break;
+
+                }
+            }
         }
 
         private void GameLoop_SaveLoaded(object sender, SaveLoadedEventArgs e)
@@ -55,12 +70,11 @@ namespace ObjectTriggers
                 switch (kvp.Value.tripperType)
                 {
                     case "farmer":
-                        foreach(var farmer in Game1.getAllFarmers())
+                        foreach (var farmer in Game1.getAllFarmers())
                         {
                             CheckTrigger(farmer, farmer.currentLocation, farmer.getTileLocation(), kvp.Key);
                         }
                         break;
-
                 }
             }
             foreach (var key in farmerTrippingDict.Keys.ToArray())
@@ -90,29 +104,49 @@ namespace ObjectTriggers
                     if (oti.elapsed > otd.interval) 
                     {
                         oti.elapsed = 0;
+                        if (Game1.random.NextDouble() > otd.tripChance)
+                            continue;
                         farmerTrippingDict[key][j].elapsed = 0;
-                        float amount;
+                        float amount = objectTriggerDataDict[oti.triggerKey].effectAmountMin + (float)Game1.random.NextDouble() * (objectTriggerDataDict[oti.triggerKey].effectAmountMax - objectTriggerDataDict[oti.triggerKey].effectAmountMin);
                         switch (otd.triggerEffectType)
                         {
                             case "damage":
-                                farmer.takeDamage((int)objectTriggerDataDict[oti.triggerKey].effectAmount, true, null);
+                                farmer.takeDamage((int)amount, true, null);
+                                if (otd.tripSound != null)
+                                    farmer.currentLocation.playSound(otd.tripSound);
+                                break;
+                            case "sound":
+                                if (otd.tripSound != null)
+                                    farmer.currentLocation.playSound(otd.tripSound);
                                 break;
                             case "heal":
-                                amount = Math.Min(farmer.maxHealth - farmer.health, objectTriggerDataDict[oti.triggerKey].effectAmount);
+                                amount = Math.Min(farmer.maxHealth - farmer.health, amount);
                                 if(amount > 0)
                                 {
-                                    farmer.currentLocation.playSound("yoba");
+                                    if(otd.tripSound != null)
+                                        farmer.currentLocation.playSound(otd.tripSound);
                                     farmer.health += (int)amount;
                                     farmer.currentLocation.debris.Add(new Debris((int)amount, new Vector2((farmer.getStandingX() + 8), farmer.getStandingY()), Color.Green, 1f, farmer));
                                 }
                                 break;
                             case "energize":
-                                amount = Math.Min(farmer.MaxStamina - farmer.Stamina, objectTriggerDataDict[oti.triggerKey].effectAmount);
+                                amount = Math.Min(farmer.MaxStamina - farmer.Stamina, amount);
                                 if (amount > 0)
                                 {
-                                    farmer.currentLocation.playSound("yoba");
+                                    if (otd.tripSound != null)
+                                        farmer.currentLocation.playSound(otd.tripSound);
                                     farmer.Stamina += amount;
-                                    farmer.currentLocation.debris.Add(new Debris((int)amount, new Vector2((farmer.getStandingX() + 8), farmer.getStandingY()), Color.Green, 1f, farmer));
+                                    farmer.currentLocation.debris.Add(new Debris((int)amount, new Vector2((farmer.getStandingX() + 8), farmer.getStandingY()), Color.Yellow, 1f, farmer));
+                                }
+                                break;
+                            case "exhaust":
+                                amount = Math.Min(farmer.Stamina, amount);
+                                if (amount > 0)
+                                {
+                                    if (otd.tripSound != null)
+                                        farmer.currentLocation.playSound(otd.tripSound);
+                                    farmer.Stamina += amount;
+                                    farmer.currentLocation.debris.Add(new Debris((int)amount, new Vector2((farmer.getStandingX() + 8), farmer.getStandingY()), Color.Yellow, 1f, farmer));
                                 }
                                 break;
                         }

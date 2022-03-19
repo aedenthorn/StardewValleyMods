@@ -12,7 +12,7 @@ namespace CustomFixedDialogue
         private static IMonitor Monitor;
         private static IModHelper Helper;
         private static string prefix = "CustomFixedDialogue";
-        private static string suffix = "EndCustomFixedDialogue";
+        private static string CSPrefix = "Strings\\StringsFromCSFiles:";
         private static string NPCPrefix = "Strings\\StringsFromCSFiles:NPC.cs.";
         private static string eventPrefix = "Strings\\StringsFromCSFiles:Event.cs.";
         private static string utilityPrefix = "Strings\\StringsFromCSFiles:Utility.cs.";
@@ -97,6 +97,8 @@ namespace CustomFixedDialogue
             "1633",
             "1634",
             "1635",
+            "1736",
+            "1738",
             "1801",
         };
 
@@ -122,11 +124,44 @@ namespace CustomFixedDialogue
             Monitor = monitor;
             Helper = helper;
         }
+        public static void LocalizedContentManager_LoadString_Postfix3(string path, object sub1, object sub2, object sub3, ref string __result)
+        {
+            try
+            {
+                AddPrefixToString(path, ref __result, new object[] { sub1, sub2, sub3 });
+            }
+            catch (Exception ex)
+            {
+                Monitor.Log($"Failed in {nameof(LocalizedContentManager_LoadString_Postfix)}:\n{ex}", LogLevel.Error);
+            }
+        }
+        public static void LocalizedContentManager_LoadString_Postfix2(string path, object sub1, object sub2, ref string __result)
+        {
+            try
+            {
+                AddPrefixToString(path, ref __result, new object[] { sub1, sub2 });
+            }
+            catch (Exception ex)
+            {
+                Monitor.Log($"Failed in {nameof(LocalizedContentManager_LoadString_Postfix)}:\n{ex}", LogLevel.Error);
+            }
+        }
+        public static void LocalizedContentManager_LoadString_Postfix1(string path, object sub1, ref string __result)
+        {
+            try
+            {
+                AddPrefixToString(path, ref __result, new object[] { sub1 });
+            }
+            catch (Exception ex)
+            {
+                Monitor.Log($"Failed in {nameof(LocalizedContentManager_LoadString_Postfix)}:\n{ex}", LogLevel.Error);
+            }
+        }
         public static void LocalizedContentManager_LoadString_Postfix(string path, ref string __result)
         {
             try
             {
-                AddWrapperToString(path, ref __result);
+                AddPrefixToString(path, ref __result);
             }
             catch (Exception ex)
             {
@@ -208,8 +243,20 @@ namespace CustomFixedDialogue
             }
         }
 
-        public static void AddWrapperToString(string path, ref string text)
+        public static void AddPrefixToString(string path, ref string text, object[] subs = null)
         {
+            string substring = "";
+            if (subs != null)
+            {
+                Monitor.Log($"has {subs.Length} subs");
+                substring = "`" + string.Join("`", subs);
+            }
+            if (text.StartsWith(prefix))
+            {
+                Monitor.Log($"removing existing prefix");
+                int index = text.IndexOf("^");
+                text = text.Substring(index + 1);
+            }
             if (text.Contains("\""))
             {
                 Monitor.Log($"event string, not adding wrapper: {text}");
@@ -217,22 +264,12 @@ namespace CustomFixedDialogue
             }
             if (path.StartsWith(extraPrefix) && extraAllowed.Contains(path.Substring(extraPrefix.Length)))
             {
-                string[] array = text.Split('/');
-                for(int i = 0; i < array.Length; i++)
-                {
-                    array[i] = $"{prefix}{path.Replace(extraPrefix, "ExtraDialogue_")}^{array[i]}^{suffix}{path.Replace(extraPrefix, "ExtraDialogue_")}";
-                }
-                text = string.Join("/", array);
+                text = $"{prefix}{path.Replace(extraPrefix, "ExtraDialogue_")}{substring}^{text}";
                 Monitor.Log($"edited string: {text}");
             }
             else if (path.StartsWith(charactersPrefix) && charactersAllowed.Contains(path.Substring(charactersPrefix.Length)))
             {
-                string[] array = text.Split('/');
-                for (int i = 0; i < array.Length; i++)
-                {
-                    array[i] = $"{prefix}{path.Replace(charactersPrefix, "Characters_")}^{array[i]}^{suffix}{path.Replace(charactersPrefix, "Characters_")}";
-                }
-                text = string.Join("/", array);
+                text = $"{prefix}{path.Replace(charactersPrefix, "Characters_")}{substring}^{text}";
                 Monitor.Log($"edited string: {text}");
             }
             else if (
@@ -241,12 +278,7 @@ namespace CustomFixedDialogue
                 || (path.StartsWith(utilityPrefix) && utilityChanges.Contains(path.Substring(utilityPrefix.Length)))
                 )
             {
-                string[] array = text.Split('/');
-                for (int i = 0; i < array.Length; i++)
-                {
-                    array[i] = $"{prefix}{path.Replace("Strings\\StringsFromCSFiles:", "")}^{array[i]}^{suffix}{path.Replace("Strings\\StringsFromCSFiles:", "")}";
-                }
-                text = string.Join("/", array);
+                text = $"{prefix}{path.Replace(CSPrefix, "")}{substring}^{text}";
                 Monitor.Log($"edited string: {text}");
             }
         }
@@ -256,43 +288,60 @@ namespace CustomFixedDialogue
 
            Monitor.Log($"checking string: {input}");
 
-            Regex pattern1 = new Regex(prefix + @"(?<key>[^\^]+)", RegexOptions.Compiled);
+            Regex pattern1 = new Regex(@"^"+prefix + @"(?<key>[^`\^]+)(?<subs>[^\^]*)\^", RegexOptions.Compiled);
 
-            while (pattern1.IsMatch(input))
+            if (pattern1.IsMatch(input))
             {
+                Monitor.Log($"matched string: {input}");
                 string oldput = input;
                 var match = pattern1.Match(input);
                 string key = match.Groups["key"].Value;
                 Dictionary<string, string> dialogueDic = null;
                 try
                 {
-                    dialogueDic = Helper.Content.Load<Dictionary<string, string>>($"Characters/Dialogue/{speaker.Name}", ContentSource.GameContent);
+                    dialogueDic = Game1.content.Load<Dictionary<string, string>>($"Characters/Dialogue/{speaker.Name}");
                 }
                 catch(Exception ex)
                 {
                     Monitor.Log($"Error loading character dictionary for {speaker.Name}:\r\n{ex}");
-                    input = input.Replace($"^{suffix}{key}", "").Replace($"{prefix}{key}^", "");
+                    input = input.Replace($"{prefix}{key}^", "");
                     Monitor.Log($"reverted input: {input}");
                 }
 
-
                 if (dialogueDic != null && dialogueDic.ContainsKey(key))
                 {
-                    Regex pattern2 = new Regex(prefix + key + @"\^.*\^" + suffix + key, RegexOptions.Compiled);
                     Monitor.Log($"{speaker.Name} has dialogue for {key}", LogLevel.Debug);
-                    input = pattern2.Replace(input, dialogueDic[key]);
+                    input = dialogueDic[key];
                 }
                 else
                 {
                     //Monitor.Log($"edited input: {input}");
-                    input = input.Replace($"^{suffix}{key}", "").Replace($"{prefix}{key}^", "");
+                    input = input.Replace($"{prefix}{key}^", "");
                     Monitor.Log($"reverted input: {input}");
                 }
-                Monitor.Log($"edited string: {input}");
                 if (input == oldput)
                 {
                     Monitor.Log($"Error editing input, aborting.", LogLevel.Error);
                     return;
+                }
+                Monitor.Log($"edited input: {input}");
+                Monitor.Log($"Subs: {match.Groups["subs"].Value}");
+                if (match.Groups["subs"].Value.Length > 0)
+                {
+                    var subs = match.Groups["subs"].Value.Substring(1).Split('`');
+                    Monitor.Log($"Got {subs.Length} subs");
+                    input = string.Format(input, subs);
+                }
+                if (input.Contains("¦"))
+                {
+                    if (Game1.player.IsMale)
+                    {
+                        input = input.Substring(0, input.IndexOf("¦"));
+                    }
+                    else
+                    {
+                        input = input.Substring(input.IndexOf("¦") + 1);
+                    }
                 }
             }
         }
