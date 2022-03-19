@@ -257,7 +257,6 @@ namespace CustomFixedDialogue
             string substring = "";
             if (subs != null)
             {
-                Monitor.Log($"has {subs.Length} subs");
                 substring = "`" + string.Join("`", subs);
             }
             if (text.StartsWith(prefix))
@@ -297,7 +296,7 @@ namespace CustomFixedDialogue
 
             //Monitor.Log($"checking string: {input}");
 
-            Regex pattern1 = new Regex(@"^"+prefix + @"(?<key>[^`\^]+)(?<subs>[^\^]*)\^", RegexOptions.Compiled);
+            Regex pattern1 = new Regex(@"^" + prefix + @"(?<key>[^`\^]+)(?<subs>[^\^]*)\^", RegexOptions.Compiled);
 
             if (pattern1.IsMatch(input))
             {
@@ -305,6 +304,7 @@ namespace CustomFixedDialogue
                 string oldput = input;
                 var match = pattern1.Match(input);
                 string key = match.Groups["key"].Value;
+                string substring = match.Groups["subs"].Value;
                 Dictionary<string, string> dialogueDic = null;
                 try
                 {
@@ -313,8 +313,9 @@ namespace CustomFixedDialogue
                 catch(Exception ex)
                 {
                     Monitor.Log($"Error loading character dictionary for {speaker.Name}:\r\n{ex}");
-                    input = input.Replace($"{prefix}{key}^", "");
+                    input = Regex.Replace(input, @"^[^\^]+\^", "");
                     //Monitor.Log($"reverted input: {input}");
+                    return;
                 }
 
                 if (dialogueDic != null && dialogueDic.ContainsKey(key))
@@ -325,19 +326,15 @@ namespace CustomFixedDialogue
                 else
                 {
                     //Monitor.Log($"edited input: {input}");
-                    input = input.Replace($"{prefix}{key}^", "");
+                    input = Regex.Replace(input, @"^[^\^]+\^", "");
                     Monitor.Log($"reverted input: {input}");
-                }
-                if (input == oldput)
-                {
-                    Monitor.Log($"Error editing input, aborting.", LogLevel.Error);
                     return;
                 }
                 //Monitor.Log($"edited input: {input}");
                 //Monitor.Log($"Subs: {match.Groups["subs"].Value}");
-                if (match.Groups["subs"].Value.Length > 0)
+                if (substring.Length > 0)
                 {
-                    var subs = match.Groups["subs"].Value.Substring(1).Split('`');
+                    var subs = substring.Substring(1).Split('`');
                     Monitor.Log($"Got {subs.Length} subs");
                     input = string.Format(input, subs);
                 }
