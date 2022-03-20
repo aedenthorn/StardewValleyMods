@@ -3,6 +3,7 @@ using StardewModdingAPI;
 using StardewValley;
 using StardewValley.Locations;
 using System;
+using System.Collections.Generic;
 
 namespace CustomFixedDialogue 
 {
@@ -27,19 +28,26 @@ namespace CustomFixedDialogue
 
             harmony.Patch(
                 original: AccessTools.Method(typeof(LocalizedContentManager), nameof(LocalizedContentManager.LoadString), new Type[] { typeof(string), typeof(object), typeof(object), typeof(object) }),
+                prefix: new HarmonyMethod(typeof(DialoguePatches), nameof(DialoguePatches.LocalizedContentManager_LoadString_Prefix3)),
                 postfix: new HarmonyMethod(typeof(DialoguePatches), nameof(DialoguePatches.LocalizedContentManager_LoadString_Postfix3))
             );
             harmony.Patch(
                 original: AccessTools.Method(typeof(LocalizedContentManager), nameof(LocalizedContentManager.LoadString), new Type[] { typeof(string), typeof(object), typeof(object) }),
+                prefix: new HarmonyMethod(typeof(DialoguePatches), nameof(DialoguePatches.LocalizedContentManager_LoadString_Prefix2)),
                 postfix: new HarmonyMethod(typeof(DialoguePatches), nameof(DialoguePatches.LocalizedContentManager_LoadString_Postfix2))
             );
             harmony.Patch(
                 original: AccessTools.Method(typeof(LocalizedContentManager), nameof(LocalizedContentManager.LoadString), new Type[] { typeof(string), typeof(object) }),
+                prefix: new HarmonyMethod(typeof(DialoguePatches), nameof(DialoguePatches.LocalizedContentManager_LoadString_Prefix1)),
                 postfix: new HarmonyMethod(typeof(DialoguePatches), nameof(DialoguePatches.LocalizedContentManager_LoadString_Postfix1))
             );
             harmony.Patch(
                 original: AccessTools.Method(typeof(LocalizedContentManager), nameof(LocalizedContentManager.LoadString), new Type[] { typeof(string) }),
                 postfix: new HarmonyMethod(typeof(DialoguePatches), nameof(DialoguePatches.LocalizedContentManager_LoadString_Postfix))
+            );
+            harmony.Patch(
+                original: AccessTools.Method(typeof(Game1), nameof(Game1.LoadStringByGender), new Type[] { typeof(int), typeof(string), typeof(object[]) }),
+                prefix: new HarmonyMethod(typeof(DialoguePatches), nameof(DialoguePatches.LocalizedContentManager_LoadStringByGender_Prefix))
             );
             harmony.Patch(
                 original: AccessTools.Method(typeof(NPC), nameof(NPC.showTextAboveHead)),
@@ -58,17 +66,45 @@ namespace CustomFixedDialogue
                 postfix: new HarmonyMethod(typeof(DialoguePatches), nameof(DialoguePatches.GetSummitDialogue_Patch))
             );
 
-            helper.Events.Input.ButtonPressed += Input_ButtonPressed;
+            //helper.Events.Input.ButtonPressed += Input_ButtonPressed;
         }
 
         private void Input_ButtonPressed(object sender, StardewModdingAPI.Events.ButtonPressedEventArgs e)
         {
-            if (e.Button != SButton.F2)
+            if (true || e.Button != SButton.F2)
                 return;
 
             var shane = Game1.getCharacterFromName("Shane");
+            
             Game1.warpCharacter(shane, Game1.player.currentLocation, Game1.player.getTileLocation() + new Microsoft.Xna.Framework.Vector2(0, 1));
-            shane.setNewDialogue(Game1.content.LoadString("Strings\\StringsFromCSFiles:Event.cs.1738", shane.displayName), true, false);
+			Friendship friends;
+			int heartLevel = Game1.player.friendshipData.TryGetValue(shane.Name, out friends) ? (friends.Points / 250) : 0;
+			Stack<Dialogue> currentDialogue = new Stack<Dialogue>();
+			Random r = new Random((int)(Game1.stats.DaysPlayed * 77U + (uint)((int)Game1.uniqueIDForThisGame / 2) + 2U + (uint)((int)shane.DefaultPosition.X * 77) + (uint)((int)shane.DefaultPosition.Y * 777)));
+			Dictionary<string, string> npcDispositions = Game1.content.Load<Dictionary<string, string>>("Data\\NPCDispositions");
+			npcDispositions.TryGetValue(shane.Name, out string disposition);
+			string[] relatives = disposition.Split('/', StringSplitOptions.None)[9].Split(' ', StringSplitOptions.None);
+			int index = r.Next(relatives.Length / 2) * 2;
+			string relativeName = relatives[index];
+			string relativeDisplayName = relativeName;
+			if (LocalizedContentManager.CurrentLanguageCode != LocalizedContentManager.LanguageCode.en && Game1.getCharacterFromName(relativeName, true, false) != null)
+			{
+				relativeDisplayName = Game1.getCharacterFromName(relativeName, true, false).displayName;
+			}
+			string relativeTitle = relatives[index + 1].Replace("'", "").Replace("_", " ");
+			string relativeProps;
+			bool relativeIsMale = npcDispositions.TryGetValue(relativeName, out relativeProps) && relativeProps.Split('/', StringSplitOptions.None)[4].Equals("male");
+			string nameAndTitle = (relativeTitle.Length > 2 && LocalizedContentManager.CurrentLanguageCode != LocalizedContentManager.LanguageCode.ja) ? (relativeIsMale ? Game1.LoadStringByGender(shane.Gender, "Strings\\StringsFromCSFiles:NPC.cs.4079", new object[]
+			{
+								relativeTitle
+			}) : Game1.LoadStringByGender(shane.Gender, "Strings\\StringsFromCSFiles:NPC.cs.4080", new object[]
+			{
+								relativeTitle
+			})) : relativeDisplayName;
+			string message = Game1.content.LoadString("Strings\\StringsFromCSFiles:NPC.cs.4083", nameAndTitle);
+
+            shane.CurrentDialogue.Clear();
+			shane.setNewDialogue(message, true, false);
             return;
         }
     }

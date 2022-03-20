@@ -76,11 +76,12 @@ namespace FarmerHelper
                     break;
                 }
             }
+            var ignoreCrops = Config.IgnoreHarvestCrops.Split(',');
             foreach (var obj in Game1.getFarm().terrainFeatures.Values)
             {
                 if (!(obj is HoeDirt))
                     continue;
-                if (Config.WarnAboutPlantsUnharvestedBeforeSleep && (obj as HoeDirt).readyForHarvest())
+                if (Config.WarnAboutPlantsUnharvestedBeforeSleep && (obj as HoeDirt).readyForHarvest() && (!ignoreCrops.Contains((obj as HoeDirt).crop?.indexOfHarvest.Value+"")))
                 {
                     question = string.Format(SHelper.Translation.Get("plants-ready-for-harvest"), question);
                     break;

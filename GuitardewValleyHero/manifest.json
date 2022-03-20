@@ -1,18 +1,18 @@
 ﻿{
-  "Name": "Particle Effects",
+  "Name": "Guitardew Valley Hero",
   "Author": "aedenthorn",
-  "Version": "0.2.0",
-  "Description": "Particle Effects.",
-  "UniqueID": "aedenthorn.ParticleEffects",
-  "EntryDll": "ParticleEffects.dll",
+  "Version": "0.1.0",
+  "Description": "Guitardew Valley Hero.",
+  "UniqueID": "aedenthorn.GuitardewValleyHero",
+  "EntryDll": "GuitardewValleyHero.dll",
   "MinimumApiVersion": "3.13.0",
   "ModUpdater": {
     "Repository": "StardewValleyMods",
     "User": "aedenthorn",
     "Directory": "_releases",
-    "ModFolder": "ParticleEffects"
+    "ModFolder": "GuitardewValleyHero"
   },
-  "UpdateKeys": [ "Nexus:11056" ],
+  "UpdateKeys": [ "Nexus:" ],
   "Dependencies": [
     {
       "UniqueID": "Platonymous.ModUpdater",

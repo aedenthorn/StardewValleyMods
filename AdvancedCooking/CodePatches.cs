@@ -110,7 +110,7 @@ namespace AdvancedCooking
             if (!Config.EnableMod || !isCookingMenu || containers == null || containers.Count == 0 || containers[0] == null)
                 return;
 
-            var list = fridgeIndex < 0 ? Game1.player.Items : containers[fridgeIndex].items;
+            var list = fridgeIndex < 0 ? Game1.player.Items : containers[Math.Min(containers.Count - 1, fridgeIndex)].items;
 
             for (int i = 0; i < Game1.player.maxItems.Value; i++)
             {

@@ -63,7 +63,7 @@ namespace ObjectTriggers
 
         private void GameLoop_UpdateTicking(object sender, UpdateTickingEventArgs e)
         {
-            if (!Config.EnableMod)
+            if (!Config.EnableMod || !Context.IsWorldReady)
                 return;
             foreach(var kvp in objectTriggerDataDict)
             {

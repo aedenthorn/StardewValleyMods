@@ -274,6 +274,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ObjectTriggers", "ObjectTri
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RangedWeapons", "RangedWeapons\RangedWeapons.csproj", "{5E602FE8-40F4-48A0-8CCD-BF2B750036BF}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GuitardewValleyHero", "GuitardewValleyHero\GuitardewValleyHero.csproj", "{6A4A948B-2A43-4365-AF46-4DDA7EC25689}"
+EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
 		_releases\_releases.projitems*{047040e0-3d07-46e5-852b-d1d45cd57bb8}*SharedItemsImports = 13
@@ -1341,6 +1343,14 @@ Global
 		{5E602FE8-40F4-48A0-8CCD-BF2B750036BF}.Release|Any CPU.Build.0 = Release|Any CPU
 		{5E602FE8-40F4-48A0-8CCD-BF2B750036BF}.Release|x86.ActiveCfg = Release|Any CPU
 		{5E602FE8-40F4-48A0-8CCD-BF2B750036BF}.Release|x86.Build.0 = Release|Any CPU
+		{6A4A948B-2A43-4365-AF46-4DDA7EC25689}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6A4A948B-2A43-4365-AF46-4DDA7EC25689}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6A4A948B-2A43-4365-AF46-4DDA7EC25689}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{6A4A948B-2A43-4365-AF46-4DDA7EC25689}.Debug|x86.Build.0 = Debug|Any CPU
+		{6A4A948B-2A43-4365-AF46-4DDA7EC25689}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6A4A948B-2A43-4365-AF46-4DDA7EC25689}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6A4A948B-2A43-4365-AF46-4DDA7EC25689}.Release|x86.ActiveCfg = Release|Any CPU
+		{6A4A948B-2A43-4365-AF46-4DDA7EC25689}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

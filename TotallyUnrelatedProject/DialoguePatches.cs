@@ -118,6 +118,28 @@ namespace CustomFixedDialogue
             Monitor = monitor;
             Helper = helper;
         }
+        public static void LocalizedContentManager_LoadString_Prefix3(string path, ref object sub1, ref object sub2, ref object sub3)
+        {
+
+            if (sub1 is string && (sub1 as string).StartsWith(prefix))
+            {
+                Monitor.Log($"removing existing prefix in subs 3");
+                int index = (sub1 as string).IndexOf("^");
+                sub1 = (sub1 as string).Substring(index + 1);
+            }
+            if (sub2 is string && (sub2 as string).StartsWith(prefix))
+            {
+                Monitor.Log($"removing existing prefix in subs 3");
+                int index = (sub2 as string).IndexOf("^");
+                sub2 = (sub2 as string).Substring(index + 1);
+            }
+            if (sub3 is string && (sub3 as string).StartsWith(prefix))
+            {
+                Monitor.Log($"removing existing prefix in subs 3");
+                int index = (sub3 as string).IndexOf("^");
+                sub3 = (sub3 as string).Substring(index + 1);
+            }
+        }
         public static void LocalizedContentManager_LoadString_Postfix3(string path, object sub1, object sub2, object sub3, ref string __result)
         {
             try
@@ -129,6 +151,22 @@ namespace CustomFixedDialogue
                 Monitor.Log($"Failed in {nameof(LocalizedContentManager_LoadString_Postfix)}:\n{ex}", LogLevel.Error);
             }
         }
+        public static void LocalizedContentManager_LoadString_Prefix2(string path, ref object sub1, ref object sub2)
+        {
+
+            if (sub1 is string && (sub1 as string).StartsWith(prefix))
+            {
+                Monitor.Log($"removing existing prefix in subs 2");
+                int index = (sub1 as string).IndexOf("^");
+                sub1 = (sub1 as string).Substring(index + 1);
+            }
+            if (sub2 is string && (sub2 as string).StartsWith(prefix))
+            {
+                Monitor.Log($"removing existing prefix in subs 2");
+                int index = (sub2 as string).IndexOf("^");
+                sub2 = (sub2 as string).Substring(index + 1);
+            }
+        }
         public static void LocalizedContentManager_LoadString_Postfix2(string path, object sub1, object sub2, ref string __result)
         {
             try
@@ -138,6 +176,15 @@ namespace CustomFixedDialogue
             catch (Exception ex)
             {
                 Monitor.Log($"Failed in {nameof(LocalizedContentManager_LoadString_Postfix)}:\n{ex}", LogLevel.Error);
+            }
+        }
+        public static void LocalizedContentManager_LoadString_Prefix1(string path, ref object sub1)
+        {
+            if (sub1 is string && (sub1 as string).StartsWith(prefix))
+            {
+                Monitor.Log($"removing existing prefix in subs 1");
+                int index = (sub1 as string).IndexOf("^");
+                sub1 = (sub1 as string).Substring(index + 1);
             }
         }
         public static void LocalizedContentManager_LoadString_Postfix1(string path, object sub1, ref string __result)
@@ -252,11 +299,32 @@ namespace CustomFixedDialogue
             }
         }
 
+        public static void LocalizedContentManager_LoadStringByGender_Prefix(int npcGender, string key, params object[] substitutions)
+        {
+            for (int i = 0; i < substitutions.Length; i++)
+            {
+                if (substitutions[i] is string && (substitutions[i] as string).StartsWith(prefix))
+                {
+                    Monitor.Log($"removing existing prefix in gender subs");
+                    int index = (substitutions[i] as string).IndexOf("^");
+                    substitutions[i] = (substitutions[i] as string).Substring(index + 1);
+                }
+            }
+        }
         public static void AddPrefixToString(string path, ref string text, object[] subs = null)
         {
             string substring = "";
             if (subs != null)
             {
+                for(int i = 0; i < subs.Length; i++)
+                {
+                    if (subs[i] is string && (subs[i] as string).StartsWith(prefix))
+                    {
+                        Monitor.Log($"removing existing prefix");
+                        int index = (subs[i] as string).IndexOf("^");
+                        subs[i] = (subs[i] as string).Substring(index + 1);
+                    }
+                }
                 substring = "`" + string.Join("`", subs);
             }
             if (text.StartsWith(prefix))
@@ -267,7 +335,6 @@ namespace CustomFixedDialogue
             }
             if (text.Contains("\""))
             {
-                Monitor.Log($"event string, not adding wrapper: {text}");
                 return;
             }
             if (path.StartsWith(extraPrefix) && extraAllowed.Contains(path.Substring(extraPrefix.Length)))
@@ -314,7 +381,7 @@ namespace CustomFixedDialogue
                 {
                     Monitor.Log($"Error loading character dictionary for {speaker.Name}:\r\n{ex}");
                     input = Regex.Replace(input, @"^[^\^]+\^", "");
-                    //Monitor.Log($"reverted input: {input}");
+                    Monitor.Log($"reverted input: {input}");
                     return;
                 }
 
@@ -325,7 +392,6 @@ namespace CustomFixedDialogue
                 }
                 else
                 {
-                    //Monitor.Log($"edited input: {input}");
                     input = Regex.Replace(input, @"^[^\^]+\^", "");
                     Monitor.Log($"reverted input: {input}");
                     return;

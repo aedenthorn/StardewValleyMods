@@ -453,7 +453,7 @@ namespace AdvancedCooking
 
         private static void UpdateActualInventory(CraftingPage instance)
         {
-            var list = fridgeIndex < 0 ? Game1.player.Items : containers[fridgeIndex].items;
+            var list = fridgeIndex < 0 ? Game1.player.Items : instance._materialContainers[Math.Min(instance._materialContainers.Count - 1 ,fridgeIndex)].items;
 
             for (int i = 0; i < Game1.player.maxItems.Value; i++)
             {
