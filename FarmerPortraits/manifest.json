@@ -1,0 +1,22 @@
+﻿{
+  "Name": "Farmer Portraits",
+  "Author": "aedenthorn",
+  "Version": "0.1.0",
+  "Description": "Farmer Portraits.",
+  "UniqueID": "aedenthorn.FarmerPortraits",
+  "EntryDll": "FarmerPortraits.dll",
+  "MinimumApiVersion": "3.13.0",
+  "ModUpdater": {
+    "Repository": "StardewValleyMods",
+    "User": "aedenthorn",
+    "Directory": "_releases",
+    "ModFolder": "FarmerPortraits"
+  },
+  "UpdateKeys": [ "Nexus:" ],
+  "Dependencies": [
+    {
+      "UniqueID": "Platonymous.ModUpdater",
+      "IsRequired": false
+    }
+  ]
+}

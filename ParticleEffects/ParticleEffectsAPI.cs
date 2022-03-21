@@ -1,4 +1,5 @@
 ﻿using Microsoft.Xna.Framework;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -40,6 +41,32 @@ namespace ParticleEffects
             if (ModEntry.NPCDict.ContainsKey(npc))
                 ModEntry.NPCDict[npc].Remove(key);
         }
+        public void BeginScreenParticleEffect(string name, int x, int y, string key)
+        {
+            if (!ModEntry.effectDict.TryGetValue(key, out ParticleEffectData template))
+                return;
+            Point position = new Point(x, y);
+            if (!ModEntry.screenDict.ContainsKey(position))
+                ModEntry.screenDict[position] = new List<ParticleEffectData>();
+            if (!ModEntry.screenDict[position].Exists(d => d.key == key))
+            {
+                ParticleEffectData ped = ModEntry.CloneParticleEffect(key, "screen", name, x, y, template);
+                ModEntry.screenDict[position].Add(ped);
+
+            }
+        }
+        public void EndScreenParticleEffect(string location, int x, int y, string key)
+        {
+            Point position = new Point(x, y);
+            if (ModEntry.screenDict.ContainsKey(position))
+            {
+                for (int i = ModEntry.screenDict[position].Count - 1; i >= 0; i--)
+                {
+                    if (ModEntry.screenDict[position][i].key == key)
+                        ModEntry.screenDict[position].RemoveAt(i);
+                }
+            }
+        }
         public void BeginLocationParticleEffect(string location, int x, int y, string key)
         {
             if (!ModEntry.effectDict.TryGetValue(key, out ParticleEffectData template))
@@ -51,35 +78,7 @@ namespace ParticleEffects
                 ModEntry.locationDict[location][position] = new List<ParticleEffectData>();
             if (!ModEntry.locationDict[location][position].Exists(d => d.key == key))
             {
-                ParticleEffectData ped = new ParticleEffectData()
-                {
-                    key = key,
-                    type = "location",
-                    name = location,
-                    movementType = template.movementType,
-                    movementSpeed = template.movementSpeed,
-                    frameSpeed = template.frameSpeed,
-                    acceleration = template.acceleration,
-                    restrictOuter = template.restrictOuter,
-                    restrictInner = template.restrictInner,
-                    minRotationRate = template.minRotationRate,
-                    maxRotationRate = template.maxRotationRate,
-                    particleWidth = template.particleWidth,
-                    particleHeight = template.particleHeight,
-                    fieldInnerWidth = template.fieldInnerWidth,
-                    fieldInnerHeight = template.fieldInnerHeight,
-                    fieldOuterWidth = template.fieldOuterWidth,
-                    fieldOuterHeight = template.fieldOuterHeight,
-                    minParticleScale = template.minParticleScale,
-                    maxParticleScale = template.maxParticleScale,
-                    maxParticles = template.maxParticles,
-                    minLifespan = template.minLifespan,
-                    maxLifespan = template.maxLifespan,
-                    spriteSheetPath = template.spriteSheetPath,
-                    spriteSheet = template.spriteSheet,
-                    fieldOffsetX = x,
-                    fieldOffsetY = y
-                };
+                ParticleEffectData ped = ModEntry.CloneParticleEffect(key, "location", location, x, y, template);
                 ModEntry.locationDict[location][position].Add(ped);
 
             }

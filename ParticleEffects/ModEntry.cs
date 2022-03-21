@@ -19,10 +19,14 @@ namespace ParticleEffects
         public static ModEntry context;
         public static readonly string dictPath = "Mods/aedenthorn.ParticleEffects/dict";
         public static Dictionary<string, ParticleEffectData> effectDict = new Dictionary<string, ParticleEffectData>();
+        
         public static Dictionary<long, EntityParticleData> farmerEffectDict = new Dictionary<long, EntityParticleData>();
         public static Dictionary<string, EntityParticleData> npcEffectDict = new Dictionary<string, EntityParticleData>();
         public static Dictionary<string, EntityParticleData> locationEffectDict = new Dictionary<string, EntityParticleData>();
+        public static EntityParticleData screenEffectDict = new EntityParticleData();
         public static Dictionary<string, EntityParticleData> objectEffectDict = new Dictionary<string, EntityParticleData>();
+        
+        public static Dictionary<Point, List<ParticleEffectData>> screenDict = new Dictionary<Point, List<ParticleEffectData>>();
         public static Dictionary<string, List<string>> NPCDict = new Dictionary<string, List<string>>();
         public static Dictionary<long, List<string>> farmerDict = new Dictionary<long, List<string>>();
         public static Dictionary<string, Dictionary<Point, List<ParticleEffectData>>> locationDict = new Dictionary<string, Dictionary<Point, List<ParticleEffectData>>>();
@@ -42,6 +46,7 @@ namespace ParticleEffects
             helper.Events.GameLoop.DayStarted += GameLoop_DayStarted;
             helper.Events.GameLoop.TimeChanged += GameLoop_TimeChanged;
             helper.Events.Display.RenderedWorld += Display_RenderedWorld;
+            helper.Events.Display.RenderedHud += Display_RenderedHud;
 
 
             var harmony = new Harmony(ModManifest.UniqueID);
@@ -58,6 +63,29 @@ namespace ParticleEffects
                original: AccessTools.Method(typeof(NPC), nameof(NPC.draw), new System.Type[] { typeof(SpriteBatch), typeof(float) }),
                postfix: new HarmonyMethod(typeof(ModEntry), nameof(ModEntry.NPC_draw_postfix))
             );
+        }
+
+        private void Display_RenderedHud(object sender, StardewModdingAPI.Events.RenderedHudEventArgs e)
+        {
+            if (!Config.EnableMod)
+                return;
+            foreach (var kvp in screenDict)
+            {
+                foreach (var effect in kvp.Value)
+                {
+                    ShowScreenParticleEffect(e.SpriteBatch, effect);
+                }
+            }
+            foreach (var key in effectDict.Keys)
+            {
+                var ped = effectDict[key];
+                switch (ped.type.ToLower())
+                {
+                    case "screen":
+                        ShowScreenParticleEffect(e.SpriteBatch, ped);
+                        break;
+                }
+            }
         }
 
         private void Display_RenderedWorld(object sender, StardewModdingAPI.Events.RenderedWorldEventArgs e)

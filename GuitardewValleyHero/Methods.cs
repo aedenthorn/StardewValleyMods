@@ -14,6 +14,7 @@ namespace GuitardewValleyHero
 {
     public partial class ModEntry : Mod
     {
+
         private void ReloadSongData()
         {
             Monitor.Log("Reloading song data");
@@ -25,12 +26,48 @@ namespace GuitardewValleyHero
                     loadedContentPacks.Add(data.packID);
                 foreach (var beat in data.beats)
                 {
-                    BeatData beatData = new BeatData(beat);
-                    data.beatDataList.Add(beatData);
+                    var list = new List<NoteData>();
+                    foreach (var note in beat)
+                    {
+                        list.Add(new NoteData(note));
+                    }
+                    data.beatDataList.Add(list);
                 }
                 songDataDict[data.songName] = data;
             }
             Monitor.Log($"Loaded {songDataDict.Count} song data(s)");
+        }
+
+        private static void CreateTextures()
+        {
+            barTexture = new Texture2D(Game1.graphics.GraphicsDevice, (int)(currentData.noteScale * 16 * 4), 8);
+            Color[] data = new Color[barTexture.Width * barTexture.Height];
+            for (int i = 0; i < data.Length; i++)
+            {
+                data[i] = Config.BarColor;
+            }
+            barTexture.SetData(data);
+        }
+        private int GetNoteScore(float yPos)
+        {
+            var distance = Math.Abs(targetStart - yPos);
+            int score = 0;
+            float width = currentData.noteScale * 16;
+            if (distance < Config.PerfectScoreLeeway)
+            {
+                Game1.playSound("yoba");
+                score = currentData.perfectScore;
+            }
+            else if(distance < width / 2)
+            {
+                score = (int)(currentData.noteScore * (width - distance) / width);
+            }
+            else
+            {
+                score = currentData.missScore;
+            }
+            Monitor.Log($"scored: {score}, yPos {yPos} vs {targetStart}, distance {distance}");
+            return score;
         }
     }
 }
