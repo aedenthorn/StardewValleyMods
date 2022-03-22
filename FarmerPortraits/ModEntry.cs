@@ -81,6 +81,24 @@ namespace FarmerPortraits
             );
             configMenu.AddBoolOption(
                 mod: ModManifest,
+                name: () => "Show With NPCs",
+                getValue: () => Config.ShowWithNPCPortrait,
+                setValue: value => Config.ShowWithNPCPortrait = value
+            );
+            configMenu.AddBoolOption(
+                mod: ModManifest,
+                name: () => "Show With Questions",
+                getValue: () => Config.ShowWithQuestions,
+                setValue: value => Config.ShowWithQuestions = value
+            );
+            configMenu.AddBoolOption(
+                mod: ModManifest,
+                name: () => "Show During Events",
+                getValue: () => Config.ShowWithEvents,
+                setValue: value => Config.ShowWithEvents = value
+            );
+            configMenu.AddBoolOption(
+                mod: ModManifest,
                 name: () => "Facing Front",
                 tooltip: () => "If not set, the portrait will face right (only meaningful if there is no custom portrait)",
                 getValue: () => Config.FacingFront,

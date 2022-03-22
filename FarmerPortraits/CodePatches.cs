@@ -28,7 +28,7 @@ namespace FarmerPortraits
             {
                 if (!Config.EnableMod)
                     return;
-                if (__instance.isPortraitBox())
+                if ((__instance.isPortraitBox() && Config.ShowWithNPCPortrait) || (__instance.isQuestion && Config.ShowWithQuestions))
                 {
                     __instance.x += 224;
                     __instance.friendshipJewel.X += 224;
@@ -36,19 +36,19 @@ namespace FarmerPortraits
             }
         }
 
-        [HarmonyPatch(typeof(DialogueBox), nameof(DialogueBox.drawPortrait))]
-        public class DialogueBox_drawPortrait_Patch
+        [HarmonyPatch(typeof(DialogueBox), nameof(DialogueBox.drawBox))]
+        public class DialogueBox_drawBox_Patch
         {
             public static void Postfix(DialogueBox __instance, SpriteBatch b)
             {
-                if (!Config.EnableMod || !__instance.transitionInitialized)
+                if (!Config.EnableMod || !__instance.transitionInitialized ||  __instance.transitioning || ((!Config.ShowWithQuestions || !__instance.isQuestion) && (!Config.ShowWithNPCPortrait || !__instance.isPortraitBox())) || (!Config.ShowWithEvents && Game1.eventUp))
                     return;
-                drawBox(b, __instance.x - 448 - 32, __instance.y, 448, __instance.height);
+                int boxHeight = 384;
+                drawBox(b, __instance.x - 448 - 32, __instance.y + __instance.height - boxHeight, 448, boxHeight);
             }
 
             private static void drawBox(SpriteBatch b, int xPos, int yPos, int boxWidth, int boxHeight)
             {
-
                 b.Draw(Game1.mouseCursors, new Rectangle(xPos, yPos - 20, boxWidth, 24), new Rectangle?(new Rectangle(275, 313, 1, 6)), Color.White);
                 b.Draw(Game1.mouseCursors, new Rectangle(xPos + 12, yPos + boxHeight, boxWidth - 20, 32), new Rectangle?(new Rectangle(275, 328, 1, 8)), Color.White);
                 b.Draw(Game1.mouseCursors, new Rectangle(xPos - 32, yPos + 24, 32, boxHeight - 28), new Rectangle?(new Rectangle(264, 325, 8, 1)), Color.White);
