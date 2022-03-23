@@ -44,7 +44,7 @@ namespace InstantGrowthPowder
             JsonAssets = Helper.ModRegistry.GetApi<IJsonAssetsApi>("spacechase0.JsonAssets");
             if (JsonAssets == null)
             {
-                Monitor.Log("Can't load Json Assets API for Placeable Mine Shaft", 0);
+                Monitor.Log("Can't load Json Assets API for Instant Growth Powder", 0);
             }
             else
             {

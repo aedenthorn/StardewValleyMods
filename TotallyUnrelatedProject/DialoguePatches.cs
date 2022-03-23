@@ -10,7 +10,7 @@ namespace CustomFixedDialogue
     {
         private static IMonitor Monitor;
         private static IModHelper Helper;
-        private static string prefix = "CustomFixedDialogue";
+        private static string prefix = "^CustomFixedDialogue";
         private static string CSPrefix = "Strings\\StringsFromCSFiles:";
         private static string NPCPrefix = "Strings\\StringsFromCSFiles:NPC.cs.";
         private static string eventPrefix = "Strings\\StringsFromCSFiles:Event.cs.";
@@ -363,16 +363,18 @@ namespace CustomFixedDialogue
 
             //Monitor.Log($"checking string: {input}");
 
-            Regex pattern1 = new Regex(@"^" + prefix + @"(?<key>[^`\^]+)(?<subs>[^\^]*)\^", RegexOptions.Compiled);
-
-            if (pattern1.IsMatch(input))
+            Regex pattern1 = new Regex(prefix + @"(?<key>[^`\^]+)(?<subs>[^\^]*)\^(?<defaultString>[^\^]*)", RegexOptions.Compiled);
+            Regex rgx = new Regex(prefix + @"[^\^]+\^");
+            while (pattern1.IsMatch(input))
             {
-                //Monitor.Log($"matched string: {input}");
+                Monitor.Log($"matched string: {input}");
                 string oldput = input;
                 var match = pattern1.Match(input);
                 string key = match.Groups["key"].Value;
                 string substring = match.Groups["subs"].Value;
-                Dictionary<string, string> dialogueDic = null;
+                string defaultString = match.Groups["defaultString"].Value;
+                string newString;
+                Dictionary<string, string> dialogueDic;
                 try
                 {
                     dialogueDic = Game1.content.Load<Dictionary<string, string>>($"Characters/Dialogue/{speaker.Name}");
@@ -380,7 +382,7 @@ namespace CustomFixedDialogue
                 catch(Exception ex)
                 {
                     Monitor.Log($"Error loading character dictionary for {speaker.Name}:\r\n{ex}");
-                    input = Regex.Replace(input, @"^[^\^]+\^", "");
+                    input = Regex.Replace(input, prefix + @"[^\^]+\^", "");
                     Monitor.Log($"reverted input: {input}");
                     return;
                 }
@@ -388,13 +390,13 @@ namespace CustomFixedDialogue
                 if (dialogueDic != null && dialogueDic.ContainsKey(key))
                 {
                     Monitor.Log($"{speaker.Name} has dialogue for {key}", LogLevel.Debug);
-                    input = dialogueDic[key];
+                    newString = dialogueDic[key];
                 }
                 else
                 {
-                    input = Regex.Replace(input, @"^[^\^]+\^", "");
-                    Monitor.Log($"reverted input: {input}");
-                    return;
+                    input = rgx.Replace(input, "", 1);
+                    Monitor.Log($"reverted next part of input. Result: {input}");
+                    continue;
                 }
                 //Monitor.Log($"edited input: {input}");
                 //Monitor.Log($"Subs: {match.Groups["subs"].Value}");
@@ -404,18 +406,20 @@ namespace CustomFixedDialogue
                     Monitor.Log($"Got {subs.Length} subs");
                     input = string.Format(input, subs);
                 }
-                if (input.Contains("¦"))
+                if (defaultString.Contains("¦"))
                 {
                     if (Game1.player.IsMale)
                     {
-                        input = input.Substring(0, input.IndexOf("¦"));
+                        newString = newString.Substring(0, newString.IndexOf("¦"));
                     }
                     else
                     {
-                        input = input.Substring(input.IndexOf("¦") + 1);
+                        newString = newString.Substring(newString.IndexOf("¦") + 1);
                     }
                 }
-                Monitor.Log($"Final edited input: {input}");
+                input.Replace(defaultString, newString);
+                input = rgx.Replace(input, "", 1);
+                Monitor.Log($"edited input: {input}");
             }
         }
     }

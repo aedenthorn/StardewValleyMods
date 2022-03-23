@@ -71,7 +71,6 @@ namespace CustomFixedDialogue
 
         private void Input_ButtonPressed(object sender, StardewModdingAPI.Events.ButtonPressedEventArgs e)
         {
-            return;
             if (e.Button == SButton.F2)
             {
                 var person = Game1.getCharacterFromName("Marnie");

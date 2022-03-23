@@ -163,7 +163,7 @@ namespace FreeLove
                 var spouses = Misc.GetSpouses(f, true).Keys;
                 foreach(string s in spouses)
                 {
-                    PMonitor.Log($"{f.Name} is married to {s}");
+                    SMonitor.Log($"{f.Name} is married to {s}");
                 }
             }
         }

@@ -1,0 +1,22 @@
+﻿{
+  "Name": "Fruit Tree Tweaks",
+  "Author": "aedenthorn",
+  "Version": "0.1.0",
+  "Description": "Fruit Tree Tweaks.",
+  "UniqueID": "aedenthorn.FruitTreeTweaks",
+  "EntryDll": "FruitTreeTweaks.dll",
+  "MinimumApiVersion": "3.13.0",
+  "ModUpdater": {
+    "Repository": "StardewValleyMods",
+    "User": "aedenthorn",
+    "Directory": "_releases",
+    "ModFolder": "FruitTreeTweaks"
+  },
+  "UpdateKeys": [ "Nexus:" ],
+  "Dependencies": [
+    {
+      "UniqueID": "Platonymous.ModUpdater",
+      "IsRequired": false
+    }
+  ]
+}

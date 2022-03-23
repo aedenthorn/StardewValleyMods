@@ -269,7 +269,7 @@ namespace FreeLove
                                 Dictionary<string, string> marriageDialogues = null;
                                 try
                                 {
-                                    marriageDialogues = ModEntry.PHelper.Content.Load<Dictionary<string, string>>("Characters\\Dialogue\\MarriageDialogue" + __instance.Name, ContentSource.GameContent);
+                                    marriageDialogues = ModEntry.SHelper.Content.Load<Dictionary<string, string>>("Characters\\Dialogue\\MarriageDialogue" + __instance.Name, ContentSource.GameContent);
                                 }
                                 catch (Exception)
                                 {
@@ -298,7 +298,7 @@ namespace FreeLove
                                 Dictionary<string, string> marriageDialogues = null;
                                 try
                                 {
-                                    marriageDialogues = ModEntry.PHelper.Content.Load<Dictionary<string, string>>("Characters\\Dialogue\\MarriageDialogue" + __instance.Name, ContentSource.GameContent);
+                                    marriageDialogues = ModEntry.SHelper.Content.Load<Dictionary<string, string>>("Characters\\Dialogue\\MarriageDialogue" + __instance.Name, ContentSource.GameContent);
                                 }
                                 catch (Exception)
                                 {
@@ -328,7 +328,7 @@ namespace FreeLove
                                 Dictionary<string, string> marriageDialogues = null;
                                 try
                                 {
-                                    marriageDialogues = ModEntry.PHelper.Content.Load<Dictionary<string, string>>("Characters\\Dialogue\\MarriageDialogue" + __instance.Name, ContentSource.GameContent);
+                                    marriageDialogues = ModEntry.SHelper.Content.Load<Dictionary<string, string>>("Characters\\Dialogue\\MarriageDialogue" + __instance.Name, ContentSource.GameContent);
                                 }
                                 catch (Exception)
                                 {
@@ -794,7 +794,7 @@ namespace FreeLove
                         if (!friendship.IsDating())
                         {
                             friendship.Status = FriendshipStatus.Dating;
-                            Multiplayer mp = ModEntry.PHelper.Reflection.GetField<Multiplayer>(typeof(Game1), "multiplayer").GetValue();
+                            Multiplayer mp = ModEntry.SHelper.Reflection.GetField<Multiplayer>(typeof(Game1), "multiplayer").GetValue();
                             mp.globalChatInfoMessage("Dating", new string[]
                             {
                                     who.Name,

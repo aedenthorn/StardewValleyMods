@@ -3,51 +3,35 @@ using System;
 
 namespace FreeLove
 {
-    public class Integrations
+    public partial class ModEntry
     {
-        private static IMonitor Monitor;
-        private static ModConfig Config;
-        private static IModHelper Helper;
         public static IKissingAPI kissingAPI;
         public static IBedTweaksAPI bedTweaksAPI;
+        public static IChildrenTweaksAPI childrenAPI;
         public static ICustomSpouseRoomsAPI customSpouseRoomsAPI;
 
-        // call this method from your Entry class
-        public static void Initialize(IMonitor monitor, ModConfig config, IModHelper helper)
-        {
-            Monitor = monitor;
-            Config = config;
-            Helper = helper;
-        }
         public static void LoadModApis()
         {
-            try 
-            { 
-                kissingAPI = Helper.ModRegistry.GetApi<IKissingAPI>("aedenthorn.HugsAndKisses");
-            }
-            catch {}
-            try 
-            { 
-                bedTweaksAPI = Helper.ModRegistry.GetApi<IBedTweaksAPI>("aedenthorn.BedTweaks");
-            }
-            catch { }
-            try 
-            { 
-                customSpouseRoomsAPI = Helper.ModRegistry.GetApi<ICustomSpouseRoomsAPI>("aedenthorn.CustomSpouseRooms");
-            }
-            catch { }
+            kissingAPI = SHelper.ModRegistry.GetApi<IKissingAPI>("aedenthorn.HugsAndKisses");
+            bedTweaksAPI = SHelper.ModRegistry.GetApi<IBedTweaksAPI>("aedenthorn.BedTweaks");
+            childrenAPI = SHelper.ModRegistry.GetApi<IChildrenTweaksAPI>("aedenthorn.ChildrenTweaks");
+            customSpouseRoomsAPI = SHelper.ModRegistry.GetApi<ICustomSpouseRoomsAPI>("aedenthorn.CustomSpouseRooms");
 
             if (kissingAPI != null)
             {
-                Monitor.Log("Kissing API loaded");
+                SMonitor.Log("Kissing API loaded");
             }
             if (bedTweaksAPI != null)
             {
-                Monitor.Log("BedTweaks API loaded");
+                SMonitor.Log("BedTweaks API loaded");
+            }
+            if (childrenAPI != null)
+            {
+                SMonitor.Log("ChildrenTweaks API loaded");
             }
             if (customSpouseRoomsAPI != null)
             {
-                Monitor.Log("customSpouseRooms API loaded");
+                SMonitor.Log("CustomSpouseRooms API loaded");
             }
         }
     }

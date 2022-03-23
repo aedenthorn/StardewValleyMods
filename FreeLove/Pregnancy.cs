@@ -16,9 +16,11 @@ namespace FreeLove
 
         public static bool Utility_pickPersonalFarmEvent_Prefix(ref FarmEvent __result)
         {
+            if (!Config.EnableMod)
+                return true;
             lastBirthingSpouse = null;
             lastPregnantSpouse = null;
-            PMonitor.Log("picking event");
+            SMonitor.Log("picking event");
             if (Game1.weddingToday)
             {
                 __result = null;
@@ -33,7 +35,7 @@ namespace FreeLove
             {
                 if (spouse == null)
                 {
-                    PMonitor.Log($"Utility_pickPersonalFarmEvent_Prefix spouse is null");
+                    SMonitor.Log($"Utility_pickPersonalFarmEvent_Prefix spouse is null");
                     continue;
                 }
                 Farmer f = spouse.getSpouse();
@@ -52,17 +54,18 @@ namespace FreeLove
                 if (spouse == null)
                     continue;
                 Farmer f = spouse.getSpouse();
-                if (!ModEntry.Config.RoommateRomance && f.friendshipData[spouse.Name].RoommateMarriage)
+                if (!Config.RoommateRomance && f.friendshipData[spouse.Name].RoommateMarriage)
                     continue;
 
                 int heartsWithSpouse = f.getFriendshipHeartLevelForNPC(spouse.Name);
                 Friendship friendship = f.friendshipData[spouse.Name];
                 List<Child> kids = f.getChildren();
-                bool can = spouse.daysAfterLastBirth <= 0 && Utility.getHomeOfFarmer(f).upgradeLevel >= 2 && friendship.DaysUntilBirthing < 0 && heartsWithSpouse >= 10 && friendship.DaysMarried >= 7 && (kids.Count < 2);
-                ModEntry.PMonitor.Log($"Checking ability to get pregnant: {spouse.Name} {can}:{(Utility.getHomeOfFarmer(f).upgradeLevel < 2 ? $" house level too low {Utility.getHomeOfFarmer(f).upgradeLevel}":"")}{(friendship.DaysMarried < 7 ? $" not married long enough {friendship.DaysMarried}":"")}{(friendship.DaysUntilBirthing >= 0 ? "Already pregnant! Gives birth in: "+friendship.DaysUntilBirthing:"")}");
-                if (can && Game1.player.currentLocation == Game1.getLocationFromName(Game1.player.homeLocation.Value) && ModEntry.myRand.NextDouble() <  0.05)
+                int maxChildren = childrenAPI == null ? 2 : childrenAPI.GetMaxChildren();
+                bool can = spouse.daysAfterLastBirth <= 0 && Utility.getHomeOfFarmer(f).upgradeLevel >= 2 && friendship.DaysUntilBirthing < 0 && heartsWithSpouse >= 10 && friendship.DaysMarried >= 7 && (kids.Count < maxChildren);
+                SMonitor.Log($"Checking ability to get pregnant: {spouse.Name} {can}:{(Utility.getHomeOfFarmer(f).upgradeLevel < 2 ? $" house level too low {Utility.getHomeOfFarmer(f).upgradeLevel}":"")}{(friendship.DaysMarried < 7 ? $", not married long enough {friendship.DaysMarried}":"")}{(friendship.DaysUntilBirthing >= 0 ? $", already pregnant (gives birth in: {friendship.DaysUntilBirthing})":"")}");
+                if (can && Game1.player.currentLocation == Game1.getLocationFromName(Game1.player.homeLocation.Value) && myRand.NextDouble() <  0.05)
                 {
-                    ModEntry.PMonitor.Log("Requesting a baby!");
+                    SMonitor.Log("Requesting a baby!");
                     lastPregnantSpouse = spouse;
                     __result = new QuestionEvent(1);
                     return false;
@@ -76,7 +79,7 @@ namespace FreeLove
 
         public static bool QuestionEvent_setUp_Prefix(int ___whichQuestion, ref bool __result)
         {
-            if(___whichQuestion == 1)
+            if(Config.EnableMod && ___whichQuestion == 1)
             {
                 if (lastPregnantSpouse == null)
                 {
@@ -106,7 +109,7 @@ namespace FreeLove
 
         public static bool BirthingEvent_tickUpdate_Prefix(GameTime time, BirthingEvent __instance, ref bool __result, ref int ___timer, string ___soundName, ref bool ___playedSound, string ___message, ref bool ___naming, bool ___getBabyName, bool ___isMale, string ___babyName)
         {
-            if (!ModEntry.Config.EnableMod || !___getBabyName)
+            if (!Config.EnableMod || !___getBabyName)
                 return true;
 
             Game1.player.CanMove = false;
@@ -146,7 +149,7 @@ namespace FreeLove
                 Child baby = new Child(newBabyName, ___isMale, isDarkSkinned, Game1.player)
                 {
                     Age = 0,
-                    Position = new Vector2(16f, 4f) * 64f + new Vector2(0f + ModEntry.myRand.Next(-64, 48), -24f + ModEntry.myRand.Next(-24, 24)),
+                    Position = new Vector2(16f, 4f) * 64f + new Vector2(0f + myRand.Next(-64, 48), -24f + myRand.Next(-24, 24)),
                 };
                 baby.modData["aedenthorn.FreeLove/OtherParent"] = lastBirthingSpouse.Name;
 
@@ -157,7 +160,7 @@ namespace FreeLove
                 if (Game1.player.getChildrenCount() == 2)
                 {
                     Game1.getCharacterFromName(lastBirthingSpouse.Name).shouldSayMarriageDialogue.Value = true;
-                    Game1.getCharacterFromName(lastBirthingSpouse.Name).currentMarriageDialogue.Insert(0, new MarriageDialogueReference("Data\\ExtraDialogue", "NewChild_SecondChild" + ModEntry.myRand.Next(1, 3), true, new string[0]));
+                    Game1.getCharacterFromName(lastBirthingSpouse.Name).currentMarriageDialogue.Insert(0, new MarriageDialogueReference("Data\\ExtraDialogue", "NewChild_SecondChild" + myRand.Next(1, 3), true, new string[0]));
                     Game1.getSteamAchievement("Achievement_FullHouse");
                 }
                 else if (lastBirthingSpouse.isGaySpouse())
@@ -176,7 +179,7 @@ namespace FreeLove
                 }
                 Game1.morningQueue.Enqueue(delegate
                 {
-                    ModEntry.mp.globalChatInfoMessage("Baby", new string[]
+                    mp.globalChatInfoMessage("Baby", new string[]
                     {
                         Lexicon.capitalize(Game1.player.Name),
                         Game1.player.spouse,
@@ -200,6 +203,8 @@ namespace FreeLove
         }
         public static bool BirthingEvent_setUp_Prefix(ref bool ___isMale, ref string ___message, ref bool __result)
         {
+            if (!Config.EnableMod)
+                return true;
             if(lastBirthingSpouse == null)
             {
                 __result = true;
@@ -207,7 +212,7 @@ namespace FreeLove
             }
             NPC spouse = lastBirthingSpouse;
             Game1.player.CanMove = false;
-            ___isMale = ModEntry.myRand.NextDouble() > 0.5f;
+            ___isMale = myRand.NextDouble() > 0.5f;
             if (spouse.isGaySpouse())
             {
                 ___message = Game1.content.LoadString("Strings\\Events:BirthMessage_Adoption", Lexicon.getGenderedChildTerm(___isMale));
