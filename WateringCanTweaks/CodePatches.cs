@@ -1,10 +1,12 @@
 ﻿using HarmonyLib;
 using Microsoft.Xna.Framework;
 using StardewValley;
+using StardewValley.Objects;
 using StardewValley.TerrainFeatures;
 using StardewValley.Tools;
 using System;
 using System.Collections.Generic;
+using Object = StardewValley.Object;
 
 namespace WateringCanTweaks
 {
@@ -69,7 +71,8 @@ namespace WateringCanTweaks
 
             SMonitor.Log($"Trying to water tiles starting at {startTile}");
 
-            if (__instance.CurrentTool.UpgradeLevel <= __instance.toolPower || (__instance.CurrentTool as WateringCan).WaterLeft <= 0 || !__instance.currentLocation.terrainFeatures.TryGetValue(startTile, out TerrainFeature feature) || feature is not HoeDirt)
+            HoeDirt dirt = GetHoeDirt(__instance.currentLocation, startTile);
+            if (__instance.CurrentTool.UpgradeLevel <= __instance.toolPower || (__instance.CurrentTool as WateringCan).WaterLeft <= 0 || dirt == null)
                 return false;
 
             var wateredTiles = 0;
@@ -78,9 +81,9 @@ namespace WateringCanTweaks
             SMonitor.Log($"Trying to water {tilesToWater} tiles");
 
             List<Vector2> tiles = new();
-            if((feature as HoeDirt).state.Value == 0)
+            if(dirt.state.Value == 0)
             {
-                (__instance.currentLocation.terrainFeatures[startTile] as HoeDirt).state.Value = 1;
+                WaterHoeDirt(__instance.currentLocation, startTile);
                 wateredTiles++;
                 SMonitor.Log($"watered tile {startTile}");
                 if (!(__instance.CurrentTool as WateringCan).IsBottomless && !__instance.hasWateringCanEnchantment)
@@ -117,25 +120,26 @@ namespace WateringCanTweaks
             return false;
         }
 
-        private static void WaterTiles(Farmer instance, List<Vector2> tiles, Vector2 startTile)
+        private static void WaterTiles(Farmer farmer, List<Vector2> tiles, Vector2 startTile)
         {
             var adjacents = Utility.getAdjacentTileLocations(startTile);
             for(int i = adjacents.Count - 1; i >= 0; i--)
             {
-                if (tiles.Contains(adjacents[i]) || !instance.currentLocation.terrainFeatures.TryGetValue(adjacents[i], out TerrainFeature feature) || feature is not HoeDirt)
+                HoeDirt dirt = GetHoeDirt(farmer.currentLocation, adjacents[i]);
+                if (tiles.Contains(adjacents[i]) || dirt is null)
                 {
                     adjacents.RemoveAt(i);
                     continue;
                 }
-                if ((feature as HoeDirt).state.Value == 0)
+                if (dirt.state.Value == 0)
                 {
-                    (instance.currentLocation.terrainFeatures[adjacents[i]] as HoeDirt).state.Value = 1;
+                    WaterHoeDirt(farmer.currentLocation, adjacents[i]);
                     wateredTiles++;
                     SMonitor.Log($"watered tile {adjacents[i]}");
-                    if(!(instance.CurrentTool as WateringCan).IsBottomless)
+                    if(!(farmer.CurrentTool as WateringCan).IsBottomless)
                     {
-                        AccessTools.FieldRefAccess<WateringCan, int>(instance.CurrentTool as WateringCan, "waterLeft")--;
-                        if (AccessTools.FieldRefAccess<WateringCan, int>(instance.CurrentTool as WateringCan, "waterLeft") <= 0)
+                        AccessTools.FieldRefAccess<WateringCan, int>(farmer.CurrentTool as WateringCan, "waterLeft")--;
+                        if (AccessTools.FieldRefAccess<WateringCan, int>(farmer.CurrentTool as WateringCan, "waterLeft") <= 0)
                         {
                             SMonitor.Log("Watering can empty");
                             return;
@@ -149,8 +153,32 @@ namespace WateringCanTweaks
             }
             foreach(var tile in adjacents)
             {
-                WaterTiles(instance, tiles, tile);
+                WaterTiles(farmer, tiles, tile);
             }
+        }
+
+        private static HoeDirt GetHoeDirt(GameLocation location, Vector2 tile)
+        {
+            if (location.terrainFeatures.TryGetValue(tile, out TerrainFeature feature) && feature is HoeDirt)
+                return feature as HoeDirt;
+            else if (SHelper.ModRegistry.IsLoaded("aedenthorn.ConnectedGardenPots") && location.objects.TryGetValue(tile, out Object obj) && obj is IndoorPot)
+                return (obj as IndoorPot).hoeDirt.Value;
+
+            return null;
+        }
+        private static bool WaterHoeDirt(GameLocation location, Vector2 tile)
+        {
+            if (location.terrainFeatures.TryGetValue(tile, out TerrainFeature feature) && feature is HoeDirt)
+            {
+                (location.terrainFeatures[tile] as HoeDirt).state.Value = 1;
+            }
+            else if (SHelper.ModRegistry.IsLoaded("aedenthorn.ConnectedGardenPots") && location.objects.TryGetValue(tile, out Object obj) && obj is IndoorPot)
+            {
+                (obj as IndoorPot).hoeDirt.Value.state.Value = 1;
+                (obj as IndoorPot).showNextIndex.Value = true;
+            }
+
+            return false;
         }
     }
 }
