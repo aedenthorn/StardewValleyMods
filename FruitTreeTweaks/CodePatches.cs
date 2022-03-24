@@ -17,6 +17,18 @@ namespace FruitTreeTweaks
 {
     public partial class ModEntry
     {
+        [HarmonyPatch(typeof(FruitTree), nameof(FruitTree.IsInSeasonHere))]
+        public class FruitTree_IsInSeasonHere_Patch
+        {
+            public static bool Prefix(ref bool __result)
+            {
+                if (!Config.EnableMod || !Config.FruitAllSeasons)
+                    return true;
+                __result = !Game1.IsWinter;
+                return false;
+            }
+        }
+        
         [HarmonyPatch(typeof(FruitTree), nameof(FruitTree.IsGrowthBlocked))]
         public class FruitTree_IsGrowthBlocked_Patch
         {
@@ -81,7 +93,6 @@ namespace FruitTreeTweaks
             }
             public static void Postfix(FruitTree __instance, SpriteBatch spriteBatch, Vector2 tileLocation)
             {
-                __instance.fruitsOnTree.Value = 42;
                 if (!Config.EnableMod || __instance.fruitsOnTree.Value <= 3 || __instance.growthStage.Value < 4)
                     return;
                 for (int i = 3; i < __instance.fruitsOnTree.Value; i++)

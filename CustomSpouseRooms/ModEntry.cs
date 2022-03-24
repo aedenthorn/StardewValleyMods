@@ -34,6 +34,7 @@ namespace CustomSpouseRooms
 
         public static Dictionary<string, SpouseRoomData> customRoomData = new Dictionary<string, SpouseRoomData>();
         public static Dictionary<string, SpouseRoomData> currentRoomData = new Dictionary<string, SpouseRoomData>();
+        public static Dictionary<string, SpouseRoomData> currentIslandRoomData = new Dictionary<string, SpouseRoomData>();
 
         /// <summary>The mod entry point, called after the mod is first loaded.</summary>
         /// <param name="helper">Provides simplified APIs for writing mods.</param>
@@ -72,6 +73,10 @@ namespace CustomSpouseRooms
             harmony.Patch(
                original: AccessTools.Method(typeof(FarmHouse), nameof(FarmHouse.updateFarmLayout)),
                prefix: new HarmonyMethod(typeof(LocationPatches), nameof(LocationPatches.FarmHouse_updateFarmLayout_Prefix))
+            );
+            harmony.Patch(
+               original: AccessTools.Method(typeof(DecoratableLocation), nameof(DecoratableLocation.MakeMapModifications)),
+               postfix: new HarmonyMethod(typeof(LocationPatches), nameof(LocationPatches.DecoratableLocation_MakeMapModifications_Postfix))
             );
             /*
             harmony.Patch(

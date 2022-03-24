@@ -12,7 +12,7 @@
     "Directory": "_releases",
     "ModFolder": "FruitTreeTweaks"
   },
-  "UpdateKeys": [ "Nexus:" ],
+  "UpdateKeys": [ "Nexus:11422" ],
   "Dependencies": [
     {
       "UniqueID": "Platonymous.ModUpdater",

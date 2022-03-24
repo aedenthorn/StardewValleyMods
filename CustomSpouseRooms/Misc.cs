@@ -50,9 +50,9 @@ namespace CustomSpouseRooms
             return spouses;
         }
 
-        public static void ExtendMap(FarmHouse farmHouse, int w, int h)
+        public static void ExtendMap(GameLocation location, int w, int h)
         {
-            List<Layer> layers = AccessTools.Field(typeof(Map), "m_layers").GetValue(farmHouse.map) as List<Layer>;
+            List<Layer> layers = AccessTools.Field(typeof(Map), "m_layers").GetValue(location.map) as List<Layer>;
             for (int i = 0; i < layers.Count; i++)
             {
                 Tile[,] tiles = AccessTools.Field(typeof(Layer), "m_tiles").GetValue(layers[i]) as Tile[,];
@@ -67,7 +67,7 @@ namespace CustomSpouseRooms
 
                 size = new Size(w, h);
                 AccessTools.Field(typeof(Layer), "m_layerSize").SetValue(layers[i], size);
-                AccessTools.Field(typeof(Map), "m_layers").SetValue(farmHouse.map, layers);
+                AccessTools.Field(typeof(Map), "m_layers").SetValue(location.map, layers);
 
                 Tile[,] newTiles = new Tile[w, h];
 
@@ -82,7 +82,7 @@ namespace CustomSpouseRooms
                 AccessTools.Field(typeof(Layer), "m_tileArray").SetValue(layers[i], new TileArray(layers[i], newTiles));
 
             }
-            AccessTools.Field(typeof(Map), "m_layers").SetValue(farmHouse.map, layers);
+            AccessTools.Field(typeof(Map), "m_layers").SetValue(location.map, layers);
         }
     }
 }

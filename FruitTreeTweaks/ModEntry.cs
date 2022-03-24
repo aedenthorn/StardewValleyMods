@@ -1,11 +1,6 @@
 ﻿using HarmonyLib;
-using Microsoft.Xna.Framework.Graphics;
 using StardewModdingAPI;
 using StardewModdingAPI.Events;
-using StardewValley;
-using StardewValley.Locations;
-using StardewValley.Objects;
-using Object = StardewValley.Object;
 
 namespace FruitTreeTweaks
 {
@@ -71,6 +66,13 @@ namespace FruitTreeTweaks
                 name: () => "Fruit Trees Block",
                 getValue: () => Config.FruitTreesBlock,
                 setValue: value => Config.FruitTreesBlock = value
+            );
+            configMenu.AddBoolOption(
+                mod: ModManifest,
+                name: () => "Fruit All Seasons",
+                tooltip: () => "Except winter, duh",
+                getValue: () => Config.FruitAllSeasons,
+                setValue: value => Config.FruitAllSeasons = value
             );
             configMenu.AddBoolOption(
                 mod: ModManifest,

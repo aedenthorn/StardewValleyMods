@@ -10,6 +10,7 @@ namespace CustomSpouseRooms
         public string templateName;
         public Point startPos = new Point(-1,-1);
         public string shellType;
+        public bool islandFarmHouse;
         public Point spousePosOffset = new Point(4, 5);
     }
 }
