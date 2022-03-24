@@ -69,22 +69,28 @@ namespace FruitTreeTweaks
             );
             configMenu.AddBoolOption(
                 mod: ModManifest,
+                name: () => "Objects Block",
+                getValue: () => Config.ObjectsBlock,
+                setValue: value => Config.ObjectsBlock = value
+            );
+            configMenu.AddBoolOption(
+                mod: ModManifest,
                 name: () => "Fruit All Seasons",
                 tooltip: () => "Except winter, duh",
                 getValue: () => Config.FruitAllSeasons,
                 setValue: value => Config.FruitAllSeasons = value
-            );
-            configMenu.AddBoolOption(
-                mod: ModManifest,
-                name: () => "Objects Block",
-                getValue: () => Config.ObjectsBlock,
-                setValue: value => Config.ObjectsBlock = value
             );
             configMenu.AddNumberOption(
                 mod: ModManifest,
                 name: () => "Max Fruit / Tree",
                 getValue: () => Config.MaxFruitPerTree,
                 setValue: value => Config.MaxFruitPerTree = value
+            );
+            configMenu.AddNumberOption(
+                mod: ModManifest,
+                name: () => "Days to Mature",
+                getValue: () => Config.DaysUntilMature,
+                setValue: value => Config.DaysUntilMature = value
             );
             configMenu.AddNumberOption(
                 mod: ModManifest,

@@ -41,8 +41,6 @@ namespace FruitTreeTweaks
                 ReloadFruit(tree.currentLocation, tree.currentTileLocation, tree.fruitsOnTree.Value);
             return fruitColors[tree.currentLocation][tree.currentTileLocation][index];
         }
-
-
         private static Vector2 GetFruitOffsetForShake(FruitTree tree, int index)
         {
             if (!Config.EnableMod || index < 2)
@@ -54,6 +52,23 @@ namespace FruitTreeTweaks
             if (!fruitOffsets.TryGetValue(tree.currentLocation, out Dictionary<Vector2, List<Vector2>> dict) || !dict.TryGetValue(tree.currentTileLocation, out List<Vector2> offsets) || offsets.Count < tree.fruitsOnTree.Value)
                 ReloadFruit(tree.currentLocation, tree.currentTileLocation, tree.fruitsOnTree.Value);
             return fruitOffsets[tree.currentLocation][tree.currentTileLocation][index];
+        }
+        private static int ChangeDaysToMatureCheck(int oldValue)
+        {
+            if (!Config.EnableMod)
+                return oldValue;
+            switch (oldValue)
+            {
+                case 0:
+                    return 0;
+                case 7:
+                    return Config.DaysUntilMature / 4;
+                case 14:
+                    return Config.DaysUntilMature / 2;
+                case 21:
+                    return Config.DaysUntilMature * 3 / 4;
+            }
+            return oldValue;
         }
 
         private static void ReloadFruit(GameLocation location, Vector2 tileLocation, int max)

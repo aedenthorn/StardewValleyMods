@@ -3,8 +3,6 @@ using HarmonyLib;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using StardewValley;
-using StardewValley.Locations;
-using StardewValley.Objects;
 using StardewValley.TerrainFeatures;
 using System;
 using System.Collections.Generic;
@@ -17,6 +15,31 @@ namespace FruitTreeTweaks
 {
     public partial class ModEntry
     {
+        [HarmonyPatch(typeof(FruitTree), new Type[] { typeof(int), typeof(int) })]
+        [HarmonyPatch(MethodType.Constructor)]
+        public class FruitTree__Patch1
+        {
+            public static void Postfix(FruitTree __instance)
+            {
+                if (!Config.EnableMod)
+                    return;
+                __instance.daysUntilMature.Value = Config.DaysUntilMature;
+                SMonitor.Log($"New fruit tree: set days until mature to {Config.DaysUntilMature}");
+            }
+        }
+        [HarmonyPatch(typeof(FruitTree), new Type[] { typeof(int) })]
+        [HarmonyPatch(MethodType.Constructor)]
+        public class FruitTree__Patch2
+        {
+            public static void Postfix(FruitTree __instance)
+            {
+                if (!Config.EnableMod)
+                    return;
+                __instance.daysUntilMature.Value = Config.DaysUntilMature;
+                SMonitor.Log($"New fruit tree: set days until mature to {Config.DaysUntilMature}");
+            }
+        }
+
         [HarmonyPatch(typeof(FruitTree), nameof(FruitTree.IsInSeasonHere))]
         public class FruitTree_IsInSeasonHere_Patch
         {
@@ -178,7 +201,11 @@ namespace FruitTreeTweaks
                         codes[i + 1].operand = AccessTools.Method(typeof(ModEntry), nameof(ModEntry.GetMaxFruit));
                         codes[i + 5].opcode = OpCodes.Call;
                         codes[i + 5].operand = AccessTools.Method(typeof(ModEntry), nameof(ModEntry.GetFruitPerDay));
-                        break;
+                    }
+                    if (i < codes.Count - 3 && codes[i].opcode == OpCodes.Ldfld && (FieldInfo)codes[i].operand == AccessTools.Field(typeof(FruitTree), nameof(FruitTree.daysUntilMature)) && codes[i + 3].opcode == OpCodes.Bgt_S)
+                    {
+                        SMonitor.Log("replacing daysUntilMature value with method");
+                        codes.Insert(i + 3, new CodeInstruction(OpCodes.Call, AccessTools.Method(typeof(ModEntry), nameof(ModEntry.ChangeDaysToMatureCheck))));
                     }
                 }
 
