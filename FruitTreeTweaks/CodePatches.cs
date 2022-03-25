@@ -156,27 +156,54 @@ namespace FruitTreeTweaks
         {
             public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions)
             {
-                SMonitor.Log($"Transpiling FruitTree.shake");
+                SMonitor.Log($"Transpiling Object.placementAction");
                 var codes = new List<CodeInstruction>(instructions);
                 bool found1 = false;
                 bool found2 = false;
+                bool found3 = false;
+                bool found4 = false;
                 for (int i = 0; i < codes.Count; i++)
                 {
-                    if (!found1 && i > 0 && i < codes.Count - 6 && codes[i + 1].opcode == OpCodes.Ldstr && (string)codes[i + 1].operand == "Strings\\StringsFromCSFiles:Object.cs.13060")
+                    if (i > 0 && i > 0 && i < codes.Count - 1 && codes[i - 1].opcode == OpCodes.Brfalse_S && codes[i + 1].opcode == OpCodes.Ldstr && (string)codes[i + 1].operand == "Strings\\StringsFromCSFiles:Object.cs.13060")
                     {
                         SMonitor.Log("adding extra check for tree blocking placement");
+                        var ci = new CodeInstruction(OpCodes.Call, AccessTools.Method(typeof(ModEntry), nameof(ModEntry.TreesBlock)));
+                        codes[i].MoveLabelsTo(ci);
                         codes.Insert(i, codes[i - 1]);
-                        codes.Insert(i, new CodeInstruction(OpCodes.Call, AccessTools.Method(typeof(ModEntry), nameof(ModEntry.TreesBlock))));
+                        codes.Insert(i, ci);
+                        i += 2;
                         found1 = true;
                     }
-                    if (!found2 && i > 0 && i < codes.Count - 6 && codes[i + 1].opcode == OpCodes.Ldstr && (string)codes[i + 1].operand == "Strings\\StringsFromCSFiles:Object.cs.13060_Fruit")
+                    else if (!found2 && i > 0 && i < codes.Count - 6 && codes[i + 1].opcode == OpCodes.Ldstr && (string)codes[i + 1].operand == "Strings\\StringsFromCSFiles:Object.cs.13060_Fruit")
                     {
                         SMonitor.Log("adding extra check for fruit tree blocking placement");
                         codes.Insert(i, codes[i - 1]);
                         codes.Insert(i, new CodeInstruction(OpCodes.Call, AccessTools.Method(typeof(ModEntry), nameof(ModEntry.FruitTreesBlock))));
+                        i += 2;
                         found2 = true;
                     }
-                    if (found1 && found2)
+                    else if (!found3 && codes[i].opcode == OpCodes.Callvirt && (MethodInfo)codes[i].operand == AccessTools.Method(typeof(Object), nameof(Object.isSapling)))
+                    {
+                        SMonitor.Log("found isSapling");
+                        found3 = true;
+                    }
+                    else if (found3 && !found4 && i < codes.Count - 110 && codes[i].opcode == OpCodes.Ldloc_0 &&  codes[i + 1].opcode == OpCodes.Ldfld && codes[i + 2].opcode == OpCodes.Isinst && ((Type)codes[i + 2].operand).Name == "Farm")
+                    {
+                        SMonitor.Log("adding sapling tile / map check override method");
+                        for (int j = i; j < codes.Count - 3; j++)
+                        {
+                            if (codes[j + 3].opcode == OpCodes.Ldstr && (string)codes[j+3].operand == "dirtyHit")
+                            {
+                                var ci = new CodeInstruction(OpCodes.Call, AccessTools.Method(typeof(ModEntry), nameof(ModEntry.CanPlantAnywhere)));
+                                codes[i].MoveLabelsTo(ci);
+                                codes.Insert(i, new CodeInstruction(OpCodes.Brtrue, codes[j+1].labels[0]));
+                                codes.Insert(i, ci);
+                                break;
+                            }
+                        }
+                        found4 = true;
+                    }
+                    if (found1 && found2 && found3 && found4)
                         break;
                 }
 

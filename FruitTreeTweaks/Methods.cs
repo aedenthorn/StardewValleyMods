@@ -23,7 +23,11 @@ namespace FruitTreeTweaks
         }
         private static bool FruitTreesBlock()
         {
-            return Config.FruitTreesBlock;
+            return Config.TreesBlock;
+        }
+        private static bool CanPlantAnywhere()
+        {
+            return Config.PlantAnywhere;
         }
         private static int GetMaxFruit()
         {

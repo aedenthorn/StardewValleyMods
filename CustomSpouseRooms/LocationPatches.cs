@@ -121,7 +121,9 @@ namespace CustomSpouseRooms
 
 					SpouseRoomData srd = null;
 					if (ModEntry.customRoomData.ContainsKey(spouse))
-						srd = ModEntry.customRoomData[spouse];
+                    {
+						srd = new SpouseRoomData(ModEntry.customRoomData[spouse]);
+                    }
 
 					Point corner = __instance.GetSpouseRoomCorner() + new Point(xOffset * i, 0);
 
@@ -187,13 +189,6 @@ namespace CustomSpouseRooms
 					return;
 
 				GetIslandFarmHouseSpouseRooms(__instance as IslandFarmHouse, allSpouses, out List<string> customSpouses);
-				
-				if (ModEntry.customRoomData.Count == 0 && allSpouses.Count == 1)// single spouse, no customizations
-				{
-					Monitor.Log("Single uncustomized spouse room, letting vanilla game take over");
-					return;
-				}
-
 
 				__instance.reloadMap();
 
@@ -254,13 +249,13 @@ namespace CustomSpouseRooms
 		
         private static void GetIslandFarmHouseSpouseRooms(IslandFarmHouse fh, List<string> orderableSpouses, out List<string> customSpouses)
 		{
-			Monitor.Log($"Getting {orderableSpouses.Count} spouse rooms");
+			Monitor.Log($"Getting {orderableSpouses.Count} island spouse rooms");
 			customSpouses = new List<string>();
 			for (int i = orderableSpouses.Count - 1; i >= 0; i--)
 			{
 				if (ModEntry.customRoomData.TryGetValue(orderableSpouses[i], out SpouseRoomData srd) && srd.islandFarmHouse && srd.startPos.X > -1)
 				{
-					Monitor.Log($"{orderableSpouses[i]} has custom spouse room");
+					Monitor.Log($"{orderableSpouses[i]} has custom island spouse room at {srd.startPos}");
 					customSpouses.Add(orderableSpouses[i]);
 				}
 			}
@@ -299,7 +294,6 @@ namespace CustomSpouseRooms
 					}
 				}
 			}
-
 
 			Dictionary<string, string> room_data = Game1.content.Load<Dictionary<string, string>>("Data\\SpouseRooms");
 			string map_path = "spouseRooms";

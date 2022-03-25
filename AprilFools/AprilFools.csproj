@@ -4,16 +4,32 @@
     <TargetFramework>net5.0</TargetFramework>
 	<EnableHarmony>true</EnableHarmony>
   </PropertyGroup>
-
+  <ItemGroup>
+    <None Remove="i18n\default.json" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="i18n\default.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Pathoschild.Stardew.ModBuildConfig" Version="4.0.0" />
   </ItemGroup>
 
   <ItemGroup>
+    <None Update="assets\bee.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="assets\Fira_Code.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="assets\Fira_Code.xnb">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Update="assets\numbers.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Update="i18n\default.json">
+    <None Update="assets\raven.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Update="manifest.json">

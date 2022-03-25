@@ -1,18 +1,18 @@
 ﻿{
-  "Name": "Fruit Tree Tweaks",
+  "Name": "Advanced Menu Positioning",
   "Author": "aedenthorn",
-  "Version": "0.3.0",
-  "Description": "Fruit Tree Tweaks.",
-  "UniqueID": "aedenthorn.FruitTreeTweaks",
-  "EntryDll": "FruitTreeTweaks.dll",
+  "Version": "0.2.0",
+  "Description": "Advanced Menu Positioning.",
+  "UniqueID": "aedenthorn.AdvancedMenuPositioning",
+  "EntryDll": "AdvancedMenuPositioning.dll",
   "MinimumApiVersion": "3.13.0",
   "ModUpdater": {
     "Repository": "StardewValleyMods",
     "User": "aedenthorn",
     "Directory": "_releases",
-    "ModFolder": "FruitTreeTweaks"
+    "ModFolder": "AdvancedMenuPositioning"
   },
-  "UpdateKeys": [ "Nexus:11422" ],
+  "UpdateKeys": [ "Nexus:11315" ],
   "Dependencies": [
     {
       "UniqueID": "Platonymous.ModUpdater",

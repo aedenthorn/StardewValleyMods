@@ -1,18 +1,18 @@
 ﻿{
-  "Name": "Custom Fixed Dialogue",
+  "Name": "April Fools",
   "Author": "aedenthorn",
-  "Version": "2.1.1",
-  "Description": "Custom fixed dialogue.",
-  "UniqueID": "aedenthorn.CustomFixedDialogue",
-  "EntryDll": "CustomFixedDialogue.dll",
+  "Version": "0.1.0",
+  "Description": "April Fools.",
+  "UniqueID": "aedenthorn.AprilFools",
+  "EntryDll": "AprilFools.dll",
   "MinimumApiVersion": "3.13.0",
-  "UpdateKeys": [ "Nexus:6358" ],
   "ModUpdater": {
     "Repository": "StardewValleyMods",
     "User": "aedenthorn",
     "Directory": "_releases",
-    "ModFolder": "CustomFixedDialogue"
+    "ModFolder": "AprilFools"
   },
+  "UpdateKeys": [ "Nexus:" ],
   "Dependencies": [
     {
       "UniqueID": "Platonymous.ModUpdater",

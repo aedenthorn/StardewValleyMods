@@ -455,7 +455,7 @@ namespace Swim
                 }
             }
             Vector2 vLocation = new Vector2(tileLocation.X, tileLocation.Y);
-            if (location.terrainFeatures.ContainsKey(vLocation) && tileLocationRect.Intersects(location.terrainFeatures[vLocation].getBoundingBox(vLocation)) && (!location.terrainFeatures[vLocation].isPassable(null) || (location.terrainFeatures[vLocation] is HoeDirt && ((HoeDirt)location.terrainFeatures[vLocation]).crop != null)))
+            if (location.terrainFeatures.TryGetValue(vLocation, out TerrainFeature feature) && feature != null && tileLocationRect.Intersects(feature.getBoundingBox(vLocation)) && (!feature.isPassable(null) || (feature is HoeDirt && ((HoeDirt)feature).crop != null)))
             {
                 return false;
             }

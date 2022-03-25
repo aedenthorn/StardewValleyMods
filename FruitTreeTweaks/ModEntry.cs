@@ -63,15 +63,16 @@ namespace FruitTreeTweaks
             );
             configMenu.AddBoolOption(
                 mod: ModManifest,
-                name: () => "Fruit Trees Block",
-                getValue: () => Config.FruitTreesBlock,
-                setValue: value => Config.FruitTreesBlock = value
-            );
-            configMenu.AddBoolOption(
-                mod: ModManifest,
                 name: () => "Objects Block",
                 getValue: () => Config.ObjectsBlock,
                 setValue: value => Config.ObjectsBlock = value
+            );
+            configMenu.AddBoolOption(
+                mod: ModManifest,
+                name: () => "Plant Anywhere",
+                tooltip: () => "Remove tile and map restrictions",
+                getValue: () => Config.PlantAnywhere,
+                setValue: value => Config.PlantAnywhere = value
             );
             configMenu.AddBoolOption(
                 mod: ModManifest,

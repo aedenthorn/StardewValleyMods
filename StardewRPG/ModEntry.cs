@@ -175,6 +175,13 @@ namespace StardewRPG
             );
 
 
+            harmony.Patch(
+               original: AccessTools.Method(typeof(Game1), nameof(Game1.UpdateOther)),
+               prefix: new HarmonyMethod(typeof(ModEntry), nameof(ModEntry.Game1_UpdateOther_Prefix)),
+               postfix: new HarmonyMethod(typeof(ModEntry), nameof(ModEntry.Game1_UpdateOther_Postfix))
+            );
+
+
             // NPC patches
 
             harmony.Patch(

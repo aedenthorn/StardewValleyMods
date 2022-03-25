@@ -110,7 +110,7 @@ namespace CustomSpouseRooms
                 foreach (var srd in obj.data)
                 {
                     customRoomData.Add(srd.name, srd);
-                    Monitor.Log($"Added {srd.name} room data, start pose{srd.startPos}");
+                    Monitor.Log($"Added {srd.name} room data, start pos {srd.startPos}");
                 }
 
                 Monitor.Log($"Added {obj.data.Count} room datas from {contentPack.Manifest.Name}");
