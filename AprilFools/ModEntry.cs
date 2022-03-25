@@ -72,6 +72,8 @@ namespace AprilFools
 
         private void GameLoop_UpdateTicked(object sender, StardewModdingAPI.Events.UpdateTickedEventArgs e)
         {
+            if (!Config.EnableMod)
+                return;
             if (backwardsCursor)
             {
                 var pos = Game1.getMousePosition();
@@ -86,7 +88,9 @@ namespace AprilFools
 
         private void GameLoop_OneSecondUpdateTicked(object sender, StardewModdingAPI.Events.OneSecondUpdateTickedEventArgs e)
         {
-            if(backwardsFarmer)
+            if (!Config.EnableMod)
+                return;
+            if (backwardsFarmer)
             {
                 if(Game1.random.NextDouble() < 0.1)
                 {
@@ -128,6 +132,9 @@ namespace AprilFools
 
         private void Display_Rendered(object sender, StardewModdingAPI.Events.RenderedEventArgs e)
         {
+            if (!Config.EnableMod)
+                return;
+
             if (beeDataList.Count > 0)
             {
                 for (int i = beeDataList.Count - 1; i >= 0; i--)
@@ -174,6 +181,9 @@ namespace AprilFools
 
         private void Display_RenderedWorld(object sender, StardewModdingAPI.Events.RenderedWorldEventArgs e)
         {
+            if (!Config.EnableMod)
+                return;
+
             if (asciifying)
             {
                 int scale = 16;

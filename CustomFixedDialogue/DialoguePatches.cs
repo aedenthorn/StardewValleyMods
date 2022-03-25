@@ -6,10 +6,9 @@ using System.Text.RegularExpressions;
 
 namespace CustomFixedDialogue
 {
-    public class DialoguePatches
+    public partial class ModEntry
     {
-        private static IMonitor Monitor;
-        private static IModHelper Helper;
+
         private static string CSPrefix = "Strings\\StringsFromCSFiles:";
         private static string CSReplacePrefix = "StringsFromCSFiles_";
         private static string NPCPrefix = "Strings\\StringsFromCSFiles:NPC.cs.";
@@ -115,152 +114,85 @@ namespace CustomFixedDialogue
             "5363",
             "5364",
         };
-
-        public static void Initialize(IMonitor monitor, IModHelper helper)
-        {
-            Monitor = monitor;
-            Helper = helper;
-        }
         public static void LocalizedContentManager_LoadString_Postfix3(string path, object sub1, object sub2, object sub3, ref string __result)
         {
+            SMonitor.Log($"3 result: {__result}");
+            return;
             if (dontFix)
                 return;
-            try
-            {
-                ReplaceString(path, ref __result, new object[] { sub1, sub2, sub3 });
-            }
-            catch (Exception ex)
-            {
-                Monitor.Log($"Failed in {nameof(LocalizedContentManager_LoadString_Postfix)}:\n{ex}", LogLevel.Error);
-            }
+            ReplaceString(path, ref __result, new object[] { sub1, sub2, sub3 });
+
         }
         public static void LocalizedContentManager_LoadString_Postfix2(string path, object sub1, object sub2, ref string __result)
         {
+            SMonitor.Log($"2 result: {__result}");
+            return;
             if (dontFix)
                 return;
+            ReplaceString(path, ref __result, new object[] { sub1, sub2 });
 
-            try
-            {
-                ReplaceString(path, ref __result, new object[] { sub1, sub2 });
-            }
-            catch (Exception ex)
-            {
-                Monitor.Log($"Failed in {nameof(LocalizedContentManager_LoadString_Postfix)}:\n{ex}", LogLevel.Error);
-            }
         }
         public static void LocalizedContentManager_LoadString_Postfix1(string path, object sub1, ref string __result)
         {
+            SMonitor.Log($"1 result: {__result}");
+            return;
             if (dontFix)
                 return;
-            try
-            {
-                ReplaceString(path, ref __result, new object[] { sub1 });
-            }
-            catch (Exception ex)
-            {
-                Monitor.Log($"Failed in {nameof(LocalizedContentManager_LoadString_Postfix)}:\n{ex}", LogLevel.Error);
-            }
+            ReplaceString(path, ref __result, new object[] { sub1 });
+
         }
         public static void LocalizedContentManager_LoadString_Postfix(string path, ref string __result)
         {
             if (dontFix)
                 return;
-            try
-            {
-                ReplaceString(path, ref __result);
-            }
-            catch (Exception ex)
-            {
-                Monitor.Log($"Failed in {nameof(LocalizedContentManager_LoadString_Postfix)}:\n{ex}", LogLevel.Error);
-            }
+            ReplaceString(path, ref __result);
         }
         public static void Dialogue_Prefix(Dialogue __instance, ref string masterDialogue, NPC speaker)
         {
-            try
-            {
-                FixString(speaker, ref masterDialogue);
-
-            }
-            catch (Exception ex)
-            {
-                Monitor.Log($"Failed in {nameof(Dialogue_Prefix)}:\n{ex}", LogLevel.Error);
-            }
+            FixString(speaker, ref masterDialogue);
         }
 
         public static void NPC_showTextAboveHead_Prefix(NPC __instance, ref string Text)
         {
-            try
-            {
-                FixString(__instance, ref Text);
-            }
-            catch (Exception ex)
-            {
-                Monitor.Log($"Failed in {nameof(NPC_showTextAboveHead_Prefix)}:\n{ex}", LogLevel.Error);
-            }
+            FixString(__instance, ref Text);
         }
 
         public static void NPC_getTermOfSpousalEndearment_Postfix(NPC __instance, ref string __result)
         {
-            try
-            {
-                FixString(__instance, ref __result);
-            }
-            catch (Exception ex)
-            {
-                Monitor.Log($"Failed in {nameof(NPC_getTermOfSpousalEndearment_Postfix)}:\n{ex}", LogLevel.Error);
-            }
+            FixString(__instance, ref __result);
+
         }
 
         public static void NPC_getHi_Postfix(NPC __instance, ref string __result)
         {
-            try
-            {
-                FixString(__instance, ref __result);
+            FixString(__instance, ref __result);
 
-            }
-            catch (Exception ex)
-            {
-                Monitor.Log($"Failed in {nameof(NPC_getHi_Postfix)}:\n{ex}", LogLevel.Error);
-            }
         }
         public static void convertToDwarvish_Prefix(ref string str)
         {
-            try
-            {
-                FixString(Game1.getCharacterFromName("Dwarf"), ref str);
-            }
-            catch (Exception ex)
-            {
-                Monitor.Log($"Failed in {nameof(convertToDwarvish_Prefix)}:\n{ex}", LogLevel.Error);
-            }
+            FixString(Game1.getCharacterFromName("Dwarf"), ref str);
+
         }
         public static void GetSummitDialogue_Patch(string key, ref string __result)
         {
-            try
+            var spouse = Game1.player.getSpouse();
+            if (key.Contains("Spouse") && spouse != null)
             {
-                var spouse = Game1.player.getSpouse();
-                if (key.Contains("Spouse") && spouse != null)
+                Dictionary<string, string> dialogueDic = null;
+                try
                 {
-                    Dictionary<string, string> dialogueDic = null;
-                    try
-                    {
-                        dialogueDic = Game1.content.Load<Dictionary<string, string>>($"Characters/Dialogue/{spouse.Name}");
-                    }
-                    catch (Exception ex)
-                    {
-                        Monitor.Log($"Error loading character dictionary for {spouse.Name}:\r\n{ex}");
-                    }
-
-                    if (dialogueDic != null && dialogueDic.ContainsKey(key))
-                    {
-                        Monitor.Log($"{spouse.Name} has dialogue for {key}", LogLevel.Debug);
-                        __result = dialogueDic[key];
-                    }
+                    dialogueDic = Game1.content.Load<Dictionary<string, string>>($"Characters/Dialogue/{spouse.Name}");
                 }
-            }
-            catch (Exception ex)
-            {
-                Monitor.Log($"Failed in {nameof(convertToDwarvish_Prefix)}:\n{ex}", LogLevel.Error);
+                catch (Exception ex)
+                {
+                    SMonitor.Log($"Error loading character dictionary for {spouse.Name}:\r\n{ex}");
+                }
+
+                if (dialogueDic != null && dialogueDic.ContainsKey(key))
+                {
+                    SMonitor.Log($"{spouse.Name} has dialogue for {key}", LogLevel.Debug);
+                    __result = dialogueDic[key];
+                }
             }
         }
         public static void ReplaceString(string path, ref string text, object[] subs = null)
@@ -285,7 +217,7 @@ namespace CustomFixedDialogue
             {
                 if (text.Contains("{" + i + "}"))
                 {
-                    if (subs == null)
+                    if (substring == "")
                         substring = "`";
                     substring += "{" + i + "}`";
                 }
@@ -309,7 +241,7 @@ namespace CustomFixedDialogue
             else return;
 
             text = "<" + $"{modifiedPath}{substring}" + ">";
-            Monitor.Log($"preparing string {original} for replacement: {text}");
+            SMonitor.Log($"preparing string {original} for replacement: {text}");
         }
 
         public static void FixString(NPC speaker, ref string input)
@@ -322,9 +254,9 @@ namespace CustomFixedDialogue
             }
             catch (Exception ex)
             {
-                Monitor.Log($"Error loading character dictionary for {speaker.Name}:\r\n{ex}");
+                SMonitor.Log($"Error loading character dictionary for {speaker.Name}:\r\n{ex}");
             }
-            //Monitor.Log($"checking string: {input}");
+            //SMonitor.Log($"checking string: {input}");
             Regex pattern1 = new Regex(@"<(?<key>[^<>]+)>", RegexOptions.Compiled);
             Regex pattern2 = new Regex(@"<(?<key>[^<`>]+)`(?<subs>[^>]+)`>", RegexOptions.Compiled);
             while (pattern1.IsMatch(input))
@@ -344,18 +276,18 @@ namespace CustomFixedDialogue
                     }
                 }
 
-                Monitor.Log($"Found key {key} with subs: {substring}");
+                SMonitor.Log($"Found key {key} with subs: {substring}");
                 string newString = "";
                 string checkKey = key.Replace(CSReplacePrefix, "");
                 if (dialogueDic != null && dialogueDic.TryGetValue(checkKey, out newString))
                 {
-                    Monitor.Log($"Found custom dialogue for npc {speaker.Name}, path {key}: {newString}");
+                    SMonitor.Log($"Found custom dialogue for npc {speaker.Name}, path {key}: {newString}");
                     if (subs != null)
                     {
-                        Monitor.Log($"Dealing with subs");
+                        SMonitor.Log($"Dealing with subs");
                         newString = string.Format(newString, subs);
                     }
-                    Monitor.Log($"New string: {newString}");
+                    SMonitor.Log($"New string: {newString}");
                 }
                 else
                 {
@@ -366,17 +298,17 @@ namespace CustomFixedDialogue
                     if (subs != null)
                     {
                         newString = Game1.content.LoadString(key, subs);
-                        Monitor.Log($"Got vanilla string {newString} for key {key}");
+                        SMonitor.Log($"Got vanilla string {newString} for key {key}");
                     }
                     else
                     {
                         newString = Game1.content.LoadString(key);
-                        Monitor.Log($"Got vanilla string {newString} for key {key}");
+                        SMonitor.Log($"Got vanilla string {newString} for key {key}");
                     }
                     dontFix = false;
                 }
                 input = input.Replace(match.Value, newString);
-                Monitor.Log($"Final replacement for {match.Value}: {newString}.\nCurrent output: {input}");
+                SMonitor.Log($"Final replacement for {match.Value}: {newString}.\nCurrent output: {input}");
             }
         }
     }

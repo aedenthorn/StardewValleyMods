@@ -156,6 +156,9 @@ namespace AprilFools
         {
             public static void Prefix(Farmer __instance)
             {
+                if (!Config.EnableMod)
+                    return;
+
                 if (backwardsFarmer)
                 {
                     if(__instance.movementDirections.Contains(0) && !__instance.movementDirections.Contains(2))
