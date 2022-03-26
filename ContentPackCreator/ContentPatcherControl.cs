@@ -24,7 +24,6 @@ namespace ContentPackCreator
         public ContentPatcherControl()
         {
             InitializeComponent();
-            changeAction.AutoCompleteCustomSource = actionTypeList;
         }
 
         private void listBox1_SelectedIndexChanged(object sender, EventArgs e)
@@ -67,9 +66,11 @@ namespace ContentPackCreator
 
         private void actionComboBox_SelectedIndexChanged(object sender, EventArgs e)
         {
+            changesActionPanel.Controls.Clear();
             switch (actionComboBox.SelectedItem.ToString())
             {
                 case "Load":
+                    changesActionPanel.Controls.Add(new ActionLoadControl() { Anchor = AnchorStyles.Left | AnchorStyles.Right });
                     break;
                 case "EditData":
                     break;

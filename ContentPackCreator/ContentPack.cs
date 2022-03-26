@@ -88,7 +88,7 @@ namespace ContentPackCreator
         {
             depTable.RowCount = depTable.RowCount + 1;
             depTable.RowStyles.RemoveAt(depTable.RowStyles.Count - 1);
-            depTable.Controls.RemoveByKey("addDep");
+            depTable.Controls.RemoveByKey("addDepButton");
             depTable.RowStyles.Add(new RowStyle(SizeType.Absolute, 120F));
             var dc = new DepControl() { Anchor = AnchorStyles.Left | AnchorStyles.Right };
             ((TextBox)dc.Controls["depID"]).AutoCompleteCustomSource = uniqueIDs;

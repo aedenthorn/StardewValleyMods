@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            this.components = new System.ComponentModel.Container();
             this.tabControl1 = new System.Windows.Forms.TabControl();
             this.tabPage1 = new System.Windows.Forms.TabPage();
             this.label10 = new System.Windows.Forms.Label();
@@ -43,11 +44,16 @@
             this.configFieldName = new System.Windows.Forms.TextBox();
             this.configListBox = new System.Windows.Forms.ListBox();
             this.tabPage5 = new System.Windows.Forms.TabPage();
+            this.textBox1 = new System.Windows.Forms.TextBox();
+            this.label3 = new System.Windows.Forms.Label();
+            this.changesRemoveButton = new System.Windows.Forms.Button();
+            this.changesActionPanel = new System.Windows.Forms.Panel();
+            this.changesAddButton = new System.Windows.Forms.Button();
+            this.actionComboBox = new System.Windows.Forms.ComboBox();
             this.label5 = new System.Windows.Forms.Label();
             this.listBox1 = new System.Windows.Forms.ListBox();
             this.cpJsonTab = new System.Windows.Forms.TabPage();
-            this.actionComboBox = new System.Windows.Forms.ComboBox();
-            this.panel1 = new System.Windows.Forms.Panel();
+            this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
             this.tabControl1.SuspendLayout();
             this.tabPage1.SuspendLayout();
             this.tabPage3.SuspendLayout();
@@ -221,7 +227,11 @@
             // 
             // tabPage5
             // 
-            this.tabPage5.Controls.Add(this.panel1);
+            this.tabPage5.Controls.Add(this.textBox1);
+            this.tabPage5.Controls.Add(this.label3);
+            this.tabPage5.Controls.Add(this.changesRemoveButton);
+            this.tabPage5.Controls.Add(this.changesActionPanel);
+            this.tabPage5.Controls.Add(this.changesAddButton);
             this.tabPage5.Controls.Add(this.actionComboBox);
             this.tabPage5.Controls.Add(this.label5);
             this.tabPage5.Controls.Add(this.listBox1);
@@ -233,10 +243,76 @@
             this.tabPage5.Text = "Changes";
             this.tabPage5.UseVisualStyleBackColor = true;
             // 
+            // textBox1
+            // 
+            this.textBox1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.textBox1.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
+            this.textBox1.Location = new System.Drawing.Point(376, 12);
+            this.textBox1.MinimumSize = new System.Drawing.Size(612, 30);
+            this.textBox1.Name = "textBox1";
+            this.textBox1.Size = new System.Drawing.Size(810, 29);
+            this.textBox1.TabIndex = 65;
+            // 
+            // label3
+            // 
+            this.label3.Font = new System.Drawing.Font("Segoe UI", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
+            this.label3.Location = new System.Drawing.Point(245, 12);
+            this.label3.Name = "label3";
+            this.label3.Size = new System.Drawing.Size(122, 30);
+            this.label3.TabIndex = 64;
+            this.label3.Text = "LogName";
+            this.label3.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            // 
+            // changesRemoveButton
+            // 
+            this.changesRemoveButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.changesRemoveButton.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
+            this.changesRemoveButton.Location = new System.Drawing.Point(899, 428);
+            this.changesRemoveButton.Name = "changesRemoveButton";
+            this.changesRemoveButton.Size = new System.Drawing.Size(139, 34);
+            this.changesRemoveButton.TabIndex = 63;
+            this.changesRemoveButton.Text = "Remove";
+            this.changesRemoveButton.UseVisualStyleBackColor = true;
+            // 
+            // changesActionPanel
+            // 
+            this.changesActionPanel.Location = new System.Drawing.Point(245, 83);
+            this.changesActionPanel.Name = "changesActionPanel";
+            this.changesActionPanel.Size = new System.Drawing.Size(938, 339);
+            this.changesActionPanel.TabIndex = 57;
+            // 
+            // changesAddButton
+            // 
+            this.changesAddButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.changesAddButton.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
+            this.changesAddButton.Location = new System.Drawing.Point(1044, 429);
+            this.changesAddButton.Name = "changesAddButton";
+            this.changesAddButton.Size = new System.Drawing.Size(139, 34);
+            this.changesAddButton.TabIndex = 62;
+            this.changesAddButton.Text = "Add";
+            this.changesAddButton.UseVisualStyleBackColor = true;
+            // 
+            // actionComboBox
+            // 
+            this.actionComboBox.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
+            this.actionComboBox.FormattingEnabled = true;
+            this.actionComboBox.Items.AddRange(new object[] {
+            "Load",
+            "EditData",
+            "EditImage",
+            "EditMap",
+            "Include"});
+            this.actionComboBox.Location = new System.Drawing.Point(376, 48);
+            this.actionComboBox.Name = "actionComboBox";
+            this.actionComboBox.Size = new System.Drawing.Size(810, 29);
+            this.actionComboBox.TabIndex = 56;
+            this.actionComboBox.SelectedIndexChanged += new System.EventHandler(this.actionComboBox_SelectedIndexChanged);
+            // 
             // label5
             // 
             this.label5.Font = new System.Drawing.Font("Segoe UI", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
-            this.label5.Location = new System.Drawing.Point(245, 9);
+            this.label5.Location = new System.Drawing.Point(248, 47);
             this.label5.Name = "label5";
             this.label5.Size = new System.Drawing.Size(122, 30);
             this.label5.TabIndex = 48;
@@ -265,29 +341,6 @@
             this.cpJsonTab.Text = "JSON";
             this.cpJsonTab.UseVisualStyleBackColor = true;
             // 
-            // actionComboBox
-            // 
-            this.actionComboBox.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
-            this.actionComboBox.FormattingEnabled = true;
-            this.actionComboBox.Items.AddRange(new object[] {
-            "Load",
-            "EditData",
-            "EditImage",
-            "EditMap",
-            "Include"});
-            this.actionComboBox.Location = new System.Drawing.Point(373, 12);
-            this.actionComboBox.Name = "actionComboBox";
-            this.actionComboBox.Size = new System.Drawing.Size(810, 29);
-            this.actionComboBox.TabIndex = 56;
-            this.actionComboBox.SelectedIndexChanged += new System.EventHandler(this.actionComboBox_SelectedIndexChanged);
-            // 
-            // panel1
-            // 
-            this.panel1.Location = new System.Drawing.Point(245, 47);
-            this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(938, 416);
-            this.panel1.TabIndex = 57;
-            // 
             // ContentPatcherControl
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
@@ -301,6 +354,7 @@
             this.tabPage3.ResumeLayout(false);
             this.tabPage3.PerformLayout();
             this.tabPage5.ResumeLayout(false);
+            this.tabPage5.PerformLayout();
             this.ResumeLayout(false);
 
         }
@@ -326,6 +380,11 @@
         private System.Windows.Forms.Label label5;
         private System.Windows.Forms.ListBox listBox1;
         private System.Windows.Forms.ComboBox actionComboBox;
-        private System.Windows.Forms.Panel panel1;
+        private System.Windows.Forms.Panel changesActionPanel;
+        private System.Windows.Forms.Label label3;
+        private System.Windows.Forms.Button changesRemoveButton;
+        private System.Windows.Forms.Button changesAddButton;
+        private System.Windows.Forms.TextBox textBox1;
+        private System.Windows.Forms.ToolTip toolTip1;
     }
 }
