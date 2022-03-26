@@ -8,6 +8,7 @@ namespace ContentPackCreator
 {
     internal static class Program
     {
+        public static ContentPack contentPack = new ContentPack();
         /// <summary>
         ///  The main entry point for the application.
         /// </summary>
@@ -17,7 +18,7 @@ namespace ContentPackCreator
             Application.SetHighDpiMode(HighDpiMode.SystemAware);
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            Application.Run(new WelcomeScreen());
+            Application.Run(contentPack);
         }
     }
 }

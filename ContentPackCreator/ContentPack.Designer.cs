@@ -59,14 +59,6 @@
             this.buildButton = new System.Windows.Forms.Button();
             this.button1 = new System.Windows.Forms.Button();
             this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
-            this.cpFormat = new System.Windows.Forms.TextBox();
-            this.label10 = new System.Windows.Forms.Label();
-            this.tabControl1 = new System.Windows.Forms.TabControl();
-            this.tabPage1 = new System.Windows.Forms.TabPage();
-            this.tabPage3 = new System.Windows.Forms.TabPage();
-            this.tabPage5 = new System.Windows.Forms.TabPage();
-            this.listView1 = new System.Windows.Forms.ListView();
-            this.listView2 = new System.Windows.Forms.ListView();
             this.tabControl.SuspendLayout();
             this.manifestTab.SuspendLayout();
             this.tabControl2.SuspendLayout();
@@ -74,11 +66,6 @@
             this.tabPage2.SuspendLayout();
             this.depTab.SuspendLayout();
             this.depTable.SuspendLayout();
-            this.contentTab.SuspendLayout();
-            this.tabControl1.SuspendLayout();
-            this.tabPage1.SuspendLayout();
-            this.tabPage3.SuspendLayout();
-            this.tabPage5.SuspendLayout();
             this.SuspendLayout();
             // 
             // tabControl
@@ -91,8 +78,9 @@
             this.tabControl.Location = new System.Drawing.Point(12, 12);
             this.tabControl.Name = "tabControl";
             this.tabControl.SelectedIndex = 0;
-            this.tabControl.Size = new System.Drawing.Size(801, 297);
+            this.tabControl.Size = new System.Drawing.Size(1240, 604);
             this.tabControl.TabIndex = 0;
+            this.tabControl.SelectedIndexChanged += new System.EventHandler(this.tabControl_SelectedIndexChanged);
             // 
             // manifestTab
             // 
@@ -101,7 +89,7 @@
             this.manifestTab.Location = new System.Drawing.Point(4, 24);
             this.manifestTab.Name = "manifestTab";
             this.manifestTab.Padding = new System.Windows.Forms.Padding(3);
-            this.manifestTab.Size = new System.Drawing.Size(793, 269);
+            this.manifestTab.Size = new System.Drawing.Size(1232, 576);
             this.manifestTab.TabIndex = 0;
             this.manifestTab.Text = "manifest.json";
             this.manifestTab.UseVisualStyleBackColor = true;
@@ -118,7 +106,7 @@
             this.tabControl2.Location = new System.Drawing.Point(6, 6);
             this.tabControl2.Name = "tabControl2";
             this.tabControl2.SelectedIndex = 0;
-            this.tabControl2.Size = new System.Drawing.Size(780, 257);
+            this.tabControl2.Size = new System.Drawing.Size(1219, 564);
             this.tabControl2.TabIndex = 0;
             // 
             // mainTab
@@ -138,7 +126,7 @@
             this.mainTab.Location = new System.Drawing.Point(4, 24);
             this.mainTab.Name = "mainTab";
             this.mainTab.Padding = new System.Windows.Forms.Padding(3);
-            this.mainTab.Size = new System.Drawing.Size(772, 229);
+            this.mainTab.Size = new System.Drawing.Size(1211, 536);
             this.mainTab.TabIndex = 0;
             this.mainTab.Text = "Main";
             this.mainTab.UseVisualStyleBackColor = true;
@@ -150,7 +138,7 @@
             this.minText.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
             this.minText.Location = new System.Drawing.Point(150, 183);
             this.minText.Name = "minText";
-            this.minText.Size = new System.Drawing.Size(616, 29);
+            this.minText.Size = new System.Drawing.Size(1055, 29);
             this.minText.TabIndex = 28;
             // 
             // label6
@@ -170,7 +158,7 @@
             this.idText.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
             this.idText.Location = new System.Drawing.Point(150, 147);
             this.idText.Name = "idText";
-            this.idText.Size = new System.Drawing.Size(616, 29);
+            this.idText.Size = new System.Drawing.Size(1055, 29);
             this.idText.TabIndex = 26;
             // 
             // descText
@@ -180,7 +168,7 @@
             this.descText.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
             this.descText.Location = new System.Drawing.Point(150, 111);
             this.descText.Name = "descText";
-            this.descText.Size = new System.Drawing.Size(616, 29);
+            this.descText.Size = new System.Drawing.Size(1055, 29);
             this.descText.TabIndex = 25;
             // 
             // versionText
@@ -190,7 +178,7 @@
             this.versionText.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
             this.versionText.Location = new System.Drawing.Point(150, 75);
             this.versionText.Name = "versionText";
-            this.versionText.Size = new System.Drawing.Size(616, 29);
+            this.versionText.Size = new System.Drawing.Size(1055, 29);
             this.versionText.TabIndex = 24;
             // 
             // authorText
@@ -200,7 +188,7 @@
             this.authorText.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
             this.authorText.Location = new System.Drawing.Point(150, 39);
             this.authorText.Name = "authorText";
-            this.authorText.Size = new System.Drawing.Size(616, 29);
+            this.authorText.Size = new System.Drawing.Size(1055, 29);
             this.authorText.TabIndex = 23;
             // 
             // nameText
@@ -210,7 +198,7 @@
             this.nameText.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
             this.nameText.Location = new System.Drawing.Point(150, 3);
             this.nameText.Name = "nameText";
-            this.nameText.Size = new System.Drawing.Size(616, 29);
+            this.nameText.Size = new System.Drawing.Size(1055, 29);
             this.nameText.TabIndex = 14;
             // 
             // label5
@@ -272,7 +260,7 @@
             this.tabPage2.Location = new System.Drawing.Point(4, 24);
             this.tabPage2.Name = "tabPage2";
             this.tabPage2.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage2.Size = new System.Drawing.Size(772, 229);
+            this.tabPage2.Size = new System.Drawing.Size(1211, 536);
             this.tabPage2.TabIndex = 1;
             this.tabPage2.Text = "ContentPackFor";
             this.tabPage2.UseVisualStyleBackColor = true;
@@ -285,8 +273,9 @@
             this.forMin.Location = new System.Drawing.Point(130, 39);
             this.forMin.MinimumSize = new System.Drawing.Size(612, 30);
             this.forMin.Name = "forMin";
-            this.forMin.Size = new System.Drawing.Size(636, 30);
+            this.forMin.Size = new System.Drawing.Size(1075, 30);
             this.forMin.TabIndex = 35;
+            this.forMin.Text = "1.25.0";
             // 
             // forID
             // 
@@ -298,8 +287,9 @@
             this.forID.Location = new System.Drawing.Point(130, 6);
             this.forID.MinimumSize = new System.Drawing.Size(612, 30);
             this.forID.Name = "forID";
-            this.forID.Size = new System.Drawing.Size(636, 30);
+            this.forID.Size = new System.Drawing.Size(1075, 30);
             this.forID.TabIndex = 34;
+            this.forID.Text = "Pathoschild.ContentPatcher";
             // 
             // label8
             // 
@@ -327,7 +317,7 @@
             this.depTab.Location = new System.Drawing.Point(4, 24);
             this.depTab.Name = "depTab";
             this.depTab.Padding = new System.Windows.Forms.Padding(3);
-            this.depTab.Size = new System.Drawing.Size(772, 229);
+            this.depTab.Size = new System.Drawing.Size(1211, 536);
             this.depTab.TabIndex = 2;
             this.depTab.Text = "Dependencies";
             this.depTab.UseVisualStyleBackColor = true;
@@ -346,7 +336,7 @@
             this.depTable.Padding = new System.Windows.Forms.Padding(10, 0, 10, 0);
             this.depTable.RowCount = 1;
             this.depTable.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 217F));
-            this.depTable.Size = new System.Drawing.Size(760, 217);
+            this.depTable.Size = new System.Drawing.Size(1199, 524);
             this.depTable.TabIndex = 0;
             // 
             // addDepButton
@@ -356,7 +346,7 @@
             this.addDepButton.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
             this.addDepButton.Location = new System.Drawing.Point(13, 3);
             this.addDepButton.Name = "addDepButton";
-            this.addDepButton.Size = new System.Drawing.Size(734, 29);
+            this.addDepButton.Size = new System.Drawing.Size(1173, 29);
             this.addDepButton.TabIndex = 1;
             this.addDepButton.Text = "Add Dependency";
             this.addDepButton.UseVisualStyleBackColor = true;
@@ -367,18 +357,17 @@
             this.tabPage4.Location = new System.Drawing.Point(4, 24);
             this.tabPage4.Name = "tabPage4";
             this.tabPage4.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage4.Size = new System.Drawing.Size(772, 229);
+            this.tabPage4.Size = new System.Drawing.Size(1211, 536);
             this.tabPage4.TabIndex = 3;
             this.tabPage4.Text = "Extra";
             this.tabPage4.UseVisualStyleBackColor = true;
             // 
             // contentTab
             // 
-            this.contentTab.Controls.Add(this.tabControl1);
             this.contentTab.Location = new System.Drawing.Point(4, 24);
             this.contentTab.Name = "contentTab";
             this.contentTab.Padding = new System.Windows.Forms.Padding(3);
-            this.contentTab.Size = new System.Drawing.Size(793, 269);
+            this.contentTab.Size = new System.Drawing.Size(1232, 576);
             this.contentTab.TabIndex = 1;
             this.contentTab.Text = "content.json";
             this.contentTab.UseVisualStyleBackColor = true;
@@ -387,7 +376,7 @@
             // 
             this.label9.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.label9.Font = new System.Drawing.Font("Segoe UI", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
-            this.label9.Location = new System.Drawing.Point(12, 331);
+            this.label9.Location = new System.Drawing.Point(12, 638);
             this.label9.Name = "label9";
             this.label9.Size = new System.Drawing.Size(90, 30);
             this.label9.TabIndex = 19;
@@ -399,16 +388,16 @@
             this.folderText.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.folderText.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
-            this.folderText.Location = new System.Drawing.Point(108, 331);
+            this.folderText.Location = new System.Drawing.Point(108, 638);
             this.folderText.Name = "folderText";
-            this.folderText.Size = new System.Drawing.Size(539, 29);
+            this.folderText.Size = new System.Drawing.Size(978, 29);
             this.folderText.TabIndex = 17;
             // 
             // buildButton
             // 
             this.buildButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.buildButton.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
-            this.buildButton.Location = new System.Drawing.Point(653, 331);
+            this.buildButton.Location = new System.Drawing.Point(1092, 638);
             this.buildButton.Name = "buildButton";
             this.buildButton.Size = new System.Drawing.Size(156, 30);
             this.buildButton.TabIndex = 18;
@@ -444,97 +433,11 @@
             this.tableLayoutPanel1.Size = new System.Drawing.Size(200, 100);
             this.tableLayoutPanel1.TabIndex = 0;
             // 
-            // cpFormat
-            // 
-            this.cpFormat.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.cpFormat.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
-            this.cpFormat.Location = new System.Drawing.Point(134, 6);
-            this.cpFormat.MinimumSize = new System.Drawing.Size(612, 30);
-            this.cpFormat.Name = "cpFormat";
-            this.cpFormat.Size = new System.Drawing.Size(633, 30);
-            this.cpFormat.TabIndex = 37;
-            this.cpFormat.Text = "1.2.5";
-            // 
-            // label10
-            // 
-            this.label10.Font = new System.Drawing.Font("Segoe UI", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
-            this.label10.Location = new System.Drawing.Point(6, 3);
-            this.label10.Name = "label10";
-            this.label10.Size = new System.Drawing.Size(142, 30);
-            this.label10.TabIndex = 36;
-            this.label10.Text = "Format";
-            this.label10.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            // 
-            // tabControl1
-            // 
-            this.tabControl1.Controls.Add(this.tabPage1);
-            this.tabControl1.Controls.Add(this.tabPage3);
-            this.tabControl1.Controls.Add(this.tabPage5);
-            this.tabControl1.Location = new System.Drawing.Point(6, 6);
-            this.tabControl1.Name = "tabControl1";
-            this.tabControl1.SelectedIndex = 0;
-            this.tabControl1.Size = new System.Drawing.Size(781, 257);
-            this.tabControl1.TabIndex = 38;
-            // 
-            // tabPage1
-            // 
-            this.tabPage1.Controls.Add(this.label10);
-            this.tabPage1.Controls.Add(this.cpFormat);
-            this.tabPage1.Location = new System.Drawing.Point(4, 24);
-            this.tabPage1.Name = "tabPage1";
-            this.tabPage1.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage1.Size = new System.Drawing.Size(773, 229);
-            this.tabPage1.TabIndex = 0;
-            this.tabPage1.Text = "Main";
-            this.tabPage1.UseVisualStyleBackColor = true;
-            // 
-            // tabPage3
-            // 
-            this.tabPage3.Controls.Add(this.listView2);
-            this.tabPage3.Location = new System.Drawing.Point(4, 24);
-            this.tabPage3.Name = "tabPage3";
-            this.tabPage3.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage3.Size = new System.Drawing.Size(773, 229);
-            this.tabPage3.TabIndex = 1;
-            this.tabPage3.Text = "Config";
-            this.tabPage3.UseVisualStyleBackColor = true;
-            // 
-            // tabPage5
-            // 
-            this.tabPage5.Controls.Add(this.listView1);
-            this.tabPage5.Location = new System.Drawing.Point(4, 24);
-            this.tabPage5.Name = "tabPage5";
-            this.tabPage5.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage5.Size = new System.Drawing.Size(773, 229);
-            this.tabPage5.TabIndex = 2;
-            this.tabPage5.Text = "Changes";
-            this.tabPage5.UseVisualStyleBackColor = true;
-            // 
-            // listView1
-            // 
-            this.listView1.HideSelection = false;
-            this.listView1.Location = new System.Drawing.Point(6, 6);
-            this.listView1.Name = "listView1";
-            this.listView1.Size = new System.Drawing.Size(761, 220);
-            this.listView1.TabIndex = 0;
-            this.listView1.UseCompatibleStateImageBehavior = false;
-            this.listView1.SelectedIndexChanged += new System.EventHandler(this.listView1_SelectedIndexChanged);
-            // 
-            // listView2
-            // 
-            this.listView2.HideSelection = false;
-            this.listView2.Location = new System.Drawing.Point(6, 4);
-            this.listView2.Name = "listView2";
-            this.listView2.Size = new System.Drawing.Size(761, 220);
-            this.listView2.TabIndex = 1;
-            this.listView2.UseCompatibleStateImageBehavior = false;
-            // 
             // ContentPack
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(825, 374);
+            this.ClientSize = new System.Drawing.Size(1264, 681);
             this.Controls.Add(this.label9);
             this.Controls.Add(this.folderText);
             this.Controls.Add(this.buildButton);
@@ -550,12 +453,6 @@
             this.tabPage2.PerformLayout();
             this.depTab.ResumeLayout(false);
             this.depTable.ResumeLayout(false);
-            this.contentTab.ResumeLayout(false);
-            this.tabControl1.ResumeLayout(false);
-            this.tabPage1.ResumeLayout(false);
-            this.tabPage1.PerformLayout();
-            this.tabPage3.ResumeLayout(false);
-            this.tabPage5.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -592,15 +489,7 @@
         private System.Windows.Forms.Label label9;
         private System.Windows.Forms.TextBox folderText;
         private System.Windows.Forms.Button buildButton;
-        private System.Windows.Forms.TextBox cpFormat;
-        private System.Windows.Forms.Label label10;
         private System.Windows.Forms.Button button1;
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel1;
-        private System.Windows.Forms.TabControl tabControl1;
-        private System.Windows.Forms.TabPage tabPage1;
-        private System.Windows.Forms.TabPage tabPage3;
-        private System.Windows.Forms.ListView listView2;
-        private System.Windows.Forms.TabPage tabPage5;
-        private System.Windows.Forms.ListView listView1;
     }
 }

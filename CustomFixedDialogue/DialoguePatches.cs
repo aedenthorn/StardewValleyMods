@@ -1,5 +1,7 @@
-﻿using StardewModdingAPI;
+﻿using HarmonyLib;
+using StardewModdingAPI;
 using StardewValley;
+using StardewValley.Menus;
 using System;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
@@ -151,7 +153,21 @@ namespace CustomFixedDialogue
         {
             FixString(speaker, ref masterDialogue);
         }
+        
+        public static void Dialogue_Box_Prefix(DialogueBox __instance, ref Dialogue dialogue)
+        {
+            if(dialogue.dialogues.Count == 1)
+            {
+                string d = dialogue.dialogues[0];
+                if (FixString(dialogue.speaker, ref d))
+                {
+                    dialogue = new Dialogue(d, dialogue.speaker);
+                    return;
+                }
+            }
+        }
 
+        
         public static void NPC_showTextAboveHead_Prefix(NPC __instance, ref string Text)
         {
             FixString(__instance, ref Text);
@@ -241,12 +257,13 @@ namespace CustomFixedDialogue
             else return;
 
             text = "<" + $"{modifiedPath}{substring}" + ">";
+            var x = Environment.StackTrace;
             SMonitor.Log($"preparing string {original} for replacement: {text}");
         }
 
-        public static void FixString(NPC speaker, ref string input)
+        public static bool FixString(NPC speaker, ref string input)
         {
-
+            bool changed = false;
             Dictionary<string, string> dialogueDic = null;
             try
             {
@@ -256,7 +273,7 @@ namespace CustomFixedDialogue
             {
                 SMonitor.Log($"Error loading character dictionary for {speaker.Name}:\r\n{ex}");
             }
-            SMonitor.Log($"checking string: {input}");
+            //SMonitor.Log($"checking string: {input}");
             Regex pattern1 = new Regex(@"<(?<key>[^<>]+)>", RegexOptions.Compiled);
             Regex pattern2 = new Regex(@"<(?<key>[^<`>]+)`(?<subs>[^>]+)`>", RegexOptions.Compiled);
             while (pattern1.IsMatch(input))
@@ -309,7 +326,9 @@ namespace CustomFixedDialogue
                 }
                 input = input.Replace(match.Value, newString);
                 SMonitor.Log($"Final replacement for {match.Value}: {newString}.\nCurrent output: {input}");
+                changed = true;
             }
+            return changed;
         }
     }
 }

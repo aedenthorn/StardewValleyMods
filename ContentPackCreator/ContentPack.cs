@@ -15,9 +15,21 @@ namespace ContentPackCreator
 {
     public partial class ContentPack : Form
     {
+        public static Dictionary<string, ConfigData> configDataDict = new Dictionary<string,ConfigData>();
+        public static string currentContentPackLayout = "";
         public static AutoCompleteStringCollection uniqueIDs = new AutoCompleteStringCollection()
         {
-            "PathosChild.ContentPatcher"
+            "Pathoschild.ContentPatcher",
+            "spacechase0.JsonAssets",
+            "Digus.ProducerFrameworkMod",
+            "Platonymous.TMXLoader",
+            "PeacefulEnd.AlternativeTextures",
+            "Cherry.ShopTileFramework",
+            "DIGUS.MailFrameworkMod",
+            "Esca.FarmTypeManager",
+            "Paritee.BetterFarmAnimalVariety",
+            "Platonymous.CustomFurniture",
+            "Platonymous.CustomMusic"
         };
 
         public ContentPack()
@@ -93,6 +105,19 @@ namespace ContentPackCreator
         private void listView1_SelectedIndexChanged(object sender, EventArgs e)
         {
 
+        }
+
+        private void tabControl_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if(((TabControl)sender).SelectedIndex == 1 && forID.Text != currentContentPackLayout)
+            {
+                currentContentPackLayout = forID.Text;
+                contentTab.Controls.Clear();
+                if(currentContentPackLayout.ToLower() == uniqueIDs[0].ToLower())
+                {
+                    contentTab.Controls.Add(new ContentPatcherControl());
+                }
+            }
         }
     }
 }

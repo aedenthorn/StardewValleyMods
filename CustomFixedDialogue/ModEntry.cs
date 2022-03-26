@@ -3,6 +3,7 @@ using StardewModdingAPI;
 using StardewValley;
 using StardewValley.BellsAndWhistles;
 using StardewValley.Locations;
+using StardewValley.Menus;
 using System;
 using System.Collections.Generic;
 
@@ -21,6 +22,10 @@ namespace CustomFixedDialogue
             harmony.Patch(
                 original: AccessTools.Constructor(typeof(Dialogue), new Type[] { typeof(string), typeof(NPC) }),
                 prefix: new HarmonyMethod(typeof(ModEntry), nameof(ModEntry.Dialogue_Prefix))
+            );
+            harmony.Patch(
+                original: AccessTools.Constructor(typeof(DialogueBox), new Type[] { typeof(Dialogue) }),
+                prefix: new HarmonyMethod(typeof(ModEntry), nameof(ModEntry.Dialogue_Box_Prefix))
             );
 
             harmony.Patch(
@@ -67,6 +72,7 @@ namespace CustomFixedDialogue
 
         private void Input_ButtonPressed(object sender, StardewModdingAPI.Events.ButtonPressedEventArgs e)
         {
+            return;
             if (e.Button == SButton.F2)
 			{
 				var person = Game1.getCharacterFromName("Haley");
@@ -74,6 +80,7 @@ namespace CustomFixedDialogue
                 Random r = Game1.random;
                 Stack<Dialogue> currentDialogue = new Stack<Dialogue>();
                 person.CurrentDialogue.Clear();
+
                 person.setNewDialogue(Game1.content.LoadString("Strings\\StringsFromCSFiles:Event.cs.1738", person.displayName), true, false);
                 return;
 
