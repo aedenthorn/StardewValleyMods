@@ -256,7 +256,7 @@ namespace CustomFixedDialogue
             {
                 SMonitor.Log($"Error loading character dictionary for {speaker.Name}:\r\n{ex}");
             }
-            //SMonitor.Log($"checking string: {input}");
+            SMonitor.Log($"checking string: {input}");
             Regex pattern1 = new Regex(@"<(?<key>[^<>]+)>", RegexOptions.Compiled);
             Regex pattern2 = new Regex(@"<(?<key>[^<`>]+)`(?<subs>[^>]+)`>", RegexOptions.Compiled);
             while (pattern1.IsMatch(input))

@@ -27,7 +27,7 @@ namespace CustomFixedDialogue
                 original: AccessTools.Method(typeof(Dialogue), nameof(Dialogue.convertToDwarvish)),
                 prefix: new HarmonyMethod(typeof(ModEntry), nameof(ModEntry.convertToDwarvish_Prefix))
             );
-
+            /*
             harmony.Patch(
                 original: AccessTools.Method(typeof(LocalizedContentManager), nameof(LocalizedContentManager.LoadString), new Type[] { typeof(string), typeof(object), typeof(object), typeof(object) }),
                 postfix: new HarmonyMethod(typeof(ModEntry), nameof(ModEntry.LocalizedContentManager_LoadString_Postfix3))
@@ -40,6 +40,7 @@ namespace CustomFixedDialogue
                 original: AccessTools.Method(typeof(LocalizedContentManager), nameof(LocalizedContentManager.LoadString), new Type[] { typeof(string), typeof(object) }),
                 postfix: new HarmonyMethod(typeof(ModEntry), nameof(ModEntry.LocalizedContentManager_LoadString_Postfix1))
             );
+            */
             harmony.Patch(
                 original: AccessTools.Method(typeof(LocalizedContentManager), nameof(LocalizedContentManager.LoadString), new Type[] { typeof(string) }),
                 postfix: new HarmonyMethod(typeof(ModEntry), nameof(ModEntry.LocalizedContentManager_LoadString_Postfix))
@@ -68,10 +69,14 @@ namespace CustomFixedDialogue
         {
             if (e.Button == SButton.F2)
 			{
-				var person = Game1.getCharacterFromName("Marnie");
+				var person = Game1.getCharacterFromName("Haley");
                 Game1.warpCharacter(person, Game1.player.currentLocation, Game1.player.getTileLocation() + new Microsoft.Xna.Framework.Vector2(0, 1));
                 Random r = Game1.random;
                 Stack<Dialogue> currentDialogue = new Stack<Dialogue>();
+                person.CurrentDialogue.Clear();
+                person.setNewDialogue(Game1.content.LoadString("Strings\\StringsFromCSFiles:Event.cs.1738", person.displayName), true, false);
+                return;
+
 
                 Dictionary<string, string> npcDispositions = Game1.content.Load<Dictionary<string, string>>("Data\\NPCDispositions");
 				string disposition;
