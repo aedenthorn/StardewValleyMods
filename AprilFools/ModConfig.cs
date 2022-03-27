@@ -12,5 +12,7 @@ namespace AprilFools
         public bool PixelateEnabled { get; set; } = true;
         public bool TreeScreamEnabled { get; set; } = true;
         public bool InventoryEnabled { get; set; } = true;
+        public bool RavenEnabled { get; set; } = true;
+        public bool SlimeEnabled { get; set; } = true;
     }
 }

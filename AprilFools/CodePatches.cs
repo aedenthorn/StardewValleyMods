@@ -29,7 +29,7 @@ namespace AprilFools
             private static int avoidTicks = 0;
             public static void Prefix(InventoryMenu __instance)
             {
-                if (!Config.EnableMod)
+                if (!Config.EnableMod || !Config.InventoryEnabled)
                     return;
                 avoidTicks++;
                 foreach (ClickableComponent clickableComponent in __instance.inventory)
@@ -70,7 +70,7 @@ namespace AprilFools
         {
             public static bool Prefix(Tree __instance, Tool t, Vector2 tileLocation, GameLocation location, ref float __state)
             {
-                if (!Config.EnableMod)
+                if (!Config.EnableMod || !Config.TreeScreamEnabled)
                     return true;
                 __state = __instance.health.Value;
                 if (Game1.random.NextDouble() < 0.25 && t is Axe)
@@ -98,7 +98,7 @@ namespace AprilFools
             }
             public static void Postfix(Tree __instance, ref float __state)
             {
-                if (!Config.EnableMod || __state <= __instance.health.Value)
+                if (!Config.EnableMod || !Config.TreeScreamEnabled || __state <= __instance.health.Value)
                     return;
                 if(__instance.health.Value > 0 && screamTicks > 120)
                 {
@@ -117,7 +117,7 @@ namespace AprilFools
         {
             public static void Postfix(Tree __instance, SpriteBatch spriteBatch, Vector2 tileLocation, NetBool ___falling)
             {
-                if (!Config.EnableMod)
+                if (!Config.EnableMod || !Config.TreeScreamEnabled)
                     return;
                 if(screamTicks <= 120)
                     screamTicks++;
@@ -156,7 +156,7 @@ namespace AprilFools
         {
             public static void Prefix(Farmer __instance, ref Vector2 __state)
             {
-                if (!Config.EnableMod)
+                if (!Config.EnableMod || !Config.BackwardsEnabled)
                     return;
 
                 if (backwardsFarmer)
@@ -186,7 +186,7 @@ namespace AprilFools
         {
             public static void Prefix(Farmer __instance, GameTime time)
             {
-                if (!Config.EnableMod || !slimeFarmer || slime == null)
+                if (!Config.EnableMod || !Config.SlimeEnabled|| !slimeFarmer || slime == null)
                     return;
                 int currentIndex = slime.Sprite.currentFrame;
                 slime.Sprite.AnimateDown(time, 0, "");
@@ -214,7 +214,7 @@ namespace AprilFools
         {
             public static bool Prefix(Farmer __instance, SpriteBatch b)
             {
-                if (!Config.EnableMod || !slimeFarmer)
+                if (!Config.EnableMod || !Config.SlimeEnabled || !slimeFarmer)
                     return true;
                 slime.Position = __instance.Position;
                 b.Draw(slime.Sprite.Texture, slime.getLocalPosition(Game1.viewport) + new Vector2(56f, (float)(16 + slime.yJumpOffset)), new Rectangle?(slime.Sprite.SourceRect), Utility.GetPrismaticColor(348 + 50, 5f), slime.rotation, new Vector2(16f, 16f), Math.Max(0.2f, slime.Scale) * 4f, slime.flip ? SpriteEffects.FlipHorizontally : SpriteEffects.None, Math.Max(0f, slime.drawOnTop ? 0.991f : ((float)slime.getStandingY() / 10000f)));

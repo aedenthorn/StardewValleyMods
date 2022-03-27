@@ -1,7 +1,7 @@
 ﻿{
   "Name": "Wall Television",
   "Author": "aedenthorn",
-  "Version": "0.1.1",
+  "Version": "0.2.0",
   "Description": "Wall Television.",
   "UniqueID": "aedenthorn.WallTelevision",
   "EntryDll": "WallTelevision.dll",
@@ -12,7 +12,7 @@
     "Directory": "_releases",
     "ModFolder": "WallTelevision"
   },
-  "UpdateKeys": [ "Nexus:11339" ],
+  "UpdateKeys": [ "Nexus:11448" ],
   "Dependencies": [
     {
       "UniqueID": "Platonymous.ModUpdater",

@@ -19,8 +19,7 @@ namespace WallTelevision
         public static ModConfig Config;
         public static ModEntry context;
 
-        private static Texture2D plasmaTexture;
-        private static Texture2D wallPotTextureWet;
+        private static Texture2D tvTexture;
 
         /// <summary>The mod entry point, called after the mod is first loaded.</summary>
         /// <param name="helper">Provides simplified APIs for writing mods.</param>
@@ -35,7 +34,6 @@ namespace WallTelevision
 
             helper.Events.GameLoop.GameLaunched += GameLoop_GameLaunched;
             helper.Events.GameLoop.SaveLoaded += GameLoop_SaveLoaded;
-            helper.Events.GameLoop.UpdateTicking += GameLoop_UpdateTicking;
             var harmony = new Harmony(ModManifest.UniqueID);
             harmony.PatchAll();
         }
@@ -44,32 +42,11 @@ namespace WallTelevision
         {
             try
             {
-                plasmaTexture = Game1.content.Load<Texture2D>("aedenthorn.WallTelevision/wall_plasma_tv");
+                tvTexture = Game1.content.Load<Texture2D>("aedenthorn.WallTelevision/tv");
             }
             catch
             {
-                plasmaTexture = Helper.Content.Load<Texture2D>("assets/wall_plasma_tv.png");
-            }
-        }
-
-        private void GameLoop_UpdateTicking(object sender, UpdateTickingEventArgs e)
-        {
-            if (!Config.EnableMod || !Context.IsWorldReady)
-                return;
-            int delta = Helper.Input.IsDown(Config.UpButton) ? 1 : (Helper.Input.IsDown(Config.DownButton) ? -1 : 0);
-            if (delta != 0 && typeof(DecoratableLocation).IsAssignableFrom(Game1.currentLocation.GetType()))
-            {
-                foreach (var f in Game1.currentLocation.furniture)
-                {
-                    if (f.boundingBox.Value.Contains(Game1.viewport.X + Game1.getOldMouseX(), Game1.viewport.Y + Game1.getOldMouseY()) && f is TV && (Game1.currentLocation as DecoratableLocation).isTileOnWall((int)f.TileLocation.X, (int)f.TileLocation.Y))
-                    {
-
-                        f.boundingBox.Value = new Rectangle(f.boundingBox.Value.Location - new Point(0, delta), f.boundingBox.Value.Size);
-                        f.updateDrawPosition();
-
-                        return;
-                    }
-                }
+                tvTexture = Helper.Content.Load<Texture2D>("assets/tv.png");
             }
         }
 
@@ -93,27 +70,6 @@ namespace WallTelevision
                 name: () => "Mod Enabled",
                 getValue: () => Config.EnableMod,
                 setValue: value => Config.EnableMod = value
-            );
-            configMenu.AddKeybind(
-                mod: ModManifest,
-                name: () => "Up Button",
-                tooltip: () => "Moves the TV up when held down while hovering over it",
-                getValue: () => Config.UpButton,
-                setValue: value => Config.UpButton = value
-            );
-            configMenu.AddKeybind(
-                mod: ModManifest,
-                name: () => "Down Button",
-                tooltip: () => "Moves the TV down when held down while hovering over it",
-                getValue: () => Config.ModKey,
-                setValue: value => Config.ModKey = value
-            );
-            configMenu.AddNumberOption(
-                mod: ModManifest,
-                name: () => "Y Offset",
-                tooltip: () => "Default wall position offset (positive is up)",
-                getValue: () => Config.OffsetY,
-                setValue: value => Config.OffsetY = value
             );
         }
     }

@@ -101,7 +101,7 @@ namespace AprilFools
                 }
                 
             }
-            else
+            else if(Config.SlimeEnabled)
             {
                 slimeFarmer = Game1.random.NextDouble() < 0.05;
                 if (slimeFarmer)
@@ -118,7 +118,7 @@ namespace AprilFools
                 }
                 
             }
-            else
+            else if (Config.BackwardsEnabled)
             {
                 backwardsFarmer = Game1.random.NextDouble() < 0.008;
             }
@@ -133,15 +133,16 @@ namespace AprilFools
             }
             else
             {
-                pixelating = Game1.random.NextDouble() < 0.01;
-                if (!pixelating)
+                if (Config.PixelateEnabled)
+                    pixelating = Game1.random.NextDouble() < 0.01;
+                if (!pixelating && Config.AsciiEnabled)
                     asciifying = Game1.random.NextDouble() < 0.008;
                 else
                     asciifying = false;
             }
             if (beeDataList.Count > 30)
                 beeDataList.Clear();
-            if (Game1.random.NextDouble() < (beeDataList.Count + 1) / 50f)
+            if (Config.BeesEnabled && Game1.random.NextDouble() < (beeDataList.Count + 1) / 50f)
             {
                 beeDataList.Add(new BeeData()
                 {
@@ -155,7 +156,7 @@ namespace AprilFools
             if (!Config.EnableMod)
                 return;
 
-            if (beeDataList.Count > 0)
+            if (Config.BeesEnabled && beeDataList.Count > 0)
             {
                 for (int i = beeDataList.Count - 1; i >= 0; i--)
                 {
@@ -204,7 +205,7 @@ namespace AprilFools
             if (!Config.EnableMod)
                 return;
 
-            if (asciifying)
+            if (Config.AsciiEnabled && asciifying)
             {
                 int scale = 16;
                 var lines = ConvertToAscii(ScaleScreen(scale), Game1.graphics.GraphicsDevice.PresentationParameters.BackBufferWidth / scale);
@@ -218,14 +219,14 @@ namespace AprilFools
                     }
                 }
             }
-            if (pixelating)
+            else if (Config.PixelateEnabled && pixelating)
             {
                 int scale = 16;
                 Texture2D pixelScreen = new Texture2D(Game1.graphics.GraphicsDevice, Game1.viewport.Width / scale, Game1.viewport.Height / scale);
                 pixelScreen.SetData(ScaleScreen(16));
                 e.SpriteBatch.Draw(pixelScreen, new Rectangle(0, 0, Game1.viewport.Width, Game1.viewport.Height), Color.White);
             }
-            if (Game1.timeOfDay >= 2100 || Game1.timeOfDay <= 200)
+            if (Config.RavenEnabled && (Game1.timeOfDay >= 2100 || Game1.timeOfDay <= 200))
             {
                 for(int i = 0; i < ravenText.Length; i++)
                 {
@@ -300,6 +301,18 @@ namespace AprilFools
                 name: () => "Enable Inventory Avoid?",
                 getValue: () => Config.InventoryEnabled,
                 setValue: value => Config.InventoryEnabled = value
+            );
+            configMenu.AddBoolOption(
+                mod: ModManifest,
+                name: () => "Enable Slime?",
+                getValue: () => Config.SlimeEnabled,
+                setValue: value => Config.SlimeEnabled = value
+            );
+            configMenu.AddBoolOption(
+                mod: ModManifest,
+                name: () => "Enable Raven?",
+                getValue: () => Config.RavenEnabled,
+                setValue: value => Config.RavenEnabled = value
             );
         }
     }
