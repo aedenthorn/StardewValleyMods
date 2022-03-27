@@ -47,6 +47,10 @@ namespace MobilePhone
             {
                 ChatOnPhone(npc);
             }
+            else if (whichAnswer == "PhoneApp_InCall_Locate")
+            {
+                LocateOnPhone(npc);
+            }
             else if (whichAnswer == "PhoneApp_InCall_Reminisce")
             {
                 ReminisceOnPhone(npc);
@@ -111,7 +115,11 @@ namespace MobilePhone
             List<Response> answers = new List<Response>();
             if (npc.CurrentDialogue != null && npc.CurrentDialogue.Count > 0)
                 answers.Add(new Response("PhoneApp_InCall_Chat", Helper.Translation.Get("chat")));
-
+            
+            if (npc.currentLocation is not null && (npc.currentLocation.Name == npc.DefaultMap || Helper.Translation.Get($"npc-in-{npc.currentLocation.Name}").HasValue()))
+            {
+                answers.Add(new Response("PhoneApp_InCall_Locate", Helper.Translation.Get("locate")));
+            }
             if (inCallReminiscence == null)
             {
                 Reminiscence r = Helper.Data.ReadJsonFile<Reminiscence>(Path.Combine("assets", "events", $"{npc.Name}.json")) ?? new Reminiscence();
@@ -204,6 +212,27 @@ namespace MobilePhone
             responses.Add(new Response("PhoneApp_InCall_Return", Helper.Translation.Get("back")));
 
             Game1.player.currentLocation.createQuestionDialogue(GetReminiscePrefix(npc), responses.ToArray(), CallDialogueAnswer);
+        }
+        private static void LocateOnPhone(NPC npc)
+        {
+            Monitor.Log($"Locating NPC");
+
+            if (!ModEntry.inCall)
+            {
+                Monitor.Log($"Not in call, exiting");
+                return;
+            }
+            if (npc.currentLocation is null)
+            {
+                Monitor.Log($"NPC is nowhere, exiting");
+                return;
+            }
+            string message =  Helper.Translation.Get(npc.currentLocation.Name == npc.DefaultMap ? $"npc-at-home" : $"npc-in-{npc.currentLocation.Name}");
+            Game1.afterDialogues = (Game1.afterFadeFunction)Delegate.Combine(Game1.afterDialogues, new Game1.afterFadeFunction(delegate ()
+            {
+                ShowMainCallDialogue(npc);
+            }));
+            Game1.drawDialogue(npc, message);
         }
         private static void InviteOnPhone(NPC npc)
         {

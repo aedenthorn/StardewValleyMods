@@ -282,9 +282,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FruitTreeTweaks", "FruitTre
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AprilFools", "AprilFools\AprilFools.csproj", "{6E0E1CC6-3CFE-4605-8529-E809BC0447CE}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CustomFixedDialogue", "CustomFixedDialogue\CustomFixedDialogue.csproj", "{364AD97E-19D6-4260-80E8-BF0B7EF81DE2}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CustomFixedDialogue", "CustomFixedDialogue\CustomFixedDialogue.csproj", "{364AD97E-19D6-4260-80E8-BF0B7EF81DE2}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ContentPackCreator", "ContentPackCreator\ContentPackCreator.csproj", "{EB4BDAA2-9F00-413F-964D-0EFD09244D00}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ContentPackCreator", "ContentPackCreator\ContentPackCreator.csproj", "{EB4BDAA2-9F00-413F-964D-0EFD09244D00}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WallTelevision", "WallTelevision\WallTelevision.csproj", "{AD41CEF4-4754-4FB5-B02A-0C4CE0D3BD3A}"
 EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
@@ -1401,6 +1403,14 @@ Global
 		{EB4BDAA2-9F00-413F-964D-0EFD09244D00}.Release|Any CPU.Build.0 = Release|Any CPU
 		{EB4BDAA2-9F00-413F-964D-0EFD09244D00}.Release|x86.ActiveCfg = Release|Any CPU
 		{EB4BDAA2-9F00-413F-964D-0EFD09244D00}.Release|x86.Build.0 = Release|Any CPU
+		{AD41CEF4-4754-4FB5-B02A-0C4CE0D3BD3A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AD41CEF4-4754-4FB5-B02A-0C4CE0D3BD3A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AD41CEF4-4754-4FB5-B02A-0C4CE0D3BD3A}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{AD41CEF4-4754-4FB5-B02A-0C4CE0D3BD3A}.Debug|x86.Build.0 = Debug|Any CPU
+		{AD41CEF4-4754-4FB5-B02A-0C4CE0D3BD3A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AD41CEF4-4754-4FB5-B02A-0C4CE0D3BD3A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AD41CEF4-4754-4FB5-B02A-0C4CE0D3BD3A}.Release|x86.ActiveCfg = Release|Any CPU
+		{AD41CEF4-4754-4FB5-B02A-0C4CE0D3BD3A}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -456,7 +456,7 @@ namespace Swim
         {
             try
             {
-                if (__result == false || !isFarmer || !character.Equals(Game1.player) || !Game1.player.swimming.Value || ModEntry.isUnderwater.Value)
+                if (__result == false || !isFarmer || character?.Equals(Game1.player) != true || !Game1.player.swimming.Value || ModEntry.isUnderwater.Value)
                     return;
 
                 Vector2 next = SwimUtils.GetNextTile();

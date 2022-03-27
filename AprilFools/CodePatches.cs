@@ -154,34 +154,71 @@ namespace AprilFools
         [HarmonyPatch(typeof(Farmer), nameof(Farmer.MovePosition))]
         public static class Farmer_MovePosition_Patch
         {
-            public static void Prefix(Farmer __instance)
+            public static void Prefix(Farmer __instance, ref Vector2 __state)
             {
                 if (!Config.EnableMod)
                     return;
 
                 if (backwardsFarmer)
                 {
-                    if(__instance.movementDirections.Contains(0) && !__instance.movementDirections.Contains(2))
-                    {
-                        __instance.movementDirections.Remove(0);
-                        __instance.movementDirections.Add(2);
-                    }
-                    else if(__instance.movementDirections.Contains(2) && !__instance.movementDirections.Contains(0))
-                    {
-                        __instance.movementDirections.Remove(2);
-                        __instance.movementDirections.Add(0);
-                    }
-                    if(__instance.movementDirections.Contains(1) && !__instance.movementDirections.Contains(3))
-                    {
-                        __instance.movementDirections.Remove(1);
-                        __instance.movementDirections.Add(3);
-                    }
-                    else if(__instance.movementDirections.Contains(3) && !__instance.movementDirections.Contains(1))
-                    {
-                        __instance.movementDirections.Remove(3);
-                        __instance.movementDirections.Add(1);
-                    }
+                    __state = __instance.Position;
                 }
+            }
+            public static void Postfix(Farmer __instance, xTile.Dimensions.Rectangle viewport, GameLocation currentLocation, ref Vector2 __state)
+            {
+                if (!Config.EnableMod)
+                    return;
+
+                if (backwardsFarmer)
+                {
+                    Vector2 dest = __state - (__instance.Position - __state);
+                    int width = __instance.GetSpriteWidthForPositioning() * 4 * 3 / 4;
+                    Rectangle destRectFloor = new Rectangle((int)Math.Floor(dest.X) - 8, (int)Math.Floor(dest.Y) - 16, width, 32);
+                    Rectangle destRectCeil = new Rectangle((int)Math.Ceiling(dest.X) + 8, (int)Math.Ceiling(dest.Y) + 16, width, 32);
+                    Rectangle destRect = Rectangle.Union(destRectCeil, destRectFloor);
+                    if (!currentLocation.isCollidingPosition(destRect, viewport, true, -1, false, __instance))
+                        __instance.Position = dest;
+                }
+            }
+        }
+        [HarmonyPatch(typeof(Farmer), nameof(Farmer.Update))]
+        public static class Farmer_Update_Patch
+        {
+            public static void Prefix(Farmer __instance, GameTime time)
+            {
+                if (!Config.EnableMod || !slimeFarmer || slime == null)
+                    return;
+                int currentIndex = slime.Sprite.currentFrame;
+                slime.Sprite.AnimateDown(time, 0, "");
+                if (__instance.isMoving())
+                {
+                    slime.Sprite.interval = 100f;
+                }
+                else
+                {
+                    slime.Sprite.interval = 200f;
+                }
+                /*
+                if (slime.readyToMate < 0)
+                {
+                    slime.readyToMate = 800;
+                }
+                slime.Sprite.currentFrame = 16 + (800 - slime.readyToMate) / 200;
+                slime.readyToMate -= time.ElapsedGameTime.Milliseconds / 16;
+                slime.yOffset = (float)Math.Sin(slime.readyToMate / 800f * 180) * 20 - 25; 
+                */
+            }
+        }
+        [HarmonyPatch(typeof(Farmer), nameof(Farmer.draw))]
+        public static class Farmer_draw_Patch
+        {
+            public static bool Prefix(Farmer __instance, SpriteBatch b)
+            {
+                if (!Config.EnableMod || !slimeFarmer)
+                    return true;
+                slime.Position = __instance.Position;
+                b.Draw(slime.Sprite.Texture, slime.getLocalPosition(Game1.viewport) + new Vector2(56f, (float)(16 + slime.yJumpOffset)), new Rectangle?(slime.Sprite.SourceRect), Utility.GetPrismaticColor(348 + 50, 5f), slime.rotation, new Vector2(16f, 16f), Math.Max(0.2f, slime.Scale) * 4f, slime.flip ? SpriteEffects.FlipHorizontally : SpriteEffects.None, Math.Max(0f, slime.drawOnTop ? 0.991f : ((float)slime.getStandingY() / 10000f)));
+                return false;
             }
         }
         //[HarmonyPatch(typeof(InputState), nameof(InputState.SetMousePosition))]

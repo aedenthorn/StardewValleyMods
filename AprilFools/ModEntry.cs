@@ -4,6 +4,7 @@ using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using StardewModdingAPI;
 using StardewValley;
+using StardewValley.Monsters;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -24,6 +25,8 @@ namespace AprilFools
         public static Texture2D beeTexture;
         public static bool asciifying;
         public static bool pixelating;
+        public static bool slimeFarmer;
+        public static BigSlime slime;
         public static bool beeing;
         public static bool backwardsFarmer;
         public static bool backwardsCursor;
@@ -90,6 +93,23 @@ namespace AprilFools
         {
             if (!Config.EnableMod)
                 return;
+            if (slimeFarmer)
+            {
+                if(Game1.random.NextDouble() < 0.08)
+                {
+                    slimeFarmer = false;
+                }
+                
+            }
+            else
+            {
+                slimeFarmer = Game1.random.NextDouble() < 0.05;
+                if (slimeFarmer)
+                {
+                    if (slime == null)
+                        slime = new BigSlime(Game1.player.Position, 121);
+                }
+            }
             if (backwardsFarmer)
             {
                 if(Game1.random.NextDouble() < 0.1)
@@ -100,11 +120,11 @@ namespace AprilFools
             }
             else
             {
-                backwardsFarmer = Game1.random.NextDouble() < 0.05;
+                backwardsFarmer = Game1.random.NextDouble() < 0.008;
             }
             if(asciifying || pixelating)
             {
-                if(Game1.random.NextDouble() < 0.1)
+                if(Game1.random.NextDouble() < 0.08)
                 {
                     asciifying = false;
                     pixelating = false;
@@ -113,15 +133,15 @@ namespace AprilFools
             }
             else
             {
-                pixelating = Game1.random.NextDouble() < 0.05;
+                pixelating = Game1.random.NextDouble() < 0.01;
                 if (!pixelating)
-                    asciifying = Game1.random.NextDouble() < 0.01;
+                    asciifying = Game1.random.NextDouble() < 0.008;
                 else
                     asciifying = false;
             }
             if (beeDataList.Count > 30)
                 beeDataList.Clear();
-            if (Game1.random.NextDouble() < (beeDataList.Count + 1) / 20f)
+            if (Game1.random.NextDouble() < (beeDataList.Count + 1) / 50f)
             {
                 beeDataList.Add(new BeeData()
                 {
