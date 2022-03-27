@@ -6,6 +6,7 @@ using StardewValley.Locations;
 using StardewValley.Menus;
 using System;
 using System.Collections.Generic;
+using Object = StardewValley.Object;
 
 namespace CustomFixedDialogue
 {
@@ -80,8 +81,9 @@ namespace CustomFixedDialogue
                 Random r = Game1.random;
                 Stack<Dialogue> currentDialogue = new Stack<Dialogue>();
                 person.CurrentDialogue.Clear();
-
-                person.setNewDialogue(Game1.content.LoadString("Strings\\StringsFromCSFiles:Event.cs.1738", person.displayName), true, false);
+                Object i = new Object(0, 1);
+                string whatToCallPlayer = (Game1.random.NextDouble() < (double)(Game1.player.getFriendshipLevelForNPC(person.Name) / 1250)) ? Game1.player.Name : "farmer";
+                person.setNewDialogue(Game1.content.LoadString("Data\\ExtraDialogue:PurchasedItem_2_QualityHigh", whatToCallPlayer, (LocalizedContentManager.CurrentLanguageCode == LocalizedContentManager.LanguageCode.en) ? Lexicon.getProperArticleForWord(i.name) : "", i.DisplayName), true, false);
                 return;
 
 

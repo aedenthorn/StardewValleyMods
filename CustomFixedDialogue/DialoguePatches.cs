@@ -229,15 +229,18 @@ namespace CustomFixedDialogue
                     substring += subs[i] + "`";
                 }
             }
-            for (int i = 0; i < 3; i++)
+            bool found = false;
+            for (int i = 2; i >= 0; i--)
             {
-                if (text.Contains("{" + i + "}"))
+                if (found || text.Contains("{" + i + "}"))
                 {
-                    if (substring == "")
-                        substring = "`";
-                    substring += "{" + i + "}`";
+                    found = true;
+                    substring = "{" + i + "}`" + substring;
                 }
             }
+            if (substring != "")
+                substring = "`" + substring;
+
             if (path.StartsWith(extraPrefix) && extraAllowed.Contains(path.Substring(extraPrefix.Length)))
             {
                 modifiedPath = path.Replace(extraPrefix, extraReplacePrefix);
