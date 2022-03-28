@@ -14,5 +14,7 @@ namespace AprilFools
         public bool InventoryEnabled { get; set; } = true;
         public bool RavenEnabled { get; set; } = true;
         public bool SlimeEnabled { get; set; } = true;
+        public bool GiantEnabled { get; set; } = true;
+        public bool BuildingsEnabled { get; set; } = true;
     }
 }

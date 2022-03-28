@@ -8,11 +8,12 @@ using StardewValley.Monsters;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using xTile;
 
 namespace AprilFools
 {
     /// <summary>The mod entry point.</summary>
-    public partial class ModEntry : Mod
+    public partial class ModEntry : Mod, IAssetEditor
     {
 
         public static IMonitor SMonitor;
@@ -29,6 +30,7 @@ namespace AprilFools
         public static BigSlime slime;
         public static bool beeing;
         public static bool backwardsFarmer;
+        public static bool gianting;
         public static bool backwardsCursor;
         public static Point lastMousePos;
         public static List<BeeData> beeDataList = new List<BeeData>();
@@ -42,9 +44,6 @@ namespace AprilFools
         public override void Entry(IModHelper helper)
         {
             Config = Helper.ReadConfig<ModConfig>();
-
-            if (!Config.EnableMod)
-                return;
 
             context = this;
 
@@ -95,7 +94,7 @@ namespace AprilFools
                 return;
             if (slimeFarmer)
             {
-                if(Game1.random.NextDouble() < 0.08)
+                if(!Config.SlimeEnabled || Game1.random.NextDouble() < 0.1)
                 {
                     slimeFarmer = false;
                 }
@@ -103,7 +102,7 @@ namespace AprilFools
             }
             else if(Config.SlimeEnabled)
             {
-                slimeFarmer = Game1.random.NextDouble() < 0.05;
+                slimeFarmer = Game1.random.NextDouble() < 0.01;
                 if (slimeFarmer)
                 {
                     if (slime == null)
@@ -112,7 +111,7 @@ namespace AprilFools
             }
             if (backwardsFarmer)
             {
-                if(Game1.random.NextDouble() < 0.1)
+                if(!Config.BackwardsEnabled ||Game1.random.NextDouble() < 0.1)
                 {
                     backwardsFarmer = false;
                 }
@@ -122,11 +121,30 @@ namespace AprilFools
             {
                 backwardsFarmer = Game1.random.NextDouble() < 0.008;
             }
-            if(asciifying || pixelating)
+            if (gianting)
             {
-                if(Game1.random.NextDouble() < 0.08)
+                if(Config.GiantEnabled || Game1.random.NextDouble() < 0.1)
+                {
+                    gianting = false;
+                }
+                
+            }
+            else if (Config.GiantEnabled)
+            {
+                gianting = Game1.random.NextDouble() < 0.008;
+            }
+            if(asciifying)
+            {
+                if(!Config.AsciiEnabled || Game1.random.NextDouble() < 0.1)
                 {
                     asciifying = false;
+                }
+
+            }
+            else if(pixelating)
+            {
+                if(!Config.PixelateEnabled || Game1.random.NextDouble() < 0.1)
+                {
                     pixelating = false;
                 }
 
@@ -140,9 +158,9 @@ namespace AprilFools
                 else
                     asciifying = false;
             }
-            if (beeDataList.Count > 30)
+            if (!Config.BeesEnabled || beeDataList.Count > 30)
                 beeDataList.Clear();
-            if (Config.BeesEnabled && Game1.random.NextDouble() < (beeDataList.Count + 1) / 50f)
+            else if (Game1.random.NextDouble() < (beeDataList.Count + 1) / 50f)
             {
                 beeDataList.Add(new BeeData()
                 {
@@ -314,6 +332,44 @@ namespace AprilFools
                 getValue: () => Config.RavenEnabled,
                 setValue: value => Config.RavenEnabled = value
             );
+            configMenu.AddBoolOption(
+                mod: ModManifest,
+                name: () => "Enable Giants?",
+                getValue: () => Config.GiantEnabled,
+                setValue: value => Config.GiantEnabled = value
+            );
+            configMenu.AddBoolOption(
+                mod: ModManifest,
+                name: () => "Enable Building Switch?",
+                getValue: () => Config.BuildingsEnabled,
+                setValue: value => Config.BuildingsEnabled = value
+            );
+        }
+
+        public bool CanEdit<T>(IAssetInfo asset)
+        {
+            if (asset.AssetNameEquals("Maps/Town") && Config.BuildingsEnabled)
+            {
+                return true;
+            }
+
+            return false;
+        }
+
+        /// <summary>Edit a matched asset.</summary>
+        /// <param name="asset">A helper which encapsulates metadata about an asset and enables changes to it.</param>
+        public void Edit<T>(IAssetData asset)
+        {
+            if (asset.AssetNameEquals("Maps/Town") && !Utility.doesMasterPlayerHaveMailReceivedButNotMailForTomorrow("ccMovieTheater"))
+            {
+
+                var editor = asset.AsMap();
+                SMonitor.Log($"Patching Maps/Town");
+                Map pierre = Helper.Content.Load<Map>("assets/pierrebuilding.tmx");
+                Map joja = Helper.Content.Load<Map>("assets/jojabuilding.tmx");
+                editor.PatchMap(pierre, null, new Rectangle(90, 41, 12, 13), PatchMapMode.Replace);
+                editor.PatchMap(joja, null, new Rectangle(38, 47, 12, 11), PatchMapMode.Replace);
+            }
         }
     }
 }

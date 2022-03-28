@@ -227,7 +227,12 @@ namespace MobilePhone
                 Monitor.Log($"NPC is nowhere, exiting");
                 return;
             }
-            string message =  Helper.Translation.Get(npc.currentLocation.Name == npc.DefaultMap ? $"npc-at-home" : $"npc-in-{npc.currentLocation.Name}");
+            var dialogueDic = Game1.content.Load<Dictionary<string, string>>($"Characters/Dialogue/{npc.Name}");
+            string key = npc.currentLocation == Game1.player.currentLocation ? $"location-here" : npc.currentLocation.Name == npc.DefaultMap ? $"location-home" : $"location-{npc.currentLocation.Name}";
+            if (dialogueDic == null || !dialogueDic.TryGetValue($"MobilePhone_{key}", out string message))
+            {
+                message = Helper.Translation.Get(key);
+            }
             Game1.afterDialogues = (Game1.afterFadeFunction)Delegate.Combine(Game1.afterDialogues, new Game1.afterFadeFunction(delegate ()
             {
                 ShowMainCallDialogue(npc);

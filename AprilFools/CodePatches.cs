@@ -181,6 +181,16 @@ namespace AprilFools
                 }
             }
         }
+        [HarmonyPatch(typeof(NPC), nameof(NPC.draw), new Type[] { typeof(SpriteBatch), typeof(float) })]
+        public static class NPC_draw_Patch
+        {
+            public static void Prefix(NPC __instance, SpriteBatch b)
+            {
+                if (!Config.EnableMod || !Config.GiantEnabled || !gianting || !__instance.isVillager())
+                    return;
+                __instance.Scale = 1f + (float)new Random((int)Game1.stats.DaysPlayed + __instance.Name.GetHashCode()).NextDouble() * 2;
+            }
+        }
         [HarmonyPatch(typeof(Farmer), nameof(Farmer.Update))]
         public static class Farmer_Update_Patch
         {

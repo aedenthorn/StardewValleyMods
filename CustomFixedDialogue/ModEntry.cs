@@ -74,7 +74,7 @@ namespace CustomFixedDialogue
         private void Input_ButtonPressed(object sender, StardewModdingAPI.Events.ButtonPressedEventArgs e)
         {
             return;
-            if (e.Button == SButton.F2)
+            if (e.Button == SButton.NumLock)
 			{
 				var person = Game1.getCharacterFromName("Haley");
                 Game1.warpCharacter(person, Game1.player.currentLocation, Game1.player.getTileLocation() + new Microsoft.Xna.Framework.Vector2(0, 1));
