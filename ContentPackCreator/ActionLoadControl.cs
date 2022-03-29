@@ -15,6 +15,8 @@ namespace ContentPackCreator
         public ActionLoadControl()
         {
             InitializeComponent();
+            fromFileText.AutoCompleteCustomSource = ContentPatcherControl.contentFileNames;
+
         }
 
         private void addWhenButton_Click(object sender, EventArgs e)

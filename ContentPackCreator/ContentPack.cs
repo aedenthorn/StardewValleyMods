@@ -115,7 +115,7 @@ namespace ContentPackCreator
                 contentTab.Controls.Clear();
                 if(currentContentPackLayout.ToLower() == uniqueIDs[0].ToLower())
                 {
-                    contentTab.Controls.Add(new ContentPatcherControl());
+                    contentTab.Controls.Add(new ContentPatcherControl() { Anchor = AnchorStyles.Left | AnchorStyles.Bottom | AnchorStyles.Top | AnchorStyles.Right });
                 }
             }
         }

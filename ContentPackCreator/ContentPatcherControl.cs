@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Drawing;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -12,19 +13,37 @@ namespace ContentPackCreator
 {
     public partial class ContentPatcherControl : UserControl
     {
-        private AutoCompleteStringCollection actionTypeList = new AutoCompleteStringCollection() 
-        {
-            "Load",
-            "EditData",
-            "EditImage",
-            "EditMap",
-            "Include"
-        };
+        private static Dictionary<string, ChangeData> changesDict = new Dictionary<string, ChangeData>();
+
+        public static AutoCompleteStringCollection contentFileNames = new AutoCompleteStringCollection();
 
         public ContentPatcherControl()
         {
             InitializeComponent();
+            ScanContentFolder();
         }
+
+        private void ScanContentFolder()
+        {
+            contentFileNames.Clear();
+            string content = Path.Combine(Directory.GetParent(Environment.CurrentDirectory).Parent.FullName, "Content");
+
+            if (!Directory.Exists(content))
+                return;
+            foreach (string folder in Directory.GetDirectories(content))
+            {
+                foreach (string file in Directory.GetFiles(folder, "*.*", SearchOption.AllDirectories))
+                {
+                    string aFile = file.Substring(folder.Length + 1);
+                    string aDir = "" + Path.GetDirectoryName(aFile);
+                    if(aDir != "")
+                        aDir = aDir.Replace("\\", "/") + "/";
+                    contentFileNames.Add(Path.GetFileName(folder) + "/" + aDir + Path.GetFileNameWithoutExtension(aFile));
+                }
+            }
+
+        }
+
 
         private void listBox1_SelectedIndexChanged(object sender, EventArgs e)
         {
@@ -66,21 +85,32 @@ namespace ContentPackCreator
 
         private void actionComboBox_SelectedIndexChanged(object sender, EventArgs e)
         {
-            changesActionPanel.Controls.Clear();
+            cpActionPanel.Controls.Clear();
             switch (actionComboBox.SelectedItem.ToString())
             {
                 case "Load":
-                    changesActionPanel.Controls.Add(new ActionLoadControl() { Anchor = AnchorStyles.Left | AnchorStyles.Right });
+                    var c = new ActionLoadControl() { Anchor = AnchorStyles.Left | AnchorStyles.Bottom | AnchorStyles.Top | AnchorStyles.Right };
+                    c.Size = cpActionPanel.Size;
+                    cpActionPanel.Controls.Add(c);
                     break;
                 case "EditData":
+                    cpActionPanel.Controls.Add(new ActionEditDataControl() { Anchor = AnchorStyles.Left | AnchorStyles.Right });
                     break;
                 case "EditImage":
+                    cpActionPanel.Controls.Add(new ActionEditImageControl() { Anchor = AnchorStyles.Left | AnchorStyles.Right });
                     break;
                 case "EditMap":
+                    cpActionPanel.Controls.Add(new ActionEditMapControl() { Anchor = AnchorStyles.Left | AnchorStyles.Right });
                     break;
                 case "Include":
+                    cpActionPanel.Controls.Add(new ActionIncludeControl() { Anchor = AnchorStyles.Left | AnchorStyles.Right });
                     break;
             }
+        }
+
+        private void changesAddButton_Click(object sender, EventArgs e)
+        {
+            changesDict.Add($"entry #{changesDict.Count} (Load )", new ChangeData());
         }
     }
 }

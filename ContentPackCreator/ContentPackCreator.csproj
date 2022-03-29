@@ -13,4 +13,14 @@
     </Reference>
   </ItemGroup>
 
+  <ItemGroup>
+    <Compile Update="ActionIncludeControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="bin\" />
+  </ItemGroup>
+
 </Project>

@@ -85,6 +85,7 @@
             // manifestTab
             // 
             this.manifestTab.AutoScroll = true;
+            this.manifestTab.BackColor = System.Drawing.Color.DimGray;
             this.manifestTab.Controls.Add(this.tabControl2);
             this.manifestTab.Location = new System.Drawing.Point(4, 24);
             this.manifestTab.Name = "manifestTab";
@@ -92,7 +93,6 @@
             this.manifestTab.Size = new System.Drawing.Size(1232, 576);
             this.manifestTab.TabIndex = 0;
             this.manifestTab.Text = "manifest.json";
-            this.manifestTab.UseVisualStyleBackColor = true;
             // 
             // tabControl2
             // 
@@ -111,6 +111,7 @@
             // 
             // mainTab
             // 
+            this.mainTab.BackColor = System.Drawing.Color.Gray;
             this.mainTab.Controls.Add(this.minText);
             this.mainTab.Controls.Add(this.label6);
             this.mainTab.Controls.Add(this.idText);
@@ -129,12 +130,12 @@
             this.mainTab.Size = new System.Drawing.Size(1211, 536);
             this.mainTab.TabIndex = 0;
             this.mainTab.Text = "Main";
-            this.mainTab.UseVisualStyleBackColor = true;
             // 
             // minText
             // 
             this.minText.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
+            this.minText.BackColor = System.Drawing.SystemColors.ControlDark;
             this.minText.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
             this.minText.Location = new System.Drawing.Point(150, 183);
             this.minText.Name = "minText";
@@ -155,6 +156,7 @@
             // 
             this.idText.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
+            this.idText.BackColor = System.Drawing.SystemColors.ControlDark;
             this.idText.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
             this.idText.Location = new System.Drawing.Point(150, 147);
             this.idText.Name = "idText";
@@ -165,6 +167,7 @@
             // 
             this.descText.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
+            this.descText.BackColor = System.Drawing.SystemColors.ControlDark;
             this.descText.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
             this.descText.Location = new System.Drawing.Point(150, 111);
             this.descText.Name = "descText";
@@ -175,6 +178,7 @@
             // 
             this.versionText.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
+            this.versionText.BackColor = System.Drawing.SystemColors.ControlDark;
             this.versionText.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
             this.versionText.Location = new System.Drawing.Point(150, 75);
             this.versionText.Name = "versionText";
@@ -185,6 +189,7 @@
             // 
             this.authorText.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
+            this.authorText.BackColor = System.Drawing.SystemColors.ControlDark;
             this.authorText.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
             this.authorText.Location = new System.Drawing.Point(150, 39);
             this.authorText.Name = "authorText";
@@ -195,6 +200,7 @@
             // 
             this.nameText.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
+            this.nameText.BackColor = System.Drawing.SystemColors.ControlDark;
             this.nameText.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
             this.nameText.Location = new System.Drawing.Point(150, 3);
             this.nameText.Name = "nameText";
@@ -273,7 +279,7 @@
             this.forMin.Location = new System.Drawing.Point(130, 39);
             this.forMin.MinimumSize = new System.Drawing.Size(612, 30);
             this.forMin.Name = "forMin";
-            this.forMin.Size = new System.Drawing.Size(1075, 30);
+            this.forMin.Size = new System.Drawing.Size(1075, 29);
             this.forMin.TabIndex = 35;
             this.forMin.Text = "1.25.0";
             // 
@@ -287,7 +293,7 @@
             this.forID.Location = new System.Drawing.Point(130, 6);
             this.forID.MinimumSize = new System.Drawing.Size(612, 30);
             this.forID.Name = "forID";
-            this.forID.Size = new System.Drawing.Size(1075, 30);
+            this.forID.Size = new System.Drawing.Size(1075, 29);
             this.forID.TabIndex = 34;
             this.forID.Text = "Pathoschild.ContentPatcher";
             // 
@@ -335,7 +341,7 @@
             this.depTable.Name = "depTable";
             this.depTable.Padding = new System.Windows.Forms.Padding(10, 0, 10, 0);
             this.depTable.RowCount = 1;
-            this.depTable.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 217F));
+            this.depTable.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 524F));
             this.depTable.Size = new System.Drawing.Size(1199, 524);
             this.depTable.TabIndex = 0;
             // 
@@ -364,13 +370,13 @@
             // 
             // contentTab
             // 
+            this.contentTab.BackColor = System.Drawing.Color.Gray;
             this.contentTab.Location = new System.Drawing.Point(4, 24);
             this.contentTab.Name = "contentTab";
             this.contentTab.Padding = new System.Windows.Forms.Padding(3);
             this.contentTab.Size = new System.Drawing.Size(1232, 576);
             this.contentTab.TabIndex = 1;
             this.contentTab.Text = "content.json";
-            this.contentTab.UseVisualStyleBackColor = true;
             // 
             // label9
             // 
@@ -387,6 +393,7 @@
             // 
             this.folderText.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
+            this.folderText.BackColor = System.Drawing.SystemColors.ControlDark;
             this.folderText.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
             this.folderText.Location = new System.Drawing.Point(108, 638);
             this.folderText.Name = "folderText";
@@ -437,6 +444,7 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.BackColor = System.Drawing.SystemColors.ControlDarkDark;
             this.ClientSize = new System.Drawing.Size(1264, 681);
             this.Controls.Add(this.label9);
             this.Controls.Add(this.folderText);

@@ -290,6 +290,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WallTelevision", "WallTelev
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CropVariation", "CropVariation\CropVariation.csproj", "{FFE86300-3D9D-4A4D-AB6D-D65C3DCDDA8C}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WikiLinks", "WikiLinks\WikiLinks.csproj", "{7503D7DB-66FC-4D52-901F-9C9C6307E54C}"
+EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
 		_releases\_releases.projitems*{047040e0-3d07-46e5-852b-d1d45cd57bb8}*SharedItemsImports = 13
@@ -1421,6 +1423,14 @@ Global
 		{FFE86300-3D9D-4A4D-AB6D-D65C3DCDDA8C}.Release|Any CPU.Build.0 = Release|Any CPU
 		{FFE86300-3D9D-4A4D-AB6D-D65C3DCDDA8C}.Release|x86.ActiveCfg = Release|Any CPU
 		{FFE86300-3D9D-4A4D-AB6D-D65C3DCDDA8C}.Release|x86.Build.0 = Release|Any CPU
+		{7503D7DB-66FC-4D52-901F-9C9C6307E54C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7503D7DB-66FC-4D52-901F-9C9C6307E54C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7503D7DB-66FC-4D52-901F-9C9C6307E54C}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{7503D7DB-66FC-4D52-901F-9C9C6307E54C}.Debug|x86.Build.0 = Debug|Any CPU
+		{7503D7DB-66FC-4D52-901F-9C9C6307E54C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7503D7DB-66FC-4D52-901F-9C9C6307E54C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7503D7DB-66FC-4D52-901F-9C9C6307E54C}.Release|x86.ActiveCfg = Release|Any CPU
+		{7503D7DB-66FC-4D52-901F-9C9C6307E54C}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

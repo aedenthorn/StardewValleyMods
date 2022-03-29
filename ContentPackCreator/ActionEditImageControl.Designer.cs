@@ -1,6 +1,6 @@
 ﻿namespace ContentPackCreator
 {
-    partial class ActionEditDataControl
+    partial class ActionEditImageControl
     {
         /// <summary> 
         /// Required designer variable.
@@ -144,12 +144,12 @@
             this.addWhenButton.Text = "Add When Condition";
             this.addWhenButton.UseVisualStyleBackColor = true;
             // 
-            // ActionEditDataControl
+            // ActionEditImageControl
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.Controls.Add(this.cpActionTabControl);
-            this.Name = "ActionEditDataControl";
+            this.Name = "ActionEditImageControl";
             this.Size = new System.Drawing.Size(1200, 510);
             this.cpActionTabControl.ResumeLayout(false);
             this.mainTab.ResumeLayout(false);
