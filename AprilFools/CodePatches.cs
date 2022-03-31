@@ -6,6 +6,7 @@ using Microsoft.Xna.Framework.Input;
 using Netcode;
 using StardewValley;
 using StardewValley.BellsAndWhistles;
+using StardewValley.Locations;
 using StardewValley.Menus;
 using StardewValley.TerrainFeatures;
 using StardewValley.Tools;
@@ -29,7 +30,7 @@ namespace AprilFools
             private static int avoidTicks = 0;
             public static void Prefix(InventoryMenu __instance)
             {
-                if (!Config.EnableMod || !Config.InventoryEnabled)
+                if (!IsModEnabled() || !Config.InventoryEnabled)
                     return;
                 avoidTicks++;
                 foreach (ClickableComponent clickableComponent in __instance.inventory)
@@ -70,7 +71,7 @@ namespace AprilFools
         {
             public static bool Prefix(Tree __instance, Tool t, Vector2 tileLocation, GameLocation location, ref float __state)
             {
-                if (!Config.EnableMod || !Config.TreeScreamEnabled)
+                if (!IsModEnabled() || !Config.TreeScreamEnabled)
                     return true;
                 __state = __instance.health.Value;
                 if (Game1.random.NextDouble() < 0.25 && t is Axe)
@@ -98,7 +99,7 @@ namespace AprilFools
             }
             public static void Postfix(Tree __instance, ref float __state)
             {
-                if (!Config.EnableMod || !Config.TreeScreamEnabled || __state <= __instance.health.Value)
+                if (!IsModEnabled() || !Config.TreeScreamEnabled || __state <= __instance.health.Value)
                     return;
                 if(__instance.health.Value > 0 && screamTicks > 120)
                 {
@@ -117,7 +118,7 @@ namespace AprilFools
         {
             public static void Postfix(Tree __instance, SpriteBatch spriteBatch, Vector2 tileLocation, NetBool ___falling)
             {
-                if (!Config.EnableMod || !Config.TreeScreamEnabled)
+                if (!IsModEnabled() || !Config.TreeScreamEnabled)
                     return;
                 if(screamTicks <= 120)
                     screamTicks++;
@@ -156,7 +157,7 @@ namespace AprilFools
         {
             public static void Prefix(Farmer __instance, ref Vector2 __state)
             {
-                if (!Config.EnableMod || !Config.BackwardsEnabled)
+                if (!IsModEnabled() || !Config.BackwardsEnabled)
                     return;
 
                 if (backwardsFarmer)
@@ -166,7 +167,7 @@ namespace AprilFools
             }
             public static void Postfix(Farmer __instance, xTile.Dimensions.Rectangle viewport, GameLocation currentLocation, ref Vector2 __state)
             {
-                if (!Config.EnableMod)
+                if (!IsModEnabled())
                     return;
 
                 if (backwardsFarmer)
@@ -186,9 +187,9 @@ namespace AprilFools
         {
             public static void Prefix(NPC __instance, SpriteBatch b)
             {
-                if (!Config.EnableMod || !Config.GiantEnabled || !gianting || !__instance.isVillager())
+                if (!IsModEnabled() || !Config.GiantEnabled || !__instance.isVillager())
                     return;
-                __instance.Scale = 1f + (float)new Random((int)Game1.stats.DaysPlayed + __instance.Name.GetHashCode()).NextDouble() * 2;
+                __instance.Scale =  !gianting ? 1 : 1 + (float)new Random((int)Game1.stats.DaysPlayed + __instance.Name.GetHashCode()).NextDouble() * 2;
             }
         }
         [HarmonyPatch(typeof(Farmer), nameof(Farmer.Update))]
@@ -196,7 +197,7 @@ namespace AprilFools
         {
             public static void Prefix(Farmer __instance, GameTime time)
             {
-                if (!Config.EnableMod || !Config.SlimeEnabled|| !slimeFarmer || slime == null)
+                if (!IsModEnabled() || !Config.SlimeEnabled|| !slimeFarmer || slime == null)
                     return;
                 int currentIndex = slime.Sprite.currentFrame;
                 slime.Sprite.AnimateDown(time, 0, "");
@@ -224,11 +225,103 @@ namespace AprilFools
         {
             public static bool Prefix(Farmer __instance, SpriteBatch b)
             {
-                if (!Config.EnableMod || !Config.SlimeEnabled || !slimeFarmer)
+                if (!IsModEnabled() || !Config.SlimeEnabled || !slimeFarmer)
                     return true;
                 slime.Position = __instance.Position;
                 b.Draw(slime.Sprite.Texture, slime.getLocalPosition(Game1.viewport) + new Vector2(56f, (float)(16 + slime.yJumpOffset)), new Rectangle?(slime.Sprite.SourceRect), Utility.GetPrismaticColor(348 + 50, 5f), slime.rotation, new Vector2(16f, 16f), Math.Max(0.2f, slime.Scale) * 4f, slime.flip ? SpriteEffects.FlipHorizontally : SpriteEffects.None, Math.Max(0f, slime.drawOnTop ? 0.991f : ((float)slime.getStandingY() / 10000f)));
                 return false;
+            }
+        }
+        [HarmonyPatch(typeof(Character), nameof(Character.update), new Type[] { typeof(GameTime), typeof(GameLocation), typeof(long), typeof(bool) })]
+        public static class Character_update_Patch
+        {
+            public static void Postfix(Character __instance, GameTime time)
+            {
+                if (!IsModEnabled() || !Config.EnableAnimalTalk || speakingAnimals is null || __instance is not FarmAnimal)
+                    return;
+                if(speakingAnimals.aID == (__instance as FarmAnimal).myID.Value)
+                {
+                    if (speakingAnimals.textAboveHeadPreTimer > 0)
+                    {
+                        speakingAnimals.textAboveHeadPreTimer -= time.ElapsedGameTime.Milliseconds;
+                    }
+                    else
+                    {
+                        speakingAnimals.textAboveHeadTimer -= time.ElapsedGameTime.Milliseconds;
+                        if (speakingAnimals.textAboveHeadTimer > 500)
+                        {
+                            speakingAnimals.textAboveHeadAlpha = Math.Min(1f, speakingAnimals.textAboveHeadAlpha + 0.1f);
+                        }
+                        else
+                        {
+                            speakingAnimals.textAboveHeadAlpha = Math.Max(0f, speakingAnimals.textAboveHeadAlpha - 0.04f);
+                        }
+                    }
+                    if (speakingAnimals.bTextAboveHeadPreTimer > 0)
+                    {
+                        speakingAnimals.bTextAboveHeadPreTimer -= time.ElapsedGameTime.Milliseconds;
+                    }
+                    else
+                    {
+                        speakingAnimals.bTextAboveHeadTimer -= time.ElapsedGameTime.Milliseconds;
+                        if (speakingAnimals.bTextAboveHeadTimer > 500)
+                        {
+                            speakingAnimals.bTextAboveHeadAlpha = Math.Min(1f, speakingAnimals.bTextAboveHeadAlpha + 0.1f);
+                        }
+                        else
+                        {
+                            speakingAnimals.bTextAboveHeadAlpha = Math.Max(0f, speakingAnimals.bTextAboveHeadAlpha - 0.04f);
+                        }
+                    }
+                    if (speakingAnimals.bTextAboveHeadTimer < 0)
+                        speakingAnimals = null;
+                }
+            }
+        }
+        [HarmonyPatch(typeof(GameLocation), nameof(GameLocation.drawAboveAlwaysFrontLayer), new Type[] { typeof(SpriteBatch) })]
+        public static class GameLocation_drawAboveAlwaysFrontLayer_Patch
+        {
+            public static void Postfix(GameLocation __instance, SpriteBatch b)
+            {
+                if (!IsModEnabled() || !Config.EnableAnimalTalk || speakingAnimals is null || (Game1.currentLocation is not Farm && Game1.currentLocation is not AnimalHouse && Game1.currentLocation is not Forest))
+                    return;
+
+                FarmAnimal[] animals;
+                if (Game1.currentLocation is AnimalHouse)
+                    animals = (Game1.currentLocation as AnimalHouse).animals.Values.ToArray();
+                else if (Game1.currentLocation is AnimalHouse)
+                    animals = (Game1.currentLocation as Farm).animals.Values.ToArray();
+                else
+                    animals = (Game1.currentLocation as Forest).marniesLivestock.ToArray();
+                foreach (var a in animals)
+                {
+                    if (speakingAnimals.aID == a.myID.Value)
+                    {
+                        if (speakingAnimals.textAboveHeadTimer > 0 && speakingAnimals.textAboveHead != null)
+                        {
+                            Vector2 local = Game1.GlobalToLocal(new Vector2((float)a.getStandingX(), (float)(a.getStandingY() - a.Sprite.SpriteHeight * 4 - 64 + a.yJumpOffset)));
+
+                            if (a.shouldShadowBeOffset)
+                            {
+                                local += a.drawOffset.Value;
+                            }
+                            SpriteText.drawStringWithScrollCenteredAt(b, speakingAnimals.textAboveHead, (int)local.X, (int)local.Y, "", speakingAnimals.textAboveHeadAlpha, speakingAnimals.textAboveHeadColor, 1, (float)(a.getTileY() * 64) / 10000f + 0.001f + (float)a.getTileX() / 10000f, false);
+                        }
+                    }
+                    else if (speakingAnimals.bID == a.myID.Value)
+                    {
+                        if (speakingAnimals.bTextAboveHeadTimer > 0 && speakingAnimals.bTextAboveHead != null)
+                        {
+                            Vector2 local = Game1.GlobalToLocal(new Vector2((float)a.getStandingX(), (float)(a.getStandingY() - a.Sprite.SpriteHeight * 4 - 64 + a.yJumpOffset)));
+
+                            if (a.shouldShadowBeOffset)
+                            {
+                                local += a.drawOffset.Value;
+                            }
+                            SpriteText.drawStringWithScrollCenteredAt(b, speakingAnimals.bTextAboveHead, (int)local.X, (int)local.Y, "", speakingAnimals.bTextAboveHeadAlpha, speakingAnimals.bTextAboveHeadColor, 1, (float)(a.getTileY() * 64) / 10000f + 0.001f + (float)a.getTileX() / 10000f, false);
+                        }
+                    }
+                }
             }
         }
         //[HarmonyPatch(typeof(InputState), nameof(InputState.SetMousePosition))]

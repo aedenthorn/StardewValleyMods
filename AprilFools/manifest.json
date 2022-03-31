@@ -1,7 +1,7 @@
 ﻿{
   "Name": "April Fools",
   "Author": "aedenthorn",
-  "Version": "0.1.0",
+  "Version": "0.1.3",
   "Description": "April Fools.",
   "UniqueID": "aedenthorn.AprilFools",
   "EntryDll": "AprilFools.dll",

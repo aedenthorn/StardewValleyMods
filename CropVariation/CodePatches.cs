@@ -40,7 +40,7 @@ namespace CropVariation
                     toTint = new Color(Math.Clamp(toTint.R + redVar, 0, 255), Math.Clamp(toTint.G + greenVar, 0, 255), Math.Clamp(toTint.B + blueVar, 0, 255));
                 }
                 __state = ___layerDepth;
-                ___layerDepth += tileLocation.X / 10000f;
+                ___layerDepth += tileLocation.X / 1000000f;
             }
             public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions)
             {

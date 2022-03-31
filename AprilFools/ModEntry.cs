@@ -4,10 +4,13 @@ using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using StardewModdingAPI;
 using StardewValley;
+using StardewValley.Locations;
 using StardewValley.Monsters;
+using StardewValley.Network;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using xTile;
 
 namespace AprilFools
@@ -31,13 +34,13 @@ namespace AprilFools
         public static bool beeing;
         public static bool backwardsFarmer;
         public static bool gianting;
-        public static bool backwardsCursor;
-        public static Point lastMousePos;
         public static List<BeeData> beeDataList = new List<BeeData>();
         public static int ravenTicks;
         public static SpriteFont font;
         public static SpriteBatch screenBatch;
         public static Texture2D screenTexture;
+
+        public static SpeakingAnimalData speakingAnimals;
 
         /// <summary>The mod entry point, called after the mod is first loaded.</summary>
         /// <param name="helper">Provides simplified APIs for writing mods.</param>
@@ -52,7 +55,8 @@ namespace AprilFools
 
             helper.Events.GameLoop.GameLaunched += GameLoop_GameLaunched;
             helper.Events.GameLoop.OneSecondUpdateTicked += GameLoop_OneSecondUpdateTicked;
-            helper.Events.GameLoop.UpdateTicked += GameLoop_UpdateTicked;
+            helper.Events.GameLoop.TimeChanged += GameLoop_TimeChanged;
+            helper.Events.Player.Warped += Player_Warped;
             helper.Events.Display.RenderedWorld += Display_RenderedWorld;
             helper.Events.Display.Rendered += Display_Rendered;
 
@@ -72,25 +76,43 @@ namespace AprilFools
             harmony.PatchAll();
         }
 
-        private void GameLoop_UpdateTicked(object sender, StardewModdingAPI.Events.UpdateTickedEventArgs e)
+        private void Player_Warped(object sender, StardewModdingAPI.Events.WarpedEventArgs e)
         {
-            if (!Config.EnableMod)
-                return;
-            if (backwardsCursor)
+            speakingAnimals = null;
+        }
+
+        private void GameLoop_TimeChanged(object sender, StardewModdingAPI.Events.TimeChangedEventArgs e)
+        {
+            if(Config.EnableMod && Config.EnableAnimalTalk && speakingAnimals is null && (Game1.currentLocation is Farm || Game1.currentLocation is AnimalHouse || Game1.currentLocation is Forest))
             {
-                var pos = Game1.getMousePosition();
-                if(pos != lastMousePos)
+                FarmAnimal[] animals;
+                if (Game1.currentLocation is AnimalHouse)
+                    animals = (Game1.currentLocation as AnimalHouse).animals.Values.ToArray();
+                else if (Game1.currentLocation is Farm)
+                    animals = (Game1.currentLocation as Farm).animals.Values.ToArray();
+                else if (Game1.currentLocation is Forest)
+                    animals = (Game1.currentLocation as Forest).marniesLivestock.ToArray();
+                else return;
+                foreach (var a in animals)
                 {
-                    Point newPos = new Point(lastMousePos.X - (pos.X - lastMousePos.X), lastMousePos.Y - (pos.Y - lastMousePos.Y));
-                    Game1.setMousePosition(newPos);
+                    foreach (var b in animals)
+                    {
+                        if (a.myID.Value == b.myID.Value)
+                            continue;
+                        if (Vector2.Distance(a.getTileLocation(), b.getTileLocation()) <= 10 && Game1.random.NextDouble() < 0.3)
+                        {
+                            speakingAnimals = new SpeakingAnimalData(a, b);
+                            return;
+                        }
+                    }
                 }
             }
-            lastMousePos = Game1.getMousePosition();
         }
+
 
         private void GameLoop_OneSecondUpdateTicked(object sender, StardewModdingAPI.Events.OneSecondUpdateTickedEventArgs e)
         {
-            if (!Config.EnableMod)
+            if (!IsModEnabled())
                 return;
             if (slimeFarmer)
             {
@@ -131,7 +153,7 @@ namespace AprilFools
             }
             else if (Config.GiantEnabled)
             {
-                gianting = Game1.random.NextDouble() < 0.008;
+                gianting = Game1.random.NextDouble() < 0.01;
             }
             if(asciifying)
             {
@@ -160,7 +182,7 @@ namespace AprilFools
             }
             if (!Config.BeesEnabled || beeDataList.Count > 30)
                 beeDataList.Clear();
-            else if (Game1.random.NextDouble() < (beeDataList.Count + 1) / 50f)
+            else if (Game1.random.NextDouble() < (beeDataList.Count + 1) / 30f)
             {
                 beeDataList.Add(new BeeData()
                 {
@@ -171,7 +193,7 @@ namespace AprilFools
 
         private void Display_Rendered(object sender, StardewModdingAPI.Events.RenderedEventArgs e)
         {
-            if (!Config.EnableMod)
+            if (!IsModEnabled())
                 return;
 
             if (Config.BeesEnabled && beeDataList.Count > 0)
@@ -220,7 +242,7 @@ namespace AprilFools
 
         private void Display_RenderedWorld(object sender, StardewModdingAPI.Events.RenderedWorldEventArgs e)
         {
-            if (!Config.EnableMod)
+            if (!IsModEnabled())
                 return;
 
             if (Config.AsciiEnabled && asciifying)
@@ -284,6 +306,13 @@ namespace AprilFools
                 getValue: () => Config.EnableMod,
                 setValue: value => Config.EnableMod = value
             );
+
+            configMenu.AddBoolOption(
+                mod: ModManifest,
+                name: () => "Only April 1st?",
+                getValue: () => Config.RestrictToAprilFirst,
+                setValue: value => Config.RestrictToAprilFirst = value
+            );
             configMenu.AddBoolOption(
                 mod: ModManifest,
                 name: () => "Enable Bees?",
@@ -343,6 +372,12 @@ namespace AprilFools
                 name: () => "Enable Building Switch?",
                 getValue: () => Config.BuildingsEnabled,
                 setValue: value => Config.BuildingsEnabled = value
+            );
+            configMenu.AddBoolOption(
+                mod: ModManifest,
+                name: () => "Enable Animal Greeting?",
+                getValue: () => Config.EnableAnimalTalk,
+                setValue: value => Config.EnableAnimalTalk = value
             );
         }
 

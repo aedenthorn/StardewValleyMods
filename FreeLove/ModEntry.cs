@@ -54,7 +54,6 @@ namespace FreeLove
             helper.Events.GameLoop.DayStarted += GameLoop_DayStarted;
             helper.Events.GameLoop.OneSecondUpdateTicked += GameLoop_OneSecondUpdateTicked;
             PathFindControllerPatches.Initialize(Monitor, Config, helper);
-            Integrations.Initialize(Monitor, Config, helper);
             Divorce.Initialize(Monitor, Config, helper);
             NPCPatches.Initialize(Monitor, Config, helper);
             LocationPatches.Initialize(Monitor, Config, helper);

@@ -2,8 +2,6 @@
 using StardewModdingAPI;
 using StardewModdingAPI.Events;
 using StardewValley;
-using StardewValley.TerrainFeatures;
-using System.Diagnostics;
 
 namespace WikiLinks
 {
@@ -32,8 +30,6 @@ namespace WikiLinks
             harmony.PatchAll();
         }
 
-
-
         private void GameLoop_GameLaunched(object sender, GameLaunchedEventArgs e)
         {
 
@@ -54,6 +50,12 @@ namespace WikiLinks
                 name: () => "Mod Enabled",
                 getValue: () => Config.EnableMod,
                 setValue: value => Config.EnableMod = value
+            );
+            configMenu.AddBoolOption(
+                mod: ModManifest,
+                name: () => "Switch Focus",
+                getValue: () => Config.SendToBack,
+                setValue: value => Config.SendToBack = value
             );
             configMenu.AddKeybind(
                 mod: ModManifest,

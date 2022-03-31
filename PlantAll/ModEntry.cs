@@ -1,6 +1,11 @@
 ﻿using HarmonyLib;
+using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using StardewModdingAPI;
+using StardewModdingAPI.Events;
 using StardewValley;
+using StardewValley.TerrainFeatures;
+using System.Collections.Generic;
 
 namespace PlantAll
 {
@@ -20,14 +25,12 @@ namespace PlantAll
         {
             Config = Helper.ReadConfig<ModConfig>();
 
-            if (!Config.EnableMod)
-                return;
-
             context = this;
 
             SMonitor = Monitor;
             SHelper = helper;
             helper.Events.GameLoop.GameLaunched += GameLoop_GameLaunched;
+            helper.Events.Display.RenderedWorld += Display_RenderedWorld;
 
 
             var harmony = new Harmony(ModManifest.UniqueID);
@@ -39,8 +42,24 @@ namespace PlantAll
 
 
         }
+        private void Display_RenderedWorld(object sender, RenderedWorldEventArgs e)
+        {
+            if (Config.EnableMod && Context.IsPlayerFree && Game1.player.CurrentItem?.Category == -74 && (Helper.Input.IsDown(Config.ModButton) || Helper.Input.IsDown(Config.StraightModButton)))
+            {
+                Vector2 grabTile = Game1.GetPlacementGrabTile();
+                if (!Utility.playerCanPlaceItemHere(Game1.player.currentLocation, Game1.player.CurrentItem, (int)grabTile.X * 64, (int)grabTile.Y * 64, Game1.player))
+                    return;
+                List<Point> placeables = new List<Point>();
+                GetPlaceable((int)grabTile.X, (int)grabTile.Y, (int)grabTile.X, (int)grabTile.Y, placeables);
+                foreach (Point p in placeables)
+                {
+                    e.SpriteBatch.Draw(Game1.mouseCursors, Game1.GlobalToLocal(new Vector2((float)((int)p.X * 64), (float)((int)p.Y * 64))), new Rectangle?(new Rectangle(194, 388, 16, 16)), Color.White, 0f, Vector2.Zero, 4f, SpriteEffects.None, 0.01f);
+                }
+            }
+        }
 
-        private void GameLoop_GameLaunched(object sender, StardewModdingAPI.Events.GameLaunchedEventArgs e)
+
+        private void GameLoop_GameLaunched(object sender, GameLaunchedEventArgs e)
         {
             // get Generic Mod Config Menu's API (if it's installed)
             var configMenu = Helper.ModRegistry.GetApi<IGenericModConfigMenuApi>("spacechase0.GenericModConfigMenu");
@@ -71,6 +90,12 @@ namespace PlantAll
                 name: () => "Modifier Key",
                 getValue: () => Config.ModButton,
                 setValue: value => Config.ModButton = value
+            );
+            configMenu.AddKeybind(
+                mod: ModManifest,
+                name: () => "Straight Mod Key",
+                getValue: () => Config.StraightModButton,
+                setValue: value => Config.StraightModButton = value
             );
         }
     }

@@ -7,8 +7,8 @@ namespace PlantAll
     {
         public bool EnableMod { get; set; } = true;
         public bool AllowDiagonal { get; set; } = true;
-
         public SButton ModButton { get; set; } = SButton.LeftShift;
+        public SButton StraightModButton { get; set; } = SButton.LeftControl;
 
     }
 }

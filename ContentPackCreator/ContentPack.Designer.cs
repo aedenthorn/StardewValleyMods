@@ -75,6 +75,7 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.tabControl.Controls.Add(this.manifestTab);
             this.tabControl.Controls.Add(this.contentTab);
+            this.tabControl.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
             this.tabControl.Location = new System.Drawing.Point(12, 12);
             this.tabControl.Name = "tabControl";
             this.tabControl.SelectedIndex = 0;
@@ -87,10 +88,10 @@
             this.manifestTab.AutoScroll = true;
             this.manifestTab.BackColor = System.Drawing.Color.DimGray;
             this.manifestTab.Controls.Add(this.tabControl2);
-            this.manifestTab.Location = new System.Drawing.Point(4, 24);
+            this.manifestTab.Location = new System.Drawing.Point(4, 30);
             this.manifestTab.Name = "manifestTab";
             this.manifestTab.Padding = new System.Windows.Forms.Padding(3);
-            this.manifestTab.Size = new System.Drawing.Size(1232, 576);
+            this.manifestTab.Size = new System.Drawing.Size(1232, 570);
             this.manifestTab.TabIndex = 0;
             this.manifestTab.Text = "manifest.json";
             // 
@@ -106,7 +107,7 @@
             this.tabControl2.Location = new System.Drawing.Point(6, 6);
             this.tabControl2.Name = "tabControl2";
             this.tabControl2.SelectedIndex = 0;
-            this.tabControl2.Size = new System.Drawing.Size(1219, 564);
+            this.tabControl2.Size = new System.Drawing.Size(1219, 558);
             this.tabControl2.TabIndex = 0;
             // 
             // mainTab
@@ -124,10 +125,10 @@
             this.mainTab.Controls.Add(this.label3);
             this.mainTab.Controls.Add(this.label2);
             this.mainTab.Controls.Add(this.label1);
-            this.mainTab.Location = new System.Drawing.Point(4, 24);
+            this.mainTab.Location = new System.Drawing.Point(4, 30);
             this.mainTab.Name = "mainTab";
             this.mainTab.Padding = new System.Windows.Forms.Padding(3);
-            this.mainTab.Size = new System.Drawing.Size(1211, 536);
+            this.mainTab.Size = new System.Drawing.Size(1211, 524);
             this.mainTab.TabIndex = 0;
             this.mainTab.Text = "Main";
             // 

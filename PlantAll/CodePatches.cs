@@ -10,12 +10,12 @@ namespace PlantAll
 
         private static void Utility_tryToPlaceItem_Postfix(GameLocation location, Item item, int x, int y, bool __result)
         {
-            if (!Config.EnableMod || !__result || !SHelper.Input.IsDown(Config.ModButton) || !IsValidItem(item))
+            if (!Config.EnableMod || !__result || (!SHelper.Input.IsDown(Config.ModButton) && !SHelper.Input.IsDown(Config.StraightModButton)) || !IsValidItem(item))
                 return;
-            SMonitor.Log($"Planting all");
+            SMonitor.Log($"Planting all; straight {SHelper.Input.IsDown(Config.StraightModButton)}, full {SHelper.Input.IsDown(Config.ModButton)}");
 
             List<Point> placeables = new List<Point>();
-            GetPlaceable(x / 64, y / 64, placeables);
+            GetPlaceable(x / 64, y / 64, x / 64, y / 64, placeables);
             SMonitor.Log($"Got {placeables.Count} placeable tiles");
             Vector2 start = new Vector2(x / 64, y / 64);
             placeables.Sort(delegate (Point p1, Point p2) { return Vector2.Distance(start, p1.ToVector2()).CompareTo(Vector2.Distance(start, p2.ToVector2())); });
@@ -35,11 +35,57 @@ namespace PlantAll
             return item != null && item.Stack > 0 && (item.Category == -74 || item.Category == -19) && !(item as Object).isSapling() && !Object.isWildTreeSeed(item.ParentSheetIndex);
         }
 
-        private static void GetPlaceable(int x, int y, List<Point> placeables)
+        private static void GetPlaceable(int ox, int oy, int x, int y, List<Point> placeables)
         {
             List<Point> tiles = new List<Point>();
-
-            if (Config.AllowDiagonal)
+            if (SHelper.Input.IsDown(Config.StraightModButton))
+            {
+                bool wide = SHelper.Input.IsDown(Config.ModButton);
+                switch (Game1.player.FacingDirection)
+                {
+                    case 0:
+                        if (x != ox)
+                            break;
+                        tiles.Add(new Point(x, y - 1));
+                        if (wide)
+                        {
+                            tiles.Add(new Point(x - 1, y));
+                            tiles.Add(new Point(x + 1, y));
+                        }
+                        break;
+                    case 1:
+                        if (y != oy)
+                            break;
+                        tiles.Add(new Point(x + 1, y));
+                        if (wide)
+                        {
+                            tiles.Add(new Point(x, y - 1));
+                            tiles.Add(new Point(x, y + 1));
+                        }
+                        break;
+                    case 2:
+                        if (x != ox)
+                            break;
+                        tiles.Add(new Point(x, y + 1));
+                        if (wide)
+                        {
+                            tiles.Add(new Point(x - 1, y));
+                            tiles.Add(new Point(x + 1, y));
+                        }
+                        break;
+                    case 3:
+                        if (y != oy)
+                            break;
+                        tiles.Add(new Point(x - 1, y));
+                        if (wide)
+                        {
+                            tiles.Add(new Point(x, y - 1));
+                            tiles.Add(new Point(x, y + 1));
+                        }
+                        break;
+                }
+            }
+            else if (Config.AllowDiagonal)
             {
                 for (int i = x - 1; i < x + 2; i++)
                 {
@@ -78,7 +124,7 @@ namespace PlantAll
             }
             foreach (var v in tiles)
             {
-                GetPlaceable(v.X, v.Y, placeables);
+                GetPlaceable(ox, oy, v.X, v.Y, placeables);
             }
         }
 
