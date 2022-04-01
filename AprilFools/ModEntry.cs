@@ -248,7 +248,7 @@ namespace AprilFools
             if (Config.AsciiEnabled && asciifying)
             {
                 int scale = 16;
-                var lines = ConvertToAscii(ScaleScreen(scale), Game1.graphics.GraphicsDevice.PresentationParameters.BackBufferWidth / scale);
+                var lines = ConvertToAscii(ScaleScreen(scale, out int w, out int h), Game1.graphics.GraphicsDevice.PresentationParameters.BackBufferWidth / scale);
                 if (lines.Count > 0)
                 {
                     e.SpriteBatch.Draw(blackTexture, new Rectangle(0, 0, Game1.viewport.Width, Game1.viewport.Height), Color.White);
@@ -261,9 +261,9 @@ namespace AprilFools
             }
             else if (Config.PixelateEnabled && pixelating)
             {
-                int scale = 16;
-                Texture2D pixelScreen = new Texture2D(Game1.graphics.GraphicsDevice, Game1.viewport.Width / scale, Game1.viewport.Height / scale);
-                pixelScreen.SetData(ScaleScreen(16));
+                Color[] data = ScaleScreen(16, out int width, out int height);
+                Texture2D pixelScreen = new Texture2D(Game1.graphics.GraphicsDevice, width, height);
+                pixelScreen.SetData(data);
                 e.SpriteBatch.Draw(pixelScreen, new Rectangle(0, 0, Game1.viewport.Width, Game1.viewport.Height), Color.White);
             }
             if (Config.RavenEnabled && (Game1.timeOfDay >= 2100 || Game1.timeOfDay <= 200))

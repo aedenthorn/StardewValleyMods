@@ -27,7 +27,7 @@ namespace AprilFools
                 list[n] = value;
             }
         }
-        private Color[] ScaleScreen(int scaleFactor)
+        private Color[] ScaleScreen(int scaleFactor, out int width, out int height)
         {
             var screenWidth = Game1.graphics.GraphicsDevice.PresentationParameters.BackBufferWidth;
             var screenHeight = Game1.graphics.GraphicsDevice.PresentationParameters.BackBufferHeight;
@@ -50,6 +50,8 @@ namespace AprilFools
 
             Game1.graphics.GraphicsDevice.SetRenderTarget(null);
             Color[] data = new Color[renderTarget.Width * renderTarget.Height];
+            width = renderTarget.Width;
+            height = renderTarget.Height;
             renderTarget.GetData(data);
             return data;
         }

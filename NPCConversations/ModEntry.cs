@@ -4,14 +4,17 @@ using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using StardewModdingAPI;
 using StardewValley;
+using StardewValley.Characters;
 using StardewValley.Locations;
 using StardewValley.Monsters;
 using StardewValley.Network;
+using StardewValley.TerrainFeatures;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using xTile;
+using Object = StardewValley.Object;
 
 namespace NPCConversations
 {
@@ -24,9 +27,9 @@ namespace NPCConversations
         public static ModConfig Config;
 
         public static ModEntry context;
-        public static readonly string dictPath = "custom_object_production_dictionary";
+        public static readonly string dictPath = "aedenthorn.NPCConversations/dictionary";
         public static Dictionary<string, NPCConversationData> npcConversationDataDict = new Dictionary<string, NPCConversationData>();
-        public static SpeakingAnimalData speakingAnimals;
+        public static List<NPCConversationInstance> currentConversations = new List<NPCConversationInstance>();
 
         /// <summary>The mod entry point, called after the mod is first loaded.</summary>
         /// <param name="helper">Provides simplified APIs for writing mods.</param>
@@ -50,43 +53,126 @@ namespace NPCConversations
 
         private void GameLoop_SaveLoaded(object sender, StardewModdingAPI.Events.SaveLoadedEventArgs e)
         {
-            throw new NotImplementedException();
+            npcConversationDataDict = Helper.Content.Load<Dictionary<string, NPCConversationData>>(dictPath, ContentSource.GameContent);
+            Monitor.Log($"Loaded {npcConversationDataDict.Count} conversation datas");
+            currentConversations.Clear();
         }
 
         private void Player_Warped(object sender, StardewModdingAPI.Events.WarpedEventArgs e)
         {
-            speakingAnimals = null;
+            currentConversations.Clear();
         }
 
         private void GameLoop_TimeChanged(object sender, StardewModdingAPI.Events.TimeChangedEventArgs e)
         {
-            if(Config.EnableMod && (Game1.currentLocation is Farm || Game1.currentLocation is AnimalHouse || Game1.currentLocation is Forest))
+            if (!Config.EnableMod)
+                return;
+
+            foreach(var kvp in npcConversationDataDict)
             {
-                FarmAnimal[] animals;
-                if (Game1.currentLocation is AnimalHouse)
-                    animals = (Game1.currentLocation as AnimalHouse).animals.Values.ToArray();
-                else if (Game1.currentLocation is Farm)
-                    animals = (Game1.currentLocation as Farm).animals.Values.ToArray();
-                else if (Game1.currentLocation is Forest)
-                    animals = (Game1.currentLocation as Forest).marniesLivestock.ToArray();
-                else return;
-                foreach (var a in animals)
-                {
-                    foreach (var b in animals)
-                    {
-                        if (a.myID.Value == b.myID.Value)
-                            continue;
-                        if (Vector2.Distance(a.getTileLocation(), b.getTileLocation()) <= 10 && Game1.random.NextDouble() < 0.3)
-                        {
-                            speakingAnimals = new SpeakingAnimalData(a, b);
-                            return;
-                        }
-                    }
-                }
+                if (Game1.random.NextDouble() < kvp.Value.chance)
+                    MakeConversation(kvp.Key, kvp.Value);
             }
         }
 
+        private void MakeConversation(string key, NPCConversationData data)
+        {
+            List<List<object>> candidates = new List<List<object>>();
+            foreach(var p in data.participantDatas)
+            {
+                List<object> thisCandidates = new List<object>();
+                foreach (var t in p.participantTypes)
+                {
+                    switch (t)
+                    {
+                        case "NPC":
+                            thisCandidates.AddRange(Game1.currentLocation.characters.ToList().Where(c => c.isVillager()));
+                            break;
+                        case "Monster":
+                            thisCandidates.AddRange(Game1.currentLocation.characters.ToList().Where(c => c is Monster));
+                            break;
+                        case "FarmAnimal":
+                            if (Game1.currentLocation is AnimalHouse)
+                                thisCandidates.AddRange((Game1.currentLocation as AnimalHouse).animals.Values.ToList());
+                            else if (Game1.currentLocation is Farm)
+                                thisCandidates.AddRange((Game1.currentLocation as Farm).animals.Values.ToList());
+                            else if (Game1.currentLocation is Forest)
+                                thisCandidates.AddRange((Game1.currentLocation as Forest).marniesLivestock.ToList());
+                            else continue;
+                            break;
+                        case "Pet":
+                            thisCandidates.AddRange(Game1.currentLocation.characters.ToList().Where(c => c is Pet));
+                            break;
+                        case "Cat":
+                            thisCandidates.AddRange(Game1.currentLocation.characters.ToList().Where(c => c is Cat));
+                            break;
+                        case "Dog":
+                            thisCandidates.AddRange(Game1.currentLocation.characters.ToList().Where(c => c is Dog));
+                            break;
+                        case "Junimo":
+                            thisCandidates.AddRange(Game1.currentLocation.characters.ToList().Where(c => c is Junimo));
+                            break;
+                        case "JunimoHarvester":
+                            thisCandidates.AddRange(Game1.currentLocation.characters.ToList().Where(c => c is JunimoHarvester));
+                            break;
+                        case "Tree":
+                            thisCandidates.AddRange(Game1.currentLocation.terrainFeatures.Values.Where(f => f is Tree));
+                            break;
+                        case "FruitTree":
+                            thisCandidates.AddRange(Game1.currentLocation.terrainFeatures.Values.Where(f => f is FruitTree));
+                            break;
+                        default:
+                            thisCandidates.AddRange(Game1.currentLocation.characters.ToList().Where(c => c.GetType()?.Name == t));
+                            break;
+                    }
+                }
+                if (p.participantNames != null)
+                {
+                    thisCandidates = thisCandidates.Where(c => AccessTools.Property(c.GetType(), "Name") is not null && p.participantNames.Contains(AccessTools.Property(c.GetType(), "Name").GetValue(c))).ToList();
+                }
+                if (thisCandidates.Count == 0)
+                    return;
+                ShuffleList(thisCandidates);
+                candidates.Add(thisCandidates);
+            }
+            var instance = new NPCConversationInstance() { data = data };
+            for (int i = 0; i < candidates.Count; i++)
+            {
+                for (int j = 0; j < candidates[i].Count; j++)
+                {
+                    for (int k = 0; k < i; k++)
+                    {
+                        if (Vector2.Distance(GetTile(instance.participants[k]), GetTile(candidates[i][j])) > data.tileDistance)
+                        {
+                            continue;
+                        }
+                        instance.participants.Add(candidates[i][j]);
+                        goto next;
+                    }
+                }
+                return;
+            next:
+                continue;
+            }
 
+            foreach(var d in data.dialogueDatas)
+            {
+                instance.dialogues.Add(new DialogueInstance() { data = d});
+            }
+            Monitor.Log($"Starting conversation {key}");
+            currentConversations.Add(instance);
+        }
+
+        private Vector2 GetTile(object thing)
+        {
+            if (thing.GetType().IsAssignableFrom(typeof(Character)))
+                return (thing as Character).getTileLocation();
+            if (thing.GetType().IsAssignableFrom(typeof(TerrainFeature)))
+                return (thing as TerrainFeature).currentTileLocation;
+            if (thing.GetType().IsAssignableFrom(typeof(Object)))
+                return (thing as Object).TileLocation;
+            return Vector2.Zero;
+        }
 
         private void GameLoop_GameLaunched(object sender, StardewModdingAPI.Events.GameLaunchedEventArgs e)
         {
