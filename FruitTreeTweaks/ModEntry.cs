@@ -114,6 +114,15 @@ namespace FruitTreeTweaks
             );
             configMenu.AddNumberOption(
                 mod: ModManifest,
+                name: () => "Size Variation %",
+                tooltip: () => "0 - 99, applied randomly for each fruit, only applied cosmetically while on tree",
+                getValue: () => Config.SizeVariation,
+                setValue: value => Config.SizeVariation = value,
+                min:0,
+                max:99
+            );
+            configMenu.AddNumberOption(
+                mod: ModManifest,
                 name: () => "Fruit Buffer X",
                 tooltip: () => "Left and right border on the canopy to limit fruit spawn locations",
                 getValue: () => Config.FruitSpawnBufferX,

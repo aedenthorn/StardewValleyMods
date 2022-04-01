@@ -19,7 +19,7 @@ using xTile.Dimensions;
 using Object = StardewValley.Object;
 using Rectangle = Microsoft.Xna.Framework.Rectangle;
 
-namespace AprilFools
+namespace NPCConversations
 {
     public partial class ModEntry
     {
@@ -104,12 +104,12 @@ namespace AprilFools
                 if(__instance.health.Value > 0 && screamTicks > 120)
                 {
                     screamTicks = 0;
-                    __instance.modData["aedenthorn.AprilFools/speech"] = SHelper.Translation.Get("tree-chop-" + Game1.random.Next(1, 8));
-                    __instance.modData["aedenthorn.AprilFools/timer"] = "60/60";
+                    __instance.modData["aedenthorn.NPCConversations/speech"] = SHelper.Translation.Get("tree-chop-" + Game1.random.Next(1, 8));
+                    __instance.modData["aedenthorn.NPCConversations/timer"] = "60/60";
                 }
                 else if (__instance.health.Value <= 0)
                 {
-                    __instance.modData.Remove("aedenthorn.AprilFools/speech");
+                    __instance.modData.Remove("aedenthorn.NPCConversations/speech");
                 }
             }
         }
@@ -122,28 +122,28 @@ namespace AprilFools
                     return;
                 if(screamTicks <= 120)
                     screamTicks++;
-                __instance.modData.TryGetValue("aedenthorn.AprilFools/speech", out string speech);
+                __instance.modData.TryGetValue("aedenthorn.NPCConversations/speech", out string speech);
                 if (!___falling.Value && speech == null)
                     return;
 
                 if (___falling.Value && speech == null)
                 {
                     speech = SHelper.Translation.Get("tree-fall-" + Game1.random.Next(1, 5));
-                    __instance.modData["aedenthorn.AprilFools/speech"] = speech;
-                    __instance.modData["aedenthorn.AprilFools/timer"] = "120/120";
+                    __instance.modData["aedenthorn.NPCConversations/speech"] = speech;
+                    __instance.modData["aedenthorn.NPCConversations/timer"] = "120/120";
                 }
 
                 Vector2 local = Game1.GlobalToLocal(tileLocation * 64 + new Vector2(32, ___falling.Value || __instance.stump.Value ? -128 : -192));
-                string[] timerString = __instance.modData["aedenthorn.AprilFools/timer"].Split('/');
+                string[] timerString = __instance.modData["aedenthorn.NPCConversations/timer"].Split('/');
                 int.TryParse(timerString[0], out int timer);
                 int.TryParse(timerString[1], out int timerMax);
                 timer--;
                 if (timer <= 0)
                 {
-                    __instance.modData.Remove("aedenthorn.AprilFools/speech");
+                    __instance.modData.Remove("aedenthorn.NPCConversations/speech");
                     return;
                 }
-                __instance.modData["aedenthorn.AprilFools/timer"] = $"{timer}/{timerMax}";
+                __instance.modData["aedenthorn.NPCConversations/timer"] = $"{timer}/{timerMax}";
                 float alpha = 1;
                 if (timer < 5)
                     alpha = timer / 5f;

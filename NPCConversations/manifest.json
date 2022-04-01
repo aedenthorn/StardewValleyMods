@@ -1,16 +1,16 @@
 ﻿{
-  "Name": "April Fools",
+  "Name": "NPC Conversations",
   "Author": "aedenthorn",
-  "Version": "0.1.4",
-  "Description": "April Fools.",
-  "UniqueID": "aedenthorn.AprilFools",
-  "EntryDll": "AprilFools.dll",
+  "Version": "0.1.0",
+  "Description": "NPC Conversations.",
+  "UniqueID": "aedenthorn.NPCConversations",
+  "EntryDll": "NPCConversations.dll",
   "MinimumApiVersion": "3.13.0",
   "ModUpdater": {
     "Repository": "StardewValleyMods",
     "User": "aedenthorn",
     "Directory": "_releases",
-    "ModFolder": "AprilFools"
+    "ModFolder": "NPCConversations"
   },
   "UpdateKeys": [ "Nexus:" ],
   "Dependencies": [

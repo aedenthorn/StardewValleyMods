@@ -16,6 +16,7 @@ namespace FruitTreeTweaks
         public int MinFruitPerDay { get; set; } = 1;
         public int MaxFruitPerDay { get; set; } = 1;
         public int ColorVariation { get; set; } = 50;
+        public int SizeVariation { get; set; } = 20;
         public int FruitSpawnBufferX { get; set; } = 5;
         public int FruitSpawnBufferY { get; set; } = 40;
     }

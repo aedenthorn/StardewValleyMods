@@ -10,6 +10,7 @@ namespace FruitTreeTweaks
     {
         private static Dictionary<GameLocation, Dictionary<Vector2, List<Vector2>>> fruitOffsets = new Dictionary<GameLocation, Dictionary<Vector2, List<Vector2>>>();
         private static Dictionary<GameLocation, Dictionary<Vector2, List<Color>>> fruitColors = new Dictionary<GameLocation, Dictionary<Vector2, List<Color>>>();
+        private static Dictionary<GameLocation, Dictionary<Vector2, List<float>>> fruitSizes = new Dictionary<GameLocation, Dictionary<Vector2, List<float>>>();
 
         private static float GetTreeBottomOffset(FruitTree tree)
         {
@@ -44,6 +45,14 @@ namespace FruitTreeTweaks
             if (!fruitColors.TryGetValue(tree.currentLocation, out Dictionary<Vector2, List<Color>> dict) || !dict.TryGetValue(tree.currentTileLocation, out List<Color> colors) || colors.Count < tree.fruitsOnTree.Value)
                 ReloadFruit(tree.currentLocation, tree.currentTileLocation, tree.fruitsOnTree.Value);
             return fruitColors[tree.currentLocation][tree.currentTileLocation][index];
+        }
+        private static float GetFruitScale(FruitTree tree, int index)
+        {
+            if (!Config.EnableMod)
+                return 4;
+            if (!fruitSizes.TryGetValue(tree.currentLocation, out Dictionary<Vector2, List<float>> dict) || !dict.TryGetValue(tree.currentTileLocation, out List<float> sizes) || sizes.Count < tree.fruitsOnTree.Value)
+                ReloadFruit(tree.currentLocation, tree.currentTileLocation, tree.fruitsOnTree.Value);
+            return fruitSizes[tree.currentLocation][tree.currentTileLocation][index];
         }
         private static Vector2 GetFruitOffsetForShake(FruitTree tree, int index)
         {
@@ -91,24 +100,34 @@ namespace FruitTreeTweaks
                 colors = new List<Color>();
                 fruitColors[location][tileLocation] = colors;
             }
-            if (offsets.Count < max)
+            if (!fruitSizes.ContainsKey(location))
+                fruitSizes.Add(location, new Dictionary<Vector2, List<float>>());
+            if (!fruitSizes[location].TryGetValue(tileLocation, out List<float> sizes))
+            {
+                sizes = new List<float>();
+                fruitSizes[location][tileLocation] = sizes;
+            }
+            if (offsets.Count != max)
             {
                 offsets.Clear();
+                colors.Clear();
+                sizes.Clear();
                 SMonitor.Log($"Resetting fruit offsets for {tileLocation} in {location.Name}");
-                Random r = new Random(location.Name.GetHashCode() + (int)(tileLocation.X + 1000 * tileLocation.Y));
                 for (int i = 0; i < max; i++)
                 {
                     var color = Color.White;
-                    color.R -= (byte)(r.NextDouble() * Config.ColorVariation);
-                    color.G -= (byte)(r.NextDouble() * Config.ColorVariation);
-                    color.B -= (byte)(r.NextDouble() * Config.ColorVariation);
+                    color.R -= (byte)(Game1.random.NextDouble() * Config.ColorVariation);
+                    color.G -= (byte)(Game1.random.NextDouble() * Config.ColorVariation);
+                    color.B -= (byte)(Game1.random.NextDouble() * Config.ColorVariation);
                     colors.Add(color);
+
+                    sizes.Add(4 * (float)(1 + ((Game1.random.NextDouble() * 2 - 1) * Config.SizeVariation / 100)));
+
                     if (i < 3)
                     {
                         offsets.Add(Vector2.Zero);
                         continue;
                     }
-
                     bool gotSpot = false;
                     Vector2 offset;
                     while (!gotSpot)
@@ -117,7 +136,7 @@ namespace FruitTreeTweaks
                         for (int j = 0; j < 100; j++)
                         {
                             gotSpot = true;
-                            offset = new Vector2(Config.FruitSpawnBufferX + r.Next(34 * 4 - Config.FruitSpawnBufferX), Config.FruitSpawnBufferY + r.Next(58 * 4 - Config.FruitSpawnBufferY));
+                            offset = new Vector2(Config.FruitSpawnBufferX + Game1.random.Next(34 * 4 - Config.FruitSpawnBufferX), Config.FruitSpawnBufferY + Game1.random.Next(58 * 4 - Config.FruitSpawnBufferY));
                             for (int k = 0; k < offsets.Count; k++)
                             {
                                 if (Vector2.Distance(offsets[k], offset) < distance)
