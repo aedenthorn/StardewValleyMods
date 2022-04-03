@@ -32,16 +32,16 @@ namespace NPCConversations
     }
     public class DialogueInstance
     {
-        public float textAboveHeadAlpha;
-        public float textAboveHeadPreTimer;
+        public float textAboveHeadAlpha = 1;
+        public int textAboveHeadPreTimer;
         public int textAboveHeadTimer;
         public DialogueData data;
     }
 
     public class NPCConversationData
     {
-        public List<ParticipantData> participantDatas;
-        public List<DialogueData> dialogueDatas;
+        public List<ParticipantData> participants;
+        public List<DialogueData> dialogues;
         public float chance;
         public int tileDistance;
         

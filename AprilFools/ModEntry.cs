@@ -383,7 +383,7 @@ namespace AprilFools
 
         public bool CanEdit<T>(IAssetInfo asset)
         {
-            if (asset.AssetNameEquals("Maps/Town") && Config.BuildingsEnabled)
+            if (asset.AssetNameEquals("Maps/Town") && IsModEnabled() && Config.BuildingsEnabled)
             {
                 return true;
             }

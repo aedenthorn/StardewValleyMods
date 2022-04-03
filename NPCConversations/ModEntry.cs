@@ -78,7 +78,7 @@ namespace NPCConversations
         private void MakeConversation(string key, NPCConversationData data)
         {
             List<List<object>> candidates = new List<List<object>>();
-            foreach(var p in data.participantDatas)
+            foreach(var p in data.participants)
             {
                 List<object> thisCandidates = new List<object>();
                 foreach (var t in p.participantTypes)
@@ -140,24 +140,47 @@ namespace NPCConversations
             {
                 for (int j = 0; j < candidates[i].Count; j++)
                 {
+                    if(i == 0)
+                    {
+                        foreach (var cc in currentConversations)
+                        {
+                            if (cc.participants.Contains(candidates[i][j]))
+                                goto next2;
+                        }
+                        instance.participants.Add(candidates[i][j]);
+                        goto next3;
+                    }
                     for (int k = 0; k < i; k++)
                     {
                         if (Vector2.Distance(GetTile(instance.participants[k]), GetTile(candidates[i][j])) > data.tileDistance)
                         {
                             continue;
                         }
+                        foreach(var cc in currentConversations)
+                        {
+                            if (cc.participants.Contains(candidates[i][j]))
+                                goto next1;
+                        }
                         instance.participants.Add(candidates[i][j]);
-                        goto next;
+                        goto next3;
+                    next1:
+                        continue;
                     }
+                next2:
+                    continue;
                 }
                 return;
-            next:
+            next3:
                 continue;
             }
 
-            foreach(var d in data.dialogueDatas)
+            foreach(var d in data.dialogues)
             {
-                instance.dialogues.Add(new DialogueInstance() { data = d});
+                instance.dialogues.Add(new DialogueInstance() { 
+                    data = d, 
+                    textAboveHeadPreTimer = Game1.random.Next(d.waitTimeMin, Math.Max(d.waitTimeMax, d.waitTimeMin)), 
+                    textAboveHeadTimer = d.sayTime 
+                });
             }
             Monitor.Log($"Starting conversation {key}");
             currentConversations.Add(instance);

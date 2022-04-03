@@ -2,31 +2,90 @@
 using HarmonyLib;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using Microsoft.Xna.Framework.Input;
 using Netcode;
 using StardewValley;
 using StardewValley.BellsAndWhistles;
 using StardewValley.Locations;
-using StardewValley.Menus;
 using StardewValley.TerrainFeatures;
-using StardewValley.Tools;
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Reflection;
-using System.Reflection.Emit;
-using xTile.Dimensions;
-using Object = StardewValley.Object;
-using Rectangle = Microsoft.Xna.Framework.Rectangle;
 
 namespace NPCConversations
 {
     public partial class ModEntry
     {
-        [HarmonyPatch(typeof(TerrainFeature), nameof(TerrainFeature.tickUpdate))]
-        public class TerrainFeature_tickUpdate_Patch
+        [HarmonyPatch(typeof(Tree), nameof(Tree.tickUpdate))]
+        public class Tree_tickUpdate_Patch
         {
-            public static void Postfix(TerrainFeature __instance, GameTime time, Vector2 tileLocation, GameLocation location)
+            public static void Postfix(Tree __instance, GameTime time, Vector2 tileLocation, GameLocation location)
+            {
+                CheckForDialogue(__instance, time);
+            }
+        }
+        [HarmonyPatch(typeof(FruitTree), nameof(FruitTree.tickUpdate))]
+        public class FruitTree_tickUpdate_Patch
+        {
+            public static void Postfix(Tree __instance, GameTime time, Vector2 tileLocation, GameLocation location)
+            {
+                CheckForDialogue(__instance, time);
+            }
+        }
+
+        [HarmonyPatch(typeof(Character), nameof(Character.update), new Type[] { typeof(GameTime), typeof(GameLocation), typeof(long), typeof(bool) })]
+        public static class Character_update_Patch
+        {
+            public static void Postfix(Character __instance, GameTime time, GameLocation location)
+            {
+                if (__instance is not NPC && location == Game1.currentLocation)
+                    CheckForDialogue(__instance, time);
+            }
+        }
+        private static void CheckForDialogue(object obj, GameTime time)
+        {
+            if (!Config.EnableMod || currentConversations.Count == 0)
+                return;
+
+            for (int i = currentConversations.Count - 1; i >= 0; i--)
+            {
+                if (currentConversations[i].Participant == obj)
+                {
+                    var d = currentConversations[i].Dialogue;
+                    if (d.textAboveHeadPreTimer > 0)
+                    {
+                        d.textAboveHeadPreTimer -= time.ElapsedGameTime.Milliseconds;
+                    }
+                    else
+                    {
+                        d.textAboveHeadTimer -= time.ElapsedGameTime.Milliseconds;
+                        if (d.textAboveHeadTimer > 500)
+                        {
+                            d.textAboveHeadAlpha = Math.Min(1f, d.textAboveHeadAlpha + 0.1f);
+                        }
+                        else
+                        {
+                            d.textAboveHeadAlpha = Math.Max(0f, d.textAboveHeadAlpha - 0.04f);
+                        }
+                    }
+                    if (d.textAboveHeadTimer < 0)
+                    {
+                        currentConversations[i].index++;
+                        if (currentConversations[i].index >= currentConversations[i].dialogues.Count)
+                        {
+                            currentConversations.RemoveAt(i);
+                            return;
+                        }
+                    }
+                    else
+                        currentConversations[i].Dialogue = d;
+                    return;
+                }
+            }
+        }
+
+        [HarmonyPatch(typeof(Tree), nameof(Tree.draw), new Type[] { typeof(SpriteBatch), typeof(Vector2) })]
+        public class Tree_draw_Patch
+        {
+            public static void Postfix(Tree __instance, SpriteBatch spriteBatch, Vector2 tileLocation, NetBool ___falling)
             {
                 if (!Config.EnableMod || currentConversations.Count == 0)
                     return;
@@ -35,83 +94,29 @@ namespace NPCConversations
                 {
                     if (currentConversations[i].Participant == __instance)
                     {
-                        var d = currentConversations[i].Dialogue;
-                        if (d.textAboveHeadPreTimer > 0)
-                        {
-                            d.textAboveHeadPreTimer -= time.ElapsedGameTime.Milliseconds;
-                        }
-                        else
-                        {
-                            d.textAboveHeadTimer -= time.ElapsedGameTime.Milliseconds;
-                            if (d.textAboveHeadTimer > 500)
-                            {
-                                d.textAboveHeadAlpha = Math.Min(1f, d.textAboveHeadAlpha + 0.1f);
-                            }
-                            else
-                            {
-                                d.textAboveHeadAlpha = Math.Max(0f, d.textAboveHeadAlpha - 0.04f);
-                            }
-                        }
-                        if (d.textAboveHeadTimer < 0)
-                        {
-                            currentConversations[i].index++;
-                            if (currentConversations[i].index >= currentConversations.Count)
-                                currentConversations.RemoveAt(i);
-                        }
-                        currentConversations[i].Dialogue = d;
+                        Vector2 local = Game1.GlobalToLocal(tileLocation * 64 + new Vector2(32, ___falling.Value || __instance.stump.Value ? -Config.TreeBubbleOffset : -Config.TreeBubbleOffset - 64));
+                        SpriteText.drawStringWithScrollCenteredAt(spriteBatch, currentConversations[i].Dialogue.data.text, (int)local.X, (int)local.Y, "", currentConversations[i].Dialogue.textAboveHeadAlpha, currentConversations[i].Dialogue.data.color, 1, 1, false);
+
                         return;
                     }
                 }
             }
         }
-
-        //[HarmonyPatch(typeof(Tree), nameof(Tree.draw), new Type[] { typeof(SpriteBatch), typeof(Vector2) })]
-        public class Tree_draw_Patch
+        [HarmonyPatch(typeof(FruitTree), nameof(FruitTree.draw), new Type[] { typeof(SpriteBatch), typeof(Vector2) })]
+        public class FruitTree_draw_Patch
         {
-            public static void Postfix(Tree __instance, SpriteBatch spriteBatch, Vector2 tileLocation, NetBool ___falling)
+            public static void Postfix(FruitTree __instance, SpriteBatch spriteBatch, Vector2 tileLocation, NetBool ___falling)
             {
-                Vector2 local = Game1.GlobalToLocal(tileLocation * 64 + new Vector2(32, ___falling.Value || __instance.stump.Value ? -128 : -192));
-                //SpriteText.drawStringWithScrollCenteredAt(spriteBatch, speech, (int)local.X, (int)local.Y, "", alpha, -1, 1, 1, false);
-            }
-        }
-        [HarmonyPatch(typeof(Character), nameof(Character.update), new Type[] { typeof(GameTime), typeof(GameLocation), typeof(long), typeof(bool) })]
-        public static class Character_update_Patch
-        {
-            public static void Postfix(Character __instance, GameTime time, GameLocation location)
-            {
-                if (!Config.EnableMod || currentConversations.Count == 0 || __instance is NPC || location != Game1.currentLocation)
+                if (!Config.EnableMod || currentConversations.Count == 0)
                     return;
-                for(int i = currentConversations.Count - 1; i >= 0; i--)
+
+                for (int i = currentConversations.Count - 1; i >= 0; i--)
                 {
-                    if(currentConversations[i].Participant == __instance)
+                    if (currentConversations[i].Participant == __instance)
                     {
-                        var d = currentConversations[i].Dialogue;
-                        if (d.textAboveHeadPreTimer > 0)
-                        {
-                            d.textAboveHeadPreTimer -= time.ElapsedGameTime.Milliseconds;
-                        }
-                        else
-                        {
-                            d.textAboveHeadTimer -= time.ElapsedGameTime.Milliseconds;
-                            if (d.textAboveHeadTimer > 500)
-                            {
-                                d.textAboveHeadAlpha = Math.Min(1f, d.textAboveHeadAlpha + 0.1f);
-                            }
-                            else
-                            {
-                                d.textAboveHeadAlpha = Math.Max(0f, d.textAboveHeadAlpha - 0.04f);
-                            }
-                        }
-                        if (d.textAboveHeadTimer < 0)
-                        {
-                            currentConversations[i].index++;
-                            if (currentConversations[i].index >= currentConversations.Count)
-                            {
-                                currentConversations.RemoveAt(i);
-                                return;
-                            }
-                        }
-                        currentConversations[i].Dialogue = d;
+                        Vector2 local = Game1.GlobalToLocal(tileLocation * 64 + new Vector2(32, ___falling.Value || __instance.stump.Value ? -128 : -192));
+                        SpriteText.drawStringWithScrollCenteredAt(spriteBatch, currentConversations[i].Dialogue.data.text, (int)local.X, (int)local.Y, "", currentConversations[i].Dialogue.textAboveHeadAlpha, currentConversations[i].Dialogue.data.color, 1, 1, false);
+
                         return;
                     }
                 }

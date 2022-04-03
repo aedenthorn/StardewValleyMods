@@ -19,7 +19,8 @@ namespace WallTelevision
         public static ModConfig Config;
         public static ModEntry context;
 
-        private static Texture2D tvTexture;
+        private static Texture2D plasmaTexture;
+        private static Texture2D tropicalTexture;
 
         /// <summary>The mod entry point, called after the mod is first loaded.</summary>
         /// <param name="helper">Provides simplified APIs for writing mods.</param>
@@ -42,11 +43,19 @@ namespace WallTelevision
         {
             try
             {
-                tvTexture = Game1.content.Load<Texture2D>("aedenthorn.WallTelevision/tv");
+                plasmaTexture = Game1.content.Load<Texture2D>("aedenthorn.WallTelevision/plasma");
             }
             catch
             {
-                tvTexture = Helper.Content.Load<Texture2D>("assets/tv.png");
+                plasmaTexture = Helper.Content.Load<Texture2D>("assets/plasma.png");
+            }
+            try
+            {
+                tropicalTexture = Game1.content.Load<Texture2D>("aedenthorn.WallTelevision/tropical");
+            }
+            catch
+            {
+                tropicalTexture = Helper.Content.Load<Texture2D>("assets/tropical.png");
             }
         }
 

@@ -1,5 +1,6 @@
 ﻿using Microsoft.Xna.Framework;
 using StardewValley;
+using StardewValley.TerrainFeatures;
 using System.Collections.Generic;
 
 namespace PlantAll
@@ -22,9 +23,11 @@ namespace PlantAll
 
             foreach(var p in placeables)
             {
-                if(((Object)Game1.player.CurrentItem).placementAction(Game1.player.currentLocation, p.X * 64, p.Y * 64, Game1.player))              
+                if (!Game1.player.currentLocation.terrainFeatures.TryGetValue(p.ToVector2(), out TerrainFeature t) || t is not HoeDirt)
+                    continue;
+                if(((Object)Game1.player.ActiveObject).placementAction(Game1.player.currentLocation, p.X * 64, p.Y * 64, Game1.player))              
                     Game1.player.reduceActiveItemByOne();
-                if (!IsValidItem(Game1.player.CurrentItem) || item.ParentSheetIndex != Game1.player.CurrentItem.ParentSheetIndex)
+                if (!IsValidItem(Game1.player.ActiveObject) || item.ParentSheetIndex != Game1.player.ActiveObject.ParentSheetIndex)
                     return;
             }
 

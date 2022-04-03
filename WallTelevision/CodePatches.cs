@@ -65,15 +65,15 @@ namespace WallTelevision
                 if (!(Game1.currentLocation as DecoratableLocation).isTileOnWall((int)__instance.TileLocation.X, (int)__instance.TileLocation.Y))
                     return true;
 
-                Rectangle source = new Rectangle(__instance.Name.Contains("Plasma") ? 0 : 48, 0, 48, 48); 
+                Rectangle source = new Rectangle(0, 0, 48, 48); 
 
                 if (Furniture.isDrawingLocationFurniture)
                 {
-                    spriteBatch.Draw(tvTexture, Game1.GlobalToLocal(Game1.viewport, ___drawPosition + ((__instance.shakeTimer > 0) ? new Vector2((float)Game1.random.Next(-1, 2), (float)Game1.random.Next(-1, 2)) : Vector2.Zero)), source, Color.White * alpha, 0f, Vector2.Zero, 4f, __instance.Flipped ? SpriteEffects.FlipHorizontally : SpriteEffects.None, (__instance.boundingBox.Value.Bottom - 8) / 10000f);
+                    spriteBatch.Draw(__instance.Name.Contains("Plasma") ? plasmaTexture : tropicalTexture, Game1.GlobalToLocal(Game1.viewport, ___drawPosition + ((__instance.shakeTimer > 0) ? new Vector2((float)Game1.random.Next(-1, 2), (float)Game1.random.Next(-1, 2)) : Vector2.Zero)), source, Color.White * alpha, 0f, Vector2.Zero, 4f, __instance.Flipped ? SpriteEffects.FlipHorizontally : SpriteEffects.None, (__instance.boundingBox.Value.Bottom - 8) / 10000f);
                 }
                 else
                 {
-                    spriteBatch.Draw(tvTexture, Game1.GlobalToLocal(Game1.viewport, new Vector2((float)(x * 64 + ((__instance.shakeTimer > 0) ? Game1.random.Next(-1, 2) : 0)), (float)(y * 64 - (__instance.sourceRect.Height * 4 - __instance.boundingBox.Height) + ((__instance.shakeTimer > 0) ? Game1.random.Next(-1, 2) : 0)))), source, Color.White * alpha, 0f, Vector2.Zero, 4f, __instance.Flipped ? SpriteEffects.FlipHorizontally : SpriteEffects.None, (__instance.boundingBox.Value.Bottom - 8 ) / 10000f);
+                    spriteBatch.Draw(__instance.Name.Contains("Plasma") ? plasmaTexture : tropicalTexture, Game1.GlobalToLocal(Game1.viewport, new Vector2((float)(x * 64 + ((__instance.shakeTimer > 0) ? Game1.random.Next(-1, 2) : 0)), (float)(y * 64 - (__instance.sourceRect.Height * 4 - __instance.boundingBox.Height) + ((__instance.shakeTimer > 0) ? Game1.random.Next(-1, 2) : 0)))), source, Color.White * alpha, 0f, Vector2.Zero, 4f, __instance.Flipped ? SpriteEffects.FlipHorizontally : SpriteEffects.None, (__instance.boundingBox.Value.Bottom - 8 ) / 10000f);
                 }
                 return false;
             }
