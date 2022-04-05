@@ -1,24 +1,7 @@
 ﻿using HarmonyLib;
-using Microsoft.Xna.Framework;
 using StardewModdingAPI;
-using StardewValley;
-using StardewValley.Buildings;
-using StardewValley.Locations;
-using StardewValley.TerrainFeatures;
-using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Linq;
-using System.Text.RegularExpressions;
-using xTile;
-using xTile.Dimensions;
-using xTile.Layers;
-using xTile.ObjectModel;
-using xTile.Tiles;
-using Object = StardewValley.Object;
-using Rectangle = Microsoft.Xna.Framework.Rectangle;
 
-namespace PurchaseBlueChickens
+namespace LivestockChoices
 {
     /// <summary>The mod entry point.</summary>
     public partial class ModEntry : Mod
@@ -65,6 +48,27 @@ namespace PurchaseBlueChickens
                 name: () => "Mod Enabled",
                 getValue: () => Config.EnableMod,
                 setValue: value => Config.EnableMod = value
+            );
+
+            configMenu.AddNumberOption(
+                mod: ModManifest,
+                name: () => "Blue Chicken Price",
+                getValue: () => Config.BlueChickenPrice,
+                setValue: value => Config.BlueChickenPrice = value
+            );
+
+            configMenu.AddNumberOption(
+                mod: ModManifest,
+                name: () => "Void Chicken Price",
+                getValue: () => Config.VoidChickenPrice,
+                setValue: value => Config.VoidChickenPrice = value
+            );
+
+            configMenu.AddNumberOption(
+                mod: ModManifest,
+                name: () => "Golden Chicken Price",
+                getValue: () => Config.GoldenChickenPrice,
+                setValue: value => Config.GoldenChickenPrice = value
             );
         }
     }

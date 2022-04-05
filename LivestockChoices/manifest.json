@@ -1,18 +1,18 @@
 ﻿{
-  "Name": "Purchase Blue Chickens",
+  "Name": "Livestock Choices",
   "Author": "aedenthorn",
   "Version": "0.1.0",
-  "Description": "Multi-Level Locations.",
-  "UniqueID": "aedenthorn.PurchaseBlueChickens",
-  "EntryDll": "PurchaseBlueChickens.dll",
+  "Description": "Livestock Choices.",
+  "UniqueID": "aedenthorn.LivestockChoices",
+  "EntryDll": "LivestockChoices.dll",
   "MinimumApiVersion": "3.13.0",
   "ModUpdater": {
     "Repository": "StardewValleyMods",
     "User": "aedenthorn",
     "Directory": "_releases",
-    "ModFolder": "PurchaseBlueChickens"
+    "ModFolder": "LivestockChoices"
   },
-  "UpdateKeys": [ "Nexus:" ],
+  "UpdateKeys": [ "Nexus:11551" ],
   "Dependencies": [
     {
       "UniqueID": "Platonymous.ModUpdater",

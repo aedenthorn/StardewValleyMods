@@ -300,6 +300,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HiResSprites", "HiResSprite
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PurchaseBlueChickens", "PurchaseBlueChickens\PurchaseBlueChickens.csproj", "{963CBAC8-8A18-41DF-B90B-3C5DDC72F2A5}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LivestockChoices", "LivestockChoices\LivestockChoices.csproj", "{A229060A-3555-432F-AAEB-3318B043B0FF}"
+EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
 		_releases\_releases.projitems*{047040e0-3d07-46e5-852b-d1d45cd57bb8}*SharedItemsImports = 13
@@ -1471,6 +1473,14 @@ Global
 		{963CBAC8-8A18-41DF-B90B-3C5DDC72F2A5}.Release|Any CPU.Build.0 = Release|Any CPU
 		{963CBAC8-8A18-41DF-B90B-3C5DDC72F2A5}.Release|x86.ActiveCfg = Release|Any CPU
 		{963CBAC8-8A18-41DF-B90B-3C5DDC72F2A5}.Release|x86.Build.0 = Release|Any CPU
+		{A229060A-3555-432F-AAEB-3318B043B0FF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A229060A-3555-432F-AAEB-3318B043B0FF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A229060A-3555-432F-AAEB-3318B043B0FF}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{A229060A-3555-432F-AAEB-3318B043B0FF}.Debug|x86.Build.0 = Debug|Any CPU
+		{A229060A-3555-432F-AAEB-3318B043B0FF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A229060A-3555-432F-AAEB-3318B043B0FF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A229060A-3555-432F-AAEB-3318B043B0FF}.Release|x86.ActiveCfg = Release|Any CPU
+		{A229060A-3555-432F-AAEB-3318B043B0FF}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

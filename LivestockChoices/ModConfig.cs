@@ -1,7 +1,7 @@
 ﻿
 using StardewModdingAPI;
 
-namespace PurchaseBlueChickens
+namespace LivestockChoices
 {
     public class ModConfig
     {

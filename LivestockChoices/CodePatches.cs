@@ -10,7 +10,7 @@ using System.Reflection;
 using System.Reflection.Emit;
 using Object = StardewValley.Object;
 
-namespace PurchaseBlueChickens
+namespace LivestockChoices
 {
     public partial class ModEntry
     {
@@ -24,13 +24,13 @@ namespace PurchaseBlueChickens
                     return;
                 Game1.player.eventsSeen.Add(3900074);
                 List<ClickableTextureComponent>  ccl = new List<ClickableTextureComponent>();
-                int spacing = 48;
+                int spacing = 64;
                 for(int i = 0; i < __instance.animalsToPurchase.Count; i++)
                 {
                     var cc = __instance.animalsToPurchase[i];
                     if (i == 0)
                     {
-                        cc.bounds.X += 32;
+                        cc.bounds.X += 18;
                         cc.bounds.Y -= 8;
                         ccl.Add(new ClickableTextureComponent(cc.name, new Rectangle(cc.bounds.X, cc.bounds.Y, 32, 32), null, "White Chicken", Game1.content.Load<Texture2D>("Animals/White Chicken"), new Rectangle(0, 0, 16, 16), 2) {
                             item = new Object(100, 1, false, 400, 0)
@@ -102,17 +102,49 @@ namespace PurchaseBlueChickens
                             upNeighborID = -1
                         });
                     }
+                    else if (i == 1)
+                    {
+                        cc.bounds.Y += 44;
+                        cc.bounds.X += 32;
+                        ccl.Add(new ClickableTextureComponent(cc.name, new Rectangle(cc.bounds.X, cc.bounds.Y, 64, 48), null, "White Cow", cc.texture, cc.sourceRect, 2) {
+                            item = new Object(100, 1, false, 750, 0)
+                            {
+                                Name = "White Cow",
+                                Type = ((Game1.getFarm().isBuildingConstructed("Barn") || Game1.getFarm().isBuildingConstructed("Deluxe Barn") || Game1.getFarm().isBuildingConstructed("Big Barn")) ? null : Game1.content.LoadString("Strings\\StringsFromCSFiles:Utility.cs.5927")),
+                                displayName = GetName("White Cow")
+                            },
+                            myID = 4,
+                            rightNeighborID = 5,
+                            leftNeighborID = 3,
+                            downNeighborID = 8,
+                            upNeighborID = -1
+                        });
+                        ccl.Add(new ClickableTextureComponent(cc.name, new Rectangle(cc.bounds.X + 64, cc.bounds.Y - 40, 64, 48), null, "Brown Cow", cc.texture, new Rectangle(cc.sourceRect.Location + new Point(32, 32), cc.sourceRect.Size), 2) {
+                            item = new Object(100, 1, false, 750, 0)
+                            {
+                                Name = "Brown Cow",
+                                Type = ((Game1.getFarm().isBuildingConstructed("Barn") || Game1.getFarm().isBuildingConstructed("Deluxe Barn") || Game1.getFarm().isBuildingConstructed("Big Barn")) ? null : Game1.content.LoadString("Strings\\StringsFromCSFiles:Utility.cs.5927")),
+                                displayName = GetName("Brown Cow")
+                            },
+                            myID = 5,
+                            rightNeighborID = 6,
+                            leftNeighborID = 5,
+                            downNeighborID = 9,
+                            upNeighborID = -1
+                        });
+                    }
                     else
                     {
-                        cc.myID += 3;
+                        cc.bounds = new Rectangle(cc.bounds.X + 32 * ( i % 3), cc.bounds.Y + 16 * (i / 3), 128, 64);
+                        cc.myID += 4;
                         if(cc.rightNeighborID >= 0)
-                            cc.rightNeighborID += 3;
+                            cc.rightNeighborID += 4;
                         if (cc.leftNeighborID >= 0)
-                            cc.leftNeighborID += 3;
+                            cc.leftNeighborID += 4;
                         if (cc.downNeighborID >= 0)
-                            cc.downNeighborID += 3;
+                            cc.downNeighborID += 4;
                         if (cc.upNeighborID >= 0)
-                            cc.upNeighborID += 3;
+                            cc.upNeighborID += 4;
                         ccl.Add(cc);
                     }
                 }
@@ -167,9 +199,11 @@ namespace PurchaseBlueChickens
         {
             public static bool Prefix(string name, ref string __result)
             {
-                if (!Config.EnableMod || !name.EndsWith(" Chicken"))
+                if (!Config.EnableMod || (!name.EndsWith(" Chicken") && !name.EndsWith(" Cow")))
                     return true;
-                __result = GetName(name);
+                string outName = GetName(name);
+                if (outName != null)
+                    __result = outName;
                 return false;
             }
         }
@@ -179,9 +213,14 @@ namespace PurchaseBlueChickens
         {
             public static bool Prefix(string name, ref string __result)
             {
-                if (!Config.EnableMod || !name.EndsWith(" Chicken"))
+                if (!Config.EnableMod)
                     return true;
-                __result = Game1.content.LoadString("Strings\\StringsFromCSFiles:PurchaseAnimalsMenu.cs.11334") + Environment.NewLine + Game1.content.LoadString("Strings\\StringsFromCSFiles:PurchaseAnimalsMenu.cs.11335");
+                if (name.EndsWith(" Chicken"))
+                    __result = Game1.content.LoadString("Strings\\StringsFromCSFiles:PurchaseAnimalsMenu.cs.11334") + Environment.NewLine + Game1.content.LoadString("Strings\\StringsFromCSFiles:PurchaseAnimalsMenu.cs.11335");
+                else if (name.EndsWith(" Cow"))
+                    __result = Game1.content.LoadString("Strings\\StringsFromCSFiles:PurchaseAnimalsMenu.cs.11343") + Environment.NewLine + Game1.content.LoadString("Strings\\StringsFromCSFiles:PurchaseAnimalsMenu.cs.11344");
+                else
+                    return true;
                 return false;
             }
         }
@@ -197,7 +236,7 @@ namespace PurchaseBlueChickens
             }
             public static void Postfix(FarmAnimal __instance, string type, string __state)
             {
-                if (!Config.EnableMod || __state == type)
+                if (!Config.EnableMod || __state == type || (!type.EndsWith("Chicken") && !type.EndsWith("Cow")))
                     return;
                 __instance.type.Value = __state;
                 __instance.reloadData();
