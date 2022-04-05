@@ -1,23 +1,84 @@
 ﻿using HarmonyLib;
 using Microsoft.Xna.Framework;
-using StardewModdingAPI;
+using Microsoft.Xna.Framework.Graphics;
 using StardewValley;
-using StardewValley.Buildings;
-using StardewValley.Locations;
-using System.Text.RegularExpressions;
+using StardewValley.Menus;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Reflection;
+using System.Reflection.Emit;
+using Object = StardewValley.Object;
 
 namespace MultiLevelLocations
 {
     public partial class ModEntry
     {
-        public static void GameLocation_updateMap_Prefix(GameLocation __instance)
+        [HarmonyPatch(typeof(NPC), nameof(NPC.draw))]
+        public class NPC_draw_Patch
         {
-            if (!Config.EnableMod || __instance.mapPath.Value == null || __instance != Game1.player.currentLocation)
-                return;
+            public static bool Prefix(NPC __instance)
+            {
+                return !Config.EnableMod || __instance.currentLocation != Game1.player.currentLocation || lastPlayerLevel == 1;
+            }
+        }
+        [HarmonyPatch(typeof(NPC), nameof(NPC.HideShadow))]
+        [HarmonyPatch(MethodType.Getter)]
+        public class NPC_HideShadow_Getter_Patch
+        {
+            public static bool Prefix(NPC __instance, ref bool __result)
+            {
+                if (!Config.EnableMod || __instance.currentLocation != Game1.player.currentLocation || lastPlayerLevel == 1)
+                    return true;
+                __result = true;
+                return false;
+            }
+        }
+        [HarmonyPatch(typeof(NPC), nameof(NPC.checkAction))]
+        public class NPC_checkAction_Patch
+        {
+            public static bool Prefix(NPC __instance, ref bool __result)
+            {
+                if (!Config.EnableMod || __instance.currentLocation != Game1.player.currentLocation || lastPlayerLevel == 1)
+                    return true;
+                __result = false;
+                return false;
+            }
+        }
+        [HarmonyPatch(typeof(Utility), nameof(Utility.checkForCharacterInteractionAtTile))]
+        public class Utility_checkForCharacterInteractionAtTile_Patch
+        {
+            public static bool Prefix()
+            {
+                return (!Config.EnableMod || lastPlayerLevel == 1);
+            }
+        }
+        [HarmonyPatch(typeof(GameLocation), nameof(GameLocation.isCollidingPosition), new Type[] { typeof(Rectangle), typeof(xTile.Dimensions.Rectangle), typeof(bool), typeof(int), typeof(bool), typeof(Character), typeof(bool), typeof(bool), typeof(bool) })]
+        public class GameLocation_isCollidingPosition_Patch
+        {
+            public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions)
+            {
+                SMonitor.Log($"Transpiling GameLocation.isCollidingPosition");
+                var codes = new List<CodeInstruction>(instructions);
+                for (int i = 0; i < codes.Count; i++)
+                {
+                    if (codes[i].opcode == OpCodes.Ldfld && (FieldInfo)codes[i].operand == AccessTools.Field(typeof(Character), nameof(Character.farmerPassesThrough)))
+                    {
+                        SMonitor.Log("overriding farmer passes through");
+                        codes.Insert(i + 1, new CodeInstruction(OpCodes.Call, AccessTools.Method(typeof(ModEntry), nameof(ModEntry.GetWhetherPassesThrough))));
+                        codes.Insert(i + 1, new CodeInstruction(OpCodes.Ldarg_0));
+                    }
+                }
 
-            string newMapPath = Regex.Replace(__instance.mapPath.Value, "_[0-9]+$", "") + (lastPlayerLevel > 1 ? "_" + lastPlayerLevel : "");
-            __instance.mapPath.Value = newMapPath;
+                return codes.AsEnumerable();
+            }
+        }
 
+        private static bool GetWhetherPassesThrough(bool through, GameLocation location)
+        {
+            if (!Config.EnableMod || location != Game1.player.currentLocation || lastPlayerLevel == 1)
+                return through;
+            return true;
         }
     }
 }

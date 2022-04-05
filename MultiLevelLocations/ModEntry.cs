@@ -7,9 +7,12 @@ using StardewValley.Locations;
 using StardewValley.TerrainFeatures;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text.RegularExpressions;
+using xTile;
 using xTile.Dimensions;
+using xTile.Layers;
 using xTile.ObjectModel;
 using xTile.Tiles;
 using Object = StardewValley.Object;
@@ -48,13 +51,8 @@ namespace MultiLevelLocations
             helper.Events.GameLoop.UpdateTicked += GameLoop_UpdateTicked;
             helper.Events.Player.Warped += Player_Warped;
             var harmony = new Harmony(ModManifest.UniqueID);
+            harmony.PatchAll();
 
-            // Game1 Patches
-
-            harmony.Patch(
-               original: AccessTools.Method(typeof(GameLocation), nameof(GameLocation.updateMap)),
-               prefix: new HarmonyMethod(typeof(ModEntry), nameof(ModEntry.GameLocation_updateMap_Prefix))
-            );
         }
 
         private void GameLoop_SaveLoaded(object sender, StardewModdingAPI.Events.SaveLoadedEventArgs e)
@@ -84,7 +82,7 @@ namespace MultiLevelLocations
             if (tile == null)
                 return;
             int newLevel = 1;
-            bool tileIsSwitch = tile.Properties.TryGetValue("SwitchMapLevel", out PropertyValue levelData);
+            bool tileIsSwitch = tile.Properties.TryGetValue("SwitchLevel", out PropertyValue levelData);
             bool setMapLevel = tile.Properties.TryGetValue("SetMapLevel", out PropertyValue newLevelString) && int.TryParse(newLevelString, out newLevel);
             if (setMapLevel)
             {
@@ -142,34 +140,24 @@ namespace MultiLevelLocations
                 Monitor.Log($"Invalid switch data: {data}");
                 return;
             }
-            if(!parts[which].Contains(":"))
-            {
-                Monitor.Log($"Invalid switch: {parts[which]}");
-                return;
-            }
-            parts = parts[which].Split(':');
-            if(!int.TryParse(parts[0], out int newLevel) || newLevel < 1)
+            if(!int.TryParse(parts[which], out int newLevel) || newLevel < 1)
             {
                 Monitor.Log($"Invalid floor: {newLevel}");
             }
-            if (!parts[1].Contains(","))
-            {
-                Monitor.Log($"Invalid position: {parts[1]}");
-                return;
-            }
-            var newPos = parts[1].Split(',');
-            if(!int.TryParse(newPos[0],out int newX) || !int.TryParse(newPos[1], out int newY))
-            {
-                Monitor.Log($"Invalid position: {parts[1]}");
-                return;
-            }
-            Game1.player.position.Value = new Vector2(newX, newY) * 64;
+
             if (lastPlayerLevel == newLevel)
             {
                 Monitor.Log($"Not switching to same level");
                 return;
             }
-            Game1.player.currentLocation.updateMap();
+            Monitor.Log($"Switching to level {newLevel}");
+            RearrangeLayersForPlayer(newLevel);
+            RearrangeObjectsForPlayer(newLevel);
+            lastPlayerLevel = newLevel;
+        }
+
+        private void RearrangeObjectsForPlayer(int newLevel)
+        {
 
             foreach (var v in Game1.player.currentLocation.Objects.Keys.ToList())
             {
@@ -212,7 +200,7 @@ namespace MultiLevelLocations
                     Game1.player.currentLocation.terrainFeatures.Remove(v);
                 }
             }
-            for(int i = 0; i < Game1.player.currentLocation.furniture.Count; i++)
+            for (int i = 0; i < Game1.player.currentLocation.furniture.Count; i++)
             {
                 var f = Game1.player.currentLocation.furniture[i];
                 Vector2 v = Game1.player.currentLocation.furniture[i].TileLocation;
@@ -239,7 +227,84 @@ namespace MultiLevelLocations
                 Game1.player.currentLocation.furniture[i].updateDrawPosition();
                 Game1.player.currentLocation.furniture[i].resetOnPlayerEntry(Game1.player.currentLocation, false);
             }
-            lastPlayerLevel = newLevel;
+        }
+        private void RearrangeLayersForPlayer(int newLevel)
+        {
+            if (!Config.EnableMod)
+                return;
+            Game1.player.currentLocation.loadMap(Game1.player.currentLocation.mapPath.Value, true);
+            Game1.player.currentLocation.temporarySprites.Clear();
+            if (newLevel == 1)
+            {
+                Monitor.Log($"Reverting map for level 1");
+                Game1.player.currentLocation.resetForPlayerEntry();
+            }
+            else
+            {
+                Layer[] oldLayers = Game1.player.currentLocation.map.Layers.ToArray();
+                List<Layer> newLayers = new List<Layer>();
+                Dictionary<string, Layer> newLayersById = new Dictionary<string, Layer>();
+                Regex rx = new Regex(@"^(?<level>[0-9]*)(?<name>[^0-9]+)(?<which>[0-9]*)", RegexOptions.Compiled);
+                int backs = 0;
+                foreach (var layer in oldLayers)
+                {
+                    var match = rx.Match(layer.Id);
+                    if (!match.Success) // skip
+                        continue;
+                    if (!layer.Properties.TryGetValue("MultiLevel", out PropertyValue thisLevel))
+                    {
+                        thisLevel = layer.Id;
+                        Monitor.Log($"Adding layer property to {thisLevel}");
+                        layer.Properties.Add("MultiLevel", thisLevel);
+                    }
+                    Monitor.Log($"Moving layer {thisLevel}");
+                    if (match.Groups["level"].Value.Length == 0) // is original, first level
+                    {
+                        layer.Id = "Back" + (backs > 0 ? backs : "");
+                        Monitor.Log($"new id: {layer.Id}");
+                        newLayers.Add(layer);
+                        newLayersById.Add(layer.Id, layer);
+                        backs++;
+                        continue;
+                    }
+                    int level = int.Parse(match.Groups["level"].Value);
+                    if (level < newLevel) // is below current level
+                    {
+                        layer.Id = "Back" + backs;
+                        Monitor.Log($"new id: {layer.Id}");
+                        newLayers.Add(layer);
+                        newLayersById.Add(layer.Id, layer);
+                        backs++;
+                        continue;
+                    }
+                    if (level == newLevel) // is current level
+                    {
+                        if(match.Groups["name"].Value == "Back") // set to top back
+                        {
+                            int which = 0;
+                            if(match.Groups["which"].Value.Length > 0)
+                                which = int.Parse(match.Groups["which"].Value);
+                            layer.Id = "Back" + (backs + which);
+                            backs++;
+                        }
+                        else
+                            layer.Id = match.Groups["name"].Value + match.Groups["which"].Value;
+                        Monitor.Log($"new id: {layer.Id}");
+                        newLayers.Add(layer);
+                        newLayersById.Add(layer.Id, layer);
+                        continue;
+                    }
+                    Monitor.Log($"new id: {layer.Id}");
+                    newLayers.Add(layer);
+                    newLayersById.Add(layer.Id, layer);
+                }
+                AccessTools.Field(typeof(Map), "m_readOnlyLayers").SetValue(Game1.player.currentLocation.map, new ReadOnlyCollection<Layer>(newLayers));
+                AccessTools.Field(typeof(Map), "m_layersById").SetValue(Game1.player.currentLocation.map, newLayersById);
+                foreach(var layer in Game1.player.currentLocation.map.Layers)
+                {
+                    Monitor.Log($"layer: {layer.Id}");
+                }
+            }
         }
 
         private void GameLoop_GameLaunched(object sender, StardewModdingAPI.Events.GameLaunchedEventArgs e)

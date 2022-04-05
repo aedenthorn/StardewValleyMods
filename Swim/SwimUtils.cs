@@ -245,7 +245,7 @@ namespace Swim
             var tiles = Game1.player.currentLocation.waterTiles;
             Point p = Game1.player.getTileLocationPoint();
 
-            if (!Game1.player.swimming.Value && Game1.player.currentLocation.map.GetLayer("Buildings").PickTile(new Location(p.X, p.Y) * Game1.tileSize, Game1.viewport.Size) != null)
+            if (!Game1.player.swimming.Value && Game1.player.currentLocation.map.GetLayer("Buildings")?.PickTile(new Location(p.X, p.Y) * Game1.tileSize, Game1.viewport.Size) != null)
                 return false;
 
             return IsMapUnderwater(Game1.player.currentLocation.Name)

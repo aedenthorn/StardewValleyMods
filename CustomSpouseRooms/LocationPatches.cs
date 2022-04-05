@@ -462,7 +462,7 @@ namespace CustomSpouseRooms
         public static void CheckSpouseThing(FarmHouse fh, SpouseRoomData srd)
         {
 			Monitor.Log($"Checking spouse thing for {srd.name}");
-			if (srd.name == "Emily" && (srd.templateName == "Emily" || srd.templateName == null || srd.templateName == "") && Game1.player.eventsSeen.Contains(463391))
+			if (srd.name == "Emily" && (srd.templateName == "Emily" || srd.templateName == null || srd.templateName == ""))
 			{
 				fh.temporarySprites.RemoveAll((s) => s is EmilysParrot);
 
