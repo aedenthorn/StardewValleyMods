@@ -22,7 +22,6 @@ namespace LivestockChoices
             {
                 if (!Config.EnableMod)
                     return;
-                Game1.player.eventsSeen.Add(3900074);
                 List<ClickableTextureComponent>  ccl = new List<ClickableTextureComponent>();
                 int spacing = 64;
                 for(int i = 0; i < __instance.animalsToPurchase.Count; i++)
@@ -59,21 +58,7 @@ namespace LivestockChoices
                             downNeighborID = 3,
                             upNeighborID = -1
                         });
-                        ccl.Add(new ClickableTextureComponent(Config.BlueChickenPrice + "", new Rectangle(cc.bounds.X, cc.bounds.Y + spacing, 32, 32), null, "Blue Chicken", Game1.content.Load<Texture2D>("Animals/Blue Chicken"), new Rectangle(0, 0, 16, 16), 2)
-                        {
-                            item = new Object(100, 1, false, Config.BlueChickenPrice, 0)
-                            {
-                                Name = "Blue Chicken",
-                                Type = (Config.BlueChickenPrice >= 0 && Game1.player.eventsSeen.Contains(3900074) && (Game1.getFarm().isBuildingConstructed("Coop") || Game1.getFarm().isBuildingConstructed("Deluxe Coop") || Game1.getFarm().isBuildingConstructed("Big Coop")) ? null : (Config.BlueChickenPrice < 0 || !Game1.player.eventsSeen.Contains(3900074) ? "" : Game1.content.LoadString("Strings\\StringsFromCSFiles:Utility.cs.5926"))),
-                                displayName = GetName("Blue Chicken")
-                            },
-                            myID = 2,
-                            rightNeighborID = 3,
-                            leftNeighborID = -1,
-                            downNeighborID = 6,
-                            upNeighborID = 0
-                        });
-                        ccl.Add(new ClickableTextureComponent(Config.VoidChickenPrice + "", new Rectangle(cc.bounds.X + spacing, cc.bounds.Y + spacing, 32, 32), null, "Void Chicken", Game1.content.Load<Texture2D>("Animals/Void Chicken"), new Rectangle(0, 0, 16, 16), 2)
+                        ccl.Add(new ClickableTextureComponent(Config.VoidChickenPrice + "", new Rectangle(cc.bounds.X, cc.bounds.Y + spacing, 32, 32), null, "Void Chicken", Game1.content.Load<Texture2D>("Animals/Void Chicken"), new Rectangle(0, 0, 16, 16), 2)
                         {
                             item = new Object(100, 1, false, Config.VoidChickenPrice, 0)
                             {
@@ -81,13 +66,13 @@ namespace LivestockChoices
                                 Type = (Config.VoidChickenPrice >= 0 && (Game1.getFarm().isBuildingConstructed("Coop") || Game1.getFarm().isBuildingConstructed("Deluxe Coop") || Game1.getFarm().isBuildingConstructed("Big Coop")) ? null : (Config.VoidChickenPrice < 0 ? "" : Game1.content.LoadString("Strings\\StringsFromCSFiles:Utility.cs.5926"))),
                                 displayName = GetName("Void Chicken")
                             },
-                            myID = 3,
-                            rightNeighborID = 4,
-                            leftNeighborID = 2,
+                            myID = 2,
+                            rightNeighborID = 3,
+                            leftNeighborID = -1,
                             downNeighborID = 6,
-                            upNeighborID = 1
+                            upNeighborID = 0
                         });
-                        ccl.Add(new ClickableTextureComponent(Config.GoldenChickenPrice + "", new Rectangle(cc.bounds.X + spacing / 2, cc.bounds.Y + spacing / 2, 32, 32), null, "Golden Chicken", Game1.content.Load<Texture2D>("Animals/Golden Chicken"), new Rectangle(0, 0, 16, 16), 2)
+                        ccl.Add(new ClickableTextureComponent(Config.GoldenChickenPrice + "", new Rectangle(cc.bounds.X + spacing, cc.bounds.Y + spacing, 32, 32), null, "Golden Chicken", Game1.content.Load<Texture2D>("Animals/Golden Chicken"), new Rectangle(0, 0, 16, 16), 2)
                         {
                             item = new Object(100, 1, false, Config.GoldenChickenPrice, 0)
                             {
@@ -95,7 +80,21 @@ namespace LivestockChoices
                                 Type = (Config.GoldenChickenPrice >= 0 && (Game1.getFarm().isBuildingConstructed("Coop") || Game1.getFarm().isBuildingConstructed("Deluxe Coop") || Game1.getFarm().isBuildingConstructed("Big Coop")) ? null : (Config.GoldenChickenPrice < 0 ? "" : Game1.content.LoadString("Strings\\StringsFromCSFiles:Utility.cs.5926"))),
                                 displayName = GetName("Golden Chicken")
                             },
-                            myID = i,
+                            myID = 3,
+                            rightNeighborID = 4,
+                            leftNeighborID = 2,
+                            downNeighborID = 6,
+                            upNeighborID = 1
+                        });
+                        ccl.Add(new ClickableTextureComponent(Config.BlueChickenPrice + "", new Rectangle(cc.bounds.X + spacing / 2, cc.bounds.Y + spacing / 2, 32, 32), null, "Blue Chicken", Game1.content.Load<Texture2D>("Animals/Blue Chicken"), new Rectangle(0, 0, 16, 16), 2)
+                        {
+                            item = new Object(100, 1, false, Config.BlueChickenPrice, 0)
+                            {
+                                Name = "Blue Chicken",
+                                Type = (Config.BlueChickenPrice >= 0 && Game1.player.eventsSeen.Contains(3900074) && (Game1.getFarm().isBuildingConstructed("Coop") || Game1.getFarm().isBuildingConstructed("Deluxe Coop") || Game1.getFarm().isBuildingConstructed("Big Coop") || !Game1.player.eventsSeen.Contains(3900074)) ? null : (Config.BlueChickenPrice < 0 ? "" : Game1.content.LoadString("Strings\\StringsFromCSFiles:Utility.cs.5926"))),
+                                displayName = GetName("Blue Chicken")
+                            },
+                            myID = 4,
                             rightNeighborID = 1,
                             leftNeighborID = -1,
                             downNeighborID = 2,
@@ -113,7 +112,7 @@ namespace LivestockChoices
                                 Type = ((Game1.getFarm().isBuildingConstructed("Barn") || Game1.getFarm().isBuildingConstructed("Deluxe Barn") || Game1.getFarm().isBuildingConstructed("Big Barn")) ? null : Game1.content.LoadString("Strings\\StringsFromCSFiles:Utility.cs.5927")),
                                 displayName = GetName("White Cow")
                             },
-                            myID = 4,
+                            myID = 5,
                             rightNeighborID = 5,
                             leftNeighborID = 3,
                             downNeighborID = 8,
@@ -126,25 +125,25 @@ namespace LivestockChoices
                                 Type = ((Game1.getFarm().isBuildingConstructed("Barn") || Game1.getFarm().isBuildingConstructed("Deluxe Barn") || Game1.getFarm().isBuildingConstructed("Big Barn")) ? null : Game1.content.LoadString("Strings\\StringsFromCSFiles:Utility.cs.5927")),
                                 displayName = GetName("Brown Cow")
                             },
-                            myID = 5,
-                            rightNeighborID = 6,
+                            myID = 6,
+                            rightNeighborID = 7,
                             leftNeighborID = 5,
-                            downNeighborID = 9,
+                            downNeighborID = 10,
                             upNeighborID = -1
                         });
                     }
                     else
                     {
                         cc.bounds = new Rectangle(cc.bounds.X + 32 * ( i % 3), cc.bounds.Y + 16 * (i / 3), 128, 64);
-                        cc.myID += 4;
+                        cc.myID += 5;
                         if(cc.rightNeighborID >= 0)
-                            cc.rightNeighborID += 4;
+                            cc.rightNeighborID += 5;
                         if (cc.leftNeighborID >= 0)
-                            cc.leftNeighborID += 4;
+                            cc.leftNeighborID += 5;
                         if (cc.downNeighborID >= 0)
-                            cc.downNeighborID += 4;
+                            cc.downNeighborID += 5;
                         if (cc.upNeighborID >= 0)
-                            cc.upNeighborID += 4;
+                            cc.upNeighborID += 5;
                         ccl.Add(cc);
                     }
                 }
