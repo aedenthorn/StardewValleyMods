@@ -4,11 +4,6 @@ using Microsoft.Xna.Framework.Graphics;
 using StardewModdingAPI;
 using StardewModdingAPI.Events;
 using StardewValley;
-using StardewValley.Locations;
-using StardewValley.Objects;
-using StardewValley.TerrainFeatures;
-using System;
-using System.Collections.Generic;
 using Object = StardewValley.Object;
 
 namespace Chess
@@ -23,13 +18,13 @@ namespace Chess
         public static ModEntry context;
         public static Object heldPiece;
 
-        public static bool flipped;
-
         private static Texture2D piecesSheet;
 
-        private static int parentIndex = -424242;
+        private static int parentIndex = 0;
         private static string pieceKey = "aedenthorn.Chess/piece";
         private static string movedKey = "aedenthorn.Chess/moved";
+        private static string squareKey = "aedenthorn.Chess/square";
+        private static string flippedKey = "aedenthorn.Chess/flipped";
         private static string lastKey = "aedenthorn.Chess/lastPiece";
         private static string[][] startPieces = new string[][]
         {
@@ -76,24 +71,27 @@ namespace Chess
 
         private void Display_RenderedWorld(object sender, RenderedWorldEventArgs e)
         {
-            if(heldPiece != null)
+            if (!Config.EnableMod)
+                return;
+            if (heldPiece != null)
             {
                 Vector2 scaleFactor = heldPiece.getScale();
                 Vector2 position = Game1.getMousePosition().ToVector2() - new Vector2(32, 92);
                 Rectangle destination = new Rectangle((int)(position.X - scaleFactor.X / 2f) + ((heldPiece.shakeTimer > 0) ? Game1.random.Next(-1, 2) : 0), (int)(position.Y - scaleFactor.Y / 2f) + ((heldPiece.shakeTimer > 0) ? Game1.random.Next(-1, 2) : 0), (int)(64f + scaleFactor.X), (int)(128f + scaleFactor.Y / 2f));
                 float draw_layer = 1;
-                e.SpriteBatch.Draw(piecesSheet, destination, new Rectangle(GetSourceRectForPiece(heldPiece.modData[pieceKey]), new Point(64, 128)), Color.White * 0.5f, 0f, Vector2.Zero, SpriteEffects.None, draw_layer);
+                e.SpriteBatch.Draw(piecesSheet, destination, new Rectangle(GetSourceRectForPiece(heldPiece.modData[pieceKey]), new Point(64, 128)), Color.White * Config.HeldPieceOpacity, 0f, Vector2.Zero, SpriteEffects.None, draw_layer);
             }
         }
 
         private void Input_ButtonPressed(object sender, ButtonPressedEventArgs e)
         {
-            if (!Config.EnableMod)
+            if (!Config.EnableMod || !Context.IsPlayerFree)
                 return;
 
-            if(Context.IsPlayerFree && GetChessBoardTileAt(Game1.lastCursorTile, out Point tile))
+            if(GetChessBoardTileAt(Game1.lastCursorTile, out Point tile))
             {
                 var cornerTile = new Vector2(Game1.lastCursorTile.X - tile.X + 1, Game1.lastCursorTile.Y + tile.Y - 1);
+                Vector2 cursorTile = Game1.currentLocation.terrainFeatures[cornerTile].modData.ContainsKey(flippedKey) ? GetFlippedTile(cornerTile, tile) : Game1.lastCursorTile;
                 if (e.Button == Config.SetupKey)
                 {
                     for (int x = 0; x < 8; x++)
@@ -106,12 +104,12 @@ namespace Chess
                                 continue;
                             var obj = new Object(thisTile, parentIndex);
                             obj.modData[pieceKey] = startPieces[y][x];
+                            obj.modData[squareKey] = $"{x + 1},{y + 1}";
+                            obj.isTemporarilyInvisible = true;
                             Game1.currentLocation.objects.Add(thisTile, obj);
                         }
                     }
-                    Game1.currentLocation.playSound("dwoop");
-                    Helper.Input.Suppress(e.Button);
-                    return;
+                    PlaySound(Config.SetupSound);
                 }
                 else if (e.Button == Config.ClearKey)
                 {
@@ -123,55 +121,110 @@ namespace Chess
                             Game1.currentLocation.objects.Remove(thisTile);
                         }
                     }
-                    Game1.currentLocation.playSound("leafrustle");
-                    Helper.Input.Suppress(e.Button);
-                    return;
+                    PlaySound(Config.ClearSound);
                 }
-                if (e.Button == SButton.MouseLeft)
+                else if (e.Button == Config.FlipKey)
                 {
+                    if (Game1.currentLocation.terrainFeatures[cornerTile].modData.ContainsKey(flippedKey))
+                    {
+                        Game1.currentLocation.terrainFeatures[cornerTile].modData.Remove(flippedKey);
+                        Monitor.Log("Board unflipped");
+                    }
+                    else
+                    {
+                        Game1.currentLocation.terrainFeatures[cornerTile].modData[flippedKey] = "true";
+                        Monitor.Log("Board flipped");
+                    }
+
+                }
+                else if (e.Button == Config.ModeKey)
+                {
+                    Config.FreeMode = !Config.FreeMode;
+                    Game1.addHUDMessage(new HUDMessage(SHelper.Translation.Get("free-" + Config.FreeMode), 1));
+                }
+                else if (Config.FreeMode && e.Button == Config.RemoveKey)
+                {
+                    Game1.currentLocation.objects.Remove(cursorTile);
+                }
+                else if (Config.FreeMode && e.Button == Config.ChangeKey)
+                {
+                    if (Game1.currentLocation.objects.TryGetValue(cursorTile, out var obj) && obj.modData.TryGetValue(pieceKey, out string piece))
+                    {
+                        if (Helper.Input.IsDown(Config.ChangeModKey))
+                        {
+                            Game1.currentLocation.objects[cursorTile].modData[pieceKey] = (piece[0] == 'b' ? "w" : "b") + piece[1].ToString();
+                        }
+                        else
+                        {
+                            string which = pieceIndexes[(pieceIndexes.IndexOf(piece[1]) + 1) % pieceIndexes.Length].ToString();
+                            Game1.currentLocation.objects[cursorTile].modData[pieceKey] = piece[0].ToString() + which;
+                        }
+                    }
+                    else
+                    {
+                        var newObj = new Object(cursorTile, parentIndex);
+                        newObj.modData[pieceKey] = "wp";
+                        newObj.modData[squareKey] = $"{cursorTile.X - cornerTile.X + 1},{cornerTile.Y - cursorTile.Y + 1}";
+                        newObj.isTemporarilyInvisible = true;
+                        Game1.currentLocation.objects.Add(cursorTile, newObj);
+                    }
+                }
+                else if (e.Button == SButton.MouseLeft)
+                {
+                    Monitor.Log($"Tile {cursorTile}");
+
                     var lastMovedPiece = GetLastMovedPiece(cornerTile);
-                    if (heldPiece is not null &&  Game1.lastCursorTile == heldPiece.TileLocation)
+                    if (heldPiece is not null && cursorTile == heldPiece.TileLocation)
                     {
                         heldPiece = null;
                     }
-                    else if (Game1.currentLocation.objects.TryGetValue(Game1.lastCursorTile, out var obj) && obj.modData.TryGetValue(pieceKey, out string piece))
+                    else if (Game1.currentLocation.objects.TryGetValue(cursorTile, out var obj) && obj.modData.TryGetValue(pieceKey, out string piece))
                     {
                         if (heldPiece == null)
                         {
-                            heldPiece = obj;
-                            Game1.currentLocation.playSound("bigSelect");
+                            if ((lastMovedPiece == null && piece[0] == 'b') || (lastMovedPiece?.modData[pieceKey][0] == piece[0]))
+                            {
+                                Game1.addHUDMessage(new HUDMessage(SHelper.Translation.Get("turn"), 1));
+                                PlaySound(Config.CancelSound);
+                            }
+                            else
+                            {
+                                heldPiece = obj;
+                                PlaySound(Config.PickupSound);
+                            }
                         }
-                        else if (!IsValidMove(heldPiece, piece, lastMovedPiece, cornerTile, heldPiece.TileLocation, Game1.lastCursorTile, out bool enPassant, out bool castle))
+                        else if (!IsValidMove(heldPiece, piece, lastMovedPiece, cornerTile, heldPiece.TileLocation, cursorTile, out bool enPassant, out bool castle))
                         {
-                            Game1.currentLocation.playSound("leafrustle");
+                            PlaySound(Config.CancelSound);
                             heldPiece = null;
                         }
                         else
                         {
-                            MovePiece(cornerTile, enPassant, castle);
-                            heldPiece = null;
+                            MovePiece(cornerTile, cursorTile, enPassant, castle);
                         }
                     }
                     else if (heldPiece != null)
                     {
-                        if (!IsValidMove(heldPiece, null, lastMovedPiece, cornerTile, heldPiece.TileLocation, Game1.lastCursorTile, out bool enPassant, out bool castle))
+                        if (!IsValidMove(heldPiece, null, lastMovedPiece, cornerTile, heldPiece.TileLocation, cursorTile, out bool enPassant, out bool castle))
                         {
-                            Game1.currentLocation.playSound("leafrustle");
+                            PlaySound(Config.CancelSound);
+                            heldPiece = null;
                         }
                         else
                         {
-                            MovePiece(cornerTile, enPassant, castle);
+                            MovePiece(cornerTile, cursorTile, enPassant, castle);
                         }
-                        heldPiece = null;
                     }
-                    Helper.Input.Suppress(e.Button);
-                    return;
                 }
+                else
+                    return;
+                Helper.Input.Suppress(e.Button);
             }
             else if (e.Button == SButton.MouseLeft && heldPiece != null)
             {
-                Game1.currentLocation.playSound("leafrustle");
-                Game1.currentLocation.objects.Remove(heldPiece.TileLocation);
+                PlaySound(Config.CancelSound);
+                if (Config.FreeMode)
+                    Game1.currentLocation.objects.Remove(heldPiece.TileLocation);
                 heldPiece = null;
                 Helper.Input.Suppress(e.Button);
             }
@@ -209,6 +262,91 @@ namespace Chess
                 name: () => "Mod Enabled",
                 getValue: () => Config.EnableMod,
                 setValue: value => Config.EnableMod = value
+            );
+
+            
+            configMenu.AddTextOption(
+                mod: ModManifest,
+                name: () => "Setup Sound",
+                getValue: () => Config.SetupSound,
+                setValue: value => Config.SetupSound = value
+            );
+            
+            configMenu.AddTextOption(
+                mod: ModManifest,
+                name: () => "Pickup Sound",
+                getValue: () => Config.PickupSound,
+                setValue: value => Config.PickupSound = value
+            );
+            configMenu.AddTextOption(
+                mod: ModManifest,
+                name: () => "Place Sound",
+                getValue: () => Config.PlaceSound,
+                setValue: value => Config.PlaceSound = value
+            );
+            
+            configMenu.AddTextOption(
+                mod: ModManifest,
+                name: () => "Cancel Sound",
+                getValue: () => Config.CancelSound,
+                setValue: value => Config.CancelSound = value
+            );
+            
+            configMenu.AddTextOption(
+                mod: ModManifest,
+                name: () => "Flip Sound",
+                getValue: () => Config.FlipSound,
+                setValue: value => Config.FlipSound = value
+            );
+            
+            configMenu.AddTextOption(
+                mod: ModManifest,
+                name: () => "Clear Sound",
+                getValue: () => Config.ClearSound,
+                setValue: value => Config.ClearSound = value
+            );
+
+            configMenu.AddKeybind(
+                mod: ModManifest,
+                name: () => "Setup Key",
+                getValue: () => Config.SetupKey,
+                setValue: value => Config.SetupKey = value
+            );
+            configMenu.AddKeybind(
+                mod: ModManifest,
+                name: () => "Clear Key",
+                getValue: () => Config.ClearKey,
+                setValue: value => Config.ClearKey = value
+            );
+            configMenu.AddKeybind(
+                mod: ModManifest,
+                name: () => "Flip Key",
+                getValue: () => Config.FlipKey,
+                setValue: value => Config.FlipKey = value
+            );
+            configMenu.AddKeybind(
+                mod: ModManifest,
+                name: () => "Mode Key",
+                getValue: () => Config.ModeKey,
+                setValue: value => Config.ModeKey = value
+            );
+            configMenu.AddKeybind(
+                mod: ModManifest,
+                name: () => "Change Key",
+                getValue: () => Config.ChangeKey,
+                setValue: value => Config.ChangeKey = value
+            );
+            configMenu.AddKeybind(
+                mod: ModManifest,
+                name: () => "Change Mod Key",
+                getValue: () => Config.ChangeModKey,
+                setValue: value => Config.ChangeModKey = value
+            );
+            configMenu.AddKeybind(
+                mod: ModManifest,
+                name: () => "Remove Key",
+                getValue: () => Config.RemoveKey,
+                setValue: value => Config.RemoveKey = value
             );
         }
     }

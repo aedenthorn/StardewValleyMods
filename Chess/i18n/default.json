@@ -1,0 +1,11 @@
+{
+  "free-true": "Free mode enabled",
+  "free-false": "Free mode disabled",
+  "check": "Your king is in check!",
+  "turn": "It's not your turn!",
+  "which-promote": "Promote to which piece?",
+  "rook": "Rook",
+  "knight": "Knight",
+  "bishop": "Bishop",
+  "queen": "Queen"
+}

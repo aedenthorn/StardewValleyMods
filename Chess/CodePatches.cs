@@ -16,23 +16,39 @@ namespace Chess
             {
                 if (!Config.EnableMod || !__instance.modData.TryGetValue(pieceKey, out string piece))
                     return true;
+                __instance.isTemporarilyInvisible = true;
                 if (heldPiece is not null && __instance == heldPiece)
                     return false;
                 Vector2 scaleFactor = __instance.getScale();
-                Vector2 position = Game1.GlobalToLocal(Game1.viewport, new Vector2(x * 64, y * 64 - 64));
+                Vector2 tilePosition;
+                var f = __instance.modData[squareKey];
+                Point square = new Point(int.Parse(__instance.modData[squareKey].Substring(0, 1)), int.Parse(__instance.modData[squareKey].Substring(2, 1)));
+                Vector2 cornerTile = new Vector2(x - square.X + 1, y + square.Y - 1);
+                if (Game1.currentLocation.terrainFeatures[cornerTile].modData.ContainsKey(flippedKey))
+                {
+                    tilePosition = GetFlippedTile(cornerTile, square) * 64 - new Vector2(0, 64);
+                }
+                else
+                {
+                    tilePosition = new Vector2(x * 64, y * 64 - 64);
+                }
+                Vector2 position = Game1.GlobalToLocal(Game1.viewport, tilePosition);
                 Rectangle destination = new Rectangle((int)(position.X - scaleFactor.X / 2f) + ((__instance.shakeTimer > 0) ? Game1.random.Next(-1, 2) : 0), (int)(position.Y - scaleFactor.Y / 2f) + ((__instance.shakeTimer > 0) ? Game1.random.Next(-1, 2) : 0), (int)(64f + scaleFactor.X), (int)(128f + scaleFactor.Y / 2f));
-                float draw_layer = Math.Max(0f, (float)((y + 1) * 64 - 24) / 10000f) + (float)x * 1E-05f;
+                float draw_layer = Math.Max(0f, (float)((tilePosition.Y / 64 + 1) * 64 - 24) / 10000f) + (float)tilePosition.X / 64 * 1E-05f;
                 spriteBatch.Draw(piecesSheet, destination, new Rectangle(GetSourceRectForPiece(piece), new Point(64, 128)), Color.White * alpha, 0f, Vector2.Zero, SpriteEffects.None, draw_layer);
                 return false;
             }
         }
         
-        [HarmonyPatch(typeof(Object), nameof(Object.updateWhenCurrentLocation))]
-        public class Object_updateWhenCurrentLocation_Patch
+        [HarmonyPatch(typeof(GameLocation), nameof(GameLocation.answerDialogue))]
+        public class GameLocation_answerDialogue_Patch
         {
-            public static bool Prefix(Object __instance)
+            public static bool Prefix(GameLocation __instance, Response answer)
             {
-                return !Config.EnableMod || !__instance.modData.ContainsKey(pieceKey);
+                if (!Config.EnableMod || __instance.lastQuestionKey != "chess-mod-promote-question")
+                    return true;
+                PromotePiece(answer.responseKey);
+                return false;
             }
         }
     }
