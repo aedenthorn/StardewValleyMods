@@ -7,16 +7,17 @@ using System;
 using System.Collections.Generic;
 using Object = StardewValley.Object;
 
-namespace Chess
+namespace ChessBoards
 {
     public partial class ModEntry
     {
         private static string pieceIndexes = "prnbqk";
 
-        private static bool IsValidMove(Object pieceObj, string capture, Object lastMovedPiece, Vector2 cornerTile, Vector2 startTile, Vector2 endTile, out bool enPassant, out bool castle)
+        private static bool IsValidMove(Object pieceObj, string capture, Object lastMovedPiece, Vector2 cornerTile, Vector2 startTile, Vector2 endTile, out bool enPassant, out bool castle, out bool pawnAdvance)
         {
             enPassant = false;
             castle = false;
+            pawnAdvance = false;
             if (Config.FreeMode)
                 return true;
             string piece = pieceObj.modData[pieceKey];
@@ -38,23 +39,38 @@ namespace Chess
                     {
                         return (Math.Abs(startSquare.X - endSquare.X) == 1 && startSquare.Y - endSquare.Y == 1);
                     }
-                    if (startSquare.Y == 3 && Math.Abs(startSquare.X - endSquare.X) == 1 && startSquare.Y - endSquare.Y == 1 && Game1.currentLocation.objects.TryGetValue(endTile - new Vector2(0, 1), out Object passed) && passed == lastMovedPiece && passed.modData[pieceKey] == "wp")
+                    if (startSquare.Y == 4 && Math.Abs(startSquare.X - endSquare.X) == 1 && startSquare.Y - endSquare.Y == 1 && Game1.currentLocation.objects.TryGetValue(endTile - new Vector2(0, 1), out Object passed) && passed == lastMovedPiece && passed.modData[pieceKey] == "wp" && passed.modData.ContainsKey(pawnKey))
                     {
                         enPassant = true;
                         return true;
                     }
-                    return startSquare.X == endSquare.X && ((startSquare.Y - endSquare.Y == 1) || ((startSquare.Y - endSquare.Y == 2 && startSquare.Y == 7) && !Game1.currentLocation.objects.ContainsKey(startTile + new Vector2(0, 1))));
+                    if (startSquare.X != endSquare.X)
+                        return false;
+                    if(startSquare.Y - endSquare.Y == 2 && startSquare.Y == 7 && !Game1.currentLocation.objects.ContainsKey(startTile + new Vector2(0, 1)))
+                    {
+                        pawnAdvance = true;
+                        return true;
+                    }
+                    return startSquare.Y - endSquare.Y == 1;
                 case "wp":
                     if (capture is not null)
                     {
                         return (Math.Abs(startSquare.X - endSquare.X) == 1 && endSquare.Y - startSquare.Y == 1);
                     }
-                    if (startSquare.Y == 5 && Math.Abs(startSquare.X - endSquare.X) == 1 && endSquare.Y - startSquare.Y == 1 && Game1.currentLocation.objects.TryGetValue(endTile + new Vector2(0, 1), out passed) && passed == lastMovedPiece && passed.modData[pieceKey] == "bp")
+                    if (startSquare.Y == 5 && Math.Abs(startSquare.X - endSquare.X) == 1 && endSquare.Y - startSquare.Y == 1 && Game1.currentLocation.objects.TryGetValue(endTile + new Vector2(0, 1), out passed) && passed == lastMovedPiece && passed.modData[pieceKey] == "bp" && passed.modData.ContainsKey(pawnKey))
                     {
                         enPassant = true;
                         return true;
                     }
-                    return startSquare.X == endSquare.X && ((endSquare.Y - startSquare.Y == 1) || ((endSquare.Y - startSquare.Y == 2 && startSquare.Y == 2) && !Game1.currentLocation.objects.ContainsKey(startTile - new Vector2(0, 1))));
+                    if (startSquare.X != endSquare.X)
+                        return false;
+                    if (endSquare.Y - startSquare.Y == 2 && startSquare.Y == 2 && !Game1.currentLocation.objects.ContainsKey(startTile - new Vector2(0, 1)))
+                    {
+                        pawnAdvance = true;
+                        return true;
+                    }
+                    return endSquare.Y - startSquare.Y == 1;
+
                 case "wn":
                 case "bn":
                     return (Math.Abs(startSquare.X - endSquare.X) == 1 && Math.Abs(startSquare.Y - endSquare.Y) == 2) || (Math.Abs(startSquare.Y - endSquare.Y) == 1 && Math.Abs(startSquare.X - endSquare.X) == 2);
@@ -112,7 +128,7 @@ namespace Chess
                     var thisTile = new Vector2(cornerTile.X + x, cornerTile.Y - y);
                     if (Game1.currentLocation.objects.TryGetValue(thisTile, out Object obj) && obj.modData.TryGetValue(pieceKey, out string p))
                     {
-                        if (p[0] != heldPiece.modData[pieceKey][0] && IsValidMove(obj, piece, null, cornerTile, obj.TileLocation, tile, out bool enPassant, out bool castle))
+                        if (p[0] != heldPiece.modData[pieceKey][0] && IsValidMove(obj, piece, null, cornerTile, obj.TileLocation, tile, out bool enPassant, out bool castle, out bool pawnAdvance))
                         {
 
                             return false;
@@ -123,7 +139,7 @@ namespace Chess
             return true;
         }
 
-        private static void MovePiece(Vector2 cornerTile, Vector2 moveTile, bool enPassant, bool castle)
+        private static void MovePiece(Vector2 cornerTile, Vector2 moveTile, bool enPassant, bool castle, bool pawnAdvance)
         {
             Vector2 startTile = heldPiece.TileLocation;
             Game1.currentLocation.objects.Remove(startTile);
@@ -186,6 +202,13 @@ namespace Chess
                 }
                 heldPiece.modData[movedKey] = "true";
                 heldPiece.modData[squareKey] = $"{heldPiece.TileLocation.X - cornerTile.X + 1},{cornerTile.Y - heldPiece.TileLocation.Y + 1}";
+                if(pawnAdvance)
+                {
+                    heldPiece.modData[pawnKey] = "true";
+                    SMonitor.Log("Two-square pawn advancement");
+                }
+                else
+                    heldPiece.modData.Remove(pawnKey);
                 SetLastMovedPiece(heldPiece, cornerTile);
                 PlaySound(Config.PlaceSound);
                 if(!Config.FreeMode && (heldPiece.modData[pieceKey] == "bp" && heldPiece.TileLocation.Y == cornerTile.Y) || (heldPiece.modData[pieceKey] == "wp" && heldPiece.TileLocation.Y == cornerTile.Y - 7))
@@ -198,7 +221,7 @@ namespace Chess
                         new Response("knight",SHelper.Translation.Get("knight") ),
                         new Response("bishop",SHelper.Translation.Get("bishop") ),
                         new Response("queen",SHelper.Translation.Get("queen") )
-                    }, "chess-mod-promote-question");
+                    }, "ChessBoards-mod-promote-question");
                 }
                 else
                 {
@@ -246,7 +269,7 @@ namespace Chess
                     var thisTile = new Vector2(cornerTile.X + x, cornerTile.Y - y);
                     if (Game1.currentLocation.objects.TryGetValue(thisTile, out Object obj) && obj.modData.TryGetValue(pieceKey, out string p))
                     {
-                        if (p[0] != heldPiece.modData[pieceKey][0] && IsValidMove(obj, king.modData[pieceKey], null, cornerTile, obj.TileLocation, king.TileLocation, out bool enPassant, out bool castle))
+                        if (p[0] != heldPiece.modData[pieceKey][0] && IsValidMove(obj, king.modData[pieceKey], null, cornerTile, obj.TileLocation, king.TileLocation, out bool enPassant, out bool castle, out bool pawnAdvance))
                         {
                             return true;
                         }
@@ -306,9 +329,9 @@ namespace Chess
             return false;
         }
 
-        private static bool GetChessBoardTileAt(Vector2 tile, out Point chessTile)
+        private static bool GetChessBoardsBoardTileAt(Vector2 tile, out Point ChessBoardsTile)
         {
-            chessTile = new Point();
+            ChessBoardsTile = new Point();
             if (!Game1.currentLocation.terrainFeatures.TryGetValue(tile, out var t) || t is not Flooring)
                 return false;
             int left = 0;
@@ -346,7 +369,7 @@ namespace Chess
             }
             if (left + right != 7)
             {
-                SMonitor.Log($"left {left}, right {right}");
+                SMonitor.Log($"Not on board! left {left}, right {right}", StardewModdingAPI.LogLevel.Warn);
                 return false;
             }
             for (int i = 1; i < 8; i++)
@@ -381,16 +404,18 @@ namespace Chess
                 //Monitor.Log($"up {up}, down {down}");
                 return false;
             }
-            chessTile = new Point(left + 1, down + 1);
-            //Monitor.Log($"Chess tile {chessTile}");
+            ChessBoardsTile = new Point(left + 1, down + 1);
+            //Monitor.Log($"ChessBoards tile {ChessBoardsTile}");
             return true;
         }
 
-        private static Point GetSourceRectForPiece(string piece)
+        private static Rectangle GetSourceRectForPiece(string piece)
         {
-            int x = pieceIndexes.IndexOf(piece[1]) * 64;
-            int y = piece[0] == 'b' ? 128 : 0;
-            return new Point(x, y);
+            int width = piecesSheet.Width / 6;
+            int height = piecesSheet.Height / 2;
+            int x = pieceIndexes.IndexOf(piece[1]) * width;
+            int y = piece[0] == 'b' ? height : 0;
+            return new Rectangle(x, y, width, height);
         }
         private static void SetLastMovedPiece(Object heldPiece, Vector2 cornerTile)
         {

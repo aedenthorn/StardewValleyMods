@@ -5,6 +5,11 @@
 	<EnableHarmony>true</EnableHarmony>
   </PropertyGroup>
   <ItemGroup>
+    <None Remove="assets\board.png" />
+    <None Remove="assets\pieces_alt.png" />
+    <None Remove="assets\pieces_old.png" />
+  </ItemGroup>
+  <ItemGroup>
     <Content Include="i18n\default.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
@@ -15,10 +20,10 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Update="assets\board.png">
+    <None Update="assets\pieces.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Update="assets\pieces.png">
+    <None Update="assets\pieces_licence.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Update="assets\wall_plasma_tv.png">

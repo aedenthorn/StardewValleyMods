@@ -1,18 +1,18 @@
 ﻿{
-  "Name": "Chess",
+  "Name": "Chess Boards",
   "Author": "aedenthorn",
   "Version": "0.1.0",
-  "Description": "Chess.",
-  "UniqueID": "aedenthorn.Chess",
-  "EntryDll": "Chess.dll",
+  "Description": "Chess Boards.",
+  "UniqueID": "aedenthorn.ChessBoards",
+  "EntryDll": "ChessBoards.dll",
   "MinimumApiVersion": "3.13.0",
   "ModUpdater": {
     "Repository": "StardewValleyMods",
     "User": "aedenthorn",
     "Directory": "_releases",
-    "ModFolder": "Chess"
+    "ModFolder": "ChessBoards"
   },
-  "UpdateKeys": [ "Nexus:" ],
+  "UpdateKeys": [ "Nexus:11580" ],
   "Dependencies": [
     {
       "UniqueID": "Platonymous.ModUpdater",

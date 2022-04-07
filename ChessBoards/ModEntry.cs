@@ -6,7 +6,7 @@ using StardewModdingAPI.Events;
 using StardewValley;
 using Object = StardewValley.Object;
 
-namespace Chess
+namespace ChessBoards
 {
     /// <summary>The mod entry point.</summary>
     public partial class ModEntry : Mod
@@ -21,11 +21,12 @@ namespace Chess
         private static Texture2D piecesSheet;
 
         private static int parentIndex = 0;
-        private static string pieceKey = "aedenthorn.Chess/piece";
-        private static string movedKey = "aedenthorn.Chess/moved";
-        private static string squareKey = "aedenthorn.Chess/square";
-        private static string flippedKey = "aedenthorn.Chess/flipped";
-        private static string lastKey = "aedenthorn.Chess/lastPiece";
+        private static string pieceKey = "aedenthorn.ChessBoards/piece";
+        private static string movedKey = "aedenthorn.ChessBoards/moved";
+        private static string squareKey = "aedenthorn.ChessBoards/square";
+        private static string flippedKey = "aedenthorn.ChessBoards/flipped";
+        private static string lastKey = "aedenthorn.ChessBoards/lastPiece";
+        private static string pawnKey = "aedenthorn.ChessBoards/pawn";
         private static string[][] startPieces = new string[][]
         {
             new string[]
@@ -50,8 +51,6 @@ namespace Chess
             }
         };
 
-        /// <summary>The mod entry point, called after the mod is first loaded.</summary>
-        /// <param name="helper">Provides simplified APIs for writing mods.</param>
         public override void Entry(IModHelper helper)
         {
             Config = Helper.ReadConfig<ModConfig>();
@@ -79,7 +78,7 @@ namespace Chess
                 Vector2 position = Game1.getMousePosition().ToVector2() - new Vector2(32, 92);
                 Rectangle destination = new Rectangle((int)(position.X - scaleFactor.X / 2f) + ((heldPiece.shakeTimer > 0) ? Game1.random.Next(-1, 2) : 0), (int)(position.Y - scaleFactor.Y / 2f) + ((heldPiece.shakeTimer > 0) ? Game1.random.Next(-1, 2) : 0), (int)(64f + scaleFactor.X), (int)(128f + scaleFactor.Y / 2f));
                 float draw_layer = 1;
-                e.SpriteBatch.Draw(piecesSheet, destination, new Rectangle(GetSourceRectForPiece(heldPiece.modData[pieceKey]), new Point(64, 128)), Color.White * Config.HeldPieceOpacity, 0f, Vector2.Zero, SpriteEffects.None, draw_layer);
+                e.SpriteBatch.Draw(piecesSheet, destination, GetSourceRectForPiece(heldPiece.modData[pieceKey]), Color.White * Config.HeldPieceOpacity, 0f, Vector2.Zero, SpriteEffects.None, draw_layer);
             }
         }
 
@@ -88,7 +87,7 @@ namespace Chess
             if (!Config.EnableMod || !Context.IsPlayerFree)
                 return;
 
-            if(GetChessBoardTileAt(Game1.lastCursorTile, out Point tile))
+            if(GetChessBoardsBoardTileAt(Game1.lastCursorTile, out Point tile))
             {
                 var cornerTile = new Vector2(Game1.lastCursorTile.X - tile.X + 1, Game1.lastCursorTile.Y + tile.Y - 1);
                 Vector2 cursorTile = Game1.currentLocation.terrainFeatures[cornerTile].modData.ContainsKey(flippedKey) ? GetFlippedTile(cornerTile, tile) : Game1.lastCursorTile;
@@ -105,7 +104,6 @@ namespace Chess
                             var obj = new Object(thisTile, parentIndex);
                             obj.modData[pieceKey] = startPieces[y][x];
                             obj.modData[squareKey] = $"{x + 1},{y + 1}";
-                            obj.isTemporarilyInvisible = true;
                             Game1.currentLocation.objects.Add(thisTile, obj);
                         }
                     }
@@ -129,22 +127,25 @@ namespace Chess
                     {
                         Game1.currentLocation.terrainFeatures[cornerTile].modData.Remove(flippedKey);
                         Monitor.Log("Board unflipped");
+                        PlaySound(Config.UnflipSound);
                     }
                     else
                     {
                         Game1.currentLocation.terrainFeatures[cornerTile].modData[flippedKey] = "true";
                         Monitor.Log("Board flipped");
+                        PlaySound(Config.FlipSound);
                     }
-
                 }
                 else if (e.Button == Config.ModeKey)
                 {
                     Config.FreeMode = !Config.FreeMode;
                     Game1.addHUDMessage(new HUDMessage(SHelper.Translation.Get("free-" + Config.FreeMode), 1));
+                    PlaySound(Config.FreeMode ? Config.FlipSound : Config.UnflipSound);
                 }
                 else if (Config.FreeMode && e.Button == Config.RemoveKey)
                 {
                     Game1.currentLocation.objects.Remove(cursorTile);
+                    PlaySound(Config.CancelSound);
                 }
                 else if (Config.FreeMode && e.Button == Config.ChangeKey)
                 {
@@ -165,14 +166,12 @@ namespace Chess
                         var newObj = new Object(cursorTile, parentIndex);
                         newObj.modData[pieceKey] = "wp";
                         newObj.modData[squareKey] = $"{cursorTile.X - cornerTile.X + 1},{cornerTile.Y - cursorTile.Y + 1}";
-                        newObj.isTemporarilyInvisible = true;
                         Game1.currentLocation.objects.Add(cursorTile, newObj);
                     }
+                    PlaySound(Config.PlaceSound);
                 }
                 else if (e.Button == SButton.MouseLeft)
                 {
-                    Monitor.Log($"Tile {cursorTile}");
-
                     var lastMovedPiece = GetLastMovedPiece(cornerTile);
                     if (heldPiece is not null && cursorTile == heldPiece.TileLocation)
                     {
@@ -193,26 +192,26 @@ namespace Chess
                                 PlaySound(Config.PickupSound);
                             }
                         }
-                        else if (!IsValidMove(heldPiece, piece, lastMovedPiece, cornerTile, heldPiece.TileLocation, cursorTile, out bool enPassant, out bool castle))
+                        else if (!IsValidMove(heldPiece, piece, lastMovedPiece, cornerTile, heldPiece.TileLocation, cursorTile, out bool enPassant, out bool castle, out bool pawnAdvance))
                         {
                             PlaySound(Config.CancelSound);
                             heldPiece = null;
                         }
                         else
                         {
-                            MovePiece(cornerTile, cursorTile, enPassant, castle);
+                            MovePiece(cornerTile, cursorTile, enPassant, castle, pawnAdvance);
                         }
                     }
                     else if (heldPiece != null)
                     {
-                        if (!IsValidMove(heldPiece, null, lastMovedPiece, cornerTile, heldPiece.TileLocation, cursorTile, out bool enPassant, out bool castle))
+                        if (!IsValidMove(heldPiece, null, lastMovedPiece, cornerTile, heldPiece.TileLocation, cursorTile, out bool enPassant, out bool castle, out bool pawnAdvance))
                         {
                             PlaySound(Config.CancelSound);
                             heldPiece = null;
                         }
                         else
                         {
-                            MovePiece(cornerTile, cursorTile, enPassant, castle);
+                            MovePiece(cornerTile, cursorTile, enPassant, castle, pawnAdvance);
                         }
                     }
                 }
@@ -234,11 +233,13 @@ namespace Chess
         {
             try
             {
-                piecesSheet = Game1.content.Load<Texture2D>("aedenthorn.Chess/pieces");
+                piecesSheet = Game1.content.Load<Texture2D>("aedenthorn.ChessBoards/pieces");
+                Monitor.Log("Loaded custom pieces sheet");
             }
             catch
             {
                 piecesSheet = Helper.Content.Load<Texture2D>("assets/pieces.png");
+                Monitor.Log("Loaded default pieces sheet");
             }
         }
 
