@@ -1,0 +1,22 @@
+﻿{
+  "Name": "VN Portraits",
+  "Author": "aedenthorn",
+  "Version": "0.2.1",
+  "Description": "Visiual Novel Style Portraits.",
+  "UniqueID": "aedenthorn.VNPortraits",
+  "EntryDll": "VNPortraits.dll",
+  "MinimumApiVersion": "3.13.0",
+  "ModUpdater": {
+    "Repository": "StardewValleyMods",
+    "User": "aedenthorn",
+    "Directory": "_releases",
+    "ModFolder": "VNPortraits"
+  },
+  "UpdateKeys": [ "Nexus:11398" ],
+  "Dependencies": [
+    {
+      "UniqueID": "Platonymous.ModUpdater",
+      "IsRequired": false
+    }
+  ]
+}

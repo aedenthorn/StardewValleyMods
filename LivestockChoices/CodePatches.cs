@@ -201,6 +201,7 @@ namespace LivestockChoices
                 if (!Config.EnableMod || (!name.EndsWith(" Chicken") && !name.EndsWith(" Cow")))
                     return true;
                 string outName = GetName(name);
+                SMonitor.Log($"Got name {outName} for {name}");
                 if (outName != null)
                     __result = outName;
                 return false;

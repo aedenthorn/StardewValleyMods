@@ -213,6 +213,7 @@ namespace AdvancedCooking
             while (true)
             {
                 bool keepCooking = false;
+                List<string> possible = new List<string>();
                 foreach (var name in CraftingRecipe.cookingRecipes.Keys)
                 {
                     if (!Config.AllowUnknownRecipes && !Game1.player.cookingRecipes.ContainsKey(name))
@@ -237,8 +238,20 @@ namespace AdvancedCooking
                         }
 
                         if (need > 0)
-                            goto next;
+                            goto nextRecipe;
                     }
+                    possible.Add(name);
+                nextRecipe:
+                    continue;
+
+                }
+                possible.Sort(delegate (string a, string b) { return new CraftingRecipe(b, true).recipeList.Count.CompareTo(new CraftingRecipe(a, true).recipeList.Count); });
+                foreach (var name in possible)
+                {
+                    CraftingRecipe recipe = new CraftingRecipe(name, true);
+                    Item crafted = recipe.createItem();
+                    if (crafted == null)
+                        continue;
                     if (heldItem is not null && (!heldItem.Name.Equals(crafted.Name) || !heldItem.getOne().canStackWith(crafted.getOne()) || heldItem.Stack + recipe.numberProducedPerCraft - 1 >= heldItem.maximumStackSize()))
                     {
                         if (Config.StoreOtherHeldItemOnCook)
@@ -323,8 +336,6 @@ namespace AdvancedCooking
                         UpdateCurrentCookables();
                         return;
                     }
-                    next:
-                    continue;
                 }
                 if (!keepCooking)
                     break;
