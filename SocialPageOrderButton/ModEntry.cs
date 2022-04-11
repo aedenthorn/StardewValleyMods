@@ -1,4 +1,5 @@
-﻿using Microsoft.Xna.Framework;
+﻿using HarmonyLib;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Netcode;
 using StardewModdingAPI;
@@ -17,7 +18,7 @@ namespace SocialPageOrderButton
         public static Dictionary<string, object> outdoorAreas = new Dictionary<string, object>();
         public static IMonitor SMonitor;
         public static IModHelper SHelper;
-        private Texture2D buttonTexture;
+        private static Texture2D buttonTexture;
         private static int xOffset = 16;
         private static int currentSort = 0;
         private bool wasMenuOpen = false;
@@ -37,11 +38,11 @@ namespace SocialPageOrderButton
 
             buttonTexture = helper.Content.Load<Texture2D>("assets/button.png");
 
-            Helper.Events.Display.RenderingActiveMenu += Display_RenderingActiveMenu;
-            Helper.Events.Display.RenderedActiveMenu += Display_RenderedActiveMenu;
             Helper.Events.Input.ButtonPressed += Input_ButtonPressed;
             Helper.Events.GameLoop.UpdateTicked += GameLoop_UpdateTicked;
 
+            var harmony = new Harmony(ModManifest.UniqueID);
+            harmony.PatchAll();
         }
 
         private void GameLoop_UpdateTicked(object sender, UpdateTickedEventArgs e)
@@ -73,23 +74,19 @@ namespace SocialPageOrderButton
             }
         }
 
-        private void Display_RenderingActiveMenu(object sender, RenderingActiveMenuEventArgs e)
+        [HarmonyPatch(typeof(SocialPage), nameof(SocialPage.draw), new Type[] { typeof(SpriteBatch) })]
+        public class IClickableMenu_drawTextureBox_Patch
         {
-            if (Game1.activeClickableMenu is GameMenu && (Game1.activeClickableMenu as GameMenu).currentTab == GameMenu.socialTab)
+            public static void Prefix(SpriteBatch b)
             {
+                if (!Config.EnableMod)
+                    return;
+                b.Draw(buttonTexture, new Rectangle(Game1.activeClickableMenu.xPositionOnScreen - xOffset, Game1.activeClickableMenu.yPositionOnScreen, buttonTexture.Width * 4, buttonTexture.Height * 4), null, Color.White);
                 Rectangle rect = new Rectangle(Game1.activeClickableMenu.xPositionOnScreen - xOffset, Game1.activeClickableMenu.yPositionOnScreen, buttonTexture.Width * 4, buttonTexture.Height * 4);
                 if (rect.Contains(Game1.getMousePosition()))
                 {
-                    (Game1.activeClickableMenu as GameMenu).hoverText = Helper.Translation.Get($"sort-{Config.CurrentSort}");
+                    (Game1.activeClickableMenu as GameMenu).hoverText = SHelper.Translation.Get($"sort-{Config.CurrentSort}");
                 }
-            }
-        }
-
-        private void Display_RenderedActiveMenu(object sender, RenderedActiveMenuEventArgs e)
-        {
-            if (Game1.activeClickableMenu is GameMenu && (Game1.activeClickableMenu as GameMenu).currentTab == GameMenu.socialTab)
-            {
-                e.SpriteBatch.Draw(buttonTexture, new Vector2(Game1.activeClickableMenu.xPositionOnScreen - xOffset, Game1.activeClickableMenu.yPositionOnScreen), new Rectangle(0,0,buttonTexture.Width, buttonTexture.Height), Color.White, 0, Vector2.Zero, 4, SpriteEffects.None, 0.0001f);
             }
         }
         private void ResortSocialList()
@@ -130,14 +127,14 @@ namespace SocialPageOrderButton
                         Monitor.Log("sorting by alpha asc");
                         nameSprites.Sort(delegate (NameSpriteSlot x, NameSpriteSlot y)
                         {
-                            return (x.name is long ? Game1.getFarmer((long)x.name).name : GetNPCDisplayName(x.name as string)).CompareTo(y.name is long ? Game1.getFarmer((long)y.name).name : GetNPCDisplayName(y.name as string));
+                            return (x.name is long ? Game1.getFarmer((long)x.name).Name : GetNPCDisplayName(x.name as string)).CompareTo(y.name is long ? Game1.getFarmer((long)y.name).name : GetNPCDisplayName(y.name as string));
                         });
                         break;
                     case 3: // alpha desc
                         Monitor.Log("sorting by alpha desc");
                         nameSprites.Sort(delegate (NameSpriteSlot x, NameSpriteSlot y)
                         {
-                            return -((x.name is long ? Game1.getFarmer((long)x.name).name : GetNPCDisplayName(x.name as string)).CompareTo(y.name is long ? Game1.getFarmer((long)y.name).name : GetNPCDisplayName(y.name as string)));
+                            return -((x.name is long ? Game1.getFarmer((long)x.name).Name : GetNPCDisplayName(x.name as string)).CompareTo(y.name is long ? Game1.getFarmer((long)y.name).name : GetNPCDisplayName(y.name as string)));
                         });
                         break;
                 }

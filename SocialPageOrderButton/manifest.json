@@ -1,11 +1,11 @@
 ﻿{
   "Name": "Social Page Order Button",
   "Author": "aedenthorn",
-  "Version": "0.1.0",
+  "Version": "0.2.0",
   "Description": "Lets you reorder the social page.",
   "UniqueID": "aedenthorn.SocialPageOrderButton",
   "EntryDll": "SocialPageOrderButton.dll",
-  "MinimumApiVersion": "3.8.0",
+  "MinimumApiVersion": "3.13.0",
   "UpdateKeys": ["Nexus:7871"],
   "ModUpdater": {
     "Repository": "StardewValleyMods",
