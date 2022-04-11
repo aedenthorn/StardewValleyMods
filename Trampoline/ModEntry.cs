@@ -21,12 +21,15 @@ namespace Trampoline
         public static ModConfig Config;
         public static ModEntry context;
         public static int jumpHeight;
+        public static float jumpSpeed;
         public static int jumpTicks;
         public static double lastPoint;
         public static bool goingDown;
         public static bool isEmoting;
         public static bool goingHigher;
         public static bool goingLower;
+        public static bool goingSlower;
+        public static bool goingFaster;
 
         private static Texture2D trampolineTexture;
 
@@ -55,7 +58,6 @@ namespace Trampoline
                 return;
             if (IsOnTrampoline())
             {
-                float jumpSpeed = 8f;
                 if (jumpTicks  >= (jumpHeight / jumpSpeed) * 2 || jumpHeight < 64)
                 {
                     jumpTicks = 0;
@@ -71,11 +73,23 @@ namespace Trampoline
                         jumpHeight += 16;
                         goingHigher = false;
                     }
+                    else if (goingSlower || Helper.Input.IsDown(Config.SlowerKey))
+                    {
+                        jumpSpeed -= 1;
+                        if (jumpSpeed < 1)
+                            jumpSpeed = 1;
+                        goingSlower = false;
+                    }
+                    else if (goingFaster || Helper.Input.IsDown(Config.FasterKey))
+                    {
+                        jumpSpeed += 1;
+                        goingFaster = false;
+                    }
                 }
                 if (jumpHeight < 64)
                     return;
                 var currentPoint = Math.Sin(jumpTicks / (jumpHeight / jumpSpeed) * Math.PI);
-                Game1.player.yOffset = (int)Math.Round((currentPoint + 0.75) * (currentPoint > -0.75 ? jumpHeight : (int)Math.Round(Math.Sqrt(jumpHeight) * 8)));
+                Game1.player.yOffset = (int)Math.Round((currentPoint + 0.75) * (currentPoint > -1.7 ? jumpHeight : (int)Math.Round(Math.Sqrt(jumpHeight) * 8)));
                 if (jumpTicks / (jumpHeight / jumpSpeed) > Math.PI / 2f && lastPoint < Math.PI / 2f)
                 {
                     Game1.currentLocation.playSound("bob");
@@ -131,6 +145,7 @@ namespace Trampoline
                 }
                 jumpTicks = 0;
                 jumpHeight = 128;
+                jumpSpeed = Config.JumpSpeed;
             }
         }
 
@@ -165,6 +180,14 @@ namespace Trampoline
                 else if (e.Button == Config.LowerKey)
                 {
                     goingLower = true;
+                }
+                else if (e.Button == Config.SlowerKey)
+                {
+                    goingSlower = true;
+                }
+                else if (e.Button == Config.FasterKey)
+                {
+                    goingFaster = true;
                 }
             }
             else if(e.Button == Config.ConvertKey)
@@ -245,6 +268,18 @@ namespace Trampoline
                 name: () => "Lower Key",
                 getValue: () => Config.LowerKey,
                 setValue: value => Config.LowerKey = value
+            );
+            configMenu.AddKeybind(
+                mod: ModManifest,
+                name: () => "Faster Key",
+                getValue: () => Config.FasterKey,
+                setValue: value => Config.FasterKey = value
+            );
+            configMenu.AddKeybind(
+                mod: ModManifest,
+                name: () => "Slower Key",
+                getValue: () => Config.SlowerKey,
+                setValue: value => Config.SlowerKey = value
             );
         }
     }

@@ -10,5 +10,8 @@ namespace Trampoline
         public SButton ConvertKey { get; set; } = SButton.T;
         public SButton HigherKey { get; set; } = SButton.Up;
         public SButton LowerKey { get; set; } = SButton.Down;
+        public SButton SlowerKey { get; set; } = SButton.Left;
+        public SButton FasterKey { get; set; } = SButton.Right;
+        public float JumpSpeed { get; set; } = 6f;
     }
 }
