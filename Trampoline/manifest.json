@@ -12,7 +12,7 @@
     "Directory": "_releases",
     "ModFolder": "Trampoline"
   },
-  "UpdateKeys": [ "Nexus:11580" ],
+  "UpdateKeys": [ "Nexus:11619" ],
   "Dependencies": [
     {
       "UniqueID": "Platonymous.ModUpdater",

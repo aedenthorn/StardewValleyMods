@@ -171,7 +171,7 @@ namespace Trampoline
             {
                 foreach (var f in Game1.currentLocation.furniture)
                 {
-                    if (f.isGroundFurniture() && f.boundingBox.Value.Contains(Game1.viewport.X + Game1.getOldMouseX(), Game1.viewport.Y + Game1.getOldMouseY()))
+                    if (f.isGroundFurniture() && f.boundingBox.Width == 128 && f.boundingBox.Height == 128 && f.boundingBox.Value.Contains(Game1.viewport.X + Game1.getOldMouseX(), Game1.viewport.Y + Game1.getOldMouseY()))
                     {
                         if (f.modData.ContainsKey(trampolineKey))
                             f.modData.Remove(trampolineKey);
