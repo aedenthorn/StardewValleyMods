@@ -135,6 +135,39 @@ namespace AdvancedDialogueDisplay
 					}
 				}
 
+				var hearts = data.hearts is null ? dataDict[defaultKey].hearts : data.hearts;
+				if (hearts is not null)
+                {
+					var pos = GetDataVector(__instance, hearts);
+					int heartLevel = Game1.player.getFriendshipHeartLevelForNPC(name);
+					int extraFriendshipPixels = Game1.player.getFriendshipLevelForNPC(name) % 250;
+
+					bool datable = SocialPage.isDatable(name);
+					bool spouse = false;
+					if (Game1.player.friendshipData.TryGetValue(name, out Friendship friendship))
+					{
+						spouse = friendship.IsMarried();
+					}
+					for (int h = 0; h < Math.Max(Utility.GetMaximumHeartsForCharacter(Game1.getCharacterFromName(name, true, false)), 10); h++)
+					{
+						if (h > heartLevel && !hearts.showEmptyHearts)
+							break;
+						if (h == heartLevel && extraFriendshipPixels == 0)
+							break;
+						int xSource = (h < heartLevel) ? 211 : 218;
+						if (datable && !friendship.IsDating() && !spouse && h >= 8)
+						{
+							xSource = 211;
+						}
+						int x = h % hearts.heartsPerRow;
+						int y = h / hearts.heartsPerRow;
+						b.Draw(Game1.mouseCursors, pos + new Vector2(x * 32, y * 32), new Rectangle?(new Rectangle(xSource, 428, 7, 6)), (datable && !friendship.IsDating() && !spouse && h >= 8) ? (Color.Black * 0.35f) : Color.White, 0f, Vector2.Zero, 4f, SpriteEffects.None, 0.88f);
+						if(h == heartLevel && extraFriendshipPixels > 0)
+                        {
+							b.Draw(Game1.mouseCursors, pos + new Vector2(x * 32, y * 32), new Rectangle?(new Rectangle(211, 428, (int)Math.Round(7 * (extraFriendshipPixels / 250f)), 6)), Color.White, 0f, Vector2.Zero, 4f, SpriteEffects.None, 0.88f);
+						}
+					}
+				}
 
 				// Jewel
 

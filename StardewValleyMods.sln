@@ -306,6 +306,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Trampoline", "Trampoline\Tr
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AdvancedDialogueDisplay", "AdvancedDialogueDisplay\AdvancedDialogueDisplay.csproj", "{B8208AC8-4B9D-4CBB-BAEC-ED710767B9E5}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PartialHearts", "PartialHearts\PartialHearts.csproj", "{72636F46-B9B6-4D15-B3BE-A01E8F8668A5}"
+EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
 		_releases\_releases.projitems*{047040e0-3d07-46e5-852b-d1d45cd57bb8}*SharedItemsImports = 13
@@ -1501,6 +1503,14 @@ Global
 		{B8208AC8-4B9D-4CBB-BAEC-ED710767B9E5}.Release|Any CPU.Build.0 = Release|Any CPU
 		{B8208AC8-4B9D-4CBB-BAEC-ED710767B9E5}.Release|x86.ActiveCfg = Release|Any CPU
 		{B8208AC8-4B9D-4CBB-BAEC-ED710767B9E5}.Release|x86.Build.0 = Release|Any CPU
+		{72636F46-B9B6-4D15-B3BE-A01E8F8668A5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{72636F46-B9B6-4D15-B3BE-A01E8F8668A5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{72636F46-B9B6-4D15-B3BE-A01E8F8668A5}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{72636F46-B9B6-4D15-B3BE-A01E8F8668A5}.Debug|x86.Build.0 = Debug|Any CPU
+		{72636F46-B9B6-4D15-B3BE-A01E8F8668A5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{72636F46-B9B6-4D15-B3BE-A01E8F8668A5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{72636F46-B9B6-4D15-B3BE-A01E8F8668A5}.Release|x86.ActiveCfg = Release|Any CPU
+		{72636F46-B9B6-4D15-B3BE-A01E8F8668A5}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

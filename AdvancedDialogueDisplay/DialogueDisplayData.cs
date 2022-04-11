@@ -81,6 +81,8 @@ namespace AdvancedDialogueDisplay
     }
     public class HeartsData : BaseData
     {
+        public int heartsPerRow = 7;
+        public bool showEmptyHearts = true;
     }
     public class GiftsData : BaseData
     {

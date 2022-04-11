@@ -1,0 +1,22 @@
+﻿{
+  "Name": "Partial Hearts",
+  "Author": "aedenthorn",
+  "Version": "0.2.0",
+  "Description": "Partial Hearts.",
+  "UniqueID": "aedenthorn.PartialHearts",
+  "EntryDll": "PartialHearts.dll",
+  "MinimumApiVersion": "3.13.0",
+  "ModUpdater": {
+    "Repository": "StardewValleyMods",
+    "User": "aedenthorn",
+    "Directory": "_releases",
+    "ModFolder": "PartialHearts"
+  },
+  "UpdateKeys": [ "Nexus:11628" ],
+  "Dependencies": [
+    {
+      "UniqueID": "Platonymous.ModUpdater",
+      "IsRequired": false
+    }
+  ]
+}
