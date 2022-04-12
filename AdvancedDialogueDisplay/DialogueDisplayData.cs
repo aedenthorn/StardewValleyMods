@@ -9,13 +9,14 @@ namespace AdvancedDialogueDisplay
         public string packName;
         public DialogueData dialogue;
         public PortraitData portrait;
-        public JewelData jewel;
-        public ImageData[] images = new ImageData[0];
-        public TextData[] texts = new TextData[0];
         public NameData name;
         public ButtonData button;
         public HeartsData hearts;
         public GiftsData gifts;
+        public JewelData jewel;
+        public ImageData[] images = new ImageData[0];
+        public TextData[] texts = new TextData[0];
+        public DividerData[] dividers = new DividerData[0];
     }
     public class BaseData
     {
@@ -29,6 +30,7 @@ namespace AdvancedDialogueDisplay
         public float scale = 4;
         public float layerDepth = 0.88f;
         public bool variable;
+        public bool disabled;
     }
     public class NameData : BaseData
     {
@@ -86,5 +88,15 @@ namespace AdvancedDialogueDisplay
     }
     public class GiftsData : BaseData
     {
+        public bool showGiftIcon = true;
+        public bool inline = false;
+    }
+    public class DividerData : BaseData
+    {
+        public bool horizontal;
+        public bool small;
+        public int red = -1;
+        public int green = -1;
+        public int blue = -1;
     }
 }

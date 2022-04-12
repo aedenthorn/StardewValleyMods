@@ -20,7 +20,6 @@ namespace SocialPageOrderButton
         public static IModHelper SHelper;
         private static Texture2D buttonTexture;
         private static int xOffset = 16;
-        private static int currentSort = 0;
         private bool wasMenuOpen = false;
 
         /*********
@@ -127,14 +126,14 @@ namespace SocialPageOrderButton
                         Monitor.Log("sorting by alpha asc");
                         nameSprites.Sort(delegate (NameSpriteSlot x, NameSpriteSlot y)
                         {
-                            return (x.name is long ? Game1.getFarmer((long)x.name).Name : GetNPCDisplayName(x.name as string)).CompareTo(y.name is long ? Game1.getFarmer((long)y.name).name : GetNPCDisplayName(y.name as string));
+                            return (x.name is long ? Game1.getFarmer((long)x.name).Name : GetNPCDisplayName(x.name as string)).CompareTo(y.name is long ? Game1.getFarmer((long)y.name).Name : GetNPCDisplayName(y.name as string));
                         });
                         break;
                     case 3: // alpha desc
                         Monitor.Log("sorting by alpha desc");
                         nameSprites.Sort(delegate (NameSpriteSlot x, NameSpriteSlot y)
                         {
-                            return -((x.name is long ? Game1.getFarmer((long)x.name).Name : GetNPCDisplayName(x.name as string)).CompareTo(y.name is long ? Game1.getFarmer((long)y.name).name : GetNPCDisplayName(y.name as string)));
+                            return -((x.name is long ? Game1.getFarmer((long)x.name).Name : GetNPCDisplayName(x.name as string)).CompareTo(y.name is long ? Game1.getFarmer((long)y.name).Name : GetNPCDisplayName(y.name as string)));
                         });
                         break;
                 }

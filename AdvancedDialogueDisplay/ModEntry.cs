@@ -68,7 +68,8 @@ namespace AdvancedDialogueDisplay
             loadedPacks.Clear();
             dataDict = Helper.Content.Load<Dictionary<string, DialogueDisplayData>>(dictPath, ContentSource.GameContent);
             Monitor.Log($"Loaded data for {dataDict.Count} NPCs");
-            dataDict.Add(defaultKey, Helper.Data.ReadJsonFile<DialogueDisplayData>("assets/default.json"));
+            if(!dataDict.ContainsKey(defaultKey))
+                dataDict[defaultKey] = Helper.Data.ReadJsonFile<DialogueDisplayData>("assets/default.json");
             imageDict.Clear();
             foreach(var key in dataDict.Keys)
             {

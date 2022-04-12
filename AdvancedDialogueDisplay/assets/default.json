@@ -5,14 +5,28 @@
     "right": true,
     "centered": true
   },
-  "dialogue": {
-    "xOffset": 8,
-    "yOffset": 58
-  },
   "portrait": {
     "xOffset": -224,
     "right": true,
     "yOffset": -276
+  },
+  "dialogue": {
+    "xOffset": 8,
+    "yOffset": 8,
+    "width": 1020
+  },
+  "hearts": {
+    "xOffset": -150,
+    "yOffset": 70,
+    "right": true,
+    "showEmptyHearts": true,
+    "heartsPerRow": 4
+  },
+  "gifts": {
+    "xOffset": -120,
+    "yOffset": 170,
+    "right": true,
+    "inline": true
   },
   "jewel": {
     "xOffset": 8,
@@ -26,8 +40,6 @@
     "right": true,
     "bottom": true
   },
-  "hearts": {},
-  "gifts": {},
   "images": [],
   "scrollTexts": [],
   "texts": []
