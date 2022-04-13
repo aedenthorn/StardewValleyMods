@@ -10,19 +10,20 @@ Dictionary keys should be either "default" for a global dialogue setup or the na
 
 So, an example CP shell would look like:
 
-	{
-		"Format": "1.23.0",
-		"Changes": [
-			{
-				"Action": "EditData",
-				"Target": "aedenthorn.AdvancedDialogueDisplay/dictionary",
-				"Entries": {
-					"Emily": {
-					}
-				}
-			}
-		]
-	}
+    {
+        "Format": "1.23.0",
+        "Changes": [
+            {
+                "Action": "EditData",
+                "Target": "aedenthorn.AdvancedDialogueDisplay/dictionary",
+                "Entries": {
+                    "Emily": {
+                        (your data goes here)
+                    }
+                }
+            }
+        ]
+    }
 
 
 ## Dictionary Objects
