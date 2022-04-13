@@ -9,7 +9,7 @@ using System;
 using System.Collections.Generic;
 using Object = StardewValley.Object;
 
-namespace AdvancedDialogueDisplay
+namespace CustomFarmAnimals
 {
     /// <summary>The mod entry point.</summary>
     public partial class ModEntry : Mod, IAssetLoader
@@ -20,10 +20,10 @@ namespace AdvancedDialogueDisplay
         public static ModConfig Config;
         public static ModEntry context;
 
-        private static string dictPath = "aedenthorn.AdvancedDialogueDisplay/dictionary";
-        private static string defaultKey = "aedenthorn.AdvancedDialogueDisplay/default";
-        private static Dictionary<string, DialogueDisplayData> dataDict = new Dictionary<string, DialogueDisplayData>();
-        private static Dictionary<string, Texture2D> imageDict = new Dictionary<string, Texture2D>();
+        private static string modPath = "aedenthorn.CustomFarmAnimals/";
+        private static string dictPath = "aedenthorn.CustomFarmAnimals/dictionary";
+        private static Dictionary<string, FarmAnimalData> dataDict = new Dictionary<string, FarmAnimalData>();
+        private static Dictionary<string, Texture2D> iconDict = new Dictionary<string, Texture2D>();
         private static List<string> loadedPacks = new List<string>();
 
         /// <summary>The mod entry point, called after the mod is first loaded.</summary>
@@ -61,30 +61,19 @@ namespace AdvancedDialogueDisplay
         {
             Monitor.Log("Loading Data");
 
-            foreach(var pack in loadedPacks)
+            foreach (var pack in loadedPacks)
             {
                 Helper.ConsoleCommands.Trigger("patch", new string[] { "reload", pack });
             }
             loadedPacks.Clear();
-            dataDict = Helper.Content.Load<Dictionary<string, DialogueDisplayData>>(dictPath, ContentSource.GameContent);
-            Monitor.Log($"Loaded data for {dataDict.Count} NPCs");
-            if(!dataDict.ContainsKey(defaultKey))
-                dataDict[defaultKey] = Helper.Data.ReadJsonFile<DialogueDisplayData>("assets/default.json");
-            imageDict.Clear();
-            foreach(var key in dataDict.Keys)
+            dataDict = Helper.Content.Load<Dictionary<string, FarmAnimalData>>(dictPath, ContentSource.GameContent);
+            foreach(var data in dataDict.Values)
             {
-                if(dataDict[key].packName != null && !loadedPacks.Contains(dataDict[key].packName))
-                {
-                    loadedPacks.Add(dataDict[key].packName);
-                }
-                foreach (var image in dataDict[key].images)
-                {
-                    if(!imageDict.ContainsKey(image.texturePath))
-                        imageDict[image.texturePath] = Helper.Content.Load<Texture2D>(image.texturePath, ContentSource.GameContent);
-                }
-                if (dataDict[key].portrait.texturePath != null && !imageDict.ContainsKey(dataDict[key].portrait.texturePath))
-                    imageDict[dataDict[key].portrait.texturePath] = Helper.Content.Load<Texture2D>(dataDict[key].portrait.texturePath, ContentSource.GameContent);
+                iconDict.Add(data.name, Game1.content.Load<Texture2D>("Animals/" + data.name));
+                if(data.babyScale <= 0)
+                    iconDict.Add(data.name, Game1.content.Load<Texture2D>("Animals/Baby" + data.name));
             }
+            Monitor.Log($"Loaded data for {dataDict.Count} Farm Animals");
         }
 
         private void GameLoop_GameLaunched(object sender, GameLaunchedEventArgs e)
@@ -123,7 +112,7 @@ namespace AdvancedDialogueDisplay
         {
             Monitor.Log("Loading dictionary");
 
-            return (T)(object)new Dictionary<string, DialogueDisplayData>();
+            return (T)(object)new Dictionary<string, FarmAnimalData>();
         }
     }
 }

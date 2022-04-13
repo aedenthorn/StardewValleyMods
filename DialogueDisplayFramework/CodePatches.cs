@@ -7,11 +7,59 @@ using StardewValley.Characters;
 using StardewValley.Menus;
 using System;
 
-namespace AdvancedDialogueDisplay
+namespace DialogueDisplayFramework
 {
     public partial class ModEntry
     {
 		private static bool preventGetCurrentString;
+		private static ProfileMenu npcSpriteMenu;
+
+		[HarmonyPatch(typeof(DialogueBox), new Type[] { typeof(Dialogue) })]
+		[HarmonyPatch(MethodType.Constructor)]
+		public class DialogueBox_Patch
+		{
+            public static void Postfix(DialogueBox __instance, Dialogue dialogue)
+			{
+				if (!Config.EnableMod || dialogue?.speaker is null)
+					return;
+				npcSpriteMenu = new ProfileMenu(dialogue.speaker);
+
+				if (!dataDict.TryGetValue(__instance.characterDialogue.speaker.Name, out DialogueDisplayData data))
+					data = dataDict[defaultKey];
+				__instance.x += data.xOffset;
+				__instance.y += data.yOffset;
+				if(data.width > 0)
+					__instance.width = data.width;
+				if (data.height > 0)
+					__instance.height = data.height;
+			}
+		}
+
+		[HarmonyPatch(typeof(DialogueBox), nameof(DialogueBox.receiveLeftClick))]
+		public class DialogueBox_receiveLeftClick_Patch
+		{
+            public static bool Prefix(DialogueBox __instance, int x, int y, bool playSound)
+			{
+				if (!Config.EnableMod || __instance.characterDialogue?.speaker is null)
+					return true;
+				if (!dataDict.TryGetValue(__instance.characterDialogue.speaker.Name, out DialogueDisplayData data))
+					data = dataDict[defaultKey];
+				if (data == null || data.disabled)
+					return true;
+				var sprite = data.sprite is null ? dataDict[defaultKey].sprite : data.sprite;
+				if (sprite is not null && !sprite.disabled)
+                {
+					if(new Rectangle(Utility.Vector2ToPoint(GetDataVector(__instance, sprite)), new Point(128, 192)).Contains(new Point(x, y)))
+                    {
+						ProfileMenu menu = new ProfileMenu(__instance.characterDialogue.speaker);
+						Game1.activeClickableMenu = menu;
+						return false;
+					}
+				}
+				return true;
+			}
+		}
+    
 		[HarmonyPatch(typeof(DialogueBox), nameof(DialogueBox.drawPortrait))]
         public class DialogueBox_drawPortrait_Patch
         {
@@ -20,18 +68,44 @@ namespace AdvancedDialogueDisplay
                 if (!Config.EnableMod)
                     return true;
 				string name = __instance.characterDialogue.speaker.getName();
-				//name = "asdfkhdsafhfdsk";
+
 				if (!dataDict.TryGetValue(name, out DialogueDisplayData data))
 					data = dataDict[defaultKey];
+
+				if (data == null || data.disabled)
+					return true;
+
+				// Dividers
+
+				var dividers = data.dividers is null ? dataDict[defaultKey].dividers : data.dividers;
+
+				if (dividers != null)
+				{
+					foreach (var divider in dividers)
+					{
+						if (divider.horizontal)
+						{
+							DrawHorizontalPartition(b, __instance, divider);
+						}
+						else
+						{
+							DrawVerticalPartition(b, __instance, divider);
+						}
+
+					}
+				}
 
 
 				// Images
 
 				var images = data.images is null ? dataDict[defaultKey].images : data.images;
 
-				foreach (var image in images)
+				if (images != null)
                 {
-					b.Draw(imageDict[image.texturePath], GetDataVector(__instance, image), new Rectangle(image.x, image.y, image.w, image.h), Color.White * image.alpha, 0, Vector2.Zero, image.scale, SpriteEffects.None, image.layerDepth);
+					foreach (var image in images)
+					{
+						b.Draw(imageDict[image.texturePath], GetDataVector(__instance, image), new Rectangle(image.x, image.y, image.w, image.h), Color.White * image.alpha, 0, Vector2.Zero, image.scale, SpriteEffects.None, image.layerDepth);
+					}
 				}
 
 
@@ -39,7 +113,7 @@ namespace AdvancedDialogueDisplay
 
 				var portrait = data.portrait is null ? dataDict[defaultKey].portrait : data.portrait;
 
-                if (!portrait.disabled)
+                if (portrait is not null && !portrait.disabled)
                 {
 					Texture2D portraitTexture;
 					Rectangle portraitSource;
@@ -57,15 +131,15 @@ namespace AdvancedDialogueDisplay
 					}
 					if (!portrait.tileSheet)
 					{
-						portraitSource = new Rectangle(0, 0, portrait.w, portrait.h);
+						portraitSource = new Rectangle(portrait.x, portrait.y, portrait.w, portrait.h);
 					}
 					else
 					{
 						portraitSource = Game1.getSourceRectForStandardTileSheet(portraitTexture, __instance.characterDialogue.getPortraitIndex(), portrait.w, portrait.h);
-					}
-					if (!portraitTexture.Bounds.Contains(portraitSource))
-					{
-						portraitSource = new Rectangle(0, 0, portrait.w, portrait.h);
+						if (!portraitTexture.Bounds.Contains(portraitSource))
+						{
+							portraitSource = new Rectangle(0, 0, portrait.w, portrait.h);
+						}
 					}
 
 
@@ -75,10 +149,36 @@ namespace AdvancedDialogueDisplay
 
 
 
+				// Sprite
+
+				var sprite = data.sprite is null ? dataDict[defaultKey].sprite : data.sprite;
+
+				if (sprite is not null && !sprite.disabled && npcSpriteMenu is not null)
+				{
+					var pos = GetDataVector(__instance, sprite);
+
+                    if (sprite.background)
+                    {
+						b.Draw((Game1.timeOfDay >= 1900) ? Game1.nightbg : Game1.daybg, pos, Color.White);
+					}
+
+					if (sprite.frame >= 0)
+                    {
+						AccessTools.FieldRefAccess<ProfileMenu, AnimatedSprite>(npcSpriteMenu, "_animatedSprite").CurrentFrame = sprite.frame;
+					}
+                    else
+                    {
+						npcSpriteMenu.update(Game1.currentGameTime);
+
+					}
+					AccessTools.FieldRefAccess<ProfileMenu, AnimatedSprite>(npcSpriteMenu, "_animatedSprite").draw(b, pos + new Vector2(32, 32), sprite.layerDepth, 0, 0, Color.White, false, sprite.scale, 0, false);
+				}
+
+
 				// NPC Name
 
 				var npcName = data.name != null ? data.name : dataDict[defaultKey].name;
-                if (!npcName.disabled)
+                if (npcName is not null && !npcName.disabled)
                 {
 					var namePos = GetDataVector(__instance, npcName);
 
@@ -115,39 +215,45 @@ namespace AdvancedDialogueDisplay
 
 				var texts = data.texts is null ? dataDict[defaultKey].texts : data.texts;
 
-				foreach (var text in texts)
+				if (texts != null)
                 {
-					var pos = GetDataVector(__instance, text);
-					if (text.centered)
+					foreach (var text in texts)
 					{
-						if (text.variable && text.right)
-							pos.X -= SpriteText.getWidthOfString(text.text) / 2;
-
-						if (text.scroll)
+						var pos = GetDataVector(__instance, text);
+						if (text.centered)
 						{
-							SpriteText.drawStringWithScrollCenteredAt(b, name, (int)pos.X, (int)pos.Y, text.placeholderText, text.alpha, text.color, text.scrollType, text.layerDepth, text.junimo);
+							if (text.variable && text.right)
+								pos.X -= SpriteText.getWidthOfString(text.text) / 2;
+
+							if (text.scroll)
+							{
+								SpriteText.drawStringWithScrollCenteredAt(b, name, (int)pos.X, (int)pos.Y, text.placeholderText, text.alpha, text.color, text.scrollType, text.layerDepth, text.junimo);
+							}
+							else
+							{
+								SpriteText.drawStringHorizontallyCenteredAt(b, name, (int)pos.X, (int)pos.Y, 999999, text.width, 999999, text.alpha, text.layerDepth, text.junimo, text.color);
+							}
+
 						}
 						else
 						{
-							SpriteText.drawStringHorizontallyCenteredAt(b, name, (int)pos.X, (int)pos.Y, 999999, text.width, 999999, text.alpha, text.layerDepth, text.junimo, text.color);
-						}
+							if (text.variable && text.right)
+								pos.X -= SpriteText.getWidthOfString(text.text);
 
-					}
-					else
-					{
-						if (text.variable && text.right)
-							pos.X -= SpriteText.getWidthOfString(text.text);
-
-						if (text.scroll)
-						{
-							SpriteText.drawStringWithScrollBackground(b, name, (int)pos.X, (int)pos.Y, text.placeholderText, text.alpha, text.color, text.alignment);
-						}
-						else
-						{
-							SpriteText.drawString(b, name, (int)pos.X, (int)pos.Y, 999999, text.width, 999999, text.alpha, text.layerDepth, text.junimo, text.color);
+							if (text.scroll)
+							{
+								SpriteText.drawStringWithScrollBackground(b, name, (int)pos.X, (int)pos.Y, text.placeholderText, text.alpha, text.color, text.alignment);
+							}
+							else
+							{
+								SpriteText.drawString(b, name, (int)pos.X, (int)pos.Y, 999999, text.width, 999999, text.alpha, text.layerDepth, text.junimo, text.color);
+							}
 						}
 					}
 				}
+
+
+
 
                 if (Game1.player.friendshipData.ContainsKey(name))
                 {
@@ -229,26 +335,6 @@ namespace AdvancedDialogueDisplay
 				}
 
 
-				// dividers
-
-				var dividers = data.dividers is null ? dataDict[defaultKey].dividers : data.dividers;
-
-				if(dividers != null)
-                {
-					foreach (var divider in dividers)
-					{
-						if (divider.horizontal)
-						{
-							DrawHorizontalPartition(b, __instance, divider);
-						}
-						else
-						{
-							DrawVerticalPartition(b, __instance, divider);
-						}
-
-					}
-				}
-
 				preventGetCurrentString = true;
 				return false;
 			}
@@ -266,13 +352,15 @@ namespace AdvancedDialogueDisplay
 				b.Draw(Game1.mouseCursors, new Rectangle(instance.x + divider.xOffset, instance.y + divider.yOffset, 36, divider.height), new Rectangle?(new Rectangle(278, 324, 9, 1)), tint);
 
 			}
-
-			private static Vector2 GetDataVector(DialogueBox box, BaseData data)
-            {
-				return new Vector2(box.x + (data.right ? box.width : 0) + data.xOffset, box.y + (data.bottom ? box.height : 0) + data.yOffset);
-			}
         }
-        [HarmonyPatch(typeof(DialogueBox), nameof(DialogueBox.getCurrentString))]
+
+		private static Vector2 GetDataVector(DialogueBox box, BaseData data)
+		{
+			return new Vector2(box.x + (data.right ? box.width : 0) + data.xOffset, box.y + (data.bottom ? box.height : 0) + data.yOffset);
+		}
+
+
+		[HarmonyPatch(typeof(DialogueBox), nameof(DialogueBox.getCurrentString))]
         public class DialogueBox_getCurrentString_Patch
 		{
             public static bool Prefix(DialogueBox __instance, ref string __result)
