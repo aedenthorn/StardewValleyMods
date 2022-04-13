@@ -19,9 +19,9 @@ namespace DialogueDisplayFramework
         public SpriteData sprite;
         public GiftsData gifts;
         public HeartsData hearts;
-        public ImageData[] images;
-        public TextData[] texts;
-        public DividerData[] dividers;
+        public ImageData[] images = new ImageData[0];
+        public TextData[] texts = new TextData[0];
+        public DividerData[] dividers = new DividerData[0];
         public bool disabled;
     }
     public class BaseData

@@ -42,7 +42,7 @@ namespace CustomFarmAnimals
                 {
                     var data = dataDict[newStock[j].Name];
                     int i = stock.Count + j;
-                    __instance.animalsToPurchase.Add(new ClickableTextureComponent(stock[i].salePrice().ToString() ?? "", new Rectangle(__instance.xPositionOnScreen + IClickableMenu.borderWidth + i % 3 * 64 * 2, __instance.yPositionOnScreen + IClickableMenu.spaceToClearTopBorder + IClickableMenu.borderWidth / 2 + i / 3 * 85, 128, 64), null, newStock[j].Name, data.iconRect, 4f, newStock[j].Type == null)
+                    __instance.animalsToPurchase.Add(new ClickableTextureComponent(stock[i].salePrice().ToString() ?? "", new Rectangle(__instance.xPositionOnScreen + IClickableMenu.borderWidth + i % 3 * 64 * 2, __instance.yPositionOnScreen + IClickableMenu.spaceToClearTopBorder + IClickableMenu.borderWidth / 2 + i / 3 * 85, 128, 64), null, newStock[j].Name, newStock[j].Type == null ? null : null, data.iconRect, 4f )
                     {
                         item = stock[i],
                         myID = i,

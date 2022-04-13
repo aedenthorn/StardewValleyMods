@@ -68,6 +68,9 @@ namespace DialogueDisplayFramework
             loadedPacks.Clear();
             dataDict = Helper.Content.Load<Dictionary<string, DialogueDisplayData>>(dictPath, ContentSource.GameContent);
             Monitor.Log($"Loaded {dataDict.Count} data entries");
+            if (!dataDict.ContainsKey(defaultKey))
+                dataDict[defaultKey] = new DialogueDisplayData() { disabled = true };
+
             imageDict.Clear();
             foreach(var key in dataDict.Keys)
             {
@@ -80,7 +83,7 @@ namespace DialogueDisplayFramework
                     if(!imageDict.ContainsKey(image.texturePath))
                         imageDict[image.texturePath] = Helper.Content.Load<Texture2D>(image.texturePath, ContentSource.GameContent);
                 }
-                if (dataDict[key].portrait.texturePath != null && !imageDict.ContainsKey(dataDict[key].portrait.texturePath))
+                if (dataDict[key].portrait?.texturePath != null && !imageDict.ContainsKey(dataDict[key].portrait.texturePath))
                     imageDict[dataDict[key].portrait.texturePath] = Helper.Content.Load<Texture2D>(dataDict[key].portrait.texturePath, ContentSource.GameContent);
             }
         }
