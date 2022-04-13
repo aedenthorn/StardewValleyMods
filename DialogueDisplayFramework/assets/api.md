@@ -48,6 +48,8 @@ Dictionary values are objects with the following keys:
 - "dividers" - array of objects relating to custom dividers (see below)
 - "disabled" - boolean, whether to disable this entry and use the game's default dialogue box setup
 
+If any field is missing in an NPC entry, the field from "default" entry will be used instead.
+
 ## Base Data
 
 For all of the above entries that are objects (or arrays of objects), the objects have the following common keys available (though they may not all use them):
