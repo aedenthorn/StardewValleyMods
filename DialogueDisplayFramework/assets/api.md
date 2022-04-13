@@ -25,7 +25,7 @@ So, an example CP shell would look like:
 	}
 
 
-## Dictionary Keys
+## Dictionary Objects
 
 Dictionary values are objects with the following keys:
 
