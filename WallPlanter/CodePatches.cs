@@ -112,6 +112,8 @@ namespace WallPlanter
 
         private static void DrawIndoorPot(SpriteBatch spriteBatch, Texture2D texture, Rectangle destinationRectangle, Rectangle? sourceRectangle, Color color, float rotation, Vector2 origin, SpriteEffects effects, float layerDepth, IndoorPot pot)
         {
+            if (texture is null)
+                return;
             int x = (destinationRectangle.X + Game1.viewport.X) / 64;
             int y = (destinationRectangle.Y + Game1.viewport.Y) / 64 + 1;
             if (!Config.EnableMod || !drawingWallPot)

@@ -69,9 +69,7 @@ namespace CustomFarmAnimals
             dataDict = Helper.Content.Load<Dictionary<string, FarmAnimalData>>(dictPath, ContentSource.GameContent);
             foreach(var data in dataDict.Values)
             {
-                iconDict.Add(data.name, Game1.content.Load<Texture2D>("Animals/" + data.name));
-                if(data.babyScale <= 0)
-                    iconDict.Add(data.name, Game1.content.Load<Texture2D>("Animals/Baby" + data.name));
+                iconDict[data.iconPath] = Game1.content.Load<Texture2D>(data.iconPath);
             }
             Monitor.Log($"Loaded data for {dataDict.Count} Farm Animals");
         }

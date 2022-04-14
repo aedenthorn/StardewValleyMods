@@ -7,8 +7,8 @@ namespace CustomFarmAnimals
     {
         public string packName;
         public string name;
-        public Rectangle bounds;
-        public Rectangle iconRect;
+        public string type;
+        public string iconPath;
         public bool pregnancy;
         public bool followAdult;
         public bool swim;

@@ -73,6 +73,7 @@ namespace DialogueDisplayFramework
     {
         public int heartsPerRow = 14;
         public bool showEmptyHearts = true;
+        public bool centered;
     }
     public class GiftsData : BaseData
     {

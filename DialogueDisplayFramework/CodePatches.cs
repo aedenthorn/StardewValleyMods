@@ -258,6 +258,8 @@ namespace DialogueDisplayFramework
                 if (Game1.player.friendshipData.ContainsKey(name))
                 {
 
+					// Hearts
+
 					var hearts = data.hearts is null ? dataDict[defaultKey].hearts : data.hearts;
 					if (hearts is not null && !hearts.disabled)
 					{
@@ -271,7 +273,12 @@ namespace DialogueDisplayFramework
 						{
 							spouse = friendship.IsMarried();
 						}
-						for (int h = 0; h < Math.Max(Utility.GetMaximumHeartsForCharacter(Game1.getCharacterFromName(name, true, false)), 10); h++)
+						int maxHearts = Math.Max(Utility.GetMaximumHeartsForCharacter(Game1.getCharacterFromName(name, true, false)), 10);
+						if (hearts.centered)
+                        {
+							pos -= new Vector2(Math.Min(hearts.heartsPerRow, maxHearts) * 32 / 2, 0);
+                        }
+						for (int h = 0; h < maxHearts; h++)
 						{
 							if (h > heartLevel && !hearts.showEmptyHearts)
 								break;
@@ -291,6 +298,9 @@ namespace DialogueDisplayFramework
 							}
 						}
 					}
+
+
+					//Gifts
 
 					var gifts = data.gifts is null ? dataDict[defaultKey].gifts : data.gifts;
 					if (gifts is not null && !gifts.disabled && !Game1.player.friendshipData[name].IsMarried() && Game1.getCharacterFromName(name) is not Child)

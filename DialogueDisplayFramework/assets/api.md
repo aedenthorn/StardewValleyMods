@@ -125,6 +125,7 @@ Hearts data has the following additional keys available:
 
 - "heartsPerRow" - integer, number of hearts per row, default 14
 - "showEmptyHearts" - boolean, include empty hearts, default true
+- "centered" - boolean, if true, xOffset will point to the center of the row of hearts
 
 
 ## Gift Data
