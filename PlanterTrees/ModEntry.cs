@@ -3,7 +3,7 @@ using StardewModdingAPI;
 using StardewModdingAPI.Events;
 using StardewValley.Menus;
 
-namespace BulkAnimalPurchase
+namespace PlanterTrees
 {
     /// <summary>The mod entry point.</summary>
     public partial class ModEntry : Mod
@@ -14,9 +14,6 @@ namespace BulkAnimalPurchase
         public static ModConfig Config;
 
         public static ModEntry context;
-        private static ClickableTextureComponent minusButton;
-        private static ClickableTextureComponent plusButton;
-        private static int animalsToBuy;
 
         /// <summary>The mod entry point, called after the mod is first loaded.</summary>
         /// <param name="helper">Provides simplified APIs for writing mods.</param>
@@ -56,12 +53,6 @@ namespace BulkAnimalPurchase
             );
         }
 
-        public static string AddToString(string str)
-        {
-            if (!Config.EnableMod)
-                return str;
-            return str + " " + string.Format(SHelper.Translation.Get("x-left-to-add"), animalsToBuy);
-        }
     }
 
 }

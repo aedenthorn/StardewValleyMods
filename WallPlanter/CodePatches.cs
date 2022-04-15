@@ -112,7 +112,7 @@ namespace WallPlanter
 
         private static void DrawIndoorPot(SpriteBatch spriteBatch, Texture2D texture, Rectangle destinationRectangle, Rectangle? sourceRectangle, Color color, float rotation, Vector2 origin, SpriteEffects effects, float layerDepth, IndoorPot pot)
         {
-            if (texture is null)
+            if (texture is null || pot is null)
                 return;
             int x = (destinationRectangle.X + Game1.viewport.X) / 64;
             int y = (destinationRectangle.Y + Game1.viewport.Y) / 64 + 1;
@@ -122,8 +122,11 @@ namespace WallPlanter
             }
             else
             {
+                texture = pot.showNextIndex.Value ? wallPotTextureWet : (pot.bush.Value != null && pot.hoeDirt.Value.state.Value == 1 ? wallPotTextureWet : wallPotTexture);
+                if (texture is null)
+                    return;
                 destinationRectangle = new Rectangle(destinationRectangle.Location - new Point(0, drawingWallPotOffset), destinationRectangle.Size);
-                spriteBatch.Draw(pot.showNextIndex.Value ? wallPotTextureWet : (pot.bush.Value != null && pot.hoeDirt.Value.state.Value == 1 ? wallPotTextureWet : wallPotTexture), destinationRectangle, null, color, rotation, origin, effects, layerDepth);
+                spriteBatch.Draw(texture, destinationRectangle, null, color, rotation, origin, effects, layerDepth);
             }
         }
         private static void DrawIndoorPotFertilizer(SpriteBatch spriteBatch, Texture2D texture, Vector2 position, Rectangle? sourceRectangle, Color color, float rotation, Vector2 origin, float scale, SpriteEffects effects, float layerDepth)

@@ -181,31 +181,31 @@ namespace DialogueDisplayFramework
                 if (npcName is not null && !npcName.disabled)
                 {
 					var namePos = GetDataVector(__instance, npcName);
-
+					var realName = __instance.characterDialogue.speaker.getName();
 					if (npcName.centered)
 					{
 						if (npcName.scroll)
 						{
-							SpriteText.drawStringWithScrollCenteredAt(b, name, (int)namePos.X, (int)namePos.Y, npcName.placeholderText is null ? name : npcName.placeholderText, npcName.alpha, npcName.color, npcName.scrollType, npcName.layerDepth, npcName.junimo);
+							SpriteText.drawStringWithScrollCenteredAt(b, realName, (int)namePos.X, (int)namePos.Y, npcName.placeholderText is null ? realName : npcName.placeholderText, npcName.alpha, npcName.color, npcName.scrollType, npcName.layerDepth, npcName.junimo);
 						}
 						else
 						{
-							SpriteText.drawStringHorizontallyCenteredAt(b, name, (int)namePos.X, (int)namePos.Y, 999999, npcName.width, 999999, npcName.alpha, npcName.layerDepth, npcName.junimo, npcName.color);
+							SpriteText.drawStringHorizontallyCenteredAt(b, realName, (int)namePos.X, (int)namePos.Y, 999999, npcName.width, 999999, npcName.alpha, npcName.layerDepth, npcName.junimo, npcName.color);
 						}
 
 					}
 					else
 					{
 						if (npcName.right)
-							namePos.X -= SpriteText.getWidthOfString(name);
+							namePos.X -= SpriteText.getWidthOfString(realName);
 
 						if (npcName.scroll)
 						{
-							SpriteText.drawStringWithScrollBackground(b, name, (int)namePos.X, (int)namePos.Y, npcName.placeholderText is null ? name : npcName.placeholderText, npcName.alpha, npcName.color, npcName.alignment);
+							SpriteText.drawStringWithScrollBackground(b, realName, (int)namePos.X, (int)namePos.Y, npcName.placeholderText is null ? realName : npcName.placeholderText, npcName.alpha, npcName.color, npcName.alignment);
 						}
 						else
 						{
-							SpriteText.drawString(b, name, (int)namePos.X, (int)namePos.Y, 999999, npcName.width, 999999, npcName.alpha, npcName.layerDepth, npcName.junimo, npcName.color);
+							SpriteText.drawString(b, realName, (int)namePos.X, (int)namePos.Y, 999999, npcName.width, 999999, npcName.alpha, npcName.layerDepth, npcName.junimo, npcName.color);
 						}
 					}
 				}
@@ -253,8 +253,6 @@ namespace DialogueDisplayFramework
 				}
 
 
-
-
                 if (Game1.player.friendshipData.ContainsKey(name))
                 {
 
@@ -276,7 +274,9 @@ namespace DialogueDisplayFramework
 						int maxHearts = Math.Max(Utility.GetMaximumHeartsForCharacter(Game1.getCharacterFromName(name, true, false)), 10);
 						if (hearts.centered)
                         {
-							pos -= new Vector2(Math.Min(hearts.heartsPerRow, maxHearts) * 32 / 2, 0);
+							int maxDisplayedHearts = hearts.showEmptyHearts ? maxHearts : heartLevel;
+							if (extraFriendshipPixels > 0) maxDisplayedHearts++;
+							 pos -= new Vector2(Math.Min(hearts.heartsPerRow, maxDisplayedHearts) * 32 / 2, 0);
                         }
 						for (int h = 0; h < maxHearts; h++)
 						{
@@ -300,7 +300,7 @@ namespace DialogueDisplayFramework
 					}
 
 
-					//Gifts
+					// Gifts
 
 					var gifts = data.gifts is null ? dataDict[defaultKey].gifts : data.gifts;
 					if (gifts is not null && !gifts.disabled && !Game1.player.friendshipData[name].IsMarried() && Game1.getCharacterFromName(name) is not Child)

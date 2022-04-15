@@ -59,9 +59,9 @@ namespace InstantGrowthPowder
 
             if(__instance.isCropAtTile(tileLocation.X, tileLocation.Y))
             {
-                if (!(__instance.terrainFeatures[new Vector2(tileLocation.X, tileLocation.Y)] as HoeDirt).crop.fullyGrown)
+                if (!(__instance.terrainFeatures[new Vector2(tileLocation.X, tileLocation.Y)] as HoeDirt).crop.fullyGrown.Value)
                     (__instance.terrainFeatures[new Vector2(tileLocation.X, tileLocation.Y)] as HoeDirt).crop.growCompletely();
-                else if ((__instance.terrainFeatures[new Vector2(tileLocation.X, tileLocation.Y)] as HoeDirt).crop.regrowAfterHarvest >= 0 && (__instance.terrainFeatures[new Vector2(tileLocation.X, tileLocation.Y)] as HoeDirt).crop.dayOfCurrentPhase.Value > 0)
+                else if ((__instance.terrainFeatures[new Vector2(tileLocation.X, tileLocation.Y)] as HoeDirt).crop.regrowAfterHarvest.Value >= 0 && (__instance.terrainFeatures[new Vector2(tileLocation.X, tileLocation.Y)] as HoeDirt).crop.dayOfCurrentPhase.Value > 0)
                     (__instance.terrainFeatures[new Vector2(tileLocation.X, tileLocation.Y)] as HoeDirt).crop.dayOfCurrentPhase.Value = 0;
                 else
                     return true;
@@ -94,13 +94,13 @@ namespace InstantGrowthPowder
                 NetLongDictionary<FarmAnimal, NetRef<FarmAnimal>> dict = SHelper.Reflection.GetField<NetLongDictionary<FarmAnimal, NetRef<FarmAnimal>>>(__instance, "animals").GetValue();
                 foreach (KeyValuePair<long, FarmAnimal> i in dict.Pairs)
                 {
-                    if (i.Value.GetCursorPetBoundingBox().Intersects(tileRect) && i.Value.age < i.Value.ageWhenMature)
+                    if (i.Value.GetCursorPetBoundingBox().Intersects(tileRect))
                     {
-                        i.Value.age.Value = i.Value.ageWhenMature;
-                        i.Value.Sprite.LoadTexture("Animals\\" + i.Value.type.Value);
+                        i.Value.age.Value = i.Value.ageWhenMature.Value;
+                        i.Value.reloadData();
                         if (i.Value.type.Value.Contains("Sheep"))
                         {
-                            i.Value.currentProduce.Value = i.Value.defaultProduceIndex;
+                            i.Value.currentProduce.Value = i.Value.defaultProduceIndex.Value;
                         }
                         i.Value.daysSinceLastLay.Value = 99;
 
@@ -116,7 +116,7 @@ namespace InstantGrowthPowder
 
             foreach (KeyValuePair<Vector2, TerrainFeature> v in __instance.terrainFeatures.Pairs)
             {
-                if (v.Value.getBoundingBox(v.Key).Intersects(tileRect) && v.Value is Tree && (v.Value as Tree).growthStage < 5)
+                if (v.Value.getBoundingBox(v.Key).Intersects(tileRect) && v.Value is Tree && (v.Value as Tree).growthStage.Value < 5)
                 {
                     (__instance.terrainFeatures[v.Key] as Tree).growthStage.Value = 5;
                     (__instance.terrainFeatures[v.Key] as Tree).fertilized.Value = true;
@@ -128,7 +128,7 @@ namespace InstantGrowthPowder
                     __result = true;
                     return false;
                 }
-                if (v.Value.getBoundingBox(v.Key).Intersects(tileRect) && v.Value is FruitTree && (v.Value as FruitTree).growthStage < 4)
+                if (v.Value.getBoundingBox(v.Key).Intersects(tileRect) && v.Value is FruitTree && (v.Value as FruitTree).growthStage.Value < 4)
                 {
                     FruitTree tree = v.Value as FruitTree; 
                     tree.daysUntilMature.Value = 0;
@@ -140,7 +140,7 @@ namespace InstantGrowthPowder
                     __result = true;
                     return false;
                 }
-                if (v.Value.getBoundingBox(v.Key).Intersects(tileRect) && v.Value is Bush && (v.Value as Bush).size == 3 && (v.Value as Bush).getAge() < 20)
+                if (v.Value.getBoundingBox(v.Key).Intersects(tileRect) && v.Value is Bush && (v.Value as Bush).size.Value == 3 && (v.Value as Bush).getAge() < 20)
                 {
                     Bush bush = v.Value as Bush;
                     bush.datePlanted.Value -= 20 - bush.getAge();
@@ -158,9 +158,9 @@ namespace InstantGrowthPowder
             {
                 if (v.Value.getBoundingBox(v.Key).Intersects(tileRect) && v.Value is IndoorPot && (v.Value as IndoorPot).hoeDirt.Value?.crop != null)
                 {
-                    if (!(v.Value as IndoorPot).hoeDirt.Value.crop.fullyGrown)
+                    if (!(v.Value as IndoorPot).hoeDirt.Value.crop.fullyGrown.Value)
                         (v.Value as IndoorPot).hoeDirt.Value.crop.growCompletely();
-                    else if ((v.Value as IndoorPot).hoeDirt.Value.crop.regrowAfterHarvest >= 0 && (v.Value as IndoorPot).hoeDirt.Value.crop.dayOfCurrentPhase.Value > 0)
+                    else if ((v.Value as IndoorPot).hoeDirt.Value.crop.regrowAfterHarvest.Value >= 0 && (v.Value as IndoorPot).hoeDirt.Value.crop.dayOfCurrentPhase.Value > 0)
                         (v.Value as IndoorPot).hoeDirt.Value.crop.dayOfCurrentPhase.Value = 0;
                     else 
                         return true;

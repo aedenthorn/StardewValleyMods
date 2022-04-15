@@ -201,7 +201,7 @@ namespace LivestockChoices
                 if (!Config.EnableMod || (!name.EndsWith(" Chicken") && !name.EndsWith(" Cow")))
                     return true;
                 string outName = GetName(name);
-                SMonitor.Log($"Got name {outName} for {name}");
+                //SMonitor.Log($"Got name {outName} for {name}");
                 if (outName != null)
                     __result = outName;
                 return false;
@@ -232,12 +232,14 @@ namespace LivestockChoices
             {
                 if (!Config.EnableMod)
                     return;
+                SMonitor.Log($"Starting creating new {type}");
                 __state = type;
             }
             public static void Postfix(FarmAnimal __instance, string type, string __state)
             {
                 if (!Config.EnableMod || __state == type || (!type.EndsWith("Chicken") && !type.EndsWith("Cow")))
                     return;
+                SMonitor.Log($"Creating new {__state}, was {type}");
                 __instance.type.Value = __state;
                 __instance.reloadData();
             }

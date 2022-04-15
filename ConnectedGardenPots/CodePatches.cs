@@ -48,7 +48,7 @@ namespace ConnectedGardenPots
             }
             public static void Postfix(IndoorPot __instance, SpriteBatch spriteBatch, int x, int y, float alpha)
             {
-                if (drawingConnectedPot)
+                if (drawingConnectedPot && gardenPotspriteSheet is not null)
                 {
                     Vector2 scaleFactor = __instance.getScale();
                     scaleFactor *= 4f;

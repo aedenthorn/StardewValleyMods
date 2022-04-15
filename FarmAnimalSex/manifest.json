@@ -1,18 +1,18 @@
 ﻿{
-  "Name": "Livestock Choices",
+  "Name": "Bulk Animal Purchase",
   "Author": "aedenthorn",
   "Version": "0.2.1",
-  "Description": "Livestock Choices.",
-  "UniqueID": "aedenthorn.LivestockChoices",
-  "EntryDll": "LivestockChoices.dll",
+  "Description": "Bulk Animal Purchase.",
+  "UniqueID": "aedenthorn.FarmAnimalSex",
+  "EntryDll": "FarmAnimalSex.dll",
   "MinimumApiVersion": "3.13.0",
   "ModUpdater": {
     "Repository": "StardewValleyMods",
     "User": "aedenthorn",
     "Directory": "_releases",
-    "ModFolder": "LivestockChoices"
+    "ModFolder": "FarmAnimalSex"
   },
-  "UpdateKeys": [ "Nexus:11551" ],
+  "UpdateKeys": [ "Nexus:11539" ],
   "Dependencies": [
     {
       "UniqueID": "Platonymous.ModUpdater",

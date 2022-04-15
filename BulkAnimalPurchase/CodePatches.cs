@@ -121,13 +121,16 @@ namespace BulkAnimalPurchase
                 Game1.addHUDMessage(new HUDMessage(___animalBeingPurchased.isMale() ? Game1.content.LoadString("Strings\\StringsFromCSFiles:PurchaseAnimalsMenu.cs.11311", ___animalBeingPurchased.displayName) : Game1.content.LoadString("Strings\\StringsFromCSFiles:PurchaseAnimalsMenu.cs.11314", ___animalBeingPurchased.displayName), 1));
 
                 string type = ___animalBeingPurchased.type.Value;
-                if (type.Contains("Chicken") && !type.Equals("Void Chicken") && !type.Equals("Golden Chicken"))
+                if (!SHelper.ModRegistry.IsLoaded("aedenthorn.LivestockChoices")) 
                 {
-                    type = "Chicken";
-                }
-                if (type.Contains("Cow"))
-                {
-                    type = "Cow";
+                    if (type.EndsWith(" Chicken") && !type.Equals("Void Chicken") && !type.Equals("Golden Chicken"))
+                    {
+                        type = "Chicken";
+                    }
+                    else if (type.EndsWith(" Cow"))
+                    {
+                        type = "Cow";
+                    }
                 }
                 ___animalBeingPurchased = new FarmAnimal(type, new Multiplayer().getNewID(), Game1.player.UniqueMultiplayerID);
                 SMonitor.Log($"next animal type: {___animalBeingPurchased.type}; price {___priceOfAnimal}, funds left {Game1.player.Money}");

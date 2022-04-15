@@ -1,18 +1,18 @@
 ﻿{
-  "Name": "Livestock Choices",
+  "Name": "Planter Trees",
   "Author": "aedenthorn",
-  "Version": "0.2.1",
-  "Description": "Livestock Choices.",
-  "UniqueID": "aedenthorn.LivestockChoices",
-  "EntryDll": "LivestockChoices.dll",
+  "Version": "0.2.0",
+  "Description": "Planter Trees.",
+  "UniqueID": "aedenthorn.PlanterTrees",
+  "EntryDll": "PlanterTrees.dll",
   "MinimumApiVersion": "3.13.0",
   "ModUpdater": {
     "Repository": "StardewValleyMods",
     "User": "aedenthorn",
     "Directory": "_releases",
-    "ModFolder": "LivestockChoices"
+    "ModFolder": "PlanterTrees"
   },
-  "UpdateKeys": [ "Nexus:11551" ],
+  "UpdateKeys": [ "Nexus:11687" ],
   "Dependencies": [
     {
       "UniqueID": "Platonymous.ModUpdater",
