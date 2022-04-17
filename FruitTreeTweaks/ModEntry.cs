@@ -135,6 +135,27 @@ namespace FruitTreeTweaks
                 getValue: () => Config.FruitSpawnBufferY,
                 setValue: value => Config.FruitSpawnBufferY = value
             );
+            configMenu.AddNumberOption(
+                mod: ModManifest,
+                name: () => "Days Until Silver",
+                tooltip: () => "After fully mature",
+                getValue: () => Config.DaysUntilSilverFruit,
+                setValue: value => Config.DaysUntilSilverFruit = value
+            );
+            configMenu.AddNumberOption(
+                mod: ModManifest,
+                name: () => "Days Until Gold",
+                tooltip: () => "After fully mature",
+                getValue: () => Config.DaysUntilGoldFruit,
+                setValue: value => Config.DaysUntilGoldFruit = value
+            );
+            configMenu.AddNumberOption(
+                mod: ModManifest,
+                name: () => "Days Until Iridium",
+                tooltip: () => "After fully mature",
+                getValue: () => Config.DaysUntilIridiumFruit,
+                setValue: value => Config.DaysUntilIridiumFruit = value
+            );
         }
     }
 }
