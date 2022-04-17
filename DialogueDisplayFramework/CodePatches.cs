@@ -67,7 +67,7 @@ namespace DialogueDisplayFramework
             {
                 if (!Config.EnableMod)
                     return true;
-				string name = __instance.characterDialogue.speaker.getName();
+				string name = __instance.characterDialogue.speaker.Name;
 
 				if (!dataDict.TryGetValue(name, out DialogueDisplayData data))
 					data = dataDict[defaultKey];
@@ -227,11 +227,11 @@ namespace DialogueDisplayFramework
 
 							if (text.scroll)
 							{
-								SpriteText.drawStringWithScrollCenteredAt(b, name, (int)pos.X, (int)pos.Y, text.placeholderText, text.alpha, text.color, text.scrollType, text.layerDepth, text.junimo);
+								SpriteText.drawStringWithScrollCenteredAt(b, text.text, (int)pos.X, (int)pos.Y, text.placeholderText, text.alpha, text.color, text.scrollType, text.layerDepth, text.junimo);
 							}
 							else
 							{
-								SpriteText.drawStringHorizontallyCenteredAt(b, name, (int)pos.X, (int)pos.Y, 999999, text.width, 999999, text.alpha, text.layerDepth, text.junimo, text.color);
+								SpriteText.drawStringHorizontallyCenteredAt(b, text.text, (int)pos.X, (int)pos.Y, 999999, text.width, 999999, text.alpha, text.layerDepth, text.junimo, text.color);
 							}
 
 						}
@@ -242,11 +242,11 @@ namespace DialogueDisplayFramework
 
 							if (text.scroll)
 							{
-								SpriteText.drawStringWithScrollBackground(b, name, (int)pos.X, (int)pos.Y, text.placeholderText, text.alpha, text.color, text.alignment);
+								SpriteText.drawStringWithScrollBackground(b, text.text, (int)pos.X, (int)pos.Y, text.placeholderText, text.alpha, text.color, text.alignment);
 							}
 							else
 							{
-								SpriteText.drawString(b, name, (int)pos.X, (int)pos.Y, 999999, text.width, 999999, text.alpha, text.layerDepth, text.junimo, text.color);
+								SpriteText.drawString(b, text.text, (int)pos.X, (int)pos.Y, 999999, text.width, 999999, text.alpha, text.layerDepth, text.junimo, text.color);
 							}
 						}
 					}

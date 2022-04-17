@@ -60,6 +60,21 @@ namespace FruitTreeTweaks
                 return Vector2.Zero;
             return GetFruitOffset(tree, index);
         }
+        private static int GetFruitQualityDays(int days)
+        {
+            if (!Config.EnableMod)
+                return days;
+            switch (days)
+            {
+                case -112:
+                    return -Config.DaysUntilSilverFruit;
+                case -224:
+                    return -Config.DaysUntilGoldFruit;
+                case -336:
+                    return -Config.DaysUntilIridiumFruit;
+            }
+            return days;
+        }
         private static Vector2 GetFruitOffset(FruitTree tree, int index)
         {
             if (!fruitOffsets.TryGetValue(tree.currentLocation, out Dictionary<Vector2, List<Vector2>> dict) || !dict.TryGetValue(tree.currentTileLocation, out List<Vector2> offsets) || offsets.Count < tree.fruitsOnTree.Value)

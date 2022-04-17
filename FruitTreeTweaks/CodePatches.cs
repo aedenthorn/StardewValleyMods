@@ -150,7 +150,25 @@ namespace FruitTreeTweaks
                         codes.Insert(i + 4, new CodeInstruction(OpCodes.Call, AccessTools.Method(typeof(ModEntry), nameof(ModEntry.GetFruitOffsetForShake))));
                         codes.Insert(i + 4, new CodeInstruction(OpCodes.Ldloc_3));
                         codes.Insert(i + 4, new CodeInstruction(OpCodes.Ldarg_0));
-                        break;
+                        i += 8;
+                    }
+                    else if (i < codes.Count - 1 && codes[i].opcode == OpCodes.Ldc_I4_S && (sbyte)codes[i].operand == -112 && codes[i + 1].opcode == OpCodes.Bgt_S)
+                    {
+                        SMonitor.Log("replacing first fruit quality day");
+                        codes.Insert(i + 1, new CodeInstruction(OpCodes.Call, AccessTools.Method(typeof(ModEntry), nameof(ModEntry.GetFruitQualityDays))));
+                        i++;
+                    }
+                    else if (i < codes.Count - 1 && codes[i].opcode == OpCodes.Ldc_I4 && (int)codes[i].operand == -224 && codes[i + 1].opcode == OpCodes.Bgt_S)
+                    {
+                        SMonitor.Log("replacing second fruit quality day");
+                        codes.Insert(i + 1, new CodeInstruction(OpCodes.Call, AccessTools.Method(typeof(ModEntry), nameof(ModEntry.GetFruitQualityDays))));
+                        i++;
+                    }
+                    else if (i < codes.Count - 1 && codes[i].opcode == OpCodes.Ldc_I4 && (int)codes[i].operand == -336 && codes[i + 1].opcode == OpCodes.Bgt_S)
+                    {
+                        SMonitor.Log("replacing third fruit quality day");
+                        codes.Insert(i + 1, new CodeInstruction(OpCodes.Call, AccessTools.Method(typeof(ModEntry), nameof(ModEntry.GetFruitQualityDays))));
+                        i++;
                     }
                 }
 

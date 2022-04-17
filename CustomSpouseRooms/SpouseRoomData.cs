@@ -22,6 +22,7 @@ namespace CustomSpouseRooms
             name = srd.name;
             upgradeLevel = srd.upgradeLevel;
             templateIndex = srd.templateIndex;
+            templateName = srd.templateName;
             startPos = srd.startPos;
             shellType = srd.shellType;
             islandFarmHouse = srd.islandFarmHouse;

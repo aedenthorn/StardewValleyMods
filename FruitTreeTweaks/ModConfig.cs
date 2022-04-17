@@ -19,5 +19,8 @@ namespace FruitTreeTweaks
         public int SizeVariation { get; set; } = 20;
         public int FruitSpawnBufferX { get; set; } = 5;
         public int FruitSpawnBufferY { get; set; } = 40;
+        public int DaysUntilSilverFruit { get; set; } = 112;
+        public int DaysUntilGoldFruit { get; set; } = 224;
+        public int DaysUntilIridiumFruit { get; set; } = 336;
     }
 }

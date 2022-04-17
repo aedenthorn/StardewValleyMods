@@ -264,7 +264,7 @@ namespace CustomSpouseRooms
         private static void MakeSpouseRoom(DecoratableLocation location, HashSet<string> appliedMapOverrides, SpouseRoomData srd, bool first = false)
         {
 
-			Monitor.Log($"Loading spouse room for {srd.name}. shellStart {srd.startPos}, spouse offset {srd.spousePosOffset}. Type: {srd.shellType}");
+			Monitor.Log($"Loading spouse room for {srd.name}. template {srd.templateName}, shellStart {srd.startPos}, spouse offset {srd.spousePosOffset}. Type: {srd.shellType}");
 
 			var corner = srd.startPos + new Point(1, 1);
 			var spouse = srd.name;
@@ -295,7 +295,7 @@ namespace CustomSpouseRooms
 				}
 			}
 
-			Dictionary<string, string> room_data = Game1.content.Load<Dictionary<string, string>>("Data\\SpouseRooms");
+			Dictionary<string, string> room_data = Helper.Content.Load<Dictionary<string, string>>("Data\\SpouseRooms", ContentSource.GameContent);
 			string map_path = "spouseRooms";
 			if (indexInSpouseMapSheet == -1 && room_data != null && srd.templateName != null && room_data.ContainsKey(srd.templateName))
 			{
