@@ -38,9 +38,9 @@
             // label3
             // 
             this.label3.Font = new System.Drawing.Font("Segoe UI", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
-            this.label3.Location = new System.Drawing.Point(3, 4);
+            this.label3.Location = new System.Drawing.Point(3, 0);
             this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(43, 30);
+            this.label3.Size = new System.Drawing.Size(35, 30);
             this.label3.TabIndex = 60;
             this.label3.Text = "Key";
             this.label3.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
@@ -48,29 +48,29 @@
             // keyText
             // 
             this.keyText.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
-            this.keyText.Location = new System.Drawing.Point(52, 5);
+            this.keyText.Location = new System.Drawing.Point(44, 5);
             this.keyText.Name = "keyText";
             this.keyText.Size = new System.Drawing.Size(227, 29);
             this.keyText.TabIndex = 59;
             // 
             // label1
             // 
+            this.label1.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.label1.Font = new System.Drawing.Font("Segoe UI", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
-            this.label1.Location = new System.Drawing.Point(310, 4);
+            this.label1.Location = new System.Drawing.Point(377, 0);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(121, 30);
+            this.label1.Size = new System.Drawing.Size(43, 30);
             this.label1.TabIndex = 62;
             this.label1.Text = "Value";
             this.label1.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
             // valueText
             // 
-            this.valueText.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
+            this.valueText.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.valueText.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
-            this.valueText.Location = new System.Drawing.Point(359, 5);
+            this.valueText.Location = new System.Drawing.Point(426, 5);
             this.valueText.Name = "valueText";
-            this.valueText.Size = new System.Drawing.Size(357, 29);
+            this.valueText.Size = new System.Drawing.Size(282, 29);
             this.valueText.TabIndex = 61;
             // 
             // label2
@@ -81,7 +81,7 @@
             this.label2.Font = new System.Drawing.Font("Segoe UI", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
             this.label2.Location = new System.Drawing.Point(0, 41);
             this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(716, 2);
+            this.label2.Size = new System.Drawing.Size(707, 2);
             this.label2.TabIndex = 63;
             this.label2.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
@@ -95,7 +95,7 @@
             this.Controls.Add(this.label3);
             this.Controls.Add(this.keyText);
             this.Name = "WhenControl";
-            this.Size = new System.Drawing.Size(720, 50);
+            this.Size = new System.Drawing.Size(711, 50);
             this.ResumeLayout(false);
             this.PerformLayout();
 

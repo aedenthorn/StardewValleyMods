@@ -151,7 +151,7 @@ namespace Trampoline
 
         private void Input_ButtonPressed(object sender, ButtonPressedEventArgs e)
         {
-            if (!Config.EnableMod)
+            if (!Config.EnableMod || !Context.IsPlayerFree)
                 return;
             if (IsOnTrampoline())
             {

@@ -15,19 +15,8 @@ using Rectangle = Microsoft.Xna.Framework.Rectangle;
 
 namespace CustomSpouseRooms
 {
-    public static class LocationPatches
+    public partial class ModEntry
     {
-        public static IMonitor Monitor;
-        public static ModConfig Config;
-        public static IModHelper Helper;
-
-        // call this method from your Entry class
-        public static void Initialize(IMonitor monitor, IModHelper helper, ModConfig config)
-        {
-            Monitor = monitor;
-            Config = config;
-            Helper = helper;
-        }
 
         public static void FarmHouse_checkAction_Postfix(FarmHouse __instance, Location tileLocation)
         {
@@ -36,19 +25,19 @@ namespace CustomSpouseRooms
                 if (__instance.map.GetLayer("Buildings").Tiles[tileLocation] != null)
                 {
                     int tileIndex = __instance.map.GetLayer("Buildings").Tiles[tileLocation].TileIndex;
-                    if (tileIndex == 2173 && Game1.player.eventsSeen.Contains(463391) && Game1.player.friendshipData.ContainsKey("Emily") && Game1.player.friendshipData["Emily"].IsMarried())
+                    if (tileIndex == 2173 && Game1.player.friendshipData.ContainsKey("Emily") && Game1.player.friendshipData["Emily"].IsMarried())
                     {
                         TemporaryAnimatedSprite t = __instance.getTemporarySpriteByID(5858585);
                         if (t != null && t is EmilysParrot)
                         {
-                            (t as EmilysParrot).doAction();
+							(t as EmilysParrot).doAction();
                         }
                     }
                 }
             }
             catch (Exception ex)
             {
-                Monitor.Log($"Failed in {nameof(FarmHouse_checkAction_Postfix)}:\n{ex}", LogLevel.Error);
+                SMonitor.Log($"Failed in {nameof(FarmHouse_checkAction_Postfix)}:\n{ex}", LogLevel.Error);
             }
         }
         
@@ -72,7 +61,7 @@ namespace CustomSpouseRooms
 		{
 			if (!Config.EnableMod)
 				return;
-			var allSpouses = Misc.GetSpouses(__instance.owner, -1).Keys.ToList();
+			var allSpouses = GetSpouses(__instance.owner, -1).Keys.ToList();
 			if (allSpouses.Count == 0)
 				return;
 			___displayingSpouseRoom = false;
@@ -84,15 +73,15 @@ namespace CustomSpouseRooms
 				return true;
 			try
             {
-				Monitor.Log("Loading spouse rooms, clearing current room data");
+				SMonitor.Log("Loading spouse rooms, clearing current room data");
 				ModEntry.currentRoomData.Clear();
-				var allSpouses = Misc.GetSpouses(__instance.owner, -1).Keys.ToList();
+				var allSpouses = GetSpouses(__instance.owner, -1).Keys.ToList();
 				if (allSpouses.Count == 0)
 					return true;
 
 				if (ModEntry.customRoomData.Count == 0 && allSpouses.Count == 1)// single spouse, no customizations
 				{
-					Monitor.Log("Single uncustomized spouse room, letting vanilla game take over");
+					SMonitor.Log("Single uncustomized spouse room, letting vanilla game take over");
 					return true;
 				}
 
@@ -161,7 +150,7 @@ namespace CustomSpouseRooms
 					{
 						srd.shellType += "_2";
 					}
-					Monitor.Log($"Using shell {srd.shellType} for {srd.name}");
+					SMonitor.Log($"Using shell {srd.shellType} for {srd.name}");
 
 					srd.startPos = shellStart;
 
@@ -171,7 +160,7 @@ namespace CustomSpouseRooms
 			}
             catch (Exception ex)
             {
-                Monitor.Log($"Failed in {nameof(FarmHouse_loadSpouseRoom_Prefix)}:\n{ex}", LogLevel.Error);
+                SMonitor.Log($"Failed in {nameof(FarmHouse_loadSpouseRoom_Prefix)}:\n{ex}", LogLevel.Error);
             }
 			return true;
         }
@@ -182,9 +171,9 @@ namespace CustomSpouseRooms
 				return;
 			try
             {
-				Monitor.Log("Loading spouse rooms, clearing current room data");
+				SMonitor.Log("Loading spouse rooms, clearing current room data");
 				ModEntry.currentIslandRoomData.Clear();
-				var allSpouses = Misc.GetSpouses(Game1.player, -1).Keys.ToList();
+				var allSpouses = GetSpouses(Game1.player, -1).Keys.ToList();
 				if (allSpouses.Count == 0)
 					return;
 
@@ -208,19 +197,19 @@ namespace CustomSpouseRooms
 			}
             catch (Exception ex)
             {
-                Monitor.Log($"Failed in {nameof(DecoratableLocation_MakeMapModifications_Postfix)}:\n{ex}", LogLevel.Error);
+                SMonitor.Log($"Failed in {nameof(DecoratableLocation_MakeMapModifications_Postfix)}:\n{ex}", LogLevel.Error);
             }
         }
 
         private static void GetFarmHouseSpouseRooms(FarmHouse fh, List<string> orderableSpouses, out List<string> orderedSpouses, out List<string> customSpouses)
 		{
-			Monitor.Log($"Getting {orderableSpouses.Count} spouse rooms");
+			SMonitor.Log($"Getting {orderableSpouses.Count} spouse rooms");
 			customSpouses = new List<string>();
 			for (int i = orderableSpouses.Count - 1; i >= 0; i--)
 			{
 				if (ModEntry.customRoomData.TryGetValue(orderableSpouses[i], out SpouseRoomData srd) && !srd.islandFarmHouse && (srd.upgradeLevel == fh.upgradeLevel || srd.upgradeLevel < 0) && srd.startPos.X > -1)
 				{
-					Monitor.Log($"{orderableSpouses[i]} has custom spouse room");
+					SMonitor.Log($"{orderableSpouses[i]} has custom spouse room");
 					customSpouses.Add(orderableSpouses[i]);
 					orderableSpouses.RemoveAt(i);
 				}
@@ -233,29 +222,29 @@ namespace CustomSpouseRooms
 				string s = str.Trim();
 				if (orderableSpouses.Contains(s))
 				{
-					Monitor.Log($"{s} has custom room order");
+					SMonitor.Log($"{s} has custom room order");
 					orderedSpouses.Add(s);
 					orderableSpouses.Remove(s);
 				}
 			}
 			foreach (string str in orderableSpouses)
 			{
-				Monitor.Log($"{str} has no customization");
+				SMonitor.Log($"{str} has no customization");
 				orderedSpouses.Add(str);
 				Config.SpouseRoomOrder += (Config.SpouseRoomOrder.Trim().Length > 0 ? "," : "") + str;
 			}
-			Helper.WriteConfig(Config);
+			SHelper.WriteConfig(Config);
 		}
 		
         private static void GetIslandFarmHouseSpouseRooms(IslandFarmHouse fh, List<string> orderableSpouses, out List<string> customSpouses)
 		{
-			Monitor.Log($"Getting {orderableSpouses.Count} island spouse rooms");
+			SMonitor.Log($"Getting {orderableSpouses.Count} island spouse rooms");
 			customSpouses = new List<string>();
 			for (int i = orderableSpouses.Count - 1; i >= 0; i--)
 			{
 				if (ModEntry.customRoomData.TryGetValue(orderableSpouses[i], out SpouseRoomData srd) && srd.islandFarmHouse && srd.startPos.X > -1)
 				{
-					Monitor.Log($"{orderableSpouses[i]} has custom island spouse room at {srd.startPos}");
+					SMonitor.Log($"{orderableSpouses[i]} has custom island spouse room at {srd.startPos}");
 					customSpouses.Add(orderableSpouses[i]);
 				}
 			}
@@ -264,7 +253,7 @@ namespace CustomSpouseRooms
         private static void MakeSpouseRoom(DecoratableLocation location, HashSet<string> appliedMapOverrides, SpouseRoomData srd, bool first = false)
         {
 
-			Monitor.Log($"Loading spouse room for {srd.name}. template {srd.templateName}, shellStart {srd.startPos}, spouse offset {srd.spousePosOffset}. Type: {srd.shellType}");
+			SMonitor.Log($"Loading spouse room for {srd.name}. template {srd.templateName}, shellStart {srd.startPos}, spouse offset {srd.spousePosOffset}. Type: {srd.shellType}");
 
 			var corner = srd.startPos + new Point(1, 1);
 			var spouse = srd.name;
@@ -273,7 +262,7 @@ namespace CustomSpouseRooms
 			var spouseSpot = srd.startPos + srd.spousePosOffset;
 
             Rectangle shellAreaToRefurbish = new Rectangle(corner.X - 1, corner.Y - 1, 8, 12);
-			Misc.ExtendMap(location, shellAreaToRefurbish.X + shellAreaToRefurbish.Width, shellAreaToRefurbish.Y + shellAreaToRefurbish.Height);
+			ExtendMap(location, shellAreaToRefurbish.X + shellAreaToRefurbish.Width, shellAreaToRefurbish.Y + shellAreaToRefurbish.Height);
 
 			// load shell
 
@@ -295,7 +284,7 @@ namespace CustomSpouseRooms
 				}
 			}
 
-			Dictionary<string, string> room_data = Helper.Content.Load<Dictionary<string, string>>("Data\\SpouseRooms", ContentSource.GameContent);
+            Dictionary<string, string> room_data = SHelper.Content.Load<Dictionary<string, string>>("Data\\SpouseRooms", ContentSource.GameContent);
 			string map_path = "spouseRooms";
 			if (indexInSpouseMapSheet == -1 && room_data != null && srd.templateName != null && room_data.ContainsKey(srd.templateName))
 			{
@@ -304,7 +293,7 @@ namespace CustomSpouseRooms
 					string[] array = room_data[srd.templateName].Split('/', StringSplitOptions.None);
 					map_path = array[0];
 					indexInSpouseMapSheet = int.Parse(array[1]);
-					Monitor.Log($"Got Data\\SpouseRooms room for template {srd.templateName}: room {map_path}, index {indexInSpouseMapSheet}");
+					SMonitor.Log($"Got Data\\SpouseRooms room for template {srd.templateName}: room {map_path}, index {indexInSpouseMapSheet}");
 				}
 				catch (Exception)
 				{
@@ -317,7 +306,7 @@ namespace CustomSpouseRooms
 					string[] array = room_data[spouse].Split('/', StringSplitOptions.None);
 					map_path = array[0];
 					indexInSpouseMapSheet = int.Parse(array[1]);
-					Monitor.Log($"Got Data\\SpouseRooms room for spouse {spouse}: room {map_path}, index {indexInSpouseMapSheet}");
+					SMonitor.Log($"Got Data\\SpouseRooms room for spouse {spouse}: room {map_path}, index {indexInSpouseMapSheet}");
 				}
 				catch (Exception)
 				{
@@ -328,16 +317,16 @@ namespace CustomSpouseRooms
 				if (srd.templateName != null && ModEntry.roomIndexes.ContainsKey(srd.templateName))
 				{
 					indexInSpouseMapSheet = ModEntry.roomIndexes[srd.templateName];
-					Monitor.Log($"Got vanilla index for template {srd.templateName}: {indexInSpouseMapSheet}");
+					SMonitor.Log($"Got vanilla index for template {srd.templateName}: {indexInSpouseMapSheet}");
 				}
 				else if (ModEntry.roomIndexes.ContainsKey(spouse))
 				{
 					indexInSpouseMapSheet = ModEntry.roomIndexes[spouse];
-					Monitor.Log($"Got vanilla index for spouse {spouse}: {indexInSpouseMapSheet}");
+					SMonitor.Log($"Got vanilla index for spouse {spouse}: {indexInSpouseMapSheet}");
 				}
 				else
 				{
-					Monitor.Log($"Could not find spouse room map for {spouse}", LogLevel.Debug);
+					SMonitor.Log($"Could not find spouse room map for {spouse}", LogLevel.Debug);
 					return;
 				}
 			}
@@ -373,11 +362,11 @@ namespace CustomSpouseRooms
 				{
 					if (refurbishedMap.GetLayer("Buildings")?.Tiles[mapReader.X + x, mapReader.Y + y] != null)
 					{
-						Helper.Reflection.GetMethod(location, "adjustMapLightPropertiesForLamp").Invoke(refurbishedMap.GetLayer("Buildings").Tiles[mapReader.X + x, mapReader.Y + y].TileIndex, areaToRefurbish.X + x, areaToRefurbish.Y + y, "Buildings");
+						SHelper.Reflection.GetMethod(location, "adjustMapLightPropertiesForLamp").Invoke(refurbishedMap.GetLayer("Buildings").Tiles[mapReader.X + x, mapReader.Y + y].TileIndex, areaToRefurbish.X + x, areaToRefurbish.Y + y, "Buildings");
 					}
 					if (y < areaToRefurbish.Height - 1 && refurbishedMap.GetLayer("Front")?.Tiles[mapReader.X + x, mapReader.Y + y] != null)
 					{
-						Helper.Reflection.GetMethod(location, "adjustMapLightPropertiesForLamp").Invoke(refurbishedMap.GetLayer("Front").Tiles[mapReader.X + x, mapReader.Y + y].TileIndex, areaToRefurbish.X + x, areaToRefurbish.Y + y, "Front");
+						SHelper.Reflection.GetMethod(location, "adjustMapLightPropertiesForLamp").Invoke(refurbishedMap.GetLayer("Front").Tiles[mapReader.X + x, mapReader.Y + y].TileIndex, areaToRefurbish.X + x, areaToRefurbish.Y + y, "Front");
 					}
 					/*
 					if (fh.map.GetLayer("Back").Tiles[corner.X + x, corner.Y + y] != null)
@@ -445,7 +434,7 @@ namespace CustomSpouseRooms
 				}
 
 
-				if (Misc.GetSpouses(f,0).ContainsKey("Sebastian") && Game1.netWorldState.Value.hasWorldStateID("sebastianFrog"))
+				if (GetSpouses(f,0).ContainsKey("Sebastian") && Game1.netWorldState.Value.hasWorldStateID("sebastianFrog"))
                 {
                     if (Game1.random.NextDouble() < 0.1 && Game1.timeOfDay > 610)
                     {
@@ -455,84 +444,9 @@ namespace CustomSpouseRooms
             }
             catch (Exception ex)
             {
-                Monitor.Log($"Failed in {nameof(FarmHouse_resetLocalState_Postfix)}:\n{ex}", LogLevel.Error);
+                SMonitor.Log($"Failed in {nameof(FarmHouse_resetLocalState_Postfix)}:\n{ex}", LogLevel.Error);
             }
         }
 
-        public static void CheckSpouseThing(FarmHouse fh, SpouseRoomData srd)
-        {
-			Monitor.Log($"Checking spouse thing for {srd.name}");
-			if (srd.name == "Emily" && (srd.templateName == "Emily" || srd.templateName == null || srd.templateName == ""))
-			{
-				fh.temporarySprites.RemoveAll((s) => s is EmilysParrot);
-
-				Vector2 spot = Utility.PointToVector2(srd.startPos + new Point(4, 2)) * 64;
-				spot += new Vector2(16, 32);
-				ModEntry.PMonitor.Log($"Building Emily's parrot at {spot}");
-				fh.temporarySprites.Add(new EmilysParrot(spot));
-			}
-			else if (srd.name == "Sebastian" && (srd.templateName == "Sebastian" || srd.templateName == null || srd.templateName == "") && Game1.netWorldState.Value.hasWorldStateID("sebastianFrogReal"))
-			{
-				Vector2 spot = Utility.PointToVector2(srd.startPos + new Point(2, 7));
-				Monitor.Log($"building Sebastian's terrarium at {spot}");
-				if(spot.X < 0 || spot.Y - 1 < 0 || spot.X + 2 >= fh.Map.GetLayer("Front").LayerWidth || spot.Y -1 >= fh.Map.GetLayer("Front").LayerHeight)
-                {
-					Monitor.Log("Spot is outside of map!");
-					return;
-				}
-				fh.removeTile((int)spot.X, (int)spot.Y - 1, "Front");
-				fh.removeTile((int)spot.X + 1, (int)spot.Y - 1, "Front");
-				fh.removeTile((int)spot.X + 2, (int)spot.Y - 1, "Front");
-				fh.temporarySprites.Add(new TemporaryAnimatedSprite
-				{
-					texture = Game1.mouseCursors,
-					sourceRect = new Rectangle(641, 1534, 48, 37),
-					animationLength = 1,
-					sourceRectStartingPos = new Vector2(641f, 1534f),
-					interval = 5000f,
-					totalNumberOfLoops = 9999,
-					position = spot * 64f + new Vector2(0f, -5f) * 4f,
-					scale = 4f,
-					layerDepth = (spot.Y + 2f + 0.1f) * 64f / 10000f
-				});
-				if (Game1.random.NextDouble() < 0.85)
-				{
-					Texture2D crittersText2 = Game1.temporaryContent.Load<Texture2D>("TileSheets\\critters");
-					fh.TemporarySprites.Add(new SebsFrogs
-					{
-						texture = crittersText2,
-						sourceRect = new Rectangle(64, 224, 16, 16),
-						animationLength = 1,
-						sourceRectStartingPos = new Vector2(64f, 224f),
-						interval = 100f,
-						totalNumberOfLoops = 9999,
-						position = spot * 64f + new Vector2((float)((Game1.random.NextDouble() < 0.5) ? 22 : 25), (float)((Game1.random.NextDouble() < 0.5) ? 2 : 1)) * 4f,
-						scale = 4f,
-						flipped = (Game1.random.NextDouble() < 0.5),
-						layerDepth = (spot.Y + 2f + 0.11f) * 64f / 10000f,
-						Parent = fh
-					});
-				}
-				if (!Game1.player.activeDialogueEvents.ContainsKey("sebastianFrog2") && Game1.random.NextDouble() < 0.5)
-				{
-					Texture2D crittersText3 = Game1.temporaryContent.Load<Texture2D>("TileSheets\\critters");
-					fh.TemporarySprites.Add(new SebsFrogs
-					{
-						texture = crittersText3,
-						sourceRect = new Rectangle(64, 240, 16, 16),
-						animationLength = 1,
-						sourceRectStartingPos = new Vector2(64f, 240f),
-						interval = 150f,
-						totalNumberOfLoops = 9999,
-						position = spot * 64f + new Vector2(8f, 3f) * 4f,
-						scale = 4f,
-						layerDepth = (spot.Y + 2f + 0.11f) * 64f / 10000f,
-						flipped = (Game1.random.NextDouble() < 0.5),
-						pingPong = false,
-						Parent = fh
-					});
-				}
-			}
-		}
     }
 }

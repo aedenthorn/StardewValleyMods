@@ -16,6 +16,7 @@ namespace ContentPackCreator
     public partial class ContentPack : Form
     {
         public static Dictionary<string, ConfigData> configDataDict = new Dictionary<string,ConfigData>();
+        public static Dictionary<string, ChangeData> changesDict = new Dictionary<string, ChangeData>();
         public static string currentContentPackLayout = "";
         public static AutoCompleteStringCollection uniqueIDs = new AutoCompleteStringCollection()
         {
@@ -73,13 +74,25 @@ namespace ContentPackCreator
                 }
             }
 
+            ContentPatcherData cData = new ContentPatcherData();
+            cData.ConfigSchema = configDataDict;
+            cData.Changes.AddRange(changesDict.Values);
+
             string folder = folderText.Text;
-            Directory.CreateDirectory(Path.Combine("Mods", folder));
-            string json = JsonConvert.SerializeObject(mData, Formatting.Indented, new JsonSerializerSettings
+            Directory.CreateDirectory(folder);
+            string manifestJson = JsonConvert.SerializeObject(mData, Formatting.Indented, new JsonSerializerSettings
             {
                 NullValueHandling = NullValueHandling.Ignore
             });
-            File.WriteAllText(Path.Combine("Mods", folder, "manifest.json"), json);
+            File.WriteAllText(Path.Combine(folder, "manifest.json"), manifestJson);
+
+            string contentJson = JsonConvert.SerializeObject(cData, Formatting.Indented, new JsonSerializerSettings
+            {
+                NullValueHandling = NullValueHandling.Ignore
+            });
+            File.WriteAllText(Path.Combine(folder, "content.json"), contentJson);
+
+
             string message = $"Mod written to {Path.Combine("Mods", folder)}.";
             MessageBox.Show(message);
         }
@@ -96,17 +109,6 @@ namespace ContentPackCreator
             depTable.RowStyles.Add(new RowStyle(SizeType.Absolute, 40F));
             depTable.Controls.Add(addDepButton, 0, depTable.RowCount - 1);
         }
-
-        private void addChangeButton_Click(object sender, EventArgs e)
-        {
-
-        }
-
-        private void listView1_SelectedIndexChanged(object sender, EventArgs e)
-        {
-
-        }
-
         private void tabControl_SelectedIndexChanged(object sender, EventArgs e)
         {
             if(((TabControl)sender).SelectedIndex == 1 && forID.Text != currentContentPackLayout)
@@ -115,9 +117,10 @@ namespace ContentPackCreator
                 contentTab.Controls.Clear();
                 if(currentContentPackLayout.ToLower() == uniqueIDs[0].ToLower())
                 {
-                    contentTab.Controls.Add(new ContentPatcherControl() { Anchor = AnchorStyles.Left | AnchorStyles.Bottom | AnchorStyles.Top | AnchorStyles.Right });
+                    contentTab.Controls.Add(new ContentPatcherControl() { Anchor = AnchorStyles.Left | AnchorStyles.Bottom | AnchorStyles.Top | AnchorStyles.Right, Dock = DockStyle.Fill });
                 }
             }
         }
+
     }
 }

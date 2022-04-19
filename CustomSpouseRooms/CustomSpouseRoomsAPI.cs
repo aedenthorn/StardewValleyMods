@@ -17,13 +17,13 @@ namespace CustomSpouseRooms
             if (ModEntry.currentRoomData.ContainsKey(spouse.Name))
             {
                 Point point = ModEntry.currentRoomData[spouse.Name].startPos + ModEntry.currentRoomData[spouse.Name].spousePosOffset;
-                ModEntry.PMonitor.Log($"Sending spouse tile for {spouse.Name}: {point}");
+                ModEntry.SMonitor.Log($"Sending spouse tile for {spouse.Name}: {point}");
                 return point;
             }
-            ModEntry.PMonitor.Log($"Couldn't get spouse tile for {spouse.Name}! Rooms: {ModEntry.currentRoomData.Count}");
+            ModEntry.SMonitor.Log($"Couldn't get spouse tile for {spouse.Name}! Rooms: {ModEntry.currentRoomData.Count}");
             foreach(var s in ModEntry.currentRoomData.Keys)
             {
-                ModEntry.PMonitor.Log($"Have: {s}!");
+                ModEntry.SMonitor.Log($"Have: {s}!");
             }
             return new Point(-1,-1);
         }

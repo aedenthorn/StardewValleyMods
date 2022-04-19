@@ -21,14 +21,16 @@ namespace ContentPackCreator
 
         private void addWhenButton_Click(object sender, EventArgs e)
         {
-            whenTable.RowCount = whenTable.RowCount + 1;
             whenTable.RowStyles.RemoveAt(whenTable.RowStyles.Count - 1);
             whenTable.Controls.RemoveByKey("addWhenButton");
-            whenTable.RowStyles.Add(new RowStyle(SizeType.Absolute, 120F));
-            var wc = new WhenControl() { Anchor = AnchorStyles.Left | AnchorStyles.Right };
-            whenTable.Controls.Add(wc, 0, whenTable.RowCount - 2);
+            whenTable.RowStyles.Add(new RowStyle(SizeType.Absolute, 50F));
+            whenTable.RowCount = whenTable.RowStyles.Count;
+            var wc = new WhenControl() { Anchor = AnchorStyles.Left | AnchorStyles.Right, Dock = DockStyle.Fill };
+            whenTable.Controls.Add(wc, 0, whenTable.RowStyles.Count - 1);
             whenTable.RowStyles.Add(new RowStyle(SizeType.Absolute, 40F));
-            whenTable.Controls.Add(addWhenButton, 0, whenTable.RowCount - 1);
+            whenTable.RowCount = whenTable.RowStyles.Count;
+            whenTable.Controls.Add(addWhenButton, 0, whenTable.RowStyles.Count - 1);
+
         }
     }
 }

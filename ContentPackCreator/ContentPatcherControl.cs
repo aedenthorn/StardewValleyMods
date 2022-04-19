@@ -13,7 +13,6 @@ namespace ContentPackCreator
 {
     public partial class ContentPatcherControl : UserControl
     {
-        private static Dictionary<string, ChangeData> changesDict = new Dictionary<string, ChangeData>();
 
         public static AutoCompleteStringCollection contentFileNames = new AutoCompleteStringCollection();
 
@@ -85,32 +84,77 @@ namespace ContentPackCreator
 
         private void actionComboBox_SelectedIndexChanged(object sender, EventArgs e)
         {
+            ChangeActionComboBox();
+        }
+
+        private void ChangeActionComboBox()
+        {
             cpActionPanel.Controls.Clear();
             switch (actionComboBox.SelectedItem.ToString())
             {
                 case "Load":
-                    var c = new ActionLoadControl() { Anchor = AnchorStyles.Left | AnchorStyles.Bottom | AnchorStyles.Top | AnchorStyles.Right };
-                    c.Size = cpActionPanel.Size;
-                    cpActionPanel.Controls.Add(c);
+                    cpActionPanel.Controls.Add(new ActionLoadControl() { Anchor = AnchorStyles.Left | AnchorStyles.Bottom | AnchorStyles.Top | AnchorStyles.Right, Dock = DockStyle.Fill });
                     break;
                 case "EditData":
-                    cpActionPanel.Controls.Add(new ActionEditDataControl() { Anchor = AnchorStyles.Left | AnchorStyles.Right });
+                    cpActionPanel.Controls.Add(new ActionEditDataControl() { Anchor = AnchorStyles.Left | AnchorStyles.Right, Dock = DockStyle.Fill });
                     break;
                 case "EditImage":
-                    cpActionPanel.Controls.Add(new ActionEditImageControl() { Anchor = AnchorStyles.Left | AnchorStyles.Right });
+                    cpActionPanel.Controls.Add(new ActionEditImageControl() { Anchor = AnchorStyles.Left | AnchorStyles.Right, Dock = DockStyle.Fill });
                     break;
                 case "EditMap":
-                    cpActionPanel.Controls.Add(new ActionEditMapControl() { Anchor = AnchorStyles.Left | AnchorStyles.Right });
+                    cpActionPanel.Controls.Add(new ActionEditMapControl() { Anchor = AnchorStyles.Left | AnchorStyles.Right, Dock = DockStyle.Fill });
                     break;
                 case "Include":
-                    cpActionPanel.Controls.Add(new ActionIncludeControl() { Anchor = AnchorStyles.Left | AnchorStyles.Right });
+                    cpActionPanel.Controls.Add(new ActionIncludeControl() { Anchor = AnchorStyles.Left | AnchorStyles.Right, Dock = DockStyle.Fill });
                     break;
             }
         }
 
         private void changesAddButton_Click(object sender, EventArgs e)
         {
-            changesDict.Add($"entry #{changesDict.Count} (Load )", new ChangeData());
+            var data = new ChangeData()
+            {
+                Action = actionComboBox.Text,
+                LogName = logName.Text.Length > 0 ? logName.Text : $"entry #{ContentPack.changesDict.Count} ({actionComboBox.SelectedItem.ToString()})",
+            };
+            List<string> update = new List<string>();
+            if (onDayStartCheck.Checked)
+                update.Add("OnDayStart");
+            if (onLocationChangeCheck.Checked)
+                update.Add("OnLocationChange");
+            if (onTimeChangeCheck.Checked)
+                update.Add("OnTimeChange");
+            data.Update = string.Join(",", update);
+
+            if (cpActionPanel.Controls.Find("targetText", true).Length > 0)
+                data.Target = (cpActionPanel.Controls.Find("targetText", true)[0] as TextBox).Text;
+            if (cpActionPanel.Controls.Find("fromFileText", true).Length > 0)
+                data.FromFile = (cpActionPanel.Controls.Find("fromFileText", true)[0] as TextBox).Text;
+
+            var whenTable = (cpActionPanel.Controls.Find("whenTable", true)[0] as TableLayoutPanel);
+            for (int j = 0; j <= whenTable.RowCount; j++)
+            {
+                Control c = whenTable.GetControlFromPosition(0, j);
+                if(c is WhenControl)
+                {
+                    if (data.When is null)
+                        data.When = new Dictionary<string, string>();
+                    data.When.Add((c.Controls.Find("keyText", true)[0] as TextBox).Text, (c.Controls.Find("valueText", true)[0] as TextBox).Text);
+                }
+            }
+
+            ContentPack.changesDict.Add(data.LogName, data);
+            ReloadChangesList();
+        }
+        private void ReloadChangesList()
+        {
+            logName.Text = "";
+            changesListBox.Items.Clear();
+            foreach (string key in ContentPack.changesDict.Keys)
+            {
+                changesListBox.Items.Add(key);
+            }
+            ChangeActionComboBox();
         }
     }
 }
