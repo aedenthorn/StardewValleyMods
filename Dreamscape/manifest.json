@@ -1,8 +1,8 @@
 ﻿{
-  "Name": "Submerged Crab Pots",
+  "Name": "Dreamscape",
   "Author": "aedenthorn",
-  "Version": "0.1.1",
-  "Description": "Submerged Crab Pots.",
+  "Version": "0.1.0",
+  "Description": "Dreamscape.",
   "UniqueID": "aedenthorn.Dreamscape",
   "EntryDll": "Dreamscape.dll",
   "MinimumApiVersion": "3.13.0",
@@ -12,7 +12,7 @@
     "Directory": "_releases",
     "ModFolder": "Dreamscape"
   },
-  "UpdateKeys": [ "Nexus:" ],
+  "UpdateKeys": [ "Nexus:11742" ],
   "Dependencies": [
     {
       "UniqueID": "Platonymous.ModUpdater",

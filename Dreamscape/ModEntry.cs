@@ -7,6 +7,7 @@ using StardewValley;
 using StardewValley.BellsAndWhistles;
 using StardewValley.Locations;
 using StardewValley.Objects;
+using StardewValley.TerrainFeatures;
 using System.Globalization;
 using System.Linq;
 using xTile.Dimensions;
@@ -24,7 +25,7 @@ namespace Dreamscape
         public static ModEntry context;
 
         public static string mapAssetKey;
-        public static Texture2D dirtTexture;
+        public static Texture2D palmTreeTexture;
 
         /// <summary>The mod entry point, called after the mod is first loaded.</summary>
         /// <param name="helper">Provides simplified APIs for writing mods.</param>
@@ -38,9 +39,22 @@ namespace Dreamscape
             SHelper = helper;
 
             helper.Events.GameLoop.GameLaunched += GameLoop_GameLaunched;
+            helper.Events.GameLoop.SaveLoaded += GameLoop_SaveLoaded;
             helper.Events.GameLoop.DayStarted += GameLoop_DayStarted;
             var harmony = new Harmony(ModManifest.UniqueID);
             harmony.PatchAll();
+        }
+
+        private void GameLoop_SaveLoaded(object sender, SaveLoadedEventArgs e)
+        {
+            try
+            {
+                palmTreeTexture = Game1.content.Load<Texture2D>("aedenthorn.Dreamscape/tree_palm");
+            }
+            catch
+            {
+                palmTreeTexture = Helper.Content.Load<Texture2D>("assets/tree_palm.png");
+            }
         }
 
         private void GameLoop_DayStarted(object sender, DayStartedEventArgs e)
@@ -49,25 +63,48 @@ namespace Dreamscape
             var layer = location.map.GetLayer("Back");
             var mine = new MineShaft();
             mine.mineLevel = 200;
+            int trees = location.terrainFeatures.Values.Where(v => v is Tree).Count();
             for (int x = 0; x < layer.LayerWidth; x++)
             {
                 for (int y = 0; y < layer.LayerHeight; y++)
                 {
-                    if (!location.objects.ContainsKey(new Vector2(x, y)) && layer.Tiles[new Location(x, y)]?.TileIndex == 26)
+                    Vector2 tile = new Vector2(x, y);
+                    if (!location.objects.ContainsKey(tile) && !location.terrainFeatures.ContainsKey(tile) && layer.Tiles[new Location(x, y)]?.TileIndex == 26)
                     {
-                        if(Game1.random.NextDouble() < 0.05)
+                        if (trees < Config.MaxTrees && Game1.random.NextDouble() < Config.TreeChancePercent / 100f)
                         {
-                            if(Game1.random.NextDouble() < 0.5)
+                            location.terrainFeatures.Add(tile, new Tree(6, Config.TreeGrowthStage));
+                        }
+                        else if(Game1.random.NextDouble() < Config.ObjectChancePercent / 100f)
+                        {
+                            double chance = Game1.random.NextDouble();
+                            if (chance < 0.5)
                             {
-                                location.objects.Add(new Vector2(x, y), new Object(new Vector2(x, y), 319 + Game1.random.Next(3), "Weeds", true, false, false, false)
+                                location.objects.Add(tile, new Object(tile, 319 + Game1.random.Next(3), "Weeds", true, false, false, false)
                                 {
                                     Fragility = 2,
                                     CanBeGrabbed = true,
                                 });
                             }
+                            else if (chance < 0.65)
+                            {
+                                location.objects[tile] = new Object(tile, 80, "Stone", true, true, false, true);
+                            }
+                            else if (chance < 0.74)
+                            {
+                                location.objects[tile] = new Object(tile, 86, "Stone", true, true, false, true);
+                            }
+                            else if (chance < 0.83)
+                            {
+                                location.objects[tile] = new Object(tile, 84, "Stone", true, true, false, true);
+                            }
+                            else if (chance < 0.90)
+                            {
+                                location.objects[tile] = new Object(tile, 82, "Stone", true, true, false, true);
+                            }
                             else
                             {
-                                location.objects.Add(new Vector2(x, y), (Object)AccessTools.Method(typeof(MineShaft), "chooseStoneType").Invoke(mine, new object[] { 0.1, 0.05, 0.25, new Vector2(x, y) }));
+                                location.objects.Add(tile, new Object(tile, (int)AccessTools.Method(typeof(MineShaft), nameof(MineShaft.getRandomGemRichStoneForThisLevel)).Invoke(mine, new object[] { 200 }), "Stone", true, false, false, false));
                             }
                         }
                     }
@@ -96,6 +133,34 @@ namespace Dreamscape
                 getValue: () => Config.EnableMod,
                 setValue: value => Config.EnableMod = value
             );
+            configMenu.AddNumberOption(
+                mod: ModManifest,
+                name: () => "Max Trees",
+                tooltip: () => "Max # of existing trees after which to prevent spawning more trees at the start of day",
+                getValue: () => Config.MaxTrees,
+                setValue: value => Config.MaxTrees = value
+            );
+            configMenu.AddNumberOption(
+                mod: ModManifest,
+                name: () => "Tree Growth Stage",
+                tooltip: () => "Growth stage for trees spawned at the start of day",
+                getValue: () => Config.TreeGrowthStage,
+                setValue: value => Config.TreeGrowthStage = value
+            );
+            configMenu.AddNumberOption(
+                mod: ModManifest,
+                name: () => "Tree % Chance",
+                tooltip: () => "Chance per cloud tile per day to spawn a tree",
+                getValue: () => Config.TreeChancePercent,
+                setValue: value => Config.TreeChancePercent = value
+            );
+            configMenu.AddNumberOption(
+                mod: ModManifest,
+                name: () => "Object % Chance",
+                tooltip: () => "Chance per empty cloud tile per day to spawn an object (crystal weed or gem resource)",
+                getValue: () => Config.ObjectChancePercent,
+                setValue: value => Config.ObjectChancePercent = value
+            );
         }
 
         public bool CanEdit<T>(IAssetInfo asset)
@@ -112,7 +177,7 @@ namespace Dreamscape
             if (asset.AssetNameEquals("Data/Locations"))
             {
                 var editor = asset.AsDictionary<string, string>();
-                editor.Data["Dreamscape"] = "372 .9 718 .1 719 .3 723 .3/372 .9 394 .5 718 .1 719 .3 723 .3/372 .9 718 .1 719 .3 723 .3/372 .4 392 .8 718 .05 719 .2 723 .2/129 -1 131 -1 147 -1 148 -1 152 -1 708 -1 267 -1/128 -1 130 -1 146 -1 149 -1 150 -1 152 -1 155 -1 708 -1 701 -1 267 -1/129 -1 131 -1 148 -1 150 -1 152 -1 154 -1 155 -1 705 -1 701 -1/708 -1 130 -1 131 -1 146 -1 147 -1 150 -1 151 -1 152 -1 154 -1 705 -1/384 .08 589 .09 102 .15 390 .25 330 1";
+                editor.Data["Dreamscape"] = "486 .3 454 .3/486 .3 454 .3/486 .3 454 .3/486 .3 454 .3/-1/-1/-1/-1/386 .1 384 .3 380 .3 378 1";
             }
         }
     }

@@ -170,6 +170,7 @@ namespace Moolah
 					xPosition += (8 - numDigits) * 24;
 				}
 				bool significant = false;
+				numDigits = currentValue.ToString().Length; 
 				for (int j = 0; j < numDigits; j++)
 				{
 					int currentDigit = int.Parse(currentValue.ToString()[j].ToString());

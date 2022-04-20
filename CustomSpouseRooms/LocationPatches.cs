@@ -74,7 +74,7 @@ namespace CustomSpouseRooms
 			try
             {
 				SMonitor.Log("Loading spouse rooms, clearing current room data");
-				ModEntry.currentRoomData.Clear();
+				currentRoomData.Clear();
 				var allSpouses = GetSpouses(__instance.owner, -1).Keys.ToList();
 				if (allSpouses.Count == 0)
 					return true;
@@ -409,9 +409,9 @@ namespace CustomSpouseRooms
 				front_layer.Tiles[kvp.Key.X, kvp.Key.Y] = kvp.Value;
 			}
 			if(location is FarmHouse)
-				ModEntry.currentRoomData[srd.name] = srd;
+				currentRoomData[srd.name] = srd;
 			else
-				ModEntry.currentIslandRoomData[srd.name] = srd;
+				currentIslandRoomData[srd.name] = srd;
 		}
 
         public static void FarmHouse_resetLocalState_Postfix(ref FarmHouse __instance)
@@ -428,7 +428,7 @@ namespace CustomSpouseRooms
                     return;
                 }
 
-				foreach(var kvp in ModEntry.currentRoomData)
+				foreach(var kvp in currentRoomData)
                 {
 					CheckSpouseThing(__instance, kvp.Value);
 				}

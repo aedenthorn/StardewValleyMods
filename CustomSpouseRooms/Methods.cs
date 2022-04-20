@@ -86,7 +86,7 @@ namespace CustomSpouseRooms
 
 				Vector2 spot = Utility.PointToVector2(srd.startPos + new Point(4, 2)) * 64;
 				spot += new Vector2(16, 32);
-				ModEntry.SMonitor.Log($"Building Emily's parrot at {spot}");
+				SMonitor.Log($"Building Emily's parrot at {spot}");
 				fh.temporarySprites.Add(new EmilysParrot(spot));
 			}
 			else if (srd.name == "Sebastian" && (srd.templateName == "Sebastian" || srd.templateName == null || srd.templateName == "") && Game1.netWorldState.Value.hasWorldStateID("sebastianFrogReal"))
