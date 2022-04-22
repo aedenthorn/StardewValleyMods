@@ -1,16 +1,15 @@
 ﻿
 using StardewModdingAPI;
 
-namespace AdvancedMenuPositioning
+namespace HarvestSeeds
 {
     public class ModConfig
     {
         public bool EnableMod { get; set; } = true;
-        public SButton DetachKey { get; set; } = SButton.X;
-        public SButton MoveKey { get; set; } = SButton.MouseLeft;
-        public SButton CloseKey { get; set; } = SButton.Z;
-        public SButton DetachModKey { get; set; } = SButton.LeftShift;
-        public SButton MoveModKey { get; set; } = SButton.LeftShift;
-        public SButton CloseModKey { get; set; } = SButton.LeftShift;
+        public bool RegrowableSeeds { get; set; } = false;
+        public int SeedChance { get; set; } = 10;
+        public int MinSeeds { get; set; } = 1;
+        public int MaxSeeds { get; set; } = 2;
+
     }
 }
