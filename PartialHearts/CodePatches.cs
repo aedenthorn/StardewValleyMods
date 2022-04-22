@@ -24,6 +24,8 @@ namespace PartialHearts
 				if (extraFriendshipPixels == 0)
 					return;
 				int heartLevel = Game1.player.getFriendshipHeartLevelForNPC(name);
+				if (heartLevel == Utility.GetMaximumHeartsForCharacter(Game1.getCharacterFromName(name, true, false)))
+					return;
 
 				Texture2D texture;
 				Rectangle source;
