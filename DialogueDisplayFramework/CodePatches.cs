@@ -22,7 +22,14 @@ namespace DialogueDisplayFramework
 			{
 				if (!Config.EnableMod || dialogue?.speaker is null)
 					return;
-				npcSpriteMenu = new ProfileMenu(dialogue.speaker);
+                try
+                {
+					npcSpriteMenu = new ProfileMenu(dialogue.speaker);
+                }
+                catch
+                {
+
+                }
 
 				if (!dataDict.TryGetValue(__instance.characterDialogue.speaker.Name, out DialogueDisplayData data))
 					data = dataDict[defaultKey];
