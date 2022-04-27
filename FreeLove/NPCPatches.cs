@@ -224,7 +224,7 @@ namespace FreeLove
         {
             try
             {
-                if (Misc.GetSpouses(Game1.player, false).ContainsKey(__instance.Name))
+                if (ModEntry.GetSpouses(Game1.player, false).ContainsKey(__instance.Name))
                 {
                     ModEntry.tempOfficialSpouse = __instance;
                 }
@@ -393,7 +393,7 @@ namespace FreeLove
         }
         public static void NPC_engagementResponse_Postfix(NPC __instance, Farmer who, bool asRoommate = false)
         {
-            Misc.ResetSpouses(who);
+            ModEntry.ResetSpouses(who);
         }
 
         public static bool NPC_isRoommate_Prefix(NPC __instance, ref bool __result)
@@ -478,7 +478,7 @@ namespace FreeLove
         {
             try
             {
-                if (Misc.GetSpouses(Game1.player, false).ContainsKey(__instance.Name))
+                if (ModEntry.GetSpouses(Game1.player, false).ContainsKey(__instance.Name))
                 {
                     __state = Game1.player.spouse;
                     Game1.player.spouse = __instance.Name;
@@ -513,9 +513,9 @@ namespace FreeLove
 
             try
             {
-                Misc.ResetSpouses(who);
+                ModEntry.ResetSpouses(who);
 
-                if ((__instance.Name.Equals(who.spouse) || Misc.GetSpouses(who, true).ContainsKey(__instance.Name)) && __instance.Sprite.CurrentAnimation == null && who.IsLocalPlayer)
+                if ((__instance.Name.Equals(who.spouse) || ModEntry.GetSpouses(who, true).ContainsKey(__instance.Name)) && __instance.Sprite.CurrentAnimation == null && who.IsLocalPlayer)
                 {
                     Monitor.Log($"{__instance.Name} is married to {who.Name}");
 
@@ -532,7 +532,7 @@ namespace FreeLove
                         __result = true;
                         return false;
                     }
-                    if (__instance.Sprite.CurrentAnimation == null && !__instance.hasTemporaryMessageAvailable() && __instance.currentMarriageDialogue.Count == 0 && __instance.CurrentDialogue.Count == 0 && Game1.timeOfDay < 2200 && !__instance.isMoving() && who.ActiveObject == null && Integrations.kissingAPI == null)
+                    if (__instance.Sprite.CurrentAnimation == null && !__instance.hasTemporaryMessageAvailable() && __instance.currentMarriageDialogue.Count == 0 && __instance.CurrentDialogue.Count == 0 && Game1.timeOfDay < 2200 && !__instance.isMoving() && who.ActiveObject == null && ModEntry.kissingAPI == null)
                     {
                         Monitor.Log($"Trying to kiss/hug {__instance.Name}");
 
@@ -686,7 +686,7 @@ namespace FreeLove
         {
             try
             {
-                if (Misc.GetSpouses(who, true).ContainsKey(__instance.Name) && Game1.NPCGiftTastes.ContainsKey(__instance.Name))
+                if (ModEntry.GetSpouses(who, true).ContainsKey(__instance.Name) && Game1.NPCGiftTastes.ContainsKey(__instance.Name))
                 {
                     Monitor.Log($"Gift to spouse {__instance.Name}");
                     __state = new List<int> {
@@ -740,12 +740,12 @@ namespace FreeLove
                 {
                     Monitor.Log($"Try give bouquet to {__instance.Name}");
 
-                    if (Misc.GetSpouses(who, true).ContainsKey(__instance.Name))
+                    if (ModEntry.GetSpouses(who, true).ContainsKey(__instance.Name))
                     {
                         who.spouse = __instance.Name;
-                        Misc.ResetSpouses(who);
+                        ModEntry.ResetSpouses(who);
                         Game1.currentLocation.playSound("dwop", NetAudio.SoundContext.NPC);
-                        if(Integrations.customSpouseRoomsAPI == null)
+                        if(ModEntry.customSpouseRoomsAPI == null)
                         {
                             FarmHouse fh = Utility.getHomeOfFarmer(who);
                             fh.showSpouseRoom();
@@ -873,7 +873,7 @@ namespace FreeLove
                 else if (who.ActiveObject.ParentSheetIndex == 809 && !who.ActiveObject.bigCraftable.Value)
                 {
                     Monitor.Log($"Tried to give movie ticket to {__instance.Name}");
-                    if (Misc.GetSpouses(who, true).ContainsKey(__instance.Name) && Utility.doesMasterPlayerHaveMailReceivedButNotMailForTomorrow("ccMovieTheater") && !__instance.Name.Equals("Krobus") && who.lastSeenMovieWeek.Value < Game1.Date.TotalWeeks && !Utility.isFestivalDay(Game1.dayOfMonth, Game1.currentSeason) && Game1.timeOfDay <= 2100 && __instance.lastSeenMovieWeek.Value < Game1.Date.TotalWeeks && MovieTheater.GetResponseForMovie(__instance) != "reject")
+                    if (ModEntry.GetSpouses(who, true).ContainsKey(__instance.Name) && Utility.doesMasterPlayerHaveMailReceivedButNotMailForTomorrow("ccMovieTheater") && !__instance.Name.Equals("Krobus") && who.lastSeenMovieWeek.Value < Game1.Date.TotalWeeks && !Utility.isFestivalDay(Game1.dayOfMonth, Game1.currentSeason) && Game1.timeOfDay <= 2100 && __instance.lastSeenMovieWeek.Value < Game1.Date.TotalWeeks && MovieTheater.GetResponseForMovie(__instance) != "reject")
                     {
                         Monitor.Log($"Tried to give movie ticket to spouse");
                         foreach (MovieInvitation invitation in who.team.movieInvitations)

@@ -17,6 +17,8 @@ namespace CropHat
     {
         private static void NewDay(Hat hat)
         {
+            if (hat is null || !hat.modData.ContainsKey(daysKey))
+                return;
             int days = Convert.ToInt32(hat.modData[daysKey]);
             int phase = Convert.ToInt32(hat.modData[phaseKey]);
             int row = Convert.ToInt32(hat.modData[rowKey]);

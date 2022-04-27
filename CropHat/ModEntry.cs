@@ -48,8 +48,9 @@ namespace CropHat
 
         private void Input_ButtonPressed(object sender, ButtonPressedEventArgs e)
         {
-            if(Config.EnableMod && Context.CanPlayerMove && e.Button == SButton.G)
+            if(Config.EnableMod && Context.CanPlayerMove && e.Button == Config.CheatButton)
             {
+                Monitor.Log("Pressed key");
                 NewDay(Game1.player.hat.Value);
             }
         }
@@ -92,7 +93,7 @@ namespace CropHat
 
         private void GameLoop_DayEnding(object sender, DayEndingEventArgs e)
         {
-            if (Game1.player.hat.Value.modData.ContainsKey(seedKey))
+            if (Game1.player?.hat?.Value?.modData.ContainsKey(seedKey) == true)
             {
                 NewDay(Game1.player.hat.Value);
             }
@@ -116,6 +117,13 @@ namespace CropHat
                 name: () => "Mod Enabled?",
                 getValue: () => Config.EnableMod,
                 setValue: value => Config.EnableMod = value
+            );
+            configMenu.AddBoolOption(
+                mod: ModManifest,
+                name: () => "Others Harvest?",
+                tooltip: () => "Allow farmers to harvest other farmers' crop hats",
+                getValue: () => Config.AllowOthersToPick,
+                setValue: value => Config.AllowOthersToPick = value
             );
         }
     }

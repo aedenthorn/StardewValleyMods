@@ -125,7 +125,7 @@ namespace FreeLove
                 max:100
             );
 
-            Integrations.LoadModApis();
+            LoadModApis();
         }
 
         private void GameLoop_ReturnedToTitle(object sender, StardewModdingAPI.Events.ReturnedToTitleEventArgs e)
@@ -135,32 +135,32 @@ namespace FreeLove
         }
         public static void GameLoop_SaveLoaded(object sender, SaveLoadedEventArgs e)
         {
-            Misc.SetAllNPCsDatable();
-            Misc.ResetSpouses(Game1.player);
-            Misc.SetNPCRelations();
+            SetAllNPCsDatable();
+            ResetSpouses(Game1.player);
+            SetNPCRelations();
         }
 
         public static void GameLoop_DayStarted(object sender, DayStartedEventArgs e)
         {
-            Misc.ResetDivorces();
-            Misc.ResetSpouses(Game1.player);
+            ResetDivorces();
+            ResetSpouses(Game1.player);
 
 
             foreach (GameLocation location in Game1.locations)
             {
                 if(ReferenceEquals(location.GetType(),typeof(FarmHouse)))
                 {
-                    Misc.PlaceSpousesInFarmhouse(location as FarmHouse);
+                    PlaceSpousesInFarmhouse(location as FarmHouse);
                 }
             }
             if (Game1.IsMasterGame)
             {
                 Game1.getFarm().addSpouseOutdoorArea(Game1.player.spouse == null ? "" : Game1.player.spouse);
-                ModEntry.farmHelperSpouse = Misc.GetRandomSpouse(Game1.MasterPlayer);
+                ModEntry.farmHelperSpouse = GetRandomSpouse(Game1.MasterPlayer);
             }
             foreach(Farmer f in Game1.getAllFarmers())
             {
-                var spouses = Misc.GetSpouses(f, true).Keys;
+                var spouses = GetSpouses(f, true).Keys;
                 foreach(string s in spouses)
                 {
                     SMonitor.Log($"{f.Name} is married to {s}");
@@ -183,8 +183,8 @@ namespace FreeLove
                     if (fh.owner == null)
                         continue;
 
-                    List<string> allSpouses = Misc.GetSpouses(fh.owner, true).Keys.ToList();
-                    List<string> bedSpouses = Misc.ReorderSpousesForSleeping(allSpouses.FindAll((s) => Config.RoommateRomance || !fh.owner.friendshipData[s].RoommateMarriage));
+                    List<string> allSpouses = GetSpouses(fh.owner, true).Keys.ToList();
+                    List<string> bedSpouses = ReorderSpousesForSleeping(allSpouses.FindAll((s) => Config.RoommateRomance || !fh.owner.friendshipData[s].RoommateMarriage));
 
                     using(IEnumerator<NPC> characters = fh.characters.GetEnumerator())
                     {
@@ -202,12 +202,12 @@ namespace FreeLove
                             if (allSpouses.Contains(character.Name))
                             {
 
-                                if (Misc.IsInBed(fh, character.GetBoundingBox()))
+                                if (IsInBed(fh, character.GetBoundingBox()))
                                 {
                                     character.farmerPassesThrough = true;
-                                    if (!character.isMoving() && (Integrations.kissingAPI == null || Integrations.kissingAPI.LastKissed(character.Name) > 2))
+                                    if (!character.isMoving() && (kissingAPI == null || kissingAPI.LastKissed(character.Name) > 2))
                                     {
-                                        Vector2 bedPos = Misc.GetSpouseBedPosition(fh, character.Name);
+                                        Vector2 bedPos = GetSpouseBedPosition(fh, character.Name);
                                         if (Game1.timeOfDay >= 2000 || Game1.timeOfDay <= 600)
                                         {
                                             character.position.Value = bedPos;
@@ -223,7 +223,7 @@ namespace FreeLove
                                             }
                                             if (character.Sprite.CurrentAnimation == null)
                                             {
-                                                if (!Misc.HasSleepingAnimation(character.Name))
+                                                if (!HasSleepingAnimation(character.Name))
                                                 {
                                                     character.Sprite.StopAnimation();
                                                     character.faceDirection(0);

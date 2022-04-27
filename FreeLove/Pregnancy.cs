@@ -27,9 +27,9 @@ namespace FreeLove
                 return false;
             }
 
-            List<NPC> allSpouses = Misc.GetSpouses(Game1.player,true).Values.ToList();
+            List<NPC> allSpouses = ModEntry.GetSpouses(Game1.player,true).Values.ToList();
 
-            Misc.ShuffleList(ref allSpouses);
+            ModEntry.ShuffleList(ref allSpouses);
             
             foreach (NPC spouse in allSpouses)
             {

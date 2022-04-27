@@ -8,15 +8,15 @@ namespace FreeLove
     {
         public void PlaceSpousesInFarmhouse(FarmHouse farmHouse)
         {
-            Misc.PlaceSpousesInFarmhouse(farmHouse);
+            ModEntry.PlaceSpousesInFarmhouse(farmHouse);
         }
         public Dictionary<string, NPC> GetSpouses(Farmer farmer, bool all = true)
         {
-            return Misc.GetSpouses(farmer, all);
+            return ModEntry.GetSpouses(farmer, all);
         }
         public Dictionary<string, NPC> GetSpouses(Farmer farmer, int all = -1)
         {
-            return Misc.GetSpouses(farmer, all != 0);
+            return ModEntry.GetSpouses(farmer, all != 0);
         }
     }
 }

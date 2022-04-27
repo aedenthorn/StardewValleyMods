@@ -33,8 +33,8 @@ namespace CropHat
                 if (!Config.EnableMod || __state is null)
                     return;
                 who.hat.Value = __state;
-                string phase = who.hat.Value.modData[phaseKey];
-                string days = who.hat.Value.modData[daysKey];
+                //string phase = who.hat.Value.modData[phaseKey];
+                //string days = who.hat.Value.modData[daysKey];
                 bool flip = who.FarmerSprite.CurrentAnimationFrame.flip;
 				float layer_offset = 3.9E-05f;
                 var sourceRect = new Rectangle(Convert.ToInt32(who.hat.Value.modData[xKey]), Convert.ToInt32(who.hat.Value.modData[yKey]), 16, 32);
@@ -144,7 +144,6 @@ namespace CropHat
                         SMonitor.Log($"Trying to wear {Game1.player.CursorSlotItem.Name}");
                         string[] split = cropString.Split('/');
                         int row = Convert.ToInt32(split[2]);
-
                         Hat hat = new Hat(0);
                         hat.modData[seedKey] = "" + Game1.player.CursorSlotItem.ParentSheetIndex;
                         hat.modData[daysKey] = "0";
@@ -154,6 +153,14 @@ namespace CropHat
                         hat.modData[grownKey] = "false";
                         hat.modData[xKey] = GetSourceX(row, 0, 0, false, false) + "";
                         hat.modData[yKey] = GetSourceY(row) + "";
+
+                        var harvestIndex = Convert.ToInt32(split[3]);
+                        if (Game1.objectInformation.TryGetValue(harvestIndex, out string objectInformation))
+                        {
+                            var split2 = objectInformation.Split('/', StringSplitOptions.None);
+                            hat.displayName = string.Format(SHelper.Translation.Get("x-hat"), split2[0]);
+                            hat.description = split2[5];
+                        }
 
                         Game1.player.CursorSlotItem.Stack--;
                         if (Game1.player.CursorSlotItem.Stack <= 0)

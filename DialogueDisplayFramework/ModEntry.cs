@@ -7,6 +7,7 @@ using StardewValley.Locations;
 using StardewValley.Objects;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using Object = StardewValley.Object;
 
 namespace DialogueDisplayFramework
@@ -48,6 +49,10 @@ namespace DialogueDisplayFramework
         {
             if(Config.EnableMod && e.Button == Config.ReloadButton)
             {
+                foreach (var pack in loadedPacks)
+                {
+                    SHelper.ConsoleCommands.Trigger("patch", new string[] { "reload", pack });
+                }
                 LoadData();
             }
         }
@@ -57,17 +62,13 @@ namespace DialogueDisplayFramework
             LoadData();
         }
 
-        private void LoadData()
+        private static void LoadData()
         {
-            Monitor.Log("Loading Data");
+            //SMonitor.Log("Loading Data");
 
-            foreach(var pack in loadedPacks)
-            {
-                Helper.ConsoleCommands.Trigger("patch", new string[] { "reload", pack });
-            }
             loadedPacks.Clear();
-            dataDict = Helper.Content.Load<Dictionary<string, DialogueDisplayData>>(dictPath, ContentSource.GameContent);
-            Monitor.Log($"Loaded {dataDict.Count} data entries");
+            dataDict = SHelper.Content.Load<Dictionary<string, DialogueDisplayData>>(dictPath, ContentSource.GameContent);
+            //SMonitor.Log($"Loaded {dataDict.Count} data entries");
             if (!dataDict.ContainsKey(defaultKey))
                 dataDict[defaultKey] = new DialogueDisplayData() { disabled = true };
 
@@ -81,10 +82,10 @@ namespace DialogueDisplayFramework
                 foreach (var image in dataDict[key].images)
                 {
                     if(!imageDict.ContainsKey(image.texturePath))
-                        imageDict[image.texturePath] = Helper.Content.Load<Texture2D>(image.texturePath, ContentSource.GameContent);
+                        imageDict[image.texturePath] = Game1.content.Load<Texture2D>(image.texturePath);
                 }
                 if (dataDict[key].portrait?.texturePath != null && !imageDict.ContainsKey(dataDict[key].portrait.texturePath))
-                    imageDict[dataDict[key].portrait.texturePath] = Helper.Content.Load<Texture2D>(dataDict[key].portrait.texturePath, ContentSource.GameContent);
+                    imageDict[dataDict[key].portrait.texturePath] = Game1.content.Load<Texture2D>(dataDict[key].portrait.texturePath);
             }
         }
 

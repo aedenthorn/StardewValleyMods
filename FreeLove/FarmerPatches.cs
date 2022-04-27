@@ -59,7 +59,7 @@ namespace FreeLove
                     {
                         __instance.spouse = null;
                     }
-                    Misc.ResetSpouses(__instance);
+                    ModEntry.ResetSpouses(__instance);
                     Helper.Content.InvalidateCache("Maps/FarmHouse1_marriage");
                     Helper.Content.InvalidateCache("Maps/FarmHouse2_marriage");
 
@@ -86,7 +86,7 @@ namespace FreeLove
         {
             try
             {
-                __result = __instance.team.IsMarried(__instance.UniqueMultiplayerID) || Misc.GetSpouses(__instance, true).Count > 0;
+                __result = __instance.team.IsMarried(__instance.UniqueMultiplayerID) || ModEntry.GetSpouses(__instance, true).Count > 0;
                 return false;
             }
             catch (Exception ex)

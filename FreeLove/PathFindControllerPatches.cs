@@ -28,9 +28,9 @@ namespace FreeLove
                 if (!Config.EnableMod || !(c is NPC) || !(c as NPC).isVillager() || !(c as NPC).isMarried() || !(location is FarmHouse) || endPoint == (location as FarmHouse).getEntryLocation())
                     return;
 
-                if (Misc.IsInBed(location as FarmHouse, new Rectangle(endPoint.X * 64, endPoint.Y * 64, 64, 64)))
+                if (ModEntry.IsInBed(location as FarmHouse, new Rectangle(endPoint.X * 64, endPoint.Y * 64, 64, 64)))
                 {
-                    endPoint = Misc.GetSpouseBedEndPoint(location as FarmHouse, c.Name);
+                    endPoint = ModEntry.GetSpouseBedEndPoint(location as FarmHouse, c.Name);
                     Monitor.Log($"Moved {c.Name} bed endpoint to {endPoint}");
                 }
                 else if (IsColliding(c, location, endPoint))

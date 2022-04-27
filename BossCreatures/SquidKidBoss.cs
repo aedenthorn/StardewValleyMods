@@ -96,12 +96,12 @@ namespace BossCreatures
                 {
                     startedLightning = false;
                     lightningStrike(playerPosition);
-                    lastLightning = Game1.random.Next(1000, 2000) * (ModEntry.IsLessThanHalfHealth(this) ? 1 : 2);
+                    lastLightning = Game1.random.Next(2000, 4000) * (ModEntry.IsLessThanHalfHealth(this) ? 1 : 2);
                 }
                 if (lastIceBall == 0f)
                 {
                     Vector2 trajectory = ModEntry.VectorFromDegree(Game1.random.Next(0,360)) * 10f;
-                    currentLocation.projectiles.Add(new BossProjectile((int)Math.Round(20 * difficulty), 9, 3, 4, 0f, trajectory.X, trajectory.Y, getStandingPosition(), "", "", true, false, currentLocation, this, false, null, 19));
+                    currentLocation.projectiles.Add(new BossProjectile((int)Math.Round(10 * difficulty), 9, 3, 4, 0f, trajectory.X, trajectory.Y, getStandingPosition(), "", "", true, false, currentLocation, this, false, null, 19));
 
                     projectileCount++;
 
@@ -140,7 +140,7 @@ namespace BossCreatures
             {
                 if (enumerator.Current.currentLocation == currentLocation && enumerator.Current.GetBoundingBox().Intersects(new Rectangle((int)Math.Round(playerLocation.X - 32), (int)Math.Round(playerLocation.Y - 32), 64, 64)))
                 {
-                    enumerator.Current.takeDamage((int)Math.Round(20 * difficulty), true, null);
+                    enumerator.Current.takeDamage((int)Math.Round(10 * difficulty), true, null);
                 }
             }
 

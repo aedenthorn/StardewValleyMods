@@ -6,6 +6,7 @@ using StardewValley.BellsAndWhistles;
 using StardewValley.Characters;
 using StardewValley.Menus;
 using System;
+using System.Diagnostics;
 
 namespace DialogueDisplayFramework
 {
@@ -30,9 +31,12 @@ namespace DialogueDisplayFramework
                 {
 
                 }
-
+				LoadData();
 				if (!dataDict.TryGetValue(__instance.characterDialogue.speaker.Name, out DialogueDisplayData data))
-					data = dataDict[defaultKey];
+                {
+					if (!dataDict.TryGetValue(defaultKey, out data))
+						return;
+                }
 				__instance.x += data.xOffset;
 				__instance.y += data.yOffset;
 				if(data.width > 0)

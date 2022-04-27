@@ -11,21 +11,9 @@ using System.Linq;
 namespace FreeLove
 {
     /// <summary>The mod entry point.</summary>
-    public class Misc
+    public partial class ModEntry
     {
         private static Dictionary<string, int> topOfHeadOffsets = new Dictionary<string, int>();
-
-        private static IMonitor Monitor;
-        private static IModHelper Helper;
-        private static ModConfig Config;
-
-        // call this method from your Entry class
-        public static void Initialize(IMonitor monitor, ModConfig config, IModHelper helper)
-        {
-            Monitor = monitor;
-            Helper = helper;
-            Config = config;
-        }
 
         public static void ReloadSpouses(Farmer farmer)
         {
@@ -36,7 +24,7 @@ namespace FreeLove
             {
                 ModEntry.currentSpouses[farmer.UniqueMultiplayerID].Add(ospouse, Game1.getCharacterFromName(ospouse));
             }
-            Monitor.Log($"Checking for extra spouses in {farmer.friendshipData.Count()} friends");
+            SMonitor.Log($"Checking for extra spouses in {farmer.friendshipData.Count()} friends");
             foreach (string friend in farmer.friendshipData.Keys)
             {
                 if (farmer.friendshipData[friend].IsMarried() && friend != farmer.spouse)
@@ -49,7 +37,7 @@ namespace FreeLove
                     }
                 }
             }
-            Monitor.Log($"reloaded {ModEntry.currentSpouses} spouses for {farmer.Name}");
+            SMonitor.Log($"reloaded {ModEntry.currentSpouses} spouses for {farmer.Name}");
         }
         public static Dictionary<string, NPC> GetSpouses(Farmer farmer, bool all)
         {
@@ -69,7 +57,7 @@ namespace FreeLove
             {
                 if(Game1.player.friendshipData[f].Status == FriendshipStatus.Divorced)
                 {
-                    Monitor.Log($"Wiping divorce for {f}");
+                    SMonitor.Log($"Wiping divorce for {f}");
                     if (Game1.player.friendshipData[f].Points < 8 * 250)
                         Game1.player.friendshipData[f].Status = FriendshipStatus.Friendly;
                     else
@@ -83,7 +71,7 @@ namespace FreeLove
         public static void SetNPCRelations()
         {
             relationships.Clear();
-            Dictionary<string, string> NPCDispositions = Helper.Content.Load<Dictionary<string, string>>("Data\\NPCDispositions", ContentSource.GameContent);
+            Dictionary<string, string> NPCDispositions = SHelper.Content.Load<Dictionary<string, string>>("Data\\NPCDispositions", ContentSource.GameContent);
             foreach(KeyValuePair<string,string> kvp in NPCDispositions)
             {
                 string[] relations = kvp.Value.Split('/')[9].Split(' ');
@@ -125,7 +113,7 @@ namespace FreeLove
 
             if (allSpouses.Count == 0)
             {
-                Monitor.Log("no spouses");
+                SMonitor.Log("no spouses");
                 return;
             }
 
@@ -138,18 +126,18 @@ namespace FreeLove
             {
                 if (!farmHouse.Equals(spouse.currentLocation))
                 {
-                    Monitor.Log($"{spouse.Name} is not in farm house ({spouse.currentLocation.Name})");
+                    SMonitor.Log($"{spouse.Name} is not in farm house ({spouse.currentLocation.Name})");
                     continue;
                 }
                 int type = ModEntry.myRand.Next(0, 100);
 
-                Monitor.Log($"spouse rand {type}, bed: {ModEntry.Config.PercentChanceForSpouseInBed} kitchen {ModEntry.Config.PercentChanceForSpouseInKitchen}");
+                SMonitor.Log($"spouse rand {type}, bed: {ModEntry.Config.PercentChanceForSpouseInBed} kitchen {ModEntry.Config.PercentChanceForSpouseInKitchen}");
                 
                 if(type < ModEntry.Config.PercentChanceForSpouseInBed)
                 {
                     if (bedSpouses.Count < 1 && (ModEntry.Config.RoommateRomance || !farmer.friendshipData[spouse.Name].IsRoommate()) && HasSleepingAnimation(spouse.Name))
                     {
-                        Monitor.Log("made bed spouse: " + spouse.Name);
+                        SMonitor.Log("made bed spouse: " + spouse.Name);
                         bedSpouses.Add(spouse.Name);
                     }
 
@@ -158,7 +146,7 @@ namespace FreeLove
                 {
                     if (kitchenSpouse == null)
                     {
-                        Monitor.Log("made kitchen spouse: " + spouse.Name);
+                        SMonitor.Log("made kitchen spouse: " + spouse.Name);
                         kitchenSpouse = spouse.Name;
                     }
                 }
@@ -166,59 +154,59 @@ namespace FreeLove
                 {
                     if (!Game1.isRaining && !Game1.IsWinter && !Game1.shortDayNameFromDayOfSeason(Game1.dayOfMonth).Equals("Sat") && !spouse.Name.Equals("Krobus") && spouse.Schedule == null)
                     {
-                        Monitor.Log("made patio spouse: " + spouse.Name);
+                        SMonitor.Log("made patio spouse: " + spouse.Name);
                         spouse.setUpForOutdoorPatioActivity();
-                        Monitor.Log($"{spouse.Name} at {spouse.currentLocation.Name} {spouse.getTileLocation()}");
+                        SMonitor.Log($"{spouse.Name} at {spouse.currentLocation.Name} {spouse.getTileLocation()}");
                     }
                 }
             }
 
             foreach (NPC spouse in allSpouses) 
             { 
-                Monitor.Log("placing " + spouse.Name);
+                SMonitor.Log("placing " + spouse.Name);
 
                 Point spouseRoomSpot = new Point(-1, -1); 
                 
-                if(Integrations.customSpouseRoomsAPI != null)
+                if(customSpouseRoomsAPI != null)
                 {
-                    Monitor.Log($"Getting spouse spot from Custom Spouse Rooms");
+                    SMonitor.Log($"Getting spouse spot from Custom Spouse Rooms");
 
-                    spouseRoomSpot = Integrations.customSpouseRoomsAPI.GetSpouseTile(spouse);
+                    spouseRoomSpot = customSpouseRoomsAPI.GetSpouseTile(spouse);
                     if(spouseRoomSpot.X >= 0)
-                        Monitor.Log($"Got custom spouse spot {spouseRoomSpot}");
+                        SMonitor.Log($"Got custom spouse spot {spouseRoomSpot}");
                 }
                 if(spouseRoomSpot.X < 0 && farmer.spouse == spouse.Name)
                 {
                     spouseRoomSpot = farmHouse.GetSpouseRoomSpot();
-                    Monitor.Log($"Using default spouse spot {spouseRoomSpot}");
+                    SMonitor.Log($"Using default spouse spot {spouseRoomSpot}");
                 }
 
                 if (!farmHouse.Equals(spouse.currentLocation))
                 {
-                    Monitor.Log($"{spouse.Name} is not in farm house ({spouse.currentLocation.Name})");
+                    SMonitor.Log($"{spouse.Name} is not in farm house ({spouse.currentLocation.Name})");
                     continue;
                 }
 
-                Monitor.Log("in farm house");
+                SMonitor.Log("in farm house");
                 spouse.shouldPlaySpousePatioAnimation.Value = false;
 
                 Vector2 bedPos = GetSpouseBedPosition(farmHouse, spouse.Name);
 
                 if (bedSpouses.Count > 0 && bedSpouses.Contains(spouse.Name) && bedPos != Vector2.Zero)
                 {
-                    Monitor.Log($"putting {spouse.Name} in bed");
+                    SMonitor.Log($"putting {spouse.Name} in bed");
                     spouse.position.Value = GetSpouseBedPosition(farmHouse, spouse.Name);
                 }
                 else if (kitchenSpouse == spouse.Name && !IsTileOccupied(farmHouse, farmHouse.getKitchenStandingSpot(), spouse.Name))
                 {
-                    Monitor.Log($"{spouse.Name} is in kitchen");
+                    SMonitor.Log($"{spouse.Name} is in kitchen");
 
                     spouse.setTilePosition(farmHouse.getKitchenStandingSpot());
                     spouse.setRandomAfternoonMarriageDialogue(Game1.timeOfDay, farmHouse, false);
                 }
                 else if (spouseRoomSpot.X > -1 && !IsTileOccupied(farmHouse, spouseRoomSpot, spouse.Name))
                 {
-                    Monitor.Log($"{spouse.Name} is in spouse room");
+                    SMonitor.Log($"{spouse.Name} is in spouse room");
                     spouse.setTilePosition(spouseRoomSpot);
                     spouse.setSpouseRoomMarriageDialogue();
                 }
@@ -226,7 +214,7 @@ namespace FreeLove
                 { 
                     spouse.setTilePosition(farmHouse.getRandomOpenPointInHouse(ModEntry.myRand));
                     spouse.faceDirection(ModEntry.myRand.Next(0, 4));
-                    Monitor.Log($"{spouse.Name} spouse random loc {spouse.getTileLocationPoint()}");
+                    SMonitor.Log($"{spouse.Name} spouse random loc {spouse.getTileLocationPoint()}");
                     spouse.setRandomAfternoonMarriageDialogue(Game1.timeOfDay, farmHouse, false);
                 }
             }
@@ -240,7 +228,7 @@ namespace FreeLove
             {
                 if (location.characters[i] != null && !location.characters[i].Name.Equals(characterToIgnore) && location.characters[i].GetBoundingBox().Intersects(tileLocationRect))
                 {
-                    Monitor.Log($"Tile {tileLocation} is occupied by {location.characters[i].Name}");
+                    SMonitor.Log($"Tile {tileLocation} is occupied by {location.characters[i].Name}");
 
                     return true;
                 }
@@ -289,9 +277,9 @@ namespace FreeLove
         }
         public static int GetBedWidth()
         {
-            if (Integrations.bedTweaksAPI != null)
+            if (bedTweaksAPI != null)
             {
-                return Integrations.bedTweaksAPI.GetBedWidth();
+                return bedTweaksAPI.GetBedWidth();
             }
             else
             {
@@ -328,7 +316,7 @@ namespace FreeLove
             if (configString != ModEntry.Config.SpouseSleepOrder)
             {
                 ModEntry.Config.SpouseSleepOrder = configString;
-                Helper.WriteConfig(ModEntry.Config);
+                SHelper.WriteConfig(ModEntry.Config);
             }
 
             return spouses;
@@ -341,7 +329,7 @@ namespace FreeLove
             {
                 return topOfHeadOffsets[name];
             }
-            //Monitor.Log($"dont yet have offset for {name}");
+            //SMonitor.Log($"dont yet have offset for {name}");
             int top = 0;
 
             if (name == "Krobus")
@@ -363,19 +351,19 @@ namespace FreeLove
             Color[] colors = new Color[tex.Width * tex.Height];
             tex.GetData(colors);
 
-            //Monitor.Log($"sleep index for {name} {sleepidx}");
+            //SMonitor.Log($"sleep index for {name} {sleepidx}");
 
             int startx = (sleepidx * 16) % 64;
             int starty = (sleepidx * 16) / 64 * 32;
 
-            //Monitor.Log($"start {startx},{starty}");
+            //SMonitor.Log($"start {startx},{starty}");
 
             for (int i = 0; i < 16 * 32; i++)
             {
                 int idx = startx + (i % 16) + (starty + i / 16) * 64;
                 if (idx >= colors.Length)
                 {
-                    Monitor.Log($"Sleep pos couldn't get pixel at {startx + i % 16},{starty + i / 16} ");
+                    SMonitor.Log($"Sleep pos couldn't get pixel at {startx + i % 16},{starty + i / 16} ");
                     break;
                 }
                 Color c = colors[idx];
@@ -399,8 +387,8 @@ namespace FreeLove
             if (!int.TryParse(sleepAnim.Split('/')[0], out int sleepidx))
                 return false;
 
-            Texture2D tex = Helper.Content.Load<Texture2D>($"Characters/{name}", ContentSource.GameContent);
-            //Monitor.Log($"tex height for {name}: {tex.Height}");
+            Texture2D tex = SHelper.Content.Load<Texture2D>($"Characters/{name}", ContentSource.GameContent);
+            //SMonitor.Log($"tex height for {name}: {tex.Height}");
 
             if (sleepidx / 4 * 32 >= tex.Height)
             {
@@ -426,7 +414,7 @@ namespace FreeLove
 
         internal static void NPCDoAnimation(NPC npc, string npcAnimation)
         {
-            Dictionary<string, string> animationDescriptions = Helper.Content.Load<Dictionary<string, string>>("Data\\animationDescriptions", ContentSource.GameContent);
+            Dictionary<string, string> animationDescriptions = SHelper.Content.Load<Dictionary<string, string>>("Data\\animationDescriptions", ContentSource.GameContent);
             if (!animationDescriptions.ContainsKey(npcAnimation))
                 return;
 
@@ -438,7 +426,7 @@ namespace FreeLove
             {
                     anim.Add(new FarmerSprite.AnimationFrame(animFrames[i], 100, 0, false, false, null, false, 0));
             }
-            Monitor.Log($"playing animation {npcAnimation} for {npc.Name}");
+            SMonitor.Log($"playing animation {npcAnimation} for {npc.Name}");
             npc.Sprite.setCurrentAnimation(anim);
         }
 
@@ -449,7 +437,7 @@ namespace FreeLove
             {
                 if(spouses.Count > 0)
                 {
-                    Monitor.Log("No official spouse, setting official spouse to: " + spouses.First().Key);
+                    SMonitor.Log("No official spouse, setting official spouse to: " + spouses.First().Key);
                     f.spouse = spouses.First().Key;
                 }
             }
@@ -458,29 +446,29 @@ namespace FreeLove
             {
                 if (f.friendshipData[name].IsEngaged())
                 {
-                    Monitor.Log($"{f.Name} is engaged to: {name} {f.friendshipData[name].CountdownToWedding} days until wedding");
+                    SMonitor.Log($"{f.Name} is engaged to: {name} {f.friendshipData[name].CountdownToWedding} days until wedding");
                     if (f.friendshipData[name].WeddingDate.TotalDays < new WorldDate(Game1.Date).TotalDays)
                     {
-                        Monitor.Log("invalid engagement: " + name);
+                        SMonitor.Log("invalid engagement: " + name);
                         f.friendshipData[name].WeddingDate.TotalDays = new WorldDate(Game1.Date).TotalDays + 1;
                     }
                     if(f.spouse != name)
                     {
-                        Monitor.Log("setting spouse to engagee: " + name);
+                        SMonitor.Log("setting spouse to engagee: " + name);
                         f.spouse = name;
                     }
                 }
                 if (f.friendshipData[name].IsMarried() && f.spouse != name)
                 {
-                    //Monitor.Log($"{f.Name} is married to: {name}");
+                    //SMonitor.Log($"{f.Name} is married to: {name}");
                     if (f.spouse != null && f.friendshipData[f.spouse] != null && !f.friendshipData[f.spouse].IsMarried() && !f.friendshipData[f.spouse].IsEngaged())
                     {
-                        Monitor.Log("invalid ospouse, setting ospouse to " + name);
+                        SMonitor.Log("invalid ospouse, setting ospouse to " + name);
                         f.spouse = name;
                     }
                     if (f.spouse == null)
                     {
-                        Monitor.Log("null ospouse, setting ospouse to " + name);
+                        SMonitor.Log("null ospouse, setting ospouse to " + name);
                         f.spouse = name;
                     }
                 }
@@ -501,7 +489,7 @@ namespace FreeLove
                 NPC npc = Game1.getCharacterFromName(friend);
                 if (npc != null && !npc.datable.Value && npc is NPC && !(npc is Child) && (npc.Age == 0 || npc.Age == 1))
                 {
-                    Monitor.Log($"Making {npc.Name} datable.");
+                    SMonitor.Log($"Making {npc.Name} datable.");
                     npc.datable.Value = true;
                 }
             }

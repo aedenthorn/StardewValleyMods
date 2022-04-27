@@ -102,11 +102,11 @@ namespace FreeLove
 
 
 
-                    List<NPC> spouses = Misc.GetSpouses(Game1.player,true).Values.OrderBy(o => Game1.player.friendshipData[o.Name].Points).Reverse().Take(4).ToList();
+                    List<NPC> spouses = ModEntry.GetSpouses(Game1.player,true).Values.OrderBy(o => Game1.player.friendshipData[o.Name].Points).Reverse().Take(4).ToList();
 
                     List<int> which = new List<int>{ 0, 1, 2, 3 };
 
-                    Misc.ShuffleList(ref which);
+                    ModEntry.ShuffleList(ref which);
 
                     List<int> myWhich = new List<int>(which).Take(spouses.Count).ToList();
 
