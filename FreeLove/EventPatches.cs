@@ -20,6 +20,7 @@ namespace FreeLove
             Helper = helper;
             Config = config;
         }
+        public static bool startingLoadActors = false;
 
         public static bool Event_answerDialogueQuestion_Prefix(Event __instance, NPC who, string answerKey)
         {
@@ -75,6 +76,30 @@ namespace FreeLove
             }
             return true;
         }
+        public static void Event_command_loadActors_Prefix()
+        {
+            try
+            {
+                startingLoadActors = true;
+            }
+            catch (Exception ex)
+            {
+                Monitor.Log($"Failed in {nameof(Event_command_loadActors_Prefix)}:\n{ex}", LogLevel.Error);
+            }
+        }
 
+        public static void Event_command_loadActors_Postfix()
+        {
+            try
+            {
+                startingLoadActors = false;
+                Game1Patches.lastGotCharacter = null;
+
+            }
+            catch (Exception ex)
+            {
+                Monitor.Log($"Failed in {nameof(Event_command_loadActors_Postfix)}:\n{ex}", LogLevel.Error);
+            }
+        }
     }
 }

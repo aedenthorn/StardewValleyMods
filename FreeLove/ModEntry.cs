@@ -56,6 +56,7 @@ namespace FreeLove
             PathFindControllerPatches.Initialize(Monitor, Config, helper);
             Divorce.Initialize(Monitor, Config, helper);
             NPCPatches.Initialize(Monitor, Config, helper);
+            Game1Patches.Initialize(Monitor);
             LocationPatches.Initialize(Monitor, Config, helper);
             FarmerPatches.Initialize(Monitor, Config, helper);
             UIPatches.Initialize(Monitor, Config, helper);
@@ -255,6 +256,11 @@ namespace FreeLove
                prefix: new HarmonyMethod(typeof(FarmerPatches), nameof(FarmerPatches.Farmer_checkAction_Prefix))
             );
 
+            harmony.Patch(
+               original: AccessTools.Method(typeof(Farmer), nameof(Farmer.getChildren)),
+               prefix: new HarmonyMethod(typeof(FarmerPatches), nameof(FarmerPatches.Farmer_getChildren_Prefix))
+            );
+
 
             // UI patches
 
@@ -285,6 +291,19 @@ namespace FreeLove
             harmony.Patch(
                original: AccessTools.Method(typeof(Event), nameof(Event.answerDialogueQuestion)),
                prefix: new HarmonyMethod(typeof(EventPatches), nameof(EventPatches.Event_answerDialogueQuestion_Prefix))
+            );
+            harmony.Patch(
+               original: AccessTools.Method(typeof(Event), nameof(Event.command_loadActors)),
+               prefix: new HarmonyMethod(typeof(EventPatches), nameof(EventPatches.Event_command_loadActors_Prefix)),
+               postfix: new HarmonyMethod(typeof(EventPatches), nameof(EventPatches.Event_command_loadActors_Postfix))
+            );
+
+
+            // Game1 patches
+
+            harmony.Patch(
+               original: AccessTools.Method(typeof(Game1), nameof(Game1.getCharacterFromName), new Type[] { typeof(string), typeof(bool), typeof(bool) }),
+               prefix: new HarmonyMethod(typeof(Game1Patches), nameof(Game1Patches.getCharacterFromName_Prefix))
             );
 
         }
