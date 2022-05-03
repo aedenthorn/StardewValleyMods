@@ -30,6 +30,7 @@ namespace FarmerPortraits
                     return;
                 if ((__instance.isPortraitBox() && Config.ShowWithNPCPortrait) || (__instance.isQuestion && Config.ShowWithQuestions))
                 {
+                    ReloadTextures();
                     __instance.x += 224;
                     __instance.friendshipJewel.X += 224;
                 }

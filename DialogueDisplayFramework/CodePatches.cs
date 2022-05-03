@@ -71,6 +71,27 @@ namespace DialogueDisplayFramework
 			}
 		}
     
+		[HarmonyPatch(typeof(DialogueBox), nameof(DialogueBox.gameWindowSizeChanged))]
+		public class DialogueBox_gameWindowSizeChanged_Patch
+		{
+            public static void Postfix(DialogueBox __instance)
+			{
+				if (!Config.EnableMod || __instance.characterDialogue?.speaker is null)
+					return;
+				if (!dataDict.TryGetValue(__instance.characterDialogue.speaker.Name, out DialogueDisplayData data))
+				{
+					if (!dataDict.TryGetValue(defaultKey, out data))
+						return;
+				}
+				__instance.x += data.xOffset;
+				__instance.y += data.yOffset;
+				if (data.width > 0)
+					__instance.width = data.width;
+				if (data.height > 0)
+					__instance.height = data.height;
+			}
+		}
+    
 		[HarmonyPatch(typeof(DialogueBox), nameof(DialogueBox.drawPortrait))]
         public class DialogueBox_drawPortrait_Patch
         {

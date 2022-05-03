@@ -11,6 +11,13 @@ namespace TrainTracks
     public partial class ModEntry
     {
 
+        private static void Horse_draw_Prefix(Horse __instance, SpriteBatch b)
+        {
+            if (!Config.EnableMod || !__instance.modData.ContainsKey(trainKey) || frontTexture == null)
+                return;
+            
+            b.Draw(frontTexture, Game1.GlobalToLocal(Game1.viewport, __instance.Position + new Vector2(__instance.flip ? 0 : -16, - 80)), new Rectangle?(__instance.Sprite.sourceRect), Color.White, 0f, Vector2.Zero, 4f, __instance.flip ? SpriteEffects.FlipHorizontally : SpriteEffects.None, (__instance.Position.Y + 64f) / 10000f);
+        }
         private static void Horse_draw_Postfix(Horse __instance, SpriteBatch b)
         {
             if (!Config.EnableMod || !__instance.modData.ContainsKey(trainKey) || frontTexture == null)

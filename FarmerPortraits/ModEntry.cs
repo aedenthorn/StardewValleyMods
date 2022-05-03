@@ -3,9 +3,6 @@ using Microsoft.Xna.Framework.Graphics;
 using StardewModdingAPI;
 using StardewModdingAPI.Events;
 using StardewValley;
-using StardewValley.Locations;
-using StardewValley.Objects;
-using Object = StardewValley.Object;
 
 namespace FarmerPortraits
 {
@@ -33,12 +30,16 @@ namespace FarmerPortraits
             SHelper = helper;
 
             helper.Events.GameLoop.GameLaunched += GameLoop_GameLaunched;
-            helper.Events.GameLoop.SaveLoaded += GameLoop_SaveLoaded;
+            helper.Events.GameLoop.DayStarted += GameLoop_DayStarted;
             var harmony = new Harmony(ModManifest.UniqueID);
             harmony.PatchAll();
         }
+        private void GameLoop_DayStarted(object sender, DayStartedEventArgs e)
+        {
+            ReloadTextures();
+        }
 
-        private void GameLoop_SaveLoaded(object sender, SaveLoadedEventArgs e)
+        private static void ReloadTextures()
         {
             try
             {
