@@ -17,12 +17,12 @@ namespace FreeLove
 
         public static void ReloadSpouses(Farmer farmer)
         {
-            ModEntry.currentSpouses[farmer.UniqueMultiplayerID] = new Dictionary<string, NPC>();
-            ModEntry.currentUnofficialSpouses[farmer.UniqueMultiplayerID] = new Dictionary<string, NPC>();
+            currentSpouses[farmer.UniqueMultiplayerID] = new Dictionary<string, NPC>();
+            currentUnofficialSpouses[farmer.UniqueMultiplayerID] = new Dictionary<string, NPC>();
             string ospouse = farmer.spouse;
             if (ospouse != null)
             {
-                ModEntry.currentSpouses[farmer.UniqueMultiplayerID].Add(ospouse, Game1.getCharacterFromName(ospouse));
+                currentSpouses[farmer.UniqueMultiplayerID].Add(ospouse, Game1.getCharacterFromName(ospouse));
             }
             SMonitor.Log($"Checking for extra spouses in {farmer.friendshipData.Count()} friends");
             foreach (string friend in farmer.friendshipData.Keys)
@@ -32,25 +32,25 @@ namespace FreeLove
                     var npc = Game1.getCharacterFromName(friend, true);
                     if(npc != null)
                     {
-                        ModEntry.currentSpouses[farmer.UniqueMultiplayerID].Add(friend, npc);
-                        ModEntry.currentUnofficialSpouses[farmer.UniqueMultiplayerID].Add(friend, npc);
+                        currentSpouses[farmer.UniqueMultiplayerID].Add(friend, npc);
+                        currentUnofficialSpouses[farmer.UniqueMultiplayerID].Add(friend, npc);
                     }
                 }
             }
-            SMonitor.Log($"reloaded {ModEntry.currentSpouses} spouses for {farmer.Name}");
+            SMonitor.Log($"reloaded {currentSpouses.Count} spouses for {farmer.Name}");
         }
         public static Dictionary<string, NPC> GetSpouses(Farmer farmer, bool all)
         {
-            if(!ModEntry.currentSpouses.ContainsKey(farmer.UniqueMultiplayerID) || (ModEntry.currentSpouses[farmer.UniqueMultiplayerID].Count == 0 && farmer.spouse != null))
+            if(!currentSpouses.ContainsKey(farmer.UniqueMultiplayerID) || (currentSpouses[farmer.UniqueMultiplayerID].Count == 0 && farmer.spouse != null))
             {
                 ReloadSpouses(farmer);
             }
-            return all ? ModEntry.currentSpouses[farmer.UniqueMultiplayerID] : ModEntry.currentUnofficialSpouses[farmer.UniqueMultiplayerID];
+            return all ? currentSpouses[farmer.UniqueMultiplayerID] : currentUnofficialSpouses[farmer.UniqueMultiplayerID];
         }
 
         internal static void ResetDivorces()
         {
-            if (!ModEntry.Config.PreventHostileDivorces)
+            if (!Config.PreventHostileDivorces)
                 return;
             List<string> friends = Game1.player.friendshipData.Keys.ToList();
             foreach(string f in friends)
@@ -129,20 +129,20 @@ namespace FreeLove
                     SMonitor.Log($"{spouse.Name} is not in farm house ({spouse.currentLocation.Name})");
                     continue;
                 }
-                int type = ModEntry.myRand.Next(0, 100);
+                int type = myRand.Next(0, 100);
 
-                SMonitor.Log($"spouse rand {type}, bed: {ModEntry.Config.PercentChanceForSpouseInBed} kitchen {ModEntry.Config.PercentChanceForSpouseInKitchen}");
+                SMonitor.Log($"spouse rand {type}, bed: {Config.PercentChanceForSpouseInBed} kitchen {Config.PercentChanceForSpouseInKitchen}");
                 
-                if(type < ModEntry.Config.PercentChanceForSpouseInBed)
+                if(type < Config.PercentChanceForSpouseInBed)
                 {
-                    if (bedSpouses.Count < 1 && (ModEntry.Config.RoommateRomance || !farmer.friendshipData[spouse.Name].IsRoommate()) && HasSleepingAnimation(spouse.Name))
+                    if (bedSpouses.Count < 1 && (Config.RoommateRomance || !farmer.friendshipData[spouse.Name].IsRoommate()) && HasSleepingAnimation(spouse.Name))
                     {
                         SMonitor.Log("made bed spouse: " + spouse.Name);
                         bedSpouses.Add(spouse.Name);
                     }
 
                 }
-                else if(type < ModEntry.Config.PercentChanceForSpouseInBed + ModEntry.Config.PercentChanceForSpouseInKitchen)
+                else if(type < Config.PercentChanceForSpouseInBed + Config.PercentChanceForSpouseInKitchen)
                 {
                     if (kitchenSpouse == null)
                     {
@@ -150,7 +150,7 @@ namespace FreeLove
                         kitchenSpouse = spouse.Name;
                     }
                 }
-                else if(type < ModEntry.Config.PercentChanceForSpouseInBed + ModEntry.Config.PercentChanceForSpouseInKitchen + ModEntry.Config.PercentChanceForSpouseAtPatio)
+                else if(type < Config.PercentChanceForSpouseInBed + Config.PercentChanceForSpouseInKitchen + Config.PercentChanceForSpouseAtPatio)
                 {
                     if (!Game1.isRaining && !Game1.IsWinter && !Game1.shortDayNameFromDayOfSeason(Game1.dayOfMonth).Equals("Sat") && !spouse.Name.Equals("Krobus") && spouse.Schedule == null)
                     {
@@ -212,8 +212,8 @@ namespace FreeLove
                 }
                 else 
                 { 
-                    spouse.setTilePosition(farmHouse.getRandomOpenPointInHouse(ModEntry.myRand));
-                    spouse.faceDirection(ModEntry.myRand.Next(0, 4));
+                    spouse.setTilePosition(farmHouse.getRandomOpenPointInHouse(myRand));
+                    spouse.faceDirection(myRand.Next(0, 4));
                     SMonitor.Log($"{spouse.Name} spouse random loc {spouse.getTileLocationPoint()}");
                     spouse.setRandomAfternoonMarriageDialogue(Game1.timeOfDay, farmHouse, false);
                 }
@@ -253,7 +253,7 @@ namespace FreeLove
 
             Point bedStart = GetBedStart(fh);
             int x = 64 + (int)((allBedmates.IndexOf(name) + 1) / (float)(allBedmates.Count + 1) * (GetBedWidth() - 1) * 64);
-            return new Vector2(bedStart.X * 64 + x, bedStart.Y * 64 + ModEntry.bedSleepOffset - (GetTopOfHeadSleepOffset(name) * 4));
+            return new Vector2(bedStart.X * 64 + x, bedStart.Y * 64 + bedSleepOffset - (GetTopOfHeadSleepOffset(name) * 4));
         }
 
         public static Point GetBedStart(FarmHouse fh)
@@ -288,7 +288,7 @@ namespace FreeLove
         }
         public static List<string> GetBedSpouses(FarmHouse fh)
         {
-            if (ModEntry.Config.RoommateRomance)
+            if (Config.RoommateRomance)
                 return GetSpouses(fh.owner, true).Keys.ToList();
 
             return GetSpouses(fh.owner, true).Keys.ToList().FindAll(s => !fh.owner.friendshipData[s].RoommateMarriage);
@@ -296,7 +296,7 @@ namespace FreeLove
 
         public static List<string> ReorderSpousesForSleeping(List<string> sleepSpouses)
         {
-            List<string> configSpouses = ModEntry.Config.SpouseSleepOrder.Split(',').Where(s => s.Length > 0).ToList();
+            List<string> configSpouses = Config.SpouseSleepOrder.Split(',').Where(s => s.Length > 0).ToList();
             List<string> spouses = new List<string>();
             foreach (string s in configSpouses)
             {
@@ -313,10 +313,10 @@ namespace FreeLove
                 }
             }
             string configString = string.Join(",", configSpouses);
-            if (configString != ModEntry.Config.SpouseSleepOrder)
+            if (configString != Config.SpouseSleepOrder)
             {
-                ModEntry.Config.SpouseSleepOrder = configString;
-                SHelper.WriteConfig(ModEntry.Config);
+                Config.SpouseSleepOrder = configString;
+                SHelper.WriteConfig(Config);
             }
 
             return spouses;
@@ -477,7 +477,7 @@ namespace FreeLove
         }
         public static void SetAllNPCsDatable()
         {
-            if (!ModEntry.Config.RomanceAllVillagers)
+            if (!Config.RomanceAllVillagers)
                 return;
             Farmer f = Game1.player;
             if (f == null)
@@ -502,7 +502,7 @@ namespace FreeLove
             while (n > 1)
             {
                 n--;
-                int k = ModEntry.myRand.Next(n + 1);
+                int k = myRand.Next(n + 1);
                 var value = list[k];
                 list[k] = list[n];
                 list[n] = value;
@@ -514,7 +514,7 @@ namespace FreeLove
             while (n > 1)
             {
                 n--;
-                int k = ModEntry.myRand.Next(n + 1);
+                int k = myRand.Next(n + 1);
                 var value = list[list.Keys.ToArray()[k]];
                 list[list.Keys.ToArray()[k]] = list[list.Keys.ToArray()[n]];
                 list[list.Keys.ToArray()[n]] = value;

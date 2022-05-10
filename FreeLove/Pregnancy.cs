@@ -27,9 +27,9 @@ namespace FreeLove
                 return false;
             }
 
-            List<NPC> allSpouses = ModEntry.GetSpouses(Game1.player,true).Values.ToList();
+            List<NPC> allSpouses = GetSpouses(Game1.player,true).Values.ToList();
 
-            ModEntry.ShuffleList(ref allSpouses);
+            ShuffleList(ref allSpouses);
             
             foreach (NPC spouse in allSpouses)
             {
@@ -231,7 +231,7 @@ namespace FreeLove
 
         public static void answerPregnancyQuestion(Farmer who, string answer)
         {
-            if (answer.Equals("Yes"))
+            if (answer == "Yes" && who is not null && lastPregnantSpouse is not null && who.friendshipData.ContainsKey(lastPregnantSpouse.Name))
             {
                 WorldDate birthingDate = new WorldDate(Game1.Date);
                 birthingDate.TotalDays += 14;

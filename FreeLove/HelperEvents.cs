@@ -156,7 +156,7 @@ namespace FreeLove
             if (Game1.IsMasterGame)
             {
                 Game1.getFarm().addSpouseOutdoorArea(Game1.player.spouse == null ? "" : Game1.player.spouse);
-                ModEntry.farmHelperSpouse = GetRandomSpouse(Game1.MasterPlayer);
+                farmHelperSpouse = GetRandomSpouse(Game1.MasterPlayer);
             }
             foreach(Farmer f in Game1.getAllFarmers())
             {
