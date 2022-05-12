@@ -109,12 +109,13 @@ namespace FreeLove
                original: AccessTools.Method(typeof(NPC), nameof(NPC.setUpForOutdoorPatioActivity)),
                prefix: new HarmonyMethod(typeof(NPCPatches), nameof(NPCPatches.NPC_setUpForOutdoorPatioActivity_Prefix))
             );
-            /*
+            
             harmony.Patch(
                original: AccessTools.Method(typeof(NPC), nameof(NPC.playSleepingAnimation)),
+               prefix: new HarmonyMethod(typeof(NPCPatches), nameof(NPCPatches.NPC_playSleepingAnimation_Prefix)),
                postfix: new HarmonyMethod(typeof(NPCPatches), nameof(NPCPatches.NPC_playSleepingAnimation_Postfix))
             );
-            */
+            
             harmony.Patch(
                original: AccessTools.Method(typeof(NPC), nameof(NPC.GetDispositionModifiedString)),
                prefix: new HarmonyMethod(typeof(NPCPatches), nameof(NPCPatches.NPC_GetDispositionModifiedString_Prefix)),

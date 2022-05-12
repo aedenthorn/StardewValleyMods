@@ -97,7 +97,7 @@ namespace FarmerHelper
                 bool found = false;
                 foreach (FarmAnimal animal in Game1.getFarm().Animals.Values)
                 {
-                    if (animal.currentProduce.Value > 0)
+                    if (animal.currentProduce.Value > 0 && !animal.type.Value.Contains("Pig"))
                     {
                         question = string.Format(SHelper.Translation.Get("animals-need-harvesting"), question);
                         found = true;
@@ -114,7 +114,7 @@ namespace FarmerHelper
                             continue;
                         foreach(FarmAnimal animal in (building.indoors.Value as AnimalHouse).animals.Values)
                         {
-                            if (animal.currentProduce.Value > 0)
+                            if (animal.currentProduce.Value > 0 && !animal.type.Value.Contains("Pig"))
                             {
                                 question = string.Format(SHelper.Translation.Get("animals-need-harvesting"), question);
                                 found = true;

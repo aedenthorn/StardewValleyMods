@@ -973,6 +973,23 @@ namespace FreeLove
             return codes.AsEnumerable();
         }
 
+        public static bool NPC_playSleepingAnimation_Prefix(NPC __instance, bool ___isPlayingSleepingAnimation)
+        {
+            try
+            {
+                if (___isPlayingSleepingAnimation)
+                    return true;
+                Dictionary<string, string> animationDescriptions = Game1.content.Load<Dictionary<string, string>>("Data\\animationDescriptions");
+                if (animationDescriptions.TryGetValue(__instance.Name.ToLower() + "_sleep", out string sleepString) && !int.TryParse(sleepString.Split('/')[0], out int sleep_frame))
+                    return false;
+            }
+            catch (Exception ex)
+            {
+                Monitor.Log($"Failed in {nameof(NPC_playSleepingAnimation_Prefix)}:\n{ex}", LogLevel.Error);
+            }
+            return true;
+        }
+
         public static void NPC_playSleepingAnimation_Postfix(NPC __instance)
         {
             try
