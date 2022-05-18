@@ -150,6 +150,9 @@ namespace FoodOnTheTable
 									case 2:
 										points = 20;
 										break;
+									default:
+										__instance.doEmote(20);
+										break;
 								}
 								owner.friendshipData[__instance.Name].Points += (int)(points * Config.PointsMult);
 								SMonitor.Log($"Friendship with {owner.Name} increased by {(int)(points * Config.PointsMult)} points!");
