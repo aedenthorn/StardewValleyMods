@@ -1,18 +1,18 @@
 ﻿{
-  "Name": "Custom Fixed Dialogue",
+  "Name": "LoadMenuTweaks",
   "Author": "aedenthorn",
-  "Version": "2.1.7",
-  "Description": "Custom fixed dialogue.",
-  "UniqueID": "aedenthorn.CustomFixedDialogue",
-  "EntryDll": "CustomFixedDialogue.dll",
+  "Version": "0.1.0",
+  "Description": "Load Menu Tweaks.",
+  "UniqueID": "aedenthorn.LoadMenuTweaks",
+  "EntryDll": "LoadMenuTweaks.dll",
   "MinimumApiVersion": "3.13.0",
-  "UpdateKeys": [ "Nexus:6358" ],
   "ModUpdater": {
     "Repository": "StardewValleyMods",
     "User": "aedenthorn",
     "Directory": "_releases",
-    "ModFolder": "CustomFixedDialogue"
+    "ModFolder": "LoadMenuTweaks"
   },
+  "UpdateKeys": [ "Nexus:" ],
   "Dependencies": [
     {
       "UniqueID": "Platonymous.ModUpdater",

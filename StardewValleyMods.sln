@@ -327,6 +327,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CropHat", "CropHat\CropHat.
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MinuteDisplay", "MinuteDisplay\MinuteDisplay.csproj", "{1B09BE4B-90A8-4E71-AF6B-10ABF95D1E0A}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DialogueNewLine", "DialogueNewLine\DialogueNewLine.csproj", "{BC36EA9D-EB5B-4E18-A0E2-B25EE84BEE7F}"
+EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
 		_releases\_releases.projitems*{047040e0-3d07-46e5-852b-d1d45cd57bb8}*SharedItemsImports = 13
@@ -1602,6 +1604,14 @@ Global
 		{1B09BE4B-90A8-4E71-AF6B-10ABF95D1E0A}.Release|Any CPU.Build.0 = Release|Any CPU
 		{1B09BE4B-90A8-4E71-AF6B-10ABF95D1E0A}.Release|x86.ActiveCfg = Release|Any CPU
 		{1B09BE4B-90A8-4E71-AF6B-10ABF95D1E0A}.Release|x86.Build.0 = Release|Any CPU
+		{BC36EA9D-EB5B-4E18-A0E2-B25EE84BEE7F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BC36EA9D-EB5B-4E18-A0E2-B25EE84BEE7F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BC36EA9D-EB5B-4E18-A0E2-B25EE84BEE7F}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{BC36EA9D-EB5B-4E18-A0E2-B25EE84BEE7F}.Debug|x86.Build.0 = Debug|Any CPU
+		{BC36EA9D-EB5B-4E18-A0E2-B25EE84BEE7F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BC36EA9D-EB5B-4E18-A0E2-B25EE84BEE7F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BC36EA9D-EB5B-4E18-A0E2-B25EE84BEE7F}.Release|x86.ActiveCfg = Release|Any CPU
+		{BC36EA9D-EB5B-4E18-A0E2-B25EE84BEE7F}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
