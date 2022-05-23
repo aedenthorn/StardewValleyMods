@@ -31,7 +31,7 @@ namespace FreeLove
             {
                 Monitor.Log("divorcing " + whichAnswer);
                 string s2 = Game1.content.LoadString("Strings\\Locations:ManorHouse_DivorceBook_Question_" + whichAnswer, whichAnswer);
-                if (s2 == null)
+                if (s2 == null || s2 == "Strings\\Locations:ManorHouse_DivorceBook_Question_" + whichAnswer)
                 {
                     s2 = Game1.content.LoadStringReturnNullIfNotFound("Strings\\Locations:ManorHouse_DivorceBook_Question");
                 }
@@ -150,7 +150,7 @@ namespace FreeLove
                     }
                     Game1.player.divorceTonight.Value = true;
                     string s = Game1.content.LoadString("Strings\\Locations:ManorHouse_DivorceBook_Filed_" + complexDivorceSpouse, complexDivorceSpouse);
-                    if (s == null)
+                    if (s == null || s == "Strings\\Locations:ManorHouse_DivorceBook_Filed_" + complexDivorceSpouse)
                     {
                         s = Game1.content.LoadStringReturnNullIfNotFound("Strings\\Locations:ManorHouse_DivorceBook_Filed");
                     }
