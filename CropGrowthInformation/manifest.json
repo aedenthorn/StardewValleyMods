@@ -1,16 +1,16 @@
 ﻿{
-  "Name": "Crop Growth Indicator",
+  "Name": "Crop Growth Information",
   "Author": "aedenthorn",
   "Version": "0.1.0",
-  "Description": "Crop Growth Indicator.",
-  "UniqueID": "aedenthorn.CropGrowthIndicator",
-  "EntryDll": "CropGrowthIndicator.dll",
+  "Description": "Crop Growth Information.",
+  "UniqueID": "aedenthorn.CropGrowthInformation",
+  "EntryDll": "CropGrowthInformation.dll",
   "MinimumApiVersion": "3.13.0",
   "ModUpdater": {
     "Repository": "StardewValleyMods",
     "User": "aedenthorn",
     "Directory": "_releases",
-    "ModFolder": "CropGrowthIndicator"
+    "ModFolder": "CropGrowthInformation"
   },
   "UpdateKeys": [ "Nexus:" ],
   "Dependencies": [

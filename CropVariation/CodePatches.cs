@@ -37,7 +37,7 @@ namespace CropVariation
                     int redVar = (int)Math.Round(Config.ColorVariation * redVarFloat);
                     int greenVar = (int)Math.Round(Config.ColorVariation * greenVarFloat);
                     int blueVar = (int)Math.Round(Config.ColorVariation * blueVarFloat);
-                    toTint = new Color(Math.Clamp(toTint.R + redVar, 0, 255), Math.Clamp(toTint.G + greenVar, 0, 255), Math.Clamp(toTint.B + blueVar, 0, 255));
+                    toTint = new Color(Math.Clamp(toTint.R + redVar, 0, 255), Math.Clamp(toTint.G + greenVar, 0, 255), Math.Clamp(toTint.B + blueVar, 0, 255), toTint.A);
                 }
                 __state = ___layerDepth;
                 ___layerDepth += tileLocation.X / 1000000f;
