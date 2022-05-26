@@ -1,18 +1,18 @@
 ﻿{
-  "Name": "DialogueNewLine",
+  "Name": "Crop Growth Indicator",
   "Author": "aedenthorn",
   "Version": "0.1.0",
-  "Description": "Insert newline into dialogue text.",
-  "UniqueID": "aedenthorn.DialogueNewLine",
-  "EntryDll": "DialogueNewLine.dll",
+  "Description": "Crop Growth Indicator.",
+  "UniqueID": "aedenthorn.CropGrowthIndicator",
+  "EntryDll": "CropGrowthIndicator.dll",
   "MinimumApiVersion": "3.13.0",
   "ModUpdater": {
     "Repository": "StardewValleyMods",
     "User": "aedenthorn",
     "Directory": "_releases",
-    "ModFolder": "DialogueNewLine"
+    "ModFolder": "CropGrowthIndicator"
   },
-  "UpdateKeys": [ "Nexus:12175" ],
+  "UpdateKeys": [ "Nexus:" ],
   "Dependencies": [
     {
       "UniqueID": "Platonymous.ModUpdater",

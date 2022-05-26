@@ -37,6 +37,20 @@ namespace DialogueNewLine
                 return codes.AsEnumerable();
             }
         }
+        
+        [HarmonyPatch(typeof(SpriteText), "IsSpecialCharacter")]
+        public class SpriteText_IsSpecialCharacter_Patch
+        {
+            public static bool Prefix(char c, ref bool __result)
+            {
+                if(Config.EnableMod && c == specialCharacter)
+                {
+                    __result = true;
+                    return false;
+                }
+                return true;
+            }
+        }
 
         private static int positionOfNextSpace(string s, int i, int x, int space)
         {

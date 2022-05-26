@@ -329,6 +329,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MinuteDisplay", "MinuteDisp
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DialogueNewLine", "DialogueNewLine\DialogueNewLine.csproj", "{BC36EA9D-EB5B-4E18-A0E2-B25EE84BEE7F}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CropGrowthIndicator", "CropGrowthIndicator\CropGrowthIndicator.csproj", "{C8BE2DA9-D975-440D-87AA-2D1F96C0B964}"
+EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
 		_releases\_releases.projitems*{047040e0-3d07-46e5-852b-d1d45cd57bb8}*SharedItemsImports = 13
@@ -1612,6 +1614,14 @@ Global
 		{BC36EA9D-EB5B-4E18-A0E2-B25EE84BEE7F}.Release|Any CPU.Build.0 = Release|Any CPU
 		{BC36EA9D-EB5B-4E18-A0E2-B25EE84BEE7F}.Release|x86.ActiveCfg = Release|Any CPU
 		{BC36EA9D-EB5B-4E18-A0E2-B25EE84BEE7F}.Release|x86.Build.0 = Release|Any CPU
+		{C8BE2DA9-D975-440D-87AA-2D1F96C0B964}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C8BE2DA9-D975-440D-87AA-2D1F96C0B964}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C8BE2DA9-D975-440D-87AA-2D1F96C0B964}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{C8BE2DA9-D975-440D-87AA-2D1F96C0B964}.Debug|x86.Build.0 = Debug|Any CPU
+		{C8BE2DA9-D975-440D-87AA-2D1F96C0B964}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C8BE2DA9-D975-440D-87AA-2D1F96C0B964}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C8BE2DA9-D975-440D-87AA-2D1F96C0B964}.Release|x86.ActiveCfg = Release|Any CPU
+		{C8BE2DA9-D975-440D-87AA-2D1F96C0B964}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
