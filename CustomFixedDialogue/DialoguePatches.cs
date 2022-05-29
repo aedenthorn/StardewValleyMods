@@ -340,9 +340,17 @@ namespace CustomFixedDialogue
                 }
                 if(gender > -1 && newString.Contains("/"))
                 {
+                    SMonitor.Log($"Got gendered string {newString}, gender {gender}");
                     var split = newString.Split('/');
-                    newString = split[gender - 1];
-                    SMonitor.Log($"took gendered string {newString}, gender {gender}");
+                    if(split.Length <= gender)
+                    {
+                        SMonitor.Log($"Invalid gender for {newString}");
+                    }
+                    else
+                    {
+                        newString = split[gender];
+                        SMonitor.Log($"took gendered string {newString}");
+                    }
                 }
                 input = input.Replace(match.Value, newString);
                 SMonitor.Log($"Final replacement for {match.Value}: {newString}.\nCurrent output: {input}");
