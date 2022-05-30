@@ -10,5 +10,6 @@ namespace FoodOnTheTable
         public float MoveToFoodChance { get; set; } = 0.1f;
         public float MaxDistanceToEat { get; set; } = 3f;
         public float PointsMult { get; set; } = 0.5f;
+        public bool CountAsFedSpouse { get; set; } = true;
     }
 }

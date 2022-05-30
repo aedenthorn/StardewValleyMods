@@ -1,7 +1,7 @@
 ﻿{
   "Name": "Food on the Table",
   "Author": "aedenthorn",
-  "Version": "0.2.0",
+  "Version": "0.3.0",
   "Description": "FoodOnTheTable.",
   "UniqueID": "aedenthorn.FoodOnTheTable",
   "EntryDll": "FoodOnTheTable.dll",
