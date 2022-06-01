@@ -280,6 +280,7 @@ namespace CustomFixedDialogue
             catch (Exception ex)
             {
                 SMonitor.Log($"Error loading character dictionary for {speaker.Name}:\r\n{ex}");
+                return false;
             }
             //SMonitor.Log($"checking string: {input}");
             Regex pattern1 = new Regex(@"<(?<key>[^<>]+)>", RegexOptions.Compiled);

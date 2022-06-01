@@ -244,7 +244,7 @@ namespace FoodOnTheTable
 					{
 						if (okayList.Contains(foodList[i].foodObject.ParentSheetIndex + ""))
 						{
-							foodList[i].value = 2;
+							foodList[i].value = 1;
 						}
 						else
 							foodList.RemoveAt(i);
