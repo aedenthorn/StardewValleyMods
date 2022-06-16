@@ -331,10 +331,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DialogueNewLine", "Dialogue
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CropGrowthInformation", "CropGrowthInformation\CropGrowthInformation.csproj", "{B67A1793-288B-4FAF-8846-5A10D3FEA73A}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CustomMarriageDialogue", "CustomMarriageDialogue\CustomMarriageDialogue.csproj", "{CA3B002F-67C6-4955-A66F-B65A8A44120A}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CustomWallpaperFramework", "CustomWallpaperFramework\CustomWallpaperFramework.csproj", "{A67080BB-9FAC-4E44-81CC-62D8535BEFDD}"
+EndProject
 Global
-	GlobalSection(SharedMSBuildProjectFiles) = preSolution
-		_releases\_releases.projitems*{047040e0-3d07-46e5-852b-d1d45cd57bb8}*SharedItemsImports = 13
-	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
 		Debug|x86 = Debug|x86
@@ -1622,11 +1623,30 @@ Global
 		{B67A1793-288B-4FAF-8846-5A10D3FEA73A}.Release|Any CPU.Build.0 = Release|Any CPU
 		{B67A1793-288B-4FAF-8846-5A10D3FEA73A}.Release|x86.ActiveCfg = Release|Any CPU
 		{B67A1793-288B-4FAF-8846-5A10D3FEA73A}.Release|x86.Build.0 = Release|Any CPU
+		{CA3B002F-67C6-4955-A66F-B65A8A44120A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CA3B002F-67C6-4955-A66F-B65A8A44120A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CA3B002F-67C6-4955-A66F-B65A8A44120A}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{CA3B002F-67C6-4955-A66F-B65A8A44120A}.Debug|x86.Build.0 = Debug|Any CPU
+		{CA3B002F-67C6-4955-A66F-B65A8A44120A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CA3B002F-67C6-4955-A66F-B65A8A44120A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CA3B002F-67C6-4955-A66F-B65A8A44120A}.Release|x86.ActiveCfg = Release|Any CPU
+		{CA3B002F-67C6-4955-A66F-B65A8A44120A}.Release|x86.Build.0 = Release|Any CPU
+		{A67080BB-9FAC-4E44-81CC-62D8535BEFDD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A67080BB-9FAC-4E44-81CC-62D8535BEFDD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A67080BB-9FAC-4E44-81CC-62D8535BEFDD}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{A67080BB-9FAC-4E44-81CC-62D8535BEFDD}.Debug|x86.Build.0 = Debug|Any CPU
+		{A67080BB-9FAC-4E44-81CC-62D8535BEFDD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A67080BB-9FAC-4E44-81CC-62D8535BEFDD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A67080BB-9FAC-4E44-81CC-62D8535BEFDD}.Release|x86.ActiveCfg = Release|Any CPU
+		{A67080BB-9FAC-4E44-81CC-62D8535BEFDD}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {55CB8E90-7822-4544-BF7C-3E0304475396}
+	EndGlobalSection
+	GlobalSection(SharedMSBuildProjectFiles) = preSolution
+		_releases\_releases.projitems*{047040e0-3d07-46e5-852b-d1d45cd57bb8}*SharedItemsImports = 13
 	EndGlobalSection
 EndGlobal
