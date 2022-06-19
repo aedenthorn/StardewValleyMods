@@ -1,22 +1,22 @@
 ﻿{
-  "Name": "Trash Can Reactions",
+  "Name": "Custom Marriage Dialogue",
   "Author": "aedenthorn",
-  "Version": "0.3.0",
-  "Description": "Allows customization of NPC reactions when they see a farmer rummaging through the trash.",
-  "UniqueID": "aedenthorn.TrashCanReactions",
-  "EntryDll": "TrashCanReactions.dll",
+  "Version": "0.1.0",
+  "Description": "Allows for extra NPC daily marriage dialogue.",
+  "UniqueID": "aedenthorn.CustomMarriageDialogue",
+  "EntryDll": "CustomMarriageDialogue.dll",
   "MinimumApiVersion": "3.8.0",
   "ModUpdater": {
     "Repository": "StardewValleyMods",
     "User": "aedenthorn",
     "Directory": "_releases",
-    "ModFolder": "TrashCanReactions"
+    "ModFolder": "CustomMarriageDialogue"
   },
   "Dependencies": [
-      {
-        "UniqueID": "Platonymous.ModUpdater",
-        "IsRequired": false
-      }
+    {
+      "UniqueID": "Platonymous.ModUpdater",
+      "IsRequired": false
+    }
   ],
-  "UpdateKeys": ["Nexus:7643"]
+  "UpdateKeys": [ "Nexus:" ]
 }

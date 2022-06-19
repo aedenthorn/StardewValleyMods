@@ -8,11 +8,6 @@ namespace MobilePhone
     /// </summary>
     public interface INpcAdventureModApi
     {
-        /// <summary>
-        /// Checks if farmer is able to recruit any companion
-        /// </summary>
-        /// <returns></returns>
-        bool CanRecruitCompanions();
 
         /// <summary>
         /// Returns list of companion NPCs

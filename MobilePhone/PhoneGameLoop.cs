@@ -173,21 +173,29 @@ namespace MobilePhone
 
             if (Helper.ModRegistry.IsLoaded("purrplingcat.npcadventure"))
             {
-                INpcAdventureModApi api = Helper.ModRegistry.GetApi<INpcAdventureModApi>("purrplingcat.npcadventure");
-                if (api != null)
+                try
                 {
-                    Monitor.Log("Loaded NpcAdventureModApi successfully");
-                    ModEntry.npcAdventureModApi = api;
+                    INpcAdventureModApi api = Helper.ModRegistry.GetApi<INpcAdventureModApi>("purrplingcat.npcadventure");
+                    if (api != null)
+                    {
+                        Monitor.Log("Loaded NpcAdventureModApi successfully");
+                        ModEntry.npcAdventureModApi = api;
+                    }
                 }
+                catch { }
             }
             if (Helper.ModRegistry.IsLoaded("tlitookilakin.HDPortraits"))
             {
-                IHDPortraitsAPI api = Helper.ModRegistry.GetApi<IHDPortraitsAPI>("tlitookilakin.HDPortraits");
-                if (api != null)
+                try
                 {
-                    Monitor.Log("Loaded HD Portraits api successfully");
-                    ModEntry.iHDPortraitsAPI = api;
+                    IHDPortraitsAPI api = Helper.ModRegistry.GetApi<IHDPortraitsAPI>("tlitookilakin.HDPortraits");
+                    if (api != null)
+                    {
+                        Monitor.Log("Loaded HD Portraits api successfully");
+                        ModEntry.iHDPortraitsAPI = api;
+                    }
                 }
+                catch { }
             }
         }
 
@@ -205,7 +213,6 @@ namespace MobilePhone
                 Monitor.Log("Testing NpcAdventureModApi...");
                 try
                 {
-                    Monitor.Log($"Can recruit: {ModEntry.npcAdventureModApi.CanRecruitCompanions()}");
                     Monitor.Log($"Possible companions: {ModEntry.npcAdventureModApi.GetPossibleCompanions().Count()}");
                     Monitor.Log($"Can recruit Abigail: {ModEntry.npcAdventureModApi.IsPossibleCompanion("Abigail")}");
                     Monitor.Log($"Recruit Abigail: {ModEntry.npcAdventureModApi.IsPossibleCompanion("Abigail") && ModEntry.npcAdventureModApi.RecruitCompanion(Game1.player, Game1.getCharacterFromName("Abigail"))}");

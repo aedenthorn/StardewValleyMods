@@ -7,6 +7,7 @@ using StardewValley.Locations;
 using StardewValley.Network;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 using System.Text.RegularExpressions;
 using xTile;
@@ -64,20 +65,20 @@ namespace ProceduralDungeons
             int rooms = Game1.random.Next(maxRooms * Config.RoomAmountFactor / 100, maxRooms);
             double coeff = Math.Sqrt(Config.MapWidth * Config.MapHeight / (float)rooms / 144f);
             SMonitor.Log($"making {rooms} rooms, max {coeff * 16}x{coeff * 9}");
-            Rectangle bounds = new Rectangle((int)(coeff * 16 / 8f), (int)(coeff * 9 / 8f), mapWidth - (int)(coeff * 16 / 4f), mapHeight - (int)(coeff * 9 / 4f));
+            Rectangle bounds = new Rectangle((int)(coeff * 16 / 8f), (int)(coeff * 9 / 8f), Config.MapWidth - (int)(coeff * 16 / 4f), Config.MapHeight - (int)(coeff * 9 / 4f));
 
             List<Point> points = new List<Point>();
 
             // prefill with ocean tiles
 
-            for (int y = 0; y < mapHeight; y++)
+            for (int y = 0; y < Config.MapHeight; y++)
             {
-                for (int x = 0; x < mapWidth; x++)
+                for (int x = 0; x < Config.MapWidth; x++)
                 {
                     Point p = new Point(x, y);
                     if (bounds.Contains(p))
                         points.Add(p);
-                    location.map.GetLayer("Back").Tiles[x, y] = new StaticTile(location.map.GetLayer("Back"), sheet, BlendMode.Alpha, GetRandomOceanTile());
+                    map.GetLayer("Back").Tiles[x, y] = new StaticTile(map.GetLayer("Back"), sheet, BlendMode.Alpha, GetRandomOceanTile());
                 }
             }
             SMonitor.Log($"got {points.Count} points");
@@ -92,8 +93,8 @@ namespace ProceduralDungeons
                 int width = Game1.random.Next((int)(coeff * 16 / 2f), (int)(coeff * 16 * 3 / 4f));
                 int height = Game1.random.Next((int)(coeff * 9 / 2f), (int)(coeff * 9 * 3 / 4f));
 
-                Monitor.Log($"trying to make island of size {width}x{height}");
-                Rectangle bounds2 = new Rectangle(width / 2, height / 2, mapWidth - width, mapHeight - height);
+                SMonitor.Log($"trying to make island of size {width}x{height}");
+                Rectangle bounds2 = new Rectangle(width / 2, height / 2, Config.MapWidth - width, Config.MapHeight - height);
                 for (int j = points.Count - 1; j >= 0; j--)
                 {
                     if (bounds2.Contains(points[j]))
@@ -120,10 +121,11 @@ namespace ProceduralDungeons
                 Rectangle isleBox = new Rectangle(randPoint.X - width / 2, randPoint.Y - height / 2, width, height);
                 isleBoxes.Add(isleBox);
             }
-            Monitor.Log($"got {isleBoxes.Count} island boxes");
+            SMonitor.Log($"got {isleBoxes.Count} island boxes");
+
+            List<List<int>> connections = new List<List<int>>();
 
             // build islands
-
             foreach (Rectangle isleBox in isleBoxes)
             {
 
@@ -207,6 +209,22 @@ namespace ProceduralDungeons
                         }
                     }
                 }
+                connections.Add(new List<int>());
+            }
+
+
+            // add paths between rooms
+            while (MissingConnection(connections))
+            {
+                foreach()
+            }
+
+
+
+            foreach (Rectangle isleBox in isleBoxes)
+            {
+
+
 
                 // add land and border tiles
 
@@ -221,7 +239,7 @@ namespace ProceduralDungeons
                         {
                             if (surround.Where(b => b).Count() == 8)
                             {
-                                location.map.GetLayer("Back").Tiles[isleBox.X + x, isleBox.Y + y] = new StaticTile(location.map.GetLayer("Back"), sheet, BlendMode.Alpha, GetRandomLandTile());
+                                map.GetLayer("Back").Tiles[isleBox.X + x, isleBox.Y + y] = new StaticTile(map.GetLayer("Back"), sheet, BlendMode.Alpha, GetRandomLandTile());
                             }
                             else
                             {
@@ -229,64 +247,64 @@ namespace ProceduralDungeons
                                 {
                                     if (!surround[3])
                                     {
-                                        location.map.GetLayer("Buildings").Tiles[isleBox.X + x, isleBox.Y + y] = new StaticTile(location.map.GetLayer("Buildings"), sheet, BlendMode.Alpha, 51);
+                                        map.GetLayer("Buildings").Tiles[isleBox.X + x, isleBox.Y + y] = new StaticTile(map.GetLayer("Buildings"), sheet, BlendMode.Alpha, 51);
                                     }
                                     else if (!surround[4])
                                     {
-                                        location.map.GetLayer("Buildings").Tiles[isleBox.X + x, isleBox.Y + y] = new StaticTile(location.map.GetLayer("Buildings"), sheet, BlendMode.Alpha, 54);
+                                        map.GetLayer("Buildings").Tiles[isleBox.X + x, isleBox.Y + y] = new StaticTile(map.GetLayer("Buildings"), sheet, BlendMode.Alpha, 54);
                                     }
-                                    else if (location.map.GetLayer("Buildings").Tiles[isleBox.X + x - 1, isleBox.Y + y]?.TileIndex == 52)
+                                    else if (map.GetLayer("Buildings").Tiles[isleBox.X + x - 1, isleBox.Y + y]?.TileIndex == 52)
                                     {
-                                        location.map.GetLayer("Buildings").Tiles[isleBox.X + x, isleBox.Y + y] = new StaticTile(location.map.GetLayer("Buildings"), sheet, BlendMode.Alpha, 53);
+                                        map.GetLayer("Buildings").Tiles[isleBox.X + x, isleBox.Y + y] = new StaticTile(map.GetLayer("Buildings"), sheet, BlendMode.Alpha, 53);
                                     }
                                     else
                                     {
-                                        location.map.GetLayer("Buildings").Tiles[isleBox.X + x, isleBox.Y + y] = new StaticTile(location.map.GetLayer("Buildings"), sheet, BlendMode.Alpha, 52);
+                                        map.GetLayer("Buildings").Tiles[isleBox.X + x, isleBox.Y + y] = new StaticTile(map.GetLayer("Buildings"), sheet, BlendMode.Alpha, 52);
                                     }
                                 }
                                 else if (!surround[6])
                                 {
                                     if (!surround[3])
                                     {
-                                        location.map.GetLayer("Buildings").Tiles[isleBox.X + x, isleBox.Y + y] = new StaticTile(location.map.GetLayer("Buildings"), sheet, BlendMode.Alpha, 51);
+                                        map.GetLayer("Buildings").Tiles[isleBox.X + x, isleBox.Y + y] = new StaticTile(map.GetLayer("Buildings"), sheet, BlendMode.Alpha, 51);
                                     }
                                     else if (!surround[4])
                                     {
-                                        location.map.GetLayer("Buildings").Tiles[isleBox.X + x, isleBox.Y + y] = new StaticTile(location.map.GetLayer("Buildings"), sheet, BlendMode.Alpha, 54);
+                                        map.GetLayer("Buildings").Tiles[isleBox.X + x, isleBox.Y + y] = new StaticTile(map.GetLayer("Buildings"), sheet, BlendMode.Alpha, 54);
                                     }
-                                    else if (location.map.GetLayer("Buildings").Tiles[isleBox.X + x - 1, isleBox.Y + y]?.TileIndex == 52)
+                                    else if (map.GetLayer("Buildings").Tiles[isleBox.X + x - 1, isleBox.Y + y]?.TileIndex == 52)
                                     {
-                                        location.map.GetLayer("Buildings").Tiles[isleBox.X + x, isleBox.Y + y] = new StaticTile(location.map.GetLayer("Buildings"), sheet, BlendMode.Alpha, 53);
+                                        map.GetLayer("Buildings").Tiles[isleBox.X + x, isleBox.Y + y] = new StaticTile(map.GetLayer("Buildings"), sheet, BlendMode.Alpha, 53);
                                     }
                                     else
                                     {
-                                        location.map.GetLayer("Buildings").Tiles[isleBox.X + x, isleBox.Y + y] = new StaticTile(location.map.GetLayer("Buildings"), sheet, BlendMode.Alpha, 52);
+                                        map.GetLayer("Buildings").Tiles[isleBox.X + x, isleBox.Y + y] = new StaticTile(map.GetLayer("Buildings"), sheet, BlendMode.Alpha, 52);
                                     }
-                                    location.map.GetLayer("Buildings").Tiles[isleBox.X + x, isleBox.Y + y].Properties.Add("@Flip", 2);
+                                    map.GetLayer("Buildings").Tiles[isleBox.X + x, isleBox.Y + y].Properties.Add("@Flip", 2);
                                 }
                                 else if (!surround[3])
                                 {
-                                    location.map.GetLayer("Buildings").Tiles[isleBox.X + x, isleBox.Y + y] = new StaticTile(location.map.GetLayer("Buildings"), sheet, BlendMode.Alpha, 68);
+                                    map.GetLayer("Buildings").Tiles[isleBox.X + x, isleBox.Y + y] = new StaticTile(map.GetLayer("Buildings"), sheet, BlendMode.Alpha, 68);
                                 }
                                 else if (!surround[4])
                                 {
-                                    location.map.GetLayer("Buildings").Tiles[isleBox.X + x, isleBox.Y + y] = new StaticTile(location.map.GetLayer("Buildings"), sheet, BlendMode.Alpha, 71);
+                                    map.GetLayer("Buildings").Tiles[isleBox.X + x, isleBox.Y + y] = new StaticTile(map.GetLayer("Buildings"), sheet, BlendMode.Alpha, 71);
                                 }
                                 else if (!surround[0])
                                 {
-                                    location.map.GetLayer("Buildings").Tiles[isleBox.X + x, isleBox.Y + y] = new StaticTile(location.map.GetLayer("Buildings"), sheet, BlendMode.Alpha, 70);
+                                    map.GetLayer("Buildings").Tiles[isleBox.X + x, isleBox.Y + y] = new StaticTile(map.GetLayer("Buildings"), sheet, BlendMode.Alpha, 70);
                                 }
                                 else if (!surround[2])
                                 {
-                                    location.map.GetLayer("Buildings").Tiles[isleBox.X + x, isleBox.Y + y] = new StaticTile(location.map.GetLayer("Buildings"), sheet, BlendMode.Alpha, 69);
+                                    map.GetLayer("Buildings").Tiles[isleBox.X + x, isleBox.Y + y] = new StaticTile(map.GetLayer("Buildings"), sheet, BlendMode.Alpha, 69);
                                 }
                                 else if (!surround[5])
                                 {
-                                    location.map.GetLayer("Buildings").Tiles[isleBox.X + x, isleBox.Y + y] = new StaticTile(location.map.GetLayer("Buildings"), sheet, BlendMode.Alpha, 87);
+                                    map.GetLayer("Buildings").Tiles[isleBox.X + x, isleBox.Y + y] = new StaticTile(map.GetLayer("Buildings"), sheet, BlendMode.Alpha, 87);
                                 }
                                 else if (!surround[7])
                                 {
-                                    location.map.GetLayer("Buildings").Tiles[isleBox.X + x, isleBox.Y + y] = new StaticTile(location.map.GetLayer("Buildings"), sheet, BlendMode.Alpha, 86);
+                                    map.GetLayer("Buildings").Tiles[isleBox.X + x, isleBox.Y + y] = new StaticTile(map.GetLayer("Buildings"), sheet, BlendMode.Alpha, 86);
                                 }
                             }
                         }
@@ -297,90 +315,70 @@ namespace ProceduralDungeons
                                 if (surround[1])
                                 {
                                     if (surround[3])
-                                        location.map.GetLayer("Buildings").Tiles[isleBox.X + x, isleBox.Y + y] = CreateAnimatedTile(location, sheet, 226);
+                                        map.GetLayer("Buildings").Tiles[isleBox.X + x, isleBox.Y + y] = CreateAnimatedTile(location, sheet, 226);
                                     else if (surround[4])
-                                        location.map.GetLayer("Buildings").Tiles[isleBox.X + x, isleBox.Y + y] = CreateAnimatedTile(location, sheet, 175);
+                                        map.GetLayer("Buildings").Tiles[isleBox.X + x, isleBox.Y + y] = CreateAnimatedTile(location, sheet, 175);
                                     else
                                     {
-                                        if (location.map.GetLayer("Buildings").Tiles[isleBox.X + x - 1, isleBox.Y + y]?.TileIndex == 141)
-                                            location.map.GetLayer("Buildings").Tiles[isleBox.X + x, isleBox.Y + y] = CreateAnimatedTile(location, sheet, 158);
+                                        if (map.GetLayer("Buildings").Tiles[isleBox.X + x - 1, isleBox.Y + y]?.TileIndex == 141)
+                                            map.GetLayer("Buildings").Tiles[isleBox.X + x, isleBox.Y + y] = CreateAnimatedTile(location, sheet, 158);
                                         else
-                                            location.map.GetLayer("Buildings").Tiles[isleBox.X + x, isleBox.Y + y] = CreateAnimatedTile(location, sheet, 141);
+                                            map.GetLayer("Buildings").Tiles[isleBox.X + x, isleBox.Y + y] = CreateAnimatedTile(location, sheet, 141);
                                     }
                                 }
                                 else if (surround[6])
                                 {
                                     if (surround[3])
                                     {
-                                        location.map.GetLayer("Buildings").Tiles[isleBox.X + x, isleBox.Y + y] = CreateAnimatedTile(location, sheet, 226);
-                                        location.map.GetLayer("Buildings").Tiles[isleBox.X + x, isleBox.Y + y].Properties.Add("@Flip", 2);
+                                        map.GetLayer("Buildings").Tiles[isleBox.X + x, isleBox.Y + y] = CreateAnimatedTile(location, sheet, 226);
+                                        map.GetLayer("Buildings").Tiles[isleBox.X + x, isleBox.Y + y].Properties.Add("@Flip", 2);
                                     }
                                     else if (surround[4])
                                     {
-                                        location.map.GetLayer("Buildings").Tiles[isleBox.X + x, isleBox.Y + y] = CreateAnimatedTile(location, sheet, 175);
-                                        location.map.GetLayer("Buildings").Tiles[isleBox.X + x, isleBox.Y + y].Properties.Add("@Flip", 2);
+                                        map.GetLayer("Buildings").Tiles[isleBox.X + x, isleBox.Y + y] = CreateAnimatedTile(location, sheet, 175);
+                                        map.GetLayer("Buildings").Tiles[isleBox.X + x, isleBox.Y + y].Properties.Add("@Flip", 2);
                                     }
                                     else
                                     {
-                                        if (location.map.GetLayer("Buildings").Tiles[isleBox.X + x - 1, isleBox.Y + y]?.TileIndex == 141)
-                                            location.map.GetLayer("Buildings").Tiles[isleBox.X + x, isleBox.Y + y] = CreateAnimatedTile(location, sheet, 158);
+                                        if (map.GetLayer("Buildings").Tiles[isleBox.X + x - 1, isleBox.Y + y]?.TileIndex == 141)
+                                            map.GetLayer("Buildings").Tiles[isleBox.X + x, isleBox.Y + y] = CreateAnimatedTile(location, sheet, 158);
                                         else
-                                            location.map.GetLayer("Buildings").Tiles[isleBox.X + x, isleBox.Y + y] = CreateAnimatedTile(location, sheet, 141);
-                                        location.map.GetLayer("Buildings").Tiles[isleBox.X + x, isleBox.Y + y].Properties.Add("@Flip", 2);
+                                            map.GetLayer("Buildings").Tiles[isleBox.X + x, isleBox.Y + y] = CreateAnimatedTile(location, sheet, 141);
+                                        map.GetLayer("Buildings").Tiles[isleBox.X + x, isleBox.Y + y].Properties.Add("@Flip", 2);
                                     }
                                 }
                                 else if (surround[3])
                                 {
-                                    location.map.GetLayer("Buildings").Tiles[isleBox.X + x, isleBox.Y + y] = CreateAnimatedTile(location, sheet, 260);
+                                    map.GetLayer("Buildings").Tiles[isleBox.X + x, isleBox.Y + y] = CreateAnimatedTile(location, sheet, 260);
                                 }
                                 else if (surround[4])
                                 {
-                                    location.map.GetLayer("Buildings").Tiles[isleBox.X + x, isleBox.Y + y] = CreateAnimatedTile(location, sheet, 209);
+                                    map.GetLayer("Buildings").Tiles[isleBox.X + x, isleBox.Y + y] = CreateAnimatedTile(location, sheet, 209);
                                 }
                                 else if (surround[0])
                                 {
-                                    location.map.GetLayer("Buildings").Tiles[isleBox.X + x, isleBox.Y + y] = CreateAnimatedTile(location, sheet, 243);
+                                    map.GetLayer("Buildings").Tiles[isleBox.X + x, isleBox.Y + y] = CreateAnimatedTile(location, sheet, 243);
                                 }
                                 else if (surround[2])
                                 {
-                                    location.map.GetLayer("Buildings").Tiles[isleBox.X + x, isleBox.Y + y] = CreateAnimatedTile(location, sheet, 192);
+                                    map.GetLayer("Buildings").Tiles[isleBox.X + x, isleBox.Y + y] = CreateAnimatedTile(location, sheet, 192);
                                 }
                                 else if (surround[5])
                                 {
-                                    location.map.GetLayer("Buildings").Tiles[isleBox.X + x, isleBox.Y + y] = CreateAnimatedTile(location, sheet, 243);
-                                    location.map.GetLayer("Buildings").Tiles[isleBox.X + x, isleBox.Y + y].Properties.Add("@Flip", 2);
+                                    map.GetLayer("Buildings").Tiles[isleBox.X + x, isleBox.Y + y] = CreateAnimatedTile(location, sheet, 243);
+                                    map.GetLayer("Buildings").Tiles[isleBox.X + x, isleBox.Y + y].Properties.Add("@Flip", 2);
                                 }
                                 else if (surround[7])
                                 {
-                                    location.map.GetLayer("Buildings").Tiles[isleBox.X + x, isleBox.Y + y] = CreateAnimatedTile(location, sheet, 192);
-                                    location.map.GetLayer("Buildings").Tiles[isleBox.X + x, isleBox.Y + y].Properties.Add("@Flip", 2);
+                                    map.GetLayer("Buildings").Tiles[isleBox.X + x, isleBox.Y + y] = CreateAnimatedTile(location, sheet, 192);
+                                    map.GetLayer("Buildings").Tiles[isleBox.X + x, isleBox.Y + y].Properties.Add("@Flip", 2);
                                 }
-                                location.map.GetLayer("Buildings").Tiles[isleBox.X + x, isleBox.Y + y].Properties["Passable"] = "T";
-                                //location.map.GetLayer("Back").Tiles[isleBox.X + x, isleBox.Y + y].TileIndexProperties["NPCBarrier"] = "t";
+                                map.GetLayer("Buildings").Tiles[isleBox.X + x, isleBox.Y + y].Properties["Passable"] = "T";
+                                //map.GetLayer("Back").Tiles[isleBox.X + x, isleBox.Y + y].TileIndexProperties["NPCBarrier"] = "t";
                             }
                         }
                     }
                 }
-            }
-
-            // add water tiles
-
-            location.waterTiles = new bool[location.map.Layers[0].LayerWidth, location.map.Layers[0].LayerHeight];
-            bool foundAnyWater = false;
-            for (int x = 0; x < location.map.Layers[0].LayerWidth; x++)
-            {
-                for (int y = 0; y < location.map.Layers[0].LayerHeight; y++)
-                {
-                    if (location.doesTileHaveProperty(x, y, "Water", "Back") != null)
-                    {
-                        foundAnyWater = true;
-                        location.waterTiles[x, y] = true;
-                    }
-                }
-            }
-            if (!foundAnyWater)
-            {
-                location.waterTiles = null;
             }
 
             // add terrain features
@@ -414,7 +412,7 @@ namespace ProceduralDungeons
                         }
                     }
                 }
-                Monitor.Log($"Island has {freeSpots.Count} free spots, {freeCenters.Count} centers");
+                SMonitor.Log($"Island has {freeSpots.Count} free spots, {freeCenters.Count} centers");
 
                 List<Vector2> randFreeSpots = new List<Vector2>(freeSpots);
 
@@ -624,21 +622,19 @@ namespace ProceduralDungeons
             }
         }
 
-        private static AnimatedTile CreateAnimatedTile(GameLocation location, TileSheet sheet, int first)
+        private static int[] MissingConnection(List<List<int>> connections)
         {
-            return new AnimatedTile(location.map.GetLayer("Buildings"), new StaticTile[] {
-                new StaticTile(location.map.GetLayer("Buildings"), sheet, BlendMode.Alpha, first),
-                new StaticTile(location.map.GetLayer("Buildings"), sheet, BlendMode.Alpha, first + 1),
-                new StaticTile(location.map.GetLayer("Buildings"), sheet, BlendMode.Alpha, first + 2),
-                new StaticTile(location.map.GetLayer("Buildings"), sheet, BlendMode.Alpha, first + 3),
-                new StaticTile(location.map.GetLayer("Buildings"), sheet, BlendMode.Alpha, first + 3),
-                new StaticTile(location.map.GetLayer("Buildings"), sheet, BlendMode.Alpha, first + 4),
-                new StaticTile(location.map.GetLayer("Buildings"), sheet, BlendMode.Alpha, first + 5),
-                new StaticTile(location.map.GetLayer("Buildings"), sheet, BlendMode.Alpha, first + 6),
-                new StaticTile(location.map.GetLayer("Buildings"), sheet, BlendMode.Alpha, first),
-                new StaticTile(location.map.GetLayer("Buildings"), sheet, BlendMode.Alpha, first),
-                new StaticTile(location.map.GetLayer("Buildings"), sheet, BlendMode.Alpha, first),
-            }, 250);
+            for(int i = 0; i < connections.Count; i++)
+            {
+                List<bool> connected = new List<bool>();
+                for (int j = 0; j < connections.Count; j++)
+                {
+                    if (j == i || connections[i].Contains(j))
+                        continue;
+
+                }
+            }
+            return null;
         }
 
         private static bool[] GetSurroundingTiles(Rectangle isleBox, bool[] landTiles, int idx)

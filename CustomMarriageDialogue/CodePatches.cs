@@ -41,8 +41,13 @@ namespace CustomMarriageDialogue
                 return oldString;
             parts[parts.Length - 1] = "";
             string stem = string.Join("_", parts);
-            var dict1 = Game1.content.Load<Dictionary<string, string>>("Characters\\Dialogue\\MarriageDialogue")?.Keys.ToList().Where(s => s.StartsWith(stem));
-            var dict2 = Game1.content.Load<Dictionary<string, string>>("Characters\\Dialogue\\MarriageDialogue" + npc.Name)?.Keys.ToList().Where(s => s.StartsWith(stem));
+            IEnumerable<string> dict1 = Game1.content.Load<Dictionary<string, string>>("Characters\\Dialogue\\MarriageDialogue")?.Keys.ToList().Where(s => s.StartsWith(stem));
+            IEnumerable<string> dict2 = null;
+            try
+            {
+                dict2 = Game1.content.Load<Dictionary<string, string>>("Characters\\Dialogue\\MarriageDialogue" + npc.Name)?.Keys.ToList().Where(s => s.StartsWith(stem));
+            }
+            catch { }
 
             int total = Math.Max(dict1.Count(), (dict2 is null ? 0 : dict2.Count()));
             int newRandom = Game1.random.Next(total);
