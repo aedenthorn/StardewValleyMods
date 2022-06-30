@@ -48,15 +48,15 @@ namespace HugsAndKisses
                 if (!npc1.datable.Value && !npc1.isRoommate() && !Config.AllowNonDateableNPCsToHugAndKiss)
                     continue;
 
+                if (lastKissed.ContainsKey(npc1.Name) && elapsedSeconds - lastKissed[npc1.Name] <= Config.MinSpouseKissIntervalSeconds)
+                    continue;
+
                 foreach (NPC npc2 in list)
                 {
                     if (npc1.Name == npc2.Name)
                         continue;
 
                     if (!npc2.datable.Value && !Config.AllowNonDateableNPCsToHugAndKiss)
-                        continue;
-
-                    if (lastKissed.ContainsKey(npc1.Name) && elapsedSeconds - lastKissed[npc1.Name] <= Config.MinSpouseKissIntervalSeconds)
                         continue;
 
                     if (lastKissed.ContainsKey(npc2.Name) && elapsedSeconds - lastKissed[npc2.Name] <= Config.MinSpouseKissIntervalSeconds)
@@ -201,7 +201,34 @@ namespace HugsAndKisses
             bool facingRight = Misc.GetFacingRight(name);
 
             bool flip = (facingRight && npc.FacingDirection == 3) || (!facingRight && npc.FacingDirection == 1);
-            if (player.getFriendshipHeartLevelForNPC(npc.Name) >= Config.MinHeartsForMarriageKiss && (!npc.hasBeenKissedToday.Value || Config.UnlimitedDailyKisses))
+            if (!player.friendshipData.TryGetValue(npc.Name, out Friendship f))
+            {
+                ModEntry.SMonitor.Log($"{player.Name} has no friendship data for {npc.Name}");
+                return;
+            }
+
+            if (npc.hasBeenKissedToday.Value && !Config.UnlimitedDailyKisses)
+            {
+                ModEntry.SMonitor.Log($"{player.Name} has already kissed {npc.Name} today");
+                return;
+            }
+
+            bool accepted = true;
+            if (f.IsMarried() || f.IsEngaged()) 
+            {
+                if (player.getFriendshipHeartLevelForNPC(npc.Name) < Config.MinHeartsForMarriageKiss)
+                {
+                    accepted = false;
+                }
+            }
+            else if (f.IsDating())
+            {
+                if (player.getFriendshipHeartLevelForNPC(npc.Name) < Config.MinHeartsForDatingKiss)
+                {
+                    accepted = false;
+                }
+            }
+            if (accepted)
             {
                 ModEntry.SMonitor.Log($"Can kiss/hug {npc.Name}");
 
@@ -256,6 +283,7 @@ namespace HugsAndKisses
             }
             player.PerformKiss(playerFaceDirection);
         }
+
         public static void PlayerNPCHug(Farmer player, NPC npc)
         {
             string name = npc.Name;
