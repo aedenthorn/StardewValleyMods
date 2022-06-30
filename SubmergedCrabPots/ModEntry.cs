@@ -73,6 +73,12 @@ namespace SubmergedCrabPots
             );
             configMenu.AddBoolOption(
                 mod: ModManifest,
+                name: () => "Submerge When Harvestable",
+                getValue: () => Config.SubmergeHarvestable,
+                setValue: value => Config.SubmergeHarvestable = value
+            );
+            configMenu.AddBoolOption(
+                mod: ModManifest,
                 name: () => "Show Ripples",
                 tooltip: () => "Only shown when no harvest",
                 getValue: () => Config.ShowRipples,

@@ -5,6 +5,7 @@ using StardewValley;
 using StardewValley.Characters;
 using StardewValley.Objects;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace PetBed
 {
@@ -32,6 +33,7 @@ namespace PetBed
             SMonitor = Monitor;
             SHelper = helper;
             helper.Events.GameLoop.GameLaunched += GameLoop_GameLaunched;
+            //helper.Events.GameLoop.SaveLoaded += GameLoop_SaveLoaded;
 
 
             var harmony = new Harmony(ModManifest.UniqueID);
@@ -50,6 +52,22 @@ namespace PetBed
                postfix: new HarmonyMethod(typeof(ModEntry), nameof(ModEntry.Pet_dayUpdate_Postfix))
             );
 
+        }
+
+        private void GameLoop_SaveLoaded(object sender, StardewModdingAPI.Events.SaveLoadedEventArgs e)
+        {
+            if (!Config.EnableMod)
+                return;
+            foreach(Pet pet in Utility.getHomeOfFarmer(Game1.player).characters.ToList().Where(c => c.GetType().IsAssignableTo(typeof(Pet))))
+            {
+                Monitor.Log($"Checking pet bed for {pet.Name}");
+                WarpPetToBed(pet, Utility.getHomeOfFarmer(Game1.player), false);
+            }
+            foreach(Pet pet in Game1.getFarm().characters.ToList().Where(c => c.GetType().IsAssignableTo(typeof(Pet))))
+            {
+                Monitor.Log($"Checking pet bed for {pet.Name}");
+                WarpPetToBed(pet, Game1.getFarm(), true);
+            }
         }
 
         private void GameLoop_GameLaunched(object sender, StardewModdingAPI.Events.GameLaunchedEventArgs e)
@@ -116,7 +134,7 @@ namespace PetBed
                 setValue: value => Config.OutdoorBedOffset = value
             );
         }
-        private static bool WarpPetToBed(Pet pet, GameLocation location, ref int ____currentBehavior, bool outdoor)
+        private static bool WarpPetToBed(Pet pet, GameLocation location, bool outdoor)
         {
 
             string which = outdoor ? Config.OutdoorBedName : Config.IndoorBedName;
@@ -190,7 +208,8 @@ namespace PetBed
                         pet.position.Value += offset;
 
                         pet.UpdateSleepingOnBed();
-                        ____currentBehavior = pet.CurrentBehavior;
+                        AccessTools.FieldRefAccess<Pet, int>(pet, "_currentBehavior") = pet.CurrentBehavior;
+
                         pet.Halt();
                         pet.Sprite.CurrentAnimation = null;
                         pet.OnNewBehavior();
@@ -199,8 +218,6 @@ namespace PetBed
                     }
                 }
             }
-
-            
 
             SMonitor.Log($"No bed found for '{pet.Name}'");
             return false;

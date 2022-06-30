@@ -9,7 +9,7 @@ using System;
 using System.Collections.Generic;
 using Object = StardewValley.Object;
 
-namespace CustomWallpaperFramework
+namespace PrismaticFurniture
 {
     /// <summary>The mod entry point.</summary>
     public partial class ModEntry : Mod, IAssetLoader
@@ -21,9 +21,8 @@ namespace CustomWallpaperFramework
 
         public static ModEntry context;
 
-        public static readonly string dictPath = "aedenthorn.CustomWallpaperFramework/dictionary";
-        public static Dictionary<string, WallpaperData> wallpaperDataDict = new Dictionary<string, WallpaperData>();
-        public static Dictionary<DecoratableLocation, Dictionary<string, WallPaperTileData>> locationDataDict = new Dictionary<DecoratableLocation, Dictionary<string, WallPaperTileData>>();
+        public static readonly string dictPath = "aedenthorn.PrismaticFurniture/dictionary";
+        public static Dictionary<string, PrismaticFurnitureData> furnitureDict = new Dictionary<string, PrismaticFurnitureData>();
 
         /// <summary>The mod entry point, called after the mod is first loaded.</summary>
         /// <param name="helper">Provides simplified APIs for writing mods.</param>
@@ -31,7 +30,7 @@ namespace CustomWallpaperFramework
         {
             Config = Helper.ReadConfig<ModConfig>();
 
-            if (!Config.EnableMod)
+            if (!Config.ModEnabled)
                 return;
 
             context = this;
@@ -49,12 +48,12 @@ namespace CustomWallpaperFramework
 
         private void GameLoop_SaveLoaded(object sender, StardewModdingAPI.Events.SaveLoadedEventArgs e)
         {
-            wallpaperDataDict = SHelper.Content.Load<Dictionary<string, WallpaperData>>(dictPath, ContentSource.GameContent) ?? new Dictionary<string, WallpaperData>();
-            foreach(var data in wallpaperDataDict.Values)
+            furnitureDict = SHelper.Content.Load<Dictionary<string, PrismaticFurnitureData>>(dictPath, ContentSource.GameContent) ?? new Dictionary<string, PrismaticFurnitureData>();
+            foreach (var data in furnitureDict.Values)
             {
                 data.texture = Game1.content.Load<Texture2D>(data.texturePath);
             }
-            Monitor.Log($"Loaded {wallpaperDataDict.Count} wallpapers");
+            Monitor.Log($"Loaded {furnitureDict.Count} furnitures");
         }
 
         private void GameLoop_GameLaunched(object sender, StardewModdingAPI.Events.GameLaunchedEventArgs e)
@@ -74,15 +73,15 @@ namespace CustomWallpaperFramework
             configMenu.AddBoolOption(
                 mod: ModManifest,
                 name: () => "Mod Enabled?",
-                getValue: () => Config.EnableMod,
-                setValue: value => Config.EnableMod = value
+                getValue: () => Config.ModEnabled,
+                setValue: value => Config.ModEnabled = value
             );
         }
         /// <summary>Get whether this instance can load the initial version of the given asset.</summary>
         /// <param name="asset">Basic metadata about the asset being loaded.</param>
         public bool CanLoad<T>(IAssetInfo asset)
         {
-            if (!Config.EnableMod)
+            if (!Config.ModEnabled)
                 return false;
 
             return asset.AssetNameEquals(dictPath);
@@ -94,7 +93,7 @@ namespace CustomWallpaperFramework
         {
             Monitor.Log("Loading dictionary");
 
-            return (T)(object)new Dictionary<string, WallpaperData>();
+            return (T)(object)new Dictionary<string, PrismaticFurnitureData>();
         }
     }
 }

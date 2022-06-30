@@ -1,7 +1,7 @@
 ﻿{
   "Name": "Custom Wallpaper Framework",
   "Author": "aedenthorn",
-  "Version": "0.1.0",
+  "Version": "0.1.1",
   "Description": "Custom Wallpaper Framework.",
   "UniqueID": "aedenthorn.CustomWallpaperFramework",
   "EntryDll": "CustomWallpaperFramework.dll",

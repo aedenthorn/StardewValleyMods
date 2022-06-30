@@ -335,6 +335,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CustomMarriageDialogue", "C
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CustomWallpaperFramework", "CustomWallpaperFramework\CustomWallpaperFramework.csproj", "{A67080BB-9FAC-4E44-81CC-62D8535BEFDD}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PrismaticFurniture", "PrismaticFurniture\PrismaticFurniture.csproj", "{FCF268EF-3B61-42AA-8A75-0C7E896DAD88}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -1639,6 +1641,14 @@ Global
 		{A67080BB-9FAC-4E44-81CC-62D8535BEFDD}.Release|Any CPU.Build.0 = Release|Any CPU
 		{A67080BB-9FAC-4E44-81CC-62D8535BEFDD}.Release|x86.ActiveCfg = Release|Any CPU
 		{A67080BB-9FAC-4E44-81CC-62D8535BEFDD}.Release|x86.Build.0 = Release|Any CPU
+		{FCF268EF-3B61-42AA-8A75-0C7E896DAD88}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FCF268EF-3B61-42AA-8A75-0C7E896DAD88}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FCF268EF-3B61-42AA-8A75-0C7E896DAD88}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{FCF268EF-3B61-42AA-8A75-0C7E896DAD88}.Debug|x86.Build.0 = Debug|Any CPU
+		{FCF268EF-3B61-42AA-8A75-0C7E896DAD88}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FCF268EF-3B61-42AA-8A75-0C7E896DAD88}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FCF268EF-3B61-42AA-8A75-0C7E896DAD88}.Release|x86.ActiveCfg = Release|Any CPU
+		{FCF268EF-3B61-42AA-8A75-0C7E896DAD88}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

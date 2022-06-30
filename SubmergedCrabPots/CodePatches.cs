@@ -2,15 +2,8 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using StardewValley;
-using StardewValley.Locations;
 using StardewValley.Objects;
-using StardewValley.TerrainFeatures;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Reflection;
-using System.Reflection.Emit;
-using Object = StardewValley.Object;
 
 namespace SubmergedCrabPots
 {
@@ -27,7 +20,7 @@ namespace SubmergedCrabPots
         {
             public static bool Prefix(CrabPot __instance, SpriteBatch spriteBatch, int x, int y, float alpha, ref float ___yBob, Vector2 ___shake)
             {
-                if (!Config.EnableMod ||(__instance.heldObject.Value == null && !__instance.readyForHarvest.Value && __instance.bait.Value == null ))
+                if (!Config.EnableMod || (__instance.heldObject.Value == null && (!__instance.readyForHarvest.Value || !Config.SubmergeHarvestable) && __instance.bait.Value == null ))
                     return true;
                 ___yBob = (float)(Math.Sin(Game1.currentGameTime.TotalGameTime.TotalMilliseconds / 500.0 + x * 64) * 8.0 + 8.0);
                 int tileIndexToShow = (int)((___yBob - 1) / 5);

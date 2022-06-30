@@ -17,12 +17,37 @@ namespace CustomMarriageDialogue
 
             public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions)
             {
+                PMonitor.Log($"Transpiling NPC.setRandomAfternoonMarriageDialogue");
 
                 var codes = new List<CodeInstruction>(instructions);
                 for (int i = 0; i < codes.Count; i++)
                 {
-                    if (codes[i].opcode == OpCodes.Call && (MethodInfo)codes[i].operand == AccessTools.Method(typeof(int), nameof(int.ToString), new Type[] { }))
+                    if (codes[i].opcode == OpCodes.Call && codes[i].operand is MethodInfo && (MethodInfo)codes[i].operand == AccessTools.Method(typeof(int), nameof(int.ToString), new Type[] { }))
                     {
+                        PMonitor.Log($"Inserting method to get random dialogue");
+                        codes.Insert(i + 1, new CodeInstruction(OpCodes.Call, AccessTools.Method(typeof(ModEntry), nameof(ModEntry.GetRandomDialogueKey))));
+                        codes.Insert(i + 1, new CodeInstruction(OpCodes.Ldarg_0));
+                    }
+                }
+
+                return codes.AsEnumerable();
+            }
+        }
+        
+        [HarmonyPatch(typeof(NPC), nameof(NPC.marriageDuties))]
+        public class NPC_marriageDuties_Patch
+        {
+
+            public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions)
+            {
+                PMonitor.Log($"Transpiling NPC.marriageDuties");
+
+                var codes = new List<CodeInstruction>(instructions);
+                for (int i = 0; i < codes.Count; i++)
+                {
+                    if (codes[i].opcode == OpCodes.Call && codes[i].operand is MethodInfo && (MethodInfo)codes[i].operand == AccessTools.Method(typeof(int), nameof(int.ToString), new Type[] { }))
+                    {
+                        PMonitor.Log($"Inserting method to get random dialogue");
                         codes.Insert(i + 1, new CodeInstruction(OpCodes.Call, AccessTools.Method(typeof(ModEntry), nameof(ModEntry.GetRandomDialogueKey))));
                         codes.Insert(i + 1, new CodeInstruction(OpCodes.Ldarg_0));
                     }
@@ -41,7 +66,7 @@ namespace CustomMarriageDialogue
                 return oldString;
             parts[parts.Length - 1] = "";
             string stem = string.Join("_", parts);
-            IEnumerable<string> dict1 = Game1.content.Load<Dictionary<string, string>>("Characters\\Dialogue\\MarriageDialogue")?.Keys.ToList().Where(s => s.StartsWith(stem));
+            IEnumerable<string> dict1 = Game1.content.Load<Dictionary<string, string>>("Characters\\Dialogue\\MarriageDialogue").Keys.ToList().Where(s => s.StartsWith(stem));
             IEnumerable<string> dict2 = null;
             try
             {
