@@ -1,7 +1,7 @@
 ﻿{
   "Name": "Pipe Irrigation",
   "Author": "aedenthorn",
-  "Version": "0.2.2",
+  "Version": "0.2.3",
   "Description": "Pipe Irrigation.",
   "UniqueID": "aedenthorn.PipeIrrigation",
   "EntryDll": "PipeIrrigation.dll",
@@ -12,7 +12,7 @@
     "Directory": "_releases",
     "ModFolder": "PipeIrrigation"
   },
-  "UpdateKeys": [ "Nexus:" ],
+  "UpdateKeys": [ "Nexus:10205" ],
   "Dependencies": [
     {
       "UniqueID": "aedenthorn.UtilityGrid",
