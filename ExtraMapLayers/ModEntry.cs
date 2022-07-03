@@ -37,6 +37,7 @@ namespace ExtraMapLayers
             PHelper = helper;
 
             harmony = new Harmony(ModManifest.UniqueID);
+            Harmony.DEBUG = false;
 
             harmony.Patch(
                original: AccessTools.Method(typeof(Layer), nameof(Layer.Draw)),
