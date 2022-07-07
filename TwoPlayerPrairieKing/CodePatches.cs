@@ -104,6 +104,7 @@ namespace TwoPlayerPrairieKing
                     coopName = null;
                     return;
                 }
+
                 AbigailGame.player2Position = new Vector2(432f, 384f);
                 __instance.player2BoundingBox = new Rectangle(9 * AbigailGame.TileSize, 8 * AbigailGame.TileSize, AbigailGame.TileSize, AbigailGame.TileSize);
             }
@@ -111,15 +112,16 @@ namespace TwoPlayerPrairieKing
         [HarmonyPatch(typeof(AbigailGame), "_ProcessInputs")]
         public class AbigailGame__ProcessInputs_Patch
         {
-            public static void Prefix()
+            public static void Prefix(ref bool __state)
             {
-                if (!Config.ModEnabled || coopName is null)
+                if (!Config.ModEnabled || coopName is null || !AbigailGame.playingWithAbigail)
                     return;
                 AbigailGame.playingWithAbigail = false;
+                __state = true;
             }
-            public static void Postfix()
+            public static void Postfix(bool __state)
             {
-                if (!Config.ModEnabled || coopName is null)
+                if (!Config.ModEnabled || coopName is null || !__state)
                     return;
                 AbigailGame.playingWithAbigail = true;
             }
@@ -151,6 +153,22 @@ namespace TwoPlayerPrairieKing
                     return;
 
                 AbigailGame.playingWithAbigail = false;
+            }
+        }
+        [HarmonyPatch(typeof(AbigailGame), nameof(AbigailGame.playerDie))]
+        public class AbigailGame_playerDie_Patch
+        {
+            public static void Prefix(ref bool __state)
+            {
+                if (!Config.ModEnabled || coopName is null || !AbigailGame.playingWithAbigail)
+                    return;
+                AbigailGame.playingWithAbigail = false;
+            }
+            public static void Postfix()
+            {
+                if (!Config.ModEnabled || coopName is null)
+                    return;
+                AbigailGame.playingWithAbigail = true;
             }
         }
         [HarmonyPatch(typeof(AbigailGame), nameof(AbigailGame.draw))]

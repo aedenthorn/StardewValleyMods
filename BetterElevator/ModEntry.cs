@@ -1,7 +1,9 @@
 ﻿using HarmonyLib;
+using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using StardewModdingAPI;
 
-namespace TwoPlayerPrairieKing
+namespace BetterElevator
 {
     /// <summary>The mod entry point.</summary>
     public partial class ModEntry : Mod
@@ -35,7 +37,6 @@ namespace TwoPlayerPrairieKing
             harmony.PatchAll();
 
         }
-
         private void GameLoop_GameLaunched(object sender, StardewModdingAPI.Events.GameLaunchedEventArgs e)
         {
             // get Generic Mod Config Menu's API (if it's installed)
@@ -56,14 +57,20 @@ namespace TwoPlayerPrairieKing
                 getValue: () => Config.ModEnabled,
                 setValue: value => Config.ModEnabled = value
             );
-
-            configMenu.AddNumberOption(
+            
+            configMenu.AddKeybind(
                 mod: ModManifest,
-                name: () => "Min Hearts To Invite",
-                getValue: () => Config.MinHearts,
-                setValue: value => Config.MinHearts = value,
-                min: 0,
-                max: 14
+                name: () => "Mod Key",
+                getValue: () => Config.ModKey,
+                setValue: value => Config.ModKey = value
+            );
+
+            configMenu.AddBoolOption(
+                mod: ModManifest,
+                name: () => "Unrestricted",
+                tooltip: () => "Lets you visit any floor, even those you haven't been to before",
+                getValue: () => Config.Unrestricted,
+                setValue: value => Config.Unrestricted = value
             );
         }
     }

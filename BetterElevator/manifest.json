@@ -1,16 +1,16 @@
 ﻿{
-  "Name": "Two Player Prairie King",
+  "Name": "Better Elevator",
   "Author": "aedenthorn",
-  "Version": "0.1.1",
-  "Description": "Two Player Prairie King.",
-  "UniqueID": "aedenthorn.TwoPlayerPrairieKing",
-  "EntryDll": "TwoPlayerPrairieKing.dll",
+  "Version": "0.2.0",
+  "Description": "Better Elevator.",
+  "UniqueID": "aedenthorn.BetterElevator",
+  "EntryDll": "BetterElevator.dll",
   "MinimumApiVersion": "3.8.0",
   "ModUpdater": {
     "Repository": "StardewValleyMods",
     "User": "aedenthorn",
     "Directory": "_releases",
-    "ModFolder": "TwoPlayerPrairieKing"
+    "ModFolder": "BetterElevator"
   },
   "Dependencies": [
     {
@@ -18,5 +18,5 @@
       "IsRequired": false
     }
   ],
-  "UpdateKeys": [ "Nexus:12750" ]
+  "UpdateKeys": [ "Nexus:12802" ]
 }

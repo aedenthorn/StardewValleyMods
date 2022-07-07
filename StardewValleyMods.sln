@@ -339,6 +339,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PrismaticFurniture", "Prism
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TwoPlayerPrairieKing", "TwoPlayerPrairieKing\TwoPlayerPrairieKing.csproj", "{B402D3FC-2BCC-4C9C-A9F4-76481751F354}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BetterElevator", "BetterElevator\BetterElevator.csproj", "{E5AAF77F-B9CE-42A1-B976-9CAAF066A9C7}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -1659,6 +1661,14 @@ Global
 		{B402D3FC-2BCC-4C9C-A9F4-76481751F354}.Release|Any CPU.Build.0 = Release|Any CPU
 		{B402D3FC-2BCC-4C9C-A9F4-76481751F354}.Release|x86.ActiveCfg = Release|Any CPU
 		{B402D3FC-2BCC-4C9C-A9F4-76481751F354}.Release|x86.Build.0 = Release|Any CPU
+		{E5AAF77F-B9CE-42A1-B976-9CAAF066A9C7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E5AAF77F-B9CE-42A1-B976-9CAAF066A9C7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E5AAF77F-B9CE-42A1-B976-9CAAF066A9C7}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{E5AAF77F-B9CE-42A1-B976-9CAAF066A9C7}.Debug|x86.Build.0 = Debug|Any CPU
+		{E5AAF77F-B9CE-42A1-B976-9CAAF066A9C7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E5AAF77F-B9CE-42A1-B976-9CAAF066A9C7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E5AAF77F-B9CE-42A1-B976-9CAAF066A9C7}.Release|x86.ActiveCfg = Release|Any CPU
+		{E5AAF77F-B9CE-42A1-B976-9CAAF066A9C7}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
