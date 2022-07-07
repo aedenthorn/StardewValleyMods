@@ -109,6 +109,19 @@ namespace Swim
                 Game1.player.mailReceived.Add("ScubaFins");
             }
         }
+
+        public static void GameLoop_Saving(object sender, SavingEventArgs e)
+        {
+            foreach(var l in Game1.locations)
+            {
+                for(int i = l.characters.Count - 1; i >=0; i--)
+                {
+                    if (l.characters[i] is Fishie || l.characters[i] is BigFishie || l.characters[i] is SeaCrab)
+                        l.characters.RemoveAt(i);
+                }
+            }
+        }
+
         public static void GameLoop_SaveLoaded(object sender, SaveLoadedEventArgs e)
         {
             // load scuba gear ids

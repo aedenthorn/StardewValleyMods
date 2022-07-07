@@ -84,6 +84,7 @@ namespace Swim
             helper.Events.GameLoop.DayStarted += SwimHelperEvents.GameLoop_DayStarted;
             helper.Events.GameLoop.GameLaunched += SwimHelperEvents.GameLoop_GameLaunched;
             helper.Events.GameLoop.SaveLoaded += SwimHelperEvents.GameLoop_SaveLoaded;
+            helper.Events.GameLoop.Saving += SwimHelperEvents.GameLoop_Saving;
             helper.Events.Display.RenderedHud += SwimHelperEvents.Display_RenderedHud;
             helper.Events.Display.RenderedWorld += SwimHelperEvents.Display_RenderedWorld;
             helper.Events.Player.InventoryChanged += SwimHelperEvents.Player_InventoryChanged;
