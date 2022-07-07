@@ -1,7 +1,7 @@
 ﻿{
     "maps":[
         {
-            "Name":"UnderwaterBeach",
+            "Name":"Custom_UnderwaterBeach",
             "Features":[
                 "SmolFishies",
                 "Crabs",
@@ -15,7 +15,7 @@
                     "StartY":27,
                     "Width":4,
                     "Height":2,
-                    "OtherMapName":"ScubaCrystalCave",
+                    "OtherMapName":"Custom_ScubaCrystalCave",
                     "OtherMapPos":{
                         "X":10,
                         "Y":12,
@@ -30,7 +30,7 @@
             "Name":"Beach",
             "DiveLocations": [
                 {
-                    "OtherMapName":"UnderwaterBeach",
+                    "OtherMapName":"Custom_UnderwaterBeach",
                 },
             ],
             "EdgeWarps":[
@@ -57,13 +57,13 @@
             ]
         },
         {
-            "Name":"ScubaCrystalCave",
+            "Name":"Custom_ScubaCrystalCave",
             "Features":[
                 "WaterTiles",
             ],
             "DiveLocations": [
                 {
-                    "OtherMapName":"UnderwaterBeach",
+                    "OtherMapName":"Custom_UnderwaterBeach",
                     "OtherMapPos":{
                         "X":5,
                         "Y":28,
@@ -79,7 +79,7 @@
                     "StartY":29,
                     "Width":3,
                     "Height":8,
-                    "OtherMapName":"ScubaCave",
+                    "OtherMapName":"Custom_ScubaCave",
                     "OtherMapPos":{
                         "X":9,
                         "Y":6,
@@ -110,7 +110,7 @@
             ]
         },    
         {
-            "Name":"ScubaCave",
+            "Name":"Custom_ScubaCave",
             "Features":[
                 "WaterTiles",
             ],
@@ -125,10 +125,10 @@
             ],
         },
         {
-            "Name":"ScubaAbigailCave",
+            "Name":"Custom_ScubaAbigailCave",
             "DiveLocations": [
                 {
-                    "OtherMapName":"UnderwaterMountain",
+                    "OtherMapName":"Custom_UnderwaterMountain",
                     "OtherMapPos":{
                         "X":48,
                         "Y":5,
@@ -137,7 +137,7 @@
             ],
         },
         {
-            "Name":"UnderwaterMountain",
+            "Name":"Custom_UnderwaterMountain",
             "Features":[
                 "BigFishies",
                 "Minerals",
@@ -149,7 +149,7 @@
                     "StartY":4,
                     "Width":2,
                     "Height":1,
-                    "OtherMapName":"ScubaAbigailCave",
+                    "OtherMapName":"Custom_ScubaAbigailCave",
                     "OtherMapPos":{
                         "X":8,
                         "Y":9,
@@ -167,7 +167,7 @@
             ],
             "DiveLocations": [
                 {
-                    "OtherMapName":"UnderwaterMountain",
+                    "OtherMapName":"Custom_UnderwaterMountain",
                 },
             ],
             "EdgeWarps":[

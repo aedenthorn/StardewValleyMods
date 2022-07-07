@@ -70,7 +70,7 @@ namespace Swim
 
         public static void Player_Warped(object sender, WarpedEventArgs e)
         {
-            if (e.NewLocation.Name == "ScubaAbigailCave")
+            if (e.NewLocation.Name == "Custom_ScubaAbigailCave")
             {
                 abigailTicks.Value = 0;
                 e.NewLocation.characters.Clear();
@@ -226,7 +226,7 @@ namespace Swim
 
         public static void Display_RenderedHud(object sender, RenderedHudEventArgs e)
         {
-            if(Game1.player.currentLocation.Name == "ScubaAbigailCave")
+            if(Game1.player.currentLocation.Name == "Custom_ScubaAbigailCave")
             {
                 if(abigailTicks.Value > 0 && abigailTicks.Value < 30 * 5)
                 {
@@ -247,16 +247,6 @@ namespace Swim
 
         public static void GameLoop_GameLaunched(object sender, GameLaunchedEventArgs e)
         {
-            // load TMX pack
-
-            IContentPack TMXcontentPack = Helper.ContentPacks.CreateFake(Path.Combine(Helper.DirectoryPath, "assets/tmx-pack"));
-
-            object api = Helper.ModRegistry.GetApi("Platonymous.TMXLoader");
-            if (api != null)
-            {
-                Helper.Reflection.GetMethod(api, "AddContentPack").Invoke(TMXcontentPack);
-            }
-
             // load scuba gear
 
             ModEntry.JsonAssets = Helper.ModRegistry.GetApi<IJsonAssetsApi>("spacechase0.JsonAssets");
@@ -588,9 +578,9 @@ namespace Swim
                     SwimMaps.RemoveWaterTiles(location);
                 }
             }
-            if (Game1.getLocationFromName("ScubaCave") != null && !Game1.player.mailReceived.Contains("ScubaMask"))
+            if (Game1.getLocationFromName("Custom_ScubaCave") != null && !Game1.player.mailReceived.Contains("ScubaMask"))
             {
-                SwimMaps.AddScubaChest(Game1.getLocationFromName("ScubaCave"), new Vector2(10,14), "ScubaMask");
+                SwimMaps.AddScubaChest(Game1.getLocationFromName("Custom_ScubaCave"), new Vector2(10,14), "ScubaMask");
             }
             ModEntry.marinerQuestionsWrongToday.Value = false;
             ModEntry.oxygen.Value = SwimUtils.MaxOxygen();
@@ -620,7 +610,7 @@ namespace Swim
                 SwimUtils.SeaMonsterSay("The quick brown fox jumped over the slow lazy dog.");
             }
 
-            if (Game1.activeClickableMenu != null && Game1.player.currentLocation.Name == "ScubaCrystalCave" && Game1.player.currentLocation.lastQuestionKey.StartsWith("SwimMod_Mariner_"))
+            if (Game1.activeClickableMenu != null && Game1.player.currentLocation.Name == "Custom_ScubaCrystalCave" && Game1.player.currentLocation.lastQuestionKey.StartsWith("SwimMod_Mariner_"))
             {
                 IClickableMenu menu = Game1.activeClickableMenu;
                 if (menu == null || menu.GetType() != typeof(DialogueBox))
@@ -714,7 +704,7 @@ namespace Swim
 
             ModEntry.isUnderwater.Value = SwimUtils.IsMapUnderwater(Game1.player.currentLocation.Name);
 
-            if (Game1.player.currentLocation.Name == "ScubaAbigailCave")
+            if (Game1.player.currentLocation.Name == "Custom_ScubaAbigailCave")
             {
                 AbigailCaveTick();
             }

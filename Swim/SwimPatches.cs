@@ -30,7 +30,7 @@ namespace Swim
         {
             try
             {
-                if(who.swimming.Value && Game1.player.currentLocation.Name.StartsWith("Underwater"))
+                if(who.swimming.Value && Game1.player.currentLocation.Name.StartsWith("Custom_Underwater"))
                 {
                     who.swimming.Value = false;
                     __state = true;
@@ -299,7 +299,7 @@ namespace Swim
         {
             try
             {
-                if(__instance.Name == "ScubaCrystalCave")
+                if(__instance.Name == "Custom_ScubaCrystalCave")
                 {
                     if (Game1.player.mailReceived.Contains("SwimMod_Mariner_Completed"))
                     {
@@ -323,7 +323,7 @@ namespace Swim
         {
             try
             {
-                if(__instance.Name == "ScubaCrystalCave")
+                if(__instance.Name == "Custom_ScubaCrystalCave")
                 {
                     if (!Game1.player.mailReceived.Contains("SwimMod_Mariner_Completed"))
                     {
@@ -340,7 +340,7 @@ namespace Swim
         {
             try
             {
-                if(__instance.Name == "ScubaCrystalCave")
+                if(__instance.Name == "Custom_ScubaCrystalCave")
                 {
                     if (!Game1.player.mailReceived.Contains("SwimMod_Mariner_Completed") && ModEntry.oldMariner != null && position.Intersects(ModEntry.oldMariner.Value.GetBoundingBox()))
                     {
@@ -359,7 +359,7 @@ namespace Swim
         {
             try
             {
-                if (__instance.Name == "ScubaCrystalCave")
+                if (__instance.Name == "Custom_ScubaCrystalCave")
                 {
                     if (!Game1.player.mailReceived.Contains("SwimMod_Mariner_Completed"))
                     {
@@ -421,7 +421,7 @@ namespace Swim
         {
             try
             {
-                if (__instance.Name == "ScubaCrystalCave")
+                if (__instance.Name == "Custom_ScubaCrystalCave")
                 {
                     if (!who.mailReceived.Contains("SwimMod_Mariner_Completed"))
                     {
