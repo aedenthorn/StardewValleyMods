@@ -56,6 +56,14 @@ namespace TwoPlayerPrairieKing
                 getValue: () => Config.ModEnabled,
                 setValue: value => Config.ModEnabled = value
             );
+            
+            configMenu.AddBoolOption(
+                mod: ModManifest,
+                name: () => "Same Location Only?",
+                tooltip: () => "Only play with NPCs in the same location as you",
+                getValue: () => Config.SameLocation,
+                setValue: value => Config.SameLocation = value
+            );
 
             configMenu.AddNumberOption(
                 mod: ModManifest,

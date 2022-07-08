@@ -16,6 +16,7 @@ namespace TwoPlayerPrairieKing
 {
     public partial class ModEntry
     {
+        public static int namePage;
         public static string GetCoopName()
         {
             if (!Config.ModEnabled || coopName is null)
@@ -33,20 +34,9 @@ namespace TwoPlayerPrairieKing
                 if(questionAndAnswer == "CowboyGame_CoopGame")
                 {
                     SMonitor.Log("Starting coop game");
-                    var names =  Game1.player.friendshipData.Keys.Where(k => Game1.player.friendshipData[k].Points / 250 >= Config.MinHearts).ToList();
 
-                    names.Sort(delegate (string a, string b) {
-                        return Game1.player.friendshipData[b].Points.CompareTo(Game1.player.friendshipData[a].Points);
-                    });
-                    names = names.Take(Config.MaxNames).ToList();
+                    CreateNameListQuestion(__instance);
 
-                    List<Response> responses = new List<Response>();
-                    foreach(var name in names)
-                    {
-                        responses.Add(new Response(name, name));
-                    }
-
-                    __instance.createQuestionDialogue(SHelper.Translation.Get("which-npc"), responses.ToArray(), "CowboyCoopGame");
                     __result = true;
                     return false;
                 } 
@@ -57,14 +47,64 @@ namespace TwoPlayerPrairieKing
                 }
                 else if (questionAndAnswer.StartsWith("CowboyCoopGame_"))
                 {
-                    coopName = questionAndAnswer.Substring("CowboyCoopGame_".Length);
-                    SMonitor.Log($"Starting coop game with {coopName}");
-                    Game1.player.jotpkProgress.Value = null;
-                    Game1.currentMinigame = new AbigailGame(false);
+                    string name = questionAndAnswer.Substring("CowboyCoopGame_".Length);
+                    if(name == "prev_page")
+                    {
+                        namePage--;
+                        CreateNameListQuestion(__instance);
+                    }
+                    else if(name == "next_page")
+                    {
+                        namePage++;
+                        CreateNameListQuestion(__instance);
+                    }
+                    else
+                    {
+                        coopName = name;
+                        SMonitor.Log($"Starting coop game with {coopName}");
+                        Game1.player.jotpkProgress.Value = null;
+                        Game1.currentMinigame = new AbigailGame(false);
+                    }
                     __result = true;
                     return false;
                 }
                 return true;
+            }
+
+            private static void CreateNameListQuestion(GameLocation __instance)
+            {
+                var names = Game1.player.friendshipData.Keys.Where(k => Game1.player.friendshipData[k].Points / 250 >= Config.MinHearts).ToList();
+
+                names.Sort(delegate (string a, string b) {
+                    return Game1.player.friendshipData[b].Points.CompareTo(Game1.player.friendshipData[a].Points);
+                });
+
+                if (Config.SameLocation)
+                {
+                    for(int i = names.Count - 1; i >= 0; i--)
+                    {
+                        if (Game1.player.currentLocation.characters.FirstOrDefault(n => n.Name == names[i]) == null)
+                            names.RemoveAt(i);
+                    }
+                }
+
+
+                int totalNames = names.Count;
+
+                names = names.Skip(namePage * Config.NamesPerPage).Take(Config.NamesPerPage).ToList();
+
+                List<Response> responses = new List<Response>();
+
+                if (namePage > 0)
+                    responses.Add(new Response("prev_page", "..."));
+                foreach (var name in names)
+                {
+                    responses.Add(new Response(name, name));
+                }
+                if (Config.NamesPerPage * (namePage + 1) < totalNames)
+                    responses.Add(new Response("next_page", "..."));
+
+                __instance.createQuestionDialogue(SHelper.Translation.Get("which-npc"), responses.ToArray(), "CowboyCoopGame");
             }
         }
         [HarmonyPatch(typeof(GameLocation), nameof(GameLocation.showPrairieKingMenu))]

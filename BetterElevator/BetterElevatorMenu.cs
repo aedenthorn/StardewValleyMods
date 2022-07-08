@@ -116,7 +116,7 @@ namespace BetterElevator
 			{
 				newLevel = MineShaft.lowestLevelReached;
 			}
-			if (newLevel > 120 && Game1.player.currentLocation is MineShaft && (Game1.player.currentLocation as MineShaft).getMineArea(-1) != 121)
+			if (newLevel > 120 && ((Game1.player.currentLocation is MineShaft && (Game1.player.currentLocation as MineShaft).getMineArea(-1) != 121) || Game1.player.currentLocation.Name == "Mine"))
             {
 				newLevel = 120;
 			}
