@@ -1,16 +1,11 @@
 ﻿using HarmonyLib;
 using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
 using Netcode;
 using StardewValley;
 using StardewValley.Minigames;
-using StardewValley.Objects;
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reflection;
 using System.Reflection.Emit;
-using Object = StardewValley.Object;
 
 namespace TwoPlayerPrairieKing
 {
@@ -79,13 +74,10 @@ namespace TwoPlayerPrairieKing
                     return Game1.player.friendshipData[b].Points.CompareTo(Game1.player.friendshipData[a].Points);
                 });
 
-                if (Config.SameLocation)
+                for (int i = names.Count - 1; i >= 0; i--)
                 {
-                    for(int i = names.Count - 1; i >= 0; i--)
-                    {
-                        if (Game1.player.currentLocation.characters.FirstOrDefault(n => n.Name == names[i]) == null)
-                            names.RemoveAt(i);
-                    }
+                    if (Game1.getCharacterFromName(names[i], true) is null || (Game1.player.currentLocation.characters.FirstOrDefault(n => n.Name == names[i]) == null && Config.SameLocation))
+                        names.RemoveAt(i);
                 }
 
 

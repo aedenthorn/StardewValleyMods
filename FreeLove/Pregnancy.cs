@@ -18,14 +18,14 @@ namespace FreeLove
         {
             if (!Config.EnableMod)
                 return true;
-            lastBirthingSpouse = null;
-            lastPregnantSpouse = null;
             SMonitor.Log("picking event");
             if (Game1.weddingToday)
             {
                 __result = null;
                 return false;
             }
+
+
 
             List<NPC> allSpouses = GetSpouses(Game1.player,true).Values.ToList();
 
@@ -44,11 +44,22 @@ namespace FreeLove
 
                 if (friendship.DaysUntilBirthing <= 0 && friendship.NextBirthingDate != null)
                 {
+                    lastPregnantSpouse = null;
                     lastBirthingSpouse = spouse;
                     __result = new BirthingEvent();
                     return false;
                 }
             }
+
+            if (plannedParenthoodAPI is not null && plannedParenthoodAPI.GetPartnerTonight() is not null)
+            {
+                SMonitor.Log($"Handing farm sleep event off to Planned Parenthood");
+                return true;
+            }
+
+            lastBirthingSpouse = null;
+            lastPregnantSpouse = null;
+
             foreach (NPC spouse in allSpouses)
             {
                 if (spouse == null)
@@ -92,7 +103,7 @@ namespace FreeLove
                     new Response("Not", Game1.content.LoadString("Strings\\Events:HaveBabyAnswer_No"))
                 };
 
-                if (!lastPregnantSpouse.isGaySpouse())
+                if (!lastPregnantSpouse.isGaySpouse() || Config.GayPregnancies)
                 {
                     Game1.currentLocation.createQuestionDialogue(Game1.content.LoadString("Strings\\Events:HavePlayerBabyQuestion", lastPregnantSpouse.Name), answers, new GameLocation.afterQuestionBehavior(answerPregnancyQuestion), lastPregnantSpouse);
                 }

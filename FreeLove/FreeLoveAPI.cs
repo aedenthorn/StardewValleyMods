@@ -18,5 +18,9 @@ namespace FreeLove
         {
             return ModEntry.GetSpouses(farmer, all != 0);
         }
+        public void SetLastPregnantSpouse(string name)
+        {
+            ModEntry.lastPregnantSpouse = Game1.getCharacterFromName(name);
+        }
     }
 }
