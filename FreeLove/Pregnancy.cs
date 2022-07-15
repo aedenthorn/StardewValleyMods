@@ -174,7 +174,7 @@ namespace FreeLove
                     Game1.getCharacterFromName(lastBirthingSpouse.Name).currentMarriageDialogue.Insert(0, new MarriageDialogueReference("Data\\ExtraDialogue", "NewChild_SecondChild" + myRand.Next(1, 3), true, new string[0]));
                     Game1.getSteamAchievement("Achievement_FullHouse");
                 }
-                else if (lastBirthingSpouse.isGaySpouse())
+                else if (lastBirthingSpouse.isGaySpouse() && !Config.GayPregnancies)
                 {
                     Game1.getCharacterFromName(lastBirthingSpouse.Name).currentMarriageDialogue.Insert(0, new MarriageDialogueReference("Data\\ExtraDialogue", "NewChild_Adoption", true, new string[]
                     {
