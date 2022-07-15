@@ -16,21 +16,29 @@ namespace PrismaticFire
 {
     public partial class ModEntry
     {
-
+        public static Dictionary<string, Color> colorDict = new Dictionary<string, Color>()
+        {
+            { "Prismatic Shard", Color.White },
+            { "Amethyst", Color.Purple },
+            { "Ruby", Color.Red },
+            { "Emerald", Color.Green },
+            { "Diamond", Color.PaleTurquoise },
+            { "Topaz", Color.Yellow }
+        };
         [HarmonyPatch(typeof(GameLocation), nameof(GameLocation.checkAction))]
         public class GameLocation_checkAction_Patch
         {
             public static bool Prefix(GameLocation __instance, Location tileLocation, xTile.Dimensions.Rectangle viewport, Farmer who, ref bool __result)
             {
-                if (!Config.ModEnabled || who.ActiveObject is null || who.ActiveObject.Name != "Prismatic Shard" || !Game1.didPlayerJustRightClick(false))
+                if (!Config.ModEnabled || who.ActiveObject is null || !colorDict.ContainsKey(who.ActiveObject.Name)|| !Game1.didPlayerJustRightClick(false))
                     return true;
                 Vector2 vect = new Vector2((float)tileLocation.X, (float)tileLocation.Y);
                 if (__instance.objects.ContainsKey(vect) && __instance.objects[vect] is Torch)
                 {
-                    SMonitor.Log($"giving {__instance.objects[vect].Name} prismatic fire");
-                    __instance.objects[vect].modData[modKey] = "true";
+                    SMonitor.Log($"giving {__instance.objects[vect].Name} {who.ActiveObject.Name} fire");
+                    __instance.objects[vect].modData[modKey] = who.ActiveObject.Name;
                     who.reduceActiveItemByOne();
-                    __instance.localSound("fireball");
+                    __instance.localSound(Config.TriggerSound);
                     __result = true;
                     return false;
                 }
@@ -38,10 +46,10 @@ namespace PrismaticFire
                 {
                     if ((f.furniture_type.Value == 14 || f.furniture_type.Value == 16) && f.IsOn && f.boundingBox.Value.Contains((int)(vect.X * 64f), (int)(vect.Y * 64f)))
                     {
-                        SMonitor.Log($"giving {f.Name} prismatic fire");
-                        f.modData[modKey] = "true";
+                        SMonitor.Log($"giving {f.Name} {who.ActiveObject.Name} fire");
+                        f.modData[modKey] = who.ActiveObject.Name;
                         who.reduceActiveItemByOne();
-                        __instance.localSound("fireball");
+                        __instance.localSound(Config.TriggerSound);
                         __result = true;
                         return false;
                     }
@@ -55,17 +63,19 @@ namespace PrismaticFire
         {
             public static void Postfix(Furniture __instance, SpriteBatch spriteBatch, int x, int y, NetVector2 ___drawPosition, NetInt ___sourceIndexOffset)
             {
-                if (!Config.ModEnabled || (__instance.furniture_type.Value != 14 && __instance.furniture_type.Value != 16) || !__instance.IsOn || !__instance.modData.ContainsKey(modKey))
+                if (!Config.ModEnabled || (__instance.furniture_type.Value != 14 && __instance.furniture_type.Value != 16) || !__instance.IsOn || !__instance.modData.TryGetValue(modKey, out string which))
                     return;
+
+                var color = GetColor(which);
 
                 if (__instance.furniture_type.Value == 14)
                 {
-                    spriteBatch.Draw(cursors, Game1.GlobalToLocal(Game1.viewport, new Vector2(__instance.boundingBox.Center.X - 12, __instance.boundingBox.Center.Y - 64)), new Rectangle?(new Rectangle(276 + (int)((Game1.currentGameTime.TotalGameTime.TotalMilliseconds + x * 3047 + y * 88) % 400.0 / 100.0) * 12, 1985, 12, 11)), Utility.GetPrismaticColor(0, 3), 0f, Vector2.Zero, 4f, SpriteEffects.None, (__instance.getBoundingBox(new Vector2(x, y)).Bottom - 2) / 10000f + 0.0001f);
-                    spriteBatch.Draw(cursors, Game1.GlobalToLocal(Game1.viewport, new Vector2(__instance.boundingBox.Center.X - 32 - 4, __instance.boundingBox.Center.Y - 64)), new Rectangle?(new Rectangle(276 + (int)((Game1.currentGameTime.TotalGameTime.TotalMilliseconds + x * 2047 + y * 98) % 400.0 / 100.0) * 12, 1985, 12, 11)), Utility.GetPrismaticColor(0, 3), 0f, Vector2.Zero, 4f, SpriteEffects.None, (__instance.getBoundingBox(new Vector2(x, y)).Bottom - 1) / 10000f + 0.0001f);
+                    spriteBatch.Draw(cursors, Game1.GlobalToLocal(Game1.viewport, new Vector2(__instance.boundingBox.Center.X - 12, __instance.boundingBox.Center.Y - 64)), new Rectangle?(new Rectangle(276 + (int)((Game1.currentGameTime.TotalGameTime.TotalMilliseconds + x * 3047 + y * 88) % 400.0 / 100.0) * 12, 1985, 12, 11)), color, 0f, Vector2.Zero, 4f, SpriteEffects.None, (__instance.getBoundingBox(new Vector2(x, y)).Bottom - 2) / 10000f + 0.0001f);
+                    spriteBatch.Draw(cursors, Game1.GlobalToLocal(Game1.viewport, new Vector2(__instance.boundingBox.Center.X - 32 - 4, __instance.boundingBox.Center.Y - 64)), new Rectangle?(new Rectangle(276 + (int)((Game1.currentGameTime.TotalGameTime.TotalMilliseconds + x * 2047 + y * 98) % 400.0 / 100.0) * 12, 1985, 12, 11)), color, 0f, Vector2.Zero, 4f, SpriteEffects.None, (__instance.getBoundingBox(new Vector2(x, y)).Bottom - 1) / 10000f + 0.0001f);
                 }
                 else if (__instance.furniture_type.Value == 16)
                 {
-                    spriteBatch.Draw(cursors, Game1.GlobalToLocal(Game1.viewport, new Vector2(__instance.boundingBox.Center.X - 20, __instance.boundingBox.Center.Y - 105.6f)), new Rectangle?(new Rectangle(276 + (int)((Game1.currentGameTime.TotalGameTime.TotalMilliseconds + x * 3047 + y * 88) % 400.0 / 100.0) * 12, 1985, 12, 11)), Utility.GetPrismaticColor(0, 3), 0f, Vector2.Zero, 4f, SpriteEffects.None, (__instance.getBoundingBox(new Vector2(x, y)).Bottom - 2) / 10000f + 0.0001f);
+                    spriteBatch.Draw(cursors, Game1.GlobalToLocal(Game1.viewport, new Vector2(__instance.boundingBox.Center.X - 20, __instance.boundingBox.Center.Y - 105.6f)), new Rectangle?(new Rectangle(276 + (int)((Game1.currentGameTime.TotalGameTime.TotalMilliseconds + x * 3047 + y * 88) % 400.0 / 100.0) * 12, 1985, 12, 11)), color, 0f, Vector2.Zero, 4f, SpriteEffects.None, (__instance.getBoundingBox(new Vector2(x, y)).Bottom - 2) / 10000f + 0.0001f);
                 }
             }
         }
@@ -116,16 +126,39 @@ namespace PrismaticFire
 
         private static void DrawTorch(SpriteBatch spriteBatch, Texture2D texture, Vector2 position, Rectangle? sourceRectangle, Color color, float rotation, Vector2 origin, float scale, SpriteEffects effects, float layerDepth, Torch torch)
         {
-            if (Config.ModEnabled && texture == Game1.mouseCursors && torch.modData.ContainsKey(modKey))
+            if (Config.ModEnabled && texture == Game1.mouseCursors && torch.modData.TryGetValue(modKey, out string which))
             {
-                Color c = Utility.GetPrismaticColor(0, 3);
+                Color c = GetColor(which);
                 if (color.R == color.G && color.G == color.B)
                     color = new Color(c.R, c.G, c.B, color.A);
                 else
                     color = new Color(c.R, c.G, c.B, color.A) * 0.5f;
-
+                texture = cursors;
             }
             spriteBatch.Draw(texture, position, sourceRectangle, color, rotation, origin, scale, effects, layerDepth);
+        }
+        private static Color GetColor(string which)
+        {
+            Color color = Color.White;
+            switch (which)
+            {
+                case "Prismatic Shard":
+                    color = Utility.GetPrismaticColor(0, Config.PrismaticSpeed);
+                    break;
+                case "Amethyst":
+                    color = Config.AmethystColor;
+                    break;
+                case "Ruby":
+                    color = Config.RubyColor;
+                    break;
+                case "Emerald":
+                    color = Config.EmeraldColor;
+                    break;
+                case "Topaz":
+                    color = Config.TopazColor;
+                    break;
+            }
+            return color;
         }
     }
 }

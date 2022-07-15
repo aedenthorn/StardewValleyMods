@@ -4,6 +4,7 @@ using Microsoft.Xna.Framework.Graphics;
 using StardewModdingAPI;
 using StardewValley;
 using System;
+using System.Globalization;
 using System.IO;
 
 namespace PrismaticFire
@@ -76,6 +77,18 @@ namespace PrismaticFire
                 name: () => "Mod Enabled?",
                 getValue: () => Config.ModEnabled,
                 setValue: value => Config.ModEnabled = value
+            );
+            configMenu.AddTextOption(
+                mod: ModManifest,
+                name: () => "Prismatic Speed",
+                getValue: () => Config.PrismaticSpeed.ToString(),
+                setValue: delegate(string value) { try { Config.PrismaticSpeed = float.Parse(value, System.Globalization.NumberStyles.Any, CultureInfo.InvariantCulture); } catch { } } 
+            );
+            configMenu.AddTextOption(
+                mod: ModManifest,
+                name: () => "Drop In Sound",
+                getValue: () => Config.TriggerSound,
+                setValue: value => Config.TriggerSound = value
             );
         }
     }
