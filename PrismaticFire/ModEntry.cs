@@ -71,6 +71,14 @@ namespace PrismaticFire
                 reset: () => Config = new ModConfig(),
                 save: () => Helper.WriteConfig(Config)
             );
+            
+            configMenu.OnFieldChanged(
+                mod: ModManifest,
+                onChange: delegate(string id, object value)
+                {
+                    Helper.WriteConfig(Config);
+                }
+            );
 
             configMenu.AddBoolOption(
                 mod: ModManifest,
@@ -90,6 +98,190 @@ namespace PrismaticFire
                 getValue: () => Config.TriggerSound,
                 setValue: value => Config.TriggerSound = value
             );
+            configMenu.AddSectionTitle(
+                mod: ModManifest,
+                text: () => "Colors"
+            );
+            configMenu.AddComplexOption(
+                mod: ModManifest,
+                name: () => "Amethyst Color",
+                beforeSave: DoNothing,
+                draw: DrawAmethystText
+            );
+            configMenu.AddNumberOption(
+                mod: ModManifest,
+                name: () => "   Red",
+                getValue: () => Config.AmethystColor.R,
+                setValue: value => Config.AmethystColor = new Color(value, Config.AmethystColor.G, Config.AmethystColor.B),
+                min: 0,
+                max: 255
+            );
+            configMenu.AddNumberOption(
+                mod: ModManifest,
+                name: () => "   Green",
+                getValue: () => Config.AmethystColor.G,
+                setValue: value => Config.AmethystColor = new Color(Config.AmethystColor.R, value, Config.AmethystColor.B),
+                min: 0,
+                max: 255
+            );
+            configMenu.AddNumberOption(
+                mod: ModManifest,
+                name: () => "   Blue",
+                getValue: () => Config.AmethystColor.B,
+                setValue: value => Config.AmethystColor = new Color(Config.AmethystColor.R, Config.AmethystColor.G, value),
+                min: 0,
+                max: 255
+            );
+            configMenu.AddComplexOption(
+                mod: ModManifest,
+                name: () => "Emerald Color",
+                beforeSave: DoNothing,
+                draw: DrawEmeraldText
+            );
+            configMenu.AddNumberOption(
+                mod: ModManifest,
+                name: () => "   Red",
+                getValue: () => Config.EmeraldColor.R,
+                setValue: value => Config.EmeraldColor = new Color(value, Config.EmeraldColor.G, Config.EmeraldColor.B),
+                min: 0,
+                max: 255
+            );
+            configMenu.AddNumberOption(
+                mod: ModManifest,
+                name: () => "   Green",
+                getValue: () => Config.EmeraldColor.G,
+                setValue: value => Config.EmeraldColor = new Color(Config.EmeraldColor.R, value, Config.EmeraldColor.B),
+                min: 0,
+                max: 255
+            );
+            configMenu.AddNumberOption(
+                mod: ModManifest,
+                name: () => "   Blue",
+                getValue: () => Config.EmeraldColor.B,
+                setValue: value => Config.EmeraldColor = new Color(Config.EmeraldColor.R, Config.EmeraldColor.G, value),
+                min: 0,
+                max: 255
+            );
+            configMenu.AddComplexOption(
+                mod: ModManifest,
+                name: () => "Ruby Color",
+                beforeSave: DoNothing,
+                draw: DrawRubyText
+            );
+            configMenu.AddNumberOption(
+                mod: ModManifest,
+                name: () => "   Red",
+                getValue: () => Config.RubyColor.R,
+                setValue: value => Config.RubyColor = new Color(value, Config.RubyColor.G, Config.RubyColor.B),
+                min: 0,
+                max: 255
+            );
+            configMenu.AddNumberOption(
+                mod: ModManifest,
+                name: () => "   Green",
+                getValue: () => Config.RubyColor.G,
+                setValue: value => Config.RubyColor = new Color(Config.RubyColor.R, value, Config.RubyColor.B),
+                min: 0,
+                max: 255
+            );
+            configMenu.AddNumberOption(
+                mod: ModManifest,
+                name: () => "   Blue",
+                getValue: () => Config.RubyColor.B,
+                setValue: value => Config.RubyColor = new Color(Config.RubyColor.R, Config.RubyColor.G, value),
+                min: 0,
+                max: 255
+            );
+            configMenu.AddComplexOption(
+                mod: ModManifest,
+                name: () => "Topaz Color",
+                beforeSave: DoNothing,
+                draw: DrawTopazText
+            );
+            configMenu.AddNumberOption(
+                mod: ModManifest,
+                name: () => "   Red",
+                getValue: () => Config.TopazColor.R,
+                setValue: value => Config.TopazColor = new Color(value, Config.TopazColor.G, Config.TopazColor.B),
+                min: 0,
+                max: 255
+            );
+            configMenu.AddNumberOption(
+                mod: ModManifest,
+                name: () => "   Green",
+                getValue: () => Config.TopazColor.G,
+                setValue: value => Config.TopazColor = new Color(Config.TopazColor.R, value, Config.TopazColor.B),
+                min: 0,
+                max: 255
+            );
+            configMenu.AddNumberOption(
+                mod: ModManifest,
+                name: () => "   Blue",
+                getValue: () => Config.TopazColor.B,
+                setValue: value => Config.TopazColor = new Color(Config.TopazColor.R, Config.TopazColor.G, value),
+                min: 0,
+                max: 255
+            );
+            configMenu.AddComplexOption(
+                mod: ModManifest,
+                name: () => "Diamond Color",
+                beforeSave: DoNothing,
+                draw: DrawDiamondText
+            );
+            configMenu.AddNumberOption(
+                mod: ModManifest,
+                name: () => "   Red",
+                getValue: () => Config.DiamondColor.R,
+                setValue: value => Config.DiamondColor = new Color(value, Config.DiamondColor.G, Config.DiamondColor.B),
+                min: 0,
+                max: 255
+            );
+            configMenu.AddNumberOption(
+                mod: ModManifest,
+                name: () => "   Green",
+                getValue: () => Config.DiamondColor.G,
+                setValue: value => Config.DiamondColor = new Color(Config.DiamondColor.R, value, Config.DiamondColor.B),
+                min: 0,
+                max: 255
+            );
+            configMenu.AddNumberOption(
+                mod: ModManifest,
+                name: () => "   Blue",
+                getValue: () => Config.DiamondColor.B,
+                setValue: value => Config.DiamondColor = new Color(Config.DiamondColor.R, Config.DiamondColor.G, value),
+                min: 0,
+                max: 255
+            );
+
+        }
+        private void DoNothing()
+        {
+        }
+
+        private void DrawAmethystText(SpriteBatch b, Vector2 pos)
+        {
+            b.DrawString(Game1.dialogueFont, "Amethyst", pos, Config.AmethystColor);
+
+        }
+        private void DrawEmeraldText(SpriteBatch b, Vector2 pos)
+        {
+            b.DrawString(Game1.dialogueFont, "Emerald", pos, Config.EmeraldColor);
+
+        }
+        private void DrawRubyText(SpriteBatch b, Vector2 pos)
+        {
+            b.DrawString(Game1.dialogueFont, "Ruby", pos, Config.RubyColor);
+
+        }
+        private void DrawTopazText(SpriteBatch b, Vector2 pos)
+        {
+            b.DrawString(Game1.dialogueFont, "Topaz", pos, Config.TopazColor);
+
+        }
+        private void DrawDiamondText(SpriteBatch b, Vector2 pos)
+        {
+            b.DrawString(Game1.dialogueFont, "Diamond", pos, Config.DiamondColor);
+
         }
     }
 }

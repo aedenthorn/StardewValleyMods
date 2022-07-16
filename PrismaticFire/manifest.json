@@ -1,11 +1,11 @@
 ﻿{
   "Name": "Prismatic Fire",
   "Author": "aedenthorn",
-  "Version": "0.1.0",
+  "Version": "0.3.0",
   "Description": "Prismatic Fire.",
   "UniqueID": "aedenthorn.PrismaticFire",
   "EntryDll": "PrismaticFire.dll",
-  "MinimumApiVersion": "3.8.0",
+  "MinimumApiVersion": "3.15.0",
   "ModUpdater": {
     "Repository": "StardewValleyMods",
     "User": "aedenthorn",

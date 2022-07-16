@@ -33,14 +33,26 @@ namespace PrismaticFire
                 if (!Config.ModEnabled || who.ActiveObject is null || !colorDict.ContainsKey(who.ActiveObject.Name)|| !Game1.didPlayerJustRightClick(false))
                     return true;
                 Vector2 vect = new Vector2((float)tileLocation.X, (float)tileLocation.Y);
-                if (__instance.objects.ContainsKey(vect) && __instance.objects[vect] is Torch)
+                if (__instance.objects.ContainsKey(vect))
                 {
-                    SMonitor.Log($"giving {__instance.objects[vect].Name} {who.ActiveObject.Name} fire");
-                    __instance.objects[vect].modData[modKey] = who.ActiveObject.Name;
-                    who.reduceActiveItemByOne();
-                    __instance.localSound(Config.TriggerSound);
-                    __result = true;
-                    return false;
+                    if(__instance.objects[vect] is Torch)
+                    {
+                        SMonitor.Log($"giving {__instance.objects[vect].Name} {who.ActiveObject.Name} fire");
+                        __instance.objects[vect].modData[modKey] = who.ActiveObject.Name;
+                        who.reduceActiveItemByOne();
+                        __instance.localSound(Config.TriggerSound);
+                        __result = true;
+                        return false;
+                    }
+                    else if(__instance.objects[vect] is Fence && __instance.objects[vect].heldObject.Value is Torch)
+                    {
+                        SMonitor.Log($"giving {__instance.objects[vect].heldObject.Value.Name} in {__instance.objects[vect].Name} {who.ActiveObject.Name} fire");
+                        __instance.objects[vect].heldObject.Value.modData[modKey] = who.ActiveObject.Name;
+                        who.reduceActiveItemByOne();
+                        __instance.localSound(Config.TriggerSound);
+                        __result = true;
+                        return false;
+                    }
                 }
                 foreach (Furniture f in __instance.furniture)
                 {

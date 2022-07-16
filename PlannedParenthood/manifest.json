@@ -1,7 +1,7 @@
 ﻿{
   "Name": "Planned Parenthood",
   "Author": "aedenthorn",
-  "Version": "0.1.0",
+  "Version": "0.1.1",
   "Description": "Planned Parenthood.",
   "UniqueID": "aedenthorn.PlannedParenthood",
   "EntryDll": "PlannedParenthood.dll",

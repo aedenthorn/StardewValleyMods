@@ -1,13 +1,11 @@
 ﻿using HarmonyLib;
-using Microsoft.Xna.Framework;
 using Netcode;
+using StardewModdingAPI;
 using StardewValley;
 using StardewValley.Events;
-using StardewValley.Minigames;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reflection.Emit;
 using Object = StardewValley.Object;
 
 namespace PlannedParenthood
@@ -97,8 +95,16 @@ namespace PlannedParenthood
         {
             public static void Prefix(GameLocation __instance, ref string question, ref Response[] answerChoices, string dialogKey)
             {
-                if (!Config.ModEnabled || dialogKey != "Sleep" || Utility.getHomeOfFarmer(Game1.player).upgradeLevel < 2)
+                if (!Config.ModEnabled || dialogKey != "Sleep")
                     return;
+                SMonitor.Log($"Showing sleep confirmation");
+
+                var level = Utility.getHomeOfFarmer(Game1.player).upgradeLevel;
+                if (level < 2)
+                {
+                    SMonitor.Log($"Cannot ask about pregnancy; farmhouse level {level}", LogLevel.Debug);
+                }
+
                 partnerName = null;
 
                 var names = Game1.player.friendshipData.Keys.Where(k => Game1.player.friendshipData[k].IsMarried() && !Game1.player.friendshipData[k].RoommateMarriage && Game1.player.friendshipData[k].Points / 250 >= Config.MinHearts).ToList();
@@ -110,7 +116,7 @@ namespace PlannedParenthood
                 }
                 if (!names.Any() || names.Exists(s => Game1.player.friendshipData[s].NextBirthingDate is not null))
                 {
-                    SMonitor.Log($"Cannot ask about pregnancy; spouses: {names.Any()}, spouse giving birth already {names.Exists(s => Game1.player.friendshipData[s].NextBirthingDate is not null)}");
+                    SMonitor.Log($"Cannot ask about pregnancy; spouses: {names.Any()}, spouse giving birth already {names.Exists(s => Game1.player.friendshipData[s].NextBirthingDate is not null)}", LogLevel.Debug);
                     return;
                 }
 
