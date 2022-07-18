@@ -4,6 +4,7 @@ using Microsoft.Xna.Framework.Graphics;
 using StardewModdingAPI;
 using StardewModdingAPI.Events;
 using StardewValley;
+using StardewValley.TerrainFeatures;
 using Object = StardewValley.Object;
 
 namespace ChessBoards
@@ -90,6 +91,8 @@ namespace ChessBoards
             if(GetChessBoardsBoardTileAt(Game1.lastCursorTile, out Point tile))
             {
                 var cornerTile = new Vector2(Game1.lastCursorTile.X - tile.X + 1, Game1.lastCursorTile.Y + tile.Y - 1);
+                if (!Game1.currentLocation.terrainFeatures.TryGetValue(cornerTile, out var t) || t is not Flooring)
+                    return;
                 Vector2 cursorTile = Game1.currentLocation.terrainFeatures[cornerTile].modData.ContainsKey(flippedKey) ? GetFlippedTile(cornerTile, tile) : Game1.lastCursorTile;
                 if (e.Button == Config.SetupKey)
                 {

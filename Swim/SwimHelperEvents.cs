@@ -116,7 +116,7 @@ namespace Swim
             {
                 for(int i = l.characters.Count - 1; i >=0; i--)
                 {
-                    if (l.characters[i] is Fishie || l.characters[i] is BigFishie || l.characters[i] is SeaCrab)
+                    if (l.characters[i] is Fishie || l.characters[i] is BigFishie || l.characters[i] is SeaCrab || l.characters[i] is AbigailMetalHead)
                         l.characters.RemoveAt(i);
                 }
             }

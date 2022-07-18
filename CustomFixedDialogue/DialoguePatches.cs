@@ -37,7 +37,7 @@ namespace CustomFixedDialogue
             "Wizard_Hatch",
             "Mines_PlayerKilled_Spouse_PlayerMale",
             "Mines_PlayerKilled_Spouse_PlayerFemale",
-            "PurchasedItem_1_QualityHigh",
+/*            "PurchasedItem_1_QualityHigh",
             "PurchasedItem_1_QualityLow",
             "PurchasedItem_2_QualityHigh",
             "PurchasedItem_2_QualityLow",
@@ -48,7 +48,7 @@ namespace CustomFixedDialogue
             "PurchasedItem_5_VegetableOrFruit",
             "PurchasedItem_5_Cooking",
             "PurchasedItem_5_Foraged",
-            "PurchasedItem_Teen",
+            "PurchasedItem_Teen",*/
             "Town_DumpsterDiveComment_Child",
             "Town_DumpsterDiveComment_Teen",
             "Town_DumpsterDiveComment_Adult"
