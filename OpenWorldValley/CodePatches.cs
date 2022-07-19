@@ -1,7 +1,9 @@
 ﻿using HarmonyLib;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using StardewValley;
 using StardewValley.BellsAndWhistles;
+using StardewValley.TerrainFeatures;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -26,11 +28,46 @@ namespace OpenWorldValley
                 foreach(var key in adjDict.Keys)
                 {
                     GameLocation loc = Game1.getLocationFromName(key);
-                    Location offset = new Location(adjDict[key][0] * 64, adjDict[key][1] * 64);
+                    Location offset = new Location(adjDict[key][0], adjDict[key][1]) * 64;
+                    Vector2 offsetTile = new Vector2(adjDict[key][0], adjDict[key][1]);
                     Game1.mapDisplayDevice.BeginScene(Game1.spriteBatch);
                     DrawLayer(loc.Map.GetLayer("Back"), Game1.mapDisplayDevice, Game1.viewport, offset, false, 4);
+                    Vector2 tile = default(Vector2);
+                    for (int y = Game1.viewport.Y / 64 - 1; y < (Game1.viewport.Y + Game1.viewport.Height) / 64 + 7; y++)
+                    {
+                        for (int x = Game1.viewport.X / 64 - 1; x < (Game1.viewport.X + Game1.viewport.Width) / 64 + 3; x++)
+                        {
+                            tile.X = (float)x;
+                            tile.Y = (float)y;
+                            TerrainFeature feat;
+                            if (loc.terrainFeatures.TryGetValue(tile, out feat) && feat is Flooring)
+                            {
+                                feat.draw(Game1.spriteBatch, tile + offsetTile);
+                            }
+                        }
+                    }
                     DrawLayer(loc.Map.GetLayer("Buildings"), Game1.mapDisplayDevice, Game1.viewport, offset, false, 4);
+                    var viewport = Game1.viewport;
+                    Game1.viewport = new xTile.Dimensions.Rectangle(viewport.X - offset.X, viewport.Y - offset.Y, viewport.Width, viewport.Height);
+                    loc.draw(Game1.spriteBatch);
+                    Game1.viewport = viewport;
                     DrawLayer(loc.Map.GetLayer("Front"), Game1.mapDisplayDevice, Game1.viewport, offset, false, 4);
+                    Game1.mapDisplayDevice.EndScene();
+                    Game1.spriteBatch.End();
+                    Game1.spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.PointClamp, null, null, null, null);
+                    for (int y = Game1.viewport.Y / 64 - 1; y < (Game1.viewport.Y + Game1.viewport.Height) / 64 + 7; y++)
+                    {
+                        for (int x = Game1.viewport.X / 64 - 1; x < (Game1.viewport.X + Game1.viewport.Width) / 64 + 3; x++)
+                        {
+                            tile.X = (float)x;
+                            tile.Y = (float)y;
+                            TerrainFeature feat;
+                            if (loc.terrainFeatures.TryGetValue(tile - offsetTile, out feat) && !(feat is Flooring))
+                            {
+                                feat.draw(Game1.spriteBatch, tile);
+                            }
+                        }
+                    }
                     if (loc.Map.GetLayer("AlwaysFront") != null)
                     {
                         DrawLayer(loc.Map.GetLayer("AlwaysFront"), Game1.mapDisplayDevice, Game1.viewport, offset, false, 4);
@@ -104,6 +141,7 @@ namespace OpenWorldValley
                 if (!Config.ModEnabled)
                     return;
                 overrideFreeze = true;
+                Game1.forceSnapOnNextViewportUpdate = true;
                 Game1.currentLocation.forceViewportPlayerFollow = true;
             }
         }
@@ -149,16 +187,6 @@ namespace OpenWorldValley
         [HarmonyPatch(typeof(Game1), "onFadeToBlackComplete")]
         public class Game1_onFadeToBlackComplete_Patch
         {
-            public static void Prefix()
-            {
-                if (!Config.ModEnabled)
-                    return;
-
-                if (Game1.locationRequest.IsRequestFor(Game1.currentLocation) && Game1.player.previousLocationName != "" && !Game1.eventUp && !Game1.currentLocation.Name.StartsWith("UndergroundMine"))
-                {
-                    SMonitor.Log("targeting");
-                }
-            }
             public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions)
             {
                 SMonitor.Log("Patching Game1.onFadeToBlackComplete");
@@ -178,7 +206,7 @@ namespace OpenWorldValley
 
         private static Vector2 GetWarpedPosition(Vector2 position)
         {
-            if (!Config.ModEnabled)
+            if (!Config.ModEnabled || !Game1.currentLocation.IsOutdoors)
                 return position;
             var offset = 64;
             if (position.X == 0)
@@ -189,6 +217,9 @@ namespace OpenWorldValley
                 position.X += offset;
             else if (position.Y == Game1.currentLocation.Map.GetLayer("Back").LayerHeight * 64)
                 position.Y += offset;
+            var x = Game1.player.position.X % 64;
+            var y = Game1.player.position.Y % 64 - 16;
+            position += new Vector2(x, y);
             return position;
         }
     }
