@@ -37,10 +37,9 @@ namespace OpenWorldValley
                     {
                         for (int x = Game1.viewport.X / 64 - 1; x < (Game1.viewport.X + Game1.viewport.Width) / 64 + 3; x++)
                         {
-                            tile.X = (float)x;
-                            tile.Y = (float)y;
-                            TerrainFeature feat;
-                            if (loc.terrainFeatures.TryGetValue(tile, out feat) && feat is Flooring)
+                            tile.X = x;
+                            tile.Y = y;
+                            if (loc.terrainFeatures.TryGetValue(tile, out TerrainFeature feat) && feat is Flooring)
                             {
                                 feat.draw(Game1.spriteBatch, tile + offsetTile);
                             }
@@ -59,18 +58,18 @@ namespace OpenWorldValley
                     {
                         for (int x = Game1.viewport.X / 64 - 1; x < (Game1.viewport.X + Game1.viewport.Width) / 64 + 3; x++)
                         {
-                            tile.X = (float)x;
-                            tile.Y = (float)y;
-                            TerrainFeature feat;
-                            if (loc.terrainFeatures.TryGetValue(tile - offsetTile, out feat) && !(feat is Flooring))
+                            tile.X = x;
+                            tile.Y = y;
+                            if (loc.terrainFeatures.TryGetValue(tile - offsetTile, out TerrainFeature feat) && !(feat is Flooring))
                             {
                                 feat.draw(Game1.spriteBatch, tile);
                             }
                         }
                     }
-                    if (loc.Map.GetLayer("AlwaysFront") != null)
+                    var af = loc.Map.GetLayer("AlwaysFront");
+                    if (af != null)
                     {
-                        DrawLayer(loc.Map.GetLayer("AlwaysFront"), Game1.mapDisplayDevice, Game1.viewport, offset, false, 4);
+                        DrawLayer(af, Game1.mapDisplayDevice, Game1.viewport, offset, false, 4);
                     }
                     Game1.mapDisplayDevice.EndScene();
                 }
@@ -114,7 +113,7 @@ namespace OpenWorldValley
                         Tile tile = layer.Tiles[tileX, tileY];
                         if (tile != null)
                         {
-                            displayDevice.DrawTile(tile, tileLocation, (float)(tileY * (16 * pixelZoom) + 16 * pixelZoom + offset) / 10000f);
+                            displayDevice.DrawTile(tile, tileLocation, (tileY * (16 * pixelZoom) + 16 * pixelZoom + offset) / 10000f);
                         }
                         tileLocation.X += tileWidth;
                     }
