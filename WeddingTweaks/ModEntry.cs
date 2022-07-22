@@ -8,15 +8,18 @@ using System.Collections.Generic;
 namespace WeddingTweaks
 {
     /// <summary>The mod entry point.</summary>
-    public class ModEntry : Mod, IAssetEditor
+    public partial class ModEntry : Mod
     {
 
-        public static IMonitor PMonitor;
-        public static IModHelper PHelper;
+        public static IMonitor SMonitor;
+        public static IModHelper SHelper;
         public static Random myRand;
         public static ModConfig Config;
         
         public static IFreeLoveAPI freeLoveAPI;
+        
+        public static string witnessKey = "aedenthorn.WeddingTweaks/witnessName";
+        public static Dictionary<string, string> npcWitnessDict = new Dictionary<string, string>();
 
         /// <summary>The mod entry point, called after the mod is first loaded.</summary>
         /// <param name="helper">Provides simplified APIs for writing mods.</param>
@@ -27,17 +30,16 @@ namespace WeddingTweaks
             if (!Config.EnableMod)
                 return;
 
-            PMonitor = Monitor;
-            PHelper = helper;
+            SMonitor = Monitor;
+            SHelper = helper;
 
             myRand = new Random();
 
             FarmerPatches.Initialize(Monitor, Config, helper);
             Game1Patches.Initialize(Monitor, Config, helper);
-            EventPatches.Initialize(Monitor, Config, helper);
-            NPCPatches.Initialize(Monitor, Config, helper);
 
             Helper.Events.GameLoop.GameLaunched += GameLoop_GameLaunched;
+            Helper.Events.Content.AssetRequested += Content_AssetRequested;
 
             Helper.ConsoleCommands.Add("Wedding", "Change upcoming wedding. Usage:\n\nWedding  // shows info about upcoming wedding.\nWedding cancel // cancels upcoming wedding.\nWedding set X // sets days until upcoming wedding (replace X with any whole number).", new System.Action<string, string[]>(WeddingCommand));
 
@@ -51,26 +53,6 @@ namespace WeddingTweaks
                prefix: new HarmonyMethod(typeof(FarmerPatches), nameof(FarmerPatches.Farmer_getChildren_Prefix))
             );
 
-            // NPC patches
-
-            harmony.Patch(
-               original: AccessTools.Method(typeof(NPC), "engagementResponse"),
-               postfix: new HarmonyMethod(typeof(NPCPatches), nameof(NPCPatches.NPC_engagementResponse_Postfix))
-            );
-
-
-            // Event patches
-
-            harmony.Patch(
-               original: AccessTools.Method(typeof(Event), "setUpCharacters"),
-               postfix: new HarmonyMethod(typeof(EventPatches), nameof(EventPatches.Event_setUpCharacters_Postfix))
-            );
-
-            harmony.Patch(
-               original: AccessTools.Method(typeof(Event), nameof(Event.command_loadActors)),
-               prefix: new HarmonyMethod(typeof(EventPatches), nameof(EventPatches.Event_command_loadActors_Prefix)),
-               postfix: new HarmonyMethod(typeof(EventPatches), nameof(EventPatches.Event_command_loadActors_Postfix))
-            );
 
             // Game1 patches
 
@@ -83,6 +65,23 @@ namespace WeddingTweaks
                original: AccessTools.Method(typeof(Game1), nameof(Game1.getCharacterFromName), new Type[] { typeof(string), typeof(bool), typeof(bool) }),
                prefix: new HarmonyMethod(typeof(Game1Patches), nameof(Game1Patches.getCharacterFromName_Prefix))
             );
+
+            harmony.PatchAll();
+        }
+
+        private void Content_AssetRequested(object sender, AssetRequestedEventArgs e)
+        {
+            if (e.NameWithoutLocale.IsEquivalentTo("Strings/StringsFromCSFiles"))
+            {
+                e.Edit(EditDaysString);
+
+            }
+        }
+
+        private void EditDaysString(IAssetData obj)
+        {
+            IDictionary<string, string> data = obj.AsDictionary<string, string>().Data;
+            data["NPC.cs.3980"] = data["NPC.cs.3980"].Replace("3", Config.DaysUntilMarriage + "");
         }
 
         private void WeddingCommand(string arg1, string[] arg2)
@@ -168,7 +167,7 @@ namespace WeddingTweaks
                     mod: ModManifest,
                     name: () => "Days between proposal and wedding",
                     getValue: () => Config.DaysUntilMarriage,
-                    setValue: value => Config.DaysUntilMarriage = value,
+                    setValue: value => Config.DaysUntilMarriage = Math.Max(1, value),
                     min: 1
                 );
                 configMenu.AddBoolOption(
@@ -183,35 +182,22 @@ namespace WeddingTweaks
                     getValue: () => Config.AllSpousesWearMarriageClothesAtWeddings,
                     setValue: value => Config.AllSpousesWearMarriageClothesAtWeddings = value
                 );
+                configMenu.AddBoolOption(
+                    mod: ModManifest,
+                    name: () => "Allow witnesses?",
+                    getValue: () => Config.AllowWitnesses,
+                    setValue: value => Config.AllowWitnesses = value
+                );
+                configMenu.AddNumberOption(
+                    mod: ModManifest,
+                    name: () => "Witness Min Hearts",
+                    getValue: () => Config.WitnessMinHearts,
+                    setValue: value => Config.WitnessMinHearts = value,
+                    min: 0,
+                    max: 14
+                );
             }
         }
 
-        /// <summary>Get whether this instance can edit the given asset.</summary>
-        /// <param name="asset">Basic metadata about the asset being loaded.</param>
-        public bool CanEdit<T>(IAssetInfo asset)
-        {
-            if (!Config.EnableMod)
-                return false;
-
-            if (asset.AssetNameEquals("Strings/StringsFromCSFiles"))
-            {
-                return true;
-            }
-            return false;
-        }
-
-        /// <summary>Edit a matched asset.</summary>
-        /// <param name="asset">A helper which encapsulates metadata about an asset and enables changes to it.</param>
-        public void Edit<T>(IAssetData asset)
-        {
-            Monitor.Log("Editing asset " + asset.AssetName);
-    
-            if (asset.AssetNameEquals("Strings/StringsFromCSFiles"))
-            {
-                IDictionary<string, string> data = asset.AsDictionary<string, string>().Data;
-                data["NPC.cs.3980"] = data["NPC.cs.3980"].Replace("3", Config.DaysUntilMarriage+"");
-                Monitor.Log($"NPC.cs.3980 is set to \"{data["NPC.cs.3980"]}\"");
-            }
-        }
     }
 }

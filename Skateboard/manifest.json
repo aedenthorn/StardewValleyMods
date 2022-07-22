@@ -1,16 +1,16 @@
 ﻿{
-  "Name": "Planned Parenthood",
+  "Name": "Skateboard",
   "Author": "aedenthorn",
-  "Version": "0.2.0",
-  "Description": "Planned Parenthood.",
-  "UniqueID": "aedenthorn.PlannedParenthood",
-  "EntryDll": "PlannedParenthood.dll",
+  "Version": "0.1.0",
+  "Description": "Skateboard.",
+  "UniqueID": "aedenthorn.Skateboard",
+  "EntryDll": "Skateboard.dll",
   "MinimumApiVersion": "3.8.0",
   "ModUpdater": {
     "Repository": "StardewValleyMods",
     "User": "aedenthorn",
     "Directory": "_releases",
-    "ModFolder": "PlannedParenthood"
+    "ModFolder": "Skateboard"
   },
   "Dependencies": [
     {

@@ -1,44 +1,72 @@
-﻿using StardewModdingAPI;
+﻿using HarmonyLib;
+using StardewModdingAPI;
 using StardewValley;
 using System;
 
 namespace WeddingTweaks
 {
-    public static class NPCPatches
+    public partial class ModEntry
     {
-        private static IMonitor Monitor;
-        private static IModHelper Helper;
-        private static ModConfig Config;
 
-        // call this method from your Entry class
-        public static void Initialize(IMonitor monitor, ModConfig config, IModHelper helper)
+        [HarmonyPatch(typeof(GameLocation), nameof(GameLocation.answerDialogueAction))]
+        public class GameLocation_answerDialogueAction_Patch
         {
-            Monitor = monitor;
-            Helper = helper;
-            Config = config;
+            public static bool Prefix(GameLocation __instance, ref string questionAndAnswer, ref bool __result)
+            {
+                if (!Config.EnableMod)
+                    return true;
+                if (questionAndAnswer.StartsWith("WeddingWitness_"))
+                {
+                    string name = questionAndAnswer.Substring("WeddingWitness_".Length);
+                    Game1.player.modData[witnessKey] = name;
+                    SMonitor.Log($"Setting witness to {name}");
+                    __result = true;
+                    return false;
+                }
+                return true;
+            }
+        }
+        [HarmonyPatch(typeof(NPC), nameof(NPC.checkAction))]
+        public static class NPC_checkAction_Patch
+        {
+            public static void Postfix(NPC __instance, Farmer who, ref bool __result, GameLocation l)
+            {
+                if (!Config.EnableMod || !Config.AllowWitnesses || __result || !who.IsLocalPlayer || !who.isEngaged() || !who.friendshipData.TryGetValue(__instance.Name, out Friendship f) || f.IsEngaged() || f.Points < Config.WitnessMinHearts / 250)
+                    return;
+
+                SMonitor.Log($"Asking about witness for {__instance.Name}");
+                var responses = l.createYesNoResponses();
+                responses[0].responseKey = __instance.Name;
+                l.createQuestionDialogue(string.Format(SHelper.Translation.Get("ask-x-to-witness"), __instance.Name), responses, "WeddingWitness", null);
+                __result = true;
+            }
         }
 
-        public static void NPC_engagementResponse_Postfix(NPC __instance, Farmer who, bool asRoommate = false)
+        [HarmonyPatch(typeof(NPC), "engagementResponse")]
+        public static class NPC_engagementResponse_Patch
         {
-            Monitor.Log($"engagement response for {__instance.Name}");
-            if (asRoommate)
+
+            public static void Postfix(NPC __instance, Farmer who, bool asRoommate = false)
             {
-                Monitor.Log($"{__instance.Name} is roomate");
-                return;
+                if (asRoommate)
+                {
+                    SMonitor.Log($"{__instance.Name} is roomate");
+                    return;
+                }
+                if (!who.friendshipData.ContainsKey(__instance.Name))
+                {
+                    SMonitor.Log($"{who.Name} has no friendship data for {__instance.Name}", LogLevel.Error);
+                    return;
+                }
+                Friendship friendship = who.friendshipData[__instance.Name];
+                WorldDate weddingDate = new WorldDate(Game1.Date);
+                weddingDate.TotalDays += Math.Max(1, Config.DaysUntilMarriage);
+                while (!Game1.canHaveWeddingOnDay(weddingDate.DayOfMonth, weddingDate.Season))
+                {
+                    weddingDate.TotalDays++;
+                }
+                friendship.WeddingDate = weddingDate;
             }
-            if (!who.friendshipData.ContainsKey(__instance.Name))
-            {
-                Monitor.Log($"{who.Name} has no friendship data for {__instance.Name}", LogLevel.Error);
-                return;
-            }
-            Friendship friendship = who.friendshipData[__instance.Name];
-            WorldDate weddingDate = new WorldDate(Game1.Date);
-            weddingDate.TotalDays += Math.Max(1,Config.DaysUntilMarriage);
-            while (!Game1.canHaveWeddingOnDay(weddingDate.DayOfMonth, weddingDate.Season))
-            {
-                weddingDate.TotalDays++;
-            }
-            friendship.WeddingDate = weddingDate;
         }
     }
 }

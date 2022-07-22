@@ -55,6 +55,13 @@ namespace CustomWallpaperFramework
                 data.texture = Game1.content.Load<Texture2D>(data.texturePath);
             }
             Monitor.Log($"Loaded {wallpaperDataDict.Count} wallpapers");
+            foreach (var loc in Game1.locations)
+            {
+                if (loc is DecoratableLocation)
+                {
+                    (loc as DecoratableLocation).setWallpapers();
+                }
+            }
         }
 
         private void GameLoop_GameLaunched(object sender, StardewModdingAPI.Events.GameLaunchedEventArgs e)
