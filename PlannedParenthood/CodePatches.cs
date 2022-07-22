@@ -122,6 +122,15 @@ namespace PlannedParenthood
                     if (npc is null || (Config.InBed && !npc.isSleeping.Value))
                         names.RemoveAt(i);
                 }
+                foreach (var kvp in Game1.player.team.friendshipData.Pairs)
+                {
+                    if (kvp.Value.IsMarried())
+                    {
+                        string name = Game1.getFarmer((kvp.Key.Farmer1 == Game1.player.UniqueMultiplayerID ? kvp.Key.Farmer2 : kvp.Key.Farmer1)).Name;
+                        SMonitor.Log($"Adding PC spouse {name} to list");
+                        names.Add(name);
+                    }
+                }
                 if (!names.Any() || names.Exists(s => Game1.player.friendshipData[s].NextBirthingDate is not null))
                 {
                     SMonitor.Log($"Cannot ask about pregnancy; spouses: {names.Any()}, spouse giving birth already {names.Exists(s => Game1.player.friendshipData[s].NextBirthingDate is not null)}", LogLevel.Debug);
@@ -147,14 +156,19 @@ namespace PlannedParenthood
                     __result = null;
                     return false;
                 }
-                SMonitor.Log($"creating pregnancy event with {partnerName}");
                 if (freeLoveAPI is not null)
                     freeLoveAPI.SetLastPregnantSpouse(partnerName);
 
-                if(Game1.player.friendshipData.ContainsKey(partnerName))
+                if (Game1.player.friendshipData.ContainsKey(partnerName))
+                {
+                    SMonitor.Log($"creating NPC pregnancy event with {partnerName}");
                     __result = new QuestionEvent(1);
+                }
                 else if(Game1.getAllFarmers().ToList().Exists(f => f.Name == partnerName))
+                {
+                    SMonitor.Log($"creating PC pregnancy event with {partnerName}");
                     __result = new QuestionEvent(3);
+                }
                 return false;
             }
         }
