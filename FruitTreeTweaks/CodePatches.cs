@@ -122,12 +122,12 @@ namespace FruitTreeTweaks
             }
             public static void Postfix(FruitTree __instance, SpriteBatch spriteBatch, Vector2 tileLocation)
             {
-                if (!Config.EnableMod || __instance.fruitsOnTree.Value <= 3 || __instance.growthStage.Value < 4)
+                if (!Config.EnableMod || __instance.fruitsOnTree.Value <= 3 || __instance.growthStage.Value < 4 || !fruitColors.TryGetValue(Game1.currentLocation, out Dictionary<Vector2, List<Color>> colors))
                     return;
                 for (int i = 3; i < __instance.fruitsOnTree.Value; i++)
                 {
                     Vector2 offset = GetFruitOffset(__instance, i);
-                    Color color = fruitColors[Game1.currentLocation][tileLocation][i];
+                    Color color = colors[tileLocation][i];
 
                     spriteBatch.Draw(Game1.objectSpriteSheet, Game1.GlobalToLocal(Game1.viewport, tileLocation * 64 - new Vector2(16, 80) * 4 + offset), new Rectangle?(Game1.getSourceRectForStandardTileSheet(Game1.objectSpriteSheet, (__instance.struckByLightningCountdown.Value > 0) ? 382 : __instance.indexOfFruit.Value, 16, 16)), color, 0f, Vector2.Zero, GetFruitScale(__instance, i), SpriteEffects.None, (float)__instance.getBoundingBox(tileLocation).Bottom / 10000f + 0.002f - tileLocation.X / 1000000f + i / 100000f);
                 }

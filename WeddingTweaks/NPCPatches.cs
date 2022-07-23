@@ -18,8 +18,52 @@ namespace WeddingTweaks
                 if (questionAndAnswer.StartsWith("WeddingWitness_"))
                 {
                     string name = questionAndAnswer.Substring("WeddingWitness_".Length);
-                    Game1.player.modData[witnessKey] = name;
-                    SMonitor.Log($"Setting witness to {name}");
+                    string dialogue;
+                    float chance;
+                    WeddingData data = null;
+                    npcWeddingDict.TryGetValue(name, out data);
+                    if (data is not null && data.witnessAcceptChance >= 0)
+                    {
+                        chance = data.witnessAcceptChance / 100f;
+                    }
+                    else
+                    {
+                        chance = Config.WitnessAcceptPercent / 100f + Config.WitnessAcceptHeartFactorPercent / 100f * Game1.player.friendshipData[name].Points / (14f * 250);
+                    }
+                    SMonitor.Log($"accept percent chance: {chance * 100}: {Config.WitnessAcceptPercent / 100f} + {Config.WitnessAcceptHeartFactorPercent / 100f * Game1.player.friendshipData[name].Points / (14f * 250)}; points {Game1.player.friendshipData[name].Points}/{14 * 250}");
+                    if(Game1.random.NextDouble() <= chance)
+                    {
+                        SMonitor.Log($"Setting witness to {name}");
+                        Game1.player.modData[witnessKey] = name;
+                        if (data is not null && data.witnessAcceptDialogue.Count > 0)
+                        {
+                            dialogue = data.witnessAcceptDialogue[Game1.random.Next(data.witnessAcceptDialogue.Count)];
+                        }
+                        else
+                        {
+                            dialogue = SHelper.Translation.Get("witness-accept");
+                        }
+                    }
+                    else
+                    {
+                        SMonitor.Log($"{name} rejected witness request");
+                        npcWitnessAsked.Add(name);
+                        if (data is not null && data.witnessDeclineDialogue.Count > 0)
+                        {
+                            dialogue = data.witnessDeclineDialogue[Game1.random.Next(data.witnessDeclineDialogue.Count)];
+                        }
+                        else
+                        {
+                            dialogue = SHelper.Translation.Get("witness-decline");
+                        }
+                    }
+                    NPC npc = Game1.getCharacterFromName(name, true);
+                    if (npc != null)
+                    {
+                        npc.CurrentDialogue.Clear();
+                        npc.CurrentDialogue.Push(new Dialogue(dialogue, npc));
+                        Game1.drawDialogue(npc);
+                    }
                     __result = true;
                     return false;
                 }
@@ -31,7 +75,7 @@ namespace WeddingTweaks
         {
             public static void Postfix(NPC __instance, Farmer who, ref bool __result, GameLocation l)
             {
-                if (!Config.EnableMod || !Config.AllowWitnesses || __result || !who.IsLocalPlayer || !who.isEngaged() || !who.friendshipData.TryGetValue(__instance.Name, out Friendship f) || f.IsEngaged() || f.Points < Config.WitnessMinHearts / 250)
+                if (!Config.EnableMod || !Config.AllowWitnesses || __result || !who.IsLocalPlayer || !who.isEngaged() || npcWitnessAsked.Contains(__instance.Name) || who.modData.ContainsKey(witnessKey) || !who.friendshipData.TryGetValue(__instance.Name, out Friendship f) || f.IsEngaged() || f.Points < Config.WitnessMinHearts / 250)
                     return;
 
                 SMonitor.Log($"Asking about witness for {__instance.Name}");

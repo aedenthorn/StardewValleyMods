@@ -27,7 +27,7 @@ namespace WeddingTweaks
             {
                 try
                 {
-                    if (!__instance.isWedding || !Config.AllSpousesJoinWeddings || Misc.GetSpouses(Game1.player, 0).Count == 0 || ModEntry.freeLoveAPI == null)
+                    if (!__instance.isWedding)
                         return;
                     string witness = null;
                     string npcWitness = null;
@@ -39,8 +39,22 @@ namespace WeddingTweaks
                             Game1.player.modData.Remove(witnessKey);
                         }
                         string spouse = Game1.player.getSpouse().Name;
-                        if (!npcWitnessDict.TryGetValue(spouse, out npcWitness))
+                        if(npcWeddingDict.TryGetValue(spouse, out WeddingData data) && data.witnesses.Count > 0)
                         {
+                            List<string> list = new List<string>();
+                            foreach (var name in data.witnesses)
+                            {
+                                if (name != spouse && name != witness)
+                                    list.Add(name);
+                            }
+                            if (list.Count > 0)
+                            {
+                                npcWitness = list[Game1.random.Next(list.Count)];
+                            }
+                        }
+                        if (npcWitness is null)
+                        {
+                            npcWitness = null;
                             Dictionary<string, string> dispositions = Game1.content.Load<Dictionary<string, string>>("Data\\NPCDispositions");
                             if(dispositions.TryGetValue(spouse, out string dis))
                             {
@@ -52,7 +66,8 @@ namespace WeddingTweaks
                                     {
                                         try
                                         {
-                                            family.Add(relations[i]);
+                                            if(relations[i] != spouse && relations[i] != witness)
+                                                family.Add(relations[i]);
                                         }
                                         catch
                                         {
@@ -64,6 +79,23 @@ namespace WeddingTweaks
                                         npcWitness = family[Game1.random.Next(family.Count)];
                                     }
                                 }
+                                if(npcWitness is null && Config.AllowRandomNPCWitnesses && Game1.player.friendshipData.Keys.Count() > 1)
+                                {
+                                    List<string> friends = new List<string>();
+                                    foreach (var key in Game1.player.friendshipData.Keys)
+                                    {
+                                        try
+                                        {
+                                            if (key != spouse && key != witness)
+                                                friends.Add(key);
+                                        }
+                                        catch
+                                        {
+
+                                        }
+                                    }
+                                    npcWitness = friends[Game1.random.Next(friends.Count)];
+                                }
                                 if(npcWitness != null)
                                 {
                                     SMonitor.Log($"{spouse} chose {npcWitness} as witness");
@@ -71,21 +103,63 @@ namespace WeddingTweaks
                             }
                         }
                     }
+                    else
+                    {
+                        Game1.player.modData.Remove(witnessKey);
+                    }
 
                     List<string> spouses = Misc.GetSpouses(Game1.player, 0).Keys.ToList();
                     Misc.ShuffleList(ref spouses);
+                    bool addSpouses = Config.AllSpousesJoinWeddings && spouses.Count > 0 && freeLoveAPI is not null;
+
                     foreach (NPC actor in __instance.actors)
                     {
                         if (witness is not null && actor.Name == witness)
                         {
-                            actor.position.Value = new Vector2(26 * Game1.tileSize, 64 * Game1.tileSize);
+                            actor.position.Value = new Vector2(26 * Game1.tileSize, 63 * Game1.tileSize);
 
-                            if (ModEntry.Config.AllSpousesWearMarriageClothesAtWeddings)
+                            if (Config.AllSpousesWearMarriageClothesAtWeddings)
                             {
                                 int frame = 37;
                                 if (actor.Gender == 0)
                                 {
                                     frame += 12;
+                                }
+                                if (npcWeddingDict.TryGetValue(actor.Name, out WeddingData data) && data.witnessFrame >= 0)
+                                {
+                                    frame = data.witnessFrame + 1;
+                                }
+                                else if (!actor.datable.Value)
+                                {
+                                    frame = 12;
+                                }
+                                actor.Sprite.setCurrentAnimation(new List<FarmerSprite.AnimationFrame>
+                                {
+                                    new FarmerSprite.AnimationFrame(frame, 0, false, true, null, true)
+                                });
+                            }
+                            else
+                                Utility.facePlayerEndBehavior(actor, location);
+                            continue;
+                        }
+                        if ((npcWitness is not null && actor.Name == npcWitness))
+                        {
+                            actor.position.Value = new Vector2(29 * Game1.tileSize, 63 * Game1.tileSize);
+
+                            if (Config.AllSpousesWearMarriageClothesAtWeddings)
+                            {
+                                int frame = 37;
+                                if (actor.Gender == 0)
+                                {
+                                    frame += 12;
+                                }
+                                if (npcWeddingDict.TryGetValue(actor.Name, out WeddingData data) && data.witnessFrame >= 0)
+                                {
+                                    frame = data.witnessFrame + 1;
+                                }
+                                else if (!actor.datable.Value)
+                                {
+                                    frame = 12;
                                 }
                                 actor.Sprite.setCurrentAnimation(new List<FarmerSprite.AnimationFrame>
                                 {
@@ -96,36 +170,14 @@ namespace WeddingTweaks
                                 Utility.facePlayerEndBehavior(actor, location);
                             continue;
                         }
-                        if ((npcWitness is not null && actor.Name == npcWitness) || (Config.AllowWitnesses && Config.AllowRandomNPCWitnesses))
-                        {
-                            if(npcWitness is null && Game1.player.friendshipData.Keys. Count() > 0)
-                            {
-                                npcWitness = Game1.player.friendshipData.Keys.ToArray()[Game1.random.Next(Game1.player.friendshipData.Keys.Count())];
-                            }
-                            if(npcWitness is not null)
-                            {
-                                actor.position.Value = new Vector2(29 * Game1.tileSize, 64 * Game1.tileSize);
-
-                                if (Config.AllSpousesWearMarriageClothesAtWeddings)
-                                {
-                                    int frame = 37;
-                                    if (actor.Gender == 0)
-                                    {
-                                        frame += 12;
-                                    }
-                                    actor.Sprite.setCurrentAnimation(new List<FarmerSprite.AnimationFrame>
-                                {
-                                    new FarmerSprite.AnimationFrame(frame, 0, false, true, null, true)
-                                });
-                                }
-                                else
-                                    Utility.facePlayerEndBehavior(actor, location);
-                                continue;
-                            }
-                        }
-                        if (spouses.Contains(actor.Name))
+                        if (addSpouses && spouses.Contains(actor.Name))
                         {
                             int idx = spouses.IndexOf(actor.Name);
+                            if (idx == 0 && witness is not null)
+                                idx++;
+                            if(idx == 1 && npcWitness is not null)
+                                idx++;
+
                             Vector2 pos;
                             if (idx < weddingPositions.Count)
                             {
@@ -138,7 +190,7 @@ namespace WeddingTweaks
                                 pos = new Vector2(x * Game1.tileSize, y * Game1.tileSize);
                             }
                             actor.position.Value = pos;
-                            if (ModEntry.Config.AllSpousesWearMarriageClothesAtWeddings)
+                            if (Config.AllSpousesWearMarriageClothesAtWeddings)
                             {
                                 bool flipped = false;
                                 int frame = 37;
@@ -161,6 +213,14 @@ namespace WeddingTweaks
                                 if (actor.Gender == 0)
                                 {
                                     frame += 12;
+                                }
+                                if (npcWeddingDict.TryGetValue(actor.Name, out WeddingData data) && data.witnessFrame >= 0)
+                                {
+                                    frame = data.witnessFrame + 1;
+                                    if (pos.X < 30 * Game1.tileSize && pos.X > 25 * Game1.tileSize)
+                                    {
+                                        frame--;
+                                    }
                                 }
                                 actor.Sprite.setCurrentAnimation(new List<FarmerSprite.AnimationFrame>
                             {
@@ -188,14 +248,14 @@ namespace WeddingTweaks
             {
                 try
                 {
-                    if (!Config.AllSpousesJoinWeddings || ModEntry.freeLoveAPI == null)
+                    if (!Config.AllSpousesJoinWeddings || freeLoveAPI == null)
                         return;
                     if (split != null && split.Length > 1)
                     {
                         string text = split[1];
                         if (text == "wedding")
                         {
-                            ModEntry.freeLoveAPI.PlaceSpousesInFarmhouse(Utility.getHomeOfFarmer(Game1.player));
+                            freeLoveAPI.PlaceSpousesInFarmhouse(Utility.getHomeOfFarmer(Game1.player));
                         }
                     }
                 }

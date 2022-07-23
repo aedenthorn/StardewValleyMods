@@ -4,6 +4,8 @@ using Microsoft.Xna.Framework.Graphics;
 using StardewModdingAPI;
 using StardewValley;
 using System;
+using System.Collections.Generic;
+using Object = StardewValley.Object;
 
 namespace Skateboard
 {
@@ -18,8 +20,9 @@ namespace Skateboard
         public static ModEntry context;
 
         public static readonly string boardKey = "aedenthorn.Skateboard/Board";
+        public static readonly int boardIndex = -42424201;
+        public static readonly string skateboardingKey = "aedenthorn.Skateboard/Skateboarding";
 
-        public static bool onSkateboard;
         public static Vector2 speed;
         public static bool accellerating;
         private static Texture2D boardTexture;
@@ -57,10 +60,29 @@ namespace Skateboard
 
         private void Content_AssetRequested(object sender, StardewModdingAPI.Events.AssetRequestedEventArgs e)
         {
-            if(e.Name.BaseName == boardKey)
+            if(e.NameWithoutLocale.IsEquivalentTo(boardKey))
             {
                 e.LoadFromModFile<Texture2D>("assets/board.png", StardewModdingAPI.Events.AssetLoadPriority.Low);
             }
+            else if (e.NameWithoutLocale.IsEquivalentTo("Data/CraftingRecipes"))
+            {
+                e.Edit(AddSkateBoardRecipe);
+            }
+            else if (e.NameWithoutLocale.IsEquivalentTo("Data/BigCraftablesInformation"))
+            {
+                e.Edit(AddSkateBoardInfo);
+            }
+        }
+
+        private void AddSkateBoardRecipe(IAssetData obj)
+        {
+            IDictionary<string, string> data = obj.AsDictionary<string, string>().Data;
+            data.Add("Skateboard", $"709 4 337 1 335 1 338 1 92 10/Home/{boardIndex}/true/null");
+        }
+        private void AddSkateBoardInfo(IAssetData obj)
+        {
+            IDictionary<int, string> data = obj.AsDictionary<int, string>().Data;
+            data.Add(boardIndex, $"Skateboard/5000/-300/Crafting -9/{Helper.Translation.Get("description")}/true/true/0/Skateboard");
         }
 
         private void GameLoop_UpdateTicked(object sender, StardewModdingAPI.Events.UpdateTickedEventArgs e)
@@ -69,11 +91,26 @@ namespace Skateboard
 
         private void Input_ButtonPressed(object sender, StardewModdingAPI.Events.ButtonPressedEventArgs e)
         {
-            if(Config.ModEnabled && Context.CanPlayerMove && e.Button == SButton.V)
+            if(Config.ModEnabled && Context.CanPlayerMove && e.Button == SButton.MouseLeft)
             {
-                speed = Vector2.Zero;
-                onSkateboard = !onSkateboard;
-                Monitor.Log($"Skateboarding: {onSkateboard}");
+                if (Game1.player.modData.ContainsKey(skateboardingKey))
+                {
+                    var s = new Object(Vector2.Zero, boardIndex, false);
+                    s.modData[boardKey] = "true";
+                    if(!Game1.player.addItemToInventoryBool(s, true))
+                    {
+                        Game1.createItemDebris(s, Game1.player.Position, 1, Game1.player.currentLocation);
+                    }
+                    speed = Vector2.Zero;
+                    Game1.player.modData.Remove(skateboardingKey) ;
+                }
+                else if(Game1.player.CurrentItem is not null && Game1.player.CurrentItem.modData.ContainsKey(boardKey))
+                {
+                    Game1.player.reduceActiveItemByOne();
+                    speed = Vector2.Zero;
+                    Game1.player.modData[skateboardingKey] = "true";
+                }
+
             }
         }
 

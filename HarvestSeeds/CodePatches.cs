@@ -18,52 +18,70 @@ namespace HarvestSeeds
         [HarmonyPatch(typeof(Crop), nameof(Crop.harvest))]
         public class Crop_harvest_Patch
         {
-            public static void Postfix(Crop __instance, int xTile, int yTile, bool __result)
+            public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions)
             {
-                if (!Config.EnableMod || __instance.dead.Value || !__result || __instance.netSeedIndex.Value == __instance.indexOfHarvest.Value || (!Config.RegrowableSeeds && __instance.regrowAfterHarvest.Value > -1) || Game1.random.NextDouble() > Config.SeedChance / 100f)
-                    return;
-                int index;
-                if (__instance.forageCrop.Value)
+                SMonitor.Log("Patching Crop.harvest");
+                var codes = new List<CodeInstruction>(instructions);
+                for (int i = 0; i < codes.Count; i++)
                 {
-                    switch (Game1.currentSeason)
+                    if (codes[i].opcode == OpCodes.Ldloc_0 && codes[i + 1].opcode == OpCodes.Brfalse)
                     {
-                        case "summer":
-                            index = 496;
-                            break;
-                        case "fall":
-                            index = 497;
-                            break;
-                        case "winter":
-                            index = 498;
-                            break;
-                        default:
-                            index = 495;
-                            break;
+                        SMonitor.Log("Adding to successful harvest");
+                        codes.Insert(i + 2, new CodeInstruction(OpCodes.Call, AccessTools.Method(typeof(ModEntry), nameof(ModEntry.HarvestSeeds))));
+                        codes.Insert(i + 2, new CodeInstruction(OpCodes.Ldarg_2));
+                        codes.Insert(i + 2, new CodeInstruction(OpCodes.Ldarg_1));
+                        codes.Insert(i + 2, new CodeInstruction(OpCodes.Ldarg_0));
+                        break;
                     }
                 }
-                else
+                return codes.AsEnumerable();
+            }
+        }
+        public static void HarvestSeeds(Crop crop, int xTile, int yTile)
+        {
+            if (!Config.EnableMod || crop.dead.Value || crop.netSeedIndex.Value == crop.indexOfHarvest.Value || (!Config.RegrowableSeeds && crop.regrowAfterHarvest.Value > -1) || Game1.random.NextDouble() > Config.SeedChance / 100f)
+                return;
+            int index;
+            if (crop.forageCrop.Value)
+            {
+                switch (Game1.currentSeason)
                 {
-                    index = __instance.netSeedIndex.Value;
-                    if (index == -1)
+                    case "summer":
+                        index = 496;
+                        break;
+                    case "fall":
+                        index = 497;
+                        break;
+                    case "winter":
+                        index = 498;
+                        break;
+                    default:
+                        index = 495;
+                        break;
+                }
+            }
+            else
+            {
+                index = crop.netSeedIndex.Value;
+                if (index == -1)
+                {
+                    Dictionary<int, string> cropData = Game1.content.Load<Dictionary<int, string>>("Data\\Crops");
+                    foreach (int key in cropData.Keys)
                     {
-                        Dictionary<int, string> cropData = Game1.content.Load<Dictionary<int, string>>("Data\\Crops");
-                        foreach (int key in cropData.Keys)
+                        if (Convert.ToInt32(cropData[key].Split('/', StringSplitOptions.None)[3]) == crop.indexOfHarvest.Value)
                         {
-                            if (Convert.ToInt32(cropData[key].Split('/', StringSplitOptions.None)[3]) == __instance.indexOfHarvest.Value)
-                            {
-                                index = key;
-                            }
+                            index = key;
                         }
                     }
                 }
-                if (index == -1)
-                    return;
-                int amount = Game1.random.Next(Config.MinSeeds, Config.MaxSeeds + 1);
-                if (amount <= 0)
-                    return;
-                SMonitor.Log($"Dropping {amount} seeds of {index}");
-                Game1.createItemDebris(new Object(index, amount), new Vector2((float)(xTile * 64 + 32), (float)(yTile * 64 + 32)), -1, null, -1);
             }
+            if (index == -1)
+                return;
+            int amount = Game1.random.Next(Config.MinSeeds, Config.MaxSeeds + 1);
+            if (amount <= 0)
+                return;
+            SMonitor.Log($"Dropping {amount} seeds of {index}");
+            Game1.createItemDebris(new Object(index, amount), new Vector2((float)(xTile * 64 + 32), (float)(yTile * 64 + 32)), -1, null, -1);
         }
-   }
+    }
 }

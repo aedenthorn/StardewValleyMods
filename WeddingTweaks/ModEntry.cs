@@ -17,9 +17,11 @@ namespace WeddingTweaks
         public static ModConfig Config;
         
         public static IFreeLoveAPI freeLoveAPI;
-        
+
+        public static List<string> npcWitnessAsked = new List<string>();
+        public static string dictionaryKey = "aedenthorn.WeddingTweaks/dictionary";
         public static string witnessKey = "aedenthorn.WeddingTweaks/witnessName";
-        public static Dictionary<string, string> npcWitnessDict = new Dictionary<string, string>();
+        public static Dictionary<string, WeddingData> npcWeddingDict = new Dictionary<string, WeddingData>();
 
         /// <summary>The mod entry point, called after the mod is first loaded.</summary>
         /// <param name="helper">Provides simplified APIs for writing mods.</param>
@@ -39,9 +41,11 @@ namespace WeddingTweaks
             Game1Patches.Initialize(Monitor, Config, helper);
 
             Helper.Events.GameLoop.GameLaunched += GameLoop_GameLaunched;
+            Helper.Events.GameLoop.SaveLoaded += GameLoop_SaveLoaded;
+            Helper.Events.GameLoop.DayStarted += GameLoop_DayStarted;
             Helper.Events.Content.AssetRequested += Content_AssetRequested;
 
-            Helper.ConsoleCommands.Add("Wedding", "Change upcoming wedding. Usage:\n\nWedding  // shows info about upcoming wedding.\nWedding cancel // cancels upcoming wedding.\nWedding set X // sets days until upcoming wedding (replace X with any whole number).", new System.Action<string, string[]>(WeddingCommand));
+            Helper.ConsoleCommands.Add("Wedding", "Change upcoming wedding. Usage:\n\nWedding  // shows info about upcoming wedding.\nWedding cancel // cancels upcoming wedding.\nWedding set X // sets days until upcoming wedding (replace X with any whole number).", new Action<string, string[]>(WeddingCommand));
 
 
             var harmony = new Harmony(ModManifest.UniqueID);
@@ -69,12 +73,28 @@ namespace WeddingTweaks
             harmony.PatchAll();
         }
 
+        private void GameLoop_DayStarted(object sender, DayStartedEventArgs e)
+        {
+            npcWitnessAsked.Clear();
+        }
+
+        private void GameLoop_SaveLoaded(object sender, SaveLoadedEventArgs e)
+        {
+            npcWitnessAsked.Clear();
+
+            npcWeddingDict = Helper.GameContent.Load<Dictionary<string, WeddingData>>(dictionaryKey);
+        }
+
         private void Content_AssetRequested(object sender, AssetRequestedEventArgs e)
         {
             if (e.NameWithoutLocale.IsEquivalentTo("Strings/StringsFromCSFiles"))
             {
                 e.Edit(EditDaysString);
 
+            }
+            else if (e.NameWithoutLocale.IsEquivalentTo(dictionaryKey))
+            {
+                e.LoadFrom(static () => new Dictionary<string, WeddingData>(), AssetLoadPriority.Exclusive);
             }
         }
 
@@ -172,29 +192,51 @@ namespace WeddingTweaks
                 );
                 configMenu.AddBoolOption(
                     mod: ModManifest,
-                    name: () => "All spouses join weddings? (Requires Free Love)",
+                    name: () => "Other spouses join weddings",
                     getValue: () => Config.AllSpousesJoinWeddings,
                     setValue: value => Config.AllSpousesJoinWeddings = value
                 );
                 configMenu.AddBoolOption(
                     mod: ModManifest,
-                    name: () => "All spouses wear marriage clothes at weddings? (Requires Free Love)",
+                    name: () => "Other spouses wear marriage clothes",
                     getValue: () => Config.AllSpousesWearMarriageClothesAtWeddings,
                     setValue: value => Config.AllSpousesWearMarriageClothesAtWeddings = value
                 );
                 configMenu.AddBoolOption(
                     mod: ModManifest,
-                    name: () => "Allow witnesses?",
+                    name: () => "Allow witnesses",
                     getValue: () => Config.AllowWitnesses,
                     setValue: value => Config.AllowWitnesses = value
                 );
                 configMenu.AddNumberOption(
                     mod: ModManifest,
-                    name: () => "Witness Min Hearts",
+                    name: () => "Witness min hearts",
                     getValue: () => Config.WitnessMinHearts,
                     setValue: value => Config.WitnessMinHearts = value,
                     min: 0,
                     max: 14
+                );
+                configMenu.AddNumberOption(
+                    mod: ModManifest,
+                    name: () => "Witness Accept Chance",
+                    getValue: () => Config.WitnessAcceptPercent,
+                    setValue: value => Config.WitnessAcceptPercent = value,
+                    min: 0,
+                    max: 100
+                );
+                configMenu.AddNumberOption(
+                    mod: ModManifest,
+                    name: () => "Heart Affect Percent",
+                    getValue: () => Config.WitnessAcceptHeartFactorPercent,
+                    setValue: value => Config.WitnessAcceptHeartFactorPercent = value,
+                    min: 0,
+                    max: 100
+                );
+                configMenu.AddBoolOption(
+                    mod: ModManifest,
+                    name: () => "Allow random witnesses",
+                    getValue: () => Config.AllowRandomNPCWitnesses,
+                    setValue: value => Config.AllowRandomNPCWitnesses = value
                 );
             }
         }

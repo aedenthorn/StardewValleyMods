@@ -4,11 +4,6 @@
     <TargetFramework>net5.0</TargetFramework>
 	<EnableHarmony>true</EnableHarmony>
   </PropertyGroup>
-  <ItemGroup>
-    <Compile Remove="i18n\**" />
-    <EmbeddedResource Remove="i18n\**" />
-    <None Remove="i18n\**" />
-  </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="Pathoschild.Stardew.ModBuildConfig" Version="4.0.0" />

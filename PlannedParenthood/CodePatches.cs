@@ -72,9 +72,17 @@ namespace PlannedParenthood
                 }
                 foreach(var kvp in Game1.player.team.friendshipData.Pairs)
                 {
-                    if (kvp.Value.IsMarried())
+                    if (kvp.Value?.IsMarried() == true)
                     {
-                        names.Add(Game1.getFarmer((kvp.Key.Farmer1 == Game1.player.UniqueMultiplayerID ? kvp.Key.Farmer2 : kvp.Key.Farmer1)).Name);
+                        string name = Game1.getFarmer((kvp.Key.Farmer1 == Game1.player.UniqueMultiplayerID ? kvp.Key.Farmer2 : kvp.Key.Farmer1))?.Name;
+                        if (name != null)
+                        {
+                            names.Add(name);
+                        }
+                        else
+                        {
+                            SMonitor.Log($"Error getting partner for {kvp.Key.Farmer1} & {kvp.Key.Farmer2}; local: {Game1.player.UniqueMultiplayerID}");
+                        }
                     }
                 }
 
@@ -124,11 +132,18 @@ namespace PlannedParenthood
                 }
                 foreach (var kvp in Game1.player.team.friendshipData.Pairs)
                 {
-                    if (kvp.Value.IsMarried())
+                    if (kvp.Value?.IsMarried() == true)
                     {
-                        string name = Game1.getFarmer((kvp.Key.Farmer1 == Game1.player.UniqueMultiplayerID ? kvp.Key.Farmer2 : kvp.Key.Farmer1)).Name;
-                        SMonitor.Log($"Adding PC spouse {name} to list");
-                        names.Add(name);
+                        string name = Game1.getFarmer((kvp.Key.Farmer1 == Game1.player.UniqueMultiplayerID ? kvp.Key.Farmer2 : kvp.Key.Farmer1))?.Name;
+                        if(name != null)
+                        {
+                            SMonitor.Log($"Adding PC spouse {name} to list");
+                            names.Add(name);
+                        }
+                        else
+                        {
+                            SMonitor.Log($"Error getting partner for {kvp.Key.Farmer1} & {kvp.Key.Farmer2}; local: {Game1.player.UniqueMultiplayerID}");
+                        }
                     }
                 }
                 if (!names.Any() || names.Exists(s => Game1.player.friendshipData[s].NextBirthingDate is not null))

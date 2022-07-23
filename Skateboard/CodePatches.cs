@@ -3,8 +3,12 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using StardewValley;
+using StardewValley.Menus;
+using StardewValley.Objects;
 using System;
 using System.Collections.Generic;
+using System.Linq;
+using Object = StardewValley.Object;
 
 namespace Skateboard
 {
@@ -12,15 +16,46 @@ namespace Skateboard
     {
         public static Rectangle source = Rectangle.Empty;
 
+        public static Vector2 lastPos;
+        public static Vector2 lastSpeed;
+
+        [HarmonyPatch(typeof(Character), nameof(Character.GetShadowOffset))]
+        public class Character_GetShadowOffset_Patch
+        {
+            public static void Postfix(Character __instance, ref Vector2 __result)
+            {
+                if (!Config.ModEnabled || Game1.eventUp || !__instance.modData.ContainsKey(skateboardingKey))
+                    return;
+
+                switch (source.X)
+                {
+                    case 0:
+                    case 11:
+                        __result.Y -= 24;
+                        break;
+                    case 22:
+                        __result.Y -= 20;
+                        break;
+                    case 38:
+                        __result.Y -= 28;
+                        break;
+                }
+            }
+        }
+        
         [HarmonyPatch(typeof(Farmer), nameof(Farmer.draw), new Type[] {typeof(SpriteBatch) })]
         public class Farmer_draw_Patch
         {
-            public static void Prefix(Farmer __instance, SpriteBatch b)
+            public static void Prefix(Farmer __instance, SpriteBatch b, ref FarmerState __state)
             {
-                if (!Config.ModEnabled || !onSkateboard)
+                if (!Config.ModEnabled || Game1.eventUp || !__instance.modData.ContainsKey(skateboardingKey))
                     return;
+
+                __state = new FarmerState();
+                __state.drawOffset = __instance.drawOffset.Value;
                 Vector2 offset = new Vector2(0, 0);
-                if(source != Rectangle.Empty && speed == Vector2.Zero)
+
+                if (source != Rectangle.Empty && speed == Vector2.Zero)
                 {
 
                 }
@@ -50,18 +85,59 @@ namespace Skateboard
                         offset += new Vector2(-8, 0);
                         break;
                 }
+                
+                switch (source.X)
+                {
+                    case 0:
+                    case 11:
+                        __instance.drawOffset.Value = new Vector2(0, -24);
+                        offset.Y = -24;
+                        break;
+                    case 22:
+                        __instance.drawOffset.Value = new Vector2(0, -20);
+                        offset.Y = -20;
+                        break;
+                    case 38:
+                        __instance.drawOffset.Value = new Vector2(0, -28);
+                        offset.Y = -28;
+                        break;
 
+                }
+                b.Draw(boardTexture, Game1.GlobalToLocal(__instance.Position) + offset, source, Color.White, 0, Vector2.Zero, 5, SpriteEffects.None, __instance.getDrawLayer() - 0.00001f);
+            }
+            public static void Postfix(Farmer __instance, FarmerState __state)
+            {
+                if (!Config.ModEnabled || Game1.eventUp || !Game1.player.modData.ContainsKey(skateboardingKey))
+                    return;
+                __instance.drawOffset.Value = __state.drawOffset;
 
-                b.Draw(boardTexture, Game1.GlobalToLocal(__instance.Position) + offset, source, Color.White, 0, Vector2.Zero, 5, SpriteEffects.None, 0.0001f);
             }
         }
 
+        [HarmonyPatch(typeof(GameLocation), nameof(GameLocation.isCollidingPosition), new Type[] { typeof(Rectangle), typeof(xTile.Dimensions.Rectangle), typeof(bool), typeof(int), typeof(bool), typeof(Character) })]
+        public class GameLocation_isCollidingPosition_Patch
+        {
+            public static void Postfix(Farmer __instance, Rectangle position, ref bool __result, Character character)
+            {
+                if (!Config.ModEnabled || Game1.eventUp || !__result || !Game1.player.modData.ContainsKey(skateboardingKey) || character != Game1.player)
+                    return;
+
+                if(character.yJumpOffset > 0)
+                {
+                    __result = false;
+                }
+                else if (lastPos == Game1.player.Position && speed.Length() < lastSpeed.Length())
+                {
+                    speed = Vector2.Zero;
+                }
+            }
+        }
         [HarmonyPatch(typeof(Farmer), nameof(Farmer.getMovementSpeed))]
         public class Farmer_getMovementSpeed_Patch
         {
             public static void Postfix(Farmer __instance, ref float __result)
             {
-                if (!Config.ModEnabled || !onSkateboard)
+                if (!Config.ModEnabled || Game1.eventUp || !Game1.player.modData.ContainsKey(skateboardingKey))
                     return;
 
                 __result = speed.Length();
@@ -72,8 +148,9 @@ namespace Skateboard
         {
             public static void Prefix(Farmer __instance, ref FarmerState __state)
             {
-                if (!Config.ModEnabled || !onSkateboard || !__instance.IsLocalPlayer)
+                if (!Config.ModEnabled || !Game1.player.modData.ContainsKey(skateboardingKey) || Game1.eventUp || !__instance.IsLocalPlayer)
                     return;
+                lastSpeed = speed;
                 __state = new FarmerState();
                 __state.pos = __instance.position.Value;
 
@@ -101,11 +178,11 @@ namespace Skateboard
                 __state.dirs = new List<int>(__instance.movementDirections);
                 accellerating = __instance.movementDirections.Count > 0;
 
-                if (Game1.player.getMovementSpeed() > 0.1f * Config.Deccelleration)
+                if (speed.Length() > 0.05f * Config.Deceleration)
                 {
                     Vector2 s = speed;
                     s.Normalize();
-                    speed -= (s * 0.05f * Config.Deccelleration);
+                    speed -= (s * 0.05f * Config.Deceleration);
                 }
                 else
                 {
@@ -113,34 +190,27 @@ namespace Skateboard
                 }
                 if (accellerating)
                 {
-                    if (Game1.player.movementDirections.Count == 0)
+                    float mult = 0.1f * Config.Acceleration;
+                    foreach (var d in Game1.player.movementDirections)
                     {
-                        accellerating = false;
-                    }
-                    else
-                    {
-                        float mult = 0.1f * Config.Accelleration;
-                        foreach (var d in Game1.player.movementDirections)
+                        switch (d)
                         {
-                            switch (d)
-                            {
-                                case 0:
-                                    speed.Y -= mult;
-                                    break;
-                                case 1:
-                                    speed.X += mult;
-                                    break;
-                                case 2:
-                                    speed.Y += mult;
-                                    break;
-                                case 3:
-                                    speed.X -= mult;
-                                    break;
-                            }
+                            case 0:
+                                speed.Y -= mult;
+                                break;
+                            case 1:
+                                speed.X += mult;
+                                break;
+                            case 2:
+                                speed.Y += mult;
+                                break;
+                            case 3:
+                                speed.X -= mult;
+                                break;
                         }
-                        speed.X = Math.Min(Config.MaxSpeed, speed.X);
-                        speed.Y = Math.Min(Config.MaxSpeed, speed.Y);
                     }
+                    speed.X = Math.Min(Config.MaxSpeed, speed.X);
+                    speed.Y = Math.Min(Config.MaxSpeed, speed.Y);
                 }
 
 
@@ -173,15 +243,127 @@ namespace Skateboard
             }
             public static void Postfix(Farmer __instance, FarmerState __state)
             {
-                if (!Config.ModEnabled || !onSkateboard || !__instance.IsLocalPlayer || speed == Vector2.Zero)
+                if (!Config.ModEnabled || Game1.eventUp|| !Game1.player.modData.ContainsKey(skateboardingKey) || !__instance.IsLocalPlayer || speed == Vector2.Zero)
                     return;
-                __instance.movementDirections = __state.dirs;
+                lastPos = __state.pos;
                 var diff = __instance.position.Value - __state.pos;
+                if (__instance.movementDirections.Count > 0 && __state.dirs.Count == 0)
+                {
+                    speed = Vector2.Zero;
+                }
+                __instance.movementDirections = __state.dirs;
+                if (diff.Length() > 64 || diff == Vector2.Zero || speed == Vector2.Zero)
+                    return;
                 var newDiff = speed;
                 newDiff.Normalize();
-                __instance.position.Value = __state.pos + newDiff * diff.Length();
+                __instance.Position = __state.pos + newDiff * diff.Length();
             }
         }
 
+        [HarmonyPatch(typeof(CraftingPage), new Type[] { typeof(int), typeof(int), typeof(int), typeof(int), typeof(bool), typeof(bool), typeof(List<Chest>) })]
+        [HarmonyPatch(MethodType.Constructor)]
+        public class CraftingPage_Patch
+        {
+            public static void Prefix()
+            {
+                if (!Config.ModEnabled || Game1.player.craftingRecipes.ContainsKey("Skateboard"))
+                    return;
+                Game1.player.craftingRecipes.Add("Skateboard", 0);
+            }
+        }
+        [HarmonyPatch(typeof(CraftingPage), "layoutRecipes")]
+        public class CraftingPage_layoutRecipes_Patch
+        {
+            public static void Postfix(CraftingPage __instance, bool ___cooking)
+            {
+                if (!Config.ModEnabled || ___cooking || __instance.pagesOfCraftingRecipes.Count == 0)
+                    return;
+                foreach(var key in __instance.pagesOfCraftingRecipes[__instance.pagesOfCraftingRecipes.Count - 1].Keys.ToList())
+                {
+                    if(__instance.pagesOfCraftingRecipes[__instance.pagesOfCraftingRecipes.Count - 1][key].name == "Skateboard")
+                    {
+                        var cc = key;
+                        var recipe = __instance.pagesOfCraftingRecipes[__instance.pagesOfCraftingRecipes.Count - 1][key];
+                        cc.texture = boardTexture;
+                        cc.sourceRect = new Rectangle(0, 0, 11, 12);
+                        __instance.pagesOfCraftingRecipes[__instance.pagesOfCraftingRecipes.Count - 1].Remove(key);
+                        __instance.pagesOfCraftingRecipes[__instance.pagesOfCraftingRecipes.Count - 1][cc] = recipe;
+                    }
+                }
+            }
+        }
+        [HarmonyPatch(typeof(CraftingRecipe), nameof(CraftingRecipe.createItem))]
+        public class CraftingRecipe_createItem_Patch
+        {
+            public static void Postfix(CraftingRecipe __instance, ref Item __result)
+            {
+                if (!Config.ModEnabled || __instance.name != "Skateboard")
+                    return;
+                __result.modData[boardKey] = "true";
+            }
+        }
+        [HarmonyPatch(typeof(Object), nameof(Object.isPlaceable))]
+        public class Object_isPlaceable_Patch
+        {
+            public static bool Prefix(Object __instance)
+            {
+                return (!Config.ModEnabled || !__instance.modData.ContainsKey(boardKey));
+            }
+        }
+        [HarmonyPatch(typeof(Object), nameof(Object.drawWhenHeld))]
+        public class Object_drawWhenHeld_Patch
+        {
+            public static bool Prefix(Object __instance, SpriteBatch spriteBatch, Vector2 objectPosition, Farmer f)
+            {
+                if (!Config.ModEnabled || !__instance.modData.ContainsKey(boardKey))
+                    return true;
+                if (Game1.player.modData.ContainsKey(skateboardingKey))
+                    return false;
+                spriteBatch.Draw(boardTexture, objectPosition + new Vector2(0, 96), new Rectangle(22, 0, 16, 12), Color.White, 0f, Vector2.Zero, 4f, SpriteEffects.None, Math.Max(0f, (f.getStandingY() + 3) / 10000f));
+                return false;
+            }
+        }
+        [HarmonyPatch(typeof(Object), nameof(Object.drawInMenu))]
+        public class Object_drawInMenu_Patch
+        {
+            public static bool Prefix(Object __instance, SpriteBatch spriteBatch, Vector2 location, float scaleSize, float transparency, float layerDepth, StackDrawType drawStackNumber, Color color, bool drawShadow)
+            {
+                if (!Config.ModEnabled || !__instance.modData.ContainsKey(boardKey))
+                    return true;
+                spriteBatch.Draw(boardTexture, location + new Vector2(40f, 68f), new Rectangle(0,0,11,12), color * transparency, 0f, new Vector2(8f, 16f), 8f * (((double)scaleSize < 0.2) ? scaleSize : (scaleSize / 2f)), SpriteEffects.None, layerDepth);
+                return false;
+            }
+        }
+        [HarmonyPatch(typeof(Object), nameof(Object.draw), new Type[] { typeof(SpriteBatch), typeof(int), typeof(int), typeof(float) })]
+        public class Object_draw_Patch_1
+        {
+            public static bool Prefix(Object __instance, SpriteBatch spriteBatch, int x, int y, float alpha)
+            {
+                if (!Config.ModEnabled || !__instance.modData.ContainsKey(boardKey))
+                    return true;
+                Vector2 scaleFactor = __instance.getScale();
+                scaleFactor *= 16f;
+                Vector2 position = Game1.GlobalToLocal(Game1.viewport, new Vector2((float)(x * 64), (float)(y * 64 - 64)));
+                Rectangle destination = new Rectangle((int)(position.X - scaleFactor.X / 2f) + ((__instance.shakeTimer > 0) ? Game1.random.Next(-1, 2) : 0), (int)(position.Y - scaleFactor.Y / 2f) + ((__instance.shakeTimer > 0) ? Game1.random.Next(-1, 2) : 0), (int)(64f + scaleFactor.X), (int)(128f + scaleFactor.Y / 2f));
+                float draw_layer = Math.Max(0f, (float)((y + 1) * 64 - 24) / 10000f) + (float)x * 1E-05f;
+                spriteBatch.Draw(boardTexture, destination, new Rectangle(0,0,11,12), Color.White * alpha, 0f, Vector2.Zero, SpriteEffects.None, draw_layer);
+                return false;
+            }
+        }
+        [HarmonyPatch(typeof(Object), nameof(Object.draw), new Type[] { typeof(SpriteBatch), typeof(int), typeof(int), typeof(float), typeof(float) })]
+        public class Object_draw_Patch_2
+        {
+            public static bool Prefix(Object __instance, SpriteBatch spriteBatch, int xNonTile, int yNonTile, float layerDepth, float alpha)
+            {
+                if (!Config.ModEnabled || !__instance.modData.ContainsKey(boardKey))
+                    return true;
+                Vector2 scaleFactor = __instance.getScale();
+                scaleFactor *= 16f;
+                Vector2 position = Game1.GlobalToLocal(Game1.viewport, new Vector2((float)xNonTile, (float)yNonTile));
+                Microsoft.Xna.Framework.Rectangle destination = new Microsoft.Xna.Framework.Rectangle((int)(position.X - scaleFactor.X / 2f) + ((__instance.shakeTimer > 0) ? Game1.random.Next(-1, 2) : 0), (int)(position.Y - scaleFactor.Y / 2f) + ((__instance.shakeTimer > 0) ? Game1.random.Next(-1, 2) : 0), (int)(64f + scaleFactor.X), (int)(128f + scaleFactor.Y / 2f));
+                spriteBatch.Draw(Game1.bigCraftableSpriteSheet, destination, new Rectangle(0,0,11,12), Color.White * alpha, 0f, Vector2.Zero, SpriteEffects.None, layerDepth);
+                return false;
+            }
+        }
     }
 }
