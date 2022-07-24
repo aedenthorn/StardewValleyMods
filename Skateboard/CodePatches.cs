@@ -7,6 +7,7 @@ using StardewValley.Menus;
 using StardewValley.Objects;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using Object = StardewValley.Object;
 
@@ -14,10 +15,11 @@ namespace Skateboard
 {
     public partial class ModEntry
     {
-        public static Rectangle source = Rectangle.Empty;
-
+        public static bool checkingPos;
         public static Vector2 lastPos;
         public static Vector2 lastSpeed;
+        public static Vector2 speed;
+        public static Rectangle source = Rectangle.Empty;
 
         [HarmonyPatch(typeof(Character), nameof(Character.GetShadowOffset))]
         public class Character_GetShadowOffset_Patch
@@ -50,7 +52,7 @@ namespace Skateboard
             {
                 if (!Config.ModEnabled || Game1.eventUp || !__instance.modData.ContainsKey(skateboardingKey))
                     return;
-
+                
                 __state = new FarmerState();
                 __state.drawOffset = __instance.drawOffset.Value;
                 Vector2 offset = new Vector2(0, 0);
@@ -114,6 +116,32 @@ namespace Skateboard
             }
         }
 
+        [HarmonyPatch(typeof(Farmer), nameof(Farmer.nextPosition))]
+        public class Farmer_nextPosition_Patch
+        {
+            public static void Prefix(Farmer __instance)
+            {
+                checkingPos = true;
+            }
+            public static void Postfix(Farmer __instance)
+            {
+                checkingPos = false;
+            }
+        }
+        
+        [HarmonyPatch(typeof(Farmer), nameof(Farmer.nextPositionHalf))]
+        public class Farmer_nextPositionHalf_Patch
+        {
+            public static void Prefix(Farmer __instance)
+            {
+                checkingPos = true;
+            }
+            public static void Postfix(Farmer __instance)
+            {
+                checkingPos = false;
+            }
+        }
+
         [HarmonyPatch(typeof(GameLocation), nameof(GameLocation.isCollidingPosition), new Type[] { typeof(Rectangle), typeof(xTile.Dimensions.Rectangle), typeof(bool), typeof(int), typeof(bool), typeof(Character) })]
         public class GameLocation_isCollidingPosition_Patch
         {
@@ -125,19 +153,21 @@ namespace Skateboard
                 if(character.yJumpOffset > 0)
                 {
                     __result = false;
+                    return;
                 }
-                else if (lastPos == Game1.player.Position && speed.Length() < lastSpeed.Length())
+                if (speed.Length() <= lastSpeed.Length() - 0.05f * Config.Deceleration)
                 {
                     speed = Vector2.Zero;
                 }
             }
         }
+
         [HarmonyPatch(typeof(Farmer), nameof(Farmer.getMovementSpeed))]
         public class Farmer_getMovementSpeed_Patch
         {
             public static void Postfix(Farmer __instance, ref float __result)
             {
-                if (!Config.ModEnabled || Game1.eventUp || !Game1.player.modData.ContainsKey(skateboardingKey))
+                if (checkingPos || !Config.ModEnabled || Game1.eventUp || !__instance.IsLocalPlayer || !__instance.modData.ContainsKey(skateboardingKey))
                     return;
 
                 __result = speed.Length();
@@ -150,6 +180,7 @@ namespace Skateboard
             {
                 if (!Config.ModEnabled || !Game1.player.modData.ContainsKey(skateboardingKey) || Game1.eventUp || !__instance.IsLocalPlayer)
                     return;
+
                 lastSpeed = speed;
                 __state = new FarmerState();
                 __state.pos = __instance.position.Value;
@@ -176,7 +207,7 @@ namespace Skateboard
                     __instance.movementDirections.Add(1);
                 }
                 __state.dirs = new List<int>(__instance.movementDirections);
-                accellerating = __instance.movementDirections.Count > 0;
+                accelerating = __instance.movementDirections.Count > 0;
 
                 if (speed.Length() > 0.05f * Config.Deceleration)
                 {
@@ -188,7 +219,7 @@ namespace Skateboard
                 {
                     speed = Vector2.Zero;
                 }
-                if (accellerating)
+                if (accelerating)
                 {
                     float mult = 0.1f * Config.Acceleration;
                     foreach (var d in Game1.player.movementDirections)
@@ -239,15 +270,14 @@ namespace Skateboard
                         __instance.movementDirections.Add(2);
                 }
 
-
             }
-            public static void Postfix(Farmer __instance, FarmerState __state)
+            public static void Postfix(Farmer __instance, FarmerState __state, xTile.Dimensions.Rectangle viewport, GameLocation currentLocation)
             {
-                if (!Config.ModEnabled || Game1.eventUp|| !Game1.player.modData.ContainsKey(skateboardingKey) || !__instance.IsLocalPlayer || speed == Vector2.Zero)
+                if (!Config.ModEnabled || Game1.eventUp|| !Game1.player.modData.ContainsKey(skateboardingKey) || !__instance.IsLocalPlayer)
                     return;
                 lastPos = __state.pos;
                 var diff = __instance.position.Value - __state.pos;
-                if (__instance.movementDirections.Count > 0 && __state.dirs.Count == 0)
+                if (speed != Vector2.Zero && __instance.movementDirections.Count == 0 && __state.dirs.Count == 0 && diff.Length() == 0)
                 {
                     speed = Vector2.Zero;
                 }
@@ -257,6 +287,12 @@ namespace Skateboard
                 var newDiff = speed;
                 newDiff.Normalize();
                 __instance.Position = __state.pos + newDiff * diff.Length();
+                if (currentLocation.isCollidingPosition(__instance.GetBoundingBox(), viewport, true, 0, false, __instance))
+                {
+                    speed = Vector2.Zero;
+                    __instance.Position = __state.pos;
+                }
+
             }
         }
 

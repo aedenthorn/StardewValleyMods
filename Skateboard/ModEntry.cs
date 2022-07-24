@@ -20,11 +20,11 @@ namespace Skateboard
         public static ModEntry context;
 
         public static readonly string boardKey = "aedenthorn.Skateboard/Board";
+        public static readonly string sourceKey = "aedenthorn.Skateboard/SourceRect";
         public static readonly int boardIndex = -42424201;
         public static readonly string skateboardingKey = "aedenthorn.Skateboard/Skateboarding";
 
-        public static Vector2 speed;
-        public static bool accellerating;
+        public static bool accelerating;
         private static Texture2D boardTexture;
 
         /// <summary>The mod entry point, called after the mod is first loaded.</summary>
@@ -91,7 +91,7 @@ namespace Skateboard
 
         private void Input_ButtonPressed(object sender, StardewModdingAPI.Events.ButtonPressedEventArgs e)
         {
-            if(Config.ModEnabled && Context.CanPlayerMove && e.Button == SButton.MouseLeft)
+            if(Config.ModEnabled && Context.CanPlayerMove && e.Button == Config.RideButton)
             {
                 if (Game1.player.modData.ContainsKey(skateboardingKey))
                 {
@@ -110,7 +110,7 @@ namespace Skateboard
                     speed = Vector2.Zero;
                     Game1.player.modData[skateboardingKey] = "true";
                 }
-
+                Helper.Input.Suppress(e.Button);
             }
         }
 
