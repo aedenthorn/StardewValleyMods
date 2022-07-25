@@ -49,7 +49,17 @@ namespace Skateboard
 
             var harmony = new Harmony(ModManifest.UniqueID);
             harmony.PatchAll();
+            helper.ConsoleCommands.Add("skateboard", "Spawn a skateboard.", SpawnSkateboard);
+        }
 
+        private void SpawnSkateboard(string arg1 = null, string[] arg2 = null)
+        {
+            var s = new Object(Vector2.Zero, boardIndex, false);
+            s.modData[boardKey] = "true";
+            if (!Game1.player.addItemToInventoryBool(s, true))
+            {
+                Game1.createItemDebris(s, Game1.player.Position, 1, Game1.player.currentLocation);
+            }
         }
 
         private void GameLoop_SaveLoaded(object sender, StardewModdingAPI.Events.SaveLoadedEventArgs e)
@@ -77,7 +87,7 @@ namespace Skateboard
         private void AddSkateBoardRecipe(IAssetData obj)
         {
             IDictionary<string, string> data = obj.AsDictionary<string, string>().Data;
-            data.Add("Skateboard", $"709 4 337 1 335 1 338 1 92 10/Home/{boardIndex}/true/null");
+            data.Add("Skateboard", $"{Config.CraftingRequirements}/Home/{boardIndex}/true/null");
         }
         private void AddSkateBoardInfo(IAssetData obj)
         {
@@ -95,14 +105,10 @@ namespace Skateboard
             {
                 if (Game1.player.modData.ContainsKey(skateboardingKey))
                 {
-                    var s = new Object(Vector2.Zero, boardIndex, false);
-                    s.modData[boardKey] = "true";
-                    if(!Game1.player.addItemToInventoryBool(s, true))
-                    {
-                        Game1.createItemDebris(s, Game1.player.Position, 1, Game1.player.currentLocation);
-                    }
+                    SpawnSkateboard();
                     speed = Vector2.Zero;
-                    Game1.player.modData.Remove(skateboardingKey) ;
+                    Game1.player.modData.Remove(skateboardingKey);
+                    Game1.player.drawOffset.Value = Vector2.Zero;
                 }
                 else if(Game1.player.CurrentItem is not null && Game1.player.CurrentItem.modData.ContainsKey(boardKey))
                 {

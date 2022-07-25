@@ -19,26 +19,32 @@ namespace Skateboard
         public static Vector2 lastPos;
         public static Vector2 lastSpeed;
         public static Vector2 speed;
-        public static Rectangle source = Rectangle.Empty;
+
 
         [HarmonyPatch(typeof(Character), nameof(Character.GetShadowOffset))]
         public class Character_GetShadowOffset_Patch
         {
             public static void Postfix(Character __instance, ref Vector2 __result)
             {
-                if (!Config.ModEnabled || Game1.eventUp || !__instance.modData.ContainsKey(skateboardingKey))
+                if (!Config.ModEnabled || Game1.eventUp || __instance is not Farmer || !__instance.modData.ContainsKey(skateboardingKey))
                     return;
-
-                switch (source.X)
+                string source;
+                if (!__instance.modData.TryGetValue(sourceKey, out source))
                 {
-                    case 0:
-                    case 11:
+                    source = "0";
+                    __instance.modData[sourceKey] = source;
+                }
+
+                switch (source)
+                {
+                    case "0":
+                    case "1":
                         __result.Y -= 24;
                         break;
-                    case 22:
+                    case "2":
                         __result.Y -= 20;
                         break;
-                    case 38:
+                    case "3":
                         __result.Y -= 28;
                         break;
                 }
@@ -48,71 +54,64 @@ namespace Skateboard
         [HarmonyPatch(typeof(Farmer), nameof(Farmer.draw), new Type[] {typeof(SpriteBatch) })]
         public class Farmer_draw_Patch
         {
-            public static void Prefix(Farmer __instance, SpriteBatch b, ref FarmerState __state)
+            public static void Prefix(Farmer __instance, SpriteBatch b)
             {
                 if (!Config.ModEnabled || Game1.eventUp || !__instance.modData.ContainsKey(skateboardingKey))
                     return;
                 
-                __state = new FarmerState();
-                __state.drawOffset = __instance.drawOffset.Value;
-                Vector2 offset = new Vector2(0, 0);
-
-                if (source != Rectangle.Empty && speed == Vector2.Zero)
+                Vector2 offset = Vector2.Zero;
+                string sourceString;
+                if (!__instance.modData.TryGetValue(sourceKey, out sourceString))
                 {
-
-                }
-                else if (((speed.X > 0 && speed.Y > 0) || (speed.X < 0 && speed.Y < 0)) & Math.Abs(Math.Abs(speed.X) - Math.Abs(speed.Y)) < Math.Max(Math.Abs(speed.X), Math.Abs(speed.Y)) / 2)
-                {
-                    source = new Rectangle(11, 0, 11, 12);
-                }
-                else if(((speed.X > 0 && speed.Y < 0) || (speed.X > 0 && speed.Y < 0)) & Math.Abs(Math.Abs(speed.X) - Math.Abs(speed.Y)) < Math.Max(Math.Abs(speed.X), Math.Abs(speed.Y)) / 2)
-                {
-                    source = new Rectangle(0, 0, 11, 12);
-                }
-                else if(Math.Abs(speed.Y) > Math.Abs(speed.X))
-                {
-                    source = new Rectangle(38, 0, 7, 12);
-                }
-                else
-                {
-                    source = new Rectangle(22, 0, 16, 12);
+                    sourceString = "0";
+                    __instance.modData[sourceKey] = sourceString;
                 }
 
-                switch(source.X)
+                var source = int.Parse(sourceString);
+                if (__instance.IsLocalPlayer)
                 {
-                    case 38:
-                        offset += new Vector2(14, 0);
-                        break;
-                    case 22:
-                        offset += new Vector2(-8, 0);
-                        break;
+                    if (speed == Vector2.Zero)
+                    {
+
+                    }
+                    else if (((speed.X > 0 && speed.Y > 0) || (speed.X < 0 && speed.Y < 0)) & Math.Abs(Math.Abs(speed.X) - Math.Abs(speed.Y)) < Math.Max(Math.Abs(speed.X), Math.Abs(speed.Y)) / 2)
+                    {
+                        source = 1;
+                    }
+                    else if (((speed.X > 0 && speed.Y < 0) || (speed.X > 0 && speed.Y < 0)) & Math.Abs(Math.Abs(speed.X) - Math.Abs(speed.Y)) < Math.Max(Math.Abs(speed.X), Math.Abs(speed.Y)) / 2)
+                    {
+                        source = 0;
+                    }
+                    else if (Math.Abs(speed.Y) > Math.Abs(speed.X))
+                    {
+                        source = 3;
+                    }
+                    else
+                    {
+                        source = 2;
+                    }
+                    __instance.modData[sourceKey] = source + "";
                 }
-                
-                switch (source.X)
+
+                __instance.drawOffset.Value = new Vector2(0, -24);
+
+                switch (source)
                 {
                     case 0:
-                    case 11:
-                        __instance.drawOffset.Value = new Vector2(0, -24);
-                        offset.Y = -24;
+                        offset = new Vector2(12, 36);
                         break;
-                    case 22:
-                        __instance.drawOffset.Value = new Vector2(0, -20);
-                        offset.Y = -20;
+                    case 1:
+                        offset = new Vector2(8, 36);
                         break;
-                    case 38:
-                        __instance.drawOffset.Value = new Vector2(0, -28);
-                        offset.Y = -28;
+                    case 2:
+                        offset = new Vector2(8, 36);
+                        break;
+                    case 3:
+                        offset = new Vector2(8, 40);
                         break;
 
                 }
-                b.Draw(boardTexture, Game1.GlobalToLocal(__instance.Position) + offset, source, Color.White, 0, Vector2.Zero, 5, SpriteEffects.None, __instance.getDrawLayer() - 0.00001f);
-            }
-            public static void Postfix(Farmer __instance, FarmerState __state)
-            {
-                if (!Config.ModEnabled || Game1.eventUp || !Game1.player.modData.ContainsKey(skateboardingKey))
-                    return;
-                __instance.drawOffset.Value = __state.drawOffset;
-
+                b.Draw(boardTexture, Game1.GlobalToLocal(__instance.Position) - offset, new Rectangle(source * 16, 0, 16, 16), Color.White, 0, Vector2.Zero, 5, SpriteEffects.None, __instance.getDrawLayer() - 0.00001f);
             }
         }
 
@@ -353,9 +352,7 @@ namespace Skateboard
             {
                 if (!Config.ModEnabled || !__instance.modData.ContainsKey(boardKey))
                     return true;
-                if (Game1.player.modData.ContainsKey(skateboardingKey))
-                    return false;
-                spriteBatch.Draw(boardTexture, objectPosition + new Vector2(0, 96), new Rectangle(22, 0, 16, 12), Color.White, 0f, Vector2.Zero, 4f, SpriteEffects.None, Math.Max(0f, (f.getStandingY() + 3) / 10000f));
+                spriteBatch.Draw(boardTexture, objectPosition + new Vector2(0, 92), new Rectangle(32, 0, 16, 16), Color.White, 0f, Vector2.Zero, 4f, SpriteEffects.None, Math.Max(0f, (f.getStandingY() + 3) / 10000f));
                 return false;
             }
         }
@@ -366,7 +363,7 @@ namespace Skateboard
             {
                 if (!Config.ModEnabled || !__instance.modData.ContainsKey(boardKey))
                     return true;
-                spriteBatch.Draw(boardTexture, location + new Vector2(40f, 68f), new Rectangle(0,0,11,12), color * transparency, 0f, new Vector2(8f, 16f), 8f * (((double)scaleSize < 0.2) ? scaleSize : (scaleSize / 2f)), SpriteEffects.None, layerDepth);
+                spriteBatch.Draw(boardTexture, location + new Vector2(32f, 64f), new Rectangle(0,0,16,16), color * transparency, 0f, new Vector2(8f, 16f), 8f * (((double)scaleSize < 0.2) ? scaleSize : (scaleSize / 2f)), SpriteEffects.None, layerDepth);
                 return false;
             }
         }
@@ -382,7 +379,7 @@ namespace Skateboard
                 Vector2 position = Game1.GlobalToLocal(Game1.viewport, new Vector2((float)(x * 64), (float)(y * 64 - 64)));
                 Rectangle destination = new Rectangle((int)(position.X - scaleFactor.X / 2f) + ((__instance.shakeTimer > 0) ? Game1.random.Next(-1, 2) : 0), (int)(position.Y - scaleFactor.Y / 2f) + ((__instance.shakeTimer > 0) ? Game1.random.Next(-1, 2) : 0), (int)(64f + scaleFactor.X), (int)(128f + scaleFactor.Y / 2f));
                 float draw_layer = Math.Max(0f, (float)((y + 1) * 64 - 24) / 10000f) + (float)x * 1E-05f;
-                spriteBatch.Draw(boardTexture, destination, new Rectangle(0,0,11,12), Color.White * alpha, 0f, Vector2.Zero, SpriteEffects.None, draw_layer);
+                spriteBatch.Draw(boardTexture, destination, new Rectangle(0,0,16,16), Color.White * alpha, 0f, Vector2.Zero, SpriteEffects.None, draw_layer);
                 return false;
             }
         }
@@ -394,10 +391,10 @@ namespace Skateboard
                 if (!Config.ModEnabled || !__instance.modData.ContainsKey(boardKey))
                     return true;
                 Vector2 scaleFactor = __instance.getScale();
-                scaleFactor *= 16f;
+                scaleFactor *= 4f;
                 Vector2 position = Game1.GlobalToLocal(Game1.viewport, new Vector2((float)xNonTile, (float)yNonTile));
                 Microsoft.Xna.Framework.Rectangle destination = new Microsoft.Xna.Framework.Rectangle((int)(position.X - scaleFactor.X / 2f) + ((__instance.shakeTimer > 0) ? Game1.random.Next(-1, 2) : 0), (int)(position.Y - scaleFactor.Y / 2f) + ((__instance.shakeTimer > 0) ? Game1.random.Next(-1, 2) : 0), (int)(64f + scaleFactor.X), (int)(128f + scaleFactor.Y / 2f));
-                spriteBatch.Draw(Game1.bigCraftableSpriteSheet, destination, new Rectangle(0,0,11,12), Color.White * alpha, 0f, Vector2.Zero, SpriteEffects.None, layerDepth);
+                spriteBatch.Draw(Game1.bigCraftableSpriteSheet, destination, new Rectangle(0,0,16,16), Color.White * alpha, 0f, Vector2.Zero, SpriteEffects.None, layerDepth);
                 return false;
             }
         }
