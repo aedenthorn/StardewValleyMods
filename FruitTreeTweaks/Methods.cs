@@ -36,7 +36,7 @@ namespace FruitTreeTweaks
         }
         private static int GetFruitPerDay()
         {
-            return !Config.EnableMod ? 1 : Game1.random.Next(Config.MinFruitPerDay, Config.MaxFruitPerDay + 1);
+            return !Config.EnableMod ? 1 : Game1.random.Next(Config.MinFruitPerDay, Math.Max(Config.MinFruitPerDay, Config.MaxFruitPerDay + 1));
         }
         private static Color GetFruitColor(FruitTree tree, int index)
         {
