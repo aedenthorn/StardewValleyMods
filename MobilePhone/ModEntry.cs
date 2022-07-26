@@ -12,7 +12,7 @@ using System.Linq;
 
 namespace MobilePhone
 {
-    public class ModEntry : Mod, IAssetEditor
+    public class ModEntry : Mod
     {
         public static ModEntry context;
 
@@ -109,6 +109,8 @@ namespace MobilePhone
         internal static bool isReminiscingAtNight;
         internal static Event reminisceEvent;
         internal static bool buildingInCall;
+        
+        public static List<string> calledToday = new List<string>();
 
         public static event EventHandler OnScreenRotated;
 
@@ -134,7 +136,7 @@ namespace MobilePhone
             PhonePatches.Initialize(Helper, Monitor, Config);
 
             if(Config.AddRotateApp)
-                apps.Add(Helper.ModRegistry.ModID+"_Rotate", new MobileApp(helper.Translation.Get("rotate-phone"), null, helper.Content.Load<Texture2D>("assets/rotate_icon.png")));
+                apps.Add(Helper.ModRegistry.ModID+"_Rotate", new MobileApp(helper.Translation.Get("rotate-phone"), null, helper.ModContent.Load<Texture2D>("assets/rotate_icon.png")));
 
             var harmony = new Harmony(ModManifest.UniqueID);
 
@@ -228,10 +230,12 @@ namespace MobilePhone
             Helper.Events.GameLoop.SaveLoaded += PhoneGameLoop.GameLoop_SaveLoaded;
             Helper.Events.GameLoop.GameLaunched += PhoneGameLoop.GameLoop_GameLaunched;
             Helper.Events.GameLoop.ReturnedToTitle += PhoneGameLoop.ReturnedToTitle;
+            Helper.Events.GameLoop.DayStarted += PhoneGameLoop.GameLoop_DayStarted; 
             Helper.Events.GameLoop.TimeChanged += PhoneGameLoop.GameLoop_TimeChanged;
             Helper.Events.GameLoop.OneSecondUpdateTicked += PhoneGameLoop.GameLoop_OneSecondUpdateTicked;
             Helper.Events.Display.WindowResized += PhoneVisuals.Display_WindowResized;
 
+            Helper.Events.Content.AssetRequested += Content_AssetRequested;
             /*
             var files = Directory.GetFiles(Path.Combine(Helper.DirectoryPath, Path.Combine("assets", "events")));
             foreach(string file in files)
@@ -248,6 +252,28 @@ namespace MobilePhone
             */
         }
 
+        private void Content_AssetRequested(object sender, StardewModdingAPI.Events.AssetRequestedEventArgs e)
+        {
+
+            if (e.NameWithoutLocale.BaseName.Contains("Events"))
+            {
+                foreach (EventInvite invite in MobilePhoneCall.eventInvites)
+                {
+                    if (invite.CanInvite(invitedNPC) && invite.forks?.Any() == true && e.NameWithoutLocale.IsEquivalentTo($"Data/Events/{invite.location}"))
+                    {
+                        foreach (EventFork fork in invite.forks)
+                        {
+                            var f = fork;
+                            e.Edit(delegate(IAssetData obj) {
+                                var dict = obj.AsDictionary<string, string>();
+                                dict.Data.Add(fork.key, MobilePhoneCall.CreateEventString(fork.nodes, invitedNPC));
+
+                            });
+                        }
+                    }
+                }
+            }
+        }
         public override object GetApi()
         {
             return new MobilePhoneApi();
@@ -260,40 +286,5 @@ namespace MobilePhone
             runningApp = null;
         }
 
-        public bool CanEdit<T>(IAssetInfo asset)
-        {
-            if (!Config.EnableMod)
-                return false;
-            if (asset.AssetName.Contains("Events") && isInviting)
-            {
-                foreach (EventInvite invite in MobilePhoneCall.eventInvites)
-                {
-                    if (invite.forks?.Any() == true && asset.AssetNameEquals($"Data/Events/{invite.location}"))
-                    {
-                        Monitor.Log($"invite {invite.name} has {invite.forks.Count} forks");
-                        return true;
-                    }
-                }
-            }
-            return false;
-        }
-        public void Edit<T>(IAssetData asset)
-        {
-            if (asset.AssetName.Contains("Events"))
-            {
-                foreach (EventInvite invite in MobilePhoneCall.eventInvites)
-                {
-                    Monitor.Log($"invite {invite.name} can invite {invite.CanInvite(invitedNPC)}, forks {invite.forks?.Any() == true}, asset is this: {asset.AssetNameEquals($"Data/Events/{invite.location}")} ");
-                    if (invite.CanInvite(invitedNPC) && invite.forks?.Any() == true && asset.AssetNameEquals($"Data/Events/{invite.location}"))
-                    {
-                        foreach(EventFork fork in invite.forks)
-                        {
-                            asset.AsDictionary<string, string>().Data.Add(fork.key, MobilePhoneCall.CreateEventString(fork.nodes, invitedNPC));
-                        }
-                    }
-                }
-            }
-
-        }
     }
 }

@@ -37,7 +37,7 @@ namespace MobilePhone
             Helper = helper;
             Monitor = monitor;
             Config = config;
-            appIcon = Helper.Content.Load<Texture2D>(Path.Combine("assets","theme_app_icon.png"));
+            appIcon = Helper.ModContent.Load<Texture2D>(Path.Combine("assets","theme_app_icon.png"));
             ModEntry.apps.Add(Helper.ModRegistry.ModID + "_themes", GetApp());
             CreateThemeLists();
         }
@@ -69,8 +69,8 @@ namespace MobilePhone
                 {
                     try
                     {
-                        Texture2D skin = Helper.Content.Load<Texture2D>(Path.Combine("assets", "skins", Path.GetFileName(path).Replace("_landscape", "")));
-                        Texture2D skinl = Helper.Content.Load<Texture2D>(Path.Combine("assets", "skins", Path.GetFileName(path)));
+                        Texture2D skin = Helper.ModContent.Load<Texture2D>(Path.Combine("assets", "skins", Path.GetFileName(path).Replace("_landscape", "")));
+                        Texture2D skinl = Helper.ModContent.Load<Texture2D>(Path.Combine("assets", "skins", Path.GetFileName(path)));
                         if (skin != null && skinl != null)
                         {
                             skinDict.Add(Path.Combine("assets", "skins", Path.GetFileName(path).Replace("_landscape", "")), new Texture2D[] { skin, skinl });
@@ -93,8 +93,8 @@ namespace MobilePhone
                 {
                     try
                     {
-                        Texture2D back = Helper.Content.Load<Texture2D>(Path.Combine("assets", "backgrounds", Path.GetFileName(path).Replace("_landscape", "")));
-                        Texture2D backl = Helper.Content.Load<Texture2D>(Path.Combine("assets", "backgrounds", Path.GetFileName(path)));
+                        Texture2D back = Helper.ModContent.Load<Texture2D>(Path.Combine("assets", "backgrounds", Path.GetFileName(path).Replace("_landscape", "")));
+                        Texture2D backl = Helper.ModContent.Load<Texture2D>(Path.Combine("assets", "backgrounds", Path.GetFileName(path)));
                         if (back != null && backl != null)
                         {
                             backgroundDict.Add(Path.Combine("assets", "backgrounds", Path.GetFileName(path).Replace("_landscape", "")), new Texture2D[] { back, backl });

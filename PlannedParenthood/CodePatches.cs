@@ -14,6 +14,36 @@ namespace PlannedParenthood
     {
         public static int namePage;
 
+
+        private static List<string> GetSpouseNames()
+        {
+            List<string> names = Game1.player.friendshipData.Keys.Where(k => Game1.player.friendshipData[k].IsMarried() && !Game1.player.friendshipData[k].RoommateMarriage && Game1.player.friendshipData[k].Points / 250 >= Config.MinHearts).ToList();
+            SMonitor.Log($"Got {names.Count} spouses");
+            for (int i = names.Count - 1; i >= 0; i--)
+            {
+                var npc = Game1.getCharacterFromName(names[i], true);
+                if (npc is null || (Config.InBed && !npc.isSleeping.Value))
+                    names.RemoveAt(i);
+            }
+            foreach (var kvp in Game1.player.team.friendshipData.Pairs)
+            {
+                if (kvp.Value?.IsMarried() == true)
+                {
+                    Farmer spouse = Game1.getFarmer((kvp.Key.Farmer1 == Game1.player.UniqueMultiplayerID ? kvp.Key.Farmer2 : kvp.Key.Farmer1));
+                    if (spouse != null && kvp.Value.NextBirthingDate is null)
+                    {
+                        SMonitor.Log($"Adding PC spouse {spouse.Name} to list");
+                        names.Add(spouse.Name);
+                    }
+                    else
+                    {
+                        SMonitor.Log($"Error getting partner for {kvp.Key.Farmer1} & {kvp.Key.Farmer2}; local: {Game1.player.UniqueMultiplayerID}");
+                    }
+                }
+            }
+            return names;
+        }
+
         [HarmonyPatch(typeof(GameLocation), nameof(GameLocation.answerDialogueAction))]
         public class GameLocation_answerDialogueAction_Patch
         {
@@ -58,34 +88,7 @@ namespace PlannedParenthood
             }
             private static void CreateNameListQuestion(GameLocation __instance)
             {
-                var names = Game1.player.friendshipData.Keys.Where(k => Game1.player.friendshipData[k].IsMarried() && !Game1.player.friendshipData[k].RoommateMarriage && Game1.player.friendshipData[k].Points / 250 >= Config.MinHearts).ToList();
-
-                names.Sort(delegate (string a, string b) {
-                    return Game1.player.friendshipData[b].Points.CompareTo(Game1.player.friendshipData[a].Points);
-                });
-
-                for (int i = names.Count - 1; i >= 0; i--)
-                {
-                    var npc = Game1.getCharacterFromName(names[i], true);
-                    if (npc is null || (Config.InBed && !npc.isSleeping.Value))
-                        names.RemoveAt(i);
-                }
-                foreach(var kvp in Game1.player.team.friendshipData.Pairs)
-                {
-                    if (kvp.Value?.IsMarried() == true)
-                    {
-                        string name = Game1.getFarmer((kvp.Key.Farmer1 == Game1.player.UniqueMultiplayerID ? kvp.Key.Farmer2 : kvp.Key.Farmer1))?.Name;
-                        if (name != null)
-                        {
-                            names.Add(name);
-                        }
-                        else
-                        {
-                            SMonitor.Log($"Error getting partner for {kvp.Key.Farmer1} & {kvp.Key.Farmer2}; local: {Game1.player.UniqueMultiplayerID}");
-                        }
-                    }
-                }
-
+                var names = GetSpouseNames();
 
                 int totalNames = names.Count;
 
@@ -123,32 +126,10 @@ namespace PlannedParenthood
 
                 partnerName = null;
 
-                var names = Game1.player.friendshipData.Keys.Where(k => Game1.player.friendshipData[k].IsMarried() && !Game1.player.friendshipData[k].RoommateMarriage && Game1.player.friendshipData[k].Points / 250 >= Config.MinHearts).ToList();
-                for (int i = names.Count - 1; i >= 0; i--)
+                var names = GetSpouseNames();
+                if (!names.Any())
                 {
-                    var npc = Game1.getCharacterFromName(names[i], true);
-                    if (npc is null || (Config.InBed && !npc.isSleeping.Value))
-                        names.RemoveAt(i);
-                }
-                foreach (var kvp in Game1.player.team.friendshipData.Pairs)
-                {
-                    if (kvp.Value?.IsMarried() == true)
-                    {
-                        string name = Game1.getFarmer((kvp.Key.Farmer1 == Game1.player.UniqueMultiplayerID ? kvp.Key.Farmer2 : kvp.Key.Farmer1))?.Name;
-                        if(name != null)
-                        {
-                            SMonitor.Log($"Adding PC spouse {name} to list");
-                            names.Add(name);
-                        }
-                        else
-                        {
-                            SMonitor.Log($"Error getting partner for {kvp.Key.Farmer1} & {kvp.Key.Farmer2}; local: {Game1.player.UniqueMultiplayerID}");
-                        }
-                    }
-                }
-                if (!names.Any() || names.Exists(s => Game1.player.friendshipData[s].NextBirthingDate is not null))
-                {
-                    SMonitor.Log($"Cannot ask about pregnancy; spouses: {names.Any()}, spouse giving birth already {names.Exists(s => Game1.player.friendshipData[s].NextBirthingDate is not null)}", LogLevel.Debug);
+                    SMonitor.Log($"Cannot ask about pregnancy; no applicable spouses", LogLevel.Debug);
                     return;
                 }
 

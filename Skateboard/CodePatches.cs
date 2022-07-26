@@ -361,7 +361,7 @@ namespace Skateboard
         {
             public static bool Prefix(Object __instance, SpriteBatch spriteBatch, Vector2 location, float scaleSize, float transparency, float layerDepth, StackDrawType drawStackNumber, Color color, bool drawShadow)
             {
-                if (!Config.ModEnabled || !__instance.modData.ContainsKey(boardKey))
+                if (!Config.ModEnabled || boardTexture is null || !__instance.modData.ContainsKey(boardKey))
                     return true;
                 spriteBatch.Draw(boardTexture, location + new Vector2(32f, 64f), new Rectangle(0,0,16,16), color * transparency, 0f, new Vector2(8f, 16f), 8f * (((double)scaleSize < 0.2) ? scaleSize : (scaleSize / 2f)), SpriteEffects.None, layerDepth);
                 return false;

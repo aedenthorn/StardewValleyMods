@@ -448,11 +448,11 @@ namespace MobilePhone
                 ModEntry.backgroundTexture = ThemeApp.backgroundDict[Path.Combine("assets", "backgrounds", "clouds.png")][0];
                 ModEntry.backgroundRotatedTexture = ThemeApp.backgroundDict[Path.Combine("assets", "backgrounds", "clouds.png")][1];
             }
-            ModEntry.upArrowTexture = Helper.Content.Load<Texture2D>(Path.Combine("assets", Config.UpArrowTexturePath));
-            ModEntry.downArrowTexture = Helper.Content.Load<Texture2D>(Path.Combine("assets", Config.DownArrowTexturePath));
+            ModEntry.upArrowTexture = Helper.ModContent.Load<Texture2D>(Path.Combine("assets", Config.UpArrowTexturePath));
+            ModEntry.downArrowTexture = Helper.ModContent.Load<Texture2D>(Path.Combine("assets", Config.DownArrowTexturePath));
             if (Config.ShowPhoneIcon)
             {
-                ModEntry.iconTexture = Helper.Content.Load<Texture2D>(Path.Combine("assets", Config.iconTexturePath));
+                ModEntry.iconTexture = Helper.ModContent.Load<Texture2D>(Path.Combine("assets", Config.iconTexturePath));
             }
         }
 

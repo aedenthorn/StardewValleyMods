@@ -32,7 +32,7 @@ namespace MobilePhone
             Helper = helper;
             Monitor = monitor;
             Config = config;
-            appIcon = Helper.Content.Load<Texture2D>(Path.Combine("assets","app_icon.png"));
+            appIcon = Helper.ModContent.Load<Texture2D>(Path.Combine("assets","app_icon.png"));
             ModEntry.apps.Add(Helper.ModRegistry.ModID, GetApp());
         }
 
@@ -264,7 +264,7 @@ namespace MobilePhone
                 Monitor.Log($"You have no friends.", LogLevel.Debug);
                 return;
             }
-            CallableNPC[] callers = callableList.Where(s => (s.npc.CurrentDialogue.Count >= 1 || s.npc.endOfRouteMessage.Value != null) && !s.npc.isSleeping.Value).ToArray();
+            CallableNPC[] callers = callableList.Where(s => (s.npc.CurrentDialogue.Count >= 1 || s.npc.endOfRouteMessage.Value != null) && !s.npc.isSleeping.Value && !ModEntry.calledToday.Contains(s.npc.Name)).ToArray();
             if (callers.Length == 0)
             {
                 Monitor.Log($"None of your friends want to talk to you.", LogLevel.Debug);
@@ -276,6 +276,7 @@ namespace MobilePhone
             PhoneUtils.PlayRingTone();
             ModEntry.currentCallRings = 0;
             ModEntry.currentCallMaxRings = Game1.random.Next(Math.Max(0, Config.IncomingCallMinRings), Math.Max(Config.IncomingCallMinRings + 1, Config.IncomingCallMaxRings));
+            ModEntry.calledToday.Add(caller.npc.Name);
             ModEntry.callingNPC = caller.npc;
         }
     }

@@ -430,8 +430,13 @@ namespace FreeLove
             npc.Sprite.setCurrentAnimation(anim);
         }
 
-        public static void ResetSpouses(Farmer f)
+        public static void ResetSpouses(Farmer f, bool force = false)
         {
+            if (force)
+            {
+                currentSpouses.Remove(f.UniqueMultiplayerID);
+                currentUnofficialSpouses.Remove(f.UniqueMultiplayerID);
+            }
             Dictionary<string, NPC> spouses = GetSpouses(f,true);
             if (f.spouse == null)
             {

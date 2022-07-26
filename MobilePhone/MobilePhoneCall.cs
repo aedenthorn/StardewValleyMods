@@ -345,7 +345,7 @@ namespace MobilePhone
             Dictionary<string, string> dict;
             try
             {
-                dict = Helper.Content.Load<Dictionary<string, string>>(Path.Combine("Data", "Events", r.location), ContentSource.GameContent);
+                dict = Helper.GameContent.Load<Dictionary<string, string>>(Path.Combine("Data", "Events", r.location));
             }
             catch (Exception ex)
             {
@@ -426,7 +426,7 @@ namespace MobilePhone
                 ModEntry.invitedNPC = null;
             };
             if (ei.forks != null)
-                Helper.Content.InvalidateCache($"Data/Events/{ei.location}");
+                Helper.GameContent.InvalidateCache($"Data/Events/{ei.location}");
 
             ModEntry.invitedNPC = npc;
 
@@ -551,7 +551,7 @@ namespace MobilePhone
         {
             try
             {
-                Dictionary<string, string> dict = Helper.Content.Load<Dictionary<string, string>>($"Characters/Dialogue/{npc.Name}", ContentSource.GameContent);
+                Dictionary<string, string> dict = Helper.GameContent.Load<Dictionary<string, string>>($"Characters/Dialogue/{npc.Name}");
                 inCallDialogue = new Dictionary<string, string>(dict);
                 if (dict.ContainsKey("MobilePhoneGreeting"))
                     return string.Format(dict["MobilePhoneGreeting"], Game1.player.displayName);

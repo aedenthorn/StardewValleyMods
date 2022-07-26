@@ -59,9 +59,11 @@ namespace FreeLove
                     {
                         __instance.spouse = null;
                     }
+                    ModEntry.currentSpouses.Remove(__instance.UniqueMultiplayerID);
+                    ModEntry.currentUnofficialSpouses.Remove(__instance.UniqueMultiplayerID);
                     ModEntry.ResetSpouses(__instance);
-                    Helper.Content.InvalidateCache("Maps/FarmHouse1_marriage");
-                    Helper.Content.InvalidateCache("Maps/FarmHouse2_marriage");
+                    Helper.GameContent.InvalidateCache("Maps/FarmHouse1_marriage");
+                    Helper.GameContent.InvalidateCache("Maps/FarmHouse2_marriage");
 
                     Monitor.Log($"New spouse: {__instance.spouse}, married {__instance.isMarried()}");
 

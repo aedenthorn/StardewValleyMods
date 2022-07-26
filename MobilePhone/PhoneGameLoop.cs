@@ -22,7 +22,7 @@ namespace MobilePhone
             Helper = helper;
             Config = config;
         }
-        public static void GameLoop_GameLaunched(object sender, StardewModdingAPI.Events.GameLaunchedEventArgs e)
+        public static void GameLoop_GameLaunched(object sender, GameLaunchedEventArgs e)
         {
             foreach (IContentPack contentPack in Helper.ContentPacks.GetOwned())
             {
@@ -37,7 +37,7 @@ namespace MobilePhone
                         {
                             foreach (AppJSON app in json.apps)
                             {
-                                Texture2D tex = contentPack.LoadAsset<Texture2D>(app.iconPath);
+                                Texture2D tex = contentPack.ModContent.Load<Texture2D>(app.iconPath);
                                 if (tex == null)
                                 {
                                     continue;
@@ -48,7 +48,7 @@ namespace MobilePhone
                         }
                         else if (json.iconPath != null)
                         {
-                            Texture2D icon = contentPack.LoadAsset<Texture2D>(json.iconPath);
+                            Texture2D icon = contentPack.ModContent.Load<Texture2D>(json.iconPath);
                             if (icon == null)
                             {
                                 continue;
@@ -102,8 +102,8 @@ namespace MobilePhone
                         {
                             string skinPath = Path.Combine("assets", "skins", Path.GetFileName(skinFile));
                             Monitor.Log($"Adding skin {Path.GetFileName(skinFile).Replace("_landscape.png", "")} from {contentPack.DirectoryPath}");
-                            Texture2D skin = contentPack.LoadAsset<Texture2D>(skinPath.Replace("_landscape.png", ".png"));
-                            Texture2D skinl = contentPack.LoadAsset<Texture2D>(skinPath);
+                            Texture2D skin = contentPack.ModContent.Load<Texture2D>(skinPath.Replace("_landscape.png", ".png"));
+                            Texture2D skinl = contentPack.ModContent.Load<Texture2D>(skinPath);
                             ThemeApp.skinList.Add(contentPack.Manifest.UniqueID + ":" + Path.GetFileName(skinFile).Replace("_landscape.png", ""));
                             ThemeApp.skinDict.Add(contentPack.Manifest.UniqueID + ":" + Path.GetFileName(skinFile).Replace("_landscape.png", ""), new Texture2D[] { skin, skinl});
                             Monitor.Log($"Added skin {Path.GetFileName(skinFile).Replace("_landscape.png", "")} from {contentPack.DirectoryPath}");
@@ -122,8 +122,8 @@ namespace MobilePhone
                         {
                             string backPath = Path.Combine("assets", "backgrounds", Path.GetFileName(backFile));
                             Monitor.Log($"Adding background {Path.GetFileName(backFile).Replace("_landscape.png", "")} from {contentPack.DirectoryPath}");
-                            Texture2D back = contentPack.LoadAsset<Texture2D>(backPath.Replace("_landscape.png", ".png"));
-                            Texture2D backl = contentPack.LoadAsset<Texture2D>(backPath);
+                            Texture2D back = contentPack.ModContent.Load<Texture2D>(backPath.Replace("_landscape.png", ".png"));
+                            Texture2D backl = contentPack.ModContent.Load<Texture2D>(backPath);
                             ThemeApp.backgroundDict.Add(contentPack.Manifest.UniqueID + ":" + Path.GetFileName(backFile).Replace("_landscape.png", ""), new Texture2D[] { back, backl });
                             ThemeApp.backgroundList.Add(contentPack.Manifest.UniqueID + ":" + Path.GetFileName(backFile).Replace("_landscape.png", ""));
                             Monitor.Log($"Added background {Path.GetFileName(backFile).Replace("_landscape.png", "")} from {contentPack.DirectoryPath}");
@@ -200,13 +200,18 @@ namespace MobilePhone
         }
 
 
+        public static void GameLoop_DayStarted(object sender, DayStartedEventArgs e)
+        {
+            ModEntry.calledToday.Clear();
+        }
 
-        public static void GameLoop_SaveLoaded(object sender, StardewModdingAPI.Events.SaveLoadedEventArgs e)
+        public static void GameLoop_SaveLoaded(object sender, SaveLoadedEventArgs e)
         {
             Monitor.Log($"total apps: {ModEntry.apps.Count}");
             PhoneUtils.OrderApps();
             PhoneUtils.RefreshPhoneLayout();
             Helper.Events.Display.RenderedWorld += PhoneVisuals.Display_RenderedWorld;
+            ModEntry.calledToday.Clear();
 
             if (ModEntry.npcAdventureModApi != null)
             {

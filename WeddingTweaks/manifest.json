@@ -1,7 +1,7 @@
 ﻿{
   "Name": "Wedding Tweaks",
   "Author": "aedenthorn",
-  "Version": "0.2.2",
+  "Version": "0.2.3",
   "Description": "Wedding Tweaks",
   "UniqueID": "aedenthorn.WeddingTweaks",
   "EntryDll": "WeddingTweaks.dll",
