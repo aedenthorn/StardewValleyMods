@@ -5,6 +5,7 @@ using StardewModdingAPI;
 using StardewValley;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using Object = StardewValley.Object;
 
 namespace Skateboard
@@ -42,7 +43,6 @@ namespace Skateboard
             SHelper = helper;
 
             helper.Events.GameLoop.GameLaunched += GameLoop_GameLaunched;
-            helper.Events.GameLoop.UpdateTicked += GameLoop_UpdateTicked;
             helper.Events.GameLoop.SaveLoaded += GameLoop_SaveLoaded;
             helper.Events.Input.ButtonPressed += Input_ButtonPressed;
             helper.Events.Content.AssetRequested += Content_AssetRequested;
@@ -52,7 +52,7 @@ namespace Skateboard
             helper.ConsoleCommands.Add("skateboard", "Spawn a skateboard.", SpawnSkateboard);
         }
 
-        private void SpawnSkateboard(string arg1 = null, string[] arg2 = null)
+        private static void SpawnSkateboard(string arg1 = null, string[] arg2 = null)
         {
             var s = new Object(Vector2.Zero, boardIndex, false);
             s.modData[boardKey] = "true";
@@ -87,21 +87,17 @@ namespace Skateboard
         private void AddSkateBoardRecipe(IAssetData obj)
         {
             IDictionary<string, string> data = obj.AsDictionary<string, string>().Data;
-            data.Add("Skateboard", $"{Config.CraftingRequirements}/Home/{boardIndex}/true/null");
+            data.Add(SHelper.Translation.Get("name"), $"{Config.CraftingRequirements}/Home/{boardIndex}/true/{Helper.Translation.Get("name")}");
         }
         private void AddSkateBoardInfo(IAssetData obj)
         {
             IDictionary<int, string> data = obj.AsDictionary<int, string>().Data;
-            data.Add(boardIndex, $"Skateboard/5000/-300/Crafting -9/{Helper.Translation.Get("description")}/true/true/0/Skateboard");
-        }
-
-        private void GameLoop_UpdateTicked(object sender, StardewModdingAPI.Events.UpdateTickedEventArgs e)
-        {
+            data.Add(boardIndex, $"{Helper.Translation.Get("name")}/5000/-300/Crafting -9/{Helper.Translation.Get("description")}/true/true/0/{Helper.Translation.Get("name")}");
         }
 
         private void Input_ButtonPressed(object sender, StardewModdingAPI.Events.ButtonPressedEventArgs e)
         {
-            if(Config.ModEnabled && Context.CanPlayerMove && e.Button == Config.RideButton)
+            if(Config.ModEnabled && Context.CanPlayerMove && e.Button == Config.RideButton && !Game1.currentLocation.isActionableTile((int)Game1.currentCursorTile.X, (int)Game1.currentCursorTile.Y, Game1.player))
             {
                 if (Game1.player.modData.ContainsKey(skateboardingKey))
                 {
@@ -116,7 +112,6 @@ namespace Skateboard
                     speed = Vector2.Zero;
                     Game1.player.modData[skateboardingKey] = "true";
                 }
-                Helper.Input.Suppress(e.Button);
             }
         }
 
@@ -140,6 +135,36 @@ namespace Skateboard
                 name: () => "Mod Enabled?",
                 getValue: () => Config.ModEnabled,
                 setValue: value => Config.ModEnabled = value
+            );
+            configMenu.AddKeybind(
+                mod: ModManifest,
+                name: () => "Ride Button",
+                getValue: () => Config.RideButton,
+                setValue: value => Config.RideButton = value
+            );
+            configMenu.AddTextOption(
+                mod: ModManifest,
+                name: () => "Max Speed",
+                getValue: () => Config.MaxSpeed +"",
+                setValue: delegate(string value) { try { Config.MaxSpeed = float.Parse(value, NumberStyles.Any, CultureInfo.InvariantCulture); } catch { } }
+            );
+            configMenu.AddTextOption(
+                mod: ModManifest,
+                name: () => "Accel Rate",
+                getValue: () => Config.Acceleration + "",
+                setValue: delegate(string value) { try { Config.Acceleration = float.Parse(value, NumberStyles.Any, CultureInfo.InvariantCulture); } catch { } }
+            );
+            configMenu.AddTextOption(
+                mod: ModManifest,
+                name: () => "Decel Rate",
+                getValue: () => Config.Deceleration+ "",
+                setValue: delegate(string value) { try { Config.Deceleration = float.Parse(value, NumberStyles.Any, CultureInfo.InvariantCulture); } catch { } }
+            );
+            configMenu.AddTextOption(
+                mod: ModManifest,
+                name: () => "Crafting Reqs",
+                getValue: () => Config.CraftingRequirements + "",
+                setValue: value => Config.CraftingRequirements = value
             );
         }
     }

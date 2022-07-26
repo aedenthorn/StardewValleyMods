@@ -2,6 +2,7 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using StardewModdingAPI;
 using StardewValley;
 using StardewValley.Menus;
 using StardewValley.Objects;
@@ -19,7 +20,6 @@ namespace Skateboard
         public static Vector2 lastPos;
         public static Vector2 lastSpeed;
         public static Vector2 speed;
-
 
         [HarmonyPatch(typeof(Character), nameof(Character.GetShadowOffset))]
         public class Character_GetShadowOffset_Patch
@@ -301,9 +301,9 @@ namespace Skateboard
         {
             public static void Prefix()
             {
-                if (!Config.ModEnabled || Game1.player.craftingRecipes.ContainsKey("Skateboard"))
+                if (!Config.ModEnabled || Game1.player.craftingRecipes.ContainsKey(SHelper.Translation.Get("name")))
                     return;
-                Game1.player.craftingRecipes.Add("Skateboard", 0);
+                Game1.player.craftingRecipes.Add(SHelper.Translation.Get("name"), 0);
             }
         }
         [HarmonyPatch(typeof(CraftingPage), "layoutRecipes")]
@@ -315,12 +315,12 @@ namespace Skateboard
                     return;
                 foreach(var key in __instance.pagesOfCraftingRecipes[__instance.pagesOfCraftingRecipes.Count - 1].Keys.ToList())
                 {
-                    if(__instance.pagesOfCraftingRecipes[__instance.pagesOfCraftingRecipes.Count - 1][key].name == "Skateboard")
+                    if(__instance.pagesOfCraftingRecipes[__instance.pagesOfCraftingRecipes.Count - 1][key].name == SHelper.Translation.Get("name").ToString())
                     {
                         var cc = key;
                         var recipe = __instance.pagesOfCraftingRecipes[__instance.pagesOfCraftingRecipes.Count - 1][key];
                         cc.texture = boardTexture;
-                        cc.sourceRect = new Rectangle(0, 0, 11, 12);
+                        cc.sourceRect = new Rectangle(0, 0, 16, 16);
                         __instance.pagesOfCraftingRecipes[__instance.pagesOfCraftingRecipes.Count - 1].Remove(key);
                         __instance.pagesOfCraftingRecipes[__instance.pagesOfCraftingRecipes.Count - 1][cc] = recipe;
                     }
@@ -332,7 +332,7 @@ namespace Skateboard
         {
             public static void Postfix(CraftingRecipe __instance, ref Item __result)
             {
-                if (!Config.ModEnabled || __instance.name != "Skateboard")
+                if (!Config.ModEnabled || __instance.name != SHelper.Translation.Get("name").ToString())
                     return;
                 __result.modData[boardKey] = "true";
             }
