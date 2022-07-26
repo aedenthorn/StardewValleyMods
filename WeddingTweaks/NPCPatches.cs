@@ -18,6 +18,8 @@ namespace WeddingTweaks
                 if (questionAndAnswer.StartsWith("WeddingWitness_"))
                 {
                     string name = questionAndAnswer.Substring("WeddingWitness_".Length);
+                    if (!Game1.player.friendshipData.TryGetValue(name, out Friendship f))
+                        return true;
                     string dialogue;
                     float chance;
                     WeddingData data = null;
@@ -28,9 +30,9 @@ namespace WeddingTweaks
                     }
                     else
                     {
-                        chance = Config.WitnessAcceptPercent / 100f + Config.WitnessAcceptHeartFactorPercent / 100f * Game1.player.friendshipData[name].Points / (14f * 250);
+                        chance = Config.WitnessAcceptPercent / 100f + Config.WitnessAcceptHeartFactorPercent / 100f * f.Points / (14f * 250);
                     }
-                    SMonitor.Log($"accept percent chance: {chance * 100}: {Config.WitnessAcceptPercent / 100f} + {Config.WitnessAcceptHeartFactorPercent / 100f * Game1.player.friendshipData[name].Points / (14f * 250)}; points {Game1.player.friendshipData[name].Points}/{14 * 250}");
+                    SMonitor.Log($"accept percent chance: {chance * 100}: {Config.WitnessAcceptPercent / 100f} + {Config.WitnessAcceptHeartFactorPercent / 100f * f.Points / (14f * 250)}; points {f.Points}/{14 * 250}");
                     if(Game1.random.NextDouble() <= chance)
                     {
                         SMonitor.Log($"Setting witness to {name}");

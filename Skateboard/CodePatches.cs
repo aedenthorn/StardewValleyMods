@@ -301,9 +301,9 @@ namespace Skateboard
         {
             public static void Prefix()
             {
-                if (!Config.ModEnabled || Game1.player.craftingRecipes.ContainsKey(SHelper.Translation.Get("name")))
+                if (!Config.ModEnabled || Game1.player.craftingRecipes.ContainsKey("Skateboard"))
                     return;
-                Game1.player.craftingRecipes.Add(SHelper.Translation.Get("name"), 0);
+                Game1.player.craftingRecipes.Add("Skateboard", 0);
             }
         }
         [HarmonyPatch(typeof(CraftingPage), "layoutRecipes")]
@@ -315,7 +315,7 @@ namespace Skateboard
                     return;
                 foreach(var key in __instance.pagesOfCraftingRecipes[__instance.pagesOfCraftingRecipes.Count - 1].Keys.ToList())
                 {
-                    if(__instance.pagesOfCraftingRecipes[__instance.pagesOfCraftingRecipes.Count - 1][key].name == SHelper.Translation.Get("name").ToString())
+                    if(__instance.pagesOfCraftingRecipes[__instance.pagesOfCraftingRecipes.Count - 1][key].name == "Skateboard")
                     {
                         var cc = key;
                         var recipe = __instance.pagesOfCraftingRecipes[__instance.pagesOfCraftingRecipes.Count - 1][key];
@@ -332,7 +332,7 @@ namespace Skateboard
         {
             public static void Postfix(CraftingRecipe __instance, ref Item __result)
             {
-                if (!Config.ModEnabled || __instance.name != SHelper.Translation.Get("name").ToString())
+                if (!Config.ModEnabled || __instance.name != "Skateboard")
                     return;
                 __result.modData[boardKey] = "true";
             }

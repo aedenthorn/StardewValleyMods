@@ -87,7 +87,7 @@ namespace Skateboard
         private void AddSkateBoardRecipe(IAssetData obj)
         {
             IDictionary<string, string> data = obj.AsDictionary<string, string>().Data;
-            data.Add(SHelper.Translation.Get("name"), $"{Config.CraftingRequirements}/Home/{boardIndex}/true/{Helper.Translation.Get("name")}");
+            data.Add("Skateboard", $"{Config.CraftingRequirements}/Home/{boardIndex}/true/{Helper.Translation.Get("name")}");
         }
         private void AddSkateBoardInfo(IAssetData obj)
         {
