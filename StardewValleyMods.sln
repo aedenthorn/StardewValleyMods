@@ -353,6 +353,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Skateboard", "Skateboard\Sk
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "KrobusRoommateStore", "KrobusRoommateStore\KrobusRoommateStore.csproj", "{9350AC1E-F6E3-48E1-98F0-A1A2AE8C3D9A}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CatalogueFilter", "CatalogueFilter\CatalogueFilter.csproj", "{0990E06A-1F38-4833-B86A-9EBBE89A0EEC}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -1729,6 +1731,14 @@ Global
 		{9350AC1E-F6E3-48E1-98F0-A1A2AE8C3D9A}.Release|Any CPU.Build.0 = Release|Any CPU
 		{9350AC1E-F6E3-48E1-98F0-A1A2AE8C3D9A}.Release|x86.ActiveCfg = Release|Any CPU
 		{9350AC1E-F6E3-48E1-98F0-A1A2AE8C3D9A}.Release|x86.Build.0 = Release|Any CPU
+		{0990E06A-1F38-4833-B86A-9EBBE89A0EEC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0990E06A-1F38-4833-B86A-9EBBE89A0EEC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0990E06A-1F38-4833-B86A-9EBBE89A0EEC}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{0990E06A-1F38-4833-B86A-9EBBE89A0EEC}.Debug|x86.Build.0 = Debug|Any CPU
+		{0990E06A-1F38-4833-B86A-9EBBE89A0EEC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0990E06A-1F38-4833-B86A-9EBBE89A0EEC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0990E06A-1F38-4833-B86A-9EBBE89A0EEC}.Release|x86.ActiveCfg = Release|Any CPU
+		{0990E06A-1F38-4833-B86A-9EBBE89A0EEC}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
