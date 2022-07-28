@@ -21,6 +21,11 @@ namespace PlannedParenthood
             SMonitor.Log($"Got {names.Count} spouses");
             for (int i = names.Count - 1; i >= 0; i--)
             {
+                if(Game1.player.friendshipData[names[i]].DaysUntilBirthing >= 0)
+                {
+                    SMonitor.Log($"Found existing birth event with {names[0]}, preventing birth questions", LogLevel.Debug);
+                    return new List<string>();
+                }
                 var npc = Game1.getCharacterFromName(names[i], true);
                 if (npc is null || (Config.InBed && !npc.isSleeping.Value))
                     names.RemoveAt(i);
@@ -30,7 +35,12 @@ namespace PlannedParenthood
                 if (kvp.Value?.IsMarried() == true)
                 {
                     Farmer spouse = Game1.getFarmer((kvp.Key.Farmer1 == Game1.player.UniqueMultiplayerID ? kvp.Key.Farmer2 : kvp.Key.Farmer1));
-                    if (spouse != null && kvp.Value.NextBirthingDate is null)
+                    if (kvp.Value.NextBirthingDate is not null)
+                    {
+                        SMonitor.Log($"Found existing birth event with {spouse.Name}, preventing birth questions", LogLevel.Debug);
+                        return new List<string>();
+                    }
+                    if (spouse != null)
                     {
                         SMonitor.Log($"Adding PC spouse {spouse.Name} to list");
                         names.Add(spouse.Name);

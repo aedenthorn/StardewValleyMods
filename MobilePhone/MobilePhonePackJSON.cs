@@ -47,6 +47,8 @@ namespace MobilePhone
         public List<EventFork> forks;
         public bool CanInvite(NPC npc)
         {
+            if (npc is null || Game1.player is null)
+                return false;
             if(incompatibleMods != null)
             {
                 foreach(string mod in incompatibleMods)
@@ -63,17 +65,19 @@ namespace MobilePhone
                         return false;
                 }
             }
-            if (date && !Game1.player.friendshipData[npc.Name].IsDating() && !Game1.player.friendshipData[npc.Name].IsEngaged() && !Game1.player.friendshipData[npc.Name].IsMarried())
+            if (!Game1.player.friendshipData.TryGetValue(npc.Name, out Friendship f))
                 return false;
-            if (!allowMarried && (Game1.player.friendshipData[npc.Name].IsMarried() || Game1.player.friendshipData[npc.Name].IsEngaged()))
+            if (date &&  !f.IsDating() && !f.IsEngaged() && !f.IsMarried())
                 return false;
-            if (requireMarried && !Game1.player.friendshipData[npc.Name].IsMarried() && !Game1.player.friendshipData[npc.Name].IsEngaged())
+            if (!allowMarried && (f.IsMarried() || f.IsEngaged()))
+                return false;
+            if (requireMarried && !f.IsMarried() && !f.IsEngaged())
                 return false;
             if (allowedNPCs != null && !allowedNPCs.Split(',').Contains(npc.Name))
                 return false;
-            if (Game1.player.friendshipData[npc.Name].Points < minPoints)
+            if (f.Points < minPoints)
                 return false;
-            if (maxPoints != -1 && Game1.player.friendshipData[npc.Name].Points >= maxPoints)
+            if (maxPoints != -1 && f.Points >= maxPoints)
                 return false;
             if (season != null && Game1.currentSeason != season)
                 return false;
