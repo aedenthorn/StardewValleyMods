@@ -255,7 +255,7 @@ namespace MobilePhone
         private void Content_AssetRequested(object sender, StardewModdingAPI.Events.AssetRequestedEventArgs e)
         {
 
-            if (e.NameWithoutLocale.BaseName.Contains("Events") && isInviting)
+            if (e.NameWithoutLocale.BaseName.Contains("Events") && isInviting && invitedNPC is not null)
             {
                 foreach (EventInvite invite in MobilePhoneCall.eventInvites)
                 {

@@ -65,7 +65,7 @@ namespace UtilityGrid
                 Monitor.Log($"Showing grid: {CurrentGrid}");
                 return;
             }
-            if (!ShowingEdit || Game1.player.IsCarrying())
+            if (!ShowingEdit || Game1.player.CurrentItem is StardewValley.Object && (Game1.player.CurrentItem as StardewValley.Object).bigCraftable.Value)
                 return;
             if (e.Button == Config.SwitchTile)
             {
