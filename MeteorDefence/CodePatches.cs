@@ -49,11 +49,11 @@ namespace MeteorDefence
                         while (j <= target.Y + 1f)
                         {
                             Vector2 v = new Vector2(i, j);
+                            j++;
                             if (!f.isTileOpenBesidesTerrainFeatures(v) || !f.isTileOpenBesidesTerrainFeatures(new Vector2(v.X + 1f, v.Y)) || !f.isTileOpenBesidesTerrainFeatures(new Vector2(v.X + 1f, v.Y - 1f)) || !f.isTileOpenBesidesTerrainFeatures(new Vector2(v.X, v.Y - 1f)) || f.doesTileHaveProperty((int)v.X, (int)v.Y, "Water", "Back") != null || f.doesTileHaveProperty((int)v.X + 1, (int)v.Y, "Water", "Back") != null)
                             {
                                 continue;
                             }
-                            j++;
                         }
                         i++;
                     }
