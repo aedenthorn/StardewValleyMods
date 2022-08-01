@@ -2,8 +2,10 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using StardewModdingAPI;
+using StardewModdingAPI.Events;
 using StardewValley;
 using System;
+using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 
@@ -19,7 +21,20 @@ namespace PrismaticFire
 
         public static ModEntry context;
         public static string modKey = "aedenthorn.PrismaticFire";
-        public static Texture2D cursors;
+        public static string dictKey = "aedenthorn.PrismaticFire/dictionary";
+        public static Texture2D cursorsSheet;
+
+        public static Dictionary<string, ColorData> colorDict = new Dictionary<string, ColorData>();
+        public static Dictionary<string, ColorData> builtInColorDict = new Dictionary<string, ColorData>()
+        {
+            { "Prismatic Shard", new ColorData(Color.Red, Color.Blue) },
+            { "Amethyst", new ColorData(Color.Purple) },
+            { "Ruby", new ColorData(Color.Red) },
+            { "Emerald", new ColorData(Color.Green) },
+            { "Diamond", new ColorData(Color.PaleTurquoise) },
+            { "Aquamarine", new ColorData(Color.LightBlue) },
+            { "Topaz", new ColorData(Color.Yellow) }
+        };
 
         /// <summary>The mod entry point, called after the mod is first loaded.</summary>
         /// <param name="helper">Provides simplified APIs for writing mods.</param>
@@ -41,12 +56,22 @@ namespace PrismaticFire
             var harmony = new Harmony(ModManifest.UniqueID);
             harmony.PatchAll();
 
+            helper.Events.Content.AssetRequested += Content_AssetRequested;
+
         }
 
-        private void GameLoop_SaveLoaded(object sender, StardewModdingAPI.Events.SaveLoadedEventArgs e)
+        private void Content_AssetRequested(object sender, AssetRequestedEventArgs e)
         {
-            cursors = new Texture2D(Game1.graphics.GraphicsDevice, Game1.mouseCursors.Width, Game1.mouseCursors.Height);
-            Color[] data = new Color[cursors.Width * cursors.Height];
+            if (e.NameWithoutLocale.IsEquivalentTo(dictKey))
+            {
+                e.LoadFrom(static () => new Dictionary<string, ColorData>(builtInColorDict), AssetLoadPriority.Exclusive);
+            }
+        }
+
+        private void GameLoop_SaveLoaded(object sender, SaveLoadedEventArgs e)
+        {
+            cursorsSheet = new Texture2D(Game1.graphics.GraphicsDevice, Game1.mouseCursors.Width, Game1.mouseCursors.Height);
+            Color[] data = new Color[cursorsSheet.Width * cursorsSheet.Height];
             Game1.mouseCursors.GetData(data);
             for(int i = 0; i < data.Length; i++)
             {
@@ -54,11 +79,17 @@ namespace PrismaticFire
                 byte c = Convert.ToByte((data[i].R + data[i].G + data[i].B) / 3f);
                 data[i] = new Color(c, c, c, data[i].A);
             }
-            cursors.SetData(data);
+            cursorsSheet.SetData(data);
+
+            colorDict = Game1.content.Load<Dictionary<string, ColorData>>(dictKey);
+            if(colorDict.Count > 0)
+            {
+                Monitor.Log($"Loaded {colorDict.Count} custom colors");
+            }
         }
 
 
-        private void GameLoop_GameLaunched(object sender, StardewModdingAPI.Events.GameLaunchedEventArgs e)
+        private void GameLoop_GameLaunched(object sender, GameLaunchedEventArgs e)
         {
             // get Generic Mod Config Menu's API (if it's installed)
             var configMenu = Helper.ModRegistry.GetApi<IGenericModConfigMenuApi>("spacechase0.GenericModConfigMenu");
@@ -129,6 +160,36 @@ namespace PrismaticFire
                 name: () => "   Blue",
                 getValue: () => Config.AmethystColor.B,
                 setValue: value => Config.AmethystColor = new Color(Config.AmethystColor.R, Config.AmethystColor.G, value),
+                min: 0,
+                max: 255
+            );
+            configMenu.AddComplexOption(
+                mod: ModManifest,
+                name: () => "Aquamarine Color",
+                beforeSave: DoNothing,
+                draw: DrawAquamarineText
+            );
+            configMenu.AddNumberOption(
+                mod: ModManifest,
+                name: () => "   Red",
+                getValue: () => Config.AquamarineColor.R,
+                setValue: value => Config.AquamarineColor = new Color(value, Config.AquamarineColor.G, Config.AquamarineColor.B),
+                min: 0,
+                max: 255
+            );
+            configMenu.AddNumberOption(
+                mod: ModManifest,
+                name: () => "   Green",
+                getValue: () => Config.AquamarineColor.G,
+                setValue: value => Config.AquamarineColor = new Color(Config.AquamarineColor.R, value, Config.AquamarineColor.B),
+                min: 0,
+                max: 255
+            );
+            configMenu.AddNumberOption(
+                mod: ModManifest,
+                name: () => "   Blue",
+                getValue: () => Config.AquamarineColor.B,
+                setValue: value => Config.AquamarineColor = new Color(Config.AquamarineColor.R, Config.AquamarineColor.G, value),
                 min: 0,
                 max: 255
             );
@@ -263,6 +324,11 @@ namespace PrismaticFire
             b.DrawString(Game1.dialogueFont, "Amethyst", pos, Config.AmethystColor);
 
         }
+        private void DrawAquamarineText(SpriteBatch b, Vector2 pos)
+        {
+            b.DrawString(Game1.dialogueFont, "Aquamarine", pos, Config.AquamarineColor);
+
+        }
         private void DrawEmeraldText(SpriteBatch b, Vector2 pos)
         {
             b.DrawString(Game1.dialogueFont, "Emerald", pos, Config.EmeraldColor);
@@ -282,6 +348,44 @@ namespace PrismaticFire
         {
             b.DrawString(Game1.dialogueFont, "Diamond", pos, Config.DiamondColor);
 
+        }
+        private static Color GetColor(string which)
+        {
+            Color color = Color.White;
+            if (colorDict.TryGetValue(which, out ColorData data))
+            {
+                if (data.speed > 0)
+                {
+                    color = Utility.Get2PhaseColor(data.startColor, data.endColor, 0, data.speed);
+                }
+                else
+                {
+                    color = data.startColor;
+                }
+                return color;
+            }
+            switch (which)
+            {
+                case "Prismatic Shard":
+                    color = Utility.GetPrismaticColor(0, Config.PrismaticSpeed);
+                    break;
+                case "Amethyst":
+                    color = Config.AmethystColor;
+                    break;
+                case "Aquamarine":
+                    color = Config.AquamarineColor;
+                    break;
+                case "Ruby":
+                    color = Config.RubyColor;
+                    break;
+                case "Emerald":
+                    color = Config.EmeraldColor;
+                    break;
+                case "Topaz":
+                    color = Config.TopazColor;
+                    break;
+            }
+            return color;
         }
     }
 }

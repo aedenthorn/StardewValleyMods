@@ -1,16 +1,16 @@
 ﻿{
-  "Name": "Prismatic Fire",
+  "Name": "Musical Paths",
   "Author": "aedenthorn",
-  "Version": "0.4.0",
-  "Description": "Prismatic Fire.",
-  "UniqueID": "aedenthorn.PrismaticFire",
-  "EntryDll": "PrismaticFire.dll",
+  "Version": "0.1.0",
+  "Description": "Musical Paths.",
+  "UniqueID": "aedenthorn.MusicalPaths",
+  "EntryDll": "MusicalPaths.dll",
   "MinimumApiVersion": "3.15.0",
   "ModUpdater": {
     "Repository": "StardewValleyMods",
     "User": "aedenthorn",
     "Directory": "_releases",
-    "ModFolder": "PrismaticFire"
+    "ModFolder": "MusicalPaths"
   },
   "Dependencies": [
     {
@@ -18,5 +18,5 @@
       "IsRequired": false
     }
   ],
-  "UpdateKeys": [ "Nexus:12931" ]
+  "UpdateKeys": [ "Nexus:13197" ]
 }

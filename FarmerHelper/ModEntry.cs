@@ -4,6 +4,7 @@ using StardewValley;
 using StardewValley.Menus;
 using StardewValley.TerrainFeatures;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Linq;
 
 namespace FarmerHelper
@@ -121,14 +122,23 @@ namespace FarmerHelper
         }
         private void GameLoop_DayStarted(object sender, StardewModdingAPI.Events.DayStartedEventArgs e)
         {
-            Helper.Content.InvalidateCache("Data/ObjectInformation");
+            Helper.GameContent.InvalidateCache("Data/ObjectInformation");
         }
 
         public static string[] seasons = new string[] { "spring", "summer", "fall", "winter" };
-        private static bool EnoughDaysLeft(Crop c)
+        private static bool EnoughDaysLeft(Crop c, HoeDirt hoeDirt)
         {
             if (c.seasonsToGrowIn.Contains(seasons[(Utility.getSeasonNumber(Game1.currentSeason) + 1) % 4]))
                 return true;
+            if(hoeDirt is not null && hoeDirt.fertilizer.Value != 0)
+            {
+                HoeDirt d = new HoeDirt(hoeDirt.state.Value, c);
+                d.currentLocation = hoeDirt.currentLocation;
+                d.currentTileLocation = hoeDirt.currentTileLocation;
+                d.fertilizer.Value = hoeDirt.fertilizer.Value;
+                AccessTools.Method(typeof(HoeDirt), "applySpeedIncreases").Invoke(d, new object[] { Game1.player });
+                c = d.crop;
+            }
             int days = 0;
             for (int i = 0; i < c.phaseDays.Count - 1; i++)
             {

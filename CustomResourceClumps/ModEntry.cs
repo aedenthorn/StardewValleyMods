@@ -72,10 +72,45 @@ namespace CustomResourceClumps
 
             }
 
+            helper.ConsoleCommands.Add("crc", "Custom Resource Clump command.", CRCConsoleCommand);
 
             helper.Events.GameLoop.GameLaunched += GameLoop_GameLaunched;
         }
 
+        private void CRCConsoleCommand(string arg1, string[] arg2)
+        {
+            if(arg2.Length == 0)
+            {
+                Monitor.Log("crc list", LogLevel.Info);
+                Monitor.Log("crc spawn <id> <x> <y>", LogLevel.Info);
+                return;
+            }
+            if (arg2[0] == "list")
+            {
+                foreach(var item in customClumps)
+                {
+                    Monitor.Log($"{item.id} ({item.index})", LogLevel.Info);
+                }
+            }
+            if (arg2[0] == "spawn" && arg2.Length == 4 && int.TryParse(arg2[2], out int x) && int.TryParse(arg2[3], out int y))
+            {
+                CustomResourceClump data;
+                if(int.TryParse(arg2[1], out int idx))
+                {
+                    data = customClumps.Find(c => c.index == idx);
+                }
+                else
+                {
+                    data = customClumps.Find(c => c.id == arg2[1]);
+                }
+                if (data is not null)
+                {
+                    var clump = new ResourceClump(data.index, 2, 2, new Vector2(x, y));
+                    clump.health.Value = data.durability;
+                    Game1.currentLocation.resourceClumps.Add(clump);
+                }
+            }
+        }
 
         private void GameLoop_GameLaunched(object sender, StardewModdingAPI.Events.GameLaunchedEventArgs e)
         {
@@ -88,14 +123,14 @@ namespace CustomResourceClumps
                 {
                     Monitor.Log($"Checking for clumps in mod", LogLevel.Debug);
                     Dictionary<string, Texture2D> modTextures = new Dictionary<string, Texture2D>();
-                    data = Helper.Content.Load<CustomResourceClumpData>("custom_resource_clumps.json", ContentSource.ModFolder);
+                    data = Helper.ModContent.Load<CustomResourceClumpData>("custom_resource_clumps.json");
                     foreach (CustomResourceClump clump in data.clumps)
                     {
                         if (clump.spriteType == "mod")
                         {
                             if (!modTextures.ContainsKey(clump.spritePath))
                             {
-                                modTextures.Add(clump.spritePath, Helper.Content.Load<Texture2D>(clump.spritePath, ContentSource.ModFolder));
+                                modTextures.Add(clump.spritePath, Helper.ModContent.Load<Texture2D>(clump.spritePath));
                             }
                             clump.texture = modTextures[clump.spritePath];
                         }
@@ -103,7 +138,7 @@ namespace CustomResourceClumps
                         {
                             if (!gameTextures.ContainsKey(clump.spritePath))
                             {
-                                gameTextures.Add(clump.spritePath, Helper.Content.Load<Texture2D>(clump.spritePath, ContentSource.GameContent));
+                                gameTextures.Add(clump.spritePath, Helper.ModContent.Load<Texture2D>(clump.spritePath));
                             }
                             clump.texture = gameTextures[clump.spritePath];
                         }
@@ -137,7 +172,7 @@ namespace CustomResourceClumps
                         {
                             if (!modTextures.ContainsKey(clump.spritePath))
                             {
-                                modTextures.Add(clump.spritePath, contentPack.LoadAsset<Texture2D>(clump.spritePath));
+                                modTextures.Add(clump.spritePath, contentPack.ModContent.Load<Texture2D>(clump.spritePath));
                             }
                             clump.texture = modTextures[clump.spritePath];
                         }
@@ -145,7 +180,7 @@ namespace CustomResourceClumps
                         {
                             if (!gameTextures.ContainsKey(clump.spritePath))
                             {
-                                gameTextures.Add(clump.spritePath, Helper.Content.Load<Texture2D>(clump.spritePath, ContentSource.GameContent));
+                                gameTextures.Add(clump.spritePath, Helper.GameContent.Load<Texture2D>(clump.spritePath));
                             }
                             clump.texture = gameTextures[clump.spritePath];
                         }

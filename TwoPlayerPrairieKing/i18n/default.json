@@ -1,4 +1,10 @@
 {
   "coop-game": "Co-op Game",
-  "which-npc": "Play With Who?"
+  "which-npc": "Choose a Partner:",
+  "die": "Play With Who?",
+  "start": "Here they come!",
+  "mid": "Half-way done!",
+  "end": "Beat the level!",
+  "endboss": "Yes! We beat them!",
+  "endgame": "Wow! We beat the game!"
 }

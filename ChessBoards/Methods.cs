@@ -369,7 +369,7 @@ namespace ChessBoards
             }
             if (left + right != 7)
             {
-                SMonitor.Log($"Not on board! left {left}, right {right}", StardewModdingAPI.LogLevel.Warn);
+                //SMonitor.Log($"Not on board! left {left}, right {right}", StardewModdingAPI.LogLevel.Warn);
                 return false;
             }
             for (int i = 1; i < 8; i++)

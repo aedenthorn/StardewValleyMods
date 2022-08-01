@@ -9,6 +9,7 @@ namespace PlantAll
         public bool AllowDiagonal { get; set; } = true;
         public SButton ModButton { get; set; } = SButton.LeftShift;
         public SButton StraightModButton { get; set; } = SButton.LeftControl;
+        public SButton SprinklerModButton { get; set; } = SButton.LeftAlt;
 
     }
 }

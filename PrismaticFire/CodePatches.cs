@@ -16,15 +16,6 @@ namespace PrismaticFire
 {
     public partial class ModEntry
     {
-        public static Dictionary<string, Color> colorDict = new Dictionary<string, Color>()
-        {
-            { "Prismatic Shard", Color.White },
-            { "Amethyst", Color.Purple },
-            { "Ruby", Color.Red },
-            { "Emerald", Color.Green },
-            { "Diamond", Color.PaleTurquoise },
-            { "Topaz", Color.Yellow }
-        };
         [HarmonyPatch(typeof(GameLocation), nameof(GameLocation.checkAction))]
         public class GameLocation_checkAction_Patch
         {
@@ -32,7 +23,7 @@ namespace PrismaticFire
             {
                 if (!Config.ModEnabled || who.ActiveObject is null || !colorDict.ContainsKey(who.ActiveObject.Name)|| !Game1.didPlayerJustRightClick(false))
                     return true;
-                Vector2 vect = new Vector2((float)tileLocation.X, (float)tileLocation.Y);
+                Vector2 vect = new Vector2(tileLocation.X, tileLocation.Y);
                 if (__instance.objects.ContainsKey(vect))
                 {
                     if(__instance.objects[vect] is Torch)
@@ -82,12 +73,12 @@ namespace PrismaticFire
 
                 if (__instance.furniture_type.Value == 14)
                 {
-                    spriteBatch.Draw(cursors, Game1.GlobalToLocal(Game1.viewport, new Vector2(__instance.boundingBox.Center.X - 12, __instance.boundingBox.Center.Y - 64)), new Rectangle?(new Rectangle(276 + (int)((Game1.currentGameTime.TotalGameTime.TotalMilliseconds + x * 3047 + y * 88) % 400.0 / 100.0) * 12, 1985, 12, 11)), color, 0f, Vector2.Zero, 4f, SpriteEffects.None, (__instance.getBoundingBox(new Vector2(x, y)).Bottom - 2) / 10000f + 0.0001f);
-                    spriteBatch.Draw(cursors, Game1.GlobalToLocal(Game1.viewport, new Vector2(__instance.boundingBox.Center.X - 32 - 4, __instance.boundingBox.Center.Y - 64)), new Rectangle?(new Rectangle(276 + (int)((Game1.currentGameTime.TotalGameTime.TotalMilliseconds + x * 2047 + y * 98) % 400.0 / 100.0) * 12, 1985, 12, 11)), color, 0f, Vector2.Zero, 4f, SpriteEffects.None, (__instance.getBoundingBox(new Vector2(x, y)).Bottom - 1) / 10000f + 0.0001f);
+                    spriteBatch.Draw(cursorsSheet, Game1.GlobalToLocal(Game1.viewport, new Vector2(__instance.boundingBox.Center.X - 12, __instance.boundingBox.Center.Y - 64)), new Rectangle?(new Rectangle(276 + (int)((Game1.currentGameTime.TotalGameTime.TotalMilliseconds + x * 3047 + y * 88) % 400.0 / 100.0) * 12, 1985, 12, 11)), color, 0f, Vector2.Zero, 4f, SpriteEffects.None, (__instance.getBoundingBox(new Vector2(x, y)).Bottom - 2) / 10000f + 0.0001f);
+                    spriteBatch.Draw(cursorsSheet, Game1.GlobalToLocal(Game1.viewport, new Vector2(__instance.boundingBox.Center.X - 32 - 4, __instance.boundingBox.Center.Y - 64)), new Rectangle?(new Rectangle(276 + (int)((Game1.currentGameTime.TotalGameTime.TotalMilliseconds + x * 2047 + y * 98) % 400.0 / 100.0) * 12, 1985, 12, 11)), color, 0f, Vector2.Zero, 4f, SpriteEffects.None, (__instance.getBoundingBox(new Vector2(x, y)).Bottom - 1) / 10000f + 0.0001f);
                 }
                 else if (__instance.furniture_type.Value == 16)
                 {
-                    spriteBatch.Draw(cursors, Game1.GlobalToLocal(Game1.viewport, new Vector2(__instance.boundingBox.Center.X - 20, __instance.boundingBox.Center.Y - 105.6f)), new Rectangle?(new Rectangle(276 + (int)((Game1.currentGameTime.TotalGameTime.TotalMilliseconds + x * 3047 + y * 88) % 400.0 / 100.0) * 12, 1985, 12, 11)), color, 0f, Vector2.Zero, 4f, SpriteEffects.None, (__instance.getBoundingBox(new Vector2(x, y)).Bottom - 2) / 10000f + 0.0001f);
+                    spriteBatch.Draw(cursorsSheet, Game1.GlobalToLocal(Game1.viewport, new Vector2(__instance.boundingBox.Center.X - 20, __instance.boundingBox.Center.Y - 105.6f)), new Rectangle?(new Rectangle(276 + (int)((Game1.currentGameTime.TotalGameTime.TotalMilliseconds + x * 3047 + y * 88) % 400.0 / 100.0) * 12, 1985, 12, 11)), color, 0f, Vector2.Zero, 4f, SpriteEffects.None, (__instance.getBoundingBox(new Vector2(x, y)).Bottom - 2) / 10000f + 0.0001f);
                 }
             }
         }
@@ -145,32 +136,9 @@ namespace PrismaticFire
                     color = new Color(c.R, c.G, c.B, color.A);
                 else
                     color = new Color(c.R, c.G, c.B, color.A) * 0.5f;
-                texture = cursors;
+                texture = cursorsSheet;
             }
             spriteBatch.Draw(texture, position, sourceRectangle, color, rotation, origin, scale, effects, layerDepth);
-        }
-        private static Color GetColor(string which)
-        {
-            Color color = Color.White;
-            switch (which)
-            {
-                case "Prismatic Shard":
-                    color = Utility.GetPrismaticColor(0, Config.PrismaticSpeed);
-                    break;
-                case "Amethyst":
-                    color = Config.AmethystColor;
-                    break;
-                case "Ruby":
-                    color = Config.RubyColor;
-                    break;
-                case "Emerald":
-                    color = Config.EmeraldColor;
-                    break;
-                case "Topaz":
-                    color = Config.TopazColor;
-                    break;
-            }
-            return color;
         }
     }
 }

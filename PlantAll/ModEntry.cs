@@ -44,7 +44,7 @@ namespace PlantAll
         }
         private void Display_RenderedWorld(object sender, RenderedWorldEventArgs e)
         {
-            if (Config.EnableMod && Context.IsPlayerFree && Game1.player.CurrentItem?.Category == -74 && (Helper.Input.IsDown(Config.ModButton) || Helper.Input.IsDown(Config.StraightModButton)))
+            if (Config.EnableMod && Context.IsPlayerFree && Game1.player.CurrentItem?.Category == -74 && (Helper.Input.IsDown(Config.ModButton) || Helper.Input.IsDown(Config.StraightModButton) || Helper.Input.IsDown(Config.SprinklerModButton)))
             {
                 Vector2 grabTile = Game1.GetPlacementGrabTile();
                 if (!Game1.player.currentLocation.terrainFeatures.TryGetValue(new Vector2((int)grabTile.X, (int)grabTile.Y), out TerrainFeature f) || f is not HoeDirt || !Utility.playerCanPlaceItemHere(Game1.player.currentLocation, Game1.player.CurrentItem, (int)grabTile.X * 64, (int)grabTile.Y * 64, Game1.player))

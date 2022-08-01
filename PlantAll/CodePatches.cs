@@ -5,15 +5,13 @@ using System.Collections.Generic;
 
 namespace PlantAll
 {
-    /// <summary>The mod entry point.</summary>
     public partial class ModEntry
     {
-
         private static void Utility_tryToPlaceItem_Postfix(GameLocation location, Item item, int x, int y, bool __result)
         {
-            if (!Config.EnableMod || !__result || (!SHelper.Input.IsDown(Config.ModButton) && !SHelper.Input.IsDown(Config.StraightModButton)) || !IsValidItem(item))
+            if (!Config.EnableMod || !__result || (!SHelper.Input.IsDown(Config.ModButton) && !SHelper.Input.IsDown(Config.StraightModButton) && !SHelper.Input.IsDown(Config.SprinklerModButton)) || !IsValidItem(item))
                 return;
-            SMonitor.Log($"Planting all; straight {SHelper.Input.IsDown(Config.StraightModButton)}, full {SHelper.Input.IsDown(Config.ModButton)}");
+            SMonitor.Log($"Planting all; straight {SHelper.Input.IsDown(Config.StraightModButton)}, sprinkler {SHelper.Input.IsDown(Config.SprinklerModButton)}, full {SHelper.Input.IsDown(Config.ModButton)}");
 
             List<Point> placeables = new List<Point>();
             GetPlaceable(x / 64, y / 64, x / 64, y / 64, placeables);
@@ -25,12 +23,11 @@ namespace PlantAll
             {
                 if (!Game1.player.currentLocation.terrainFeatures.TryGetValue(p.ToVector2(), out TerrainFeature t) || t is not HoeDirt)
                     continue;
-                if(((Object)Game1.player.ActiveObject).placementAction(Game1.player.currentLocation, p.X * 64, p.Y * 64, Game1.player))              
+                if(Game1.player.ActiveObject.placementAction(Game1.player.currentLocation, p.X * 64, p.Y * 64, Game1.player))              
                     Game1.player.reduceActiveItemByOne();
                 if (!IsValidItem(Game1.player.ActiveObject) || item.ParentSheetIndex != Game1.player.ActiveObject.ParentSheetIndex)
                     return;
             }
-
         }
 
         private static bool IsValidItem(Item item)
@@ -88,6 +85,20 @@ namespace PlantAll
                         break;
                 }
             }
+            else if (SHelper.Input.IsDown(Config.SprinklerModButton))
+            {
+                var playerTile = Game1.player.getTileLocationPoint();
+                int size = SHelper.Input.IsDown(Config.ModButton) ? 2 : 1;
+                for (int i = playerTile.X - size; i <= playerTile.X + size; i++)
+                {
+                    for (int j = playerTile.Y - size; j <= playerTile.Y + size; j++)
+                    {
+                        if (i == playerTile.X && j == playerTile.Y)
+                            continue;
+                        tiles.Add(new Point(i, j));
+                    }
+                }
+            }
             else if (Config.AllowDiagonal)
             {
                 for (int i = x - 1; i < x + 2; i++)
@@ -125,6 +136,8 @@ namespace PlantAll
                     placeables.Add(tiles[i]);
                 }
             }
+            if (SHelper.Input.IsDown(Config.SprinklerModButton))
+                return;
             foreach (var v in tiles)
             {
                 GetPlaceable(ox, oy, v.X, v.Y, placeables);

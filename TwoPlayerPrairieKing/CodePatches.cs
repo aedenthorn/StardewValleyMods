@@ -3,8 +3,10 @@ using Microsoft.Xna.Framework;
 using Netcode;
 using StardewValley;
 using StardewValley.Minigames;
+using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Reflection.Emit;
 
 namespace TwoPlayerPrairieKing
@@ -170,21 +172,48 @@ namespace TwoPlayerPrairieKing
                     coopName = null;
                     return;
                 }
-                if(AbigailGame.waveTimer - time.ElapsedGameTime.Milliseconds <= 0)
-                {
-                    if(AbigailGame.monsters.Count == 0 && __instance.isSpawnQueueEmpty())
-                        __instance.startAbigailPortrait(1, Game1.content.LoadString("Strings\\StringsFromCSFiles:AbigailGame.cs.11898"));
-                    return;
-                }
+
                 AbigailGame.playingWithAbigail = true;
+                if (__instance.player2BoundingBox.Intersects(__instance.playerBoundingBox))
+                    __instance.player2BoundingBox = Rectangle.Empty;
                 __state = true;
             }
             public static void Postfix(AbigailGame __instance, bool __state)
             {
-                if (!__state)
-                    return;
+                if(coopName is not null)
+                {
+                    if (AbigailGame.monsters.Count == 0 && __instance.isSpawnQueueEmpty())
+                    {
+                        __instance.player2BoundingBox = Rectangle.Empty;
+                    }
+                    else
+                    {
+                        __instance.player2BoundingBox.X = (int)AbigailGame.player2Position.X + AbigailGame.TileSize / 4;
+                        __instance.player2BoundingBox.Y = (int)AbigailGame.player2Position.Y + AbigailGame.TileSize / 4;
+                        __instance.player2BoundingBox.Width = AbigailGame.TileSize / 2;
+                        __instance.player2BoundingBox.Height = AbigailGame.TileSize / 2;
+                    }
+                }
+                
+                /*
+                if(AbigailGame.monsters.Count > 0 && Game1.random.NextDouble() < 0.05)
+                {
+                    AbigailGame.powerups.Add(new AbigailGame.CowboyPowerup(Game1.random.Next(1, 10), AbigailGame.monsters[Game1.random.Next(AbigailGame.monsters.Count)].position.Location, __instance.lootDuration));
+                }
+                */
 
-                AbigailGame.playingWithAbigail = false;
+                if (__state)
+                {
+                    if (__instance.fadethenQuitTimer > 0)
+                    {
+                        __instance.fadethenQuitTimer = 0;
+                        AbigailGame.map[8, 15] = 3;
+                        AbigailGame.map[7, 15] = 3;
+                        AbigailGame.map[9, 15] = 3;
+                    }
+                    AbigailGame.playingWithAbigail = false;
+                }
+
             }
         }
         [HarmonyPatch(typeof(AbigailGame), nameof(AbigailGame.playerDie))]
@@ -227,6 +256,7 @@ namespace TwoPlayerPrairieKing
                 int idx = codes.FindIndex(c => c.opcode == OpCodes.Ldstr && (string)c.operand == "Abigail");
                 if (idx >= 0)
                 {
+                    SMonitor.Log($"switching portrait name");
                     codes[idx].opcode = OpCodes.Call;
                     codes[idx].operand = AccessTools.Method(typeof(ModEntry), nameof(ModEntry.GetCoopName));
                 }
@@ -235,37 +265,101 @@ namespace TwoPlayerPrairieKing
             }
 
         }
+        [HarmonyPatch(typeof(AbigailGame), nameof(AbigailGame.updateAbigail))]
+        public class AbigailGame_updateAbigail_Patch
+        {
+            public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions)
+            {
+                SMonitor.Log($"Transpiling AbigailGame.updateAbigail");
+
+                var codes = new List<CodeInstruction>(instructions);
+                for(int i = 0; i < codes.Count; i++)
+                {
+                    if (codes[i].opcode == OpCodes.Ldsfld && (FieldInfo)codes[i].operand == AccessTools.Field(typeof(AbigailGame), nameof(AbigailGame.powerups)) && codes[i + 2].opcode == OpCodes.Callvirt && ((MethodInfo)codes[i + 2].operand).Name == "RemoveAt")
+                    {
+                        var c = codes[i + 1].Clone();
+                        SMonitor.Log($"adding pickup method");
+                        codes.Insert(i, new CodeInstruction(OpCodes.Call, AccessTools.Method(typeof(ModEntry), nameof(ModEntry.UsePowerUp))));
+                        codes.Insert(i, c);
+                        codes.Insert(i, new CodeInstruction(OpCodes.Ldarg_0));
+                        i += 3;
+                    }
+                }
+
+                return codes.AsEnumerable();
+            }
+
+        }
+
+        private static void UsePowerUp(AbigailGame game, int idx)
+        {
+            if (Config.ModEnabled)
+            {
+                SMonitor.Log($"second player picked up powerup {idx}");
+                game.usePowerup(idx);
+            }
+        }
+
         [HarmonyPatch(typeof(AbigailGame), nameof(AbigailGame.startAbigailPortrait))]
         public class AbigailGame_startAbigailPortrait_Patch
         {
-            public static void Prefix(ref string sayWhat, ref int whichExpression)
+            public static bool Prefix(AbigailGame __instance, ref string sayWhat, ref int whichExpression)
             {
                 if (!Config.ModEnabled || coopName is null)
-                    return;
+                    return true;
+                if (AbigailGame.shootoutLevel && AbigailGame.monsters.Count == 0 && __instance.isSpawnQueueEmpty())
+                    return false;
                 //SMonitor.Log($"{coopName} saying {sayWhat}");
-                string which = "start";
+                string which = "";
                 if (sayWhat == Game1.content.LoadString("Strings\\StringsFromCSFiles:AbigailGame.cs.11898"))
-                    which = "end";
-                else if (sayWhat == Game1.content.LoadString("Strings\\StringsFromCSFiles:AbigailGame.cs.11897"))
-                    which = "mid";
-                else if (sayWhat == Game1.content.LoadString("Strings\\StringsFromCSFiles:AbigailGame.cs.11901") || sayWhat == Game1.content.LoadString("Strings\\StringsFromCSFiles:AbigailGame.cs.11902"))
-                    which = "die";
-                else if(coopName != "Abigail")
                 {
-                    whichExpression = 0;
+                    if (AbigailGame.shootoutLevel)
+                    {
+                        if (AbigailGame.whichWave == 12)
+                            which = "endgame";
+                        else
+                            which = "endboss";
+                    }
+                    else
+                        which = "end";
+                }
+                else if (sayWhat == Game1.content.LoadString("Strings\\StringsFromCSFiles:AbigailGame.cs.11897"))
+                {
+
+                    which = "mid";
+                }
+                else if (sayWhat == Game1.content.LoadString("Strings\\StringsFromCSFiles:AbigailGame.cs.11901") || sayWhat == Game1.content.LoadString("Strings\\StringsFromCSFiles:AbigailGame.cs.11902"))
+                {
+
+                    which = "die";
+                }
+                else if (sayWhat == Game1.content.LoadString("Strings\\StringsFromCSFiles:AbigailGame.cs.11896"))
+                {
+                    which = "start";
+                    if (coopName != "Abigail")
+                        whichExpression = 0;
+                }
+                else
+                {
+                    which = sayWhat;
                 }
 
                 //SMonitor.Log($"which is {which}");
 
                 var dict = Game1.content.Load<Dictionary<string, string>>("Characters\\Dialogue\\" + coopName);
                 if (dict == null)
-                    return;
+                    return true;
                 List<string> keys = dict.Keys.ToList().Where(s => s.StartsWith("TwoPlayerPrairieKing_"+which)).ToList();
                 if (keys.Any())
                 {
                     sayWhat = dict[keys[Game1.random.Next(keys.Count)]];
                     //SMonitor.Log($"{coopName} saying {sayWhat}");
                 }
+                else
+                {
+                    sayWhat = SHelper.Translation.Get(which);
+                }
+                return true;
             }
         }
     }
