@@ -4,11 +4,8 @@ using Microsoft.Xna.Framework.Graphics;
 using StardewModdingAPI;
 using StardewModdingAPI.Events;
 using StardewValley;
-using StardewValley.BellsAndWhistles;
 using StardewValley.Locations;
-using StardewValley.Objects;
 using StardewValley.TerrainFeatures;
-using System.Globalization;
 using System.Linq;
 using xTile.Dimensions;
 using Object = StardewValley.Object;
@@ -16,7 +13,7 @@ using Object = StardewValley.Object;
 namespace Dreamscape
 {
     /// <summary>The mod entry point.</summary>
-    public partial class ModEntry : Mod, IAssetEditor
+    public partial class ModEntry : Mod
     {
 
         public static IMonitor SMonitor;
@@ -41,8 +38,26 @@ namespace Dreamscape
             helper.Events.GameLoop.GameLaunched += GameLoop_GameLaunched;
             helper.Events.GameLoop.SaveLoaded += GameLoop_SaveLoaded;
             helper.Events.GameLoop.DayStarted += GameLoop_DayStarted;
+
+            helper.Events.Content.AssetRequested += Content_AssetRequested;
+
             var harmony = new Harmony(ModManifest.UniqueID);
             harmony.PatchAll();
+        }
+
+        private void Content_AssetRequested(object sender, AssetRequestedEventArgs e)
+        {
+            if (!Config.EnableMod)
+                return;
+            if (e.NameWithoutLocale.IsEquivalentTo("Data/Locations"))
+            {
+                e.Edit(AddLocation);
+            }
+        }
+
+        private void AddLocation(IAssetData obj)
+        {
+            obj.AsDictionary<string, string>().Data["Dreamscape"] = "486 .3 454 .3/486 .3 454 .3/486 .3 454 .3/486 .3 454 .3/-1/-1/-1/-1/386 .1 384 .3 380 .3 378 1";
         }
 
         private void GameLoop_SaveLoaded(object sender, SaveLoadedEventArgs e)
@@ -53,7 +68,7 @@ namespace Dreamscape
             }
             catch
             {
-                palmTreeTexture = Helper.Content.Load<Texture2D>("assets/tree_palm.png");
+                palmTreeTexture = Helper.ModContent.Load<Texture2D>("assets/tree_palm.png");
             }
         }
 
@@ -75,7 +90,7 @@ namespace Dreamscape
                         {
                             location.terrainFeatures.Add(tile, new Tree(6, Config.TreeGrowthStage));
                         }
-                        else if(Game1.random.NextDouble() < Config.ObjectChancePercent / 100f)
+                        else if (Game1.random.NextDouble() < Config.ObjectChancePercent / 100f)
                         {
                             double chance = Game1.random.NextDouble();
                             if (chance < 0.5)
@@ -163,22 +178,5 @@ namespace Dreamscape
             );
         }
 
-        public bool CanEdit<T>(IAssetInfo asset)
-        {
-            if (!Config.EnableMod)
-                return false;
-            if (asset.AssetNameEquals("Data/Locations"))
-                return true;
-
-            return false;
-        }
-        public void Edit<T>(IAssetData asset)
-        {
-            if (asset.AssetNameEquals("Data/Locations"))
-            {
-                var editor = asset.AsDictionary<string, string>();
-                editor.Data["Dreamscape"] = "486 .3 454 .3/486 .3 454 .3/486 .3 454 .3/486 .3 454 .3/-1/-1/-1/-1/386 .1 384 .3 380 .3 378 1";
-            }
-        }
     }
 }

@@ -33,25 +33,11 @@ namespace PetBed
             SMonitor = Monitor;
             SHelper = helper;
             helper.Events.GameLoop.GameLaunched += GameLoop_GameLaunched;
-            //helper.Events.GameLoop.SaveLoaded += GameLoop_SaveLoaded;
+            helper.Events.GameLoop.SaveLoaded += GameLoop_SaveLoaded;
 
 
             var harmony = new Harmony(ModManifest.UniqueID);
-
-            harmony.Patch(
-               original: AccessTools.Method(typeof(Pet), nameof(Pet.warpToFarmHouse)),
-               prefix: new HarmonyMethod(typeof(ModEntry), nameof(ModEntry.Pet_warpToFarmHouse_Prefix))
-            );
-            harmony.Patch(
-               original: AccessTools.Method(typeof(Pet), nameof(Pet.setAtFarmPosition)),
-               prefix: new HarmonyMethod(typeof(ModEntry), nameof(ModEntry.Pet_setAtFarmPosition_Prefix))
-            );
-            harmony.Patch(
-               original: AccessTools.Method(typeof(Pet), nameof(Pet.dayUpdate)),
-               prefix: new HarmonyMethod(typeof(ModEntry), nameof(ModEntry.Pet_dayUpdate_Prefix)),
-               postfix: new HarmonyMethod(typeof(ModEntry), nameof(ModEntry.Pet_dayUpdate_Postfix))
-            );
-
+            harmony.PatchAll();
         }
 
         private void GameLoop_SaveLoaded(object sender, StardewModdingAPI.Events.SaveLoadedEventArgs e)
@@ -214,6 +200,7 @@ namespace PetBed
                         pet.Sprite.CurrentAnimation = null;
                         pet.OnNewBehavior();
                         pet.Sprite.UpdateSourceRect();
+                        pet.isSleeping.Value = true;
                         return true;
                     }
                 }

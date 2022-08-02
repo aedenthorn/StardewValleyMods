@@ -18,7 +18,7 @@ namespace FoodOnTheTable
 		}
 		private static void NPC_performTenMinuteUpdate_Postfix(NPC __instance)
 		{
-			if (!Config.EnableMod || Game1.eventUp || !WantsToEat(__instance))
+			if (!Config.EnableMod || Game1.eventUp || __instance.currentLocation is null || !__instance.isVillager() || !WantsToEat(__instance))
 				return;
 			PlacedFoodData food = GetClosestFood(__instance, __instance.currentLocation);
 			TryToEatFood(__instance, food);

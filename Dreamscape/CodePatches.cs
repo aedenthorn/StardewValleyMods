@@ -165,10 +165,10 @@ namespace Dreamscape
             {
                 if (!Config.EnableMod || !Game1.IsMasterGame)
                     return;
-                mapAssetKey = SHelper.Content.GetActualAssetKey("assets/Dreamscape.tmx");
+                mapAssetKey = SHelper.ModContent.GetInternalAssetName("assets/Dreamscape.tmx").BaseName;
                 GameLocation location = new GameLocation(mapAssetKey, "Dreamscape") { IsOutdoors = false, IsFarm = true, IsGreenhouse = true };
                 Game1.locations.Add(location);
-                SHelper.Content.InvalidateCache("Data/Locations");
+                SHelper.GameContent.InvalidateCache("Data/Locations");
             }
         }
     }

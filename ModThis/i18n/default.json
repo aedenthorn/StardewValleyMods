@@ -1,22 +1,23 @@
 {
-    "welcome": "What do you want to do with {0}?",
-    "pickup": "Pick it up.",
-    "remove": "Remove it.",
-    "rename": "Rename it.",
-    "move": "Move it.",
-    "take": "Take it.",
-    "grow": "Grow it.",
-    "water": "Water it.",
-    "kill": "Kill it.",
-    
-    "what-name": "What do you want to rename it to?",
-    "confirm-remove": "Really remove it from the game?",
-    "confirm-move": "Move in which direction?",
+  "welcome": "What do you want to do with {0}?",
+  "pickup": "Pick it up.",
+  "remove": "Remove it.",
+  "rename": "Rename it.",
+  "move": "Move it.",
+  "take": "Take it.",
+  "grow": "Grow it.",
+  "revive": "Revive it.",
+  "water": "Water it.",
+  "kill": "Kill it.",
 
-    "up": "Up",
-    "down": "Down",
-    "left": "Left",
-    "right": "Right",
+  "what-name": "What do you want to rename it to?",
+  "confirm-remove": "Really remove it from the game?",
+  "confirm-move": "Move in which direction?",
 
-    "cancel": "Cancel",
+  "up": "Up",
+  "down": "Down",
+  "left": "Left",
+  "right": "Right",
+
+  "cancel": "Cancel"
 }
