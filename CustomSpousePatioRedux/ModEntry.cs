@@ -386,7 +386,14 @@ namespace CustomSpousePatioRedux
                     Tile base_tile = baseSpouseAreaTiles[spouse][layer][location];
                     if (map_layer != null)
                     {
-                        map_layer.Tiles[location.X, location.Y] = base_tile;
+                        try
+                        {
+                            map_layer.Tiles[location.X, location.Y] = base_tile;
+                        }
+                        catch(Exception ex)
+                        {
+                            SMonitor.Log($"Error adding tile {spouse} in {l.Name}: {ex}");
+                        }
                     }
                 }
             }

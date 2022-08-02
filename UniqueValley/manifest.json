@@ -1,22 +1,22 @@
 ﻿{
-  "Name": "Food on the Table",
+  "Name": "Unique Valley",
   "Author": "aedenthorn",
-  "Version": "0.3.1",
-  "Description": "FoodOnTheTable.",
-  "UniqueID": "aedenthorn.FoodOnTheTable",
-  "EntryDll": "FoodOnTheTable.dll",
+  "Version": "0.1.0",
+  "Description": "Unique Valley.",
+  "UniqueID": "aedenthorn.UniqueValley",
+  "EntryDll": "UniqueValley.dll",
   "MinimumApiVersion": "3.15.0",
   "ModUpdater": {
     "Repository": "StardewValleyMods",
     "User": "aedenthorn",
     "Directory": "_releases",
-    "ModFolder": "FoodOnTheTable"
+    "ModFolder": "UniqueValley"
   },
-  "UpdateKeys": [ "Nexus:10886" ],
   "Dependencies": [
     {
       "UniqueID": "Platonymous.ModUpdater",
       "IsRequired": false
     }
-  ]
+  ],
+  "UpdateKeys": [ "Nexus:" ]
 }

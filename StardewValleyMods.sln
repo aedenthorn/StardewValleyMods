@@ -359,6 +359,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SDVExplorer", "SDVExplorer\
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MusicalPaths", "MusicalPaths\MusicalPaths.csproj", "{1B9BD0C4-F1AA-4BB2-9A7F-0D27678CBF5E}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "UniqueValley", "UniqueValley\UniqueValley.csproj", "{3FAF55C1-5233-4E96-90DC-A4780652CF2E}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -1759,6 +1761,14 @@ Global
 		{1B9BD0C4-F1AA-4BB2-9A7F-0D27678CBF5E}.Release|Any CPU.Build.0 = Release|Any CPU
 		{1B9BD0C4-F1AA-4BB2-9A7F-0D27678CBF5E}.Release|x86.ActiveCfg = Release|Any CPU
 		{1B9BD0C4-F1AA-4BB2-9A7F-0D27678CBF5E}.Release|x86.Build.0 = Release|Any CPU
+		{3FAF55C1-5233-4E96-90DC-A4780652CF2E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3FAF55C1-5233-4E96-90DC-A4780652CF2E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3FAF55C1-5233-4E96-90DC-A4780652CF2E}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{3FAF55C1-5233-4E96-90DC-A4780652CF2E}.Debug|x86.Build.0 = Debug|Any CPU
+		{3FAF55C1-5233-4E96-90DC-A4780652CF2E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3FAF55C1-5233-4E96-90DC-A4780652CF2E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3FAF55C1-5233-4E96-90DC-A4780652CF2E}.Release|x86.ActiveCfg = Release|Any CPU
+		{3FAF55C1-5233-4E96-90DC-A4780652CF2E}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
