@@ -66,14 +66,20 @@ namespace UniqueValley
 			public static bool ignore;
             public static bool Prefix(Character __instance, ref string __result)
             {
-                if (ignore || !Config.ModEnabled || __instance is not NPC || !(__instance as NPC).isVillager() || !subDict.TryGetValue(__instance.Name, out string sub))
+                if (ignore || !Config.ModEnabled || __instance is not NPC || !(__instance as NPC).isVillager() || !subDict.TryGetValue(__instance.Name, out SubData sub))
                     return true;
-				NPC n = Game1.getCharacterFromName(sub);
+				if (sub.displayName is not null)
+                {
+					__result = sub.displayName;
+					return false;
+                }
+				NPC n = Game1.getCharacterFromName(sub.name);
 				if (n is null)
 					return true;
 				ignore = true;
 				__result = n.displayName;
 				ignore = false;
+				subDict[__instance.Name].displayName = __result;
 				return false;
 			}
         }
@@ -82,19 +88,23 @@ namespace UniqueValley
         public class Character_Sprite_Patch
         {
 			public static bool ignore;
-            public static bool Prefix(Character __instance, ref AnimatedSprite __result)
+            public static void Postfix(Character __instance, ref AnimatedSprite __result)
             {
-                if (ignore || !Config.ModEnabled || __instance is not NPC ||  !(__instance as NPC).isVillager() || !subDict.TryGetValue(__instance.Name, out string sub))
-                    return true;
-				NPC n = Game1.getCharacterFromName(sub);
-				if (n is null)
-					return true;
+                if (ignore || !Config.ModEnabled || __result is null || __instance is not NPC ||  !(__instance as NPC).isVillager() || !subDict.TryGetValue(__instance.Name, out SubData sub))
+                    return;
+				if (sub.sprite is not null)
+				{
+					__result.spriteTexture = sub.sprite.Texture;
+					__result.textureName.Value = sub.sprite.textureName.Value;
+					__result.loadedTexture = sub.sprite.loadedTexture;
+					return;
+				}
 				ignore = true;
-				__result = n.Sprite;
+				__result.LoadTexture("Characters\\" + NPC.getTextureNameForCharacter(sub.name));
 				ignore = false;
-				return false;
+				subDict[__instance.Name].sprite = __result;
 			}
-        }
+		}
         [HarmonyPatch(typeof(NPC), nameof(NPC.Portrait))]
         [HarmonyPatch(MethodType.Getter)]
         public class NPC_Portrait_Patch
@@ -102,14 +112,20 @@ namespace UniqueValley
 			public static bool ignore;
             public static bool Prefix(NPC __instance, ref Texture2D __result)
             {
-                if (ignore || !Config.ModEnabled || !__instance.isVillager() || !subDict.TryGetValue(__instance.Name, out string sub))
+                if (ignore || !Config.ModEnabled || !__instance.isVillager() || !subDict.TryGetValue(__instance.Name, out SubData sub))
                     return true;
-				NPC n = Game1.getCharacterFromName(sub);
+				if (sub.portrait is not null)
+				{
+					__result = sub.portrait;
+					return false;
+				}
+				NPC n = Game1.getCharacterFromName(sub.name);
 				if (n is null)
 					return true;
 				ignore = true;
 				__result = n.Portrait;
 				ignore = false;
+				subDict[__instance.Name].portrait = __result;
 				return false;
 			}
         }

@@ -23,7 +23,7 @@ namespace UniqueValley
 
         public static string nameKey = "aedenthorn.UniqueValley/name";
 
-        public static Dictionary<string, string> subDict = new Dictionary<string, string>();
+        public static Dictionary<string, SubData> subDict = new Dictionary<string, SubData>();
 
         /// <summary>The mod entry point, called after the mod is first loaded.</summary>
         /// <param name="helper">Provides simplified APIs for writing mods.</param>
@@ -64,7 +64,7 @@ namespace UniqueValley
                         Helper.GameContent.InvalidateCache($"Characters/Dialogue/{c.Name}");
                         if (c.modData.TryGetValue(nameKey, out string sub))
                         {
-                            subDict.Add(c.Name, sub);
+                            subDict.Add(c.Name, new SubData() { name = sub });
                         }
                     }
                 }
@@ -83,8 +83,19 @@ namespace UniqueValley
             var dict = obj.AsDictionary<string, string>().Data;
             foreach (var key in dict.Keys.ToList())
             {
-                foreach (var kvp in subDict)
-                    dict[key] = dict[key].Replace(kvp.Key, kvp.Value);
+                for (int i = 0; i < dict[key].Length; i++)
+                {
+                    foreach (var kvp in subDict)
+                    {
+                        if (dict[key].Substring(i).StartsWith(kvp.Key))
+                        {
+                            dict[key] = dict[key].Substring(0, i) + kvp.Value.name + dict[key].Substring(i + kvp.Key.Length);
+                            i += kvp.Value.name.Length;
+                            break;
+                        }
+
+                    }
+                }
             }
         }
 

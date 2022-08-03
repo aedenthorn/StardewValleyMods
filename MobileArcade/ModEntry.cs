@@ -32,10 +32,10 @@ namespace MobileArcade
             api = Helper.ModRegistry.GetApi<IMobilePhoneApi>("aedenthorn.MobilePhone");
             if (api != null)
             {
-                Texture2D appIcon = Helper.Content.Load<Texture2D>(Path.Combine("assets", "app_icon_prairie.png"));
+                Texture2D appIcon = Helper.ModContent.Load<Texture2D>(Path.Combine("assets", "app_icon_prairie.png"));
                 bool success = api.AddApp(Helper.ModRegistry.ModID + "Prairie", "Prairie King", OpenPrairieKing, appIcon);
                 Monitor.Log($"loaded Prairie King app successfully: {success}", LogLevel.Debug);
-                appIcon = Helper.Content.Load<Texture2D>(Path.Combine("assets", "app_icon_junimo.png"));
+                appIcon = Helper.ModContent.Load<Texture2D>(Path.Combine("assets", "app_icon_junimo.png"));
                 success = api.AddApp(Helper.ModRegistry.ModID + "Junimo", "Junimo Kart", OpenJunimoKart, appIcon);
                 Monitor.Log($"loaded Junimo Kart app successfully: {success}", LogLevel.Debug);
             }

@@ -239,8 +239,14 @@ namespace Skateboard
                                 break;
                         }
                     }
-                    speed.X = Math.Min(Config.MaxSpeed, speed.X);
-                    speed.Y = Math.Min(Config.MaxSpeed, speed.Y);
+                    if(speed.X > 0)
+                        speed.X = Math.Min(Config.MaxSpeed, speed.X);
+                    else
+                        speed.X = Math.Max(-Config.MaxSpeed, speed.X);
+                    if(speed.Y > 0)
+                        speed.Y = Math.Min(Config.MaxSpeed, speed.Y);
+                    else
+                        speed.Y = Math.Max(-Config.MaxSpeed, speed.Y);
                 }
 
 
