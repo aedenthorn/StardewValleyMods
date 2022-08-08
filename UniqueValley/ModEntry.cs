@@ -6,6 +6,7 @@ using StardewValley.Locations;
 using StardewValley.TerrainFeatures;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
 
@@ -73,7 +74,7 @@ namespace UniqueValley
 
         private void Content_AssetRequested(object sender, StardewModdingAPI.Events.AssetRequestedEventArgs e)
         {
-            if (e.Name.StartsWith("Characters/Dialogue/"))
+            if (e.Name.StartsWith("Characters/Dialogue/") || e.Name.StartsWith("Strings/"))
             {
                 e.Edit(ChangeNames, StardewModdingAPI.Events.AssetEditPriority.Late);
             }

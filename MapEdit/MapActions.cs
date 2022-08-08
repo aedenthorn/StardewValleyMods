@@ -171,7 +171,7 @@ namespace MapEdit
             if (!ModEntry.Config.EnableMod || (!force && (!ModEntry.mapCollectionData.mapDataDict.ContainsKey(mapName) || ModEntry.cleanMaps.Contains(mapName))))
                 return;
 
-            ModEntry.SHelper.Content.InvalidateCache("Maps/" + mapName);
+            ModEntry.SHelper.GameContent.InvalidateCache("Maps/" + mapName);
             Game1.player.currentLocation.reloadMap();
         }
         public static bool MapHasTile(Vector2 tileLoc)

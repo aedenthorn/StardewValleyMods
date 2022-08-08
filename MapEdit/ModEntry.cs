@@ -9,7 +9,7 @@ using xTile.Tiles;
 
 namespace MapEdit
 {
-    public class ModEntry : Mod, IAssetEditor
+    public class ModEntry : Mod
     {
         public static ModEntry context;
 
@@ -51,6 +51,8 @@ namespace MapEdit
             Helper.Events.GameLoop.ReturnedToTitle += HelperEvents.GameLoop_ReturnedToTitle;
             Helper.Events.Player.Warped += HelperEvents.Player_Warped;
 
+            Helper.Events.Content.AssetRequested += Content_AssetRequested;
+
             var harmony = new Harmony(ModManifest.UniqueID);
             
             harmony.Patch(
@@ -59,6 +61,76 @@ namespace MapEdit
             );
         }
 
+        private void Content_AssetRequested(object sender, StardewModdingAPI.Events.AssetRequestedEventArgs e)
+        {
+            if (!Config.EnableMod)
+                return;
+
+            if (e.NameWithoutLocale.StartsWith("Maps"))
+            {
+                foreach (string name in mapCollectionData.mapDataDict.Keys)
+                {
+                    if (e.NameWithoutLocale.IsEquivalentTo("Maps/" + name))
+                    {
+                        e.Edit(delegate (IAssetData idata)
+                        {
+                            Monitor.Log("Editing map " + e.Name);
+                            var mapData = idata.AsMap();
+                            MapData data = mapCollectionData.mapDataDict[name];
+                            int count = 0;
+                            foreach (var kvp in data.tileDataDict)
+                            {
+                                foreach (Layer layer in mapData.Data.Layers)
+                                {
+                                    if (layer.Id == "Paths")
+                                        continue;
+                                    try
+                                    {
+                                        layer.Tiles[(int)kvp.Key.X, (int)kvp.Key.Y] = null;
+                                    }
+                                    catch
+                                    {
+
+                                    }
+                                }
+                                foreach (var kvp2 in kvp.Value.tileDict)
+                                {
+                                    try
+                                    {
+                                        List<StaticTile> tiles = new List<StaticTile>();
+                                        for (int i = 0; i < kvp2.Value.tiles.Count; i++)
+                                        {
+                                            TileInfo tile = kvp2.Value.tiles[i];
+                                            tiles.Add(new StaticTile(mapData.Data.GetLayer(kvp2.Key), mapData.Data.GetTileSheet(tile.tileSheet), tile.blendMode, tile.tileIndex));
+                                            foreach (var prop in kvp2.Value.tiles[i].properties)
+                                            {
+                                                tiles[i].Properties[prop.Key] = prop.Value;
+                                            }
+                                        }
+
+                                        if (kvp2.Value.tiles.Count == 1)
+                                        {
+                                            mapData.Data.GetLayer(kvp2.Key).Tiles[(int)kvp.Key.X, (int)kvp.Key.Y] = tiles[0];
+                                        }
+                                        else
+                                        {
+                                            mapData.Data.GetLayer(kvp2.Key).Tiles[(int)kvp.Key.X, (int)kvp.Key.Y] = new AnimatedTile(mapData.Data.GetLayer(kvp2.Key), tiles.ToArray(), kvp2.Value.frameInterval);
+                                        }
+                                        count++;
+                                    }
+                                    catch
+                                    {
+
+                                    }
+                                }
+                            }
+                            Monitor.Log($"Added {count} custom tiles to map {name}");
+                        });
+                        cleanMaps.Add(name);
+                    }
+                }
+            }
+        }
         private static bool pressSwitchToolButton_Prefix()
         {
             if (!Config.EnableMod || !Context.IsPlayerFree || Game1.input.GetMouseState().ScrollWheelValue == Game1.oldMouseState.ScrollWheelValue || !modActive || copiedTileLoc.X < 0)
@@ -67,86 +139,6 @@ namespace MapEdit
             ModActions.SwitchTile(Game1.input.GetMouseState().ScrollWheelValue - Game1.oldMouseState.ScrollWheelValue > 0);
 
             return false;
-        }
-        public bool CanEdit<T>(IAssetInfo asset)
-        {
-            if (!Config.EnableMod)
-                return false;
-
-            if (asset.AssetName.StartsWith("Maps"))
-            {
-                foreach (string name in mapCollectionData.mapDataDict.Keys)
-                {
-                    if (asset.AssetNameEquals("Maps/"+name))
-                    {
-                        return true;
-                    }
-                }
-            }
-
-            return false;
-        }
-
-        public void Edit<T>(IAssetData asset)
-        {
-            foreach (string name in mapCollectionData.mapDataDict.Keys)
-            {
-                if (asset.AssetNameEquals("Maps/" + name))
-                {
-                    Monitor.Log("Editing map " + asset.AssetName);
-                    var mapData = asset.AsMap();
-                    MapData data = mapCollectionData.mapDataDict[name];
-                    int count = 0;
-                    foreach (var kvp in data.tileDataDict)
-                    {
-                        foreach (Layer layer in mapData.Data.Layers)
-                        {
-                            if (layer.Id == "Paths")
-                                continue;
-                            try
-                            {
-                                layer.Tiles[(int)kvp.Key.X, (int)kvp.Key.Y] = null;
-                            }
-                            catch
-                            {
-
-                            }
-                        }
-                        foreach (var kvp2 in kvp.Value.tileDict)
-                        {
-                            try
-                            {
-                                List<StaticTile> tiles = new List<StaticTile>();
-                                for(int i = 0; i < kvp2.Value.tiles.Count; i++)
-                                {
-                                    TileInfo tile = kvp2.Value.tiles[i];
-                                    tiles.Add(new StaticTile(mapData.Data.GetLayer(kvp2.Key), mapData.Data.GetTileSheet(tile.tileSheet), tile.blendMode, tile.tileIndex));
-                                    foreach (var prop in kvp2.Value.tiles[i].properties)
-                                    {
-                                        tiles[i].Properties[prop.Key] = prop.Value;
-                                    }
-                                }
-
-                                if (kvp2.Value.tiles.Count == 1)
-                                {
-                                    mapData.Data.GetLayer(kvp2.Key).Tiles[(int)kvp.Key.X, (int)kvp.Key.Y] = tiles[0];
-                                }
-                                else
-                                {
-                                    mapData.Data.GetLayer(kvp2.Key).Tiles[(int)kvp.Key.X, (int)kvp.Key.Y] = new AnimatedTile(mapData.Data.GetLayer(kvp2.Key), tiles.ToArray(), kvp2.Value.frameInterval);
-                                }
-                                count++;
-                            }
-                            catch
-                            {
-
-                            }
-                        }
-                    }
-                    Monitor.Log($"Added {count} custom tiles to map {name}");
-                    cleanMaps.Add(name);
-                }
-            }
         }
     }
 }
