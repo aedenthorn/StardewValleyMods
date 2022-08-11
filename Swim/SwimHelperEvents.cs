@@ -1018,7 +1018,9 @@ namespace Swim
             if (!ModEntry.myButtonDown.Value || Game1.player.millisecondsPlayed - lastJump.Value < 250 || SwimUtils.IsMapUnderwater(Game1.player.currentLocation.Name))
                 return;
 
-            if (Helper.Input.IsDown(SButton.MouseLeft) && !Game1.player.swimming.Value && (Game1.player.CurrentTool is WateringCan || Game1.player.CurrentTool is FishingRod))
+            // !IMP: Conditions with hand tools (i.e. rods), must be placed here.
+            if ((Helper.Input.IsDown(SButton.MouseLeft) && !Game1.player.swimming.Value && (Game1.player.CurrentTool is WateringCan || Game1.player.CurrentTool is FishingRod)) ||
+                (Helper.Input.IsDown(SButton.MouseRight) && !Game1.player.swimming.Value && Game1.player.CurrentTool is MeleeWeapon))
                 return;
 
             List<Vector2> tiles = SwimUtils.GetTilesInDirection(5);
