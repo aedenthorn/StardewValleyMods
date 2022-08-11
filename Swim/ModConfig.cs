@@ -43,18 +43,26 @@ namespace Swim
             SwimKey = SButton.J;
             SwimSuitKey = SButton.K;
             DiveKey = SButton.H;
+            ManualJumpButton = SButton.MouseRight;
+
             EnableMod = true;
             ReadyToSwim = true;
+            ShowOxygenBar = true;
             SwimSuitAlways = false;
+            EnableClickToSwim = true;
+            BreatheSound = true;
+            SwimRestoresVitals = false;
+
             JumpTimeInMilliseconds = 500;
             OxygenMult = 2;
             BubbleMult = 1;
+
             AllowActionsWhileInSwimsuit = true;
             AllowRunningWhileInSwimsuit = false;
+
             AddFishies = true;
             AddCrabs = true;
-            BreatheSound = true;
-            EnableClickToSwim = true;
+
             MineralPerThousandMin = 10;
             MineralPerThousandMax = 30;
             CrabsPerThousandMin = 1;
@@ -68,9 +76,6 @@ namespace Swim
             OceanForagePerThousandMax = 10;
             MinOceanChests = 0;
             MaxOceanChests = 3;
-            SwimRestoresVitals = false;
-            ManualJumpButton = SButton.MouseLeft;
-            ShowOxygenBar = true;
         }
     }
 }
