@@ -9,6 +9,7 @@ namespace Swim
         public bool ReadyToSwim { get; set; }
         public bool SwimSuitAlways { get; set; }
         public bool NoAutoSwimSuit { get; set; }
+        public bool ShowOxygenBar { get; set; }
         public int JumpTimeInMilliseconds { get; set; }
         public SButton SwimKey{ get; set; }
         public SButton SwimSuitKey { get; set; }
@@ -69,6 +70,7 @@ namespace Swim
             MaxOceanChests = 3;
             SwimRestoresVitals = false;
             ManualJumpButton = SButton.MouseLeft;
+            ShowOxygenBar = true;
         }
     }
 }

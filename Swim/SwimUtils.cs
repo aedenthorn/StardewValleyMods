@@ -122,13 +122,15 @@ namespace Swim
 
         public static void CheckIfMyButtonDown()
         {
-            if (Game1.player == null || Game1.player.currentLocation == null || !Config.ReadyToSwim || Game1.player.currentLocation.waterTiles == null || !Context.IsPlayerFree || Helper.Input.IsDown(SButton.LeftShift))
+            // !IMP: Base conditions to prevent from swimming placed here.
+            if (Game1.player == null || Game1.player.currentLocation == null || Game1.player.currentLocation.waterTiles == null || !Context.IsPlayerFree || Helper.Input.IsDown(SButton.LeftShift) || 
+                Game1.player.isRidingHorse())
             {
                 ModEntry.myButtonDown.Value = false;
                 return;
             }
 
-            if (Game1.isOneOfTheseKeysDown(
+            if (!Config.ReadyToSwim && Game1.isOneOfTheseKeysDown(
                 Game1.input.GetKeyboardState(), Game1.options.moveUpButton) ||
                 (Game1.options.gamepadControls && ((double)Game1.input.GetGamePadState().ThumbSticks.Left.Y > 0.25 || Game1.input.GetGamePadState().IsButtonDown(Buttons.DPadUp))) ||
                 Game1.isOneOfTheseKeysDown(Game1.input.GetKeyboardState(), Game1.options.moveDownButton) ||
