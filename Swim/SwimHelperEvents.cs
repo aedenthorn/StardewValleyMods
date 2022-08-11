@@ -33,7 +33,7 @@ namespace Swim
 
         public static readonly PerScreen<bool> isJumping = new PerScreen<bool>(() => false);
         public static readonly PerScreen<Vector2> startJumpLoc = new PerScreen<Vector2>();
-        public static readonly PerScreen<Vector2> endJumpLoc = new PerScreen<Vector2>();     
+        public static readonly PerScreen<Vector2> endJumpLoc = new PerScreen<Vector2>();
         public static readonly PerScreen<ulong> lastJump = new PerScreen<ulong>(() => 0);
         public static readonly PerScreen<ulong> lastProjectile = new PerScreen<ulong>(() => 0);
         public static readonly PerScreen<int> abigailTicks = new PerScreen<int>();
@@ -77,7 +77,7 @@ namespace Swim
 
 
                 Game1.player.changeOutOfSwimSuit();
-                if(Game1.player.hat.Value != null && Game1.player.hat.Value.ParentSheetIndex != 0)
+                if (Game1.player.hat.Value != null && Game1.player.hat.Value.ParentSheetIndex != 0)
                     Game1.player.addItemToInventory(Game1.player.hat.Value);
                 Game1.player.hat.Value = new Hat(0);
                 Game1.player.doEmote(9);
@@ -112,9 +112,9 @@ namespace Swim
 
         public static void GameLoop_Saving(object sender, SavingEventArgs e)
         {
-            foreach(var l in Game1.locations)
+            foreach (var l in Game1.locations)
             {
-                for(int i = l.characters.Count - 1; i >=0; i--)
+                for (int i = l.characters.Count - 1; i >= 0; i--)
                 {
                     if (l.characters[i] is Fishie || l.characters[i] is BigFishie || l.characters[i] is SeaCrab || l.characters[i] is AbigailMetalHead)
                         l.characters.RemoveAt(i);
@@ -151,7 +151,7 @@ namespace Swim
 
                 try
                 {
-                    ModEntry.scubaFinsID.Value = Helper.Content.Load<Dictionary<int, string>>(@"Data/Boots", ContentSource.GameContent).First(x => x.Value.StartsWith("Scuba Fins")).Key;
+                    ModEntry.scubaFinsID.Value = Helper.GameContent.Load<Dictionary<int, string>>(@"Data/Boots").First(x => x.Value.StartsWith("Scuba Fins")).Key;
                 }
                 catch
                 {
@@ -160,7 +160,7 @@ namespace Swim
                 if (ModEntry.scubaFinsID.Value != -1)
                 {
                     Monitor.Log(string.Format("Swim mod item #3 ID is {0}.", ModEntry.scubaFinsID.Value));
-                    if(Game1.player.boots.Value != null && Game1.player.boots.Value != null && Game1.player.boots.Value.Name == "Scuba Fins" && Game1.player.boots.Value.ParentSheetIndex != ModEntry.scubaFinsID.Value)
+                    if (Game1.player.boots.Value != null && Game1.player.boots.Value != null && Game1.player.boots.Value.Name == "Scuba Fins" && Game1.player.boots.Value.ParentSheetIndex != ModEntry.scubaFinsID.Value)
                     {
                         Game1.player.boots.Value = new Boots(ModEntry.scubaFinsID.Value);
                     }
@@ -198,7 +198,7 @@ namespace Swim
             if (!SwimUtils.IsWearingScubaGear() && Config.SwimSuitAlways && !Config.NoAutoSwimSuit)
                 Game1.player.changeIntoSwimsuit();
 
-            bubbleTexture = Helper.Content.Load<Texture2D>("LooseSprites/temporary_sprites_1", ContentSource.GameContent);
+            bubbleTexture = Helper.GameContent.Load<Texture2D>("LooseSprites/temporary_sprites_1");
         }
 
 
@@ -212,22 +212,22 @@ namespace Swim
                 if ((ticksUnderwater.Value % 100 / Math.Min(100, Config.BubbleMult)) - bubbleOffset.Value == 0)
                 {
                     Game1.playSound("tinyWhip");
-                    ModEntry.bubbles.Value.Add(new Vector2(Game1.player.position.X + Game1.random.Next(-24,25), Game1.player.position.Y - 96));
+                    ModEntry.bubbles.Value.Add(new Vector2(Game1.player.position.X + Game1.random.Next(-24, 25), Game1.player.position.Y - 96));
                     if (ModEntry.bubbles.Value.Count > 100)
                     {
                         ModEntry.bubbles.Value = ModEntry.bubbles.Value.Skip(1).ToList();
                     }
-                    bubbleOffset.Value = Game1.random.Next(30/ Math.Min(100, Config.BubbleMult));
+                    bubbleOffset.Value = Game1.random.Next(30 / Math.Min(100, Config.BubbleMult));
                 }
 
-                for (int k = 0; k < ModEntry.bubbles.Value.Count; k++) 
+                for (int k = 0; k < ModEntry.bubbles.Value.Count; k++)
                 {
                     ModEntry.bubbles.Value[k] = new Vector2(ModEntry.bubbles.Value[k].X, ModEntry.bubbles.Value[k].Y - 2);
                 }
 
                 foreach (Vector2 v in ModEntry.bubbles.Value)
                 {
-                    e.SpriteBatch.Draw(bubbleTexture, v + new Vector2((float)Math.Sin(ticksUnderwater.Value / 20f) * 10f - Game1.viewport.X, -Game1.viewport.Y), new Microsoft.Xna.Framework.Rectangle?(new Microsoft.Xna.Framework.Rectangle(132, 20, 8, 8)), new Color(1,1,1,0.5f), 0f, Vector2.Zero, 4f, SpriteEffects.None, 0.001f);
+                    e.SpriteBatch.Draw(bubbleTexture, v + new Vector2((float)Math.Sin(ticksUnderwater.Value / 20f) * 10f - Game1.viewport.X, -Game1.viewport.Y), new Microsoft.Xna.Framework.Rectangle?(new Microsoft.Xna.Framework.Rectangle(132, 20, 8, 8)), new Color(1, 1, 1, 0.5f), 0f, Vector2.Zero, 4f, SpriteEffects.None, 0.001f);
                 }
                 ticksUnderwater.Value++;
             }
@@ -239,19 +239,19 @@ namespace Swim
 
         public static void Display_RenderedHud(object sender, RenderedHudEventArgs e)
         {
-            if(Game1.player.currentLocation.Name == "Custom_ScubaAbigailCave")
+            if (Game1.player.currentLocation.Name == "Custom_ScubaAbigailCave")
             {
-                if(abigailTicks.Value > 0 && abigailTicks.Value < 30 * 5)
+                if (abigailTicks.Value > 0 && abigailTicks.Value < 30 * 5)
                 {
-                    e.SpriteBatch.Draw(Game1.mouseCursors, new Vector2(Game1.viewport.Width, Game1.viewport.Height) / 2 - new Vector2(78, 31) / 2, new Rectangle?(new Rectangle(353, 1649, 78, 31)), new Color(255,255,255,abigailTicks.Value > 30 * 3 ? (int)Math.Round(255 * (abigailTicks.Value - 90) / 60f) : 255), 0f, Vector2.Zero, 3f, SpriteEffects.None, 0.99f);
+                    e.SpriteBatch.Draw(Game1.mouseCursors, new Vector2(Game1.viewport.Width, Game1.viewport.Height) / 2 - new Vector2(78, 31) / 2, new Rectangle?(new Rectangle(353, 1649, 78, 31)), new Color(255, 255, 255, abigailTicks.Value > 30 * 3 ? (int)Math.Round(255 * (abigailTicks.Value - 90) / 60f) : 255), 0f, Vector2.Zero, 3f, SpriteEffects.None, 0.99f);
                 }
-                if (abigailTicks.Value > 0 && abigailTicks.Value < 80000 / 16)
+                if (abigailTicks.Value > 0 && abigailTicks.Value < 80000 / 16 && Config.ShowOxygenBar)
                     SwimUtils.MakeOxygenBar((80000 / 16) - abigailTicks.Value, 80000 / 16);
                 e.SpriteBatch.Draw(ModEntry.OxygenBarTexture.Value, new Vector2((int)Math.Round(Game1.viewport.Width * 0.13f), 100), Color.White);
                 return;
             }
             int maxOx = SwimUtils.MaxOxygen();
-            if (ModEntry.oxygen.Value < maxOx)
+            if (ModEntry.oxygen.Value < maxOx && Config.ShowOxygenBar)
             {
                 SwimUtils.MakeOxygenBar(ModEntry.oxygen.Value, maxOx);
                 e.SpriteBatch.Draw(ModEntry.OxygenBarTexture.Value, new Vector2((int)Math.Round(Game1.viewport.Width * 0.13f), 100), Color.White);
@@ -281,7 +281,7 @@ namespace Swim
                 {
                     Monitor.Log($"Reading content pack: {contentPack.Manifest.Name} {contentPack.Manifest.Version} from {contentPack.DirectoryPath}");
                     DiveMapData data = contentPack.ReadJsonFile<DiveMapData>("content.json");
-                    foreach(DiveMap map in data.Maps)
+                    foreach (DiveMap map in data.Maps)
                     {
                         if (map.Features.Contains("FixWaterTiles") && !ModEntry.changeLocations.ContainsKey(map.Name))
                         {
@@ -306,66 +306,86 @@ namespace Swim
             var configMenu = Helper.ModRegistry.GetApi<IGenericModConfigMenuApi>("spacechase0.GenericModConfigMenu");
             if (configMenu != null)
             {
-
-                // register mod
+                // Register mod.
                 configMenu.Register(
                     mod: ModEntry.context.ModManifest,
                     reset: () => Config = new ModConfig(),
                     save: () => Helper.WriteConfig(Config)
                 );
 
+                #region Region: Basic Options.
+
                 configMenu.AddSectionTitle(
                     mod: ModEntry.context.ModManifest,
-                    text: () => "Basic Options"
+                    text: () => "Basic Options",
+                    tooltip: () => "Basic mod options."
                 );
                 configMenu.AddBoolOption(
                     mod: ModEntry.context.ModManifest,
                     name: () => "Mod Enabled?",
+                    tooltip: () => "Enables and Disables mod.",
                     getValue: () => Config.EnableMod,
                     setValue: value => Config.EnableMod = value
                 );
                 configMenu.AddBoolOption(
                     mod: ModEntry.context.ModManifest,
-                    name: () => "ReadyToSwim",
+                    name: () => "Auto-Swim enabled?",
+                    tooltip: () => "Allow character to jump to the water automatically, when you walk to land edge.",
                     getValue: () => Config.ReadyToSwim,
                     setValue: value => Config.ReadyToSwim = value
                 );
                 configMenu.AddBoolOption(
                     mod: ModEntry.context.ModManifest,
+                    name: () => "ShowOxygenBar",
+                    tooltip: () => "Define, will oxygen bar draw or not, when you dive to the water.",
+                    getValue: () => Config.ShowOxygenBar,
+                    setValue: value => Config.ShowOxygenBar = value
+                );
+                configMenu.AddBoolOption(
+                    mod: ModEntry.context.ModManifest,
                     name: () => "SwimSuitAlways",
+                    tooltip: () => "If set's true, your character will always wear a swimsuit.",
                     getValue: () => Config.SwimSuitAlways,
                     setValue: value => Config.SwimSuitAlways = value
                 );
                 configMenu.AddBoolOption(
                     mod: ModEntry.context.ModManifest,
                     name: () => "NoAutoSwimSuit",
+                    tooltip: () => "If set's false, character will NOT wear a swimsuit automatically, when you enter the water.",
                     getValue: () => Config.NoAutoSwimSuit,
                     setValue: value => Config.NoAutoSwimSuit = value
                 );
                 configMenu.AddBoolOption(
                     mod: ModEntry.context.ModManifest,
                     name: () => "AllowActionsWhileInSwimsuit",
+                    tooltip: () => "Allow you to use items, while you're swimming (may cause some visual bugs).",
                     getValue: () => Config.AllowActionsWhileInSwimsuit,
                     setValue: value => Config.AllowActionsWhileInSwimsuit = value
                 );
                 configMenu.AddBoolOption(
                     mod: ModEntry.context.ModManifest,
                     name: () => "AllowRunningWhileInSwimsuit",
+                    tooltip: () => "Allow you to run, while you're swimming (may cause some visual bugs).",
                     getValue: () => Config.AllowRunningWhileInSwimsuit,
                     setValue: value => Config.AllowRunningWhileInSwimsuit = value
                 );
                 configMenu.AddBoolOption(
                     mod: ModEntry.context.ModManifest,
                     name: () => "EnableClickToSwim",
+                    tooltip: () => "Enables or Disables possibility to manual jump to the water (by clicking certain key).",
                     getValue: () => Config.EnableClickToSwim,
                     setValue: value => Config.EnableClickToSwim = value
                 );
                 configMenu.AddBoolOption(
                     mod: ModEntry.context.ModManifest,
                     name: () => "SwimRestoresVitals",
+                    tooltip: () => "If set's true, your HP and Energy will restore, while you're swimming (like in Bath).",
                     getValue: () => Config.SwimRestoresVitals,
                     setValue: value => Config.SwimRestoresVitals = value
                 );
+                #endregion
+
+                #region Region: Key Binds.
 
                 configMenu.AddSectionTitle(
                     mod: ModEntry.context.ModManifest,
@@ -374,29 +394,35 @@ namespace Swim
 
                 configMenu.AddKeybind(
                     mod: ModEntry.context.ModManifest,
-                    name: () => "Enable Swimming",
+                    name: () => "Enable Auto-Swimming",
+                    tooltip: () => "Enables and Disables auto-swimming option.",
                     getValue: () => Config.SwimKey,
                     setValue: value => Config.SwimKey = value
                 );
                 configMenu.AddKeybind(
                     mod: ModEntry.context.ModManifest,
                     name: () => "Toggle Swimsuit",
+                    tooltip: () => "Change character cloth to swimsuit and vice versa.",
                     getValue: () => Config.SwimSuitKey,
                     setValue: value => Config.SwimSuitKey = value
                 );
                 configMenu.AddKeybind(
                     mod: ModEntry.context.ModManifest,
                     name: () => "Dive",
+                    tooltip: () => "Change character cloth to swimsuit and vice versa.",
                     getValue: () => Config.DiveKey,
                     setValue: value => Config.DiveKey = value
                 );
                 configMenu.AddKeybind(
                     mod: ModEntry.context.ModManifest,
                     name: () => "Manual Jump",
+                    tooltip: () => "Allow you to jump into the water by clicking a certain key.",
                     getValue: () => Config.ManualJumpButton,
                     setValue: value => Config.ManualJumpButton = value
                 );
+                #endregion
 
+                #region Region: Advanced Tweaks.
 
                 configMenu.AddSectionTitle(
                     mod: ModEntry.context.ModManifest,
@@ -405,6 +431,7 @@ namespace Swim
                 configMenu.AddNumberOption(
                     mod: ModEntry.context.ModManifest,
                     name: () => "JumpTimeInMilliseconds",
+                    tooltip: () => "Set's jumping animation time.",
                     getValue: () => Config.JumpTimeInMilliseconds,
                     setValue: value => Config.JumpTimeInMilliseconds = value
                 );
@@ -412,111 +439,130 @@ namespace Swim
                 configMenu.AddNumberOption(
                     mod: ModEntry.context.ModManifest,
                     name: () => "OxygenMult",
+                    tooltip: () => "Set's oxygen multiplier (Energy * Mult = O2).",
                     getValue: () => Config.OxygenMult,
                     setValue: value => Config.OxygenMult = value
                 );
                 configMenu.AddNumberOption(
                     mod: ModEntry.context.ModManifest,
                     name: () => "BubbleMult",
+                    tooltip: () => "Set's quantity multiplier of bubbles.",
                     getValue: () => Config.BubbleMult,
                     setValue: value => Config.BubbleMult = value
                 );
                 configMenu.AddBoolOption(
                     mod: ModEntry.context.ModManifest,
                     name: () => "AddFishies",
+                    tooltip: () => "Allow fishes to spawn in underwater.",
                     getValue: () => Config.AddFishies,
                     setValue: value => Config.AddFishies = value
                 );
                 configMenu.AddBoolOption(
                     mod: ModEntry.context.ModManifest,
                     name: () => "AddCrabs",
+                    tooltip: () => "Allow crabs to spawn in underwater.",
                     getValue: () => Config.AddCrabs,
                     setValue: value => Config.AddCrabs = value
                 );
                 configMenu.AddBoolOption(
                     mod: ModEntry.context.ModManifest,
                     name: () => "BreatheSound",
+                    tooltip: () => "If set's true, while you're underwater you will hear breathe sound.",
                     getValue: () => Config.BreatheSound,
                     setValue: value => Config.BreatheSound = value
                 );
                 configMenu.AddNumberOption(
                     mod: ModEntry.context.ModManifest,
                     name: () => "MineralPerThousandMin",
+                    tooltip: () => "Set's minimal quantity, that can be meet underwater.",
                     getValue: () => Config.MineralPerThousandMin,
                     setValue: value => Config.MineralPerThousandMin = value
                 );
                 configMenu.AddNumberOption(
                     mod: ModEntry.context.ModManifest,
                     name: () => "MineralPerThousandMax",
+                    tooltip: () => "Set's maximal quantity, that can be meet underwater.",
                     getValue: () => Config.MineralPerThousandMax,
                     setValue: value => Config.MineralPerThousandMax = value
                 );
                 configMenu.AddNumberOption(
                     mod: ModEntry.context.ModManifest,
                     name: () => "CrabsPerThousandMin",
+                    tooltip: () => "Set's minimal quantity, that can be meet underwater.",
                     getValue: () => Config.CrabsPerThousandMin,
                     setValue: value => Config.CrabsPerThousandMin = value
                 );
                 configMenu.AddNumberOption(
                     mod: ModEntry.context.ModManifest,
                     name: () => "CrabsPerThousandMax",
+                    tooltip: () => "Set's maximal quantity, that can be meet underwater.",
                     getValue: () => Config.CrabsPerThousandMax,
                     setValue: value => Config.CrabsPerThousandMax = value
                 );
                 configMenu.AddNumberOption(
                     mod: ModEntry.context.ModManifest,
                     name: () => "PercentChanceCrabIsMimic",
+                    tooltip: () => "Set's chance to change crab by the mimic one.",
                     getValue: () => Config.PercentChanceCrabIsMimic,
                     setValue: value => Config.PercentChanceCrabIsMimic = value
                 );
                 configMenu.AddNumberOption(
                     mod: ModEntry.context.ModManifest,
                     name: () => "MinSmolFishies",
+                    tooltip: () => "Set's minimal quantity, that can be meet underwater.",
                     getValue: () => Config.MinSmolFishies,
                     setValue: value => Config.MinSmolFishies = value
                 );
                 configMenu.AddNumberOption(
                     mod: ModEntry.context.ModManifest,
                     name: () => "MaxSmolFishies",
+                    tooltip: () => "Set's maximal quantity, that can be meet underwater.",
                     getValue: () => Config.MaxSmolFishies,
                     setValue: value => Config.MaxSmolFishies = value
                 );
                 configMenu.AddNumberOption(
                     mod: ModEntry.context.ModManifest,
                     name: () => "BigFishiesPerThousandMin",
+                    tooltip: () => "Set's minimal quantity, that can be meet underwater.",
                     getValue: () => Config.BigFishiesPerThousandMin,
                     setValue: value => Config.BigFishiesPerThousandMin = value
                 );
                 configMenu.AddNumberOption(
                     mod: ModEntry.context.ModManifest,
                     name: () => "BigFishiesPerThousandMax",
+                    tooltip: () => "Set's maximal quantity, that can be meet underwater.",
                     getValue: () => Config.BigFishiesPerThousandMax,
                     setValue: value => Config.BigFishiesPerThousandMax = value
                 );
                 configMenu.AddNumberOption(
                     mod: ModEntry.context.ModManifest,
                     name: () => "OceanForagePerThousandMin",
+                    tooltip: () => "Set's minimal quantity, that can be meet underwater.",
                     getValue: () => Config.OceanForagePerThousandMin,
                     setValue: value => Config.OceanForagePerThousandMin = value
                 );
                 configMenu.AddNumberOption(
                     mod: ModEntry.context.ModManifest,
                     name: () => "OceanForagePerThousandMax",
+                    tooltip: () => "Set's maximal quantity, that can be meet underwater.",
                     getValue: () => Config.OceanForagePerThousandMax,
                     setValue: value => Config.OceanForagePerThousandMax = value
                 );
                 configMenu.AddNumberOption(
                     mod: ModEntry.context.ModManifest,
                     name: () => "MinOceanChests",
+                    tooltip: () => "Set's minimal quantity, that can be meet in underwater biome ocean.",
                     getValue: () => Config.MinOceanChests,
                     setValue: value => Config.MinOceanChests = value
                 );
                 configMenu.AddNumberOption(
                     mod: ModEntry.context.ModManifest,
                     name: () => "MaxOceanChests",
+                    tooltip: () => "Set's maximal quantity, that can be meet in underwater biome ocean",
                     getValue: () => Config.MaxOceanChests,
                     setValue: value => Config.MaxOceanChests = value
                 );
+                #endregion
             }
         }
 
@@ -532,7 +578,7 @@ namespace Swim
 
         public static void GameLoop_DayStarted(object sender, DayStartedEventArgs e)
         {
-            foreach(KeyValuePair<string, DiveMap> kvp in ModEntry.diveMaps)
+            foreach (KeyValuePair<string, DiveMap> kvp in ModEntry.diveMaps)
             {
                 GameLocation location = Game1.getLocationFromName(kvp.Key);
                 if (location == null)
@@ -593,7 +639,7 @@ namespace Swim
             }
             if (Game1.getLocationFromName("Custom_ScubaCave") != null && !Game1.player.mailReceived.Contains("ScubaMask"))
             {
-                SwimMaps.AddScubaChest(Game1.getLocationFromName("Custom_ScubaCave"), new Vector2(10,14), "ScubaMask");
+                SwimMaps.AddScubaChest(Game1.getLocationFromName("Custom_ScubaCave"), new Vector2(10, 14), "ScubaMask");
             }
             ModEntry.marinerQuestionsWrongToday.Value = false;
             ModEntry.oxygen.Value = SwimUtils.MaxOxygen();
@@ -601,7 +647,7 @@ namespace Swim
 
         public static void Input_ButtonReleased(object sender, ButtonReleasedEventArgs e)
         {
-            if(Game1.player == null)
+            if (Game1.player == null)
             {
                 ModEntry.myButtonDown.Value = false;
                 return;
@@ -618,7 +664,7 @@ namespace Swim
                 return;
             }
 
-            if(false && e.Button == SButton.Q)
+            if (false && e.Button == SButton.Q)
             {
                 SwimUtils.SeaMonsterSay("The quick brown fox jumped over the slow lazy dog.");
             }
@@ -635,13 +681,13 @@ namespace Swim
 
                 if (resp < 0 || resps == null || resp >= resps.Count || resps[resp] == null)
                     return;
-                Game1.player.currentLocation.lastQuestionKey = ""; 
-                
+                Game1.player.currentLocation.lastQuestionKey = "";
+
                 SwimDialog.OldMarinerDialogue(resps[resp].responseKey);
                 return;
             }
 
-            if(false && e.Button == SButton.Q)
+            if (false && e.Button == SButton.Q)
             {
                 var v1 = Game1.game1;
                 return;
@@ -660,7 +706,7 @@ namespace Swim
 
                 DiveMap dm = ModEntry.diveMaps[Game1.player.currentLocation.Name];
                 DiveLocation diveLocation = null;
-                foreach(DiveLocation dl in dm.DiveLocations)
+                foreach (DiveLocation dl in dm.DiveLocations)
                 {
                     if (dl.GetRectangle().X == -1 || dl.GetRectangle().Contains(loc))
                     {
@@ -683,9 +729,9 @@ namespace Swim
 
                 Monitor.Log($"warping to {diveLocation.OtherMapName}", LogLevel.Debug);
                 SwimUtils.DiveTo(diveLocation);
-                return; 
+                return;
             }
-            
+
             if (e.Button == Config.SwimKey && Game1.activeClickableMenu == null && (!Game1.player.swimming.Value || !Config.ReadyToSwim) && !isJumping.Value)
             {
                 Config.ReadyToSwim = !Config.ReadyToSwim;
@@ -700,7 +746,7 @@ namespace Swim
                 Helper.WriteConfig<ModConfig>(Config);
                 if (!Game1.player.swimming.Value)
                 {
-                    if(!Config.SwimSuitAlways)
+                    if (!Config.SwimSuitAlways)
                         Game1.player.changeOutOfSwimSuit();
                     else
                         Game1.player.changeIntoSwimsuit();
@@ -730,14 +776,15 @@ namespace Swim
                     {
                         if (!SwimUtils.IsWearingScubaGear())
                             ModEntry.oxygen.Value--;
-                        else {
+                        else
+                        {
                             if (ModEntry.oxygen.Value < SwimUtils.MaxOxygen())
                                 ModEntry.oxygen.Value++;
                             if (ModEntry.oxygen.Value < SwimUtils.MaxOxygen())
                                 ModEntry.oxygen.Value++;
                         }
                     }
-                    if(ModEntry.oxygen.Value < 0 && !surfacing.Value)
+                    if (ModEntry.oxygen.Value < 0 && !surfacing.Value)
                     {
                         surfacing.Value = true;
                         Game1.playSound("pullItemFromWater");
@@ -802,13 +849,18 @@ namespace Swim
             }
 
             // only if ready to swim from here on!
+            var readyToAutoSwim = Config.ReadyToSwim;
+            var manualSwim = Helper.Input.IsDown(Config.ManualJumpButton);
 
-            if (!Config.ReadyToSwim || !Context.IsPlayerFree || Game1.player.currentLocation is BeachNightMarket)
+            // !IMP: Conditions, with locations (i.e. locations with restricted swimming), must be checked here.
+            if ((!readyToAutoSwim && !manualSwim) || !Context.IsPlayerFree ||
+                Game1.player.currentLocation is BeachNightMarket || Game1.player.currentLocation is VolcanoDungeon)
             {
                 return;
             }
 
-            if (Game1.player.swimming.Value) {
+            if (Game1.player.swimming.Value)
+            {
                 if (!SwimUtils.IsInWater() && !isJumping.Value)
                 {
                     Monitor.Log("Swimming out of water");
@@ -968,28 +1020,30 @@ namespace Swim
             if (!ModEntry.myButtonDown.Value || Game1.player.millisecondsPlayed - lastJump.Value < 250 || SwimUtils.IsMapUnderwater(Game1.player.currentLocation.Name))
                 return;
 
-            if (Helper.Input.IsDown(SButton.MouseLeft) && !Game1.player.swimming.Value && (Game1.player.CurrentTool is WateringCan || Game1.player.CurrentTool is FishingRod))
+            // !IMP: Conditions with hand tools (i.e. rods), must be placed here.
+            if ((Helper.Input.IsDown(SButton.MouseLeft) && !Game1.player.swimming.Value && (Game1.player.CurrentTool is WateringCan || Game1.player.CurrentTool is FishingRod)) ||
+                (Helper.Input.IsDown(SButton.MouseRight) && !Game1.player.swimming.Value && Game1.player.CurrentTool is MeleeWeapon))
                 return;
 
             List<Vector2> tiles = SwimUtils.GetTilesInDirection(5);
             Vector2 jumpLocation = Vector2.Zero;
-            
+
             double distance = -1;
             int maxDistance = 0;
             switch (Game1.player.FacingDirection)
             {
                 case 0:
                     distance = Math.Abs(Game1.player.position.Y - tiles.Last().Y * Game1.tileSize);
-                    maxDistance = 72;
+                    maxDistance = 144;
                     break;
                 case 2:
                     distance = Math.Abs(Game1.player.position.Y - tiles.Last().Y * Game1.tileSize);
-                    maxDistance = 48;
+                    maxDistance = 96;
                     break;
                 case 1:
                 case 3:
                     distance = Math.Abs(Game1.player.position.X - tiles.Last().X * Game1.tileSize);
-                    maxDistance = 65;
+                    maxDistance = 130;
                     break;
             }
             if (Helper.Input.IsDown(SButton.MouseLeft))
@@ -1011,15 +1065,16 @@ namespace Swim
             }
             //Monitor.Value.Log("Distance: " + distance);
 
-            bool nextToLand = Game1.player.swimming.Value && !Game1.player.currentLocation.isTilePassable(new Location((int)tiles.Last().X, (int)tiles.Last().Y), Game1.viewport) && !SwimUtils.IsWaterTile(tiles[tiles.Count - 2]) && distance < maxDistance;
-            
+            bool nextToLand = Game1.player.swimming.Value && !SwimUtils.IsWaterTile(tiles[tiles.Count - 2]) && distance < maxDistance;
+
+
             bool nextToWater = false;
             try
             {
                 nextToWater = !Game1.player.swimming.Value &&
                     !SwimUtils.IsTilePassable(Game1.player.currentLocation, new Location((int)tiles.Last().X, (int)tiles.Last().Y), Game1.viewport) &&
                     (Game1.player.currentLocation.waterTiles[(int)tiles.Last().X, (int)tiles.Last().Y]
-                        || SwimUtils.IsWaterTile(tiles[tiles.Count - 2])) 
+                        || SwimUtils.IsWaterTile(tiles[tiles.Count - 2]))
                     && distance < maxDistance;
             }
             catch
@@ -1029,11 +1084,10 @@ namespace Swim
 
             //Monitor.Value.Log($"next passable {Game1.player.currentLocation.isTilePassable(new Location((int)tiles.Last().X, (int)tiles.Last().Y), Game1.viewport)} next to land: {nextToLand}, next to water: {nextToWater}");
 
-
-            if (Helper.Input.IsDown(Config.SwimKey) || nextToLand || nextToWater)
+            if (nextToLand || nextToWater)
             {
                 //Monitor.Value.Log("okay to jump");
-                for(int i = 0; i < tiles.Count; i++)
+                for (int i = 0; i < tiles.Count; i++)
                 {
                     Vector2 tileV = tiles[i];
                     bool isWater = false;
@@ -1050,9 +1104,9 @@ namespace Swim
                             jumpLocation = Vector2.Zero;
                         }
                     }
-                    catch(Exception ex)
+                    catch (Exception ex)
                     {
-                        Monitor.Log(""+ex);
+                        Monitor.Log("" + ex);
                     }
                     if (nextToLand && !isWater && isPassable)
                     {
@@ -1072,12 +1126,14 @@ namespace Swim
                 }
             }
 
+            // Monitor.Log($"Current \"JumpLocation\" state: {jumpLocation}. Equals state: {jumpLocation == Vector2.Zero}.");
+
             if (jumpLocation != Vector2.Zero)
             {
                 lastJump.Value = Game1.player.millisecondsPlayed;
                 //Monitor.Value.Log("got swim location");
-                if (Game1.player.swimming.Value) 
-                { 
+                if (Game1.player.swimming.Value)
+                {
                     ModEntry.willSwim.Value = false;
                     Game1.player.swimming.Value = false;
                     Game1.player.freezePause = Config.JumpTimeInMilliseconds;
@@ -1087,9 +1143,9 @@ namespace Swim
                 else
                 {
                     ModEntry.willSwim.Value = true;
-                    if(!SwimUtils.IsWearingScubaGear() && !Config.NoAutoSwimSuit)
+                    if (!SwimUtils.IsWearingScubaGear() && !Config.NoAutoSwimSuit)
                         Game1.player.changeIntoSwimsuit();
-                    
+
                     Game1.player.freezePause = Config.JumpTimeInMilliseconds;
                     Game1.player.currentLocation.playSound("dwop", NetAudio.SoundContext.Default);
                 }
@@ -1106,7 +1162,7 @@ namespace Swim
             Game1.player.CurrentToolIndex = Game1.player.Items.Count;
 
             List<NPC> list = Game1.player.currentLocation.characters.ToList().FindAll((n) => (n is Monster) && (n as Monster).Health <= 0);
-            foreach(NPC n in list)
+            foreach (NPC n in list)
             {
                 Game1.player.currentLocation.characters.Remove(n);
             }
@@ -1123,23 +1179,23 @@ namespace Swim
             }
 
             Vector2 v = Vector2.Zero;
-            float yrt = (float)(1/Math.Sqrt(2));
+            float yrt = (float)(1 / Math.Sqrt(2));
             if (Helper.Input.IsDown(SButton.Up) || Helper.Input.IsDown(SButton.RightThumbstickUp))
             {
-                if(Helper.Input.IsDown(SButton.Right) || Helper.Input.IsDown(SButton.RightThumbstickRight))
+                if (Helper.Input.IsDown(SButton.Right) || Helper.Input.IsDown(SButton.RightThumbstickRight))
                     v = new Vector2(yrt, -yrt);
-                else if(Helper.Input.IsDown(SButton.Left) || Helper.Input.IsDown(SButton.RightThumbstickLeft))
+                else if (Helper.Input.IsDown(SButton.Left) || Helper.Input.IsDown(SButton.RightThumbstickLeft))
                     v = new Vector2(-yrt, -yrt);
-                else 
+                else
                     v = new Vector2(0, -1);
             }
             else if (Helper.Input.IsDown(SButton.Down) || Helper.Input.IsDown(SButton.RightThumbstickDown))
             {
-                if(Helper.Input.IsDown(SButton.Right) || Helper.Input.IsDown(SButton.RightThumbstickRight))
+                if (Helper.Input.IsDown(SButton.Right) || Helper.Input.IsDown(SButton.RightThumbstickRight))
                     v = new Vector2(yrt, yrt);
-                else if(Helper.Input.IsDown(SButton.Left) || Helper.Input.IsDown(SButton.RightThumbstickLeft))
+                else if (Helper.Input.IsDown(SButton.Left) || Helper.Input.IsDown(SButton.RightThumbstickLeft))
                     v = new Vector2(-yrt, yrt);
-                else 
+                else
                     v = new Vector2(0, 1);
             }
             else if (Helper.Input.IsDown(SButton.Right) || Helper.Input.IsDown(SButton.RightThumbstickDown))
@@ -1152,13 +1208,13 @@ namespace Swim
                 float y = Game1.viewport.Y + Game1.getOldMouseY() - Game1.player.position.Y;
                 float dx = Math.Abs(x);
                 float dy = Math.Abs(y);
-                if(y < 0)
+                if (y < 0)
                 {
-                    if(x > 0)
+                    if (x > 0)
                     {
-                        if(dy > dx)
+                        if (dy > dx)
                         {
-                            if (dy-dx > dy / 2)
+                            if (dy - dx > dy / 2)
                                 v = new Vector2(0, -1);
                             else
                                 v = new Vector2(yrt, -yrt);
@@ -1234,7 +1290,7 @@ namespace Swim
 
             if (v != Vector2.Zero && Game1.player.millisecondsPlayed - lastProjectile.Value > 350)
             {
-                Game1.player.currentLocation.projectiles.Add(new AbigailProjectile(1, 383, 0, 0, 0, v.X * 6, v.Y * 6, new Vector2(Game1.player.getStandingX() - 24, Game1.player.getStandingY() - 48), "Cowboy_monsterDie", "Cowboy_gunshot", false, true, Game1.player.currentLocation, Game1.player, true)); 
+                Game1.player.currentLocation.projectiles.Add(new AbigailProjectile(1, 383, 0, 0, 0, v.X * 6, v.Y * 6, new Vector2(Game1.player.getStandingX() - 24, Game1.player.getStandingY() - 48), "Cowboy_monsterDie", "Cowboy_gunshot", false, true, Game1.player.currentLocation, Game1.player, true));
                 lastProjectile.Value = Game1.player.millisecondsPlayed;
             }
 
@@ -1261,7 +1317,7 @@ namespace Swim
 
 
             abigailTicks.Value++;
-            if(abigailTicks.Value > 80000 / 16f)
+            if (abigailTicks.Value > 80000 / 16f)
             {
                 if (Game1.player.currentLocation.characters.ToList().FindAll((n) => (n is Monster)).Count > 0)
                     return;
@@ -1270,7 +1326,7 @@ namespace Swim
                 Game1.player.hat.Value = null;
                 Game1.stopMusicTrack(Game1.MusicContext.Default);
 
-                if(!Game1.player.mailReceived.Contains("ScubaFins"))
+                if (!Game1.player.mailReceived.Contains("ScubaFins"))
                 {
                     Game1.playSound("Cowboy_Secret");
                     SwimMaps.AddScubaChest(Game1.player.currentLocation, new Vector2(8, 8), "ScubaFins");
@@ -1284,7 +1340,7 @@ namespace Swim
                 Game1.player.currentLocation.setMapTile(9, 17, 108, "Back", null);
                 Game1.player.currentLocation.setTileProperty(9, 17, "Back", "Water", "T");
                 Game1.player.currentLocation.removeTile(9, 17, "Buildings");
-                Game1.player.currentLocation.setMapTile(10, 17, 109, "Buildings", null); 
+                Game1.player.currentLocation.setMapTile(10, 17, 109, "Buildings", null);
                 Game1.player.currentLocation.setMapTile(8, 18, 139, "Buildings", null);
                 Game1.player.currentLocation.setMapTile(9, 18, 140, "Buildings", null);
                 Game1.player.currentLocation.setMapTile(10, 18, 141, "Buildings", null);

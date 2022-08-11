@@ -1,16 +1,16 @@
-﻿using Microsoft.Xna.Framework.Input;
-using StardewModdingAPI;
+﻿using StardewModdingAPI;
 
 namespace Swim
 {
     public class ModConfig
     {
-        public bool EnableMod{ get; set; }
+        public bool EnableMod { get; set; }
         public bool ReadyToSwim { get; set; }
         public bool SwimSuitAlways { get; set; }
         public bool NoAutoSwimSuit { get; set; }
+        public bool ShowOxygenBar { get; set; }
         public int JumpTimeInMilliseconds { get; set; }
-        public SButton SwimKey{ get; set; }
+        public SButton SwimKey { get; set; }
         public SButton SwimSuitKey { get; set; }
         public SButton DiveKey { get; set; }
         public int OxygenMult { get; set; }
@@ -42,18 +42,26 @@ namespace Swim
             SwimKey = SButton.J;
             SwimSuitKey = SButton.K;
             DiveKey = SButton.H;
+            ManualJumpButton = SButton.MouseRight;
+
             EnableMod = true;
             ReadyToSwim = true;
+            ShowOxygenBar = true;
             SwimSuitAlways = false;
+            EnableClickToSwim = true;
+            BreatheSound = true;
+            SwimRestoresVitals = false;
+
             JumpTimeInMilliseconds = 500;
             OxygenMult = 2;
             BubbleMult = 1;
+
             AllowActionsWhileInSwimsuit = true;
             AllowRunningWhileInSwimsuit = false;
+
             AddFishies = true;
             AddCrabs = true;
-            BreatheSound = true;
-            EnableClickToSwim = true;
+
             MineralPerThousandMin = 10;
             MineralPerThousandMax = 30;
             CrabsPerThousandMin = 1;
@@ -67,8 +75,6 @@ namespace Swim
             OceanForagePerThousandMax = 10;
             MinOceanChests = 0;
             MaxOceanChests = 3;
-            SwimRestoresVitals = false;
-            ManualJumpButton = SButton.MouseLeft;
         }
     }
 }

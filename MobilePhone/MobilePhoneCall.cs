@@ -147,7 +147,7 @@ namespace MobilePhone
                     }
                 }
             }
-            if (ModEntry.npcAdventureModApi != null && ModEntry.npcAdventureModApi.IsPossibleCompanion(npc) && ModEntry.npcAdventureModApi.CanAskToFollow(npc) && !npc.isSleeping.Value)
+            if (ModEntry.npcAdventureModApi != null && ModEntry.npcAdventureModApi.CanRecruit(Game1.player, npc) && !npc.isSleeping.Value)
             {
                 answers.Add(new Response("PhoneApp_InCall_Recruit", Helper.Translation.Get("recruit")));
             }
@@ -278,7 +278,7 @@ namespace MobilePhone
                 new Response("PhoneApp_InCall_Recruit_Yes", Game1.content.LoadString("Strings\\Lexicon:QuestionDialogue_Yes")),
                 new Response("PhoneApp_InCall_No", Game1.content.LoadString("Strings\\Lexicon:QuestionDialogue_No"))
             };
-            Game1.player.currentLocation.createQuestionDialogue(ModEntry.npcAdventureModApi.LoadString("Strings/Strings:askToFollow", npc.Name), responses, CallDialogueAnswer);
+            Game1.player.currentLocation.createQuestionDialogue(string.Format(Helper.Translation.Get("ask-x-to-followask-x-to-follow"), npc.Name), responses, CallDialogueAnswer);
         }
         private static void BuildOnPhone()
         {
@@ -447,9 +447,9 @@ namespace MobilePhone
             }
 
 
-            if (ModEntry.npcAdventureModApi.CanRecruit(Game1.player, npc))
+            if (ModEntry.npcAdventureModApi.CanRecruit(Game1.player, npc, out string key, out int cd))
             {
-                Game1.drawDialogue(npc, ModEntry.npcAdventureModApi.LoadString($"Dialogue/{npc.Name}:companionAccepted"));
+                Game1.drawDialogue(npc, Game1.content.LoadString(key));
                 Game1.afterDialogues = delegate ()
                 {
                     DoRecruit(npc);
@@ -457,7 +457,7 @@ namespace MobilePhone
             }
             else
             {
-                Game1.drawDialogue(npc, ModEntry.npcAdventureModApi.LoadString($"Dialogue/{npc.Name}:" + (Game1.timeOfDay >= 2200 ? "companionRejectedNight" : "companionRejected")));
+                Game1.drawDialogue(npc, Game1.content.LoadString(key));
                 Game1.afterDialogues = delegate ()
                 {
                     ShowMainCallDialogue(npc);
@@ -486,7 +486,7 @@ namespace MobilePhone
                 return;
             }
 
-            if (ModEntry.npcAdventureModApi.RecruitCompanion(Game1.player, npc))
+            if (ModEntry.npcAdventureModApi.Recruit(Game1.player, npc))
             {
                 if (ModEntry.npcAdventureModApi.IsRecruited(npc))
                 {

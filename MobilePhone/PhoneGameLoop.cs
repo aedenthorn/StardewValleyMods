@@ -218,9 +218,9 @@ namespace MobilePhone
                 Monitor.Log("Testing NpcAdventureModApi...");
                 try
                 {
-                    Monitor.Log($"Possible companions: {ModEntry.npcAdventureModApi.GetPossibleCompanions().Count()}");
-                    Monitor.Log($"Can recruit Abigail: {ModEntry.npcAdventureModApi.IsPossibleCompanion("Abigail")}");
-                    Monitor.Log($"Recruit Abigail: {ModEntry.npcAdventureModApi.IsPossibleCompanion("Abigail") && ModEntry.npcAdventureModApi.RecruitCompanion(Game1.player, Game1.getCharacterFromName("Abigail"))}");
+                    Monitor.Log($"Possible companions: {ModEntry.npcAdventureModApi.GetCompanions().Count()}");
+                    Monitor.Log($"Can recruit Abigail: {ModEntry.npcAdventureModApi.IsValidCompanion("Abigail")}");
+                    //Monitor.Log($"Recruit Abigail: {ModEntry.npcAdventureModApi.IsValidCompanion("Abigail") && ModEntry.npcAdventureModApi.Recruit(Game1.player, Game1.getCharacterFromName("Abigail"))}");
                 }
                 catch (Exception ex)
                 {

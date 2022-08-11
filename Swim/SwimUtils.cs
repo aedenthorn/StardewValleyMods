@@ -122,13 +122,15 @@ namespace Swim
 
         public static void CheckIfMyButtonDown()
         {
-            if (Game1.player == null || Game1.player.currentLocation == null || !Config.ReadyToSwim || Game1.player.currentLocation.waterTiles == null || !Context.IsPlayerFree || Helper.Input.IsDown(SButton.LeftShift))
+            // !IMP: Base conditions to prevent from swimming placed here.
+            if (Game1.player == null || Game1.player.currentLocation == null || Game1.player.currentLocation.waterTiles == null || !Context.IsPlayerFree || Helper.Input.IsDown(SButton.LeftShift) ||
+                Game1.player.isRidingHorse())
             {
                 ModEntry.myButtonDown.Value = false;
                 return;
             }
 
-            if (Game1.isOneOfTheseKeysDown(
+            if (!Config.ReadyToSwim && Game1.isOneOfTheseKeysDown(
                 Game1.input.GetKeyboardState(), Game1.options.moveUpButton) ||
                 (Game1.options.gamepadControls && ((double)Game1.input.GetGamePadState().ThumbSticks.Left.Y > 0.25 || Game1.input.GetGamePadState().IsButtonDown(Buttons.DPadUp))) ||
                 Game1.isOneOfTheseKeysDown(Game1.input.GetKeyboardState(), Game1.options.moveDownButton) ||
@@ -136,7 +138,8 @@ namespace Swim
                 Game1.isOneOfTheseKeysDown(Game1.input.GetKeyboardState(), Game1.options.moveLeftButton) ||
                 (Game1.options.gamepadControls && ((double)Game1.input.GetGamePadState().ThumbSticks.Left.X < -0.25 || Game1.input.GetGamePadState().IsButtonDown(Buttons.DPadLeft))) ||
                 Game1.isOneOfTheseKeysDown(Game1.input.GetKeyboardState(), Game1.options.moveRightButton) ||
-                (Game1.options.gamepadControls && ((double)Game1.input.GetGamePadState().ThumbSticks.Left.X > 0.25 || Game1.input.GetGamePadState().IsButtonDown(Buttons.DPadRight)))) {
+                (Game1.options.gamepadControls && ((double)Game1.input.GetGamePadState().ThumbSticks.Left.X > 0.25 || Game1.input.GetGamePadState().IsButtonDown(Buttons.DPadRight))))
+            {
 
                 ModEntry.myButtonDown.Value = true;
                 return;
@@ -252,7 +255,7 @@ namespace Swim
                 ||
                 (
                     tiles != null
-                    && 
+                    &&
                     (
                         (p.X >= 0 && p.Y >= 0 && tiles.waterTiles.GetLength(0) > p.X && tiles.waterTiles.GetLength(1) > p.Y && tiles[p.X, p.Y])
                         ||
