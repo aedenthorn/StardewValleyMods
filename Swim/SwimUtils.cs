@@ -130,15 +130,26 @@ namespace Swim
                 return;
             }
 
-            if (!Config.ReadyToSwim && Game1.isOneOfTheseKeysDown(
-                Game1.input.GetKeyboardState(), Game1.options.moveUpButton) ||
-                (Game1.options.gamepadControls && ((double)Game1.input.GetGamePadState().ThumbSticks.Left.Y > 0.25 || Game1.input.GetGamePadState().IsButtonDown(Buttons.DPadUp))) ||
-                Game1.isOneOfTheseKeysDown(Game1.input.GetKeyboardState(), Game1.options.moveDownButton) ||
-                (Game1.options.gamepadControls && ((double)Game1.input.GetGamePadState().ThumbSticks.Left.Y < -0.25 || Game1.input.GetGamePadState().IsButtonDown(Buttons.DPadDown))) ||
-                Game1.isOneOfTheseKeysDown(Game1.input.GetKeyboardState(), Game1.options.moveLeftButton) ||
-                (Game1.options.gamepadControls && ((double)Game1.input.GetGamePadState().ThumbSticks.Left.X < -0.25 || Game1.input.GetGamePadState().IsButtonDown(Buttons.DPadLeft))) ||
-                Game1.isOneOfTheseKeysDown(Game1.input.GetKeyboardState(), Game1.options.moveRightButton) ||
-                (Game1.options.gamepadControls && ((double)Game1.input.GetGamePadState().ThumbSticks.Left.X > 0.25 || Game1.input.GetGamePadState().IsButtonDown(Buttons.DPadRight))))
+            if (Config.ReadyToSwim && 
+                    (
+                        Game1.isOneOfTheseKeysDown(Game1.input.GetKeyboardState(), Game1.options.moveUpButton) || 
+                        Game1.isOneOfTheseKeysDown(Game1.input.GetKeyboardState(), Game1.options.moveDownButton) ||
+                        Game1.isOneOfTheseKeysDown(Game1.input.GetKeyboardState(), Game1.options.moveLeftButton) ||
+                        Game1.isOneOfTheseKeysDown(Game1.input.GetKeyboardState(), Game1.options.moveRightButton) ||
+                        (Game1.options.gamepadControls && 
+                            (
+                                Game1.input.GetGamePadState().ThumbSticks.Left.Y > 0.25 || 
+                                Game1.input.GetGamePadState().IsButtonDown(Buttons.DPadUp) ||
+                                Game1.input.GetGamePadState().ThumbSticks.Left.Y < -0.25 || 
+                                Game1.input.GetGamePadState().IsButtonDown(Buttons.DPadDown) ||
+                                Game1.input.GetGamePadState().ThumbSticks.Left.X < -0.25 || 
+                                Game1.input.GetGamePadState().IsButtonDown(Buttons.DPadLeft) ||
+                                Game1.input.GetGamePadState().ThumbSticks.Left.X > 0.25 || 
+                                Game1.input.GetGamePadState().IsButtonDown(Buttons.DPadRight)
+                            )
+                        )
+                    )
+                )
             {
 
                 ModEntry.myButtonDown.Value = true;

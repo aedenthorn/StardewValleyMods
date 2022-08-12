@@ -12,7 +12,11 @@ namespace CustomSpousePatioRedux
     {
         private void GameLoop_Saving(object sender, SavingEventArgs e)
         {
-            Helper.Data.WriteSaveData(saveKey, outdoorAreas);
+
+            if(Game1.player.IsMainPlayer)
+            {
+                Helper.Data.WriteSaveData(saveKey, outdoorAreas);
+            }
         }
         private void GameLoop_ReturnedToTitle(object sender, ReturnedToTitleEventArgs e)
         {
