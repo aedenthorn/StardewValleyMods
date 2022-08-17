@@ -854,7 +854,7 @@ namespace Swim
 
             // !IMP: Conditions, with locations (i.e. locations with restricted swimming), must be checked here.
             if ((!readyToAutoSwim && !manualSwim) || !Context.IsPlayerFree ||
-                Game1.player.currentLocation is BeachNightMarket || Game1.player.currentLocation is VolcanoDungeon)
+                Game1.player.currentLocation is BeachNightMarket || Game1.player.currentLocation is VolcanoDungeon || Game1.player.currentLocation is Caldera)
             {
                 return;
             }
