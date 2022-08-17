@@ -31,14 +31,15 @@ namespace MusicalPaths
                     Vector2 playerPos = farmer.getTileLocation();
                     if (__instance.terrainFeatures.TryGetValue(playerPos, out TerrainFeature f) && f is Flooring && f.modData.TryGetValue(typeKey, out string soundType))
                     {
-                        if (soundType.Equals("Flute Block") && Game1.currentGameTime.TotalGameTime.TotalMilliseconds - int.Parse(f.modData[lastTimeKey]) >= 1000)
-                        {
+                        int.TryParse(f.modData[lastTimeKey], out int lastTime);
+                        if (soundType.Equals("Flute Block") && (Game1.currentGameTime.TotalGameTime.TotalMilliseconds - lastTime >= 1000 || lastTime > Game1.currentGameTime.TotalGameTime.TotalMilliseconds))
+                        { 
                             var sound = Game1.soundBank.GetCue("flute");
                             sound.SetVariable("Pitch", int.Parse(f.modData[whichKey]));
                             sound.Play();
                             f.modData[lastTimeKey] = "" + (int)Game1.currentGameTime.TotalGameTime.TotalMilliseconds;
                         }
-                        else if (soundType.Equals("Drum Block") && Game1.currentGameTime.TotalGameTime.TotalMilliseconds - int.Parse(f.modData[lastTimeKey]) >= 1000)
+                        else if (soundType.Equals("Drum Block") && (Game1.currentGameTime.TotalGameTime.TotalMilliseconds - lastTime >= 1000 || lastTime > Game1.currentGameTime.TotalGameTime.TotalMilliseconds))
                         {
                             var sound = Game1.soundBank.GetCue("drumkit" + int.Parse(f.modData[whichKey]));
                             sound.Play();

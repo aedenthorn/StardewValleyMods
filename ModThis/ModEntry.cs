@@ -582,15 +582,14 @@ namespace ModThis
         private void WaterThis()
         {
             Monitor.Log($"Watering");
-            if (Game1.currentLocation.terrainFeatures[new Vector2(cursorLoc.X, cursorLoc.Y)] is HoeDirt && (Game1.currentLocation.terrainFeatures[new Vector2(cursorLoc.X, cursorLoc.Y)] as HoeDirt).state.Value != 1)
+            if (Game1.currentLocation.terrainFeatures.TryGetValue(new Vector2(cursorLoc.X, cursorLoc.Y), out TerrainFeature f) && f is HoeDirt && (f as HoeDirt).state.Value != 1)
             {
                 (Game1.currentLocation.terrainFeatures[new Vector2((int)cursorLoc.X, (int)cursorLoc.Y)] as HoeDirt).state.Value = 1;
                 Monitor.Log($"Watered crop");
                 return;
             }
 
-            Microsoft.Xna.Framework.Rectangle tileRect = new Microsoft.Xna.Framework.Rectangle((int)cursorLoc.X * 64, (int)cursorLoc.Y * 64, 64, 64);
-
+            Rectangle tileRect = new Rectangle((int)cursorLoc.X * 64, (int)cursorLoc.Y * 64, 64, 64);
 
             foreach (KeyValuePair<Vector2, Object> v in Game1.currentLocation.objects.Pairs)
             {

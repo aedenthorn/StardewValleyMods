@@ -1,7 +1,7 @@
 ﻿{
   "Name": "Musical Paths",
   "Author": "aedenthorn",
-  "Version": "0.1.0",
+  "Version": "0.1.1",
   "Description": "Musical Paths.",
   "UniqueID": "aedenthorn.MusicalPaths",
   "EntryDll": "MusicalPaths.dll",

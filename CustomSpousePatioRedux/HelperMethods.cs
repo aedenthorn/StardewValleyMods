@@ -67,7 +67,9 @@ namespace CustomSpousePatioRedux
             //Monitor.Log($"last question key: {Game1.player?.currentLocation?.lastQuestionKey}");
 
             if (Context.CanPlayerMove && e.Button == Config.PatioWizardKey)
+            {
                 StartWizard();
+            }
             else if (Game1.activeClickableMenu != null && Game1.player?.currentLocation?.lastQuestionKey?.StartsWith("CSP_Wizard_Questions") == true)
             {
 
@@ -83,6 +85,7 @@ namespace CustomSpousePatioRedux
                     return;
                 Monitor.Log($"Answered {Game1.player.currentLocation.lastQuestionKey} with {resps[resp].responseKey}");
 
+                currentPage = 0;
                 CSPWizardDialogue(Game1.player.currentLocation.lastQuestionKey, resps[resp].responseKey);
                 return;
             }

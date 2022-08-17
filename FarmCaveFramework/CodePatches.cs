@@ -17,7 +17,7 @@ namespace FarmCaveFramework
 
             if (!Config.EnableMod || questionKey != "cave")
                 return true;
-            caveChoice = SHelper.Content.Load<Dictionary<string,CaveChoice>>(frameworkPath, ContentSource.GameContent)[answerIds[answerChoice]];
+            caveChoice = SHelper.GameContent.Load<Dictionary<string,CaveChoice>>(frameworkPath)[answerIds[answerChoice]];
             SMonitor.Log($"Chose {caveChoice.choice}, objects {caveChoice.objects.Count}");
             SHelper.Data.WriteSaveData("farm-cave-framework-choice", caveChoice.id);
             if (caveChoice.objects.Count > 0)
@@ -95,7 +95,7 @@ namespace FarmCaveFramework
         {
             if (!Config.EnableMod || Game1.activeClickableMenu != null)
                 return true;
-            Dictionary<string, CaveChoice> choices = SHelper.Content.Load<Dictionary<string, CaveChoice>>(frameworkPath, ContentSource.GameContent);
+            Dictionary<string, CaveChoice> choices = SHelper.GameContent.Load<Dictionary<string, CaveChoice>>(frameworkPath);
             SMonitor.Log($"showing {choices.Count} cave choices");
             List<Response> responses = new List<Response>();
             answerIds.Clear();
