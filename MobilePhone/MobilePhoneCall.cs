@@ -126,7 +126,7 @@ namespace MobilePhone
              */
 
             string normilizedLocationValue = npc.currentLocation.Name.Replace("Custom_", string.Empty);
-            Translation npcLocationResponse = Helper.Translation.Get($"location-{npc.currentLocation.Name}");
+            Translation npcLocationResponse = Helper.Translation.Get($"location-{normilizedLocationValue}");
 
             if (npc.currentLocation is not null && (npc.currentLocation.Name == npc.DefaultMap || npcLocationResponse.HasValue()))
             {
@@ -242,11 +242,20 @@ namespace MobilePhone
                 return;
             }
             var dialogueDic = Game1.content.Load<Dictionary<string, string>>($"Characters/Dialogue/{npc.Name}");
-            string key = npc.currentLocation == Game1.player.currentLocation ? $"location-here" : npc.currentLocation.Name == npc.DefaultMap ? $"location-home" : $"location-{npc.currentLocation.Name}";
+
+            // !Updated code.
+            /* Changes:
+             * 1. Added new variable, to fix problems with "Custom_" prefix in modded locations names.
+             */
+
+            string normalizedLocation = npc.currentLocation.Name.Replace("Custom_", string.Empty);
+            string key = npc.currentLocation == Game1.player.currentLocation ? $"location-here" : npc.currentLocation.Name == npc.DefaultMap ? $"location-home" : $"location-{normalizedLocation}";
             if (dialogueDic == null || !dialogueDic.TryGetValue($"MobilePhone_{key}", out string message))
             {
                 message = Helper.Translation.Get(key);
             }
+            // End update.
+
             Game1.afterDialogues = (Game1.afterFadeFunction)Delegate.Combine(Game1.afterDialogues, new Game1.afterFadeFunction(delegate ()
             {
                 ShowMainCallDialogue(npc);
