@@ -20,9 +20,9 @@ namespace CustomSpouseRooms
     {
         private static Dictionary<string, int> topOfHeadOffsets = new Dictionary<string, int>();
 
-        public static Dictionary<string, NPC> GetSpouses(Farmer farmer, int all)
+        public static Dictionary<string, object> GetSpouses(Farmer farmer, int all)
         {
-            Dictionary<string, NPC> spouses = new Dictionary<string, NPC>();
+            Dictionary<string, object> spouses = new Dictionary<string, object>();
             if (all < 0)
             {
                 NPC ospouse = farmer.getSpouse();
@@ -38,7 +38,17 @@ namespace CustomSpouseRooms
                     spouses.Add(friend, Game1.getCharacterFromName(friend, true));
                 }
             }
-
+			foreach(var pair in farmer.team.friendshipData.Pairs)
+            {
+				if (!pair.Value.IsMarried())
+					continue;
+				long id = pair.Key.Farmer1 == farmer.UniqueMultiplayerID ? pair.Key.Farmer2 : pair.Key.Farmer1;
+				Farmer spouse = Game1.getFarmer(id);
+				if (spouse != null)
+                {
+					spouses.Add(spouse.Name, spouse);
+                }
+            }
             return spouses;
         }
 
