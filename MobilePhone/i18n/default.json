@@ -1,4 +1,5 @@
 ﻿{
+  "mobile-phone": "Mobile Phone",
   "phone-book": "Phone Book",
   "themes": "Customize",
   "customize": "Customize",
@@ -368,6 +369,19 @@
   "location-ARVHouse": "I'm at the Coopers' house in East Scarp.",
   "location-JunaCave": "I'm in Juna's cave. Don't tell her.",
   "location-RileyHouse2": "I'm in Riley's house.",
-  "location-RazorCrest": "I'm at Mando's house."
+  "location-RazorCrest": "I'm at Mando's house.",
 
+  "location-BuffalosRanch": "I'm at the buffalo ranch just north of the bus stop.",
+  "location-BoardingHouse_BackwoodsPlateau": "I'm at the boarding house, it's very close to the bus stop.",
+  "location-BoardingHouse": "I'm at Joel's boarding house.",
+  "location-MineEntrance": "I'm at the entrance to this dark and scary cave behind the boarding house.",
+  "AbandonedMine1A": "I was able to go down into this cave near the boarding house, but not very deep.",
+  "AbandonedMine1B": "I'm exploring the second level of the cave near the boarding house. It's scary in here...",
+  "AbandonedMine2A": "The descent into the boarding house cave took longer than I thought it would. I am now on third level.",
+  "AbandonedMine2B": "How deep do you think that cave by the boarding house goes? I'm on the fourth floor right now.",
+  "AbandonedMine3": "The cave at the boarding house is very deep. I managed to get to fifth level!",
+  "AbandonedMine4": "This cave by the boarding house seems endless. I'm already on sixth level.",
+  "AbandonedMine5": "I'm in a cave by the boarding house. In its depths. It's very hot in here. The ancients left a crypt here, no wonder Joja decided to explore it.",
+  "TheLostValley": "Я... it's a strange place. It's like a whole world beneath ours. Could something like this really exist beneath the boarding house?",
+  "Ruins": "I'm in an Aboriginal village, just east of this descent into an abandoned valley. This place seems so... ancient. It's as if civilization had never touched it."
 }
