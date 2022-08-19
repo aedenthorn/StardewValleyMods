@@ -95,8 +95,6 @@ namespace MobilePhone
             }
             else if (whichAnswer == "PhoneApp_InCall_GoodBye")
             {
-                var val = GetGoodBye(npc);
-
                 Game1.drawDialogue(npc, GetGoodBye(npc));
                 EndCall();
             }
