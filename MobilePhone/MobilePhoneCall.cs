@@ -115,11 +115,25 @@ namespace MobilePhone
             List<Response> answers = new List<Response>();
             if (npc.CurrentDialogue != null && npc.CurrentDialogue.Count > 0)
                 answers.Add(new Response("PhoneApp_InCall_Chat", Helper.Translation.Get("chat")));
-            
-            if (npc.currentLocation is not null && (npc.currentLocation.Name == npc.DefaultMap || Helper.Translation.Get($"npc-in-{npc.currentLocation.Name}").HasValue()))
+
+            // !Updated code.
+            /* Changes:
+             * 1. Fixed troubles with locations response (earlier they ain't work properly)
+             *    (Cause "Helper.Translation.Get()" uses old translation values keys);
+             * 2. Fixed troubles with custom locations from mods (i.e. East Scarp locations)
+             *    (New modded locations have "Custom_" prefix in their names, so we need remove this value, to get properly key.
+             *     As an option we can update all values in *.json strings files, but naming standard is already here, so i just normalized names to it).
+             */
+
+            string normilizedLocationValue = npc.currentLocation.Name.Replace("Custom_", string.Empty);
+            Translation npcLocationResponse = Helper.Translation.Get($"location-{normilizedLocationValue}");
+
+            if (npc.currentLocation is not null && (npc.currentLocation.Name == npc.DefaultMap || npcLocationResponse.HasValue()))
             {
                 answers.Add(new Response("PhoneApp_InCall_Locate", Helper.Translation.Get("locate")));
             }
+            // End update.
+
             if (inCallReminiscence == null)
             {
                 Reminiscence r = Helper.Data.ReadJsonFile<Reminiscence>(Path.Combine("assets", "events", $"{npc.Name}.json")) ?? new Reminiscence();
@@ -228,11 +242,20 @@ namespace MobilePhone
                 return;
             }
             var dialogueDic = Game1.content.Load<Dictionary<string, string>>($"Characters/Dialogue/{npc.Name}");
-            string key = npc.currentLocation == Game1.player.currentLocation ? $"location-here" : npc.currentLocation.Name == npc.DefaultMap ? $"location-home" : $"location-{npc.currentLocation.Name}";
+
+            // !Updated code.
+            /* Changes:
+             * 1. Added new variable, to fix problems with "Custom_" prefix in modded locations names.
+             */
+
+            string normalizedLocation = npc.currentLocation.Name.Replace("Custom_", string.Empty);
+            string key = npc.currentLocation == Game1.player.currentLocation ? $"location-here" : npc.currentLocation.Name == npc.DefaultMap ? $"location-home" : $"location-{normalizedLocation}";
             if (dialogueDic == null || !dialogueDic.TryGetValue($"MobilePhone_{key}", out string message))
             {
                 message = Helper.Translation.Get(key);
             }
+            // End update.
+
             Game1.afterDialogues = (Game1.afterFadeFunction)Delegate.Combine(Game1.afterDialogues, new Game1.afterFadeFunction(delegate ()
             {
                 ShowMainCallDialogue(npc);
