@@ -1,7 +1,7 @@
 ﻿{
   "Name": "Free Love",
   "Author": "aedenthorn",
-  "Version": "1.0.4",
+  "Version": "1.1.0",
   "Description": "Free Love",
   "UniqueID": "aedenthorn.FreeLove",
   "EntryDll": "FreeLove.dll",
@@ -16,6 +16,10 @@
   "Dependencies": [
     {
       "UniqueID": "Platonymous.ModUpdater",
+      "IsRequired": false
+    },
+    {
+      "UniqueID": "Pathoschild.ContentPatcher",
       "IsRequired": false
     }
   ]

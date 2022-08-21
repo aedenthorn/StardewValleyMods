@@ -1,15 +1,17 @@
 ﻿using HarmonyLib;
 using StardewModdingAPI;
+using StardewValley;
 using StardewValley.Locations;
 using StardewValley.Network;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using xTile;
 
 namespace CustomSpouseRooms
 {
     /// <summary>The mod entry point.</summary>
-    public partial class ModEntry : Mod, IAssetLoader
+    public partial class ModEntry : Mod
     {
 
         public static IMonitor SMonitor;
@@ -90,6 +92,13 @@ namespace CustomSpouseRooms
 
             SHelper.Events.GameLoop.GameLaunched += GameLoop_GameLaunched;
             SHelper.Events.GameLoop.SaveLoaded += GameLoop_SaveLoaded;
+            SHelper.Events.Content.AssetRequested += Content_AssetRequested;
+        }
+
+        private void Content_AssetRequested(object sender, StardewModdingAPI.Events.AssetRequestedEventArgs e)
+        {
+            if(e.NameWithoutLocale.BaseName.Contains("custom_spouse_room_"))
+                e.LoadFromModFile<Map>(e.NameWithoutLocale.BaseName + ".tmx", StardewModdingAPI.Events.AssetLoadPriority.Exclusive);
         }
 
         private void GameLoop_SaveLoaded(object sender, StardewModdingAPI.Events.SaveLoadedEventArgs e)
@@ -112,6 +121,34 @@ namespace CustomSpouseRooms
 
                 SMonitor.Log($"Added {obj.data.Count} room datas from {contentPack.Manifest.Name}");
             }
+            var api = Helper.ModRegistry.GetApi<IContentPatcherAPI>("Pathoschild.ContentPatcher");
+            api.RegisterToken(ModManifest, "PlayerSpouses", () =>
+            {
+                Farmer player;
+
+                if (Context.IsWorldReady)
+                    player = Game1.player;
+                else if (SaveGame.loaded?.player != null)
+                    player = SaveGame.loaded.player;
+                else
+                    return null;
+
+                var spouses = GetSpouses(player, 1).Keys.ToList();
+                spouses.Sort(delegate (string a, string b) {
+                    player.friendshipData.TryGetValue(a, out Friendship af);
+                    player.friendshipData.TryGetValue(b, out Friendship bf);
+                    if (af == null && bf == null)
+                        return 0;
+                    if (af == null)
+                        return -1;
+                    if (bf == null)
+                        return 1;
+                    if (af.WeddingDate == bf.WeddingDate)
+                        return 0;
+                    return af.WeddingDate > bf.WeddingDate ? -1: 1;
+                });
+                return spouses.ToArray();
+            });
         }
 
         public override object GetApi()
@@ -119,27 +156,6 @@ namespace CustomSpouseRooms
             return new CustomSpouseRoomsAPI();
         }
 
-        /// <summary>Get whether this instance can load the initial version of the given asset.</summary>
-        /// <param name="asset">Basic metadata about the asset being loaded.</param>
-        public bool CanLoad<T>(IAssetInfo asset)
-        {
-            if (!Config.EnableMod)
-                return false;
 
-            if (asset.AssetName.Contains("custom_spouse_room_"))
-            {
-                SMonitor.Log($"can load map {asset.AssetName}");
-                return true;
-            }
-
-            return false;
-        }
-
-        /// <summary>Load a matched asset.</summary>
-        /// <param name="asset">Basic metadata about the asset being loaded.</param>
-        public T Load<T>(IAssetInfo asset)
-        {
-            return SHelper.Content.Load<T>(asset.AssetName + ".tmx");
-        }
     }
 }

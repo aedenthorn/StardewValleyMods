@@ -1,0 +1,32 @@
+{
+  "welcome": "欢迎使用自定义配偶露台向导。你想做什么？",
+
+  "new-patio": "在 {0},{1} 添加一个露台",
+  "new-patio-which": "为哪个配偶创建配偶露台？",
+  "new-patio-use-tiles": "使用哪些默认瓷砖？",
+  "created-patio": "在 {0},{1} 创建了配偶露台！",
+
+  "move-patio": "移动现有配偶露台",
+  "move-patio-which": "移动哪个配偶的配偶露台？",
+  "move-patio-which-way": "将配偶露台搬到哪里？",
+  "cursor-location": "到光标位置 ({0},{1})",
+  "up": "上",
+  "down": "下",
+  "left": "左",
+  "right": "右",
+  "moved-patio": "为 {0} 移动了配偶露台！",
+  "not-moved-patio": "无法移动 {0} 的配偶露台！它将不在地图上！",
+  "cursor-out-of-bounds": "无法在 {0},{1} 创建配偶露台！它将不在地图上！",
+
+  "remove-patio": "移除现有的配偶露台",
+  "remove-patio-which": "移除哪个配偶的配偶露台？",
+  "removed-patio": "删除了 {0} 的配偶露台！",
+  "not-removed-patio": "无法删除 {0} 的配偶露台！可能他们的露台在内容包中。",
+
+  "list-patios": "列出现有的自定义露台",
+  "patios-exist-for": "{0} 存在自定义露台。",
+
+  "reload-patios": "重新加载自定义露台",
+  "reloaded-patios": "重新加载 {0} 个配偶露台！",
+  "cancel": "取消"
+}
