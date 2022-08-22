@@ -2,7 +2,7 @@
 using Microsoft.Xna.Framework.Graphics;
 using StardewValley;
 
-namespace MobilePhone
+namespace MobilePhone.Api
 {
     public interface IHDPortraitsAPI
     {

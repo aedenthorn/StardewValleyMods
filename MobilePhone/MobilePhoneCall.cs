@@ -1,4 +1,5 @@
 ﻿using Microsoft.Xna.Framework;
+using MobilePhone.Api;
 using StardewModdingAPI;
 using StardewValley;
 using StardewValley.Menus;
@@ -162,7 +163,7 @@ namespace MobilePhone
             var api = ModEntry.npcAdventureModApi;
             var canRecruit = api?.CanRecruit(Game1.player, npc) ?? false;
 
-            if (api != null && api.CanRecruit(Game1.player, npc) && !npc.isSleeping.Value && !api.IsRecruited(npc))
+            if (CheckToRecruit(api, npc))
             {
                 answers.Add(new Response("PhoneApp_InCall_Recruit", Helper.Translation.Get("recruit")));
             }
@@ -180,6 +181,43 @@ namespace MobilePhone
             Game1.objectDialoguePortraitPerson = npc;
         }
 
+        /// <summary>
+        /// !Updated code. New function. <br />
+        /// Make complex check to current NPC to recruit ability.
+        /// </summary>
+        /// <param name="api">NPC Adventure api instance.</param>
+        /// <param name="npc">NPC to check.</param>
+        /// <returns>
+        /// If NPC can be recruited — true. <br />
+        /// In all other cases — false;
+        /// </returns>
+        private static bool CheckToRecruit(INpcAdventureModApi api, NPC npc)
+        {
+            switch (api)
+            {
+                case null:
+                    return false;
+
+                default:
+                    if (!api.CanRecruitCompanions())
+                        return false;
+
+                    else if (!api.IsPossibleCompanion(npc))
+                        return false;
+
+                    else if (!api.CanRecruit(Game1.player, npc))
+                        return false;
+
+                    else if (npc.isSleeping.Value)
+                        return false;
+
+                    else if (api.IsRecruited(npc))
+                        return false;
+                    break;
+            }
+
+            return true;
+        }
 
         private static async void ChatOnPhone(NPC npc)
         {
