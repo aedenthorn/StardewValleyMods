@@ -115,16 +115,6 @@ namespace MobilePhone
             List<Response> answers = new List<Response>();
             if (npc.CurrentDialogue != null && npc.CurrentDialogue.Count > 0)
                 answers.Add(new Response("PhoneApp_InCall_Chat", Helper.Translation.Get("chat")));
-
-            // !Updated code.
-            /* Changes:
-             * 1. Fixed troubles with locations response (earlier they ain't work properly)
-             *    (Cause "Helper.Translation.Get()" uses old translation values keys);
-             * 2. Fixed troubles with custom locations from mods (i.e. East Scarp locations)
-             *    (New modded locations have "Custom_" prefix in their names, so we need remove this value, to get properly key.
-             *     As an option we can update all values in *.json strings files, but naming standard is already here, so i just normalized names to it).
-             */
-
             string normilizedLocationValue = npc.currentLocation.Name.Replace("Custom_", string.Empty);
             Translation npcLocationResponse = Helper.Translation.Get($"location-{normilizedLocationValue}");
 
@@ -132,7 +122,6 @@ namespace MobilePhone
             {
                 answers.Add(new Response("PhoneApp_InCall_Locate", Helper.Translation.Get("locate")));
             }
-            // End update.
 
             if (inCallReminiscence == null)
             {
@@ -161,10 +150,24 @@ namespace MobilePhone
                     }
                 }
             }
-            if (ModEntry.npcAdventureModApi != null && ModEntry.npcAdventureModApi.CanRecruit(Game1.player, npc) && !npc.isSleeping.Value)
+
+            // !Updated Code.
+            /* Changes:
+             * 1. Added variables, to more comfortable debugging (in byte-code there is no difference btw);
+             * 2. Updated function calls to new 'NPC Adventures API' version;
+             * 2.1. I'm not sure, but added standalone check to NPC is not recruited yet, to prevent re-recruiting same characters
+             *      (Earlier, as I think, it was part of function 'CarRecruit()').
+             */
+
+            var api = ModEntry.npcAdventureModApi;
+            var canRecruit = api?.CanRecruit(Game1.player, npc) ?? false;
+
+            if (api != null && api.CanRecruit(Game1.player, npc) && !npc.isSleeping.Value && !api.IsRecruited(npc))
             {
                 answers.Add(new Response("PhoneApp_InCall_Recruit", Helper.Translation.Get("recruit")));
             }
+            // Update end.
+
             if (npc.Name == "Robin" && Game1.player.daysUntilHouseUpgrade.Value < 0 && !Game1.getFarm().isThereABuildingUnderConstruction())
             {
                 if (Game1.player.HouseUpgradeLevel < 3)
@@ -243,7 +246,7 @@ namespace MobilePhone
             }
             var dialogueDic = Game1.content.Load<Dictionary<string, string>>($"Characters/Dialogue/{npc.Name}");
 
-            // !Updated code.
+            // !Updated Code.
             /* Changes:
              * 1. Added new variable, to fix problems with "Custom_" prefix in modded locations names.
              */
@@ -254,7 +257,7 @@ namespace MobilePhone
             {
                 message = Helper.Translation.Get(key);
             }
-            // End update.
+            // Update end.
 
             Game1.afterDialogues = (Game1.afterFadeFunction)Delegate.Combine(Game1.afterDialogues, new Game1.afterFadeFunction(delegate ()
             {
@@ -301,7 +304,7 @@ namespace MobilePhone
                 new Response("PhoneApp_InCall_Recruit_Yes", Game1.content.LoadString("Strings\\Lexicon:QuestionDialogue_Yes")),
                 new Response("PhoneApp_InCall_No", Game1.content.LoadString("Strings\\Lexicon:QuestionDialogue_No"))
             };
-            Game1.player.currentLocation.createQuestionDialogue(string.Format(Helper.Translation.Get("ask-x-to-followask-x-to-follow"), npc.Name), responses, CallDialogueAnswer);
+            Game1.player.currentLocation.createQuestionDialogue(string.Format(Helper.Translation.Get("ask-x-to-follow"), npc.displayName), responses, CallDialogueAnswer);
         }
         private static void BuildOnPhone()
         {
@@ -470,9 +473,9 @@ namespace MobilePhone
             }
 
 
-            if (ModEntry.npcAdventureModApi.CanRecruit(Game1.player, npc, out string key, out int cd))
+            if (ModEntry.npcAdventureModApi.CanRecruit(Game1.player, npc))
             {
-                Game1.drawDialogue(npc, Game1.content.LoadString(key));
+                Game1.drawDialogue(npc, Helper.Translation.Get("recruit-success"));
                 Game1.afterDialogues = delegate ()
                 {
                     DoRecruit(npc);
@@ -480,7 +483,7 @@ namespace MobilePhone
             }
             else
             {
-                Game1.drawDialogue(npc, Game1.content.LoadString(key));
+                Game1.drawDialogue(npc, Helper.Translation.Get("recruit-fail"));
                 Game1.afterDialogues = delegate ()
                 {
                     ShowMainCallDialogue(npc);
@@ -509,7 +512,7 @@ namespace MobilePhone
                 return;
             }
 
-            if (ModEntry.npcAdventureModApi.Recruit(Game1.player, npc))
+            if (ModEntry.npcAdventureModApi.RecruitCompanion(Game1.player, npc))
             {
                 if (ModEntry.npcAdventureModApi.IsRecruited(npc))
                 {
