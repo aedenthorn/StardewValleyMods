@@ -1,5 +1,6 @@
 ﻿using Microsoft.Xna.Framework.Audio;
 using Microsoft.Xna.Framework.Graphics;
+using MobilePhone.Api;
 using StardewModdingAPI;
 using StardewModdingAPI.Events;
 using StardewValley;
@@ -213,23 +214,12 @@ namespace MobilePhone
             Helper.Events.Display.RenderedWorld += PhoneVisuals.Display_RenderedWorld;
             ModEntry.calledToday.Clear();
 
-            if (ModEntry.npcAdventureModApi != null)
-            {
-                Monitor.Log("Testing NpcAdventureModApi...");
-                try
-                {
-                    Monitor.Log($"Possible companions: {ModEntry.npcAdventureModApi.GetCompanions().Count()}");
-                    Monitor.Log($"Can recruit Abigail: {ModEntry.npcAdventureModApi.IsValidCompanion("Abigail")}");
-                    //Monitor.Log($"Recruit Abigail: {ModEntry.npcAdventureModApi.IsValidCompanion("Abigail") && ModEntry.npcAdventureModApi.Recruit(Game1.player, Game1.getCharacterFromName("Abigail"))}");
-                }
-                catch (Exception ex)
-                {
-                    Monitor.Log($"Error testing NpcAdventureModApi: {ex}", LogLevel.Warn);
-                }
-                Monitor.Log("Testing NpcAdventureModApi finished");
+            // !Changed code.
+            /* Changes:
+             * 1. Removed testing 'NPC Adventures API' calling. 
+             */
 
-            }
-
+            // Changes end. 
         }
 
         internal static void ReturnedToTitle(object sender, ReturnedToTitleEventArgs e)
