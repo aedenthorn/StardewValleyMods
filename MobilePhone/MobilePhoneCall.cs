@@ -161,7 +161,6 @@ namespace MobilePhone
              */
 
             var api = ModEntry.npcAdventureModApi;
-            var canRecruit = api?.CanRecruit(Game1.player, npc) ?? false;
 
             if (CheckToRecruit(api, npc))
             {
@@ -283,19 +282,12 @@ namespace MobilePhone
                 return;
             }
             var dialogueDic = Game1.content.Load<Dictionary<string, string>>($"Characters/Dialogue/{npc.Name}");
-
-            // !Updated Code.
-            /* Changes:
-             * 1. Added new variable, to fix problems with "Custom_" prefix in modded locations names.
-             */
-
             string normalizedLocation = npc.currentLocation.Name.Replace("Custom_", string.Empty);
             string key = npc.currentLocation == Game1.player.currentLocation ? $"location-here" : npc.currentLocation.Name == npc.DefaultMap ? $"location-home" : $"location-{normalizedLocation}";
             if (dialogueDic == null || !dialogueDic.TryGetValue($"MobilePhone_{key}", out string message))
             {
                 message = Helper.Translation.Get(key);
             }
-            // Update end.
 
             Game1.afterDialogues = (Game1.afterFadeFunction)Delegate.Combine(Game1.afterDialogues, new Game1.afterFadeFunction(delegate ()
             {

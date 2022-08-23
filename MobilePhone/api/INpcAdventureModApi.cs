@@ -3,6 +3,7 @@
 namespace MobilePhone.Api
 {
     /// <summary>
+    /// !Updated Code. <br />
     /// One big change: API functionality updated to latest stability ('Blackhole') version. <br />
     /// All unused functions has been removed, to increase compatibility with next versions.
     /// </summary>
