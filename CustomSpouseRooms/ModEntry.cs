@@ -121,34 +121,6 @@ namespace CustomSpouseRooms
 
                 SMonitor.Log($"Added {obj.data.Count} room datas from {contentPack.Manifest.Name}");
             }
-            var api = Helper.ModRegistry.GetApi<IContentPatcherAPI>("Pathoschild.ContentPatcher");
-            api.RegisterToken(ModManifest, "PlayerSpouses", () =>
-            {
-                Farmer player;
-
-                if (Context.IsWorldReady)
-                    player = Game1.player;
-                else if (SaveGame.loaded?.player != null)
-                    player = SaveGame.loaded.player;
-                else
-                    return null;
-
-                var spouses = GetSpouses(player, 1).Keys.ToList();
-                spouses.Sort(delegate (string a, string b) {
-                    player.friendshipData.TryGetValue(a, out Friendship af);
-                    player.friendshipData.TryGetValue(b, out Friendship bf);
-                    if (af == null && bf == null)
-                        return 0;
-                    if (af == null)
-                        return -1;
-                    if (bf == null)
-                        return 1;
-                    if (af.WeddingDate == bf.WeddingDate)
-                        return 0;
-                    return af.WeddingDate > bf.WeddingDate ? -1: 1;
-                });
-                return spouses.ToArray();
-            });
         }
 
         public override object GetApi()

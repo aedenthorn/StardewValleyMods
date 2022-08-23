@@ -115,14 +115,6 @@ namespace CustomSpouseRooms
                     }
 
 					Point corner = __instance.GetSpouseRoomCorner() + new Point(xOffset * i, 0);
-					if(customRoomData.TryGetValue((i+1).ToString(), out SpouseRoomData srdi) && (srdi.upgradeLevel >= __instance.upgradeLevel || srdi.upgradeLevel < 0) && !srdi.islandFarmHouse)
-                    {
-						srd.startPos = srdi.startPos;
-						if (srdi.shellType is not null)
-							srd.shellType = srdi.shellType;
-						if (srdi.templateName is not null)
-							srd.templateName = srdi.templateName;
-                    }
 
 					Point spouseOffset;
 					int indexInSpouseMapSheet = -1;
@@ -161,6 +153,16 @@ namespace CustomSpouseRooms
 					SMonitor.Log($"Using shell {srd.shellType} for {srd.name}");
 
 					srd.startPos = shellStart;
+
+					if (customRoomData.TryGetValue((i + 1).ToString(), out SpouseRoomData srdi) && (srdi.upgradeLevel >= __instance.upgradeLevel || srdi.upgradeLevel < 0) && !srdi.islandFarmHouse)
+					{
+						SMonitor.Log($"Found index override {i+1}, using start pos, etc.");
+						srd.startPos = srdi.startPos;
+						if (srdi.shellType is not null)
+							srd.shellType = srdi.shellType;
+						if (srdi.templateName is not null)
+							srd.templateName = srdi.templateName;
+					}
 
 					MakeSpouseRoom(__instance, ____appliedMapOverrides, srd, i == 0);
                 }
