@@ -14,13 +14,13 @@ using System.Text.RegularExpressions;
 namespace FreeLove
 {
     /// <summary>The mod entry point.</summary>
-    public partial class ModEntry : Mod, IAssetEditor
+    public partial class ModEntry : Mod
     {
 
         public static IMonitor SMonitor;
         public static IModHelper SHelper;
         public static ModConfig Config;
-        
+        public static ModEntry context;
         public static Multiplayer mp;
         public static Random myRand;
         public static string farmHelperSpouse = null;
@@ -38,7 +38,7 @@ namespace FreeLove
         public override void Entry(IModHelper helper)
         {
             Config = Helper.ReadConfig<ModConfig>();
-
+            context = this;
             if (!Config.EnableMod)
                 return;
 
@@ -53,6 +53,9 @@ namespace FreeLove
             helper.Events.GameLoop.SaveLoaded += GameLoop_SaveLoaded;
             helper.Events.GameLoop.DayStarted += GameLoop_DayStarted;
             helper.Events.GameLoop.OneSecondUpdateTicked += GameLoop_OneSecondUpdateTicked;
+
+            helper.Events.Content.AssetRequested += Content_AssetRequested;
+
             PathFindControllerPatches.Initialize(Monitor, Config, helper);
             Divorce.Initialize(Monitor, Config, helper);
             NPCPatches.Initialize(Monitor, Config, helper);
@@ -309,149 +312,155 @@ namespace FreeLove
 
         }
 
-
         public override object GetApi()
         {
             return new FreeLoveAPI();
         }
 
-        /// <summary>Get whether this instance can edit the given asset.</summary>
-        /// <param name="asset">Basic metadata about the asset being loaded.</param>
-        public bool CanEdit<T>(IAssetInfo asset)
+
+        private void Content_AssetRequested(object sender, StardewModdingAPI.Events.AssetRequestedEventArgs e)
         {
             if (!Config.EnableMod)
-                return false;
-
-            if (asset.AssetNameEquals("Data/Events/HaleyHouse") || asset.AssetNameEquals("Data/Events/Saloon") || asset.AssetNameEquals("Data/EngagementDialogue") || asset.AssetNameEquals("Strings/StringsFromCSFiles") || asset.AssetNameEquals("Data/animationDescriptions") || asset.AssetNameEquals("Strings/Locations"))
+                return;
+            if (e.NameWithoutLocale.IsEquivalentTo("Data/Events/HaleyHouse"))
             {
-                return true;
+                e.Edit(delegate (IAssetData idata)
+                {
+                    IDictionary<string, string> data = idata.AsDictionary<string, string>().Data;
+
+                    string key = "195012/f Haley 2500/f Emily 2500/f Penny 2500/f Abigail 2500/f Leah 2500/f Maru 2500/o Abigail/o Penny/o Leah/o Emily/o Maru/o Haley/o Shane/o Harvey/o Sebastian/o Sam/o Elliott/o Alex/e 38/e 2123343/e 10/e 901756/e 54/e 15/k 195019";
+                    if (!data.TryGetValue(key, out string value))
+                    {
+                        Monitor.Log("Missing event key for HaleyHouse!");
+                        return;
+                    }
+                    data[key] = Regex.Replace(value, "(pause 1000/speak Maru \\\")[^$]+.a\\\"", $"$1{SHelper.Translation.Get("confrontation-female")}$h\"/emote Haley 21 true/emote Emily 21 true/emote Penny 21 true/emote Maru 21 true/emote Leah 21 true/emote Abigail 21").Replace("/dump girls 3", "");
+                    //data["91740942"] = data["195012/f Haley 2500/f Emily 2500/f Penny 2500/f Abigail 2500/f Leah 2500/f Maru 2500/o Abigail/o Penny/o Leah/o Emily/o Maru/o Haley/o Shane/o Harvey/o Sebastian/o Sam/o Elliott/o Alex/e 38/e 2123343/e 10/e 901756/e 54/e 15/k 195019"];
+                    if (data.TryGetValue("choseToExplain", out value))
+                    {
+                        data["choseToExplain"] = Regex.Replace(value, "(pause 1000/speak Maru \\\")[^$]+.a\\\"", $"$1{SHelper.Translation.Get("confrontation-female")}$h\"/emote Haley 21 true/emote Emily 21 true/emote Penny 21 true/emote Maru 21 true/emote Leah 21 true/emote Abigail 21").Replace("/dump girls 4", "");
+                    }
+                    if (data.TryGetValue("lifestyleChoice", out value))
+                    {
+                        data["lifestyleChoice"] = Regex.Replace(value, "(pause 1000/speak Maru \\\")[^$]+.a\\\"", $"$1{SHelper.Translation.Get("confrontation-female")}$h\"/emote Haley 21 true/emote Emily 21 true/emote Penny 21 true/emote Maru 21 true/emote Leah 21 true/emote Abigail 21").Replace("/dump girls 4", "");
+                    }
+
+                });
+
             }
-            if (Config.RomanceAllVillagers && (asset.AssetName.StartsWith("Characters/schedules") || asset.AssetName.StartsWith("Characters\\schedules")))
+            else if (e.NameWithoutLocale.IsEquivalentTo("Data/Events/Saloon"))
+            {
+                e.Edit(delegate (IAssetData idata)
+                {
+                    IDictionary<string, string> data = idata.AsDictionary<string, string>().Data;
+                    string key = "195013/f Shane 2500/f Sebastian 2500/f Sam 2500/f Harvey 2500/f Alex 2500/f Elliott 2500/o Abigail/o Penny/o Leah/o Emily/o Maru/o Haley/o Shane/o Harvey/o Sebastian/o Sam/o Elliott/o Alex/e 911526/e 528052/e 9581348/e 43/e 384882/e 233104/k 195099";
+                    if (!data.TryGetValue(key, out string value))
+                    {
+                        Monitor.Log("Missing event key for Saloon!");
+                        return;
+                    }
+                    data[key] = Regex.Replace(value, "(pause 1000/speak Sam \\\")[^$]+.a\\\"", $"$1{SHelper.Translation.Get("confrontation-male")}$h\"/emote Shane 21 true/emote Sebastian 21 true/emote Sam 21 true/emote Harvey 21 true/emote Alex 21 true/emote Elliott 21").Replace("/dump guys 3", "");
+                    //data["19501342"] = Regex.Replace(aData, "(pause 1000/speak Sam \\\")[^$]+.a\\\"",$"$1{SHelper.Translation.Get("confrontation-male")}$h\"/emote Shane 21 true/emote Sebastian 21 true/emote Sam 21 true/emote Harvey 21 true/emote Alex 21 true/emote Elliott 21").Replace("/dump guys 3", "");
+                    if (data.TryGetValue("choseToExplain", out value))
+                    {
+                        data["choseToExplain"] = Regex.Replace(value, "(pause 1000/speak Sam \\\")[^$]+.a\\\"", $"$1{SHelper.Translation.Get("confrontation-male")}$h\"/emote Shane 21 true/emote Sebastian 21 true/emote Sam 21 true/emote Harvey 21 true/emote Alex 21 true/emote Elliott 21").Replace("/dump guys 4", "");
+                    }
+                    if (data.TryGetValue("crying", out value))
+                    {
+                        data["crying"] = Regex.Replace(value, "(pause 1000/speak Sam \\\")[^$]+.a\\\"", $"$1{SHelper.Translation.Get("confrontation-male")}$h\"/emote Shane 21 true/emote Sebastian 21 true/emote Sam 21 true/emote Harvey 21 true/emote Alex 21 true/emote Elliott 21").Replace("/dump guys 4", "");
+                    }
+                });
+            }
+            else if (e.NameWithoutLocale.IsEquivalentTo("Strings/StringsFromCSFiles"))
+            {
+                e.Edit(delegate (IAssetData idata)
+                {
+                    IDictionary<string, string> data = idata.AsDictionary<string, string>().Data;
+                    data["NPC.cs.3985"] = Regex.Replace(data["NPC.cs.3985"], @"\.\.\.\$s.+", $"$n#$b#$c 0.5#{data["ResourceCollectionQuest.cs.13681"]}#{data["ResourceCollectionQuest.cs.13683"]}");
+                    Monitor.Log($"NPC.cs.3985 is set to \"{data["NPC.cs.3985"]}\"");
+                });
+
+            }
+            else if (e.NameWithoutLocale.IsEquivalentTo("Data/animationDescriptions"))
+            {
+                e.Edit(delegate (IAssetData idata)
+                {
+                    IDictionary<string, string> data = idata.AsDictionary<string, string>().Data;
+                    List<string> sleepKeys = data.Keys.ToList().FindAll((s) => s.EndsWith("_Sleep"));
+                    foreach (string key in sleepKeys)
+                    {
+                        if (!data.ContainsKey(key.ToLower()))
+                        {
+                            Monitor.Log($"adding {key.ToLower()} to animationDescriptions");
+                            data.Add(key.ToLower(), data[key]);
+                        }
+                    }
+                });
+
+            }
+            else if (e.NameWithoutLocale.IsEquivalentTo("Data/EngagementDialogue"))
+            {
+                if (!Config.RomanceAllVillagers)
+                    return;
+                e.Edit(delegate (IAssetData idata)
+                {
+                    IDictionary<string, string> data = idata.AsDictionary<string, string>().Data;
+                    Farmer f = Game1.player;
+                    if (f == null)
+                    {
+                        return;
+                    }
+                    foreach (string friend in f.friendshipData.Keys)
+                    {
+                        if (!data.ContainsKey(friend + "0"))
+                        {
+                            data[friend + "0"] = "";
+                        }
+                        if (!data.ContainsKey(friend + "1"))
+                        {
+                            data[friend + "1"] = "";
+                        }
+                    }
+                });
+            }
+            else if (Config.RomanceAllVillagers && (e.NameWithoutLocale.BaseName.StartsWith("Characters/schedules/") || e.NameWithoutLocale.BaseName.StartsWith("Characters\\schedules\\")))
             {
                 try
                 {
-                    string name = asset.AssetName.Replace("Characters/schedules/", "").Replace("Characters\\schedules\\", "");
+                    string name = e.NameWithoutLocale.BaseName.Replace("Characters/schedules/", "").Replace("Characters\\schedules\\", "");
                     NPC npc = Game1.getCharacterFromName(name);
                     if (npc != null && npc.Age < 2 && !(npc is Child))
                     {
-                        string dispo = Helper.Content.Load<Dictionary<string, string>>("Data/NPCDispositions", ContentSource.GameContent)[name];
+                        string dispo = Game1.content.Load<Dictionary<string, string>>("Data/NPCDispositions")[name];
                         if (dispo.Split('/')[5] != "datable")
                         {
                             Monitor.Log($"can edit schedule for {name}");
-                            return true;
+                            e.Edit(delegate (IAssetData idata)
+                            {
+                                IDictionary<string, string> data = idata.AsDictionary<string, string>().Data;
+                                List<string> keys = new List<string>(data.Keys);
+                                foreach (string key in keys)
+                                {
+                                    if (!data.ContainsKey($"marriage_{key}"))
+                                        data[$"marriage_{key}"] = data[key];
+                                }
+                            });
                         }
                     }
                 }
                 catch
                 {
-                    return false;
-                }
-            }
-            return false;
-        }
-
-        /// <summary>Edit a matched asset.</summary>
-        /// <param name="asset">A helper which encapsulates metadata about an asset and enables changes to it.</param>
-        public void Edit<T>(IAssetData asset)
-        {
-            Monitor.Log("Editing asset " + asset.AssetName);
-            if (asset.AssetNameEquals("Data/Events/HaleyHouse"))
-            {
-                IDictionary<string, string> data = asset.AsDictionary<string, string>().Data;
-
-                string key = "195012/f Haley 2500/f Emily 2500/f Penny 2500/f Abigail 2500/f Leah 2500/f Maru 2500/o Abigail/o Penny/o Leah/o Emily/o Maru/o Haley/o Shane/o Harvey/o Sebastian/o Sam/o Elliott/o Alex/e 38/e 2123343/e 10/e 901756/e 54/e 15/k 195019";
-                if (!data.TryGetValue(key, out string value))
-                {
-                    Monitor.Log("Missing event key for HaleyHouse!");
-                    return;
-                }
-                data[key] = Regex.Replace(value, "(pause 1000/speak Maru \\\")[^$]+.a\\\"",$"$1{SHelper.Translation.Get("confrontation-female")}$h\"/emote Haley 21 true/emote Emily 21 true/emote Penny 21 true/emote Maru 21 true/emote Leah 21 true/emote Abigail 21").Replace("/dump girls 3", "");
-                //data["91740942"] = data["195012/f Haley 2500/f Emily 2500/f Penny 2500/f Abigail 2500/f Leah 2500/f Maru 2500/o Abigail/o Penny/o Leah/o Emily/o Maru/o Haley/o Shane/o Harvey/o Sebastian/o Sam/o Elliott/o Alex/e 38/e 2123343/e 10/e 901756/e 54/e 15/k 195019"];
-                if(data.TryGetValue("choseToExplain", out value))
-                {
-                    data["choseToExplain"] = Regex.Replace(value, "(pause 1000/speak Maru \\\")[^$]+.a\\\"", $"$1{SHelper.Translation.Get("confrontation-female")}$h\"/emote Haley 21 true/emote Emily 21 true/emote Penny 21 true/emote Maru 21 true/emote Leah 21 true/emote Abigail 21").Replace("/dump girls 4", "");
-                }
-                if(data.TryGetValue("lifestyleChoice", out value))
-                {
-                    data["lifestyleChoice"] = Regex.Replace(value, "(pause 1000/speak Maru \\\")[^$]+.a\\\"", $"$1{SHelper.Translation.Get("confrontation-female")}$h\"/emote Haley 21 true/emote Emily 21 true/emote Penny 21 true/emote Maru 21 true/emote Leah 21 true/emote Abigail 21").Replace("/dump girls 4", "");
-                }
-            }
-            else if (asset.AssetNameEquals("Data/Events/Saloon"))
-            {
-                IDictionary<string, string> data = asset.AsDictionary<string, string>().Data;
-                string key = "195013/f Shane 2500/f Sebastian 2500/f Sam 2500/f Harvey 2500/f Alex 2500/f Elliott 2500/o Abigail/o Penny/o Leah/o Emily/o Maru/o Haley/o Shane/o Harvey/o Sebastian/o Sam/o Elliott/o Alex/e 911526/e 528052/e 9581348/e 43/e 384882/e 233104/k 195099";
-                if (!data.TryGetValue(key, out string value))
-                {
-                    Monitor.Log("Missing event key for Saloon!");
-                    return;
-                }
-                data[key] = Regex.Replace(value, "(pause 1000/speak Sam \\\")[^$]+.a\\\"",$"$1{SHelper.Translation.Get("confrontation-male")}$h\"/emote Shane 21 true/emote Sebastian 21 true/emote Sam 21 true/emote Harvey 21 true/emote Alex 21 true/emote Elliott 21").Replace("/dump guys 3", "");
-                //data["19501342"] = Regex.Replace(aData, "(pause 1000/speak Sam \\\")[^$]+.a\\\"",$"$1{SHelper.Translation.Get("confrontation-male")}$h\"/emote Shane 21 true/emote Sebastian 21 true/emote Sam 21 true/emote Harvey 21 true/emote Alex 21 true/emote Elliott 21").Replace("/dump guys 3", "");
-                if (data.TryGetValue("choseToExplain", out value))
-                {
-                    data["choseToExplain"] = Regex.Replace(value, "(pause 1000/speak Sam \\\")[^$]+.a\\\"", $"$1{SHelper.Translation.Get("confrontation-male")}$h\"/emote Shane 21 true/emote Sebastian 21 true/emote Sam 21 true/emote Harvey 21 true/emote Alex 21 true/emote Elliott 21").Replace("/dump guys 4", "");
-                }
-                if (data.TryGetValue("crying", out value))
-                {
-                    data["crying"] = Regex.Replace(value, "(pause 1000/speak Sam \\\")[^$]+.a\\\"", $"$1{SHelper.Translation.Get("confrontation-male")}$h\"/emote Shane 21 true/emote Sebastian 21 true/emote Sam 21 true/emote Harvey 21 true/emote Alex 21 true/emote Elliott 21").Replace("/dump guys 4", "");
                 }
 
+
             }
-            else if (asset.AssetNameEquals("Strings/StringsFromCSFiles"))
+            else if (e.NameWithoutLocale.IsEquivalentTo("Strings/Locations"))
             {
-                IDictionary<string, string> data = asset.AsDictionary<string, string>().Data;
-                data["NPC.cs.3985"] = Regex.Replace(data["NPC.cs.3985"],  @"\.\.\.\$s.+", $"$n#$b#$c 0.5#{data["ResourceCollectionQuest.cs.13681"]}#{data["ResourceCollectionQuest.cs.13683"]}");
-                Monitor.Log($"NPC.cs.3985 is set to \"{data["NPC.cs.3985"]}\"");
-            }
-            else if (asset.AssetNameEquals("Data/animationDescriptions"))
-            {
-                IDictionary<string, string> data = asset.AsDictionary<string, string>().Data;
-                List<string> sleepKeys = data.Keys.ToList().FindAll((s) => s.EndsWith("_Sleep"));
-                foreach(string key in sleepKeys)
+                e.Edit(delegate (IAssetData idata)
                 {
-                    if (!data.ContainsKey(key.ToLower()))
-                    {
-                        Monitor.Log($"adding {key.ToLower()} to animationDescriptions");
-                        data.Add(key.ToLower(), data[key]);
-                    }
-                }
-            }
-            else if (asset.AssetNameEquals("Data/EngagementDialogue"))
-            {
-                if (!Config.RomanceAllVillagers)
-                    return;
-                IDictionary<string, string> data = asset.AsDictionary<string, string>().Data;
-                Farmer f = Game1.player;
-                if (f == null)
-                {
-                    return;
-                }
-                foreach (string friend in f.friendshipData.Keys)
-                {
-                    if (!data.ContainsKey(friend+"0"))
-                    {
-                        data[friend + "0"] = "";
-                    }
-                    if (!data.ContainsKey(friend+"1"))
-                    {
-                        data[friend + "1"] = "";
-                    }
-                }
-            }
-            else if (asset.AssetName.StartsWith("Characters/schedules") || asset.AssetName.StartsWith("Characters\\schedules"))
-            {
-                IDictionary<string, string> data = asset.AsDictionary<string, string>().Data;
-                List<string> keys = new List<string>(data.Keys);
-                foreach (string key in keys)
-                {
-                    if(!data.ContainsKey($"marriage_{key}"))
-                        data[$"marriage_{key}"] = data[key]; 
-                }
-            }
-            else if (asset.AssetNameEquals("Strings/Locations"))
-            {
-                IDictionary<string, string> data = asset.AsDictionary<string, string>().Data;
-                data["Beach_Mariner_PlayerBuyItem_AnswerYes"] = data["Beach_Mariner_PlayerBuyItem_AnswerYes"].Replace("5000", Config.PendantPrice+"");
+                    IDictionary<string, string> data = idata.AsDictionary<string, string>().Data;
+                    data["Beach_Mariner_PlayerBuyItem_AnswerYes"] = data["Beach_Mariner_PlayerBuyItem_AnswerYes"].Replace("5000", Config.PendantPrice + "");
+                });
             }
         }
     }

@@ -71,7 +71,7 @@ namespace FreeLove
         public static void SetNPCRelations()
         {
             relationships.Clear();
-            Dictionary<string, string> NPCDispositions = SHelper.Content.Load<Dictionary<string, string>>("Data\\NPCDispositions", ContentSource.GameContent);
+            Dictionary<string, string> NPCDispositions = SHelper.GameContent.Load<Dictionary<string, string>>("Data\\NPCDispositions");
             foreach(KeyValuePair<string,string> kvp in NPCDispositions)
             {
                 string[] relations = kvp.Value.Split('/')[9].Split(' ');
@@ -387,7 +387,7 @@ namespace FreeLove
             if (!int.TryParse(sleepAnim.Split('/')[0], out int sleepidx))
                 return false;
 
-            Texture2D tex = SHelper.Content.Load<Texture2D>($"Characters/{name}", ContentSource.GameContent);
+            Texture2D tex = SHelper.GameContent.Load<Texture2D>($"Characters/{name}");
             //SMonitor.Log($"tex height for {name}: {tex.Height}");
 
             if (sleepidx / 4 * 32 >= tex.Height)
@@ -414,7 +414,7 @@ namespace FreeLove
 
         internal static void NPCDoAnimation(NPC npc, string npcAnimation)
         {
-            Dictionary<string, string> animationDescriptions = SHelper.Content.Load<Dictionary<string, string>>("Data\\animationDescriptions", ContentSource.GameContent);
+            Dictionary<string, string> animationDescriptions = SHelper.GameContent.Load<Dictionary<string, string>>("Data\\animationDescriptions");
             if (!animationDescriptions.ContainsKey(npcAnimation))
                 return;
 

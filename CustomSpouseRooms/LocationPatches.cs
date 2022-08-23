@@ -98,7 +98,7 @@ namespace CustomSpouseRooms
 
 				foreach(string spouse in customSpouses)
                 {
-					SpouseRoomData srd = ModEntry.customRoomData[spouse];
+					SpouseRoomData srd = customRoomData[spouse];
 					MakeSpouseRoom(__instance, ____appliedMapOverrides, srd);
 				}
 
@@ -109,12 +109,20 @@ namespace CustomSpouseRooms
 					string spouse = orderedSpouses[i];
 
 					SpouseRoomData srd = null;
-					if (ModEntry.customRoomData.ContainsKey(spouse))
+					if (customRoomData.TryGetValue(spouse, out SpouseRoomData srd1))
                     {
-						srd = new SpouseRoomData(ModEntry.customRoomData[spouse]);
+						srd = new SpouseRoomData(srd1);
                     }
 
 					Point corner = __instance.GetSpouseRoomCorner() + new Point(xOffset * i, 0);
+					if(customRoomData.TryGetValue((i+1).ToString(), out SpouseRoomData srdi) && (srdi.upgradeLevel >= __instance.upgradeLevel || srdi.upgradeLevel < 0) && !srdi.islandFarmHouse)
+                    {
+						srd.startPos = srdi.startPos;
+						if (srdi.shellType is not null)
+							srd.shellType = srdi.shellType;
+						if (srdi.templateName is not null)
+							srd.templateName = srdi.templateName;
+                    }
 
 					Point spouseOffset;
 					int indexInSpouseMapSheet = -1;
@@ -207,7 +215,7 @@ namespace CustomSpouseRooms
 			customSpouses = new List<string>();
 			for (int i = orderableSpouses.Count - 1; i >= 0; i--)
 			{
-				if (ModEntry.customRoomData.TryGetValue(orderableSpouses[i], out SpouseRoomData srd) && !srd.islandFarmHouse && (srd.upgradeLevel == fh.upgradeLevel || srd.upgradeLevel < 0) && srd.startPos.X > -1)
+				if (customRoomData.TryGetValue(orderableSpouses[i], out SpouseRoomData srd) && !srd.islandFarmHouse && (srd.upgradeLevel == fh.upgradeLevel || srd.upgradeLevel < 0) && srd.startPos.X > -1)
 				{
 					SMonitor.Log($"{orderableSpouses[i]} has custom spouse room");
 					customSpouses.Add(orderableSpouses[i]);
@@ -284,7 +292,7 @@ namespace CustomSpouseRooms
 				}
 			}
 
-            Dictionary<string, string> room_data = SHelper.Content.Load<Dictionary<string, string>>("Data\\SpouseRooms", ContentSource.GameContent);
+            Dictionary<string, string> room_data = SHelper.GameContent.Load<Dictionary<string, string>>("Data\\SpouseRooms");
 			string map_path = "spouseRooms";
 			if (indexInSpouseMapSheet == -1 && room_data != null && srd.templateName != null && room_data.ContainsKey(srd.templateName))
 			{
