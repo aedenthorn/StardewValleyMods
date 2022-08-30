@@ -71,7 +71,7 @@ namespace FreeLove
                 int heartsWithSpouse = f.getFriendshipHeartLevelForNPC(spouse.Name);
                 Friendship friendship = f.friendshipData[spouse.Name];
                 List<Child> kids = f.getChildren();
-                int maxChildren = childrenAPI == null ? 2 : childrenAPI.GetMaxChildren();
+                int maxChildren = childrenAPI == null ? Config.MaxChildren : childrenAPI.GetMaxChildren();
                 bool can = spouse.daysAfterLastBirth <= 0 && Utility.getHomeOfFarmer(f).upgradeLevel >= 2 && friendship.DaysUntilBirthing < 0 && heartsWithSpouse >= 10 && friendship.DaysMarried >= 7 && (kids.Count < maxChildren);
                 SMonitor.Log($"Checking ability to get pregnant: {spouse.Name} {can}:{(Utility.getHomeOfFarmer(f).upgradeLevel < 2 ? $" house level too low {Utility.getHomeOfFarmer(f).upgradeLevel}":"")}{(friendship.DaysMarried < 7 ? $", not married long enough {friendship.DaysMarried}":"")}{(friendship.DaysUntilBirthing >= 0 ? $", already pregnant (gives birth in: {friendship.DaysUntilBirthing})":"")}");
                 if (can && Game1.player.currentLocation == Game1.getLocationFromName(Game1.player.homeLocation.Value) && myRand.NextDouble() <  0.05)

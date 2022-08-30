@@ -15,6 +15,7 @@ namespace FreeLove
         public bool RoommateRomance { get; set; } = false;
         public bool RomanceAllVillagers { get; set; } = false;
         public bool GayPregnancies { get; set; } = false;
+        public int MaxChildren { get; set; } = 2;
         public bool ShowParentNames { get; set; } = false;
         public string SpouseSleepOrder { get; set; } = "";
         public int PercentChanceForSpouseInBed { get; set; } = 25;

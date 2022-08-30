@@ -43,33 +43,36 @@ namespace FreeLove
                 SMonitor.Log("PlannedParenthood API loaded");
             }
             contentPatcherAPI = SHelper.ModRegistry.GetApi<IContentPatcherAPI>("Pathoschild.ContentPatcher");
-            contentPatcherAPI.RegisterToken(context.ModManifest, "PlayerSpouses", () =>
+            if(contentPatcherAPI is not null)
             {
-                Farmer player;
+                contentPatcherAPI.RegisterToken(context.ModManifest, "PlayerSpouses", () =>
+                {
+                    Farmer player;
 
-                if (Context.IsWorldReady)
-                    player = Game1.player;
-                else if (SaveGame.loaded?.player != null)
-                    player = SaveGame.loaded.player;
-                else
-                    return null;
+                    if (Context.IsWorldReady)
+                        player = Game1.player;
+                    else if (SaveGame.loaded?.player != null)
+                        player = SaveGame.loaded.player;
+                    else
+                        return null;
 
-                var spouses = GetSpouses(player, true).Keys.ToList();
-                spouses.Sort(delegate (string a, string b) {
-                    player.friendshipData.TryGetValue(a, out Friendship af);
-                    player.friendshipData.TryGetValue(b, out Friendship bf);
-                    if (af == null && bf == null)
-                        return 0;
-                    if (af == null)
-                        return -1;
-                    if (bf == null)
-                        return 1;
-                    if (af.WeddingDate == bf.WeddingDate)
-                        return 0;
-                    return af.WeddingDate > bf.WeddingDate ? -1 : 1;
+                    var spouses = GetSpouses(player, true).Keys.ToList();
+                    spouses.Sort(delegate (string a, string b) {
+                        player.friendshipData.TryGetValue(a, out Friendship af);
+                        player.friendshipData.TryGetValue(b, out Friendship bf);
+                        if (af == null && bf == null)
+                            return 0;
+                        if (af == null)
+                            return -1;
+                        if (bf == null)
+                            return 1;
+                        if (af.WeddingDate == bf.WeddingDate)
+                            return 0;
+                        return af.WeddingDate > bf.WeddingDate ? -1 : 1;
+                    });
+                    return spouses.ToArray();
                 });
-                return spouses.ToArray();
-            });
+            }
         }
     }
 }
