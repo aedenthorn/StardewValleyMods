@@ -1,0 +1,22 @@
+﻿{
+  "Name": "MoveGreenhousePlot",
+  "Author": "aedenthorn",
+  "Version": "0.1.0",
+  "Description": "MoveGreenhousePlot.",
+  "UniqueID": "aedenthorn.MoveGreenhousePlot",
+  "EntryDll": "MoveGreenhousePlot.dll",
+  "MinimumApiVersion": "3.15.0",
+  "ModUpdater": {
+    "Repository": "StardewValleyMods",
+    "User": "aedenthorn",
+    "Directory": "_releases",
+    "ModFolder": "MoveGreenhousePlot"
+  },
+  "Dependencies": [
+    {
+      "UniqueID": "Platonymous.ModUpdater",
+      "IsRequired": false
+    }
+  ],
+  "UpdateKeys": [ "Nexus:13589" ]
+}
