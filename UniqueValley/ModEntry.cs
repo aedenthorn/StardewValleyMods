@@ -54,6 +54,7 @@ namespace UniqueValley
 
         private void GameLoop_SaveLoaded(object sender, StardewModdingAPI.Events.SaveLoadedEventArgs e)
         {
+            subDict.Clear();
             for (int i = 0; i < Game1.locations.Count; i++)
             {
                 if (!(Game1.locations[i] is MovieTheater))

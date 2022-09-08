@@ -1,18 +1,18 @@
 ﻿{
-  "Name": "Farmer Portraits",
+  "Name": "Social Page Order Menu",
   "Author": "aedenthorn",
-  "Version": "0.4.0",
-  "Description": "Farmer Portraits.",
-  "UniqueID": "aedenthorn.FarmerPortraits",
-  "EntryDll": "FarmerPortraits.dll",
+  "Version": "0.1.1",
+  "Description": "Lets you reorder the social page.",
+  "UniqueID": "aedenthorn.SocialPageOrderMenu",
+  "EntryDll": "SocialPageOrderMenu.dll",
   "MinimumApiVersion": "3.13.0",
+  "UpdateKeys": [ "Nexus:13698" ],
   "ModUpdater": {
     "Repository": "StardewValleyMods",
     "User": "aedenthorn",
     "Directory": "_releases",
-    "ModFolder": "FarmerPortraits"
+    "ModFolder": "SocialPageOrderMenu"
   },
-  "UpdateKeys": [ "Nexus:11398" ],
   "Dependencies": [
     {
       "UniqueID": "Platonymous.ModUpdater",

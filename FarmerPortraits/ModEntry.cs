@@ -91,6 +91,13 @@ namespace FarmerPortraits
                 name: () => "Show With Questions",
                 getValue: () => Config.ShowWithQuestions,
                 setValue: value => Config.ShowWithQuestions = value
+            );;
+            configMenu.AddBoolOption(
+                mod: ModManifest,
+                name: () => "Show Otherwise",
+                tooltip: () => "Show for dialogue boxes that are neither questions nor have NPC portraits",
+                getValue: () => Config.ShowMisc,
+                setValue: value => Config.ShowMisc = value
             );
             configMenu.AddBoolOption(
                 mod: ModManifest,
