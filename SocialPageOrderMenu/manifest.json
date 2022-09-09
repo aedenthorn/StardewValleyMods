@@ -1,7 +1,7 @@
 ﻿{
   "Name": "Social Page Order Menu",
   "Author": "aedenthorn",
-  "Version": "0.1.3",
+  "Version": "0.2.0",
   "Description": "Lets you reorder the social page.",
   "UniqueID": "aedenthorn.SocialPageOrderMenu",
   "EntryDll": "SocialPageOrderMenu.dll",
