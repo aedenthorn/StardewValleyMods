@@ -4,6 +4,7 @@ using Microsoft.Xna.Framework.Graphics;
 using StardewModdingAPI;
 using StardewModdingAPI.Events;
 using StardewValley;
+using StardewValley.Objects;
 using StardewValley.TerrainFeatures;
 using System.Collections.Generic;
 
@@ -34,23 +35,18 @@ namespace PlantAll
 
 
             var harmony = new Harmony(ModManifest.UniqueID);
-
-            harmony.Patch(
-               original: AccessTools.Method(typeof(Utility), nameof(Utility.tryToPlaceItem)),
-               postfix: new HarmonyMethod(typeof(ModEntry), nameof(ModEntry.Utility_tryToPlaceItem_Postfix))
-            );
-
-
+            harmony.PatchAll();
         }
         private void Display_RenderedWorld(object sender, RenderedWorldEventArgs e)
         {
+            return;
             if (Config.EnableMod && Context.IsPlayerFree && Game1.player.CurrentItem?.Category == -74 && (Helper.Input.IsDown(Config.ModButton) || Helper.Input.IsDown(Config.StraightModButton) || Helper.Input.IsDown(Config.SprinklerModButton)))
             {
                 Vector2 grabTile = Game1.GetPlacementGrabTile();
-                if (!Game1.player.currentLocation.terrainFeatures.TryGetValue(new Vector2((int)grabTile.X, (int)grabTile.Y), out TerrainFeature f) || f is not HoeDirt || !Utility.playerCanPlaceItemHere(Game1.player.currentLocation, Game1.player.CurrentItem, (int)grabTile.X * 64, (int)grabTile.Y * 64, Game1.player))
+                if (((!Game1.player.currentLocation.terrainFeatures.TryGetValue(new Vector2((int)grabTile.X, (int)grabTile.Y), out TerrainFeature f) || f is not HoeDirt) && (!Game1.player.currentLocation.objects.TryGetValue(new Vector2((int)grabTile.X, (int)grabTile.Y), out Object o) || o is not IndoorPot)) || !Utility.playerCanPlaceItemHere(Game1.player.currentLocation, Game1.player.CurrentItem, (int)grabTile.X * 64, (int)grabTile.Y * 64, Game1.player))
                     return;
                 List<Point> placeables = new List<Point>();
-                GetPlaceable((int)grabTile.X, (int)grabTile.Y, (int)grabTile.X, (int)grabTile.Y, placeables);
+                GetPlaceable(Game1.player.CurrentItem, Game1.player.currentLocation, (int)grabTile.X, (int)grabTile.Y, (int)grabTile.X, (int)grabTile.Y, placeables);
                 foreach (Point p in placeables)
                 {
                     e.SpriteBatch.Draw(Game1.mouseCursors, Game1.GlobalToLocal(new Vector2((float)((int)p.X * 64), (float)((int)p.Y * 64))), new Rectangle?(new Rectangle(194, 388, 16, 16)), Color.White, 0f, Vector2.Zero, 4f, SpriteEffects.None, 0.01f);

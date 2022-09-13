@@ -1,5 +1,7 @@
-﻿using Microsoft.Xna.Framework;
+﻿using HarmonyLib;
+using Microsoft.Xna.Framework;
 using StardewValley;
+using StardewValley.Objects;
 using StardewValley.TerrainFeatures;
 using System.Collections.Generic;
 
@@ -7,24 +9,50 @@ namespace PlantAll
 {
     public partial class ModEntry
     {
-        private static void Utility_tryToPlaceItem_Postfix(GameLocation location, Item item, int x, int y, bool __result)
+        [HarmonyPatch(typeof(Utility), nameof(Utility.tryToPlaceItem))]
+        private static class UtilitytryToPlaceItem_Patch
         {
-            if (!Config.EnableMod || !__result || (!SHelper.Input.IsDown(Config.ModButton) && !SHelper.Input.IsDown(Config.StraightModButton) && !SHelper.Input.IsDown(Config.SprinklerModButton)) || !IsValidItem(item))
-                return;
+            private static void Postfix(GameLocation location, Item item, int x, int y, bool __result)
+            {
+                if (!Config.EnableMod || !__result || (!SHelper.Input.IsDown(Config.ModButton) && !SHelper.Input.IsDown(Config.StraightModButton) && !SHelper.Input.IsDown(Config.SprinklerModButton)) || !IsValidItem(item))
+                    return;
+                PlantAll(item, location, x / 64, y / 64);
+            }
+        }
+
+        [HarmonyPatch(typeof(IndoorPot), nameof(IndoorPot.performObjectDropInAction))]
+        private static class IndoorPot_performObjectDropInAction_Patch
+        {
+            private static void Postfix(Object __instance, Item dropInItem, bool probe, Farmer who, bool __result)
+            {
+                if (!Config.EnableMod || probe || !__result || (!SHelper.Input.IsDown(Config.ModButton) && !SHelper.Input.IsDown(Config.StraightModButton) && !SHelper.Input.IsDown(Config.SprinklerModButton)) || !IsValidItem(dropInItem))
+                    return;
+                PlantAll(dropInItem, who.currentLocation, (int)__instance.TileLocation.X, (int)__instance.TileLocation.Y);
+            }
+        }
+
+        private static void PlantAll(Item item, GameLocation location, int x, int y)
+        {
             SMonitor.Log($"Planting all; straight {SHelper.Input.IsDown(Config.StraightModButton)}, sprinkler {SHelper.Input.IsDown(Config.SprinklerModButton)}, full {SHelper.Input.IsDown(Config.ModButton)}");
 
             List<Point> placeables = new List<Point>();
-            GetPlaceable(x / 64, y / 64, x / 64, y / 64, placeables);
+            GetPlaceable(item, location, x, y, x, y, placeables);
             SMonitor.Log($"Got {placeables.Count} placeable tiles");
-            Vector2 start = new Vector2(x / 64, y / 64);
+            Vector2 start = new Vector2(x, y);
             placeables.Sort(delegate (Point p1, Point p2) { return Vector2.Distance(start, p1.ToVector2()).CompareTo(Vector2.Distance(start, p2.ToVector2())); });
 
-            foreach(var p in placeables)
+            foreach (var p in placeables)
             {
-                if (!Game1.player.currentLocation.terrainFeatures.TryGetValue(p.ToVector2(), out TerrainFeature t) || t is not HoeDirt)
-                    continue;
-                if(Game1.player.ActiveObject.placementAction(Game1.player.currentLocation, p.X * 64, p.Y * 64, Game1.player))              
-                    Game1.player.reduceActiveItemByOne();
+                if(location.objects.TryGetValue(p.ToVector2(), out Object o) && o is IndoorPot)
+                {
+                    if (o.performObjectDropInAction(item, false, Game1.player))
+                        Game1.player.reduceActiveItemByOne();
+                }
+                else if (location.terrainFeatures.TryGetValue(p.ToVector2(), out TerrainFeature f) && f is HoeDirt)
+                {
+                    if (Game1.player.ActiveObject.placementAction(Game1.player.currentLocation, p.X * 64, p.Y * 64, Game1.player))
+                        Game1.player.reduceActiveItemByOne();
+                }
                 if (!IsValidItem(Game1.player.ActiveObject) || item.ParentSheetIndex != Game1.player.ActiveObject.ParentSheetIndex)
                     return;
             }
@@ -35,7 +63,7 @@ namespace PlantAll
             return item != null && item.Stack > 0 && (item.Category == -74 || item.Category == -19) && !(item as Object).isSapling() && !Object.isWildTreeSeed(item.ParentSheetIndex);
         }
 
-        private static void GetPlaceable(int ox, int oy, int x, int y, List<Point> placeables)
+        private static void GetPlaceable(Item item, GameLocation location, int ox, int oy, int x, int y, List<Point> placeables)
         {
             List<Point> tiles = new List<Point>();
             if (SHelper.Input.IsDown(Config.StraightModButton))
@@ -127,20 +155,28 @@ namespace PlantAll
             }
             for (int i = tiles.Count - 1; i >= 0; i--)
             {
-                if (!Game1.player.CurrentItem.canBePlacedHere(Game1.player.currentLocation, new Vector2(tiles[i].X, tiles[i].Y)) || (!SHelper.Reflection.GetMethod(typeof(Utility), "itemCanBePlaced").Invoke<bool>(new object[] { Game1.player.currentLocation, new Vector2(tiles[i].X, tiles[i].Y), Game1.player.CurrentItem }) && !Utility.isViableSeedSpot(Game1.player.currentLocation, new Vector2(tiles[i].X, tiles[i].Y), Game1.player.CurrentItem)))
+
+                if (
+                    (
+                        item.canBePlacedHere(location, new Vector2(tiles[i].X, tiles[i].Y)) &&
+                        (SHelper.Reflection.GetMethod(typeof(Utility), "itemCanBePlaced").Invoke<bool>(new object[] { location, new Vector2(tiles[i].X, tiles[i].Y), item })
+                            || Utility.isViableSeedSpot(location, new Vector2(tiles[i].X, tiles[i].Y), item))
+                    )
+                    || (location.objects.TryGetValue(tiles[i].ToVector2(), out Object o) && o is IndoorPot && (o as IndoorPot).hoeDirt.Value.crop is null)
+                )
                 {
-                    tiles.RemoveAt(i);
+                    placeables.Add(tiles[i]);
                 }
                 else
                 {
-                    placeables.Add(tiles[i]);
+                    tiles.RemoveAt(i);
                 }
             }
             if (SHelper.Input.IsDown(Config.SprinklerModButton))
                 return;
             foreach (var v in tiles)
             {
-                GetPlaceable(ox, oy, v.X, v.Y, placeables);
+                GetPlaceable(item, location, ox, oy, v.X, v.Y, placeables);
             }
         }
 
