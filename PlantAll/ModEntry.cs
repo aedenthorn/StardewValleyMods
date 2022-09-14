@@ -39,7 +39,6 @@ namespace PlantAll
         }
         private void Display_RenderedWorld(object sender, RenderedWorldEventArgs e)
         {
-            return;
             if (Config.EnableMod && Context.IsPlayerFree && Game1.player.CurrentItem?.Category == -74 && (Helper.Input.IsDown(Config.ModButton) || Helper.Input.IsDown(Config.StraightModButton) || Helper.Input.IsDown(Config.SprinklerModButton)))
             {
                 Vector2 grabTile = Game1.GetPlacementGrabTile();
