@@ -42,7 +42,7 @@ namespace FarmerPortraits
         {
             public static void Postfix(DialogueBox __instance, SpriteBatch b)
             {
-                if (!Config.EnableMod || !__instance.transitionInitialized ||  __instance.transitioning || ((!Config.ShowWithQuestions || !__instance.isQuestion) && (!Config.ShowWithNPCPortrait || !__instance.isPortraitBox())) || (!Config.ShowWithEvents && Game1.eventUp))
+                if (!Config.EnableMod || !__instance.transitionInitialized ||  __instance.transitioning || (!Config.ShowWithQuestions && __instance.isQuestion) ||  (!Config.ShowWithNPCPortrait && __instance.isPortraitBox()) || (!Config.ShowWithEvents && Game1.eventUp) || (!Config.ShowMisc && !__instance.isQuestion && !__instance.isPortraitBox()))
                     return;
                 int boxHeight = 384;
                 drawBox(b, __instance.x - 448 - 32, __instance.y + __instance.height - boxHeight, 448, boxHeight);

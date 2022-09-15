@@ -1,7 +1,6 @@
 ﻿using HarmonyLib;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using Netcode;
 using StardewModdingAPI;
 using StardewModdingAPI.Events;
 using StardewValley;
@@ -34,9 +33,46 @@ namespace SocialPageOrderMenu
             SHelper = Helper;
 
             helper.Events.Input.ButtonPressed += Input_ButtonPressed;
+            helper.Events.GameLoop.GameLaunched += GameLoop_GameLaunched;
 
             var harmony = new Harmony(ModManifest.UniqueID);
             harmony.PatchAll();
+        }
+
+        private void GameLoop_GameLaunched(object sender, GameLaunchedEventArgs e)
+        {
+
+            // get Generic Mod Config Menu's API (if it's installed)
+            var configMenu = Helper.ModRegistry.GetApi<IGenericModConfigMenuApi>("spacechase0.GenericModConfigMenu");
+            if (configMenu is null)
+                return;
+
+            // register mod
+            configMenu.Register(
+                mod: ModManifest,
+                reset: () => Config = new ModConfig(),
+                save: () => Helper.WriteConfig(Config)
+            );
+
+            configMenu.AddBoolOption(
+                mod: ModManifest,
+                name: () => "Mod Enabled?",
+                getValue: () => Config.EnableMod,
+                setValue: value => Config.EnableMod = value
+            );
+
+            configMenu.AddKeybind(
+                mod: ModManifest,
+                name: () => "Prev Sort Key",
+                getValue: () => Config.prevButton,
+                setValue: value => Config.prevButton = value
+            );
+            configMenu.AddKeybind(
+                mod: ModManifest,
+                name: () => "Next Sort Key",
+                getValue: () => Config.nextButton,
+                setValue: value => Config.nextButton = value
+            );
         }
 
         private void Input_ButtonPressed(object sender, ButtonPressedEventArgs e)
@@ -162,9 +198,9 @@ namespace SocialPageOrderMenu
             {
                 SocialPage page = (Game1.activeClickableMenu as GameMenu).pages[GameMenu.socialTab] as SocialPage;
 
-                List<ClickableTextureComponent> sprites = new List<ClickableTextureComponent>(SHelper.Reflection.GetField<List<ClickableTextureComponent>>(page, "sprites").GetValue());
                 List<NameSpriteSlot> nameSprites = new List<NameSpriteSlot>();
-                for(int i = 0; i < page.names.Count; i++)
+                List<ClickableTextureComponent> sprites = new List<ClickableTextureComponent>(SHelper.Reflection.GetField<List<ClickableTextureComponent>>(page, "sprites").GetValue());
+                for (int i = 0; i < page.names.Count; i++)
                 {
                     nameSprites.Add(new NameSpriteSlot(page.names[i], sprites[i], page.characterSlots[i]));
                 }
@@ -213,11 +249,22 @@ namespace SocialPageOrderMenu
                         });
                         break;
                 }
-                for(int i = 0; i < nameSprites.Count; i++)
+                var cslots = ((Game1.activeClickableMenu as GameMenu).pages[GameMenu.socialTab] as SocialPage).characterSlots;
+                var names = ((Game1.activeClickableMenu as GameMenu).pages[GameMenu.socialTab] as SocialPage).names;
+                for (int i = 0; i < nameSprites.Count; i++)
                 {
-                    ((Game1.activeClickableMenu as GameMenu).pages[GameMenu.socialTab] as SocialPage).names[i] = nameSprites[i].name;
+                    nameSprites[i].slot.myID = i;
+                    nameSprites[i].slot.downNeighborID = i + 1;
+                    nameSprites[i].slot.upNeighborID = i - 1;
+                    if (nameSprites[i].slot.upNeighborID < 0)
+                    {
+                        nameSprites[i].slot.upNeighborID = 12342;
+                    }
+                    names[i] = nameSprites[i].name;
                     sprites[i] = nameSprites[i].sprite;
-                    ((Game1.activeClickableMenu as GameMenu).pages[GameMenu.socialTab] as SocialPage).characterSlots[i] = nameSprites[i].slot;
+                    nameSprites[i].slot.bounds = cslots[i].bounds;
+                    cslots[i] = nameSprites[i].slot;
+
                 }
                 SHelper.Reflection.GetField<List<ClickableTextureComponent>>((Game1.activeClickableMenu as GameMenu).pages[GameMenu.socialTab], "sprites").SetValue(new List<ClickableTextureComponent>(sprites));
 

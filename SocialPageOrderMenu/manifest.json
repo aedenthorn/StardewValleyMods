@@ -1,18 +1,18 @@
 ﻿{
-  "Name": "Plant All",
+  "Name": "Social Page Order Menu",
   "Author": "aedenthorn",
-  "Version": "0.5.1",
-  "Description": "Plant All.",
-  "UniqueID": "aedenthorn.PlantAll",
-  "EntryDll": "PlantAll.dll",
+  "Version": "0.2.0",
+  "Description": "Lets you reorder the social page.",
+  "UniqueID": "aedenthorn.SocialPageOrderMenu",
+  "EntryDll": "SocialPageOrderMenu.dll",
   "MinimumApiVersion": "3.13.0",
+  "UpdateKeys": [ "Nexus:13698" ],
   "ModUpdater": {
     "Repository": "StardewValleyMods",
     "User": "aedenthorn",
     "Directory": "_releases",
-    "ModFolder": "PlantAll"
+    "ModFolder": "SocialPageOrderMenu"
   },
-  "UpdateKeys": [ "Nexus:10482" ],
   "Dependencies": [
     {
       "UniqueID": "Platonymous.ModUpdater",

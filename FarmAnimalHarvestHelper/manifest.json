@@ -1,0 +1,22 @@
+﻿{
+  "Name": "Farm Animal Harvest Helper",
+  "Author": "aedenthorn",
+  "Version": "0.1.0",
+  "Description": "Farm Animal Harvest Helper.",
+  "UniqueID": "aedenthorn.FarmAnimalHarvestHelper",
+  "EntryDll": "FarmAnimalHarvestHelper.dll",
+  "MinimumApiVersion": "3.15.0",
+  "ModUpdater": {
+    "Repository": "StardewValleyMods",
+    "User": "aedenthorn",
+    "Directory": "_releases",
+    "ModFolder": "FarmAnimalHarvestHelper"
+  },
+  "Dependencies": [
+    {
+      "UniqueID": "Platonymous.ModUpdater",
+      "IsRequired": false
+    }
+  ],
+  "UpdateKeys": [ "Nexus:13782" ]
+}
