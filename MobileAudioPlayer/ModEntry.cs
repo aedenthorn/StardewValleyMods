@@ -202,8 +202,8 @@ namespace MapTeleport
             api = Helper.ModRegistry.GetApi<IMobilePhoneApi>("aedenthorn.MobilePhone");
             if (api != null)
             {
-                Texture2D appIcon = Helper.Content.Load<Texture2D>(Path.Combine("assets", "app_icon.png"));
-                bool success = api.AddApp(Helper.ModRegistry.ModID, "Audio Player", OpenAudioPlayer, appIcon);
+                Texture2D appIcon = Helper.ModContent.Load<Texture2D>(Path.Combine("assets", "app_icon.png"));
+                bool success = api.AddApp(Helper.ModRegistry.ModID, Helper.Translation.Get("app-name"), OpenAudioPlayer, appIcon);
                 Monitor.Log($"loaded app successfully: {success}", LogLevel.Debug);
             }
             MakeTextures();
@@ -238,7 +238,7 @@ namespace MapTeleport
             texture.SetData(data);
             buttonBarTexture = texture;
 
-            buttonsTexture = Helper.Content.Load<Texture2D>(Path.Combine("assets", "buttons.png"));
+            buttonsTexture = Helper.ModContent.Load<Texture2D>(Path.Combine("assets", "buttons.png"));
 
             texture = new Texture2D(Game1.graphics.GraphicsDevice, Config.VolumeBarWidth, 30);
             data = new Color[texture.Width * texture.Height];
