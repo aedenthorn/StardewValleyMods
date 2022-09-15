@@ -96,8 +96,8 @@ namespace VideoPlayerMod
                 api = Helper.ModRegistry.GetApi<IMobilePhoneApi>("aedenthorn.MobilePhone");
                 if (api != null)
                 {
-                    Texture2D appIcon = Helper.Content.Load<Texture2D>(Path.Combine("assets", "app_icon.png"));
-                    bool success = api.AddApp(Helper.ModRegistry.ModID, "Video Player", OpenVideoPlayer, appIcon);
+                    Texture2D appIcon = Helper.ModContent.Load<Texture2D>(Path.Combine("assets", "app_icon.png"));
+                    bool success = api.AddApp(Helper.ModRegistry.ModID, Helper.Translation.Get("app-name"), OpenVideoPlayer, appIcon);
                     Monitor.Log($"loaded phone app successfully: {success}", LogLevel.Debug);
                 }
             }
@@ -114,9 +114,9 @@ namespace VideoPlayerMod
             background.SetData(data);
             backgroundTexture = background;
 
-            xTexture = Helper.Content.Load<Texture2D>(Path.Combine("assets", "x.png"));
-            buttonsTexture = Helper.Content.Load<Texture2D>(Path.Combine("assets", "buttons.png"));
-            playTexture = Helper.Content.Load<Texture2D>(Path.Combine("assets", "play.png"));
+            xTexture = Helper.ModContent.Load<Texture2D>(Path.Combine("assets", "x.png"));
+            buttonsTexture = Helper.ModContent.Load<Texture2D>(Path.Combine("assets", "buttons.png"));
+            playTexture = Helper.ModContent.Load<Texture2D>(Path.Combine("assets", "play.png"));
         }
 
         private void OpenVideoPlayer()
