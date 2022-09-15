@@ -1,62 +1,42 @@
-﻿using StardewModdingAPI;
+﻿using HarmonyLib;
+using StardewModdingAPI;
 using StardewModdingAPI.Events;
 using StardewValley;
 using StardewValley.Menus;
 
 namespace MapTeleport
 {
-    public class ModEntry : Mod 
+    public partial class ModEntry : Mod 
     {
         public static ModEntry context;
-
         public static ModConfig Config;
-        private CoordinatesList coordinates;
-        private bool isSVE;
+        public static IModHelper SHelper;
+        public static IMonitor SMonitor;
+        private Harmony harmony;
+
+        public static string dictPath = "aedenthorn.MapTeleport/coordinates";
 
         public override void Entry(IModHelper helper)
         {
-            context = this;
             Config = Helper.ReadConfig<ModConfig>();
             if (!Config.EnableMod)
                 return;
 
-            isSVE = Helper.ModRegistry.IsLoaded("FlashShifter.SVECode");
-            if (isSVE)
-            {
-                Monitor.Log("Using Stardew Valley Extended Map", LogLevel.Warn);
-                coordinates = Helper.Data.ReadJsonFile<CoordinatesList>("assets/sve_coordinates.json");
-            }
-            else
-                coordinates = Helper.Data.ReadJsonFile<CoordinatesList>("assets/coordinates.json");
+            context = this;
+            SMonitor = Monitor;
+            SHelper = helper;
 
-            Helper.Events.Input.ButtonPressed += Input_ButtonPressed;
+            helper.Events.Content.AssetRequested += Content_AssetRequested;
+
+            harmony = new Harmony(ModManifest.UniqueID);
+            harmony.PatchAll();
         }
 
-        private void Input_ButtonPressed(object sender, ButtonPressedEventArgs e)
+        private void Content_AssetRequested(object sender, AssetRequestedEventArgs e)
         {
-            if (Game1.activeClickableMenu is GameMenu && (Game1.activeClickableMenu as GameMenu).currentTab == GameMenu.mapTab && e.Button == Config.TeleportKey)
+            if (e.NameWithoutLocale.IsEquivalentTo(dictPath))
             {
-                MapPage mp = (Game1.activeClickableMenu as GameMenu).pages[(Game1.activeClickableMenu as GameMenu).currentTab] as MapPage;
-                int x = Game1.getMouseX(true);
-                int y = Game1.getMouseY(true);
-                Monitor.Log($"Trying to teleport, mouse pos {x},{y}; raw {Game1.getMouseX(false)},{Game1.getMouseY(false)}");
-
-                foreach (ClickableComponent c in mp.points)
-                {
-                    if (c.containsPoint(x, y))
-                    {
-                        Coordinates co = coordinates.coordinates.Find(o => o.id == c.myID);
-                        if (co == null)
-                        {
-                            Monitor.Log($"Teleport location {c.myID} {c.name} not found!", LogLevel.Warn);
-                            break;
-                        }
-                        Monitor.Log($"Teleporting to {c.name} ({c.myID}), {co.mapName}, {co.x},{co.y}", LogLevel.Debug);
-                        Game1.activeClickableMenu?.exitThisMenu(true);
-                        Game1.warpFarmer(co.mapName, co.x, co.y, false);
-                        break;
-                    }
-                }
+                e.LoadFromModFile<CoordinatesList>("assets/coordinates.json", AssetLoadPriority.Exclusive);
             }
         }
 
