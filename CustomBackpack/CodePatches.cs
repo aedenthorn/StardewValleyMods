@@ -327,10 +327,9 @@ namespace CustomBackpack
                             Game1.player.Money -= dataDict[i].cost;
                             SetPlayerSlots(i);
                             Game1.player.holdUpItemThenMessage(new SpecialItem(99, dataDict[i].name), true);
-                            ((Multiplayer)typeof(Game1).GetField("multiplayer", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Static).GetValue(Game1.game1)).globalChatInfoMessage("CustomBackpack", new string[]
+                            ((Multiplayer)typeof(Game1).GetField("multiplayer", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Static).GetValue(Game1.game1)).globalChatInfoMessage($"CustomBackpack_{i}", new string[]
                             {
-                                Game1.player.Name,
-                                dataDict[i].name
+                                Game1.player.Name
                             });
                         }
                         else
