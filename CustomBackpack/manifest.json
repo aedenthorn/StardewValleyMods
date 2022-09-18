@@ -1,16 +1,16 @@
 ﻿{
-  "Name": "Farm Animal Harvest Helper",
+  "Name": "CustomBackpack",
   "Author": "aedenthorn",
-  "Version": "0.1.1",
-  "Description": "Farm Animal Harvest Helper.",
-  "UniqueID": "aedenthorn.FarmAnimalHarvestHelper",
-  "EntryDll": "FarmAnimalHarvestHelper.dll",
+  "Version": "0.1.0",
+  "Description": "CustomBackpack.",
+  "UniqueID": "aedenthorn.CustomBackpack",
+  "EntryDll": "CustomBackpack.dll",
   "MinimumApiVersion": "3.15.0",
   "ModUpdater": {
     "Repository": "StardewValleyMods",
     "User": "aedenthorn",
     "Directory": "_releases",
-    "ModFolder": "FarmAnimalHarvestHelper"
+    "ModFolder": "CustomBackpack"
   },
   "Dependencies": [
     {
@@ -18,5 +18,5 @@
       "IsRequired": false
     }
   ],
-  "UpdateKeys": [ "Nexus:13782" ]
+  "UpdateKeys": [ "Nexus:13826" ]
 }

@@ -31,7 +31,7 @@ namespace FarmAnimalHarvestHelper
                 for (int i = __instance.animals.Count() - 1; i >= 0; i--)
                 {
                     var animal = __instance.animals.Pairs.ElementAt(i).Value;
-                    if (animal.currentProduce.Value == -1 || animal.age.Value < animal.ageWhenMature.Value || animal.Name.Contains("Pig") || !animal.buildingTypeILiveIn.Contains("Barn"))
+                    if (animal.currentProduce.Value == -1 || animal.age.Value < animal.ageWhenMature.Value || animal.type.Contains("Pig") || !animal.buildingTypeILiveIn.Contains("Barn"))
                         continue;
                     var pos = Config.FirstSlotTile;
                     pos += new Vector2(slot, 0);
@@ -47,7 +47,7 @@ namespace FarmAnimalHarvestHelper
         {
             public static void Postfix(FarmAnimal __instance, GameTime time, GameLocation location)
             {
-                if (!Config.ModEnabled || location is not AnimalHouse || __instance.currentProduce.Value == -1 || __instance.age.Value < __instance.ageWhenMature.Value || __instance.Name.Contains("Pig") || (Config.MaxWaitHour >= 0 && Game1.timeOfDay > Config.MaxWaitHour) || Game1.timeOfDay < 600 || !slottedDict.TryGetValue(location.uniqueName.Value, out Dictionary<long, Vector2> dict) || !dict.TryGetValue(__instance.myID.Value, out Vector2 pos))
+                if (!Config.ModEnabled || location is not AnimalHouse || __instance.currentProduce.Value == -1 || __instance.age.Value < __instance.ageWhenMature.Value || __instance.type.Contains("Pig") || (Config.MaxWaitHour >= 0 && Game1.timeOfDay > Config.MaxWaitHour) || Game1.timeOfDay < 600 || !slottedDict.TryGetValue(location.uniqueName.Value, out Dictionary<long, Vector2> dict) || !dict.TryGetValue(__instance.myID.Value, out Vector2 pos))
                     return;
                 pos -= new Vector2(0.5f, 0);
                 __instance.Position = pos * 64;
@@ -60,7 +60,7 @@ namespace FarmAnimalHarvestHelper
         {
             public static bool Prefix(FarmAnimal __instance, GameTime time, GameLocation environment)
             {
-                if (!Config.ModEnabled || environment is not AnimalHouse || __instance.currentProduce.Value == -1 || __instance.age.Value < __instance.ageWhenMature.Value || __instance.Name.Contains("Pig") || (Config.MaxWaitHour >= 0 && Game1.timeOfDay > Config.MaxWaitHour) || Game1.timeOfDay < 600 || !slottedDict.TryGetValue(environment.uniqueName.Value, out Dictionary<long, Vector2> dict) || !dict.TryGetValue(__instance.myID.Value, out Vector2 pos))
+                if (!Config.ModEnabled || environment is not AnimalHouse || __instance.currentProduce.Value == -1 || __instance.age.Value < __instance.ageWhenMature.Value || __instance.type.Contains("Pig") || (Config.MaxWaitHour >= 0 && Game1.timeOfDay > Config.MaxWaitHour) || Game1.timeOfDay < 600 || !slottedDict.TryGetValue(environment.uniqueName.Value, out Dictionary<long, Vector2> dict) || !dict.TryGetValue(__instance.myID.Value, out Vector2 pos))
                     return true;
                 pos -= new Vector2(0.5f, 0);
                 __instance.Position = pos * 64;

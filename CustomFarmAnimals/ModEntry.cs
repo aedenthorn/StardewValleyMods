@@ -66,7 +66,7 @@ namespace CustomFarmAnimals
                 Helper.ConsoleCommands.Trigger("patch", new string[] { "reload", pack });
             }
             loadedPacks.Clear();
-            dataDict = Helper.Content.Load<Dictionary<string, FarmAnimalData>>(dictPath, ContentSource.GameContent);
+            dataDict = Helper.GameContent.Load<Dictionary<string, FarmAnimalData>>(dictPath);
             foreach(var data in dataDict.Values)
             {
                 iconDict[data.iconPath] = Game1.content.Load<Texture2D>(data.iconPath);
