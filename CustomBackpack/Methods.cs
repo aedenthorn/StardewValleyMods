@@ -1,15 +1,6 @@
-﻿using HarmonyLib;
-using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
-using StardewValley;
-using StardewValley.Buildings;
-using StardewValley.Locations;
+﻿using StardewValley;
 using StardewValley.Menus;
-using StardewValley.Objects;
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using xTile.Dimensions;
 
 namespace CustomBackpack
 {
@@ -55,6 +46,8 @@ namespace CustomBackpack
 
         private static void SetPlayerSlots(int i)
         {
+            if (!Config.ModEnabled || Game1.player is null)
+                return;
             if (i % 12 != 0)
                 i = (i / 12 + 1) * 12;
             SMonitor.Log($"Setting player backpack slots to {i}");

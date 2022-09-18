@@ -1,6 +1,7 @@
 ﻿using HarmonyLib;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using Microsoft.Xna.Framework.Input;
 using StardewValley;
 using StardewValley.Locations;
 using StardewValley.Menus;
@@ -21,11 +22,24 @@ namespace CustomBackpack
         {
             public static void Postfix(InventoryMenu __instance, int xPosition, int yPosition, bool playerInventory, IList<Item> actualInventory, InventoryMenu.highlightThisItem highlightMethod, int capacity, int rows, int horizontalGap, int verticalGap, bool drawSlots)
             {
-                if (!Config.ModEnabled || !__instance.playerInventory || __instance.actualInventory.Count <= 36)
+                if (!Config.ModEnabled || (__instance.actualInventory != Game1.player.Items) || __instance.actualInventory.Count <= 36)
                     return;
 
                 SMonitor.Log($"Created new inventory menu with {__instance.actualInventory.Count} slots");
-
+                upArrow = new ClickableTextureComponent(new Microsoft.Xna.Framework.Rectangle(__instance.xPositionOnScreen + 768 + 32 - 50, __instance.yPositionOnScreen - 46, 64, 64), Game1.mouseCursors, Game1.getSourceRectForStandardTileSheet(Game1.mouseCursors, 12, -1, -1), 0.8f, false)
+                {
+                    myID = 88,
+                    downNeighborID = 89,
+                    rightNeighborID = 106,
+                    leftNeighborID = -99998
+                };
+                downArrow = new ClickableTextureComponent(new Microsoft.Xna.Framework.Rectangle(__instance.xPositionOnScreen + 768 + 32 - 50, __instance.yPositionOnScreen + 192 + 32 - 53, 64, 64), Game1.mouseCursors, Game1.getSourceRectForStandardTileSheet(Game1.mouseCursors, 11, -1, -1), 0.8f, false)
+                {
+                    myID = 89,
+                    upNeighborID = 88,
+                    rightNeighborID = 106,
+                    leftNeighborID = -99998
+                };
                 scrolled = 0;
                 __instance.inventory.Clear();
                 for (int j = 0; j < __instance.actualInventory.Count; j++)
@@ -44,33 +58,32 @@ namespace CustomBackpack
                         rightNeighborImmutable = true
                     });
                 }
-                upArrow = new ClickableTextureComponent(new Microsoft.Xna.Framework.Rectangle(__instance.xPositionOnScreen + 768 + 32 - 50, __instance.yPositionOnScreen - 46, 64, 64), Game1.mouseCursors, Game1.getSourceRectForStandardTileSheet(Game1.mouseCursors, 12, -1, -1), 0.8f, false)
-                {
-                    myID = 88,
-                    downNeighborID = 89,
-                    rightNeighborID = 106,
-                    leftNeighborID = -99998
-                };
-                downArrow = new ClickableTextureComponent(new Microsoft.Xna.Framework.Rectangle(__instance.xPositionOnScreen + 768 + 32 - 50, __instance.yPositionOnScreen + 192 + 32 - 53, 64, 64), Game1.mouseCursors, Game1.getSourceRectForStandardTileSheet(Game1.mouseCursors, 11, -1, -1), 0.8f, false)
-                {
-                    myID = 89,
-                    upNeighborID = 88,
-                    rightNeighborID = 106,
-                    leftNeighborID = -99998
-                };
+
             }
         }
 
         [HarmonyPatch(typeof(InventoryMenu), nameof(InventoryMenu.hover))]
         public class InventoryMenu_hover_Patch
         {
-
-            public static bool Prefix(InventoryMenu __instance, int x, int y)
+            public static void Prefix(InventoryMenu __instance, int x, int y)
             {
-                if (!Config.ModEnabled || !__instance.playerInventory || __instance.actualInventory.Count <= 36)
-                    return true;
-
-                if(Game1.input.GetMouseState().ScrollWheelValue != Game1.oldMouseState.ScrollWheelValue)
+                if (!Config.ModEnabled || (__instance.actualInventory != Game1.player.Items) || __instance.actualInventory.Count <= 36 || !__instance.isWithinBounds(x, y))
+                    return;
+                if (Game1.input.GetGamePadState().IsButtonDown(Buttons.DPadUp) && !Game1.oldPadState.IsButtonDown(Buttons.DPadUp))
+                {
+                    if (scrolled > 0)
+                    {
+                        scrolled--;
+                    }
+                }
+                else if (Game1.input.GetGamePadState().IsButtonDown(Buttons.DPadDown) && !Game1.oldPadState.IsButtonDown(Buttons.DPadDown))
+                {
+                    if (__instance.actualInventory.Count >= __instance.capacity / __instance.rows * (scrolled + 1) + __instance.capacity)
+                    {
+                        scrolled++;
+                    }
+                }
+                else if (Game1.input.GetMouseState().ScrollWheelValue != Game1.oldMouseState.ScrollWheelValue)
                 {
                     var oldScrolled = scrolled;
                     if (Game1.oldMouseState.ScrollWheelValue - Game1.input.GetMouseState().ScrollWheelValue > 0)
@@ -93,23 +106,20 @@ namespace CustomBackpack
                         int width = __instance.capacity / __instance.rows;
                         for (int i = 0; i < __instance.inventory.Count; i++)
                         {
-                            __instance.inventory[i].bounds = new Microsoft.Xna.Framework.Rectangle(__instance.inventory[i].bounds.Location - new Point(0, (scrolled - oldScrolled) * __instance.inventory[i].bounds.Height), __instance.inventory[i].bounds.Size);
+                            if(i < scrolled * width || i >= scrolled * width + __instance.capacity)
+                            {
+                                __instance.inventory[i].bounds = new Microsoft.Xna.Framework.Rectangle();
+                            }
+                            else
+                            {
+                                int j = i - scrolled * width;
+                                __instance.inventory[i].bounds = new Microsoft.Xna.Framework.Rectangle(__instance.xPositionOnScreen + i % (__instance.capacity / __instance.rows) * 64 + __instance.horizontalGap * (i % width), __instance.yPositionOnScreen + j / width * (64 + __instance.verticalGap) + (j / width - 1) * 4 - ((j > width || !__instance.playerInventory || __instance.verticalGap != 0) ? 0 : 12), 64, 64);
+                            }
                             __instance.inventory[i].downNeighborID = (i >= __instance.capacity + width * (scrolled - 1)) ? 102 : 90000 + (i + width);
                             __instance.inventory[i].upNeighborID = (i < width * (scrolled + 1)) ? (12340 + i - width * scrolled) : 90000 + (i - width);
                         }
-                        return false;
                     }
-                    return true;
                 }
-                if(GetGridPosition(__instance, x, y) != Where.within)
-                {
-                    __instance.descriptionText = "";
-                    __instance.descriptionTitle = "";
-                    __instance.hoverText = "";
-                    __instance.hoverTitle = "";
-                    return false;
-                }
-                return true;
             }
         }
 
@@ -118,7 +128,7 @@ namespace CustomBackpack
         {
             public static void Prefix(InventoryMenu __instance, int x, int y)
             {
-                if (!Config.ModEnabled || !__instance.playerInventory || __instance.actualInventory.Count <= 36)
+                if (!Config.ModEnabled || (__instance.actualInventory != Game1.player.Items) || __instance.actualInventory.Count <= 36)
                     return;
                 var oldScrolled = scrolled;
 
@@ -150,11 +160,9 @@ namespace CustomBackpack
         {
             public static bool Prefix(InventoryMenu __instance, int x, int y, ref int __result)
             {
-                if (!Config.ModEnabled || !__instance.playerInventory || __instance.actualInventory.Count <= 36)
+                if (!Config.ModEnabled || (__instance.actualInventory != Game1.player.Items) || __instance.actualInventory.Count <= 36)
                     return true;
-                int width = __instance.capacity / __instance.rows;
-                var where = GetGridPosition(__instance, x, y);
-                if(where != Where.within)
+                if(!__instance.isWithinBounds(x, y))
                 {
                     __result = -1;
                     return false;
@@ -168,11 +176,9 @@ namespace CustomBackpack
         {
             public static bool Prefix(InventoryMenu __instance, int x, int y, Item toPlace, ref Item __result)
             {
-                if (!Config.ModEnabled || !__instance.playerInventory || __instance.actualInventory.Count <= 36)
+                if (!Config.ModEnabled || (__instance.actualInventory != Game1.player.Items) || __instance.actualInventory.Count <= 36)
                     return true;
-                int width = __instance.capacity / __instance.rows;
-                var where = GetGridPosition(__instance, x, y);
-                if(where != Where.within)
+                if(!__instance.isWithinBounds(x, y))
                 {
                     __result = toPlace;
                     return false;
@@ -188,9 +194,7 @@ namespace CustomBackpack
             {
                 if (!Config.ModEnabled || !__instance.playerInventory || __instance.actualInventory.Count <= 36)
                     return true;
-                int width = __instance.capacity / __instance.rows;
-                var where = GetGridPosition(__instance, x, y);
-                if(where != Where.within)
+                if (!__instance.isWithinBounds(x, y))
                 {
                     __result = toAddTo;
                     return false;
@@ -202,34 +206,46 @@ namespace CustomBackpack
         [HarmonyPatch(typeof(InventoryMenu), nameof(InventoryMenu.draw), new Type[] { typeof(SpriteBatch), typeof(int), typeof(int), typeof(int) })]
         public class InventoryMenu_draw_Patch
         {
-            public static void Prefix(InventoryMenu __instance, ref IList<Item> __state)
+            public static void Prefix(InventoryMenu __instance, ref object[] __state)
             {
-                if (!Config.ModEnabled || !__instance.playerInventory || __instance.actualInventory.Count <= 36)
+                if (!Config.ModEnabled || (__instance.actualInventory != Game1.player.Items) || __instance.actualInventory.Count <= 36)
                     return;
-                __state = Game1.player.Items;
+                __state = new object[]{
+                    Game1.player.Items,
+                    __instance.inventory
+                };
+
                 __instance.actualInventory = new List<Item>(__instance.actualInventory.Skip(__instance.capacity / __instance.rows * scrolled).Take(__instance.capacity));
+                __instance.inventory = new List<ClickableComponent>(__instance.inventory.Skip(__instance.capacity / __instance.rows * scrolled).Take(__instance.capacity));
             }
-            public static void Postfix(SpriteBatch b, InventoryMenu __instance, ref IList<Item> __state)
+            public static void Postfix(SpriteBatch b, InventoryMenu __instance, ref object[] __state)
             {
                 if (__state is null)
                     return;
-                __instance.actualInventory = __state;
+                __instance.actualInventory = (IList<Item>)__state[0];
+                __instance.inventory = (List<ClickableComponent>)__state[1];
                 if (Config.ShowArrows)
                 {
                     if (scrolled > 0)
+                    {
+                        upArrow.setPosition(__instance.xPositionOnScreen + 768 + 32 - 50, __instance.yPositionOnScreen - (__instance.playerInventory ? 46 : 24));
                         upArrow.draw(b);
+                    }
                     if (scrolled * __instance.capacity / __instance.rows + __instance.capacity < __instance.actualInventory.Count)
+                    {
+                        downArrow.setPosition(__instance.xPositionOnScreen + 768 + 32 - 50, __instance.yPositionOnScreen + 192 + 32 - (__instance.playerInventory ? 53 : 60));
                         downArrow.draw(b);
+                    }
                 }
                 if (Config.ShowRowNumbers)
                 {
-                    Vector2 toDraw = new Vector2(__instance.xPositionOnScreen - 8, __instance.yPositionOnScreen);
+                    Vector2 toDraw = new Vector2(__instance.xPositionOnScreen - 8, __instance.yPositionOnScreen + (__instance.playerInventory ? 0 : 12));
                     for (int i = 0; i < 3; i++)
                     {
                         var strToDraw = (scrolled + 1 + i) + "";
                         Vector2 strSize = Game1.tinyFont.MeasureString(strToDraw);
                         b.DrawString(Game1.tinyFont, strToDraw, toDraw + new Vector2(-strSize.X / 2f, -strSize.Y + i * 68), Color.DimGray);
-                        if (i == 0)
+                        if (i == 0 && __instance.playerInventory)
                             toDraw += new Vector2(0, 12);
                     }
                 }
