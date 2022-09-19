@@ -10,11 +10,15 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using xTile.Dimensions;
+using Rectangle = Microsoft.Xna.Framework.Rectangle;
 
 namespace CustomBackpack
 {
     public partial class ModEntry
     {
+        public static ClickableTextureComponent upArrow;
+        public static ClickableTextureComponent downArrow;
+        public static ClickableTextureComponent expandButton;
 
         [HarmonyPatch(typeof(InventoryMenu), new Type[] { typeof(int), typeof(int), typeof(bool), typeof(IList<Item>), typeof(InventoryMenu.highlightThisItem), typeof(int), typeof(int), typeof(int), typeof(int), typeof(bool) })]
         [HarmonyPatch(MethodType.Constructor)]
@@ -29,22 +33,29 @@ namespace CustomBackpack
                 upArrow = new ClickableTextureComponent(new Microsoft.Xna.Framework.Rectangle(__instance.xPositionOnScreen + 768 + 32 - 50, __instance.yPositionOnScreen - 46, 64, 64), Game1.mouseCursors, Game1.getSourceRectForStandardTileSheet(Game1.mouseCursors, 12, -1, -1), 0.8f, false)
                 {
                     myID = 88,
-                    downNeighborID = 89,
+                    downNeighborID = 90,
                     rightNeighborID = 106,
                     leftNeighborID = -99998
                 };
                 downArrow = new ClickableTextureComponent(new Microsoft.Xna.Framework.Rectangle(__instance.xPositionOnScreen + 768 + 32 - 50, __instance.yPositionOnScreen + 192 + 32 - 53, 64, 64), Game1.mouseCursors, Game1.getSourceRectForStandardTileSheet(Game1.mouseCursors, 11, -1, -1), 0.8f, false)
                 {
                     myID = 89,
-                    upNeighborID = 88,
+                    upNeighborID = 90,
                     rightNeighborID = 106,
                     leftNeighborID = -99998
                 };
-                scrolled = 0;
+                expandButton = new ClickableTextureComponent(new Microsoft.Xna.Framework.Rectangle(__instance.xPositionOnScreen + 768 + 32 - 50, __instance.yPositionOnScreen + 192 + 32 - 53, 64, 64), Game1.mouseCursors, OptionsPlusMinus.plusButtonSource, 4f, false)
+                {
+                    myID = 90,
+                    upNeighborID = 88,
+                    downNeighborID = 89,
+                    rightNeighborID = 106,
+                    leftNeighborID = -99998
+                };
                 __instance.inventory.Clear();
                 for (int j = 0; j < __instance.actualInventory.Count; j++)
                 {
-                    __instance.inventory.Add(new ClickableComponent(new Microsoft.Xna.Framework.Rectangle(xPosition + j % (__instance.capacity / rows) * 64 + horizontalGap * (j % (__instance.capacity / rows)), __instance.yPositionOnScreen + j / (__instance.capacity / rows) * (64 + verticalGap) + (j / (__instance.capacity / rows) - 1) * 4 - ((j > __instance.capacity / rows || !playerInventory || verticalGap != 0) ? 0 : 12), 64, 64), j.ToString() ?? "")
+                    var cc = new ClickableComponent(new Rectangle(xPosition + j % (__instance.capacity / rows) * 64 + horizontalGap * (j % (__instance.capacity / rows)), __instance.yPositionOnScreen + j / (__instance.capacity / rows) * (64 + verticalGap) + (j / (__instance.capacity / rows) - 1) * 4 - ((j > __instance.capacity / rows || !playerInventory || verticalGap != 0) ? 0 : 12) - scrolled * 64, 64, 64), j.ToString() ?? "")
                     {
                         myID = 90000 + j,
                         leftNeighborID = ((j % (__instance.capacity / rows) != 0) ? 90000 + (j - 1) : 107),
@@ -56,7 +67,8 @@ namespace CustomBackpack
                         downNeighborImmutable = true,
                         leftNeighborImmutable = true,
                         rightNeighborImmutable = true
-                    });
+                    };
+                    __instance.inventory.Add(cc);
                 }
 
             }
@@ -69,57 +81,27 @@ namespace CustomBackpack
             {
                 if (!Config.ModEnabled || (__instance.actualInventory != Game1.player.Items) || __instance.actualInventory.Count <= 36 || !__instance.isWithinBounds(x, y))
                     return;
-                if (Game1.input.GetGamePadState().IsButtonDown(Buttons.DPadUp) && !Game1.oldPadState.IsButtonDown(Buttons.DPadUp))
-                {
-                    if (scrolled > 0)
-                    {
-                        scrolled--;
-                    }
-                }
-                else if (Game1.input.GetGamePadState().IsButtonDown(Buttons.DPadDown) && !Game1.oldPadState.IsButtonDown(Buttons.DPadDown))
-                {
-                    if (__instance.actualInventory.Count >= __instance.capacity / __instance.rows * (scrolled + 1) + __instance.capacity)
-                    {
-                        scrolled++;
-                    }
-                }
-                else if (Game1.input.GetMouseState().ScrollWheelValue != Game1.oldMouseState.ScrollWheelValue)
-                {
-                    var oldScrolled = scrolled;
-                    if (Game1.oldMouseState.ScrollWheelValue - Game1.input.GetMouseState().ScrollWheelValue > 0)
-                    {
-                        if (__instance.actualInventory.Count >= __instance.capacity / __instance.rows * (scrolled + 1) + __instance.capacity)
-                        {
-                            scrolled++;
-                        }
-                    }
-                    else
-                    {
-                        if (scrolled > 0)
-                        {
-                            scrolled--;
-                        }
-                    }
-                    if (scrolled != oldScrolled)
-                    {
-                        Game1.playSound("shiny4");
-                        int width = __instance.capacity / __instance.rows;
-                        for (int i = 0; i < __instance.inventory.Count; i++)
-                        {
-                            if(i < scrolled * width || i >= scrolled * width + __instance.capacity)
-                            {
-                                __instance.inventory[i].bounds = new Microsoft.Xna.Framework.Rectangle();
-                            }
-                            else
-                            {
-                                int j = i - scrolled * width;
-                                __instance.inventory[i].bounds = new Microsoft.Xna.Framework.Rectangle(__instance.xPositionOnScreen + i % (__instance.capacity / __instance.rows) * 64 + __instance.horizontalGap * (i % width), __instance.yPositionOnScreen + j / width * (64 + __instance.verticalGap) + (j / width - 1) * 4 - ((j > width || !__instance.playerInventory || __instance.verticalGap != 0) ? 0 : 12), 64, 64);
-                            }
-                            __instance.inventory[i].downNeighborID = (i >= __instance.capacity + width * (scrolled - 1)) ? 102 : 90000 + (i + width);
-                            __instance.inventory[i].upNeighborID = (i < width * (scrolled + 1)) ? (12340 + i - width * scrolled) : 90000 + (i - width);
-                        }
-                    }
-                }
+                OnHover(ref __instance, x, y);
+            }
+        }
+        
+        [HarmonyPatch(typeof(ShopMenu), nameof(ShopMenu.performHoverAction))]
+        public class ShopMenu_performHoverAction_Patch
+        {
+            public static void Prefix(ShopMenu __instance, int x, int y)
+            {
+                if (!Config.ModEnabled || (__instance.inventory.actualInventory != Game1.player.Items) || __instance.inventory.actualInventory.Count <= 36 || !__instance.inventory.isWithinBounds(x, y))
+                    return;
+                OnHover(ref __instance.inventory, x, y);
+            }
+        }
+        
+        [HarmonyPatch(typeof(ShopMenu), nameof(ShopMenu.receiveScrollWheelAction))]
+        public class ShopMenu_receiveScrollWheelAction_Patch
+        {
+            public static bool Prefix(ShopMenu __instance, int direction)
+            {
+                return !Config.ModEnabled || (__instance.inventory.actualInventory != Game1.player.Items) || __instance.inventory.actualInventory.Count <= 36 || !__instance.inventory.isWithinBounds(Game1.getMouseX(), Game1.getMouseY());
             }
         }
 
@@ -162,7 +144,7 @@ namespace CustomBackpack
             {
                 if (!Config.ModEnabled || (__instance.actualInventory != Game1.player.Items) || __instance.actualInventory.Count <= 36)
                     return true;
-                if(!__instance.isWithinBounds(x, y))
+                if (!IsWithinBounds(__instance, x, y))
                 {
                     __result = -1;
                     return false;
@@ -178,7 +160,7 @@ namespace CustomBackpack
             {
                 if (!Config.ModEnabled || (__instance.actualInventory != Game1.player.Items) || __instance.actualInventory.Count <= 36)
                     return true;
-                if(!__instance.isWithinBounds(x, y))
+                if(!IsWithinBounds(__instance, x, y))
                 {
                     __result = toPlace;
                     return false;
@@ -206,6 +188,7 @@ namespace CustomBackpack
         [HarmonyPatch(typeof(InventoryMenu), nameof(InventoryMenu.draw), new Type[] { typeof(SpriteBatch), typeof(int), typeof(int), typeof(int) })]
         public class InventoryMenu_draw_Patch
         {
+
             public static void Prefix(InventoryMenu __instance, ref object[] __state)
             {
                 if (!Config.ModEnabled || (__instance.actualInventory != Game1.player.Items) || __instance.actualInventory.Count <= 36)
@@ -236,6 +219,13 @@ namespace CustomBackpack
                         downArrow.setPosition(__instance.xPositionOnScreen + 768 + 32 - 50, __instance.yPositionOnScreen + 192 + 32 - (__instance.playerInventory ? 53 : 60));
                         downArrow.draw(b);
                     }
+                }
+                expandButton.setPosition(__instance.xPositionOnScreen + 768 + 32 - 20, __instance.yPositionOnScreen + 132 - (__instance.playerInventory ? 53 : 60));
+                expandButton.draw(b);
+                if(SHelper.Input.IsDown(StardewModdingAPI.SButton.MouseLeft) && expandButton.containsPoint(Game1.getMouseX(), Game1.getMouseY()))
+                {
+                    lastMenu = Game1.activeClickableMenu;
+                    Game1.activeClickableMenu = new FullInventoryPage(__instance, __instance.xPositionOnScreen, __instance.yPositionOnScreen, __instance.width, __instance.height);
                 }
                 if (Config.ShowRowNumbers)
                 {

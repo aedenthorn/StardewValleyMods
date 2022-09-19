@@ -5,7 +5,7 @@ namespace CoinCollector
 {
     public class ModConfig
     {
-        public bool EnableMod { get; set; } = true;
+        public bool ModEnabled { get; set; } = true;
         public string BlipAudioPath { get; set; } = "assets/blip.wav";
         public string BlipAudioPathLeft { get; set; } = "assets/blip_left.wav";
         public string BlipAudioPathRight { get; set; } = "assets/blip_right.wav";
@@ -24,5 +24,6 @@ namespace CoinCollector
         public float IndicatorSpeed { get; set; } = 10;
         public float LuckFactor { get; set; } = 0.1f;
         public float MaxPixelPingDistance { get; set; } = 800;
+        public string CraftingRequirements { get; set; } = "709 4 337 1 335 1 338 1 92 10";
     }
 }

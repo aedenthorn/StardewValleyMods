@@ -1,7 +1,9 @@
 ﻿using HarmonyLib;
 using Microsoft.Xna.Framework.Graphics;
+using Microsoft.Xna.Framework.Input;
 using StardewModdingAPI;
 using StardewValley;
+using StardewValley.Menus;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -17,9 +19,11 @@ namespace CustomBackpack
         public static ModConfig Config;
         public static ModEntry context;
 
+        public static IClickableMenu lastMenu;
+
         public static string dictPath = "aedenthorn.CustomBackpack/dictionary";
 
-        private static Dictionary<int, BackPackData> dataDict = new Dictionary<int, BackPackData>();
+        public static Dictionary<int, BackPackData> dataDict = new Dictionary<int, BackPackData>();
 
         /// <summary>The mod entry point, called after the mod is first loaded.</summary>
         /// <param name="helper">Provides simplified APIs for writing mods.</param>
@@ -36,14 +40,17 @@ namespace CustomBackpack
             SHelper = helper;
 
             helper.Events.Content.AssetRequested += Content_AssetRequested;
+            
             helper.Events.GameLoop.SaveLoaded += GameLoop_SaveLoaded;
             helper.Events.GameLoop.DayStarted += GameLoop_DayStarted;
-            Helper.ConsoleCommands.Add("custombackpack", "Manually set backpack slots. Usage: custombackpack <slotnumber>", SetSlots);
+
+            helper.ConsoleCommands.Add("custombackpack", "Manually set backpack slots. Usage: custombackpack <slotnumber>", SetSlots);
 
 
             var harmony = new Harmony(ModManifest.UniqueID);
             harmony.PatchAll();
         }
+
 
         private void SetSlots(string arg1, string[] arg2)
         {

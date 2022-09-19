@@ -2,15 +2,12 @@
 
 namespace CoinCollector
 {
-    public class CoinDataDict
-    {
-        public List<CoinData> data = new List<CoinData>();
-    }
-
     public class CoinData
     {
-        public string id;
+        public int index;
+        public string name;
         public string setName;
+        public string texturePath;
         public List<string> locations;
         public float rarity;
         public int parentSheetIndex;
