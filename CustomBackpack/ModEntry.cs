@@ -50,8 +50,10 @@ namespace CustomBackpack
             var harmony = new Harmony(ModManifest.UniqueID);
             harmony.PatchAll();
         }
-
-
+        public override object GetApi()
+        {
+            return new CustomBackpackApi();
+        }
         private void SetSlots(string arg1, string[] arg2)
         {
             if(arg2.Length == 1 && int.TryParse(arg2[0], out int slots))

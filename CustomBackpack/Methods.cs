@@ -23,9 +23,23 @@ namespace CustomBackpack
 
         private static bool IsWithinBounds(InventoryMenu instance, int x, int y)
         {
-            int first = scrolled * 12;
+            int first = (instance.actualInventory.Count <= instance.capacity ? 0 :  scrolled * instance.rows);
             Rectangle rect = new Rectangle(instance.inventory[first].bounds.X, instance.inventory[first].bounds.Y, instance.inventory[first + instance.capacity - 1].bounds.X + instance.inventory[first + instance.capacity - 1].bounds.Width - instance.inventory[first].bounds.X, instance.inventory[first+instance.capacity - 1].bounds.Y + instance.inventory[first+instance.capacity - 1].bounds.Height - instance.inventory[first].bounds.Y);
             return rect.Contains(x, y);
+        }
+
+        private static Rectangle GetBounds(InventoryMenu __instance, int i)
+        {
+            int offset = __instance.capacity >= __instance.actualInventory.Count ? 0 : scrolled;
+            int width = __instance.capacity / __instance.rows;
+            if (i < offset * width || i >= offset * width + __instance.capacity)
+            {
+                return new Rectangle();
+            }
+            else
+            {
+                return new Rectangle(__instance.xPositionOnScreen + i % width * 64 + __instance.horizontalGap * (i % width), __instance.yPositionOnScreen + (i / width - offset) * (64 + __instance.verticalGap) + (i / width - offset - 1) * 4 - ((((i - offset * width) >= width || !__instance.playerInventory || __instance.verticalGap != 0)) ? 0 : 12), 64, 64);
+            }
         }
 
         private static Where GetGridPosition(InventoryMenu __instance, int x, int y)
@@ -53,24 +67,31 @@ namespace CustomBackpack
             return Where.absent;
         }
 
-        private static void SetPlayerSlots(int slots)
+        public static bool SetPlayerSlots(int slots, bool force = false)
         {
             if (!Config.ModEnabled || Game1.player is null || slots < 1)
-                return;
-            if (slots % 12 != 0)
-                slots = (slots / 12 + 1) * 12;
-            SMonitor.Log($"Setting player backpack slots to {slots}");
+                return false;
+            if(slots == Game1.player.MaxItems)
+            {
+                SMonitor.Log($"Player backpack slots already at {slots}");
+                return false;
+            }
+
+            SMonitor.Log($"Changing player backpack slots from {Game1.player.MaxItems} to {slots}");
 
             if(slots < Game1.player.MaxItems)
             {
-                for (int i = Game1.player.Items.Count - 1; i >= slots; i--)
+                if (!force)
                 {
-                    if (Game1.player.Items.Count <= i)
-                        break;
-                    if (Game1.player.Items[i] is not null)
+                    for (int i = Game1.player.Items.Count - 1; i >= slots; i--)
                     {
-                        SMonitor.Log($"Slot {i} isn't empty, aborting");
-                        return;
+                        if (Game1.player.Items.Count <= i)
+                            break;
+                        if (Game1.player.Items[i] is not null)
+                        {
+                            SMonitor.Log($"Slot {i} isn't empty, aborting");
+                            return false;
+                        }
                     }
                 }
                 while (Game1.player.Items.Count > slots)
@@ -86,11 +107,12 @@ namespace CustomBackpack
                 }
             }
             Game1.player.maxItems.Value = slots;
+            return true;
         }
 
         private static void OnHover(ref InventoryMenu __instance, int x, int y)
         {
-            if (__instance is FullInventoryMenu)
+            if (__instance.capacity >= __instance.actualInventory.Count)
                 return;
             if ((Game1.input.GetGamePadState().IsButtonDown(Buttons.DPadUp) && !Game1.oldPadState.IsButtonDown(Buttons.DPadUp)) || (Game1.input.GetKeyboardState().IsKeyDown(Keys.Up) && !Game1.oldKBState.IsKeyDown(Keys.Up)))
             {
@@ -129,15 +151,7 @@ namespace CustomBackpack
                     int width = __instance.capacity / __instance.rows;
                     for (int i = 0; i < __instance.inventory.Count; i++)
                     {
-                        if (i < scrolled * width || i >= scrolled * width + __instance.capacity)
-                        {
-                            __instance.inventory[i].bounds = new Microsoft.Xna.Framework.Rectangle();
-                        }
-                        else
-                        {
-                            int j = i - scrolled * width;
-                            __instance.inventory[i].bounds = new Microsoft.Xna.Framework.Rectangle(__instance.xPositionOnScreen + i % (__instance.capacity / __instance.rows) * 64 + __instance.horizontalGap * (i % width), __instance.yPositionOnScreen + j / width * (64 + __instance.verticalGap) + (j / width - 1) * 4 - ((j > width || !__instance.playerInventory || __instance.verticalGap != 0) ? 0 : 12), 64, 64);
-                        }
+                        __instance.inventory[i].bounds = GetBounds(__instance, i);
                         __instance.inventory[i].downNeighborID = (i >= __instance.capacity + width * (scrolled - 1)) ? 102 : 90000 + (i + width);
                         __instance.inventory[i].upNeighborID = (i < width * (scrolled + 1)) ? (12340 + i - width * scrolled) : 90000 + (i - width);
                     }

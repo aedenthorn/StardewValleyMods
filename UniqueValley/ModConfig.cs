@@ -10,5 +10,6 @@ namespace UniqueValley
         public bool MaintainGender { get; set; } = true;
         public bool MaintainAge { get; set; } = true;
         public bool MaintainDatable { get; set; } = true;
+        public bool RandomizeGiftTastes { get; set; } = false;
     }
 }

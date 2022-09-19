@@ -79,6 +79,10 @@ namespace UniqueValley
             {
                 e.Edit(ChangeNames, StardewModdingAPI.Events.AssetEditPriority.Late);
             }
+            else if (Config.RandomizeGiftTastes && e.NameWithoutLocale.IsEquivalentTo("Data/NPCGiftTastes"))
+            {
+                e.Edit(ChangeNames, StardewModdingAPI.Events.AssetEditPriority.Late);
+            }
         }
         private void ChangeNames(IAssetData obj)
         {
