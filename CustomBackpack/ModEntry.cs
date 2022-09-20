@@ -1,4 +1,5 @@
 ﻿using HarmonyLib;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using StardewModdingAPI;
@@ -25,6 +26,21 @@ namespace CustomBackpack
 
         public static Dictionary<int, BackPackData> dataDict = new Dictionary<int, BackPackData>();
 
+        public static Texture2D scrollTexture;
+        public static Texture2D handleTexture;
+        public static List<Item> tempInventory = new List<Item>();
+        public static int pressTime;
+
+        public static int oldScrollValue;
+        public static int oldCapacity;
+        public static int oldRows;
+        public static int oldScrolled;
+        public static int scrolled = 0;
+        public static int scrollChange = 0;
+        public static int scrollWidth = 4;
+        public static bool scrolling;
+        public static Rectangle scrollArea;
+
         /// <summary>The mod entry point, called after the mod is first loaded.</summary>
         /// <param name="helper">Provides simplified APIs for writing mods.</param>
         public override void Entry(IModHelper helper)
@@ -43,13 +59,44 @@ namespace CustomBackpack
             
             helper.Events.GameLoop.SaveLoaded += GameLoop_SaveLoaded;
             helper.Events.GameLoop.DayStarted += GameLoop_DayStarted;
+            helper.Events.Input.ButtonPressed += Input_ButtonPressed;
+            helper.Events.GameLoop.UpdateTicked += GameLoop_UpdateTicked; ;
 
             helper.ConsoleCommands.Add("custombackpack", "Manually set backpack slots. Usage: custombackpack <slotnumber>", SetSlots);
 
-
             var harmony = new Harmony(ModManifest.UniqueID);
             harmony.PatchAll();
+
+            scrollTexture = new Texture2D(Game1.graphics.GraphicsDevice, 1, 1);
+            scrollTexture.SetData(new Color[] { Config.BackgroundColor });
+            handleTexture = new Texture2D(Game1.graphics.GraphicsDevice, 1, 1);
+            handleTexture.SetData(new Color[] { Config.HandleColor });
         }
+
+        private void GameLoop_UpdateTicked(object sender, StardewModdingAPI.Events.UpdateTickedEventArgs e)
+        {
+            if(scrolling && (Game1.activeClickableMenu is null || Game1.input.GetMouseState().LeftButton != ButtonState.Pressed))
+            {
+                scrolling = false;
+            }
+            var newScrollValue = Game1.input.GetMouseState().ScrollWheelValue;
+            if (oldScrollValue > newScrollValue)
+                scrollChange = 1;
+            else if (oldScrollValue < newScrollValue)
+                scrollChange = -1;
+            else
+                scrollChange = 0;
+            oldScrollValue = newScrollValue;
+        }
+
+        private void Input_ButtonPressed(object sender, StardewModdingAPI.Events.ButtonPressedEventArgs e)
+        {
+            if(Game1.activeClickableMenu is not null && e.Button == SButton.MouseLeft && scrollArea.Contains(Game1.getMouseX(), Game1.getMouseY()))
+            {
+                scrolling = true;
+            }
+        }
+
         public override object GetApi()
         {
             return new CustomBackpackApi();
@@ -135,6 +182,12 @@ namespace CustomBackpack
                 name: () => "Show Row Numbers?",
                 getValue: () => Config.ShowRowNumbers,
                 setValue: value => Config.ShowRowNumbers = value
+            );
+            configMenu.AddNumberOption(
+                mod: ModManifest,
+                name: () => "Min Handle Height",
+                getValue: () => Config.MinHandleHeight,
+                setValue: value => Config.MinHandleHeight = value
             );
         }
     }

@@ -9,6 +9,7 @@ namespace CustomBackpack
 {
     internal class FullInventoryPage : InventoryPage
     {
+
         FieldInfo trashRotField = AccessTools.Field(typeof(InventoryPage), "trashCanLidRotation");
         FieldInfo hoverTextField = AccessTools.Field(typeof(InventoryPage), "hoverText");
         FieldInfo hoverAmountField = AccessTools.Field(typeof(InventoryPage), "hoverAmount");
@@ -17,6 +18,7 @@ namespace CustomBackpack
 
         public FullInventoryPage(InventoryMenu instance, int x, int y, int width, int height) : base(x, y, width, height)
         {
+
             inventory = new FullInventoryMenu(instance);
             equipmentIcons?.Clear();
             if(junimoNoteIcon is not null)
@@ -25,6 +27,7 @@ namespace CustomBackpack
                 portrait.bounds = new Rectangle();
             exitFunction = delegate ()
             {
+                ModEntry.scrolled = ModEntry.oldScrolled;
                 Game1.activeClickableMenu = ModEntry.lastMenu;
             };
         }
@@ -44,10 +47,10 @@ namespace CustomBackpack
             int num = width / 3;
             if (organizeButton != null)
             {
-                organizeButton.bounds.X = xPositionOnScreen + width + 48;
+                organizeButton.bounds.X = xPositionOnScreen + width + 64;
                 organizeButton.draw(b);
             }
-            trashCan.bounds.X = xPositionOnScreen + width + 48;
+            trashCan.bounds.X = xPositionOnScreen + width + 64;
             trashCan.bounds.Y = organizeButton.bounds.Y + 256;
             trashCan.draw(b);
             b.Draw(Game1.mouseCursors, new Vector2(trashCan.bounds.X + 60, trashCan.bounds.Y + 40), new Rectangle?(new Rectangle(564 + Game1.player.trashCanLevel * 18, 129, 18, 10)), Color.White, trashCanLidRotation, new Vector2(16f, 10f), 4f, SpriteEffects.None, 0.86f);

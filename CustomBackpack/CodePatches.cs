@@ -29,22 +29,28 @@ namespace CustomBackpack
                 if (!Config.ModEnabled || (__instance.actualInventory != Game1.player.Items) || __instance.capacity >= __instance.actualInventory.Count)
                     return;
 
+                if (capacity != oldCapacity || rows != oldRows)
+                    scrolled = 0;
+
+                oldRows = rows;
+                oldCapacity = capacity;
+
                 SMonitor.Log($"Created new inventory menu with {__instance.actualInventory.Count} slots");
-                upArrow = new ClickableTextureComponent(new Microsoft.Xna.Framework.Rectangle(__instance.xPositionOnScreen + 768 + 32 - 50, __instance.yPositionOnScreen - 46, 64, 64), Game1.mouseCursors, Game1.getSourceRectForStandardTileSheet(Game1.mouseCursors, 12, -1, -1), 0.8f, false)
+                upArrow = new ClickableTextureComponent(new Rectangle(__instance.xPositionOnScreen + 768 + 32 - 50, __instance.yPositionOnScreen - 46, 24, 24), Game1.mouseCursors, Game1.getSourceRectForStandardTileSheet(Game1.mouseCursors, 12, -1, -1), 0.4f, false)
                 {
                     myID = 88,
                     downNeighborID = 90,
                     rightNeighborID = 106,
                     leftNeighborID = -99998
                 };
-                downArrow = new ClickableTextureComponent(new Microsoft.Xna.Framework.Rectangle(__instance.xPositionOnScreen + 768 + 32 - 50, __instance.yPositionOnScreen + 192 + 32 - 53, 64, 64), Game1.mouseCursors, Game1.getSourceRectForStandardTileSheet(Game1.mouseCursors, 11, -1, -1), 0.8f, false)
+                downArrow = new ClickableTextureComponent(new Rectangle(__instance.xPositionOnScreen + 768 + 32 - 50, __instance.yPositionOnScreen + 192 + 32 - 53, 24, 24), Game1.mouseCursors, Game1.getSourceRectForStandardTileSheet(Game1.mouseCursors, 11, -1, -1), 0.4f, false)
                 {
                     myID = 89,
                     upNeighborID = 90,
                     rightNeighborID = 106,
                     leftNeighborID = -99998
                 };
-                expandButton = new ClickableTextureComponent(new Microsoft.Xna.Framework.Rectangle(__instance.xPositionOnScreen + 768 + 32 - 50, __instance.yPositionOnScreen + 192 + 32 - 53, 64, 64), Game1.mouseCursors, OptionsPlusMinus.plusButtonSource, 4f, false)
+                expandButton = new ClickableTextureComponent(new Rectangle(__instance.xPositionOnScreen + 768 + 32 - 50, __instance.yPositionOnScreen + 192 + 32 - 53, 32, 32), Game1.mouseCursors, OptionsPlusMinus.plusButtonSource, 4f, false)
                 {
                     myID = 90,
                     upNeighborID = 88,
@@ -157,7 +163,6 @@ namespace CustomBackpack
         [HarmonyPatch(typeof(InventoryMenu), nameof(InventoryMenu.draw), new Type[] { typeof(SpriteBatch), typeof(int), typeof(int), typeof(int) })]
         public class InventoryMenu_draw_Patch
         {
-
             public static void Prefix(InventoryMenu __instance, ref object[] __state)
             {
                 if (!Config.ModEnabled || (__instance.actualInventory != Game1.player.Items) || __instance.capacity >= __instance.actualInventory.Count)
@@ -176,46 +181,7 @@ namespace CustomBackpack
                     return;
                 __instance.actualInventory = (IList<Item>)__state[0];
                 __instance.inventory = (List<ClickableComponent>)__state[1];
-                var cc1 = __instance.inventory[(scrolled + 1) * (__instance.capacity / __instance.rows) - 1];
-                Point corner1 = cc1.bounds.Location + new Point(cc1.bounds.Width, 0);
-                var cc2 = __instance.inventory[(scrolled + __instance.rows) * (__instance.capacity / __instance.rows) - 1];
-                Point corner2 = cc2.bounds.Location + new Point(cc2.bounds.Width, cc2.bounds.Height);
-                Point middle = corner1 + new Point(0, (corner2.Y - corner1.Y) / 2);
-                if (Config.ShowArrows)
-                {
-                    if (scrolled > 0)
-                    {
-                        upArrow.setPosition(corner1.X - 16, corner1.Y - 30);
-                        upArrow.draw(b);
-                    }
-                    if (scrolled * __instance.capacity / __instance.rows + __instance.capacity < __instance.actualInventory.Count)
-                    {
-                        downArrow.setPosition(corner2.X - 16, corner2.Y - 25);
-                        downArrow.draw(b);
-                    }
-                }
-                expandButton.setPosition(middle.X + 12, middle.Y - 11);
-                expandButton.draw(b);
-                if(SHelper.Input.IsDown(StardewModdingAPI.SButton.MouseLeft) && expandButton.containsPoint(Game1.getMouseX(), Game1.getMouseY()))
-                {
-                    Game1.playSound("shwip");
-                    lastMenu = Game1.activeClickableMenu;
-                    Game1.activeClickableMenu = new FullInventoryPage(__instance, __instance.xPositionOnScreen, __instance.yPositionOnScreen, __instance.width, __instance.height);
-                }
-                if (Config.ShowRowNumbers)
-                {
-                    int width = __instance.capacity / __instance.rows;
-                    for (int i = 0; i < __instance.rows; i++)
-                    {
-                        var cc = __instance.inventory[(scrolled + i) * width];
-
-                        Vector2 toDraw = new Vector2(cc.bounds.X - 8, cc.bounds.Y + 16);
-
-                        var strToDraw = (scrolled + 1 + i) + "";
-                        Vector2 strSize = Game1.tinyFont.MeasureString(strToDraw);
-                        b.DrawString(Game1.tinyFont, strToDraw, toDraw + new Vector2(-strSize.X / 2f, -strSize.Y), Color.DimGray);
-                    }
-                }
+                DrawUIElements(b, __instance);
             }
         }
         [HarmonyPatch(typeof(SeedShop), nameof(SeedShop.draw))]
