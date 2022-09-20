@@ -6,7 +6,7 @@ using System.Linq;
 
 namespace CustomResourceClumps
 {
-    public class CustomResourceClumps
+    public class CustomResourceClumpsAPI
     {
         public ResourceClump GetCustomClump(string id, Vector2 tile)
         {
@@ -29,7 +29,7 @@ namespace CustomResourceClumps
         {
             return new List<object>(ModEntry.customClumps);
         }
-        public List<string> GetCustomClumpIDs() 
+        public List<string> GetCustomClumpIDs()
         {
             return ModEntry.customClumps.Select(n => n.id).ToList();
         }

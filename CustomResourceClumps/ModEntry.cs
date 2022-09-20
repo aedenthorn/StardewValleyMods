@@ -76,7 +76,10 @@ namespace CustomResourceClumps
 
             helper.Events.GameLoop.GameLaunched += GameLoop_GameLaunched;
         }
-
+        public override object GetApi()
+        {
+            return new CustomResourceClumpsAPI();
+        }
         private void CRCConsoleCommand(string arg1, string[] arg2)
         {
             if(arg2.Length == 0)
