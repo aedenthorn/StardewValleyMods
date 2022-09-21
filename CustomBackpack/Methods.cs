@@ -32,6 +32,33 @@ namespace CustomBackpack
                 return new Rectangle(__instance.xPositionOnScreen + i % width * 64 + __instance.horizontalGap * (i % width), __instance.yPositionOnScreen + (i / width - offset) * (64 + __instance.verticalGap) + (i / width - offset - 1) * 4 - ((((i - offset * width) >= width || !__instance.playerInventory || __instance.verticalGap != 0)) ? 0 : 12), 64, 64);
             }
         }
+        private static int GetDownNeighbor(InventoryMenu __instance, int i)
+        {
+            int width = __instance.capacity / __instance.rows;
+            int offset = (__instance.capacity >= __instance.actualInventory.Count ? 0 : scrolled.Value) * width;
+            if (i < offset || i >= offset + __instance.capacity)
+            {
+                return -999;
+            }
+            else
+            {
+                return (i >= offset + width * (__instance.rows - 1)) ? 102 : 90000 + i + width;
+            }
+        }
+
+        private static int GetUpNeighbor(InventoryMenu __instance, int i)
+        {
+            int width = __instance.capacity / __instance.rows;
+            int offset = (__instance.capacity >= __instance.actualInventory.Count ? 0 : scrolled.Value) * width;
+            if (i < offset || i >= offset + __instance.capacity)
+            {
+                return -999;
+            }
+            else
+            {
+                return (i < offset + width) ? 12340 + i % width : 90000 + i - width;
+            }
+        }
 
         public static bool SetPlayerSlots(int slots, bool force = false)
         {
@@ -81,15 +108,7 @@ namespace CustomBackpack
         {
             if (__instance.capacity >= __instance.actualInventory.Count)
                 return;
-            if ((Game1.input.GetGamePadState().IsButtonDown(Buttons.DPadUp) && !Game1.oldPadState.IsButtonDown(Buttons.DPadUp)) || (Game1.input.GetKeyboardState().IsKeyDown(Keys.Up) && !Game1.oldKBState.IsKeyDown(Keys.Up)))
-            {
-                 ChangeScroll(__instance, -1);
-            }
-            else if ((Game1.input.GetGamePadState().IsButtonDown(Buttons.DPadDown) && !Game1.oldPadState.IsButtonDown(Buttons.DPadDown)) || (Game1.input.GetKeyboardState().IsKeyDown(Keys.Down) && !Game1.oldKBState.IsKeyDown(Keys.Down)))
-            {
-                 ChangeScroll(__instance, 1);
-            }
-            else if (Game1.input.GetMouseState().ScrollWheelValue != Game1.oldMouseState.ScrollWheelValue)
+            if (Game1.input.GetMouseState().ScrollWheelValue != Game1.oldMouseState.ScrollWheelValue)
             {
                 if (Game1.oldMouseState.ScrollWheelValue - Game1.input.GetMouseState().ScrollWheelValue > 0)
                 {
@@ -114,8 +133,8 @@ namespace CustomBackpack
                 for (int i = 0; i < __instance.inventory.Count; i++)
                 {
                     __instance.inventory[i].bounds = GetBounds(__instance, i);
-                    __instance.inventory[i].downNeighborID = (i >= __instance.capacity + width * (scrolled.Value - 1)) ? 102 : 90000 + (i + width);
-                    __instance.inventory[i].upNeighborID = (i < width * (scrolled.Value + 1)) ? (12340 + i - width * scrolled.Value) : 90000 + (i - width);
+                    __instance.inventory[i].downNeighborID = GetDownNeighbor(__instance, i);
+                    __instance.inventory[i].upNeighborID = GetUpNeighbor(__instance, i);
                 }
                 return true;
             }

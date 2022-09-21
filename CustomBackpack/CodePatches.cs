@@ -65,8 +65,8 @@ namespace CustomBackpack
                         myID = 90000 + j,
                         leftNeighborID = ((j % (__instance.capacity / rows) != 0) ? 90000 + (j - 1) : 107),
                         rightNeighborID = (((j + 1) % (__instance.capacity / rows) != 0) ? 90000 + (j + 1) : 106),
-                        downNeighborID = ((j >= __instance.capacity - __instance.capacity / rows) ? 102 : 90000 + (j + __instance.capacity / rows)),
-                        upNeighborID = ((j < __instance.capacity / rows) ? (12340 + j) : 90000 + (j - __instance.capacity / rows)),
+                        downNeighborID = GetDownNeighbor(__instance, j),
+                        upNeighborID = GetUpNeighbor(__instance, j),
                         region = 9000,
                         upNeighborImmutable = true,
                         downNeighborImmutable = true,
@@ -77,6 +77,7 @@ namespace CustomBackpack
                 }
 
             }
+
         }
 
         [HarmonyPatch(typeof(InventoryMenu), nameof(InventoryMenu.hover))]
@@ -156,6 +157,79 @@ namespace CustomBackpack
                     return false;
                 }
                 return true;
+            }
+        }
+        
+        [HarmonyPatch(typeof(InventoryMenu), nameof(InventoryMenu.setUpForGamePadMode))]
+        public class InventoryMenu_setUpForGamePadMode_Patch
+        {
+            public static void Postfix(InventoryMenu __instance)
+            {
+                if (!Config.ModEnabled || __instance.inventory is null || __instance.capacity >= __instance.actualInventory.Count)
+                    return;
+                if (__instance.inventory.Count > 0)
+                {
+                    var bounds = __instance.inventory[scrolled.Value * __instance.capacity / __instance.rows].bounds;
+                    Game1.setMousePosition(bounds.Right - bounds.Width / 8, bounds.Bottom - bounds.Height / 8);
+                    var x = Game1.getMousePosition();
+                    var y = x;
+                }
+            }
+        }
+        
+        [HarmonyPatch(typeof(InventoryPage), nameof(InventoryPage.snapToDefaultClickableComponent))]
+        public class InventoryPage_snapToDefaultClickableComponent_Patch
+        {
+            public static bool Prefix(InventoryPage __instance)
+            {
+                if (!Config.ModEnabled || __instance.inventory is null || __instance.inventory.capacity >= __instance.inventory.actualInventory.Count)
+                    return true;
+
+                __instance.currentlySnappedComponent = __instance.getComponentWithID(90000 + scrolled.Value * __instance.inventory.capacity / __instance.inventory.rows);
+                __instance.snapCursorToCurrentSnappedComponent();
+                return false;
+            }
+        }
+        
+        [HarmonyPatch(typeof(IClickableMenu), nameof(IClickableMenu.moveCursorInDirection))]
+        public class IClickableMenu_moveCursorInDirection_Patch
+        {
+            public static bool Prefix(IClickableMenu __instance, int direction)
+            {
+                if (!Config.ModEnabled || __instance is not InventoryPage || (__instance as InventoryPage).inventory.actualInventory.Count <= (__instance as InventoryPage).inventory.capacity || __instance.currentlySnappedComponent is null)
+                    return true;
+                InventoryMenu menu = (__instance as InventoryPage).inventory;
+                ClickableComponent old = __instance.currentlySnappedComponent;
+                int width = menu.capacity / menu.rows;
+                int offset = scrolled.Value * width;
+                if (direction == 0 && old.myID == 102)
+                {
+                    __instance.currentlySnappedComponent = __instance.getComponentWithID(90000 + offset + width * (menu.rows - 1));
+                }
+                else if (direction == 2 && old.myID >= 12340 && old.myID < 12340 + width)
+                {
+                    __instance.currentlySnappedComponent = __instance.getComponentWithID(90000 + offset + old.myID % 12340);
+                }
+                else if (direction == 0 && old.myID > 90000 && old.upNeighborID < 90000 && scrolled.Value > 0)
+                {
+                    ChangeScroll(menu, -1);
+                    __instance.currentlySnappedComponent = __instance.getComponentWithID(old.myID - width);
+                }
+                else if (direction == 2 && old.myID > 90000 && old.downNeighborID == 102 && scrolled.Value < (menu.actualInventory.Count  / width) - menu.rows)
+                {
+                    ChangeScroll(menu, 1);
+                    __instance.currentlySnappedComponent = __instance.getComponentWithID(old.myID + width);
+                }
+                else
+                {
+                    return true;
+                }
+                __instance.snapCursorToCurrentSnappedComponent();
+                if (__instance.currentlySnappedComponent != old)
+                {
+                    Game1.playSound("shiny4");
+                }
+                return false;
             }
         }
 

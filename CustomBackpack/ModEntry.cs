@@ -28,18 +28,18 @@ namespace CustomBackpack
         public static Texture2D scrollTexture;
         public static Texture2D handleTexture;
 
-        public static PerScreen<IClickableMenu> lastMenu;
-        public static PerScreen<int> pressTime;
+        public static PerScreen<IClickableMenu> lastMenu = new PerScreen<IClickableMenu>();
+        public static PerScreen<int> pressTime = new PerScreen<int>();
 
-        public static PerScreen<int> oldScrollValue;
-        public static PerScreen<int> oldCapacity;
-        public static PerScreen<int> oldRows;
-        public static PerScreen<int> oldScrolled;
-        public static PerScreen<int> scrolled;
-        public static PerScreen<int> scrollChange;
+        public static PerScreen<int> oldScrollValue = new PerScreen<int>();
+        public static PerScreen<int> oldCapacity = new PerScreen<int>();
+        public static PerScreen<int> oldRows = new PerScreen<int>();
+        public static PerScreen<int> oldScrolled = new PerScreen<int>();
+        public static PerScreen<int> scrolled = new PerScreen<int>();
+        public static PerScreen<int> scrollChange = new PerScreen<int>();
         public static PerScreen<int> scrollWidth = new PerScreen<int>(() => 4);
-        public static PerScreen<bool> scrolling;
-        public static PerScreen<Rectangle> scrollArea;
+        public static PerScreen<bool> scrolling = new PerScreen<bool>();
+        public static PerScreen<Rectangle> scrollArea = new PerScreen<Rectangle>();
 
         /// <summary>The mod entry point, called after the mod is first loaded.</summary>
         /// <param name="helper">Provides simplified APIs for writing mods.</param>
@@ -56,7 +56,8 @@ namespace CustomBackpack
             SHelper = helper;
 
             helper.Events.Content.AssetRequested += Content_AssetRequested;
-            
+
+            helper.Events.GameLoop.GameLaunched += GameLoop_GameLaunched;
             helper.Events.GameLoop.SaveLoaded += GameLoop_SaveLoaded;
             helper.Events.GameLoop.DayStarted += GameLoop_DayStarted;
             helper.Events.Input.ButtonPressed += Input_ButtonPressed;
@@ -188,6 +189,12 @@ namespace CustomBackpack
                 name: () => "Min Handle Height",
                 getValue: () => Config.MinHandleHeight,
                 setValue: value => Config.MinHandleHeight = value
+            );
+            configMenu.AddKeybind(
+                mod: ModManifest,
+                name: () => "Expand Button",
+                getValue: () => Config.ShowExpandedButton,
+                setValue: value => Config.ShowExpandedButton = value
             );
         }
     }
