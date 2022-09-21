@@ -3,6 +3,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using StardewModdingAPI;
+using StardewModdingAPI.Utilities;
 using StardewValley;
 using StardewValley.Menus;
 using System;
@@ -20,26 +21,25 @@ namespace CustomBackpack
         public static ModConfig Config;
         public static ModEntry context;
 
-        public static IClickableMenu lastMenu;
 
         public static string dictPath = "aedenthorn.CustomBackpack/dictionary";
 
         public static Dictionary<int, BackPackData> dataDict = new Dictionary<int, BackPackData>();
-
         public static Texture2D scrollTexture;
         public static Texture2D handleTexture;
-        public static List<Item> tempInventory = new List<Item>();
-        public static int pressTime;
 
-        public static int oldScrollValue;
-        public static int oldCapacity;
-        public static int oldRows;
-        public static int oldScrolled;
-        public static int scrolled = 0;
-        public static int scrollChange = 0;
-        public static int scrollWidth = 4;
-        public static bool scrolling;
-        public static Rectangle scrollArea;
+        public static PerScreen<IClickableMenu> lastMenu;
+        public static PerScreen<int> pressTime;
+
+        public static PerScreen<int> oldScrollValue;
+        public static PerScreen<int> oldCapacity;
+        public static PerScreen<int> oldRows;
+        public static PerScreen<int> oldScrolled;
+        public static PerScreen<int> scrolled;
+        public static PerScreen<int> scrollChange;
+        public static PerScreen<int> scrollWidth = new PerScreen<int>(() => 4);
+        public static PerScreen<bool> scrolling;
+        public static PerScreen<Rectangle> scrollArea;
 
         /// <summary>The mod entry point, called after the mod is first loaded.</summary>
         /// <param name="helper">Provides simplified APIs for writing mods.</param>
@@ -75,25 +75,25 @@ namespace CustomBackpack
 
         private void GameLoop_UpdateTicked(object sender, StardewModdingAPI.Events.UpdateTickedEventArgs e)
         {
-            if(scrolling && (Game1.activeClickableMenu is null || Game1.input.GetMouseState().LeftButton != ButtonState.Pressed))
+            if(scrolling.Value && (Game1.activeClickableMenu is null || Game1.input.GetMouseState().LeftButton != ButtonState.Pressed))
             {
-                scrolling = false;
+                scrolling.Value = false;
             }
             var newScrollValue = Game1.input.GetMouseState().ScrollWheelValue;
-            if (oldScrollValue > newScrollValue)
-                scrollChange = 1;
-            else if (oldScrollValue < newScrollValue)
-                scrollChange = -1;
+            if (oldScrollValue.Value > newScrollValue)
+                scrollChange.Value = 1;
+            else if (oldScrollValue.Value < newScrollValue)
+                scrollChange.Value = -1;
             else
-                scrollChange = 0;
-            oldScrollValue = newScrollValue;
+                scrollChange.Value = 0;
+            oldScrollValue.Value = newScrollValue;
         }
 
         private void Input_ButtonPressed(object sender, StardewModdingAPI.Events.ButtonPressedEventArgs e)
         {
-            if(Game1.activeClickableMenu is not null && e.Button == SButton.MouseLeft && scrollArea.Contains(Game1.getMouseX(), Game1.getMouseY()))
+            if(Game1.activeClickableMenu is not null && e.Button == SButton.MouseLeft && scrollArea.Value.Contains(Game1.getMouseX(), Game1.getMouseY()))
             {
-                scrolling = true;
+                scrolling.Value = true;
             }
         }
 

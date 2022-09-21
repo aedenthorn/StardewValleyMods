@@ -28,7 +28,7 @@ namespace CustomBackpack
             exitFunction = delegate ()
             {
                 ModEntry.scrolled = ModEntry.oldScrolled;
-                Game1.activeClickableMenu = ModEntry.lastMenu;
+                Game1.activeClickableMenu = ModEntry.lastMenu.Value;
             };
         }
         public override void draw(SpriteBatch b)

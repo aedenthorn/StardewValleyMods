@@ -1,7 +1,6 @@
 ﻿using HarmonyLib;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using Microsoft.Xna.Framework.Input;
 using StardewValley;
 using StardewValley.Locations;
 using StardewValley.Menus;
@@ -29,11 +28,11 @@ namespace CustomBackpack
                 if (!Config.ModEnabled || (__instance.actualInventory != Game1.player.Items) || __instance.capacity >= __instance.actualInventory.Count)
                     return;
 
-                if (capacity != oldCapacity || rows != oldRows)
-                    scrolled = 0;
+                if (capacity != oldCapacity.Value || rows != oldRows.Value)
+                    scrolled.Value = 0;
 
-                oldRows = rows;
-                oldCapacity = capacity;
+                oldRows.Value = rows;
+                oldCapacity.Value = capacity;
 
                 SMonitor.Log($"Created new inventory menu with {__instance.actualInventory.Count} slots");
                 upArrow = new ClickableTextureComponent(new Rectangle(__instance.xPositionOnScreen + 768 + 32 - 50, __instance.yPositionOnScreen - 46, 24, 24), Game1.mouseCursors, Game1.getSourceRectForStandardTileSheet(Game1.mouseCursors, 12, -1, -1), 0.4f, false)
@@ -172,8 +171,8 @@ namespace CustomBackpack
                     __instance.inventory
                 };
 
-                __instance.actualInventory = new List<Item>(__instance.actualInventory.Skip(__instance.capacity / __instance.rows * scrolled).Take(__instance.capacity));
-                __instance.inventory = new List<ClickableComponent>(__instance.inventory.Skip(__instance.capacity / __instance.rows * scrolled).Take(__instance.capacity));
+                __instance.actualInventory = new List<Item>(__instance.actualInventory.Skip(__instance.capacity / __instance.rows * scrolled.Value).Take(__instance.capacity));
+                __instance.inventory = new List<ClickableComponent>(__instance.inventory.Skip(__instance.capacity / __instance.rows * scrolled.Value).Take(__instance.capacity));
             }
             public static void Postfix(SpriteBatch b, InventoryMenu __instance, ref object[] __state)
             {

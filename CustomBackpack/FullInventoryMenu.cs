@@ -36,7 +36,7 @@ namespace CustomBackpack
 			Color tint = (red == -1) ? Color.White : new Color((int)Utility.Lerp(red, Math.Min(255, red + 150), 0.65f), (int)Utility.Lerp(green, Math.Min(255, green + 150), 0.65f), (int)Utility.Lerp(blue, Math.Min(255, blue + 150), 0.65f));
 			Texture2D texture = (red == -1) ? Game1.menuTexture : Game1.uncoloredMenuTexture;
 			int perRow = capacity / rows;
-			int first = capacity < actualInventory.Count ? ModEntry.scrolled * perRow : 0;
+			int first = capacity < actualInventory.Count ? ModEntry.scrolled.Value * perRow : 0;
 			for (int i = first; i < Math.Min(actualInventory.Count, first + capacity); i++)
 			{
 				Vector2 toDraw = new Vector2(xPositionOnScreen + i % perRow * 64 + horizontalGap * (i % perRow), ModEntry.GetBounds(this, i).Y);

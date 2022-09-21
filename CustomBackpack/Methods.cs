@@ -14,14 +14,14 @@ namespace CustomBackpack
 
         private static bool IsWithinBounds(InventoryMenu instance, int x, int y)
         {
-            int first = (instance.actualInventory.Count <= instance.capacity ? 0 :  scrolled * instance.capacity / instance.rows);
+            int first = (instance.actualInventory.Count <= instance.capacity ? 0 :  scrolled.Value * instance.capacity / instance.rows);
             Rectangle rect = new Rectangle(instance.inventory[first].bounds.X, instance.inventory[first].bounds.Y, instance.inventory[first + instance.capacity - 1].bounds.X + instance.inventory[first + instance.capacity - 1].bounds.Width - instance.inventory[first].bounds.X, instance.inventory[first+instance.capacity - 1].bounds.Y + instance.inventory[first+instance.capacity - 1].bounds.Height - instance.inventory[first].bounds.Y);
             return rect.Contains(x, y);
         }
 
         public static Rectangle GetBounds(InventoryMenu __instance, int i)
         {
-            int offset = __instance.capacity >= __instance.actualInventory.Count ? 0 : scrolled;
+            int offset = __instance.capacity >= __instance.actualInventory.Count ? 0 : scrolled.Value;
             int width = __instance.capacity / __instance.rows;
             if (i < offset * width || i >= offset * width + __instance.capacity)
             {
@@ -106,16 +106,16 @@ namespace CustomBackpack
         {
             if (v == 0)
                 return false;
-            if (scrolled + v >= 0 && __instance.actualInventory.Count >= __instance.capacity / __instance.rows * (scrolled + v) + __instance.capacity)
+            if (scrolled.Value + v >= 0 && __instance.actualInventory.Count >= __instance.capacity / __instance.rows * (scrolled.Value + v) + __instance.capacity)
             {
-                scrolled += v;
+                scrolled.Value += v;
                 Game1.playSound("shiny4");
                 int width = __instance.capacity / __instance.rows;
                 for (int i = 0; i < __instance.inventory.Count; i++)
                 {
                     __instance.inventory[i].bounds = GetBounds(__instance, i);
-                    __instance.inventory[i].downNeighborID = (i >= __instance.capacity + width * (scrolled - 1)) ? 102 : 90000 + (i + width);
-                    __instance.inventory[i].upNeighborID = (i < width * (scrolled + 1)) ? (12340 + i - width * scrolled) : 90000 + (i - width);
+                    __instance.inventory[i].downNeighborID = (i >= __instance.capacity + width * (scrolled.Value - 1)) ? 102 : 90000 + (i + width);
+                    __instance.inventory[i].upNeighborID = (i < width * (scrolled.Value + 1)) ? (12340 + i - width * scrolled.Value) : 90000 + (i - width);
                 }
                 return true;
             }
@@ -136,63 +136,63 @@ namespace CustomBackpack
             int minScrollWidth = 4;
             int maxScrollWidth = 16;
 
-            var cc1 = __instance.inventory[(scrolled + 1) * gridWidth - 1];
+            var cc1 = __instance.inventory[(scrolled.Value + 1) * gridWidth - 1];
             Point corner1 = cc1.bounds.Location + new Point(cc1.bounds.Width, 0);
-            var cc2 = __instance.inventory[(scrolled + __instance.rows) * gridWidth - 1];
+            var cc2 = __instance.inventory[(scrolled.Value + __instance.rows) * gridWidth - 1];
             Point corner2 = cc2.bounds.Location + new Point(cc2.bounds.Width, cc2.bounds.Height);
             Point middle = corner1 + new Point(0, (corner2.Y - corner1.Y) / 2);
 
-            scrollArea = new Rectangle(corner1, new Point(24, corner2.Y - corner1.Y));
-            if(scrollWidth > 226)
-                IClickableMenu.drawTextureBox(b, Game1.mouseCursors, new Rectangle(403, 383, 6, 6), scrollArea.X + maxScrollWidth - scrollWidth, scrollArea.Y, scrollWidth, scrollArea.Height, Color.White, 4f, false, -1f);
+            scrollArea.Value = new Rectangle(corner1, new Point(24, corner2.Y - corner1.Y));
+            if(scrollWidth.Value > 226)
+                IClickableMenu.drawTextureBox(b, Game1.mouseCursors, new Rectangle(403, 383, 6, 6), scrollArea.Value.X + maxScrollWidth - scrollWidth.Value, scrollArea.Value.Y, scrollWidth.Value, scrollArea.Value.Height, Color.White, 4f, false, -1f);
             else 
-                b.Draw(scrollTexture, new Rectangle(scrollArea.X + maxScrollWidth - scrollWidth, scrollArea.Y, scrollWidth, scrollArea.Height), Color.White);
+                b.Draw(scrollTexture, new Rectangle(scrollArea.Value.X + maxScrollWidth - scrollWidth.Value, scrollArea.Value.Y, scrollWidth.Value, scrollArea.Value.Height), Color.White);
 
 
             int scrollIntervals = totalRows - __instance.rows + 1;
-            int handleHeight = Math.Max(Config.MinHandleHeight, scrollArea.Height / scrollIntervals);
-            int handleOffset = (handleHeight - scrollArea.Height / scrollIntervals) / 2;
-            int scrollableHeight = (scrollArea.Height - handleOffset * 2);
+            int handleHeight = Math.Max(Config.MinHandleHeight, scrollArea.Value.Height / scrollIntervals);
+            int handleOffset = (handleHeight - scrollArea.Value.Height / scrollIntervals) / 2;
+            int scrollableHeight = (scrollArea.Value.Height - handleOffset * 2);
             float scrollInterval = scrollableHeight / (float)scrollIntervals;
-            int handleY = scrollArea.Y + (int)Math.Round(scrollInterval * scrolled);
+            int handleY = scrollArea.Value.Y + (int)Math.Round(scrollInterval * scrolled.Value);
 
-            if(scrolled == totalRows - __instance.rows)
+            if(scrolled.Value == totalRows - __instance.rows)
             {
-                handleY = scrollArea.Y + scrollArea.Height - handleHeight;
+                handleY = scrollArea.Value.Y + scrollArea.Value.Height - handleHeight;
             }
-            bool inScrollArea = scrollArea.Contains(mouseX, mouseY);
+            bool inScrollArea = scrollArea.Value.Contains(mouseX, mouseY);
 
             if (inScrollArea)
             {
-                ChangeScroll(__instance, scrollChange);
+                ChangeScroll(__instance, scrollChange.Value);
             }
 
-            if (inScrollArea || scrolling || (Config.ShowArrows && (upArrow.bounds.Contains(mouseX, mouseY) || downArrow.bounds.Contains(mouseX, mouseY))))
+            if (inScrollArea || scrolling.Value || (Config.ShowArrows && (upArrow.bounds.Contains(mouseX, mouseY) || downArrow.bounds.Contains(mouseX, mouseY))))
             {
-                scrollWidth = Math.Min(maxScrollWidth - 4, scrollWidth + 1);
-                if (scrolling)
+                scrollWidth.Value = Math.Min(maxScrollWidth - 4, scrollWidth.Value + 1);
+                if (scrolling.Value)
                 {
-                    int yOffset = Math.Max(Math.Min(mouseY, scrollArea.Y + scrollArea.Height - 1), scrollArea.Y) - scrollArea.Y - handleOffset;
-                    ChangeScroll(__instance, (int)(yOffset / scrollInterval) - scrolled);
+                    int yOffset = Math.Max(Math.Min(mouseY, scrollArea.Value.Y + scrollArea.Value.Height - 1), scrollArea.Value.Y) - scrollArea.Value.Y - handleOffset;
+                    ChangeScroll(__instance, (int)(yOffset / scrollInterval) - scrolled.Value);
                 }
             }
-            else if(scrollWidth > 4)
+            else if(scrollWidth.Value > 4)
             {
-                scrollWidth = Math.Max(minScrollWidth, scrollWidth - 1);
+                scrollWidth.Value = Math.Max(minScrollWidth, scrollWidth.Value - 1);
             }
-            if (scrollWidth > 226)
-                b.Draw(Game1.mouseCursors, new Rectangle(scrollArea.X + maxScrollWidth - scrollWidth, handleY, scrollWidth, handleHeight), new Rectangle(435, 463, 6, 10), Color.White);
+            if (scrollWidth.Value > 226)
+                b.Draw(Game1.mouseCursors, new Rectangle(scrollArea.Value.X + maxScrollWidth - scrollWidth.Value, handleY, scrollWidth.Value, handleHeight), new Rectangle(435, 463, 6, 10), Color.White);
             else
-                b.Draw(handleTexture, new Rectangle(scrollArea.X + maxScrollWidth - scrollWidth, handleY, scrollWidth, handleHeight), Color.White);
+                b.Draw(handleTexture, new Rectangle(scrollArea.Value.X + maxScrollWidth - scrollWidth.Value, handleY, scrollWidth.Value, handleHeight), Color.White);
 
-            if (scrollWidth > maxScrollWidth / 2 && Config.ShowArrows)
+            if (scrollWidth.Value > maxScrollWidth / 2 && Config.ShowArrows)
             {
-                if (scrolled > 0)
+                if (scrolled.Value > 0)
                 {
                     upArrow.setPosition(corner1.X - 3, corner1.Y - 23);
                     upArrow.draw(b);
                 }
-                if (scrolled * __instance.capacity / __instance.rows + __instance.capacity < __instance.actualInventory.Count)
+                if (scrolled.Value * __instance.capacity / __instance.rows + __instance.capacity < __instance.actualInventory.Count)
                 {
                     downArrow.setPosition(corner2.X - 3, corner2.Y - 3);
                     downArrow.draw(b);
@@ -217,7 +217,7 @@ namespace CustomBackpack
                 }
                 else if (Config.ShowArrows && !inScrollArea) 
                 {
-                    if (pressTime == 0 || (pressTime >= 20 && pressTime % 4 == 0))
+                    if (pressTime.Value == 0 || (pressTime.Value >= 20 && pressTime.Value % 4 == 0))
                     {
                         if (upArrow.containsPoint(mouseX, mouseY))
                         {
@@ -228,24 +228,24 @@ namespace CustomBackpack
                             ChangeScroll(__instance, 1);
                         }
                     }
-                    if (pressTime < 20)
-                        pressTime++;
+                    if (pressTime.Value < 20)
+                        pressTime.Value++;
                 }
             }
             else
             {
-                pressTime = 0;
+                pressTime.Value = 0;
             }
             if (Config.ShowRowNumbers)
             {
                 int width = __instance.capacity / __instance.rows;
                 for (int i = 0; i < __instance.rows; i++)
                 {
-                    var cc = __instance.inventory[(scrolled + i) * width];
+                    var cc = __instance.inventory[(scrolled.Value + i) * width];
 
                     Vector2 toDraw = new Vector2(cc.bounds.X - 8, cc.bounds.Y + 16);
 
-                    var strToDraw = (scrolled + 1 + i) + "";
+                    var strToDraw = (scrolled.Value + 1 + i) + "";
                     Vector2 strSize = Game1.tinyFont.MeasureString(strToDraw);
                     b.DrawString(Game1.tinyFont, strToDraw, toDraw + new Vector2(-strSize.X / 2f, -strSize.Y), Color.DimGray);
                 }
@@ -255,8 +255,8 @@ namespace CustomBackpack
         private static void OpenFullInventory(InventoryMenu __instance)
         {
             Game1.playSound("shwip");
-            oldScrolled = scrolled;
-            lastMenu = Game1.activeClickableMenu;
+            oldScrolled.Value = scrolled.Value;
+            lastMenu.Value = Game1.activeClickableMenu;
             Game1.activeClickableMenu = new FullInventoryPage(__instance, __instance.xPositionOnScreen, __instance.yPositionOnScreen, __instance.width, __instance.height);
         }
     }
