@@ -8,6 +8,8 @@ using StardewValley.Objects;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
+using System.Reflection.Emit;
 using xTile.Dimensions;
 using Rectangle = Microsoft.Xna.Framework.Rectangle;
 
@@ -58,15 +60,16 @@ namespace CustomBackpack
                     leftNeighborID = -99998
                 };
                 __instance.inventory.Clear();
-                for (int j = 0; j < __instance.actualInventory.Count; j++)
+                int offset = __instance.GetOffset();
+                for (int i = 0; i < __instance.actualInventory.Count; i++)
                 {
-                    var cc = new ClickableComponent(GetBounds(__instance, j), j.ToString() ?? "")
+                    var cc = new ClickableComponent(GetBounds(__instance, i), i.ToString() ?? "")
                     {
-                        myID = 90000 + j,
-                        leftNeighborID = ((j % (__instance.capacity / rows) != 0) ? 90000 + (j - 1) : 107),
-                        rightNeighborID = (((j + 1) % (__instance.capacity / rows) != 0) ? 90000 + (j + 1) : 106),
-                        downNeighborID = GetDownNeighbor(__instance, j),
-                        upNeighborID = GetUpNeighbor(__instance, j),
+                        myID = (i >= offset  && i < offset + __instance.capacity) ? IDOffset + i - offset : -99999,
+                        leftNeighborID = GetLeftNeighbor(__instance, i),
+                        rightNeighborID = GetRightNeighbor (__instance, i),
+                        downNeighborID = GetDownNeighbor(__instance, i),
+                        upNeighborID = GetUpNeighbor(__instance, i),
                         region = 9000,
                         upNeighborImmutable = true,
                         downNeighborImmutable = true,
@@ -185,43 +188,94 @@ namespace CustomBackpack
                 if (!Config.ModEnabled || __instance.inventory is null || __instance.inventory.capacity >= __instance.inventory.actualInventory.Count)
                     return true;
 
-                __instance.currentlySnappedComponent = __instance.getComponentWithID(90000 + scrolled.Value * __instance.inventory.capacity / __instance.inventory.rows);
+                __instance.currentlySnappedComponent = __instance.getComponentWithID(IDOffset);
                 __instance.snapCursorToCurrentSnappedComponent();
                 return false;
             }
         }
         
+        [HarmonyPatch(typeof(ItemGrabMenu), nameof(ItemGrabMenu.snapToDefaultClickableComponent))]
+        public class ItemGrabMenu_snapToDefaultClickableComponent_Patch
+        {
+            public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions)
+            {
+                SMonitor.Log($"Transpiling ItemGrabMenu.snapToDefaultClickableComponent");
+
+                var codes = new List<CodeInstruction>(instructions);
+                for (int i = 0; i < codes.Count; i++)
+                {
+                    if (i < codes.Count - 1 && codes[i].opcode == OpCodes.Ldc_I4_0 && codes[i + 1].opcode == OpCodes.Callvirt && (MethodInfo)codes[i + 1].operand == AccessTools.Method(typeof(IClickableMenu), nameof(IClickableMenu.getComponentWithID)))
+                    {
+                        SMonitor.Log("Adding method to get top left inventory item");
+                        codes[i].opcode = OpCodes.Call;
+                        codes[i].operand = AccessTools.Method(typeof(ModEntry), nameof(ModEntry.GetTopLeftComponentID));
+                        codes.Insert(i, new CodeInstruction(OpCodes.Ldarg_0));
+                    }
+                }
+
+                return codes.AsEnumerable();
+            }
+        }
+        private static int GetTopLeftComponentID(ItemGrabMenu menu)
+        {
+            if (!Config.ModEnabled || menu.inventory is null || !menu.inventory.Scrolling())
+                return 0;
+            return IDOffset;
+        }
+
         [HarmonyPatch(typeof(IClickableMenu), nameof(IClickableMenu.moveCursorInDirection))]
         public class IClickableMenu_moveCursorInDirection_Patch
         {
             public static bool Prefix(IClickableMenu __instance, int direction)
             {
-                if (!Config.ModEnabled || __instance is not InventoryPage || (__instance as InventoryPage).inventory.actualInventory.Count <= (__instance as InventoryPage).inventory.capacity || __instance.currentlySnappedComponent is null)
+                if (!Config.ModEnabled || __instance.currentlySnappedComponent is null)
                     return true;
-                InventoryMenu menu = (__instance as InventoryPage).inventory;
+                IDOffset = 90000;
+                InventoryMenu menu;
+                if (__instance is InventoryPage && (__instance as InventoryPage).inventory.Scrolling())
+                {
+                    menu = (__instance as InventoryPage).inventory;
+                }
+                else if (__instance is ItemGrabMenu && (__instance as ItemGrabMenu).inventory.Scrolling())
+                    menu = (__instance as ItemGrabMenu).inventory;
+                else
+                    return true;
+                int columns = menu.Columns();
+                if(__instance is ItemGrabMenu && menu.inventory != null && menu.inventory.Count >= (__instance as ItemGrabMenu).GetColumnCount())
+                {
+                    for (int i = 0; i < columns; i++)
+                    {
+                        menu.inventory[i + menu.GetOffset()].upNeighborID = ((__instance as ItemGrabMenu).shippingBin ? 12598 : (Math.Min(i, (__instance as ItemGrabMenu).ItemsToGrabMenu.inventory.Count - 1) + 53910));
+                    }
+                }
                 ClickableComponent old = __instance.currentlySnappedComponent;
-                int width = menu.capacity / menu.rows;
-                int offset = scrolled.Value * width;
-                if (direction == 0 && old.myID == 102)
+                if (direction == 0 && (old.myID == 102 || old.myID == 101))
                 {
-                    __instance.currentlySnappedComponent = __instance.getComponentWithID(90000 + offset + width * (menu.rows - 1));
+                    __instance.currentlySnappedComponent = __instance.getComponentWithID(IDOffset + columns * (menu.rows - 1));
                 }
-                else if (direction == 2 && old.myID >= 12340 && old.myID < 12340 + width)
+                else if (direction == 2 && old.myID >= 12340 && old.myID < 12340 + columns)
                 {
-                    __instance.currentlySnappedComponent = __instance.getComponentWithID(90000 + offset + old.myID % 12340);
+                    __instance.currentlySnappedComponent = __instance.getComponentWithID(IDOffset + old.myID % 12340);
                 }
-                else if (direction == 0 && old.myID > 90000 && old.upNeighborID < 90000 && scrolled.Value > 0)
+                else if (direction == 2 && __instance is ItemGrabMenu && old.myID >= 53910 + (__instance as ItemGrabMenu).ItemsToGrabMenu.capacity  - (__instance as ItemGrabMenu).ItemsToGrabMenu.Columns() && old.myID < 53910 + (__instance as ItemGrabMenu).ItemsToGrabMenu.capacity)
+                {
+                    int idx = IDOffset + (old.myID - 53910) % (__instance as ItemGrabMenu).ItemsToGrabMenu.Columns();
+                    __instance.currentlySnappedComponent = __instance.getComponentWithID(idx);
+                }
+                else if (direction == 0 && old.myID >= IDOffset && old.myID < IDOffset + columns && scrolled.Value > 0)
                 {
                     ChangeScroll(menu, -1);
-                    __instance.currentlySnappedComponent = __instance.getComponentWithID(old.myID - width);
+                    __instance.currentlySnappedComponent = __instance.getComponentWithID(old.myID - columns);
                 }
-                else if (direction == 2 && old.myID > 90000 && old.downNeighborID == 102 && scrolled.Value < (menu.actualInventory.Count  / width) - menu.rows)
+                else if (direction == 2 && old.myID >= IDOffset + menu.capacity - columns && old.myID < IDOffset + menu.capacity && scrolled.Value < (menu.actualInventory.Count  / columns) - menu.rows)
                 {
+                    SMonitor.Log($"a {direction}, {old.myID}, {old.upNeighborID}, {old.downNeighborID}");
                     ChangeScroll(menu, 1);
-                    __instance.currentlySnappedComponent = __instance.getComponentWithID(old.myID + width);
+                    __instance.currentlySnappedComponent = __instance.getComponentWithID(old.myID + columns);
                 }
                 else
                 {
+                    SMonitor.Log($"b {direction}, {old.myID}, {old.upNeighborID}, {old.downNeighborID}");
                     return true;
                 }
                 __instance.snapCursorToCurrentSnappedComponent();
@@ -229,6 +283,72 @@ namespace CustomBackpack
                 {
                     Game1.playSound("shiny4");
                 }
+                return false;
+            }
+        }
+        
+        [HarmonyPatch(typeof(ItemGrabMenu), "customSnapBehavior")]
+        public class ItemGrabMenu_customSnapBehavior_Patch
+        {
+            public static bool Prefix(ItemGrabMenu __instance, int direction, int oldRegion, int oldID)
+            {
+                if (!Config.ModEnabled || __instance.inventory is null || !__instance.inventory.Scrolling())
+                    return true;
+                InventoryMenu menu = __instance.inventory;
+                int columns = menu.Columns();
+                if (direction == 2)
+                {
+                    if (menu.inventory != null && menu.inventory.Count >= __instance.GetColumnCount() && __instance.shippingBin)
+                    {
+                        for (int i = 0; i < columns; i++)
+                        {
+                            menu.inventory[i + menu.GetOffset()].upNeighborID = (__instance.shippingBin ? 12598 : (Math.Min(i, __instance.ItemsToGrabMenu.inventory.Count - 1) + 53910));
+                        }
+                    }
+                    SMonitor.Log($"{oldID}, {menu.capacity}, {scrolled.Value}");
+                    if (oldID >= IDOffset && oldID < IDOffset + menu.capacity && oldID >= IDOffset + menu.capacity - columns && scrolled.Value < menu.actualInventory.Count / columns - menu.rows)
+                    {
+                        ChangeScroll(menu, 1);
+                        __instance.currentlySnappedComponent = __instance.getComponentWithID(oldID);
+                    }
+                    else if (!__instance.shippingBin && oldID >= 53910 && oldID < IDOffset)
+                    {
+                        int index = oldID - 53910;
+                        if (index + __instance.GetColumnCount() <= __instance.ItemsToGrabMenu.inventory.Count - 1)
+                        {
+                            __instance.currentlySnappedComponent = __instance.getComponentWithID(index + __instance.GetColumnCount() + 53910);
+                            __instance.snapCursorToCurrentSnappedComponent();
+                            return false;
+                        }
+                    }
+                    else
+                    {
+                        __instance.currentlySnappedComponent = __instance.getComponentWithID((oldRegion == 12598) ? IDOffset : IDOffset + ((oldID - 53910) % __instance.GetColumnCount()));
+                    }
+                }
+                else if (direction == 0)
+                {
+                    if(oldID >= IDOffset && oldID < IDOffset + columns)
+                    {
+                        if (scrolled.Value > 0)
+                        {
+                            ChangeScroll(menu, -1);
+                            __instance.currentlySnappedComponent = __instance.getComponentWithID(oldID);
+                        }
+                        else if (__instance.shippingBin && Game1.getFarm().lastItemShipped != null)
+                        {
+                            __instance.currentlySnappedComponent = __instance.getComponentWithID(12598);
+                            __instance.currentlySnappedComponent.downNeighborID = oldID;
+                        }
+                    }
+                    else if (oldID >= IDOffset + menu.Columns())
+                    {
+                        __instance.currentlySnappedComponent = __instance.getComponentWithID(oldID - menu.Columns());
+                    }
+                    else
+                        return true;
+                }
+                __instance.snapCursorToCurrentSnappedComponent();
                 return false;
             }
         }

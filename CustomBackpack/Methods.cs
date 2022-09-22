@@ -38,11 +38,11 @@ namespace CustomBackpack
             int offset = (__instance.capacity >= __instance.actualInventory.Count ? 0 : scrolled.Value) * width;
             if (i < offset || i >= offset + __instance.capacity)
             {
-                return -999;
+                return -99999;
             }
             else
             {
-                return (i >= offset + width * (__instance.rows - 1)) ? 102 : 90000 + i + width;
+                return (i >= offset + width * (__instance.rows - 1)) ? 102 : IDOffset + i + width - offset;
             }
         }
 
@@ -52,11 +52,46 @@ namespace CustomBackpack
             int offset = (__instance.capacity >= __instance.actualInventory.Count ? 0 : scrolled.Value) * width;
             if (i < offset || i >= offset + __instance.capacity)
             {
-                return -999;
+                return -99999;
             }
             else
             {
-                return (i < offset + width) ? 12340 + i % width : 90000 + i - width;
+                return (i < offset + width) ? 12340 + i % width : IDOffset + i - width - offset;
+            }
+        }
+        private static int GetLeftNeighbor(InventoryMenu __instance, int i)
+        {
+            int width = __instance.capacity / __instance.rows;
+            int offset = (__instance.capacity >= __instance.actualInventory.Count ? 0 : scrolled.Value) * width;
+            if (i < offset || i >= offset + __instance.capacity)
+            {
+                return -99999;
+            }
+            else if(i % width == 0)
+            {
+                return 107;
+            }
+            else
+            {
+                return IDOffset + i - 1 - offset;
+            }
+        }
+
+        private static int GetRightNeighbor(InventoryMenu __instance, int i)
+        {
+            int width = __instance.capacity / __instance.rows;
+            int offset = (__instance.capacity >= __instance.actualInventory.Count ? 0 : scrolled.Value) * width;
+            if (i < offset || i >= offset + __instance.capacity)
+            {
+                return -99999;
+            }
+            else if (i % width == width - 1)
+            {
+                return 106;
+            }
+            else
+            {
+                return IDOffset + i + 1 - offset;
             }
         }
 
@@ -129,10 +164,13 @@ namespace CustomBackpack
             {
                 scrolled.Value += v;
                 Game1.playSound("shiny4");
-                int width = __instance.capacity / __instance.rows;
+                var offset = __instance.GetOffset();
                 for (int i = 0; i < __instance.inventory.Count; i++)
                 {
+                    __instance.inventory[i].myID = offset > i || offset + __instance.capacity <= i ? -99999 : IDOffset + i - offset;
                     __instance.inventory[i].bounds = GetBounds(__instance, i);
+                    __instance.inventory[i].leftNeighborID = GetLeftNeighbor(__instance, i);
+                    __instance.inventory[i].rightNeighborID = GetRightNeighbor(__instance, i);
                     __instance.inventory[i].downNeighborID = GetDownNeighbor(__instance, i);
                     __instance.inventory[i].upNeighborID = GetUpNeighbor(__instance, i);
                 }
