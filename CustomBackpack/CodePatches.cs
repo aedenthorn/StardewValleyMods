@@ -230,7 +230,6 @@ namespace CustomBackpack
             {
                 if (!Config.ModEnabled || __instance.currentlySnappedComponent is null)
                     return true;
-                IDOffset = 90000;
                 InventoryMenu menu;
                 if (__instance is InventoryPage && (__instance as InventoryPage).inventory.Scrolling())
                 {
