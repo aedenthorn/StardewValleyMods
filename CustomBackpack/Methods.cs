@@ -156,13 +156,13 @@ namespace CustomBackpack
             }
         }
 
-        private static bool ChangeScroll(InventoryMenu __instance, int v)
+        public static bool ChangeScroll(InventoryMenu __instance, int change)
         {
-            if (v == 0)
+            if (change == 0)
                 return false;
-            if (scrolled.Value + v >= 0 && __instance.actualInventory.Count >= __instance.capacity / __instance.rows * (scrolled.Value + v) + __instance.capacity)
+            if (scrolled.Value + change >= 0 && __instance.actualInventory.Count >= __instance.capacity / __instance.rows * (scrolled.Value + change) + __instance.capacity)
             {
-                scrolled.Value += v;
+                scrolled.Value += change;
                 Game1.playSound("shiny4");
                 var offset = __instance.GetOffset();
                 for (int i = 0; i < __instance.inventory.Count; i++)

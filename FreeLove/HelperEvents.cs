@@ -79,6 +79,12 @@ namespace FreeLove
                 setValue: value => Config.RoommateRomance = value
             );
 
+            configMenu.AddNumberOption(
+                mod: ModManifest,
+                name: () => "Max children",
+                getValue: () => Config.MaxChildren,
+                setValue: value => Config.MaxChildren = value
+            );
             configMenu.AddBoolOption(
                 mod: ModManifest,
                 name: () => "Show Parent Names",
