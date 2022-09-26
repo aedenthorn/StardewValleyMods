@@ -109,7 +109,7 @@ namespace FarmerHelper
                 var ignoreCrops = Config.IgnoreHarvestCrops.Split(',');
                 foreach (var terrainFeature in Game1.getFarm().terrainFeatures.Values)
                 {
-                    if (terrainFeature is HoeDirt && (terrainFeature as HoeDirt).readyForHarvest() && (!ignoreCrops.Contains((terrainFeature as HoeDirt).crop?.indexOfHarvest.Value + "")))
+                    if (terrainFeature is HoeDirt && (terrainFeature as HoeDirt).readyForHarvest() && (!Config.IgnoreFlowers || new Object((terrainFeature as HoeDirt).crop.indexOfHarvest.Value, 1, false, -1, 0).Category != -80) && (!ignoreCrops.Contains((terrainFeature as HoeDirt).crop?.indexOfHarvest.Value + "")))
                     {
                         logMessage.Add($"Crop with harvest index {(terrainFeature as HoeDirt).crop.indexOfHarvest.Value} at Farm {terrainFeature.currentTileLocation.X},{terrainFeature.currentTileLocation.Y} is ready to harvest");
                         if (!added)

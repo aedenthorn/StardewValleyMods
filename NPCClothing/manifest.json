@@ -1,0 +1,22 @@
+﻿{
+  "Name": "NPC Clothing",
+  "Author": "aedenthorn",
+  "Version": "0.1.0",
+  "Description": "NPC Clothing.",
+  "UniqueID": "aedenthorn.NPCClothing",
+  "EntryDll": "NPCClothing.dll",
+  "MinimumApiVersion": "3.15.0",
+  "ModUpdater": {
+    "Repository": "StardewValleyMods",
+    "User": "aedenthorn",
+    "Directory": "_releases",
+    "ModFolder": "NPCClothing"
+  },
+  "Dependencies": [
+    {
+      "UniqueID": "Platonymous.ModUpdater",
+      "IsRequired": false
+    }
+  ],
+  "UpdateKeys": [ "Nexus:13888" ]
+}

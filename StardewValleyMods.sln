@@ -375,6 +375,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CustomBackpack", "CustomBac
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OutfitSets", "OutfitSets\OutfitSets.csproj", "{5C747E8F-FB02-48EB-A4D3-18ECE0D1F503}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NPCClothing", "NPCClothing\NPCClothing.csproj", "{C734199A-ED10-4C2C-B8C5-0ED4C9FB1B67}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -1839,6 +1841,14 @@ Global
 		{5C747E8F-FB02-48EB-A4D3-18ECE0D1F503}.Release|Any CPU.Build.0 = Release|Any CPU
 		{5C747E8F-FB02-48EB-A4D3-18ECE0D1F503}.Release|x86.ActiveCfg = Release|Any CPU
 		{5C747E8F-FB02-48EB-A4D3-18ECE0D1F503}.Release|x86.Build.0 = Release|Any CPU
+		{C734199A-ED10-4C2C-B8C5-0ED4C9FB1B67}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C734199A-ED10-4C2C-B8C5-0ED4C9FB1B67}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C734199A-ED10-4C2C-B8C5-0ED4C9FB1B67}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{C734199A-ED10-4C2C-B8C5-0ED4C9FB1B67}.Debug|x86.Build.0 = Debug|Any CPU
+		{C734199A-ED10-4C2C-B8C5-0ED4C9FB1B67}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C734199A-ED10-4C2C-B8C5-0ED4C9FB1B67}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C734199A-ED10-4C2C-B8C5-0ED4C9FB1B67}.Release|x86.ActiveCfg = Release|Any CPU
+		{C734199A-ED10-4C2C-B8C5-0ED4C9FB1B67}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
