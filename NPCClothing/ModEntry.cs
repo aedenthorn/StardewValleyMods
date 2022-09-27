@@ -1,15 +1,12 @@
 ﻿using HarmonyLib;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using Newtonsoft.Json;
 using StardewModdingAPI;
 using StardewValley;
-using StardewValley.Locations;
-using StardewValley.TerrainFeatures;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
-using System.Globalization;
-using System.Linq;
+using System.IO;
 
 namespace NPCClothing
 {
@@ -26,10 +23,21 @@ namespace NPCClothing
         public static string dictPath = "aedenthorn.NPCClothing/dictionary";
         public static string skinPath = "aedenthorn.NPCClothing/skin";
         public static string giftKey = "aedenthorn.NPCClothing/gift";
+        
+        public static ClothingData forceWear;
 
+        public static int[] giftIndexes = new int[] {
+            -42424200,
+            -42424202,
+            -42424204,
+            -42424206,
+            -42424208
+        };
+        
         public static Dictionary<string, ClothingData> clothingDict = new Dictionary<string, ClothingData>();
         public static Dictionary<string, List<Color>> skinDict = new Dictionary<string, List<Color>>();
         public static Dictionary<string, NPC> npcDict = new Dictionary<string, NPC>();
+        
         public static List<string> genderList = new List<string>()
         {
             "male", "female", "undefined"
@@ -73,7 +81,7 @@ namespace NPCClothing
             {
                 e.LoadFrom(() => new Dictionary<string, List<Color>>(), StardewModdingAPI.Events.AssetLoadPriority.Exclusive);
             }
-            else if (e.NameWithoutLocale.StartsWith("Characters/"))
+            else if (e.NameWithoutLocale.StartsWith("Characters/") && e.NameWithoutLocale.Name.Split('/').Length == 2)
             {
                 e.Edit(CheckClothes, StardewModdingAPI.Events.AssetEditPriority.Late);
             }
@@ -81,82 +89,6 @@ namespace NPCClothing
             {
                 e.Edit(CheckClothes, StardewModdingAPI.Events.AssetEditPriority.Late);
             }
-        }
-
-        private void CheckClothes(IAssetData obj)
-        {
-            if (!Config.ModEnabled)
-                return;
-            var split = obj.NameWithoutLocale.Name.Split('/');
-            if (split.Length != 2)
-                return;
-            foreach (var kvp in clothingDict)
-            {
-                if (ClothesFit(split[1], kvp.Value, split[0] == "Characters"))
-                {
-                    Monitor.Log($"Applying clothes {kvp.Key} to {obj.NameWithoutLocale.Name}");
-                    Color[] colors = ApplyClothes(split[1], obj.AsImage().Data, kvp.Value, split[0] == "Characters" ? kvp.Value.spriteTexturePath : kvp.Value.portraitTexturePath);
-                    obj.AsImage().Data.SetData(colors);
-                }
-            }
-        }
-        
-        private bool ClothesFit(string name, ClothingData data, bool sprite)
-        {
-            var npc = Game1.getCharacterFromName(name);
-            if (npc is null || !npc.isVillager())
-                return false;
-
-            if (sprite && string.IsNullOrEmpty(data.spriteTexturePath))
-                return false;
-            if (!sprite && string.IsNullOrEmpty(data.portraitTexturePath))
-                return false;
-            if (data.nameRestrictions is not null && data.nameRestrictions.Count > 0 &&  !data.nameRestrictions.Contains(name))
-                return false;
-            if (data.genderRestrictions is not null && data.genderRestrictions.Count > 0 && !data.genderRestrictions.Contains(genderList[npc.Gender]))
-                return false;
-            if (data.ageRestrictions is not null && data.ageRestrictions.Count > 0 && !data.ageRestrictions.Contains(ageList[npc.Age]))
-                return false;
-            if (data.giftName is not null && data.giftName.Length > 0 && (!npc.modData.TryGetValue(giftKey, out string gifts) || !gifts.Split(',').Contains(data.giftName)))
-                return false;
-            if (data.percentChance <= Game1.random.Next(100))
-                return false;
-            return true;
-        }
-        private Color[] ApplyClothes(string name, Texture2D texture, ClothingData data, string texturePath)
-        {
-            Texture2D clothesTexture = Helper.GameContent.Load<Texture2D>(texturePath);
-            Color[] clothesColors = new Color[clothesTexture.Width * clothesTexture.Height];
-            Color[] charColors = new Color[texture.Width * texture.Height];
-            clothesTexture.GetData(clothesColors);
-            texture.GetData(charColors);
-            skinDict.TryGetValue(name, out List<Color> skins);
-            for (int i = 0; i < clothesColors.Length; i++)
-            {
-                if (clothesColors[i] != Color.Transparent)
-                {
-                    if(skins is not null && data.skinColors is not null)
-                    {
-                        if(data.skinColors.Contains(clothesColors[i]))
-                        {
-                            int idx = data.skinColors.IndexOf(clothesColors[i]);
-                            if(skins.Count > idx)
-                                charColors[i] = skins[idx];
-                            continue;
-                        }
-                    }
-                    if(clothesColors[i].A < 255)
-                    {
-                        if (clothesColors[i].A < 15) 
-                            charColors[i] = Color.Transparent;
-                        else
-                            charColors[i] = Color.Lerp(charColors[i], clothesColors[i], clothesColors[i].A / 255f);
-                    }
-                    else 
-                        charColors[i] = clothesColors[i];
-                }
-            }
-            return charColors;
         }
 
         private void GameLoop_SaveLoaded(object sender, StardewModdingAPI.Events.SaveLoadedEventArgs e)
@@ -173,10 +105,12 @@ namespace NPCClothing
                     } 
                 }
             };
+            Helper.GameContent.InvalidateCache(asset => asset.DataType == typeof(Texture2D) && ((asset.Name.StartsWith("Characters/") && asset.Name.Name.Split('/').Length == 2) || asset.Name.StartsWith("Portraits/")));
         }
 
         private void GameLoop_GameLaunched(object sender, StardewModdingAPI.Events.GameLaunchedEventArgs e)
         {
+            //MakeHatData();
 
             // get Generic Mod Config Menu's API (if it's installed)
             var configMenu = Helper.ModRegistry.GetApi<IGenericModConfigMenuApi>("spacechase0.GenericModConfigMenu");
@@ -196,7 +130,12 @@ namespace NPCClothing
                 getValue: () => Config.ModEnabled,
                 setValue: value => Config.ModEnabled = value
             );
+            configMenu.AddBoolOption(
+                mod: ModManifest,
+                name: () => "Wear when gifted",
+                getValue: () => Config.ForceWearOnGift,
+                setValue: value => Config.ForceWearOnGift = value
+            );
         }
-
     }
 }

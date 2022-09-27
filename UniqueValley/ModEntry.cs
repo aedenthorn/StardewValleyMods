@@ -43,6 +43,7 @@ namespace UniqueValley
             helper.Events.GameLoop.GameLaunched += GameLoop_GameLaunched;
 
             helper.Events.GameLoop.SaveLoaded += GameLoop_SaveLoaded;
+            helper.Events.GameLoop.ReturnedToTitle += GameLoop_ReturnedToTitle;
 
             helper.Events.Content.AssetRequested += Content_AssetRequested;
 
@@ -50,6 +51,11 @@ namespace UniqueValley
             var harmony = new Harmony(ModManifest.UniqueID);
             harmony.PatchAll();
 
+        }
+
+        private void GameLoop_ReturnedToTitle(object sender, StardewModdingAPI.Events.ReturnedToTitleEventArgs e)
+        {
+            subDict.Clear();
         }
 
         private void GameLoop_SaveLoaded(object sender, StardewModdingAPI.Events.SaveLoadedEventArgs e)

@@ -15,7 +15,7 @@ namespace FarmCaveFramework
         private static bool Event_answerDialogue_Prefix(string questionKey, int answerChoice)
         {
 
-            if (!Config.EnableMod || questionKey != "cave")
+            if (!Config.EnableMod || !Game1.IsMasterGame || questionKey != "cave")
                 return true;
             caveChoice = SHelper.GameContent.Load<Dictionary<string,CaveChoice>>(frameworkPath)[answerIds[answerChoice]];
             SMonitor.Log($"Chose {caveChoice.choice}, objects {caveChoice.objects.Count}");
@@ -93,7 +93,7 @@ namespace FarmCaveFramework
 
         private static bool Event_command_cave_Prefix()
         {
-            if (!Config.EnableMod || Game1.activeClickableMenu != null)
+            if (!Config.EnableMod || !Game1.IsMasterGame || Game1.activeClickableMenu != null)
                 return true;
             Dictionary<string, CaveChoice> choices = SHelper.GameContent.Load<Dictionary<string, CaveChoice>>(frameworkPath);
             SMonitor.Log($"showing {choices.Count} cave choices");
@@ -110,7 +110,7 @@ namespace FarmCaveFramework
         }
         private static bool FarmCave_UpdateWhenCurrentLocation_Prefix(FarmCave __instance, GameTime time)
         {
-            if (!Config.EnableMod || caveChoice == null)
+            if (!Config.EnableMod || !Game1.IsMasterGame || caveChoice == null)
                 return true;
             var ptr = typeof(GameLocation).GetMethod("UpdateWhenCurrentLocation", System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Instance).MethodHandle.GetFunctionPointer();
             var baseMethod = (Func<GameTime, GameLocation>)Activator.CreateInstance(typeof(Func<GameTime, GameLocation>), __instance, ptr);
@@ -168,7 +168,7 @@ namespace FarmCaveFramework
         }
         private static bool FarmCave_resetLocalState_Prefix(FarmCave __instance)
         {
-            if (!Config.EnableMod)
+            if (!Config.EnableMod || !Game1.IsMasterGame)
                 return true;
             LoadCaveChoice();
             if (caveChoice == null)
@@ -201,7 +201,7 @@ namespace FarmCaveFramework
         }
         private static bool FarmCave_DayUpdate_Prefix(FarmCave __instance, int dayOfMonth)
         {
-            if (!Config.EnableMod)
+            if (!Config.EnableMod || !Game1.IsMasterGame)
                 return true;
             LoadCaveChoice();
             if (caveChoice == null)
@@ -247,7 +247,7 @@ namespace FarmCaveFramework
         }
         private static bool FarmCave_UpdateReadyFlag_Prefix(FarmCave __instance)
         {
-            if (!Config.EnableMod)
+            if (!Config.EnableMod || !Game1.IsMasterGame)
                 return true;
             /*
             string choiceId = SHelper.Data.ReadSaveData<string>("farm-cave-framework-choice");
