@@ -682,38 +682,10 @@ namespace FreeLove
         }
 
 
-        public static bool NPC_tryToReceiveActiveObject_Prefix(NPC __instance, ref Farmer who, Dictionary<string, string> ___dialogue, ref List<int> __state)
+        public static bool NPC_tryToReceiveActiveObject_Prefix(NPC __instance, ref Farmer who, Dictionary<string, string> ___dialogue)
         {
             try
             {
-                if (ModEntry.GetSpouses(who, true).ContainsKey(__instance.Name) && Game1.NPCGiftTastes.ContainsKey(__instance.Name))
-                {
-                    Monitor.Log($"Gift to spouse {__instance.Name}");
-                    __state = new List<int> {
-                        who.friendshipData[__instance.Name].GiftsToday,
-                        who.friendshipData[__instance.Name].GiftsThisWeek,
-                        0,
-                        0
-                    };
-                    if (Config.MaxGiftsPerSpousePerDay < 0 || who.friendshipData[__instance.Name].GiftsToday < Config.MaxGiftsPerSpousePerDay)
-                    {
-                        who.friendshipData[__instance.Name].GiftsToday = 0;
-                    }
-                    else
-                    {
-                        who.friendshipData[__instance.Name].GiftsToday = 1;
-                        __state[2] = 1; // flag to say we set it to 1
-                    }
-                    if (Config.MaxGiftsPerSpousePerWeek < 0 || who.friendshipData[__instance.Name].GiftsThisWeek < Config.MaxGiftsPerSpousePerWeek)
-                    {
-                        who.friendshipData[__instance.Name].GiftsThisWeek = 0;
-                    }
-                    else
-                    {
-                        who.friendshipData[__instance.Name].GiftsThisWeek = 2;
-                        __state[3] = 1; // flag to say we set it to 2
-                    }
-                }
                 string safe_name = __instance.Name.ToLower().Replace(' ', '_');
                 if (who.ActiveObject.HasContextTag("propose_roommate_" + safe_name))
                 {
@@ -928,23 +900,6 @@ namespace FreeLove
                 Monitor.Log($"Failed in {nameof(NPC_tryToReceiveActiveObject_Prefix)}:\n{ex}", LogLevel.Error);
             }
             return true;
-        }
-        public static void NPC_tryToReceiveActiveObject_Postfix(NPC __instance, ref Farmer who, List<int> __state)
-        {
-            try
-            {
-                if (__state != null && __state.Count > 0)
-                {
-                    who.friendshipData[__instance.Name].GiftsToday += __state[0] - (__state[2] == 1 ? 1 : 0);
-                    who.friendshipData[__instance.Name].GiftsThisWeek += __state[1] - (__state[3] == 1 ? 2 : 0);
-                    Monitor.Log($"gifts this week {who.friendshipData[__instance.Name].GiftsThisWeek}");
-                    Monitor.Log($"gifts today {who.friendshipData[__instance.Name].GiftsToday}");
-                }
-            }
-            catch (Exception ex)
-            {
-                Monitor.Log($"Failed in {nameof(NPC_tryToReceiveActiveObject_Postfix)}:\n{ex}", LogLevel.Error);
-            }
         }
 
         public static IEnumerable<CodeInstruction> NPC_tryToReceiveActiveObject_Transpiler(IEnumerable<CodeInstruction> instructions)

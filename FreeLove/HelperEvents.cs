@@ -43,20 +43,6 @@ namespace FreeLove
                 getValue: () => Config.MinPointsToDate,
                 setValue: value => Config.MinPointsToDate = value
             );
-            
-            configMenu.AddNumberOption(
-                mod: ModManifest,
-                name: () => "Max Gifts Per Day",
-                getValue: () => Config.MaxGiftsPerSpousePerDay,
-                setValue: value => Config.MaxGiftsPerSpousePerDay = value
-            );
-            
-            configMenu.AddNumberOption(
-                mod: ModManifest,
-                name: () => "Max Gifts Per Week",
-                getValue: () => Config.MaxGiftsPerSpousePerWeek,
-                setValue: value => Config.MaxGiftsPerSpousePerWeek = value
-            );
 
             configMenu.AddBoolOption(
                 mod: ModManifest,

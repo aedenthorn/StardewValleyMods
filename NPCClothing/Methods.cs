@@ -275,7 +275,22 @@ namespace NPCClothing
                     });
                 }
 
-                clothingData.namesAllow.AddRange(new List<string>() { "Abigail", "George", "Evelyn" });
+                clothingData.namesAllow.AddRange(new List<string>() { "Abigail", "George", "Evelyn", "Jas", "Vincent" });
+                clothingData.spriteOffsets.Add(new OffsetData()
+                {
+                    offset = new Point(0, 1),
+                    names = new List<string>() { "Evelyn" }
+                });
+                clothingData.spriteOffsets.Add(new OffsetData()
+                {
+                    offset = new Point(0, 4),
+                    names = new List<string>() { "Jas" }
+                });
+                clothingData.spriteOffsets.Add(new OffsetData()
+                {
+                    offset = new Point(0, 5),
+                    names = new List<string>() { "Vincent" }
+                });
 
                 hatData.Add($"hat_{i}", clothingData);
                 cpData.Add(new Dictionary<string, string>()
