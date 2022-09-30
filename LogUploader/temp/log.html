@@ -1,0 +1,154 @@
+﻿
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>SMAPI log parser - SMAPI.io</title>
+    <link rel="stylesheet" href="/Content/css/main.css" />
+
+    <link rel="stylesheet" href="/Content/css/file-upload.css" />
+    <link rel="stylesheet" href="/Content/css/log-parser.css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tabbyjs@12.0.3/dist/css/tabby-ui-vertical.min.css" />
+
+    <script src="https://cdn.jsdelivr.net/npm/tabbyjs@12.0.3" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vue@2.6.14" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1" crossorigin="anonymous"></script>
+    <script src="/Content/js/file-upload.js"></script>
+    <script src="/Content/js/log-parser.js?r=20220409"></script>
+
+    <script id="serializedData" type="application/json">
+
+        {
+            "messages": null,
+            "sections": {"0":"ModsList","1":"ContentPackList","2":"ModUpdateList"},
+            "logLevels": {"0":"trace","1":"debug","2":"info","3":"warn","4":"error","5":"alert","6":"critical"},
+            "modSlugs": null,
+            "screenIds": []
+        }
+    </script>
+
+    <script>
+        $(function() {
+            smapi.logParser(
+                {
+                    logStarted: new Date(null),
+                    dataElement: "script#serializedData",
+                    showPopup: true,
+                    showMods: null,
+                    showSections: {"ModsList":false,"ContentPackList":false,"ModUpdateList":false},
+                    showLevels: {"trace":false,"debug":true,"info":true,"warn":true,"error":true,"alert":true,"critical":true},
+                    enableFilters: true
+                }
+            );
+
+
+                    new Tabby("[data-tabs]");
+                        });
+    </script>
+
+</head>
+<body>
+    <div id="sidebar">
+        <h4>SMAPI</h4>
+        <ul>
+            <li><a href="/">About SMAPI</a></li>
+            <li><a href="https://stardewvalleywiki.com/Modding:Index">Modding docs</a></li>
+        </ul>
+
+        <h4>Tools</h4>
+        <ul>
+            <li><a href="/mods">Mod compatibility</a></li>
+            <li><a href="/log">Log parser</a></li>
+            <li><a href="/json">JSON validator</a></li>
+        </ul>
+
+
+
+    </div>
+    <div id="content-column">
+        <div id="content">
+            <h1>SMAPI log parser</h1>
+
+
+
+
+            <h2>Where do I find my SMAPI log?</h2>
+            <div id="os-instructions">
+                <div>
+                    <ul data-tabs>
+                        <li><a href="#Android">Android</a></li>
+                        <li><a href="#Linux">Linux</a></li>
+                        <li><a href="#Mac">Mac</a></li>
+                        <li><a data-tabby-default href="#Windows-steamgog">Windows (Steam or GOG)</a></li>
+                        <li><a href="#Windows-xbox">Windows (Xbox app)</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <div id="Android">
+                        <ol>
+                            <li>Open a file app (like My Files or MT Manager).</li>
+                            <li>Find the <code>StardewValley</code> folder on your internal storage.</li>
+                            <li>Open the <code>ErrorLogs</code> subfolder.</li>
+                            <li>The log file is <code>SMAPI-crash.txt</code> if it exists, otherwise <code>SMAPI-latest.txt</code>.</li>
+                        </ol>
+                    </div>
+                    <div id="Linux">
+                        <ol>
+                            <li>Open the Files app.</li>
+                            <li>Click the options menu (might be labeled <em>Go</em> or <code>⋮</code>).</li>
+                            <li>Choose <em>Enter Location</em>.</li>
+                            <li>Enter this exact text: <pre>~/.config/StardewValley/ErrorLogs</pre></li>
+                            <li>The log file is <code>SMAPI-crash.txt</code> if it exists, otherwise <code>SMAPI-latest.txt</code>.</li>
+                        </ol>
+                    </div>
+                    <div id="Mac">
+                        <ol>
+                            <li>Open the Finder app.</li>
+                            <li>Click <em>Go</em> at the top, then <em>Go to Folder</em>.</li>
+                            <li>Enter this exact text: <pre>~/.config/StardewValley/ErrorLogs</pre></li>
+                            <li>The log file is <code>SMAPI-crash.txt</code> if it exists, otherwise <code>SMAPI-latest.txt</code>.</li>
+                        </ol>
+                    </div>
+                    <div id="Windows-steamgog">
+                        <ol>
+                            <li>Press the <kbd>Windows</kbd> and <kbd>R</kbd> buttons at the same time.</li>
+                            <li>In the 'run' box that appears, enter this exact text: <pre>%appdata%\StardewValley\ErrorLogs</pre></li>
+                            <li>The log file is <code>SMAPI-crash.txt</code> if it exists, otherwise <code>SMAPI-latest.txt</code>.</li>
+                        </ol>
+                    </div>
+                    <div id="Windows-xbox">
+                        <ol>
+                            <li>Press the <kbd>Windows</kbd> and <kbd>R</kbd> buttons at the same time.</li>
+                            <li>In the 'run' box that appears, enter this exact text: <pre>%localappdata%\Packages\ConcernedApe.StardewValleyPC_0c8vynj4cqe4e\LocalCache\Roaming\StardewValley\ErrorLogs</pre></li>
+                            <li>If you get an error with the title "Location is not available", try the "with Steam or GOG" instructions above.</li>
+                            <li>Otherwise the log file is <code>SMAPI-crash.txt</code> if it exists, otherwise <code>SMAPI-latest.txt</code>.</li>
+                        </ol>
+                    </div>
+                </div>
+            </div>
+            <h2>How do I share my log?</h2>
+            <form action="https://smapi.io/log" method="post">
+                <input id="inputFile" type="file" />
+                <ol>
+                    <li>
+                        Drag the file onto this textbox <small>(or <a href="#" id="choose-file-link">choose a file</a>)</small>:<br />
+                        <textarea id="input" name="input" placeholder="paste log here">{{HERE}}</textarea>
+                    </li>
+                    <li>
+                        Click this button:<br />
+                        <input type="submit" id="submit" value="save & parse log" />
+                    </li>
+                    <li>On the new page, copy the URL and send it to the person helping you.</li>
+                </ol>
+            </form>
+
+        </div>
+        <div id="footer">
+            <div id="license">
+                Hi! See the <a href="/privacy">privacy page</a>, <a href="https://github.com/pathoschild/SMAPI" title="view source">SMAPI's source code</a>, or <a href="https://smapi.io/community" title="community pages">ask questions</a>.
+            </div>
+        </div>
+    </div>
+</body>
+</html>
