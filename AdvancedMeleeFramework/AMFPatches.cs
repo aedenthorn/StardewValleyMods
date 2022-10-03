@@ -143,7 +143,7 @@ namespace AdvancedMeleeFramework
         }
         public static bool _OnMonsterSlay_Prefix(BaseEnchantment __instance, string ____displayName, Monster m, GameLocation location, Farmer who)
         {
-            if (!(__instance is BaseWeaponEnchantment) || ____displayName == null || !ModEntry.advancedEnchantments.ContainsKey(____displayName) || (ModEntry.EnchantmentTriggers.ContainsKey(who.uniqueMultiplayerID + ____displayName) && ModEntry.EnchantmentTriggers[who.uniqueMultiplayerID + ____displayName] == Game1.ticks))
+            if (!(__instance is BaseWeaponEnchantment) || ____displayName == null || who is null|| !ModEntry.advancedEnchantments.ContainsKey(____displayName) || (ModEntry.EnchantmentTriggers.ContainsKey(who.UniqueMultiplayerID + ____displayName) && ModEntry.EnchantmentTriggers[who.UniqueMultiplayerID + ____displayName] == Game1.ticks))
                 return true;
             AdvancedEnchantmentData enchantment = ModEntry.advancedEnchantments[____displayName];
             if (enchantment.parameters["trigger"] == "slay")

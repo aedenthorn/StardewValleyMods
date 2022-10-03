@@ -1,4 +1,4 @@
-﻿using Harmony;
+﻿using HarmonyLib;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using StardewModdingAPI;
@@ -52,7 +52,7 @@ namespace AdvancedMeleeFramework
 
             myRand = new Random();
 
-            var harmony = HarmonyInstance.Create(ModManifest.UniqueID);
+            var harmony = new Harmony(ModManifest.UniqueID);
 
             harmony.Patch(
                 original: AccessTools.Method(typeof(MeleeWeapon), "doAnimateSpecialMove"),
@@ -92,7 +92,7 @@ namespace AdvancedMeleeFramework
 
         private void Player_InventoryChanged(object sender, StardewModdingAPI.Events.InventoryChangedEventArgs e)
         {
-            foreach(Item item in e.Player.items)
+            foreach(Item item in e.Player.Items)
             {
                 if(item is MeleeWeapon)
                 {
@@ -110,7 +110,7 @@ namespace AdvancedMeleeFramework
         public void GameLoop_SaveLoaded(object sender, StardewModdingAPI.Events.SaveLoadedEventArgs e)
         {
             LoadAdvancedMeleeWeapons();
-            foreach (Item item in Game1.player.items)
+            foreach (Item item in Game1.player.Items)
             {
                 if (item is MeleeWeapon)
                 {
@@ -321,7 +321,7 @@ namespace AdvancedMeleeFramework
                                         Monitor.Log($"Got name instead of id {weapon.id}");
                                         try
                                         {
-                                            id = Helper.Content.Load<Dictionary<int, string>>("Data/weapons", ContentSource.GameContent).First(p => p.Value.StartsWith($"{weapon.id}/")).Key;
+                                            id = Helper.GameContent.Load<Dictionary<int, string>>("Data/weapons").First(p => p.Value.StartsWith($"{weapon.id}/")).Key;
                                             Monitor.Log($"Got name-based id {id}");
                                         }
                                         catch (Exception ex)
@@ -469,7 +469,7 @@ namespace AdvancedMeleeFramework
                         Vector2 velocity = TranslateVector(new Vector2(p.xVelocity, p.yVelocity), user.FacingDirection);
                         Vector2 startPos = TranslateVector(new Vector2(p.startingPositionX, p.startingPositionY), user.FacingDirection);
 
-                        int damage = advancedWeaponAnimating.type > 0 ? p.damage * myRand.Next(weaponAnimating.minDamage, weaponAnimating.maxDamage) : p.damage;
+                        int damage = advancedWeaponAnimating.type > 0 ? p.damage * myRand.Next(weaponAnimating.minDamage.Value, weaponAnimating.maxDamage.Value) : p.damage;
 
                         //Monitor.Log($"player position: {user.Position}, start position: { new Vector2(startingPositionX, startingPositionY) }");
 
@@ -551,12 +551,12 @@ namespace AdvancedMeleeFramework
         }
         public void LightningStrike(Farmer who, MeleeWeapon weapon, Dictionary<string, string> parameters)
         {
-            int minDamage = weapon.minDamage;
-            int maxDamage = weapon.maxDamage;
+            int minDamage = weapon.minDamage.Value;
+            int maxDamage = weapon.maxDamage.Value;
             if (parameters.ContainsKey("damageMult"))
             {
-                minDamage = (int)Math.Round(weapon.minDamage * float.Parse(parameters["damageMult"]));
-                maxDamage = (int)Math.Round(weapon.maxDamage * float.Parse(parameters["damageMult"]));
+                minDamage = (int)Math.Round(weapon.minDamage.Value * float.Parse(parameters["damageMult"]));
+                maxDamage = (int)Math.Round(weapon.maxDamage.Value * float.Parse(parameters["damageMult"]));
             }
             else if (parameters.ContainsKey("minDamage") && parameters.ContainsKey("maxDamage"))
             {
@@ -599,7 +599,7 @@ namespace AdvancedMeleeFramework
             int damage;
             if (parameters.ContainsKey("damageMult"))
             {
-                damage = (int)Math.Round(Game1.random.Next(weapon.minDamage, weapon.maxDamage + 1) * float.Parse(parameters["damageMult"]));
+                damage = (int)Math.Round(Game1.random.Next(weapon.minDamage.Value, weapon.maxDamage.Value + 1) * float.Parse(parameters["damageMult"]));
             }
             else if (parameters.ContainsKey("minDamage") && parameters.ContainsKey("maxDamage"))
             {
@@ -607,7 +607,7 @@ namespace AdvancedMeleeFramework
 
             }
             else
-                damage = Game1.random.Next(weapon.minDamage, weapon.maxDamage + 1);
+                damage = Game1.random.Next(weapon.minDamage.Value, weapon.maxDamage.Value + 1);
 
             user.currentLocation.explode(tileLocation, radius, user, false, damage);
         }
@@ -618,7 +618,7 @@ namespace AdvancedMeleeFramework
             if (advancedMeleeWeapons.ContainsKey(weapon.InitialParentTileIndex))
             {
                 int skillLevel = -1;
-                foreach (AdvancedMeleeWeapon amw in advancedMeleeWeapons[weapon.initialParentTileIndex])
+                foreach (AdvancedMeleeWeapon amw in advancedMeleeWeapons[weapon.InitialParentTileIndex])
                 {
                     if (user == null || (amw.skillLevel <= user.getEffectiveSkillLevel(4) && amw.skillLevel > skillLevel))
                     {
@@ -627,10 +627,10 @@ namespace AdvancedMeleeFramework
                     }
                 }
             }
-            if (advancedMeleeWeapon == null && advancedMeleeWeaponsByType.ContainsKey(weapon.type) && user != null)
+            if (advancedMeleeWeapon == null && advancedMeleeWeaponsByType.ContainsKey(weapon.type.Value) && user != null)
             {
                 int skillLevel = -1;
-                foreach(AdvancedMeleeWeapon amw in advancedMeleeWeaponsByType[weapon.type])
+                foreach(AdvancedMeleeWeapon amw in advancedMeleeWeaponsByType[weapon.type.Value])
                 {
                     if(amw.skillLevel <= user.getEffectiveSkillLevel(4) && amw.skillLevel > skillLevel)
                     {
