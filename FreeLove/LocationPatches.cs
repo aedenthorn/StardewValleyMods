@@ -210,7 +210,7 @@ namespace FreeLove
                             responses.Add(new Response(spouse.Name, spouse.displayName));
                         }
                         responses.Add(new Response("No", Game1.content.LoadString("Strings\\Lexicon:QuestionDialogue_No")));
-                        __instance.createQuestionDialogue(str, responses.ToArray(), Divorce.afterDialogueBehavior);
+                        __instance.createQuestionDialogue(str, responses.ToArray(), "freelovedivorce");
                         //__instance.createQuestionDialogue(s2, responses.ToArray(), "divorce");
                         __result = true;
                         return false;
@@ -224,43 +224,43 @@ namespace FreeLove
             return true;
         }
 
-        public static void GameLocation_answerDialogue_prefix(GameLocation __instance, Response answer)
+        public static bool ManorHouse_answerDialogueAction_Prefix(ManorHouse __instance, string questionAndAnswer, string[] questionParams, ref bool __result)
         {
-            try
+            if (questionAndAnswer.StartsWith("freelovedivorce"))
             {
-                if (answer.responseKey.StartsWith("divorce_"))
-                    __instance.afterQuestion = Divorce.afterDialogueBehavior;
-
+                Divorce.afterDialogueBehavior(Game1.player, questionAndAnswer.Substring("freelovedivorce".Length + 1));
+                __result = true;
+                return false;
             }
-            catch (Exception ex)
-            {
-                Monitor.Log($"Failed in {nameof(GameLocation_answerDialogue_prefix)}:\n{ex}", LogLevel.Error);
-            }
+            return true;
         }
         public static bool GameLocation_answerDialogueAction_Prefix(string questionAndAnswer, string[] questionParams, ref bool __result)
         {
-            if (!Config.EnableMod || questionAndAnswer != "mariner_Buy")
+            if (!Config.EnableMod)
                 return true;
 
-            if (Game1.player.Money < Config.PendantPrice)
+            if(questionAndAnswer == "mariner_Buy")
             {
-                Game1.drawObjectDialogue(Game1.content.LoadString("Strings\\UI:NotEnoughMoney1"));
-            }
-            else
-            {
-                Game1.player.Money -= Config.PendantPrice;
-                Game1.player.addItemByMenuIfNecessary(new Object(460, 1, false, -1, 0)
+                if (Game1.player.Money < Config.PendantPrice)
                 {
-                    specialItem = true
-                }, null);
-                if (Game1.activeClickableMenu == null)
-                {
-                    Game1.player.holdUpItemThenMessage(new Object(460, 1, false, -1, 0), true);
+                    Game1.drawObjectDialogue(Game1.content.LoadString("Strings\\UI:NotEnoughMoney1"));
                 }
+                else
+                {
+                    Game1.player.Money -= Config.PendantPrice;
+                    Game1.player.addItemByMenuIfNecessary(new Object(460, 1, false, -1, 0)
+                    {
+                        specialItem = true
+                    }, null);
+                    if (Game1.activeClickableMenu == null)
+                    {
+                        Game1.player.holdUpItemThenMessage(new Object(460, 1, false, -1, 0), true);
+                    }
+                }
+                __result = true;
+                return false;
             }
-            __result = true;
-            return false;
+            return true;
         }
-
     }
 }

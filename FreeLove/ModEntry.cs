@@ -199,10 +199,10 @@ namespace FreeLove
                original: AccessTools.Method(typeof(ManorHouse), nameof(ManorHouse.performAction)),
                prefix: new HarmonyMethod(typeof(LocationPatches), nameof(LocationPatches.ManorHouse_performAction_Prefix))
             );
-
+            
             harmony.Patch(
-               original: AccessTools.Method(typeof(GameLocation), nameof(GameLocation.answerDialogue)),
-               prefix: new HarmonyMethod(typeof(LocationPatches), nameof(LocationPatches.GameLocation_answerDialogue_prefix))
+               original: AccessTools.Method(typeof(ManorHouse), nameof(ManorHouse.answerDialogueAction)),
+               prefix: new HarmonyMethod(typeof(LocationPatches), nameof(LocationPatches.ManorHouse_answerDialogueAction_Prefix))
             );
             
             harmony.Patch(

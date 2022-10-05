@@ -43,7 +43,7 @@ namespace FreeLove
                 }
                 responses.Add(new Response("No", Game1.content.LoadString("Strings\\Lexicon:QuestionDialogue_No")));
                 (Game1.activeClickableMenu as DialogueBox)?.closeDialogue();
-                Game1.currentLocation.createQuestionDialogue(s2, responses.ToArray(), afterDialogueBehavior);
+                Game1.currentLocation.createQuestionDialogue(s2, responses.ToArray(), "freelovedivorce");
             }
             else if (whichAnswer.StartsWith("divorce_Yes_"))
             {
@@ -198,7 +198,7 @@ namespace FreeLove
             Game1.currentLocation.lastQuestionKey = "";
             Game1.isQuestion = true;
             Game1.dialogueUp = true;
-            l.createQuestionDialogue(s2, responses.ToArray(), afterDialogueBehavior);
+            l.createQuestionDialogue(s2, responses.ToArray(), "freelovedivorce");
         }
     }
 }

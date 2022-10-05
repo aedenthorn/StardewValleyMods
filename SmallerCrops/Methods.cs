@@ -1,6 +1,8 @@
-﻿using Microsoft.Xna.Framework;
+﻿using HarmonyLib;
+using Microsoft.Xna.Framework;
 using StardewValley;
 using StardewValley.TerrainFeatures;
+using System.Collections.Generic;
 using Object = StardewValley.Object;
 
 namespace SmallerCrops
@@ -42,6 +44,12 @@ namespace SmallerCrops
                 return 4f;
             return 2f;
         }
+        private static float GetGiantCropScale()
+        {
+            if (!Config.ModEnabled)
+                return 4f;
+            return 1f;
+        }
         private static float GetPlacementScale(Object __instance)
         {
             if (!Config.ModEnabled || (__instance.Category != -74 && __instance.Category != -19))
@@ -67,6 +75,70 @@ namespace SmallerCrops
             if (!Config.ModEnabled)
                 return 4f;
             return 2f;
+        }
+        private static double GetGiantCropDouble(ulong a, ulong b, ulong c, ulong d)
+        {
+            if (!Config.ModEnabled)
+                return (double)AccessTools.Method("StardewValley.OneTimeRandom:GetDouble").Invoke(null, new object[] { a, b, c, d });
+            return 1;
+        }
+        private struct NeighborLoc
+        {
+            public NeighborLoc(Vector2 a, byte b, byte c)
+            {
+                this.Offset = a;
+                this.Direction = b;
+                this.InvDirection = c;
+            }
+
+            public readonly Vector2 Offset;
+
+            public readonly byte Direction;
+
+            public readonly byte InvDirection;
+        }
+        private static object[] GetNeigbourOffsets(GameLocation loc, Vector2 tilePos)
+        {
+            if (!Config.ModEnabled)
+                return (object[])AccessTools.Field(typeof(HoeDirt), "_offsets").GetValue(null);
+            return new object[] {
+            };
+            if (tilePos.X >= tileOffset * 3)
+            {
+                 return new object[] {
+                    new NeighborLoc(new Vector2(-tileOffset * 2, -tileOffset * 2), 1, 4),
+                    new NeighborLoc(new Vector2(-tileOffset * 2, -tileOffset * 2 + 1), 4, 1),
+                    new NeighborLoc(new Vector2(-tileOffset + 1, -tileOffset), 2, 8),
+                    new NeighborLoc(new Vector2(-tileOffset, -tileOffset), 8, 2)
+                };
+            }
+            else if (tilePos.X >= tileOffset * 2)
+            {
+                 return new object[] {
+                    new NeighborLoc(new Vector2(-tileOffset * 2, -tileOffset * 2), 1, 4),
+                    new NeighborLoc(new Vector2(-tileOffset * 2, -tileOffset * 2 + 1), 4, 1),
+                    new NeighborLoc(new Vector2(tileOffset, tileOffset), 2, 8),
+                    new NeighborLoc(new Vector2(tileOffset - 1, tileOffset), 8, 2)
+                };
+            }
+            else if (tilePos.X >= tileOffset)
+            {
+                 return new object[] {
+                    new NeighborLoc(new Vector2(tileOffset * 2, tileOffset * 2 - 1), 1, 4),
+                    new NeighborLoc(new Vector2(tileOffset * 2, tileOffset * 2), 4, 1),
+                    new NeighborLoc(new Vector2(-tileOffset + 1, -tileOffset), 2, 8),
+                    new NeighborLoc(new Vector2(-tileOffset, -tileOffset), 8, 2)
+                };
+            }
+            else
+            {
+                 return new object[] {
+                    new NeighborLoc(new Vector2(tileOffset * 2, tileOffset * 2 - 1), 1, 4),
+                    new NeighborLoc(new Vector2(tileOffset * 2, tileOffset * 2), 4, 1),
+                    new NeighborLoc(new Vector2(tileOffset, tileOffset), 2, 8),
+                    new NeighborLoc(new Vector2(tileOffset - 1, tileOffset), 8, 2)
+                };
+            }
         }
     }
 }
