@@ -359,6 +359,33 @@ namespace TwoPlayerPrairieKing
                 {
                     sayWhat = SHelper.Translation.Get(which);
                 }
+
+                if (sayWhat.Length > 2 && sayWhat.Substring(sayWhat.Length - 2, 1) == "$")
+                {
+                    var end = sayWhat.Substring(sayWhat.Length - 1);
+                    if(!int.TryParse(end, out whichExpression))
+                    {
+                        switch (end)
+                        {
+                            case "h":
+                                whichExpression = 1;
+                                break;
+                            case "s":
+                                whichExpression = 2;
+                                break;
+                            case "u":
+                                whichExpression = 3;
+                                break;
+                            case "l":
+                                whichExpression = 4;
+                                break;
+                            case "a":
+                                whichExpression = 5;
+                                break;
+                        }
+                    }
+                    sayWhat = sayWhat.Substring(0, sayWhat.Length - 2);
+                }
                 return true;
             }
         }
