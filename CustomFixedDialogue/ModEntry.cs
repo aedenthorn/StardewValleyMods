@@ -55,8 +55,13 @@ namespace CustomFixedDialogue
             );
             harmony.Patch(
                 original: AccessTools.Method(typeof(Game1), nameof(Game1.LoadStringByGender), new Type[] { typeof(int),  typeof(string) }),
-                prefix: new HarmonyMethod(typeof(ModEntry), nameof(ModEntry.Game1_LoadStringByGender_Prefix)),
-                postfix: new HarmonyMethod(typeof(ModEntry), nameof(ModEntry.Game1_LoadStringByGender_Postfix))
+                prefix: new HarmonyMethod(typeof(ModEntry), nameof(ModEntry.Game1_LoadStringByGender_Prefix1)),
+                postfix: new HarmonyMethod(typeof(ModEntry), nameof(ModEntry.Game1_LoadStringByGender_Postfix1))
+            );
+            harmony.Patch(
+                original: AccessTools.Method(typeof(Game1), nameof(Game1.LoadStringByGender), new Type[] { typeof(int),  typeof(string), typeof(object[]) }),
+                prefix: new HarmonyMethod(typeof(ModEntry), nameof(ModEntry.Game1_LoadStringByGender_Prefix2)),
+                postfix: new HarmonyMethod(typeof(ModEntry), nameof(ModEntry.Game1_LoadStringByGender_Postfix2))
             );
             harmony.Patch(
                 original: AccessTools.Method(typeof(NPC), nameof(NPC.showTextAboveHead)),
@@ -75,18 +80,32 @@ namespace CustomFixedDialogue
                 postfix: new HarmonyMethod(typeof(ModEntry), nameof(ModEntry.GetSummitDialogue_Patch))
             );
 
-            helper.Events.Input.ButtonPressed += Input_ButtonPressed;
+            //helper.Events.Input.ButtonPressed += Input_ButtonPressed;
         }
 
         private void Input_ButtonPressed(object sender, StardewModdingAPI.Events.ButtonPressedEventArgs e)
         {
-            //return;
             if (e.Button == SButton.NumLock)
 			{
-				var person = Game1.getCharacterFromName("Shane");
+				var person = Game1.getCharacterFromName("Maru");
                 Game1.warpCharacter(person, Game1.player.currentLocation, Game1.player.getTileLocation() + new Microsoft.Xna.Framework.Vector2(0, 1));
+                
+                string relativeTitle = "father";
 
-                Game1.drawDialogue(person, Game1.LoadStringByGender(person.Gender, "Strings\\StringsFromCSFiles:NPC.cs.4276"));
+                string nameAndTitle = Game1.LoadStringByGender(0, "Strings\\StringsFromCSFiles:NPC.cs.4079", new object[]
+                {
+                    relativeTitle
+                });
+
+                var message = Game1.content.LoadString("Strings\\StringsFromCSFiles:NPC.cs.4100", nameAndTitle, "Purple Shorts") + Game1.content.LoadString("Strings\\StringsFromCSFiles:NPC.cs.4126") + "%revealtaste" + "Demetrius0";
+                try
+                {
+                    message = message.Substring(0, 1).ToUpper() + message.Substring(1, message.Length - 1);
+                }
+                catch (Exception)
+                {
+                }
+                Game1.drawDialogue(person, message);
                 return;
             }
             if (e.Button == SButton.F3)
