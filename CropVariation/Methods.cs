@@ -21,7 +21,7 @@ namespace CropVariation
 
         private static float GetRandomSizeVar(HoeDirt hoeDirt)
         {
-            if (!Config.EnableMod)
+            if (!Config.EnableMod || hoeDirt is null)
                 return 0;
             double sv = Game1.random.NextDouble() * 2 - 1;
             hoeDirt.modData[sizeVarKey] = sv + "";
@@ -30,7 +30,7 @@ namespace CropVariation
 
         private static void GetRandomColorVars(HoeDirt hoeDirt)
         {
-            if (!Config.EnableMod)
+            if (!Config.EnableMod || hoeDirt is null)
                 return;
             hoeDirt.modData[redVarKey] = (Game1.random.NextDouble() * 2 - 1) + "";
             hoeDirt.modData[greenVarKey] = (Game1.random.NextDouble() * 2 - 1) + "";
