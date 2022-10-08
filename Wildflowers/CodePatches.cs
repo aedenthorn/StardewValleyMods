@@ -31,7 +31,13 @@ namespace Wildflowers
                         if (chance <= Config.wildflowerGrowChance)
                         {
                             var flowers = Game1.objectInformation.Where(p => p.Value.Contains("/Basic -80/")).Select(p => p.Key).ToArray();
-                            crop = new Crop(GetRandomFlowerSeed(flowers), (int)key.X, (int)key.Y);
+                            int idx = GetRandomFlowerSeed(flowers);
+                            if (idx < 0)
+                            {
+                                SMonitor.Log($"no flowers for this season");
+                                return;
+                            }
+                            crop = new Crop(idx, (int)key.X, (int)key.Y);
                             crop.growCompletely();
                             SMonitor.Log($"Added new wild flower {crop.indexOfHarvest} to {__instance.Name} at {key}");
                         }
@@ -68,7 +74,7 @@ namespace Wildflowers
                 crop.draw(spriteBatch, tileLocation, Color.White, 0);
             }
         }
-        [HarmonyPatch(typeof(Utility), nameof(Utility.findCloseFlower))]
+        [HarmonyPatch(typeof(Utility), nameof(Utility.findCloseFlower), new Type[] { typeof(GameLocation), typeof(Vector2), typeof(int), typeof(Func<Crop, bool>)})]
         public class Utility_findCloseFlower_Patch
         {
             public static void Postfix(GameLocation location, Vector2 startTileLocation, int range, Func<Crop, bool> additional_check, ref Crop __result)

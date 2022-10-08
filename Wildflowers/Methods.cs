@@ -25,7 +25,9 @@ namespace Wildflowers
                     continue;
                 idxs.Add(kvp.Key);
             }
-            return idxs[Game1.random.Next(idxs.Count)];
+            if(idxs.Count > 0)
+                return idxs[Game1.random.Next(idxs.Count)];
+            return -1;
         }
     }
 }
