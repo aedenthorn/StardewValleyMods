@@ -1,6 +1,7 @@
 ﻿using HarmonyLib;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using Newtonsoft.Json;
 using StardewModdingAPI;
 using StardewValley;
 using StardewValley.Objects;
@@ -11,7 +12,7 @@ using Object = StardewValley.Object;
 namespace FurnitureDisplayFramework
 {
     /// <summary>The mod entry point.</summary>
-    public partial class ModEntry : Mod, IAssetLoader
+    public partial class ModEntry : Mod
     {
 
         public static IMonitor SMonitor;
@@ -38,6 +39,7 @@ namespace FurnitureDisplayFramework
             helper.Events.Input.ButtonPressed += Input_ButtonPressed;
             helper.Events.GameLoop.GameLaunched += GameLoop_GameLaunched;
             helper.Events.GameLoop.SaveLoaded += GameLoop_SaveLoaded;
+            helper.Events.Content.AssetRequested += Content_AssetRequested;
 
             var harmony = new Harmony(ModManifest.UniqueID);
             harmony.Patch(
@@ -45,6 +47,15 @@ namespace FurnitureDisplayFramework
                postfix: new HarmonyMethod(typeof(ModEntry), nameof(GameLocation_draw_Postfix))
             );
         }
+
+        private void Content_AssetRequested(object sender, StardewModdingAPI.Events.AssetRequestedEventArgs e)
+        {
+            if (e.Name.IsEquivalentTo(frameworkPath))
+            {
+                e.LoadFrom(() => new Dictionary<string, FurnitureDisplayData>(), StardewModdingAPI.Events.AssetLoadPriority.Exclusive);
+            }
+        }
+
         public override object GetApi()
         {
             return new FurnitureDisplayFrameworkAPI();
@@ -90,7 +101,7 @@ namespace FurnitureDisplayFramework
             if (!Config.EnableMod)
                 return;
             furnitureDisplayDict.Clear();
-            var tempDisplayDict = Helper.Content.Load<Dictionary<string, FurnitureDisplayData>>(frameworkPath, ContentSource.GameContent);
+            var tempDisplayDict = Helper.GameContent.Load<Dictionary<string, FurnitureDisplayData>>(frameworkPath);
             foreach(var kvp in tempDisplayDict)
             {
                 if (kvp.Key.Contains(","))
@@ -138,7 +149,7 @@ namespace FurnitureDisplayFramework
         {
             if (!Config.EnableMod || Game1.activeClickableMenu != null || !Context.IsWorldReady || furnitureDisplayDict.Count == 0)
                 return;
-            if(e.Button == Config.PlaceKey && Game1.player.CurrentItem is Object && !(Game1.player.CurrentItem as Object).bigCraftable.Value && Game1.player.CurrentItem.GetType().BaseType == typeof(Item))
+            if(e.Button == Config.PlaceKey && Game1.player.ActiveObject is not null && !Game1.player.ActiveObject.bigCraftable.Value && Game1.player.ActiveObject.GetType().BaseType == typeof(Item))
             {
                 foreach (var f in Game1.currentLocation.furniture)
                 {
@@ -152,60 +163,71 @@ namespace FurnitureDisplayFramework
                             //Monitor.Log($"Checking if {slotRect} contains {Game1.viewport.X + Game1.getOldMouseX()},{Game1.viewport.Y + Game1.getOldMouseY()}");
                             if (slotRect.Contains(Game1.viewport.X + Game1.getOldMouseX(), Game1.viewport.Y + Game1.getOldMouseY()))
                             {
-                                var amount = Config.PlaceAllByDefault ? Game1.player.CurrentItem.Stack : 1;
+                                Object obj = null;
+                                var amount = Config.PlaceAllByDefault ? Game1.player.ActiveObject.Stack : 1;
                                 //Monitor.Log($"Clicked on furniture display {name} slot {i}");
-                                Monitor.Log($"Placing {Game1.player.CurrentItem.Name} x{amount} in slot {i}");
+                                Monitor.Log($"Placing {Game1.player.ActiveObject.Name} x{amount} in slot {i}");
                                 Game1.player.currentLocation.playSound("dwop");
-                                if (f.modData.ContainsKey("aedenthorn.FurnitureDisplayFramework/" + i) && f.modData["aedenthorn.FurnitureDisplayFramework/" + i].Contains(","))
+                                if (f.modData.TryGetValue("aedenthorn.FurnitureDisplayFramework/" + i, out string slotString))
                                 {
-                                    var currentItem = f.modData["aedenthorn.FurnitureDisplayFramework/" + i].Split(',');
-                                    Monitor.Log($"Slot has {currentItem[0]}x{currentItem[1]}");
-                                    if ((Game1.player.CurrentItem.Name != currentItem[0] && Game1.player.CurrentItem.ParentSheetIndex.ToString() != currentItem[0]) || (Game1.player.CurrentItem as Object).Quality.ToString() != currentItem[2])
+                                    if (slotString.Contains("{"))
                                     {
-                                        var obj = GetObjectFromID(currentItem[0], int.Parse(currentItem[1]), int.Parse(currentItem[2]));
-                                        if (obj != null && !Game1.player.addItemToInventoryBool(obj, true))
-                                        {
-                                            Monitor.Log($"Switching with {Game1.player.CurrentItem.Name} x{amount}");
-                                            f.modData["aedenthorn.FurnitureDisplayFramework/" + i] = $"{Game1.player.CurrentItem.ParentSheetIndex},{amount},{(Game1.player.CurrentItem as Object).Quality}";
-
-                                            if (amount >= Game1.player.CurrentItem.Stack)
-                                                Game1.player.removeItemFromInventory(Game1.player.CurrentItem);
-                                            else
-                                                Game1.player.CurrentItem.Stack -= amount;
-
-                                            Helper.Input.Suppress(e.Button);
-                                        }
+                                        var currentItem = f.modData["aedenthorn.FurnitureDisplayFramework/" + i].Split(',');
+                                        obj = GetObjectFromID(currentItem[0], int.Parse(currentItem[1]), int.Parse(currentItem[2]));
                                     }
-                                    else
+                                    else if(slotString.Contains("{"))
                                     {
-                                        int slotAmount = int.Parse(currentItem[1]);
-                                        int newSlotAmount = Math.Min(Game1.player.CurrentItem.maximumStackSize(), slotAmount + amount);
-                                        Monitor.Log($"Adding {Game1.player.CurrentItem.Name} x{newSlotAmount}");
-                                        f.modData["aedenthorn.FurnitureDisplayFramework/" + i] = $"{currentItem[0]},{newSlotAmount},{currentItem[2]}";
-                                        if (newSlotAmount < slotAmount + amount)
+                                        obj = JsonConvert.DeserializeObject<Object>(slotString);
+                                    }
+                                    if(obj is not null)
+                                    {
+                                        Monitor.Log($"Slot has {obj.Name}x{obj.Stack}");
+                                        if ((Game1.player.ActiveObject.Name != obj.Name && Game1.player.ActiveObject.ParentSheetIndex.ToString() != obj.Name) || Game1.player.ActiveObject.Quality != obj.Quality)
                                         {
-                                            Game1.player.CurrentItem.Stack = slotAmount + amount - newSlotAmount;
+                                            if (!Game1.player.addItemToInventoryBool(obj, true))
+                                            {
+                                                Monitor.Log($"Switching with {Game1.player.CurrentItem.Name} x{amount}");
+                                                f.modData["aedenthorn.FurnitureDisplayFramework/" + i] = JsonConvert.SerializeObject(obj);
+
+                                                if (amount >= Game1.player.CurrentItem.Stack)
+                                                    Game1.player.removeItemFromInventory(Game1.player.CurrentItem);
+                                                else
+                                                    Game1.player.CurrentItem.Stack -= amount;
+                                            }
                                         }
                                         else
                                         {
-                                            if (amount >= Game1.player.CurrentItem.Stack)
-                                                Game1.player.removeItemFromInventory(Game1.player.CurrentItem);
+                                            int slotAmount = obj.Stack;
+                                            int newSlotAmount = Math.Min(Game1.player.ActiveObject.maximumStackSize(), slotAmount + amount);
+                                            obj.Stack = newSlotAmount;
+                                            Monitor.Log($"Adding {Game1.player.ActiveObject.Name} x{newSlotAmount}");
+                                            f.modData["aedenthorn.FurnitureDisplayFramework/" + i] = JsonConvert.SerializeObject(obj);
+                                            if (newSlotAmount < slotAmount + amount)
+                                            {
+                                                Game1.player.ActiveObject.Stack = slotAmount + amount - newSlotAmount;
+                                            }
                                             else
-                                                Game1.player.CurrentItem.Stack -= amount;
+                                            {
+                                                if (amount >= Game1.player.ActiveObject.Stack)
+                                                    Game1.player.removeItemFromInventory(Game1.player.ActiveObject);
+                                                else
+                                                    Game1.player.ActiveObject.Stack -= amount;
+                                            }
                                         }
                                         Helper.Input.Suppress(e.Button);
+                                        return;
                                     }
+
                                 }
+                                Monitor.Log($"Adding {Game1.player.ActiveObject.Name} x{amount}");
+                                obj = Game1.player.ActiveObject;
+                                obj.Stack = amount;
+                                f.modData["aedenthorn.FurnitureDisplayFramework/" + i] = JsonConvert.SerializeObject(obj);
+                                if (amount >= Game1.player.ActiveObject.Stack)
+                                    Game1.player.removeItemFromInventory(Game1.player.ActiveObject);
                                 else
-                                {
-                                    Monitor.Log($"Adding {Game1.player.CurrentItem.Name} x{amount}");
-                                    f.modData["aedenthorn.FurnitureDisplayFramework/" + i] = $"{Game1.player.CurrentItem.ParentSheetIndex},{amount},{(Game1.player.CurrentItem as Object).Quality}";
-                                    if (amount >= Game1.player.CurrentItem.Stack)
-                                        Game1.player.removeItemFromInventory(Game1.player.CurrentItem);
-                                    else
-                                        Game1.player.CurrentItem.Stack -= amount;
-                                    Helper.Input.Suppress(e.Button);
-                                }
+                                    Game1.player.ActiveObject.Stack -= amount;
+                                Helper.Input.Suppress(e.Button);
                                 return;
                             }
                         }
@@ -224,14 +246,21 @@ namespace FurnitureDisplayFramework
                         for (int i = 0; i < data.slots.Length; i++)
                         {
                             Rectangle slotRect = new Rectangle((int)(f.boundingBox.X + data.slots[i].slotRect.X * 4), (int)(f.boundingBox.Y + data.slots[i].slotRect.Y * 4), (int)(data.slots[i].slotRect.Width * 4), (int)(data.slots[i].slotRect.Height * 4));
-                            if (slotRect.Contains(Game1.viewport.X + Game1.getOldMouseX(), Game1.viewport.Y + Game1.getOldMouseY()) && furnitureDisplayDict.ContainsKey(name) && f.modData.ContainsKey("aedenthorn.FurnitureDisplayFramework/" + i) && f.modData["aedenthorn.FurnitureDisplayFramework/" + i].Contains(","))
+                            if (slotRect.Contains(Game1.viewport.X + Game1.getOldMouseX(), Game1.viewport.Y + Game1.getOldMouseY()) && furnitureDisplayDict.ContainsKey(name) && f.modData.TryGetValue("aedenthorn.FurnitureDisplayFramework/" + i, out string slotString))
                             {
-                                Game1.player.currentLocation.playSound("dwop");
-                                var currentItem = f.modData["aedenthorn.FurnitureDisplayFramework/" + i].Split(',');
-                                Monitor.Log($"Slot has {currentItem[0]}x{currentItem[1]}");
-                                var obj = GetObjectFromID(currentItem[0], int.Parse(currentItem[1]), int.Parse(currentItem[2]));
+                                Object obj = null;
+                                if (slotString.Contains("{"))
+                                {
+                                    var currentItem = f.modData["aedenthorn.FurnitureDisplayFramework/" + i].Split(',');
+                                    obj = GetObjectFromID(currentItem[0], int.Parse(currentItem[1]), int.Parse(currentItem[2]));
+                                }
+                                else if (slotString.Contains("{"))
+                                {
+                                    obj = JsonConvert.DeserializeObject<Object>(slotString);
+                                }
                                 if (obj != null)
                                 {
+                                    Monitor.Log($"Slot has {obj.Name}x{obj.Stack}");
                                     Game1.player.currentLocation.playSound("dwop");
                                     Monitor.Log($"Taking {obj.Name}x{obj.Stack}");
                                     f.modData.Remove("aedenthorn.FurnitureDisplayFramework/" + i);
@@ -312,24 +341,6 @@ namespace FurnitureDisplayFramework
             */
         }
 
-        /// <summary>Get whether this instance can load the initial version of the given asset.</summary>
-        /// <param name="asset">Basic metadata about the asset being loaded.</param>
-        public bool CanLoad<T>(IAssetInfo asset)
-        {
-            if (!Config.EnableMod)
-                return false;
-
-            return asset.AssetNameEquals(frameworkPath);
-        }
-
-        /// <summary>Load a matched asset.</summary>
-        /// <param name="asset">Basic metadata about the asset being loaded.</param>
-        public T Load<T>(IAssetInfo asset)
-        {
-            Monitor.Log("Loading furniture display list");
-
-            return (T)(object)new Dictionary<string, FurnitureDisplayData>();
-        }
     }
 
 }

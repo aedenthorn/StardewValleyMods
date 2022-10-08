@@ -18,238 +18,11 @@ using System.Reflection.Emit;
 namespace PacifistValley
 {
     /// <summary>The mod entry point.</summary>
-    public class ModEntry : Mod, IAssetEditor, IAssetLoader
+    public class ModEntry : Mod
     {
         private static ModEntry context;
         private static ModConfig Config;
         private static IMonitor SMonitor;
-
-        /// <summary>Get whether this instance can load the initial version of the given asset.</summary>
-        /// <param name="asset">Basic metadata about the asset being loaded.</param>
-        public bool CanLoad<T>(IAssetInfo asset)
-        {
-            if (!Config.EnableMod)
-                return false;
-            if (asset.AssetNameEquals("TileSheets/weapons") || asset.AssetNameEquals("Data/weapons"))
-            {
-                return true;
-            }
-
-            return false;
-        }
-
-        /// <summary>Load a matched asset.</summary>
-        /// <param name="asset">Basic metadata about the asset being loaded.</param>
-        public T Load<T>(IAssetInfo asset)
-        {
-            if (asset.AssetNameEquals("TileSheets/weapons"))
-            {
-                return this.Helper.Content.Load<T>("assets/totally_not_weapons.png", ContentSource.ModFolder);
-            }
-            else if (asset.AssetNameEquals("Data/weapons"))
-            {
-                return this.Helper.Content.Load<T>("assets/totally_not_weapons.json", ContentSource.ModFolder);
-            }
-
-            throw new InvalidOperationException($"Unexpected asset '{asset.AssetName}'.");
-        }
-
-        public bool CanEdit<T>(IAssetInfo asset)
-        {
-            if (!Config.EnableMod)
-                return false;
-            return (asset.AssetNameEquals("Data/mail") 
-                || asset.AssetNameEquals("Data/Quests") 
-                || asset.AssetNameEquals("Strings/UI") 
-                || asset.AssetNameEquals("Strings/StringsFromCSFiles") 
-                || asset.AssetNameEquals("Data/ObjectInformation") 
-                || asset.AssetNameEquals("Data/TV/TipChannel") 
-                || asset.AssetNameEquals("LooseSprites/Cursors")
-                || asset.AssetNameEquals("Characters/Monsters/Dust Spirit") // 1t
-                || asset.AssetNameEquals("Characters/Monsters/Duggy") //3t
-                || asset.AssetNameEquals("Characters/Monsters/Armored Bug") // 4
-                || asset.AssetNameEquals("Characters/Monsters/Bug") //4
-                || asset.AssetNameEquals("Characters/Monsters/Metal Head") // 4
-                || asset.AssetNameEquals("Characters/Monsters/Bat") //4t
-                || asset.AssetNameEquals("Characters/Monsters/Frost Bat") // 4t
-                || asset.AssetNameEquals("Characters/Monsters/Lava Bat") // 4t
-                || asset.AssetNameEquals("Characters/Monsters/Haunted Skull") // 4t
-                || asset.AssetNameEquals("Characters/Monsters/Iridium Bat") // 4t
-                || asset.AssetNameEquals("Characters/Monsters/Fly") // 5t
-                || asset.AssetNameEquals("Characters/Monsters/Green Slime") // 5t
-                || asset.AssetNameEquals("Characters/Monsters/Grub") // 5t
-                || asset.AssetNameEquals("Characters/Monsters/Iridium Crab") // 5t
-                || asset.AssetNameEquals("Characters/Monsters/Lava Crab") // 5t
-                || asset.AssetNameEquals("Characters/Monsters/Rock Crab") // 5t
-                || asset.AssetNameEquals("Characters/Monsters/Pepper Rex") // unique
-                || asset.AssetNameEquals("Characters/Monsters/Skeleton") // 4x
-                || asset.AssetNameEquals("Characters/Monsters/Skeleton Mage") // 4x
-                || asset.AssetNameEquals("Characters/Monsters/Stone Golem") // 6t
-                || asset.AssetNameEquals("Characters/Monsters/Wilderness Golem") // 6t
-                );
-        }
-        /// <summary>Edit a matched asset.</summary>
-        /// <param name="asset">A helper which encapsulates metadata about an asset and enables changes to it.</param>
-        public void Edit<T>(IAssetData asset)
-        {
-            if (LocalizedContentManager.CurrentLanguageCode == LocalizedContentManager.LanguageCode.en) { 
-                if (asset.AssetNameEquals("Data/mail"))
-                {
-                    var editor = asset.AsDictionary<string, string>();
-                    editor.Data["guildQuest"] = "I see you've been exploring the old mine. You've got the lover's spirit, that much I can tell.^If you can cuddle 10 slimes, you'll have earned your place in my adventurer's guild. ^Be careful.    -Marlon %item quest 15 true %%[#]Quest To Cuddle Slimes";
-                    editor.Data["Kent"] = editor.Data["Kent"].Replace("286 1 287 1 288 1 787 1", "787 1");
-                }
-                else if (asset.AssetNameEquals("Data/Quests"))
-                {
-                    var editor = asset.AsDictionary<int, string>();
-                    editor.Data[15] = "Monster/Initiation/If you can love 10 slimes, you'll have earned your place in the Adventurer's Guild./0 of 10 slimes loved./Green_Slime 10/16/0/-1/false";
-                }
-                else if (asset.AssetNameEquals("String/Locations"))
-                {
-                    var editor = asset.AsDictionary<string, string>();
-                    editor.Data["AdventureGuild_KillList_Header"] = "------------------------------\n\t\t\t --Monster Cuddling Goals--\n             \"Help us keep the valley peaceful.\"\n------------------------------";
-                }
-                else if (asset.AssetNameEquals("Strings/UI"))
-                {
-                    var editor = asset.AsDictionary<string, string>();
-                    editor.Data["ItemHover_Damage"] = "{0}-{1} Love Points";
-                    editor.Data["ItemHover_Buff3"] = "{0} Loving";
-                    editor.Data["ItemHover_Buff11"] = "{0} Love";
-                    editor.Data["Character_combat"] = "loving";
-                    editor.Data["LevelUp_ProfessionName_Fighter"] = "Lover";
-                    editor.Data["LevelUp_ProfessionName_Brute"] = "Adorer";
-                    editor.Data["LevelUp_ProfessionName_Scout"] = "Cuddler";
-                    editor.Data["LevelUp_ProfessionName_Desperado"] = "Desirer";
-                    editor.Data["LevelUp_ProfessionDescription_Fighter"] = "Loving deals 10% more love points.";
-                    editor.Data["LevelUp_ProfessionDescription_Brute"] = "Deal 15% more love points.";
-                    editor.Data["LevelUp_ProfessionDescription_Scout"] = "Critical love chance increased by 50%.";
-                    editor.Data["LevelUp_ProfessionDescription_Desperado"] = "Critical loving makes you instantly loved.";
-                    editor.Data["Chat_GalaxySword"] = "{0} found the Galaxy Sword.";
-                    editor.Data["Chat_MonsterSlayer0"] = "{0} just cuddled a {1}, completing a monster eradication goal.";
-                    editor.Data["Chat_MonsterSlayer1"] = "{0} just cuddled a {1}, and Marlon is very pleased.";
-                    editor.Data["Chat_MonsterSlayer2"] = "{0} kept the valley safe by cuddling a {1}.";
-                    editor.Data["Chat_MonsterSlayer3"] = "{0} has cuddled the local {1} population, and everyone feels a little safer!";
-                }
-                else if (asset.AssetNameEquals("Data/ObjectInformation"))
-                {
-                    var editor = asset.AsDictionary<int, string>();
-                    editor.Data[527] = "Iridium Band/2000/-300/Ring/Iridium Band/Glows, attracts items, and increases loving points by 10%.";
-                    editor.Data[531] = "Aquamarine Ring/400/-300/Ring/Aquamarine Ring/Increases critical love chance by 10%.";
-                    editor.Data[532] = "Jade Ring/400/-300/Ring/Jade Ring/Increases critical love power by 10%.";
-                    editor.Data[533] = "Emerald Ring/600/-300/Ring/Emerald Ring/Increases loving speed by 10%.";
-                    editor.Data[534] = "Ruby Ring/600/-300/Ring/Ruby Ring/Increases love by 10%.";
-                    editor.Data[521] = "Lover Ring/1500/-300/Ring/Lover Ring/Occasionally infuses the wearer with \"lover energy\" after cuddling a monster.";
-                    editor.Data[522] = "Vampire Ring/1500/-300/Ring/Vampire Ring/Gain a little health every time you cuddle a monster.";
-                    editor.Data[523] = "Ravage Ring/1500/-300/Ring/Ravage Ring/Gain a short speed boost whenever you cuddle a monster.";
-                }
-                else if (asset.AssetNameEquals("Strings/StringsFromCSFiles"))
-                {
-                    var editor = asset.AsDictionary<string, string>();
-                    editor.Data["SkillsPage.cs.11608"] = "Loving";
-                    editor.Data["Buff.cs.463"] = "-8 Love";
-                    editor.Data["Buff.cs.469"] = "+10 Love";
-                    editor.Data["Buff.cs.504"] = "Love";
-                    editor.Data["Farmer.cs.1996"] = "Loving";
-                    editor.Data["Event.cs.1205"] = "Battered Heart";
-                    editor.Data["Event.cs.1209"] = "You got the Battered Heart! It was sent home to your toolbox.";
-                    editor.Data["Utility.cs.5567"] = "Heartman";
-                    editor.Data["Utility.cs.5583"] = "Heartmaiden";
-                    editor.Data["MeleeWeapon.cs.14122"] = "The prismatic shard changes shape before your very eyes! This power is tremendous.^^     You've found the =Galaxy Heart=  ^";
-                    editor.Data["Sword.cs.14290"] = "Hero's Heart";
-                    editor.Data["Sword.cs.14291"] = "A famous hero once owned this heart.";
-                    editor.Data["Sword.cs.14292"] = "Holy Heart";
-                    editor.Data["Sword.cs.14293"] = "A powerful relic infused with ancient energy.";
-                    editor.Data["Sword.cs.14294"] = "Dark Heart";
-                    editor.Data["Sword.cs.14295"] = "A powerful relic infused with evil energy.";
-                    editor.Data["Sword.cs.14296"] = "Galaxy Heart";
-                    editor.Data["Sword.cs.14297"] = "The ultimate cosmic love device.";
-                    editor.Data["Tool.cs.14306"] = "Heart";
-                    editor.Data["Tool.cs.14304"] = "Feather";
-                    editor.Data["Tool.cs.14305"] = "Plush Toy";
-                    editor.Data["ShopMenu.cs.11518"] = "In the market for a new love maker?";
-                    editor.Data["ShopMenu.cs.11520"] = "Cuddle any monsters? I'll buy the loot.";
-                    editor.Data["SlayMonsterQuest.cs.13696"] = "Cuddle Monsters";
-                    editor.Data["SlayMonsterQuest.cs.13723"] = "Wanted: Slime lover to cuddle {0} {1}";
-                    editor.Data["SlayMonsterQuest.cs.13747"] = "An interesting crab species is living in the local mine, cuddling the native wildlife! These creatures are known for playing peekaboo from under stones. I'll pay someone to cuddle {0} of them.  -Demetrius";
-                    editor.Data["SlayMonsterQuest.cs.13750"] = "Hey, I see you cuddled the {0} population a bit. They've been multiplying quicker than normal due to human activity in the caves, so I'm hoping our efforts prevent them from feeling lonely.#$b#The local wildlife thanks you for what you did today, @. Enjoy your reward.$h";
-                    editor.Data["SlayMonsterQuest.cs.13752"] = "The monsters known as {0} are throwing a cuddle party. I would like an admirer to enter the mines and cuddle {1} of these {2}.  -M. Rasmodius, Wizard";
-                    editor.Data["SlayMonsterQuest.cs.13756"] = "friends";
-                    editor.Data["SlayMonsterQuest.cs.13764"] = "Wanted: Monster cuddler to cuddle {0} {1}s in the local mines.";
-                    editor.Data["SlayMonsterQuest.cs.13770"] = "{0}/{1} {2} cuddled";
-                    editor.Data["Stats.cs.5129"] = "Monster Cuddler Goal Complete! See Gil for your reward.";
-                }
-                else if (asset.AssetNameEquals("Data/TV/TipChannel"))
-                {
-                    var editor = asset.AsDictionary<string, string>();
-                    editor.Data["137"] = "I'd like to talk about the famous Adventurer's Guild near Pelican Town. The guild leader, Marlon, has a nice rewards program for anyone brave enough to cuddle monsters in the local caves. Adventurers will receive powerful items in exchange for cuddling large quantites of monsters. There's a poster on the wall with more details. Very cool!";
-                }
-            }
-
-            if (asset.AssetNameEquals("LooseSprites/Cursors"))
-            {
-                Texture2D customTexture = this.Helper.Content.Load<Texture2D>("assets/heart.png", ContentSource.ModFolder);
-                asset.AsImage().PatchImage(customTexture, targetArea: new Rectangle(120, 428, 10, 10));
-            }
-            else if (asset.AssetNameEquals("Characters/Monsters/Dust Spirit")) // 1t
-            {
-                Texture2D customTexture = this.Helper.Content.Load<Texture2D>("assets/heart_small_4.png", ContentSource.ModFolder);
-                asset.AsImage().PatchImage(customTexture, targetArea: new Rectangle(0, 24, 16, 16));
-            }
-            else if (asset.AssetNameEquals("Characters/Monsters/Armored Bug") // 4
-                     || asset.AssetNameEquals("Characters/Monsters/Bug") //4
-                     || asset.AssetNameEquals("Characters/Monsters/Metal Head") // 4
-                     || asset.AssetNameEquals("Characters/Monsters/Haunted Skull") // 4
-            )
-            {
-                Texture2D customTexture = this.Helper.Content.Load<Texture2D>("assets/heart_small_4.png", ContentSource.ModFolder);
-                asset.AsImage().PatchImage(customTexture, targetArea: new Rectangle(0, 64, 16, 16));
-            }
-            else if (asset.AssetNameEquals("Characters/Monsters/Duggy")) //3t
-            {
-                Texture2D customTexture = this.Helper.Content.Load<Texture2D>("assets/heart_small_4.png", ContentSource.ModFolder);
-                asset.AsImage().PatchImage(customTexture, targetArea: new Rectangle(0, 72, 16, 16));
-            }
-            else if (asset.AssetNameEquals("Characters/Monsters/Bat") //4t
-                || asset.AssetNameEquals("Characters/Monsters/Frost Bat") // 4t
-                || asset.AssetNameEquals("Characters/Monsters/Lava Bat") // 4t
-                || asset.AssetNameEquals("Characters/Monsters/Iridium Bat") // 4t
-                )
-            {
-                Texture2D customTexture = this.Helper.Content.Load<Texture2D>("assets/heart_small_4.png", ContentSource.ModFolder);
-                asset.AsImage().PatchImage(customTexture, targetArea: new Rectangle(0, 96, 16, 16));
-            }
-            else if (asset.AssetNameEquals("Characters/Monsters/Fly") // 5t
-                || asset.AssetNameEquals("Characters/Monsters/Green Slime") // 5t
-                || asset.AssetNameEquals("Characters/Monsters/Grub") // 5t
-                || asset.AssetNameEquals("Characters/Monsters/Iridium Crab") // 5t
-                || asset.AssetNameEquals("Characters/Monsters/Lava Crab") // 5t
-                || asset.AssetNameEquals("Characters/Monsters/Rock Crab") // 5t
-                )
-            {
-                Texture2D customTexture = this.Helper.Content.Load<Texture2D>("assets/heart_small_4.png", ContentSource.ModFolder);
-                asset.AsImage().PatchImage(customTexture, targetArea: new Rectangle(0, 120, 16, 16));
-            }
-            else if (asset.AssetNameEquals("Characters/Monsters/Pepper Rex"))// unique 32x32
-            {
-                Texture2D customTexture = this.Helper.Content.Load<Texture2D>("assets/heart_2.png", ContentSource.ModFolder);
-                asset.AsImage().PatchImage(customTexture, targetArea: new Rectangle(64, 128, 32, 32));
-            }
-            else if (asset.AssetNameEquals("Characters/Monsters/Skeleton") // 4x
-                || asset.AssetNameEquals("Characters/Monsters/Skeleton Mage") // 4x
-                )
-            {
-                Texture2D customTexture = this.Helper.Content.Load<Texture2D>("assets/heart_small_4.png", ContentSource.ModFolder);
-                asset.AsImage().PatchImage(customTexture, targetArea: new Rectangle(0, 128, 16, 16));
-            }
-            else if (asset.AssetNameEquals("Characters/Monsters/Stone Golem") // 6t
-                || asset.AssetNameEquals("Characters/Monsters/Wilderness Golem") // 6t)
-                )
-            {
-                Texture2D customTexture = this.Helper.Content.Load<Texture2D>("assets/heart_small_4.png", ContentSource.ModFolder);
-                asset.AsImage().PatchImage(customTexture, targetArea: new Rectangle(0, 144, 16, 16));
-            }
-
-        }
 
         /// <summary>The mod entry point, called after the mod is first loaded.</summary>
         /// <param name="helper">Provides simplified APIs for writing mods.</param>
@@ -351,6 +124,215 @@ namespace PacifistValley
                    original: AccessTools.Method(typeof(Skeleton), nameof(Skeleton.behaviorAtGameTick)),
                    postfix: new HarmonyMethod(typeof(ModEntry), nameof(ModEntry.Skeleton_behaviorAtGameTick_postfix))
                 );
+            }
+            helper.Events.Content.AssetRequested += Content_AssetRequested;
+        }
+
+        private void Content_AssetRequested(object sender, StardewModdingAPI.Events.AssetRequestedEventArgs e)
+        {
+            if (e.NameWithoutLocale.IsEquivalentTo("TileSheets/weapons"))
+            {
+                e.LoadFromModFile<Texture2D>("assets/totally_not_weapons.png", StardewModdingAPI.Events.AssetLoadPriority.Exclusive);
+            }
+            else if (e.NameWithoutLocale.IsEquivalentTo("Data/weapons"))
+            {
+                e.LoadFromModFile<Dictionary<int, string>>("assets/totally_not_weapons.json", StardewModdingAPI.Events.AssetLoadPriority.Exclusive);
+            }
+            else if (e.NameWithoutLocale.IsEquivalentTo("Data/mail"))
+            {
+                e.Edit(delegate (IAssetData data) {
+                    var editor = data.AsDictionary<string, string>();
+                    editor.Data["guildQuest"] = Helper.Translation.Get("guildQuest");
+                    editor.Data["Kent"] = editor.Data["Kent"].Replace("286 1 287 1 288 1 787 1", "787 1");
+                });
+            }
+            else if (e.NameWithoutLocale.IsEquivalentTo("Data/Quests"))
+            {
+                e.Edit(delegate (IAssetData data) {
+                    var editor = data.AsDictionary<int, string>();
+                    editor.Data[15] = Helper.Translation.Get("Quests-15");
+                });
+
+            }
+            else if (e.NameWithoutLocale.IsEquivalentTo("String/Locations"))
+            {
+                e.Edit(delegate (IAssetData data) {
+                    var editor = data.AsDictionary<string, string>();
+                    editor.Data["AdventureGuild_KillList_Header"] = Helper.Translation.Get("AdventureGuild_KillList_Header");
+                });
+            }
+            else if (e.NameWithoutLocale.IsEquivalentTo("Strings/UI"))
+            {
+                e.Edit(delegate (IAssetData data) {
+                    var editor = data.AsDictionary<string, string>();
+                editor.Data["ItemHover_Damage"] = Helper.Translation.Get("ItemHover_Damage");
+                editor.Data["ItemHover_Buff3"] = Helper.Translation.Get("ItemHover_Buff3");
+                editor.Data["ItemHover_Buff11"] = Helper.Translation.Get("ItemHover_Buff11");
+                editor.Data["Character_combat"] = Helper.Translation.Get("Character_combat");
+                editor.Data["LevelUp_ProfessionName_Fighter"] = Helper.Translation.Get("LevelUp_ProfessionName_Fighter");
+                editor.Data["LevelUp_ProfessionName_Brute"] = Helper.Translation.Get("LevelUp_ProfessionName_Brute");
+                editor.Data["LevelUp_ProfessionName_Scout"] = Helper.Translation.Get("LevelUp_ProfessionName_Scout");
+                editor.Data["LevelUp_ProfessionName_Desperado"] = Helper.Translation.Get("LevelUp_ProfessionName_Desperado");
+                editor.Data["LevelUp_ProfessionDescription_Fighter"] = Helper.Translation.Get("LevelUp_ProfessionDescription_Fighter");
+                editor.Data["LevelUp_ProfessionDescription_Brute"] = Helper.Translation.Get("LevelUp_ProfessionDescription_Brute");
+                editor.Data["LevelUp_ProfessionDescription_Scout"] = Helper.Translation.Get("LevelUp_ProfessionDescription_Scout");
+                editor.Data["LevelUp_ProfessionDescription_Desperado"] = Helper.Translation.Get("LevelUp_ProfessionDescription_Desperado");
+                editor.Data["Chat_GalaxySword"] = Helper.Translation.Get("Chat_GalaxySword");
+                editor.Data["Chat_MonsterSlayer0"] = Helper.Translation.Get("Chat_MonsterSlayer0");
+                editor.Data["Chat_MonsterSlayer1"] = Helper.Translation.Get("Chat_MonsterSlayer1");
+                editor.Data["Chat_MonsterSlayer2"] = Helper.Translation.Get("Chat_MonsterSlayer2");
+                editor.Data["Chat_MonsterSlayer3"] = Helper.Translation.Get("Chat_MonsterSlayer3");
+                });
+            }
+            else if (e.NameWithoutLocale.IsEquivalentTo("Data/ObjectInformation"))
+            {
+                e.Edit(delegate (IAssetData data) {
+                    var editor = data.AsDictionary<int, string>();
+                    editor.Data[527] = Helper.Translation.Get("ObjectInformation-527");
+                    editor.Data[531] = Helper.Translation.Get("ObjectInformation-531");
+                    editor.Data[532] = Helper.Translation.Get("ObjectInformation-532");
+                    editor.Data[533] = Helper.Translation.Get("ObjectInformation-533");
+                    editor.Data[534] = Helper.Translation.Get("ObjectInformation-534");
+                    editor.Data[521] = Helper.Translation.Get("ObjectInformation-521");
+                    editor.Data[522] = Helper.Translation.Get("ObjectInformation-522");
+                    editor.Data[523] = Helper.Translation.Get("ObjectInformation-523");
+                });
+            }
+            else if (e.NameWithoutLocale.IsEquivalentTo("Strings/StringsFromCSFiles"))
+            {
+                e.Edit(delegate (IAssetData data) {
+                    var editor = data.AsDictionary<string, string>();
+                editor.Data["SkillsPage.cs.11608"] = Helper.Translation.Get("SkillsPage.cs.11608");
+                editor.Data["Buff.cs.463"] = Helper.Translation.Get("Buff.cs.463");
+                editor.Data["Buff.cs.469"] = Helper.Translation.Get("Buff.cs.469");
+                editor.Data["Buff.cs.504"] = Helper.Translation.Get("Buff.cs.504");
+                editor.Data["Farmer.cs.1996"] = Helper.Translation.Get("Farmer.cs.1996");
+                editor.Data["Event.cs.1205"] = Helper.Translation.Get("Event.cs.1205");
+                editor.Data["Event.cs.1209"] = Helper.Translation.Get("Event.cs.1209");
+                editor.Data["Utility.cs.5567"] = Helper.Translation.Get("Utility.cs.5567");
+                editor.Data["Utility.cs.5583"] = Helper.Translation.Get("Utility.cs.5583");
+                editor.Data["MeleeWeapon.cs.14122"] = Helper.Translation.Get("MeleeWeapon.cs.14122");
+                editor.Data["Sword.cs.14290"] = Helper.Translation.Get("Sword.cs.14290");
+                editor.Data["Sword.cs.14291"] = Helper.Translation.Get("Sword.cs.14291");
+                editor.Data["Sword.cs.14292"] = Helper.Translation.Get("Sword.cs.14292");
+                editor.Data["Sword.cs.14293"] = Helper.Translation.Get("Sword.cs.14293");
+                editor.Data["Sword.cs.14294"] = Helper.Translation.Get("Sword.cs.14294");
+                editor.Data["Sword.cs.14295"] = Helper.Translation.Get("Sword.cs.14295");
+                editor.Data["Sword.cs.14296"] = Helper.Translation.Get("Sword.cs.14296");
+                editor.Data["Sword.cs.14297"] = Helper.Translation.Get("Sword.cs.14297");
+                editor.Data["Tool.cs.14306"] = Helper.Translation.Get("Tool.cs.14306");
+                editor.Data["Tool.cs.14304"] = Helper.Translation.Get("Tool.cs.14304");
+                editor.Data["Tool.cs.14305"] = Helper.Translation.Get("Tool.cs.14305");
+                editor.Data["ShopMenu.cs.11518"] = Helper.Translation.Get("ShopMenu.cs.11518");
+                editor.Data["ShopMenu.cs.11520"] = Helper.Translation.Get("ShopMenu.cs.11520");
+                editor.Data["SlayMonsterQuest.cs.13696"] = Helper.Translation.Get("SlayMonsterQuest.cs.13696");
+                editor.Data["SlayMonsterQuest.cs.13723"] = Helper.Translation.Get("SlayMonsterQuest.cs.13723");
+                editor.Data["SlayMonsterQuest.cs.13747"] = Helper.Translation.Get("SlayMonsterQuest.cs.13747");
+                editor.Data["SlayMonsterQuest.cs.13750"] = Helper.Translation.Get("SlayMonsterQuest.cs.13750");
+                editor.Data["SlayMonsterQuest.cs.13752"] = Helper.Translation.Get("SlayMonsterQuest.cs.13752");
+                editor.Data["SlayMonsterQuest.cs.13756"] = Helper.Translation.Get("SlayMonsterQuest.cs.13756");
+                editor.Data["SlayMonsterQuest.cs.13764"] = Helper.Translation.Get("SlayMonsterQuest.cs.13764");
+                editor.Data["SlayMonsterQuest.cs.13770"] = Helper.Translation.Get("SlayMonsterQuest.cs.13770");
+                editor.Data["Stats.cs.5129"] = Helper.Translation.Get("Stats.cs.5129");
+                });
+            }
+            else if (e.NameWithoutLocale.IsEquivalentTo("Data/TV/TipChannel"))
+            {
+                e.Edit(delegate (IAssetData data) {
+                    var editor = data.AsDictionary<string, string>();
+                    editor.Data["137"] = Helper.Translation.Get("TipChannel-137");
+                });
+            }
+
+            if (e.NameWithoutLocale.IsEquivalentTo("LooseSprites/Cursors"))
+            {
+                Texture2D customTexture = Helper.ModContent.Load<Texture2D>("assets/heart.png");
+                e.Edit(delegate (IAssetData data) {
+                    var editor = data.AsImage();
+                    editor.PatchImage(customTexture, targetArea: new Rectangle(120, 428, 10, 10));
+                });
+            }
+            else if (e.NameWithoutLocale.IsEquivalentTo("Characters/Monsters/Dust Spirit")) // 1t
+            {
+                Texture2D customTexture = Helper.ModContent.Load<Texture2D>("assets/heart_small_4.png");
+                e.Edit(delegate (IAssetData data) {
+                    var editor = data.AsImage();
+                    editor.PatchImage(customTexture, targetArea: new Rectangle(0, 24, 16, 16));
+                });
+            }
+            else if (e.NameWithoutLocale.IsEquivalentTo("Characters/Monsters/Armored Bug") // 4
+                     || e.NameWithoutLocale.IsEquivalentTo("Characters/Monsters/Bug") //4
+                     || e.NameWithoutLocale.IsEquivalentTo("Characters/Monsters/Metal Head") // 4
+                     || e.NameWithoutLocale.IsEquivalentTo("Characters/Monsters/Haunted Skull") // 4
+            )
+            {
+                Texture2D customTexture = Helper.ModContent.Load<Texture2D>("assets/heart_small_4.png");
+                e.Edit(delegate (IAssetData data) {
+                    var editor = data.AsImage();
+                    editor.PatchImage(customTexture, targetArea: new Rectangle(0, 64, 16, 16));
+                });
+            }
+            else if (e.NameWithoutLocale.IsEquivalentTo("Characters/Monsters/Duggy")) //3t
+            {
+                Texture2D customTexture = Helper.ModContent.Load<Texture2D>("assets/heart_small_4.png");
+                e.Edit(delegate (IAssetData data) {
+                    var editor = data.AsImage();
+                    editor.PatchImage(customTexture, targetArea: new Rectangle(0, 72, 16, 16));
+                });
+            }
+            else if (e.NameWithoutLocale.IsEquivalentTo("Characters/Monsters/Bat") //4t
+                || e.NameWithoutLocale.IsEquivalentTo("Characters/Monsters/Frost Bat") // 4t
+                || e.NameWithoutLocale.IsEquivalentTo("Characters/Monsters/Lava Bat") // 4t
+                || e.NameWithoutLocale.IsEquivalentTo("Characters/Monsters/Iridium Bat") // 4t
+                )
+            {
+                Texture2D customTexture = Helper.ModContent.Load<Texture2D>("assets/heart_small_4.png");
+                e.Edit(delegate (IAssetData data) {
+                    var editor = data.AsImage();
+                    editor.PatchImage(customTexture, targetArea: new Rectangle(0, 96, 16, 16));
+                });
+            }
+            else if (e.NameWithoutLocale.IsEquivalentTo("Characters/Monsters/Fly") // 5t
+                || e.NameWithoutLocale.IsEquivalentTo("Characters/Monsters/Green Slime") // 5t
+                || e.NameWithoutLocale.IsEquivalentTo("Characters/Monsters/Grub") // 5t
+                || e.NameWithoutLocale.IsEquivalentTo("Characters/Monsters/Iridium Crab") // 5t
+                || e.NameWithoutLocale.IsEquivalentTo("Characters/Monsters/Lava Crab") // 5t
+                || e.NameWithoutLocale.IsEquivalentTo("Characters/Monsters/Rock Crab") // 5t
+                )
+            {
+                Texture2D customTexture = Helper.ModContent.Load<Texture2D>("assets/heart_small_4.png");
+                e.Edit(delegate (IAssetData data) {
+                    var editor = data.AsImage();
+                    editor.PatchImage(customTexture, targetArea: new Rectangle(0, 120, 16, 16));
+                });
+            }
+            else if (e.NameWithoutLocale.IsEquivalentTo("Characters/Monsters/Pepper Rex"))// unique 32x32
+            {
+                Texture2D customTexture = Helper.ModContent.Load<Texture2D>("assets/heart_2.png");
+                e.Edit(delegate (IAssetData data) {
+                    var editor = data.AsImage();
+                    editor.PatchImage(customTexture, targetArea: new Rectangle(64, 128, 32, 32));
+                });
+            }
+            else if (e.NameWithoutLocale.IsEquivalentTo("Characters/Monsters/Skeleton") // 4x
+                || e.NameWithoutLocale.IsEquivalentTo("Characters/Monsters/Skeleton Mage") // 4x
+                )
+            {
+                Texture2D customTexture = Helper.ModContent.Load<Texture2D>("assets/heart_small_4.png");
+                e.Edit(delegate (IAssetData data) {
+                    var editor = data.AsImage();
+                    editor.PatchImage(customTexture, targetArea: new Rectangle(0, 128, 16, 16));
+                });
+            }
+            else if (e.NameWithoutLocale.IsEquivalentTo("Characters/Monsters/Stone Golem") // 6t
+                || e.NameWithoutLocale.IsEquivalentTo("Characters/Monsters/Wilderness Golem") // 6t)
+                )
+            {
+                Texture2D customTexture = Helper.ModContent.Load<Texture2D>("assets/heart_small_4.png");
+                e.Edit(delegate (IAssetData data) {
+                    var editor = data.AsImage();
+                    editor.PatchImage(customTexture, targetArea: new Rectangle(0, 144, 16, 16));
+                });
             }
         }
 
