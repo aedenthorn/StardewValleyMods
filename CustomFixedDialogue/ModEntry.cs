@@ -1,9 +1,11 @@
 ﻿using HarmonyLib;
 using StardewModdingAPI;
 using StardewValley;
+using StardewValley.BellsAndWhistles;
 using StardewValley.Locations;
 using StardewValley.Menus;
 using System;
+using System.Collections.Generic;
 
 namespace CustomFixedDialogue
 {
@@ -11,10 +13,13 @@ namespace CustomFixedDialogue
     {
         private static IMonitor SMonitor;
         private static IModHelper SHelper;
+        public static ModConfig Config;
 
-        private static string spaces = "                                                                                                                                                                                                                                                                                                            ";
+        private static Dictionary<string, FixedDialogueData> fixedDict = new Dictionary<string, FixedDialogueData>();
         public override void Entry(IModHelper helper)
         {
+            Config = Helper.ReadConfig<ModConfig>();
+
             SMonitor = Monitor;
             SHelper = Helper;
             var harmony = new Harmony(ModManifest.UniqueID);
@@ -80,24 +85,34 @@ namespace CustomFixedDialogue
                 postfix: new HarmonyMethod(typeof(ModEntry), nameof(ModEntry.GetSummitDialogue_Patch))
             );
 
-            //helper.Events.Input.ButtonPressed += Input_ButtonPressed;
+            helper.Events.Input.ButtonPressed += Input_ButtonPressed;
+            helper.Events.GameLoop.SaveLoaded += GameLoop_SaveLoaded;
+        }
+
+        private void GameLoop_SaveLoaded(object sender, StardewModdingAPI.Events.SaveLoadedEventArgs e)
+        {
+            fixedDict.Clear();
         }
 
         private void Input_ButtonPressed(object sender, StardewModdingAPI.Events.ButtonPressedEventArgs e)
         {
+            if (!Config.Debug)
+                return;
             if (e.Button == SButton.NumLock)
 			{
 				var person = Game1.getCharacterFromName("Maru");
+                var ds = person.CurrentDialogue;
                 Game1.warpCharacter(person, Game1.player.currentLocation, Game1.player.getTileLocation() + new Microsoft.Xna.Framework.Vector2(0, 1));
                 
                 string relativeTitle = "father";
+                string itemName = "French Toast";
 
                 string nameAndTitle = Game1.LoadStringByGender(0, "Strings\\StringsFromCSFiles:NPC.cs.4079", new object[]
                 {
                     relativeTitle
                 });
-
-                var message = Game1.content.LoadString("Strings\\StringsFromCSFiles:NPC.cs.4100", nameAndTitle, "Purple Shorts") + Game1.content.LoadString("Strings\\StringsFromCSFiles:NPC.cs.4126") + "%revealtaste" + "Demetrius0";
+                string message = Game1.content.LoadString("Strings\\StringsFromCSFiles:NPC.cs.4083", nameAndTitle);
+                message += (true ? Game1.content.LoadString("Strings\\StringsFromCSFiles:NPC.cs.4135", itemName, Lexicon.getRandomNegativeFoodAdjective(null)) : Game1.content.LoadString("Strings\\StringsFromCSFiles:NPC.cs.4138", itemName, Lexicon.getRandomNegativeFoodAdjective(null)));
                 try
                 {
                     message = message.Substring(0, 1).ToUpper() + message.Substring(1, message.Length - 1);
@@ -105,7 +120,9 @@ namespace CustomFixedDialogue
                 catch (Exception)
                 {
                 }
-                Game1.drawDialogue(person, message);
+                //Game1.drawDialogue(person, message);
+                person.setNewDialogue(Game1.content.LoadString("Strings\\StringsFromCSFiles:Event.cs.1738", person.displayName), true, false);
+
                 return;
             }
             if (e.Button == SButton.F3)

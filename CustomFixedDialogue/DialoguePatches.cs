@@ -180,7 +180,9 @@ namespace CustomFixedDialogue
         
         public static void Dialogue_Box_Prefix(DialogueBox __instance, ref Dialogue dialogue)
         {
-            if(dialogue.dialogues.Count == 1)
+            var x = Environment.StackTrace;
+
+            if (dialogue.dialogues.Count == 1)
             {
                 string d = dialogue.dialogues[0];
                 if (FixString(dialogue.speaker, ref d))
@@ -200,7 +202,6 @@ namespace CustomFixedDialogue
         public static void NPC_getTermOfSpousalEndearment_Postfix(NPC __instance, ref string __result)
         {
             FixString(__instance, ref __result);
-
         }
 
         public static void NPC_getHi_Postfix(NPC __instance, ref string __result)
@@ -239,12 +240,7 @@ namespace CustomFixedDialogue
 
         public static void ReplaceString(string path, ref string text, object[] subs = null, int gender = -1)
         {
-            if (text.Contains("\""))
-            {
-                return;
-            }
-
-            FixedDialogueData data = new FixedDialogueData(path, subs, gender);
+            FixedDialogueData data = new FixedDialogueData(path, text, subs, gender);
 
             if (path.StartsWith(extraPrefix) && extraAllowed.Contains(path.Substring(extraPrefix.Length)))
             {
@@ -263,63 +259,87 @@ namespace CustomFixedDialogue
                 data.modPath = path.Replace(CSPrefix, "");
             }
             else return;
-            text = "`" + text + "`" + spaces + JsonConvert.SerializeObject(data);
-            var x = Environment.StackTrace;
+            if (Config.Debug)
+            {
+                SMonitor.Log($"Adding replacement data for {path} with original text:\n\n{text}");
+            }
+            Guid guid = Guid.NewGuid();
+            fixedDict[path + guid] = data;
+            text = "⣇" + path + guid + "⣿";
+            if (Config.Debug)
+            {
+                var x = Environment.StackTrace;
+                SMonitor.Log($"new text:\n\n{text}");
+            }
         }
 
         public static bool FixString(NPC speaker, ref string input)
         {
+            if (!input.Contains("⣇"))
+                return false;
             bool changed = false;
-            Dictionary<string, string> dialogueDic = null;
             try
             {
-                dialogueDic = Game1.content.Load<Dictionary<string, string>>($"Characters/Dialogue/{speaker.Name}");
-            }
-            catch
-            {
-                SMonitor.Log($"Error loading character dictionary for {speaker?.Name}");
-            }
-            Regex pattern = new Regex(@"`(?<string>[^`]+)`" + spaces + @"(?<data>\{[^}]+\})", RegexOptions.Compiled);
-            while (pattern.IsMatch(input))
-            {
-                var match = pattern.Match(input);
-                string dataString = match.Groups["data"].Value;
-                FixedDialogueData data = JsonConvert.DeserializeObject<FixedDialogueData>(dataString);
-                string str = match.Groups["string"].Value;
+                Dictionary<string, string> dialogueDic = null;
+                try
+                {
+                    dialogueDic = Game1.content.Load<Dictionary<string, string>>($"Characters/Dialogue/{speaker.Name}");
+                }
+                catch
+                {
+                    //SMonitor.Log($"Error loading character dictionary for {speaker?.Name}");
+                }
+                if (Config.Debug)
+                {
+                    var x = Environment.StackTrace;
 
-                SMonitor.Log($"Found key {data.path} with {data.subs.Count} subs");
-                string newString = "";
-                if (dialogueDic != null && dialogueDic.TryGetValue(data.modPath, out newString))
-                {
-                    SMonitor.Log($"Found custom dialogue for npc {speaker.Name}, path {data.path}: {newString}");
-                    if (data.subs.Any())
-                    {
-                        SMonitor.Log($"Dealing with subs");
-                        newString = string.Format(newString, data.subs);
-                    }
-                    SMonitor.Log($"New string: {newString}");
+                    SMonitor.Log($"Checking string for {speaker?.Name}:\n\n{input}");
                 }
-                else
+                Regex pattern = new Regex(@"⣇(?<key>[^⣿]+)⣿", RegexOptions.Compiled);
+                while (pattern.IsMatch(input))
                 {
-                    newString = str;
-                }
-                if(data.gender > -1 && newString.Contains("/"))
-                {
-                    SMonitor.Log($"Got gendered string {newString}, gender {data.gender}");
-                    var split = newString.Split('/');
-                    if(split.Length <= data.gender)
+                    var match = pattern.Match(input);
+                    if (!fixedDict.TryGetValue(match.Groups["key"].Value, out FixedDialogueData data))
+                        continue;
+
+                    SMonitor.Log($"Found key {data.path} with {data.subs.Count} subs");
+                    string newString = "";
+                    if (dialogueDic != null && dialogueDic.TryGetValue(data.modPath, out newString))
                     {
-                        SMonitor.Log($"Invalid gender for {newString}");
+                        SMonitor.Log($"Found custom dialogue for npc {speaker.Name}, path {data.path}: {newString}");
+                        if (data.subs.Any())
+                        {
+                            SMonitor.Log($"Dealing with subs");
+                            newString = string.Format(newString, data.subs.ToArray());
+                        }
+                        SMonitor.Log($"New string: {newString}");
                     }
                     else
                     {
-                        newString = split[data.gender];
-                        SMonitor.Log($"took gendered string {newString}");
+                        newString = data.text;
                     }
+                    if (data.gender > -1 && newString.Contains("/"))
+                    {
+                        SMonitor.Log($"Got gendered string {newString}, gender {data.gender}");
+                        var split = newString.Split('/');
+                        if (split.Length <= data.gender)
+                        {
+                            SMonitor.Log($"Invalid gender for {newString}");
+                        }
+                        else
+                        {
+                            newString = split[data.gender];
+                            SMonitor.Log($"took gendered string {newString}");
+                        }
+                    }
+                    input = input.Replace(match.Value, newString);
+                    SMonitor.Log($"Final replacement for {match.Value}: {newString}.\nCurrent output: {input}");
+                    changed = true;
                 }
-                input = input.Replace(match.Value, newString);
-                SMonitor.Log($"Final replacement for {match.Value}: {newString}.\nCurrent output: {input}");
-                changed = true;
+            }
+            catch
+            {
+
             }
             return changed;
         }

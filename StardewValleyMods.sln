@@ -385,6 +385,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SmallerCrops", "SmallerCrop
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Wildflowers", "Wildflowers\Wildflowers.csproj", "{832F86A4-AB45-4CB7-BD0B-5F95D76411F3}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PersonalTravellingCart", "PersonalTravellingCart\PersonalTravellingCart.csproj", "{9C7AB9B3-BE57-4189-AE0C-1E33529631C2}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -1889,6 +1891,14 @@ Global
 		{832F86A4-AB45-4CB7-BD0B-5F95D76411F3}.Release|Any CPU.Build.0 = Release|Any CPU
 		{832F86A4-AB45-4CB7-BD0B-5F95D76411F3}.Release|x86.ActiveCfg = Release|Any CPU
 		{832F86A4-AB45-4CB7-BD0B-5F95D76411F3}.Release|x86.Build.0 = Release|Any CPU
+		{9C7AB9B3-BE57-4189-AE0C-1E33529631C2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9C7AB9B3-BE57-4189-AE0C-1E33529631C2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9C7AB9B3-BE57-4189-AE0C-1E33529631C2}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{9C7AB9B3-BE57-4189-AE0C-1E33529631C2}.Debug|x86.Build.0 = Debug|Any CPU
+		{9C7AB9B3-BE57-4189-AE0C-1E33529631C2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9C7AB9B3-BE57-4189-AE0C-1E33529631C2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9C7AB9B3-BE57-4189-AE0C-1E33529631C2}.Release|x86.ActiveCfg = Release|Any CPU
+		{9C7AB9B3-BE57-4189-AE0C-1E33529631C2}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

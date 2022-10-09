@@ -10,7 +10,7 @@ namespace CropVariation
     {
         private static float ChangeScale(Vector2 tileLocation)
         {
-            if (!Config.EnableMod || Config.SizeVariationPercent == 0 || !Game1.currentLocation.terrainFeatures.TryGetValue(tileLocation, out TerrainFeature f) || (f as HoeDirt).crop is null || (f as HoeDirt).crop.currentPhase.Value == 0 || (!Config.EnableTrellisResize && (f as HoeDirt).crop.raisedSeeds.Value))
+            if (!Config.EnableMod || Config.SizeVariationPercent == 0 || Game1.currentLocation?.terrainFeatures?.TryGetValue(tileLocation, out TerrainFeature f) != true || f is not HoeDirt || (f as HoeDirt).crop is null || (f as HoeDirt).crop.currentPhase.Value == 0 || (!Config.EnableTrellisResize && (f as HoeDirt).crop.raisedSeeds.Value))
                 return 4;
             if (!f.modData.TryGetValue(sizeVarKey, out string varString) || !float.TryParse(varString, NumberStyles.Float, CultureInfo.InvariantCulture, out float sizeVarFloat))
                 sizeVarFloat = GetRandomSizeVar(f as HoeDirt);
