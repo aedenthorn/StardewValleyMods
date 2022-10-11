@@ -50,8 +50,8 @@ namespace YAJM
                prefix: new HarmonyMethod(typeof(ModEntry), nameof(ModEntry.GameLocation_isCollidingPosition_prefix))
             );
 
-            horseShadow = Helper.Content.Load<Texture2D>(Path.Combine("assets", "horse_shadow.png"));
-            horse = Helper.Content.Load<Texture2D>(Path.Combine("assets", "horse.png"));
+            horseShadow = Helper.ModContent.Load<Texture2D>(Path.Combine("assets", "horse_shadow.png"));
+            horse = Helper.ModContent.Load<Texture2D>(Path.Combine("assets", "horse.png"));
             
         }
 
