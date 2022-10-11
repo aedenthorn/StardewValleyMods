@@ -4,6 +4,6 @@
     {
         public bool ModEnabled { get; set; } = true;
         public bool Debug { get; set; } = false;
-        public string CurrentCart { get; set; } = "";
+        public string ThisPlayerCartLocationName { get; set; } = null;
     }
 }

@@ -1,6 +1,8 @@
 ﻿using HarmonyLib;
 using Microsoft.Xna.Framework;
 using StardewValley;
+using StardewValley.Characters;
+using System;
 using xTile.Dimensions;
 using xTile.Display;
 using xTile.Layers;
@@ -11,12 +13,12 @@ namespace PersonalTravellingCart
 {
     public partial class ModEntry
     {
-        private static bool IsMouseInBoundingBox(PersonalCartData data)
+        private static bool IsMouseInBoundingBox(Character c, PersonalCartData data)
         {
             if (!Config.ModEnabled)
                 return false;
-            DirectionData ddata = GetDirectionData(data, Game1.player.FacingDirection);
-            Rectangle box = new Rectangle(Utility.Vector2ToPoint(Game1.player.Position + ddata.cartOffset) + new Point(ddata.clickRect.Location.X * 4, ddata.clickRect.Location.Y * 4), new Point(ddata.clickRect.Width * 4, ddata.clickRect.Height * 4));
+            DirectionData ddata = GetDirectionData(data, c.FacingDirection);
+            Rectangle box = new Rectangle(Utility.Vector2ToPoint(c.Position + ddata.cartOffset) + new Point(ddata.clickRect.Location.X * 4, ddata.clickRect.Location.Y * 4), new Point(ddata.clickRect.Width * 4, ddata.clickRect.Height * 4));
             return box.Contains(Game1.viewport.X + Game1.getMouseX(), Game1.viewport.Y + Game1.getMouseY());
         }
         private static DirectionData GetDirectionData(PersonalCartData data, int facingDirection)
@@ -36,9 +38,34 @@ namespace PersonalTravellingCart
         }
         private static void WarpOutOfCart(Farmer who)
         {
-            if (Game1.isWarping)
+            if (Game1.isWarping || who.currentLocation is null)
                 return;
-            if (!who.modData.TryGetValue(lastLocationKey, out string lastLoc))
+            Horse horse = null;
+            foreach (var l in Game1.locations)
+            {
+                foreach (var c in l.characters)
+                {
+                    if (c is Horse)
+                    {
+                        var owner = (c as Horse).getOwner();
+                        if(owner is not null && owner.modData.TryGetValue(locKey, out string locName) && locName == who.currentLocation.Name)
+                        {
+                            horse = c as Horse;
+                            goto gothorse;
+                        }
+                    }
+                }
+                foreach (var c in l.farmers)
+                {
+                    if (c.isRidingHorse() && c.modData.TryGetValue(locKey, out string locName) && locName == who.currentLocation.Name)
+                    {
+                        horse = c.mount;
+                        goto gothorse;
+                    }
+                }
+            }
+        gothorse:
+            if (horse is null)
             {
                 SMonitor.Log($"Warping to farm");
                 Game1.warpFarmer("Farm", Game1.getFarm().GetMainFarmHouseEntry().X, Game1.getFarm().GetMainFarmHouseEntry().Y, false);
@@ -46,9 +73,9 @@ namespace PersonalTravellingCart
             else
             {
                 SMonitor.Log($"Warping to last location");
-                int x = int.Parse(who.modData[lastXKey]);
-                int y = int.Parse(who.modData[lastYKey]);
-                Game1.warpFarmer(lastLoc, x, y, false);
+                int x = horse.getTileX();
+                int y = horse.getTileY();
+                Game1.warpFarmer(new LocationRequest(horse.currentLocation.Name, false, horse.currentLocation), x, y, 2);
             }
         }
         private static void DrawLayer(Layer layer, IDisplayDevice displayDevice, xTile.Dimensions.Rectangle mapViewport, Location displayOffset, bool v1, int pixelZoom)

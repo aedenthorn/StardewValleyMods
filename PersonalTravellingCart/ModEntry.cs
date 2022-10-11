@@ -6,6 +6,7 @@ using StardewModdingAPI;
 using StardewModdingAPI.Events;
 using StardewModdingAPI.Utilities;
 using StardewValley;
+using StardewValley.Locations;
 using StardewValley.TerrainFeatures;
 using System;
 using System.Collections.Generic;
@@ -25,11 +26,14 @@ namespace PersonalTravellingCart
         public static ModEntry context;
         public static string mapAssetKey;
         public static string dataPath = "aedenthorn.PersonalTravellingCart/dictionary";
-        public static string lastXKey = "aedenthorn.PersonalTravellingCart/lastX";
-        public static string lastYKey = "aedenthorn.PersonalTravellingCart/lastY";
-        public static string lastLocationKey = "aedenthorn.PersonalTravellingCart/lastLocation";
+        public static string cartKey = "aedenthorn.PersonalTravellingCart/whichCart";
+        public static string locKey = "aedenthorn.PersonalTravellingCart/loc";
+        public static string locPrefix = "PersonalCart";
         public static Dictionary<string, PersonalCartData> cartDict = new Dictionary<string, PersonalCartData>();
-        private static PerScreen<string> locationName = new PerScreen<string>();
+        private static bool skip;
+
+        private static GameTime deltaTime;
+        private static RenderTarget2D screen;
 
         /// <summary>The mod entry point, called after the mod is first loaded.</summary>
         /// <param name="helper">Provides simplified APIs for writing mods.</param>
@@ -56,29 +60,27 @@ namespace PersonalTravellingCart
 
         private void Input_ButtonPressed(object sender, ButtonPressedEventArgs e)
         {
-            if (!Config.ModEnabled || !Context.IsPlayerFree || !Game1.player.isRidingHorse() || cartDict.Count == 0 || !cartDict.TryGetValue(Config.CurrentCart, out PersonalCartData data))
+            if (!Config.ModEnabled || !Context.IsPlayerFree || !Game1.player.isRidingHorse() || !Game1.player.mount.modData.TryGetValue(cartKey, out string which) || !cartDict.TryGetValue(which, out PersonalCartData data))
                 return;
             if (e.Button == SButton.PageUp)
             {
                 var keys = cartDict.Keys.ToList();
-                var idx = keys.IndexOf(Config.CurrentCart);
+                var idx = keys.IndexOf(which);
                 idx--;
                 if(idx < 0)
                     idx = keys.Count - 1;
                 SMonitor.Log($"Switching cart to {keys[idx]}");
-                Config.CurrentCart = keys[idx];
-                Helper.WriteConfig(Config);
+                Game1.player.mount.modData[cartKey] = keys[idx];
                 return;
             }
             if (e.Button == SButton.PageDown)
             {
                 var keys = cartDict.Keys.ToList();
-                var idx = keys.IndexOf(Config.CurrentCart);
+                var idx = keys.IndexOf(which);
                 idx++;
                 idx %= keys.Count;
                 SMonitor.Log($"Switching cart to {keys[idx]}");
-                Config.CurrentCart = keys[idx];
-                Helper.WriteConfig(Config);
+                Game1.player.mount.modData[cartKey] = keys[idx];
                 return;
             }
             if (!Config.Debug)
@@ -99,9 +101,9 @@ namespace PersonalTravellingCart
                     SMonitor.Log("File not found");
                     return;
                 }
-                var tex = cartDict[Config.CurrentCart].spriteSheet;
+                var tex = cartDict[which].spriteSheet;
                 cartDict = JsonConvert.DeserializeObject<Dictionary<string, PersonalCartData>>(File.ReadAllText(jsonPath));
-                cartDict[Config.CurrentCart].spriteSheet = tex;
+                cartDict[which].spriteSheet = tex;
                 return;
             }
             int mult = Helper.Input.IsDown(SButton.LeftAlt) ? 4 : 1;
@@ -160,7 +162,7 @@ namespace PersonalTravellingCart
                     data.left = ddata;
                     break;
             }
-            cartDict[Config.CurrentCart] = data;
+            cartDict[which] = data;
         }
 
         private void Content_AssetRequested(object sender, AssetRequestedEventArgs e)
@@ -174,7 +176,7 @@ namespace PersonalTravellingCart
         }
         private void GameLoop_SaveLoaded(object sender, SaveLoadedEventArgs e)
         {
-
+            Game1.player.modData[locKey] = Config.ThisPlayerCartLocationName;
         }
 
         private void GameLoop_GameLaunched(object sender, GameLaunchedEventArgs e)

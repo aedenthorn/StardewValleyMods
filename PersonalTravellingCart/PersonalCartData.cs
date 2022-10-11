@@ -10,6 +10,7 @@ namespace PersonalTravellingCart
         public Texture2D spriteSheet;
 
         public string mapPath;
+        public Point entryTile = new Point(6, 6);
         public string spriteSheetPath;
         public DirectionData left = new() {
             backRect = new(0, 0, 128, 128),
