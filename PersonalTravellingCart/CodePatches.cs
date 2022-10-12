@@ -1,7 +1,9 @@
 ﻿using HarmonyLib;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using Newtonsoft.Json;
 using StardewValley;
+using StardewValley.Buildings;
 using StardewValley.Characters;
 using StardewValley.Locations;
 using StardewValley.TerrainFeatures;
@@ -40,10 +42,14 @@ namespace PersonalTravellingCart
 
                 cartDict["_default"] = new PersonalCartData() { spriteSheet = SHelper.ModContent.Load<Texture2D>("assets/cart.png") };
 
-                var mapAssetKey = SHelper.ModContent.GetInternalAssetName("assets/Cart.tmx").BaseName;
+                string mapAssetKey;
                 if (Game1.player.modData.TryGetValue(cartKey, out string which) && cartDict.TryGetValue(which, out PersonalCartData data) && data.mapPath is not null)
                 {
                     mapAssetKey = data.mapPath;
+                }
+                else
+                {
+                    mapAssetKey = SHelper.ModContent.GetInternalAssetName("assets/Cart.tmx").BaseName;
                 }
                 if(Config.ThisPlayerCartLocationName is null)
                 {
@@ -75,13 +81,16 @@ namespace PersonalTravellingCart
         {
             public static void Prefix(Horse __instance, SpriteBatch b)
             {
-                if (!Config.ModEnabled || __instance.getOwner() is null || __instance.Name.StartsWith("tractor/") || __instance.currentLocation != Game1.currentLocation)
+                if (!Config.ModEnabled || __instance.Name.StartsWith("tractor/") || __instance.currentLocation != Game1.currentLocation)
+                    return;
+                var owner = __instance.getOwner();
+                if (owner is null || owner.modData.ContainsKey(parkedKey))
                     return;
 
-                if (!__instance.modData.TryGetValue(cartKey, out string which) || !cartDict.ContainsKey(which))
+                if (!owner.modData.TryGetValue(cartKey, out string which) || !cartDict.ContainsKey(which))
                 {
                     which = "_default";
-                    __instance.modData[cartKey] = which;
+                    owner.modData[cartKey] = which;
                 }
 
                 DirectionData directionData = GetDirectionData(cartDict[which], __instance.FacingDirection);
@@ -118,13 +127,13 @@ namespace PersonalTravellingCart
                     }
                     return true;
                 }
-                if (__instance.mount.Name.StartsWith("tractor/"))
+                if (__instance.mount.Name.StartsWith("tractor/") || __instance.modData.ContainsKey(parkedKey))
                     return true;
 
-                if (!__instance.mount.modData.TryGetValue(cartKey, out string which) || !cartDict.ContainsKey(which))
+                if (!__instance.modData.TryGetValue(cartKey, out string which) || !cartDict.ContainsKey(which))
                 {
                     which = "_default";
-                    __instance.mount.modData[cartKey] = which;
+                    __instance.modData[cartKey] = which;
                 }
                 __state = new float[] {
                     __instance.xOffset,
@@ -150,12 +159,18 @@ namespace PersonalTravellingCart
             {
                 if (!Config.ModEnabled || Game1.currentLocation is null)
                     return true;
-                foreach(var c in Game1.currentLocation.characters)
+                if (clickableCart is not null)
+                {
+                    Game1.mouseCursor = 2;
+                    __result = true;
+                    return false;
+                }
+                foreach (var c in Game1.currentLocation.characters)
                 {
                     if(c is Horse && !c.Name.StartsWith("tractor/"))
                     {
                         Farmer owner = (c as Horse).getOwner();
-                        if (owner is null)
+                        if (owner is null || owner.modData.ContainsKey(parkedKey))
                             continue;
                         if (!owner.modData.TryGetValue(cartKey, out string which) || !cartDict.ContainsKey(which))
                         {
@@ -171,7 +186,7 @@ namespace PersonalTravellingCart
                 }
                 foreach(var farmer in Game1.currentLocation.farmers)
                 {
-                    if (!farmer.isRidingHorse())
+                    if (!farmer.isRidingHorse() || farmer.modData.ContainsKey(parkedKey))
                         continue;
                     if (!farmer.modData.TryGetValue(cartKey, out string which) || !cartDict.ContainsKey(which))
                     {
@@ -194,26 +209,37 @@ namespace PersonalTravellingCart
             {
                 if (!Config.ModEnabled)
                         return true;
+                if (clickableCart is not null)
+                {
+                    SMonitor.Log("Clicked on clickable parked cart");
+                    var location = Game1.getLocationFromName(clickableCart.location);
+                    if (location is null)
+                    {
+                        SMonitor.Log($"Location {clickableCart.location} does not exist");
+                        return true;
+                    }
+                    SMonitor.Log($"Warping to Cart {clickableCart.location}");
+                    if (who.mount is not null)
+                        who.mount.dismount(false);
+                    who.Position = clickableCart.position;
+                    Game1.warpFarmer(new LocationRequest(clickableCart.location, false, location), clickableCart.data.entryTile.X, clickableCart.data.entryTile.Y, 0);
+                    __result = true;
+                    return false;
+                }
 
                 foreach (var c in Game1.currentLocation.characters)
                 {
-                    if (c is Horse && !c.Name.StartsWith("tractor/") && (c as Horse).ownerId.Value != 0)
+                    if (c is Horse && !c.Name.StartsWith("tractor/"))
                     {
-                        if ((c as Horse).getOwner()?.modData.TryGetValue(cartKey, out string which) != true || !cartDict.ContainsKey(which))
+                        var owner = (c as Horse).getOwner();
+                        if (owner is null || owner.modData.ContainsKey(parkedKey))
+                            continue;
+                        if (owner?.modData.TryGetValue(cartKey, out string which) != true || !cartDict.ContainsKey(which))
                         {
                             which = "_default";
                         }
                         if (IsMouseInBoundingBox(c, cartDict[which]))
                         {
-                            Farmer owner = (c as Horse).getOwner();
-                            if (owner is null)
-                            {
-                                SMonitor.Log($"horse's owner is not online");
-                                return true;
-                            }
-                            if (who.mount is not null)
-                                who.mount.dismount(false);
-
                             if(!owner.modData.TryGetValue(locKey, out string locName))
                             {
                                 SMonitor.Log($"horse's owner has no location");
@@ -227,6 +253,8 @@ namespace PersonalTravellingCart
                                 return true;
                             }
                             SMonitor.Log($"Warping to Cart {locName}");
+                            if (who.mount is not null)
+                                who.mount.dismount(false);
                             Game1.warpFarmer(new LocationRequest(locName, false, location), cartDict[which].entryTile.X, cartDict[which].entryTile.Y, 0);
                             __result = true;
                             return false;
@@ -235,7 +263,7 @@ namespace PersonalTravellingCart
                 }
                 foreach (var farmer in Game1.currentLocation.farmers)
                 {
-                    if (!farmer.isRidingHorse())
+                    if (!farmer.isRidingHorse() || farmer.modData.ContainsKey(parkedKey))
                         continue;
                     if (!farmer.modData.TryGetValue(cartKey, out string which) || !cartDict.ContainsKey(which))
                     {
@@ -266,6 +294,29 @@ namespace PersonalTravellingCart
                 return true;
             }
         }
+        [HarmonyPatch(typeof(Stable), nameof(Stable.grabHorse))]
+        public class Stable_grabHorse_Patch
+        {
+            public static bool Prefix(Stable __instance)
+            {
+                if (!Config.ModEnabled)
+                    return true;
+
+                Horse horse = Utility.findHorse(__instance.HorseId);
+                return horse is null;
+            }
+        }
+        [HarmonyPatch(typeof(GameLocation), nameof(GameLocation.CanPlaceThisFurnitureHere))]
+        public class GameLocation_CanPlaceThisFurnitureHere_Patch
+        {
+            public static bool Prefix(GameLocation __instance, ref bool __result)
+            {
+                if (!Config.ModEnabled || !__instance.Name.StartsWith(locPrefix))
+                    return true;
+                __result = true;
+                return false;
+            }
+        }
         [HarmonyPatch(typeof(Game1), nameof(Game1.drawWeather))]
         public class Game1_drawWeather_Patch
         {
@@ -278,6 +329,31 @@ namespace PersonalTravellingCart
                 }
             }
         }
+        [HarmonyPatch(typeof(GameLocation), nameof(GameLocation.draw))]
+        public class GameLocation_draw_Patch
+        {
+            public static void Postfix(GameLocation __instance, SpriteBatch b)
+            {
+                if (!Config.ModEnabled || !__instance.modData.TryGetValue(parkedKey, out string parkedString))
+                    return;
+                clickableCart = null;
+                List<ParkedCart> carts = JsonConvert.DeserializeObject<List<ParkedCart>>(parkedString);
+                foreach (var cart in carts)
+                {
+                    if(!cartDict.TryGetValue(cart.whichCart, out PersonalCartData data))
+                    {
+                        data = cartDict["_default"];
+                    }
+                    var ddata = data.GetDirectionData(cart.facing);
+                    b.Draw(data.spriteSheet, Game1.GlobalToLocal(cart.position + ddata.cartOffset), ddata.backRect, Color.White, 0, Vector2.Zero, 4, SpriteEffects.None, (cart.position.Y + ddata.cartOffset.Y + (ddata.hitchRect.Y + ddata.hitchRect.Height / 2 + 16) * 4 - 1) / 10000f);
+                    b.Draw(data.spriteSheet, Game1.GlobalToLocal(cart.position + ddata.cartOffset), ddata.frontRect, Color.White, 0, Vector2.Zero, 4, SpriteEffects.None, (cart.position.Y + ddata.cartOffset.Y + (ddata.hitchRect.Y + ddata.hitchRect.Height / 2 + 16) * 4 + 1) / 10000f);
+                    if(new Rectangle(Utility.Vector2ToPoint(Game1.GlobalToLocal(cart.position) + ddata.cartOffset) + new Point(ddata.clickRect.Location.X * 4, ddata.clickRect.Location.Y * 4), new Point(ddata.clickRect.Size.X * 4,ddata.clickRect.Size.Y * 4)).Contains(Game1.getMousePosition()))
+                    {
+                        clickableCart = cart;
+                    }
+                }
+            }
+        }
         [HarmonyPatch(typeof(GameLocation), nameof(GameLocation.drawBackground))]
         public class GameLocation_drawBackground_Patch
         {
@@ -286,47 +362,148 @@ namespace PersonalTravellingCart
             {
                 if (!Config.ModEnabled || !__instance.Name.StartsWith(locPrefix))
                     return;
+
+                int positionX = 0;
+                int positionY = 0;
+                GameLocation loc = null;
+                Point outerTile = Point.Zero;
+                if (!Game1.player.modData.ContainsKey(parkedKey))
+                {
+                    Horse horse = null;
+                    foreach (var l in Game1.locations)
+                    {
+                        foreach (var c in l.characters)
+                        {
+                            if (c is Horse && (c as Horse).getOwner()?.modData.TryGetValue(locKey, out string locName) == true && locName == __instance.Name)
+                            {
+                                horse = c as Horse;
+                                goto gothorse;
+                            }
+                        }
+                        foreach (var c in l.farmers)
+                        {
+                            if (c.isRidingHorse() && c.modData.TryGetValue(locKey, out string locName) == true && locName == __instance.Name)
+                            {
+                                horse = c.mount;
+                                goto gothorse;
+                            }
+                        }
+                    }
+                gothorse:
+                    if (horse is null)
+                    {
+                        return;
+                    }
+
+                    loc = horse.currentLocation;
+                    outerTile = horse.getTileLocationPoint();
+                    positionX = outerTile.X * 64 - __instance.Map.GetLayer("Back").LayerWidth * 32;
+                    positionY = outerTile.Y * 64 - __instance.Map.GetLayer("Back").LayerHeight * 32;
+                }
+                else
+                {
+                    foreach (var l in Game1.locations)
+                    {
+                        if (!l.modData.TryGetValue(parkedKey, out string parkedString))
+                            continue;
+                        List<ParkedCart> carts = JsonConvert.DeserializeObject<List<ParkedCart>>(parkedString);
+                        foreach (var cart in carts)
+                        {
+                            if (cart.location == Config.ThisPlayerCartLocationName)
+                            {
+                                var ddata = cart.data.GetDirectionData(cart.facing);
+                                var position = cart.position + ddata.cartOffset + ddata.backRect.Size.ToVector2() * 2;
+                                positionX = (int)position.X - __instance.Map.GetLayer("Back").LayerWidth * 32;
+                                positionY = (int)position.Y - __instance.Map.GetLayer("Back").LayerHeight * 32;
+                                outerTile = new Point((int)(cart.position.X / 64), (int)(cart.position.Y / 64));
+                                loc = l;
+                                break;
+                            }
+                        }
+                    }
+                }
                 var playerTile = __instance.Map.GetLayer("Back").PickTile(new Location((int)Game1.player.Position.X, (int)Game1.player.Position.Y), Game1.viewport.Size);
                 if (playerTile is not null && playerTile != lastTile)
                 {
-                    if(playerTile.Properties.ContainsKey("Leave"))
+                    if (playerTile.Properties.ContainsKey("Leave"))
                     {
-                        WarpOutOfCart(Game1.player);
+                        if (loc is null)
+                        {
+                            SMonitor.Log($"Warping to farm");
+                            Game1.warpFarmer("Farm", Game1.getFarm().GetMainFarmHouseEntry().X, Game1.getFarm().GetMainFarmHouseEntry().Y, false);
+                        }
+                        else
+                        {
+                            SMonitor.Log($"Warping to last location");
+                            Game1.warpFarmer(new LocationRequest(loc.Name, false, loc), outerTile.X, outerTile.Y, 2);
+                        }
                     }
                 }
-                
                 lastTile = playerTile;
-                Horse horse = null;
-                foreach (var l in Game1.locations)
-                {
-                    foreach (var c in l.characters)
-                    {
-                        if (c is Horse && (c as Horse).getOwner()?.modData.TryGetValue(locKey, out string locName) == true && locName == __instance.Name)
-                        {
-                            horse = c as Horse;
-                            goto gothorse;
-                        }
-                    }
-                    foreach (var c in l.farmers)
-                    {
-                        if (c.isRidingHorse() && c.modData.TryGetValue(locKey, out string locName) == true && locName == __instance.Name)
-                        {
-                            horse = c.mount;
-                            goto gothorse;
-                        }
-                    }
-                }
-            gothorse:
-                if (horse is null)
-                {
+                if (loc is null)
                     return;
-                }
 
-                GameLocation loc = horse.currentLocation;
-                int horseX = horse.getTileX() * 64 - __instance.Map.GetLayer("Back").LayerWidth * 32;
-                int horseY = horse.getTileY() * 64 - __instance.Map.GetLayer("Back").LayerHeight * 32;
-                Location offset = new Location(-horseX, -horseY);
-                Vector2 offsetTile = new Vector2(-horseX, -horseY) / 64f;
+                Location offset = new Location(-positionX, -positionY);
+                Vector2 offsetTile = new Vector2(-positionX, -positionY) / 64f;
+
+                /*
+                Game1.spriteBatch.End();
+                Game1.SetRenderTarget(Game1.lightmap);
+                Game1.game1.GraphicsDevice.Clear(Color.White * 0f);
+                Matrix lighting_matrix = Matrix.Identity;
+                if (Game1.game1.useUnscaledLighting)
+                {
+                    lighting_matrix = Matrix.CreateScale(Game1.options.zoomLevel);
+                }
+                Game1.spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.NonPremultiplied, SamplerState.PointClamp, null, null, null, new Matrix?(lighting_matrix));
+                Color lighting;
+                if (!Game1.ambientLight.Equals(Color.White) && (!Game1.IsRainingHere(loc) || !loc.IsOutdoors))
+                {
+                    lighting = Game1.ambientLight;
+                }
+                else
+                {
+                    lighting = Game1.outdoorLight;
+                }
+                float light_multiplier = 1f;
+                if (Game1.player.hasBuff(26))
+                {
+                    if (lighting == Color.White)
+                    {
+                        lighting = new Color(0.75f, 0.75f, 0.75f);
+                    }
+                    else
+                    {
+                        lighting.R = (byte)Utility.Lerp((float)lighting.R, 255f, 0.5f);
+                        lighting.G = (byte)Utility.Lerp((float)lighting.G, 255f, 0.5f);
+                        lighting.B = (byte)Utility.Lerp((float)lighting.B, 255f, 0.5f);
+                    }
+                    light_multiplier = 0.33f;
+                }
+                Game1.spriteBatch.Draw(Game1.staminaRect, Game1.lightmap.Bounds, lighting);
+                foreach (LightSource lightSource in Game1.currentLightSources)
+                {
+                    if ((!Game1.IsRainingHere(loc) && !Game1.isDarkOut()) || lightSource.lightContext.Value != LightSource.LightContext.WindowLight)
+                    {
+                        if (lightSource.PlayerID != 0L && lightSource.PlayerID != Game1.player.UniqueMultiplayerID)
+                        {
+                            Farmer farmer = Game1.getFarmerMaybeOffline(lightSource.PlayerID);
+                            if (farmer == null || (farmer.currentLocation != null && farmer.currentLocation.Name != Game1.currentLocation.Name) || farmer.hidden.Value)
+                            {
+                                continue;
+                            }
+                        }
+                        if (Utility.isOnScreen(lightSource.position.Value, (int)(lightSource.radius.Value * 64f * 4f)))
+                        {
+                            Game1.spriteBatch.Draw(lightSource.lightTexture, Game1.GlobalToLocal(Game1.viewport, lightSource.position.Value) / (float)(Game1.options.lightingQuality / 2), new Microsoft.Xna.Framework.Rectangle?(lightSource.lightTexture.Bounds), lightSource.color.Value * light_multiplier, 0f, new Vector2((float)(lightSource.lightTexture.Bounds.Width / 2), (float)(lightSource.lightTexture.Bounds.Height / 2)), lightSource.radius.Value / (float)(Game1.options.lightingQuality / 2), SpriteEffects.None, 0.9f);
+                        }
+                    }
+                }
+                Game1.spriteBatch.End();
+                Game1.SetRenderTarget(Game1.game1.screen);
+                Game1.spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.PointClamp, null, null, null, null);
+                */
+
                 Game1.mapDisplayDevice.BeginScene(Game1.spriteBatch);
                 DrawLayer(loc.Map.GetLayer("Back"), Game1.mapDisplayDevice, Game1.viewport, offset, false, 4);
                 Vector2 tile = default(Vector2);
@@ -374,6 +551,25 @@ namespace PersonalTravellingCart
                 skip = true;
                 Game1.game1.drawWeather(deltaTime, Game1.game1.screen);
                 Game1.updateWeather(deltaTime);
+
+                Game1.spriteBatch.End();
+                Game1.spriteBatch.Begin(SpriteSortMode.Deferred, AccessTools.FieldRefAccess<Game1, BlendState>(Game1.game1, "lightingBlend"), SamplerState.LinearClamp, null, null, null, null);
+                Viewport vp = Game1.game1.GraphicsDevice.Viewport;
+                vp.Bounds = ((Game1.game1.screen != null) ? Game1.game1.screen.Bounds : Game1.game1.GraphicsDevice.PresentationParameters.Bounds);
+                Game1.game1.GraphicsDevice.Viewport = vp;
+                float render_zoom = (float)(Game1.options.lightingQuality / 2);
+                if (Game1.game1.useUnscaledLighting)
+                {
+                    render_zoom /= Game1.options.zoomLevel;
+                }
+                Game1.spriteBatch.Draw(Game1.lightmap, Vector2.Zero, new Microsoft.Xna.Framework.Rectangle?(Game1.lightmap.Bounds), Color.White, 0f, Vector2.Zero, render_zoom, SpriteEffects.None, 1f);
+                if (Game1.IsRainingHere(null) && Game1.currentLocation.IsOutdoors && !(Game1.currentLocation is Desert))
+                {
+                    Game1.spriteBatch.Draw(Game1.staminaRect, vp.Bounds, Color.OrangeRed * 0.45f);
+                }
+                Game1.spriteBatch.End();
+                Game1.spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.PointClamp, null, null, null, null);
+
                 skip = false;
                 Game1.currentLocation = currentLoc;
             }
