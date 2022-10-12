@@ -30,6 +30,7 @@ namespace PersonalTravellingCart
         public static string locKey = "aedenthorn.PersonalTravellingCart/loc";
         public static string parkedKey = "aedenthorn.PersonalTravellingCart/parked";
         public static string locPrefix = "PersonalCart";
+        public static string defaultKey = "_default";
         public static Dictionary<string, PersonalCartData> cartDict = new Dictionary<string, PersonalCartData>();
         private static bool skip;
         private static ParkedCart clickableCart;
@@ -113,22 +114,23 @@ namespace PersonalTravellingCart
             {
                 var hasParked = Game1.player.currentLocation.modData.TryGetValue(parkedKey, out string parkedString);
                 List<ParkedCart> carts = hasParked ? JsonConvert.DeserializeObject<List<ParkedCart>>(parkedString) : new List<ParkedCart>();
+
                 if (!Game1.player.modData.ContainsKey(parkedKey))
                 {
-                    carts.Add(new ParkedCart() { facing = Game1.player.FacingDirection, location = thisPlayerCartLocation, whichCart = which, data = data, position = Game1.player.Position });
-                    Game1.player.currentLocation.modData[parkedKey] = JsonConvert.SerializeObject(carts);
+                    carts.Add(new ParkedCart() { facing = Game1.player.FacingDirection, location = thisPlayerCartLocation, whichCart = which, position = Game1.player.Position });
                     Game1.player.modData[parkedKey] = "true";
                     SMonitor.Log($"Parked player cart in {Game1.player.currentLocation}");
                 }
-                else if(hasParked)
+                else if (hasParked)
                 {
-                    for(int i = 0; i < carts.Count; i++)
+                    for (int i = 0; i < carts.Count; i++)
                     {
                         var cart = carts[i];
                         if (cart.location != thisPlayerCartLocation)
                             continue;
 
-                        var cddata = cart.data.GetDirectionData(cart.facing);
+                        var cdata = GetCartData(cart.whichCart);
+                        var cddata = cdata.GetDirectionData(cart.facing);
                         Rectangle box = new Rectangle(Utility.Vector2ToPoint(cart.position + cddata.cartOffset) + new Point(cddata.hitchRect.Location.X * 4, cddata.hitchRect.Location.Y * 4 + 64), new Point(cddata.hitchRect.Size.X * 4, cddata.hitchRect.Size.Y * 4));
                         Rectangle horseBox = Game1.player.mount.GetBoundingBox();
                         if (box.Intersects(horseBox))
@@ -138,11 +140,17 @@ namespace PersonalTravellingCart
                             Game1.player.faceDirection(cart.facing);
                             Game1.player.modData.Remove(parkedKey);
                             carts.RemoveAt(i);
-                            Game1.player.currentLocation.modData[parkedKey] = JsonConvert.SerializeObject(carts);
                             break;
                         }
                     }
                 }
+                else return;
+
+                for (int i = 0; i < carts.Count; i++)
+                {
+                    carts[i].data = null;
+                }
+                Game1.player.currentLocation.modData[parkedKey] = JsonConvert.SerializeObject(carts);
                 return;
             }
 

@@ -41,7 +41,7 @@ namespace PersonalTravellingCart
                 }
                 SMonitor.Log($"Loaded {cartDict.Count} custom carts");
 
-                cartDict["_default"] = new PersonalCartData() { spriteSheet = SHelper.ModContent.Load<Texture2D>("assets/cart.png") };
+                cartDict[defaultKey] = new PersonalCartData() { spriteSheet = SHelper.ModContent.Load<Texture2D>("assets/cart.png") };
 
                 string mapAssetKey;
                 if (Game1.player.modData.TryGetValue(cartKey, out string which) && cartDict.TryGetValue(which, out PersonalCartData data) && data.mapPath is not null)
@@ -86,7 +86,7 @@ namespace PersonalTravellingCart
 
                 if (!owner.modData.TryGetValue(cartKey, out string which) || !cartDict.ContainsKey(which))
                 {
-                    which = "_default";
+                    which = defaultKey;
                     owner.modData[cartKey] = which;
                 }
 
@@ -129,7 +129,7 @@ namespace PersonalTravellingCart
 
                 if (!__instance.modData.TryGetValue(cartKey, out string which) || !cartDict.ContainsKey(which))
                 {
-                    which = "_default";
+                    which = defaultKey;
                     __instance.modData[cartKey] = which;
                 }
                 __state = new float[] {
@@ -171,7 +171,7 @@ namespace PersonalTravellingCart
                             continue;
                         if (!owner.modData.TryGetValue(cartKey, out string which) || !cartDict.ContainsKey(which))
                         {
-                            which = "_default";
+                            which = defaultKey;
                         }
                         if (IsMouseInBoundingBox(c, cartDict[which]))
                         {
@@ -187,7 +187,7 @@ namespace PersonalTravellingCart
                         continue;
                     if (!farmer.modData.TryGetValue(cartKey, out string which) || !cartDict.ContainsKey(which))
                     {
-                        which = "_default";
+                        which = defaultKey;
                     }
                     if (IsMouseInBoundingBox(farmer, cartDict[which]))
                     {
@@ -219,7 +219,8 @@ namespace PersonalTravellingCart
                     if (who.mount is not null)
                         who.mount.dismount(false);
                     who.Position = clickableCart.position;
-                    Game1.warpFarmer(new LocationRequest(clickableCart.location, false, location), clickableCart.data.entryTile.X, clickableCart.data.entryTile.Y, 0);
+                    var data = GetCartData(clickableCart.whichCart);
+                    Game1.warpFarmer(new LocationRequest(clickableCart.location, false, location), data.entryTile.X, data.entryTile.Y, 0);
                     __result = true;
                     return false;
                 }
@@ -233,7 +234,7 @@ namespace PersonalTravellingCart
                             continue;
                         if (owner?.modData.TryGetValue(cartKey, out string which) != true || !cartDict.ContainsKey(which))
                         {
-                            which = "_default";
+                            which = defaultKey;
                         }
                         if (IsMouseInBoundingBox(c, cartDict[which]))
                         {
@@ -264,7 +265,7 @@ namespace PersonalTravellingCart
                         continue;
                     if (!farmer.modData.TryGetValue(cartKey, out string which) || !cartDict.ContainsKey(which))
                     {
-                        which = "_default";
+                        which = defaultKey;
                     }
                     if (IsMouseInBoundingBox(farmer, cartDict[which]))
                     {
@@ -290,6 +291,7 @@ namespace PersonalTravellingCart
                 }
                 return true;
             }
+
         }
         [HarmonyPatch(typeof(Stable), nameof(Stable.grabHorse))]
         public class Stable_grabHorse_Patch
@@ -337,10 +339,7 @@ namespace PersonalTravellingCart
                 List<ParkedCart> carts = JsonConvert.DeserializeObject<List<ParkedCart>>(parkedString);
                 foreach (var cart in carts)
                 {
-                    if(!cartDict.TryGetValue(cart.whichCart, out PersonalCartData data))
-                    {
-                        data = cartDict["_default"];
-                    }
+                    var data = GetCartData(cart.whichCart);
                     var ddata = data.GetDirectionData(cart.facing);
                     b.Draw(data.spriteSheet, Game1.GlobalToLocal(cart.position + ddata.cartOffset), ddata.backRect, Color.White, 0, Vector2.Zero, 4, SpriteEffects.None, (cart.position.Y + ddata.cartOffset.Y + (ddata.hitchRect.Y + ddata.hitchRect.Height / 2 + 16) * 4 - 1) / 10000f);
                     b.Draw(data.spriteSheet, Game1.GlobalToLocal(cart.position + ddata.cartOffset), ddata.frontRect, Color.White, 0, Vector2.Zero, 4, SpriteEffects.None, (cart.position.Y + ddata.cartOffset.Y + (ddata.hitchRect.Y + ddata.hitchRect.Height / 2 + 16) * 4 + 1) / 10000f);
@@ -408,7 +407,8 @@ namespace PersonalTravellingCart
                         {
                             if (cart.location == __instance.Name)
                             {
-                                var ddata = cart.data.GetDirectionData(cart.facing);
+                                var data = GetCartData(cart.whichCart);
+                                var ddata = data.GetDirectionData(cart.facing);
                                 var position = cart.position + ddata.cartOffset + ddata.backRect.Size.ToVector2() * 2;
                                 positionX = (int)position.X - __instance.Map.GetLayer("Back").LayerWidth * 32;
                                 positionY = (int)position.Y - __instance.Map.GetLayer("Back").LayerHeight * 32;

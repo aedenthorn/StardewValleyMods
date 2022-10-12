@@ -21,6 +21,13 @@ namespace PersonalTravellingCart
             Rectangle box = new Rectangle(Utility.Vector2ToPoint(c.Position + ddata.cartOffset) + new Point(ddata.clickRect.Location.X * 4, ddata.clickRect.Location.Y * 4), new Point(ddata.clickRect.Width * 4, ddata.clickRect.Height * 4));
             return box.Contains(Game1.viewport.X + Game1.getMouseX(), Game1.viewport.Y + Game1.getMouseY());
         }
+        private static PersonalCartData GetCartData(string whichCart)
+        {
+            PersonalCartData data;
+            if (!cartDict.TryGetValue(whichCart, out data))
+                data = cartDict[defaultKey];
+            return data;
+        }
         private static DirectionData GetDirectionData(PersonalCartData data, int facingDirection)
         {
 
