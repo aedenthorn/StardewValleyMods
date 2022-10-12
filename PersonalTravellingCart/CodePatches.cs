@@ -9,6 +9,7 @@ using StardewValley.Locations;
 using StardewValley.TerrainFeatures;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using xTile.Dimensions;
 using xTile.Tiles;
@@ -51,13 +52,9 @@ namespace PersonalTravellingCart
                 {
                     mapAssetKey = SHelper.ModContent.GetInternalAssetName("assets/Cart.tmx").BaseName;
                 }
-                if(Config.ThisPlayerCartLocationName is null)
-                {
-                    Config.ThisPlayerCartLocationName = locPrefix + Guid.NewGuid().ToString("N");
-                    SHelper.WriteConfig(Config);
-                }
-                SMonitor.Log($"adding location {Config.ThisPlayerCartLocationName}");
-                DecoratableLocation location = new DecoratableLocation(mapAssetKey, Config.ThisPlayerCartLocationName) { IsOutdoors = false, IsFarm = false, IsGreenhouse = false };
+
+                SMonitor.Log($"adding location {thisPlayerCartLocation}");
+                DecoratableLocation location = new DecoratableLocation(mapAssetKey, thisPlayerCartLocation) { IsOutdoors = false, IsFarm = false, IsGreenhouse = false };
                 location.ReadWallpaperAndFloorTileData();
                 //location.Map.Properties.Add("WallIDs", "Wall");
                 //location.Map.Properties.Add("FloorIDs", "Floor");
@@ -409,7 +406,7 @@ namespace PersonalTravellingCart
                         List<ParkedCart> carts = JsonConvert.DeserializeObject<List<ParkedCart>>(parkedString);
                         foreach (var cart in carts)
                         {
-                            if (cart.location == Config.ThisPlayerCartLocationName)
+                            if (cart.location == __instance.Name)
                             {
                                 var ddata = cart.data.GetDirectionData(cart.facing);
                                 var position = cart.position + ddata.cartOffset + ddata.backRect.Size.ToVector2() * 2;
@@ -549,8 +546,11 @@ namespace PersonalTravellingCart
                 var currentLoc = Game1.currentLocation;
                 Game1.currentLocation = loc;
                 skip = true;
-                Game1.game1.drawWeather(deltaTime, Game1.game1.screen);
-                Game1.updateWeather(deltaTime);
+                if(deltaTime is not null)
+                {
+                    Game1.game1.drawWeather(deltaTime, Game1.game1.screen);
+                    Game1.updateWeather(deltaTime);
+                }
 
                 Game1.spriteBatch.End();
                 Game1.spriteBatch.Begin(SpriteSortMode.Deferred, AccessTools.FieldRefAccess<Game1, BlendState>(Game1.game1, "lightingBlend"), SamplerState.LinearClamp, null, null, null, null);

@@ -34,6 +34,9 @@ namespace PersonalTravellingCart
         private static bool skip;
         private static ParkedCart clickableCart;
 
+        private static string cartLocationFilePath;
+        private static string thisPlayerCartLocation;
+
         private static GameTime deltaTime;
         private static RenderTarget2D screen;
 
@@ -42,23 +45,64 @@ namespace PersonalTravellingCart
         public override void Entry(IModHelper helper)
         {
             Config = Helper.ReadConfig<ModConfig>();
-
-            if (!Config.ModEnabled)
-                return;
-
-            context = this;
-
             SMonitor = Monitor;
             SHelper = helper;
 
+            cartLocationFilePath = Path.Combine(Helper.DirectoryPath, "this_player_cart_location.txt");
+
+            if (File.Exists(cartLocationFilePath))
+            {
+                thisPlayerCartLocation = File.ReadAllText(cartLocationFilePath);
+            }
+            else
+            {
+                if (Config.ThisPlayerCartLocationName is null)
+                {
+                    thisPlayerCartLocation = locPrefix + Guid.NewGuid().ToString("N");
+                }
+                else
+                {
+                    thisPlayerCartLocation = Config.ThisPlayerCartLocationName;
+                    Monitor.Log($"Got cart location from config {thisPlayerCartLocation}");
+                }
+                File.WriteAllText(cartLocationFilePath, thisPlayerCartLocation);
+            }
+            Monitor.Log($"Saved cart location {thisPlayerCartLocation} to {cartLocationFilePath}");
+
+            context = this;
+
+
             helper.Events.GameLoop.GameLaunched += GameLoop_GameLaunched;
-            helper.Events.GameLoop.SaveLoaded += GameLoop_SaveLoaded;
+            helper.Events.GameLoop.DayEnding += GameLoop_DayEnding;
             helper.Events.Content.AssetRequested += Content_AssetRequested;
             helper.Events.Input.ButtonPressed += Input_ButtonPressed;
 
             var harmony = new Harmony(ModManifest.UniqueID);
             harmony.PatchAll();
         }
+
+        private void GameLoop_DayEnding(object sender, DayEndingEventArgs e)
+        {
+            if (!Config.ModEnabled || !Game1.player.modData.ContainsKey(parkedKey))
+                return;
+            foreach(var l in Game1.locations)
+            {
+                if (!l.modData.TryGetValue(parkedKey, out string parkedString))
+                    continue;
+                List<ParkedCart> carts = JsonConvert.DeserializeObject<List<ParkedCart>>(parkedString);
+                for (int i = 0; i < carts.Count; i++)
+                {
+                    var cart = carts[i];
+                    if (cart.location == thisPlayerCartLocation)
+                    {
+                        SMonitor.Log($"Found player cart in {l}");
+                        return;
+                    }
+                }
+            }
+            Game1.player.modData.Remove(parkedKey);
+        }
+
 
         private void Input_ButtonPressed(object sender, ButtonPressedEventArgs e)
         {
@@ -71,7 +115,7 @@ namespace PersonalTravellingCart
                 List<ParkedCart> carts = hasParked ? JsonConvert.DeserializeObject<List<ParkedCart>>(parkedString) : new List<ParkedCart>();
                 if (!Game1.player.modData.ContainsKey(parkedKey))
                 {
-                    carts.Add(new ParkedCart() { facing = Game1.player.FacingDirection, location = Config.ThisPlayerCartLocationName, whichCart = which, data = data, position = Game1.player.Position });
+                    carts.Add(new ParkedCart() { facing = Game1.player.FacingDirection, location = thisPlayerCartLocation, whichCart = which, data = data, position = Game1.player.Position });
                     Game1.player.currentLocation.modData[parkedKey] = JsonConvert.SerializeObject(carts);
                     Game1.player.modData[parkedKey] = "true";
                     SMonitor.Log($"Parked player cart in {Game1.player.currentLocation}");
@@ -81,6 +125,9 @@ namespace PersonalTravellingCart
                     for(int i = 0; i < carts.Count; i++)
                     {
                         var cart = carts[i];
+                        if (cart.location != thisPlayerCartLocation)
+                            continue;
+
                         var cddata = cart.data.GetDirectionData(cart.facing);
                         Rectangle box = new Rectangle(Utility.Vector2ToPoint(cart.position + cddata.cartOffset) + new Point(cddata.hitchRect.Location.X * 4, cddata.hitchRect.Location.Y * 4 + 64), new Point(cddata.hitchRect.Size.X * 4, cddata.hitchRect.Size.Y * 4));
                         Rectangle horseBox = Game1.player.mount.GetBoundingBox();
@@ -214,7 +261,7 @@ namespace PersonalTravellingCart
         }
         private void GameLoop_SaveLoaded(object sender, SaveLoadedEventArgs e)
         {
-            Game1.player.modData[locKey] = Config.ThisPlayerCartLocationName;
+            Game1.player.modData[locKey] = thisPlayerCartLocation;
         }
 
         private void GameLoop_GameLaunched(object sender, GameLaunchedEventArgs e)
@@ -236,6 +283,18 @@ namespace PersonalTravellingCart
                 name: () => "Mod Enabled",
                 getValue: () => Config.ModEnabled,
                 setValue: value => Config.ModEnabled = value
+            );
+            configMenu.AddBoolOption(
+                mod: ModManifest,
+                name: () => "Debug",
+                getValue: () => Config.Debug,
+                setValue: value => Config.Debug = value
+            );
+            configMenu.AddKeybind(
+                mod: ModManifest,
+                name: () => "Hitch Button",
+                getValue: () => Config.HitchButton,
+                setValue: value => Config.HitchButton = value
             );
         }
     }

@@ -1,7 +1,7 @@
 ﻿{
   "Name": "Personal Travelling Cart",
   "Author": "aedenthorn",
-  "Version": "0.3.0",
+  "Version": "0.3.2",
   "Description": "Personal Travelling Cart.",
   "UniqueID": "aedenthorn.PersonalTravellingCart",
   "EntryDll": "PersonalTravellingCart.dll",

@@ -36,48 +36,7 @@ namespace PersonalTravellingCart
                     return data.left;
             }
         }
-        private static void WarpOutOfCart(Farmer who)
-        {
-            if (Game1.isWarping || who.currentLocation is null)
-                return;
-            Horse horse = null;
-            foreach (var l in Game1.locations)
-            {
-                foreach (var c in l.characters)
-                {
-                    if (c is Horse)
-                    {
-                        var owner = (c as Horse).getOwner();
-                        if(owner is not null && owner.modData.TryGetValue(locKey, out string locName) && locName == who.currentLocation.Name)
-                        {
-                            horse = c as Horse;
-                            goto gothorse;
-                        }
-                    }
-                }
-                foreach (var c in l.farmers)
-                {
-                    if (c.isRidingHorse() && c.modData.TryGetValue(locKey, out string locName) && locName == who.currentLocation.Name)
-                    {
-                        horse = c.mount;
-                        goto gothorse;
-                    }
-                }
-            }
-        gothorse:
-            if (horse is null)
-            {
-                SMonitor.Log($"Warping to farm");
-                Game1.warpFarmer("Farm", Game1.getFarm().GetMainFarmHouseEntry().X, Game1.getFarm().GetMainFarmHouseEntry().Y, false);
-            }
-            else
-            {
-                SMonitor.Log($"Warping to last location");
-                int x = horse.getTileX();
-                int y = horse.getTileY();
-                Game1.warpFarmer(new LocationRequest(horse.currentLocation.Name, false, horse.currentLocation), x, y, 2);
-            }
-        }
+
         private static void DrawLayer(Layer layer, IDisplayDevice displayDevice, xTile.Dimensions.Rectangle mapViewport, Location displayOffset, bool v1, int pixelZoom)
         {
             int tileWidth = pixelZoom * 16;
