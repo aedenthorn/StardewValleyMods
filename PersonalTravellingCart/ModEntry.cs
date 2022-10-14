@@ -33,6 +33,7 @@ namespace PersonalTravellingCart
         public static string defaultKey = "_default";
         public static Dictionary<string, PersonalCartData> cartDict = new Dictionary<string, PersonalCartData>();
         private static bool skip;
+        private static bool drawingExterior;
         private static ParkedCart clickableCart;
 
         private static string cartLocationFilePath;
@@ -291,6 +292,18 @@ namespace PersonalTravellingCart
                 name: () => "Mod Enabled",
                 getValue: () => Config.ModEnabled,
                 setValue: value => Config.ModEnabled = value
+            );
+            configMenu.AddBoolOption(
+                mod: ModManifest,
+                name: () => "Draw Cart Exterior",
+                getValue: () => Config.DrawCartExterior,
+                setValue: value => Config.DrawCartExterior = value
+            );
+            configMenu.AddBoolOption(
+                mod: ModManifest,
+                name: () => "Draw Cart Exterior Weather",
+                getValue: () => Config.DrawCartExteriorWeather,
+                setValue: value => Config.DrawCartExteriorWeather = value
             );
             configMenu.AddBoolOption(
                 mod: ModManifest,

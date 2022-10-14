@@ -343,7 +343,7 @@ namespace PersonalTravellingCart
                     var ddata = data.GetDirectionData(cart.facing);
                     b.Draw(data.spriteSheet, Game1.GlobalToLocal(cart.position + ddata.cartOffset), ddata.backRect, Color.White, 0, Vector2.Zero, 4, SpriteEffects.None, (cart.position.Y + ddata.cartOffset.Y + (ddata.hitchRect.Y + ddata.hitchRect.Height / 2 + 16) * 4 - 1) / 10000f);
                     b.Draw(data.spriteSheet, Game1.GlobalToLocal(cart.position + ddata.cartOffset), ddata.frontRect, Color.White, 0, Vector2.Zero, 4, SpriteEffects.None, (cart.position.Y + ddata.cartOffset.Y + (ddata.hitchRect.Y + ddata.hitchRect.Height / 2 + 16) * 4 + 1) / 10000f);
-                    if(new Rectangle(Utility.Vector2ToPoint(Game1.GlobalToLocal(cart.position) + ddata.cartOffset) + new Point(ddata.clickRect.Location.X * 4, ddata.clickRect.Location.Y * 4), new Point(ddata.clickRect.Size.X * 4,ddata.clickRect.Size.Y * 4)).Contains(Game1.getMousePosition()))
+                    if(!drawingExterior && new Rectangle(Utility.Vector2ToPoint(Game1.GlobalToLocal(cart.position) + ddata.cartOffset) + new Point(ddata.clickRect.Location.X * 4, ddata.clickRect.Location.Y * 4), new Point(ddata.clickRect.Size.X * 4,ddata.clickRect.Size.Y * 4)).Contains(Game1.getMousePosition()))
                     {
                         clickableCart = cart;
                     }
@@ -363,6 +363,17 @@ namespace PersonalTravellingCart
                 int positionY = 0;
                 GameLocation loc = null;
                 Point outerTile = Point.Zero;
+                bool shouldWarp = false;
+                var playerTile = __instance.Map.GetLayer("Back").PickTile(new Location((int)Game1.player.Position.X, (int)Game1.player.Position.Y), Game1.viewport.Size);
+                if (playerTile is not null && playerTile != lastTile && playerTile.Properties.ContainsKey("Leave"))
+                {
+                    shouldWarp = true;
+                }
+                lastTile = playerTile;
+
+                if (!Config.DrawCartExterior && !shouldWarp)
+                    return;
+
                 if (!Game1.player.modData.ContainsKey(parkedKey))
                 {
                     Horse horse = null;
@@ -419,24 +430,22 @@ namespace PersonalTravellingCart
                         }
                     }
                 }
-                var playerTile = __instance.Map.GetLayer("Back").PickTile(new Location((int)Game1.player.Position.X, (int)Game1.player.Position.Y), Game1.viewport.Size);
-                if (playerTile is not null && playerTile != lastTile)
+
+                if (shouldWarp)
                 {
-                    if (playerTile.Properties.ContainsKey("Leave"))
+                    if (loc is null)
                     {
-                        if (loc is null)
-                        {
-                            SMonitor.Log($"Warping to farm");
-                            Game1.warpFarmer("Farm", Game1.getFarm().GetMainFarmHouseEntry().X, Game1.getFarm().GetMainFarmHouseEntry().Y, false);
-                        }
-                        else
-                        {
-                            SMonitor.Log($"Warping to last location");
-                            Game1.warpFarmer(new LocationRequest(loc.Name, false, loc), outerTile.X, outerTile.Y, 2);
-                        }
+                        SMonitor.Log($"Warping to farm");
+                        Game1.warpFarmer("Farm", Game1.getFarm().GetMainFarmHouseEntry().X, Game1.getFarm().GetMainFarmHouseEntry().Y, false);
                     }
+                    else
+                    {
+                        SMonitor.Log($"Warping to last location");
+                        Game1.warpFarmer(new LocationRequest(loc.Name, false, loc), outerTile.X, outerTile.Y, 2);
+                    }
+                    return;
                 }
-                lastTile = playerTile;
+
                 if (loc is null)
                     return;
 
@@ -519,7 +528,9 @@ namespace PersonalTravellingCart
                 DrawLayer(loc.Map.GetLayer("Buildings"), Game1.mapDisplayDevice, Game1.viewport, offset, false, 4);
                 var viewport = Game1.viewport;
                 Game1.viewport = new xTile.Dimensions.Rectangle(viewport.X - offset.X, viewport.Y - offset.Y, viewport.Width, viewport.Height);
+                drawingExterior = true;
                 loc.draw(Game1.spriteBatch);
+                drawingExterior = false;
                 Game1.viewport = viewport;
                 DrawLayer(loc.Map.GetLayer("Front"), Game1.mapDisplayDevice, Game1.viewport, offset, false, 4);
                 Game1.mapDisplayDevice.EndScene();
@@ -543,35 +554,39 @@ namespace PersonalTravellingCart
                     DrawLayer(af, Game1.mapDisplayDevice, Game1.viewport, offset, false, 4);
                 }
                 Game1.mapDisplayDevice.EndScene();
-                var currentLoc = Game1.currentLocation;
-                Game1.currentLocation = loc;
-                skip = true;
-                if(deltaTime is not null)
-                {
-                    Game1.game1.drawWeather(deltaTime, Game1.game1.screen);
-                    Game1.updateWeather(deltaTime);
-                }
 
-                Game1.spriteBatch.End();
-                Game1.spriteBatch.Begin(SpriteSortMode.Deferred, AccessTools.FieldRefAccess<Game1, BlendState>(Game1.game1, "lightingBlend"), SamplerState.LinearClamp, null, null, null, null);
-                Viewport vp = Game1.game1.GraphicsDevice.Viewport;
-                vp.Bounds = ((Game1.game1.screen != null) ? Game1.game1.screen.Bounds : Game1.game1.GraphicsDevice.PresentationParameters.Bounds);
-                Game1.game1.GraphicsDevice.Viewport = vp;
-                float render_zoom = (float)(Game1.options.lightingQuality / 2);
-                if (Game1.game1.useUnscaledLighting)
+                if (Config.DrawCartExteriorWeather)
                 {
-                    render_zoom /= Game1.options.zoomLevel;
-                }
-                Game1.spriteBatch.Draw(Game1.lightmap, Vector2.Zero, new Microsoft.Xna.Framework.Rectangle?(Game1.lightmap.Bounds), Color.White, 0f, Vector2.Zero, render_zoom, SpriteEffects.None, 1f);
-                if (Game1.IsRainingHere(null) && Game1.currentLocation.IsOutdoors && !(Game1.currentLocation is Desert))
-                {
-                    Game1.spriteBatch.Draw(Game1.staminaRect, vp.Bounds, Color.OrangeRed * 0.45f);
-                }
-                Game1.spriteBatch.End();
-                Game1.spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.PointClamp, null, null, null, null);
+                    var currentLoc = Game1.currentLocation;
+                    Game1.currentLocation = loc;
+                    skip = true;
+                    if (deltaTime is not null)
+                    {
+                        Game1.game1.drawWeather(deltaTime, Game1.game1.screen);
+                        Game1.updateWeather(deltaTime);
+                    }
 
-                skip = false;
-                Game1.currentLocation = currentLoc;
+                    Game1.spriteBatch.End();
+                    Game1.spriteBatch.Begin(SpriteSortMode.Deferred, AccessTools.FieldRefAccess<Game1, BlendState>(Game1.game1, "lightingBlend"), SamplerState.LinearClamp, null, null, null, null);
+                    Viewport vp = Game1.game1.GraphicsDevice.Viewport;
+                    vp.Bounds = ((Game1.game1.screen != null) ? Game1.game1.screen.Bounds : Game1.game1.GraphicsDevice.PresentationParameters.Bounds);
+                    Game1.game1.GraphicsDevice.Viewport = vp;
+                    float render_zoom = (float)(Game1.options.lightingQuality / 2);
+                    if (Game1.game1.useUnscaledLighting)
+                    {
+                        render_zoom /= Game1.options.zoomLevel;
+                    }
+                    Game1.spriteBatch.Draw(Game1.lightmap, Vector2.Zero, new Microsoft.Xna.Framework.Rectangle?(Game1.lightmap.Bounds), Color.White, 0f, Vector2.Zero, render_zoom, SpriteEffects.None, 1f);
+                    if (Game1.IsRainingHere(null) && Game1.currentLocation.IsOutdoors && !(Game1.currentLocation is Desert))
+                    {
+                        Game1.spriteBatch.Draw(Game1.staminaRect, vp.Bounds, Color.OrangeRed * 0.45f);
+                    }
+                    Game1.spriteBatch.End();
+                    Game1.spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.PointClamp, null, null, null, null);
+
+                    skip = false;
+                    Game1.currentLocation = currentLoc;
+                }
             }
         }
     }
