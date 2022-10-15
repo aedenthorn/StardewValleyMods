@@ -393,6 +393,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "InstantBuildingConstruction
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BuildingUpgrades", "BuildingUpgrades\BuildingUpgrades.csproj", "{8AFDC886-8384-4064-AB8F-866624579987}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PlaygroundMod", "PlaygroundMod\PlaygroundMod.csproj", "{206E86D4-6B3C-4AFC-B8F9-FA6EEC845C10}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -1929,6 +1931,14 @@ Global
 		{8AFDC886-8384-4064-AB8F-866624579987}.Release|Any CPU.Build.0 = Release|Any CPU
 		{8AFDC886-8384-4064-AB8F-866624579987}.Release|x86.ActiveCfg = Release|Any CPU
 		{8AFDC886-8384-4064-AB8F-866624579987}.Release|x86.Build.0 = Release|Any CPU
+		{206E86D4-6B3C-4AFC-B8F9-FA6EEC845C10}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{206E86D4-6B3C-4AFC-B8F9-FA6EEC845C10}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{206E86D4-6B3C-4AFC-B8F9-FA6EEC845C10}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{206E86D4-6B3C-4AFC-B8F9-FA6EEC845C10}.Debug|x86.Build.0 = Debug|Any CPU
+		{206E86D4-6B3C-4AFC-B8F9-FA6EEC845C10}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{206E86D4-6B3C-4AFC-B8F9-FA6EEC845C10}.Release|Any CPU.Build.0 = Release|Any CPU
+		{206E86D4-6B3C-4AFC-B8F9-FA6EEC845C10}.Release|x86.ActiveCfg = Release|Any CPU
+		{206E86D4-6B3C-4AFC-B8F9-FA6EEC845C10}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

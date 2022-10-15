@@ -46,10 +46,10 @@ namespace AdvancedLootFramework
 
         private static void Chest_ShowMenu_Prefix(Chest __instance)
         {
-            if (!__instance.playerChest || __instance.coins.Value <= 0)
+            if (!__instance.playerChest.Value || __instance.coins.Value <= 0)
                 return;
             context.Monitor.Log($"Giving {__instance.coins} gold to player from chest");
-            Game1.player.Money += __instance.coins;
+            Game1.player.Money += __instance.coins.Value;
             __instance.coins.Value = 0;
         }
 
@@ -126,7 +126,7 @@ namespace AdvancedLootFramework
                     //int price = GetStorePrice(kvp.Key);
                     //if(price == 0)
                     
-                    int price = new Object(Vector2.Zero, kvp.Key, false).price;
+                    int price = new Object(Vector2.Zero, kvp.Key, false).Price;
                     if (CanAddTreasure(price, minItemValue, maxItemValue))
                         treasures.Add(new Treasure(kvp.Key, price, "BigCraftable"));
                 }
@@ -138,35 +138,40 @@ namespace AdvancedLootFramework
             {
                 if (Config.ForbiddenObjects.Contains(kvp.Key))
                     continue;
-                if (kvp.Value.Split('/')[5] == "...")
+                var split = kvp.Value.Split('/');
+                if (split[5] == "...")
                     continue;
                 string type = "";
-                int price = Convert.ToInt32(kvp.Value.Split('/')[1]);
-                if (includeList.Contains("Ring") && kvp.Value.Split('/')[3] == "Ring")
+                if (!int.TryParse(split[1], out int price))
+                {
+                    SMonitor.Log($"Warning, invalid price for {kvp.Value}", LogLevel.Warn);
+                    continue;
+                }
+                if (includeList.Contains("Ring") && split[3] == "Ring")
                 {
                     type = "Ring";
                 }
-                else if (includeList.Contains("Cooking") && kvp.Value.Split('/')[3].StartsWith("Cooking"))
+                else if (includeList.Contains("Cooking") && split[3].StartsWith("Cooking"))
                 {
                     type = "Cooking";
                 }
-                else if (includeList.Contains("Seed") && kvp.Value.Split('/')[3].StartsWith("Seeds"))
+                else if (includeList.Contains("Seed") && split[3].StartsWith("Seeds"))
                 {
                     type = "Seed";
                 }
-                else if (includeList.Contains("Mineral") && kvp.Value.Split('/')[3].StartsWith("Mineral"))
+                else if (includeList.Contains("Mineral") && split[3].StartsWith("Mineral"))
                 {
                     type = "Mineral";
                 }
-                else if (includeList.Contains("Fish") && kvp.Value.Split('/')[3].StartsWith("Fish"))
+                else if (includeList.Contains("Fish") && split[3].StartsWith("Fish"))
                 {
                     type = "Fish";
                 }
-                else if (includeList.Contains("Relic") && kvp.Value.Split('/')[3].StartsWith("Arch"))
+                else if (includeList.Contains("Relic") && split[3].StartsWith("Arch"))
                 {
                     type = "Relic";
                 }
-                else if (includeList.Contains("BasicObject") && kvp.Value.Split('/')[3].StartsWith("Basic"))
+                else if (includeList.Contains("BasicObject") && split[3].StartsWith("Basic"))
                 {
                     type = "BasicObject";
                 }
