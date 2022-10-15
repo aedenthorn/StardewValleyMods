@@ -10,6 +10,7 @@ using StardewValley.Locations;
 using StardewValley.TerrainFeatures;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 
@@ -33,6 +34,7 @@ namespace PlaygroundMod
         private static Texture2D springTexture;
         private static Dictionary<long, int> swingTicks = new();
         private static Dictionary<long, int> springTicks = new();
+        private static Dictionary<long, int> springEyes = new();
         private static Dictionary<long, int> climbTicks = new();
         private static Dictionary<long, int> slideTicks = new();
 
@@ -103,6 +105,60 @@ namespace PlaygroundMod
                 name: () => "Mod Enabled",
                 getValue: () => Config.ModEnabled,
                 setValue: value => Config.ModEnabled = value
+            );
+            configMenu.AddTextOption(
+                mod: ModManifest,
+                name: () => "Climb Sound",
+                getValue: () => Config.climbSound,
+                setValue: value => Config.climbSound = value
+            );
+            configMenu.AddTextOption(
+                mod: ModManifest,
+                name: () => "Slide Sound",
+                getValue: () => Config.slideSound,
+                setValue: value => Config.slideSound = value
+            );
+            configMenu.AddTextOption(
+                mod: ModManifest,
+                name: () => "Swing Forth Sound",
+                getValue: () => Config.swingForthSound,
+                setValue: value => Config.swingForthSound = value
+            );
+            configMenu.AddTextOption(
+                mod: ModManifest,
+                name: () => "Swing Back Sound",
+                getValue: () => Config.swingBackSound,
+                setValue: value => Config.swingBackSound = value
+            );
+            configMenu.AddTextOption(
+                mod: ModManifest,
+                name: () => "Spring Sound",
+                getValue: () => Config.springSound,
+                setValue: value => Config.springSound = value
+            );
+            configMenu.AddTextOption(
+                mod: ModManifest,
+                name: () => "Climb Speed",
+                getValue: () => Config.climbSpeed + "",
+                setValue: delegate(string value) { try { Config.climbSpeed = float.Parse(value, NumberStyles.Float, CultureInfo.InvariantCulture); } catch { } }
+            );
+            configMenu.AddTextOption(
+                mod: ModManifest,
+                name: () => "Slide Speed",
+                getValue: () => Config.slideSpeed + "",
+                setValue: delegate(string value) { try { Config.slideSpeed = float.Parse(value, NumberStyles.Float, CultureInfo.InvariantCulture); } catch { } }
+            );
+            configMenu.AddTextOption(
+                mod: ModManifest,
+                name: () => "Swing Speed",
+                getValue: () => Config.swingSpeed + "",
+                setValue: delegate(string value) { try { Config.swingSpeed = float.Parse(value, NumberStyles.Float, CultureInfo.InvariantCulture); } catch { } }
+            );
+            configMenu.AddTextOption(
+                mod: ModManifest,
+                name: () => "Spring Speed",
+                getValue: () => Config.springSpeed + "",
+                setValue: delegate(string value) { try { Config.springSpeed = float.Parse(value, NumberStyles.Float, CultureInfo.InvariantCulture); } catch { } }
             );
         }
     }

@@ -123,7 +123,7 @@ namespace PlaygroundMod
         [HarmonyPatch(typeof(FarmerRenderer), nameof(FarmerRenderer.draw), new Type[] { typeof(SpriteBatch), typeof(FarmerSprite.AnimationFrame), typeof(int), typeof(Rectangle), typeof(Vector2), typeof(Vector2), typeof(float), typeof(int), typeof(Color), typeof(float), typeof(float), typeof(Farmer) })]
         public class FarmerRenderer_draw_Patch
         {
-            public static bool Prefix(FarmerRenderer __instance, SpriteBatch b, ref float scale, Farmer who, ref Vector2 origin, ref FarmerSprite.AnimationFrame animationFrame, ref int currentFrame, ref Rectangle sourceRect, ref float rotation)
+            public static bool Prefix(FarmerRenderer __instance, SpriteBatch b, ref float scale, ref Farmer who, ref Vector2 origin, ref FarmerSprite.AnimationFrame animationFrame, ref int currentFrame, ref Rectangle sourceRect, ref float rotation)
             {
                 if (!Config.ModEnabled || who.currentLocation is not Town)
                 {
@@ -142,7 +142,7 @@ namespace PlaygroundMod
                 {
                     if (!swingTicks.TryGetValue(who.UniqueMultiplayerID, out ticks))
                         ticks = 0;
-                    float factor = (float)Math.Sin((Math.PI / 180f) * ticks * 2);
+                    float factor = (float)Math.Sin((Math.PI / 180f) * ticks * 2 * Config.swingSpeed);
                     scale = 1 + factor * 0.1f;
                     if (factor > 0)
                         factor *= 0.5f;
@@ -155,7 +155,9 @@ namespace PlaygroundMod
                     }
                     if (ticks % 90 == 0)
                     {
-                        who.currentLocation.playSound(factor > 0 ? "doorCreakReverse" : "doorCreak");
+                        string sound = factor > 0 ? Config.swingBackSound : Config.swingForthSound;
+                        if (!string.IsNullOrEmpty(sound))
+                            who.currentLocation.playSound(sound);
                     }
                 }
                 else if (who.IsSitting() && n == new Point(24, 11))
@@ -166,10 +168,11 @@ namespace PlaygroundMod
                     }
                     if (ticks % 90 == 30)
                     {
-                        who.currentLocation.playSound("dustMeep");
+                        if (!string.IsNullOrEmpty(Config.springSound))
+                            who.currentLocation.playSound(Config.springSound);
                     }
-                    float factor = (float)Math.Sin((Math.PI / 180f) * ticks * 2) / 4f;
-                    b.Draw(springTexture, Game1.GlobalToLocal(new Vector2(23 * 64, 10 * 64)), new Rectangle(0, 0, 48, 32), Color.White, 0, Vector2.Zero, 4, SpriteEffects.None, who.getDrawLayer() + 0.0000002f);
+                    float factor = (float)Math.Sin((Math.PI / 180f) * ticks * 2 * Config.springSpeed) / 4f;
+                    b.Draw(springTexture, Game1.GlobalToLocal(new Vector2(23 * 64, 10 * 64)), new Rectangle(Game1.currentSeason == "winter" ? 144 : 0, 0, 48, 32), Color.White, 0, Vector2.Zero, 4, SpriteEffects.None, who.getDrawLayer() + 0.0000002f);
                     b.Draw(springTexture, Game1.GlobalToLocal(new Vector2(23 * 64, 10 * 64)) + new Vector2(16, 28) * 4, new Rectangle(48, 0, 48, 32), Color.White, factor, new Vector2(16, 28), 4, SpriteEffects.None, who.getDrawLayer() + 0.0000004f);
                     b.Draw(springTexture, Game1.GlobalToLocal(new Vector2(23 * 64, 10 * 64)) + new Vector2(16, 24) * 4, new Rectangle(96, 0, 48, 32), Color.White, factor * 2, new Vector2(16, 24), 4, SpriteEffects.None, who.getDrawLayer() + 0.0000005f);
 
@@ -180,10 +183,12 @@ namespace PlaygroundMod
                     animationFrame.xOffset += 3;
                     animationFrame.positionOffset += 4;
                     rotation = factor * 2;
+                    springEyes[who.UniqueMultiplayerID] = who.currentEyes;
+                    who.currentEyes = 0;
                 }
                 else if (slideTicks.TryGetValue(who.UniqueMultiplayerID, out ticks))
                 {
-                    float slideSpeed = 0.5f;
+                    float slideSpeed = Config.slideSpeed;
                     who.isSitting.Value = true;
                     who.sittingFurniture = new MySeat();
                     who.canMove = false;
@@ -195,7 +200,7 @@ namespace PlaygroundMod
 
                     if (ticks > 40 * 4)
                     {
-                        var dest = new Vector2(25 * 64 - 16, 13 * 64 + 8);
+                        var dest = new Vector2(25 * 64, 13 * 64 + 8);
                         who.isSitting.Value = false;
                         who.sittingFurniture = null;
                         who.FarmerSprite.setCurrentSingleFrame(6, 32000, false, false);
@@ -215,10 +220,11 @@ namespace PlaygroundMod
                     else
                     {
                         who.Position = new Vector2(20 * 64 + 32, 10 * 64 + 56) + new Vector2(ticks, ticks);
-                        ticks += (int)Math.Round(slideSpeed + ticks / 50f);
+                        ticks += (int)Math.Round(slideSpeed + ticks / 25f);
                         if (ticks % 24 == 0)
                         {
-                            who.currentLocation.playSound("shwip");
+                            if (!string.IsNullOrEmpty(Config.slideSound))
+                                who.currentLocation.playSound(Config.slideSound);
                         }
                         slideTicks[who.UniqueMultiplayerID] = ticks;
                         return false;
@@ -231,12 +237,13 @@ namespace PlaygroundMod
                     who.FarmerSprite.setCurrentSingleFrame(14 + (ticks % 32 < 16 ? 1 : 0), 32000, false, ticks % 64 < 32);
                     animationFrame = who.FarmerSprite.CurrentAnimationFrame;
                     sourceRect = who.FarmerSprite.sourceRect;
-                    climbSpeed = 2;
+                    climbSpeed = 2 / Config.climbSpeed;
                     who.Position = new Vector2(who.Position.X, 14 * 64 - ticks / climbSpeed * 4);
                     ticks++;
                     if (ticks % 24 == 0)
                     {
-                        who.currentLocation.playSound("stoneStep");
+                        if(!string.IsNullOrEmpty(Config.climbSound))
+                            who.currentLocation.playSound(Config.climbSound);
                     }
                     if (ticks > 64 * climbSpeed)
                     {
@@ -264,13 +271,6 @@ namespace PlaygroundMod
                 }
                 return true;
             }
-            public static void Postfix(Farmer who)
-            {
-                if (slideTicks.ContainsKey(who.UniqueMultiplayerID))
-                {
-
-                }
-            }
         }
         [HarmonyPatch(typeof(GameLocation), nameof(GameLocation.drawAboveAlwaysFrontLayer))]
         public class GameLocation_drawAboveAlwaysFrontLayer_Patch
@@ -294,12 +294,12 @@ namespace PlaygroundMod
                     if(f is not null && f.currentLocation == __instance)
                     {
                         var ticks = swingTicks[id];
-                        float factor = (float)Math.Sin((Math.PI / 180f) * ticks * 2);
+                        float factor = (float)Math.Sin((Math.PI / 180f) * ticks * 2 * Config.swingSpeed);
                         var scale = 1 + factor * 0.1f;
                         if (factor > 0)
                             factor *= 0.5f;
                         int offset = (f.getTileLocationPoint() == new Point(17, 12)) ? 128 : 0;
-                        b.Draw(swingTexture, Game1.GlobalToLocal(new Vector2(15 * 64 - 4 + offset, 10 * 64 - 8)), new Rectangle(0, 5, 17, 61), Color.White, 0, Vector2.Zero, 4, SpriteEffects.None, f.getDrawLayer() + 0.0000001f);
+                        b.Draw(swingTexture, Game1.GlobalToLocal(new Vector2(15 * 64 - 4 + offset, 10 * 64 - 8)), new Rectangle(Game1.currentSeason == "winter" ? 34 : 0, 5, 17, 61), Color.White, 0, Vector2.Zero, 4, SpriteEffects.None, f.getDrawLayer() + 0.0000001f);
 
                         var y = 10 * 64 + factor * 4 * 4 - 8;
                         var yo = (int)(Math.Max(0, (632 - y)) / 4f);
@@ -318,7 +318,7 @@ namespace PlaygroundMod
                     if(f is not null && f.currentLocation == __instance)
                     {
                         f.draw(b);
-                        b.Draw(slideTexture, Game1.GlobalToLocal(new Vector2(21 * 64, 11 * 64 - 12)), new Rectangle(0, 0, 48, 48), Color.White, 0, Vector2.Zero, 4, SpriteEffects.None, f.getDrawLayer() + 0.0000002f);
+                        b.Draw(slideTexture, Game1.GlobalToLocal(new Vector2(21 * 64, 11 * 64 - 12)), new Rectangle(Game1.currentSeason == "winter" ? 48 : 0, 0, 48, 48), Color.White, 0, Vector2.Zero, 4, SpriteEffects.None, f.getDrawLayer() + 0.0000002f);
                     }
                 }
                 skip = false;
