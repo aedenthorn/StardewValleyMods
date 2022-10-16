@@ -1,4 +1,5 @@
 ﻿using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using StardewModdingAPI;
 using StardewValley;
 using StardewValley.Monsters;
@@ -296,6 +297,20 @@ namespace HedgeMaze
                 if (Config.Debug)
                 {
                     SMonitor.Log($"Spawning fairy at {v}");
+                }
+            }
+            if (endTiles.Any())
+            {
+                int idx = Game1.random.Next(endTiles.Count);
+                Vector2 v = endTiles[idx].ToVector2();
+                endTiles.RemoveAt(idx);
+                woods.addCharacter(new NPC(new AnimatedSprite("Characters\\Dwarf", 0, 16, 24), v * 64, "Woods", 2, "Dwarf", false, null, Game1.content.Load<Texture2D>("Portraits\\Dwarf"))
+                {
+                    Breather = false
+                });
+                if (Config.Debug)
+                {
+                    SMonitor.Log($"Spawning dwarf at {v}");
                 }
             }
             for (int i = 0; i < slimes; i++)

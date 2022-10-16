@@ -94,7 +94,7 @@ namespace HedgeMaze
             var woods = Game1.getLocationFromName("Woods");
             for (int i = woods.characters.Count - 1; i >= 0; i--)
             {
-                if (woods.characters[i] is Monster)
+                if (woods.characters[i] is Monster || woods.characters[i].Name.Equals("Dwarf"))
                 {
                     woods.characters.RemoveAt(i);
                 }

@@ -53,6 +53,20 @@ namespace Wildflowers
                 }
             }
         }
+        [HarmonyPatch(typeof(Grass), nameof(Grass.dayUpdate))]
+        public class Grass_dayUpdate_Patch
+        {
+            public static void Postfix(Grass __instance, GameLocation environment, Vector2 tileLocation)
+            {
+                if (!Config.ModEnabled || Game1.dayOfMonth != 1 ||  !__instance.modData.TryGetValue(wildKey, out string data))
+                    return;
+                var c = JsonConvert.DeserializeObject<CropData>(data);
+                if(c is not null && environment.IsOutdoors && !environment.SeedsIgnoreSeasonsHere() && !c.seasonsToGrowIn.Contains(environment.GetSeasonForLocation()))
+                {
+                    __instance.modData.Remove(wildKey);
+                }
+            }
+        }
         [HarmonyPatch(typeof(Grass), nameof(Grass.draw))]
         public class Grass_draw_Patch
         {

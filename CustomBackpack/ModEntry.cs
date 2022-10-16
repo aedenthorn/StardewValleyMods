@@ -25,7 +25,7 @@ namespace CustomBackpack
         public static string dictPath = "aedenthorn.CustomBackpack/dictionary";
 
         public static Dictionary<int, BackPackData> dataDict = new Dictionary<int, BackPackData>();
-        public static int IDOffset = 90000;
+        public static int IDOffset = 0;
         public static Texture2D scrollTexture;
         public static Texture2D handleTexture;
 

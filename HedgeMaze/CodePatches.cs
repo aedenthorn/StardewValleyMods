@@ -4,6 +4,7 @@ using Microsoft.Xna.Framework.Graphics;
 using StardewModdingAPI;
 using StardewValley;
 using StardewValley.Locations;
+using StardewValley.Menus;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -70,22 +71,36 @@ namespace HedgeMaze
         [HarmonyPatch(typeof(GameLocation), nameof(GameLocation.checkAction))]
         public class GameLocation_checkAction_Patch
         {
-            public static void Prefix(GameLocation __instance, Location tileLocation, xTile.Dimensions.Rectangle viewport, Farmer who)
+            public static bool Prefix(GameLocation __instance, Location tileLocation, xTile.Dimensions.Rectangle viewport, Farmer who, ref bool __result)
             {
                 if (!Config.ModEnabled || !Game1.currentLocation.Name.Equals("Woods"))
-                    return;
-
-                foreach(var f in fairyTiles)
+                    return true;
+                var tv = new Vector2(tileLocation.X, tileLocation.Y);
+                foreach (var f in fairyTiles)
                 {
-                    if (new Rectangle((int)f.X - 1, (int)f.Y - 1, 2, 2).Contains(new Point(tileLocation.X, tileLocation.Y)))
+                    if (f == tv)
                     {
                         __instance.localSound("yoba");
                         who.health = who.maxHealth;
                         who.stamina = who.MaxStamina;
                         fairyTiles.Remove(f);
-                        return;
+                        __result = true;
+                        return false;
                     }
                 }
+                return true;
+            }
+        }
+        [HarmonyPatch(typeof(NPC), nameof(NPC.checkAction))]
+        public class NPC_checkAction_Patch
+        {
+            public static bool Prefix(NPC __instance, Farmer who, GameLocation l, ref bool __result)
+            {
+                if (!Config.ModEnabled || !__instance.Name.Equals("Dwarf") || !l.Name.Equals("Woods") || !who.canUnderstandDwarves)
+                    return true;
+                Game1.activeClickableMenu = new ShopMenu(Utility.getDwarfShopStock(), 0, "Dwarf", null, null, null);
+                __result = true;
+                return false;
             }
         }
     }

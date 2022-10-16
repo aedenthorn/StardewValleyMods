@@ -179,49 +179,6 @@ namespace CustomBackpack
                 }
             }
         }
-        
-        [HarmonyPatch(typeof(InventoryPage), nameof(InventoryPage.snapToDefaultClickableComponent))]
-        public class InventoryPage_snapToDefaultClickableComponent_Patch
-        {
-            public static bool Prefix(InventoryPage __instance)
-            {
-                if (!Config.ModEnabled || __instance.inventory is null || __instance.inventory.capacity >= __instance.inventory.actualInventory.Count)
-                    return true;
-
-                __instance.currentlySnappedComponent = __instance.getComponentWithID(IDOffset);
-                __instance.snapCursorToCurrentSnappedComponent();
-                return false;
-            }
-        }
-        
-        [HarmonyPatch(typeof(ItemGrabMenu), nameof(ItemGrabMenu.snapToDefaultClickableComponent))]
-        public class ItemGrabMenu_snapToDefaultClickableComponent_Patch
-        {
-            public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions)
-            {
-                SMonitor.Log($"Transpiling ItemGrabMenu.snapToDefaultClickableComponent");
-
-                var codes = new List<CodeInstruction>(instructions);
-                for (int i = 0; i < codes.Count; i++)
-                {
-                    if (i < codes.Count - 1 && codes[i].opcode == OpCodes.Ldc_I4_0 && codes[i + 1].opcode == OpCodes.Callvirt && (MethodInfo)codes[i + 1].operand == AccessTools.Method(typeof(IClickableMenu), nameof(IClickableMenu.getComponentWithID)))
-                    {
-                        SMonitor.Log("Adding method to get top left inventory item");
-                        codes[i].opcode = OpCodes.Call;
-                        codes[i].operand = AccessTools.Method(typeof(ModEntry), nameof(ModEntry.GetTopLeftComponentID));
-                        codes.Insert(i, new CodeInstruction(OpCodes.Ldarg_0));
-                    }
-                }
-
-                return codes.AsEnumerable();
-            }
-        }
-        private static int GetTopLeftComponentID(ItemGrabMenu menu)
-        {
-            if (!Config.ModEnabled || menu.inventory is null || !menu.inventory.Scrolling())
-                return 0;
-            return IDOffset;
-        }
 
         [HarmonyPatch(typeof(IClickableMenu), nameof(IClickableMenu.moveCursorInDirection))]
         public class IClickableMenu_moveCursorInDirection_Patch
@@ -231,13 +188,25 @@ namespace CustomBackpack
                 if (!Config.ModEnabled || __instance.currentlySnappedComponent is null)
                     return true;
                 InventoryMenu menu;
-                if (__instance is InventoryPage && (__instance as InventoryPage).inventory.Scrolling())
+                if (__instance is InventoryPage)
                 {
                     menu = (__instance as InventoryPage).inventory;
                 }
-                else if (__instance is ItemGrabMenu && (__instance as ItemGrabMenu).inventory.Scrolling())
+                else if (__instance is ItemGrabMenu)
+                {
                     menu = (__instance as ItemGrabMenu).inventory;
+                }
+                else if (__instance is GeodeMenu)
+                {
+                    menu = (__instance as GeodeMenu).inventory;
+                }
+                else if (__instance is JunimoNoteMenu)
+                {
+                    menu = (__instance as JunimoNoteMenu).inventory;
+                }
                 else
+                    return true;
+                if (!menu.Scrolling())
                     return true;
                 int columns = menu.Columns();
                 if(__instance is ItemGrabMenu && menu.inventory != null && menu.inventory.Count >= (__instance as ItemGrabMenu).GetColumnCount())
@@ -245,6 +214,24 @@ namespace CustomBackpack
                     for (int i = 0; i < columns; i++)
                     {
                         menu.inventory[i + menu.GetOffset()].upNeighborID = ((__instance as ItemGrabMenu).shippingBin ? 12598 : (Math.Min(i, (__instance as ItemGrabMenu).ItemsToGrabMenu.inventory.Count - 1) + 53910));
+                    }
+                }
+                else if(__instance is GeodeMenu && menu.inventory != null)
+                {
+                    for (int i = 0; i < columns; i++)
+                    {
+                        menu.inventory[i + menu.GetOffset()].upNeighborID = 998;
+                    }
+                }
+                else if(__instance is JunimoNoteMenu && menu.inventory != null)
+                {
+                    for (int i = 0; i < columns; i++)
+                    {
+                        menu.inventory[i + menu.GetOffset() + (menu.rows - 1 * columns)].downNeighborID = -99998;
+                    }
+                    for (int i = 0; i < menu.rows; i++)
+                    {
+                        menu.inventory[menu.GetOffset() + (i * columns) + columns - 1].rightNeighborID = -99998;
                     }
                 }
                 ClickableComponent old = __instance.currentlySnappedComponent;
@@ -255,6 +242,10 @@ namespace CustomBackpack
                 else if (direction == 2 && old.myID >= 12340 && old.myID < 12340 + columns)
                 {
                     __instance.currentlySnappedComponent = __instance.getComponentWithID(IDOffset + old.myID % 12340);
+                }
+                else if (direction == 2 && __instance is GeodeMenu && old.myID == 998)
+                {
+                    __instance.currentlySnappedComponent = __instance.getComponentWithID(IDOffset);
                 }
                 else if (direction == 2 && __instance is ItemGrabMenu && old.myID >= 53910 + (__instance as ItemGrabMenu).ItemsToGrabMenu.capacity  - (__instance as ItemGrabMenu).ItemsToGrabMenu.Columns() && old.myID < 53910 + (__instance as ItemGrabMenu).ItemsToGrabMenu.capacity)
                 {
