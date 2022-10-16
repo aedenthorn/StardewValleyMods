@@ -206,29 +206,35 @@ namespace PlaygroundMod
                         who.FarmerSprite.setCurrentSingleFrame(6, 32000, false, false);
                         animationFrame = who.FarmerSprite.CurrentAnimationFrame;
                         sourceRect = who.FarmerSprite.sourceRect;
-                        if (Vector2.Distance(who.Position, dest) > 16)
+                        if (who == Game1.player)
                         {
-                            who.Position = Vector2.Lerp(who.Position, dest, 0.2f);
-                        }
-                        else
-                        {
-                            who.Position = dest;
-                            slideTicks.Remove(who.UniqueMultiplayerID);
-                            who.canMove = true;
+                            if (Vector2.Distance(who.Position, dest) > 16)
+                            {
+                                who.Position = Vector2.Lerp(who.Position, dest, 0.2f);
+                            }
+                            else
+                            {
+                                who.Position = dest;
+                                slideTicks.Remove(who.UniqueMultiplayerID);
+                                who.canMove = true;
+                            }
                         }
                     }
                     else
                     {
-                        who.Position = new Vector2(20 * 64 + 32, 10 * 64 + 56) + new Vector2(ticks, ticks);
-                        ticks += (int)Math.Round(slideSpeed + ticks / 25f);
-                        if (ticks % 24 == 0)
+                        if (who == Game1.player)
                         {
-                            if (!string.IsNullOrEmpty(Config.slideSound))
-                                who.currentLocation.playSound(Config.slideSound);
+                            who.Position = new Vector2(20 * 64 + 32, 10 * 64 + 56) + new Vector2(ticks, ticks);
+                            ticks += (int)Math.Round(slideSpeed + ticks / 25f);
+                            if (ticks % 24 == 0)
+                            {
+                                if (!string.IsNullOrEmpty(Config.slideSound))
+                                    who.currentLocation.playSound(Config.slideSound);
+                            }
+                            slideTicks[who.UniqueMultiplayerID] = ticks;
                         }
-                        slideTicks[who.UniqueMultiplayerID] = ticks;
-                        return false;
                     }
+                    return false;
                 }
                 else if (climbTicks.TryGetValue(who.UniqueMultiplayerID, out ticks))
                 {
@@ -237,26 +243,28 @@ namespace PlaygroundMod
                     who.FarmerSprite.setCurrentSingleFrame(14 + (ticks % 32 < 16 ? 1 : 0), 32000, false, ticks % 64 < 32);
                     animationFrame = who.FarmerSprite.CurrentAnimationFrame;
                     sourceRect = who.FarmerSprite.sourceRect;
-                    climbSpeed = 2 / Config.climbSpeed;
-                    who.Position = new Vector2(who.Position.X, 14 * 64 - ticks / climbSpeed * 4);
-                    ticks++;
-                    if (ticks % 24 == 0)
+                    if (who == Game1.player)
                     {
-                        if(!string.IsNullOrEmpty(Config.climbSound))
-                            who.currentLocation.playSound(Config.climbSound);
+                        climbSpeed = 2 / Config.climbSpeed;
+                        who.Position = new Vector2(who.Position.X, 14 * 64 - ticks / climbSpeed * 4);
+                        ticks++;
+                        if (ticks % 24 == 0)
+                        {
+                            if (!string.IsNullOrEmpty(Config.climbSound))
+                                who.currentLocation.playSound(Config.climbSound);
+                        }
+                        if (ticks > 64 * climbSpeed)
+                        {
+                            who.canMove = true;
+                            climbTicks.Remove(who.UniqueMultiplayerID);
+                            slideTicks[who.UniqueMultiplayerID] = 1;
+                        }
+                        else
+                        {
+                            climbTicks[who.UniqueMultiplayerID] = ticks;
+                        }
                     }
-                    if (ticks > 64 * climbSpeed)
-                    {
-                        who.canMove = true;
-                        climbTicks.Remove(who.UniqueMultiplayerID);
-                        slideTicks[who.UniqueMultiplayerID] = 1;
-                    }
-                    else
-                    {
-                        climbTicks[who.UniqueMultiplayerID] = ticks;
-                        return false;
-                    }
-
+                    return false;
                 }
                 else if ((n.Y == 14 && (n.X == 19 || n.X == 20)) && who.movementDirections.Contains(0) && who.Position.Y % 64 < 8)
                 {

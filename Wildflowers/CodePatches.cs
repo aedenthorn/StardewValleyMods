@@ -30,7 +30,7 @@ namespace Wildflowers
                         
                         if (chance <= Config.wildflowerGrowChance)
                         {
-                            var flowers = Game1.objectInformation.Where(p => p.Value.Contains("/Basic -80/")).Select(p => p.Key).ToArray();
+                            var flowers = Game1.objectInformation.Where(p => p.Value.Contains("/Basic -80/") && !Config.DisallowNames.Contains(p.Value.Split('/')[0])).Select(p => p.Key).ToArray();
                             int idx = GetRandomFlowerSeed(flowers);
                             if (idx < 0)
                             {
