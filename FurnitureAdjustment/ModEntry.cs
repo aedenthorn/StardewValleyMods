@@ -37,7 +37,7 @@ namespace FurnitureAdjustment
 
         private void GameLoop_UpdateTicked(object sender, StardewModdingAPI.Events.UpdateTickedEventArgs e)
         {
-            if (!Config.EnableMod || !Context.IsWorldReady)
+            if (!Config.EnableMod || !Context.IsPlayerFree)
                 return;
             if (++ticks < Config.MoveSpeed)
                 return;

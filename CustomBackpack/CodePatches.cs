@@ -211,6 +211,7 @@ namespace CustomBackpack
                 int columns = menu.Columns();
                 if(__instance is ItemGrabMenu && menu.inventory != null && menu.inventory.Count >= (__instance as ItemGrabMenu).GetColumnCount())
                 {
+                    SMonitor.Log($"items to grab {(__instance as ItemGrabMenu).ItemsToGrabMenu.inventory.Count}");
                     for (int i = 0; i < columns; i++)
                     {
                         menu.inventory[i + menu.GetOffset()].upNeighborID = ((__instance as ItemGrabMenu).shippingBin ? 12598 : (Math.Min(i, (__instance as ItemGrabMenu).ItemsToGrabMenu.inventory.Count - 1) + 53910));
@@ -301,7 +302,7 @@ namespace CustomBackpack
                         ChangeScroll(menu, 1);
                         __instance.currentlySnappedComponent = __instance.getComponentWithID(oldID);
                     }
-                    else if (!__instance.shippingBin && oldID >= 53910 && oldID < IDOffset)
+                    else if (!__instance.shippingBin && oldID >= 53910)
                     {
                         int index = oldID - 53910;
                         if (index + __instance.GetColumnCount() <= __instance.ItemsToGrabMenu.inventory.Count - 1)
