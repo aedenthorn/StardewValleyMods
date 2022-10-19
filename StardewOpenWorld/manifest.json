@@ -1,16 +1,16 @@
 ﻿{
-  "Name": "Custom Starter Package",
+  "Name": "Stardew Open World",
   "Author": "aedenthorn",
-  "Version": "0.2.0",
-  "Description": "Custom Starter Package.",
-  "UniqueID": "aedenthorn.CustomStarterPackage",
-  "EntryDll": "CustomStarterPackage.dll",
+  "Version": "0.1.0",
+  "Description": "Stardew Open World.",
+  "UniqueID": "aedenthorn.StardewOpenWorld",
+  "EntryDll": "StardewOpenWorld.dll",
   "MinimumApiVersion": "3.15.0",
   "ModUpdater": {
     "Repository": "StardewValleyMods",
     "User": "aedenthorn",
     "Directory": "_releases",
-    "ModFolder": "CustomStarterPackage"
+    "ModFolder": "StardewOpenWorld"
   },
   "Dependencies": [
     {
@@ -18,5 +18,5 @@
       "IsRequired": false
     }
   ],
-  "UpdateKeys": [ "Nexus:14152" ]
+  "UpdateKeys": [ "Nexus:" ]
 }

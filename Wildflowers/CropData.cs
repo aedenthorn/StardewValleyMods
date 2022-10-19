@@ -82,6 +82,10 @@ namespace Wildflowers
 		}
 		public List<int> phaseDays = new List<int>();
 
+		public string cropName;
+
+		public string harvestName;
+		
 		public int rowInSpriteSheet;
 
 		public int phaseToShow = -1;

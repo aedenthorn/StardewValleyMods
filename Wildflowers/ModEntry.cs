@@ -99,6 +99,12 @@ namespace Wildflowers
                 getValue: () => Config.WildFlowersMakeFlowerHoney,
                 setValue: value => Config.WildFlowersMakeFlowerHoney = value
             );
+            configMenu.AddBoolOption(
+                mod: ModManifest,
+                name: () => "Weapons Harvest Flowers",
+                getValue: () => Config.WeaponsHarvestFlowers,
+                setValue: value => Config.WeaponsHarvestFlowers = value
+            );
             configMenu.AddNumberOption(
                 mod: ModManifest,
                 name: () => "Wildflower Grow % Chance",

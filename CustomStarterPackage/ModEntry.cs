@@ -26,6 +26,7 @@ namespace CustomStarterPackage
         public static ModEntry context;
 
         public static string dictPath = "aedenthorn.CustomStarterPackage/dictionary";
+        public static string chestKey = "aedenthorn.CustomStarterPackage/chest";
         public static Dictionary<string, StarterItemData> dataDict = new();
         
         /// <summary>The mod entry point, called after the mod is first loaded.</summary>
@@ -316,6 +317,7 @@ namespace CustomStarterPackage
                     {
                         (o.Value as Chest).dropContents.Value = true;
                     }
+                    o.Value.modData[chestKey] = "true";
                     SMonitor.Log($"Added {items.Count} items to starter chest", LogLevel.Warn);
                     return;
                 }
