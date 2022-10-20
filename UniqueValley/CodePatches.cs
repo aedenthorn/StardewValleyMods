@@ -1,6 +1,7 @@
 ﻿using HarmonyLib;
 using Microsoft.Xna.Framework.Graphics;
 using StardewValley;
+using StardewValley.Characters;
 using StardewValley.Locations;
 using System.Collections.Generic;
 using System.Linq;
@@ -20,41 +21,36 @@ namespace UniqueValley
 
 				Dictionary<string, string> replaced = new Dictionary<string, string>();
 				Dictionary<string, string> dispositions = Game1.content.Load<Dictionary<string, string>>("Data\\NPCDispositions");
+				Dictionary<string, string> giftTastes = Game1.content.Load<Dictionary<string, string>>("Data\\NPCGiftTastes");
 				List<string> forbidden = Config.ForbiddenList.Split(',').ToList();
-				for (int i = 0; i < Game1.locations.Count; i++)
+				foreach (NPC c in Utility.getAllCharacters())
 				{
-					if (!(Game1.locations[i] is MovieTheater))
+					if (c.isVillager() && c is not Child && giftTastes.ContainsKey(c.Name) && dispositions.TryGetValue(c.Name, out string dispo) && !forbidden.Contains(c.Name))
 					{
-						foreach (NPC c in Game1.locations[i].getCharacters())
+						List<string> potential = new List<string>();
+						string[] split = dispo.Split('/');
+						foreach (var kvp in dispositions)
 						{
-							if (c.isVillager() && dispositions.TryGetValue(c.Name, out string dispo) && !forbidden.Contains(c.Name))
-							{
-								List<string> potential = new List<string>();
-								string[] split = dispo.Split('/');
-								foreach (var kvp in dispositions)
-                                {
-									if (kvp.Key == c.Name || replaced.ContainsKey(kvp.Key) || forbidden.Contains(kvp.Key))
-										continue;
-									string[] split2 = kvp.Value.Split('/');
-									if (Config.MaintainAge && split[0] != split2[0])
-										continue;
-									if (Config.MaintainGender && split[4] != split2[4])
-										continue;
-									if (Config.MaintainDatable && split[5] != split2[5])
-										continue;
-									potential.Add(kvp.Key);
-                                }
-								if(potential.Count == 0)
-                                {
-									SMonitor.Log($"no potential swaps for {c.Name}");
-									continue;
-								}
-								string choice = potential[Game1.random.Next(potential.Count)];
-								SMonitor.Log($"Converting {c.Name} to {choice}");
-								c.modData[nameKey] = choice;
-								replaced[choice] = c.Name;
-							}
+							if (kvp.Key == c.Name || replaced.ContainsKey(kvp.Key) || forbidden.Contains(kvp.Key))
+								continue;
+							string[] split2 = kvp.Value.Split('/');
+							if (Config.MaintainAge && split[0] != split2[0])
+								continue;
+							if (Config.MaintainGender && split[4] != split2[4])
+								continue;
+							if (Config.MaintainDatable && split[5] != split2[5])
+								continue;
+							potential.Add(kvp.Key);
 						}
+						if (potential.Count == 0)
+						{
+							SMonitor.Log($"no potential swaps for {c.Name}");
+							continue;
+						}
+						string choice = potential[Game1.random.Next(potential.Count)];
+						SMonitor.Log($"Converting {c.Name} to {choice}");
+						c.modData[nameKey] = choice;
+						replaced[choice] = c.Name;
 					}
 				}
 			}

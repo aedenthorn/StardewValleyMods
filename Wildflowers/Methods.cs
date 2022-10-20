@@ -31,7 +31,7 @@ namespace Wildflowers
         }
         private static bool IsCropDataInvalid(Crop crop, CropData cropData)
         {
-            return (!string.IsNullOrEmpty(cropData.harvestName) && Game1.objectInformation.TryGetValue(crop.indexOfHarvest.Value, out string harvest) && !harvest.StartsWith(cropData.harvestName + "/")) || (!string.IsNullOrEmpty(cropData.cropName) && Game1.content.Load<Dictionary<int, string>>("Data\\Crops").TryGetValue(crop.netSeedIndex.Value, out string cropName) && cropName.Split('/', StringSplitOptions.None)[3] != cropData.cropName);
+            return (!string.IsNullOrEmpty(cropData.harvestName) && Game1.objectInformation.TryGetValue(crop.indexOfHarvest.Value, out string harvest) && !harvest.StartsWith(cropData.harvestName + "/")) || (!string.IsNullOrEmpty(cropData.cropName) && Game1.objectInformation.TryGetValue(crop.netSeedIndex.Value, out string cropName) && cropName.Split('/', StringSplitOptions.None)[0] != cropData.cropName);
         }
     }
 }

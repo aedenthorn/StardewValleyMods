@@ -16,6 +16,15 @@ namespace Wildflowers
         }
         public CropData(Crop crop)
         {
+			if(Game1.objectInformation.TryGetValue(crop.netSeedIndex.Value, out string cropData))
+            {
+				cropName = cropData.Split('/')[0];
+			}
+			if(Game1.objectInformation.TryGetValue(crop.indexOfHarvest.Value, out string harvestData))
+            {
+				harvestName = harvestData.Split('/')[0];
+			}
+
 			phaseDays = crop.phaseDays.ToList();
 			rowInSpriteSheet = crop.rowInSpriteSheet.Value;
 			phaseToShow = crop.phaseToShow.Value;

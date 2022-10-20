@@ -127,9 +127,9 @@ namespace HedgeMaze
             if (advancedLootFrameworkApi != null)
             {
                 Monitor.Log($"loaded AdvancedLootFramework API", LogLevel.Debug);
+                treasuresList = advancedLootFrameworkApi.LoadPossibleTreasures(Config.ItemListChances.Where(p => p.Value > 0).ToDictionary(s => s.Key, s => s.Value).Keys.ToArray(), Config.MinItemValue, Config.MaxItemValue);
+                Monitor.Log($"Got {treasuresList.Count} possible treasures");
             }
-            treasuresList = advancedLootFrameworkApi.LoadPossibleTreasures(Config.ItemListChances.Where(p => p.Value > 0).ToDictionary(s => s.Key, s => s.Value).Keys.ToArray(), Config.MinItemValue, Config.MaxItemValue);
-            Monitor.Log($"Got {treasuresList.Count} possible treasures");
 
             // get Generic Mod Config Menu's API (if it's installed)
             var configMenu = Helper.ModRegistry.GetApi<IGenericModConfigMenuApi>("spacechase0.GenericModConfigMenu");

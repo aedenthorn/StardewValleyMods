@@ -105,7 +105,7 @@ namespace OutfitSets
                     Vector2 toDraw = GetCenterPoint(__instance, i).ToVector2();
                     var strToDraw = (1 + i) + "";
                     Vector2 strSize = Game1.tinyFont.MeasureString(strToDraw);
-                    b.DrawString(Game1.tinyFont, strToDraw, toDraw + new Vector2(-strSize.X / 2f, -strSize.Y / 2), which == i + 1 ? Color.Brown : Color.White);
+                    b.DrawString(Game1.tinyFont, strToDraw, toDraw + new Vector2(-strSize.X / 2f, -strSize.Y / 2), which == i + 1 ? Config.CurrentColor : Config.DefaultColor);
                 }
 			}
         }
