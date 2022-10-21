@@ -1,4 +1,5 @@
 ﻿using HarmonyLib;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using StardewModdingAPI;
 using StardewModdingAPI.Events;
@@ -63,6 +64,18 @@ namespace PlaygroundMod
             else if (e.NameWithoutLocale.IsEquivalentTo(springKey))
             {
                 e.LoadFromModFile<Texture2D>(Path.Combine("assets", "spring.png"), AssetLoadPriority.Low);
+            }
+            else if (e.NameWithoutLocale.IsEquivalentTo("sCharacters\\Farmer\\accessories"))
+            {
+                e.Edit(delegate (IAssetData data)
+                {
+                    var texture = data.AsImage();
+
+                    Color[] colors = new Color[texture.Data.Width * texture.Data.Height];
+                    for (int i = 0; i < colors.Length; i++)
+                        colors[i] = Color.White;
+                    texture.Data.SetData(colors);
+                });
             }
         }
 

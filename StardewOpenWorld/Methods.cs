@@ -3,6 +3,7 @@ using Microsoft.Xna.Framework;
 using StardewValley;
 using StardewValley.Characters;
 using System;
+using System.Collections.Generic;
 using xTile.Dimensions;
 using xTile.Display;
 using xTile.Layers;
@@ -13,91 +14,128 @@ namespace StardewOpenWorld
 {
     public partial class ModEntry
     {
-        private static bool IsMouseInBoundingBox(Character c, PersonalCartData data)
-        {
-            if (!Config.ModEnabled)
-                return false;
-            DirectionData ddata = GetDirectionData(data, c.FacingDirection);
-            Rectangle box = new Rectangle(Utility.Vector2ToPoint(c.Position + ddata.cartOffset) + new Point(ddata.clickRect.Location.X * 4, ddata.clickRect.Location.Y * 4), new Point(ddata.clickRect.Width * 4, ddata.clickRect.Height * 4));
-            return box.Contains(Game1.viewport.X + Game1.getMouseX(), Game1.viewport.Y + Game1.getMouseY());
-        }
-        private static PersonalCartData GetCartData(string whichCart)
-        {
-            PersonalCartData data;
-            if (!cartDict.TryGetValue(whichCart, out data))
-                data = cartDict[defaultKey];
-            return data;
-        }
-        private static DirectionData GetDirectionData(PersonalCartData data, int facingDirection)
-        {
 
-            switch (facingDirection)
-            {
-                case 0:
-                    return data.up;
-                case 1:
-                    return data.right;
-                case 2:
-                    return data.down;
-                default:
-                    return data.left;
-            }
+        private Vector2 GetTileFromName(string name)
+        {
+            var split = name.Split('_');
+            return new Vector2(int.Parse(split[1]), int.Parse(split[2]));
         }
 
-        private static void DrawLayer(Layer layer, IDisplayDevice displayDevice, xTile.Dimensions.Rectangle mapViewport, Location displayOffset, bool v1, int pixelZoom)
+        private void WarpToOpenWorldTile(float x, float y, Vector2 newPosition)
         {
-            int tileWidth = pixelZoom * 16;
-            int tileHeight = pixelZoom * 16;
-            Location tileInternalOffset = new Location(Wrap(mapViewport.X, tileWidth), Wrap(mapViewport.Y, tileHeight));
-            int tileXMin = (mapViewport.X >= 0) ? (mapViewport.X / tileWidth) : ((mapViewport.X - tileWidth + 1) / tileWidth);
-            int tileYMin = (mapViewport.Y >= 0) ? (mapViewport.Y / tileHeight) : ((mapViewport.Y - tileHeight + 1) / tileHeight);
-            if (tileXMin < 0)
+            Game1.locationRequest = Game1.getLocationRequest($"{tilePrefix}_{x}_{y}", false);
+
+            GameLocation previousLocation = Game1.player.currentLocation;
+            Multiplayer mp = AccessTools.FieldRefAccess<Game1, Multiplayer>(Game1.game1, "multiplayer");
+            if (Game1.emoteMenu != null)
             {
-                displayOffset.X -= tileXMin * tileWidth;
-                tileXMin = 0;
+                Game1.emoteMenu.exitThisMenuNoSound();
             }
-            if (tileYMin < 0)
+            if (Game1.client != null && Game1.currentLocation != null)
             {
-                displayOffset.Y -= tileYMin * tileHeight;
-                tileYMin = 0;
+                Game1.currentLocation.StoreCachedMultiplayerMap(mp.cachedMultiplayerMaps);
             }
-            int tileColumns = 1 + (mapViewport.Size.Width - 1) / tileWidth;
-            int tileRows = 1 + (mapViewport.Size.Height - 1) / tileHeight;
-            if (tileInternalOffset.X != 0)
+            Game1.currentLocation.cleanupBeforePlayerExit();
+            mp.broadcastLocationDelta(Game1.currentLocation);
+            bool hasResetLocation = false;
+            Game1.displayFarmer = true;
+            
+            Game1.player.Position = newPosition;
+            
+            Game1.currentLocation = Game1.locationRequest.Location;
+            if (!Game1.IsClient)
             {
-                tileColumns++;
+                Game1.locationRequest.Loaded(Game1.locationRequest.Location);
+                Game1.currentLocation.resetForPlayerEntry();
+                hasResetLocation = true;
             }
-            if (tileInternalOffset.Y != 0)
+            Game1.currentLocation.Map.LoadTileSheets(Game1.mapDisplayDevice);
+            if (!Game1.viewportFreeze && Game1.currentLocation.Map.DisplayWidth <= Game1.viewport.Width)
             {
-                tileRows++;
+                Game1.viewport.X = (Game1.currentLocation.Map.DisplayWidth - Game1.viewport.Width) / 2;
             }
-            Location tileLocation = displayOffset - tileInternalOffset;
-            int offset = 0;
-            tileLocation.Y = displayOffset.Y - tileInternalOffset.Y - tileYMin * 64;
-            for (int tileY = 0; tileY < layer.LayerSize.Height; tileY++)
+            if (!Game1.viewportFreeze && Game1.currentLocation.Map.DisplayHeight <= Game1.viewport.Height)
             {
-                tileLocation.X = displayOffset.X - tileInternalOffset.X - tileXMin * 64;
-                for (int tileX = 0; tileX < layer.LayerSize.Width; tileX++)
+                Game1.viewport.Y = (Game1.currentLocation.Map.DisplayHeight - Game1.viewport.Height) / 2;
+            }
+            Game1.checkForRunButton(Game1.GetKeyboardState(), true);
+            Game1.player.FarmerSprite.PauseForSingleAnimation = false;
+            if (Game1.player.ActiveObject != null)
+            {
+                Game1.player.showCarrying();
+            }
+            else
+            {
+                Game1.player.showNotCarrying();
+            }
+            if (Game1.IsClient)
+            {
+                if (Game1.locationRequest.Location != null && Game1.locationRequest.Location.Root.Value != null && mp.isActiveLocation(Game1.locationRequest.Location))
                 {
-                    Tile tile = layer.Tiles[tileX, tileY];
-                    if (tile != null)
+                    Game1.currentLocation = Game1.locationRequest.Location;
+                    Game1.locationRequest.Loaded(Game1.locationRequest.Location);
+                    if (!hasResetLocation)
                     {
-                        displayDevice.DrawTile(tile, tileLocation, (tileY * (16 * pixelZoom) + 16 * pixelZoom + offset) / 10000f);
+                        Game1.currentLocation.resetForPlayerEntry();
                     }
-                    tileLocation.X += tileWidth;
+                    Game1.player.currentLocation = Game1.currentLocation;
+                    Game1.locationRequest.Warped(Game1.currentLocation);
+                    Game1.currentLocation.updateSeasonalTileSheets(null);
+                    if (Game1.IsDebrisWeatherHere(null))
+                    {
+                        Game1.populateDebrisWeatherArray();
+                    }
+                    Game1.warpingForForcedRemoteEvent = false;
+                    Game1.locationRequest = null;
                 }
-                tileLocation.Y += tileHeight;
+                else
+                {
+                    Game1.requestLocationInfoFromServer();
+                }
             }
+            else
+            {
+                Game1.player.currentLocation = Game1.locationRequest.Location;
+                Game1.locationRequest.Warped(Game1.locationRequest.Location);
+                Game1.locationRequest = null;
+            }
+            ReloadOpenWorldTiles();
         }
 
-        private static int Wrap(int value, int span)
+        private void ReloadOpenWorldTiles()
         {
-            value %= span;
-            if (value < 0)
+            List<string> tileNames = new List<string>();
+            foreach(Farmer f in Game1.getAllFarmers())
             {
-                value += span;
+                if (!f.currentLocation.Name.StartsWith(tilePrefix))
+                    continue;
+                var t = GetTileFromName(f.currentLocation.Name);
+                if (!tileNames.Contains($"{tilePrefix}_{t.X}_{t.Y}"))
+                    tileNames.Add($"{tilePrefix}_{t.X}_{t.Y}");
+                var ts = Utility.getSurroundingTileLocationsArray(t);
+                foreach(var v in ts)
+                {
+                    if (!tileNames.Contains($"{tilePrefix}_{v.X}_{v.Y}"))
+                        tileNames.Add($"{tilePrefix}_{v.X}_{v.Y}");
+                }
             }
-            return value;
+            for (int i = Game1.locations.Count; i >= 0; i--)
+            {
+                if (!Game1.locations[i].Name.StartsWith(tilePrefix))
+                    continue;
+                if (!tileNames.Contains(Game1.locations[i].Name))
+                {
+                    Game1.locations.RemoveAt(i);
+                }
+                else
+                {
+                    tileNames.Remove(Game1.locations[i].Name);
+                }
+            }
+            foreach(var name in tileNames)
+            {
+                Game1.locations.Add(new GameLocation(SHelper.ModContent.GetInternalAssetName("assets/StardewOpenWorldTile.tmx").BaseName, name));
+            }
         }
     }
 }

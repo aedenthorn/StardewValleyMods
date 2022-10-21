@@ -27,9 +27,10 @@ namespace StardewOpenWorld
 
         public static string dataPath = "aedenthorn.StardewOpenWorld/dictionary";
         public static string namePrefix = "StardewOpenWorld";
+        public static string tilePrefix = "StardewOpenWorldTile";
 
-        public static GameLocation openWorld;
-        public static GameLocation[] openWorldTiles;
+        private static GameLocation openWorldLocation;
+        private static GameLocation openWorldTile;
 
         /// <summary>The mod entry point, called after the mod is first loaded.</summary>
         /// <param name="helper">Provides simplified APIs for writing mods.</param>
@@ -42,194 +43,67 @@ namespace StardewOpenWorld
             context = this;
 
             helper.Events.GameLoop.GameLaunched += GameLoop_GameLaunched;
-            helper.Events.GameLoop.Saving += GameLoop_Saving;
-            helper.Events.Content.AssetRequested += Content_AssetRequested;
-            helper.Events.Input.ButtonPressed += Input_ButtonPressed;
+            helper.Events.GameLoop.UpdateTicked += GameLoop_UpdateTicked;
 
             var harmony = new Harmony(ModManifest.UniqueID);
             harmony.PatchAll();
         }
 
-        private void GameLoop_Saving(object sender, SavingEventArgs e)
+        private void GameLoop_UpdateTicked(object sender, UpdateTickedEventArgs e)
         {
-            if (!Config.ModEnabled || openWorld is null)
+            if (!Config.ModEnabled || !Context.IsWorldReady || !Game1.player.currentLocation.Name.StartsWith(tilePrefix))
                 return;
-            openWorld.DayUpdate(Game1.dayOfMonth);
-            foreach(var l in Game1.locations)
+            var p = GetTileFromName(Game1.player.currentLocation.Name);
+                    
+            if(Game1.player.Position.X < 0)
             {
-                if (l.Name.StartsWith(namePrefix) )
+                if (p.X > 1)
                 {
-
-                }
-            }
-        }
-
-
-        private void Input_ButtonPressed(object sender, ButtonPressedEventArgs e)
-        {
-            if (!Config.ModEnabled || !Context.IsPlayerFree || !Game1.player.isRidingHorse() || !Game1.player.modData.TryGetValue(cartKey, out string which) || !cartDict.TryGetValue(which, out PersonalCartData data))
-                return;
-
-            if (e.Button == Config.HitchButton)
-            {
-                var hasParked = Game1.player.currentLocation.modData.TryGetValue(parkedKey, out string parkedString);
-                List<ParkedCart> carts = hasParked ? JsonConvert.DeserializeObject<List<ParkedCart>>(parkedString) : new List<ParkedCart>();
-
-                if (!Game1.player.modData.ContainsKey(parkedKey))
-                {
-                    carts.Add(new ParkedCart() { facing = Game1.player.FacingDirection, location = thisPlayerCartLocation, whichCart = which, position = Game1.player.Position });
-                    Game1.player.modData[parkedKey] = "true";
-                    SMonitor.Log($"Parked player cart in {Game1.player.currentLocation}");
-                }
-                else if (hasParked)
-                {
-                    for (int i = 0; i < carts.Count; i++)
-                    {
-                        var cart = carts[i];
-                        if (cart.location != thisPlayerCartLocation)
-                            continue;
-
-                        var cdata = GetCartData(cart.whichCart);
-                        var cddata = cdata.GetDirectionData(cart.facing);
-                        Rectangle box = new Rectangle(Utility.Vector2ToPoint(cart.position + cddata.cartOffset) + new Point(cddata.hitchRect.Location.X * 4, cddata.hitchRect.Location.Y * 4 + 64), new Point(cddata.hitchRect.Size.X * 4, cddata.hitchRect.Size.Y * 4));
-                        Rectangle horseBox = Game1.player.mount.GetBoundingBox();
-                        if (box.Intersects(horseBox))
-                        {
-                            SMonitor.Log($"Hitching to cart in {Game1.player.currentLocation}");
-                            Game1.player.Position = cart.position;
-                            Game1.player.faceDirection(cart.facing);
-                            Game1.player.modData.Remove(parkedKey);
-                            carts.RemoveAt(i);
-                            break;
-                        }
-                    }
-                }
-                else return;
-
-                for (int i = 0; i < carts.Count; i++)
-                {
-                    carts[i].data = null;
-                }
-                Game1.player.currentLocation.modData[parkedKey] = JsonConvert.SerializeObject(carts);
-                return;
-            }
-
-
-            if (e.Button == SButton.PageUp)
-            {
-                var keys = cartDict.Keys.ToList();
-                var idx = keys.IndexOf(which);
-                idx--;
-                if(idx < 0)
-                    idx = keys.Count - 1;
-                SMonitor.Log($"Switching cart to {keys[idx]}");
-                Game1.player.modData[cartKey] = keys[idx];
-                return;
-            }
-            if (e.Button == SButton.PageDown)
-            {
-                var keys = cartDict.Keys.ToList();
-                var idx = keys.IndexOf(which);
-                idx++;
-                idx %= keys.Count;
-                SMonitor.Log($"Switching cart to {keys[idx]}");
-                Game1.player.modData[cartKey] = keys[idx];
-                return;
-            }
-            if (!Config.Debug)
-                return;
-            DirectionData ddata = GetDirectionData(data, Game1.player.FacingDirection);
-            if (e.Button == SButton.F5)
-            {
-                SMonitor.Log("Saving to json file");
-                File.WriteAllText(Path.Combine(Helper.DirectoryPath, "assets", "cart_data.json"), JsonConvert.SerializeObject(cartDict, Formatting.Indented));
-                return;
-            }
-            else if(e.Button == SButton.F7)
-            {
-                SMonitor.Log("Loading from json file");
-                string jsonPath = Path.Combine(Helper.DirectoryPath, "assets", "cart_data.json");
-                if (!File.Exists(jsonPath))
-                {
-                    SMonitor.Log("File not found");
+                    WarpToOpenWorldTile(p.X - 1, p.Y, Game1.player.Position + new Vector2(500 * 64, 0));
                     return;
                 }
-                var tex = cartDict[which].spriteSheet;
-                cartDict = JsonConvert.DeserializeObject<Dictionary<string, PersonalCartData>>(File.ReadAllText(jsonPath));
-                cartDict[which].spriteSheet = tex;
-                return;
-            }
-            int mult = Helper.Input.IsDown(SButton.LeftAlt) ? 4 : 1;
-            if (Helper.Input.IsDown(SButton.LeftShift))
-            {
-                switch (e.Button)
+                else
                 {
-                    case SButton.Left:
-                        ddata.playerOffset += new Vector2(1 * mult, 0);
-                        break;
-                    case SButton.Right:
-                        ddata.playerOffset -= new Vector2(1 * mult, 0);
-                        break;
-                    case SButton.Up:
-                        ddata.playerOffset += new Vector2(0, 4 * mult);
-                        break;
-                    case SButton.Down:
-                        ddata.playerOffset -= new Vector2(0, 4 * mult);
-                        break;
-                    default:
-                        return;
+                    Game1.player.Position = new Vector2(0, Game1.player.Position.Y);
                 }
             }
-            else
+            if(Game1.player.Position.X >= 500 * 64)
             {
-                switch (e.Button)
+                if (p.X < 200)
                 {
-                    case SButton.Left:
-                        ddata.cartOffset -= new Vector2(4 * mult, 0);
-                        break;
-                    case SButton.Right:
-                        ddata.cartOffset += new Vector2(4 * mult, 0);
-                        break;
-                    case SButton.Up:
-                        ddata.cartOffset -= new Vector2(0, 4 * mult);
-                        break;
-                    case SButton.Down:
-                        ddata.cartOffset += new Vector2(0, 4 * mult);
-                        break;
-                    default:
-                        return;
+                    WarpToOpenWorldTile(p.X + 1, p.Y, Game1.player.Position + new Vector2(-500 * 64, 0));
+                    return;
+                }
+                else
+                {
+                    Game1.player.Position = new Vector2(500 * 64, Game1.player.Position.Y);
                 }
             }
-            switch (Game1.player.FacingDirection)
+            if(Game1.player.Position.Y < 0)
             {
-                case 0:
-                    data.up = ddata;
-                    break;
-                case 1:
-                    data.right = ddata;
-                    break;
-                case 2:
-                    data.down = ddata;
-                    break;
-                case 3:
-                    data.left = ddata;
-                    break;
+                if (p.Y > 1)
+                {
+                    WarpToOpenWorldTile(p.X, p.Y - 1, Game1.player.Position + new Vector2(0, 500 * 64));
+                    return;
+                }
+                else
+                {
+                    Game1.player.Position = new Vector2(Game1.player.Position.X, 0);
+                }
             }
-            cartDict[which] = data;
-        }
-
-        private void Content_AssetRequested(object sender, AssetRequestedEventArgs e)
-        {
-            if (!Config.ModEnabled)
-                return;
-            if (e.NameWithoutLocale.IsEquivalentTo(dataPath))
+            if(Game1.player.Position.Y >= 500 * 64)
             {
-                e.LoadFrom(() => new Dictionary<string, PersonalCartData>(), AssetLoadPriority.Exclusive);
+                if (p.Y < 200)
+                {
+                    WarpToOpenWorldTile(p.X, p.Y + 1, Game1.player.Position + new Vector2(0, -500 * 64));
+                    return;
+                }
+                else
+                {
+                    Game1.player.Position = new Vector2(Game1.player.Position.X, 500 * 64);
+                }
             }
-        }
-        private void GameLoop_SaveLoaded(object sender, SaveLoadedEventArgs e)
-        {
-            Game1.player.modData[locKey] = thisPlayerCartLocation;
+            
         }
 
         private void GameLoop_GameLaunched(object sender, GameLaunchedEventArgs e)

@@ -63,11 +63,11 @@ namespace PlaygroundMod
                 }
                 else if (texture == FarmerRenderer.accessoriesTexture)
                 {
-
+                    origin = new Vector2(6f,32f);
                 }
                 else if (texture == FarmerRenderer.hatsTexture)
                 {
-                    origin += new Vector2(1, 5);
+                    origin = new Vector2(8, 35);
                 }
                 else if (texture == FarmerRenderer.hairStylesTexture)
                 {
@@ -97,11 +97,11 @@ namespace PlaygroundMod
                 }
                 else if (texture == FarmerRenderer.accessoriesTexture)
                 {
-
+                    origin = new Vector2(3f, 38);
                 }
                 else if (texture == FarmerRenderer.hatsTexture)
-                {
-                    origin += new Vector2(2, 20);
+                { 
+                    origin += new Vector2(6, 20);
 
                 }
                 else if (texture == FarmerRenderer.hairStylesTexture)
@@ -181,7 +181,7 @@ namespace PlaygroundMod
                     ticks %= 360;
                     springTicks[who.UniqueMultiplayerID] = ticks;
                     origin = new Vector2(7, 30);
-                    animationFrame.xOffset += 3;
+                    animationFrame.xOffset += 2;
                     animationFrame.positionOffset += 2;
                     rotation = factor * 2;
                     springEyes[who.UniqueMultiplayerID] = who.currentEyes;

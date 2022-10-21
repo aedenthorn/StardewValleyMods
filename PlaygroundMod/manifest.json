@@ -1,7 +1,7 @@
 ﻿{
   "Name": "Playground Mod",
   "Author": "aedenthorn",
-  "Version": "0.3.0",
+  "Version": "0.3.1",
   "Description": "Playground Mod.",
   "UniqueID": "aedenthorn.PlaygroundMod",
   "EntryDll": "PlaygroundMod.dll",
