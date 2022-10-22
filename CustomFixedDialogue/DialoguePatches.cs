@@ -341,6 +341,10 @@ namespace CustomFixedDialogue
             {
 
             }
+            dontFix = true;
+            input = input.Replace("%endearmentlower", speaker.getTermOfSpousalEndearment(true).ToLower());
+            input = input.Replace("%endearment", speaker.getTermOfSpousalEndearment(true));
+            dontFix = false;
             return changed;
         }
     }

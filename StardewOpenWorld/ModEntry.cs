@@ -13,6 +13,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using xTile;
+using xTile.Tiles;
 
 namespace StardewOpenWorld
 {
@@ -28,9 +29,13 @@ namespace StardewOpenWorld
         public static string dataPath = "aedenthorn.StardewOpenWorld/dictionary";
         public static string namePrefix = "StardewOpenWorld";
         public static string tilePrefix = "StardewOpenWorldTile";
+        public static bool warping = false;
+        private static GameTime deltaTime;
 
         private static GameLocation openWorldLocation;
-        private static GameLocation openWorldTile;
+        private static Dictionary<Vector2, Tile> openWorldBack = new Dictionary<Vector2, Tile>();
+        private static Dictionary<Vector2, Tile> openWorldBuildings = new Dictionary<Vector2, Tile>();
+        private static Dictionary<Vector2, Tile> openWorldFront = new Dictionary<Vector2, Tile>();
 
         /// <summary>The mod entry point, called after the mod is first loaded.</summary>
         /// <param name="helper">Provides simplified APIs for writing mods.</param>
@@ -44,66 +49,69 @@ namespace StardewOpenWorld
 
             helper.Events.GameLoop.GameLaunched += GameLoop_GameLaunched;
             helper.Events.GameLoop.UpdateTicked += GameLoop_UpdateTicked;
+            helper.Events.Content.AssetRequested += Content_AssetRequested;
 
             var harmony = new Harmony(ModManifest.UniqueID);
             harmony.PatchAll();
         }
 
+        private void Content_AssetRequested(object sender, AssetRequestedEventArgs e)
+        {
+            if (e.NameWithoutLocale.IsEquivalentTo("Maps/Backwoods"))
+            {
+                e.LoadFromModFile<Map>(Path.Combine("assets", "BackwoodsEdit.tmx"), AssetLoadPriority.High);
+            }
+            else if (e.NameWithoutLocale.Name.Contains("StardewOpenWorldTileMap"))
+            {
+                e.LoadFrom(delegate ()
+                {
+                    Map map = Helper.ModContent.Load<Map>("assets/StardewOpenWorldTile.tmx");
+                    var back = map.GetLayer("Back");
+                    var mainSheet = map.GetTileSheet("outdoors");
+
+                    for (int y = 0; y < 500; y++)
+                    {
+                        for (int x = 0; x < 500; x++)
+                        {
+                            var tile = new StaticTile(back, mainSheet, BlendMode.Alpha, 0);
+                            var which = Game1.random.NextDouble();
+                            if (which < 0.025f)
+                            {
+                                tile.TileIndex = 304;
+                            }
+                            else if (which < 0.05f)
+                            {
+                                tile.TileIndex = 305;
+
+                            }
+                            else if (which < 0.15f)
+                            {
+                                tile.TileIndex = 300;
+                            }
+                            else
+                            {
+                                tile.TileIndex = 351;
+                            }
+                            back.Tiles[x, y] = tile;
+                        }
+                    }
+                    return map;
+                }, AssetLoadPriority.Exclusive);
+            }
+        }
+
         private void GameLoop_UpdateTicked(object sender, UpdateTickedEventArgs e)
         {
-            if (!Config.ModEnabled || !Context.IsWorldReady || !Game1.player.currentLocation.Name.StartsWith(tilePrefix))
+            if (!Config.ModEnabled || !Context.IsWorldReady)
                 return;
-            var p = GetTileFromName(Game1.player.currentLocation.Name);
-                    
-            if(Game1.player.Position.X < 0)
+            if (Game1.player.currentLocation.Name.StartsWith(tilePrefix))
             {
-                if (p.X > 1)
-                {
-                    WarpToOpenWorldTile(p.X - 1, p.Y, Game1.player.Position + new Vector2(500 * 64, 0));
-                    return;
-                }
-                else
-                {
-                    Game1.player.Position = new Vector2(0, Game1.player.Position.Y);
-                }
+                warping = CheckPlayerWarp();
             }
-            if(Game1.player.Position.X >= 500 * 64)
+            if (!Game1.isWarping && Game1.player.currentLocation.Name.Equals("Backwoods") && Game1.player.getTileLocation().X == 24 && Game1.player.getTileLocation().Y < 6)
             {
-                if (p.X < 200)
-                {
-                    WarpToOpenWorldTile(p.X + 1, p.Y, Game1.player.Position + new Vector2(-500 * 64, 0));
-                    return;
-                }
-                else
-                {
-                    Game1.player.Position = new Vector2(500 * 64, Game1.player.Position.Y);
-                }
+                Game1.warpFarmer($"{tilePrefix}_100_199", 250, 499, false);
             }
-            if(Game1.player.Position.Y < 0)
-            {
-                if (p.Y > 1)
-                {
-                    WarpToOpenWorldTile(p.X, p.Y - 1, Game1.player.Position + new Vector2(0, 500 * 64));
-                    return;
-                }
-                else
-                {
-                    Game1.player.Position = new Vector2(Game1.player.Position.X, 0);
-                }
-            }
-            if(Game1.player.Position.Y >= 500 * 64)
-            {
-                if (p.Y < 200)
-                {
-                    WarpToOpenWorldTile(p.X, p.Y + 1, Game1.player.Position + new Vector2(0, -500 * 64));
-                    return;
-                }
-                else
-                {
-                    Game1.player.Position = new Vector2(Game1.player.Position.X, 500 * 64);
-                }
-            }
-            
         }
 
         private void GameLoop_GameLaunched(object sender, GameLaunchedEventArgs e)
@@ -125,30 +133,6 @@ namespace StardewOpenWorld
                 name: () => "Mod Enabled",
                 getValue: () => Config.ModEnabled,
                 setValue: value => Config.ModEnabled = value
-            );
-            configMenu.AddBoolOption(
-                mod: ModManifest,
-                name: () => "Draw Cart Exterior",
-                getValue: () => Config.DrawCartExterior,
-                setValue: value => Config.DrawCartExterior = value
-            );
-            configMenu.AddBoolOption(
-                mod: ModManifest,
-                name: () => "Draw Cart Exterior Weather",
-                getValue: () => Config.DrawCartExteriorWeather,
-                setValue: value => Config.DrawCartExteriorWeather = value
-            );
-            configMenu.AddBoolOption(
-                mod: ModManifest,
-                name: () => "Debug",
-                getValue: () => Config.Debug,
-                setValue: value => Config.Debug = value
-            );
-            configMenu.AddKeybind(
-                mod: ModManifest,
-                name: () => "Hitch Button",
-                getValue: () => Config.HitchButton,
-                setValue: value => Config.HitchButton = value
             );
         }
     }

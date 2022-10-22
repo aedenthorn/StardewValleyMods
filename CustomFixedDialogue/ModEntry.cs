@@ -100,10 +100,17 @@ namespace CustomFixedDialogue
                 return;
             if (e.Button == SButton.NumLock)
 			{
-				var person = Game1.getCharacterFromName("Maru");
+				var person = Game1.getCharacterFromName("Emily");
                 var ds = person.CurrentDialogue;
                 Game1.warpCharacter(person, Game1.player.currentLocation, Game1.player.getTileLocation() + new Microsoft.Xna.Framework.Vector2(0, 1));
-                
+                person.CurrentDialogue.Clear();
+                person.addMarriageDialogue("Strings\\StringsFromCSFiles", "NPC.cs.4486", false, new string[]
+                {
+                    "%endearmentlower"
+                });
+
+                return;
+
                 string relativeTitle = "father";
                 string itemName = "French Toast";
 

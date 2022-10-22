@@ -5,7 +5,7 @@
   "Description": "Advanced loot framework.",
   "UniqueID": "aedenthorn.AdvancedLootFramework",
   "EntryDll": "AdvancedLootFramework.dll",
-  "MinimumApiVersion": "3.8.0",
+  "MinimumApiVersion": "3.15.0",
   "UpdateKeys": ["Nexus:7739"],
   "ModUpdater": {
     "Repository": "StardewValleyMods",
@@ -17,6 +17,6 @@
       {
         "UniqueID": "Platonymous.ModUpdater",
         "IsRequired": false
-      },
+      }
   ]
 }
