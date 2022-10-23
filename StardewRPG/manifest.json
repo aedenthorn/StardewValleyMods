@@ -1,7 +1,7 @@
 ﻿{
   "Name": "Stardew RPG",
   "Author": "aedenthorn",
-  "Version": "0.3.5",
+  "Version": "0.3.6",
   "Description": "Stardew RPG.",
   "UniqueID": "aedenthorn.StardewRPG",
   "EntryDll": "StardewRPG.dll",
