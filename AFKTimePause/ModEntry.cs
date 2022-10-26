@@ -38,6 +38,7 @@ namespace AFKTimePause
             SMonitor = Monitor;
             SHelper = helper;
 
+            helper.Events.GameLoop.GameLaunched += GameLoop_GameLaunched;
             helper.Events.GameLoop.OneSecondUpdateTicked += GameLoop_OneSecondUpdateTicked;
             helper.Events.Display.Rendered += Display_Rendered;
             helper.Events.Input.CursorMoved += PlayerInput;
@@ -63,13 +64,21 @@ namespace AFKTimePause
                 elapsedSeconds = 0;
                 return;
             }
-            if (elapsedSeconds < Config.SecondsTilAFK)
+            if (elapsedSeconds == Config.SecondsTilAFK && Config.FreezeGame)
+            {
+                SMonitor.Log("Going AFK");
+                Game1.activeClickableMenu = new AFKMenu();
+                elapsedSeconds++;
+            }
+            else if (elapsedSeconds < Config.SecondsTilAFK)
                 elapsedSeconds++;
         }
 
         private void PlayerInput(object sender, object e)
         {
             elapsedSeconds = 0;
+            if (Game1.activeClickableMenu is AFKMenu)
+                Game1.activeClickableMenu = null;
         }
 
 
@@ -93,6 +102,12 @@ namespace AFKTimePause
                 name: () => "Mod Enabled",
                 getValue: () => Config.ModEnabled,
                 setValue: value => Config.ModEnabled = value
+            );
+            configMenu.AddBoolOption(
+                mod: ModManifest,
+                name: () => "Freeze Game",
+                getValue: () => Config.FreezeGame,
+                setValue: value => Config.FreezeGame = value
             );
             configMenu.AddNumberOption(
                 mod: ModManifest,

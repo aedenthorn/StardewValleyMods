@@ -1,16 +1,16 @@
 ﻿{
-  "Name": "AFK Time Pause",
+  "Name": "OK Night Check",
   "Author": "aedenthorn",
   "Version": "0.2.0",
-  "Description": "AFK Time Pause.",
-  "UniqueID": "aedenthorn.AFKTimePause",
-  "EntryDll": "AFKTimePause.dll",
+  "Description": "OK Night Check.",
+  "UniqueID": "aedenthorn.OKNightCheck",
+  "EntryDll": "OKNightCheck.dll",
   "MinimumApiVersion": "3.15.0",
   "ModUpdater": {
     "Repository": "StardewValleyMods",
     "User": "aedenthorn",
     "Directory": "_releases",
-    "ModFolder": "AFKTimePause"
+    "ModFolder": "OKNightCheck"
   },
   "Dependencies": [
     {
@@ -18,5 +18,5 @@
       "IsRequired": false
     }
   ],
-  "UpdateKeys": [ "Nexus:14228" ]
+  "UpdateKeys": [ "Nexus:14231" ]
 }

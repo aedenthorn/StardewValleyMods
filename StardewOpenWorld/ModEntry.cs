@@ -29,6 +29,7 @@ namespace StardewOpenWorld
         public static string dataPath = "aedenthorn.StardewOpenWorld/dictionary";
         public static string namePrefix = "StardewOpenWorld";
         public static string tilePrefix = "StardewOpenWorldTile";
+        public static readonly int openWorldTileSize = 250;
         public static bool warping = false;
         private static GameTime deltaTime;
 
@@ -63,40 +64,8 @@ namespace StardewOpenWorld
             }
             else if (e.NameWithoutLocale.Name.Contains("StardewOpenWorldTileMap"))
             {
-                e.LoadFrom(delegate ()
-                {
-                    Map map = Helper.ModContent.Load<Map>("assets/StardewOpenWorldTile.tmx");
-                    var back = map.GetLayer("Back");
-                    var mainSheet = map.GetTileSheet("outdoors");
-
-                    for (int y = 0; y < 500; y++)
-                    {
-                        for (int x = 0; x < 500; x++)
-                        {
-                            var tile = new StaticTile(back, mainSheet, BlendMode.Alpha, 0);
-                            var which = Game1.random.NextDouble();
-                            if (which < 0.025f)
-                            {
-                                tile.TileIndex = 304;
-                            }
-                            else if (which < 0.05f)
-                            {
-                                tile.TileIndex = 305;
-
-                            }
-                            else if (which < 0.15f)
-                            {
-                                tile.TileIndex = 300;
-                            }
-                            else
-                            {
-                                tile.TileIndex = 351;
-                            }
-                            back.Tiles[x, y] = tile;
-                        }
-                    }
-                    return map;
-                }, AssetLoadPriority.Exclusive);
+                Helper.GameContent.InvalidateCache(Helper.ModContent.GetInternalAssetName("assets/StardewOpenWorldTile.tmx"));
+                e.LoadFromModFile<Map>("assets/StardewOpenWorldTile.tmx", AssetLoadPriority.Exclusive);
             }
         }
 
@@ -110,7 +79,7 @@ namespace StardewOpenWorld
             }
             if (!Game1.isWarping && Game1.player.currentLocation.Name.Equals("Backwoods") && Game1.player.getTileLocation().X == 24 && Game1.player.getTileLocation().Y < 6)
             {
-                Game1.warpFarmer($"{tilePrefix}_100_199", 250, 499, false);
+                Game1.warpFarmer($"{tilePrefix}_100_199", 125, 249, false);
             }
         }
 

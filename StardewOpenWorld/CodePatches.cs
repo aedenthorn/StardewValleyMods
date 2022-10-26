@@ -68,24 +68,34 @@ namespace StardewOpenWorld
                     return;
 
                 var tile = GetTileFromName(__instance.Name);
-                var surrounding = Utility.getAdjacentTileLocations(tile);
-
-                foreach (var s in surrounding)
+                var surrounding = new int[]
                 {
-                    int positionX = (int)(s.X - tile.X);
-                    int positionY = (int)(s.Y - tile.Y);
-                    if (positionX == 1 && Game1.viewport.Location.X < 500 * 64 - Game1.viewport.Width)
-                        continue;
-                    if (positionX == -1 && Game1.viewport.Location.X > Game1.viewport.Width)
-                        continue;
-                    if (positionY == 1 && Game1.viewport.Location.Y < 500 * 64 - Game1.viewport.Height)
-                        continue;
-                    if (positionY == -1 && Game1.viewport.Location.Y > Game1.viewport.Height)
-                        continue;
-                    GameLocation loc = Game1.getLocationFromName($"{tilePrefix}_{s.X}_{s.Y}");
-                    if (loc is null)
-                        continue;
-                    DrawGameLocation(loc, positionX * 500 * 64, positionY * 500 * 64);
+                    -1,
+                    0,
+                    1
+                };
+                foreach(var x in surrounding)
+                {
+                    foreach (var y in surrounding)
+                    {
+                        if (x == 0 && y == 0)
+                            continue;
+                        if (tile.X + x < 0 || tile.X + x > 199 || tile.Y + y < 0 || tile.Y + y > 199 )
+                            continue;
+
+                        if (x == 1 && Game1.viewport.Location.X < openWorldTileSize * 64 - Game1.viewport.Width)
+                            continue;
+                        if (x == -1 && Game1.viewport.Location.X > Game1.viewport.Width)
+                            continue;
+                        if (y == 1 && Game1.viewport.Location.Y < openWorldTileSize * 64 - Game1.viewport.Height)
+                            continue;
+                        if (y == -1 && Game1.viewport.Location.Y > Game1.viewport.Height)
+                            continue;
+                        GameLocation loc = Game1.getLocationFromName($"{tilePrefix}_{tile.X + x}_{tile.Y + y}");
+                        if (loc is null)
+                            continue;
+                        DrawGameLocation(loc, x * openWorldTileSize * 64, y * openWorldTileSize * 64);
+                    }
                 }
             }
         }

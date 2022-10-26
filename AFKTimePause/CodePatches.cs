@@ -6,20 +6,6 @@ namespace AFKTimePause
 {
     public partial class ModEntry
     {
-        [HarmonyPatch(typeof(Game1), nameof(Game1.showEndOfNightStuff))]
-        public class Game1_showEndOfNightStuff_Patch
-        {
-            public static void Postfix()
-            {
-                if (!Config.ModEnabled || !Config.ShowOKMenu)
-                    return;
-                if(Game1.endOfNightMenus.Count == 0)
-                {
-                    SMonitor.Log("Showing pause menu");
-                    Game1.activeClickableMenu = new AFKMenu();
-                }
-            }
-        }
         [HarmonyPatch(typeof(Game1), nameof(Game1.shouldTimePass))]
         public class Game1_shouldTimePass_Patch
         {

@@ -43,7 +43,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TransparentObjects", "Trans
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Familiars", "Familiars\Familiars.csproj", "{08FA65AF-8FEB-4A3C-8E50-52A2EF085DE5}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Quotes", "Quotes\Quotes.csproj", "{4FB39A1B-1952-40B2-A328-D1B8BEF2F95B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Quotes", "Quotes\Quotes.csproj", "{4FB39A1B-1952-40B2-A328-D1B8BEF2F95B}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VideoPlayer", "VideoPlayer\VideoPlayer.csproj", "{CC266241-EA19-41EB-A6AC-A86661981912}"
 EndProject
@@ -402,6 +402,10 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "StardewOpenWorld", "StardewOpenWorld\StardewOpenWorld.csproj", "{3F3EA6C5-6C5B-4628-A349-32077B50B8F4}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AFKTimePause", "AFKTimePause\AFKTimePause.csproj", "{87CB29DB-E954-4943-A6AA-79512925A1BC}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OKNightCheck", "OKNightCheck\OKNightCheck.csproj", "{B4AE1B3C-76F6-4509-9138-01AD06670F59}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TakeAll", "TakeAll\TakeAll.csproj", "{77FF84FF-FC9D-41CF-A7C1-4529FB184E5A}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -1979,6 +1983,22 @@ Global
 		{87CB29DB-E954-4943-A6AA-79512925A1BC}.Release|Any CPU.Build.0 = Release|Any CPU
 		{87CB29DB-E954-4943-A6AA-79512925A1BC}.Release|x86.ActiveCfg = Release|Any CPU
 		{87CB29DB-E954-4943-A6AA-79512925A1BC}.Release|x86.Build.0 = Release|Any CPU
+		{B4AE1B3C-76F6-4509-9138-01AD06670F59}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B4AE1B3C-76F6-4509-9138-01AD06670F59}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B4AE1B3C-76F6-4509-9138-01AD06670F59}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{B4AE1B3C-76F6-4509-9138-01AD06670F59}.Debug|x86.Build.0 = Debug|Any CPU
+		{B4AE1B3C-76F6-4509-9138-01AD06670F59}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B4AE1B3C-76F6-4509-9138-01AD06670F59}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B4AE1B3C-76F6-4509-9138-01AD06670F59}.Release|x86.ActiveCfg = Release|Any CPU
+		{B4AE1B3C-76F6-4509-9138-01AD06670F59}.Release|x86.Build.0 = Release|Any CPU
+		{77FF84FF-FC9D-41CF-A7C1-4529FB184E5A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{77FF84FF-FC9D-41CF-A7C1-4529FB184E5A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{77FF84FF-FC9D-41CF-A7C1-4529FB184E5A}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{77FF84FF-FC9D-41CF-A7C1-4529FB184E5A}.Debug|x86.Build.0 = Debug|Any CPU
+		{77FF84FF-FC9D-41CF-A7C1-4529FB184E5A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{77FF84FF-FC9D-41CF-A7C1-4529FB184E5A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{77FF84FF-FC9D-41CF-A7C1-4529FB184E5A}.Release|x86.ActiveCfg = Release|Any CPU
+		{77FF84FF-FC9D-41CF-A7C1-4529FB184E5A}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

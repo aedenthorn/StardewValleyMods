@@ -13,22 +13,24 @@ namespace Quotes
         public static ModEntry context;
 
         public static ModConfig Config;
-        private Random myRand;
+        public static Random myRand;
 
         public static string[] quotestrings = new string[0];
         public static List<Quote> quotes = new List<Quote>();
-        private float lastFadeAlpha = 1f;
-        private Quote dailyQuote;
-        private int displayTicks = 0;
-        private bool clickedOnQuote = true;
-        private List<string> seasons = new List<string>
+        public static float lastFadeAlpha = 1f;
+        public static Quote dailyQuote;
+        public static int displayTicks = 0;
+        public static bool clickedOnQuote = true;
+        public static List<string> seasons = new List<string>
         {
             "spring",
             "summer",
             "fall",
             "winter"
         };
-        private IMobilePhoneApi api;
+        public static IMobilePhoneApi mobileAPI;
+        public static IModHelper SHelper;
+        public static IMonitor SMonitor { get; private set; }
 
         /// <summary>The mod entry point, called after the mod is first loaded.</summary>
         /// <param name="helper">Provides simplified APIs for writing mods.</param>
@@ -36,8 +38,9 @@ namespace Quotes
         {
             context = this;
             Config = Helper.ReadConfig<ModConfig>();
-            if (!Config.EnableMod)
-                return;
+
+            SHelper = helper;
+            SMonitor = Monitor;
 
             myRand = new Random(Guid.NewGuid().GetHashCode());
 
@@ -46,29 +49,108 @@ namespace Quotes
             if(quotestrings.Length > 0)
             {
                 Helper.Events.GameLoop.GameLaunched += GameLoop_GameLaunched;
+                Helper.Events.GameLoop.SaveLoaded += GameLoop_SaveLoaded;
                 Helper.Events.GameLoop.DayStarted += GameLoop_DayStarted;
                 if(Config.ClickToDispelQuote || Config.QuoteDurationPerLineMult < 0)
                     Helper.Events.Input.ButtonPressed += Input_ButtonPressed;
             }
         }
 
-        private void GameLoop_GameLaunched(object sender, StardewModdingAPI.Events.GameLaunchedEventArgs e)
+        private void GameLoop_SaveLoaded(object sender, StardewModdingAPI.Events.SaveLoadedEventArgs e)
         {
-            if (Config.EnableApp)
+            if (Config.EnableApp && Config.EnableMod)
             {
-                api = Helper.ModRegistry.GetApi<IMobilePhoneApi>("aedenthorn.MobilePhone");
-                if (api != null)
+                mobileAPI = Helper.ModRegistry.GetApi<IMobilePhoneApi>("aedenthorn.MobilePhone");
+                if (mobileAPI != null)
                 {
-                    Texture2D appIcon = Helper.Content.Load<Texture2D>(Path.Combine("assets", "app_icon.png"));
-                    bool success = api.AddApp(Helper.ModRegistry.ModID, "Random Quote", ShowRandomQuote, appIcon);
+                    Texture2D appIcon = Helper.ModContent.Load<Texture2D>(Path.Combine("assets", "app_icon.png"));
+                    bool success = mobileAPI.AddApp(Helper.ModRegistry.ModID, "Random Quote", ShowRandomQuote, appIcon);
                     Monitor.Log($"loaded phone app successfully: {success}", LogLevel.Debug);
                 }
             }
         }
 
-        private void ShowRandomQuote()
+        public override object GetApi()
         {
-            if(clickedOnQuote == false)
+            return new QuotesAPI();
+        }
+
+
+        public void GameLoop_GameLaunched(object sender, StardewModdingAPI.Events.GameLaunchedEventArgs e)
+        {
+            // get Generic Mod Config Menu's API (if it's installed)
+            var configMenu = Helper.ModRegistry.GetApi<IGenericModConfigMenuApi>("spacechase0.GenericModConfigMenu");
+            if (configMenu is null)
+                return;
+
+            // register mod
+            configMenu.Register(
+                mod: ModManifest,
+                reset: () => Config = new ModConfig(),
+                save: () => Helper.WriteConfig(Config)
+            );
+
+            configMenu.AddBoolOption(
+                mod: ModManifest,
+                name: () => "Mod Enabled",
+                getValue: () => Config.EnableMod,
+                setValue: value => Config.EnableMod = value
+            );
+            configMenu.AddBoolOption(
+                mod: ModManifest,
+                name: () => "App Enabled",
+                getValue: () => Config.EnableApp,
+                setValue: value => Config.EnableApp = value
+            );
+            configMenu.AddBoolOption(
+                mod: ModManifest,
+                name: () => "Show Daily Quote",
+                getValue: () => Config.ShowDailyQuote,
+                setValue: value => Config.ShowDailyQuote = value
+            );
+            configMenu.AddBoolOption(
+                mod: ModManifest,
+                name: () => "Click To Dispel Quote",
+                getValue: () => Config.ClickToDispelQuote,
+                setValue: value => Config.ClickToDispelQuote = value
+            );
+            configMenu.AddBoolOption(
+                mod: ModManifest,
+                name: () => "Random Quote",
+                getValue: () => Config.RandomQuote,
+                setValue: value => Config.RandomQuote = value
+            );
+            configMenu.AddNumberOption(
+                mod: ModManifest,
+                name: () => "Characters Per Line",
+                getValue: () => Config.QuoteCharPerLine,
+                setValue: value => Config.QuoteCharPerLine = value
+            );
+            configMenu.AddNumberOption(
+                mod: ModManifest,
+                name: () => "Quote Width",
+                getValue: () => Config.QuoteWidth,
+                setValue: value => Config.QuoteWidth = value
+            );
+            configMenu.AddNumberOption(
+                mod: ModManifest,
+                name: () => "Line Spacing",
+                getValue: () => Config.LineSpacing,
+                setValue: value => Config.LineSpacing = value
+            );
+            configMenu.AddTextOption(
+                mod: ModManifest,
+                name: () => "Author Prefix",
+                getValue: () => Config.AuthorPrefix,
+                setValue: value => Config.AuthorPrefix = value
+            );
+        }
+
+        public static void ShowRandomQuote()
+        {
+            if (!Config.EnableMod)
+                return;
+            if (clickedOnQuote == false)
                 return;
 
             dailyQuote = GetAQuote(true);
@@ -81,12 +163,16 @@ namespace Quotes
 
         private void Input_ButtonPressed(object sender, StardewModdingAPI.Events.ButtonPressedEventArgs e)
         {
+            if (!Config.EnableMod)
+                return;
             if (!clickedOnQuote)
                 clickedOnQuote = true;
         }
 
         private void GameLoop_DayStarted(object sender, StardewModdingAPI.Events.DayStartedEventArgs e)
         {
+            if (!Config.EnableMod || !Config.ShowDailyQuote)
+                return;
             lastFadeAlpha = 1f;
             displayTicks = 0;
             clickedOnQuote = false;
@@ -102,6 +188,8 @@ namespace Quotes
 
         private void Display_Rendering(object sender, StardewModdingAPI.Events.RenderingEventArgs e)
         {
+            if (!Config.EnableMod)
+                return;
             if (Game1.fadeToBlackAlpha > 0)
             {
                 if ((Config.QuoteDurationPerLineMult < 0 || ++displayTicks < Config.QuoteDurationPerLineMult * dailyQuote.quoteLines.Count * 200) && !clickedOnQuote)
@@ -126,6 +214,8 @@ namespace Quotes
         }
         private void Display_Rendered(object sender, StardewModdingAPI.Events.RenderedEventArgs e)
         {
+            if (!Config.EnableMod)
+                return;
             Color thisColor = Config.QuoteColor;
             thisColor.A = (byte)Math.Round(255 * Game1.fadeToBlackAlpha);
             int lineSpacing = Game1.dialogueFont.LineSpacing + Config.LineSpacing;
@@ -142,18 +232,19 @@ namespace Quotes
             //SpriteText.drawString(e.SpriteBatch, Config.AuthorPrefix + dailyQuote.author, x, y + (int)Math.Ceiling(dailyQuote.quoteSize.X / Config.QuoteWidth) * Game1.dialogueFont.LineSpacing, 999999, Config.QuoteWidth, 999999, Game1.fadeToBlackAlpha, 0.88f, false, -1, "", colorCode, SpriteText.ScrollTextAlignment.Right);
         }
 
-        private void LoadQuotes()
+        private static void LoadQuotes()
         {
-            string file = Path.Combine(Helper.DirectoryPath, "assets", "quotes.txt");
+
+            string file = Path.Combine(SHelper.DirectoryPath, "assets", "quotes.txt");
             if (!File.Exists(file))
             {
-                Monitor.Log($"No quotes.txt file, using quotes_default.txt", LogLevel.Debug);
-                file = Path.Combine(Helper.DirectoryPath, "assets", "quotes_default.txt");
+                SMonitor.Log($"No quotes.txt file, using quotes_default.txt", LogLevel.Debug);
+                file = Path.Combine(SHelper.DirectoryPath, "assets", "quotes_default.txt");
             }
             if (File.Exists(file))
             {
                 quotestrings = File.ReadAllLines(file);
-                Monitor.Log($"Loaded {quotestrings.Length} quotes from {file}", LogLevel.Debug);
+                SMonitor.Log($"Loaded {quotestrings.Length} quotes from {file}", LogLevel.Debug);
                 foreach(string quote in quotestrings)
                 {
                     if(quote.Length > 0)
@@ -162,11 +253,11 @@ namespace Quotes
             }
             else
             {
-                Monitor.Log($"Quotes file not found at {file}!", LogLevel.Error);
+                SMonitor.Log($"Quotes file not found at {file}!", LogLevel.Warn);
             }
         }
 
-        private Quote GetAQuote(bool random)
+        public static Quote GetAQuote(bool random)
         {
             if (quotes.Count == 0)
                 return null;

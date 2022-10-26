@@ -30,7 +30,7 @@ namespace StardewOpenWorld
             {
                 if (p.X > 0)
                 {
-                    WarpToOpenWorldTile(p.X - 1, p.Y, Game1.player.Position + new Vector2(500 * 64, 0));
+                    WarpToOpenWorldTile(p.X - 1, p.Y, Game1.player.Position + new Vector2(openWorldTileSize * 64, 0));
                     return true;
                 }
                 else
@@ -38,23 +38,23 @@ namespace StardewOpenWorld
                     Game1.player.Position = new Vector2(0, Game1.player.Position.Y);
                 }
             }
-            if (Game1.player.Position.X >= 500 * 64)
+            if (Game1.player.Position.X >= openWorldTileSize * 64)
             {
                 if (p.X < 199)
                 {
-                    WarpToOpenWorldTile(p.X + 1, p.Y, Game1.player.Position + new Vector2(-500 * 64, 0));
+                    WarpToOpenWorldTile(p.X + 1, p.Y, Game1.player.Position + new Vector2(-openWorldTileSize * 64, 0));
                     return true;
                 }
                 else
                 {
-                    Game1.player.Position = new Vector2(500 * 64, Game1.player.Position.Y);
+                    Game1.player.Position = new Vector2(openWorldTileSize * 64, Game1.player.Position.Y);
                 }
             }
             if (Game1.player.Position.Y < 0)
             {
                 if (p.Y > 0)
                 {
-                    WarpToOpenWorldTile(p.X, p.Y - 1, Game1.player.Position + new Vector2(0, 500 * 64));
+                    WarpToOpenWorldTile(p.X, p.Y - 1, Game1.player.Position + new Vector2(0, openWorldTileSize * 64));
                     return true;
                 }
                 else
@@ -62,16 +62,16 @@ namespace StardewOpenWorld
                     Game1.player.Position = new Vector2(Game1.player.Position.X, 0);
                 }
             }
-            if (Game1.player.Position.Y >= 500 * 64)
+            if (Game1.player.Position.Y >= openWorldTileSize * 64)
             {
                 if (p.Y < 199)
                 {
-                    WarpToOpenWorldTile(p.X, p.Y + 1, Game1.player.Position + new Vector2(0, -500 * 64));
+                    WarpToOpenWorldTile(p.X, p.Y + 1, Game1.player.Position + new Vector2(0, -openWorldTileSize * 64));
                     return true;
                 }
                 else
                 {
-                    Game1.player.Position = new Vector2(Game1.player.Position.X, 500 * 64);
+                    Game1.player.Position = new Vector2(Game1.player.Position.X, openWorldTileSize * 64);
                 }
             }
             return false;
@@ -213,17 +213,18 @@ namespace StardewOpenWorld
             var mapName = SHelper.ModContent.GetInternalAssetName("assets/StardewOpenWorldTile.tmx").BaseName;
             foreach (var name in tileNames)
             {
+                s.Restart();
                 var gl = new GameLocation(mapName, name);
                 ApplyTileInfo(gl);
                 Game1.locations.Add(gl);
-                SMonitor.Log($"added location {gl.Name}");
+                SMonitor.Log($"added location {gl.Name} in {s.ElapsedMilliseconds} ms");
             }
-            s.Stop();
-            SMonitor.Log($"Applied info in {s.ElapsedMilliseconds} ms");
         }
 
         private static void ApplyTileInfo(GameLocation gl)
         {
+            Stopwatch s = new Stopwatch();
+
             var v = GetTileFromName(gl.Name);
             var rect = GetTileRect(v);
             var offset = new Vector2(rect.X, rect.Y);
@@ -231,9 +232,11 @@ namespace StardewOpenWorld
             var mainSheet = gl.Map.GetTileSheet("outdoors");
             if (back.Tiles[0,0] == null)
             {
-                for (int y = 0; y < 500; y++)
+                s.Start();
+                SMonitor.Log($"applying default tiles");
+                for (int y = 0; y < openWorldTileSize; y++)
                 {
-                    for (int x = 0; x < 500; x++)
+                    for (int x = 0; x < openWorldTileSize; x++)
                     {
                         var tile = new StaticTile(back, mainSheet, BlendMode.Alpha, 0);
                         var which = Game1.random.NextDouble();
@@ -257,18 +260,23 @@ namespace StardewOpenWorld
                         back.Tiles[x, y] = tile;
                     }
                 }
+                SMonitor.Log($"applied defaults in {s.ElapsedMilliseconds} ms");
+                s.Restart();
             }
             var objs = openWorldLocation.objects.Pairs.Where(o => rect.Contains(o.Key.X, o.Key.Y));
             foreach (var obj in objs)
             {
                 gl.objects[obj.Key - offset] = obj.Value;
             }
-
+            SMonitor.Log($"applied objects in {s.ElapsedMilliseconds} ms");
+            s.Restart();
             var tfs = openWorldLocation.terrainFeatures.Pairs.Where(o => rect.Contains(o.Key.X, o.Key.Y));
             foreach (var tf in tfs)
             {
                 gl.terrainFeatures[tf.Key - offset] = tf.Value;
             }
+            SMonitor.Log($"applied tfs in {s.ElapsedMilliseconds} ms");
+            s.Stop();
         }
         private static void StoreTileInfo(GameLocation gl)
         {
@@ -298,7 +306,7 @@ namespace StardewOpenWorld
 
         private static Rectangle GetTileRect(Vector2 v)
         {
-            return new Rectangle((int)v.X * 500, (int)v.Y * 500, 500, 500);
+            return new Rectangle((int)v.X * openWorldTileSize, (int)v.Y * openWorldTileSize, openWorldTileSize, openWorldTileSize);
         }
 
         private static void DrawGameLocation(GameLocation loc, int positionX, int positionY)
@@ -308,17 +316,12 @@ namespace StardewOpenWorld
 
             Game1.mapDisplayDevice.BeginScene(Game1.spriteBatch);
             DrawLayer(loc.Map.GetLayer("Back"), Game1.mapDisplayDevice, Game1.viewport, offset, false, 4);
-            Vector2 tile = default(Vector2);
-            for (int y = Game1.viewport.Y / 64 - 1; y < (Game1.viewport.Y + Game1.viewport.Height) / 64 + 7; y++)
+            var screen = new Rectangle(Game1.viewport.X / 64 - 1, Game1.viewport.Y / 64 - 1, Game1.viewport.Width / 64 + 3, Game1.viewport.Height / 64 + 7);
+            foreach (var kvp in loc.terrainFeatures.Pairs)
             {
-                for (int x = Game1.viewport.X / 64 - 1; x < (Game1.viewport.X + Game1.viewport.Width) / 64 + 3; x++)
+                if (screen.Contains(Utility.Vector2ToPoint(kvp.Key)) && (kvp.Value is Flooring || kvp.Value is HoeDirt))
                 {
-                    tile.X = x;
-                    tile.Y = y;
-                    if (loc.terrainFeatures.TryGetValue(tile - offsetTile, out TerrainFeature feat) && (feat is Flooring || feat is HoeDirt))
-                    {
-                        feat.draw(Game1.spriteBatch, tile);
-                    }
+                    kvp.Value.draw(Game1.spriteBatch, kvp.Key);
                 }
             }
             DrawLayer(loc.Map.GetLayer("Buildings"), Game1.mapDisplayDevice, Game1.viewport, offset, false, 4);
@@ -330,16 +333,11 @@ namespace StardewOpenWorld
             Game1.mapDisplayDevice.EndScene();
             Game1.spriteBatch.End();
             Game1.spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.PointClamp, null, null, null, null);
-            for (int y = Game1.viewport.Y / 64 - 1; y < (Game1.viewport.Y + Game1.viewport.Height) / 64 + 7; y++)
+            foreach (var kvp in loc.terrainFeatures.Pairs)
             {
-                for (int x = Game1.viewport.X / 64 - 1; x < (Game1.viewport.X + Game1.viewport.Width) / 64 + 3; x++)
+                if (screen.Contains(Utility.Vector2ToPoint(kvp.Key)) && kvp.Value is not Flooring && kvp.Value is not HoeDirt)
                 {
-                    tile.X = x;
-                    tile.Y = y;
-                    if (loc.terrainFeatures.TryGetValue(tile - offsetTile, out TerrainFeature feat) && feat is not Flooring && feat is not HoeDirt)
-                    {
-                        feat.draw(Game1.spriteBatch, tile);
-                    }
+                    kvp.Value.draw(Game1.spriteBatch, kvp.Key);
                 }
             }
             var af = loc.Map.GetLayer("AlwaysFront");
@@ -348,7 +346,6 @@ namespace StardewOpenWorld
                 DrawLayer(af, Game1.mapDisplayDevice, Game1.viewport, offset, false, 4);
             }
             Game1.mapDisplayDevice.EndScene();
-
             var currentLoc = Game1.currentLocation;
             Game1.currentLocation = loc;
             if (deltaTime is not null)
@@ -367,7 +364,7 @@ namespace StardewOpenWorld
             {
                 render_zoom /= Game1.options.zoomLevel;
             }
-            Game1.spriteBatch.Draw(Game1.lightmap, Vector2.Zero, new Microsoft.Xna.Framework.Rectangle?(Game1.lightmap.Bounds), Color.White, 0f, Vector2.Zero, render_zoom, SpriteEffects.None, 1f);
+            //Game1.spriteBatch.Draw(Game1.lightmap, Vector2.Zero, new Microsoft.Xna.Framework.Rectangle?(Game1.lightmap.Bounds), Color.White, 0f, Vector2.Zero, render_zoom, SpriteEffects.None, 1f);
             if (Game1.IsRainingHere(null))
             {
                 Game1.spriteBatch.Draw(Game1.staminaRect, vp.Bounds, Color.OrangeRed * 0.45f);
@@ -405,6 +402,7 @@ namespace StardewOpenWorld
             {
                 tileRows++;
             }
+            var screen = new Rectangle(mapViewport.X - displayOffset.X - 64 * pixelZoom, mapViewport.Y - displayOffset.Y - 64 * pixelZoom, (mapViewport.Width + 64) * pixelZoom, (mapViewport.Height + 64) * pixelZoom);
             Location tileLocation = displayOffset - tileInternalOffset;
             int offset = 0;
             tileLocation.Y = displayOffset.Y - tileInternalOffset.Y - tileYMin * 64;
@@ -413,10 +411,13 @@ namespace StardewOpenWorld
                 tileLocation.X = displayOffset.X - tileInternalOffset.X - tileXMin * 64;
                 for (int tileX = 0; tileX < layer.LayerSize.Width; tileX++)
                 {
-                    Tile tile = layer.Tiles[tileX, tileY];
-                    if (tile != null)
+                    if (screen.Contains(new Point(tileX * 64, tileY * 64)))
                     {
-                        displayDevice.DrawTile(tile, tileLocation, (tileY * (16 * pixelZoom) + 16 * pixelZoom + offset) / 10000f);
+                        Tile tile = layer.Tiles[tileX, tileY];
+                        if (tile != null)
+                        {
+                            displayDevice.DrawTile(tile, tileLocation, (tileY * (16 * pixelZoom) + 16 * pixelZoom + offset) / 10000f);
+                        }
                     }
                     tileLocation.X += tileWidth;
                 }
