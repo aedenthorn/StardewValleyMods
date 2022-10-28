@@ -13,6 +13,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using xTile;
+using xTile.Layers;
 using xTile.Tiles;
 
 namespace StardewOpenWorld
@@ -27,17 +28,16 @@ namespace StardewOpenWorld
         public static ModEntry context;
 
         public static string dataPath = "aedenthorn.StardewOpenWorld/dictionary";
-        public static string namePrefix = "StardewOpenWorld";
+        public static string mapName = "StardewOpenWorld";
         public static string tilePrefix = "StardewOpenWorldTile";
-        public static readonly int openWorldTileSize = 200;
+        public static int openWorldTileSize = 100;
+        public static int openWorldSize = 100000;
         public static bool warping = false;
-        private static Point mapLocation;
-        private static Point tileLocation;
-        private static int[,] backTiles;
-        private static int[,] BuildingsTiles;
-        private static int[,] FrontTiles;
+        private static Point playerTileLocation;
+        private static Tile[,] grassTiles;
 
         private static GameLocation openWorldLocation;
+        private static Dictionary<string, Biome> biomes = new Dictionary<string, Biome>();
         private static Dictionary<Vector2, Tile> openWorldBack = new Dictionary<Vector2, Tile>();
         private static Dictionary<Vector2, Tile> openWorldBuildings = new Dictionary<Vector2, Tile>();
         private static Dictionary<Vector2, Tile> openWorldFront = new Dictionary<Vector2, Tile>();
@@ -54,35 +54,16 @@ namespace StardewOpenWorld
 
             helper.Events.GameLoop.GameLaunched += GameLoop_GameLaunched;
             helper.Events.GameLoop.UpdateTicked += GameLoop_UpdateTicked;
-            helper.Events.GameLoop.UpdateTicking += GameLoop_UpdateTicking;
+            helper.Events.GameLoop.SaveLoaded += GameLoop_SaveLoaded;
             helper.Events.Content.AssetRequested += Content_AssetRequested;
 
             var harmony = new Harmony(ModManifest.UniqueID);
             harmony.PatchAll();
         }
 
-        private void GameLoop_UpdateTicking(object sender, UpdateTickingEventArgs e)
+        private void GameLoop_SaveLoaded(object sender, SaveLoadedEventArgs e)
         {
-            if (!Config.ModEnabled || !Context.IsWorldReady)
-                return;
-            if (Game1.player.currentLocation.Name.StartsWith(namePrefix))
-            {
-                Point loc = Game1.player.getTileLocationPoint();
-                if (loc == new Point(0, 0))
-                {
-                    Game1.player.Position = new Vector2(openWorldTileSize / 2, openWorldTileSize / 2) * 64;
-                    tileLocation = new Point(openWorldTileSize / 2, openWorldTileSize / 2);
-                    mapLocation = new Point(openWorldTileSize * 100, openWorldTileSize * 100);
-                    return;
-                }
-                if (tileLocation != loc)
-                {
-                    Point delta = loc - tileLocation;
-                    mapLocation += delta;
-                    SetTiles(Game1.player.currentLocation);
-                    Game1.player.Position = Game1.player.Position - delta.ToVector2() * 64;
-                }
-            }
+
         }
 
         private void Content_AssetRequested(object sender, AssetRequestedEventArgs e)
@@ -103,8 +84,8 @@ namespace StardewOpenWorld
                 return;
             if (!Game1.isWarping && Game1.player.currentLocation.Name.Equals("Backwoods") && Game1.player.getTileLocation().X == 24 && Game1.player.getTileLocation().Y < 6)
             {
-                mapLocation = new Point(openWorldTileSize * 100, openWorldTileSize * 100);
-                Game1.warpFarmer(namePrefix, openWorldTileSize / 2, openWorldTileSize / 2, false);
+                //mapLocation = new Point(openWorldTileSize * 100, openWorldTileSize * 100);
+                Game1.warpFarmer(mapName, 0, 0, false);
             }
         }
 
@@ -129,5 +110,6 @@ namespace StardewOpenWorld
                 setValue: value => Config.ModEnabled = value
             );
         }
+
     }
 }

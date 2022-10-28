@@ -21,25 +21,20 @@ namespace StardewOpenWorld
     public partial class ModEntry
     {
 
-        private static void SetTiles(GameLocation gl)
+        private static void SetTiles(GameLocation gl, Point delta)
         {
-            Stopwatch s = new Stopwatch();
 
-            var back = gl.Map.GetLayer("Back");
-            var mainSheet = gl.Map.GetTileSheet("outdoors");
-            Point startTile = mapLocation - new Point(openWorldTileSize / 2, openWorldTileSize / 2);
-            s.Start();
-            SMonitor.Log($"applying tiles");
+            var oldTiles = (Tile[,])grassTiles.Clone();
             for (int y = 0; y < openWorldTileSize; y++)
             {
+                var ty = (openWorldTileSize + y + delta.Y) % openWorldTileSize;
                 for (int x = 0; x < openWorldTileSize; x++)
                 {
-                    var tile = backTiles[x + startTile.X, y + startTile.Y];
-                    back.Tiles[x, y] = new StaticTile(back, mainSheet, BlendMode.Alpha, tile);
+                    var tx = (openWorldTileSize + x + delta.X) % openWorldTileSize;
+                    var tile = oldTiles[tx, ty];
+                    grassTiles[x, y] = tile;
                 }
             }
-            SMonitor.Log($"applied tiles in {s.ElapsedMilliseconds} ms");
-            s.Restart();
             /*
             var objs = openWorldLocation.objects.Pairs.Where(o => rect.Contains(o.Key.X, o.Key.Y));
             foreach (var obj in objs)
@@ -53,14 +48,22 @@ namespace StardewOpenWorld
             {
                 gl.terrainFeatures[tf.Key - offset] = tf.Value;
             }
-            */
             SMonitor.Log($"applied tfs in {s.ElapsedMilliseconds} ms");
             s.Stop();
+            */
         }
 
         private static Rectangle GetTileRect(Vector2 v)
         {
             return new Rectangle((int)v.X * openWorldTileSize, (int)v.Y * openWorldTileSize, openWorldTileSize, openWorldTileSize);
+        }
+        public static Tile GetTile(Layer layer, int x, int y)
+        {
+            return null;
+        }
+
+        public static void SetTile(Layer layer, int x, int y, Tile value)
+        {
         }
 
     }
