@@ -407,6 +407,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OKNightCheck", "OKNightChec
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TakeAll", "TakeAll\TakeAll.csproj", "{77FF84FF-FC9D-41CF-A7C1-4529FB184E5A}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GiftRejection", "GiftRejection\GiftRejection.csproj", "{4C314853-7ACD-466B-ACCD-93E3CF8E03BF}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -1999,6 +2001,14 @@ Global
 		{77FF84FF-FC9D-41CF-A7C1-4529FB184E5A}.Release|Any CPU.Build.0 = Release|Any CPU
 		{77FF84FF-FC9D-41CF-A7C1-4529FB184E5A}.Release|x86.ActiveCfg = Release|Any CPU
 		{77FF84FF-FC9D-41CF-A7C1-4529FB184E5A}.Release|x86.Build.0 = Release|Any CPU
+		{4C314853-7ACD-466B-ACCD-93E3CF8E03BF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4C314853-7ACD-466B-ACCD-93E3CF8E03BF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4C314853-7ACD-466B-ACCD-93E3CF8E03BF}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{4C314853-7ACD-466B-ACCD-93E3CF8E03BF}.Debug|x86.Build.0 = Debug|Any CPU
+		{4C314853-7ACD-466B-ACCD-93E3CF8E03BF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4C314853-7ACD-466B-ACCD-93E3CF8E03BF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4C314853-7ACD-466B-ACCD-93E3CF8E03BF}.Release|x86.ActiveCfg = Release|Any CPU
+		{4C314853-7ACD-466B-ACCD-93E3CF8E03BF}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
