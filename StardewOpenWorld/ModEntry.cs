@@ -29,9 +29,13 @@ namespace StardewOpenWorld
         public static string dataPath = "aedenthorn.StardewOpenWorld/dictionary";
         public static string namePrefix = "StardewOpenWorld";
         public static string tilePrefix = "StardewOpenWorldTile";
-        public static readonly int openWorldTileSize = 250;
+        public static readonly int openWorldTileSize = 200;
         public static bool warping = false;
-        private static GameTime deltaTime;
+        private static Point mapLocation;
+        private static Point tileLocation;
+        private static int[,] backTiles;
+        private static int[,] BuildingsTiles;
+        private static int[,] FrontTiles;
 
         private static GameLocation openWorldLocation;
         private static Dictionary<Vector2, Tile> openWorldBack = new Dictionary<Vector2, Tile>();
@@ -50,10 +54,35 @@ namespace StardewOpenWorld
 
             helper.Events.GameLoop.GameLaunched += GameLoop_GameLaunched;
             helper.Events.GameLoop.UpdateTicked += GameLoop_UpdateTicked;
+            helper.Events.GameLoop.UpdateTicking += GameLoop_UpdateTicking;
             helper.Events.Content.AssetRequested += Content_AssetRequested;
 
             var harmony = new Harmony(ModManifest.UniqueID);
             harmony.PatchAll();
+        }
+
+        private void GameLoop_UpdateTicking(object sender, UpdateTickingEventArgs e)
+        {
+            if (!Config.ModEnabled || !Context.IsWorldReady)
+                return;
+            if (Game1.player.currentLocation.Name.StartsWith(namePrefix))
+            {
+                Point loc = Game1.player.getTileLocationPoint();
+                if (loc == new Point(0, 0))
+                {
+                    Game1.player.Position = new Vector2(openWorldTileSize / 2, openWorldTileSize / 2) * 64;
+                    tileLocation = new Point(openWorldTileSize / 2, openWorldTileSize / 2);
+                    mapLocation = new Point(openWorldTileSize * 100, openWorldTileSize * 100);
+                    return;
+                }
+                if (tileLocation != loc)
+                {
+                    Point delta = loc - tileLocation;
+                    mapLocation += delta;
+                    SetTiles(Game1.player.currentLocation);
+                    Game1.player.Position = Game1.player.Position - delta.ToVector2() * 64;
+                }
+            }
         }
 
         private void Content_AssetRequested(object sender, AssetRequestedEventArgs e)
@@ -62,10 +91,9 @@ namespace StardewOpenWorld
             {
                 e.LoadFromModFile<Map>(Path.Combine("assets", "BackwoodsEdit.tmx"), AssetLoadPriority.High);
             }
-            else if (e.NameWithoutLocale.Name.Contains("StardewOpenWorldTileMap"))
+            else if (e.NameWithoutLocale.Name.Contains("StardewOpenWorldMap"))
             {
-                Helper.GameContent.InvalidateCache(Helper.ModContent.GetInternalAssetName("assets/StardewOpenWorldTile.tmx"));
-                e.LoadFromModFile<Map>("assets/StardewOpenWorldTile.tmx", AssetLoadPriority.Exclusive);
+                e.LoadFromModFile<Map>("assets/StardewOpenWorld.tmx", AssetLoadPriority.Exclusive);
             }
         }
 
@@ -73,13 +101,10 @@ namespace StardewOpenWorld
         {
             if (!Config.ModEnabled || !Context.IsWorldReady)
                 return;
-            if (Game1.player.currentLocation.Name.StartsWith(tilePrefix))
-            {
-                warping = CheckPlayerWarp();
-            }
             if (!Game1.isWarping && Game1.player.currentLocation.Name.Equals("Backwoods") && Game1.player.getTileLocation().X == 24 && Game1.player.getTileLocation().Y < 6)
             {
-                Game1.warpFarmer($"{tilePrefix}_100_199", 125, 249, false);
+                mapLocation = new Point(openWorldTileSize * 100, openWorldTileSize * 100);
+                Game1.warpFarmer(namePrefix, openWorldTileSize / 2, openWorldTileSize / 2, false);
             }
         }
 

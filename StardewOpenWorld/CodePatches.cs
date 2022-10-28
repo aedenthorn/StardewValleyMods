@@ -1,25 +1,35 @@
 ﻿using HarmonyLib;
-using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using Newtonsoft.Json;
 using StardewValley;
-using StardewValley.Buildings;
-using StardewValley.Characters;
-using StardewValley.Locations;
-using StardewValley.TerrainFeatures;
 using System;
-using System.Collections.Generic;
 using System.Diagnostics;
-using System.IO;
-using System.Linq;
-using xTile.Dimensions;
 using xTile.Tiles;
-using Rectangle = Microsoft.Xna.Framework.Rectangle;
 
 namespace StardewOpenWorld
 {
     public partial class ModEntry
     {
+        [HarmonyPatch(typeof(Farmer), nameof(Farmer.draw), new Type[] { typeof(SpriteBatch) })]
+        public class Farmer_draw_Patch
+        {
+            public static void Prefix(Farmer __instance)
+            {
+                if (!Config.ModEnabled || !__instance.currentLocation.Name.StartsWith(namePrefix))
+                    return;
+            }
+        }
+        [HarmonyPatch(typeof(Game1), nameof(Game1.UpdateViewPort))]
+        public class Game1_UpdateViewPort_Patch
+        {
+            public static void Prefix(ref bool overrideFreeze)
+            {
+                if (!Config.ModEnabled || !Game1.currentLocation.Name.StartsWith(namePrefix))
+                    return;
+                overrideFreeze = true;
+                Game1.forceSnapOnNextViewportUpdate = true;
+                Game1.currentLocation.forceViewportPlayerFollow = true;
+            }
+        }
         [HarmonyPatch(typeof(Game1), nameof(Game1.loadForNewGame))]
         public class Game1_loadForNewGame_Patch
         {
@@ -29,74 +39,38 @@ namespace StardewOpenWorld
                     return;
 
 
-                openWorldLocation = new GameLocation("StardewOpenWorldTileMap", namePrefix) { IsOutdoors = true, IsFarm = true, IsGreenhouse = false };
+                openWorldLocation = new GameLocation("StardewOpenWorldMap", namePrefix) { IsOutdoors = true, IsFarm = true, IsGreenhouse = false };
+                SMonitor.Log("Created new game location");
+                var back = openWorldLocation.Map.GetLayer("Back");
+                var mainSheet = openWorldLocation.Map.GetTileSheet("outdoors");
 
-                List<string> tileNames = new List<string>()
+                backTiles = new int[50000, 50000];
+                Stopwatch s = new Stopwatch();
+                s.Start();
+                SMonitor.Log($"applying tiles");
+                for (int y = 0; y < 50000; y++)
                 {
-                    $"{tilePrefix}_98_198",
-                    $"{tilePrefix}_98_199",
-                    $"{tilePrefix}_99_198",
-                    $"{tilePrefix}_99_199",
-                    $"{tilePrefix}_100_198",
-                    $"{tilePrefix}_100_199"
-                };
-                ReloadOpenWorldTiles(tileNames);
-            }
-        }
-
-        [HarmonyPatch(typeof(Game1), nameof(Game1.UpdateViewPort))]
-        public class Game1_UpdateViewPort_Patch
-        {
-            public static void Prefix(ref bool overrideFreeze)
-            {
-                if (!Config.ModEnabled || !Game1.player.currentLocation.Name.StartsWith(tilePrefix))
-                    return;
-                overrideFreeze = true;
-                Game1.forceSnapOnNextViewportUpdate = true;
-                Game1.currentLocation.forceViewportPlayerFollow = true;
-            }
-        }
-
-
-        [HarmonyPatch(typeof(GameLocation), nameof(GameLocation.drawBackground))]
-        public class GameLocation_drawBackground_Patch
-        {
-            public static Tile lastTile;
-            public static void Postfix(GameLocation __instance)
-            {
-                if (!Config.ModEnabled || !__instance.Name.StartsWith(tilePrefix))
-                    return;
-
-                var tile = GetTileFromName(__instance.Name);
-                var surrounding = new int[]
-                {
-                    -1,
-                    0,
-                    1
-                };
-                foreach(var x in surrounding)
-                {
-                    foreach (var y in surrounding)
+                    for (int x = 0; x < 50000; x++)
                     {
-                        if (x == 0 && y == 0)
-                            continue;
-                        if (tile.X + x < 0 || tile.X + x > 199 || tile.Y + y < 0 || tile.Y + y > 199 )
-                            continue;
-
-                        if (x == 1 && Game1.viewport.Location.X < openWorldTileSize * 64 - Game1.viewport.Width)
-                            continue;
-                        if (x == -1 && Game1.viewport.Location.X > Game1.viewport.Width)
-                            continue;
-                        if (y == 1 && Game1.viewport.Location.Y < openWorldTileSize * 64 - Game1.viewport.Height)
-                            continue;
-                        if (y == -1 && Game1.viewport.Location.Y > Game1.viewport.Height)
-                            continue;
-                        GameLocation loc = Game1.getLocationFromName($"{tilePrefix}_{tile.X + x}_{tile.Y + y}");
-                        if (loc is null)
-                            continue;
-                        DrawGameLocation(loc, x * openWorldTileSize * 64, y * openWorldTileSize * 64);
+                        int idx = 351;
+                        var which = Game1.random.NextDouble();
+                        if (which < 0.025f)
+                        {
+                            idx = 304;
+                        }
+                        else if (which < 0.05f)
+                        {
+                            idx = 305;
+                        }
+                        else if (which < 0.15f)
+                        {
+                            idx = 300;
+                        }
+                        backTiles[x, y] = idx;
                     }
                 }
+                SMonitor.Log($"created all tiles in {s.ElapsedMilliseconds} ms");
+                Game1.locations.Add(openWorldLocation);
             }
         }
     }

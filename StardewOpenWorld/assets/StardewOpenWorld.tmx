@@ -1511,15 +1511,15 @@
   <tileset firstgid="2008" name="untitled tile sheet2" tilewidth="16" tileheight="16" tilecount="256" columns="16">
     <image source="spring_outdoorsTileSheet2" width="256" height="256" />
   </tileset>
- <layer id="1" name="Back" width="1" height="1">
+ <layer id="1" name="Back" width="200" height="200">
   <data encoding="csv">
 </data>
  </layer>
- <layer id="2" name="Buildings" width="1" height="1">
+ <layer id="2" name="Buildings" width="200" height="200">
   <data encoding="csv">
 </data>
  </layer>
- <layer id="3" name="Front" width="1" height="1">
+ <layer id="3" name="Front" width="200" height="200">
   <data encoding="csv">
 </data>
  </layer>
