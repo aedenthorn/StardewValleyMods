@@ -8,7 +8,7 @@ namespace Wildflowers
         public bool ModEnabled { get; set; } = true;
         public bool WildFlowersMakeFlowerHoney { get; set; } = true;
         public bool WeaponsHarvestFlowers { get; set; } = false;
-        public float wildflowerGrowChance { get; set; } = 0.05f;
+        public float wildflowerGrowChance { get; set; } = 0.005f;
         public List<string> DisallowNames { get; set; } = new List<string>();
     }
 }

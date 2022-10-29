@@ -7,6 +7,7 @@ using StardewValley;
 using StardewValley.TerrainFeatures;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 
@@ -105,13 +106,11 @@ namespace Wildflowers
                 getValue: () => Config.WeaponsHarvestFlowers,
                 setValue: value => Config.WeaponsHarvestFlowers = value
             );
-            configMenu.AddNumberOption(
+            configMenu.AddTextOption(
                 mod: ModManifest,
                 name: () => "Wildflower Grow % Chance",
-                getValue: () => (int)(Config.wildflowerGrowChance * 100),
-                setValue: value => Config.wildflowerGrowChance = value / 100f,
-                min: 0,
-                max: 100
+                getValue: () => (Config.wildflowerGrowChance * 100) +"",
+                setValue: delegate(string value) { if (float.TryParse(value, NumberStyles.Float, CultureInfo.InvariantCulture, out float fv)) Config.wildflowerGrowChance = fv / 100f; }
             );
         }
     }
