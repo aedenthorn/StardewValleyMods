@@ -22,6 +22,7 @@
   "location-home": "I'm at home right now.",
   "location-here": "I'm right here, why are you calling me??",
   "location-FarmHouse": "I'm in your house. Here is quite cozy.",
+  "location-x": "I'm at {0}",
 
   "location-AbandonedJojaMart": "I'm at the abandoned Jojamart. Who broke my schedule?!",
   "location-AdventureGuild": "I'm at the Adventurer's Guild. Gil says hi.",
