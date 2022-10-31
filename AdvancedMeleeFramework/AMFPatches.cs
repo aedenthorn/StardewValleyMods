@@ -56,7 +56,7 @@ namespace AdvancedMeleeFramework
         public static void drawInMenu_Prefix(MeleeWeapon __instance, ref int __state)
         {
             __state = 0;
-            switch (__instance.type)
+            switch (__instance.type.Value)
             {
                 case 0:
                 case 3:
@@ -87,7 +87,7 @@ namespace AdvancedMeleeFramework
             if (__state == 0)
                 return;
 
-            switch (__instance.type)
+            switch (__instance.type.Value)
             {
                 case 0:
                 case 3:
@@ -105,17 +105,17 @@ namespace AdvancedMeleeFramework
 
         public static bool _OnDealDamage_Prefix(BaseEnchantment __instance, string ____displayName, Monster monster, GameLocation location, Farmer who, ref int amount)
         {
-            if (!(__instance is BaseWeaponEnchantment) || ____displayName == null  || ____displayName == "" || !ModEntry.advancedEnchantments.ContainsKey(____displayName) || (ModEntry.EnchantmentTriggers.ContainsKey(who.uniqueMultiplayerID + ____displayName) && ModEntry.EnchantmentTriggers[who.uniqueMultiplayerID + ____displayName] == Game1.ticks))
+            if (!(__instance is BaseWeaponEnchantment) || ____displayName == null  || ____displayName == "" || !ModEntry.advancedEnchantments.ContainsKey(____displayName) || (ModEntry.EnchantmentTriggers.TryGetValue(who.UniqueMultiplayerID + ____displayName, out int trigger) && trigger == Game1.ticks))
                 return true;
             AdvancedEnchantmentData enchantment = ModEntry.advancedEnchantments[____displayName];
 
-            if (enchantment?.parameters?.ContainsKey("trigger") != true)
+            if (enchantment?.parameters?.TryGetValue("trigger", out string triggerString) != true)
                 return true;
 
-            if (enchantment.parameters["trigger"] == "damage" || (enchantment.parameters["trigger"] == "crit" && amount > (who.CurrentTool as MeleeWeapon).maxDamage) && !Environment.StackTrace.Contains("OnCalculateDamage"))
+            if (triggerString == "damage" || (triggerString == "crit" && amount > (who.CurrentTool as MeleeWeapon).maxDamage.Value) && !Environment.StackTrace.Contains("OnCalculateDamage"))
             {
-                context.Monitor.Log($"Triggered enchantment {enchantment.name} on {enchantment.parameters["trigger"]} {amount} {(who.CurrentTool as MeleeWeapon).enchantments.Count}");
-                ModEntry.EnchantmentTriggers[who.uniqueMultiplayerID + ____displayName] = Game1.ticks;
+                context.Monitor.Log($"Triggered enchantment {enchantment.name} on {triggerString} {amount} {(who.CurrentTool as MeleeWeapon).enchantments.Count}");
+                ModEntry.EnchantmentTriggers[who.UniqueMultiplayerID + ____displayName] = Game1.ticks;
                 if (enchantment.type == "heal")
                 {
                     if (Game1.random.NextDouble() < float.Parse(enchantment.parameters["chance"]) / 100f)
@@ -146,10 +146,10 @@ namespace AdvancedMeleeFramework
             if (!(__instance is BaseWeaponEnchantment) || ____displayName == null || who is null|| !ModEntry.advancedEnchantments.ContainsKey(____displayName) || (ModEntry.EnchantmentTriggers.ContainsKey(who.UniqueMultiplayerID + ____displayName) && ModEntry.EnchantmentTriggers[who.UniqueMultiplayerID + ____displayName] == Game1.ticks))
                 return true;
             AdvancedEnchantmentData enchantment = ModEntry.advancedEnchantments[____displayName];
-            if (enchantment.parameters["trigger"] == "slay")
+            if (enchantment.parameters.TryGetValue("trigger", out string trigger) && trigger == "slay")
             {
                 context.Monitor.Log($"Triggered enchantment {enchantment.name} on slay");
-                ModEntry.EnchantmentTriggers[who.uniqueMultiplayerID + ____displayName] = Game1.ticks;
+                ModEntry.EnchantmentTriggers[who.UniqueMultiplayerID + ____displayName] = Game1.ticks;
                 if (enchantment.type == "heal")
                 {
                     if (Game1.random.NextDouble() < float.Parse(enchantment.parameters["chance"]) / 100f)
@@ -173,9 +173,9 @@ namespace AdvancedMeleeFramework
                                 location.monsterDrop(m, m.GetBoundingBox().Center.X, m.GetBoundingBox().Center.Y, who);
                             }
                         }
-                        else if (enchantment.parameters.ContainsKey("extraDropItems"))
+                        else if (enchantment.parameters.TryGetValue("extraDropItems", out string extra))
                         {
-                            string[] items = enchantment.parameters["extraDropItems"].Split(',');
+                            string[] items = extra.Split(',');
                             foreach (string item in items)
                             {
                                 string[] ic = item.Split('_');
@@ -195,8 +195,8 @@ namespace AdvancedMeleeFramework
                                 }
                             }
                         }
-                        if (enchantment.parameters.ContainsKey("sound"))
-                            Game1.playSound(enchantment.parameters["sound"]);
+                        if (enchantment.parameters.TryGetValue("sound", out string sound))
+                            Game1.playSound(sound);
                     }
                 }
                 else if (enchantment.type == "coins")
@@ -204,10 +204,10 @@ namespace AdvancedMeleeFramework
                     if (Game1.random.NextDouble() < float.Parse(enchantment.parameters["chance"]) / 100f)
                     {
                         float mult = float.Parse(enchantment.parameters["amountMult"]);
-                        int amount = (int)Math.Round(mult * m.maxHealth);
+                        int amount = (int)Math.Round(mult * m.MaxHealth);
                         who.Money += amount;
-                        if (enchantment.parameters.ContainsKey("sound"))
-                            Game1.playSound(enchantment.parameters["sound"]);
+                        if (enchantment.parameters.TryGetValue("sound", out string sound))
+                            Game1.playSound(sound);
                     }
                 }
             }
