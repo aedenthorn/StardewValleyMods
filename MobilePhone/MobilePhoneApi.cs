@@ -15,7 +15,7 @@ namespace MobilePhone
             {
                 return false;
             }
-            ModEntry.apps.Add(id, new MobileApp(name, action, icon));
+            ModEntry.apps[id] = new MobileApp(name, action, icon);
             return true;
         }
 
