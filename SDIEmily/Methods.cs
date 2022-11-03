@@ -13,6 +13,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Xml.Serialization;
+using static StardewValley.Minigames.TargetGame;
 using Object = StardewValley.Object;
 
 namespace SDIEmily
@@ -22,8 +23,23 @@ namespace SDIEmily
 
         private void SkillEvent(string name, Farmer farmer)
         {
-            var cursorPos = Game1.getMousePosition().ToVector2();
-            var playerPos = Game1.GlobalToLocal(farmer.Position);
+            var target = GetTarget(farmer);
+            farmer.currentLocation.playSound("parrot_squawk");
+            runningSkills.Add(new RunningSkill(farmer.currentLocation, target, true, farmer.CurrentTool));
+            sdiAPI.GetCharacter(name, false).CurrentEnergy = sdiAPI.GetCharacter(name, false).BurstEnergyCost;
+        }
+
+        private void BurstEvent(string name, Farmer farmer)
+        {
+            var target = GetTarget(farmer);
+            farmer.currentLocation.playSound("parrot_squawk");
+            runningBursts.Add(new RunningBurst(farmer.currentLocation, target, true, farmer.CurrentTool));
+        }
+
+        private Vector2 GetTarget(Farmer farmer)
+        {
+            var cursorPos = new Vector2(Game1.viewport.Location.X, Game1.viewport.Location.Y) + Game1.getMousePosition().ToVector2();
+            var playerPos = farmer.Position;
             var cursorDistance = Vector2.Distance(cursorPos, playerPos);
             var rangeEnd = cursorPos;
             if (cursorDistance > Config.MaxSkillRange)
@@ -31,7 +47,7 @@ namespace SDIEmily
                 rangeEnd = Vector2.Lerp(playerPos, cursorPos, Config.MaxSkillRange / cursorDistance);
             }
             var rangeDistance = Vector2.Distance(rangeEnd, playerPos);
-            SMonitor.Log($"Checking for monster for emily skill; player: {playerPos}; cursor {cursorPos}; cursor distance {cursorDistance}; rangeEnd {rangeEnd}; range distance {Vector2.Distance(playerPos, rangeEnd)}");
+            SMonitor.Log($"Checking for monster; player: {playerPos}; cursor {cursorPos}; cursor distance {cursorDistance}; rangeEnd {rangeEnd}; range distance {Vector2.Distance(playerPos, rangeEnd)}");
             for (int i = 0; i < rangeDistance; i++)
             {
                 var point = Vector2.Lerp(playerPos, rangeEnd, i / rangeDistance);
@@ -40,34 +56,28 @@ namespace SDIEmily
                     var offLine = Vector2.Distance(point, m.Position);
                     if (m is Monster && offLine <= Config.MaxSkillDistanceOffLookAxis)
                     {
-                        SMonitor.Log($"Triggering Emily skill on {m.Name} at {m.Position}");
-                        runningSkill = new RunningSkill(farmer.currentLocation, m.Position, true, farmer.CurrentTool);
-                        return;
+                        SMonitor.Log($"returning {m.Name} position {m.Position}");
+                        return m.Position;
                     }
                 }
             }
-            SMonitor.Log($"Triggering Emily skill (no monster found) at range end {rangeEnd}");
-            runningSkill = new RunningSkill(farmer.currentLocation, rangeEnd, true, farmer.CurrentTool);
-        }
-
-        private void BurstEvent(string arg1, Farmer arg2)
-        {
-            throw new NotImplementedException();
+            SMonitor.Log($"(no monster found) returning range end {rangeEnd}");
+            return rangeEnd;
         }
 
 
-        private void DealDamage(GameLocation location, Vector2 center, MeleeWeapon weapon)
+        private void DealDamage(GameLocation location, Vector2 center, MeleeWeapon weapon, float damageMult, int radius)
         {
             for(int i = 0; i < location.characters.Count; i++)
             {
-                if(location.characters[i] is Monster && Vector2.Distance(Game1.GlobalToLocal(location.characters[i].Position), center) <= Config.SkillRadius)
+                if(location.characters[i] is Monster && Vector2.Distance(location.characters[i].Position, center) <= radius)
                 {
-                    (location.characters[i] as Monster).takeDamage((int)(Config.SkillDamageMult * GetWeaponDamage(weapon)), 0, 0, false, 0, Game1.player);
+                    (location.characters[i] as Monster).takeDamage((int)(damageMult * GetWeaponDamage(weapon)), 0, 0, false, 0, Game1.player);
                 }
             }
             foreach(var key in location.terrainFeatures.Keys.ToArray())
             {
-                if (Vector2.Distance(Game1.GlobalToLocal(key * 64), center) > Config.SkillRadius)
+                if (Vector2.Distance(key * 64, center) > radius)
                     continue;
                 TerrainFeature f = location.terrainFeatures[key];
                 if (f is HoeDirt)
@@ -77,6 +87,8 @@ namespace SDIEmily
                 else if (f is Grass)
                 {
                     location.terrainFeatures[key].performToolAction(weapon, 0, f.currentTileLocation, location);
+                    if ((location.terrainFeatures[key] as Grass).numberOfWeeds.Value <= 0)
+                        location.terrainFeatures.Remove(key);
                 }
             }
         }

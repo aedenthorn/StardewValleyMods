@@ -30,8 +30,16 @@ namespace FreeLove
 
                 if (ModEntry.IsInBed(location as FarmHouse, new Rectangle(endPoint.X * 64, endPoint.Y * 64, 64, 64)))
                 {
-                    endPoint = ModEntry.GetSpouseBedEndPoint(location as FarmHouse, c.Name);
-                    Monitor.Log($"Moved {c.Name} bed endpoint to {endPoint}");
+                    Point point = ModEntry.GetSpouseBedEndPoint(location as FarmHouse, c.Name);
+                    if(point.X < 0 || point.Y < 0)
+                    {
+                        Monitor.Log($"Error setting bed endpoint for {c.Name}", LogLevel.Warn);
+                    }
+                    else
+                    {
+                        endPoint = point;
+                        Monitor.Log($"Moved {c.Name} bed endpoint to {endPoint}");
+                    }
                 }
                 else if (IsColliding(c, location, endPoint))
                 {

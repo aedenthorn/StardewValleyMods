@@ -245,6 +245,8 @@ namespace FreeLove
             bool up = fh.upgradeLevel > 1;
 
             int x = (int)(bedSpouses.IndexOf(name) / (float)(bedSpouses.Count) * (bedWidth - 1));
+            if (x < 0)
+                return Point.Zero;
             return new Point(bedStart.X + x, bedStart.Y);
         }
         public static Vector2 GetSpouseBedPosition(FarmHouse fh, string name)

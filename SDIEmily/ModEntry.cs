@@ -6,6 +6,7 @@ using StardewValley;
 using StardewValley.BellsAndWhistles;
 using StardewValley.Locations;
 using StardewValley.Menus;
+using StardewValley.Monsters;
 using StardewValley.TerrainFeatures;
 using StardewValley.Tools;
 using System;
@@ -15,6 +16,7 @@ using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
 using System.Xml.Linq;
+using xTile.Dimensions;
 
 namespace SDIEmily
 {
@@ -44,7 +46,8 @@ namespace SDIEmily
         
         public static IStardewImpactApi sdiAPI;
 
-        private static RunningSkill runningSkill;
+        private static List<RunningSkill> runningSkills = new List<RunningSkill>();
+        private static List<RunningBurst> runningBursts = new List<RunningBurst>();
 
         /// <summary>The mod entry point, called after the mod is first loaded.</summary>
         /// <param name="helper">Provides simplified APIs for writing mods.</param>
@@ -72,43 +75,97 @@ namespace SDIEmily
 
         private void Display_RenderedWorld(object sender, StardewModdingAPI.Events.RenderedWorldEventArgs e)
         {
-            if (!Config.ModEnabled || runningSkill is null)
+            if (!Config.ModEnabled || !Context.IsPlayerFree)
                 return;
             
-            bool here = Game1.currentLocation == runningSkill.currentLocation;
-                
-            if (runningSkill.currentTick == 0)
+            if(runningSkills.Count > 0)
             {
-                if (here)
-                    runningSkill.currentLocation.playSound("swordswipe");
-                runningSkill.currentFrame = 0;
-                runningSkill.currentStartPos = GetRandomPointOnCircle(runningSkill.center, Config.SkillRadius);
-                runningSkill.currentEndPos = runningSkill.center - (runningSkill.currentStartPos - runningSkill.center);
-                runningSkill.totalTicks = (int)(Config.SkillRadius * 2 / (16 * Config.SkillSpeed));
-                Monitor.Log($"start {runningSkill.currentStartPos}, start {runningSkill.center}, end {runningSkill.currentEndPos}, length {Vector2.Distance(runningSkill.currentEndPos, runningSkill.currentStartPos)}");
-            }
-            runningSkill.currentPos = Vector2.Lerp(runningSkill.currentStartPos, runningSkill.currentEndPos, runningSkill.currentTick / (float)runningSkill.totalTicks);
-            if(here)
-                e.SpriteBatch.Draw(SHelper.GameContent.Load<Texture2D>("LooseSprites\\parrots"), runningSkill.currentPos, new Rectangle(48 + runningSkill.currentFrame * 24, 0, 24, 24), Color.White, 0, Vector2.Zero, 4, (runningSkill.currentStartPos.X < runningSkill.currentEndPos.X ? SpriteEffects.FlipHorizontally : SpriteEffects.None), 1f);
-            runningSkill.currentTick++;
-            if(runningSkill.currentTick % (runningSkill.totalTicks / 6) == 0)
-            {
-                runningSkill.currentFrame++;
-            }
-            if(runningSkill.currentTick >= runningSkill.totalTicks)
-            {
-                runningSkill.currentTick = 0;
-                runningSkill.currentLoop++;
-                if (runningSkill.isCaster && runningSkill.weapon is not null)
+                for(int i = runningSkills.Count - 1; i >= 0; i--)
                 {
-                    DealDamage(runningSkill.currentLocation, runningSkill.center, runningSkill.weapon);
-                }
-                if(runningSkill.currentLoop >= Config.SkillHits)
-                {
-                    runningSkill = null;
-                    return;
+                    var runningSkill = runningSkills[i];
+                    bool here = Game1.currentLocation == runningSkill.currentLocation;
+
+                    if (runningSkill.currentTick == 0)
+                    {
+                        if (here)
+                            runningSkill.currentLocation.playSound("swordswipe");
+                        runningSkill.currentFrame = 0;
+                        runningSkill.currentStartPos = GetRandomPointOnCircle(runningSkill.center, Config.SkillRadius);
+                        runningSkill.currentEndPos = runningSkill.center - (runningSkill.currentStartPos - runningSkill.center);
+                        runningSkill.totalTicks = (int)(Config.SkillRadius * 2 / (16 * Config.SkillSpeed));
+                        Monitor.Log($"start {runningSkill.currentStartPos}, start {runningSkill.center}, end {runningSkill.currentEndPos}, length {Vector2.Distance(runningSkill.currentEndPos, runningSkill.currentStartPos)}");
+                    }
+                    runningSkill.currentPos = Vector2.Lerp(runningSkill.currentStartPos, runningSkill.currentEndPos, runningSkill.currentTick / (float)runningSkill.totalTicks);
+                    if (here)
+                        e.SpriteBatch.Draw(SHelper.GameContent.Load<Texture2D>("LooseSprites\\parrots"), Game1.GlobalToLocal(runningSkill.currentPos), new Microsoft.Xna.Framework.Rectangle(48 + runningSkill.currentFrame * 24, 0, 24, 24), Color.White, 0, Vector2.Zero, 4, (runningSkill.currentStartPos.X < runningSkill.currentEndPos.X ? SpriteEffects.FlipHorizontally : SpriteEffects.None), 1f);
+                    runningSkill.currentTick++;
+                    if (runningSkill.currentTick % (runningSkill.totalTicks / 6) == 0)
+                    {
+                        runningSkill.currentFrame++;
+                    }
+                    if (runningSkill.currentTick >= runningSkill.totalTicks)
+                    {
+                        runningSkill.currentTick = 0;
+                        runningSkill.currentLoop++;
+                        if (runningSkill.isCaster && runningSkill.weapon is not null)
+                        {
+                            DealDamage(runningSkill.currentLocation, runningSkill.center, runningSkill.weapon, Config.SkillDamageMult, Config.SkillRadius);
+                        }
+                        if (runningSkill.currentLoop >= Config.SkillHits)
+                        {
+                            runningSkills.RemoveAt(i);
+                            continue;
+                        }
+                    }
+                    runningSkills[i] = runningSkill;
                 }
             }
+            if(runningBursts.Count > 0)
+            {
+                float burstSpeed = Config.BurstSpeed * 16;
+                for (int i = runningBursts.Count - 1; i >= 0; i--)
+                {
+                    var runningBurst = runningBursts[i];
+                    bool here = Game1.currentLocation == runningBurst.currentLocation;
+                    var radAngle = runningBurst.currentAngle * Math.PI / 180;
+                    var currentPos = new Vector2(runningBurst.center.X + (float)Math.Cos(radAngle) * runningBurst.currentRadius, runningBurst.center.Y + (float)Math.Sin(radAngle) * runningBurst.currentRadius);
+                    if (here)
+                        e.SpriteBatch.Draw(SHelper.GameContent.Load<Texture2D>("LooseSprites\\parrots"), Game1.GlobalToLocal(currentPos), new Microsoft.Xna.Framework.Rectangle(48 + runningBurst.currentFrame * 24, 0, 24, 24), Color.White, (float)(radAngle + Math.PI / 2), Vector2.Zero, 4, SpriteEffects.None, 1f);
+                    runningBurst.currentAngle = (runningBurst.currentAngle + (int)burstSpeed) % 360;
+                    if (runningBurst.currentAngle % (360 / 6) < burstSpeed)
+                    {
+                        runningBurst.currentFrame = (runningBurst.currentFrame + 1) % 6;
+                    }
+                    if (runningBurst.currentAngle % 90 < burstSpeed)
+                    {
+                        runningBurst.currentRadius -= burstSpeed;
+
+                        if (runningBurst.isCaster && runningBurst.weapon is not null)
+                        {
+                            runningBurst.currentLocation.playSound("swordswipe");
+                            for (int j = 0; j < runningBurst.currentLocation.characters.Count; j++)
+                            {
+                                if (runningBurst.currentLocation.characters[j] is Monster && Vector2.Distance(runningBurst.currentLocation.characters[j].Position, runningBurst.center) <= Config.BurstRadius)
+                                {
+                                    var pos = (runningBurst.currentLocation.characters[j] as Monster).Position;
+                                    (runningBurst.currentLocation.characters[j] as Monster).Position = Vector2.Lerp(pos, new Vector2(runningBurst.center.X, runningBurst.center.Y), 64 / Vector2.Distance(pos, runningBurst.center));
+                                }
+                            }
+                            DealDamage(runningBurst.currentLocation, runningBurst.center, runningBurst.weapon, Config.BurstDamageMult, Config.BurstRadius);
+                        }
+
+                    }
+                    if (runningBurst.currentRadius <= Config.BurstEndRadius)
+                    {
+                        runningBursts.RemoveAt(i);
+                    }
+                    else
+                    {
+                        runningBursts[i] = runningBurst;
+                    }
+                }
+            }
+
         }
 
         private void Content_AssetRequested(object sender, StardewModdingAPI.Events.AssetRequestedEventArgs e)

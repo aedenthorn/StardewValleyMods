@@ -11,37 +11,37 @@ namespace StardewImpact
         public static void LoadTextures(string name)
         {
 
-            if (string.IsNullOrEmpty(characterDict[name].portraitPath))
+            if (string.IsNullOrEmpty(characterDict[name].PortraitPath))
             {
-                characterDict[name].portrait = MakePortrait(Game1.content.Load<Texture2D>("Portraits\\" + name));
+                characterDict[name].Portrait = MakePortrait(Game1.content.Load<Texture2D>("Portraits\\" + name));
             }
             else
             {
-                characterDict[name].portrait = Game1.content.Load<Texture2D>(characterDict[name].portraitPath);
+                characterDict[name].Portrait = Game1.content.Load<Texture2D>(characterDict[name].PortraitPath);
             }
-            if (string.IsNullOrEmpty(characterDict[name].spritePath))
+            if (string.IsNullOrEmpty(characterDict[name].SpritePath))
             {
-                characterDict[name].sprite = Game1.content.Load<Texture2D>("Characters\\" + name);
-            }
-            else
-            {
-                characterDict[name].sprite = Game1.content.Load<Texture2D>(characterDict[name].spritePath);
-            }
-            if (string.IsNullOrEmpty(characterDict[name].skillIconPath))
-            {
-                characterDict[name].skillIcon = defaultSkillIcon;
+                characterDict[name].Sprite = Game1.content.Load<Texture2D>("Characters\\" + name);
             }
             else
             {
-                characterDict[name].skillIcon = Game1.content.Load<Texture2D>(characterDict[name].skillIconPath);
+                characterDict[name].Sprite = Game1.content.Load<Texture2D>(characterDict[name].SpritePath);
             }
-            if (string.IsNullOrEmpty(characterDict[name].burstIconPath))
+            if (string.IsNullOrEmpty(characterDict[name].SkillIconPath))
             {
-                characterDict[name].burstIcon = defaultBurstIcon;
+                characterDict[name].SkillIcon = defaultSkillIcon;
             }
             else
             {
-                characterDict[name].burstIcon = Game1.content.Load<Texture2D>(characterDict[name].burstIconPath);
+                characterDict[name].SkillIcon = Game1.content.Load<Texture2D>(characterDict[name].SkillIconPath);
+            }
+            if (string.IsNullOrEmpty(characterDict[name].BurstIconPath))
+            {
+                characterDict[name].BurstIcon = defaultBurstIcon;
+            }
+            else
+            {
+                characterDict[name].BurstIcon = Game1.content.Load<Texture2D>(characterDict[name].BurstIconPath);
             }
         }
         public static Texture2D MakePortrait(Texture2D texture)

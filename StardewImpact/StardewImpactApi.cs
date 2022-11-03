@@ -57,7 +57,7 @@ namespace StardewImpact
                 ModEntry.SMonitor.Log($"Error adding skill event for {name}: character data not found", StardewModdingAPI.LogLevel.Error);
                 return;
             }
-            data.skillEvent.Add(action);
+            data.SkillEvent.Add(action);
         }
         public void AddBurstEvent(string name, Action<string, Farmer> action)
         {
@@ -66,7 +66,7 @@ namespace StardewImpact
                 ModEntry.SMonitor.Log($"Error adding burst event for {name}: character data not found", StardewModdingAPI.LogLevel.Error);
                 return;
             }
-            data.burstEvent.Add(action);
+            data.BurstEvent.Add(action);
         }
     }
 }

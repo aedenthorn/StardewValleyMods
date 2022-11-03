@@ -73,39 +73,39 @@ namespace StardewImpact
             {
                 Helper.Input.Suppress(e.Button);
                 CharacterData data = GetCurrentCharacter();
-                if (data.skillCooldownValue > 0)
+                if (data.SkillCooldownValue > 0)
                 {
-                    Monitor.Log($"Skill on cooldown {data.skillCooldownValue}");
+                    Monitor.Log($"Skill on cooldown {data.SkillCooldownValue}");
                     return;
                 }
-                Monitor.Log($"invoking {data.skillEvent.Count} skill events");
-                characterDict[data.name].currentEnergy = Math.Min(characterDict[data.name].burstEnergyCost, characterDict[data.name].currentEnergy + characterDict[data.name].energyPerSkill);
-                characterDict[data.name].skillCooldownValue = characterDict[data.name].skillCooldown;
-                foreach (var a in data.skillEvent)
+                Monitor.Log($"invoking {data.SkillEvent.Count} skill events");
+                characterDict[data.Name].CurrentEnergy = Math.Min(characterDict[data.Name].BurstEnergyCost, characterDict[data.Name].CurrentEnergy + characterDict[data.Name].EnergyPerSkill);
+                characterDict[data.Name].SkillCooldownValue = characterDict[data.Name].SkillCooldown;
+                foreach (var a in data.SkillEvent)
                 {
-                    a.Invoke(data.name, Game1.player);
+                    a.Invoke(data.Name, Game1.player);
                 }
             }
             else if (e.Button == Config.BurstButton && Game1.player.modData.ContainsKey(currentSlotKey))
             {
                 Helper.Input.Suppress(e.Button);
                 CharacterData data = GetCurrentCharacter();
-                if (data.burstCooldownValue > 0)
+                if (data.BurstCooldownValue > 0)
                 {
-                    Monitor.Log($"Burst on cooldown {data.burstCooldownValue}");
+                    Monitor.Log($"Burst on cooldown {data.BurstCooldownValue}");
                     return;
                 }
-                else if(data.currentEnergy < data.burstEnergyCost)
+                else if(data.CurrentEnergy < data.BurstEnergyCost)
                 {
                     Monitor.Log($"Not enough energy for burst");
                     return;
                 }
-                Monitor.Log($"invoking {data.burstEvent.Count} burst events");
-                characterDict[data.name].currentEnergy = 0;
-                characterDict[data.name].burstCooldownValue = characterDict[data.name].burstCooldown;
-                foreach (var a in data.burstEvent)
+                Monitor.Log($"invoking {data.BurstEvent.Count} burst events");
+                //characterDict[data.Name].CurrentEnergy = 0;
+                //characterDict[data.Name].BurstCooldownValue = characterDict[data.Name].BurstCooldown;
+                foreach (var a in data.BurstEvent)
                 {
-                    a.Invoke(data.name, Game1.player);
+                    a.Invoke(data.Name, Game1.player);
                 }
             }
         }

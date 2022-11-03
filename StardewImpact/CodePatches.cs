@@ -19,7 +19,7 @@ namespace StardewImpact
         {
             public static bool Prefix(Farmer __instance, SpriteBatch b)
             {
-                if (!Config.ModEnabled || !Context.IsPlayerFree || __instance.IsSitting() || __instance.isRidingHorse() || __instance.swimming.Value || __instance.CurrentTool is not MeleeWeapon || !__instance.modData.TryGetValue(currentSlotKey, out string key) || !__instance.modData.TryGetValue(slotPrefix + key, out string name) || !GetAvailableCharacters().TryGetValue(name, out CharacterData data) || data.sprite is null)
+                if (!Config.ModEnabled || !Context.IsPlayerFree || __instance.IsSitting() || __instance.isRidingHorse() || __instance.swimming.Value || __instance.CurrentTool is not MeleeWeapon || !__instance.modData.TryGetValue(currentSlotKey, out string key) || !__instance.modData.TryGetValue(slotPrefix + key, out string name) || !GetAvailableCharacters().TryGetValue(name, out CharacterData data) || data.Sprite is null)
                     return true;
                 int yOffset = 0;
                 bool walking = __instance.movementDirections.Contains(__instance.FacingDirection);
@@ -45,7 +45,7 @@ namespace StardewImpact
                 }
                 int xOffset = (xAxis % 256) / 64 * 16;
                 Rectangle sourceRect = new Rectangle(xOffset, yOffset, 16, 32);
-                b.Draw(data.sprite, __instance.getLocalPosition(Game1.viewport) - new Vector2(0, 24) * 4f, sourceRect, Color.White, 0, Vector2.Zero, 4f, SpriteEffects.None, Math.Max(0f, __instance.getStandingY() / 10000f));
+                b.Draw(data.Sprite, __instance.getLocalPosition(Game1.viewport) - new Vector2(0, 24) * 4f, sourceRect, Color.White, 0, Vector2.Zero, 4f, SpriteEffects.None, Math.Max(0f, __instance.getStandingY() / 10000f));
                 return false;
             }
         }

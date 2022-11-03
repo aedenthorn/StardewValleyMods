@@ -87,13 +87,13 @@ namespace StardewImpact
         {
             foreach(var key in characterDict.Keys.ToArray())
             {
-                if (characterDict[key].skillCooldownValue > 0)
+                if (characterDict[key].SkillCooldownValue > 0)
                 {
-                    characterDict[key].skillCooldownValue -= (float)Game1.currentGameTime.ElapsedGameTime.TotalSeconds;
+                    characterDict[key].SkillCooldownValue -= (float)Game1.currentGameTime.ElapsedGameTime.TotalSeconds;
                 }
-                if (characterDict[key].burstCooldownValue > 0)
+                if (characterDict[key].BurstCooldownValue > 0)
                 {
-                    characterDict[key].burstCooldownValue -= (float)Game1.currentGameTime.ElapsedGameTime.TotalSeconds;
+                    characterDict[key].BurstCooldownValue -= (float)Game1.currentGameTime.ElapsedGameTime.TotalSeconds;
                 }
             }
         }
