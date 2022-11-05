@@ -90,7 +90,7 @@ namespace StardewImpact
             Dictionary<string, CharacterData> result = new Dictionary<string, CharacterData>();
             foreach(var kvp in characterDict)
             {
-                if (Game1.player.friendshipData.TryGetValue(kvp.Key, out Friendship f) && f.Points > Config.MinPoints)
+                if (Game1.player.friendshipData.TryGetValue(kvp.Key, out Friendship f) && f.Points >= Config.MinPoints)
                 {
                     result.Add(kvp.Key, kvp.Value);
                 }
@@ -112,7 +112,7 @@ namespace StardewImpact
                 Game1.player.modData.Remove(slotPrefix + slot);
                 return;
             }
-            var names = characterDict.Keys.ToList();
+            var names = GetAvailableCharacters().Keys.ToList();
             names.Sort();
             if (!Game1.player.modData.TryGetValue(slotPrefix + slot, out string name) || !names.Contains(name))
             {

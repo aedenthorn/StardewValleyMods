@@ -13,7 +13,7 @@ namespace StardewImpact
         public string[] GetCharacterNames(bool available);
         public ICharacterData GetCharacter(string name, bool available);
         public bool GetCharacterBool(string name, out ICharacterData character, bool available);
-        public void AddCharacter(string name, Color skillColor, float currentEnergy, float energyPerSkill, float energyPerHit, float burstEnergyCost, float skillCooldoown, float burstCooldoown, string portraitPath, string spritePath, string skillIconPath, string burstIconPath, List<Action<string, Farmer>> skillEvent, List<Action<string, Farmer>> burstEvent);
+        public void AddCharacter(string name, Color characterColor, float energyPerSkill, float energyPerHit, float burstEnergyCost, float skillCooldoown, float burstCooldoown, string portraitPath, string spritePath, string skillIconPath, string burstIconPath, List<Action<string, Farmer>> skillEvent, List<Action<string, Farmer>> burstEvent);
         public void AddSkillEvent(string name, Action<string, Farmer> action);
         public void AddBurstEvent(string name, Action<string, Farmer> action);
     }
@@ -42,14 +42,12 @@ namespace StardewImpact
             character = data;
             return result;
         }
-        public void AddCharacter(string name, Color skillColor, float currentEnergy, float energyPerSkill, float energyPerHit, float burstEnergyCost, float skillCooldoown, float burstCooldoown, string portraitPath, string spritePath, string skillIconPath, string burstIconPath, List<Action<string, Farmer>> skillEvent, List<Action<string, Farmer>> burstEvent)
+        public void AddCharacter(string name, Color characterColor, float energyPerSkill, float energyPerHit, float burstEnergyCost, float skillCooldoown, float burstCooldoown, string portraitPath, string spritePath, string skillIconPath, string burstIconPath, List<Action<string, Farmer>> skillEvent, List<Action<string, Farmer>> burstEvent)
         {
-            ModEntry.characterDict[name] = new CharacterData(name, skillColor, currentEnergy, energyPerSkill, energyPerHit, burstEnergyCost, skillCooldoown, burstCooldoown, portraitPath, spritePath, skillIconPath, burstIconPath, skillEvent, burstEvent);
+            ModEntry.characterDict[name] = new CharacterData(name, characterColor, energyPerSkill, energyPerHit, burstEnergyCost, skillCooldoown, burstCooldoown, portraitPath, spritePath, skillIconPath, burstIconPath, skillEvent, burstEvent);
             ModEntry.LoadTextures(name);
             ModEntry.SMonitor.Log($"Added character {name}", StardewModdingAPI.LogLevel.Debug);
         }
-
-
         public void AddSkillEvent(string name, Action<string, Farmer> action)
         {
             if (!ModEntry.characterDict.TryGetValue(name, out CharacterData data))

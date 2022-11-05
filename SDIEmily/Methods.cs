@@ -1,20 +1,10 @@
-﻿using HarmonyLib;
-using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
-using Microsoft.Xna.Framework.Input;
+﻿using Microsoft.Xna.Framework;
 using StardewValley;
-using StardewValley.Menus;
 using StardewValley.Monsters;
-using StardewValley.Objects;
 using StardewValley.TerrainFeatures;
 using StardewValley.Tools;
 using System;
-using System.Collections.Generic;
-using System.IO;
 using System.Linq;
-using System.Xml.Serialization;
-using static StardewValley.Minigames.TargetGame;
-using Object = StardewValley.Object;
 
 namespace SDIEmily
 {
@@ -23,20 +13,21 @@ namespace SDIEmily
 
         private void SkillEvent(string name, Farmer farmer)
         {
-            var target = GetTarget(farmer);
+            var data = sdiAPI.GetCharacter(name, true);
+            var target = GetTarget(farmer, Config.MaxSkillRange, Config.MaxSkillDistanceOffLookAxis);
             farmer.currentLocation.playSound("parrot_squawk");
-            runningSkills.Add(new RunningSkill(farmer.currentLocation, target, true, farmer.CurrentTool));
-            sdiAPI.GetCharacter(name, false).CurrentEnergy = sdiAPI.GetCharacter(name, false).BurstEnergyCost;
+            runningSkills.Add(new RunningSkill(farmer.currentLocation, farmer.Position, target, data.CharacterColor, true, farmer.CurrentTool));
         }
 
         private void BurstEvent(string name, Farmer farmer)
         {
-            var target = GetTarget(farmer);
+            var data = sdiAPI.GetCharacter(name, true);
+            var target = GetTarget(farmer, Config.MaxBurstRange, Config.MaxBurstDistanceOffLookAxis);
             farmer.currentLocation.playSound("parrot_squawk");
-            runningBursts.Add(new RunningBurst(farmer.currentLocation, target, true, farmer.CurrentTool));
+            runningBursts.Add(new RunningBurst(farmer.currentLocation, target, data.CharacterColor, true, farmer.CurrentTool));
         }
 
-        private Vector2 GetTarget(Farmer farmer)
+        private Vector2 GetTarget(Farmer farmer, float maxRange, float maxDistanceOffAxis)
         {
             var cursorPos = new Vector2(Game1.viewport.Location.X, Game1.viewport.Location.Y) + Game1.getMousePosition().ToVector2();
             var playerPos = farmer.Position;
@@ -44,7 +35,7 @@ namespace SDIEmily
             var rangeEnd = cursorPos;
             if (cursorDistance > Config.MaxSkillRange)
             {
-                rangeEnd = Vector2.Lerp(playerPos, cursorPos, Config.MaxSkillRange / cursorDistance);
+                rangeEnd = Vector2.Lerp(playerPos, cursorPos, maxRange / cursorDistance);
             }
             var rangeDistance = Vector2.Distance(rangeEnd, playerPos);
             SMonitor.Log($"Checking for monster; player: {playerPos}; cursor {cursorPos}; cursor distance {cursorDistance}; rangeEnd {rangeEnd}; range distance {Vector2.Distance(playerPos, rangeEnd)}");
@@ -54,7 +45,7 @@ namespace SDIEmily
                 foreach (var m in farmer.currentLocation.characters)
                 {
                     var offLine = Vector2.Distance(point, m.Position);
-                    if (m is Monster && offLine <= Config.MaxSkillDistanceOffLookAxis)
+                    if (m is Monster && offLine <= maxDistanceOffAxis)
                     {
                         SMonitor.Log($"returning {m.Name} position {m.Position}");
                         return m.Position;
@@ -65,14 +56,16 @@ namespace SDIEmily
             return rangeEnd;
         }
 
-
-        private void DealDamage(GameLocation location, Vector2 center, MeleeWeapon weapon, float damageMult, int radius)
+        private void DealDamage(GameLocation location, Vector2 center, MeleeWeapon weapon, Color damageColor, float damageMult, int radius)
         {
-            for(int i = 0; i < location.characters.Count; i++)
+            for (int i = 0; i < location.characters.Count; i++)
             {
-                if(location.characters[i] is Monster && Vector2.Distance(location.characters[i].Position, center) <= radius)
+                if(location.characters[i] is Monster && !location.characters[i].IsInvisible && !(location.characters[i] as Monster).isInvincible() && Vector2.Distance(location.characters[i].Position, center) <= radius)
                 {
-                    (location.characters[i] as Monster).takeDamage((int)(damageMult * GetWeaponDamage(weapon)), 0, 0, false, 0, Game1.player);
+                    int damageAmount = (int)(damageMult * GetWeaponDamage(weapon));
+                    location.removeDamageDebris(location.characters[i] as Monster);
+                    location.debris.Add(new Debris(damageAmount, new Vector2((float)(location.characters[i].GetBoundingBox().Center.X + 16), (float)location.characters[i].GetBoundingBox().Center.Y), new Color(255, 130, 0), 1f, location.characters[i]));
+                    (location.characters[i] as Monster).takeDamage(damageAmount, 0, 0, false, 0, Game1.player);
                 }
             }
             foreach(var key in location.terrainFeatures.Keys.ToArray())

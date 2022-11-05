@@ -3,27 +3,15 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using StardewModdingAPI;
 using StardewValley;
-using StardewValley.BellsAndWhistles;
-using StardewValley.Locations;
-using StardewValley.Menus;
 using StardewValley.Monsters;
-using StardewValley.TerrainFeatures;
-using StardewValley.Tools;
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Diagnostics;
-using System.Globalization;
-using System.Linq;
-using System.Xml.Linq;
-using xTile.Dimensions;
 
 namespace SDIEmily
 {
     /// <summary>The mod entry point.</summary>
     public partial class ModEntry : Mod
     {
-
         public static IMonitor SMonitor;
         public static IModHelper SHelper;
         public static ModConfig Config;
@@ -34,10 +22,8 @@ namespace SDIEmily
         public static string slotPrefix = "aedenthorn.StardewImpact/slot";
         public static string currentSlotKey = "aedenthorn.StardewImpact/currentSlot";
         
-        
         public static string skillIconPath = "aedenthorn.SDIEmily/skillIcon";
         public static string burstIconPath = "aedenthorn.SDIEmily/burstIcon";
-        
 
         public static Texture2D frameTexture;
         public static Texture2D backTexture;
@@ -72,7 +58,6 @@ namespace SDIEmily
             harmony.PatchAll();
 
         }
-
         private void Display_RenderedWorld(object sender, StardewModdingAPI.Events.RenderedWorldEventArgs e)
         {
             if (!Config.ModEnabled || !Context.IsPlayerFree)
@@ -90,15 +75,23 @@ namespace SDIEmily
                         if (here)
                             runningSkill.currentLocation.playSound("swordswipe");
                         runningSkill.currentFrame = 0;
-                        runningSkill.currentStartPos = GetRandomPointOnCircle(runningSkill.center, Config.SkillRadius);
-                        runningSkill.currentEndPos = runningSkill.center - (runningSkill.currentStartPos - runningSkill.center);
-                        runningSkill.totalTicks = (int)(Config.SkillRadius * 2 / (16 * Config.SkillSpeed));
-                        Monitor.Log($"start {runningSkill.currentStartPos}, start {runningSkill.center}, end {runningSkill.currentEndPos}, length {Vector2.Distance(runningSkill.currentEndPos, runningSkill.currentStartPos)}");
+                        if (runningSkill.intro)
+                        {
+                            runningSkill.currentEndPos = runningSkill.center;
+                            runningSkill.totalTicks = (int)(Config.SkillRadius * 2 / (16 * Config.SkillSpeed));
+                            runningSkill.intro = false;
+                        }
+                        else
+                        {
+                            runningSkill.currentStartPos = GetRandomPointOnCircle(runningSkill.center, Config.SkillRadius);
+                            runningSkill.currentEndPos = runningSkill.center - (runningSkill.currentStartPos - runningSkill.center);
+                            runningSkill.totalTicks = (int)(Config.SkillRadius * 2 / (16 * Config.SkillSpeed));
+                        }
                     }
                     runningSkill.currentPos = Vector2.Lerp(runningSkill.currentStartPos, runningSkill.currentEndPos, runningSkill.currentTick / (float)runningSkill.totalTicks);
+                    runningSkill.currentTick++;
                     if (here)
                         e.SpriteBatch.Draw(SHelper.GameContent.Load<Texture2D>("LooseSprites\\parrots"), Game1.GlobalToLocal(runningSkill.currentPos), new Microsoft.Xna.Framework.Rectangle(48 + runningSkill.currentFrame * 24, 0, 24, 24), Color.White, 0, Vector2.Zero, 4, (runningSkill.currentStartPos.X < runningSkill.currentEndPos.X ? SpriteEffects.FlipHorizontally : SpriteEffects.None), 1f);
-                    runningSkill.currentTick++;
                     if (runningSkill.currentTick % (runningSkill.totalTicks / 6) == 0)
                     {
                         runningSkill.currentFrame++;
@@ -109,7 +102,7 @@ namespace SDIEmily
                         runningSkill.currentLoop++;
                         if (runningSkill.isCaster && runningSkill.weapon is not null)
                         {
-                            DealDamage(runningSkill.currentLocation, runningSkill.center, runningSkill.weapon, Config.SkillDamageMult, Config.SkillRadius);
+                            DealDamage(runningSkill.currentLocation, runningSkill.center, runningSkill.weapon, runningSkill.color, Config.SkillDamageMult, Config.SkillRadius);
                         }
                         if (runningSkill.currentLoop >= Config.SkillHits)
                         {
@@ -122,15 +115,20 @@ namespace SDIEmily
             }
             if(runningBursts.Count > 0)
             {
-                float burstSpeed = Config.BurstSpeed * 16;
+                float burstSpeed = Config.BurstSpeed * 8;
                 for (int i = runningBursts.Count - 1; i >= 0; i--)
                 {
                     var runningBurst = runningBursts[i];
                     bool here = Game1.currentLocation == runningBurst.currentLocation;
-                    var radAngle = runningBurst.currentAngle * Math.PI / 180;
-                    var currentPos = new Vector2(runningBurst.center.X + (float)Math.Cos(radAngle) * runningBurst.currentRadius, runningBurst.center.Y + (float)Math.Sin(radAngle) * runningBurst.currentRadius);
                     if (here)
-                        e.SpriteBatch.Draw(SHelper.GameContent.Load<Texture2D>("LooseSprites\\parrots"), Game1.GlobalToLocal(currentPos), new Microsoft.Xna.Framework.Rectangle(48 + runningBurst.currentFrame * 24, 0, 24, 24), Color.White, (float)(radAngle + Math.PI / 2), Vector2.Zero, 4, SpriteEffects.None, 1f);
+                    {
+                        for(int j = 0; j < 4; j++)
+                        {
+                            var radAngle = runningBurst.currentAngle * Math.PI / 180 + Math.PI / 2 * j;
+                            var currentPos = new Vector2(runningBurst.center.X + (float)Math.Cos(radAngle) * runningBurst.currentRadius, runningBurst.center.Y + (float)Math.Sin(radAngle) * runningBurst.currentRadius);
+                            e.SpriteBatch.Draw(SHelper.GameContent.Load<Texture2D>("LooseSprites\\parrots"), Game1.GlobalToLocal(currentPos), new Microsoft.Xna.Framework.Rectangle(48 + runningBurst.currentFrame * 24, 0, 24, 24), Color.White, (float)(radAngle + Math.PI / 2), Vector2.Zero, 4, SpriteEffects.FlipHorizontally, 1f);
+                        }
+                    }
                     runningBurst.currentAngle = (runningBurst.currentAngle + (int)burstSpeed) % 360;
                     if (runningBurst.currentAngle % (360 / 6) < burstSpeed)
                     {
@@ -138,7 +136,7 @@ namespace SDIEmily
                     }
                     if (runningBurst.currentAngle % 90 < burstSpeed)
                     {
-                        runningBurst.currentRadius -= burstSpeed;
+                        runningBurst.currentRadius -= burstSpeed * 2;
 
                         if (runningBurst.isCaster && runningBurst.weapon is not null)
                         {
@@ -151,11 +149,11 @@ namespace SDIEmily
                                     (runningBurst.currentLocation.characters[j] as Monster).Position = Vector2.Lerp(pos, new Vector2(runningBurst.center.X, runningBurst.center.Y), 64 / Vector2.Distance(pos, runningBurst.center));
                                 }
                             }
-                            DealDamage(runningBurst.currentLocation, runningBurst.center, runningBurst.weapon, Config.BurstDamageMult, Config.BurstRadius);
+                            DealDamage(runningBurst.currentLocation, runningBurst.center, runningBurst.weapon, runningBurst.color, Config.BurstDamageMult,  Config.BurstRadius);
                         }
 
                     }
-                    if (runningBurst.currentRadius <= Config.BurstEndRadius)
+                    if (runningBurst.currentRadius <= Config.BurstEndRadius * 4)
                     {
                         runningBursts.RemoveAt(i);
                     }
@@ -165,9 +163,7 @@ namespace SDIEmily
                     }
                 }
             }
-
         }
-
         private void Content_AssetRequested(object sender, StardewModdingAPI.Events.AssetRequestedEventArgs e)
         {
             if (!Config.ModEnabled)
@@ -181,15 +177,13 @@ namespace SDIEmily
                 e.LoadFromModFile<Texture2D>("assets/burst.png", StardewModdingAPI.Events.AssetLoadPriority.Low);
             }
         }
-
         private void GameLoop_SaveLoaded(object sender, StardewModdingAPI.Events.SaveLoadedEventArgs e)
         {
             if (sdiAPI is not null)
             {
-                sdiAPI.AddCharacter("Emily", Color.PaleGreen, 0, 20, 10, 80, 5, 10, null, null, skillIconPath, burstIconPath, new List<Action<string, Farmer>>() { SkillEvent }, new List<Action<string, Farmer>>() { BurstEvent });
+                sdiAPI.AddCharacter("Emily", Color.PaleGreen, 20, 10, 80, 5, 10, null, null, skillIconPath, burstIconPath, new List<Action<string, Farmer>>() { SkillEvent }, new List<Action<string, Farmer>>() { BurstEvent });
             }
         }
-
         private void GameLoop_GameLaunched(object sender, StardewModdingAPI.Events.GameLaunchedEventArgs e)
         {
             sdiAPI = Helper.ModRegistry.GetApi<IStardewImpactApi>("aedenthorn.StardewImpact");
@@ -214,7 +208,5 @@ namespace SDIEmily
                 setValue: value => Config.ModEnabled = value
             );
         }
-
-
     }
 }

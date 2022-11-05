@@ -8,7 +8,9 @@ namespace SDIEmily
     {
         public bool ModEnabled { get; set; } = true;
         public int MaxSkillRange { get; set; } = 256;
+        public int MaxBurstRange { get; set; } = 512;
         public int MaxSkillDistanceOffLookAxis { get; set; } = 64;
+        public int MaxBurstDistanceOffLookAxis { get; set; } = 64;
         public int SkillRadius { get; set; } = 128;
         public int BurstRadius { get; set; } = 512;
         public int BurstPullSpeed { get; set; } = 128;

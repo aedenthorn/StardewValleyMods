@@ -101,8 +101,8 @@ namespace StardewImpact
                     return;
                 }
                 Monitor.Log($"invoking {data.BurstEvent.Count} burst events");
-                //characterDict[data.Name].CurrentEnergy = 0;
-                //characterDict[data.Name].BurstCooldownValue = characterDict[data.Name].BurstCooldown;
+                characterDict[data.Name].CurrentEnergy = 0;
+                characterDict[data.Name].BurstCooldownValue = characterDict[data.Name].BurstCooldown;
                 foreach (var a in data.BurstEvent)
                 {
                     a.Invoke(data.Name, Game1.player);

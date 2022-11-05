@@ -9,7 +9,7 @@ namespace StardewImpact
     public interface ICharacterData
     {
         public string Name { get; set; }
-        public Color SkillColor { get; set; }
+        public Color CharacterColor { get; set; }
         public float CurrentEnergy { get; set; }
         public float EnergyPerSkill { get; set; }
         public float EnergyPerHit { get; set; }
