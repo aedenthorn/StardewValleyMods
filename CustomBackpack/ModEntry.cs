@@ -197,6 +197,12 @@ namespace CustomBackpack
                 getValue: () => Config.ShowExpandedButton,
                 setValue: value => Config.ShowExpandedButton = value
             );
+            configMenu.AddNumberOption(
+                mod: ModManifest,
+                name: () => "Toolbar Rows To Shift",
+                getValue: () => Config.ShiftRows,
+                setValue: value => Config.ShiftRows = value
+            );
         }
     }
 }

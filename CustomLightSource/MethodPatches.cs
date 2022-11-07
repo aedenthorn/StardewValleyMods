@@ -15,7 +15,7 @@ namespace CustomLightSource
             if (!Config.EnableMod || value < 9 || value - 8 > lightTextureList.Count)
                 return true;
 
-            __instance.lightTexture = SHelper.Content.Load<Texture2D>(lightTextureList[value - 9], ContentSource.GameContent);
+            __instance.lightTexture = SHelper.GameContent.Load<Texture2D>(lightTextureList[value - 9]);
             return false;
         }
         private static bool Object_initializeLightSource_Prefix(Object __instance, Vector2 tileLocation)

@@ -7,7 +7,7 @@ namespace StardewImpact
     public class ModConfig
     {
         public bool ModEnabled { get; set; } = true;
-        public int MinPoints { get; set; } = 0;
+        public int MinPoints { get; set; } = 1500;
         public float PortraitScale { get; set; } = 2f;
         public int PortraitSpacing { get; set; } = 32;
         public float SkillsScale { get; set; } = 2f;

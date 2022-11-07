@@ -1,11 +1,11 @@
 ﻿{
   "Name": "Custom Light Source",
   "Author": "aedenthorn",
-  "Version": "0.1.0",
+  "Version": "0.1.1",
   "Description": "Custom Light Source.",
   "UniqueID": "aedenthorn.CustomLightSource",
   "EntryDll": "CustomLightSource.dll",
-  "MinimumApiVersion": "3.13.0-beta.20211018",
+  "MinimumApiVersion": "3.15",
   "ModUpdater": {
     "Repository": "StardewValleyMods",
     "User": "aedenthorn",

@@ -6,7 +6,7 @@ using System.Collections.Generic;
 namespace CustomLightSource
 {
     /// <summary>The mod entry point.</summary>
-    public partial class ModEntry : Mod, IAssetLoader
+    public partial class ModEntry : Mod
     {
 
         public static IMonitor SMonitor;
@@ -35,6 +35,7 @@ namespace CustomLightSource
             SHelper = helper;
 
             helper.Events.GameLoop.GameLaunched += GameLoop_GameLaunched;
+            helper.Events.Content.AssetRequested += Content_AssetRequested;
 
             var harmony = new Harmony(ModManifest.UniqueID);
 
@@ -48,6 +49,14 @@ namespace CustomLightSource
             );
         }
 
+        private void Content_AssetRequested(object sender, StardewModdingAPI.Events.AssetRequestedEventArgs e)
+        {
+
+            if (e.NameWithoutLocale.IsEquivalentTo(dictPath))
+            {
+                e.LoadFrom(() => new Dictionary<string, LightData>(), StardewModdingAPI.Events.AssetLoadPriority.Exclusive);
+            }
+        }
 
         private void GameLoop_GameLaunched(object sender, StardewModdingAPI.Events.GameLaunchedEventArgs e)
         {
@@ -56,7 +65,7 @@ namespace CustomLightSource
 
         private void GameLoop_UpdateTicked(object sender, StardewModdingAPI.Events.UpdateTickedEventArgs e)
         {
-            lightDataDict = SHelper.Content.Load<Dictionary<string, LightData>>(dictPath, ContentSource.GameContent) ?? new Dictionary<string, LightData>();
+            lightDataDict = SHelper.GameContent.Load<Dictionary<string, LightData>>(dictPath) ?? new Dictionary<string, LightData>();
             lightTextureList.Clear();
             foreach (var kvp in lightDataDict)
             {
@@ -70,23 +79,5 @@ namespace CustomLightSource
             SHelper.Events.GameLoop.UpdateTicked -= GameLoop_UpdateTicked;
         }
 
-        /// <summary>Get whether this instance can load the initial version of the given asset.</summary>
-        /// <param name="asset">Basic metadata about the asset being loaded.</param>
-        public bool CanLoad<T>(IAssetInfo asset)
-        {
-            if (!Config.EnableMod)
-                return false;
-
-            return asset.AssetNameEquals(dictPath);
-        }
-
-        /// <summary>Load a matched asset.</summary>
-        /// <param name="asset">Basic metadata about the asset being loaded.</param>
-        public T Load<T>(IAssetInfo asset)
-        {
-            Monitor.Log("Loading dictionary");
-
-            return (T)(object)new Dictionary<string, LightData>();
-        }
     }
 }

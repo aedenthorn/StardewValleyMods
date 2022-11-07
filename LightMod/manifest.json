@@ -1,16 +1,16 @@
 ﻿{
-  "Name": "SDI Emily",
+  "Name": "Light Mod",
   "Author": "aedenthorn",
   "Version": "0.1.0",
-  "Description": "SDI Emily.",
-  "UniqueID": "aedenthorn.SDIEmily",
-  "EntryDll": "SDIEmily.dll",
+  "Description": "Light Mod.",
+  "UniqueID": "aedenthorn.LightMod",
+  "EntryDll": "LightMod.dll",
   "MinimumApiVersion": "3.15.0",
   "ModUpdater": {
     "Repository": "StardewValleyMods",
     "User": "aedenthorn",
     "Directory": "_releases",
-    "ModFolder": "SDIEmily"
+    "ModFolder": "LightMod"
   },
   "Dependencies": [
     {
@@ -18,5 +18,5 @@
       "IsRequired": false
     }
   ],
-  "UpdateKeys": [ "Nexus:14366" ]
+  "UpdateKeys": [ "Nexus:14247" ]
 }
