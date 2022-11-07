@@ -1,6 +1,4 @@
-﻿using Newtonsoft.Json.Linq;
-using StardewValley;
-using StardewValley.Objects;
+﻿using StardewValley;
 using System;
 using Object = StardewValley.Object;
 
@@ -72,6 +70,40 @@ namespace LightMod
                 Game1.currentLocation.removeLightSource(ident);
                 value.initializeLightSource(value.TileLocation);
             }
+        }
+        private static int GetMorningLightTime()
+        {
+        /*
+            switch (Game1.currentSeason)
+            {
+                case "spring":
+                    return Config.SpringMorningLightTime;
+                case "summer":
+                    return Config.SummerMorningLightTime;
+                case "fall":
+                    return Config.SummerMorningLightTime;
+                case "winter":
+                    return Config.SummerMorningLightTime;
+            }
+        */
+            return 0;
+        }
+        private static int GetNightDarkTime()
+        {
+            /*
+            switch (Game1.currentSeason)
+            {
+                case "spring":
+                    return Config.SpringDarkTime;
+                case "summer":
+                    return Config.SummerDarkTime;
+                case "fall":
+                    return Config.FallDarkTime;
+                case "winter":
+                    return Config.WinterDarkTime;
+            }
+        */
+            return 1600;
         }
     }
 }

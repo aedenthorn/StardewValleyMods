@@ -1,11 +1,16 @@
 ﻿using HarmonyLib;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using Newtonsoft.Json.Linq;
 using StardewValley;
 using StardewValley.Objects;
 using System;
+using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
+using xTile;
+using xTile.Layers;
+using xTile.ObjectModel;
 using Object = StardewValley.Object;
 
 namespace LightMod
@@ -31,19 +36,24 @@ namespace LightMod
             {
                 if (!Config.ModEnabled)
                     return true;
+                if (__instance.modData.TryGetValue(switchKey, out string status) && status == "off")
+                {
+                    __instance.lightSource = null;
+                    return false;
+                }
 
-                LightData light = null;
-                if (lightDataDict.ContainsKey(__instance.ParentSheetIndex + ""))
-                    light = lightDataDict[__instance.ParentSheetIndex + ""];
-                else if (lightDataDict.ContainsKey(__instance.Name))
-                    light = lightDataDict[__instance.Name];
-                else
-                    return true;
+                if (!lightDataDict.TryGetValue(__instance.ParentSheetIndex + "", out LightData light))
+                {
+                    if(!lightDataDict.TryGetValue(__instance.Name, out light))
+                    {
+                        return true;
+                    }
+                }
 
                 SMonitor.Log($"Adding light to {__instance.Name}");
 
                 int identifier = (int)(tileLocation.X * 2000f + tileLocation.Y);
-                __instance.lightSource = new LightSource(light.textureIndex, new Vector2(tileLocation.X * 64f + light.offset.X, tileLocation.Y * 64f + light.offset.Y), light.radius, new Color(255 - light.color.R, 255 - light.color.G, 255 - light.color.B, 255 - light.color.A), identifier, LightSource.LightContext.None, 0L);
+                __instance.lightSource = new LightSource(light.textureIndex, new Vector2(tileLocation.X * 64f + light.offset.X, tileLocation.Y * 64f + light.offset.Y), light.radius, light.color, identifier, LightSource.LightContext.None, 0L);
                 __instance.isLamp.Value = light.isLamp;
                 __instance.IsOn = true;
                 return false;
@@ -75,6 +85,10 @@ namespace LightMod
         [HarmonyPatch(typeof(Furniture), nameof(Furniture.addLights))]
         private static class Furniture_addLights_Patch
         {
+            public static bool xPrefix(Furniture __instance)
+            {
+                return (!Config.ModEnabled || !__instance.modData.TryGetValue(switchKey, out string status) || status == "on");
+            }
             public static void Postfix(Furniture __instance, GameLocation environment)
             {
                 if (!Config.ModEnabled || __instance.lightSource is null)
@@ -94,14 +108,150 @@ namespace LightMod
                 environment.sharedLights.Add(__instance.lightSource.Identifier, __instance.lightSource.Clone());
             }
         }
+        
+        [HarmonyPatch(typeof(Object), nameof(Object.minutesElapsed))]
+        private static class Object_minutesElapsed_Patch
+        {
+            public static void Postfix(Object __instance)
+            {
+                if (!Config.ModEnabled)
+                    return;
+                __instance.initializeLightSource(__instance.TileLocation);
+            }
+        }
+        
+        [HarmonyPatch(typeof(Furniture), nameof(Furniture.removeLights))]
+        private static class Furniture_removeLights_Patch
+        {
+            public static bool Prefix(Furniture __instance)
+            {
+                return (!Config.ModEnabled || !__instance.modData.TryGetValue(switchKey, out string status) || status == "off");
+            }
+        }
 
         [HarmonyPatch(typeof(Game1), nameof(Game1.pressSwitchToolButton))]
-        private static class Farmer_pressSwitchToolButton_Patch
+        private static class Game1_pressSwitchToolButton_Patch
         {
             public static bool Prefix()
             {
                 return (!Config.ModEnabled || !suppressingScroll);
 
+            }
+        }
+
+        //[HarmonyPatch(typeof(Game1), nameof(Game1.getStartingToGetDarkTime))]
+        private static class Game1_getStartingToGetDarkTime_Patch
+        {
+            public static bool Prefix(ref int __result)
+            {
+                if (!Config.ModEnabled)
+                    return true;
+
+                int morningLightTime = GetMorningLightTime();
+
+                if (Game1.timeOfDay < morningLightTime && Game1.timeOfDay >= morningLightTime - 100)
+                {
+                    __result = Game1.timeOfDay;
+                }
+                else
+                {
+                    __result = GetNightDarkTime() - 200;
+                }
+
+                return false;
+            }
+        }
+        //[HarmonyPatch(typeof(Game1), nameof(Game1.getModeratelyDarkTime))]
+        private static class Game1_getModeratelyDarkTime_Patch
+        {
+            public static bool Prefix(ref int __result)
+            {
+                if (!Config.ModEnabled)
+                    return true;
+                int morningLightTime = GetMorningLightTime();
+
+                if (Game1.timeOfDay < morningLightTime - 100 && Game1.timeOfDay >= morningLightTime - 200)
+                {
+                    __result = Game1.timeOfDay;
+                }
+                else
+                {
+                    __result = GetNightDarkTime() - 100;
+                }
+                return false;
+            }
+        }
+        //[HarmonyPatch(typeof(Game1), nameof(Game1.getTrulyDarkTime))]
+        private static class Game1_getTrulyDarkTime_Patch
+        {
+            public static bool Prefix(ref int __result)
+            {
+                if (!Config.ModEnabled)
+                    return true;
+
+                if(Game1.timeOfDay < GetMorningLightTime() - 200)
+                {
+                    __result = Game1.timeOfDay;
+                }
+                else
+                {
+                    __result = GetNightDarkTime();
+                }
+                return false;
+            }
+        }
+        //[HarmonyPatch(typeof(Game1), nameof(Game1.performTenMinuteClockUpdate))]
+        private static class Game1_performTenMinuteClockUpdate_Patch
+        {
+            public static void Postfix()
+            {
+                if (!Config.ModEnabled)
+                    return;
+
+                if(Game1.timeOfDay == GetMorningLightTime())
+                {
+                    PropertyValue dayTiles;
+                    
+                    if (Game1.currentLocation.Map.Properties.TryGetValue("DayTiles", out dayTiles) && dayTiles != null)
+                    {
+                        string[] split = dayTiles.ToString().Trim().Split(' ', StringSplitOptions.None);
+                        for (int i = 0; i < split.Length; i += 4)
+                        {
+                            Layer layer = Game1.currentLocation.Map.GetLayer(split[i]);
+                            if ((!split[i + 3].Equals("720") || !Game1.MasterPlayer.mailReceived.Contains("pamHouseUpgrade")) && layer.Tiles[Convert.ToInt32(split[i + 1]), Convert.ToInt32(split[i + 2])] != null)
+                            {
+                                layer.Tiles[Convert.ToInt32(split[i + 1]), Convert.ToInt32(split[i + 2])].TileIndex = Convert.ToInt32(split[i + 3]);
+                            }
+                        }
+                    }
+                    if(!Game1.currentLocation.IsOutdoors)
+                        Game1.ambientLight = Color.White;
+                    Game1.outdoorLight = (Game1.IsRainingHere(null) ? Game1.ambientLight : Color.White);
+                    AccessTools.Method(typeof(GameLocation), "resetLocalState").Invoke(Game1.currentLocation, new object[] { });
+                }
+            }
+        }
+
+        [HarmonyPatch(typeof(Furniture), nameof(Furniture.resetOnPlayerEntry))]
+        private static class Furniture_resetOnPlayerEntry_Patch
+        {
+            public static void Postfix(Furniture __instance, GameLocation environment)
+            {
+                if (!Config.ModEnabled)
+                    return;
+                if(__instance.modData.TryGetValue(switchKey, out string status))
+                {
+                    if(status == "on")
+                    {
+                        __instance.initializeLightSource(__instance.TileLocation);
+                    }
+                    else
+                    {
+                        __instance.lightSource = null;
+                        environment.removeLightSource((int)(__instance.TileLocation.X * 2000f + __instance.TileLocation.Y));
+                        __instance.RemoveLightGlow(Game1.currentLocation);
+                    }
+                }
             }
         }
     }
