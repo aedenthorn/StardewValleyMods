@@ -5,9 +5,12 @@ using Newtonsoft.Json.Linq;
 using StardewValley;
 using StardewValley.Objects;
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
+using System.Reflection.Emit;
+using System.Reflection;
 using xTile;
 using xTile.Layers;
 using xTile.ObjectModel;
@@ -17,6 +20,36 @@ namespace LightMod
 {
     public partial class ModEntry
     {
+        public static IEnumerable<CodeInstruction> SGame_DrawImpl_Transpiler(IEnumerable<CodeInstruction> instructions)
+        {
+            SMonitor.Log($"Transpiling Game1._draw");
+
+            var codes = new List<CodeInstruction>(instructions);
+            for (int i = 0; i < codes.Count; i++)
+            {
+                if (i < codes.Count - 2 && codes[i].opcode == OpCodes.Ldloc_S && codes[i + 1].opcode == OpCodes.Ldfld && codes[i + 2].opcode == OpCodes.Callvirt && (FieldInfo)codes[i + 1].operand == AccessTools.Field(typeof(LightSource), nameof(LightSource.lightTexture)) && (MethodInfo)codes[i + 2].operand == AccessTools.PropertyGetter(typeof(Texture2D), nameof(Texture2D.Bounds)))
+                {
+                    SMonitor.Log("adding method to check light source texture bounds");
+                    codes.Insert(i + 3, new CodeInstruction(OpCodes.Call, AccessTools.Method(typeof(ModEntry), nameof(ModEntry.GetTextureBounds))));
+                    codes.Insert(i + 3, codes[i].Clone());
+                }
+            }
+
+            return codes.AsEnumerable();
+        }
+        public static long lastFrame;
+        private static Rectangle GetTextureBounds(Rectangle bounds, LightSource lightSource)
+        {
+            if (!Config.ModEnabled || lightSource.textureIndex.Value < 9 || lightSource.textureIndex.Value - 8 > lightTextureList.Count)
+                return bounds;
+            var d = lightTextureList[lightSource.textureIndex.Value - 9];
+            if (d.frames < 2)
+                return bounds;
+            int currentFrame = (int)(Game1.currentGameTime.TotalGameTime.TotalSeconds / d.duration) % d.frames;
+
+            return new Rectangle(d.width * currentFrame, 0, d.width, bounds.Height);
+        }
+
         [HarmonyPatch(typeof(LightSource), "loadTextureFromConstantValue")]
         private static class LightSource_loadTextureFromConstantValue_Patch
         {
@@ -25,7 +58,7 @@ namespace LightMod
                 if (!Config.ModEnabled || value < 9 || value - 8 > lightTextureList.Count)
                     return true;
 
-                __instance.lightTexture = SHelper.GameContent.Load<Texture2D>(lightTextureList[value - 9]);
+                __instance.lightTexture = SHelper.GameContent.Load<Texture2D>(lightTextureList[value - 9].texturePath);
                 return false;
             }
         }

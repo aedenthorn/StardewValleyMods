@@ -14,6 +14,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
+using System.Security.Permissions;
 using Object = StardewValley.Object;
 
 namespace LightMod
@@ -33,7 +34,7 @@ namespace LightMod
         public static string radiusKey = "aedenthorn.LightMod/radius";
         public static string switchKey = "aedenthorn.LightMod/switch";
         public static Dictionary<string, LightData> lightDataDict = new Dictionary<string, LightData>();
-        public static List<string> lightTextureList = new List<string>();
+        public static List<TextureData> lightTextureList = new List<TextureData>();
         public static bool suppressingScroll;
 
         /// <summary>The mod entry point, called after the mod is first loaded.</summary>
@@ -58,6 +59,11 @@ namespace LightMod
 
             var harmony = new Harmony(ModManifest.UniqueID);
             harmony.PatchAll();
+
+            harmony.Patch(
+                original: AccessTools.Method(Game1.game1.GetType(), "DrawImpl"),
+                transpiler: new HarmonyMethod(typeof(ModEntry), nameof(ModEntry.SGame_DrawImpl_Transpiler))
+            );
 
         }
 
@@ -89,74 +95,6 @@ namespace LightMod
                         return;
                     }
                 }
-            }
-        }
-
-        private void ToggleLight(Object value)
-        {
-            if (value.modData.TryGetValue(switchKey, out string status))
-            {
-                if (status == "off")
-                {
-                    TurnOnLight(value);
-                }
-                else
-                {
-                    TurnOffLight(value);
-                }
-            }
-            else
-            {
-                if(value.lightSource is null)
-                {
-                    value.initializeLightSource(Game1.currentCursorTile);
-                    if (value.lightSource is not null)
-                    {
-                        Monitor.Log($"turning on {value.Name}");
-                        value.modData[switchKey] = "on";
-                        int ident = (int)(value.TileLocation.X * 2000f + value.TileLocation.Y);
-                        if (value.lightSource is not null && !Game1.currentLocation.hasLightSource(ident))
-                            Game1.currentLocation.sharedLights[ident] = value.lightSource.Clone();
-                        if (value is Furniture)
-                        {
-                            (value as Furniture).addLights(Game1.currentLocation);
-                        }
-                    }
-                }
-                else
-                {
-                    TurnOffLight(value);
-                }
-            }
-        }
-
-        private void TurnOffLight(Object value)
-        {
-            Monitor.Log($"turning off {value.Name}");
-            value.modData[switchKey] = "off";
-            if (value.lightSource != null)
-            {
-                value.lightSource = null;
-            }
-            Game1.currentLocation.removeLightSource((int)(value.TileLocation.X * 2000f + value.TileLocation.Y));
-            if (value is Furniture)
-            {
-                (value as Furniture).removeLights(Game1.currentLocation);
-            }
-        }
-
-        private void TurnOnLight(Object value)
-        {
-            Monitor.Log($"turning on {value.Name}");
-            value.modData[switchKey] = "on";
-            value.initializeLightSource(Game1.currentCursorTile);
-            int ident = (int)(value.TileLocation.X * 2000f + value.TileLocation.Y);
-            if (value.lightSource is not null && !Game1.currentLocation.hasLightSource(ident))
-                Game1.currentLocation.sharedLights[ident] = value.lightSource.Clone();
-            if (value is Furniture)
-            {
-                (value as Furniture).addLights(Game1.currentLocation);
-                value.IsOn = true;
             }
         }
 
@@ -294,12 +232,24 @@ namespace LightMod
         {
             lightDataDict = SHelper.GameContent.Load<Dictionary<string, LightData>>(dictPath) ?? new Dictionary<string, LightData>();
             lightTextureList.Clear();
-            foreach (var kvp in lightDataDict)
+            foreach (var key in lightDataDict.Keys.ToArray())
             {
-                if (kvp.Value.texturePath != null && kvp.Value.texturePath.Length > 0)
+                if (lightDataDict[key].texturePath != null && lightDataDict[key].texturePath.Length > 0)
                 {
-                    lightTextureList.Add(kvp.Value.texturePath);
-                    kvp.Value.textureIndex = 8 + lightTextureList.Count;
+                    lightTextureList.Add(new TextureData()
+                        {
+                            texturePath = lightDataDict[key].texturePath,
+                            frames = lightDataDict[key].textureFrames,
+                            width = lightDataDict[key].frameWidth,
+                            duration = lightDataDict[key].frameSeconds
+                    }
+                    );
+                    lightDataDict[key].textureIndex = 8 + lightTextureList.Count;
+                }
+                else if(lightDataDict[key].textureIndex == 3 || lightDataDict[key].textureIndex < 1 || lightDataDict[key].textureIndex > 8)
+                {
+                    SMonitor.Log($"Invalid texture index {lightDataDict[key].textureIndex} for {key}");
+                    lightDataDict.Remove(key);
                 }
             }
             SMonitor.Log($"Loaded {lightDataDict.Count} custom light sources");

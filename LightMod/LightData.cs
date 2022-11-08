@@ -7,6 +7,9 @@ namespace LightMod
         public Color color;
         public int textureIndex;
         public string texturePath;
+        public int textureFrames;
+        public int frameWidth;
+        public float frameSeconds;
         public float radius;
         public XY offset;
         public bool isLamp;

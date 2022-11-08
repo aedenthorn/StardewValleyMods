@@ -1,4 +1,5 @@
 ﻿using StardewValley;
+using StardewValley.Objects;
 using System;
 using Object = StardewValley.Object;
 
@@ -71,6 +72,77 @@ namespace LightMod
                 value.initializeLightSource(value.TileLocation);
             }
         }
+
+
+        private void ToggleLight(Object value)
+        {
+            if (value.modData.TryGetValue(switchKey, out string status))
+            {
+                if (status == "off")
+                {
+                    TurnOnLight(value);
+                }
+                else
+                {
+                    TurnOffLight(value);
+                }
+            }
+            else
+            {
+                if (value.lightSource is null)
+                {
+                    value.initializeLightSource(Game1.currentCursorTile);
+                    if (value.lightSource is not null)
+                    {
+                        Monitor.Log($"turning on {value.Name}");
+                        value.modData[switchKey] = "on";
+                        int ident = (int)(value.TileLocation.X * 2000f + value.TileLocation.Y);
+                        if (value.lightSource is not null && !Game1.currentLocation.hasLightSource(ident))
+                            Game1.currentLocation.sharedLights[ident] = value.lightSource.Clone();
+                        if (value is Furniture)
+                        {
+                            (value as Furniture).addLights(Game1.currentLocation);
+                        }
+                    }
+                }
+                else
+                {
+                    TurnOffLight(value);
+                }
+            }
+        }
+
+        private void TurnOffLight(Object value)
+        {
+            Monitor.Log($"turning off {value.Name}");
+            value.modData[switchKey] = "off";
+            if (value.lightSource != null)
+            {
+                value.lightSource = null;
+            }
+            Game1.currentLocation.removeLightSource((int)(value.TileLocation.X * 2000f + value.TileLocation.Y));
+            if (value is Furniture)
+            {
+                (value as Furniture).removeLights(Game1.currentLocation);
+            }
+        }
+
+        private void TurnOnLight(Object value)
+        {
+            Monitor.Log($"turning on {value.Name}");
+            value.modData[switchKey] = "on";
+            value.initializeLightSource(Game1.currentCursorTile);
+            int ident = (int)(value.TileLocation.X * 2000f + value.TileLocation.Y);
+            if (value.lightSource is not null && !Game1.currentLocation.hasLightSource(ident))
+                Game1.currentLocation.sharedLights[ident] = value.lightSource.Clone();
+            if (value is Furniture)
+            {
+                (value as Furniture).addLights(Game1.currentLocation);
+                value.IsOn = true;
+            }
+        }
+
+
         private static int GetMorningLightTime()
         {
         /*
