@@ -1,16 +1,16 @@
 ﻿{
-  "Name": "Better Elevator",
+  "Name": "NPC Status Icons",
   "Author": "aedenthorn",
-  "Version": "0.2.4",
-  "Description": "Better Elevator.",
-  "UniqueID": "aedenthorn.BetterElevator",
-  "EntryDll": "BetterElevator.dll",
+  "Version": "0.1.0",
+  "Description": "NPC Status Icons.",
+  "UniqueID": "aedenthorn.NPCStatusIcons",
+  "EntryDll": "NPCStatusIcons.dll",
   "MinimumApiVersion": "3.15.0",
   "ModUpdater": {
     "Repository": "StardewValleyMods",
     "User": "aedenthorn",
     "Directory": "_releases",
-    "ModFolder": "BetterElevator"
+    "ModFolder": "NPCStatusIcons"
   },
   "Dependencies": [
     {
@@ -18,5 +18,5 @@
       "IsRequired": false
     }
   ],
-  "UpdateKeys": [ "Nexus:12802" ]
+  "UpdateKeys": [ "Nexus:" ]
 }

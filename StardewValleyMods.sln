@@ -415,6 +415,10 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LightMod", "LightMod\LightM
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MailboxMenu", "MailboxMenu\MailboxMenu.csproj", "{B2C8466D-8CAE-4E49-8E36-D334A69D59B5}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ChestPreview", "ChestPreview\ChestPreview.csproj", "{BEC9FBFD-8372-45E6-867C-C4C6C81D371D}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NPCStatusIcons", "NPCStatusIcons\NPCStatusIcons.csproj", "{91E97CB9-3CD7-4F0D-B4FE-5947590B3F1B}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -2047,6 +2051,22 @@ Global
 		{B2C8466D-8CAE-4E49-8E36-D334A69D59B5}.Release|Any CPU.Build.0 = Release|Any CPU
 		{B2C8466D-8CAE-4E49-8E36-D334A69D59B5}.Release|x86.ActiveCfg = Release|Any CPU
 		{B2C8466D-8CAE-4E49-8E36-D334A69D59B5}.Release|x86.Build.0 = Release|Any CPU
+		{BEC9FBFD-8372-45E6-867C-C4C6C81D371D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BEC9FBFD-8372-45E6-867C-C4C6C81D371D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BEC9FBFD-8372-45E6-867C-C4C6C81D371D}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{BEC9FBFD-8372-45E6-867C-C4C6C81D371D}.Debug|x86.Build.0 = Debug|Any CPU
+		{BEC9FBFD-8372-45E6-867C-C4C6C81D371D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BEC9FBFD-8372-45E6-867C-C4C6C81D371D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BEC9FBFD-8372-45E6-867C-C4C6C81D371D}.Release|x86.ActiveCfg = Release|Any CPU
+		{BEC9FBFD-8372-45E6-867C-C4C6C81D371D}.Release|x86.Build.0 = Release|Any CPU
+		{91E97CB9-3CD7-4F0D-B4FE-5947590B3F1B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{91E97CB9-3CD7-4F0D-B4FE-5947590B3F1B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{91E97CB9-3CD7-4F0D-B4FE-5947590B3F1B}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{91E97CB9-3CD7-4F0D-B4FE-5947590B3F1B}.Debug|x86.Build.0 = Debug|Any CPU
+		{91E97CB9-3CD7-4F0D-B4FE-5947590B3F1B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{91E97CB9-3CD7-4F0D-B4FE-5947590B3F1B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{91E97CB9-3CD7-4F0D-B4FE-5947590B3F1B}.Release|x86.ActiveCfg = Release|Any CPU
+		{91E97CB9-3CD7-4F0D-B4FE-5947590B3F1B}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
