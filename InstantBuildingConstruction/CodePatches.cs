@@ -1,6 +1,8 @@
 ﻿using HarmonyLib;
+using Microsoft.Xna.Framework;
 using StardewValley;
 using StardewValley.Buildings;
+using StardewValley.Locations;
 using StardewValley.Menus;
 using System;
 using System.Collections.Generic;
@@ -16,11 +18,35 @@ namespace InstantBuildingConstruction
         [HarmonyPatch(MethodType.Constructor)]
         public class Blueprint_Patch
         {
-            public static void Postfix(BluePrint __instance, string name)
+            public static void Postfix(BluePrint __instance)
             {
                 if (!Config.ModEnabled)
                     return;
                 __instance.daysToConstruct = 0;
+            }
+        }
+        [HarmonyPatch(typeof(Building), new Type[] { typeof(BluePrint), typeof(Vector2) })]
+        [HarmonyPatch(MethodType.Constructor)]
+        public class Building_Patch
+        {
+            public static void Postfix(Building __instance)
+            {
+                if (!Config.ModEnabled)
+                    return;
+                __instance.daysOfConstructionLeft.Value = 0;
+            }
+        }
+        [HarmonyPatch(typeof(CarpenterMenu), nameof(CarpenterMenu.tryToBuild))]
+        public class CarpenterMenu_tryToBuild_Patch
+        {
+            public static void Postfix()
+            {
+                if (!Config.ModEnabled)
+                    return;
+                foreach(var b in Game1.getFarm().buildings)
+                {
+                    b.daysOfConstructionLeft.Value = 0;
+                }
             }
         }
 
@@ -54,8 +80,9 @@ namespace InstantBuildingConstruction
                                 ((AnimalHouse)buildings[i].indoors.Value).animalLimit.Value += 4;
                                 ((AnimalHouse)buildings[i].indoors.Value).loadLights();
                             }
-                            buildings[i].updateInteriorWarps(buildings[i].indoors.Value);
+
                         }
+                        buildings[i].upgrade();
                         buildings[i].resetTexture();
                     }
                 }

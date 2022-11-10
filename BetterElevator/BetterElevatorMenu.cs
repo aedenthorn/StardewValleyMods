@@ -114,7 +114,8 @@ namespace BetterElevator
 			int newLevel = int.Parse(ls);
 			if (!ModEntry.Config.Unrestricted && newLevel > MineShaft.lowestLevelReached)
 			{
-				newLevel = MineShaft.lowestLevelReached;
+				newLevel = MineShaft.lowestLevelReached - ((Game1.player.currentLocation is MineShaft && (Game1.player.currentLocation as MineShaft).getMineArea(-1) == 121) || Game1.player.currentLocation.Name == "SkullCave" ? 120 : 0);
+
 			}
 			if (newLevel > 120 && ((Game1.player.currentLocation is MineShaft && (Game1.player.currentLocation as MineShaft).getMineArea(-1) != 121) || Game1.player.currentLocation.Name == "Mine"))
             {
@@ -134,22 +135,23 @@ namespace BetterElevator
 			b.Draw(Game1.fadeToBlackRect, Game1.graphics.GraphicsDevice.Viewport.Bounds, Color.Black * 0.4f);
 			Game1.drawDialogueBox(xPositionOnScreen, yPositionOnScreen - 64 + 8, width + 21, height + 64, false, true, null, false, true, -1, -1, -1);
 			base.draw(b);
-			int lowestLevel = MineShaft.lowestLevelReached;
-			if (Game1.player.currentLocation is MineShaft && (Game1.player.currentLocation as MineShaft).getMineArea(-1) == 121)
-			{
-				lowestLevel -= 120;
-			}
-			else if(Game1.player.currentLocation.Name == "SkullCave")
+
+            int lowestLevel = MineShaft.lowestLevelReached;
+            if (Game1.player.currentLocation is MineShaft && (Game1.player.currentLocation as MineShaft).getMineArea(-1) == 121)
             {
-				if(lowestLevel <= 120)
-					lowestLevel = 0;
+                lowestLevel -= 120;
+            }
+            else if (Game1.player.currentLocation.Name == "SkullCave")
+            {
+                if (lowestLevel <= 120)
+                    lowestLevel = 0;
             }
             else
             {
-				lowestLevel = Math.Min(120, lowestLevel);
+                lowestLevel = Math.Min(120, lowestLevel);
             }
 
-			string level = (levelToGoto > 0 ?  level = levelToGoto.ToString() : "");
+            string level = (levelToGoto > 0 ?  levelToGoto.ToString() : "");
 			
 			int blinkRate = 16;
 			drawTicks++;

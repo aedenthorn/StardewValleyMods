@@ -16,12 +16,6 @@ namespace BetterElevator
 {
     public partial class ModEntry
     {
-        public static string GetCoopName()
-        {
-            if (!Config.ModEnabled || coopName is null)
-                return "Abigail";
-            return coopName;
-        }
         [HarmonyPatch(typeof(GameLocation), nameof(GameLocation.performAction))]
         public class GameLocation_performAction_Patch
         {
@@ -29,7 +23,7 @@ namespace BetterElevator
             {
                 if (!Config.ModEnabled || action == null || !who.IsLocalPlayer || !SHelper.Input.IsDown(Config.ModKey))
                     return true;
-                if (MineShaft.lowestLevelReached < (Game1.player.currentLocation.Name == "SkullCave" ? 121 : 1))
+                if (!Config.Unrestricted && MineShaft.lowestLevelReached < (Game1.player.currentLocation.Name == "SkullCave" ? 121 : 1))
                 {
                     return true;
                 }
