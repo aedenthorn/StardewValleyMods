@@ -31,10 +31,9 @@ namespace MailboxMenu
         public static ModEntry context;
 
         public static string npcPath = "aedenthorn.MailboxMenu/npcs";
-        public static string mailPath = "aedenthorn.MailboxMenu/mail";
+        public static string mailPath = "aedenthorn.MailboxMenu/letters";
         public static Dictionary<string, EnvelopeData> envelopeData = new Dictionary<string, EnvelopeData>();
         public static Dictionary<string, EnvelopeData> npcEnvelopeData = new Dictionary<string, EnvelopeData>();
-        public static int whichTab;
 
         /// <summary>The mod entry point, called after the mod is first loaded.</summary>
         /// <param name="helper">Provides simplified APIs for writing mods.</param>
@@ -91,7 +90,7 @@ namespace MailboxMenu
             }
             else if (e.NameWithoutLocale.IsEquivalentTo(mailPath))
             {
-                e.LoadFrom(() => new Dictionary<string, EnvelopeData>(), StardewModdingAPI.Events.AssetLoadPriority.Exclusive);
+                e.LoadFrom(() => defaultMailSenders, StardewModdingAPI.Events.AssetLoadPriority.Exclusive);
             }
         }
 
@@ -115,7 +114,6 @@ namespace MailboxMenu
                 getValue: () => Config.ModEnabled,
                 setValue: value => Config.ModEnabled = value
             );
-
             configMenu.AddTextOption(
                 mod: ModManifest,
                 name: () => "Inbox Text",
@@ -127,6 +125,54 @@ namespace MailboxMenu
                 name: () => "Archive Text",
                 getValue: () => Config.ArchiveText,
                 setValue: value => Config.ArchiveText = value
+            );
+            configMenu.AddNumberOption(
+                mod: ModManifest,
+                name: () => "Window Width",
+                getValue: () => Config.WindowWidth,
+                setValue: value => Config.WindowWidth = value
+            );
+            configMenu.AddNumberOption(
+                mod: ModManifest,
+                name: () => "Window Height",
+                getValue: () => Config.WindowHeight,
+                setValue: value => Config.WindowHeight = value
+            );
+            configMenu.AddNumberOption(
+                mod: ModManifest,
+                name: () => "Grid Columns",
+                getValue: () => Config.GridColumns,
+                setValue: value => Config.GridColumns = value
+            );
+            configMenu.AddNumberOption(
+                mod: ModManifest,
+                name: () => "Envelope Width",
+                getValue: () => Config.EnvelopeWidth,
+                setValue: value => Config.EnvelopeWidth = value
+            );
+            configMenu.AddNumberOption(
+                mod: ModManifest,
+                name: () => "Envelope Height",
+                getValue: () => Config.EnvelopeHeight,
+                setValue: value => Config.EnvelopeHeight = value
+            );
+            configMenu.AddNumberOption(
+                mod: ModManifest,
+                name: () => "Envelope Height",
+                getValue: () => Config.EnvelopeHeight,
+                setValue: value => Config.EnvelopeHeight = value
+            );
+            configMenu.AddNumberOption(
+                mod: ModManifest,
+                name: () => "Side Width",
+                getValue: () => Config.SideWidth,
+                setValue: value => Config.SideWidth = value
+            );
+            configMenu.AddNumberOption(
+                mod: ModManifest,
+                name: () => "Grid Spacing",
+                getValue: () => Config.GridSpace,
+                setValue: value => Config.GridSpace = value
             );
         }
     }
