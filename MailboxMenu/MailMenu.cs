@@ -31,7 +31,7 @@ namespace MailboxMenu
 
         public MailMenu() : base(Game1.uiViewport.Width / 2 - (windowWidth + borderWidth * 2) / 2, Game1.uiViewport.Height / 2 - (windowHeight + borderWidth * 2) / 2, windowWidth + borderWidth * 2, windowHeight + borderWidth * 2, false)
         {
-            var textHeight = (int)Game1.dialogueFont.MeasureString("Inbox").Y;
+            var textHeight = (int)Game1.dialogueFont.MeasureString(ModEntry.Config.InboxText).Y;
             currentMailList = new List<ClickableTextureComponent>();
             inboxButton = new ClickableComponent(new Rectangle(xPositionOnScreen + borderWidth + 16, yPositionOnScreen + borderWidth + 64, 256, textHeight), "Inbox")
             {
@@ -67,7 +67,7 @@ namespace MailboxMenu
                 contained++;
                 int width = cc.texture.Width;
                 int xOffset = 0;
-                if(ModEntry.mailDataDict.TryGetValue(cc.name, out MailData data) && data.frames > 1)
+                if(ModEntry.envelopeData.TryGetValue(cc.name, out EnvelopeData data) && data.frames > 1)
                 {
                     cc.draw(b, Color.White, 1, (int)(Game1.currentGameTime.TotalGameTime.TotalSeconds / data.frameSeconds) % data.frames);
                 }
@@ -102,12 +102,13 @@ namespace MailboxMenu
                         canScroll = true;
                         break;
                     }
+                    b.DrawString(Game1.smallFont, str, new Vector2(cc.bounds.X + (cc.bounds.Width - m.X) / 2 - 1, y + 1), Color.White, 0, Vector2.Zero, scale, SpriteEffects.None, 1f);
                     b.DrawString(Game1.smallFont, str, new Vector2(cc.bounds.X + (cc.bounds.Width - m.X) / 2, y), Color.Black, 0, Vector2.Zero, scale, SpriteEffects.None, 1f);
                     lines++;
                 }
             }
-            SpriteText.drawString(b, "Inbox", inboxButton.bounds.X, inboxButton.bounds.Y, color: ModEntry.whichTab == 0 ? 0 : 8);
-            SpriteText.drawString(b, "Archive", allMailButton.bounds.X, allMailButton.bounds.Y, color: ModEntry.whichTab == 1 ? 0 : 8);
+            SpriteText.drawString(b, ModEntry.Config.InboxText, inboxButton.bounds.X, inboxButton.bounds.Y, color: ModEntry.whichTab == 0 ? 0 : 8);
+            SpriteText.drawString(b, ModEntry.Config.ArchiveText, allMailButton.bounds.X, allMailButton.bounds.Y, color: ModEntry.whichTab == 1 ? 0 : 8);
             drawMouse(b);
             base.draw(b);
         }
@@ -250,20 +251,41 @@ namespace MailboxMenu
             var gridX = i % gridColumns;
             var gridY = i / gridColumns;
             Texture2D texture;
-            if(ModEntry.mailDataDict.TryGetValue(id, out MailData data))
+            if(ModEntry.envelopeData.TryGetValue(id, out EnvelopeData data))
             {
-                if (!string.IsNullOrEmpty(data.texturePath))
+                if (data.texture is not null)
+                {
+                    texture = data.texture;
+                }
+                else if (!string.IsNullOrEmpty(data.texturePath))
                 {
                     texture = ModEntry.SHelper.GameContent.Load<Texture2D>(data.texturePath);
                 }
-                else if(string.IsNullOrEmpty(data.sender) || !ModEntry.npcEnvelopeTextures.TryGetValue(data.sender, out texture))
+                else if(!string.IsNullOrEmpty(data.sender) && ModEntry.npcEnvelopeData.TryGetValue(data.sender, out data))
                 {
-                    texture = ModEntry.mailDataDict["default"].texture;
+                    if (data.texture is not null)
+                    {
+                        texture = data.texture;
+                    }
+                    else if (!string.IsNullOrEmpty(data.texturePath))
+                    {
+                        texture = ModEntry.SHelper.GameContent.Load<Texture2D>(data.texturePath);
+                    }
+                    else
+                    {
+                        data = ModEntry.envelopeData["default"];
+                        texture = data.texture;
+                    }
+                }
+                else
+                {
+                    data = ModEntry.envelopeData["default"];
+                    texture = data.texture;
                 }
             }
             else
             {
-                data = ModEntry.mailDataDict["default"];
+                data = ModEntry.envelopeData["default"];
                 texture = data.texture;
             }
             Rectangle textureBounds = new Rectangle(0, 0, texture.Width, texture.Height);
@@ -272,7 +294,7 @@ namespace MailboxMenu
                 textureBounds.Size = new Point(data.frameWidth, texture.Height);
             }
 
-            currentMailList.Add(new ClickableTextureComponent(id, new Rectangle(xPositionOnScreen + borderWidth + 256 + 10 + gridX * (envelopeWidth + gridSpace), yPositionOnScreen + borderWidth + 64 + gridY * (envelopeHeight + gridSpace), envelopeWidth, envelopeHeight), "", "", texture, textureBounds, data.scale, false)
+            currentMailList.Add(new ClickableTextureComponent(id, new Rectangle(xPositionOnScreen + borderWidth + 256 + 10 + gridX * (envelopeWidth + gridSpace), yPositionOnScreen + borderWidth + 64 + gridY * (envelopeHeight + gridSpace + 16), envelopeWidth, envelopeHeight), "", "", texture, textureBounds, data.scale, false)
             {
                 hoverText = GetMailName(id),
                 myID = mailIndex + i,

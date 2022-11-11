@@ -3,12 +3,12 @@ using System.Text.Json.Serialization;
 
 namespace MailboxMenu
 {
-    public class MailData
+    public class EnvelopeData
     {
         public string texturePath;
         public string sender;
         public string title;
-        public float scale = 4;
+        public float scale = 1;
         public int frames = 1;
         public int frameWidth;
         public float frameSeconds;

@@ -7,5 +7,7 @@ namespace MailboxMenu
     public class ModConfig
     {
         public bool ModEnabled { get; set; } = true;
+        public string InboxText { get; set; } = "Mailbox";
+        public string ArchiveText { get; set; } = "Old Mail";
     }
 }

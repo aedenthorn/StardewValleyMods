@@ -1,6 +1,7 @@
 ﻿using HarmonyLib;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using Newtonsoft.Json;
 using StardewModdingAPI;
 using StardewValley;
 using StardewValley.BellsAndWhistles;
@@ -31,8 +32,8 @@ namespace MailboxMenu
 
         public static string npcPath = "aedenthorn.MailboxMenu/npcs";
         public static string mailPath = "aedenthorn.MailboxMenu/mail";
-        public static Dictionary<string, MailData> mailDataDict = new Dictionary<string, MailData>();
-        public static Dictionary<string, Texture2D> npcEnvelopeTextures = new Dictionary<string, Texture2D>();
+        public static Dictionary<string, EnvelopeData> envelopeData = new Dictionary<string, EnvelopeData>();
+        public static Dictionary<string, EnvelopeData> npcEnvelopeData = new Dictionary<string, EnvelopeData>();
         public static int whichTab;
 
         /// <summary>The mod entry point, called after the mod is first loaded.</summary>
@@ -50,35 +51,35 @@ namespace MailboxMenu
             SHelper = helper;
 
             Helper.Events.GameLoop.GameLaunched += GameLoop_GameLaunched;
-            Helper.Events.GameLoop.SaveLoaded += GameLoop_SaveLoaded;
+            Helper.Events.GameLoop.DayStarted += GameLoop_DayStarted;
             Helper.Events.Content.AssetRequested += Content_AssetRequested;
 
             var harmony = new Harmony(ModManifest.UniqueID);
             harmony.PatchAll();
         }
 
-        private void GameLoop_SaveLoaded(object sender, StardewModdingAPI.Events.SaveLoadedEventArgs e)
+        private void GameLoop_DayStarted(object sender, StardewModdingAPI.Events.DayStartedEventArgs e)
         {
-            npcEnvelopeTextures.Clear();
-            var data = Helper.GameContent.Load<Dictionary<string, string>>(npcPath);
-            foreach(var kvp in data)
+            npcEnvelopeData = Helper.GameContent.Load<Dictionary<string, EnvelopeData>>(npcPath);
+            foreach (var key in npcEnvelopeData.Keys.ToArray())
             {
-                npcEnvelopeTextures[kvp.Key] = Helper.GameContent.Load<Texture2D>(kvp.Value);
+                if (!string.IsNullOrEmpty(npcEnvelopeData[key].texturePath))
+                    npcEnvelopeData[key].texture = Helper.GameContent.Load<Texture2D>(npcEnvelopeData[key].texturePath);
             }
-            mailDataDict = Helper.GameContent.Load<Dictionary<string, MailData>>(mailPath);
-            foreach (var key in mailDataDict.Keys.ToArray())
+            envelopeData = Helper.GameContent.Load<Dictionary<string, EnvelopeData>>(mailPath);
+            foreach (var key in envelopeData.Keys.ToArray())
             {
-                if(!string.IsNullOrEmpty(mailDataDict[key].texturePath))
-                    mailDataDict[key].texture = Helper.GameContent.Load<Texture2D>(mailDataDict[key].texturePath);
+                if(!string.IsNullOrEmpty(envelopeData[key].texturePath))
+                    envelopeData[key].texture = Helper.GameContent.Load<Texture2D>(envelopeData[key].texturePath);
             }
-            if (!mailDataDict.ContainsKey("default"))
+            if (!envelopeData.ContainsKey("default"))
             {
-                mailDataDict["default"] = new MailData() { 
+                envelopeData["default"] = new EnvelopeData() { 
                     texture = Helper.ModContent.Load<Texture2D>(Path.Combine("assets", "envelope.png")), 
-                    scale = 16, 
+                    scale = 1, 
                 };
             }
-            Monitor.Log($"npc envelopes: {npcEnvelopeTextures.Count}, mail data: {mailDataDict.Count}");
+            Monitor.Log($"npc envelopes: {npcEnvelopeData.Count}, mail data: {envelopeData.Count}");
         }
 
         private void Content_AssetRequested(object sender, StardewModdingAPI.Events.AssetRequestedEventArgs e)
@@ -86,11 +87,11 @@ namespace MailboxMenu
 
             if (e.NameWithoutLocale.IsEquivalentTo(npcPath))
             {
-                e.LoadFrom(() => new Dictionary<string, string>(), StardewModdingAPI.Events.AssetLoadPriority.Exclusive);
+                e.LoadFrom(() => new Dictionary<string, EnvelopeData>(), StardewModdingAPI.Events.AssetLoadPriority.Exclusive);
             }
             else if (e.NameWithoutLocale.IsEquivalentTo(mailPath))
             {
-                e.LoadFrom(() => new Dictionary<string, MailData>(), StardewModdingAPI.Events.AssetLoadPriority.Exclusive);
+                e.LoadFrom(() => new Dictionary<string, EnvelopeData>(), StardewModdingAPI.Events.AssetLoadPriority.Exclusive);
             }
         }
 
@@ -113,6 +114,19 @@ namespace MailboxMenu
                 name: () => "Mod Enabled",
                 getValue: () => Config.ModEnabled,
                 setValue: value => Config.ModEnabled = value
+            );
+
+            configMenu.AddTextOption(
+                mod: ModManifest,
+                name: () => "Inbox Text",
+                getValue: () => Config.InboxText,
+                setValue: value => Config.InboxText = value
+            );
+            configMenu.AddTextOption(
+                mod: ModManifest,
+                name: () => "Archive Text",
+                getValue: () => Config.ArchiveText,
+                setValue: value => Config.ArchiveText = value
             );
         }
     }
