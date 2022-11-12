@@ -1,4 +1,5 @@
-﻿using StardewValley;
+﻿using Microsoft.Xna.Framework;
+using StardewValley;
 using StardewValley.Objects;
 using System;
 using Object = StardewValley.Object;
@@ -71,6 +72,40 @@ namespace LightMod
                 Game1.currentLocation.removeLightSource(ident);
                 value.initializeLightSource(value.TileLocation);
             }
+        }
+        
+        private void ChangeLightGlowAlpha(Vector2 light, int delta)
+        {
+            suppressingScroll = true;
+            string key = $"{alphaKey}_{light.X}_{light.Y}";
+            int shiftAmount = Config.AlphaAmount;
+            if (Helper.Input.IsDown(Config.ModButton1))
+            {
+                shiftAmount = Config.Alpha1Amount;
+            }
+            else if (Helper.Input.IsDown(Config.ModButton2))
+            {
+                shiftAmount = Config.Alpha2Amount;
+            }
+            shiftAmount *= (delta > 0 ? 1 : -1);
+            if (Game1.currentLocation.modData.TryGetValue(key, out string alphaString) && int.TryParse(alphaString, out int oldAlpha))
+            {
+                shiftAmount += oldAlpha;
+            }
+            else
+            {
+                shiftAmount += 255;
+            }
+            shiftAmount = Math.Max(0, Math.Min(255, shiftAmount));
+            Game1.currentLocation.modData[key] = shiftAmount + "";
+            SMonitor.Log($"Set light glow {light} alpha to {shiftAmount}");
+        }
+
+        private static Color GetLightGlowAlpha(GameLocation l, Vector2 light)
+        {
+            if (!Config.ModEnabled || !l.modData.TryGetValue($"{alphaKey}_{light.X}_{light.Y}", out string alphaString) || !int.TryParse(alphaString, out int alpha))
+                return Color.White;
+            return Color.White * (alpha / 255f);
         }
 
 

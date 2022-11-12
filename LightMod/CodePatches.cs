@@ -27,11 +27,12 @@ namespace LightMod
             var codes = new List<CodeInstruction>(instructions);
             for (int i = 0; i < codes.Count; i++)
             {
-                if (i < codes.Count - 2 && codes[i].opcode == OpCodes.Ldloc_S && codes[i + 1].opcode == OpCodes.Ldfld && codes[i + 2].opcode == OpCodes.Callvirt && (FieldInfo)codes[i + 1].operand == AccessTools.Field(typeof(LightSource), nameof(LightSource.lightTexture)) && (MethodInfo)codes[i + 2].operand == AccessTools.PropertyGetter(typeof(Texture2D), nameof(Texture2D.Bounds)))
+                if (i < codes.Count - 3 && codes[i].opcode == OpCodes.Ldloc_S && codes[i + 1].opcode == OpCodes.Ldfld && codes[i + 2].opcode == OpCodes.Callvirt && (FieldInfo)codes[i + 1].operand == AccessTools.Field(typeof(LightSource), nameof(LightSource.lightTexture)) && (MethodInfo)codes[i + 2].operand == AccessTools.PropertyGetter(typeof(Texture2D), nameof(Texture2D.Bounds)))
                 {
                     SMonitor.Log("adding method to check light source texture bounds");
                     codes.Insert(i + 3, new CodeInstruction(OpCodes.Call, AccessTools.Method(typeof(ModEntry), nameof(ModEntry.GetTextureBounds))));
                     codes.Insert(i + 3, codes[i].Clone());
+                    i += 4;
                 }
             }
 
@@ -153,6 +154,30 @@ namespace LightMod
             }
         }
         
+        [HarmonyPatch(typeof(GameLocation), nameof(GameLocation.drawLightGlows))]
+        private static class GameLocation_drawLightGlows_Patch
+        {
+            public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions)
+            {
+                SMonitor.Log($"Transpiling GameLocation.drawLightGlows");
+
+                var codes = new List<CodeInstruction>(instructions);
+                for (int i = 0; i < codes.Count; i++)
+                {
+                    if (codes[i].opcode == OpCodes.Call && (MethodInfo)codes[i].operand == AccessTools.PropertyGetter(typeof(Color), nameof(Color.White)))
+                    {
+                        SMonitor.Log("adding method to change light glow alpha");
+                        codes[i].operand = AccessTools.Method(typeof(ModEntry), nameof(ModEntry.GetLightGlowAlpha));
+                        codes.Insert(i, new CodeInstruction(OpCodes.Ldloc_1));
+                        codes.Insert(i, new CodeInstruction(OpCodes.Ldarg_0));
+                        break;
+                    }
+                }
+
+                return codes.AsEnumerable();
+            }
+        }
+
         [HarmonyPatch(typeof(Furniture), nameof(Furniture.removeLights))]
         private static class Furniture_removeLights_Patch
         {

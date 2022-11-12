@@ -103,7 +103,16 @@ namespace LightMod
             suppressingScroll = false;
             if (!Config.ModEnabled || !Context.IsPlayerFree)
                 return;
-            if(Game1.currentLocation.Objects.TryGetValue(Game1.currentCursorTile, out Object value) && value.lightSource is not null)
+            Point tile = Utility.Vector2ToPoint(Game1.currentCursorTile * 64);
+            foreach (var l in Game1.currentLocation.lightGlows)
+            {
+                if (Utility.Vector2ToPoint(l - new Vector2(32,0)) == tile)
+                {
+                    ChangeLightGlowAlpha(l, e.Delta);
+                    return;
+                }
+            }
+            if (Game1.currentLocation.Objects.TryGetValue(Game1.currentCursorTile, out Object value) && value.lightSource is not null)
             {
                 if (Helper.Input.IsDown(Config.RadiusModButton))
                 {
@@ -115,7 +124,6 @@ namespace LightMod
                 }
                 return;
             }
-            Point tile = Utility.Vector2ToPoint(Game1.currentCursorTile * 64);
             foreach (var f in Game1.currentLocation.furniture)
             {
                 if (f.getBoundingBox(f.TileLocation).Contains(tile))
