@@ -52,9 +52,20 @@ namespace MailboxMenu
             Helper.Events.GameLoop.GameLaunched += GameLoop_GameLaunched;
             Helper.Events.GameLoop.DayStarted += GameLoop_DayStarted;
             Helper.Events.Content.AssetRequested += Content_AssetRequested;
+            Helper.Events.Input.ButtonPressed += Input_ButtonPressed;
 
             var harmony = new Harmony(ModManifest.UniqueID);
             harmony.PatchAll();
+        }
+
+        private void Input_ButtonPressed(object sender, StardewModdingAPI.Events.ButtonPressedEventArgs e)
+        {
+            if (!Config.ModEnabled)
+                return;
+            if(e.Button == Config.MenuKey)
+            {
+                OpenMenu();
+            }
         }
 
         private void GameLoop_DayStarted(object sender, StardewModdingAPI.Events.DayStartedEventArgs e)
@@ -96,6 +107,11 @@ namespace MailboxMenu
 
         private void GameLoop_GameLaunched(object sender, StardewModdingAPI.Events.GameLaunchedEventArgs e)
         {
+            var phoneAPI = Helper.ModRegistry.GetApi<IMobilePhoneApi>("aedenthorn.MobilePhone");
+            if (phoneAPI != null)
+            {
+                phoneAPI.AddApp("aedenthorn.MailboxMenu", "Mailbox", OpenMenu, Helper.ModContent.Load<Texture2D>(Path.Combine("assets", "icon.png")));
+            }
             // get Generic Mod Config Menu's API (if it's installed)
             var configMenu = Helper.ModRegistry.GetApi<IGenericModConfigMenuApi>("spacechase0.GenericModConfigMenu");
             if (configMenu is null)
@@ -113,6 +129,25 @@ namespace MailboxMenu
                 name: () => "Mod Enabled",
                 getValue: () => Config.ModEnabled,
                 setValue: value => Config.ModEnabled = value
+            );
+            configMenu.AddBoolOption(
+                mod: ModManifest,
+                name: () => "Click Mailbox To Open",
+                getValue: () => Config.MenuOnMailbox,
+                setValue: value => Config.MenuOnMailbox = value
+            );
+            configMenu.AddKeybind(
+                mod: ModManifest,
+                name: () => "Menu Key",
+                getValue: () => Config.MenuKey,
+                setValue: value => Config.MenuKey = value
+            );
+            configMenu.AddKeybind(
+                mod: ModManifest,
+                name: () => "Mod Key",
+                tooltip: () => "Hold this down while interacting with the mailbox",
+                getValue: () => Config.ModKey,
+                setValue: value => Config.ModKey = value
             );
             configMenu.AddTextOption(
                 mod: ModManifest,
@@ -174,6 +209,14 @@ namespace MailboxMenu
                 getValue: () => Config.GridSpace,
                 setValue: value => Config.GridSpace = value
             );
+        }
+
+        private void OpenMenu()
+        {
+            if(Config.ModEnabled && Context.IsPlayerFree)
+            {
+                Game1.activeClickableMenu = new MailMenu();
+            }
         }
     }
 }

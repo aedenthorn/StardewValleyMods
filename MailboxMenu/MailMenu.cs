@@ -11,21 +11,22 @@ namespace MailboxMenu
 {
     public class MailMenu : IClickableMenu
     {
-        private static int whichTab;
-        private static string whichSender;
-        private static bool preserveScroll;
-        private static int mainScrolled;
-        private static int sideScrolled;
+        public static int whichTab;
+        public static string whichSender;
+        public static bool preserveScroll;
+        public static int mainScrolled;
+        public static int sideScrolled;
 
-        private ClickableComponent inboxButton;
-        private ClickableComponent allMailButton;
-        private List<ClickableTextureComponent> currentMailList = new List<ClickableTextureComponent>();
-        private List<ClickableComponent> senders = new List<ClickableComponent>();
-        private List<string> possibleSenders = new List<string>();
-        private int mailIndex = 99942000;
-        private Dictionary<string, string> mailTitles = new Dictionary<string, string>();
-        private bool canScroll;
-        private int contained;
+        public ClickableComponent inboxButton;
+        public ClickableComponent allMailButton;
+        public List<ClickableTextureComponent> currentMailList = new List<ClickableTextureComponent>();
+        public List<ClickableComponent> senders = new List<ClickableComponent>();
+        public List<string> possibleSenders = new List<string>();
+        public int mailIndex = 99942000;
+        public Dictionary<string, string> mailTitles = new Dictionary<string, string>();
+        public bool canScroll;
+        public int lastVisibleMailId;
+        public int contained;
 
         public MailMenu() : base(Game1.uiViewport.Width / 2 - (ModEntry.Config.WindowWidth + borderWidth * 2) / 2, Game1.uiViewport.Height / 2 - (ModEntry.Config.WindowHeight + borderWidth * 2) / 2, ModEntry.Config.WindowWidth + borderWidth * 2, ModEntry.Config.WindowHeight+ borderWidth * 2, false)
         {
@@ -40,43 +41,52 @@ namespace MailboxMenu
 
             var textHeight = (int)Game1.dialogueFont.MeasureString(ModEntry.Config.InboxText).Y;
             currentMailList = new List<ClickableTextureComponent>();
-            inboxButton = new ClickableComponent(new Rectangle(xPositionOnScreen + borderWidth + 16, yPositionOnScreen + borderWidth + 64, 256, textHeight), "Inbox")
+            inboxButton = new ClickableComponent(new Rectangle(xPositionOnScreen + borderWidth + 16, yPositionOnScreen + borderWidth + 64, ModEntry.Config.SideWidth - 16, textHeight), "Inbox")
             {
                 myID = 900,
                 downNeighborID = 901,
                 rightNeighborID = mailIndex,
-                region = 15923
+                region = 42
             };
-            allMailButton = new ClickableComponent(new Rectangle(xPositionOnScreen + borderWidth + 16, yPositionOnScreen + borderWidth + 64 + textHeight + 8, 256, textHeight), "Archive")
+            allMailButton = new ClickableComponent(new Rectangle(xPositionOnScreen + borderWidth + 16, yPositionOnScreen + borderWidth + 64 + textHeight + 8, ModEntry.Config.SideWidth - 16, textHeight), "Archive")
             {
                 myID = 901,
                 upNeighborID = 900,
                 downNeighborID = 902,
                 rightNeighborID = mailIndex,
-                region = 15923
+                region = 42
             };
             PopulateSenders();
             PopulateMailList();
-            populateClickableComponentList();
+            snapToDefaultClickableComponent();
         }
 
         private void PopulateSenders()
         {
             senders.Clear();
             possibleSenders.Clear();
-            foreach(var kvp in ModEntry.envelopeData)
+            bool addUnknown = false;
+            Dictionary<string, string> mail = Game1.content.Load<Dictionary<string, string>>("Data\\mail");
+            foreach (var id in Game1.player.mailReceived)
             {
-                if (Game1.mailbox.Contains(kvp.Key) || !Game1.player.mailReceived.Contains(kvp.Key))
+                if (!mail.ContainsKey(id))
                     continue;
-                if(!string.IsNullOrEmpty(kvp.Value.sender) && !possibleSenders.Contains(kvp.Value.sender))
+                if(ModEntry.envelopeData.TryGetValue(id, out EnvelopeData data) && !string.IsNullOrEmpty(data.sender))
                 {
-                    possibleSenders.Add(kvp.Value.sender);
+                    if(!possibleSenders.Contains(data.sender))
+                        possibleSenders.Add(data.sender);
+                }
+                else
+                {
+                    addUnknown = true;
                 }
             }
             var textHeight = (int)Game1.dialogueFont.MeasureString(ModEntry.Config.InboxText).Y;
             var textHeight2 = (int)Game1.smallFont.MeasureString(ModEntry.Config.InboxText).Y;
             int count = (height - borderWidth * 2 - 64 - (textHeight + 8) * 2) / textHeight2;
             possibleSenders.Sort();
+            if (addUnknown)
+                possibleSenders.Add("???");
             var list = possibleSenders.Skip(sideScrolled).Take(count).ToList();
             for (int i = 0; i < list.Count; i++)
             {
@@ -86,49 +96,67 @@ namespace MailboxMenu
                     upNeighborID = 902 + i - 1,
                     downNeighborID = 902 + i + 1,
                     rightNeighborID = mailIndex,
-                    region = 15923
+                    region = 42
                 });
             }
+            populateClickableComponentList();
         }
 
         private void PopulateMailList()
         {
+            Dictionary<string, string> mail = Game1.content.Load<Dictionary<string, string>>("Data\\mail");
+
             currentMailList.Clear();
             if (whichTab == 0)
             {
                 for (int i = mainScrolled * ModEntry.Config.GridColumns; i < Game1.mailbox.Count; i++)
                 {
-                    ModEntry.SMonitor.Log(Game1.mailbox[i]);
-                    AddMail(Game1.mailbox[i], i);
+                    if (mail.TryGetValue(Game1.mailbox[i], out string mailData))
+                        AddMail(Game1.mailbox[i], i, mailData);
+                    else
+                    {
+                        AddMail(Game1.mailbox[i], i, "");
+                    }
                 }
             }
             else
             {
-                Dictionary<string, string> mail = Game1.content.Load<Dictionary<string, string>>("Data\\mail");
                 List<string> strings = new List<string>();
                 int count = 0;
                 for (int i = 0; i < Game1.player.mailReceived.Count; i++)
                 {
-                    if (Game1.mailbox.Contains(Game1.player.mailReceived[i]) || !mail.ContainsKey(Game1.player.mailReceived[i]))
+                    string id = Game1.player.mailReceived[i];
+                    if (!mail.TryGetValue(id, out string mailData))
                         continue;
-                    if (whichSender is not null && (!ModEntry.envelopeData.TryGetValue(Game1.player.mailReceived[i], out EnvelopeData data) || data.sender != whichSender))
+                    if (Game1.mailbox.Contains(id))
                         continue;
+                    if (whichSender is not null)
+                    {
+                        if (ModEntry.envelopeData.TryGetValue(id, out EnvelopeData data))
+                        {
+                            if(data.sender != whichSender)
+                                continue;
+                        }
+                        else if(whichSender != "???") 
+                        {
+                            continue;
+                        }
+                    }
                     if (count >= mainScrolled * ModEntry.Config.GridColumns)
                     {
-                        AddMail(Game1.player.mailReceived[i], count - mainScrolled * ModEntry.Config.GridColumns);
+                            AddMail(id, count - mainScrolled * ModEntry.Config.GridColumns, mailData);
                     }
                     count++;
                 }
             }
+            populateClickableComponentList();
         }
 
-        private void AddMail(string id, int i)
+        private void AddMail(string id, int i, string mailData)
         {
-            Dictionary<string, string> mail = Game1.content.Load<Dictionary<string, string>>("Data\\mail");
-
             if (!mailTitles.ContainsKey(id))
             {
-                string[] split = mail[id].Split(new string[]
+                string[] split = mailData.Split(new string[]
                 {
                 "[#]"
                 }, StringSplitOptions.None);
@@ -184,13 +212,64 @@ namespace MailboxMenu
             {
                 hoverText = mailTitles[id],
                 myID = mailIndex + i,
-                upNeighborID = mailIndex + i - 1,
-                downNeighborID = mailIndex + i + 1,
-                leftNeighborID = 901,
-                region = 15924
+                upNeighborID = mailIndex + i - ModEntry.Config.GridColumns,
+                downNeighborID = mailIndex + i + ModEntry.Config.GridColumns,
+                leftNeighborID = (i % ModEntry.Config.GridColumns == 0 ? 901 : mailIndex + i - 1),
+                rightNeighborID = (i % ModEntry.Config.GridColumns == ModEntry.Config.GridColumns - 1 ? -99999 : mailIndex + i + 1),
+                region = 4242
             });
         }
-
+        public override void snapToDefaultClickableComponent()
+        {
+            if (!Game1.options.snappyMenus || !Game1.options.gamepadControls)
+                return;
+            if(currentlySnappedComponent == null)
+                currentlySnappedComponent = getComponentWithID(900);
+            snapCursorToCurrentSnappedComponent();
+        }
+        public override void applyMovementKey(int direction)
+        {
+            if(currentlySnappedComponent != null)
+            {
+                if (direction == 1 && currentlySnappedComponent.rightNeighborID == -99999)
+                    return;
+                if (direction == 0)
+                {
+                    if (currentlySnappedComponent.region == 4242 && mainScrolled > 0 && currentlySnappedComponent.myID < mailIndex + ModEntry.Config.GridColumns)
+                    {
+                        mainScrolled--;
+                        Game1.playSound("shiny4");
+                        PopulateMailList();
+                        return;
+                    }
+                    if (currentlySnappedComponent.region == 42 && sideScrolled > 0 && currentlySnappedComponent.myID == 902)
+                    {
+                        sideScrolled--;
+                        Game1.playSound("shiny4");
+                        PopulateSenders();
+                        return;
+                    }
+                }
+                else if (direction == 2)
+                {
+                    if (currentlySnappedComponent.region == 4242 && canScroll && currentlySnappedComponent.myID > lastVisibleMailId - ModEntry.Config.GridColumns && currentlySnappedComponent.myID < mailIndex + currentMailList.Count - ModEntry.Config.GridColumns)
+                    {
+                        mainScrolled++;
+                        Game1.playSound("shiny4");
+                        PopulateMailList();
+                        return;
+                    }
+                    if (currentlySnappedComponent.region == 42 && possibleSenders.Count > sideScrolled + senders.Count && currentlySnappedComponent.myID == 901 + senders.Count)
+                    {
+                        sideScrolled++;
+                        Game1.playSound("shiny4");
+                        PopulateSenders();
+                        return;
+                    }
+                }
+            }
+            base.applyMovementKey(direction);
+        }
         public override void draw(SpriteBatch b)
         {
             canScroll = false;
@@ -216,20 +295,19 @@ namespace MailboxMenu
                 contained++;
                 int width = cc.texture.Width;
                 int xOffset = 0;
-                if(ModEntry.envelopeData.TryGetValue(cc.name, out EnvelopeData data) && data.frames > 1)
-                {
-                    cc.draw(b, Color.White, 1, (int)(Game1.currentGameTime.TotalGameTime.TotalSeconds / data.frameSeconds) % data.frames);
-                }
-                else if (cc.bounds.Y + cc.bounds.Height >= cutoff)
+                int frameOffset = (ModEntry.envelopeData.TryGetValue(cc.name, out EnvelopeData data) && data.frames > 1) ? (int)(Game1.currentGameTime.TotalGameTime.TotalSeconds / data.frameSeconds) % data.frames : 0;
+
+                if (cc.bounds.Y + cc.bounds.Height >= cutoff)
                 {
                     cc.sourceRect = new Rectangle(xOffset, 0, width, Math.Min((cutoff - cc.bounds.Y) / (ModEntry.Config.EnvelopeWidth / cc.texture.Width), cc.texture.Height));
-                    cc.draw(b);
+                    cc.draw(b, Color.White, 1, frameOffset);
                     canScroll = true;
                     continue;
                 }
                 else
                 {
-                    cc.draw(b);
+                    lastVisibleMailId = cc.myID;
+                    cc.draw(b, Color.White, 1, frameOffset);
                 }
                 var s = mailTitles[cc.name];
                 var scale = 1f;

@@ -7,6 +7,9 @@ namespace MailboxMenu
     public class ModConfig
     {
         public bool ModEnabled { get; set; } = true;
+        public bool MenuOnMailbox { get; set; } = true;
+        public SButton ModKey { get; set; } = SButton.None;
+        public SButton MenuKey { get; set; } = SButton.F15;
         public string InboxText { get; set; } = "Mailbox";
         public string ArchiveText { get; set; } = "Old Mail";
         public int WindowWidth { get; set; } = 1600;
