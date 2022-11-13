@@ -41,7 +41,7 @@ namespace PersonalTravellingCart
                 }
                 SMonitor.Log($"Loaded {cartDict.Count} custom carts");
 
-                cartDict[defaultKey] = new PersonalCartData() { spriteSheet = SHelper.ModContent.Load<Texture2D>("assets/cart.png") };
+                cartDict[defaultKey] = new PersonalCartData() { spriteSheet = SHelper.ModContent.Load<Texture2D>("assets/cart.png"), mapPath = SHelper.ModContent.GetInternalAssetName("assets/Cart.tmx").BaseName };
 
                 string mapAssetKey;
                 if (Game1.player.modData.TryGetValue(cartKey, out string which) && cartDict.TryGetValue(which, out PersonalCartData data) && data.mapPath is not null)
@@ -283,6 +283,7 @@ namespace PersonalTravellingCart
                             SMonitor.Log($"Location {locName} does not exist");
                             return true;
                         }
+                        var locations = Game1.getLocationFromName(locName);
                         SMonitor.Log($"Warping to Cart {locName}");
                         Game1.warpFarmer(new LocationRequest(locName, false, location), cartDict[which].entryTile.X, cartDict[which].entryTile.Y, 0);
                         __result = true;
@@ -553,8 +554,17 @@ namespace PersonalTravellingCart
                 {
                     DrawLayer(af, Game1.mapDisplayDevice, Game1.viewport, offset, false, 4);
                 }
+                
                 Game1.mapDisplayDevice.EndScene();
-
+                
+				if (loc.LightLevel > 0f && Game1.timeOfDay < 2000)
+				{
+					Game1.spriteBatch.Draw(Game1.fadeToBlackRect, Game1.graphics.GraphicsDevice.Viewport.Bounds, Color.Black * Game1.currentLocation.LightLevel);
+				}
+				if (Game1.screenGlow)
+				{
+					Game1.spriteBatch.Draw(Game1.fadeToBlackRect, Game1.graphics.GraphicsDevice.Viewport.Bounds, Game1.screenGlowColor * Game1.screenGlowAlpha);
+				}
                 if (Config.DrawCartExteriorWeather)
                 {
                     var currentLoc = Game1.currentLocation;
@@ -584,9 +594,11 @@ namespace PersonalTravellingCart
                     Game1.spriteBatch.End();
                     Game1.spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.PointClamp, null, null, null, null);
 
+
                     skip = false;
                     Game1.currentLocation = currentLoc;
                 }
+                
             }
         }
     }

@@ -419,6 +419,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ChestPreview", "ChestPrevie
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NPCStatusIcons", "NPCStatusIcons\NPCStatusIcons.csproj", "{91E97CB9-3CD7-4F0D-B4FE-5947590B3F1B}"
 EndProject
+Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "_releases", "_releases\_releases.shproj", "{047040E0-3D07-46E5-852B-D1D45CD57BB8}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -2073,5 +2075,8 @@ Global
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {55CB8E90-7822-4544-BF7C-3E0304475396}
+	EndGlobalSection
+	GlobalSection(SharedMSBuildProjectFiles) = preSolution
+		_releases\_releases.projitems*{047040e0-3d07-46e5-852b-d1d45cd57bb8}*SharedItemsImports = 13
 	EndGlobalSection
 EndGlobal

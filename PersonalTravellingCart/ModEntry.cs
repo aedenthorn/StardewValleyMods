@@ -75,6 +75,7 @@ namespace PersonalTravellingCart
 
 
             helper.Events.GameLoop.GameLaunched += GameLoop_GameLaunched;
+            helper.Events.GameLoop.SaveLoaded += GameLoop_SaveLoaded;
             helper.Events.GameLoop.DayEnding += GameLoop_DayEnding;
             helper.Events.Content.AssetRequested += Content_AssetRequested;
             helper.Events.Input.ButtonPressed += Input_ButtonPressed;
@@ -164,6 +165,8 @@ namespace PersonalTravellingCart
                 if(idx < 0)
                     idx = keys.Count - 1;
                 SMonitor.Log($"Switching cart to {keys[idx]}");
+                var loc = Game1.getLocationFromName(Game1.player.modData[locKey]);
+                loc.mapPath.Value = cartDict[keys[idx]].mapPath;
                 Game1.player.modData[cartKey] = keys[idx];
                 return;
             }
@@ -174,6 +177,8 @@ namespace PersonalTravellingCart
                 idx++;
                 idx %= keys.Count;
                 SMonitor.Log($"Switching cart to {keys[idx]}");
+                var loc = Game1.getLocationFromName(Game1.player.modData[locKey]);
+                loc.mapPath.Value = cartDict[keys[idx]].mapPath;
                 Game1.player.modData[cartKey] = keys[idx];
                 return;
             }

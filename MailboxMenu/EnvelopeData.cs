@@ -1,5 +1,4 @@
 ﻿using Microsoft.Xna.Framework.Graphics;
-using System.Text.Json.Serialization;
 
 namespace MailboxMenu
 {
