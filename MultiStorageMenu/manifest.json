@@ -1,0 +1,22 @@
+﻿{
+  "Name": "MultiStorage Menu",
+  "Author": "aedenthorn",
+  "Version": "0.3.0",
+  "Description": "MultiStorage Menu.",
+  "UniqueID": "aedenthorn.MultiStorageMenu",
+  "EntryDll": "MultiStorageMenu.dll",
+  "MinimumApiVersion": "3.15.0",
+  "ModUpdater": {
+    "Repository": "StardewValleyMods",
+    "User": "aedenthorn",
+    "Directory": "_releases",
+    "ModFolder": "MultiStorageMenu"
+  },
+  "Dependencies": [
+    {
+      "UniqueID": "Platonymous.ModUpdater",
+      "IsRequired": false
+    }
+  ],
+  "UpdateKeys": [ "Nexus:14439" ]
+}

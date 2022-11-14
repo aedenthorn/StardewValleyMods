@@ -53,6 +53,58 @@ namespace StardewOpenWorld
             */
         }
 
+        public static void PlayerTileChanged(Point oldPoint, Point newPoint)
+        {
+            if(newPoint.X / openWorldTileSize < oldPoint.X / openWorldTileSize)
+            {
+                UnloadWorldTile(oldPoint.X / openWorldTileSize + 1, oldPoint.Y);
+                LoadWorldTile(oldPoint.X / openWorldTileSize - 1, oldPoint.Y);
+            }
+            else if(newPoint.X / openWorldTileSize > oldPoint.X / openWorldTileSize)
+            {
+                UnloadWorldTile(oldPoint.X / openWorldTileSize - 1, oldPoint.Y);
+                LoadWorldTile(oldPoint.X / openWorldTileSize + 1, oldPoint.Y);
+            }
+            if(newPoint.Y / openWorldTileSize < oldPoint.Y / openWorldTileSize)
+            {
+                UnloadWorldTile(oldPoint.X, oldPoint.Y / openWorldTileSize + 1);
+                LoadWorldTile(oldPoint.X, oldPoint.Y / openWorldTileSize - 1);
+            }
+            else if(newPoint.Y / openWorldTileSize > oldPoint.Y / openWorldTileSize)
+            {
+                UnloadWorldTile(oldPoint.X, oldPoint.Y / openWorldTileSize - 1);
+                LoadWorldTile(oldPoint.X, oldPoint.Y / openWorldTileSize + 1);
+            }
+        }
+
+        private static void UnloadWorldTile(int v, int y)
+        {
+            throw new NotImplementedException();
+        }
+
+        private static void LoadWorldTile(int x, int y)
+        {
+            WorldTile tile= new WorldTile();
+            if(!cachedWorldTiles.TryGetValue(new Point(x, y), out tile))
+            {
+                tile = CreateTile(x, y);
+            }
+            LoadTileData(tile);
+        }
+
+        private static void LoadTileData(WorldTile tile)
+        {
+            throw new NotImplementedException();
+        }
+
+        private static WorldTile CreateTile(int x, int y)
+        {
+            foreach(var biome in biomes) 
+            { 
+
+            }
+        }
+
         private static Rectangle GetTileRect(Vector2 v)
         {
             return new Rectangle((int)v.X * openWorldTileSize, (int)v.Y * openWorldTileSize, openWorldTileSize, openWorldTileSize);

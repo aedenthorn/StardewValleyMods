@@ -29,7 +29,7 @@ namespace AdvancedMeleeFramework
         }
         protected override void _OnDealDamage(Monster monster, GameLocation location, Farmer who, ref int amount)
         {
-            if (enchantment.parameters["trigger"] == "damage" || (enchantment.parameters["trigger"] == "crit" && amount > weapon.maxDamage))
+            if (enchantment.parameters["trigger"] == "damage" || (enchantment.parameters["trigger"] == "crit" && amount > weapon.maxDamage.Value))
             {
                 //ModEntry.context.Monitor.Log($"Triggered enchantment {enchantment.type} on {enchantment.parameters["trigger"]} for {weapon.Name}");
                 if (enchantment.type == "heal")

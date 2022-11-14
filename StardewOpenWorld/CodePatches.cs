@@ -24,7 +24,7 @@ namespace StardewOpenWorld
                     return;
 
 
-                openWorldLocation = new GameLocation("StardewOpenWorldMap", mapName) { IsOutdoors = true, IsFarm = true, IsGreenhouse = false };
+                openWorldLocation = new GameLocation(mapPath, locName) { IsOutdoors = true, IsFarm = true, IsGreenhouse = false };
                 SMonitor.Log("Created new game location");
                 var back = openWorldLocation.Map.GetLayer("Back");
                 var mainSheet = openWorldLocation.Map.GetTileSheet("outdoors");
@@ -61,10 +61,10 @@ namespace StardewOpenWorld
         {
             public static void Postfix(GameLocation __instance)
             {
-                if (!Config.ModEnabled || !__instance.Name.Contains(mapName))
+                if (!Config.ModEnabled || !__instance.Name.Contains(locName))
                     return;
                 AccessTools.FieldRefAccess<Map, Size>(__instance.Map, "m_displaySize") = new Size(100000, 100000);
-                AccessTools.FieldRefAccess<Map, string>(__instance.Map, "m_id") = mapName;
+                AccessTools.FieldRefAccess<Map, string>(__instance.Map, "m_id") = locName;
             }
         }
         [HarmonyPatch(typeof(Map), "UpdateDisplaySize")]
@@ -72,7 +72,7 @@ namespace StardewOpenWorld
         {
             public static bool Prefix(string ___m_id, ref Size ___m_displaySize)
             {
-                if (!Config.ModEnabled || !___m_id.Contains(mapName))
+                if (!Config.ModEnabled || !___m_id.Contains(locName))
                     return true;
                 ___m_displaySize = new Size(100000, 100000);
                 return false;
@@ -83,7 +83,7 @@ namespace StardewOpenWorld
         {
             public static bool Prefix(ref bool __result)
             {
-                return !Config.ModEnabled || Game1.currentLocation is null || !Game1.currentLocation.Name.Contains(mapName);
+                return !Config.ModEnabled || Game1.currentLocation is null || !Game1.currentLocation.Name.Contains(locName);
             }
         }
         [HarmonyPatch(typeof(Game1), nameof(Game1.UpdateViewPort))]
@@ -91,7 +91,7 @@ namespace StardewOpenWorld
         {
             public static void Prefix(ref bool overrideFreeze)
             {
-                if (!Config.ModEnabled || !Game1.currentLocation.Name.Contains(mapName))
+                if (!Config.ModEnabled || !Game1.currentLocation.Name.Contains(locName))
                     return;
                 overrideFreeze = true;
                 Game1.forceSnapOnNextViewportUpdate = true;
@@ -104,7 +104,7 @@ namespace StardewOpenWorld
         {            
             public static void Postfix(Layer __instance, TileArray __result)
             {
-                if (!Config.ModEnabled || !__instance.Map.Id.Contains(mapName))
+                if (!Config.ModEnabled || !__instance.Map.Id.Contains(locName))
                     return;
                 __result = new MyTileArray(__instance, __result);
             }
@@ -114,7 +114,7 @@ namespace StardewOpenWorld
         {
             public static bool Prefix(GameLocation __instance, Vector2 position, ref bool __result)
             {
-                if (!Config.ModEnabled || !__instance.Name.Contains(mapName))
+                if (!Config.ModEnabled || !__instance.Name.Contains(locName))
                     return true;
                 __result = position.X >= 0f && position.X < openWorldSize && position.Y >= 0f && position.Y < openWorldSize;
                 return false;
@@ -125,7 +125,7 @@ namespace StardewOpenWorld
         {
             public static bool Prefix(GameLocation __instance, int x, int y, ref bool __result)
             {
-                if (!Config.ModEnabled || !__instance.Name.Contains(mapName))
+                if (!Config.ModEnabled || !__instance.Name.Contains(locName))
                     return true;
                 __result = x >= 0f && x < openWorldSize && y >= 0f && y < openWorldSize;
                 return false;
@@ -136,12 +136,9 @@ namespace StardewOpenWorld
         {
             public static bool Prefix(Layer __instance, IDisplayDevice displayDevice, xTile.Dimensions.Rectangle mapViewport, Location displayOffset, int pixelZoom)
             {
-                if (!Config.ModEnabled || !Game1.currentLocation.Name.Contains(mapName))
+                if (!Config.ModEnabled || !Game1.currentLocation.Name.Contains(locName))
                     return true;
 
-
-
-                openWorldTileSize = 100;
                 int tileWidth = pixelZoom * 16;
                 int tileHeight = pixelZoom * 16;
                 Location tileInternalOffset = new Location(Wrap(mapViewport.X, tileWidth), Wrap(mapViewport.Y, tileHeight));
