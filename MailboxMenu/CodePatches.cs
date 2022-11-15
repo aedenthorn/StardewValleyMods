@@ -15,7 +15,8 @@ namespace MailboxMenu
             {
                 if (!Config.ModEnabled || !Config.MenuOnMailbox || (Config.ModKey != SButton.None && !SHelper.Input.IsDown(Config.ModKey)))
                     return true;
-
+                if(GetMailString(Game1.mailbox.First()) == "")
+                    return true;
                 Game1.activeClickableMenu = new MailMenu();
                 return false;
             }

@@ -143,15 +143,15 @@ namespace MultiStorageMenu
                     {
                         Chest f = (l as FarmHouse).fridge.Value;
                         string key = l.Name;
-                        if (!f.modData.TryGetValue("Pathoschild.ChestsAnywhere/Name", out string name) || string.IsNullOrEmpty(name))
+                        if (!f.modData.TryGetValue("Pathoschild.ChestsAnywhere/Name", out string chestName) || string.IsNullOrEmpty(chestName))
                         {
                             key += " " + fridgeString;
                         }
                         else
                         {
-                            key += $" {name}";
+                            key += $" {chestName}";
                         }
-                        allStorageList.Add(new StorageData() { chest = f, location = l.Name, id = key, index = allStorageList.Count });
+                        allStorageList.Add(new StorageData() { chest = f, name = chestName, location = l.Name, tile = new Vector2(-1, -1), label = key, index = allStorageList.Count });
                     }
                     foreach (var kvp in l.objects.Pairs)
                     {
@@ -159,12 +159,12 @@ namespace MultiStorageMenu
                         if (obj is Chest && (obj as Chest).playerChest.Value && (obj as Chest).CanBeGrabbed)
                         {
                             string key = $"{l.Name} {kvp.Key.X},{kvp.Key.Y}";
-                            if (obj.modData.TryGetValue(chestsAnywhereKey, out string name) && !string.IsNullOrEmpty(name))
+                            if (obj.modData.TryGetValue(chestsAnywhereKey, out string chestName) && !string.IsNullOrEmpty(chestName))
                             {
-                                key = $"{name} ({key})";
+                                key = $"{chestName} ({key})";
                             }
 
-                            allStorageList.Add(new StorageData() { chest = obj as Chest, location = l.Name, id = key, index = allStorageList.Count });
+                            allStorageList.Add(new StorageData() { chest = obj as Chest, name = chestName, location = l.Name, tile = kvp.Key, label = key, index = allStorageList.Count });
                         }
                     }
                 }
@@ -178,7 +178,7 @@ namespace MultiStorageMenu
             {
                 var storage = allStorageList[i];
 
-                if (!string.IsNullOrEmpty(whichLocation) && !storage.id.ToLower().Contains(whichLocation.ToLower()))
+                if (!string.IsNullOrEmpty(whichLocation) && !storage.label.ToLower().Contains(whichLocation.ToLower()))
                     continue;
                 RestoreNulls(storage.chest.items);
                 var columns = 12;
@@ -243,7 +243,7 @@ namespace MultiStorageMenu
                 }
                 if (i == heldMenu)
                     continue;
-                SpriteText.drawString(b, storage.id, storage.menu.xPositionOnScreen, storage.menu.yPositionOnScreen - 48);
+                SpriteText.drawString(b, storage.label, storage.menu.xPositionOnScreen, storage.menu.yPositionOnScreen - 48);
                 if (!storage.collapsed)
                 {
                     storage.menu.draw(b);
@@ -295,7 +295,7 @@ namespace MultiStorageMenu
             }
             if (heldMenu > -1)
             {
-                SpriteText.drawString(b, allStorageList[heldMenu].id, Game1.getOldMouseX(), Game1.getOldMouseY() - 48);
+                SpriteText.drawString(b, allStorageList[heldMenu].label, Game1.getOldMouseX(), Game1.getOldMouseY() - 48);
                 b.Draw(Game1.staminaRect, new Rectangle(Game1.getOldMouseX(), Game1.getOldMouseY(), 64 * 12, allStorageList[heldMenu].menu.rows * 64), Color.LightGray * 0.5f);
 
             }
@@ -331,11 +331,7 @@ namespace MultiStorageMenu
                     renameBox.Update();
                     if(okButton.containsPoint(x, y))
                     {
-                        renamingStorage.chest.modData[chestsAnywhereKey] = renameBox.Text;
-                        renamingStorage = null;
-                        renameBox.Selected = false;
-                        Game1.playSound("bigSelect");
-                        PopulateMenus(true);
+                        RenameStorage();
                     }
                 }
 
@@ -502,11 +498,7 @@ namespace MultiStorageMenu
             {
                 if(renamingStorage is not null)
                 {
-                    renamingStorage.chest.modData[chestsAnywhereKey] = renameBox.Text;
-                    renamingStorage = null;
-                    renameBox.Selected = false;
-                    Game1.playSound("bigSelect");
-                    PopulateMenus(true);
+                    RenameStorage();
                 }
                 renameBox.Selected = false;
             }
@@ -735,6 +727,16 @@ namespace MultiStorageMenu
             renamingStorage = storageData;
             renameBox.Selected = true;
             renameBox.Text = storageData.chest.modData.TryGetValue(chestsAnywhereKey, out string name) ? name : "";
+        }
+
+        private void RenameStorage()
+        {
+            allStorageList[renamingStorage.index].chest.modData[chestsAnywhereKey] = renameBox.Text;
+            allStorageList[renamingStorage.index].label = $"{renameBox.Text} ({renamingStorage.location} {(renamingStorage.tile.X > -1 ? renamingStorage.tile.X + "," + renamingStorage.tile.Y : fridgeString)})";
+            renamingStorage = null;
+            renameBox.Selected = false;
+            Game1.playSound("bigSelect");
+            PopulateMenus();
         }
     }
 }
