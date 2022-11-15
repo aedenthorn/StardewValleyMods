@@ -1,6 +1,7 @@
 ﻿using Microsoft.Xna.Framework;
 using StardewValley.Menus;
 using StardewValley.Objects;
+using System.Collections.Generic;
 
 namespace MultiStorageMenu
 {
@@ -11,6 +12,7 @@ namespace MultiStorageMenu
         public string label;
         public int index;
         public InventoryMenu menu;
+        public List<ClickableTextureComponent> inventoryButtons = new List<ClickableTextureComponent>();
         public bool collapsed;
         public Chest chest;
         public Vector2 tile;

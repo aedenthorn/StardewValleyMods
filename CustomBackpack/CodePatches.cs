@@ -180,14 +180,14 @@ namespace CustomBackpack
             }
         }
 
-        [HarmonyPatch(typeof(IClickableMenu), nameof(IClickableMenu.moveCursorInDirection))]
+        [HarmonyPatch(typeof(IClickableMenu), nameof(IClickableMenu.applyMovementKey), new Type[] {typeof(int) })]
         public class IClickableMenu_moveCursorInDirection_Patch
         {
             public static bool Prefix(IClickableMenu __instance, int direction)
             {
                 if (!Config.ModEnabled || __instance.currentlySnappedComponent is null)
                     return true;
-                InventoryMenu menu;
+                InventoryMenu menu = null;
                 if (__instance is InventoryPage)
                 {
                     menu = (__instance as InventoryPage).inventory;
@@ -205,6 +205,16 @@ namespace CustomBackpack
                     menu = (__instance as JunimoNoteMenu).inventory;
                 }
                 else
+                {
+                    foreach(var field in AccessTools.GetDeclaredFields(__instance.GetType()))
+                    {
+                        if(field.FieldType == typeof(InventoryMenu) && ((InventoryMenu)field.GetValue(__instance)).actualInventory == Game1.player.Items)
+                        {
+                            menu = (InventoryMenu)field.GetValue(__instance);
+                        }
+                    }
+                }
+                if(menu is null)
                     return true;
                 if (!menu.Scrolling())
                     return true;

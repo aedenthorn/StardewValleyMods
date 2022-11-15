@@ -1,24 +1,8 @@
 ﻿using HarmonyLib;
-using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using Microsoft.Xna.Framework.Input;
-using Newtonsoft.Json;
 using StardewModdingAPI;
 using StardewValley;
-using StardewValley.BellsAndWhistles;
-using StardewValley.Locations;
-using StardewValley.Menus;
-using StardewValley.Objects;
-using StardewValley.TerrainFeatures;
-using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Globalization;
 using System.IO;
-using System.Linq;
-using System.Security.Permissions;
-using static StardewValley.Minigames.MineCart.Whale;
-using Object = StardewValley.Object;
 
 namespace MultiStorageMenu
 {
@@ -57,14 +41,24 @@ namespace MultiStorageMenu
         {
             if (!Config.ModEnabled)
                 return;
-            if (Game1.activeClickableMenu is StorageMenu && ((Game1.activeClickableMenu as StorageMenu).locationText.Selected || (Game1.activeClickableMenu as StorageMenu).renameBox.Selected))
+            Config.SwitchButton = SButton.ControllerBack;
+            if (Game1.activeClickableMenu is StorageMenu)
             {
-                if(e.Button.ToString().Length == 1)
+                if (Game1.options.snappyMenus && Game1.options.gamepadControls && e.Button == Config.SwitchButton)
+                {
+                    Game1.playSound("shwip");
+                    if (!(Game1.activeClickableMenu as StorageMenu).focusBottom)
+                        (Game1.activeClickableMenu as StorageMenu).lastTopSnappedCC = Game1.activeClickableMenu.currentlySnappedComponent;
+                    (Game1.activeClickableMenu as StorageMenu).focusBottom = !(Game1.activeClickableMenu as StorageMenu).focusBottom;
+                    Game1.activeClickableMenu.currentlySnappedComponent = null;
+                    Game1.activeClickableMenu.snapToDefaultClickableComponent();
+                }
+                if (((Game1.activeClickableMenu as StorageMenu).locationText.Selected || (Game1.activeClickableMenu as StorageMenu).renameBox.Selected) && e.Button.ToString().Length == 1)
                 {
                     SHelper.Input.Suppress(e.Button);
                 }
             }
-            if (e.Button == Config.MenuKey && (Config.ModKey == SButton.None || Helper.Input.IsDown(Config.ModKey)))
+            if (e.Button == Config.MenuKey && (Config.ModKey == SButton.None || !Config.ModToOpen || Helper.Input.IsDown(Config.ModKey)))
             {
                 OpenMenu();
             }
@@ -100,6 +94,34 @@ namespace MultiStorageMenu
                 name: () => "Menu Key",
                 getValue: () => Config.MenuKey,
                 setValue: value => Config.MenuKey = value
+            );
+
+            configMenu.AddBoolOption(
+                mod: ModManifest,
+                name: () => "Req. Mod Key To Open",
+                getValue: () => Config.ModToOpen,
+                setValue: value => Config.ModToOpen = value
+            );
+            configMenu.AddKeybind(
+                mod: ModManifest,
+                name: () => "Mod Key",
+                tooltip: () => "Hold down to open menu and to transfer contents instead of swapping menus",
+                getValue: () => Config.ModKey,
+                setValue: value => Config.ModKey = value
+            );
+            configMenu.AddKeybind(
+                mod: ModManifest,
+                name: () => "Mod Key 2",
+                tooltip: () => "Hold down to transfer only same items when transfering all",
+                getValue: () => Config.SwitchButton,
+                setValue: value => Config.SwitchButton = value
+            );
+            configMenu.AddKeybind(
+                mod: ModManifest,
+                name: () => "Switch Button",
+                tooltip: () => "For controllers to switch between upper and lower interfaces",
+                getValue: () => Config.SwitchButton,
+                setValue: value => Config.ModKey2 = value
             );
         }
 
