@@ -1,6 +1,7 @@
 ﻿using HarmonyLib;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using Microsoft.Xna.Framework.Input;
 using Newtonsoft.Json;
 using StardewModdingAPI;
 using StardewValley;
@@ -16,6 +17,7 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Security.Permissions;
+using static StardewValley.Minigames.MineCart.Whale;
 using Object = StardewValley.Object;
 
 namespace MultiStorageMenu
@@ -51,17 +53,24 @@ namespace MultiStorageMenu
             harmony.PatchAll();
         }
 
-        private void Input_ButtonPressed(object sender, StardewModdingAPI.Events.ButtonPressedEventArgs e)
+        public void Input_ButtonPressed(object sender, StardewModdingAPI.Events.ButtonPressedEventArgs e)
         {
             if (!Config.ModEnabled)
                 return;
-            if(e.Button == Config.MenuKey && (Config.ModKey == SButton.None || Helper.Input.IsDown(Config.ModKey)))
+            if (Game1.activeClickableMenu is StorageMenu && ((Game1.activeClickableMenu as StorageMenu).locationText.Selected || (Game1.activeClickableMenu as StorageMenu).renameBox.Selected))
+            {
+                if(e.Button.ToString().Length == 1)
+                {
+                    SHelper.Input.Suppress(e.Button);
+                }
+            }
+            if (e.Button == Config.MenuKey && (Config.ModKey == SButton.None || Helper.Input.IsDown(Config.ModKey)))
             {
                 OpenMenu();
             }
         }
 
-        private void GameLoop_GameLaunched(object sender, StardewModdingAPI.Events.GameLaunchedEventArgs e)
+        public void GameLoop_GameLaunched(object sender, StardewModdingAPI.Events.GameLaunchedEventArgs e)
         {
             var phoneAPI = Helper.ModRegistry.GetApi<IMobilePhoneApi>("aedenthorn.MobilePhone");
             if (phoneAPI != null)

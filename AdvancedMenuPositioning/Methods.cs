@@ -40,12 +40,21 @@ namespace AdvancedMenuPositioning
                 }
                 else if (f.FieldType.IsSubclassOf(typeof(IClickableMenu)) || f.FieldType == typeof(IClickableMenu))
                 {
-                    AdjustMenu((IClickableMenu)f.GetValue(menu), delta);
+                    var child = (IClickableMenu)f.GetValue(menu);
+                    if (child != menu)
+                    {
+                        AdjustMenu(child, delta);
 
+                    }
                 }
                 else if (f.FieldType == typeof(InventoryMenu))
                 {
-                    AdjustMenu((IClickableMenu)f.GetValue(menu), delta);
+                    var child = (IClickableMenu)f.GetValue(menu);
+                    if (child != menu)
+                    {
+                        AdjustMenu(child, delta);
+
+                    }
                 }
                 else if (f.Name == "scrollBarRunner")
                 {
@@ -70,7 +79,11 @@ namespace AdvancedMenuPositioning
                         continue;
                     foreach (var o in ol)
                     {
-                        AdjustMenu(o, delta);
+                        if (o != menu)
+                        {
+                            AdjustMenu(o, delta);
+
+                        }
                     }
                 }
                 else if (f.FieldType == typeof(Dictionary<int, ClickableTextureComponent>))

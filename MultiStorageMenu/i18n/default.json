@@ -1,0 +1,11 @@
+﻿{
+    "filter": "Filter",
+    "name": "Name",
+    "fridge": "Fridge",
+    "open": "Open",
+    "put": "Put",
+    "take": "Take",
+    "rename": "Rename",
+    "target": "Target",
+    "store-similar": "Store Similar",
+}

@@ -278,6 +278,7 @@ namespace HedgeMaze
                     //Monitor.Log($"Adding expanded chest of value {level} to {l.name}");
                     Chest chest = advancedLootFrameworkApi.MakeChest(treasuresList, Config.ItemListChances, Config.MaxItems, Config.MinItemValue, Config.MaxItemValue, level, Config.IncreaseRate, Config.ItemsBaseMaxValue, Config.CoinBaseMin, Config.CoinBaseMax, v);
                     chest.playerChoiceColor.Value = MakeTint(fraction);
+                    chest.CanBeGrabbed = false;
                     woods.overlayObjects[v] = chest;
                     if (Config.Debug)
                     {
