@@ -4,7 +4,7 @@ using StardewModdingAPI;
 using StardewValley;
 using System.IO;
 
-namespace MultiStorageMenu
+namespace AllChestsMenu
 {
     /// <summary>The mod entry point.</summary>
     public partial class ModEntry : Mod
@@ -41,7 +41,6 @@ namespace MultiStorageMenu
         {
             if (!Config.ModEnabled)
                 return;
-            Config.SwitchButton = SButton.ControllerBack;
             if (Game1.activeClickableMenu is StorageMenu)
             {
                 if (Game1.options.snappyMenus && Game1.options.gamepadControls && e.Button == Config.SwitchButton)
@@ -69,7 +68,7 @@ namespace MultiStorageMenu
             var phoneAPI = Helper.ModRegistry.GetApi<IMobilePhoneApi>("aedenthorn.MobilePhone");
             if (phoneAPI != null)
             {
-                phoneAPI.AddApp("aedenthorn.MultiStorageMenu", "Mailbox", OpenMenu, Helper.ModContent.Load<Texture2D>(Path.Combine("assets", "icon.png")));
+                phoneAPI.AddApp("aedenthorn.AllChestsMenu", "Mailbox", OpenMenu, Helper.ModContent.Load<Texture2D>(Path.Combine("assets", "icon.png")));
             }
             // get Generic Mod Config Menu's API (if it's installed)
             var configMenu = Helper.ModRegistry.GetApi<IGenericModConfigMenuApi>("spacechase0.GenericModConfigMenu");
@@ -88,6 +87,12 @@ namespace MultiStorageMenu
                 name: () => "Mod Enabled",
                 getValue: () => Config.ModEnabled,
                 setValue: value => Config.ModEnabled = value
+            );
+            configMenu.AddBoolOption(
+                mod: ModManifest,
+                name: () => "Current Loc Only",
+                getValue: () => Config.LimitToCurrentLocation,
+                setValue: value => Config.LimitToCurrentLocation = value
             );
             configMenu.AddKeybind(
                 mod: ModManifest,

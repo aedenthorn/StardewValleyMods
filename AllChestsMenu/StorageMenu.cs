@@ -1,4 +1,5 @@
-﻿using Microsoft.Xna.Framework;
+﻿using HarmonyLib;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using Netcode;
@@ -18,7 +19,7 @@ using System.Runtime;
 using static System.Net.Mime.MediaTypeNames;
 using Object = StardewValley.Object;
 
-namespace MultiStorageMenu
+namespace AllChestsMenu
 {
     public class StorageMenu : IClickableMenu
     {
@@ -67,6 +68,7 @@ namespace MultiStorageMenu
         public ClickableComponent renameBoxCC;
         public Item hoveredItem;
         public string hoverText;
+        public string chestLocation;
         public int hoverAmount;
         public float trashCanLidRotation;
         public int heldMenu = -1;
@@ -162,11 +164,13 @@ namespace MultiStorageMenu
             {
                 myID = 2 * ccMagnitude + 1,
                 upNeighborID = 2 * ccMagnitude,
-                rightNeighborID = 0
+                rightNeighborID = 2 * ccMagnitude + 2
             };
+            locationText.Selected = false;
+            renameBox.Selected = false;
             okButton = new ClickableTextureComponent(new Rectangle(renameBox.X + renameBox.Width + 4, renameBox.Y, 48, 48), Game1.mouseCursors, Game1.getSourceRectForStandardTileSheet(Game1.mouseCursors, 46, -1, -1), 0.75f, false)
             {
-                myID = 2 * ccMagnitude + 3,
+                myID = 2 * ccMagnitude + 2,
                 leftNeighborID = 2 * ccMagnitude + 1,
                 rightNeighborID = 0
             };
@@ -195,16 +199,27 @@ namespace MultiStorageMenu
 
         public void PopulateMenus(bool remakeChests = false)
         {
-            if (remakeChests)
+            if (remakeChests || (ModEntry.Config.LimitToCurrentLocation && chestLocation != Game1.currentLocation.Name))
             {
+                chestLocation = Game1.currentLocation.Name;
                 allStorageList.Clear();
-                foreach (var l in Game1.locations)
+                List<GameLocation> list = new();
+                if (ModEntry.Config.LimitToCurrentLocation)
+                {
+                    list.Add(Game1.currentLocation);
+                }
+                else
+                {
+                    list = new(Game1.locations);
+                }
+                foreach (var l in list)
                 {
                     if(l is FarmHouse)
                     {
-                        Chest f = (l as FarmHouse).fridge.Value;
+                        Chest chest = (l as FarmHouse).fridge.Value;
+                        RestoreNulls(chest.items);
                         string key = l.Name;
-                        if (!f.modData.TryGetValue("Pathoschild.ChestsAnywhere/Name", out string chestName) || string.IsNullOrEmpty(chestName))
+                        if (!chest.modData.TryGetValue("Pathoschild.ChestsAnywhere/Name", out string chestName) || string.IsNullOrEmpty(chestName))
                         {
                             key += " " + fridgeString;
                             chestName = fridgeString;
@@ -213,13 +228,18 @@ namespace MultiStorageMenu
                         {
                             key += $" {chestName}";
                         }
-                        allStorageList.Add(new StorageData() { chest = f, name = chestName, location = l.Name, tile = new Vector2(-1, -1), label = key, index = allStorageList.Count });
+                        var columns = 12;
+                        var rows = Math.Max((int)Math.Ceiling(chest.items.Count / (float)columns), 3);
+                        var cap = rows * columns;
+                        allStorageList.Add(new StorageData() { chest = chest, name = chestName, location = l.Name, tile = new Vector2(-1, -1), label = key, index = allStorageList.Count });
                     }
                     foreach (var kvp in l.objects.Pairs)
                     {
                         var obj = kvp.Value;
                         if (obj is Chest && (obj as Chest).playerChest.Value && (obj as Chest).CanBeGrabbed)
                         {
+                            Chest chest = obj as Chest;
+                            RestoreNulls(chest.items);
                             string key = $"{l.Name} {kvp.Key.X},{kvp.Key.Y}";
                             if (obj.modData.TryGetValue(chestsAnywhereKey, out string chestName) && !string.IsNullOrEmpty(chestName))
                             {
@@ -230,7 +250,7 @@ namespace MultiStorageMenu
                                 chestName = "";
                             }
 
-                            allStorageList.Add(new StorageData() { chest = obj as Chest, name = chestName, location = l.Name, tile = kvp.Key, label = key });
+                            allStorageList.Add(new StorageData() { chest = chest, name = chestName, location = l.Name, tile = new Vector2(-1, -1), label = key, index = allStorageList.Count });
                         }
                     }
                 }
@@ -249,22 +269,17 @@ namespace MultiStorageMenu
 
                 if (!string.IsNullOrEmpty(whichLocation) && !storage.label.ToLower().Contains(whichLocation.ToLower()))
                     continue;
-                RestoreNulls(storage.chest.items);
                 var columns = 12;
                 var rows = Math.Max((int)Math.Ceiling(storage.chest.items.Count / (float)columns), 3);
                 var cap = rows * columns;
-                while (cap > storage.chest.items.Count)
-                {
-                    storage.chest.items.Add(null);
-                }
                 storage.menu = new InventoryMenu(xPositionOnScreen + borderWidth + (even ? (64 * 13) : 0), yPositionOnScreen - scrolled * scrollInterval + borderWidth + 64 + 64 * rowsAlready + xSpace * (1 + menusAlready), false, storage.chest.items, null, cap, rows);
                 if (!even)
                 {
-                    oddRows = (!storage.collapsed ? rows : 0);
+                    oddRows = (!storage.collapsed ? storage.menu.rows : 0);
                 }
                 else
                 {
-                    rowsAlready += Math.Max((!storage.collapsed ? rows : 0), oddRows);
+                    rowsAlready += Math.Max((!storage.collapsed ? storage.menu.rows : 0), oddRows);
                     menusAlready++;
                 }
                 even = !even;
@@ -450,6 +465,9 @@ namespace MultiStorageMenu
         public override void receiveLeftClick(int x, int y, bool playSound = true)
         {
             Item held = heldItem;
+            Rectangle rect;
+            renameBox.Selected = false;
+            locationText.Selected = false;
             if (y >= cutoff)
             {
                 if (heldMenu> -1)
@@ -474,14 +492,14 @@ namespace MultiStorageMenu
                 if (renamingStorage is not null)
                 {
                     renameBox.Update();
-                    if(okButton.containsPoint(x, y))
+                    if (okButton.containsPoint(x, y))
                     {
                         RenameStorage();
                         return;
                     }
                 }
-
                 locationText.Update();
+
                 if (this.trashCan != null && this.trashCan.containsPoint(x, y) && this.heldItem != null && this.heldItem.canBeTrashed())
                 {
                     Utility.trashItem(this.heldItem);
@@ -509,6 +527,8 @@ namespace MultiStorageMenu
                     {
                         Game1.playSound("bigSelect");
                         currentSort = (Sort)Enum.Parse(typeof(Sort), cc.name);
+                        ModEntry.Config.CurrentSort = currentSort;
+                        ModEntry.SHelper.WriteConfig(ModEntry.Config);
                         SortAllStorages();
                         PopulateMenus();
                         return;
@@ -527,7 +547,7 @@ namespace MultiStorageMenu
                             return;
                         }
                     }
-                    var rect = new Rectangle(storageList[i].menu.xPositionOnScreen, storageList[i].menu.yPositionOnScreen - 48, (width - borderWidth * 2 - 64) / 2, 48);
+                    rect = new Rectangle(storageList[i].menu.xPositionOnScreen, storageList[i].menu.yPositionOnScreen - 48, (width - borderWidth * 2 - 64) / 2, 48);
                     if (rect.Contains(new Point(x, y)) || (heldMenu > -1 && storageList[i].menu.isWithinBounds(x, y)))
                     {
                         if (heldMenu > -1)
@@ -1045,12 +1065,23 @@ namespace MultiStorageMenu
             {
                 items.Remove(null);
             }
+            while(items.Count % 12 != 0) 
+            {
+                items.Add(null);
+            }
         }
         public void Rename(StorageData storageData)
         {
             renamingStorage = storageData;
             renameBox.Selected = true;
             renameBox.Text = storageData.chest.modData.TryGetValue(chestsAnywhereKey, out string name) ? name : "";
+            if (currentlySnappedComponent is not null)
+            {
+                focusBottom = true;
+                lastTopSnappedCC = currentlySnappedComponent;
+                currentlySnappedComponent = renameBoxCC;
+                snapCursorToCurrentSnappedComponent();
+            }
         }
 
         private void RenameStorage()
@@ -1060,6 +1091,12 @@ namespace MultiStorageMenu
             renamingStorage = null;
             renameBox.Selected = false;
             Game1.playSound("bigSelect");
+            if (lastTopSnappedCC is not null)
+            {
+                focusBottom = false;
+                currentlySnappedComponent = lastTopSnappedCC;
+                snapCursorToCurrentSnappedComponent();
+            }
             PopulateMenus();
         }
 
@@ -1102,16 +1139,16 @@ namespace MultiStorageMenu
                         result = sb.CompareTo(sa);
                         break;
                     case Sort.CA:
-                        result = a.menu.inventory.Count.CompareTo(b.menu.inventory.Count);
+                        result = a.chest.items.Count.CompareTo(b.chest.items.Count);
                         break;
                     case Sort.CD:
-                        result = b.menu.inventory.Count.CompareTo(a.menu.inventory.Count);
+                        result = b.chest.items.Count.CompareTo(a.chest.items.Count);
                         break;
                     case Sort.IA:
-                        result = a.menu.actualInventory.Where(i => i is not null).Count().CompareTo(b.menu.actualInventory.Where(i => i is not null).Count());
+                        result = a.chest.items.Where(i => i is not null).Count().CompareTo(b.chest.items.Where(i => i is not null).Count());
                         break;
                     case Sort.ID:
-                        result = b.menu.actualInventory.Where(i => i is not null).Count().CompareTo(a.menu.actualInventory.Where(i => i is not null).Count());
+                        result = b.chest.items.Where(i => i is not null).Count().CompareTo(a.chest.items.Where(i => i is not null).Count());
                         break;
                 }
                 if(result == 0)

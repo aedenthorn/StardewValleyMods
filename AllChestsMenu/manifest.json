@@ -1,16 +1,16 @@
 ﻿{
-  "Name": "MultiStorage Menu",
+  "Name": "All Chests Menu",
   "Author": "aedenthorn",
-  "Version": "0.3.0",
-  "Description": "MultiStorage Menu.",
-  "UniqueID": "aedenthorn.MultiStorageMenu",
-  "EntryDll": "MultiStorageMenu.dll",
+  "Version": "0.1.0",
+  "Description": "All Chests Menu.",
+  "UniqueID": "aedenthorn.AllChestsMenu",
+  "EntryDll": "AllChestsMenu.dll",
   "MinimumApiVersion": "3.15.0",
   "ModUpdater": {
     "Repository": "StardewValleyMods",
     "User": "aedenthorn",
     "Directory": "_releases",
-    "ModFolder": "MultiStorageMenu"
+    "ModFolder": "AllChestsMenu"
   },
   "Dependencies": [
     {
@@ -18,5 +18,5 @@
       "IsRequired": false
     }
   ],
-  "UpdateKeys": [ "Nexus:14439" ]
+  "UpdateKeys": [ "Nexus:14494" ]
 }

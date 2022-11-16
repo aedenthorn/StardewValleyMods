@@ -4,7 +4,7 @@ using StardewValley;
 using StardewValley.Objects;
 using System.Linq;
 
-namespace MultiStorageMenu
+namespace AllChestsMenu
 {
     public partial class ModEntry
     {

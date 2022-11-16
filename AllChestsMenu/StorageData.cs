@@ -3,7 +3,7 @@ using StardewValley.Menus;
 using StardewValley.Objects;
 using System.Collections.Generic;
 
-namespace MultiStorageMenu
+namespace AllChestsMenu
 {
     public class StorageData
     {

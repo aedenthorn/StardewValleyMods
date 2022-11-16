@@ -3,7 +3,7 @@ using Microsoft.Xna.Framework.Graphics;
 using StardewValley;
 using System;
 
-namespace MultiStorageMenu
+namespace AllChestsMenu
 {
     public interface IMobilePhoneApi
     {   
