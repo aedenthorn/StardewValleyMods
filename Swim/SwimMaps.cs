@@ -98,7 +98,6 @@ namespace Swim
             foreach (Vector2 tile in mineralSpots)
             {
                 double chance = Game1.random.NextDouble();
-
                 if (chance < 0.2 && !l.map.GetLayer("Back").Tiles[(int)tile.X, (int)tile.Y].Properties.ContainsKey("Treasure") && !l.map.GetLayer("Back").Tiles[(int)tile.X, (int)tile.Y].Properties.ContainsKey("Diggable"))
                 {
                     l.map.GetLayer("Back").Tiles[(int)tile.X, (int)tile.Y].TileIndex = 1299;

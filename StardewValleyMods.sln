@@ -425,6 +425,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AllChestsMenu", "AllChestsM
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CustomMineCartSteam", "CustomMineCartSteam\CustomMineCartSteam.csproj", "{7D412040-9278-4659-B973-99482D7D6568}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GalaxyWeaponChoice", "GalaxyWeaponChoice\GalaxyWeaponChoice.csproj", "{3938BE98-5CD1-472E-9D84-75906F20B58D}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -2089,6 +2091,14 @@ Global
 		{7D412040-9278-4659-B973-99482D7D6568}.Release|Any CPU.Build.0 = Release|Any CPU
 		{7D412040-9278-4659-B973-99482D7D6568}.Release|x86.ActiveCfg = Release|Any CPU
 		{7D412040-9278-4659-B973-99482D7D6568}.Release|x86.Build.0 = Release|Any CPU
+		{3938BE98-5CD1-472E-9D84-75906F20B58D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3938BE98-5CD1-472E-9D84-75906F20B58D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3938BE98-5CD1-472E-9D84-75906F20B58D}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{3938BE98-5CD1-472E-9D84-75906F20B58D}.Debug|x86.Build.0 = Debug|Any CPU
+		{3938BE98-5CD1-472E-9D84-75906F20B58D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3938BE98-5CD1-472E-9D84-75906F20B58D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3938BE98-5CD1-472E-9D84-75906F20B58D}.Release|x86.ActiveCfg = Release|Any CPU
+		{3938BE98-5CD1-472E-9D84-75906F20B58D}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
