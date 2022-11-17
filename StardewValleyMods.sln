@@ -423,6 +423,8 @@ Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "_releases", "_releases\_rel
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AllChestsMenu", "AllChestsMenu\AllChestsMenu.csproj", "{D25DA177-4671-4A16-A4A5-6D43F6D38A82}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CustomMineCartSteam", "CustomMineCartSteam\CustomMineCartSteam.csproj", "{7D412040-9278-4659-B973-99482D7D6568}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -2079,6 +2081,14 @@ Global
 		{D25DA177-4671-4A16-A4A5-6D43F6D38A82}.Release|Any CPU.Build.0 = Release|Any CPU
 		{D25DA177-4671-4A16-A4A5-6D43F6D38A82}.Release|x86.ActiveCfg = Release|Any CPU
 		{D25DA177-4671-4A16-A4A5-6D43F6D38A82}.Release|x86.Build.0 = Release|Any CPU
+		{7D412040-9278-4659-B973-99482D7D6568}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7D412040-9278-4659-B973-99482D7D6568}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7D412040-9278-4659-B973-99482D7D6568}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{7D412040-9278-4659-B973-99482D7D6568}.Debug|x86.Build.0 = Debug|Any CPU
+		{7D412040-9278-4659-B973-99482D7D6568}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7D412040-9278-4659-B973-99482D7D6568}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7D412040-9278-4659-B973-99482D7D6568}.Release|x86.ActiveCfg = Release|Any CPU
+		{7D412040-9278-4659-B973-99482D7D6568}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

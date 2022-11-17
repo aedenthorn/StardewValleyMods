@@ -1,0 +1,22 @@
+﻿{
+  "Name": "CustomMineCartSteam",
+  "Author": "aedenthorn",
+  "Version": "0.1.1",
+  "Description": "CustomMineCartSteam.",
+  "UniqueID": "aedenthorn.CustomMineCartSteam",
+  "EntryDll": "CustomMineCartSteam.dll",
+  "MinimumApiVersion": "3.15.0",
+  "ModUpdater": {
+    "Repository": "StardewValleyMods",
+    "User": "aedenthorn",
+    "Directory": "_releases",
+    "ModFolder": "CustomMineCartSteam"
+  },
+  "Dependencies": [
+    {
+      "UniqueID": "Platonymous.ModUpdater",
+      "IsRequired": false
+    }
+  ],
+  "UpdateKeys": [ "Nexus:14508" ]
+}
