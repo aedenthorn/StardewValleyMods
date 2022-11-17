@@ -27,8 +27,11 @@ namespace CustomMineCartSteam
         public float rotation = 0;
         public float rotationChange = 0;
         public bool local;
+        public bool drawAboveAlwaysFront;
         public XY motion;
         public XY acceleration;
+
+        public int id;
     }
 
     public class XY
