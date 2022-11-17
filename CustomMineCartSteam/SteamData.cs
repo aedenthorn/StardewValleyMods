@@ -5,7 +5,7 @@ namespace CustomMineCartSteam
     public class SteamData
     {
         public string location;
-        public bool replaceSteam = true;
+        public bool replaceSteam;
         public int animationRow = 27;
         public Point position;
         public int animationLength = 8;
@@ -20,7 +20,7 @@ namespace CustomMineCartSteam
 
         public string texturePath;
         public Rectangle sourceRect;
-        public bool flicker = true;
+        public bool flicker;
         public float alphaFade = 0;
         public float scale = 1;
         public float scaleChange = 0;
