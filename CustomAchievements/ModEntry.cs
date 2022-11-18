@@ -6,7 +6,7 @@ using System.Collections.Generic;
 namespace CustomAchievements
 {
     /// <summary>The mod entry point.</summary>
-    public class ModEntry : Mod, IAssetLoader
+    public class ModEntry : Mod
     {
 
         public static IMonitor PMonitor;
@@ -37,8 +37,17 @@ namespace CustomAchievements
             Helper.Events.GameLoop.DayStarted += GameLoop_DayStarted;
             Helper.Events.GameLoop.TimeChanged += GameLoop_TimeChanged;
             Helper.Events.Player.Warped += Player_Warped;
+            helper.Events.Content.AssetRequested += Content_AssetRequested;
         }
 
+        private void Content_AssetRequested(object sender, StardewModdingAPI.Events.AssetRequestedEventArgs e)
+        {
+
+            if (e.NameWithoutLocale.IsEquivalentTo(dictPath))
+            {
+                e.LoadFrom(() => new Dictionary<string, CustomAcheivementData>(), StardewModdingAPI.Events.AssetLoadPriority.Exclusive);
+            }
+        }
         private void Player_Warped(object sender, StardewModdingAPI.Events.WarpedEventArgs e)
         {
             CheckForAchievements();
@@ -58,7 +67,7 @@ namespace CustomAchievements
         public static void CheckForAchievements()
         {
             var sound = false;
-            using (var dict = Game1.content.Load<Dictionary<string, CustomAcheivementData>>(PHelper.Content.GetActualAssetKey(dictPath, ContentSource.GameContent)).GetEnumerator())
+            using (var dict = Game1.content.Load<Dictionary<string, CustomAcheivementData>>(dictPath).GetEnumerator())
             {
                 while (dict.MoveNext())
                 {
@@ -81,7 +90,7 @@ namespace CustomAchievements
 
         private void GameLoop_SaveLoaded(object sender, StardewModdingAPI.Events.SaveLoadedEventArgs e)
         {
-            using (var dict = Helper.Content.Load<Dictionary<string, CustomAcheivementData>>(dictPath, ContentSource.GameContent).GetEnumerator())
+            using (var dict = Helper.GameContent.Load<Dictionary<string, CustomAcheivementData>>(dictPath).GetEnumerator())
             {
                 while (dict.MoveNext())
                 {
@@ -90,26 +99,6 @@ namespace CustomAchievements
                     currentAchievements[hash] = a;
                 }
             }
-        }
-
-
-        /// <summary>Get whether this instance can load the initial version of the given asset.</summary>
-        /// <param name="asset">Basic metadata about the asset being loaded.</param>
-        public bool CanLoad<T>(IAssetInfo asset)
-        {
-            if (!Config.EnableMod)
-                return false;
-
-            return asset.AssetNameEquals(dictPath);
-        }
-
-        /// <summary>Load a matched asset.</summary>
-        /// <param name="asset">Basic metadata about the asset being loaded.</param>
-        public T Load<T>(IAssetInfo asset)
-        {
-            Monitor.Log("Loading dictionary");
-
-            return (T)(object)new Dictionary<string, CustomAcheivementData>();
         }
     }
 }

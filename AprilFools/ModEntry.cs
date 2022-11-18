@@ -16,7 +16,7 @@ using xTile;
 namespace AprilFools
 {
     /// <summary>The mod entry point.</summary>
-    public partial class ModEntry : Mod, IAssetEditor
+    public partial class ModEntry : Mod
     {
 
         public static IMonitor SMonitor;
@@ -59,13 +59,14 @@ namespace AprilFools
             helper.Events.Player.Warped += Player_Warped;
             helper.Events.Display.RenderedWorld += Display_RenderedWorld;
             helper.Events.Display.Rendered += Display_Rendered;
+            helper.Events.Content.AssetRequested += Content_AssetRequested;
 
             ravenText = File.ReadAllLines(Path.Combine(Helper.DirectoryPath, "assets", "raven.txt"));
             blackTexture = new Texture2D(Game1.graphics.GraphicsDevice, 1, 1);
             blackTexture.SetData(new Color[] { Color.Black });
 
-            font = helper.Content.Load<SpriteFont>("assets/Fira_Code");
-            beeTexture = helper.Content.Load<Texture2D>("assets/bee");
+            font = helper.ModContent.Load<SpriteFont>("assets/Fira_Code.xnb");
+            beeTexture = helper.ModContent.Load<Texture2D>("assets/bee.png");
 
             var screenWidth = Game1.graphics.GraphicsDevice.PresentationParameters.BackBufferWidth;
             var screenHeight = Game1.graphics.GraphicsDevice.PresentationParameters.BackBufferHeight;
@@ -74,6 +75,21 @@ namespace AprilFools
 
             var harmony = new Harmony(ModManifest.UniqueID);
             harmony.PatchAll();
+        }
+
+        private void Content_AssetRequested(object sender, StardewModdingAPI.Events.AssetRequestedEventArgs e)
+        {
+            if (e.NameWithoutLocale.IsEquivalentTo("Maps/Town") && IsModEnabled() && Config.BuildingsEnabled && !Utility.doesMasterPlayerHaveMailReceivedButNotMailForTomorrow("ccMovieTheater"))
+            {
+                e.Edit(delegate(IAssetData data)
+                {
+                    SMonitor.Log($"Patching Maps/Town");
+                    Map pierre = Helper.ModContent.Load<Map>("assets/pierrebuilding.tmx");
+                    Map joja = Helper.ModContent.Load<Map>("assets/jojabuilding.tmx");
+                    data.AsMap().PatchMap(pierre, null, new Rectangle(90, 41, 12, 13), PatchMapMode.Replace);
+                    data.AsMap().PatchMap(joja, null, new Rectangle(38, 47, 12, 11), PatchMapMode.Replace);
+                });
+            }
         }
 
         private void Player_Warped(object sender, StardewModdingAPI.Events.WarpedEventArgs e)
@@ -381,30 +397,6 @@ namespace AprilFools
             );
         }
 
-        public bool CanEdit<T>(IAssetInfo asset)
-        {
-            if (asset.AssetNameEquals("Maps/Town") && IsModEnabled() && Config.BuildingsEnabled)
-            {
-                return true;
-            }
 
-            return false;
-        }
-
-        /// <summary>Edit a matched asset.</summary>
-        /// <param name="asset">A helper which encapsulates metadata about an asset and enables changes to it.</param>
-        public void Edit<T>(IAssetData asset)
-        {
-            if (asset.AssetNameEquals("Maps/Town") && !Utility.doesMasterPlayerHaveMailReceivedButNotMailForTomorrow("ccMovieTheater"))
-            {
-
-                var editor = asset.AsMap();
-                SMonitor.Log($"Patching Maps/Town");
-                Map pierre = Helper.Content.Load<Map>("assets/pierrebuilding.tmx");
-                Map joja = Helper.Content.Load<Map>("assets/jojabuilding.tmx");
-                editor.PatchMap(pierre, null, new Rectangle(90, 41, 12, 13), PatchMapMode.Replace);
-                editor.PatchMap(joja, null, new Rectangle(38, 47, 12, 11), PatchMapMode.Replace);
-            }
-        }
     }
 }

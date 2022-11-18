@@ -56,7 +56,7 @@ namespace CustomAchievements
             int baseX = __instance.xPositionOnScreen + IClickableMenu.borderWidth + IClickableMenu.spaceToClearSideBorder;
             int baseY = __instance.yPositionOnScreen + IClickableMenu.borderWidth + IClickableMenu.spaceToClearTopBorder - 16;
 
-            using var dict = Helper.Content.Load<Dictionary<string, CustomAcheivementData>>(ModEntry.dictPath, ContentSource.GameContent).GetEnumerator();
+            using var dict = Helper.GameContent.Load<Dictionary<string, CustomAcheivementData>>(ModEntry.dictPath).GetEnumerator();
             while (dict.MoveNext())
             {
                 var a = dict.Current.Value;
@@ -67,7 +67,7 @@ namespace CustomAchievements
                 int yPos = baseY + widthUsed / 10 * 68;
                 if (a.iconPath.Length > 0)
                 {
-                    var icon = Game1.content.Load<Texture2D>(Helper.Content.GetActualAssetKey(a.iconPath, ContentSource.GameContent));
+                    var icon = Game1.content.Load<Texture2D>(a.iconPath);
                     __instance.collections[5][0].Add(new ClickableTextureComponent($"{hash} {a.achieved}", new Rectangle(xPos, yPos, 64, 64), null, "", icon, a.iconRect == null ? new Rectangle(0, 0, icon.Width, icon.Height) : a.iconRect.Value, 1f, false));
                 }
                 else

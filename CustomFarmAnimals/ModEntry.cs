@@ -12,7 +12,7 @@ using Object = StardewValley.Object;
 namespace CustomFarmAnimals
 {
     /// <summary>The mod entry point.</summary>
-    public partial class ModEntry : Mod, IAssetLoader
+    public partial class ModEntry : Mod
     {
 
         public static IMonitor SMonitor;
@@ -40,6 +40,8 @@ namespace CustomFarmAnimals
             helper.Events.GameLoop.GameLaunched += GameLoop_GameLaunched;
             helper.Events.Input.ButtonPressed += Input_ButtonPressed;
             helper.Events.GameLoop.SaveLoaded += GameLoop_SaveLoaded;
+            helper.Events.Content.AssetRequested += Content_AssetRequested;
+
             var harmony = new Harmony(ModManifest.UniqueID);
             harmony.PatchAll();
         }
@@ -63,7 +65,7 @@ namespace CustomFarmAnimals
 
             foreach (var pack in loadedPacks)
             {
-                Helper.ConsoleCommands.Trigger("patch", new string[] { "reload", pack });
+                //Helper.ConsoleCommands.Trigger("patch", new string[] { "reload", pack });
             }
             loadedPacks.Clear();
             dataDict = Helper.GameContent.Load<Dictionary<string, FarmAnimalData>>(dictPath);
@@ -96,21 +98,13 @@ namespace CustomFarmAnimals
                 setValue: value => Config.EnableMod = value
             );
         }
-        public bool CanLoad<T>(IAssetInfo asset)
+        private void Content_AssetRequested(object sender, StardewModdingAPI.Events.AssetRequestedEventArgs e)
         {
-            if (!Config.EnableMod)
-                return false;
 
-            return asset.AssetNameEquals(dictPath);
-        }
-
-        /// <summary>Load a matched asset.</summary>
-        /// <param name="asset">Basic metadata about the asset being loaded.</param>
-        public T Load<T>(IAssetInfo asset)
-        {
-            Monitor.Log("Loading dictionary");
-
-            return (T)(object)new Dictionary<string, FarmAnimalData>();
+            if (e.NameWithoutLocale.IsEquivalentTo(dictPath))
+            {
+                e.LoadFrom(() => new Dictionary<string, FarmAnimalData>(), StardewModdingAPI.Events.AssetLoadPriority.Exclusive);
+            }
         }
     }
 }
