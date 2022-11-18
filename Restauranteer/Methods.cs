@@ -32,7 +32,7 @@ namespace Restauranteer
                 UpdateOrder(npc, JsonConvert.DeserializeObject<OrderData>(orderData));
                 return;
             }
-            if (!Game1.NPCGiftTastes.ContainsKey(npc.Name))
+            if (!Game1.NPCGiftTastes.ContainsKey(npc.Name) || npcOrderNumbers.Value.TryGetValue(npc.Name, out int amount) && amount >= Config.MaxNPCOrdersPerNight)
                 return;
             if(Game1.random.NextDouble() < Config.OrderChance)
             {

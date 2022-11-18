@@ -429,6 +429,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GalaxyWeaponChoice", "Galax
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Restauranteer", "Restauranteer\Restauranteer.csproj", "{A62482D1-1C8A-404B-B718-020F4C3FC788}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FastForward", "FastForward\FastForward.csproj", "{EECEADC8-2CBA-43C9-9006-14D70C0EC818}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -2113,6 +2115,14 @@ Global
 		{A62482D1-1C8A-404B-B718-020F4C3FC788}.Release|Any CPU.Build.0 = Release|Any CPU
 		{A62482D1-1C8A-404B-B718-020F4C3FC788}.Release|x86.ActiveCfg = Release|Any CPU
 		{A62482D1-1C8A-404B-B718-020F4C3FC788}.Release|x86.Build.0 = Release|Any CPU
+		{EECEADC8-2CBA-43C9-9006-14D70C0EC818}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EECEADC8-2CBA-43C9-9006-14D70C0EC818}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EECEADC8-2CBA-43C9-9006-14D70C0EC818}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{EECEADC8-2CBA-43C9-9006-14D70C0EC818}.Debug|x86.Build.0 = Debug|Any CPU
+		{EECEADC8-2CBA-43C9-9006-14D70C0EC818}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EECEADC8-2CBA-43C9-9006-14D70C0EC818}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EECEADC8-2CBA-43C9-9006-14D70C0EC818}.Release|x86.ActiveCfg = Release|Any CPU
+		{EECEADC8-2CBA-43C9-9006-14D70C0EC818}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

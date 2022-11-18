@@ -1,4 +1,11 @@
 ﻿{
-  "gus-event-string": "/pause 200/speak Gus \"Oh, by the way, if you are ever looking for something to do, we could really use a cook down at the Saloon!\""
+  "gus-event-string": "Oh, by the way, if you are ever looking for something to do, we could really use another cook down at the Saloon!",
+  "low-friendship": "You're not good enough friends with Gus to use his kitchen.",
+  "loved-order-reaction-1": "Thank you, this looks delicious!",
+  "loved-order-reaction-2": "Thank you!",
+  "loved-order-reaction-3": "Exactly what I wanted, thank you!",
+  "liked-order-reaction-1": "Thanks, this looks good!",
+  "liked-order-reaction-2": "Thanks!",
+  "liked-order-reaction-3": "Just what I ordered, thanks!"
 
 }
