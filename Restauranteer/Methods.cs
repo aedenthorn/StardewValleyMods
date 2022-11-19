@@ -1,8 +1,14 @@
-﻿using Newtonsoft.Json;
+﻿using HarmonyLib;
+using Netcode;
+using Newtonsoft.Json;
 using StardewValley;
+using StardewValley.Locations;
 using StardewValley.Menus;
+using StardewValley.Objects;
+using System;
 using System.Collections.Generic;
 using System.Linq;
+using Object = StardewValley.Object;
 
 namespace Restauranteer
 {
@@ -13,7 +19,7 @@ namespace Restauranteer
             foreach(var c in Game1.player.currentLocation.characters)
             {
 
-                if (c.isVillager() && c.Name != "Gus" && c.Name != "Emily")
+                if (c.isVillager() && !Config.IgnoredNPCs.Contains(c.Name))
                 {
                     CheckOrder(c);
                 }
@@ -53,14 +59,14 @@ namespace Restauranteer
             List<int> loves = new();
             foreach(var str in Game1.NPCGiftTastes["Universal_Love"].Split(' '))
             {
-                if (Game1.objectInformation.TryGetValue(int.Parse(str), out string data) && CraftingRecipe.cookingRecipes.ContainsKey(data.Split('/')[0]))
+                if (int.TryParse(str, out int i) && Game1.objectInformation.TryGetValue(i, out string data) && CraftingRecipe.cookingRecipes.ContainsKey(data.Split('/')[0]))
                 {
                     loves.Add(int.Parse(str));
                 }
             }
             foreach(var str in Game1.NPCGiftTastes[npc.Name].Split('/')[1].Split(' '))
             {
-                if (Game1.objectInformation.TryGetValue(int.Parse(str), out string data) && CraftingRecipe.cookingRecipes.ContainsKey(data.Split('/')[0]))
+                if (int.TryParse(str, out int i) && Game1.objectInformation.TryGetValue(i, out string data) && CraftingRecipe.cookingRecipes.ContainsKey(data.Split('/')[0]))
                 {
                     loves.Add(int.Parse(str));
                 }
@@ -68,14 +74,14 @@ namespace Restauranteer
             List<int> likes = new();
             foreach(var str in Game1.NPCGiftTastes["Universal_Like"].Split(' '))
             {
-                if (Game1.objectInformation.TryGetValue(int.Parse(str), out string data) && CraftingRecipe.cookingRecipes.ContainsKey(data.Split('/')[0]))
+                if (int.TryParse(str, out int i) && Game1.objectInformation.TryGetValue(i, out string data) && CraftingRecipe.cookingRecipes.ContainsKey(data.Split('/')[0]))
                 {
                     likes.Add(int.Parse(str));
                 }
             }
             foreach (var str in Game1.NPCGiftTastes[npc.Name].Split('/')[3].Split(' '))
             {
-                if (Game1.objectInformation.TryGetValue(int.Parse(str), out string data) && CraftingRecipe.cookingRecipes.ContainsKey(data.Split('/')[0]))
+                if (int.TryParse(str, out int i) && Game1.objectInformation.TryGetValue(i, out string data) && CraftingRecipe.cookingRecipes.ContainsKey(data.Split('/')[0]))
                 {
                     likes.Add(int.Parse(str));
                 }
@@ -96,6 +102,36 @@ namespace Restauranteer
             var name = Game1.objectInformation[dish].Split('/')[0];
             Monitor.Log($"{npc.Name} is going to order {name}");
             npc.modData[orderKey] = JsonConvert.SerializeObject(new OrderData(dish, name, loved));
+        }
+
+        private static NetRef<Chest> GetFridge(GameLocation __instance)
+        {
+            if(__instance is FarmHouse)
+            {
+                return (__instance as FarmHouse).fridge;
+            }
+            if(__instance is IslandFarmHouse)
+            {
+                return (__instance as IslandFarmHouse).fridge;
+            }
+            NetRef<Chest> fridge;
+            if (__instance.Objects.TryGetValue(fridgeHideTile, out Object value) && value is Chest)
+            {
+                fridge = new NetRef<Chest>(value as Chest);
+
+            }
+            else
+            {
+                SMonitor.Log($"adding fridge to {__instance.Name}");
+                fridge = new NetRef<Chest>(new Chest(true, 130));
+                __instance.Objects.Add(fridgeHideTile, fridge.Value);
+            }
+
+            __instance.NetFields.AddFields(new INetSerializable[]
+            {
+                fridge
+            });
+            return fridge;
         }
     }
 }

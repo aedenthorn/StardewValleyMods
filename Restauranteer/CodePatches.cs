@@ -38,7 +38,7 @@ namespace Restauranteer
                 __instance.IsEmoting = true;
                 if (!__instance.modData.TryGetValue(orderKey, out string data))
                     return;
-                if(__instance.currentLocation.Name != "Saloon")
+                if(!Config.RestaurantLocations.Contains(__instance.currentLocation.Name))
                 {
                     __instance.modData.Remove(orderKey);
                     return;
@@ -60,7 +60,7 @@ namespace Restauranteer
         {
             public static bool Prefix(GameLocation __instance, string action, Farmer who, Location tileLocation, ref bool __result)
             {
-                if (!Config.ModEnabled || __instance.Name != "Saloon" || (action != "kitchen"  && action != "fridge" && (SHelper.Input.IsDown(Config.FridgeModKey) || action != "DropBox GusFridge")))
+                if (!Config.ModEnabled || !Config.RestaurantLocations.Contains(__instance.Name) || (action != "kitchen"  && action != "fridge" && (SHelper.Input.IsDown(Config.FridgeModKey) || action != "DropBox GusFridge")))
                     return true;
                 if (!Game1.player.eventsSeen.Contains(980558))
                 {
@@ -68,7 +68,8 @@ namespace Restauranteer
                     __result = true;
                     return false;
                 }
-                if (Config.AuotFillFridge)
+                var fridge = GetFridge(__instance);
+                if (Config.AutoFillFridge)
                 {
                     fridge.Value.items.Clear();
                     foreach (var c in __instance.characters)
@@ -130,8 +131,9 @@ namespace Restauranteer
         {
             public static void Postfix(GameLocation __instance)
             {
-                if (!Config.ModEnabled || __instance.Name != "Saloon")
+                if (!Config.ModEnabled || !Config.RestaurantLocations.Contains(__instance.Name))
                     return;
+                var fridge = GetFridge(__instance);
                 __instance.NetFields.AddFields(new INetSerializable[]
                 {
                     fridge
@@ -139,22 +141,14 @@ namespace Restauranteer
             }
         }
 
-        [HarmonyPatch(typeof(GameLocation), "drawAboveFrontLayer")]
-        public class GameLocation_drawAboveFrontLayer_Patch
-        {
-            public static void Postfix(GameLocation __instance, SpriteBatch b)
-            {
-                if (!Config.ModEnabled || __instance.Name != "Saloon")
-                    return;
-            }
-        }
         [HarmonyPatch(typeof(GameLocation), nameof(GameLocation.UpdateWhenCurrentLocation))]
         public class GameLocation_UpdateWhenCurrentLocation_Patch
         {
             public static void Postfix(GameLocation __instance, GameTime time)
             {
-                if (!Config.ModEnabled || __instance.Name != "Saloon")
+                if (!Config.ModEnabled || !Config.RestaurantLocations.Contains(__instance.Name))
                     return;
+                var fridge = GetFridge(__instance);
                 fridge.Value.updateWhenCurrentLocation(time, __instance);
             }
         }
@@ -164,7 +158,7 @@ namespace Restauranteer
         {
             public static bool Prefix(NPC __instance, Farmer who)
             {
-                if (!Config.ModEnabled || __instance.currentLocation.Name != "Saloon" || !__instance.modData.TryGetValue(orderKey, out string data))
+                if (!Config.ModEnabled || !Config.RestaurantLocations.Contains(__instance.Name) || !__instance.modData.TryGetValue(orderKey, out string data))
                     return true;
                 OrderData orderData = JsonConvert.DeserializeObject<OrderData>(data);
                 if(who.ActiveObject?.ParentSheetIndex == orderData.dish)

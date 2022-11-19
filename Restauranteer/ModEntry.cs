@@ -1,6 +1,8 @@
 ﻿using HarmonyLib;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Netcode;
+using Newtonsoft.Json;
 using StardewModdingAPI;
 using StardewModdingAPI.Utilities;
 using StardewValley;
@@ -9,8 +11,11 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
+using System.Linq;
+using System.Runtime.Serialization.Formatters.Binary;
 using xTile;
 using xTile.Dimensions;
+using xTile.Tiles;
 
 namespace Restauranteer
 {
@@ -25,9 +30,10 @@ namespace Restauranteer
         public static ModEntry context;
         
         public static string orderKey = "aedenthorn.Restauranteer/order";
+        public static string fridgeKey = "aedenthorn.Restauranteer/fridge";
         public static Texture2D emoteSprite;
+        public static Vector2 fridgeHideTile = new Vector2(-42000, -42000);
         public static PerScreen<Dictionary<string, int>> npcOrderNumbers = new PerScreen<Dictionary<string, int>>();
-        public static NetRef<Chest> fridge;
         public static PerScreen<Location> fridgePosition = new PerScreen<Location>();
 
         /// <summary>The mod entry point, called after the mod is first loaded.</summary>
@@ -52,17 +58,16 @@ namespace Restauranteer
             npcOrderNumbers.Value = new Dictionary<string, int>();
         }
 
+
         private void GameLoop_DayStarted(object sender, StardewModdingAPI.Events.DayStartedEventArgs e)
         {
             npcOrderNumbers.Value.Clear();
-            fridge = new NetRef<Chest>(new Chest(true, 130));
-
             emoteSprite = SHelper.ModContent.Load<Texture2D>(Path.Combine("assets", "emote.png"));
         }
 
         private void GameLoop_OneSecondUpdateTicked(object sender, StardewModdingAPI.Events.OneSecondUpdateTickedEventArgs e)
         {
-            if(Config.ModEnabled && Context.IsPlayerFree &&  Game1.player.currentLocation.Name == "Saloon" && Game1.player.eventsSeen.Contains(980558))
+            if(Config.ModEnabled && Context.IsPlayerFree && Config.RestaurantLocations.Contains(Game1.player.currentLocation.Name) && Game1.player.eventsSeen.Contains(980558))
             {
                 UpdateOrders();
             }
@@ -83,7 +88,7 @@ namespace Restauranteer
                     }
                 });
             }
-            if (e.NameWithoutLocale.IsEquivalentTo("Maps/Saloon"))
+            else if (e.NameWithoutLocale.IsEquivalentTo("Maps/Saloon"))
             {
                 e.Edit(delegate (IAssetData data)
                 {
@@ -135,8 +140,8 @@ namespace Restauranteer
             configMenu.AddBoolOption(
                 mod: ModManifest,
                 name: () => "Auto Fill Fridge",
-                getValue: () => Config.AuotFillFridge,
-                setValue: value => Config.AuotFillFridge = value
+                getValue: () => Config.AutoFillFridge,
+                setValue: value => Config.AutoFillFridge = value
             );
             configMenu.AddBoolOption(
                 mod: ModManifest,
