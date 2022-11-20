@@ -119,9 +119,9 @@ namespace FarmerHelper
                         }
                     }
                 }
-                foreach (TerrainFeature terrainFeature in Game1.getLocationFromName("Greenhouse").terrainFeatures.Values)
+                foreach (TerrainFeature terrainFeature in Game1.getLocationFromName("Greenhouse")?.terrainFeatures.Values)
                 {
-                    if (terrainFeature is HoeDirt && (terrainFeature as HoeDirt).crop != null && !(terrainFeature as HoeDirt).hasPaddyCrop() && (terrainFeature as HoeDirt).state.Value == 0 && (terrainFeature as HoeDirt).crop.currentPhase.Value < (terrainFeature as HoeDirt).crop.phaseDays.Count - 1)
+                    if (terrainFeature is HoeDirt && (terrainFeature as HoeDirt).readyForHarvest())
                     {
                         logMessage.Add($"Crop with harvest index {(terrainFeature as HoeDirt).crop.indexOfHarvest.Value} at Greenhouse {terrainFeature.currentTileLocation.X},{terrainFeature.currentTileLocation.Y} is ready to harvest");
                         if (!added)

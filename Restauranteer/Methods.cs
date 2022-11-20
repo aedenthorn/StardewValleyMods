@@ -1,11 +1,8 @@
-﻿using HarmonyLib;
-using Netcode;
+﻿using Netcode;
 using Newtonsoft.Json;
 using StardewValley;
 using StardewValley.Locations;
-using StardewValley.Menus;
 using StardewValley.Objects;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using Object = StardewValley.Object;
@@ -124,7 +121,7 @@ namespace Restauranteer
             {
                 SMonitor.Log($"adding fridge to {__instance.Name}");
                 fridge = new NetRef<Chest>(new Chest(true, 130));
-                __instance.Objects.Add(fridgeHideTile, fridge.Value);
+                __instance.objects.Add(fridgeHideTile, fridge.Value);
             }
 
             __instance.NetFields.AddFields(new INetSerializable[]
