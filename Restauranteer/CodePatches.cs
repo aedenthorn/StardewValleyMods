@@ -60,7 +60,7 @@ namespace Restauranteer
         {
             public static bool Prefix(GameLocation __instance, string action, Farmer who, Location tileLocation, ref bool __result)
             {
-                if (!Config.ModEnabled || !Config.RestaurantLocations.Contains(__instance.Name) || (action != "kitchen"  && action != "fridge" && (SHelper.Input.IsDown(Config.FridgeModKey) || action != "DropBox GusFridge")))
+                if (!Config.ModEnabled || !Config.RestaurantLocations.Contains(__instance.Name) || (action != "kitchen" && ((action != "fridge" && (SHelper.Input.IsDown(Config.FridgeModKey) || action != "DropBox GusFridge")) || Config.AutoFillFridge)))
                     return true;
                 if (!Game1.player.eventsSeen.Contains(980558))
                 {
@@ -152,13 +152,38 @@ namespace Restauranteer
                 fridge.Value.updateWhenCurrentLocation(time, __instance);
             }
         }
+        
+        [HarmonyPatch(typeof(Utility), nameof(Utility.checkForCharacterInteractionAtTile))]
+        public class Utility_checkForCharacterInteractionAtTile_Patch
+        {
+            public static bool Prefix(Vector2 tileLocation, Farmer who)
+            {
+                if (!Config.ModEnabled)
+                    return true;
+                NPC npc = Game1.currentLocation.isCharacterAtTile(tileLocation);
+                if (npc is null || !npc.modData.TryGetValue(orderKey, out string data))
+                    return true;
+                if (!Config.RestaurantLocations.Contains(Game1.currentLocation.Name))
+                {
+                    npc.modData.Remove(orderKey);
+                    return true;
+                }
+                OrderData orderData = JsonConvert.DeserializeObject<OrderData>(data);
+                if(who.ActiveObject != null && who.ActiveObject.canBeGivenAsGift() && who.ActiveObject.Name == orderData.dishName)
+                {
+                    Game1.mouseCursor = 6;
+                    return false;
+                }
+                return true;
+            }
+        }
 
         [HarmonyPatch(typeof(NPC), nameof(NPC.tryToReceiveActiveObject))]
         public class NPC_tryToReceiveActiveObject_Patch
         {
             public static bool Prefix(NPC __instance, Farmer who)
             {
-                if (!Config.ModEnabled || !Config.RestaurantLocations.Contains(__instance.Name) || !__instance.modData.TryGetValue(orderKey, out string data))
+                if (!Config.ModEnabled || !Config.RestaurantLocations.Contains(__instance.currentLocation.Name) || !__instance.modData.TryGetValue(orderKey, out string data))
                     return true;
                 OrderData orderData = JsonConvert.DeserializeObject<OrderData>(data);
                 if(who.ActiveObject?.ParentSheetIndex == orderData.dish)

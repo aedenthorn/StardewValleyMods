@@ -151,7 +151,7 @@ namespace Restauranteer
             );
             configMenu.AddBoolOption(
                 mod: ModManifest,
-                name: () => "Reveal Gift Taste",
+                name: () => "Patch Saloon Map",
                 getValue: () => Config.PatchSaloonMap,
                 setValue: value => Config.PatchSaloonMap = value
             );
