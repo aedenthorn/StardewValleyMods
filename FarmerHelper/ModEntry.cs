@@ -3,9 +3,6 @@ using StardewModdingAPI;
 using StardewValley;
 using StardewValley.Menus;
 using StardewValley.TerrainFeatures;
-using System.Collections.Generic;
-using System.Drawing;
-using System.Linq;
 
 namespace FarmerHelper
 {
