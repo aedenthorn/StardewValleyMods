@@ -2,7 +2,7 @@
 using StardewModdingAPI;
 using System.Collections.Generic;
 
-namespace Restauranteer
+namespace SoundTweaker
 {
     public class ModConfig
     {

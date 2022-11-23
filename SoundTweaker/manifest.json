@@ -1,16 +1,16 @@
 ﻿{
-  "Name": "Restauranteer",
+  "Name": "SoundTweaker",
   "Author": "aedenthorn",
-  "Version": "0.4.0",
-  "Description": "Restauranteer.",
-  "UniqueID": "aedenthorn.Restauranteer",
-  "EntryDll": "Restauranteer.dll",
+  "Version": "0.1.0",
+  "Description": "SoundTweaker.",
+  "UniqueID": "aedenthorn.SoundTweaker",
+  "EntryDll": "SoundTweaker.dll",
   "MinimumApiVersion": "3.15.0",
   "ModUpdater": {
     "Repository": "StardewValleyMods",
     "User": "aedenthorn",
     "Directory": "_releases",
-    "ModFolder": "Restauranteer"
+    "ModFolder": "SoundTweaker"
   },
   "Dependencies": [
     {

@@ -31,7 +31,8 @@ namespace StardewImpact
         {
             if(!(available ? ModEntry.GetAvailableCharacters() : ModEntry.characterDict).TryGetValue(name, out CharacterData data))
             {
-                ModEntry.SMonitor.Log($"Error getting character {name}: character data not found", StardewModdingAPI.LogLevel.Error);
+                if (ModEntry.SMonitor is not null)
+                    ModEntry.SMonitor.Log($"Error getting character {name}: character data not found", StardewModdingAPI.LogLevel.Error);
                 return null;
             }
             return data;
@@ -46,13 +47,15 @@ namespace StardewImpact
         {
             ModEntry.characterDict[name] = new CharacterData(name, characterColor, energyPerSkill, energyPerHit, burstEnergyCost, skillCooldoown, burstCooldoown, portraitPath, spritePath, skillIconPath, burstIconPath, skillEvent, burstEvent);
             ModEntry.LoadTextures(name);
-            ModEntry.SMonitor.Log($"Added character {name}", StardewModdingAPI.LogLevel.Debug);
+            if(ModEntry.SMonitor is not null)
+                ModEntry.SMonitor.Log($"Added character {name}", StardewModdingAPI.LogLevel.Debug);
         }
         public void AddSkillEvent(string name, Action<string, Farmer> action)
         {
             if (!ModEntry.characterDict.TryGetValue(name, out CharacterData data))
             {
-                ModEntry.SMonitor.Log($"Error adding skill event for {name}: character data not found", StardewModdingAPI.LogLevel.Error);
+                if (ModEntry.SMonitor is not null)
+                    ModEntry.SMonitor.Log($"Error adding skill event for {name}: character data not found", StardewModdingAPI.LogLevel.Error);
                 return;
             }
             data.SkillEvent.Add(action);
@@ -61,7 +64,8 @@ namespace StardewImpact
         {
             if (!ModEntry.characterDict.TryGetValue(name, out CharacterData data))
             {
-                ModEntry.SMonitor.Log($"Error adding burst event for {name}: character data not found", StardewModdingAPI.LogLevel.Error);
+                if (ModEntry.SMonitor is not null)
+                    ModEntry.SMonitor.Log($"Error adding burst event for {name}: character data not found", StardewModdingAPI.LogLevel.Error);
                 return;
             }
             data.BurstEvent.Add(action);

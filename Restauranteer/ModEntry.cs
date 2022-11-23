@@ -13,6 +13,7 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Runtime.Serialization.Formatters.Binary;
+using System.Text.RegularExpressions;
 using xTile;
 using xTile.Dimensions;
 using xTile.Tiles;
@@ -112,6 +113,19 @@ namespace Restauranteer
                             map.Data.GetLayer("Buildings").Tiles[tile.X, tile.Y].Properties["Action"] = "fridge";
                         }
                         catch { }
+                    }
+                }, StardewModdingAPI.Events.AssetEditPriority.Late);
+            }
+            else if (e.NameWithoutLocale.IsEquivalentTo("Characters/schedules/Emily") && !string.IsNullOrEmpty(Config.EmilySaloonString))
+            {
+                e.Edit(delegate (IAssetData data)
+                {
+                    var dict = data.AsDictionary<string, string>();
+                    Regex ex = new Regex(@"Saloon [0-9]+ [0-9]+[^/]*", RegexOptions.Compiled);
+                    Monitor.Log($"Replacing Emily saloon string with {Config.EmilySaloonString}");
+                    foreach (var key in dict.Data.Keys)
+                    {
+                        dict.Data[key] = ex.Replace(dict.Data[key], Config.EmilySaloonString);
                     }
                 }, StardewModdingAPI.Events.AssetEditPriority.Late);
             }

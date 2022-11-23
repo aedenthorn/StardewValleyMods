@@ -2,7 +2,7 @@
 using StardewModdingAPI;
 using System.Collections.Generic;
 
-namespace Restauranteer
+namespace DynamicMapTiles
 {
     public class ModConfig
     {

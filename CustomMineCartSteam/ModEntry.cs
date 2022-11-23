@@ -46,13 +46,22 @@ namespace CustomMineCartSteam
 
         private void Player_Warped(object sender, StardewModdingAPI.Events.WarpedEventArgs e)
         {
+            int id = 424200;
             foreach (var sd in steamDict.Values)
             {
                 if (sd.location == e.NewLocation.Name)
                 {
-                    if (sd.replaceSteam && !Game1.MasterPlayer.mailReceived.Contains("ccBoilerRoom"))
+                    if (sd.replaceSteam)
                     {
-                        continue;
+                        if (!Game1.MasterPlayer.mailReceived.Contains("ccBoilerRoom"))
+                        {
+                            continue;
+                        }
+                        var mcs = AccessTools.Field(Game1.currentLocation.GetType(), "minecartSteam");
+                        if (mcs is not null)
+                        {
+                            AccessTools.Field(Game1.currentLocation.GetType(), "minecartSteam").SetValue(Game1.currentLocation, null);
+                        }
                     }
                         
                     TemporaryAnimatedSprite sprite;
@@ -60,7 +69,6 @@ namespace CustomMineCartSteam
                     {
                         sprite = new TemporaryAnimatedSprite(sd.animationRow, sd.position.ToVector2(), sd.color, sd.animationLength, sd.flipped, sd.animationInterval, sd.animationLoops, sd.sourceRectWidth, sd.layerDepth, sd.sourceRectHeight, sd.delay)
                         {
-                            id = sd.id,
                             layerDepth = sd.layerDepth
                         };
                     }
@@ -68,39 +76,25 @@ namespace CustomMineCartSteam
                     {
                         sprite = new TemporaryAnimatedSprite(sd.texturePath, sd.sourceRect, sd.animationInterval, sd.animationLength, sd.animationLoops, sd.position.ToVector2(), sd.flicker, sd.flipped, sd.layerDepth, sd.alphaFade, sd.color, sd.scale, sd.scaleChange, sd.rotation, sd.rotationChange, sd.local)
                         {
-                            id = sd.id,
                             layerDepth = sd.layerDepth,
                             motion = sd.motion.ToVector2(),
                             acceleration = sd.acceleration.ToVector2()
                         };
                     }
-                    Game1.currentLocation.removeTemporarySpritesWithIDLocal(sd.id);
+                    sprite.id = id++;
+                    Game1.currentLocation.removeTemporarySpritesWithIDLocal(sprite.id);
                     Game1.currentLocation.TemporarySprites.Add(sprite);
 
-                    if (sd.replaceSteam)
-                    {
-                        var mcs = AccessTools.Field(Game1.currentLocation.GetType(), "minecartSteam");
-                        if (mcs is not null)
-                        {
-                            AccessTools.Field(Game1.currentLocation.GetType(), "minecartSteam").SetValue(Game1.currentLocation, null);
-                        }
-                    }
                 }
             }
         }
-
 
         private void GameLoop_DayStarted(object sender, StardewModdingAPI.Events.DayStartedEventArgs e)
         {
             if (!Config.ModEnabled)
                 return;
             steamDict = Helper.GameContent.Load<Dictionary<string, SteamData>>(dictPath);
-            int id = 42424200;
-            foreach(var key in steamDict.Keys.ToArray())
-            {
-                steamDict[key].id = id;
-                id++;
-            }
+
             Monitor.Log($"loaded {steamDict.Count} custom temporary sprites");
         }
 
@@ -133,6 +127,5 @@ namespace CustomMineCartSteam
                 setValue: value => Config.ModEnabled = value
             );
         }
-
     }
 }
