@@ -247,17 +247,17 @@ namespace DynamicMapTiles
             }
             if (tile.Properties.TryGetValue(changePropertiesOffKey, out value))
             {
-                var split = value.ToString().Split('`');
-                foreach (var str in split)
+                var props = value.ToString().Split('`');
+                foreach (var prop in props)
                 {
-                    var ss = str.Split("=");
-                    if (ss.Length == 2)
+                    var kvp = prop.Split("=");
+                    if (kvp.Length == 2)
                     {
-                        tile.Properties[ss[0]] = ss[1];
+                        tile.Properties[kvp[0]] = kvp[1];
                     }
                     else
                     {
-                        tile.Properties.Remove(ss[0]);
+                        tile.Properties.Remove(kvp[0]);
                     }
                 }
             }
@@ -288,7 +288,6 @@ namespace DynamicMapTiles
 
             }
         }
-
 
         public static void PushTile(GameLocation location, Tile tile, int dir, Point start, string sound)
         {
