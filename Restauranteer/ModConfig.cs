@@ -7,6 +7,7 @@ namespace Restauranteer
     public class ModConfig
     {
         public bool ModEnabled { get; set; } = true;
+        public bool RequireEvent { get; set; } = true;
         public bool AutoFillFridge { get; set; } = true;
         public bool PatchSaloonMap { get; set; } = true;
         public bool RevealGiftTaste { get; set; } = true;

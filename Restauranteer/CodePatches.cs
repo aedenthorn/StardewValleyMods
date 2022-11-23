@@ -62,7 +62,7 @@ namespace Restauranteer
             {
                 if (!Config.ModEnabled || !Config.RestaurantLocations.Contains(__instance.Name) || (action != "kitchen" && ((action != "fridge" && (SHelper.Input.IsDown(Config.FridgeModKey) || action != "DropBox GusFridge")) || Config.AutoFillFridge)))
                     return true;
-                if (!Game1.player.eventsSeen.Contains(980558))
+                if (Config.RequireEvent && !Game1.player.eventsSeen.Contains(980558))
                 {
                     Game1.drawObjectDialogue(SHelper.Translation.Get("low-friendship"));
                     __result = true;

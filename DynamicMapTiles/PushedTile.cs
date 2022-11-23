@@ -7,7 +7,6 @@ namespace DynamicMapTiles
     {
         public Tile tile;
         public Point position;
-        public Point destination;
         public int dir;
     }
 }
