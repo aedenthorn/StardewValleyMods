@@ -97,8 +97,10 @@ namespace Restauranteer
                 dish = likes[Game1.random.Next(likes.Count)];
             }
             var name = Game1.objectInformation[dish].Split('/')[0];
+            int price = 0;
+            int.TryParse(Game1.objectInformation[dish].Split('/')[1], out price);
             Monitor.Log($"{npc.Name} is going to order {name}");
-            npc.modData[orderKey] = JsonConvert.SerializeObject(new OrderData(dish, name, loved));
+            npc.modData[orderKey] = JsonConvert.SerializeObject(new OrderData(dish, name, price, loved));
         }
 
         private static NetRef<Chest> GetFridge(GameLocation __instance)

@@ -140,6 +140,7 @@ namespace Restauranteer
                 });
             }
         }
+        
 
         [HarmonyPatch(typeof(GameLocation), nameof(GameLocation.UpdateWhenCurrentLocation))]
         public class GameLocation_UpdateWhenCurrentLocation_Patch
@@ -275,5 +276,26 @@ namespace Restauranteer
                 return true;   
             }
         }
+        [HarmonyPatch(typeof(Utility), nameof(Utility.getSaloonStock))]
+        public class Utility_getSaloonStock_Patch
+        {
+            public static void Postfix(Dictionary<ISalable, int[]> __result)
+            {
+                if (!Config.ModEnabled || !Config.SellCurrentRecipes)
+                    return;
+                foreach(var npc in Game1.getLocationFromName("Saloon").characters)
+                {
+                    if(npc.modData.TryGetValue(orderKey, out string dataString))
+                    {
+                        var data = JsonConvert.DeserializeObject<OrderData>(dataString);
+                        if (!Game1.player.cookingRecipes.ContainsKey(data.dishName))
+                        {
+                            Utility.AddStock(__result, new Object(data.dish, 1, true, -1, 0), data.dishPrice, -1);
+                        }
+                    }
+                }
+            }
+        }
+
     }
 }
