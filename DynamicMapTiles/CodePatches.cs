@@ -1,17 +1,13 @@
 ﻿using HarmonyLib;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using Newtonsoft.Json.Linq;
 using StardewValley;
-using StardewValley.Tools;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
-using System.Reflection;
 using xTile.Dimensions;
 using xTile.ObjectModel;
-using xTile.Tiles;
 using Rectangle = Microsoft.Xna.Framework.Rectangle;
 
 namespace DynamicMapTiles
@@ -23,18 +19,20 @@ namespace DynamicMapTiles
         {
             public static void Postfix(GameLocation __instance, float x, float y)
             {
-                if (!Config.ModEnabled)
+                if (!Config.ModEnabled || !__instance.isTileOnMap(new Vector2(x, y)))
                     return;
-                try
+                foreach(var layer in __instance.map.Layers)
                 {
-                    var tile = __instance.Map.GetLayer("Buildings").Tiles[(int)x, (int)y];
-                    if (tile is not null && tile.Properties.ContainsKey(explodeKey))
+                    var tile = layer.Tiles[(int)x, (int)y];
+                    if (tile is not null && tile.Properties.TryGetValue(explodeKey, out PropertyValue mail))
                     {
-                        __instance.Map.GetLayer("Buildings").Tiles[(int)x, (int)y] = null;
+                        layer.Tiles[(int)x, (int)y] = null;
+                        if (!string.IsNullOrEmpty(mail) && !Game1.player.mailReceived.Contains(mail))
+                        {
+                            Game1.player.mailReceived.Add(mail);
+                        }
                     }
                 }
-                catch { }
-
             }
         }
         [HarmonyPatch(typeof(GameLocation), nameof(GameLocation.isCollidingPosition), new Type[] { typeof(Rectangle), typeof(xTile.Dimensions.Rectangle), typeof(bool), typeof(int), typeof(bool), typeof(Character) })]
@@ -92,21 +90,28 @@ namespace DynamicMapTiles
         {
             public static void Prefix(Farmer __instance, ref Vector2[] __state)
             {
-                if (!Config.ModEnabled || double.IsNaN((double)__instance.xVelocity) || double.IsNaN((double)__instance.yVelocity))
+                if (!Config.ModEnabled)
                     return;
+                var tileLoc = __instance.getTileLocation();
+                if (__instance.currentLocation.isTileOnMap(tileLoc) && __instance.currentLocation.Map.GetLayer("Back").Tiles[(int)tileLoc.X, (int)tileLoc.Y].Properties.TryGetValue(moveKey, out PropertyValue value))
+                {
+                    var split = value.ToString().Split(' ');
+                    __instance.xVelocity = float.Parse(split[0], NumberStyles.Any, CultureInfo.InvariantCulture);
+                    __instance.yVelocity = float.Parse(split[1], NumberStyles.Any, CultureInfo.InvariantCulture);
+                }
 
-                __state = new Vector2[] { __instance.Position, new Vector2(__instance.xVelocity, __instance.yVelocity), __instance.getTileLocation() };
+                __state = new Vector2[] { __instance.Position, tileLoc };
             }
             public static void Postfix(Farmer __instance, Vector2[] __state)
             {
                 if (!Config.ModEnabled || __state is null)
                     return;
                 var tilePos = __instance.getTileLocationPoint();
-                var oldTile = Utility.Vector2ToPoint(__state[2]);
+                var oldTile = Utility.Vector2ToPoint(__state[1]);
                 if(oldTile != tilePos)
                 {
-                    DoStepOnActions(__instance, tilePos);
                     DoStepOffActions(__instance, oldTile);
+                    DoStepOnActions(__instance, tilePos);
                 }
                 if (__state[0] == __instance.Position && __instance.movementDirections.Any())
                 {
@@ -114,14 +119,22 @@ namespace DynamicMapTiles
                     startTile += GetNextTile(__instance.FacingDirection);
                     Point start = new Point(startTile.X * 64, startTile.Y * 64);
                     var startLoc = new Location(start.X, start.Y);
-                    
 
                     var build = __instance.currentLocation.Map.GetLayer("Buildings");
                     var tile = build.PickTile(startLoc, Game1.viewport.Size);
 
-                    if (tile is not null && tile.Properties.TryGetValue(pushKey, out PropertyValue dirs) && dirs.ToString().Split(',').ToList().Contains(__instance.FacingDirection + ""))
+                    if (tile is not null && tile.Properties.TryGetValue(pushKey, out PropertyValue tiles))
                     {
-                        PushTile(__instance.currentLocation, tile, __instance.FacingDirection, start, tile.Properties.TryGetValue(pushSoundKey, out PropertyValue sound) ? sound : null);
+                        var destTile = startTile + GetNextTile(__instance.FacingDirection);
+                        foreach (var item in tiles.ToString().Split(','))
+                        {
+                            var split = item.Split(' ');
+                            if(split.Length == 2 && int.TryParse(split[0], out int x) && int.TryParse(split[1], out int y) && destTile.X == x && destTile.Y == y) 
+                            {
+                                PushTile(__instance.currentLocation, tile, __instance.FacingDirection, start, tile.Properties.TryGetValue(pushSoundKey, out PropertyValue sound) ? sound.ToString() : null);
+                                break;
+                            }
+                        }
                     }
                 }
             }

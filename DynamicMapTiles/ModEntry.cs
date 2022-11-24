@@ -9,7 +9,6 @@ using static System.Net.Mime.MediaTypeNames;
 
 namespace DynamicMapTiles
 {
-    /// <summary>The mod entry point.</summary>
     public partial class ModEntry : Mod
     {
 
@@ -31,18 +30,20 @@ namespace DynamicMapTiles
         public static string explodeKey = "DMT/explode";
         public static string pushKey = "DMT/push";
         public static string pushSoundKey = "DMT/pushSound";
-        public static string pushedKey = "DMT/pushed";
         public static string soundKey = "DMT/sound";
         public static string soundOnceKey = "DMT/soundOnce";
         public static string soundOffKey = "DMT/soundOff";
         public static string soundOffOnceKey = "DMT/soundOffOnce";
         public static string teleportKey = "DMT/teleport";
+        public static string teleportTileKey = "DMT/teleportTile";
         public static string giveKey = "DMT/give";
+        public static string giveObjectKey = "DMT/give";
         public static string messageKey = "DMT/message";
         public static string messageOnceKey = "DMT/messageOnce";
         public static string eventKey = "DMT/event";
         public static string eventOnceKey = "DMT/eventOnce";
         public static string mailKey = "DMT/mail";
+        public static string mailBoxKey = "DMT/mailbox";
         public static string musicKey = "DMT/music";
         public static string healthKey = "DMT/health";
         public static string staminaKey = "DMT/stamina";
@@ -50,9 +51,9 @@ namespace DynamicMapTiles
         public static string staminaPerSecondKey = "DMT/staminaPerSecond";
         public static string buffKey = "DMT/buff";
         public static string speedKey = "DMT/speed";
+        public static string moveKey = "DMT/move";
+        public static string emoteKey = "DMT/emote";
 
-        /// <summary>The mod entry point, called after the mod is first loaded.</summary>
-        /// <param name="helper">Provides simplified APIs for writing mods.</param>
         public override void Entry(IModHelper helper)
         {
             Config = Helper.ReadConfig<ModConfig>();
@@ -106,62 +107,95 @@ namespace DynamicMapTiles
 
         private void Input_ButtonPressed(object sender, StardewModdingAPI.Events.ButtonPressedEventArgs e)
         {
-            if(e.Button == SButton.Delete)
+            if(Config.IsDebug && e.Button == SButton.Delete)
             {
-                var tile = Game1.currentLocation.Map.GetLayer("Buildings").Tiles[51, 86];
+                Game1.player.IsEmoting = false;
+                    var tile = Game1.currentLocation.Map.GetLayer("Buildings").Tiles[51, 86];
+                if(tile != null)
+                {
+                    tile.Properties[pushKey] = "51 86,50 86,50 87,51 87";
+                }
+                tile = Game1.currentLocation.Map.GetLayer("Buildings").Tiles[47, 86];
                 if(tile != null)
                 {
                     tile.Properties[explodeKey] = "T";
-                    tile.Properties[pushKey] = "3";
-                    tile.Properties[pushedKey] = "1";
                 }
-                tile = Game1.currentLocation.Map.GetLayer("Back").Tiles[20, 57];
+                tile = Game1.currentLocation.Map.GetLayer("Back").Tiles[47, 87];
                 if(tile != null)
                 {
                     tile.Properties[changeIndexKey] = "380";
-                    tile.Properties[soundKey] = "shwip";
-                    tile.Properties[soundOffKey] = "shwip";
-                    tile.Properties[messageKey] = "You found a pair of purple shorts!";
-                    tile.Properties[giveKey] = "789";
-                    //tile.Properties[teleportKey] = $"{30 * 64} {57 * 64}";
-                    //tile.Properties.Remove(teleportKey);
-                    tile.Properties.Remove(eventKey);
-                    //tile.Properties[eventKey] = "playful/20 57/Harvey 25 57 3/skippable/pause 200/speak Harvey \"Hey, why are you stepping there, @?\"/pause 500/end";
-                }
-                tile = Game1.currentLocation.Map.GetLayer("Back").Tiles[26, 59];
-                if(tile != null)
-                {
-                    tile.Properties[changeMultipleIndexKey] = "26 59 1064,25 59 1064,27 59 1064,26 58 1064,25 58 1064,27 58 1064,26 60 1064,25 60 1064,27 60 1064";
-                    tile.Properties[changeMultipleIndexOffKey] = "26 59 736,25 59 736,27 59 736,26 58 736,25 58 736,27 58 736,26 60 736,25 60 736,27 60 736";
-                    tile.Properties[soundKey] = "shwip";
-                    tile.Properties[soundOffKey] = "shwip";
-                }
-                tile = Game1.currentLocation.Map.GetLayer("Back").Tiles[22, 57];
-                if(tile != null)
-                {
+                    tile.Properties[changeIndexOffKey] = "206";
                     tile.Properties[soundKey] = "slime";
                     tile.Properties[buffKey] = "13";
                     tile.Properties[messageKey] = "You have been slimed!";
+                    tile.Properties[soundOffKey] = "shwip";
+                    //tile.Properties[teleportKey] = $"{30 * 64} {57 * 64}";
+                    //tile.Properties.Remove(teleportKey);
+                    //tile.Properties[eventKey] = "playful/20 57/Harvey 25 57 3/skippable/pause 200/speak Harvey \"Hey, why are you stepping there, @?\"/pause 500/end";
                 }
-                tile = Game1.currentLocation.Map.GetLayer("Back").Tiles[20, 58];
+
+                tile = Game1.currentLocation.Map.GetLayer("Back").Tiles[42, 86];
+                if(tile != null)
+                {
+                    tile.Properties[changeMultipleIndexKey] = "Buildings 41 85=Landscape/1140|Buildings 43 85=Landscape/1141|Front 41 84=Landscape/1117|Front 43 84=Landscape/1118|Front 41 83=Landscape/1090|Front 43 83=Landscape/1091";
+                    tile.Properties[changeMultipleIndexOffKey] = "Buildings 41 85=|Buildings 43 85=|Front 41 84=|Front 43 84=|Front 41 83=|Front 43 83=";
+                    tile.Properties[changeMultiplePropertiesKey] = "Buildings,42,85,Action=kitchen";
+                    tile.Properties[changeMultiplePropertiesOffKey] = "Buildings,42,85,Action=";
+                    tile.Properties[soundKey] = "shwip";
+                    tile.Properties[soundOffKey] = "shwip";
+                }
+                tile = Game1.currentLocation.Map.GetLayer("Back").Tiles[42, 91];
+                if(tile != null)
+                {
+                    tile.Properties[teleportKey] = $"{47*64} {87 * 64}";
+                }
+                tile = Game1.currentLocation.Map.GetLayer("Back").Tiles[42, 91];
+                if(tile != null)
+                {
+                    tile.Properties[teleportTileKey] = "51 87";
+                    tile.Properties[soundKey] = "shwip";
+                }
+                tile = Game1.currentLocation.Map.GetLayer("Back").Tiles[51, 87];
+                if(tile != null)
+                {
+                    tile.Properties[teleportTileKey] = "42 91";
+                    tile.Properties[soundKey] = "shwip";
+                }
+                tile = Game1.currentLocation.Map.GetLayer("Back").Tiles[47, 88];
                 if(tile != null)
                 {
                     tile.Properties[healthPerSecondKey] = "-5";
                 }
-                tile = Game1.currentLocation.Map.GetLayer("Back").Tiles[19, 58];
+                tile = Game1.currentLocation.Map.GetLayer("Back").Tiles[42, 87];
                 if(tile != null)
                 {
                     tile.Properties[healthPerSecondKey] = "5";
                 }
-                tile = Game1.currentLocation.Map.GetLayer("Back").Tiles[25, 57];
+                tile = Game1.currentLocation.Map.GetLayer("Back").Tiles[51, 86];
                 if(tile != null)
                 {
-                    tile.Properties[speedKey] = "5";
+                    tile.Properties[giveKey] = "Weapon/Rusty Sword";
+                    tile.Properties[messageOnceKey] = "You found an old sword!";
                 }
-                tile = Game1.currentLocation.Map.GetLayer("Back").Tiles[27, 57];
-                if(tile != null)
+                for (int i = 0; i < 10; i++)
                 {
-                    tile.Properties[speedKey] = "0.5";
+                    tile = Game1.currentLocation.Map.GetLayer("Back").Tiles[42 + i, 95];
+                    if (tile != null)
+                    {
+                        tile.Properties[moveKey] = "1 0";
+                        if(i == 9)
+                        {
+                            tile.Properties[emoteKey] = "4";
+                        }
+                    }
+                }
+                for(int i = 0; i < 6; i++)
+                {
+                    tile = Game1.currentLocation.Map.GetLayer("Back").Tiles[47, 89 + i];
+                    if (tile != null)
+                    {
+                        tile.Properties[speedKey] = "0.5";
+                    }
                 }
             }
         }
@@ -176,10 +210,6 @@ namespace DynamicMapTiles
                 tile.position += GetNextTile(tile.dir);
                 if(tile.position.X % 64 == 0 && tile.position.Y % 64 == 0)
                 {
-                    var pushed = tile.tile.Properties[pushedKey];
-                    tile.tile.Properties[pushedKey] = tile.tile.Properties[pushKey];
-                    tile.tile.Properties[pushKey] = pushed;
-
                     Game1.currentLocation.Map.GetLayer("Buildings").Tiles[tile.position.X / 64, tile.position.Y / 64] = tile.tile;
                     tiles.RemoveAt(i);
                 }
@@ -207,6 +237,12 @@ namespace DynamicMapTiles
                 name: () => "Mod Enabled",
                 getValue: () => Config.ModEnabled,
                 setValue: value => Config.ModEnabled = value
+            );
+            configMenu.AddBoolOption(
+                mod: ModManifest,
+                name: () => "Debug",
+                getValue: () => Config.IsDebug,
+                setValue: value => Config.IsDebug = value
             );
         }
     }
