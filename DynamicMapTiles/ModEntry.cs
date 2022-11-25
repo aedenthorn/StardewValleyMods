@@ -27,7 +27,10 @@ namespace DynamicMapTiles
         public static string changePropertiesOffKey = "DMT/changePropertiesOff";
         public static string changeMultiplePropertiesKey = "DMT/changeMultipleProperties";
         public static string changeMultiplePropertiesOffKey = "DMT/changeMultiplePropertiesOff";
+        public static string triggerKey = "DMT/trigger";
+        public static string triggerOnceKey = "DMT/triggerOnce";
         public static string explodeKey = "DMT/explode";
+        public static string explosionKey = "DMT/explosion";
         public static string pushKey = "DMT/push";
         public static string pushSoundKey = "DMT/pushSound";
         public static string soundKey = "DMT/sound";
@@ -37,7 +40,8 @@ namespace DynamicMapTiles
         public static string teleportKey = "DMT/teleport";
         public static string teleportTileKey = "DMT/teleportTile";
         public static string giveKey = "DMT/give";
-        public static string giveObjectKey = "DMT/give";
+        public static string chestKey = "DMT/chest";
+        public static string chestAdvancedKey = "DMT/chestAdvanced";
         public static string messageKey = "DMT/message";
         public static string messageOnceKey = "DMT/messageOnce";
         public static string eventKey = "DMT/event";
@@ -53,6 +57,90 @@ namespace DynamicMapTiles
         public static string speedKey = "DMT/speed";
         public static string moveKey = "DMT/move";
         public static string emoteKey = "DMT/emote";
+
+        public static List<string> actionKeys = new List<string>()
+        {
+            "DMT/changeIndex",
+            "DMT/changeIndexOff",
+            "DMT/changeMultipleIndex",
+            "DMT/changeMultipleIndexOff",
+            "DMT/changeProperties",
+            "DMT/changePropertiesOff",
+            "DMT/changeMultipleProperties",
+            "DMT/changeMultiplePropertiesOff",
+            "DMT/explosion",
+            "DMT/trigger",
+            "DMT/triggerOnce",
+            "DMT/explode",
+            "DMT/push",
+            "DMT/pushSound",
+            "DMT/sound",
+            "DMT/soundOnce",
+            "DMT/soundOff",
+            "DMT/soundOffOnce",
+            "DMT/teleport",
+            "DMT/teleportTile",
+            "DMT/give",
+            "DMT/chest",
+            "DMT/chestAdvanced",
+            "DMT/message",
+            "DMT/messageOnce",
+            "DMT/event",
+            "DMT/eventOnce",
+            "DMT/mail",
+            "DMT/mailbox",
+            "DMT/music",
+            "DMT/health",
+            "DMT/stamina",
+            "DMT/healthPerSecond",
+            "DMT/staminaPerSecond",
+            "DMT/buff",
+            "DMT/speed",
+            "DMT/move",
+            "DMT/emote"
+        };
+        public static List<string> stepOnKeys = new List<string>()
+        {
+            "DMT/changeIndex",
+            "DMT/changeMultipleIndex",
+            "DMT/changeProperties",
+            "DMT/changeMultipleProperties",
+            "DMT/explosion",
+            "DMT/trigger",
+            "DMT/triggerOnce",
+            "DMT/sound",
+            "DMT/soundOnce",
+            "DMT/teleport",
+            "DMT/teleportTile",
+            "DMT/give",
+            "DMT/message",
+            "DMT/messageOnce",
+            "DMT/event",
+            "DMT/eventOnce",
+            "DMT/mail",
+            "DMT/mailbox",
+            "DMT/music",
+            "DMT/health",
+            "DMT/stamina",
+            "DMT/buff",
+            "DMT/emote"
+        };
+        public static List<string> stepOffKeys = new List<string>()
+        {
+            "DMT/changeIndexOff",
+            "DMT/changeMultipleIndexOff",
+            "DMT/changePropertiesOff",
+            "DMT/changeMultiplePropertiesOff",
+            "DMT/triggerOff",
+            "DMT/soundOff",
+            "DMT/soundOffOnce"
+        };
+        public static List<string> triggerKeys = new List<string>()
+        {
+            "DMT/chest",
+            "DMT/chestAdvanced",
+            "DMT/explosion"
+        };
 
         public override void Entry(IModHelper helper)
         {

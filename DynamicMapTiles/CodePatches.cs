@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using xTile.Dimensions;
+using xTile.Layers;
 using xTile.ObjectModel;
 using Rectangle = Microsoft.Xna.Framework.Rectangle;
 
@@ -14,12 +15,25 @@ namespace DynamicMapTiles
 {
     public partial class ModEntry
     {
+        private static Farmer explodingFarmer;
+        
+        [HarmonyPatch(typeof(GameLocation), nameof(GameLocation.explode))]
+        public class GameLocation_explode_Patch
+        {
+
+            public static void Prefix(Farmer who)
+            {
+                if (!Config.ModEnabled)
+                    return;
+                explodingFarmer = who;
+            }
+        }
         [HarmonyPatch(typeof(GameLocation), nameof(GameLocation.explosionAt))]
         public class GameLocation_explosionAt_Patch
         {
             public static void Postfix(GameLocation __instance, float x, float y)
             {
-                if (!Config.ModEnabled || !__instance.isTileOnMap(new Vector2(x, y)))
+                if (!Config.ModEnabled || !__instance.isTileOnMap(new Vector2(x, y)) || explodingFarmer is null)
                     return;
                 foreach(var layer in __instance.map.Layers)
                 {
@@ -27,9 +41,27 @@ namespace DynamicMapTiles
                     if (tile is not null && tile.Properties.TryGetValue(explodeKey, out PropertyValue mail))
                     {
                         layer.Tiles[(int)x, (int)y] = null;
-                        if (!string.IsNullOrEmpty(mail) && !Game1.player.mailReceived.Contains(mail))
+                        if (!string.IsNullOrEmpty(mail) && !explodingFarmer.mailReceived.Contains(mail))
                         {
-                            Game1.player.mailReceived.Add(mail);
+                            explodingFarmer.mailReceived.Add(mail);
+                        }
+                    }
+                    if(layer.Id == "Back")
+                    {
+                        List<string> actions = new List<string>();
+                        foreach(var kvp in tile.Properties)
+                        {
+                            foreach(var str in actionKeys)
+                            {
+                                if (kvp.Key == str + "Explode")
+                                {
+                                    actions.Add(str);
+                                }
+                            }
+                        }
+                        if(actions.Count > 0)
+                        {
+                            TriggerActions(actions, new List<Layer>() { layer }, explodingFarmer, new Point((int)x, (int)y));
                         }
                     }
                 }
