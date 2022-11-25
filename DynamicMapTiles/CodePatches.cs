@@ -38,7 +38,9 @@ namespace DynamicMapTiles
                 foreach(var layer in __instance.map.Layers)
                 {
                     var tile = layer.Tiles[(int)x, (int)y];
-                    if (tile is not null && tile.Properties.TryGetValue(explodeKey, out PropertyValue mail))
+                    if (tile is null)
+                        continue;
+                    if (tile.Properties.TryGetValue(explodeKey, out PropertyValue mail))
                     {
                         layer.Tiles[(int)x, (int)y] = null;
                         if (!string.IsNullOrEmpty(mail) && !explodingFarmer.mailReceived.Contains(mail))
@@ -110,7 +112,7 @@ namespace DynamicMapTiles
                 if (__instance.currentLocation.isTileOnMap(tileLoc))
                 {
                     var tile = __instance.currentLocation.Map.GetLayer("Back").Tiles[(int)tileLoc.X, (int)tileLoc.Y];
-                    if (tile.Properties.TryGetValue(speedKey, out PropertyValue value) && float.TryParse(value, NumberStyles.Any, CultureInfo.InvariantCulture, out float mult))
+                    if (tile is not null && tile.Properties.TryGetValue(speedKey, out PropertyValue value) && float.TryParse(value, NumberStyles.Any, CultureInfo.InvariantCulture, out float mult))
                     {
                         __result *= mult;
                     }
@@ -125,11 +127,15 @@ namespace DynamicMapTiles
                 if (!Config.ModEnabled)
                     return;
                 var tileLoc = __instance.getTileLocation();
-                if (__instance.currentLocation.isTileOnMap(tileLoc) && __instance.currentLocation.Map.GetLayer("Back").Tiles[(int)tileLoc.X, (int)tileLoc.Y].Properties.TryGetValue(moveKey, out PropertyValue value))
+                if (__instance.currentLocation.isTileOnMap(tileLoc))
                 {
-                    var split = value.ToString().Split(' ');
-                    __instance.xVelocity = float.Parse(split[0], NumberStyles.Any, CultureInfo.InvariantCulture);
-                    __instance.yVelocity = float.Parse(split[1], NumberStyles.Any, CultureInfo.InvariantCulture);
+                    var tile = __instance.currentLocation.Map.GetLayer("Back").Tiles[(int)tileLoc.X, (int)tileLoc.Y];
+                    if(tile is not null && tile.Properties.TryGetValue(moveKey, out PropertyValue value))
+                    {
+                        var split = value.ToString().Split(' ');
+                        __instance.xVelocity = float.Parse(split[0], NumberStyles.Any, CultureInfo.InvariantCulture);
+                        __instance.yVelocity = float.Parse(split[1], NumberStyles.Any, CultureInfo.InvariantCulture);
+                    }
                 }
 
                 __state = new Vector2[] { __instance.Position, tileLoc };

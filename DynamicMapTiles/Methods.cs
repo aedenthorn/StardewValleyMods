@@ -1,9 +1,11 @@
 ﻿using Microsoft.Xna.Framework;
 using StardewValley;
+using StardewValley.Network;
 using StardewValley.Objects;
 using StardewValley.Tools;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using xTile.Dimensions;
 using xTile.Layers;
 using xTile.ObjectModel;
@@ -35,518 +37,570 @@ namespace DynamicMapTiles
 
                 if (tile is null)
                     continue;
-                foreach(var kvp in tile.Properties)
+                foreach(var key in tile.Properties.Keys.ToArray())
                 {
-                    if (!actions.Contains(kvp.Key))
+                    if (!actions.Contains(key) || !tile.Properties.TryGetValue(key, out PropertyValue v))
                         continue;
-                    string value = kvp.Value.ToString();
-                    int number;
-                    if (kvp.Key == changeIndexKey)
+                    string value = v?.ToString();
+                    try
                     {
-                        if (string.IsNullOrEmpty(value))
+                        int number;
+                        if (key == changeIndexKey)
                         {
-                            tile.Layer.Tiles[tilePos.X, tilePos.Y] = null;
-                        }
-                        else if (int.TryParse(value, out number))
-                        {
-                            if (tile.Layer.Tiles[tilePos.X, tilePos.Y] is null)
+                            if (string.IsNullOrEmpty(value))
                             {
-                                tile.Layer.Tiles[tilePos.X, tilePos.Y] = new StaticTile(tile.Layer, tile.TileSheet, BlendMode.Alpha, number);
+                                tile.Layer.Tiles[tilePos.X, tilePos.Y] = null;
                             }
-                            else
+                            else if (int.TryParse(value, out number))
                             {
-                                tile.Layer.Tiles[tilePos.X, tilePos.Y].TileIndex = number;
-                            }
-                        }
-                        else if (value.ToString().Contains(','))
-                        {
-                            var indexesDuration = value.ToString().Split(',');
-                            var indexes = indexesDuration[0].Split(' ');
-                            List<StaticTile> tiles = new List<StaticTile>();
-                            foreach (var index in indexes)
-                            {
-                                if (int.TryParse(index, out number))
+                                if (tile.Layer.Tiles[tilePos.X, tilePos.Y] is null)
                                 {
-                                    tiles.Add(new StaticTile(tile.Layer, tile.TileSheet, BlendMode.Alpha, number));
+                                    tile.Layer.Tiles[tilePos.X, tilePos.Y] = new StaticTile(tile.Layer, tile.TileSheet, BlendMode.Alpha, number);
                                 }
-                                else if (index.ToString().Contains('/'))
+                                else
                                 {
-                                    var sheetIndex = index.ToString().Split('/');
-                                    tiles.Add(new StaticTile(tile.Layer, farmer.currentLocation.Map.GetTileSheet(sheetIndex[0]), BlendMode.Alpha, int.Parse(sheetIndex[1])));
+                                    tile.Layer.Tiles[tilePos.X, tilePos.Y].TileIndex = number;
                                 }
-
                             }
-                            tile.Layer.Tiles[tilePos.X, tilePos.Y] = new AnimatedTile(tile.Layer, tiles.ToArray(), int.Parse(indexesDuration[1]));
-                        }
-                        else if (value.ToString().Contains('/'))
-                        {
-                            var sheetIndex = value.ToString().Split('/');
-                            tile.Layer.Tiles[tilePos.X, tilePos.Y] = new StaticTile(tile.Layer, farmer.currentLocation.Map.GetTileSheet(sheetIndex[0]), BlendMode.Alpha, int.Parse(sheetIndex[1]));
-                        }
-                    }
-                    else if (kvp.Key == changeMultipleIndexKey)
-                    {
-                        var tileInfos = value.ToString().Split('|');
-                        foreach (var tileInfo in tileInfos)
-                        {
-                            var pair = tileInfo.Split('=');
-                            var layerXY = pair[0].Split(' ');
-                            var l = farmer.currentLocation.Map.GetLayer(layerXY[0]);
-                            if (string.IsNullOrEmpty(pair[1]))
+                            else if (value.ToString().Contains(','))
                             {
-                                l.Tiles[int.Parse(layerXY[1]), int.Parse(layerXY[2])] = null;
-                            }
-                            else if (int.TryParse(pair[1], out number))
-                            {
-                                l.Tiles[int.Parse(layerXY[1]), int.Parse(layerXY[2])].TileIndex = number;
-                            }
-                            else if (pair[1].ToString().Contains(','))
-                            {
-                                var indexesDuration = pair[1].ToString().Split(',');
+                                var indexesDuration = value.ToString().Split(',');
                                 var indexes = indexesDuration[0].Split(' ');
                                 List<StaticTile> tiles = new List<StaticTile>();
                                 foreach (var index in indexes)
                                 {
                                     if (int.TryParse(index, out number))
                                     {
-                                        tiles.Add(new StaticTile(l, tile.TileSheet, BlendMode.Alpha, number));
+                                        tiles.Add(new StaticTile(tile.Layer, tile.TileSheet, BlendMode.Alpha, number));
                                     }
                                     else if (index.ToString().Contains('/'))
                                     {
                                         var sheetIndex = index.ToString().Split('/');
-                                        tiles.Add(new StaticTile(l, farmer.currentLocation.Map.GetTileSheet(sheetIndex[0]), BlendMode.Alpha, int.Parse(sheetIndex[1])));
+                                        tiles.Add(new StaticTile(tile.Layer, farmer.currentLocation.Map.GetTileSheet(sheetIndex[0]), BlendMode.Alpha, int.Parse(sheetIndex[1])));
                                     }
 
                                 }
-                                l.Tiles[int.Parse(layerXY[1]), int.Parse(layerXY[2])] = new AnimatedTile(l, tiles.ToArray(), int.Parse(indexesDuration[1]));
+                                tile.Layer.Tiles[tilePos.X, tilePos.Y] = new AnimatedTile(tile.Layer, tiles.ToArray(), int.Parse(indexesDuration[1]));
                             }
-                            else if (pair[1].ToString().Contains('/'))
+                            else if (value.ToString().Contains('/'))
                             {
-                                var sheetIndex = pair[1].ToString().Split('/');
-                                l.Tiles[int.Parse(layerXY[1]), int.Parse(layerXY[2])] = new StaticTile(tile.Layer, farmer.currentLocation.Map.GetTileSheet(sheetIndex[0]), BlendMode.Alpha, int.Parse(sheetIndex[1]));
+                                var sheetIndex = value.ToString().Split('/');
+                                tile.Layer.Tiles[tilePos.X, tilePos.Y] = new StaticTile(tile.Layer, farmer.currentLocation.Map.GetTileSheet(sheetIndex[0]), BlendMode.Alpha, int.Parse(sheetIndex[1]));
                             }
                         }
-                    }
-                    else if (kvp.Key == changePropertiesKey)
-                    {
-                        var props = value.ToString().Split('|');
-                        foreach (var prop in props)
+                        else if (key == changeMultipleIndexKey)
                         {
-                            var pair = prop.Split('=');
-                            if (pair.Length == 2)
+                            var tileInfos = value.ToString().Split('|');
+                            foreach (var tileInfo in tileInfos)
                             {
-                                tile.Properties[pair[0]] = pair[1];
+                                var pair = tileInfo.Split('=');
+                                var layerXY = pair[0].Split(' ');
+                                var l = farmer.currentLocation.Map.GetLayer(layerXY[0]);
+                                if (string.IsNullOrEmpty(pair[1]))
+                                {
+                                    l.Tiles[int.Parse(layerXY[1]), int.Parse(layerXY[2])] = null;
+                                }
+                                else if (int.TryParse(pair[1], out number))
+                                {
+                                    l.Tiles[int.Parse(layerXY[1]), int.Parse(layerXY[2])] = new StaticTile(l, tile.TileSheet, BlendMode.Alpha, number);
+                                }
+                                else if (pair[1].ToString().Contains(','))
+                                {
+                                    var indexesDuration = pair[1].ToString().Split(',');
+                                    var indexes = indexesDuration[0].Split(' ');
+                                    List<StaticTile> tiles = new List<StaticTile>();
+                                    foreach (var index in indexes)
+                                    {
+                                        if (int.TryParse(index, out number))
+                                        {
+                                            tiles.Add(new StaticTile(l, tile.TileSheet, BlendMode.Alpha, number));
+                                        }
+                                        else if (index.ToString().Contains('/'))
+                                        {
+                                            var sheetIndex = index.ToString().Split('/');
+                                            tiles.Add(new StaticTile(l, farmer.currentLocation.Map.GetTileSheet(sheetIndex[0]), BlendMode.Alpha, int.Parse(sheetIndex[1])));
+                                        }
+
+                                    }
+                                    l.Tiles[int.Parse(layerXY[1]), int.Parse(layerXY[2])] = new AnimatedTile(l, tiles.ToArray(), int.Parse(indexesDuration[1]));
+                                }
+                                else if (pair[1].ToString().Contains('/'))
+                                {
+                                    var sheetIndex = pair[1].ToString().Split('/');
+                                    l.Tiles[int.Parse(layerXY[1]), int.Parse(layerXY[2])] = new StaticTile(tile.Layer, farmer.currentLocation.Map.GetTileSheet(sheetIndex[0]), BlendMode.Alpha, int.Parse(sheetIndex[1]));
+                                }
+                            }
+                        }
+                        else if (key == changePropertiesKey)
+                        {
+                            var props = value.ToString().Split('|');
+                            foreach (var prop in props)
+                            {
+                                var pair = prop.Split('=');
+                                if (pair.Length == 2)
+                                {
+                                    tile.Properties[pair[0]] = pair[1];
+                                }
+                                else
+                                {
+                                    tile.Properties.Remove(pair[0]);
+                                }
+                            }
+                        }
+                        else if (key == changeMultiplePropertiesKey)
+                        {
+                            var tiles = value.ToString().Split('|');
+                            foreach (var prop in tiles)
+                            {
+                                var pair = prop.Split('=');
+                                if (pair.Length == 2)
+                                {
+                                    var tileInfo = pair[0].Split(',');
+                                    if (tileInfo.Length == 3)
+                                    {
+                                        tile.Layer.Tiles[int.Parse(tileInfo[0]), int.Parse(tileInfo[1])].Properties[tileInfo[2]] = pair[1];
+                                    }
+                                    else if (tileInfo.Length == 4)
+                                    {
+                                        farmer.currentLocation.Map.GetLayer(tileInfo[0]).Tiles[int.Parse(tileInfo[1]), int.Parse(tileInfo[2])].Properties[tileInfo[3]] = pair[1];
+                                    }
+                                }
+                            }
+                        }
+                        else if (key == soundKey)
+                        {
+                            farmer.currentLocation.playSound(value);
+                        }
+                        else if (key == soundOnceKey)
+                        {
+                            tile.Properties.Remove(soundOnceKey);
+                            farmer.currentLocation.playSound(value);
+                        }
+                        else if (key == messageKey)
+                        {
+                            Game1.drawObjectDialogue(value);
+                        }
+                        else if (key == messageOnceKey)
+                        {
+                            tile.Properties.Remove(messageOnceKey);
+                            Game1.drawObjectDialogue(value);
+                        }
+                        else if (key == eventKey)
+                        {
+                            Game1.currentLocation.currentEvent = new Event(value, -1, null);
+                            Game1.currentLocation.checkForEvents();
+                        }
+                        else if (key == eventOnceKey)
+                        {
+                            tile.Properties.Remove(eventOnceKey);
+                            Game1.currentLocation.currentEvent = new Event(value, -1, null);
+                            Game1.currentLocation.checkForEvents();
+                        }
+                        else if (key == musicKey)
+                        {
+                            Game1.changeMusicTrack(value);
+                        }
+                        else if (key == mailKey)
+                        {
+                            tile.Properties.Remove(mailKey);
+                            if (!farmer.mailReceived.Contains(value))
+                                farmer.mailReceived.Add(value);
+                        }
+                        else if (key == mailBoxKey)
+                        {
+                            tile.Properties.Remove(mailKey);
+                            if (!farmer.mailbox.Contains(value))
+                                farmer.mailbox.Add(value);
+                        }
+                        else if (key == invalidateKey)
+                        {
+                            var split = value.Split('|');
+                            foreach(var str in split)
+                            {
+                                SHelper.GameContent.InvalidateCache(str);
+                            }
+                        }
+                        else if (key == teleportKey)
+                        {
+                            var split = value.ToString().Split(' ');
+                            if (split.Length != 2 || !int.TryParse(split[0], out int x) || !int.TryParse(split[1], out int y))
+                                return;
+                            farmer.Position = new Vector2(x, y);
+                        }
+                        else if (key == teleportTileKey)
+                        {
+                            var split = value.ToString().Split(' ');
+                            if (split.Length != 2 || !int.TryParse(split[0], out int x) || !int.TryParse(split[1], out int y))
+                                return;
+                            farmer.Position = new Vector2(x * 64, y * 64);
+                        }
+                        else if (key == giveKey)
+                        {
+                            tile.Properties.Remove(giveKey);
+                            Item item = null;
+                            if (value.StartsWith("Money/"))
+                            {
+                                if (int.TryParse(value.Split('/')[1], out number))
+                                    farmer.addUnearnedMoney(number);
                             }
                             else
                             {
-                                tile.Properties.Remove(pair[0]);
+                                item = GetItemFromString(value);
+                            }
+                            if (item is null)
+                                return;
+                            farmer.holdUpItemThenMessage(item, false);
+                            if (!Game1.player.addItemToInventoryBool(item, false))
+                            {
+                                Game1.createItemDebris(item, Game1.player.getStandingPosition(), 1, null, -1);
                             }
                         }
-                    }
-                    else if (kvp.Key == changeMultiplePropertiesKey)
-                    {
-                        var tiles = value.ToString().Split('|');
-                        foreach (var prop in tiles)
+                        else if (key == healthKey && int.TryParse(value, out number))
                         {
-                            var pair = prop.Split('=');
-                            if (pair.Length == 2)
+                            if (number < 0)
                             {
-                                var tileInfo = pair[0].Split(',');
-                                if (tileInfo.Length == 3)
-                                {
-                                    tile.Layer.Tiles[int.Parse(tileInfo[0]), int.Parse(tileInfo[1])].Properties[tileInfo[2]] = pair[1];
-                                }
-                                else if (tileInfo.Length == 4)
-                                {
-                                    farmer.currentLocation.Map.GetLayer(tileInfo[0]).Tiles[int.Parse(tileInfo[1]), int.Parse(tileInfo[2])].Properties[tileInfo[3]] = pair[1];
-                                }
-                            }
-                        }
-                    }
-                    else if (kvp.Key == soundKey)
-                    {
-                        farmer.currentLocation.playSound(value);
-                    }
-                    else if (kvp.Key == soundOnceKey)
-                    {
-                        tile.Properties.Remove(soundOnceKey);
-                        farmer.currentLocation.playSound(value);
-                    }
-                    else if (kvp.Key == messageKey)
-                    {
-                        Game1.drawObjectDialogue(value);
-                    }
-                    else if (kvp.Key == messageOnceKey)
-                    {
-                        tile.Properties.Remove(messageOnceKey);
-                        Game1.drawObjectDialogue(value);
-                    }
-                    else if (kvp.Key == eventKey)
-                    {
-                        Game1.currentLocation.currentEvent = new Event(value, -1, null);
-                        Game1.currentLocation.checkForEvents();
-                    }
-                    else if (kvp.Key == eventOnceKey)
-                    {
-                        tile.Properties.Remove(eventOnceKey);
-                        Game1.currentLocation.currentEvent = new Event(value, -1, null);
-                        Game1.currentLocation.checkForEvents();
-                    }
-                    else if (kvp.Key == musicKey)
-                    {
-                        Game1.changeMusicTrack(value);
-                    }
-                    else if (kvp.Key == mailKey)
-                    {
-                        tile.Properties.Remove(mailKey);
-                        if (!farmer.mailReceived.Contains(value))
-                            farmer.mailReceived.Add(value);
-                    }
-                    else if (kvp.Key == mailBoxKey)
-                    {
-                        tile.Properties.Remove(mailKey);
-                        if (!farmer.mailbox.Contains(value))
-                            farmer.mailbox.Add(value);
-                    }
-                    else if (kvp.Key == teleportKey)
-                    {
-                        var split = value.ToString().Split(' ');
-                        if (split.Length != 2 || !int.TryParse(split[0], out int x) || !int.TryParse(split[1], out int y))
-                            return;
-                        farmer.Position = new Vector2(x, y);
-                    }
-                    else if (kvp.Key == teleportTileKey)
-                    {
-                        var split = value.ToString().Split(' ');
-                        if (split.Length != 2 || !int.TryParse(split[0], out int x) || !int.TryParse(split[1], out int y))
-                            return;
-                        farmer.Position = new Vector2(x * 64, y * 64);
-                    }
-                    else if (kvp.Key == giveKey)
-                    {
-                        tile.Properties.Remove(giveKey);
-                        Item item = null;
-                        if (!value.ToString().Contains("/"))
-                        {
-                            if (int.TryParse(value, out number))
-                            {
-                                item = new Object(number, 1);
+                                Game1.player.takeDamage(Math.Abs(number), false, null);
                             }
                             else
                             {
-                                foreach (var pair in Game1.objectInformation)
+                                Game1.player.health = Math.Min(Game1.player.health + number, Game1.player.maxHealth);
+                                Game1.player.currentLocation.debris.Add(new Debris(number, new Vector2((float)(Game1.player.getStandingX() + 8), (float)Game1.player.getStandingY()), Color.LimeGreen, 1f, Game1.player));
+                            }
+                        }
+                        else if (key == staminaKey && int.TryParse(value, out number))
+                        {
+                            Game1.player.Stamina += number;
+                        }
+                        else if (key == buffKey && int.TryParse(value, out number))
+                        {
+                            Game1.buffsDisplay.addOtherBuff(new Buff(number));
+                        }
+                        else if ((key == emoteKey || key == emoteOnceKey) && int.TryParse(value, out number))
+                        {
+                            farmer.doEmote(number);
+                            if (key == emoteOnceKey)
+                            {
+                                tile.Properties.Remove(key);
+                            }
+                        }
+                        else if (key == explosionKey || key == explosionOnceKey)
+                        {
+                            var split = value.Split(' ');
+                            farmer.currentLocation.playSound("explosion");
+                            farmer.currentLocation.explode(new Vector2(int.Parse(split[0]), int.Parse(split[1])), int.Parse(split[2]), farmer, bool.Parse(split[3]), int.Parse(split[4]));
+                            if (key == explosionOnceKey)
+                            {
+                                tile.Properties.Remove(key);
+                            }
+                        }
+                        else if (key == chestKey)
+                        {
+                            var split = value.Split('=');
+                            var split2 = split[0].Split(' ');
+                            Vector2 p = new Vector2(int.Parse(split2[0]), int.Parse(split2[1]));
+                            if (!farmer.currentLocation.objects.TryGetValue(p, out Object o) || o is not Chest)
+                            {
+                                int money = 0;
+                                var items = new List<Item>();
+                                split2 = split[1].Split(' ');
+                                foreach (var str in split2)
                                 {
-                                    if (pair.Value.StartsWith(value + "/"))
+                                    if (str.StartsWith("Money/"))
                                     {
-                                        item = new Object(pair.Key, 1);
+                                        int.TryParse(str.Split('/')[1], out money);
+                                    }
+                                    else
+                                    {
+                                        var item = GetItemFromString(str);
+                                        if (item is not null)
+                                            items.Add(item);
                                     }
                                 }
+                                var chest = new Chest(true, p, 130);
+                                chest.items.AddRange(items);
+                                chest.coins.Value = money;
+                                chest.Type = "interactive";
+                                chest.bigCraftable.Value = false;
+                                chest.CanBeSetDown = false;
+                                farmer.currentLocation.overlayObjects[p] = chest;
                             }
+                            tile.Properties.Remove(key);
                         }
-                        else
-                        {
-                            var split = value.ToString().Split('/');
-                            switch (split[0])
-                            {
-                                case "Hat":
-                                    if (int.TryParse(split[1], out number))
-                                    {
-                                        item = new Hat(number);
-                                    }
-                                    else
-                                    {
-                                        Dictionary<int, string> dictionary = Game1.content.Load<Dictionary<int, string>>("Data\\hats");
-                                        foreach (var pair in dictionary)
-                                        {
-                                            if (pair.Value.StartsWith(split[1] + "/"))
-                                            {
-                                                item = new Hat(pair.Key);
-                                            }
-                                        }
-                                    }
-                                    break;
-                                case "Clothing":
-                                    if (int.TryParse(split[1], out number))
-                                    {
-                                        item = new Clothing(number);
-                                    }
-                                    else
-                                    {
-                                        foreach (var pair in Game1.clothingInformation)
-                                        {
-                                            if (pair.Value.StartsWith(split[1] + "/"))
-                                            {
-                                                item = new Clothing(pair.Key);
-                                            }
-                                        }
-                                    }
-                                    break;
-                                case "Craftable":
-                                    if (int.TryParse(split[1], out number))
-                                    {
-                                        item = new Object(Vector2.Zero, number, false);
-                                    }
-                                    else
-                                    {
-                                        foreach (var pair in Game1.bigCraftablesInformation)
-                                        {
-                                            if (pair.Value.StartsWith(split[1] + "/"))
-                                            {
-                                                item = new Object(Vector2.Zero, pair.Key, false);
-                                            }
-                                        }
-                                    }
-                                    break;
-                                case "Furniture":
-                                    if (int.TryParse(split[1], out number))
-                                    {
-                                        item = new Furniture(number, Vector2.Zero);
-                                    }
-                                    else
-                                    {
-                                        foreach (var pair in Game1.content.Load<Dictionary<int, string>>("Data\\Furniture"))
-                                        {
-                                            if (pair.Value.StartsWith(split[1] + "/"))
-                                            {
-                                                item = new Furniture(pair.Key, Vector2.Zero);
-                                            }
-                                        }
-                                    }
-                                    break;
-                                case "Weapon":
-                                    if (int.TryParse(split[1], out number))
-                                    {
-                                        item = new MeleeWeapon(number);
-                                    }
-                                    else
-                                    {
-                                        foreach (var pair in Game1.content.Load<Dictionary<int, string>>("Data\\weapons"))
-                                        {
-                                            if (pair.Value.StartsWith(split[1] + "/"))
-                                            {
-                                                item = new MeleeWeapon(pair.Key);
-                                            }
-                                        }
-                                    }
-                                    break;
-                                case "Money":
-                                    if (int.TryParse(split[1], out number))
-                                    {
-                                        farmer.addUnearnedMoney(number);
-                                    }
-                                    break;
-                            }
-                        }
-                        if (item is null)
-                            return;
-                        farmer.holdUpItemThenMessage(item, false);
-                        if (!Game1.player.addItemToInventoryBool(item, false))
-                        {
-                            Game1.createItemDebris(item, Game1.player.getStandingPosition(), 1, null, -1);
-                        }
-                    }
-                    else if (kvp.Key == healthKey && int.TryParse(value, out number))
-                    {
-                        if (number < 0)
-                        {
-                            Game1.player.takeDamage(Math.Abs(number), false, null);
-                        }
-                        else
-                        {
-                            Game1.player.health = Math.Min(Game1.player.health + number, Game1.player.maxHealth);
-                            Game1.player.currentLocation.debris.Add(new Debris(number, new Vector2((float)(Game1.player.getStandingX() + 8), (float)Game1.player.getStandingY()), Color.LimeGreen, 1f, Game1.player));
-                        }
-                    }
-                    else if (kvp.Key == staminaKey && int.TryParse(value, out number))
-                    {
-                        Game1.player.Stamina += number;
-                    }
-                    else if (kvp.Key == buffKey && int.TryParse(value, out number))
-                    {
-                        Game1.buffsDisplay.addOtherBuff(new Buff(number));
-                    }
-                    else if (kvp.Key == emoteKey && int.TryParse(value, out number))
-                    {
-                        farmer.doEmote(number);
-                    }
 
+                        // step off
 
-                    else if (kvp.Key == changeIndexOffKey && int.TryParse(value, out number))
-                    {
-                        if (string.IsNullOrEmpty(value))
+                        else if (key == changeIndexOffKey && int.TryParse(value, out number))
                         {
-                            tile.Layer.Tiles[tilePos.X, tilePos.Y] = null;
-                        }
-                        else if (int.TryParse(value, out number))
-                        {
-                            if (tile.Layer.Tiles[tilePos.X, tilePos.Y] is null)
+                            if (string.IsNullOrEmpty(value))
                             {
-                                tile.Layer.Tiles[tilePos.X, tilePos.Y] = new StaticTile(tile.Layer, tile.TileSheet, BlendMode.Alpha, number);
+                                tile.Layer.Tiles[tilePos.X, tilePos.Y] = null;
                             }
-                            else
+                            else if (int.TryParse(value, out number))
                             {
-                                tile.Layer.Tiles[tilePos.X, tilePos.Y].TileIndex = number;
-                            }
-                        }
-                        else if (value.ToString().Contains(','))
-                        {
-                            var indexesDuration = value.ToString().Split(',');
-                            var indexes = indexesDuration[0].Split(' ');
-                            List<StaticTile> tiles = new List<StaticTile>();
-                            foreach (var index in indexes)
-                            {
-                                if (int.TryParse(index, out number))
+                                if (tile.Layer.Tiles[tilePos.X, tilePos.Y] is null)
                                 {
-                                    tiles.Add(new StaticTile(tile.Layer, tile.TileSheet, BlendMode.Alpha, number));
+                                    tile.Layer.Tiles[tilePos.X, tilePos.Y] = new StaticTile(tile.Layer, tile.TileSheet, BlendMode.Alpha, number);
                                 }
-                                else if (index.ToString().Contains('/'))
+                                else
                                 {
-                                    var sheetIndex = index.ToString().Split('/');
-                                    tiles.Add(new StaticTile(tile.Layer, farmer.currentLocation.Map.GetTileSheet(sheetIndex[0]), BlendMode.Alpha, int.Parse(sheetIndex[1])));
+                                    tile.Layer.Tiles[tilePos.X, tilePos.Y].TileIndex = number;
                                 }
-
                             }
-                            tile.Layer.Tiles[tilePos.X, tilePos.Y] = new AnimatedTile(tile.Layer, tiles.ToArray(), int.Parse(indexesDuration[1]));
-                        }
-                        else if (value.ToString().Contains('/'))
-                        {
-                            var sheetIndex = value.ToString().Split('/');
-                            tile.Layer.Tiles[tilePos.X, tilePos.Y] = new StaticTile(tile.Layer, farmer.currentLocation.Map.GetTileSheet(sheetIndex[0]), BlendMode.Alpha, int.Parse(sheetIndex[1]));
-                        }
-                    }
-                    else if (kvp.Key == changeMultipleIndexOffKey)
-                    {
-                        var tileInfos = value.ToString().Split('|');
-                        foreach (var tileInfo in tileInfos)
-                        {
-                            var pair = tileInfo.Split('=');
-                            var layerXY = pair[0].Split(' ');
-                            var l = farmer.currentLocation.Map.GetLayer(layerXY[0]);
-                            if (string.IsNullOrEmpty(pair[1]))
+                            else if (value.ToString().Contains(','))
                             {
-                                l.Tiles[int.Parse(layerXY[1]), int.Parse(layerXY[2])] = null;
-                            }
-                            else if (int.TryParse(pair[1], out number))
-                            {
-                                l.Tiles[int.Parse(layerXY[1]), int.Parse(layerXY[2])].TileIndex = number;
-                            }
-                            else if (pair[1].ToString().Contains(','))
-                            {
-                                var indexesDuration = pair[1].ToString().Split(',');
+                                var indexesDuration = value.ToString().Split(',');
                                 var indexes = indexesDuration[0].Split(' ');
                                 List<StaticTile> tiles = new List<StaticTile>();
                                 foreach (var index in indexes)
                                 {
                                     if (int.TryParse(index, out number))
                                     {
-                                        tiles.Add(new StaticTile(l, tile.TileSheet, BlendMode.Alpha, number));
+                                        tiles.Add(new StaticTile(tile.Layer, tile.TileSheet, BlendMode.Alpha, number));
                                     }
                                     else if (index.ToString().Contains('/'))
                                     {
                                         var sheetIndex = index.ToString().Split('/');
-                                        tiles.Add(new StaticTile(l, farmer.currentLocation.Map.GetTileSheet(sheetIndex[0]), BlendMode.Alpha, int.Parse(sheetIndex[1])));
+                                        tiles.Add(new StaticTile(tile.Layer, farmer.currentLocation.Map.GetTileSheet(sheetIndex[0]), BlendMode.Alpha, int.Parse(sheetIndex[1])));
                                     }
 
                                 }
-                                l.Tiles[int.Parse(layerXY[1]), int.Parse(layerXY[2])] = new AnimatedTile(l, tiles.ToArray(), int.Parse(indexesDuration[1]));
+                                tile.Layer.Tiles[tilePos.X, tilePos.Y] = new AnimatedTile(tile.Layer, tiles.ToArray(), int.Parse(indexesDuration[1]));
                             }
-                            else if (pair[1].ToString().Contains('/'))
+                            else if (value.ToString().Contains('/'))
                             {
-                                var sheetIndex = pair[1].ToString().Split('/');
-                                l.Tiles[int.Parse(layerXY[1]), int.Parse(layerXY[2])] = new StaticTile(tile.Layer, farmer.currentLocation.Map.GetTileSheet(sheetIndex[0]), BlendMode.Alpha, int.Parse(sheetIndex[1]));
+                                var sheetIndex = value.ToString().Split('/');
+                                tile.Layer.Tiles[tilePos.X, tilePos.Y] = new StaticTile(tile.Layer, farmer.currentLocation.Map.GetTileSheet(sheetIndex[0]), BlendMode.Alpha, int.Parse(sheetIndex[1]));
                             }
                         }
-                    }
-                    else if (kvp.Key == changePropertiesOffKey)
-                    {
-                        var props = value.ToString().Split('|');
-                        foreach (var prop in props)
+                        else if (key == changeMultipleIndexOffKey)
                         {
-                            var pair = prop.Split('=');
-                            if (pair.Length == 2)
+                            var tileInfos = value.ToString().Split('|');
+                            foreach (var tileInfo in tileInfos)
                             {
-                                tile.Properties[pair[0]] = pair[1];
-                            }
-                            else
-                            {
-                                tile.Properties.Remove(pair[0]);
-                            }
-                        }
-                    }
-                    else if (kvp.Key == changeMultiplePropertiesOffKey)
-                    {
-                        var tiles = value.ToString().Split('|');
-                        foreach (var tileProp in tiles)
-                        {
-                            var pair = tileProp.Split('=');
-                            if (pair.Length == 2)
-                            {
-                                var tileInfo = pair[0].Split(',');
-                                if (tileInfo.Length == 3)
+                                var pair = tileInfo.Split('=');
+                                var layerXY = pair[0].Split(' ');
+                                var l = farmer.currentLocation.Map.GetLayer(layerXY[0]);
+                                if (string.IsNullOrEmpty(pair[1]))
                                 {
-                                    tile.Layer.Tiles[int.Parse(tileInfo[0]), int.Parse(tileInfo[1])].Properties[tileInfo[2]] = pair[1];
+                                    l.Tiles[int.Parse(layerXY[1]), int.Parse(layerXY[2])] = null;
                                 }
-                                else if (tileInfo.Length == 4)
+                                else if (int.TryParse(pair[1], out number))
                                 {
-                                    farmer.currentLocation.Map.GetLayer(tileInfo[0]).Tiles[int.Parse(tileInfo[1]), int.Parse(tileInfo[2])].Properties[tileInfo[3]] = pair[1];
+                                    l.Tiles[int.Parse(layerXY[1]), int.Parse(layerXY[2])].TileIndex = number;
                                 }
-                            }
-                        }
+                                else if (pair[1].ToString().Contains(','))
+                                {
+                                    var indexesDuration = pair[1].ToString().Split(',');
+                                    var indexes = indexesDuration[0].Split(' ');
+                                    List<StaticTile> tiles = new List<StaticTile>();
+                                    foreach (var index in indexes)
+                                    {
+                                        if (int.TryParse(index, out number))
+                                        {
+                                            tiles.Add(new StaticTile(l, tile.TileSheet, BlendMode.Alpha, number));
+                                        }
+                                        else if (index.ToString().Contains('/'))
+                                        {
+                                            var sheetIndex = index.ToString().Split('/');
+                                            tiles.Add(new StaticTile(l, farmer.currentLocation.Map.GetTileSheet(sheetIndex[0]), BlendMode.Alpha, int.Parse(sheetIndex[1])));
+                                        }
 
+                                    }
+                                    l.Tiles[int.Parse(layerXY[1]), int.Parse(layerXY[2])] = new AnimatedTile(l, tiles.ToArray(), int.Parse(indexesDuration[1]));
+                                }
+                                else if (pair[1].ToString().Contains('/'))
+                                {
+                                    var sheetIndex = pair[1].ToString().Split('/');
+                                    l.Tiles[int.Parse(layerXY[1]), int.Parse(layerXY[2])] = new StaticTile(tile.Layer, farmer.currentLocation.Map.GetTileSheet(sheetIndex[0]), BlendMode.Alpha, int.Parse(sheetIndex[1]));
+                                }
+                            }
+                        }
+                        else if (key == changePropertiesOffKey)
+                        {
+                            var props = value.ToString().Split('|');
+                            foreach (var prop in props)
+                            {
+                                var pair = prop.Split('=');
+                                if (pair.Length == 2)
+                                {
+                                    tile.Properties[pair[0]] = pair[1];
+                                }
+                                else
+                                {
+                                    tile.Properties.Remove(pair[0]);
+                                }
+                            }
+                        }
+                        else if (key == changeMultiplePropertiesOffKey)
+                        {
+                            var tiles = value.ToString().Split('|');
+                            foreach (var tileProp in tiles)
+                            {
+                                var pair = tileProp.Split('=');
+                                if (pair.Length == 2)
+                                {
+                                    var tileInfo = pair[0].Split(',');
+                                    if (tileInfo.Length == 3)
+                                    {
+                                        tile.Layer.Tiles[int.Parse(tileInfo[0]), int.Parse(tileInfo[1])].Properties[tileInfo[2]] = pair[1];
+                                    }
+                                    else if (tileInfo.Length == 4)
+                                    {
+                                        farmer.currentLocation.Map.GetLayer(tileInfo[0]).Tiles[int.Parse(tileInfo[1]), int.Parse(tileInfo[2])].Properties[tileInfo[3]] = pair[1];
+                                    }
+                                }
+                            }
+
+                        }
+                        else if (key == soundOffKey)
+                        {
+                            farmer.currentLocation.playSound(value);
+                        }
+                        else if (key == soundOffOnceKey)
+                        {
+                            tile.Properties.Remove(soundOffOnceKey);
+                            farmer.currentLocation.playSound(value);
+                        }
                     }
-                    else if (kvp.Key == soundOffKey)
+                    catch(Exception ex)
                     {
-                        farmer.currentLocation.playSound(value);
-                    }
-                    else if (kvp.Key == soundOffOnceKey)
-                    {
-                        tile.Properties.Remove(soundOffOnceKey);
-                        farmer.currentLocation.playSound(value);
+                        SMonitor.Log($"Error triggering {key} with value {value} at {tilePos}:\n\n{ex.ToString()}", StardewModdingAPI.LogLevel.Error);
                     }
 
-                    else if (kvp.Key == triggerKey || kvp.Key == triggerOnceKey)
+                }
+            }
+        }
+
+        private static Item GetItemFromString(string value)
+        {
+            Item item = null;
+            int number;
+            if (!value.ToString().Contains("/"))
+            {
+                if (int.TryParse(value, out number))
+                {
+                    item = new Object(number, 1);
+                }
+                else
+                {
+                    var amount = 1;
+                    if (value.Contains(","))
                     {
-                        var split = value.Split('|');
-                        foreach(var s in split)
+                        var split = value.Split(',');
+                        value = split[0];
+                        amount = int.Parse(split[1]);
+                    }
+                    if (int.TryParse(value, out number))
+                    {
+                        item = new Object(number, amount);
+                    }
+                    else
+                    {
+                        foreach (var pair in Game1.objectInformation)
                         {
-                            var split2 = s.Split('/');
-                            var ls = new List<Layer>();
-                            Point point;
-                            if (split2.Length > 1)
+                            if (pair.Value.StartsWith(value + "/"))
                             {
-                                var split3 = split2[1].Split(' ');
-                                ls.Add(farmer.currentLocation.Map.GetLayer(split2[0]));
-                                try
-                                {
-                                    point = new Point(int.Parse(split3[0]), int.Parse(split3[1]));
-                                }
-                                catch 
-                                {
-                                    continue;
-                                }
+                                item = new Object(pair.Key, amount);
+                                break;
                             }
-                            else
-                            {
-                                var split3 = split2[0].Split(' ');
-                                try
-                                {
-                                    point = new Point(int.Parse(split3[0]), int.Parse(split3[1]));
-                                }
-                                catch
-                                {
-                                    continue;
-                                }
-                                ls.AddRange(farmer.currentLocation.Map.Layers);
-                            }
-                            TriggerActions(triggerKeys, ls, farmer, point);
-                        }
-                        if (kvp.Key == triggerOnceKey)
-                        {
-                            tile.Properties.Remove(triggerOnceKey);
                         }
                     }
                 }
             }
+            else
+            {
+                var split = value.ToString().Split('/');
+                switch (split[0])
+                {
+                    case "Hat":
+                        if (int.TryParse(split[1], out number))
+                        {
+                            item = new Hat(number);
+                        }
+                        else
+                        {
+                            Dictionary<int, string> dictionary = Game1.content.Load<Dictionary<int, string>>("Data\\hats");
+                            foreach (var pair in dictionary)
+                            {
+                                if (pair.Value.StartsWith(split[1] + "/"))
+                                {
+                                    item = new Hat(pair.Key);
+                                    break;
+                                }
+                            }
+                        }
+                        break;
+                    case "Clothing":
+                        if (int.TryParse(split[1], out number))
+                        {
+                            item = new Clothing(number);
+                        }
+                        else
+                        {
+                            foreach (var pair in Game1.clothingInformation)
+                            {
+                                if (pair.Value.StartsWith(split[1] + "/"))
+                                {
+                                    item = new Clothing(pair.Key);
+                                    break;
+                                }
+                            }
+                        }
+                        break;
+                    case "Craftable":
+                        if (int.TryParse(split[1], out number))
+                        {
+                            item = new Object(Vector2.Zero, number, false);
+                        }
+                        else
+                        {
+                            foreach (var pair in Game1.bigCraftablesInformation)
+                            {
+                                if (pair.Value.StartsWith(split[1] + "/"))
+                                {
+                                    item = new Object(Vector2.Zero, pair.Key, false);
+                                    break;
+                                }
+                            }
+                        }
+                        break;
+                    case "Furniture":
+                        if (int.TryParse(split[1], out number))
+                        {
+                            item = new Furniture(number, Vector2.Zero);
+                        }
+                        else
+                        {
+                            foreach (var pair in Game1.content.Load<Dictionary<int, string>>("Data\\Furniture"))
+                            {
+                                if (pair.Value.StartsWith(split[1] + "/"))
+                                {
+                                    item = new Furniture(pair.Key, Vector2.Zero);
+                                    break;
+                                }
+                            }
+                        }
+                        break;
+                    case "Weapon":
+                        if (int.TryParse(split[1], out number))
+                        {
+                            item = new MeleeWeapon(number);
+                        }
+                        else
+                        {
+                            foreach (var pair in Game1.content.Load<Dictionary<int, string>>("Data\\weapons"))
+                            {
+                                if (pair.Value.StartsWith(split[1] + "/"))
+                                {
+                                    item = new MeleeWeapon(pair.Key);
+                                    break;
+                                }
+                            }
+                        }
+                        break;
+                }
+            }
+            return item;
         }
 
         public static void PushTile(GameLocation location, Tile tile, int dir, Point start, string sound)

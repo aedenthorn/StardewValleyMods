@@ -17,7 +17,9 @@ namespace AdditionalMineMaps
         public static ModEntry context;
 
         public static string dictPath = "aedenthorn.AdditionalMineMaps/dictionary";
-        public static string[] mapList;
+        public static string mapPathKey = "aedenthorn.AdditionalMineMaps/mapPath";
+        public static Dictionary<string, MapData> mapDict;
+        public static Dictionary<int, MapData> forcedMapDict = new Dictionary<int, MapData>();
 
         /// <summary>The mod entry point, called after the mod is first loaded.</summary>
         /// <param name="helper">Provides simplified APIs for writing mods.</param>
@@ -46,16 +48,22 @@ namespace AdditionalMineMaps
         {
             if (!Config.ModEnabled)
                 return;
-            mapList = Helper.GameContent.Load<Dictionary<string, string>>(dictPath).Values.ToArray();
-
-            Monitor.Log($"loaded {mapList.Length} custom maps");
+            mapDict = Helper.GameContent.Load<Dictionary<string, MapData>>(dictPath);
+            foreach(var map in mapDict.Values)
+            {
+                if(map.forceLevel > -1)
+                {
+                    forcedMapDict[map.forceLevel] = map;
+                }
+            }
+            Monitor.Log($"loaded {mapDict.Count} custom maps and {forcedMapDict.Count} forced maps");
         }
 
         private void Content_AssetRequested(object sender, StardewModdingAPI.Events.AssetRequestedEventArgs e)
         {
             if (e.NameWithoutLocale.IsEquivalentTo(dictPath))
             {
-                e.LoadFrom(() => new Dictionary<string, string>(), StardewModdingAPI.Events.AssetLoadPriority.Exclusive);
+                e.LoadFrom(() => new Dictionary<string, MapData>(), StardewModdingAPI.Events.AssetLoadPriority.Exclusive);
             }
         }
 

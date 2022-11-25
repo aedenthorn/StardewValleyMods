@@ -31,6 +31,7 @@ namespace DynamicMapTiles
         public static string triggerOnceKey = "DMT/triggerOnce";
         public static string explodeKey = "DMT/explode";
         public static string explosionKey = "DMT/explosion";
+        public static string explosionOnceKey = "DMT/explosionOnce";
         public static string pushKey = "DMT/push";
         public static string pushSoundKey = "DMT/pushSound";
         public static string soundKey = "DMT/sound";
@@ -48,6 +49,7 @@ namespace DynamicMapTiles
         public static string eventOnceKey = "DMT/eventOnce";
         public static string mailKey = "DMT/mail";
         public static string mailBoxKey = "DMT/mailbox";
+        public static string invalidateKey = "DMT/invalidate";
         public static string musicKey = "DMT/music";
         public static string healthKey = "DMT/health";
         public static string staminaKey = "DMT/stamina";
@@ -57,89 +59,87 @@ namespace DynamicMapTiles
         public static string speedKey = "DMT/speed";
         public static string moveKey = "DMT/move";
         public static string emoteKey = "DMT/emote";
+        public static string emoteOnceKey = "DMT/emoteOnce";
 
         public static List<string> actionKeys = new List<string>()
         {
-            "DMT/changeIndex",
-            "DMT/changeIndexOff",
-            "DMT/changeMultipleIndex",
-            "DMT/changeMultipleIndexOff",
-            "DMT/changeProperties",
-            "DMT/changePropertiesOff",
-            "DMT/changeMultipleProperties",
-            "DMT/changeMultiplePropertiesOff",
-            "DMT/explosion",
-            "DMT/trigger",
-            "DMT/triggerOnce",
-            "DMT/explode",
-            "DMT/push",
-            "DMT/pushSound",
-            "DMT/sound",
-            "DMT/soundOnce",
-            "DMT/soundOff",
-            "DMT/soundOffOnce",
-            "DMT/teleport",
-            "DMT/teleportTile",
-            "DMT/give",
-            "DMT/chest",
-            "DMT/chestAdvanced",
-            "DMT/message",
-            "DMT/messageOnce",
-            "DMT/event",
-            "DMT/eventOnce",
-            "DMT/mail",
-            "DMT/mailbox",
-            "DMT/music",
-            "DMT/health",
-            "DMT/stamina",
-            "DMT/healthPerSecond",
-            "DMT/staminaPerSecond",
-            "DMT/buff",
-            "DMT/speed",
-            "DMT/move",
-            "DMT/emote"
+            changeIndexKey,
+            changeIndexOffKey,
+            changeMultipleIndexKey,
+            changeMultipleIndexOffKey,
+            changePropertiesKey,
+            changePropertiesOffKey,
+            changeMultiplePropertiesKey,
+            changeMultiplePropertiesOffKey,
+            explodeKey,
+            explosionKey,
+            explosionOnceKey,
+            pushKey,
+            pushSoundKey,
+            soundKey,
+            soundOnceKey,
+            soundOffKey,
+            soundOffOnceKey,
+            teleportKey,
+            teleportTileKey,
+            giveKey,
+            chestKey,
+            chestAdvancedKey,
+            messageKey,
+            messageOnceKey,
+            eventKey,
+            eventOnceKey,
+            mailKey,
+            mailBoxKey,
+            invalidateKey,
+            musicKey,
+            healthKey,
+            staminaKey,
+            healthPerSecondKey,
+            staminaPerSecondKey,
+            buffKey,
+            speedKey,
+            moveKey,
+            emoteKey,
+            emoteOnceKey
         };
         public static List<string> stepOnKeys = new List<string>()
         {
-            "DMT/changeIndex",
-            "DMT/changeMultipleIndex",
-            "DMT/changeProperties",
-            "DMT/changeMultipleProperties",
-            "DMT/explosion",
-            "DMT/trigger",
-            "DMT/triggerOnce",
-            "DMT/sound",
-            "DMT/soundOnce",
-            "DMT/teleport",
-            "DMT/teleportTile",
-            "DMT/give",
-            "DMT/message",
-            "DMT/messageOnce",
-            "DMT/event",
-            "DMT/eventOnce",
-            "DMT/mail",
-            "DMT/mailbox",
-            "DMT/music",
-            "DMT/health",
-            "DMT/stamina",
-            "DMT/buff",
-            "DMT/emote"
+            changeIndexKey,
+            changeMultipleIndexKey,
+            changePropertiesKey,
+            changeMultiplePropertiesKey,
+            explosionKey,
+            explosionOnceKey,
+            soundKey,
+            soundOnceKey,
+            teleportKey,
+            teleportTileKey,
+            giveKey,
+            chestKey,
+            chestAdvancedKey,
+            messageKey,
+            messageOnceKey,
+            eventKey,
+            eventOnceKey,
+            mailKey,
+            mailBoxKey,
+            invalidateKey,
+            musicKey,
+            healthKey,
+            staminaKey,
+            buffKey,
+            emoteKey,
+            emoteOnceKey
         };
         public static List<string> stepOffKeys = new List<string>()
         {
-            "DMT/changeIndexOff",
-            "DMT/changeMultipleIndexOff",
-            "DMT/changePropertiesOff",
-            "DMT/changeMultiplePropertiesOff",
-            "DMT/triggerOff",
-            "DMT/soundOff",
-            "DMT/soundOffOnce"
-        };
-        public static List<string> triggerKeys = new List<string>()
-        {
-            "DMT/chest",
-            "DMT/chestAdvanced",
-            "DMT/explosion"
+            changeIndexOffKey,
+            changeMultipleIndexOffKey,
+            changePropertiesOffKey,
+            changeMultiplePropertiesOffKey,
+            soundOffKey,
+            soundOffOnceKey
         };
 
         public override void Entry(IModHelper helper)
@@ -197,6 +197,8 @@ namespace DynamicMapTiles
         {
             if(Config.IsDebug && e.Button == SButton.Delete)
             {
+                var x = Game1.player.mailReceived;
+                return;
                 Game1.player.IsEmoting = false;
                     var tile = Game1.currentLocation.Map.GetLayer("Buildings").Tiles[51, 86];
                 if(tile != null)
