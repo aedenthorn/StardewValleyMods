@@ -113,23 +113,11 @@ namespace Restauranteer
             {
                 return (__instance as IslandFarmHouse).fridge;
             }
-            NetRef<Chest> fridge;
-            if (__instance.Objects.TryGetValue(fridgeHideTile, out Object value) && value is Chest)
+            __instance.objects.Remove(fridgeHideTile);
+            if (!fridgeDict.TryGetValue(__instance.Name, out NetRef<Chest> fridge))
             {
-                fridge = new NetRef<Chest>(value as Chest);
-
+                fridge = fridgeDict[__instance.Name] = new NetRef<Chest>(new Chest(true, 130));
             }
-            else
-            {
-                SMonitor.Log($"adding fridge to {__instance.Name}");
-                fridge = new NetRef<Chest>(new Chest(true, 130));
-                __instance.objects.Add(fridgeHideTile, fridge.Value);
-            }
-
-            __instance.NetFields.AddFields(new INetSerializable[]
-            {
-                fridge
-            });
             return fridge;
         }
     }

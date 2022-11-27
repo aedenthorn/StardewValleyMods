@@ -60,7 +60,7 @@ namespace Restauranteer
         {
             public static bool Prefix(GameLocation __instance, string action, Farmer who, Location tileLocation, ref bool __result)
             {
-                if (!Config.ModEnabled || !Config.RestaurantLocations.Contains(__instance.Name) || (action != "kitchen" && ((action != "fridge" && (SHelper.Input.IsDown(Config.FridgeModKey) || action != "DropBox GusFridge")) || Config.AutoFillFridge)))
+                if (!Config.ModEnabled || !Config.RestaurantLocations.Contains(__instance.Name) || action != "kitchen" )
                     return true;
                 if (Config.RequireEvent && !Game1.player.eventsSeen.Contains(980558))
                 {
@@ -112,35 +112,11 @@ namespace Restauranteer
                         }
                     }
                 }
-                if (action == "kitchen")
-                {
-                    __instance.ActivateKitchen(fridge);
-                }
-                else if(action == "fridge" || (!SHelper.Input.IsDown(Config.FridgeModKey) && action == "DropBox GusFridge"))
-                {
-                    fridgePosition.Value = tileLocation;
-                    fridge.Value.fridge.Value = true;
-                    fridge.Value.checkForAction(who, false);
-                }
+                __instance.ActivateKitchen(fridge);
                 __result = true;
                 return false;
             }
         }
-        [HarmonyPatch(typeof(GameLocation), "initNetFields")]
-        public class GameLocation_initNetFields_Patch
-        {
-            public static void Postfix(GameLocation __instance)
-            {
-                if (!Config.ModEnabled || !Config.RestaurantLocations.Contains(__instance.Name))
-                    return;
-                var fridge = GetFridge(__instance);
-                __instance.NetFields.AddFields(new INetSerializable[]
-                {
-                    fridge
-                });
-            }
-        }
-        
 
         [HarmonyPatch(typeof(GameLocation), nameof(GameLocation.UpdateWhenCurrentLocation))]
         public class GameLocation_UpdateWhenCurrentLocation_Patch

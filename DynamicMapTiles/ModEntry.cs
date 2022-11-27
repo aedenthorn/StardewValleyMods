@@ -4,6 +4,7 @@ using StardewModdingAPI;
 using StardewValley;
 using System;
 using System.Collections.Generic;
+using xTile.Layers;
 using xTile.ObjectModel;
 using static System.Net.Mime.MediaTypeNames;
 
@@ -33,7 +34,7 @@ namespace DynamicMapTiles
         public static string explosionKey = "DMT/explosion";
         public static string explosionOnceKey = "DMT/explosionOnce";
         public static string pushKey = "DMT/push";
-        public static string pushSoundKey = "DMT/pushSound";
+        public static string pushOthersKey = "DMT/pushOthers";
         public static string soundKey = "DMT/sound";
         public static string soundOnceKey = "DMT/soundOnce";
         public static string soundOffKey = "DMT/soundOff";
@@ -60,6 +61,8 @@ namespace DynamicMapTiles
         public static string moveKey = "DMT/move";
         public static string emoteKey = "DMT/emote";
         public static string emoteOnceKey = "DMT/emoteOnce";
+        public static string animationKey = "DMT/animation";
+        public static string animationOnceKey = "DMT/animationOnce";
 
         public static List<string> actionKeys = new List<string>()
         {
@@ -75,7 +78,7 @@ namespace DynamicMapTiles
             explosionKey,
             explosionOnceKey,
             pushKey,
-            pushSoundKey,
+            pushOthersKey,
             soundKey,
             soundOnceKey,
             soundOffKey,
@@ -101,7 +104,9 @@ namespace DynamicMapTiles
             speedKey,
             moveKey,
             emoteKey,
-            emoteOnceKey
+            emoteOnceKey,
+            animationKey,
+            animationOnceKey
         };
         public static List<string> stepOnKeys = new List<string>()
         {
@@ -130,7 +135,9 @@ namespace DynamicMapTiles
             staminaKey,
             buffKey,
             emoteKey,
-            emoteOnceKey
+            emoteOnceKey,
+            animationKey,
+            animationOnceKey
         };
         public static List<string> stepOffKeys = new List<string>()
         {
@@ -197,7 +204,6 @@ namespace DynamicMapTiles
         {
             if(Config.IsDebug && e.Button == SButton.Delete)
             {
-                var x = Game1.player.mailReceived;
                 return;
                 Game1.player.IsEmoting = false;
                     var tile = Game1.currentLocation.Map.GetLayer("Buildings").Tiles[51, 86];
@@ -300,7 +306,29 @@ namespace DynamicMapTiles
                 tile.position += GetNextTile(tile.dir);
                 if(tile.position.X % 64 == 0 && tile.position.Y % 64 == 0)
                 {
-                    Game1.currentLocation.Map.GetLayer("Buildings").Tiles[tile.position.X / 64, tile.position.Y / 64] = tile.tile;
+                    tile.tile.Layer.Tiles[tile.position.X / 64, tile.position.Y / 64] = tile.tile;
+                    foreach (var l in Game1.currentLocation.map.Layers)
+                    {
+                        List<string> actions = new List<string>();
+                        var t = l.PickTile(new xTile.Dimensions.Location(tile.position.X, tile.position.Y), Game1.viewport.Size);
+                        if (t is not null)
+                        {
+                            foreach (var kvp in t.Properties)
+                            {
+                                foreach (var str in actionKeys)
+                                {
+                                    if (kvp.Key == str + "Pushed")
+                                    {
+                                        actions.Add(kvp.Key);
+                                    }
+                                }
+                            }
+                            if (actions.Count > 0)
+                            {
+                                TriggerActions(actions, new List<Layer>() { t.Layer }, tile.farmer, new Point(tile.position.X / 64, tile.position.Y / 64));
+                            }
+                        }
+                    }
                     tiles.RemoveAt(i);
                 }
             }

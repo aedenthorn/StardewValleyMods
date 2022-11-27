@@ -1,9 +1,11 @@
 ﻿using HarmonyLib;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using Netcode;
 using StardewModdingAPI;
 using StardewModdingAPI.Utilities;
 using StardewValley;
+using StardewValley.Objects;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
@@ -28,7 +30,7 @@ namespace Restauranteer
         public static Texture2D emoteSprite;
         public static Vector2 fridgeHideTile = new Vector2(-42000, -42000);
         public static PerScreen<Dictionary<string, int>> npcOrderNumbers = new PerScreen<Dictionary<string, int>>();
-        public static PerScreen<Location> fridgePosition = new PerScreen<Location>();
+        public static Dictionary<string, NetRef<Chest>> fridgeDict = new();
 
         /// <summary>The mod entry point, called after the mod is first loaded.</summary>
         /// <param name="helper">Provides simplified APIs for writing mods.</param>
@@ -55,6 +57,7 @@ namespace Restauranteer
 
         private void GameLoop_DayStarted(object sender, StardewModdingAPI.Events.DayStartedEventArgs e)
         {
+            fridgeDict.Clear();
             npcOrderNumbers.Value.Clear();
             emoteSprite = SHelper.ModContent.Load<Texture2D>(Path.Combine("assets", "emote.png"));
         }
@@ -96,14 +99,6 @@ namespace Restauranteer
                         try
                         {
                             map.Data.GetLayer("Buildings").Tiles[tile.X, tile.Y].Properties["Action"] = "kitchen";
-                        }
-                        catch { }
-                    }
-                    foreach(var tile in Config.FridgeTiles)
-                    {
-                        try
-                        {
-                            map.Data.GetLayer("Buildings").Tiles[tile.X, tile.Y].Properties["Action"] = "fridge";
                         }
                         catch { }
                     }
@@ -203,12 +198,6 @@ namespace Restauranteer
                 name: () => "Liked Friendship Change",
                 getValue: () => Config.LikedFriendshipChange,
                 setValue: value => Config.LikedFriendshipChange = value
-            );
-            configMenu.AddKeybind(
-                mod: ModManifest,
-                name: () => "Fridge Mod Key",
-                getValue: () => Config.FridgeModKey,
-                setValue: value => Config.FridgeModKey = value
             );
         }
     }

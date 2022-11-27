@@ -42,18 +42,14 @@ namespace DynamicMapTiles
                         continue;
                     if (tile.Properties.TryGetValue(explodeKey, out PropertyValue mail))
                     {
-                        layer.Tiles[(int)x, (int)y] = null;
                         if (!string.IsNullOrEmpty(mail) && !explodingFarmer.mailReceived.Contains(mail))
                         {
                             explodingFarmer.mailReceived.Add(mail);
                         }
-                    }
-                    if(layer.Id == "Back")
-                    {
                         List<string> actions = new List<string>();
-                        foreach(var kvp in tile.Properties)
+                        foreach (var kvp in tile.Properties)
                         {
-                            foreach(var str in actionKeys)
+                            foreach (var str in actionKeys)
                             {
                                 if (kvp.Key == str + "Explode")
                                 {
@@ -61,10 +57,11 @@ namespace DynamicMapTiles
                                 }
                             }
                         }
-                        if(actions.Count > 0)
+                        if (actions.Count > 0)
                         {
                             TriggerActions(actions, new List<Layer>() { layer }, explodingFarmer, new Point((int)x, (int)y));
                         }
+                        layer.Tiles[(int)x, (int)y] = null;
                     }
                 }
             }
@@ -97,7 +94,7 @@ namespace DynamicMapTiles
                     return;
                 foreach(var tile in tiles)
                 {
-                    Game1.mapDisplayDevice.DrawTile(tile.tile, new Location(tile.position.X - Game1.viewport.X, tile.position.Y - Game1.viewport.Y), (float)(tile.position.Y + 64) / 10000f);
+                    Game1.mapDisplayDevice.DrawTile(tile.tile, new Location(tile.position.X - Game1.viewport.X, tile.position.Y - Game1.viewport.Y), (float)(tile.position.Y + 64 + (tile.tile.Layer.Id.Contains("Front") ? 16 : 0)) / 10000f);
                 }
             }
         }
@@ -167,9 +164,56 @@ namespace DynamicMapTiles
                         foreach (var item in tiles.ToString().Split(','))
                         {
                             var split = item.Split(' ');
-                            if(split.Length == 2 && int.TryParse(split[0], out int x) && int.TryParse(split[1], out int y) && destTile.X == x && destTile.Y == y) 
+                            if(split.Length == 2 && int.TryParse(split[0], out int x) && int.TryParse(split[1], out int y) && destTile.X == x && destTile.Y == y)
                             {
-                                PushTile(__instance.currentLocation, tile, __instance.FacingDirection, start, tile.Properties.TryGetValue(pushSoundKey, out PropertyValue sound) ? sound.ToString() : null);
+                                foreach(var l in __instance.currentLocation.map.Layers)
+                                {
+                                    List<string> actions = new List<string>();
+                                    var t = l.PickTile(startLoc, Game1.viewport.Size);
+                                    if(t is not null)
+                                    {
+                                        foreach (var kvp in t.Properties)
+                                        {
+                                            foreach (var str in actionKeys)
+                                            {
+                                                if (kvp.Key == str + "Push")
+                                                {
+                                                    actions.Add(kvp.Key);
+                                                }
+                                            }
+                                        }
+                                        if (actions.Count > 0)
+                                        {
+                                            TriggerActions(actions, new List<Layer>() { t.Layer }, __instance, new Point(startTile.X, startTile.Y));
+                                        }
+                                    }
+                                }
+                                PushTile(__instance.currentLocation, tile, __instance.FacingDirection, start, __instance);
+                                if(tile.Properties.TryGetValue(pushOthersKey, out PropertyValue others))
+                                {
+                                    split = others.ToString().Split(',');
+                                    foreach(var t in split)
+                                    {
+                                        try
+                                        {
+                                            var split2 = t.Split(' ');
+                                            if (split2.Length == 3 && int.TryParse(split2[1], out int x2) && int.TryParse(split2[2], out int y2))
+                                            {
+                                                x2 += startTile.X;
+                                                y2 += startTile.Y;
+                                                var layer = __instance.currentLocation.Map.GetLayer(split2[0]);
+                                                if (layer is not null && __instance.currentLocation.isTileOnMap(x2, y2) && layer.Tiles[x2, y2] is not null)
+                                                {
+                                                    PushTile(__instance.currentLocation, layer.Tiles[x2, y2], __instance.FacingDirection, new Point(x2 * 64, y2 * 64), __instance);
+                                                }
+                                            }
+                                        }
+                                        catch(Exception ex)
+                                        {
+                                            SMonitor.Log(ex.ToString(), StardewModdingAPI.LogLevel.Error);
+                                        }
+                                    }
+                                }
                                 break;
                             }
                         }

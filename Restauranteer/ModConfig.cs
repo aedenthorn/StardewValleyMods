@@ -12,7 +12,6 @@ namespace Restauranteer
         public bool PatchSaloonMap { get; set; } = true;
         public bool RevealGiftTaste { get; set; } = true;
         public bool SellCurrentRecipes { get; set; } = true;
-        public SButton FridgeModKey { get; set; } = SButton.LeftShift;
         public int MaxNPCOrdersPerNight { get; set; } = 2;
         public int LovedFriendshipChange { get; set; } = 40;
         public int LikedFriendshipChange { get; set; } = 20;
@@ -35,9 +34,5 @@ namespace Restauranteer
         public List<Point> KitchenTiles { get; set; } = new List<Point>()
         {
         };
-        public List<Point> FridgeTiles { get; set; } = new List<Point>()
-        {
-        };
-
     }
 }

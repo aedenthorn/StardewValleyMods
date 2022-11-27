@@ -5,12 +5,14 @@ using StardewValley.Objects;
 using StardewValley.Tools;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using xTile.Dimensions;
 using xTile.Layers;
 using xTile.ObjectModel;
 using xTile.Tiles;
 using Object = StardewValley.Object;
+using Rectangle = Microsoft.Xna.Framework.Rectangle;
 
 namespace DynamicMapTiles
 {
@@ -37,10 +39,23 @@ namespace DynamicMapTiles
 
                 if (tile is null)
                     continue;
-                foreach(var key in tile.Properties.Keys.ToArray())
+                foreach(var k in tile.Properties.Keys.ToArray())
                 {
-                    if (!actions.Contains(key) || !tile.Properties.TryGetValue(key, out PropertyValue v))
+                    if (!actions.Contains(k) || !tile.Properties.TryGetValue(k, out PropertyValue v))
                         continue;
+                    string key = k;
+                    if (key.EndsWith("Push"))
+                    {
+                        key = key.Substring(0, key.Length - 4);
+                    }
+                    else if (key.EndsWith("Explode"))
+                    {
+                        key = key.Substring(0, key.Length - 6);
+                    }
+                    else if (key.EndsWith("Pushed"))
+                    {
+                        key = key.Substring(0, key.Length - 6);
+                    }
                     string value = v?.ToString();
                     try
                     {
@@ -167,14 +182,25 @@ namespace DynamicMapTiles
                                 }
                             }
                         }
-                        else if (key == soundKey)
+                        else if (key == soundKey || key == soundOnceKey || key == soundOffKey || key == soundOffOnceKey)
                         {
-                            farmer.currentLocation.playSound(value);
-                        }
-                        else if (key == soundOnceKey)
-                        {
-                            tile.Properties.Remove(soundOnceKey);
-                            farmer.currentLocation.playSound(value);
+                            if (value.Contains(","))
+                            {
+                                var split = value.Split(',');
+                                if (int.TryParse(split[1], out int delay))
+                                {
+                                    DelayedAction.playSoundAfterDelay(split[0], delay, farmer.currentLocation, -1);
+                                }
+                            }
+                            else
+                            {
+                                Game1.currentSeason = "test";
+                                farmer.currentLocation.playSound(value);
+                            }
+                            if(key == soundOnceKey || key == soundOffOnceKey)
+                            {
+                                tile.Properties.Remove(k);
+                            }
                         }
                         else if (key == messageKey)
                         {
@@ -182,7 +208,7 @@ namespace DynamicMapTiles
                         }
                         else if (key == messageOnceKey)
                         {
-                            tile.Properties.Remove(messageOnceKey);
+                            tile.Properties.Remove(k);
                             Game1.drawObjectDialogue(value);
                         }
                         else if (key == eventKey)
@@ -192,7 +218,7 @@ namespace DynamicMapTiles
                         }
                         else if (key == eventOnceKey)
                         {
-                            tile.Properties.Remove(eventOnceKey);
+                            tile.Properties.Remove(k);
                             Game1.currentLocation.currentEvent = new Event(value, -1, null);
                             Game1.currentLocation.checkForEvents();
                         }
@@ -202,13 +228,13 @@ namespace DynamicMapTiles
                         }
                         else if (key == mailKey)
                         {
-                            tile.Properties.Remove(mailKey);
+                            tile.Properties.Remove(k);
                             if (!farmer.mailReceived.Contains(value))
                                 farmer.mailReceived.Add(value);
                         }
                         else if (key == mailBoxKey)
                         {
-                            tile.Properties.Remove(mailKey);
+                            tile.Properties.Remove(k);
                             if (!farmer.mailbox.Contains(value))
                                 farmer.mailbox.Add(value);
                         }
@@ -236,7 +262,7 @@ namespace DynamicMapTiles
                         }
                         else if (key == giveKey)
                         {
-                            tile.Properties.Remove(giveKey);
+                            tile.Properties.Remove(k);
                             Item item = null;
                             if (value.StartsWith("Money/"))
                             {
@@ -280,7 +306,7 @@ namespace DynamicMapTiles
                             farmer.doEmote(number);
                             if (key == emoteOnceKey)
                             {
-                                tile.Properties.Remove(key);
+                                tile.Properties.Remove(k);
                             }
                         }
                         else if (key == explosionKey || key == explosionOnceKey)
@@ -290,7 +316,7 @@ namespace DynamicMapTiles
                             farmer.currentLocation.explode(new Vector2(int.Parse(split[0]), int.Parse(split[1])), int.Parse(split[2]), farmer, bool.Parse(split[3]), int.Parse(split[4]));
                             if (key == explosionOnceKey)
                             {
-                                tile.Properties.Remove(key);
+                                tile.Properties.Remove(k);
                             }
                         }
                         else if (key == chestKey)
@@ -324,7 +350,36 @@ namespace DynamicMapTiles
                                 chest.CanBeSetDown = false;
                                 farmer.currentLocation.overlayObjects[p] = chest;
                             }
-                            tile.Properties.Remove(key);
+                            tile.Properties.Remove(k);
+                        }
+                        else if (key == animationKey || key == animationOnceKey)
+                        {
+                            var split = value.Split(' ');
+                            TemporaryAnimatedSprite sprite;
+                            if (int.TryParse(split[0], out int index))
+                            {
+                                sprite = new TemporaryAnimatedSprite(index, new Vector2(int.Parse(split[1]), int.Parse(split[2])), new Color(byte.Parse(split[3]), byte.Parse(split[4]), byte.Parse(split[5]), byte.Parse(split[6])), int.Parse(split[7]), bool.Parse(split[8]), float.Parse(split[9], System.Globalization.NumberStyles.Any, CultureInfo.InvariantCulture), int.Parse(split[10]), int.Parse(split[11]), float.Parse(split[12], System.Globalization.NumberStyles.Any, CultureInfo.InvariantCulture), int.Parse(split[13]), int.Parse(split[14]))
+                                {
+                                    layerDepth = float.Parse(split[12], System.Globalization.NumberStyles.Any, CultureInfo.InvariantCulture),
+                                    id = int.Parse(split[15])
+                                };
+                            }
+                            else
+                            {
+                                sprite = new TemporaryAnimatedSprite(split[0], new Rectangle(int.Parse(split[1]), int.Parse(split[2]), int.Parse(split[3]), int.Parse(split[4])), float.Parse(split[5], System.Globalization.NumberStyles.Any, CultureInfo.InvariantCulture), int.Parse(split[6]), int.Parse(split[7]), new Vector2(int.Parse(split[8]), int.Parse(split[9])), bool.Parse(split[10]), bool.Parse(split[11]), float.Parse(split[12], System.Globalization.NumberStyles.Any, CultureInfo.InvariantCulture), float.Parse(split[13], System.Globalization.NumberStyles.Any, CultureInfo.InvariantCulture), new Color(byte.Parse(split[14]), byte.Parse(split[15]), byte.Parse(split[16]), byte.Parse(split[17])), float.Parse(split[18], System.Globalization.NumberStyles.Any, CultureInfo.InvariantCulture), float.Parse(split[19], System.Globalization.NumberStyles.Any, CultureInfo.InvariantCulture), float.Parse(split[20], System.Globalization.NumberStyles.Any, CultureInfo.InvariantCulture), float.Parse(split[21], System.Globalization.NumberStyles.Any, CultureInfo.InvariantCulture), bool.Parse(split[22]))
+                                {
+                                    layerDepth = float.Parse(split[12], System.Globalization.NumberStyles.Any, CultureInfo.InvariantCulture),
+                                    motion = new Vector2(float.Parse(split[23], System.Globalization.NumberStyles.Any, CultureInfo.InvariantCulture), float.Parse(split[24], System.Globalization.NumberStyles.Any, CultureInfo.InvariantCulture)),
+                                    acceleration = new Vector2(float.Parse(split[25], System.Globalization.NumberStyles.Any, CultureInfo.InvariantCulture), float.Parse(split[26], System.Globalization.NumberStyles.Any, CultureInfo.InvariantCulture)),
+                                    id = int.Parse(split[27])
+                                };
+                            }
+                            farmer.currentLocation.removeTemporarySpritesWithIDLocal(sprite.id);
+                            farmer.currentLocation.TemporarySprites.Add(sprite);
+                            if(key == animationOnceKey)
+                            {
+                                tile.Properties.Remove(k);
+                            }
                         }
 
                         // step off
@@ -451,15 +506,6 @@ namespace DynamicMapTiles
                                 }
                             }
 
-                        }
-                        else if (key == soundOffKey)
-                        {
-                            farmer.currentLocation.playSound(value);
-                        }
-                        else if (key == soundOffOnceKey)
-                        {
-                            tile.Properties.Remove(soundOffOnceKey);
-                            farmer.currentLocation.playSound(value);
                         }
                     }
                     catch(Exception ex)
@@ -603,24 +649,20 @@ namespace DynamicMapTiles
             return item;
         }
 
-        public static void PushTile(GameLocation location, Tile tile, int dir, Point start, string sound)
+        public static void PushTile(GameLocation location, Tile tile, int dir, Point start, Farmer farmer)
         {
             var startTile = new Point(start.X / 64, start.Y / 64);
 
             if (!location.isTileOnMap(startTile.ToVector2()) || !location.isTileOnMap((startTile + GetNextTile(dir)).ToVector2()))
                 return;
-            if(!string.IsNullOrEmpty(sound))
-            {
-                location.playSound(sound);
-            }
 
             if (!pushingDict.TryGetValue(location.Name, out List<PushedTile> tiles))
             {
                 pushingDict.Add(location.Name, tiles = new List<PushedTile>());
             }
 
-            tiles.Add(new PushedTile() { tile = tile, position = start, dir = dir });
-            location.Map.GetLayer("Buildings").Tiles[new Location(start.X / 64, start.Y / 64)] = null;
+            tiles.Add(new PushedTile() { tile = tile, position = start, dir = dir, farmer = farmer });
+            tile.Layer.Tiles[new Location(start.X / 64, start.Y / 64)] = null;
         }
         public static Point GetNextTile(int dir)
         {
