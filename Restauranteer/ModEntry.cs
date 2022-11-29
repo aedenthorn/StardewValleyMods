@@ -159,6 +159,12 @@ namespace Restauranteer
             );
             configMenu.AddBoolOption(
                 mod: ModManifest,
+                name: () => "Sell Current Recipes",
+                getValue: () => Config.SellCurrentRecipes,
+                setValue: value => Config.SellCurrentRecipes = value
+            );
+            configMenu.AddBoolOption(
+                mod: ModManifest,
                 name: () => "Patch Saloon Map",
                 getValue: () => Config.PatchSaloonMap,
                 setValue: value => Config.PatchSaloonMap = value

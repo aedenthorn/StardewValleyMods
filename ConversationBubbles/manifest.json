@@ -1,22 +1,22 @@
 ﻿{
-  "Name": "Restauranteer",
+  "Name": "Conversation Bubbles",
   "Author": "aedenthorn",
-  "Version": "0.7.2",
-  "Description": "Restauranteer.",
-  "UniqueID": "aedenthorn.Restauranteer",
-  "EntryDll": "Restauranteer.dll",
+  "Version": "0.1.0",
+  "Description": "Conversation Bubbles.",
+  "UniqueID": "aedenthorn.ConversationBubbles",
+  "EntryDll": "ConversationBubbles.dll",
   "MinimumApiVersion": "3.15.0",
   "ModUpdater": {
     "Repository": "StardewValleyMods",
     "User": "aedenthorn",
     "Directory": "_releases",
-    "ModFolder": "Restauranteer"
+    "ModFolder": "ConversationBubbles"
   },
+  "UpdateKeys": [ "Nexus:" ],
   "Dependencies": [
     {
       "UniqueID": "Platonymous.ModUpdater",
       "IsRequired": false
     }
-  ],
-  "UpdateKeys": [ "Nexus:14519" ]
+  ]
 }

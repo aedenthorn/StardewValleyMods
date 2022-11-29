@@ -10,7 +10,7 @@ using StardewValley.TerrainFeatures;
 using System;
 using System.Linq;
 
-namespace NPCConversations
+namespace ConversationBubbles
 {
     public partial class ModEntry
     {

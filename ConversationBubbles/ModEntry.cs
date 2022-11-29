@@ -1,25 +1,20 @@
 ﻿using HarmonyLib;
 using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
-using Microsoft.Xna.Framework.Input;
 using StardewModdingAPI;
 using StardewValley;
 using StardewValley.Characters;
 using StardewValley.Locations;
 using StardewValley.Monsters;
-using StardewValley.Network;
 using StardewValley.TerrainFeatures;
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
-using xTile;
 using Object = StardewValley.Object;
 
-namespace NPCConversations
+namespace ConversationBubbles
 {
     /// <summary>The mod entry point.</summary>
-    public partial class ModEntry : Mod, IAssetLoader
+    public partial class ModEntry : Mod
     {
 
         public static IMonitor SMonitor;
@@ -27,9 +22,9 @@ namespace NPCConversations
         public static ModConfig Config;
 
         public static ModEntry context;
-        public static readonly string dictPath = "aedenthorn.NPCConversations/dictionary";
-        public static Dictionary<string, NPCConversationData> npcConversationDataDict = new Dictionary<string, NPCConversationData>();
-        public static List<NPCConversationInstance> currentConversations = new List<NPCConversationInstance>();
+        public static readonly string dictPath = "aedenthorn.ConversationBubbles/dictionary";
+        public static Dictionary<string, ConversationData> npcConversationDataDict = new Dictionary<string, ConversationData>();
+        public static List<ConversationInstance> currentConversations = new List<ConversationInstance>();
 
         /// <summary>The mod entry point, called after the mod is first loaded.</summary>
         /// <param name="helper">Provides simplified APIs for writing mods.</param>
@@ -46,14 +41,23 @@ namespace NPCConversations
             helper.Events.GameLoop.SaveLoaded += GameLoop_SaveLoaded;
             helper.Events.GameLoop.TimeChanged += GameLoop_TimeChanged;
             helper.Events.Player.Warped += Player_Warped;
+            helper.Events.Content.AssetRequested += Content_AssetRequested;
 
             var harmony = new Harmony(ModManifest.UniqueID);
             harmony.PatchAll();
         }
 
+        private void Content_AssetRequested(object sender, StardewModdingAPI.Events.AssetRequestedEventArgs e)
+        {
+            if (e.NameWithoutLocale.IsEquivalentTo(dictPath))
+            {
+                e.LoadFrom(() => new Dictionary<string, ConversationData>(), StardewModdingAPI.Events.AssetLoadPriority.Exclusive);
+            }
+        }
+
         private void GameLoop_SaveLoaded(object sender, StardewModdingAPI.Events.SaveLoadedEventArgs e)
         {
-            npcConversationDataDict = Helper.Content.Load<Dictionary<string, NPCConversationData>>(dictPath, ContentSource.GameContent);
+            npcConversationDataDict = Helper.GameContent.Load<Dictionary<string, ConversationData>>(dictPath);
             Monitor.Log($"Loaded {npcConversationDataDict.Count} conversation datas");
             currentConversations.Clear();
         }
@@ -70,12 +74,12 @@ namespace NPCConversations
 
             foreach(var kvp in npcConversationDataDict)
             {
-                if (Game1.random.NextDouble() < kvp.Value.chance)
+                if (e.NewTime >= kvp.Value.minTime && (kvp.Value.maxTime < 0 || e.NewTime < kvp.Value.maxTime) && (kvp.Value.locations is null || kvp.Value.locations.Contains(Game1.currentLocation.Name)) && Game1.random.NextDouble() < kvp.Value.chance)
                     MakeConversation(kvp.Key, kvp.Value);
             }
         }
 
-        private void MakeConversation(string key, NPCConversationData data)
+        private void MakeConversation(string key, ConversationData data)
         {
             List<List<object>> candidates = new List<List<object>>();
             foreach(var p in data.participants)
@@ -135,7 +139,7 @@ namespace NPCConversations
                 ShuffleList(thisCandidates);
                 candidates.Add(thisCandidates);
             }
-            var instance = new NPCConversationInstance() { data = data };
+            var instance = new ConversationInstance() { data = data };
             for (int i = 0; i < candidates.Count; i++)
             {
                 for (int j = 0; j < candidates[i].Count; j++)
@@ -220,23 +224,5 @@ namespace NPCConversations
 
         }
 
-        /// <summary>Get whether this instance can load the initial version of the given asset.</summary>
-        /// <param name="asset">Basic metadata about the asset being loaded.</param>
-        public bool CanLoad<T>(IAssetInfo asset)
-        {
-            if (!Config.EnableMod)
-                return false;
-
-            return asset.AssetNameEquals(dictPath);
-        }
-
-        /// <summary>Load a matched asset.</summary>
-        /// <param name="asset">Basic metadata about the asset being loaded.</param>
-        public T Load<T>(IAssetInfo asset)
-        {
-            Monitor.Log("Loading dictionary");
-
-            return (T)(object)new Dictionary<string, NPCConversationData>();
-        }
     }
 }

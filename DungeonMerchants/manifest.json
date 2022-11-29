@@ -1,22 +1,22 @@
 ﻿{
-  "Name": "NPC Conversations",
+  "Name": "Dungeon Merchants",
   "Author": "aedenthorn",
   "Version": "0.1.0",
-  "Description": "NPC Conversations.",
-  "UniqueID": "aedenthorn.NPCConversations",
-  "EntryDll": "NPCConversations.dll",
-  "MinimumApiVersion": "3.13.0",
+  "Description": "Dungeon Merchants.",
+  "UniqueID": "aedenthorn.DungeonMerchants",
+  "EntryDll": "DungeonMerchants.dll",
+  "MinimumApiVersion": "3.15.0",
   "ModUpdater": {
     "Repository": "StardewValleyMods",
     "User": "aedenthorn",
     "Directory": "_releases",
-    "ModFolder": "NPCConversations"
+    "ModFolder": "DungeonMerchants"
   },
-  "UpdateKeys": [ "Nexus:" ],
   "Dependencies": [
     {
       "UniqueID": "Platonymous.ModUpdater",
       "IsRequired": false
     }
-  ]
+  ],
+  "UpdateKeys": [ "Nexus:14630" ]
 }

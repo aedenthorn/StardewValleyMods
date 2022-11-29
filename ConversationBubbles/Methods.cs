@@ -5,7 +5,7 @@ using System;
 using System.Collections.Generic;
 using Rectangle = Microsoft.Xna.Framework.Rectangle;
 
-namespace NPCConversations
+namespace ConversationBubbles
 {
     public partial class ModEntry
     {

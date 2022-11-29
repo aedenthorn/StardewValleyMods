@@ -3,6 +3,7 @@ using Microsoft.Xna.Framework.Graphics;
 using StardewValley;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using Object = StardewValley.Object;
 
 namespace ParticleEffects
@@ -94,32 +95,47 @@ namespace ParticleEffects
                 Vector2 direction = particleList[i].direction;
                 if(direction == Vector2.Zero)
                 {
-                    switch (ped.movementType)
+                    if (ped.movementType.Contains(" "))
                     {
-                        case "away":
-                            direction = (center - particleList[i].position) * new Vector2(-1, -1);
+                        var split = ped.movementType.Split(' ');
+                        if (split.Length == 2 
+                            && float.TryParse(split[0], NumberStyles.Any, CultureInfo.InvariantCulture, out float x) 
+                            && float.TryParse(split[1], NumberStyles.Any, CultureInfo.InvariantCulture, out float y)
+                        )
+                        { 
+                            direction = new Vector2(x, y);
                             direction.Normalize();
-                            break;
-                        case "towards":
-                            direction = center - particleList[i].position;
-                            direction.Normalize();
-                            break;
-                        case "up":
-                            direction = new Vector2(0, -1);
-                            break;
-                        case "down":
-                            direction = new Vector2(0, 1);
-                            break;
-                        case "left":
-                            direction = new Vector2(-1, 0);
-                            break;
-                        case "right":
-                            direction = new Vector2(1, 0);
-                            break;
-                        case "random":
-                            direction = new Vector2((float)Game1.random.NextDouble() - 0.5f, (float)Game1.random.NextDouble() - 0.5f);
-                            direction.Normalize();
-                            break;
+                        }
+                    }
+                    else
+                    {
+                        switch (ped.movementType)
+                        {
+                            case "away":
+                                direction = (center - particleList[i].position) * new Vector2(-1, -1);
+                                direction.Normalize();
+                                break;
+                            case "towards":
+                                direction = center - particleList[i].position;
+                                direction.Normalize();
+                                break;
+                            case "up":
+                                direction = new Vector2(0, -1);
+                                break;
+                            case "down":
+                                direction = new Vector2(0, 1);
+                                break;
+                            case "left":
+                                direction = new Vector2(-1, 0);
+                                break;
+                            case "right":
+                                direction = new Vector2(1, 0);
+                                break;
+                            case "random":
+                                direction = new Vector2((float)Game1.random.NextDouble() - 0.5f, (float)Game1.random.NextDouble() - 0.5f);
+                                direction.Normalize();
+                                break;
+                        }
                     }
                     particleList[i].direction = direction;
                 }

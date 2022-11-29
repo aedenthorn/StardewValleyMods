@@ -1,7 +1,7 @@
 ﻿
 using StardewModdingAPI;
 
-namespace NPCConversations
+namespace ConversationBubbles
 {
     public class ModConfig
     {

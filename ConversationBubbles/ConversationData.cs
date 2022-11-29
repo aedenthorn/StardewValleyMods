@@ -1,11 +1,11 @@
 ﻿using StardewValley;
 using System.Collections.Generic;
 
-namespace NPCConversations
+namespace ConversationBubbles
 {
-    public class NPCConversationInstance
+    public class ConversationInstance
     {
-        public NPCConversationData data;
+        public ConversationData data;
         public int index;
         public List<object> participants = new List<object>();
         public List<DialogueInstance> dialogues = new List<DialogueInstance>();
@@ -38,10 +38,13 @@ namespace NPCConversations
         public DialogueData data;
     }
 
-    public class NPCConversationData
+    public class ConversationData
     {
         public List<ParticipantData> participants;
         public List<DialogueData> dialogues;
+        public List<string> locations;
+        public int minTime = -1;
+        public int maxTime = -1;
         public float chance;
         public int tileDistance;
         
