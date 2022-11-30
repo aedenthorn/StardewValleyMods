@@ -25,7 +25,7 @@ namespace DungeonMerchants
                     && (Config.DwarfFloorMax < 0 || __result.mineLevel <= Config.DwarfFloorMax) 
                     && (!Config.DwarfFloors.Any() || Config.DwarfFloors.Contains(__result.mineLevel)) 
                     && (Config.DwarfFloorMult < 0 || __result.mineLevel % Config.DwarfFloorMult == 0)
-                    && (Config.DwarfFloors.Contains(__result.mineLevel) || __result.mineLevel % Config.DwarfFloorMult == 0 || Game1.random.NextDouble() < Config.DwarfFloorChancePercent / 100f)
+                    && (Config.DwarfFloors.Contains(__result.mineLevel) || (Config.DwarfFloorMult >= 0 && __result.mineLevel % Config.DwarfFloorMult == 0) || Game1.random.NextDouble() < Config.DwarfFloorChancePercent / 100f)
                 )
                 {
                     SpawnDwarf(__result);
@@ -34,7 +34,7 @@ namespace DungeonMerchants
                     && (Config.MerchantFloorMax < 0 || __result.mineLevel <= Config.MerchantFloorMax) 
                     && (!Config.MerchantFloors.Any() || Config.MerchantFloors.Contains(__result.mineLevel)) 
                     && (Config.MerchantFloorMult < 0 || __result.mineLevel % Config.MerchantFloorMult == 0)
-                    && (Config.MerchantFloors.Contains(__result.mineLevel) || __result.mineLevel % Config.MerchantFloorMult == 0 || Game1.random.NextDouble() < Config.MerchantFloorChancePercent / 100f)
+                    && (Config.MerchantFloors.Contains(__result.mineLevel) || (Config.MerchantFloorMult >= 0 && __result.mineLevel % Config.MerchantFloorMult == 0) || Game1.random.NextDouble() < Config.MerchantFloorChancePercent / 100f)
                 )
                 {
                     SpawnMerchant(__result);

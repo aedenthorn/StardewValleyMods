@@ -1,16 +1,16 @@
 ﻿{
-  "Name": "Dungeon Merchants",
+  "Name": "Help Wanted",
   "Author": "aedenthorn",
-  "Version": "0.1.1",
-  "Description": "Dungeon Merchants.",
-  "UniqueID": "aedenthorn.DungeonMerchants",
-  "EntryDll": "DungeonMerchants.dll",
+  "Version": "0.1.0",
+  "Description": "Help Wanted.",
+  "UniqueID": "aedenthorn.HelpWanted",
+  "EntryDll": "HelpWanted.dll",
   "MinimumApiVersion": "3.15.0",
   "ModUpdater": {
     "Repository": "StardewValleyMods",
     "User": "aedenthorn",
     "Directory": "_releases",
-    "ModFolder": "DungeonMerchants"
+    "ModFolder": "HelpWanted"
   },
   "Dependencies": [
     {
@@ -18,5 +18,5 @@
       "IsRequired": false
     }
   ],
-  "UpdateKeys": [ "Nexus:14630" ]
+  "UpdateKeys": [ "Nexus:" ]
 }

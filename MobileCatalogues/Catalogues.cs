@@ -219,8 +219,8 @@ namespace MobileCatalogues
         private static Dictionary<ISalable, int[]> GetAllSeeds()
         {
             Dictionary<ISalable, int[]> items = new Dictionary<ISalable, int[]>();
-            Dictionary<int, string> cropData = Helper.Content.Load<Dictionary<int, string>>("Data\\Crops", 0);
-            Dictionary<int, string> fruitTreeData = Helper.Content.Load<Dictionary<int, string>>("Data\\fruitTrees", 0);
+            Dictionary<int, string> cropData = Helper.GameContent.Load<Dictionary<int, string>>("Data\\Crops");
+            Dictionary<int, string> fruitTreeData = Helper.GameContent.Load<Dictionary<int, string>>("Data\\fruitTrees");
 
             Dictionary<int, int> seedProducts = new Dictionary<int, int>();
 

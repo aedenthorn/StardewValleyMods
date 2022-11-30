@@ -169,6 +169,12 @@ namespace Restauranteer
                 getValue: () => Config.PatchSaloonMap,
                 setValue: value => Config.PatchSaloonMap = value
             );
+            configMenu.AddKeybind(
+                mod: ModManifest,
+                name: () => "Show Dish Name Key",
+                getValue: () => Config.ModKey,
+                setValue: value => Config.ModKey = value
+            );
             configMenu.AddTextOption(
                 mod: ModManifest,
                 name: () => "Order Chance / s",

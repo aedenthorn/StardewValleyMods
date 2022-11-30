@@ -275,7 +275,7 @@ namespace CustomFixedDialogue
 
         public static bool FixString(NPC speaker, ref string input)
         {
-            if (!input.Contains("⣇"))
+            if (input is null || !input.Contains("⣇"))
                 return false;
             bool changed = false;
             try

@@ -4,6 +4,7 @@ using Microsoft.Xna.Framework.Graphics;
 using Netcode;
 using Newtonsoft.Json;
 using StardewValley;
+using StardewValley.BellsAndWhistles;
 using StardewValley.Locations;
 using StardewValley.Objects;
 using System;
@@ -51,8 +52,16 @@ namespace Restauranteer
                 }
                 Vector2 emotePosition = __instance.getLocalPosition(Game1.viewport);
                 emotePosition.Y -= 32 + __instance.Sprite.SpriteHeight * 4;
-                b.Draw(emoteSprite, emotePosition, new Rectangle?(new Rectangle(emoteIndex * 16 % Game1.emoteSpriteSheet.Width, emoteIndex * 16 / emoteSprite.Width * 16, 16, 16)), Color.White, 0f, Vector2.Zero, 4f, SpriteEffects.None, __instance.getStandingY() / 10000f);
-                b.Draw(Game1.objectSpriteSheet, emotePosition + new Vector2(16, 8), GameLocation.getSourceRectForObject(orderData.dish), Color.White, 0f, Vector2.Zero, 2f, SpriteEffects.None, (__instance.getStandingY() + 1) / 10000f);
+                if (SHelper.Input.IsDown(Config.ModKey))
+                {
+                    SpriteText.drawStringWithScrollCenteredAt(b, orderData.dishName, (int)emotePosition.X + 32, (int)emotePosition.Y, "", 1, -1, 1);
+                }
+                else
+                {
+                    b.Draw(emoteSprite, emotePosition, new Rectangle?(new Rectangle(emoteIndex * 16 % Game1.emoteSpriteSheet.Width, emoteIndex * 16 / emoteSprite.Width * 16, 16, 16)), Color.White, 0f, Vector2.Zero, 4f, SpriteEffects.None, __instance.getStandingY() / 10000f);
+                    b.Draw(Game1.objectSpriteSheet, emotePosition + new Vector2(16, 8), GameLocation.getSourceRectForObject(orderData.dish), Color.White, 0f, Vector2.Zero, 2f, SpriteEffects.None, (__instance.getStandingY() + 1) / 10000f);
+                }
+
             }
         }
         [HarmonyPatch(typeof(GameLocation), nameof(GameLocation.performAction))]
