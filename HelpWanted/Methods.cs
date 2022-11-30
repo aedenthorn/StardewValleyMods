@@ -1,5 +1,8 @@
-﻿using StardewValley;
+﻿using Microsoft.Xna.Framework;
+using StardewValley;
+using StardewValley.Locations;
 using StardewValley.Quests;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Object = StardewValley.Object;
@@ -71,6 +74,41 @@ namespace HelpWanted
             {
                 return items;
             }
+        }
+
+
+        public static Color GetRandomColor()
+        {
+            return new Color((byte)random.Next(Config.RandomColorMin, Config.RandomColorMax), (byte)random.Next(Config.RandomColorMin, Config.RandomColorMax), (byte)random.Next(Config.RandomColorMin, Config.RandomColorMax));
+        }
+
+        public static void RefreshQuestOfTheDay(Random r)
+        {
+            var mine = (MineShaft.lowestLevelReached > 0 && Game1.stats.DaysPlayed > 5U);
+            float totalWeight = Config.ResourceCollectionWeight + (mine ? Config.SlayMonstersWeight : 0) + Config.FishingWeight + Config.ItemDeliveryWeight;
+            double d = r.NextDouble();
+            float currentWeight = Config.ResourceCollectionWeight;
+            if (d < currentWeight / totalWeight)
+            {
+                Game1.questOfTheDay = new ResourceCollectionQuest();
+                return;
+            }
+            if (mine)
+            {
+                currentWeight += Config.SlayMonstersWeight;
+                if (d < currentWeight / totalWeight)
+                {
+                    Game1.questOfTheDay = new SlayMonsterQuest();
+                    return;
+                }
+            }
+            currentWeight += Config.FishingWeight;
+            if (d < currentWeight / totalWeight)
+            {
+                Game1.questOfTheDay = new FishingQuest();
+                return;
+            }
+            Game1.questOfTheDay = new ItemDeliveryQuest();
         }
     }
 }

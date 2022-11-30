@@ -14,6 +14,9 @@ namespace HelpWanted
         public Color pinColor { get; set; }
         public Texture2D icon { get; set; }
         public Rectangle iconSource { get; set; }
+        public Color iconColor { get; set; }
+        public float iconScale { get; set; }
+        public Point iconOffset { get; set; }
         public Quest quest { get; set; }
     }
 }

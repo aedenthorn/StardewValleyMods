@@ -443,6 +443,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HelpWanted", "HelpWanted\He
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CustomFixedDialogue", "CustomFixedDialogue\CustomFixedDialogue.csproj", "{08E3CBC3-A61A-4EEC-B490-C8AE50E551F7}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "InfallibleFishing", "InfallibleFishing\InfallibleFishing.csproj", "{67ECC7A7-8721-42DF-B977-9BF55CBD4A0B}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -3039,6 +3041,18 @@ Global
 		{08E3CBC3-A61A-4EEC-B490-C8AE50E551F7}.Release|x64.Build.0 = Release|x64
 		{08E3CBC3-A61A-4EEC-B490-C8AE50E551F7}.Release|x86.ActiveCfg = Release|Any CPU
 		{08E3CBC3-A61A-4EEC-B490-C8AE50E551F7}.Release|x86.Build.0 = Release|Any CPU
+		{67ECC7A7-8721-42DF-B977-9BF55CBD4A0B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{67ECC7A7-8721-42DF-B977-9BF55CBD4A0B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{67ECC7A7-8721-42DF-B977-9BF55CBD4A0B}.Debug|x64.ActiveCfg = Debug|x64
+		{67ECC7A7-8721-42DF-B977-9BF55CBD4A0B}.Debug|x64.Build.0 = Debug|x64
+		{67ECC7A7-8721-42DF-B977-9BF55CBD4A0B}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{67ECC7A7-8721-42DF-B977-9BF55CBD4A0B}.Debug|x86.Build.0 = Debug|Any CPU
+		{67ECC7A7-8721-42DF-B977-9BF55CBD4A0B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{67ECC7A7-8721-42DF-B977-9BF55CBD4A0B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{67ECC7A7-8721-42DF-B977-9BF55CBD4A0B}.Release|x64.ActiveCfg = Release|x64
+		{67ECC7A7-8721-42DF-B977-9BF55CBD4A0B}.Release|x64.Build.0 = Release|x64
+		{67ECC7A7-8721-42DF-B977-9BF55CBD4A0B}.Release|x86.ActiveCfg = Release|Any CPU
+		{67ECC7A7-8721-42DF-B977-9BF55CBD4A0B}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

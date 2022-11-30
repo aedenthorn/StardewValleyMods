@@ -47,7 +47,30 @@ namespace HelpWanted
                     OrdersBillboard.questBillboard = null;
                 }
             }
+            public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions)
+            {
+                SMonitor.Log($"Transpiling Billboard.receiveLeftClick");
+
+                var codes = new List<CodeInstruction>(instructions);
+                for (int i = 0; i < codes.Count; i++)
+                {
+                    if (i < codes.Count - 1 && codes[i].opcode == OpCodes.Ldfld && codes[i + 1].opcode == OpCodes.Ldc_I4_2 && (FieldInfo)codes[i].operand == AccessTools.Field(typeof(Quest), nameof(Quest.daysLeft)))
+                    {
+                        SMonitor.Log($"replacing days left with method");
+                        codes[i + 1].opcode = OpCodes.Call;
+                        codes[i + 1].operand = AccessTools.Method(typeof(ModEntry), nameof(ModEntry.GetQuestDays));
+                    }
+                }
+
+                return codes.AsEnumerable();
+            }
         }
+
+        public static int GetQuestDays()
+        {
+            return !Config.ModEnabled ? 2 : Config.QuestDays;
+        }
+
         [HarmonyPatch(typeof(Utility), nameof(Utility.getRandomItemFromSeason))]
         public class Utility_getRandomItemFromSeason_Patch
         {

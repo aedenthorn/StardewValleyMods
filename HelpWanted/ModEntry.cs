@@ -1,23 +1,13 @@
 ﻿using HarmonyLib;
 using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
-using Netcode;
 using StardewModdingAPI;
-using StardewModdingAPI.Utilities;
 using StardewValley;
-using StardewValley.Locations;
-using StardewValley.Objects;
 using StardewValley.Quests;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
-using System.IO;
 using System.Linq;
-using System.Text.RegularExpressions;
-using xTile;
-using xTile.Dimensions;
-using xTile.Tiles;
 using Rectangle = Microsoft.Xna.Framework.Rectangle;
 
 namespace HelpWanted
@@ -84,29 +74,6 @@ namespace HelpWanted
             {
                 padTexture = Helper.ModContent.Load<Texture2D>("assets/pad.png");
             }
-            var api = Helper.ModRegistry.GetApi<IHelpWantedAPI>("aedenthorn.HelpWanted");
-            if (api != null)
-            {
-                var d = new MyQuestData()
-                {
-                    pinTextureSource = new Rectangle(0,0,64,64),
-                    padTextureSource = new Rectangle(0,0,64,64),
-                    pinTexture = pinTexture,
-                    padTexture = padTexture,
-                    pinColor = Color.Black,
-                    padColor = Color.Gray,
-                    icon = Game1.getCharacterFromName("Krobus").Portrait,
-                    iconSource = new Rectangle(0, 0, 64, 64),
-                    quest = new ItemDeliveryQuest()
-                };
-                (d.quest as ItemDeliveryQuest).target.Value = "Krobus";
-                (d.quest as ItemDeliveryQuest).item.Value = 305;
-                (d.quest as ItemDeliveryQuest).targetMessage = "I can haz void egg? Tanks lots.";
-                d.quest.currentObjective = "Gib Krobus void egg.";
-                d.quest.questDescription = "Pls gib.";
-
-                api.AddQuestToday(d);
-            }
             Helper.Events.GameLoop.UpdateTicked += GameLoop_UpdateTicked;
         }
 
@@ -118,6 +85,8 @@ namespace HelpWanted
             {
                 RefreshQuestOfTheDay(random);
             }
+            Rectangle iconRect = new Rectangle(0, 0, 64, 64);
+            Point iconOffset = new Point(Config.PortraitOffsetX, Config.PortraitOffsetY);
             for (int i = 0; i < Config.MaxQuests; i++)
             {
                 if (modQuestList.Any())
@@ -155,47 +124,14 @@ namespace HelpWanted
                     npc = Game1.getCharacterFromName((Game1.questOfTheDay as FishingQuest).target.Value);
                 }
                 Texture2D icon = npc.Portrait;
-                Rectangle iconRect = new Rectangle(0, 0, 64, 64);
-                questList.Add(new QuestData() { padTexture = padTexture, pinTexture = pinTexture, padTextureSource = new Rectangle(0, 0, 64, 64), pinTextureSource = new Rectangle(0, 0, 64, 64), icon = icon, iconSource = iconRect, quest = Game1.questOfTheDay, pinColor = GetRandomColor(), padColor = GetRandomColor() });
+                questList.Add(new QuestData() { padTexture = padTexture, pinTexture = pinTexture, padTextureSource = new Rectangle(0, 0, 64, 64), pinTextureSource = new Rectangle(0, 0, 64, 64), icon = icon, iconSource = iconRect, quest = Game1.questOfTheDay, pinColor = GetRandomColor(), padColor = GetRandomColor(), iconColor = new Color(Config.PortraitTintR,Config.PortraitTintG,Config.PortraitTintB,Config.PortraitTintA), iconOffset = iconOffset, iconScale = Config.PortraitScale });
                 RefreshQuestOfTheDay(random);
                 Game1.stats.DaysPlayed = days;
             }
+            modQuestList.Clear();
             Helper.Events.GameLoop.UpdateTicked -= GameLoop_UpdateTicked;
         }
 
-        private Color GetRandomColor()
-        {
-            return new Color((byte)random.Next(155, 256), (byte)random.Next(155, 256), (byte)random.Next(155, 256));
-        }
-
-        private void RefreshQuestOfTheDay(Random r)
-        {
-            var mine = (MineShaft.lowestLevelReached > 0 && Game1.stats.DaysPlayed > 5U);
-            float totalWeight = Config.ResourceCollectionWeight + (mine ? Config.SlayMonstersWeight : 0) + Config.FishingWeight + Config.ItemDeliveryWeight;
-            double d = r.NextDouble();
-            float currentWeight = Config.ResourceCollectionWeight;
-            if (d < currentWeight / totalWeight)
-            {
-                Game1.questOfTheDay = new ResourceCollectionQuest();
-                return;
-            }
-            if (mine)
-            {
-                currentWeight += Config.SlayMonstersWeight;
-                if (d < currentWeight / totalWeight)
-                {
-                    Game1.questOfTheDay = new SlayMonsterQuest();
-                    return;
-                }
-            }
-            currentWeight += Config.FishingWeight;
-            if (d < currentWeight / totalWeight)
-            {
-                Game1.questOfTheDay = new FishingQuest();
-                return;
-            }
-            Game1.questOfTheDay = new ItemDeliveryQuest();
-        }
 
         private void GameLoop_GameLaunched(object sender, StardewModdingAPI.Events.GameLaunchedEventArgs e)
         {
@@ -217,18 +153,126 @@ namespace HelpWanted
                 getValue: () => Config.ModEnabled,
                 setValue: value => Config.ModEnabled = value
             );
+            configMenu.AddBoolOption(
+                mod: ModManifest,
+                name: () => "Must Like Item",
+                getValue: () => Config.MustLikeItem,
+                setValue: value => Config.MustLikeItem = value
+            );
+            configMenu.AddBoolOption(
+                mod: ModManifest,
+                name: () => "Must Love Item",
+                getValue: () => Config.MustLoveItem,
+                setValue: value => Config.MustLoveItem = value
+            );
 
             configMenu.AddNumberOption(
                 mod: ModManifest,
-                name: () => "Icon Scale",
-                getValue: () => Config.IconScale,
-                setValue: value => Config.IconScale = value
+                name: () => "Days To Complete",
+                getValue: () => Config.QuestDays,
+                setValue: value => Config.QuestDays = value
             );
             configMenu.AddNumberOption(
                 mod: ModManifest,
                 name: () => "Max Quests",
                 getValue: () => Config.MaxQuests,
                 setValue: value => Config.MaxQuests = value
+            );
+            configMenu.AddTextOption(
+                mod: ModManifest,
+                name: () => "Note Scale",
+                getValue: () => Config.NoteScale + "",
+                setValue: delegate (string value) { if (float.TryParse(value, NumberStyles.Any, CultureInfo.InvariantCulture, out float f)) { Config.NoteScale = f; } }
+            );
+            configMenu.AddTextOption(
+                mod: ModManifest,
+                name: () => "Portrait Scale",
+                getValue: () => Config.PortraitScale + "",
+                setValue: delegate (string value) { if (float.TryParse(value, NumberStyles.Any, CultureInfo.InvariantCulture, out float f)) { Config.PortraitScale = f; } }
+            );
+            configMenu.AddNumberOption(
+                mod: ModManifest,
+                name: () => "Portrait Offset X",
+                getValue: () => Config.PortraitOffsetX,
+                setValue: value => Config.PortraitOffsetX = value
+            );
+            configMenu.AddNumberOption(
+                mod: ModManifest,
+                name: () => "Portrait Offset Y",
+                getValue: () => Config.PortraitOffsetY,
+                setValue: value => Config.PortraitOffsetY = value
+            );
+            configMenu.AddNumberOption(
+                mod: ModManifest,
+                name: () => "Random Color Min",
+                getValue: () => Config.RandomColorMin,
+                setValue: value => Config.RandomColorMin = value,
+                min: 0,
+                max: 255
+            );
+            configMenu.AddNumberOption(
+                mod: ModManifest,
+                name: () => "Random Color Max",
+                getValue: () => Config.RandomColorMax,
+                setValue: value => Config.RandomColorMax = value,
+                min: 0,
+                max: 255
+            );
+            configMenu.AddNumberOption(
+                mod: ModManifest,
+                name: () => "Portrait Tint R",
+                getValue: () => Config.PortraitTintR,
+                setValue: value => Config.PortraitTintR = value,
+                min: 0,
+                max: 255
+            );
+            configMenu.AddNumberOption(
+                mod: ModManifest,
+                name: () => "Portrait Tint G",
+                getValue: () => Config.PortraitTintG,
+                setValue: value => Config.PortraitTintG = value,
+                min: 0,
+                max: 255
+            );
+            configMenu.AddNumberOption(
+                mod: ModManifest,
+                name: () => "Portrait Tint B",
+                getValue: () => Config.PortraitTintB,
+                setValue: value => Config.PortraitTintB = value,
+                min: 0,
+                max: 255
+            );
+            configMenu.AddNumberOption(
+                mod: ModManifest,
+                name: () => "Portrait Tint A",
+                getValue: () => Config.PortraitTintA,
+                setValue: value => Config.PortraitTintA = value,
+                min: 0,
+                max: 255
+            );
+            configMenu.AddTextOption(
+                mod: ModManifest,
+                name: () => "Res. Collection",
+                getValue: () => Config.ResourceCollectionWeight+"",
+                setValue: delegate(string value) { if (float.TryParse(value, NumberStyles.Any, CultureInfo.InvariantCulture, out float f)) { Config.ResourceCollectionWeight = f; } }
+            );
+            configMenu.AddTextOption(
+                mod: ModManifest,
+                name: () => "Fishing",
+                getValue: () => Config.FishingWeight+"",
+                setValue: delegate(string value) { if (float.TryParse(value, NumberStyles.Any, CultureInfo.InvariantCulture, out float f)) { Config.FishingWeight = f; } }
+            );
+            configMenu.AddTextOption(
+                mod: ModManifest,
+                name: () => "Slay Monster",
+                getValue: () => Config.SlayMonstersWeight+"",
+                setValue: delegate(string value) { if (float.TryParse(value, NumberStyles.Any, CultureInfo.InvariantCulture, out float f)) { Config.SlayMonstersWeight = f; } }
+            );
+            configMenu.AddTextOption(
+                mod: ModManifest,
+                name: () => "Item Delivery",
+                getValue: () => Config.ItemDeliveryWeight+"",
+                setValue: delegate(string value) { if (float.TryParse(value, NumberStyles.Any, CultureInfo.InvariantCulture, out float f)) { Config.ItemDeliveryWeight = f; } }
             );
         }
     }

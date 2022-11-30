@@ -1,16 +1,16 @@
 ﻿{
-  "Name": "Help Wanted",
+  "Name": "Infallible Fishing",
   "Author": "aedenthorn",
-  "Version": "0.2.0",
-  "Description": "Help Wanted.",
-  "UniqueID": "aedenthorn.HelpWanted",
-  "EntryDll": "HelpWanted.dll",
+  "Version": "0.1.1",
+  "Description": "Infallible Fishing.",
+  "UniqueID": "aedenthorn.InfallibleFishing",
+  "EntryDll": "InfallibleFishing.dll",
   "MinimumApiVersion": "3.15.0",
   "ModUpdater": {
     "Repository": "StardewValleyMods",
     "User": "aedenthorn",
     "Directory": "_releases",
-    "ModFolder": "HelpWanted"
+    "ModFolder": "InfallibleFishing"
   },
   "Dependencies": [
     {
@@ -18,5 +18,5 @@
       "IsRequired": false
     }
   ],
-  "UpdateKeys": [ "Nexus:14640" ]
+  "UpdateKeys": [ "Nexus:14639" ]
 }

@@ -36,11 +36,11 @@ namespace HelpWanted
 
                 for (int i = 0; i < quests.Count; i++)
                 {
-                    Point size = new Point(quests[i].padTextureSource.Width * ModEntry.Config.IconScale, quests[i].padTextureSource.Height * ModEntry.Config.IconScale);
+                    Point size = new Point((int)(quests[i].padTextureSource.Width * ModEntry.Config.NoteScale), (int)(quests[i].padTextureSource.Height * ModEntry.Config.NoteScale));
                     Rectangle? bounds = GetFreeBounds(size.X, size.Y);
                     if (bounds is null)
                         break;
-                    ccList.Add(new ClickableTextureComponent(bounds.Value, quests[i].padTexture, quests[i].padTextureSource, ModEntry.Config.IconScale) 
+                    ccList.Add(new ClickableTextureComponent(bounds.Value, quests[i].padTexture, quests[i].padTextureSource, ModEntry.Config.NoteScale) 
                     { 
                         myID = ccIndex - i,
                         leftNeighborID = i > 0 ? ccIndex - i + 1 : -1,
@@ -167,11 +167,11 @@ namespace HelpWanted
             }
             else
             {
-                foreach(var c in ccList)
+                foreach (var c in ccList)
                 {
                     c.draw(b, questDict[c.myID].padColor, 1);
                     b.Draw(questDict[c.myID].pinTexture, c.bounds, questDict[c.myID].iconSource, questDict[c.myID].pinColor);
-                    b.Draw(questDict[c.myID].icon, new Rectangle(c.bounds.X + c.bounds.Width / 4, c.bounds.Center.Y, c.bounds.Width / 2, c.bounds.Height / 2), questDict[c.myID].iconSource, new Color(150, 150, 150, 150), 0, Vector2.Zero, SpriteEffects.FlipHorizontally, 1);
+                    b.Draw(questDict[c.myID].icon, new Vector2(c.bounds.X + questDict[c.myID].iconOffset.X, c.bounds.Y + questDict[c.myID].iconOffset.Y), questDict[c.myID].iconSource, questDict[c.myID].iconColor, 0, Vector2.Zero, questDict[c.myID].iconScale, SpriteEffects.FlipHorizontally, 1);
                 }
             }
             if (upperRightCloseButton != null && shouldDrawCloseButton())
