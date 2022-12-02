@@ -34,6 +34,7 @@ namespace DynamicMapTiles
         public static string explosionKey = "DMT/explosion";
         public static string explosionOnceKey = "DMT/explosionOnce";
         public static string pushKey = "DMT/push";
+        public static string pushableKey = "DMT/pushable";
         public static string pushOthersKey = "DMT/pushOthers";
         public static string soundKey = "DMT/sound";
         public static string soundOnceKey = "DMT/soundOnce";

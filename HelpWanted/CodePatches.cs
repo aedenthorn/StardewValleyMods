@@ -84,6 +84,13 @@ namespace HelpWanted
 
                 return codes.AsEnumerable();
             }
+            public static void Prefix(ref int randomSeedAddition)
+            {
+                if (!Config.ModEnabled || !gettingQuestDetails)
+                    return;
+                randomSeedAddition += random.Next();
+
+            }
         }
         [HarmonyPatch(typeof(Utility), nameof(Utility.possibleCropsAtThisTime))]
         public class Utility_possibleCropsAtThisTime_Patch

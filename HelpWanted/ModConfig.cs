@@ -10,12 +10,12 @@ namespace HelpWanted
         public bool MustLikeItem { get; set; } = true;
         public bool MustLoveItem { get; set; } = false;
 
-        public int QuestDays { get; set; } = 3;
+        public int QuestDays { get; set; } = 2;
+        public int MaxQuests { get; set; } = 10;
         public float NoteScale { get; set; } = 2;
         public float PortraitScale { get; set; } = 1f;
         public int PortraitOffsetX { get; set; } = 32;
         public int PortraitOffsetY { get; set; } = 64;
-        public int MaxQuests { get; set; } = 10;
         public int RandomColorMin { get; set; } = 150;
         public int RandomColorMax { get; set; } = 255;
         public int PortraitTintR { get; set; } = 150;

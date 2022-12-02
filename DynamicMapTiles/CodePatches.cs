@@ -9,6 +9,7 @@ using System.Linq;
 using xTile.Dimensions;
 using xTile.Layers;
 using xTile.ObjectModel;
+using xTile.Tiles;
 using Rectangle = Microsoft.Xna.Framework.Rectangle;
 
 namespace DynamicMapTiles
@@ -166,30 +167,8 @@ namespace DynamicMapTiles
                             var split = item.Split(' ');
                             if(split.Length == 2 && int.TryParse(split[0], out int x) && int.TryParse(split[1], out int y) && destTile.X == x && destTile.Y == y)
                             {
-                                foreach(var l in __instance.currentLocation.map.Layers)
-                                {
-                                    List<string> actions = new List<string>();
-                                    var t = l.PickTile(startLoc, Game1.viewport.Size);
-                                    if(t is not null)
-                                    {
-                                        foreach (var kvp in t.Properties)
-                                        {
-                                            foreach (var str in actionKeys)
-                                            {
-                                                if (kvp.Key == str + "Push")
-                                                {
-                                                    actions.Add(kvp.Key);
-                                                }
-                                            }
-                                        }
-                                        if (actions.Count > 0)
-                                        {
-                                            TriggerActions(actions, new List<Layer>() { t.Layer }, __instance, new Point(startTile.X, startTile.Y));
-                                        }
-                                    }
-                                }
-                                PushTile(__instance.currentLocation, tile, __instance.FacingDirection, start, __instance);
-                                if(tile.Properties.TryGetValue(pushOthersKey, out PropertyValue others))
+                                List<(Point, Tile)> tileList = new() { (startTile, tile) };
+                                if (tile.Properties.TryGetValue(pushOthersKey, out PropertyValue others))
                                 {
                                     split = others.ToString().Split(',');
                                     foreach(var t in split)
@@ -204,7 +183,7 @@ namespace DynamicMapTiles
                                                 var layer = __instance.currentLocation.Map.GetLayer(split2[0]);
                                                 if (layer is not null && __instance.currentLocation.isTileOnMap(x2, y2) && layer.Tiles[x2, y2] is not null)
                                                 {
-                                                    PushTile(__instance.currentLocation, layer.Tiles[x2, y2], __instance.FacingDirection, new Point(x2 * 64, y2 * 64), __instance);
+                                                    tileList.Add((new Point(x2, y2), layer.Tiles[x2, y2]));
                                                 }
                                             }
                                         }
@@ -214,6 +193,7 @@ namespace DynamicMapTiles
                                         }
                                     }
                                 }
+                                PushTiles(__instance.currentLocation, tileList, __instance.FacingDirection, __instance);
                                 break;
                             }
                         }

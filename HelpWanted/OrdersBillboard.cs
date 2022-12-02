@@ -7,6 +7,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 
 namespace HelpWanted
 {
@@ -21,8 +22,8 @@ namespace HelpWanted
         public static int showingQuest;
         public static Billboard questBillboard;
 
-        public string hoverTitle;
-        public string hoverText;
+        public string hoverTitle = "";
+        public string hoverText = "";
 
         public OrdersBillboard() : base(true)
         {
@@ -178,7 +179,7 @@ namespace HelpWanted
             {
                 upperRightCloseButton.draw(b);
             }
-            if (hoverText.Length > 0)
+            if (hoverText?.Length > 0)
             {
                 drawHoverText(b, hoverText, Game1.smallFont, 0, 0, -1, (hoverTitle.Length > 0) ? hoverTitle : null, -1, null, null, 0, -1, -1, -1, -1, 1f, null, null);
             }
@@ -187,6 +188,11 @@ namespace HelpWanted
         }
         private Rectangle? GetFreeBounds(int w, int h)
         {
+            if(w >= boardRect.Width || h >= boardRect.Height)
+            {
+                ModEntry.SMonitor.Log($"note size {w},{h} is too big for the screen", StardewModdingAPI.LogLevel.Warn);
+                return null;
+            }
             int tries = 100;
             while(tries > 0)
             {

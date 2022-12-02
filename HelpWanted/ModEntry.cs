@@ -95,38 +95,38 @@ namespace HelpWanted
                     modQuestList.RemoveAt(0);
                     continue;
                 }
-                var days = Game1.stats.DaysPlayed;
-                Game1.stats.DaysPlayed = (uint)random.Next();
-                AccessTools.FieldRefAccess<Quest, Random>(Game1.questOfTheDay, "random") = random;
-                gettingQuestDetails = true;
-                Game1.questOfTheDay.reloadDescription();
-                Game1.questOfTheDay.reloadObjective();
-                gettingQuestDetails = false;
-                NPC npc = null;
-                if (Game1.questOfTheDay is ItemDeliveryQuest)
+                try
                 {
-                    npc = Game1.getCharacterFromName((Game1.questOfTheDay as ItemDeliveryQuest).target.Value);
-                    if ((Config.MustLikeItem || Config.MustLoveItem) && Game1.NPCGiftTastes.TryGetValue((Game1.questOfTheDay as ItemDeliveryQuest).target.Value, out string data))
+                    AccessTools.FieldRefAccess<Quest, Random>(Game1.questOfTheDay, "random") = random;
+                    gettingQuestDetails = true;
+                    Game1.questOfTheDay.reloadDescription();
+                    Game1.questOfTheDay.reloadObjective();
+                    gettingQuestDetails = false;
+                    NPC npc = null;
+                    if (Game1.questOfTheDay is ItemDeliveryQuest)
                     {
-                        var split = data.Split('/');
+                        npc = Game1.getCharacterFromName((Game1.questOfTheDay as ItemDeliveryQuest).target.Value);
+                    }
+                    else if (Game1.questOfTheDay is ResourceCollectionQuest)
+                    {
+                        npc = Game1.getCharacterFromName((Game1.questOfTheDay as ResourceCollectionQuest).target.Value);
+                    }
+                    else if (Game1.questOfTheDay is SlayMonsterQuest)
+                    {
+                        npc = Game1.getCharacterFromName((Game1.questOfTheDay as SlayMonsterQuest).target.Value);
+                    }
+                    else if (Game1.questOfTheDay is FishingQuest)
+                    {
+                        npc = Game1.getCharacterFromName((Game1.questOfTheDay as FishingQuest).target.Value);
+                    }
+                    if (npc is not null)
+                    {
+                        Texture2D icon = npc.Portrait;
+                        questList.Add(new QuestData() { padTexture = padTexture, pinTexture = pinTexture, padTextureSource = new Rectangle(0, 0, 64, 64), pinTextureSource = new Rectangle(0, 0, 64, 64), icon = icon, iconSource = iconRect, quest = Game1.questOfTheDay, pinColor = GetRandomColor(), padColor = GetRandomColor(), iconColor = new Color(Config.PortraitTintR, Config.PortraitTintG, Config.PortraitTintB, Config.PortraitTintA), iconOffset = iconOffset, iconScale = Config.PortraitScale });
+                        RefreshQuestOfTheDay(random);
                     }
                 }
-                else if (Game1.questOfTheDay is ResourceCollectionQuest)
-                {
-                    npc = Game1.getCharacterFromName((Game1.questOfTheDay as ResourceCollectionQuest).target.Value);
-                }
-                else if (Game1.questOfTheDay is SlayMonsterQuest)
-                {
-                    npc = Game1.getCharacterFromName((Game1.questOfTheDay as SlayMonsterQuest).target.Value);
-                }
-                else if (Game1.questOfTheDay is FishingQuest)
-                {
-                    npc = Game1.getCharacterFromName((Game1.questOfTheDay as FishingQuest).target.Value);
-                }
-                Texture2D icon = npc.Portrait;
-                questList.Add(new QuestData() { padTexture = padTexture, pinTexture = pinTexture, padTextureSource = new Rectangle(0, 0, 64, 64), pinTextureSource = new Rectangle(0, 0, 64, 64), icon = icon, iconSource = iconRect, quest = Game1.questOfTheDay, pinColor = GetRandomColor(), padColor = GetRandomColor(), iconColor = new Color(Config.PortraitTintR,Config.PortraitTintG,Config.PortraitTintB,Config.PortraitTintA), iconOffset = iconOffset, iconScale = Config.PortraitScale });
-                RefreshQuestOfTheDay(random);
-                Game1.stats.DaysPlayed = days;
+                catch { }
             }
             modQuestList.Clear();
             Helper.Events.GameLoop.UpdateTicked -= GameLoop_UpdateTicked;
@@ -252,7 +252,7 @@ namespace HelpWanted
             );
             configMenu.AddTextOption(
                 mod: ModManifest,
-                name: () => "Res. Collection",
+                name: () => "Resource Collect",
                 getValue: () => Config.ResourceCollectionWeight+"",
                 setValue: delegate(string value) { if (float.TryParse(value, NumberStyles.Any, CultureInfo.InvariantCulture, out float f)) { Config.ResourceCollectionWeight = f; } }
             );

@@ -649,20 +649,48 @@ namespace DynamicMapTiles
             return item;
         }
 
-        public static void PushTile(GameLocation location, Tile tile, int dir, Point start, Farmer farmer)
+        public static bool PushTiles(GameLocation location, List<(Point, Tile)> tileList, int dir, Farmer farmer)
         {
-            var startTile = new Point(start.X / 64, start.Y / 64);
-
-            if (!location.isTileOnMap(startTile.ToVector2()) || !location.isTileOnMap((startTile + GetNextTile(dir)).ToVector2()))
-                return;
-
-            if (!pushingDict.TryGetValue(location.Name, out List<PushedTile> tiles))
+            for(int i = 0; i < tileList.Count; i++)
             {
-                pushingDict.Add(location.Name, tiles = new List<PushedTile>());
+                Point destTile = tileList[i].Item1 + GetNextTile(dir);
+                if (!location.isTileOnMap(tileList[i].Item1.ToVector2()) || !location.isTileOnMap(destTile.ToVector2()) || 
+                    (
+                        tileList[i].Item2.Layer.Tiles[destTile.X, destTile.Y] is not null &&
+                        (tileList[i].Item2.Layer.Tiles[destTile.X, destTile.Y].Properties.ContainsKey(pushKey) || tileList[i].Item2.Layer.Tiles[destTile.X, destTile.Y].Properties.ContainsKey(pushableKey)) &&
+                        !tileList.Where(t => t.Item1 == destTile && t.Item2.Layer.Id == tileList[i].Item2.Layer.Id).Any()
+                    )
+                )
+                    return false;
             }
-
-            tiles.Add(new PushedTile() { tile = tile, position = start, dir = dir, farmer = farmer });
-            tile.Layer.Tiles[new Location(start.X / 64, start.Y / 64)] = null;
+            if (!pushingDict.TryGetValue(location.Name, out List<PushedTile> pushedList))
+            {
+                pushingDict.Add(location.Name, pushedList = new List<PushedTile>());
+            }
+            for (int i = 0; i < tileList.Count; i++)
+            {
+                if (tileList[i].Item2.Layer.Id == "Buildings")
+                {
+                    List<string> actions = new List<string>();
+                    foreach (var kvp in tileList[i].Item2.Properties)
+                    {
+                        foreach (var str in actionKeys)
+                        {
+                            if (kvp.Key == str + "Push")
+                            {
+                                actions.Add(kvp.Key);
+                            }
+                        }
+                    }
+                    if (actions.Count > 0)
+                    {
+                        TriggerActions(actions, new List<Layer>() { tileList[i].Item2.Layer }, farmer, tileList[i].Item1);
+                    }
+                }
+                pushedList.Add(new PushedTile() { tile = tileList[i].Item2, position = new Point(tileList[i].Item1.X * 64, tileList[i].Item1.Y * 64), dir = dir, farmer = farmer });
+                tileList[i].Item2.Layer.Tiles[new Location(tileList[i].Item1.X, tileList[i].Item1.Y)] = null;
+            }
+            return true;
         }
         public static Point GetNextTile(int dir)
         {
