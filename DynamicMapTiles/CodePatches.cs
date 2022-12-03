@@ -2,6 +2,7 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using StardewValley;
+using StardewValley.Tools;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -60,7 +61,7 @@ namespace DynamicMapTiles
                         }
                         if (actions.Count > 0)
                         {
-                            TriggerActions(actions, new List<Layer>() { layer }, explodingFarmer, new Point((int)x, (int)y));
+                            TriggerActions(actions, new List<Layer>() { layer }, explodingFarmer, new Point((int)x, (int)y), new List<string>() { "Explode" });
                         }
                         layer.Tiles[(int)x, (int)y] = null;
                     }
@@ -97,6 +98,16 @@ namespace DynamicMapTiles
                 {
                     Game1.mapDisplayDevice.DrawTile(tile.tile, new Location(tile.position.X - Game1.viewport.X, tile.position.Y - Game1.viewport.Y), (float)(tile.position.Y + 64 + (tile.tile.Layer.Id.Contains("Front") ? 16 : 0)) / 10000f);
                 }
+            }
+        }
+        [HarmonyPatch(typeof(GameLocation), nameof(GameLocation.performToolAction))]
+        public class GameLocation_performToolAction_Patch
+        {
+            public static void Postfix(GameLocation __instance, Tool t, int tileX, int tileY, ref bool __result)
+            {
+                if (!Config.ModEnabled || !__instance.isTileOnMap(new Vector2(tileX, tileY)))
+                    return;
+                TriggerActions(actionKeys, __instance.Map.Layers.ToList(), t.getLastFarmerToUse(), new Point(tileX, tileY), new List<string>() { t.GetType().Name, t.Name });
             }
         }
         [HarmonyPatch(typeof(Farmer), nameof(Farmer.getMovementSpeed))]

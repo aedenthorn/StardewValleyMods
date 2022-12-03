@@ -49,7 +49,7 @@ namespace HelpWanted
                     continue;
                 items.Add(i);
             }
-            if (!items.Any())
+            if (!items.Any() || possibleItems?.Any() != true)
                 return null;
             for (int i = possibleItems.Count - 1; i >= 0; i--)
             {

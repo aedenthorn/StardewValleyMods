@@ -1,7 +1,7 @@
 ﻿{
   "Name": "Help Wanted",
   "Author": "aedenthorn",
-  "Version": "0.2.5",
+  "Version": "0.2.7",
   "Description": "Help Wanted.",
   "UniqueID": "aedenthorn.HelpWanted",
   "EntryDll": "HelpWanted.dll",

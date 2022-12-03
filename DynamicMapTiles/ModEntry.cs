@@ -20,6 +20,8 @@ namespace DynamicMapTiles
 
         public static Dictionary<string, List<PushedTile>> pushingDict = new Dictionary<string, List<PushedTile>>();
         
+        public static string addLayerKey = "DMT/addLayer";
+        public static string addTilesheetKey = "DMT/addTilesheet";
         public static string changeIndexKey = "DMT/changeIndex";
         public static string changeIndexOffKey = "DMT/changeIndexOff";
         public static string changeMultipleIndexKey = "DMT/changeMultipleIndex";
@@ -29,26 +31,20 @@ namespace DynamicMapTiles
         public static string changeMultiplePropertiesKey = "DMT/changeMultipleProperties";
         public static string changeMultiplePropertiesOffKey = "DMT/changeMultiplePropertiesOff";
         public static string triggerKey = "DMT/trigger";
-        public static string triggerOnceKey = "DMT/triggerOnce";
         public static string explodeKey = "DMT/explode";
         public static string explosionKey = "DMT/explosion";
-        public static string explosionOnceKey = "DMT/explosionOnce";
         public static string pushKey = "DMT/push";
         public static string pushableKey = "DMT/pushable";
         public static string pushOthersKey = "DMT/pushOthers";
         public static string soundKey = "DMT/sound";
-        public static string soundOnceKey = "DMT/soundOnce";
         public static string soundOffKey = "DMT/soundOff";
-        public static string soundOffOnceKey = "DMT/soundOffOnce";
         public static string teleportKey = "DMT/teleport";
         public static string teleportTileKey = "DMT/teleportTile";
         public static string giveKey = "DMT/give";
         public static string chestKey = "DMT/chest";
         public static string chestAdvancedKey = "DMT/chestAdvanced";
         public static string messageKey = "DMT/message";
-        public static string messageOnceKey = "DMT/messageOnce";
         public static string eventKey = "DMT/event";
-        public static string eventOnceKey = "DMT/eventOnce";
         public static string mailKey = "DMT/mail";
         public static string mailBoxKey = "DMT/mailbox";
         public static string invalidateKey = "DMT/invalidate";
@@ -61,12 +57,12 @@ namespace DynamicMapTiles
         public static string speedKey = "DMT/speed";
         public static string moveKey = "DMT/move";
         public static string emoteKey = "DMT/emote";
-        public static string emoteOnceKey = "DMT/emoteOnce";
         public static string animationKey = "DMT/animation";
-        public static string animationOnceKey = "DMT/animationOnce";
 
         public static List<string> actionKeys = new List<string>()
         {
+            addLayerKey,
+            addTilesheetKey,
             changeIndexKey,
             changeIndexOffKey,
             changeMultipleIndexKey,
@@ -77,22 +73,17 @@ namespace DynamicMapTiles
             changeMultiplePropertiesOffKey,
             explodeKey,
             explosionKey,
-            explosionOnceKey,
             pushKey,
             pushOthersKey,
             soundKey,
-            soundOnceKey,
             soundOffKey,
-            soundOffOnceKey,
             teleportKey,
             teleportTileKey,
             giveKey,
             chestKey,
             chestAdvancedKey,
             messageKey,
-            messageOnceKey,
             eventKey,
-            eventOnceKey,
             mailKey,
             mailBoxKey,
             invalidateKey,
@@ -105,29 +96,25 @@ namespace DynamicMapTiles
             speedKey,
             moveKey,
             emoteKey,
-            emoteOnceKey,
-            animationKey,
-            animationOnceKey
+            animationKey
         };
         public static List<string> stepOnKeys = new List<string>()
         {
+            addLayerKey,
+            addTilesheetKey,
             changeIndexKey,
             changeMultipleIndexKey,
             changePropertiesKey,
             changeMultiplePropertiesKey,
             explosionKey,
-            explosionOnceKey,
             soundKey,
-            soundOnceKey,
             teleportKey,
             teleportTileKey,
             giveKey,
             chestKey,
             chestAdvancedKey,
             messageKey,
-            messageOnceKey,
             eventKey,
-            eventOnceKey,
             mailKey,
             mailBoxKey,
             invalidateKey,
@@ -136,9 +123,7 @@ namespace DynamicMapTiles
             staminaKey,
             buffKey,
             emoteKey,
-            emoteOnceKey,
-            animationKey,
-            animationOnceKey
+            animationKey
         };
         public static List<string> stepOffKeys = new List<string>()
         {
@@ -146,8 +131,7 @@ namespace DynamicMapTiles
             changeMultipleIndexOffKey,
             changePropertiesOffKey,
             changeMultiplePropertiesOffKey,
-            soundOffKey,
-            soundOffOnceKey
+            soundOffKey
         };
 
         public override void Entry(IModHelper helper)
@@ -272,7 +256,7 @@ namespace DynamicMapTiles
                 if(tile != null)
                 {
                     tile.Properties[giveKey] = "Weapon/Rusty Sword";
-                    tile.Properties[messageOnceKey] = "You found an old sword!";
+                    tile.Properties[messageKey+"Once"] = "You found an old sword!";
                 }
                 for (int i = 0; i < 10; i++)
                 {
@@ -326,7 +310,7 @@ namespace DynamicMapTiles
                             }
                             if (actions.Count > 0)
                             {
-                                TriggerActions(actions, new List<Layer>() { t.Layer }, tile.farmer, new Point(tile.position.X / 64, tile.position.Y / 64));
+                                TriggerActions(actions, new List<Layer>() { t.Layer }, tile.farmer, new Point(tile.position.X / 64, tile.position.Y / 64), new List<string>() { "Pushed" });
                             }
                         }
                     }

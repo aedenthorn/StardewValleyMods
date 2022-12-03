@@ -1,4 +1,5 @@
 ﻿using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using StardewValley;
 using StardewValley.Network;
 using StardewValley.Objects;
@@ -7,10 +8,12 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using xTile;
 using xTile.Dimensions;
 using xTile.Layers;
 using xTile.ObjectModel;
 using xTile.Tiles;
+using static StardewValley.Minigames.TargetGame;
 using Object = StardewValley.Object;
 using Rectangle = Microsoft.Xna.Framework.Rectangle;
 
@@ -20,15 +23,15 @@ namespace DynamicMapTiles
     {
         private static void DoStepOnActions(Farmer farmer, Point tilePos)
         {
-            TriggerActions(stepOnKeys, new List<Layer>() { farmer.currentLocation.Map.GetLayer("Back") }, farmer, tilePos);
+            TriggerActions(stepOnKeys, new List<Layer>() { farmer.currentLocation.Map.GetLayer("Back") }, farmer, tilePos, null);
         }
 
         private static void DoStepOffActions(Farmer farmer, Point tilePos)
         {
-            TriggerActions(stepOffKeys, new List<Layer>() { farmer.currentLocation.Map.GetLayer("Back") }, farmer, tilePos);
+            TriggerActions(stepOffKeys, new List<Layer>() { farmer.currentLocation.Map.GetLayer("Back") }, farmer, tilePos, null);
         }
 
-        public static void TriggerActions(List<string> actions, List<Layer> layers, Farmer farmer, Point tilePos)
+        public static void TriggerActions(List<string> actions, List<Layer> layers, Farmer farmer, Point tilePos, List<string> postfixes)
         {
             if (!farmer.currentLocation.isTileOnMap(tilePos.ToVector2()))
                 return;
@@ -41,22 +44,31 @@ namespace DynamicMapTiles
                     continue;
                 foreach(var k in tile.Properties.Keys.ToArray())
                 {
-                    if (!actions.Contains(k) || !tile.Properties.TryGetValue(k, out PropertyValue v))
-                        continue;
                     string key = k;
-                    if (key.EndsWith("Push"))
+                    if (postfixes is not null)
                     {
+                        foreach(var postfix in postfixes)
+                        {
+                            if(key.EndsWith(postfix))
+                            key = key.Substring(0, key.Length - postfix.Length);
+                            break;
+                        }
+                    }
+                    bool remove = false;
+                    if (key.EndsWith("Once"))
+                    {
+                        //remove = true;
                         key = key.Substring(0, key.Length - 4);
                     }
-                    else if (key.EndsWith("Explode"))
-                    {
-                        key = key.Substring(0, key.Length - 6);
-                    }
-                    else if (key.EndsWith("Pushed"))
-                    {
-                        key = key.Substring(0, key.Length - 6);
-                    }
+                    if (!actions.Contains(key) || !tile.Properties.TryGetValue(k, out PropertyValue v))
+                        continue;
+                    SMonitor.Log($"Triggering property {key}");
                     string value = v?.ToString();
+                    if (remove)
+                    {
+                        SMonitor.Log($"Removing property from tile");
+                        tile.Properties.Remove(k);
+                    }
                     try
                     {
                         int number;
@@ -111,6 +123,10 @@ namespace DynamicMapTiles
                                 var pair = tileInfo.Split('=');
                                 var layerXY = pair[0].Split(' ');
                                 var l = farmer.currentLocation.Map.GetLayer(layerXY[0]);
+                                if(l is null)
+                                {
+                                    l = AddLayer(farmer.currentLocation.Map, layerXY[0]);
+                                }
                                 if (string.IsNullOrEmpty(pair[1]))
                                 {
                                     l.Tiles[int.Parse(layerXY[1]), int.Parse(layerXY[2])] = null;
@@ -177,48 +193,48 @@ namespace DynamicMapTiles
                                     }
                                     else if (tileInfo.Length == 4)
                                     {
-                                        farmer.currentLocation.Map.GetLayer(tileInfo[0]).Tiles[int.Parse(tileInfo[1]), int.Parse(tileInfo[2])].Properties[tileInfo[3]] = pair[1];
+                                        var l = farmer.currentLocation.Map.GetLayer(tileInfo[0]);
+                                        if (l is null)
+                                        {
+                                            l = AddLayer(farmer.currentLocation.Map, tileInfo[0]);
+                                        }
+                                        l.Tiles[int.Parse(tileInfo[1]), int.Parse(tileInfo[2])].Properties[tileInfo[3]] = pair[1];
                                     }
                                 }
                             }
                         }
-                        else if (key == soundKey || key == soundOnceKey || key == soundOffKey || key == soundOffOnceKey)
+                        else if (key == soundKey || key == soundOffKey)
                         {
-                            if (value.Contains(","))
+                            var split = value.Split('|');
+                            for(int i = 0; i < split.Length; i++)
                             {
-                                var split = value.Split(',');
-                                if (int.TryParse(split[1], out int delay))
+                                if (split[i].Contains(","))
                                 {
-                                    DelayedAction.playSoundAfterDelay(split[0], delay, farmer.currentLocation, -1);
+                                    var split2 = split[i].Split(',');
+                                    if (int.TryParse(split2[1], out int delay))
+                                    {
+                                        DelayedAction.playSoundAfterDelay(split2[0], delay, farmer.currentLocation, -1);
+                                    }
                                 }
-                            }
-                            else
-                            {
-                                Game1.currentSeason = "test";
-                                farmer.currentLocation.playSound(value);
-                            }
-                            if(key == soundOnceKey || key == soundOffOnceKey)
-                            {
-                                tile.Properties.Remove(k);
+                                else
+                                {
+                                    if(i == 0)
+                                    {
+                                        farmer.currentLocation.playSound(split[i]);
+                                    }
+                                    else
+                                    {
+                                        DelayedAction.playSoundAfterDelay(split[i], i * 300, farmer.currentLocation, -1);
+                                    }
+                                }
                             }
                         }
                         else if (key == messageKey)
                         {
                             Game1.drawObjectDialogue(value);
                         }
-                        else if (key == messageOnceKey)
-                        {
-                            tile.Properties.Remove(k);
-                            Game1.drawObjectDialogue(value);
-                        }
                         else if (key == eventKey)
                         {
-                            Game1.currentLocation.currentEvent = new Event(value, -1, null);
-                            Game1.currentLocation.checkForEvents();
-                        }
-                        else if (key == eventOnceKey)
-                        {
-                            tile.Properties.Remove(k);
                             Game1.currentLocation.currentEvent = new Event(value, -1, null);
                             Game1.currentLocation.checkForEvents();
                         }
@@ -250,14 +266,14 @@ namespace DynamicMapTiles
                         {
                             var split = value.ToString().Split(' ');
                             if (split.Length != 2 || !int.TryParse(split[0], out int x) || !int.TryParse(split[1], out int y))
-                                return;
+                                continue;
                             farmer.Position = new Vector2(x, y);
                         }
                         else if (key == teleportTileKey)
                         {
                             var split = value.ToString().Split(' ');
                             if (split.Length != 2 || !int.TryParse(split[0], out int x) || !int.TryParse(split[1], out int y))
-                                return;
+                                continue;
                             farmer.Position = new Vector2(x * 64, y * 64);
                         }
                         else if (key == giveKey)
@@ -274,7 +290,7 @@ namespace DynamicMapTiles
                                 item = GetItemFromString(value);
                             }
                             if (item is null)
-                                return;
+                                continue;
                             farmer.holdUpItemThenMessage(item, false);
                             if (!Game1.player.addItemToInventoryBool(item, false))
                             {
@@ -301,23 +317,15 @@ namespace DynamicMapTiles
                         {
                             Game1.buffsDisplay.addOtherBuff(new Buff(number));
                         }
-                        else if ((key == emoteKey || key == emoteOnceKey) && int.TryParse(value, out number))
+                        else if (key == emoteKey && int.TryParse(value, out number))
                         {
                             farmer.doEmote(number);
-                            if (key == emoteOnceKey)
-                            {
-                                tile.Properties.Remove(k);
-                            }
                         }
-                        else if (key == explosionKey || key == explosionOnceKey)
+                        else if (key == explosionKey)
                         {
                             var split = value.Split(' ');
                             farmer.currentLocation.playSound("explosion");
                             farmer.currentLocation.explode(new Vector2(int.Parse(split[0]), int.Parse(split[1])), int.Parse(split[2]), farmer, bool.Parse(split[3]), int.Parse(split[4]));
-                            if (key == explosionOnceKey)
-                            {
-                                tile.Properties.Remove(k);
-                            }
                         }
                         else if (key == chestKey)
                         {
@@ -352,33 +360,51 @@ namespace DynamicMapTiles
                             }
                             tile.Properties.Remove(k);
                         }
-                        else if (key == animationKey || key == animationOnceKey)
+                        else if (key == animationKey)
                         {
-                            var split = value.Split(' ');
-                            TemporaryAnimatedSprite sprite;
-                            if (int.TryParse(split[0], out int index))
+                            var split = value.Split('|');
+                            foreach(var str in split)
                             {
-                                sprite = new TemporaryAnimatedSprite(index, new Vector2(int.Parse(split[1]), int.Parse(split[2])), new Color(byte.Parse(split[3]), byte.Parse(split[4]), byte.Parse(split[5]), byte.Parse(split[6])), int.Parse(split[7]), bool.Parse(split[8]), float.Parse(split[9], System.Globalization.NumberStyles.Any, CultureInfo.InvariantCulture), int.Parse(split[10]), int.Parse(split[11]), float.Parse(split[12], System.Globalization.NumberStyles.Any, CultureInfo.InvariantCulture), int.Parse(split[13]), int.Parse(split[14]))
+                                var split2 = str.Split(',');
+                                TemporaryAnimatedSprite sprite = null;
+                                if (int.TryParse(split2[0], out int index))
                                 {
-                                    layerDepth = float.Parse(split[12], System.Globalization.NumberStyles.Any, CultureInfo.InvariantCulture),
-                                    id = int.Parse(split[15])
-                                };
-                            }
-                            else
-                            {
-                                sprite = new TemporaryAnimatedSprite(split[0], new Rectangle(int.Parse(split[1]), int.Parse(split[2]), int.Parse(split[3]), int.Parse(split[4])), float.Parse(split[5], System.Globalization.NumberStyles.Any, CultureInfo.InvariantCulture), int.Parse(split[6]), int.Parse(split[7]), new Vector2(int.Parse(split[8]), int.Parse(split[9])), bool.Parse(split[10]), bool.Parse(split[11]), float.Parse(split[12], System.Globalization.NumberStyles.Any, CultureInfo.InvariantCulture), float.Parse(split[13], System.Globalization.NumberStyles.Any, CultureInfo.InvariantCulture), new Color(byte.Parse(split[14]), byte.Parse(split[15]), byte.Parse(split[16]), byte.Parse(split[17])), float.Parse(split[18], System.Globalization.NumberStyles.Any, CultureInfo.InvariantCulture), float.Parse(split[19], System.Globalization.NumberStyles.Any, CultureInfo.InvariantCulture), float.Parse(split[20], System.Globalization.NumberStyles.Any, CultureInfo.InvariantCulture), float.Parse(split[21], System.Globalization.NumberStyles.Any, CultureInfo.InvariantCulture), bool.Parse(split[22]))
+                                    sprite = new TemporaryAnimatedSprite(index, new Vector2(int.Parse(split2[1]), int.Parse(split2[2])), new Color(byte.Parse(split2[3]), byte.Parse(split2[4]), byte.Parse(split2[5]), byte.Parse(split2[6])), int.Parse(split2[7]), bool.Parse(split2[8]), float.Parse(split2[9], NumberStyles.Any, CultureInfo.InvariantCulture), int.Parse(split2[10]), int.Parse(split2[11]), float.Parse(split2[12], NumberStyles.Any, CultureInfo.InvariantCulture), int.Parse(split2[13]), int.Parse(split2[14]))
+                                    {
+                                        layerDepth = float.Parse(split2[12], NumberStyles.Any, CultureInfo.InvariantCulture),
+                                        id = int.Parse(split2[15])
+                                    };
+                                }
+                                else
                                 {
-                                    layerDepth = float.Parse(split[12], System.Globalization.NumberStyles.Any, CultureInfo.InvariantCulture),
-                                    motion = new Vector2(float.Parse(split[23], System.Globalization.NumberStyles.Any, CultureInfo.InvariantCulture), float.Parse(split[24], System.Globalization.NumberStyles.Any, CultureInfo.InvariantCulture)),
-                                    acceleration = new Vector2(float.Parse(split[25], System.Globalization.NumberStyles.Any, CultureInfo.InvariantCulture), float.Parse(split[26], System.Globalization.NumberStyles.Any, CultureInfo.InvariantCulture)),
-                                    id = int.Parse(split[27])
-                                };
+                                    // string textureName, Rectangle sourceRect, float animationInterval, int animationLength, int numberOfLoops, Vector2 position, bool flicker, bool flipped, float layerDepth, float alphaFade, Color color, float scale, float scaleChange, float rotation, float rotationChange, bool local
+
+                                    sprite = new TemporaryAnimatedSprite(split2[0], new Rectangle(int.Parse(split2[1]), int.Parse(split2[2]), int.Parse(split2[3]), int.Parse(split2[4])), float.Parse(split2[5], NumberStyles.Any, CultureInfo.InvariantCulture), int.Parse(split2[6]), int.Parse(split2[7]), new Vector2(int.Parse(split2[8]), int.Parse(split2[9])), bool.Parse(split2[10]), bool.Parse(split2[11]), float.Parse(split2[12], NumberStyles.Any, CultureInfo.InvariantCulture), float.Parse(split2[13], NumberStyles.Any, CultureInfo.InvariantCulture), new Color(byte.Parse(split2[14]), byte.Parse(split2[15]), byte.Parse(split2[16]), byte.Parse(split2[17])), float.Parse(split2[18], NumberStyles.Any, CultureInfo.InvariantCulture), float.Parse(split2[19], NumberStyles.Any, CultureInfo.InvariantCulture), float.Parse(split2[20], NumberStyles.Any, CultureInfo.InvariantCulture), float.Parse(split2[21], NumberStyles.Any, CultureInfo.InvariantCulture), bool.Parse(split2[22]))
+                                    {
+                                        layerDepth = float.Parse(split2[12], NumberStyles.Any, CultureInfo.InvariantCulture),
+                                        motion = new Vector2(float.Parse(split2[23], NumberStyles.Any, CultureInfo.InvariantCulture), float.Parse(split2[24], NumberStyles.Any, CultureInfo.InvariantCulture)),
+                                        acceleration = new Vector2(float.Parse(split2[25], NumberStyles.Any, CultureInfo.InvariantCulture), float.Parse(split2[26], NumberStyles.Any, CultureInfo.InvariantCulture)),
+                                        delayBeforeAnimationStart = int.Parse(split2[27]),
+                                        id = int.Parse(split2[28])
+                                    };
+                                }
+                                if(sprite is not null)
+                                {
+                                    farmer.currentLocation.removeTemporarySpritesWithIDLocal(sprite.id);
+                                    farmer.currentLocation.TemporarySprites.Add(sprite);
+                                }
                             }
-                            farmer.currentLocation.removeTemporarySpritesWithIDLocal(sprite.id);
-                            farmer.currentLocation.TemporarySprites.Add(sprite);
-                            if(key == animationOnceKey)
+                        }
+                        else if (key == addLayerKey)
+                        {
+                            AddLayer(farmer.currentLocation.map, value);
+                        }
+                        else if (key == addTilesheetKey)
+                        {
+                            var split = value.Split(',');
+                            if(split.Length == 2) 
                             {
-                                tile.Properties.Remove(k);
+                                AddTilesheet(farmer.currentLocation.map, split[0], split[1]);
                             }
                         }
 
@@ -435,6 +461,10 @@ namespace DynamicMapTiles
                                 var pair = tileInfo.Split('=');
                                 var layerXY = pair[0].Split(' ');
                                 var l = farmer.currentLocation.Map.GetLayer(layerXY[0]);
+                                if (l is null)
+                                {
+                                    l = AddLayer(farmer.currentLocation.Map, layerXY[0]);
+                                }
                                 if (string.IsNullOrEmpty(pair[1]))
                                 {
                                     l.Tiles[int.Parse(layerXY[1]), int.Parse(layerXY[2])] = null;
@@ -501,7 +531,12 @@ namespace DynamicMapTiles
                                     }
                                     else if (tileInfo.Length == 4)
                                     {
-                                        farmer.currentLocation.Map.GetLayer(tileInfo[0]).Tiles[int.Parse(tileInfo[1]), int.Parse(tileInfo[2])].Properties[tileInfo[3]] = pair[1];
+                                        var l = farmer.currentLocation.Map.GetLayer(tileInfo[0]);
+                                        if (l is null)
+                                        {
+                                            l = AddLayer(farmer.currentLocation.Map, tileInfo[0]);
+                                        }
+                                        l.Tiles[int.Parse(tileInfo[1]), int.Parse(tileInfo[2])].Properties[tileInfo[3]] = pair[1];
                                     }
                                 }
                             }
@@ -515,6 +550,22 @@ namespace DynamicMapTiles
 
                 }
             }
+        }
+
+        private static Layer AddLayer(Map map, string id)
+        {
+            var layer = new Layer(id, map, map.Layers[0].LayerSize, Layer.m_tileSize);
+            map.AddLayer(layer);
+            return layer;
+        }
+        private static TileSheet AddTilesheet(Map map, string id, string texturePath)
+        {
+            var texture = SHelper.GameContent.Load<Texture2D>(texturePath);
+            if (texture == null)
+                return null;
+            var tilesheet = new TileSheet(id, map, texturePath, new Size(texture.Width / 16, texture.Height / 16), new Size(16, 16));
+            map.AddTileSheet(tilesheet);
+            return tilesheet;
         }
 
         private static Item GetItemFromString(string value)
@@ -684,7 +735,7 @@ namespace DynamicMapTiles
                     }
                     if (actions.Count > 0)
                     {
-                        TriggerActions(actions, new List<Layer>() { tileList[i].Item2.Layer }, farmer, tileList[i].Item1);
+                        TriggerActions(actions, new List<Layer>() { tileList[i].Item2.Layer }, farmer, tileList[i].Item1, new List<string>() { "Push" });
                     }
                 }
                 pushedList.Add(new PushedTile() { tile = tileList[i].Item2, position = new Point(tileList[i].Item1.X * 64, tileList[i].Item1.Y * 64), dir = dir, farmer = farmer });
