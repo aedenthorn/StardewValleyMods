@@ -23,12 +23,12 @@ namespace DynamicMapTiles
     {
         private static void DoStepOnActions(Farmer farmer, Point tilePos)
         {
-            TriggerActions(stepOnKeys, new List<Layer>() { farmer.currentLocation.Map.GetLayer("Back") }, farmer, tilePos, null);
+            TriggerActions(actionKeys, new List<Layer>() { farmer.currentLocation.Map.GetLayer("Back") }, farmer, tilePos, new List<string>() { "On" });
         }
 
         private static void DoStepOffActions(Farmer farmer, Point tilePos)
         {
-            TriggerActions(stepOffKeys, new List<Layer>() { farmer.currentLocation.Map.GetLayer("Back") }, farmer, tilePos, null);
+            TriggerActions(actionKeys, new List<Layer>() { farmer.currentLocation.Map.GetLayer("Back") }, farmer, tilePos, new List<string>() { "Off" });
         }
 
         public static void TriggerActions(List<string> actions, List<Layer> layers, Farmer farmer, Point tilePos, List<string> postfixes)
@@ -57,7 +57,7 @@ namespace DynamicMapTiles
                     bool remove = false;
                     if (key.EndsWith("Once"))
                     {
-                        //remove = true;
+                        remove = true;
                         key = key.Substring(0, key.Length - 4);
                     }
                     if (!actions.Contains(key) || !tile.Properties.TryGetValue(k, out PropertyValue v))
@@ -203,7 +203,7 @@ namespace DynamicMapTiles
                                 }
                             }
                         }
-                        else if (key == soundKey || key == soundOffKey)
+                        else if (key == soundKey)
                         {
                             var split = value.Split('|');
                             for(int i = 0; i < split.Length; i++)
@@ -244,13 +244,16 @@ namespace DynamicMapTiles
                         }
                         else if (key == mailKey)
                         {
-                            tile.Properties.Remove(k);
                             if (!farmer.mailReceived.Contains(value))
                                 farmer.mailReceived.Add(value);
                         }
+                        else if (key == mailRemoveKey)
+                        {
+                            if (farmer.mailReceived.Contains(value))
+                                farmer.mailReceived.Remove(value);
+                        }
                         else if (key == mailBoxKey)
                         {
-                            tile.Properties.Remove(k);
                             if (!farmer.mailbox.Contains(value))
                                 farmer.mailbox.Add(value);
                         }
@@ -278,7 +281,6 @@ namespace DynamicMapTiles
                         }
                         else if (key == giveKey)
                         {
-                            tile.Properties.Remove(k);
                             Item item = null;
                             if (value.StartsWith("Money/"))
                             {
@@ -358,7 +360,6 @@ namespace DynamicMapTiles
                                 chest.CanBeSetDown = false;
                                 farmer.currentLocation.overlayObjects[p] = chest;
                             }
-                            tile.Properties.Remove(k);
                         }
                         else if (key == animationKey)
                         {
@@ -406,141 +407,6 @@ namespace DynamicMapTiles
                             {
                                 AddTilesheet(farmer.currentLocation.map, split[0], split[1]);
                             }
-                        }
-
-                        // step off
-
-                        else if (key == changeIndexOffKey && int.TryParse(value, out number))
-                        {
-                            if (string.IsNullOrEmpty(value))
-                            {
-                                tile.Layer.Tiles[tilePos.X, tilePos.Y] = null;
-                            }
-                            else if (int.TryParse(value, out number))
-                            {
-                                if (tile.Layer.Tiles[tilePos.X, tilePos.Y] is null)
-                                {
-                                    tile.Layer.Tiles[tilePos.X, tilePos.Y] = new StaticTile(tile.Layer, tile.TileSheet, BlendMode.Alpha, number);
-                                }
-                                else
-                                {
-                                    tile.Layer.Tiles[tilePos.X, tilePos.Y].TileIndex = number;
-                                }
-                            }
-                            else if (value.ToString().Contains(','))
-                            {
-                                var indexesDuration = value.ToString().Split(',');
-                                var indexes = indexesDuration[0].Split(' ');
-                                List<StaticTile> tiles = new List<StaticTile>();
-                                foreach (var index in indexes)
-                                {
-                                    if (int.TryParse(index, out number))
-                                    {
-                                        tiles.Add(new StaticTile(tile.Layer, tile.TileSheet, BlendMode.Alpha, number));
-                                    }
-                                    else if (index.ToString().Contains('/'))
-                                    {
-                                        var sheetIndex = index.ToString().Split('/');
-                                        tiles.Add(new StaticTile(tile.Layer, farmer.currentLocation.Map.GetTileSheet(sheetIndex[0]), BlendMode.Alpha, int.Parse(sheetIndex[1])));
-                                    }
-
-                                }
-                                tile.Layer.Tiles[tilePos.X, tilePos.Y] = new AnimatedTile(tile.Layer, tiles.ToArray(), int.Parse(indexesDuration[1]));
-                            }
-                            else if (value.ToString().Contains('/'))
-                            {
-                                var sheetIndex = value.ToString().Split('/');
-                                tile.Layer.Tiles[tilePos.X, tilePos.Y] = new StaticTile(tile.Layer, farmer.currentLocation.Map.GetTileSheet(sheetIndex[0]), BlendMode.Alpha, int.Parse(sheetIndex[1]));
-                            }
-                        }
-                        else if (key == changeMultipleIndexOffKey)
-                        {
-                            var tileInfos = value.ToString().Split('|');
-                            foreach (var tileInfo in tileInfos)
-                            {
-                                var pair = tileInfo.Split('=');
-                                var layerXY = pair[0].Split(' ');
-                                var l = farmer.currentLocation.Map.GetLayer(layerXY[0]);
-                                if (l is null)
-                                {
-                                    l = AddLayer(farmer.currentLocation.Map, layerXY[0]);
-                                }
-                                if (string.IsNullOrEmpty(pair[1]))
-                                {
-                                    l.Tiles[int.Parse(layerXY[1]), int.Parse(layerXY[2])] = null;
-                                }
-                                else if (int.TryParse(pair[1], out number))
-                                {
-                                    l.Tiles[int.Parse(layerXY[1]), int.Parse(layerXY[2])].TileIndex = number;
-                                }
-                                else if (pair[1].ToString().Contains(','))
-                                {
-                                    var indexesDuration = pair[1].ToString().Split(',');
-                                    var indexes = indexesDuration[0].Split(' ');
-                                    List<StaticTile> tiles = new List<StaticTile>();
-                                    foreach (var index in indexes)
-                                    {
-                                        if (int.TryParse(index, out number))
-                                        {
-                                            tiles.Add(new StaticTile(l, tile.TileSheet, BlendMode.Alpha, number));
-                                        }
-                                        else if (index.ToString().Contains('/'))
-                                        {
-                                            var sheetIndex = index.ToString().Split('/');
-                                            tiles.Add(new StaticTile(l, farmer.currentLocation.Map.GetTileSheet(sheetIndex[0]), BlendMode.Alpha, int.Parse(sheetIndex[1])));
-                                        }
-
-                                    }
-                                    l.Tiles[int.Parse(layerXY[1]), int.Parse(layerXY[2])] = new AnimatedTile(l, tiles.ToArray(), int.Parse(indexesDuration[1]));
-                                }
-                                else if (pair[1].ToString().Contains('/'))
-                                {
-                                    var sheetIndex = pair[1].ToString().Split('/');
-                                    l.Tiles[int.Parse(layerXY[1]), int.Parse(layerXY[2])] = new StaticTile(tile.Layer, farmer.currentLocation.Map.GetTileSheet(sheetIndex[0]), BlendMode.Alpha, int.Parse(sheetIndex[1]));
-                                }
-                            }
-                        }
-                        else if (key == changePropertiesOffKey)
-                        {
-                            var props = value.ToString().Split('|');
-                            foreach (var prop in props)
-                            {
-                                var pair = prop.Split('=');
-                                if (pair.Length == 2)
-                                {
-                                    tile.Properties[pair[0]] = pair[1];
-                                }
-                                else
-                                {
-                                    tile.Properties.Remove(pair[0]);
-                                }
-                            }
-                        }
-                        else if (key == changeMultiplePropertiesOffKey)
-                        {
-                            var tiles = value.ToString().Split('|');
-                            foreach (var tileProp in tiles)
-                            {
-                                var pair = tileProp.Split('=');
-                                if (pair.Length == 2)
-                                {
-                                    var tileInfo = pair[0].Split(',');
-                                    if (tileInfo.Length == 3)
-                                    {
-                                        tile.Layer.Tiles[int.Parse(tileInfo[0]), int.Parse(tileInfo[1])].Properties[tileInfo[2]] = pair[1];
-                                    }
-                                    else if (tileInfo.Length == 4)
-                                    {
-                                        var l = farmer.currentLocation.Map.GetLayer(tileInfo[0]);
-                                        if (l is null)
-                                        {
-                                            l = AddLayer(farmer.currentLocation.Map, tileInfo[0]);
-                                        }
-                                        l.Tiles[int.Parse(tileInfo[1]), int.Parse(tileInfo[2])].Properties[tileInfo[3]] = pair[1];
-                                    }
-                                }
-                            }
-
                         }
                     }
                     catch(Exception ex)

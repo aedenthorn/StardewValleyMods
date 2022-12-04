@@ -23,13 +23,9 @@ namespace DynamicMapTiles
         public static string addLayerKey = "DMT/addLayer";
         public static string addTilesheetKey = "DMT/addTilesheet";
         public static string changeIndexKey = "DMT/changeIndex";
-        public static string changeIndexOffKey = "DMT/changeIndexOff";
         public static string changeMultipleIndexKey = "DMT/changeMultipleIndex";
-        public static string changeMultipleIndexOffKey = "DMT/changeMultipleIndexOff";
         public static string changePropertiesKey = "DMT/changeProperties";
-        public static string changePropertiesOffKey = "DMT/changePropertiesOff";
         public static string changeMultiplePropertiesKey = "DMT/changeMultipleProperties";
-        public static string changeMultiplePropertiesOffKey = "DMT/changeMultiplePropertiesOff";
         public static string triggerKey = "DMT/trigger";
         public static string explodeKey = "DMT/explode";
         public static string explosionKey = "DMT/explosion";
@@ -37,7 +33,6 @@ namespace DynamicMapTiles
         public static string pushableKey = "DMT/pushable";
         public static string pushOthersKey = "DMT/pushOthers";
         public static string soundKey = "DMT/sound";
-        public static string soundOffKey = "DMT/soundOff";
         public static string teleportKey = "DMT/teleport";
         public static string teleportTileKey = "DMT/teleportTile";
         public static string giveKey = "DMT/give";
@@ -46,6 +41,7 @@ namespace DynamicMapTiles
         public static string messageKey = "DMT/message";
         public static string eventKey = "DMT/event";
         public static string mailKey = "DMT/mail";
+        public static string mailRemoveKey = "DMT/mailRemove";
         public static string mailBoxKey = "DMT/mailbox";
         public static string invalidateKey = "DMT/invalidate";
         public static string musicKey = "DMT/music";
@@ -64,19 +60,14 @@ namespace DynamicMapTiles
             addLayerKey,
             addTilesheetKey,
             changeIndexKey,
-            changeIndexOffKey,
             changeMultipleIndexKey,
-            changeMultipleIndexOffKey,
             changePropertiesKey,
-            changePropertiesOffKey,
             changeMultiplePropertiesKey,
-            changeMultiplePropertiesOffKey,
             explodeKey,
             explosionKey,
             pushKey,
             pushOthersKey,
             soundKey,
-            soundOffKey,
             teleportKey,
             teleportTileKey,
             giveKey,
@@ -85,6 +76,7 @@ namespace DynamicMapTiles
             messageKey,
             eventKey,
             mailKey,
+            mailRemoveKey,
             mailBoxKey,
             invalidateKey,
             musicKey,
@@ -97,41 +89,6 @@ namespace DynamicMapTiles
             moveKey,
             emoteKey,
             animationKey
-        };
-        public static List<string> stepOnKeys = new List<string>()
-        {
-            addLayerKey,
-            addTilesheetKey,
-            changeIndexKey,
-            changeMultipleIndexKey,
-            changePropertiesKey,
-            changeMultiplePropertiesKey,
-            explosionKey,
-            soundKey,
-            teleportKey,
-            teleportTileKey,
-            giveKey,
-            chestKey,
-            chestAdvancedKey,
-            messageKey,
-            eventKey,
-            mailKey,
-            mailBoxKey,
-            invalidateKey,
-            musicKey,
-            healthKey,
-            staminaKey,
-            buffKey,
-            emoteKey,
-            animationKey
-        };
-        public static List<string> stepOffKeys = new List<string>()
-        {
-            changeIndexOffKey,
-            changeMultipleIndexOffKey,
-            changePropertiesOffKey,
-            changeMultiplePropertiesOffKey,
-            soundOffKey
         };
 
         public override void Entry(IModHelper helper)
@@ -205,11 +162,9 @@ namespace DynamicMapTiles
                 if(tile != null)
                 {
                     tile.Properties[changeIndexKey] = "380";
-                    tile.Properties[changeIndexOffKey] = "206";
                     tile.Properties[soundKey] = "slime";
                     tile.Properties[buffKey] = "13";
                     tile.Properties[messageKey] = "You have been slimed!";
-                    tile.Properties[soundOffKey] = "shwip";
                     //tile.Properties[teleportKey] = $"{30 * 64} {57 * 64}";
                     //tile.Properties.Remove(teleportKey);
                     //tile.Properties[eventKey] = "playful/20 57/Harvey 25 57 3/skippable/pause 200/speak Harvey \"Hey, why are you stepping there, @?\"/pause 500/end";
@@ -219,11 +174,8 @@ namespace DynamicMapTiles
                 if(tile != null)
                 {
                     tile.Properties[changeMultipleIndexKey] = "Buildings 41 85=Landscape/1140|Buildings 43 85=Landscape/1141|Front 41 84=Landscape/1117|Front 43 84=Landscape/1118|Front 41 83=Landscape/1090|Front 43 83=Landscape/1091";
-                    tile.Properties[changeMultipleIndexOffKey] = "Buildings 41 85=|Buildings 43 85=|Front 41 84=|Front 43 84=|Front 41 83=|Front 43 83=";
                     tile.Properties[changeMultiplePropertiesKey] = "Buildings,42,85,Action=kitchen";
-                    tile.Properties[changeMultiplePropertiesOffKey] = "Buildings,42,85,Action=";
                     tile.Properties[soundKey] = "shwip";
-                    tile.Properties[soundOffKey] = "shwip";
                 }
                 tile = Game1.currentLocation.Map.GetLayer("Back").Tiles[42, 91];
                 if(tile != null)
