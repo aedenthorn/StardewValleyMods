@@ -9,11 +9,14 @@ namespace HelpWanted
         public bool ModEnabled { get; set; } = true;
         public bool MustLikeItem { get; set; } = true;
         public bool MustLoveItem { get; set; } = false;
-
+        public bool IgnoreVanillaItemSelection { get; set; } = true;
+        public bool OneQuestPerVillager { get; set; } = true;
         public int QuestDays { get; set; } = 2;
         public int MaxQuests { get; set; } = 10;
         public float NoteScale { get; set; } = 2;
         public float PortraitScale { get; set; } = 1f;
+        public float XOverlapBoundary { get; set; } = 0.5f;
+        public float YOverlapBoundary { get; set; } = 0.25f;
         public int PortraitOffsetX { get; set; } = 32;
         public int PortraitOffsetY { get; set; } = 64;
         public int RandomColorMin { get; set; } = 150;

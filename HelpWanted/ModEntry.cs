@@ -79,14 +79,16 @@ namespace HelpWanted
 
         private void GameLoop_UpdateTicked(object sender, StardewModdingAPI.Events.UpdateTickedEventArgs e)
         {
-            random = new Random((int)Game1.uniqueIDForThisGame + (int)Game1.stats.DaysPlayed);
+            random = new Random();
             questList.Clear();
+            List<string> npcs = new List<string>();
             if (Game1.questOfTheDay is null)
             {
                 RefreshQuestOfTheDay(random);
             }
             Rectangle iconRect = new Rectangle(0, 0, 64, 64);
             Point iconOffset = new Point(Config.PortraitOffsetX, Config.PortraitOffsetY);
+            int tries = 0;
             for (int i = 0; i < Config.MaxQuests; i++)
             {
                 if (modQuestList.Any())
@@ -121,12 +123,28 @@ namespace HelpWanted
                     }
                     if (npc is not null)
                     {
+                        if (Config.OneQuestPerVillager && npcs.Contains(npc.Name))
+                        {
+                            tries++;
+                            if(tries > 100)
+                            {
+                                tries = 0;
+                            }
+                            else
+                            {
+                                i--;
+                            }
+                            RefreshQuestOfTheDay(random);
+                            continue;
+                        }
+                        tries = 0;
+                        npcs.Add(npc.Name);
                         Texture2D icon = npc.Portrait;
                         questList.Add(new QuestData() { padTexture = padTexture, pinTexture = pinTexture, padTextureSource = new Rectangle(0, 0, 64, 64), pinTextureSource = new Rectangle(0, 0, 64, 64), icon = icon, iconSource = iconRect, quest = Game1.questOfTheDay, pinColor = GetRandomColor(), padColor = GetRandomColor(), iconColor = new Color(Config.PortraitTintR, Config.PortraitTintG, Config.PortraitTintB, Config.PortraitTintA), iconOffset = iconOffset, iconScale = Config.PortraitScale });
-                        RefreshQuestOfTheDay(random);
                     }
                 }
                 catch { }
+                RefreshQuestOfTheDay(random);
             }
             modQuestList.Clear();
             Helper.Events.GameLoop.UpdateTicked -= GameLoop_UpdateTicked;
@@ -165,6 +183,27 @@ namespace HelpWanted
                 getValue: () => Config.MustLoveItem,
                 setValue: value => Config.MustLoveItem = value
             );
+            
+            configMenu.AddBoolOption(
+                mod: ModManifest,
+                name: () => "Ignore Game's Item Choice",
+                getValue: () => Config.IgnoreVanillaItemSelection,
+                setValue: value => Config.IgnoreVanillaItemSelection = value
+            );
+            
+            configMenu.AddBoolOption(
+                mod: ModManifest,
+                name: () => "One Quest / Villager",
+                getValue: () => Config.OneQuestPerVillager,
+                setValue: value => Config.OneQuestPerVillager = value
+            );
+            
+            configMenu.AddBoolOption(
+                mod: ModManifest,
+                name: () => "One Quest / Villager",
+                getValue: () => Config.OneQuestPerVillager,
+                setValue: value => Config.OneQuestPerVillager = value
+            );
 
             configMenu.AddNumberOption(
                 mod: ModManifest,
@@ -189,6 +228,18 @@ namespace HelpWanted
                 name: () => "Portrait Scale",
                 getValue: () => Config.PortraitScale + "",
                 setValue: delegate (string value) { if (float.TryParse(value, NumberStyles.Any, CultureInfo.InvariantCulture, out float f)) { Config.PortraitScale = f; } }
+            );
+            configMenu.AddTextOption(
+                mod: ModManifest,
+                name: () => "X Overlap Boundary",
+                getValue: () => Config.XOverlapBoundary + "",
+                setValue: delegate (string value) { if (float.TryParse(value, NumberStyles.Any, CultureInfo.InvariantCulture, out float f)) { Config.XOverlapBoundary = f; } }
+            );
+            configMenu.AddTextOption(
+                mod: ModManifest,
+                name: () => "Y Overlap Boundary",
+                getValue: () => Config.YOverlapBoundary+ "",
+                setValue: delegate (string value) { if (float.TryParse(value, NumberStyles.Any, CultureInfo.InvariantCulture, out float f)) { Config.YOverlapBoundary = f; } }
             );
             configMenu.AddNumberOption(
                 mod: ModManifest,

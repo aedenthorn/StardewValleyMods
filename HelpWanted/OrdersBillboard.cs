@@ -193,13 +193,13 @@ namespace HelpWanted
                 ModEntry.SMonitor.Log($"note size {w},{h} is too big for the screen", StardewModdingAPI.LogLevel.Warn);
                 return null;
             }
-            int tries = 100;
+            int tries = 10000;
             while(tries > 0)
             {
                 Rectangle rect = new Rectangle(xPositionOnScreen + Game1.random.Next(boardRect.X, boardRect.Right - w), yPositionOnScreen + Game1.random.Next(boardRect.Y, boardRect.Bottom - h), w, h);
                 foreach(var cc in ccList)
                 {
-                    if (cc.bounds.Intersects(rect))
+                    if (Math.Abs(cc.bounds.Center.X - rect.Center.X) < rect.Width * ModEntry.Config.XOverlapBoundary || Math.Abs(cc.bounds.Center.Y - rect.Center.Y) < rect.Height * ModEntry.Config.YOverlapBoundary)
                         goto cont;
                 }
                 return rect;

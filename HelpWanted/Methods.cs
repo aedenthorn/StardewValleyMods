@@ -18,8 +18,8 @@ namespace HelpWanted
                 return result;
             if(items.Contains(result)) 
                 return result;
-            return items[random.Next(items.Count)];
-
+            var item = items[random.Next(items.Count)];
+            return item;
         }
 
         private static List<int> GetRandomItemList(List<int> possibleItems)
@@ -49,8 +49,12 @@ namespace HelpWanted
                     continue;
                 items.Add(i);
             }
-            if (!items.Any() || possibleItems?.Any() != true)
+            if (!items.Any() || (!Config.IgnoreVanillaItemSelection && possibleItems?.Any() != true))
                 return null;
+            if (Config.IgnoreVanillaItemSelection)
+            {
+                return items;
+            }
             for (int i = possibleItems.Count - 1; i >= 0; i--)
             {
                 int idx = possibleItems[i];
