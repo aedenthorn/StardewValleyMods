@@ -114,5 +114,61 @@ namespace HelpWanted
             }
             Game1.questOfTheDay = new ItemDeliveryQuest();
         }
+
+        private Quest MakeQuest(QuestInfo quest)
+        {
+            switch (quest.questType)
+            {
+                case QuestType.ResourceCollection:
+                    var q = new ResourceCollectionQuest();
+                    q.target.Value = quest.target;
+                    q.questTitle = quest.questTitle;
+                    q.questDescription = quest.questDescription;
+                    q.resource.Value = GetIndexFromString(quest.item);
+                    q.number.Value = quest.number;
+                    q.targetMessage.Value = quest.targetMessage;
+                    q.currentObjective = quest.currentObjective;
+                    return q;
+                case QuestType.Fishing:
+                    var q2 = new FishingQuest();
+                    q2.target.Value = quest.target;
+                    q2.questTitle = quest.questTitle;
+                    q2.questDescription = quest.questDescription;
+                    q2.whichFish.Value = GetIndexFromString(quest.item);
+                    q2.numberToFish.Value = quest.number;
+                    q2.targetMessage = quest.targetMessage;
+                    q2.currentObjective = quest.currentObjective;
+                    return q2;
+                case QuestType.ItemDelivery:
+                    var q3 = new ItemDeliveryQuest();
+                    q3.target.Value = quest.target;
+                    q3.questTitle = quest.questTitle;
+                    q3.item.Value = GetIndexFromString(quest.item);
+                    q3.targetMessage = quest.targetMessage;
+                    q3.currentObjective = quest.currentObjective;
+                    q3.questDescription = quest.questDescription;
+                    return q3;
+                case QuestType.SlayMonster:
+                    var q4 = new SlayMonsterQuest();
+                    q4.target.Value = quest.target;
+                    q4.questTitle = quest.questTitle;
+                    q4.questDescription = quest.questDescription;
+                    q4.monsterName.Value = quest.item;
+                    q4.numberToKill.Value = quest.number;
+                    q4.targetMessage = quest.targetMessage;
+                    q4.currentObjective = quest.currentObjective;
+                    return q4;
+                default:
+                    return null;
+            }
+        }
+
+        private int GetIndexFromString(string item)
+        {
+            if (int.TryParse(item, out int idx))
+                return idx;
+            return Game1.objectInformation.First(o => o.Value.StartsWith(item + "/")).Key;
+        }
+
     }
 }

@@ -22,6 +22,7 @@ namespace HelpWanted
 
         public static bool skipBillboardConst;
         public static bool gettingQuestDetails;
+        public static string dictPath = "aedenthorn.HelpWanted/dictionary";
         public static string pinTexturePath = "aedenthorn.HelpWanted/pin";
         public static string padTexturePath = "aedenthorn.HelpWanted/pad";
         public static ModEntry context;
@@ -30,6 +31,7 @@ namespace HelpWanted
         public static Random random;
         public static Texture2D pinTexture;
         public static Texture2D padTexture;
+        public static Dictionary<string, JsonQuestData> modQuestDict = new Dictionary<string, JsonQuestData>();
 
         /// <summary>The mod entry point, called after the mod is first loaded.</summary>
         /// <param name="helper">Provides simplified APIs for writing mods.</param>
@@ -44,11 +46,24 @@ namespace HelpWanted
 
             Helper.Events.GameLoop.GameLaunched += GameLoop_GameLaunched;
             Helper.Events.GameLoop.DayStarted += GameLoop_DayStarted;
+            Helper.Events.Content.AssetRequested += Content_AssetRequested;
 
+            random = new Random();
 
             var harmony = new Harmony(ModManifest.UniqueID);
             harmony.PatchAll();
         }
+
+        private void Content_AssetRequested(object sender, StardewModdingAPI.Events.AssetRequestedEventArgs e)
+        {
+            if (!Config.ModEnabled)
+                return;
+            if (e.NameWithoutLocale.IsEquivalentTo(dictPath))
+            {
+                e.LoadFrom(() => new Dictionary<string, JsonQuestData>(), StardewModdingAPI.Events.AssetLoadPriority.Exclusive);
+            }
+        }
+
         public override object GetApi()
         {
             return new HelpWantedAPI();
@@ -74,12 +89,40 @@ namespace HelpWanted
             {
                 padTexture = Helper.ModContent.Load<Texture2D>("assets/pad.png");
             }
+            var dict = Helper.GameContent.Load<Dictionary<string, JsonQuestData>>(dictPath);
+            foreach(var kvp in dict)
+            {
+                var d = kvp.Value;
+                try
+                {
+                    var q = new QuestData()
+                    {
+                        pinTextureSource = d.pinTextureSource,
+                        padTextureSource = d.padTextureSource,
+                        pinTexture = string.IsNullOrEmpty(d.pinTexturePath) ? pinTexture : Helper.GameContent.Load<Texture2D>(d.pinTexturePath),
+                        padTexture = string.IsNullOrEmpty(d.padTexturePath) ? padTexture : Helper.GameContent.Load<Texture2D>(d.padTexturePath),
+                        pinColor = d.pinColor is null ? GetRandomColor() : d.pinColor.Value,
+                        padColor = d.padColor is null ? GetRandomColor() : d.padColor.Value,
+                        icon = string.IsNullOrEmpty(d.iconPath) ? Game1.getCharacterFromName(d.quest.target).Portrait : Helper.GameContent.Load<Texture2D>(d.iconPath),
+                        iconSource = d.iconSource,
+                        iconColor = d.iconColor is null ? new Color(Config.PortraitTintR, Config.PortraitTintG, Config.PortraitTintB, Config.PortraitTintA) : d.iconColor.Value,
+                        iconScale = d.iconScale,
+                        iconOffset = d.iconOffset is null ? new Point(Config.PortraitOffsetX, Config.PortraitOffsetY) : d.iconOffset.Value,
+                        quest = MakeQuest(d.quest)
+                    };
+                    modQuestList.Add(q);
+                }
+                catch (Exception ex)
+                {
+                    Monitor.Log($"Error loading custom quest {kvp.Key} :\n\n {ex}", LogLevel.Warn);
+                }
+
+            }
             Helper.Events.GameLoop.UpdateTicked += GameLoop_UpdateTicked;
         }
 
         private void GameLoop_UpdateTicked(object sender, StardewModdingAPI.Events.UpdateTickedEventArgs e)
         {
-            random = new Random();
             questList.Clear();
             List<string> npcs = new List<string>();
             if (Game1.questOfTheDay is null)
@@ -143,7 +186,10 @@ namespace HelpWanted
                         questList.Add(new QuestData() { padTexture = padTexture, pinTexture = pinTexture, padTextureSource = new Rectangle(0, 0, 64, 64), pinTextureSource = new Rectangle(0, 0, 64, 64), icon = icon, iconSource = iconRect, quest = Game1.questOfTheDay, pinColor = GetRandomColor(), padColor = GetRandomColor(), iconColor = new Color(Config.PortraitTintR, Config.PortraitTintG, Config.PortraitTintB, Config.PortraitTintA), iconOffset = iconOffset, iconScale = Config.PortraitScale });
                     }
                 }
-                catch { }
+                catch(Exception ex) 
+                {
+                    Monitor.Log($"Error loading quest:\n\n {ex}", LogLevel.Warn);
+                }
                 RefreshQuestOfTheDay(random);
             }
             modQuestList.Clear();
