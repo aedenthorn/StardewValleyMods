@@ -1,19 +1,19 @@
 ﻿using Microsoft.Xna.Framework;
 using StardewValley;
 using System.Collections.Generic;
-using xTile.Tiles;
+using xTile.Layers;
 
 namespace DynamicMapTiles
 {
     public interface IDynamicMapTilesApi
     {
-        public bool PushTiles(GameLocation location, List<(Point, Tile)> tiles, int dir, Farmer farmer);
+        public bool TriggerActions(List<Layer> layers, Farmer farmer, Point tilePos, List<string> suffixes);
     }
     public class DynamicMapTilesApi : IDynamicMapTilesApi
     {
-        public bool PushTiles(GameLocation location, List<(Point, Tile)> tiles, int dir, Farmer farmer)
+        public bool TriggerActions(List<Layer> layers, Farmer farmer, Point tilePos, List<string> suffixes)
         {
-            return ModEntry.PushTiles(location, tiles, dir, farmer);
+            return ModEntry.TriggerActions(layers, farmer, tilePos, suffixes);
         }
     }
 }

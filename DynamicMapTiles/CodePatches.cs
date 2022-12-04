@@ -48,21 +48,7 @@ namespace DynamicMapTiles
                         {
                             explodingFarmer.mailReceived.Add(mail);
                         }
-                        List<string> actions = new List<string>();
-                        foreach (var kvp in tile.Properties)
-                        {
-                            foreach (var str in actionKeys)
-                            {
-                                if (kvp.Key == str + "Explode")
-                                {
-                                    actions.Add(str);
-                                }
-                            }
-                        }
-                        if (actions.Count > 0)
-                        {
-                            TriggerActions(actions, new List<Layer>() { layer }, explodingFarmer, new Point((int)x, (int)y), new List<string>() { "Explode" });
-                        }
+                        TriggerActions(new List<Layer>() { tile.Layer }, explodingFarmer, new Point((int)x, (int)y), new List<string>() { "Explode" });
                         layer.Tiles[(int)x, (int)y] = null;
                     }
                 }
@@ -107,7 +93,24 @@ namespace DynamicMapTiles
             {
                 if (!Config.ModEnabled || !__instance.isTileOnMap(new Vector2(tileX, tileY)))
                     return;
-                TriggerActions(actionKeys, __instance.Map.Layers.ToList(), t.getLastFarmerToUse(), new Point(tileX, tileY), new List<string>() { t.GetType().Name, t.Name });
+
+                TriggerActions(__instance.Map.Layers.ToList(), t.getLastFarmerToUse(), new Point(tileX, tileY), new List<string>() { t.GetType().Name, t.Name });
+            }
+        }
+        [HarmonyPatch(typeof(GameLocation), nameof(GameLocation.checkAction))]
+        public class GameLocation_checkAction_Patch
+        {
+            public static void Postfix(GameLocation __instance, Location tileLocation, xTile.Dimensions.Rectangle viewport, Farmer who, ref bool __result)
+            {
+                if (!Config.ModEnabled || __result || !__instance.isTileOnMap(new Vector2(tileLocation.X, tileLocation.Y)))
+                    return;
+                if (who.ActiveObject is null || !TriggerActions(__instance.Map.Layers.ToList(), who, new Point(tileLocation.X, tileLocation.Y), new List<string>() { "Object"+ who.ActiveObject.Name, "Object" + who.ActiveObject.ParentSheetIndex }))
+                {
+                    __result = TriggerActions(__instance.Map.Layers.ToList(), who, new Point(tileLocation.X, tileLocation.Y), new List<string>() { "Action" });
+                    return;
+                }
+                __result = true;
+                
             }
         }
         [HarmonyPatch(typeof(Farmer), nameof(Farmer.getMovementSpeed))]
@@ -178,33 +181,7 @@ namespace DynamicMapTiles
                             var split = item.Split(' ');
                             if(split.Length == 2 && int.TryParse(split[0], out int x) && int.TryParse(split[1], out int y) && destTile.X == x && destTile.Y == y)
                             {
-                                List<(Point, Tile)> tileList = new() { (startTile, tile) };
-                                if (tile.Properties.TryGetValue(pushOthersKey, out PropertyValue others))
-                                {
-                                    split = others.ToString().Split(',');
-                                    foreach(var t in split)
-                                    {
-                                        try
-                                        {
-                                            var split2 = t.Split(' ');
-                                            if (split2.Length == 3 && int.TryParse(split2[1], out int x2) && int.TryParse(split2[2], out int y2))
-                                            {
-                                                x2 += startTile.X;
-                                                y2 += startTile.Y;
-                                                var layer = __instance.currentLocation.Map.GetLayer(split2[0]);
-                                                if (layer is not null && __instance.currentLocation.isTileOnMap(x2, y2) && layer.Tiles[x2, y2] is not null)
-                                                {
-                                                    tileList.Add((new Point(x2, y2), layer.Tiles[x2, y2]));
-                                                }
-                                            }
-                                        }
-                                        catch(Exception ex)
-                                        {
-                                            SMonitor.Log(ex.ToString(), StardewModdingAPI.LogLevel.Error);
-                                        }
-                                    }
-                                }
-                                PushTiles(__instance.currentLocation, tileList, __instance.FacingDirection, __instance);
+                                PushTileWithOthers(__instance, tile, startTile);
                                 break;
                             }
                         }

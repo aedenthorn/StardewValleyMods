@@ -23,19 +23,19 @@ namespace DynamicMapTiles
     {
         private static void DoStepOnActions(Farmer farmer, Point tilePos)
         {
-            TriggerActions(actionKeys, new List<Layer>() { farmer.currentLocation.Map.GetLayer("Back") }, farmer, tilePos, new List<string>() { "On" });
+            TriggerActions(new List<Layer>() { farmer.currentLocation.Map.GetLayer("Back") }, farmer, tilePos, new List<string>() { "On" });
         }
 
         private static void DoStepOffActions(Farmer farmer, Point tilePos)
         {
-            TriggerActions(actionKeys, new List<Layer>() { farmer.currentLocation.Map.GetLayer("Back") }, farmer, tilePos, new List<string>() { "Off" });
+            TriggerActions(new List<Layer>() { farmer.currentLocation.Map.GetLayer("Back") }, farmer, tilePos, new List<string>() { "Off" });
         }
 
-        public static void TriggerActions(List<string> actions, List<Layer> layers, Farmer farmer, Point tilePos, List<string> postfixes)
+        public static bool TriggerActions(List<Layer> layers, Farmer farmer, Point tilePos, List<string> postfixes)
         {
             if (!farmer.currentLocation.isTileOnMap(tilePos.ToVector2()))
-                return;
-
+                return false;
+            bool triggered = false;
             foreach (var layer in layers)
             {
                 var tile = layer.Tiles[tilePos.X, tilePos.Y];
@@ -45,14 +45,20 @@ namespace DynamicMapTiles
                 foreach(var k in tile.Properties.Keys.ToArray())
                 {
                     string key = k;
-                    if (postfixes is not null)
+                    if (postfixes is not null && postfixes.Any())
                     {
+                        bool found = false;
                         foreach(var postfix in postfixes)
                         {
-                            if(key.EndsWith(postfix))
-                            key = key.Substring(0, key.Length - postfix.Length);
-                            break;
+                            if (key.EndsWith(postfix))
+                            {
+                                key = key.Substring(0, key.Length - postfix.Length);
+                                found = true;
+                                break;
+                            }
                         }
+                        if (!found)
+                            continue;
                     }
                     bool remove = false;
                     if (key.EndsWith("Once"))
@@ -60,8 +66,9 @@ namespace DynamicMapTiles
                         remove = true;
                         key = key.Substring(0, key.Length - 4);
                     }
-                    if (!actions.Contains(key) || !tile.Properties.TryGetValue(k, out PropertyValue v))
+                    if (!actionKeys.Contains(key) || !tile.Properties.TryGetValue(k, out PropertyValue v))
                         continue;
+                    triggered = true;
                     SMonitor.Log($"Triggering property {key}");
                     string value = v?.ToString();
                     if (remove)
@@ -72,7 +79,19 @@ namespace DynamicMapTiles
                     try
                     {
                         int number;
-                        if (key == changeIndexKey)
+                        if (key == addLayerKey)
+                        {
+                            AddLayer(farmer.currentLocation.map, value);
+                        }
+                        else if (key == addTilesheetKey)
+                        {
+                            var split = value.Split(',');
+                            if (split.Length == 2)
+                            {
+                                AddTilesheet(farmer.currentLocation.map, split[0], split[1]);
+                            }
+                        }
+                        else if (key == changeIndexKey)
                         {
                             if (string.IsNullOrEmpty(value))
                             {
@@ -396,16 +415,30 @@ namespace DynamicMapTiles
                                 }
                             }
                         }
-                        else if (key == addLayerKey)
+                        else if (key == pushKey)
                         {
-                            AddLayer(farmer.currentLocation.map, value);
+                            PushTileWithOthers(farmer, tile, tilePos);
                         }
-                        else if (key == addTilesheetKey)
+                        else if (key == takeKey && farmer.ActiveObject is not null && (string.IsNullOrEmpty(value) || farmer.ActiveObject.ParentSheetIndex+"" == value || farmer.ActiveObject.Name == value))
+                        {
+                            farmer.reduceActiveItemByOne();
+                        }
+                        else if (key == pushOthersKey)
                         {
                             var split = value.Split(',');
-                            if(split.Length == 2) 
+                            foreach(var str in split)
                             {
-                                AddTilesheet(farmer.currentLocation.map, split[0], split[1]);
+                                Layer l = tile.Layer;
+                                var split2 = str.Split(' ');
+                                if (split2.Length == 3)
+                                {
+                                    l = farmer.currentLocation.Map.GetLayer(split2[0]);
+                                    PushTileWithOthers(farmer, l.Tiles[int.Parse(split2[1]), int.Parse(split2[2])], tilePos);
+                                }
+                                else
+                                {
+                                    PushTileWithOthers(farmer, l.Tiles[int.Parse(split2[0]), int.Parse(split2[1])], tilePos);
+                                }
                             }
                         }
                     }
@@ -416,6 +449,7 @@ namespace DynamicMapTiles
 
                 }
             }
+            return triggered;
         }
 
         private static Layer AddLayer(Map map, string id)
@@ -566,6 +600,38 @@ namespace DynamicMapTiles
             return item;
         }
 
+
+        private static void PushTileWithOthers(Farmer farmer, Tile tile, Point startTile)
+        {
+            List<(Point, Tile)> tileList = new() { (startTile, tile) };
+            if (tile.Properties.TryGetValue(pushAlsoKey, out PropertyValue others))
+            {
+                var split = others.ToString().Split(',');
+                foreach (var t in split)
+                {
+                    try
+                    {
+                        var split2 = t.Split(' ');
+                        if (split2.Length == 3 && int.TryParse(split2[1], out int x2) && int.TryParse(split2[2], out int y2))
+                        {
+                            x2 += startTile.X;
+                            y2 += startTile.Y;
+                            var layer = farmer.currentLocation.Map.GetLayer(split2[0]);
+                            if (layer is not null && farmer.currentLocation.isTileOnMap(x2, y2) && layer.Tiles[x2, y2] is not null)
+                            {
+                                tileList.Add((new Point(x2, y2), layer.Tiles[x2, y2]));
+                            }
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        SMonitor.Log(ex.ToString(), StardewModdingAPI.LogLevel.Error);
+                    }
+                }
+            }
+            PushTiles(farmer.currentLocation, tileList, farmer.FacingDirection, farmer);
+        }
+
         public static bool PushTiles(GameLocation location, List<(Point, Tile)> tileList, int dir, Farmer farmer)
         {
             for(int i = 0; i < tileList.Count; i++)
@@ -588,27 +654,14 @@ namespace DynamicMapTiles
             {
                 if (tileList[i].Item2.Layer.Id == "Buildings")
                 {
-                    List<string> actions = new List<string>();
-                    foreach (var kvp in tileList[i].Item2.Properties)
-                    {
-                        foreach (var str in actionKeys)
-                        {
-                            if (kvp.Key == str + "Push")
-                            {
-                                actions.Add(kvp.Key);
-                            }
-                        }
-                    }
-                    if (actions.Count > 0)
-                    {
-                        TriggerActions(actions, new List<Layer>() { tileList[i].Item2.Layer }, farmer, tileList[i].Item1, new List<string>() { "Push" });
-                    }
+                    TriggerActions(new List<Layer>() { tileList[i].Item2.Layer }, farmer, tileList[i].Item1, new List<string>() { "Push" });
                 }
                 pushedList.Add(new PushedTile() { tile = tileList[i].Item2, position = new Point(tileList[i].Item1.X * 64, tileList[i].Item1.Y * 64), dir = dir, farmer = farmer });
                 tileList[i].Item2.Layer.Tiles[new Location(tileList[i].Item1.X, tileList[i].Item1.Y)] = null;
             }
             return true;
         }
+
         public static Point GetNextTile(int dir)
         {
             switch (dir)

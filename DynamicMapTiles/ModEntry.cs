@@ -31,11 +31,13 @@ namespace DynamicMapTiles
         public static string explosionKey = "DMT/explosion";
         public static string pushKey = "DMT/push";
         public static string pushableKey = "DMT/pushable";
+        public static string pushAlsoKey = "DMT/pushAlso";
         public static string pushOthersKey = "DMT/pushOthers";
         public static string soundKey = "DMT/sound";
         public static string teleportKey = "DMT/teleport";
         public static string teleportTileKey = "DMT/teleportTile";
         public static string giveKey = "DMT/give";
+        public static string takeKey = "DMT/take";
         public static string chestKey = "DMT/chest";
         public static string chestAdvancedKey = "DMT/chestAdvanced";
         public static string messageKey = "DMT/message";
@@ -250,20 +252,7 @@ namespace DynamicMapTiles
                         var t = l.PickTile(new xTile.Dimensions.Location(tile.position.X, tile.position.Y), Game1.viewport.Size);
                         if (t is not null)
                         {
-                            foreach (var kvp in t.Properties)
-                            {
-                                foreach (var str in actionKeys)
-                                {
-                                    if (kvp.Key == str + "Pushed")
-                                    {
-                                        actions.Add(kvp.Key);
-                                    }
-                                }
-                            }
-                            if (actions.Count > 0)
-                            {
-                                TriggerActions(actions, new List<Layer>() { t.Layer }, tile.farmer, new Point(tile.position.X / 64, tile.position.Y / 64), new List<string>() { "Pushed" });
-                            }
+                            TriggerActions(new List<Layer>() { t.Layer }, tile.farmer, new Point(tile.position.X / 64, tile.position.Y / 64), new List<string>() { "Pushed" });
                         }
                     }
                     tiles.RemoveAt(i);
