@@ -109,6 +109,7 @@ namespace DynamicMapTiles
                     __result = TriggerActions(__instance.Map.Layers.ToList(), who, new Point(tileLocation.X, tileLocation.Y), new List<string>() { "Action" });
                     return;
                 }
+
                 __result = true;
                 
             }

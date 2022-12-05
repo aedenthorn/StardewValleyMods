@@ -73,6 +73,7 @@ namespace DynamicMapTiles
             teleportKey,
             teleportTileKey,
             giveKey,
+            takeKey,
             chestKey,
             chestAdvancedKey,
             messageKey,
