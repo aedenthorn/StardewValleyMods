@@ -1,4 +1,4 @@
-﻿namespace Guns
+﻿namespace DynamicMapTiles
 {
     public class TweakData
     {

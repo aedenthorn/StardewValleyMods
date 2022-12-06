@@ -16,10 +16,16 @@ namespace HelpWanted
             List<int> items = GetRandomItemList(possibleItems);
             if (items is null)
                 return result;
-            if(items.Contains(result)) 
+            if(items.Contains(result) && !Config.IgnoreVanillaItemSelection) 
                 return result;
-            var item = items[random.Next(items.Count)];
-            return item;
+            for(int i = items.Count - 1; i >= 0; i--)
+            {
+                if (!Game1.objectInformation.ContainsKey(items[i]))
+                    items.RemoveAt(i);
+            }
+            if (!items.Any())
+                return result;
+            return items[random.Next(items.Count)];
         }
 
         private static List<int> GetRandomItemList(List<int> possibleItems)

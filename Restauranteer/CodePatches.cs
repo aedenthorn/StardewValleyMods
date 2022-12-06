@@ -1,17 +1,14 @@
 ﻿using HarmonyLib;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using Netcode;
 using Newtonsoft.Json;
 using StardewValley;
 using StardewValley.BellsAndWhistles;
-using StardewValley.Locations;
-using StardewValley.Objects;
 using System;
 using System.Collections.Generic;
-using System.IO;
-using System.Linq;
 using xTile.Dimensions;
+using xTile.ObjectModel;
+using xTile.Tiles;
 using Object = StardewValley.Object;
 using Rectangle = Microsoft.Xna.Framework.Rectangle;
 
@@ -64,12 +61,38 @@ namespace Restauranteer
 
             }
         }
+        [HarmonyPatch(typeof(GameLocation), nameof(GameLocation.checkAction))]
+        public class GameLocation_checkAction_Patch
+        {
+            public static bool Prefix(GameLocation __instance, Location tileLocation, xTile.Dimensions.Rectangle viewport, Farmer who, ref bool __result)
+            {
+                if (!Config.ModEnabled || !Config.RestaurantLocations.Contains(__instance.Name))
+                    return true;
+                Tile tile = __instance.map.GetLayer("Buildings").PickTile(new Location(tileLocation.X * 64, tileLocation.Y * 64), viewport.Size);
+                if (tile != null && tile.Properties.TryGetValue("Action", out PropertyValue property) && property == "DropBox GusFridge")
+                {
+                    if(__instance.performAction(property, who, tileLocation))
+                    {
+
+                        __result = true;
+                        return false;
+                    }
+                    else if (Config.RequireEvent && !Game1.player.eventsSeen.Contains(980558))
+                    {
+                        Game1.drawObjectDialogue(SHelper.Translation.Get("low-friendship"));
+                        __result = true;
+                        return false;
+                    }
+                }
+                return true;
+            }
+        }
         [HarmonyPatch(typeof(GameLocation), nameof(GameLocation.performAction))]
         public class GameLocation_performAction_Patch
         {
             public static bool Prefix(GameLocation __instance, string action, Farmer who, Location tileLocation, ref bool __result)
             {
-                if (!Config.ModEnabled || !Config.RestaurantLocations.Contains(__instance.Name) || action != "kitchen" )
+                if (!Config.ModEnabled || !Config.RestaurantLocations.Contains(__instance.Name) || (action != "kitchen" && action != "restaurant"))
                     return true;
                 if (Config.RequireEvent && !Game1.player.eventsSeen.Contains(980558))
                 {
@@ -78,49 +101,7 @@ namespace Restauranteer
                     return false;
                 }
                 var fridge = GetFridge(__instance);
-                if (Config.AutoFillFridge)
-                {
-                    fridge.Value.items.Clear();
-                    foreach (var c in __instance.characters)
-                    {
-                        if (c.modData.TryGetValue(orderKey, out string dataString))
-                        {
-                            OrderData data = JsonConvert.DeserializeObject<OrderData>(dataString);
-                            CraftingRecipe r = new CraftingRecipe(data.dishName, true);
-                            if (r is not null)
-                            {
-                                foreach (var key in r.recipeList.Keys)
-                                {
-                                    if (Game1.objectInformation.ContainsKey(key))
-                                    {
-                                        var obj = new Object(key, r.recipeList[key]);
-                                        SMonitor.Log($"Adding {obj.Name} ({obj.ParentSheetIndex}) x{obj.Stack} to fridge");
-                                        fridge.Value.addItem(obj);
-                                    }
-                                    else
-                                    {
-                                        List<int> list = new List<int>();
-                                        foreach (var kvp in Game1.objectInformation)
-                                        {
-                                            string[] objectInfoArray = kvp.Value.Split('/', StringSplitOptions.None);
-                                            string[] typeAndCategory = objectInfoArray[3].Split(' ', StringSplitOptions.None);
-                                            if (typeAndCategory.Length > 1 && typeAndCategory[1] == key.ToString())
-                                            {
-                                                list.Add(kvp.Key);
-                                            }
-                                        }
-                                        if (list.Any())
-                                        {
-                                            var obj = new Object(list[Game1.random.Next(list.Count)], r.recipeList[key]);
-                                            SMonitor.Log($"Adding {obj.Name} ({obj.ParentSheetIndex}) x{obj.Stack} to fridge");
-                                            fridge.Value.addItem(obj);
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
+
                 __instance.ActivateKitchen(fridge);
                 __result = true;
                 return false;

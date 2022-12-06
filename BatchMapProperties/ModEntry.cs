@@ -5,7 +5,6 @@ using StardewValley;
 using StardewValley.Objects;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 using xTile.Layers;
 using xTile.ObjectModel;
@@ -116,63 +115,45 @@ namespace DynamicMapTiles
             Helper.Events.GameLoop.OneSecondUpdateTicked += GameLoop_OneSecondUpdateTicked;
             Helper.Events.Input.ButtonPressed += Input_ButtonPressed;
             Helper.Events.Content.AssetRequested += Content_AssetRequested;
-            Helper.Events.Player.Warped += Player_Warped;
 
             var harmony = new Harmony(ModManifest.UniqueID);
             harmony.PatchAll();
 
         }
 
-        private void Player_Warped(object sender, StardewModdingAPI.Events.WarpedEventArgs e)
+        private void GameLoop_DayStarted(object sender, StardewModdingAPI.Events.DayStartedEventArgs e)
         {
-            if (!Config.ModEnabled)
-                return;
-            Stopwatch s = new Stopwatch();
-            s.Start();
             var dict = Helper.GameContent.Load<Dictionary<string, DynamicTileInfo>>(dictPath);
-            foreach (var kvp in dict)
+            foreach(var info in dict.Values)
             {
-                var info = kvp.Value;
-                int count = 0;
-                if (info.locations is not null && !info.locations.Contains(e.NewLocation.Name))
-                    continue;
-                if (info.tileSheets is not null && !info.tileSheets.Exists(s => e.NewLocation.Map.TileSheets.ToList().Exists(ss => ss.Id == s)))
-                    continue;
-                foreach (var layer in e.NewLocation.Map.Layers)
+                foreach(var loc in Game1.locations)
                 {
-                    if (info.layers is not null && !info.layers.Contains(layer.Id))
+                    if (info.locations is not null && !info.locations.Contains(loc.Name))
                         continue;
-                    for (int x = 0; x < layer.Tiles.Array.GetLength(0); x++)
+                    foreach(var layer in loc.Map.Layers)
                     {
-                        for (int y = 0; y < layer.Tiles.Array.GetLength(1); y++)
+                        if (info.layers is not null && !info.layers.Contains(layer.Id))
+                            continue;
+                        for (int x = 0; x < layer.Tiles.Array.GetLength(0); x++)
                         {
-                            if (layer.Tiles[x, y] is not null)
+                            for (int y = 0; y < layer.Tiles.Array.GetLength(1); y++)
                             {
-                                if (info.tileSheets is not null && !info.tileSheets.Contains(layer.Tiles[x, y].TileSheet.Id))
-                                    continue;
-                                if (info.indexes is not null && !info.indexes.Contains(layer.Tiles[x, y].TileIndex))
-                                    continue;
-                                Point point = new Point(x, y);
-                                if (info.rectangles is not null && !info.rectangles.Exists(r => r.Contains(point)))
-                                    continue;
-                                count++;
-                                foreach (var prop in info.properties)
+                                if (layer.Tiles[x, y] is not null)
                                 {
-                                    layer.Tiles[x, y].Properties[prop.Key] = prop.Value;
+                                    if(info.tileSheets is not null && !info.tileSheets.Contains(layer.Tiles[x, y].TileSheet.Id))
+                                        continue;
+                                    if(info.indexes is not null && !info.indexes.Contains(layer.Tiles[x, y].TileIndex))
+                                        continue;
+                                    foreach(var prop in info.properties)
+                                    {
+
+                                    }
                                 }
                             }
                         }
                     }
                 }
-                Monitor.Log($"Added properties from {kvp.Key} to {count} tiles in {e.NewLocation.Name}");
             }
-            s.Stop();
-            Monitor.Log($"{s.Elapsed} elapsed");
-        }
-
-        private void GameLoop_DayStarted(object sender, StardewModdingAPI.Events.DayStartedEventArgs e)
-        {
-
         }
 
         private void Content_AssetRequested(object sender, StardewModdingAPI.Events.AssetRequestedEventArgs e)

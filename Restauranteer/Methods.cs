@@ -3,6 +3,7 @@ using Newtonsoft.Json;
 using StardewValley;
 using StardewValley.Locations;
 using StardewValley.Objects;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Object = StardewValley.Object;
@@ -114,9 +115,53 @@ namespace Restauranteer
                 return (__instance as IslandFarmHouse).fridge;
             }
             __instance.objects.Remove(fridgeHideTile);
+            
             if (!fridgeDict.TryGetValue(__instance.Name, out NetRef<Chest> fridge))
             {
                 fridge = fridgeDict[__instance.Name] = new NetRef<Chest>(new Chest(true, 130));
+            }
+            if (Config.AutoFillFridge)
+            {
+                fridge.Value.items.Clear();
+                foreach (var c in __instance.characters)
+                {
+                    if (c.modData.TryGetValue(orderKey, out string dataString))
+                    {
+                        OrderData data = JsonConvert.DeserializeObject<OrderData>(dataString);
+                        CraftingRecipe r = new CraftingRecipe(data.dishName, true);
+                        if (r is not null)
+                        {
+                            foreach (var key in r.recipeList.Keys)
+                            {
+                                if (Game1.objectInformation.ContainsKey(key))
+                                {
+                                    var obj = new Object(key, r.recipeList[key]);
+                                    SMonitor.Log($"Adding {obj.Name} ({obj.ParentSheetIndex}) x{obj.Stack} to fridge");
+                                    fridge.Value.addItem(obj);
+                                }
+                                else
+                                {
+                                    List<int> list = new List<int>();
+                                    foreach (var kvp in Game1.objectInformation)
+                                    {
+                                        string[] objectInfoArray = kvp.Value.Split('/', StringSplitOptions.None);
+                                        string[] typeAndCategory = objectInfoArray[3].Split(' ', StringSplitOptions.None);
+                                        if (typeAndCategory.Length > 1 && typeAndCategory[1] == key.ToString())
+                                        {
+                                            list.Add(kvp.Key);
+                                        }
+                                    }
+                                    if (list.Any())
+                                    {
+                                        var obj = new Object(list[Game1.random.Next(list.Count)], r.recipeList[key]);
+                                        SMonitor.Log($"Adding {obj.Name} ({obj.ParentSheetIndex}) x{obj.Stack} to fridge");
+                                        fridge.Value.addItem(obj);
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
             }
             return fridge;
         }

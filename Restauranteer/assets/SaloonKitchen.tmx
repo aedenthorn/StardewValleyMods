@@ -76,7 +76,7 @@
  <objectgroup id="6" name="Buildings">
   <object id="1" name="TileData" x="112" y="64" width="16" height="16">
    <properties>
-    <property name="Action" value="kitchen"/>
+    <property name="Action" value="restaurant"/>
    </properties>
   </object>
  </objectgroup>

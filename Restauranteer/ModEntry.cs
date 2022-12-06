@@ -5,13 +5,17 @@ using Netcode;
 using StardewModdingAPI;
 using StardewModdingAPI.Utilities;
 using StardewValley;
+using StardewValley.Locations;
 using StardewValley.Objects;
+using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.Text.RegularExpressions;
 using xTile;
 using xTile.Dimensions;
+using xTile.ObjectModel;
+using Object = StardewValley.Object;
 
 namespace Restauranteer
 {
@@ -31,6 +35,7 @@ namespace Restauranteer
         public static Vector2 fridgeHideTile = new Vector2(-42000, -42000);
         public static PerScreen<Dictionary<string, int>> npcOrderNumbers = new PerScreen<Dictionary<string, int>>();
         public static Dictionary<string, NetRef<Chest>> fridgeDict = new();
+        private Harmony harmony;
 
         /// <summary>The mod entry point, called after the mod is first loaded.</summary>
         /// <param name="helper">Provides simplified APIs for writing mods.</param>
@@ -48,7 +53,7 @@ namespace Restauranteer
             Helper.Events.GameLoop.OneSecondUpdateTicked += GameLoop_OneSecondUpdateTicked;
             Helper.Events.Content.AssetRequested += Content_AssetRequested;
 
-            var harmony = new Harmony(ModManifest.UniqueID);
+            harmony = new Harmony(ModManifest.UniqueID);
             harmony.PatchAll();
 
             npcOrderNumbers.Value = new Dictionary<string, int>();
@@ -60,6 +65,37 @@ namespace Restauranteer
             fridgeDict.Clear();
             npcOrderNumbers.Value.Clear();
             emoteSprite = SHelper.ModContent.Load<Texture2D>(Path.Combine("assets", "emote.png"));
+            foreach (var name in Config.RestaurantLocations)
+            {
+                var l = Game1.getLocationFromName(name);
+                if (l is not null && l is not FarmHouse)
+                {
+                    for (int x = 0; x < l.Map.GetLayer("Buildings").Tiles.Array.GetLength(0); x++)
+                    {
+                        for (int y = 0; y < l.Map.GetLayer("Buildings").Tiles.Array.GetLength(1); y++)
+                        {
+                            if (l.Map.GetLayer("Buildings").Tiles[x, y] is not null && l.Map.GetLayer("Buildings").Tiles[x, y].Properties.TryGetValue("Action", out PropertyValue p) && (p == "fridge" || p == "DropBox GusFridge"))
+                            {
+                                Vector2 v = new Vector2(x, y);
+                                if (Config.AddFridgeObjects && !l.objects.TryGetValue(v, out Object obj))
+                                {
+                                    Chest fridge = new Chest(216, v, 217, 2)
+                                    {
+                                        shakeTimer = 50
+                                    };
+                                    fridge.modData[fridgeKey] = "true";
+                                    fridge.fridge.Value = true;
+                                    l.objects[v] = fridge;
+                                }
+                                else if (!Config.AddFridgeObjects && l.objects.TryGetValue(v, out obj) && obj.modData.ContainsKey(fridgeKey))
+                                {
+                                    l.objects.Remove(v);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
         }
 
         private void GameLoop_OneSecondUpdateTicked(object sender, StardewModdingAPI.Events.OneSecondUpdateTickedEventArgs e)
@@ -121,6 +157,16 @@ namespace Restauranteer
 
         private void GameLoop_GameLaunched(object sender, StardewModdingAPI.Events.GameLaunchedEventArgs e)
         {
+
+            object obj = Helper.ModRegistry.GetApi("blueberry.LoveOfCooking");
+            if (obj is not null)
+            {
+                harmony.Patch( 
+                    original: AccessTools.Constructor(obj.GetType().Assembly.GetType("LoveOfCooking.Objects.CookingMenu"), new Type[] { typeof(List<CraftingRecipe>), typeof(List<Chest>), typeof(string)  }),
+                    prefix: new HarmonyMethod(typeof(ModEntry), nameof(ModEntry.LoveOfCooking_CookingMenu_Prefix))
+                );
+            }
+
             // get Generic Mod Config Menu's API (if it's installed)
             var configMenu = Helper.ModRegistry.GetApi<IGenericModConfigMenuApi>("spacechase0.GenericModConfigMenu");
             if (configMenu is null)
@@ -150,6 +196,12 @@ namespace Restauranteer
                 name: () => "Auto Fill Fridge",
                 getValue: () => Config.AutoFillFridge,
                 setValue: value => Config.AutoFillFridge = value
+            );
+            configMenu.AddBoolOption(
+                mod: ModManifest,
+                name: () => "Add Fridge Objects",
+                getValue: () => Config.AddFridgeObjects,
+                setValue: value => Config.AddFridgeObjects = value
             );
             configMenu.AddBoolOption(
                 mod: ModManifest,
@@ -211,6 +263,16 @@ namespace Restauranteer
                 getValue: () => Config.LikedFriendshipChange,
                 setValue: value => Config.LikedFriendshipChange = value
             );
+        }
+
+        private static void LoveOfCooking_CookingMenu_Prefix(ref List<Chest> materialContainers)
+        {
+            if (!Config.ModEnabled || !Config.RestaurantLocations.Contains(Game1.currentLocation.Name))
+                return;
+            var fridge = GetFridge(Game1.currentLocation);
+            if(materialContainers is null)
+                materialContainers = new List<Chest>();
+            materialContainers.Add( fridge );
         }
     }
 }

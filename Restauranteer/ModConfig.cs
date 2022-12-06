@@ -11,6 +11,7 @@ namespace Restauranteer
         public bool RequireEvent { get; set; } = true;
         public bool AutoFillFridge { get; set; } = true;
         public bool PatchSaloonMap { get; set; } = true;
+        public bool AddFridgeObjects { get; set; } = false;
         public bool RevealGiftTaste { get; set; } = true;
         public bool SellCurrentRecipes { get; set; } = true;
         public SButton ModKey { get; set; } = SButton.LeftAlt;
