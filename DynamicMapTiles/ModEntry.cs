@@ -9,6 +9,7 @@ using System.Diagnostics;
 using System.Linq;
 using xTile.Layers;
 using xTile.ObjectModel;
+using xTile.Tiles;
 using static System.Net.Mime.MediaTypeNames;
 
 namespace DynamicMapTiles
@@ -136,7 +137,9 @@ namespace DynamicMapTiles
                 int count = 0;
                 if (info.locations is not null && !info.locations.Contains(e.NewLocation.Name))
                     continue;
-                if (info.tileSheets is not null && !info.tileSheets.Exists(s => e.NewLocation.Map.TileSheets.ToList().Exists(ss => ss.Id == s)))
+                if (info.tileSheets is not null && !info.tileSheets.Exists(s => e.NewLocation.Map.TileSheets.ToList().Exists(ss => ss.Id == s)) && !info.tileSheets.Exists(s => e.NewLocation.Map.TileSheets.ToList().Exists(ss => ss.ImageSource.Contains(s))))
+                    continue;
+                if (info.tileSheetPaths is not null && !info.tileSheetPaths.Exists(s => e.NewLocation.Map.TileSheets.ToList().Exists(ss => ss.ImageSource.Contains(s))))
                     continue;
                 foreach (var layer in e.NewLocation.Map.Layers)
                 {
@@ -149,6 +152,8 @@ namespace DynamicMapTiles
                             if (layer.Tiles[x, y] is not null)
                             {
                                 if (info.tileSheets is not null && !info.tileSheets.Contains(layer.Tiles[x, y].TileSheet.Id))
+                                    continue;
+                                if (info.tileSheetPaths is not null && !info.tileSheetPaths.Exists(s => layer.Tiles[x, y].TileSheet.ImageSource.Contains(s)))
                                     continue;
                                 if (info.indexes is not null && !info.indexes.Contains(layer.Tiles[x, y].TileIndex))
                                     continue;

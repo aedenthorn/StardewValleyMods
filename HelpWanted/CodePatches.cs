@@ -20,7 +20,7 @@ namespace HelpWanted
         {
             public static bool Prefix(bool ___dailyQuestBoard)
             {
-                if (!Config.ModEnabled || !___dailyQuestBoard || Game1.activeClickableMenu is OrdersBillboard)
+                if (!Config.ModEnabled || !___dailyQuestBoard || Game1.activeClickableMenu.GetType() != typeof(Billboard))
                     return true;
                 Game1.activeClickableMenu = new OrdersBillboard();
                 return false;
