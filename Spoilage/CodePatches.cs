@@ -15,15 +15,7 @@ namespace Spoilage
             {
                 if (!Config.ModEnabled || !__instance.modData.ContainsKey(spoiledKey))
                     return;
-                __state = __instance.ParentSheetIndex;
-                color = Color.Green;
-                __instance.ParentSheetIndex = 168;
-            }
-            public static void Postfix(Object __instance, ref Color color, ref int __state)
-            {
-                if (!Config.ModEnabled || !__instance.modData.ContainsKey(spoiledKey))
-                    return;
-                __instance.ParentSheetIndex = __state;
+                color = Config.CustomSpoiledColor;
             }
         }
         [HarmonyPatch(typeof(Object), nameof(Object.sellToStorePrice))]
@@ -43,9 +35,9 @@ namespace Spoilage
         {
             public static void Postfix(Object __instance, ref string __result)
             {
-                if (!Config.ModEnabled || !__instance.modData.ContainsKey(nameKey))
+                if (!Config.ModEnabled || !__instance.modData.ContainsKey(spoiledKey))
                     return;
-                __result = __instance.modData[nameKey] + SHelper.Translation.Get("spoiled");
+                __result = __instance.modData[spoiledKey] + SHelper.Translation.Get("spoiled");
             }
         }
         [HarmonyPatch(typeof(Object), nameof(Object.getDescription))]
@@ -60,7 +52,12 @@ namespace Spoilage
                 else if (Config.DisplayDays)
                 {
                     int days = (int)float.Parse(ageString, NumberStyles.Any, CultureInfo.InvariantCulture);
-                    if(days > 1)
+                    if (Config.DisplayDaysLeft)
+                    {
+                        int left = GetSpoilAge(__instance);
+                        __result += string.Format(SHelper.Translation.Get("x-y-days-old"), days, left);
+                    }
+                    else if (days > 1)
                         __result += string.Format(SHelper.Translation.Get("x-days-old"), days);
                     else if(days == 1)
                         __result += string.Format(SHelper.Translation.Get("1-day-old"), days);

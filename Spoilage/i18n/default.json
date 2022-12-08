@@ -1,6 +1,7 @@
 ﻿{
   "spoiled": " (Spoiled)",
-  "spoiled-desc": "This item is spoiled.",
+  "spoiled-desc": "This item has spoiled.",
   "1-day-old": " (1 day old)",
-  "x-days-old": " ({0} days old)"
+  "x-days-old": " ({0} days old)",
+  "x-y-days-old": " ({0}/{1} days old)"
 }

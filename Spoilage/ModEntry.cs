@@ -26,8 +26,7 @@ namespace Spoilage
         public static string dictPath = "aedenthorn.Spoilage/dictionary";
         public static string ageKey = "aedenthorn.Spoilage/age";
         public static string spoiledKey = "aedenthorn.Spoilage/spoiled";
-        public static string nameKey = "aedenthorn.Spoilage/name";
-        public static Dictionary<string, int> spoilageDict = new Dictionary<string, int>();
+        public static Dictionary<string, SpoilData> spoilageDict = new Dictionary<string, SpoilData>();
         public static ModEntry context;
 
         /// <summary>The mod entry point, called after the mod is first loaded.</summary>
@@ -50,31 +49,42 @@ namespace Spoilage
             harmony.PatchAll();
         }
 
+        public override object GetApi()
+        {
+            if (!Config.ModEnabled)
+                return null;
+            return new SpoilageAPI();
+        }
         private void Content_AssetRequested(object sender, StardewModdingAPI.Events.AssetRequestedEventArgs e)
         {
             if (!Config.ModEnabled)
                 return;
             if (e.NameWithoutLocale.IsEquivalentTo(dictPath))
             {
-                e.LoadFrom(() => new Dictionary<string, int>(), StardewModdingAPI.Events.AssetLoadPriority.Exclusive);
+                e.LoadFrom(() => new Dictionary<string, SpoilData>(), StardewModdingAPI.Events.AssetLoadPriority.Exclusive);
             }
         }
         private void GameLoop_DayStarted(object sender, StardewModdingAPI.Events.DayStartedEventArgs e)
         {
             if (!Config.ModEnabled)
                 return;
+            spoilageDict = Helper.GameContent.Load<Dictionary<string, SpoilData>>(dictPath);
+            foreach(var kvp in Config.CustomSpoilage)
+            {
+                spoilageDict.TryAdd(kvp.Key, kvp.Value);
+            }
             foreach(var l in Game1.locations)
             {
                 foreach(var obj in l.objects.Values)
                 {
                     if(obj is Chest)
                     {
-                        CheckItems((obj as Chest).items, (obj as Chest).fridge.Value ? Config.FridgeMult : 1);
+                        SpoilItems((obj as Chest).items, (obj as Chest).fridge.Value ? Config.FridgeMult : 1);
 
                     }
                 }
             }
-            CheckItems(Game1.player.items, Config.PlayerMult);
+            SpoilItems(Game1.player.items, Config.PlayerMult);
 
         }
 
@@ -105,9 +115,9 @@ namespace Spoilage
             );
             configMenu.AddBoolOption(
                 mod: ModManifest,
-                name: () => "Allow Rotting",
-                getValue: () => Config.Rotting,
-                setValue: value => Config.Rotting = value
+                name: () => "Allow Spoiling",
+                getValue: () => Config.Spoiling,
+                setValue: value => Config.Spoiling = value
             );
             configMenu.AddBoolOption(
                 mod: ModManifest,
@@ -115,57 +125,63 @@ namespace Spoilage
                 getValue: () => Config.DisplayDays,
                 setValue: value => Config.DisplayDays = value
             );
+            configMenu.AddBoolOption(
+                mod: ModManifest,
+                name: () => "Display Days Left",
+                getValue: () => Config.DisplayDaysLeft,
+                setValue: value => Config.DisplayDaysLeft = value
+            );
             configMenu.AddNumberOption(
                 mod: ModManifest,
-                name: () => "Fruits Days To Spoil",
+                name: () => "Fruits Days",
                 getValue: () => Config.FruitsDays,
                 setValue: value => Config.FruitsDays = value
             );
             configMenu.AddNumberOption(
                 mod: ModManifest,
-                name: () => "Vegetables Days To Spoil",
+                name: () => "Vegetables Days",
                 getValue: () => Config.VegetablesDays,
                 setValue: value => Config.VegetablesDays = value
             );
             configMenu.AddNumberOption(
                 mod: ModManifest,
-                name: () => "Greens Days To Spoil",
+                name: () => "Greens Days",
                 getValue: () => Config.GreensDays,
                 setValue: value => Config.GreensDays = value
             );
             configMenu.AddNumberOption(
                 mod: ModManifest,
-                name: () => "Flowers Days To Spoil",
+                name: () => "Flowers Days",
                 getValue: () => Config.FlowersDays,
                 setValue: value => Config.FlowersDays = value
             );
             configMenu.AddNumberOption(
                 mod: ModManifest,
-                name: () => "Eggs Days To Spoil",
+                name: () => "Eggs Days",
                 getValue: () => Config.EggDays,
                 setValue: value => Config.EggDays = value
             );
             configMenu.AddNumberOption(
                 mod: ModManifest,
-                name: () => "Milk Days To Spoil",
+                name: () => "Milk Days",
                 getValue: () => Config.MilkDays,
                 setValue: value => Config.MilkDays = value
             );
             configMenu.AddNumberOption(
                 mod: ModManifest,
-                name: () => "MeatDays To Spoil",
-                getValue: () => Config.MeatDays,
-                setValue: value => Config.MeatDays = value
-            );
-            configMenu.AddNumberOption(
-                mod: ModManifest,
-                name: () => "Cooking Days To Spoil",
+                name: () => "Cooked Days",
                 getValue: () => Config.CookingDays,
                 setValue: value => Config.CookingDays = value
             );
             configMenu.AddNumberOption(
                 mod: ModManifest,
-                name: () => "Fish Days To Spoil",
+                name: () => "Meat Days",
+                getValue: () => Config.MeatDays,
+                setValue: value => Config.MeatDays = value
+            );
+            configMenu.AddNumberOption(
+                mod: ModManifest,
+                name: () => "Fish Days",
                 getValue: () => Config.FishDays,
                 setValue: value => Config.FishDays = value
             );
@@ -174,6 +190,12 @@ namespace Spoilage
                 name: () => "Fridge Spoilage Multiplier",
                 getValue: () => Config.FridgeMult + "",
                 setValue: delegate (string value) { if (float.TryParse(value, NumberStyles.Any, CultureInfo.InvariantCulture, out float f)) { Config.FridgeMult = f; } }
+            );
+            configMenu.AddTextOption(
+                mod: ModManifest,
+                name: () => "Player Spoilage Multiplier",
+                getValue: () => Config.PlayerMult + "",
+                setValue: delegate (string value) { if (float.TryParse(value, NumberStyles.Any, CultureInfo.InvariantCulture, out float f)) { Config.PlayerMult = f; } }
             );
         }
     }

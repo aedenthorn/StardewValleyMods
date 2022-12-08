@@ -1,7 +1,7 @@
 ﻿{
   "Name": "Spoilage",
   "Author": "aedenthorn",
-  "Version": "0.4.2",
+  "Version": "0.3.0",
   "Description": "Spoilage.",
   "UniqueID": "aedenthorn.Spoilage",
   "EntryDll": "Spoilage.dll",
@@ -18,5 +18,5 @@
       "IsRequired": false
     }
   ],
-  "UpdateKeys": [ "Nexus:14640" ]
+  "UpdateKeys": [ "Nexus:14712" ]
 }

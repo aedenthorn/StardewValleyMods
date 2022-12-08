@@ -1,10 +1,6 @@
 ﻿using HarmonyLib;
-using Microsoft.Xna.Framework;
 using Netcode;
 using StardewValley;
-using StardewValley.Locations;
-using StardewValley.Quests;
-using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
@@ -14,48 +10,60 @@ namespace Spoilage
 {
     public partial class ModEntry
     {
-        private int GetSpoilAge(Item item)
+        private static int GetSpoilAge(Item item)
         {
-            if(item.Category == Object.GreensCategory)
+            int category = item.Category;
+            if(spoilageDict.TryGetValue(item.Name, out SpoilData data) || spoilageDict.TryGetValue(item.ParentSheetIndex+"", out data))
+            {
+                if(data.category != 9999)
+                {
+                    category = data.category;
+                }
+                else if(data.age > -1)
+                {
+                    return data.age;
+                }
+            }
+            if(category == Object.GreensCategory)
             {
                 return Config.GreensDays;
             }
-            if(item.Category == Object.VegetableCategory)
+            if(category == Object.VegetableCategory)
             {
                 return Config.VegetablesDays;
             }
-            if(item.Category == Object.FishCategory)
+            if(category == Object.FishCategory)
             {
                 return Config.FishDays;
             }
-            if(item.Category == Object.EggCategory)
+            if(category == Object.EggCategory)
             {
                 return Config.EggDays;
             }
-            if(item.Category == Object.MilkCategory)
+            if(category == Object.MilkCategory)
             {
                 return Config.MilkDays;
             }
-            if(item.Category == Object.CookingCategory)
+            if(category == Object.CookingCategory)
             {
                 return Config.CookingDays;
             }
-            if(item.Category == Object.FruitsCategory)
+            if(category == Object.FruitsCategory)
             {
                 return Config.FruitsDays;
             }
-            if(item.Category == Object.flowersCategory)
+            if(category == Object.flowersCategory)
             {
                 return Config.FlowersDays;
             }
-            if(item.Category == Object.meatCategory)
+            if(category == Object.meatCategory)
             {
                 return Config.MeatDays;
             }
-            return -1;
+            return 0;
         }
 
-        private void CheckItems(NetObjectList<Item> items, float mult)
+        public static void SpoilItems(IList<Item> items, float mult)
         {
             for (int i = 0; i < items.Count; i++)
             {
@@ -63,7 +71,7 @@ namespace Spoilage
                 if (item is not Object || (item as Object).bigCraftable.Value)
                     continue;
                 var spoil = GetSpoilAge(item);
-                if (spoil < 0)
+                if (spoil < 1)
                     continue;
                 float age = 0;
                 if (item.modData.TryGetValue(ageKey, out string ageString))
@@ -71,21 +79,35 @@ namespace Spoilage
                     float.TryParse(ageString, NumberStyles.Any, CultureInfo.InvariantCulture, out age);
                 }
                 age += mult;
-                if (age >= spoil)
+                if (age >= spoil && !item.modData.ContainsKey(spoiledKey))
                 {
                     if (Config.QualityReduction && (item as Object).Quality > 0)
                     {
-                        Monitor.Log($"Reducing quality of {item.Name} x{item.Stack}");
+                        SMonitor.Log($"Reducing quality of {item.Name} x{item.Stack}");
                         (items[i] as Object).Quality--;
                         age = 0;
                     }
-                    else if (Config.Rotting && (item as Object).Quality == 0)
+                    else if (Config.Spoiling && (item as Object).Quality == 0)
                     {
-                        item.modData[nameKey] = (string)AccessTools.Method(item.GetType(), "loadDisplayName").Invoke(item, new object[] { });
-                        Monitor.Log($"Spoiling {item.Name} x{item.Stack}");
+                        SMonitor.Log($"Spoiling {item.Name} x{item.Stack}");
+                        item.modData[spoiledKey] = (string)AccessTools.Method(item.GetType(), "loadDisplayName").Invoke(item, new object[] { });
                         (items[i] as Object).Quality = -4;
-                        (items[i] as Object).ParentSheetIndex = 168;
-                        item.modData[spoiledKey] = "true";
+
+                        int spoiledIndex = Config.SpoiledIndex;
+                        if ((spoilageDict.TryGetValue(item.Name, out SpoilData data) || spoilageDict.TryGetValue(item.ParentSheetIndex + "", out data)) && data.spoiled is not null)
+                        {
+                            if(int.TryParse(data.spoiled, out int index))
+                                spoiledIndex = index;
+                            else
+                            {
+                                try
+                                {
+                                    spoiledIndex = Game1.objectInformation.First(k => k.Value.StartsWith(data.spoiled + "/")).Key;
+                                }
+                                catch { }
+                            }
+                        }
+                        (items[i] as Object).ParentSheetIndex = spoiledIndex;
                     }
                 }
                 item.modData[ageKey] = age + "";

@@ -8,8 +8,9 @@ namespace Spoilage
     {
         public bool ModEnabled { get; set; } = true;
         public bool QualityReduction { get; set; } = true;
-        public bool Rotting { get; set; } = true;
+        public bool Spoiling { get; set; } = true;
         public bool DisplayDays { get; set; } = true;
+        public bool DisplayDaysLeft { get; set; } = true;
         public int FruitsDays { get; set; } = 5;
         public int VegetablesDays { get; set; } = 5;
         public int GreensDays { get; set; } = 4;
@@ -21,9 +22,11 @@ namespace Spoilage
         public int FishDays { get; set; } = 1;
         public float FridgeMult { get; set; } = 0.1f;
         public float PlayerMult { get; set; } = 1.5f;
-        public List<string> Exceptions { get; set; } = new List<string>
+        public int SpoiledIndex { get; set; } = 168;
+        public Color CustomSpoiledColor { get; set; } = Color.Lime;
+        public Dictionary<string, SpoilData> CustomSpoilage { get; set; } = new Dictionary<string, SpoilData>
         {
-            "92:0"
+            { "Sap", new SpoilData() { age = 0 } }
         };
     }
 }
