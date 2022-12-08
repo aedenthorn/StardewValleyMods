@@ -95,13 +95,38 @@ namespace HelpWanted
         [HarmonyPatch(typeof(Utility), nameof(Utility.possibleCropsAtThisTime))]
         public class Utility_possibleCropsAtThisTime_Patch
         {
-            public static void Postfix(List<int> __result)
+            public static void Postfix(ref List<int> __result)
             {
-                if (!Config.ModEnabled )
+                if (!Config.ModEnabled)
                     return;
                 List<int> result = GetRandomItemList(__result);
-                if(result is not null)
+                SMonitor.Log($"possible crops: {result?.Count}");
+                if (result is not null && result.Any())
+                {
                     __result = result;
+                }
+            }
+        }
+        [HarmonyPatch(typeof(ItemDeliveryQuest), nameof(ItemDeliveryQuest.loadQuestInfo))]
+        public class ItemDeliveryQuest_loadQuestInfo_Patch
+        {
+            public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions)
+            {
+                SMonitor.Log($"Transpiling ItemDeliveryQuest.loadQuestInfo");
+
+                var codes = new List<CodeInstruction>(instructions);
+
+                int idx = codes.FindIndex(c => c.opcode == OpCodes.Ldstr && (string)c.operand == "Cooking");
+                for(int i = idx; i < idx + 15; i++)
+                {
+                    if (codes[i].opcode == OpCodes.Ldc_R8)
+                    {
+                        codes[i].operand = -0.1;
+                        break;
+                    }
+                }
+
+                return codes.AsEnumerable();
             }
         }
     }

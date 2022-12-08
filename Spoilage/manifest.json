@@ -1,16 +1,16 @@
 ﻿{
-  "Name": "DynamicMapTiles",
+  "Name": "Spoilage",
   "Author": "aedenthorn",
-  "Version": "0.9.2",
-  "Description": "DynamicMapTiles.",
-  "UniqueID": "aedenthorn.DynamicMapTiles",
-  "EntryDll": "DynamicMapTiles.dll",
+  "Version": "0.4.2",
+  "Description": "Spoilage.",
+  "UniqueID": "aedenthorn.Spoilage",
+  "EntryDll": "Spoilage.dll",
   "MinimumApiVersion": "3.15.0",
   "ModUpdater": {
     "Repository": "StardewValleyMods",
     "User": "aedenthorn",
     "Directory": "_releases",
-    "ModFolder": "DynamicMapTiles"
+    "ModFolder": "Spoilage"
   },
   "Dependencies": [
     {
@@ -18,5 +18,5 @@
       "IsRequired": false
     }
   ],
-  "UpdateKeys": [ "Nexus:14566" ]
+  "UpdateKeys": [ "Nexus:14640" ]
 }

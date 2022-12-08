@@ -14,6 +14,7 @@ namespace HelpWanted
         private static int GetRandomItem(int result, List<int> possibleItems)
         {
             List<int> items = GetRandomItemList(possibleItems);
+
             if (items is null)
                 return result;
             if(items.Contains(result) && !Config.IgnoreVanillaItemSelection) 
@@ -25,7 +26,12 @@ namespace HelpWanted
             }
             if (!items.Any())
                 return result;
-            return items[random.Next(items.Count)];
+            var ii = items[random.Next(items.Count)];
+            SMonitor.Log($"our random: {ii}");
+            if (!Game1.objectInformation.ContainsKey(ii))
+                return result;
+            SMonitor.Log($"found our random: {ii}");
+            return ii;
         }
 
         private static List<int> GetRandomItemList(List<int> possibleItems)
@@ -53,6 +59,10 @@ namespace HelpWanted
             {
                 if (!int.TryParse(str, out int i))
                     continue;
+                if (i > 1000)
+                {
+                    var x = i;
+                }
                 items.Add(i);
             }
             if (!items.Any() || (!Config.IgnoreVanillaItemSelection && possibleItems?.Any() != true))

@@ -34,19 +34,19 @@ namespace Moolah
 
             helper.Events.GameLoop.GameLaunched += GameLoop_GameLaunched;
             //helper.Events.GameLoop.UpdateTicked += GameLoop_UpdateTicked;
+            helper.Events.Input.ButtonPressed += Input_ButtonPressed;
 
             var harmony = new Harmony(ModManifest.UniqueID);
             harmony.PatchAll();
         }
 
-        private void GameLoop_UpdateTicked(object sender, UpdateTickedEventArgs e)
+        private void Input_ButtonPressed(object sender, ButtonPressedEventArgs e)
         {
-            return;
-            if (Context.IsPlayerFree && GetTotalMoolah() < long.MaxValue)
+            if (Config.EnableMod && e.Button == SButton.H && Context.IsPlayerFree && GetTotalMoolah() < long.MaxValue)
             {
                 if(Game1.player.Money < maxValue)
                     Game1.player.Money = 854775807;
-                Game1.player.addUnearnedMoney(maxValue);
+                Game1.player.addUnearnedMoney((int)Math.Round(maxValue * 10 * Game1.random.NextDouble()));
             }
         }
 

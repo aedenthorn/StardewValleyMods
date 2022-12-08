@@ -91,7 +91,7 @@ namespace DynamicMapTiles
         {
             public static bool Prefix(GameLocation __instance, Tool t, int tileX, int tileY, ref bool __result)
             {
-                if (!Config.ModEnabled || !__instance.isTileOnMap(new Vector2(tileX, tileY)))
+                if (!Config.ModEnabled || t is null || t.getLastFarmerToUse() is null || !__instance.isTileOnMap(new Vector2(tileX, tileY)))
                     return true;
 
                 if(TriggerActions(__instance.Map.Layers.ToList(), t.getLastFarmerToUse(), new Point(tileX, tileY), new List<string>() { t.GetType().Name, t.Name }))
