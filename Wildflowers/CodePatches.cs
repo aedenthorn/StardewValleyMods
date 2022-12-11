@@ -123,6 +123,7 @@ namespace Wildflowers
                     else if(Vector2.Distance(startTileLocation, v) < Vector2.Distance(tilePos, startTileLocation))
                     {
                         __result = locDict[v];
+                        tilePos = v;
                     }
                 }
             }
@@ -186,6 +187,23 @@ namespace Wildflowers
                     __instance.modData.Remove(wildKey);
                     SMonitor.Log($"harvested wild flower in {location.Name} at {tileLocation}");
                 }
+            }
+        }
+        //[HarmonyPatch(typeof(Object), nameof(Object.performDropDownAction))]
+        public class Object_performDropDownAction_Patch
+        {
+            public static bool Prefix(Object __instance)
+            {
+                if (__instance.name.Equals("Bee House"))
+                {
+                    if (__instance.heldObject.Value == null)
+                    {
+                        __instance.heldObject.Value = new Object(Vector2.Zero, 340, null, false, true, false, false);
+                        __instance.MinutesUntilReady = 0;
+                    }
+                    return false;
+                }
+                return true;
             }
         }
     }
