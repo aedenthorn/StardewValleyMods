@@ -33,12 +33,12 @@ namespace Guns
         public static ModConfig Config;
 
         public static ModEntry context;
-        public static bool isFiring;
-        public static int fireTicks;
         public static Texture2D gunTexture;
         
         public static string dictPath = "aedenthorn.Guns/dictionary";
+        public static string firingKey = "aedenthorn.Guns/firing";
         public static Dictionary<string, GunData> gunDict = new Dictionary<string, GunData>();
+        public static Dictionary<long, string> farmerDict = new Dictionary<long, string>();
         public static int altFrame;
 
         /// <summary>The mod entry point, called after the mod is first loaded.</summary>
@@ -53,7 +53,7 @@ namespace Guns
             SHelper = helper;
 
             Helper.Events.GameLoop.GameLaunched += GameLoop_GameLaunched;
-            Helper.Events.GameLoop.SaveLoaded += GameLoop_SaveLoaded;
+            Helper.Events.GameLoop.DayStarted += GameLoop_DayStarted;
             Helper.Events.GameLoop.UpdateTicked += GameLoop_UpdateTicked;
             Helper.Events.Content.AssetRequested += Content_AssetRequested;
 
@@ -61,6 +61,7 @@ namespace Guns
             harmony.PatchAll();
 
         }
+
 
         private void Content_AssetRequested(object sender, StardewModdingAPI.Events.AssetRequestedEventArgs e)
         {
@@ -76,50 +77,14 @@ namespace Guns
 
         private void GameLoop_UpdateTicked(object sender, StardewModdingAPI.Events.UpdateTickedEventArgs e)
         {
-            if(isFiring)
-            {
-                fireTicks++;
-                altFrame = (fireTicks / 5 % 2);
-                if(fireTicks % 5 == 0)
-                {
-                    float x = 0;
-                    float y = 0;
-                    float rotation = (float)Math.PI / 4;
-                    Vector2 start = Game1.player.Position;
-                    switch (Game1.player.FacingDirection)
-                    {
-                        case 0:
-                            y = -25;
-                            start += new Vector2(24, -92);
-                            rotation -= (float)Math.PI / 2f;
-                            break;
-                        case 1:
-                            x = 25;
-                            start += new Vector2(48, -48);
-                            break;
-                        case 2:
-                            y = 25;
-                            rotation += (float)Math.PI / 2f;
-                            start += new Vector2(-22, 4);
-                            break;
-                        case 3:
-                            x = -25;
-                            rotation += (float)Math.PI;
-                            start += new Vector2(-48, -48);
-                            break;
-                    }
-                    Game1.playSound("shiny4");
-                    Game1.currentLocation.projectiles.Add(new GunProjectile(rotation, 100, 553, 0, 0, 0, x, y, start, "", "", false, true, Game1.player.currentLocation, Game1.player, true, null));
-                }
-            }
-            else
-            {
-                fireTicks = 0;
-            }
         }
-        private void GameLoop_SaveLoaded(object sender, StardewModdingAPI.Events.SaveLoadedEventArgs e)
+        private void GameLoop_DayStarted(object sender, StardewModdingAPI.Events.DayStartedEventArgs e)
         {
             gunDict = Helper.GameContent.Load<Dictionary<string, GunData>>(dictPath);
+            foreach(var key in gunDict.Keys.ToArray()) 
+            {
+                gunDict[key].texture = Helper.GameContent.Load<Texture2D>(gunDict[key].texturePath);
+            }
             gunTexture = Helper.ModContent.Load<Texture2D>("assets/uzi.png");
         }
         private void GameLoop_GameLaunched(object sender, StardewModdingAPI.Events.GameLaunchedEventArgs e)

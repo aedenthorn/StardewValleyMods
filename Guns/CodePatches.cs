@@ -3,6 +3,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using StardewValley;
 using StardewValley.Tools;
+using System;
 
 namespace Guns
 {
@@ -13,31 +14,34 @@ namespace Guns
         {
             public static bool Prefix(Farmer __instance)
             {
-                if (!Config.ModEnabled || __instance.CurrentTool is not MeleeWeapon)
+                if (!Config.ModEnabled || __instance.CurrentTool is not MeleeWeapon || !gunDict.ContainsKey(__instance.CurrentTool.Name))
                     return true;
-                isFiring = true;
+                __instance.modData[firingKey] = "0";
+                farmerDict[__instance.UniqueMultiplayerID] = __instance.CurrentTool.Name;
                 return false;
             }
         }
         [HarmonyPatch(typeof(Tool), nameof(Tool.beginUsing))]
         public class MeleeWeapon_beginUsing_Patch
         {
-            public static bool Prefix(MeleeWeapon __instance)
+            public static bool Prefix(Tool __instance, Farmer who)
             {
-                if (!Config.ModEnabled)
+                if (!Config.ModEnabled || __instance is not MeleeWeapon || !gunDict.ContainsKey(__instance.Name))
                     return true;
-                isFiring = true;
+                __instance.modData[firingKey] = "0";
+                farmerDict[who.UniqueMultiplayerID] = __instance.Name;
                 return false;
             }
         }
        [HarmonyPatch(typeof(MeleeWeapon), nameof(MeleeWeapon.leftClick))]
         public class MeleeWeapon_leftClick_Patch
         {
-            public static bool Prefix(MeleeWeapon __instance)
+            public static bool Prefix(MeleeWeapon __instance, Farmer who)
             {
-                if (!Config.ModEnabled)
+                if (!Config.ModEnabled || !gunDict.ContainsKey(__instance.Name))
                     return true;
-                isFiring = true;
+                __instance.modData[firingKey] = "0";
+                farmerDict[who.UniqueMultiplayerID] = __instance.Name;
                 return false;
             }
         }
@@ -46,15 +50,44 @@ namespace Guns
         {
             public static void Postfix(Farmer __instance, SpriteBatch b)
             {
-                if (!Config.ModEnabled || !isFiring)
-                    return;
-
-
-                if(!SHelper.Input.IsDown(StardewModdingAPI.SButton.MouseLeft))
+                if (!SHelper.Input.IsDown(StardewModdingAPI.SButton.MouseLeft))
                 {
-                    isFiring = false;
+                    __instance.modData.Remove(firingKey);
                     return;
                 }
+                if (!Config.ModEnabled || !__instance.modData.TryGetValue(firingKey, out string str) || !int.TryParse(str, out int fireTicks) || !farmerDict.TryGetValue(__instance.UniqueMultiplayerID, out string dataKey))
+                    return;
+                GunData data = gunDict[dataKey];
+                fireTicks++;
+                altFrame = (fireTicks / 5 % 2);
+                if (fireTicks % 5 == 0)
+                {
+                    float x = 0;
+                    float y = 0;
+                    float rotation = data.bulletRotation + (float)Math.PI / 2f * Game1.player.FacingDirection;
+                    Vector2 start = Game1.player.Position + data.bulletOffsets[Game1.player.FacingDirection].ToVector2();
+                    
+                    switch (Game1.player.FacingDirection)
+                    {
+                        case 0:
+                            y = -1;
+                            break;
+                        case 1:
+                            x = 1;
+                            break;
+                        case 2:
+                            y = 1;
+                            break;
+                        case 3:
+                            x = -1;
+                            break;
+                    }
+                    if(data.fireSound != null)
+                        Game1.playSound(data.fireSound);
+                    Game1.currentLocation.projectiles.Add(new GunProjectile(rotation, data.bulletScale, Game1.random.Next(data.minDamage, data.maxDamage + 1), data.bulletIndex, 0, 0, 0, x * data.bulletVelocity, y * data.bulletVelocity, start, "", "", false, true, Game1.player.currentLocation, Game1.player, true, null));
+                }
+                __instance.modData[firingKey] = fireTicks + "";
+
                 int row = 0;
                 Vector2 pos = __instance.getLocalPosition(Game1.viewport); 
                 SpriteEffects effects = SpriteEffects.None;
@@ -77,7 +110,7 @@ namespace Guns
                         effects = SpriteEffects.FlipHorizontally;
                         break;
                 }
-                b.Draw(gunTexture, pos, new Rectangle(altFrame * 32, row * 32, 32, 32), Color.White, 0, Vector2.Zero, 2, effects, (__instance.getStandingY() + 111) / 10000f);
+                b.Draw(data.texture, pos, new Rectangle(altFrame * 32, row * 32, 32, 32), Color.White, 0, Vector2.Zero, 2, effects, (__instance.getStandingY() + 111) / 10000f);
             }
         }
     }

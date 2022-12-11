@@ -11,6 +11,14 @@ namespace HelpWanted
 {
     public partial class ModEntry
     {
+        private static List<int> GetPossibleCrops(List<int> oldList)
+        {
+            if (!Config.ModEnabled)
+                return oldList;
+            List<int> newList = GetRandomItemList(oldList);
+            SMonitor.Log($"possible crops: {newList?.Count}");
+            return (newList is null || !newList.Any()) ? oldList : newList;
+        }
         private static int GetRandomItem(int result, List<int> possibleItems)
         {
             List<int> items = GetRandomItemList(possibleItems);
@@ -27,10 +35,10 @@ namespace HelpWanted
             if (!items.Any())
                 return result;
             var ii = items[random.Next(items.Count)];
-            SMonitor.Log($"our random: {ii}");
             if (!Game1.objectInformation.ContainsKey(ii))
                 return result;
-            SMonitor.Log($"found our random: {ii}");
+            SMonitor.Log($"our random: {ii}");
+            //SMonitor.Log($"found our random: {ii}");
             return ii;
         }
 

@@ -71,7 +71,7 @@ namespace HelpWanted
 
         private void GameLoop_DayStarted(object sender, StardewModdingAPI.Events.DayStartedEventArgs e)
         {
-            if (!Config.ModEnabled)
+            if (!Config.ModEnabled || Utility.isFestivalDay(Game1.dayOfMonth, Game1.currentSeason))
                 return;
             try
             {

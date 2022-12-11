@@ -99,8 +99,13 @@ namespace SoundTweaker
         {
             public static void Postfix(Cue __instance, XactSoundBankSound ____currentXactSound)
             {
-                if (!Config.ModEnabled)
+                if (!Config.ModEnabled || !__instance.Name.ToLower().Contains("step"))
                     return;
+                if(____currentXactSound?.rpcCurves?.Length > 0)
+                {
+                    var x = 1;
+                }
+
                 //AccessTools.FieldRefAccess<Cue, float>(__instance, "_rpcVolume") = 10f;
             }
         }

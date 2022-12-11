@@ -92,21 +92,6 @@ namespace HelpWanted
 
             }
         }
-        [HarmonyPatch(typeof(Utility), nameof(Utility.possibleCropsAtThisTime))]
-        public class Utility_possibleCropsAtThisTime_Patch
-        {
-            public static void Postfix(ref List<int> __result)
-            {
-                if (!Config.ModEnabled)
-                    return;
-                List<int> result = GetRandomItemList(__result);
-                SMonitor.Log($"possible crops: {result?.Count}");
-                if (result is not null && result.Any())
-                {
-                    __result = result;
-                }
-            }
-        }
         [HarmonyPatch(typeof(ItemDeliveryQuest), nameof(ItemDeliveryQuest.loadQuestInfo))]
         public class ItemDeliveryQuest_loadQuestInfo_Patch
         {
@@ -116,18 +101,33 @@ namespace HelpWanted
 
                 var codes = new List<CodeInstruction>(instructions);
 
-                int idx = codes.FindIndex(c => c.opcode == OpCodes.Ldstr && (string)c.operand == "Cooking");
-                for(int i = idx; i < idx + 15; i++)
+                bool start = false;
+                bool found1 = false;
+                bool found2 = false;
+                for(int i = 0; i < codes.Count; i++)
                 {
-                    if (codes[i].opcode == OpCodes.Ldc_R8)
+                    if (start && !found1 && codes[i].opcode == OpCodes.Ldc_R8)
                     {
                         codes[i].operand = -0.1;
-                        break;
+                        found1 = true;
                     }
+                    else if (!start && codes[i].opcode == OpCodes.Ldstr && (string)codes[i].operand == "Cooking")
+                    {
+                        start = true;
+                    }
+                    else if (!found2 && codes[i].opcode == OpCodes.Call && (MethodInfo)codes[i].operand == AccessTools.Method(typeof(Utility), nameof(Utility.possibleCropsAtThisTime)))
+                    {
+                        codes.Insert(i + 1, new CodeInstruction(OpCodes.Call, AccessTools.Method(typeof(ModEntry), nameof(ModEntry.GetPossibleCrops))));
+                        i++;
+                        found2 = true;
+                    }
+                    if (found1 && found2)
+                        break;
                 }
 
                 return codes.AsEnumerable();
             }
         }
+
     }
 }
