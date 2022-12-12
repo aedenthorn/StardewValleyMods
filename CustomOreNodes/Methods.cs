@@ -41,12 +41,12 @@ namespace CustomOreNodes
                     int add = 0;
                     try
                     {
-                        data = Helper.Content.Load<CustomOreData>("custom_ore_nodes.json", ContentSource.ModFolder);
+                        data = Helper.ModContent.Load<CustomOreData>("custom_ore_nodes.json");
 
                     }
                     catch
                     {
-                        var tempData = Helper.Content.Load<CustomOreDataOld>("custom_ore_nodes.json", ContentSource.ModFolder);
+                        var tempData = Helper.ModContent.Load<CustomOreDataOld>("custom_ore_nodes.json");
                         data = new CustomOreData();
                         for (int i = 0; i < tempData.nodes.Count; i++)
                         {
@@ -59,17 +59,29 @@ namespace CustomOreNodes
                         }
                     }
                     conf = Helper.Data.ReadJsonFile<CustomOreConfig>("ore_config.json") ?? new CustomOreConfig();
+                    var dict = Helper.GameContent.Load<Dictionary<string, CustomOreNode>>(dictPath);
+                    foreach (var kvp in dict)
+                    {
+                        try
+                        {
+                            data.nodes.Add(kvp.Value);
+                        }
+                        catch(Exception ex)
+                        {
+                            Monitor.Log($"Exception adding {kvp.Key}: \r\n{ex}");
+                        }
+                    }
                     foreach (object nodeObj in data.nodes)
                     {
                         CustomOreNode node = (CustomOreNode)nodeObj;
 
                         if (node.spriteType == "mod")
                         {
-                            node.texture = Helper.Content.Load<Texture2D>(node.spritePath, ContentSource.ModFolder);
+                            node.texture = Helper.ModContent.Load<Texture2D>(node.spritePath);
                         }
                         else
                         {
-                            node.texture = Helper.Content.Load<Texture2D>(node.spritePath, ContentSource.GameContent);
+                            node.texture = Helper.ModContent.Load<Texture2D>(node.spritePath);
                         }
                         if (conf.parentSheetIndexes.ContainsKey(add))
                         {
@@ -136,12 +148,12 @@ namespace CustomOreNodes
                     {
                         if (node.spriteType == "mod")
                         {
-                            node.texture = contentPack.LoadAsset<Texture2D>(node.spritePath);
+                            node.texture = contentPack.ModContent.Load<Texture2D>(node.spritePath);
 
                         }
                         else
                         {
-                            node.texture = Helper.Content.Load<Texture2D>(node.spritePath, ContentSource.GameContent);
+                            node.texture = Helper.GameContent.Load<Texture2D>(node.spritePath);
 
                         }
                         if (conf.parentSheetIndexes.ContainsKey(add))

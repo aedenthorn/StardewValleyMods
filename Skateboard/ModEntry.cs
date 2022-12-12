@@ -6,6 +6,7 @@ using StardewValley;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.Linq;
 using Object = StardewValley.Object;
 
 namespace Skateboard
@@ -44,12 +45,24 @@ namespace Skateboard
 
             helper.Events.GameLoop.GameLaunched += GameLoop_GameLaunched;
             helper.Events.GameLoop.SaveLoaded += GameLoop_SaveLoaded;
+            helper.Events.Player.Warped += Player_Warped;
             helper.Events.Input.ButtonPressed += Input_ButtonPressed;
             helper.Events.Content.AssetRequested += Content_AssetRequested;
 
             var harmony = new Harmony(ModManifest.UniqueID);
             harmony.PatchAll();
             helper.ConsoleCommands.Add("skateboard", "Spawn a skateboard.", SpawnSkateboard);
+        }
+
+        private void Player_Warped(object sender, StardewModdingAPI.Events.WarpedEventArgs e)
+        {
+            foreach(var key in e.NewLocation.Objects.Keys.ToArray())
+            {
+                if (e.NewLocation.Objects[key]?.modData.ContainsKey(boardKey) == true)
+                {
+                    e.NewLocation.Objects.Remove(key);
+                }
+            }
         }
 
         private static void SpawnSkateboard(string arg1 = null, string[] arg2 = null)

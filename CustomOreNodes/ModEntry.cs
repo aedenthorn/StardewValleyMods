@@ -13,14 +13,14 @@ using Object = StardewValley.Object;
 namespace CustomOreNodes
 {
     /// <summary>The mod entry point.</summary>
-    public partial class ModEntry : Mod, IAssetLoader
+    public partial class ModEntry : Mod
     {
 
         public static ModEntry context;
 
         public static ModConfig Config;
         public static List<CustomOreNode> customOreNodesList = new List<CustomOreNode>();
-        public static readonly string dictPath = "Mods/aedenthorn.CustomOreNodes/dict";
+        public static readonly string dictPath = "aedenthorn.CustomOreNodes/dict";
         public static IMonitor SMonitor;
         
 
@@ -61,6 +61,15 @@ namespace CustomOreNodes
 
             helper.Events.GameLoop.SaveLoaded += GameLoop_SaveLoaded;
             helper.Events.Player.Warped += Player_Warped;
+            helper.Events.Content.AssetRequested += Content_AssetRequested;
+        }
+
+        private void Content_AssetRequested(object sender, StardewModdingAPI.Events.AssetRequestedEventArgs e)
+        {
+            if (e.NameWithoutLocale.IsEquivalentTo(dictPath))
+            {
+                e.LoadFrom(() => new Dictionary<string, CustomOreNode>(), StardewModdingAPI.Events.AssetLoadPriority.Exclusive);
+            }
         }
 
         private void GameLoop_SaveLoaded(object sender, StardewModdingAPI.Events.SaveLoadedEventArgs e)
@@ -81,22 +90,6 @@ namespace CustomOreNodes
             return new CustomOreNodesAPI();
         }
 
-        /// <summary>Get whether this instance can load the initial version of the given asset.</summary>
-        /// <param name="asset">Basic metadata about the asset being loaded.</param>
-        public bool CanLoad<T>(IAssetInfo asset)
-        {
-
-            return asset.AssetNameEquals(dictPath);
-        }
-
-        /// <summary>Load a matched asset.</summary>
-        /// <param name="asset">Basic metadata about the asset being loaded.</param>
-        public T Load<T>(IAssetInfo asset)
-        {
-            Monitor.Log("Loading dictionary");
-
-            return (T)(object)new Dictionary<string, List<CustomOreNode>>();
-        }
     }
 }
  
