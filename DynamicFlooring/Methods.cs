@@ -22,7 +22,7 @@ namespace DynamicFlooring
         {
             if (!Config.ModEnabled)
                 return;
-            foreach(var data in list)
+            foreach (var data in list)
             {
                 for(int y = data.area.Y; y < data.area.Y + data.area.Height; y++)
                 {
@@ -41,10 +41,13 @@ namespace DynamicFlooring
                             {
                                 floor_pattern_id += firstFlooringTile;
                             }
-                            if (IsFloorableTile(location, x, y, layer))
+                            var floor = IsFloorableTile(location, x, y, layer) && IsFloorableOrWallpaperableTile(location, x, y, layer);
+                            var wall = !floor && IsFloorableOrWallpaperableTile(location, x, y, layer);
+                            var wallOrFloor = floor || wall;
+                            if ((data.ignore && !wall) || (!data.ignore && floor))
                             {
                                 Tile old_tile = location.map.GetLayer(layer).Tiles[x, y];
-                                location.setMapTile(x, y, GetFlooringIndex(location, floor_pattern_id, x, y), layer, null, tilesheet_index);
+                                location.setMapTile(x, y, GetFlooringIndex(location, floor_pattern_id, x, y, data, tilesheet_index), layer, null, tilesheet_index);
                                 Tile new_tile = location.map.GetLayer(layer).Tiles[x, y];
                                 if (old_tile != null)
                                 {
@@ -91,6 +94,7 @@ namespace DynamicFlooring
                     TileSheet tilesheet = new TileSheet("walls_and_floors", location.map, "Maps/walls_and_floors", new Size(texture.Width / 16, texture.Height / 16), new Size(16, 16));
                     location.map.AddTileSheet(tilesheet);
                     location.map.LoadTileSheets(Game1.mapDisplayDevice);
+                    location.interiorDoors.ResetLocalState();
                     result = tilesheet;
                 }
                 return result;
@@ -120,6 +124,7 @@ namespace DynamicFlooring
                     TileSheet tilesheet = new TileSheet("x_WallsAndFloors_" + id, location.map, found_mod_data.Texture, new Size(texture.Width / 16, texture.Height / 16), new Size(16, 16));
                     location.map.AddTileSheet(tilesheet);
                     location.map.LoadTileSheets(Game1.mapDisplayDevice);
+                    location.interiorDoors.ResetLocalState();
                     result = tilesheet;
                 }
                 else
@@ -136,7 +141,7 @@ namespace DynamicFlooring
         public static bool IsFloorableTile(GameLocation location, int x, int y, string layer_name)
         {
             int tile_index = location.getTileIndexAt(x, y, "Buildings");
-            return (tile_index < 197 || tile_index > 199 || !(location.getTileSheetIDAt(x, y, "Buildings") == "untitled tile sheet")) && IsFloorableOrWallpaperableTile(location, x, y, layer_name);
+            return (tile_index < 197 || tile_index > 199 || !(location.getTileSheetIDAt(x, y, "Buildings") == "untitled tile sheet"));
         }
         public static bool IsFloorableOrWallpaperableTile(GameLocation location, int x, int y, string layer_name)
         {
@@ -147,27 +152,36 @@ namespace DynamicFlooring
         {
             return tilesheet_id.StartsWith("x_WallsAndFloors_") || tilesheet_id == "walls_and_floors";
         }
-        public static int GetFlooringIndex(GameLocation location, int base_tile_sheet, int tile_x, int tile_y)
+        public static int GetFlooringIndex(GameLocation location, int base_tile_sheet, int tile_x, int tile_y, FlooringData data, int tileSheetIndex)
         {
-            int replaced_tile_index = location.getTileIndexAt(tile_x, tile_y, "Back");
-            if (replaced_tile_index < 0)
-            {
-                return 0;
-            }
             string tilesheet_name = location.getTileSheetIDAt(tile_x, tile_y, "Back");
-            TileSheet tilesheet = location.map.GetTileSheet(tilesheet_name);
+            TileSheet tilesheet = data.ignore ? location.map.TileSheets[tileSheetIndex] : location.map.GetTileSheet(tilesheet_name);
             int tiles_wide = 16;
             if (tilesheet != null)
             {
                 tiles_wide = tilesheet.SheetWidth;
             }
-            if (tilesheet_name == "walls_and_floors")
+            if (data.ignore)
             {
-                replaced_tile_index -= firstFlooringTile;
+                int x_offset = (tile_x - data.area.X) % 2;
+                int y_offset = (tile_y - data.area.Y) % 2;
+                return base_tile_sheet + x_offset + tiles_wide * y_offset;
             }
-            int x_offset = replaced_tile_index % 2;
-            int y_offset = replaced_tile_index % (tiles_wide * 2) / tiles_wide;
-            return base_tile_sheet + x_offset + tiles_wide * y_offset;
+            else
+            {
+                int replaced_tile_index = location.getTileIndexAt(tile_x, tile_y, "Back");
+                if (replaced_tile_index < 0)
+                {
+                    return 0;
+                }
+                if (tilesheet_name == "walls_and_floors")
+                {
+                    replaced_tile_index -= firstFlooringTile;
+                }
+                int x_offset = replaced_tile_index % 2;
+                int y_offset = replaced_tile_index % (tiles_wide * 2) / tiles_wide;
+                return base_tile_sheet + x_offset + tiles_wide * y_offset;
+            }
         }
     }
 }

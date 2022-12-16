@@ -64,7 +64,7 @@ namespace DynamicFlooring
                 startTile.Value = Game1.currentCursorTile;
                 Helper.Input.Suppress(e.Button);
             }
-            else if(e.Button == Config.RemoveButton && Helper.Input.IsDown(Config.ModButton) && Game1.player.currentLocation.modData.TryGetValue(flooringKey, out string listString))
+            else if(e.Button == Config.RemoveButton && Game1.player.currentLocation.modData.TryGetValue(flooringKey, out string listString))
             {
                 var point = Utility.Vector2ToPoint(Game1.currentCursorTile);
                 var list = JsonConvert.DeserializeObject<List<FlooringData>>(listString);
@@ -77,7 +77,8 @@ namespace DynamicFlooring
                             list.RemoveAt(i);
                             Game1.currentLocation.modData[flooringKey] = JsonConvert.SerializeObject(list);
                             Game1.currentLocation.loadMap(Game1.currentLocation.mapPath.Value, true);
-                            if(Game1.currentLocation is DecoratableLocation)
+                            Game1.currentLocation.resetForPlayerEntry();
+                            if (Game1.currentLocation is DecoratableLocation)
                             {
                                 (Game1.currentLocation as DecoratableLocation).ReadWallpaperAndFloorTileData();
                             }
@@ -113,8 +114,22 @@ namespace DynamicFlooring
             configMenu.AddKeybind(
                 mod: ModManifest,
                 name: () => "Mod Button",
+                tooltip: () => "Hold to enable using the place button",
                 getValue: () => Config.ModButton,
                 setValue: value => Config.ModButton = value
+            );
+            configMenu.AddKeybind(
+                mod: ModManifest,
+                name: () => "Place Button",
+                getValue: () => Config.PlaceButton,
+                setValue: value => Config.PlaceButton = value
+            );
+            configMenu.AddKeybind(
+                mod: ModManifest,
+                name: () => "Ignore Button",
+                tooltip: () => "Hold to ignore floor placing restrictions",
+                getValue: () => Config.IgnoreButton,
+                setValue: value => Config.IgnoreButton = value
             );
             configMenu.AddKeybind(
                 mod: ModManifest,

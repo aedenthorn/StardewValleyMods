@@ -8,5 +8,6 @@ namespace DynamicFlooring
     {
         public Rectangle area;
         public string id;
+        public bool ignore;
     }
 }
