@@ -1,19 +1,7 @@
 ﻿using HarmonyLib;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Audio;
-using Microsoft.Xna.Framework.Graphics;
-using Netcode;
-using Newtonsoft.Json;
 using StardewValley;
-using StardewValley.Locations;
-using StardewValley.Objects;
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using xTile.Dimensions;
-using Object = StardewValley.Object;
-using Rectangle = Microsoft.Xna.Framework.Rectangle;
 
 namespace SoundTweaker
 {

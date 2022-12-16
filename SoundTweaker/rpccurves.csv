@@ -1,12 +1,12 @@
 RpcCurve,RpcCurve.FileOffset,RpcCurve.Variable,RpcCurve.IsGlobal,RpcCurve.Parameter
-0Microsoft.Xna.Framework.Audio.RpcCurve,280,6,False,Pitch
-1Microsoft.Xna.Framework.Audio.RpcCurve,303,7,False,Volume
-2Microsoft.Xna.Framework.Audio.RpcCurve,335,8,False,FilterFrequency
-3Microsoft.Xna.Framework.Audio.RpcCurve,358,9,False,Pitch
-4Microsoft.Xna.Framework.Audio.RpcCurve,381,8,False,FilterFrequency
-5Microsoft.Xna.Framework.Audio.RpcCurve,404,8,False,FilterQFactor
-6Microsoft.Xna.Framework.Audio.RpcCurve,427,7,False,Volume
-7Microsoft.Xna.Framework.Audio.RpcCurve,477,8,False,FilterQFactor
-8Microsoft.Xna.Framework.Audio.RpcCurve,599,8,False,FilterFrequency
-9Microsoft.Xna.Framework.Audio.RpcCurve,658,8,False,Pitch
-10Microsoft.Xna.Framework.Audio.RpcCurve,708,7,False,Volume
+0 - 280,6,Pitch
+1 - 303,7,Volume
+2 - 335,8,FilterFrequency
+3 - 358,9,Pitch
+4 - 381,8,FilterFrequency
+5 - 404,8,FilterQFactor
+6 - 427,7,Volume
+7 - 477,8,FilterQFactor
+8 - 599,8,FilterFrequency
+9 - 658,8,Pitch
+10 - 708,7,Volume

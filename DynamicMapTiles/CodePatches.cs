@@ -1,6 +1,7 @@
 ﻿using HarmonyLib;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using StardewModdingAPI.Utilities;
 using StardewValley;
 using StardewValley.Tools;
 using System;
@@ -17,17 +18,16 @@ namespace DynamicMapTiles
 {
     public partial class ModEntry
     {
-        private static Farmer explodingFarmer;
+        private static PerScreen<Farmer> explodingFarmer = new PerScreen<Farmer>();
         
         [HarmonyPatch(typeof(GameLocation), nameof(GameLocation.explode))]
         public class GameLocation_explode_Patch
         {
-
             public static void Prefix(Farmer who)
             {
                 if (!Config.ModEnabled)
                     return;
-                explodingFarmer = who;
+                explodingFarmer.Value = who;
             }
         }
         [HarmonyPatch(typeof(GameLocation), nameof(GameLocation.explosionAt))]
@@ -35,7 +35,7 @@ namespace DynamicMapTiles
         {
             public static void Postfix(GameLocation __instance, float x, float y)
             {
-                if (!Config.ModEnabled || !__instance.isTileOnMap(new Vector2(x, y)) || explodingFarmer is null)
+                if (!Config.ModEnabled || !__instance.isTileOnMap(new Vector2(x, y)))
                     return;
                 foreach(var layer in __instance.map.Layers)
                 {
@@ -44,11 +44,14 @@ namespace DynamicMapTiles
                         continue;
                     if (tile.Properties.TryGetValue(explodeKey, out PropertyValue mail))
                     {
-                        if (!string.IsNullOrEmpty(mail) && !explodingFarmer.mailReceived.Contains(mail))
+                        if(explodingFarmer.Value is not null && explodingFarmer.Value.currentLocation.Name == __instance.Name)
                         {
-                            explodingFarmer.mailReceived.Add(mail);
+                            if (!string.IsNullOrEmpty(mail) && !explodingFarmer.Value.mailReceived.Contains(mail))
+                            {
+                                explodingFarmer.Value.mailReceived.Add(mail);
+                            }
+                            TriggerActions(new List<Layer>() { tile.Layer }, explodingFarmer.Value, new Point((int)x, (int)y), new List<string>() { "Explode" });
                         }
-                        TriggerActions(new List<Layer>() { tile.Layer }, explodingFarmer, new Point((int)x, (int)y), new List<string>() { "Explode" });
                         layer.Tiles[(int)x, (int)y] = null;
                     }
                 }
@@ -122,7 +125,7 @@ namespace DynamicMapTiles
         {
             public static void Postfix(Farmer __instance, ref float __result)
             {
-                if (!Config.ModEnabled)
+                if (!Config.ModEnabled || __instance.currentLocation is null)
                     return;
                 var tileLoc = __instance.getTileLocation();
                 if (__instance.currentLocation.isTileOnMap(tileLoc))
@@ -140,7 +143,7 @@ namespace DynamicMapTiles
         {
             public static void Prefix(Farmer __instance, ref Vector2[] __state)
             {
-                if (!Config.ModEnabled)
+                if (!Config.ModEnabled || __instance.currentLocation is null)
                     return;
                 var tileLoc = __instance.getTileLocation();
                 if (__instance.currentLocation.isTileOnMap(tileLoc))
@@ -158,7 +161,7 @@ namespace DynamicMapTiles
             }
             public static void Postfix(Farmer __instance, Vector2[] __state)
             {
-                if (!Config.ModEnabled || __state is null)
+                if (!Config.ModEnabled || __state is null || __instance.currentLocation is null)
                     return;
                 var tilePos = __instance.getTileLocationPoint();
                 var oldTile = Utility.Vector2ToPoint(__state[1]);

@@ -1,16 +1,16 @@
 ﻿{
-  "Name": "Restauranteer",
+  "Name": "Dynamic Flooring",
   "Author": "aedenthorn",
-  "Version": "0.8.2",
-  "Description": "Restauranteer.",
-  "UniqueID": "aedenthorn.Restauranteer",
-  "EntryDll": "Restauranteer.dll",
+  "Version": "0.1.0",
+  "Description": "Dynamic Flooring.",
+  "UniqueID": "aedenthorn.DynamicFlooring",
+  "EntryDll": "DynamicFlooring.dll",
   "MinimumApiVersion": "3.15.0",
   "ModUpdater": {
     "Repository": "StardewValleyMods",
     "User": "aedenthorn",
     "Directory": "_releases",
-    "ModFolder": "Restauranteer"
+    "ModFolder": "DynamicFlooring"
   },
   "Dependencies": [
     {
@@ -18,5 +18,5 @@
       "IsRequired": false
     }
   ],
-  "UpdateKeys": [ "Nexus:14519" ]
+  "UpdateKeys": [ "Nexus:" ]
 }

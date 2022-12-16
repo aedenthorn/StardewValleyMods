@@ -124,6 +124,8 @@ namespace FreeLove
 
             foreach (NPC spouse in allSpouses)
             {
+                if(spouse is null) 
+                    continue;
                 if (!farmHouse.Equals(spouse.currentLocation))
                 {
                     SMonitor.Log($"{spouse.Name} is not in farm house ({spouse.currentLocation.Name})");
