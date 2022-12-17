@@ -80,12 +80,12 @@ namespace SoundTweaker
                                 string filePath;
                                 if (str.StartsWith("SMAPI/"))
                                 {
-                                    var parts = str.Split('/');
+                                    var parts = str.Split('/', 3);
                                     IModInfo info = SHelper.ModRegistry.Get(parts[1]);
                                     if(info is not null)
                                     {
                                         dirPath = (string)AccessTools.Property(info.GetType(), "DirectoryPath").GetValue(info);
-                                        filePath = string.Join("/", parts.Skip(2));
+                                        filePath = parts[2];
                                     }
                                     else
                                     {
