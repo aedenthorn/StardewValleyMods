@@ -12,12 +12,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Reference Include="FAudio-CS">
-      <HintPath>H:\tmp\ga\SteamLibrary\steamapps\common\Stardew Valley\FAudio-CS.dll</HintPath>
-    </Reference>
-  </ItemGroup>
-
-  <ItemGroup>
     <None Update="assets\emote.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>

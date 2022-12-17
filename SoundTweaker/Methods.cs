@@ -1,6 +1,7 @@
 ﻿using HarmonyLib;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Audio;
+using StardewModdingAPI;
 using StardewValley;
 using System.Collections.Generic;
 using System.IO;
@@ -18,11 +19,11 @@ namespace SoundTweaker
                 sounds = new List<SoundInfo> { new SoundInfo() { filePaths = { "aedenthorn.TestSound/guitar", "aedenthorn.TestSound/drum" }, cuePaths = { "toyPiano", "flute" }, soundIndexes = { 257, 258, 259 }, minVolume = 0.75f, maxVolume = 1f, minPitch = 1f, maxPitch = 2f, reverb = false, minFrequency = 0, maxFrequency = 1000, minQ = 0, maxQ = 500, filter = FilterMode.HighPass } }
             });
             */
-            tweakDict.Clear();
             tweakDict = SHelper.GameContent.Load<Dictionary<string, TweakData>>(dictPath);
+
             SoundBank soundBank;
             var fi = AccessTools.Field(Game1.soundBank.GetType(), "soundBank");
-            if(fi is null)
+            if (fi is null)
             {
                 fi = AccessTools.Field(Game1.soundBank.GetType(), "sdvSoundBankWrapper");
                 if (fi is null)
@@ -73,15 +74,38 @@ namespace SoundTweaker
                         {
                             foreach (var str in s.filePaths)
                             {
+                                var cat = Game1.audioEngine.GetCategoryIndex(s.category);
                                 SoundEffect audio;
-                                string filePathCombined = Path.Combine(SHelper.DirectoryPath, str);
+                                string dirPath;
+                                string filePath;
+                                if (str.StartsWith("SMAPI/"))
+                                {
+                                    var parts = str.Split('/');
+                                    IModInfo info = SHelper.ModRegistry.Get(parts[1]);
+                                    if(info is not null)
+                                    {
+                                        dirPath = (string)AccessTools.Property(info.GetType(), "DirectoryPath").GetValue(info);
+                                        filePath = string.Join("/", parts.Skip(2));
+                                    }
+                                    else
+                                    {
+                                        continue;
+                                    }
+                                }
+                                else
+                                {
+                                    dirPath = SHelper.DirectoryPath;
+                                    filePath = str;
+                                }
+                                string filePathCombined = Path.Combine(dirPath, filePath);
+
                                 if (File.Exists(filePathCombined))
                                 {
                                     using (var stream = new FileStream(filePathCombined, FileMode.Open))
                                     {
                                         audio = SoundEffect.FromStream(stream);
                                     }
-                                    outsounds.Add(new XactSoundBankSound(new SoundEffect[] { audio }, Game1.audioEngine.GetCategoryIndex(s.category), s.loop, s.reverb));
+                                    outsounds.Add(new XactSoundBankSound(new SoundEffect[] { audio }, s.category is null ? (int)oldSounds[0].categoryID : Game1.audioEngine.GetCategoryIndex(s.category), s.loop, s.reverb));
 
                                 }
                             }
