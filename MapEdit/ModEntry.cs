@@ -2,6 +2,7 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using StardewModdingAPI;
+using StardewModdingAPI.Utilities;
 using StardewValley;
 using System.Collections.Generic;
 using xTile.Layers;
@@ -17,7 +18,6 @@ namespace MapEdit
         public static IModHelper SHelper;
         public static IMonitor SMonitor;
 
-        public static bool modActive = false;
         public static int modNumber = 189017541;
 
         public static Texture2D existsTexture;
@@ -27,10 +27,11 @@ namespace MapEdit
         public static List<string> cleanMaps = new List<string>();
         public static MapCollectionData mapCollectionData = new MapCollectionData();
 
-        public static Vector2 copiedTileLoc = new Vector2(-1, -1);
-        public static Vector2 pastedTileLoc = new Vector2(-1, -1);
-        public static Dictionary<string, Tile> currentTileDict = new Dictionary<string, Tile>();
-        public static int currentLayer = 0;
+        public static PerScreen<bool> modActive = new PerScreen<bool>();
+        public static PerScreen<Vector2> copiedTileLoc = new PerScreen<Vector2>();
+        public static PerScreen<Vector2> pastedTileLoc = new PerScreen<Vector2>();
+        public static PerScreen<Dictionary<string, Tile>> currentTileDict = new PerScreen<Dictionary<string, Tile>>();
+        public static PerScreen<int> currentLayer = new PerScreen<int>();
 
         public override void Entry(IModHelper helper)
         {
@@ -39,6 +40,8 @@ namespace MapEdit
 
             SHelper = Helper;
             SMonitor = Monitor;
+
+            currentTileDict.Value = new Dictionary<string, Tile>();
 
             HelperEvents.Initialize(Config, Monitor, Helper);
 
@@ -133,7 +136,7 @@ namespace MapEdit
         }
         private static bool pressSwitchToolButton_Prefix()
         {
-            if (!Config.EnableMod || !Context.IsPlayerFree || Game1.input.GetMouseState().ScrollWheelValue == Game1.oldMouseState.ScrollWheelValue || !modActive || copiedTileLoc.X < 0)
+            if (!Config.EnableMod || !Context.IsPlayerFree || Game1.input.GetMouseState().ScrollWheelValue == Game1.oldMouseState.ScrollWheelValue || !modActive.Value || copiedTileLoc.Value.X < 0)
                 return true;
 
             ModActions.SwitchTile(Game1.input.GetMouseState().ScrollWheelValue - Game1.oldMouseState.ScrollWheelValue > 0);

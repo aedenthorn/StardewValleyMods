@@ -42,12 +42,13 @@ namespace PlaygroundMod
 
 
             helper.Events.GameLoop.GameLaunched += GameLoop_GameLaunched;
-            helper.Events.GameLoop.SaveLoaded += GameLoop_SaveLoaded;
+            helper.Events.GameLoop.DayStarted += GameLoop_DayStarted;
             helper.Events.Content.AssetRequested += Content_AssetRequested;
 
             var harmony = new Harmony(ModManifest.UniqueID);
             harmony.PatchAll();
         }
+
 
         private void Content_AssetRequested(object sender, AssetRequestedEventArgs e)
         {
@@ -65,21 +66,8 @@ namespace PlaygroundMod
             {
                 e.LoadFromModFile<Texture2D>(Path.Combine("assets", "spring.png"), AssetLoadPriority.Low);
             }
-            else if (e.NameWithoutLocale.IsEquivalentTo("sCharacters\\Farmer\\accessories"))
-            {
-                e.Edit(delegate (IAssetData data)
-                {
-                    var texture = data.AsImage();
-
-                    Color[] colors = new Color[texture.Data.Width * texture.Data.Height];
-                    for (int i = 0; i < colors.Length; i++)
-                        colors[i] = Color.White;
-                    texture.Data.SetData(colors);
-                });
-            }
         }
-
-        private void GameLoop_SaveLoaded(object sender, SaveLoadedEventArgs e)
+        private void GameLoop_DayStarted(object sender, DayStartedEventArgs e)
         {
             if (!Config.ModEnabled)
                 return;
@@ -110,6 +98,12 @@ namespace PlaygroundMod
                 name: () => "Mod Enabled",
                 getValue: () => Config.ModEnabled,
                 setValue: value => Config.ModEnabled = value
+            );
+            configMenu.AddBoolOption(
+                mod: ModManifest,
+                name: () => "Enabled For Festivals",
+                getValue: () => Config.Festivals,
+                setValue: value => Config.Festivals = value
             );
             configMenu.AddTextOption(
                 mod: ModManifest,

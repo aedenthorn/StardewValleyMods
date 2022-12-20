@@ -126,7 +126,7 @@ namespace PlaygroundMod
         {
             public static bool Prefix(FarmerRenderer __instance, SpriteBatch b, ref float scale, ref Farmer who, ref Vector2 origin, ref FarmerSprite.AnimationFrame animationFrame, ref int currentFrame, ref Rectangle sourceRect, ref float rotation)
             {
-                if (!Config.ModEnabled || who.currentLocation is not Town)
+                if (!Config.ModEnabled || who.currentLocation is not Town || (!Config.Festivals && Game1.isFestival()))
                 {
                     springTicks.Remove(who.UniqueMultiplayerID);
                     swingTicks.Remove(who.UniqueMultiplayerID);
@@ -288,7 +288,7 @@ namespace PlaygroundMod
         {
             public static void Postfix(GameLocation __instance, SpriteBatch b)
             {
-                if (!Config.ModEnabled || __instance is not Town)
+                if (!Config.ModEnabled || __instance is not Town || (!Config.Festivals && Game1.isFestival()))
                     return;
                 skip = true;
                 foreach (long id in climbTicks.Keys)

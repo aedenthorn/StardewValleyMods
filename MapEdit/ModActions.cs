@@ -14,7 +14,7 @@ namespace MapEdit
             List<string> layers = new List<string>();
             foreach (Layer layer in Game1.player.currentLocation.map.Layers)
             {
-                if (ModEntry.currentTileDict.ContainsKey(layer.Id))
+                if (ModEntry.currentTileDict.Value.ContainsKey(layer.Id))
                     layers.Add(layer.Id);
             }
 
@@ -24,26 +24,26 @@ namespace MapEdit
                     return;
                 if (increase)
                 {
-                    if (ModEntry.currentLayer >= layers.Count - 1)
-                        ModEntry.currentLayer = 0;
+                    if (ModEntry.currentLayer.Value >= layers.Count - 1)
+                        ModEntry.currentLayer.Value = 0;
                     else
-                        ModEntry.currentLayer++;
+                        ModEntry.currentLayer.Value++;
                 }
                 else
                 {
-                    if (ModEntry.currentLayer < 1)
-                        ModEntry.currentLayer = layers.Count - 1;
+                    if (ModEntry.currentLayer.Value < 1)
+                        ModEntry.currentLayer.Value = layers.Count - 1;
                     else
-                        ModEntry.currentLayer--;
+                        ModEntry.currentLayer.Value--;
                 }
 
-                string text = string.Format(ModEntry.SHelper.Translation.Get("current-layer"), layers[ModEntry.currentLayer]);
+                string text = string.Format(ModEntry.SHelper.Translation.Get("current-layer"), layers[ModEntry.currentLayer.Value]);
                 ModEntry.SMonitor.Log(text);
                 ModActions.ShowMessage(text);
             }
             else if (ModEntry.SHelper.Input.IsDown(ModEntry.Config.SheetModButton))
             {
-                if (ModEntry.currentTileDict[layers[ModEntry.currentLayer]] is AnimatedTile)
+                if (ModEntry.currentTileDict.Value[layers[ModEntry.currentLayer.Value]] is AnimatedTile)
                     return;
 
                 List<TileSheet> sheets = new List<TileSheet>();
@@ -54,10 +54,10 @@ namespace MapEdit
                 }
                 if (sheets.Count < 2)
                     return;
-                Tile tile = ModEntry.currentTileDict[layers[ModEntry.currentLayer]];
+                Tile tile = ModEntry.currentTileDict.Value[layers[ModEntry.currentLayer.Value]];
                 if (tile == null)
                 {
-                    Layer layer = Game1.player.currentLocation.map.GetLayer(layers[ModEntry.currentLayer]);
+                    Layer layer = Game1.player.currentLocation.map.GetLayer(layers[ModEntry.currentLayer.Value]);
                     tile = new StaticTile(layer, sheets[0], BlendMode.Alpha, -1);
                 }
                 int tileSheetIndex = sheets.IndexOf(tile.TileSheet);
@@ -84,20 +84,20 @@ namespace MapEdit
             }
             else
             {
-                if (ModEntry.currentTileDict[layers[ModEntry.currentLayer]] == null)
+                if (ModEntry.currentTileDict.Value[layers[ModEntry.currentLayer.Value]] == null)
                 {
-                    ModEntry.currentTileDict[layers[ModEntry.currentLayer]] = new StaticTile(Game1.player.currentLocation.map.GetLayer(layers[ModEntry.currentLayer]), Game1.player.currentLocation.map.TileSheets[0], BlendMode.Alpha, -1);
+                    ModEntry.currentTileDict.Value[layers[ModEntry.currentLayer.Value]] = new StaticTile(Game1.player.currentLocation.map.GetLayer(layers[ModEntry.currentLayer.Value]), Game1.player.currentLocation.map.TileSheets[0], BlendMode.Alpha, -1);
                 }
-                if (ModEntry.currentTileDict[layers[ModEntry.currentLayer]] is AnimatedTile)
+                if (ModEntry.currentTileDict.Value[layers[ModEntry.currentLayer.Value]] is AnimatedTile)
                     return;
 
-                Tile tile = ModEntry.currentTileDict[layers[ModEntry.currentLayer]];
+                Tile tile = ModEntry.currentTileDict.Value[layers[ModEntry.currentLayer.Value]];
                 //context.Monitor.Log($"old index {tile.TileIndex}");
                 if (tile == null)
                 {
-                    ModEntry.SMonitor.Log($"Layer {layers[ModEntry.currentLayer]} copied tile is null, creating empty tile");
-                    Layer layer = Game1.player.currentLocation.map.GetLayer(layers[ModEntry.currentLayer]);
-                    ModEntry.currentTileDict[layers[ModEntry.currentLayer]] = new StaticTile(layer, Game1.player.currentLocation.map.TileSheets[0], BlendMode.Alpha, -1);
+                    ModEntry.SMonitor.Log($"Layer {layers[ModEntry.currentLayer.Value]} copied tile is null, creating empty tile");
+                    Layer layer = Game1.player.currentLocation.map.GetLayer(layers[ModEntry.currentLayer.Value]);
+                    ModEntry.currentTileDict.Value[layers[ModEntry.currentLayer.Value]] = new StaticTile(layer, Game1.player.currentLocation.map.TileSheets[0], BlendMode.Alpha, -1);
                 }
                 if (increase)
                 {
@@ -160,11 +160,11 @@ namespace MapEdit
 
         public static void DeactivateMod()
         {
-            ModEntry.modActive = false;
-            ModEntry.copiedTileLoc = new Vector2(-1, -1);
-            ModEntry.pastedTileLoc = new Vector2(-1, -1);
-            ModEntry.currentTileDict.Clear();
-            ModEntry.currentLayer = 0;
+            ModEntry.modActive.Value = false;
+            ModEntry.copiedTileLoc.Value = new Vector2(-1, -1);
+            ModEntry.pastedTileLoc.Value = new Vector2(-1, -1);
+            ModEntry.currentTileDict.Value.Clear();
+            ModEntry.currentLayer.Value = 0;
         }
 
 

@@ -83,7 +83,7 @@ namespace MapEdit
                 if (!ModEntry.mapCollectionData.mapDataDict.ContainsKey(map))
                     ModEntry.mapCollectionData.mapDataDict[map] = new MapData();
 
-                ModEntry.mapCollectionData.mapDataDict[map].tileDataDict[Game1.currentCursorTile] = new TileLayers(ModEntry.currentTileDict);
+                ModEntry.mapCollectionData.mapDataDict[map].tileDataDict[Game1.currentCursorTile] = new TileLayers(ModEntry.currentTileDict.Value);
             }
 
             string modPath = ModEntry.SHelper.DirectoryPath;

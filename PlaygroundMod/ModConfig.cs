@@ -5,6 +5,7 @@ namespace PlaygroundMod
     public class ModConfig
     {
         public bool ModEnabled { get; set; } = true;
+        public bool Festivals { get; set; } = false;
         public float swingSpeed { get; set; } = 1f;
         public float springSpeed { get; set; } = 1f;
         public float slideSpeed { get; set; } = 1f;
