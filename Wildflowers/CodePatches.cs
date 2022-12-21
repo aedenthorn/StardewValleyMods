@@ -111,19 +111,43 @@ namespace Wildflowers
             {
                 if (!Config.ModEnabled || !Config.WildFlowersMakeFlowerHoney || !cropDict.TryGetValue(location.Name, out Dictionary<Vector2, Crop> locDict))
                     return;
+                range = Config.BeeRange;
                 Vector2 tilePos = __result is null ? Vector2.Zero : AccessTools.FieldRefAccess<Crop, Vector2>(__result, "tilePosition");
-                foreach(var v in locDict.Keys)
+                float closestDistance = Vector2.Distance(startTileLocation, tilePos);
+                foreach (var v in locDict.Keys.ToArray())
                 {
-                    if (__result is null) {
-                        if (range < 0 || Math.Abs(v.X - startTileLocation.X) + Math.Abs(v.Y - startTileLocation.Y) <= range)
+                    if (!location.terrainFeatures.TryGetValue(v, out var tf) || tf is not Grass || !tf.modData.ContainsKey(wildKey))
+                    {
+                        locDict.Remove(v);
+                        continue;
+                    }
+                    if (Config.FixFlowerFind)
+                    {
+                        var distance = Vector2.Distance(startTileLocation, v);
+                        if (distance <= range && distance < closestDistance)
                         {
+                            closestDistance = distance;
                             __result = locDict[v];
+                            AccessTools.FieldRefAccess<Crop, Vector2>(__result, "tilePosition") = v;
                         }
                     }
-                    else if(Vector2.Distance(startTileLocation, v) < Vector2.Distance(tilePos, startTileLocation))
+                    else
                     {
-                        __result = locDict[v];
-                        tilePos = v;
+                        if (__result is null)
+                        {
+                            if (range < 0 || Math.Abs(v.X - startTileLocation.X) + Math.Abs(v.Y - startTileLocation.Y) <= range)
+                            {
+                                tilePos = v;
+                                __result = locDict[v];
+                                AccessTools.FieldRefAccess<Crop, Vector2>(__result, "tilePosition") = v;
+                            }
+                        }
+                        else if (Vector2.Distance(startTileLocation, v) < Vector2.Distance(tilePos, startTileLocation))
+                        {
+                            __result = locDict[v];
+                            tilePos = v;
+                            AccessTools.FieldRefAccess<Crop, Vector2>(__result, "tilePosition") = v;
+                        }
                     }
                 }
             }

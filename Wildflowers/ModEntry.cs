@@ -102,6 +102,18 @@ namespace Wildflowers
             );
             configMenu.AddBoolOption(
                 mod: ModManifest,
+                name: () => "Fix Flower Find",
+                getValue: () => Config.FixFlowerFind,
+                setValue: value => Config.FixFlowerFind = value
+            );
+            configMenu.AddNumberOption(
+                mod: ModManifest,
+                name: () => "Bee Range",
+                getValue: () => Config.BeeRange,
+                setValue: value => Config.BeeRange = value
+            );
+            configMenu.AddBoolOption(
+                mod: ModManifest,
                 name: () => "Weapons Harvest Flowers",
                 getValue: () => Config.WeaponsHarvestFlowers,
                 setValue: value => Config.WeaponsHarvestFlowers = value

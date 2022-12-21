@@ -77,14 +77,31 @@ namespace StardewOpenWorld
             }
         }
 
-        private static void UnloadWorldTile(int v, int y)
+        private static void UnloadWorldTile(int x, int y)
         {
-            throw new NotImplementedException();
+            if (!cachedWorldTiles.ContainsKey(new Point(x, y)))
+                return;
+            bool keep = false;
+            foreach(var f in Game1.getAllFarmers())
+            {
+                if (f.currentLocation.Name.Contains(locName) && GetPlayerTile(f) == new Point(x, y))
+                {
+                    keep = true;
+                    break;
+                }
+            }
+            if (!keep)
+                cachedWorldTiles.Remove(new Point(x, y));
+        }
+
+        private static Point GetPlayerTile(Farmer f)
+        {
+            return new Point(f.getTileX() / openWorldTileSize, f.getTileY() / openWorldTileSize);
         }
 
         private static void LoadWorldTile(int x, int y)
         {
-            WorldTile tile= new WorldTile();
+            WorldTile tile = null;
             if(!cachedWorldTiles.TryGetValue(new Point(x, y), out tile))
             {
                 tile = CreateTile(x, y);
@@ -99,10 +116,33 @@ namespace StardewOpenWorld
 
         private static WorldTile CreateTile(int x, int y)
         {
-            foreach(var biome in biomes) 
-            { 
-
+            WorldTile outTile = new WorldTile();
+            List<WorldTile> tiles = new List<WorldTile>();
+            foreach (var biome in biomes) 
+            {
+                var tile = biome.Value.Invoke(randomSeed, x, y);
+                if(tile != null)
+                    tiles.Add(tile);
             }
+            if (!tiles.Any())
+                return null;
+            tiles.Sort(delegate (WorldTile a, WorldTile b) { return a.priority.CompareTo(b.priority); });
+            foreach(var tile in tiles)
+            {
+                foreach (var kvp in tile.objects)
+                    outTile.objects[kvp.Key] = kvp.Value;
+                foreach (var kvp in tile.terrainFeatures)
+                    outTile.terrainFeatures[kvp.Key] = kvp.Value;
+                foreach (var kvp in tile.back)
+                    outTile.back[kvp.Key] = kvp.Value;
+                foreach (var kvp in tile.buildings)
+                    outTile.buildings[kvp.Key] = kvp.Value;
+                foreach (var kvp in tile.front)
+                    outTile.front[kvp.Key] = kvp.Value;
+                foreach (var kvp in tile.alwaysFront)
+                    outTile.alwaysFront[kvp.Key] = kvp.Value;
+            }
+            return outTile;
         }
 
         private static Rectangle GetTileRect(Vector2 v)

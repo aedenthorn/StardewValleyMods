@@ -36,16 +36,17 @@ namespace StardewOpenWorld
         public static int openWorldTileSize = 100;
         public static int openWorldSize = 100000;
         public static bool warping = false;
-        private static Point playerTileLocation;
-        private static Tile[,] grassTiles;
+        public static Point playerTileLocation;
+        public static Tile[,] grassTiles;
 
-        private static GameLocation openWorldLocation;
-        private static Dictionary<string, Biome> biomes = new Dictionary<string, Biome>();
-        private static Dictionary<Point, WorldTile> cachedWorldTiles = new Dictionary<Point, WorldTile>();
-        private static Dictionary<Point, WorldTile> loadedWorldTiles = new Dictionary<Point, WorldTile>();
-        private static Dictionary<Point, Tile> openWorldBack = new Dictionary<Point, Tile>();
-        private static Dictionary<Point, Tile> openWorldBuildings = new Dictionary<Point, Tile>();
-        private static Dictionary<Point, Tile> openWorldFront = new Dictionary<Point, Tile>();
+        public static GameLocation openWorldLocation;
+        //private static Dictionary<string, Biome> biomes = new Dictionary<string, Biome>();
+        public static Dictionary<string, Func<int, int, int, WorldTile>> biomes;
+        public static Dictionary<Point, WorldTile> cachedWorldTiles = new Dictionary<Point, WorldTile>();
+        public static Dictionary<Point, WorldTile> loadedWorldTiles = new Dictionary<Point, WorldTile>();
+        public static Dictionary<Point, Tile> openWorldBack = new Dictionary<Point, Tile>();
+        public static Dictionary<Point, Tile> openWorldBuildings = new Dictionary<Point, Tile>();
+        public static Dictionary<Point, Tile> openWorldFront = new Dictionary<Point, Tile>();
 
         /// <summary>The mod entry point, called after the mod is first loaded.</summary>
         /// <param name="helper">Provides simplified APIs for writing mods.</param>
@@ -65,7 +66,10 @@ namespace StardewOpenWorld
             var harmony = new Harmony(ModManifest.UniqueID);
             harmony.PatchAll();
         }
-
+        public override object GetApi()
+        {
+            return new StardewOpenWorldAPI();
+        }
         private void GameLoop_SaveLoaded(object sender, SaveLoadedEventArgs e)
         {
             if (!Config.ModEnabled)

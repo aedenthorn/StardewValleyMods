@@ -1,16 +1,16 @@
 ﻿{
-  "Name": "Wildflowers",
+  "Name": "Bee Paths",
   "Author": "aedenthorn",
-  "Version": "0.4.0",
-  "Description": "Wildflowers.",
-  "UniqueID": "aedenthorn.Wildflowers",
-  "EntryDll": "Wildflowers.dll",
+  "Version": "0.1.1",
+  "Description": "Bee Paths.",
+  "UniqueID": "aedenthorn.BeePaths",
+  "EntryDll": "BeePaths.dll",
   "MinimumApiVersion": "3.15.0",
   "ModUpdater": {
     "Repository": "StardewValleyMods",
     "User": "aedenthorn",
     "Directory": "_releases",
-    "ModFolder": "Wildflowers"
+    "ModFolder": "BeePaths"
   },
   "Dependencies": [
     {
@@ -18,5 +18,5 @@
       "IsRequired": false
     }
   ],
-  "UpdateKeys": [ "Nexus:14061" ]
+  "UpdateKeys": [ "Nexus:14812" ]
 }

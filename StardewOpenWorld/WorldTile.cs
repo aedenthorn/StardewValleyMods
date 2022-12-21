@@ -14,5 +14,6 @@ namespace StardewOpenWorld
         public Dictionary<Point, Tile> buildings = new Dictionary<Point, Tile>();
         public Dictionary<Point, Tile> front = new Dictionary<Point, Tile>();
         public Dictionary<Point, Tile> alwaysFront = new Dictionary<Point, Tile>();
+        public int priority;
     }
 }
