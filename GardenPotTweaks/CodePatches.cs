@@ -208,6 +208,16 @@ namespace GardenPotTweaks
                 return false;
             }
         }
+        [HarmonyPatch(typeof(Object), "loadDisplayName")]
+        public class Object_loadDisplayName_Patch
+        {
+            public static void Postfix(Object __instance, ref string __result)
+            {
+                if (!Config.ModEnabled || !Config.EnableMoving || __instance is not IndoorPot || (__instance as IndoorPot).hoeDirt.Value?.crop is null)
+                    return;
+                __result += $" ({new Object((__instance as IndoorPot).hoeDirt.Value.crop.indexOfHarvest.Value, 1).Name})";
+            }
+        }
         [HarmonyPatch(typeof(IndoorPot), nameof(IndoorPot.performObjectDropInAction))]
         public class IndoorPot_performObjectDropInAction_Patch
         {

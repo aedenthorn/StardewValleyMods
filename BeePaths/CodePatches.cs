@@ -26,7 +26,7 @@ namespace BeePaths
         [HarmonyPatch(typeof(Utility), nameof(Utility.findCloseFlower), new Type[] { typeof(GameLocation), typeof(Vector2), typeof(int), typeof(Func<Crop, bool>) })]
         public class findCloseFlower_Patch
         {
-            public static bool Prefix(GameLocation location, Vector2 startTileLocation, int range, Func<Crop, bool> additional_check, ref Crop __result)
+            public static bool Prefix(GameLocation location, Vector2 startTileLocation, ref int range, Func<Crop, bool> additional_check, ref Crop __result)
             {
                 if (!Config.ModEnabled || !Config.FixFlowerFind)
                     return true;

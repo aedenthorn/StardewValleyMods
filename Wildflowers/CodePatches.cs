@@ -111,7 +111,6 @@ namespace Wildflowers
             {
                 if (!Config.ModEnabled || !Config.WildFlowersMakeFlowerHoney || !cropDict.TryGetValue(location.Name, out Dictionary<Vector2, Crop> locDict))
                     return;
-                range = Config.BeeRange;
                 Vector2 tilePos = __result is null ? Vector2.Zero : AccessTools.FieldRefAccess<Crop, Vector2>(__result, "tilePosition");
                 float closestDistance = Vector2.Distance(startTileLocation, tilePos);
                 foreach (var v in locDict.Keys.ToArray())
