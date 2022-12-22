@@ -99,7 +99,7 @@ namespace BeePaths
                         hive.bees.Add(reverse ? GetBee(cropTile, kvp.Key) : GetBee(kvp.Key, cropTile));
                     }
                 }
-                if (hive.bees.Count < Config.NumberBees && Game1.random.NextDouble() < 0.5)
+                if (hive.bees.Count < Config.NumberBees && Game1.random.NextDouble() < 0.25)
                 {
                     var reverse = Game1.random.NextDouble() < 0.5;
                     hive.bees.Add(reverse ? GetBee(hive.cropTile, kvp.Key, false) : GetBee(kvp.Key, hive.cropTile, false));
@@ -107,7 +107,8 @@ namespace BeePaths
                 for (int i = hive.bees.Count - 1; i >= 0; i--)
                 {
                     var bee = hive.bees[i];
-                    e.SpriteBatch.Draw(beeDot, Game1.GlobalToLocal(bee.pos), null, Config.BeeColor, -(float)Math.Atan((bee.endPos - bee.pos).Y / (bee.endPos - bee.pos).X), Vector2.Zero, Config.BeeScale, SpriteEffects.None, 1);
+                    Vector2 drawPos = bee.pos + Vector2.Normalize(Vector2.Transform(bee.pos, Matrix.CreateRotationX(90f * (float)Math.PI / 180f))) * 5 * (float)Math.Sin(Vector2.Distance(bee.startPos, bee.pos) / 20);
+                    e.SpriteBatch.Draw(beeDot, Game1.GlobalToLocal(drawPos), null, Config.BeeColor, -(float)Math.Atan((bee.endPos - bee.pos).Y / (bee.endPos - bee.pos).X), Vector2.Zero, Config.BeeScale, SpriteEffects.None, 1);
                     if(Config.BeeDamage > 0 && Game1.random.Next(100) < Config.BeeStingChance)
                     {
                         foreach (var f in Game1.getAllFarmers())
@@ -137,7 +138,9 @@ namespace BeePaths
                     if(buzz is null)
                         buzz = Game1.soundBank.GetCue(Config.BeeSound);
                     var vol = 100 - 100 * buzzDistance / Config.MaxSoundDistance - 10;
+                    buzz.Pitch = 0;
                     buzz.SetVariable("Volume", vol);
+                    buzz.SetVariable("Pitch", 0f);
                     if (!buzz.IsPlaying)
                         buzz.Play();
                 }

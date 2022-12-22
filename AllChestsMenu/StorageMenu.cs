@@ -212,13 +212,24 @@ namespace AllChestsMenu
                 {
                     list = new(Game1.locations);
                 }
+                foreach(var l in list.ToArray())
+                {
+                    if(l is BuildableGameLocation)
+                    {
+                        foreach(var b in (l as BuildableGameLocation).buildings)
+                        {
+                            if(b.indoors.Value is not null)
+                                list.Add(b.indoors.Value);
+                        }
+                    }
+                }
                 foreach (var l in list)
                 {
                     if(l is FarmHouse)
                     {
                         Chest chest = (l as FarmHouse).fridge.Value;
                         RestoreNulls(chest.items);
-                        string key = l.Name;
+                        string key = l.NameOrUniqueName;
                         if (!chest.modData.TryGetValue("Pathoschild.ChestsAnywhere/Name", out string chestName) || string.IsNullOrEmpty(chestName))
                         {
                             key += " " + fridgeString;
@@ -231,7 +242,7 @@ namespace AllChestsMenu
                         var columns = 12;
                         var rows = Math.Max((int)Math.Ceiling(chest.items.Count / (float)columns), 3);
                         var cap = rows * columns;
-                        allStorageList.Add(new StorageData() { chest = chest, name = chestName, location = l.Name, tile = new Vector2(-1, -1), label = key, index = allStorageList.Count });
+                        allStorageList.Add(new StorageData() { chest = chest, name = chestName, location = l.NameOrUniqueName, tile = new Vector2(-1, -1), label = key, index = allStorageList.Count });
                     }
                     foreach (var kvp in l.objects.Pairs)
                     {
@@ -240,7 +251,7 @@ namespace AllChestsMenu
                         {
                             Chest chest = obj as Chest;
                             RestoreNulls(chest.items);
-                            string key = $"{l.Name} {kvp.Key.X},{kvp.Key.Y}";
+                            string key = $"{l.NameOrUniqueName} {kvp.Key.X},{kvp.Key.Y}";
                             if (obj.modData.TryGetValue(chestsAnywhereKey, out string chestName) && !string.IsNullOrEmpty(chestName))
                             {
                                 key = $"{chestName} ({key})";
@@ -250,7 +261,7 @@ namespace AllChestsMenu
                                 chestName = "";
                             }
 
-                            allStorageList.Add(new StorageData() { chest = chest, name = chestName, location = l.Name, tile = new Vector2(-1, -1), label = key, index = allStorageList.Count });
+                            allStorageList.Add(new StorageData() { chest = chest, name = chestName, location = l.NameOrUniqueName, tile = new Vector2(-1, -1), label = key, index = allStorageList.Count });
                         }
                     }
                 }

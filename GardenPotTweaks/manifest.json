@@ -1,16 +1,16 @@
 ﻿{
-  "Name": "Bee Paths",
+  "Name": "Garden Pot Tweaks",
   "Author": "aedenthorn",
-  "Version": "0.2.0",
-  "Description": "Bee Paths.",
-  "UniqueID": "aedenthorn.BeePaths",
-  "EntryDll": "BeePaths.dll",
+  "Version": "0.1.0",
+  "Description": "Garden Pot Tweaks.",
+  "UniqueID": "aedenthorn.GardenPotTweaks",
+  "EntryDll": "GardenPotTweaks.dll",
   "MinimumApiVersion": "3.15.0",
   "ModUpdater": {
     "Repository": "StardewValleyMods",
     "User": "aedenthorn",
     "Directory": "_releases",
-    "ModFolder": "BeePaths"
+    "ModFolder": "GardenPotTweaks"
   },
   "Dependencies": [
     {
@@ -18,5 +18,5 @@
       "IsRequired": false
     }
   ],
-  "UpdateKeys": [ "Nexus:14812" ]
+  "UpdateKeys": [ "Nexus:" ]
 }

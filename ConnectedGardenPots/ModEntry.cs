@@ -45,7 +45,7 @@ namespace ConnectedGardenPots
             }
             catch
             {
-                gardenPotspriteSheet = Helper.Content.Load<Texture2D>("assets/sprite_sheet.png");
+                gardenPotspriteSheet = Helper.ModContent.Load<Texture2D>("assets/sprite_sheet.png");
             }
         }
         private void GameLoop_GameLaunched(object sender, GameLaunchedEventArgs e)

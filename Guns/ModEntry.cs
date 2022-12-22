@@ -57,6 +57,9 @@ namespace Guns
             Helper.Events.GameLoop.UpdateTicked += GameLoop_UpdateTicked;
             Helper.Events.Content.AssetRequested += Content_AssetRequested;
 
+            //var data = new GunData();
+            //File.WriteAllText("content.json", JsonConvert.SerializeObject(data));
+
             var harmony = new Harmony(ModManifest.UniqueID);
             harmony.PatchAll();
 
@@ -83,7 +86,7 @@ namespace Guns
             gunDict = Helper.GameContent.Load<Dictionary<string, GunData>>(dictPath);
             foreach(var key in gunDict.Keys.ToArray()) 
             {
-                gunDict[key].texture = Helper.GameContent.Load<Texture2D>(gunDict[key].texturePath);
+                //gunDict[key].texture = Helper.GameContent.Load<Texture2D>(gunDict[key].texturePath);
             }
             gunTexture = Helper.ModContent.Load<Texture2D>("assets/uzi.png");
         }
