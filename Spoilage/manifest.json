@@ -1,7 +1,7 @@
 ﻿{
   "Name": "Spoilage",
   "Author": "aedenthorn",
-  "Version": "0.3.0",
+  "Version": "0.3.1",
   "Description": "Spoilage.",
   "UniqueID": "aedenthorn.Spoilage",
   "EntryDll": "Spoilage.dll",

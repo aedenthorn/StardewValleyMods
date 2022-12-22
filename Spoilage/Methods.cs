@@ -90,8 +90,6 @@ namespace Spoilage
                     else if (Config.Spoiling && (item as Object).Quality == 0)
                     {
                         SMonitor.Log($"Spoiling {item.Name} x{item.Stack}");
-                        item.modData[spoiledKey] = (string)AccessTools.Method(item.GetType(), "loadDisplayName").Invoke(item, new object[] { });
-                        (items[i] as Object).Quality = -4;
 
                         int spoiledIndex = Config.SpoiledIndex;
                         if ((spoilageDict.TryGetValue(item.Name, out SpoilData data) || spoilageDict.TryGetValue(item.ParentSheetIndex + "", out data)) && data.spoiled is not null)
@@ -107,7 +105,9 @@ namespace Spoilage
                                 catch { }
                             }
                         }
-                        (items[i] as Object).ParentSheetIndex = spoiledIndex;
+                        items[i] = new Object(spoiledIndex, items[i].Stack);
+                        (items[i] as Object).Quality = -4;
+                        items[i].modData[spoiledKey] = (string)AccessTools.Method(item.GetType(), "loadDisplayName").Invoke(item, new object[] { });
                     }
                 }
                 item.modData[ageKey] = age + "";

@@ -4,6 +4,7 @@ using Microsoft.Xna.Framework.Graphics;
 using Netcode;
 using StardewModdingAPI;
 using StardewValley;
+using StardewValley.Locations;
 using StardewValley.Objects;
 using StardewValley.Quests;
 using System;
@@ -73,14 +74,33 @@ namespace Spoilage
             {
                 spoilageDict.TryAdd(kvp.Key, kvp.Value);
             }
+            var locs = new List<GameLocation>();
             foreach(var l in Game1.locations)
+            {
+                locs.Add(l);
+                if(l is BuildableGameLocation)
+                {
+                    foreach(var b in (l as BuildableGameLocation).buildings)
+                    {
+                        if(b.indoors.Value is not null)
+                        {
+                            locs.Add(b.indoors.Value);
+                        }
+                    }
+                }
+            }
+            
+            foreach(var l in locs)
             {
                 foreach(var obj in l.objects.Values)
                 {
                     if(obj is Chest)
                     {
                         SpoilItems((obj as Chest).items, (obj as Chest).fridge.Value ? Config.FridgeMult : 1);
-
+                    }
+                    else if(obj.heldObject.Value is Chest)
+                    {
+                        SpoilItems((obj.heldObject.Value as Chest).items, (obj.heldObject.Value as Chest).fridge.Value ? Config.FridgeMult : 1);
                     }
                 }
             }
