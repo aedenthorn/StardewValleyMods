@@ -453,6 +453,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GardenPotTweaks", "GardenPo
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ConnectedGardenPots", "ConnectedGardenPots\ConnectedGardenPots.csproj", "{7AB0DEA9-561E-4D11-9F80-B5539CFB6F4C}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ChatSounds", "ChatSounds\ChatSounds.csproj", "{0D558B0F-818F-4D03-A288-154341A4E91A}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -3109,6 +3111,18 @@ Global
 		{7AB0DEA9-561E-4D11-9F80-B5539CFB6F4C}.Release|x64.Build.0 = Release|x64
 		{7AB0DEA9-561E-4D11-9F80-B5539CFB6F4C}.Release|x86.ActiveCfg = Release|Any CPU
 		{7AB0DEA9-561E-4D11-9F80-B5539CFB6F4C}.Release|x86.Build.0 = Release|Any CPU
+		{0D558B0F-818F-4D03-A288-154341A4E91A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0D558B0F-818F-4D03-A288-154341A4E91A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0D558B0F-818F-4D03-A288-154341A4E91A}.Debug|x64.ActiveCfg = Debug|x64
+		{0D558B0F-818F-4D03-A288-154341A4E91A}.Debug|x64.Build.0 = Debug|x64
+		{0D558B0F-818F-4D03-A288-154341A4E91A}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{0D558B0F-818F-4D03-A288-154341A4E91A}.Debug|x86.Build.0 = Debug|Any CPU
+		{0D558B0F-818F-4D03-A288-154341A4E91A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0D558B0F-818F-4D03-A288-154341A4E91A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0D558B0F-818F-4D03-A288-154341A4E91A}.Release|x64.ActiveCfg = Release|x64
+		{0D558B0F-818F-4D03-A288-154341A4E91A}.Release|x64.Build.0 = Release|x64
+		{0D558B0F-818F-4D03-A288-154341A4E91A}.Release|x86.ActiveCfg = Release|Any CPU
+		{0D558B0F-818F-4D03-A288-154341A4E91A}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

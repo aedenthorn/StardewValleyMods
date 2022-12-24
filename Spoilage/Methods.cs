@@ -90,7 +90,11 @@ namespace Spoilage
                     else if (Config.Spoiling && (item as Object).Quality == 0)
                     {
                         SMonitor.Log($"Spoiling {item.Name} x{item.Stack}");
-
+                        if(Config.RemoveSpoiled)
+                        {
+                            items[i] = null;
+                            continue;
+                        }
                         int spoiledIndex = Config.SpoiledIndex;
                         if ((spoilageDict.TryGetValue(item.Name, out SpoilData data) || spoilageDict.TryGetValue(item.ParentSheetIndex + "", out data)) && data.spoiled is not null)
                         {

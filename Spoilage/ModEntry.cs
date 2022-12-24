@@ -141,6 +141,12 @@ namespace Spoilage
             );
             configMenu.AddBoolOption(
                 mod: ModManifest,
+                name: () => "Remove Spoiled",
+                getValue: () => Config.RemoveSpoiled,
+                setValue: value => Config.RemoveSpoiled = value
+            );
+            configMenu.AddBoolOption(
+                mod: ModManifest,
                 name: () => "Display Age",
                 getValue: () => Config.DisplayDays,
                 setValue: value => Config.DisplayDays = value

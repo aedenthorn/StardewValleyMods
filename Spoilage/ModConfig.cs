@@ -9,6 +9,7 @@ namespace Spoilage
         public bool ModEnabled { get; set; } = true;
         public bool QualityReduction { get; set; } = true;
         public bool Spoiling { get; set; } = true;
+        public bool RemoveSpoiled { get; set; } = false;
         public bool DisplayDays { get; set; } = true;
         public bool DisplayDaysLeft { get; set; } = true;
         public int FruitsDays { get; set; } = 5;
