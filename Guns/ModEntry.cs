@@ -39,7 +39,6 @@ namespace Guns
         public static string firingKey = "aedenthorn.Guns/firing";
         public static Dictionary<string, GunData> gunDict = new Dictionary<string, GunData>();
         public static Dictionary<long, string> farmerDict = new Dictionary<long, string>();
-        public static int altFrame;
 
         /// <summary>The mod entry point, called after the mod is first loaded.</summary>
         /// <param name="helper">Provides simplified APIs for writing mods.</param>
@@ -86,7 +85,7 @@ namespace Guns
             gunDict = Helper.GameContent.Load<Dictionary<string, GunData>>(dictPath);
             foreach(var key in gunDict.Keys.ToArray()) 
             {
-                //gunDict[key].texture = Helper.GameContent.Load<Texture2D>(gunDict[key].texturePath);
+                gunDict[key].gunTexture = Helper.GameContent.Load<Texture2D>(gunDict[key].gunTexturePath);
             }
             gunTexture = Helper.ModContent.Load<Texture2D>("assets/uzi.png");
         }

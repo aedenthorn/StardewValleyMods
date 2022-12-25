@@ -115,8 +115,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SocialPageOrderButton", "So
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CustomTextColours", "CustomTextColours\CustomTextColours.csproj", "{FDB19233-8029-4CA4-9C80-C74391F2547A}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AdvancedMeleeFramework", "AdvancedMeleeFramework\AdvancedMeleeFramework.csproj", "{DDD72137-FBD6-4EDA-AE6F-8D3AAB6BE48E}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CustomPaintings", "CustomPaintings\CustomPaintings.csproj", "{5EA80D01-0BA0-4279-86AE-330AF8C9BF7F}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ParrotPerch", "ParrotPerch\ParrotPerch.csproj", "{B2A2DDC0-6F97-4326-86B8-92ED3D2F0624}"
@@ -454,6 +452,8 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ConnectedGardenPots", "ConnectedGardenPots\ConnectedGardenPots.csproj", "{7AB0DEA9-561E-4D11-9F80-B5539CFB6F4C}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ChatSounds", "ChatSounds\ChatSounds.csproj", "{0D558B0F-818F-4D03-A288-154341A4E91A}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AdvancedMeleeFramework", "AdvancedMeleeFramework\AdvancedMeleeFramework.csproj", "{0C59FC3C-5C82-4AEE-AD35-6FBF8E0B041C}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -1137,18 +1137,6 @@ Global
 		{FDB19233-8029-4CA4-9C80-C74391F2547A}.Release|x64.Build.0 = Release|x64
 		{FDB19233-8029-4CA4-9C80-C74391F2547A}.Release|x86.ActiveCfg = Release|Any CPU
 		{FDB19233-8029-4CA4-9C80-C74391F2547A}.Release|x86.Build.0 = Release|Any CPU
-		{DDD72137-FBD6-4EDA-AE6F-8D3AAB6BE48E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{DDD72137-FBD6-4EDA-AE6F-8D3AAB6BE48E}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{DDD72137-FBD6-4EDA-AE6F-8D3AAB6BE48E}.Debug|x64.ActiveCfg = Debug|x64
-		{DDD72137-FBD6-4EDA-AE6F-8D3AAB6BE48E}.Debug|x64.Build.0 = Debug|x64
-		{DDD72137-FBD6-4EDA-AE6F-8D3AAB6BE48E}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{DDD72137-FBD6-4EDA-AE6F-8D3AAB6BE48E}.Debug|x86.Build.0 = Debug|Any CPU
-		{DDD72137-FBD6-4EDA-AE6F-8D3AAB6BE48E}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{DDD72137-FBD6-4EDA-AE6F-8D3AAB6BE48E}.Release|Any CPU.Build.0 = Release|Any CPU
-		{DDD72137-FBD6-4EDA-AE6F-8D3AAB6BE48E}.Release|x64.ActiveCfg = Release|x64
-		{DDD72137-FBD6-4EDA-AE6F-8D3AAB6BE48E}.Release|x64.Build.0 = Release|x64
-		{DDD72137-FBD6-4EDA-AE6F-8D3AAB6BE48E}.Release|x86.ActiveCfg = Release|Any CPU
-		{DDD72137-FBD6-4EDA-AE6F-8D3AAB6BE48E}.Release|x86.Build.0 = Release|Any CPU
 		{5EA80D01-0BA0-4279-86AE-330AF8C9BF7F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{5EA80D01-0BA0-4279-86AE-330AF8C9BF7F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{5EA80D01-0BA0-4279-86AE-330AF8C9BF7F}.Debug|x64.ActiveCfg = Debug|x64
@@ -3123,6 +3111,18 @@ Global
 		{0D558B0F-818F-4D03-A288-154341A4E91A}.Release|x64.Build.0 = Release|x64
 		{0D558B0F-818F-4D03-A288-154341A4E91A}.Release|x86.ActiveCfg = Release|Any CPU
 		{0D558B0F-818F-4D03-A288-154341A4E91A}.Release|x86.Build.0 = Release|Any CPU
+		{0C59FC3C-5C82-4AEE-AD35-6FBF8E0B041C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0C59FC3C-5C82-4AEE-AD35-6FBF8E0B041C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0C59FC3C-5C82-4AEE-AD35-6FBF8E0B041C}.Debug|x64.ActiveCfg = Debug|x64
+		{0C59FC3C-5C82-4AEE-AD35-6FBF8E0B041C}.Debug|x64.Build.0 = Debug|x64
+		{0C59FC3C-5C82-4AEE-AD35-6FBF8E0B041C}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{0C59FC3C-5C82-4AEE-AD35-6FBF8E0B041C}.Debug|x86.Build.0 = Debug|Any CPU
+		{0C59FC3C-5C82-4AEE-AD35-6FBF8E0B041C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0C59FC3C-5C82-4AEE-AD35-6FBF8E0B041C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0C59FC3C-5C82-4AEE-AD35-6FBF8E0B041C}.Release|x64.ActiveCfg = Release|x64
+		{0C59FC3C-5C82-4AEE-AD35-6FBF8E0B041C}.Release|x64.Build.0 = Release|x64
+		{0C59FC3C-5C82-4AEE-AD35-6FBF8E0B041C}.Release|x86.ActiveCfg = Release|Any CPU
+		{0C59FC3C-5C82-4AEE-AD35-6FBF8E0B041C}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

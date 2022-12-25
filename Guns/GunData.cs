@@ -1,30 +1,47 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System;
-using System.Collections.Generic;
 
 namespace Guns
 {
     public class GunData
     {
-        public string texturePath;
-        public Texture2D texture;
-        public string bulletTexture;
+        public bool gunAlwaysShow;
+        public string gunTexturePath;
+        public Texture2D gunTexture;
+        public float gunTextureScale;
+        public int gunTileWidth;
+        public int gunTileHeight;
+        public Point[] gunOffsets = 
+        {
+            new Point(0, 0),
+            new Point(0, 0),
+            new Point(0, 0),
+            new Point(0, 0)
+        };
+        public string bulletTexturePath;
+        public Texture2D bulletTexture;
         public int bulletIndex;
-        public int minDamage;
-        public int maxDamage;
-        public float rate;
-        public string fireSound;
-        public bool explosive;
+        public bool bulletFromSpringObjects;
         public float bulletRotation;
         public float bulletVelocity;
         public float bulletScale;
-        public List<Point> bulletOffsets = new List<Point>()
+        public Point[] bulletOffsets =
         {
-            new Point(24, -92),
-            new Point(48, -48),
-            new Point(-22, 4),
-            new Point(-48, -48)
+            new Point(0, 0),
+            new Point(0, 0),
+            new Point(0, 0),
+            new Point(0, 0)
         };
+
+        public int minDamage;
+        public int maxDamage;
+        public int fireRate;
+        public int fireTicks;
+        public string fireSound;
+        public string collisionSound;
+        public bool explosive;
+        public int explosionRadius;
+        public int explosionDamage = -1;
+        public bool explosionDamagesFarmers;
     }
 }

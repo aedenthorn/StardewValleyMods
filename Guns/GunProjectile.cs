@@ -9,10 +9,17 @@ namespace Guns
     {
 
 
-        public GunProjectile(float rotation, float scale, int v1, int v2, int v3, int v4, int v5, float x, float y, Vector2 vector2, string v6, string v7, bool v8, bool v9, GameLocation currentLocation, Farmer player, bool v10, object value) : base(v1, v2, v3, v4, v5, x, y, vector2, v6, v7, v8, v9, currentLocation, player, v10, null)
+        public GunProjectile(float rotation, float scale, int damage, int index, int bounces, int tail, int rotVelocity, float xVelocity, float yVelocity, Vector2 startPos, string collisionSound, string firingSound, bool explode, bool damageMonsters, GameLocation location, Farmer firer, bool spriteFromObjSheet, onCollisionBehavior behavior) : base(damage, index, bounces, tail, rotVelocity, xVelocity, yVelocity, startPos, collisionSound, firingSound, explode, damageMonsters, location, firer, spriteFromObjSheet, behavior)
         {
+            ignoreTravelGracePeriod.Value = true;
             this.rotation = rotation;
             localScale = scale;
+            ignoreLocationCollision.Value = false;
+        }
+
+        public override bool isColliding(GameLocation location)
+        {
+            return location.isCollidingPosition(getBoundingBox(), Game1.viewport, false, 0, false, theOneWhoFiredMe.Get(location), false, true, false) || location.doesPositionCollideWithCharacter(getBoundingBox(), false) != null;
         }
     }
 }
