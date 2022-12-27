@@ -41,6 +41,20 @@ namespace OmniTools
                 {
                     Tool t = f.CurrentTool;
                     Tool newTool = GetToolFromInfo(tools[i]);
+                    if(newTool is null)
+                    {
+                        SMonitor.Log($"Invalid tool {tools[i].displayName}, removing", StardewModdingAPI.LogLevel.Warn);
+                        tools.RemoveAt(i);
+                        if(tools.Count > 0)
+                        {
+                            f.CurrentTool.modData[toolsKey] = JsonConvert.SerializeObject(tools);
+                        }
+                        else
+                        {
+                            f.CurrentTool.modData.Remove(toolsKey);
+                        }
+                        return false;
+                    }
                     if ((type == typeof(MeleeWeapon) && (newTool as MeleeWeapon).isScythe(newTool.ParentSheetIndex)) ||(type is null && !(newTool as MeleeWeapon).isScythe(newTool.ParentSheetIndex)))
                         continue;
                     f.CurrentTool = newTool;
@@ -63,6 +77,21 @@ namespace OmniTools
         {
             List<ToolInfo> tools = JsonConvert.DeserializeObject<List<ToolInfo>>(toolsString);
             Tool t = GetToolFromInfo(tools[0]);
+            if (t is null)
+            {
+                SMonitor.Log($"Invalid tool {tools[0].displayName}, removing", StardewModdingAPI.LogLevel.Warn);
+                tools.RemoveAt(0);
+                if (tools.Count > 0)
+                {
+                    currentTool.modData[toolsKey] = JsonConvert.SerializeObject(tools);
+                }
+                else
+                {
+                    currentTool.modData.Remove(toolsKey);
+                }
+                return currentTool;
+            }
+
             tools.Add(new ToolInfo(currentTool));
             t.modData[toolsKey] = JsonConvert.SerializeObject(tools.Skip(1));
             Game1.playSound(GetToolSound(t));
@@ -72,8 +101,21 @@ namespace OmniTools
         public static Tool RemoveTool(Tool currentTool, string toolsString)
         {
             List<ToolInfo> tools = JsonConvert.DeserializeObject<List<ToolInfo>>(toolsString);
-            currentTool.modData.Remove(toolsKey);
             Tool t = GetToolFromInfo(tools[0]);
+            if (t is null)
+            {
+                SMonitor.Log($"Invalid tool {tools[0].displayName}, removing", StardewModdingAPI.LogLevel.Warn);
+                tools.RemoveAt(0);
+                if (tools.Count > 0)
+                {
+                    currentTool.modData[toolsKey] = JsonConvert.SerializeObject(tools);
+                }
+                else
+                {
+                    currentTool.modData.Remove(toolsKey);
+                }
+                return currentTool;
+            }
             if (tools.Count > 1)
             {
                 t.modData[toolsKey] = JsonConvert.SerializeObject(tools.Skip(1));
@@ -83,6 +125,7 @@ namespace OmniTools
                 t.modData.Remove(toolsKey);
             }
             Game1.playSound(GetToolSound(t));
+            currentTool.modData.Remove(toolsKey);
             if (!Game1.player.addItemToInventoryBool(currentTool))
             {
                 Game1.createItemDebris(currentTool, Game1.player.getStandingPosition(), Game1.player.FacingDirection, null, -1);
@@ -154,7 +197,8 @@ namespace OmniTools
                     t = new Wand();
                     break;
             }
-            t.UpgradeLevel = upgradeLevel;
+            if(t is not null)
+                t.UpgradeLevel = upgradeLevel;
             return t;
         }
     }
