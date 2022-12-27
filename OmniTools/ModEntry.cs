@@ -207,6 +207,12 @@ namespace OmniTools
             );
             configMenu.AddBoolOption(
                 mod: ModManifest,
+                name: () => "Switch For Crops",
+                getValue: () => Config.SwitchForCrops,
+                setValue: value => Config.SwitchForCrops = value
+            );
+            configMenu.AddBoolOption(
+                mod: ModManifest,
                 name: () => "Switch For Resource Clumps",
                 getValue: () => Config.SwitchForResourceClumps,
                 setValue: value => Config.SwitchForResourceClumps = value
@@ -236,5 +242,6 @@ namespace OmniTools
                 setValue: value => Config.SwitchForObjects = value
             );
         }
+
     }
 }

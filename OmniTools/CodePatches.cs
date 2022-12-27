@@ -204,5 +204,66 @@ namespace OmniTools
                 }
             }
         }
+
+        [HarmonyPatch(typeof(Game1), "checkIsMissingTool")]
+        public class Game1_checkIsMissingTool_Patch
+        {
+            public static void Postfix(Dictionary<Type, int> missingTools, ref int missingScythes, Item item)
+            {
+                if (!Config.EnableMod || item is not Tool || !item.modData.TryGetValue(toolsKey, out string toolsString))
+                    return;
+                var tools = GetToolsFromTool(item as Tool);
+                foreach(var tool in tools)
+                {
+                    for (int i = 0; i < missingTools.Count; i++)
+                    {
+                        if (tool.GetType() == missingTools.ElementAt(i).Key)
+                        {
+                            Type key = missingTools.ElementAt(i).Key;
+                            int num = missingTools[key];
+                            missingTools[key] = num - 1;
+                        }
+                    }
+                    if (tool is MeleeWeapon && (tool as MeleeWeapon).Name.Equals("Scythe"))
+                    {
+                        missingScythes--;
+                    }
+                }
+            }
+        }
+        [HarmonyPatch(typeof(Farmer), nameof(Farmer.removeItemFromInventory), new Type[] { typeof(Item) })]
+        public class Farmer_removeItemFromInventory_Patch
+        {
+            public static void Prefix(Farmer __instance, Item which)
+            {
+                if (!Config.EnableMod || which is not Tool || !which.modData.TryGetValue(toolsKey, out string toolsString))
+                    return;
+                var tools = GetToolInfosFromString(toolsString);
+                foreach (var tool in tools)
+                {
+                    Tool t = GetToolFromInfo(tool);
+                    if (t is not null)
+                    {
+                        if (!__instance.addItemToInventoryBool(t))
+                        {
+                            Game1.createItemDebris(t, __instance.getStandingPosition(), __instance.FacingDirection, __instance.currentLocation, -1);
+                        }
+                    }
+                }
+                which.modData.Remove(toolsKey);
+            }
+        }
+        [HarmonyPatch(typeof(HoeDirt), nameof(HoeDirt.performUseAction))]
+        public class HoeDirt_performUseAction_Patch
+        {
+            public static void Prefix(HoeDirt __instance)
+            {
+                if (!Config.EnableMod || !Config.SwitchForCrops || Game1.player.CurrentTool is not Tool || !Game1.player.CurrentTool.modData.ContainsKey(toolsKey))
+                    return;
+                Tool tool = SwitchForTerrainFeature(Game1.player.CurrentTool, __instance);
+                if (tool is not null)
+                    Game1.player.CurrentTool = tool;
+            }
+        }
     }
 }

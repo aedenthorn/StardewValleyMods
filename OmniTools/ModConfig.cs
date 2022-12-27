@@ -17,6 +17,7 @@ namespace OmniTools
         public bool SwitchForTrees { get; set; } = true;
         public bool SwitchForResourceClumps { get; set; } = true;
         public bool SwitchForGrass { get; set; } = true;
+        public bool SwitchForCrops { get; set; } = true;
         public bool SwitchForPan { get; set; } = true;
         public bool SwitchForWateringCan { get; set; } = true;
         public bool SwitchForFishing { get; set; } = true;

@@ -49,17 +49,8 @@ namespace OmniTools
         }
         public Tool[] GetTools(Tool tool)
         {
-            if (!tool.modData.TryGetValue(ModEntry.toolsKey, out var toolsString))
-                return null;
-            var infos = JsonConvert.DeserializeObject<List<ToolInfo>>(toolsString);
-            var list = new List<Tool>();
-            foreach(var i in infos)
-            {
-                Tool t = ModEntry.GetToolFromInfo(i);
-                if(t is not null)
-                    list.Add(t);
-            }
-            return list.ToArray();
+
+            return ModEntry.GetToolsFromTool(tool);
         }
     }
 

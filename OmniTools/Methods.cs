@@ -213,6 +213,11 @@ namespace OmniTools
                 Tool tool = SwitchTool(currentTool, null, tools); 
                 if (tool != null) return tool; 
             }
+            else if (Config.SwitchForCrops && tf is HoeDirt && (tf as HoeDirt).crop?.harvestMethod.Value == 1) 
+            { 
+                Tool tool = SwitchTool(currentTool, null, tools); 
+                if (tool != null) return tool; 
+            }
 
             return null;
         }
@@ -289,6 +294,17 @@ namespace OmniTools
                 }
                 catch { }
             }
+            foreach (var oi in toolInfo.attachments)
+            {
+                try
+                {
+                    t.attachments.Add(oi is not null ? new Object(oi.parentSheetIndex, oi.stack, false, -1, oi.quality) : null);
+                }
+                catch(Exception ex) 
+                {
+                    SMonitor.Log(ex.ToString());
+                }
+            }
             return t;
         }
 
@@ -344,6 +360,32 @@ namespace OmniTools
             if (t is not null)
                 t.UpgradeLevel = upgradeLevel;
             return t;
+        }
+        public static Tool[] GetToolsFromTool(Tool tool)
+        {
+            if (!tool.modData.TryGetValue(toolsKey, out var toolsString))
+                return null; 
+            var infos = JsonConvert.DeserializeObject<List<ToolInfo>>(toolsString);
+            var list = new List<Tool>();
+            foreach (var i in infos)
+            {
+                Tool t = ModEntry.GetToolFromInfo(i);
+                if (t is not null)
+                    list.Add(t);
+            }
+            return list.ToArray();
+        }
+        public static List<ToolInfo> GetToolInfosFromTool(Tool tool)
+        {
+            if (!tool.modData.TryGetValue(toolsKey, out var toolsString))
+                return null; 
+            return JsonConvert.DeserializeObject<List<ToolInfo>>(toolsString);
+        }
+        public static List<ToolInfo> GetToolInfosFromString(string toolsString)
+        {
+            if (toolsString is null)
+                return null; 
+            return JsonConvert.DeserializeObject<List<ToolInfo>>(toolsString);
         }
     }
 }
