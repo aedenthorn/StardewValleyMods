@@ -111,14 +111,24 @@ namespace OmniTools
             {
                 currentLocation.orePanPoint.Value = new Point(49, 24);
                 Rectangle orePanRect = new Rectangle(currentLocation.orePanPoint.X * 64 - 64, currentLocation.orePanPoint.Y * 64 - 64, 256, 256);
-                if (orePanRect.Contains((int)tile.X * 64, (int)tile.Y * 64) && Utility.distance((float)currentTool.getLastFarmerToUse().getStandingX(), (float)orePanRect.Center.X, (float)currentTool.getLastFarmerToUse().getStandingY(), (float)orePanRect.Center.Y) <= 192f) { Tool tool = SwitchTool(currentTool, typeof(Pan), tools); if (tool != null) return tool; }
+                if (orePanRect.Contains((int)tile.X * 64, (int)tile.Y * 64) && Utility.distance((float)currentTool.getLastFarmerToUse().getStandingX(), (float)orePanRect.Center.X, (float)currentTool.getLastFarmerToUse().getStandingY(), (float)orePanRect.Center.Y) <= 192f) 
+                { 
+                    Tool tool = SwitchTool(currentTool, typeof(Pan), tools); 
+                    if (tool != null) 
+                        return tool; 
+                }
 
             }
             if (Config.SwitchForMonsters)
             {
                 foreach (var c in currentLocation.characters)
                 {
-                    if (c.GetBoundingBox().Intersects(new Rectangle((int)tile.X * 64, (int)tile.Y * 64, 64, 64)) && c is Monster) { Tool tool = SwitchTool(currentTool, typeof(MeleeWeapon), tools); if (tool != null) return tool; }
+                    if (c.GetBoundingBox().Intersects(new Rectangle((int)tile.X * 64, (int)tile.Y * 64, 64, 64)) && c is Monster) 
+                    { 
+                        Tool tool = SwitchTool(currentTool, typeof(MeleeWeapon), tools); 
+                        if (tool != null) 
+                            return tool; 
+                    }
                 }
             }
             if (Config.SwitchForAnimals)
@@ -162,9 +172,18 @@ namespace OmniTools
         public static Tool SwitchForAnimal(Tool currentTool, FarmAnimal c, List<ToolInfo> tools = null)
         {
             //SMonitor.Log($"harvesting {c.Name}; age {c.age.Value}/{c.ageWhenMature.Value}; produce {c.currentProduce.Value} ({c.defaultProduceIndex.Value}); tool {Game1.player.CurrentTool?.Name} ({c.toolUsedForHarvest.Value} - {toolsString})");
-            if (c.toolUsedForHarvest.Value.Equals("Shears")) { Tool tool = SwitchTool(currentTool, typeof(Shears), tools); if (tool != null) return tool; }
-
-            if (c.toolUsedForHarvest.Value.Equals("Milk Pail")) { Tool tool = SwitchTool(currentTool, typeof(MilkPail), tools); if (tool != null) return tool; }
+            if (c.toolUsedForHarvest.Value.Equals("Shears")) 
+            { 
+                Tool tool = SwitchTool(currentTool, typeof(Shears), tools); 
+                if (tool != null) 
+                    return tool; 
+            }
+            else if (c.toolUsedForHarvest.Value.Equals("Milk Pail")) 
+            { 
+                Tool tool = SwitchTool(currentTool, typeof(MilkPail), tools); 
+                if (tool != null) 
+                    return tool; 
+            }
             
             return null;
             //if (c.currentProduce.Value > 0 && c.age.Value >= (int)c.ageWhenMature.Value)
@@ -175,9 +194,18 @@ namespace OmniTools
 
         public static Tool SwitchForClump(Tool currentTool, ResourceClump clump, List<ToolInfo> tools = null)
         {
-            if ((clump.parentSheetIndex.Value == 600 || clump.parentSheetIndex.Value == 602)) { Tool tool = SwitchTool(currentTool, typeof(Axe), tools); if (tool != null) return tool; }
-
-            else if (new int[] { 622, 672, 752, 754, 756, 758 }.Contains(clump.parentSheetIndex.Value)) { Tool tool = SwitchTool(currentTool, typeof(Pickaxe), tools); if (tool != null) return tool; }
+            if ((clump.parentSheetIndex.Value == 600 || clump.parentSheetIndex.Value == 602)) 
+            { 
+                Tool tool = SwitchTool(currentTool, typeof(Axe), tools); 
+                if (tool != null) 
+                    return tool; 
+            }
+            else if (new int[] { 622, 672, 752, 754, 756, 758 }.Contains(clump.parentSheetIndex.Value)) 
+            { 
+                Tool tool = SwitchTool(currentTool, typeof(Pickaxe), tools); 
+                if (tool != null) 
+                    return tool; 
+            }
             return null;
         }
 
@@ -186,17 +214,20 @@ namespace OmniTools
             if (obj.Name.Equals("Stone"))
             {
                 Tool tool = SwitchTool(currentTool, typeof(Pickaxe), tools); 
-                if (tool != null) return tool;
+                if (tool != null) 
+                    return tool;
             }
             else if (obj.Name.Contains("Twig"))
             {
                 Tool tool = SwitchTool(currentTool, typeof(Axe), tools); 
-                if (tool != null) return tool;
+                if (tool != null) 
+                    return tool;
             }
             else if (obj.ParentSheetIndex == 590)
             {
                 Tool tool = SwitchTool(currentTool, typeof(Hoe), tools); 
-                if (tool != null) return tool;
+                if (tool != null) 
+                    return tool;
             }
             return null;
         }
@@ -206,17 +237,20 @@ namespace OmniTools
             if (Config.SwitchForTrees && tf is Tree) 
             { 
                 Tool tool = SwitchTool(currentTool, typeof(Axe), tools); 
-                if (tool != null) return tool; 
+                if (tool != null) 
+                    return tool; 
             }
             else if (Config.SwitchForGrass && tf is Grass) 
             { 
                 Tool tool = SwitchTool(currentTool, null, tools); 
-                if (tool != null) return tool; 
+                if (tool != null) 
+                    return tool; 
             }
             else if (Config.SwitchForCrops && tf is HoeDirt && (tf as HoeDirt).crop?.harvestMethod.Value == 1) 
             { 
                 Tool tool = SwitchTool(currentTool, null, tools); 
-                if (tool != null) return tool; 
+                if (tool != null) 
+                    return tool; 
             }
 
             return null;
