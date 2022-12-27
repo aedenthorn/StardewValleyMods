@@ -28,36 +28,42 @@ namespace DynamicFlooring
                 {
                     for(int x = data.area.X; x < data.area.X + data.area.Width; x++)
                     {
-                        KeyValuePair<int, int> source = GetFloorSource(location, data.id);
-                        if (source.Value >= 0)
+                        if (!location.isTileOnMap(new Vector2(x, y)))
+                            continue;
+                        try
                         {
-                            int tilesheet_index = source.Key;
-                            int floor_pattern_id = source.Value;
-                            int tiles_wide = location.map.TileSheets[tilesheet_index].SheetWidth;
-                            string id = location.map.TileSheets[tilesheet_index].Id;
-                            string layer = "Back";
-                            floor_pattern_id = floor_pattern_id * 2 + floor_pattern_id / (tiles_wide / 2) * tiles_wide;
-                            if (id == "walls_and_floors")
+                            KeyValuePair<int, int> source = GetFloorSource(location, data.id);
+                            if (source.Value >= 0)
                             {
-                                floor_pattern_id += firstFlooringTile;
-                            }
-                            var floor = IsFloorableTile(location, x, y, layer) && IsFloorableOrWallpaperableTile(location, x, y, layer);
-                            var wall = !floor && IsFloorableOrWallpaperableTile(location, x, y, layer);
-                            var wallOrFloor = floor || wall;
-                            if ((data.ignore && !wall) || (!data.ignore && floor))
-                            {
-                                Tile old_tile = location.map.GetLayer(layer).Tiles[x, y];
-                                location.setMapTile(x, y, GetFlooringIndex(location, floor_pattern_id, x, y, data, tilesheet_index), layer, null, tilesheet_index);
-                                Tile new_tile = location.map.GetLayer(layer).Tiles[x, y];
-                                if (old_tile != null)
+                                int tilesheet_index = source.Key;
+                                int floor_pattern_id = source.Value;
+                                int tiles_wide = location.map.TileSheets[tilesheet_index].SheetWidth;
+                                string id = location.map.TileSheets[tilesheet_index].Id;
+                                string layer = "Back";
+                                floor_pattern_id = floor_pattern_id * 2 + floor_pattern_id / (tiles_wide / 2) * tiles_wide;
+                                if (id == "walls_and_floors")
                                 {
-                                    foreach (KeyValuePair<string, PropertyValue> property in old_tile.Properties)
+                                    floor_pattern_id += firstFlooringTile;
+                                }
+                                var floor = IsFloorableTile(location, x, y, layer) && IsFloorableOrWallpaperableTile(location, x, y, layer);
+                                var wall = !floor && IsFloorableOrWallpaperableTile(location, x, y, layer);
+                                var wallOrFloor = floor || wall;
+                                if ((data.ignore && !wall) || (!data.ignore && floor))
+                                {
+                                    Tile old_tile = location.map.GetLayer(layer).Tiles[x, y];
+                                    location.setMapTile(x, y, GetFlooringIndex(location, floor_pattern_id, x, y, data, tilesheet_index), layer, null, tilesheet_index);
+                                    Tile new_tile = location.map.GetLayer(layer).Tiles[x, y];
+                                    if (old_tile != null)
                                     {
-                                        new_tile.Properties[property.Key] = property.Value;
+                                        foreach (KeyValuePair<string, PropertyValue> property in old_tile.Properties)
+                                        {
+                                            new_tile.Properties[property.Key] = property.Value;
+                                        }
                                     }
                                 }
                             }
                         }
+                        catch { }
                     }
                 }
             }

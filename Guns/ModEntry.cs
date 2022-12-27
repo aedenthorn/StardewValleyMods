@@ -21,6 +21,7 @@ using xTile.Dimensions;
 using xTile.Tiles;
 using static StardewValley.Projectiles.BasicProjectile;
 using static System.Net.Mime.MediaTypeNames;
+using Rectangle = Microsoft.Xna.Framework.Rectangle;
 
 namespace Guns
 {
@@ -61,7 +62,7 @@ namespace Guns
 
             var harmony = new Harmony(ModManifest.UniqueID);
             harmony.PatchAll();
-
+            
         }
 
 

@@ -1,22 +1,22 @@
 ﻿{
-  "Name": "Dynamic Flooring",
+  "Name": "Omni Tools",
   "Author": "aedenthorn",
-  "Version": "0.1.1",
-  "Description": "Dynamic Flooring.",
-  "UniqueID": "aedenthorn.DynamicFlooring",
-  "EntryDll": "DynamicFlooring.dll",
+  "Version": "0.1.0",
+  "Description": "Omni Tools.",
+  "UniqueID": "aedenthorn.OmniTools",
+  "EntryDll": "OmniTools.dll",
   "MinimumApiVersion": "3.15.0",
   "ModUpdater": {
     "Repository": "StardewValleyMods",
     "User": "aedenthorn",
     "Directory": "_releases",
-    "ModFolder": "DynamicFlooring"
+    "ModFolder": "OmniTools"
   },
+  "UpdateKeys": [ "Nexus:" ],
   "Dependencies": [
     {
       "UniqueID": "Platonymous.ModUpdater",
       "IsRequired": false
     }
-  ],
-  "UpdateKeys": [ "Nexus:14780" ]
+  ]
 }

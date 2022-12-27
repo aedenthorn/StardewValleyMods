@@ -455,6 +455,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ChatSounds", "ChatSounds\Ch
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AdvancedMeleeFramework", "AdvancedMeleeFramework\AdvancedMeleeFramework.csproj", "{0C59FC3C-5C82-4AEE-AD35-6FBF8E0B041C}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OmniTools", "OmniTools\OmniTools.csproj", "{834C7274-6D2B-4BA0-B5E5-102AEDB3C70D}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -3123,6 +3125,18 @@ Global
 		{0C59FC3C-5C82-4AEE-AD35-6FBF8E0B041C}.Release|x64.Build.0 = Release|x64
 		{0C59FC3C-5C82-4AEE-AD35-6FBF8E0B041C}.Release|x86.ActiveCfg = Release|Any CPU
 		{0C59FC3C-5C82-4AEE-AD35-6FBF8E0B041C}.Release|x86.Build.0 = Release|Any CPU
+		{834C7274-6D2B-4BA0-B5E5-102AEDB3C70D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{834C7274-6D2B-4BA0-B5E5-102AEDB3C70D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{834C7274-6D2B-4BA0-B5E5-102AEDB3C70D}.Debug|x64.ActiveCfg = Debug|x64
+		{834C7274-6D2B-4BA0-B5E5-102AEDB3C70D}.Debug|x64.Build.0 = Debug|x64
+		{834C7274-6D2B-4BA0-B5E5-102AEDB3C70D}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{834C7274-6D2B-4BA0-B5E5-102AEDB3C70D}.Debug|x86.Build.0 = Debug|Any CPU
+		{834C7274-6D2B-4BA0-B5E5-102AEDB3C70D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{834C7274-6D2B-4BA0-B5E5-102AEDB3C70D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{834C7274-6D2B-4BA0-B5E5-102AEDB3C70D}.Release|x64.ActiveCfg = Release|x64
+		{834C7274-6D2B-4BA0-B5E5-102AEDB3C70D}.Release|x64.Build.0 = Release|x64
+		{834C7274-6D2B-4BA0-B5E5-102AEDB3C70D}.Release|x86.ActiveCfg = Release|Any CPU
+		{834C7274-6D2B-4BA0-B5E5-102AEDB3C70D}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

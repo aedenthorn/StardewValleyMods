@@ -52,7 +52,7 @@ namespace Guns
         {
             public static void Postfix(Farmer __instance, SpriteBatch b)
             {
-                if (!Config.ModEnabled || __instance.CurrentTool is not MeleeWeapon || !gunDict.TryGetValue(__instance.CurrentTool.Name, out GunData data))
+                if (!Config.ModEnabled || __instance.CurrentTool is not MeleeWeapon || __instance.CurrentTool.Name is null || !gunDict.TryGetValue(__instance.CurrentTool.Name, out GunData data))
                     return;
 
                 int row = 0;
