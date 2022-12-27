@@ -159,7 +159,7 @@ namespace OmniTools
             return null;
         }
 
-        private static Tool SwitchForAnimal(Tool currentTool, FarmAnimal c, List<ToolInfo> tools)
+        public static Tool SwitchForAnimal(Tool currentTool, FarmAnimal c, List<ToolInfo> tools = null)
         {
             //SMonitor.Log($"harvesting {c.Name}; age {c.age.Value}/{c.ageWhenMature.Value}; produce {c.currentProduce.Value} ({c.defaultProduceIndex.Value}); tool {Game1.player.CurrentTool?.Name} ({c.toolUsedForHarvest.Value} - {toolsString})");
             if (c.toolUsedForHarvest.Value.Equals("Shears")) { Tool tool = SwitchTool(currentTool, typeof(Shears), tools); if (tool != null) return tool; }

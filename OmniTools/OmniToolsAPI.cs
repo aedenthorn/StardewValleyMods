@@ -33,6 +33,10 @@ namespace OmniTools
         {
             return ModEntry.SwitchForTerrainFeature(tool, tf);
         }
+        public Tool SwitchForFarmAnimal(Tool tool, FarmAnimal animal)
+        {
+            return ModEntry.SwitchForAnimal(tool, animal);
+        }
         public bool IsOmniTool(Tool tool)
         {
             return tool.modData.ContainsKey(ModEntry.toolsKey);
@@ -85,6 +89,12 @@ namespace OmniTools
         /// <param name="clump">The <see cref="StardewValley.TerrainFeatures.TerrainFeature">terrain feature</see>.</param>
         /// <returns>The altered tool or <c>null</c> if no appropriate change is detected.</returns>
         public Tool SwitchForTerrainFeature(Tool tool, TerrainFeature tf);
+        
+        /// <summary>Switch tools based on a <see cref="StardewValley.FarmAnimal">farm animal</see>.</summary>
+        /// <param name="tool">The omni-tool to be switched.</param>
+        /// <param name="clump">The <see cref="StardewValley.FarmAnimal">farm animal</see>.</param>
+        /// <returns>The altered tool or <c>null</c> if no appropriate change is detected.</returns>
+        public Tool SwitchForFarmAnimal(Tool tool, FarmAnimal animal);
 
         /// <summary>Switch tools to a specific tool type.</summary>
         /// <param name="tool">The omni-tool to be switched.</param>

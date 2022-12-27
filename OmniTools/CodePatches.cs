@@ -102,9 +102,9 @@ namespace OmniTools
         {
             public static void Postfix(IClickableMenu __instance, Keys key)
             {
-                if (!Config.EnableMod || __instance is not InventoryPage || (key != (Keys)Config.CycleButton && key != (Keys)Config.RemoveButton))
+                if (!Config.EnableMod || (__instance is not InventoryPage && __instance is not MenuWithInventory) || (key != (Keys)Config.CycleButton && key != (Keys)Config.RemoveButton))
                     return;
-                var inv = (__instance as InventoryPage).inventory;
+                var inv = __instance is InventoryPage ? (__instance as InventoryPage).inventory : (__instance as MenuWithInventory).inventory;
                 var mouse = Game1.getMousePosition();
                 if(key == (Keys)Config.CycleButton)
                 {
