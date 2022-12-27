@@ -19,7 +19,7 @@ namespace OmniTools
     {
         public static string GetToolSound(Tool t)
         {
-            if(t is MeleeWeapon)
+            if (t is MeleeWeapon)
             {
                 if ((t as MeleeWeapon).type.Value == 3)
                     return "swordswipe";
@@ -38,7 +38,7 @@ namespace OmniTools
                 return null;
             if (!currentTool.modData.TryGetValue(toolsKey, out var toolsString))
                 return null;
-            if(tools is null)
+            if (tools is null)
                 tools = JsonConvert.DeserializeObject<List<ToolInfo>>(toolsString);
             for (int i = tools.Count - 1; i >= 0; i--)
             {
@@ -46,11 +46,11 @@ namespace OmniTools
                 {
                     Tool t = currentTool;
                     Tool newTool = GetToolFromInfo(tools[i]);
-                    if(newTool is null)
+                    if (newTool is null)
                     {
                         SMonitor.Log($"Invalid tool {tools[i].displayName}, removing", StardewModdingAPI.LogLevel.Warn);
                         tools.RemoveAt(i);
-                        if(tools.Count > 0)
+                        if (tools.Count > 0)
                         {
                             currentTool.modData[toolsKey] = JsonConvert.SerializeObject(tools);
                         }
@@ -60,7 +60,7 @@ namespace OmniTools
                         }
                         return null;
                     }
-                    if ((type == typeof(MeleeWeapon) && (newTool as MeleeWeapon).isScythe(newTool.ParentSheetIndex)) ||(type is null && !(newTool as MeleeWeapon).isScythe(newTool.ParentSheetIndex)))
+                    if ((type == typeof(MeleeWeapon) && (newTool as MeleeWeapon).isScythe(newTool.ParentSheetIndex)) || (type is null && !(newTool as MeleeWeapon).isScythe(newTool.ParentSheetIndex)))
                         continue;
                     tools.RemoveAt(i);
                     tools.Add(new ToolInfo(t));
@@ -81,37 +81,29 @@ namespace OmniTools
         {
             if (Config.SwitchForObjects && currentLocation.objects.TryGetValue(tile, out Object obj))
             {
-                if (obj.Name.Equals("Stone"))
-                {
-                    Tool tool = SwitchTool(currentTool, typeof(Pickaxe), tools); if (tool != null) return tool;
-
-
-                }
-                else if (obj.Name.Contains("Twig")) { Tool tool = SwitchTool(currentTool, typeof(Axe), tools); if (tool != null) return tool; }
-
-                else if (obj.ParentSheetIndex == 590) { Tool tool = SwitchTool(currentTool, typeof(Hoe), tools); if (tool != null) return tool; }
-
+                Tool tool = SwitchForObject(currentTool, obj, tools);
+                if (tool is not null)
+                    return tool;
             }
             if (currentLocation.terrainFeatures.TryGetValue(tile, out TerrainFeature tf))
             {
-                if (Config.SwitchForTrees && tf is Tree) { Tool tool = SwitchTool(currentTool, typeof(Axe), tools); if (tool != null) return tool; }
-
-                else if (Config.SwitchForGrass && tf is Grass) { Tool tool = SwitchTool(currentTool, null, tools); if (tool != null) return tool; }
+                Tool tool = SwitchForTerrainFeature(currentTool, tf, tools);
+                if (tool is not null)
+                    return tool;
 
             }
             if (Config.SwitchForResourceClumps)
             {
                 Rectangle tileRect = new Rectangle((int)tile.X * 64, (int)tile.Y * 64, 64, 64);
 
-                foreach (ResourceClump stump in currentLocation.resourceClumps)
+                foreach (ResourceClump clump in currentLocation.resourceClumps)
                 {
-                    var bb = stump.getBoundingBox(stump.tile.Value);
+                    var bb = clump.getBoundingBox(clump.tile.Value);
                     if (bb.Intersects(tileRect))
                     {
-                        if ((stump.parentSheetIndex.Value == 600 || stump.parentSheetIndex.Value == 602)) { Tool tool = SwitchTool(currentTool, typeof(Axe), tools); if (tool != null) return tool; }
-
-                        else if (new int[] { 622, 672, 752, 754, 756, 758 }.Contains(stump.parentSheetIndex.Value)) { Tool tool = SwitchTool(currentTool, typeof(Pickaxe), tools); if (tool != null) return tool; }
-
+                        Tool tool = SwitchForClump(currentTool, clump, tools);
+                        if (tool is not null)
+                            return tool;
                     }
                 }
             }
@@ -127,7 +119,6 @@ namespace OmniTools
                 foreach (var c in currentLocation.characters)
                 {
                     if (c.GetBoundingBox().Intersects(new Rectangle((int)tile.X * 64, (int)tile.Y * 64, 64, 64)) && c is Monster) { Tool tool = SwitchTool(currentTool, typeof(MeleeWeapon), tools); if (tool != null) return tool; }
-
                 }
             }
             if (Config.SwitchForAnimals)
@@ -146,26 +137,86 @@ namespace OmniTools
                     Rectangle r = new Rectangle((int)tile.X * 64 - 32, (int)tile.Y * 64 - 32, 64, 64);
                     if (c.GetHarvestBoundingBox().Intersects(r))
                     {
-                        //SMonitor.Log($"harvesting {c.Name}; age {c.age.Value}/{c.ageWhenMature.Value}; produce {c.currentProduce.Value} ({c.defaultProduceIndex.Value}); tool {Game1.player.CurrentTool?.Name} ({c.toolUsedForHarvest.Value} - {toolsString})");
-                        if (c.toolUsedForHarvest.Value.Equals("Shears")) { Tool tool = SwitchTool(currentTool, typeof(Shears), tools); if (tool != null) return tool; }
-
-                        if (c.toolUsedForHarvest.Value.Equals("Milk Pail")) { Tool tool = SwitchTool(currentTool, typeof(MilkPail), tools); if (tool != null) return tool; }
-
-                        if (c.currentProduce.Value > 0 && c.age.Value >= (int)c.ageWhenMature.Value)
-                        {
-
-                        }
+                        Tool tool = SwitchForAnimal(currentTool, c, tools);
+                        if (tool is not null)
+                            return tool;
                     }
                 }
-
             }
 
-            if (Config.SwitchForWateringCan && currentLocation.CanRefillWateringCanOnTile((int)tile.X, (int)tile.Y)) { Tool tool = SwitchTool(currentTool, typeof(WateringCan), tools); if (tool != null) return tool; }
+            if (Config.SwitchForWateringCan && currentLocation.CanRefillWateringCanOnTile((int)tile.X, (int)tile.Y)) 
+            { 
+                Tool tool = SwitchTool(currentTool, typeof(WateringCan), tools); 
+                if (tool != null) return tool; 
+            }
 
-            if (Config.SwitchForFishing && currentLocation.waterTiles is not null && currentLocation.waterTiles[(int)tile.X, (int)tile.Y]) { Tool tool = SwitchTool(currentTool, typeof(FishingRod), tools); if (tool != null) return tool; }
+            if (Config.SwitchForFishing && currentLocation.waterTiles is not null && currentLocation.waterTiles[(int)tile.X, (int)tile.Y]) 
+            { 
+                Tool tool = SwitchTool(currentTool, typeof(FishingRod), tools); 
+                if (tool != null) return tool; 
+            }
 
             return null;
         }
+
+        private static Tool SwitchForAnimal(Tool currentTool, FarmAnimal c, List<ToolInfo> tools)
+        {
+            //SMonitor.Log($"harvesting {c.Name}; age {c.age.Value}/{c.ageWhenMature.Value}; produce {c.currentProduce.Value} ({c.defaultProduceIndex.Value}); tool {Game1.player.CurrentTool?.Name} ({c.toolUsedForHarvest.Value} - {toolsString})");
+            if (c.toolUsedForHarvest.Value.Equals("Shears")) { Tool tool = SwitchTool(currentTool, typeof(Shears), tools); if (tool != null) return tool; }
+
+            if (c.toolUsedForHarvest.Value.Equals("Milk Pail")) { Tool tool = SwitchTool(currentTool, typeof(MilkPail), tools); if (tool != null) return tool; }
+            
+            return null;
+            //if (c.currentProduce.Value > 0 && c.age.Value >= (int)c.ageWhenMature.Value)
+            //{
+
+            //}
+        }
+
+        public static Tool SwitchForClump(Tool currentTool, ResourceClump clump, List<ToolInfo> tools = null)
+        {
+            if ((clump.parentSheetIndex.Value == 600 || clump.parentSheetIndex.Value == 602)) { Tool tool = SwitchTool(currentTool, typeof(Axe), tools); if (tool != null) return tool; }
+
+            else if (new int[] { 622, 672, 752, 754, 756, 758 }.Contains(clump.parentSheetIndex.Value)) { Tool tool = SwitchTool(currentTool, typeof(Pickaxe), tools); if (tool != null) return tool; }
+            return null;
+        }
+
+        public static Tool SwitchForObject(Tool currentTool, Object obj, List<ToolInfo> tools = null)
+        {
+            if (obj.Name.Equals("Stone"))
+            {
+                Tool tool = SwitchTool(currentTool, typeof(Pickaxe), tools); 
+                if (tool != null) return tool;
+            }
+            else if (obj.Name.Contains("Twig"))
+            {
+                Tool tool = SwitchTool(currentTool, typeof(Axe), tools); 
+                if (tool != null) return tool;
+            }
+            else if (obj.ParentSheetIndex == 590)
+            {
+                Tool tool = SwitchTool(currentTool, typeof(Hoe), tools); 
+                if (tool != null) return tool;
+            }
+            return null;
+        }
+
+        public static Tool SwitchForTerrainFeature(Tool currentTool, TerrainFeature tf, List<ToolInfo> tools = null)
+        {
+            if (Config.SwitchForTrees && tf is Tree) 
+            { 
+                Tool tool = SwitchTool(currentTool, typeof(Axe), tools); 
+                if (tool != null) return tool; 
+            }
+            else if (Config.SwitchForGrass && tf is Grass) 
+            { 
+                Tool tool = SwitchTool(currentTool, null, tools); 
+                if (tool != null) return tool; 
+            }
+
+            return null;
+        }
+
         public static Tool CycleTool(Tool currentTool, string toolsString)
         {
             List<ToolInfo> tools = JsonConvert.DeserializeObject<List<ToolInfo>>(toolsString);
@@ -243,9 +294,9 @@ namespace OmniTools
 
         public static ToolDescription? GetDescriptionFromTool(Tool t)
         {
-            if(!toolList.Contains(t.GetType()))
+            if (!toolList.Contains(t.GetType()))
                 return null;
-            if(t is MeleeWeapon)
+            if (t is MeleeWeapon)
             {
                 return new ToolDescription((byte)toolList.IndexOf(typeof(MeleeWeapon)), t.ParentSheetIndex == -1 ? (byte)(t as MeleeWeapon).InitialParentTileIndex : (byte)t.ParentSheetIndex);
             }
@@ -290,7 +341,7 @@ namespace OmniTools
                     t = new Wand();
                     break;
             }
-            if(t is not null)
+            if (t is not null)
                 t.UpgradeLevel = upgradeLevel;
             return t;
         }

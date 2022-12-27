@@ -1,10 +1,12 @@
 ﻿using Microsoft.Xna.Framework;
 using Newtonsoft.Json;
 using StardewValley;
+using StardewValley.TerrainFeatures;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using xTile.Tiles;
+using Object = StardewValley.Object;
 
 namespace OmniTools
 {
@@ -18,6 +20,18 @@ namespace OmniTools
         public Tool SwitchTool(Tool tool, Type toolType)
         {
             return ModEntry.SwitchTool(tool, toolType);
+        }
+        public Tool SwitchForResourceClump(Tool tool, ResourceClump clump)
+        {
+            return ModEntry.SwitchForClump(tool, clump);
+        }
+        public Tool SwitchForObject(Tool tool, Object obj)
+        {
+            return ModEntry.SwitchForObject(tool, obj);
+        }
+        public Tool SwitchForTerrainFeature(Tool tool, TerrainFeature tf)
+        {
+            return ModEntry.SwitchForTerrainFeature(tool, tf);
         }
         public bool IsOmniTool(Tool tool)
         {
@@ -53,6 +67,24 @@ namespace OmniTools
         /// <param name="tile">The coordinates of the tile being acted upon.</param>
         /// <returns>The altered tool or <c>null</c> if no appropriate change is detected.</returns>
         public Tool SmartSwitch(Tool tool, GameLocation gameLocation, Vector2 tile);
+
+        /// <summary>Switch tools based on a <see cref="StardewValley.TerrainFeatures.ResourceClump">resource clump</see>.</summary>
+        /// <param name="tool">The omni-tool to be switched.</param>
+        /// <param name="clump">The <see cref="StardewValley.TerrainFeatures.ResourceClump">resource clump</see>.</param>
+        /// <returns>The altered tool or <c>null</c> if no appropriate change is detected.</returns>
+        public Tool SwitchForResourceClump(Tool tool, ResourceClump clump);
+
+        /// <summary>Switch tools based on an <see cref="StardewValley.Object">Object</see>.</summary>
+        /// <param name="tool">The omni-tool to be switched.</param>
+        /// <param name="clump">The <see cref="StardewValley.Object">Object</see>.</param>
+        /// <returns>The altered tool or <c>null</c> if no appropriate change is detected.</returns>
+        public Tool SwitchForObject(Tool tool, Object obj);
+
+        /// <summary>Switch tools based on an <see cref="StardewValley.TerrainFeatures.TerrainFeature">terrain feature</see>.</summary>
+        /// <param name="tool">The omni-tool to be switched.</param>
+        /// <param name="clump">The <see cref="StardewValley.TerrainFeatures.TerrainFeature">terrain feature</see>.</param>
+        /// <returns>The altered tool or <c>null</c> if no appropriate change is detected.</returns>
+        public Tool SwitchForTerrainFeature(Tool tool, TerrainFeature tf);
 
         /// <summary>Switch tools to a specific tool type.</summary>
         /// <param name="tool">The omni-tool to be switched.</param>
