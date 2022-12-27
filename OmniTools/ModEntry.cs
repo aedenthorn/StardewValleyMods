@@ -80,6 +80,11 @@ namespace OmniTools
 
         }
 
+        public override object GetApi()
+        {
+            return new OmniToolsAPI();
+        }
+
         private void Input_ButtonPressed(object sender, StardewModdingAPI.Events.ButtonPressedEventArgs e)
         {
             if (!Config.EnableMod || !Context.IsPlayerFree || Game1.player.CurrentTool?.modData.TryGetValue(toolsKey, out string toolsString) != true)
