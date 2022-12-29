@@ -81,6 +81,50 @@ namespace OmniTools
 
         public static Tool SmartSwitch(Tool currentTool, GameLocation currentLocation, Vector2 tile, List<ToolInfo> tools = null)
         {
+            if (Config.SwitchForMonsters && currentTool.getLastFarmerToUse() is not null)
+            {
+                var f = currentTool.getLastFarmerToUse();
+                foreach (var c in currentLocation.characters)
+                {
+                    foreach(var t in GetToolsFromTool(currentTool))
+                    {
+                        if(t is MeleeWeapon && !(t as MeleeWeapon).isScythe(t.ParentSheetIndex))
+                        {
+                            Vector2 tileLocation = Vector2.Zero;
+                            Vector2 tileLocation2 = Vector2.Zero;
+                            var aoe = (t as MeleeWeapon).getAreaOfEffect((int)tile.X * 64, (int)tile.Y * 64, f.FacingDirection, ref tileLocation, ref tileLocation2, f.GetBoundingBox(), f.FarmerSprite.currentAnimationIndex);
+                            if (c is Monster && c.GetBoundingBox().Intersects(aoe))
+                            {
+                                Tool tool = SwitchTool(currentTool, typeof(MeleeWeapon), tools);
+                                if (tool != null)
+                                    return tool;
+                            }
+                        }
+                    }
+                }
+            }
+            if (Config.SwitchForAnimals)
+            {
+                FarmAnimal[] animals = new FarmAnimal[0];
+                if (currentLocation is Farm)
+                {
+                    animals = (currentLocation as Farm).animals.Values.ToArray();
+                }
+                else if (currentLocation is AnimalHouse)
+                {
+                    animals = (currentLocation as AnimalHouse).animals.Values.ToArray();
+                }
+                foreach (var c in animals)
+                {
+                    Rectangle r = new Rectangle((int)tile.X * 64 - 32, (int)tile.Y * 64 - 32, 64, 64);
+                    if (c.GetHarvestBoundingBox().Intersects(r))
+                    {
+                        Tool tool = SwitchForAnimal(currentTool, c, tools);
+                        if (tool is not null)
+                            return tool;
+                    }
+                }
+            }
             if (Config.SwitchForObjects && currentLocation.objects.TryGetValue(tile, out Object obj))
             {
                 Tool tool = SwitchForObject(currentTool, obj, tools);
@@ -92,6 +136,12 @@ namespace OmniTools
                 Tool tool = SwitchForTerrainFeature(currentTool, tf, tools);
                 if (tool is not null)
                     return tool;
+                if (currentLocation is Farm && Config.SwitchForWatering && tf is HoeDirt && (tf as HoeDirt).state.Value == 0)
+                {
+                    tool = SwitchTool(currentTool, typeof(WateringCan), tools);
+                    if (tool != null)
+                        return tool;
+                }
 
             }
             if (Config.SwitchForResourceClumps)
@@ -120,41 +170,6 @@ namespace OmniTools
                 }
 
             }
-            if (Config.SwitchForMonsters)
-            {
-                foreach (var c in currentLocation.characters)
-                {
-                    if (c.GetBoundingBox().Intersects(new Rectangle((int)tile.X * 64, (int)tile.Y * 64, 64, 64)) && c is Monster) 
-                    { 
-                        Tool tool = SwitchTool(currentTool, typeof(MeleeWeapon), tools); 
-                        if (tool != null) 
-                            return tool; 
-                    }
-                }
-            }
-            if (Config.SwitchForAnimals)
-            {
-                FarmAnimal[] animals = new FarmAnimal[0];
-                if (currentLocation is Farm)
-                {
-                    animals = (currentLocation as Farm).animals.Values.ToArray();
-                }
-                else if (currentLocation is AnimalHouse)
-                {
-                    animals = (currentLocation as AnimalHouse).animals.Values.ToArray();
-                }
-                foreach (var c in animals)
-                {
-                    Rectangle r = new Rectangle((int)tile.X * 64 - 32, (int)tile.Y * 64 - 32, 64, 64);
-                    if (c.GetHarvestBoundingBox().Intersects(r))
-                    {
-                        Tool tool = SwitchForAnimal(currentTool, c, tools);
-                        if (tool is not null)
-                            return tool;
-                    }
-                }
-            }
-
             if (Config.SwitchForWateringCan && currentLocation.CanRefillWateringCanOnTile((int)tile.X, (int)tile.Y)) 
             { 
                 Tool tool = SwitchTool(currentTool, typeof(WateringCan), tools); 
@@ -243,6 +258,12 @@ namespace OmniTools
                 if (tool != null) 
                     return tool;
             }
+            else if (obj.Name.Contains("Weeds"))
+            {
+                Tool tool = SwitchTool(currentTool, null, tools);
+                if (tool != null)
+                    return tool;
+            }
             return null;
         }
 
@@ -250,9 +271,32 @@ namespace OmniTools
         {
             if (Config.SwitchForTrees && tf is Tree) 
             { 
-                Tool tool = SwitchTool(currentTool, typeof(Axe), tools); 
-                if (tool != null) 
-                    return tool; 
+                if((tf as Tree).growthStage.Value >= 3)
+                {
+                    Tool tool = SwitchTool(currentTool, typeof(Axe), tools);
+                    if (tool != null)
+                        return tool;
+
+                }
+                else if((tf as Tree).growthStage.Value >= 1)
+                {
+                    Tool tool = SwitchTool(currentTool, null, tools);
+                    if (tool != null)
+                        return tool;
+
+                }
+                else
+                {
+                    Tool tool = SwitchTool(currentTool, typeof(Axe), tools);
+                    if (tool != null)
+                        return tool;
+                    tool = SwitchTool(currentTool, typeof(Pickaxe), tools);
+                    if (tool != null)
+                        return tool;
+                    tool = SwitchTool(currentTool, typeof(Hoe), tools);
+                    if (tool != null)
+                        return tool;
+                }
             }
             else if (Config.SwitchForGrass && tf is Grass) 
             { 
@@ -266,13 +310,6 @@ namespace OmniTools
                 if (tool != null) 
                     return tool; 
             }
-            else if (Config.SwitchForWatering && tf is HoeDirt && (tf as HoeDirt).state.Value == 0) 
-            { 
-                Tool tool = SwitchTool(currentTool, typeof(WateringCan), tools); 
-                if (tool != null) 
-                    return tool; 
-            }
-
             return null;
         }
 
@@ -359,6 +396,8 @@ namespace OmniTools
                     SMonitor.Log(ex.ToString());
                 }
             }
+            if(t is WateringCan && toolInfo.vars.Count > 0)
+                (t as WateringCan).WaterLeft = (int)(long)toolInfo.vars[0];
             return t;
         }
 

@@ -12,6 +12,7 @@ namespace OmniTools
         public string displayName;
         public List<string> enchantments = new();
         public List<ObjectInfo> attachments = new();
+        public List<object> vars = new();
         public ToolInfo()
         {
 
@@ -29,6 +30,10 @@ namespace OmniTools
             foreach (var o in tool.attachments)
             {
                 attachments.Add(o is not null ? new ObjectInfo(o.ParentSheetIndex, o.Stack, o.Quality) : null);
+            }
+            if(tool is WateringCan)
+            {
+                vars.Add((tool as WateringCan).WaterLeft);
             }
         }
     }
