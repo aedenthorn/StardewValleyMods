@@ -457,6 +457,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OmniTools", "OmniTools\Omni
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FurnitureDisplayFramework", "FurnitureDisplayFramework\FurnitureDisplayFramework.csproj", "{955A0E0D-E923-4A18-971C-C19D697B1AAF}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FarmCaveDoors", "FarmCaveDoors\FarmCaveDoors.csproj", "{870CC3C4-7A4B-4275-90B7-483AE64E2969}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -3137,6 +3139,18 @@ Global
 		{955A0E0D-E923-4A18-971C-C19D697B1AAF}.Release|x64.Build.0 = Release|x64
 		{955A0E0D-E923-4A18-971C-C19D697B1AAF}.Release|x86.ActiveCfg = Release|Any CPU
 		{955A0E0D-E923-4A18-971C-C19D697B1AAF}.Release|x86.Build.0 = Release|Any CPU
+		{870CC3C4-7A4B-4275-90B7-483AE64E2969}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{870CC3C4-7A4B-4275-90B7-483AE64E2969}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{870CC3C4-7A4B-4275-90B7-483AE64E2969}.Debug|x64.ActiveCfg = Debug|x64
+		{870CC3C4-7A4B-4275-90B7-483AE64E2969}.Debug|x64.Build.0 = Debug|x64
+		{870CC3C4-7A4B-4275-90B7-483AE64E2969}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{870CC3C4-7A4B-4275-90B7-483AE64E2969}.Debug|x86.Build.0 = Debug|Any CPU
+		{870CC3C4-7A4B-4275-90B7-483AE64E2969}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{870CC3C4-7A4B-4275-90B7-483AE64E2969}.Release|Any CPU.Build.0 = Release|Any CPU
+		{870CC3C4-7A4B-4275-90B7-483AE64E2969}.Release|x64.ActiveCfg = Release|x64
+		{870CC3C4-7A4B-4275-90B7-483AE64E2969}.Release|x64.Build.0 = Release|x64
+		{870CC3C4-7A4B-4275-90B7-483AE64E2969}.Release|x86.ActiveCfg = Release|Any CPU
+		{870CC3C4-7A4B-4275-90B7-483AE64E2969}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -1,7 +1,7 @@
 ﻿{
   "Name": "Furniture Display Framework",
   "Author": "aedenthorn",
-  "Version": "0.3.0",
+  "Version": "0.3.1",
   "Description": "FurnitureDisplayFramework.",
   "UniqueID": "aedenthorn.FurnitureDisplayFramework",
   "EntryDll": "FurnitureDisplayFramework.dll",

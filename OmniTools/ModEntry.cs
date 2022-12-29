@@ -231,6 +231,18 @@ namespace OmniTools
             );
             configMenu.AddBoolOption(
                 mod: ModManifest,
+                name: () => "Switch For Tilling",
+                getValue: () => Config.SwitchForTilling,
+                setValue: value => Config.SwitchForTilling = value
+            );
+            configMenu.AddBoolOption(
+                mod: ModManifest,
+                name: () => "Switch For Watering",
+                getValue: () => Config.SwitchForWatering,
+                setValue: value => Config.SwitchForWatering = value
+            );
+            configMenu.AddBoolOption(
+                mod: ModManifest,
                 name: () => "Switch For Fishing",
                 getValue: () => Config.SwitchForFishing,
                 setValue: value => Config.SwitchForFishing = value

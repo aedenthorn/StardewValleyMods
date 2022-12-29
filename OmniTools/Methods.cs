@@ -11,7 +11,9 @@ using StardewValley.Tools;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using xTile.Dimensions;
 using Object = StardewValley.Object;
+using Rectangle = Microsoft.Xna.Framework.Rectangle;
 
 namespace OmniTools
 {
@@ -109,7 +111,6 @@ namespace OmniTools
             }
             if (Config.SwitchForPan && currentTool.getLastFarmerToUse() is not null)
             {
-                currentLocation.orePanPoint.Value = new Point(49, 24);
                 Rectangle orePanRect = new Rectangle(currentLocation.orePanPoint.X * 64 - 64, currentLocation.orePanPoint.Y * 64 - 64, 256, 256);
                 if (orePanRect.Contains((int)tile.X * 64, (int)tile.Y * 64) && Utility.distance((float)currentTool.getLastFarmerToUse().getStandingX(), (float)orePanRect.Center.X, (float)currentTool.getLastFarmerToUse().getStandingY(), (float)orePanRect.Center.Y) <= 192f) 
                 { 
@@ -160,9 +161,22 @@ namespace OmniTools
                 if (tool != null) return tool; 
             }
 
-            if (Config.SwitchForFishing && currentLocation.waterTiles is not null && currentLocation.waterTiles[(int)tile.X, (int)tile.Y]) 
+            if (Config.SwitchForFishing && currentLocation.waterTiles is not null)
+            {
+                try
+                {
+                    if(currentLocation.waterTiles[(int)tile.X, (int)tile.Y])
+                    {
+                        Tool tool = SwitchTool(currentTool, typeof(FishingRod), tools);
+                        if (tool != null) return tool;
+                    }
+                }
+                catch { }
+            }
+            
+            if (Config.SwitchForTilling && currentLocation.doesTileHaveProperty((int)tile.X, (int)tile.Y, "Diggable", "Back") != null && !currentLocation.isTileOccupied(tile, "", false) && currentLocation.isTilePassable(new Location((int)tile.X, (int)tile.Y), Game1.viewport))
             { 
-                Tool tool = SwitchTool(currentTool, typeof(FishingRod), tools); 
+                Tool tool = SwitchTool(currentTool, typeof(Hoe), tools); 
                 if (tool != null) return tool; 
             }
 
@@ -246,9 +260,15 @@ namespace OmniTools
                 if (tool != null) 
                     return tool; 
             }
-            else if (Config.SwitchForCrops && tf is HoeDirt && (tf as HoeDirt).crop?.harvestMethod.Value == 1) 
+            else if (Config.SwitchForCrops && tf is HoeDirt && (tf as HoeDirt).crop?.harvestMethod.Value == 1 && (tf as HoeDirt).crop.currentPhase.Value >= (tf as HoeDirt).crop.phaseDays.Count - 1 && (!(tf as HoeDirt).crop.fullyGrown.Value || (tf as HoeDirt).crop.dayOfCurrentPhase.Value <= 0)) 
             { 
                 Tool tool = SwitchTool(currentTool, null, tools); 
+                if (tool != null) 
+                    return tool; 
+            }
+            else if (Config.SwitchForWatering && tf is HoeDirt && (tf as HoeDirt).state.Value == 0) 
+            { 
+                Tool tool = SwitchTool(currentTool, typeof(WateringCan), tools); 
                 if (tool != null) 
                     return tool; 
             }
@@ -350,6 +370,10 @@ namespace OmniTools
             {
                 return new ToolDescription((byte)toolList.IndexOf(typeof(MeleeWeapon)), t.ParentSheetIndex == -1 ? (byte)(t as MeleeWeapon).InitialParentTileIndex : (byte)t.ParentSheetIndex);
             }
+            if (t is Slingshot)
+            {
+                return new ToolDescription((byte)toolList.IndexOf(typeof(Slingshot)), (byte)(t as Slingshot).InitialParentTileIndex);
+            }
             return new ToolDescription((byte)toolList.IndexOf(t.GetType()), (byte)t.UpgradeLevel);
         }
 
@@ -376,7 +400,7 @@ namespace OmniTools
                 case 5:
                     return new MeleeWeapon(upgradeLevel);
                 case 6:
-                    t = new Slingshot();
+                    t = new Slingshot(upgradeLevel);
                     break;
                 case 7:
                     t = new MilkPail();

@@ -1,5 +1,6 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using Newtonsoft.Json;
 using StardewValley;
 using StardewValley.Objects;
 using Object = StardewValley.Object;
@@ -24,10 +25,21 @@ namespace FurnitureDisplayFramework
 
                 for(int i = 0; i < furnitureDisplayDict[name].slots.Length; i++)
                 {
-                    if (!f.modData.ContainsKey("aedenthorn.FurnitureDisplayFramework/" + i) || f.modData["aedenthorn.FurnitureDisplayFramework/" + i].Length == 0)
+                    if (!f.modData.TryGetValue("aedenthorn.FurnitureDisplayFramework/" + i, out var slotString) || slotString.Length == 0)
                         continue;
-                    var currentItem = f.modData["aedenthorn.FurnitureDisplayFramework/" + i].Split(',');
-                    var obj = GetObjectFromID(currentItem[0], int.Parse(currentItem[1]), int.Parse(currentItem[2]));
+                    Object obj;
+                    if (slotString.Contains("{"))
+                    {
+                        obj = JsonConvert.DeserializeObject<Object>(slotString, new JsonSerializerSettings
+                        {
+                            Error = HandleDeserializationError
+                        });
+                    }
+                    else
+                    {
+                        var currentItem = f.modData["aedenthorn.FurnitureDisplayFramework/" + i].Split(',');
+                        obj = GetObjectFromID(currentItem[0], int.Parse(currentItem[1]), int.Parse(currentItem[2]));
+                    }
                     if (obj == null)
                         continue;
                     float scale = 4;

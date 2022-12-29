@@ -2,6 +2,7 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Serialization;
 using StardewModdingAPI;
 using StardewValley;
 using StardewValley.Objects;
@@ -63,6 +64,7 @@ namespace FurnitureDisplayFramework
 
         private void GameLoop_GameLaunched(object sender, StardewModdingAPI.Events.GameLaunchedEventArgs e)
         {
+
             // get Generic Mod Config Menu's API (if it's installed)
             var configMenu = Helper.ModRegistry.GetApi<IGenericModConfigMenuApi>("spacechase0.GenericModConfigMenu");
             if (configMenu is null)
@@ -172,12 +174,14 @@ namespace FurnitureDisplayFramework
                                 {
                                     if (slotString.Contains("{"))
                                     {
-                                        var currentItem = f.modData["aedenthorn.FurnitureDisplayFramework/" + i].Split(',');
-                                        obj = GetObjectFromID(currentItem[0], int.Parse(currentItem[1]), int.Parse(currentItem[2]));
+                                        obj = JsonConvert.DeserializeObject<Object>(slotString, new JsonSerializerSettings
+                                        {
+                                            Error = HandleDeserializationError
+                                        });
+
                                     }
-                                    else if(slotString.Contains("{"))
+                                    else
                                     {
-                                        obj = JsonConvert.DeserializeObject<Object>(slotString);
                                     }
                                     if(obj is not null)
                                     {
@@ -187,7 +191,7 @@ namespace FurnitureDisplayFramework
                                             if (!Game1.player.addItemToInventoryBool(obj, true))
                                             {
                                                 Monitor.Log($"Switching with {Game1.player.CurrentItem.Name} x{amount}");
-                                                f.modData["aedenthorn.FurnitureDisplayFramework/" + i] = JsonConvert.SerializeObject(obj);
+                                                f.modData["aedenthorn.FurnitureDisplayFramework/" + i] = JsonConvert.SerializeObject(obj, new JsonSerializerSettings() { ReferenceLoopHandling = ReferenceLoopHandling.Ignore });
 
                                                 if (amount >= Game1.player.CurrentItem.Stack)
                                                     Game1.player.removeItemFromInventory(Game1.player.CurrentItem);
@@ -201,7 +205,7 @@ namespace FurnitureDisplayFramework
                                             int newSlotAmount = Math.Min(Game1.player.ActiveObject.maximumStackSize(), slotAmount + amount);
                                             obj.Stack = newSlotAmount;
                                             Monitor.Log($"Adding {Game1.player.ActiveObject.Name} x{newSlotAmount}");
-                                            f.modData["aedenthorn.FurnitureDisplayFramework/" + i] = JsonConvert.SerializeObject(obj);
+                                            f.modData["aedenthorn.FurnitureDisplayFramework/" + i] = JsonConvert.SerializeObject(obj, new JsonSerializerSettings() { ReferenceLoopHandling = ReferenceLoopHandling.Ignore });
                                             if (newSlotAmount < slotAmount + amount)
                                             {
                                                 Game1.player.ActiveObject.Stack = slotAmount + amount - newSlotAmount;
@@ -222,7 +226,7 @@ namespace FurnitureDisplayFramework
                                 Monitor.Log($"Adding {Game1.player.ActiveObject.Name} x{amount}");
                                 obj = Game1.player.ActiveObject;
                                 obj.Stack = amount;
-                                f.modData["aedenthorn.FurnitureDisplayFramework/" + i] = JsonConvert.SerializeObject(obj);
+                                f.modData["aedenthorn.FurnitureDisplayFramework/" + i] = JsonConvert.SerializeObject(obj, new JsonSerializerSettings() { ReferenceLoopHandling = ReferenceLoopHandling.Ignore });
                                 if (amount >= Game1.player.ActiveObject.Stack)
                                     Game1.player.removeItemFromInventory(Game1.player.ActiveObject);
                                 else
@@ -256,7 +260,10 @@ namespace FurnitureDisplayFramework
                                 }
                                 else if (slotString.Contains("{"))
                                 {
-                                    obj = JsonConvert.DeserializeObject<Object>(slotString);
+                                    obj = JsonConvert.DeserializeObject<Object>(slotString, new JsonSerializerSettings
+                                    {
+                                        Error = HandleDeserializationError
+                                    });
                                 }
                                 if (obj != null)
                                 {
@@ -275,6 +282,11 @@ namespace FurnitureDisplayFramework
             }
         }
 
+        private static void HandleDeserializationError(object sender, ErrorEventArgs e)
+        {
+            var currentError = e.ErrorContext.Error.Message;
+            e.ErrorContext.Handled = true;
+        }
 
         private static Object GetObjectFromID(string id, int amount, int quality)
         {

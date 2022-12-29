@@ -210,7 +210,7 @@ namespace OmniTools
         {
             public static void Postfix(Dictionary<Type, int> missingTools, ref int missingScythes, Item item)
             {
-                if (!Config.EnableMod || item is not Tool || !item.modData.TryGetValue(toolsKey, out string toolsString))
+                if (!Config.EnableMod || item is not Tool || !item.modData.ContainsKey(toolsKey))
                     return;
                 var tools = GetToolsFromTool(item as Tool);
                 foreach(var tool in tools)
