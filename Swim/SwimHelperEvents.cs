@@ -669,7 +669,7 @@ namespace Swim
                 SwimUtils.SeaMonsterSay("The quick brown fox jumped over the slow lazy dog.");
             }
 
-            if (Game1.activeClickableMenu != null && Game1.player.currentLocation.Name == "Custom_ScubaCrystalCave" && Game1.player.currentLocation.lastQuestionKey.StartsWith("SwimMod_Mariner_"))
+            if (Game1.activeClickableMenu != null && Game1.player.currentLocation.Name == "Custom_ScubaCrystalCave" && Game1.player.currentLocation.lastQuestionKey?.StartsWith("SwimMod_Mariner_") == true)
             {
                 IClickableMenu menu = Game1.activeClickableMenu;
                 if (menu == null || menu.GetType() != typeof(DialogueBox))
