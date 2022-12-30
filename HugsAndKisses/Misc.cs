@@ -193,7 +193,7 @@ namespace HugsAndKisses
         public static void SetNPCRelations()
         {
             ModEntry.relationships.Clear();
-            Dictionary<string, string> NPCDispositions = Helper.Content.Load<Dictionary<string, string>>("Data\\NPCDispositions", ContentSource.GameContent);
+            Dictionary<string, string> NPCDispositions = Helper.GameContent.Load<Dictionary<string, string>>("Data\\NPCDispositions");
             foreach (KeyValuePair<string, string> kvp in NPCDispositions)
             {
                 string[] relations = kvp.Value.Split('/')[9].Split(' ');

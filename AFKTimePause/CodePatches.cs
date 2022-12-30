@@ -6,19 +6,18 @@ namespace AFKTimePause
 {
     public partial class ModEntry
     {
-        [HarmonyPatch(typeof(Game1), nameof(Game1.shouldTimePass))]
-        public class Game1_shouldTimePass_Patch
+        [HarmonyPatch(typeof(Game1), nameof(Game1.UpdateGameClock))]
+        public class Game1_UpdateGameClock_Patch
         {
-            public static bool Prefix(ref bool __result)
+            public static bool Prefix()
             {
-                if (!Config.ModEnabled || !Game1.IsMasterGame || elapsedSeconds < Config.SecondsTilAFK)
+                if (!Config.ModEnabled || !Game1.IsMasterGame || Game1.eventUp || Game1.isFestival() || elapsedSeconds < Config.SecondsTilAFK)
                     return true;
                 if(elapsedSeconds == Config.SecondsTilAFK)
                 {
                     elapsedSeconds++;
                     SMonitor.Log("Going AFK");
                 }
-                __result = false;
                 return false;
             }
         }
