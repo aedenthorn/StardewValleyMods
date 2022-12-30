@@ -182,6 +182,8 @@ namespace FurnitureDisplayFramework
                                     }
                                     else
                                     {
+                                        var currentItem = f.modData["aedenthorn.FurnitureDisplayFramework/" + i].Split(',');
+                                        obj = GetObjectFromID(currentItem[0], int.Parse(currentItem[1]), int.Parse(currentItem[2]));
                                     }
                                     if(obj is not null)
                                     {
@@ -226,7 +228,7 @@ namespace FurnitureDisplayFramework
                                 Monitor.Log($"Adding {Game1.player.ActiveObject.Name} x{amount}");
                                 obj = Game1.player.ActiveObject;
                                 obj.Stack = amount;
-                                f.modData["aedenthorn.FurnitureDisplayFramework/" + i] = JsonConvert.SerializeObject(obj, new JsonSerializerSettings() { ReferenceLoopHandling = ReferenceLoopHandling.Ignore });
+                                f.modData["aedenthorn.FurnitureDisplayFramework/" + i] = JsonConvert.SerializeObject(obj, new JsonSerializerSettings() { ReferenceLoopHandling = ReferenceLoopHandling.Ignore, Error = HandleSerializationError });
                                 if (amount >= Game1.player.ActiveObject.Stack)
                                     Game1.player.removeItemFromInventory(Game1.player.ActiveObject);
                                 else
@@ -280,77 +282,6 @@ namespace FurnitureDisplayFramework
                     }
                 }
             }
-        }
-
-        private static void HandleDeserializationError(object sender, ErrorEventArgs e)
-        {
-            var currentError = e.ErrorContext.Error.Message;
-            e.ErrorContext.Handled = true;
-        }
-
-        private static Object GetObjectFromID(string id, int amount, int quality)
-        {
-            if (int.TryParse(id, out int index))
-            {
-                //SMonitor.Log($"Spawning object with index {id}");
-                return new Object(index, amount, false, -1, quality);
-            }
-            foreach (var kvp in Game1.objectInformation)
-            {
-                if (kvp.Value.StartsWith(id + "/"))
-                    return new Object(kvp.Key, amount, false, -1, quality);
-            }
-            return null;
-            /*
-            //SMonitor.Log($"Trying to get object {id}, DGA {apiDGA != null}, JA {apiJA != null}");
-
-            Object obj = null;
-            try
-            {
-
-                if (int.TryParse(id, out int index))
-                {
-                    //SMonitor.Log($"Spawning object with index {id}");
-                    return new Object(index, amount, false, -1, quality);
-                }
-                else
-                {
-                    var dict = SHelper.Content.Load<Dictionary<int, string>>("Data/ObjectInformation", ContentSource.GameContent);
-                    foreach (var kvp in dict)
-                    {
-                        if (kvp.Value.StartsWith(id + "/"))
-                            return new Object(kvp.Key, amount, false, -1, quality);
-                    }
-                }
-                if (apiDGA != null && id.Contains("/"))
-                {
-                    object o = apiDGA.SpawnDGAItem(id);
-                    if (o is Object)
-                    {
-                        //SMonitor.Log($"Spawning DGA object {id}");
-                        (o as Object).Stack = amount;
-                        (o as Object).Quality = quality;
-                        return (o as Object);
-                    }
-                }
-                if (apiJA != null)
-                {
-                    int idx = apiJA.GetObjectId(id);
-                    if (idx != -1)
-                    {
-                        //SMonitor.Log($"Spawning JA object {id}");
-                        return new Object(idx, amount, false, -1, quality);
-
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                //SMonitor.Log($"Exception: {ex}", LogLevel.Error);
-            }
-            //SMonitor.Log($"Couldn't find item with id {id}");
-            return obj;
-            */
         }
 
     }
