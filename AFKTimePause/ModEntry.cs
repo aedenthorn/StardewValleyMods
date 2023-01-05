@@ -5,6 +5,7 @@ using StardewValley;
 using StardewValley.BellsAndWhistles;
 using StardewValley.Locations;
 using StardewValley.TerrainFeatures;
+using StardewValley.Tools;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -59,7 +60,7 @@ namespace AFKTimePause
 
         private void GameLoop_OneSecondUpdateTicked(object sender, StardewModdingAPI.Events.OneSecondUpdateTickedEventArgs e)
         {
-            if (!Config.ModEnabled || !Context.IsPlayerFree)
+            if (!Config.ModEnabled || !Context.IsPlayerFree || (Game1.player.CurrentTool is FishingRod && (Game1.player.CurrentTool as FishingRod).inUse()))
             {
                 elapsedSeconds = 0;
                 return;
