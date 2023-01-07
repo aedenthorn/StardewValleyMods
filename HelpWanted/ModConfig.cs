@@ -12,7 +12,7 @@ namespace HelpWanted
         public bool AllowArtisanGoods { get; set; } = true;
         public bool IgnoreVanillaItemSelection { get; set; } = true;
         public bool OneQuestPerVillager { get; set; } = true;
-        public bool AvoidMaxHeartQuests { get; set; } = true;
+        public bool AvoidMaxHearts { get; set; } = true;
         public int MaxPrice { get; set; } = -1;
         public int QuestDays { get; set; } = 2;
         public int MaxQuests { get; set; } = 10;

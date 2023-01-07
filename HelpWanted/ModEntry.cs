@@ -166,7 +166,9 @@ namespace HelpWanted
                     }
                     if (npc is not null)
                     {
-                        if (Config.OneQuestPerVillager && npcs.Contains(npc.Name))
+                        if ((Config.OneQuestPerVillager && npcs.Contains(npc.Name)) ||
+                            (Config.AvoidMaxHearts && !Game1.IsMultiplayer && Game1.player.tryGetFriendshipLevelForNPC(npc.Name) >= Utility.GetMaximumHeartsForCharacter(npc) * 250)
+                        )
                         {
                             tries++;
                             if(tries > 100)
@@ -249,6 +251,13 @@ namespace HelpWanted
                 name: () => "One Quest / Villager",
                 getValue: () => Config.OneQuestPerVillager,
                 setValue: value => Config.OneQuestPerVillager = value
+            );
+            
+            configMenu.AddBoolOption(
+                mod: ModManifest,
+                name: () => "Avoid Max Heart Villagers",
+                getValue: () => Config.AvoidMaxHearts,
+                setValue: value => Config.AvoidMaxHearts = value
             );
 
             configMenu.AddNumberOption(

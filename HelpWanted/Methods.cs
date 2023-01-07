@@ -65,7 +65,7 @@ namespace HelpWanted
             List<int> items = new List<int>();
             foreach (var str in split)
             {
-                if (!int.TryParse(str, out int i))
+                if (!int.TryParse(str, out int i) || !Game1.objectInformation.ContainsKey(i))
                     continue;
                 Object obj = new Object(i, 1);
                 if (!Config.AllowArtisanGoods && obj is not null && obj.Category == Object.artisanGoodsCategory)
