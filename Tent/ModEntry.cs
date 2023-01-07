@@ -107,16 +107,20 @@ namespace Tent
         private void GameLoop_GameLaunched(object sender, StardewModdingAPI.Events.GameLaunchedEventArgs e)
         {
             apiDGA = Helper.ModRegistry.GetApi<IDynamicGameAssetsApi>("spacechase0.DynamicGameAssets");
-            IManifest manifest = new MyManifest("aedenthorn.TentDGA", "TentDGA", "aedenthorn", "TentDGA", new SemanticVersion("0.1.0"))
+            if(apiDGA != null)
             {
-                ContentPackFor = new MyManifestContentPackFor
+                IManifest manifest = new MyManifest("aedenthorn.TentDGA", "TentDGA", "aedenthorn", "TentDGA", new SemanticVersion("0.1.0"))
                 {
-                    UniqueID = "spacechase0.DynamicGameAssets"
-                },
-                ExtraFields = new Dictionary<string, object>() { { "DGA.FormatVersion", 2 }, { "DGA.ConditionsFormatVersion", "1.23.0" } }
-            };
+                    ContentPackFor = new MyManifestContentPackFor
+                    {
+                        UniqueID = "spacechase0.DynamicGameAssets"
+                    },
+                    ExtraFields = new Dictionary<string, object>() { { "DGA.FormatVersion", 2 }, { "DGA.ConditionsFormatVersion", "1.23.0" } }
+                };
 
-            apiDGA.AddEmbeddedPack(manifest, $"{Helper.DirectoryPath}/dga");
+                apiDGA.AddEmbeddedPack(manifest, $"{Helper.DirectoryPath}/dga");
+            }
+
 
             // get Generic Mod Config Menu's API (if it's installed)
             var configMenu = Helper.ModRegistry.GetApi<IGenericModConfigMenuApi>("spacechase0.GenericModConfigMenu");

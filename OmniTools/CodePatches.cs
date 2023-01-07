@@ -113,9 +113,12 @@ namespace OmniTools
                         if (c.containsPoint(mouse.X, mouse.Y))
                         {
                             int slotNumber = Convert.ToInt32(c.name);
-                            if (slotNumber >= inv.actualInventory.Count || inv.actualInventory[slotNumber] is null || !inv.actualInventory[slotNumber].modData.TryGetValue(toolsKey, out string toolsString))
+                            if (slotNumber >= inv.actualInventory.Count || inv.actualInventory[slotNumber] is not Tool || !inv.actualInventory[slotNumber].modData.TryGetValue(toolsKey, out string toolsString))
                                 return;
-                            inv.actualInventory[slotNumber] = CycleTool(inv.actualInventory[slotNumber] as Tool, toolsString);
+                            var newTool = CycleTool(inv.actualInventory[slotNumber] as Tool, toolsString);
+                            if(slotNumber == Game1.player.CurrentToolIndex)
+                                UpdateEnchantments(Game1.player, inv.actualInventory[slotNumber] as Tool, newTool);
+                            inv.actualInventory[slotNumber] = newTool;
                             return;
                         }
                     }
@@ -127,9 +130,12 @@ namespace OmniTools
                         if (c.containsPoint(mouse.X, mouse.Y))
                         {
                             int slotNumber = Convert.ToInt32(c.name);
-                            if (slotNumber >= inv.actualInventory.Count || inv.actualInventory[slotNumber] is null || !inv.actualInventory[slotNumber].modData.TryGetValue(toolsKey, out string toolsString))
+                            if (slotNumber >= inv.actualInventory.Count || inv.actualInventory[slotNumber] is not Tool || !inv.actualInventory[slotNumber].modData.TryGetValue(toolsKey, out string toolsString))
                                 return;
-                            inv.actualInventory[slotNumber] = RemoveTool(inv.actualInventory[slotNumber] as Tool, toolsString);
+                            var newTool = RemoveTool(inv.actualInventory[slotNumber] as Tool, toolsString);
+                            if (slotNumber == Game1.player.CurrentToolIndex)
+                                UpdateEnchantments(Game1.player, inv.actualInventory[slotNumber] as Tool, newTool);
+                            inv.actualInventory[slotNumber] = newTool;
                             return;
                         }
                     }
@@ -200,6 +206,7 @@ namespace OmniTools
                 Tool t = SmartSwitch(__instance.CurrentTool, __instance.currentLocation, tile, tools);
                 if (t is not null)
                 {
+                    UpdateEnchantments(__instance, __instance.CurrentTool, t);
                     __instance.CurrentTool = t;
                 }
             }
@@ -260,9 +267,19 @@ namespace OmniTools
             {
                 if (!Config.EnableMod || !Config.SwitchForCrops || Game1.player.CurrentTool is not Tool || !Game1.player.CurrentTool.modData.ContainsKey(toolsKey))
                     return;
-                Tool tool = SwitchForTerrainFeature(Game1.player.CurrentTool, __instance);
-                if (tool is not null)
-                    Game1.player.CurrentTool = tool;
+                Tool t = SwitchForTerrainFeature(Game1.player.CurrentTool, __instance);
+                if (t is not null)
+                {
+                    foreach (var e in Game1.player.CurrentTool.enchantments)
+                    {
+                        e.OnUnequip(Game1.player);
+                    }
+                    Game1.player.CurrentTool = t;
+                    foreach (var e in t.enchantments)
+                    {
+                        e.ApplyTo(t, Game1.player);
+                    }
+                }
             }
         }
     }

@@ -67,10 +67,11 @@ namespace HelpWanted
             {
                 if (!int.TryParse(str, out int i))
                     continue;
-                if (i > 1000)
-                {
-                    var x = i;
-                }
+                Object obj = new Object(i, 1);
+                if (!Config.AllowArtisanGoods && obj is not null && obj.Category == Object.artisanGoodsCategory)
+                    continue;
+                if (Config.MaxPrice > 0 && obj is not null && obj.Price > Config.MaxPrice)
+                    continue;
                 items.Add(i);
             }
             if (!items.Any() || (!Config.IgnoreVanillaItemSelection && possibleItems?.Any() != true))
@@ -87,7 +88,7 @@ namespace HelpWanted
                     if (idx >= 0)
                     {
                         Object obj = new Object(idx, 1);
-                        if (obj is null || !items.Contains(obj.Category))
+                        if (obj is null || !items.Contains(obj.Category) || (!Config.AllowArtisanGoods && obj.Category == Object.artisanGoodsCategory) || (Config.MaxPrice > 0 && obj.Price > Config.MaxPrice))
                         {
                             possibleItems.RemoveAt(i);
                         }

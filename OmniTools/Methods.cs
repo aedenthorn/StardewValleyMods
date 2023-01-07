@@ -373,6 +373,18 @@ namespace OmniTools
             return t;
         }
 
+
+        public static void UpdateEnchantments(Farmer player, Tool oldTool, Tool newTool)
+        {
+            foreach (var e in oldTool.enchantments)
+            {
+                e.OnUnequip(player);
+            }
+            foreach (var e in newTool.enchantments)
+            {
+                e.OnEquip(player);
+            }
+        }
         public static Tool GetToolFromInfo(ToolInfo toolInfo)
         {
             Tool t = GetToolFromDescription(toolInfo.description.index, toolInfo.description.upgradeLevel);
@@ -381,7 +393,7 @@ namespace OmniTools
                 try
                 {
                     var type = typeof(Game1).Assembly.GetType(s);
-                    AccessTools.Method(t.enchantments.GetType(), "Add").Invoke(t.enchantments, new object[] { Activator.CreateInstance(type) });
+                    AccessTools.Method(t.GetType(), "AddEnchantment").Invoke(t, new object[] { Activator.CreateInstance(type) });
                 }
                 catch { }
             }

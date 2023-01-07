@@ -1,6 +1,7 @@
 ﻿using HarmonyLib;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Audio;
+using Netcode;
 using Newtonsoft.Json;
 using StardewModdingAPI;
 using StardewModdingAPI.Utilities;
@@ -91,11 +92,21 @@ namespace OmniTools
                 return;
             if(e.Button == Config.CycleButton)
             {
-                Game1.player.CurrentTool = CycleTool(Game1.player.CurrentTool, toolsString);
+                var newTool = CycleTool(Game1.player.CurrentTool, toolsString);
+                if(newTool != null) 
+                {
+                    UpdateEnchantments(Game1.player, Game1.player.CurrentTool, newTool);
+                    Game1.player.CurrentTool = newTool;
+                }
             }
             else if(e.Button == Config.RemoveButton)
             {
-                Game1.player.CurrentTool = RemoveTool(Game1.player.CurrentTool, toolsString);
+                var newTool = RemoveTool(Game1.player.CurrentTool, toolsString);
+                if (newTool != null)
+                {
+                    UpdateEnchantments(Game1.player, Game1.player.CurrentTool, newTool);
+                    Game1.player.CurrentTool = newTool;
+                }
             }
         }
 

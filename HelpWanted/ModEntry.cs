@@ -232,6 +232,13 @@ namespace HelpWanted
             
             configMenu.AddBoolOption(
                 mod: ModManifest,
+                name: () => "Allow Artisan Goods",
+                getValue: () => Config.AllowArtisanGoods,
+                setValue: value => Config.AllowArtisanGoods = value
+            );
+            
+            configMenu.AddBoolOption(
+                mod: ModManifest,
                 name: () => "Ignore Game's Item Choice",
                 getValue: () => Config.IgnoreVanillaItemSelection,
                 setValue: value => Config.IgnoreVanillaItemSelection = value
@@ -243,12 +250,12 @@ namespace HelpWanted
                 getValue: () => Config.OneQuestPerVillager,
                 setValue: value => Config.OneQuestPerVillager = value
             );
-            
-            configMenu.AddBoolOption(
+
+            configMenu.AddNumberOption(
                 mod: ModManifest,
-                name: () => "One Quest / Villager",
-                getValue: () => Config.OneQuestPerVillager,
-                setValue: value => Config.OneQuestPerVillager = value
+                name: () => "Max Item Price",
+                getValue: () => Config.MaxPrice,
+                setValue: value => Config.MaxPrice = value
             );
 
             configMenu.AddNumberOption(

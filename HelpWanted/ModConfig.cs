@@ -9,8 +9,11 @@ namespace HelpWanted
         public bool ModEnabled { get; set; } = true;
         public bool MustLikeItem { get; set; } = true;
         public bool MustLoveItem { get; set; } = false;
+        public bool AllowArtisanGoods { get; set; } = true;
         public bool IgnoreVanillaItemSelection { get; set; } = true;
         public bool OneQuestPerVillager { get; set; } = true;
+        public bool AvoidMaxHeartQuests { get; set; } = true;
+        public int MaxPrice { get; set; } = -1;
         public int QuestDays { get; set; } = 2;
         public int MaxQuests { get; set; } = 10;
         public float NoteScale { get; set; } = 2;
