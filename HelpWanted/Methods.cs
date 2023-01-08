@@ -125,7 +125,7 @@ namespace HelpWanted
             if (!Config.ModEnabled)
                 return oldList;
             List<int> newList = GetRandomItemList(oldList);
-            SMonitor.Log($"possible crops: {newList?.Count}");
+            //SMonitor.Log($"possible crops: {newList?.Count}");
             return (newList is null || !newList.Any()) ? oldList : newList;
         }
         private static int GetRandomItem(int result, List<int> possibleItems)
@@ -146,7 +146,7 @@ namespace HelpWanted
             var ii = items[random.Next(items.Count)];
             if (!Game1.objectInformation.ContainsKey(ii))
                 return result;
-            SMonitor.Log($"our random: {ii}");
+            //SMonitor.Log($"our random: {ii}");
             //SMonitor.Log($"found our random: {ii}");
             return ii;
         }
