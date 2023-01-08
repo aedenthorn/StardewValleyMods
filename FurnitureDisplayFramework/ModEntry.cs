@@ -257,15 +257,15 @@ namespace FurnitureDisplayFramework
                                 Object obj = null;
                                 if (slotString.Contains("{"))
                                 {
-                                    var currentItem = f.modData["aedenthorn.FurnitureDisplayFramework/" + i].Split(',');
-                                    obj = GetObjectFromID(currentItem[0], int.Parse(currentItem[1]), int.Parse(currentItem[2]));
-                                }
-                                else if (slotString.Contains("{"))
-                                {
                                     obj = JsonConvert.DeserializeObject<Object>(slotString, new JsonSerializerSettings
                                     {
                                         Error = HandleDeserializationError
                                     });
+                                }
+                                else
+                                {
+                                    var currentItem = f.modData["aedenthorn.FurnitureDisplayFramework/" + i].Split(',');
+                                    obj = GetObjectFromID(currentItem[0], int.Parse(currentItem[1]), int.Parse(currentItem[2]));
                                 }
                                 if (obj != null)
                                 {
