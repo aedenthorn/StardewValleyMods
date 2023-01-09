@@ -226,7 +226,7 @@ namespace FurnitureDisplayFramework
 
                                 }
                                 Monitor.Log($"Adding {Game1.player.ActiveObject.Name} x{amount}");
-                                obj = Game1.player.ActiveObject;
+                                obj = (Object)Game1.player.ActiveObject.getOne();
                                 obj.Stack = amount;
                                 f.modData["aedenthorn.FurnitureDisplayFramework/" + i] = JsonConvert.SerializeObject(obj, new JsonSerializerSettings() { ReferenceLoopHandling = ReferenceLoopHandling.Ignore, Error = HandleSerializationError });
                                 if (amount >= Game1.player.ActiveObject.Stack)
