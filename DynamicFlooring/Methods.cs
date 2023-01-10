@@ -20,7 +20,7 @@ namespace DynamicFlooring
         public static int firstFlooringTile = 336;
         private static void UpdateFloor(GameLocation location, List<FlooringData> list)
         {
-            if (!Config.ModEnabled)
+            if (!Config.ModEnabled || location.map is null)
                 return;
             foreach (var data in list)
             {
