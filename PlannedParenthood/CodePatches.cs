@@ -128,10 +128,17 @@ namespace PlannedParenthood
                     return;
                 SMonitor.Log($"Showing sleep confirmation");
 
-                var level = Utility.getHomeOfFarmer(Game1.player).upgradeLevel;
-                if (level < 2)
+                var fh = Utility.getHomeOfFarmer(Game1.player);
+                
+                if (fh.upgradeLevel < 2)
                 {
-                    SMonitor.Log($"Cannot ask about pregnancy; farmhouse level {level}", LogLevel.Debug);
+                    SMonitor.Log($"Cannot ask about pregnancy; farmhouse level {fh.upgradeLevel}", LogLevel.Debug);
+                    return;
+                }
+                if (fh.cribStyle.Value <= 0)
+                {
+                    SMonitor.Log($"Cannot ask about pregnancy; no crib", LogLevel.Debug);
+                    return;
                 }
 
                 partnerName = null;
