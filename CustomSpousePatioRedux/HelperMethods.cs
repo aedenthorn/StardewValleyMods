@@ -66,6 +66,9 @@ namespace CustomSpousePatioRedux
         {
             //Monitor.Log($"last question key: {Game1.player?.currentLocation?.lastQuestionKey}");
 
+            if(!Config.EnableMod || !Context.IsWorldReady) 
+                return;
+
             if (Context.CanPlayerMove && e.Button == Config.PatioWizardKey)
             {
                 StartWizard();
