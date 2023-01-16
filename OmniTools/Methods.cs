@@ -170,10 +170,24 @@ namespace OmniTools
                 }
 
             }
-            if (Config.SwitchForWateringCan && currentLocation.CanRefillWateringCanOnTile((int)tile.X, (int)tile.Y)) 
-            { 
-                Tool tool = SwitchTool(currentTool, typeof(WateringCan), tools); 
-                if (tool != null) return tool; 
+            if (Config.SwitchForWateringCan)
+            {
+                if (currentLocation.CanRefillWateringCanOnTile((int)tile.X, (int)tile.Y))
+                {
+                    Tool tool = SwitchTool(currentTool, typeof(WateringCan), tools);
+                    if (tool != null) return tool;
+
+                }
+                if (currentLocation is Farm && currentLocation.getTileIndexAt((int)tile.X, (int)tile.Y, "Buildings") == 1938 && !(currentLocation as Farm).petBowlWatered.Value)
+                { 
+                    Tool tool = SwitchTool(currentTool, typeof(WateringCan), tools);
+                    if (tool != null) return tool;
+                }
+                if (currentLocation.objects.TryGetValue(tile, out obj) && obj.Name.EndsWith("Pet Bowl"))
+                { 
+                    Tool tool = SwitchTool(currentTool, typeof(WateringCan), tools);
+                    if (tool != null) return tool;
+                }
             }
 
             if (Config.SwitchForFishing && currentLocation.waterTiles is not null)
