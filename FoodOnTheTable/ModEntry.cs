@@ -1,6 +1,7 @@
 ﻿using HarmonyLib;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using Newtonsoft.Json;
 using StardewModdingAPI;
 using StardewValley;
 using StardewValley.Locations;
@@ -109,8 +110,11 @@ namespace FoodOnTheTable
 				getValue: () => Config.CountAsFedSpouse,
 				setValue: value => Config.CountAsFedSpouse = value
 			);
-
-			fdfAPI = SHelper.ModRegistry.GetApi<IFurnitureDisplayFrameworkAPI>("aedenthorn.FurnitureDisplayFramework");
+			try
+			{
+                fdfAPI = SHelper.ModRegistry.GetApi<IFurnitureDisplayFrameworkAPI>("aedenthorn.FurnitureDisplayFramework");
+            }
+			catch { }
         }
 
         private void GameLoop_SaveLoaded(object sender, StardewModdingAPI.Events.SaveLoadedEventArgs e)
@@ -194,23 +198,18 @@ namespace FoodOnTheTable
 				}
 				if (fdfAPI != null)
 				{
-					int slots = fdfAPI.GetTotalSlots(f);
-					for (int i = 0; i < slots; i++)
+                    List<Object> objList = fdfAPI.GetSlotObjects(f);
+					if (objList is null || objList.Count == 0)
+						continue;
+					for (int i = 0; i < objList.Count; i++)
 					{
-						if (f.modData.ContainsKey("aedenthorn.FurnitureDisplayFramework/" + i) && f.modData["aedenthorn.FurnitureDisplayFramework/" + i].Length > 0)
-						{
-
-							string[] parts = f.modData["aedenthorn.FurnitureDisplayFramework/" + i].Split(',');
-							//SMonitor.Log($"Got food {parts[0]} at slot {i} of {f.Name}");
-							var slotObj = new Object(int.Parse(parts[0]), int.Parse(parts[1]));
-							if (slotObj.Edibility > 0)
-							{
-								var slotRect = fdfAPI.GetSlotRect(f, i);
-								if (slotRect != null)
-									foodList.Add(new PlacedFoodData(f, new Vector2((f.boundingBox.X + slotRect.Value.X) / 64, (f.boundingBox.Y + slotRect.Value.Y) / 64), slotObj, i));
-							}
-						}
-					}
+                        if (objList[i] is not null && objList[i].Edibility > 0)
+                        {
+                            var slotRect = fdfAPI.GetSlotRect(f, i);
+                            if (slotRect != null)
+                                foodList.Add(new PlacedFoodData(f, new Vector2((f.boundingBox.X + slotRect.Value.X) / 64, (f.boundingBox.Y + slotRect.Value.Y) / 64), objList[i], i));
+                        }
+                    }
 				}
 			}
 			if (foodList.Count == 0)
@@ -268,8 +267,21 @@ namespace FoodOnTheTable
 			SMonitor.Log($"Got {foodList.Count} possible food for {npc.Name}; best: {foodList[0].foodObject.Name} at {foodList[0].foodTile}, value {foodList[0].value}");
 			return foodList[0];
 		}
-
-		private static bool WantsToEat(NPC spouse)
+		private static Object GetObjectFromID(string id, int amount, int quality)
+		{
+			if (int.TryParse(id, out int index))
+			{
+				//SMonitor.Log($"Spawning object with index {id}");
+				return new Object(index, amount, false, -1, quality);
+			}
+			foreach (var kvp in Game1.objectInformation)
+			{
+				if (kvp.Value.StartsWith(id + "/"))
+					return new Object(kvp.Key, amount, false, -1, quality);
+			}
+			return null;
+		}
+        private static bool WantsToEat(NPC spouse)
 		{
 			if (!spouse.modData.ContainsKey("aedenthorn.FoodOnTheTable/LastFood") || spouse.modData["aedenthorn.FoodOnTheTable/LastFood"].Length == 0)
 			{

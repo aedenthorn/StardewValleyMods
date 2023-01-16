@@ -254,19 +254,8 @@ namespace FurnitureDisplayFramework
                             Rectangle slotRect = new Rectangle((int)(f.boundingBox.X + data.slots[i].slotRect.X * 4), (int)(f.boundingBox.Y + data.slots[i].slotRect.Y * 4), (int)(data.slots[i].slotRect.Width * 4), (int)(data.slots[i].slotRect.Height * 4));
                             if (slotRect.Contains(Game1.viewport.X + Game1.getOldMouseX(), Game1.viewport.Y + Game1.getOldMouseY()) && furnitureDisplayDict.ContainsKey(name) && f.modData.TryGetValue("aedenthorn.FurnitureDisplayFramework/" + i, out string slotString))
                             {
-                                Object obj = null;
-                                if (slotString.Contains("{"))
-                                {
-                                    obj = JsonConvert.DeserializeObject<Object>(slotString, new JsonSerializerSettings
-                                    {
-                                        Error = HandleDeserializationError
-                                    });
-                                }
-                                else
-                                {
-                                    var currentItem = f.modData["aedenthorn.FurnitureDisplayFramework/" + i].Split(',');
-                                    obj = GetObjectFromID(currentItem[0], int.Parse(currentItem[1]), int.Parse(currentItem[2]));
-                                }
+                                Object obj = GetObjectFromSlot(slotString);
+
                                 if (obj != null)
                                 {
                                     Monitor.Log($"Slot has {obj.Name}x{obj.Stack}");
@@ -284,6 +273,25 @@ namespace FurnitureDisplayFramework
             }
         }
 
+        public static Object GetObjectFromSlot(string slotString)
+        {
+            try
+            {
+                if (slotString.Contains("{"))
+                {
+                    return JsonConvert.DeserializeObject<Object>(slotString, new JsonSerializerSettings
+                    {
+                        Error = HandleDeserializationError
+                    });
+                }
+                else
+                {
+                    var currentItem = slotString.Split(',');
+                    return GetObjectFromID(currentItem[0], int.Parse(currentItem[1]), int.Parse(currentItem[2]));
+                }
+            }
+            catch { }
+            return null;
+        }
     }
-
 }
