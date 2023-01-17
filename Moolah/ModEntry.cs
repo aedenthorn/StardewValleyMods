@@ -46,7 +46,8 @@ namespace Moolah
             {
                 if(Game1.player.Money < maxValue)
                     Game1.player.Money = 854775807;
-                Game1.player.addUnearnedMoney((int)Math.Round(maxValue * 10 * Game1.random.NextDouble()));
+                for(int i = 0; i < 1000; i++)
+                    Game1.player.addUnearnedMoney((int)Math.Round(maxValue * 10 * Game1.random.NextDouble()));
             }
         }
 
@@ -79,6 +80,30 @@ namespace Moolah
                 name: () => "Mod Enabled",
                 getValue: () => Config.EnableMod,
                 setValue: value => Config.EnableMod = value
+            );
+            configMenu.AddTextOption(
+                mod: ModManifest,
+                name: () => "Separator",
+                getValue: () => Config.Separator,
+                setValue: value => Config.Separator = value
+            );
+            configMenu.AddNumberOption(
+                mod: ModManifest,
+                name: () => "Separator X",
+                getValue: () => Config.SeparatorX,
+                setValue: value => Config.SeparatorX = value
+            );
+            configMenu.AddNumberOption(
+                mod: ModManifest,
+                name: () => "Separator Y",
+                getValue: () => Config.SeparatorY,
+                setValue: value => Config.SeparatorY = value
+            );
+            configMenu.AddNumberOption(
+                mod: ModManifest,
+                name: () => "Separator Interval",
+                getValue: () => Config.SeparatorInterval,
+                setValue: value => Config.SeparatorInterval = value
             );
         }
     }

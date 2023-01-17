@@ -180,7 +180,11 @@ namespace Moolah
 					}
 					if (significant)
 					{
-						b.Draw(Game1.mouseCursors, position + new Vector2(xPosition, 0f), new Rectangle?(new Rectangle(286, 502 - (currentDigit) * 8, 5, 8)), Color.Maroon, 0f, Vector2.Zero, 4f + ((AccessTools.FieldRefAccess<MoneyDial, int>(moneyDial, "moneyShineTimer") / 60 == numDigits - j) ? 0.3f : 0f), SpriteEffects.None, 1f);
+						if (!string.IsNullOrEmpty(Config.Separator) && j < numDigits - 1 && (numDigits - j) % Config.SeparatorInterval == 1)
+						{
+                            SpriteText.drawString(b, Config.Separator, (int)position.X + xPosition + Config.SeparatorX, (int)position.Y + Config.SeparatorY);
+                        }
+                        b.Draw(Game1.mouseCursors, position + new Vector2(xPosition, 0f), new Rectangle?(new Rectangle(286, 502 - (currentDigit) * 8, 5, 8)), Color.Maroon, 0f, Vector2.Zero, 4f + ((AccessTools.FieldRefAccess<MoneyDial, int>(moneyDial, "moneyShineTimer") / 60 == numDigits - j) ? 0.3f : 0f), SpriteEffects.None, 1f);
 					}
 					xPosition += 24;
 				}
