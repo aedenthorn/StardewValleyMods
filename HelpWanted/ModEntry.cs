@@ -87,6 +87,8 @@ namespace HelpWanted
             foreach(var kvp in dict)
             {
                 var d = kvp.Value;
+                if (Game1.random.Next(100) >= d.percentChance)
+                    continue;
                 try
                 {
                     var q = new QuestData()

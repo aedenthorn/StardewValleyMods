@@ -5,19 +5,16 @@ using StardewValley;
 using StardewValley.BellsAndWhistles;
 using StardewValley.Menus;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Reflection;
-using System.Reflection.Emit;
-using Object = StardewValley.Object;
+using System.Numerics;
+using Vector2 = Microsoft.Xna.Framework.Vector2;
 
 namespace Moolah
 {
-    public partial class ModEntry
+	public partial class ModEntry
     {
         private static int maxValue = 1000000000;
-        private static long previousTargetValue;
-        private static long currentValue;
+        private static BigInteger previousTargetValue;
+        private static BigInteger currentValue;
         private static long speed;
         private static long soundTimer;
 
@@ -29,9 +26,9 @@ namespace Moolah
             {
                 if (!Config.EnableMod)
                     return;
-                long moocha = 0;
+                BigInteger moocha = 0;
                 if(__instance.modData.TryGetValue("aedenthorn.Moolah/moocha", out string moochaString))
-                    moocha = Convert.ToInt64(moochaString);
+                    moocha = BigInteger.Parse(moochaString);
                 if(value > maxValue)
                 {
                     //SMonitor.Log($"Storing excess money: {value - maxValue} with {moocha}");
@@ -65,7 +62,7 @@ namespace Moolah
                 if (!Config.EnableMod || Game1.player is null)
                     return true;
 
-				long moocha = GetTotalMoolah();
+				BigInteger moocha = GetTotalMoolah();
 
                 AccessTools.Method(typeof(DayTimeMoneyBox), "updatePosition").Invoke(__instance, new object[] { });
                 b.Draw(Game1.mouseCursors, ((overrideY != -1) ? new Vector2((overrideX == -1) ? __instance.position.X : ((float)overrideX), (float)(overrideY - 172)) : __instance.position) + new Vector2((float)(28 + ((__instance.moneyShakeTimer > 0) ? Game1.random.Next(-3, 4) : 0)), (float)(172 + ((__instance.moneyShakeTimer > 0) ? Game1.random.Next(-3, 4) : 0))), new Rectangle?(new Rectangle(340, 472, 65, 17)), Color.White, 0f, Vector2.Zero, 4f, SpriteEffects.None, 0.9f);
@@ -88,12 +85,19 @@ namespace Moolah
                 return false;
             }
 
-			private static void DrawMoneyDial(MoneyDial moneyDial, SpriteBatch b, Vector2 position, long target)
+			private static void DrawMoneyDial(MoneyDial moneyDial, SpriteBatch b, Vector2 position, BigInteger target)
 			{
 				int numDigits = currentValue.ToString().Length;
 				if (previousTargetValue != target)
-				{
-					speed = (int)(target - currentValue) / 100;
+                {
+                    BigInteger diff = target - currentValue;
+
+					if (diff < -int.MaxValue)
+						speed = -int.MaxValue / 100; 
+					else if (diff > int.MaxValue)
+						speed = int.MaxValue / 100; 
+					else
+						speed = (int)diff / 100;
 					previousTargetValue = target;
 					soundTimer = Math.Max(6, 100 / (Math.Abs(speed) + 1));
 				}
@@ -113,7 +117,9 @@ namespace Moolah
 				{
 					Game1.dayTimeMoneyBox.moneyShakeTimer = 100;
 				}
-				if (currentValue != target)
+                //currentValue = target;
+
+                if (currentValue != target)
 				{
 					currentValue += speed + ((currentValue < target) ? 1 : -1);
 					if (currentValue < target)
@@ -121,7 +127,11 @@ namespace Moolah
 						AccessTools.FieldRefAccess<MoneyDial, int>(moneyDial, "moneyMadeAccumulator") += (int)Math.Abs(speed);
 					}
 					soundTimer--;
-					if (Math.Abs(target - currentValue) <= speed + 1 || (speed != 0 && Math.Sign(target - currentValue) != Math.Sign(speed)))
+					BigInteger diff = target - currentValue;
+					int sign = diff > 0 ? 1 : -1;
+					BigInteger abs = diff > 0 ? diff : currentValue - target;
+
+                    if (abs <= speed + 1 || (speed != 0 && sign != Math.Sign(speed)))
 					{
 						currentValue = target;
 					}
@@ -129,7 +139,7 @@ namespace Moolah
 					{
 						if (moneyDial.onPlaySound != null)
 						{
-							moneyDial.onPlaySound(Math.Sign(target - currentValue));
+							moneyDial.onPlaySound(sign);
 						}
 						soundTimer = Math.Max(6, 100 / (Math.Abs(speed) + 1));
 						if (Game1.random.NextDouble() < 0.4)
@@ -170,8 +180,10 @@ namespace Moolah
 					xPosition += (8 - numDigits) * 24;
 				}
 				bool significant = false;
-				numDigits = currentValue.ToString().Length; 
-				for (int j = 0; j < numDigits; j++)
+				numDigits = currentValue.ToString().Length;
+				var moneyShineTimer = AccessTools.FieldRefAccess<MoneyDial, int>(moneyDial, "moneyShineTimer");
+				var showSeparator = !string.IsNullOrEmpty(Config.Separator);
+                for (int j = 0; j < numDigits; j++)
 				{
 					int currentDigit = int.Parse(currentValue.ToString()[j].ToString());
 					if (currentDigit > 0 || j == numDigits - 1)
@@ -180,11 +192,11 @@ namespace Moolah
 					}
 					if (significant)
 					{
-						if (!string.IsNullOrEmpty(Config.Separator) && j < numDigits - 1 && (numDigits - j) % Config.SeparatorInterval == 1)
+						if (showSeparator && j < numDigits - 1 && (numDigits - j) % Config.SeparatorInterval == 1)
 						{
                             SpriteText.drawString(b, Config.Separator, (int)position.X + xPosition + Config.SeparatorX, (int)position.Y + Config.SeparatorY);
                         }
-                        b.Draw(Game1.mouseCursors, position + new Vector2(xPosition, 0f), new Rectangle?(new Rectangle(286, 502 - (currentDigit) * 8, 5, 8)), Color.Maroon, 0f, Vector2.Zero, 4f + ((AccessTools.FieldRefAccess<MoneyDial, int>(moneyDial, "moneyShineTimer") / 60 == numDigits - j) ? 0.3f : 0f), SpriteEffects.None, 1f);
+                        b.Draw(Game1.mouseCursors, position + new Vector2(xPosition, 0f), new Rectangle?(new Rectangle(286, 502 - (currentDigit) * 8, 5, 8)), Color.Maroon, 0f, Vector2.Zero, 4f + ((moneyShineTimer / 60 == numDigits - j) ? 0.3f : 0f), SpriteEffects.None, 1f);
 					}
 					xPosition += 24;
 				}

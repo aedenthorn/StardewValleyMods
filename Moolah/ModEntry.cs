@@ -7,6 +7,7 @@ using StardewValley.Locations;
 using StardewValley.Objects;
 using System;
 using System.Collections.Generic;
+using System.Numerics;
 using Object = StardewValley.Object;
 
 namespace Moolah
@@ -33,30 +34,36 @@ namespace Moolah
             SHelper = helper;
 
             helper.Events.GameLoop.GameLaunched += GameLoop_GameLaunched;
-            //helper.Events.GameLoop.UpdateTicked += GameLoop_UpdateTicked;
+            helper.Events.GameLoop.SaveLoaded += GameLoop_SaveLoaded;
+            //helper.Events.GameLoop.OneSecondUpdateTicked += GameLoop_OneSecondUpdateTicked;
             //helper.Events.Input.ButtonPressed += Input_ButtonPressed;
 
             var harmony = new Harmony(ModManifest.UniqueID);
             harmony.PatchAll();
         }
 
+        private void GameLoop_SaveLoaded(object sender, SaveLoadedEventArgs e)
+        {
+            previousTargetValue = 0;
+            currentValue = 0;
+        }
+
         private void Input_ButtonPressed(object sender, ButtonPressedEventArgs e)
         {
-            if (Config.EnableMod && e.Button == SButton.H && Context.IsPlayerFree && GetTotalMoolah() < long.MaxValue)
+            if (Config.EnableMod && e.Button == SButton.H && Context.IsPlayerFree)
             {
                 if(Game1.player.Money < maxValue)
                     Game1.player.Money = 854775807;
-                for(int i = 0; i < 1000; i++)
-                    Game1.player.addUnearnedMoney((int)Math.Round(maxValue * 10 * Game1.random.NextDouble()));
+                Game1.player.addUnearnedMoney((int)Math.Round(maxValue * 10 * Game1.random.NextDouble()));
             }
         }
 
 
-        private static long GetTotalMoolah()
+        private static BigInteger GetTotalMoolah()
         {
-            long moocha = Game1.player.Money;
+            BigInteger moocha = Game1.player.Money;
             if (Game1.player.modData.TryGetValue("aedenthorn.Moolah/moocha", out string moochaString))
-                moocha += Convert.ToInt64(moochaString);
+                moocha += BigInteger.Parse(moochaString);
             return moocha;
         }
 
