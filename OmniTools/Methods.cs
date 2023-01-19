@@ -158,6 +158,19 @@ namespace OmniTools
                             return tool;
                     }
                 }
+                if(currentLocation is Woods)
+                {
+                    foreach (ResourceClump clump in (currentLocation as Woods).stumps)
+                    {
+                        var bb = clump.getBoundingBox(clump.tile.Value);
+                        if (bb.Intersects(tileRect))
+                        {
+                            Tool tool = SwitchForClump(currentTool, clump, tools);
+                            if (tool is not null)
+                                return tool;
+                        }
+                    }
+                }
             }
             if (Config.SwitchForPan && currentTool.getLastFarmerToUse() is not null)
             {
