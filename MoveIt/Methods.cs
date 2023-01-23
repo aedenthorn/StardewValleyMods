@@ -26,8 +26,9 @@ namespace MoveIt
             foreach (var c in Game1.currentLocation.characters)
             {
                 var bb = c.GetBoundingBox();
-                var box = new Rectangle(bb.Location - new Point(0, 64), new Point(64, 128));
-                if (box.Contains(mp))
+                if(c is NPC)
+                    bb = new Rectangle(bb.Location - new Point(0, 64), new Point(64, 128));
+                if (bb.Contains(mp))
                 {
                     Pickup(c, cursorTile, c.Name);
                     return;
