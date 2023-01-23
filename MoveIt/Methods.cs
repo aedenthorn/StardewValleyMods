@@ -125,15 +125,17 @@ namespace MoveIt
             }
             if (movingObject is null)
                 return;
-            if(movingObject is Character)
+            SHelper.Input.Suppress(Config.MoveKey);
+            if (movingObject is Character)
             {
                 (movingObject as Character).Position = (Game1.getMousePosition() + new Point(Game1.viewport.Location.X - 32, Game1.viewport.Location.Y - 32)).ToVector2();
+                movingObject = null;
             }
-            else if(movingObject is Object)
+            else if (movingObject is Object)
             {
                 if (Game1.currentLocation.objects.ContainsKey(movingTile))
                 {
-                    if(Config.ProtectOverwrite && Game1.currentLocation.objects.ContainsKey(Game1.currentCursorTile))
+                    if (Config.ProtectOverwrite && Game1.currentLocation.objects.ContainsKey(Game1.currentCursorTile))
                     {
                         Game1.playSound("cancel");
                         SMonitor.Log($"Preventing overwrite", StardewModdingAPI.LogLevel.Info);
@@ -141,24 +143,28 @@ namespace MoveIt
                     }
                     Game1.currentLocation.objects[Game1.currentCursorTile] = Game1.currentLocation.objects[movingTile];
                     Game1.currentLocation.objects.Remove(movingTile);
+                    movingObject = null;
                 }
             }
-            else if(movingObject is FarmAnimal)
+            else if (movingObject is FarmAnimal)
             {
                 (movingObject as FarmAnimal).Position = (Game1.getMousePosition() + new Point(Game1.viewport.Location.X - 32, Game1.viewport.Location.Y - 32)).ToVector2();
+                movingObject = null;
             }
             else if (movingObject is ResourceClump)
             {
-                if(Game1.currentLocation is Forest && (Game1.currentLocation as Forest).log == movingObject)
+                if (Game1.currentLocation is Forest && (Game1.currentLocation as Forest).log == movingObject)
                 {
                     (Game1.currentLocation as Forest).log.currentTileLocation = Game1.lastCursorTile;
                     (Game1.currentLocation as Forest).log.tile.Value = Game1.lastCursorTile;
+                    movingObject = null;
                 }
                 else if (Game1.currentLocation is Woods && (Game1.currentLocation as Woods).stumps.IndexOf(movingObject as ResourceClump) >= 0)
                 {
                     var index = (Game1.currentLocation as Woods).stumps.IndexOf(movingObject as ResourceClump);
                     (Game1.currentLocation as Woods).stumps[index].currentTileLocation = Game1.lastCursorTile;
                     (Game1.currentLocation as Woods).stumps[index].tile.Value = Game1.lastCursorTile;
+                    movingObject = null;
                 }
                 else
                 {
@@ -167,12 +173,23 @@ namespace MoveIt
                     {
                         Game1.currentLocation.resourceClumps[index].currentTileLocation = Game1.lastCursorTile;
                         Game1.currentLocation.resourceClumps[index].tile.Value = Game1.lastCursorTile;
+                        movingObject = null;
                     }
                 }
             }
-            else if(movingObject is TerrainFeature)
+            else if (movingObject is TerrainFeature)
             {
-                if (Game1.currentLocation.terrainFeatures.ContainsKey(movingTile))
+                if (movingObject is LargeTerrainFeature)
+                {
+                    var index = Game1.currentLocation.largeTerrainFeatures.IndexOf(movingObject as LargeTerrainFeature);
+                    if (index >= 0)
+                    {
+                        Game1.currentLocation.largeTerrainFeatures[index].currentTileLocation = Game1.lastCursorTile;
+                        Game1.currentLocation.largeTerrainFeatures[index].tilePosition.Value = Game1.lastCursorTile;
+                        movingObject = null;
+                    }
+                }
+                else if (Game1.currentLocation.terrainFeatures.ContainsKey(movingTile))
                 {
                     if (Config.ProtectOverwrite && Game1.currentLocation.terrainFeatures.ContainsKey(Game1.currentCursorTile))
                     {
@@ -182,27 +199,19 @@ namespace MoveIt
                     }
                     Game1.currentLocation.terrainFeatures[Game1.currentCursorTile] = Game1.currentLocation.terrainFeatures[movingTile];
                     Game1.currentLocation.terrainFeatures.Remove(movingTile);
-                    if(Game1.currentLocation.terrainFeatures[Game1.currentCursorTile] is HoeDirt)
+                    if (Game1.currentLocation.terrainFeatures[Game1.currentCursorTile] is HoeDirt)
                     {
                         (Game1.currentLocation.terrainFeatures[Game1.currentCursorTile] as HoeDirt).updateNeighbors(Game1.currentLocation, Game1.currentCursorTile);
                         if ((Game1.currentLocation.terrainFeatures[Game1.currentCursorTile] as HoeDirt).crop is not null)
                             (Game1.currentLocation.terrainFeatures[Game1.currentCursorTile] as HoeDirt).crop.updateDrawMath(Game1.currentCursorTile);
                     }
-                }
-                var index = Game1.currentLocation.largeTerrainFeatures.IndexOf(movingObject as LargeTerrainFeature);
-                if (index >= 0)
-                {
-                    Game1.currentLocation.largeTerrainFeatures[index].currentTileLocation = Game1.lastCursorTile;
-                    Game1.currentLocation.largeTerrainFeatures[index].tilePosition.Value = Game1.lastCursorTile;
+                    movingObject = null;
                 }
             }
-            else
+            if (movingObject is null)
             {
-                return;
+                PlaySound();
             }
-            SHelper.Input.Suppress(Config.MoveKey);
-            PlaySound();
-            movingObject = null;
         }
 
         private static void PlaySound()

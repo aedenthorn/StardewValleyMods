@@ -171,6 +171,12 @@ namespace OmniTools
                         }
                     }
                 }
+                if (currentLocation is Forest && (Game1.currentLocation as Forest).log?.occupiesTile((int)tile.X, (int)tile.Y) == true)
+                {
+                    Tool tool = SwitchForClump(currentTool, (Game1.currentLocation as Forest).log, tools);
+                    if (tool is not null)
+                        return tool;
+                }
             }
             if (Config.SwitchForPan && currentTool.getLastFarmerToUse() is not null)
             {
