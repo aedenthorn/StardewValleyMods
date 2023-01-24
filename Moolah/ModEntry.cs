@@ -1,14 +1,10 @@
 ﻿using HarmonyLib;
-using Microsoft.Xna.Framework.Graphics;
 using StardewModdingAPI;
 using StardewModdingAPI.Events;
+using StardewModdingAPI.Utilities;
 using StardewValley;
-using StardewValley.Locations;
-using StardewValley.Objects;
 using System;
-using System.Collections.Generic;
 using System.Numerics;
-using Object = StardewValley.Object;
 
 namespace Moolah
 {
@@ -20,6 +16,15 @@ namespace Moolah
         public static IModHelper SHelper;
         public static ModConfig Config;
         public static ModEntry context;
+
+        private static int maxValue = 1000000000;
+
+        private static PerScreen<BigInteger> previousTarget = new();
+        private static PerScreen<BigInteger> currentValue = new();
+        private static PerScreen<BigInteger> flipSpeed = new();
+        private static PerScreen<BigInteger> soundTime = new();
+        private static PerScreen<BigInteger> moneyShineTimer = new();
+        private static PerScreen<BigInteger> moneyMadeAccumulator = new();
 
 
         /// <summary>The mod entry point, called after the mod is first loaded.</summary>
@@ -35,8 +40,11 @@ namespace Moolah
 
             helper.Events.GameLoop.GameLaunched += GameLoop_GameLaunched;
             helper.Events.GameLoop.SaveLoaded += GameLoop_SaveLoaded;
+            if (Config.Debug)
+            {
+                helper.Events.Input.ButtonPressed += Input_ButtonPressed;
+            }
             //helper.Events.GameLoop.OneSecondUpdateTicked += GameLoop_OneSecondUpdateTicked;
-            //helper.Events.Input.ButtonPressed += Input_ButtonPressed;
 
             var harmony = new Harmony(ModManifest.UniqueID);
             harmony.PatchAll();
@@ -44,27 +52,24 @@ namespace Moolah
 
         private void GameLoop_SaveLoaded(object sender, SaveLoadedEventArgs e)
         {
-            previousTargetValue = 0;
-            currentValue = 0;
+            previousTarget.Value = 0;
+            currentValue.Value = 0;
         }
 
         private void Input_ButtonPressed(object sender, ButtonPressedEventArgs e)
         {
             if (Config.EnableMod && e.Button == SButton.H && Context.IsPlayerFree)
             {
-                if(Game1.player.Money < maxValue)
-                    Game1.player.Money = 854775807;
-                Game1.player.addUnearnedMoney((int)Math.Round(maxValue * 10 * Game1.random.NextDouble()));
+                var i = new BigInteger(maxValue * Game1.random.NextDouble() * 1000);
+                BigInteger total = GetTotalMoolah(Game1.player) + i;
+                Game1.player._money = AdjustMoney(Game1.player, total);
+                //Game1.player.addUnearnedMoney(i);
             }
         }
 
-
-        private static BigInteger GetTotalMoolah()
+        public override object GetApi()
         {
-            BigInteger moocha = Game1.player.Money;
-            if (Game1.player.modData.TryGetValue("aedenthorn.Moolah/moocha", out string moochaString))
-                moocha += BigInteger.Parse(moochaString);
-            return moocha;
+            return new MoolahAPI();
         }
 
         private void GameLoop_GameLaunched(object sender, GameLaunchedEventArgs e)

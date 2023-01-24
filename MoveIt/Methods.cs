@@ -142,6 +142,7 @@ namespace MoveIt
                         return;
                     }
                     Game1.currentLocation.objects[Game1.currentCursorTile] = Game1.currentLocation.objects[movingTile];
+                    Game1.currentLocation.objects[Game1.currentCursorTile].TileLocation = Game1.currentCursorTile;
                     Game1.currentLocation.objects.Remove(movingTile);
                     movingObject = null;
                 }
