@@ -16,7 +16,7 @@ using Rectangle = Microsoft.Xna.Framework.Rectangle;
 
 namespace Swim
 {
-    public class ModEntry : Mod, IAssetEditor, IAssetLoader
+    public class ModEntry : Mod
     {
         
         public static ModConfig config;
@@ -89,6 +89,7 @@ namespace Swim
             helper.Events.Display.RenderedWorld += SwimHelperEvents.Display_RenderedWorld;
             helper.Events.Player.InventoryChanged += SwimHelperEvents.Player_InventoryChanged;
             helper.Events.Player.Warped += SwimHelperEvents.Player_Warped;
+            helper.Events.Content.AssetRequested += Content_AssetRequested;
 
             var harmony = new Harmony(this.ModManifest.UniqueID);
 
@@ -179,149 +180,18 @@ namespace Swim
                postfix: new HarmonyMethod(typeof(SwimPatches), nameof(SwimPatches.GameLocation_sinkDebris_Postfix))
             );
         }
+
+        private void Content_AssetRequested(object sender, StardewModdingAPI.Events.AssetRequestedEventArgs e)
+        {
+            if (e.Name.Name.StartsWith("Fishies"))
+            {
+                e.LoadFromModFile<Texture2D>($"assets/{e.Name.Name}.png", StardewModdingAPI.Events.AssetLoadPriority.Exclusive);
+            }
+        }
+
         public override object GetApi()
         {
             return new SwimModApi(Monitor, this);
         }
-
-
-        /// <summary>Get whether this instance can load the initial version of the given asset.</summary>
-        /// <param name="asset">Basic metadata about the asset being loaded.</param>
-        public bool CanLoad<T>(IAssetInfo asset)
-        {
-            if (!config.EnableMod)
-                return false;
-
-            if (asset.AssetName.StartsWith("Fishies"))
-            {
-                return true;
-            }
-
-
-            return false;
-        }
-
-        /// <summary>Load a matched asset.</summary>
-        /// <param name="asset">Basic metadata about the asset being loaded.</param>
-        public T Load<T>(IAssetInfo asset)
-        {
-            Monitor.Log($"loading asset for {asset.AssetName}");
-
-            if (asset.AssetName.StartsWith("Fishies"))
-            {
-                return (T)(object)Helper.Content.Load<Texture2D>($"assets/{asset.AssetName}.png");
-            }
-            throw new InvalidDataException(); 
-        }
-
-        /// <summary>Get whether this instance can edit the given asset.</summary>
-        /// <param name="asset">Basic metadata about the asset being loaded.</param>
-        public bool CanEdit<T>(IAssetInfo asset)
-        {
-            return false;
-            if (!config.EnableMod)
-                return false;
-
-            foreach(string key in changeLocations.Keys)
-            {
-                if (asset.AssetNameEquals($"Maps/{key}"))
-                    return true;
-
-            }
-
-            return false;
-        }
-
-        /// <summary>Edit a matched asset.</summary>
-        /// <param name="asset">A helper which encapsulates metadata about an asset and enables changes to it.</param>
-        public void Edit<T>(IAssetData asset)
-        {
-            Monitor.Log("Editing asset: " + asset.AssetName);
-
-            string mapName = asset.AssetName.Replace("Maps/", "").Replace("Maps\\", "");
-
-            if (false && changeLocations.ContainsKey(mapName))
-            {
-                IAssetDataForMap map = asset.AsMap();
-                for (int x = 0; x < map.Data.Layers[0].LayerWidth; x++)
-                {
-                    for (int y = 0; y < map.Data.Layers[0].LayerHeight; y++)
-                    {
-                        if (SwimUtils.doesTileHaveProperty(map.Data, x, y, "Water", "Back") != null)
-                        {
-                            Tile tile = map.Data.GetLayer("Back").PickTile(new Location(x, y) * Game1.tileSize, Game1.viewport.Size);
-                            if (tile != null && (((mapName == "Beach" || mapName == "Custom_UnderwaterBeach") && x > 58 && x < 61 && y > 11 && y < 15) || mapName != "Beach"))
-                            {
-                                if (tile.TileIndexProperties.ContainsKey("Passable"))
-                                {
-                                    tile.TileIndexProperties.Remove("Passable");
-                                }
-                            }
-                            tile = map.Data.GetLayer("Front").PickTile(new Location(x, y) * Game1.tileSize, Game1.viewport.Size);
-                            if (tile != null)
-                            {
-                                if (tile.TileIndexProperties.ContainsKey("Passable"))
-                                {
-                                    //tile.TileIndexProperties.Remove("Passable");
-                                }
-                            }
-                            if (map.Data.GetLayer("AlwaysFront") != null)
-                            {
-                                tile = map.Data.GetLayer("AlwaysFront").PickTile(new Location(x, y) * Game1.tileSize, Game1.viewport.Size);
-                                if (tile != null)
-                                {
-                                    if (tile.TileIndexProperties.ContainsKey("Passable"))
-                                    {
-                                        //tile.TileIndexProperties.Remove("Passable");
-                                    }
-                                }
-                            }
-                            tile = map.Data.GetLayer("Buildings").PickTile(new Location(x, y) * Game1.tileSize, Game1.viewport.Size);
-                            if (tile != null)
-                            {
-                                if (
-                                    ((mapName == "Beach" || mapName == "Custom_UnderwaterBeach") && x > 58 && x < 61 && y > 11 && y < 15) ||
-                                    (mapName != "Beach" && mapName != "Custom_UnderwaterBeach"
-                                        && ((tile.TileIndex > 1292 && tile.TileIndex < 1297) || (tile.TileIndex > 1317 && tile.TileIndex < 1322)
-                                            || (tile.TileIndex % 25 > 17 && tile.TileIndex / 25 < 53 && tile.TileIndex / 25 > 48)
-                                            || (tile.TileIndex % 25 > 1 && tile.TileIndex % 25 < 7 && tile.TileIndex / 25 < 53 && tile.TileIndex / 25 > 48)
-                                            || (tile.TileIndex % 25 > 11 && tile.TileIndex / 25 < 51 && tile.TileIndex / 25 > 48)
-                                            || (tile.TileIndex % 25 > 10 && tile.TileIndex % 25 < 14 && tile.TileIndex / 25 < 49 && tile.TileIndex / 25 > 46)
-                                            || tile.TileIndex == 734 || tile.TileIndex == 759
-                                            || tile.TileIndex == 628 || tile.TileIndex == 629
-                                            || (mapName == "Forest" && x == 119 && ((y > 42 && y < 48) || (y > 104 && y < 119)))
-                                    
-                                        )
-                                    )
-                                )
-                                {
-                                    if (tile.TileIndexProperties.ContainsKey("Passable"))
-                                    {
-                                        tile.TileIndexProperties["Passable"] = "T";
-                                    }
-                                    else
-                                    {
-                                        tile.TileIndexProperties.Add("Passable", "T");
-                                    }
-
-                                }
-                                else if(mapName == "Beach" && tile.TileIndex == 76)
-                                {
-                                    if(x > 58 && x < 61 && y > 11 && y < 15)
-                                    {
-                                        Game1.getLocationFromName(mapName).removeTile(x, y, "Buildings");
-                                    }
-                                    if (tile.TileIndexProperties.ContainsKey("Passable"))
-                                    {
-                                        tile.TileIndexProperties.Remove("Passable");
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        }
-
     }
 }
