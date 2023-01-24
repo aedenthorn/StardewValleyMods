@@ -146,9 +146,10 @@ namespace Moolah
         {
             public static void Prefix(string path, ref object sub1)
             {
-                if (!Config.EnableMod || string.IsNullOrEmpty(Config.Separator) || path != "Strings\\StringsFromCSFiles:LoadGameMenu.cs.11020")
+                if (!Config.EnableMod || string.IsNullOrEmpty(Config.Separator) || path != "Strings\\StringsFromCSFiles:LoadGameMenu.cs.11020" || sub1 is not int)
                     return;
                 sub1 = CheckIntToString(sub1.ToString());
+                var x = sub1;
             }
         }
         [HarmonyPatch(typeof(IClickableMenu), nameof(IClickableMenu.drawHoverText), new Type[] { typeof(SpriteBatch), typeof(StringBuilder), typeof(SpriteFont), typeof(int), typeof(int), typeof(int), typeof(string), typeof(int), typeof(string[]), typeof(Item), typeof(int), typeof(int), typeof(int), typeof(int), typeof(int), typeof(float), typeof(CraftingRecipe), typeof(IList<Item>) })]

@@ -71,7 +71,7 @@ namespace MobilePhone
             }
         }
 
-        internal static void OrderApps()
+        public static void OrderApps()
         {
             string[] appOrder = Config.AppList;
             ModEntry.appOrder = new List<string>();
@@ -256,7 +256,7 @@ namespace MobilePhone
             return new Vector2(x, y);
         }
 
-        internal static Vector2 GetOpenSurroundingPosition()
+        public static Vector2 GetOpenSurroundingPosition()
         {
             Vector2[] tiles = Utility.getSurroundingTileLocationsArray(Game1.player.getTileLocation());
             foreach(Vector2 tile in tiles)

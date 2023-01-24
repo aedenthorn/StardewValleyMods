@@ -3,6 +3,7 @@ using StardewModdingAPI;
 using StardewModdingAPI.Events;
 using StardewModdingAPI.Utilities;
 using StardewValley;
+using StardewValley.Tools;
 using System;
 using System.Numerics;
 
@@ -60,6 +61,7 @@ namespace Moolah
         {
             if (Config.EnableMod && e.Button == SButton.H && Context.IsPlayerFree)
             {
+
                 var i = new BigInteger(maxValue * Game1.random.NextDouble() * 1000);
                 BigInteger total = GetTotalMoolah(Game1.player) + i;
                 Game1.player._money = AdjustMoney(Game1.player, total);
