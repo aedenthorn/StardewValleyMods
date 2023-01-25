@@ -1,10 +1,13 @@
 ﻿using HarmonyLib;
+using Netcode;
 using StardewModdingAPI;
 using StardewModdingAPI.Events;
 using StardewModdingAPI.Utilities;
 using StardewValley;
+using StardewValley.Buildings;
 using StardewValley.Tools;
 using System;
+using System.Collections.Generic;
 using System.Numerics;
 
 namespace Moolah
@@ -19,6 +22,8 @@ namespace Moolah
         public static ModEntry context;
 
         private static int maxValue = 1000000000;
+        private static string moochaKey = "aedenthorn.Moolah/moocha";
+        //private static string earnedKey = "aedenthorn.Moolah/earned";
 
         private static PerScreen<BigInteger> previousTarget = new();
         private static PerScreen<BigInteger> currentValue = new();
@@ -26,6 +31,10 @@ namespace Moolah
         private static PerScreen<BigInteger> soundTime = new();
         private static PerScreen<BigInteger> moneyShineTimer = new();
         private static PerScreen<BigInteger> moneyMadeAccumulator = new();
+        private static PerScreen<Item[]> shippingBin = new();
+        private static PerScreen<List<BigInteger>> categoryTotals = new();
+        private static PerScreen<Dictionary<Item, BigInteger>> itemValues = new();
+        private static PerScreen<Dictionary<Item, BigInteger>> singleItemValues = new();
 
 
         /// <summary>The mod entry point, called after the mod is first loaded.</summary>
@@ -53,6 +62,7 @@ namespace Moolah
 
         private void GameLoop_SaveLoaded(object sender, SaveLoadedEventArgs e)
         {
+            shippingBin.Value = new Item[0];
             previousTarget.Value = 0;
             currentValue.Value = 0;
         }

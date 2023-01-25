@@ -16,7 +16,7 @@ namespace Moolah
             if (value > maxValue)
             {
                 //SMonitor.Log($"Storing excess money: {value - maxValue} with {moocha}");
-                __instance.modData["aedenthorn.Moolah/moocha"] = (value - maxValue) + "";
+                __instance.modData[moochaKey] = (value - maxValue) + "";
                 value = maxValue;
             }
             return (int)value;
@@ -25,7 +25,7 @@ namespace Moolah
         public static BigInteger GetTotalMoolah(Farmer f)
         {
             BigInteger moocha = f.Money;
-            if (f.modData.TryGetValue("aedenthorn.Moolah/moocha", out string moochaString))
+            if (f.modData.TryGetValue(moochaKey, out string moochaString))
                 moocha += BigInteger.Parse(moochaString);
             return moocha;
         }
