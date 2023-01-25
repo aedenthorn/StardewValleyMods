@@ -29,6 +29,17 @@ namespace OmniTools
     public partial class ModEntry
     {
 
+        [HarmonyPatch(typeof(Item), nameof(Item.canBeTrashed))]
+        public class Item_canBeTrashed_Patch
+        {
+            public static void Postfix(Item __instance, ref bool __result)
+            {
+                if (!Config.EnableMod || !__result || !__instance.modData.ContainsKey(toolsKey))
+                    return;
+                __result = false;
+            }
+        }
+
         [HarmonyPatch(typeof(WateringCan), nameof(WateringCan.drawInMenu))]
         public class WateringCan_drawInMenu_Patch
         {
