@@ -151,8 +151,8 @@ namespace Moolah
             private static string GetMoney(int money)
             {
                 var m = GetTotalMoolah(Game1.player);
-                if (m == money)
-                    return Utility.getNumberWithCommas(money);
+                if (m.ToString().Length < 10)
+                    return Utility.getNumberWithCommas((int)m);
                 return string.Format("{0:#.##E+0}", m);
             }
         }
