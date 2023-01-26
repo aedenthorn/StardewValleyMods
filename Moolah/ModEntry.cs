@@ -21,20 +21,17 @@ namespace Moolah
         public static ModConfig Config;
         public static ModEntry context;
 
-        private static int maxValue = 1000000000;
-        private static string moochaKey = "aedenthorn.Moolah/moocha";
-        //private static string earnedKey = "aedenthorn.Moolah/earned";
+        public static int maxValue = 1000000000;
+        public static string moochaKey = "aedenthorn.Moolah/moocha";
+        //public static string earnedKey = "aedenthorn.Moolah/earned";
 
-        private static PerScreen<BigInteger> previousTarget = new();
-        private static PerScreen<BigInteger> currentValue = new();
-        private static PerScreen<BigInteger> flipSpeed = new();
-        private static PerScreen<BigInteger> soundTime = new();
-        private static PerScreen<BigInteger> moneyShineTimer = new();
-        private static PerScreen<BigInteger> moneyMadeAccumulator = new();
-        private static PerScreen<Item[]> shippingBin = new();
-        private static PerScreen<List<BigInteger>> categoryTotals = new();
-        private static PerScreen<Dictionary<Item, BigInteger>> itemValues = new();
-        private static PerScreen<Dictionary<Item, BigInteger>> singleItemValues = new();
+        public static PerScreen<MoneyDialData> moneyDialData = new();
+        public static PerScreen<List<MoneyDialData>> moneyDialDataList = new();
+
+        public static PerScreen<Item[]> shippingBin = new();
+        public static PerScreen<List<BigInteger>> categoryTotals = new();
+        public static PerScreen<Dictionary<Item, BigInteger>> itemValues = new();
+        public static PerScreen<Dictionary<Item, BigInteger>> singleItemValues = new();
 
 
         /// <summary>The mod entry point, called after the mod is first loaded.</summary>
@@ -63,8 +60,7 @@ namespace Moolah
         private void GameLoop_SaveLoaded(object sender, SaveLoadedEventArgs e)
         {
             shippingBin.Value = new Item[0];
-            previousTarget.Value = 0;
-            currentValue.Value = 0;
+            moneyDialData.Value = new();
         }
 
         private void Input_ButtonPressed(object sender, ButtonPressedEventArgs e)

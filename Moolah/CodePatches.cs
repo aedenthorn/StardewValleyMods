@@ -119,7 +119,7 @@ namespace Moolah
 					}
 				}
 
-				DrawMoneyDial(__instance.moneyDial, b, ((overrideY != -1) ? new Vector2((overrideX == -1) ? __instance.position.X : ((float)overrideX), (float)(overrideY - 172)) : __instance.position) + new Vector2((float)(68 + ((__instance.moneyShakeTimer > 0) ? Game1.random.Next(-3, 4) : 0)), (float)(196 + ((__instance.moneyShakeTimer > 0) ? Game1.random.Next(-3, 4) : 0))), moocha);
+				DrawMoneyDial(__instance.moneyDial, b, ((overrideY != -1) ? new Vector2((overrideX == -1) ? __instance.position.X : ((float)overrideX), (float)(overrideY - 172)) : __instance.position) + new Vector2((float)(68 + ((__instance.moneyShakeTimer > 0) ? Game1.random.Next(-3, 4) : 0)), (float)(196 + ((__instance.moneyShakeTimer > 0) ? Game1.random.Next(-3, 4) : 0))), moocha, -1);
                 if (__instance.moneyShakeTimer > 0)
                 {
                     __instance.moneyShakeTimer -= Game1.currentGameTime.ElapsedGameTime.Milliseconds;
@@ -173,13 +173,15 @@ namespace Moolah
         {
             public static void Prefix(ShippingMenu __instance)
             {
-                categoryTotals.Value = new() { 0, 0, 0, 0, 0, 0 };
-                itemValues.Value = new();
-                singleItemValues.Value = new();
                 if (!Config.EnableMod)
                     return;
 
-                foreach(var j in Game1.player.displayedShippedItems)
+                categoryTotals.Value = new() { 0, 0, 0, 0, 0, 0 };
+                itemValues.Value = new();
+                singleItemValues.Value = new();
+                moneyDialDataList.Value = new() { new(), new(), new(), new(), new(), new() };
+
+                foreach (var j in Game1.player.displayedShippedItems)
                 {
                     if (j is Object)
                     {
@@ -222,13 +224,7 @@ namespace Moolah
                             {
                                 b.Draw(Game1.mouseCursors, start + new Vector2((float)(-(float)___itemSlotWidth - 192 - 24 + j * 6 * 4), 12f), new Rectangle?(new Rectangle(355, 476, 7, 11)), Color.White, 0f, Vector2.Zero, 4f, SpriteEffects.None, 0.88f);
                             }
-                            var pv = previousTarget.Value;
-                            var cv = currentValue.Value;
-                            previousTarget.Value = ct;
-                            currentValue.Value = ct;
-                            DrawMoneyDial(___categoryDials[i], b, start + new Vector2((float)(-(float)___itemSlotWidth - 192 - 72 + 4), 20f), ct);
-                            previousTarget.Value = pv;
-                            currentValue.Value = cv;
+                            DrawMoneyDial(___categoryDials[i], b, start + new Vector2((float)(-(float)___itemSlotWidth - 192 - 72 + 4), 20f), ct, i);
                         }
                         i++;
                     }
