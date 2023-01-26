@@ -1,18 +1,18 @@
 ﻿{
-  "Name": "Omni Tools",
+  "Name": "Tool Smart Switch",
   "Author": "aedenthorn",
-  "Version": "0.5.3",
-  "Description": "Omni Tools.",
-  "UniqueID": "aedenthorn.OmniTools",
-  "EntryDll": "OmniTools.dll",
+  "Version": "0.1.0",
+  "Description": "Tool Smart Switch.",
+  "UniqueID": "aedenthorn.ToolSmartSwitch",
+  "EntryDll": "ToolSmartSwitch.dll",
   "MinimumApiVersion": "3.15.0",
   "ModUpdater": {
     "Repository": "StardewValleyMods",
     "User": "aedenthorn",
     "Directory": "_releases",
-    "ModFolder": "OmniTools"
+    "ModFolder": "ToolSmartSwitch"
   },
-  "UpdateKeys": [ "Nexus:14865" ],
+  "UpdateKeys": [ "Nexus:" ],
   "Dependencies": [
     {
       "UniqueID": "Platonymous.ModUpdater",

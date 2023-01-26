@@ -18,7 +18,7 @@ using xTile.Layers;
 using xTile.ObjectModel;
 using Object = StardewValley.Object;
 
-namespace OmniTools
+namespace ToolSmartSwitch
 {
     /// <summary>The mod entry point.</summary>
     public partial class ModEntry : Mod
@@ -29,37 +29,7 @@ namespace OmniTools
         public static ModConfig Config;
 
         public static ModEntry context;
-        public static string toolsKey = "aedenthorn.OmniTools/tools";
-        public static bool skip;
 
-        public static List<Type> toolList = new() 
-        {
-            { typeof(Axe) },
-            { typeof(Hoe) },
-            { typeof(FishingRod) },
-            { typeof(Pickaxe) },
-            { typeof(WateringCan) },
-            { typeof(MeleeWeapon) },
-            { typeof(Slingshot) },
-            { typeof(MilkPail) },
-            { typeof(Pan) },
-            { typeof(Shears) },
-            { typeof(Wand) }
-        };
-        public static List<string> toolSoundList = new()
-        {
-            "axe",
-            "hoeHit",
-            "cast",
-            "hammer",
-            "glug",
-            "axe",
-            "slingshot",
-            "fishingRodBend",
-            "slosh",
-            "scissors",
-            "wand"
-        };
         /// <summary>The mod entry point, called after the mod is first loaded.</summary>
         /// <param name="helper">Provides simplified APIs for writing mods.</param>
         public override void Entry(IModHelper helper)
@@ -75,7 +45,6 @@ namespace OmniTools
             SHelper = helper;
 
             Helper.Events.GameLoop.GameLaunched += GameLoop_GameLaunched;
-            Helper.Events.Input.ButtonPressed += Input_ButtonPressed;
             var harmony = new Harmony(ModManifest.UniqueID);
             harmony.PatchAll();
 
@@ -83,32 +52,9 @@ namespace OmniTools
 
         public override object GetApi()
         {
-            return new OmniToolsAPI();
+            return new ToolSmartSwitchAPI();
         }
 
-        private void Input_ButtonPressed(object sender, StardewModdingAPI.Events.ButtonPressedEventArgs e)
-        {
-            if (!Config.EnableMod || !Context.CanPlayerMove || Game1.player.CurrentTool?.modData.TryGetValue(toolsKey, out string toolsString) != true)
-                return;
-            if(e.Button == Config.CycleButton)
-            {
-                var newTool = CycleTool(Game1.player.CurrentTool, toolsString);
-                if(newTool != null) 
-                {
-                    UpdateEnchantments(Game1.player, Game1.player.CurrentTool, newTool);
-                    Game1.player.CurrentTool = newTool;
-                }
-            }
-            else if(e.Button == Config.RemoveButton)
-            {
-                var newTool = RemoveTool(Game1.player.CurrentTool, toolsString);
-                if (newTool != null)
-                {
-                    UpdateEnchantments(Game1.player, Game1.player.CurrentTool, newTool);
-                    Game1.player.CurrentTool = newTool;
-                }
-            }
-        }
 
         private void GameLoop_GameLaunched(object sender, StardewModdingAPI.Events.GameLaunchedEventArgs e)
         {
@@ -130,66 +76,12 @@ namespace OmniTools
                 getValue: () => Config.EnableMod,
                 setValue: value => Config.EnableMod = value
             );
-            
-            configMenu.AddKeybind(
-                mod: ModManifest,
-                name: () => "Mod Key",
-                getValue: () => Config.ModButton,
-                setValue: value => Config.ModButton = value
-            );
-
-            configMenu.AddKeybind(
-                mod: ModManifest,
-                name: () => "Cycle Key",
-                getValue: () => Config.CycleButton,
-                setValue: value => Config.CycleButton = value
-            );
-
-            configMenu.AddKeybind(
-                mod: ModManifest,
-                name: () => "Remove Key",
-                getValue: () => Config.RemoveButton,
-                setValue: value => Config.RemoveButton = value
-            );
 
             configMenu.AddBoolOption(
                 mod: ModManifest,
-                name: () => "Show Number",
-                getValue: () => Config.ShowNumber,
-                setValue: value => Config.ShowNumber = value
-            );
-            
-            configMenu.AddNumberOption(
-                mod: ModManifest,
-                name: () => "Number Color R",
-                getValue: () => Config.NumberColor.R,
-                setValue: value => Config.NumberColor = new Color(value, Config.NumberColor.G, Config.NumberColor.B, Config.NumberColor.A),
-                min: 0,
-                max: 255
-            );
-            configMenu.AddNumberOption(
-                mod: ModManifest,
-                name: () => "Number Color G",
-                getValue: () => Config.NumberColor.G,
-                setValue: value => Config.NumberColor = new Color(Config.NumberColor.R, value, Config.NumberColor.B, Config.NumberColor.A),
-                min: 0,
-                max: 255
-            );
-            configMenu.AddNumberOption(
-                mod: ModManifest,
-                name: () => "Number Color B",
-                getValue: () => Config.NumberColor.B,
-                setValue: value => Config.NumberColor = new Color(Config.NumberColor.R, Config.NumberColor.G, value, Config.NumberColor.A),
-                min: 0,
-                max: 255
-            );
-            configMenu.AddNumberOption(
-                mod: ModManifest,
-                name: () => "Number Color A",
-                getValue: () => Config.NumberColor.A,
-                setValue: value => Config.NumberColor = new Color(Config.NumberColor.R, Config.NumberColor.G, Config.NumberColor.B, value),
-                min: 0,
-                max: 255
+                name: () => "Only When Holding Tool",
+                getValue: () => Config.HoldingTool,
+                setValue: value => Config.HoldingTool = value
             );
 
             configMenu.AddBoolOption(
