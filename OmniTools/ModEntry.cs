@@ -11,6 +11,7 @@ using StardewValley.TerrainFeatures;
 using StardewValley.Tools;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using xTile;
@@ -30,6 +31,7 @@ namespace OmniTools
 
         public static ModEntry context;
         public static string toolsKey = "aedenthorn.OmniTools/tools";
+        public static string toolCountKey = "aedenthorn.OmniTools/toolCount";
         public static bool skip;
 
         public static List<Type> toolList = new() 
@@ -203,6 +205,12 @@ namespace OmniTools
                 name: () => "Switch For Monsters",
                 getValue: () => Config.SwitchForMonsters,
                 setValue: value => Config.SwitchForMonsters = value
+            );
+            configMenu.AddTextOption(
+                mod: ModManifest,
+                name: () => "Max Monster Distance",
+                getValue: () => Config.MaxMonsterDistance + "",
+                setValue: delegate (string value) { if (float.TryParse(value, NumberStyles.Any, CultureInfo.InvariantCulture, out float f)) { Config.MaxMonsterDistance = f; } }
             );
             configMenu.AddBoolOption(
                 mod: ModManifest,
