@@ -1,18 +1,18 @@
 ﻿{
   "Name": "Moolah",
   "Author": "aedenthorn",
-  "Version": "0.1.0",
+  "Version": "0.6.1",
   "Description": "Moolah.",
   "UniqueID": "aedenthorn.Moolah",
   "EntryDll": "Moolah.dll",
-  "MinimumApiVersion": "3.13.0",
+  "MinimumApiVersion": "3.15.0",
   "ModUpdater": {
     "Repository": "StardewValleyMods",
     "User": "aedenthorn",
     "Directory": "_releases",
     "ModFolder": "Moolah"
   },
-  "UpdateKeys": [ "Nexus:" ],
+  "UpdateKeys": [ "Nexus:15123" ],
   "Dependencies": [
     {
       "UniqueID": "Platonymous.ModUpdater",

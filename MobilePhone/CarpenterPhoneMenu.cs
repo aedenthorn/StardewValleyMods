@@ -4,7 +4,7 @@ using StardewValley.Menus;
 
 namespace MobilePhone
 {
-    internal class CarpenterPhoneMenu : CarpenterMenu
+    public class CarpenterPhoneMenu : CarpenterMenu
     {
         private IModHelper helper;
 

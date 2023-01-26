@@ -96,20 +96,20 @@ namespace MobilePhone
         public static bool inCall;
         public static object ringSound;
         public static object notificationSound;
-        internal static bool isReminiscing;
-        internal static bool isInviting;
-        internal static INpcAdventureModApi npcAdventureModApi;
-        internal static IHDPortraitsAPI iHDPortraitsAPI;
+        public static bool isReminiscing;
+        public static bool isInviting;
+        public static INpcAdventureModApi npcAdventureModApi;
+        public static IHDPortraitsAPI iHDPortraitsAPI;
 
         public static LocationRequest callLocation;
-        internal static NetPosition callPosition;
-        internal static xTile.Dimensions.Location callViewportLocation;
-        internal static NPC invitedNPC;
-        internal static Texture2D ringListBackgroundTexture;
-        internal static Texture2D ringListHighlightTexture;
-        internal static bool isReminiscingAtNight;
-        internal static Event reminisceEvent;
-        internal static bool buildingInCall;
+        public static NetPosition callPosition;
+        public static xTile.Dimensions.Location callViewportLocation;
+        public static NPC invitedNPC;
+        public static Texture2D ringListBackgroundTexture;
+        public static Texture2D ringListHighlightTexture;
+        public static bool isReminiscingAtNight;
+        public static Event reminisceEvent;
+        public static bool buildingInCall;
         
         public static List<string> calledToday = new List<string>();
 
@@ -280,7 +280,7 @@ namespace MobilePhone
             return new MobilePhoneApi();
         }
 
-        internal static void ClosePhone()
+        public static void ClosePhone()
         {
             phoneOpen = false;
             appRunning = false;

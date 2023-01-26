@@ -25,6 +25,7 @@ namespace HelpWanted
         public float iconScale = 1;
         public Point? iconOffset;
         public QuestInfo quest;
+        public float percentChance = 100;
     }
     public class QuestInfo
     {

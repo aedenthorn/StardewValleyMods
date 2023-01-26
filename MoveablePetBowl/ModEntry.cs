@@ -19,12 +19,12 @@ using Rectangle = Microsoft.Xna.Framework.Rectangle;
 namespace MoveablePetBowl
 {
     /// <summary>The mod entry point.</summary>
-    public class ModEntry : Mod, IAssetEditor
+    public class ModEntry : Mod
     {
 
         public static IMonitor PMonitor;
         public static IModHelper PHelper;
-        public static ModConfig config;
+        public static ModConfig Config;
         private static IJsonAssetsApi mJsonAssets;
         private static Texture2D tilesTexture;
         private static Texture2D waterTexture;
@@ -34,9 +34,9 @@ namespace MoveablePetBowl
         /// <param name="helper">Provides simplified APIs for writing mods.</param>
         public override void Entry(IModHelper helper)
         {
-            config = Helper.ReadConfig<ModConfig>();
+            Config = Helper.ReadConfig<ModConfig>();
 
-            if (!config.EnableMod)
+            if (!Config.EnableMod)
                 return;
 
             PMonitor = Monitor;
@@ -48,8 +48,10 @@ namespace MoveablePetBowl
 
             Helper.Events.GameLoop.DayStarted += GameLoop_DayStarted;
 
-            tilesTexture = Helper.Content.Load<Texture2D>("assets/tiles.png");
-            waterTexture = Helper.Content.Load<Texture2D>("assets/water.png");
+            Helper.Events.Content.AssetRequested += Content_AssetRequested;
+
+            tilesTexture = Helper.ModContent.Load<Texture2D>("assets/tiles.png");
+            waterTexture = Helper.ModContent.Load<Texture2D>("assets/water.png");
 
             var harmony = new Harmony(ModManifest.UniqueID);
             
@@ -110,6 +112,100 @@ namespace MoveablePetBowl
                postfix: new HarmonyMethod(typeof(ModEntry), nameof(ModEntry.Object_draw_Postfix2))
             );
 
+        }
+
+        private void Content_AssetRequested(object sender, StardewModdingAPI.Events.AssetRequestedEventArgs e)
+        {
+            if (!Config.EnableMod)
+                return;
+            if (e.NameWithoutLocale.IsEquivalentTo("Maps/Farm") || e.NameWithoutLocale.IsEquivalentTo("Maps/Farm_Combat") || e.NameWithoutLocale.IsEquivalentTo("Maps/Farm_Fishing") || e.NameWithoutLocale.IsEquivalentTo("Maps/Farm_Foraging") || e.NameWithoutLocale.IsEquivalentTo("Maps/Farm_FourCorners") || e.NameWithoutLocale.IsEquivalentTo("Maps/Farm_Island") || e.NameWithoutLocale.IsEquivalentTo("Maps/Farm_Mining"))
+            {
+                Monitor.Log("Editing map " + e.Name.Name);
+
+                try
+                {
+                    e.Edit(delegate (IAssetData data)
+                    {
+                        var mapData = data.AsMap();
+                        for (int x = 0; x < mapData.Data.Layers[0].LayerWidth; x++)
+                        {
+                            for (int y = 0; y < mapData.Data.Layers[0].LayerHeight; y++)
+                            {
+                                //Monitor.Log($"{x},{y},{map.GetLayer("Buildings").Tiles[x, y]?.TileIndex},{map.GetLayer("Front").Tiles[x, y]?.TileIndex}",LogLevel.Warn);
+
+                                if (mapData.Data.GetLayer("Buildings").Tiles[x, y]?.TileIndex == 1938)
+                                {
+                                    Monitor.Log("Removing existing pet bowl.");
+                                    mapData.Data.GetLayer("Buildings").Tiles[x, y] = null;
+                                    mapData.Data.GetLayer("Back").Tiles[x, y].TileIndex = 1938;
+                                    try
+                                    {
+                                        mapData.Data.GetLayer("Back").Tiles[x - 1, y].TileIndexProperties.Remove("NoFurniture");
+                                        mapData.Data.GetLayer("Back").Tiles[x - 1, y].Properties.Remove("NoFurniture");
+                                        mapData.Data.GetLayer("Back").Tiles[x - 1, y].Properties.Remove("Placeable");
+                                    }
+                                    catch
+                                    {
+                                    }
+                                    try
+                                    {
+                                        mapData.Data.GetLayer("Back").Tiles[x - 1, y + 1].TileIndexProperties.Remove("NoFurniture");
+                                        mapData.Data.GetLayer("Back").Tiles[x - 1, y + 1].Properties.Remove("NoFurniture");
+                                        mapData.Data.GetLayer("Back").Tiles[x - 1, y + 1].Properties.Remove("Placeable");
+                                    }
+                                    catch
+                                    {
+                                    }
+                                    try
+                                    {
+                                        mapData.Data.GetLayer("Back").Tiles[x, y + 1].TileIndexProperties.Remove("NoFurniture");
+                                        mapData.Data.GetLayer("Back").Tiles[x, y + 1].Properties.Remove("NoFurniture");
+                                        mapData.Data.GetLayer("Back").Tiles[x, y + 1].Properties.Remove("Placeable");
+                                    }
+                                    catch
+                                    {
+                                    }
+                                }
+                            }
+                        }
+
+                    });
+                }
+                catch (Exception ex)
+                {
+                    Monitor.Log($"Exception removing existing pet bowl.\n{ex}", LogLevel.Error);
+                }
+                return;
+
+
+            }
+            if (e.NameWithoutLocale.Name.EndsWith("outdoorsTileSheet") && Config.FixTilesheet)
+            {
+                e.Edit(delegate(IAssetData data)
+                {
+                    var image = data.AsImage();
+                    int y = 0;
+                    if (e.NameWithoutLocale.Name.EndsWith("summer_outdoorsTileSheet"))
+                    {
+                        y = 1;
+                    }
+                    else if (e.NameWithoutLocale.Name.EndsWith("fall_outdoorsTileSheet"))
+                    {
+                        y = 2;
+
+                    }
+                    else if (e.NameWithoutLocale.Name.EndsWith("winter_outdoorsTileSheet"))
+                    {
+                        y = 3;
+
+                    }
+                    Rectangle rect = new Rectangle(0, y * 16, 32, 16);
+
+                    image.PatchImage(tilesTexture, rect, new Rectangle(208, 1232, 32, 16));
+                });
+
+                return;
+            }
         }
 
         private void GameLoop_GameLaunched(object sender, StardewModdingAPI.Events.GameLaunchedEventArgs e)
@@ -190,7 +286,7 @@ namespace MoveablePetBowl
 
         private static bool _UpdateWaterBowl_Prefix(Farm __instance)
         {
-            if (!config.EnableMod)
+            if (!Config.EnableMod)
                 return true;
             Vector2 closestBowl = Vector2.Zero;
             float closestDistance = 4;
@@ -265,8 +361,6 @@ namespace MoveablePetBowl
                 PMonitor.Log("Clicked on pet bowl");
                 who.currentLocation.playSound("slosh");
                 return true;
-                __result = true;
-                return false;
             }
             return true;
         }
@@ -315,109 +409,5 @@ namespace MoveablePetBowl
 
         }
 
-
-        /// <summary>Get whether this instance can edit the given asset.</summary>
-        /// <param name="asset">Basic metadata about the asset being loaded.</param>
-        public bool CanEdit<T>(IAssetInfo asset)
-        {
-            if (!config.EnableMod)
-                return false;
-
-            if (asset.AssetNameEquals("Maps/Farm") || asset.AssetNameEquals("Maps/Farm_Combat") || asset.AssetNameEquals("Maps/Farm_Fishing") || asset.AssetNameEquals("Maps/Farm_Foraging") || asset.AssetNameEquals("Maps/Farm_FourCorners") || asset.AssetNameEquals("Maps/Farm_Island") || asset.AssetNameEquals("Maps/Farm_Mining"))
-            {
-                return true;
-            }
-            if (asset.AssetName.EndsWith("outdoorsTileSheet") && config.FixTilesheet)
-            {
-                return true;
-            }
-            return false;
-        }
-
-        /// <summary>Edit a matched asset.</summary>
-        /// <param name="asset">A helper which encapsulates metadata about an asset and enables changes to it.</param>
-        public void Edit<T>(IAssetData asset)
-        {
-            Monitor.Log("Editing asset" + asset.AssetName);
-            if (asset.AssetName.EndsWith("outdoorsTileSheet"))
-            {
-                var image = asset.AsImage();
-                int y = 0;
-                if (asset.AssetName.EndsWith("summer_outdoorsTileSheet"))
-                {
-                    y = 1;
-                }
-                else if (asset.AssetName.EndsWith("fall_outdoorsTileSheet"))
-                {
-                    y = 2;
-
-                }
-                else if (asset.AssetName.EndsWith("winter_outdoorsTileSheet"))
-                {
-                    y = 3;
-
-                }
-                Rectangle rect = new Rectangle(0, y * 16, 32, 16);
-
-                image.PatchImage(tilesTexture, rect, new Rectangle(208, 1232, 32, 16));
-
-                return;
-            }
-            else if (asset.AssetName.StartsWith("Maps"))
-            {
-                try
-                {
-                    var mapData = asset.AsMap();
-                    for (int x = 0; x < mapData.Data.Layers[0].LayerWidth; x++)
-                    {
-                        for (int y = 0; y < mapData.Data.Layers[0].LayerHeight; y++)
-                        {
-                            //Monitor.Log($"{x},{y},{map.GetLayer("Buildings").Tiles[x, y]?.TileIndex},{map.GetLayer("Front").Tiles[x, y]?.TileIndex}",LogLevel.Warn);
-
-                            if (mapData.Data.GetLayer("Buildings").Tiles[x, y]?.TileIndex == 1938)
-                            {
-                                Monitor.Log("Removing existing pet bowl.");
-                                mapData.Data.GetLayer("Buildings").Tiles[x, y] = null;
-                                mapData.Data.GetLayer("Back").Tiles[x, y].TileIndex = 1938;
-                                try
-                                {
-                                    mapData.Data.GetLayer("Back").Tiles[x - 1, y].TileIndexProperties.Remove("NoFurniture");
-                                    mapData.Data.GetLayer("Back").Tiles[x - 1, y].Properties.Remove("NoFurniture");
-                                    mapData.Data.GetLayer("Back").Tiles[x - 1, y].Properties.Remove("Placeable");
-                                }
-                                catch
-                                {
-                                }
-                                try
-                                {
-                                    mapData.Data.GetLayer("Back").Tiles[x - 1, y + 1].TileIndexProperties.Remove("NoFurniture");
-                                    mapData.Data.GetLayer("Back").Tiles[x - 1, y + 1].Properties.Remove("NoFurniture");
-                                    mapData.Data.GetLayer("Back").Tiles[x - 1, y + 1].Properties.Remove("Placeable");
-                                }
-                                catch
-                                {
-                                }
-                                try
-                                {
-                                    mapData.Data.GetLayer("Back").Tiles[x, y + 1].TileIndexProperties.Remove("NoFurniture");
-                                    mapData.Data.GetLayer("Back").Tiles[x, y + 1].Properties.Remove("NoFurniture");
-                                    mapData.Data.GetLayer("Back").Tiles[x, y + 1].Properties.Remove("Placeable");
-                                }
-                                catch
-                                {
-                                }
-                            }
-                        }
-                    }
-
-                }
-                catch (Exception ex)
-                {
-                    Monitor.Log($"Exception removing existing pet bowl.\n{ex}", LogLevel.Error);
-                }
-                return;
-            }
-
-        }
     }
 }

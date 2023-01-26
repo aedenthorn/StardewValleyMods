@@ -11,7 +11,6 @@ namespace Swim
         private static IMonitor Monitor;
         private static ModConfig Config;
         private static IModHelper Helper;
-        private static Multiplayer mp;
         private static List<int> marinerQuestions;
 
         public static void Initialize(IMonitor monitor, IModHelper helper, ModConfig config)
@@ -20,7 +19,6 @@ namespace Swim
             Config = config;
             Helper = helper;
 
-            //mp
             marinerQuestions = new List<int>();
 
         }

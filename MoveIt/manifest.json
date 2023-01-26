@@ -1,0 +1,22 @@
+﻿{
+  "Name": "MoveIt",
+  "Author": "aedenthorn",
+  "Version": "0.2.1",
+  "Description": "MoveIt.",
+  "UniqueID": "aedenthorn.MoveIt",
+  "EntryDll": "MoveIt.dll",
+  "MinimumApiVersion": "3.15.0",
+  "ModUpdater": {
+    "Repository": "StardewValleyMods",
+    "User": "aedenthorn",
+    "Directory": "_releases",
+    "ModFolder": "MoveIt"
+  },
+  "Dependencies": [
+    {
+      "UniqueID": "Platonymous.ModUpdater",
+      "IsRequired": false
+    }
+  ],
+  "UpdateKeys": [ "Nexus:" ]
+}

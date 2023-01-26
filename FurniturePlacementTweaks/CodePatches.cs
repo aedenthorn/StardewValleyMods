@@ -15,7 +15,7 @@ namespace FurniturePlacementTweaks
                     return true;
                 foreach(Furniture f in who.currentLocation.furniture)
                 {
-                    if (f != __instance && f.boundingBox.Value.Intersects(__instance.boundingBox.Value))
+                    if (f != __instance && f.furniture_type.Value != 12 && f.boundingBox.Value.Intersects(__instance.boundingBox.Value))
                     {
                         __result = false;
                         return false;

@@ -11,15 +11,15 @@ using System.Threading.Tasks;
 
 namespace MobilePhone
 {
-    internal class MobilePhoneCall
+    public class MobilePhoneCall
     {
         private static IModHelper Helper;
         private static IMonitor Monitor;
         private static ModConfig Config;
         public static List<Reminisce> inCallReminiscence;
         public static Dictionary<string, string> inCallDialogue;
-        internal static List<EventInvite> eventInvites = new List<EventInvite>();
-        internal static Dictionary<string, Reminiscence> contentPackReminiscences = new Dictionary<string, Reminiscence>();
+        public static List<EventInvite> eventInvites = new List<EventInvite>();
+        public static Dictionary<string, Reminiscence> contentPackReminiscences = new Dictionary<string, Reminiscence>();
 
         public static void Initialize(IModHelper helper, IMonitor monitor, ModConfig config)
         {
@@ -528,7 +528,7 @@ namespace MobilePhone
             }
         }
 
-        internal static string CreateEventString(List<EventNode> nodes, NPC npc)
+        public static string CreateEventString(List<EventNode> nodes, NPC npc)
         {
             List<string> outNodes = new List<string>();
             foreach(EventNode node in nodes)

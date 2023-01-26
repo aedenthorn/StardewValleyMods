@@ -170,6 +170,25 @@ namespace OmniTools
                             return tool;
                     }
                 }
+                if(currentLocation is Woods)
+                {
+                    foreach (ResourceClump clump in (currentLocation as Woods).stumps)
+                    {
+                        var bb = clump.getBoundingBox(clump.tile.Value);
+                        if (bb.Intersects(tileRect))
+                        {
+                            Tool tool = SwitchForClump(currentTool, clump, tools);
+                            if (tool is not null)
+                                return tool;
+                        }
+                    }
+                }
+                if (currentLocation is Forest && (Game1.currentLocation as Forest).log?.occupiesTile((int)tile.X, (int)tile.Y) == true)
+                {
+                    Tool tool = SwitchForClump(currentTool, (Game1.currentLocation as Forest).log, tools);
+                    if (tool is not null)
+                        return tool;
+                }
             }
             if (Config.SwitchForPan && currentTool.getLastFarmerToUse() is not null)
             {
@@ -182,10 +201,24 @@ namespace OmniTools
                 }
 
             }
-            if (Config.SwitchForWateringCan && currentLocation.CanRefillWateringCanOnTile((int)tile.X, (int)tile.Y)) 
-            { 
-                Tool tool = SwitchTool(currentTool, typeof(WateringCan), tools); 
-                if (tool != null) return tool; 
+            if (Config.SwitchForWateringCan)
+            {
+                if (currentLocation.CanRefillWateringCanOnTile((int)tile.X, (int)tile.Y))
+                {
+                    Tool tool = SwitchTool(currentTool, typeof(WateringCan), tools);
+                    if (tool != null) return tool;
+
+                }
+                if (currentLocation is Farm && currentLocation.getTileIndexAt((int)tile.X, (int)tile.Y, "Buildings") == 1938 && !(currentLocation as Farm).petBowlWatered.Value)
+                { 
+                    Tool tool = SwitchTool(currentTool, typeof(WateringCan), tools);
+                    if (tool != null) return tool;
+                }
+                if (currentLocation.objects.TryGetValue(tile, out obj) && obj.Name.EndsWith("Pet Bowl"))
+                { 
+                    Tool tool = SwitchTool(currentTool, typeof(WateringCan), tools);
+                    if (tool != null) return tool;
+                }
             }
 
             if (Config.SwitchForFishing && currentLocation.waterTiles is not null)

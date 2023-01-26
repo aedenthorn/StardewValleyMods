@@ -7,7 +7,7 @@ namespace MobilePhone
     {
         public List<Reminisce> events = new List<Reminisce>();
 
-        internal void WeedOutUnseen()
+        public void WeedOutUnseen()
         {
             if (events.Count == 0)
                 return;

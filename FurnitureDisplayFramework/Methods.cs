@@ -8,15 +8,15 @@ namespace FurnitureDisplayFramework
 
         private static void HandleDeserializationError(object sender, ErrorEventArgs e)
         {
-            var currentError = e.ErrorContext.Error.Message;
-            SMonitor.Log(currentError);
+            //var currentError = e.ErrorContext.Error.Message;
+            //SMonitor.Log(currentError);
             e.ErrorContext.Handled = true;
         }
 
         private static void HandleSerializationError(object sender, ErrorEventArgs e)
         {
-            var currentError = e.ErrorContext.Error.Message;
-            SMonitor.Log(currentError);
+            //var currentError = e.ErrorContext.Error.Message;
+            //SMonitor.Log(currentError);
             e.ErrorContext.Handled = true;
         }
 

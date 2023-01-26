@@ -1,0 +1,22 @@
+﻿{
+  "Name": "Throwable Bombs",
+  "Author": "aedenthorn",
+  "Version": "0.1.0",
+  "Description": "Throwable Bombs.",
+  "UniqueID": "aedenthorn.ThrowableBombs",
+  "EntryDll": "ThrowableBombs.dll",
+  "MinimumApiVersion": "3.15.0",
+  "ModUpdater": {
+    "Repository": "StardewValleyMods",
+    "User": "aedenthorn",
+    "Directory": "_releases",
+    "ModFolder": "ThrowableBombs"
+  },
+  "Dependencies": [
+    {
+      "UniqueID": "Platonymous.ModUpdater",
+      "IsRequired": false
+    }
+  ],
+  "UpdateKeys": [ "Nexus:" ]
+}
