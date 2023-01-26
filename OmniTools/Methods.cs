@@ -32,9 +32,26 @@ namespace OmniTools
             }
             return toolSoundList[toolList.IndexOf(t.GetType())];
         }
+        private static bool CheckTool(Tool currentTool, Type type)
+        {
+            if (currentTool is null)
+                return false;
+
+            if (type == null)
+            {
+                return currentTool.GetType() == typeof(MeleeWeapon) && (currentTool as MeleeWeapon).isScythe();
+            }
+            if (type == typeof(MeleeWeapon))
+            {
+                return currentTool.GetType() == typeof(MeleeWeapon) && !(currentTool as MeleeWeapon).isScythe();
+            }
+            return currentTool.GetType() == type;
+        }
 
         public static Tool SwitchTool(Tool currentTool, Type type, List<ToolInfo> tools = null)
         {
+            if(CheckTool(currentTool, type))
+                return currentTool;
             int index = type is null ? toolList.IndexOf(typeof(MeleeWeapon)) : toolList.IndexOf(type);
             if (index < 0)
                 return null;

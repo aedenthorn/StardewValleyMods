@@ -68,8 +68,6 @@ namespace OmniTools
         {
             Config = Helper.ReadConfig<ModConfig>();
 
-            if (!Config.EnableMod)
-                return;
 
             context = this;
 
