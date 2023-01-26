@@ -28,13 +28,20 @@ namespace OmniTools
 {
     public partial class ModEntry
     {
-
-        //[HarmonyPatch(typeof(WateringCan), nameof(WateringCan.drawInMenu))]
+        [HarmonyPatch(typeof(Item), nameof(Item.canBeTrashed))]
+        public class Item_canBeTrashed_Patch
+        {
+            public static void Postfix(Item __instance, ref bool __result)
+            {
+                if (!Config.EnableMod || !__result || !__instance.modData.ContainsKey(toolsKey))
+                    return;
+                __result = false;
+            }
+        }
         public class WateringCan_drawInMenu_Patch
         {
             public static void Postfix(Tool __instance, SpriteBatch spriteBatch, Vector2 location, float scaleSize, float transparency, float layerDepth, StackDrawType drawStackNumber, Color color, bool drawShadow)
             {
-                return;
                 if (!Config.EnableMod || !Config.ShowNumber || !__instance.modData.TryGetValue(toolCountKey, out string countString))
                     return;
                 var count = int.Parse(countString) + 1;
