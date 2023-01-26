@@ -131,6 +131,13 @@ namespace OmniTools
                 setValue: value => Config.EnableMod = value
             );
             
+            configMenu.AddBoolOption(
+                mod: ModManifest,
+                name: () => "Switch From Weapon",
+                getValue: () => Config.FromWeapon,
+                setValue: value => Config.FromWeapon = value
+            );
+            
             configMenu.AddKeybind(
                 mod: ModManifest,
                 name: () => "Mod Key",

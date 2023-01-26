@@ -74,29 +74,32 @@ namespace ToolSmartSwitch
 
         public static void SmartSwitch(Farmer f)
         {
+            if (!Config.FromWeapon && f.CurrentTool is MeleeWeapon && !(f.CurrentTool as MeleeWeapon).isScythe(f.CurrentTool.ParentSheetIndex))
+                return;
             var tile = f.GetToolLocation(false) / 64;
             tile = new Vector2((int)tile.X, (int)tile.Y);
 
             Dictionary<int, Tool> tools = GetTools(f);
 
-            if (Config.SwitchForMonsters && !CheckTool(f, typeof(MeleeWeapon)))
+            if (Config.SwitchForMonsters)
             {
                 foreach (var c in f.currentLocation.characters)
                 {
-                    foreach(var kvp in tools)
+                    if (c is Monster)
                     {
-                        var t = kvp.Value;
-                        if(t is MeleeWeapon && !(t as MeleeWeapon).isScythe(t.ParentSheetIndex))
-                        {
-                            Vector2 tileLocation = Vector2.Zero;
-                            Vector2 tileLocation2 = Vector2.Zero;
-                            var aoe = (t as MeleeWeapon).getAreaOfEffect((int)tile.X * 64, (int)tile.Y * 64, f.FacingDirection, ref tileLocation, ref tileLocation2, f.GetBoundingBox(), f.FarmerSprite.currentAnimationIndex);
-                            if (c is Monster && c.GetBoundingBox().Intersects(aoe))
-                            {
-                                SwitchTool(f, kvp.Key);
-                                return;
-                            }
-                        }
+                        var distance = Vector2.Distance(c.GetBoundingBox().Center.ToVector2(), f.GetBoundingBox().Center.ToVector2());
+                        if (distance > Config.MaxMonsterDistance)
+                            continue;
+                        if (f.FacingDirection == 0 && c.GetBoundingBox().Top > f.GetBoundingBox().Bottom)
+                            continue;
+                        if (f.FacingDirection == 1 && c.GetBoundingBox().Right < f.GetBoundingBox().Left)
+                            continue;
+                        if (f.FacingDirection == 2 && c.GetBoundingBox().Bottom < f.GetBoundingBox().Top)
+                            continue;
+                        if (f.FacingDirection == 3 && c.GetBoundingBox().Left > f.GetBoundingBox().Right)
+                            continue;
+                        if (SwitchToolType(f, typeof(MeleeWeapon), tools))
+                            return;
                     }
                 }
             }

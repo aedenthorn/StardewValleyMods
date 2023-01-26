@@ -30,8 +30,13 @@ namespace OmniTools
         {
             public static void Postfix(Tool __instance, SpriteBatch spriteBatch, Vector2 location, float scaleSize, float transparency, float layerDepth, StackDrawType drawStackNumber, Color color, bool drawShadow)
             {
-                if (!Config.EnableMod || !Config.ShowNumber || !__instance.modData.TryGetValue(toolCountKey, out string countString))
+                if (!Config.EnableMod || !Config.ShowNumber || !__instance.modData.TryGetValue(toolsKey, out string toolsString))
                     return;
+                if(!__instance.modData.TryGetValue(toolCountKey, out string countString))
+                {
+                    countString = JsonConvert.DeserializeObject<List<ToolInfo>>(toolsString).Count.ToString();
+                    __instance.modData[toolCountKey] = countString;
+                }
                 var count = int.Parse(countString) + 1;
                 Utility.drawTinyDigits(count, spriteBatch, location + new Vector2(4, 0), 3f * scaleSize, 1f, Config.NumberColor);
             }
@@ -41,8 +46,13 @@ namespace OmniTools
         {
             public static void Postfix(Tool __instance, SpriteBatch spriteBatch, Vector2 location, float scaleSize, float transparency, float layerDepth, StackDrawType drawStackNumber, Color color, bool drawShadow)
             {
-                if (!Config.EnableMod || !Config.ShowNumber || !__instance.modData.TryGetValue(toolCountKey, out string countString))
+                if (!Config.EnableMod || !Config.ShowNumber || !__instance.modData.TryGetValue(toolsKey, out string toolsString))
                     return;
+                if (!__instance.modData.TryGetValue(toolCountKey, out string countString))
+                {
+                    countString = JsonConvert.DeserializeObject<List<ToolInfo>>(toolsString).Count.ToString();
+                    __instance.modData[toolCountKey] = countString;
+                }
                 var count = int.Parse(countString) + 1;
                 Utility.drawTinyDigits(count, spriteBatch, location + new Vector2(4, 0), 3f * scaleSize, 1f, Config.NumberColor);
             }
@@ -52,8 +62,13 @@ namespace OmniTools
         {
             public static void Postfix(Tool __instance, SpriteBatch spriteBatch, Vector2 location, float scaleSize, float transparency, float layerDepth, StackDrawType drawStackNumber, Color color, bool drawShadow)
             {
-                if (!Config.EnableMod || !Config.ShowNumber || !__instance.modData.TryGetValue(toolCountKey, out string countString))
+                if (!Config.EnableMod || !Config.ShowNumber || !__instance.modData.TryGetValue(toolsKey, out string toolsString))
                     return;
+                if (!__instance.modData.TryGetValue(toolCountKey, out string countString))
+                {
+                    countString = JsonConvert.DeserializeObject<List<ToolInfo>>(toolsString).Count.ToString();
+                    __instance.modData[toolCountKey] = countString;
+                }
                 var count = int.Parse(countString) + 1;
                 Utility.drawTinyDigits(count, spriteBatch, location + new Vector2(4, 0), 3f * scaleSize, 1f, Config.NumberColor);
             }

@@ -8,6 +8,7 @@ namespace OmniTools
     public class ModConfig
     {
         public bool EnableMod { get; set; } = true;
+        public bool FromWeapon { get; set; } = true;
         public SButton ModButton { get; set; } = SButton.LeftAlt;
         public SButton CycleButton { get; set; } = SButton.X;
         public SButton RemoveButton { get; set; } = SButton.Z;

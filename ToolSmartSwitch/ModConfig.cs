@@ -9,6 +9,7 @@ namespace ToolSmartSwitch
     {
         public bool EnableMod { get; set; } = true;
         public bool HoldingTool { get; set; } = true;
+        public bool FromWeapon { get; set; } = true;
         public bool SwitchForObjects { get; set; } = true;
         public bool SwitchForTrees { get; set; } = true;
         public bool SwitchForResourceClumps { get; set; } = true;
@@ -21,6 +22,7 @@ namespace ToolSmartSwitch
         public bool SwitchForTilling { get; set; } = true;
         public bool SwitchForAnimals { get; set; } = true;
         public bool SwitchForMonsters { get; set; } = true;
+        public float MaxMonsterDistance { get; set; } = 128;
 
     }
 }
