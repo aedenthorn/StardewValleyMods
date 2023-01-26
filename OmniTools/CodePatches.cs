@@ -29,14 +29,15 @@ namespace OmniTools
     public partial class ModEntry
     {
 
-        [HarmonyPatch(typeof(WateringCan), nameof(WateringCan.drawInMenu))]
+        //[HarmonyPatch(typeof(WateringCan), nameof(WateringCan.drawInMenu))]
         public class WateringCan_drawInMenu_Patch
         {
             public static void Postfix(Tool __instance, SpriteBatch spriteBatch, Vector2 location, float scaleSize, float transparency, float layerDepth, StackDrawType drawStackNumber, Color color, bool drawShadow)
             {
-                if (!Config.EnableMod || !Config.ShowNumber || !__instance.modData.TryGetValue(toolsKey, out string toolsString))
+                return;
+                if (!Config.EnableMod || !Config.ShowNumber || !__instance.modData.TryGetValue(toolCountKey, out string countString))
                     return;
-                var count = JsonConvert.DeserializeObject<List<ToolInfo>>(toolsString).Count + 1;
+                var count = int.Parse(countString) + 1;
                 Utility.drawTinyDigits(count, spriteBatch, location + new Vector2(4, 0), 3f * scaleSize, 1f, Config.NumberColor);
             }
         }
@@ -45,9 +46,9 @@ namespace OmniTools
         {
             public static void Postfix(Tool __instance, SpriteBatch spriteBatch, Vector2 location, float scaleSize, float transparency, float layerDepth, StackDrawType drawStackNumber, Color color, bool drawShadow)
             {
-                if (!Config.EnableMod || !Config.ShowNumber || !__instance.modData.TryGetValue(toolsKey, out string toolsString))
+                if (!Config.EnableMod || !Config.ShowNumber || !__instance.modData.TryGetValue(toolCountKey, out string countString))
                     return;
-                var count = JsonConvert.DeserializeObject<List<ToolInfo>>(toolsString).Count + 1;
+                var count = int.Parse(countString) + 1;
                 Utility.drawTinyDigits(count, spriteBatch, location + new Vector2(4, 0), 3f * scaleSize, 1f, Config.NumberColor);
             }
         }
@@ -56,9 +57,9 @@ namespace OmniTools
         {
             public static void Postfix(Tool __instance, SpriteBatch spriteBatch, Vector2 location, float scaleSize, float transparency, float layerDepth, StackDrawType drawStackNumber, Color color, bool drawShadow)
             {
-                if (!Config.EnableMod || !Config.ShowNumber || !__instance.modData.TryGetValue(toolsKey, out string toolsString))
+                if (!Config.EnableMod || !Config.ShowNumber || !__instance.modData.TryGetValue(toolCountKey, out string countString))
                     return;
-                var count = JsonConvert.DeserializeObject<List<ToolInfo>>(toolsString).Count + 1;
+                var count = int.Parse(countString) + 1;
                 Utility.drawTinyDigits(count, spriteBatch, location + new Vector2(4, 0), 3f * scaleSize, 1f, Config.NumberColor);
             }
         }
@@ -67,9 +68,9 @@ namespace OmniTools
         {
             public static void Postfix(Tool __instance, SpriteBatch spriteBatch, Vector2 location, float scaleSize, float transparency, float layerDepth, StackDrawType drawStackNumber, Color color, bool drawShadow)
             {
-                if (!Config.EnableMod || !Config.ShowNumber || __instance is WateringCan || !__instance.modData.TryGetValue(toolsKey, out string toolsString))
+                if (!Config.EnableMod || !Config.ShowNumber || !__instance.modData.TryGetValue(toolCountKey, out string countString))
                     return;
-                var count = JsonConvert.DeserializeObject<List<ToolInfo>>(toolsString).Count + 1;
+                var count = int.Parse(countString) + 1;
                 Utility.drawTinyDigits(count, spriteBatch, location + new Vector2(4, 0), 3f * scaleSize, 1f, Config.NumberColor);
             }
         }
@@ -186,6 +187,7 @@ namespace OmniTools
                         Game1.playSound(GetToolSound(toPlace as Tool));
                         list.Add(new ToolInfo(toPlace as Tool));
                         __instance.actualInventory[slotNumber].modData[toolsKey] = JsonConvert.SerializeObject(list);
+                        __instance.actualInventory[slotNumber].modData[toolCountKey] = list.Count + "";
                         return false;
                     }
                 }
