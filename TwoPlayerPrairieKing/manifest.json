@@ -1,11 +1,11 @@
 ﻿{
   "Name": "Two Player Prairie King",
   "Author": "aedenthorn",
-  "Version": "0.4.0",
+  "Version": "0.4.1",
   "Description": "Two Player Prairie King.",
   "UniqueID": "aedenthorn.TwoPlayerPrairieKing",
   "EntryDll": "TwoPlayerPrairieKing.dll",
-  "MinimumApiVersion": "3.8.0",
+  "MinimumApiVersion": "3.15.0",
   "ModUpdater": {
     "Repository": "StardewValleyMods",
     "User": "aedenthorn",
