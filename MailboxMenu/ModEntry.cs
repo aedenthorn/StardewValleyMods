@@ -193,12 +193,6 @@ namespace MailboxMenu
             );
             configMenu.AddNumberOption(
                 mod: ModManifest,
-                name: () => "Envelope Height",
-                getValue: () => Config.EnvelopeHeight,
-                setValue: value => Config.EnvelopeHeight = value
-            );
-            configMenu.AddNumberOption(
-                mod: ModManifest,
                 name: () => "Side Width",
                 getValue: () => Config.SideWidth,
                 setValue: value => Config.SideWidth = value

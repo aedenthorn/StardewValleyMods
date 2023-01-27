@@ -45,7 +45,30 @@ namespace CatalogueFilter
                 if(lastFilterString != filterField.Text)
                 {
                     lastFilterString = filterField.Text;
-                    ChangeItemList(__instance);
+
+                    foreach (var i in __instance.forSale)
+                    {
+                        if (!allItems.Contains(i))
+                            allItems.Add(i);
+                    }
+                    for (int i = allItems.Count - 1; i >= 0; i--)
+                    {
+                        if (!__instance.itemPriceAndStock.ContainsKey(allItems[i]))
+                            allItems.RemoveAt(i);
+                    }
+                    __instance.forSale.Clear();
+                    if (filterField.Text == "")
+                    {
+                        __instance.forSale.AddRange(allItems);
+                        return;
+                    }
+                    foreach (var i in allItems)
+                    {
+                        if (__instance.itemPriceAndStock.ContainsKey(i) && i.DisplayName.ToLower().Contains(filterField.Text.ToLower()))
+                            __instance.forSale.Add(i);
+                    }
+                    __instance.currentItemIndex = 0;
+
                     __instance.gameWindowSizeChanged(Game1.graphics.GraphicsDevice.Viewport.Bounds, Game1.graphics.GraphicsDevice.Viewport.Bounds);
                 }
                 filterField.Draw(b);
@@ -92,17 +115,7 @@ namespace CatalogueFilter
 
         private static void ChangeItemList(ShopMenu shopMenu)
         {
-            shopMenu.forSale.Clear();
-            if (filterField.Text == "")
-            {
-                shopMenu.forSale.AddRange(allItems);
-                return;
-            }
-            foreach (var i in allItems)
-            {
-                if (i.DisplayName.ToLower().Contains(filterField.Text.ToLower()))
-                    shopMenu.forSale.Add(i);
-            }
+
         }
     }
 }

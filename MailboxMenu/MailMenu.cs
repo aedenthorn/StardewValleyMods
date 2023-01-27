@@ -39,6 +39,11 @@ namespace MailboxMenu
             }
             preserveScroll = false;
 
+            ResetPositions();
+        }
+
+        private void ResetPositions()
+        {
             var textHeight = (int)Game1.dialogueFont.MeasureString(ModEntry.Config.InboxText).Y;
             currentMailList = new List<ClickableTextureComponent>();
             inboxButton = new ClickableComponent(new Rectangle(xPositionOnScreen + borderWidth + 16, yPositionOnScreen + borderWidth + 64, ModEntry.Config.SideWidth - 16, textHeight), "Inbox")
@@ -61,6 +66,14 @@ namespace MailboxMenu
             snapToDefaultClickableComponent();
         }
 
+        public override void gameWindowSizeChanged(Rectangle oldBounds, Rectangle newBounds)
+        {
+            xPositionOnScreen = Math.Max(0, Game1.uiViewport.Width / 2 - (ModEntry.Config.WindowWidth + borderWidth * 2) / 2);
+            yPositionOnScreen = Math.Max(0, Game1.uiViewport.Height / 2 - (ModEntry.Config.WindowHeight + borderWidth * 2) / 2);
+            width = Math.Min(Game1.uiViewport.Width, ModEntry.Config.WindowWidth + borderWidth * 2);
+            height = Math.Min(Game1.uiViewport.Height, ModEntry.Config.WindowHeight + borderWidth * 2);
+            ResetPositions();
+        }
         private void PopulateSenders()
         {
             senders.Clear();
@@ -207,7 +220,7 @@ namespace MailboxMenu
             {
                 textureBounds.Size = new Point(data.frameWidth, texture.Height);
             }
-            int xOffset =  (width - (borderWidth * 2 + ModEntry.Config.SideWidth) - (ModEntry.Config.EnvelopeWidth + ModEntry.Config.GridSpace) * ModEntry.Config.GridColumns) / 2;
+            int xOffset =  Math.Max(0, (width - (borderWidth * 2 + ModEntry.Config.SideWidth) - (ModEntry.Config.EnvelopeWidth + ModEntry.Config.GridSpace) * ModEntry.Config.GridColumns) / 2);
             currentMailList.Add(new ClickableTextureComponent(id, new Rectangle(xPositionOnScreen + borderWidth * 2 + ModEntry.Config.SideWidth + xOffset + gridX * (ModEntry.Config.EnvelopeWidth + ModEntry.Config.GridSpace), yPositionOnScreen + borderWidth + 132 + gridY * (ModEntry.Config.EnvelopeHeight + ModEntry.Config.GridSpace + 16), ModEntry.Config.EnvelopeWidth, ModEntry.Config.EnvelopeHeight), "", "", texture, textureBounds, data.scale, false)
             {
                 hoverText = mailTitles[id],

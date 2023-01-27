@@ -162,7 +162,7 @@ namespace Moolah
             for (int i = 0; i < input.Length; i++)
             {
                 output += input[i];
-                if (i < input.Length - 1 && (input.Length - i) % Config.SeparatorInterval == 1)
+                if (input[i] != '-' && i < input.Length - 1 && (input.Length - i) % Config.SeparatorInterval == 1)
                     output += Config.Separator;
             }
             return output;

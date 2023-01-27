@@ -13,7 +13,7 @@ using System.Threading.Tasks;
 
 namespace MobilePhone
 {
-    public class MobilePhoneApp
+    public partial class MobilePhoneApp
     {
         private static IModHelper Helper;
         private static IMonitor Monitor;
