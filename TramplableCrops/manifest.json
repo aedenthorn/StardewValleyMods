@@ -1,18 +1,18 @@
 ﻿{
-  "Name": "Tool Smart Switch",
+  "Name": "Tramplable Crops",
   "Author": "aedenthorn",
-  "Version": "0.2.1",
-  "Description": "Tool Smart Switch.",
-  "UniqueID": "aedenthorn.ToolSmartSwitch",
-  "EntryDll": "ToolSmartSwitch.dll",
+  "Version": "0.1.0",
+  "Description": "Tramplable Crops.",
+  "UniqueID": "aedenthorn.TramplableCrops",
+  "EntryDll": "TramplableCrops.dll",
   "MinimumApiVersion": "3.15.0",
   "ModUpdater": {
     "Repository": "StardewValleyMods",
     "User": "aedenthorn",
     "Directory": "_releases",
-    "ModFolder": "ToolSmartSwitch"
+    "ModFolder": "TramplableCrops"
   },
-  "UpdateKeys": [ "Nexus:15216" ],
+  "UpdateKeys": [ "Nexus:" ],
   "Dependencies": [
     {
       "UniqueID": "Platonymous.ModUpdater",

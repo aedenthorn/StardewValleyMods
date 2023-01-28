@@ -37,9 +37,6 @@ namespace ToolSmartSwitch
         {
             Config = Helper.ReadConfig<ModConfig>();
 
-            if (!Config.EnableMod)
-                return;
-
             context = this;
 
             SMonitor = Monitor;

@@ -61,7 +61,7 @@ namespace Moolah
                 shippingBin.Value = Game1.getFarm().getShippingBin(Game1.player).ToArray();
                 BigInteger previous = GetTotalMoolah(Game1.player);
                 BigInteger total = new(0);
-                if (Config.Debug)
+                if (Config.Debug && false)
                 {
                     Object obj = new Object(64, 999, false, 2000000000);
                     List<Object> list = new();
