@@ -92,7 +92,7 @@ namespace Moolah
                     }
                 }
                 SMonitor.Log($"Made {total} moolah today");
-                Game1.player._money = AdjustMoney(Game1.player, total + previous);
+                Game1.player.Money = AdjustMoney(Game1.player, total + previous);
                 Game1.getFarm().getShippingBin(Game1.player).Clear();
             }
         }
