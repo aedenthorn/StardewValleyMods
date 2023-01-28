@@ -11,14 +11,12 @@ namespace ImmersiveSprinklers
 
         private static Object GetSprinkler(string sprinklerString)
         {
-            if (sprinklerDict.TryGetValue(sprinklerString, out var obj))
-                return obj;
 
             foreach (var kvp in Game1.objectInformation)
             {
                 if (kvp.Value.StartsWith(sprinklerString + "/"))
                 {
-                    obj = new Object(kvp.Key, 1);
+                    var obj = new Object(kvp.Key, 1);
                     sprinklerDict[sprinklerString] = obj;
                     return obj;
                 }
