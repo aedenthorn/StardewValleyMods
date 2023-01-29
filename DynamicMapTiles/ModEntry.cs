@@ -133,6 +133,7 @@ namespace DynamicMapTiles
             var dict = Helper.GameContent.Load<Dictionary<string, DynamicTileInfo>>(dictPath);
             foreach (var kvp in dict)
             {
+                Monitor.Log($"Adding properties from {kvp.Key}");
                 var info = kvp.Value;
                 int count = 0;
                 if (info.properties is null)

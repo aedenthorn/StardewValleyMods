@@ -89,12 +89,6 @@ namespace MoveIt
                 Pickup(obj, cursorTile, obj.Name);
                 return;
             }
-            if (Game1.currentLocation.terrainFeatures.TryGetValue(cursorTile, out var tf))
-            {
-                Pickup(tf, cursorTile, tf.GetType().ToString());
-                return;
-
-            }
             foreach (var rc in Game1.currentLocation.resourceClumps)
             {
                 if (rc.occupiesTile((int)cursorTile.X, (int)cursorTile.Y))
@@ -114,6 +108,12 @@ namespace MoveIt
                         return;
                     }
                 }
+            }
+            if (Game1.currentLocation.terrainFeatures.TryGetValue(cursorTile, out var tf))
+            {
+                Pickup(tf, cursorTile, tf.GetType().ToString());
+                return;
+
             }
         }
         public static void PlaceObject()
