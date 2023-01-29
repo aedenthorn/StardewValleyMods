@@ -78,33 +78,37 @@ namespace ImmersiveSprinklers
             }
 
         }
-        [HarmonyPatch(typeof(HoeDirt), nameof(HoeDirt.performToolAction))]
-        public class HoeDirt_performToolAction_Patch
+        [HarmonyPatch(typeof(GameLocation), "initNetFields")]
+        public class GameLocation_initNetFields_Patch
         {
-            public static void Postfix(HoeDirt __instance, ref bool __result, Vector2 tileLocation, GameLocation location)
+            public static void Postfix(GameLocation __instance)
             {
-                if (!Config.EnableMod || !__result)
+                if (!Config.EnableMod)
                     return;
-                for (int i = 0; i < 4; i++)
+                __instance.terrainFeatures.OnValueRemoved += delegate (Vector2 tileLocation, TerrainFeature tf)
                 {
-                    if (__instance.modData.TryGetValue(sprinklerKey + i, out var sprinklerString))
+                    if (tf is not HoeDirt)
+                        return;
+                    for (int i = 0; i < 4; i++)
                     {
-                        var obj = GetSprinkler(sprinklerString);
-                        if (obj is not null)
+                        if (tf.modData.TryGetValue(sprinklerKey + i, out var sprinklerString))
                         {
-                            location.debris.Add(new Debris(obj, tileLocation * 64));
+                            var obj = GetSprinkler(sprinklerString);
+                            if (obj is not null)
+                            {
+                                __instance.debris.Add(new Debris(obj, tileLocation * 64));
+                            }
                         }
                     }
-                }
+                };
             }
-
         }
         [HarmonyPatch(typeof(HoeDirt), nameof(HoeDirt.dayUpdate))]
         public class HoeDirt_dayUpdate_Patch
         {
             public static void Postfix(HoeDirt __instance, GameLocation environment, Vector2 tileLocation)
             {
-                if (!Config.EnableMod || Game1.IsRainingHere(environment))
+                if (!Config.EnableMod || (environment.IsOutdoors && Game1.IsRainingHere(environment)))
                     return;
                 for (int i = 0; i < 4; i++)
                 {
