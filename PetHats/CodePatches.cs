@@ -29,6 +29,7 @@ namespace PetHats
                     SMonitor.Log($"Placing {who.CurrentItem.Name} on {__instance.Name}");
                     hatDict[GetHatString((Hat)who.CurrentItem)] = (Hat)who.CurrentItem;
                     __instance.modData[hatKey] = GetHatString((Hat)who.CurrentItem);
+                    Game1.playSound("dirtyHit");
                     who.reduceActiveItemByOne();
                 }
                 else if(!string.IsNullOrEmpty(str) && (Config.RetrieveButton == SButton.None || SHelper.Input.IsDown(Config.RetrieveButton)))
