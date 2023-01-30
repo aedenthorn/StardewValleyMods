@@ -33,7 +33,7 @@ namespace DynamicMapTiles
 
         public static bool TriggerActions(List<Layer> layers, Farmer farmer, Point tilePos, List<string> postfixes)
         {
-            if (!farmer.currentLocation.isTileOnMap(tilePos.ToVector2()))
+            if ((!Config.TriggerDuringEvents && Game1.eventUp) || !farmer.currentLocation.isTileOnMap(tilePos.ToVector2()))
                 return false;
             bool triggered = false;
             foreach (var layer in layers)

@@ -8,6 +8,7 @@ namespace DynamicMapTiles
     {
         public bool ModEnabled { get; set; } = true;
         public bool IsDebug { get; set; } = false;
+        public bool TriggerDuringEvents { get; set; } = false;
 
     }
 }

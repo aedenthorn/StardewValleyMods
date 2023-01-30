@@ -141,9 +141,10 @@ namespace MoveIt
                         SMonitor.Log($"Preventing overwrite", StardewModdingAPI.LogLevel.Info);
                         return;
                     }
-                    Game1.currentLocation.objects[Game1.currentCursorTile] = Game1.currentLocation.objects[movingTile];
-                    Game1.currentLocation.objects[Game1.currentCursorTile].TileLocation = Game1.currentCursorTile;
+                    var obj = Game1.currentLocation.objects[movingTile];
                     Game1.currentLocation.objects.Remove(movingTile);
+                    Game1.currentLocation.objects[Game1.currentCursorTile] = obj;
+                    Game1.currentLocation.objects[Game1.currentCursorTile].TileLocation = Game1.currentCursorTile;
                     movingObject = null;
                 }
             }
@@ -198,8 +199,9 @@ namespace MoveIt
                         SMonitor.Log($"Preventing overwrite", StardewModdingAPI.LogLevel.Info);
                         return;
                     }
-                    Game1.currentLocation.terrainFeatures[Game1.currentCursorTile] = Game1.currentLocation.terrainFeatures[movingTile];
+                    var tf = Game1.currentLocation.terrainFeatures[movingTile];
                     Game1.currentLocation.terrainFeatures.Remove(movingTile);
+                    Game1.currentLocation.terrainFeatures[Game1.currentCursorTile] = tf;
                     if (Game1.currentLocation.terrainFeatures[Game1.currentCursorTile] is HoeDirt)
                     {
                         (Game1.currentLocation.terrainFeatures[Game1.currentCursorTile] as HoeDirt).updateNeighbors(Game1.currentLocation, Game1.currentCursorTile);

@@ -11,13 +11,25 @@ namespace OKNightCheck
 {
 	public class OKMenu : ShippingMenu
 	{
-		public OKMenu() : base(new List<Item>())
+		private ClickableTextureComponent quitButton;
+
+        public OKMenu() : base(new List<Item>())
 		{
 			if (ModEntry.quotesAPI is not null)
             {
 				quote = ModEntry.quotesAPI.GetRandomQuoteAndAuthor(true);
 			}
 
+			if (ModEntry.Config.ShowQuitButton)
+			{
+                Rectangle quitRect = new Rectangle(this.centerX + this.totalWidth / 2 - this.itemAndPlusButtonWidth + 32 + 64, this.centerY + 300 - 64, 64, 64);
+                quitButton = new ClickableTextureComponent("Quit", quitRect, null, "Quit", Game1.mouseCursors, new Rectangle(337, 494, 12, 12), 5.333f, false)
+                {
+                    myID = 102,
+                    leftNeighborID = 101
+                };
+				okButton.rightNeighborID = 102;
+            }
 
 			_activated = false;
 			if (!Game1.wasRainingYesterday)
@@ -154,6 +166,17 @@ namespace OKNightCheck
 			Game1.playSound("bigDeSelect");
 			Game1.changeMusicTrack("none", false, Game1.MusicContext.Default);
 		}
+		
+		private void quitClicked()
+		{
+			Game1.changeMusicTrack("none", false, Game1.MusicContext.Default);
+            if (Game1.options.optionsDirty)
+            {
+                Game1.options.SaveDefaultOptions();
+            }
+            Game1.playSound("bigDeSelect");
+            Game1.ExitToTitle(null);
+        }
 
 		public override void receiveLeftClick(int x, int y, bool playSound = true)
 		{
@@ -171,9 +194,12 @@ namespace OKNightCheck
 				return;
 			}
 			base.receiveLeftClick(x, y, playSound);
-			if (introTimer <= 0 && okButton.containsPoint(x, y))
+			if (introTimer <= 0)
 			{
-				okClicked();
+				if(okButton.containsPoint(x, y))
+					okClicked();
+				if(quitButton.containsPoint(x, y))
+                    quitClicked();
 			}
 			if (Game1.dayOfMonth == 28 && timesPokedMoon <= 10 && new Rectangle(Game1.uiViewport.Width - 176, 4, 172, 172).Contains(x, y))
 			{
@@ -429,6 +455,12 @@ namespace OKNightCheck
 			}
 			if (introTimer <= 0)
 			{
+				okButton.draw(b);
+				if (ModEntry.Config.ShowQuitButton)
+				{
+					quitButton.draw(b);
+
+				}
 				okButton.draw(b);
 
 				if(ModEntry.quotesAPI is not null && quote is not null)

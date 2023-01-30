@@ -365,9 +365,9 @@ namespace DynamicMapTiles
             );
             configMenu.AddBoolOption(
                 mod: ModManifest,
-                name: () => "Debug",
-                getValue: () => Config.IsDebug,
-                setValue: value => Config.IsDebug = value
+                name: () => "Trigger During Events",
+                getValue: () => Config.TriggerDuringEvents,
+                setValue: value => Config.TriggerDuringEvents = value
             );
         }
     }

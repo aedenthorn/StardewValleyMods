@@ -467,6 +467,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TramplableCrops", "Tramplab
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ImmersiveSprinklers", "ImmersiveSprinklers\ImmersiveSprinklers.csproj", "{22D0D163-DD41-4B86-8C86-A45D05590762}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ImmersiveScarecrows", "ImmersiveScarecrows\ImmersiveScarecrows.csproj", "{7C8EA8C7-09CA-462F-A883-EDD7EAFABF59}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -3201,6 +3203,18 @@ Global
 		{22D0D163-DD41-4B86-8C86-A45D05590762}.Release|x64.Build.0 = Release|x64
 		{22D0D163-DD41-4B86-8C86-A45D05590762}.Release|x86.ActiveCfg = Release|Any CPU
 		{22D0D163-DD41-4B86-8C86-A45D05590762}.Release|x86.Build.0 = Release|Any CPU
+		{7C8EA8C7-09CA-462F-A883-EDD7EAFABF59}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7C8EA8C7-09CA-462F-A883-EDD7EAFABF59}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7C8EA8C7-09CA-462F-A883-EDD7EAFABF59}.Debug|x64.ActiveCfg = Debug|x64
+		{7C8EA8C7-09CA-462F-A883-EDD7EAFABF59}.Debug|x64.Build.0 = Debug|x64
+		{7C8EA8C7-09CA-462F-A883-EDD7EAFABF59}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{7C8EA8C7-09CA-462F-A883-EDD7EAFABF59}.Debug|x86.Build.0 = Debug|Any CPU
+		{7C8EA8C7-09CA-462F-A883-EDD7EAFABF59}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7C8EA8C7-09CA-462F-A883-EDD7EAFABF59}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7C8EA8C7-09CA-462F-A883-EDD7EAFABF59}.Release|x64.ActiveCfg = Release|x64
+		{7C8EA8C7-09CA-462F-A883-EDD7EAFABF59}.Release|x64.Build.0 = Release|x64
+		{7C8EA8C7-09CA-462F-A883-EDD7EAFABF59}.Release|x86.ActiveCfg = Release|Any CPU
+		{7C8EA8C7-09CA-462F-A883-EDD7EAFABF59}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
