@@ -231,7 +231,7 @@ namespace ImmersiveScarecrows
                             if (obj is not null)
                             {
                                 int radius = obj.GetRadiusForScarecrow();
-                                var distance = Vector2.Distance(kvp.Key + GetScarecrowCorner(i) * 32, v);
+                                var distance = Vector2.Distance(kvp.Key + GetScarecrowCorner(i) * 0.5f, v);
                                 if (distance < radius)
                                 {
                                     return false;

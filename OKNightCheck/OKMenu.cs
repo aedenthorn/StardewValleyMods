@@ -20,17 +20,6 @@ namespace OKNightCheck
 				quote = ModEntry.quotesAPI.GetRandomQuoteAndAuthor(true);
 			}
 
-			if (ModEntry.Config.ShowQuitButton)
-			{
-                Rectangle quitRect = new Rectangle(this.centerX + this.totalWidth / 2 - this.itemAndPlusButtonWidth + 32 + 64, this.centerY + 300 - 64, 64, 64);
-                quitButton = new ClickableTextureComponent("Quit", quitRect, null, "Quit", Game1.mouseCursors, new Rectangle(337, 494, 12, 12), 5.333f, false)
-                {
-                    myID = 102,
-                    leftNeighborID = 101
-                };
-				okButton.rightNeighborID = 102;
-            }
-
 			_activated = false;
 			if (!Game1.wasRainingYesterday)
 			{
@@ -47,7 +36,17 @@ namespace OKNightCheck
 			{
 				myID = 101,
 			};
-			backButton = new ClickableTextureComponent("", new Rectangle(xPositionOnScreen + 32, yPositionOnScreen + height - 64, 48, 44), null, "", Game1.mouseCursors, new Rectangle(352, 495, 12, 11), 4f, false)
+            if (ModEntry.Config.ShowQuitButton)
+            {
+                Rectangle quitRect = new Rectangle(okRect.Location + new Point(66, 2), new Point(60, 60));
+                quitButton = new ClickableTextureComponent("Quit", quitRect, null, "Quit", Game1.mouseCursors, new Rectangle(337, 494, 12, 12), 5, false)
+                {
+                    myID = 102,
+                    leftNeighborID = 101
+                };
+                okButton.rightNeighborID = 102;
+            }
+            backButton = new ClickableTextureComponent("", new Rectangle(xPositionOnScreen + 32, yPositionOnScreen + height - 64, 48, 44), null, "", Game1.mouseCursors, new Rectangle(352, 495, 12, 11), 4f, false)
 			{
 				myID = 103,
 				rightNeighborID = -7777
