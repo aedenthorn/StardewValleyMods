@@ -43,9 +43,20 @@ namespace ToolSmartSwitch
             SHelper = helper;
 
             Helper.Events.GameLoop.GameLaunched += GameLoop_GameLaunched;
+            Helper.Events.Input.ButtonPressed += Input_ButtonPressed;
             var harmony = new Harmony(ModManifest.UniqueID);
             harmony.PatchAll();
 
+        }
+
+        private void Input_ButtonPressed(object sender, StardewModdingAPI.Events.ButtonPressedEventArgs e)
+        {
+            if(Context.CanPlayerMove && e.Button == Config.ToggleButton)
+            {
+                Config.EnableMod = !Config.EnableMod;
+                Helper.WriteConfig(Config);
+                SMonitor.Log("Mod enabled: " + Config.EnableMod);
+            }
         }
 
         public override object GetApi()
@@ -73,6 +84,13 @@ namespace ToolSmartSwitch
                 name: () => "Mod Enabled",
                 getValue: () => Config.EnableMod,
                 setValue: value => Config.EnableMod = value
+            );
+            
+            configMenu.AddKeybind(
+                mod: ModManifest,
+                name: () => "Toggle Button",
+                getValue: () => Config.ToggleButton,
+                setValue: value => Config.ToggleButton = value
             );
 
             configMenu.AddBoolOption(

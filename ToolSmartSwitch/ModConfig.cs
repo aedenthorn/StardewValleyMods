@@ -8,6 +8,7 @@ namespace ToolSmartSwitch
     public class ModConfig
     {
         public bool EnableMod { get; set; } = true;
+        public SButton ToggleButton { get; set; } = SButton.None;
         public bool HoldingTool { get; set; } = true;
         public bool FromWeapon { get; set; } = true;
         public bool SwitchForObjects { get; set; } = true;

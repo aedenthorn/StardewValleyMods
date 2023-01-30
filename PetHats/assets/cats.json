@@ -4,6 +4,7 @@
     "Y": -38,
     "flippedX": 24,
     "flippedY": -38,
+    "direction": 2,
     "disable": false
   },
   "2": {
@@ -11,6 +12,7 @@
     "Y": -38,
     "flippedX": 24,
     "flippedY": -38,
+    "direction": 2,
     "disable": false
   },
   "1": {
@@ -18,6 +20,7 @@
     "Y": -34,
     "flippedX": 24,
     "flippedY": -34,
+    "direction": 2,
     "disable": false
   },
   "3": {
@@ -25,6 +28,7 @@
     "Y": -34,
     "flippedX": 24,
     "flippedY": -34,
+    "direction": 2,
     "disable": false
   },
   "4": {
@@ -32,13 +36,15 @@
     "Y": -44,
     "flippedX": 0,
     "flippedY": -44,
+    "direction": 1,
     "disable": false
   },
   "6": {
     "X": 52,
-    "Y": -42,
+    "Y": -44,
     "flippedX": 0,
     "flippedY": -44,
+    "direction": 1,
     "disable": false
   },
   "5": {
@@ -46,6 +52,7 @@
     "Y": -40,
     "flippedX": 0,
     "flippedY": -40,
+    "direction": 1,
     "disable": false
   },
   "7": {
@@ -53,6 +60,7 @@
     "Y": -40,
     "flippedX": 0,
     "flippedY": -40,
+    "direction": 1,
     "disable": false
   },
   "8": {
@@ -60,6 +68,7 @@
     "Y": -64,
     "flippedX": 24,
     "flippedY": -64,
+    "direction": 0,
     "disable": false
   },
   "10": {
@@ -67,6 +76,7 @@
     "Y": -64,
     "flippedX": 24,
     "flippedY": -64,
+    "direction": 0,
     "disable": false
   },
   "9": {
@@ -74,6 +84,7 @@
     "Y": -60,
     "flippedX": 24,
     "flippedY": -60,
+    "direction": 0,
     "disable": false
   },
   "11": {
@@ -81,6 +92,7 @@
     "Y": -60,
     "flippedX": 24,
     "flippedY": -60,
+    "direction": 0,
     "disable": false
   },
   "12": {
@@ -88,6 +100,7 @@
     "Y": -44,
     "flippedX": 52,
     "flippedY": -44,
+    "direction": 3,
     "disable": false
   },
   "14": {
@@ -95,6 +108,7 @@
     "Y": -44,
     "flippedX": 52,
     "flippedY": -44,
+    "direction": 3,
     "disable": false
   },
   "13": {
@@ -102,6 +116,7 @@
     "Y": -40,
     "flippedX": 52,
     "flippedY": -40,
+    "direction": 3,
     "disable": false
   },
   "15": {
@@ -109,6 +124,7 @@
     "Y": -40,
     "flippedX": 52,
     "flippedY": -40,
+    "direction": 3,
     "disable": false
   },
   "16": {
@@ -116,6 +132,7 @@
     "Y": -44,
     "flippedX": 24,
     "flippedY": -44,
+    "direction": 2,
     "disable": false
   },
   "21": {
@@ -123,6 +140,7 @@
     "Y": -48,
     "flippedX": 24,
     "flippedY": -48,
+    "direction": 2,
     "disable": false
   },
   "23": {
@@ -130,13 +148,7 @@
     "Y": -48,
     "flippedX": 24,
     "flippedY": -48,
-    "disable": false
-  },
-  "24": {
-    "X": 52,
-    "Y": -40,
-    "flippedX": 2,
-    "flippedY": -40,
+    "direction": 2,
     "disable": false
   },
   "17": {
@@ -144,6 +156,7 @@
     "Y": -52,
     "flippedX": 24,
     "flippedY": -52,
+    "direction": 2,
     "disable": false
   },
   "20": {
@@ -151,6 +164,7 @@
     "Y": -52,
     "flippedX": 24,
     "flippedY": -52,
+    "direction": 2,
     "disable": false
   },
   "22": {
@@ -158,6 +172,7 @@
     "Y": -52,
     "flippedX": 24,
     "flippedY": -52,
+    "direction": 2,
     "disable": false
   },
   "18": {
@@ -165,6 +180,7 @@
     "Y": -56,
     "flippedX": 24,
     "flippedY": -56,
+    "direction": 2,
     "disable": false
   },
   "19": {
@@ -172,27 +188,39 @@
     "Y": -56,
     "flippedX": 24,
     "flippedY": -56,
+    "direction": 2,
+    "disable": false
+  },
+  "24": {
+    "X": 52,
+    "Y": -36,
+    "flippedX": 2,
+    "flippedY": -36,
+    "direction": 1,
     "disable": false
   },
   "25": {
     "X": 52,
-    "Y": -32,
+    "Y": -30,
     "flippedX": 0,
-    "flippedY": -32,
+    "flippedY": -30,
+    "direction": 1,
     "disable": false
   },
   "26": {
     "X": 52,
-    "Y": -28,
+    "Y": -26,
     "flippedX": 0,
-    "flippedY": -28,
+    "flippedY": -26,
+    "direction": 1,
     "disable": false
   },
   "27": {
     "X": 52,
-    "Y": -28,
+    "Y": -24,
     "flippedX": 0,
-    "flippedY": -28,
+    "flippedY": -24,
+    "direction": 1,
     "disable": false
   },
   "28": {
@@ -200,6 +228,7 @@
     "Y": -28,
     "flippedX": 24,
     "flippedY": -28,
+    "direction": 2,
     "disable": false
   },
   "29": {
@@ -207,20 +236,23 @@
     "Y": -28,
     "flippedX": 24,
     "flippedY": -28,
+    "direction": 2,
     "disable": false
   },
   "30": {
     "X": 48,
-    "Y": -36,
+    "Y": -32,
     "flippedX": 8,
-    "flippedY": -36,
+    "flippedY": -32,
+    "direction": 1,
     "disable": false
   },
   "31": {
     "X": 48,
-    "Y": -36,
+    "Y": -32,
     "flippedX": 8,
-    "flippedY": -36,
+    "flippedY": -32,
+    "direction": 1,
     "disable": false
   }
 }

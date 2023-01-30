@@ -49,7 +49,7 @@ namespace PetHats
                 if (hat is null)
                     return;
 
-                if (!GetFrameOffsetsBool(__instance, out int x, out int y))
+                if (!GetFrameOffsetsBool(__instance, out int x, out int y, out int direction))
                     return;
                 if (!GetHatOffsetBool(__instance, hat, out Vector2 hatOffset))
                     return;
@@ -62,17 +62,24 @@ namespace PetHats
                 {
                     hatOffset += new Vector2((float)Game1.random.Next(-1, 2), (float)Game1.random.Next(-1, 2));
                 }
-                hat.draw(b, Utility.snapDrawPosition(__instance.getLocalPosition(Game1.viewport) + hatOffset + new Vector2(x, y)), 1.33333337f, 1f, draw_layer, __instance.FacingDirection);
+                if(__instance is Cat && Config.CatOffsets.Count > __instance.whichBreed.Value)
+                {
+                    hatOffset += Config.CatOffsets[__instance.whichBreed.Value].ToVector2();
+                }
+                else if(__instance is Dog && Config.DogOffsets.Count > __instance.whichBreed.Value)
+                {
+                    hatOffset += Config.DogOffsets[__instance.whichBreed.Value].ToVector2() * 2;
+                }
+                hat.draw(b, Utility.snapDrawPosition(__instance.getLocalPosition(Game1.viewport) + hatOffset + new Vector2(x, y)), 1.33333337f, 1f, draw_layer, direction);
 
             }
-            private static int frame = 25;
+            private static int frame = 0;
             private static bool flip = true;
             public static void Prefix(Pet __instance, SpriteBatch b)
             {
                 return;
                 if (!Config.Debug)
                     return;
-                b.DrawString(Game1.dialogueFont, __instance.Sprite.CurrentFrame + " " + __instance.flip + " " + __instance.FacingDirection, Game1.GlobalToLocal(__instance.position) + new Vector2(0, -128), Color.White, 0, Vector2.Zero, 1, SpriteEffects.None, 2);
                 if (SHelper.Input.IsDown(SButton.Z))
                 {
                     SHelper.Input.Suppress(SButton.Z);
@@ -80,7 +87,7 @@ namespace PetHats
                     frame %= 36;
                 }
                 __instance.Sprite.CurrentFrame = frame;
-                if(SHelper.Input.IsDown(SButton.X))
+                if (SHelper.Input.IsDown(SButton.X))
                 {
                     SHelper.Input.Suppress(SButton.X);
                     __instance.FacingDirection++;
@@ -93,6 +100,7 @@ namespace PetHats
 
                 }
                 __instance.flip = flip;
+                b.DrawString(Game1.dialogueFont, __instance.Sprite.CurrentFrame + " " + __instance.flip + " " + __instance.FacingDirection, Game1.GlobalToLocal(__instance.position) + new Vector2(0, -128), Color.White, 0, Vector2.Zero, 1, SpriteEffects.None, 2);
             }
         }
     }

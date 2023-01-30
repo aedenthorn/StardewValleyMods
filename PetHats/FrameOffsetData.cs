@@ -7,5 +7,6 @@
         public int flippedX;
         public int flippedY;
         public bool disable;
+        public int direction;
     }
 }

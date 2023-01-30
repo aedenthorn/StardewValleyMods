@@ -64,10 +64,11 @@ namespace PetHats
             }
         }
 
-        private static bool GetFrameOffsetsBool(Pet __instance, out int x, out int y)
+        private static bool GetFrameOffsetsBool(Pet __instance, out int x, out int y, out int direction)
         {
             x = 0;
             y = 0;
+            direction = 0;
             var dict = __instance is Cat ? catOffsetDict : dogOffsetDict;
             if(dict.TryGetValue(__instance.Sprite.CurrentFrame, out var data))
             {
@@ -77,11 +78,17 @@ namespace PetHats
                 {
                     x = data.flippedX; 
                     y = data.flippedY;
+                    direction = data.direction;
+                    if(direction == 1)
+                        direction = 3;
+                    else if(direction == 3)
+                        direction = 1;
                 }
                 else
                 {
                     x = data.X; 
                     y = data.Y;
+                    direction = data.direction;
                 }
             }
             return true;
