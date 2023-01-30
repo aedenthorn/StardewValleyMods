@@ -108,7 +108,18 @@ namespace ImmersiveSprinklers
                 getValue: () => Config.EnableMod,
                 setValue: value => Config.EnableMod = value
             );
-
+            configMenu.AddKeybind(
+                mod: ModManifest,
+                name: () => "Pickup Key",
+                getValue: () => Config.PickupButton,
+                setValue: value => Config.PickupButton = value
+            );
+            configMenu.AddKeybind(
+                mod: ModManifest,
+                name: () => "Activate Key",
+                getValue: () => Config.ActivateButton,
+                setValue: value => Config.ActivateButton = value
+            );
             configMenu.AddTextOption(
                 mod: ModManifest,
                 name: () => "Scale",
@@ -121,17 +132,23 @@ namespace ImmersiveSprinklers
                 getValue: () => Config.Alpha + "",
                 setValue: delegate (string value) { if (float.TryParse(value, NumberStyles.Any, CultureInfo.InvariantCulture, out float f)) { Config.Alpha = f; } }
             );
-            configMenu.AddKeybind(
+            configMenu.AddNumberOption(
                 mod: ModManifest,
-                name: () => "Pickup Key",
-                getValue: () => Config.PickupButton,
-                setValue: value => Config.PickupButton = value
+                name: () => "Offset X",
+                getValue: () => Config.DrawOffsetX,
+                setValue: value => Config.DrawOffsetX = value
             );
-            configMenu.AddKeybind(
+            configMenu.AddNumberOption(
                 mod: ModManifest,
-                name: () => "Activate Key",
-                getValue: () => Config.ActivateButton,
-                setValue: value => Config.ActivateButton = value
+                name: () => "Offset Y",
+                getValue: () => Config.DrawOffsetY,
+                setValue: value => Config.DrawOffsetY = value
+            );
+            configMenu.AddNumberOption(
+                mod: ModManifest,
+                name: () => "Offset Z",
+                getValue: () => Config.DrawOffsetZ,
+                setValue: value => Config.DrawOffsetZ = value
             );
 
         }

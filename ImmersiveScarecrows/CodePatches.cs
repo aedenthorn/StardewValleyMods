@@ -58,9 +58,9 @@ namespace ImmersiveScarecrows
                         if(obj is not null)
                         {
                             Vector2 scaleFactor = obj.getScale();
-                            var globalPosition = tileLocation * 64 + new Vector2(32 - 8 * Config.Scale - scaleFactor.X / 2f, 32 - 8 * Config.Scale - 80 - scaleFactor.Y / 2f) + GetScarecrowCorner(i) * 32;
+                            var globalPosition = tileLocation * 64 + new Vector2(32 - 8 * Config.Scale - scaleFactor.X / 2f + Config.DrawOffsetX, 32 - 8 * Config.Scale - 80 - scaleFactor.Y / 2f + Config.DrawOffsetY) + GetScarecrowCorner(i) * 32;
                             var position = Game1.GlobalToLocal(globalPosition);
-                            dirt_batch.Draw(Game1.bigCraftableSpriteSheet, position, Object.getSourceRectForBigCraftable(obj.ParentSheetIndex), Color.White * Config.Alpha, 0, Vector2.Zero, Config.Scale, SpriteEffects.None, (globalPosition.Y + 81 + 16) / 10000f);
+                            dirt_batch.Draw(Game1.bigCraftableSpriteSheet, position, Object.getSourceRectForBigCraftable(obj.ParentSheetIndex), Color.White * Config.Alpha, 0, Vector2.Zero, Config.Scale, SpriteEffects.None, (globalPosition.Y + 81 + 16 + Config.DrawOffsetZ) / 10000f);
                         }
                     }
                 }

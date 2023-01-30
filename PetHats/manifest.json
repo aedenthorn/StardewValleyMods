@@ -1,18 +1,18 @@
 ﻿{
-  "Name": "Immersive Sprinklers",
+  "Name": "Pet Hats",
   "Author": "aedenthorn",
-  "Version": "0.1.4",
-  "Description": "Immersive Sprinklers.",
-  "UniqueID": "aedenthorn.ImmersiveSprinklers",
-  "EntryDll": "ImmersiveSprinklers.dll",
+  "Version": "0.1.0",
+  "Description": "Pet Hats.",
+  "UniqueID": "aedenthorn.PetHats",
+  "EntryDll": "PetHats.dll",
   "MinimumApiVersion": "3.15.0",
   "ModUpdater": {
     "Repository": "StardewValleyMods",
     "User": "aedenthorn",
     "Directory": "_releases",
-    "ModFolder": "ImmersiveSprinklers"
+    "ModFolder": "PetHats"
   },
-  "UpdateKeys": [ "Nexus:15239" ],
+  "UpdateKeys": [ "Nexus:" ],
   "Dependencies": [
     {
       "UniqueID": "Platonymous.ModUpdater",

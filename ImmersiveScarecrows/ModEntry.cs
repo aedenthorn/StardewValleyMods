@@ -1,6 +1,7 @@
 ﻿using HarmonyLib;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Audio;
+using Microsoft.Xna.Framework.Graphics;
 using Netcode;
 using Newtonsoft.Json;
 using StardewModdingAPI;
@@ -48,10 +49,37 @@ namespace ImmersiveScarecrows
             Helper.Events.GameLoop.GameLaunched += GameLoop_GameLaunched;
             Helper.Events.GameLoop.SaveLoaded += GameLoop_SaveLoaded;
             Helper.Events.Input.ButtonPressed += Input_ButtonPressed;
+            Helper.Events.Display.RenderedWorld += Display_RenderedWorld;
 
             var harmony = new Harmony(ModManifest.UniqueID);
             harmony.PatchAll();
 
+        }
+
+        private void Display_RenderedWorld(object sender, StardewModdingAPI.Events.RenderedWorldEventArgs e)
+        {
+            if (!Config.EnableMod || !Context.IsPlayerFree || !Helper.Input.IsDown(Config.ShowRangeButton) || Game1.currentLocation?.terrainFeatures?.TryGetValue(Game1.currentCursorTile, out var tf) != true || tf is not HoeDirt)
+                return;
+            var corner = GetMouseCorner();
+            var scarecrowTile = Game1.currentCursorTile;
+            if (!GetScarecrowTileBool(Game1.currentLocation, ref scarecrowTile, ref corner, out string str))
+                return;
+            var obj = GetScarecrow(str);
+            if(obj is not null)
+            {
+                var r = obj.GetRadiusForScarecrow();
+                Vector2 pos = scarecrowTile + GetScarecrowCorner(corner) * 0.5f;
+                for(int x = 0; x < r * 2 + 1; x ++)
+                {
+                    for (int y = 0; y < r * 2 + 1; y++)
+                    {
+                        Vector2 tile = scarecrowTile + new Vector2(x - r , y - r);
+                        if (Vector2.Distance(tile, pos) < r)
+                            e.SpriteBatch.Draw(Game1.mouseCursors, Game1.GlobalToLocal(new Vector2((float)((int)tile.X * 64), (float)((int)tile.Y * 64))), new Rectangle?(new Rectangle(194, 388, 16, 16)), Color.White, 0f, Vector2.Zero, 4f, SpriteEffects.None, 0.01f);
+
+                    }
+                }
+            }
         }
 
         private void Input_ButtonPressed(object sender, StardewModdingAPI.Events.ButtonPressedEventArgs e)
@@ -93,6 +121,19 @@ namespace ImmersiveScarecrows
                 getValue: () => Config.EnableMod,
                 setValue: value => Config.EnableMod = value
             );
+            configMenu.AddKeybind(
+                mod: ModManifest,
+                name: () => "Pickup Key",
+                getValue: () => Config.PickupButton,
+                setValue: value => Config.PickupButton = value
+            );
+            
+            configMenu.AddKeybind(
+                mod: ModManifest,
+                name: () => "Show Range Key",
+                getValue: () => Config.ShowRangeButton,
+                setValue: value => Config.ShowRangeButton = value
+            );
 
             configMenu.AddTextOption(
                 mod: ModManifest,
@@ -106,11 +147,23 @@ namespace ImmersiveScarecrows
                 getValue: () => Config.Alpha + "",
                 setValue: delegate (string value) { if (float.TryParse(value, NumberStyles.Any, CultureInfo.InvariantCulture, out float f)) { Config.Alpha = f; } }
             );
-            configMenu.AddKeybind(
+            configMenu.AddNumberOption(
                 mod: ModManifest,
-                name: () => "Pickup Key",
-                getValue: () => Config.PickupButton,
-                setValue: value => Config.PickupButton = value
+                name: () => "Offset X",
+                getValue: () => Config.DrawOffsetX,
+                setValue: value => Config.DrawOffsetX = value
+            );
+            configMenu.AddNumberOption(
+                mod: ModManifest,
+                name: () => "Offset Y",
+                getValue: () => Config.DrawOffsetY,
+                setValue: value => Config.DrawOffsetY = value
+            );
+            configMenu.AddNumberOption(
+                mod: ModManifest,
+                name: () => "Offset Z",
+                getValue: () => Config.DrawOffsetZ,
+                setValue: value => Config.DrawOffsetZ = value
             );
 
         }

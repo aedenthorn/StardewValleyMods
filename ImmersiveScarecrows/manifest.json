@@ -12,7 +12,7 @@
     "Directory": "_releases",
     "ModFolder": "ImmersiveScarecrows"
   },
-  "UpdateKeys": [ "Nexus:" ],
+  "UpdateKeys": [ "Nexus:15290" ],
   "Dependencies": [
     {
       "UniqueID": "Platonymous.ModUpdater",

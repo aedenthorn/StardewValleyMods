@@ -55,9 +55,9 @@ namespace ImmersiveSprinklers
                         }
                         if(obj is not null)
                         {
-                            var globalPosition = tileLocation * 64 + new Vector2(32 - 8 * Config.Scale, 32 - 8 * Config.Scale) + GetSprinklerCorner(i) * 32;
+                            var globalPosition = tileLocation * 64 + new Vector2(32 - 8 * Config.Scale + Config.DrawOffsetX, 32 - 8 * Config.Scale + Config.DrawOffsetY) + GetSprinklerCorner(i) * 32;
                             var position = Game1.GlobalToLocal(globalPosition);
-                            dirt_batch.Draw(Game1.objectSpriteSheet, position, GameLocation.getSourceRectForObject(obj.ParentSheetIndex), Color.White * Config.Alpha, 0, Vector2.Zero, Config.Scale, obj.Flipped ? SpriteEffects.FlipHorizontally : SpriteEffects.None, (globalPosition.Y + 16) / 10000f);
+                            dirt_batch.Draw(Game1.objectSpriteSheet, position, GameLocation.getSourceRectForObject(obj.ParentSheetIndex), Color.White * Config.Alpha, 0, Vector2.Zero, Config.Scale, obj.Flipped ? SpriteEffects.FlipHorizontally : SpriteEffects.None, (globalPosition.Y + 16 + Config.DrawOffsetZ) / 10000f);
                         }
                     }
                 }
