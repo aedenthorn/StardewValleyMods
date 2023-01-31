@@ -127,6 +127,16 @@ namespace AdvancedMeleeFramework
                             Game1.playSound(enchantment.parameters["sound"]);
                     }
                 }
+                else if (enchantment.type == "hurt")
+                {
+                    if (Game1.random.NextDouble() < float.Parse(enchantment.parameters["chance"]) / 100f)
+                    {
+                        int hurt = Math.Max(1, (int)(amount * float.Parse(enchantment.parameters["amountMult"])));
+                        who.takeDamage(hurt, true, null);
+                        if (enchantment.parameters.ContainsKey("sound"))
+                            Game1.playSound(enchantment.parameters["sound"]);
+                    }
+                }
                 else if (enchantment.type == "coins")
                 {
                     if (Game1.random.NextDouble() < float.Parse(enchantment.parameters["chance"]) / 100f)
@@ -157,6 +167,16 @@ namespace AdvancedMeleeFramework
                         int heal = Math.Max(1, (int)(m.Health * float.Parse(enchantment.parameters["amountMult"])));
                         who.health = Math.Min(who.maxHealth, Game1.player.health + heal);
                         location.debris.Add(new Debris(heal, new Vector2((float)Game1.player.getStandingX(), (float)Game1.player.getStandingY()), Color.Lime, 1f, who));
+                        if (enchantment.parameters.ContainsKey("sound"))
+                            Game1.playSound(enchantment.parameters["sound"]);
+                    }
+                }
+                else if (enchantment.type == "hurt")
+                {
+                    if (Game1.random.NextDouble() < float.Parse(enchantment.parameters["chance"]) / 100f)
+                    {
+                        int hurt = Math.Max(1, (int)(m.Health * float.Parse(enchantment.parameters["amountMult"])));
+                        who.takeDamage(hurt, true, null);
                         if (enchantment.parameters.ContainsKey("sound"))
                             Game1.playSound(enchantment.parameters["sound"]);
                     }
