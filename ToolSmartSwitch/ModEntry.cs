@@ -1,23 +1,6 @@
 ﻿using HarmonyLib;
-using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Audio;
-using Netcode;
-using Newtonsoft.Json;
 using StardewModdingAPI;
-using StardewModdingAPI.Utilities;
-using StardewValley;
-using StardewValley.Menus;
-using StardewValley.TerrainFeatures;
-using StardewValley.Tools;
-using System;
-using System.Collections.Generic;
 using System.Globalization;
-using System.IO;
-using System.Linq;
-using xTile;
-using xTile.Layers;
-using xTile.ObjectModel;
-using Object = StardewValley.Object;
 
 namespace ToolSmartSwitch
 {
@@ -51,7 +34,7 @@ namespace ToolSmartSwitch
 
         private void Input_ButtonPressed(object sender, StardewModdingAPI.Events.ButtonPressedEventArgs e)
         {
-            if(Context.CanPlayerMove && e.Button == Config.ToggleButton)
+            if(Context.CanPlayerMove && Config.ToggleButton != SButton.None && e.Button == Config.ToggleButton)
             {
                 Config.EnableMod = !Config.EnableMod;
                 Helper.WriteConfig(Config);
