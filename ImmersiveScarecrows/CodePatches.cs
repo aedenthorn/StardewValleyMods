@@ -96,11 +96,11 @@ namespace ImmersiveScarecrows
                     {
                         if (tf.modData.TryGetValue(scarecrowKey + i, out var scarecrowString))
                         {
-                            var obj = GetScarecrow(scarecrowString);
-                            if (obj is not null)
+                            try
                             {
-                                __instance.debris.Add(new Debris(obj, tileLocation * 64));
+                                __instance.terrainFeatures.Add(tileLocation, tf);
                             }
+                            catch { }
                         }
                     }
                 };

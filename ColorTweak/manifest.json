@@ -1,18 +1,18 @@
 ﻿{
-  "Name": "Immersive Scarecrows",
+  "Name": "Color Tweak",
   "Author": "aedenthorn",
-  "Version": "0.1.1",
-  "Description": "Immersive Scarecrows.",
-  "UniqueID": "aedenthorn.ImmersiveScarecrows",
-  "EntryDll": "ImmersiveScarecrows.dll",
+  "Version": "0.1.0",
+  "Description": "Color Tweak.",
+  "UniqueID": "aedenthorn.ColorTweak",
+  "EntryDll": "ColorTweak.dll",
   "MinimumApiVersion": "3.15.0",
   "ModUpdater": {
     "Repository": "StardewValleyMods",
     "User": "aedenthorn",
     "Directory": "_releases",
-    "ModFolder": "ImmersiveScarecrows"
+    "ModFolder": "ColorTweak"
   },
-  "UpdateKeys": [ "Nexus:15290" ],
+  "UpdateKeys": [ "Nexus:" ],
   "Dependencies": [
     {
       "UniqueID": "Platonymous.ModUpdater",

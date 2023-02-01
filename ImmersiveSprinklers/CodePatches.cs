@@ -93,11 +93,11 @@ namespace ImmersiveSprinklers
                     {
                         if (tf.modData.TryGetValue(sprinklerKey + i, out var sprinklerString))
                         {
-                            var obj = GetSprinkler(sprinklerString);
-                            if (obj is not null)
+                            try
                             {
-                                __instance.debris.Add(new Debris(obj, tileLocation * 64));
+                                __instance.terrainFeatures.Add(tileLocation, tf);
                             }
+                            catch { }
                         }
                     }
                 };
