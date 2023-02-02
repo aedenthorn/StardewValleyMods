@@ -13,6 +13,7 @@ namespace ImmersiveSprinklers
         public int DrawOffsetZ { get; set; } = 0;
         public SButton PickupButton { get; set; } = SButton.E;
         public SButton ActivateButton { get; set; } = SButton.Enter;
+        public SButton ShowRangeButton { get; set; } = SButton.LeftControl;
 
     }
 }

@@ -9,7 +9,7 @@ namespace ImmersiveSprinklers
     public partial class ModEntry
     {
 
-        private static Object GetSprinkler(string sprinklerString)
+        private static Object GetSprinkler(string sprinklerString, bool nozzle)
         {
 
             foreach (var kvp in Game1.objectInformation)
@@ -17,6 +17,10 @@ namespace ImmersiveSprinklers
                 if (kvp.Value.StartsWith(sprinklerString + "/"))
                 {
                     var obj = new Object(kvp.Key, 1);
+                    if (nozzle)
+                    {
+                        obj.heldObject.Value = new Object(915, 1);
+                    }
                     sprinklerDict[sprinklerString] = obj;
                     return obj;
                 }
@@ -170,18 +174,52 @@ namespace ImmersiveSprinklers
             if (tf.modData.TryGetValue(sprinklerKey + which, out var sprinklerString))
             {
                 tf.modData.Remove(sprinklerKey + which);
-                sprinkler = GetSprinkler(sprinklerString);
+                sprinkler = GetSprinkler(sprinklerString, false);
                 if (sprinkler is not null && !who.addItemToInventoryBool(sprinkler))
                 {
                     who.currentLocation.debris.Add(new Debris(sprinkler, who.Position));
+                }
+                if (tf.modData.ContainsKey(enricherKey + which))
+                {
+                    tf.modData.Remove(enricherKey + which);
+                    var e = new Object(913, 1);
+                    TryReturnObject(e, who);
+                }
+                if (tf.modData.ContainsKey(nozzleKey + which))
+                {
+                    tf.modData.Remove(nozzleKey + which);
+                    var n = new Object(915, 1);
+                    TryReturnObject(n, who);
+
+                }
+                if (tf.modData.TryGetValue(fertilizerKey + which, out var fertString))
+                {
+                    tf.modData.Remove(fertilizerKey + which);
+                    Object f = GetFertilizer(fertString);
+                    TryReturnObject(f, who);
                 }
                 return true;
             }
             return false;
         }
 
+        private static void TryReturnObject(Object obj, Farmer who)
+        {
+            if (!who.addItemToInventoryBool(obj))
+            {
+                who.currentLocation.debris.Add(new Debris(obj, who.Position));
+            }
+        }
+
+        private static Object GetFertilizer(string fertString)
+        {
+            var fertData = fertString.Split(',');
+            return new Object(int.Parse(fertData[0]), int.Parse(fertData[1]));
+        }
+
         private static List<Vector2> GetSprinklerTiles(Vector2 tileLocation, int which, int radius)
         {
+            
             Vector2 start = tileLocation + new Vector2(-1, -1) * radius;
             List<Vector2> list = new();
             switch (which)
