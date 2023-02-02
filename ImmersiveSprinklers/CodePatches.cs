@@ -165,7 +165,19 @@ namespace ImmersiveSprinklers
                         {
                             var globalPosition = tileLocation * 64 + new Vector2(32 - 8 * Config.Scale + Config.DrawOffsetX, 32 - 8 * Config.Scale + Config.DrawOffsetY) + GetSprinklerCorner(i) * 32;
                             var position = Game1.GlobalToLocal(globalPosition);
-                            dirt_batch.Draw(Game1.objectSpriteSheet, position, GameLocation.getSourceRectForObject(obj.ParentSheetIndex), Color.White * Config.Alpha, 0, Vector2.Zero, Config.Scale, obj.Flipped ? SpriteEffects.FlipHorizontally : SpriteEffects.None, (globalPosition.Y + 16 + Config.DrawOffsetZ) / 10000f);
+                            Texture2D texture = null;
+                            Rectangle sourceRect = new Rectangle();
+                            if (false && atApi is not null && obj.modData.ContainsKey("AlternativeTextureName"))
+                            {
+                                texture = GetTextureForObject(obj, out sourceRect);
+                            }
+                            if(texture is null)
+                            {
+                                texture = Game1.objectSpriteSheet;
+                                sourceRect = GameLocation.getSourceRectForObject(obj.ParentSheetIndex);
+                            }
+                            dirt_batch.Draw(texture, position, sourceRect, Color.White * Config.Alpha, 0, Vector2.Zero, Config.Scale, obj.Flipped ? SpriteEffects.FlipHorizontally : SpriteEffects.None, (globalPosition.Y + 16 + Config.DrawOffsetZ) / 10000f);
+
                             if (__instance.modData.ContainsKey(enricherKey + i))
                             {
                                 dirt_batch.Draw(Game1.objectSpriteSheet, position + new Vector2(0f, -20f), GameLocation.getSourceRectForObject(914), Color.White * Config.Alpha, 0, Vector2.Zero, Config.Scale, obj.Flipped ? SpriteEffects.FlipHorizontally : SpriteEffects.None, (globalPosition.Y + 16 + Config.DrawOffsetZ) / 10000f + 2E-05f);

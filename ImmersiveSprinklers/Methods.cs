@@ -1,5 +1,8 @@
 ﻿
+using HarmonyLib;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
+using Sickhead.Engine.Util;
 using StardewValley;
 using StardewValley.TerrainFeatures;
 using System.Collections.Generic;
@@ -175,10 +178,7 @@ namespace ImmersiveSprinklers
             {
                 tf.modData.Remove(sprinklerKey + which);
                 sprinkler = GetSprinkler(sprinklerString, false);
-                if (sprinkler is not null && !who.addItemToInventoryBool(sprinkler))
-                {
-                    who.currentLocation.debris.Add(new Debris(sprinkler, who.Position));
-                }
+                TryReturnObject(sprinkler, who);
                 if (tf.modData.ContainsKey(enricherKey + which))
                 {
                     tf.modData.Remove(enricherKey + which);
@@ -318,6 +318,76 @@ namespace ImmersiveSprinklers
                 id = tileLocation.X * 4000f + tileLocation.Y,
                 scale = scale
             });
+        }
+
+
+        private static Texture2D GetTextureForObject(Object obj, out Rectangle sourceRect)
+        {
+            sourceRect = new Rectangle();
+            if (!obj.modData.TryGetValue("AlternativeTextureName", out var str))
+                return null;
+            var textureMgr = AccessTools.Field(atApi.GetType().Assembly.GetType("AlternativeTextures"), "textureManager").GetValue(null);
+            var textureModel = AccessTools.Method(textureMgr.GetType(),"GetSpecificTextureModel").GetValue(textureMgr, new object[] { str } );
+            if (textureModel is null)
+            {
+                return null;
+            }
+            var textureVariation = int.Parse(obj.modData["AlternativeTextureVariation"]);
+            var modConfig = AccessTools.Field(atApi.GetType().Assembly.GetType("AlternativeTextures"), "modConfig").GetValue(null);
+            if (textureVariation == -1 || (bool)AccessTools.Method(modConfig.GetType(), "IsTextureVariationDisabled").GetValue(modConfig, new object[] { AccessTools.Method(textureModel.GetType(), "GetId").GetValue(textureModel, new object[] { }), textureVariation } ))
+            {
+                return null;
+            }
+            var textureOffset = (int)AccessTools.Method(textureModel.GetType(), "GetTextureOffset").GetValue(textureModel, new object[] { textureVariation });
+
+            // Get the current X index for the source tile
+            var xTileOffset = obj.modData.ContainsKey("AlternativeTextureSheetId") ? obj.ParentSheetIndex - int.Parse(obj.modData["AlternativeTextureSheetId"]) : 0;
+            if (obj.showNextIndex.Value)
+            {
+                xTileOffset += 1;
+            }
+
+            // Override xTileOffset if AlternativeTextureModel has an animation
+            if ((bool)AccessTools.Method(textureModel.GetType(), "HasAnimation").GetValue(textureModel, new object[] { textureVariation }))
+            {
+                if (!obj.modData.ContainsKey("AlternativeTextureCurrentFrame") || !obj.modData.ContainsKey("AlternativeTextureFrameIndex") || !obj.modData.ContainsKey("AlternativeTextureFrameDuration") || !obj.modData.ContainsKey("AlternativeTextureElapsedDuration"))
+                {
+                    var animationData = AccessTools.Method(textureModel.GetType(), "GetAnimationDataAtIndex").GetValue(textureModel, new object[] { textureVariation, 0 });
+                    obj.modData["AlternativeTextureCurrentFrame"] = "0";
+                    obj.modData["AlternativeTextureFrameIndex"] = "0";
+                    obj.modData["AlternativeTextureFrameDuration"] = AccessTools.Property(animationData.GetType(), "Duration").GetValue(animationData).ToString();// Animation.ElementAt(0).Duration.ToString();
+                    obj.modData["AlternativeTextureElapsedDuration"] = "0";
+                }
+
+                var currentFrame = int.Parse(obj.modData["AlternativeTextureCurrentFrame"]);
+                var frameIndex = int.Parse(obj.modData["AlternativeTextureFrameIndex"]);
+                var frameDuration = int.Parse(obj.modData["AlternativeTextureFrameDuration"]);
+                var elapsedDuration = int.Parse(obj.modData["AlternativeTextureElapsedDuration"]);
+
+                if (elapsedDuration >= frameDuration)
+                {
+                    var animationDataList = (List<object>)AccessTools.Method(textureModel.GetType(), "GetAnimationData").GetValue(textureModel, new object[] { textureVariation, 0 });
+                    frameIndex = frameIndex + 1 >= animationDataList.Count ? 0 : frameIndex + 1;
+
+                    var animationData = AccessTools.Method(textureModel.GetType(), "GetAnimationDataAtIndex").GetValue(textureModel, new object[] { textureVariation, frameIndex });
+                    currentFrame = (int)AccessTools.Property(animationData.GetType(), "Frame").GetValue(animationData);
+
+                    obj.modData["AlternativeTextureCurrentFrame"] = currentFrame.ToString();
+                    obj.modData["AlternativeTextureFrameIndex"] = frameIndex.ToString();
+                    obj.modData["AlternativeTextureFrameDuration"] = AccessTools.Property(animationData.GetType(), "Duration").GetValue(animationData).ToString();
+                    obj.modData["AlternativeTextureElapsedDuration"] = "0";
+                }
+                else
+                {
+                    obj.modData["AlternativeTextureElapsedDuration"] = (elapsedDuration + Game1.currentGameTime.ElapsedGameTime.Milliseconds).ToString();
+                }
+
+                xTileOffset = currentFrame;
+            }
+            var w = (int)AccessTools.Field(textureModel.GetType(), "TextureWidth").GetValue(textureModel);
+            var h = (int)AccessTools.Field(textureModel.GetType(), "TextureHeight").GetValue(textureModel);
+            sourceRect = new Rectangle(xTileOffset * w, textureOffset, w, h);
+            return (Texture2D)AccessTools.Method(textureModel.GetType(), "GetTexture").GetValue(textureModel, new object[] { textureVariation });
         }
     }
 }
