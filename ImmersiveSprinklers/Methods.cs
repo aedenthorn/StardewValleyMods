@@ -253,9 +253,9 @@ namespace ImmersiveSprinklers
             {
                 return;
             }
-            foreach (Vector2 v2 in GetSprinklerTiles(tileLocation, which, radius))
+            foreach (Vector2 tile in GetSprinklerTiles(tileLocation, which, radius))
             {
-                obj.ApplySprinkler(environment, v2);
+                obj.ApplySprinkler(environment, tile);
             }
             ApplySprinklerAnimation(tileLocation, which, radius, environment, delay ? Game1.random.Next(1000) : 0);
         }
