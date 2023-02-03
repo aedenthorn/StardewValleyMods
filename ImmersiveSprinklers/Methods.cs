@@ -4,6 +4,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Sickhead.Engine.Util;
 using StardewValley;
+using StardewValley.Objects;
 using StardewValley.TerrainFeatures;
 using System.Collections.Generic;
 
@@ -256,6 +257,10 @@ namespace ImmersiveSprinklers
             foreach (Vector2 tile in GetSprinklerTiles(tileLocation, which, radius))
             {
                 obj.ApplySprinkler(environment, tile);
+                if(environment.objects.TryGetValue(tile, out var o) && o is IndoorPot) 
+                {
+                    (o as IndoorPot).hoeDirt.Value.state.Value = 1;
+                }
             }
             ApplySprinklerAnimation(tileLocation, which, radius, environment, delay ? Game1.random.Next(1000) : 0);
         }
