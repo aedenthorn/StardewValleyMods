@@ -107,6 +107,17 @@ namespace ImmersiveSprinklers
                 {
                     ReturnSprinkler(who, location, tf, placementTile, which);
                     tf.modData[sprinklerKey + which] = GetSprinklerString(__instance);
+                    if (atApi is not null)
+                    {
+                        atApi.SetTextureForObject(__instance);
+                        foreach (var kvp in __instance.modData.Pairs)
+                        {
+                            if (kvp.Key.StartsWith(altTextureKey))
+                            {
+                                tf.modData["aedenthorn.ImmersiveSprinklers/" + kvp.Key + which] = kvp.Value;
+                            }
+                        }
+                    }
                 }
                 else if (__instance.Category == -74)
                 {
@@ -116,7 +127,7 @@ namespace ImmersiveSprinklers
                         {
                             if (kvp.Value.modData.TryGetValue(sprinklerKey + i, out string sprinklerString) && kvp.Value.modData.ContainsKey(enricherKey + i) && kvp.Value.modData.TryGetValue(fertilizerKey + i, out string fertString))
                             {
-                                var obj = GetSprinkler(sprinklerString, kvp.Value.modData.ContainsKey(nozzleKey + i));
+                                var obj = GetSprinkler(tf, i, kvp.Value.modData.ContainsKey(nozzleKey + i));
                                 var radius = obj.GetModifiedRadiusForSprinkler();
 
                                 if (GetSprinklerTiles(kvp.Key, i, radius).Contains(placementTile))
@@ -157,19 +168,19 @@ namespace ImmersiveSprinklers
                 {
                     if(__instance.modData.TryGetValue(sprinklerKey + i, out var sprinklerString))
                     {
-                        if(!sprinklerDict.TryGetValue(sprinklerString, out var obj))
+                        if (!sprinklerDict.TryGetValue(sprinklerString, out var obj))
                         {
-                            obj = GetSprinkler(sprinklerString, __instance.modData.ContainsKey(nozzleKey + i));
+                            obj = GetSprinkler(__instance, i, __instance.modData.ContainsKey(nozzleKey + i));
                         }
-                        if(obj is not null)
+                        if (obj is not null)
                         {
                             var globalPosition = tileLocation * 64 + new Vector2(32 - 8 * Config.Scale + Config.DrawOffsetX, 32 - 8 * Config.Scale + Config.DrawOffsetY) + GetSprinklerCorner(i) * 32;
                             var position = Game1.GlobalToLocal(globalPosition);
                             Texture2D texture = null;
                             Rectangle sourceRect = new Rectangle();
-                            if (false && atApi is not null && obj.modData.ContainsKey("AlternativeTextureName"))
+                            if (atApi is not null && obj.modData.ContainsKey("AlternativeTextureName"))
                             {
-                                texture = GetTextureForObject(obj, out sourceRect);
+                                texture = atApi.GetTextureForObject(obj, out sourceRect);
                             }
                             if(texture is null)
                             {
@@ -242,7 +253,7 @@ namespace ImmersiveSprinklers
                 {
                     if (__instance.modData.TryGetValue(sprinklerKey + i, out var sprinklerString))
                     {
-                        var obj = GetSprinkler(sprinklerString, __instance.modData.ContainsKey(nozzleKey + i));
+                        var obj = GetSprinkler(__instance, i, __instance.modData.ContainsKey(nozzleKey + i));
                         if (obj is not null)
                         {
                             var which = i;

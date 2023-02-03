@@ -39,8 +39,10 @@ namespace ImmersiveSprinklers
         public static string enricherKey = "aedenthorn.ImmersiveSprinklers/enricher";
         public static string fertilizerKey = "aedenthorn.ImmersiveSprinklers/fertilizer";
         public static string nozzleKey = "aedenthorn.ImmersiveSprinklers/nozzle";
+        public static string altTexturePrefix = "aedenthorn.ImmersiveSprinklers/AlternativeTexture";
+        public static string altTextureKey = "AlternativeTexture";
         public static Dictionary<string, Object> sprinklerDict = new();
-        public static object atApi;
+        public static IATApi atApi;
 
         /// <summary>The mod entry point, called after the mod is first loaded.</summary>
         /// <param name="helper">Provides simplified APIs for writing mods.</param>
@@ -72,7 +74,7 @@ namespace ImmersiveSprinklers
             if (!GetSprinklerTileBool(Game1.currentLocation, ref sprinklerTile, ref which, out string str))
                 return;
             tf = Game1.currentLocation.terrainFeatures[sprinklerTile];
-            var obj = GetSprinkler(str, tf.modData.ContainsKey(nozzleKey + which));
+            var obj = GetSprinkler(tf, which, tf.modData.ContainsKey(nozzleKey + which));
             if (obj is not null)
             {
                 var tiles = GetSprinklerTiles(sprinklerTile, which, obj.GetModifiedRadiusForSprinkler());
@@ -110,7 +112,7 @@ namespace ImmersiveSprinklers
                 
                 if (GetSprinklerTileBool(Game1.currentLocation, ref tile, ref which, out string sprinklerString))
                 {
-                    var obj = GetSprinkler(sprinklerString, Game1.currentLocation.terrainFeatures[tile].modData.ContainsKey(nozzleKey + which));
+                    var obj = GetSprinkler(Game1.currentLocation.terrainFeatures[tile], which, Game1.currentLocation.terrainFeatures[tile].modData.ContainsKey(nozzleKey + which));
                     if (obj is not null)
                     {
                         ActivateSprinkler(Game1.currentLocation, tile, obj, which, false);
@@ -127,7 +129,7 @@ namespace ImmersiveSprinklers
 
         private void GameLoop_GameLaunched(object sender, StardewModdingAPI.Events.GameLaunchedEventArgs e)
         {
-            atApi = Helper.ModRegistry.GetApi("PeacefulEnd.AlternativeTextures");
+            //atApi = Helper.ModRegistry.GetApi<IATApi>("PeacefulEnd.AlternativeTextures");
             // get Generic Mod Config Menu's API (if it's installed)
             var configMenu = Helper.ModRegistry.GetApi<IGenericModConfigMenuApi>("spacechase0.GenericModConfigMenu");
             if (configMenu is null)

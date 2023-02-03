@@ -7,15 +7,17 @@ using StardewValley;
 using StardewValley.Objects;
 using StardewValley.TerrainFeatures;
 using System.Collections.Generic;
+using System.Reflection;
 
 namespace ImmersiveSprinklers
 {
     public partial class ModEntry
     {
 
-        private static Object GetSprinkler(string sprinklerString, bool nozzle)
+        private static Object GetSprinkler(TerrainFeature tf, int which, bool nozzle)
         {
-
+            if(!tf.modData.TryGetValue(sprinklerKey + which, out string sprinklerString))
+                return null;
             foreach (var kvp in Game1.objectInformation)
             {
                 if (kvp.Value.StartsWith(sprinklerString + "/"))
@@ -24,6 +26,17 @@ namespace ImmersiveSprinklers
                     if (nozzle)
                     {
                         obj.heldObject.Value = new Object(915, 1);
+                    }
+                    if(atApi is not null)
+                    {
+                        foreach (var kvp2 in tf.modData.Pairs)
+                        {
+                            if(kvp2.Key.EndsWith(which+"") && kvp2.Key.StartsWith(altTexturePrefix))
+                            {
+                                var key = kvp2.Key.Substring("aedenthorn.ImmersiveSprinklers/".Length, kvp2.Key.Length - "aedenthorn.ImmersiveSprinklers/".Length - 1);
+                                obj.modData[key] = kvp2.Value;
+                            }
+                        }
                     }
                     sprinklerDict[sprinklerString] = obj;
                     return obj;
@@ -178,7 +191,7 @@ namespace ImmersiveSprinklers
             if (tf.modData.TryGetValue(sprinklerKey + which, out var sprinklerString))
             {
                 tf.modData.Remove(sprinklerKey + which);
-                sprinkler = GetSprinkler(sprinklerString, false);
+                sprinkler = GetSprinkler(tf, which, false);
                 TryReturnObject(sprinkler, who);
                 if (tf.modData.ContainsKey(enricherKey + which))
                 {
@@ -260,6 +273,7 @@ namespace ImmersiveSprinklers
                 if(environment.objects.TryGetValue(tile, out var o) && o is IndoorPot) 
                 {
                     (o as IndoorPot).hoeDirt.Value.state.Value = 1;
+                    o.showNextIndex.Value = true;
                 }
             }
             ApplySprinklerAnimation(tileLocation, which, radius, environment, delay ? Game1.random.Next(1000) : 0);
@@ -326,24 +340,67 @@ namespace ImmersiveSprinklers
         }
 
 
-        private static Texture2D GetTextureForObject(Object obj, out Rectangle sourceRect)
+        private static void SetAltTextureForObject(Object obj)
+        {
+            if (atApi is null)
+                return;
+
+            var textureMgr = AccessTools.Field(atApi.GetType().Assembly.GetType("AlternativeTextures.AlternativeTextures"), "textureManager").GetValue(null);
+
+            var modelType = 1;
+            var baseName = AccessTools.Method(atApi.GetType().Assembly.GetType("AlternativeTextures.Framework.Patches.PatchTemplate"), "GetObjectName").Invoke(null, new object[] { obj });
+            var instanceName = $"{modelType}_{baseName}";
+            var instanceSeasonName = $"{instanceName}_{Game1.currentSeason}";
+
+            bool hasAlt = (bool)AccessTools.Method(textureMgr.GetType(), "DoesObjectHaveAlternativeTexture", new System.Type[] { typeof(string) }).Invoke(textureMgr, new object[] { instanceName });
+            bool hasAltSeason = (bool)AccessTools.Method(textureMgr.GetType(), "DoesObjectHaveAlternativeTexture", new System.Type[] { typeof(string) }).Invoke(textureMgr, new object[] { instanceSeasonName });
+            MethodInfo assignModData = AccessTools.Method(atApi.GetType().Assembly.GetType("AlternativeTextures.Framework.Patches.PatchTemplate"), "AssignModData").MakeGenericMethod(typeof(Object));
+            if ((bool)AccessTools.Method(atApi.GetType().Assembly.GetType("AlternativeTextures.Framework.Patches.PatchTemplate"), "HasCachedTextureName").MakeGenericMethod(typeof(Object)).Invoke(null, new object[] { obj, false }))
+            {
+                return;
+            }
+            else if (hasAlt && hasAltSeason)
+            {
+                var result = Game1.random.Next(2) > 0 ? assignModData.Invoke(null, new object[] { obj, instanceSeasonName, true, obj.bigCraftable.Value }) : assignModData.Invoke(null, new object[] { obj, instanceName, false, obj.bigCraftable.Value });
+                return;
+            }
+            else
+            {
+                if (hasAlt)
+                {
+                    assignModData.Invoke(null, new object[] { obj, instanceName, false, obj.bigCraftable.Value });
+                    return;
+                }
+
+                if (hasAltSeason)
+                {
+                    assignModData.Invoke(null, new object[] { obj, instanceSeasonName, true, obj.bigCraftable.Value });
+                    return;
+                }
+            }
+
+            AccessTools.Method(atApi.GetType().Assembly.GetType("AlternativeTextures.Framework.Patches.PatchTemplate"), "AssignDefaultModData").MakeGenericMethod(typeof(Object)).Invoke(null, new object[] { obj, instanceSeasonName, true, obj.bigCraftable.Value });
+        }
+
+
+        private static Texture2D GetAltTextureForObject(Object obj, out Rectangle sourceRect)
         {
             sourceRect = new Rectangle();
             if (!obj.modData.TryGetValue("AlternativeTextureName", out var str))
                 return null;
-            var textureMgr = AccessTools.Field(atApi.GetType().Assembly.GetType("AlternativeTextures"), "textureManager").GetValue(null);
-            var textureModel = AccessTools.Method(textureMgr.GetType(),"GetSpecificTextureModel").GetValue(textureMgr, new object[] { str } );
+            var textureMgr = AccessTools.Field(atApi.GetType().Assembly.GetType("AlternativeTextures.AlternativeTextures"), "textureManager").GetValue(null);
+            var textureModel = AccessTools.Method(textureMgr.GetType(),"GetSpecificTextureModel").Invoke(textureMgr, new object[] { str } );
             if (textureModel is null)
             {
                 return null;
             }
             var textureVariation = int.Parse(obj.modData["AlternativeTextureVariation"]);
-            var modConfig = AccessTools.Field(atApi.GetType().Assembly.GetType("AlternativeTextures"), "modConfig").GetValue(null);
-            if (textureVariation == -1 || (bool)AccessTools.Method(modConfig.GetType(), "IsTextureVariationDisabled").GetValue(modConfig, new object[] { AccessTools.Method(textureModel.GetType(), "GetId").GetValue(textureModel, new object[] { }), textureVariation } ))
+            var modConfig = AccessTools.Field(atApi.GetType().Assembly.GetType("AlternativeTextures.AlternativeTextures"), "modConfig").GetValue(null);
+            if (textureVariation == -1 || (bool)AccessTools.Method(modConfig.GetType(), "IsTextureVariationDisabled").Invoke(modConfig, new object[] { AccessTools.Method(textureModel.GetType(), "GetId").Invoke(textureModel, new object[] { }), textureVariation } ))
             {
                 return null;
             }
-            var textureOffset = (int)AccessTools.Method(textureModel.GetType(), "GetTextureOffset").GetValue(textureModel, new object[] { textureVariation });
+            var textureOffset = (int)AccessTools.Method(textureModel.GetType(), "GetTextureOffset").Invoke(textureModel, new object[] { textureVariation });
 
             // Get the current X index for the source tile
             var xTileOffset = obj.modData.ContainsKey("AlternativeTextureSheetId") ? obj.ParentSheetIndex - int.Parse(obj.modData["AlternativeTextureSheetId"]) : 0;
@@ -353,11 +410,11 @@ namespace ImmersiveSprinklers
             }
 
             // Override xTileOffset if AlternativeTextureModel has an animation
-            if ((bool)AccessTools.Method(textureModel.GetType(), "HasAnimation").GetValue(textureModel, new object[] { textureVariation }))
+            if ((bool)AccessTools.Method(textureModel.GetType(), "HasAnimation").Invoke(textureModel, new object[] { textureVariation }))
             {
                 if (!obj.modData.ContainsKey("AlternativeTextureCurrentFrame") || !obj.modData.ContainsKey("AlternativeTextureFrameIndex") || !obj.modData.ContainsKey("AlternativeTextureFrameDuration") || !obj.modData.ContainsKey("AlternativeTextureElapsedDuration"))
                 {
-                    var animationData = AccessTools.Method(textureModel.GetType(), "GetAnimationDataAtIndex").GetValue(textureModel, new object[] { textureVariation, 0 });
+                    var animationData = AccessTools.Method(textureModel.GetType(), "GetAnimationDataAtIndex").Invoke(textureModel, new object[] { textureVariation, 0 });
                     obj.modData["AlternativeTextureCurrentFrame"] = "0";
                     obj.modData["AlternativeTextureFrameIndex"] = "0";
                     obj.modData["AlternativeTextureFrameDuration"] = AccessTools.Property(animationData.GetType(), "Duration").GetValue(animationData).ToString();// Animation.ElementAt(0).Duration.ToString();
@@ -371,10 +428,10 @@ namespace ImmersiveSprinklers
 
                 if (elapsedDuration >= frameDuration)
                 {
-                    var animationDataList = (List<object>)AccessTools.Method(textureModel.GetType(), "GetAnimationData").GetValue(textureModel, new object[] { textureVariation, 0 });
+                    var animationDataList = (List<object>)AccessTools.Method(textureModel.GetType(), "GetAnimationData").Invoke(textureModel, new object[] { textureVariation, 0 });
                     frameIndex = frameIndex + 1 >= animationDataList.Count ? 0 : frameIndex + 1;
 
-                    var animationData = AccessTools.Method(textureModel.GetType(), "GetAnimationDataAtIndex").GetValue(textureModel, new object[] { textureVariation, frameIndex });
+                    var animationData = AccessTools.Method(textureModel.GetType(), "GetAnimationDataAtIndex").Invoke(textureModel, new object[] { textureVariation, frameIndex });
                     currentFrame = (int)AccessTools.Property(animationData.GetType(), "Frame").GetValue(animationData);
 
                     obj.modData["AlternativeTextureCurrentFrame"] = currentFrame.ToString();
@@ -392,7 +449,7 @@ namespace ImmersiveSprinklers
             var w = (int)AccessTools.Field(textureModel.GetType(), "TextureWidth").GetValue(textureModel);
             var h = (int)AccessTools.Field(textureModel.GetType(), "TextureHeight").GetValue(textureModel);
             sourceRect = new Rectangle(xTileOffset * w, textureOffset, w, h);
-            return (Texture2D)AccessTools.Method(textureModel.GetType(), "GetTexture").GetValue(textureModel, new object[] { textureVariation });
+            return (Texture2D)AccessTools.Method(textureModel.GetType(), "GetTexture").Invoke(textureModel, new object[] { textureVariation });
         }
     }
 }
