@@ -6,8 +6,10 @@ using Sickhead.Engine.Util;
 using StardewValley;
 using StardewValley.Objects;
 using StardewValley.TerrainFeatures;
+using System;
 using System.Collections.Generic;
 using System.Reflection;
+using Object = StardewValley.Object;
 
 namespace ImmersiveSprinklers
 {
@@ -33,12 +35,17 @@ namespace ImmersiveSprinklers
                         {
                             if(kvp2.Key.EndsWith(which+"") && kvp2.Key.StartsWith(altTexturePrefix))
                             {
-                                var key = kvp2.Key.Substring("aedenthorn.ImmersiveSprinklers/".Length, kvp2.Key.Length - "aedenthorn.ImmersiveSprinklers/".Length - 1);
+                                var key = kvp2.Key.Substring(prefixKey.Length, kvp2.Key.Length - prefixKey.Length - 1);
                                 obj.modData[key] = kvp2.Value;
                             }
                         }
                     }
-                    sprinklerDict[sprinklerString] = obj;
+                    if(!tf.modData.TryGetValue(guidKey + which, out var guid))
+                    {
+                        guid = Guid.NewGuid().ToString();
+                        tf.modData[guidKey + which] = guid;
+                    }
+                    sprinklerDict[guid] = obj;
                     return obj;
                 }
             }
@@ -190,9 +197,10 @@ namespace ImmersiveSprinklers
             Object sprinkler = null;
             if (tf.modData.TryGetValue(sprinklerKey + which, out var sprinklerString))
             {
-                tf.modData.Remove(sprinklerKey + which);
                 sprinkler = GetSprinkler(tf, which, false);
                 TryReturnObject(sprinkler, who);
+                tf.modData.Remove(sprinklerKey + which);
+                tf.modData.Remove(guidKey + which);
                 if (tf.modData.ContainsKey(enricherKey + which))
                 {
                     tf.modData.Remove(enricherKey + which);
@@ -219,6 +227,9 @@ namespace ImmersiveSprinklers
 
         private static void TryReturnObject(Object obj, Farmer who)
         {
+            if (obj is null)
+                return;
+            SMonitor.Log($"Trying to return {obj.Name}");
             if (!who.addItemToInventoryBool(obj))
             {
                 who.currentLocation.debris.Add(new Debris(obj, who.Position));
@@ -281,7 +292,7 @@ namespace ImmersiveSprinklers
         private static void ApplySprinklerAnimation(Vector2 tileLocation, int which, int radius, GameLocation location, int delay)
         {
 
-            if (radius < 0)
+            if (radius < 0 || location.getTemporarySpriteByID((int)(tileLocation.X * 4000f + tileLocation.Y)) is not null)
             {
                 return;
             }
@@ -347,7 +358,7 @@ namespace ImmersiveSprinklers
 
             var textureMgr = AccessTools.Field(atApi.GetType().Assembly.GetType("AlternativeTextures.AlternativeTextures"), "textureManager").GetValue(null);
 
-            var modelType = 1;
+            var modelType = "Craftable";
             var baseName = AccessTools.Method(atApi.GetType().Assembly.GetType("AlternativeTextures.Framework.Patches.PatchTemplate"), "GetObjectName").Invoke(null, new object[] { obj });
             var instanceName = $"{modelType}_{baseName}";
             var instanceSeasonName = $"{instanceName}_{Game1.currentSeason}";
@@ -446,8 +457,8 @@ namespace ImmersiveSprinklers
 
                 xTileOffset = currentFrame;
             }
-            var w = (int)AccessTools.Field(textureModel.GetType(), "TextureWidth").GetValue(textureModel);
-            var h = (int)AccessTools.Field(textureModel.GetType(), "TextureHeight").GetValue(textureModel);
+            var w = (int)AccessTools.Property(textureModel.GetType(), "TextureWidth").GetValue(textureModel);
+            var h = (int)AccessTools.Property(textureModel.GetType(), "TextureHeight").GetValue(textureModel);
             sourceRect = new Rectangle(xTileOffset * w, textureOffset, w, h);
             return (Texture2D)AccessTools.Method(textureModel.GetType(), "GetTexture").Invoke(textureModel, new object[] { textureVariation });
         }

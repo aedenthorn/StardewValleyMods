@@ -1,18 +1,18 @@
 ﻿{
-  "Name": "Immersive Sprinklers",
+  "Name": "Loading Screens",
   "Author": "aedenthorn",
-  "Version": "0.4.0",
-  "Description": "Immersive Sprinklers.",
-  "UniqueID": "aedenthorn.ImmersiveSprinklers",
-  "EntryDll": "ImmersiveSprinklers.dll",
+  "Version": "0.1.0",
+  "Description": "Loading Screens.",
+  "UniqueID": "aedenthorn.LoadingScreens",
+  "EntryDll": "LoadingScreens.dll",
   "MinimumApiVersion": "3.15.0",
   "ModUpdater": {
     "Repository": "StardewValleyMods",
     "User": "aedenthorn",
     "Directory": "_releases",
-    "ModFolder": "ImmersiveSprinklers"
+    "ModFolder": "LoadingScreens"
   },
-  "UpdateKeys": [ "Nexus:15239" ],
+  "UpdateKeys": [ "Nexus:" ],
   "Dependencies": [
     {
       "UniqueID": "Platonymous.ModUpdater",

@@ -16,6 +16,7 @@ using xTile.Dimensions;
 using Color = Microsoft.Xna.Framework.Color;
 using Object = StardewValley.Object;
 using Rectangle = Microsoft.Xna.Framework.Rectangle;
+using StardewValley.Objects;
 
 namespace ImmersiveScarecrows
 {
@@ -35,7 +36,50 @@ namespace ImmersiveScarecrows
                 int which = GetMouseCorner();
                 ReturnScarecrow(who, location, tf, placementTile, which);
                 tf.modData[scarecrowKey + which] = GetScarecrowString(__instance);
+                tf.modData[guidKey + which] = Guid.NewGuid().ToString();
+                if (atApi is not null)
+                {
+                    Object obj = (Object)__instance.getOne();
+                    SetAltTextureForObject(obj);
+                    foreach (var kvp in obj.modData.Pairs)
+                    {
+                        if (kvp.Key.StartsWith(altTextureKey))
+                        {
+                            tf.modData[prefixKey + kvp.Key + which] = kvp.Value;
+                        }
+                    }
+                }
                 location.playSound("woodyStep", NetAudio.SoundContext.Default);
+                __result = true;
+                return false;
+            }
+        }
+        [HarmonyPatch(typeof(GameLocation), nameof(GameLocation.checkAction))]
+        public class GameLocation_checkAction_Patch
+        {
+            public static bool Prefix(GameLocation __instance, Location tileLocation, xTile.Dimensions.Rectangle viewport, Farmer who, ref bool __result)
+            {
+                var tile = new Vector2(tileLocation.X, tileLocation.Y);
+                if (!Config.EnableMod || !Game1.currentLocation.terrainFeatures.TryGetValue(tile, out var tf) && tf is HoeDirt)
+                    return true;
+                int which = GetMouseCorner();
+                if (!GetScarecrowTileBool(__instance, ref tile, ref which, out string scarecrowString))
+                    return true;
+                var scareCrow = GetScarecrow(tf, which);
+                if(scareCrow is null || scareCrow.ParentSheetIndex != 126)
+                    return true;
+
+                if(tf.modData.TryGetValue(hatKey + which, out var hatString))
+                {
+                    Game1.createItemDebris(new Hat(int.Parse(hatString)), tf.currentTileLocation * 64f, (who.FacingDirection + 2) % 4, null, -1);
+                    tf.modData.Remove(hatKey + which);
+                }
+                if (who.CurrentItem is not null && who.CurrentItem is Hat)
+                {
+                    tf.modData[hatKey + which] = (who.CurrentItem as Hat).which.Value + "";
+                    who.Items[who.CurrentToolIndex] = null;
+                    who.currentLocation.playSound("dirtyHit", NetAudio.SoundContext.Default);
+                }
                 __result = true;
                 return false;
             }
@@ -49,18 +93,39 @@ namespace ImmersiveScarecrows
                     return;
                 for (int i = 0; i < 4; i++)
                 {
-                    if(__instance.modData.TryGetValue(scarecrowKey + i, out var scarecrowString))
+                    if(__instance.modData.ContainsKey(scarecrowKey + i))
                     {
-                        if(!scarecrowDict.TryGetValue(scarecrowString, out var obj))
+                        if (!__instance.modData.TryGetValue(guidKey + i, out var guid))
                         {
-                            obj = GetScarecrow(scarecrowString);
+                            guid = Guid.NewGuid().ToString();
+                            __instance.modData[guidKey + i] = guid;
                         }
-                        if(obj is not null)
+                        if (!scarecrowDict.TryGetValue(guid, out var obj))
+                        {
+                            obj = GetScarecrow(__instance, i);
+                        }
+                        if (obj is not null)
                         {
                             Vector2 scaleFactor = obj.getScale();
                             var globalPosition = tileLocation * 64 + new Vector2(32 - 8 * Config.Scale - scaleFactor.X / 2f + Config.DrawOffsetX, 32 - 8 * Config.Scale - 80 - scaleFactor.Y / 2f + Config.DrawOffsetY) + GetScarecrowCorner(i) * 32;
                             var position = Game1.GlobalToLocal(globalPosition);
-                            dirt_batch.Draw(Game1.bigCraftableSpriteSheet, position, Object.getSourceRectForBigCraftable(obj.ParentSheetIndex), Color.White * Config.Alpha, 0, Vector2.Zero, Config.Scale, SpriteEffects.None, (globalPosition.Y + 81 + 16 + Config.DrawOffsetZ) / 10000f);
+                            Texture2D texture = null;
+                            Rectangle sourceRect = new Rectangle();
+                            if (atApi is not null && obj.modData.ContainsKey("AlternativeTextureName"))
+                            {
+                                texture = GetAltTextureForObject(obj, out sourceRect);
+                            }
+                            if (texture is null)
+                            {
+                                texture = Game1.bigCraftableSpriteSheet;
+                                sourceRect = Object.getSourceRectForBigCraftable(obj.ParentSheetIndex);
+                            }
+                            var layerDepth = (globalPosition.Y + 81 + 16 + Config.DrawOffsetZ) / 10000f;
+                            dirt_batch.Draw(texture, position, sourceRect, Color.White * Config.Alpha, 0, Vector2.Zero, Config.Scale, SpriteEffects.None, layerDepth);
+                            if (__instance.modData.TryGetValue(hatKey + i, out string hatString) && int.TryParse(hatString, out var hat))
+                            {
+                                dirt_batch.Draw(FarmerRenderer.hatsTexture, position + new Vector2(-3f, -6f) * 4f, new Rectangle(hat * 20 % FarmerRenderer.hatsTexture.Width, hat * 20 / FarmerRenderer.hatsTexture.Width * 20 * 4, 20, 20), Color.White * Config.Alpha, 0f, Vector2.Zero, 4f, SpriteEffects.None, layerDepth + 1E-05f);
+                            }
                         }
                     }
                 }

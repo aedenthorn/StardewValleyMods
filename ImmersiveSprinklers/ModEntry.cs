@@ -35,14 +35,17 @@ namespace ImmersiveSprinklers
 
         public static ModEntry context;
 
+        public static string prefixKey = "aedenthorn.ImmersiveSprinklers/";
         public static string sprinklerKey = "aedenthorn.ImmersiveSprinklers/sprinkler";
+        public static string guidKey = "aedenthorn.ImmersiveSprinklers/guid";
         public static string enricherKey = "aedenthorn.ImmersiveSprinklers/enricher";
         public static string fertilizerKey = "aedenthorn.ImmersiveSprinklers/fertilizer";
         public static string nozzleKey = "aedenthorn.ImmersiveSprinklers/nozzle";
         public static string altTexturePrefix = "aedenthorn.ImmersiveSprinklers/AlternativeTexture";
         public static string altTextureKey = "AlternativeTexture";
+
         public static Dictionary<string, Object> sprinklerDict = new();
-        public static IATApi atApi;
+        public static object atApi;
 
         /// <summary>The mod entry point, called after the mod is first loaded.</summary>
         /// <param name="helper">Provides simplified APIs for writing mods.</param>
@@ -129,7 +132,7 @@ namespace ImmersiveSprinklers
 
         private void GameLoop_GameLaunched(object sender, StardewModdingAPI.Events.GameLaunchedEventArgs e)
         {
-            //atApi = Helper.ModRegistry.GetApi<IATApi>("PeacefulEnd.AlternativeTextures");
+            atApi = Helper.ModRegistry.GetApi("PeacefulEnd.AlternativeTextures");
             // get Generic Mod Config Menu's API (if it's installed)
             var configMenu = Helper.ModRegistry.GetApi<IGenericModConfigMenuApi>("spacechase0.GenericModConfigMenu");
             if (configMenu is null)

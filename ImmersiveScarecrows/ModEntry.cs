@@ -1,23 +1,11 @@
 ﻿using HarmonyLib;
 using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Audio;
 using Microsoft.Xna.Framework.Graphics;
-using Netcode;
-using Newtonsoft.Json;
 using StardewModdingAPI;
-using StardewModdingAPI.Utilities;
 using StardewValley;
-using StardewValley.Menus;
 using StardewValley.TerrainFeatures;
-using StardewValley.Tools;
-using System;
 using System.Collections.Generic;
 using System.Globalization;
-using System.IO;
-using System.Linq;
-using xTile;
-using xTile.Layers;
-using xTile.ObjectModel;
 using Object = StardewValley.Object;
 
 namespace ImmersiveScarecrows
@@ -32,7 +20,15 @@ namespace ImmersiveScarecrows
 
         public static ModEntry context;
 
+        public static object atApi;
+
+        public static string prefixKey = "aedenthorn.ImmersiveScarecrows/";
         public static string scarecrowKey = "aedenthorn.ImmersiveScarecrows/scarecrow";
+        public static string hatKey = "aedenthorn.ImmersiveScarecrows/hat";
+        public static string guidKey = "aedenthorn.ImmersiveScarecrows/guid";
+        public static string altTexturePrefix = "aedenthorn.ImmersiveScarecrows/AlternativeTexture";
+        public static string altTextureKey = "AlternativeTexture";
+
         public static Dictionary<string, Object> scarecrowDict = new();
 
         /// <summary>The mod entry point, called after the mod is first loaded.</summary>
@@ -60,15 +56,17 @@ namespace ImmersiveScarecrows
         {
             if (!Config.EnableMod || !Context.IsPlayerFree || !Helper.Input.IsDown(Config.ShowRangeButton) || Game1.currentLocation?.terrainFeatures?.TryGetValue(Game1.currentCursorTile, out var tf) != true || tf is not HoeDirt)
                 return;
-            var corner = GetMouseCorner();
+            var which = GetMouseCorner();
             var scarecrowTile = Game1.currentCursorTile;
-            if (!GetScarecrowTileBool(Game1.currentLocation, ref scarecrowTile, ref corner, out string str))
+            if (!GetScarecrowTileBool(Game1.currentLocation, ref scarecrowTile, ref which, out string str))
                 return;
-            var obj = GetScarecrow(str);
+            if (!Game1.currentLocation.terrainFeatures.TryGetValue(scarecrowTile, out tf))
+                return;
+            var obj = GetScarecrow(tf, which);
             if(obj is not null)
             {
                 var r = obj.GetRadiusForScarecrow();
-                Vector2 pos = scarecrowTile + GetScarecrowCorner(corner) * 0.5f;
+                Vector2 pos = scarecrowTile + GetScarecrowCorner(which) * 0.5f;
                 for(int x = 0; x < r * 2 + 1; x ++)
                 {
                     for (int y = 0; y < r * 2 + 1; y++)
@@ -103,6 +101,8 @@ namespace ImmersiveScarecrows
 
         private void GameLoop_GameLaunched(object sender, StardewModdingAPI.Events.GameLaunchedEventArgs e)
         {
+            atApi = Helper.ModRegistry.GetApi("PeacefulEnd.AlternativeTextures");
+
             // get Generic Mod Config Menu's API (if it's installed)
             var configMenu = Helper.ModRegistry.GetApi<IGenericModConfigMenuApi>("spacechase0.GenericModConfigMenu");
             if (configMenu is null)

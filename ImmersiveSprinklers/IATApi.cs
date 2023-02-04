@@ -7,7 +7,7 @@ namespace ImmersiveSprinklers
 {
     public interface IATApi
     {
-        public Texture2D GetTextureForObject(Object obj, out Rectangle sourceRect);
-        public void SetTextureForObject(Object obj);
+        //public Texture2D GetTextureForObject(Object obj, out Rectangle sourceRect);
+        //public void SetTextureForObject(Object obj);
     }
 }
