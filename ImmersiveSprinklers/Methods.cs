@@ -301,30 +301,31 @@ namespace ImmersiveSprinklers
             }
             var corner = GetSprinklerCorner(which);
             var position = tileLocation * 64 + corner * 32;
+            float layerDepth = 1;
             if (radius == 0)
             {
                 float rotation = 60 * MathHelper.Pi / 180;
                 int a = 24;
                 int b = 40;
-                location.temporarySprites.Add(new TemporaryAnimatedSprite(29, position + new Vector2(a, -b), Color.White * 0.5f, 4, false, 60f, 100, -1, 1f, -1, 0)
+                location.temporarySprites.Add(new TemporaryAnimatedSprite(29, position + new Vector2(a, -b), Color.White * 0.5f, 4, false, 60f, 100, -1, layerDepth, -1, 0)
                 {
                     rotation = rotation,
                     delayBeforeAnimationStart = delay,
                     id = tileLocation.X * 4000f + tileLocation.Y
                 });
-                location.temporarySprites.Add(new TemporaryAnimatedSprite(29, position + new Vector2(b, a), Color.White * 0.5f, 4, false, 60f, 100, -1, 1f, -1, 0)
+                location.temporarySprites.Add(new TemporaryAnimatedSprite(29, position + new Vector2(b, a), Color.White * 0.5f, 4, false, 60f, 100, -1, layerDepth, -1, 0)
                 {
                     rotation = 1.57079637f + rotation,
                     delayBeforeAnimationStart = delay,
                     id = tileLocation.X * 4000f + tileLocation.Y
                 });
-                location.temporarySprites.Add(new TemporaryAnimatedSprite(29, position + new Vector2(-a, b), Color.White * 0.5f, 4, false, 60f, 100, -1, 1f, -1, 0)
+                location.temporarySprites.Add(new TemporaryAnimatedSprite(29, position + new Vector2(-a, b), Color.White * 0.5f, 4, false, 60f, 100, -1, layerDepth, -1, 0)
                 {
                     rotation = 3.14159274f + rotation,
                     delayBeforeAnimationStart = delay,
                     id = tileLocation.X * 4000f + tileLocation.Y
                 });
-                location.temporarySprites.Add(new TemporaryAnimatedSprite(29, position + new Vector2(-b, -a), Color.White * 0.5f, 4, false, 60f, 100, -1, 1f, -1, 0)
+                location.temporarySprites.Add(new TemporaryAnimatedSprite(29, position + new Vector2(-b, -a), Color.White * 0.5f, 4, false, 60f, 100, -1, layerDepth, -1, 0)
                 {
                     rotation = 4.712389f + rotation,
                     delayBeforeAnimationStart = delay,
@@ -339,7 +340,7 @@ namespace ImmersiveSprinklers
                     color = Color.White * 0.4f,
                     delayBeforeAnimationStart = delay,
                     id = tileLocation.X * 4000f + tileLocation.Y,
-                    layerDepth = 1,
+                    layerDepth = layerDepth,
                     scale = 1.3f
                 });
                 return;
@@ -350,7 +351,7 @@ namespace ImmersiveSprinklers
                 color = Color.White * 0.4f,
                 delayBeforeAnimationStart = delay,
                 id = tileLocation.X * 4000f + tileLocation.Y,
-                layerDepth = 1,
+                layerDepth = layerDepth,
                 scale = scale
             });
         }
