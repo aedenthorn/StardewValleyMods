@@ -84,6 +84,12 @@ namespace ImmersiveScarecrows
         {
             if (!Config.EnableMod)
                 return;
+
+            if(Context.IsPlayerFree && Config.Debug && e.Button == SButton.X)
+            {
+                Game1.getFarm().addCrows();
+                Monitor.Log("Adding crows");
+            }
             if (e.Button == Config.PickupButton && Context.CanPlayerMove && Game1.currentLocation.terrainFeatures.TryGetValue(Game1.currentCursorTile, out var tf) && tf is HoeDirt)
             {
                 int which = GetMouseCorner();

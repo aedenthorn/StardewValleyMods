@@ -34,6 +34,7 @@ namespace ImmersiveScarecrows
                 if (!location.terrainFeatures.TryGetValue(placementTile, out var tf) || tf is not HoeDirt)
                     return true;
                 int which = GetMouseCorner();
+                SMonitor.Log($"Placing {__instance.Name} at {x},{y}:{which}");
                 ReturnScarecrow(who, location, tf, placementTile, which);
                 tf.modData[scarecrowKey + which] = GetScarecrowString(__instance);
                 tf.modData[guidKey + which] = Guid.NewGuid().ToString();
@@ -176,7 +177,7 @@ namespace ImmersiveScarecrows
         {
             public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions)
             {
-                SMonitor.Log($"Transpiling Object");
+                SMonitor.Log($"Transpiling Farm.addCrows");
 
                 var codes = new List<CodeInstruction>(instructions);
                 for (int i = 0; i < codes.Count; i++)

@@ -214,6 +214,7 @@ namespace ImmersiveScarecrows
                 {
                     who.currentLocation.debris.Add(new Debris(scarecrow, who.Position));
                 }
+                SMonitor.Log($"Returning {scarecrow.Name}");
                 return true;
             }
             return false;

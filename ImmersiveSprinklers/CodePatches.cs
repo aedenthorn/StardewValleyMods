@@ -105,8 +105,13 @@ namespace ImmersiveSprinklers
                 int which = GetMouseCorner();
                 if (__instance.IsSprinkler())
                 {
+                    SMonitor.Log($"Placing {__instance.Name} at {x},{y}:{which}");
                     ReturnSprinkler(who, location, tf, placementTile, which);
                     tf.modData[sprinklerKey + which] = GetSprinklerString(__instance);
+                    if (__instance.bigCraftable.Value)
+                    {
+                        tf.modData[bigCraftableKey + which] = "true";
+                    }
                     tf.modData[guidKey + which] = Guid.NewGuid().ToString();
                     if (atApi is not null)
                     {
@@ -120,6 +125,8 @@ namespace ImmersiveSprinklers
                             }
                         }
                     }
+                    __result = true;
+                    return false;
                 }
                 else if (__instance.Category == -74)
                 {
@@ -151,12 +158,8 @@ namespace ImmersiveSprinklers
                             }
                         }
                     }
-                    return true;
                 }
-                else
-                    return true;
-                __result = true;
-                return false;
+                return true;
             }
         }
         [HarmonyPatch(typeof(HoeDirt), nameof(HoeDirt.DrawOptimized))]
@@ -182,28 +185,30 @@ namespace ImmersiveSprinklers
 
                         if (obj is not null)
                         {
-                            var globalPosition = tileLocation * 64 + new Vector2(32 - 8 * Config.Scale + Config.DrawOffsetX, 32 - 8 * Config.Scale + Config.DrawOffsetY) + GetSprinklerCorner(i) * 32;
+                            var globalPosition = tileLocation * 64 + new Vector2(32 - 8 * Config.Scale + Config.DrawOffsetX, obj.bigCraftable.Value ? -64 : 32 - 8 * Config.Scale + Config.DrawOffsetY) + GetSprinklerCorner(i) * 32;
                             var position = Game1.GlobalToLocal(globalPosition);
+                            var layerDepth = (globalPosition.Y + 16 + Config.DrawOffsetZ) / 10000f;
                             Texture2D texture = null;
                             Rectangle sourceRect = new Rectangle();
                             if (atApi is not null && obj.modData.ContainsKey("AlternativeTextureName"))
                             {
                                 texture = GetAltTextureForObject(obj, out sourceRect);
                             }
+                            
                             if(texture is null)
                             {
-                                texture = Game1.objectSpriteSheet;
-                                sourceRect = GameLocation.getSourceRectForObject(obj.ParentSheetIndex);
+                                texture = obj.bigCraftable.Value ? Game1.bigCraftableSpriteSheet : Game1.objectSpriteSheet;
+                                sourceRect = obj.bigCraftable.Value ? Object.getSourceRectForBigCraftable(obj.ParentSheetIndex) : GameLocation.getSourceRectForObject(obj.ParentSheetIndex);
                             }
-                            dirt_batch.Draw(texture, position, sourceRect, Color.White * Config.Alpha, 0, Vector2.Zero, Config.Scale, obj.Flipped ? SpriteEffects.FlipHorizontally : SpriteEffects.None, (globalPosition.Y + 16 + Config.DrawOffsetZ) / 10000f);
+                            dirt_batch.Draw(texture, position, sourceRect, Color.White * Config.Alpha, 0, Vector2.Zero, Config.Scale, obj.Flipped ? SpriteEffects.FlipHorizontally : SpriteEffects.None, layerDepth);
 
                             if (__instance.modData.ContainsKey(enricherKey + i))
                             {
-                                dirt_batch.Draw(Game1.objectSpriteSheet, position + new Vector2(0f, -20f), GameLocation.getSourceRectForObject(914), Color.White * Config.Alpha, 0, Vector2.Zero, Config.Scale, obj.Flipped ? SpriteEffects.FlipHorizontally : SpriteEffects.None, (globalPosition.Y + 16 + Config.DrawOffsetZ) / 10000f + 2E-05f);
+                                dirt_batch.Draw(Game1.objectSpriteSheet, position + new Vector2(0f, -20f), GameLocation.getSourceRectForObject(914), Color.White * Config.Alpha, 0, Vector2.Zero, Config.Scale, obj.Flipped ? SpriteEffects.FlipHorizontally : SpriteEffects.None, layerDepth + 2E-05f);
                             }
                             if (__instance.modData.ContainsKey(nozzleKey + i))
                             {
-                                dirt_batch.Draw(Game1.objectSpriteSheet, position, GameLocation.getSourceRectForObject(916), Color.White * Config.Alpha, 0, Vector2.Zero, Config.Scale, obj.Flipped ? SpriteEffects.FlipHorizontally : SpriteEffects.None, (globalPosition.Y + 16 + Config.DrawOffsetZ) / 10000f + 1E-05f);
+                                dirt_batch.Draw(Game1.objectSpriteSheet, position, GameLocation.getSourceRectForObject(916), Color.White * Config.Alpha, 0, Vector2.Zero, Config.Scale, obj.Flipped ? SpriteEffects.FlipHorizontally : SpriteEffects.None, layerDepth + 1E-05f);
                             }
                         }
                     }

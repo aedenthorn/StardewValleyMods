@@ -20,11 +20,12 @@ namespace ImmersiveSprinklers
         {
             if(!tf.modData.TryGetValue(sprinklerKey + which, out string sprinklerString))
                 return null;
-            foreach (var kvp in Game1.objectInformation)
+            var bc = tf.modData.ContainsKey(bigCraftableKey + which);
+            foreach (var kvp in bc ? Game1.bigCraftablesInformation :  Game1.objectInformation)
             {
                 if (kvp.Value.StartsWith(sprinklerString + "/"))
                 {
-                    var obj = new Object(kvp.Key, 1);
+                    var obj = bc ? new Object(Vector2.Zero, kvp.Key) : new Object(kvp.Key, 1);
                     if (nozzle)
                     {
                         obj.heldObject.Value = new Object(915, 1);
@@ -201,6 +202,7 @@ namespace ImmersiveSprinklers
                 TryReturnObject(sprinkler, who);
                 tf.modData.Remove(sprinklerKey + which);
                 tf.modData.Remove(guidKey + which);
+                tf.modData.Remove(bigCraftableKey + which);
                 if (tf.modData.ContainsKey(enricherKey + which))
                 {
                     tf.modData.Remove(enricherKey + which);
@@ -220,6 +222,7 @@ namespace ImmersiveSprinklers
                     Object f = GetFertilizer(fertString);
                     TryReturnObject(f, who);
                 }
+                SMonitor.Log($"Returning {sprinkler.Name}");
                 return true;
             }
             return false;
@@ -303,25 +306,25 @@ namespace ImmersiveSprinklers
                 float rotation = 60 * MathHelper.Pi / 180;
                 int a = 24;
                 int b = 40;
-                location.temporarySprites.Add(new TemporaryAnimatedSprite(29, position + new Vector2(a, -b), Color.White * 0.5f, 4, false, 60f, 100, -1, -1f, -1, 0)
+                location.temporarySprites.Add(new TemporaryAnimatedSprite(29, position + new Vector2(a, -b), Color.White * 0.5f, 4, false, 60f, 100, -1, 1f, -1, 0)
                 {
                     rotation = rotation,
                     delayBeforeAnimationStart = delay,
                     id = tileLocation.X * 4000f + tileLocation.Y
                 });
-                location.temporarySprites.Add(new TemporaryAnimatedSprite(29, position + new Vector2(b, a), Color.White * 0.5f, 4, false, 60f, 100, -1, -1f, -1, 0)
+                location.temporarySprites.Add(new TemporaryAnimatedSprite(29, position + new Vector2(b, a), Color.White * 0.5f, 4, false, 60f, 100, -1, 1f, -1, 0)
                 {
                     rotation = 1.57079637f + rotation,
                     delayBeforeAnimationStart = delay,
                     id = tileLocation.X * 4000f + tileLocation.Y
                 });
-                location.temporarySprites.Add(new TemporaryAnimatedSprite(29, position + new Vector2(-a, b), Color.White * 0.5f, 4, false, 60f, 100, -1, -1f, -1, 0)
+                location.temporarySprites.Add(new TemporaryAnimatedSprite(29, position + new Vector2(-a, b), Color.White * 0.5f, 4, false, 60f, 100, -1, 1f, -1, 0)
                 {
                     rotation = 3.14159274f + rotation,
                     delayBeforeAnimationStart = delay,
                     id = tileLocation.X * 4000f + tileLocation.Y
                 });
-                location.temporarySprites.Add(new TemporaryAnimatedSprite(29, position + new Vector2(-b, -a), Color.White * 0.5f, 4, false, 60f, 100, -1, -1f, -1, 0)
+                location.temporarySprites.Add(new TemporaryAnimatedSprite(29, position + new Vector2(-b, -a), Color.White * 0.5f, 4, false, 60f, 100, -1, 1f, -1, 0)
                 {
                     rotation = 4.712389f + rotation,
                     delayBeforeAnimationStart = delay,
@@ -336,6 +339,7 @@ namespace ImmersiveSprinklers
                     color = Color.White * 0.4f,
                     delayBeforeAnimationStart = delay,
                     id = tileLocation.X * 4000f + tileLocation.Y,
+                    layerDepth = 1,
                     scale = 1.3f
                 });
                 return;
@@ -346,6 +350,7 @@ namespace ImmersiveSprinklers
                 color = Color.White * 0.4f,
                 delayBeforeAnimationStart = delay,
                 id = tileLocation.X * 4000f + tileLocation.Y,
+                layerDepth = 1,
                 scale = scale
             });
         }

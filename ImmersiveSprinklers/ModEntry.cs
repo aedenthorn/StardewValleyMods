@@ -37,6 +37,7 @@ namespace ImmersiveSprinklers
 
         public static string prefixKey = "aedenthorn.ImmersiveSprinklers/";
         public static string sprinklerKey = "aedenthorn.ImmersiveSprinklers/sprinkler";
+        public static string bigCraftableKey = "aedenthorn.ImmersiveSprinklers/bigCraftable";
         public static string guidKey = "aedenthorn.ImmersiveSprinklers/guid";
         public static string enricherKey = "aedenthorn.ImmersiveSprinklers/enricher";
         public static string fertilizerKey = "aedenthorn.ImmersiveSprinklers/fertilizer";
