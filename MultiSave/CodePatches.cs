@@ -23,7 +23,7 @@ using Color = Microsoft.Xna.Framework.Color;
 using Object = StardewValley.Object;
 using Rectangle = Microsoft.Xna.Framework.Rectangle;
 
-namespace SimpleBackup
+namespace MultiSave
 {
     public partial class ModEntry
     {
@@ -244,7 +244,7 @@ namespace SimpleBackup
                         __instance.deleteButtons[i + 4].tryHover(x, y, 0.2f);
                         if (__instance.deleteButtons[i + 4].containsPoint(x, y))
                         {
-                            ___hoverText = string.Format(saveBackupList[___currentItemIndex + i].Length == 1 ? SHelper.Translation.Get("1-backup") : SHelper.Translation.Get("x-backups"), saveBackupList[___currentItemIndex + i].Length);
+                            ___hoverText = string.Format(saveBackupList[___currentItemIndex + i].Length == 1 ? SHelper.Translation.Get("1-save") : SHelper.Translation.Get("x-saves"), saveBackupList[___currentItemIndex + i].Length);
                             return false;
                         }
                     }
@@ -262,7 +262,7 @@ namespace SimpleBackup
                 var newFolder = Path.Combine(Constants.SavesPath, currentSaveSlot.Farmer.slotName, GetFolderName(currentSaveSlot.Farmer));
                 var backupFolderPath = __instance.Farmer.modData[backupFolderKey];
                 var currentFolderPath = Path.Combine(Constants.SavesPath, currentSaveSlot.Farmer.slotName);
-                var tempDir = Path.Combine(Constants.DataPath, currentSaveSlot.Farmer.slotName + "_tmp");
+                var tempDir = Path.Combine(Constants.SavesPath, currentSaveSlot.Farmer.slotName + "_tmp");
 
                 if (!Directory.Exists(backupFolderPath))
                 {

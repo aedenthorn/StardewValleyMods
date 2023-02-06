@@ -19,14 +19,14 @@ using static StardewValley.Menus.LoadGameMenu;
 using static StardewValley.Minigames.TargetGame;
 using Object = StardewValley.Object;
 
-namespace SimpleBackup
+namespace MultiSave
 {
     public partial class ModEntry
     {
 
         private static void SaveBackup()
         {
-            var path = Path.Combine(Constants.CurrentSavePath, $"{folderPrefix}_{Game1.dayOfMonth}_{Utility.getSeasonNumber(Game1.currentSeason)}_{Game1.year}");
+            var path = Path.Combine(Constants.CurrentSavePath, $"{folderPrefix}_{Game1.year}_{Game1.currentSeason}_{Game1.dayOfMonth}");
             TransferFiles(Constants.CurrentSavePath, path, false, true);
         }
         private static void TransferFiles(string sourcePath, string targetPath, bool move, bool backup)

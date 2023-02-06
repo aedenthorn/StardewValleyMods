@@ -8,7 +8,7 @@ using System.IO;
 using System.Reflection;
 using static StardewValley.Menus.LoadGameMenu;
 
-namespace SimpleBackup
+namespace MultiSave
 {
     /// <summary>The mod entry point.</summary>
     public partial class ModEntry : Mod
@@ -19,8 +19,8 @@ namespace SimpleBackup
         public static ModConfig Config;
 
         public static ModEntry context;
-        public static string folderPrefix = "aedenthorn.SimpleBackup";
-        public static string backupFolderKey = "aedenthorn.SimpleBackup/backupFolder";
+        public static string folderPrefix = "aedenthorn.MultiSave";
+        public static string backupFolderKey = "aedenthorn.MultiSave/backupFolder";
 
         public static SaveFileSlot currentSaveSlot;
         public static List<string> currentSaveBackupList = new();
@@ -81,7 +81,7 @@ namespace SimpleBackup
                 return;
             if(Config.SaveButton != SButton.None && e.Button == Config.SaveButton)
             {
-                Game1.addHUDMessage(new HUDMessage(Helper.Translation.Get("saving-backup"), 2));
+                Game1.addHUDMessage(new HUDMessage(Helper.Translation.Get("saving"), 2));
                 SaveBackup();
             }
         }
