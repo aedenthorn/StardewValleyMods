@@ -66,7 +66,7 @@ namespace HedgeMaze
 
         private void Input_ButtonPressed(object sender, ButtonPressedEventArgs e)
         {
-            if(Config.ModEnabled && Config.Debug && e.Button == SButton.F5)
+            if(Config.ModEnabled && Context.IsWorldReady && Config.Debug && e.Button == SButton.F5)
             {
                 Helper.GameContent.InvalidateCache("Maps/Woods");
                 Game1.getLocationFromName("Woods").reloadMap();

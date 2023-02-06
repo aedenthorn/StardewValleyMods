@@ -38,13 +38,13 @@ namespace OKNightCheck
 			};
             if (ModEntry.Config.ShowQuitButton)
             {
-                Rectangle quitRect = new Rectangle(okRect.Location + new Point(66, 2), new Point(60, 60));
+                Rectangle quitRect = new Rectangle(0, 0, 60, 60);
                 quitButton = new ClickableTextureComponent("Quit", quitRect, null, "Quit", Game1.mouseCursors, new Rectangle(337, 494, 12, 12), 5, false)
                 {
                     myID = 102,
-                    leftNeighborID = 101
+                    rightNeighborID = 101
                 };
-                okButton.rightNeighborID = 102;
+                okButton.leftNeighborID = 102;
             }
             backButton = new ClickableTextureComponent("", new Rectangle(xPositionOnScreen + 32, yPositionOnScreen + height - 64, 48, 44), null, "", Game1.mouseCursors, new Rectangle(352, 495, 12, 11), 4f, false)
 			{

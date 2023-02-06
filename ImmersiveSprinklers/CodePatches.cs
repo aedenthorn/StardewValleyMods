@@ -185,9 +185,9 @@ namespace ImmersiveSprinklers
 
                         if (obj is not null)
                         {
-                            var globalPosition = tileLocation * 64 + new Vector2(32 - 8 * Config.Scale + Config.DrawOffsetX, obj.bigCraftable.Value ? -64 : 32 - 8 * Config.Scale + Config.DrawOffsetY) + GetSprinklerCorner(i) * 32;
+                            var globalPosition = tileLocation * 64 + new Vector2(32 - 8 * Config.Scale + Config.DrawOffsetX, (obj.bigCraftable.Value ? -32 : 32) - 8 * Config.Scale + Config.DrawOffsetY) + GetSprinklerCorner(i) * 32;
                             var position = Game1.GlobalToLocal(globalPosition);
-                            var layerDepth = (globalPosition.Y + 16 + Config.DrawOffsetZ) / 10000f;
+                            var layerDepth = (globalPosition.Y + (obj.bigCraftable.Value ? 80 : 16) + Config.DrawOffsetZ) / 10000f;
                             Texture2D texture = null;
                             Rectangle sourceRect = new Rectangle();
                             if (atApi is not null && obj.modData.ContainsKey("AlternativeTextureName"))

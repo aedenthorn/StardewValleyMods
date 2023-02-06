@@ -1,7 +1,7 @@
 ﻿{
   "Name": "OK Night Check",
   "Author": "aedenthorn",
-  "Version": "0.2.0",
+  "Version": "0.3.0",
   "Description": "OK Night Check.",
   "UniqueID": "aedenthorn.OKNightCheck",
   "EntryDll": "OKNightCheck.dll",

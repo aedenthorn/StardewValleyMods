@@ -18,18 +18,6 @@ namespace ToolMod
 {
     public partial class ModEntry
     {
-        [HarmonyPatch(typeof(Object), nameof(Object.GetBaseRadiusForSprinkler))]
-        public class Object_GetBaseRadiusForSprinkler_Patch
-        {
-            public static void Postfix(Object __instance, ref int __result)
-            {
-                if (!Config.EnableMod)
-                    return;
-                if (Config.SprinklerRadii.TryGetValue(__instance.Name, out int radius))
-                    __result = radius;
-            }
-        }
-
         [HarmonyPatch(typeof(Tool), "tilesAffected")]
         public class Tool_tilesAffected_Patch
         {

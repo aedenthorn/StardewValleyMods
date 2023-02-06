@@ -23,7 +23,7 @@ namespace ImmersiveSprinklers
             var bc = tf.modData.ContainsKey(bigCraftableKey + which);
             foreach (var kvp in bc ? Game1.bigCraftablesInformation :  Game1.objectInformation)
             {
-                if (kvp.Value.StartsWith(sprinklerString + "/"))
+                if (kvp.Value.Equals(sprinklerString) || kvp.Value.StartsWith(sprinklerString + "/"))
                 {
                     var obj = bc ? new Object(Vector2.Zero, kvp.Key) : new Object(kvp.Key, 1);
                     if (nozzle)
@@ -54,7 +54,12 @@ namespace ImmersiveSprinklers
         }
         private static string GetSprinklerString(Object instance)
         {
+            if (instance.bigCraftable.Value && Game1.bigCraftablesInformation.TryGetValue(instance.ParentSheetIndex, out string str))
+                return str;
+            if (!instance.bigCraftable.Value && Game1.objectInformation.TryGetValue(instance.ParentSheetIndex, out str))
+                return str;
             return instance.Name;
+
         }
         private static Vector2 GetSprinklerCorner(int i)
         {

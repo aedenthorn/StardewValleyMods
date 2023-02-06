@@ -1,19 +1,7 @@
-﻿using HarmonyLib;
-using Microsoft.Xna.Framework;
-using Netcode;
-using Newtonsoft.Json;
+﻿using Microsoft.Xna.Framework;
 using StardewValley;
-using StardewValley.Locations;
-using StardewValley.Monsters;
-using StardewValley.Objects;
-using StardewValley.TerrainFeatures;
 using StardewValley.Tools;
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using xTile.Dimensions;
-using Object = StardewValley.Object;
-using Rectangle = Microsoft.Xna.Framework.Rectangle;
 
 namespace ToolMod
 {
