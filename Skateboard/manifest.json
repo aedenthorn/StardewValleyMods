@@ -1,7 +1,7 @@
 ﻿{
   "Name": "Skateboard",
   "Author": "aedenthorn",
-  "Version": "0.2.4",
+  "Version": "0.2.5",
   "Description": "Skateboard.",
   "UniqueID": "aedenthorn.Skateboard",
   "EntryDll": "Skateboard.dll",

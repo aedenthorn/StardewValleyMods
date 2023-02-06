@@ -1,5 +1,8 @@
 ﻿using HarmonyLib;
+using Netcode;
 using StardewModdingAPI;
+using StardewValley;
+using System.Collections.Generic;
 using System.Globalization;
 
 namespace CraftFromContainers
@@ -14,6 +17,8 @@ namespace CraftFromContainers
 
         public static ModEntry context;
 
+        public static List<NetObjectList<Item>> cachedContainers;
+
         /// <summary>The mod entry point, called after the mod is first loaded.</summary>
         /// <param name="helper">Provides simplified APIs for writing mods.</param>
         public override void Entry(IModHelper helper)
@@ -26,12 +31,16 @@ namespace CraftFromContainers
             SHelper = helper;
 
             Helper.Events.GameLoop.GameLaunched += GameLoop_GameLaunched;
+            Helper.Events.Display.MenuChanged += Display_MenuChanged;
             var harmony = new Harmony(ModManifest.UniqueID);
             harmony.PatchAll();
 
         }
 
-
+        private void Display_MenuChanged(object sender, StardewModdingAPI.Events.MenuChangedEventArgs e)
+        {
+            cachedContainers = null;
+        }
         public override object GetApi()
         {
             return new CraftFromContainersAPI();

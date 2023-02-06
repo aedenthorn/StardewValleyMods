@@ -2,7 +2,9 @@
 using Netcode;
 using StardewModdingAPI;
 using StardewValley;
+using StardewValley.Locations;
 using StardewValley.Objects;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Object = StardewValley.Object;
@@ -78,30 +80,12 @@ namespace CraftFromContainers
                     additional_crafting_items = new List<Item>();
                 foreach (var kvp in __instance.recipeList)
                 {
-                    foreach (var l in Game1.locations)
+                    foreach (NetObjectList<Item> items in GetContainers())
                     {
-                        foreach (Object obj in l.objects.Values)
-                        {
-                            if (obj is not null)
-                            {
-                                NetObjectList<Item> items;
-                                if (obj is StorageFurniture)
-                                {
-                                    items = (obj as StorageFurniture).heldItems;
-                                }
-                                else if (obj is Chest)
-                                {
-                                    items = (obj as Chest).items;
-                                }
-                                else
-                                    continue;
-
-                                var amount = Game1.player.getItemCountInList(items, kvp.Key, 8);
-                                if (amount <= 0)
-                                    continue;
-                                additional_crafting_items.Add(new Object(kvp.Key, amount));
-                            }
-                        }
+                        var amount = Game1.player.getItemCountInList(items, kvp.Key, 8);
+                        if (amount <= 0)
+                            continue;
+                        additional_crafting_items.Add(new Object(kvp.Key, amount));
                     }
                 }
                 return;

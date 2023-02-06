@@ -8,9 +8,12 @@ using StardewValley.Menus;
 using StardewValley.Objects;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Globalization;
 using System.Linq;
+using xTile.Dimensions;
 using Object = StardewValley.Object;
+using Rectangle = Microsoft.Xna.Framework.Rectangle;
 
 namespace Skateboard
 {
@@ -342,6 +345,7 @@ namespace Skateboard
                     return;
                 __result.modData[boardKey] = "true";
                 (__result as Object).Type = "Skateboard";
+                (__result as Object).Category = -20;
             }
         }
         [HarmonyPatch(typeof(Object), nameof(Object.isPlaceable))]
@@ -349,7 +353,38 @@ namespace Skateboard
         {
             public static bool Prefix(Object __instance)
             {
+                var result = (!Config.ModEnabled || !__instance.modData.ContainsKey(boardKey));
+                return result;
+            }
+        }
+        [HarmonyPatch(typeof(Object), nameof(Object.drawPlacementBounds))]
+        public class Object_drawPlacementBounds_Patch
+        {
+            public static bool Prefix(Object __instance)
+            {
+                var result = (!Config.ModEnabled || !__instance.modData.ContainsKey(boardKey));
+                return result;
+            }
+        }
+        [HarmonyPatch(typeof(Object), nameof(Object.placementAction))]
+        public class Object_placementAction_Patch
+        {
+            public static bool Prefix(Object __instance)
+            {
                 return (!Config.ModEnabled || !__instance.modData.ContainsKey(boardKey));
+            }
+        }
+        [HarmonyPatch(typeof(GameLocation), nameof(GameLocation.checkAction))]
+        public class GameLocation_checkAction_Patch
+        {
+            public static bool Prefix(GameLocation __instance, Location tileLocation)
+            {
+                if (__instance.objects.TryGetValue(new Vector2(tileLocation.X, tileLocation.Y), out var obj) && obj.modData.ContainsKey(boardKey))
+                {
+                    __instance.objects.Remove(new Vector2(tileLocation.X, tileLocation.Y));
+                    return false;
+                }
+                return true;
             }
         }
         [HarmonyPatch(typeof(Object), nameof(Object.drawWhenHeld))]

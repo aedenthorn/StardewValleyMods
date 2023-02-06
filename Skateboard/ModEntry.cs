@@ -69,6 +69,8 @@ namespace Skateboard
         {
             var s = new Object(Vector2.Zero, boardIndex, false);
             s.modData[boardKey] = "true";
+            s.Type = "Skateboard";
+            s.Category = -20;
             if (!Game1.player.addItemToInventoryBool(s, true))
             {
                 Game1.createItemDebris(s, Game1.player.Position, 1, Game1.player.currentLocation);

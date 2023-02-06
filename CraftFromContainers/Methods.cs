@@ -106,40 +106,20 @@ namespace CraftFromContainers
             foreach (var kvp in missing)
             {
                 int found = 0;
-                foreach (var l in Game1.locations)
+                foreach (NetObjectList<Item> items in GetContainers())
                 {
-                    foreach (Object obj in l.objects.Values)
+                    var amount = Game1.player.getItemCountInList(items, kvp.Key, 0);
+                    if (amount <= 0)
+                        continue;
+                    var min = Math.Min(kvp.Value, amount);
+                    SMonitor.Log($"Consuming {kvp.Key}x{min}");
+                    ConsumeObject(items, kvp.Key, min);
+                    found += amount;
+                    if (found >= kvp.Value)
                     {
-                        if (obj is not null)
-                        {
-                            NetObjectList<Item> items;
-                            if (obj is StorageFurniture)
-                            {
-                                items = (obj as StorageFurniture).heldItems;
-                            }
-                            else if (obj is Chest)
-                            {
-                                items = (obj as Chest).items;
-                            }
-                            else
-                                continue;
-
-                            var amount = Game1.player.getItemCountInList(items, kvp.Key, 0);
-                            if (amount <= 0)
-                                continue;
-                            var min = Math.Min(kvp.Value, amount);
-                            SMonitor.Log($"Consuming {kvp.Key}x{min} from {obj.Name}");
-                            ConsumeObject(items, kvp.Key, min);
-                            found += amount;
-                            if (found >= kvp.Value)
-                            {
-                                goto done;
-                            }
-                        }
+                        break;
                     }
                 }
-            done:
-                continue;
             }
         }
 
@@ -166,25 +146,12 @@ namespace CraftFromContainers
         private static bool CheckAmount(int itemIndex, int quantity, int minPrice)
         {
             int found = 0;
-            foreach (var l in Game1.locations)
+            foreach (var items in GetContainers())
             {
-                foreach (Object obj in l.objects.Values)
+                found += Game1.player.getItemCountInList(items, itemIndex, minPrice);
+                if (found >= quantity)
                 {
-                    if (obj is not null)
-                    {
-                        if (obj is StorageFurniture)
-                        {
-                            found += Game1.player.getItemCountInList((obj as StorageFurniture).heldItems, itemIndex, minPrice);
-                        }
-                        else if (obj is Chest)
-                        {
-                            found += Game1.player.getItemCountInList((obj as Chest).items, itemIndex, minPrice);
-                        }
-                        if (found >= quantity)
-                        {
-                            return true;
-                        }
-                    }
+                    return true;
                 }
             }
             return false;
@@ -210,6 +177,57 @@ namespace CraftFromContainers
                 }
             }
             return true;
+        }
+
+        public static List<NetObjectList<Item>> GetContainers()
+        {
+            if(cachedContainers is not null)
+                return cachedContainers;
+            var list = new List<NetObjectList<Item>>();
+
+            foreach (var l in Game1.locations)
+            {
+                foreach (Object obj in l.objects.Values)
+                {
+                    if (obj is not null)
+                    {
+                        if (obj is StorageFurniture)
+                        {
+                            list.Add((obj as StorageFurniture).heldItems);
+                        }
+                        else if (obj is Chest)
+                        {
+                            list.Add((obj as Chest).items);
+                        }
+                    }
+                }
+                if (l is BuildableGameLocation)
+                {
+                    foreach (var building in (l as BuildableGameLocation).buildings)
+                    {
+                        if (building.indoors.Value is not null)
+                        {
+                            foreach (Object obj in building.indoors.Value.objects.Values)
+                            {
+                                if (obj is not null)
+                                {
+                                    if (obj is StorageFurniture)
+                                    {
+                                        list.Add((obj as StorageFurniture).heldItems);
+                                    }
+                                    else if (obj is Chest)
+                                    {
+                                        list.Add((obj as Chest).items);
+                                    }
+                                }
+                            }
+
+                        }
+                    }
+                }
+            }
+            cachedContainers = list;
+            return cachedContainers;
         }
     }
 }

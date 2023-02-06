@@ -26,6 +26,8 @@ namespace MultiSave
 
         private static void SaveBackup()
         {
+            if (Constants.CurrentSavePath is null)
+                return;
             var path = Path.Combine(Constants.CurrentSavePath, $"{folderPrefix}_{Game1.year}_{Game1.currentSeason}_{Game1.dayOfMonth}");
             TransferFiles(Constants.CurrentSavePath, path, false, true);
         }

@@ -54,7 +54,7 @@ namespace MultiSave
 
         private void GameLoop_DayStarted(object sender, StardewModdingAPI.Events.DayStartedEventArgs e)
         {
-            if (!Config.EnableMod)
+            if (!Config.EnableMod || Constants.CurrentSavePath is null)
                 return;
             if (Config.MaxDaysOldToKeep > 0)
             {
@@ -77,7 +77,7 @@ namespace MultiSave
 
         private void Input_ButtonPressed(object sender, StardewModdingAPI.Events.ButtonPressedEventArgs e)
         {
-            if (!Config.EnableMod || !Context.CanPlayerMove)
+            if (!Config.EnableMod || !Context.CanPlayerMove || Constants.CurrentSavePath is null)
                 return;
             if(Config.SaveButton != SButton.None && e.Button == Config.SaveButton)
             {
@@ -88,7 +88,7 @@ namespace MultiSave
 
         private void GameLoop_DayEnding(object sender, StardewModdingAPI.Events.DayEndingEventArgs e)
         {
-            if (!Config.EnableMod)
+            if (!Config.EnableMod || Constants.CurrentSavePath is null)
                 return;
             if (Config.AutoSaveDaily || (Config.AutoSaveOnDayOfWeek > 0 && Game1.dayOfMonth % 7 == Config.AutoSaveOnDayOfWeek % 7) || (Config.AutoSaveOnDayOfMonth > 0 && Game1.dayOfMonth == Config.AutoSaveOnDayOfMonth))
                 SaveBackup();
