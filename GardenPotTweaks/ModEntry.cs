@@ -39,7 +39,7 @@ namespace GardenPotTweaks
             Helper.Events.GameLoop.GameLaunched += GameLoop_GameLaunched;
 
             var harmony = new Harmony(ModManifest.UniqueID);
-            harmony.PatchAll();
+            PatchAll(harmony);
 
         }
 

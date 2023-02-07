@@ -21,12 +21,69 @@ using StardewValley.Tools;
 using StardewValley.Network;
 using Microsoft.Xna.Framework.Graphics.PackedVector;
 using Netcode;
+using Color = Microsoft.Xna.Framework.Color;
 
 namespace GardenPotTweaks
 {
     public partial class ModEntry
     {
-        [HarmonyPatch(typeof(Utility), nameof(Utility.findCloseFlower), new Type[] { typeof(GameLocation), typeof(Vector2), typeof(int), typeof(Func<Crop, bool>) })]
+        public static void PatchAll(Harmony harmony)
+        {
+            harmony.Patch(
+                original: AccessTools.Method(typeof(Utility), nameof(Utility.findCloseFlower), new Type[] { typeof(GameLocation), typeof(Vector2), typeof(int), typeof(Func<Crop, bool>) }),
+                postfix: new HarmonyMethod(typeof(Utility_findCloseFlower_Patch), nameof(Utility_findCloseFlower_Patch.Postfix))
+            );
+
+            harmony.Patch(
+                original: AccessTools.Method(typeof(Object), nameof(Object.ApplySprinkler)),
+                postfix: new HarmonyMethod(typeof(Object_ApplySprinkler_Patch), nameof(Object_ApplySprinkler_Patch.Postfix))
+            );
+
+            //harmony.Patch(
+            //    original: AccessTools.Method(typeof(Axe), nameof(Axe.DoFunction)),
+            //    prefix: new HarmonyMethod(typeof(Axe_DoFunction_Patch), nameof(Axe_DoFunction_Patch.Prefix))
+            //);
+
+            harmony.Patch(
+                original: AccessTools.Method(typeof(Pickaxe), nameof(Pickaxe.DoFunction)),
+                prefix: new HarmonyMethod(typeof(Pickaxe_DoFunction_Patch), nameof(Pickaxe_DoFunction_Patch.Prefix))
+            );
+
+            harmony.Patch(
+                original: AccessTools.Method(typeof(Object), nameof(Object.maximumStackSize)),
+                postfix: new HarmonyMethod(typeof(Object_maximumStackSize_Patch), nameof(Object_maximumStackSize_Patch.Postfix))
+            );
+            harmony.Patch(
+                original: AccessTools.Method(typeof(Object), nameof(Object.drawInMenu), new Type[] { typeof(SpriteBatch), typeof(Vector2), typeof(float), typeof(float), typeof(float), typeof(StackDrawType), typeof(Color), typeof(bool) }),
+                postfix: new HarmonyMethod(typeof(Object_drawInMenu_Patch), nameof(Object_drawInMenu_Patch.Postfix))
+            );
+
+            harmony.Patch(
+                original: AccessTools.Method(typeof(Object), nameof(Object.drawWhenHeld)),
+                postfix: new HarmonyMethod(typeof(Object_drawWhenHeld_Patch), nameof(Object_drawWhenHeld_Patch.Postfix))
+            );
+
+            harmony.Patch(
+                original: AccessTools.Method(typeof(IndoorPot), nameof(IndoorPot.draw), new Type[] { typeof(SpriteBatch), typeof(int), typeof(int), typeof(float) }),
+                prefix: new HarmonyMethod(typeof(IndoorPot_draw_Patch), nameof(IndoorPot_draw_Patch.Prefix))
+            );
+
+            harmony.Patch(
+                original: AccessTools.Method(typeof(Object), nameof(Object.placementAction)),
+                prefix: new HarmonyMethod(typeof(Object_placementAction_Patch), nameof(Object_placementAction_Patch.Prefix))
+            );
+
+            harmony.Patch(
+                original: AccessTools.Method(typeof(Object), "loadDisplayName"),
+                postfix: new HarmonyMethod(typeof(Object_loadDisplayName_Patch), nameof(Object_loadDisplayName_Patch.Postfix))
+            );
+
+            harmony.Patch(
+                original: AccessTools.Method(typeof(IndoorPot), nameof(IndoorPot.performObjectDropInAction)),
+                prefix: new HarmonyMethod(typeof(IndoorPot_performObjectDropInAction_Patch), nameof(IndoorPot_performObjectDropInAction_Patch.Prefix))
+            );
+        }
+
         public class Utility_findCloseFlower_Patch
         {
             public static void Postfix(GameLocation location, Vector2 startTileLocation, int range, Func<Crop, bool> additional_check, ref Crop __result)
@@ -71,20 +128,23 @@ namespace GardenPotTweaks
                 }
             }
         }
-        [HarmonyPatch(typeof(Object), nameof(Object.ApplySprinkler))]
+        
         public class Object_ApplySprinkler_Patch
         {
+            private static readonly WateringCan Can = new() { WaterLeft = 100, IsBottomless = true };
+
             public static void Postfix(GameLocation location, Vector2 tile)
             {
                 if (!Config.ModEnabled || !Config.EnableSprinklering)
                     return;
-                if (location.objects.TryGetValue(tile, out var obj) && obj is IndoorPot && (obj as IndoorPot).hoeDirt.Value.state.Value != 2)
+                if (location.objects.TryGetValue(tile, out var obj) && obj is IndoorPot pot && pot.hoeDirt.Value.state.Value != 2)
                 {
-                    (location.objects[tile] as IndoorPot).hoeDirt.Value.state.Value = 1;
+                    // water via fake watering can since sprinklers don't update garden pot visuals
+                    pot.performToolAction(Can, location);
                 }
             }
         }
-        //[HarmonyPatch(typeof(Axe), nameof(Axe.DoFunction))]
+        
         public class Axe_DoFunction_Patch
         {
             public static void Prefix(Axe __instance, GameLocation location, int x, int y, int power, Farmer who)
@@ -102,7 +162,7 @@ namespace GardenPotTweaks
                 }
             }
         }
-        [HarmonyPatch(typeof(Pickaxe), nameof(Pickaxe.DoFunction))]
+        
         public class Pickaxe_DoFunction_Patch
         {
             public static void Prefix(Pickaxe __instance, GameLocation location, int x, int y, int power, Farmer who)
@@ -122,56 +182,56 @@ namespace GardenPotTweaks
             }
 
         }
-        [HarmonyPatch(typeof(Object), nameof(Object.maximumStackSize))]
+
         public class Object_maximumStackSize_Patch
         {
             public static void Postfix(Object __instance, ref int __result)
             {
-                if (!Config.ModEnabled || !Config.EnableMoving || __instance is not IndoorPot || !IsPotModified(__instance as IndoorPot))
+                if (!Config.ModEnabled || !Config.EnableMoving || __instance is not IndoorPot pot || !IsPotModified(pot))
                     return;
                 __result = 1;
             }
         }
-        [HarmonyPatch(typeof(Object), nameof(Object.drawInMenu))]
+        
         public class Object_drawInMenu_Patch
         {
             public static void Postfix(Object __instance, SpriteBatch spriteBatch, Vector2 location, float scaleSize, float transparency, float layerDepth, StackDrawType drawStackNumber, Color color, bool drawShadow)
             {
-                if (!Config.ModEnabled || __instance is not IndoorPot || !IsPotModified(__instance as IndoorPot))
+                if (!Config.ModEnabled || __instance is not IndoorPot pot || !IsPotModified(pot))
                     return;
 
-                var crop = (__instance as IndoorPot).hoeDirt.Value.crop;
-                var bush = (__instance as IndoorPot).bush.Value;
+                var crop = pot.hoeDirt.Value.crop;
+                var bush = pot.bush.Value;
                 if(crop != null)
                 {
                     var drawLocation = location + new Vector2(32f, 32f) + new Vector2(1, 2f);
                     var sourceRect = AccessTools.FieldRefAccess<Crop, Rectangle>(crop, "sourceRect");
                     if (sourceRect == Rectangle.Empty)
                     {
-                        (__instance as IndoorPot).hoeDirt.Value.crop.updateDrawMath(Vector2.One);
+                       pot.hoeDirt.Value.crop.updateDrawMath(Vector2.One);
                         sourceRect = AccessTools.FieldRefAccess<Crop, Rectangle>(crop, "sourceRect");
                     }
                     var coloredSourceRect = AccessTools.FieldRefAccess<Crop, Rectangle>(crop, "coloredSourceRect");
-                    var rotation = (__instance as IndoorPot).hoeDirt.Value.getShakeRotation();
+                    var rotation = pot.hoeDirt.Value.getShakeRotation();
                     if (crop.forageCrop.Value)
                     {
                         spriteBatch.Draw(Game1.mouseCursors, drawLocation, new Rectangle?(sourceRect), Color.White, 0f, new Vector2(8f, 8f), 2f, SpriteEffects.None, layerDepth + 0.0001f);
                         return;
                     }
-                    spriteBatch.Draw(Game1.cropSpriteSheet, drawLocation, new Rectangle?(sourceRect), ((__instance as IndoorPot).hoeDirt.Value.state.Value == 1 && (__instance as IndoorPot).hoeDirt.Value.crop.currentPhase.Value == 0 && !(__instance as IndoorPot).hoeDirt.Value.crop.raisedSeeds.Value) ? (new Color(180, 100, 200) * 1f) : Color.White, rotation, new Vector2(8f, 24f), 2f, crop.flip.Value ? SpriteEffects.FlipHorizontally : SpriteEffects.None, layerDepth + 0.0001f);
+                    spriteBatch.Draw(Game1.cropSpriteSheet, drawLocation, new Rectangle?(sourceRect), (pot.hoeDirt.Value.state.Value == 1 && pot.hoeDirt.Value.crop.currentPhase.Value == 0 && !pot.hoeDirt.Value.crop.raisedSeeds.Value) ? (new Color(180, 100, 200) * 1f) : Color.White, rotation, new Vector2(8f, 24f), 2f, crop.flip.Value ? SpriteEffects.FlipHorizontally : SpriteEffects.None, layerDepth + 0.0001f);
                     if (!crop.tintColor.Value.Equals(Color.White) && crop.currentPhase.Value == crop.phaseDays.Count - 1 && !crop.dead.Value)
                     {
                         spriteBatch.Draw(Game1.cropSpriteSheet, drawLocation, new Rectangle?(coloredSourceRect), crop.tintColor.Value, rotation, new Vector2(8f, 24f), 2f, crop.flip.Value ? SpriteEffects.FlipHorizontally : SpriteEffects.None, layerDepth + 0.0002f);
                     }
                 }
-                if ((__instance as IndoorPot).hoeDirt.Value.fertilizer.Value != 0)
+                if (pot.hoeDirt.Value.fertilizer.Value != 0)
                 {
                     var drawLocation = location + new Vector2(16f, 32f) + new Vector2(1, 2f);
 
-                    Rectangle fertilizer_rect = (__instance as IndoorPot).hoeDirt.Value.GetFertilizerSourceRect((__instance as IndoorPot).hoeDirt.Value.fertilizer.Value);
+                    Rectangle fertilizer_rect = pot.hoeDirt.Value.GetFertilizerSourceRect(pot.hoeDirt.Value.fertilizer.Value);
                     fertilizer_rect.Width = 13;
                     fertilizer_rect.Height = 13;
-                    spriteBatch.Draw(Game1.mouseCursors, drawLocation + new Vector2(4f, - 12f), new Rectangle?(fertilizer_rect), Color.White, 0f, Vector2.Zero, 2f, SpriteEffects.None, ((__instance as IndoorPot).TileLocation.Y + 0.65f) * 64f / 10000f + (float)drawLocation.X / 64 * 1E-05f);
+                    spriteBatch.Draw(Game1.mouseCursors, drawLocation + new Vector2(4f, - 12f), new Rectangle?(fertilizer_rect), Color.White, 0f, Vector2.Zero, 2f, SpriteEffects.None, (pot.TileLocation.Y + 0.65f) * 64f / 10000f + (float)drawLocation.X / 64 * 1E-05f);
                 }
                 if (bush is not null)
                 {
@@ -197,36 +257,36 @@ namespace GardenPotTweaks
 
             }
         }
-        [HarmonyPatch(typeof(Object), nameof(Object.drawWhenHeld))]
+        
         public class Object_drawWhenHeld_Patch
         {
             public static void Postfix(Object __instance, SpriteBatch spriteBatch, Vector2 objectPosition)
             {
-                if (!Config.ModEnabled || __instance is not IndoorPot || !IsPotModified(__instance as IndoorPot))
+                if (!Config.ModEnabled || __instance is not IndoorPot pot || !IsPotModified(pot))
                     return;
                 var tileLocation = new Vector2(objectPosition.X + Game1.viewport.X, objectPosition.Y + Game1.viewport.Y + 64) / 64;
-                var crop = (__instance as IndoorPot).hoeDirt.Value.crop;
-                var bush = (__instance as IndoorPot).bush.Value;
+                var crop = pot.hoeDirt.Value.crop;
+                var bush = pot.bush.Value;
                 if (crop != null)
                 {
                     var offset = new Vector2(32f, 8f);
                     var sourceRect = AccessTools.FieldRefAccess<Crop, Rectangle>(crop, "sourceRect");
                     var coloredSourceRect = AccessTools.FieldRefAccess<Crop, Rectangle>(crop, "coloredSourceRect");
-                    var rotation = (__instance as IndoorPot).hoeDirt.Value.getShakeRotation();
+                    var rotation = pot.hoeDirt.Value.getShakeRotation();
                     if (crop.forageCrop.Value)
                     {
                         spriteBatch.Draw(Game1.mouseCursors, Game1.GlobalToLocal(Game1.viewport, offset + new Vector2(tileLocation.X * 64f, tileLocation.Y * 64f)), new Rectangle?(sourceRect), Color.White, 0f, new Vector2(8f, 8f), 4f, SpriteEffects.None, (tileLocation.Y + 10.99f) * 64f / 10000f + tileLocation.X * 1E-05f);
                         return;
                     }
-                    spriteBatch.Draw(Game1.cropSpriteSheet, Game1.GlobalToLocal(Game1.viewport, offset + new Vector2(tileLocation.X * 64f, tileLocation.Y * 64f)), new Rectangle?(sourceRect), ((__instance as IndoorPot).hoeDirt.Value.state.Value == 1 && (__instance as IndoorPot).hoeDirt.Value.crop.currentPhase.Value == 0 && !(__instance as IndoorPot).hoeDirt.Value.crop.raisedSeeds.Value) ? (new Color(180, 100, 200) * 1f) : Color.White, rotation, new Vector2(8f, 24f), 4f, crop.flip.Value ? SpriteEffects.FlipHorizontally : SpriteEffects.None, (tileLocation.Y + 10.99f) * 64f / 10000f + tileLocation.X * 1E-05f);
+                    spriteBatch.Draw(Game1.cropSpriteSheet, Game1.GlobalToLocal(Game1.viewport, offset + new Vector2(tileLocation.X * 64f, tileLocation.Y * 64f)), new Rectangle?(sourceRect), (pot.hoeDirt.Value.state.Value == 1 && pot.hoeDirt.Value.crop.currentPhase.Value == 0 && !pot.hoeDirt.Value.crop.raisedSeeds.Value) ? (new Color(180, 100, 200) * 1f) : Color.White, rotation, new Vector2(8f, 24f), 4f, crop.flip.Value ? SpriteEffects.FlipHorizontally : SpriteEffects.None, (tileLocation.Y + 10.99f) * 64f / 10000f + tileLocation.X * 1E-05f);
                     if (!crop.tintColor.Value.Equals(Color.White) && crop.currentPhase.Value == crop.phaseDays.Count - 1 && !crop.dead.Value)
                     {
                         spriteBatch.Draw(Game1.cropSpriteSheet, Game1.GlobalToLocal(Game1.viewport, offset + new Vector2(tileLocation.X * 64f, tileLocation.Y * 64f)), new Rectangle?(coloredSourceRect), crop.tintColor.Value, rotation, new Vector2(8f, 24f), 4f, crop.flip.Value ? SpriteEffects.FlipHorizontally : SpriteEffects.None, (tileLocation.Y + 11f) * 64f / 10000f + tileLocation.X * 1E-05f);
                     }
                 }
-                if ((__instance as IndoorPot).hoeDirt.Value.fertilizer.Value != 0)
+                if (pot.hoeDirt.Value.fertilizer.Value != 0)
                 {
-                    Rectangle fertilizer_rect = (__instance as IndoorPot).hoeDirt.Value.GetFertilizerSourceRect((__instance as IndoorPot).hoeDirt.Value.fertilizer.Value);
+                    Rectangle fertilizer_rect = pot.hoeDirt.Value.GetFertilizerSourceRect(pot.hoeDirt.Value.fertilizer.Value);
                     fertilizer_rect.Width = 13;
                     fertilizer_rect.Height = 13;
                     spriteBatch.Draw(Game1.mouseCursors, Game1.GlobalToLocal(Game1.viewport, new Vector2(tileLocation.X * 64f + 4f, tileLocation.Y * 64f - 12f)), new Rectangle?(fertilizer_rect), Color.White, 0f, Vector2.Zero, 4f, SpriteEffects.None, (tileLocation.Y + 0.65f) * 64f / 10000f + (float)tileLocation.X * 1E-02f);
@@ -254,7 +314,7 @@ namespace GardenPotTweaks
                 }
             }
         }
-        [HarmonyPatch(typeof(IndoorPot), nameof(IndoorPot.draw))]
+        
         public class IndoorPot_draw_Patch
         {
             public static void Prefix(IndoorPot __instance, int x, int y)
@@ -264,39 +324,39 @@ namespace GardenPotTweaks
                 __instance.TileLocation = new Vector2(x, y);
             }
         }
-        [HarmonyPatch(typeof(Object), nameof(Object.placementAction))]
+        
         public class Object_placementAction_Patch
         {
             public static bool Prefix(Object __instance, GameLocation location, int x, int y, Farmer who, ref bool __result)
             {
-                if (!Config.ModEnabled || !Config.EnableMoving || __instance is not IndoorPot || !IsPotModified(__instance as IndoorPot))
+                if (!Config.ModEnabled || !Config.EnableMoving || __instance is not IndoorPot pot || !IsPotModified(pot))
                     return true;
-                location.objects.Add(new Vector2((float)(x / 64), (float)(y / 64)), __instance);
+                location.objects.Add(new Vector2((float)(x / 64), (float)(y / 64)), pot);
                 location.playSound("woodyStep", NetAudio.SoundContext.Default);
                 __result = true;
                 return false;
             }
         }
-        [HarmonyPatch(typeof(Object), "loadDisplayName")]
+
         public class Object_loadDisplayName_Patch
         {
             public static void Postfix(Object __instance, ref string __result)
             {
-                if (!Config.ModEnabled || !Config.EnableMoving || __instance is not IndoorPot || !IsPotModified(__instance as IndoorPot))
+                if (!Config.ModEnabled || !Config.EnableMoving || __instance is not IndoorPot pot || !IsPotModified(pot))
                     return;
-                var crop = (__instance as IndoorPot).hoeDirt.Value.crop;
-                var bush = (__instance as IndoorPot).bush.Value;
+                var crop = pot.hoeDirt.Value.crop;
+                var bush = pot.bush.Value;
                 if (crop is not null)
                 {
-                    __result += $" ({new Object((__instance as IndoorPot).hoeDirt.Value.crop.indexOfHarvest.Value, 1).Name})";
+                    __result += $" ({new Object(pot.hoeDirt.Value.crop.indexOfHarvest.Value, 1).Name})";
                 }
                 else if (bush is not null)
                 {
-                    __result += $" ({(__instance as IndoorPot).bush.Value.GetType().Name})";
+                    __result += $" ({pot.bush.Value.GetType().Name})";
                 }
             }
         }
-        [HarmonyPatch(typeof(IndoorPot), nameof(IndoorPot.performObjectDropInAction))]
+        
         public class IndoorPot_performObjectDropInAction_Patch
         {
             public static bool Prefix(IndoorPot __instance, Item dropInItem, bool probe, Farmer who, ref bool __result)

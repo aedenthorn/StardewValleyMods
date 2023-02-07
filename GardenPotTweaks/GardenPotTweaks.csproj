@@ -7,13 +7,14 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
-    <PackageReference Include="Pathoschild.Stardew.ModBuildConfig" Version="4.0.0" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.2" />
+    <PackageReference Include="Pathoschild.Stardew.ModBuildConfig" Version="4.1.0" />
   </ItemGroup>
 
   <ItemGroup>
     <Reference Include="FAudio-CS">
       <HintPath>H:\tmp\ga\SteamLibrary\steamapps\common\Stardew Valley\FAudio-CS.dll</HintPath>
+      <Private>False</Private>
     </Reference>
   </ItemGroup>
 
