@@ -24,6 +24,7 @@ namespace ImmersiveScarecrows
 
         public static string prefixKey = "aedenthorn.ImmersiveScarecrows/";
         public static string scarecrowKey = "aedenthorn.ImmersiveScarecrows/scarecrow";
+        public static string scaredKey = "aedenthorn.ImmersiveScarecrows/scared";
         public static string hatKey = "aedenthorn.ImmersiveScarecrows/hat";
         public static string guidKey = "aedenthorn.ImmersiveScarecrows/guid";
         public static string altTexturePrefix = "aedenthorn.ImmersiveScarecrows/AlternativeTexture";
@@ -87,6 +88,7 @@ namespace ImmersiveScarecrows
 
             if(Context.IsPlayerFree && Config.Debug && e.Button == SButton.X)
             {
+
                 Game1.getFarm().addCrows();
                 Monitor.Log("Adding crows");
             }

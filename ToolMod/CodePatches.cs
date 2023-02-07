@@ -13,6 +13,7 @@ using System.Linq;
 using System.Reflection.Emit;
 using System.Reflection;
 using Object = StardewValley.Object;
+using Microsoft.Xna.Framework.Graphics;
 
 namespace ToolMod
 {

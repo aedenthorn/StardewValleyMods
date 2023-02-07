@@ -38,6 +38,7 @@ namespace ImmersiveScarecrows
                 ReturnScarecrow(who, location, tf, placementTile, which);
                 tf.modData[scarecrowKey + which] = GetScarecrowString(__instance);
                 tf.modData[guidKey + which] = Guid.NewGuid().ToString();
+                tf.modData[scaredKey + which] = "0";
                 if (atApi is not null)
                 {
                     Object obj = (Object)__instance.getOne();
@@ -61,25 +62,44 @@ namespace ImmersiveScarecrows
             public static bool Prefix(GameLocation __instance, Location tileLocation, xTile.Dimensions.Rectangle viewport, Farmer who, ref bool __result)
             {
                 var tile = new Vector2(tileLocation.X, tileLocation.Y);
-                if (!Config.EnableMod || !Game1.currentLocation.terrainFeatures.TryGetValue(tile, out var tf) && tf is HoeDirt)
+                if (!Config.EnableMod || !Game1.currentLocation.terrainFeatures.TryGetValue(tile, out var tf) || tf is not HoeDirt)
                     return true;
                 int which = GetMouseCorner();
                 if (!GetScarecrowTileBool(__instance, ref tile, ref which, out string scarecrowString))
                     return true;
+                tf = __instance.terrainFeatures[tile];
                 var scareCrow = GetScarecrow(tf, which);
-                if(scareCrow is null || scareCrow.ParentSheetIndex != 126)
+                if(scareCrow is null)
                     return true;
+                if(scareCrow.ParentSheetIndex == 126 && who.CurrentItem is not null && who.CurrentItem is Hat)
+                {
+                    if (tf.modData.TryGetValue(hatKey + which, out var hatString))
+                    {
+                        Game1.createItemDebris(new Hat(int.Parse(hatString)), tf.currentTileLocation * 64f, (who.FacingDirection + 2) % 4, null, -1);
+                        tf.modData.Remove(hatKey + which);
 
-                if(tf.modData.TryGetValue(hatKey + which, out var hatString))
-                {
-                    Game1.createItemDebris(new Hat(int.Parse(hatString)), tf.currentTileLocation * 64f, (who.FacingDirection + 2) % 4, null, -1);
-                    tf.modData.Remove(hatKey + which);
-                }
-                if (who.CurrentItem is not null && who.CurrentItem is Hat)
-                {
+                    }
                     tf.modData[hatKey + which] = (who.CurrentItem as Hat).which.Value + "";
                     who.Items[who.CurrentToolIndex] = null;
                     who.currentLocation.playSound("dirtyHit", NetAudio.SoundContext.Default);
+                    __result = true;
+                    return false;
+                }
+                if (Game1.didPlayerJustRightClick(true))
+                {
+                    if (!tf.modData.TryGetValue(scaredKey + which, out var scaredString) || !int.TryParse(scaredString, out int scared))
+                    {
+                        tf.modData[scaredKey + which] = "0";
+                        scared = 0;
+                    }
+                    if (scared == 0)
+                    {
+                        Game1.drawObjectDialogue(Game1.content.LoadString("Strings\\StringsFromCSFiles:Object.cs.12926"));
+                    }
+                    else
+                    {
+                        Game1.drawObjectDialogue((scared == 1) ? Game1.content.LoadString("Strings\\StringsFromCSFiles:Object.cs.12927") : Game1.content.LoadString("Strings\\StringsFromCSFiles:Object.cs.12929", scared));
+                    }
                 }
                 __result = true;
                 return false;

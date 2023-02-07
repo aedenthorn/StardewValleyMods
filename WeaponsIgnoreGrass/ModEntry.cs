@@ -1,14 +1,8 @@
 ﻿using HarmonyLib;
 using StardewModdingAPI;
-using StardewValley;
-using System;
-using System.Collections.Generic;
-using System.Globalization;
-using System.Reflection;
 
-namespace ToolMod
+namespace WeaponsIgnoreGrass
 {
-    /// <summary>The mod entry point.</summary>
     public partial class ModEntry : Mod
     {
 
@@ -17,10 +11,7 @@ namespace ToolMod
         public static ModConfig Config;
 
         public static ModEntry context;
-        
 
-        /// <summary>The mod entry point, called after the mod is first loaded.</summary>
-        /// <param name="helper">Provides simplified APIs for writing mods.</param>
         public override void Entry(IModHelper helper)
         {
             Config = Helper.ReadConfig<ModConfig>();
@@ -31,29 +22,25 @@ namespace ToolMod
             SHelper = helper;
 
             Helper.Events.GameLoop.GameLaunched += GameLoop_GameLaunched;
-
+            Helper.Events.Input.ButtonPressed += Input_ButtonPressed;
             var harmony = new Harmony(ModManifest.UniqueID);
             harmony.PatchAll();
 
-            foreach(var c in typeof(Game1).GetTypeInfo().DeclaredNestedTypes)
+        }
+
+        private void Input_ButtonPressed(object sender, StardewModdingAPI.Events.ButtonPressedEventArgs e)
+        {
+            if(e.Button == Config.ToggleKey)
             {
-                if (!c.Name.Contains("DisplayClass"))
-                    continue;
-                foreach(var m in c.GetMethods(BindingFlags.Instance | BindingFlags.NonPublic))
-                {
-                    if (m.Name.Contains("UpdateControlInput"))
-                    {
-                        harmony.Patch(
-                            m,
-                            transpiler: new HarmonyMethod(typeof(ModEntry), nameof(ModEntry.Game1_UpdateControlInput_Transpiler))
-                        );
-                    }
-                }
+                Monitor.Log($"Mod Enabled: {Config.EnableMod}", LogLevel.Info);
+                Config.EnableMod = !Config.EnableMod;
+                Helper.WriteConfig(Config);
             }
         }
 
         private void GameLoop_GameLaunched(object sender, StardewModdingAPI.Events.GameLaunchedEventArgs e)
         {
+
             // get Generic Mod Config Menu's API (if it's installed)
             var configMenu = Helper.ModRegistry.GetApi<IGenericModConfigMenuApi>("spacechase0.GenericModConfigMenu");
             if (configMenu is null)
@@ -73,7 +60,14 @@ namespace ToolMod
                 setValue: value => Config.EnableMod = value
             );
 
-        }
+            configMenu.AddKeybind(
+                mod: ModManifest,
+                name: () => "Toggle Key",
+                getValue: () => Config.ToggleKey,
+                setValue: value => Config.ToggleKey = value
+            );
 
+
+        }
     }
 }

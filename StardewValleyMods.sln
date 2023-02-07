@@ -483,6 +483,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SprinklerMod", "SprinklerMo
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MultiSave", "MultiSave\MultiSave.csproj", "{D0C90AF6-C36A-4745-BA14-88FF9F6F276F}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WeaponsIgnoreGrass", "WeaponsIgnoreGrass\WeaponsIgnoreGrass.csproj", "{204E79D0-BB11-4A01-9597-71D1814470C9}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -3313,6 +3315,18 @@ Global
 		{D0C90AF6-C36A-4745-BA14-88FF9F6F276F}.Release|x64.Build.0 = Release|x64
 		{D0C90AF6-C36A-4745-BA14-88FF9F6F276F}.Release|x86.ActiveCfg = Release|Any CPU
 		{D0C90AF6-C36A-4745-BA14-88FF9F6F276F}.Release|x86.Build.0 = Release|Any CPU
+		{204E79D0-BB11-4A01-9597-71D1814470C9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{204E79D0-BB11-4A01-9597-71D1814470C9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{204E79D0-BB11-4A01-9597-71D1814470C9}.Debug|x64.ActiveCfg = Debug|x64
+		{204E79D0-BB11-4A01-9597-71D1814470C9}.Debug|x64.Build.0 = Debug|x64
+		{204E79D0-BB11-4A01-9597-71D1814470C9}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{204E79D0-BB11-4A01-9597-71D1814470C9}.Debug|x86.Build.0 = Debug|Any CPU
+		{204E79D0-BB11-4A01-9597-71D1814470C9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{204E79D0-BB11-4A01-9597-71D1814470C9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{204E79D0-BB11-4A01-9597-71D1814470C9}.Release|x64.ActiveCfg = Release|x64
+		{204E79D0-BB11-4A01-9597-71D1814470C9}.Release|x64.Build.0 = Release|x64
+		{204E79D0-BB11-4A01-9597-71D1814470C9}.Release|x86.ActiveCfg = Release|Any CPU
+		{204E79D0-BB11-4A01-9597-71D1814470C9}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

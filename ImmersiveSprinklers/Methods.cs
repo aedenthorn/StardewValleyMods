@@ -201,7 +201,7 @@ namespace ImmersiveSprinklers
         private static bool TryReturnSprinkler(Farmer who, GameLocation location, TerrainFeature tf, Vector2 placementTile, int which)
         {
             Object sprinkler = null;
-            if (tf.modData.TryGetValue(sprinklerKey + which, out var sprinklerString))
+            if (tf.modData.ContainsKey(sprinklerKey + which))
             {
                 sprinkler = GetSprinkler(tf, which, false);
                 TryReturnObject(sprinkler, who);

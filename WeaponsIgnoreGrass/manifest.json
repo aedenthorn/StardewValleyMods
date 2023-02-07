@@ -1,22 +1,22 @@
 ﻿{
-  "Name": "Garden Pot Tweaks",
+  "Name": "Weapons Ignore Grass",
   "Author": "aedenthorn",
-  "Version": "0.2.1",
-  "Description": "Garden Pot Tweaks.",
-  "UniqueID": "aedenthorn.GardenPotTweaks",
-  "EntryDll": "GardenPotTweaks.dll",
+  "Version": "0.1.0",
+  "Description": "Weapons Ignore Grass.",
+  "UniqueID": "aedenthorn.WeaponsIgnoreGrass",
+  "EntryDll": "WeaponsIgnoreGrass.dll",
   "MinimumApiVersion": "3.15.0",
   "ModUpdater": {
     "Repository": "StardewValleyMods",
     "User": "aedenthorn",
     "Directory": "_releases",
-    "ModFolder": "GardenPotTweaks"
+    "ModFolder": "WeaponsIgnoreGrass"
   },
+  "UpdateKeys": [ "Nexus:15409" ],
   "Dependencies": [
     {
       "UniqueID": "Platonymous.ModUpdater",
       "IsRequired": false
     }
-  ],
-  "UpdateKeys": [ "Nexus:14820" ]
+  ]
 }

@@ -35,10 +35,10 @@ namespace SprinklerMod
             {
                 if (!Config.EnableMod)
                     return;
-                if (__instance.bigCraftable.Value && sprinklerDict.TryGetValue(__instance.ParentSheetIndex + "", out int radius))
-                    __result = radius;
-                else if (sprinklerDict.TryGetValue(__instance.Name, out radius))
-                    __result = radius;
+                if ((__instance.bigCraftable.Value && sprinklerDict.TryGetValue(__instance.ParentSheetIndex + "", out var radius)) || sprinklerDict.TryGetValue(__instance.Name, out radius))
+                {
+                    int.TryParse(radius, out __result);
+                }
             }
         }
         [HarmonyPatch(typeof(Object), nameof(Object.canBePlacedHere))]

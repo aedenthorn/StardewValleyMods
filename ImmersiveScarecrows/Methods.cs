@@ -210,6 +210,8 @@ namespace ImmersiveScarecrows
             {
                 scarecrow = GetScarecrow(tf, which);
                 tf.modData.Remove(scarecrowKey + which);
+                tf.modData.Remove(scaredKey + which);
+                tf.modData.Remove(guidKey + which);
                 if (scarecrow is not null && !who.addItemToInventoryBool(scarecrow))
                 {
                     who.currentLocation.debris.Add(new Debris(scarecrow, who.Position));
@@ -249,6 +251,7 @@ namespace ImmersiveScarecrows
         }
         private static bool CheckForScarecrowInRange(Farm f, Vector2 v)
         {
+            SMonitor.Log("Checking for scarecrows near crop");
             foreach (var kvp in f.terrainFeatures.Pairs)
             {
                 if (kvp.Value is HoeDirt)
@@ -264,6 +267,13 @@ namespace ImmersiveScarecrows
                                 var distance = Vector2.Distance(kvp.Key + GetScarecrowCorner(i) * 0.5f, v);
                                 if (distance < radius)
                                 {
+                                    if (f.terrainFeatures[v] is HoeDirt && (f.terrainFeatures[v] as HoeDirt).crop != null && (f.terrainFeatures[v] as HoeDirt).crop.currentPhase.Value > 1)
+                                    {
+                                        if (!kvp.Value.modData.TryGetValue(scaredKey + i, out var scaredString) || !int.TryParse(scaredString, out int scared))
+                                            scared = 0;
+                                        kvp.Value.modData[scaredKey + i] = (scared + 1) + "";
+
+                                    }
                                     return false;
                                 }
                             }

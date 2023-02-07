@@ -1,19 +1,6 @@
 ﻿using HarmonyLib;
-using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Audio;
-using Microsoft.Xna.Framework.Graphics;
-using Newtonsoft.Json;
 using StardewModdingAPI;
-using StardewModdingAPI.Utilities;
 using StardewValley;
-using StardewValley.Locations;
-using StardewValley.Monsters;
-using StardewValley.Objects;
-using System;
-using System.Collections.Generic;
-using System.Globalization;
-using System.Linq;
-using System.Reflection.Metadata;
 
 namespace GardenPotTweaks
 {

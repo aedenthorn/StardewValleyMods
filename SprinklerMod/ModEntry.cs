@@ -21,7 +21,7 @@ namespace SprinklerMod
         public static ModEntry context;
 
         public static string dictPath = "aedenthorn.SprinklerMod/dictionary";
-        public static Dictionary<string, int> sprinklerDict = new();
+        public static Dictionary<string, string> sprinklerDict = new();
 
         /// <summary>The mod entry point, called after the mod is first loaded.</summary>
         /// <param name="helper">Provides simplified APIs for writing mods.</param>
@@ -73,17 +73,17 @@ namespace SprinklerMod
         {
             if (!Config.EnableMod)
                 return;
-            sprinklerDict = Helper.GameContent.Load<Dictionary<string, int>>(dictPath);
+            sprinklerDict = Helper.GameContent.Load<Dictionary<string, string>>(dictPath);
         }
 
         private void Content_AssetRequested(object sender, StardewModdingAPI.Events.AssetRequestedEventArgs e)
         {
             if(Config.EnableMod && e.NameWithoutLocale.IsEquivalentTo(dictPath))
             {
-                Dictionary<string, int> dict = new();
+                Dictionary<string, string> dict = new();
                 foreach (var kvp in Config.SprinklerRadii)
                 {
-                    dict.Add(kvp.Key, kvp.Value);
+                    dict.Add(kvp.Key, kvp.Value+"");
                 };
                 e.LoadFrom(() => dict, StardewModdingAPI.Events.AssetLoadPriority.Exclusive);
             }
