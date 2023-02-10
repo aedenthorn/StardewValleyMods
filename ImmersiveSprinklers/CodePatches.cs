@@ -175,15 +175,7 @@ namespace ImmersiveSprinklers
                 {
                     if(__instance.modData.ContainsKey(sprinklerKey + i))
                     {
-                        if(!__instance.modData.TryGetValue(guidKey + i, out var guid))
-                        {
-                            guid = Guid.NewGuid().ToString();
-                            __instance.modData[guidKey + i] = guid;
-                        }
-                        if(!sprinklerDict.TryGetValue(guid, out var obj))
-                        {
-                            obj = GetSprinkler(__instance, i, __instance.modData.ContainsKey(nozzleKey + i));
-                        }
+                        var obj = GetSprinklerCached(__instance, i, __instance.modData.ContainsKey(nozzleKey + i));
 
                         if (obj is not null)
                         {
@@ -229,6 +221,61 @@ namespace ImmersiveSprinklers
                 {
                     __result = false;
                 }
+            }
+
+        }
+        [HarmonyPatch(typeof(Utility), "itemCanBePlaced")]
+        public class Utility_itemCanBePlaced_Patch
+        {
+            public static bool Prefix(GameLocation location, Vector2 tileLocation, Item item, ref bool __result)
+            {
+                if (!Config.EnableMod || item is not Object || !(item as Object).IsSprinkler() || !location.terrainFeatures.TryGetValue(tileLocation, out var tf) || tf is not HoeDirt)
+                    return true;
+                __result = true;
+                return false;
+            }
+
+        }
+        [HarmonyPatch(typeof(Utility), nameof(Utility.playerCanPlaceItemHere))]
+        public class Utility_playerCanPlaceItemHere_Patch
+        {
+            public static bool Prefix(GameLocation location, Item item, int x, int y, Farmer f, ref bool __result)
+            {
+                if (!Config.EnableMod || item is not Object || !(item as Object).IsSprinkler() || !location.terrainFeatures.TryGetValue(new Vector2(x / 64, y / 64), out var tf) || tf is not HoeDirt)
+                    return true;
+                __result = Utility.withinRadiusOfPlayer(x, y, 1, Game1.player);
+                return false;
+            }
+
+        }
+        [HarmonyPatch(typeof(Object), nameof(Object.drawPlacementBounds))]
+        public class Object_drawPlacementBounds_Patch
+        {
+            public static bool Prefix(Object __instance, SpriteBatch spriteBatch, GameLocation location)
+            {
+                if (!Config.EnableMod || !Context.IsPlayerFree || !__instance.IsSprinkler() || Game1.currentLocation?.terrainFeatures?.TryGetValue(Game1.currentCursorTile, out var tf) != true || tf is not HoeDirt)
+                    return true;
+                var which = GetMouseCorner();
+                var sprinklerTile = Game1.currentCursorTile;
+
+                GetSprinklerTileBool(Game1.currentLocation, ref sprinklerTile, ref which, out string str);
+
+                Vector2 pos = Game1.GlobalToLocal(sprinklerTile * 64 + GetSprinklerCorner(which) * 32f);
+
+                spriteBatch.Draw(Game1.mouseCursors, pos, new Rectangle(Utility.withinRadiusOfPlayer((int)Game1.currentCursorTile.X * 64, (int)Game1.currentCursorTile.Y * 64, 1, Game1.player) ? 194 : 210, 388, 16, 16), Color.White, 0f, Vector2.Zero, 4f, SpriteEffects.None, 0.01f);
+
+                if (true || Config.ShowRangeWhenPlacing)
+                {
+                    foreach(var tile in GetSprinklerTiles(sprinklerTile, which, GetSprinklerRadius(__instance)))
+                    {
+                        spriteBatch.Draw(Game1.mouseCursors, Game1.GlobalToLocal(tile * 64), new Rectangle(194, 388, 16, 16), Color.White * 0.5f, 0f, Vector2.Zero, 4f, SpriteEffects.None, 0.01f);
+                    }
+                }
+                if(__instance.bigCraftable.Value)
+                    pos -= new Vector2(0, 64);
+                spriteBatch.Draw(__instance.bigCraftable.Value ? Game1.bigCraftableSpriteSheet : Game1.objectSpriteSheet, pos, __instance.bigCraftable.Value ? Object.getSourceRectForBigCraftable(__instance.ParentSheetIndex) : GameLocation.getSourceRectForObject(__instance.ParentSheetIndex), Color.White * Config.Alpha, 0, Vector2.Zero, Config.Scale, __instance.Flipped ? SpriteEffects.FlipHorizontally : SpriteEffects.None, 0.02f);
+
+                return false;
             }
 
         }

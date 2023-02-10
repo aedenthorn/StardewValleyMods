@@ -16,6 +16,20 @@ namespace ImmersiveSprinklers
     public partial class ModEntry
     {
 
+        private static Object GetSprinklerCached(TerrainFeature tf, int which, bool nozzle)
+        {
+            if (!tf.modData.TryGetValue(guidKey + which, out var guid))
+            {
+                guid = Guid.NewGuid().ToString();
+                tf.modData[guidKey + which] = guid;
+            }
+            if (!sprinklerDict.TryGetValue(guid, out var obj))
+            {
+                obj = GetSprinkler(tf, which, nozzle);
+                sprinklerDict[guid] = obj;
+            }
+            return obj;
+        }
         private static Object GetSprinkler(TerrainFeature tf, int which, bool nozzle)
         {
             if(!tf.modData.TryGetValue(sprinklerKey + which, out string sprinklerString))
@@ -249,6 +263,12 @@ namespace ImmersiveSprinklers
             var fertData = fertString.Split(',');
             return new Object(int.Parse(fertData[0]), int.Parse(fertData[1]));
         }
+        private static int GetSprinklerRadius(Object obj)
+        {
+            if (!Config.SprinklerRadii.TryGetValue(obj.Name, out int radius))
+                return obj.GetModifiedRadiusForSprinkler();
+            return radius;
+        }
 
         private static List<Vector2> GetSprinklerTiles(Vector2 tileLocation, int which, int radius)
         {
@@ -285,10 +305,7 @@ namespace ImmersiveSprinklers
             {
                 return;
             }
-            if (!Config.SprinklerRadii.TryGetValue(obj.Name, out int radius))
-            {
-                radius = obj.GetModifiedRadiusForSprinkler();
-            }
+            int radius = GetSprinklerRadius(obj);
             if (radius < 0)
                 return;
             foreach (Vector2 tile in GetSprinklerTiles(tileLocation, which, radius))

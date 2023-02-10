@@ -76,13 +76,14 @@ namespace ImmersiveSprinklers
                 return;
             var which = GetMouseCorner();
             var sprinklerTile = Game1.currentCursorTile;
+
             if (!GetSprinklerTileBool(Game1.currentLocation, ref sprinklerTile, ref which, out string str))
                 return;
             tf = Game1.currentLocation.terrainFeatures[sprinklerTile];
-            var obj = GetSprinkler(tf, which, tf.modData.ContainsKey(nozzleKey + which));
+            Object obj = GetSprinklerCached(tf, which, tf.modData.ContainsKey(nozzleKey + which));
             if (obj is not null)
             {
-                var tiles = GetSprinklerTiles(sprinklerTile, which, obj.GetModifiedRadiusForSprinkler());
+                var tiles = GetSprinklerTiles(sprinklerTile, which, GetSprinklerRadius(obj));
                 foreach(var tile in tiles)
                 {
                     e.SpriteBatch.Draw(Game1.mouseCursors, Game1.GlobalToLocal(new Vector2((float)((int)tile.X * 64), (float)((int)tile.Y * 64))), new Rectangle?(new Rectangle(194, 388, 16, 16)), Color.White, 0f, Vector2.Zero, 4f, SpriteEffects.None, 0.01f);
@@ -98,6 +99,8 @@ namespace ImmersiveSprinklers
                 }
             }
         }
+
+
         private void Input_ButtonPressed(object sender, StardewModdingAPI.Events.ButtonPressedEventArgs e)
         {
             if (!Config.EnableMod)
