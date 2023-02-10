@@ -7,6 +7,7 @@ using StardewValley.TerrainFeatures;
 using System;
 using System.Collections.Generic;
 using System.Reflection;
+using xTile.Tiles;
 using Object = StardewValley.Object;
 
 namespace ImmersiveScarecrows
@@ -224,7 +225,8 @@ namespace ImmersiveScarecrows
 
         private static List<Vector2> GetScarecrowTiles(Vector2 tileLocation, int which, int radius)
         {
-            Vector2 start = tileLocation + new Vector2(-1, -1) * radius;
+            Vector2 start = tileLocation + new Vector2(-1, -1) * (radius - 2);
+            Vector2 position = tileLocation + GetScarecrowCorner(which) * 0.5f;
             List<Vector2> list = new();
             switch (which)
             {
@@ -238,20 +240,22 @@ namespace ImmersiveScarecrows
                     start += new Vector2(-1, 0);
                     break;
             }
-            var diameter = (radius + 1) * 2;
+            var diameter = (radius - 1) * 2;
             for (int x = 0; x < diameter; x++)
             {
                 for (int y = 0; y < diameter; y++)
                 {
-                    list.Add(start + new Vector2(x, y));
+                    Vector2 tile = start + new Vector2(x, y);
+                    if (Vector2.Distance(position, tile) < radius - 2)
+                        list.Add(tile);
                 }
             }
             return list;
 
         }
-        private static bool CheckForScarecrowInRange(Farm f, Vector2 v)
+        private static bool IsNoScarecrowInRange(Farm f, Vector2 v)
         {
-            SMonitor.Log("Checking for scarecrows near crop");
+            //SMonitor.Log("Checking for scarecrows near crop");
             foreach (var kvp in f.terrainFeatures.Pairs)
             {
                 if (kvp.Value is HoeDirt)
@@ -263,17 +267,9 @@ namespace ImmersiveScarecrows
                             var obj = GetScarecrow(kvp.Value, i);
                             if (obj is not null)
                             {
-                                int radius = obj.GetRadiusForScarecrow();
-                                var distance = Vector2.Distance(kvp.Key + GetScarecrowCorner(i) * 0.5f, v);
-                                if (distance < radius)
+                                var tiles = GetScarecrowTiles(kvp.Key, i, obj.GetRadiusForScarecrow());
+                                if(tiles.Contains(v))
                                 {
-                                    if (f.terrainFeatures[v] is HoeDirt && (f.terrainFeatures[v] as HoeDirt).crop != null && (f.terrainFeatures[v] as HoeDirt).crop.currentPhase.Value > 1)
-                                    {
-                                        if (!kvp.Value.modData.TryGetValue(scaredKey + i, out var scaredString) || !int.TryParse(scaredString, out int scared))
-                                            scared = 0;
-                                        kvp.Value.modData[scaredKey + i] = (scared + 1) + "";
-
-                                    }
                                     return false;
                                 }
                             }

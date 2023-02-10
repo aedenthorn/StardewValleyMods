@@ -156,6 +156,13 @@ namespace ImmersiveSprinklers
                 getValue: () => Config.EnableMod,
                 setValue: value => Config.EnableMod = value
             );
+
+            configMenu.AddBoolOption(
+                mod: ModManifest,
+                name: () => "Show Range When Placing",
+                getValue: () => Config.ShowRangeWhenPlacing,
+                setValue: value => Config.ShowRangeWhenPlacing = value
+            );
             configMenu.AddKeybind(
                 mod: ModManifest,
                 name: () => "Pickup Key",

@@ -87,17 +87,10 @@ namespace ImmersiveScarecrows
             var obj = GetScarecrow(tf, which);
             if(obj is not null)
             {
-                var r = obj.GetRadiusForScarecrow();
-                Vector2 pos = scarecrowTile + GetScarecrowCorner(which) * 0.5f;
-                for(int x = 0; x < r * 2 + 1; x ++)
+                var tiles = GetScarecrowTiles(scarecrowTile, which, obj.GetRadiusForScarecrow());
+                foreach (var tile in tiles)
                 {
-                    for (int y = 0; y < r * 2 + 1; y++)
-                    {
-                        Vector2 tile = scarecrowTile + new Vector2(x - r , y - r);
-                        if (Vector2.Distance(tile, pos) < r)
-                            e.SpriteBatch.Draw(Game1.mouseCursors, Game1.GlobalToLocal(new Vector2((float)((int)tile.X * 64), (float)((int)tile.Y * 64))), new Rectangle?(new Rectangle(194, 388, 16, 16)), Color.White, 0f, Vector2.Zero, 4f, SpriteEffects.None, 0.01f);
-
-                    }
+                    e.SpriteBatch.Draw(Game1.mouseCursors, Game1.GlobalToLocal(new Vector2(tile.X * 64, tile.Y * 64)), new Rectangle?(new Rectangle(194, 388, 16, 16)), Color.White, 0f, Vector2.Zero, 4f, SpriteEffects.None, 0.01f);
                 }
             }
         }
@@ -149,6 +142,12 @@ namespace ImmersiveScarecrows
                 name: () => "Mod Enabled",
                 getValue: () => Config.EnableMod,
                 setValue: value => Config.EnableMod = value
+            );
+            configMenu.AddBoolOption(
+                mod: ModManifest,
+                name: () => "Show Range When Placing",
+                getValue: () => Config.ShowRangeWhenPlacing,
+                setValue: value => Config.ShowRangeWhenPlacing = value
             );
             configMenu.AddKeybind(
                 mod: ModManifest,

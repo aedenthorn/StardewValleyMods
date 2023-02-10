@@ -6,6 +6,7 @@ namespace ImmersiveScarecrows
     {
         public bool EnableMod { get; set; } = true;
         public bool Debug { get; set; } = false;
+        public bool ShowRangeWhenPlacing { get; set; } = true;
         public float Scale { get; set; } = 4;
         public float Alpha { get; set; } = 1;
         public int DrawOffsetX { get; set; } = 0;

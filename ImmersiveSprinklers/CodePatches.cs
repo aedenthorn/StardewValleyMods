@@ -264,7 +264,7 @@ namespace ImmersiveSprinklers
 
                 spriteBatch.Draw(Game1.mouseCursors, pos, new Rectangle(Utility.withinRadiusOfPlayer((int)Game1.currentCursorTile.X * 64, (int)Game1.currentCursorTile.Y * 64, 1, Game1.player) ? 194 : 210, 388, 16, 16), Color.White, 0f, Vector2.Zero, 4f, SpriteEffects.None, 0.01f);
 
-                if (true || Config.ShowRangeWhenPlacing)
+                if (Config.ShowRangeWhenPlacing)
                 {
                     foreach(var tile in GetSprinklerTiles(sprinklerTile, which, GetSprinklerRadius(__instance)))
                     {
