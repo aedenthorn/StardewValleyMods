@@ -281,11 +281,16 @@ namespace ImmersiveSprinklers
 
         private static void ActivateSprinkler(GameLocation environment, Vector2 tileLocation, Object obj, int which, bool delay)
         {
-            var radius = obj.GetModifiedRadiusForSprinkler();
             if (Game1.player.team.SpecialOrderRuleActive("NO_SPRINKLER", null))
             {
                 return;
             }
+            if (!Config.SprinklerRadii.TryGetValue(obj.Name, out int radius))
+            {
+                radius = obj.GetModifiedRadiusForSprinkler();
+            }
+            if (radius < 0)
+                return;
             foreach (Vector2 tile in GetSprinklerTiles(tileLocation, which, radius))
             {
                 obj.ApplySprinkler(environment, tile);

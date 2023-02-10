@@ -1,5 +1,6 @@
 ﻿using StardewModdingAPI;
 using StardewModdingAPI.Utilities;
+using System.Collections.Generic;
 
 namespace ImmersiveSprinklers
 {
@@ -15,6 +16,11 @@ namespace ImmersiveSprinklers
         public SButton PickupButton { get; set; } = SButton.E;
         public SButton ActivateButton { get; set; } = SButton.Enter;
         public SButton ShowRangeButton { get; set; } = SButton.LeftControl;
-
+        public Dictionary<string, int> SprinklerRadii { get; set; } = new()
+        {
+            { "Sprinkler", 0 },
+            { "Quality Sprinkler", 1 },
+            { "Iridium Sprinkler", 2 }
+        };
     }
 }
