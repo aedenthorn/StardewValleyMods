@@ -450,7 +450,7 @@ namespace ImmersiveSprinklers
 
                 if (elapsedDuration >= frameDuration)
                 {
-                    var animationDataList = (List<object>)AccessTools.Method(textureModel.GetType(), "GetAnimationData").Invoke(textureModel, new object[] { textureVariation, 0 });
+                    var animationDataList = (List<object>)AccessTools.Method(textureModel.GetType(), "GetAnimationData").Invoke(textureModel, new object[] { textureVariation });
                     frameIndex = frameIndex + 1 >= animationDataList.Count ? 0 : frameIndex + 1;
 
                     var animationData = AccessTools.Method(textureModel.GetType(), "GetAnimationDataAtIndex").Invoke(textureModel, new object[] { textureVariation, frameIndex });

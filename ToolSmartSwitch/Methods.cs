@@ -87,6 +87,8 @@ namespace ToolSmartSwitch
                 {
                     if (c is Monster)
                     {
+                        if (c is RockCrab && !AccessTools.FieldRefAccess<RockCrab, NetBool>((c as RockCrab), "shellGone").Value)
+                            continue;
                         var distance = Vector2.Distance(c.GetBoundingBox().Center.ToVector2(), f.GetBoundingBox().Center.ToVector2());
                         if (distance > Config.MaxMonsterDistance)
                             continue;

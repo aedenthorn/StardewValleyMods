@@ -100,6 +100,8 @@ namespace OmniTools
 
         public static Tool SmartSwitch(Tool currentTool, GameLocation currentLocation, Vector2 tile, List<ToolInfo> tools = null)
         {
+            if (!Config.SmartSwitch)
+                return null;
             if (!Config.FromWeapon && currentTool is MeleeWeapon && !(currentTool as MeleeWeapon).isScythe(currentTool.ParentSheetIndex))
                 return null;
             if (Config.SwitchForMonsters && currentTool.getLastFarmerToUse() is not null)
@@ -113,6 +115,8 @@ namespace OmniTools
                         {
                             if (c is Monster)
                             {
+                                if (c is RockCrab && !AccessTools.FieldRefAccess<RockCrab, NetBool>((c as RockCrab), "shellGone").Value)
+                                    continue;
                                 var distance = Vector2.Distance(c.GetBoundingBox().Center.ToVector2(), f.GetBoundingBox().Center.ToVector2());
                                 if (distance > Config.MaxMonsterDistance)
                                     continue;

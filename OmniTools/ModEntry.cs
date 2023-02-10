@@ -88,7 +88,14 @@ namespace OmniTools
 
         private void Input_ButtonPressed(object sender, StardewModdingAPI.Events.ButtonPressedEventArgs e)
         {
-            if (!Config.EnableMod || !Context.CanPlayerMove || Game1.player.CurrentTool?.modData.TryGetValue(toolsKey, out string toolsString) != true)
+            if (!Config.EnableMod || !Context.CanPlayerMove)
+                return;
+            if(Config.ToggleButton != SButton.None && e.Button == Config.ToggleButton)
+            {
+                Config.SmartSwitch = !Config.SmartSwitch;
+                Helper.WriteConfig(Config);
+            }
+            if(Game1.player.CurrentTool?.modData.TryGetValue(toolsKey, out string toolsString) != true)
                 return;
             if(e.Button == Config.CycleButton)
             {
@@ -131,6 +138,14 @@ namespace OmniTools
                 setValue: value => Config.EnableMod = value
             );
             
+
+            configMenu.AddBoolOption(
+                mod: ModManifest,
+                name: () => "Smart Switch Enabled",
+                getValue: () => Config.SmartSwitch,
+                setValue: value => Config.SmartSwitch = value
+            );
+            
             configMenu.AddBoolOption(
                 mod: ModManifest,
                 name: () => "Switch From Weapon",
@@ -157,6 +172,13 @@ namespace OmniTools
                 name: () => "Remove Key",
                 getValue: () => Config.RemoveButton,
                 setValue: value => Config.RemoveButton = value
+            );
+
+            configMenu.AddKeybind(
+                mod: ModManifest,
+                name: () => "Toggle Key",
+                getValue: () => Config.ToggleButton,
+                setValue: value => Config.ToggleButton = value
             );
 
             configMenu.AddBoolOption(

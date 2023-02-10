@@ -485,6 +485,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MultiSave", "MultiSave\Mult
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WeaponsIgnoreGrass", "WeaponsIgnoreGrass\WeaponsIgnoreGrass.csproj", "{204E79D0-BB11-4A01-9597-71D1814470C9}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "StackedItemIcons", "StackedItemIcons\StackedItemIcons.csproj", "{BE0BFC58-B090-47A4-907B-0FCFDF6B8349}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -3327,6 +3329,18 @@ Global
 		{204E79D0-BB11-4A01-9597-71D1814470C9}.Release|x64.Build.0 = Release|x64
 		{204E79D0-BB11-4A01-9597-71D1814470C9}.Release|x86.ActiveCfg = Release|Any CPU
 		{204E79D0-BB11-4A01-9597-71D1814470C9}.Release|x86.Build.0 = Release|Any CPU
+		{BE0BFC58-B090-47A4-907B-0FCFDF6B8349}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BE0BFC58-B090-47A4-907B-0FCFDF6B8349}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BE0BFC58-B090-47A4-907B-0FCFDF6B8349}.Debug|x64.ActiveCfg = Debug|x64
+		{BE0BFC58-B090-47A4-907B-0FCFDF6B8349}.Debug|x64.Build.0 = Debug|x64
+		{BE0BFC58-B090-47A4-907B-0FCFDF6B8349}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{BE0BFC58-B090-47A4-907B-0FCFDF6B8349}.Debug|x86.Build.0 = Debug|Any CPU
+		{BE0BFC58-B090-47A4-907B-0FCFDF6B8349}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BE0BFC58-B090-47A4-907B-0FCFDF6B8349}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BE0BFC58-B090-47A4-907B-0FCFDF6B8349}.Release|x64.ActiveCfg = Release|x64
+		{BE0BFC58-B090-47A4-907B-0FCFDF6B8349}.Release|x64.Build.0 = Release|x64
+		{BE0BFC58-B090-47A4-907B-0FCFDF6B8349}.Release|x86.ActiveCfg = Release|Any CPU
+		{BE0BFC58-B090-47A4-907B-0FCFDF6B8349}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

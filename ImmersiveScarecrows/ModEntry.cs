@@ -4,8 +4,10 @@ using Microsoft.Xna.Framework.Graphics;
 using StardewModdingAPI;
 using StardewValley;
 using StardewValley.TerrainFeatures;
+using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.Reflection;
 using Object = StardewValley.Object;
 
 namespace ImmersiveScarecrows
@@ -50,6 +52,25 @@ namespace ImmersiveScarecrows
 
             var harmony = new Harmony(ModManifest.UniqueID);
             harmony.PatchAll();
+
+            HarmonyMethod prefix = new(typeof(ModEntry), nameof(ModEntry.Modded_Farm_AddCrows_Prefix));
+            Type prismaticPatches = AccessTools.TypeByName("PrismaticTools.Framework.PrismaticPatches");
+            MethodInfo prismaticPrefix = AccessTools.Method(prismaticPatches, "Farm_AddCrows");
+
+            if (prismaticPrefix is not null)
+            {
+                harmony.Patch(prismaticPrefix, prefix: prefix);
+                Monitor.Log("Found Prismatic Tools, patching for compat", LogLevel.Info);
+            }
+
+            Type radioactivePatches = AccessTools.TypeByName("RadioactiveTools.Framework.RadioactivePatches");
+            MethodInfo radioactivePrefix = AccessTools.Method(radioactivePatches, "Farm_AddCrows");
+
+            if (radioactivePrefix is not null)
+            {
+                harmony.Patch(radioactivePrefix, prefix: prefix);
+                Monitor.Log("Found Radioactive Tools, patching for compat", LogLevel.Info);
+            }
 
         }
 

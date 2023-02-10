@@ -1,8 +1,11 @@
 ﻿using Microsoft.Xna.Framework;
 using StardewModdingAPI;
 using StardewValley;
+using StardewValley.Buildings;
 using StardewValley.Locations;
 using StardewValley.TerrainFeatures;
+using System;
+using System.Linq;
 using Object = StardewValley.Object;
 
 namespace MoveIt
@@ -88,6 +91,18 @@ namespace MoveIt
             {
                 Pickup(obj, cursorTile, obj.Name);
                 return;
+            }
+            if (Game1.currentLocation is BuildableGameLocation)
+            {
+                var building = (Game1.currentLocation as BuildableGameLocation).buildings.FirstOrDefault(b => b.intersects(new Rectangle(Utility.Vector2ToPoint(Game1.currentCursorTile * 64 - new Vector2(32, 32)), new Point(64, 64))));
+                if (building != null)
+                {
+                    var mousePos = Game1.getMousePosition().ToVector2();
+                    var viewport = new Vector2(Game1.viewport.X, Game1.viewport.Y);
+                    var buildingPos = new Vector2(building.tileX.Value, building.tileY.Value) * 64 - viewport;
+                    Pickup(building, cursorTile, mousePos - buildingPos, building.GetType().ToString());
+                    return;
+                }
             }
             foreach (var rc in Game1.currentLocation.resourceClumps)
             {
@@ -211,6 +226,26 @@ namespace MoveIt
                     movingObject = null;
                 }
             }
+            else if (movingObject is Building)
+            {
+                if (Game1.currentLocation is BuildableGameLocation && (Game1.currentLocation as BuildableGameLocation).buildings.Contains(movingObject as Building))
+                {
+                    (movingObject as Building).tileX.Value = (int)Math.Round(Game1.currentCursorTile.X - (movingOffset.X / 64));
+                    (movingObject as Building).tileY.Value = (int)Math.Round(Game1.currentCursorTile.Y - (movingOffset.Y / 64));
+
+                    if (movingObject is ShippingBin)
+                    {
+                        (movingObject as ShippingBin).initLid();
+                    }
+                    if (movingObject is GreenhouseBuilding)
+                    {
+                        Game1.getFarm().greenhouseMoved.Value = true;
+                    }
+                    (movingObject as Building).performActionOnBuildingPlacement();
+
+                    movingObject = null;
+                }
+            }
             if (movingObject is null)
             {
                 PlaySound();
@@ -225,8 +260,14 @@ namespace MoveIt
 
         private void Pickup(object obj, Vector2 cursorTile, string name)
         {
+            Pickup(obj, cursorTile, Game1.getMousePosition().ToVector2() + new Vector2(Game1.viewport.X, Game1.viewport.Y) - cursorTile * 64, name);
+        }
+
+        private void Pickup(object obj, Vector2 cursorTile, Vector2 offset, string name)
+        {
             movingObject = obj;
             movingTile = cursorTile;
+            movingOffset = offset;
             SMonitor.Log($"Picked up {name}");
             Helper.Input.Suppress(Config.MoveKey);
             PlaySound();

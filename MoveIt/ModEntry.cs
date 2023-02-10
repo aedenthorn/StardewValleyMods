@@ -5,6 +5,7 @@ using Microsoft.Xna.Framework.Graphics.PackedVector;
 using StardewModdingAPI;
 using StardewValley;
 using StardewValley.BellsAndWhistles;
+using StardewValley.Buildings;
 using StardewValley.Locations;
 using StardewValley.TerrainFeatures;
 using StardewValley.Tools;
@@ -29,6 +30,7 @@ namespace MoveIt
 
         public static object movingObject;
         public static Vector2 movingTile;
+        public static Vector2 movingOffset;
 
         /// <summary>The mod entry point, called after the mod is first loaded.</summary>
         /// <param name="helper">Provides simplified APIs for writing mods.</param>
@@ -84,6 +86,21 @@ namespace MoveIt
                 {
                     Rectangle box = (movingObject as Character).GetBoundingBox();
                     (movingObject as Character).Sprite.draw(e.SpriteBatch, new Vector2(Game1.getMouseX() - 32, Game1.getMouseY() - 32) + new Vector2((float)((movingObject as Character).GetSpriteWidthForPositioning() * 4 / 2), (float)(box.Height / 2)), (float)box.Center.Y / 10000f, 0, (movingObject as Character).ySourceRectOffset, Color.White, false, 4f, 0f, true);
+                }
+                else if (movingObject is Building)
+                {
+                    var building = (movingObject as Building);
+                    var x = (int)Math.Round(Game1.currentCursorTile.X - movingOffset.X / 64);
+                    var y = (int)Math.Round(Game1.currentCursorTile.Y - movingOffset.Y / 64);
+                    
+                    for (int x_offset = 0; x_offset < building.tilesWide.Value; x_offset++)
+                    {
+                        for (int y_offset = 0; y_offset < building.tilesHigh.Value; y_offset++)
+                        {
+                            e.SpriteBatch.Draw(Game1.mouseCursors, new Vector2((float)((x + x_offset) * 64 - Game1.viewport.X), (float)((y + y_offset) * 64 - Game1.viewport.Y)), new Microsoft.Xna.Framework.Rectangle?(new Rectangle(194, 388, 16, 16)), Color.White, 0f, Vector2.Zero, 4f, SpriteEffects.None, 0.01f);
+                        }
+                    }
+                    //e.SpriteBatch.Draw(building.texture.Value, new Vector2(Game1.getMouseX() - movingOffset.X, Game1.getMouseY() + building.tilesHigh.Value * 64 - movingOffset.Y), new Rectangle?(building.getSourceRect()), building.color.Value, 0f, new Vector2(0f, (float)building.getSourceRect().Height), 4f, SpriteEffects.None, 1);
                 }
             }
             catch { }

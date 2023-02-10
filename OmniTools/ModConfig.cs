@@ -8,10 +8,12 @@ namespace OmniTools
     public class ModConfig
     {
         public bool EnableMod { get; set; } = true;
+        public bool SmartSwitch { get; set; } = true;
         public bool FromWeapon { get; set; } = true;
         public SButton ModButton { get; set; } = SButton.LeftAlt;
         public SButton CycleButton { get; set; } = SButton.X;
         public SButton RemoveButton { get; set; } = SButton.Z;
+        public SButton ToggleButton { get; set; } = SButton.None;
         public bool ShowNumber { get; set; } = true;
         public Color NumberColor { get; set; } = Color.Pink;
         public bool SwitchForObjects { get; set; } = true;

@@ -199,7 +199,7 @@ namespace OmniTools
         {
             public static void Prefix(Farmer __instance)
             {
-                if (!Config.EnableMod || !__instance.IsLocalPlayer || __instance.CurrentTool?.modData.TryGetValue(toolsKey, out string toolsString) != true)
+                if (!Config.EnableMod || !Config.SmartSwitch || !__instance.IsLocalPlayer || __instance.CurrentTool?.modData.TryGetValue(toolsKey, out string toolsString) != true)
                     return;
                 List<ToolInfo> tools = JsonConvert.DeserializeObject<List<ToolInfo>>(toolsString);
                 var tile = __instance.GetToolLocation(false) / 64;
