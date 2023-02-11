@@ -197,20 +197,20 @@ namespace ImmersiveScarecrows
         {
             public static bool Prefix(Object __instance, SpriteBatch spriteBatch, GameLocation location)
             {
-                if (!Config.EnableMod || !Context.IsPlayerFree || !__instance.IsSprinkler() || Game1.currentLocation?.terrainFeatures?.TryGetValue(Game1.currentCursorTile, out var tf) != true || tf is not HoeDirt)
+                if (!Config.EnableMod || !Context.IsPlayerFree || !__instance.IsScarecrow() || Game1.currentLocation?.terrainFeatures?.TryGetValue(Game1.currentCursorTile, out var tf) != true || tf is not HoeDirt)
                     return true;
                 var which = GetMouseCorner();
-                var sprinklerTile = Game1.currentCursorTile;
+                var scarecrowTile = Game1.currentCursorTile;
 
-                GetScarecrowTileBool(Game1.currentLocation, ref sprinklerTile, ref which, out string str);
+                GetScarecrowTileBool(Game1.currentLocation, ref scarecrowTile, ref which, out string str);
 
-                Vector2 pos = Game1.GlobalToLocal(sprinklerTile * 64 + GetScarecrowCorner(which) * 32f);
+                Vector2 pos = Game1.GlobalToLocal(scarecrowTile * 64 + GetScarecrowCorner(which) * 32f);
 
                 spriteBatch.Draw(Game1.mouseCursors, pos, new Rectangle(Utility.withinRadiusOfPlayer((int)Game1.currentCursorTile.X * 64, (int)Game1.currentCursorTile.Y * 64, 1, Game1.player) ? 194 : 210, 388, 16, 16), Color.White, 0f, Vector2.Zero, 4f, SpriteEffects.None, 0.01f);
 
                 if (Config.ShowRangeWhenPlacing)
                 {
-                    foreach (var tile in GetScarecrowTiles(sprinklerTile, which, __instance.GetRadiusForScarecrow()))
+                    foreach (var tile in GetScarecrowTiles(scarecrowTile, which, __instance.GetRadiusForScarecrow()))
                     {
                         spriteBatch.Draw(Game1.mouseCursors, Game1.GlobalToLocal(tile * 64), new Rectangle(194, 388, 16, 16), Color.White * 0.5f, 0f, Vector2.Zero, 4f, SpriteEffects.None, 0.01f);
                     }
