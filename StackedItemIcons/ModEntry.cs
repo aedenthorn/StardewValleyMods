@@ -62,6 +62,13 @@ namespace StackedItemIcons
                 getValue: () => Config.MinForTripleStack,
                 setValue: value => Config.MinForTripleStack = value
             );
+            
+            configMenu.AddNumberOption(
+                mod: ModManifest,
+                name: () => "Spacing",
+                getValue: () => Config.Spacing,
+                setValue: value => Config.Spacing = value
+            );
 
 
         }

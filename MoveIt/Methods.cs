@@ -196,7 +196,7 @@ namespace MoveIt
             }
             else if (movingObject is TerrainFeature)
             {
-                if (movingObject is LargeTerrainFeature)
+                if (movingObject is LargeTerrainFeature && Game1.currentLocation.largeTerrainFeatures.Contains(movingObject as LargeTerrainFeature))
                 {
                     var index = Game1.currentLocation.largeTerrainFeatures.IndexOf(movingObject as LargeTerrainFeature);
                     if (index >= 0)
