@@ -164,7 +164,9 @@ namespace FreeLove
             }
 
             foreach (NPC spouse in allSpouses) 
-            { 
+            {
+                if (spouse is null)
+                    continue;
                 SMonitor.Log("placing " + spouse.Name);
 
                 Point spouseRoomSpot = new Point(-1, -1); 

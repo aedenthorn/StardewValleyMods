@@ -102,12 +102,6 @@ namespace HugsAndKisses
                 );
                 configMenu.AddBoolOption(
                     mod: ModManifest,
-                    name: () => "Unlimited Kisses",
-                    getValue: () => Config.UnlimitedDailyKisses,
-                    setValue: value => Config.UnlimitedDailyKisses = value
-                );
-                configMenu.AddBoolOption(
-                    mod: ModManifest,
                     name: () => "Dating Kisses",
                     getValue: () => Config.DatingKisses,
                     setValue: value => Config.DatingKisses = value

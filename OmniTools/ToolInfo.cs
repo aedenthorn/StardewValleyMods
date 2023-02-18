@@ -30,7 +30,7 @@ namespace OmniTools
             }
             foreach (var o in tool.attachments)
             {
-                attachments.Add(o is not null ? new ObjectInfo(o.ParentSheetIndex, o.Stack, o.Quality) : null);
+                attachments.Add(o is not null ? new ObjectInfo(o.ParentSheetIndex, o.Stack, o.Quality, o.uses.Value) : null);
             }
             foreach (var kvp in tool.modData.Pairs)
             {
@@ -50,12 +50,14 @@ namespace OmniTools
         public int parentSheetIndex;
         public int stack;
         public int quality;
+        public int uses;
 
-        public ObjectInfo(int parentSheetIndex, int stack, int quality)
+        public ObjectInfo(int parentSheetIndex, int stack, int quality, int uses)
         {
             this.parentSheetIndex = parentSheetIndex;
             this.stack = stack;
             this.quality = quality;
+            this.uses = uses;
         }
     }
 }

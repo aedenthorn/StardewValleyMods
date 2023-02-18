@@ -475,7 +475,13 @@ namespace OmniTools
             {
                 try
                 {
-                    t.attachments.Add(oi is not null ? new Object(oi.parentSheetIndex, oi.stack, false, -1, oi.quality) : null);
+                    Object a = null;
+                    if (oi is not null)
+                    {
+                        a = new Object(oi.parentSheetIndex, oi.stack, false, -1, oi.quality);
+                        a.uses.Value = oi.uses;
+                    }
+                    t.attachments.Add(a);
                 }
                 catch(Exception ex) 
                 {

@@ -1,18 +1,18 @@
 ﻿{
-  "Name": "Omni Tools",
+  "Name": "Immersive Scarecrows",
   "Author": "aedenthorn",
-  "Version": "0.5.7",
-  "Description": "Omni Tools.",
-  "UniqueID": "aedenthorn.OmniTools",
-  "EntryDll": "OmniTools.dll",
+  "Version": "0.4.2",
+  "Description": "Immersive Scarecrows.",
+  "UniqueID": "aedenthorn.ImmersiveScarecrows",
+  "EntryDll": "ImmersiveScarecrows.dll",
   "MinimumApiVersion": "3.15.0",
   "ModUpdater": {
     "Repository": "StardewValleyMods",
     "User": "aedenthorn",
     "Directory": "_releases",
-    "ModFolder": "OmniTools"
+    "ModFolder": "ImmersiveScarecrows"
   },
-  "UpdateKeys": [ "Nexus:14865" ],
+  "UpdateKeys": [ "Nexus:15290" ],
   "Dependencies": [
     {
       "UniqueID": "Platonymous.ModUpdater",
