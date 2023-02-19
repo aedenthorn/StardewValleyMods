@@ -161,7 +161,7 @@ namespace Moolah
         {
             public static bool Prefix(MoneyDial __instance)
             {
-                if (!Config.EnableMod || string.IsNullOrEmpty(Config.Separator))
+                if (!Config.EnableMod || string.IsNullOrEmpty(Config.Separator) || !Environment.StackTrace.Contains("ShippingMenu"))
                     return true;
                 return false;
 

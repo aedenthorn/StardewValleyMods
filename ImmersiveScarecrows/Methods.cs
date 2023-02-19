@@ -6,6 +6,7 @@ using StardewValley;
 using StardewValley.TerrainFeatures;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 using xTile.Tiles;
 using Object = StardewValley.Object;
@@ -368,8 +369,8 @@ namespace ImmersiveScarecrows
 
                 if (elapsedDuration >= frameDuration)
                 {
-                    var animationDataList = (List<object>)AccessTools.Method(textureModel.GetType(), "GetAnimationData").Invoke(textureModel, new object[] { textureVariation, 0 });
-                    frameIndex = frameIndex + 1 >= animationDataList.Count ? 0 : frameIndex + 1;
+                    var animationDataList = (IEnumerable<object>)AccessTools.Method(textureModel.GetType(), "GetAnimationData").Invoke(textureModel, new object[] { textureVariation });
+                    frameIndex = frameIndex + 1 >= animationDataList.Count() ? 0 : frameIndex + 1;
 
                     var animationData = AccessTools.Method(textureModel.GetType(), "GetAnimationDataAtIndex").Invoke(textureModel, new object[] { textureVariation, frameIndex });
                     currentFrame = (int)AccessTools.Property(animationData.GetType(), "Frame").GetValue(animationData);
