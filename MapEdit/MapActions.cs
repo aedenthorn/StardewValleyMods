@@ -166,9 +166,11 @@ namespace MapEdit
 
         public static void UpdateCurrentMap(bool force)
         {
+            if (!ModEntry.Config.EnableMod || Game1.player?.currentLocation?.mapPath?.Value is null)
+                return;
             string mapName = Game1.player.currentLocation.mapPath.Value.Replace("Maps\\", "");
 
-            if (!ModEntry.Config.EnableMod || (!force && (!ModEntry.mapCollectionData.mapDataDict.ContainsKey(mapName) || ModEntry.cleanMaps.Contains(mapName))))
+            if (!force && (!ModEntry.mapCollectionData.mapDataDict.ContainsKey(mapName) || ModEntry.cleanMaps.Contains(mapName)))
                 return;
 
             ModEntry.SHelper.GameContent.InvalidateCache("Maps/" + mapName);
