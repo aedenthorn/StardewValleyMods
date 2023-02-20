@@ -35,7 +35,7 @@ namespace DynamicMapTiles
         {
             public static void Postfix(GameLocation __instance, float x, float y)
             {
-                if (!Config.ModEnabled || !__instance.isTileOnMap(new Vector2(x, y)))
+                if (!Config.ModEnabled || (!Config.TriggerDuringEvents && Game1.eventUp) || !__instance.isTileOnMap(new Vector2(x, y)))
                     return;
                 foreach(var layer in __instance.map.Layers)
                 {
@@ -125,7 +125,7 @@ namespace DynamicMapTiles
         {
             public static void Postfix(Farmer __instance, ref float __result)
             {
-                if (!Config.ModEnabled || __instance.currentLocation is null)
+                if (!Config.ModEnabled || (!Config.TriggerDuringEvents && Game1.eventUp) || __instance.currentLocation is null)
                     return;
                 var tileLoc = __instance.getTileLocation();
                 if (__instance.currentLocation.isTileOnMap(tileLoc))
@@ -143,7 +143,7 @@ namespace DynamicMapTiles
         {
             public static void Prefix(Farmer __instance, ref Vector2[] __state)
             {
-                if (!Config.ModEnabled || __instance.currentLocation is null)
+                if (!Config.ModEnabled || (!Config.TriggerDuringEvents && Game1.eventUp) || __instance.currentLocation is null)
                     return;
                 var tileLoc = __instance.getTileLocation();
                 if (__instance.currentLocation.isTileOnMap(tileLoc))
@@ -161,7 +161,7 @@ namespace DynamicMapTiles
             }
             public static void Postfix(Farmer __instance, Vector2[] __state)
             {
-                if (!Config.ModEnabled || __state is null || __instance.currentLocation is null)
+                if (!Config.ModEnabled || (!Config.TriggerDuringEvents && Game1.eventUp) || __state is null || __instance.currentLocation is null)
                     return;
                 var tilePos = __instance.getTileLocationPoint();
                 var oldTile = Utility.Vector2ToPoint(__state[1]);
