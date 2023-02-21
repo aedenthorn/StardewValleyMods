@@ -5,7 +5,9 @@ using StardewValley.Locations;
 using StardewValley.Quests;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using static StardewValley.LocationRequest;
 using Object = StardewValley.Object;
 
 namespace HelpWanted
@@ -13,112 +15,84 @@ namespace HelpWanted
     public partial class ModEntry
     {
 
-        private void LoadTextures()
+        private Texture2D GetTexture(string path)
         {
-            pinTextures.Clear();
-            npcPinTextures.Clear();
-            questPinTextures.Clear();
-            padTextures.Clear();
-            npcPadTextures.Clear();
-            questPadTextures.Clear();
-            var dispoDict = Game1.content.Load<Dictionary<string, string>>("Data\\NPCDispositions");
-            AddTextures(pinTextures, pinTexturePath, "assets/pin.png");
-            foreach(var npc in dispoDict.Keys)
-            {
-                npcPinTextures[npc] = new();
-                AddTextures(npcPinTextures[npc], pinTexturePath + "/" + npc);
-                npcQuestPinTextures[npc] = new();
-                foreach (var quest in Enum.GetNames(typeof(QuestType)))
-                {
-                    npcQuestPinTextures[npc][quest] = new();
-                    AddTextures(npcQuestPinTextures[npc][quest], pinTexturePath + "/" + npc + "/" + quest);
-                }
-            }
-            foreach (var quest in Enum.GetNames(typeof(QuestType)))
-            {
-                questPinTextures[quest] = new();
-                AddTextures(questPinTextures[quest], pinTexturePath + "/" + quest);
-            }
-            AddTextures(padTextures, padTexturePath, "assets/pad.png");
-            foreach(var npc in dispoDict.Keys)
-            {
-                npcPadTextures[npc] = new();
-                AddTextures(npcPadTextures[npc], padTexturePath + "/" + npc);
-                npcQuestPadTextures[npc] = new();
-                foreach (var quest in Enum.GetNames(typeof(QuestType)))
-                {
-                    npcQuestPadTextures[npc][quest] = new();
-                    AddTextures(npcQuestPadTextures[npc][quest], padTexturePath + "/" + npc + "/" + quest);
-                }
-            }
-            foreach (var quest in Enum.GetNames(typeof(QuestType)))
-            {
-                questPadTextures[quest] = new();
-                AddTextures(questPadTextures[quest], padTexturePath + "/" + quest);
-            }
-        }
-
-        private void AddTextures(List<Texture2D> list, string path, string fallback = null)
-        {
+            List<Texture2D> list = new List<Texture2D>();
             try
             {
                 int i = 1;
-                for (; ; )
+                for ( ; ; )
                 {
-                    list.Add(Game1.content.Load<Texture2D>(path + "/" + i));
+                    list.Add(Helper.GameContent.Load<Texture2D>(path + "/" + i));
                     i++;
                 }
             }
             catch { }
-            if (!list.Any())
+            if (list.Any())
             {
-                try
-                {
-                    list.Add(Game1.content.Load<Texture2D>(path));
-                }
-                catch
-                {
-                    if(fallback is not null)
-                        list.Add(Helper.ModContent.Load<Texture2D>(fallback));
-                }
+                return list[Game1.random.Next(list.Count)];
             }
+
+            try
+            {
+                return Helper.GameContent.Load<Texture2D>(path);
+            }
+            catch
+            {
+            }
+            return null;
         }
 
         private Texture2D GetPadTexture(string target, string questType)
         {
-            List<Texture2D> list;
-            if (npcQuestPadTextures.TryGetValue(target, out var dict) && dict.TryGetValue(questType, out list) && list.Any())
+            var texture = GetTexture(padTexturePath + "/" + target + "/" + questType);
+            if (texture is not null)
             {
-                return list.Count > 1 ? list[Game1.random.Next(list.Count)] : list[0];
+                return texture;
             }
-            if (npcPadTextures.TryGetValue(target, out list) && list.Any())
+            texture = GetTexture(padTexturePath + "/" + target);
+            if (texture is not null)
             {
-                return list.Count > 1 ? list[Game1.random.Next(list.Count)] : list[0];
+                return texture;
             }
-            if (questPadTextures.TryGetValue(questType, out list) && list.Any())
+            texture = GetTexture(padTexturePath + "/" + questType);
+            if (texture is not null)
             {
-                return list.Count > 1 ? list[Game1.random.Next(list.Count)] : list[0];
+                return texture;
             }
-            return padTextures.Count > 1 ? padTextures[Game1.random.Next(padTextures.Count)] : padTextures[0];
+            texture = GetTexture(padTexturePath);
+            if (texture is not null)
+            {
+                return texture;
+            }
+            return Helper.ModContent.Load<Texture2D>("assets/pad.png");
         }
 
         private Texture2D GetPinTexture(string target, string questType)
         {
-            List<Texture2D> list;
-            if (npcQuestPinTextures.TryGetValue(target, out var dict) && dict.TryGetValue(questType, out list) && list.Any())
+            var texture = GetTexture(pinTexturePath + "/" + target + "/" + questType);
+            if (texture is not null)
             {
-                return list.Count > 1 ? list[Game1.random.Next(list.Count)] : list[0];
+                return texture;
             }
-            if (npcPinTextures.TryGetValue(target, out list) && list.Any())
+            texture = GetTexture(pinTexturePath + "/" + target);
+            if (texture is not null)
             {
-                return list.Count > 1 ? list[Game1.random.Next(list.Count)] : list[0];
+                return texture;
             }
-            if (questPinTextures.TryGetValue(questType, out list) && list.Any())
+            texture = GetTexture(pinTexturePath + "/" + questType);
+            if (texture is not null)
             {
-                return list.Count > 1 ? list[Game1.random.Next(list.Count)] : list[0];
+                return texture;
             }
-            return pinTextures.Count > 1 ? pinTextures[Game1.random.Next(pinTextures.Count)] : pinTextures[0];
+            texture = GetTexture(pinTexturePath);
+            if (texture is not null)
+            {
+                return texture;
+            }
+            return Helper.ModContent.Load<Texture2D>("assets/pin.png");
         }
+
 
         private static List<int> GetPossibleCrops(List<int> oldList)
         {

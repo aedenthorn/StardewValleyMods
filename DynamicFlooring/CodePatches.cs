@@ -25,7 +25,7 @@ namespace DynamicFlooring
         {
             public static void Postfix(GameLocation __instance, SpriteBatch b)
             {
-                if (!Config.ModEnabled || !drawingTiles || startTile.Value is null || Game1.player.ActiveObject is not Wallpaper)
+                if (!Config.ModEnabled || !drawingTiles.Value || startTile.Value is null || Game1.player.ActiveObject is not Wallpaper)
                     return;
                 var start = startTile.Value.Value;
                 Vector2 rectStart = new Vector2(MathHelper.Min(start.X, Game1.currentCursorTile.X), MathHelper.Min(start.Y, Game1.currentCursorTile.Y));
@@ -34,7 +34,7 @@ namespace DynamicFlooring
                 Rectangle drawRect = new Rectangle(Utility.Vector2ToPoint(rectStart * 64), Utility.Vector2ToPoint((rectEnd - rectStart) * 64));
                 if (!SHelper.Input.IsSuppressed(Config.PlaceButton))
                 {
-                    drawingTiles = false;
+                    drawingTiles.Value = false;
                     Wallpaper w = (Game1.player.ActiveObject as Wallpaper);
                     string id;
                     if (w.GetModData() != null)

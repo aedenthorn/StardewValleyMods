@@ -1,7 +1,7 @@
 ﻿{
   "Name": "Dynamic Flooring",
   "Author": "aedenthorn",
-  "Version": "0.1.2",
+  "Version": "0.1.3",
   "Description": "Dynamic Flooring.",
   "UniqueID": "aedenthorn.DynamicFlooring",
   "EntryDll": "DynamicFlooring.dll",

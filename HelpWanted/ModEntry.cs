@@ -32,16 +32,6 @@ namespace HelpWanted
 
         public static Dictionary<string, JsonQuestData> modQuestDict = new Dictionary<string, JsonQuestData>();
 
-        public static Dictionary<string, List<Texture2D>> npcPinTextures = new();
-        public static Dictionary<string, List<Texture2D>> questPinTextures = new();
-        public static Dictionary<string, Dictionary<string, List<Texture2D>>> npcQuestPinTextures = new();
-        public static List<Texture2D> pinTextures = new();
-
-        public static Dictionary<string, List<Texture2D>> npcPadTextures = new();
-        public static Dictionary<string, List<Texture2D>> questPadTextures = new();
-        public static Dictionary<string, Dictionary<string, List<Texture2D>>> npcQuestPadTextures = new();
-        public static List<Texture2D> padTextures = new();
-
         /// <summary>The mod entry point, called after the mod is first loaded.</summary>
         /// <param name="helper">Provides simplified APIs for writing mods.</param>
         public override void Entry(IModHelper helper)
@@ -82,7 +72,6 @@ namespace HelpWanted
         {
             if (!Config.ModEnabled || Utility.isFestivalDay(Game1.dayOfMonth, Game1.currentSeason))
                 return;
-            LoadTextures();
             var dict = Helper.GameContent.Load<Dictionary<string, JsonQuestData>>(dictPath);
             foreach(var kvp in dict)
             {

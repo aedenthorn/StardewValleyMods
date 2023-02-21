@@ -22,9 +22,6 @@ namespace FarmerHelper
         {
             Config = Helper.ReadConfig<ModConfig>();
 
-            if (!Config.EnableMod)
-                return;
-
             context = this;
 
             SMonitor = Monitor;
@@ -133,7 +130,7 @@ namespace FarmerHelper
         {
             if (c.seasonsToGrowIn.Contains(seasons[(Utility.getSeasonNumber(Game1.currentSeason) + 1) % 4]))
                 return true;
-            if(hoeDirt is not null && hoeDirt.fertilizer.Value != 0)
+            if(hoeDirt is not null)
             {
                 HoeDirt d = new HoeDirt(hoeDirt.state.Value, c);
                 d.currentLocation = hoeDirt.currentLocation;

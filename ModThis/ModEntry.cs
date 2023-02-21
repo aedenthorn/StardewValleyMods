@@ -78,12 +78,12 @@ namespace ModThis
             List<Response> responses = new List<Response>();
 
 
-            if (thing is Object && ((thing as Object).Type.Equals("Crafting") || (thing as Object).Type.Equals("interactive")) && (!(thing is Chest) || !(thing as Chest).items.Any()))
+            if ((thing is Object && ((thing as Object).Type.Equals("Crafting") || (thing as Object).Type.Equals("interactive")) && (!(thing is Chest) || !(thing as Chest).items.Any())) || thing is Furniture)
                 responses.Add(new Response("ModThis_Wizard_Questions_Pickup", Helper.Translation.Get("pickup")));
 
             responses.Add(new Response("ModThis_Wizard_Questions_Remove", Helper.Translation.Get("remove")));
 
-            if(thing is Object || thing is Building || thing is TerrainFeature || thing is LargeTerrainFeature || thing is ResourceClump)
+            if(thing is Object || thing is Building || thing is TerrainFeature || thing is LargeTerrainFeature || thing is ResourceClump || thing is Furniture)
                 responses.Add(new Response("ModThis_Wizard_Questions_Move", Helper.Translation.Get("move")));
             
             if(thing is Tree || thing is FruitTree || (thing is Bush && (thing as Bush).size.Value == 3) || (thing is FarmAnimal && (thing as FarmAnimal).age.Value < (thing as FarmAnimal).ageWhenMature.Value) || Game1.currentLocation.isCropAtTile((int)cursorLoc.X, (int)cursorLoc.Y) || thing is IndoorPot)
@@ -112,6 +112,8 @@ namespace ModThis
                 return location.objects[cursorLoc];
             if (location.overlayObjects.ContainsKey(cursorLoc))
                 return location.overlayObjects[cursorLoc];
+            if (location.furniture.FirstOrDefault(f => f.boundingBox.Value.Contains(new Point((int)cursorLoc.X, (int)cursorLoc.Y)))!= null)
+                return location.furniture.FirstOrDefault(f => f.boundingBox.Value.Contains(new Point((int)cursorLoc.X, (int)cursorLoc.Y)));
             if (location.resourceClumps.FirstOrDefault(f => f.occupiesTile((int)cursorLoc.X, (int)cursorLoc.Y)) != null)
                 return location.resourceClumps.FirstOrDefault(f => f.occupiesTile((int)cursorLoc.X, (int)cursorLoc.Y));
             if (location.terrainFeatures.ContainsKey(cursorLoc))
@@ -223,7 +225,7 @@ namespace ModThis
         private void PickupThis()
         {
             Monitor.Log($"Picking up");
-            if (thing is Object && (Game1.currentLocation.objects.ContainsKey(cursorLoc) || Game1.currentLocation.objects.ContainsKey(cursorLoc)))
+            if (thing is Object && (Game1.currentLocation.objects.ContainsKey(cursorLoc) || Game1.currentLocation.overlayObjects.ContainsKey(cursorLoc)))
             {
                 Object obj = thing as Object;
                 Monitor.Log($"{obj.name} is an object");
@@ -236,6 +238,16 @@ namespace ModThis
                     Game1.currentLocation.objects.Remove(cursorLoc);
                 else
                     Game1.currentLocation.overlayObjects.Remove(cursorLoc);
+            }
+            else if (thing is Furniture && Game1.currentLocation.furniture.AsEnumerable().Contains(thing))
+            {
+                Furniture f = thing as Furniture;
+                if (f.heldObject.Value != null)
+                {
+                    Game1.player.currentLocation.debris.Add(new Debris(f.heldObject.Value, f.TileLocation * 64f + new Vector2(32f, 32f)));
+                }
+                Game1.player.currentLocation.debris.Add(new Debris(f.heldObject.Value, f.TileLocation * 64f + new Vector2(32f, 32f)));
+                Game1.currentLocation.furniture.Remove(f);
             }
         }
 
@@ -255,6 +267,16 @@ namespace ModThis
                 {
                     Game1.currentLocation.overlayObjects.Remove(cursorLoc);
                     Monitor.Log($"removed {(thing as Object).name} from overlayObjects");
+                    return;
+                }
+            }
+            if (thing is Furniture) 
+            {
+                Monitor.Log($"{(thing as Furniture).name} is furniture");
+                if (Game1.currentLocation.furniture.AsEnumerable().Contains(thing))
+                {
+                    Game1.currentLocation.furniture.Remove(thing as Furniture);
+                    Monitor.Log($"removed {(thing as Furniture).name} from furniture");
                     return;
                 }
             }
@@ -395,6 +417,18 @@ namespace ModThis
                     Game1.currentLocation.overlayObjects[cursorLoc + shiftV] = Game1.currentLocation.overlayObjects[cursorLoc];
                     Game1.currentLocation.overlayObjects.Remove(cursorLoc);
                     Monitor.Log($"moved {(thing as Object).name} {dir}");
+                    return;
+                }
+            }
+            if (thing is Furniture)
+            {
+                Monitor.Log($"{(thing as Furniture).name} is furniture");
+                if (Game1.currentLocation.furniture.AsEnumerable().Contains(thing))
+                {
+                    Furniture f = thing as Furniture;
+                    f.TileLocation += shiftV;
+                    f.updateDrawPosition();
+                    Monitor.Log($"moved {(thing as Furniture).name} {dir}");
                     return;
                 }
             }

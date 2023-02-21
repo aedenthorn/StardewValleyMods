@@ -1,6 +1,5 @@
 ﻿using HarmonyLib;
 using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Audio;
 using Newtonsoft.Json;
 using StardewModdingAPI;
 using StardewModdingAPI.Utilities;
@@ -9,7 +8,6 @@ using StardewValley.Locations;
 using StardewValley.Objects;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reflection.Metadata;
 
 namespace DynamicFlooring
 {
@@ -21,9 +19,10 @@ namespace DynamicFlooring
         public static ModConfig Config;
 
         public static ModEntry context;
-        public static PerScreen<Vector2?> startTile = new PerScreen<Vector2?>();
         public static string flooringKey = "aedenthorn.DynamicFlooring/flooring";
-        public static bool drawingTiles;
+        
+        public static PerScreen<Vector2?> startTile = new PerScreen<Vector2?>();
+        public static PerScreen<bool> drawingTiles = new(); 
 
         public override void Entry(IModHelper helper)
         {
@@ -50,7 +49,7 @@ namespace DynamicFlooring
                 return;
             if (e.Button == Config.ModButton)
             {
-                drawingTiles = false;
+                drawingTiles.Value = false;
             }
         }
 
@@ -60,7 +59,7 @@ namespace DynamicFlooring
                 return;
             if(e.Button == Config.PlaceButton && Helper.Input.IsDown(Config.ModButton) && Game1.player.ActiveObject is Wallpaper)
             {
-                drawingTiles = true;
+                drawingTiles.Value = true;
                 startTile.Value = Game1.currentCursorTile;
                 Helper.Input.Suppress(e.Button);
             }
