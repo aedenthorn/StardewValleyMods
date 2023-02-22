@@ -177,6 +177,12 @@ namespace OmniTools
                     if (tool != null)
                         return tool;
                 }
+                if (Config.SwitchForCrops && tf is HoeDirt && (tf as HoeDirt).crop?.forageCrop.Value == true && (tf as HoeDirt).crop?.whichForageCrop.Value == Crop.forageCrop_ginger)
+                {
+                    tool = SwitchTool(currentTool, typeof(Hoe), tools);
+                    if (tool != null)
+                        return tool;
+                }
 
             }
             if (Config.SwitchForResourceClumps)
@@ -226,6 +232,11 @@ namespace OmniTools
             }
             if (Config.SwitchForWateringCan)
             {
+                if (currentLocation is VolcanoDungeon && (currentLocation as VolcanoDungeon).level.Value != 5 && currentLocation.isTileOnMap(new Vector2(tile.X, tile.Y)) && currentLocation.waterTiles[(int)tile.X, (int)tile.Y] && !(currentLocation as VolcanoDungeon).cooledLavaTiles.ContainsKey(new Vector2(tile.X, tile.Y)))
+                {
+                    Tool tool = SwitchTool(currentTool, typeof(WateringCan), tools);
+                    if (tool != null) return tool;
+                }
                 if (currentLocation.CanRefillWateringCanOnTile((int)tile.X, (int)tile.Y))
                 {
                     Tool tool = SwitchTool(currentTool, typeof(WateringCan), tools);

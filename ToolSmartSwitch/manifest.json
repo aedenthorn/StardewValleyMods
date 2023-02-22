@@ -1,7 +1,7 @@
 ﻿{
   "Name": "Tool Smart Switch",
   "Author": "aedenthorn",
-  "Version": "0.3.2",
+  "Version": "0.4.0",
   "Description": "Tool Smart Switch.",
   "UniqueID": "aedenthorn.ToolSmartSwitch",
   "EntryDll": "ToolSmartSwitch.dll",

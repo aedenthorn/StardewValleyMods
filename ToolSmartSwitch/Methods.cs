@@ -140,7 +140,11 @@ namespace ToolSmartSwitch
                     if (SwitchToolType(f, typeof(WateringCan), tools))
                         return;
                 }
-
+                if (Config.SwitchForCrops && tf is HoeDirt && (tf as HoeDirt).crop?.forageCrop.Value == true && (tf as HoeDirt).crop?.whichForageCrop.Value == Crop.forageCrop_ginger)
+                {
+                    if (SwitchToolType(f, typeof(Hoe), tools))
+                        return;
+                }
             }
             if (Config.SwitchForResourceClumps)
             {
@@ -185,6 +189,11 @@ namespace ToolSmartSwitch
             }
             if (Config.SwitchForWateringCan)
             {
+                if (f.currentLocation is VolcanoDungeon && (f.currentLocation as VolcanoDungeon).level.Value != 5 && f.currentLocation.isTileOnMap(new Vector2(tile.X, tile.Y)) && f.currentLocation.waterTiles[(int)tile.X, (int)tile.Y] && !(f.currentLocation as VolcanoDungeon).cooledLavaTiles.ContainsKey(new Vector2(tile.X, tile.Y)))
+                {
+                    if (SwitchToolType(f, typeof(WateringCan), tools)) 
+                        return;
+                }
                 if (f.currentLocation.CanRefillWateringCanOnTile((int)tile.X, (int)tile.Y))
                 {
                     if (SwitchToolType(f, typeof(WateringCan), tools))
