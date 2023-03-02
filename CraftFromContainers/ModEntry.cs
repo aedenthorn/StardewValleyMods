@@ -88,6 +88,12 @@ namespace CraftFromContainers
                 getValue: () => Config.EnableForCrafting,
                 setValue: value => Config.EnableForCrafting = value
             );
+            configMenu.AddBoolOption(
+                mod: ModManifest,
+                name: () => "Enable Everywhere",
+                getValue: () => Config.EnableEverywhere,
+                setValue: value => Config.EnableEverywhere = value
+            );
         }
 
     }

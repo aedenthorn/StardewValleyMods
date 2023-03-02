@@ -99,6 +99,7 @@ namespace MultiSave
                 currentSaveBackupList.Clear();
                 saveBackupList.Clear();
                 AccessTools.FieldRefAccess<LoadGameMenu, List<MenuSlot>>(TitleMenu.subMenu as LoadGameMenu, "menuSlots").Clear();
+                AccessTools.FieldRefAccess<LoadGameMenu, int>(TitleMenu.subMenu as LoadGameMenu, "currentItemIndex") = 0;
                 AccessTools.Method(typeof(LoadGameMenu), "startListPopulation").Invoke(TitleMenu.subMenu, new object[] { });
                 (TitleMenu.subMenu as LoadGameMenu).UpdateButtons();
                 if (Game1.options.snappyMenus && Game1.options.gamepadControls)

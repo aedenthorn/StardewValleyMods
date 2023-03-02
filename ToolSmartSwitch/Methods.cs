@@ -194,11 +194,11 @@ namespace ToolSmartSwitch
                     if (SwitchToolType(f, typeof(WateringCan), tools)) 
                         return;
                 }
-                if (f.currentLocation.CanRefillWateringCanOnTile((int)tile.X, (int)tile.Y))
+
+                if(f.currentLocation.isTileOnMap(new Vector2(tile.X, tile.Y)) && (!Config.SwitchForFishing || f.CurrentTool is not FishingRod || f.currentLocation.waterTiles is null || !f.currentLocation.waterTiles[(int)tile.X, (int)tile.Y]) && f.currentLocation.CanRefillWateringCanOnTile((int)tile.X, (int)tile.Y))
                 {
                     if (SwitchToolType(f, typeof(WateringCan), tools))
                         return;
-
                 }
                 if (f.currentLocation is Farm && f.currentLocation.getTileIndexAt((int)tile.X, (int)tile.Y, "Buildings") == 1938 && !(f.currentLocation as Farm).petBowlWatered.Value)
                 {
@@ -297,6 +297,11 @@ namespace ToolSmartSwitch
             {
                 return SwitchToolType(f, null, tools);
 
+            }
+            else if (obj is BreakableContainer)
+            {
+                if (SwitchToolType(f, typeof(MeleeWeapon), tools) || SwitchToolType(f, typeof(Hoe), tools) || SwitchToolType(f, typeof(Axe), tools) || SwitchToolType(f, typeof(Pickaxe), tools))
+                    return true;
             }
             return false;
         }

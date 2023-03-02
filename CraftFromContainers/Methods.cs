@@ -4,6 +4,7 @@ using Netcode;
 using Newtonsoft.Json;
 using StardewValley;
 using StardewValley.Locations;
+using StardewValley.Menus;
 using StardewValley.Monsters;
 using StardewValley.Objects;
 using StardewValley.TerrainFeatures;
@@ -24,9 +25,11 @@ namespace CraftFromContainers
         {
             if (skip)
                 return false;
-            if (Environment.StackTrace.Contains("CarpenterMenu") && Config.EnableForBuilding)
+            if (Config.EnableEverywhere)
                 return true;
-            if (Environment.StackTrace.Contains("CraftingPage") && Config.EnableForCrafting)
+            if (Config.EnableForBuilding && Game1.activeClickableMenu is CarpenterMenu)
+                return true;
+            if (Config.EnableForCrafting && Game1.activeClickableMenu is GameMenu && (Game1.activeClickableMenu as GameMenu).GetCurrentPage() is CraftingPage)
                 return true;
             return false;
         }

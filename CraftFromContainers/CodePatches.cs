@@ -22,7 +22,6 @@ namespace CraftFromContainers
                 if (!Config.EnableMod || __result || (Config.ToggleButton != SButton.None && !SHelper.Input.IsDown(Config.ToggleButton)) || !IsValidToPull())
                     return;
                 __result = CheckAllAmounts(__instance.recipeList.ToList(), extraToCheck);
-
             }
         }
         [HarmonyPatch(typeof(CraftingRecipe), nameof(CraftingRecipe.DoesFarmerHaveAdditionalIngredientsInInventory))]

@@ -247,7 +247,7 @@ namespace ImmersiveScarecrows
                 for (int y = 0; y < diameter; y++)
                 {
                     Vector2 tile = start + new Vector2(x, y);
-                    if (Vector2.Distance(position, tile) < radius - 1)
+                    if ((int)Math.Ceiling(Vector2.Distance(position, tile)) <= radius)
                         list.Add(tile);
                 }
             }
