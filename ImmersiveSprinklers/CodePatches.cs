@@ -139,6 +139,8 @@ namespace ImmersiveSprinklers
                             if (kvp.Value.modData.TryGetValue(sprinklerKey + i, out string sprinklerString) && kvp.Value.modData.ContainsKey(enricherKey + i) && kvp.Value.modData.TryGetValue(fertilizerKey + i, out string fertString))
                             {
                                 var obj = GetSprinkler(tf, i, kvp.Value.modData.ContainsKey(nozzleKey + i));
+                                if (obj is null)
+                                    continue;
                                 var radius = obj.GetModifiedRadiusForSprinkler();
 
                                 if (GetSprinklerTiles(kvp.Key, i, radius).Contains(placementTile))

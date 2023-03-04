@@ -1,4 +1,5 @@
 ﻿using HarmonyLib;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using StardewModdingAPI;
 using StardewValley;
@@ -41,13 +42,33 @@ namespace ThrowableBombs
             SHelper = helper;
 
             helper.Events.GameLoop.GameLaunched += GameLoop_GameLaunched;
+            helper.Events.GameLoop.UpdateTicking += GameLoop_UpdateTicking;
 
             var harmony = new Harmony(ModManifest.UniqueID);
             harmony.PatchAll();
 
         }
 
-
+        private void GameLoop_UpdateTicking(object sender, StardewModdingAPI.Events.UpdateTickingEventArgs e)
+        {
+            if (!Config.ModEnabled)
+                return;
+            float throwSpeed = 8;
+            float heightOffset = 32;
+            foreach (var key in bombDict.Keys.ToArray())
+            {
+                var sprite = bombDict[key].location.getTemporarySpriteByID(key);
+                if (sprite is null)
+                    continue;
+                float distanceTravelled = Vector2.Distance(bombDict[key].startPos, bombDict[key].currentPos);
+                float totalDistance = Vector2.Distance(bombDict[key].startPos, bombDict[key].endPos);
+                float distanceRemain = totalDistance - distanceTravelled;
+                float height = (float)Math.Sin(distanceTravelled / totalDistance) * heightOffset; 
+                bombDict[key].currentPos = Vector2.Lerp(bombDict[key].currentPos, bombDict[key].endPos, throwSpeed / distanceRemain);
+                
+                bombDict[key].location.TemporarySprites[key].Position = bombDict[key].startPos + bombDict[key].currentPos - bombDict[key].startPos
+            }
+        }
 
         private void GameLoop_GameLaunched(object sender, StardewModdingAPI.Events.GameLaunchedEventArgs e)
         {
