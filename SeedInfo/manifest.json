@@ -1,0 +1,22 @@
+﻿{
+  "Name": "Seed Info",
+  "Author": "aedenthorn",
+  "Version": "0.1.0",
+  "Description": "Seed Info.",
+  "UniqueID": "aedenthorn.SeedInfo",
+  "EntryDll": "SeedInfo.dll",
+  "MinimumApiVersion": "3.15.0",
+  "ModUpdater": {
+    "Repository": "StardewValleyMods",
+    "User": "aedenthorn",
+    "Directory": "_releases",
+    "ModFolder": "SeedInfo"
+  },
+  "Dependencies": [
+    {
+      "UniqueID": "Platonymous.ModUpdater",
+      "IsRequired": false
+    }
+  ],
+  "UpdateKeys": [ "Nexus:15754" ]
+}

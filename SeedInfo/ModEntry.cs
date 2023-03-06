@@ -13,7 +13,7 @@ using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
 
-namespace ThrowableBombs
+namespace SeedInfo
 {
     /// <summary>The mod entry point.</summary>
     public partial class ModEntry : Mod
@@ -25,7 +25,7 @@ namespace ThrowableBombs
 
         public static ModEntry context;
 
-        public static string explodingKey = "aedenthorn.ThrowableBombs/exploding";
+        public static int[] qualities = new int[] { 0, 1, 2, 4 };
 
         /// <summary>The mod entry point, called after the mod is first loaded.</summary>
         /// <param name="helper">Provides simplified APIs for writing mods.</param>
@@ -42,35 +42,13 @@ namespace ThrowableBombs
             SHelper = helper;
 
             helper.Events.GameLoop.GameLaunched += GameLoop_GameLaunched;
-            helper.Events.GameLoop.UpdateTicking += GameLoop_UpdateTicking;
 
             var harmony = new Harmony(ModManifest.UniqueID);
             harmony.PatchAll();
 
         }
 
-        private void GameLoop_UpdateTicking(object sender, StardewModdingAPI.Events.UpdateTickingEventArgs e)
-        {
-            if (!Config.ModEnabled)
-                return;
-            float throwSpeed = 8;
-            float heightOffset = 32;
-            foreach (var key in bombDict.Keys.ToArray())
-            {
-                var sprite = bombDict[key].location.getTemporarySpriteByID(key);
-                if (sprite is null)
-                    continue;
-                float distanceTravelled = Vector2.Distance(bombDict[key].startPos, bombDict[key].currentPos);
-                float totalDistance = Vector2.Distance(bombDict[key].startPos, bombDict[key].endPos);
-                float distanceRemain = totalDistance - distanceTravelled;
-                float height = (float)Math.Sin(distanceTravelled / totalDistance) * heightOffset; 
-                bombDict[key].currentPos = Vector2.Lerp(bombDict[key].currentPos, bombDict[key].endPos, throwSpeed / distanceRemain);
-
-                bombDict[key].location.TemporarySprites[key].Position = bombDict[key].startPos + bombDict[key].currentPos - bombDict[key].startPos;
-            }
-        }
-
-        private void GameLoop_GameLaunched(object sender, StardewModdingAPI.Events.GameLaunchedEventArgs e)
+        public void GameLoop_GameLaunched(object sender, StardewModdingAPI.Events.GameLaunchedEventArgs e)
         {
 
             // get Generic Mod Config Menu's API (if it's installed)
@@ -90,6 +68,36 @@ namespace ThrowableBombs
                 name: () => "Mod Enabled",
                 getValue: () => Config.ModEnabled,
                 setValue: value => Config.ModEnabled = value
+            );
+            configMenu.AddNumberOption(
+                mod: ModManifest,
+                name: () => "Days Per Month",
+                getValue: () => Config.DaysPerMonth,
+                setValue: value => Config.DaysPerMonth = value
+            );
+            configMenu.AddNumberOption(
+                mod: ModManifest,
+                name: () => "Price Color R",
+                getValue: () => Config.PriceColor.R,
+                setValue: value => Config.PriceColor = new Color(value, Config.PriceColor.G, Config.PriceColor.B, Config.PriceColor.A),
+                min: 0,
+                max: 255
+            );
+            configMenu.AddNumberOption(
+                mod: ModManifest,
+                name: () => "Price Color G",
+                getValue: () => Config.PriceColor.G,
+                setValue: value => Config.PriceColor = new Color(Config.PriceColor.R, value, Config.PriceColor.B, Config.PriceColor.A),
+                min: 0,
+                max: 255
+            );
+            configMenu.AddNumberOption(
+                mod: ModManifest,
+                name: () => "Price Color B",
+                getValue: () => Config.PriceColor.B,
+                setValue: value => Config.PriceColor = new Color(Config.PriceColor.R, Config.PriceColor.G, value, Config.PriceColor.A),
+                min: 0,
+                max: 255
             );
         }
 

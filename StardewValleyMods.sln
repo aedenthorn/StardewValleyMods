@@ -489,6 +489,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "StackedItemIcons", "Stacked
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ToggleFullscreen", "ToggleFullscreen\ToggleFullscreen.csproj", "{F747C6C5-6FB1-4246-B42B-B214B42BE0D2}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SeedInfo", "SeedInfo\SeedInfo.csproj", "{F95FA072-6D9E-44FA-A7B9-3423D5EA970A}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -3355,6 +3357,18 @@ Global
 		{F747C6C5-6FB1-4246-B42B-B214B42BE0D2}.Release|x64.Build.0 = Release|x64
 		{F747C6C5-6FB1-4246-B42B-B214B42BE0D2}.Release|x86.ActiveCfg = Release|Any CPU
 		{F747C6C5-6FB1-4246-B42B-B214B42BE0D2}.Release|x86.Build.0 = Release|Any CPU
+		{F95FA072-6D9E-44FA-A7B9-3423D5EA970A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F95FA072-6D9E-44FA-A7B9-3423D5EA970A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F95FA072-6D9E-44FA-A7B9-3423D5EA970A}.Debug|x64.ActiveCfg = Debug|x64
+		{F95FA072-6D9E-44FA-A7B9-3423D5EA970A}.Debug|x64.Build.0 = Debug|x64
+		{F95FA072-6D9E-44FA-A7B9-3423D5EA970A}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{F95FA072-6D9E-44FA-A7B9-3423D5EA970A}.Debug|x86.Build.0 = Debug|Any CPU
+		{F95FA072-6D9E-44FA-A7B9-3423D5EA970A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F95FA072-6D9E-44FA-A7B9-3423D5EA970A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F95FA072-6D9E-44FA-A7B9-3423D5EA970A}.Release|x64.ActiveCfg = Release|x64
+		{F95FA072-6D9E-44FA-A7B9-3423D5EA970A}.Release|x64.Build.0 = Release|x64
+		{F95FA072-6D9E-44FA-A7B9-3423D5EA970A}.Release|x86.ActiveCfg = Release|Any CPU
+		{F95FA072-6D9E-44FA-A7B9-3423D5EA970A}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
