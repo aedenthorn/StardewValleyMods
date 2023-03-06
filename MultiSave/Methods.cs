@@ -80,7 +80,7 @@ namespace MultiSave
             saveBackupList.Clear();
             foreach(var slot in menuSlots)
             {
-                saveBackupList.Add(GetBackups((slot as SaveFileSlot).Farmer.slotName));
+                saveBackupList.Add((slot as SaveFileSlot)?.Farmer?.slotName is not null ? GetBackups((slot as SaveFileSlot).Farmer.slotName) : new string[0]);
             }
         }
         private static void ReloadDeleteButtons(LoadGameMenu __instance)

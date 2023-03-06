@@ -25,6 +25,7 @@ namespace DungeonMerchants
         public static IModHelper SHelper;
         public static ModConfig Config;
 
+        public static string dwarfKey = "aedenthorn.DungeonMerchants/dwarfTile";
         public static string merchantKey = "aedenthorn.DungeonMerchants/merchantTile";
         public static ModEntry context;
         

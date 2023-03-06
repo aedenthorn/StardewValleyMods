@@ -54,7 +54,6 @@ namespace WeddingTweaks
                         }
                         if (npcWitness is null)
                         {
-                            npcWitness = null;
                             Dictionary<string, string> dispositions = Game1.content.Load<Dictionary<string, string>>("Data\\NPCDispositions");
                             if(dispositions.TryGetValue(spouse, out string dis))
                             {
@@ -112,6 +111,28 @@ namespace WeddingTweaks
                     Misc.ShuffleList(ref spouses);
                     bool addSpouses = Config.AllSpousesJoinWeddings && spouses.Count > 0 && freeLoveAPI is not null;
 
+                    if(witness is not null && !__instance.actors.Exists(n => n.Name == witness))
+                    {
+                        try
+                        {
+                            AccessTools.Method(typeof(Event), "addActor").Invoke(__instance, new object[] { witness, 26, 63, 1, location });
+                        }
+                        catch (Exception ex)
+                        {
+                            SMonitor.Log($"Error adding {witness} to wedding: \n\n{ex}");
+                        }
+                    }
+                    if(npcWitness is not null && !__instance.actors.Exists(n => n.Name == npcWitness))
+                    {
+                        try
+                        {
+                            AccessTools.Method(typeof(Event), "addActor").Invoke(__instance, new object[] { npcWitness, 29, 63, 3, location });
+                        }
+                        catch (Exception ex)
+                        {
+                            SMonitor.Log($"Error adding {npcWitness} to wedding: \n\n{ex}");
+                        }
+                    }
                     foreach (NPC actor in __instance.actors)
                     {
                         if (witness is not null && actor.Name == witness)

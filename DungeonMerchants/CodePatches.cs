@@ -21,7 +21,8 @@ namespace DungeonMerchants
             {
                 if (!Config.ModEnabled || __result.mineLevel == 77377)
                     return;
-                if (__result.mineLevel >= Config.DwarfFloorMin 
+                if (!__result.modData.ContainsKey(dwarfKey) 
+                    && __result.mineLevel >= Config.DwarfFloorMin 
                     && (Config.DwarfFloorMax < 0 || __result.mineLevel <= Config.DwarfFloorMax) 
                     && (!Config.DwarfFloors.Any() || Config.DwarfFloors.Contains(__result.mineLevel)) 
                     && (Config.DwarfFloorMult < 0 || __result.mineLevel % Config.DwarfFloorMult == 0)
@@ -30,7 +31,8 @@ namespace DungeonMerchants
                 {
                     SpawnDwarf(__result);
                 }
-                if(__result.mineLevel >= Config.MerchantFloorMin 
+                if(!__result.modData.ContainsKey(merchantKey)
+                    && __result.mineLevel >= Config.MerchantFloorMin 
                     && (Config.MerchantFloorMax < 0 || __result.mineLevel <= Config.MerchantFloorMax) 
                     && (!Config.MerchantFloors.Any() || Config.MerchantFloors.Contains(__result.mineLevel)) 
                     && (Config.MerchantFloorMult < 0 || __result.mineLevel % Config.MerchantFloorMult == 0)

@@ -36,6 +36,7 @@ namespace DungeonMerchants
             Point tile = GetBottomWallTile(mineShaft, dwarfWallTiles);
             if (tile.X < 0)
                 return;
+            mineShaft.modData[dwarfKey] = tile.X + "," + tile.Y;
             mineShaft.addCharacter(new NPC(new AnimatedSprite("Characters\\Dwarf", 0, 16, 24), tile.ToVector2() * 64 + new Vector2(0, 64), "MineShaft", 2, "Dwarf", false, null, Game1.content.Load<Texture2D>("Portraits\\Dwarf"))
             {
                 Breather = false
