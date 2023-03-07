@@ -116,7 +116,7 @@ namespace MultiSave
         {
             public static void Postfix(LoadGameMenu __instance, List<MenuSlot> ___menuSlots)
             {
-                if (!Config.EnableMod || ___menuSlots is null)
+                if (!Config.EnableMod || ___menuSlots is null || __instance.GetType() != typeof(LoadGameMenu))
                     return;
                 if(currentSaveSlot is null &&  saveBackupList.Count != ___menuSlots.Count)
                 {
