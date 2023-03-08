@@ -15,8 +15,7 @@ namespace SeedInfo
             foreach (int q in ModEntry.qualities)
             {
                 var i = new QualityInfo(seed, q);
-                if (i.crop is not null)
-                    info.Add(i);
+                info.Add(i);
             }
         }
     }

@@ -194,6 +194,8 @@ namespace SeedInfo
 
                 for (int j = 0; j < 4; j++)
                 {
+                    if (info.info.Count < j)
+                        break;
                     var quality = qualities[j];
                     Rectangle qr = quality < 4 ? new Rectangle(338 + (quality - 1) * 8, 400, 8, 8) : new Rectangle(346, 392, 8, 8);
 
@@ -205,6 +207,8 @@ namespace SeedInfo
                         num++;
                     if (info.info[j].keg is not null)
                         num++;
+                    if (num == 0)
+                        continue;
                     if (num < 2)
                         offset = new Vector2(0, 28);
                     else if (num < 2)
