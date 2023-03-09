@@ -395,6 +395,19 @@ namespace FreeLove
         {
             ModEntry.ResetSpouses(who);
         }
+        
+        public static bool NPC_spouseObstacleCheck_Prefix(NPC __instance, GameLocation currentLocation, ref bool __result)
+        {
+            if (!Config.EnableMod || currentLocation is not FarmHouse)
+                return true;
+            if (NPC.checkTileOccupancyForSpouse(currentLocation, __instance.getTileLocation(), __instance.Name))
+            {
+                Game1.warpCharacter(__instance, __instance.DefaultMap, (Game1.getLocationFromName(__instance.DefaultMap) as FarmHouse).getSpouseBedSpot(__instance.Name));
+                __instance.faceDirection(1);
+                __result = true;
+            }
+            return false;
+        }
 
         public static bool NPC_isRoommate_Prefix(NPC __instance, ref bool __result)
         {
