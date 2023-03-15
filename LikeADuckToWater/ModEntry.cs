@@ -59,18 +59,18 @@ namespace LikeADuckToWater
 
             helper.Events.GameLoop.GameLaunched += GameLoop_GameLaunched;
             helper.Events.GameLoop.DayStarted += GameLoop_DayStarted;
-            helper.Events.GameLoop.UpdateTicked += GameLoop_UpdateTicked; 
+            helper.Events.GameLoop.OneSecondUpdateTicked += GameLoop_OneSecondUpdateTicked;
 
             var harmony = new Harmony(ModManifest.UniqueID);
             harmony.PatchAll();
 
         }
 
-        private void GameLoop_UpdateTicked(object sender, StardewModdingAPI.Events.UpdateTickedEventArgs e)
+        private void GameLoop_OneSecondUpdateTicked(object sender, StardewModdingAPI.Events.OneSecondUpdateTickedEventArgs e)
         {
             if (!Config.ModEnabled || !ducksToCheck.Any())
             {
-                pickedTiles = new();
+                pickedTiles.Clear();
                 return;
             }
             foreach(var key in ducksToCheck.Keys.ToArray())

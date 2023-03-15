@@ -40,19 +40,13 @@ namespace LikeADuckToWater
             }
         }
         
-        [HarmonyPatch(typeof(GameLocation), nameof(GameLocation.isCollidingPosition), new Type[] { typeof(Rectangle), typeof(xTile.Dimensions.Rectangle), typeof(bool), typeof(int), typeof(bool), typeof(Character) })]
+        [HarmonyPatch(typeof(GameLocation), nameof(GameLocation.isCollidingPosition), new Type[] { typeof(Rectangle), typeof(xTile.Dimensions.Rectangle), typeof(bool), typeof(int), typeof(bool), typeof(Character), typeof(bool), typeof(bool), typeof(bool) })]
         public class GameLocation_isCollidingPosition_Patch
         {
             public static bool Prefix(GameLocation __instance, Rectangle position, Character character, ref bool __result)
             {
-                if (!Config.ModEnabled || __instance is not Farm || __instance.waterTiles is null || character is not FarmAnimal || !((FarmAnimal)character).CanSwim())
-                    return true;
-                var point = new Point(position.X / 64, position.Y / 64);
-                int bi = __instance.getTileIndexAt(point, "Buildings");
-                if (__instance.isWaterTile(point.X, point.Y) && (bi < 0 || waterBuildingTiles.Contains(bi)) && !__instance.objects.ContainsKey(position.Location.ToVector2()))
-                {
+                if (!isCollidingWater(__instance, character, position.X / 64, position.Y / 64))
                     return false;
-                }
                 return true;
             }
         }

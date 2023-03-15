@@ -43,16 +43,33 @@ namespace LikeADuckToWater
             animal.modData[swamTodayKey] = "true";
             SMonitor.Log($"{animal.displayName} is hopping into the water");
         }
+        private static bool isCollidingWater(GameLocation __instance, Character character, int x, int y)
+        {
+            if (!Config.ModEnabled || __instance is not Farm || __instance.waterTiles is null || character is not FarmAnimal || !((FarmAnimal)character).CanSwim())
+                return true;
+            int bi = __instance.getTileIndexAt(x, y, "Buildings");
+            Rectangle bb = new Rectangle(x * 64, y * 64, 64, 64);
+            if (__instance.isWaterTile(x, y) && (bi < 0 || waterBuildingTiles.Contains(bi)) && !__instance.objects.ContainsKey(new Vector2(x, y)) && !(__instance as Farm).animals.Values.ToList().Exists(a => a.GetBoundingBox().Intersects(bb)))
+            {
+                return false;
+            }
+            return true;
+        }
 
         private static void TryHop(Character character, GameLocation location)
         {
             if (!hopTileDict.Any())
                 return;
-            var tile = character.getTileLocation();
+            var center = character.GetBoundingBox().Center.ToVector2();
+
             var keys = hopTileDict.Keys.ToList();
+            keys.Sort(delegate (Vector2 a, Vector2 b)
+            {
+                return Vector2.Distance((a + new Vector2(0.5f, 0.5f)) * 64, center).CompareTo(Vector2.Distance((b + new Vector2(0.5f, 0.5f)) * 64, center));
+            });
             foreach (var t in keys)
             {
-                if (Vector2.Distance(tile, t) < 2)
+                if (Vector2.Distance(center, (t + new Vector2(0.5f, 0.5f)) * 64) < 64)
                 {
                     DoHop((FarmAnimal) character, t);
                     return;
@@ -63,21 +80,22 @@ namespace LikeADuckToWater
         {
             if (!hopTileDict.Any())
                 return;
-            var tile = animal.getTileLocation();
+            var center = animal.GetBoundingBox().Center.ToVector2();
             var keys = hopTileDict.Keys.ToList();
             keys.Sort(delegate (Vector2 a, Vector2 b)
             {
-                return Vector2.Distance(b, tile).CompareTo(Vector2.Distance(a, tile));
+                return Vector2.Distance((b + new Vector2(0.5f, 0.5f)) * 64, center).CompareTo(Vector2.Distance((a + new Vector2(0.5f, 0.5f)) * 64, center));
             });
             Stack<Vector2> stack = new Stack<Vector2>();
             foreach (var t in keys)
             {
-                if(Vector2.Distance(tile, t) < 2)
+                var d = Vector2.Distance(center, (t + new Vector2(0.5f, 0.5f)) * 64);
+                if (d < 64)
                 {
                     DoHop(animal, t);
                     return;
                 }
-                else if(Vector2.Distance(tile, t) > Config.MaxDistance)
+                else if(d / 64 > Config.MaxDistance)
                 {
                     continue;
                 }
@@ -124,13 +142,14 @@ namespace LikeADuckToWater
             for(int i = 0; i < 4; i++)
             {
                 Vector2 offset = Utility.getTranslatedVector2(Vector2.Zero, i, 1f);
+                Point offsetPoint = Utility.Vector2ToPoint(offset);
                 if (offset != Vector2.Zero)
                 {
-                    Point hop_over_tile = tile + Utility.Vector2ToPoint(offset);
-                    Point hop_tile = hop_over_tile + Utility.Vector2ToPoint(offset);
+                    Point hop_over_tile = tile + offsetPoint;
+                    Point hop_tile = hop_over_tile + offsetPoint;
                     Rectangle hop_destination = animal.GetBoundingBox();
                     hop_destination.Offset(offset * 128);
-                    if (farm.isWaterTile(hop_over_tile.X, hop_over_tile.Y) && farm.doesTileHaveProperty(hop_over_tile.X, hop_over_tile.Y, "Passable", "Buildings") == null && !farm.isCollidingPosition(hop_destination, Game1.viewport, false, 0, false, animal) && farm.isOpenWater(hop_tile.X, hop_tile.Y))
+                    if (farm.isWaterTile(hop_over_tile.X, hop_over_tile.Y) && farm.doesTileHaveProperty(hop_over_tile.X, hop_over_tile.Y, "Passable", "Buildings") == null && !farm.isCollidingPosition(hop_destination, Game1.viewport, false, 0, false, animal) && (!isCollidingWater(farm, animal, hop_destination.X / 64, hop_destination.Y / 64) || farm.isOpenWater(hop_tile.X, hop_tile.Y)))
                     {
                         list.Add(new HopInfo() { 
                             dir = i,
