@@ -35,6 +35,10 @@ namespace LikeADuckToWater
         private static List<int> waterBuildingTiles = new()
         {
             209,
+            628,
+            629,
+            734,
+            759,
             1293,
             1318
         };

@@ -1,42 +1,21 @@
 ﻿using HarmonyLib;
 using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
-using Netcode;
-using StardewModdingAPI;
 using StardewValley;
-using StardewValley.BellsAndWhistles;
-using StardewValley.Menus;
-using StardewValley.Network;
-using StardewValley.Objects;
-using StardewValley.Tools;
 using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using System.Reflection;
-using System.Reflection.Emit;
-using xTile.Dimensions;
-using xTile.Tiles;
-using Object = StardewValley.Object;
 using Rectangle = Microsoft.Xna.Framework.Rectangle;
 
 namespace LikeADuckToWater
 {
     public partial class ModEntry
     {
-
         [HarmonyPatch(typeof(FarmAnimal), nameof(FarmAnimal.updatePerTenMinutes))]
         public class FarmAnimal_MovePosition_Patch
         {
             public static void Postfix(FarmAnimal __instance)
             {
-                if (!Config.ModEnabled || __instance.controller is not null || __instance.currentLocation != Game1.getFarm() || __instance.currentLocation.waterTiles is null || __instance.modData.ContainsKey(swamTodayKey) || !__instance.CanSwim() || __instance.isSwimming.Value || !__instance.wasPet.Value || __instance.fullness.Value < 195)
+                if (!Config.ModEnabled || __instance.controller is not null || __instance.currentLocation != Game1.getFarm() || __instance.currentLocation.waterTiles is null || ducksToCheck.ContainsKey(__instance) || __instance.modData.ContainsKey(swamTodayKey) || !__instance.CanSwim() || __instance.isSwimming.Value || (!__instance.wasPet.Value && !__instance.wasAutoPet.Value) || __instance.fullness.Value < 195)
                     return;
-                Stopwatch s = new Stopwatch();
-                s.Start();
                 TryMoveToWater(__instance, __instance.currentLocation);
-                s.Stop();
-                SMonitor.Log($"Trying to move took {s.ElapsedMilliseconds}ms");
             }
         }
         
@@ -58,16 +37,46 @@ namespace LikeADuckToWater
                 __instance.modData.Remove(swamTodayKey);
             }
         }
-        [HarmonyPatch(typeof(Farm), nameof(Farm.DayUpdate))]
-        public class Farm_DayUpdate_Patch
+        [HarmonyPatch(typeof(FarmAnimal), nameof(FarmAnimal.HandleHop))]
+        public class FarmAnimal_HandleHop_Patch
         {
-            public static void Postfix(Farm __instance)
+            public static void Postfix(FarmAnimal __instance)
             {
-                RebuildHopSpots(__instance);
-                
-
+                if (!__instance.modData.ContainsKey(swamTodayKey)) 
+                {
+                    SwamToday(__instance);
+                }
             }
         }
-
+        [HarmonyPatch(typeof(GameLocation), nameof(GameLocation.isOpenWater))]
+        public class GameLocation_isOpenWater_Patch
+        {
+            public static bool Prefix(GameLocation __instance, int xTile, int yTile, ref bool __result)
+            {
+                if (!Config.ModEnabled)
+                    return true;
+                if (!__instance.isWaterTile(xTile, yTile))
+                {
+                    __result = false;
+                    return false;
+                }
+                int tile_index = __instance.getTileIndexAt(xTile, yTile, "Buildings");
+                if (tile_index != -1)
+                {
+                    bool tile_blocked = true;
+                    if (__instance.getTileSheetIDAt(xTile, yTile, "Buildings") == "outdoors" && waterBuildingTiles.Contains(tile_index))
+                    {
+                        tile_blocked = false;
+                    }
+                    if (tile_blocked)
+                    {
+                        __result = false;
+                        return false;
+                    }
+                }
+                __result = !__instance.objects.ContainsKey(new Vector2((float)xTile, (float)yTile));
+                return false;
+            }
+        }
     }
 }

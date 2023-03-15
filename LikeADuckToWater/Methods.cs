@@ -40,7 +40,7 @@ namespace LikeADuckToWater
             animal.isSwimming.Value = true;
             animal.hopOffset = hopTileDict[key][0].offset;
             animal.pauseTimer = 0;
-            animal.modData[swamTodayKey] = "true";
+            SwamToday(animal);
             SMonitor.Log($"{animal.displayName} is hopping into the water");
         }
         private static bool isCollidingWater(GameLocation __instance, Character character, int x, int y)
@@ -48,8 +48,7 @@ namespace LikeADuckToWater
             if (!Config.ModEnabled || __instance is not Farm || __instance.waterTiles is null || character is not FarmAnimal || !((FarmAnimal)character).CanSwim())
                 return true;
             int bi = __instance.getTileIndexAt(x, y, "Buildings");
-            Rectangle bb = new Rectangle(x * 64, y * 64, 64, 64);
-            if (__instance.isWaterTile(x, y) && (bi < 0 || waterBuildingTiles.Contains(bi)) && !__instance.objects.ContainsKey(new Vector2(x, y)) && !(__instance as Farm).animals.Values.ToList().Exists(a => a.GetBoundingBox().Intersects(bb)))
+            if (__instance.isWaterTile(x, y) && (bi < 0 || waterBuildingTiles.Contains(bi)) && !__instance.objects.ContainsKey(new Vector2(x, y)))
             {
                 return false;
             }
@@ -118,6 +117,10 @@ namespace LikeADuckToWater
             {
                 for (int x = 0; x < farm.map.Layers[0].LayerWidth; x++)
                 {
+                    if(farm.isWaterTile(x, y) && farm.doesTileHaveProperty(x, y, "Passable", "Back") != null)
+                    {
+                        farm.removeTileProperty(x, y, "Back", "Passable");
+                    }
                     animal.Position = new Vector2(x, y) * 64;
                     if (!farm.waterTiles.waterTiles[x,y].isWater && !farm.isCollidingPosition(animal.GetBoundingBox(), Game1.viewport, false, 0, false, animal, false, false, false))
                     {
@@ -160,5 +163,14 @@ namespace LikeADuckToWater
             }
             return list;
         }
+        private static void SwamToday(FarmAnimal animal)
+        {
+            if (!animal.modData.ContainsKey(swamTodayKey) && Config.FriendshipGain > 0)
+            {
+                animal.friendshipTowardFarmer.Value = Math.Min(1000, animal.friendshipTowardFarmer.Value + Config.FriendshipGain);
+            }
+            animal.modData[swamTodayKey] = "true";
+        }
+
     }
 }
