@@ -125,6 +125,12 @@ namespace LikeADuckToWater
                 getValue: () => Config.MaxDistance,
                 setValue: value => Config.MaxDistance = value
             );
+            configMenu.AddNumberOption(
+                mod: ModManifest,
+                name: () => "Friendship Gain",
+                getValue: () => Config.FriendshipGain,
+                setValue: value => Config.FriendshipGain = value
+            );
         }
 
     }
