@@ -27,7 +27,6 @@ namespace WallPlanter
             {
                 if (!Config.EnableMod || item is not Object || !(item as Object).bigCraftable.Value || item.ParentSheetIndex != 62 || !typeof(DecoratableLocation).IsAssignableFrom(location.GetType()) || !(location as DecoratableLocation).isTileOnWall(x / 64, y / 64) || !Utility.isWithinTileWithLeeway(x, y, item, f))
                     return true;
-                SMonitor.Log($"Placing planter on wall");
                 __result = true;
                 return false;
             }

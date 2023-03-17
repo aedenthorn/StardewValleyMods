@@ -60,32 +60,28 @@ namespace MultiSave
             }
         }
         
-        [HarmonyPatch(typeof(LoadGameMenu), nameof(LoadGameMenu.draw))]
-        public class LoadGameMenu_draw_Patch
-        {
-            public static void Postfix(LoadGameMenu __instance, int ___currentItemIndex, SpriteBatch b)
-            {
-                if (!Config.EnableMod || currentSaveSlot is not null)
-                    return;
-                for (int i = 0; i < 4; i++)
-                {
-                    if(saveBackupList.Count > ___currentItemIndex + i && saveBackupList[___currentItemIndex + i].Length > 0)
-                        __instance.deleteButtons[i + 4].draw(b, Color.White * 0.75f, 1f, 0);
-                }
-            }
-        }
         [HarmonyPatch(typeof(SaveFileSlot), nameof(SaveFileSlot.Draw))]
         public class SaveFileSlot_Draw_Patch
         {
             public static void Postfix(SpriteBatch b, int i, SaveFileSlot __instance, LoadGameMenu ___menu)
             {
-                if (!Config.EnableMod || currentSaveSlot is null || !__instance.Farmer.modData.TryGetValue(backupFolderKey, out string backupFolder))
+                if (!Config.EnableMod)
                     return;
-                var info = new DirectoryInfo(backupFolder);
-                var date = info.CreationTime;
-                var dateString = date.ToShortDateString() + " " + date.ToShortTimeString();
-                var fontMeasure = Game1.smallFont.MeasureString(dateString);
-                b.DrawString(Game1.smallFont, dateString, new Vector2(___menu.slotButtons[i].bounds.Center.X - fontMeasure.X / 2, ___menu.slotButtons[i].bounds.Y + 16), Color.Black);
+
+                if (currentSaveSlot is null)
+                {
+                    var currentItemIndex = (int)AccessTools.Field(typeof(LoadGameMenu), "currentItemIndex").GetValue(___menu);
+                    if (saveBackupList.Count > i && saveBackupList[currentItemIndex + i].Length > 0)
+                        ___menu.deleteButtons[i + 4].draw(b, Color.White * 0.75f, 1f, 0);
+                }
+                else if(__instance.Farmer.modData.TryGetValue(backupFolderKey, out string backupFolder)) 
+                {
+                    var info = new DirectoryInfo(backupFolder);
+                    var date = info.CreationTime;
+                    var dateString = date.ToShortDateString() + " " + date.ToShortTimeString();
+                    var fontMeasure = Game1.smallFont.MeasureString(dateString);
+                    b.DrawString(Game1.smallFont, dateString, new Vector2(___menu.slotButtons[i].bounds.Center.X - fontMeasure.X / 2, ___menu.slotButtons[i].bounds.Y + 16), Color.Black);
+                }
             }
         }
         [HarmonyPatch(typeof(TitleMenu), nameof(TitleMenu.backButtonPressed))]
