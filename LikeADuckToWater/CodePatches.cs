@@ -13,7 +13,29 @@ namespace LikeADuckToWater
         {
             public static void Postfix(FarmAnimal __instance)
             {
-                if (!Config.ModEnabled || __instance.controller is not null || __instance.currentLocation != Game1.getFarm() || __instance.currentLocation.waterTiles is null || ducksToCheck.ContainsKey(__instance) || __instance.modData.ContainsKey(swamTodayKey) || !__instance.CanSwim() || __instance.isSwimming.Value || (!__instance.wasPet.Value && !__instance.wasAutoPet.Value) || __instance.fullness.Value < 195)
+                if (NotReadyToSwim(__instance))
+                    return;
+                TryMoveToWater(__instance, __instance.currentLocation);
+            }
+        }
+
+        [HarmonyPatch(typeof(FarmAnimal), nameof(FarmAnimal.Eat))]
+        public class FarmAnimal_Eat_Patch
+        {
+            public static void Postfix(FarmAnimal __instance)
+            {
+                if (NotReadyToSwim(__instance))
+                    return;
+                TryMoveToWater(__instance, __instance.currentLocation);
+            }
+        }
+        
+        [HarmonyPatch(typeof(FarmAnimal), nameof(FarmAnimal.pet))]
+        public class FarmAnimal_pet_Patch
+        {
+            public static void Postfix(FarmAnimal __instance, bool is_auto_pet)
+            {
+                if (is_auto_pet || NotReadyToSwim(__instance))
                     return;
                 TryMoveToWater(__instance, __instance.currentLocation);
             }

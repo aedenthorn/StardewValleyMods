@@ -45,7 +45,7 @@ namespace LikeADuckToWater
         
         private static Dictionary<Vector2, List<HopInfo>> hopTileDict;
 
-        public static Dictionary<FarmAnimal, Stack<Vector2>> ducksToCheck = new Dictionary<FarmAnimal, Stack<Vector2>>();
+        public static Dictionary<FarmAnimal, Stack<HopInfo>> ducksToCheck = new Dictionary<FarmAnimal, Stack<HopInfo>>();
 
         /// <summary>The mod entry point, called after the mod is first loaded.</summary>
         /// <param name="helper">Provides simplified APIs for writing mods.</param>

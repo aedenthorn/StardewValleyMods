@@ -20,16 +20,25 @@ namespace LikeADuckToWater
     public partial class ModEntry
     {
 
-        private bool CheckDuck(FarmAnimal animal, Vector2 t)
+        private static bool NotReadyToSwim(FarmAnimal animal)
         {
-            if (pickedTiles.Contains(t))
+            return !Config.ModEnabled || animal.controller is not null || animal.currentLocation != Game1.getFarm() || animal.currentLocation.waterTiles is null || !animal.CanSwim() || animal.isSwimming.Value || (!animal.wasPet.Value && !animal.wasAutoPet.Value) || animal.fullness.Value < 195 || ducksToCheck.ContainsKey(animal) || animal.modData.ContainsKey(swamTodayKey);
+        }
+        private bool CheckDuck(FarmAnimal animal, HopInfo info)
+        {
+            if (pickedTiles.Contains(info.hopTile))
                 return false;
-            var c = new PathFindController(animal, animal.currentLocation, new PathFindController.isAtEnd(PathFindController.isAtEndPoint), hopTileDict[t][0].dir, false, new PathFindController.endBehavior(TryHop), 200, new Point((int)t.X, (int)t.Y), true);
+            foreach(var a in (animal.currentLocation as Farm).Animals.Values)
+            {
+                if (a.GetBoundingBox().Intersects(info.hoppedBox))
+                    return false;
+            }
+            var c = new PathFindController(animal, animal.currentLocation, new PathFindController.isAtEnd(PathFindController.isAtEndPoint), info.dir, false, new PathFindController.endBehavior(TryHop), 200, new Point((int)info.hopTile.X, (int)info.hopTile.Y), true);
             if (c.pathToEndPoint is not null)
             {
-                pickedTiles.Add(t);
+                pickedTiles.Add(info.hopTile);
                 animal.controller = c;
-                SMonitor.Log($"{animal.displayName} is travelling from {animal.getTileLocation()} to {t} to swim");
+                SMonitor.Log($"{animal.displayName} is travelling from {animal.getTileLocation()} to {info.hopTile} to swim");
                 return true;
             }
             return false;
@@ -85,7 +94,7 @@ namespace LikeADuckToWater
             {
                 return Vector2.Distance((b + new Vector2(0.5f, 0.5f)) * 64, center).CompareTo(Vector2.Distance((a + new Vector2(0.5f, 0.5f)) * 64, center));
             });
-            Stack<Vector2> stack = new Stack<Vector2>();
+            Stack<HopInfo> stack = new Stack<HopInfo>();
             foreach (var t in keys)
             {
                 var d = Vector2.Distance(center, (t + new Vector2(0.5f, 0.5f)) * 64);
@@ -98,7 +107,8 @@ namespace LikeADuckToWater
                 {
                     continue;
                 }
-                stack.Push(t);
+                foreach(var i in hopTileDict[t])
+                    stack.Push(i);
             }
             ducksToCheck[animal] = stack;
         }
@@ -155,8 +165,10 @@ namespace LikeADuckToWater
                     if (farm.isWaterTile(hop_over_tile.X, hop_over_tile.Y) && farm.doesTileHaveProperty(hop_over_tile.X, hop_over_tile.Y, "Passable", "Buildings") == null && !farm.isCollidingPosition(hop_destination, Game1.viewport, false, 0, false, animal) && (!isCollidingWater(farm, animal, hop_destination.X / 64, hop_destination.Y / 64) || farm.isOpenWater(hop_tile.X, hop_tile.Y)))
                     {
                         list.Add(new HopInfo() { 
+                            hopTile = tile.ToVector2(),
                             dir = i,
-                            offset = offset * 128
+                            offset = offset * 128,
+                            hoppedBox = hop_destination
                         });
                     }
                 }
