@@ -56,13 +56,13 @@ namespace WateringCanTweaks
                     tileCount = (int)(3 * Config.WaterMult);
                     break;
                 case 1:
-                    tileCount = (int)(5 * Config.WaterMult);
+                    tileCount = (int)(2 * Config.WaterMult);
                     break;
                 case 2:
-                    tileCount = (int)(9 * Config.WaterMult);
+                    tileCount = (int)(4 * Config.WaterMult);
                     break;
                 case 3:
-                    tileCount = (int)(18 * Config.WaterMult);
+                    tileCount = (int)(9 * Config.WaterMult);
                     break;
             }
 
@@ -76,30 +76,37 @@ namespace WateringCanTweaks
                 return false;
 
             var wateredTiles = 0;
-            var tilesToWater = tileCount;
 
-            SMonitor.Log($"Trying to water {tilesToWater} tiles");
+            SMonitor.Log($"Trying to water {tileCount} tiles");
 
             List<Vector2> tiles = new();
+            bool empty = false;
             if(dirt.state.Value == 0)
             {
-                WaterHoeDirt(__instance.currentLocation, startTile);
+                empty = !WaterHoeDirt(__instance, startTile);
                 wateredTiles++;
-                SMonitor.Log($"watered tile {startTile}");
-                if (!(__instance.CurrentTool as WateringCan).IsBottomless && !__instance.hasWateringCanEnchantment)
+
+            }
+            WaterTiles(__instance, tiles, startTile);
+
+            tiles.Sort(delegate(Vector2 a, Vector2 b)
+            {
+                return Vector2.Distance(startTile, a).CompareTo(Vector2.Distance(startTile, b));
+            });
+            foreach (var tile in tiles)
+            {
+                if (empty || wateredTiles >= tileCount)
+                    break;
+                dirt = GetHoeDirt(__instance.currentLocation, tile);
+
+                if (dirt.state.Value == 0)
                 {
-                    AccessTools.FieldRefAccess<WateringCan, int>(__instance.CurrentTool as WateringCan, "waterLeft")--;
-                    if (AccessTools.FieldRefAccess<WateringCan, int>(__instance.CurrentTool as WateringCan, "waterLeft") <= 0)
-                    {
-                        SMonitor.Log("Watering can empty");
-                        return false;
-                    }
+                    empty = !WaterHoeDirt(__instance, tile);
+                    wateredTiles++;
                 }
             }
-            tileCount--;
-            if (tileCount > 0)
-                WaterTiles(__instance, tiles, startTile);
-            if(wateredTiles > 0)
+
+            if (wateredTiles > 0)
             {
                 if (__instance.ShouldHandleAnimationSound())
                 {
@@ -116,7 +123,6 @@ namespace WateringCanTweaks
             }
             SMonitor.Log($"Increasing tool power to {__instance.toolPower + 1}");
             __instance.toolPower++;
-
             return false;
         }
 
@@ -131,24 +137,6 @@ namespace WateringCanTweaks
                     adjacents.RemoveAt(i);
                     continue;
                 }
-                if (dirt.state.Value == 0)
-                {
-                    WaterHoeDirt(farmer.currentLocation, adjacents[i]);
-                    wateredTiles++;
-                    SMonitor.Log($"watered tile {adjacents[i]}");
-                    if(!(farmer.CurrentTool as WateringCan).IsBottomless)
-                    {
-                        AccessTools.FieldRefAccess<WateringCan, int>(farmer.CurrentTool as WateringCan, "waterLeft")--;
-                        if (AccessTools.FieldRefAccess<WateringCan, int>(farmer.CurrentTool as WateringCan, "waterLeft") <= 0)
-                        {
-                            SMonitor.Log("Watering can empty");
-                            return;
-                        }
-                    }
-                }
-                tileCount--;
-                if (tileCount <= 0)
-                    return;
                 tiles.Add(adjacents[i]);
             }
             foreach(var tile in adjacents)
@@ -166,19 +154,28 @@ namespace WateringCanTweaks
 
             return null;
         }
-        private static bool WaterHoeDirt(GameLocation location, Vector2 tile)
+        private static bool WaterHoeDirt(Farmer f, Vector2 tile)
         {
-            if (location.terrainFeatures.TryGetValue(tile, out TerrainFeature feature) && feature is HoeDirt)
+            if (f.currentLocation.terrainFeatures.TryGetValue(tile, out TerrainFeature feature) && feature is HoeDirt)
             {
-                (location.terrainFeatures[tile] as HoeDirt).state.Value = 1;
+                (f.currentLocation.terrainFeatures[tile] as HoeDirt).state.Value = 1;
             }
-            else if (SHelper.ModRegistry.IsLoaded("aedenthorn.ConnectedGardenPots") && location.objects.TryGetValue(tile, out Object obj) && obj is IndoorPot)
+            else if (SHelper.ModRegistry.IsLoaded("aedenthorn.ConnectedGardenPots") && f.currentLocation.objects.TryGetValue(tile, out Object obj) && obj is IndoorPot)
             {
                 (obj as IndoorPot).hoeDirt.Value.state.Value = 1;
                 (obj as IndoorPot).showNextIndex.Value = true;
             }
-
-            return false;
+            SMonitor.Log($"watered tile {tile}");
+            if (!(f.CurrentTool as WateringCan).IsBottomless && !f.hasWateringCanEnchantment)
+            {
+                AccessTools.FieldRefAccess<WateringCan, int>((f.CurrentTool as WateringCan), "waterLeft")--;
+                if (AccessTools.FieldRefAccess<WateringCan, int>((f.CurrentTool as WateringCan), "waterLeft") <= 0)
+                {
+                    SMonitor.Log("Watering can empty");
+                    return false;
+                }
+            }
+            return true;
         }
     }
 }

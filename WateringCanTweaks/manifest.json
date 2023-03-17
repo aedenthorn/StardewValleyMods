@@ -1,7 +1,7 @@
 ﻿{
   "Name": "Watering Can Tweaks",
   "Author": "aedenthorn",
-  "Version": "0.2.0",
+  "Version": "0.3.0",
   "Description": "Watering Can Tweaks.",
   "UniqueID": "aedenthorn.WateringCanTweaks",
   "EntryDll": "WateringCanTweaks.dll",
