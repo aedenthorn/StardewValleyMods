@@ -15,7 +15,7 @@ namespace LikeADuckToWater
             {
                 if (NotReadyToSwim(__instance))
                     return;
-                TryMoveToWater(__instance, __instance.currentLocation);
+                TryAddToQueue(__instance, __instance.currentLocation);
             }
         }
 
@@ -26,7 +26,7 @@ namespace LikeADuckToWater
             {
                 if (NotReadyToSwim(__instance))
                     return;
-                TryMoveToWater(__instance, __instance.currentLocation);
+                TryAddToQueue(__instance, __instance.currentLocation);
             }
         }
         
@@ -37,7 +37,7 @@ namespace LikeADuckToWater
             {
                 if (is_auto_pet || NotReadyToSwim(__instance))
                     return;
-                TryMoveToWater(__instance, __instance.currentLocation);
+                TryAddToQueue(__instance, __instance.currentLocation);
             }
         }
         

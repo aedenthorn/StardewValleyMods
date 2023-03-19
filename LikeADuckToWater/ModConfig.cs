@@ -8,6 +8,7 @@ namespace LikeADuckToWater
     {
         public bool ModEnabled { get; set; } = true;
         public float MaxDistance { get; set; } = 20;
+        public float ChancePerTick { get; set; } = 0.03f;
         public int FriendshipGain { get; set; } = 10;
     }
 }

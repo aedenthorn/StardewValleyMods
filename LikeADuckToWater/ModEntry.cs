@@ -63,20 +63,22 @@ namespace LikeADuckToWater
 
             helper.Events.GameLoop.GameLaunched += GameLoop_GameLaunched;
             helper.Events.GameLoop.DayStarted += GameLoop_DayStarted;
-            helper.Events.GameLoop.OneSecondUpdateTicked += GameLoop_OneSecondUpdateTicked;
+            helper.Events.GameLoop.UpdateTicked += GameLoop_UpdateTicked;
 
             var harmony = new Harmony(ModManifest.UniqueID);
             harmony.PatchAll();
 
         }
 
-        private void GameLoop_OneSecondUpdateTicked(object sender, StardewModdingAPI.Events.OneSecondUpdateTickedEventArgs e)
+        private void GameLoop_UpdateTicked(object sender, StardewModdingAPI.Events.UpdateTickedEventArgs e)
         {
             if (!Config.ModEnabled || !ducksToCheck.Any())
             {
                 pickedTiles.Clear();
                 return;
             }
+            if (FarmAnimal.NumPathfindingThisTick >= FarmAnimal.MaxPathfindingPerTick || Game1.random.NextDouble() > Config.ChancePerTick)
+                return;
             foreach(var key in ducksToCheck.Keys.ToArray())
             {
                 if (key.modData.ContainsKey(swamTodayKey) || ducksToCheck[key].Count == 0)
@@ -84,7 +86,7 @@ namespace LikeADuckToWater
                     ducksToCheck.Remove(key);
                     continue;
                 }
-                else if(CheckDuck(key, ducksToCheck[key].Pop()))
+                if(CheckDuck(key, ducksToCheck[key].Pop()))
                 {
                     ducksToCheck.Remove(key);
                 }
@@ -118,12 +120,19 @@ namespace LikeADuckToWater
                 getValue: () => Config.ModEnabled,
                 setValue: value => Config.ModEnabled = value
             );
-
-            configMenu.AddNumberOption(
+            configMenu.AddTextOption(
                 mod: ModManifest,
                 name: () => "Max Distance",
-                getValue: () => Config.MaxDistance,
-                setValue: value => Config.MaxDistance = value
+                tooltip: () => "Max distance in tiles to allow adding to move queue",
+                getValue: () => "" + Config.MaxDistance,
+                setValue: delegate (string value) { try { Config.MaxDistance = float.Parse(value, CultureInfo.InvariantCulture); } catch { } }
+            );
+            configMenu.AddTextOption(
+                mod: ModManifest,
+                name: () => "Chance / Tick",
+                tooltip: () => "Chance for a queued duck to begin moving each game tick",
+                getValue: () => "" + Config.ChancePerTick,
+                setValue: delegate (string value) { try { Config.ChancePerTick = float.Parse(value, CultureInfo.InvariantCulture); } catch { } }
             );
             configMenu.AddNumberOption(
                 mod: ModManifest,

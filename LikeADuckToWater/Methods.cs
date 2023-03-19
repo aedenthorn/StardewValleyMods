@@ -34,6 +34,7 @@ namespace LikeADuckToWater
                     return false;
             }
             var c = new PathFindController(animal, animal.currentLocation, new PathFindController.isAtEnd(PathFindController.isAtEndPoint), info.dir, false, new PathFindController.endBehavior(TryHop), 200, new Point((int)info.hopTile.X, (int)info.hopTile.Y), true);
+            FarmAnimal.NumPathfindingThisTick++;
             if (c.pathToEndPoint is not null)
             {
                 pickedTiles.Add(info.hopTile);
@@ -84,7 +85,7 @@ namespace LikeADuckToWater
                 }
             }
         }
-        private static void TryMoveToWater(FarmAnimal animal, GameLocation location)
+        private static void TryAddToQueue(FarmAnimal animal, GameLocation location)
         {
             if (!hopTileDict.Any())
                 return;
