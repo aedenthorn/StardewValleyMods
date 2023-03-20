@@ -40,7 +40,7 @@ namespace LikeADuckToWater
                 TryAddToQueue(__instance, __instance.currentLocation);
             }
         }
-        
+              
         [HarmonyPatch(typeof(GameLocation), nameof(GameLocation.isCollidingPosition), new Type[] { typeof(Rectangle), typeof(xTile.Dimensions.Rectangle), typeof(bool), typeof(int), typeof(bool), typeof(Character), typeof(bool), typeof(bool), typeof(bool) })]
         public class GameLocation_isCollidingPosition_Patch
         {
@@ -64,6 +64,11 @@ namespace LikeADuckToWater
         {
             public static void Postfix(FarmAnimal __instance)
             {
+                if (__instance.hopOffset == Vector2.Zero)
+                {
+                    Point p = __instance.getTileLocationPoint();
+                    __instance.isSwimming.Value = __instance.currentLocation.doesTileHaveProperty(p.X, p.Y, "Water", "Back") != null;
+                }
                 if (!__instance.modData.ContainsKey(swamTodayKey)) 
                 {
                     SwamToday(__instance);

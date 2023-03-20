@@ -22,7 +22,7 @@ namespace LikeADuckToWater
 
         private static bool NotReadyToSwim(FarmAnimal animal)
         {
-            return !Config.ModEnabled || animal.controller is not null || animal.currentLocation != Game1.getFarm() || animal.currentLocation.waterTiles is null || !animal.CanSwim() || animal.isSwimming.Value || (!animal.wasPet.Value && !animal.wasAutoPet.Value) || animal.fullness.Value < 195 || ducksToCheck.ContainsKey(animal) || animal.modData.ContainsKey(swamTodayKey);
+            return !Config.ModEnabled || animal.controller is not null || animal.currentLocation != Game1.getFarm() || animal.currentLocation.waterTiles is null || !animal.CanSwim() || animal.isSwimming.Value || (!animal.wasPet.Value && (!Config.SwimAfterAutoPet || !animal.wasAutoPet.Value)) || (Config.EatBeforeSwimming && animal.fullness.Value < 195) || ducksToCheck.ContainsKey(animal) || animal.modData.ContainsKey(swamTodayKey);
         }
         private bool CheckDuck(FarmAnimal animal, HopInfo info)
         {

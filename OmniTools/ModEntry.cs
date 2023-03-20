@@ -236,8 +236,8 @@ namespace OmniTools
             configMenu.AddTextOption(
                 mod: ModManifest,
                 name: () => "Max Monster Distance",
-                getValue: () => Config.MaxMonsterDistance + "",
-                setValue: delegate (string value) { if (float.TryParse(value, NumberStyles.Any, CultureInfo.InvariantCulture, out float f)) { Config.MaxMonsterDistance = f; } }
+                getValue: () => Config.MonsterMaxDistance + "",
+                setValue: delegate (string value) { if (float.TryParse(value, NumberStyles.Any, CultureInfo.InvariantCulture, out float f)) { Config.MonsterMaxDistance = f; } }
             );
             configMenu.AddBoolOption(
                 mod: ModManifest,

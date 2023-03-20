@@ -120,6 +120,13 @@ namespace LikeADuckToWater
                 getValue: () => Config.ModEnabled,
                 setValue: value => Config.ModEnabled = value
             );
+
+            configMenu.AddBoolOption(
+                mod: ModManifest,
+                name: () => "Swim After Auto Pet",
+                getValue: () => Config.SwimAfterAutoPet,
+                setValue: value => Config.SwimAfterAutoPet = value
+            );
             configMenu.AddTextOption(
                 mod: ModManifest,
                 name: () => "Max Distance",

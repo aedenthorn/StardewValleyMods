@@ -28,7 +28,6 @@ namespace OmniTools
         public bool SwitchForTilling { get; set; } = true;
         public bool SwitchForAnimals { get; set; } = true;
         public bool SwitchForMonsters { get; set; } = true;
-        public float MaxMonsterDistance { get; set; } = 128;
-
+        public float MonsterMaxDistance { get; set; } = 256;
     }
 }

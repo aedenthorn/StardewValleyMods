@@ -118,7 +118,7 @@ namespace OmniTools
                                 if (c is RockCrab && !AccessTools.FieldRefAccess<RockCrab, NetBool>((c as RockCrab), "shellGone").Value)
                                     continue;
                                 var distance = Vector2.Distance(c.GetBoundingBox().Center.ToVector2(), f.GetBoundingBox().Center.ToVector2());
-                                if (distance > Config.MaxMonsterDistance)
+                                if (distance > Config.MonsterMaxDistance)
                                     continue;
                                 if (f.FacingDirection == 0 && c.GetBoundingBox().Top > f.GetBoundingBox().Bottom)
                                     continue;
