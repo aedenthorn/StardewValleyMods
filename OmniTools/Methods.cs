@@ -179,7 +179,8 @@ namespace OmniTools
                 }
                 if (Config.SwitchForCrops && tf is HoeDirt && (tf as HoeDirt).crop != null)
                 {
-                    if ((tf as HoeDirt).crop.forageCrop.Value == false && ((tf as HoeDirt).crop.harvestMethod.Value == 1 || Config.HarvestWithScythe))
+                    var crop = (tf as HoeDirt).crop;
+                    if (crop.forageCrop.Value == false && (crop.harvestMethod.Value == 1 || Config.HarvestWithScythe) && crop.currentPhase.Value >= crop.phaseDays.Count - 1 && (!crop.fullyGrown.Value || crop.dayOfCurrentPhase.Value <= 0))
                     {
                         tool = SwitchTool(currentTool, null, tools);
                         if (tool != null)
@@ -378,7 +379,7 @@ namespace OmniTools
                         return tool;
 
                 }
-                else if ((tf as Tree).growthStage.Value <= 1)
+                else if ((tf as Tree).growthStage.Value == 1)
                 {
                     Tool tool = SwitchTool(currentTool, null, tools);
                     if (tool != null)

@@ -142,7 +142,8 @@ namespace ToolSmartSwitch
                 }
                 if (Config.SwitchForCrops && tf is HoeDirt && (tf as HoeDirt).crop != null)
                 {
-                    if ((tf as HoeDirt).crop.forageCrop.Value == false && ((tf as HoeDirt).crop.harvestMethod.Value == 1 || Config.HarvestWithScythe))
+                    var crop = (tf as HoeDirt).crop;
+                    if (crop.forageCrop.Value == false && (crop.harvestMethod.Value == 1 || Config.HarvestWithScythe) && crop.currentPhase.Value >= crop.phaseDays.Count - 1 && (!crop.fullyGrown.Value || crop.dayOfCurrentPhase.Value <= 0))
                     {
                         if (SwitchToolType(f, null, tools))
                             return;
@@ -322,7 +323,7 @@ namespace ToolSmartSwitch
                 {
                     return SwitchToolType(f, typeof(Axe), tools);
                 }
-                else if((tf as Tree).growthStage.Value <= 1)
+                else if((tf as Tree).growthStage.Value == 1)
                 {
                     return SwitchToolType(f, null, tools);
                 }
