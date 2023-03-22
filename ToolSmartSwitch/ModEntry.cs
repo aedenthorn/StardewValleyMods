@@ -129,6 +129,12 @@ namespace ToolSmartSwitch
             );
             configMenu.AddBoolOption(
                 mod: ModManifest,
+                name: () => "Harvest With Scythe (Mod)",
+                getValue: () => Config.HarvestWithScythe,
+                setValue: value => Config.HarvestWithScythe = value
+            );
+            configMenu.AddBoolOption(
+                mod: ModManifest,
                 name: () => "Switch For Resource Clumps",
                 getValue: () => Config.SwitchForResourceClumps,
                 setValue: value => Config.SwitchForResourceClumps = value

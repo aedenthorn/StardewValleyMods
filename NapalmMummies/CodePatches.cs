@@ -22,9 +22,27 @@ namespace NapalmMummies
         {
             public static void Postfix(Mummy __instance, Farmer who)
             {
-                if (!Config.ModEnabled || __instance.reviveTimer.Value != 10000 || (who.leftRing.Value.indexInTileSheet.Value != 811 && who.rightRing.Value.indexInTileSheet.Value != 811))
+                if (!Config.ModEnabled || __instance.reviveTimer.Value != 10000)
                     return;
-                __instance.currentLocation.explode(__instance.getTileLocation(), 2, who, false, -1);
+                List<Ring> rings = new List<Ring>();
+                if(who.leftRing.Value is CombinedRing)
+                {
+                    rings.AddRange((who.leftRing.Value as CombinedRing).combinedRings);
+                }
+                else
+                {
+                    rings.Add(who.leftRing.Value);
+                }
+                if(who.rightRing.Value is CombinedRing)
+                {
+                    rings.AddRange((who.rightRing.Value as CombinedRing).combinedRings);
+                }
+                else
+                {
+                    rings.Add(who.rightRing.Value);
+                }
+                if(rings.Exists(r => r.indexInTileSheet.Value == 811))
+                    __instance.currentLocation.explode(__instance.getTileLocation(), 2, who, false, -1);
             }
         }
         [HarmonyPatch(typeof(Ring), nameof(Ring.onMonsterSlay))]

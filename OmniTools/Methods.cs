@@ -65,7 +65,7 @@ namespace OmniTools
                 {
                     Tool t = currentTool;
                     Tool newTool = GetToolFromInfo(tools[i]);
-                    if (newTool is null)
+                    if (newTool is null || newTool.GetType() != toolList[index])
                     {
                         SMonitor.Log($"Invalid tool {tools[i].displayName}, removing", StardewModdingAPI.LogLevel.Warn);
                         tools.RemoveAt(i);
@@ -177,11 +177,20 @@ namespace OmniTools
                     if (tool != null)
                         return tool;
                 }
-                if (Config.SwitchForCrops && tf is HoeDirt && (tf as HoeDirt).crop?.forageCrop.Value == true && (tf as HoeDirt).crop?.whichForageCrop.Value == Crop.forageCrop_ginger)
+                if (Config.SwitchForCrops && tf is HoeDirt && (tf as HoeDirt).crop != null)
                 {
-                    tool = SwitchTool(currentTool, typeof(Hoe), tools);
-                    if (tool != null)
-                        return tool;
+                    if ((tf as HoeDirt).crop.forageCrop.Value == false && ((tf as HoeDirt).crop.harvestMethod.Value == 1 || Config.HarvestWithScythe))
+                    {
+                        tool = SwitchTool(currentTool, null, tools);
+                        if (tool != null)
+                            return tool;
+                    }
+                    else if ((tf as HoeDirt).crop.forageCrop.Value == true && (tf as HoeDirt).crop.whichForageCrop.Value == Crop.forageCrop_ginger)
+                    {
+                        tool = SwitchTool(currentTool, typeof(Hoe), tools);
+                        if (tool != null)
+                            return tool;
+                    }
                 }
 
             }
@@ -369,12 +378,11 @@ namespace OmniTools
                         return tool;
 
                 }
-                else if((tf as Tree).growthStage.Value >= 1)
+                else if ((tf as Tree).growthStage.Value <= 1)
                 {
                     Tool tool = SwitchTool(currentTool, null, tools);
                     if (tool != null)
                         return tool;
-
                 }
                 else
                 {

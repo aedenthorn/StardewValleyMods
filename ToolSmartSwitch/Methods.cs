@@ -140,10 +140,18 @@ namespace ToolSmartSwitch
                     if (SwitchToolType(f, typeof(WateringCan), tools))
                         return;
                 }
-                if (Config.SwitchForCrops && tf is HoeDirt && (tf as HoeDirt).crop?.forageCrop.Value == true && (tf as HoeDirt).crop?.whichForageCrop.Value == Crop.forageCrop_ginger)
+                if (Config.SwitchForCrops && tf is HoeDirt && (tf as HoeDirt).crop != null)
                 {
-                    if (SwitchToolType(f, typeof(Hoe), tools))
-                        return;
+                    if ((tf as HoeDirt).crop.forageCrop.Value == false && ((tf as HoeDirt).crop.harvestMethod.Value == 1 || Config.HarvestWithScythe))
+                    {
+                        if (SwitchToolType(f, null, tools))
+                            return;
+                    }
+                    else if ((tf as HoeDirt).crop.forageCrop.Value == true && (tf as HoeDirt).crop.whichForageCrop.Value == Crop.forageCrop_ginger)
+                    {
+                        if (SwitchToolType(f, typeof(Hoe), tools))
+                            return;
+                    }
                 }
             }
             if (Config.SwitchForResourceClumps)
@@ -313,10 +321,8 @@ namespace ToolSmartSwitch
                 if((tf as Tree).growthStage.Value >= 3)
                 {
                     return SwitchToolType(f, typeof(Axe), tools);
-
-
                 }
-                else if((tf as Tree).growthStage.Value >= 1)
+                else if((tf as Tree).growthStage.Value <= 1)
                 {
                     return SwitchToolType(f, null, tools);
                 }
