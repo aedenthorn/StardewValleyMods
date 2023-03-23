@@ -11,10 +11,20 @@ namespace LikeADuckToWater
         [HarmonyPatch(typeof(FarmAnimal), nameof(FarmAnimal.updatePerTenMinutes))]
         public class FarmAnimal_MovePosition_Patch
         {
-            public static void Postfix(FarmAnimal __instance)
+            public static void Prefix(FarmAnimal __instance, ref Vector2 __state)
+            {
+                if (!Config.ModEnabled || !__instance.isSwimming.Value)
+                    return;
+                __state = __instance.Position;
+            }
+            public static void Postfix(FarmAnimal __instance, GameLocation currentLocation, Vector2 __state)
             {
                 if (NotReadyToSwim(__instance))
                     return;
+                if(__instance.IsActuallySwimming() && __state != __instance.Position && !currentLocation.isWaterTile(__instance.getTileX(), __instance.getTileY()))
+                {
+                    __instance.isSwimming.Value = false;
+                }
                 TryAddToQueue(__instance, __instance.currentLocation);
             }
         }
@@ -75,6 +85,7 @@ namespace LikeADuckToWater
                 }
             }
         }
+
         [HarmonyPatch(typeof(GameLocation), nameof(GameLocation.isOpenWater))]
         public class GameLocation_isOpenWater_Patch
         {
