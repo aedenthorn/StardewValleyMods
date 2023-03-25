@@ -1,16 +1,16 @@
 ﻿{
-  "Name": "Like A Duck To Water",
+  "Name": "Ghost Speed",
   "Author": "aedenthorn",
-  "Version": "0.4.3",
-  "Description": "Like A Duck To Water.",
-  "UniqueID": "aedenthorn.LikeADuckToWater",
-  "EntryDll": "LikeADuckToWater.dll",
+  "Version": "0.1.0",
+  "Description": "Ghost Speed.",
+  "UniqueID": "aedenthorn.GhostSpeed",
+  "EntryDll": "GhostSpeed.dll",
   "MinimumApiVersion": "3.15.0",
   "ModUpdater": {
     "Repository": "StardewValleyMods",
     "User": "aedenthorn",
     "Directory": "_releases",
-    "ModFolder": "LikeADuckToWater"
+    "ModFolder": "GhostSpeed"
   },
   "Dependencies": [
     {
@@ -18,5 +18,5 @@
       "IsRequired": false
     }
   ],
-  "UpdateKeys": [ "Nexus:15860" ]
+  "UpdateKeys": [ "Nexus:" ]
 }

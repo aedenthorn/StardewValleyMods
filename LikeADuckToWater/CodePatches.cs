@@ -24,17 +24,17 @@ namespace LikeADuckToWater
         {
             public static void Prefix(FarmAnimal __instance, ref Vector2 __state)
             {
-                if (!Config.ModEnabled || !__instance.isSwimming.Value)
+                if (!Config.ModEnabled || !__instance.CanSwim())
                     return;
                 __state = __instance.Position;
             }
             public static void Postfix(FarmAnimal __instance, GameLocation currentLocation, Vector2 __state)
             {
-                if (!Config.ModEnabled)
+                if (!Config.ModEnabled || !__instance.CanSwim())
                     return;
-                if(__instance.IsActuallySwimming() && __state != __instance.Position && !currentLocation.isWaterTile(__instance.getTileX(), __instance.getTileY()))
+                if(__instance.hopOffset == Vector2.Zero && __state != __instance.Position)
                 {
-                    __instance.isSwimming.Value = false;
+                    __instance.isSwimming.Value = currentLocation.isWaterTile(__instance.getTileX(), __instance.getTileY());
                 }
             }
         }

@@ -1,5 +1,6 @@
 ﻿using HarmonyLib;
 using StardewModdingAPI;
+using StardewModdingAPI.Utilities;
 using StardewValley;
 using System;
 using System.Collections.Generic;
@@ -22,6 +23,10 @@ namespace ExtraMapLayers
         private Harmony harmony;
         public static ModEntry context;
         public static ModConfig config;
+        public static Regex numberRx = new Regex("[0-9]$", RegexOptions.Compiled);
+
+        public static PerScreen<int> thisLayerDepth = new PerScreen<int>();
+        public static PerScreen<int> lastLayerDepth = new PerScreen<int>();
 
         /// <summary>The mod entry point, called after the mod is first loaded.</summary>
         /// <param name="helper">Provides simplified APIs for writing mods.</param>
@@ -93,36 +98,32 @@ namespace ExtraMapLayers
         {
             return layerName.StartsWith("Front") ? 16 : 0;
         }
-
-        public static int thisLayerDepth = 0;
         public static void Layer_Draw_Postfix(Layer __instance, IDisplayDevice displayDevice, Rectangle mapViewport, Location displayOffset, bool wrapAround, int pixelZoom)
         {
-            if (!config.EnableMod || Regex.IsMatch(__instance.Id, "[0-9]$"))
+            if (!config.EnableMod || numberRx.IsMatch(__instance.Id))
                 return;
 
-            foreach (Layer layer in Game1.currentLocation.Map.Layers)
+            foreach (Layer layer in __instance.Map.Layers)
             {
                 if (layer.Id.StartsWith(__instance.Id) && int.TryParse(layer.Id.Substring(__instance.Id.Length), out int layerIndex))
                 {
-                    thisLayerDepth = layerIndex;
+                    thisLayerDepth.Value = layerIndex;
                     layer.Draw(displayDevice, mapViewport, displayOffset, wrapAround, pixelZoom);
                     thisLayerDepth = 0;
                 }
             }
         }
-
-        public static int lastLayerDepth = 0;
         public static void DrawTile_Prefix(ref float layerDepth)
         {
-            if (!config.EnableMod || thisLayerDepth == 0)
+            if (!config.EnableMod || thisLayerDepth.Value == 0)
                 return;
-            if(lastLayerDepth != thisLayerDepth)
+            if(lastLayerDepth.Value != thisLayerDepth.Value)
             {
-                lastLayerDepth = thisLayerDepth;
+                lastLayerDepth.Value = thisLayerDepth.Value;
             }
-            layerDepth += thisLayerDepth / 10000f;
+            layerDepth += thisLayerDepth.Value / 10000f;
         }
-       public static bool PyTK_drawLayer_Prefix(Layer layer)
+        public static bool PyTK_drawLayer_Prefix(Layer layer)
         {
             return (!config.EnableMod || !Regex.IsMatch(layer.Id, "[0-9]$"));
         }

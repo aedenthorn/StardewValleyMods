@@ -497,6 +497,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AutoPetterTweaks", "AutoPet
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NapalmMummies", "NapalmMummies\NapalmMummies.csproj", "{1AF5C121-0593-455A-BB6C-7CAB775BCF4F}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GhostSpeed", "GhostSpeed\GhostSpeed.csproj", "{2A744BD4-B923-4413-B9E7-AFA755AD1E04}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -3411,6 +3413,18 @@ Global
 		{1AF5C121-0593-455A-BB6C-7CAB775BCF4F}.Release|x64.Build.0 = Release|x64
 		{1AF5C121-0593-455A-BB6C-7CAB775BCF4F}.Release|x86.ActiveCfg = Release|Any CPU
 		{1AF5C121-0593-455A-BB6C-7CAB775BCF4F}.Release|x86.Build.0 = Release|Any CPU
+		{2A744BD4-B923-4413-B9E7-AFA755AD1E04}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2A744BD4-B923-4413-B9E7-AFA755AD1E04}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2A744BD4-B923-4413-B9E7-AFA755AD1E04}.Debug|x64.ActiveCfg = Debug|x64
+		{2A744BD4-B923-4413-B9E7-AFA755AD1E04}.Debug|x64.Build.0 = Debug|x64
+		{2A744BD4-B923-4413-B9E7-AFA755AD1E04}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{2A744BD4-B923-4413-B9E7-AFA755AD1E04}.Debug|x86.Build.0 = Debug|Any CPU
+		{2A744BD4-B923-4413-B9E7-AFA755AD1E04}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2A744BD4-B923-4413-B9E7-AFA755AD1E04}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2A744BD4-B923-4413-B9E7-AFA755AD1E04}.Release|x64.ActiveCfg = Release|x64
+		{2A744BD4-B923-4413-B9E7-AFA755AD1E04}.Release|x64.Build.0 = Release|x64
+		{2A744BD4-B923-4413-B9E7-AFA755AD1E04}.Release|x86.ActiveCfg = Release|Any CPU
+		{2A744BD4-B923-4413-B9E7-AFA755AD1E04}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
