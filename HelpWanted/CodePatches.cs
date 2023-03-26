@@ -144,16 +144,6 @@ namespace HelpWanted
             return !Config.ModEnabled ? 2 : Config.QuestDays;
         }
 
-        [HarmonyPatch(typeof(Farmer), nameof(Farmer.checkForQuestComplete))]
-        public class Farmer_checkForQuestComplete_Patch
-        {
-            public static void Prefix(Farmer __instance, NPC n, int number1, int number2, Item item, string str, int questType, int questTypeToIgnore)
-            {
-
-                var x = __instance.questLog;
-                var y = 1;
-            }
-        }
         [HarmonyPatch(typeof(Utility), nameof(Utility.getRandomItemFromSeason))]
         public class Utility_getRandomItemFromSeason_Patch
         {
