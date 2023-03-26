@@ -109,7 +109,7 @@ namespace ExtraMapLayers
                 {
                     thisLayerDepth.Value = layerIndex;
                     layer.Draw(displayDevice, mapViewport, displayOffset, wrapAround, pixelZoom);
-                    thisLayerDepth = 0;
+                    thisLayerDepth.Value = 0;
                 }
             }
         }
