@@ -228,22 +228,27 @@ namespace MoveIt
             }
             else if (movingObject is Building)
             {
-                if (Game1.currentLocation is BuildableGameLocation && (Game1.currentLocation as BuildableGameLocation).buildings.Contains(movingObject as Building))
+                if (Game1.currentLocation is BuildableGameLocation && ((BuildableGameLocation)Game1.currentLocation).buildings.Contains((Building)movingObject))
                 {
-                    (movingObject as Building).tileX.Value = (int)Math.Round(Game1.currentCursorTile.X - (movingOffset.X / 64));
-                    (movingObject as Building).tileY.Value = (int)Math.Round(Game1.currentCursorTile.Y - (movingOffset.Y / 64));
-
-                    if (movingObject is ShippingBin)
+                    if (((BuildableGameLocation)Game1.currentLocation).buildStructure((Building)movingObject, new Vector2((int)Math.Round(Game1.currentCursorTile.X - movingOffset.X / 64), (int)Math.Round(Game1.currentCursorTile.Y - movingOffset.Y / 64)), Game1.player, false))
                     {
-                        (movingObject as ShippingBin).initLid();
+                        if (movingObject is ShippingBin)
+                        {
+                            (movingObject as ShippingBin).initLid();
+                        }
+                        if (movingObject is GreenhouseBuilding)
+                        {
+                            Game1.getFarm().greenhouseMoved.Value = true;
+                        }
+                        (movingObject as Building).performActionOnBuildingPlacement();
+                        movingObject = null;
                     }
-                    if (movingObject is GreenhouseBuilding)
+                    else
                     {
-                        Game1.getFarm().greenhouseMoved.Value = true;
+                        Game1.playSound("cancel");
+                        return;
                     }
-                    (movingObject as Building).performActionOnBuildingPlacement();
 
-                    movingObject = null;
                 }
             }
             if (movingObject is null)
