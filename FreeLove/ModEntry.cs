@@ -252,7 +252,11 @@ namespace FreeLove
 
             harmony.Patch(
                original: AccessTools.Method(typeof(Farmer), nameof(Farmer.getSpouse)),
-               prefix: new HarmonyMethod(typeof(FarmerPatches), nameof(FarmerPatches.Farmer_getSpouse_Prefix))
+               postfix: new HarmonyMethod(typeof(FarmerPatches), nameof(FarmerPatches.Farmer_getSpouse_Postfix))
+            );
+            harmony.Patch(
+               original: AccessTools.PropertyGetter(typeof(Farmer), nameof(Farmer.spouse)),
+               postfix: new HarmonyMethod(typeof(FarmerPatches), nameof(FarmerPatches.Farmer_spouse_Postfix))
             );
             harmony.Patch(
                original: AccessTools.Method(typeof(Farmer), nameof(Farmer.GetSpouseFriendship)),

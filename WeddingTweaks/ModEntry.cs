@@ -1,9 +1,14 @@
 ﻿using HarmonyLib;
+using Netcode;
 using StardewModdingAPI;
 using StardewModdingAPI.Events;
 using StardewValley;
 using System;
+using System.Collections;
 using System.Collections.Generic;
+using System.Globalization;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace WeddingTweaks
 {
@@ -76,6 +81,54 @@ namespace WeddingTweaks
         private void GameLoop_DayStarted(object sender, DayStartedEventArgs e)
         {
             npcWitnessAsked.Clear();
+            /*
+            var task = new Task(delegate ()
+            {
+                Thread.CurrentThread.CurrentCulture = CultureInfo.InvariantCulture;
+                IEnumerator new_day_task = StartWeddings();
+                while (new_day_task.MoveNext())
+                {
+                }
+            });
+            */
+        }
+        public IEnumerator StartWeddings()
+        {
+            if (Game1.IsMasterGame)
+            {
+                Game1.queueWeddingsForToday();
+                Game1.newDaySync.sendVar<NetRef<NetLongList>, NetLongList>("weddingsToday", new NetLongList(Game1.weddingsToday));
+            }
+            else
+            {
+                while (!Game1.newDaySync.isVarReady("weddingsToday"))
+                {
+                    yield return 0;
+                }
+                Game1.weddingsToday = new List<long>(Game1.newDaySync.waitForVar<NetRef<NetLongList>, NetLongList>("weddingsToday"));
+            }
+            Game1.weddingToday = false;
+            foreach (long id in Game1.weddingsToday)
+            {
+                Farmer spouse_farmer = Game1.getFarmer(id);
+                if (spouse_farmer != null && !spouse_farmer.hasCurrentOrPendingRoommate())
+                {
+                    Game1.weddingToday = true;
+                    break;
+                }
+            }
+            if (Game1.player.spouse != null && Game1.player.isEngaged() && Game1.weddingsToday.Contains(Game1.player.UniqueMultiplayerID))
+            {
+                Friendship friendship = Game1.player.friendshipData[Game1.player.spouse];
+                if (friendship.CountdownToWedding <= 1)
+                {
+                    Game1.prepareSpouseForWedding(Game1.player);
+                    friendship.Status = FriendshipStatus.Married;
+                    friendship.WeddingDate = new WorldDate(Game1.Date);
+                }
+            }
+
+            yield break;
         }
 
         private void GameLoop_SaveLoaded(object sender, SaveLoadedEventArgs e)
@@ -189,6 +242,12 @@ namespace WeddingTweaks
                     getValue: () => Config.DaysUntilMarriage,
                     setValue: value => Config.DaysUntilMarriage = Math.Max(1, value),
                     min: 1
+                );
+                configMenu.AddBoolOption(
+                    mod: ModManifest,
+                    name: () => "Fix Wedding Event Start",
+                    getValue: () => Config.FixWeddingStart,
+                    setValue: value => Config.FixWeddingStart = value
                 );
                 configMenu.AddBoolOption(
                     mod: ModManifest,

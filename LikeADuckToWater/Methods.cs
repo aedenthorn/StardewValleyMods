@@ -26,11 +26,11 @@ namespace LikeADuckToWater
         }
         private bool CheckDuck(FarmAnimal animal, HopInfo info)
         {
-            if (pickedTiles.Contains(info.hopTile))
+            if (animal is null || info is null || animal.currentLocation is not Farm || pickedTiles.Contains(info.hopTile) || FarmAnimal.NumPathfindingThisTick >= FarmAnimal.MaxPathfindingPerTick)
                 return false;
             foreach(var a in (animal.currentLocation as Farm).Animals.Values)
             {
-                if (a.GetBoundingBox().Intersects(info.hoppedBox))
+                if (a is not null && a.GetBoundingBox().Intersects(info.hoppedBox))
                     return false;
             }
             var c = new PathFindController(animal, animal.currentLocation, new PathFindController.isAtEnd(PathFindController.isAtEndPoint), info.dir, false, new PathFindController.endBehavior(TryHop), 200, new Point((int)info.hopTile.X, (int)info.hopTile.Y), true);

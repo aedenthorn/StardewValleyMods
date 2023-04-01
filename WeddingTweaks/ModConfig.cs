@@ -6,6 +6,7 @@ namespace WeddingTweaks
         public bool EnableMod { get; set; } = true;
         public int DaysUntilMarriage { get; set; } = 3;
         public bool AllSpousesJoinWeddings { get; set; } = true;
+        public bool FixWeddingStart { get; set; } = true;
         public bool AllSpousesWearMarriageClothesAtWeddings { get; set; } = true;
         public bool AllowWitnesses { get; set; } = true;
         public int WitnessMinHearts { get; set; } = 6;
