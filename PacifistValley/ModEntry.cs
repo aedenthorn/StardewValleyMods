@@ -127,6 +127,11 @@ namespace PacifistValley
                    postfix: new HarmonyMethod(typeof(ModEntry), nameof(ModEntry.Skeleton_behaviorAtGameTick_postfix))
                 );
             }
+
+            harmony.Patch(
+               original: AccessTools.Method(typeof(FarmHouse), nameof(FarmHouse.UpdateWhenCurrentLocation)),
+               transpiler: new HarmonyMethod(typeof(ModEntry), nameof(ModEntry.FarmHouse_UpdateWhenCurrentLocation_Transpiler))
+            );
         }
 
         private void Content_AssetRequested(object sender, StardewModdingAPI.Events.AssetRequestedEventArgs e)
@@ -350,11 +355,6 @@ namespace PacifistValley
                     mod: ModManifest,
                     reset: () => Config = new ModConfig(),
                     save: () => Helper.WriteConfig(Config)
-                );
-                configMenu.AddSectionTitle(
-                    mod: ModManifest,
-                    text: () => "You must close the game and restart for changes to take effect." 
-                    
                 );
                 configMenu.AddBoolOption(
                     mod: ModManifest,
@@ -740,6 +740,30 @@ namespace PacifistValley
             }
             //__instance.temporarilyInvincible = true;
             //__instance.currentLocation.playSound("dwop", NetAudio.SoundContext.Default);
+            return false;
+        }
+        public static IEnumerable<CodeInstruction> FarmHouse_UpdateWhenCurrentLocation_Transpiler(IEnumerable<CodeInstruction> instructions)
+        {
+
+            SMonitor.Log($"Transpiling FarmHouse.UpdateWhenCurrentLocation");
+
+            var codes = new List<CodeInstruction>(instructions);
+            for (int i = 0; i < codes.Count; i++)
+            {
+                if (codes[i].opcode == OpCodes.Callvirt && codes[i].operand is MethodInfo && (MethodInfo)codes[i].operand == AccessTools.Method(typeof(Farmer), nameof(Farmer.isMarried)))
+                {
+                    SMonitor.Log($"Adding prevent method");
+
+                    codes.Insert(i + 1, new CodeInstruction(OpCodes.Call, AccessTools.Method(typeof(ModEntry), nameof(ModEntry.PreventMonsterAttack))));
+                    break;
+                }
+            }
+
+            return codes.AsEnumerable();
+        }
+
+        private static bool PreventMonsterAttack(bool married)
+        {
             return false;
         }
     }

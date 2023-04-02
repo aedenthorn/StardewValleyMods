@@ -133,11 +133,14 @@ namespace FreeLove
             }
             return true;
         }
-
+        public static bool skipSpouse = false;
         public static void Farmer_spouse_Postfix(Farmer __instance, ref string __result)
         {
+            if (skipSpouse)
+                return;
             try
             {
+                skipSpouse = true;
                 if (ModEntry.tempOfficialSpouse != null && __instance.friendshipData.ContainsKey(ModEntry.tempOfficialSpouse.Name) && __instance.friendshipData[ModEntry.tempOfficialSpouse.Name].IsMarried())
                 {
                     __result = ModEntry.tempOfficialSpouse.Name;
@@ -166,8 +169,9 @@ namespace FreeLove
             {
                 Monitor.Log($"Failed in {nameof(Farmer_spouse_Postfix)}:\n{ex}", LogLevel.Error);
             }
+            skipSpouse = false;
         }
-        
+
         public static void Farmer_getSpouse_Postfix(Farmer __instance, ref NPC __result)
         {
             try
