@@ -41,7 +41,7 @@ namespace NapalmMummies
                 {
                     rings.Add(who.rightRing.Value);
                 }
-                if(rings.Exists(r => r.indexInTileSheet.Value == 811))
+                if(rings.Exists(r => r is not null && r.indexInTileSheet.Value == 811))
                     __instance.currentLocation.explode(__instance.getTileLocation(), 2, who, false, -1);
             }
         }
