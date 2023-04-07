@@ -117,18 +117,18 @@ namespace ExtraMapLayers
         }
         public static void Layer_Draw_Postfix(Layer __instance, IDisplayDevice displayDevice, Rectangle mapViewport, Location displayOffset, bool wrapAround, int pixelZoom)
         {
-            if (!config.EnableMod)
+            if (!config.EnableMod || thisLayerDepth.Value != 0)
                 return;
 
             foreach (Layer layer in __instance.Map.Layers)
             {
-                if (layer.Id.StartsWith(__instance.Id) && int.TryParse(layer.Id.Substring(__instance.Id.Length), out int layerIndex))
+                if (layer.Id.Length > __instance.Id.Length && layer.Id.StartsWith(__instance.Id) && int.TryParse(layer.Id.Substring(__instance.Id.Length), out int layerIndex) && layerIndex != 0)
                 {
                     thisLayerDepth.Value = layerIndex;
                     layer.Draw(displayDevice, mapViewport, displayOffset, wrapAround, pixelZoom);
-                    thisLayerDepth.Value = 0;
                 }
             }
+            thisLayerDepth.Value = 0;
         }
         public static void DrawTile_Prefix(ref float layerDepth)
         {
