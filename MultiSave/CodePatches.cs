@@ -71,10 +71,10 @@ namespace MultiSave
                 if (currentSaveSlot is null)
                 {
                     var currentItemIndex = (int)AccessTools.Field(typeof(LoadGameMenu), "currentItemIndex").GetValue(___menu);
-                    if (saveBackupList.Count > i && saveBackupList[currentItemIndex + i].Length > 0)
+                    if (saveBackupList.Count > currentItemIndex + i && saveBackupList[currentItemIndex + i].Length > 0)
                         ___menu.deleteButtons[i + 4].draw(b, Color.White * 0.75f, 1f, 0);
                 }
-                else if(__instance.Farmer.modData.TryGetValue(backupFolderKey, out string backupFolder)) 
+                else if(__instance.Farmer?.modData.TryGetValue(backupFolderKey, out string backupFolder) == true)
                 {
                     var info = new DirectoryInfo(backupFolder);
                     var date = info.CreationTime;
