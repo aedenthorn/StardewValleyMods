@@ -11,7 +11,7 @@ using System.IO;
 namespace OpenWorldValley
 {
     /// <summary>The mod entry point.</summary>
-    public partial class ModEntry : Mod, IAssetLoader
+    public partial class ModEntry : Mod
     {
 
         public static IMonitor SMonitor;
@@ -37,17 +37,27 @@ namespace OpenWorldValley
             SMonitor = Monitor;
             SHelper = helper;
 
+            helper.Events.GameLoop.GameLaunched += GameLoop_GameLaunched;
             helper.Events.GameLoop.SaveLoaded += GameLoop_SaveLoaded;
             helper.Events.Input.ButtonPressed += Input_ButtonPressed;
+            helper.Events.Content.AssetRequested += Content_AssetRequested;
 
             var harmony = new Harmony(ModManifest.UniqueID);
             harmony.PatchAll();
 
         }
 
+        private void Content_AssetRequested(object sender, StardewModdingAPI.Events.AssetRequestedEventArgs e)
+        {
+            if (e.NameWithoutLocale.IsEquivalentTo(dictPath))
+            {
+                e.LoadFrom(() => new Dictionary<string, Dictionary<string, int[]>>(), StardewModdingAPI.Events.AssetLoadPriority.Exclusive);
+            }
+        }
+
         private void Input_ButtonPressed(object sender, StardewModdingAPI.Events.ButtonPressedEventArgs e)
         {
-            if(e.Button == SButton.Y)
+            if(e.Button == SButton.O)
             {
                 ReloadMaps();
             }
@@ -60,8 +70,7 @@ namespace OpenWorldValley
 
         private void ReloadMaps()
         {
-            SHelper.Content.InvalidateCache(dictPath);
-            mapDict = SHelper.Content.Load<Dictionary<string, Dictionary<string, int[]>>>(dictPath, ContentSource.GameContent) ?? new Dictionary<string, Dictionary<string, int[]>>();
+            mapDict = Game1.content.Load<Dictionary<string, Dictionary<string, int[]>>>(dictPath) ?? new Dictionary<string, Dictionary<string, int[]>>();
             Monitor.Log($"Loaded {mapDict.Count} maps");
         }
 

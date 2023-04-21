@@ -1,22 +1,22 @@
 ﻿{
-  "Name": "Loading Screens",
+  "Name": "Trash Cans On Horse",
   "Author": "aedenthorn",
-  "Version": "0.1.0",
-  "Description": "Loading Screens.",
-  "UniqueID": "aedenthorn.LoadingScreens",
-  "EntryDll": "LoadingScreens.dll",
+  "Version": "0.1.1",
+  "Description": "Napalm Mummies.",
+  "UniqueID": "aedenthorn.TrashCansOnHorse",
+  "EntryDll": "TrashCansOnHorse.dll",
   "MinimumApiVersion": "3.15.0",
   "ModUpdater": {
     "Repository": "StardewValleyMods",
     "User": "aedenthorn",
     "Directory": "_releases",
-    "ModFolder": "LoadingScreens"
+    "ModFolder": "TrashCansOnHorse"
   },
-  "UpdateKeys": [ "Nexus:" ],
   "Dependencies": [
     {
       "UniqueID": "Platonymous.ModUpdater",
       "IsRequired": false
     }
-  ]
+  ],
+  "UpdateKeys": [ "Nexus:16394" ]
 }

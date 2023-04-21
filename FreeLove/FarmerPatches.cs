@@ -153,7 +153,7 @@ namespace FreeLove
                     {
                         if (aspouse is null)
                             aspouse = spouse.Key;
-                        if (__instance.friendshipData[spouse.Key].IsEngaged())
+                        if (__instance.friendshipData[spouse.Key]?.IsEngaged() == true)
                         {
                             __result = spouse.Key;
                             break;

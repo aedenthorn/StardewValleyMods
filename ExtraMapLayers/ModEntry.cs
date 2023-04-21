@@ -126,9 +126,9 @@ namespace ExtraMapLayers
                 {
                     thisLayerDepth.Value = layerIndex;
                     layer.Draw(displayDevice, mapViewport, displayOffset, wrapAround, pixelZoom);
+                    thisLayerDepth.Value = 0;
                 }
             }
-            thisLayerDepth.Value = 0;
         }
         public static void DrawTile_Prefix(ref float layerDepth)
         {
