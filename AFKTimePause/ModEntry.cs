@@ -107,6 +107,7 @@ namespace AFKTimePause
             configMenu.AddBoolOption(
                 mod: ModManifest,
                 name: () => ModEntry.SHelper.Translation.Get("GMCM_Option_FreezeGame_Name"),
+                tooltip: () => ModEntry.SHelper.Translation.Get("GMCM_Option_FreezeGame_Tooltip"),
                 getValue: () => Config.FreezeGame,
                 setValue: value => Config.FreezeGame = value
             );
