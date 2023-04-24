@@ -13,11 +13,6 @@ namespace AFKTimePause
             {
                 if (!Config.ModEnabled || !Game1.IsMasterGame || Game1.eventUp || Game1.isFestival() || elapsedSeconds < Config.SecondsTilAFK)
                     return true;
-                if(elapsedSeconds == Config.SecondsTilAFK)
-                {
-                    elapsedSeconds++;
-                    SMonitor.Log("Going AFK");
-                }
                 return false;
             }
         }

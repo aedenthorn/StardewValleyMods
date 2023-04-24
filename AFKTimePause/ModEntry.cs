@@ -53,13 +53,15 @@ namespace AFKTimePause
 
         private void Display_Rendered(object sender, StardewModdingAPI.Events.RenderedEventArgs e)
         {
-            if (!Config.ModEnabled || !Config.ShowAFKText || elapsedSeconds < Config.SecondsTilAFK || !Context.IsPlayerFree)
+            if (!Config.ModEnabled || !Config.ShowAFKText || Config.FreezeGame || elapsedSeconds < Config.SecondsTilAFK || !Context.IsPlayerFree)
                 return;
             SpriteText.drawStringWithScrollCenteredAt(e.SpriteBatch, Config.AFKText, Game1.viewport.Width / 2, Game1.viewport.Height / 2);
         }
 
         private void GameLoop_OneSecondUpdateTicked(object sender, StardewModdingAPI.Events.OneSecondUpdateTickedEventArgs e)
         {
+            if (Game1.activeClickableMenu is AFKMenu)
+                return;
             if (!Config.ModEnabled || !Context.IsPlayerFree || (Game1.player.CurrentTool is FishingRod && (Game1.player.CurrentTool as FishingRod).inUse()))
             {
                 elapsedSeconds = 0;
@@ -69,7 +71,6 @@ namespace AFKTimePause
             {
                 SMonitor.Log("Going AFK");
                 Game1.activeClickableMenu = new AFKMenu();
-                elapsedSeconds++;
             }
             else if (elapsedSeconds < Config.SecondsTilAFK)
                 elapsedSeconds++;
