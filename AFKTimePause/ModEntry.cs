@@ -100,31 +100,31 @@ namespace AFKTimePause
 
             configMenu.AddBoolOption(
                 mod: ModManifest,
-                name: () => "Mod Enabled",
+                name: () => ModEntry.SHelper.Translation.Get("GMCM_Option_ModEnabled_Name"),
                 getValue: () => Config.ModEnabled,
                 setValue: value => Config.ModEnabled = value
             );
             configMenu.AddBoolOption(
                 mod: ModManifest,
-                name: () => "Freeze Game",
+                name: () => ModEntry.SHelper.Translation.Get("GMCM_Option_FreezeGame_Name"),
                 getValue: () => Config.FreezeGame,
                 setValue: value => Config.FreezeGame = value
             );
             configMenu.AddNumberOption(
                 mod: ModManifest,
-                name: () => "Seconds Until AFK",
+                name: () => ModEntry.SHelper.Translation.Get("GMCM_Option_SecondsTilAFK_Name"),
                 getValue: () => Config.SecondsTilAFK,
                 setValue: value => Config.SecondsTilAFK = value
             );
             configMenu.AddBoolOption(
                 mod: ModManifest,
-                name: () => "Show AFK Text",
+                name: () => ModEntry.SHelper.Translation.Get("GMCM_Option_ShowAFKText_Name"),
                 getValue: () => Config.ShowAFKText,
                 setValue: value => Config.ShowAFKText = value
             );
             configMenu.AddTextOption(
                 mod: ModManifest,
-                name: () => "AFK Text",
+                name: () => ModEntry.SHelper.Translation.Get("GMCM_Option_AFKText_Name"),
                 getValue: () => Config.AFKText,
                 setValue: value => Config.AFKText = value
             );
