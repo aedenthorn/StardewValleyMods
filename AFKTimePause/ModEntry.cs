@@ -53,13 +53,15 @@ namespace AFKTimePause
 
         private void Display_Rendered(object sender, StardewModdingAPI.Events.RenderedEventArgs e)
         {
-            if (!Config.ModEnabled || !Config.ShowAFKText || elapsedSeconds < Config.SecondsTilAFK || !Context.IsPlayerFree)
+            if (!Config.ModEnabled || !Config.ShowAFKText || Config.FreezeGame || elapsedSeconds < Config.SecondsTilAFK || !Context.IsPlayerFree)
                 return;
             SpriteText.drawStringWithScrollCenteredAt(e.SpriteBatch, Config.AFKText, Game1.viewport.Width / 2, Game1.viewport.Height / 2);
         }
 
         private void GameLoop_OneSecondUpdateTicked(object sender, StardewModdingAPI.Events.OneSecondUpdateTickedEventArgs e)
         {
+            if (Game1.activeClickableMenu is AFKMenu)
+                return;
             if (!Config.ModEnabled || !Context.IsPlayerFree || (Game1.player.CurrentTool is FishingRod && (Game1.player.CurrentTool as FishingRod).inUse()))
             {
                 elapsedSeconds = 0;
@@ -69,7 +71,6 @@ namespace AFKTimePause
             {
                 SMonitor.Log("Going AFK");
                 Game1.activeClickableMenu = new AFKMenu();
-                elapsedSeconds++;
             }
             else if (elapsedSeconds < Config.SecondsTilAFK)
                 elapsedSeconds++;
@@ -100,31 +101,32 @@ namespace AFKTimePause
 
             configMenu.AddBoolOption(
                 mod: ModManifest,
-                name: () => "Mod Enabled",
+                name: () => ModEntry.SHelper.Translation.Get("GMCM_Option_ModEnabled_Name"),
                 getValue: () => Config.ModEnabled,
                 setValue: value => Config.ModEnabled = value
             );
             configMenu.AddBoolOption(
                 mod: ModManifest,
-                name: () => "Freeze Game",
+                name: () => ModEntry.SHelper.Translation.Get("GMCM_Option_FreezeGame_Name"),
+                tooltip: () => ModEntry.SHelper.Translation.Get("GMCM_Option_FreezeGame_Tooltip"),
                 getValue: () => Config.FreezeGame,
                 setValue: value => Config.FreezeGame = value
             );
             configMenu.AddNumberOption(
                 mod: ModManifest,
-                name: () => "Seconds Until AFK",
+                name: () => ModEntry.SHelper.Translation.Get("GMCM_Option_SecondsTilAFK_Name"),
                 getValue: () => Config.SecondsTilAFK,
                 setValue: value => Config.SecondsTilAFK = value
             );
             configMenu.AddBoolOption(
                 mod: ModManifest,
-                name: () => "Show AFK Text",
+                name: () => ModEntry.SHelper.Translation.Get("GMCM_Option_ShowAFKText_Name"),
                 getValue: () => Config.ShowAFKText,
                 setValue: value => Config.ShowAFKText = value
             );
             configMenu.AddTextOption(
                 mod: ModManifest,
-                name: () => "AFK Text",
+                name: () => ModEntry.SHelper.Translation.Get("GMCM_Option_AFKText_Name"),
                 getValue: () => Config.AFKText,
                 setValue: value => Config.AFKText = value
             );
