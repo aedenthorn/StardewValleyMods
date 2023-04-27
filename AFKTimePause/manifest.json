@@ -1,7 +1,7 @@
 ﻿{
   "Name": "AFK Time Pause",
   "Author": "aedenthorn",
-  "Version": "0.3.1",
+  "Version": "0.4.0",
   "Description": "AFK Time Pause.",
   "UniqueID": "aedenthorn.AFKTimePause",
   "EntryDll": "AFKTimePause.dll",
