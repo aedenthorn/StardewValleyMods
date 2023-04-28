@@ -119,67 +119,67 @@ namespace AdvancedCooking
             );
             configMenu.AddKeybind(
                 mod: ModManifest,
-                name: () => "Cook All Mod Key",
+                name: () => ModEntry.SHelper.Translation.Get("GMCM_Option_CookAllModKey_Name"),
                 getValue: () => Config.CookAllModKey,
                 setValue: value => Config.CookAllModKey = value
             );
             configMenu.AddBoolOption(
                 mod: ModManifest,
-                name: () => "Store Held Item On Cook",
+                name: () => ModEntry.SHelper.Translation.Get("GMCM_Option_StoreOtherHeldItemOnCook_Name"),
                 getValue: () => Config.StoreOtherHeldItemOnCook,
                 setValue: value => Config.StoreOtherHeldItemOnCook = value
             );
             configMenu.AddBoolOption(
                 mod: ModManifest,
-                name: () => "Consume Ingredients On Fail",
+                name: () => ModEntry.SHelper.Translation.Get("GMCM_Option_ConsumeIngredientsOnFail_Name"),
                 getValue: () => Config.ConsumeIngredientsOnFail,
                 setValue: value => Config.ConsumeIngredientsOnFail = value
             );
             configMenu.AddBoolOption(
                 mod: ModManifest,
-                name: () => "Consume Excess On Success",
+                name: () => ModEntry.SHelper.Translation.Get("GMCM_Option_ConsumeExtraIngredientsOnSucceed_Name"),
                 getValue: () => Config.ConsumeExtraIngredientsOnSucceed,
                 setValue: value => Config.ConsumeExtraIngredientsOnSucceed = value
             );
             configMenu.AddBoolOption(
                 mod: ModManifest,
-                name: () => "Give Trash On Fail",
+                name: () => ModEntry.SHelper.Translation.Get("GMCM_Option_GiveTrashOnFail_Name"),
                 getValue: () => Config.GiveTrashOnFail,
                 setValue: value => Config.GiveTrashOnFail = value
             );
             configMenu.AddBoolOption(
                 mod: ModManifest,
-                name: () => "Allow Unknown Recipes",
+                name: () => ModEntry.SHelper.Translation.Get("GMCM_Option_AllowUnknownRecipes_Name"),
                 getValue: () => Config.AllowUnknownRecipes,
                 setValue: value => Config.AllowUnknownRecipes = value
             );
             configMenu.AddBoolOption(
                 mod: ModManifest,
-                name: () => "Learn Unknown Recipes",
+                name: () => ModEntry.SHelper.Translation.Get("GMCM_Option_LearnUnknownRecipes_Name"),
                 getValue: () => Config.LearnUnknownRecipes,
                 setValue: value => Config.LearnUnknownRecipes = value
             );
             configMenu.AddBoolOption(
                 mod: ModManifest,
-                name: () => "Show Product Info",
+                name: () => ModEntry.SHelper.Translation.Get("GMCM_Option_ShowProductInfo_Name"),
                 getValue: () => Config.ShowProductInfo,
                 setValue: value => Config.ShowProductInfo = value
             );
             configMenu.AddBoolOption(
                 mod: ModManifest,
-                name: () => "Show Cook Tooltip",
+                name: () => ModEntry.SHelper.Translation.Get("GMCM_Option_ShowCookTooltip_Name"),
                 getValue: () => Config.ShowCookTooltip,
                 setValue: value => Config.ShowCookTooltip = value
             );
             configMenu.AddBoolOption(
                 mod: ModManifest,
-                name: () => "Show Products In Tooltip",
+                name: () => ModEntry.SHelper.Translation.Get("GMCM_Option_ShowProductsInTooltip_Name"),
                 getValue: () => Config.ShowProductsInTooltip,
                 setValue: value => Config.ShowProductsInTooltip = value
             );
             configMenu.AddNumberOption(
                 mod: ModManifest,
-                name: () => "Height Offset",
+                name: () => ModEntry.SHelper.Translation.Get("GMCM_Option_YOffset_Name"),
                 getValue: () => Config.YOffset,
                 setValue: value => Config.YOffset = value
             );
