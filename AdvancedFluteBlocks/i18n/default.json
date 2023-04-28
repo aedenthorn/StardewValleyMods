@@ -1,0 +1,8 @@
+{
+  // GMCM
+  "GMCM_Option_ModEnabled_Name": "Mod Enabled",
+  "GMCM_SectionTitle_KeyBinds_Text": "Key Binds",
+  "GMCM_Option_PitchModKey_Name": "Pitch Mod Key",
+  "GMCM_Option_ToneModKey_Name": "Tone Mod Key",
+  "GMCM_Option_PitchStep_Name": "Pitch Step"
+}
