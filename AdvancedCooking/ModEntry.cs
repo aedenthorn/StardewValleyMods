@@ -198,7 +198,8 @@ namespace AdvancedCooking
                         text.Add(string.Format(SHelper.Translation.Get("plus-x-more"), keys.Length - i));
                         break;
                     }
-                    text.Add(string.Format(SHelper.Translation.Get("x-of-y"), !SHelper.Input.IsDown(Config.CookAllModKey) ? 1 : currentCookables[keys[i]], keys[i]));
+                    string[] recipeInfo = CraftingRecipe.cookingRecipes[keys[i]].Split('/');
+                    text.Add(string.Format(SHelper.Translation.Get("x-of-y"), !SHelper.Input.IsDown(Config.CookAllModKey) ? 1 : currentCookables[keys[i]], (recipeInfo.Length > 4) ? recipeInfo[4] : keys[i]));
                     if (!SHelper.Input.IsDown(Config.CookAllModKey))
                         break;
                 }
