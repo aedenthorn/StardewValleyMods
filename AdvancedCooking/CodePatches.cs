@@ -54,7 +54,7 @@ namespace AdvancedCooking
         }
         private static void CraftingPage_receiveLeftClick_Prefix(CraftingPage __instance, ref Item ___heldItem, int x, int y)
         {
-            if (!Config.EnableMod || Game1.activeClickableMenu is not CraftingPage || !AccessTools.FieldRefAccess<CraftingPage, bool>(Game1.activeClickableMenu as CraftingPage, "cooking"))
+            if (!Config.EnableMod || Game1.activeClickableMenu is not CraftingPage || !AccessTools.FieldRefAccess<CraftingPage, bool>(Game1.activeClickableMenu as CraftingPage, "cooking") || ___heldItem is Tool)
                 return;
             if (cookButton != null && cookButton.containsPoint(x, y))
             {
