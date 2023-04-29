@@ -182,7 +182,7 @@ namespace AdvancedMenuPositioning
             {
                 if(Game1.activeClickableMenu != null)
                 {
-                    if (currentlyDragging == Game1.activeClickableMenu || Game1.activeClickableMenu.isWithinBounds(Game1.getMouseX(), Game1.getMouseY()))
+                    if (currentlyDragging == Game1.activeClickableMenu || currentlyDragging is null && Game1.activeClickableMenu.isWithinBounds(Game1.getMouseX(), Game1.getMouseY()))
                     {
                         currentlyDragging = Game1.activeClickableMenu;
                         AdjustMenu(Game1.activeClickableMenu, Game1.getMousePosition() - lastMousePosition, true);
@@ -198,7 +198,7 @@ namespace AdvancedMenuPositioning
                 {
                     if (menu is null)
                         continue;
-                    if (currentlyDragging == menu || menu.isWithinBounds(Game1.getMouseX(), Game1.getMouseY()))
+                    if (currentlyDragging == menu || currentlyDragging is null && menu.isWithinBounds(Game1.getMouseX(), Game1.getMouseY()))
                     {
                         currentlyDragging = menu;
 
@@ -211,7 +211,7 @@ namespace AdvancedMenuPositioning
                 {
                     if (menu is null)
                         continue;
-                    if (currentlyDragging == menu || menu.isWithinBounds(Game1.getMouseX(), Game1.getMouseY()))
+                    if (currentlyDragging == menu || currentlyDragging is null && menu.isWithinBounds(Game1.getMouseX(), Game1.getMouseY()))
                     {
                         currentlyDragging = menu;
 
