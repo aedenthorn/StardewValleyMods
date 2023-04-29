@@ -139,13 +139,9 @@ namespace AdvancedMenuPositioning
                         if (Game1.activeClickableMenu != null)
                         {
                             var d = new Point(detachedMenus[i].xPositionOnScreen - Game1.activeClickableMenu.xPositionOnScreen, detachedMenus[i].yPositionOnScreen - Game1.activeClickableMenu.yPositionOnScreen);
-                            if (d != Point.Zero)
-                            {
-                                detachedMenus[i] = Game1.activeClickableMenu;
-                                AdjustMenu(detachedMenus[i], d, true);
-                                Game1.activeClickableMenu = menu;
-                            }
-
+                            detachedMenus[i] = Game1.activeClickableMenu;
+                            AdjustMenu(detachedMenus[i], d, true);
+                            Game1.activeClickableMenu = menu;
                         }
                         else
                             detachedMenus.RemoveAt(i);
@@ -172,12 +168,9 @@ namespace AdvancedMenuPositioning
                         if (Game1.activeClickableMenu != null)
                         {
                             var d = new Point(detachedMenus[i].xPositionOnScreen - Game1.activeClickableMenu.xPositionOnScreen, detachedMenus[i].yPositionOnScreen - Game1.activeClickableMenu.yPositionOnScreen);
-                            if(d != Point.Zero)
-                            {
-                                detachedMenus[i] = Game1.activeClickableMenu;
-                                AdjustMenu(detachedMenus[i], d, true);
-                                Game1.activeClickableMenu = menu;
-                            }
+                            detachedMenus[i] = Game1.activeClickableMenu;
+                            AdjustMenu(detachedMenus[i], d, true);
+                            Game1.activeClickableMenu = menu;
                         }
                         else
                             detachedMenus.RemoveAt(i);
