@@ -127,6 +127,8 @@ namespace AdvancedMenuPositioning
                 }
                 else if (e.Button == SButton.MouseLeft)
                 {
+                    if (Game1.activeClickableMenu is not null && Game1.activeClickableMenu.isWithinBounds(Game1.getMouseX(), Game1.getMouseY()))
+                        return;
                     for (int i = 0; i < detachedMenus.Count; i++)
                     {
                         bool toBreak = detachedMenus[i].isWithinBounds(Game1.getMouseX(), Game1.getMouseY());
@@ -158,6 +160,8 @@ namespace AdvancedMenuPositioning
                 }
                 else if (e.Button == SButton.MouseRight)
                 {
+                    if (Game1.activeClickableMenu is not null && Game1.activeClickableMenu.isWithinBounds(Game1.getMouseX(), Game1.getMouseY()))
+                        return;
                     for (int i = 0; i < detachedMenus.Count; i++)
                     {
                         bool toBreak = detachedMenus[i].isWithinBounds(Game1.getMouseX(), Game1.getMouseY());
