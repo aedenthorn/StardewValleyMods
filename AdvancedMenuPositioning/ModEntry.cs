@@ -338,32 +338,32 @@ namespace AdvancedMenuPositioning
 
             configMenu.AddBoolOption(
                 mod: ModManifest,
-                name: () => "Mod Enabled",
+                name: () => ModEntry.SHelper.Translation.Get("GMCM_Option_ModEnabled_Name"),
                 getValue: () => Config.EnableMod,
                 setValue: value => Config.EnableMod = value
             );
             configMenu.AddKeybindList(
                 mod: ModManifest,
-                name: () => "Move Keys",
+                name: () => ModEntry.SHelper.Translation.Get("GMCM_Option_MoveKeys_Name"),
                 getValue: () => Config.MoveKeys,
                 setValue: value => Config.MoveKeys = value
             );
             configMenu.AddKeybindList(
                 mod: ModManifest,
-                name: () => "Detach Keys",
+                name: () => ModEntry.SHelper.Translation.Get("GMCM_Option_DetachKeys_Name"),
                 getValue: () => Config.DetachKeys,
                 setValue: value => Config.DetachKeys = value
             );
             configMenu.AddKeybindList(
                 mod: ModManifest,
-                name: () => "Close Keys",
+                name: () => ModEntry.SHelper.Translation.Get("GMCM_Option_CloseKeys_Name"),
                 getValue: () => Config.CloseKeys,
                 setValue: value => Config.CloseKeys = value
             );
             configMenu.AddBoolOption(
                 mod: ModManifest,
-                name: () => "Strict Keys Enabled",
-                tooltip: () => "When enabled, strict key mode ensures that only the designated keys are pressed. This allows performing default game actions associated with those keys (e.g., in the crafting menu, LeftShift + MouseLeft will move the menu, and LeftShift + MouseLeft + AnyOtherKey will craft 5 items at a time).",
+                name: () => ModEntry.SHelper.Translation.Get("GMCM_Option_StrictKeybindings_Name"),
+                tooltip: () => ModEntry.SHelper.Translation.Get("GMCM_Option_StrictKeybindings_Tooltip"),
                 getValue: () => Config.StrictKeybindings,
                 setValue: value => Config.StrictKeybindings = value
             );
