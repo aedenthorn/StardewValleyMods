@@ -41,10 +41,18 @@ namespace AdvancedMenuPositioning
 
             helper.Events.GameLoop.GameLaunched += GameLoop_GameLaunched;
             helper.Events.GameLoop.UpdateTicking += GameLoop_UpdateTicking;
+            helper.Events.GameLoop.ReturnedToTitle += GameLoop_ReturnedToTitle;
             helper.Events.Input.ButtonPressed += Input_ButtonPressed;
             helper.Events.Input.MouseWheelScrolled += Input_MouseWheelScrolled;
             helper.Events.Display.RenderedWorld += Display_RenderedWorld;
 
+        }
+
+        private void GameLoop_ReturnedToTitle(object sender, StardewModdingAPI.Events.ReturnedToTitleEventArgs e)
+        {
+            adjustedComponents.Clear();
+            adjustedMenus.Clear();
+            detachedMenus.Clear();
         }
 
         private void Input_MouseWheelScrolled(object sender, StardewModdingAPI.Events.MouseWheelScrolledEventArgs e)
