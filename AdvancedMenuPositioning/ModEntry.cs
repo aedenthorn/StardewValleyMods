@@ -49,6 +49,8 @@ namespace AdvancedMenuPositioning
 
         private void Input_MouseWheelScrolled(object sender, StardewModdingAPI.Events.MouseWheelScrolledEventArgs e)
         {
+            if (!Context.IsWorldReady)
+                return;
             foreach (var m in detachedMenus)
             {
                 m.receiveScrollWheelAction(e.Delta);
@@ -57,6 +59,8 @@ namespace AdvancedMenuPositioning
 
         private void Display_RenderedWorld(object sender, StardewModdingAPI.Events.RenderedWorldEventArgs e)
         {
+            if (!Context.IsWorldReady)
+                return;
             if (detachedMenus.Any())
             {
                 var back = Game1.options.showMenuBackground;
@@ -74,7 +78,7 @@ namespace AdvancedMenuPositioning
 
         private void Input_ButtonPressed(object sender, StardewModdingAPI.Events.ButtonPressedEventArgs e)
         {
-            if (!Config.EnableMod)
+            if (!Context.IsWorldReady || !Config.EnableMod)
                 return;
             if (Game1.activeClickableMenu != null && Helper.Input.IsDown(Config.DetachModKey) && e.Button == Config.DetachKey && new Rectangle(Game1.activeClickableMenu.xPositionOnScreen, Game1.activeClickableMenu.yPositionOnScreen, Game1.activeClickableMenu.width, Game1.activeClickableMenu.height).Contains(Game1.getMouseX(), Game1.getMouseY()))
             {
@@ -178,6 +182,8 @@ namespace AdvancedMenuPositioning
 
         private void GameLoop_UpdateTicking(object sender, StardewModdingAPI.Events.UpdateTickingEventArgs e)
         {
+            if (!Context.IsWorldReady)
+                return;
             if(Config.EnableMod && Helper.Input.IsDown(Config.MoveModKey) && (Helper.Input.IsDown(Config.MoveKey) || Helper.Input.IsSuppressed(Config.MoveKey)))
             {
                 if(Game1.activeClickableMenu != null)
