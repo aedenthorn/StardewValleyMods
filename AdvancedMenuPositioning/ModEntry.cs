@@ -88,7 +88,7 @@ namespace AdvancedMenuPositioning
         {
             if (!Context.IsWorldReady || !Config.EnableMod)
                 return;
-            if (Game1.activeClickableMenu != null && Helper.Input.IsDown(Config.DetachModKey) && e.Button == Config.DetachKey && new Rectangle(Game1.activeClickableMenu.xPositionOnScreen, Game1.activeClickableMenu.yPositionOnScreen, Game1.activeClickableMenu.width, Game1.activeClickableMenu.height).Contains(Game1.getMouseX(), Game1.getMouseY()))
+            if (Game1.activeClickableMenu != null && Config.DetachKeys.Keybinds[0].Buttons.All(button => Helper.Input.IsDown(button) || Helper.Input.IsSuppressed(button)) && new Rectangle(Game1.activeClickableMenu.xPositionOnScreen, Game1.activeClickableMenu.yPositionOnScreen, Game1.activeClickableMenu.width, Game1.activeClickableMenu.height).Contains(Game1.getMouseX(), Game1.getMouseY()))
             {
                 detachedMenus.Add(Game1.activeClickableMenu);
                 Game1.activeClickableMenu = null;
@@ -98,9 +98,9 @@ namespace AdvancedMenuPositioning
             }
             else if(detachedMenus.Count > 0)
             {
-                if (Helper.Input.IsDown(Config.MoveModKey) && (Helper.Input.IsDown(Config.MoveKey) || Helper.Input.IsSuppressed(Config.MoveKey)))
+                if (Config.MoveKeys.Keybinds[0].Buttons.All(button => Helper.Input.IsDown(button) || Helper.Input.IsSuppressed(button)))
                     return;
-                if (Helper.Input.IsDown(Config.CloseModKey) && e.Button == Config.CloseKey)
+                if (Config.CloseKeys.Keybinds[0].Buttons.All(button => Helper.Input.IsDown(button) || Helper.Input.IsSuppressed(button)))
                 {
                     for (int i = 0; i < detachedMenus.Count; i++)
                     {
@@ -113,7 +113,7 @@ namespace AdvancedMenuPositioning
                         }
                     }
                 }
-                if (Helper.Input.IsDown(Config.DetachModKey) && e.Button == Config.DetachKey && Game1.activeClickableMenu == null)
+                if (Config.DetachKeys.Keybinds[0].Buttons.All(button => Helper.Input.IsDown(button) || Helper.Input.IsSuppressed(button)) && Game1.activeClickableMenu == null)
                 {
                     for (int i = 0; i < detachedMenus.Count; i++)
                     {
@@ -191,7 +191,7 @@ namespace AdvancedMenuPositioning
         {
             if (!Context.IsWorldReady)
                 return;
-            if(Config.EnableMod && Helper.Input.IsDown(Config.MoveModKey) && (Helper.Input.IsDown(Config.MoveKey) || Helper.Input.IsSuppressed(Config.MoveKey)))
+            if(Config.EnableMod && Config.MoveKeys.Keybinds[0].Buttons.All(button => Helper.Input.IsDown(button) || Helper.Input.IsSuppressed(button)))
             {
                 if(Game1.activeClickableMenu != null)
                 {
@@ -199,7 +199,7 @@ namespace AdvancedMenuPositioning
                     {
                         currentlyDragging = Game1.activeClickableMenu;
                         AdjustMenu(Game1.activeClickableMenu, Game1.getMousePosition() - lastMousePosition, true);
-                        Helper.Input.Suppress(Config.MoveKey);
+                        Array.ForEach(Config.MoveKeys.Keybinds[0].Buttons, button => Helper.Input.Suppress(button));
                         if (Game1.activeClickableMenu is ItemGrabMenu && Helper.ModRegistry.IsLoaded("Pathoschild.ChestsAnywhere"))
                         {
                             Game1.activeClickableMenu = Game1.activeClickableMenu.ShallowClone();
@@ -216,7 +216,7 @@ namespace AdvancedMenuPositioning
                         currentlyDragging = menu;
 
                         AdjustMenu(menu, Game1.getMousePosition() - lastMousePosition, true);
-                        Helper.Input.Suppress(Config.MoveKey);
+                        Array.ForEach(Config.MoveKeys.Keybinds[0].Buttons, button => Helper.Input.Suppress(button));
                         goto next;
                     }
                 }
@@ -229,7 +229,7 @@ namespace AdvancedMenuPositioning
                         currentlyDragging = menu;
 
                         AdjustMenu(menu, Game1.getMousePosition() - lastMousePosition, true);
-                        Helper.Input.Suppress(Config.MoveKey);
+                        Array.ForEach(Config.MoveKeys.Keybinds[0].Buttons, button => Helper.Input.Suppress(button));
                         goto next;
                     }
                 }
@@ -267,41 +267,23 @@ namespace AdvancedMenuPositioning
                 getValue: () => Config.EnableMod,
                 setValue: value => Config.EnableMod = value
             );
-            configMenu.AddKeybind(
+            configMenu.AddKeybindList(
                 mod: ModManifest,
-                name: () => "Move Key",
-                getValue: () => Config.MoveKey,
-                setValue: value => Config.MoveKey = value
+                name: () => "Move Keys",
+                getValue: () => Config.MoveKeys,
+                setValue: value => Config.MoveKeys = value
             );
-            configMenu.AddKeybind(
+            configMenu.AddKeybindList(
                 mod: ModManifest,
-                name: () => "Detach Key",
-                getValue: () => Config.DetachKey,
-                setValue: value => Config.DetachKey = value
+                name: () => "Detach Keys",
+                getValue: () => Config.DetachKeys,
+                setValue: value => Config.DetachKeys = value
             );
-            configMenu.AddKeybind(
+            configMenu.AddKeybindList(
                 mod: ModManifest,
-                name: () => "Close Key",
-                getValue: () => Config.CloseKey,
-                setValue: value => Config.CloseKey = value
-            );
-            configMenu.AddKeybind(
-                mod: ModManifest,
-                name: () => "Move Mod Key",
-                getValue: () => Config.MoveModKey,
-                setValue: value => Config.MoveModKey = value
-            );
-            configMenu.AddKeybind(
-                mod: ModManifest,
-                name: () => "DetachModKey Key",
-                getValue: () => Config.DetachModKey,
-                setValue: value => Config.DetachModKey = value
-            );
-            configMenu.AddKeybind(
-                mod: ModManifest,
-                name: () => "CloseModKey Key",
-                getValue: () => Config.CloseModKey,
-                setValue: value => Config.CloseModKey = value
+                name: () => "Close Keys",
+                getValue: () => Config.CloseKeys,
+                setValue: value => Config.CloseKeys = value
             );
         }
    }
