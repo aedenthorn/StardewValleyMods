@@ -98,6 +98,8 @@ namespace AdvancedMenuPositioning
             }
             else if(detachedMenus.Count > 0)
             {
+                if (Helper.Input.IsDown(Config.MoveModKey) && (Helper.Input.IsDown(Config.MoveKey) || Helper.Input.IsSuppressed(Config.MoveKey)))
+                    return;
                 if (Helper.Input.IsDown(Config.CloseModKey) && e.Button == Config.CloseKey)
                 {
                     for (int i = 0; i < detachedMenus.Count; i++)
