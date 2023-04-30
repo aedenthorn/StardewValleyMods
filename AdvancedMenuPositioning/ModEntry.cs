@@ -59,9 +59,9 @@ namespace AdvancedMenuPositioning
         {
             if (!Context.IsWorldReady)
                 return;
-            foreach (var m in detachedMenus)
+            for (int i = detachedMenus.Count - 1; i >= 0; i--)
             {
-                m.receiveScrollWheelAction(e.Delta);
+                detachedMenus[i].receiveScrollWheelAction(e.Delta);
             }
         }
 
@@ -102,7 +102,7 @@ namespace AdvancedMenuPositioning
                     return;
                 if (Config.CloseKeys.Keybinds[0].Buttons.All(button => Helper.Input.IsDown(button) || Helper.Input.IsSuppressed(button)))
                 {
-                    for (int i = 0; i < detachedMenus.Count; i++)
+                    for (int i = detachedMenus.Count - 1; i >= 0; i--)
                     {
                         if(detachedMenus[i].isWithinBounds(Game1.getMouseX(), Game1.getMouseY()))
                         {
@@ -115,7 +115,7 @@ namespace AdvancedMenuPositioning
                 }
                 if (Config.DetachKeys.Keybinds[0].Buttons.All(button => Helper.Input.IsDown(button) || Helper.Input.IsSuppressed(button)) && Game1.activeClickableMenu == null)
                 {
-                    for (int i = 0; i < detachedMenus.Count; i++)
+                    for (int i = detachedMenus.Count - 1; i >= 0; i--)
                     {
                         if(detachedMenus[i].isWithinBounds(Game1.getMouseX(), Game1.getMouseY()))
                         {
@@ -131,7 +131,7 @@ namespace AdvancedMenuPositioning
                 {
                     if (Game1.activeClickableMenu is not null && Game1.activeClickableMenu.isWithinBounds(Game1.getMouseX(), Game1.getMouseY()))
                         return;
-                    for (int i = 0; i < detachedMenus.Count; i++)
+                    for (int i = detachedMenus.Count - 1; i >= 0; i--)
                     {
                         bool toBreak = detachedMenus[i].isWithinBounds(Game1.getMouseX(), Game1.getMouseY());
 
@@ -144,6 +144,11 @@ namespace AdvancedMenuPositioning
                             detachedMenus[i] = Game1.activeClickableMenu;
                             AdjustMenu(detachedMenus[i], d, true);
                             Game1.activeClickableMenu = menu;
+                            if (toBreak)
+                            {
+                                detachedMenus.Add(detachedMenus[i]);
+                                detachedMenus.RemoveAt(i);
+                            }
                         }
                         else
                             detachedMenus.RemoveAt(i);
@@ -160,7 +165,7 @@ namespace AdvancedMenuPositioning
                 {
                     if (Game1.activeClickableMenu is not null && Game1.activeClickableMenu.isWithinBounds(Game1.getMouseX(), Game1.getMouseY()))
                         return;
-                    for (int i = 0; i < detachedMenus.Count; i++)
+                    for (int i = detachedMenus.Count - 1; i >= 0; i--)
                     {
                         bool toBreak = detachedMenus[i].isWithinBounds(Game1.getMouseX(), Game1.getMouseY());
 
@@ -173,6 +178,11 @@ namespace AdvancedMenuPositioning
                             detachedMenus[i] = Game1.activeClickableMenu;
                             AdjustMenu(detachedMenus[i], d, true);
                             Game1.activeClickableMenu = menu;
+                            if (toBreak)
+                            {
+                                detachedMenus.Add(detachedMenus[i]);
+                                detachedMenus.RemoveAt(i);
+                            }
                         }
                         else
                             detachedMenus.RemoveAt(i);
@@ -207,28 +217,32 @@ namespace AdvancedMenuPositioning
                         goto next;
                     }
                 }
-                foreach (var menu in Game1.onScreenMenus)
+                for (int i = Game1.onScreenMenus.Count - 1; i >= 0; i--)
                 {
-                    if (menu is null)
+                    if (Game1.onScreenMenus[i] is null)
                         continue;
-                    if (currentlyDragging == menu || currentlyDragging is null && menu.isWithinBounds(Game1.getMouseX(), Game1.getMouseY()))
+                    if (currentlyDragging == Game1.onScreenMenus[i] || currentlyDragging is null && Game1.onScreenMenus[i].isWithinBounds(Game1.getMouseX(), Game1.getMouseY()))
                     {
-                        currentlyDragging = menu;
+                        currentlyDragging = Game1.onScreenMenus[i];
 
-                        AdjustMenu(menu, Game1.getMousePosition() - lastMousePosition, true);
+                        Game1.onScreenMenus.Add(Game1.onScreenMenus[i]);
+                        Game1.onScreenMenus.RemoveAt(i);
+                        AdjustMenu(Game1.onScreenMenus[i], Game1.getMousePosition() - lastMousePosition, true);
                         Array.ForEach(Config.MoveKeys.Keybinds[0].Buttons, button => Helper.Input.Suppress(button));
                         goto next;
                     }
                 }
-                foreach (var menu in detachedMenus)
+                for (int i = detachedMenus.Count - 1; i >= 0; i--)
                 {
-                    if (menu is null)
+                    if (detachedMenus[i] is null)
                         continue;
-                    if (currentlyDragging == menu || currentlyDragging is null && menu.isWithinBounds(Game1.getMouseX(), Game1.getMouseY()))
+                    if (currentlyDragging == detachedMenus[i] || currentlyDragging is null && detachedMenus[i].isWithinBounds(Game1.getMouseX(), Game1.getMouseY()))
                     {
-                        currentlyDragging = menu;
+                        currentlyDragging = detachedMenus[i];
 
-                        AdjustMenu(menu, Game1.getMousePosition() - lastMousePosition, true);
+                        detachedMenus.Add(detachedMenus[i]);
+                        detachedMenus.RemoveAt(i);
+                        AdjustMenu(detachedMenus[i], Game1.getMousePosition() - lastMousePosition, true);
                         Array.ForEach(Config.MoveKeys.Keybinds[0].Buttons, button => Helper.Input.Suppress(button));
                         goto next;
                     }
