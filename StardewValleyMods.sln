@@ -509,6 +509,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "QuestTimeLimits", "QuestTim
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WeatherTotems", "WeatherTotems\WeatherTotems.csproj", "{7C5DF242-3E3B-4316-B9F8-5EDCC2139EF4}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ToolEnchantmentTweaks", "ToolEnchantmentTweaks\ToolEnchantmentTweaks.csproj", "{094342F7-B30D-4A01-9CDC-343AF6D0A22D}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -3495,6 +3497,18 @@ Global
 		{7C5DF242-3E3B-4316-B9F8-5EDCC2139EF4}.Release|x64.Build.0 = Release|x64
 		{7C5DF242-3E3B-4316-B9F8-5EDCC2139EF4}.Release|x86.ActiveCfg = Release|Any CPU
 		{7C5DF242-3E3B-4316-B9F8-5EDCC2139EF4}.Release|x86.Build.0 = Release|Any CPU
+		{094342F7-B30D-4A01-9CDC-343AF6D0A22D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{094342F7-B30D-4A01-9CDC-343AF6D0A22D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{094342F7-B30D-4A01-9CDC-343AF6D0A22D}.Debug|x64.ActiveCfg = Debug|x64
+		{094342F7-B30D-4A01-9CDC-343AF6D0A22D}.Debug|x64.Build.0 = Debug|x64
+		{094342F7-B30D-4A01-9CDC-343AF6D0A22D}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{094342F7-B30D-4A01-9CDC-343AF6D0A22D}.Debug|x86.Build.0 = Debug|Any CPU
+		{094342F7-B30D-4A01-9CDC-343AF6D0A22D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{094342F7-B30D-4A01-9CDC-343AF6D0A22D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{094342F7-B30D-4A01-9CDC-343AF6D0A22D}.Release|x64.ActiveCfg = Release|x64
+		{094342F7-B30D-4A01-9CDC-343AF6D0A22D}.Release|x64.Build.0 = Release|x64
+		{094342F7-B30D-4A01-9CDC-343AF6D0A22D}.Release|x86.ActiveCfg = Release|Any CPU
+		{094342F7-B30D-4A01-9CDC-343AF6D0A22D}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

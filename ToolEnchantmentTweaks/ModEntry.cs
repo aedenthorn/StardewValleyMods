@@ -1,23 +1,12 @@
 ﻿using HarmonyLib;
-using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
 using StardewModdingAPI;
 using StardewValley;
-using StardewValley.BellsAndWhistles;
-using StardewValley.Locations;
-using StardewValley.TerrainFeatures;
-using StardewValley.Tools;
 using System;
-using System.Collections.Generic;
-using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
-using xTile.Dimensions;
-using xTile.Tiles;
 
-namespace NapalmMummies
+namespace ToolEnchantmentTweaks
 {
-    /// <summary>The mod entry point.</summary>
     public partial class ModEntry : Mod
     {
 
@@ -31,16 +20,28 @@ namespace NapalmMummies
         {
             Config = Helper.ReadConfig<ModConfig>();
 
+            if (!Config.ModEnabled)
+                return;
+
             context = this;
 
             SMonitor = Monitor;
             SHelper = helper;
 
             helper.Events.GameLoop.GameLaunched += GameLoop_GameLaunched;
+            //helper.Events.Input.ButtonPressed += Input_ButtonPressed;
 
             var harmony = new Harmony(ModManifest.UniqueID);
             harmony.PatchAll();
 
+        }
+
+        private void Input_ButtonPressed(object sender, StardewModdingAPI.Events.ButtonPressedEventArgs e)
+        {
+            if(e.Button == SButton.J)
+            {
+                Game1.player.CurrentTool.AddEnchantment(new SwiftToolEnchantment());
+            }
         }
 
         public void GameLoop_GameLaunched(object sender, StardewModdingAPI.Events.GameLaunchedEventArgs e)
@@ -63,6 +64,13 @@ namespace NapalmMummies
                 name: () => "Mod Enabled",
                 getValue: () => Config.ModEnabled,
                 setValue: value => Config.ModEnabled = value
+            );
+
+            configMenu.AddTextOption(
+                mod: ModManifest,
+                name: () => "Swift Modifier",
+                getValue: () => Config.SwiftModifier + "",
+                setValue: delegate (string value) { if (float.TryParse(value, NumberStyles.Any, CultureInfo.InvariantCulture, out var f)) Config.SwiftModifier = f; }
             );
         }
 

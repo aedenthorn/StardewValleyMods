@@ -1,16 +1,16 @@
 ﻿{
-  "Name": "Napalm Mummies",
+  "Name": "Tool Enchantment Tweaks",
   "Author": "aedenthorn",
-  "Version": "0.1.3",
-  "Description": "Napalm Mummies.",
-  "UniqueID": "aedenthorn.NapalmMummies",
-  "EntryDll": "NapalmMummies.dll",
+  "Version": "0.1.0",
+  "Description": "Tool Enchantment Tweaks.",
+  "UniqueID": "aedenthorn.ToolEnchantmentTweaks",
+  "EntryDll": "ToolEnchantmentTweaks.dll",
   "MinimumApiVersion": "3.15.0",
   "ModUpdater": {
     "Repository": "StardewValleyMods",
     "User": "aedenthorn",
     "Directory": "_releases",
-    "ModFolder": "NapalmMummies"
+    "ModFolder": "ToolEnchantmentTweaks"
   },
   "Dependencies": [
     {
@@ -18,5 +18,5 @@
       "IsRequired": false
     }
   ],
-  "UpdateKeys": [ "Nexus:15933" ]
+  "UpdateKeys": [ "Nexus:" ]
 }
