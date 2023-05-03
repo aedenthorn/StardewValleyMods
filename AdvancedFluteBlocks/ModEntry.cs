@@ -125,29 +125,29 @@ namespace AdvancedFluteBlocks
 
             configMenu.AddBoolOption(
                 mod: ModManifest,
-                name: () => "Mod Enabled?",
+                name: () => ModEntry.SHelper.Translation.Get("GMCM_Option_ModEnabled_Name"),
                 getValue: () => Config.EnableMod,
                 setValue: value => Config.EnableMod = value
             );
             configMenu.AddSectionTitle(
                 mod: ModManifest,
-                text: () => "Key Binds"
+                text: () => ModEntry.SHelper.Translation.Get("GMCM_SectionTitle_KeyBinds_Text")
             );
             configMenu.AddKeybind(
                 mod: ModManifest,
-                name: () => "Pitch Mod Key",
+                name: () => ModEntry.SHelper.Translation.Get("GMCM_Option_PitchModKey_Name"),
                 getValue: () => Config.PitchModKey,
                 setValue: value => Config.PitchModKey = value
             );
             configMenu.AddKeybind(
                 mod: ModManifest,
-                name: () => "Tone Mod Key",
+                name: () => ModEntry.SHelper.Translation.Get("GMCM_Option_ToneModKey_Name"),
                 getValue: () => Config.ToneModKey,
                 setValue: value => Config.ToneModKey = value
             );
             configMenu.AddNumberOption(
                 mod: ModManifest,
-                name: () => "Pitch Step",
+                name: () => ModEntry.SHelper.Translation.Get("GMCM_Option_PitchStep_Name"),
                 getValue: () => Config.PitchStep,
                 setValue: value => Config.PitchStep = value
             );
