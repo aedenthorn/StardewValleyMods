@@ -1,0 +1,26 @@
+{
+  "new-recipe-x": "Vous avez appris à cuisiner {0} !",
+  "cooking-failed": "Vous n'avez pas réussi à cuisiner quoi que ce soit de comestible...",
+  "ingredients": "Ingrédients :",
+  "will-cook-1": "(cuisinera {0} objet)",
+  "will-cook-x": "(cuisinera {0} objets)",
+  "plus-x-more": "et {0} de plus",
+  "cannot-cook": "Impossible de cuisiner en tenant un autre objet !",
+  "cook": "Cuisiner",
+  "x-of-y": "{0} {1}",
+  "player": "Joueur",
+  "fridge-x": "Réfrigérateur {0}",
+
+  // GMCM
+  "GMCM_Option_CookAllModKey_Name": "Touche pour tout cuisiner",
+  "GMCM_Option_StoreOtherHeldItemOnCook_Name": "Stocker l'objet tenu lors de la cuisine",
+  "GMCM_Option_ConsumeIngredientsOnFail_Name": "Consommer les ingrédients en cas d'échec",
+  "GMCM_Option_ConsumeExtraIngredientsOnSucceed_Name": "Consommer l'excédent en cas de succès",
+  "GMCM_Option_GiveTrashOnFail_Name": "Donner des déchets en cas d'échec",
+  "GMCM_Option_AllowUnknownRecipes_Name": "Autoriser les recettes inconnues",
+  "GMCM_Option_LearnUnknownRecipes_Name": "Apprendre les recettes inconnues",
+  "GMCM_Option_ShowProductInfo_Name": "Afficher les informations sur les produits",
+  "GMCM_Option_ShowCookTooltip_Name": "Afficher l'infobulle de cuisine",
+  "GMCM_Option_ShowProductsInTooltip_Name": "Afficher les produits dans l'infobulle",
+  "GMCM_Option_YOffset_Name": "Décalage en hauteur"
+}
