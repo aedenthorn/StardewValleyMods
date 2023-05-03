@@ -475,7 +475,12 @@ namespace AdvancedCooking
         }
         private static bool IsCorrectIngredient(Item item, int key)
         {
-            return item is not null && !(item as Object).bigCraftable.Value && (((Object)item).ParentSheetIndex == key || ((Object)item).Category == key || CraftingRecipe.isThereSpecialIngredientRule((Object)item, key));
+            Object obj = item as Object;
+
+            if (obj is null)
+                return false;
+            else
+                return !obj.bigCraftable.Value && (obj.ParentSheetIndex == key || obj.Category == key || CraftingRecipe.isThereSpecialIngredientRule(obj, key));
         }
     }
 }
