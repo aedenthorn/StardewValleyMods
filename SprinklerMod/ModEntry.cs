@@ -1,10 +1,12 @@
 ﻿using HarmonyLib;
 using Microsoft.Xna.Framework;
 using StardewModdingAPI;
+using StardewModdingAPI.Utilities;
 using StardewValley;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.Linq;
 using System.Reflection;
 using xTile.Dimensions;
 using Object = StardewValley.Object;
@@ -22,6 +24,7 @@ namespace SprinklerMod
 
         public static string dictPath = "aedenthorn.SprinklerMod/dictionary";
         public static Dictionary<string, string> sprinklerDict = new();
+        public static PerScreen<Dictionary<Object, ActiveSprinklerData>> activeSprinklers = new();
 
         /// <summary>The mod entry point, called after the mod is first loaded.</summary>
         /// <param name="helper">Provides simplified APIs for writing mods.</param>
@@ -34,18 +37,46 @@ namespace SprinklerMod
             SMonitor = Monitor;
             SHelper = helper;
 
+            activeSprinklers.Value = new();
+
             Helper.Events.GameLoop.GameLaunched += GameLoop_GameLaunched;
             Helper.Events.GameLoop.SaveLoaded += GameLoop_SaveLoaded;
             Helper.Events.Content.AssetRequested += Content_AssetRequested;
             Helper.Events.Input.ButtonPressed += Input_ButtonPressed;
+            Helper.Events.GameLoop.UpdateTicked += GameLoop_UpdateTicked;
             
             var harmony = new Harmony(ModManifest.UniqueID);
             harmony.PatchAll();
         }
 
+        private void GameLoop_UpdateTicked(object sender, StardewModdingAPI.Events.UpdateTickedEventArgs e)
+        {
+            if(!Config.EnableMod || !Context.IsWorldReady)
+            {
+                activeSprinklers.Value.Clear();
+                return;
+            }
+            foreach(var key in activeSprinklers.Value.Keys.ToArray())
+            {
+                if (activeSprinklers.Value[key].ticks < 60)
+                {
+                    activeSprinklers.Value[key].ticks++;
+                    continue;
+                }
+                else
+                {
+                    foreach (Vector2 v2 in key.GetSprinklerTiles())
+                    {
+                        key.ApplySprinkler(activeSprinklers.Value[key].location, v2);
+                    }
+                    activeSprinklers.Value.Remove(key);
+                }
+            }
+        }
+
         private void Input_ButtonPressed(object sender, StardewModdingAPI.Events.ButtonPressedEventArgs e)
         {
-            if (!Config.EnableMod || !Context.CanPlayerMove)
+            if (!Config.EnableMod || !Context.IsPlayerFree || !Context.CanPlayerMove)
                 return;
             if(e.Button == Config.SprinkleAllButton)
             {

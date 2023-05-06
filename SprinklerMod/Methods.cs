@@ -20,15 +20,14 @@ namespace SprinklerMod
     public partial class ModEntry
     {
 
-        private async void ActivateSprinkler(Object obj, GameLocation currentLocation)
+        private void ActivateSprinkler(Object obj, GameLocation currentLocation)
         {
             DeactiveateSprinkler(obj.TileLocation, currentLocation);
             obj.ApplySprinklerAnimation(Game1.currentLocation);
-            await Task.Delay(1000);
-            foreach (Vector2 v2 in obj.GetSprinklerTiles())
+            activeSprinklers.Value.Add(obj, new ActiveSprinklerData()
             {
-                obj.ApplySprinkler(Game1.currentLocation, v2);
-            }
+                location = Game1.currentLocation
+            });
         }
 
         private static void DeactiveateSprinkler(Vector2 tileLocation, GameLocation currentLocation)
