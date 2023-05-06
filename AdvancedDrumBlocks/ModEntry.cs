@@ -85,13 +85,13 @@ namespace AdvancedDrumBlocks
 
             configMenu.AddBoolOption(
                 mod: ModManifest,
-                name: () => "Mod Enabled?",
+                name: () => ModEntry.SHelper.Translation.Get("GMCM_Option_ModEnabled_Name"),
                 getValue: () => Config.EnableMod,
                 setValue: value => Config.EnableMod = value
             );
             configMenu.AddKeybind(
                 mod: ModManifest,
-                name: () => "Index Mod Key",
+                name: () => ModEntry.SHelper.Translation.Get("GMCM_Option_IndexModKey_Name"),
                 getValue: () => Config.IndexModKey,
                 setValue: value => Config.IndexModKey = value
             );

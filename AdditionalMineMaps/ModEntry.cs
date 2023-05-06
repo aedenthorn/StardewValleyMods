@@ -80,13 +80,13 @@ namespace AdditionalMineMaps
 
             configMenu.AddBoolOption(
                 mod: ModManifest,
-                name: () => "Mod Enabled",
+                name: () => ModEntry.SHelper.Translation.Get("GMCM_Option_ModEnabled_Name"),
                 getValue: () => Config.ModEnabled,
                 setValue: value => Config.ModEnabled = value
             );
             configMenu.AddBoolOption(
                 mod: ModManifest,
-                name: () => "Allow Vanilla Maps",
+                name: () => ModEntry.SHelper.Translation.Get("GMCM_Option_AllowVanillaMaps_Name"),
                 getValue: () => Config.AllowVanillaMaps,
                 setValue: value => Config.AllowVanillaMaps = value
             );
