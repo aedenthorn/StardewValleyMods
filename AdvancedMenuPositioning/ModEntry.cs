@@ -88,7 +88,7 @@ namespace AdvancedMenuPositioning
         {
             if (!Context.IsWorldReady || !Config.EnableMod)
                 return;
-            if (Game1.activeClickableMenu != null && Config.DetachKeys.Keybinds[0].Buttons.All(button => Helper.Input.IsDown(button) || Helper.Input.IsSuppressed(button)) && new Rectangle(Game1.activeClickableMenu.xPositionOnScreen, Game1.activeClickableMenu.yPositionOnScreen, Game1.activeClickableMenu.width, Game1.activeClickableMenu.height).Contains(Game1.getMouseX(), Game1.getMouseY()))
+            if (Game1.activeClickableMenu != null && isKeybindPressed(Config.DetachKeys.Keybinds[0].Buttons) && new Rectangle(Game1.activeClickableMenu.xPositionOnScreen, Game1.activeClickableMenu.yPositionOnScreen, Game1.activeClickableMenu.width, Game1.activeClickableMenu.height).Contains(Game1.getMouseX(), Game1.getMouseY()))
             {
                 detachedMenus.Add(Game1.activeClickableMenu);
                 Game1.activeClickableMenu = null;
@@ -98,9 +98,9 @@ namespace AdvancedMenuPositioning
             }
             else if(detachedMenus.Count > 0)
             {
-                if (Config.MoveKeys.Keybinds[0].Buttons.All(button => Helper.Input.IsDown(button) || Helper.Input.IsSuppressed(button)))
+                if (isKeybindPressed(Config.MoveKeys.Keybinds[0].Buttons))
                     return;
-                if (Config.CloseKeys.Keybinds[0].Buttons.All(button => Helper.Input.IsDown(button) || Helper.Input.IsSuppressed(button)))
+                if (isKeybindPressed(Config.CloseKeys.Keybinds[0].Buttons))
                 {
                     for (int i = detachedMenus.Count - 1; i >= 0; i--)
                     {
@@ -113,7 +113,7 @@ namespace AdvancedMenuPositioning
                         }
                     }
                 }
-                if (Config.DetachKeys.Keybinds[0].Buttons.All(button => Helper.Input.IsDown(button) || Helper.Input.IsSuppressed(button)) && Game1.activeClickableMenu == null)
+                if (isKeybindPressed(Config.DetachKeys.Keybinds[0].Buttons) && Game1.activeClickableMenu == null)
                 {
                     for (int i = detachedMenus.Count - 1; i >= 0; i--)
                     {
@@ -199,9 +199,9 @@ namespace AdvancedMenuPositioning
 
         private void GameLoop_UpdateTicking(object sender, StardewModdingAPI.Events.UpdateTickingEventArgs e)
         {
-            if (!Context.IsWorldReady)
+            if (!Context.IsWorldReady || !Config.EnableMod)
                 return;
-            if(Config.EnableMod && Config.MoveKeys.Keybinds[0].Buttons.All(button => Helper.Input.IsDown(button) || Helper.Input.IsSuppressed(button)))
+            if(isKeybindPressed(Config.MoveKeys.Keybinds[0].Buttons))
             {
                 if(Game1.activeClickableMenu != null)
                 {
@@ -298,6 +298,13 @@ namespace AdvancedMenuPositioning
                 name: () => "Close Keys",
                 getValue: () => Config.CloseKeys,
                 setValue: value => Config.CloseKeys = value
+            );
+            configMenu.AddBoolOption(
+                mod: ModManifest,
+                name: () => "Strict Keys Enabled",
+                tooltip: () => "When enabled, strict key mode ensures that only the designated keys are pressed. This allows performing default game actions associated with those keys (e.g., in the crafting menu, LeftShift + MouseLeft will move the menu, and LeftShift + MouseLeft + AnyOtherKey will craft 5 items at a time).",
+                getValue: () => Config.StrictKeybindings,
+                setValue: value => Config.StrictKeybindings = value
             );
         }
    }
