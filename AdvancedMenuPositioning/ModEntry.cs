@@ -23,6 +23,7 @@ namespace AdvancedMenuPositioning
         public static ModEntry context;
         private static Point lastMousePosition;
         private static IClickableMenu currentlyDragging;
+        private static int RightClickLimiter;
 
         private static List<ClickableComponent> adjustedComponents = new List<ClickableComponent>();
         private static List<IClickableMenu> adjustedMenus = new List<IClickableMenu>();
@@ -40,7 +41,8 @@ namespace AdvancedMenuPositioning
             SHelper = helper;
 
             helper.Events.GameLoop.GameLaunched += GameLoop_GameLaunched;
-            helper.Events.GameLoop.UpdateTicking += GameLoop_UpdateTicking;
+            helper.Events.GameLoop.UpdateTicking += GameLoop_UpdateTicking_MoveMenus;
+            helper.Events.GameLoop.UpdateTicking += GameLoop_UpdateTicking_RightClick;
             helper.Events.GameLoop.ReturnedToTitle += GameLoop_ReturnedToTitle;
             helper.Events.Input.ButtonPressed += Input_ButtonPressed;
             helper.Events.Input.MouseWheelScrolled += Input_MouseWheelScrolled;
@@ -197,7 +199,62 @@ namespace AdvancedMenuPositioning
             }
         }
 
-        private void GameLoop_UpdateTicking(object sender, StardewModdingAPI.Events.UpdateTickingEventArgs e)
+        private void GameLoop_UpdateTicking_RightClick(object sender, StardewModdingAPI.Events.UpdateTickingEventArgs e)
+        {
+            if (!Context.IsWorldReady || !Config.EnableMod)
+                return;
+            if(detachedMenus.Count > 0)
+            {
+                if (Helper.Input.IsDown(SButton.MouseRight) || Helper.Input.IsSuppressed(SButton.MouseRight))
+                {
+                    if (Game1.activeClickableMenu is not null && Game1.activeClickableMenu.isWithinBounds(Game1.getMouseX(), Game1.getMouseY()))
+                        return;
+                    if (RightClickLimiter < 30)
+                    {
+                        RightClickLimiter++;
+                        return ;
+                    }
+                    else
+                    {
+                        RightClickLimiter -= 3;
+                        for (int i = detachedMenus.Count - 1; i >= 0; i--)
+                        {
+                            bool toBreak = detachedMenus[i].isWithinBounds(Game1.getMouseX(), Game1.getMouseY());
+
+                            var menu = Game1.activeClickableMenu;
+                            Game1.activeClickableMenu = detachedMenus[i];
+                            Game1.activeClickableMenu.receiveRightClick(Game1.getMouseX(), Game1.getMouseY());
+                            if (Game1.activeClickableMenu != null)
+                            {
+                                var d = new Point(detachedMenus[i].xPositionOnScreen - Game1.activeClickableMenu.xPositionOnScreen, detachedMenus[i].yPositionOnScreen - Game1.activeClickableMenu.yPositionOnScreen);
+                                detachedMenus[i] = Game1.activeClickableMenu;
+                                AdjustMenu(detachedMenus[i], d, true);
+                                Game1.activeClickableMenu = menu;
+                                if (toBreak)
+                                {
+                                    detachedMenus.Add(detachedMenus[i]);
+                                    detachedMenus.RemoveAt(i);
+                                }
+                            }
+                            else
+                                detachedMenus.RemoveAt(i);
+                            Game1.activeClickableMenu = menu;
+                            if (toBreak)
+                            {
+                                Helper.Input.Suppress(SButton.MouseRight);
+                                return;
+                            }
+                        }
+                    }
+                }
+                else
+                {
+                    RightClickLimiter = 0;
+                }
+            }
+        }
+
+        private void GameLoop_UpdateTicking_MoveMenus(object sender, StardewModdingAPI.Events.UpdateTickingEventArgs e)
         {
             if (!Context.IsWorldReady || !Config.EnableMod)
                 return;
