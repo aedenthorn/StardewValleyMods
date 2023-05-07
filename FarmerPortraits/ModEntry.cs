@@ -30,11 +30,14 @@ namespace FarmerPortraits
             SHelper = helper;
 
             helper.Events.GameLoop.GameLaunched += GameLoop_GameLaunched;
-            helper.Events.GameLoop.DayStarted += GameLoop_DayStarted;
+
+            helper.Events.Display.MenuChanged += Display_MenuChanged;
+            
             var harmony = new Harmony(ModManifest.UniqueID);
             harmony.PatchAll();
         }
-        private void GameLoop_DayStarted(object sender, DayStartedEventArgs e)
+
+        private void Display_MenuChanged(object sender, MenuChangedEventArgs e)
         {
             ReloadTextures();
         }
@@ -43,7 +46,7 @@ namespace FarmerPortraits
         {
             try
             {
-                portraitTexture = Game1.content.Load<Texture2D>("aedenthorn.FarmerPortraits/portrait");
+                portraitTexture = SHelper.GameContent.Load<Texture2D>("aedenthorn.FarmerPortraits/portrait");
             }
             catch
             {
@@ -51,7 +54,7 @@ namespace FarmerPortraits
             }
             try
             {
-                backgroundTexture = Game1.content.Load<Texture2D>("aedenthorn.FarmerPortraits/background");
+                backgroundTexture = SHelper.GameContent.Load<Texture2D>("aedenthorn.FarmerPortraits/background");
             }
             catch
             {

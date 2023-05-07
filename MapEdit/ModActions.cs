@@ -163,7 +163,7 @@ namespace MapEdit
             ModEntry.modActive.Value = false;
             ModEntry.copiedTileLoc.Value = new Vector2(-1, -1);
             ModEntry.pastedTileLoc.Value = new Vector2(-1, -1);
-            ModEntry.currentTileDict.Value.Clear();
+            ModEntry.currentTileDict.Value = new Dictionary<string, Tile>();
             ModEntry.currentLayer.Value = 0;
         }
 
