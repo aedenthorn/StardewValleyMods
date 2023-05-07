@@ -318,80 +318,80 @@ namespace AprilFools
 
             configMenu.AddBoolOption(
                 mod: ModManifest,
-                name: () => "Mod Enabled?",
+                name: () => ModEntry.SHelper.Translation.Get("GMCM_Option_ModEnabled_Name"),
                 getValue: () => Config.EnableMod,
                 setValue: value => Config.EnableMod = value
             );
 
             configMenu.AddBoolOption(
                 mod: ModManifest,
-                name: () => "Only April 1st?",
+                name: () => ModEntry.SHelper.Translation.Get("GMCM_Option_OnlyAprilFirst_Name"),
                 getValue: () => Config.RestrictToAprilFirst,
                 setValue: value => Config.RestrictToAprilFirst = value
             );
             configMenu.AddBoolOption(
                 mod: ModManifest,
-                name: () => "Enable Bees?",
+                name: () => ModEntry.SHelper.Translation.Get("GMCM_Option_EnableBees_Name"),
                 getValue: () => Config.BeesEnabled,
                 setValue: value => Config.BeesEnabled = value
             );
             configMenu.AddBoolOption(
                 mod: ModManifest,
-                name: () => "Enable Backwards?",
+                name: () => ModEntry.SHelper.Translation.Get("GMCM_Option_EnableBackwards_Name"),
                 getValue: () => Config.BackwardsEnabled,
                 setValue: value => Config.BackwardsEnabled = value
             );
             configMenu.AddBoolOption(
                 mod: ModManifest,
-                name: () => "Enable Ascii?",
+                name: () => ModEntry.SHelper.Translation.Get("GMCM_Option_EnableAscii_Name"),
                 getValue: () => Config.AsciiEnabled,
                 setValue: value => Config.AsciiEnabled = value
             );
             configMenu.AddBoolOption(
                 mod: ModManifest,
-                name: () => "Enable Pixelate?",
+                name: () => ModEntry.SHelper.Translation.Get("GMCM_Option_EnablePixelate_Name"),
                 getValue: () => Config.PixelateEnabled,
                 setValue: value => Config.PixelateEnabled = value
             );
             configMenu.AddBoolOption(
                 mod: ModManifest,
-                name: () => "Enable Tree Screams?",
+                name: () => ModEntry.SHelper.Translation.Get("GMCM_Option_EnableTreeScreams_Name"),
                 getValue: () => Config.TreeScreamEnabled,
                 setValue: value => Config.TreeScreamEnabled = value
             );
             configMenu.AddBoolOption(
                 mod: ModManifest,
-                name: () => "Enable Inventory Avoid?",
+                name: () => ModEntry.SHelper.Translation.Get("GMCM_Option_EnableInventoryAvoid_Name"),
                 getValue: () => Config.InventoryEnabled,
                 setValue: value => Config.InventoryEnabled = value
             );
             configMenu.AddBoolOption(
                 mod: ModManifest,
-                name: () => "Enable Slime?",
+                name: () => ModEntry.SHelper.Translation.Get("GMCM_Option_EnableSlime_Name"),
                 getValue: () => Config.SlimeEnabled,
                 setValue: value => Config.SlimeEnabled = value
             );
             configMenu.AddBoolOption(
                 mod: ModManifest,
-                name: () => "Enable Raven?",
+                name: () => ModEntry.SHelper.Translation.Get("GMCM_Option_EnableRaven_Name"),
                 getValue: () => Config.RavenEnabled,
                 setValue: value => Config.RavenEnabled = value
             );
             configMenu.AddBoolOption(
                 mod: ModManifest,
-                name: () => "Enable Giants?",
+                name: () => ModEntry.SHelper.Translation.Get("GMCM_Option_EnableGiants_Name"),
                 getValue: () => Config.GiantEnabled,
                 setValue: value => Config.GiantEnabled = value
             );
             configMenu.AddBoolOption(
                 mod: ModManifest,
-                name: () => "Enable Building Switch?",
+                name: () => ModEntry.SHelper.Translation.Get("GMCM_Option_EnableBuildingSwitch_Name"),
                 getValue: () => Config.BuildingsEnabled,
                 setValue: value => Config.BuildingsEnabled = value
             );
             configMenu.AddBoolOption(
                 mod: ModManifest,
-                name: () => "Enable Animal Greeting?",
+                name: () => ModEntry.SHelper.Translation.Get("GMCM_Option_EnableAnimalGreeting_Name"),
                 getValue: () => Config.EnableAnimalTalk,
                 setValue: value => Config.EnableAnimalTalk = value
             );
