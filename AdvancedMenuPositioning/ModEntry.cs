@@ -7,6 +7,7 @@ using StardewValley;
 using StardewValley.Menus;
 using StardewValley.Objects;
 using System;
+using System.Reflection;
 using System.Collections.Generic;
 using System.Linq;
 using Rectangle = Microsoft.Xna.Framework.Rectangle;
@@ -140,6 +141,9 @@ namespace AdvancedMenuPositioning
                         var menu = Game1.activeClickableMenu;
                         Game1.activeClickableMenu = detachedMenus[i];
                         Game1.activeClickableMenu.receiveLeftClick(Game1.getMouseX(), Game1.getMouseY());
+                        ItemGrabMenu menuAsItemGrabMenu = Game1.activeClickableMenu as ItemGrabMenu;
+                        if (menuAsItemGrabMenu is not null)
+                            Game1.activeClickableMenu = (IClickableMenu) new ItemGrabMenu(menuAsItemGrabMenu.ItemsToGrabMenu.actualInventory, false, true, new InventoryMenu.highlightThisItem(InventoryMenu.highlightAllItems), (ItemGrabMenu.behaviorOnItemSelect)typeof(ItemGrabMenu).GetField("behaviorFunction", BindingFlags.NonPublic | BindingFlags.Instance).GetValue(menuAsItemGrabMenu), (string) null, menuAsItemGrabMenu.behaviorOnItemGrab, canBeExitedWithKey: true, showOrganizeButton: true, source: menuAsItemGrabMenu.source, sourceItem: (Item)typeof(ItemGrabMenu).GetField("sourceItem", BindingFlags.NonPublic | BindingFlags.Instance).GetValue(menuAsItemGrabMenu), whichSpecialButton: menuAsItemGrabMenu.whichSpecialButton, context: menuAsItemGrabMenu.context).setEssential((bool)typeof(ItemGrabMenu).GetField("essential", BindingFlags.NonPublic | BindingFlags.Instance).GetValue(menuAsItemGrabMenu));
                         if (Game1.activeClickableMenu != null)
                         {
                             var d = new Point(detachedMenus[i].xPositionOnScreen - Game1.activeClickableMenu.xPositionOnScreen, detachedMenus[i].yPositionOnScreen - Game1.activeClickableMenu.yPositionOnScreen);
