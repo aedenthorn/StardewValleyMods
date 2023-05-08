@@ -1,0 +1,17 @@
+{
+  // GMCM
+  "GMCM_Option_ModEnabled_Name": "Mod Enabled",
+  "GMCM_Option_ShowWhenRaining_Name": "Show When Raining",
+  "GMCM_Option_FixFlowerFind_Name": "Fix Flower Find",
+  "GMCM_Option_NumberBees_Name": "Number of Bees",
+  "GMCM_Option_BeeRange_Name": "Bee Range",
+  "GMCM_Option_BeeDamage_Name": "Bee Damage",
+  "GMCM_Option_BeeStingChance_Name": "Sting % Chance",
+  "GMCM_Option_BeeScale_Name": "Bee Scale",
+  "GMCM_Option_BeeSpeed_Name": "Bee Speed",
+  "GMCM_Option_BeeSound_Name": "Bee Sound",
+  "GMCM_Option_MaxSoundDistance_Name": "Bee Sound Distance",
+  "GMCM_Option_BeeColorR_Name": "Bee Color R",
+  "GMCM_Option_BeeColorG_Name": "Bee Color G",
+  "GMCM_Option_BeeColorB_Name": "Bee Color B"
+}

@@ -168,43 +168,43 @@ namespace BeePaths
 
             configMenu.AddBoolOption(
                 mod: ModManifest,
-                name: () => "Mod Enabled",
+                name: () => ModEntry.SHelper.Translation.Get("GMCM_Option_ModEnabled_Name"),
                 getValue: () => Config.ModEnabled,
                 setValue: value => Config.ModEnabled = value
             );
             configMenu.AddBoolOption(
                 mod: ModManifest,
-                name: () => "Show When Raining",
+                name: () => ModEntry.SHelper.Translation.Get("GMCM_Option_ShowWhenRaining_Name"),
                 getValue: () => Config.ShowWhenRaining,
                 setValue: value => Config.ShowWhenRaining = value
             );
             configMenu.AddBoolOption(
                 mod: ModManifest,
-                name: () => "Fix Flower Find",
+                name: () => ModEntry.SHelper.Translation.Get("GMCM_Option_FixFlowerFind_Name"),
                 getValue: () => Config.FixFlowerFind,
                 setValue: value => Config.FixFlowerFind = value
             );
             configMenu.AddNumberOption(
                 mod: ModManifest,
-                name: () => "Number of Bees",
+                name: () => ModEntry.SHelper.Translation.Get("GMCM_Option_NumberBees_Name"),
                 getValue: () => Config.NumberBees,
                 setValue: value => Config.NumberBees = value
             );
             configMenu.AddNumberOption(
                 mod: ModManifest,
-                name: () => "Bee Range",
+                name: () => ModEntry.SHelper.Translation.Get("GMCM_Option_BeeRange_Name"),
                 getValue: () => Config.BeeRange,
                 setValue: value => Config.BeeRange = value
             );
             configMenu.AddNumberOption(
                 mod: ModManifest,
-                name: () => "Bee Damage",
+                name: () => ModEntry.SHelper.Translation.Get("GMCM_Option_BeeDamage_Name"),
                 getValue: () => Config.BeeDamage,
                 setValue: value => Config.BeeDamage = value
             );
             configMenu.AddNumberOption(
                 mod: ModManifest,
-                name: () => "Sting % Chance",
+                name: () => ModEntry.SHelper.Translation.Get("GMCM_Option_BeeStingChance_Name"),
                 getValue: () => Config.BeeStingChance,
                 setValue: value => Config.BeeStingChance = value,
                 min: 0,
@@ -212,31 +212,31 @@ namespace BeePaths
             );
             configMenu.AddTextOption(
                 mod: ModManifest,
-                name: () => "Bee Scale",
+                name: () => ModEntry.SHelper.Translation.Get("GMCM_Option_BeeScale_Name"),
                 getValue: () => Config.BeeScale+"",
                 setValue: delegate(string value){ if (float.TryParse(value, NumberStyles.Any, CultureInfo.InvariantCulture, out var f)) Config.BeeScale = f; }
             );
             configMenu.AddTextOption(
                 mod: ModManifest,
-                name: () => "Bee Speed",
+                name: () =>ModEntry.SHelper.Translation.Get("GMCM_Option_BeeSpeed_Name"),
                 getValue: () => Config.BeeSpeed+"",
                 setValue: delegate(string value){ if (float.TryParse(value, NumberStyles.Any, CultureInfo.InvariantCulture, out var f)) Config.BeeSpeed = f; }
             );
             configMenu.AddTextOption(
                 mod: ModManifest,
-                name: () => "Bee Sound",
+                name: () => ModEntry.SHelper.Translation.Get("GMCM_Option_BeeSound_Name"),
                 getValue: () => Config.BeeSound,
                 setValue: value => Config.BeeSound = value
             );
             configMenu.AddTextOption(
                 mod: ModManifest,
-                name: () => "Bee Sound Distance",
+                name: () => ModEntry.SHelper.Translation.Get("GMCM_Option_MaxSoundDistance_Name"),
                 getValue: () => Config.MaxSoundDistance + "",
                 setValue: delegate (string value) { if (float.TryParse(value, NumberStyles.Any, CultureInfo.InvariantCulture, out var f)) Config.MaxSoundDistance = f; }
             );
             configMenu.AddNumberOption(
                 mod: ModManifest,
-                name: () => "Bee Color R",
+                name: () => ModEntry.SHelper.Translation.Get("GMCM_Option_BeeColorR_Name"),
                 getValue: () => Config.BeeColor.R,
                 setValue: value => Config.BeeColor = new Color(value, Config.BeeColor.G, Config.BeeColor.B, Config.BeeColor.A),
                 min: 0,
@@ -244,7 +244,7 @@ namespace BeePaths
             );
             configMenu.AddNumberOption(
                 mod: ModManifest,
-                name: () => "Bee Color G",
+                name: () => ModEntry.SHelper.Translation.Get("GMCM_Option_BeeColorG_Name"),
                 getValue: () => Config.BeeColor.G,
                 setValue: value => Config.BeeColor = new Color(Config.BeeColor.R, value, Config.BeeColor.B, Config.BeeColor.A),
                 min: 0,
@@ -252,7 +252,7 @@ namespace BeePaths
             );
             configMenu.AddNumberOption(
                 mod: ModManifest,
-                name: () => "Bee Color B",
+                name: () => ModEntry.SHelper.Translation.Get("GMCM_Option_BeeColorB_Name"),
                 getValue: () => Config.BeeColor.B,
                 setValue: value => Config.BeeColor = new Color(Config.BeeColor.R, Config.BeeColor.G, value, Config.BeeColor.A),
                 min: 0,
