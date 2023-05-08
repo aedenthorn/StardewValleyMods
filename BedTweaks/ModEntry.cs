@@ -59,25 +59,25 @@ namespace BedTweaks
 
             configMenu.AddBoolOption(
                 mod: ModManifest,
-                name: () => "Mod Enabled",
+                name: () => ModEntry.SHelper.Translation.Get("GMCM_Option_ModEnabled_Name"),
                 getValue: () => Config.EnableMod,
                 setValue: value => Config.EnableMod = value
             );
             configMenu.AddBoolOption(
                 mod: ModManifest,
-                name: () => "Redraw Middle Pillows",
+                name: () => ModEntry.SHelper.Translation.Get("GMCM_Option_RedrawMiddlePillows_Name"),
                 getValue: () => Config.RedrawMiddlePillows,
                 setValue: value => Config.RedrawMiddlePillows = value
             );
             configMenu.AddNumberOption(
                 mod: ModManifest,
-                name: () => "Bed Width",
+                name: () => ModEntry.SHelper.Translation.Get("GMCM_Option_BedWidth_Name"),
                 getValue: () => Config.BedWidth,
                 setValue: value => Config.BedWidth = value
             );
             configMenu.AddNumberOption(
                 mod: ModManifest,
-                name: () => "Sheet Opacity %",
+                name: () => ModEntry.SHelper.Translation.Get("GMCM_Option_SheetTransparency_Name"),
                 getValue: () => (int)(Config.SheetTransparency * 100),
                 setValue: value => Config.SheetTransparency = value / 100f,
                 min: 1,
