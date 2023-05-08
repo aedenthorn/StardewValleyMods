@@ -53,22 +53,22 @@ namespace BetterElevator
 
             configMenu.AddBoolOption(
                 mod: ModManifest,
-                name: () => "Mod Enabled?",
+                name: () => ModEntry.SHelper.Translation.Get("GMCM_Option_ModEnabled_Name"),
                 getValue: () => Config.ModEnabled,
                 setValue: value => Config.ModEnabled = value
             );
             
             configMenu.AddKeybind(
                 mod: ModManifest,
-                name: () => "Mod Key",
+                name: () => ModEntry.SHelper.Translation.Get("GMCM_Option_ModKey_Name"),
                 getValue: () => Config.ModKey,
                 setValue: value => Config.ModKey = value
             );
 
             configMenu.AddBoolOption(
                 mod: ModManifest,
-                name: () => "Unrestricted",
-                tooltip: () => "Lets you visit any floor, even those you haven't been to before",
+                name: () => ModEntry.SHelper.Translation.Get("GMCM_Option_Unrestricted_Name"),
+                tooltip: () => ModEntry.SHelper.Translation.Get("GMCM_Option_Unrestricted_Tooltip"),
                 getValue: () => Config.Unrestricted,
                 setValue: value => Config.Unrestricted = value
             );
