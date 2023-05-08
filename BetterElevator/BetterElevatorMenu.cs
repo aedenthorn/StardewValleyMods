@@ -126,6 +126,10 @@ namespace BetterElevator
 				{
                     newLevel = Math.Min(Math.Max(MineShaft.lowestLevelReached - 120, 0), newLevel);
                 }
+				if (newLevel == 77377 - 120)
+				{
+					newLevel++;
+				}
 				if (newLevel > int.MaxValue - 120)
 				{
 					newLevel = int.MaxValue - 120;

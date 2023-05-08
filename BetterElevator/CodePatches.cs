@@ -53,16 +53,50 @@ namespace BetterElevator
         {
             public static bool Prefix(MineShaft __instance, Location tileLocation, xTile.Dimensions.Rectangle viewport, Farmer who, ref bool __result)
             {
-                if (!Config.ModEnabled || !who.IsLocalPlayer || !SHelper.Input.IsDown(Config.ModKey))
+                if (!Config.ModEnabled || !who.IsLocalPlayer)
                     return true;
                 Tile tile = __instance.map.GetLayer("Buildings").PickTile(new Location(tileLocation.X * 64, tileLocation.Y * 64), viewport.Size);
-                if (tile == null || tile.TileIndex != 115)
+                if (tile == null)
                     return true;
-                if (__instance.mineLevel == 77377)
-                    return true;
-                Game1.activeClickableMenu = new BetterElevatorMenu();
-                __result = true;
-                return false;
+                if (tile.TileIndex == 115)
+                {
+                    if (!SHelper.Input.IsDown(Config.ModKey))
+                        return true;
+                    if (__instance.mineLevel == 77377)
+                        return true;
+                    Game1.activeClickableMenu = new BetterElevatorMenu();
+                    __result = true;
+                    return false;
+                }
+                if (tile.TileIndex == 173)
+                {
+                    if (__instance.mineLevel == 77376)
+                    {
+                        Game1.enterMine(__instance.mineLevel + 2);
+                        __instance.playSound("stairsdown");
+                        __result = true;
+                        return false;
+                    }
+                    if (__instance.mineLevel == int.MaxValue)
+                    {
+                        Game1.enterMine(__instance.mineLevel);
+                        __instance.playSound("stairsdown");
+                        __result = true;
+                        return false;
+                    }
+                }
+                return true;
+            }
+        }
+        [HarmonyPatch(typeof(MineShaft), nameof(MineShaft.shouldCreateLadderOnThisLevel))]
+        public class MineShaft_shouldCreateLadderOnThisLevel_Patch
+        {
+            public static void Postfix(MineShaft __instance, ref bool __result)
+            {
+                if (!Config.ModEnabled)
+                    return;
+                if (__instance.mineLevel == int.MaxValue)
+                    __result = false;
             }
         }
     }
