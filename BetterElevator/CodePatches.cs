@@ -35,6 +35,10 @@ namespace BetterElevator
                     if (!who.hasSkullKey || !who.hasUnlockedSkullDoor)
                         return true;
                 }
+                else if (text == "Mine" && actionParams.Length > 1 && actionParams[1] == "77377")
+                {
+                    return true;
+                }
                 else if (text != "Mine")
                 {
                     return true;
@@ -47,12 +51,14 @@ namespace BetterElevator
         [HarmonyPatch(typeof(MineShaft), nameof(MineShaft.checkAction))]
         public class MineShaft_checkAction_Patch
         {
-            public static bool Prefix(GameLocation __instance, Location tileLocation, xTile.Dimensions.Rectangle viewport, Farmer who, ref bool __result)
+            public static bool Prefix(MineShaft __instance, Location tileLocation, xTile.Dimensions.Rectangle viewport, Farmer who, ref bool __result)
             {
                 if (!Config.ModEnabled || !who.IsLocalPlayer || !SHelper.Input.IsDown(Config.ModKey))
                     return true;
                 Tile tile = __instance.map.GetLayer("Buildings").PickTile(new Location(tileLocation.X * 64, tileLocation.Y * 64), viewport.Size);
                 if (tile == null || tile.TileIndex != 115)
+                    return true;
+                if (__instance.mineLevel == 77377)
                     return true;
                 Game1.activeClickableMenu = new BetterElevatorMenu();
                 __result = true;
