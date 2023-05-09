@@ -72,27 +72,27 @@ namespace BetterLightningRods
 
             configMenu.AddBoolOption(
                 mod: ModManifest,
-                name: () => "Mod Enabled?",
+                name: () => ModEntry.SHelper.Translation.Get("GMCM_Option_ModEnabled_Name"),
                 getValue: () => Config.EnableMod,
                 setValue: value => Config.EnableMod = value
             );
             configMenu.AddBoolOption(
                 mod: ModManifest,
-                name: () => "Unique Check?",
-                tooltip: () => "Don't check the same rod twice per strike.",
+                name: () => ModEntry.SHelper.Translation.Get("GMCM_Option_UniqueCheck_Name"),
+                tooltip: () => ModEntry.SHelper.Translation.Get("GMCM_Option_UniqueCheck_Tooltip"),
                 getValue: () => Config.UniqueCheck,
                 setValue: value => Config.UniqueCheck = value
             );
             configMenu.AddNumberOption(
                 mod: ModManifest,
-                name: () => "Rods To Check",
-                tooltip: () => "Each time lightning strikes, check this many rods to see if they can receive the charge.",
+                name: () => ModEntry.SHelper.Translation.Get("GMCM_Option_RodsToCheck_Name"),
+                tooltip: () => ModEntry.SHelper.Translation.Get("GMCM_Option_RodsToCheck_Tooltip"),
                 getValue: () => Config.RodsToCheck,
                 setValue: value => Config.RodsToCheck = value
             );
             configMenu.AddNumberOption(
                 mod: ModManifest,
-                name: () => "Base Lightning Chance",
+                name: () => ModEntry.SHelper.Translation.Get("GMCM_Option_LightningChance_Name"),
                 getValue: () => (int)Config.LightningChance,
                 setValue: value => Config.LightningChance = value,
                 min: 0,
