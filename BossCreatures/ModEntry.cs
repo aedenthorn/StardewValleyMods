@@ -132,7 +132,7 @@ namespace BossCreatures
             {
                 try
                 {
-                    Texture2D spriteTexture = PHelper.Content.Load<Texture2D>($"Characters/Monsters/{type.Name}", ContentSource.GameContent);
+                    Texture2D spriteTexture = PHelper.GameContent.Load<Texture2D>($"Characters/Monsters/{type.Name}");
                     if(spriteTexture != null)
                     {
                         texturePath = $"Characters\\Monsters\\{type.Name}";
@@ -226,7 +226,7 @@ namespace BossCreatures
 
                 if (toggleSprite < 20)
                 {
-                    Texture2D texture = PHelper.Content.Load<Texture2D>("Characters/Monsters/Haunted Skull", ContentSource.GameContent);
+                    Texture2D texture = PHelper.GameContent.Load<Texture2D>("Characters/Monsters/Haunted Skull");
                     ClickableTextureComponent bossIcon = new ClickableTextureComponent(new Microsoft.Xna.Framework.Rectangle(x, y, 80, 80), texture, new Microsoft.Xna.Framework.Rectangle(toggleSprite > 10 ? 16 : 0, 32, 16, 16), 5f, false);
                     bossIcon.draw(Game1.spriteBatch);
                 }
