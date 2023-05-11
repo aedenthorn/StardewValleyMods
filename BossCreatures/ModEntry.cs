@@ -52,6 +52,7 @@ namespace BossCreatures
             PHelper = helper;
 
             helper.Events.Player.Warped += Warped;
+            helper.Events.GameLoop.GameLaunched += OnGameLaunched;
             helper.Events.GameLoop.DayStarted += OnDayStarted;
             helper.Events.GameLoop.DayEnding += OnDayEnding;
 
@@ -576,6 +577,388 @@ namespace BossCreatures
         public static bool IsLessThanHalfHealth(Monster m)
         {
             return m.Health < m.MaxHealth / 2;
+        }
+
+        private void OnGameLaunched(object sender, StardewModdingAPI.Events.GameLaunchedEventArgs e)
+        {
+            // get Generic Mod Config Menu's API (if it's installed)
+            var configMenu = Helper.ModRegistry.GetApi<IGenericModConfigMenuApi>("spacechase0.GenericModConfigMenu");
+            if (configMenu is null)
+                return;
+
+            // register mod
+            configMenu.Register(
+                mod: ModManifest,
+                reset: () => Config = new ModConfig(),
+                save: () => Helper.WriteConfig(Config)
+            );
+
+            configMenu.AddPageLink(
+                mod: ModManifest,
+                pageId: "Spawning",
+                text: () => "Spawning"
+            );
+            configMenu.AddPageLink(
+                mod: ModManifest,
+                pageId: "Difficulty",
+                text: () => "Difficulty"
+            );
+            configMenu.AddPageLink(
+                mod: ModManifest,
+                pageId: "Sprites",
+                text: () => "Sprites"
+            );
+
+            configMenu.AddPage(
+                mod: ModManifest,
+                pageId: "Spawning",
+                pageTitle: () => "Spawning"
+            );
+            configMenu.AddSectionTitle(
+                mod: ModManifest,
+                text: () => "Boss Spawn Chance"
+            );
+            configMenu.AddParagraph(
+                mod: ModManifest,
+                text: () => "Adjust the percent chance of a boss spawning in each location. Note that a boss can only spawn once per day in each location."
+            );
+            configMenu.AddNumberOption(
+                mod: ModManifest,
+                name: () => "Monster Area",
+                getValue: () => Config.PercentChanceOfBossInMonsterArea,
+                setValue: value => Config.PercentChanceOfBossInMonsterArea = value,
+                min: 0,
+                max: 100
+            );
+            configMenu.AddNumberOption(
+                mod: ModManifest,
+                name: () => "Farm",
+                getValue: () => Config.PercentChanceOfBossInFarm,
+                setValue: value => Config.PercentChanceOfBossInFarm = value,
+                min: 0,
+                max: 100
+            );
+            configMenu.AddNumberOption(
+                mod: ModManifest,
+                name: () => "Town",
+                getValue: () => Config.PercentChanceOfBossInTown,
+                setValue: value => Config.PercentChanceOfBossInTown = value,
+                min: 0,
+                max: 100
+            );
+            configMenu.AddNumberOption(
+                mod: ModManifest,
+                name: () => "Forest",
+                getValue: () => Config.PercentChanceOfBossInForest,
+                setValue: value => Config.PercentChanceOfBossInForest = value,
+                min: 0,
+                max: 100
+            );
+            configMenu.AddNumberOption(
+                mod: ModManifest,
+                name: () => "Mountain",
+                getValue: () => Config.PercentChanceOfBossInMountain,
+                setValue: value => Config.PercentChanceOfBossInMountain = value,
+                min: 0,
+                max: 100
+            );
+            configMenu.AddNumberOption(
+                mod: ModManifest,
+                name: () => "Desert",
+                getValue: () => Config.PercentChanceOfBossInDesert,
+                setValue: value => Config.PercentChanceOfBossInDesert = value,
+                min: 0,
+                max: 100
+            );
+            if (ModEntry.PHelper.ModRegistry.IsLoaded("FlashShifter.SVECode"))
+            {
+                configMenu.AddNumberOption(
+                    mod: ModManifest,
+                    name: () => "Crimson Badlands",
+                    getValue: () => Config.PercentChanceOfBossInCrimsonBadlands,
+                    setValue: value => Config.PercentChanceOfBossInCrimsonBadlands = value,
+                    min: 0,
+                    max: 100
+                );
+            }
+            configMenu.AddSectionTitle(
+                mod: ModManifest,
+                text: () => "Boss Probability Weights"
+            );
+            configMenu.AddParagraph(
+                mod: ModManifest,
+                text: () => "Adjust the probability weights for each boss type to control their chances of spawning. Higher weights amplify the chances of encountering a specific boss, while lower weights reduce their occurrence."
+            );
+            configMenu.AddNumberOption(
+                mod: ModManifest,
+                name: () => "Bug Boss",
+                getValue: () => Config.WeightBugBossChance,
+                setValue: value => Config.WeightBugBossChance = value
+            );
+            configMenu.AddNumberOption(
+                mod: ModManifest,
+                name: () => "Ghost Boss",
+                getValue: () => Config.WeightGhostBossChance,
+                setValue: value => Config.WeightGhostBossChance = value
+            );
+            configMenu.AddNumberOption(
+                mod: ModManifest,
+                name: () => "Serpent Boss",
+                getValue: () => Config.WeightSerpentBossChance,
+                setValue: value => Config.WeightSerpentBossChance = value
+            );
+            configMenu.AddNumberOption(
+                mod: ModManifest,
+                name: () => "Skeleton Boss",
+                getValue: () => Config.WeightSkeletonBossChance,
+                setValue: value => Config.WeightSkeletonBossChance = value
+            );
+            configMenu.AddNumberOption(
+                mod: ModManifest,
+                name: () => "Skull Boss",
+                getValue: () => Config.WeightSkullBossChance,
+                setValue: value => Config.WeightSkullBossChance = value
+            );
+            configMenu.AddNumberOption(
+                mod: ModManifest,
+                name: () => "Squid Boss",
+                getValue: () => Config.WeightSquidBossChance,
+                setValue: value => Config.WeightSquidBossChance = value
+            );
+            configMenu.AddNumberOption(
+                mod: ModManifest,
+                name: () => "Slime Boss",
+                getValue: () => Config.WeightSlimeBossChance,
+                setValue: value => Config.WeightSlimeBossChance = value
+            );
+
+            configMenu.AddPage(
+                mod: ModManifest,
+                pageId: "Difficulty",
+                pageTitle: () => "Difficulty"
+            );
+            configMenu.AddSectionTitle(
+                mod: ModManifest,
+                text: () => "Underground Difficulty"
+            );
+            configMenu.AddParagraph(
+                mod: ModManifest,
+                text: () => "The difficulty mainly affects boss HP and damage. It is determined by multiplying the base underground difficulty by the current mine level.\nThe formula is: BaseUndergroundDifficulty x mineLevel / 100."
+            );
+            configMenu.AddNumberOption(
+                mod: ModManifest,
+                name: () => "Base Underground Difficulty",
+                getValue: () => Config.BaseUndergroundDifficulty,
+                setValue: value => Config.BaseUndergroundDifficulty = value
+            );
+            configMenu.AddSectionTitle(
+                mod: ModManifest,
+                text: () => "Overland Difficulty"
+            );
+            configMenu.AddParagraph(
+                mod: ModManifest,
+                text: () => "Above ground, the difficulty is a random value between the minimum and maximum overland difficulty."
+            );
+            configMenu.AddNumberOption(
+                mod: ModManifest,
+                name: () => "Min Overland Difficulty",
+                getValue: () => Config.MinOverlandDifficulty,
+                setValue: value => {
+                    Config.MinOverlandDifficulty = value;
+                    Config.MaxOverlandDifficulty = Math.Max(Config.MinOverlandDifficulty, Config.MaxOverlandDifficulty);
+                }
+            );
+            configMenu.AddNumberOption(
+                mod: ModManifest,
+                name: () => "Max Overland Difficulty",
+                getValue: () => Config.MaxOverlandDifficulty,
+                setValue: value => {
+                    Config.MaxOverlandDifficulty = value;
+                    Config.MinOverlandDifficulty = Math.Min(Config.MinOverlandDifficulty, Config.MaxOverlandDifficulty);
+                }
+            );
+
+            configMenu.AddPage(
+                mod: ModManifest,
+                pageId: "Sprites",
+                pageTitle: () => "Sprites"
+            );
+            configMenu.AddSectionTitle(
+                mod: ModManifest,
+                text: () => "Alternate Textures"
+            );
+            configMenu.AddParagraph(
+                mod: ModManifest,
+                text: () => "By default, this mod uses the sprites of the monsters they are based on, scaled up. Enabling this option allows the loading of custom sprites."
+            );
+            configMenu.AddBoolOption(
+                mod: ModManifest,
+                name: () => "Use Alternate Textures",
+                getValue: () => Config.UseAlternateTextures,
+                setValue: value => Config.UseAlternateTextures = value
+            );
+            configMenu.AddSectionTitle(
+                mod: ModManifest,
+                text: () => "Dimensions"
+            );
+            configMenu.AddParagraph(
+                mod: ModManifest,
+                text: () => "The sprite scale defines the size of a boss in relation to the size of an ordinary monster of the same type. Don't alter the width and height of the bosses unless you're using custom sprites."
+            );
+            configMenu.AddSectionTitle(
+                mod: ModManifest,
+                text: () => "Bug Boss"
+            );
+            configMenu.AddNumberOption(
+                mod: ModManifest,
+                name: () => "Scale",
+                getValue: () => Config.BugBossScale,
+                setValue: value => Config.BugBossScale = value
+            );
+            configMenu.AddNumberOption(
+                mod: ModManifest,
+                name: () => "Height",
+                getValue: () => Config.BugBossHeight,
+                setValue: value => Config.BugBossHeight = value
+            );
+            configMenu.AddNumberOption(
+                mod: ModManifest,
+                name: () => "Width",
+                getValue: () => Config.BugBossWidth,
+                setValue: value => Config.BugBossWidth = value
+            );
+            configMenu.AddSectionTitle(
+                mod: ModManifest,
+                text: () => "Ghost Boss"
+            );
+            configMenu.AddNumberOption(
+                mod: ModManifest,
+                name: () => "Scale",
+                getValue: () => Config.GhostBossScale,
+                setValue: value => Config.GhostBossScale = value
+            );
+            configMenu.AddNumberOption(
+                mod: ModManifest,
+                name: () => "Height",
+                getValue: () => Config.GhostBossHeight,
+                setValue: value => Config.GhostBossHeight = value
+            );
+            configMenu.AddNumberOption(
+                mod: ModManifest,
+                name: () => "Width",
+                getValue: () => Config.GhostBossWidth,
+                setValue: value => Config.GhostBossWidth = value
+            );
+            configMenu.AddSectionTitle(
+                mod: ModManifest,
+                text: () => "Serpent Boss"
+            );
+            configMenu.AddNumberOption(
+                mod: ModManifest,
+                name: () => "Scale",
+                getValue: () => Config.SerpentBossScale,
+                setValue: value => Config.SerpentBossScale = value
+            );
+            configMenu.AddNumberOption(
+                mod: ModManifest,
+                name: () => "Height",
+                getValue: () => Config.SerpentBossHeight,
+                setValue: value => Config.SerpentBossHeight = value
+            );
+            configMenu.AddNumberOption(
+                mod: ModManifest,
+                name: () => "Width",
+                getValue: () => Config.SerpentBossWidth,
+                setValue: value => Config.SerpentBossWidth = value
+            );
+            configMenu.AddSectionTitle(
+                mod: ModManifest,
+                text: () => "Skeleton Boss"
+            );
+            configMenu.AddNumberOption(
+                mod: ModManifest,
+                name: () => "Scale",
+                getValue: () => Config.SkeletonBossScale,
+                setValue: value => Config.SkeletonBossScale = value
+            );
+            configMenu.AddNumberOption(
+                mod: ModManifest,
+                name: () => "Height",
+                getValue: () => Config.SkeletonBossHeight,
+                setValue: value => Config.SkeletonBossHeight = value
+            );
+            configMenu.AddNumberOption(
+                mod: ModManifest,
+                name: () => "Width",
+                getValue: () => Config.SkeletonBossWidth,
+                setValue: value => Config.SkeletonBossWidth = value
+            );
+            configMenu.AddSectionTitle(
+                mod: ModManifest,
+                text: () => "Skull Boss"
+            );
+            configMenu.AddNumberOption(
+                mod: ModManifest,
+                name: () => "Scale",
+                getValue: () => Config.SkullBossScale,
+                setValue: value => Config.SkullBossScale = value
+            );
+            configMenu.AddNumberOption(
+                mod: ModManifest,
+                name: () => "Height",
+                getValue: () => Config.SkullBossHeight,
+                setValue: value => Config.SkullBossHeight = value
+            );
+            configMenu.AddNumberOption(
+                mod: ModManifest,
+                name: () => "Width",
+                getValue: () => Config.SkullBossWidth,
+                setValue: value => Config.SkullBossWidth = value
+            );
+            configMenu.AddSectionTitle(
+                mod: ModManifest,
+                text: () => "Squid Kid Boss"
+            );
+            configMenu.AddNumberOption(
+                mod: ModManifest,
+                name: () => "Scale",
+                getValue: () => Config.SquidKidBossScale,
+                setValue: value => Config.SquidKidBossScale = value
+            );
+            configMenu.AddNumberOption(
+                mod: ModManifest,
+                name: () => "Height",
+                getValue: () => Config.SquidKidBossHeight,
+                setValue: value => Config.SquidKidBossHeight = value
+            );
+            configMenu.AddNumberOption(
+                mod: ModManifest,
+                name: () => "Width",
+                getValue: () => Config.SquidKidBossWidth,
+                setValue: value => Config.SquidKidBossWidth = value
+            );
+            configMenu.AddSectionTitle(
+                mod: ModManifest,
+                text: () => "Slime Boss"
+            );
+            configMenu.AddNumberOption(
+                mod: ModManifest,
+                name: () => "Scale",
+                getValue: () => Config.SlimeBossScale,
+                setValue: value => Config.SlimeBossScale = value
+            );
+            configMenu.AddNumberOption(
+                mod: ModManifest,
+                name: () => "Height",
+                getValue: () => Config.SlimeBossHeight,
+                setValue: value => Config.SlimeBossHeight = value
+            );
+            configMenu.AddNumberOption(
+                mod: ModManifest,
+                name: () => "Width",
+                getValue: () => Config.SlimeBossWidth,
+                setValue: value => Config.SlimeBossWidth = value
+            );
         }
     }
 }
