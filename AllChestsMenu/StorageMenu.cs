@@ -269,7 +269,7 @@ namespace AllChestsMenu
                             chestName = "";
                         }
 
-                        allStorageList.Add(new StorageData() { chest = chest, name = chestName, location = l.Name, tile = new Vector2(-1, -1), label = key, index = allStorageList.Count });
+                        allStorageList.Add(new StorageData() { chest = chest, name = chestName, location = l.Name, tile = new Vector2(kvp.Key.X, kvp.Key.Y), label = key, index = allStorageList.Count });
 
                     }
                 }
