@@ -1105,8 +1105,16 @@ namespace AllChestsMenu
 
         private void RenameStorage()
         {
-            allStorageList[renamingStorage.index].chest.modData[chestsAnywhereKey] = renameBox.Text;
-            allStorageList[renamingStorage.index].label = $"{renameBox.Text} ({renamingStorage.location} {(renamingStorage.tile.X > -1 ? renamingStorage.tile.X + "," + renamingStorage.tile.Y : fridgeString)})";
+            if (string.IsNullOrEmpty(renameBox.Text))
+            {
+                allStorageList[renamingStorage.index].chest.modData[chestsAnywhereKey] = "";
+                allStorageList[renamingStorage.index].label = $"{renamingStorage.location} {(renamingStorage.tile.X > -1 ? renamingStorage.tile.X + "," + renamingStorage.tile.Y : fridgeString)}";
+            }
+            else
+            {
+                allStorageList[renamingStorage.index].chest.modData[chestsAnywhereKey] = renameBox.Text;
+                allStorageList[renamingStorage.index].label = $"{renameBox.Text} ({renamingStorage.location} {(renamingStorage.tile.X > -1 ? renamingStorage.tile.X + "," + renamingStorage.tile.Y : fridgeString)})";
+            }
             renamingStorage = null;
             renameBox.Selected = false;
             Game1.playSound("bigSelect");
