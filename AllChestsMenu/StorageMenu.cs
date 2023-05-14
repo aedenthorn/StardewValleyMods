@@ -86,7 +86,6 @@ namespace AllChestsMenu
         public string filterString;
         public string nameString;
         public string fridgeString;
-        public string storeSimilarString;
         private string sortString;
 
         public StorageMenu() : base(Game1.uiViewport.Width / 2 - (windowWidth + borderWidth * 2) / 2, -borderWidth - 64, 64 * 26 + 4 + borderWidth * 2, Game1.uiViewport.Height + borderWidth * 2 + 64, false)
@@ -108,7 +107,6 @@ namespace AllChestsMenu
             filterString = ModEntry.SHelper.Translation.Get("filter");
             nameString = ModEntry.SHelper.Translation.Get("name");
             fridgeString = ModEntry.SHelper.Translation.Get("fridge");
-            storeSimilarString = ModEntry.SHelper.Translation.Get("store-similar");
             sortString = ModEntry.SHelper.Translation.Get("sort");
 
             var columns = 12;
@@ -118,7 +116,7 @@ namespace AllChestsMenu
             playerInventoryMenu = new InventoryMenu((Game1.uiViewport.Width - 64 * columns) / 2, Game1.uiViewport.Height - 64 * 3 - borderWidth / 2, false, Game1.player.Items, null, cap, rows);
             SetPlayerInventoryNeighbours();
 
-            trashCan = new ClickableTextureComponent(new Rectangle(playerInventoryMenu.xPositionOnScreen + playerInventoryMenu.width + 64 + 32, playerInventoryMenu.yPositionOnScreen + 64 + 16, 64, 104), Game1.mouseCursors, new Rectangle(564 + Game1.player.trashCanLevel * 18, 102, 18, 26), 4f, false)
+            trashCan = new ClickableTextureComponent(new Rectangle(playerInventoryMenu.xPositionOnScreen + playerInventoryMenu.width + 64 + 32 + 8, playerInventoryMenu.yPositionOnScreen + 64 + 16, 64, 104), Game1.mouseCursors, new Rectangle(564 + Game1.player.trashCanLevel * 18, 102, 18, 26), 4f, false)
             {
                 myID = 4 * ccMagnitude + 2,
                 leftNeighborID = 11,
@@ -132,7 +130,7 @@ namespace AllChestsMenu
                 leftNeighborID = 11,
                 rightNeighborID = 4 * ccMagnitude + 1
             };
-            storeAlikeButton =  new ClickableTextureComponent("", new Rectangle(playerInventoryMenu.xPositionOnScreen + playerInventoryMenu.width + 64 + 64, playerInventoryMenu.yPositionOnScreen, 64, 64), "", storeSimilarString, Game1.mouseCursors, new Rectangle(419, 456, 14, 14), 4f, false)
+            storeAlikeButton =  new ClickableTextureComponent("", new Rectangle(playerInventoryMenu.xPositionOnScreen + playerInventoryMenu.width + 64 + 64 + 16, playerInventoryMenu.yPositionOnScreen, 64, 64), "", Game1.content.LoadString("Strings\\UI:ItemGrab_FillStacks"), Game1.mouseCursors, new Rectangle(103, 469, 16, 16), 4f, false)
             {
                 myID = 4 * ccMagnitude + 1,
                 downNeighborID = 4 * ccMagnitude + 2,
@@ -181,7 +179,7 @@ namespace AllChestsMenu
                 string name = s[i];
                 sortNames[name] = ModEntry.SHelper.Translation.Get("sort-" + name);
                 int idx = 5 * ccMagnitude;
-                sortCCList.Add(new ClickableComponent(new Rectangle(organizeButton.bounds.X + 156 + i / 2 * 48, organizeButton.bounds.Y + 64 + row * 48, 32, 32), name, name)
+                sortCCList.Add(new ClickableComponent(new Rectangle(organizeButton.bounds.X + 156 + i / 2 * 48 + 32, organizeButton.bounds.Y + 64 + row * 48 + 16, 32, 32), name, name)
                 {
                     myID = idx + i,
                     leftNeighborID = i > 2 ? idx + i - 2: 4 * ccMagnitude + 1,
@@ -439,7 +437,7 @@ namespace AllChestsMenu
                 renameBox.Draw(b);
                 okButton.draw(b);
             }
-            SpriteText.drawStringHorizontallyCenteredAt(b, sortString, organizeButton.bounds.X + 156 + 32 * 2 + 24, organizeButton.bounds.Y);
+            SpriteText.drawStringHorizontallyCenteredAt(b, sortString, organizeButton.bounds.X + 156 + 32 * 2 + 24 + 32, organizeButton.bounds.Y + 16);
             foreach(var cc in sortCCList)
             {
                 b.DrawString(Game1.smallFont, cc.label, cc.bounds.Location.ToVector2() + new Vector2(-1, 1), currentSort.ToString() == cc.label ? Color.Green : Color.Black);
