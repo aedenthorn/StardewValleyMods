@@ -24,7 +24,7 @@ namespace AllChestsMenu
     public class StorageMenu : IClickableMenu
     {
         public static int scrolled;
-        public static int windowWidth = 64 * 25;
+        public static int windowWidth = 64 * 26;
         public static StorageMenu instance;
         
         public int xSpace = 64;
@@ -88,7 +88,7 @@ namespace AllChestsMenu
         public string fridgeString;
         private string sortString;
 
-        public StorageMenu() : base(Game1.uiViewport.Width / 2 - (windowWidth + borderWidth * 2) / 2, -borderWidth - 64, 64 * 26 + 4 + borderWidth * 2, Game1.uiViewport.Height + borderWidth * 2 + 64, false)
+		public StorageMenu() : base(Game1.uiViewport.Width / 2 - (windowWidth + borderWidth * 2) / 2, -borderWidth - 64, windowWidth + borderWidth * 2, Game1.uiViewport.Height + borderWidth * 2 + 64, false)
         {
             currentSort = ModEntry.Config.CurrentSort;
             instance = this;
@@ -141,7 +141,7 @@ namespace AllChestsMenu
             locationText = new TextBox(Game1.content.Load<Texture2D>("LooseSprites\\textBox"), null, Game1.smallFont, Game1.textColor)
             {
                 X = xPositionOnScreen + borderWidth,
-                Width = (width - playerInventoryMenu.width) / 2 - borderWidth * 2 - 64,
+                Width = (width - playerInventoryMenu.width) / 2 - borderWidth * 2 - 32,
                 Y = cutoff + borderWidth + 32,
                 Text = whichLocation
             };
