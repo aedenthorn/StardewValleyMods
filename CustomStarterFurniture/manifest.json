@@ -1,0 +1,22 @@
+﻿{
+  "Name": "Custom Starter Furniture",
+  "Author": "aedenthorn",
+  "Version": "0.1.0",
+  "Description": "Custom Starter Furniture.",
+  "UniqueID": "aedenthorn.CustomStarterFurniture",
+  "EntryDll": "CustomStarterFurniture.dll",
+  "MinimumApiVersion": "3.15.0",
+  "ModUpdater": {
+    "Repository": "StardewValleyMods",
+    "User": "aedenthorn",
+    "Directory": "_releases",
+    "ModFolder": "CustomStarterFurniture"
+  },
+  "Dependencies": [
+    {
+      "UniqueID": "Platonymous.ModUpdater",
+      "IsRequired": false
+    }
+  ],
+  "UpdateKeys": [ "Nexus:16729" ]
+}
