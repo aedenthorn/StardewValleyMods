@@ -169,5 +169,25 @@ namespace AdvancedMenuPositioning
                 adjustedComponents.Add(c);
             }
         }
+
+        private static bool isKeybindPressed(SButton[] buttons)
+        {
+            if (!buttons.All(button => SHelper.Input.IsDown(button) || SHelper.Input.IsSuppressed(button)))
+                return false;
+            if (!Config.StrictKeybindings)
+                return true;
+
+            KeyboardState keyboardState = Game1.input.GetKeyboardState();
+            MouseState mouseState = Game1.input.GetMouseState();
+            GamePadState gamePadState = Game1.input.GetGamePadState();
+            int numberOfButtonsPressed = 0;
+
+            foreach (SButton button in Enum.GetValues(typeof(SButton)))
+            {
+                if (SHelper.Input.IsDown(button) || SHelper.Input.IsSuppressed(button))
+                    numberOfButtonsPressed++;
+            }
+            return numberOfButtonsPressed == buttons.Length;
+        }
     }
 }
