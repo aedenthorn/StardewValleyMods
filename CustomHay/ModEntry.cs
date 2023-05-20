@@ -13,20 +13,20 @@ using System.IO;
 using System.Linq;
 using Object = StardewValley.Object;
 
-namespace CustomStarterFurniture
+namespace CustomHay
 {
     /// <summary>The mod entry point.</summary>
     public partial class ModEntry : Mod
     {
-        
+
         public static IMonitor SMonitor;
         public static IModHelper SHelper;
         public static ModConfig Config;
 
         public static ModEntry context;
 
-        public static string dictPath = "aedenthorn.CustomStarterFurniture/dictionary";
-        public static Dictionary<string, StarterFurnitureData> dataDict = new();
+        //public static string dictPath = "aedenthorn.CustomHay/dictionary";
+        //public static Dictionary<string, CustomHayData> dataDict = new();
         
         /// <summary>The mod entry point, called after the mod is first loaded.</summary>
         /// <param name="helper">Provides simplified APIs for writing mods.</param>
@@ -43,13 +43,13 @@ namespace CustomStarterFurniture
             SHelper = helper;
 
             helper.Events.GameLoop.GameLaunched += GameLoop_GameLaunched;
-            helper.Events.Content.AssetRequested += Content_AssetRequested;
+            //helper.Events.Content.AssetRequested += Content_AssetRequested;
 
             var harmony = new Harmony(ModManifest.UniqueID);
             harmony.PatchAll();
 
         }
-
+        /*
         private void Content_AssetRequested(object sender, StardewModdingAPI.Events.AssetRequestedEventArgs e)
         {
             if (e.NameWithoutLocale.IsEquivalentTo(dictPath))
@@ -62,7 +62,7 @@ namespace CustomStarterFurniture
         {
             dataDict = Game1.content.Load<Dictionary<string, StarterFurnitureData>>(dictPath);
         }
-
+        */
         private void GameLoop_GameLaunched(object sender, StardewModdingAPI.Events.GameLaunchedEventArgs e)
         {
             //MakeHatData();
@@ -84,6 +84,19 @@ namespace CustomStarterFurniture
                 name: () => "Mod Enabled",
                 getValue: () => Config.ModEnabled,
                 setValue: value => Config.ModEnabled = value
+            );
+
+            configMenu.AddTextOption(
+                mod: ModManifest,
+                name: () => "Ordinary Chance",
+                getValue: () => (Config.OrdinaryHayChance * 100) + "",
+                setValue: delegate(string value) { if (int.TryParse(value, out int i)) { Config.OrdinaryHayChance = i / 100f; } }
+            );
+            configMenu.AddTextOption(
+                mod: ModManifest,
+                name: () => "Gold Chance",
+                getValue: () => (Config.GoldHayChance * 100) + "",
+                setValue: delegate(string value) { if (int.TryParse(value, out int i)) { Config.GoldHayChance = i / 100f; } }
             );
         }
     }
