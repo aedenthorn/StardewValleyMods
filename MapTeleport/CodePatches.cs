@@ -2,6 +2,7 @@
 using StardewModdingAPI;
 using StardewValley;
 using StardewValley.Menus;
+using System.IO;
 
 namespace MapTeleport
 {
@@ -15,24 +16,31 @@ namespace MapTeleport
             {
                 if (!Config.EnableMod)
                     return true;
+                var coordinates = SHelper.GameContent.Load<CoordinatesList>(dictPath);
+                bool added = false;
+                bool found = false;
                 foreach (ClickableComponent c in __instance.points)
                 {
-                    if (c.containsPoint(x, y))
+                    Coordinates co = coordinates.coordinates.Find(o => o.id == c.myID);
+                    if (co == null)
                     {
-                        var coordinates = SHelper.GameContent.Load<CoordinatesList>(dictPath);
-                        Coordinates co = coordinates.coordinates.Find(o => o.id == c.myID);
-                        if (co == null)
-                        {
-                            SMonitor.Log($"Teleport location {c.myID} {c.name} not found!", LogLevel.Warn);
-                            break;
-                        }
+                        coordinates.coordinates.Add(new Coordinates() { name = c.name, id = c.myID, enabled = false });
+                        added = true;
+                        continue;
+                    }
+                    if (c.containsPoint(x, y) && co.enabled)
+                    {
                         SMonitor.Log($"Teleporting to {c.name} ({c.myID}), {co.mapName}, {co.x},{co.y}", LogLevel.Debug);
                         Game1.activeClickableMenu?.exitThisMenu(true);
                         Game1.warpFarmer(co.mapName, co.x, co.y, false);
-                        return false;
+                        found = true;
                     }
                 }
-                return true;
+                if (added)
+                {
+                    SHelper.Data.WriteJsonFile("coordinates.json", coordinates);
+                }
+                return !found;
             }
         }
    }

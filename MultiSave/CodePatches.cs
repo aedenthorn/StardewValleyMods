@@ -68,10 +68,18 @@ namespace MultiSave
                 if (!Config.EnableMod)
                     return;
 
+                if(___menu is CoopMenu || ___menu is FarmhandMenu)
+                {
+                    saveBackupList.Clear();
+                    currentSaveBackupList.Clear();
+                    currentSaveSlot = null;
+                    return;
+                }
+
                 if (currentSaveSlot is null)
                 {
                     var currentItemIndex = (int)AccessTools.Field(typeof(LoadGameMenu), "currentItemIndex").GetValue(___menu);
-                    if (saveBackupList.Count > currentItemIndex + i && saveBackupList[currentItemIndex + i].Length > 0)
+                    if (saveBackupList.Count > currentItemIndex + i && saveBackupList[currentItemIndex + i].Length > 0 && ___menu.deleteButtons.Count > i + 4)
                         ___menu.deleteButtons[i + 4].draw(b, Color.White * 0.75f, 1f, 0);
                 }
                 else if(__instance.Farmer?.modData.TryGetValue(backupFolderKey, out string backupFolder) == true)
