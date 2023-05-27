@@ -15,7 +15,7 @@ So, an example CP shell would look like:
         "Changes": [
             {
                 "Action": "EditData",
-                "Target": "aedenthorn.AdvancedDialogueDisplay/dictionary",
+                "Target": "aedenthorn.DialogueDisplayFramework/dictionary",
                 "Entries": {
                     "Emily": {
                         (your data goes here)
