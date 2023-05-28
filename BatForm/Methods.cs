@@ -31,5 +31,16 @@ namespace BatForm
             if(!string.IsNullOrEmpty(Config.TransformSound))
                 Game1.player.currentLocation.playSound(Config.TransformSound);
         }
+        private void ResetBat()
+        {
+            batFormActive.Value = false;
+            batFormSwitching.Value = false;
+            height.Value = 0;
+            if(Game1.player is not null)
+            {
+                Game1.player.ignoreCollisions = false;
+            }
+        }
+
     }
 }

@@ -69,5 +69,15 @@ namespace BatForm
                 return false;
             }
         }
+        [HarmonyPatch(typeof(Farmer), nameof(Farmer.takeDamage))]
+        public class Farmer_takeDamage_Patch
+        {
+            public static bool Prefix(Farmer __instance)
+            {
+                if (!Config.ModEnabled || (!batFormActive.Value  && !batFormSwitching.Value) || __instance != Game1.player)
+                    return true;
+                return false;
+            }
+        }
     }
 }

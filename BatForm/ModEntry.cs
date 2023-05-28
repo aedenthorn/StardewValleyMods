@@ -52,14 +52,38 @@ namespace BatForm
             SHelper = helper;
 
             helper.Events.GameLoop.GameLaunched += GameLoop_GameLaunched;
-            helper.Events.Input.ButtonsChanged += Input_ButtonsChanged;
             helper.Events.GameLoop.UpdateTicked += GameLoop_UpdateTicked;
             helper.Events.GameLoop.OneSecondUpdateTicked += GameLoop_OneSecondUpdateTicked;
+            helper.Events.GameLoop.DayStarted += GameLoop_DayStarted;
+            helper.Events.GameLoop.ReturnedToTitle += GameLoop_ReturnedToTitle;
+
+            helper.Events.Player.Warped += Player_Warped;
+            
+            helper.Events.Input.ButtonsChanged += Input_ButtonsChanged;
+            
             helper.Events.Display.RenderedWorld += Display_RenderedWorld;
 
             var harmony = new Harmony(ModManifest.UniqueID);
             harmony.PatchAll();
 
+        }
+
+        private void Player_Warped(object sender, StardewModdingAPI.Events.WarpedEventArgs e)
+        {
+            if (e.Player == Game1.player && batFormActive.Value && !batFormSwitching.Value && Config.OutdoorsOnly && !e.NewLocation.IsOutdoors)
+            {
+                TransformBat();
+            }
+        }
+
+        private void GameLoop_ReturnedToTitle(object sender, StardewModdingAPI.Events.ReturnedToTitleEventArgs e)
+        {
+            ResetBat();
+        }
+
+        private void GameLoop_DayStarted(object sender, StardewModdingAPI.Events.DayStartedEventArgs e)
+        {
+            ResetBat();
         }
 
         private void GameLoop_OneSecondUpdateTicked(object sender, StardewModdingAPI.Events.OneSecondUpdateTickedEventArgs e)
@@ -93,42 +117,43 @@ namespace BatForm
 
         private void GameLoop_UpdateTicked(object sender, StardewModdingAPI.Events.UpdateTickedEventArgs e)
         {
-            if(!Config.ModEnabled || !Context.IsWorldReady || Game1.killScreen || Game1.player is null || Game1.player.health <= 0 || Game1.timeOfDay >= 2600 || Game1.eventUp)
+            if(!Config.ModEnabled || !Context.IsWorldReady || Game1.killScreen || Game1.eventUp || Game1.player is null || Game1.player.health <= 0 || Game1.timeOfDay >= 2600 || Game1.eventUp)
             {
-                batFormActive.Value = false;
-                batFormSwitching.Value = false;
-                height.Value = 0;
+                ResetBat();
                 return;
             }
-            if (!Context.CanPlayerMove || !batFormSwitching.Value)
-                return;
-            if(batFormActive.Value)
+            if(batFormActive.Value || batFormSwitching.Value)
+                Game1.player.temporarilyInvincible = true;
+            if (batFormSwitching.Value)
             {
-                height.Value = Math.Max(0, height.Value - 1);
-                if(height.Value == 0)
+                if (batFormActive.Value)
                 {
-                    PlayTransform();
-                    Game1.player.ignoreCollisions = false;
-                    batFormSwitching.Value = false;
-                    batFormActive.Value = false;
+                    height.Value = Math.Max(0, height.Value - 1);
+                    if (height.Value == 0)
+                    {
+                        PlayTransform();
+                        Game1.player.ignoreCollisions = false;
+                        batFormSwitching.Value = false;
+                        batFormActive.Value = false;
+                    }
                 }
+                else
+                {
+                    Game1.player.ignoreCollisions = true;
+                    if (height.Value == 0)
+                    {
+                        PlayTransform();
+                    }
+                    height.Value = Math.Min(maxHeight, height.Value + 1);
+                    if (height.Value == maxHeight)
+                    {
+                        batFormSwitching.Value = false;
+                        batFormActive.Value = true;
+                    }
+                }
+                Game1.forceSnapOnNextViewportUpdate = true;
+                Game1.game1.refreshWindowSettings();
             }
-            else
-            {
-                Game1.player.ignoreCollisions = true;
-                if(height.Value == 0)
-                {
-                    PlayTransform();
-                }
-                height.Value = Math.Min(maxHeight, height.Value + 1);
-                if(height.Value == maxHeight)
-                {
-                    batFormSwitching.Value = false;
-                    batFormActive.Value = true;
-                }
-            }
-            Game1.forceSnapOnNextViewportUpdate = true;
-            Game1.game1.refreshWindowSettings();
         }
 
         private void Input_ButtonsChanged(object sender, StardewModdingAPI.Events.ButtonsChangedEventArgs e)
