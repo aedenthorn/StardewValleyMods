@@ -517,6 +517,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CustomHay", "CustomHay\Cust
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BatForm", "BatForm\BatForm.csproj", "{C93848A5-DC5C-4662-84DE-36C46352C8D4}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AnimalDialogueFramework", "AnimalDialogueFramework\AnimalDialogueFramework.csproj", "{4379EC0B-A0BC-494C-BB6B-2DFF729E7494}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -3551,6 +3553,18 @@ Global
 		{C93848A5-DC5C-4662-84DE-36C46352C8D4}.Release|x64.Build.0 = Release|x64
 		{C93848A5-DC5C-4662-84DE-36C46352C8D4}.Release|x86.ActiveCfg = Release|Any CPU
 		{C93848A5-DC5C-4662-84DE-36C46352C8D4}.Release|x86.Build.0 = Release|Any CPU
+		{4379EC0B-A0BC-494C-BB6B-2DFF729E7494}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4379EC0B-A0BC-494C-BB6B-2DFF729E7494}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4379EC0B-A0BC-494C-BB6B-2DFF729E7494}.Debug|x64.ActiveCfg = Debug|x64
+		{4379EC0B-A0BC-494C-BB6B-2DFF729E7494}.Debug|x64.Build.0 = Debug|x64
+		{4379EC0B-A0BC-494C-BB6B-2DFF729E7494}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{4379EC0B-A0BC-494C-BB6B-2DFF729E7494}.Debug|x86.Build.0 = Debug|Any CPU
+		{4379EC0B-A0BC-494C-BB6B-2DFF729E7494}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4379EC0B-A0BC-494C-BB6B-2DFF729E7494}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4379EC0B-A0BC-494C-BB6B-2DFF729E7494}.Release|x64.ActiveCfg = Release|x64
+		{4379EC0B-A0BC-494C-BB6B-2DFF729E7494}.Release|x64.Build.0 = Release|x64
+		{4379EC0B-A0BC-494C-BB6B-2DFF729E7494}.Release|x86.ActiveCfg = Release|Any CPU
+		{4379EC0B-A0BC-494C-BB6B-2DFF729E7494}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -1,0 +1,22 @@
+﻿{
+  "Name": "Animal Dialogue Framework",
+  "Author": "aedenthorn",
+  "Version": "0.1.0",
+  "Description": "Animal Dialogue Framework.",
+  "UniqueID": "aedenthorn.AnimalDialogueFramework",
+  "EntryDll": "AnimalDialogueFramework.dll",
+  "MinimumApiVersion": "3.15.0",
+  "ModUpdater": {
+    "Repository": "StardewValleyMods",
+    "User": "aedenthorn",
+    "Directory": "_releases",
+    "ModFolder": "AnimalDialogueFramework"
+  },
+  "Dependencies": [
+    {
+      "UniqueID": "Platonymous.ModUpdater",
+      "IsRequired": false
+    }
+  ],
+  "UpdateKeys": [ "Nexus:16881" ]
+}
