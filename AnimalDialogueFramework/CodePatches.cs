@@ -95,6 +95,26 @@ namespace AnimalDialogueFramework
             }
 
         }
+        [HarmonyPatch(typeof(GameLocation), nameof(GameLocation.checkAction))]
+        public class GameLocation_checkAction_Patch
+        {
+            public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions)
+            {
+                SMonitor.Log($"Transpiling GameLocation.checkAction");
+                var codes = new List<CodeInstruction>(instructions);
+                for (int i = 0; i < codes.Count; i++)
+                {
+                    if (codes[i].opcode == OpCodes.Callvirt && codes[i].operand is MethodInfo && (MethodInfo)codes[i].operand == AccessTools.PropertyGetter(typeof(Character), nameof(Character.IsMonster)))
+                    {
+                        SMonitor.Log($"adding check for monsters allowed");
+                        codes.Insert(i + 1, new CodeInstruction(OpCodes.Call, AccessTools.Method(typeof(ModEntry), nameof(CheckMonster))));
+                    }
+                }
+
+                return codes.AsEnumerable();
+            }
+
+        }
         [HarmonyPatch(typeof(NPC), nameof(NPC.Dialogue))]
         [HarmonyPatch(MethodType.Getter)]
         public class NPC_Dialogue_Patch

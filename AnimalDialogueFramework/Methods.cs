@@ -17,5 +17,11 @@ namespace AnimalDialogueFramework
                 return inst;
             return false;
         }
+        private static bool CheckMonster(bool inst)
+        {
+            if (!Config.ModEnabled || !Config.MonsterEnabled)
+                return inst;
+            return false;
+        }
     }
 }
