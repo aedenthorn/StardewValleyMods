@@ -1,18 +1,8 @@
 ﻿using HarmonyLib;
-using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using Newtonsoft.Json;
 using StardewModdingAPI;
-using StardewModdingAPI.Utilities;
 using StardewValley;
-using StardewValley.Objects;
-using StardewValley.TerrainFeatures;
-using StardewValley.Tools;
-using System;
 using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using Object = StardewValley.Object;
 
 namespace RainbowTrail
 {
@@ -26,9 +16,9 @@ namespace RainbowTrail
 
         public static ModEntry context;
         
-        public static Texture2D rainbowSprite;
-
         public static string rainbowTrailKey = "aedenthorn.RainbowTrail";
+
+        public static Texture2D rainbowTexture;
 
         public static Dictionary<long, Queue<PositionInfo>> trailDict = new();
 
@@ -56,12 +46,22 @@ namespace RainbowTrail
             helper.Events.GameLoop.ReturnedToTitle += GameLoop_ReturnedToTitle;
 
             helper.Events.Player.Warped += Player_Warped;
-            
+
+            helper.Events.Content.AssetRequested += Content_AssetRequested;
+
             helper.Events.Input.ButtonsChanged += Input_ButtonsChanged;
             
             var harmony = new Harmony(ModManifest.UniqueID);
             harmony.PatchAll();
 
+        }
+
+        private void Content_AssetRequested(object sender, StardewModdingAPI.Events.AssetRequestedEventArgs e)
+        {
+            if (e.NameWithoutLocale.IsEquivalentTo(rainbowTrailKey))
+            {
+                e.LoadFromModFile<Texture2D>("assets/rainbow.png", StardewModdingAPI.Events.AssetLoadPriority.Low);
+            }
         }
 
         private void GameLoop_DayEnding(object sender, StardewModdingAPI.Events.DayEndingEventArgs e)
@@ -112,8 +112,8 @@ namespace RainbowTrail
             }
             else
             {
-                if(!string.IsNullOrEmpty(Config.ToggleSound))
-                    Game1.currentLocation.playSound(Config.ToggleSound);
+                if(!string.IsNullOrEmpty(Config.EnableSound))
+                    Game1.currentLocation.playSound(Config.EnableSound);
                 Game1.player.modData[rainbowTrailKey] = "true";
             }
         }
@@ -121,7 +121,6 @@ namespace RainbowTrail
         private void GameLoop_GameLaunched(object sender, StardewModdingAPI.Events.GameLaunchedEventArgs e)
         {
 
-            rainbowSprite = SHelper.ModContent.Load<Texture2D>("assets/rainbow.png");
 
             // get Generic Mod Config Menu's API (if it's installed)
             var configMenu = Helper.ModRegistry.GetApi<IGenericModConfigMenuApi>("spacechase0.GenericModConfigMenu");
@@ -173,9 +172,9 @@ namespace RainbowTrail
 
             configMenu.AddTextOption(
                 mod: ModManifest,
-                name: () => "Toggle Sound",
-                getValue: () => Config.ToggleSound,
-                setValue: value => Config.ToggleSound = value
+                name: () => "Enable Sound",
+                getValue: () => Config.EnableSound,
+                setValue: value => Config.EnableSound = value
             );
         }
     }

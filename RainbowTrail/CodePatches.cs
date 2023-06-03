@@ -2,17 +2,9 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using StardewValley;
-using StardewValley.Buildings;
-using StardewValley.Locations;
-using StardewValley.Objects;
-using StardewValley.TerrainFeatures;
-using StardewValley.Tools;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reflection;
-using System.Reflection.Emit;
-using Object = StardewValley.Object;
 
 namespace RainbowTrail
 {
@@ -36,7 +28,7 @@ namespace RainbowTrail
 
                 if (active)
                 {
-                    if (Game1.player == __instance)
+                    if (Game1.player == __instance && Config.MoveSpeed != 0)
                     {
                         Buff? buff = Game1.buffsDisplay.otherBuffs.FirstOrDefault(p => p.which == buffId);
                         if (buff == null)
@@ -57,7 +49,10 @@ namespace RainbowTrail
                 }
                 if (set.Count < max + 1)
                     set.Enqueue(new PositionInfo(pos, d));
-
+                if(rainbowTexture is null)
+                {
+                    rainbowTexture = SHelper.GameContent.Load<Texture2D>(rainbowTrailKey);
+                }
                 for (int i = 0; i < set.Count; i++)
                 {
                     Vector2 p = set.ElementAt(i).position;
@@ -104,7 +99,7 @@ namespace RainbowTrail
                             offsetX += 96;
                             offsetY -= 118;
                         }
-                        b.Draw(rainbowSprite, new Rectangle(Utility.Vector2ToPoint(Game1.GlobalToLocal(p) - new Vector2(32f + offsetX - (ed == 2 ? 128 : 0), 88 + offsetY)), destSize), sourceRect, Color.White * (0.5f - (max - i) / max / 2),  rot, Vector2.Zero, SpriteEffects.None, p.Y / 10000f - 0.005f + (d == 0 ? 0.0067f : 0) - (max + 1 - i) / 10000f);
+                        b.Draw(rainbowTexture, new Rectangle(Utility.Vector2ToPoint(Game1.GlobalToLocal(p) - new Vector2(32f + offsetX - (ed == 2 ? 128 : 0), 88 + offsetY)), destSize), sourceRect, Color.White * (0.5f - (max - i) / max / 2),  rot, Vector2.Zero, SpriteEffects.None, p.Y / 10000f - 0.005f + (d == 0 ? 0.0067f : 0) - (max + 1 - i) / 10000f);
                     }
                 }
                 if((!active && set.Count > 0) || set.Count > max)

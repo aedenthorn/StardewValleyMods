@@ -1,16 +1,5 @@
-﻿using HarmonyLib;
-using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
-using Newtonsoft.Json;
-using StardewModdingAPI;
+﻿using Microsoft.Xna.Framework.Graphics;
 using StardewValley;
-using StardewValley.Objects;
-using StardewValley.Tools;
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using Object = StardewValley.Object;
 
 namespace RainbowTrail
 {
@@ -19,6 +8,7 @@ namespace RainbowTrail
         private void ResetTrail()
         {
             trailDict.Remove(Game1.player.UniqueMultiplayerID);
+            rainbowTexture = SHelper.GameContent.Load<Texture2D>(rainbowTrailKey);
         }
 
         private static bool RainbowTrailStatus(Farmer player)
