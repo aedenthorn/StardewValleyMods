@@ -25,7 +25,7 @@ namespace BatForm
         {
             public static bool Prefix(Farmer __instance, SpriteBatch b)
             {
-                if (!Config.ModEnabled || __instance != Game1.player || (!batFormSwitching.Value && !batFormActive.Value))
+                if (!Config.ModEnabled || __instance != Game1.player || BatFormStatus(Game1.player) == BatForm.Inactive)
                     return true;
                 Buff? buff = Game1.buffsDisplay.otherBuffs.FirstOrDefault(p => p.which == buffId);
                 if (buff == null)
@@ -44,7 +44,7 @@ namespace BatForm
         {
             public static void Postfix(Options __instance, ref float __result)
             {
-                if (!Config.ModEnabled || (!batFormSwitching.Value && !batFormActive.Value))
+                if (!Config.ModEnabled || BatFormStatus(Game1.player) == BatForm.Inactive)
                     return;
                 __result -= height.Value / 100f;
             }
@@ -54,7 +54,7 @@ namespace BatForm
         {
             public static bool Prefix(FarmerSprite __instance, Farmer ___owner)
             {
-                if (!Config.ModEnabled || !batFormActive.Value || ___owner != Game1.player)
+                if (!Config.ModEnabled || BatFormStatus(Game1.player) == BatForm.Inactive || ___owner != Game1.player)
                     return true;
                 return false;
             }
@@ -64,7 +64,7 @@ namespace BatForm
         {
             public static bool Prefix(Character who)
             {
-                if (!Config.ModEnabled || !batFormActive.Value || who != Game1.player)
+                if (!Config.ModEnabled || BatFormStatus(Game1.player) == BatForm.Inactive || who != Game1.player)
                     return true;
                 return false;
             }
@@ -74,7 +74,7 @@ namespace BatForm
         {
             public static bool Prefix(Farmer __instance)
             {
-                if (!Config.ModEnabled || (!batFormActive.Value  && !batFormSwitching.Value) || __instance != Game1.player)
+                if (!Config.ModEnabled || BatFormStatus(Game1.player) == BatForm.Inactive || __instance != Game1.player)
                     return true;
                 return false;
             }

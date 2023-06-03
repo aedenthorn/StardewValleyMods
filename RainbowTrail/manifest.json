@@ -1,16 +1,16 @@
 ﻿{
-  "Name": "Bat Form",
+  "Name": "Rainbow Trail",
   "Author": "aedenthorn",
-  "Version": "0.3.1",
-  "Description": "Bat Form.",
-  "UniqueID": "aedenthorn.BatForm",
-  "EntryDll": "BatForm.dll",
+  "Version": "0.1.0",
+  "Description": "Rainbow Trail.",
+  "UniqueID": "aedenthorn.RainbowTrail",
+  "EntryDll": "RainbowTrail.dll",
   "MinimumApiVersion": "3.15.0",
   "ModUpdater": {
     "Repository": "StardewValleyMods",
     "User": "aedenthorn",
     "Directory": "_releases",
-    "ModFolder": "BatForm"
+    "ModFolder": "RainbowTrail"
   },
   "Dependencies": [
     {
@@ -18,5 +18,5 @@
       "IsRequired": false
     }
   ],
-  "UpdateKeys": [ "Nexus:16825" ]
+  "UpdateKeys": [ "Nexus:" ]
 }

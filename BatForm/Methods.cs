@@ -18,7 +18,12 @@ namespace BatForm
     {
         public static void TransformBat()
         {
-            batFormSwitching.Value = !batFormSwitching.Value;
+            var status = BatFormStatus(Game1.player);
+            if (status == BatForm.Inactive || status == BatForm.SwitchingFrom)
+                status = BatForm.SwitchingTo;
+            else
+                status = BatForm.SwitchingFrom;
+            Game1.player.modData[batFormKey] = status + "";
         }
         public static void PlayTransform()
         {
@@ -33,8 +38,7 @@ namespace BatForm
         }
         private void ResetBat()
         {
-            batFormActive.Value = false;
-            batFormSwitching.Value = false;
+            Game1.player.modData.Remove(batFormKey);
             height.Value = 0;
             if(Game1.player is not null)
             {
@@ -42,5 +46,12 @@ namespace BatForm
             }
         }
 
+        private static BatForm BatFormStatus(Farmer player)
+        {
+            if (!Config.ModEnabled || !player.modData.TryGetValue(batFormKey, out string str))
+                return BatForm.Inactive;
+            return Enum.Parse<BatForm>(str);
+
+        }
     }
 }

@@ -27,16 +27,24 @@ namespace BatForm
         public static ModEntry context;
 
         public static int maxHeight = 50;
+        
+        public static string batFormKey = "aedenthorn.BatForm";
 
-        public static PerScreen<bool> batFormActive = new();
-        public static PerScreen<bool> batFormSwitching = new();
         public static PerScreen<ICue> batSound = new();
         public static PerScreen<int> height = new();
         public static PerScreen<AnimatedSprite> batSprite = new();
 
+        public enum BatForm
+        {
+            Inactive,
+            SwitchingTo,
+            SwitchingFrom,
+            Active
+        }
+
         //public static string dictPath = "aedenthorn.BatForm/dictionary";
         //public static Dictionary<string, BatFormData> dataDict = new();
-        
+
         /// <summary>The mod entry point, called after the mod is first loaded.</summary>
         /// <param name="helper">Provides simplified APIs for writing mods.</param>
         public override void Entry(IModHelper helper)
@@ -55,6 +63,7 @@ namespace BatForm
             helper.Events.GameLoop.UpdateTicked += GameLoop_UpdateTicked;
             helper.Events.GameLoop.OneSecondUpdateTicked += GameLoop_OneSecondUpdateTicked;
             helper.Events.GameLoop.DayStarted += GameLoop_DayStarted;
+            helper.Events.GameLoop.DayEnding += GameLoop_DayEnding;
             helper.Events.GameLoop.ReturnedToTitle += GameLoop_ReturnedToTitle;
 
             helper.Events.Player.Warped += Player_Warped;
@@ -68,11 +77,22 @@ namespace BatForm
 
         }
 
+        private void GameLoop_DayEnding(object sender, StardewModdingAPI.Events.DayEndingEventArgs e)
+        {
+            ResetBat();
+        }
+
         private void Player_Warped(object sender, StardewModdingAPI.Events.WarpedEventArgs e)
         {
-            if (e.Player == Game1.player && batFormActive.Value && !batFormSwitching.Value && Config.OutdoorsOnly && !e.NewLocation.IsOutdoors)
+            if (!Config.ModEnabled || e.Player != Game1.player || BatFormStatus(e.Player) == BatForm.Inactive)
+                return;
+            if(Config.OutdoorsOnly && !e.NewLocation.IsOutdoors)
             {
-                TransformBat();
+                ResetBat();
+            }
+            if(Game1.CurrentEvent != null)
+            {
+                ResetBat();
             }
         }
 
@@ -88,7 +108,7 @@ namespace BatForm
 
         private void GameLoop_OneSecondUpdateTicked(object sender, StardewModdingAPI.Events.OneSecondUpdateTickedEventArgs e)
         {
-            if(!Config.ModEnabled || batFormSwitching.Value || !batFormActive.Value || Config.StaminaUse <= 0) 
+            if(!Config.ModEnabled || BatFormStatus(Game1.player) != BatForm.Active || Config.StaminaUse <= 0) 
                 return;
             if(Game1.player.Stamina <= Config.StaminaUse)
             {
@@ -100,7 +120,7 @@ namespace BatForm
 
         private void Display_RenderedWorld(object sender, StardewModdingAPI.Events.RenderedWorldEventArgs e)
         {
-            if (!Config.ModEnabled || (!batFormActive.Value && !batFormSwitching.Value))
+            if (!Config.ModEnabled || BatFormStatus(Game1.player) == BatForm.Inactive)
                 return;
             if (batSprite.Value is null)
             {
@@ -117,24 +137,26 @@ namespace BatForm
 
         private void GameLoop_UpdateTicked(object sender, StardewModdingAPI.Events.UpdateTickedEventArgs e)
         {
-            if(!Config.ModEnabled || !Context.IsWorldReady || Game1.killScreen || Game1.eventUp || Game1.player is null || Game1.player.health <= 0 || Game1.timeOfDay >= 2600 || Game1.eventUp)
+            if(!Config.ModEnabled || !Context.IsWorldReady || Game1.killScreen || Game1.player is null || Game1.player.health <= 0 || Game1.timeOfDay >= 2600 || Game1.eventUp || Game1.CurrentEvent != null)
             {
                 ResetBat();
                 return;
             }
-            if(batFormActive.Value || batFormSwitching.Value)
+            var status = BatFormStatus(Game1.player);
+            if (status != BatForm.Inactive)
                 Game1.player.temporarilyInvincible = true;
-            if (batFormSwitching.Value)
+            else
+                return;
+            if (status != BatForm.Active)
             {
-                if (batFormActive.Value)
+                if (status == BatForm.SwitchingFrom)
                 {
                     height.Value = Math.Max(0, height.Value - 1);
                     if (height.Value == 0)
                     {
                         PlayTransform();
                         Game1.player.ignoreCollisions = false;
-                        batFormSwitching.Value = false;
-                        batFormActive.Value = false;
+                        Game1.player.modData[batFormKey] = BatForm.Inactive + "";
                     }
                 }
                 else
@@ -147,8 +169,7 @@ namespace BatForm
                     height.Value = Math.Min(maxHeight, height.Value + 1);
                     if (height.Value == maxHeight)
                     {
-                        batFormSwitching.Value = false;
-                        batFormActive.Value = true;
+                        Game1.player.modData[batFormKey] = BatForm.Active + "";
                     }
                 }
                 Game1.forceSnapOnNextViewportUpdate = true;
@@ -158,7 +179,7 @@ namespace BatForm
 
         private void Input_ButtonsChanged(object sender, StardewModdingAPI.Events.ButtonsChangedEventArgs e)
         {
-            if(!Config.ModEnabled || !Context.CanPlayerMove || !Config.TransformKey.JustPressed() || batFormSwitching.Value || (Config.NightOnly && Game1.timeOfDay < 1800) || (Config.OutdoorsOnly && !Game1.player.currentLocation.IsOutdoors)) 
+            if(!Config.ModEnabled || !Context.CanPlayerMove || !Config.TransformKey.JustPressed() || BatFormStatus(Game1.player) == BatForm.SwitchingFrom || BatFormStatus(Game1.player) == BatForm.SwitchingTo || (Config.NightOnly && Game1.timeOfDay < 1800) || (Config.OutdoorsOnly && !Game1.player.currentLocation.IsOutdoors)) 
                 return;
             TransformBat();
         }

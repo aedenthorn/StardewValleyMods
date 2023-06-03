@@ -415,6 +415,8 @@ namespace CustomSpousePatioRedux
             GameLocation l = Game1.getLocationFromName(area.location);
             if (l == null)
                 l = Game1.getFarm();
+            if (l == null)
+                return;
             CacheOffBasePatioArea(spouse, l, area.corner);
         }
         private static void CacheOffBasePatioArea(string spouse, GameLocation l, Vector2 corner)
