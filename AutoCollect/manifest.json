@@ -1,16 +1,16 @@
 ﻿{
-  "Name": "All Chests Menu",
+  "Name": "Auto Collect",
   "Author": "aedenthorn",
-  "Version": "0.2.3",
-  "Description": "All Chests Menu.",
-  "UniqueID": "aedenthorn.AllChestsMenu",
-  "EntryDll": "AllChestsMenu.dll",
+  "Version": "0.1.0",
+  "Description": "Auto Collect.",
+  "UniqueID": "aedenthorn.AutoCollect",
+  "EntryDll": "AutoCollect.dll",
   "MinimumApiVersion": "3.15.0",
   "ModUpdater": {
     "Repository": "StardewValleyMods",
     "User": "aedenthorn",
     "Directory": "_releases",
-    "ModFolder": "AllChestsMenu"
+    "ModFolder": "AutoCollect"
   },
   "Dependencies": [
     {
@@ -18,5 +18,5 @@
       "IsRequired": false
     }
   ],
-  "UpdateKeys": [ "Nexus:14494" ]
+  "UpdateKeys": [ "Nexus:" ]
 }

@@ -81,7 +81,7 @@ namespace WateringCanTweaks
                 name: () => "Water Adjacent",
                 tooltip: () => "When charging, fill adjacent tiles instead of creating rectangle area",
                 getValue: () => Config.FillAdjacent,
-                setValue: value => Config.EnableMod = value
+                setValue: value => Config.FillAdjacent = value
             );
 
             configMenu.AddTextOption(

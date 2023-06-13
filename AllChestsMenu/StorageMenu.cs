@@ -89,11 +89,11 @@ namespace AllChestsMenu
         public string storeSimilarString;
         private string sortString;
 
-        public StorageMenu() : base(Game1.uiViewport.Width / 2 - (windowWidth + borderWidth * 2) / 2, -borderWidth - 64, 64 * 26 + 4 + borderWidth * 2, Game1.viewport.Height + borderWidth * 2 + 64, false)
+        public StorageMenu() : base(Game1.uiViewport.Width / 2 - (windowWidth + borderWidth * 2) / 2, -borderWidth - 64, 64 * 26 + 4 + borderWidth * 2, Game1.uiViewport.Height + borderWidth * 2 + 64, false)
         {
             currentSort = ModEntry.Config.CurrentSort;
             instance = this;
-            cutoff = Game1.viewport.Height - 64 * 3 - 8 - borderWidth;
+            cutoff = Game1.uiViewport.Height - 64 * 3 - 8 - borderWidth;
 
             widgetText = new string[]{
                 ModEntry.SHelper.Translation.Get("open"), 
@@ -115,7 +115,7 @@ namespace AllChestsMenu
             var rows = Math.Min(3, (int)Math.Ceiling(Game1.player.Items.Count / (float)columns));
             var cap = rows * columns;
             
-            playerInventoryMenu = new InventoryMenu((Game1.viewport.Width - 64 * columns) / 2, Game1.viewport.Height - 64 * 3 - borderWidth / 2, false, Game1.player.Items, null, cap, rows);
+            playerInventoryMenu = new InventoryMenu((Game1.uiViewport.Width - 64 * columns) / 2, Game1.uiViewport.Height - 64 * 3 - borderWidth / 2, false, Game1.player.Items, null, cap, rows);
             SetPlayerInventoryNeighbours();
 
             trashCan = new ClickableTextureComponent(new Rectangle(playerInventoryMenu.xPositionOnScreen + playerInventoryMenu.width + 64 + 32, playerInventoryMenu.yPositionOnScreen + 64 + 16, 64, 104), Game1.mouseCursors, new Rectangle(564 + Game1.player.trashCanLevel * 18, 102, 18, 26), 4f, false)
