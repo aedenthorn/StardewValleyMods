@@ -84,47 +84,47 @@ namespace AllChestsMenu
 
             configMenu.AddBoolOption(
                 mod: ModManifest,
-                name: () => "Mod Enabled",
+                name: () => ModEntry.SHelper.Translation.Get("GMCM_Option_ModEnabled_Name"),
                 getValue: () => Config.ModEnabled,
                 setValue: value => Config.ModEnabled = value
             );
             configMenu.AddBoolOption(
                 mod: ModManifest,
-                name: () => "Current Loc Only",
+                name: () => ModEntry.SHelper.Translation.Get("GMCM_Option_LimitToCurrentLocation_Name"),
                 getValue: () => Config.LimitToCurrentLocation,
                 setValue: value => Config.LimitToCurrentLocation = value
             );
             configMenu.AddKeybind(
                 mod: ModManifest,
-                name: () => "Menu Key",
+                name: () => ModEntry.SHelper.Translation.Get("GMCM_Option_MenuKey_Name"),
                 getValue: () => Config.MenuKey,
                 setValue: value => Config.MenuKey = value
             );
 
             configMenu.AddBoolOption(
                 mod: ModManifest,
-                name: () => "Req. Mod Key To Open",
+                name: () => ModEntry.SHelper.Translation.Get("GMCM_Option_ModToOpen_Name"),
                 getValue: () => Config.ModToOpen,
                 setValue: value => Config.ModToOpen = value
             );
             configMenu.AddKeybind(
                 mod: ModManifest,
-                name: () => "Mod Key",
-                tooltip: () => "Hold down to open menu and to transfer contents instead of swapping menus",
+                name: () => ModEntry.SHelper.Translation.Get("GMCM_Option_ModKey_Name"),
+                tooltip: () => ModEntry.SHelper.Translation.Get("GMCM_Option_ModKey_Tooltip"),
                 getValue: () => Config.ModKey,
                 setValue: value => Config.ModKey = value
             );
             configMenu.AddKeybind(
                 mod: ModManifest,
-                name: () => "Mod Key 2",
-                tooltip: () => "Hold down to transfer only same items when transfering all",
+                name: () => ModEntry.SHelper.Translation.Get("GMCM_Option_ModKey2_Name"),
+                tooltip: () => ModEntry.SHelper.Translation.Get("GMCM_Option_ModKey2_Tooltip"),
                 getValue: () => Config.ModKey2,
                 setValue: value => Config.ModKey2 = value
             );
             configMenu.AddKeybind(
                 mod: ModManifest,
-                name: () => "Switch Button",
-                tooltip: () => "For controllers to switch between upper and lower interfaces",
+                name: () => ModEntry.SHelper.Translation.Get("GMCM_Option_SwitchButton_Name"),
+                tooltip: () => ModEntry.SHelper.Translation.Get("GMCM_Option_SwitchButton_Tooltip"),
                 getValue: () => Config.SwitchButton,
                 setValue: value => Config.SwitchButton = value
             );

@@ -15,5 +15,17 @@
   "sort-CA": "Capacity (Asc)",
   "sort-CD": "Capacity (Desc)",
   "sort-IA": "Items (Asc)",
-  "sort-ID": "Items (Desc)"
+  "sort-ID": "Items (Desc)",
+
+  // GMCM
+  "GMCM_Option_ModEnabled_Name": "Mod Enabled",
+  "GMCM_Option_LimitToCurrentLocation_Name": "Current Loc Only",
+  "GMCM_Option_MenuKey_Name": "Menu Key",
+  "GMCM_Option_ModToOpen_Name": "Req. Mod Key To Open",
+  "GMCM_Option_ModKey_Name": "Mod Key",
+  "GMCM_Option_ModKey_Tooltip": "Hold down to open menu and to transfer contents instead of swapping menus",
+  "GMCM_Option_ModKey2_Name": "Mod Key 2",
+  "GMCM_Option_ModKey2_Tooltip": "Hold down to transfer only same items when transfering all",
+  "GMCM_Option_SwitchButton_Name": "Switch Button",
+  "GMCM_Option_SwitchButton_Tooltip": "For controllers to switch between upper and lower interfaces"
 }
