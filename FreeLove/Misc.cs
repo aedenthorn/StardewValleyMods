@@ -22,7 +22,7 @@ namespace FreeLove
             string ospouse = farmer.spouse;
             if (ospouse != null)
             {
-                currentSpouses[farmer.UniqueMultiplayerID].Add(ospouse, Game1.getCharacterFromName(ospouse));
+                currentSpouses[farmer.UniqueMultiplayerID][ospouse] = Game1.getCharacterFromName(ospouse);
             }
             SMonitor.Log($"Checking for extra spouses in {farmer.friendshipData.Count()} friends");
             foreach (string friend in farmer.friendshipData.Keys)
@@ -32,8 +32,8 @@ namespace FreeLove
                     var npc = Game1.getCharacterFromName(friend, true);
                     if(npc != null)
                     {
-                        currentSpouses[farmer.UniqueMultiplayerID].Add(friend, npc);
-                        currentUnofficialSpouses[farmer.UniqueMultiplayerID].Add(friend, npc);
+                        currentSpouses[farmer.UniqueMultiplayerID][friend] = npc;
+                        currentUnofficialSpouses[farmer.UniqueMultiplayerID][friend] = npc;
                     }
                 }
             }
