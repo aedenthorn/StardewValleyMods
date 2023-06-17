@@ -118,15 +118,15 @@ namespace AllChestsMenu
                 mod: ModManifest,
                 name: () => "Mod Key 2",
                 tooltip: () => "Hold down to transfer only same items when transfering all",
-                getValue: () => Config.SwitchButton,
-                setValue: value => Config.SwitchButton = value
+                getValue: () => Config.ModKey2,
+                setValue: value => Config.ModKey2 = value
             );
             configMenu.AddKeybind(
                 mod: ModManifest,
                 name: () => "Switch Button",
                 tooltip: () => "For controllers to switch between upper and lower interfaces",
                 getValue: () => Config.SwitchButton,
-                setValue: value => Config.ModKey2 = value
+                setValue: value => Config.SwitchButton = value
             );
         }
 
