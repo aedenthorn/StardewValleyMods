@@ -944,7 +944,7 @@ namespace AllChestsMenu
 
         public void SwapMenus(int idx1, int idx2)
         {
-            if (ModEntry.SHelper.Input.IsDown(SButton.LeftShift))
+            if (ModEntry.SHelper.Input.IsDown(ModEntry.Config.ModKey))
             {
                 SwapContents(allStorageList[idx1].chest.items, allStorageList[idx2].chest.items);
                 heldMenu = -1;
