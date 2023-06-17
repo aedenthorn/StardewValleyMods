@@ -40,6 +40,8 @@ namespace BatForm
         {
             Game1.player.modData.Remove(batFormKey);
             height.Value = 0;
+            Game1.forceSnapOnNextViewportUpdate = true;
+            Game1.game1.refreshWindowSettings();
             if(Game1.player is not null)
             {
                 Game1.player.ignoreCollisions = false;
