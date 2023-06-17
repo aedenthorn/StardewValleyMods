@@ -415,7 +415,7 @@ namespace AllChestsMenu
                 {
                     break;
                 }
-                if (i == heldMenu)
+                if (i == heldMenu - (storageList[i].index - i))
                     continue;
                 SpriteText.drawString(b, storage.label, storage.menu.xPositionOnScreen, storage.menu.yPositionOnScreen - 48);
                 if (!storage.collapsed)
