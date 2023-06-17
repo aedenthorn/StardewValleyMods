@@ -88,7 +88,7 @@ namespace AllChestsMenu
         public string fridgeString;
         private string sortString;
 
-		public StorageMenu() : base(Game1.uiViewport.Width / 2 - (windowWidth + borderWidth * 2) / 2, -borderWidth - 64, windowWidth + borderWidth * 2, Game1.uiViewport.Height + borderWidth * 2 + 64, false)
+        public StorageMenu() : base(Game1.uiViewport.Width / 2 - (windowWidth + borderWidth * 2) / 2, -borderWidth - 64, windowWidth + borderWidth * 2, Game1.uiViewport.Height + borderWidth * 2 + 64, false)
         {
             currentSort = ModEntry.Config.CurrentSort;
             instance = this;
