@@ -11,7 +11,7 @@ namespace CooperativeEggHunt
         [HarmonyPatch(typeof(Event), "eggHuntWinner")]
         public class Event_eggHuntWinner_Patch
         {
-            public static bool Prefix(Event __instance)
+            public static bool Prefix(Event __instance, HashSet<long> ___festivalWinners)
             {
                 if (!Config.ModEnabled)
                     return true;
@@ -35,9 +35,18 @@ namespace CooperativeEggHunt
                 {
                     dialogueArray.Add(h.Value != 1 ? string.Format(SHelper.Translation.Get("results-x"), h.Key, h.Value) : string.Format(SHelper.Translation.Get("results-1"), h.Key));
                 }
+                var won = eggs >= Config.EggsToWin;
                 dialogueArray.Add(string.Format(SHelper.Translation.Get("results-total"), eggs));
-                dialogueArray.Add(eggs >= Config.EggsToWin ? SHelper.Translation.Get("results-enough") : SHelper.Translation.Get("results-not-enough"));
-                __instance.specialEventVariable1 = eggs < Config.EggsToWin;
+                dialogueArray.Add(won ? SHelper.Translation.Get("results-enough") : SHelper.Translation.Get("results-not-enough"));
+                __instance.specialEventVariable1 = !won;
+
+                if (won)
+                {
+                    foreach (Farmer temp in Game1.getOnlineFarmers())
+                    {
+                        ___festivalWinners.Add(temp.UniqueMultiplayerID);
+                    }
+                }
 
                 string dialogue = string.Join("#$b#", dialogueArray);
                 var lewis = __instance.getActorByName("Lewis");
