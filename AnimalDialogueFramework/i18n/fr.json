@@ -1,0 +1,9 @@
+{
+  // GMCM
+  "GMCM_Option_ModEnabled_Name": "Activer le Mod",
+  "GMCM_Option_ChildEnabled_Name": "Activer pour les enfants",
+  "GMCM_Option_PetEnabled_Name": "Activer pour les animaux de compagnie",
+  "GMCM_Option_MonsterEnabled_Name": "Activer pour les monstres",
+  "GMCM_Option_JunimoEnabled_Name": "Activer pour les Junimos",
+  "GMCM_Option_HorseEnabled_Name": "Activer pour le cheval"
+}
