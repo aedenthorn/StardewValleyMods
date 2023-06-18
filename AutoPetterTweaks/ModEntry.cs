@@ -63,21 +63,21 @@ namespace AutoPetterTweaks
 
             configMenu.AddBoolOption(
                 mod: ModManifest,
-                name: () => "Mod Enabled",
+                name: () => ModEntry.SHelper.Translation.Get("GMCM_Option_ModEnabled_Name"),
                 getValue: () => Config.ModEnabled,
                 setValue: value => Config.ModEnabled = value
             );
             
             configMenu.AddBoolOption(
                 mod: ModManifest,
-                name: () => "Pet at End of Day",
+                name: () => ModEntry.SHelper.Translation.Get("GMCM_Option_PetAtEndOfDay_Name"),
                 getValue: () => Config.PetAtEndOfDay,
                 setValue: value => Config.PetAtEndOfDay = value
             );
 
             configMenu.AddNumberOption(
                 mod: ModManifest,
-                name: () => "Friendship Reduction",
+                name: () => ModEntry.SHelper.Translation.Get("GMCM_Option_FriendshipReduction_Name"),
                 getValue: () => Config.FriendshipReduction,
                 setValue: value => Config.FriendshipReduction = value
             );
