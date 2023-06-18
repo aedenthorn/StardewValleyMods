@@ -62,42 +62,42 @@ namespace AnimalDialogueFramework
 
             configMenu.AddBoolOption(
                 mod: ModManifest,
-                name: () => "Mod Enabled",
+                name: () => ModEntry.SHelper.Translation.Get("GMCM_Option_ModEnabled_Name"),
                 getValue: () => Config.ModEnabled,
                 setValue: value => Config.ModEnabled = value
             );
 
             configMenu.AddBoolOption(
                 mod: ModManifest,
-                name: () => "Child Enabled",
+                name: () => ModEntry.SHelper.Translation.Get("GMCM_Option_ChildEnabled_Name"),
                 getValue: () => Config.ChildEnabled,
                 setValue: value => Config.ChildEnabled = value
             );
 
             configMenu.AddBoolOption(
                 mod: ModManifest,
-                name: () => "Pet Enabled",
+                name: () => ModEntry.SHelper.Translation.Get("GMCM_Option_PetEnabled_Name"),
                 getValue: () => Config.PetEnabled,
                 setValue: value => Config.PetEnabled = value
             );
 
             configMenu.AddBoolOption(
                 mod: ModManifest,
-                name: () => "Monster Enabled",
+                name: () => ModEntry.SHelper.Translation.Get("GMCM_Option_MonsterEnabled_Name"),
                 getValue: () => Config.MonsterEnabled,
                 setValue: value => Config.MonsterEnabled = value
             );
 
             configMenu.AddBoolOption(
                 mod: ModManifest,
-                name: () => "Junimo Enabled",
+                name: () => ModEntry.SHelper.Translation.Get("GMCM_Option_JunimoEnabled_Name"),
                 getValue: () => Config.JunimoEnabled,
                 setValue: value => Config.JunimoEnabled = value
             );
 
             configMenu.AddBoolOption(
                 mod: ModManifest,
-                name: () => "Horse Enabled",
+                name: () => ModEntry.SHelper.Translation.Get("GMCM_Option_HorseEnabled_Name"),
                 getValue: () => Config.HorseEnabled,
                 setValue: value => Config.HorseEnabled = value
             );

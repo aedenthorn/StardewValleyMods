@@ -1,0 +1,9 @@
+{
+  // GMCM
+  "GMCM_Option_ModEnabled_Name": "Mod Enabled",
+  "GMCM_Option_ChildEnabled_Name": "Child Enabled",
+  "GMCM_Option_PetEnabled_Name": "Pet Enabled",
+  "GMCM_Option_MonsterEnabled_Name": "Monster Enabled",
+  "GMCM_Option_JunimoEnabled_Name": "Junimo Enabled",
+  "GMCM_Option_HorseEnabled_Name": "Horse Enabled"
+}
