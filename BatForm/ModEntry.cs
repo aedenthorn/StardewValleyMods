@@ -144,9 +144,14 @@ namespace BatForm
             }
             var status = BatFormStatus(Game1.player);
             if (status != BatForm.Inactive)
+            {
                 Game1.player.temporarilyInvincible = true;
+                EnforceMapBounds();
+            }
             else
+            {
                 return;
+            }
             if (status != BatForm.Active)
             {
                 if (status == BatForm.SwitchingFrom)

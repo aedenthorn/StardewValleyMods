@@ -55,5 +55,46 @@ namespace BatForm
             return Enum.Parse<BatForm>(str);
 
         }
+
+        private static void EnforceMapBounds()
+        {
+            if (Game1.isWarping || Game1.currentLocation == null)
+                return;
+
+            xTile.Dimensions.Location tileLocation = Game1.player.nextPositionTile();
+            int nextTilePositionX = tileLocation.X;
+            int nextTilePositionY = tileLocation.Y;
+            xTile.Dimensions.Location location = Game1.player.nextPositionPoint();
+            int nextPositionX = location.X;
+            int nextPositionY = location.Y;
+
+            if (nextTilePositionX == Game1.player.getTileX() && nextTilePositionY == Game1.player.getTileY())
+            {
+                if (nextPositionX < 0)
+                    nextTilePositionX--;
+                if (nextPositionY < 0)
+                    nextTilePositionY--;
+            }
+
+            foreach (Warp warp in Game1.currentLocation.warps)
+            {
+                if (warp.X == nextTilePositionX && warp.Y == nextTilePositionY)
+                    return;
+            }
+
+            const int offsetX = 0;
+            const int offsetY = Game1.tileSize / 4;
+            int maxX = Game1.currentLocation.map.DisplaySize.Width - Game1.tileSize;
+            int maxY = Game1.currentLocation.map.DisplaySize.Height - Game1.tileSize + offsetY;
+
+            if (Game1.player.position.X < offsetX)
+                Game1.player.position.X = offsetX;
+            if (Game1.player.position.X > maxX)
+                Game1.player.position.X = maxX;
+            if (Game1.player.position.Y < offsetY)
+                Game1.player.position.Y = offsetY;
+            if (Game1.player.position.Y > maxY)
+                Game1.player.position.Y = maxY;
+        }
     }
 }
