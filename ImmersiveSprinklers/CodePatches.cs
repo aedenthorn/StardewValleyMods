@@ -53,6 +53,7 @@ namespace ImmersiveSprinklers
                     else if (who.CurrentItem.Category == -19 && tf.modData.ContainsKey(enricherKey + which))
                     {
                         int stack = who.CurrentItem.Stack;
+                        int addStack = stack;
                         int index = who.CurrentItem.ParentSheetIndex;
                         if (tf.modData.TryGetValue(fertilizerKey + which, out string fertString))
                         {
@@ -60,7 +61,7 @@ namespace ImmersiveSprinklers
                             if(f.ParentSheetIndex == who.CurrentItem.ParentSheetIndex)
                             {
                                 int add = Math.Min(f.maximumStackSize() - f.Stack, stack);
-                                f.Stack += add;
+                                addStack = f.Stack + add;
                                 stack -= add;
                                 who.CurrentItem.Stack = stack;
                                 if (stack == 0)
@@ -82,7 +83,7 @@ namespace ImmersiveSprinklers
                             who.removeItemFromInventory(who.CurrentItem);
                             who.showNotCarrying();
                         }
-                        tf.modData[fertilizerKey + which] = index + "," + stack;
+                        tf.modData[fertilizerKey + which] = index + "," + addStack;
                         __instance.playSound("dirtyHit", NetAudio.SoundContext.Default);
                     }
                     else
@@ -138,7 +139,7 @@ namespace ImmersiveSprinklers
                         {
                             if (kvp.Value.modData.TryGetValue(sprinklerKey + i, out string sprinklerString) && kvp.Value.modData.ContainsKey(enricherKey + i) && kvp.Value.modData.TryGetValue(fertilizerKey + i, out string fertString))
                             {
-                                var obj = GetSprinkler(tf, i, kvp.Value.modData.ContainsKey(nozzleKey + i));
+                                var obj = GetSprinkler(kvp.Value, i, kvp.Value.modData.ContainsKey(enricherKey + i));
                                 if (obj is null)
                                     continue;
                                 var radius = obj.GetModifiedRadiusForSprinkler();

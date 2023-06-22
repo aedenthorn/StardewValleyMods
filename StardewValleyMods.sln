@@ -527,6 +527,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FriendshipTweaks", "Friends
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CooperativeEggHunt", "CooperativeEggHunt\CooperativeEggHunt.csproj", "{28E474BB-F8EE-48D2-9198-4EC642687AEE}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "StardewValleyOrigins", "StardewValleyOrigins\StardewValleyOrigins.csproj", "{17212D2A-9472-4691-85E2-B75EFA747334}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -3621,6 +3623,18 @@ Global
 		{28E474BB-F8EE-48D2-9198-4EC642687AEE}.Release|x64.Build.0 = Release|x64
 		{28E474BB-F8EE-48D2-9198-4EC642687AEE}.Release|x86.ActiveCfg = Release|Any CPU
 		{28E474BB-F8EE-48D2-9198-4EC642687AEE}.Release|x86.Build.0 = Release|Any CPU
+		{17212D2A-9472-4691-85E2-B75EFA747334}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{17212D2A-9472-4691-85E2-B75EFA747334}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{17212D2A-9472-4691-85E2-B75EFA747334}.Debug|x64.ActiveCfg = Debug|x64
+		{17212D2A-9472-4691-85E2-B75EFA747334}.Debug|x64.Build.0 = Debug|x64
+		{17212D2A-9472-4691-85E2-B75EFA747334}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{17212D2A-9472-4691-85E2-B75EFA747334}.Debug|x86.Build.0 = Debug|Any CPU
+		{17212D2A-9472-4691-85E2-B75EFA747334}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{17212D2A-9472-4691-85E2-B75EFA747334}.Release|Any CPU.Build.0 = Release|Any CPU
+		{17212D2A-9472-4691-85E2-B75EFA747334}.Release|x64.ActiveCfg = Release|x64
+		{17212D2A-9472-4691-85E2-B75EFA747334}.Release|x64.Build.0 = Release|x64
+		{17212D2A-9472-4691-85E2-B75EFA747334}.Release|x86.ActiveCfg = Release|Any CPU
+		{17212D2A-9472-4691-85E2-B75EFA747334}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
