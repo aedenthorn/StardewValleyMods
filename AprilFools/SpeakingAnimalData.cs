@@ -26,53 +26,53 @@ namespace AprilFools
         {
             new string[]
             {
-                "To err is human...",
-                "To forgive bovine."
+                ModEntry.SHelper.Translation.Get("animal-speech-1-1"),
+                ModEntry.SHelper.Translation.Get("animal-speech-1-2")
             },
             new string[]
             {
-                "If it talks like a duck...",
-                "then you're drunk. Ducks don't talk."
+                ModEntry.SHelper.Translation.Get("animal-speech-2-1"),
+                ModEntry.SHelper.Translation.Get("animal-speech-2-2")
             },
             new string[]
             {
-                "If it talks like a duck...",
-                "Then you're drunk. Ducks don't talk."
+                ModEntry.SHelper.Translation.Get("animal-speech-3-1"),
+                ModEntry.SHelper.Translation.Get("animal-speech-3-2")
             },
             new string[]
             {
-                "Why do cows have hooves and not feet?",
-                "Because they lactose."
+                ModEntry.SHelper.Translation.Get("animal-speech-4-1"),
+                ModEntry.SHelper.Translation.Get("animal-speech-4-2")
             },
             new string[]
             {
-                "Hear about the happy-go-lucky farmer?",
-                "They lived life by the seeds of their plants."
+                ModEntry.SHelper.Translation.Get("animal-speech-5-1"),
+                ModEntry.SHelper.Translation.Get("animal-speech-5-2")
             },
             new string[]
             {
-                "Hear about prize-winning scarecrow?",
-                "It was out standing in its field."
+                ModEntry.SHelper.Translation.Get("animal-speech-6-1"),
+                ModEntry.SHelper.Translation.Get("animal-speech-6-2")
             },
             new string[]
             {
-                "They say making hay is difficult.",
-                "Seems rather cut and dried to me."
+                ModEntry.SHelper.Translation.Get("animal-speech-7-1"),
+                ModEntry.SHelper.Translation.Get("animal-speech-7-2")
             },
             new string[]
             {
-                "They say making hay is difficult.",
-                "Seems rather cut and dried to me."
+                ModEntry.SHelper.Translation.Get("animal-speech-8-1"),
+                ModEntry.SHelper.Translation.Get("animal-speech-8-2")
             },
             new string[]
             {
-                "It's pasture bedtime.",
-                "Sheep happens."
+                ModEntry.SHelper.Translation.Get("animal-speech-9-1"),
+                ModEntry.SHelper.Translation.Get("animal-speech-9-2")
             },
             new string[]
             {
-                "Bees scare me.",
-                "Yeah, the whole alphabet scares me."
+                ModEntry.SHelper.Translation.Get("animal-speech-10-1"),
+                ModEntry.SHelper.Translation.Get("animal-speech-10-2")
             }
         };
 

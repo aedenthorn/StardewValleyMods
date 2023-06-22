@@ -1,4 +1,5 @@
 {
+  // Tree screams
   "tree-chop-1": "Ah! Stop!",
   "tree-chop-2": "Oh, the cruelty!",
   "tree-chop-3": "Have mercy!",
@@ -9,5 +10,42 @@
   "tree-fall-1": "Aaaaaaa!",
   "tree-fall-2": "Et tu, Brute?",
   "tree-fall-3": "I am a leaf on the wind...",
-  "tree-fall-4": "Freeeedoooom!"
+  "tree-fall-4": "Freeeedoooom!",
+
+  // Animal speeches
+  "animal-speech-1-1": "To err is human...",
+  "animal-speech-1-2": "To forgive bovine.",
+  "animal-speech-2-1": "If it talks like a duck...",
+  "animal-speech-2-2": "Then you're drunk. Ducks don't talk.",
+  "animal-speech-3-1": "If it talks like a duck...",
+  "animal-speech-3-2": "Then you're drunk. Ducks don't talk.",
+  "animal-speech-4-1": "Why do cows have hooves and not feet?",
+  "animal-speech-4-2": "Because they lactose.",
+  "animal-speech-5-1": "Hear about the happy-go-lucky farmer?",
+  "animal-speech-5-2": "They lived life by the seeds of their plants.",
+  "animal-speech-6-1": "Hear about prize-winning scarecrow?",
+  "animal-speech-6-2": "It was out standing in its field.",
+  "animal-speech-7-1": "They say making hay is difficult.",
+  "animal-speech-7-2": "Seems rather cut and dried to me.",
+  "animal-speech-8-1": "They say making hay is difficult.",
+  "animal-speech-8-2": "Seems rather cut and dried to me.",
+  "animal-speech-9-1": "It's pasture bedtime.",
+  "animal-speech-9-2": "Sheep happens.",
+  "animal-speech-10-1": "Bees scare me.",
+  "animal-speech-10-2": "Yeah, the whole alphabet scares me.",
+
+  // GMCM
+  "GMCM_Option_ModEnabled_Name": "Mod Enabled?",
+  "GMCM_Option_OnlyAprilFirst_Name": "Only April 1st?",
+  "GMCM_Option_EnableBees_Name": "Enable Bees?",
+  "GMCM_Option_EnableBackwards_Name": "Enable Backwards?",
+  "GMCM_Option_EnableAscii_Name": "Enable Ascii?",
+  "GMCM_Option_EnablePixelate_Name": "Enable Pixelate?",
+  "GMCM_Option_EnableTreeScreams_Name": "Enable Tree Screams?",
+  "GMCM_Option_EnableInventoryAvoid_Name": "Enable Inventory Avoid?",
+  "GMCM_Option_EnableSlime_Name": "Enable Slime?",
+  "GMCM_Option_EnableRaven_Name": "Enable Raven?",
+  "GMCM_Option_EnableGiants_Name": "Enable Giants?",
+  "GMCM_Option_EnableBuildingSwitch_Name": "Enable Building Switch?",
+  "GMCM_Option_EnableAnimalGreeting_Name": "Enable Animal Greeting?"
 }
