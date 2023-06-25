@@ -9,10 +9,14 @@ using StardewValley.Objects;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection.Emit;
+using System.Reflection;
 using xTile.Dimensions;
 using xTile.ObjectModel;
 using xTile.Tiles;
 using Rectangle = Microsoft.Xna.Framework.Rectangle;
+using StardewValley.Menus;
+using Netcode;
 
 namespace StardewValleyOrigins
 {
@@ -30,7 +34,7 @@ namespace StardewValleyOrigins
             }
 
         }
-        [HarmonyPatch(typeof(Game1), nameof(Game1.addMail))]
+        [HarmonyPatch(typeof(Game1), nameof(Game1.addMailForTomorrow))]
         public class Game1_addMailForTomorrow_Patch
         {
             public static bool Prefix(string mailName)
@@ -116,7 +120,7 @@ namespace StardewValleyOrigins
                 if (!bus)
                 {
                     ___busDoor = null;
-                    ___busPosition = new Vector2(-1000,-1000);
+                    ___busPosition = new Vector2(-10000,-10000);
                 }
             }
         }
@@ -155,6 +159,68 @@ namespace StardewValleyOrigins
                 return !Config.ModEnabled || blacksmith;
             }
         }
+        [HarmonyPatch(typeof(Beach), "draw")]
+        public class Beach_Patch
+        {
+            public static void Prefix(Beach __instance, ref bool __state)
+            {
+                if (!Config.ModEnabled)
+                    return;
+                __state = __instance.bridgeFixed.Value;
+                __instance.bridgeFixed.Value = true;
+            }
+            public static void Postfix(Beach __instance, bool __state)
+            {
+                if (!Config.ModEnabled)
+                    return;
+                __instance.bridgeFixed.Value = __state;
+            }
+        }
+        [HarmonyPatch(typeof(Beach), nameof(Beach.fixBridge))]
+        public class Beach_fixBridge_Patch
+        {
+            public static bool Prefix()
+            {
+                return !Config.ModEnabled;
+
+            }
+        }
+        [HarmonyPatch(typeof(MapPage), new Type[] { typeof(int), typeof(int), typeof(int), typeof(int) })]
+        [HarmonyPatch(MethodType.Constructor)]
+        public class MapPage_Patch
+        {
+            public static void Postfix(MapPage __instance)
+            {
+                if (!Config.ModEnabled)
+                    return;
+
+                for(int i = __instance.points.Count - 1; i >= 0; i--)
+                {
+                    if (!allowedMapPoints.Contains(__instance.points[i].myID))
+                        __instance.points.RemoveAt(i);
+                }
+            }
+        }
+        [HarmonyPatch(typeof(Mountain), "resetSharedState")]
+        public class Mountain_resetSharedState_Patch
+        {
+            public static void Postfix(Mountain __instance, NetBool ___landslide)
+            {
+                if (!Config.ModEnabled)
+                    return;
+                ___landslide.Value = false;
+                if (!linusCampfire)
+                    __instance.Objects.Remove(new Vector2(29, 9));
+            }
+        }
+        [HarmonyPatch(typeof(Farm), nameof(Farm.AddModularShippingBin))]
+        public class Farm_AddModularShippingBin_Patch
+        {
+            public static bool Prefix()
+            {
+                return !Config.ModEnabled || shippingBin;
+            }
+        }
         [HarmonyPatch(typeof(GameLocation), nameof(GameLocation.GetLocationEvents))]
         public class GameLocation_GetLocationEvents_Patch
         {
@@ -169,6 +235,29 @@ namespace StardewValleyOrigins
                         __result.Remove(k);
                     }
                 }
+            }
+        }
+        [HarmonyPatch(typeof(SocialPage), new Type[] { typeof(int), typeof(int), typeof(int), typeof(int) })]
+        [HarmonyPatch(MethodType.Constructor)]
+        public class SocialPage_Patch
+        {
+            public static void Postfix()
+            {
+            }
+            public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions)
+            {
+                SMonitor.Log($"Transpiling SocialPage.SocialPage");
+                var codes = new List<CodeInstruction>(instructions);
+                for (int i = 0; i < codes.Count; i++)
+                {
+                    if (codes[i].opcode == OpCodes.Ldsfld && codes[i].operand is FieldInfo && (FieldInfo)codes[i].operand == AccessTools.Field(typeof(SocialPage), nameof(SocialPage.defaultFriendships)))
+                    {
+                        SMonitor.Log($"removing default friendships");
+                        codes.Insert(i + 1, new CodeInstruction(OpCodes.Call, AccessTools.Method(typeof(ModEntry), nameof(RemoveDefaultFriendships))));
+                    }
+                }
+
+                return codes.AsEnumerable();
             }
         }
     }

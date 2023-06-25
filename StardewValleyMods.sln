@@ -529,6 +529,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CooperativeEggHunt", "Coope
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "StardewValleyOrigins", "StardewValleyOrigins\StardewValleyOrigins.csproj", "{17212D2A-9472-4691-85E2-B75EFA747334}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PoopFramework", "PoopFramework\PoopFramework.csproj", "{D2F3BB7D-30D3-4FD1-8DDB-4F15149A8925}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -3635,6 +3637,18 @@ Global
 		{17212D2A-9472-4691-85E2-B75EFA747334}.Release|x64.Build.0 = Release|x64
 		{17212D2A-9472-4691-85E2-B75EFA747334}.Release|x86.ActiveCfg = Release|Any CPU
 		{17212D2A-9472-4691-85E2-B75EFA747334}.Release|x86.Build.0 = Release|Any CPU
+		{D2F3BB7D-30D3-4FD1-8DDB-4F15149A8925}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D2F3BB7D-30D3-4FD1-8DDB-4F15149A8925}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D2F3BB7D-30D3-4FD1-8DDB-4F15149A8925}.Debug|x64.ActiveCfg = Debug|x64
+		{D2F3BB7D-30D3-4FD1-8DDB-4F15149A8925}.Debug|x64.Build.0 = Debug|x64
+		{D2F3BB7D-30D3-4FD1-8DDB-4F15149A8925}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{D2F3BB7D-30D3-4FD1-8DDB-4F15149A8925}.Debug|x86.Build.0 = Debug|Any CPU
+		{D2F3BB7D-30D3-4FD1-8DDB-4F15149A8925}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D2F3BB7D-30D3-4FD1-8DDB-4F15149A8925}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D2F3BB7D-30D3-4FD1-8DDB-4F15149A8925}.Release|x64.ActiveCfg = Release|x64
+		{D2F3BB7D-30D3-4FD1-8DDB-4F15149A8925}.Release|x64.Build.0 = Release|x64
+		{D2F3BB7D-30D3-4FD1-8DDB-4F15149A8925}.Release|x86.ActiveCfg = Release|Any CPU
+		{D2F3BB7D-30D3-4FD1-8DDB-4F15149A8925}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

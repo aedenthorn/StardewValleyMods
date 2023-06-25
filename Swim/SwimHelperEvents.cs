@@ -15,6 +15,7 @@ using StardewValley.Objects;
 using StardewValley.Tools;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -315,11 +316,6 @@ namespace Swim
 
                 #region Region: Basic Options.
 
-                configMenu.AddSectionTitle(
-                    mod: ModEntry.context.ModManifest,
-                    text: () => "Basic Options",
-                    tooltip: () => "Basic mod options."
-                );
                 configMenu.AddBoolOption(
                     mod: ModEntry.context.ModManifest,
                     name: () => "Mod Enabled?",
@@ -387,11 +383,6 @@ namespace Swim
 
                 #region Region: Key Binds.
 
-                configMenu.AddSectionTitle(
-                    mod: ModEntry.context.ModManifest,
-                    text: () => "Key Binds"
-                );
-
                 configMenu.AddKeybind(
                     mod: ModEntry.context.ModManifest,
                     name: () => "Enable Auto-Swimming",
@@ -424,14 +415,10 @@ namespace Swim
 
                 #region Region: Advanced Tweaks.
 
-                configMenu.AddSectionTitle(
-                    mod: ModEntry.context.ModManifest,
-                    text: () => "Advanced Tweaks"
-                );
                 configMenu.AddNumberOption(
                     mod: ModEntry.context.ModManifest,
                     name: () => "JumpTimeInMilliseconds",
-                    tooltip: () => "Set's jumping animation time.",
+                    tooltip: () => "Sets jumping animation time.",
                     getValue: () => Config.JumpTimeInMilliseconds,
                     setValue: value => Config.JumpTimeInMilliseconds = value
                 );
@@ -439,7 +426,7 @@ namespace Swim
                 configMenu.AddNumberOption(
                     mod: ModEntry.context.ModManifest,
                     name: () => "OxygenMult",
-                    tooltip: () => "Set's oxygen multiplier (Energy * Mult = O2).",
+                    tooltip: () => "Sets oxygen multiplier (Energy * Mult = O2).",
                     getValue: () => Config.OxygenMult,
                     setValue: value => Config.OxygenMult = value
                 );
@@ -467,100 +454,107 @@ namespace Swim
                 configMenu.AddBoolOption(
                     mod: ModEntry.context.ModManifest,
                     name: () => "BreatheSound",
-                    tooltip: () => "If set's true, while you're underwater you will hear breathe sound.",
+                    tooltip: () => "If sets true, while you're underwater you will hear breathe sound.",
                     getValue: () => Config.BreatheSound,
                     setValue: value => Config.BreatheSound = value
                 );
                 configMenu.AddNumberOption(
                     mod: ModEntry.context.ModManifest,
                     name: () => "MineralPerThousandMin",
-                    tooltip: () => "Set's minimal quantity, that can be meet underwater.",
+                    tooltip: () => "Sets minimal quantity, that can be meet underwater.",
                     getValue: () => Config.MineralPerThousandMin,
                     setValue: value => Config.MineralPerThousandMin = value
                 );
                 configMenu.AddNumberOption(
                     mod: ModEntry.context.ModManifest,
                     name: () => "MineralPerThousandMax",
-                    tooltip: () => "Set's maximal quantity, that can be meet underwater.",
+                    tooltip: () => "Sets maximal quantity, that can be meet underwater.",
                     getValue: () => Config.MineralPerThousandMax,
                     setValue: value => Config.MineralPerThousandMax = value
                 );
                 configMenu.AddNumberOption(
                     mod: ModEntry.context.ModManifest,
                     name: () => "CrabsPerThousandMin",
-                    tooltip: () => "Set's minimal quantity, that can be meet underwater.",
+                    tooltip: () => "Sets minimal quantity, that can be meet underwater.",
                     getValue: () => Config.CrabsPerThousandMin,
                     setValue: value => Config.CrabsPerThousandMin = value
                 );
                 configMenu.AddNumberOption(
                     mod: ModEntry.context.ModManifest,
                     name: () => "CrabsPerThousandMax",
-                    tooltip: () => "Set's maximal quantity, that can be meet underwater.",
+                    tooltip: () => "Sets maximal quantity, that can be meet underwater.",
                     getValue: () => Config.CrabsPerThousandMax,
                     setValue: value => Config.CrabsPerThousandMax = value
                 );
                 configMenu.AddNumberOption(
                     mod: ModEntry.context.ModManifest,
                     name: () => "PercentChanceCrabIsMimic",
-                    tooltip: () => "Set's chance to change crab by the mimic one.",
+                    tooltip: () => "Sets chance to change crab by the mimic one.",
                     getValue: () => Config.PercentChanceCrabIsMimic,
                     setValue: value => Config.PercentChanceCrabIsMimic = value
                 );
                 configMenu.AddNumberOption(
                     mod: ModEntry.context.ModManifest,
                     name: () => "MinSmolFishies",
-                    tooltip: () => "Set's minimal quantity, that can be meet underwater.",
+                    tooltip: () => "Sets minimal quantity, that can be meet underwater.",
                     getValue: () => Config.MinSmolFishies,
                     setValue: value => Config.MinSmolFishies = value
                 );
                 configMenu.AddNumberOption(
                     mod: ModEntry.context.ModManifest,
                     name: () => "MaxSmolFishies",
-                    tooltip: () => "Set's maximal quantity, that can be meet underwater.",
+                    tooltip: () => "Sets maximal quantity, that can be meet underwater.",
                     getValue: () => Config.MaxSmolFishies,
                     setValue: value => Config.MaxSmolFishies = value
                 );
                 configMenu.AddNumberOption(
                     mod: ModEntry.context.ModManifest,
                     name: () => "BigFishiesPerThousandMin",
-                    tooltip: () => "Set's minimal quantity, that can be meet underwater.",
+                    tooltip: () => "Sets minimal quantity, that can be meet underwater.",
                     getValue: () => Config.BigFishiesPerThousandMin,
                     setValue: value => Config.BigFishiesPerThousandMin = value
                 );
                 configMenu.AddNumberOption(
                     mod: ModEntry.context.ModManifest,
                     name: () => "BigFishiesPerThousandMax",
-                    tooltip: () => "Set's maximal quantity, that can be meet underwater.",
+                    tooltip: () => "Sets maximal quantity, that can be meet underwater.",
                     getValue: () => Config.BigFishiesPerThousandMax,
                     setValue: value => Config.BigFishiesPerThousandMax = value
                 );
                 configMenu.AddNumberOption(
                     mod: ModEntry.context.ModManifest,
                     name: () => "OceanForagePerThousandMin",
-                    tooltip: () => "Set's minimal quantity, that can be meet underwater.",
+                    tooltip: () => "Sets minimal quantity, that can be meet underwater.",
                     getValue: () => Config.OceanForagePerThousandMin,
                     setValue: value => Config.OceanForagePerThousandMin = value
                 );
                 configMenu.AddNumberOption(
                     mod: ModEntry.context.ModManifest,
                     name: () => "OceanForagePerThousandMax",
-                    tooltip: () => "Set's maximal quantity, that can be meet underwater.",
+                    tooltip: () => "Sets maximal quantity, that can be meet underwater.",
                     getValue: () => Config.OceanForagePerThousandMax,
                     setValue: value => Config.OceanForagePerThousandMax = value
                 );
                 configMenu.AddNumberOption(
                     mod: ModEntry.context.ModManifest,
                     name: () => "MinOceanChests",
-                    tooltip: () => "Set's minimal quantity, that can be meet in underwater biome ocean.",
+                    tooltip: () => "Sets minimal quantity, that can be meet in underwater biome ocean.",
                     getValue: () => Config.MinOceanChests,
                     setValue: value => Config.MinOceanChests = value
                 );
                 configMenu.AddNumberOption(
                     mod: ModEntry.context.ModManifest,
                     name: () => "MaxOceanChests",
-                    tooltip: () => "Set's maximal quantity, that can be meet in underwater biome ocean",
+                    tooltip: () => "Sets maximal quantity, that can be meet in underwater biome ocean",
                     getValue: () => Config.MaxOceanChests,
                     setValue: value => Config.MaxOceanChests = value
+                );
+                configMenu.AddTextOption(
+                    mod: ModEntry.context.ModManifest,
+                    name: () => "JumpDistanceMult",
+                    tooltip: () => "Multiply jump sensitivity by this amount",
+                    getValue: () => Config.TriggerDistanceMult +"",
+                    setValue: delegate(string value) { if (float.TryParse(value, NumberStyles.Any, CultureInfo.InvariantCulture, out var f)) { Config.TriggerDistanceMult = f; } } 
                 );
                 #endregion
             }
@@ -1034,16 +1028,19 @@ namespace Swim
             {
                 case 0:
                     distance = Math.Abs(Game1.player.position.Y - tiles.Last().Y * Game1.tileSize);
-                    maxDistance = 144;
+                    maxDistance = (int)Math.Round(Config.TriggerDistanceUp * Config.TriggerDistanceMult);
                     break;
                 case 2:
                     distance = Math.Abs(Game1.player.position.Y - tiles.Last().Y * Game1.tileSize);
-                    maxDistance = 96;
+                    maxDistance = (int)Math.Round(Config.TriggerDistanceDown * Config.TriggerDistanceMult);
                     break;
                 case 1:
+                    distance = Math.Abs(Game1.player.position.X - tiles.Last().X * Game1.tileSize);
+                    maxDistance = (int)Math.Round(Config.TriggerDistanceRight * Config.TriggerDistanceMult);
+                    break;
                 case 3:
                     distance = Math.Abs(Game1.player.position.X - tiles.Last().X * Game1.tileSize);
-                    maxDistance = 130;
+                    maxDistance = (int)Math.Round(Config.TriggerDistanceLeft * Config.TriggerDistanceMult);
                     break;
             }
             if (Helper.Input.IsDown(SButton.MouseLeft))

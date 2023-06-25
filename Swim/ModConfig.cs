@@ -36,6 +36,11 @@ namespace Swim
         public int MaxOceanChests { get; set; }
         public bool SwimRestoresVitals { get; set; }
         public SButton ManualJumpButton { get; set; }
+        public float TriggerDistanceMult { get; set; }
+        public int TriggerDistanceUp { get; set; }
+        public int TriggerDistanceDown { get; set; }
+        public int TriggerDistanceLeft { get; set; }
+        public int TriggerDistanceRight { get; set; }
 
         public ModConfig()
         {
@@ -75,6 +80,12 @@ namespace Swim
             OceanForagePerThousandMax = 10;
             MinOceanChests = 0;
             MaxOceanChests = 3;
+
+            TriggerDistanceMult = 1f;
+            TriggerDistanceUp = 144;
+            TriggerDistanceDown = 96;
+            TriggerDistanceLeft = 130;
+            TriggerDistanceRight = 130;
         }
     }
 }

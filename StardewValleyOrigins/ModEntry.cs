@@ -2,6 +2,7 @@
 using Microsoft.Xna.Framework.Graphics;
 using StardewModdingAPI;
 using StardewValley;
+using StardewValley.Menus;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -20,11 +21,11 @@ namespace StardewValleyOrigins
         
         public static string StardewValleyOriginsKey = "aedenthorn.StardewValleyOrigins";
 
-        public static int worldState;
-        
         public static List<string> allowedNPCs = new();
         public static List<string> allowedEvents = new();
         public static List<string> allowedMail = new();
+        public static List<int> allowedMapPoints = new();
+        public static bool shippingBin;
         public static bool bus;
         public static bool minecarts;
         public static bool blacksmith;
@@ -32,8 +33,9 @@ namespace StardewValleyOrigins
         public static bool marniesLivestock;
         public static bool townBoard;
         public static bool specialOrdersBoard;
+        public static bool linusCampfire;
 
-        public static Dictionary<int, WorldStateData> worldStateDict= new();
+        public static Dictionary<string, WorldStateData> worldStateDict= new();
 
         //public static string dictPath = "aedenthorn.StardewValleyOrigins/dictionary";
         //public static Dictionary<string, StardewValleyOriginsData> dataDict = new();
@@ -43,9 +45,6 @@ namespace StardewValleyOrigins
         public override void Entry(IModHelper helper)
         {
             Config = Helper.ReadConfig<ModConfig>();
-
-            if (!Config.ModEnabled)
-                return;
 
             context = this;
 
@@ -78,9 +77,7 @@ namespace StardewValleyOrigins
 
         private void GameLoop_SaveLoaded(object sender, StardewModdingAPI.Events.SaveLoadedEventArgs e)
         {
-            var model = Helper.Data.ReadSaveData<OriginsData>("world-state");
-            worldState = model is not null ? model.worldState : 0;
-            worldStateDict = Helper.GameContent.Load<Dictionary<int, WorldStateData>>(StardewValleyOriginsKey);
+            worldStateDict = Helper.GameContent.Load<Dictionary<string, WorldStateData>>(StardewValleyOriginsKey);
             GetAllowedWorldState();
             foreach(var l in Game1.locations)
             {
@@ -94,12 +91,26 @@ namespace StardewValleyOrigins
             }
         }
 
-
         private void Content_AssetRequested(object sender, StardewModdingAPI.Events.AssetRequestedEventArgs e)
         {
             if (e.NameWithoutLocale.IsEquivalentTo(StardewValleyOriginsKey))
             {
-                e.LoadFrom(() => new Dictionary<int, WorldStateData>(), StardewModdingAPI.Events.AssetLoadPriority.Exclusive);
+                e.LoadFrom(() => new Dictionary<string, WorldStateData>(), StardewModdingAPI.Events.AssetLoadPriority.Exclusive);
+            }
+            else if (e.NameWithoutLocale.IsEquivalentTo("Data/Quests"))
+            {
+                e.Edit(delegate(IAssetData data)
+                {
+                    data.AsDictionary<int, string>().Data.Remove(9);
+                });
+            }
+            else if (e.NameWithoutLocale.IsEquivalentTo("Strings/StringsFromCSFiles"))
+            {
+                e.Edit(delegate(IAssetData data)
+                {
+                    string orig = data.AsDictionary<string, string>().Data["Farmer.cs.1918"];
+                    data.AsDictionary<string, string>().Data["Farmer.cs.1918"] = orig.Substring(0, orig.IndexOf('^'));
+                });
             }
         }
 
