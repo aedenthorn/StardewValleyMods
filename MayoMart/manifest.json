@@ -1,0 +1,22 @@
+﻿{
+  "Name": "MayoMart",
+  "Author": "aedenthorn",
+  "Version": "0.1.0",
+  "Description": "MayoMart.",
+  "UniqueID": "aedenthorn.MayoMart",
+  "EntryDll": "MayoMart.dll",
+  "MinimumApiVersion": "3.15.0",
+  "ModUpdater": {
+    "Repository": "StardewValleyMods",
+    "User": "aedenthorn",
+    "Directory": "_releases",
+    "ModFolder": "MayoMart"
+  },
+  "Dependencies": [
+    {
+      "UniqueID": "Platonymous.ModUpdater",
+      "IsRequired": false
+    }
+  ],
+  "UpdateKeys": [ "Nexus:17175" ]
+}

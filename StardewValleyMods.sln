@@ -531,6 +531,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "StardewValleyOrigins", "Sta
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PoopFramework", "PoopFramework\PoopFramework.csproj", "{D2F3BB7D-30D3-4FD1-8DDB-4F15149A8925}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MayoMart", "MayoMart\MayoMart.csproj", "{A1C1B295-83D5-4667-B968-E28F86370E0F}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -3649,6 +3651,18 @@ Global
 		{D2F3BB7D-30D3-4FD1-8DDB-4F15149A8925}.Release|x64.Build.0 = Release|x64
 		{D2F3BB7D-30D3-4FD1-8DDB-4F15149A8925}.Release|x86.ActiveCfg = Release|Any CPU
 		{D2F3BB7D-30D3-4FD1-8DDB-4F15149A8925}.Release|x86.Build.0 = Release|Any CPU
+		{A1C1B295-83D5-4667-B968-E28F86370E0F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A1C1B295-83D5-4667-B968-E28F86370E0F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A1C1B295-83D5-4667-B968-E28F86370E0F}.Debug|x64.ActiveCfg = Debug|x64
+		{A1C1B295-83D5-4667-B968-E28F86370E0F}.Debug|x64.Build.0 = Debug|x64
+		{A1C1B295-83D5-4667-B968-E28F86370E0F}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{A1C1B295-83D5-4667-B968-E28F86370E0F}.Debug|x86.Build.0 = Debug|Any CPU
+		{A1C1B295-83D5-4667-B968-E28F86370E0F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A1C1B295-83D5-4667-B968-E28F86370E0F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A1C1B295-83D5-4667-B968-E28F86370E0F}.Release|x64.ActiveCfg = Release|x64
+		{A1C1B295-83D5-4667-B968-E28F86370E0F}.Release|x64.Build.0 = Release|x64
+		{A1C1B295-83D5-4667-B968-E28F86370E0F}.Release|x86.ActiveCfg = Release|Any CPU
+		{A1C1B295-83D5-4667-B968-E28F86370E0F}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
