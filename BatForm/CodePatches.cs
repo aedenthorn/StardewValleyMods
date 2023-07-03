@@ -79,5 +79,25 @@ namespace BatForm
                 return false;
             }
         }
+        [HarmonyPatch(typeof(Game1), nameof(Game1.pressActionButton))]
+        public class Game1_pressActionButton_Patch
+        {
+            public static bool Prefix()
+            {
+                if (!Config.ModEnabled || Config.ActionsEnabled || BatFormStatus(Game1.player) == BatForm.Inactive)
+                    return true;
+                return false;
+            }
+        }
+        [HarmonyPatch(typeof(Game1), nameof(Game1.pressUseToolButton))]
+        public class Game1_pressUseToolButton_Patch
+        {
+            public static bool Prefix()
+            {
+                if (!Config.ModEnabled || Config.ActionsEnabled || BatFormStatus(Game1.player) == BatForm.Inactive)
+                    return true;
+                return false;
+            }
+        }
     }
 }

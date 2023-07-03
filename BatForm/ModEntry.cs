@@ -232,6 +232,13 @@ namespace BatForm
                 getValue: () => Config.TransformKey,
                 setValue: value => Config.TransformKey = value
             );
+
+            configMenu.AddBoolOption(
+                mod: ModManifest,
+                name: () => "Actions Enabled",
+                getValue: () => Config.ActionsEnabled,
+                setValue: value => Config.ActionsEnabled = value
+            );
             
             configMenu.AddNumberOption(
                 mod: ModManifest,
