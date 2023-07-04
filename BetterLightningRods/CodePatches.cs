@@ -29,11 +29,12 @@ namespace BetterLightningRods
                     codes[i + 1] = new CodeInstruction(OpCodes.Call, AccessTools.Method(typeof(ModEntry), nameof(ModEntry.GetRodsToCheck)));
                     rodsFound = true;
                 }
-                else if (!chanceFound && codes[i].opcode == OpCodes.Ldc_R8 && (double)codes[i].operand == 0.125)
+                else if (!chanceFound && i < codes.Count - 12 && codes[i].opcode == OpCodes.Ldc_R8 && (double)codes[i].operand == 0.125 && codes[i + 1].opcode == OpCodes.Call && codes[i + 2].opcode == OpCodes.Callvirt && codes[i + 3].opcode == OpCodes.Ldnull && codes[i + 4].opcode == OpCodes.Callvirt && codes[i + 5].opcode == OpCodes.Add && codes[i + 6].opcode == OpCodes.Call && codes[i + 7].opcode == OpCodes.Callvirt && codes[i + 8].opcode == OpCodes.Ldnull && codes[i + 9].opcode == OpCodes.Callvirt && codes[i + 10].opcode == OpCodes.Ldc_R8 && (double)codes[i + 10].operand == 100.0 && codes[i + 11].opcode == OpCodes.Div && codes[i + 12].opcode == OpCodes.Add)
                 {
                     SMonitor.Log($"Overriding lightning chance");
                     codes[i].opcode = OpCodes.Call;
                     codes[i].operand = AccessTools.Method(typeof(ModEntry), nameof(ModEntry.GetLightningChance));
+                    codes.RemoveRange(i + 1, 12);
                     chanceFound = true;
                 }
                 else if (!shuffleFound && Config.UniqueCheck && i < codes.Count - 2 && codes[i + 2].opcode == OpCodes.Ble && codes[i + 1].opcode == OpCodes.Ldc_I4_0 && codes[i].opcode == OpCodes.Callvirt && codes[i - 1].opcode == OpCodes.Ldloc_3)
