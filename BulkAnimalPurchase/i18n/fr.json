@@ -1,0 +1,7 @@
+{
+  "amount": "Nombre à acheter :",
+  "x-left-to-add": "({0} restant à placer)",
+
+  // GMCM
+  "GMCM_Option_ModEnabled_Name": "Activer le Mod"
+}
