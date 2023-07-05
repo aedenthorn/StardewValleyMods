@@ -268,14 +268,91 @@ namespace ChessBoards
                 setValue: value => Config.EnableMod = value
             );
 
-            
+            configMenu.AddSectionTitle(
+                mod: ModManifest,
+                text: () => "Chess Pieces"
+            );
+            configMenu.AddKeybind(
+                mod: ModManifest,
+                name: () => "Setup Key",
+                tooltip: () => "Set up the board with a fresh set of chess pieces.",
+                getValue: () => Config.SetupKey,
+                setValue: value => Config.SetupKey = value
+            );
+            configMenu.AddKeybind(
+                mod: ModManifest,
+                name: () => "Flip Key",
+                tooltip: () => "Rotate the board 180 degrees.",
+                getValue: () => Config.FlipKey,
+                setValue: value => Config.FlipKey = value
+            );
+            configMenu.AddKeybind(
+                mod: ModManifest,
+                name: () => "Clear Key",
+                tooltip: () => "Remove all chess pieces from the board.",
+                getValue: () => Config.ClearKey,
+                setValue: value => Config.ClearKey = value
+            );
+
+            configMenu.AddSectionTitle(
+                mod: ModManifest,
+                text: () => "Free Mode"
+            );
+            configMenu.AddParagraph(
+                mod: ModManifest,
+                text: () => "By default, piece movements are constrained to legal chess moves. Free mode allows you to setup the board as you like and move pieces without constraint."
+            );
+            configMenu.AddKeybind(
+                mod: ModManifest,
+                name: () => "Mode Key",
+                tooltip: () => "Toggle free mode.",
+                getValue: () => Config.ModeKey,
+                setValue: value => Config.ModeKey = value
+            );
+            configMenu.AddKeybind(
+                mod: ModManifest,
+                name: () => "Change Key",
+                tooltip: () => "Cycle the piece at the hovered square through the available piece types, or add a white pawn to the square if it is empty.",
+                getValue: () => Config.ChangeKey,
+                setValue: value => Config.ChangeKey = value
+            );
+            configMenu.AddKeybind(
+                mod: ModManifest,
+                name: () => "Change Mod Key",
+                tooltip: () => "Hold down this key while pressing the Change Key to change the piece color instead of the piece type.",
+                getValue: () => Config.ChangeModKey,
+                setValue: value => Config.ChangeModKey = value
+            );
+            configMenu.AddKeybind(
+                mod: ModManifest,
+                name: () => "Remove Key",
+                tooltip: () => "Remove the piece at the hovered square.",
+                getValue: () => Config.RemoveKey,
+                setValue: value => Config.RemoveKey = value
+            );
+
+            configMenu.AddSectionTitle(
+                mod: ModManifest,
+                text: () => "Sound Effects"
+            );
             configMenu.AddTextOption(
                 mod: ModManifest,
                 name: () => "Setup Sound",
                 getValue: () => Config.SetupSound,
                 setValue: value => Config.SetupSound = value
             );
-            
+            configMenu.AddTextOption(
+                mod: ModManifest,
+                name: () => "Flip Sound",
+                getValue: () => Config.FlipSound,
+                setValue: value => Config.FlipSound = value
+            );
+            configMenu.AddTextOption(
+                mod: ModManifest,
+                name: () => "Clear Sound",
+                getValue: () => Config.ClearSound,
+                setValue: value => Config.ClearSound = value
+            );
             configMenu.AddTextOption(
                 mod: ModManifest,
                 name: () => "Pickup Sound",
@@ -288,69 +365,11 @@ namespace ChessBoards
                 getValue: () => Config.PlaceSound,
                 setValue: value => Config.PlaceSound = value
             );
-            
             configMenu.AddTextOption(
                 mod: ModManifest,
                 name: () => "Cancel Sound",
                 getValue: () => Config.CancelSound,
                 setValue: value => Config.CancelSound = value
-            );
-            
-            configMenu.AddTextOption(
-                mod: ModManifest,
-                name: () => "Flip Sound",
-                getValue: () => Config.FlipSound,
-                setValue: value => Config.FlipSound = value
-            );
-            
-            configMenu.AddTextOption(
-                mod: ModManifest,
-                name: () => "Clear Sound",
-                getValue: () => Config.ClearSound,
-                setValue: value => Config.ClearSound = value
-            );
-
-            configMenu.AddKeybind(
-                mod: ModManifest,
-                name: () => "Setup Key",
-                getValue: () => Config.SetupKey,
-                setValue: value => Config.SetupKey = value
-            );
-            configMenu.AddKeybind(
-                mod: ModManifest,
-                name: () => "Clear Key",
-                getValue: () => Config.ClearKey,
-                setValue: value => Config.ClearKey = value
-            );
-            configMenu.AddKeybind(
-                mod: ModManifest,
-                name: () => "Flip Key",
-                getValue: () => Config.FlipKey,
-                setValue: value => Config.FlipKey = value
-            );
-            configMenu.AddKeybind(
-                mod: ModManifest,
-                name: () => "Mode Key",
-                getValue: () => Config.ModeKey,
-                setValue: value => Config.ModeKey = value
-            );
-            configMenu.AddKeybind(
-                mod: ModManifest,
-                name: () => "Change Key",
-                getValue: () => Config.ChangeKey,
-                setValue: value => Config.ChangeKey = value
-            );
-            configMenu.AddKeybind(
-                mod: ModManifest,
-                name: () => "Change Mod Key",
-                getValue: () => Config.ChangeModKey,
-                setValue: value => Config.ChangeModKey = value
-            );
-            configMenu.AddKeybind(
-                mod: ModManifest,
-                name: () => "Remove Key",
-                getValue: () => Config.RemoveKey,
-                setValue: value => Config.RemoveKey = value
             );
         }
     }
