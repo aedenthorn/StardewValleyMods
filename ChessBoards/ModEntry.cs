@@ -263,111 +263,111 @@ namespace ChessBoards
 
             configMenu.AddBoolOption(
                 mod: ModManifest,
-                name: () => "Mod Enabled",
+                name: () => ModEntry.SHelper.Translation.Get("GMCM_Option_ModEnabled_Name"),
                 getValue: () => Config.EnableMod,
                 setValue: value => Config.EnableMod = value
             );
 
             configMenu.AddSectionTitle(
                 mod: ModManifest,
-                text: () => "Chess Pieces"
+                text: () => ModEntry.SHelper.Translation.Get("GMCM_Title_ChessPieces_Text")
             );
             configMenu.AddKeybind(
                 mod: ModManifest,
-                name: () => "Setup Key",
-                tooltip: () => "Set up the board with a fresh set of chess pieces.",
+                name: () => ModEntry.SHelper.Translation.Get("GMCM_Option_SetupKey_Name"),
+                tooltip: () => ModEntry.SHelper.Translation.Get("GMCM_Option_SetupKey_Tooltip"),
                 getValue: () => Config.SetupKey,
                 setValue: value => Config.SetupKey = value
             );
             configMenu.AddKeybind(
                 mod: ModManifest,
-                name: () => "Flip Key",
-                tooltip: () => "Rotate the board 180 degrees.",
+                name: () => ModEntry.SHelper.Translation.Get("GMCM_Option_FlipKey_Name"),
+                tooltip: () => ModEntry.SHelper.Translation.Get("GMCM_Option_FlipKey_Tooltip"),
                 getValue: () => Config.FlipKey,
                 setValue: value => Config.FlipKey = value
             );
             configMenu.AddKeybind(
                 mod: ModManifest,
-                name: () => "Clear Key",
-                tooltip: () => "Remove all chess pieces from the board.",
+                name: () => ModEntry.SHelper.Translation.Get("GMCM_Option_ClearKey_Name"),
+                tooltip: () => ModEntry.SHelper.Translation.Get("GMCM_Option_ClearKey_Tooltip"),
                 getValue: () => Config.ClearKey,
                 setValue: value => Config.ClearKey = value
             );
 
             configMenu.AddSectionTitle(
                 mod: ModManifest,
-                text: () => "Free Mode"
+                text: () => ModEntry.SHelper.Translation.Get("GMCM_Title_FreeMode_Text")
             );
             configMenu.AddParagraph(
                 mod: ModManifest,
-                text: () => "By default, piece movements are constrained to legal chess moves. Free mode allows you to setup the board as you like and move pieces without constraint."
+                text: () => ModEntry.SHelper.Translation.Get("GMCM_Paragraph_FreeMode_Text")
             );
             configMenu.AddKeybind(
                 mod: ModManifest,
-                name: () => "Mode Key",
-                tooltip: () => "Toggle free mode.",
+                name: () => ModEntry.SHelper.Translation.Get("GMCM_Option_ModeKey_Name"),
+                tooltip: () => ModEntry.SHelper.Translation.Get("GMCM_Option_ModeKey_Tooltip"),
                 getValue: () => Config.ModeKey,
                 setValue: value => Config.ModeKey = value
             );
             configMenu.AddKeybind(
                 mod: ModManifest,
-                name: () => "Change Key",
-                tooltip: () => "Cycle the piece at the hovered square through the available piece types, or add a white pawn to the square if it is empty.",
+                name: () => ModEntry.SHelper.Translation.Get("GMCM_Option_ChangeKey_Name"),
+                tooltip: () => ModEntry.SHelper.Translation.Get("GMCM_Option_ChangeKey_Tooltip"),
                 getValue: () => Config.ChangeKey,
                 setValue: value => Config.ChangeKey = value
             );
             configMenu.AddKeybind(
                 mod: ModManifest,
-                name: () => "Change Mod Key",
-                tooltip: () => "Hold down this key while pressing the Change Key to change the piece color instead of the piece type.",
+                name: () => ModEntry.SHelper.Translation.Get("GMCM_Option_ChangeModKey_Name"),
+                tooltip: () => ModEntry.SHelper.Translation.Get("GMCM_Option_ChangeModKey_Tooltip"),
                 getValue: () => Config.ChangeModKey,
                 setValue: value => Config.ChangeModKey = value
             );
             configMenu.AddKeybind(
                 mod: ModManifest,
-                name: () => "Remove Key",
-                tooltip: () => "Remove the piece at the hovered square.",
+                name: () => ModEntry.SHelper.Translation.Get("GMCM_Option_RemoveKey_Name"),
+                tooltip: () => ModEntry.SHelper.Translation.Get("GMCM_Option_RemoveKey_Tooltip"),
                 getValue: () => Config.RemoveKey,
                 setValue: value => Config.RemoveKey = value
             );
 
             configMenu.AddSectionTitle(
                 mod: ModManifest,
-                text: () => "Sound Effects"
+                text: () => ModEntry.SHelper.Translation.Get("GMCM_Title_SoundEffects_Text")
             );
             configMenu.AddTextOption(
                 mod: ModManifest,
-                name: () => "Setup Sound",
+                name: () => ModEntry.SHelper.Translation.Get("GMCM_Option_SetupSound_Name"),
                 getValue: () => Config.SetupSound,
                 setValue: value => Config.SetupSound = value
             );
             configMenu.AddTextOption(
                 mod: ModManifest,
-                name: () => "Flip Sound",
+                name: () => ModEntry.SHelper.Translation.Get("GMCM_Option_FlipSound_Name"),
                 getValue: () => Config.FlipSound,
                 setValue: value => Config.FlipSound = value
             );
             configMenu.AddTextOption(
                 mod: ModManifest,
-                name: () => "Clear Sound",
+                name: () => ModEntry.SHelper.Translation.Get("GMCM_Option_ClearSound_Name"),
                 getValue: () => Config.ClearSound,
                 setValue: value => Config.ClearSound = value
             );
             configMenu.AddTextOption(
                 mod: ModManifest,
-                name: () => "Pickup Sound",
+                name: () => ModEntry.SHelper.Translation.Get("GMCM_Option_PickupSound_Name"),
                 getValue: () => Config.PickupSound,
                 setValue: value => Config.PickupSound = value
             );
             configMenu.AddTextOption(
                 mod: ModManifest,
-                name: () => "Place Sound",
+                name: () => ModEntry.SHelper.Translation.Get("GMCM_Option_PlaceSound_Name"),
                 getValue: () => Config.PlaceSound,
                 setValue: value => Config.PlaceSound = value
             );
             configMenu.AddTextOption(
                 mod: ModManifest,
-                name: () => "Cancel Sound",
+                name: () => ModEntry.SHelper.Translation.Get("GMCM_Option_CancelSound_Name"),
                 getValue: () => Config.CancelSound,
                 setValue: value => Config.CancelSound = value
             );
