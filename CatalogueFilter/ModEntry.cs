@@ -30,6 +30,7 @@ namespace CatalogueFilter
 
             SMonitor = Monitor;
             SHelper = helper;
+            helper.Events.GameLoop.GameLaunched += GameLoop_GameLaunched;
 
             var harmony = new Harmony(ModManifest.UniqueID);
             harmony.PatchAll();
