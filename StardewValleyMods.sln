@@ -533,6 +533,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PoopFramework", "PoopFramew
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MayoMart", "MayoMart\MayoMart.csproj", "{A1C1B295-83D5-4667-B968-E28F86370E0F}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TileTransparency", "TileTransparency\TileTransparency.csproj", "{965663C5-F65C-41EA-8322-E89831026093}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -3663,6 +3665,18 @@ Global
 		{A1C1B295-83D5-4667-B968-E28F86370E0F}.Release|x64.Build.0 = Release|x64
 		{A1C1B295-83D5-4667-B968-E28F86370E0F}.Release|x86.ActiveCfg = Release|Any CPU
 		{A1C1B295-83D5-4667-B968-E28F86370E0F}.Release|x86.Build.0 = Release|Any CPU
+		{965663C5-F65C-41EA-8322-E89831026093}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{965663C5-F65C-41EA-8322-E89831026093}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{965663C5-F65C-41EA-8322-E89831026093}.Debug|x64.ActiveCfg = Debug|x64
+		{965663C5-F65C-41EA-8322-E89831026093}.Debug|x64.Build.0 = Debug|x64
+		{965663C5-F65C-41EA-8322-E89831026093}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{965663C5-F65C-41EA-8322-E89831026093}.Debug|x86.Build.0 = Debug|Any CPU
+		{965663C5-F65C-41EA-8322-E89831026093}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{965663C5-F65C-41EA-8322-E89831026093}.Release|Any CPU.Build.0 = Release|Any CPU
+		{965663C5-F65C-41EA-8322-E89831026093}.Release|x64.ActiveCfg = Release|x64
+		{965663C5-F65C-41EA-8322-E89831026093}.Release|x64.Build.0 = Release|x64
+		{965663C5-F65C-41EA-8322-E89831026093}.Release|x86.ActiveCfg = Release|Any CPU
+		{965663C5-F65C-41EA-8322-E89831026093}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

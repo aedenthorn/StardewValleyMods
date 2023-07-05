@@ -80,6 +80,16 @@ namespace MovieTheatreTweaks
                 return true;
             }
         }
+        [HarmonyPatch(typeof(MovieTheater), "_Leave")]
+        public class MovieTheater__Leave_Patch
+        {
+            public static void Postfix()
+            {
+                if (!Config.ModEnabled)
+                    return;
+                Game1.player.lastSeenMovieWeek.Value = -1;
+            }
+        }
 
     }
 }

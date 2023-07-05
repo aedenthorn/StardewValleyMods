@@ -1,6 +1,8 @@
 ﻿using HarmonyLib;
 using Microsoft.Xna.Framework.Graphics;
+using Microsoft.Xna.Framework.Input;
 using StardewModdingAPI;
+using StardewModdingAPI.Events;
 using StardewValley;
 using StardewValley.BellsAndWhistles;
 using StardewValley.Locations;
@@ -23,7 +25,7 @@ namespace AFKTimePause
         public static ModConfig Config;
 
         public static ModEntry context;
-        public static int elapsedSeconds;
+        public static float elapsedSeconds;
 
         /// <summary>The mod entry point, called after the mod is first loaded.</summary>
         /// <param name="helper">Provides simplified APIs for writing mods.</param>
@@ -58,11 +60,11 @@ namespace AFKTimePause
             SpriteText.drawStringWithScrollCenteredAt(e.SpriteBatch, Config.AFKText, Game1.viewport.Width / 2, Game1.viewport.Height / 2);
         }
 
-        private void GameLoop_OneSecondUpdateTicked(object sender, StardewModdingAPI.Events.OneSecondUpdateTickedEventArgs e)
+        private void GameLoop_OneSecondUpdateTicked(object sender, OneSecondUpdateTickedEventArgs e)
         {
             if (Game1.activeClickableMenu is AFKMenu)
                 return;
-            if (!Config.ModEnabled || !Context.IsPlayerFree || (Game1.player.CurrentTool is FishingRod && (Game1.player.CurrentTool as FishingRod).inUse()))
+            if (!Config.ModEnabled || !Context.CanPlayerMove || Game1.player.movementDirections.Count > 0 || (Game1.player.CurrentTool is FishingRod && (Game1.player.CurrentTool as FishingRod).inUse()) || Game1.input.GetKeyboardState().GetPressedKeys().Length > 0 || (byte)AccessTools.Field(typeof(MouseState), "_buttons").GetValue(Game1.input.GetMouseState()) > 0)
             {
                 elapsedSeconds = 0;
                 return;
@@ -78,6 +80,8 @@ namespace AFKTimePause
 
         private void PlayerInput(object sender, object e)
         {
+            if (e is CursorMovedEventArgs && !Config.WakeOnMouseMove)
+                return;
             elapsedSeconds = 0;
             if (Game1.activeClickableMenu is AFKMenu)
                 Game1.activeClickableMenu = null;
@@ -101,34 +105,40 @@ namespace AFKTimePause
 
             configMenu.AddBoolOption(
                 mod: ModManifest,
-                name: () => ModEntry.SHelper.Translation.Get("GMCM_Option_ModEnabled_Name"),
+                name: () => SHelper.Translation.Get("GMCM_Option_ModEnabled_Name"),
                 getValue: () => Config.ModEnabled,
                 setValue: value => Config.ModEnabled = value
             );
             configMenu.AddBoolOption(
                 mod: ModManifest,
-                name: () => ModEntry.SHelper.Translation.Get("GMCM_Option_FreezeGame_Name"),
-                tooltip: () => ModEntry.SHelper.Translation.Get("GMCM_Option_FreezeGame_Tooltip"),
+                name: () => SHelper.Translation.Get("GMCM_Option_FreezeGame_Name"),
+                tooltip: () => SHelper.Translation.Get("GMCM_Option_FreezeGame_Tooltip"),
                 getValue: () => Config.FreezeGame,
                 setValue: value => Config.FreezeGame = value
             );
             configMenu.AddNumberOption(
                 mod: ModManifest,
-                name: () => ModEntry.SHelper.Translation.Get("GMCM_Option_SecondsTilAFK_Name"),
+                name: () => SHelper.Translation.Get("GMCM_Option_SecondsTilAFK_Name"),
                 getValue: () => Config.SecondsTilAFK,
                 setValue: value => Config.SecondsTilAFK = value
             );
             configMenu.AddBoolOption(
                 mod: ModManifest,
-                name: () => ModEntry.SHelper.Translation.Get("GMCM_Option_ShowAFKText_Name"),
+                name: () => SHelper.Translation.Get("GMCM_Option_ShowAFKText_Name"),
                 getValue: () => Config.ShowAFKText,
                 setValue: value => Config.ShowAFKText = value
             );
             configMenu.AddTextOption(
                 mod: ModManifest,
-                name: () => ModEntry.SHelper.Translation.Get("GMCM_Option_AFKText_Name"),
+                name: () => SHelper.Translation.Get("GMCM_Option_AFKText_Name"),
                 getValue: () => Config.AFKText,
                 setValue: value => Config.AFKText = value
+            );
+            configMenu.AddBoolOption(
+                mod: ModManifest,
+                name: () => SHelper.Translation.Get("GMCM_Option_WakeOnMouseMove_Name"),
+                getValue: () => Config.WakeOnMouseMove,
+                setValue: value => Config.WakeOnMouseMove = value
             );
 
         }

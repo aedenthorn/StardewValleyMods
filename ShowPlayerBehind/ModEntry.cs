@@ -1,9 +1,11 @@
-﻿using Microsoft.Xna.Framework;
+﻿using HarmonyLib;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using StardewModdingAPI;
 using StardewValley;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Reflection;
 using xTile.Dimensions;
@@ -13,40 +15,70 @@ using xTile.Tiles;
 
 namespace ShowPlayerBehind
 {
-    public class ModEntry : Mod
+    public partial class ModEntry : Mod
     {
         
-        public static ModConfig config;
+        public static ModConfig Config;
         public static IMonitor SMonitor;
 
         private Dictionary<long, Point[]> transparentPoints = new Dictionary<long, Point[]>();
         private Dictionary<long, Point> farmerPoints = new Dictionary<long, Point>();
-        private Texture2D _houseTexture;
 
         public override void Entry(IModHelper helper)
         {
-            config = Helper.ReadConfig<ModConfig>();
-            if (!config.EnableMod)
-                return;
+            Config = Helper.ReadConfig<ModConfig>();
 
             SMonitor = Monitor;
 
-            //Helper.Events.GameLoop.SaveLoaded += GameLoop_SaveLoaded;
             Helper.Events.Display.RenderingWorld += Display_RenderingWorld;
+            helper.Events.GameLoop.GameLaunched += GameLoop_GameLaunched;
+
         }
 
-        private void GameLoop_SaveLoaded(object sender, StardewModdingAPI.Events.SaveLoadedEventArgs e)
+        public void GameLoop_GameLaunched(object sender, StardewModdingAPI.Events.GameLaunchedEventArgs e)
         {
-            //_houseTexture = Helper.Content.Load<Texture2D>("Buildings\\houses", ContentSource.GameContent);
-        }
 
+            // get Generic Mod Config Menu's API (if it's installed)
+            var configMenu = Helper.ModRegistry.GetApi<IGenericModConfigMenuApi>("spacechase0.GenericModConfigMenu");
+            if (configMenu is null)
+                return;
+
+            // register mod
+            configMenu.Register(
+                mod: ModManifest,
+                reset: () => Config = new ModConfig(),
+                save: () => Helper.WriteConfig(Config)
+            );
+
+            configMenu.AddBoolOption(
+                mod: ModManifest,
+                name: () => "Mod Enabled",
+                getValue: () => Config.ModEnabled,
+                setValue: value => Config.ModEnabled = value
+            );
+            configMenu.AddTextOption(
+                mod: ModManifest,
+                name: () => "Inner Transparency",
+                getValue: () => Config.InnerTransparency + "",
+                setValue: delegate(string value) { if (float.TryParse(value, NumberStyles.Any, CultureInfo.InvariantCulture, out var f)) { Config.InnerTransparency = f; } }
+            );
+            configMenu.AddTextOption(
+                mod: ModManifest,
+                name: () => "Outer Transparency",
+                getValue: () => Config.OuterTransparency + "",
+                setValue: delegate(string value) { if (float.TryParse(value, NumberStyles.Any, CultureInfo.InvariantCulture, out var f)) { Config.OuterTransparency = f; } }
+            );
+            configMenu.AddTextOption(
+                mod: ModManifest,
+                name: () => "Corner Transparency",
+                getValue: () => Config.CornerTransparency + "",
+                setValue: delegate(string value) { if (float.TryParse(value, NumberStyles.Any, CultureInfo.InvariantCulture, out var f)) { Config.CornerTransparency = f; } }
+            );
+        }
         private void Display_RenderingWorld(object sender, StardewModdingAPI.Events.RenderingWorldEventArgs e)
         {
-            Texture2D houseTexture = null;
-            if (config.TransparentFarmBuildings)
-            {
-                houseTexture = _houseTexture;
-            }
+            if (!Config.ModEnabled)
+                return;
             foreach(Farmer f in Game1.getAllFarmers())
             {
                 Point fp = f.getTileLocationPoint();
@@ -113,43 +145,28 @@ namespace ShowPlayerBehind
                         Tile tile = gl.map.GetLayer(layer).PickTile(new Location(p.X, p.Y) * Game1.tileSize, Game1.viewport.Size);
                         if (tile != null)
                         {
-                            tile.Properties.TryGetValue("@Opacity", out PropertyValue property);
-                            float opacity = config.OuterTransparency;
+                            float opacity = Config.OuterTransparency;
                             if (p == fp || p == new Point(fp.X, fp.Y - 1))
                             {
-                                opacity = config.InnerTransparency;
+                                opacity = Config.InnerTransparency;
                             }
                             else if(p.X != fp.X && (p.Y == fp.Y - 2 || p.Y == fp.Y + 1))
                             {
-                                opacity = config.CornerTransparency;
+                                opacity = Config.CornerTransparency;
                             }
-                            if (property != null)
+                            if (tile.Properties.ContainsKey("@Opacity"))
                             {
-                                gl.map.GetLayer(layer).Tiles[p.X, p.Y].Properties["@Opacity"] = opacity;
+                                gl.map.GetLayer(layer).Tiles[p.X, p.Y].Properties["@Opacity"] = opacity + "";
                             }
                             else
                             {
-                                gl.map.GetLayer(layer).Tiles[p.X, p.Y].Properties.Add("@Opacity", opacity);
+                                gl.map.GetLayer(layer).Tiles[p.X, p.Y].Properties.Add("@Opacity", opacity + "");
                             }
                         }
                     }
                 }
 
-                if(gl is Farm && config.TransparentFarmBuildings)
-                {
-                    if (config.HouseRectangle.Contains(fp))
-                    {
-                        //AddBuildingTransparency(houseTexture, fp, );
-                    }
-                }
             }
-        }
-
-        private void AddBuildingTransparency(Texture2D texture, Point fp)
-        {
-            Color[] data = new Color[texture.Width * texture.Height];
-            texture.GetData(data);
-
         }
 
         private Point[] AddFarmerPoints(Farmer f)

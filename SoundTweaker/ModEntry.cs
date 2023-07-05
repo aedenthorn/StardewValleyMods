@@ -30,6 +30,7 @@ namespace SoundTweaker
 
             Helper.Events.GameLoop.GameLaunched += GameLoop_GameLaunched;
             Helper.Events.GameLoop.DayStarted += GameLoop_DayStarted;
+            Helper.Events.Player.Warped += Player_Warped;
             Helper.Events.Content.AssetRequested += Content_AssetRequested;
             //Helper.Events.Input.ButtonPressed += Input_ButtonPressed;
 
@@ -42,6 +43,11 @@ namespace SoundTweaker
             };
             //File.WriteAllText("contents.json", JsonConvert.SerializeObject(data, Formatting.Indented));
             
+        }
+
+        private void Player_Warped(object sender, StardewModdingAPI.Events.WarpedEventArgs e)
+        {
+            ReloadSounds();
         }
 
         private void GameLoop_DayStarted(object sender, StardewModdingAPI.Events.DayStartedEventArgs e)

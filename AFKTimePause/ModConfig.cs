@@ -10,6 +10,7 @@ namespace AFKTimePause
         public bool FreezeGame { get; set; } = true;
         public int SecondsTilAFK { get; set; } = 60;
         public bool ShowAFKText { get; set; } = false;
+        public bool WakeOnMouseMove { get; set; } = true;
         public string AFKText { get; set; } = "AFK";
     }
 }

@@ -1,16 +1,16 @@
 ﻿{
-  "Name": "AFK Time Pause",
+  "Name": "Tile Transparency",
   "Author": "aedenthorn",
-  "Version": "0.6.0",
-  "Description": "AFK Time Pause.",
-  "UniqueID": "aedenthorn.AFKTimePause",
-  "EntryDll": "AFKTimePause.dll",
+  "Version": "0.1.0",
+  "Description": "Tile Transparency.",
+  "UniqueID": "aedenthorn.TileTransparency",
+  "EntryDll": "TileTransparency.dll",
   "MinimumApiVersion": "3.15.0",
   "ModUpdater": {
     "Repository": "StardewValleyMods",
     "User": "aedenthorn",
     "Directory": "_releases",
-    "ModFolder": "AFKTimePause"
+    "ModFolder": "TileTransparency"
   },
   "Dependencies": [
     {
@@ -18,5 +18,5 @@
       "IsRequired": false
     }
   ],
-  "UpdateKeys": [ "Nexus:14228" ]
+  "UpdateKeys": [ "Nexus:17288" ]
 }

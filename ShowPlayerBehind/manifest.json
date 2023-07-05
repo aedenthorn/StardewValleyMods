@@ -1,12 +1,12 @@
 ﻿{
   "Name": "Show Players Behind Buildings",
   "Author": "aedenthorn",
-  "Version": "0.1.3",
+  "Version": "0.2.0",
   "Description": "Lets you see farmers behind buildings.",
   "UniqueID": "aedenthorn.ShowPlayerBehind",
   "EntryDll": "ShowPlayerBehind.dll",
-  "MinimumApiVersion": "3.5.0",
-  "UpdateKeys": ["Nexus:6540"],
+  "MinimumApiVersion": "3.15.0",
+  "UpdateKeys": [ "Nexus:6540" ],
   "ModUpdater": {
     "Repository": "StardewValleyMods",
     "User": "aedenthorn",
@@ -14,13 +14,13 @@
     "ModFolder": "ShowPlayerBehind"
   },
   "Dependencies": [
-      {
-        "UniqueID": "Platonymous.Toolkit",
-        "IsRequired": true
-      },
-      {
-        "UniqueID": "Platonymous.ModUpdater",
-        "IsRequired": false
-      },
+    {
+      "UniqueID": "aedenthorn.TileTransparency",
+      "IsRequired": true
+    },
+    {
+      "UniqueID": "Platonymous.ModUpdater",
+      "IsRequired": false
+    }
   ]
 }

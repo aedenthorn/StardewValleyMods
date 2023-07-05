@@ -28,14 +28,14 @@ namespace CustomSpouseRooms
                 NPC ospouse = farmer.getSpouse();
                 if (ospouse != null)
                 {
-                    spouses.Add(ospouse.Name, ospouse);
+                    spouses[ospouse.Name] = ospouse;
                 }
             }
             foreach (string friend in farmer.friendshipData.Keys)
             {
                 if (Game1.getCharacterFromName(friend, true) != null && farmer.friendshipData[friend].IsMarried() && (all > 0 || friend != farmer.spouse))
                 {
-                    spouses.Add(friend, Game1.getCharacterFromName(friend, true));
+                    spouses[friend] = Game1.getCharacterFromName(friend, true);
                 }
             }
 			foreach(var pair in farmer.team.friendshipData.Pairs)
@@ -46,7 +46,7 @@ namespace CustomSpouseRooms
 				Farmer spouse = Game1.getFarmer(id);
 				if (spouse != null)
                 {
-					spouses.Add(spouse.Name, spouse);
+					spouses[spouse.Name] = spouse;
                 }
             }
             return spouses;
