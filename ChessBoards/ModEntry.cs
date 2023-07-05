@@ -241,7 +241,7 @@ namespace ChessBoards
             }
             catch
             {
-                piecesSheet = Helper.Content.Load<Texture2D>("assets/pieces.png");
+                piecesSheet = Helper.ModContent.Load<Texture2D>("assets/pieces.png");
                 Monitor.Log("Loaded default pieces sheet");
             }
         }
