@@ -1,4 +1,5 @@
 ﻿using Microsoft.Xna.Framework;
+using System.Globalization;
 using xTile.Tiles;
 
 namespace TileTransparency
@@ -7,10 +8,11 @@ namespace TileTransparency
     {
         public static void DrawTile_Prefix(Tile tile, ref Color ___m_modulationColour, ref Color? __state)
         {
-            if (!Config.ModEnabled || !tile.Properties.TryGetValue("@Opacity", out var p))
+            float f = 1;
+            if (!Config.ModEnabled || !tile.Properties.TryGetValue("@Opacity", out var p) || (p.Type == typeof(string) && !float.TryParse(p, NumberStyles.Any, CultureInfo.InvariantCulture, out f)))
                 return;
             __state = ___m_modulationColour;
-            ___m_modulationColour *= (float)p;
+            ___m_modulationColour *= p.Type == typeof(string) ? f : (float)p;
         }
         public static void DrawTile_Postfix(ref Color ___m_modulationColour, ref Color? __state)
         {
