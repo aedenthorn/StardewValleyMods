@@ -71,37 +71,37 @@ namespace CooperativeEggHunt
 
             configMenu.AddBoolOption(
                 mod: ModManifest,
-                name: () => "Mod Enabled",
+                name: () => ModEntry.SHelper.Translation.Get("GMCM_Option_ModEnabled_Name"),
                 getValue: () => Config.ModEnabled,
                 setValue: value => Config.ModEnabled = value
             );
             configMenu.AddNumberOption(
                 mod: ModManifest,
-                name: () => "Eggs To Win",
+                name: () => ModEntry.SHelper.Translation.Get("GMCM_Option_EggsToWin_Name"),
                 getValue: () => Config.EggsToWin,
                 setValue: value => Config.EggsToWin = value
             );
             configMenu.AddNumberOption(
                 mod: ModManifest,
-                name: () => "NPC Min Eggs",
+                name: () => ModEntry.SHelper.Translation.Get("GMCM_Option_NPCMinEggs_Name"),
                 getValue: () => Config.NPCMinEggs,
                 setValue: value => Config.NPCMinEggs = value
             );
             configMenu.AddNumberOption(
                 mod: ModManifest,
-                name: () => "NPC Max Eggs",
+                name: () => ModEntry.SHelper.Translation.Get("GMCM_Option_NPCMaxEggs_Name"),
                 getValue: () => Config.NPCMaxEggs,
                 setValue: value => Config.NPCMaxEggs = value
             );
             configMenu.AddNumberOption(
                 mod: ModManifest,
-                name: () => "Points Per Egg",
+                name: () => ModEntry.SHelper.Translation.Get("GMCM_Option_PointsPerEgg_Name"),
                 getValue: () => Config.PointsPerEgg,
                 setValue: value => Config.PointsPerEgg = value
             );
             configMenu.AddNumberOption(
                 mod: ModManifest,
-                name: () => "Eggs Per Talk",
+                name: () => ModEntry.SHelper.Translation.Get("GMCM_Option_EggsPerTalk_Name"),
                 getValue: () => Config.EggsPerTalk,
                 setValue: value => Config.EggsPerTalk = value
             );
