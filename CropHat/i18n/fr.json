@@ -1,0 +1,8 @@
+{
+  "x-hat": "Chapeau {0}",
+
+  // GMCM
+  "GMCM_Option_ModEnabled_Name": "Activer le Mod",
+  "GMCM_Option_AllowOthersToPick_Name": "Récolter les autres",
+  "GMCM_Option_AllowOthersToPick_Tooltip": "Permet aux agriculteurs de récolter les chapeaux de culture des autres."
+}
