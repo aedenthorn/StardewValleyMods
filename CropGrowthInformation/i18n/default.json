@@ -1,0 +1,30 @@
+{
+  "name": "Crop Name",
+  "phase": "Phase {0}/{1}",
+  "current": "Day {0}/{1}",
+  "total": "Growth {0}/{1}",
+  "ready": "Ready!",
+
+  // GMCM
+  "GMCM_Option_ModEnabled_Name": "Mod Enabled",
+  "GMCM_Title_Keys_Text": "Keys",
+  "GMCM_Option_RequireToggle_Name": "Require Toggle",
+  "GMCM_Option_ToggleButton_Name": "Toggle Key",
+  "GMCM_Title_Information_Text": "Information",
+  "GMCM_Option_ShowCropName_Name": "Show Crop Name",
+  "GMCM_Option_ShowCurrentPhase_Name": "Show Current Phase",
+  "GMCM_Option_ShowDaysInCurrentPhase_Name": "Show Phase Days",
+  "GMCM_Option_ShowTotalGrowth_Name": "Show Total Days",
+  "GMCM_Option_ShowReadyText_Name": "Show Ready Text",
+  "GMCM_Title_Display_Text": "Display",
+  "GMCM_Option_TextScale_Name": "Text Scale",
+  "GMCM_Option_CropNameColor_Name": "Name Color",
+  "GMCM_Option_CurrentPhaseColor_Name": "Phase Color",
+  "GMCM_Option_DaysInCurrentPhaseColor_Name": "Phase Days Color",
+  "GMCM_Option_TotalGrowthColor_Name": "Total Days Color",
+  "GMCM_Option_ReadyTextColor_Name": "Ready Color",
+  "GMCM_Option_Red_Name": "Red",
+  "GMCM_Option_Green_Name": "Green",
+  "GMCM_Option_Blue_Name": "Blue",
+  "GMCM_Option_CropOpacity_Name": "Crop Opacity"
+}

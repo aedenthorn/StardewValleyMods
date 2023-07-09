@@ -24,8 +24,8 @@ namespace CropGrowthInformation
                 if (!r.Contains(pos))
                     return;
                 __state = __instance.tintColor.Value;
-                __instance.tintColor.Value = __instance.tintColor.Value * Config.CropTransparency;
-                toTint *= Config.CropTransparency;
+                __instance.tintColor.Value = __instance.tintColor.Value * Config.CropOpacity;
+                toTint *= Config.CropOpacity;
             }
             public static void Postfix(Crop __instance, Vector2 tileLocation, ref Color __state)
             {
@@ -43,8 +43,8 @@ namespace CropGrowthInformation
                 if (!Config.EnableMod || !Context.CanPlayerMove || (Config.RequireToggle && !SHelper.Input.IsDown(Config.ToggleButton)) || tileLocation != Game1.currentCursorTile)
                     return;
                 __state = __instance.tintColor.Value;
-                __instance.tintColor.Value = __instance.tintColor.Value * Config.CropTransparency;
-                toTint *= Config.CropTransparency;
+                __instance.tintColor.Value = __instance.tintColor.Value * Config.CropOpacity;
+                toTint *= Config.CropOpacity;
             }
             public static void Postfix(Crop __instance, Vector2 tileLocation, ref Color __state)
             {
@@ -86,7 +86,7 @@ namespace CropGrowthInformation
                 if (crop.currentPhase.Value >= crop.phaseDays.Count - 1)
                 {
                     if (Config.ShowReadyText)
-                        list.Add(new TextData(Config.ReadyText, Config.ReadyColor));
+                        list.Add(new TextData(SHelper.Translation.Get("ready"), Config.ReadyColor));
                     else
                         return;
                 }
@@ -112,21 +112,26 @@ namespace CropGrowthInformation
                     }
                     if (Config.ShowCropName)
                     {
-                        var obj = new Object(crop.indexOfHarvest.Value, 1, false, -1, 0);
-                        if(obj is not null)
-                            list.Add(new TextData(obj.Name, Config.NameColor));
+                        Dictionary<int, string> cropData = Game1.content.Load<Dictionary<int, string>>("Data\\Crops");
+                        if (cropData.TryGetValue(crop.netSeedIndex, out var cropString))
+                        {
+                            if (Game1.objectInformation.TryGetValue(int.Parse(cropString.Split('/')[3]), out var objectInformation))
+                            {
+                                list.Add(new TextData(objectInformation.Split('/')[4], Config.NameColor));
+                            }
+                        }
                     }
                     if (Config.ShowCurrentPhase)
                     {
-                        list.Add(new TextData(string.Format(Config.PhaseText, phase + 1, crop.phaseDays.Count), Config.CurrentPhaseColor));
+                        list.Add(new TextData(string.Format(SHelper.Translation.Get("phase"), phase + 1, crop.phaseDays.Count), Config.CurrentPhaseColor));
                     }
                     if (Config.ShowDaysInCurrentPhase)
                     {
-                        list.Add(new TextData(string.Format(Config.CurrentText, days + 1, maxdays + 1), Config.CurrentGrowthColor));
+                        list.Add(new TextData(string.Format(SHelper.Translation.Get("current"), days + 1, maxdays + 1), Config.CurrentGrowthColor));
                     }
                     if (Config.ShowTotalGrowth)
                     {
-                        list.Add(new TextData(string.Format(Config.TotalText, totaldays + 1, totalmaxdays + 1), Config.TotalGrowthColor));
+                        list.Add(new TextData(string.Format(SHelper.Translation.Get("total"), totaldays + 1, totalmaxdays + 1), Config.TotalGrowthColor));
                     }
                 }
                 float scale = Config.TextScale;
