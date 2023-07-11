@@ -68,5 +68,10 @@ namespace BetterLightningRods
         {
             return Config.EnableMod ? Config.RodsToCheck : 2;
         }
+
+        private static bool Farm_doLightningStrike_Patch()
+        {
+            return !(Config.EnableMod && Config.Astraphobia);
+        }
     }
 }

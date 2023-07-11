@@ -43,7 +43,10 @@ namespace BetterLightningRods
                original: AccessTools.Method(typeof(Utility), nameof(Utility.performLightningUpdate)),
                transpiler: new HarmonyMethod(typeof(ModEntry), nameof(ModEntry.Utility_performLightningUpdate_Transpiler))
             );
-
+            harmony.Patch(
+               original: AccessTools.Method(typeof(Farm), "doLightningStrike"),
+               prefix: new HarmonyMethod(typeof(ModEntry), nameof(ModEntry.Farm_doLightningStrike_Patch))
+            );
         }
 
         private void Input_ButtonPressed(object sender, StardewModdingAPI.Events.ButtonPressedEventArgs e)
@@ -98,6 +101,13 @@ namespace BetterLightningRods
                 setValue: value => Config.LightningChance = value,
                 min: 0,
                 max: 100
+            );
+            configMenu.AddBoolOption(
+                mod: ModManifest,
+                name: () => ModEntry.SHelper.Translation.Get("GMCM_Option_Astraphobia_Name"),
+                tooltip: () => ModEntry.SHelper.Translation.Get("GMCM_Option_Astraphobia_Tooltip"),
+                getValue: () => Config.Astraphobia,
+                setValue: value => Config.Astraphobia = value
             );
         }
         private static int GetLightningRod(List<Vector2> rods, int index)
