@@ -37,7 +37,7 @@ namespace FreeLove
                     }
                 }
             }
-            SMonitor.Log($"reloaded {currentSpouses.Count} spouses for {farmer.Name}");
+            SMonitor.Log($"reloaded {currentSpouses[farmer.UniqueMultiplayerID].Count} spouses for {farmer.Name} {farmer.UniqueMultiplayerID}");
         }
         public static Dictionary<string, NPC> GetSpouses(Farmer farmer, bool all)
         {

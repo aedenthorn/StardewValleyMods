@@ -47,7 +47,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SocialNetwork", "SocialNetw
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MobileArcade", "MobileArcade\MobileArcade.csproj", "{A2FD8D92-D03C-4D92-B17A-0C7D0FEAE1F6}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ShowPlayerBehind", "ShowPlayerBehind\ShowPlayerBehind.csproj", "{8D8331B7-D4B5-40FB-BC2A-A4FA25C9E46B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ShowPlayerBehind", "ShowPlayerBehind\ShowPlayerBehind.csproj", "{8D8331B7-D4B5-40FB-BC2A-A4FA25C9E46B}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MobileCatalogues", "MobileCatalogues\MobileCatalogues.csproj", "{7AF1F7CF-5BD8-4A46-BC81-3469B621B360}"
 EndProject
@@ -534,6 +534,8 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MayoMart", "MayoMart\MayoMart.csproj", "{A1C1B295-83D5-4667-B968-E28F86370E0F}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TileTransparency", "TileTransparency\TileTransparency.csproj", "{965663C5-F65C-41EA-8322-E89831026093}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Arabic", "Arabic\Arabic.csproj", "{3DB0B93B-A65E-4FFD-9858-AF0EDAE52F01}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -3677,6 +3679,18 @@ Global
 		{965663C5-F65C-41EA-8322-E89831026093}.Release|x64.Build.0 = Release|x64
 		{965663C5-F65C-41EA-8322-E89831026093}.Release|x86.ActiveCfg = Release|Any CPU
 		{965663C5-F65C-41EA-8322-E89831026093}.Release|x86.Build.0 = Release|Any CPU
+		{3DB0B93B-A65E-4FFD-9858-AF0EDAE52F01}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3DB0B93B-A65E-4FFD-9858-AF0EDAE52F01}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3DB0B93B-A65E-4FFD-9858-AF0EDAE52F01}.Debug|x64.ActiveCfg = Debug|x64
+		{3DB0B93B-A65E-4FFD-9858-AF0EDAE52F01}.Debug|x64.Build.0 = Debug|x64
+		{3DB0B93B-A65E-4FFD-9858-AF0EDAE52F01}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{3DB0B93B-A65E-4FFD-9858-AF0EDAE52F01}.Debug|x86.Build.0 = Debug|Any CPU
+		{3DB0B93B-A65E-4FFD-9858-AF0EDAE52F01}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3DB0B93B-A65E-4FFD-9858-AF0EDAE52F01}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3DB0B93B-A65E-4FFD-9858-AF0EDAE52F01}.Release|x64.ActiveCfg = Release|x64
+		{3DB0B93B-A65E-4FFD-9858-AF0EDAE52F01}.Release|x64.Build.0 = Release|x64
+		{3DB0B93B-A65E-4FFD-9858-AF0EDAE52F01}.Release|x86.ActiveCfg = Release|Any CPU
+		{3DB0B93B-A65E-4FFD-9858-AF0EDAE52F01}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -6,6 +6,8 @@ using StardewModdingAPI.Events;
 using StardewValley;
 using StardewValley.Locations;
 using System;
+using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 
@@ -198,6 +200,394 @@ namespace MobilePhone
                 }
                 catch { }
             }
+            var configMenu = Helper.ModRegistry.GetApi<IGenericModConfigMenuApi>("spacechase0.GenericModConfigMenu");
+            if (configMenu is not null)
+            {
+                var ModManifest = ModEntry.context.ModManifest;
+                // register mod
+                configMenu.Register(
+                    mod: ModManifest,
+                    reset: () => Config = new ModConfig(),
+                    save: () => Helper.WriteConfig(Config)
+                );
+
+                configMenu.AddBoolOption(
+                    mod: ModManifest,
+                    name: () => "Mod Enabled",
+                    getValue: () => Config.EnableMod,
+                    setValue: value => Config.EnableMod = value
+                );
+
+                configMenu.AddBoolOption(
+                    mod: ModManifest,
+                    name: () => "Enable Open Phone Key",
+                    getValue: () => Config.EnableOpenPhoneKey,
+                    setValue: value => Config.EnableOpenPhoneKey = value
+                );
+                configMenu.AddKeybind(
+                    mod: ModManifest,
+                    name: () => "Open Phone Key",
+                    getValue: () => Config.OpenPhoneKey,
+                    setValue: value => Config.OpenPhoneKey = value
+                );
+
+                configMenu.AddBoolOption(
+                    mod: ModManifest,
+                    name: () => "Enable Rotate Key",
+                    getValue: () => Config.EnableRotatePhoneKey,
+                    setValue: value => Config.EnableRotatePhoneKey = value
+                );
+                configMenu.AddKeybind(
+                    mod: ModManifest,
+                    name: () => "Rotate Key",
+                    getValue: () => Config.RotatePhoneKey,
+                    setValue: value => Config.RotatePhoneKey = value
+                );
+                configMenu.AddBoolOption(
+                    mod: ModManifest,
+                    name: () => "Add Rotate App",
+                    getValue: () => Config.AddRotateApp,
+                    setValue: value => Config.AddRotateApp = value
+                );
+                
+                configMenu.AddBoolOption(
+                    mod: ModManifest,
+                    name: () => "Show Phone Icon",
+                    getValue: () => Config.ShowPhoneIcon,
+                    setValue: value => Config.ShowPhoneIcon = value
+                );
+                
+                configMenu.AddBoolOption(
+                    mod: ModManifest,
+                    name: () => "Vibrate Phone Icon",
+                    getValue: () => Config.VibratePhoneIcon,
+                    setValue: value => Config.VibratePhoneIcon = value
+                );
+
+                var poses = new List<string>()
+                {
+                    "mid",
+                    "top-left",
+                    "top-right",
+                    "bottom-left",
+                    "bottom-right"
+                };
+
+                configMenu.AddTextOption(
+                    mod: ModManifest,
+                    name: () => "Phone Position",
+                    getValue: () => Config.PhonePosition,
+                    setValue: delegate(string value) { if (poses.Contains(value)) Config.PhonePosition = value; } 
+                );
+                configMenu.AddTextOption(
+                    mod: ModManifest,
+                    name: () => "Icon Position",
+                    getValue: () => Config.PhoneIconPosition,
+                    setValue: delegate (string value) { if (poses.Contains(value)) Config.PhoneIconPosition = value; }
+                );
+                configMenu.AddNumberOption(
+                    mod: ModManifest,
+                    name: () => "Tooltip Delay Ticks",
+                    getValue: () => Config.ToolTipDelayTicks,
+                    setValue: value => Config.ToolTipDelayTicks = value
+                );
+                
+                configMenu.AddNumberOption(
+                    mod: ModManifest,
+                    name: () => "Move Icon Ticks",
+                    getValue: () => Config.TicksToMoveAppIcon,
+                    setValue: value => Config.TicksToMoveAppIcon = value
+                );
+                
+                
+                configMenu.AddNumberOption(
+                    mod: ModManifest,
+                    name: () => "Points To Call",
+                    getValue: () => Config.MinPointsToCall,
+                    setValue: value => Config.MinPointsToCall = value
+                );
+                configMenu.AddTextOption(
+                    mod: ModManifest,
+                    name: () => "Block List",
+                    getValue: () => Config.CallBlockList,
+                    setValue: value => Config.CallBlockList = value
+                );
+
+                configMenu.AddTextOption(
+                    mod: ModManifest,
+                    name: () => "Allow List",
+                    getValue: () => Config.CallAllowList,
+                    setValue: value => Config.CallAllowList = value
+                );
+                configMenu.AddBoolOption(
+                    mod: ModManifest,
+                    name: () => "Show Names",
+                    getValue: () => Config.ShowNamesInPhoneBook,
+                    setValue: value => Config.ShowNamesInPhoneBook = value
+                );
+                configMenu.AddBoolOption(
+                    mod: ModManifest,
+                    name: () => "Real Names",
+                    getValue: () => Config.UseRealNamesInPhoneBook,
+                    setValue: value => Config.UseRealNamesInPhoneBook = value
+                );
+
+
+
+                configMenu.AddNumberOption(
+                    mod: ModManifest,
+                    name: () => "Uncallable Alpha",
+                    getValue: () => Config.UncallableNPCAlpha,
+                    setValue: value => Config.UncallableNPCAlpha = value,
+                    min: 0,
+                    max: 255
+                );
+                configMenu.AddBoolOption(
+                    mod: ModManifest,
+                    name: () => "Incoming Calls",
+                    getValue: () => Config.EnableIncomingCalls,
+                    setValue: value => Config.EnableIncomingCalls = value
+                );
+                configMenu.AddKeybind(
+                    mod: ModManifest,
+                    name: () => "Toggle Calls",
+                    getValue: () => Config.ToggleIncomingCallsKey,
+                    setValue: value => Config.ToggleIncomingCallsKey = value
+                );
+
+                configMenu.AddBoolOption(
+                    mod: ModManifest,
+                    name: () => "Underground Calls",
+                    getValue: () => Config.ReceiveCallsUnderground,
+                    setValue: value => Config.ReceiveCallsUnderground = value
+                );
+
+                configMenu.AddTextOption(
+                    mod: ModManifest,
+                    name: () => "Call Chance",
+                    getValue: () => Config.FriendCallChance + "",
+                    setValue: delegate (string value) { if (float.TryParse(value, NumberStyles.Any, CultureInfo.InvariantCulture, out float f)) { Config.FriendCallChance = f; } }
+                );
+
+
+                configMenu.AddNumberOption(
+                    mod: ModManifest,
+                    name: () => "Min Rings",
+                    getValue: () => Config.IncomingCallMinRings,
+                    setValue: value => Config.IncomingCallMinRings = value
+                );
+                
+
+                configMenu.AddNumberOption(
+                    mod: ModManifest,
+                    name: () => "Max Rings",
+                    getValue: () => Config.IncomingCallMaxRings,
+                    setValue: value => Config.IncomingCallMaxRings = value
+                );
+
+                configMenu.AddNumberOption(
+                    mod: ModManifest,
+                    name: () => "Ring Interval",
+                    getValue: () => Config.PhoneRingInterval,
+                    setValue: value => Config.PhoneRingInterval = value
+                );
+                configMenu.AddBoolOption(
+                    mod: ModManifest,
+                    name: () => "Notify On Ring",
+                    getValue: () => Config.NotifyOnRing,
+                    setValue: value => Config.NotifyOnRing = value
+                );
+
+
+
+                configMenu.AddNumberOption(
+                    mod: ModManifest,
+                    name: () => "Icon Width",
+                    getValue: () => Config.IconWidth,
+                    setValue: value => Config.IconWidth = value
+                );
+                
+                configMenu.AddNumberOption(
+                    mod: ModManifest,
+                    name: () => "Icon Height",
+                    getValue: () => Config.IconHeight,
+                    setValue: value => Config.IconHeight = value
+                );
+                
+                
+                configMenu.AddNumberOption(
+                    mod: ModManifest,
+                    name: () => "Icon Margin X",
+                    getValue: () => Config.IconMarginX,
+                    setValue: value => Config.IconMarginX = value
+                );
+                
+                configMenu.AddNumberOption(
+                    mod: ModManifest,
+                    name: () => "Icon Margin Y",
+                    getValue: () => Config.IconMarginY,
+                    setValue: value => Config.IconMarginY = value
+                );
+                
+                
+                configMenu.AddNumberOption(
+                    mod: ModManifest,
+                    name: () => "Phone Width",
+                    getValue: () => Config.PhoneWidth,
+                    setValue: value => Config.PhoneWidth = value
+                );
+                
+                configMenu.AddNumberOption(
+                    mod: ModManifest,
+                    name: () => "Phone Height",
+                    getValue: () => Config.PhoneHeight,
+                    setValue: value => Config.PhoneHeight = value
+                );
+                
+                configMenu.AddNumberOption(
+                    mod: ModManifest,
+                    name: () => "Screen Width",
+                    getValue: () => Config.ScreenWidth,
+                    setValue: value => Config.ScreenWidth = value
+                );
+                
+                configMenu.AddNumberOption(
+                    mod: ModManifest,
+                    name: () => "Screen Height",
+                    getValue: () => Config.ScreenHeight,
+                    setValue: value => Config.ScreenHeight = value
+                );
+                
+                configMenu.AddNumberOption(
+                    mod: ModManifest,
+                    name: () => "Phone Icon Width",
+                    getValue: () => Config.PhoneIconWidth,
+                    setValue: value => Config.PhoneIconWidth = value
+                );
+                
+                configMenu.AddNumberOption(
+                    mod: ModManifest,
+                    name: () => "Phone Icon Height",
+                    getValue: () => Config.PhoneIconHeight,
+                    setValue: value => Config.PhoneIconHeight = value
+                );
+                
+                configMenu.AddNumberOption(
+                    mod: ModManifest,
+                    name: () => "Phone Offset X",
+                    getValue: () => Config.PhoneOffsetX,
+                    setValue: value => Config.PhoneOffsetX = value
+                );
+                
+                configMenu.AddNumberOption(
+                    mod: ModManifest,
+                    name: () => "Phone Offset Y",
+                    getValue: () => Config.PhoneOffsetY,
+                    setValue: value => Config.PhoneOffsetY = value
+                );
+                
+                configMenu.AddNumberOption(
+                    mod: ModManifest,
+                    name: () => "Screen Offset X",
+                    getValue: () => Config.ScreenOffsetX,
+                    setValue: value => Config.ScreenOffsetX = value
+                );
+                
+                configMenu.AddNumberOption(
+                    mod: ModManifest,
+                    name: () => "Screen Offset Y",
+                    getValue: () => Config.ScreenOffsetY,
+                    setValue: value => Config.ScreenOffsetY = value
+                );
+
+                configMenu.AddNumberOption(
+                    mod: ModManifest,
+                    name: () => "Phone Icon Offset X",
+                    getValue: () => Config.PhoneIconOffsetX,
+                    setValue: value => Config.PhoneIconOffsetX = value
+                );
+
+                configMenu.AddNumberOption(
+                    mod: ModManifest,
+                    name: () => "Phone Icon Offset Y",
+                    getValue: () => Config.PhoneIconOffsetY,
+                    setValue: value => Config.PhoneIconOffsetY = value
+                );
+                
+
+                configMenu.AddNumberOption(
+                    mod: ModManifest,
+                    name: () => "Phone Icon Offset X",
+                    getValue: () => Config.PhoneIconOffsetX,
+                    setValue: value => Config.PhoneIconOffsetX = value
+                );
+
+                configMenu.AddNumberOption(
+                    mod: ModManifest,
+                    name: () => "Phone Icon Offset Y",
+                    getValue: () => Config.PhoneIconOffsetY,
+                    setValue: value => Config.PhoneIconOffsetY = value
+                );
+
+
+                configMenu.AddNumberOption(
+                    mod: ModManifest,
+                    name: () => "Phone Rotated Width",
+                    getValue: () => Config.PhoneRotatedWidth,
+                    setValue: value => Config.PhoneRotatedWidth = value
+                );
+
+                configMenu.AddNumberOption(
+                    mod: ModManifest,
+                    name: () => "Phone Rotated Height",
+                    getValue: () => Config.PhoneRotatedHeight,
+                    setValue: value => Config.PhoneRotatedHeight = value
+                );
+
+                configMenu.AddNumberOption(
+                    mod: ModManifest,
+                    name: () => "Screen Rotated Width",
+                    getValue: () => Config.ScreenRotatedWidth,
+                    setValue: value => Config.ScreenRotatedWidth = value
+                );
+
+                configMenu.AddNumberOption(
+                    mod: ModManifest,
+                    name: () => "Screen Rotated Height",
+                    getValue: () => Config.ScreenRotatedHeight,
+                    setValue: value => Config.ScreenRotatedHeight = value
+                );
+
+                configMenu.AddNumberOption(
+                    mod: ModManifest,
+                    name: () => "Phone Rotated Offset X",
+                    getValue: () => Config.PhoneRotatedOffsetX,
+                    setValue: value => Config.PhoneRotatedOffsetX = value
+                );
+
+                configMenu.AddNumberOption(
+                    mod: ModManifest,
+                    name: () => "Phone Rotated Offset Y",
+                    getValue: () => Config.PhoneRotatedOffsetY,
+                    setValue: value => Config.PhoneRotatedOffsetY = value
+                );
+
+                configMenu.AddNumberOption(
+                    mod: ModManifest,
+                    name: () => "Screen Rotated Offset X",
+                    getValue: () => Config.ScreenRotatedOffsetX,
+                    setValue: value => Config.ScreenRotatedOffsetX = value
+                );
+
+                configMenu.AddNumberOption(
+                    mod: ModManifest,
+                    name: () => "Screen Rotated Offset Y",
+                    getValue: () => Config.ScreenRotatedOffsetY,
+                    setValue: value => Config.ScreenRotatedOffsetY = value
+                );
+
+            }
+
         }
 
 

@@ -8,7 +8,7 @@ namespace AFKTimePause
     {
         public bool ModEnabled { get; set; } = true;
         public bool FreezeGame { get; set; } = true;
-        public int SecondsTilAFK { get; set; } = 60;
+        public int ticksTilAFK { get; set; } = 3600;
         public bool ShowAFKText { get; set; } = false;
         public bool WakeOnMouseMove { get; set; } = true;
         public string AFKText { get; set; } = "AFK";

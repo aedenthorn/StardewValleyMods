@@ -53,7 +53,13 @@ namespace MobilePhone
 
             if (!ModEntry.phoneOpen)
             {
-                if (e.Button == SButton.MouseLeft && Game1.displayHUD && Config.ShowPhoneIcon && new Rectangle((int)ModEntry.phoneIconPosition.X, (int)ModEntry.phoneIconPosition.Y, Config.PhoneIconWidth, Config.PhoneIconHeight).Contains(mousePos))
+                if(Config.ToggleIncomingCallsKey != SButton.None && Game1.activeClickableMenu is null &&  e.Button == Config.ToggleIncomingCallsKey)
+                {
+                    Config.EnableIncomingCalls = Config.EnableIncomingCalls;
+                    Monitor.Log($"Incoming Calls Enabled: {Config.EnableIncomingCalls}");
+                    Helper.WriteConfig(Config);
+                }
+                else if (e.Button == SButton.MouseLeft && Game1.displayHUD && Config.ShowPhoneIcon && new Rectangle((int)ModEntry.phoneIconPosition.X, (int)ModEntry.phoneIconPosition.Y, Config.PhoneIconWidth, Config.PhoneIconHeight).Contains(mousePos))
                 {
                     Helper.Input.Suppress(SButton.MouseLeft);
                     ModEntry.clickingPhoneIcon = true;

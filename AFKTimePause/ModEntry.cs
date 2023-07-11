@@ -25,7 +25,7 @@ namespace AFKTimePause
         public static ModConfig Config;
 
         public static ModEntry context;
-        public static float elapsedSeconds;
+        public static int elapsedTicks;
 
         /// <summary>The mod entry point, called after the mod is first loaded.</summary>
         /// <param name="helper">Provides simplified APIs for writing mods.</param>
@@ -42,7 +42,7 @@ namespace AFKTimePause
             SHelper = helper;
 
             helper.Events.GameLoop.GameLaunched += GameLoop_GameLaunched;
-            helper.Events.GameLoop.OneSecondUpdateTicked += GameLoop_OneSecondUpdateTicked;
+            helper.Events.GameLoop.UpdateTicked += GameLoop_UpdateTicked;
             helper.Events.Display.Rendered += Display_Rendered;
             helper.Events.Input.CursorMoved += PlayerInput;
             helper.Events.Input.MouseWheelScrolled += PlayerInput;
@@ -53,36 +53,36 @@ namespace AFKTimePause
 
         }
 
-        private void Display_Rendered(object sender, StardewModdingAPI.Events.RenderedEventArgs e)
+        private void Display_Rendered(object sender, RenderedEventArgs e)
         {
-            if (!Config.ModEnabled || !Config.ShowAFKText || Config.FreezeGame || elapsedSeconds < Config.SecondsTilAFK || !Context.IsPlayerFree)
+            if (!Config.ModEnabled || !Config.ShowAFKText || Config.FreezeGame || elapsedTicks < Config.ticksTilAFK || !Context.IsPlayerFree)
                 return;
             SpriteText.drawStringWithScrollCenteredAt(e.SpriteBatch, Config.AFKText, Game1.viewport.Width / 2, Game1.viewport.Height / 2);
         }
 
-        private void GameLoop_OneSecondUpdateTicked(object sender, OneSecondUpdateTickedEventArgs e)
+        private void GameLoop_UpdateTicked(object sender, UpdateTickedEventArgs e)
         {
             if (Game1.activeClickableMenu is AFKMenu)
                 return;
             if (!Config.ModEnabled || !Context.CanPlayerMove || Game1.player.movementDirections.Count > 0 || (Game1.player.CurrentTool is FishingRod && (Game1.player.CurrentTool as FishingRod).inUse()) || Game1.input.GetKeyboardState().GetPressedKeys().Length > 0 || (byte)AccessTools.Field(typeof(MouseState), "_buttons").GetValue(Game1.input.GetMouseState()) > 0)
             {
-                elapsedSeconds = 0;
+                elapsedTicks = 0;
                 return;
             }
-            if (elapsedSeconds == Config.SecondsTilAFK && Config.FreezeGame)
+            if (elapsedTicks >= Config.ticksTilAFK && Config.FreezeGame)
             {
                 SMonitor.Log("Going AFK");
                 Game1.activeClickableMenu = new AFKMenu();
             }
-            else if (elapsedSeconds < Config.SecondsTilAFK)
-                elapsedSeconds++;
+            else if (elapsedTicks < Config.ticksTilAFK)
+                elapsedTicks++;
         }
 
         private void PlayerInput(object sender, object e)
         {
             if (e is CursorMovedEventArgs && !Config.WakeOnMouseMove)
                 return;
-            elapsedSeconds = 0;
+            elapsedTicks = 0;
             if (Game1.activeClickableMenu is AFKMenu)
                 Game1.activeClickableMenu = null;
         }
@@ -118,9 +118,9 @@ namespace AFKTimePause
             );
             configMenu.AddNumberOption(
                 mod: ModManifest,
-                name: () => SHelper.Translation.Get("GMCM_Option_SecondsTilAFK_Name"),
-                getValue: () => Config.SecondsTilAFK,
-                setValue: value => Config.SecondsTilAFK = value
+                name: () => SHelper.Translation.Get("GMCM_Option_TicksTilAFK_Name"),
+                getValue: () => Config.ticksTilAFK,
+                setValue: value => Config.ticksTilAFK = value
             );
             configMenu.AddBoolOption(
                 mod: ModManifest,

@@ -20,6 +20,7 @@ using xTile;
 using xTile.Dimensions;
 using xTile.Layers;
 using xTile.ObjectModel;
+using xTile.Tiles;
 using Color = Microsoft.Xna.Framework.Color;
 using Object = StardewValley.Object;
 using Rectangle = Microsoft.Xna.Framework.Rectangle;
@@ -72,31 +73,41 @@ namespace ImmersiveSprinklers
 
         private void Display_RenderedWorld(object sender, StardewModdingAPI.Events.RenderedWorldEventArgs e)
         {
-            if (!Config.EnableMod || !Context.IsPlayerFree || !Helper.Input.IsDown(Config.ShowRangeButton) || Game1.currentLocation?.terrainFeatures?.TryGetValue(Game1.currentCursorTile, out var tf) != true || tf is not HoeDirt)
+            if (!Config.EnableMod || !Context.IsPlayerFree || !Helper.Input.IsDown(Config.ShowRangeButton))
                 return;
-            var which = GetMouseCorner();
-            var sprinklerTile = Game1.currentCursorTile;
-
-            if (!GetSprinklerTileBool(Game1.currentLocation, ref sprinklerTile, ref which, out string str))
-                return;
-            tf = Game1.currentLocation.terrainFeatures[sprinklerTile];
-            Object obj = GetSprinklerCached(tf, which, tf.modData.ContainsKey(nozzleKey + which));
-            if (obj is not null)
+            List<Vector2> tiles = new List<Vector2>();
+            foreach(var kvp in Game1.currentLocation.terrainFeatures.Pairs)
             {
-                var tiles = GetSprinklerTiles(sprinklerTile, which, GetSprinklerRadius(obj));
-                foreach(var tile in tiles)
+                for(int i = 0; i < 4; i++)
                 {
-                    e.SpriteBatch.Draw(Game1.mouseCursors, Game1.GlobalToLocal(new Vector2((float)((int)tile.X * 64), (float)((int)tile.Y * 64))), new Rectangle?(new Rectangle(194, 388, 16, 16)), Color.White, 0f, Vector2.Zero, 4f, SpriteEffects.None, 0.01f);
+                    var which = i;
+                    var sprinklerTile = kvp.Key;
+                    if (TileSprinklerString(Game1.currentLocation, sprinklerTile, which) is null)
+                    {
+                        continue;
+                    }
+                    var tf = Game1.currentLocation.terrainFeatures[sprinklerTile];
+                    Object obj = GetSprinklerCached(tf, which, tf.modData.ContainsKey(nozzleKey + which));
+                    if (obj is not null)
+                    {
+                        tiles.AddRange(GetSprinklerTiles(sprinklerTile, which, GetSprinklerRadius(obj)));
+
+                        if (tf.modData.ContainsKey(enricherKey + which) && tf.modData.TryGetValue(fertilizerKey + which, out string fertString))
+                        {
+                            Vector2 pos = sprinklerTile + GetSprinklerCorner(which) * 0.5f;
+                            var f = GetFertilizer(fertString);
+                            var xy = Game1.GlobalToLocal(pos * 64) + new Vector2(0, -64);
+                            e.SpriteBatch.Draw(Game1.objectSpriteSheet, xy, GameLocation.getSourceRectForObject(f.ParentSheetIndex), Color.White, 0f, Vector2.Zero, 4f, SpriteEffects.None, (pos.Y + 1) / 10000f);
+                            var scaleFactor = 1f;
+                            Utility.drawTinyDigits(f.Stack, e.SpriteBatch, xy + new Vector2((float)(64 - Utility.getWidthOfTinyDigitString(f.Stack, 3f * scaleFactor)) + 3f * scaleFactor, 64f - 18f * scaleFactor + 1f), 3f * scaleFactor, 1f, Color.White);
+                        }
+                    }
                 }
-                if (tf.modData.ContainsKey(enricherKey + which) && tf.modData.TryGetValue(fertilizerKey + which, out string fertString))
-                {
-                    Vector2 pos = sprinklerTile + GetSprinklerCorner(which) * 0.5f;
-                    var f = GetFertilizer(fertString);
-                    var xy = Game1.GlobalToLocal(pos * 64) + new Vector2(0, -64);
-                    e.SpriteBatch.Draw(Game1.objectSpriteSheet, xy,  GameLocation.getSourceRectForObject(f.ParentSheetIndex), Color.White, 0f, Vector2.Zero, 4f, SpriteEffects.None, (pos.Y + 1) / 10000f);
-                    var scaleFactor = 1f;
-                    Utility.drawTinyDigits(f.Stack, e.SpriteBatch, xy + new Vector2((float)(64 - Utility.getWidthOfTinyDigitString(f.Stack, 3f * scaleFactor)) + 3f * scaleFactor, 64f - 18f * scaleFactor + 1f), 3f * scaleFactor, 1f, Color.White);
-                }
+
+            }
+            foreach (var tile in tiles.Distinct())
+            {
+                e.SpriteBatch.Draw(Game1.mouseCursors, Game1.GlobalToLocal(new Vector2((float)((int)tile.X * 64), (float)((int)tile.Y * 64))), new Rectangle?(new Rectangle(194, 388, 16, 16)), Color.White, 0f, Vector2.Zero, 4f, SpriteEffects.None, 0.01f);
             }
         }
 

@@ -225,17 +225,84 @@ namespace MobilePhone
             }
         }
 
+        public static void CheckIconOffScreen()
+        {
+            int halfWidth = Game1.viewport.Width / 2;
+            int halfHeight = Game1.viewport.Height / 2;
+            int halfIconWidth = Config.PhoneIconWidth / 2;
+            int halfIconHeight = Config.PhoneIconHeight / 2;
+            switch (Config.PhoneIconPosition.ToLower())
+            {
+                case "mid":
+
+                    if (Config.PhoneIconOffsetX > halfWidth - halfIconWidth || Config.PhoneIconOffsetX < -halfWidth + halfIconWidth || Config.PhoneIconOffsetY > halfHeight - halfIconHeight || Config.PhoneIconOffsetY < -halfHeight + halfIconHeight)
+                    {
+                        Config.PhoneIconOffsetX = MathHelper.Clamp(Config.PhoneIconOffsetX, -halfWidth + halfIconWidth, halfWidth - halfIconWidth);
+                        Config.PhoneIconOffsetY = MathHelper.Clamp(Config.PhoneIconOffsetY, -halfHeight + halfIconHeight, halfHeight - halfIconHeight);
+                        Helper.WriteConfig(Config);
+                        ModEntry.phoneIconPosition = GetPhoneIconPosition();
+                    }
+                    break;
+                case "top-left":
+                    if (Config.PhoneIconOffsetX > Game1.viewport.Width - Config.PhoneIconWidth || Config.PhoneIconOffsetX < 0 || Config.PhoneIconOffsetY > Game1.viewport.Height - Config.PhoneIconHeight || Config.PhoneIconOffsetY < 0)
+                    {
+                        Config.PhoneIconOffsetX = MathHelper.Clamp(Config.PhoneIconOffsetX, 0, Game1.viewport.Width - Config.PhoneIconWidth);
+                        Config.PhoneIconOffsetY = MathHelper.Clamp(Config.PhoneIconOffsetY, 0, Game1.viewport.Height - Config.PhoneIconHeight);
+                        Helper.WriteConfig(Config);
+                        ModEntry.phoneIconPosition = GetPhoneIconPosition();
+                        CheckIconOffScreen();
+                    }
+                    break;
+                case "top-right":
+                    if (Config.PhoneIconOffsetX < -Game1.viewport.Width + Config.PhoneIconWidth || Config.PhoneIconOffsetX > 0 || Config.PhoneIconOffsetY > Game1.viewport.Height - Config.PhoneIconHeight || Config.PhoneIconOffsetY < 0)
+                    {
+                        Config.PhoneIconOffsetX = MathHelper.Clamp(Config.PhoneIconOffsetX, -Game1.viewport.Width + Config.PhoneIconWidth, 0);
+                        Config.PhoneIconOffsetY = MathHelper.Clamp(Config.PhoneIconOffsetY, 0, Game1.viewport.Height - Config.PhoneIconHeight);
+                        Helper.WriteConfig(Config);
+                        ModEntry.phoneIconPosition = GetPhoneIconPosition();
+                        CheckIconOffScreen();
+                    }
+                    break;
+                case "bottom-left":
+                    if (Config.PhoneIconOffsetX > Game1.viewport.Width - Config.PhoneIconWidth || Config.PhoneIconOffsetX < 0 || Config.PhoneIconOffsetY < -Game1.viewport.Height + Config.PhoneIconHeight || Config.PhoneIconOffsetY > 0)
+                    {
+                        Config.PhoneIconOffsetX = MathHelper.Clamp(Config.PhoneIconOffsetX, 0, Game1.viewport.Width - Config.PhoneIconWidth);
+                        Config.PhoneIconOffsetY = MathHelper.Clamp(Config.PhoneIconOffsetY, -Game1.viewport.Height + Config.PhoneIconHeight, 0);
+                        Helper.WriteConfig(Config);
+                        ModEntry.phoneIconPosition = GetPhoneIconPosition();
+                        CheckIconOffScreen();
+                    }
+                    break;
+                case "bottom-right":
+                    if (Config.PhoneIconOffsetX < -Game1.viewport.Width + Config.PhoneIconWidth || Config.PhoneIconOffsetX > 0 || Config.PhoneIconOffsetY < -Game1.viewport.Height + Config.PhoneIconHeight || Config.PhoneIconOffsetY > 0)
+                    {
+                        Config.PhoneIconOffsetX = MathHelper.Clamp(Config.PhoneIconOffsetX, -Game1.viewport.Width + Config.PhoneIconWidth, 0);
+                        Config.PhoneIconOffsetY = MathHelper.Clamp(Config.PhoneIconOffsetY, -Game1.viewport.Height + Config.PhoneIconHeight, 0);
+                        Helper.WriteConfig(Config);
+                        ModEntry.phoneIconPosition = GetPhoneIconPosition();
+                        CheckIconOffScreen();
+                    }
+                    break;
+            }
+
+        }
         public static Vector2 GetPhoneIconPosition()
         {
             int x = 0;
             int y = 0;
+            int halfWidth = Game1.viewport.Width / 2;
+            int halfHeight = Game1.viewport.Height/ 2;
+            int halfIconWidth = Config.PhoneIconWidth / 2;
+            int halfIconHeight = Config.PhoneIconHeight / 2;
             switch (Config.PhoneIconPosition.ToLower())
             {
                 case "mid":
-                    x = Game1.viewport.Width / 2 - Config.PhoneIconWidth / 2 + Config.PhoneIconOffsetX;
-                    y = Game1.viewport.Height / 2 - Config.PhoneIconHeight / 2 + Config.PhoneIconOffsetY;
+
+                    x = halfWidth - halfIconWidth + Config.PhoneIconOffsetX;
+                    y = halfHeight - halfIconHeight + Config.PhoneIconOffsetY;
                     break;
                 case "top-left":
+
                     x = Config.PhoneIconOffsetX;
                     y = Config.PhoneIconOffsetY;
                     break;
@@ -252,7 +319,6 @@ namespace MobilePhone
                     y = Game1.viewport.Height - Config.PhoneIconHeight + Config.PhoneIconOffsetY;
                     break;
             }
-
             return new Vector2(x, y);
         }
 

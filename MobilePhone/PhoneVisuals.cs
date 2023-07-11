@@ -38,6 +38,7 @@ namespace MobilePhone
 
                 if (Config.ShowPhoneIcon && Game1.displayHUD && !Game1.eventUp && Game1.currentBillboard == 0 && Game1.gameMode == 3 && !Game1.freezeControls && !Game1.panMode && !Game1.HostPaused && !Game1.game1.takingMapScreenshot)
                 {
+                    PhoneUtils.CheckIconOffScreen();
                     if (ModEntry.clickingPhoneIcon)
                     {
                         if(Helper.Input.IsSuppressed(SButton.MouseLeft) && lastMousePos != mousePos)
@@ -420,6 +421,7 @@ namespace MobilePhone
             }
 
         }
+
 
         public static void Display_WindowResized(object sender, StardewModdingAPI.Events.WindowResizedEventArgs e)
         {
