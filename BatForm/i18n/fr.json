@@ -1,0 +1,11 @@
+{
+  // GMCM
+  "GMCM_Option_ModEnabled_Name": "Activer le Mod",
+  "GMCM_Option_NightOnly_Name": "Uniquement la nuit",
+  "GMCM_Option_OutdoorsOnly_Name": "Uniquement en extérieur",
+  "GMCM_Option_TransformKey_Name": "Touche de transformation",
+  "GMCM_Option_ActionsEnabled_Name": "Actions autorisées",
+  "GMCM_Option_MoveSpeed_Name": "Vitesse de déplacement",
+  "GMCM_Option_StaminaUse_Name": "Consommation d'endurance",
+  "GMCM_Option_TransformSound_Name": "Son de transformation"
+}
