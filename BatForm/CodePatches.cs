@@ -44,9 +44,38 @@ namespace BatForm
         {
             public static void Postfix(Options __instance, ref float __result)
             {
-                if (!Config.ModEnabled || BatFormStatus(Game1.player) == BatForm.Inactive)
+                if (!Config.ModEnabled || Game1.currentLocation == null || BatFormStatus(Game1.player) == BatForm.Inactive)
                     return;
-                __result -= height.Value / 100f;
+
+                float nextZoomLevel = __result - height.Value / 100f;
+                int nextViewportWidth = (int) Math.Ceiling((double) Game1.game1.localMultiplayerWindow.Width * (1.0 / (double) nextZoomLevel));
+                int nextViewportHeight = (int) Math.Ceiling((double) Game1.game1.localMultiplayerWindow.Height * (1.0 / (double) nextZoomLevel));
+                bool viewportWidthHasOrWillOverflowMapWidth = Game1.viewport.Size.Width > Game1.currentLocation.Map.DisplayWidth || nextViewportWidth > Game1.currentLocation.Map.DisplayWidth;
+                bool viewportHeightHasOrWillOverflowMapHeight = Game1.viewport.Size.Height > Game1.currentLocation.Map.DisplayHeight || nextViewportHeight > Game1.currentLocation.Map.DisplayHeight;
+
+                if (viewportWidthHasOrWillOverflowMapWidth || viewportHeightHasOrWillOverflowMapHeight || (BatFormStatus(Game1.player) == BatForm.SwitchingFrom && height.Value >= heightViewportLimit.Value))
+                {
+                    float zoomLevelBasedOnMaxViewportWidth = (float) Game1.game1.localMultiplayerWindow.Width / Game1.currentLocation.Map.DisplayWidth;
+                    float zoomLevelBasedOnMaxViewportHeight = (float) Game1.game1.localMultiplayerWindow.Height / Game1.currentLocation.Map.DisplayHeight;
+
+                    if (viewportWidthHasOrWillOverflowMapWidth && viewportHeightHasOrWillOverflowMapHeight)
+                    {
+                        __result = Math.Min(__result, Math.Max(zoomLevelBasedOnMaxViewportWidth, zoomLevelBasedOnMaxViewportHeight));
+                    }
+                    else
+                    {
+                        if (viewportWidthHasOrWillOverflowMapWidth)
+                            __result = Math.Min(__result, zoomLevelBasedOnMaxViewportWidth);
+                        else
+                            __result = Math.Min(__result, zoomLevelBasedOnMaxViewportHeight);
+                    }
+                    if (heightViewportLimit.Value == maxHeight)
+                        heightViewportLimit.Value = height.Value;
+                }
+                else
+                {
+                    __result = nextZoomLevel;
+                }
             }
         }
         [HarmonyPatch(typeof(FarmerSprite), "checkForFootstep")]

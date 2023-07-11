@@ -40,6 +40,7 @@ namespace BatForm
         {
             Game1.player.modData.Remove(batFormKey);
             height.Value = 0;
+            heightViewportLimit.Value = maxHeight;
             Game1.forceSnapOnNextViewportUpdate = true;
             Game1.game1.refreshWindowSettings();
             if(Game1.player is not null)

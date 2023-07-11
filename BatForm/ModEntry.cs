@@ -32,6 +32,7 @@ namespace BatForm
 
         public static PerScreen<ICue> batSound = new();
         public static PerScreen<int> height = new();
+        public static PerScreen<int> heightViewportLimit = new();
         public static PerScreen<AnimatedSprite> batSprite = new();
 
         public enum BatForm
@@ -86,6 +87,9 @@ namespace BatForm
         {
             if (!Config.ModEnabled || e.Player != Game1.player || BatFormStatus(e.Player) == BatForm.Inactive)
                 return;
+            heightViewportLimit.Value = maxHeight;
+            Game1.forceSnapOnNextViewportUpdate = true;
+            Game1.game1.refreshWindowSettings();
             if(Config.OutdoorsOnly && !e.NewLocation.IsOutdoors)
             {
                 ResetBat();
@@ -160,6 +164,7 @@ namespace BatForm
                     if (height.Value == 0)
                     {
                         PlayTransform();
+                        heightViewportLimit.Value = maxHeight;
                         Game1.player.ignoreCollisions = false;
                         Game1.player.modData[batFormKey] = BatForm.Inactive + "";
                     }
