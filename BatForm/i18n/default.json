@@ -1,0 +1,11 @@
+{
+  // GMCM
+  "GMCM_Option_ModEnabled_Name": "Mod Enabled",
+  "GMCM_Option_NightOnly_Name": "Night Only",
+  "GMCM_Option_OutdoorsOnly_Name": "Outdoors Only",
+  "GMCM_Option_TransformKey_Name": "Transform Key",
+  "GMCM_Option_ActionsEnabled_Name": "Actions Enabled",
+  "GMCM_Option_MoveSpeed_Name": "Move Speed",
+  "GMCM_Option_StaminaUse_Name": "Stamina Use",
+  "GMCM_Option_TransformSound_Name": "Transform Sound"
+}

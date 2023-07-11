@@ -211,57 +211,56 @@ namespace BatForm
 
             configMenu.AddBoolOption(
                 mod: ModManifest,
-                name: () => "Mod Enabled",
+                name: () => ModEntry.SHelper.Translation.Get("GMCM_Option_ModEnabled_Name"),
                 getValue: () => Config.ModEnabled,
                 setValue: value => Config.ModEnabled = value
             );
             
-
             configMenu.AddBoolOption(
                 mod: ModManifest,
-                name: () => "Night Only",
+                name: () => ModEntry.SHelper.Translation.Get("GMCM_Option_NightOnly_Name"),
                 getValue: () => Config.NightOnly,
                 setValue: value => Config.NightOnly = value
             );
             
             configMenu.AddBoolOption(
                 mod: ModManifest,
-                name: () => "Outdoors Only",
+                name: () => ModEntry.SHelper.Translation.Get("GMCM_Option_OutdoorsOnly_Name"),
                 getValue: () => Config.OutdoorsOnly,
                 setValue: value => Config.OutdoorsOnly = value
             );
             
             configMenu.AddKeybindList(
                 mod: ModManifest,
-                name: () => "Transform Key",
+                name: () => ModEntry.SHelper.Translation.Get("GMCM_Option_TransformKey_Name"),
                 getValue: () => Config.TransformKey,
                 setValue: value => Config.TransformKey = value
             );
 
             configMenu.AddBoolOption(
                 mod: ModManifest,
-                name: () => "Actions Enabled",
+                name: () => ModEntry.SHelper.Translation.Get("GMCM_Option_ActionsEnabled_Name"),
                 getValue: () => Config.ActionsEnabled,
                 setValue: value => Config.ActionsEnabled = value
             );
             
             configMenu.AddNumberOption(
                 mod: ModManifest,
-                name: () => "Move Speed",
+                name: () => ModEntry.SHelper.Translation.Get("GMCM_Option_MoveSpeed_Name"),
                 getValue: () => Config.MoveSpeed,
                 setValue: value => Config.MoveSpeed = value
             );
             
             configMenu.AddNumberOption(
                 mod: ModManifest,
-                name: () => "Stamina Use",
+                name: () => ModEntry.SHelper.Translation.Get("GMCM_Option_StaminaUse_Name"),
                 getValue: () => Config.StaminaUse,
                 setValue: value => Config.StaminaUse = value
             );
 
             configMenu.AddTextOption(
                 mod: ModManifest,
-                name: () => "Transform Sound",
+                name: () => ModEntry.SHelper.Translation.Get("GMCM_Option_TransformSound_Name"),
                 getValue: () => Config.TransformSound,
                 setValue: value => Config.TransformSound = value
             );
