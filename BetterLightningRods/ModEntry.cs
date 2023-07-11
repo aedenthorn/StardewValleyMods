@@ -93,6 +93,7 @@ namespace BetterLightningRods
             configMenu.AddNumberOption(
                 mod: ModManifest,
                 name: () => ModEntry.SHelper.Translation.Get("GMCM_Option_LightningChance_Name"),
+                tooltip: () => ModEntry.SHelper.Translation.Get("GMCM_Option_LightningChance_Tooltip"),
                 getValue: () => (int)Config.LightningChance,
                 setValue: value => Config.LightningChance = value,
                 min: 0,
