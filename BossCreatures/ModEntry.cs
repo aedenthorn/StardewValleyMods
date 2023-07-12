@@ -67,6 +67,9 @@ namespace BossCreatures
 
         private void OnDayEnding(object sender, DayEndingEventArgs e)
         {
+            if (!Config.ModEnabled)
+                return;
+
             foreach (GameLocation location in Game1.locations)
             {
                 for (int i = 0; i < location.characters.Count; i++)
@@ -92,11 +95,16 @@ namespace BossCreatures
         }
         private void OnDayStarted(object sender, DayStartedEventArgs e)
         {
+            if (!Config.ModEnabled)
+                return;
+
             CheckedBosses.Clear();
         }
 
         private void Warped(object sender, WarpedEventArgs e)
         {
+            if (!Config.ModEnabled)
+                return;
 
             PMonitor.Log("Entered location: " + e.NewLocation.Name);
             //defaultMusic = Game1.getMusicTrackName();
@@ -593,6 +601,23 @@ namespace BossCreatures
                 save: () => Helper.WriteConfig(Config)
             );
 
+            configMenu.AddBoolOption(
+                mod: ModManifest,
+                name: () => "Mod Enabled",
+                getValue: () => Config.ModEnabled,
+                setValue: value => {
+                    if (Config.ModEnabled == true && value == false)
+                    {
+                        if (BossHere(Game1.player.currentLocation) != null)
+                        {
+                            RevertMusic(Game1.player.currentLocation);
+                        }
+                        OnDayEnding(null, null);
+                        OnDayStarted(null, null);
+                    }
+                    Config.ModEnabled = value;
+                }
+            );
             configMenu.AddPageLink(
                 mod: ModManifest,
                 pageId: "Spawning",
