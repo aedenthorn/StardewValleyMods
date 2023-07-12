@@ -26,22 +26,20 @@ namespace BetterLightningRods
                 if (!rodsFound && i < codes.Count - 2 && codes[i + 2].opcode == OpCodes.Blt && codes[i + 1].opcode == OpCodes.Ldc_I4_2 && codes[i].opcode == OpCodes.Ldloc_S)
                 {
                     SMonitor.Log($"Overriding number of lightning rods to check");
-                    codes[i + 1] = new CodeInstruction(OpCodes.Call, AccessTools.Method(typeof(ModEntry), nameof(ModEntry.GetRodsToCheck)));
+                    codes[i + 1] = new CodeInstruction(OpCodes.Call, AccessTools.Method(typeof(ModEntry), nameof(GetRodsToCheck)));
                     rodsFound = true;
                 }
                 else if (!chanceFound && i < codes.Count - 12 && codes[i].opcode == OpCodes.Ldc_R8 && (double)codes[i].operand == 0.125 && codes[i + 1].opcode == OpCodes.Call && codes[i + 2].opcode == OpCodes.Callvirt && codes[i + 3].opcode == OpCodes.Ldnull && codes[i + 4].opcode == OpCodes.Callvirt && codes[i + 5].opcode == OpCodes.Add && codes[i + 6].opcode == OpCodes.Call && codes[i + 7].opcode == OpCodes.Callvirt && codes[i + 8].opcode == OpCodes.Ldnull && codes[i + 9].opcode == OpCodes.Callvirt && codes[i + 10].opcode == OpCodes.Ldc_R8 && (double)codes[i + 10].operand == 100.0 && codes[i + 11].opcode == OpCodes.Div && codes[i + 12].opcode == OpCodes.Add)
                 {
                     SMonitor.Log($"Overriding lightning chance");
-                    codes[i].opcode = OpCodes.Call;
-                    codes[i].operand = AccessTools.Method(typeof(ModEntry), nameof(ModEntry.GetLightningChance));
-                    codes.RemoveRange(i + 1, 12);
+                    codes.Insert(i + 13, new CodeInstruction(OpCodes.Call, AccessTools.Method(typeof(ModEntry), nameof(GetLightningChance))));
                     chanceFound = true;
                 }
                 else if (!shuffleFound && Config.UniqueCheck && i < codes.Count - 2 && codes[i + 2].opcode == OpCodes.Ble && codes[i + 1].opcode == OpCodes.Ldc_I4_0 && codes[i].opcode == OpCodes.Callvirt && codes[i - 1].opcode == OpCodes.Ldloc_3)
                 {
                     SMonitor.Log($"Shuffling lightning rod list");
                     indexCode = new CodeInstruction(OpCodes.Ldloc_S, codes[i + 4].operand);
-                    newCodes.Add(new CodeInstruction(OpCodes.Call, AccessTools.Method(typeof(ModEntry), nameof(ModEntry.ShuffleRodList))));
+                    newCodes.Add(new CodeInstruction(OpCodes.Call, AccessTools.Method(typeof(ModEntry), nameof(ShuffleRodList))));
                     shuffleFound = true;
                 }
                 else if (!derandomFound && Config.UniqueCheck && indexCode != null && i < codes.Count - 4 && codes[i + 4].opcode == OpCodes.Callvirt && (MethodInfo)codes[i + 4].operand == AccessTools.Method(typeof(Random), nameof(Random.Next), new Type[] { typeof(int) }) && codes[i + 2].opcode == OpCodes.Ldloc_3 && codes[i + 1].opcode == OpCodes.Ldloc_0 && codes[i].opcode == OpCodes.Ldloc_3)
@@ -50,7 +48,7 @@ namespace BetterLightningRods
                     newCodes.Add(codes[i]);
                     newCodes.Add(codes[i]);
                     newCodes.Add(indexCode);
-                    newCodes.Add(new CodeInstruction(OpCodes.Call, AccessTools.Method(typeof(ModEntry), nameof(ModEntry.GetLightningRod))));
+                    newCodes.Add(new CodeInstruction(OpCodes.Call, AccessTools.Method(typeof(ModEntry), nameof(GetLightningRod))));
                     i += 5;
                     derandomFound = true;
                 }
@@ -58,21 +56,6 @@ namespace BetterLightningRods
             }
 
             return newCodes.AsEnumerable();
-        }
-
-        private static double GetLightningChance()
-        {
-            return Config.EnableMod ? (double)(Config.LightningChance / 100f) : 0.125;
-        }
-
-        private static int GetRodsToCheck()
-        {
-            return Config.EnableMod ? Config.RodsToCheck : 2;
-        }
-
-        private static bool Farm_doLightningStrike_Patch()
-        {
-            return !(Config.EnableMod && Config.Astraphobia);
         }
     }
 }

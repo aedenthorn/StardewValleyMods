@@ -34,29 +34,15 @@ namespace BetterLightningRods
             SMonitor = Monitor;
             SHelper = helper;
             helper.Events.GameLoop.GameLaunched += GameLoop_GameLaunched;
-            helper.Events.Input.ButtonPressed += Input_ButtonPressed;
 
 
             var harmony = new Harmony(ModManifest.UniqueID);
 
             harmony.Patch(
                original: AccessTools.Method(typeof(Utility), nameof(Utility.performLightningUpdate)),
-               transpiler: new HarmonyMethod(typeof(ModEntry), nameof(ModEntry.Utility_performLightningUpdate_Transpiler))
+               transpiler: new HarmonyMethod(typeof(ModEntry), nameof(Utility_performLightningUpdate_Transpiler))
             );
-            harmony.Patch(
-               original: AccessTools.Method(typeof(Farm), "doLightningStrike"),
-               prefix: new HarmonyMethod(typeof(ModEntry), nameof(ModEntry.Farm_doLightningStrike_Patch))
-            );
-        }
 
-        private void Input_ButtonPressed(object sender, StardewModdingAPI.Events.ButtonPressedEventArgs e)
-        {
-            if(Context.IsWorldReady && e.Button == Config.LightningButton)
-            {
-                Monitor.Log("Lightning strike!");
-                Utility.performLightningUpdate(Game1.timeOfDay);
-
-            }
         }
 
         private void GameLoop_GameLaunched(object sender, StardewModdingAPI.Events.GameLaunchedEventArgs e)
@@ -75,72 +61,32 @@ namespace BetterLightningRods
 
             configMenu.AddBoolOption(
                 mod: ModManifest,
-                name: () => ModEntry.SHelper.Translation.Get("GMCM_Option_ModEnabled_Name"),
+                name: () => Helper.Translation.Get("GMCM_Option_ModEnabled_Name"),
                 getValue: () => Config.EnableMod,
                 setValue: value => Config.EnableMod = value
             );
             configMenu.AddBoolOption(
                 mod: ModManifest,
-                name: () => ModEntry.SHelper.Translation.Get("GMCM_Option_UniqueCheck_Name"),
-                tooltip: () => ModEntry.SHelper.Translation.Get("GMCM_Option_UniqueCheck_Tooltip"),
+                name: () => Helper.Translation.Get("GMCM_Option_UniqueCheck_Name"),
+                tooltip: () => Helper.Translation.Get("GMCM_Option_UniqueCheck_Tooltip"),
                 getValue: () => Config.UniqueCheck,
                 setValue: value => Config.UniqueCheck = value
             );
             configMenu.AddNumberOption(
                 mod: ModManifest,
-                name: () => ModEntry.SHelper.Translation.Get("GMCM_Option_RodsToCheck_Name"),
-                tooltip: () => ModEntry.SHelper.Translation.Get("GMCM_Option_RodsToCheck_Tooltip"),
+                name: () => Helper.Translation.Get("GMCM_Option_RodsToCheck_Name"),
+                tooltip: () => Helper.Translation.Get("GMCM_Option_RodsToCheck_Tooltip"),
                 getValue: () => Config.RodsToCheck,
                 setValue: value => Config.RodsToCheck = value
             );
             configMenu.AddNumberOption(
                 mod: ModManifest,
-                name: () => ModEntry.SHelper.Translation.Get("GMCM_Option_LightningChance_Name"),
-                tooltip: () => ModEntry.SHelper.Translation.Get("GMCM_Option_LightningChance_Tooltip"),
+                name: () => Helper.Translation.Get("GMCM_Option_LightningChance_Name"),
                 getValue: () => (int)Config.LightningChance,
                 setValue: value => Config.LightningChance = value,
                 min: 0,
                 max: 100
             );
-            configMenu.AddBoolOption(
-                mod: ModManifest,
-                name: () => ModEntry.SHelper.Translation.Get("GMCM_Option_Astraphobia_Name"),
-                tooltip: () => ModEntry.SHelper.Translation.Get("GMCM_Option_Astraphobia_Tooltip"),
-                getValue: () => Config.Astraphobia,
-                setValue: value => Config.Astraphobia = value
-            );
-        }
-        private static int GetLightningRod(List<Vector2> rods, int index)
-        {
-            int rod = Math.Min(index, rods.Count - 1);
-            return rod;
-        }
-        private static List<Vector2> ShuffleRodList(List<Vector2> rods)
-        {
-            //SMonitor.Log($"Shuffling {rods.Count} rods");
-            ShuffleList(rods);
-            if (Config.OnlyCheckEmpty)
-            {
-                for(int i = rods.Count - 1; i >= 0; i--)
-                {
-                    if (Game1.getFarm().objects[rods[i]].heldObject.Value != null)
-                        rods.RemoveAt(i);
-                }
-            }
-            return rods;
-        }
-        public static List<T> ShuffleList<T>(List<T> list)
-        {
-            int n = list.Count;
-            while (n > 1)
-            {
-                n--;
-                int k = Game1.random.Next(n + 1);
-                var value = list[k];
-                list[k] = list[n];
-                list[n] = value;
-            }
-            return list;
         }
     }
 
