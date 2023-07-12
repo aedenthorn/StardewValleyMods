@@ -111,13 +111,29 @@ namespace BetterElevator
 			if (n == 0 && levelToGoto == 0)
 				return;
 			string ls = (levelToGoto == 0 ? "" : levelToGoto.ToString())  + n;
-			int newLevel = int.Parse(ls);
+			int newLevel;
+			try
+			{
+				newLevel = int.Parse(ls);
+			}
+			catch (OverflowException)
+			{
+				newLevel = int.MaxValue;
+			}
 			if (IsSkullCave())
 			{
 				if (!ModEntry.Config.Unrestricted)
 				{
                     newLevel = Math.Min(Math.Max(MineShaft.lowestLevelReached - 120, 0), newLevel);
                 }
+				if (newLevel == 77377 - 120)
+				{
+					newLevel++;
+				}
+				if (newLevel > int.MaxValue - 120)
+				{
+					newLevel = int.MaxValue - 120;
+				}
             }
 			else
 			{
@@ -125,7 +141,10 @@ namespace BetterElevator
                 {
                     newLevel = Math.Min(Math.Min(MineShaft.lowestLevelReached, 120), newLevel);
                 }
-
+				if (newLevel > 120)
+				{
+					newLevel = 120;
+				}
             }
 			levelToGoto = newLevel;
 		}
