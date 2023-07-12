@@ -603,7 +603,7 @@ namespace BossCreatures
 
             configMenu.AddBoolOption(
                 mod: ModManifest,
-                name: () => "Mod Enabled",
+                name: () => ModEntry.PHelper.Translation.Get("GMCM_Option_ModEnabled_Name"),
                 getValue: () => Config.ModEnabled,
                 setValue: value => {
                     if (Config.ModEnabled == true && value == false)
@@ -621,35 +621,35 @@ namespace BossCreatures
             configMenu.AddPageLink(
                 mod: ModManifest,
                 pageId: "Spawning",
-                text: () => "Spawning"
+                text: () => ModEntry.PHelper.Translation.Get("GMCM_Page_Spawning_Text")
             );
             configMenu.AddPageLink(
                 mod: ModManifest,
                 pageId: "Difficulty",
-                text: () => "Difficulty"
+                text: () => ModEntry.PHelper.Translation.Get("GMCM_Page_Difficulty_Text")
             );
             configMenu.AddPageLink(
                 mod: ModManifest,
                 pageId: "Sprites",
-                text: () => "Sprites"
+                text: () => ModEntry.PHelper.Translation.Get("GMCM_Page_Sprites_Text")
             );
 
             configMenu.AddPage(
                 mod: ModManifest,
                 pageId: "Spawning",
-                pageTitle: () => "Spawning"
+                pageTitle: () => ModEntry.PHelper.Translation.Get("GMCM_Page_Spawning_Text")
             );
             configMenu.AddSectionTitle(
                 mod: ModManifest,
-                text: () => "Boss Spawn Chance"
+                text: () => ModEntry.PHelper.Translation.Get("GMCM_SectionTitle_BossSpawnPercentChance_Text")
             );
             configMenu.AddParagraph(
                 mod: ModManifest,
-                text: () => "Adjust the percent chance of a boss spawning in each location. Note that a boss can only spawn once per day in each location."
+                text: () => ModEntry.PHelper.Translation.Get("GMCM_Paragraph_BossSpawnPercentChance_Text")
             );
             configMenu.AddNumberOption(
                 mod: ModManifest,
-                name: () => "Monster Area",
+                name: () => ModEntry.PHelper.Translation.Get("GMCM_Option_MonsterArea_Name"),
                 getValue: () => Config.PercentChanceOfBossInMonsterArea,
                 setValue: value => Config.PercentChanceOfBossInMonsterArea = value,
                 min: 0,
@@ -657,7 +657,7 @@ namespace BossCreatures
             );
             configMenu.AddNumberOption(
                 mod: ModManifest,
-                name: () => "Farm",
+                name: () => ModEntry.PHelper.Translation.Get("GMCM_Option_Farm_Name"),
                 getValue: () => Config.PercentChanceOfBossInFarm,
                 setValue: value => Config.PercentChanceOfBossInFarm = value,
                 min: 0,
@@ -665,7 +665,7 @@ namespace BossCreatures
             );
             configMenu.AddNumberOption(
                 mod: ModManifest,
-                name: () => "Town",
+                name: () => ModEntry.PHelper.Translation.Get("GMCM_Option_Town_Name"),
                 getValue: () => Config.PercentChanceOfBossInTown,
                 setValue: value => Config.PercentChanceOfBossInTown = value,
                 min: 0,
@@ -673,7 +673,7 @@ namespace BossCreatures
             );
             configMenu.AddNumberOption(
                 mod: ModManifest,
-                name: () => "Forest",
+                name: () => ModEntry.PHelper.Translation.Get("GMCM_Option_Forest_Name"),
                 getValue: () => Config.PercentChanceOfBossInForest,
                 setValue: value => Config.PercentChanceOfBossInForest = value,
                 min: 0,
@@ -681,7 +681,7 @@ namespace BossCreatures
             );
             configMenu.AddNumberOption(
                 mod: ModManifest,
-                name: () => "Mountain",
+                name: () => ModEntry.PHelper.Translation.Get("GMCM_Option_Mountain_Name"),
                 getValue: () => Config.PercentChanceOfBossInMountain,
                 setValue: value => Config.PercentChanceOfBossInMountain = value,
                 min: 0,
@@ -689,7 +689,7 @@ namespace BossCreatures
             );
             configMenu.AddNumberOption(
                 mod: ModManifest,
-                name: () => "Desert",
+                name: () => ModEntry.PHelper.Translation.Get("GMCM_Option_Desert_Name"),
                 getValue: () => Config.PercentChanceOfBossInDesert,
                 setValue: value => Config.PercentChanceOfBossInDesert = value,
                 min: 0,
@@ -699,7 +699,7 @@ namespace BossCreatures
             {
                 configMenu.AddNumberOption(
                     mod: ModManifest,
-                    name: () => "Crimson Badlands",
+                    name: () => ModEntry.PHelper.Translation.Get("GMCM_Option_CrimsonBadlands_Name"),
                     getValue: () => Config.PercentChanceOfBossInCrimsonBadlands,
                     setValue: value => Config.PercentChanceOfBossInCrimsonBadlands = value,
                     min: 0,
@@ -708,51 +708,51 @@ namespace BossCreatures
             }
             configMenu.AddSectionTitle(
                 mod: ModManifest,
-                text: () => "Boss Probability Weights"
+                text: () => ModEntry.PHelper.Translation.Get("GMCM_SectionTitle_BossProbabilityWeights_Text")
             );
             configMenu.AddParagraph(
                 mod: ModManifest,
-                text: () => "Adjust the probability weights for each boss type to control their chances of spawning. Higher weights amplify the chances of encountering a specific boss, while lower weights reduce their occurrence."
+                text: () => ModEntry.PHelper.Translation.Get("GMCM_Paragraph_BossProbabilityWeights_Text")
             );
             configMenu.AddNumberOption(
                 mod: ModManifest,
-                name: () => "Bug Boss",
+                name: () => ModEntry.PHelper.Translation.Get("GMCM_Option_BugBoss_Name"),
                 getValue: () => Config.WeightBugBossChance,
                 setValue: value => Config.WeightBugBossChance = value
             );
             configMenu.AddNumberOption(
                 mod: ModManifest,
-                name: () => "Ghost Boss",
+                name: () => ModEntry.PHelper.Translation.Get("GMCM_Option_GhostBoss_Name"),
                 getValue: () => Config.WeightGhostBossChance,
                 setValue: value => Config.WeightGhostBossChance = value
             );
             configMenu.AddNumberOption(
                 mod: ModManifest,
-                name: () => "Serpent Boss",
+                name: () => ModEntry.PHelper.Translation.Get("GMCM_Option_SerpentBoss_Name"),
                 getValue: () => Config.WeightSerpentBossChance,
                 setValue: value => Config.WeightSerpentBossChance = value
             );
             configMenu.AddNumberOption(
                 mod: ModManifest,
-                name: () => "Skeleton Boss",
+                name: () => ModEntry.PHelper.Translation.Get("GMCM_Option_SkeletonBoss_Name"),
                 getValue: () => Config.WeightSkeletonBossChance,
                 setValue: value => Config.WeightSkeletonBossChance = value
             );
             configMenu.AddNumberOption(
                 mod: ModManifest,
-                name: () => "Skull Boss",
+                name: () => ModEntry.PHelper.Translation.Get("GMCM_Option_SkullBoss_Name"),
                 getValue: () => Config.WeightSkullBossChance,
                 setValue: value => Config.WeightSkullBossChance = value
             );
             configMenu.AddNumberOption(
                 mod: ModManifest,
-                name: () => "Squid Boss",
+                name: () => ModEntry.PHelper.Translation.Get("GMCM_Option_SquidKidBoss_Name"),
                 getValue: () => Config.WeightSquidBossChance,
                 setValue: value => Config.WeightSquidBossChance = value
             );
             configMenu.AddNumberOption(
                 mod: ModManifest,
-                name: () => "Slime Boss",
+                name: () => ModEntry.PHelper.Translation.Get("GMCM_Option_SlimeBoss_Name"),
                 getValue: () => Config.WeightSlimeBossChance,
                 setValue: value => Config.WeightSlimeBossChance = value
             );
@@ -760,33 +760,33 @@ namespace BossCreatures
             configMenu.AddPage(
                 mod: ModManifest,
                 pageId: "Difficulty",
-                pageTitle: () => "Difficulty"
+                pageTitle: () => ModEntry.PHelper.Translation.Get("GMCM_Page_Difficulty_Text")
             );
             configMenu.AddSectionTitle(
                 mod: ModManifest,
-                text: () => "Underground Difficulty"
+                text: () => ModEntry.PHelper.Translation.Get("GMCM_SectionTitle_UndergroundDifficulty_Text")
             );
             configMenu.AddParagraph(
                 mod: ModManifest,
-                text: () => "The difficulty mainly affects boss HP and damage. It is determined by multiplying the base underground difficulty by the current mine level.\nThe formula is: BaseUndergroundDifficulty x mineLevel / 100."
+                text: () => ModEntry.PHelper.Translation.Get("GMCM_Paragraph_UndergroundDifficulty_Text")
             );
             configMenu.AddNumberOption(
                 mod: ModManifest,
-                name: () => "Base Underground Difficulty",
+                name: () => ModEntry.PHelper.Translation.Get("GMCM_Option_BaseUndergroundDifficulty_Name"),
                 getValue: () => Config.BaseUndergroundDifficulty,
                 setValue: value => Config.BaseUndergroundDifficulty = value
             );
             configMenu.AddSectionTitle(
                 mod: ModManifest,
-                text: () => "Overland Difficulty"
+                text: () => ModEntry.PHelper.Translation.Get("GMCM_SectionTitle_OverlandDifficulty_Text")
             );
             configMenu.AddParagraph(
                 mod: ModManifest,
-                text: () => "Above ground, the difficulty is a random value between the minimum and maximum overland difficulty."
+                text: () => ModEntry.PHelper.Translation.Get("GMCM_Paragraph_OverlandDifficulty_Text")
             );
             configMenu.AddNumberOption(
                 mod: ModManifest,
-                name: () => "Min Overland Difficulty",
+                name: () => ModEntry.PHelper.Translation.Get("GMCM_Option_MinOverlandDifficulty_Text"),
                 getValue: () => Config.MinOverlandDifficulty,
                 setValue: value => {
                     Config.MinOverlandDifficulty = value;
@@ -795,7 +795,7 @@ namespace BossCreatures
             );
             configMenu.AddNumberOption(
                 mod: ModManifest,
-                name: () => "Max Overland Difficulty",
+                name: () => ModEntry.PHelper.Translation.Get("GMCM_Option_MaxOverlandDifficulty_Text"),
                 getValue: () => Config.MaxOverlandDifficulty,
                 setValue: value => {
                     Config.MaxOverlandDifficulty = value;
@@ -806,181 +806,181 @@ namespace BossCreatures
             configMenu.AddPage(
                 mod: ModManifest,
                 pageId: "Sprites",
-                pageTitle: () => "Sprites"
+                pageTitle: () => ModEntry.PHelper.Translation.Get("GMCM_Page_Sprites_Text")
             );
             configMenu.AddSectionTitle(
                 mod: ModManifest,
-                text: () => "Alternate Textures"
+                text: () => ModEntry.PHelper.Translation.Get("GMCM_SectionTitle_AlternateTextures_Text")
             );
             configMenu.AddParagraph(
                 mod: ModManifest,
-                text: () => "By default, this mod uses the sprites of the monsters they are based on, scaled up. Enabling this option allows the loading of custom sprites."
+                text: () => ModEntry.PHelper.Translation.Get("GMCM_Paragraph_AlternateTextures_Text")
             );
             configMenu.AddBoolOption(
                 mod: ModManifest,
-                name: () => "Use Alternate Textures",
+                name: () => ModEntry.PHelper.Translation.Get("GMCM_Option_UseAlternateTextures_Text"),
                 getValue: () => Config.UseAlternateTextures,
                 setValue: value => Config.UseAlternateTextures = value
             );
             configMenu.AddSectionTitle(
                 mod: ModManifest,
-                text: () => "Dimensions"
+                text: () => ModEntry.PHelper.Translation.Get("GMCM_SectionTitle_Dimensions_Text")
             );
             configMenu.AddParagraph(
                 mod: ModManifest,
-                text: () => "The sprite scale defines the size of a boss in relation to the size of an ordinary monster of the same type. Don't alter the width and height of the bosses unless you're using custom sprites."
+                text: () => ModEntry.PHelper.Translation.Get("GMCM_Paragraph_Dimensions_Text")
             );
             configMenu.AddSectionTitle(
                 mod: ModManifest,
-                text: () => "Bug Boss"
+                text: () => ModEntry.PHelper.Translation.Get("GMCM_Option_BugBoss_Name")
             );
             configMenu.AddNumberOption(
                 mod: ModManifest,
-                name: () => "Scale",
+                name: () => ModEntry.PHelper.Translation.Get("GMCM_Option_Scale_Text"),
                 getValue: () => Config.BugBossScale,
                 setValue: value => Config.BugBossScale = value
             );
             configMenu.AddNumberOption(
                 mod: ModManifest,
-                name: () => "Height",
+                name: () => ModEntry.PHelper.Translation.Get("GMCM_Option_Height_Text"),
                 getValue: () => Config.BugBossHeight,
                 setValue: value => Config.BugBossHeight = value
             );
             configMenu.AddNumberOption(
                 mod: ModManifest,
-                name: () => "Width",
+                name: () => ModEntry.PHelper.Translation.Get("GMCM_Option_Width_Text"),
                 getValue: () => Config.BugBossWidth,
                 setValue: value => Config.BugBossWidth = value
             );
             configMenu.AddSectionTitle(
                 mod: ModManifest,
-                text: () => "Ghost Boss"
+                text: () => ModEntry.PHelper.Translation.Get("GMCM_Option_GhostBoss_Name")
             );
             configMenu.AddNumberOption(
                 mod: ModManifest,
-                name: () => "Scale",
+                name: () => ModEntry.PHelper.Translation.Get("GMCM_Option_Scale_Text"),
                 getValue: () => Config.GhostBossScale,
                 setValue: value => Config.GhostBossScale = value
             );
             configMenu.AddNumberOption(
                 mod: ModManifest,
-                name: () => "Height",
+                name: () => ModEntry.PHelper.Translation.Get("GMCM_Option_Height_Text"),
                 getValue: () => Config.GhostBossHeight,
                 setValue: value => Config.GhostBossHeight = value
             );
             configMenu.AddNumberOption(
                 mod: ModManifest,
-                name: () => "Width",
+                name: () => ModEntry.PHelper.Translation.Get("GMCM_Option_Width_Text"),
                 getValue: () => Config.GhostBossWidth,
                 setValue: value => Config.GhostBossWidth = value
             );
             configMenu.AddSectionTitle(
                 mod: ModManifest,
-                text: () => "Serpent Boss"
+                text: () => ModEntry.PHelper.Translation.Get("GMCM_Option_SerpentBoss_Name")
             );
             configMenu.AddNumberOption(
                 mod: ModManifest,
-                name: () => "Scale",
+                name: () => ModEntry.PHelper.Translation.Get("GMCM_Option_Scale_Text"),
                 getValue: () => Config.SerpentBossScale,
                 setValue: value => Config.SerpentBossScale = value
             );
             configMenu.AddNumberOption(
                 mod: ModManifest,
-                name: () => "Height",
+                name: () => ModEntry.PHelper.Translation.Get("GMCM_Option_Height_Text"),
                 getValue: () => Config.SerpentBossHeight,
                 setValue: value => Config.SerpentBossHeight = value
             );
             configMenu.AddNumberOption(
                 mod: ModManifest,
-                name: () => "Width",
+                name: () => ModEntry.PHelper.Translation.Get("GMCM_Option_Width_Text"),
                 getValue: () => Config.SerpentBossWidth,
                 setValue: value => Config.SerpentBossWidth = value
             );
             configMenu.AddSectionTitle(
                 mod: ModManifest,
-                text: () => "Skeleton Boss"
+                text: () => ModEntry.PHelper.Translation.Get("GMCM_Option_SkeletonBoss_Name")
             );
             configMenu.AddNumberOption(
                 mod: ModManifest,
-                name: () => "Scale",
+                name: () => ModEntry.PHelper.Translation.Get("GMCM_Option_Scale_Text"),
                 getValue: () => Config.SkeletonBossScale,
                 setValue: value => Config.SkeletonBossScale = value
             );
             configMenu.AddNumberOption(
                 mod: ModManifest,
-                name: () => "Height",
+                name: () => ModEntry.PHelper.Translation.Get("GMCM_Option_Height_Text"),
                 getValue: () => Config.SkeletonBossHeight,
                 setValue: value => Config.SkeletonBossHeight = value
             );
             configMenu.AddNumberOption(
                 mod: ModManifest,
-                name: () => "Width",
+                name: () => ModEntry.PHelper.Translation.Get("GMCM_Option_Width_Text"),
                 getValue: () => Config.SkeletonBossWidth,
                 setValue: value => Config.SkeletonBossWidth = value
             );
             configMenu.AddSectionTitle(
                 mod: ModManifest,
-                text: () => "Skull Boss"
+                text: () => ModEntry.PHelper.Translation.Get("GMCM_Option_SkullBoss_Name")
             );
             configMenu.AddNumberOption(
                 mod: ModManifest,
-                name: () => "Scale",
+                name: () => ModEntry.PHelper.Translation.Get("GMCM_Option_Scale_Text"),
                 getValue: () => Config.SkullBossScale,
                 setValue: value => Config.SkullBossScale = value
             );
             configMenu.AddNumberOption(
                 mod: ModManifest,
-                name: () => "Height",
+                name: () => ModEntry.PHelper.Translation.Get("GMCM_Option_Height_Text"),
                 getValue: () => Config.SkullBossHeight,
                 setValue: value => Config.SkullBossHeight = value
             );
             configMenu.AddNumberOption(
                 mod: ModManifest,
-                name: () => "Width",
+                name: () => ModEntry.PHelper.Translation.Get("GMCM_Option_Width_Text"),
                 getValue: () => Config.SkullBossWidth,
                 setValue: value => Config.SkullBossWidth = value
             );
             configMenu.AddSectionTitle(
                 mod: ModManifest,
-                text: () => "Squid Kid Boss"
+                text: () => ModEntry.PHelper.Translation.Get("GMCM_Option_SquidKidBoss_Name")
             );
             configMenu.AddNumberOption(
                 mod: ModManifest,
-                name: () => "Scale",
+                name: () => ModEntry.PHelper.Translation.Get("GMCM_Option_Scale_Text"),
                 getValue: () => Config.SquidKidBossScale,
                 setValue: value => Config.SquidKidBossScale = value
             );
             configMenu.AddNumberOption(
                 mod: ModManifest,
-                name: () => "Height",
+                name: () => ModEntry.PHelper.Translation.Get("GMCM_Option_Height_Text"),
                 getValue: () => Config.SquidKidBossHeight,
                 setValue: value => Config.SquidKidBossHeight = value
             );
             configMenu.AddNumberOption(
                 mod: ModManifest,
-                name: () => "Width",
+                name: () => ModEntry.PHelper.Translation.Get("GMCM_Option_Width_Text"),
                 getValue: () => Config.SquidKidBossWidth,
                 setValue: value => Config.SquidKidBossWidth = value
             );
             configMenu.AddSectionTitle(
                 mod: ModManifest,
-                text: () => "Slime Boss"
+                text: () => ModEntry.PHelper.Translation.Get("GMCM_Option_SlimeBoss_Name")
             );
             configMenu.AddNumberOption(
                 mod: ModManifest,
-                name: () => "Scale",
+                name: () => ModEntry.PHelper.Translation.Get("GMCM_Option_Scale_Text"),
                 getValue: () => Config.SlimeBossScale,
                 setValue: value => Config.SlimeBossScale = value
             );
             configMenu.AddNumberOption(
                 mod: ModManifest,
-                name: () => "Height",
+                name: () => ModEntry.PHelper.Translation.Get("GMCM_Option_Height_Text"),
                 getValue: () => Config.SlimeBossHeight,
                 setValue: value => Config.SlimeBossHeight = value
             );
             configMenu.AddNumberOption(
                 mod: ModManifest,
-                name: () => "Width",
+                name: () => ModEntry.PHelper.Translation.Get("GMCM_Option_Width_Text"),
                 getValue: () => Config.SlimeBossWidth,
                 setValue: value => Config.SlimeBossWidth = value
             );
