@@ -117,8 +117,15 @@ namespace MobilePhone
             {
                 try
                 {
-                    if (kvp.Value.Points >= Config.MinPointsToCall && blackList?.Contains(kvp.Key) != true && whiteList?.Contains(kvp.Key) != false && (!npcDict.TryGetValue(kvp.Key, out var data) || (data.canCall && data.minPointsToCall >= kvp.Value.Points)))
+                    if (blackList?.Contains(kvp.Key) != true && whiteList?.Contains(kvp.Key) != false)
                     {
+                        if (!npcDict.TryGetValue(kvp.Key, out var data))
+                        {
+                            if (kvp.Value.Points < Config.MinPointsToCall)
+                                continue;
+                        }
+                        else if (!data.canCall || data.minPointsToCall > kvp.Value.Points)
+                            continue;
                         Monitor.Log($"Adding {kvp.Key} to callable list");
                         NPC npc = Game1.getCharacterFromName(kvp.Key);
                         Texture2D portrait = npc.Sprite.Texture;
