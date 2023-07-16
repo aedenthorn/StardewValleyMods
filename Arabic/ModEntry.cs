@@ -1,8 +1,12 @@
-﻿using HarmonyLib;
+﻿using BmFont;
+using HarmonyLib;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using Newtonsoft.Json;
 using StardewModdingAPI;
 using StardewModdingAPI.Events;
+using StardewValley;
+using StardewValley.GameData;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -20,10 +24,8 @@ namespace Arabic
         public static ModConfig Config;
 
         public static ModEntry context;
-        public static SpriteFont dialogueFont;
-        public static SpriteFont smallFont;
-        public static SpriteFont tinyFont;
-        //private Dictionary<string, Mapping> arabicMap;
+        //public static string dictPath = "aedenthorn.RightToLeft/dictionary";
+        private static Dictionary<string, LanguageInfo> languageDict = new();
 
         /// <summary>The mod entry point, called after the mod is first loaded.</summary>
         /// <param name="helper">Provides simplified APIs for writing mods.</param>
@@ -41,8 +43,17 @@ namespace Arabic
 
             Helper.Events.GameLoop.GameLaunched += GameLoop_GameLaunched;
             Helper.Events.Input.ButtonPressed += Input_ButtonPressed;
-            //Helper.Events.Content.AssetRequested += Content_AssetRequested;
-
+            Helper.Events.Content.AssetRequested += Content_AssetRequested;
+            foreach (var f in Directory.GetDirectories(Helper.DirectoryPath))
+            {
+                try
+                {
+                    LanguageInfo li = JsonConvert.DeserializeObject<LanguageInfo>(File.ReadAllText(Path.Combine(f, "content.json")));
+                    li.path = f;
+                    languageDict[li.code] = li;
+                }
+                catch { }
+            }
             /*
             arabicMap = new Dictionary<string, Mapping>();
             XmlReader xmlReader = XmlReader.Create(Path.Combine(Helper.DirectoryPath, "assets", "Arabic.fnt"));
@@ -67,6 +78,46 @@ namespace Arabic
 
         private void Content_AssetRequested(object sender, AssetRequestedEventArgs e)
         {
+            if (e.NameWithoutLocale.IsEquivalentTo("Data/AdditionalLanguages"))
+            {
+                e.Edit(delegate (IAssetData data) { 
+                    foreach(var kvp in languageDict) 
+                    {
+                        data.GetData<List<ModLanguage>>().Add(kvp.Value.metaData);
+                    }
+                });
+            }
+            foreach(var kvp in languageDict)
+            {
+                if(e.Name.IsEquivalentTo("Fonts/SpriteFont1_international") && LocalizedContentManager.CurrentLanguageCode == LocalizedContentManager.LanguageCode.mod && LocalizedContentManager.CurrentModLanguage.LanguageCode == kvp.Value.code)
+                {
+                    var x = e.Name;
+                    e.LoadFromModFile<XmlSource>($"{kvp.Value.code}/dialogueFont.fnt", AssetLoadPriority.Exclusive);
+                }
+                else if (e.Name.IsEquivalentTo($"Fonts/{kvp.Value.name}_0"))
+                {
+                    e.LoadFromModFile<Texture2D>(Path.Combine(kvp.Value.code, "dialogueFont_0.png"), AssetLoadPriority.Exclusive);
+                }
+                else if (e.Name.IsEquivalentTo($"aedenthorn.RightToLeft/{kvp.Value.code}/Button"))
+                {
+                    e.LoadFromModFile<Texture2D>(Path.Combine(kvp.Value.code, "button.png"), AssetLoadPriority.Exclusive);
+                }
+                else if (e.Name.IsEquivalentTo($"Fonts/SpriteFont1.{kvp.Value.code}"))
+                {
+                    ReloadFonts();
+                    e.LoadFrom(() => kvp.Value.dialogueFont, AssetLoadPriority.Exclusive);
+                }
+                else if (e.Name.IsEquivalentTo($"Fonts/SmallFont.{kvp.Value.code}"))
+                {
+                    ReloadFonts();
+                    e.LoadFrom(() => kvp.Value.smallFont, AssetLoadPriority.Exclusive);
+                }
+                else if (e.Name.IsEquivalentTo($"Fonts/tinyFont.{kvp.Value.code}"))
+                {
+                    ReloadFonts();
+                    e.LoadFrom(() => kvp.Value.tinyFont, AssetLoadPriority.Exclusive);
+                }
+            }
         }
 
         private void Input_ButtonPressed(object sender, ButtonPressedEventArgs e)
@@ -74,13 +125,20 @@ namespace Arabic
             if(e.Button == SButton.Down)
             {
                 ReloadFonts();
+                foreach(var key in languageDict.Keys)
+                {
+                    Helper.GameContent.InvalidateCache($"Fonts/SpriteFont1.{key}");
+                    Helper.GameContent.InvalidateCache($"Fonts/SmallFont.{key}");
+                    Helper.GameContent.InvalidateCache($"Fonts/tinyFont.{key}");
+                }
             }
         }
 
         private void GameLoop_GameLaunched(object sender, GameLaunchedEventArgs e)
         {
-            ReloadFonts();
+            
 
+            ReloadFonts();
         }
 
     }

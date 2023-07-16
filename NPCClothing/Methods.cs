@@ -175,6 +175,16 @@ namespace NPCClothing
             List<int> forbiddenAll = new List<int>() {
                 73,74
             };
+            List<OffsetData> custom = new();
+            var tmp = Path.Combine(Helper.DirectoryPath, "tmp", "custom.txt");
+            if (File.Exists(tmp))
+            {
+                foreach (var s in File.ReadAllLines(tmp))
+                {
+
+                }
+            }
+            var cpJson = new CPJSON();
             for (int i = 0; i < 94; i++)
             {
                 if (forbiddenAll.Contains(i))
@@ -293,18 +303,21 @@ namespace NPCClothing
                 });
 
                 hatData.Add($"hat_{i}", clothingData);
-                cpData.Add(new Dictionary<string, string>()
+                cpJson.Changes.Add(new Dictionary<string, object>()
                 {
                     { "Action", "Load"},
                     { "Target", $"aedenthorn.NCFHatsCP/hat_{i}_sprite"},
                     { "FromFile", $"assets/hat_{i}.png"},
                 });
             }
-            string json = JsonConvert.SerializeObject(hatData, Formatting.Indented);
+            cpJson.Changes.Add(new Dictionary<string, object>()
+            {
+                { "Action", "EditData" },
+                { "Target", "aedenthorn.NPCClothing/dictionary" },
+                { "Entries", hatData },
+            });
+            string json = JsonConvert.SerializeObject(cpJson, Formatting.Indented);
             File.WriteAllText("tmp/content.json", json);
-            json = JsonConvert.SerializeObject(cpData, Formatting.Indented);
-            File.WriteAllText("tmp/content2.json", json);
         }
-
     }
 }

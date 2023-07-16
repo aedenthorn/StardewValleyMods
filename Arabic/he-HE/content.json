@@ -1,0 +1,22 @@
+﻿{
+  "name": "Hebrew",
+  "code": "he-HE",
+  "defaultCharacter": "x",
+  "xOffset": 4,
+  "dialogueFontLineSpacing": 50,
+  "smallFontLineSpacing": 33,
+  "tinyFontLineSpacing": 25,
+  "dialogueFontSpacing": -2,
+  "smallFontSpacing": -1,
+  "tinyFontSpacing": 1,
+  "metaData": {
+    "ID": "aedenthorn.RightToLeft/he-HE",
+    "LanguageCode": "he-HE",
+    "ButtonTexture": "aedenthorn.RightToLeft/he-HE/Button",
+    "UseLatinFont": false,
+    "FontFile": "Fonts/SpriteFont1.he-HE",
+    "TimeFormat": "[HOURS_24_00]:[MINUTES]",
+    "ClockTimeFormat": "[HOURS_24_00]:[MINUTES]",
+    "ClockDateFormat": "[DAY_OF_WEEK] [DAY_OF_MONTH]"
+  }
+}
