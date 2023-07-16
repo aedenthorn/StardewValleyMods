@@ -1,16 +1,16 @@
 ﻿{
-  "Name": "Arabic",
+  "Name": "RightToLeft",
   "Author": "aedenthorn",
   "Version": "0.1.0",
-  "Description": "Arabic.",
-  "UniqueID": "aedenthorn.Arabic",
-  "EntryDll": "Arabic.dll",
+  "Description": "RightToLeft.",
+  "UniqueID": "aedenthorn.RightToLeft",
+  "EntryDll": "RightToLeft.dll",
   "MinimumApiVersion": "3.15.0",
   "ModUpdater": {
     "Repository": "StardewValleyMods",
     "User": "aedenthorn",
     "Directory": "_releases",
-    "ModFolder": "Arabic"
+    "ModFolder": "RightToLeft"
   },
   "Dependencies": [
     {

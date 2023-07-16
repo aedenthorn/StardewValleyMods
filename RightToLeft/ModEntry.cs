@@ -1,19 +1,15 @@
 ﻿using BmFont;
 using HarmonyLib;
-using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Newtonsoft.Json;
 using StardewModdingAPI;
 using StardewModdingAPI.Events;
 using StardewValley;
 using StardewValley.GameData;
-using System;
 using System.Collections.Generic;
-using System.Globalization;
 using System.IO;
-using System.Xml;
 
-namespace Arabic
+namespace RightToLeft
 {
     /// <summary>The mod entry point.</summary>
     public partial class ModEntry : Mod

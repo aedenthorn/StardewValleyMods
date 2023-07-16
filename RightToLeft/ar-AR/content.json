@@ -1,8 +1,9 @@
 ﻿{
-  "name": "Hebrew",
-  "code": "he-HE",
+  "name": "Arabic",
+  "code": "ar-AR",
   "defaultCharacter": "x",
   "xOffset": 4,
+  "useXAdvance": false,
   "dialogueFontLineSpacing": 50,
   "smallFontLineSpacing": 33,
   "tinyFontLineSpacing": 25,
@@ -10,11 +11,11 @@
   "smallFontSpacing": -1,
   "tinyFontSpacing": 1,
   "metaData": {
-    "ID": "aedenthorn.RightToLeft/he-HE",
-    "LanguageCode": "he-HE",
-    "ButtonTexture": "aedenthorn.RightToLeft/he-HE/Button",
+    "ID": "aedenthorn.RightToLeft/ar-AR",
+    "LanguageCode": "ar-AR",
+    "ButtonTexture": "aedenthorn.RightToLeft/ar-AR/Button",
     "UseLatinFont": false,
-    "FontFile": "Fonts/SpriteFont1.he-HE",
+    "FontFile": "Fonts/SpriteFont1.ar-AR",
     "TimeFormat": "[HOURS_24_00]:[MINUTES]",
     "ClockTimeFormat": "[HOURS_24_00]:[MINUTES]",
     "ClockDateFormat": "[DAY_OF_WEEK] [DAY_OF_MONTH]"

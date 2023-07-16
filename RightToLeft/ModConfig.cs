@@ -1,7 +1,4 @@
-﻿using StardewModdingAPI;
-using StardewModdingAPI.Utilities;
-
-namespace Arabic
+﻿namespace RightToLeft
 {
     public class ModConfig
     {

@@ -1,7 +1,7 @@
 ﻿using Microsoft.Xna.Framework.Graphics;
 using StardewValley.GameData;
 
-namespace Arabic
+namespace RightToLeft
 {
     public class LanguageInfo
     {
@@ -9,6 +9,7 @@ namespace Arabic
         public string code;
         public char defaultCharacter;
         public int xOffset;
+        public bool useXAdvance;
         public int dialogueFontLineSpacing = 50;
         public int smallFontLineSpacing = 33;
         public int tinyFontLineSpacing = 25;

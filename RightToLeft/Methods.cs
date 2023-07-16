@@ -1,18 +1,16 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using StardewValley;
+using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
-using System;
-using System.Text;
-using System.Xml;
-using StardewValley.Buildings;
-using System.Text.RegularExpressions;
 using System.Linq;
-using System.Xml.Linq;
+using System.Text;
+using System.Text.RegularExpressions;
+using System.Xml;
 
-namespace Arabic
+namespace RightToLeft
 {
     public partial class ModEntry
     {
@@ -22,7 +20,7 @@ namespace Arabic
             {
                 try
                 {
-                    languageDict[key].dialogueFont = MakeFont(languageDict[key],  "dialogueFont", languageDict[key].dialogueFontLineSpacing, languageDict[key].dialogueFontLineSpacing);
+                    languageDict[key].dialogueFont = MakeFont(languageDict[key],  "dialogueFont", languageDict[key].dialogueFontLineSpacing, languageDict[key].dialogueFontSpacing);
                     languageDict[key].smallFont = MakeFont(languageDict[key], "smallFont", languageDict[key].smallFontLineSpacing, languageDict[key].smallFontSpacing);
                     languageDict[key].tinyFont = MakeFont(languageDict[key], "tinyFont", languageDict[key].tinyFontLineSpacing, languageDict[key].tinyFontSpacing);
                 }
@@ -71,12 +69,14 @@ namespace Arabic
 
                 }
             }
+            /*
             var fontObject = new SpriteFontMapping()
             {
                 DefaultCharacter = info.defaultCharacter,
                 LineSpacing = lineSpacing,
                 Spacing = spacing
             };
+            */
             var glyphs = new List<Rectangle>();
             var cropping = new List<Rectangle>();
             var charMap = new List<char>();
@@ -87,7 +87,8 @@ namespace Arabic
                 var ch = (char)int.Parse(Convert.ToString(int.Parse(m.Key), 16), NumberStyles.HexNumber);
                 var glyph = new Rectangle(m.Value.x, m.Value.y, m.Value.width, m.Value.height);
                 var crop = new Rectangle(info.xOffset + m.Value.xo, m.Value.yo, m.Value.width, m.Value.height);
-                var kern = new Vector3(0, m.Value.width, 0);
+                var kern = new Vector3(0, m.Value.width, info.useXAdvance ? m.Value.xa - m.Value.width : 0);
+                /*
                 fontObject.Characters.Add(ch);
                 fontObject.Glyphs.Add(ch, new SpriteFont.Glyph()
                 {
@@ -99,6 +100,7 @@ namespace Arabic
                     Width = kern.Y,
                     WidthIncludingBearings = kern.X + kern.Y + kern.Z
                 });
+                */
                 glyphs.Add(glyph);
                 cropping.Add(crop);
                 charMap.Add(ch);
@@ -109,7 +111,7 @@ namespace Arabic
             return new SpriteFont(fontTexture, glyphs, cropping, charMap, lineSpacing, spacing, kerning, defaultChar);
             //var spriteFont = SHelper.GameContent.Load<SpriteFont>("Fonts/SpriteFont1.he-HE");
         }
-        private static void FixForArabic(ref SpriteFont spriteFont, ref string text, ref Vector2 position)
+        private static void FixForRTL(ref SpriteFont spriteFont, ref string text, ref Vector2 position)
         {
             if (!Config.ModEnabled || text?.Length == 0 || LocalizedContentManager.CurrentLanguageCode != LocalizedContentManager.LanguageCode.mod || !languageDict.ContainsKey(LocalizedContentManager.CurrentModLanguage.LanguageCode) || Regex.IsMatch(text, @"[a-zA-Z0-9]", RegexOptions.Compiled))
                 return;
@@ -120,7 +122,7 @@ namespace Arabic
             }
             text = inter;
         }
-        private static void FixForArabic(ref SpriteFont spriteFont, ref StringBuilder text, ref Vector2 position)
+        private static void FixForRTL(ref SpriteFont spriteFont, ref StringBuilder text, ref Vector2 position)
         {
             if (!Config.ModEnabled || text?.Length == 0 || LocalizedContentManager.CurrentLanguageCode != LocalizedContentManager.LanguageCode.mod || !languageDict.ContainsKey(LocalizedContentManager.CurrentModLanguage.LanguageCode) || Regex.IsMatch(text.ToString(), @"[a-zA-Z0-9]", RegexOptions.Compiled))
                 return;
