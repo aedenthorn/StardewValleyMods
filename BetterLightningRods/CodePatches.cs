@@ -57,5 +57,9 @@ namespace BetterLightningRods
 
             return newCodes.AsEnumerable();
         }
+        private static bool Farm_doLightningStrike_Prefix()
+        {
+            return !(Config.EnableMod && Config.Astraphobia);
+        }
     }
 }

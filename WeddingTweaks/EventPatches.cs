@@ -11,7 +11,7 @@ namespace WeddingTweaks
     public partial class ModEntry
     {
 
-        private static List<int[]> weddingPositions = new List<int[]>
+        private static List<int[]> allWeddingPositions = new List<int[]>
         {
             new int[]{26,63,1},
             new int[]{29,63,3},
@@ -133,6 +133,17 @@ namespace WeddingTweaks
                             SMonitor.Log($"Error adding {npcWitness} to wedding: \n\n{ex}");
                         }
                     }
+
+                    var weddingPositions = new List<int[]>();
+                    for(int i = 0; i < allWeddingPositions.Count; i++)
+                    {
+                        if (i == 0 && witness is not null)
+                            continue;
+                        if (i == 1 && npcWitness is not null)
+                            continue;
+                        weddingPositions.Add(allWeddingPositions[i]);
+                    }
+
                     foreach (NPC actor in __instance.actors)
                     {
                         if (witness is not null && actor.Name == witness)
@@ -194,10 +205,6 @@ namespace WeddingTweaks
                         if (addSpouses && spouses.Contains(actor.Name))
                         {
                             int idx = spouses.IndexOf(actor.Name);
-                            if (idx == 0 && witness is not null)
-                                idx++;
-                            if(idx == 1 && npcWitness is not null)
-                                idx++;
 
                             Vector2 pos;
                             if (idx < weddingPositions.Count)

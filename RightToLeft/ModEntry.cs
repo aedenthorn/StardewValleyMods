@@ -5,7 +5,9 @@ using Newtonsoft.Json;
 using StardewModdingAPI;
 using StardewModdingAPI.Events;
 using StardewValley;
+using StardewValley.BellsAndWhistles;
 using StardewValley.GameData;
+using StardewValley.Menus;
 using System.Collections.Generic;
 using System.IO;
 
@@ -22,6 +24,7 @@ namespace RightToLeft
         public static ModEntry context;
         //public static string dictPath = "aedenthorn.RightToLeft/dictionary";
         private static Dictionary<string, LanguageInfo> languageDict = new();
+        private LetterViewerMenu letterView;
 
         /// <summary>The mod entry point, called after the mod is first loaded.</summary>
         /// <param name="helper">Provides simplified APIs for writing mods.</param>
@@ -38,6 +41,7 @@ namespace RightToLeft
             harmony.PatchAll();
 
             Helper.Events.GameLoop.GameLaunched += GameLoop_GameLaunched;
+            Helper.Events.Display.RenderedWorld += Display_RenderedWorld;
             Helper.Events.Input.ButtonPressed += Input_ButtonPressed;
             Helper.Events.Content.AssetRequested += Content_AssetRequested;
             foreach (var f in Directory.GetDirectories(Helper.DirectoryPath))
@@ -72,6 +76,15 @@ namespace RightToLeft
             */
         }
 
+        private void Display_RenderedWorld(object sender, RenderedWorldEventArgs e)
+        {
+            letterView = null;
+            if (letterView != null)
+            {
+                letterView.draw(e.SpriteBatch);
+            }
+        }
+
         private void Content_AssetRequested(object sender, AssetRequestedEventArgs e)
         {
             if (e.NameWithoutLocale.IsEquivalentTo("Data/AdditionalLanguages"))
@@ -83,35 +96,41 @@ namespace RightToLeft
                     }
                 });
             }
-            foreach(var kvp in languageDict)
+            foreach (var kvp in languageDict)
             {
+                if (e.Name.IsEquivalentTo($"aedenthorn.RightToLeft/{kvp.Value.code}/Button"))
+                {
+                    e.LoadFromModFile<Texture2D>(Path.Combine(kvp.Value.code, "button.png"), AssetLoadPriority.Exclusive);
+                    return;
+                }
                 if(e.Name.IsEquivalentTo("Fonts/SpriteFont1_international") && LocalizedContentManager.CurrentLanguageCode == LocalizedContentManager.LanguageCode.mod && LocalizedContentManager.CurrentModLanguage.LanguageCode == kvp.Value.code)
                 {
                     var x = e.Name;
                     e.LoadFromModFile<XmlSource>($"{kvp.Value.code}/dialogueFont.fnt", AssetLoadPriority.Exclusive);
+                    return;
                 }
                 else if (e.Name.IsEquivalentTo($"Fonts/{kvp.Value.name}_0"))
                 {
                     e.LoadFromModFile<Texture2D>(Path.Combine(kvp.Value.code, "dialogueFont_0.png"), AssetLoadPriority.Exclusive);
-                }
-                else if (e.Name.IsEquivalentTo($"aedenthorn.RightToLeft/{kvp.Value.code}/Button"))
-                {
-                    e.LoadFromModFile<Texture2D>(Path.Combine(kvp.Value.code, "button.png"), AssetLoadPriority.Exclusive);
+                    return;
                 }
                 else if (e.Name.IsEquivalentTo($"Fonts/SpriteFont1.{kvp.Value.code}"))
                 {
                     ReloadFonts();
                     e.LoadFrom(() => kvp.Value.dialogueFont, AssetLoadPriority.Exclusive);
+                    return;
                 }
                 else if (e.Name.IsEquivalentTo($"Fonts/SmallFont.{kvp.Value.code}"))
                 {
                     ReloadFonts();
                     e.LoadFrom(() => kvp.Value.smallFont, AssetLoadPriority.Exclusive);
+                    return;
                 }
                 else if (e.Name.IsEquivalentTo($"Fonts/tinyFont.{kvp.Value.code}"))
                 {
                     ReloadFonts();
                     e.LoadFrom(() => kvp.Value.tinyFont, AssetLoadPriority.Exclusive);
+                    return;
                 }
             }
         }

@@ -115,6 +115,7 @@ namespace RightToLeft
         {
             if (!Config.ModEnabled || text?.Length == 0 || LocalizedContentManager.CurrentLanguageCode != LocalizedContentManager.LanguageCode.mod || !languageDict.ContainsKey(LocalizedContentManager.CurrentModLanguage.LanguageCode) || Regex.IsMatch(text, @"[a-zA-Z0-9]", RegexOptions.Compiled))
                 return;
+
             string inter = "";
             for (int i = text.Length - 1; i >= 0; i--)
             {

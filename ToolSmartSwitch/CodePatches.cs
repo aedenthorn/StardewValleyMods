@@ -4,6 +4,7 @@ using Microsoft.Xna.Framework.Audio;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using Newtonsoft.Json;
+using StardewModdingAPI;
 using StardewValley;
 using StardewValley.Locations;
 using StardewValley.Menus;
@@ -29,14 +30,14 @@ namespace ToolSmartSwitch
     public partial class ModEntry
     {
 
-        [HarmonyPatch(typeof(Farmer), "performBeginUsingTool")]
-        public class Farmer_performBeginUsingTool_Patch
+        [HarmonyPatch(typeof(Game1), nameof(Game1.pressUseToolButton))]
+        public class Farmer_pressUseToolButton_Patch
         {
-            public static void Prefix(Farmer __instance)
+            public static void Prefix()
             {
-                if (!Config.EnableMod || !__instance.IsLocalPlayer || (__instance.CurrentTool is null && Config.HoldingTool))
+                if (!Config.EnableMod || Game1.fadeToBlack || !Context.CanPlayerMove || (Game1.player.CurrentTool is null && Config.HoldingTool))
                     return;
-                SmartSwitch(__instance);
+                SmartSwitch(Game1.player);
             }
         }
 
@@ -45,7 +46,7 @@ namespace ToolSmartSwitch
         {
             public static void Prefix(HoeDirt __instance)
             {
-                if (!Config.EnableMod || !Config.SwitchForCrops || Game1.player.CurrentTool is not Tool)
+                if (!Config.EnableMod || !Config.SwitchForCrops || (Game1.player.CurrentTool is not Tool && Config.HoldingTool))
                     return;
                 SwitchForTerrainFeature(Game1.player, __instance, GetTools(Game1.player));
             }
