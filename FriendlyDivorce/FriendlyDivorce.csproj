@@ -149,6 +149,9 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
+    <None Include="i18n\ru.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Include="i18n\hu.json" />
     <None Include="i18n\pt.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
