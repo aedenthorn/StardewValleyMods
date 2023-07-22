@@ -9,8 +9,12 @@
     <None Remove="assets\board.png" />
     <None Remove="assets\pieces_alt.png" />
     <None Remove="assets\pieces_old.png" />
+    <None Remove="i18n\ru.json" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="i18n\ru.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="i18n\default.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
