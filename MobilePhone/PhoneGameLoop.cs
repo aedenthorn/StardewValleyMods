@@ -1,5 +1,6 @@
 ﻿using Microsoft.Xna.Framework.Audio;
 using Microsoft.Xna.Framework.Graphics;
+using MobilePhone.api;
 using MobilePhone.Api;
 using StardewModdingAPI;
 using StardewModdingAPI.Events;
@@ -603,13 +604,6 @@ namespace MobilePhone
             PhoneUtils.RefreshPhoneLayout();
             Helper.Events.Display.RenderedWorld += PhoneVisuals.Display_RenderedWorld;
             ModEntry.calledToday.Clear();
-
-            // !Changed code.
-            /* Changes:
-             * 1. Removed testing 'NPC Adventures API' calling. 
-             */
-
-            // Changes end. 
         }
 
         public static void ReturnedToTitle(object sender, ReturnedToTitleEventArgs e)
