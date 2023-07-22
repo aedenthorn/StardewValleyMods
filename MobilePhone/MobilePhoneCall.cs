@@ -157,21 +157,11 @@ namespace MobilePhone
                 }
             }
 
-            // !Updated Code.
-            /* Changes:
-             * 1. Added variables, to more comfortable debugging (in byte-code there is no difference btw);
-             * 2. Updated function calls to new 'NPC Adventures API' version;
-             * 2.1. I'm not sure, but added standalone check to NPC is not recruited yet, to prevent re-recruiting same characters
-             *      (Earlier, as I think, it was part of function 'CarRecruit()').
-             */
-
             var api = ModEntry.npcAdventureModApi;
-
             if (CheckToRecruit(api, npc))
             {
                 answers.Add(new Response("PhoneApp_InCall_Recruit", Helper.Translation.Get("recruit")));
             }
-            // Update end.
 
             if (npc.Name == "Robin" && Game1.player.daysUntilHouseUpgrade.Value < 0 && !Game1.getFarm().isThereABuildingUnderConstruction())
             {
@@ -203,19 +193,13 @@ namespace MobilePhone
                     return false;
 
                 default:
-                    if (!api.CanRecruitCompanions())
+                    if (!api.IsAvailable(npc))
                         return false;
-
-                    else if (!api.IsPossibleCompanion(npc))
+                    else if (api.IsRecruited(npc))
                         return false;
-
                     else if (!api.CanRecruit(Game1.player, npc))
                         return false;
-
                     else if (npc.isSleeping.Value)
-                        return false;
-
-                    else if (api.IsRecruited(npc))
                         return false;
                     break;
             }
