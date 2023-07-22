@@ -1,0 +1,9 @@
+{
+  // Mod Options.
+  "Mod.Options.IsEnabled": "Mod is Enabled?",
+
+  "Mod.Options.InBedOnly.Name": "In Bed Only?",
+  "Mod.Options.InBedOnly.Description": "Only try with spouses currently sleeping.",
+
+  "Mod.Options.MinHearts.Name": "Min Hearts to Invite"
+}
