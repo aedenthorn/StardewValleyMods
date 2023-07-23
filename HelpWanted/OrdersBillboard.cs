@@ -1,4 +1,5 @@
-﻿using Microsoft.Xna.Framework;
+﻿using HarmonyLib;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using StardewValley;
 using StardewValley.Menus;
@@ -89,16 +90,19 @@ namespace HelpWanted
                 {
                     if (cc.containsPoint(x, y))
                     {
-                        Game1.questOfTheDay = questDict[cc.myID].quest;
-                        showingQuest = cc.myID;
-                        questBillboard = new Billboard(true);
+                        if (questDict[cc.myID].acceptable)
+                        {
+                            Game1.questOfTheDay = questDict[cc.myID].quest;
+                            showingQuest = cc.myID;
+                            questBillboard = new Billboard(true);
+                        }
                         return;
                     }
                 }
-                if (upperRightCloseButton.containsPoint(x, y))
-                {
-                    exitThisMenu(true);
-                }
+                var method = AccessTools.Method(typeof(IClickableMenu), nameof(IClickableMenu.receiveLeftClick));
+                var ftn = method.MethodHandle.GetFunctionPointer();
+                var func = (Action<int, int, bool>)Activator.CreateInstance(typeof(Action<int, int, bool>), this, ftn);
+                func.Invoke(x, y, playSound);
             }
             else
             {
@@ -172,7 +176,10 @@ namespace HelpWanted
                 {
                     c.draw(b, questDict[c.myID].padColor, 1);
                     b.Draw(questDict[c.myID].pinTexture, c.bounds, questDict[c.myID].iconSource, questDict[c.myID].pinColor);
-                    b.Draw(questDict[c.myID].icon, new Vector2(c.bounds.X + questDict[c.myID].iconOffset.X, c.bounds.Y + questDict[c.myID].iconOffset.Y), questDict[c.myID].iconSource, questDict[c.myID].iconColor, 0, Vector2.Zero, questDict[c.myID].iconScale, SpriteEffects.FlipHorizontally, 1);
+                    if (questDict[c.myID].icon is not null)
+                    {
+                        b.Draw(questDict[c.myID].icon, new Vector2(c.bounds.X + questDict[c.myID].iconOffset.X, c.bounds.Y + questDict[c.myID].iconOffset.Y), questDict[c.myID].iconSource, questDict[c.myID].iconColor, 0, Vector2.Zero, questDict[c.myID].iconScale, SpriteEffects.FlipHorizontally, 1);
+                    }
                 }
             }
             if (upperRightCloseButton != null && shouldDrawCloseButton())
@@ -183,6 +190,10 @@ namespace HelpWanted
             {
                 drawHoverText(b, hoverText, Game1.smallFont, 0, 0, -1, (hoverTitle.Length > 0) ? hoverTitle : null, -1, null, null, 0, -1, -1, -1, -1, 1f, null, null);
             }
+            var method = AccessTools.Method(typeof(IClickableMenu), nameof(IClickableMenu.draw), new Type[] { typeof(SpriteBatch) });
+            var ftn = method.MethodHandle.GetFunctionPointer();
+            var func = (Action<SpriteBatch>)Activator.CreateInstance(typeof(Action<SpriteBatch>), this, ftn);
+            func.Invoke(b);
             Game1.mouseCursorTransparency = 1f;
             drawMouse(b, false, -1);
         }

@@ -1,15 +1,14 @@
 ﻿using HarmonyLib;
 using StardewValley;
 using StardewValley.Menus;
-using System.Collections.Generic;
-using System.Reflection.Emit;
-using System.Reflection;
-using System.Linq;
-using System;
-using StardewValley.Quests;
-using Object = StardewValley.Object;
-using Microsoft.Xna.Framework;
 using StardewValley.Monsters;
+using StardewValley.Quests;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Reflection;
+using System.Reflection.Emit;
+using Object = StardewValley.Object;
 
 namespace HelpWanted
 {

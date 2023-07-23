@@ -2,7 +2,7 @@
 using Microsoft.Xna.Framework.Graphics;
 using StardewValley.Quests;
 
-namespace HelpWanted
+namespace FarmerCommissions
 {
     public interface IQuestData
     {

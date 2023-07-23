@@ -10,7 +10,7 @@ using System.Globalization;
 using System.Linq;
 using Rectangle = Microsoft.Xna.Framework.Rectangle;
 
-namespace HelpWanted
+namespace FarmerCommissions
 {
     /// <summary>The mod entry point.</summary>
     public partial class ModEntry : Mod
@@ -20,17 +20,9 @@ namespace HelpWanted
         public static IModHelper SHelper;
         public static ModConfig Config;
 
-        public static bool skipBillboardConst;
-        public static bool gettingQuestDetails;
         public static string dictPath = "aedenthorn.HelpWanted/dictionary";
-        public static string pinTexturePath = "aedenthorn.HelpWanted/pin";
-        public static string padTexturePath = "aedenthorn.HelpWanted/pad";
         public static ModEntry context;
-        public static List<IQuestData> questList = new();
-        public static List<IQuestData> modQuestList = new();
-        public static Random random;
-
-        public static Dictionary<string, JsonQuestData> modQuestDict = new Dictionary<string, JsonQuestData>();
+        public static IHelpWantedAPI helpWantedAPI;
 
         /// <summary>The mod entry point, called after the mod is first loaded.</summary>
         /// <param name="helper">Provides simplified APIs for writing mods.</param>
@@ -44,10 +36,7 @@ namespace HelpWanted
             SHelper = helper;
 
             Helper.Events.GameLoop.GameLaunched += GameLoop_GameLaunched;
-            Helper.Events.GameLoop.DayStarted += GameLoop_DayStarted;
             Helper.Events.Content.AssetRequested += Content_AssetRequested;
-
-            random = new Random();
 
             var harmony = new Harmony(ModManifest.UniqueID);
             harmony.PatchAll();
@@ -59,138 +48,18 @@ namespace HelpWanted
                 return;
             if (e.NameWithoutLocale.IsEquivalentTo(dictPath))
             {
-                e.LoadFrom(() => new Dictionary<string, JsonQuestData>(), StardewModdingAPI.Events.AssetLoadPriority.Exclusive);
+                e.Edit(delegate(IAssetData data)
+                {
+
+                });
             }
-        }
-
-        public override object GetApi()
-        {
-            return new HelpWantedAPI();
-        }
-
-        private void GameLoop_DayStarted(object sender, StardewModdingAPI.Events.DayStartedEventArgs e)
-        {
-            if (!Config.ModEnabled || Utility.isFestivalDay(Game1.dayOfMonth, Game1.currentSeason))
-                return;
-            var dict = Helper.GameContent.Load<Dictionary<string, JsonQuestData>>(dictPath);
-            foreach(var kvp in dict)
-            {
-                var d = kvp.Value;
-                if (Game1.random.Next(100) >= d.percentChance)
-                    continue;
-                try
-                {
-                    var q = new QuestData()
-                    {
-                        pinTextureSource = d.pinTextureSource,
-                        padTextureSource = d.padTextureSource,
-                        pinTexture = string.IsNullOrEmpty(d.pinTexturePath) ? GetPinTexture(d.quest.target, d.quest.questType.ToString()) : Helper.GameContent.Load<Texture2D>(d.pinTexturePath),
-                        padTexture = string.IsNullOrEmpty(d.padTexturePath) ? GetPadTexture(d.quest.target, d.quest.questType.ToString()) : Helper.GameContent.Load<Texture2D>(d.padTexturePath),
-                        pinColor = d.pinColor is null ? GetRandomColor() : d.pinColor.Value,
-                        padColor = d.padColor is null ? GetRandomColor() : d.padColor.Value,
-                        icon = string.IsNullOrEmpty(d.iconPath) ? Game1.getCharacterFromName(d.quest.target).Portrait : Helper.GameContent.Load<Texture2D>(d.iconPath),
-                        iconSource = d.iconSource,
-                        iconColor = d.iconColor is null ? new Color(Config.PortraitTintR, Config.PortraitTintG, Config.PortraitTintB, Config.PortraitTintA) : d.iconColor.Value,
-                        iconScale = d.iconScale,
-                        iconOffset = d.iconOffset is null ? new Point(Config.PortraitOffsetX, Config.PortraitOffsetY) : d.iconOffset.Value,
-                        quest = MakeQuest(d.quest)
-                    };
-                    modQuestList.Add(q);
-                }
-                catch (Exception ex)
-                {
-                    Monitor.Log($"Error loading custom quest {kvp.Key} :\n\n {ex}", LogLevel.Warn);
-                }
-
-            }
-            Helper.Events.GameLoop.UpdateTicked += GameLoop_UpdateTicked;
-        }
-
-        private void GameLoop_UpdateTicked(object sender, StardewModdingAPI.Events.UpdateTickedEventArgs e)
-        {
-            questList.Clear();
-            List<string> npcs = new List<string>();
-            if (Game1.questOfTheDay is null)
-            {
-                RefreshQuestOfTheDay(random);
-            }
-            Rectangle iconRect = new Rectangle(0, 0, 64, 64);
-            Point iconOffset = new Point(Config.PortraitOffsetX, Config.PortraitOffsetY);
-            int tries = 0;
-            for (int i = 0; i < Config.MaxQuests; i++)
-            {
-                if (modQuestList.Any())
-                {
-                    questList.Add(modQuestList[0]);
-                    modQuestList.RemoveAt(0);
-                    continue;
-                }
-                try
-                {
-                    AccessTools.FieldRefAccess<Quest, Random>(Game1.questOfTheDay, "random") = random;
-                    gettingQuestDetails = true;
-                    Game1.questOfTheDay.reloadDescription();
-                    Game1.questOfTheDay.reloadObjective();
-                    gettingQuestDetails = false;
-                    NPC npc = null;
-                    QuestType questType = QuestType.ItemDelivery;
-                    if (Game1.questOfTheDay is ItemDeliveryQuest)
-                    {
-                        npc = Game1.getCharacterFromName((Game1.questOfTheDay as ItemDeliveryQuest).target.Value);
-                    }
-                    else if (Game1.questOfTheDay is ResourceCollectionQuest)
-                    {
-                        npc = Game1.getCharacterFromName((Game1.questOfTheDay as ResourceCollectionQuest).target.Value);
-                        questType = QuestType.ResourceCollection;
-                    }
-                    else if (Game1.questOfTheDay is SlayMonsterQuest)
-                    {
-                        npc = Game1.getCharacterFromName((Game1.questOfTheDay as SlayMonsterQuest).target.Value);
-                        questType = QuestType.SlayMonster;
-                    }
-                    else if (Game1.questOfTheDay is FishingQuest)
-                    {
-                        npc = Game1.getCharacterFromName((Game1.questOfTheDay as FishingQuest).target.Value);
-                        questType = QuestType.Fishing;
-                    }
-                    if (npc is not null)
-                    {
-                        if ((Config.OneQuestPerVillager && npcs.Contains(npc.Name)) ||
-                            (Config.AvoidMaxHearts && !Game1.IsMultiplayer && Game1.player.tryGetFriendshipLevelForNPC(npc.Name) >= Utility.GetMaximumHeartsForCharacter(npc) * 250)
-                        )
-                        {
-                            tries++;
-                            if(tries > 100)
-                            {
-                                tries = 0;
-                            }
-                            else
-                            {
-                                i--;
-                            }
-                            RefreshQuestOfTheDay(random);
-                            continue;
-                        }
-                        tries = 0;
-                        npcs.Add(npc.Name);
-                        Texture2D icon = npc.Portrait;
-                        AddQuest(Game1.questOfTheDay, questType, icon, iconRect, iconOffset);
-
-                    }
-                }
-                catch(Exception ex) 
-                {
-                    Monitor.Log($"Error loading quest:\n\n {ex}", LogLevel.Warn);
-                }
-                RefreshQuestOfTheDay(random);
-            }
-            modQuestList.Clear();
-            Helper.Events.GameLoop.UpdateTicked -= GameLoop_UpdateTicked;
         }
 
 
         private void GameLoop_GameLaunched(object sender, StardewModdingAPI.Events.GameLaunchedEventArgs e)
         {
+            helpWantedAPI = Helper.ModRegistry.GetApi<IHelpWantedAPI>("aedenthorn.HelpWanted");
+
             // get Generic Mod Config Menu's API (if it's installed)
             var configMenu = Helper.ModRegistry.GetApi<IGenericModConfigMenuApi>("spacechase0.GenericModConfigMenu");
             if (configMenu is null)
