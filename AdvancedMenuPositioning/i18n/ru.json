@@ -1,0 +1,9 @@
+{
+  // GMCM
+  "GMCM_Option_ModEnabled_Name": "Мод включён?",
+  "GMCM_Option_MoveKeys_Name": "Клавиши передвижения",
+  "GMCM_Option_DetachKeys_Name": "Клавиши отсоединения",
+  "GMCM_Option_CloseKeys_Name": "Клавиши закрытия",
+  "GMCM_Option_StrictKeybindings_Name": "Строгий режим",
+  "GMCM_Option_StrictKeybindings_Tooltip": "При включении, мод будет проверять, что нажаты только соответствующие клавиши. Это позволяет выполнять действия, которые назначены на клавиши по умолчанию (например, в меню создания предметов, Л.Shift + ЛКМ будет двигать меню и Л.Shift + ЛКМ + [Любая Клавиша] позволит создать сразу 5 предметов)."
+}

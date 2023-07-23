@@ -127,6 +127,8 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
+    <None Include="i18n\default.json" />
+    <None Include="i18n\ru.json" />
     <None Include="manifest.json" />
     <None Include="packages.config" />
   </ItemGroup>

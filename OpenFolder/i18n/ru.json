@@ -1,0 +1,9 @@
+﻿{
+  "game-folder": "Открыть папку игры",
+  "mods-folder": "Открыть папку модов",
+  "mod-folder": "Открыть папку",
+  "ModEnabled_GMCM": "Включить мод",
+  "AddGameFolderButton_GMCM": "Директория игры",
+  "AddModsFolderButton_GMCM": "Директория модов",
+  "AddGMCMModsFolderButton_GMCM": "Директории GMCM"
+}

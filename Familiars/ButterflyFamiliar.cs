@@ -278,7 +278,7 @@ namespace Familiars
 
             }
 
-            Buff buff = new Buff(buffs[0], buffs[1], buffs[2], buffs[3], buffs[4], buffs[5], buffs[6], 0, 0, buffs[7], buffs[8], buffs[9], BuffDuration(), "ButterflyFamiliar", ModEntry.SHelper.Translation.Get("butterfly-familiar"));
+            Buff buff = new Buff(buffs[0], buffs[1], buffs[2], buffs[3], buffs[4], buffs[5], buffs[6], 0, 0, buffs[7], buffs[8], buffs[9], BuffDuration(), "ButterflyFamiliar", ModEntry.SHelper.Translation.Get("ButterflyFamiliar"));
             buff.which = 4200 + which;
             return buff;
         }
