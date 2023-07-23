@@ -58,22 +58,22 @@ namespace MultipleCribs
 
             configMenu.AddBoolOption(
                 mod: ModManifest,
-                name: () => "Mod Enabled?",
+                name: () => SHelper.Translation.Get("Mod.Options.IsEnabled"),
                 getValue: () => Config.ModEnabled,
                 setValue: value => Config.ModEnabled = value
             );
             
             configMenu.AddBoolOption(
                 mod: ModManifest,
-                name: () => "In Bed Only?",
-                tooltip: () => "Only try with spouses currently sleeping.",
+                name: () => SHelper.Translation.Get("Mod.Options.InBedOnly.Name"),
+                tooltip: () => SHelper.Translation.Get("Mod.Options.InBedOnly.Description"),
                 getValue: () => Config.InBed,
                 setValue: value => Config.InBed = value
             );
 
             configMenu.AddNumberOption(
                 mod: ModManifest,
-                name: () => "Min Hearts To Invite",
+                name: () => SHelper.Translation.Get("Mod.Options.MinHearts.Name"),
                 getValue: () => Config.MinHearts,
                 setValue: value => Config.MinHearts = value,
                 min: 0,

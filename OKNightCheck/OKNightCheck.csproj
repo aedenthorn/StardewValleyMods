@@ -5,9 +5,6 @@
 	<EnableHarmony>true</EnableHarmony>
 	<Platforms>AnyCPU;x64</Platforms>
   </PropertyGroup>
-  <ItemGroup>
-    <None Include="bin\Debug\net5.0\OKNightCheck 0.2.0.zip" />
-  </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />

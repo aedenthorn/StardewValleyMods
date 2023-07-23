@@ -1,0 +1,12 @@
+{
+  // GMCM
+  "GMCM_Option_ModEnabled_Name": "Включить мод?",
+  "GMCM_Option_UniqueCheck_Name": "Уникальная проверка?",
+  "GMCM_Option_UniqueCheck_Tooltip": "Не проверяет один и тот же отвод несколько раз при ударе.",
+  "GMCM_Option_RodsToCheck_Name": "Отводы для проверки",
+  "GMCM_Option_RodsToCheck_Tooltip": "Каждый раз при ударе молнии указанное количество громоотводов будет проверено на возможность полчить заряд.",
+  "GMCM_Option_LightningChance_Name": "Шанс удара",
+  "GMCM_Option_LightningChance_Tooltip": "Шанс того, что молния ударит. Проверка выполняется каждые 10 минут.",
+  "GMCM_Option_Astraphobia_Name": "Безопасный режим",
+  "GMCM_Option_Astraphobia_Tooltip": "Отключает аудио и визуальную составляющую грома."
+}

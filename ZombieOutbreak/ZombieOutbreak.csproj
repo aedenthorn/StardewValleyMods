@@ -132,6 +132,7 @@
     <None Include="app.config" />
     <None Include="assets\json-assets\content-pack.json" />
     <None Include="assets\json-assets\Objects\Zombie Cure\object.json" />
+    <None Include="i18n\ru.json" />
     <None Include="i18n\default.json" />
     <None Include="manifest.json" />
     <None Include="packages.config" />

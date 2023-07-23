@@ -132,6 +132,7 @@
     <None Include="assets\json-assets\BigCraftables\Gold Scarecrow\big-craftable.json" />
     <None Include="assets\json-assets\BigCraftables\Iridium Scarecrow\big-craftable.json" />
     <None Include="assets\json-assets\content-pack.json" />
+    <None Include="i18n\ru.json" />
     <None Include="i18n\default.json" />
     <None Include="manifest.json" />
     <None Include="packages.config" />

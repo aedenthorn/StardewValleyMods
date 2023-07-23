@@ -64,7 +64,7 @@ namespace SocialNetwork
             if (ModEntry.api != null)
             {
                 Texture2D appIcon = Helper.Content.Load<Texture2D>(Path.Combine("assets", "app_icon.png"));
-                bool success = ModEntry.api.AddApp(Helper.ModRegistry.ModID, "Social Network", ModEntry.OpenFeed, appIcon);
+                bool success = ModEntry.api.AddApp(Helper.ModRegistry.ModID, SHelper.Translation.Get("Mod.App.Name"), ModEntry.OpenFeed, appIcon);
                 Monitor.Log($"loaded app successfully: {success}", LogLevel.Debug);
                 Utils.MakeTextures();
             }
