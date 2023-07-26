@@ -842,6 +842,22 @@ namespace Swim
                 return;
             }
 
+            if (Game1.player.swimming.Value && !SwimUtils.IsInWater() && !isJumping.Value)
+            {
+                Monitor.Log("Swimming out of water");
+                ModEntry.willSwim.Value = false;
+                Game1.player.freezePause = Config.JumpTimeInMilliseconds;
+                Game1.player.currentLocation.playSound("dwop", NetAudio.SoundContext.Default);
+                Game1.player.currentLocation.playSound("waterSlosh", NetAudio.SoundContext.Default);
+                isJumping.Value = true;
+                startJumpLoc.Value = Game1.player.position.Value;
+                endJumpLoc.Value = Game1.player.position.Value;
+
+                Game1.player.swimming.Value = false;
+                if (Game1.player.bathingClothes.Value && !Config.SwimSuitAlways)
+                    Game1.player.changeOutOfSwimSuit();
+            }
+
             // only if ready to swim from here on!
             var readyToAutoSwim = Config.ReadyToSwim;
             var manualSwim = Helper.Input.IsDown(Config.ManualJumpButton);
@@ -855,22 +871,6 @@ namespace Swim
 
             if (Game1.player.swimming.Value)
             {
-                if (!SwimUtils.IsInWater() && !isJumping.Value)
-                {
-                    Monitor.Log("Swimming out of water");
-                    ModEntry.willSwim.Value = false;
-                    Game1.player.freezePause = Config.JumpTimeInMilliseconds;
-                    Game1.player.currentLocation.playSound("dwop", NetAudio.SoundContext.Default);
-                    Game1.player.currentLocation.playSound("waterSlosh", NetAudio.SoundContext.Default);
-                    isJumping.Value = true;
-                    startJumpLoc.Value = Game1.player.position.Value;
-                    endJumpLoc.Value = Game1.player.position.Value;
-
-                    Game1.player.swimming.Value = false;
-                    if (Game1.player.bathingClothes.Value && !Config.SwimSuitAlways)
-                        Game1.player.changeOutOfSwimSuit();
-                }
-
                 DiveMap dm = null;
                 Point edgePos = Game1.player.getTileLocationPoint();
 

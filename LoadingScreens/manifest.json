@@ -1,0 +1,22 @@
+﻿{
+  "Name": "Loading Screens",
+  "Author": "aedenthorn",
+  "Version": "0.10",
+  "Description": "Loading Screens.",
+  "UniqueID": "aedenthorn.LoadingScreens",
+  "EntryDll": "LoadingScreens.dll",
+  "MinimumApiVersion": "3.15.0",
+  "ModUpdater": {
+    "Repository": "StardewValleyMods",
+    "User": "aedenthorn",
+    "Directory": "_releases",
+    "ModFolder": "LoadingScreens"
+  },
+  "Dependencies": [
+    {
+      "UniqueID": "Platonymous.ModUpdater",
+      "IsRequired": false
+    }
+  ],
+  "UpdateKeys": [ "Nexus:" ]
+}
