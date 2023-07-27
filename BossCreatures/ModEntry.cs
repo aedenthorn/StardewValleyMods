@@ -122,7 +122,6 @@ namespace BossCreatures
             }
 
 
-            MakeBossHealthBar(100, 100);
 
             if (isFightingBoss && BossHere(e.NewLocation) == null)
             {
