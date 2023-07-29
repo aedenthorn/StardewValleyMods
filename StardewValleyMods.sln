@@ -545,6 +545,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FishSpotBait", "FishSpotBai
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FloatingGardenPots", "FloatingGardenPots\FloatingGardenPots.csproj", "{45DDC74D-D46A-4A08-BC76-2447839C4614}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Alarms", "Alarms\Alarms.csproj", "{F0692CF6-44DC-4109-84C1-50A515051C35}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -3747,6 +3749,18 @@ Global
 		{45DDC74D-D46A-4A08-BC76-2447839C4614}.Release|x64.Build.0 = Release|x64
 		{45DDC74D-D46A-4A08-BC76-2447839C4614}.Release|x86.ActiveCfg = Release|Any CPU
 		{45DDC74D-D46A-4A08-BC76-2447839C4614}.Release|x86.Build.0 = Release|Any CPU
+		{F0692CF6-44DC-4109-84C1-50A515051C35}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F0692CF6-44DC-4109-84C1-50A515051C35}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F0692CF6-44DC-4109-84C1-50A515051C35}.Debug|x64.ActiveCfg = Debug|x64
+		{F0692CF6-44DC-4109-84C1-50A515051C35}.Debug|x64.Build.0 = Debug|x64
+		{F0692CF6-44DC-4109-84C1-50A515051C35}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{F0692CF6-44DC-4109-84C1-50A515051C35}.Debug|x86.Build.0 = Debug|Any CPU
+		{F0692CF6-44DC-4109-84C1-50A515051C35}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F0692CF6-44DC-4109-84C1-50A515051C35}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F0692CF6-44DC-4109-84C1-50A515051C35}.Release|x64.ActiveCfg = Release|x64
+		{F0692CF6-44DC-4109-84C1-50A515051C35}.Release|x64.Build.0 = Release|x64
+		{F0692CF6-44DC-4109-84C1-50A515051C35}.Release|x86.ActiveCfg = Release|Any CPU
+		{F0692CF6-44DC-4109-84C1-50A515051C35}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
