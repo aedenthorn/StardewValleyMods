@@ -29,15 +29,11 @@ namespace Alarms
         public ClickableTextureComponent downCC;
         public string hoverText;
         public string hoveredItem;
-        public static Texture2D timeBox;
         public static List<ClockSound> soundList = new();
 
         public ClockSoundMenu() : base(Game1.uiViewport.Width / 2 - (windowWidth + borderWidth * 2) / 2, -borderWidth, windowWidth + borderWidth * 2, Game1.uiViewport.Height, false)
         {
             ReloadSounds();
-            setsPerPage = 6;
-            width = 64 * 17;
-            timeBox = ModEntry.SHelper.ModContent.Load<Texture2D>("assets/textBox.png");
             RepopulateComponentList();
 
             exitFunction = emergencyShutDown;
@@ -65,28 +61,28 @@ namespace Alarms
                 int xStart = xPositionOnScreen + spaceToClearSideBorder + borderWidth;
                 int yStart = yPositionOnScreen + borderWidth + spaceToClearTopBorder - 24 + count * setHeight;
                 int baseID = count * 1000;
-                allComponents.Add(new ClickableComponent(new Rectangle(xStart, yStart + 8, 59, 48), "hourCC")
+                allComponents.Add(new ClickableComponent(new Rectangle(xStart, yStart + 8, 59, 48), "hourCC", "Hours "+i)
                 {
                     myID = baseID,
                     upNeighborID = count > 0 ? baseID - 1000 : -9999,
                     rightNeighborID = baseID + 1,
                     downNeighborID = baseID + 2
                 });
-                allComponents.Add(new ClickableComponent(new Rectangle(xStart + 64, yStart + 8, 59, 48), "minCC")
+                allComponents.Add(new ClickableComponent(new Rectangle(xStart + 64, yStart + 8, 59, 48), "minCC", "Minutes " + i)
                 {
                     myID = baseID + 1,
                     upNeighborID = count > 0 ? baseID - 1000 : -9999,
                     rightNeighborID = baseID + 4,
                     downNeighborID = baseID + 2
                 });
-                allComponents.Add(new ClickableComponent(new Rectangle(xStart, yStart + lineHeight, 360, 48), "notifyCC")
+                allComponents.Add(new ClickableComponent(new Rectangle(xStart, yStart + lineHeight, 360, 48), "notifyCC", "Notification " + i)
                 {
                     myID = baseID + 2,
                     rightNeighborID = baseID + 3,
                     upNeighborID = baseID,
                     downNeighborID = baseID + 1000
                 });
-                allComponents.Add(new ClickableComponent(new Rectangle(xStart + 64, yStart + 8, 192, 48), "soundCC") 
+                allComponents.Add(new ClickableComponent(new Rectangle(xStart + 360 + 48, yStart + lineHeight, 192, 48), "soundCC", "Sound " + i) 
                 {
                     myID = baseID + 3,
                     rightNeighborID = baseID + 15,
@@ -96,17 +92,19 @@ namespace Alarms
                 });
                 var set = new SoundComponentSet()
                 {
-                    hourText = new TextBox(timeBox, null, Game1.smallFont, Game1.textColor)
+                    hourText = new TextBox(textBox, null, Game1.smallFont, Game1.textColor)
                     {
                         X = xStart,
                         Y = yStart + 8,
+                        Width = 64,
                         Text = soundList[i].hours + "",
                         
                     },
-                    minText = new TextBox(timeBox, null, Game1.smallFont, Game1.textColor)
+                    minText = new TextBox(textBox, null, Game1.smallFont, Game1.textColor)
                     {
                         X = xStart + 64,
                         Y = yStart + 8,
+                        Width = 64,
                         Text = (soundList[i].minutes < 10 && soundList[i].minutes >= 0 ? "0" : "") + soundList[i].minutes + ""
                     },
                     notificationText = new TextBox(textBox, null, Game1.smallFont, Game1.textColor)
@@ -124,7 +122,7 @@ namespace Alarms
                     },
                     seasonCCs = new ClickableTextureComponent[]
                     {
-                        new ClickableTextureComponent(new Rectangle(xStart + clockWidth, yStart, 48, 32), Game1.mouseCursors, new Rectangle(406, 441, 12, 8), 4f)
+                        new ClickableTextureComponent("Spring", new Rectangle(xStart + clockWidth, yStart, 48, 32), "", Utility.getSeasonNameFromNumber(0), Game1.mouseCursors, new Rectangle(406, 441, 12, 8), 4f)
                         {
                             myID = baseID + 4,
                             upNeighborID = count > 0 ? baseID - 1000 : -9999,
@@ -132,7 +130,7 @@ namespace Alarms
                             leftNeighborID = baseID + 1,
                             downNeighborID = baseID + 6
                         },
-                        new ClickableTextureComponent(new Rectangle(xStart + clockWidth + 48, yStart, 48, 32), Game1.mouseCursors, new Rectangle(406, 441 + 8, 12, 8), 4f)
+                        new ClickableTextureComponent("Summer", new Rectangle(xStart + clockWidth + 48, yStart, 48, 32), "", Utility.getSeasonNameFromNumber(1),  Game1.mouseCursors, new Rectangle(406, 441 + 8, 12, 8), 4f)
                         {
                             myID = baseID + 5,
                             upNeighborID = count > 0 ? baseID - 1000 : -9999,
@@ -140,7 +138,7 @@ namespace Alarms
                             leftNeighborID = baseID + 4,
                             downNeighborID = baseID + 7
                         },
-                        new ClickableTextureComponent(new Rectangle(xStart + clockWidth, yStart + 32, 48, 32), Game1.mouseCursors, new Rectangle(406, 441 + 16, 12, 8), 4f)
+                        new ClickableTextureComponent("Fall", new Rectangle(xStart + clockWidth, yStart + 32, 48, 32), "", Utility.getSeasonNameFromNumber(2), Game1.mouseCursors, new Rectangle(406, 441 + 16, 12, 8), 4f)
                         {
                             myID = baseID + 6,
                             upNeighborID = baseID + 4,
@@ -148,7 +146,7 @@ namespace Alarms
                             leftNeighborID = baseID + 1,
                             downNeighborID = baseID + 2
                         },
-                        new ClickableTextureComponent(new Rectangle(xStart + clockWidth + 48, yStart + 32, 48, 32), Game1.mouseCursors, new Rectangle(406, 441 + 24, 12, 8), 4f)
+                        new ClickableTextureComponent("Winter", new Rectangle(xStart + clockWidth + 48, yStart + 32, 48, 32),"", Utility.getSeasonNameFromNumber(3), Game1.mouseCursors, new Rectangle(406, 441 + 24, 12, 8), 4f)
                         {
                             myID = baseID + 7,
                             upNeighborID = baseID + 5,
@@ -218,7 +216,7 @@ namespace Alarms
                     },
                     notifCC = new ClickableTextureComponent("", new Rectangle(xStart - 12, yStart + lineHeight + 8, 10, 28), "", ModEntry.SHelper.Translation.Get("notification"), Game1.mouseCursors, new Rectangle(403, 496, 5, 14), 2),
                     soundCC = new ClickableTextureComponent("", new Rectangle(xStart + 380, yStart + lineHeight + 8, 36, 36), "", ModEntry.SHelper.Translation.Get("sound"), Game1.mouseCursors, new Rectangle(128, 384, 9, 9), 4),
-                    enabledBox = new ClickableTextureComponent("", new Rectangle(xStart + clockWidth + seasonWidth + weekWidth + monthWidth, yStart + 4, 36, 36), "", ModEntry.SHelper.Translation.Get("enabled"), Game1.mouseCursors, new Rectangle(227 + (soundList[i].enabled ? 9 : 0), 425, 9, 9), 4)
+                    enabledBox = new ClickableTextureComponent("Enable " + i, new Rectangle(xStart + clockWidth + seasonWidth + weekWidth + monthWidth, yStart + 4, 36, 36), "", ModEntry.SHelper.Translation.Get("enabled"), Game1.mouseCursors, new Rectangle(227 + (soundList[i].enabled ? 9 : 0), 425, 9, 9), 4)
                     {
                         myID = baseID + 43,
                         upNeighborID = baseID - 1000,
@@ -226,7 +224,7 @@ namespace Alarms
                         leftNeighborID = baseID + 21,
                         downNeighborID = baseID + 44
                     },
-                    deleteCC = new ClickableTextureComponent("", new Rectangle(xStart + clockWidth + seasonWidth + weekWidth + monthWidth, yStart + lineHeight + 16, 36, 36), "", ModEntry.SHelper.Translation.Get("delete"), Game1.mouseCursors, new Rectangle(322, 498, 12, 12), 3)
+                    deleteCC = new ClickableTextureComponent("Delete " + i, new Rectangle(xStart + clockWidth + seasonWidth + weekWidth + monthWidth, yStart + lineHeight + 16, 36, 36), "", ModEntry.SHelper.Translation.Get("delete"), Game1.mouseCursors, new Rectangle(322, 498, 12, 12), 3)
                     {
                         myID = baseID + 44,
                         upNeighborID = baseID + 43,
@@ -261,7 +259,7 @@ namespace Alarms
                 soundComponentSets.Add(set);
                 count++;
             }
-            addCC = new ClickableTextureComponent("", new Rectangle(xPositionOnScreen + width - 128, yPositionOnScreen - 128 + height, 56, 56), "", ModEntry.SHelper.Translation.Get("add"), Game1.mouseCursors, new Rectangle(1, 412, 14, 14), 4)
+            addCC = new ClickableTextureComponent("Add", new Rectangle(xPositionOnScreen + width - 128, yPositionOnScreen - 128 + height, 56, 56), "", ModEntry.SHelper.Translation.Get("add"), Game1.mouseCursors, new Rectangle(1, 412, 14, 14), 4)
             {
                 myID = count * 1000,
                 upNeighborID = (count - 1) * 1000,
@@ -269,7 +267,7 @@ namespace Alarms
             };
             if (scrolled > 0)
             {
-                upCC = new ClickableTextureComponent("", new Rectangle(xPositionOnScreen + width + 40, yPositionOnScreen + 84, 40, 44), "", ModEntry.SHelper.Translation.Get("up"), Game1.mouseCursors, new Rectangle(76, 72, 40, 44), 1)
+                upCC = new ClickableTextureComponent("Up", new Rectangle(xPositionOnScreen + width + 40, yPositionOnScreen + 84, 40, 44), "", ModEntry.SHelper.Translation.Get("up"), Game1.mouseCursors, new Rectangle(76, 72, 40, 44), 1)
                 {
                     myID = -1,
                     leftNeighborID = 0,
@@ -281,7 +279,7 @@ namespace Alarms
                 upCC = null;
             if (count + scrolled < soundList.Count)
             {
-                downCC = new ClickableTextureComponent("", new Rectangle(xPositionOnScreen + width + 40, yPositionOnScreen + height - 64, 40, 44), "", ModEntry.SHelper.Translation.Get("down"), Game1.mouseCursors, new Rectangle(12, 76, 40, 44), 1)
+                downCC = new ClickableTextureComponent("Down", new Rectangle(xPositionOnScreen + width + 40, yPositionOnScreen + height - 64, 40, 44), "", ModEntry.SHelper.Translation.Get("down"), Game1.mouseCursors, new Rectangle(12, 76, 40, 44), 1)
                 {
                     myID = -2,
                     leftNeighborID = 0,
@@ -332,7 +330,7 @@ namespace Alarms
                 set.notifCC.draw(b);
                 set.enabledBox.draw(b);
                 set.deleteCC.draw(b);
-                Game1.spriteBatch.Draw(Game1.menuTexture, new Rectangle(xPositionOnScreen + 32, yPositionOnScreen + 84 + (count + 1) * 192, width - 64, 16), new Rectangle(40, 16, 1, 16), Color.White);
+                b.Draw(Game1.menuTexture, new Rectangle(xPositionOnScreen + 32, yPositionOnScreen + 84 + (count + 1) * 192, width - 64, 16), new Rectangle(40, 16, 1, 16), Color.White);
                 count++;
             }
             addCC.draw(b);
@@ -492,76 +490,103 @@ namespace Alarms
         public override void receiveKeyPress(Keys key)
         {
             bool close = Game1.options.doesInputListContain(Game1.options.menuButton, key) && readyToClose();
-            for (int i = 0; i < soundComponentSets.Count; i++)
+            if(!Game1.options.snappyMenus || !Game1.options.gamepadControls)
             {
-                var hc = soundComponentSets[i].hourText.Text != soundList[i + scrolled].hours + "";
-                if (soundComponentSets[i].hourText.Selected && (!close || hc))
+                for (int i = 0; i < soundComponentSets.Count; i++)
                 {
-                    Game1.playSound("cowboy_monsterhit");
-                    if(hc && int.TryParse(soundComponentSets[i].hourText.Text, out int h) && ((h >= 6 && h < 26) || h < 0))
+                    var hc = soundComponentSets[i].hourText.Text != soundList[i + scrolled].hours + "";
+                    if (soundComponentSets[i].hourText.Selected && (!close || hc))
                     {
-                        soundList[i + scrolled].hours = h;
-                        SaveSounds();
+                        Game1.playSound("cowboy_monsterhit");
+                        if (hc && int.TryParse(soundComponentSets[i].hourText.Text, out int h) && ((h >= 6 && h < 26) || h < 0))
+                        {
+                            soundList[i + scrolled].hours = h;
+                            SaveSounds();
+                        }
+                        return;
                     }
-                    return;
-                }
-                var mc = soundComponentSets[i].minText.Text != soundList[i + scrolled].minutes + "";
-                if (soundComponentSets[i].minText.Selected && (!close || mc))
-                {
-                    Game1.playSound("cowboy_monsterhit");
-                    if(mc && int.TryParse(soundComponentSets[i].minText.Text, out int m) && m < 60)
+                    var mc = soundComponentSets[i].minText.Text != soundList[i + scrolled].minutes + "";
+                    if (soundComponentSets[i].minText.Selected && (!close || mc))
                     {
-                        soundList[i + scrolled].minutes = m;
-                        SaveSounds();
+                        Game1.playSound("cowboy_monsterhit");
+                        if (mc && int.TryParse(soundComponentSets[i].minText.Text, out int m) && m < 60)
+                        {
+                            soundList[i + scrolled].minutes = m;
+                            SaveSounds();
+                        }
+                        return;
                     }
-                    return;
-                }
-                var nc = soundComponentSets[i].notificationText.Text != soundList[i + scrolled].notification;
-                if (soundComponentSets[i].notificationText.Selected && (!close || nc))
-                {
-                    Game1.playSound("cowboy_monsterhit");
-                    if (nc)
+                    var nc = soundComponentSets[i].notificationText.Text != soundList[i + scrolled].notification;
+                    if (soundComponentSets[i].notificationText.Selected && (!close || nc))
                     {
-                        soundList[i + scrolled].notification = soundComponentSets[i].notificationText.Text;
-                        SaveSounds();
+                        Game1.playSound("cowboy_monsterhit");
+                        if (nc)
+                        {
+                            soundList[i + scrolled].notification = soundComponentSets[i].notificationText.Text;
+                            SaveSounds();
+                        }
+                        return;
                     }
-                    return;
-                }
-                var sc = soundComponentSets[i].soundText.Text != soundList[i + scrolled].sound;
-                if (soundComponentSets[i].soundText.Selected && (!close || sc))
-                {
-                    Game1.playSound("cowboy_monsterhit");
-                    if (sc)
+                    var sc = soundComponentSets[i].soundText.Text != soundList[i + scrolled].sound;
+                    if (soundComponentSets[i].soundText.Selected && (!close || sc))
                     {
-                        soundList[i + scrolled].sound = soundComponentSets[i].soundText.Text;
-                        SaveSounds();
+                        Game1.playSound("cowboy_monsterhit");
+                        if (sc)
+                        {
+                            soundList[i + scrolled].sound = soundComponentSets[i].soundText.Text;
+                            SaveSounds();
+                        }
+                        return;
                     }
-                    return;
                 }
             }
-            if (Game1.options.snappyMenus && Game1.options.gamepadControls)
-            {
-                applyMovementKey(key);
-            }
-            else if (close)
+            if (close)
             {
                 exitThisMenu(true);
             }
-            else
+            else if (Game1.options.snappyMenus && Game1.options.gamepadControls)
             {
-               
-                base.receiveKeyPress(key);
+                applyMovementKey(key);
             }
         }
 
 
         public override void snapToDefaultClickableComponent()
         {
-            base.snapToDefaultClickableComponent();
+            if(Game1.options.snappyMenus && Game1.options.gamepadControls)
+            {
+                currentlySnappedComponent = this.getComponentWithID(0);
+                snapCursorToCurrentSnappedComponent();
+            }
         }
         public override void applyMovementKey(int direction)
         {
-            base.applyMovementKey(direction);
+
+            if (currentlySnappedComponent != null)
+            {
+                ClickableComponent next = null;
+                switch (direction)
+                {
+                    case 0:
+                        next = getComponentWithID(currentlySnappedComponent.upNeighborID);
+                        break;
+                    case 1:
+                        next = getComponentWithID(currentlySnappedComponent.rightNeighborID);
+                        break;
+                    case 2:
+                        next = getComponentWithID(currentlySnappedComponent.downNeighborID);
+                        break;
+                    case 3:
+                        next = getComponentWithID(currentlySnappedComponent.leftNeighborID);
+                        break;
+                }
+                if (next is not null)
+                {
+                    Game1.playSound("shiny4");
+                    currentlySnappedComponent = next;
+                    snapCursorToCurrentSnappedComponent();
+                }
+            }
         }
         public override void update(GameTime time)
         {

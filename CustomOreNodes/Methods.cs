@@ -143,6 +143,8 @@ namespace CustomOreNodes
                             contentPack.WriteJsonFile("custom_ore_nodes.json", data);
                         }
                     }
+                    if (data?.nodes is null)
+                        continue;
 
                     foreach (CustomOreNode node in data.nodes)
                     {

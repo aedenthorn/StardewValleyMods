@@ -809,7 +809,7 @@ namespace AllChestsMenu
                         }
                         break;
                 }
-                if (this.currentlySnappedComponent != old)
+                if (currentlySnappedComponent != old)
                 {
                     Game1.playSound("shiny4");
                 }
