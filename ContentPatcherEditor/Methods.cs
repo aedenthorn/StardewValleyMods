@@ -1,4 +1,5 @@
-﻿using Microsoft.Xna.Framework;
+﻿using HarmonyLib;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -7,8 +8,10 @@ using StardewValley;
 using StardewValley.Menus;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Reflection.Emit;
 using System.Reflection.Metadata;
 
 namespace ContentPatcherEditor
@@ -31,22 +34,22 @@ namespace ContentPatcherEditor
                     {
                         { "Action", "EditImage" },
                         { "Target", "" },
-                        { "FromFile", "" },
+                        { "FromFile", "assets/" },
                         { "LogName", "" },
                     };
                 case "EditMap":
                     return new JObject()
                     {
                         { "Action", "EditMap" },
-                        { "Target", "" },
-                        { "FromFile", "" },
+                        { "Target", "Maps/" },
+                        { "FromFile", "assets/" },
                         { "LogName", "" },
                     };
                 case "Include":
                     return new JObject()
                     {
                         { "Action", "Include" },
-                        { "FromFile", "" },
+                        { "FromFile", "assets/" },
                         { "LogName", "" },
                     };
                 default:
@@ -63,17 +66,18 @@ namespace ContentPatcherEditor
         {
             var manifest = new MyManifest()
             {
-                Name = "New Pack",
+                Name = "[CP] New Pack",
                 Description = "New Content Patcher Content Pack",
-                Version = new System.Version("0.1.0"),
+                Version = new Version("0.1.0"),
                 Author = Game1.player.Name,
-                MinimumApiVersion = new System.Version("3.15.0"),
+                MinimumApiVersion = new Version("3.15.0"),
                 UniqueID = $"{Game1.player.Name}.NewContentPatcherPack",
             };
             var content = new ContentPatcherContent()
             {
-                Format = "1.29.0",
-                Changes = new()
+                Format = SHelper.ModRegistry.Get("Pathoschild.ContentPatcher")?.Manifest.Version.ToString() ?? "1.29.0",
+                Changes = new(),
+                ConfigSchema = new(),
             };
             int count = 0;
             while (Directory.Exists(Path.Combine(Constants.GamePath, "Mods", $"[CP] New Content Pack{(count == 0 ? "" : " " + count)}")))
@@ -85,42 +89,109 @@ namespace ContentPatcherEditor
             {
                 directory = dir,
                 manifest = manifest,
-                content = content
+                content = content,
+                config = new()
             });
+        }
+        public static void RebuildLists(ContentPatcherPack pack)
+        {
+            pack.config = pack.content.ConfigSchema is null ? new List<KeyValuePair<string, ConfigVar>>() : pack.content.ConfigSchema.ToList();
+            pack.content.lists = new();
+            for (int i = 0; i < pack.content.Changes.Count; i++)
+            {
+                var change = pack.content.Changes[i];
+
+                pack.content.lists.Add(new Dictionary<string, List<KeyValuePair<string, JToken?>>>());
+                if (change.TryGetValue("When", out var obj))
+                {
+                    pack.content.lists[i]["When"] = new List<KeyValuePair<string, JToken?>>();
+                    foreach (var kvp in (JObject)obj)
+                    {
+                        pack.content.lists[i]["When"].Add(new KeyValuePair<string, JToken?>(kvp.Key, kvp.Value));
+                    }
+                }
+                if (change.TryGetValue("Entries", out obj))
+                {
+                    pack.content.lists[i]["Entries"] = new List<KeyValuePair<string, JToken?>>();
+                    foreach (var kvp in (JObject)obj)
+                    {
+                        pack.content.lists[i]["Entries"].Add(new KeyValuePair<string, JToken?>(kvp.Key, kvp.Value));
+                    }
+                }
+                if (change.TryGetValue("MapProperties", out obj))
+                {
+                    pack.content.lists[i]["MapProperties"] = new List<KeyValuePair<string, JToken?>>();
+                    foreach (var kvp in (JObject)obj)
+                    {
+                        pack.content.lists[i]["MapProperties"].Add(new KeyValuePair<string, JToken?>(kvp.Key, kvp.Value));
+                    }
+                }
+            }
         }
 
         public static void SaveContentPack(ContentPatcherPack pack)
         {
+            for(int i = 0; i < pack.content.Changes.Count; i++)
+            {
+                foreach(var kvp in pack.content.lists[i])
+                {
+                    JObject j = new JObject();
+                    foreach(var l in kvp.Value)
+                    {
+                        j.TryAdd(l.Key, l.Value);
+                    }
+                    pack.content.Changes[i][kvp.Key] = j;
+                }
+            }
+            pack.content.lists = null;
+            if(pack.config is not null)
+            {
+                pack.content.ConfigSchema = new();
+                foreach (var kvp in pack.config)
+                {
+                    pack.content.ConfigSchema.TryAdd(kvp.Key, kvp.Value);
+                }
+            }
+            pack.config = null;
             Directory.CreateDirectory(pack.directory);
-            File.WriteAllText(Path.Combine(pack.directory, "manifest.json"), JsonConvert.SerializeObject(pack.manifest, Formatting.Indented, new JsonSerializerSettings()
+            string mf = Path.Combine(pack.directory, "manifest.json");
+            string cf = Path.Combine(pack.directory, "content.json");
+            if (Config.Backup)
+            {
+                if (File.Exists(mf))
+                {
+                    File.Move(mf, mf + ".backup", true);
+                }
+                if (File.Exists(cf))
+                {
+                    File.Move(cf, cf + ".backup", true);
+                }
+            }
+            File.WriteAllText(mf, JsonConvert.SerializeObject(pack.manifest, Formatting.Indented, new JsonSerializerSettings()
             {
                 NullValueHandling = NullValueHandling.Ignore
             }));
-            File.WriteAllText(Path.Combine(pack.directory, "content.json"), JsonConvert.SerializeObject(pack.content, Formatting.Indented, new JsonSerializerSettings()
+            File.WriteAllText(cf, JsonConvert.SerializeObject(pack.content, Formatting.Indented, new JsonSerializerSettings()
             {
                 NullValueHandling = NullValueHandling.Ignore
             }));
+            SMonitor.Log($"Saved content pack {pack.manifest.Name} to {pack.directory}");
         }
         public static bool CanShowLine(int lines)
         {
             return lines >= ContentPackMenu.scrolled && lines < ContentPackMenu.scrolled + ContentPackMenu.linesPerPage;
         }
 
-        public static void TryAddList(string key, int xStart, int yStart, int width, int lineHeight, ref int lines, JObject change, Dictionary<Vector2, string> labels, List<TextBox[]> textBoxes, ref ClickableTextureComponent addCC, List<ClickableTextureComponent> subCCs)
+        public static void TryAddDict(string key, int xStart, int yStart, int width, int lineHeight, ref int lines, List<KeyValuePair<string, JToken?>> dict, Dictionary<Vector2, string> labels, List<TextBox[]> textBoxes, ref ClickableTextureComponent addCC, List<ClickableTextureComponent> subCCs)
         {
 
             int ws = 8;
             int wl = (int)Game1.dialogueFont.MeasureString(key).X + 8;
-            if (!change.TryGetValue(key, out var keyObj))
-            {
-                keyObj = new JObject();
-            }
-            var dict = (JObject)keyObj;
             textBoxes.Clear();
             if (CanShowLine(++lines))
             {
                 labels.Add(new Vector2(xStart, yStart + (lines - ContentPackMenu.scrolled) * lineHeight), key);
-                addCC = new ClickableTextureComponent("Add", new Rectangle(xStart + wl, yStart + (lines - ContentPackMenu.scrolled) * lineHeight + 16, 56, 56), "", SHelper.Translation.Get("add"), Game1.mouseCursors, new Rectangle(1, 412, 14, 14), 1)
+                addCC = new ClickableTextureComponent("Add", new Rectangle(xStart + wl, yStart + (lines - ContentPackMenu.scrolled) * lineHeight + 16, 14, 14), "", SHelper.Translation.Get("add"), Game1.mouseCursors, new Rectangle(1, 412, 14, 14), 1)
                 {
                     myID = lines * 1000 + 1,
                     upNeighborID = (lines - 1) * 1000,
@@ -144,17 +215,19 @@ namespace ContentPatcherEditor
                                 X = xStart + wl,
                                 Y = yStart + lineHeight * (lines - ContentPackMenu.scrolled),
                                 Width = ww,
-                                Text = c.Key
+                                Text = c.Key,
+                                limitWidth = false
                             },
                             new TextBox(Game1.content.Load<Texture2D>("LooseSprites\\textBox"), null, Game1.smallFont, Game1.textColor)
                             {
                                 X = xStart + wl + ww + ws,
                                 Y = yStart + lineHeight * (lines - ContentPackMenu.scrolled),
                                 Width = ww,
-                                Text = c.Value.Type == JTokenType.String ? c.Value.ToString() : ""
+                                Text = c.Value.Type == JTokenType.String ? (string)c.Value : "",
+                                limitWidth = false
                             },
                         });
-                        subCCs.Add(new ClickableTextureComponent("Remove", new Rectangle(xStart + wl + ww + ws + ww + 2, yStart + (lines - ContentPackMenu.scrolled) * lineHeight + 16, 56, 56), "", SHelper.Translation.Get("remove"), Game1.mouseCursors, new Rectangle(269, 471, 14, 15), 1)
+                        subCCs.Add(new ClickableTextureComponent("Remove", new Rectangle(xStart + wl + ww + ws + ww + 2, yStart + (lines - ContentPackMenu.scrolled) * lineHeight + 16, 14, 15), "", SHelper.Translation.Get("remove"), Game1.mouseCursors, new Rectangle(269, 471, 14, 15), 1)
                         {
                             myID = lines * 1000 + 1,
                             upNeighborID = (lines - 1) * 1000,
@@ -169,5 +242,105 @@ namespace ContentPatcherEditor
                 lines++;
             }
         }
+        public static void TryAddList(string key, int xStart, int yStart, int width, int lineHeight, ref int lines, JArray list, Dictionary<Vector2, string> labels, List<TextBox> textBoxes, ref ClickableTextureComponent addCC, List<ClickableTextureComponent> subCCs)
+        {
+
+            int ws = 8;
+            int wl = (int)Game1.dialogueFont.MeasureString(key).X + 8;
+
+            textBoxes.Clear();
+            if (CanShowLine(++lines))
+            {
+                labels.Add(new Vector2(xStart, yStart + (lines - ContentPackMenu.scrolled) * lineHeight), key);
+                addCC = new ClickableTextureComponent("Add", new Rectangle(xStart + wl, yStart + (lines - ContentPackMenu.scrolled) * lineHeight + 16, 14, 14), "", SHelper.Translation.Get("add"), Game1.mouseCursors, new Rectangle(1, 412, 14, 14), 1)
+                {
+                    myID = lines * 1000 + 1,
+                    upNeighborID = (lines - 1) * 1000,
+                    leftNeighborID = lines * 1000,
+                };
+            }
+
+            if (list.Count > 0)
+            {
+                wl += 16;
+                int ww = (width - wl);
+                foreach (var c in list)
+                {
+                    if (CanShowLine(lines))
+                    {
+
+                        textBoxes.Add(new TextBox(Game1.content.Load<Texture2D>("LooseSprites\\textBox"), null, Game1.smallFont, Game1.textColor)
+                        {
+                            X = xStart + wl,
+                            Y = yStart + lineHeight * (lines - ContentPackMenu.scrolled),
+                            Width = ww,
+                            Text = c.ToString(),
+                            limitWidth = false
+                        });
+                        subCCs.Add(new ClickableTextureComponent("Remove", new Rectangle(xStart + width + 2, yStart + (lines - ContentPackMenu.scrolled) * lineHeight + 16, 14, 15), "", SHelper.Translation.Get("remove"), Game1.mouseCursors, new Rectangle(269, 471, 14, 15), 1)
+                        {
+                            myID = lines * 1000 + 1,
+                            upNeighborID = (lines - 1) * 1000,
+                            leftNeighborID = lines * 1000,
+                        });
+                    }
+                    lines++;
+                }
+            }
+            else
+            {
+                lines++;
+            }
+        }
+        public static JArray MakeJArray(string values)
+        {
+            JArray array = new JArray();
+            if (values is null)
+                return array;
+            foreach (var v in values.Split(","))
+            {
+                array.Add(v.Trim());
+            }
+            return array;
+        }
+
+        public static void TryOpenFolder(string folder)
+        {
+            try
+            {
+                Process.Start(new ProcessStartInfo
+                {
+                    FileName = folder,
+                    UseShellExecute = true,
+                    Verb = "open"
+                });
+                SMonitor.Log($"Opening folder {folder}");
+            }
+            catch (Exception ex)
+            {
+                SMonitor.Log($"Error opening folder {folder}: \n\n{ex}", LogLevel.Error);
+            }
+        }
+        public static readonly Lazy<Action<string>> AddToRawCommandQueue = new(() =>
+        {
+            var scoreType = AccessTools.TypeByName("StardewModdingAPI.Framework.SCore, StardewModdingAPI")!;
+            var commandQueueType = AccessTools.TypeByName("StardewModdingAPI.Framework.CommandQueue, StardewModdingAPI")!;
+
+            var scoreGetter = AccessTools.PropertyGetter(scoreType, "Instance")!;
+            var rawCommandQueueField = AccessTools.Field(scoreType, "RawCommandQueue")!;
+            var commandQueueAddMethod = AccessTools.Method(commandQueueType, "Add");
+
+            var dynamicMethod = new DynamicMethod("AddToRawCommandQueue", null, new Type[] { typeof(string) });
+            var il = dynamicMethod.GetILGenerator();
+
+            il.Emit(OpCodes.Call, scoreGetter);
+            il.Emit(OpCodes.Ldfld, rawCommandQueueField);
+            il.Emit(OpCodes.Ldarg_0);
+            il.Emit(OpCodes.Call, commandQueueAddMethod);
+            il.Emit(OpCodes.Ret);
+
+            return dynamicMethod.CreateDelegate<Action<string>>();
+        });
+
     }
 }

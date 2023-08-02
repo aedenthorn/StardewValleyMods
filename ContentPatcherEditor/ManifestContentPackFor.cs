@@ -2,7 +2,7 @@
 
 namespace ContentPatcherEditor
 {
-    internal class ManifestContentPackFor
+    public class ManifestContentPackFor
     {
         public string UniqueID = "PathosChild.ContentPatcher";
 

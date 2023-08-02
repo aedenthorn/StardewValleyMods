@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 namespace ContentPatcherEditor
 {
-    internal class MyManifest
+    public class MyManifest
     {
         public string Name;
 

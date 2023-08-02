@@ -1,12 +1,16 @@
 ﻿using HarmonyLib;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using Newtonsoft.Json.Linq;
 using StardewModdingAPI;
 using StardewValley;
+using StardewValley.Quests;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
+using System.Linq;
+using Rectangle = Microsoft.Xna.Framework.Rectangle;
 
-namespace ContentPatcherEditor
+namespace StatueShorts
 {
     /// <summary>The mod entry point.</summary>
     public partial class ModEntry : Mod
@@ -17,6 +21,7 @@ namespace ContentPatcherEditor
         public static ModConfig Config;
 
         public static ModEntry context;
+        public static string modKey = "aedenthorn.StatueShorts";
 
         /// <summary>The mod entry point, called after the mod is first loaded.</summary>
         /// <param name="helper">Provides simplified APIs for writing mods.</param>
@@ -30,19 +35,26 @@ namespace ContentPatcherEditor
             SHelper = helper;
 
             Helper.Events.GameLoop.GameLaunched += GameLoop_GameLaunched;
-            Helper.Events.Input.ButtonsChanged += Input_ButtonsChanged;
+            //Helper.Events.GameLoop.SaveLoaded += GameLoop_SaveLoaded;
+            Helper.Events.Content.AssetRequested += Content_AssetRequested;
 
             var harmony = new Harmony(ModManifest.UniqueID);
             harmony.PatchAll();
         }
 
-        private void Input_ButtonsChanged(object sender, StardewModdingAPI.Events.ButtonsChangedEventArgs e)
+        private void Content_AssetRequested(object sender, StardewModdingAPI.Events.AssetRequestedEventArgs e)
         {
-            if (Context.CanPlayerMove && Game1.activeClickableMenu is null && Config.ModEnabled && Config.MenuButton.JustPressed())
+            if (e.NameWithoutLocale.IsEquivalentTo("Data/mail"))
             {
-                Game1.playSound("bigSelect");
-                Game1.activeClickableMenu = new ContentPatcherMenu();
+                e.Edit(delegate (IAssetData assetData)
+                {
+                    assetData.AsDictionary<string, string>().Data["lewisStatue"] = assetData.AsDictionary<string, string>().Data["lewisStatue"].Replace("%item", "^^" + Helper.Translation.Get("mail") + "%item");
+                });
             }
+        }
+
+        private void GameLoop_SaveLoaded(object sender, StardewModdingAPI.Events.SaveLoadedEventArgs e)
+        {
         }
 
         private void GameLoop_GameLaunched(object sender, StardewModdingAPI.Events.GameLaunchedEventArgs e)
@@ -65,18 +77,6 @@ namespace ContentPatcherEditor
                 name: () => SHelper.Translation.Get("GMCM_Option_ModEnabled_Name"),
                 getValue: () => Config.ModEnabled,
                 setValue: value => Config.ModEnabled = value
-            );
-            configMenu.AddBoolOption(
-                mod: ModManifest,
-                name: () => SHelper.Translation.Get("GMCM_Option_Backup_Name"),
-                getValue: () => Config.Backup,
-                setValue: value => Config.Backup = value
-            );
-            configMenu.AddKeybindList(
-                mod: ModManifest,
-                name: () => SHelper.Translation.Get("GMCM_Option_MenuButton_Name"),
-                getValue: () => Config.MenuButton,
-                setValue: value => Config.MenuButton = value
             );
 
         }

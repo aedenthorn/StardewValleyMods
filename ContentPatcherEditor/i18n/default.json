@@ -1,10 +1,20 @@
 {
   "GMCM_Option_ModEnabled_Name": "Mod Enabled",
   "GMCM_Option_MenuButton_Name": "Menu Button",
+  "GMCM_Option_Backup_Name": "Backup Files",
+  "content-packs": "CP Content Packs",
   "manifest": "Manifest",
   "changes": "Changes",
   "config": "Config",
   "add": "Add New",
-  "back": "Back",
-  "save": "Save Content Pack"
+  "back": "Back to pack list",
+  "up": "Up",
+  "down": "Down",
+  "remove": "Remove",
+  "allow-blank": "Allow blank values",
+  "allow-multiple": "Allow multiple values",
+  "folder": "Open Folder",
+  "save": "Save Content Pack",
+  "reload": "Reload Content Pack",
+  "revert": "Revert Content Pack"
 }
