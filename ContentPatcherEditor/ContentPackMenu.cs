@@ -8,6 +8,7 @@ using StardewValley.BellsAndWhistles;
 using StardewValley.Menus;
 using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.IO;
 using System.Linq;
 using System.Reflection.Emit;
@@ -18,7 +19,6 @@ namespace ContentPatcherEditor
     {
         public static int scrolled;
         public ContentPatcherPack pack;
-        public static int setsPerPage = 6;
         public static int linesPerPage = 17;
         public static int windowWidth = 64 * 24;
         public List<ChangeSet> changesList = new();
@@ -60,11 +60,7 @@ namespace ContentPatcherEditor
         {
             scrolled = 0;
             pack = _pack;
-            setsPerPage = 6;
-            linesPerPage = 17;
-            width = 64 * 24;
-            tabHeight = 80;
-            changingRect = new Rectangle(Game1.viewport.Width / 2 - width / 8, Game1.viewport.Height / 2 - height / 4, width / 4, height / 2);
+
             RepopulateComponentList();
             saveCC = null;
             revertCC = null;
@@ -74,8 +70,20 @@ namespace ContentPatcherEditor
             snapToDefaultClickableComponent();
         }
 
+
         private void RepopulateComponentList()
         {
+            int lineHeight = 64;
+
+            width = Math.Min(64 * 24, Game1.viewport.Width - 96);
+            height = Game1.viewport.Height + 72;
+            xPositionOnScreen = (Game1.viewport.Width - width) / 2;
+            yPositionOnScreen = - 72;
+            tabHeight = 80;
+            linesPerPage = (height - spaceToClearTopBorder * 2 - 116) / lineHeight;
+            
+            changingRect = new Rectangle(Game1.viewport.Width / 2 - width / 8, Game1.viewport.Height / 2 - height / 4, width / 4, height / 2);
+
             changesList.Clear();
             allComponents.Clear();
             allTextBoxes.Clear();
@@ -89,17 +97,18 @@ namespace ContentPatcherEditor
                 myID = -3,
                 rightNeighborID = 0,
             };
-            tabs.Add(new ClickableComponent(new Rectangle(xStart, yStart, width / 3, tabHeight), "manifest", ModEntry.SHelper.Translation.Get("manifest"))
+            var tabsWidth = width - (spaceToClearSideBorder + borderWidth) * 2;
+            tabs.Add(new ClickableComponent(new Rectangle(xStart, yStart, tabsWidth / 3, tabHeight), "manifest", ModEntry.SHelper.Translation.Get("manifest"))
             {
 
             });
             tabTexts.Add((int)Game1.dialogueFont.MeasureString(ModEntry.SHelper.Translation.Get("manifest")).X);
-            tabs.Add(new ClickableComponent(new Rectangle(xStart + width / 3, yStart, width / 3, tabHeight), "changes", ModEntry.SHelper.Translation.Get("changes"))
+            tabs.Add(new ClickableComponent(new Rectangle(xStart + tabsWidth / 3, yStart, tabsWidth / 3, tabHeight), "changes", ModEntry.SHelper.Translation.Get("changes"))
             {
 
             });
             tabTexts.Add((int)Game1.dialogueFont.MeasureString(ModEntry.SHelper.Translation.Get("changes")).X);
-            tabs.Add(new ClickableComponent(new Rectangle(xStart + width * 2 / 3, yStart, width / 3, tabHeight), "config", ModEntry.SHelper.Translation.Get("config"))
+            tabs.Add(new ClickableComponent(new Rectangle(xStart + tabsWidth * 2 / 3, yStart, tabsWidth / 3, tabHeight), "config", ModEntry.SHelper.Translation.Get("config"))
             {
 
             });
@@ -113,30 +122,27 @@ namespace ContentPatcherEditor
             {
                 ModEntry.RebuildLists(pack);
             }
+            var lines = 0;
             if (tab == 0)
             {
-                int count = 0;
-                int lineHeight = 96;
                 foreach (var fi in typeof(MyManifest).GetFields())
                 {
                     if (fi.FieldType == typeof(string) || fi.FieldType == typeof(Version))
                     {
-                        var nameWidth = (int)Game1.dialogueFont.MeasureString(fi.Name).X;
-                        allTextBoxes.Add(new TextBox(textBox, null, Game1.smallFont, Game1.textColor)
+                        if (ModEntry.CanShowLine(lines))
                         {
-                            X = xStart + nameWidth,
-                            Y = yStart + lineHeight * count,
-                            Width = width - nameWidth - (spaceToClearSideBorder + borderWidth) * 2,
-                            Text = fi.GetValue(pack.manifest).ToString(),
-                            limitWidth = false
-                        });
-                        allComponents.Add(new ClickableComponent(new Rectangle(xStart, yStart + lineHeight * count, width, lineHeight), fi.Name)
-                        {
-                            myID = 1000 * count,
-                            upNeighborID = 1000 * (count - 1),
-                            downNeighborID = 1000 * (count + 1)
-                        });
-                        count++;
+                            var nameWidth = (int)Game1.dialogueFont.MeasureString(fi.Name).X;
+                            allTextBoxes.Add(new TextBox(textBox, null, Game1.smallFont, Game1.textColor)
+                            {
+                                X = xStart + nameWidth,
+                                Y = yStart + lineHeight * lines,
+                                Width = width - nameWidth - (spaceToClearSideBorder + borderWidth) * 2,
+                                Text = fi.GetValue(pack.manifest)?.ToString(),
+                                limitWidth = false
+                            });
+                            allComponents.Add(new ClickableComponent(new Rectangle(xStart, yStart + lineHeight * lines, width, lineHeight), fi.Name));
+                        }
+                        lines++;
                     }
                 }
             }
@@ -144,8 +150,6 @@ namespace ContentPatcherEditor
             {
                 int count = 0;
                 int setHeight = 0;
-                int lineHeight = 64;
-                var lines = 0;
                 for (int i = 0; i < pack.content.Changes.Count; i++)
                 {
                     var change = pack.content.Changes[i];
@@ -181,44 +185,18 @@ namespace ContentPatcherEditor
                     }
                     count++;
                 }
-                totalLines = lines;
                 addCC = new ClickableTextureComponent("Add", new Rectangle(xPositionOnScreen + width - 104, yPositionOnScreen - 96 + height, 56, 56), "", ModEntry.SHelper.Translation.Get("add"), Game1.mouseCursors, new Rectangle(1, 412, 14, 14), 4)
                 {
                     myID = count * 1000,
                     upNeighborID = (count - 1) * 1000,
                     rightNeighborID = -2,
                 };
-                if (scrolled > 0)
-                {
-                    upCC = new ClickableTextureComponent("Up", new Rectangle(xPositionOnScreen + width + 40, yPositionOnScreen + 84, 40, 44), "", ModEntry.SHelper.Translation.Get("up"), Game1.mouseCursors, new Rectangle(76, 72, 40, 44), 1)
-                    {
-                        myID = -1,
-                        leftNeighborID = 0,
-                        downNeighborID = -2,
-                    };
-
-                }
-                else
-                    upCC = null;
-                if (scrolled < totalLines - linesPerPage)
-                {
-                    downCC = new ClickableTextureComponent("Down", new Rectangle(xPositionOnScreen + width + 40, yPositionOnScreen + height - 64, 40, 44), "", ModEntry.SHelper.Translation.Get("down"), Game1.mouseCursors, new Rectangle(12, 76, 40, 44), 1)
-                    {
-                        myID = -2,
-                        leftNeighborID = 0,
-                        upNeighborID = -1,
-                    };
-                }
-                else
-                    downCC = null;
             }
             else if (tab == 2)
             {
 
                 int count = 0;
                 int setHeight = 0;
-                int lineHeight = 64;
-                var lines = 0;
                 var boxWidth = width - (spaceToClearSideBorder + borderWidth) * 2;
                 configList = new List<ConfigSetup>();
                 foreach (var kvp in pack.config)
@@ -265,37 +243,37 @@ namespace ContentPatcherEditor
                     configList.Add(cfgs);
                     count++;
                 }
-                totalLines = lines;
                 addCC = new ClickableTextureComponent("Add", new Rectangle(xPositionOnScreen + width - 104, yPositionOnScreen - 96 + height, 56, 56), "", ModEntry.SHelper.Translation.Get("add"), Game1.mouseCursors, new Rectangle(1, 412, 14, 14), 4)
                 {
                     myID = count * 1000,
                     upNeighborID = (count - 1) * 1000,
                     rightNeighborID = -2,
                 };
-                if (scrolled > 0)
-                {
-                    upCC = new ClickableTextureComponent("Up", new Rectangle(xPositionOnScreen + width + 40, yPositionOnScreen + 84, 40, 44), "", ModEntry.SHelper.Translation.Get("up"), Game1.mouseCursors, new Rectangle(76, 72, 40, 44), 1)
-                    {
-                        myID = -1,
-                        leftNeighborID = 0,
-                        downNeighborID = -2,
-                    };
-
-                }
-                else
-                    upCC = null;
-                if (scrolled < totalLines - linesPerPage)
-                {
-                    downCC = new ClickableTextureComponent("Down", new Rectangle(xPositionOnScreen + width + 40, yPositionOnScreen + height - 64, 40, 44), "", ModEntry.SHelper.Translation.Get("down"), Game1.mouseCursors, new Rectangle(12, 76, 40, 44), 1)
-                    {
-                        myID = -2,
-                        leftNeighborID = 0,
-                        upNeighborID = -1,
-                    };
-                }
-                else
-                    downCC = null;
             }
+            totalLines = lines;
+            if (scrolled > 0)
+            {
+                upCC = new ClickableTextureComponent("Up", new Rectangle(xPositionOnScreen + width + 40, yPositionOnScreen + 84, 40, 44), "", ModEntry.SHelper.Translation.Get("up"), Game1.mouseCursors, new Rectangle(76, 72, 40, 44), 1)
+                {
+                    myID = -1,
+                    leftNeighborID = 0,
+                    downNeighborID = -2,
+                };
+
+            }
+            else
+                upCC = null;
+            if (scrolled < totalLines - linesPerPage)
+            {
+                downCC = new ClickableTextureComponent("Down", new Rectangle(xPositionOnScreen + width + 40, yPositionOnScreen + height - 64, 40, 44), "", ModEntry.SHelper.Translation.Get("down"), Game1.mouseCursors, new Rectangle(12, 76, 40, 44), 1)
+                {
+                    myID = -2,
+                    leftNeighborID = 0,
+                    upNeighborID = -1,
+                };
+            }
+            else
+                downCC = null;
             if (upCC != null || downCC != null) 
             {
                 scrollBar = new ClickableTextureComponent(new Rectangle(xPositionOnScreen + width + 40 + 8, yPositionOnScreen + 132, 24, 40), Game1.mouseCursors, new Rectangle(435, 463, 6, 10), 4f, false);
@@ -629,7 +607,14 @@ namespace ContentPatcherEditor
             if (backCC.containsPoint(x, y))
             {
                 Game1.playSound("bigDeSelect");
-                Game1.activeClickableMenu = new ContentPatcherMenu();
+                if (Game1.activeClickableMenu is TitleMenu)
+                {
+                    TitleMenu.subMenu = new ContentPatcherMenu();
+                }
+                else
+                {
+                    Game1.activeClickableMenu = new ContentPatcherMenu();
+                }
                 return;
             }
             if(scrollBar?.containsPoint(x, y) == true)
@@ -1156,7 +1141,7 @@ namespace ContentPatcherEditor
 
         public override void receiveKeyPress(Keys key)
         {
-            bool close = Game1.options.doesInputListContain(Game1.options.menuButton, key) && readyToClose();
+           bool close = Game1.options.doesInputListContain(Game1.options.menuButton, key) && readyToClose();
 
             if (tab == 0)
             {
@@ -1166,7 +1151,7 @@ namespace ContentPatcherEditor
                     if (!tb.Selected)
                         continue;
                     var fi = typeof(MyManifest).GetField(allComponents[i].name);
-                    if (fi.GetValue(pack.manifest).ToString() != tb.Text)
+                    if (fi.GetValue(pack.manifest)?.ToString() != tb.Text)
                     {
                         Game1.playSound("cowboy_monsterhit");
                         if (fi.FieldType == typeof(string))
@@ -1391,6 +1376,7 @@ namespace ContentPatcherEditor
             if (close)
             {
                 exitThisMenu(true);
+
             }
             else if (Game1.options.snappyMenus && Game1.options.gamepadControls)
             {
@@ -1584,6 +1570,12 @@ namespace ContentPatcherEditor
         {
             base.releaseLeftClick(x, y);
             scrolling = false;
+        }
+        public override void gameWindowSizeChanged(Rectangle oldBounds, Rectangle newBounds)
+        {
+            base.gameWindowSizeChanged(oldBounds, newBounds);
+            scrolled = Math.Min(scrolled, totalLines - ((Game1.viewport.Height + 72 - spaceToClearTopBorder * 2 - 116) / 64));
+            RepopulateComponentList();
         }
     }
 }

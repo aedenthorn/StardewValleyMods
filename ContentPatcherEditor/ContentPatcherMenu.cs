@@ -21,7 +21,7 @@ namespace ContentPatcherEditor
     public class ContentPatcherMenu : IClickableMenu
     {
         public static int scrolled;
-        public static int setsPerPage = 17;
+        public static int linesPerPage = 17;
         public static int windowWidth = 64 * 24;
         public static ContentPatcherMenu instance;
         public List<ContentPatcherPack> contentPatcherPacks = new();
@@ -38,8 +38,6 @@ namespace ContentPatcherEditor
         public ContentPatcherMenu() : base(Game1.uiViewport.Width / 2 - (windowWidth + borderWidth * 2) / 2, -borderWidth, windowWidth + borderWidth * 2, Game1.uiViewport.Height, false)
         {
             scrolled = 0;
-            setsPerPage = 17;
-            width = 64 * 24;
 
             foreach (var dir in Directory.GetDirectories(Path.Combine(Constants.GamePath, "Mods"), "*", SearchOption.AllDirectories))
             {
@@ -56,6 +54,11 @@ namespace ContentPatcherEditor
                                 manifest = manifest,
                                 content = JsonConvert.DeserializeObject<ContentPatcherContent>(File.ReadAllText(Path.Combine(dir, "content.json"))),
                             };
+                            if(pack.content is null)
+                            {
+                                ModEntry.SMonitor.Log($"Error loading mod at {dir}: \n\ncontent.json is null", LogLevel.Error);
+                                continue;
+                            }
                             ModEntry.RebuildLists(pack);
                             contentPatcherPacks.Add(pack);
                         }
@@ -76,31 +79,34 @@ namespace ContentPatcherEditor
 
         private void RepopulateComponentList()
         {
+            width = Math.Min(64 * 24, Game1.viewport.Width);
+            height = Game1.viewport.Height + 72;
+            xPositionOnScreen = (Game1.viewport.Width - width) / 2;
+            yPositionOnScreen = -72;
+            linesPerPage = (height - spaceToClearTopBorder * 2 - 108) / 64;
+
             allComponents.Clear();
             
             int count = 0;
-            int setHeight = 64;
-            int lineHeight = 96;
-            int clockWidth = 144;
-            int seasonWidth = 108;
+            int lineHeight = 64;
             int dowWidth = 56;
             int weekWidth = dowWidth * 7 + 8;
             int domWidth = 40;
             int monthWidth = domWidth * 7 + 12;
             Texture2D textBox = Game1.content.Load<Texture2D>("LooseSprites\\textBox");
 
-            for (int i = scrolled; i < Math.Min(setsPerPage + scrolled, contentPatcherPacks.Count); i++)
+            for (int i = scrolled; i < Math.Min(linesPerPage + scrolled, contentPatcherPacks.Count); i++)
             {
                 int xStart = xPositionOnScreen + spaceToClearSideBorder + borderWidth;
-                int yStart = yPositionOnScreen + borderWidth + spaceToClearTopBorder - 24 + count * setHeight;
+                int yStart = yPositionOnScreen + borderWidth + spaceToClearTopBorder - 24 + count * lineHeight;
                 int baseID = count * 1000;
                 
-                allComponents.Add(new ClickableComponent(new Rectangle(xStart, yStart + 96, width, setHeight), contentPatcherPacks[i].manifest.Name, contentPatcherPacks[i].manifest.UniqueID)
+                allComponents.Add(new ClickableComponent(new Rectangle(xStart, yStart + 96, width, lineHeight), contentPatcherPacks[i].manifest.Name, contentPatcherPacks[i].manifest.UniqueID)
                 {
                     myID = baseID,
                     downNeighborID = baseID + 1000,
                     upNeighborID = baseID - 1000,
-                    rightNeighborID = count < setsPerPage ? -1 : -2
+                    rightNeighborID = count < linesPerPage ? -1 : -2
                 });
                 count++;
             }
@@ -133,11 +139,11 @@ namespace ContentPatcherEditor
             }
             else 
                 downCC = null;
-            if (contentPatcherPacks.Count > setsPerPage)
+            if (contentPatcherPacks.Count > linesPerPage)
             {
                 scrollBar = new ClickableTextureComponent(new Rectangle(xPositionOnScreen + width + 40 + 8, yPositionOnScreen + 132, 24, 40), Game1.mouseCursors, new Rectangle(435, 463, 6, 10), 4f, false);
                 scrollBarRunner = new Rectangle(scrollBar.bounds.X, scrollBar.bounds.Y, scrollBar.bounds.Width, height - 200);
-                float interval = (scrollBarRunner.Height - scrollBar.bounds.Height) / (float)(contentPatcherPacks.Count - setsPerPage);
+                float interval = (scrollBarRunner.Height - scrollBar.bounds.Height) / (float)(contentPatcherPacks.Count - linesPerPage);
                 scrollBar.bounds.Y = Math.Min(scrollBarRunner.Y + (int)Math.Round(interval * scrolled), scrollBarRunner.Bottom - scrollBar.bounds.Height);
 
             }
@@ -181,7 +187,14 @@ namespace ContentPatcherEditor
                 if(set.containsPoint(x, y))
                 {
                     Game1.playSound("bigSelect");
-                    Game1.activeClickableMenu = new ContentPackMenu(contentPatcherPacks.First(p => p.manifest.UniqueID == set.label));
+                    if(Game1.activeClickableMenu is TitleMenu)
+                    {
+                        TitleMenu.subMenu = new ContentPackMenu(contentPatcherPacks.First(p => p.manifest.UniqueID == set.label));
+                    }
+                    else
+                    {
+                        Game1.activeClickableMenu = new ContentPackMenu(contentPatcherPacks.First(p => p.manifest.UniqueID == set.label));
+                    }
                     return;
                 }
             }
@@ -228,7 +241,7 @@ namespace ContentPatcherEditor
 
         private bool DoScroll(int direction)
         {
-            if (direction < 0 && scrolled < contentPatcherPacks.Count - setsPerPage)
+            if (direction < 0 && scrolled < contentPatcherPacks.Count - linesPerPage)
             {
                 Game1.playSound("shiny4");
                 scrolled++;
@@ -331,12 +344,12 @@ namespace ContentPatcherEditor
             base.leftClickHeld(x, y);
             if (scrolling)
             {
-                float interval = (scrollBarRunner.Height - scrollBar.bounds.Height) / (float)(contentPatcherPacks.Count - setsPerPage);
+                float interval = (scrollBarRunner.Height - scrollBar.bounds.Height) / (float)(contentPatcherPacks.Count - linesPerPage);
 
                 float percent = (y - scrollBarRunner.Y) / (float)scrollBarRunner.Height;
                 int which = (int)Math.Round(scrollBarRunner.Height / interval * percent);
 
-                int newScroll = Math.Max(0, Math.Min(contentPatcherPacks.Count - setsPerPage, which));
+                int newScroll = Math.Max(0, Math.Min(contentPatcherPacks.Count - linesPerPage, which));
                 if (newScroll != scrolled)
                 {
                     Game1.playSound("shiny4");
@@ -350,6 +363,12 @@ namespace ContentPatcherEditor
         {
             base.releaseLeftClick(x, y);
             scrolling = false;
+        }
+        public override void gameWindowSizeChanged(Rectangle oldBounds, Rectangle newBounds)
+        {
+            base.gameWindowSizeChanged(oldBounds, newBounds);
+            scrolled = Math.Min(scrolled, contentPatcherPacks.Count - ((Game1.viewport.Height + 72 - spaceToClearTopBorder * 2 - 108) / 64));
+            RepopulateComponentList();
         }
 
     }

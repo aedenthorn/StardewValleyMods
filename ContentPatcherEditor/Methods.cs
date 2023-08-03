@@ -69,9 +69,9 @@ namespace ContentPatcherEditor
                 Name = "[CP] New Pack",
                 Description = "New Content Patcher Content Pack",
                 Version = new Version("0.1.0"),
-                Author = Game1.player.Name,
+                Author = "YourName",
                 MinimumApiVersion = new Version("3.15.0"),
-                UniqueID = $"{Game1.player.Name}.NewContentPatcherPack",
+                UniqueID = "yourName.NewContentPatcherPack",
             };
             var content = new ContentPatcherContent()
             {

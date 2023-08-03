@@ -1,6 +1,6 @@
 {
   "GMCM_Option_ModEnabled_Name": "Mod Enabled",
-  "GMCM_Option_MenuButton_Name": "Menu Button",
+  "GMCM_Option_ShowButton_Name": "Title Menu Button",
   "GMCM_Option_Backup_Name": "Backup Files",
   "content-packs": "CP Content Packs",
   "manifest": "Manifest",
