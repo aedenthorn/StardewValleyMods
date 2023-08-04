@@ -331,7 +331,7 @@ namespace AdvancedMeleeFramework
                                                 id = mJsonAssets.GetWeaponId(weapon.id);
                                                 if(id == -1)
                                                 {
-                                                    Monitor.Log($"error getting JSON Assets weapon {weapon.id}\n{ex}", LogLevel.Error);
+                                                    //Monitor.Log($"error getting JSON Assets weapon {weapon.id}\n{ex}", LogLevel.Error);
                                                     continue;
                                                 }
                                                 Monitor.Log($"Added JA weapon {weapon.id}, id {id}");

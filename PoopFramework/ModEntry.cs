@@ -21,7 +21,8 @@ namespace PoopFramework
         public static ModEntry context;
 
         public static string dataKey = "aedenthorn.PoopFramework";
-        public static Dictionary<string, PoopData> poopDict = new();
+        public static string poopDictPath = "aedenthorn.PoopFramework/poop";
+        public static string toiletDictPath = "aedenthorn.PoopFramework/toilets";
 
         /// <summary>The mod entry point, called after the mod is first loaded.</summary>
         /// <param name="helper">Provides simplified APIs for writing mods.</param>
@@ -35,7 +36,6 @@ namespace PoopFramework
             SHelper = helper;
 
             helper.Events.GameLoop.GameLaunched += GameLoop_GameLaunched;
-            helper.Events.GameLoop.SaveLoaded += GameLoop_SaveLoaded;
             helper.Events.Content.AssetRequested += Content_AssetRequested;
 
             var harmony = new Harmony(ModManifest.UniqueID);
@@ -43,29 +43,20 @@ namespace PoopFramework
 
         }
 
-        private void GameLoop_SaveLoaded(object sender, StardewModdingAPI.Events.SaveLoadedEventArgs e)
-        {
-            poopDict = Helper.GameContent.Load<Dictionary<string, PoopData>>(dataKey);
-            foreach(var key in poopDict.Keys.ToArray())
-            {
-                try
-                {
-                    poopDict[key].poopChance = int.Parse((string)poopDict[key].poopChance);
-                    poopDict[key].poopInterval = int.Parse((string)poopDict[key].poopInterval);
-                }
-                catch
-                {
-                    Monitor.Log($"Error parsing poop data {key}");
-                    poopDict.Remove(key);
-                }
-            }
-        }
 
         private void Content_AssetRequested(object sender, StardewModdingAPI.Events.AssetRequestedEventArgs e)
         {
-            if (e.NameWithoutLocale.IsEquivalentTo(dataKey))
+            if (e.NameWithoutLocale.IsEquivalentTo(poopDictPath))
             {
                 e.LoadFrom(() => new Dictionary<string, PoopData>(), StardewModdingAPI.Events.AssetLoadPriority.Exclusive);
+            }
+            else if (e.NameWithoutLocale.IsEquivalentTo(toiletDictPath))
+            {
+                e.LoadFrom(() => new Dictionary<string, ToiletData>(), StardewModdingAPI.Events.AssetLoadPriority.Exclusive);
+            }
+            else if (e.NameWithoutLocale.IsEquivalentTo(dataKey))
+            {
+                e.LoadFrom(() => SHelper.GameContent.Load<Dictionary<string, PoopData>>(poopDictPath), StardewModdingAPI.Events.AssetLoadPriority.Exclusive);
             }
         }
         private void GameLoop_GameLaunched(object sender, StardewModdingAPI.Events.GameLaunchedEventArgs e)

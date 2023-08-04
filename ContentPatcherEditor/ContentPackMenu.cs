@@ -753,18 +753,12 @@ namespace ContentPatcherEditor
                         if ((set as EditDataSet).EntriesAddCC?.containsPoint(x, y) == true)
                         {
                             Game1.playSound("bigSelect");
-                            if (!pack.content.Changes[i].TryGetValue("Entries", out var entriesObj))
+                            if (!pack.content.lists[i].TryGetValue("Entries", out var entries))
                             {
-                                entriesObj = new JObject();
+                                entries = new List<KeyValuePair<string, JToken?>>();
                             }
-                            var entries = (JObject)entriesObj;
-                            int count = 0;
-                            while (entries.ContainsKey(count == 0 ? "" : count + ""))
-                            {
-                                count++;
-                            }
-                            entries.Add(count == 0 ? "" : count + "", "");
-                            pack.content.Changes[i]["Entries"] = entries;
+                            entries.Add(new KeyValuePair<string, JToken?>("",""));
+                            pack.content.lists[i]["Entries"] = entries;
                             ShowSaveButton();
                             RepopulateComponentList();
                             return;
@@ -790,7 +784,7 @@ namespace ContentPatcherEditor
                             {
                                 if ((set as EditDataSet).EntriesSubCC[j].containsPoint(x, y))
                                 {
-                                    ((JObject)pack.content.Changes[i]["Entries"]).Remove((set as EditDataSet).Entries[j][0].Text);
+                                    pack.content.lists[i]["Entries"].RemoveAt(j);
                                     Game1.playSound("trashcan");
                                     ShowSaveButton();
                                     RepopulateComponentList();
@@ -944,18 +938,12 @@ namespace ContentPatcherEditor
                         if ((set as EditMapSet).MapPropertiesAddCC?.containsPoint(x, y) == true)
                         {
                             Game1.playSound("bigSelect");
-                            if (!pack.content.Changes[i].TryGetValue("MapProperties", out var obj))
+                            if (!pack.content.lists[i].TryGetValue("MapProperties", out var entries))
                             {
-                                obj = new JObject();
+                                entries = new List<KeyValuePair<string, JToken?>>();
                             }
-                            var entries = (JObject)obj;
-                            int count = 0;
-                            while (entries.ContainsKey(count == 0 ? "" : count + ""))
-                            {
-                                count++;
-                            }
-                            entries.Add(count == 0 ? "" : count + "", "");
-                            pack.content.Changes[i]["MapProperties"] = entries;
+                            entries.Add(new KeyValuePair<string, JToken?>("", ""));
+                            pack.content.lists[i]["MapProperties"] = entries;
                             ShowSaveButton();
                             RepopulateComponentList();
                             return;
@@ -966,7 +954,7 @@ namespace ContentPatcherEditor
                             {
                                 if ((set as EditMapSet).MapPropertiesSubCC[j].containsPoint(x, y))
                                 {
-                                    ((JObject)pack.content.Changes[i]["MapProperties"]).Remove((set as EditMapSet).MapProperties[j][0].Text);
+                                    pack.content.lists[i]["MapProperties"].RemoveAt(j);
                                     Game1.playSound("trashcan");
                                     ShowSaveButton();
                                     RepopulateComponentList();

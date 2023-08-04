@@ -92,6 +92,7 @@ namespace ContentPatcherEditor
                 content = content,
                 config = new()
             });
+            Game1.activeClickableMenu = new ContentPatcherMenu();
         }
         public static void RebuildLists(ContentPatcherPack pack)
         {

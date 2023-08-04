@@ -1,8 +1,10 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using StardewValley;
+using StardewValley.Objects;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.Design;
 using System.Linq;
 using Object = StardewValley.Object;
 
@@ -12,11 +14,18 @@ namespace PoopFramework
     {
         private static void TryPoop(Character instance, int timeOfDay, GameLocation l)
         {
+            if(!Config.ModEnabled) 
+                return;
+
+            var toiletDict = SHelper.GameContent.Load<Dictionary<string, ToiletData>>(toiletDictPath);
+            var poopDict = SHelper.GameContent.Load<Dictionary<string, PoopData>>(dataKey);
+            
             int totalChance = 0;
             List<PoopData> list = new List<PoopData>();
-            foreach(var p in poopDict.Values)
+            bool poopWarning = false;
+            foreach(var kvp in poopDict)
             {
-                if(p.pooper.Equals(instance.Name) || p.pooper.Equals(instance.GetType().Name))
+                if (kvp.Value.pooper.Equals(instance.Name) || kvp.Value.pooper.Equals(instance.GetType().Name))
                 {
                     int lastPooped = 600;
                     if(timeOfDay == 610)
@@ -27,23 +36,27 @@ namespace PoopFramework
                     {
                         int.TryParse(dataString, out lastPooped);
                     }
-                    if ((int)p.poopInterval <= Utility.CalculateMinutesBetweenTimes(lastPooped, timeOfDay))
+                    if (kvp.Value.poopInterval <= Utility.CalculateMinutesBetweenTimes(lastPooped, timeOfDay))
                     {
-                        totalChance += (int)p.poopChance;
-                        list.Add(p);
+                        totalChance += kvp.Value.poopChance;
+                        list.Add(kvp.Value);
+                    }
+                    else if (kvp.Value.poopInterval == Utility.CalculateMinutesBetweenTimes(lastPooped, timeOfDay) + Config.PoopWarningTime)
+                    {
+                        poopWarning = true;
                     }
                 }
             }
-            if(poopDict.Any())
+            if(list.Any())
             {
                 int currentChance = 0;
                 foreach(var p in list)
                 {
-                    currentChance += (int)p.poopChance;
+                    currentChance += p.poopChance;
                     if (Game1.random.Next(Math.Max(100, totalChance)) < currentChance)
                     {
                         IDictionary<int, string> dict = p.bigCraftablePoop ? Game1.bigCraftablesInformation : Game1.objectInformation;
-                        Item i = null;
+                        Item item = null;
                         int index = -1;
                         if (!int.TryParse(p.poopItem, out index) || !dict.ContainsKey(index))
                         {
@@ -57,10 +70,39 @@ namespace PoopFramework
                         }
                         if (index > -1)
                         {
-                            i = p.bigCraftablePoop ? new Object(Vector2.Zero, index) : new Object(index, 1);
+                            item = p.bigCraftablePoop ? new Object(Vector2.Zero, index) : new Object(index, 1);
                         }
-                        if (i != null)
+                        if (item != null)
                         {
+                            if (p.poopSound != null)
+                            {
+                                l.playSound(p.poopSound);
+                            }
+                            if (p.poopEmote != null)
+                            {
+                                foreach (var emote_type in Farmer.EMOTES)
+                                {
+                                    if (emote_type.emoteString.ToLower() == p.poopEmote.ToLower())
+                                    {
+                                        if (emote_type.emoteIconIndex >= 0)
+                                        {
+                                            instance.isEmoting = false;
+                                            instance.doEmote(emote_type.emoteIconIndex, false);
+                                        }
+                                        break;
+                                    }
+                                }
+                            }
+                            instance.modData[dataKey] = timeOfDay + "";
+                            foreach (var t in toiletDict.Values)
+                            {
+                                if (t.sit && instance is Farmer && ((Farmer)instance).IsSitting() && ((Farmer)instance).sittingFurniture is Furniture && ((((Farmer)instance).sittingFurniture as Furniture).Name == t.toiletNameOrId || (((Farmer)instance).sittingFurniture as Furniture).ParentSheetIndex + "" == t.toiletNameOrId || Config.ToiletKeywords.Split(',').Where(s => (((Farmer)instance).sittingFurniture as Furniture).Name.ToLower().Contains(s.Trim().ToLower())).Any()) && (t.poopTypes is null || t.poopTypes.Contains(item.Name) || t.poopTypes.Contains(item.ParentSheetIndex + "")))
+                                {
+                                    SMonitor.Log("Pooping in toilet");
+                                    return;
+                                }
+                            }
+                            SMonitor.Log("Pooping on ground");
                             Vector2 offset = Vector2.Zero;
                             switch (instance.FacingDirection)
                             {
@@ -77,34 +119,31 @@ namespace PoopFramework
                                     offset = new Vector2(1, 0);
                                     break;
                             }
-                            Debris d = new Debris(i, instance.Position + offset * 16 + new Vector2(0, -32), instance.Position + offset * 64);
+                            Debris d = new Debris(item, instance.Position + offset * 16 + new Vector2(0, -32), instance.Position + offset * 64);
                             l.debris.Add(d);
-                            if (p.poopSound != null)
-                            {
-                                l.playSound(p.poopSound);
-                            }
-                            if(p.poopEmote != null)
-                            {
-                                foreach(var emote_type in Farmer.EMOTES)
-                                {
-                                    if (emote_type.emoteString.ToLower() == p.poopEmote.ToLower())
-                                    {
-                                        if(emote_type.emoteIconIndex >= 0)
-                                        {
-                                            instance.isEmoting = false;
-                                            instance.doEmote(emote_type.emoteIconIndex, false);
-                                        }
-                                        break;
-                                    }
-                                }
-                            }
-                            instance.modData[dataKey] = timeOfDay + "";
+
                         }
                         else
                         {
                             SMonitor.Log($"Error getting poop {p.poopItem}");
                         }
                         return;
+                    }
+                }
+                
+            }
+            else if (poopWarning)
+            {
+                foreach (var emote_type in Farmer.EMOTES)
+                {
+                    if (emote_type.emoteString.ToLower() == Config.PoopWarning.ToLower())
+                    {
+                        if (emote_type.emoteIconIndex >= 0)
+                        {
+                            instance.isEmoting = false;
+                            instance.doEmote(emote_type.emoteIconIndex, false);
+                        }
+                        break;
                     }
                 }
             }
