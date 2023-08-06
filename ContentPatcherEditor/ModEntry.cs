@@ -107,6 +107,12 @@ namespace ContentPatcherEditor
                 getValue: () => Config.Backup,
                 setValue: value => Config.Backup = value
             );
+            configMenu.AddBoolOption(
+                mod: ModManifest,
+                name: () => SHelper.Translation.Get("GMCM_Option_OpenModsFolderAfterZip_Name"),
+                getValue: () => Config.OpenModsFolderAfterZip,
+                setValue: value => Config.OpenModsFolderAfterZip = value
+            );
             configMenu.AddKeybindList(
                 mod: ModManifest,
                 name: () => SHelper.Translation.Get("GMCM_Option_MenuButton_Name"),
@@ -115,5 +121,6 @@ namespace ContentPatcherEditor
             );
 
         }
+
     }
 }

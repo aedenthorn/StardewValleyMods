@@ -15,7 +15,7 @@ namespace ContentPatcherEditor
             {
                 if (!Config.ModEnabled || TitleMenu.subMenu is null || !Game1.options.doesInputListContain(Game1.options.menuButton, key) || !TitleMenu.subMenu.readyToClose())
                     return;
-                __instance.backButtonPressed();
+                TitleMenu.subMenu.receiveKeyPress(key);
             }
         }
     }

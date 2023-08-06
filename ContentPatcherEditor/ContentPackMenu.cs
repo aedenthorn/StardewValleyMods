@@ -21,16 +21,23 @@ namespace ContentPatcherEditor
         public ContentPatcherPack pack;
         public static int linesPerPage = 17;
         public static int windowWidth = 64 * 24;
+        public Dictionary<Vector2, string> labels = new();
         public List<ChangeSet> changesList = new();
         public List<ClickableComponent> allComponents = new();
         public List<ClickableComponent> tabs = new();
         public List<int> tabTexts = new();
-        public List<TextBox> allTextBoxes = new();
+        
+        public List<TextBox> fieldTextBoxes = new();
+        public List<TextBox> updateKeysTextBoxes = new();
+        public ClickableTextureComponent updateKeysAddCC;
+        public List<ClickableTextureComponent> updateKeysSubCCs = new();
+        
         public ClickableTextureComponent addCC;
         public ClickableTextureComponent revertCC;
         public ClickableTextureComponent reloadCC;
         public ClickableTextureComponent saveCC;
         public ClickableTextureComponent backCC;
+        public ClickableTextureComponent zipCC;
         public ClickableTextureComponent upCC;
         public ClickableTextureComponent downCC;
         public ClickableTextureComponent folderCC;
@@ -86,7 +93,7 @@ namespace ContentPatcherEditor
 
             changesList.Clear();
             allComponents.Clear();
-            allTextBoxes.Clear();
+            fieldTextBoxes.Clear();
             Texture2D textBox = Game1.content.Load<Texture2D>("LooseSprites\\textBox");
             int xStart = xPositionOnScreen + spaceToClearSideBorder + borderWidth;
             int yStart = yPositionOnScreen + borderWidth + spaceToClearTopBorder - 24;
@@ -132,7 +139,7 @@ namespace ContentPatcherEditor
                         if (ModEntry.CanShowLine(lines))
                         {
                             var nameWidth = (int)Game1.dialogueFont.MeasureString(fi.Name).X;
-                            allTextBoxes.Add(new TextBox(textBox, null, Game1.smallFont, Game1.textColor)
+                            fieldTextBoxes.Add(new TextBox(textBox, null, Game1.smallFont, Game1.textColor)
                             {
                                 X = xStart + nameWidth,
                                 Y = yStart + lineHeight * lines,
@@ -145,6 +152,10 @@ namespace ContentPatcherEditor
                         lines++;
                     }
                 }
+                JArray list = pack.manifest.UpdateKeys ?? new JArray();
+                labels.Clear();
+                lines--;
+                ModEntry.TryAddList("UpdateKeys", xStart, yStart, width - (spaceToClearSideBorder + borderWidth) * 2, lineHeight, ref lines, list, labels, updateKeysTextBoxes, ref updateKeysAddCC, updateKeysSubCCs);
             }
             else if (tab == 1)
             {
@@ -287,15 +298,10 @@ namespace ContentPatcherEditor
             }
             if (ModEntry.SHelper.ModRegistry.IsLoaded(pack.manifest.UniqueID))
             {
-                reloadCC = new ClickableTextureComponent("Reload", new Rectangle(xPositionOnScreen + width / 2 - 72, yPositionOnScreen - 102 + height, 64, 64), "", ModEntry.SHelper.Translation.Get("reload"), Game1.mouseCursors, new Rectangle(330, 373, 16, 16), 4)
-                {
-                    myID = -5,
-                    upNeighborID = 0,
-                    rightNeighborID = -2,
-                    leftNeighborID = -3
-                };
+                reloadCC = new ClickableTextureComponent("Reload", new Rectangle(xPositionOnScreen + spaceToClearSideBorder + borderWidth / 2 + 80, yPositionOnScreen - 100 + height, 64, 64), "", ModEntry.SHelper.Translation.Get("reload"), Game1.mouseCursors, new Rectangle(274, 284, 16, 16), 4);
             }
-            folderCC = new ClickableTextureComponent("Folder", new Rectangle(xPositionOnScreen + width / 2 + 8, yPositionOnScreen - 100 + height, 64, 64), "", ModEntry.SHelper.Translation.Get("folder"), Game1.mouseCursors, new Rectangle(366, 373, 16, 16), 4);
+            zipCC = new ClickableTextureComponent("Zip", new Rectangle(xPositionOnScreen + spaceToClearSideBorder + borderWidth / 2, yPositionOnScreen - 100 + height, 64, 64), "", ModEntry.SHelper.Translation.Get("zip"), Game1.mouseCursors, new Rectangle(162, 440, 16, 16), 4);
+            folderCC = new ClickableTextureComponent("Folder", new Rectangle(xPositionOnScreen + spaceToClearSideBorder + borderWidth / 2 + 160, yPositionOnScreen - 100 + height, 64, 64), "", ModEntry.SHelper.Translation.Get("folder"), Game1.mouseCursors, new Rectangle(366, 373, 16, 16), 4);
             populateClickableComponentList();
         }
 
@@ -319,13 +325,27 @@ namespace ContentPatcherEditor
             }
             b.Draw(Game1.menuTexture, new Rectangle(xPositionOnScreen + 32, yPositionOnScreen + borderWidth + spaceToClearTopBorder - 48 + tabHeight, width - 64, 16), new Rectangle(40, 16, 1, 16), Color.White);
             reloadCC?.draw(b);
+            zipCC?.draw(b);
             folderCC.draw(b);
             if (tab == 0)
             {
-                for (int i = 0; i <  allTextBoxes.Count; i++)
+                for (int i = 0; i <  fieldTextBoxes.Count; i++)
                 {
-                    allTextBoxes[i].Draw(b);
+                    fieldTextBoxes[i].Draw(b);
                     b.DrawString(Game1.dialogueFont, allComponents[i].name, allComponents[i].bounds.Location.ToVector2(), Color.Brown);
+                }
+                foreach(var l in labels)
+                {
+                    b.DrawString(Game1.dialogueFont, l.Value, l.Key, Color.Brown);
+                }
+                updateKeysAddCC?.draw(b);
+                foreach(var tb in updateKeysTextBoxes)
+                {
+                    tb.Draw(b);
+                }
+                foreach(var cc in updateKeysSubCCs)
+                {
+                    cc.draw(b);
                 }
             }
             else if(tab == 1)
@@ -514,7 +534,7 @@ namespace ContentPatcherEditor
             }
             if(scrollBar is not null)
             {
-                IClickableMenu.drawTextureBox(b, Game1.mouseCursors, new Rectangle(403, 383, 6, 6), this.scrollBarRunner.X, this.scrollBarRunner.Y, this.scrollBarRunner.Width, this.scrollBarRunner.Height, Color.White, 4f, true, -1f);
+                drawTextureBox(b, Game1.mouseCursors, new Rectangle(403, 383, 6, 6), this.scrollBarRunner.X, this.scrollBarRunner.Y, this.scrollBarRunner.Width, this.scrollBarRunner.Height, Color.White, 4f, true, -1f);
                 scrollBar.draw(b);
             }
             b.Draw(Game1.menuTexture, new Rectangle(xPositionOnScreen + spaceToClearSideBorder + 16, yPositionOnScreen + height - 112, width - 64, 8), new Rectangle(40, 16, 1, 16), Color.White);
@@ -566,6 +586,13 @@ namespace ContentPatcherEditor
                 RepopulateComponentList();
                 return;
             }
+            if (zipCC?.containsPoint(x, y) == true)
+            {
+                ModEntry.ZipContentPack(pack);
+                Game1.playSound("Ship");
+                RepopulateComponentList();
+                return;
+            }
             if (reloadCC?.containsPoint(x, y) == true)
             {
                 ModEntry.AddToRawCommandQueue.Value($"patch reload {pack.manifest.UniqueID}");
@@ -583,7 +610,7 @@ namespace ContentPatcherEditor
             }
             if (revertCC?.containsPoint(x, y) == true)
             {
-                Game1.playSound("bigSelect");
+                Game1.playSound("trashcan");
                 var newPack = new ContentPatcherPack()
                 {
                     directory = pack.directory,
@@ -635,10 +662,41 @@ namespace ContentPatcherEditor
             }
             if (tab == 0)
             {
-                foreach (var tb in allTextBoxes)
+                foreach (var tb in fieldTextBoxes)
                 {
                     tb.Selected = false;
                     tb.Update();
+                }
+                if(updateKeysAddCC?.containsPoint(x, y) == true)
+                {
+                    Game1.playSound("bigSelect");
+                    if (pack.manifest.UpdateKeys is null)
+                    {
+                        pack.manifest.UpdateKeys = new JArray();
+                    }
+                    pack.manifest.UpdateKeys.Add("");
+                    ShowSaveButton();
+                    RepopulateComponentList();
+                    return;
+                }
+                foreach (var tb in updateKeysTextBoxes)
+                {
+                    tb.Selected = false;
+                    tb.Update();
+                }
+                if(updateKeysSubCCs?.Count > 0)
+                {
+                    for (int j = 0; j < updateKeysSubCCs.Count; j++)
+                    {
+                        if (updateKeysSubCCs[j].containsPoint(x, y))
+                        {
+                            pack.manifest.UpdateKeys.RemoveAt(j);
+                            Game1.playSound("trashcan");
+                            ShowSaveButton();
+                            RepopulateComponentList();
+                            return;
+                        }
+                    }
                 }
             }
             else if (tab == 1)
@@ -1129,19 +1187,19 @@ namespace ContentPatcherEditor
 
         public override void receiveKeyPress(Keys key)
         {
-           bool close = Game1.options.doesInputListContain(Game1.options.menuButton, key) && readyToClose();
+            bool close = Game1.options.doesInputListContain(Game1.options.menuButton, key) && readyToClose();
 
             if (tab == 0)
             {
-                for (int i = 0; i < allTextBoxes.Count; i++)
+                for (int i = 0; i < fieldTextBoxes.Count; i++)
                 {
-                    var tb = allTextBoxes[i];
+                    var tb = fieldTextBoxes[i];
                     if (!tb.Selected)
                         continue;
                     var fi = typeof(MyManifest).GetField(allComponents[i].name);
                     if (fi.GetValue(pack.manifest)?.ToString() != tb.Text)
                     {
-                        Game1.playSound("cowboy_monsterhit");
+                        ModEntry.PlaySound("typing");
                         if (fi.FieldType == typeof(string))
                             fi.SetValue(pack.manifest, tb.Text);
                         else
@@ -1156,6 +1214,20 @@ namespace ContentPatcherEditor
                         return;
                     }
                 }
+                if (updateKeysTextBoxes?.Count > 0)
+                {
+                    for (int j = 0; j < updateKeysTextBoxes.Count; j++)
+                    {
+                        if (updateKeysTextBoxes[j].Selected && updateKeysTextBoxes[j].Text != (string)pack.manifest.UpdateKeys[j])
+                        {
+                            pack.manifest.UpdateKeys[j] = updateKeysTextBoxes[j].Text;
+                            ModEntry.PlaySound("typing");
+                            ShowSaveButton();
+                            return;
+                        }
+                    }
+                }
+
             }
             else if (tab == 1)
             {
@@ -1164,14 +1236,14 @@ namespace ContentPatcherEditor
                     var set = changesList[i];
                     if (set.Action?.Selected == true && (string)pack.content.Changes[i]["Action"] != set.Action.Text)
                     {
-                        Game1.playSound("cowboy_monsterhit");
+                        ModEntry.PlaySound("typing");
                         pack.content.Changes[i]["Action"] = set.Action.Text;
                         ShowSaveButton();
                         return;
                     }
                     if (set.LogName?.Selected == true && (string)pack.content.Changes[i]["LogName"] != set.Action.Text)
                     {
-                        Game1.playSound("cowboy_monsterhit");
+                        ModEntry.PlaySound("typing");
                         pack.content.Changes[i]["LogName"] = set.LogName.Text;
                         ShowSaveButton();
                         return;
@@ -1182,7 +1254,7 @@ namespace ContentPatcherEditor
                             set.When[j][1].Selected && set.When[j][1].Text != (string)pack.content.lists[i]["When"][j].Value)
                         {
                             pack.content.lists[i]["When"][j] = new KeyValuePair<string, JToken?>(set.When[j][0].Text, set.When[j][1].Text);
-                            Game1.playSound("cowboy_monsterhit");
+                            ModEntry.PlaySound("typing");
                             ShowSaveButton();
                             return;
                         }
@@ -1191,14 +1263,14 @@ namespace ContentPatcherEditor
                     {
                         if ((set as LoadSet).Target?.Selected == true && (string)pack.content.Changes[i]["Target"] != (set as LoadSet).Target.Text)
                         {
-                            Game1.playSound("cowboy_monsterhit");
+                            ModEntry.PlaySound("typing");
                             pack.content.Changes[i]["Target"] = (set as LoadSet).Target.Text;
                             ShowSaveButton();
                             return;
                         }
                         if ((set as LoadSet).FromFile?.Selected == true && (string)pack.content.Changes[i]["FromFile"] != (set as LoadSet).FromFile.Text)
                         {
-                            Game1.playSound("cowboy_monsterhit");
+                            ModEntry.PlaySound("typing");
                             pack.content.Changes[i]["FromFile"] = (set as LoadSet).FromFile.Text;
                             ShowSaveButton();
                             return;
@@ -1208,7 +1280,7 @@ namespace ContentPatcherEditor
                     {
                         if ((set as EditDataSet).Target?.Selected == true && (string)pack.content.Changes[i]["Target"] != (set as EditDataSet).Target.Text)
                         {
-                            Game1.playSound("cowboy_monsterhit");
+                            ModEntry.PlaySound("typing");
                             pack.content.Changes[i]["Target"] = (set as EditDataSet).Target.Text;
                             ShowSaveButton();
                             return;
@@ -1219,14 +1291,14 @@ namespace ContentPatcherEditor
                             if (entry[0].Selected && entry[0].Text != (string)pack.content.lists[i]["Entries"][j].Key)
                             {
                                 pack.content.lists[i]["Entries"][j] = new KeyValuePair<string, JToken?>(entry[0].Text, pack.content.lists[i]["Entries"][j].Value);
-                                Game1.playSound("cowboy_monsterhit");
+                                ModEntry.PlaySound("typing");
                                 ShowSaveButton();
                                 return;
                             }
                             if (pack.content.lists[i]["Entries"][j].Value.Type == JTokenType.String && entry[1].Selected && entry[1].Text != (string)pack.content.lists[i]["Entries"][j].Value)
                             {
                                 pack.content.lists[i]["Entries"][j] = new KeyValuePair<string, JToken?>(pack.content.lists[i]["Entries"][j].Key, entry[1].Text);
-                                Game1.playSound("cowboy_monsterhit");
+                                ModEntry.PlaySound("typing");
                                 ShowSaveButton();
                                 return;
                             }
@@ -1236,27 +1308,27 @@ namespace ContentPatcherEditor
                     {
                         if ((set as EditImageSet).Target?.Selected == true && (string)pack.content.Changes[i]["Target"] != (set as EditImageSet).Target.Text)
                         {
-                            Game1.playSound("cowboy_monsterhit");
+                            ModEntry.PlaySound("typing");
                             pack.content.Changes[i]["Target"] = (set as EditImageSet).Target.Text;
                             ShowSaveButton();
                             return;
                         }
                         if ((set as EditImageSet).FromFile?.Selected == true && (string)pack.content.Changes[i]["FromFile"] != (set as EditImageSet).FromFile.Text)
                         {
-                            Game1.playSound("cowboy_monsterhit");
+                            ModEntry.PlaySound("typing");
                             pack.content.Changes[i]["FromFile"] = (set as EditImageSet).FromFile.Text;
                             ShowSaveButton();
                             return;
                         }
                         if ((set as EditImageSet).FromArea is not null && CheckRectChanged((set as EditImageSet).FromArea, "FromArea", i))
                         {
-                            Game1.playSound("cowboy_monsterhit");
+                            ModEntry.PlaySound("typing");
                             ShowSaveButton();
                             return;
                         }
                         if ((set as EditImageSet).ToArea is not null && CheckRectChanged((set as EditImageSet).ToArea, "ToArea", i))
                         {
-                            Game1.playSound("cowboy_monsterhit");
+                            ModEntry.PlaySound("typing");
                             ShowSaveButton();
                             return;
                         }
@@ -1265,14 +1337,14 @@ namespace ContentPatcherEditor
                     {
                         if ((set as EditMapSet).Target?.Selected == true && (string)pack.content.Changes[i]["Target"] != (set as EditMapSet).Target.Text)
                         {
-                            Game1.playSound("cowboy_monsterhit");
+                            ModEntry.PlaySound("typing");
                             pack.content.Changes[i]["Target"] = (set as EditMapSet).Target.Text;
                             ShowSaveButton();
                             return;
                         }
                         if ((set as EditMapSet).FromFile?.Selected == true && (string)pack.content.Changes[i]["FromFile"] != (set as EditMapSet).FromFile.Text)
                         {
-                            Game1.playSound("cowboy_monsterhit");
+                            ModEntry.PlaySound("typing");
                             pack.content.Changes[i]["FromFile"] = (set as EditMapSet).FromFile.Text;
                             ShowSaveButton();
                             return;
@@ -1284,7 +1356,7 @@ namespace ContentPatcherEditor
                                 entry[1].Selected && entry[1].Text != (string)pack.content.lists[i]["MapProperties"][j].Value)
                             {
                                 pack.content.lists[i]["MapProperties"][j] = new KeyValuePair<string, JToken?>(entry[0].Text, entry[1].Text);
-                                Game1.playSound("cowboy_monsterhit");
+                                ModEntry.PlaySound("typing");
                                 ShowSaveButton();
                                 return;
                             }
@@ -1294,20 +1366,20 @@ namespace ContentPatcherEditor
                             if ((set as EditMapSet).AddWarps[j].Selected && (set as EditMapSet).AddWarps[j].Text != pack.content.Changes[i]["AddWarps"][j].ToString())
                             {
                                 pack.content.Changes[i]["AddWarps"][j] = (set as EditMapSet).AddWarps[j].Text;
-                                Game1.playSound("cowboy_monsterhit");
+                                ModEntry.PlaySound("typing");
                                 ShowSaveButton();
                                 return;
                             }
                         }
                         if ((set as EditMapSet).FromArea is not null && CheckRectChanged((set as EditMapSet).FromArea, "FromArea", i))
                         {
-                            Game1.playSound("cowboy_monsterhit");
+                            ModEntry.PlaySound("typing");
                             ShowSaveButton();
                             return;
                         }
                         if ((set as EditMapSet).ToArea is not null && CheckRectChanged((set as EditMapSet).ToArea, "ToArea", i))
                         {
-                            Game1.playSound("cowboy_monsterhit");
+                            ModEntry.PlaySound("typing");
                             ShowSaveButton();
                             return;
                         }
@@ -1316,7 +1388,7 @@ namespace ContentPatcherEditor
                     {
                         if ((set as IncludeSet).FromFile?.Selected == true && (string)pack.content.Changes[i]["FromFile"] != (set as IncludeSet).FromFile.Text)
                         {
-                            Game1.playSound("cowboy_monsterhit");
+                            ModEntry.PlaySound("typing");
                             pack.content.Changes[i]["FromFile"] = (set as IncludeSet).FromFile.Text;
                             ShowSaveButton();
                             return;
@@ -1331,14 +1403,14 @@ namespace ContentPatcherEditor
                     var cfg = configList[i];
                     if (cfg.Key?.Selected == true && cfg.oldKey != cfg.Key.Text)
                     {
-                        Game1.playSound("cowboy_monsterhit");
+                        ModEntry.PlaySound("typing");
                         pack.config[i] =  new KeyValuePair<string, ConfigVar>(cfg.Key.Text, pack.config[i].Value);
                         ShowSaveButton();
                         return;
                     }
                     if (cfg.Default?.Selected == true && pack.config[i].Value.Default != cfg.Default.Text)
                     {
-                        Game1.playSound("cowboy_monsterhit");
+                        ModEntry.PlaySound("typing");
                         pack.config[i].Value.Default = cfg.Default.Text;
                         ShowSaveButton();
                         return;
@@ -1350,7 +1422,7 @@ namespace ContentPatcherEditor
                             string[] values = pack.config[i].Value.AllowValues.Split(',');
                             if (cfg.AllowValues[j].Selected && values[j].Trim() != cfg.AllowValues[j].Text.Trim())
                             {
-                                Game1.playSound("cowboy_monsterhit");
+                                ModEntry.PlaySound("typing");
                                 values[j] = cfg.AllowValues[j].Text.Trim();
                                 pack.config[i].Value.AllowValues = string.Join(", ", values);
                                 ShowSaveButton();
@@ -1420,14 +1492,14 @@ namespace ContentPatcherEditor
 
         private void ShowSaveButton()
         {
-            saveCC = new ClickableTextureComponent("Save", new Rectangle(xPositionOnScreen + spaceToClearSideBorder + borderWidth, yPositionOnScreen - 100 + height, 64, 64), "", ModEntry.SHelper.Translation.Get("save"), Game1.mouseCursors, new Rectangle(241, 320, 16, 16), 4)
+            saveCC = new ClickableTextureComponent("Save", new Rectangle(xPositionOnScreen + width / 2 - 70, yPositionOnScreen - 100 + height, 64, 64), "", ModEntry.SHelper.Translation.Get("save"), Game1.mouseCursors, new Rectangle(241, 320, 16, 16), 4)
             {
                 myID = -4,
                 upNeighborID = 0,
                 rightNeighborID = -2,
                 leftNeighborID = -3
             };
-            revertCC = new ClickableTextureComponent("Revert", new Rectangle(xPositionOnScreen + spaceToClearSideBorder + borderWidth + 64, yPositionOnScreen - 102 + height, 68, 68), "", ModEntry.SHelper.Translation.Get("revert"), Game1.mouseCursors, new Rectangle(348, 372, 17, 17), 4)
+            revertCC = new ClickableTextureComponent("Revert", new Rectangle(xPositionOnScreen + width / 2 + 10, yPositionOnScreen - 102 + height, 68, 68), "", ModEntry.SHelper.Translation.Get("revert"), Game1.mouseCursors, new Rectangle(348, 372, 17, 17), 4)
             {
                 myID = -5,
                 upNeighborID = 0,
@@ -1492,6 +1564,11 @@ namespace ContentPatcherEditor
             if (reloadCC?.containsPoint(x, y) == true)
             {
                 hoverText = reloadCC.hoverText;
+                return;
+            }
+            if (zipCC?.containsPoint(x, y) == true)
+            {
+                hoverText = zipCC.hoverText;
                 return;
             }
             if (folderCC?.containsPoint(x, y) == true)

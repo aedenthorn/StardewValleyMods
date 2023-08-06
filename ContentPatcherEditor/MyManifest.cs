@@ -1,4 +1,5 @@
-﻿using StardewModdingAPI;
+﻿using Newtonsoft.Json.Linq;
+using StardewModdingAPI;
 using StardewValley;
 using System.Collections.Generic;
 
@@ -32,8 +33,8 @@ namespace ContentPatcherEditor
             }
         };
 
-        public string[] UpdateKeys;
+        public JArray? UpdateKeys;
 
-        public Dictionary<string, object> ExtraFields;
+        public JObject? ExtraFields;
     }
 }

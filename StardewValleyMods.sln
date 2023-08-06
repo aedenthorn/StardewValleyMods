@@ -551,6 +551,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ContentPatcherEditor", "Con
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "StatueShorts", "StatueShorts\StatueShorts.csproj", "{B529566E-B44F-48E9-B48C-1EAC7BA0FF7E}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BuffFramework", "BuffFramework\BuffFramework.csproj", "{7695A53D-D6A7-4249-A81F-9847C495FCB7}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -3789,6 +3791,18 @@ Global
 		{B529566E-B44F-48E9-B48C-1EAC7BA0FF7E}.Release|x64.Build.0 = Release|x64
 		{B529566E-B44F-48E9-B48C-1EAC7BA0FF7E}.Release|x86.ActiveCfg = Release|Any CPU
 		{B529566E-B44F-48E9-B48C-1EAC7BA0FF7E}.Release|x86.Build.0 = Release|Any CPU
+		{7695A53D-D6A7-4249-A81F-9847C495FCB7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7695A53D-D6A7-4249-A81F-9847C495FCB7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7695A53D-D6A7-4249-A81F-9847C495FCB7}.Debug|x64.ActiveCfg = Debug|x64
+		{7695A53D-D6A7-4249-A81F-9847C495FCB7}.Debug|x64.Build.0 = Debug|x64
+		{7695A53D-D6A7-4249-A81F-9847C495FCB7}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{7695A53D-D6A7-4249-A81F-9847C495FCB7}.Debug|x86.Build.0 = Debug|Any CPU
+		{7695A53D-D6A7-4249-A81F-9847C495FCB7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7695A53D-D6A7-4249-A81F-9847C495FCB7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7695A53D-D6A7-4249-A81F-9847C495FCB7}.Release|x64.ActiveCfg = Release|x64
+		{7695A53D-D6A7-4249-A81F-9847C495FCB7}.Release|x64.Build.0 = Release|x64
+		{7695A53D-D6A7-4249-A81F-9847C495FCB7}.Release|x86.ActiveCfg = Release|Any CPU
+		{7695A53D-D6A7-4249-A81F-9847C495FCB7}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

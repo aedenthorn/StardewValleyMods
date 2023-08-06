@@ -8,8 +8,10 @@ using StardewValley;
 using StardewValley.Menus;
 using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.Diagnostics;
 using System.IO;
+using System.IO.Compression;
 using System.Linq;
 using System.Reflection.Emit;
 using System.Reflection.Metadata;
@@ -189,6 +191,8 @@ namespace ContentPatcherEditor
             int ws = 8;
             int wl = (int)Game1.dialogueFont.MeasureString(key).X + 8;
             textBoxes.Clear();
+            addCC = null;
+            subCCs.Clear();
             if (CanShowLine(++lines))
             {
                 labels.Add(new Vector2(xStart, yStart + (lines - ContentPackMenu.scrolled) * lineHeight), key);
@@ -250,6 +254,8 @@ namespace ContentPatcherEditor
             int wl = (int)Game1.dialogueFont.MeasureString(key).X + 8;
 
             textBoxes.Clear();
+            addCC = null;
+            subCCs.Clear();
             if (CanShowLine(++lines))
             {
                 labels.Add(new Vector2(xStart, yStart + (lines - ContentPackMenu.scrolled) * lineHeight), key);
@@ -342,6 +348,41 @@ namespace ContentPatcherEditor
 
             return dynamicMethod.CreateDelegate<Action<string>>();
         });
+        public static void ZipContentPack(ContentPatcherPack pack)
+        {
+            var path = Path.Combine(Constants.GamePath, "Mods", $"{Path.GetFileNameWithoutExtension(pack.directory)}.{pack.manifest.Version}.zip");
+            File.Delete(path);
+            ZipFile.CreateFromDirectory(pack.directory, path);
 
+            using (ZipArchive archive = ZipFile.Open(path, ZipArchiveMode.Update))
+            {
+                for (int i = archive.Entries.Count - 1; i >= 0; i--)
+                {
+                    if (archive.Entries[i].FullName.EndsWith(".backup", StringComparison.OrdinalIgnoreCase) || archive.Entries[i].FullName.Equals("config.json", StringComparison.OrdinalIgnoreCase))
+                    {
+                        archive.Entries[i].Delete();
+                    }
+                }
+            }
+            SMonitor.Log($"Mod zip file created at {path}");
+            if (Config.OpenModsFolderAfterZip)
+            {
+                TryOpenFolder(Path.Combine(Constants.GamePath, "Mods"));
+            }
+        }
+
+        public static void PlaySound(string v)
+        {
+            switch (v)
+            {
+                case "typing":
+                    if (Game1.activeClickableMenu is not TitleMenu)
+                    {
+                        Game1.playSound("cowboy_monsterhit");
+                    }
+                    break;
+            }
+
+        }
     }
 }
