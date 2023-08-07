@@ -553,6 +553,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "StatueShorts", "StatueShort
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BuffFramework", "BuffFramework\BuffFramework.csproj", "{7695A53D-D6A7-4249-A81F-9847C495FCB7}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ItemAboveHead", "ItemAboveHead\ItemAboveHead.csproj", "{B165DDB6-C537-4612-87D0-231089517243}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -3803,6 +3805,18 @@ Global
 		{7695A53D-D6A7-4249-A81F-9847C495FCB7}.Release|x64.Build.0 = Release|x64
 		{7695A53D-D6A7-4249-A81F-9847C495FCB7}.Release|x86.ActiveCfg = Release|Any CPU
 		{7695A53D-D6A7-4249-A81F-9847C495FCB7}.Release|x86.Build.0 = Release|Any CPU
+		{B165DDB6-C537-4612-87D0-231089517243}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B165DDB6-C537-4612-87D0-231089517243}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B165DDB6-C537-4612-87D0-231089517243}.Debug|x64.ActiveCfg = Debug|x64
+		{B165DDB6-C537-4612-87D0-231089517243}.Debug|x64.Build.0 = Debug|x64
+		{B165DDB6-C537-4612-87D0-231089517243}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{B165DDB6-C537-4612-87D0-231089517243}.Debug|x86.Build.0 = Debug|Any CPU
+		{B165DDB6-C537-4612-87D0-231089517243}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B165DDB6-C537-4612-87D0-231089517243}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B165DDB6-C537-4612-87D0-231089517243}.Release|x64.ActiveCfg = Release|x64
+		{B165DDB6-C537-4612-87D0-231089517243}.Release|x64.Build.0 = Release|x64
+		{B165DDB6-C537-4612-87D0-231089517243}.Release|x86.ActiveCfg = Release|Any CPU
+		{B165DDB6-C537-4612-87D0-231089517243}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
