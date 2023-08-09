@@ -5,7 +5,7 @@ using StardewModdingAPI;
 using StardewModdingAPI.Utilities;
 using StardewValley;
 
-namespace BuffFramework
+namespace CropHarvestBubbles
 {
     public interface IGenericModConfigMenuApi
     {

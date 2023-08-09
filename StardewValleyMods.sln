@@ -557,6 +557,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ItemAboveHead", "ItemAboveH
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BirthdayBuff", "BirthdayBuff\BirthdayBuff.csproj", "{9DA3F935-C562-4B46-B538-12E6DA7EF2EA}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CropHarvestBubbles", "CropHarvestBubbles\CropHarvestBubbles.csproj", "{524B084D-CB01-4E39-82E8-1B9C328A56EA}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -3831,6 +3833,18 @@ Global
 		{9DA3F935-C562-4B46-B538-12E6DA7EF2EA}.Release|x64.Build.0 = Release|x64
 		{9DA3F935-C562-4B46-B538-12E6DA7EF2EA}.Release|x86.ActiveCfg = Release|Any CPU
 		{9DA3F935-C562-4B46-B538-12E6DA7EF2EA}.Release|x86.Build.0 = Release|Any CPU
+		{524B084D-CB01-4E39-82E8-1B9C328A56EA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{524B084D-CB01-4E39-82E8-1B9C328A56EA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{524B084D-CB01-4E39-82E8-1B9C328A56EA}.Debug|x64.ActiveCfg = Debug|x64
+		{524B084D-CB01-4E39-82E8-1B9C328A56EA}.Debug|x64.Build.0 = Debug|x64
+		{524B084D-CB01-4E39-82E8-1B9C328A56EA}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{524B084D-CB01-4E39-82E8-1B9C328A56EA}.Debug|x86.Build.0 = Debug|Any CPU
+		{524B084D-CB01-4E39-82E8-1B9C328A56EA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{524B084D-CB01-4E39-82E8-1B9C328A56EA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{524B084D-CB01-4E39-82E8-1B9C328A56EA}.Release|x64.ActiveCfg = Release|x64
+		{524B084D-CB01-4E39-82E8-1B9C328A56EA}.Release|x64.Build.0 = Release|x64
+		{524B084D-CB01-4E39-82E8-1B9C328A56EA}.Release|x86.ActiveCfg = Release|Any CPU
+		{524B084D-CB01-4E39-82E8-1B9C328A56EA}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
