@@ -1,23 +1,12 @@
 ﻿using HarmonyLib;
-using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using StardewValley;
 using StardewValley.Menus;
-using StardewValley.Network;
-using StardewValley.Objects;
-using StardewValley.Quests;
-using StardewValley.Tools;
 using System.Collections.Generic;
-using System.Reflection.Emit;
-using System.Reflection;
-using xTile.Dimensions;
 using System.Linq;
-using Microsoft.Xna.Framework.Graphics;
-using System;
+using System.Reflection;
+using System.Reflection.Emit;
 using Rectangle = Microsoft.Xna.Framework.Rectangle;
-using Object = StardewValley.Object;
-using StardewValley.Characters;
-using static StardewValley.Minigames.CraneGame;
-using StardewValley.Locations;
 
 namespace BuffFramework
 {
@@ -26,12 +15,12 @@ namespace BuffFramework
         [HarmonyPatch(typeof(Farmer), nameof(Farmer.draw))]
         public class Farmer_draw_Patch
         {
-            public static bool Prefix(Farmer __instance, SpriteBatch b)
+            public static void Prefix(Farmer __instance, SpriteBatch b)
             {
                 if (!Config.ModEnabled || !__instance.IsLocalPlayer)
-                    return true;
+                    return;
 
-                foreach(var fb in farmerBuffs.Value)
+                foreach(var fb in farmerBuffs.Value.Values)
                 {
                     Buff? buff = Game1.buffsDisplay.otherBuffs.FirstOrDefault(p => p.which == fb.which);
                     if (buff == null)
@@ -42,7 +31,41 @@ namespace BuffFramework
                     }
                     buff.millisecondsDuration = 50;
                 }
-                return true;
+            }
+        }
+        [HarmonyPatch(typeof(Buff), nameof(Buff.getClickableComponents))]
+        public class Buff_getClickableComponents_Patch
+        {
+            public static void Postfix(Buff __instance, ref List<ClickableTextureComponent> __result)
+            {
+                if (!Config.ModEnabled || __result?.Any() != true)
+                    return;
+                
+                foreach (var kvp in farmerBuffs.Value)
+                {
+                    object texturePath = null;
+                    object description = null;
+                    if (kvp.Value.which == __instance.which)
+                    {
+                        if (buffDict[kvp.Key].TryGetValue("texturePath", out texturePath) || buffDict[kvp.Key].TryGetValue("description", out description))
+                        {
+                            var tex = texturePath is not null ? SHelper.GameContent.Load<Texture2D>((string)texturePath) : __result[0].texture;
+                            var cc = new ClickableTextureComponent("", Rectangle.Empty, null, description is not null ? (string)description : __result[0].hoverText, tex, texturePath is not null ? new Rectangle(0, 0, tex.Width, tex.Height) : __result[0].sourceRect, 4f, false);
+
+                            if (buffDict[kvp.Key].TryGetValue("separate", out var separate) && (bool)separate)
+                            {
+                                __result.Insert(0, cc);
+                            }
+                            else
+                            {
+                                __result = new() {
+                                    cc
+                                };
+                            }
+                        }
+                        return;
+                    }
+                }
             }
         }
         [HarmonyPatch(typeof(Buff), nameof(Buff.addBuff))]

@@ -555,6 +555,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BuffFramework", "BuffFramew
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ItemAboveHead", "ItemAboveHead\ItemAboveHead.csproj", "{B165DDB6-C537-4612-87D0-231089517243}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BirthdayBuff", "BirthdayBuff\BirthdayBuff.csproj", "{9DA3F935-C562-4B46-B538-12E6DA7EF2EA}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -3817,6 +3819,18 @@ Global
 		{B165DDB6-C537-4612-87D0-231089517243}.Release|x64.Build.0 = Release|x64
 		{B165DDB6-C537-4612-87D0-231089517243}.Release|x86.ActiveCfg = Release|Any CPU
 		{B165DDB6-C537-4612-87D0-231089517243}.Release|x86.Build.0 = Release|Any CPU
+		{9DA3F935-C562-4B46-B538-12E6DA7EF2EA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9DA3F935-C562-4B46-B538-12E6DA7EF2EA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9DA3F935-C562-4B46-B538-12E6DA7EF2EA}.Debug|x64.ActiveCfg = Debug|x64
+		{9DA3F935-C562-4B46-B538-12E6DA7EF2EA}.Debug|x64.Build.0 = Debug|x64
+		{9DA3F935-C562-4B46-B538-12E6DA7EF2EA}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{9DA3F935-C562-4B46-B538-12E6DA7EF2EA}.Debug|x86.Build.0 = Debug|Any CPU
+		{9DA3F935-C562-4B46-B538-12E6DA7EF2EA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9DA3F935-C562-4B46-B538-12E6DA7EF2EA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9DA3F935-C562-4B46-B538-12E6DA7EF2EA}.Release|x64.ActiveCfg = Release|x64
+		{9DA3F935-C562-4B46-B538-12E6DA7EF2EA}.Release|x64.Build.0 = Release|x64
+		{9DA3F935-C562-4B46-B538-12E6DA7EF2EA}.Release|x86.ActiveCfg = Release|Any CPU
+		{9DA3F935-C562-4B46-B538-12E6DA7EF2EA}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

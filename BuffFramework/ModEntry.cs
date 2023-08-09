@@ -1,5 +1,6 @@
 ﻿using HarmonyLib;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Audio;
 using Microsoft.Xna.Framework.Graphics;
 using Newtonsoft.Json.Linq;
 using StardewModdingAPI;
@@ -24,8 +25,9 @@ namespace BuffFramework
 
         public static ModEntry context;
         public static string dictKey = "aedenthorn.BuffFramework/dictionary";
-        public static Dictionary<string, BuffData> buffDict = new();
-        public static PerScreen<List<Buff>> farmerBuffs = new();
+        public static Dictionary<string, Dictionary<string, object>> buffDict = new();
+        public static PerScreen<Dictionary<string, Buff>> farmerBuffs = new();
+        public static Dictionary<string, ICue> cues = new();
 
         /// <summary>The mod entry point, called after the mod is first loaded.</summary>
         /// <param name="helper">Provides simplified APIs for writing mods.</param>
@@ -51,31 +53,29 @@ namespace BuffFramework
 
         private void GameLoop_TimeChanged(object sender, StardewModdingAPI.Events.TimeChangedEventArgs e)
         {
-            UpdateBuffs();
+            Helper.Events.GameLoop.UpdateTicking += GameLoop_UpdateTicking;
         }
 
         private void Player_Warped(object sender, StardewModdingAPI.Events.WarpedEventArgs e)
         {
-            Helper.Events.GameLoop.UpdateTicked += GameLoop_UpdateTicked;
-
+            Helper.Events.GameLoop.UpdateTicking += GameLoop_UpdateTicking;
         }
-
-        private void GameLoop_UpdateTicked(object sender, StardewModdingAPI.Events.UpdateTickedEventArgs e)
-        {
-            UpdateBuffs();
-            Helper.Events.GameLoop.UpdateTicked -= GameLoop_UpdateTicked;
-        }
-
         private void GameLoop_DayStarted(object sender, StardewModdingAPI.Events.DayStartedEventArgs e)
         {
+            Helper.Events.GameLoop.UpdateTicking += GameLoop_UpdateTicking;
+        }
+
+        private void GameLoop_UpdateTicking(object sender, StardewModdingAPI.Events.UpdateTickingEventArgs e)
+        {
             UpdateBuffs();
+            Helper.Events.GameLoop.UpdateTicking -= GameLoop_UpdateTicking;
         }
 
         private void Content_AssetRequested(object sender, StardewModdingAPI.Events.AssetRequestedEventArgs e)
         {
             if (e.NameWithoutLocale.IsEquivalentTo(dictKey))
             {
-                e.LoadFrom(() => new Dictionary<string, BuffData>(), StardewModdingAPI.Events.AssetLoadPriority.Exclusive);
+                e.LoadFrom(() => new Dictionary<string, Dictionary<string, object>>(), StardewModdingAPI.Events.AssetLoadPriority.Exclusive);
             }
         }
 
@@ -86,26 +86,24 @@ namespace BuffFramework
 
         private void GameLoop_GameLaunched(object sender, StardewModdingAPI.Events.GameLaunchedEventArgs e)
         {
-
             // get Generic Mod Config Menu's API (if it's installed)
             var configMenu = Helper.ModRegistry.GetApi<IGenericModConfigMenuApi>("spacechase0.GenericModConfigMenu");
-            if (configMenu is null)
-                return;
+            if (configMenu is not null)
+            {
+                // register mod
+                configMenu.Register(
+                    mod: ModManifest,
+                    reset: () => Config = new ModConfig(),
+                    save: () => Helper.WriteConfig(Config)
+                );
 
-            // register mod
-            configMenu.Register(
-                mod: ModManifest,
-                reset: () => Config = new ModConfig(),
-                save: () => Helper.WriteConfig(Config)
-            );
-
-            configMenu.AddBoolOption(
-                mod: ModManifest,
-                name: () => SHelper.Translation.Get("GMCM_Option_ModEnabled_Name"),
-                getValue: () => Config.ModEnabled,
-                setValue: value => Config.ModEnabled = value
-            );
-
+                configMenu.AddBoolOption(
+                    mod: ModManifest,
+                    name: () => SHelper.Translation.Get("GMCM_Option_ModEnabled_Name"),
+                    getValue: () => Config.ModEnabled,
+                    setValue: value => Config.ModEnabled = value
+                );
+            }
         }
     }
 }

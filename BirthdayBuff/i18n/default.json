@@ -1,0 +1,16 @@
+{
+  "GMCM_Option_ModEnabled_Name": "Mod Enabled",
+  "GMCM_Option_ShowSeparate_Name": "ShowSeparate",
+  "GMCM_Option_Sound_Name": "Sound",
+  "GMCM_Option_Farming_Name": "Farming",
+  "GMCM_Option_Fishing_Name": "Fishing",
+  "GMCM_Option_Mining_Name": "Mining",
+  "GMCM_Option_Luck_Name": "Luck",
+  "GMCM_Option_Foraging_Name": "Foraging",
+  "GMCM_Option_MaxStamina_Name": "MaxStamina",
+  "GMCM_Option_MagneticRadius_Name": "MagneticRadius",
+  "GMCM_Option_Speed_Name": "Speed",
+  "GMCM_Option_Defense_Name": "Defense",
+  "GMCM_Option_Attack_Name": "Attack",
+  "birthday-buff": "Birthday Buff"
+}
