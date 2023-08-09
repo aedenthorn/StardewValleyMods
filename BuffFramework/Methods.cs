@@ -1,21 +1,8 @@
-﻿using HarmonyLib;
-using Microsoft.Xna.Framework;
+﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Audio;
-using Microsoft.Xna.Framework.Graphics;
-using Microsoft.Xna.Framework.Media;
 using Newtonsoft.Json.Linq;
 using StardewValley;
-using StardewValley.BellsAndWhistles;
-using StardewValley.Locations;
-using StardewValley.Quests;
-using StardewValley.SDKs;
-using System;
 using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using xTile.Dimensions;
-using static StardewValley.LocationRequest;
-using Object = StardewValley.Object;
 
 namespace BuffFramework
 {

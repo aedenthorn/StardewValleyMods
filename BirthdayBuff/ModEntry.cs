@@ -1,18 +1,9 @@
 ﻿using HarmonyLib;
-using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using Newtonsoft.Json.Linq;
-using Sickhead.Engine.Util;
 using StardewModdingAPI;
-using StardewModdingAPI.Utilities;
 using StardewValley;
-using StardewValley.Quests;
 using System;
 using System.Collections.Generic;
-using System.Globalization;
-using System.Linq;
-using System.Text;
-using Rectangle = Microsoft.Xna.Framework.Rectangle;
 
 namespace BirthdayBuff
 {
