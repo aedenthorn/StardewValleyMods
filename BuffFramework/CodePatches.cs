@@ -17,7 +17,7 @@ namespace BuffFramework
         {
             public static void Prefix(Farmer __instance, SpriteBatch b)
             {
-                if (!Config.ModEnabled || !__instance.IsLocalPlayer)
+                if (!Config.ModEnabled || !__instance.IsLocalPlayer || farmerBuffs.Value is null)
                     return;
 
                 foreach(var fb in farmerBuffs.Value.Values)

@@ -9,6 +9,8 @@ namespace CropHarvestBubbles
     {
         public bool ModEnabled { get; set; } = true;
         public bool RequireKeyPress { get; set; } = false;
+        public int OpacityPercent { get; set; } = 75;
+        public int SizePercent { get; set; } = 100;
         public KeybindList PressKeys { get; set; } = new KeybindList(SButton.None);
     }
 }

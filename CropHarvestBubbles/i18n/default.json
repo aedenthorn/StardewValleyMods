@@ -1,5 +1,7 @@
 {
   "GMCM_Option_ModEnabled_Name": "Mod Enabled",
+  "GMCM_Option_OpacityPercent_Name": "Opacity Percent",
+  "GMCM_Option_SizePercent_Name": "Size Percent",
   "GMCM_Option_PressKeys_Name": "Press Keys",
   "GMCM_Option_RequireKeyPress_Name": "Require Key Press"
 }

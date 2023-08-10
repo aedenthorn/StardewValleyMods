@@ -67,6 +67,23 @@ namespace CropHarvestBubbles
                 getValue: () => Config.PressKeys,
                 setValue: value => Config.PressKeys = value
             );
+            
+            configMenu.AddNumberOption(
+                mod: ModManifest,
+                name: () => SHelper.Translation.Get("GMCM_Option_OpacityPercent_Name"),
+                getValue: () => Config.OpacityPercent,
+                setValue: value => Config.OpacityPercent = value,
+                min: 1,
+                max: 100
+            );
+            configMenu.AddNumberOption(
+                mod: ModManifest,
+                name: () => SHelper.Translation.Get("GMCM_Option_SizePercent_Name"),
+                getValue: () => Config.SizePercent,
+                setValue: value => Config.SizePercent = value,
+                min: 1,
+                max: 100
+            );
 
         }
     }

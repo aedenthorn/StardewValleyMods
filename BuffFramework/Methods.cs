@@ -21,6 +21,8 @@ namespace BuffFramework
         }
         private static void UpdateBuffs()
         {
+            if (farmerBuffs.Value is null)
+                farmerBuffs.Value = new();
             var oldBuffDict = new Dictionary<string, Dictionary<string, object>>();
             foreach (var b in buffDict)
             {

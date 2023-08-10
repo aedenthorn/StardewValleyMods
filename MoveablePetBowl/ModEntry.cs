@@ -4,6 +4,7 @@ using Microsoft.Xna.Framework.Graphics;
 using StardewModdingAPI;
 using StardewValley;
 using StardewValley.Characters;
+using StardewValley.Locations;
 using StardewValley.Tools;
 using System;
 using System.Collections.Generic;
@@ -112,6 +113,7 @@ namespace MoveablePetBowl
                postfix: new HarmonyMethod(typeof(ModEntry), nameof(ModEntry.Object_draw_Postfix2))
             );
 
+
         }
 
         private void Content_AssetRequested(object sender, StardewModdingAPI.Events.AssetRequestedEventArgs e)
@@ -161,6 +163,13 @@ namespace MoveablePetBowl
                                         mapData.Data.GetLayer("Back").Tiles[x, y + 1].TileIndexProperties.Remove("NoFurniture");
                                         mapData.Data.GetLayer("Back").Tiles[x, y + 1].Properties.Remove("NoFurniture");
                                         mapData.Data.GetLayer("Back").Tiles[x, y + 1].Properties.Remove("Placeable");
+                                    }
+                                    catch
+                                    {
+                                    }
+                                    try
+                                    {
+                                        mapData.Data.GetLayer("Back").Tiles[x, y + 2].Properties.Add("Buildable", "T");
                                     }
                                     catch
                                     {
