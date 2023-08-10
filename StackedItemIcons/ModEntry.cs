@@ -1,5 +1,7 @@
 ﻿using HarmonyLib;
 using StardewModdingAPI;
+using System.Collections.Generic;
+using System.IO;
 
 namespace StackedItemIcons
 {
@@ -10,7 +12,12 @@ namespace StackedItemIcons
         public static IModHelper SHelper;
         public static ModConfig Config;
 
+        public static string allowPath = "allow_list.json";
+
         public static ModEntry context;
+        public static bool reloadAllowed;
+        public static bool writeAllowed;
+        public static Dictionary<string, bool> allowList;
 
         public override void Entry(IModHelper helper)
         {
@@ -22,9 +29,40 @@ namespace StackedItemIcons
             SHelper = helper;
 
             Helper.Events.GameLoop.GameLaunched += GameLoop_GameLaunched;
+            Helper.Events.GameLoop.OneSecondUpdateTicked += GameLoop_OneSecondUpdateTicked; 
             var harmony = new Harmony(ModManifest.UniqueID);
             harmony.PatchAll();
+            if(!File.Exists(Path.Combine(SHelper.DirectoryPath, allowPath)))
+            {
+                allowList = new();
+                SHelper.Data.WriteJsonFile(allowPath, allowList);
+            }
+            else
+            {
+                allowList = SHelper.ModContent.Load<Dictionary<string, bool>>(allowPath);
+            }
+        }
 
+        private void GameLoop_OneSecondUpdateTicked(object sender, StardewModdingAPI.Events.OneSecondUpdateTickedEventArgs e)
+        {
+            if (writeAllowed)
+            {
+                SHelper.Data.WriteJsonFile(allowPath, allowList);
+                writeAllowed = false;
+            }
+            if (reloadAllowed)
+            {
+                if (!File.Exists(Path.Combine(SHelper.DirectoryPath, allowPath)))
+                {
+                    allowList = new();
+                    SHelper.Data.WriteJsonFile(allowPath, allowList);
+                }
+                else
+                {
+                    allowList = SHelper.ModContent.Load<Dictionary<string, bool>>(allowPath) ?? new();
+                }
+                reloadAllowed = false;
+            }
         }
 
         private void GameLoop_GameLaunched(object sender, StardewModdingAPI.Events.GameLaunchedEventArgs e)
@@ -44,7 +82,7 @@ namespace StackedItemIcons
 
             configMenu.AddBoolOption(
                 mod: ModManifest,
-                name: () => "Mod Enabled",
+                name: delegate() { reloadAllowed = true; return "Mod Enabled"; },
                 getValue: () => Config.EnableMod,
                 setValue: value => Config.EnableMod = value
             );

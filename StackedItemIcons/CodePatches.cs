@@ -18,7 +18,7 @@ namespace StackedItemIcons
         {
             public static void Prefix(Object __instance, SpriteBatch spriteBatch, ref Vector2 location, float scaleSize, float transparency, float layerDepth, StackDrawType drawStackNumber, Color color, bool drawShadow)
             {
-                if (!Config.EnableMod || __instance.Stack < Config.MinForDoubleStack || __instance.bigCraftable.Value)
+                if (!Config.EnableMod || !AllowedToShow(__instance) || __instance.Stack < Config.MinForDoubleStack)
                     return;
 
                 var trans = (float)Math.Pow(transparency, 1.5);
@@ -35,6 +35,7 @@ namespace StackedItemIcons
                     location += new Vector2(offset, offset) * scaleSize;
                 }
             }
+
         }
     }
 }
