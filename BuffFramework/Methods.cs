@@ -2,7 +2,9 @@
 using Microsoft.Xna.Framework.Audio;
 using Newtonsoft.Json.Linq;
 using StardewValley;
+using System;
 using System.Collections.Generic;
+using System.Globalization;
 
 namespace BuffFramework
 {
@@ -15,10 +17,12 @@ namespace BuffFramework
             foreach(var b in buffDict.Values)
             {
                 if(GetInt(b["buffId"]) == buff.which) 
-                    return b.TryGetValue("glowRate", out var r) ? (float)(double)r : 0.05f;
+                    return b.TryGetValue("glowRate", out var r) ? GetFloat(r) : 0.05f;
             }
             return rate;
         }
+
+
         private static void UpdateBuffs()
         {
             if (farmerBuffs.Value is null)
@@ -85,8 +89,15 @@ namespace BuffFramework
                             buff.sheetIndex = GetInt(p.Value);
                             break;
                         case "glow":
-                            var j = (JObject)p.Value;
-                            buff.glow = new Color((byte)(long)j["R"],(byte)(long)j["G"],(byte)(long)j["B"]);
+                            if(p.Value is Color)
+                            {
+                                buff.glow = (Color)p.Value;
+                            }
+                            else if (p.Value is JObject)
+                            {
+                                var j = (JObject)p.Value;
+                                buff.glow = new Color((byte)(long)j["R"], (byte)(long)j["G"], (byte)(long)j["B"]);
+                            }
                             break;
                         case "description":
                             buff.description = (string)p.Value;
@@ -136,12 +147,23 @@ namespace BuffFramework
             }
             else if(value is string)
             {
-                return int.Parse((string)value);
+                return int.TryParse((string)value, out int i) ? i : 0;
             }
             else
             {
                 return 0;
             }
+
+        }
+        private static float GetFloat(object r)
+        {
+            if (r is float)
+                return (float)r;
+            else if (r is double)
+                return (float)(double)r;
+            else if (r is string)
+                return float.TryParse((string)r, NumberStyles.Any, CultureInfo.InvariantCulture, out float f) ? f : 0;
+            return 0;
         }
     }
 }

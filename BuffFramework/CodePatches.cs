@@ -2,6 +2,7 @@
 using Microsoft.Xna.Framework.Graphics;
 using StardewValley;
 using StardewValley.Menus;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
@@ -31,6 +32,28 @@ namespace BuffFramework
                     }
                     buff.millisecondsDuration = 50;
                 }
+            }
+        }
+        [HarmonyPatch(typeof(BuffsDisplay), nameof(BuffsDisplay.performHoverAction))]
+        public class BuffsDisplay_performHoverAction_Patch
+        {
+            public static bool Prefix(BuffsDisplay __instance, int x, int y, Dictionary<ClickableTextureComponent, Buff> ___buffs)
+            {
+                if (!Config.ModEnabled)
+                    return true;
+
+                __instance.hoverText = "";
+                foreach (KeyValuePair<ClickableTextureComponent, Buff> c in ___buffs)
+                {
+                    if (c.Key.containsPoint(x, y))
+                    {
+                        bool showTime = c.Value.millisecondsDuration / 60000 > 0 || c.Value.millisecondsDuration % 60000 / 10000 + c.Value.millisecondsDuration % 60000 % 10000 / 1000 > 0;
+                        __instance.hoverText = c.Key.hoverText + (showTime ? Environment.NewLine + c.Value.getTimeLeft() : "");
+                        c.Key.scale = Math.Min(c.Key.baseScale + 0.1f, c.Key.scale + 0.02f);
+                        return false;
+                    }
+                }
+                return false;
             }
         }
         [HarmonyPatch(typeof(Buff), nameof(Buff.getClickableComponents))]
