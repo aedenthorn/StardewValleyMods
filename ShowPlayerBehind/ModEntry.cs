@@ -150,6 +150,10 @@ namespace ShowPlayerBehind
                             {
                                 opacity = Config.InnerTransparency;
                             }
+                            else if (layer == "Front" && p.Y == fp.Y - 2)
+                            {
+                                continue;
+                            }
                             else if(p.X != fp.X && (p.Y == fp.Y - 2 || p.Y == fp.Y + 1))
                             {
                                 opacity = Config.CornerTransparency;

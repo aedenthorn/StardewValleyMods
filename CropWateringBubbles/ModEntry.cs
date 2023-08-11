@@ -136,6 +136,13 @@ namespace CropWateringBubbles
                 setValue: value => Config.RequireKeyPress = value
             );
 
+            configMenu.AddBoolOption(
+                mod: ModManifest,
+                name: () => SHelper.Translation.Get("GMCM_Option_IncludeGiantable_Name"),
+                getValue: () => Config.IncludeGiantable,
+                setValue: value => Config.IncludeGiantable = value
+            );
+
             configMenu.AddKeybindList(
                 mod: ModManifest,
                 name: () => SHelper.Translation.Get("GMCM_Option_PressKeys_Name"),

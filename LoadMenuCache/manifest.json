@@ -1,16 +1,16 @@
 ﻿{
-  "Name": "Crop Harvest Bubbles",
+  "Name": "Load Menu Cache",
   "Author": "aedenthorn",
-  "Version": "0.2.1",
-  "Description": "Crop Harvest Bubbles.",
-  "UniqueID": "aedenthorn.CropHarvestBubbles",
-  "EntryDll": "CropHarvestBubbles.dll",
+  "Version": "0.1.0",
+  "Description": "Load Menu Cache.",
+  "UniqueID": "aedenthorn.LoadMenuCache",
+  "EntryDll": "LoadMenuCache.dll",
   "MinimumApiVersion": "3.15.0",
   "ModUpdater": {
     "Repository": "StardewValleyMods",
     "User": "aedenthorn",
     "Directory": "_releases",
-    "ModFolder": "CropHarvestBubbles"
+    "ModFolder": "LoadMenuCache"
   },
   "Dependencies": [
     {
@@ -18,5 +18,5 @@
       "IsRequired": false
     }
   ],
-  "UpdateKeys": [ "Nexus:17761" ]
+  "UpdateKeys": [ "Nexus:" ]
 }

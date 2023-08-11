@@ -561,6 +561,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CropHarvestBubbles", "CropH
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CropWateringBubbles", "CropWateringBubbles\CropWateringBubbles.csproj", "{9495AF28-F66D-42B0-9B8A-318BCE0DE294}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LoadMenuCache", "LoadMenuCache\LoadMenuCache.csproj", "{16AF9E89-A30E-480F-AE41-880DBF9A1D1A}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -3859,6 +3861,18 @@ Global
 		{9495AF28-F66D-42B0-9B8A-318BCE0DE294}.Release|x64.Build.0 = Release|x64
 		{9495AF28-F66D-42B0-9B8A-318BCE0DE294}.Release|x86.ActiveCfg = Release|Any CPU
 		{9495AF28-F66D-42B0-9B8A-318BCE0DE294}.Release|x86.Build.0 = Release|Any CPU
+		{16AF9E89-A30E-480F-AE41-880DBF9A1D1A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{16AF9E89-A30E-480F-AE41-880DBF9A1D1A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{16AF9E89-A30E-480F-AE41-880DBF9A1D1A}.Debug|x64.ActiveCfg = Debug|x64
+		{16AF9E89-A30E-480F-AE41-880DBF9A1D1A}.Debug|x64.Build.0 = Debug|x64
+		{16AF9E89-A30E-480F-AE41-880DBF9A1D1A}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{16AF9E89-A30E-480F-AE41-880DBF9A1D1A}.Debug|x86.Build.0 = Debug|Any CPU
+		{16AF9E89-A30E-480F-AE41-880DBF9A1D1A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{16AF9E89-A30E-480F-AE41-880DBF9A1D1A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{16AF9E89-A30E-480F-AE41-880DBF9A1D1A}.Release|x64.ActiveCfg = Release|x64
+		{16AF9E89-A30E-480F-AE41-880DBF9A1D1A}.Release|x64.Build.0 = Release|x64
+		{16AF9E89-A30E-480F-AE41-880DBF9A1D1A}.Release|x86.ActiveCfg = Release|Any CPU
+		{16AF9E89-A30E-480F-AE41-880DBF9A1D1A}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
