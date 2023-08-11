@@ -1,7 +1,7 @@
 ﻿{
   "Name": "Crop Watering Bubbles",
   "Author": "aedenthorn",
-  "Version": "0.1.0",
+  "Version": "0.2.0",
   "Description": "Crop Harvest Bubbles.",
   "UniqueID": "aedenthorn.CropWateringBubbles",
   "EntryDll": "CropWateringBubbles.dll",

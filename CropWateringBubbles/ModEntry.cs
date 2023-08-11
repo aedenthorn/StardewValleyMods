@@ -4,6 +4,7 @@ using StardewModdingAPI;
 using StardewModdingAPI.Events;
 using StardewValley;
 using StardewValley.TerrainFeatures;
+using StardewValley.Tools;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -57,24 +58,33 @@ namespace CropWateringBubbles
         {
             if (!Config.ModEnabled)
                 return;
-            if(isEmoting)
+            if (Config.OnlyWhenWatering && Game1.player.CurrentTool is not WateringCan)
+            {
+                isEmoting = false;
+                emoteFading = false;
+                currentEmoteFrame = 0;
+                emoteInterval = 0;
+                repeatInterval = 0;
+                return;
+            }
+            if (isEmoting)
             {
                 updateEmote();
             }
             else if (!Config.RequireKeyPress)
             {
-                repeatInterval++;
-                if(repeatInterval >= Config.RepeatInterval * 60)
+                if (repeatInterval <= 0)
                 {
-                    repeatInterval = 0;
+                    repeatInterval = Config.RepeatInterval * 60;
                     isEmoting = true;
                 }
+                repeatInterval--;
             }
         }
 
-        private void Input_ButtonsChanged(object sender, StardewModdingAPI.Events.ButtonsChangedEventArgs e)
+        private void Input_ButtonsChanged(object sender, ButtonsChangedEventArgs e)
         {
-            if (Config.ModEnabled && Context.CanPlayerMove && Config.RequireKeyPress && Config.PressKeys.JustPressed())
+            if (Config.ModEnabled && Context.CanPlayerMove && !isEmoting && Config.RequireKeyPress && Config.PressKeys.JustPressed())
             {
                 isEmoting = true;
                 Game1.playSound("dwoop");
@@ -110,6 +120,13 @@ namespace CropWateringBubbles
                 setValue: value => Config.RepeatInterval = value,
                 min: 1,
                 max: 100
+            );
+
+            configMenu.AddBoolOption(
+                mod: ModManifest,
+                name: () => SHelper.Translation.Get("GMCM_Option_OnlyWhenWatering_Name"),
+                getValue: () => Config.OnlyWhenWatering,
+                setValue: value => Config.OnlyWhenWatering = value
             );
 
             configMenu.AddBoolOption(

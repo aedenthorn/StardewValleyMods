@@ -9,6 +9,7 @@ namespace CropWateringBubbles
     {
         public bool ModEnabled { get; set; } = true;
         public bool RequireKeyPress { get; set; } = false;
+        public bool OnlyWhenWatering { get; set; } = false;
         public int RepeatInterval { get; set; } = 3;
         public int OpacityPercent { get; set; } = 75;
         public int SizePercent { get; set; } = 100;

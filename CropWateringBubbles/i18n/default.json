@@ -4,5 +4,6 @@
   "GMCM_Option_SizePercent_Name": "Size Percent",
   "GMCM_Option_PressKeys_Name": "Press Keys",
   "GMCM_Option_RepeatInterval_Name": "Repeat Interval",
-  "GMCM_Option_RequireKeyPress_Name": "Require Key Press"
+  "GMCM_Option_RequireKeyPress_Name": "Require Key Press",
+  "GMCM_Option_OnlyWhenWatering_Name": "Only When Watering"
 }
