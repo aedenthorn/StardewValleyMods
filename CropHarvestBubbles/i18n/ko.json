@@ -1,0 +1,7 @@
+{
+  "GMCM_Option_ModEnabled_Name": "모드 활성화",
+  "GMCM_Option_OpacityPercent_Name": "투명도 설정",
+  "GMCM_Option_SizePercent_Name": "크기 설정",
+  "GMCM_Option_PressKeys_Name": "단축키 설정",
+  "GMCM_Option_RequireKeyPress_Name": "단축키 사용할 때만 표시"
+}
