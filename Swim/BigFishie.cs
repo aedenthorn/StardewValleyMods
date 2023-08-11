@@ -26,7 +26,7 @@ namespace Swim
 
         public BigFishie(Vector2 position) : base(position)
         {
-            Sprite.LoadTexture("Fishies/" + bigFishTextures[Game1.random.Next(bigFishTextures.Count)]);
+            Sprite.LoadTexture("aedenthorn.Swim/Fishies/" + bigFishTextures[Game1.random.Next(bigFishTextures.Count)]);
             Scale = 0.5f + (float)Game1.random.NextDouble()/4f;
             DamageToFarmer = 0;
             Slipperiness = 24 + Game1.random.Next(10);

@@ -183,9 +183,9 @@ namespace Swim
 
         private void Content_AssetRequested(object sender, StardewModdingAPI.Events.AssetRequestedEventArgs e)
         {
-            if (e.Name.Name.StartsWith("Fishies"))
+            if (e.NameWithoutLocale.StartsWith("aedenthorn.Swim/Fishies"))
             {
-                e.LoadFromModFile<Texture2D>($"assets/{e.Name.Name}.png", StardewModdingAPI.Events.AssetLoadPriority.Exclusive);
+                e.LoadFromModFile<Texture2D>($"assets/{e.NameWithoutLocale}.png", StardewModdingAPI.Events.AssetLoadPriority.Exclusive);
             }
         }
 

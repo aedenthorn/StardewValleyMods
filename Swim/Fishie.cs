@@ -25,7 +25,7 @@ namespace Swim
 
         public Fishie(Vector2 position) : base(position)
         {
-            Sprite.LoadTexture("Fishies/" + fishTextures[Game1.random.Next(fishTextures.Count)]);
+            Sprite.LoadTexture("aedenthorn.Swim/Fishies/" + fishTextures[Game1.random.Next(fishTextures.Count)]);
             Scale = ((float)Game1.random.NextDouble() + 0.1f) * 0.35f;
             DamageToFarmer = 0;
             moveTowardPlayerThreshold.Value = 50;
