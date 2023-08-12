@@ -4,6 +4,7 @@ using Microsoft.Xna.Framework.Input;
 using Netcode;
 using StardewModdingAPI;
 using StardewValley;
+using StardewValley.Locations;
 using StardewValley.TerrainFeatures;
 using System;
 using System.Collections.Generic;
@@ -455,7 +456,7 @@ namespace Swim
                 tmp.TileIndexProperties.TryGetValue("Passable", out passable);
             }
             Tile tile = location.map.GetLayer("Buildings").PickTile(new Location(tileLocation.X * 64, tileLocation.Y * 64), viewport.Size);
-            if (location.largeTerrainFeatures != null)
+            if (location.largeTerrainFeatures is not null)
             {
                 using (List<LargeTerrainFeature>.Enumerator enumerator = location.largeTerrainFeatures.GetEnumerator())
                 {
@@ -479,6 +480,11 @@ namespace Swim
         public static bool DebrisIsAnItem(Debris debris)
         {
             return debris.debrisType.Value == Debris.DebrisType.OBJECT || debris.debrisType.Value == Debris.DebrisType.ARCHAEOLOGY || debris.debrisType.Value == Debris.DebrisType.RESOURCE || debris.item != null;
+        }
+
+        internal static bool CanSwimHere()
+        {
+            return (!Config.SwimIndoors || Game1.player.currentLocation.IsOutdoors) && Game1.player.currentLocation is not BeachNightMarket && Game1.player.currentLocation is not VolcanoDungeon && Game1.player.currentLocation is not BathHousePool;
         }
     }
 }
