@@ -61,7 +61,7 @@ namespace BuffFramework
         {
             public static void Postfix(Buff __instance, ref List<ClickableTextureComponent> __result)
             {
-                if (!Config.ModEnabled || __result?.Any() != true)
+                if (!Config.ModEnabled)
                     return;
                 
                 foreach (var kvp in farmerBuffs.Value)
@@ -70,10 +70,12 @@ namespace BuffFramework
                     object description = null;
                     if (kvp.Value.which == __instance.which)
                     {
-                        if (buffDict[kvp.Key].TryGetValue("texturePath", out texturePath) || buffDict[kvp.Key].TryGetValue("description", out description))
+                        var hasTex = buffDict[kvp.Key].TryGetValue("texturePath", out texturePath);
+                        var hasDesc = buffDict[kvp.Key].TryGetValue("description", out description);
+                        if (hasTex || hasDesc)
                         {
-                            var tex = texturePath is not null ? SHelper.GameContent.Load<Texture2D>((string)texturePath) : __result[0].texture;
-                            var cc = new ClickableTextureComponent("", Rectangle.Empty, null, description is not null ? (string)description : __result[0].hoverText, tex, texturePath is not null ? new Rectangle(0, 0, tex.Width, tex.Height) : __result[0].sourceRect, 4f, false);
+                            var tex = texturePath is not null ? SHelper.GameContent.Load<Texture2D>((string)texturePath) : (__result.Any() ? __result[0].texture : null);
+                            var cc = new ClickableTextureComponent("", Rectangle.Empty, null, description is not null ? (string)description : (__result.Any() ? __result[0].hoverText : null), tex, texturePath is not null ? new Rectangle(0, 0, tex.Width, tex.Height) : (__result.Any() ? __result[0].sourceRect : new Rectangle()), 4f, false);
 
                             if (buffDict[kvp.Key].TryGetValue("separate", out var separate) && (bool)separate)
                             {

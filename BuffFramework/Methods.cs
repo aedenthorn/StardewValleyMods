@@ -16,7 +16,7 @@ namespace BuffFramework
                 return rate;
             foreach(var b in buffDict.Values)
             {
-                if(GetInt(b["buffId"]) == buff.which) 
+                if((b.TryGetValue("buffId", out var id) && GetInt(id) == buff.which) || (b.TryGetValue("which", out var which) && GetInt(which) == buff.which)) 
                     return b.TryGetValue("glowRate", out var r) ? GetFloat(r) : 0.05f;
             }
             return rate;
@@ -39,19 +39,27 @@ namespace BuffFramework
             {
                 var b = kvp.Value;
                 Buff buff;
-                if (b.TryGetValue("which", out var which) && (long)which > -1)
+                if (b.TryGetValue("which", out var which) && GetInt(which) > -1)
                 {
-                    buff = new Buff((int)(long)which);
+                    buff = new Buff(GetInt(which));
                 }
                 else
                 {
-                    buff = new Buff(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, minutesDuration: 1, source: (string)b["source"], (string)b["displaySource"]) { which = GetInt(b["buffId"]) };
+                    buff = new Buff(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, "", "") { which = GetInt(b["buffId"]) };
                 }
+                buff.millisecondsDuration = 50;
+                buff.totalMillisecondsDuration = 50;
 
                 foreach (var p in b)
                 {
                     switch(p.Key)
                     {
+                        case "source":
+                            buff.source = (string)p.Value;
+                            break;
+                        case "displaySource":
+                            buff.displaySource = (string)p.Value;
+                            break;
                         case "farming":
 	                        buff.buffAttributes[Buff.farming] = GetInt(p.Value);
 	                        break;

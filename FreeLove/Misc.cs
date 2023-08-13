@@ -22,7 +22,11 @@ namespace FreeLove
             string ospouse = farmer.spouse;
             if (ospouse != null)
             {
-                currentSpouses[farmer.UniqueMultiplayerID][ospouse] = Game1.getCharacterFromName(ospouse);
+                var npc = Game1.getCharacterFromName(ospouse);
+                if(npc is not null)
+                {
+                    currentSpouses[farmer.UniqueMultiplayerID][ospouse] = npc;
+                }
             }
             SMonitor.Log($"Checking for extra spouses in {farmer.friendshipData.Count()} friends");
             foreach (string friend in farmer.friendshipData.Keys)
@@ -37,13 +41,19 @@ namespace FreeLove
                     }
                 }
             }
+            if (farmer.spouse is null && currentSpouses[farmer.UniqueMultiplayerID].Any())
+                farmer.spouse = currentSpouses[farmer.UniqueMultiplayerID].First().Key;
             SMonitor.Log($"reloaded {currentSpouses[farmer.UniqueMultiplayerID].Count} spouses for {farmer.Name} {farmer.UniqueMultiplayerID}");
         }
         public static Dictionary<string, NPC> GetSpouses(Farmer farmer, bool all)
         {
-            if(!currentSpouses.ContainsKey(farmer.UniqueMultiplayerID) || (currentSpouses[farmer.UniqueMultiplayerID].Count == 0 && farmer.spouse != null))
+            if(!currentSpouses.ContainsKey(farmer.UniqueMultiplayerID) || ((currentSpouses[farmer.UniqueMultiplayerID].Count == 0 && farmer.spouse != null)))
             {
                 ReloadSpouses(farmer);
+            }
+            if(farmer.spouse == null && currentSpouses[farmer.UniqueMultiplayerID].Count > 0)
+            {
+                farmer.spouse = currentSpouses[farmer.UniqueMultiplayerID].First().Key;
             }
             return all ? currentSpouses[farmer.UniqueMultiplayerID] : currentUnofficialSpouses[farmer.UniqueMultiplayerID];
         }
