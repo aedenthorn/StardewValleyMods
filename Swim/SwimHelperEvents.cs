@@ -843,6 +843,17 @@ namespace Swim
             }
             if (!SwimUtils.CanSwimHere())
                 return;
+
+            // only if ready to swim from here on!
+            var readyToAutoSwim = Config.ReadyToSwim;
+            var manualSwim = Helper.Input.IsDown(Config.ManualJumpButton);
+
+            // !IMP: Conditions, with locations (i.e. locations with restricted swimming), must be checked here.
+            if ((!readyToAutoSwim && !manualSwim) || !Context.IsPlayerFree)
+            {
+                return;
+            }
+
             if (Game1.player.swimming.Value && !SwimUtils.IsInWater() && !isJumping.Value)
             {
                 Monitor.Log("Swimming out of water");
@@ -857,16 +868,6 @@ namespace Swim
                 Game1.player.swimming.Value = false;
                 if (Game1.player.bathingClothes.Value && !Config.SwimSuitAlways)
                     Game1.player.changeOutOfSwimSuit();
-            }
-
-            // only if ready to swim from here on!
-            var readyToAutoSwim = Config.ReadyToSwim;
-            var manualSwim = Helper.Input.IsDown(Config.ManualJumpButton);
-
-            // !IMP: Conditions, with locations (i.e. locations with restricted swimming), must be checked here.
-            if ((!readyToAutoSwim && !manualSwim) || !Context.IsPlayerFree)
-            {
-                return;
             }
 
             if (Game1.player.swimming.Value)

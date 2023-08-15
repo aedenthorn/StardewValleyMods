@@ -1,7 +1,7 @@
 ﻿{
   "Name": "Fish Spot Bait",
   "Author": "aedenthorn",
-  "Version": "0.1.0",
+  "Version": "0.1.1",
   "Description": "Fish Spot Bait.",
   "UniqueID": "aedenthorn.FishSpotBait",
   "EntryDll": "FishSpotBait.dll",

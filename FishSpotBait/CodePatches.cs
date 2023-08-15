@@ -22,6 +22,8 @@ namespace FishSpotBait
                     return true;
                 if(!__instance.isWaterTile(tileLocation.X, tileLocation.Y)) 
                     return true;
+                if(__instance.Objects.ContainsKey(new Vector2(tileLocation.X, tileLocation.Y))) 
+                    return true;
                 if(int.TryParse(Config.BaitItem, out int index))
                 {
                     if (who.ActiveObject.ParentSheetIndex != index)
