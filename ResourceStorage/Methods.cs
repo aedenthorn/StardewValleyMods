@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json;
+﻿using Microsoft.Xna.Framework;
+using Newtonsoft.Json;
 using StardewValley;
 using System;
 using System.Collections.Generic;
@@ -9,11 +10,11 @@ namespace ResourceStorage
 {
     public partial class ModEntry
     {
-        public static int ModifyResourceLevel(Farmer instance, string id, int amountToAdd, bool auto = true)
+        public static long ModifyResourceLevel(Farmer instance, string id, int amountToAdd, bool auto = true)
         {
-            Dictionary<string, int> dict = GetFarmerResources(instance);
+            Dictionary<string, long> dict = GetFarmerResources(instance);
             
-            if(!dict.TryGetValue(id, out int oldAmount))
+            if(!dict.TryGetValue(id, out long oldAmount))
             {
                 if (auto && !CanAutoStore(id))
                     return 0;
@@ -23,30 +24,32 @@ namespace ResourceStorage
             if(newAmount != oldAmount)
             {
                 SMonitor.Log($"Modify resource {id} from {oldAmount} to {newAmount}");
+                Object item = new Object(GetIndex(id), (int)(newAmount - oldAmount));
+                Game1.addHUDMessage(new HUDMessage(newAmount > oldAmount ? string.Format(SHelper.Translation.Get("added-x"), item.DisplayName) : string.Format(SHelper.Translation.Get("removed-x"), item.DisplayName), (int)Math.Abs(newAmount - oldAmount), true, Color.WhiteSmoke, item));
             }
             dict[id] = newAmount;
             return newAmount - oldAmount;
         }
 
-        public static Dictionary<string, int> GetFarmerResources(Farmer instance)
+        public static Dictionary<string, long> GetFarmerResources(Farmer instance)
         {
             if (!resourceDict.TryGetValue(instance.UniqueMultiplayerID, out var dict))
             {
-                dict = instance.modData.TryGetValue(dictKey, out var str) ? JsonConvert.DeserializeObject<Dictionary<string, int>>(str) : new();
+                dict = instance.modData.TryGetValue(dictKey, out var str) ? JsonConvert.DeserializeObject<Dictionary<string, long>>(str) : new();
                 resourceDict[instance.UniqueMultiplayerID] = dict;
             }
             return dict;
         }
 
-        public static int GetResourceAmount(Farmer instance, string id)
+        public static long GetResourceAmount(Farmer instance, string id)
         {
-            Dictionary<string, int> dict = GetFarmerResources(instance);
+            Dictionary<string, long> dict = GetFarmerResources(instance);
 
-            return dict.TryGetValue(id, out int amount) ? amount : 0;
+            return dict.TryGetValue(id, out long amount) ? amount : 0;
         }
         public static bool CanStore(Object obj)
         {
-            return !(obj.Quality > 0 || obj.modData.Count() > 0 || obj.bigCraftable.Value || obj.GetType() != typeof(Object) || obj.maximumStackSize() == 1);
+            return !(obj.Quality > 0 || obj.preserve.Value is not null || obj.orderData.Value is not null || obj.preservedParentSheetIndex.Value != 0 || obj.bigCraftable.Value || obj.GetType() != typeof(Object) || obj.maximumStackSize() == 1);
         }
         public static bool CanAutoStore(Object obj)
         {
@@ -98,9 +101,9 @@ namespace ResourceStorage
 
         private static int AddIngredientAmount(int ingredient_count, CraftingRecipe recipe, int index)
         {
-            if (!Config.ModEnabled || !Game1.objectInformation.TryGetValue(recipe.recipeList[recipe.recipeList.Keys.ElementAt(index)], out string data))
+            if (!Config.ModEnabled || !Config.AutoUse || !Game1.objectInformation.TryGetValue(recipe.recipeList[recipe.recipeList.Keys.ElementAt(index)], out string data))
                 return ingredient_count;
-            return ingredient_count + GetResourceAmount(Game1.player, GetIdString(data));
+            return (int)(ingredient_count + GetResourceAmount(Game1.player, GetIdString(data)));
         }
 
     }

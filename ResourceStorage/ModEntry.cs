@@ -18,7 +18,7 @@ namespace ResourceStorage
 
         public static ModEntry context;
         public static string dictKey = "aedenthorn.ResourceStorage/dictionary";
-        public static Dictionary<long, Dictionary<string, int>> resourceDict = new();
+        public static Dictionary<long, Dictionary<string, long>> resourceDict = new();
 
         public static GameMenu gameMenu;
         public static ClickableTextureComponent resourceButton;
@@ -45,9 +45,9 @@ namespace ResourceStorage
 
         public void GameLoop_Saving(object sender, StardewModdingAPI.Events.SavingEventArgs e)
         {
-            foreach(var f in Game1.getAllFarmers())
+            foreach (var f in Game1.getAllFarmers())
             {
-                if(resourceDict.TryGetValue(f.UniqueMultiplayerID, out var dict))
+                if (resourceDict.TryGetValue(f.UniqueMultiplayerID, out var dict))
                 {
                     f.modData[dictKey] = JsonConvert.SerializeObject(dict);
                 }
@@ -78,6 +78,21 @@ namespace ResourceStorage
                     getValue: () => Config.ModEnabled,
                     setValue: value => Config.ModEnabled = value
                 );
+
+                configMenu.AddBoolOption(
+                    mod: ModManifest,
+                    name: () => SHelper.Translation.Get("GMCM_Option_AutoUse_Name"),
+                    getValue: () => Config.AutoUse,
+                    setValue: value => Config.AutoUse = value
+                );
+                
+                configMenu.AddKeybind(
+                    mod: ModManifest,
+                    name: () => SHelper.Translation.Get("GMCM_Option_ModKeyMax_Name"),
+                    getValue: () => Config.ModKeyMax,
+                    setValue: value => Config.ModKeyMax = value
+                );
+
             }
         }
     }

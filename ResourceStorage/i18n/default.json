@@ -1,6 +1,10 @@
 {
   "GMCM_Option_ModEnabled_Name": "Mod Enabled",
-  "auto": "Auto Add",
+  "GMCM_Option_AutoUse_Name": "Allow Consume",
+  "GMCM_Option_ModKeyMax_Name": "Take Max Key",
+  "auto": "Auto Store",
   "take": "Take",
+  "added-x": "Added {0} to storage",
+  "removed-x": "Took {0} from storage",
   "resources": "Resources"
 }

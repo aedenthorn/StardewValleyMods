@@ -1,21 +1,12 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
-using StardewModdingAPI;
 using StardewValley;
 using StardewValley.BellsAndWhistles;
 using StardewValley.Menus;
-using StardewValley.SDKs;
 using System;
-using System.Buffers.Text;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
-using System.Security.Cryptography;
-using System.Threading;
-using static HarmonyLib.Code;
 using Object = StardewValley.Object;
 
 namespace ResourceStorage
@@ -26,11 +17,11 @@ namespace ResourceStorage
         public static int linesPerPage = 17;
         public static int windowWidth = 64 * 24;
         public static ResourceMenu instance;
-        public Dictionary<string, int> resources = new();
+        public Dictionary<string, long> resources = new();
         public List<Object> resourceList = new();
         //public List<ClickableComponent> allComponents = new();
-        public List<ClickableTextureComponent> autoCCs = new();
-        public List<ClickableTextureComponent> takeCCs = new();
+        public Dictionary<int, ClickableTextureComponent> autoCCs = new();
+        public Dictionary<int, ClickableTextureComponent> takeCCs = new();
         public ClickableTextureComponent upCC;
         public ClickableTextureComponent downCC;
         public string hoverText;
@@ -48,7 +39,7 @@ namespace ResourceStorage
                 int index = ModEntry.GetIndex(resource.Key);
                 if (index < 0)
                     continue;
-                Object obj = new Object(index, resource.Value);
+                Object obj = new Object(index, (int)resource.Value);
                 //obj.stack.Value = obj.ParentSheetIndex * 193;
                 resourceList.Add(obj);
             }
@@ -61,18 +52,19 @@ namespace ResourceStorage
 
         public void RepopulateComponentList()
         {
+            int lineHeight = 64;
+            linesPerPage = (Game1.viewport.Height + 72 - spaceToClearTopBorder * 2 - 108) / lineHeight;
+
             width = Math.Min(64 * 12, Game1.viewport.Width);
-            height = Game1.viewport.Height + 72;
+            height = Math.Min(Game1.viewport.Height + 72, Math.Min(linesPerPage, resourceList.Count) * lineHeight + (borderWidth + spaceToClearTopBorder) * 2 - 32);
             xPositionOnScreen = (Game1.viewport.Width - width) / 2;
-            yPositionOnScreen = -72;
-            linesPerPage = (height - spaceToClearTopBorder * 2 - 108) / 64;
+            yPositionOnScreen = Math.Max(-72, (Game1.viewport.Height - height) / 2 - 32);
 
             //allComponents.Clear();
             autoCCs.Clear();
             takeCCs.Clear();
             
             int count = 0;
-            int lineHeight = 64;
 
             for (int i = scrolled; i < Math.Min(linesPerPage + scrolled, resourceList.Count); i++)
             {
@@ -88,20 +80,20 @@ namespace ResourceStorage
                     rightNeighborID = baseID + 2,
                 });
                 */
-                autoCCs.Add(new ClickableTextureComponent("Auto", new Rectangle(xStart, yStart + 104, 36, 36), "", ModEntry.SHelper.Translation.Get("auto"), Game1.mouseCursors, new Rectangle(ModEntry.CanAutoStore(resourceList[i]) ? 236 : 227, 425, 9, 9), 4)
+                autoCCs[i] = new ClickableTextureComponent("Auto", new Rectangle(xStart, yStart + 104, 36, 36), "", ModEntry.SHelper.Translation.Get("auto"), Game1.mouseCursors, new Rectangle(ModEntry.CanAutoStore(resourceList[i]) ? 236 : 227, 425, 9, 9), 4)
                 {
                     myID = baseID,
                     downNeighborID = baseID + 1000,
                     upNeighborID = baseID - 1000,
                     rightNeighborID = baseID + 1,
-                });
-                takeCCs.Add(new ClickableTextureComponent("Take", new Rectangle(xPositionOnScreen + width - (spaceToClearSideBorder + borderWidth) - 36, yStart + 100, 28, 28), "", ModEntry.SHelper.Translation.Get("take"), Game1.mouseCursors, new Rectangle(365, 495, 12, 11), 4)
+                };
+                takeCCs[i] = new ClickableTextureComponent("Take", new Rectangle(xPositionOnScreen + width - (spaceToClearSideBorder + borderWidth) - 36, yStart + 100, 48, 44), "", ModEntry.SHelper.Translation.Get("take"), Game1.mouseCursors, new Rectangle(365, 495, 12, 11), 4)
                 {
                     myID = baseID + 1,
                     downNeighborID = baseID + 1000,
                     upNeighborID = baseID - 1000,
                     leftNeighborID = baseID,
-                });
+                };
                 count++;
             }
 
@@ -147,14 +139,14 @@ namespace ResourceStorage
             SpriteText.drawStringHorizontallyCenteredAt(b, ModEntry.SHelper.Translation.Get("resources"), Game1.viewport.Width / 2, yPositionOnScreen + spaceToClearTopBorder + borderWidth / 2);
             b.Draw(Game1.menuTexture, new Rectangle(xPositionOnScreen + 32, yPositionOnScreen + borderWidth + spaceToClearTopBorder + 48, width - 64, 16), new Rectangle(40, 16, 1, 16), Color.White);
             int count = 0;
-            for(int i = 0; i < resourceList.Count; i++)
+            for (int i = scrolled; i < Math.Min(linesPerPage + scrolled, resourceList.Count); i++)
             {
                 autoCCs[i].draw(b);
                 takeCCs[i].draw(b);
-                resourceList[i].drawInMenu(b, new Vector2(autoCCs[i].bounds.Right, autoCCs[i].bounds.Y - 16), 1, 1, 1, StackDrawType.Hide);
-                b.DrawString(Game1.dialogueFont, resourceList[i].DisplayName, new Vector2(autoCCs[i].bounds.Right + 64, autoCCs[i].bounds.Y - 4), Color.Black);
+                resourceList[i].drawInMenu(b, new Vector2(autoCCs[i].bounds.Right + 8, autoCCs[i].bounds.Y - 16), 1, 1, 1, StackDrawType.Hide);
+                b.DrawString(Game1.dialogueFont, resourceList[i].DisplayName, new Vector2(autoCCs[i].bounds.Right + 80, autoCCs[i].bounds.Y - 4), Color.Black);
                 float width = Game1.dialogueFont.MeasureString(resourceList[i].Stack + "").X;
-                b.DrawString(Game1.dialogueFont, resourceList[i].Stack + "", new Vector2(takeCCs[i].bounds.X - width, autoCCs[i].bounds.Y - 4), Color.Black);
+                b.DrawString(Game1.dialogueFont, resourceList[i].Stack + "", new Vector2(takeCCs[i].bounds.X - width - 8, autoCCs[i].bounds.Y - 4), Color.Black);
                 count++;
             }
             upCC?.draw(b);
@@ -174,7 +166,7 @@ namespace ResourceStorage
 
         public override void receiveLeftClick(int x, int y, bool playSound = true)
         {
-            for(int i = 0; i < resourceList.Count; i++)
+            for (int i = scrolled; i < Math.Min(linesPerPage + scrolled, resourceList.Count); i++)
             {
                 if (autoCCs[i].containsPoint(x, y))
                 {
@@ -182,6 +174,7 @@ namespace ResourceStorage
 
                     if (ModEntry.CanAutoStore(resourceList[i]))
                     {
+                        ModEntry.SMonitor.Log($"Removing {resourceList[i].DisplayName} from autostore list");
                         Game1.playSound("drumkit6");
 
                         for (int j = 0; j < list.Count; j++)
@@ -195,11 +188,13 @@ namespace ResourceStorage
                     }
                     else
                     {
+                        ModEntry.SMonitor.Log($"Adding {resourceList[i].DisplayName} to autostore list");
                         Game1.playSound("drumkit6");
 
                         list.Add(resourceList[i].Name);
                     }
                     ModEntry.Config.AutoStore = string.Join(",", list);
+                    ModEntry.SMonitor.Log($"New autostore list: {ModEntry.Config.AutoStore}");
                     ModEntry.SHelper.WriteConfig(ModEntry.Config);
                     RepopulateComponentList();
                     return;
@@ -207,7 +202,7 @@ namespace ResourceStorage
                 if (takeCCs[i].containsPoint(x, y))
                 {
                     int stack = 1;
-                    if (ModEntry.SHelper.Input.IsDown(ModEntry.Config.ModKeyMax.Buttons[0]))
+                    if (ModEntry.SHelper.Input.IsDown(ModEntry.Config.ModKeyMax))
                     {
                         stack = Math.Min(resourceList[i].Stack, resourceList[i].maximumStackSize());
                     }
@@ -215,6 +210,8 @@ namespace ResourceStorage
                     Object obj = new Object(resourceList[i].ParentSheetIndex, stack);
                     if (Game1.player.addItemToInventoryBool(obj))
                     {
+                        ModEntry.SMonitor.Log($"Moving {obj.DisplayName}x{stack} from resources: {resourceList[i].Stack} > {resourceList[i].Stack - stack}");
+
                         Game1.playSound("Ship");
                         if (resourceList[i].Stack <= stack)
                         {
@@ -222,7 +219,7 @@ namespace ResourceStorage
                         }
                         else
                         {
-                            resourceList[i].Stack = resourceList[i].Stack - stack;
+                            resourceList[i].stack.Value = resourceList[i].Stack - stack;
                         }
                         resources.Clear();
                         foreach(var r in resourceList)
@@ -281,11 +278,13 @@ namespace ResourceStorage
             {
                 Game1.playSound("shiny4");
                 scrolled++;
+                RepopulateComponentList();
             }
             else if (direction > 0 && scrolled > 0)
             {
                 Game1.playSound("shiny4");
                 scrolled--;
+                RepopulateComponentList();
             }
             else
             {
@@ -354,19 +353,21 @@ namespace ResourceStorage
             hoverText = "";
             base.performHoverAction(x, y);
 
-            for (int i = 0; i < autoCCs.Count; i++)
+            foreach (var cc in autoCCs.Values)
             {
-                if (autoCCs[i].containsPoint(x, y))
+                if (cc.containsPoint(x, y))
                 {
-                    hoverText = autoCCs[i].hoverText;
+                    hoverText = cc.hoverText;
                     return;
                 }
-                if (takeCCs[i].containsPoint(x, y))
+            }
+            foreach (var cc in takeCCs.Values) 
+            {
+                if (cc.containsPoint(x, y))
                 {
-                    hoverText = takeCCs[i].hoverText;
+                    hoverText = cc.hoverText;
                     return;
                 }
-
             }
             if (upCC?.containsPoint(x, y) == true)
             {

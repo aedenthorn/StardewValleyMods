@@ -56,6 +56,13 @@ namespace CropHarvestBubbles
 
             configMenu.AddBoolOption(
                 mod: ModManifest,
+                name: () => SHelper.Translation.Get("GMCM_Option_IgnoreFlowers_Name"),
+                getValue: () => Config.IgnoreFlowers,
+                setValue: value => Config.IgnoreFlowers = value
+            );
+
+            configMenu.AddBoolOption(
+                mod: ModManifest,
                 name: () => SHelper.Translation.Get("GMCM_Option_RequireKeyPress_Name"),
                 getValue: () => Config.RequireKeyPress,
                 setValue: value => Config.RequireKeyPress = value

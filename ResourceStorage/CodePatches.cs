@@ -19,11 +19,38 @@ namespace ResourceStorage
         {
             public static bool Prefix(Farmer __instance, int index, ref int quantity)
             {
-                if (!Config.ModEnabled || !Game1.objectInformation.TryGetValue(index, out string data))
+                if (!Config.ModEnabled || !Config.AutoUse || !Game1.objectInformation.TryGetValue(index, out string data))
                     return true;
 
-                quantity += ModifyResourceLevel(__instance, GetIdString(data), -quantity);
+                quantity += (int)ModifyResourceLevel(__instance, GetIdString(data), -quantity);
                 return quantity > 0;
+            }
+        }
+        [HarmonyPatch(typeof(Farmer), nameof(Farmer.removeItemsFromInventory))]
+        public class Farmer_removeItemsFromInventory_Patch
+        {
+            public static bool Prefix(Farmer __instance, int index, ref int stack, ref bool __result)
+            {
+                if (!Config.ModEnabled || !Config.AutoUse || !Game1.objectInformation.TryGetValue(index, out string data))
+                    return true;
+
+                stack += (int)ModifyResourceLevel(__instance, GetIdString(data), -stack);
+                if(stack <= 0)
+                {
+                    __result = true;
+                    return false;
+                }
+                return true;
+            }
+        }
+        [HarmonyPatch(typeof(Farmer), nameof(Farmer.addItemToInventory), new Type[] { typeof(Item), typeof(List<Item>) })]
+        public class Farmer_addItemToInventory_Patch
+        {
+            public static bool Prefix(Farmer __instance, Item item)
+            {
+                if (!Config.ModEnabled || Game1.activeClickableMenu is ResourceMenu || item is not Object || !CanStore(item as Object) || !Game1.objectInformation.TryGetValue(item.ParentSheetIndex, out string data))
+                    return true;
+                return ModifyResourceLevel(__instance, GetIdString(data), item.Stack) <= 0;
             }
         }
         [HarmonyPatch(typeof(Farmer), nameof(Farmer.getItemCount))]
@@ -31,10 +58,10 @@ namespace ResourceStorage
         {
             public static void Postfix(Farmer __instance, int item_index, ref int __result)
             {
-                if (!Config.ModEnabled || !Game1.objectInformation.TryGetValue(item_index, out string data))
+                if (!Config.ModEnabled || !Config.AutoUse || !Game1.objectInformation.TryGetValue(item_index, out string data))
                     return;
 
-                __result += GetResourceAmount(__instance, GetIdString(data));
+                __result += (int)GetResourceAmount(__instance, GetIdString(data));
             }
         }
         [HarmonyPatch(typeof(Farmer), nameof(Farmer.getTallyOfObject))]
@@ -42,10 +69,10 @@ namespace ResourceStorage
         {
             public static void Postfix(Farmer __instance, int index, bool bigCraftable, ref int __result)
             {
-                if (!Config.ModEnabled || bigCraftable || !Game1.objectInformation.TryGetValue(index, out string data))
+                if (!Config.ModEnabled || !Config.AutoUse || bigCraftable || !Game1.objectInformation.TryGetValue(index, out string data))
                     return;
 
-                __result += GetResourceAmount(__instance, GetIdString(data));
+                __result += (int)GetResourceAmount(__instance, GetIdString(data));
             }
         }
         [HarmonyPatch(typeof(Farmer), nameof(Farmer.hasItemInInventory))]
@@ -53,9 +80,9 @@ namespace ResourceStorage
         {
             public static bool Prefix(Farmer __instance, int itemIndex, ref int quantity, ref bool __result)
             {
-                if (!Config.ModEnabled || !Game1.objectInformation.TryGetValue(itemIndex, out string data))
+                if (!Config.ModEnabled || !Config.AutoUse || !Game1.objectInformation.TryGetValue(itemIndex, out string data))
                     return true;
-                quantity -= GetResourceAmount(__instance, GetIdString(data));
+                quantity -= (int)GetResourceAmount(__instance, GetIdString(data));
                 if(quantity <= 0)
                 {
                     __result = true;
@@ -93,10 +120,10 @@ namespace ResourceStorage
         {
             public static bool Prefix(Farmer who, Item drop_in, ref int amount)
             {
-                if (!Config.ModEnabled || !Game1.objectInformation.TryGetValue(drop_in.ParentSheetIndex, out string data))
+                if (!Config.ModEnabled || !Config.AutoUse || !Game1.objectInformation.TryGetValue(drop_in.ParentSheetIndex, out string data))
                     return true;
 
-                amount += ModifyResourceLevel(who, GetIdString(data), -amount);
+                amount += (int)ModifyResourceLevel(who, GetIdString(data), -amount);
                 return amount > 0;
             }
         }
@@ -105,14 +132,14 @@ namespace ResourceStorage
         {
             public static void Prefix(List<KeyValuePair<int, int>> additional_recipe_items)
             {
-                if (!Config.ModEnabled)
+                if (!Config.ModEnabled || !Config.AutoUse)
                     return;
                 for(int i = 0; i < additional_recipe_items.Count; i++)
                 {
                     if (!Game1.objectInformation.TryGetValue(additional_recipe_items[i].Key, out string data))
                         continue;
                     string id = GetIdString(data);
-                    additional_recipe_items[i] = new KeyValuePair<int, int>(additional_recipe_items[i].Key, additional_recipe_items[i].Value + ModifyResourceLevel(Game1.player, id, -additional_recipe_items[i].Value));
+                    additional_recipe_items[i] = new KeyValuePair<int, int>(additional_recipe_items[i].Key, additional_recipe_items[i].Value + (int)ModifyResourceLevel(Game1.player, id, -additional_recipe_items[i].Value));
                 }
             }
         }
@@ -143,7 +170,7 @@ namespace ResourceStorage
         {
             public static void Prefix(CraftingRecipe __instance, ref Dictionary<int, int> __state)
             {
-                if (!Config.ModEnabled)
+                if (!Config.ModEnabled || !Config.AutoUse)
                     return;
 
                 __state = __instance.recipeList;
@@ -152,7 +179,7 @@ namespace ResourceStorage
                 {
                     if (!Game1.objectInformation.TryGetValue(s.Key, out string data))
                         continue;
-                    int amount = s.Value + ModifyResourceLevel(Game1.player, GetIdString(data), -s.Value, false);
+                    int amount = s.Value + (int)ModifyResourceLevel(Game1.player, GetIdString(data), -s.Value);
                     if (amount <= 0)
                         continue;
                     dict.Add(s.Key, amount);
@@ -161,31 +188,21 @@ namespace ResourceStorage
             }
             public static void Postfix(CraftingRecipe __instance, ref Dictionary<int, int> __state)
             {
-                if (!Config.ModEnabled)
+                if (!Config.ModEnabled || !Config.AutoUse)
                     return;
                 __instance.recipeList = __state;
-            }
-        }
-        [HarmonyPatch(typeof(Farmer), nameof(Farmer.addItemToInventory), new Type[] { typeof(Item), typeof(List<Item>) })]
-        public class Farmer_addItemToInventory_Patch
-        {
-            public static bool Prefix(Farmer __instance, Item item)
-            {
-                if (!Config.ModEnabled || Game1.activeClickableMenu is ResourceMenu || item is not Object || !CanStore(item as Object) || !Game1.objectInformation.TryGetValue(item.ParentSheetIndex, out string data))
-                    return true;
-                return ModifyResourceLevel(__instance, GetIdString(data), item.Stack) <= 0;
             }
         }
         [HarmonyPatch(typeof(GameMenu), new Type[] { typeof(bool)})]
         [HarmonyPatch(MethodType.Constructor)]
         public class GameMenu_Patch
         {
-            public static void Postfix()
+            public static void Postfix(GameMenu __instance)
             {
                 if (!Config.ModEnabled)
                     return;
                 gameMenu = null;
-                resourceButton = new ClickableTextureComponent("Up", new Rectangle(Game1.viewport.Width / 2 - 22, Game1.viewport.Height * 2 /3 - 22, 44, 44), "", SHelper.Translation.Get("resources"), Game1.mouseCursors, new Rectangle(116, 442, 22, 22), 2)
+                resourceButton = new ClickableTextureComponent("Up", new Rectangle(__instance.xPositionOnScreen + __instance.width + 8, __instance.yPositionOnScreen + 96, 44, 44), "", SHelper.Translation.Get("resources"), Game1.mouseCursors, new Rectangle(116, 442, 22, 22), 2)
                 {
                     myID = -1,
                     leftNeighborID = 0,
@@ -198,17 +215,33 @@ namespace ResourceStorage
         {
             public static void Postfix(SpriteBatch b)
             {
-                if (!Config.ModEnabled)
+                if (!Config.ModEnabled || Game1.activeClickableMenu is not GameMenu)
                     return;
+                resourceButton.bounds = new Rectangle(Game1.activeClickableMenu.xPositionOnScreen + Game1.activeClickableMenu.width + 8, Game1.activeClickableMenu.yPositionOnScreen + 96, 44, 44);
                 resourceButton.draw(b);
+            }
+        }
+        [HarmonyPatch(typeof(InventoryPage), nameof(InventoryPage.performHoverAction))]
+        public class InventoryPage_performHoverAction_Patch
+        {
+            public static bool Prefix(ref string ___hoverText, int x, int y)
+            {
+                if (!Config.ModEnabled)
+                    return true;
+                if(resourceButton.containsPoint(x, y))
+                {
+                    ___hoverText = resourceButton.hoverText;
+                    return false;
+                }
+                return true;
             }
         }
         [HarmonyPatch(typeof(InventoryPage), nameof(InventoryPage.receiveLeftClick))]
         public class InventoryPage_receiveLeftClick_Patch
         {
-            public static bool Prefix(InventoryPage __instance, int x, int y)
+            public static bool Prefix(InventoryPage __instance, ref string ___hoverText, int x, int y)
             {
-                if (!Config.ModEnabled)
+                if (!Config.ModEnabled || Game1.activeClickableMenu is not GameMenu)
                     return true;
                 if(resourceButton.containsPoint(x, y))
                 {
@@ -223,9 +256,11 @@ namespace ResourceStorage
                     }
                     else
                     {
+                        ___hoverText = "";
                         Game1.playSound("bigSelect");
                         gameMenu = Game1.activeClickableMenu as GameMenu;
                         Game1.activeClickableMenu = new ResourceMenu();
+                        
                     }
                     return false;
                 }
