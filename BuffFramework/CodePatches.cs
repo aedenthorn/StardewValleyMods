@@ -1,5 +1,6 @@
 ﻿using HarmonyLib;
 using Microsoft.Xna.Framework.Graphics;
+using StardewModdingAPI;
 using StardewValley;
 using StardewValley.Menus;
 using System;
@@ -13,14 +14,27 @@ namespace BuffFramework
 {
     public partial class ModEntry
     {
-        [HarmonyPatch(typeof(Farmer), nameof(Farmer.draw))]
-        public class Farmer_draw_Patch
+        [HarmonyPatch(typeof(Game1), nameof(Game1.newDayAfterFade))]
+        public class Game1_newDayAfterFade_Patch
         {
-            public static void Prefix(Farmer __instance, SpriteBatch b)
+            public static void Prefix()
+            {
+                if (!Config.ModEnabled)
+                    return;
+                foreach (var kvp in farmerBuffs.Value)
+                {
+                    Game1.buffsDisplay.removeOtherBuff(kvp.Value.which);
+                }
+                farmerBuffs.Value.Clear();
+            }
+        }
+        [HarmonyPatch(typeof(Farmer), nameof(Farmer.Update))]
+        public class Farmer_Update_Patch
+        {
+            public static void Prefix(Farmer __instance)
             {
                 if (!Config.ModEnabled || !__instance.IsLocalPlayer || farmerBuffs.Value is null)
                     return;
-
                 foreach(var fb in farmerBuffs.Value.Values)
                 {
                     Buff? buff = Game1.buffsDisplay.otherBuffs.FirstOrDefault(p => p.which == fb.which);

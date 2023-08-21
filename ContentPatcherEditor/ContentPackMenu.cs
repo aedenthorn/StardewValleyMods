@@ -207,7 +207,6 @@ namespace ContentPatcherEditor
             {
 
                 int count = 0;
-                int setHeight = 0;
                 var boxWidth = width - (spaceToClearSideBorder + borderWidth) * 2;
                 configList = new List<ConfigSetup>();
                 foreach (var kvp in pack.config)
@@ -308,7 +307,6 @@ namespace ContentPatcherEditor
         public override void draw(SpriteBatch b)
         {
             Game1.drawDialogueBox(xPositionOnScreen, yPositionOnScreen, width, height, false, true, null, false, true);
-            int count = 0;
             backCC.draw(b);
             for(int i = 0; i < tabs.Count; i++)
             {

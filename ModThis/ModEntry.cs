@@ -35,6 +35,12 @@ namespace ModThis
                 return;
 
             Helper.Events.Input.ButtonPressed += Input_ButtonPressed;
+            Helper.Events.GameLoop.GameLaunched += GameLoop_GameLaunched;
+        }
+
+        private void GameLoop_GameLaunched(object sender, GameLaunchedEventArgs e)
+        {
+            throw new System.NotImplementedException();
         }
 
         private void Input_ButtonPressed(object sender, ButtonPressedEventArgs e)

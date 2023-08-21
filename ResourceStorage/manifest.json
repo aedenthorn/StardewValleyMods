@@ -1,16 +1,16 @@
 ﻿{
-  "Name": "Buff Framework",
+  "Name": "Resource Storage",
   "Author": "aedenthorn",
-  "Version": "0.3.2",
-  "Description": "Buff Framework.",
-  "UniqueID": "aedenthorn.BuffFramework",
-  "EntryDll": "BuffFramework.dll",
+  "Version": "0.1.0",
+  "Description": "Resource Storage.",
+  "UniqueID": "aedenthorn.ResourceStorage",
+  "EntryDll": "ResourceStorage.dll",
   "MinimumApiVersion": "3.15.0",
   "ModUpdater": {
     "Repository": "StardewValleyMods",
     "User": "aedenthorn",
     "Directory": "_releases",
-    "ModFolder": "BuffFramework"
+    "ModFolder": "ResourceStorage"
   },
   "Dependencies": [
     {
@@ -18,5 +18,5 @@
       "IsRequired": false
     }
   ],
-  "UpdateKeys": [ "Nexus:17746" ]
+  "UpdateKeys": [ "Nexus:" ]
 }

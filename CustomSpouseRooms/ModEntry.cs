@@ -115,8 +115,15 @@ namespace CustomSpouseRooms
                 SpouseRoomDataObject obj = contentPack.ReadJsonFile<SpouseRoomDataObject>("content.json");
                 foreach (var srd in obj.data)
                 {
-                    customRoomData.Add(srd.name, srd);
-                    SMonitor.Log($"Added {srd.name} room data, template {srd.templateName} start pos {srd.startPos}");
+                    try
+                    {
+                        customRoomData.Add(srd.name, srd);
+                        SMonitor.Log($"Added {srd.name} room data, template {srd.templateName} start pos {srd.startPos}");
+                    }
+                    catch(Exception ex)
+                    {
+                        SMonitor.Log($"Error adding {srd.name} room data, template {srd.templateName} start pos {srd.startPos}: \n\n{ex}", LogLevel.Error);
+                    }
                 }
 
                 SMonitor.Log($"Added {obj.data.Count} room datas from {contentPack.Manifest.Name}");

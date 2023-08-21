@@ -15,61 +15,43 @@ using System.IO;
 using System.Linq;
 using System.Security.Cryptography;
 using System.Threading;
+using static HarmonyLib.Code;
+using Object = StardewValley.Object;
 
-namespace ContentPatcherEditor
+namespace ResourceStorage
 {
-    public class ContentPatcherMenu : IClickableMenu
+    public class ResourceMenu : IClickableMenu
     {
         public static int scrolled;
         public static int linesPerPage = 17;
         public static int windowWidth = 64 * 24;
-        public static ContentPatcherMenu instance;
-        public List<ContentPatcherPack> contentPatcherPacks = new();
-        public List<ClickableComponent> allComponents = new();
-        public ClickableTextureComponent addCC;
+        public static ResourceMenu instance;
+        public Dictionary<string, int> resources = new();
+        public List<Object> resourceList = new();
+        //public List<ClickableComponent> allComponents = new();
+        public List<ClickableTextureComponent> autoCCs = new();
+        public List<ClickableTextureComponent> takeCCs = new();
         public ClickableTextureComponent upCC;
         public ClickableTextureComponent downCC;
         public string hoverText;
         public string hoveredItem;
-        private ClickableTextureComponent scrollBar;
-        private Rectangle scrollBarRunner;
-        private bool scrolling;
+        public ClickableTextureComponent scrollBar;
+        public Rectangle scrollBarRunner;
+        public bool scrolling;
 
-        public ContentPatcherMenu() : base(Game1.uiViewport.Width / 2 - (windowWidth + borderWidth * 2) / 2, -borderWidth, windowWidth + borderWidth * 2, Game1.uiViewport.Height, false)
+        public ResourceMenu() : base(Game1.uiViewport.Width / 2 - (windowWidth + borderWidth * 2) / 2, -borderWidth, windowWidth + borderWidth * 2, Game1.uiViewport.Height, false)
         {
             scrolled = 0;
-
-            foreach (var dir in Directory.GetDirectories(Path.Combine(Constants.GamePath, "Mods"), "*", SearchOption.AllDirectories))
+            resources = ModEntry.GetFarmerResources(Game1.player);
+            foreach(var resource in resources)
             {
-                if (File.Exists(Path.Combine(dir, "manifest.json")) && File.Exists(Path.Combine(dir, "content.json")))
-                {
-                    try
-                    {
-                        MyManifest manifest = JsonConvert.DeserializeObject<MyManifest>(File.ReadAllText(Path.Combine(dir, "manifest.json")));
-                        if (manifest.ContentPackFor?.UniqueID == "Pathoschild.ContentPatcher")
-                        {
-                            var pack = new ContentPatcherPack()
-                            {
-                                directory = dir,
-                                manifest = manifest,
-                                content = JsonConvert.DeserializeObject<ContentPatcherContent>(File.ReadAllText(Path.Combine(dir, "content.json"))),
-                            };
-                            if(pack.content is null)
-                            {
-                                ModEntry.SMonitor.Log($"Error loading mod at {dir}: \n\ncontent.json is null", LogLevel.Error);
-                                continue;
-                            }
-                            ModEntry.RebuildLists(pack);
-                            contentPatcherPacks.Add(pack);
-                        }
-                    }
-                    catch(Exception ex)
-                    {
-                        ModEntry.SMonitor.Log($"Error loading mod at {dir}: \n\n{ex}", LogLevel.Error);
-                    }
-                }
+                int index = ModEntry.GetIndex(resource.Key);
+                if (index < 0)
+                    continue;
+                Object obj = new Object(index, resource.Value);
+                //obj.stack.Value = obj.ParentSheetIndex * 193;
+                resourceList.Add(obj);
             }
-
             RepopulateComponentList();
 
             exitFunction = emergencyShutDown;
@@ -77,44 +59,52 @@ namespace ContentPatcherEditor
             snapToDefaultClickableComponent();
         }
 
-        private void RepopulateComponentList()
+        public void RepopulateComponentList()
         {
-            width = Math.Min(64 * 24, Game1.viewport.Width);
+            width = Math.Min(64 * 12, Game1.viewport.Width);
             height = Game1.viewport.Height + 72;
             xPositionOnScreen = (Game1.viewport.Width - width) / 2;
             yPositionOnScreen = -72;
             linesPerPage = (height - spaceToClearTopBorder * 2 - 108) / 64;
 
-            allComponents.Clear();
+            //allComponents.Clear();
+            autoCCs.Clear();
+            takeCCs.Clear();
             
             int count = 0;
             int lineHeight = 64;
-            int dowWidth = 56;
-            int weekWidth = dowWidth * 7 + 8;
-            int domWidth = 40;
-            int monthWidth = domWidth * 7 + 12;
 
-            for (int i = scrolled; i < Math.Min(linesPerPage + scrolled, contentPatcherPacks.Count); i++)
+            for (int i = scrolled; i < Math.Min(linesPerPage + scrolled, resourceList.Count); i++)
             {
                 int xStart = xPositionOnScreen + spaceToClearSideBorder + borderWidth;
                 int yStart = yPositionOnScreen + borderWidth + spaceToClearTopBorder - 24 + count * lineHeight;
                 int baseID = count * 1000;
-                
-                allComponents.Add(new ClickableComponent(new Rectangle(xStart, yStart + 96, width, lineHeight), contentPatcherPacks[i].manifest.Name, contentPatcherPacks[i].manifest.UniqueID)
+                /*
+                allComponents.Add(new ClickableComponent(new Rectangle(xStart + 32, yStart + 96, width, lineHeight), resourceList[i].DisplayName, resourceList[i].getDescription())
                 {
                     myID = baseID,
                     downNeighborID = baseID + 1000,
                     upNeighborID = baseID - 1000,
-                    rightNeighborID = count < linesPerPage ? -1 : -2
+                    rightNeighborID = baseID + 2,
+                });
+                */
+                autoCCs.Add(new ClickableTextureComponent("Auto", new Rectangle(xStart, yStart + 104, 36, 36), "", ModEntry.SHelper.Translation.Get("auto"), Game1.mouseCursors, new Rectangle(ModEntry.CanAutoStore(resourceList[i]) ? 236 : 227, 425, 9, 9), 4)
+                {
+                    myID = baseID,
+                    downNeighborID = baseID + 1000,
+                    upNeighborID = baseID - 1000,
+                    rightNeighborID = baseID + 1,
+                });
+                takeCCs.Add(new ClickableTextureComponent("Take", new Rectangle(xPositionOnScreen + width - (spaceToClearSideBorder + borderWidth) - 36, yStart + 100, 28, 28), "", ModEntry.SHelper.Translation.Get("take"), Game1.mouseCursors, new Rectangle(365, 495, 12, 11), 4)
+                {
+                    myID = baseID + 1,
+                    downNeighborID = baseID + 1000,
+                    upNeighborID = baseID - 1000,
+                    leftNeighborID = baseID,
                 });
                 count++;
             }
-            addCC = new ClickableTextureComponent("Add", new Rectangle(xPositionOnScreen + width - 100, yPositionOnScreen - 96 + height, 56, 56), "", ModEntry.SHelper.Translation.Get("add"), Game1.mouseCursors, new Rectangle(1, 412, 14, 14), 4)
-            {
-                myID = count * 1000,
-                upNeighborID = (count - 1) * 1000,
-                rightNeighborID = -2,
-            };
+
             if (scrolled > 0)
             {
                 upCC = new ClickableTextureComponent("Up", new Rectangle(xPositionOnScreen + width + 40, yPositionOnScreen + 84, 40, 44), "", ModEntry.SHelper.Translation.Get("up"), Game1.mouseCursors, new Rectangle(76, 72, 40, 44), 1)
@@ -127,7 +117,7 @@ namespace ContentPatcherEditor
             }
             else
                 upCC = null;
-            if (count + scrolled < contentPatcherPacks.Count)
+            if (count + scrolled < resourceList.Count)
             {
                 downCC = new ClickableTextureComponent("Down", new Rectangle(xPositionOnScreen + width + 40, yPositionOnScreen + height - 64, 40, 44), "", ModEntry.SHelper.Translation.Get("down"), Game1.mouseCursors, new Rectangle(12, 76, 40, 44), 1)
                 {
@@ -138,11 +128,11 @@ namespace ContentPatcherEditor
             }
             else 
                 downCC = null;
-            if (contentPatcherPacks.Count > linesPerPage)
+            if (resourceList.Count > linesPerPage)
             {
                 scrollBar = new ClickableTextureComponent(new Rectangle(xPositionOnScreen + width + 40 + 8, yPositionOnScreen + 132, 24, 40), Game1.mouseCursors, new Rectangle(435, 463, 6, 10), 4f, false);
                 scrollBarRunner = new Rectangle(scrollBar.bounds.X, scrollBar.bounds.Y, scrollBar.bounds.Width, height - 200);
-                float interval = (scrollBarRunner.Height - scrollBar.bounds.Height) / (float)(contentPatcherPacks.Count - linesPerPage);
+                float interval = (scrollBarRunner.Height - scrollBar.bounds.Height) / (float)(resourceList.Count - linesPerPage);
                 scrollBar.bounds.Y = Math.Min(scrollBarRunner.Y + (int)Math.Round(interval * scrolled), scrollBarRunner.Bottom - scrollBar.bounds.Height);
 
             }
@@ -152,25 +142,29 @@ namespace ContentPatcherEditor
 
         public override void draw(SpriteBatch b)
         {
+            ModEntry.gameMenu.draw(b);
             Game1.drawDialogueBox(xPositionOnScreen, yPositionOnScreen, width, height, false, true, null, false, true);
-            SpriteText.drawStringHorizontallyCenteredAt(b, ModEntry.SHelper.Translation.Get("content-packs"), Game1.viewport.Width / 2, yPositionOnScreen + spaceToClearTopBorder + borderWidth / 2);
+            SpriteText.drawStringHorizontallyCenteredAt(b, ModEntry.SHelper.Translation.Get("resources"), Game1.viewport.Width / 2, yPositionOnScreen + spaceToClearTopBorder + borderWidth / 2);
             b.Draw(Game1.menuTexture, new Rectangle(xPositionOnScreen + 32, yPositionOnScreen + borderWidth + spaceToClearTopBorder + 48, width - 64, 16), new Rectangle(40, 16, 1, 16), Color.White);
             int count = 0;
-            foreach(var set in allComponents)
+            for(int i = 0; i < resourceList.Count; i++)
             {
-                b.DrawString(Game1.dialogueFont, set.name, new Vector2(set.bounds.X, set.bounds.Y), Color.Black);
+                autoCCs[i].draw(b);
+                takeCCs[i].draw(b);
+                resourceList[i].drawInMenu(b, new Vector2(autoCCs[i].bounds.Right, autoCCs[i].bounds.Y - 16), 1, 1, 1, StackDrawType.Hide);
+                b.DrawString(Game1.dialogueFont, resourceList[i].DisplayName, new Vector2(autoCCs[i].bounds.Right + 64, autoCCs[i].bounds.Y - 4), Color.Black);
+                float width = Game1.dialogueFont.MeasureString(resourceList[i].Stack + "").X;
+                b.DrawString(Game1.dialogueFont, resourceList[i].Stack + "", new Vector2(takeCCs[i].bounds.X - width, autoCCs[i].bounds.Y - 4), Color.Black);
                 count++;
             }
-            addCC.draw(b);
             upCC?.draw(b);
             downCC?.draw(b);
-            b.Draw(Game1.menuTexture, new Rectangle(xPositionOnScreen + spaceToClearSideBorder + 16, yPositionOnScreen + height - 112, width - 64, 8), new Rectangle(40, 16, 1, 16), Color.White);
             if (scrollBar is not null)
             {
-                IClickableMenu.drawTextureBox(b, Game1.mouseCursors, new Rectangle(403, 383, 6, 6), this.scrollBarRunner.X, this.scrollBarRunner.Y, this.scrollBarRunner.Width, this.scrollBarRunner.Height, Color.White, 4f, true, -1f);
+                drawTextureBox(b, Game1.mouseCursors, new Rectangle(403, 383, 6, 6), this.scrollBarRunner.X, this.scrollBarRunner.Y, this.scrollBarRunner.Width, this.scrollBarRunner.Height, Color.White, 4f, true, -1f);
                 scrollBar.draw(b);
             }
-            if (hoverText != null && hoveredItem == null)
+            if (!string.IsNullOrEmpty(hoverText) && hoveredItem == null)
             {
                 drawHoverText(b, hoverText, Game1.smallFont, 0, 0, -1, null, -1, null, null, 0, -1, -1, -1, -1, 1f, null, null);
             }
@@ -180,29 +174,72 @@ namespace ContentPatcherEditor
 
         public override void receiveLeftClick(int x, int y, bool playSound = true)
         {
-            for(int i = 0; i < allComponents.Count; i++)
+            for(int i = 0; i < resourceList.Count; i++)
             {
-                var set = allComponents[i];
-                if(set.containsPoint(x, y))
+                if (autoCCs[i].containsPoint(x, y))
                 {
-                    Game1.playSound("bigSelect");
-                    if(Game1.activeClickableMenu is TitleMenu)
+                    List<string> list = ModEntry.Config.AutoStore.Split(',').ToList();
+
+                    if (ModEntry.CanAutoStore(resourceList[i]))
                     {
-                        TitleMenu.subMenu = new ContentPackMenu(contentPatcherPacks.First(p => p.manifest.UniqueID == set.label));
+                        Game1.playSound("drumkit6");
+
+                        for (int j = 0; j < list.Count; j++)
+                        {
+                            if (list[j].Trim().ToLower() == resourceList[i].Name.ToLower() || (int.TryParse(list[j], out int index) && index == resourceList[i].ParentSheetIndex))
+                            {
+                                list.RemoveAt(j);
+                                break;
+                            }
+                        }
                     }
                     else
                     {
-                        Game1.activeClickableMenu = new ContentPackMenu(contentPatcherPacks.First(p => p.manifest.UniqueID == set.label));
+                        Game1.playSound("drumkit6");
+
+                        list.Add(resourceList[i].Name);
+                    }
+                    ModEntry.Config.AutoStore = string.Join(",", list);
+                    ModEntry.SHelper.WriteConfig(ModEntry.Config);
+                    RepopulateComponentList();
+                    return;
+                }
+                if (takeCCs[i].containsPoint(x, y))
+                {
+                    int stack = 1;
+                    if (ModEntry.SHelper.Input.IsDown(ModEntry.Config.ModKeyMax.Buttons[0]))
+                    {
+                        stack = Math.Min(resourceList[i].Stack, resourceList[i].maximumStackSize());
+                    }
+
+                    Object obj = new Object(resourceList[i].ParentSheetIndex, stack);
+                    if (Game1.player.addItemToInventoryBool(obj))
+                    {
+                        Game1.playSound("Ship");
+                        if (resourceList[i].Stack <= stack)
+                        {
+                            resourceList.RemoveAt(i);
+                        }
+                        else
+                        {
+                            resourceList[i].Stack = resourceList[i].Stack - stack;
+                        }
+                        resources.Clear();
+                        foreach(var r in resourceList)
+                        {
+                            if(Game1.objectInformation.TryGetValue(r.ParentSheetIndex, out string data))
+                            {
+                                resources[ModEntry.GetIdString(data)] = r.Stack;
+                            }
+                        }
+                        RepopulateComponentList();
+                    }
+                    else
+                    {
+                        Game1.showRedMessage(Game1.content.LoadString("Strings\\StringsFromCSFiles:Crop.cs.588"));
                     }
                     return;
                 }
-            }
-            if(addCC.containsPoint(x, y))
-            {
-                Game1.playSound("bigSelect");
-                ModEntry.CreateNewContentPatcherPack();
-                RepopulateComponentList();
-                return;
             }
             if (upCC?.containsPoint(x, y) == true)
             {
@@ -238,9 +275,9 @@ namespace ContentPatcherEditor
             RepopulateComponentList();
         }
 
-        private bool DoScroll(int direction)
+        public bool DoScroll(int direction)
         {
-            if (direction < 0 && scrolled < contentPatcherPacks.Count - linesPerPage)
+            if (direction < 0 && scrolled < resourceList.Count - linesPerPage)
             {
                 Game1.playSound("shiny4");
                 scrolled++;
@@ -259,6 +296,12 @@ namespace ContentPatcherEditor
 
         public override void receiveKeyPress(Keys key)
         {
+            if(Game1.options.doesInputListContain(Game1.options.menuButton, key) && readyToClose())
+            {
+                exitThisMenu();
+                Game1.activeClickableMenu = ModEntry.gameMenu;
+                return;
+            }
             base.receiveKeyPress(key);
         }
 
@@ -311,17 +354,19 @@ namespace ContentPatcherEditor
             hoverText = "";
             base.performHoverAction(x, y);
 
-            for (int i = 0; i < allComponents.Count; i++)
+            for (int i = 0; i < autoCCs.Count; i++)
             {
-                var set = allComponents[i];
-                if(set.containsPoint(x, y))
-                    hoverText = set.label;
+                if (autoCCs[i].containsPoint(x, y))
+                {
+                    hoverText = autoCCs[i].hoverText;
+                    return;
+                }
+                if (takeCCs[i].containsPoint(x, y))
+                {
+                    hoverText = takeCCs[i].hoverText;
+                    return;
+                }
 
-            }
-            if (addCC.containsPoint(x, y))
-            {
-                hoverText = addCC.hoverText;
-                return;
             }
             if (upCC?.containsPoint(x, y) == true)
             {
@@ -343,12 +388,12 @@ namespace ContentPatcherEditor
             base.leftClickHeld(x, y);
             if (scrolling)
             {
-                float interval = (scrollBarRunner.Height - scrollBar.bounds.Height) / (float)(contentPatcherPacks.Count - linesPerPage);
+                float interval = (scrollBarRunner.Height - scrollBar.bounds.Height) / (float)(resourceList.Count - linesPerPage);
 
                 float percent = (y - scrollBarRunner.Y) / (float)scrollBarRunner.Height;
                 int which = (int)Math.Round(scrollBarRunner.Height / interval * percent);
 
-                int newScroll = Math.Max(0, Math.Min(contentPatcherPacks.Count - linesPerPage, which));
+                int newScroll = Math.Max(0, Math.Min(resourceList.Count - linesPerPage, which));
                 if (newScroll != scrolled)
                 {
                     Game1.playSound("shiny4");
@@ -366,7 +411,7 @@ namespace ContentPatcherEditor
         public override void gameWindowSizeChanged(Rectangle oldBounds, Rectangle newBounds)
         {
             base.gameWindowSizeChanged(oldBounds, newBounds);
-            scrolled = Math.Min(scrolled, contentPatcherPacks.Count - ((Game1.viewport.Height + 72 - spaceToClearTopBorder * 2 - 108) / 64));
+            scrolled = Math.Min(scrolled, resourceList.Count - ((Game1.viewport.Height + 72 - spaceToClearTopBorder * 2 - 108) / 64));
             RepopulateComponentList();
         }
 
