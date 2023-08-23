@@ -11,6 +11,7 @@ using StardewValley.Tools;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using xTile.Dimensions;
 using Object = StardewValley.Object;
 using Rectangle = Microsoft.Xna.Framework.Rectangle;
@@ -494,12 +495,15 @@ namespace OmniTools
         public static Tool GetToolFromInfo(ToolInfo toolInfo)
         {
             Tool t = GetToolFromDescription(toolInfo.description.index, toolInfo.description.upgradeLevel);
-            foreach (var s in toolInfo.enchantments)
+            for (int i = 0; i < toolInfo.enchantments.Count; i++)
             {
                 try
                 {
-                    var type = typeof(Game1).Assembly.GetType(s);
-                    AccessTools.Method(t.GetType(), "AddEnchantment").Invoke(t, new object[] { Activator.CreateInstance(type) });
+                 
+                    var type = typeof(Game1).Assembly.GetType(toolInfo.enchantments[i]);
+                    BaseEnchantment enchantment = (BaseEnchantment)Activator.CreateInstance(type);
+                    enchantment.Level = toolInfo.enchantLevels[i];
+                    AccessTools.Method(t.GetType(), "AddEnchantment").Invoke(t, new object[] { enchantment });
                 }
                 catch { }
             }

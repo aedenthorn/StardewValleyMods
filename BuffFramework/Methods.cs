@@ -173,5 +173,18 @@ namespace BuffFramework
                 return float.TryParse((string)r, NumberStyles.Any, CultureInfo.InvariantCulture, out float f) ? f : 0;
             return 0;
         }
+
+
+        private static void ClearCues()
+        {
+            foreach (var cue in cues)
+            {
+                if (cue.Value.IsPlaying)
+                {
+                    cue.Value.Stop(Microsoft.Xna.Framework.Audio.AudioStopOptions.Immediate);
+                }
+            }
+            cues.Clear();
+        }
     }
 }

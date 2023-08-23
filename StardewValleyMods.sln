@@ -565,6 +565,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LoadMenuCache", "LoadMenuCa
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ResourceStorage", "ResourceStorage\ResourceStorage.csproj", "{7DBB20D7-1B51-495A-BBC9-3CD66BF314A1}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BirthdayFriendship", "BirthdayFriendship\BirthdayFriendship.csproj", "{1E922558-78CC-46FE-8DE0-B664BCC53E3C}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -2781,6 +2783,14 @@ Global
 		{7DBB20D7-1B51-495A-BBC9-3CD66BF314A1}.Release|Any CPU.Build.0 = Release|Any CPU
 		{7DBB20D7-1B51-495A-BBC9-3CD66BF314A1}.Release|x64.ActiveCfg = Release|x64
 		{7DBB20D7-1B51-495A-BBC9-3CD66BF314A1}.Release|x64.Build.0 = Release|x64
+		{1E922558-78CC-46FE-8DE0-B664BCC53E3C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1E922558-78CC-46FE-8DE0-B664BCC53E3C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1E922558-78CC-46FE-8DE0-B664BCC53E3C}.Debug|x64.ActiveCfg = Debug|x64
+		{1E922558-78CC-46FE-8DE0-B664BCC53E3C}.Debug|x64.Build.0 = Debug|x64
+		{1E922558-78CC-46FE-8DE0-B664BCC53E3C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1E922558-78CC-46FE-8DE0-B664BCC53E3C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1E922558-78CC-46FE-8DE0-B664BCC53E3C}.Release|x64.ActiveCfg = Release|x64
+		{1E922558-78CC-46FE-8DE0-B664BCC53E3C}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

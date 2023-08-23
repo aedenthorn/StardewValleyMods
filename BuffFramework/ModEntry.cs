@@ -3,6 +3,7 @@ using HarmonyLib;
 using StardewModdingAPI;
 using StardewModdingAPI.Utilities;
 using StardewValley;
+using System;
 using System.Collections.Generic;
 
 namespace BuffFramework
@@ -46,14 +47,7 @@ namespace BuffFramework
 
         private void GameLoop_ReturnedToTitle(object sender, StardewModdingAPI.Events.ReturnedToTitleEventArgs e)
         {
-            foreach(var cue in cues)
-            {
-                if(cue.Value.IsPlaying)
-                {
-                    cue.Value.Stop(Microsoft.Xna.Framework.Audio.AudioStopOptions.Immediate);
-                }
-            }
-            cues.Clear();
+            ClearCues();
         }
 
         private void GameLoop_TimeChanged(object sender, StardewModdingAPI.Events.TimeChangedEventArgs e)

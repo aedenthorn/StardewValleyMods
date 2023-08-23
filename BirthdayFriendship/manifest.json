@@ -1,22 +1,22 @@
 ﻿{
-  "Name": "Omni Tools",
+  "Name": "Birthday Friendship",
   "Author": "aedenthorn",
-  "Version": "0.8.2",
-  "Description": "Omni Tools.",
-  "UniqueID": "aedenthorn.OmniTools",
-  "EntryDll": "OmniTools.dll",
+  "Version": "0.1.0",
+  "Description": "Birthday Friendship.",
+  "UniqueID": "aedenthorn.BirthdayFriendship",
+  "EntryDll": "BirthdayFriendship.dll",
   "MinimumApiVersion": "3.15.0",
   "ModUpdater": {
     "Repository": "StardewValleyMods",
     "User": "aedenthorn",
     "Directory": "_releases",
-    "ModFolder": "OmniTools"
+    "ModFolder": "BirthdayFriendship"
   },
-  "UpdateKeys": [ "Nexus:14865" ],
   "Dependencies": [
     {
       "UniqueID": "Platonymous.ModUpdater",
       "IsRequired": false
     }
-  ]
+  ],
+  "UpdateKeys": [ "Nexus:17974" ]
 }

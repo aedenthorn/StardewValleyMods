@@ -26,6 +26,7 @@ namespace BuffFramework
                     Game1.buffsDisplay.removeOtherBuff(kvp.Value.which);
                 }
                 farmerBuffs.Value.Clear();
+                ClearCues();
             }
         }
         [HarmonyPatch(typeof(Farmer), nameof(Farmer.Update))]
