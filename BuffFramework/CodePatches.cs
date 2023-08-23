@@ -19,8 +19,13 @@ namespace BuffFramework
         {
             public static void Prefix()
             {
-                if (!Config.ModEnabled)
+                if (!Config.ModEnabled || Game1.buffsDisplay is null)
                     return;
+                if(farmerBuffs.Value is null)
+                {
+                    farmerBuffs.Value = new();
+                    return;
+                }
                 foreach (var kvp in farmerBuffs.Value)
                 {
                     Game1.buffsDisplay.removeOtherBuff(kvp.Value.which);
