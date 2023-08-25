@@ -20,19 +20,34 @@ namespace FarmerPortraits
     public partial class ModEntry
     {
 
+        private static void AdjustWindow(ref DialogueBox __instance)
+        {
+            __instance.x = Math.Max(520, (int)Utility.getTopLeftPositionForCenteringOnScreen(__instance.width, __instance.height, 0, 0).X + 260);
+            __instance.width = (int)Math.Min(Game1.uiViewport.Width - __instance.x - 48, 1200);
+            __instance.friendshipJewel = new Rectangle(__instance.x + __instance.width - 64, __instance.y + 256, 44, 44);
+        }
+
         [HarmonyPatch(typeof(DialogueBox), new Type[] { typeof(Dialogue) })]
         [HarmonyPatch(MethodType.Constructor)]
         public class DialogueBox_Patch
         {
             public static void Postfix(DialogueBox __instance)
             {
-                if (!Config.EnableMod)
+                if (!Config.EnableMod || !__instance.transitionInitialized || __instance.transitioning || (!Config.ShowWithQuestions && __instance.isQuestion) || (!Config.ShowWithNPCPortrait && __instance.isPortraitBox()) || (!Config.ShowWithEvents && Game1.eventUp) || (!Config.ShowMisc && !__instance.isQuestion && !__instance.isPortraitBox()))
                     return;
-                if ((__instance.isPortraitBox() && Config.ShowWithNPCPortrait) || (__instance.isQuestion && Config.ShowWithQuestions))
-                {
-                    __instance.x += 224;
-                    __instance.friendshipJewel.X += 224;
-                }
+                AdjustWindow(ref __instance);
+            }
+        }
+
+        
+        [HarmonyPatch(typeof(DialogueBox), "setUpIcons")]
+        public class DialogueBox_setUpIcons_Patch
+        {
+            public static void Prefix(DialogueBox __instance)
+            {
+                if (!Config.EnableMod || !__instance.transitionInitialized || __instance.transitioning || (!Config.ShowWithQuestions && __instance.isQuestion) || (!Config.ShowWithNPCPortrait && __instance.isPortraitBox()) || (!Config.ShowWithEvents && Game1.eventUp) || (!Config.ShowMisc && !__instance.isQuestion && !__instance.isPortraitBox()))
+                    return;
+                AdjustWindow(ref __instance);
             }
         }
 
@@ -61,7 +76,7 @@ namespace FarmerPortraits
                 if (backgroundTexture != null && Config.UseCustomBackground)
                     b.Draw(backgroundTexture, new Rectangle(xPos - 4, yPos, boxWidth + 12, boxHeight + 4), null, Color.White);
                 else
-                    b.Draw(Game1.mouseCursors, new Vector2(xPos - 8, yPos), new Rectangle?(new Rectangle(583, 411, 115, 97)), Color.White, 0f, Vector2.Zero, 4f, SpriteEffects.None, 0.88f); // background
+                    b.Draw(Game1.mouseCursors, new Vector2(xPos - 4, yPos), new Rectangle?(new Rectangle(583, 411, 115, 97)), Color.White, 0f, Vector2.Zero, 4f, SpriteEffects.None, 0.88f); // background
 
                 int portraitBoxX = xPos + 76;
                 int portraitBoxY = yPos + boxHeight / 2 - 148 - 36;

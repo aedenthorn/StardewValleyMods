@@ -202,7 +202,7 @@ namespace ResourceStorage
                 if (!Config.ModEnabled)
                     return;
                 gameMenu = null;
-                resourceButton = new ClickableTextureComponent("Up", new Rectangle(__instance.xPositionOnScreen + __instance.width + 8, __instance.yPositionOnScreen + 96, 44, 44), "", SHelper.Translation.Get("resources"), Game1.mouseCursors, new Rectangle(116, 442, 22, 22), 2)
+                resourceButton = new ClickableTextureComponent("Up", new Rectangle(__instance.xPositionOnScreen + __instance.width + 8 + Config.IconOffsetX, __instance.yPositionOnScreen + 96 + Config.IconOffsetY, 44, 44), "", SHelper.Translation.Get("resources"), Game1.mouseCursors, new Rectangle(116, 442, 22, 22), 2)
                 {
                     myID = -1,
                     leftNeighborID = 0,

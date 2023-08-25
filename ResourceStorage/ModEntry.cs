@@ -92,6 +92,20 @@ namespace ResourceStorage
                     getValue: () => Config.ModKeyMax,
                     setValue: value => Config.ModKeyMax = value
                 );
+                
+                configMenu.AddNumberOption(
+                    mod: ModManifest,
+                    name: () => SHelper.Translation.Get("GMCM_Option_IconOffsetX_Name"),
+                    getValue: () => Config.IconOffsetX,
+                    setValue: value => Config.IconOffsetX = value
+                );
+                
+                configMenu.AddNumberOption(
+                    mod: ModManifest,
+                    name: () => SHelper.Translation.Get("GMCM_Option_IconOffsetY_Name"),
+                    getValue: () => Config.IconOffsetY,
+                    setValue: value => Config.IconOffsetY = value
+                );
 
             }
         }

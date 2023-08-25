@@ -30,11 +30,20 @@ namespace FarmerPortraits
             SHelper = helper;
 
             helper.Events.GameLoop.GameLaunched += GameLoop_GameLaunched;
+            helper.Events.Input.ButtonPressed += Input_ButtonPressed;
 
             helper.Events.Display.MenuChanged += Display_MenuChanged;
             
             var harmony = new Harmony(ModManifest.UniqueID);
             harmony.PatchAll();
+        }
+
+        private void Input_ButtonPressed(object sender, ButtonPressedEventArgs e)
+        {
+            if(e.Button == SButton.OemCloseBrackets)
+            {
+                Game1.drawDialogueNoTyping(Game1.getCharacterFromName("Lewis"), "Farts are people too.");
+            }
         }
 
         private void Display_MenuChanged(object sender, MenuChangedEventArgs e)

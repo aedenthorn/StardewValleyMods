@@ -2,6 +2,8 @@
   "GMCM_Option_ModEnabled_Name": "Mod Enabled",
   "GMCM_Option_AutoUse_Name": "Allow Consume",
   "GMCM_Option_ModKeyMax_Name": "Take Max Key",
+  "GMCM_Option_IconOffsetX_Name": "Icon Offset X",
+  "GMCM_Option_IconOffsetY_Name": "Icon Offset Y",
   "auto": "Auto Store",
   "take": "Take",
   "added-x": "Added {0} to storage",
