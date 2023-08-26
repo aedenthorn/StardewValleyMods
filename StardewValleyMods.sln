@@ -567,6 +567,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ResourceStorage", "Resource
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BirthdayFriendship", "BirthdayFriendship\BirthdayFriendship.csproj", "{1E922558-78CC-46FE-8DE0-B664BCC53E3C}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CropsSurviveSeasonChange", "CropsSurviveSeasonChange\CropsSurviveSeasonChange.csproj", "{9328A1AC-A2B0-4C7A-B281-5FE1778FD2AB}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -2791,6 +2793,14 @@ Global
 		{1E922558-78CC-46FE-8DE0-B664BCC53E3C}.Release|Any CPU.Build.0 = Release|Any CPU
 		{1E922558-78CC-46FE-8DE0-B664BCC53E3C}.Release|x64.ActiveCfg = Release|x64
 		{1E922558-78CC-46FE-8DE0-B664BCC53E3C}.Release|x64.Build.0 = Release|x64
+		{9328A1AC-A2B0-4C7A-B281-5FE1778FD2AB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9328A1AC-A2B0-4C7A-B281-5FE1778FD2AB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9328A1AC-A2B0-4C7A-B281-5FE1778FD2AB}.Debug|x64.ActiveCfg = Debug|x64
+		{9328A1AC-A2B0-4C7A-B281-5FE1778FD2AB}.Debug|x64.Build.0 = Debug|x64
+		{9328A1AC-A2B0-4C7A-B281-5FE1778FD2AB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9328A1AC-A2B0-4C7A-B281-5FE1778FD2AB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9328A1AC-A2B0-4C7A-B281-5FE1778FD2AB}.Release|x64.ActiveCfg = Release|x64
+		{9328A1AC-A2B0-4C7A-B281-5FE1778FD2AB}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

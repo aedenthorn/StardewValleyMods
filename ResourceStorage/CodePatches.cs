@@ -5,7 +5,6 @@ using StardewValley.Menus;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reflection;
 using System.Reflection.Emit;
 using Object = StardewValley.Object;
 using Rectangle = Microsoft.Xna.Framework.Rectangle;
@@ -178,7 +177,10 @@ namespace ResourceStorage
                 foreach(var s in __state)
                 {
                     if (!Game1.objectInformation.TryGetValue(s.Key, out string data))
+                    {
+                        dict.Add(s.Key, s.Value);
                         continue;
+                    }
                     int amount = s.Value + (int)ModifyResourceLevel(Game1.player, GetIdString(data), -s.Value);
                     if (amount <= 0)
                         continue;
@@ -217,7 +219,7 @@ namespace ResourceStorage
             {
                 if (!Config.ModEnabled || Game1.activeClickableMenu is not GameMenu)
                     return;
-                resourceButton.bounds = new Rectangle(Game1.activeClickableMenu.xPositionOnScreen + Game1.activeClickableMenu.width + 8, Game1.activeClickableMenu.yPositionOnScreen + 96, 44, 44);
+                resourceButton.bounds = new Rectangle(Game1.activeClickableMenu.xPositionOnScreen + Game1.activeClickableMenu.width + 8 + Config.IconOffsetX, Game1.activeClickableMenu.yPositionOnScreen + 96 + Config.IconOffsetY, 44, 44);
                 resourceButton.draw(b);
             }
         }

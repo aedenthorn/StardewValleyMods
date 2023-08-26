@@ -1,16 +1,16 @@
 ﻿{
-  "Name": "Resource Storage",
+  "Name": "Crops Survive Season Change",
   "Author": "aedenthorn",
-  "Version": "0.2.2",
-  "Description": "Resource Storage.",
-  "UniqueID": "aedenthorn.ResourceStorage",
-  "EntryDll": "ResourceStorage.dll",
+  "Version": "0.1.0",
+  "Description": "Crops Survive Season Change.",
+  "UniqueID": "aedenthorn.CropsSurviveSeasonChange",
+  "EntryDll": "CropsSurviveSeasonChange.dll",
   "MinimumApiVersion": "3.15.0",
   "ModUpdater": {
     "Repository": "StardewValleyMods",
     "User": "aedenthorn",
     "Directory": "_releases",
-    "ModFolder": "ResourceStorage"
+    "ModFolder": "CropsSurviveSeasonChange"
   },
   "Dependencies": [
     {
@@ -18,5 +18,5 @@
       "IsRequired": false
     }
   ],
-  "UpdateKeys": [ "Nexus:17951" ]
+  "UpdateKeys": [ "Nexus:18030" ]
 }
