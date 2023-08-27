@@ -129,8 +129,8 @@ namespace HelpWanted
                     if (i < codes.Count - 1 && codes[i].opcode == OpCodes.Ldfld && codes[i + 1].opcode == OpCodes.Ldc_I4_2 && (FieldInfo)codes[i].operand == AccessTools.Field(typeof(Quest), nameof(Quest.daysLeft)))
                     {
                         SMonitor.Log($"replacing days left with method");
-                        codes[i + 1].opcode = OpCodes.Call;
-                        codes[i + 1].operand = AccessTools.Method(typeof(ModEntry), nameof(ModEntry.GetQuestDays));
+                        codes.Insert(i + 2, new CodeInstruction(OpCodes.Call, AccessTools.Method(typeof(ModEntry), nameof(GetQuestDays))));
+                        break;
                     }
                 }
 
@@ -138,9 +138,9 @@ namespace HelpWanted
             }
         }
 
-        public static int GetQuestDays()
+        public static int GetQuestDays(int days)
         {
-            return !Config.ModEnabled ? 2 : Config.QuestDays;
+            return !Config.ModEnabled ? days: Config.QuestDays;
         }
 
         [HarmonyPatch(typeof(Utility), nameof(Utility.getRandomItemFromSeason))]

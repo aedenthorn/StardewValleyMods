@@ -53,6 +53,13 @@ namespace CropsSurviveSeasonChange
 
                 configMenu.AddBoolOption(
                     mod: ModManifest,
+                    name: () => SHelper.Translation.Get("GMCM_Option_IncludeRegrowables_Name"),
+                    getValue: () => Config.IncludeRegrowables,
+                    setValue: value => Config.IncludeRegrowables = value
+                );
+
+                configMenu.AddBoolOption(
+                    mod: ModManifest,
                     name: () => SHelper.Translation.Get("GMCM_Option_IncludeWinter_Name"),
                     getValue: () => Config.IncludeWinter,
                     setValue: value => Config.IncludeWinter = value

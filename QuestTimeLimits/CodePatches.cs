@@ -8,6 +8,8 @@ using StardewValley.Quests;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
+using System.Reflection.Emit;
 using xTile.Dimensions;
 
 namespace QuestTimeLimits
@@ -77,32 +79,29 @@ namespace QuestTimeLimits
                 {
                     if (__instance.questLog[i].dailyQuest.Value)
                     {
-                        NetInt daysLeft = __instance.questLog[i].daysLeft;
-                        int num = daysLeft.Value;
-                        daysLeft.Value = num += 1;
+                        __instance.questLog[i].daysLeft.Value += 1;
                     }
                 }
             }
         }     
          
-        [HarmonyPatch(typeof(Farmer), "farmerInit")]
-        public class Farmer_farmerInit_Patch
+        [HarmonyPatch(typeof(Billboard), nameof(Billboard.receiveLeftClick))]
+        public class Billboard_receiveLeftClick_Patch
         {
-            public static void Postfix(Farmer __instance)
+            public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions)
             {
-                if (!Config.ModEnabled)
-                    return;
-                __instance.questLog.OnElementChanged += QuestLog_OnElementChanged;
-            }
-        }
+                SMonitor.Log($"Transpiling Billboard.receiveLeftClick");
+                var codes = new List<CodeInstruction>(instructions);
+                for (int i = 0; i < codes.Count; i++)
+                {
+                    if (codes[i].opcode == OpCodes.Ldc_I4_2)
+                    {
+                        SMonitor.Log($"adding method for days multiplier");
+                        codes.Insert(i + 1, new CodeInstruction(OpCodes.Call, AccessTools.Method(typeof(ModEntry), nameof(MultiplyQuestDays))));
+                    }
+                }
 
-        private static void QuestLog_OnElementChanged(NetList<Quest, NetRef<Quest>> list, int index, Quest oldValue, Quest newValue)
-        {
-            if (newValue is not null && Config.ModEnabled && Config.DailyQuestMult > 0 && newValue.dailyQuest.Value)
-            {
-                SMonitor.Log($"Multiplying daily quest days left by {Config.DailyQuestMult}");
-
-                newValue.daysLeft.Value = (int)Math.Round(newValue.daysLeft.Value * Config.DailyQuestMult);
+                return codes.AsEnumerable();
             }
         }
     }
