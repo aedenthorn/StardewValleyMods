@@ -28,7 +28,6 @@ namespace ExtraMapLayers
         public static Regex numberRx = new Regex("[0-9]$", RegexOptions.Compiled);
 
         public static PerScreen<int> thisLayerDepth = new PerScreen<int>();
-        private static Dictionary<TileSheet, Texture2D> tileSheetsDict;
 
         /// <summary>The mod entry point, called after the mod is first loaded.</summary>
         /// <param name="helper">Provides simplified APIs for writing mods.</param>
@@ -57,17 +56,24 @@ namespace ExtraMapLayers
             Helper.Events.GameLoop.GameLaunched += GameLoop_GameLaunched;
             Helper.Events.Player.Warped += Player_Warped;
 
-            tileSheetsDict = (Dictionary<TileSheet, Texture2D>)AccessTools.Field(Game1.mapDisplayDevice.GetType(), "m_tileSheetTextures").GetValue(Game1.mapDisplayDevice);
-
         }
 
         private void Player_Warped(object sender, StardewModdingAPI.Events.WarpedEventArgs e)
         {
+            if (Game1.mapDisplayDevice is null)
+                return;
+            var tileSheetsDict = (Dictionary<TileSheet, Texture2D>)AccessTools.Field(Game1.mapDisplayDevice.GetType(), "m_tileSheetTextures")?.GetValue(Game1.mapDisplayDevice);
+            if (tileSheetsDict is null)
+                return;
             foreach (TileSheet tileSheet in e.NewLocation.Map.TileSheets)
             {
                 if (tileSheetsDict is not null && !tileSheetsDict.ContainsKey(tileSheet))
                 {
-                    tileSheetsDict.Add(tileSheet, SHelper.GameContent.Load<Texture2D>(tileSheet.ImageSource));
+                    try
+                    {
+                        tileSheetsDict.Add(tileSheet, SHelper.GameContent.Load<Texture2D>(tileSheet.ImageSource));
+                    }
+                    catch { }
                 }
             }
         }

@@ -1,8 +1,6 @@
 ﻿using HarmonyLib;
-using StardewModdingAPI;
 using StardewValley;
 using StardewValley.Objects;
-using System.Linq;
 
 namespace AllChestsMenu
 {
@@ -15,6 +13,15 @@ namespace AllChestsMenu
             public static void Postfix(Chest __instance, ref int __result)
             {
                 __result = 12 * Config.ChestRows;
+            }
+        }
+
+        [HarmonyPatch(typeof(ShipObjective), nameof(ShipObjective.OnItemShipped))]
+        public class ShipObjective_OnItemShipped_Patch
+        {
+            public static bool Prefix(Item item)
+            {
+                return item is not null;
             }
         }
     }

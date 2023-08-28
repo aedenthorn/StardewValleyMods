@@ -1,8 +1,6 @@
-﻿using HarmonyLib;
-using Microsoft.Xna.Framework;
+﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
-using Netcode;
 using StardewModdingAPI;
 using StardewValley;
 using StardewValley.BellsAndWhistles;
@@ -10,14 +8,9 @@ using StardewValley.Buildings;
 using StardewValley.Locations;
 using StardewValley.Menus;
 using StardewValley.Objects;
-using StardewValley.SDKs;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reflection.Metadata;
-using System.Runtime;
-using static System.Net.Mime.MediaTypeNames;
-using Object = StardewValley.Object;
 
 namespace AllChestsMenu
 {
@@ -209,21 +202,21 @@ namespace AllChestsMenu
                 else
                 {
                     list = new(Game1.locations);
-                }
-                foreach(var l in list.ToArray())
-                {
-                    if(l is BuildableGameLocation)
+                    foreach (var l in list.ToArray())
                     {
-                        foreach(var b in (l as BuildableGameLocation).buildings)
+                        if (l is BuildableGameLocation)
                         {
-                            if(b.indoors.Value is not null)
-                                list.Add(b.indoors.Value);
+                            foreach (var b in (l as BuildableGameLocation).buildings)
+                            {
+                                if (b is not ShippingBin && b.indoors.Value is not null)
+                                    list.Add(b.indoors.Value);
+                            }
                         }
                     }
                 }
                 foreach (var l in list)
                 {
-                    if(l is FarmHouse)
+                    if (l is FarmHouse)
                     {
                         Chest chest = (l as FarmHouse).fridge.Value;
                         RestoreNulls(chest.items);
@@ -447,7 +440,7 @@ namespace AllChestsMenu
             organizeButton.draw(b);
             storeAlikeButton.draw(b);
 
-            b.Draw(Game1.mouseCursors, new Vector2((float)(trashCan.bounds.X + 60), (float)(trashCan.bounds.Y + 40)), new Rectangle?(new Rectangle(564 + Game1.player.trashCanLevel * 18, 129, 18, 10)), Color.White, trashCanLidRotation, new Vector2(16f, 10f), 4f, SpriteEffects.None, 0.86f);
+            b.Draw(Game1.mouseCursors, new Vector2(trashCan.bounds.X + 60, trashCan.bounds.Y + 40), new Rectangle?(new Rectangle(564 + Game1.player.trashCanLevel * 18, 129, 18, 10)), Color.White, trashCanLidRotation, new Vector2(16f, 10f), 4f, SpriteEffects.None, 0.86f);
             Game1.spriteBatch.Draw(Game1.menuTexture, new Rectangle(xPositionOnScreen + 16, -4, 24, 16), new Rectangle(16, 16, 24, 16), Color.White);
             Game1.spriteBatch.Draw(Game1.menuTexture, new Rectangle(xPositionOnScreen + width - 32, -4, 16, 16), new Rectangle(225, 16, 16, 16), Color.White);
             Game1.spriteBatch.Draw(Game1.menuTexture, new Rectangle(xPositionOnScreen + 40, -4, width - 72, 16), new Rectangle(40, 16, 1, 16), Color.White);
@@ -468,7 +461,7 @@ namespace AllChestsMenu
             }
             if (heldItem != null)
             {
-                heldItem.drawInMenu(b, new Vector2((float)(Game1.getOldMouseX() + 8), (float)(Game1.getOldMouseY() + 8)), 1f);
+                heldItem.drawInMenu(b, new Vector2(Game1.getOldMouseX() + 8, Game1.getOldMouseY() + 8), 1f);
             }
             if (heldMenu > -1)
             {
@@ -517,10 +510,10 @@ namespace AllChestsMenu
                 }
                 locationText.Update();
 
-                if (this.trashCan != null && this.trashCan.containsPoint(x, y) && this.heldItem != null && this.heldItem.canBeTrashed())
+                if (trashCan != null && trashCan.containsPoint(x, y) && heldItem != null && heldItem.canBeTrashed())
                 {
-                    Utility.trashItem(this.heldItem);
-                    this.heldItem = null;
+                    Utility.trashItem(heldItem);
+                    heldItem = null;
                     return;
                 }
                 if (organizeButton.containsPoint(x, y))
@@ -689,9 +682,9 @@ namespace AllChestsMenu
                 Utility.trashItem(heldItem);
                 heldItem = null;
             }
-            if (key.Equals(Keys.Delete) && this.heldItem != null && this.heldItem.canBeTrashed())
+            if (key.Equals(Keys.Delete) && heldItem != null && heldItem.canBeTrashed())
             {
-                Utility.trashItem(this.heldItem);
+                Utility.trashItem(heldItem);
             }
             if (key.Equals(Keys.Enter) && renameBox.Selected)
             {
@@ -920,26 +913,26 @@ namespace AllChestsMenu
         public override void emergencyShutDown()
         {
             base.emergencyShutDown();
-            if (this.heldItem != null)
+            if (heldItem != null)
             {
-                Console.WriteLine("Taking " + this.heldItem.Name);
-                this.heldItem = Game1.player.addItemToInventory(this.heldItem);
+                Console.WriteLine("Taking " + heldItem.Name);
+                heldItem = Game1.player.addItemToInventory(heldItem);
             }
-            if (this.heldItem != null)
+            if (heldItem != null)
             {
-                this.DropHeldItem();
+                DropHeldItem();
             }
         }
         public virtual void DropHeldItem()
         {
-            if (this.heldItem == null)
+            if (heldItem == null)
             {
                 return;
             }
             Game1.playSound("throwDownITem");
             int drop_direction = Game1.player.facingDirection;
-            Game1.createItemDebris(this.heldItem, Game1.player.getStandingPosition(), drop_direction, null, -1);
-            this.heldItem = null;
+            Game1.createItemDebris(heldItem, Game1.player.getStandingPosition(), drop_direction, null, -1);
+            heldItem = null;
         }
 
         public void SwapMenus(int idx1, int idx2)

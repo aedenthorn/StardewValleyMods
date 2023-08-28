@@ -1,8 +1,8 @@
 ﻿{
-  "Name": "Hedge Maze",
+  "Name": "Hedge Maze Framework",
   "Author": "aedenthorn",
-  "Version": "0.1.1",
-  "Description": "Hedge Maze.",
+  "Version": "0.1.0",
+  "Description": "Hedge Maze Framework.",
   "UniqueID": "aedenthorn.HedgeMaze",
   "EntryDll": "HedgeMaze.dll",
   "MinimumApiVersion": "3.15.0",
@@ -18,5 +18,5 @@
       "IsRequired": false
     }
   ],
-  "UpdateKeys": [ "Nexus:14138" ]
+  "UpdateKeys": [ "Nexus:" ]
 }
