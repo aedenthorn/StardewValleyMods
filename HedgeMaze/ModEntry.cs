@@ -1,18 +1,9 @@
 ﻿using HarmonyLib;
 using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
-using Newtonsoft.Json;
 using StardewModdingAPI;
 using StardewModdingAPI.Events;
-using StardewModdingAPI.Utilities;
 using StardewValley;
-using StardewValley.Locations;
-using StardewValley.Monsters;
-using StardewValley.TerrainFeatures;
-using System;
 using System.Collections.Generic;
-using System.Globalization;
-using System.IO;
 using System.Linq;
 using xTile;
 
@@ -60,10 +51,14 @@ namespace HedgeMaze
 
             var harmony = new Harmony(ModManifest.UniqueID);
             harmony.PatchAll();
+            //var data = new MazeData();
+            //File.WriteAllText(Path.Combine(SHelper.DirectoryPath, "test.json"), JsonConvert.SerializeObject(data));
         }
 
         private void Content_AssetRequested(object sender, AssetRequestedEventArgs e)
         {
+            if (!Config.ModEnabled || !Game1.IsMasterGame)
+                return;
             if (e.NameWithoutLocale.IsEquivalentTo(dictPath))
             {
                 e.LoadFrom(() => new Dictionary<string, MazeData>(), AssetLoadPriority.Exclusive);
@@ -88,7 +83,7 @@ namespace HedgeMaze
 
         private void Input_ButtonPressed(object sender, ButtonPressedEventArgs e)
         {
-            if(Config.ModEnabled && Context.IsWorldReady && Config.Debug && e.Button == SButton.F5)
+            if(Config.ModEnabled && Context.IsWorldReady && Config.Debug && Game1.IsMasterGame && e.Button == SButton.F5)
             {
                 PopulateMaps();
             }
@@ -96,7 +91,7 @@ namespace HedgeMaze
 
         private void GameLoop_DayStarted(object sender, DayStartedEventArgs e)
         {
-            if (!Config.ModEnabled)
+            if (!Config.ModEnabled || !Game1.IsMasterGame)
                 return;
             SHelper.GameContent.InvalidateCache(dictPath);
             SHelper.Events.GameLoop.UpdateTicked += GameLoop_UpdateTicked_AfterDayStarted;

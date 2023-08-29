@@ -1,7 +1,7 @@
 ﻿{
   "Name": "Crops Survive Season Change",
   "Author": "aedenthorn",
-  "Version": "0.1.1",
+  "Version": "0.1.2",
   "Description": "Crops Survive Season Change.",
   "UniqueID": "aedenthorn.CropsSurviveSeasonChange",
   "EntryDll": "CropsSurviveSeasonChange.dll",

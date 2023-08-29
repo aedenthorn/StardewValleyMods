@@ -4,12 +4,13 @@ namespace CropsSurviveSeasonChange
 {
     public partial class ModEntry
     {
-        private static void CheckKill(Crop crop, GameLocation environment)
+        private static bool CheckKill(bool outdoors, Crop crop, GameLocation environment)
         {
-            if (!Config.ModEnabled || crop.dead.Value || (!Config.IncludeRegrowables && crop.regrowAfterHarvest.Value != -1) || (environment.GetSeasonForLocation() == "winter" && !Config.IncludeWinter))
+            if (!Config.ModEnabled || crop.forageCrop.Value || crop.dead.Value || (!Config.IncludeRegrowables && crop.regrowAfterHarvest.Value != -1) || (environment.GetSeasonForLocation() == "winter" && !Config.IncludeWinter))
             {
-                crop.Kill();
+                return outdoors;
             }
+            return false;
         }
     }
 }

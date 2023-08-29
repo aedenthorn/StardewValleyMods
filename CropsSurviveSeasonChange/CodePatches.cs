@@ -20,11 +20,12 @@ namespace CropsSurviveSeasonChange
                 var codes = new List<CodeInstruction>(instructions);
                 for (int i = 0; i < codes.Count; i++)
                 {
-                    if (codes[i].opcode == OpCodes.Call && codes[i].operand is MethodInfo && (MethodInfo)codes[i].operand == AccessTools.Method(typeof(Crop), nameof(Crop.Kill)))
+                    if (codes[i].opcode == OpCodes.Ldfld && codes[i].operand is FieldInfo && (FieldInfo)codes[i].operand == AccessTools.Field(typeof(GameLocation), nameof(GameLocation.isOutdoors)))
                     {
                         SMonitor.Log($"adding method to prevent killing");
-                        codes[i].operand = AccessTools.Method(typeof(ModEntry), nameof(CheckKill));
-                        codes.Insert(i, new CodeInstruction(OpCodes.Ldarg_S, 5));
+                        codes.Insert(i + 2, new CodeInstruction(OpCodes.Call, AccessTools.Method(typeof(ModEntry), nameof(CheckKill))));
+                        codes.Insert(i + 2, new CodeInstruction(OpCodes.Ldarg_S, 5));
+                        codes.Insert(i + 2, new CodeInstruction(OpCodes.Ldarg_0));
                         break;
                     }
                 }

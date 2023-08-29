@@ -9,6 +9,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection.Emit;
+using System.Reflection.Metadata.Ecma335;
 using xTile.Dimensions;
 using xTile.Tiles;
 using Rectangle = Microsoft.Xna.Framework.Rectangle;
@@ -50,6 +51,8 @@ namespace HedgeMaze
                     var thisTile = farmerMazeTile + t;
                     if (!IsOnMap(thisTile, data.mapSize))
                         continue;
+                    if (t.Y == 1 && !data.tiles[farmerMazeTile.X, farmerMazeTile.Y + 1])
+                        continue;
                     if (front.Tiles.Array[(t.X + tile.X), (t.Y + tile.Y)] is StaticTile && front.Tiles.Array[(t.X + tile.X), (t.Y + tile.Y)].TileIndex == 946)
                     {
                         Point mazeTile = farmerMazeTile + t;
@@ -86,8 +89,12 @@ namespace HedgeMaze
                     return;
                 fairyFrame++;
                 fairyFrame %= 32;
+                var front = __instance.map.GetLayer("Front");
                 foreach (var f in data.fairyTiles)
                 {
+                    var tile = front.PickTile(new Location((int)f.X * 64, (int)f.Y * 64), Game1.viewport.Size);
+                    if (tile?.TileIndex == 946)
+                        continue;
                     b.Draw(Game1.mouseCursors, Game1.GlobalToLocal(Game1.viewport, f * 64), new Rectangle?(new Rectangle(16 + fairyFrame / 8 * 16, 592, 16, 16)), Color.White, 0f, Vector2.Zero, 4f, SpriteEffects.None, 0.9999999f);
                 }
 

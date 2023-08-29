@@ -618,7 +618,7 @@ namespace HedgeMaze
                 Helper.GameContent.InvalidateCache(gl.mapPath.Value);
                 for (int i = gl.characters.Count - 1; i >= 0; i--)
                 {
-                    if (gl.characters[i] is Monster || gl.characters[i].Name.Equals("Dwarf"))
+                    if (IsTileInMaze(gl.characters[i].getTileLocationPoint(), kvp.Value.mapSize, kvp.Value.corner) && (gl.characters[i] is Monster || gl.characters[i].Name.Equals("Dwarf")))
                     {
                         gl.characters.RemoveAt(i);
                     }

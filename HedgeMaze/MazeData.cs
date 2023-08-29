@@ -9,20 +9,21 @@ namespace HedgeMaze
     {
         public Point corner;
         public Point mapSize;
-        public List<Vector2> fairyTiles = new();
-        public List<Point> openTiles = new();
-        public List<Point> endTiles = new();
-        public List<Point> vertTiles = new();
         public string mapPath;
         public EntranceSide entranceSide;
         public int entranceOffset;
 
+        public List<Vector2> fairyTiles = new();
+        public List<Point> openTiles = new();
+        public List<Point> endTiles = new();
+        public List<Point> vertTiles = new();
         public bool[,] tiles;
 
-        public bool HideMaze = true;
+        public bool HideMaze = false;
         public bool HideBorders = false;
-        public bool AddTorches = true;
-        public bool AddDwarf = true;
+        public bool AddTorches = false;
+        public bool AddDwarf = false;
+
         public Dictionary<string, int> ItemListChances = new Dictionary<string, int>
         {
             {"MeleeWeapon", 100},
