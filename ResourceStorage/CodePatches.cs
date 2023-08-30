@@ -1,5 +1,6 @@
 ﻿using HarmonyLib;
 using Microsoft.Xna.Framework.Graphics;
+using Microsoft.Xna.Framework.Input;
 using StardewValley;
 using StardewValley.Menus;
 using System;
@@ -204,12 +205,36 @@ namespace ResourceStorage
                 if (!Config.ModEnabled)
                     return;
                 gameMenu = null;
-                resourceButton = new ClickableTextureComponent("Up", new Rectangle(__instance.xPositionOnScreen + __instance.width + 8 + Config.IconOffsetX, __instance.yPositionOnScreen + 96 + Config.IconOffsetY, 44, 44), "", SHelper.Translation.Get("resources"), Game1.mouseCursors, new Rectangle(116, 442, 22, 22), 2)
+                resourceButton = new ClickableTextureComponent("Up", new Rectangle(__instance.xPositionOnScreen + __instance.width + 8 + Config.IconOffsetX, __instance.yPositionOnScreen + 256 + Config.IconOffsetY, 44, 44), "", SHelper.Translation.Get("resources"), Game1.mouseCursors, new Rectangle(116, 442, 22, 22), 2)
                 {
-                    myID = -1,
-                    leftNeighborID = 0,
-                    downNeighborID = -2,
+                    myID = 42999,
+                    upNeighborID = 106,
+                    downNeighborID = 105,
+                    leftNeighborID = 11
                 };
+            }
+        }
+        [HarmonyPatch(typeof(InventoryPage), new Type[] {typeof(int),typeof(int),typeof(int),typeof(int) })]
+        [HarmonyPatch(MethodType.Constructor)]
+        public class InventoryPage_Patch
+        {
+            public static void Postfix(InventoryPage __instance)
+            {
+                if (!Config.ModEnabled)
+                    return;
+                __instance.organizeButton.downNeighborID = 42999;
+                __instance.trashCan.upNeighborID = 42999;
+            }
+        }
+        [HarmonyPatch(typeof(IClickableMenu), nameof(IClickableMenu.populateClickableComponentList))]
+        public class IClickableMenu_populateClickableComponentList_Patch
+        {
+            public static void Postfix(IClickableMenu __instance)
+            {
+                if (!Config.ModEnabled || __instance is not InventoryPage || resourceButton is null)
+                    return;
+                __instance.allClickableComponents.Add(resourceButton);
+
             }
         }
         [HarmonyPatch(typeof(InventoryPage), nameof(InventoryPage.draw))]
@@ -219,7 +244,7 @@ namespace ResourceStorage
             {
                 if (!Config.ModEnabled || Game1.activeClickableMenu is not GameMenu)
                     return;
-                resourceButton.bounds = new Rectangle(Game1.activeClickableMenu.xPositionOnScreen + Game1.activeClickableMenu.width + 8 + Config.IconOffsetX, Game1.activeClickableMenu.yPositionOnScreen + 96 + Config.IconOffsetY, 44, 44);
+                resourceButton.bounds = new Rectangle(Game1.activeClickableMenu.xPositionOnScreen + Game1.activeClickableMenu.width + 8 + Config.IconOffsetX, Game1.activeClickableMenu.yPositionOnScreen + 256 + Config.IconOffsetY, 44, 44);
                 resourceButton.draw(b);
             }
         }
@@ -233,6 +258,24 @@ namespace ResourceStorage
                 if(resourceButton.containsPoint(x, y))
                 {
                     ___hoverText = resourceButton.hoverText;
+                    return false;
+                }
+                return true;
+            }
+        }
+        [HarmonyPatch(typeof(InventoryPage), nameof(InventoryPage.receiveKeyPress))]
+        public class InventoryPage_receiveKeyPress_Patch
+        {
+            public static bool Prefix(InventoryPage __instance, Keys key, ref string ___hoverText)
+            {
+                if (!Config.ModEnabled || Game1.activeClickableMenu is not GameMenu)
+                    return true;
+                if(key == (Keys)Config.ResourcesKey)
+                {
+                    ___hoverText = "";
+                    Game1.playSound("bigSelect");
+                    gameMenu = Game1.activeClickableMenu as GameMenu;
+                    Game1.activeClickableMenu = new ResourceMenu();
                     return false;
                 }
                 return true;

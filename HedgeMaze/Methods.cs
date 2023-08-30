@@ -30,8 +30,49 @@ namespace HedgeMaze
             new Point(-2, 0)
         };
 
-        private static void ModifyMap(Map map, MazeData data)
+        private void ReloadMazes()
         {
+
+            mazeDataDict = SHelper.GameContent.Load<Dictionary<string, MazeData>>(dictPath);
+            mazeLocationDict.Clear();
+            SMonitor.Log($"Got {mazeDataDict.Count} mazes");
+
+            foreach (var kvp in mazeDataDict.ToArray())
+            {
+                var gameLocation = kvp.Value.gameLocation is null ? kvp.Key : kvp.Value.gameLocation;
+                var gl = Game1.getLocationFromName(gameLocation);
+                if (gl is null)
+                    continue;
+                if (!mazeLocationDict.TryGetValue(gameLocation, out var list)) 
+                {
+                    list = new();
+                    mazeLocationDict[gameLocation] = list;
+                }
+                var inst = new MazeInstance()
+                {
+                    id = kvp.Key
+                };
+                
+                if (kvp.Value.mapSize.X % 2 == 0)
+                {
+                    kvp.Value.mapSize.X--;
+                }
+                if (kvp.Value.mapSize.Y % 2 == 0)
+                {
+                    kvp.Value.mapSize.Y--;
+                }
+                mazeDataDict[kvp.Key] = kvp.Value;
+
+                inst.tiles = MakeMapArray(kvp.Value, inst);
+                inst.mapPath = gl.mapPath.Value;
+                SHelper.GameContent.InvalidateCache(gl.mapPath.Value);
+                list.Add(inst);
+            }
+            PopulateMazes();
+        }
+        private static void ModifyMap(Map map, MazeInstance inst)
+        {
+            MazeData data = mazeDataDict[inst.id];
             ExtendMap(map, data.corner.X + data.mapSize.X, data.corner.Y + data.mapSize.Y);
             var festSheet = new TileSheet("Custom_HedgeMaze_Fest", map, "Maps/Festivals", new Size(512 / 16, 512 / 16), new Size(16, 16));
             var mainSheet = new TileSheet("Custom_HedgeMaze_Main", map, "Maps/spring_outdoorsTileSheet", new Size(400 / 16, 1264 / 16), new Size(16, 16));
@@ -48,10 +89,10 @@ namespace HedgeMaze
                 map.AddLayer(alwaysFront);
             }
 
-            data.openTiles = new();
-            data.endTiles = new();
-            data.vertTiles = new();
-            data.fairyTiles = new();
+            inst.openTiles = new();
+            inst.endTiles = new();
+            inst.vertTiles = new();
+            inst.fairyTiles = new();
             if (data.AddTorches)
             {
                 var torch = new AnimatedTile(alwaysFront, new StaticTile[] {
@@ -100,11 +141,11 @@ namespace HedgeMaze
                         catch { }
                     }
 
-                    bool left = x > 0 && !data.tiles[x - 1, y];
-                    bool right = x < data.mapSize.X - 2 && !data.tiles[x + 1, y];
-                    bool up = y > 0 && !data.tiles[x, y - 1];
-                    bool down = y < data.mapSize.Y - 2 && !data.tiles[x, y + 1];
-                    if (!data.tiles[x, y])
+                    bool left = x > 0 && !inst.tiles[x - 1, y];
+                    bool right = x < data.mapSize.X - 2 && !inst.tiles[x + 1, y];
+                    bool up = y > 0 && !inst.tiles[x, y - 1];
+                    bool down = y < data.mapSize.Y - 2 && !inst.tiles[x, y + 1];
+                    if (!inst.tiles[x, y])
                     {
                         int[] wallTiles = GetWallTiles(left, right, up, down);
                         if (wallTiles[0] > -1)
@@ -137,10 +178,10 @@ namespace HedgeMaze
                         {
                             back.Tiles[tx, ty] = new StaticTile(back, mainSheet, BlendMode.Alpha, 351);
                         }
-                        data.openTiles.Add(new Point(tx, ty));
+                        inst.openTiles.Add(new Point(tx, ty));
                         if (!down && !up)
                         {
-                            data.vertTiles.Add(new Point(tx, ty));
+                            inst.vertTiles.Add(new Point(tx, ty));
                         }
                         else if (
                             (!down && up && left && right)
@@ -149,7 +190,7 @@ namespace HedgeMaze
                             || (down && up && left && !right)
                             )
                         {
-                            data.endTiles.Add(new Point(tx, ty));
+                            inst.endTiles.Add(new Point(tx, ty));
                         }
                     }
                 }
@@ -273,24 +314,28 @@ namespace HedgeMaze
             return wallTiles;
         }
 
-        public static void PopulateMaps()
+        public static void PopulateMazes()
         {
-            foreach (var kvp in mazeLocations)
+            foreach (var kvp in mazeLocationDict)
             {
-                if (advancedLootFrameworkApi != null)
+                foreach(var inst in kvp.Value)
                 {
-                    SMonitor.Log($"loaded AdvancedLootFramework API", LogLevel.Debug);
-                    treasuresList = advancedLootFrameworkApi.LoadPossibleTreasures(kvp.Value.ItemListChances.Where(p => p.Value > 0).ToDictionary(s => s.Key, s => s.Value).Keys.ToArray(), kvp.Value.MinItemValue, kvp.Value.MaxItemValue);
-                    if (treasuresList != null)
-                        SMonitor.Log($"Got {treasuresList.Count} possible treasures");
+                    MazeData data = mazeDataDict[inst.id];
+                    if (advancedLootFrameworkApi != null)
+                    {
+                        SMonitor.Log($"loaded AdvancedLootFramework API", LogLevel.Debug);
+                        treasuresList = advancedLootFrameworkApi.LoadPossibleTreasures(data.ItemListChances.Where(p => p.Value > 0).ToDictionary(s => s.Key, s => s.Value).Keys.ToArray(), data.MinItemValue, data.MaxItemValue);
+                        if (treasuresList != null)
+                            SMonitor.Log($"Got {treasuresList.Count} possible treasures");
+                    }
+                    var gl = Game1.getLocationFromName(kvp.Key);
+                    if (gl is null)
+                        continue;
+                    PopulateMaze(gl, data, inst);
                 }
-                var gl = Game1.getLocationFromName(kvp.Key);
-                if (gl is null)
-                    continue;
-                PopulateMap(gl, kvp.Value);
             }
         }
-        public static void PopulateMap(GameLocation gl, MazeData mazeData)
+        public static void PopulateMaze(GameLocation gl, MazeData mazeData, MazeInstance inst)
         {
             for(int x = mazeData.corner.X; x < mazeData.corner.X + mazeData.mapSize.X; x++)
             {
@@ -323,11 +368,11 @@ namespace HedgeMaze
                     string[] split = data.Split(' ');
                     for (int i = 0; i < forages; i++)
                     {
-                        if (!mazeData.vertTiles.Any())
+                        if (!inst.vertTiles.Any())
                             break;
-                        int idx = Game1.random.Next(mazeData.vertTiles.Count);
-                        Vector2 v = mazeData.vertTiles[idx].ToVector2();
-                        mazeData.vertTiles.RemoveAt(idx);
+                        int idx = Game1.random.Next(inst.vertTiles.Count);
+                        Vector2 v = inst.vertTiles[idx].ToVector2();
+                        inst.vertTiles.RemoveAt(idx);
                         gl.objects.TryGetValue(v, out Object o);
                         int whichObject = Game1.random.Next(split.Length / 2) * 2;
                         gl.dropObject(new Object(v, int.Parse(split[whichObject]), null, false, true, false, true), new Vector2((float)(v.X * 64), (float)(v.Y * 64)), Game1.viewport, true, null);
@@ -344,11 +389,11 @@ namespace HedgeMaze
             {
                 for (int i = 0; i < treasures; i++)
                 {
-                    if (!mazeData.endTiles.Any())
+                    if (!inst.endTiles.Any())
                         break;
-                    int idx = Game1.random.Next(mazeData.endTiles.Count);
-                    Vector2 v = mazeData.endTiles[idx].ToVector2();
-                    mazeData.endTiles.RemoveAt(idx);
+                    int idx = Game1.random.Next(inst.endTiles.Count);
+                    Vector2 v = inst.endTiles[idx].ToVector2();
+                    inst.endTiles.RemoveAt(idx);
                     double fraction = Math.Pow(Game1.random.NextDouble(), 1 / mazeData.RarityChance);
                     int level = (int)Math.Ceiling(fraction * mazeData.Mult);
                     //Monitor.Log($"Adding expanded chest of value {level} to {l.name}");
@@ -365,22 +410,22 @@ namespace HedgeMaze
 
             for (int i = 0; i < fairies; i++)
             {
-                if (!mazeData.endTiles.Any())
+                if (!inst.endTiles.Any())
                     break;
-                int idx = Game1.random.Next(mazeData.endTiles.Count);
-                Vector2 v = mazeData.endTiles[idx].ToVector2() - new Vector2(0, 1);
-                mazeData.endTiles.RemoveAt(idx);
-                mazeData.fairyTiles.Add(v);
+                int idx = Game1.random.Next(inst.endTiles.Count);
+                Vector2 v = inst.endTiles[idx].ToVector2() - new Vector2(0, 1);
+                inst.endTiles.RemoveAt(idx);
+                inst.fairyTiles.Add(v);
                 if (Config.Debug)
                 {
                     SMonitor.Log($"Spawning fairy at {v}");
                 }
             }
-            if (mazeData.endTiles.Any() && mazeData.AddDwarf)
+            if (inst.endTiles.Any() && mazeData.AddDwarf)
             {
-                int idx = Game1.random.Next(mazeData.endTiles.Count);
-                Vector2 v = mazeData.endTiles[idx].ToVector2();
-                mazeData.endTiles.RemoveAt(idx);
+                int idx = Game1.random.Next(inst.endTiles.Count);
+                Vector2 v = inst.endTiles[idx].ToVector2();
+                inst.endTiles.RemoveAt(idx);
                 gl.addCharacter(new NPC(new AnimatedSprite("Characters\\Dwarf", 0, 16, 24), v * 64, "Woods", 2, "Dwarf", false, null, Game1.content.Load<Texture2D>("Portraits\\Dwarf"))
                 {
                     Breather = false
@@ -392,11 +437,11 @@ namespace HedgeMaze
             }
             for (int i = 0; i < slimes; i++)
             {
-                if (!mazeData.openTiles.Any())
+                if (!inst.openTiles.Any())
                     break;
-                int idx = Game1.random.Next(mazeData.openTiles.Count);
-                Vector2 v = mazeData.openTiles[idx].ToVector2() * 64;
-                mazeData.openTiles.RemoveAt(idx);
+                int idx = Game1.random.Next(inst.openTiles.Count);
+                Vector2 v = inst.openTiles[idx].ToVector2() * 64;
+                inst.openTiles.RemoveAt(idx);
                 gl.characters.Add(new GreenSlime(v, Game1.random.Next(mazeData.MineLevelMin, mazeData.MineLevelMax)));
                 if (Config.Debug)
                 {
@@ -405,11 +450,11 @@ namespace HedgeMaze
             }
             for (int i = 0; i < bats; i++)
             {
-                if (!mazeData.openTiles.Any())
+                if (!inst.openTiles.Any())
                     break;
-                int idx = Game1.random.Next(mazeData.openTiles.Count);
-                Vector2 v = mazeData.openTiles[idx].ToVector2() * 64;
-                mazeData.openTiles.RemoveAt(idx);
+                int idx = Game1.random.Next(inst.openTiles.Count);
+                Vector2 v = inst.openTiles[idx].ToVector2() * 64;
+                inst.openTiles.RemoveAt(idx);
                 gl.characters.Add(new Bat(v, Game1.random.Next(mazeData.MineLevelMin, mazeData.MineLevelMax)));
                 if (Config.Debug)
                 {
@@ -418,11 +463,11 @@ namespace HedgeMaze
             }
             for (int i = 0; i < serpents; i++)
             {
-                if (!mazeData.openTiles.Any())
+                if (!inst.openTiles.Any())
                     break;
-                int idx = Game1.random.Next(mazeData.openTiles.Count);
-                Vector2 v = mazeData.openTiles[idx].ToVector2() * 64;
-                mazeData.openTiles.RemoveAt(idx);
+                int idx = Game1.random.Next(inst.openTiles.Count);
+                Vector2 v = inst.openTiles[idx].ToVector2() * 64;
+                inst.openTiles.RemoveAt(idx);
                 gl.characters.Add(new Serpent(v));
                 if (Config.Debug)
                 {
@@ -431,11 +476,11 @@ namespace HedgeMaze
             }
             for (int i = 0; i < brutes; i++)
             {
-                if (!mazeData.openTiles.Any())
+                if (!inst.openTiles.Any())
                     break;
-                int idx = Game1.random.Next(mazeData.openTiles.Count);
-                Vector2 v = mazeData.openTiles[idx].ToVector2() * 64;
-                mazeData.openTiles.RemoveAt(idx);
+                int idx = Game1.random.Next(inst.openTiles.Count);
+                Vector2 v = inst.openTiles[idx].ToVector2() * 64;
+                inst.openTiles.RemoveAt(idx);
                 gl.characters.Add(new ShadowBrute(v));
                 if (Config.Debug)
                 {
@@ -444,11 +489,11 @@ namespace HedgeMaze
             }
             for (int i = 0; i < shamans; i++)
             {
-                if (!mazeData.openTiles.Any())
+                if (!inst.openTiles.Any())
                     break;
-                int idx = Game1.random.Next(mazeData.openTiles.Count);
-                Vector2 v = mazeData.openTiles[idx].ToVector2() * 64;
-                mazeData.openTiles.RemoveAt(idx);
+                int idx = Game1.random.Next(inst.openTiles.Count);
+                Vector2 v = inst.openTiles[idx].ToVector2() * 64;
+                inst.openTiles.RemoveAt(idx);
                 gl.characters.Add(new ShadowShaman(v));
                 if (Config.Debug)
                 {
@@ -458,11 +503,11 @@ namespace HedgeMaze
             }
             for (int i = 0; i < squids; i++)
             {
-                if (!mazeData.openTiles.Any())
+                if (!inst.openTiles.Any())
                     break;
-                int idx = Game1.random.Next(mazeData.openTiles.Count);
-                Vector2 v = mazeData.openTiles[idx].ToVector2() * 64;
-                mazeData.openTiles.RemoveAt(idx);
+                int idx = Game1.random.Next(inst.openTiles.Count);
+                Vector2 v = inst.openTiles[idx].ToVector2() * 64;
+                inst.openTiles.RemoveAt(idx);
                 gl.characters.Add(new SquidKid(v));
                 if (Config.Debug)
                 {
@@ -471,11 +516,11 @@ namespace HedgeMaze
             }
             for (int i = 0; i < skeletons; i++)
             {
-                if (!mazeData.openTiles.Any())
+                if (!inst.openTiles.Any())
                     break;
-                int idx = Game1.random.Next(mazeData.openTiles.Count);
-                Vector2 v = mazeData.openTiles[idx].ToVector2() * 64;
-                mazeData.openTiles.RemoveAt(idx);
+                int idx = Game1.random.Next(inst.openTiles.Count);
+                Vector2 v = inst.openTiles[idx].ToVector2() * 64;
+                inst.openTiles.RemoveAt(idx);
                 gl.characters.Add(new Skeleton(v));
                 if (Config.Debug)
                 {
@@ -485,11 +530,11 @@ namespace HedgeMaze
             }
             for (int i = 0; i < dusts; i++)
             {
-                if (!mazeData.openTiles.Any())
+                if (!inst.openTiles.Any())
                     break;
-                int idx = Game1.random.Next(mazeData.openTiles.Count);
-                Vector2 v = mazeData.openTiles[idx].ToVector2() * 64;
-                mazeData.openTiles.RemoveAt(idx);
+                int idx = Game1.random.Next(inst.openTiles.Count);
+                Vector2 v = inst.openTiles[idx].ToVector2() * 64;
+                inst.openTiles.RemoveAt(idx);
                 gl.characters.Add(new DustSpirit(v));
 
                 if (Config.Debug)
@@ -504,33 +549,68 @@ namespace HedgeMaze
             return color;
         }
 
-        public static bool[,] MakeMapArray(MazeData data)
+        public static bool[,] MakeMapArray(MazeData data, MazeInstance inst)
         {
             var mapSize = data.mapSize;
-            Point entrance = new Point(data.entranceOffset, 0);
-            Point start = entrance;
-            switch (data.entranceSide)
-            {
-                case EntranceSide.Left:
-                    entrance = new Point(0, data.entranceOffset);
-                    start += new Point(1, 0);
-                    break;
-                case EntranceSide.Bottom:
-                    entrance = new Point(data.entranceOffset, data.mapSize.Y - 1);
-                    start += new Point(0, -1);
-                    break;
-                case EntranceSide.Right:
-                    entrance = new Point(data.mapSize.X - 1, data.entranceOffset);
-                    start += new Point(-1, 0);
-                    break;
-                default:
-                    start += new Point(0, 1);
-                    break;
-            }
             bool[,] map = new bool[mapSize.X, mapSize.Y];
-            map[entrance.X, entrance.Y] = true; // knock down entrance
-
+            Point start = new Point(1,1);
             List<Point> checkedTiles = new();
+            if (data.entranceOffset > -1)
+            {
+                Point entrance = new Point(data.entranceOffset, 0);
+                start = entrance;
+                switch (data.entranceSide)
+                {
+                    case EntranceSide.Left:
+                        entrance = new Point(0, data.entranceOffset);
+                        start += new Point(1, 0);
+                        break;
+                    case EntranceSide.Bottom:
+                        entrance = new Point(data.entranceOffset, data.mapSize.Y - 1);
+                        start += new Point(0, -1);
+                        break;
+                    case EntranceSide.Right:
+                        entrance = new Point(data.mapSize.X - 1, data.entranceOffset);
+                        start += new Point(-1, 0);
+                        break;
+                    default:
+                        start += new Point(0, 1);
+                        break;
+                }
+                map[entrance.X, entrance.Y] = true; // knock down entrance
+            }
+            else
+            {
+                foreach(var i in data.topEntranceOffsets)
+                {
+                    map[i, 0] = true; // knock down entrance
+                    map[i, 1] = true; // knock down tile inside
+                    start = new Point(i, 1);
+                    checkedTiles.Add(start);
+                }
+                foreach(var i in data.rightEntranceOffsets)
+                {
+                    map[data.mapSize.X - 1, i] = true; // knock down entrance
+                    map[data.mapSize.X - 2, i] = true; // knock down tile inside
+                    start = new Point(data.mapSize.X - 2, i);
+                    checkedTiles.Add(start);
+                }
+                foreach (var i in data.leftEntranceOffsets)
+                {
+                    map[0, i] = true; // knock down entrance
+                    map[1, i] = true; // knock down tile inside
+                    start = new Point(1, i);
+                    checkedTiles.Add(start);
+                }
+                foreach (var i in data.bottomEntranceOffsets)
+                {
+                    map[i, data.mapSize.Y - 1] = true; // knock down entrance
+                    map[i, data.mapSize.Y - 2] = true; // knock down tile inside
+                    start = new Point(i, data.mapSize.Y - 2);
+                    checkedTiles.Add(start);
+                }
+            }
+
             List<Point> checkingTiles = new();
             CheckTile(ref map, checkedTiles, checkingTiles, start, mapSize); // start at tile below entrance
             if (Config.Debug)
@@ -579,7 +659,7 @@ namespace HedgeMaze
             }
         }
 
-        private static bool IsOnMap(Point n, Point mapSize)
+        private static bool IsTileOnMaze(Point n, Point mapSize)
         {
             return n.X >= 0 && n.X < mapSize.X && n.Y >= 0 && n.Y < mapSize.Y;
         }
@@ -608,7 +688,7 @@ namespace HedgeMaze
 
         private void DepopulateMaps()
         {
-            foreach (var kvp in mazeLocations)
+            foreach (var kvp in mazeLocationDict)
             {
                 var gl = Game1.getLocationFromName(kvp.Key);
                 if (gl is null)
@@ -616,19 +696,24 @@ namespace HedgeMaze
                     continue;
                 }
                 Helper.GameContent.InvalidateCache(gl.mapPath.Value);
-                for (int i = gl.characters.Count - 1; i >= 0; i--)
+                foreach (var inst in kvp.Value)
                 {
-                    if (IsTileInMaze(gl.characters[i].getTileLocationPoint(), kvp.Value.mapSize, kvp.Value.corner) && (gl.characters[i] is Monster || gl.characters[i].Name.Equals("Dwarf")))
+                    MazeData data = mazeDataDict[inst.id];
+                    for (int i = gl.characters.Count - 1; i >= 0; i--)
                     {
-                        gl.characters.RemoveAt(i);
+                        if (IsTileInMaze(gl.characters[i].getTileLocationPoint(), data.mapSize, data.corner) && (gl.characters[i] is Monster || gl.characters[i].Name.Equals("Dwarf")))
+                        {
+                            gl.characters.RemoveAt(i);
+                        }
+                    }
+                    foreach (var kvp2 in gl.objects.Pairs.ToArray())
+                    {
+                        if (IsTileInMaze(Utility.Vector2ToPoint(kvp2.Key), data.mapSize, data.corner))
+                            gl.objects.Remove(kvp2.Key);
                     }
                 }
-                foreach (var kvp2 in gl.objects.Pairs.ToArray())
-                {
-                    if (IsTileInMaze(Utility.Vector2ToPoint(kvp2.Key), kvp.Value.mapSize, kvp.Value.corner))
-                        gl.objects.Remove(kvp2.Key);
-                }
             }
+            mazeLocationDict.Clear();
         }
         private static void ExtendMap(Map map, int x, int y)
         {

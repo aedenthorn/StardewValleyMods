@@ -43,6 +43,7 @@ namespace ResourceStorage
             harmony.PatchAll();
         }
 
+
         public void GameLoop_Saving(object sender, StardewModdingAPI.Events.SavingEventArgs e)
         {
             foreach (var f in Game1.getAllFarmers())
@@ -84,6 +85,13 @@ namespace ResourceStorage
                     name: () => SHelper.Translation.Get("GMCM_Option_AutoUse_Name"),
                     getValue: () => Config.AutoUse,
                     setValue: value => Config.AutoUse = value
+                );
+                
+                configMenu.AddKeybind(
+                    mod: ModManifest,
+                    name: () => SHelper.Translation.Get("GMCM_Option_ResourcesKey_Name"),
+                    getValue: () => Config.ResourcesKey,
+                    setValue: value => Config.ResourcesKey = value
                 );
                 
                 configMenu.AddKeybind(

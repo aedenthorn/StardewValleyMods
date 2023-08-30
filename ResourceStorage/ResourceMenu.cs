@@ -295,7 +295,7 @@ namespace ResourceStorage
 
         public override void receiveKeyPress(Keys key)
         {
-            if(Game1.options.doesInputListContain(Game1.options.menuButton, key) && readyToClose())
+            if((Game1.options.doesInputListContain(Game1.options.menuButton, key) || key == (Keys)ModEntry.Config.ResourcesKey) && readyToClose())
             {
                 exitThisMenu();
                 Game1.activeClickableMenu = ModEntry.gameMenu;

@@ -7,17 +7,16 @@ namespace HedgeMaze
 {
     public class MazeData
     {
+        public string gameLocation;
         public Point corner;
         public Point mapSize;
-        public string mapPath;
         public EntranceSide entranceSide;
-        public int entranceOffset;
+        public int entranceOffset = -1;
 
-        public List<Vector2> fairyTiles = new();
-        public List<Point> openTiles = new();
-        public List<Point> endTiles = new();
-        public List<Point> vertTiles = new();
-        public bool[,] tiles;
+        public int[] topEntranceOffsets;
+        public int[] rightEntranceOffsets;
+        public int[] leftEntranceOffsets;
+        public int[] bottomEntranceOffsets;
 
         public bool HideMaze = false;
         public bool HideBorders = false;
@@ -73,6 +72,17 @@ namespace HedgeMaze
         public int SkeletonMax;
         public int DustSpriteMin;
         public int DustSpriteMax;
+    }
+
+    public class MazeInstance
+    {
+        public string id;
+        public string mapPath;
+        public List<Vector2> fairyTiles = new();
+        public List<Point> openTiles = new();
+        public List<Point> endTiles = new();
+        public List<Point> vertTiles = new();
+        public bool[,] tiles;
     }
 
     public enum EntranceSide

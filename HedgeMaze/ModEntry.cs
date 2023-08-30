@@ -3,6 +3,7 @@ using Microsoft.Xna.Framework;
 using StardewModdingAPI;
 using StardewModdingAPI.Events;
 using StardewValley;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using xTile;
@@ -30,7 +31,8 @@ namespace HedgeMaze
         };
 
         public static string dictPath = "aedenthorn.HedgeMaze/dictionary";
-        public static Dictionary<string, MazeData> mazeLocations = new();
+        public static Dictionary<string, List<MazeInstance>> mazeLocationDict = new();
+        public static Dictionary<string, MazeData> mazeDataDict = new();
 
         /// <summary>The mod entry point, called after the mod is first loaded.</summary>
         /// <param name="helper">Provides simplified APIs for writing mods.</param>
@@ -66,16 +68,19 @@ namespace HedgeMaze
             }
             if (e.DataType == typeof(Map))
             {
-                foreach(var kvp in mazeLocations)
+                foreach(var kvp in mazeLocationDict)
                 {
-                    if(e.NameWithoutLocale.IsEquivalentTo(kvp.Value.mapPath))
+                    foreach(var inst in kvp.Value)
                     {
-                        e.Edit(delegate (IAssetData data)
+                        if (e.NameWithoutLocale.IsEquivalentTo(inst.mapPath))
                         {
-                            SMonitor.Log($"adding maze to map {e.NameWithoutLocale}");
-                            ModifyMap(data.AsMap().Data, kvp.Value);
-                        });
-                        return;
+                            e.Edit(delegate (IAssetData data)
+                            {
+                                SMonitor.Log($"adding maze to map {e.NameWithoutLocale}");
+                                ModifyMap(data.AsMap().Data, inst);
+                            });
+                            return;
+                        }
                     }
                 }
             }
@@ -85,7 +90,7 @@ namespace HedgeMaze
         {
             if(Config.ModEnabled && Context.IsWorldReady && Config.Debug && Game1.IsMasterGame && e.Button == SButton.F5)
             {
-                PopulateMaps();
+                PopulateMazes();
             }
         }
 
@@ -99,29 +104,7 @@ namespace HedgeMaze
 
         private void GameLoop_UpdateTicked_AfterDayStarted(object sender, UpdateTickedEventArgs e)
         {
-            mazeLocations = SHelper.GameContent.Load<Dictionary<string, MazeData>>(dictPath);
-            SMonitor.Log($"Got {mazeLocations.Count} mazes");
-
-            foreach (var kvp in mazeLocations.ToArray())
-            {
-                if(kvp.Value.mapSize.X % 2 == 0)
-                {
-                    kvp.Value.mapSize.X--;
-                }
-                if(kvp.Value.mapSize.Y % 2 == 0)
-                {
-                    kvp.Value.mapSize.Y--;
-                }
-                kvp.Value.tiles = MakeMapArray(kvp.Value);
-                mazeLocations[kvp.Key] = kvp.Value;
-                var gl = Game1.getLocationFromName(kvp.Key);
-                if (gl != null)
-                {
-                    mazeLocations[kvp.Key].mapPath = gl.mapPath.Value;
-                    SHelper.GameContent.InvalidateCache(gl.mapPath.Value);
-                }
-            }
-            PopulateMaps();
+            ReloadMazes();
             SHelper.Events.GameLoop.UpdateTicked -= GameLoop_UpdateTicked_AfterDayStarted;
         }
 
