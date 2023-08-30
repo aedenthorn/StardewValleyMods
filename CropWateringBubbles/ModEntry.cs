@@ -84,7 +84,7 @@ namespace CropWateringBubbles
 
         private void Input_ButtonsChanged(object sender, ButtonsChangedEventArgs e)
         {
-            if (Config.ModEnabled && Context.CanPlayerMove && !isEmoting && Config.RequireKeyPress && Config.PressKeys.JustPressed())
+            if (Config.ModEnabled && Context.CanPlayerMove && !isEmoting && Config.RequireKeyPress && Config.PressKeys.JustPressed() && (!Config.OnlyWhenWatering || Game1.player.CurrentTool is WateringCan))
             {
                 isEmoting = true;
                 Game1.playSound("dwoop");
