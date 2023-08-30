@@ -42,7 +42,7 @@ namespace ContentPatcherEditor
 
         private void Input_ButtonPressed(object sender, StardewModdingAPI.Events.ButtonPressedEventArgs e)
         {
-            if(Config.ModEnabled && Config.ShowButton && e.Button == SButton.MouseLeft && Game1.activeClickableMenu is TitleMenu && TitleMenu.subMenu is not ContentPatcherMenu && TitleMenu.subMenu is not ContentPackMenu)
+            if(Config.ModEnabled && Config.ShowButton && e.Button == SButton.MouseLeft && Game1.activeClickableMenu is TitleMenu && TitleMenu.subMenu is null)
             {
                 var rect = new Rectangle(42, Game1.viewport.Height - 192, 64, 64);
                 if (rect.Contains(Game1.getMousePosition()))
@@ -57,7 +57,7 @@ namespace ContentPatcherEditor
 
         private void Display_RenderedActiveMenu(object sender, StardewModdingAPI.Events.RenderedActiveMenuEventArgs e)
         {
-            if (Config.ModEnabled && Config.ShowButton && Game1.activeClickableMenu is TitleMenu && TitleMenu.subMenu is not ContentPatcherMenu && TitleMenu.subMenu is not ContentPackMenu)
+            if (Config.ModEnabled && Config.ShowButton && Game1.activeClickableMenu is TitleMenu && TitleMenu.subMenu is null)
             {
                 var rect = new Rectangle(42, Game1.viewport.Height - 192, 64, 64);
                 e.SpriteBatch.Draw(Game1.mouseCursors, rect, new Rectangle(330, 373, 16, 16), rect.Contains(Game1.getMousePosition()) ? Color.White : Color.White * 0.5f);
