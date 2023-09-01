@@ -569,6 +569,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BirthdayFriendship", "Birth
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CropsSurviveSeasonChange", "CropsSurviveSeasonChange\CropsSurviveSeasonChange.csproj", "{9328A1AC-A2B0-4C7A-B281-5FE1778FD2AB}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CropMarkers", "CropMarkers\CropMarkers.csproj", "{B84DE1BA-4973-4405-91D9-B3C295C2ADFD}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -2801,6 +2803,14 @@ Global
 		{9328A1AC-A2B0-4C7A-B281-5FE1778FD2AB}.Release|Any CPU.Build.0 = Release|Any CPU
 		{9328A1AC-A2B0-4C7A-B281-5FE1778FD2AB}.Release|x64.ActiveCfg = Release|x64
 		{9328A1AC-A2B0-4C7A-B281-5FE1778FD2AB}.Release|x64.Build.0 = Release|x64
+		{B84DE1BA-4973-4405-91D9-B3C295C2ADFD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B84DE1BA-4973-4405-91D9-B3C295C2ADFD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B84DE1BA-4973-4405-91D9-B3C295C2ADFD}.Debug|x64.ActiveCfg = Debug|x64
+		{B84DE1BA-4973-4405-91D9-B3C295C2ADFD}.Debug|x64.Build.0 = Debug|x64
+		{B84DE1BA-4973-4405-91D9-B3C295C2ADFD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B84DE1BA-4973-4405-91D9-B3C295C2ADFD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B84DE1BA-4973-4405-91D9-B3C295C2ADFD}.Release|x64.ActiveCfg = Release|x64
+		{B84DE1BA-4973-4405-91D9-B3C295C2ADFD}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

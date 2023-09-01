@@ -4,6 +4,7 @@ using StardewModdingAPI;
 using StardewModdingAPI.Utilities;
 using StardewValley;
 using StardewValley.Menus;
+using System;
 using System.Collections.Generic;
 
 namespace ResourceStorage
@@ -22,6 +23,7 @@ namespace ResourceStorage
 
         public static GameMenu gameMenu;
         public static ClickableTextureComponent resourceButton;
+        private Harmony harmony;
 
 
         /// <summary>The mod entry point, called after the mod is first loaded.</summary>
@@ -39,11 +41,9 @@ namespace ResourceStorage
             Helper.Events.GameLoop.SaveLoaded += GameLoop_SaveLoaded;
             Helper.Events.GameLoop.Saving += GameLoop_Saving;
 
-            var harmony = new Harmony(ModManifest.UniqueID);
+            harmony = new Harmony(ModManifest.UniqueID);
             harmony.PatchAll();
         }
-
-
         public void GameLoop_Saving(object sender, StardewModdingAPI.Events.SavingEventArgs e)
         {
             foreach (var f in Game1.getAllFarmers())
@@ -62,6 +62,38 @@ namespace ResourceStorage
 
         public void GameLoop_GameLaunched(object sender, StardewModdingAPI.Events.GameLaunchedEventArgs e)
         {
+            var bcapi = Helper.ModRegistry.GetApi("leclair.bettercrafting");
+            if (bcapi is not null)
+            {
+                var type = bcapi.GetType().Assembly.GetType("Leclair.Stardew.Common.InventoryHelper");
+                if (type is not null)
+                {
+                    try
+                    {
+                        foreach(var m in type.GetMethods())
+                        {
+                            if(m.Name == "CountItem" && m.GetParameters().Length > 1 && m.GetParameters()[1].ParameterType == typeof(Farmer))
+                            {
+                                harmony.Patch(
+                                    original: m,
+                                    postfix: new HarmonyMethod(typeof(ModEntry), nameof(Leclair_Stardew_Common_InventoryHelper_CountItem_Postfix))
+                                );
+                            }
+                            else if (m.Name == "ConsumeItem")
+                            {
+                                harmony.Patch(
+                                    original: m,
+                                    prefix: new HarmonyMethod(typeof(ModEntry), nameof(Leclair_Stardew_Common_InventoryHelper_ConsumeItem_Prefix))
+                                );
+                            }
+                        }
+                    }
+                    catch(Exception ex)
+                    {
+                        Monitor.Log($"Error: {ex}", LogLevel.Error);
+                    }
+                }
+            }
             // get Generic Mod Config Menu's API (if it's installed)
             var configMenu = Helper.ModRegistry.GetApi<IGenericModConfigMenuApi>("spacechase0.GenericModConfigMenu");
             if (configMenu is not null)

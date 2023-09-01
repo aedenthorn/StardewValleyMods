@@ -127,6 +127,18 @@ namespace ResourceStorage
                 return amount > 0;
             }
         }
+        [HarmonyPatch(typeof(Object), nameof(Object.ConsumeInventoryItem), new Type[] { typeof(Farmer), typeof(int), typeof(int) })]
+        public class Object_ConsumeInventoryItem_Patch_2
+        {
+            public static bool Prefix(Farmer who, int parent_sheet_index, ref int amount)
+            {
+                if (!Config.ModEnabled || !Config.AutoUse || !Game1.objectInformation.TryGetValue(parent_sheet_index, out string data))
+                    return true;
+
+                amount += (int)ModifyResourceLevel(who, GetIdString(data), -amount);
+                return amount > 0;
+            }
+        }
         [HarmonyPatch(typeof(CraftingRecipe), nameof(CraftingRecipe.ConsumeAdditionalIngredients))]
         public class CraftingRecipe_ConsumeAdditionalIngredients_Patch
         {
@@ -310,6 +322,44 @@ namespace ResourceStorage
                     return false;
                 }
                 return true;
+            }
+        }
+
+        public static void Leclair_Stardew_Common_InventoryHelper_CountItem_Postfix(Farmer who, Func<Item, bool> matcher, ref int __result)
+        {
+            if (!Config.ModEnabled)
+                return;
+            var resDict = GetFarmerResources(who);
+            foreach(var res in resDict)
+            {
+                int idx = GetIndex(res.Key);
+                if (idx == -1)
+                    continue;
+                Object obj = new Object(idx, (int)res.Value);
+                if (matcher(obj))
+                {
+                    __result = (int.MaxValue - (int)res.Value < __result) ? int.MaxValue : (int)res.Value + __result;
+                    return;
+                }
+            }
+        }
+        public static void Leclair_Stardew_Common_InventoryHelper_ConsumeItem_Prefix(Func<Item, bool> matcher, IList<Item> items, int amount)
+        {
+            if (!Config.ModEnabled || items != Game1.player.Items)
+                return;
+
+            var resDict = GetFarmerResources(Game1.player);
+            foreach(var res in resDict)
+            {
+                int idx = GetIndex(res.Key);
+                if (idx == -1)
+                    continue;
+                Object obj = new Object(idx, (int)res.Value);
+                if (matcher(obj))
+                {
+                    amount += (int)ModifyResourceLevel(Game1.player, res.Key, -amount);
+                    return;
+                }
             }
         }
     }

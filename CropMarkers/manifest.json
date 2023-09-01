@@ -1,0 +1,16 @@
+﻿{
+  "Name": "Crop Markers",
+  "Author": "aedenthorn",
+  "Version": "0.2.0",
+  "Description": "Crop Markers.",
+  "UniqueID": "aedenthorn.CropMarkers",
+  "EntryDll": "CropMarkers.dll",
+  "MinimumApiVersion": "3.15.0",
+  "ModUpdater": {
+    "Repository": "StardewValleyMods",
+    "User": "aedenthorn",
+    "Directory": "_releases",
+    "ModFolder": "CropMarkers"
+  },
+  "UpdateKeys": [ "Nexus:18120" ]
+}

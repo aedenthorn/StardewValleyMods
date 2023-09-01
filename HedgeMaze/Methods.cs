@@ -36,7 +36,7 @@ namespace HedgeMaze
             mazeDataDict = SHelper.GameContent.Load<Dictionary<string, MazeData>>(dictPath);
             mazeLocationDict.Clear();
             SMonitor.Log($"Got {mazeDataDict.Count} mazes");
-
+            List<string> maps = new();
             foreach (var kvp in mazeDataDict.ToArray())
             {
                 var gameLocation = kvp.Value.gameLocation is null ? kvp.Key : kvp.Value.gameLocation;
@@ -65,8 +65,12 @@ namespace HedgeMaze
 
                 inst.tiles = MakeMapArray(kvp.Value, inst);
                 inst.mapPath = gl.mapPath.Value;
-                SHelper.GameContent.InvalidateCache(gl.mapPath.Value);
+                maps.Add(inst.mapPath);
                 list.Add(inst);
+            }
+            foreach(var map in maps)
+            {
+                SHelper.GameContent.InvalidateCache(map);
             }
             PopulateMazes();
         }
@@ -555,64 +559,53 @@ namespace HedgeMaze
             bool[,] map = new bool[mapSize.X, mapSize.Y];
             Point start = new Point(1,1);
             List<Point> checkedTiles = new();
+            List<Point> checkingTiles = new();
+            CheckTile(ref map, checkedTiles, checkingTiles, start, mapSize); // start at tile below entrance
             if (data.entranceOffset > -1)
             {
-                Point entrance = new Point(data.entranceOffset, 0);
-                start = entrance;
                 switch (data.entranceSide)
                 {
                     case EntranceSide.Left:
-                        entrance = new Point(0, data.entranceOffset);
-                        start += new Point(1, 0);
+                        map[0, data.entranceOffset] = true;
+                        map[0, data.entranceOffset + 1] = true;
                         break;
                     case EntranceSide.Bottom:
-                        entrance = new Point(data.entranceOffset, data.mapSize.Y - 1);
-                        start += new Point(0, -1);
+                        map[data.entranceOffset, data.mapSize.Y - 1] = true;
+                        map[data.entranceOffset, data.mapSize.Y - 2] = true;
                         break;
                     case EntranceSide.Right:
-                        entrance = new Point(data.mapSize.X - 1, data.entranceOffset);
-                        start += new Point(-1, 0);
+                        map[data.mapSize.X - 1, data.entranceOffset] = true;
+                        map[data.mapSize.X - 2, data.entranceOffset] = true;
                         break;
                     default:
-                        start += new Point(0, 1);
+                        map[data.entranceOffset, 0] = true;
+                        map[data.entranceOffset, 1] = true;
                         break;
                 }
-                map[entrance.X, entrance.Y] = true; // knock down entrance
             }
             else
             {
-                foreach(var i in data.topEntranceOffsets)
+                foreach (var i in data.topEntranceOffsets)
                 {
                     map[i, 0] = true; // knock down entrance
                     map[i, 1] = true; // knock down tile inside
-                    start = new Point(i, 1);
-                    checkedTiles.Add(start);
                 }
-                foreach(var i in data.rightEntranceOffsets)
+                foreach (var i in data.rightEntranceOffsets)
                 {
                     map[data.mapSize.X - 1, i] = true; // knock down entrance
                     map[data.mapSize.X - 2, i] = true; // knock down tile inside
-                    start = new Point(data.mapSize.X - 2, i);
-                    checkedTiles.Add(start);
                 }
                 foreach (var i in data.leftEntranceOffsets)
                 {
                     map[0, i] = true; // knock down entrance
                     map[1, i] = true; // knock down tile inside
-                    start = new Point(1, i);
-                    checkedTiles.Add(start);
                 }
                 foreach (var i in data.bottomEntranceOffsets)
                 {
                     map[i, data.mapSize.Y - 1] = true; // knock down entrance
                     map[i, data.mapSize.Y - 2] = true; // knock down tile inside
-                    start = new Point(i, data.mapSize.Y - 2);
-                    checkedTiles.Add(start);
                 }
             }
-
-            List<Point> checkingTiles = new();
-            CheckTile(ref map, checkedTiles, checkingTiles, start, mapSize); // start at tile below entrance
             if (Config.Debug)
             {
                 List<string> output = new List<string>();

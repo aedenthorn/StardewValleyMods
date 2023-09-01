@@ -60,7 +60,7 @@ namespace SDVExplorer.UI
 				}
 				if(obj is bool)
                 {
-					ModEntry.SMonitor.Log($"SeTting {label} for {AccessTools.Field(lastObject.GetType(), objName)} to {(bool)obj}");
+					ModEntry.SMonitor.Log($"Setting {label} for {AccessTools.Field(lastObject.GetType(), objName)} to {(bool)obj}");
 					AccessTools.Field(lastObject.GetType(), objName).SetValue(lastObject, isChecked);
                 }
 				selected = null;
