@@ -185,7 +185,7 @@ namespace BuffFramework
                         else if (p.Value is JObject)
                         {
                             var j = (JObject)p.Value;
-                            buff.glow = new Color((byte)(long)j["R"], (byte)(long)j["G"], (byte)(long)j["B"]);
+                            buff.glow = new Color((byte)(long)j["R"], (byte)(long)j["G"], (byte)(long)j["B"], j.TryGetValue("A", out var a) ? (byte)(long)a : 255);
                         }
                         break;
                     case "description":

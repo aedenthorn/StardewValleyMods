@@ -6,6 +6,8 @@ using StardewValley;
 using StardewValley.Menus;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.Tracing;
+using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Reflection.Emit;
@@ -214,16 +216,29 @@ namespace BuffFramework
                 
                 foreach (var kvp in farmerBuffs.Value)
                 {
-                    object texturePath = null;
-                    object description = null;
                     if (kvp.Value.which == __instance.which)
                     {
+                        object texturePath = null;
+                        object description = null;
                         var hasTex = buffDict[kvp.Key].TryGetValue("texturePath", out texturePath);
                         var hasDesc = buffDict[kvp.Key].TryGetValue("description", out description);
                         if (hasTex || hasDesc)
                         {
-                            var tex = texturePath is not null ? SHelper.GameContent.Load<Texture2D>((string)texturePath) : (__result.Any() ? __result[0].texture : null);
-                            var cc = new ClickableTextureComponent("", Rectangle.Empty, null, description is not null ? (string)description : (__result.Any() ? __result[0].hoverText : null), tex, texturePath is not null ? new Rectangle(0, 0, tex.Width, tex.Height) : (__result.Any() ? __result[0].sourceRect : new Rectangle()), 4f, false);
+                            Texture2D tex = (__result.Any() ? __result[0].texture : null);
+                            Rectangle sourceRect = __instance.sheetIndex > -1 && __result.Any() ? __result[0].sourceRect : new Rectangle();
+                            float scale = 4;
+                            if (texturePath is not null)
+                            {
+                                tex = SHelper.GameContent.Load<Texture2D>((string)texturePath);
+                                var sourceX = buffDict[kvp.Key].TryGetValue("textureX", out var x) ? GetInt(x) : 0;
+                                var sourceY = buffDict[kvp.Key].TryGetValue("textureY", out var y) ? GetInt(y) : 0;
+                                var sourceW = buffDict[kvp.Key].TryGetValue("textureWidth", out var w) ? GetInt(w) : tex.Width;
+                                var sourceH = buffDict[kvp.Key].TryGetValue("textureHeight", out var h) ? GetInt(h) : tex.Height;
+                                sourceRect = new Rectangle(sourceX, sourceY, sourceW, sourceH);
+                                if(buffDict[kvp.Key].TryGetValue("textureScale", out var s))
+                                    scale = GetFloat(s);
+                            }
+                            var cc = new ClickableTextureComponent("", Rectangle.Empty, null, description is not null ? (string)description + "\n" + Game1.content.LoadString("Strings\\StringsFromCSFiles:Buff.cs.508") + __instance.displaySource : (__result.Any() ? __result[0].hoverText : null), tex, sourceRect, scale, false);
 
                             if (buffDict[kvp.Key].TryGetValue("separate", out var separate) && (bool)separate)
                             {

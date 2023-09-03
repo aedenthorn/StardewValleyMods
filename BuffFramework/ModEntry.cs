@@ -1,10 +1,14 @@
 ﻿using Force.DeepCloner;
 using HarmonyLib;
+using Microsoft.Xna.Framework;
+using Newtonsoft.Json;
 using StardewModdingAPI;
 using StardewModdingAPI.Utilities;
 using StardewValley;
 using System;
 using System.Collections.Generic;
+using System.IO;
+using System.Linq;
 
 namespace BuffFramework
 {
@@ -38,12 +42,46 @@ namespace BuffFramework
             Helper.Events.Player.Warped += Player_Warped;
             
             Helper.Events.GameLoop.TimeChanged += GameLoop_TimeChanged;
+            Helper.Events.GameLoop.OneSecondUpdateTicked += GameLoop_OneSecondUpdateTicked;
             Helper.Events.GameLoop.SaveLoaded += GameLoop_SaveLoaded;
             Helper.Events.Content.AssetRequested += Content_AssetRequested;
             Helper.Events.GameLoop.ReturnedToTitle += GameLoop_ReturnedToTitle;
 
             var harmony = new Harmony(ModManifest.UniqueID);
             harmony.PatchAll();
+            return;
+            var dict = JsonConvert.DeserializeObject<Dictionary<string, Dictionary<string, string>>>(File.ReadAllText(Path.Combine(SHelper.DirectoryPath, "content.json")));
+            var outDict = new Dictionary<string, string>();
+            foreach(var k in dict.Keys.ToArray())
+            {
+                var key = "clothing-buff-"+k.Split('/')[1].Replace("Buff", "").ToLower();
+                outDict[key] = dict[k]["displaySource"];
+                dict[k]["displaySource"] = $"{{{{i18n: {key}}}}}";
+                if (dict[k].TryGetValue("description", out var desc))
+                {
+                    outDict[key + "-desc"] = desc;
+                    dict[k]["description"] = $"{{{{i18n: {key + "-desc"}}}}}";
+                }
+            }
+            File.WriteAllText(Path.Combine(SHelper.DirectoryPath, "out.json"), JsonConvert.SerializeObject(outDict, Formatting.Indented));
+            File.WriteAllText(Path.Combine(SHelper.DirectoryPath, "out2.json"), JsonConvert.SerializeObject(dict, Formatting.Indented));
+        }
+
+        private void GameLoop_OneSecondUpdateTicked(object sender, StardewModdingAPI.Events.OneSecondUpdateTickedEventArgs e)
+        {
+            if(!Config.ModEnabled || !Context.IsPlayerFree) 
+                return;
+            foreach(var key in farmerBuffs.Value.Keys)
+            {
+                if (buffDict[key].TryGetValue("healthRegen", out var healthRegen))
+                {
+                    Game1.player.health = MathHelper.Clamp(Game1.player.health + GetInt(healthRegen), 0, Game1.player.maxHealth);
+                }
+                if(buffDict[key].TryGetValue("staminaRegen", out var staminaRegen))
+                {
+                    Game1.player.Stamina = MathHelper.Clamp(Game1.player.Stamina + GetInt(staminaRegen), 0, Game1.player.MaxStamina);
+                }
+            }
         }
 
         private void GameLoop_ReturnedToTitle(object sender, StardewModdingAPI.Events.ReturnedToTitleEventArgs e)
