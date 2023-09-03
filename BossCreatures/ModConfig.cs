@@ -2,6 +2,7 @@
 {
     public class ModConfig
     {
+        public bool ModEnabled { get; set; } = true;
         public int PercentChanceOfBossInMonsterArea { get; set; } = 100;
         public int PercentChanceOfBossInFarm { get; set; } = 0;
         public int PercentChanceOfBossInTown { get; set; } = 0;

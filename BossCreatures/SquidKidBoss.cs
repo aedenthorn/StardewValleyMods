@@ -149,10 +149,10 @@ namespace BossCreatures
         public override Rectangle GetBoundingBox()
         {
             return new Rectangle((int)(Position.X + 8 * Scale), (int)(Position.Y + 16 * Scale), (int)(Sprite.SpriteWidth * 4 * 3 / 4 * Scale), (int)(32 * Scale));
-            return new Microsoft.Xna.Framework.Rectangle((int)Position.X + 8, (int)Position.Y + 16, Sprite.SpriteWidth * 4 * 3 / 4, 32);
+            // return new Microsoft.Xna.Framework.Rectangle((int)Position.X + 8, (int)Position.Y + 16, Sprite.SpriteWidth * 4 * 3 / 4, 32);
 
-            Rectangle r = new Rectangle((int)(Position.X - Scale * width / 2), (int)(Position.Y - Scale * height / 2), (int)(Scale * width), (int)(Scale * height));
-            return r;
+            // Rectangle r = new Rectangle((int)(Position.X - Scale * width / 2), (int)(Position.Y - Scale * height / 2), (int)(Scale * width), (int)(Scale * height));
+            // return r;
         }
         public override void drawAboveAllLayers(SpriteBatch b)
         {
