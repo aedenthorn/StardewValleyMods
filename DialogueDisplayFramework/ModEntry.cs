@@ -13,7 +13,7 @@ using Object = StardewValley.Object;
 namespace DialogueDisplayFramework
 {
     /// <summary>The mod entry point.</summary>
-    public partial class ModEntry : Mod, IAssetLoader
+    public partial class ModEntry : Mod
     {
 
         public static IMonitor SMonitor;
@@ -39,21 +39,23 @@ namespace DialogueDisplayFramework
             SHelper = helper;
 
             helper.Events.GameLoop.GameLaunched += GameLoop_GameLaunched;
-            helper.Events.Input.ButtonPressed += Input_ButtonPressed;
             helper.Events.GameLoop.SaveLoaded += GameLoop_SaveLoaded;
+            
+            helper.Events.Content.AssetRequested += Content_AssetRequested;
+            
             var harmony = new Harmony(ModManifest.UniqueID);
             harmony.PatchAll();
         }
 
-        private void Input_ButtonPressed(object sender, ButtonPressedEventArgs e)
+        private void Content_AssetRequested(object sender, AssetRequestedEventArgs e)
         {
-            if(Config.EnableMod && e.Button == Config.ReloadButton)
+            if (!Config.EnableMod)
+                return;
+
+            if (e.NameWithoutLocale.IsEquivalentTo(dictPath))
             {
-                foreach (var pack in loadedPacks)
-                {
-                    SHelper.ConsoleCommands.Trigger("patch", new string[] { "reload", pack });
-                }
-                LoadData();
+                e.LoadFrom(() => new Dictionary<string, DialogueDisplayData>(), AssetLoadPriority.Exclusive);
+
             }
         }
 
@@ -67,7 +69,7 @@ namespace DialogueDisplayFramework
             //SMonitor.Log("Loading Data");
 
             loadedPacks.Clear();
-            dataDict = SHelper.Content.Load<Dictionary<string, DialogueDisplayData>>(dictPath, ContentSource.GameContent);
+            dataDict = SHelper.GameContent.Load<Dictionary<string, DialogueDisplayData>>(dictPath);
             //SMonitor.Log($"Loaded {dataDict.Count} data entries");
             if (!dataDict.ContainsKey(defaultKey))
                 dataDict[defaultKey] = new DialogueDisplayData() { disabled = true };
@@ -111,21 +113,6 @@ namespace DialogueDisplayFramework
                 setValue: value => Config.EnableMod = value
             );
         }
-        public bool CanLoad<T>(IAssetInfo asset)
-        {
-            if (!Config.EnableMod)
-                return false;
 
-            return asset.AssetNameEquals(dictPath);
-        }
-
-        /// <summary>Load a matched asset.</summary>
-        /// <param name="asset">Basic metadata about the asset being loaded.</param>
-        public T Load<T>(IAssetInfo asset)
-        {
-            Monitor.Log("Loading dictionary");
-
-            return (T)(object)new Dictionary<string, DialogueDisplayData>();
-        }
     }
 }
