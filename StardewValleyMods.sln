@@ -571,6 +571,10 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CropsSurviveSeasonChange", 
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CropMarkers", "CropMarkers\CropMarkers.csproj", "{B84DE1BA-4973-4405-91D9-B3C295C2ADFD}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ChestContentsDisplay", "ChestContentsDisplay\ChestContentsDisplay.csproj", "{58BCEE87-34B8-4558-9F89-B47008961EE6}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ChestFullnessTextures", "ChestFullnessTextures\ChestFullnessTextures.csproj", "{483952C5-C55A-4682-B11C-FED9D468786C}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -2811,6 +2815,22 @@ Global
 		{B84DE1BA-4973-4405-91D9-B3C295C2ADFD}.Release|Any CPU.Build.0 = Release|Any CPU
 		{B84DE1BA-4973-4405-91D9-B3C295C2ADFD}.Release|x64.ActiveCfg = Release|x64
 		{B84DE1BA-4973-4405-91D9-B3C295C2ADFD}.Release|x64.Build.0 = Release|x64
+		{58BCEE87-34B8-4558-9F89-B47008961EE6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{58BCEE87-34B8-4558-9F89-B47008961EE6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{58BCEE87-34B8-4558-9F89-B47008961EE6}.Debug|x64.ActiveCfg = Debug|x64
+		{58BCEE87-34B8-4558-9F89-B47008961EE6}.Debug|x64.Build.0 = Debug|x64
+		{58BCEE87-34B8-4558-9F89-B47008961EE6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{58BCEE87-34B8-4558-9F89-B47008961EE6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{58BCEE87-34B8-4558-9F89-B47008961EE6}.Release|x64.ActiveCfg = Release|x64
+		{58BCEE87-34B8-4558-9F89-B47008961EE6}.Release|x64.Build.0 = Release|x64
+		{483952C5-C55A-4682-B11C-FED9D468786C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{483952C5-C55A-4682-B11C-FED9D468786C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{483952C5-C55A-4682-B11C-FED9D468786C}.Debug|x64.ActiveCfg = Debug|x64
+		{483952C5-C55A-4682-B11C-FED9D468786C}.Debug|x64.Build.0 = Debug|x64
+		{483952C5-C55A-4682-B11C-FED9D468786C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{483952C5-C55A-4682-B11C-FED9D468786C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{483952C5-C55A-4682-B11C-FED9D468786C}.Release|x64.ActiveCfg = Release|x64
+		{483952C5-C55A-4682-B11C-FED9D468786C}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

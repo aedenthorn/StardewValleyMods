@@ -1,7 +1,7 @@
 ﻿{
   "Name": "Buff Framework",
   "Author": "aedenthorn",
-  "Version": "0.3.4",
+  "Version": "0.4.1",
   "Description": "Buff Framework.",
   "UniqueID": "aedenthorn.BuffFramework",
   "EntryDll": "BuffFramework.dll",

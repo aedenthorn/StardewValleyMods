@@ -36,6 +36,7 @@ namespace BuffFramework
             Helper.Events.GameLoop.GameLaunched += GameLoop_GameLaunched;
             Helper.Events.GameLoop.DayStarted += GameLoop_DayStarted;
             Helper.Events.Player.Warped += Player_Warped;
+            
             Helper.Events.GameLoop.TimeChanged += GameLoop_TimeChanged;
             Helper.Events.GameLoop.SaveLoaded += GameLoop_SaveLoaded;
             Helper.Events.Content.AssetRequested += Content_AssetRequested;

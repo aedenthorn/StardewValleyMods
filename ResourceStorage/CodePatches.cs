@@ -252,7 +252,7 @@ namespace ResourceStorage
         [HarmonyPatch(typeof(InventoryPage), nameof(InventoryPage.draw))]
         public class InventoryPage_draw_Patch
         {
-            public static void Postfix(SpriteBatch b)
+            public static void Prefix(SpriteBatch b)
             {
                 if (!Config.ModEnabled || Game1.activeClickableMenu is not GameMenu)
                     return;

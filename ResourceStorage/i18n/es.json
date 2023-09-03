@@ -1,0 +1,12 @@
+{
+  "GMCM_Option_ModEnabled_Name": "Activar Mod",
+  "GMCM_Option_AutoUse_Name": "Permitir consumo",
+  "GMCM_Option_ModKeyMax_Name": "Tecla para tomar todo",
+  "GMCM_Option_IconOffsetX_Name": "Ubicación del icono en X",
+  "GMCM_Option_IconOffsetY_Name": "Ubicación del icono en Y",
+  "auto": "Guardar automáticamente",
+  "take": "Tomar",
+  "added-x": "Añadido {0} al almacenamiento",
+  "removed-x": "Tomado {0} del almacenamiento",
+  "resources": "Recursos"
+}

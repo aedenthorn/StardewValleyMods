@@ -1,0 +1,16 @@
+﻿{
+  "Name": "Chest Contents Display",
+  "Author": "aedenthorn",
+  "Version": "0.1.0",
+  "Description": "Chest Contents Display.",
+  "UniqueID": "aedenthorn.ChestContentsDisplay",
+  "EntryDll": "ChestContentsDisplay.dll",
+  "MinimumApiVersion": "3.15.0",
+  "ModUpdater": {
+    "Repository": "StardewValleyMods",
+    "User": "aedenthorn",
+    "Directory": "_releases",
+    "ModFolder": "ChestContentsDisplay"
+  },
+  "UpdateKeys": [ "Nexus:" ]
+}

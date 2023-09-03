@@ -1,4 +1,5 @@
 ﻿using HarmonyLib;
+using Microsoft.Xna.Framework.Audio;
 using Microsoft.Xna.Framework.Graphics;
 using StardewModdingAPI;
 using StardewValley;
@@ -8,6 +9,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Reflection.Emit;
+using Object = StardewValley.Object;
 using Rectangle = Microsoft.Xna.Framework.Rectangle;
 
 namespace BuffFramework
@@ -41,17 +43,143 @@ namespace BuffFramework
             {
                 if (!Config.ModEnabled || !__instance.IsLocalPlayer || farmerBuffs.Value is null)
                     return;
-                foreach(var fb in farmerBuffs.Value.Values)
+                foreach(var key in farmerBuffs.Value.Keys.ToArray())
                 {
+                    var fb = farmerBuffs.Value[key];
                     Buff? buff = Game1.buffsDisplay.otherBuffs.FirstOrDefault(p => p.which == fb.which);
-                    if (buff == null)
+
+                    if(fb.totalMillisecondsDuration <= 50)
                     {
-                        Game1.buffsDisplay.addOtherBuff(
-                            buff = fb
-                        );
+                        if (buff is not null && buff.totalMillisecondsDuration > 50)
+                        {
+                            Game1.buffsDisplay.removeOtherBuff(buff.which);
+                            buff = null;
+                        }
+                        if (buff == null)
+                        {
+                            Game1.buffsDisplay.addOtherBuff(
+                                buff = fb
+                            );
+                        }
+                        buff.millisecondsDuration = 50;
                     }
-                    buff.millisecondsDuration = 50;
+                    else
+                    {
+                        if (buff == fb)
+                        {
+                            if (buff.millisecondsDuration <= 50 && buff.totalMillisecondsDuration > 50)
+                            {
+                                farmerBuffs.Value.Remove(key);
+                                if (cues.TryGetValue(key, out var cue))
+                                {
+                                    if (cue.IsPlaying)
+                                    {
+                                        cue.Stop(AudioStopOptions.Immediate);
+                                    }
+                                    cues.Remove(key);
+                                }
+                            }
+                        }
+                        else if (buff != null)
+                        {
+                            if (buff.totalMillisecondsDuration <= 50) // present persistant buff
+                            {
+                                farmerBuffs.Value.Remove(key); // no effect
+                            }
+                            else 
+                            {
+                                Game1.buffsDisplay.removeOtherBuff(buff.which);
+                                buff = null;
+                            }
+                        }
+                        if(buff == null)
+                        {
+                            Game1.buffsDisplay.addOtherBuff(fb);
+                        }
+                    }
                 }
+            }
+        }
+        [HarmonyPatch(typeof(Farmer), nameof(Farmer.doneEating))]
+        public class Farmer_doneEating_Patch
+        {
+            public static void Prefix(Farmer __instance)
+            {
+                if (!Config.ModEnabled || !__instance.IsLocalPlayer || farmerBuffs.Value is null)
+                    return;
+                foreach (var kvp in buffDict)
+                {
+                    int duration = 50;
+                    var dataDict = kvp.Value;
+                    if (!dataDict.TryGetValue("consume", out var food))
+                        continue;
+                    if (!Game1.player.isEating || Game1.player.itemToEat is not Object || (Game1.player.itemToEat as Object).Name != (string)food)
+                        continue;
+                    if (dataDict.TryGetValue("duration", out var dur))
+                    {
+                        duration = GetInt(dur) * 1000;
+                    }
+                    Buff buff = CreateBuff(kvp.Key, kvp.Value, food, duration);
+                    foreach(var key in farmerBuffs.Value.Keys.ToArray())
+                    {
+                        Buff oldBuff = farmerBuffs.Value[key];
+                        if(oldBuff.which == buff.which)
+                        {
+                            if(oldBuff.totalMillisecondsDuration > 50)
+                            {
+                                Game1.buffsDisplay.removeOtherBuff(oldBuff.which);
+                            }
+                            else
+                            {
+                                return;
+                            }
+                        }
+                    }
+                    farmerBuffs.Value[kvp.Key] = buff;
+                }
+            }
+        }
+        [HarmonyPatch(typeof(Farmer), "farmerInit")]
+        public class Farmer_farmerInit_Patch
+        {
+            public static void Postfix(Farmer __instance)
+            {
+                __instance.hat.fieldChangeEvent += Hat_fieldChangeEvent;
+                __instance.shirtItem.fieldChangeEvent += ShirtItem_fieldChangeEvent;
+                __instance.pantsItem.fieldChangeEvent += PantsItem_fieldChangeEvent;
+                __instance.boots.fieldChangeEvent += Boots_fieldChangeEvent;
+                __instance.leftRing.fieldChangeEvent += LeftRing_fieldChangeEvent;
+                __instance.rightRing.fieldChangeEvent += RightRing_fieldChangeEvent;
+            }
+
+            private static void RightRing_fieldChangeEvent(Netcode.NetRef<StardewValley.Objects.Ring> field, StardewValley.Objects.Ring oldValue, StardewValley.Objects.Ring newValue)
+            {
+                UpdateBuffs();
+            }
+
+            private static void LeftRing_fieldChangeEvent(Netcode.NetRef<StardewValley.Objects.Ring> field, StardewValley.Objects.Ring oldValue, StardewValley.Objects.Ring newValue)
+            {
+                UpdateBuffs();
+            }
+
+            private static void Boots_fieldChangeEvent(Netcode.NetRef<StardewValley.Objects.Boots> field, StardewValley.Objects.Boots oldValue, StardewValley.Objects.Boots newValue)
+            {
+                UpdateBuffs();
+            }
+
+            private static void PantsItem_fieldChangeEvent(Netcode.NetRef<StardewValley.Objects.Clothing> field, StardewValley.Objects.Clothing oldValue, StardewValley.Objects.Clothing newValue)
+            {
+                UpdateBuffs();
+            }
+
+            private static void ShirtItem_fieldChangeEvent(Netcode.NetRef<StardewValley.Objects.Clothing> field, StardewValley.Objects.Clothing oldValue, StardewValley.Objects.Clothing newValue)
+            {
+                UpdateBuffs();
+            }
+
+            private static void Hat_fieldChangeEvent(Netcode.NetRef<StardewValley.Objects.Hat> field, StardewValley.Objects.Hat oldValue, StardewValley.Objects.Hat newValue)
+            {
+                UpdateBuffs();
             }
         }
         [HarmonyPatch(typeof(BuffsDisplay), nameof(BuffsDisplay.performHoverAction))]
