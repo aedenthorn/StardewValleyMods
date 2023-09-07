@@ -1,0 +1,12 @@
+{
+  // GMCM
+  "GMCM_Option_ModEnabled_Name": "Activer le Mod",
+  "GMCM_Option_OrdinaryGiftsPerDay_Name": "Ordinaire / Jour",
+  "GMCM_Option_OrdinaryGiftsPerWeek_Name": "Ordinaire / Semaine",
+  "GMCM_Option_FriendGiftsPerDay_Name": "Ami.e / Jour",
+  "GMCM_Option_FriendGiftsPerWeek_Name": "Ami.e / Semaine",
+  "GMCM_Option_DatingGiftsPerDay_Name": "Petit.e ami.e / Jour",
+  "GMCM_Option_DatingGiftsPerWeek_Name": "Petit.e ami.e / Semaine",
+  "GMCM_Option_SpouseGiftsPerDay_Name": "Époux.se / Jour",
+  "GMCM_Option_SpouseGiftsPerWeek_Name": "Époux.se / Semaine"
+}
