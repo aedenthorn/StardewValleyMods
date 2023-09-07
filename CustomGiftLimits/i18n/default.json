@@ -1,0 +1,12 @@
+{
+  // GMCM
+  "GMCM_Option_ModEnabled_Name": "Mod Enabled",
+  "GMCM_Option_OrdinaryGiftsPerDay_Name": "Ordinary / Day",
+  "GMCM_Option_OrdinaryGiftsPerWeek_Name": "Ordinary / Week",
+  "GMCM_Option_FriendGiftsPerDay_Name": "Friend / Day",
+  "GMCM_Option_FriendGiftsPerWeek_Name": "Friend / Week",
+  "GMCM_Option_DatingGiftsPerDay_Name": "Dating / Day",
+  "GMCM_Option_DatingGiftsPerWeek_Name": "Dating / Week",
+  "GMCM_Option_SpouseGiftsPerDay_Name": "Spouse / Day",
+  "GMCM_Option_SpouseGiftsPerWeek_Name": "Spouse / Week"
+}
