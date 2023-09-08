@@ -136,7 +136,16 @@ namespace CustomLocks
                 {
                     if (ModEntry.Config.AllowSeedShopWed)
                     {
-                        ModEntry.DoWarp(actionParams, __instance);
+                        if ((Game1.timeOfDay < Convert.ToInt32(actionParams[4]) || Game1.timeOfDay >= Convert.ToInt32(actionParams[5])) && !ModEntry.Config.AllowOutsideTime)
+                        {
+                            string sub1 = Game1.getTimeOfDayString(Convert.ToInt32(actionParams[4])).Replace(" ", "");
+                            string sub2 = Game1.getTimeOfDayString(Convert.ToInt32(actionParams[5])).Replace(" ", "");
+                            Game1.drawObjectDialogue(Game1.content.LoadString("Strings\\Locations:LockedDoor_OpenRange", sub1, sub2));
+                        }
+                        else
+                        {
+                            ModEntry.DoWarp(actionParams, __instance);
+                        }
                         return false;
                     }
                 }
