@@ -20,6 +20,9 @@ namespace CustomLocks
 
         public static bool Mountain_checkAction_Prefix(Mountain __instance, Location tileLocation, xTile.Dimensions.Rectangle viewport, Farmer who)
         {
+            if (!ModEntry.Config.Enabled)
+                return true;
+
             try
             {
                 if (__instance.map.GetLayer("Buildings").Tiles[tileLocation] != null)
@@ -41,6 +44,9 @@ namespace CustomLocks
         }
         public static bool GameLocation_performAction_Prefix(GameLocation __instance, string action, Farmer who, Location tileLocation)
         {
+            if (!ModEntry.Config.Enabled)
+                return true;
+
             try
             {
                 if (action != null && who.IsLocalPlayer)
@@ -84,6 +90,9 @@ namespace CustomLocks
         }
         public static bool GameLocation_performTouchAction_Prefix(GameLocation __instance, string fullActionString, Vector2 playerStandingPosition)
         {
+            if (!ModEntry.Config.Enabled)
+                return true;
+
             try
             {
                 if (Game1.eventUp && !ModEntry.Config.IgnoreEvents)
@@ -115,6 +124,9 @@ namespace CustomLocks
 
         public static bool GameLocation_lockedDoorWarp(GameLocation __instance, string[] actionParams)
         {
+            if (!ModEntry.Config.Enabled)
+                return true;
+
             try
             {
                 if (Utility.isFestivalDay(Game1.dayOfMonth, Game1.currentSeason) && Utility.getStartTimeOfFestival() < 1900)

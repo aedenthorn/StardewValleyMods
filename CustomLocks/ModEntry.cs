@@ -22,9 +22,6 @@ namespace CustomLocks
         {
             Config = Helper.ReadConfig<ModConfig>();
 
-            if (!Config.Enabled)
-                return;
-
             Helper.Events.GameLoop.GameLaunched += GameLoop_GameLaunched;
 
 
