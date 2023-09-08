@@ -11,6 +11,7 @@ namespace CustomLocks
     public class ModEntry : Mod
     {
 
+        public static IModHelper SHelper;
         public static ModConfig Config;
 
         /*********
@@ -21,6 +22,8 @@ namespace CustomLocks
         public override void Entry(IModHelper helper)
         {
             Config = Helper.ReadConfig<ModConfig>();
+
+            SHelper = helper;
 
             Helper.Events.GameLoop.GameLaunched += GameLoop_GameLaunched;
 
@@ -63,43 +66,43 @@ namespace CustomLocks
 
             configMenu.AddBoolOption(
                 mod: ModManifest,
-                name: () => "Mod Enabled?",
+                name: () => ModEntry.SHelper.Translation.Get("GMCM_Option_ModEnabled_Name"),
                 getValue: () => Config.Enabled,
                 setValue: value => Config.Enabled = value
             );
             configMenu.AddBoolOption(
                 mod: ModManifest,
-                name: () => "Allow Seed Shop on Wed?",
+                name: () => ModEntry.SHelper.Translation.Get("GMCM_Option_AllowSeedShopWed_Name"),
                 getValue: () => Config.AllowSeedShopWed,
                 setValue: value => Config.AllowSeedShopWed = value
             );
             configMenu.AddBoolOption(
                 mod: ModManifest,
-                name: () => "Allow Outside Hours?",
+                name: () => ModEntry.SHelper.Translation.Get("GMCM_Option_AllowOutsideTime_Name"),
                 getValue: () => Config.AllowOutsideTime,
                 setValue: value => Config.AllowOutsideTime = value
             );
             configMenu.AddBoolOption(
                 mod: ModManifest,
-                name: () => "Allow Stranger Home Entry?",
+                name: () => ModEntry.SHelper.Translation.Get("GMCM_Option_AllowStrangerHomeEntry_Name"),
                 getValue: () => Config.AllowStrangerHomeEntry,
                 setValue: value => Config.AllowStrangerHomeEntry = value
             );
             configMenu.AddBoolOption(
                 mod: ModManifest,
-                name: () => "Allow Stranger Room Entry?",
+                name: () => ModEntry.SHelper.Translation.Get("GMCM_Option_AllowStrangerRoomEntry_Name"),
                 getValue: () => Config.AllowStrangerRoomEntry,
                 setValue: value => Config.AllowStrangerRoomEntry = value
             );
             configMenu.AddBoolOption(
                 mod: ModManifest,
-                name: () => "Allow Adventure Guild Entry?",
+                name: () => ModEntry.SHelper.Translation.Get("GMCM_Option_AllowAdventureGuildEntry_Name"),
                 getValue: () => Config.AllowAdventureGuildEntry,
                 setValue: value => Config.AllowAdventureGuildEntry = value
             );
             configMenu.AddBoolOption(
                 mod: ModManifest,
-                name: () => "Ignore Events?",
+                name: () => ModEntry.SHelper.Translation.Get("GMCM_Option_IgnoreEvents_Name"),
                 getValue: () => Config.IgnoreEvents,
                 setValue: value => Config.IgnoreEvents = value
             );
