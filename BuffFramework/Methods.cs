@@ -65,7 +65,7 @@ namespace BuffFramework
                             }
                         }
                     }
-                    else if (Game1.player.rightRing.Value.Name == (string)ring)
+                    else if (Game1.player.rightRing.Value?.Name == (string)ring)
                     {
                         found = true;
                     }
@@ -82,7 +82,7 @@ namespace BuffFramework
                                 }
                             }
                         }
-                        else if (Game1.player.leftRing.Value.Name == (string)ring)
+                        else if (Game1.player.leftRing.Value?.Name == (string)ring)
                         {
                             found = true;
                         }
@@ -185,7 +185,7 @@ namespace BuffFramework
                         else if (p.Value is JObject)
                         {
                             var j = (JObject)p.Value;
-                            buff.glow = new Color((byte)(long)j["R"], (byte)(long)j["G"], (byte)(long)j["B"], j.TryGetValue("A", out var a) ? (byte)(long)a : 255);
+                            buff.glow = new Color((byte)(long)j["R"], (byte)(long)j["G"], (byte)(long)j["B"]);
                         }
                         break;
                     case "description":

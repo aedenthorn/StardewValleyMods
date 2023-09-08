@@ -29,7 +29,7 @@ namespace ItemAboveHead
         {
             public static bool Prefix(Event __instance, string[] split)
             {
-                if (!Config.ModEnabled || split.Length < 2)
+                if (!Config.ModEnabled || split.Length < 3)
                     return true;
                 SMonitor.Log($"command_itemAboveHead {string.Join(" ", split)}, show {split[2]}");
                 int i = -1;

@@ -15,7 +15,7 @@ namespace TrashCansOnHorse
         [HarmonyPatch(typeof(Town), nameof(Town.checkAction))]
         public class Town_checkAction_Patch
         {
-            public static void Prefix(Location tileLocation, xTile.Dimensions.Rectangle viewport, Farmer who, ref bool __result)
+            public static void Prefix(Location tileLocation, Rectangle viewport, Farmer who, ref bool __result)
             {
                 if (!Config.ModEnabled)
                     return;
@@ -30,7 +30,7 @@ namespace TrashCansOnHorse
                     if (i < codes.Count - 2 && codes[i].opcode == OpCodes.Ldarg_3 && codes[i+1].opcode == OpCodes.Callvirt && codes[i+1].operand is MethodInfo && (MethodInfo)codes[i+1].operand == AccessTools.PropertyGetter(typeof(Farmer), nameof(Farmer.mount)))
                     {
                         SMonitor.Log("adding method to ignore mount");
-                        codes.Insert(i + 2, new CodeInstruction(OpCodes.Call, AccessTools.Method(typeof(ModEntry), nameof(ModEntry.Farmer_mount_Override))));
+                        codes.Insert(i + 2, new CodeInstruction(OpCodes.Call, AccessTools.Method(typeof(ModEntry), nameof(Farmer_mount_Override))));
                     }
                 }
 
