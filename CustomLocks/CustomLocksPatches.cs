@@ -199,7 +199,14 @@ namespace CustomLocks
                 }
                 else if (ModEntry.Config.AllowStrangerHomeEntry)
                 {
-                    ModEntry.DoWarp(actionParams, __instance);
+                    if ((Game1.timeOfDay < Convert.ToInt32(actionParams[4]) || Game1.timeOfDay >= Convert.ToInt32(actionParams[5])) && !ModEntry.Config.AllowOutsideTime)
+                    {
+                        Game1.drawObjectDialogue(Game1.content.LoadString("Strings\\Locations:LockedDoor"));
+                    }
+                    else
+                    {
+                        ModEntry.DoWarp(actionParams, __instance);
+                    }
                     return false;
                 }
                 return true;
