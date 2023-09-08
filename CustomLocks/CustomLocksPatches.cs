@@ -129,7 +129,7 @@ namespace CustomLocks
                     }
                 }
                 else if (
-                    (Game1.timeOfDay < Convert.ToInt32(actionParams[4]) || Game1.timeOfDay >= Convert.ToInt32(actionParams[5]) && ModEntry.Config.AllowOutsideTime) 
+                    ((Game1.timeOfDay < Convert.ToInt32(actionParams[4]) || Game1.timeOfDay >= Convert.ToInt32(actionParams[5])) && ModEntry.Config.AllowOutsideTime) 
                     && 
                     (actionParams.Length >= 7 && !Game1.currentSeason.Equals("winter") && (!Game1.player.friendshipData.ContainsKey(actionParams[6]) || Game1.player.friendshipData[actionParams[6]].Points < Convert.ToInt32(actionParams[7])) && ModEntry.Config.AllowStrangerHomeEntry)
                 )
@@ -149,7 +149,7 @@ namespace CustomLocks
                     return false;
                 }
                 else if (
-                    (Game1.timeOfDay < Convert.ToInt32(actionParams[4]) || Game1.timeOfDay >= Convert.ToInt32(actionParams[5]) && ModEntry.Config.AllowOutsideTime)
+                    ((Game1.timeOfDay < Convert.ToInt32(actionParams[4]) || Game1.timeOfDay >= Convert.ToInt32(actionParams[5])) && ModEntry.Config.AllowOutsideTime)
                     &&
                     (actionParams.Length < 7 || Game1.currentSeason.Equals("winter") || (Game1.player.friendshipData.ContainsKey(actionParams[6]) && Game1.player.friendshipData[actionParams[6]].Points >= Convert.ToInt32(actionParams[7])))
                 )
