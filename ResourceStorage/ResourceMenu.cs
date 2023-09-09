@@ -7,6 +7,7 @@ using StardewValley.Menus;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using Object = StardewValley.Object;
 
 namespace ResourceStorage
@@ -333,6 +334,19 @@ namespace ResourceStorage
                     case 3:
                         next = getComponentWithID(currentlySnappedComponent.leftNeighborID);
                         break;
+                }
+                if (next is null && (currentlySnappedComponent.myID % 1000 == 0))
+                {
+                    if (direction == 0)
+                    {
+                        DoScroll(1);
+                        next = getComponentWithID(currentlySnappedComponent.upNeighborID);
+                    }
+                    else if (direction == 2)
+                    {
+                        DoScroll(-1);
+                        next = getComponentWithID(currentlySnappedComponent.downNeighborID);
+                    }
                 }
                 if (next is not null)
                 {
