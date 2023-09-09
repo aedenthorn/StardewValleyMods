@@ -1,3 +1,6 @@
 {
-  "filter": "Filter"
+  "filter": "Filter",
+
+  // GMCM
+  "GMCM_Option_ModEnabled_Name": "Mod Enabled?"
 }
