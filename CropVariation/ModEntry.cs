@@ -49,19 +49,19 @@ namespace CropVariation
 
             configMenu.AddBoolOption(
                 mod: ModManifest,
-                name: () => "Mod Enabled",
+                name: () => ModEntry.SHelper.Translation.Get("GMCM_Option_ModEnabled_Name"),
                 getValue: () => Config.EnableMod,
                 setValue: value => Config.EnableMod = value
             );
             configMenu.AddBoolOption(
                 mod: ModManifest,
-                name: () => "Resize Trellis",
+                name: () => ModEntry.SHelper.Translation.Get("GMCM_Option_EnableTrellisResize_Name"),
                 getValue: () => Config.EnableTrellisResize,
                 setValue: value => Config.EnableTrellisResize = value
             );
             configMenu.AddNumberOption(
                 mod: ModManifest,
-                name: () => "Max Size Var %",
+                name: () => ModEntry.SHelper.Translation.Get("GMCM_Option_SizeVariationPercent_Name"),
                 getValue: () => Config.SizeVariationPercent,
                 setValue: value => Config.SizeVariationPercent = value,
                 min: 0,
@@ -69,8 +69,7 @@ namespace CropVariation
             );
             configMenu.AddNumberOption(
                 mod: ModManifest,
-                name: () => "Max Color Var",
-                tooltip: () => "0 - 255",
+                name: () => ModEntry.SHelper.Translation.Get("GMCM_Option_ColorVariation_Name"),
                 getValue: () => Config.ColorVariation,
                 setValue: value => Config.ColorVariation = value,
                 min: 0,
@@ -78,7 +77,7 @@ namespace CropVariation
             );
             configMenu.AddNumberOption(
                 mod: ModManifest,
-                name: () => "Size Quality Factor",
+                name: () => ModEntry.SHelper.Translation.Get("GMCM_Option_SizeVariationQualityFactor_Name"),
                 getValue: () => Config.SizeVariationQualityFactor,
                 setValue: value => Config.SizeVariationQualityFactor = value,
                 min: 0,
@@ -86,7 +85,7 @@ namespace CropVariation
             );
             configMenu.AddNumberOption(
                 mod: ModManifest,
-                name: () => "Color Quality Factor",
+                name: () => ModEntry.SHelper.Translation.Get("GMCM_Option_ColorVariationQualityFactor_Name"),
                 getValue: () => Config.ColorVariationQualityFactor,
                 setValue: value => Config.ColorVariationQualityFactor = value,
                 min: 0,
