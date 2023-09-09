@@ -7,5 +7,32 @@
   "rook": "Rook",
   "knight": "Knight",
   "bishop": "Bishop",
-  "queen": "Queen"
+  "queen": "Queen",
+
+  // GMCM
+  "GMCM_Option_ModEnabled_Name": "Mod Enabled",
+  "GMCM_Title_ChessPieces_Text": "Chess Pieces",
+  "GMCM_Option_SetupKey_Name": "Setup Key",
+  "GMCM_Option_SetupKey_Tooltip": "Sets up the board with a fresh set of chess pieces.",
+  "GMCM_Option_FlipKey_Name": "Flip Key",
+  "GMCM_Option_FlipKey_Tooltip": "Rotates the board 180 degrees.",
+  "GMCM_Option_ClearKey_Name": "Clear Key",
+  "GMCM_Option_ClearKey_Tooltip": "Removes all chess pieces from the board.",
+  "GMCM_Title_FreeMode_Text": "Free Mode",
+  "GMCM_Paragraph_FreeMode_Text": "By default, piece movements are constrained to legal chess moves. Free mode allows you to setup the board as you like and move pieces without constraint.",
+  "GMCM_Option_ModeKey_Name": "Mode Key",
+  "GMCM_Option_ModeKey_Tooltip": "Toggles free mode.",
+  "GMCM_Option_ChangeKey_Name": "Change Key",
+  "GMCM_Option_ChangeKey_Tooltip": "Cycles the piece at the hovered square through the available piece types, or add a white pawn to the square if it is empty.",
+  "GMCM_Option_ChangeModKey_Name": "Change Mod Key",
+  "GMCM_Option_ChangeModKey_Tooltip": "Hold down this key while pressing the Change Key to change the piece color instead of the piece type.",
+  "GMCM_Option_RemoveKey_Name": "Remove Key",
+  "GMCM_Option_RemoveKey_Tooltip": "Removes the piece at the hovered square.",
+  "GMCM_Title_SoundEffects_Text": "Sound Effects",
+  "GMCM_Option_SetupSound_Name": "Setup Sound",
+  "GMCM_Option_FlipSound_Name": "Flip Sound",
+  "GMCM_Option_ClearSound_Name": "Clear Sound",
+  "GMCM_Option_PickupSound_Name": "Pickup Sound",
+  "GMCM_Option_PlaceSound_Name": "Place Sound",
+  "GMCM_Option_CancelSound_Name": "Cancel Sound"
 }
