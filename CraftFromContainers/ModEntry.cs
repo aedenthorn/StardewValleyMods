@@ -63,34 +63,34 @@ namespace CraftFromContainers
 
             configMenu.AddBoolOption(
                 mod: ModManifest,
-                name: () => "Mod Enabled",
+                name: () => ModEntry.SHelper.Translation.Get("GMCM_Option_ModEnabled_Name"),
                 getValue: () => Config.EnableMod,
                 setValue: value => Config.EnableMod = value
             );
 
             configMenu.AddKeybind(
                 mod: ModManifest,
-                name: () => "Toggle Button",
+                name: () => ModEntry.SHelper.Translation.Get("GMCM_Option_ToggleButton_Name"),
                 getValue: () => Config.ToggleButton,
                 setValue: value => Config.ToggleButton = value
             );
 
             configMenu.AddBoolOption(
                 mod: ModManifest,
-                name: () => "Enable For Building",
+                name: () =>ModEntry.SHelper.Translation.Get("GMCM_Option_EnableForBuilding_Name"),
                 getValue: () => Config.EnableForBuilding,
                 setValue: value => Config.EnableForBuilding = value
             );
             
             configMenu.AddBoolOption(
                 mod: ModManifest,
-                name: () => "Enable For Crafting",
+                name: () => ModEntry.SHelper.Translation.Get("GMCM_Option_EnableForCrafting_Name"),
                 getValue: () => Config.EnableForCrafting,
                 setValue: value => Config.EnableForCrafting = value
             );
             configMenu.AddBoolOption(
                 mod: ModManifest,
-                name: () => "Enable Everywhere",
+                name: () => ModEntry.SHelper.Translation.Get("GMCM_Option_EnableEverywhere_Name"),
                 getValue: () => Config.EnableEverywhere,
                 setValue: value => Config.EnableEverywhere = value
             );
