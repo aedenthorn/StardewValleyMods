@@ -80,7 +80,7 @@ namespace CropHat
                 if (!Game1.objectInformation.TryGetValue(harvestIndex, out string objectInformation))
                     return true;
                 split = objectInformation.Split('/', StringSplitOptions.None);
-                __instance.displayName = string.Format(SHelper.Translation.Get("x-hat"), split[0]);
+                __instance.displayName = string.Format(SHelper.Translation.Get("x-hat"), split[4]);
                 __instance.description = split[5];
                 __result = true;
                 return false;
@@ -158,7 +158,7 @@ namespace CropHat
                         if (Game1.objectInformation.TryGetValue(harvestIndex, out string objectInformation))
                         {
                             var split2 = objectInformation.Split('/', StringSplitOptions.None);
-                            hat.displayName = string.Format(SHelper.Translation.Get("x-hat"), split2[0]);
+                            hat.displayName = string.Format(SHelper.Translation.Get("x-hat"), split2[4]);
                             hat.description = split2[5];
                         }
 

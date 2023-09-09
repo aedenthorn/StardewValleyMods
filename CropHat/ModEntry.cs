@@ -114,14 +114,14 @@ namespace CropHat
 
             configMenu.AddBoolOption(
                 mod: ModManifest,
-                name: () => "Mod Enabled?",
+                name: () => ModEntry.SHelper.Translation.Get("GMCM_Option_ModEnabled_Name"),
                 getValue: () => Config.EnableMod,
                 setValue: value => Config.EnableMod = value
             );
             configMenu.AddBoolOption(
                 mod: ModManifest,
-                name: () => "Others Harvest?",
-                tooltip: () => "Allow farmers to harvest other farmers' crop hats",
+                name: () => ModEntry.SHelper.Translation.Get("GMCM_Option_AllowOthersToPick_Name"),
+                tooltip: () => ModEntry.SHelper.Translation.Get("GMCM_Option_AllowOthersToPick_Tooltip"),
                 getValue: () => Config.AllowOthersToPick,
                 setValue: value => Config.AllowOthersToPick = value
             );
