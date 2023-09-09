@@ -1,0 +1,13 @@
+﻿{
+  "backpack-upgrade-x": "Amélioration de sac à dos - {0} emplacements",
+  "buy-backpack-for-x": "Acheter ({0:#,##0}po)",
+  "farmer-bought-x": "{{0}} a acheté le {0}.",
+
+  // GMCM
+  "GMCM_Option_ModEnabled_Name": "Activer le Mod",
+  "GMCM_Option_ShowArrows_Name": "Afficher les flèches",
+  "GMCM_Option_ShowRowNumbers_Name": "Afficher les numéros de ligne",
+  "GMCM_Option_MinHandleHeight_Name": "Hauteur minimale du contrôle de défilement",
+  "GMCM_Option_ShowExpandedButton_Name": "Touche pour agrandir",
+  "GMCM_Option_ShiftRows_Name": "Lignes à faire défiler dans la barre d'outils"
+}
