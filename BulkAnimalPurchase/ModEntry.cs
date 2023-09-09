@@ -50,7 +50,7 @@ namespace BulkAnimalPurchase
 
             configMenu.AddBoolOption(
                 mod: ModManifest,
-                name: () => "Mod Enabled?",
+                name: () => ModEntry.SHelper.Translation.Get("GMCM_Option_ModEnabled_Name"),
                 getValue: () => Config.EnableMod,
                 setValue: value => Config.EnableMod = value
             );

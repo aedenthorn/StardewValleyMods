@@ -1,4 +1,7 @@
 {
   "amount": "Amount To Buy:",
-  "x-left-to-add": "({0} left to add)"
+  "x-left-to-add": "({0} left to add)",
+
+  // GMCM
+  "GMCM_Option_ModEnabled_Name": "Mod Enabled?"
 }
