@@ -1,0 +1,8 @@
+{
+  "GMCM_Option_ModEnabled_Name": "Activer le Mod",
+  "GMCM_Option_IgnoreFlowers_Name": "Ignorer les fleurs",
+  "GMCM_Option_OpacityPercent_Name": "Opacité (en %)",
+  "GMCM_Option_SizePercent_Name": "Taille (en %)",
+  "GMCM_Option_PressKeys_Name": "Touches d'activation",
+  "GMCM_Option_RequireKeyPress_Name": "Nécessite les touches d'activation"
+}
