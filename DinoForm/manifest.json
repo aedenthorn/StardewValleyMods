@@ -1,16 +1,16 @@
 ﻿{
-  "Name": "Buff Framework",
+  "Name": "Dino Form",
   "Author": "aedenthorn",
-  "Version": "0.6.0",
-  "Description": "Buff Framework.",
-  "UniqueID": "aedenthorn.BuffFramework",
-  "EntryDll": "BuffFramework.dll",
+  "Version": "0.1.0",
+  "Description": "Bat Form.",
+  "UniqueID": "aedenthorn.DinoForm",
+  "EntryDll": "DinoForm.dll",
   "MinimumApiVersion": "3.15.0",
   "ModUpdater": {
     "Repository": "StardewValleyMods",
     "User": "aedenthorn",
     "Directory": "_releases",
-    "ModFolder": "BuffFramework"
+    "ModFolder": "DinoForm"
   },
   "Dependencies": [
     {
@@ -18,5 +18,5 @@
       "IsRequired": false
     }
   ],
-  "UpdateKeys": [ "Nexus:17746" ]
+  "UpdateKeys": [ "Nexus:" ]
 }

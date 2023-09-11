@@ -67,7 +67,12 @@ namespace BuffFramework
             File.WriteAllText(Path.Combine(SHelper.DirectoryPath, "out2.json"), JsonConvert.SerializeObject(dict, Formatting.Indented));
         }
 
-        private void GameLoop_OneSecondUpdateTicked(object sender, StardewModdingAPI.Events.OneSecondUpdateTickedEventArgs e)
+        public override object GetApi()
+        {
+            return new BuffFrameworkAPI();
+        }
+
+        public void GameLoop_OneSecondUpdateTicked(object sender, StardewModdingAPI.Events.OneSecondUpdateTickedEventArgs e)
         {
             if(!Config.ModEnabled || !Context.IsPlayerFree) 
                 return;
@@ -84,32 +89,33 @@ namespace BuffFramework
             }
         }
 
-        private void GameLoop_ReturnedToTitle(object sender, StardewModdingAPI.Events.ReturnedToTitleEventArgs e)
+        public void GameLoop_ReturnedToTitle(object sender, StardewModdingAPI.Events.ReturnedToTitleEventArgs e)
         {
             ClearCues();
         }
 
-        private void GameLoop_TimeChanged(object sender, StardewModdingAPI.Events.TimeChangedEventArgs e)
+        public void GameLoop_TimeChanged(object sender, StardewModdingAPI.Events.TimeChangedEventArgs e)
         {
             Helper.Events.GameLoop.UpdateTicking += GameLoop_UpdateTicking;
         }
 
-        private void Player_Warped(object sender, StardewModdingAPI.Events.WarpedEventArgs e)
-        {
-            Helper.Events.GameLoop.UpdateTicking += GameLoop_UpdateTicking;
-        }
-        private void GameLoop_DayStarted(object sender, StardewModdingAPI.Events.DayStartedEventArgs e)
+        public void Player_Warped(object sender, StardewModdingAPI.Events.WarpedEventArgs e)
         {
             Helper.Events.GameLoop.UpdateTicking += GameLoop_UpdateTicking;
         }
 
-        private void GameLoop_UpdateTicking(object sender, StardewModdingAPI.Events.UpdateTickingEventArgs e)
+        public void GameLoop_DayStarted(object sender, StardewModdingAPI.Events.DayStartedEventArgs e)
+        {
+            Helper.Events.GameLoop.UpdateTicking += GameLoop_UpdateTicking;
+        }
+
+        public void GameLoop_UpdateTicking(object sender, StardewModdingAPI.Events.UpdateTickingEventArgs e)
         {
             UpdateBuffs();
             Helper.Events.GameLoop.UpdateTicking -= GameLoop_UpdateTicking;
         }
 
-        private void Content_AssetRequested(object sender, StardewModdingAPI.Events.AssetRequestedEventArgs e)
+        public void Content_AssetRequested(object sender, StardewModdingAPI.Events.AssetRequestedEventArgs e)
         {
             if (e.NameWithoutLocale.IsEquivalentTo(dictKey))
             {
@@ -117,12 +123,12 @@ namespace BuffFramework
             }
         }
 
-        private void GameLoop_SaveLoaded(object sender, StardewModdingAPI.Events.SaveLoadedEventArgs e)
+        public void GameLoop_SaveLoaded(object sender, StardewModdingAPI.Events.SaveLoadedEventArgs e)
         {
             farmerBuffs.Value = new();
         }
 
-        private void GameLoop_GameLaunched(object sender, StardewModdingAPI.Events.GameLaunchedEventArgs e)
+        public void GameLoop_GameLaunched(object sender, StardewModdingAPI.Events.GameLaunchedEventArgs e)
         {
 
 

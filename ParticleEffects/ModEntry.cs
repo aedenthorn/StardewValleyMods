@@ -9,7 +9,7 @@ using System.Linq;
 namespace ParticleEffects
 {
     /// <summary>The mod entry point.</summary>
-    public partial class ModEntry : Mod, IAssetLoader
+    public partial class ModEntry : Mod
     {
 
         public static IMonitor SMonitor;
@@ -48,21 +48,30 @@ namespace ParticleEffects
             helper.Events.Display.RenderedWorld += Display_RenderedWorld;
             helper.Events.Display.RenderedHud += Display_RenderedHud;
 
+            helper.Events.Content.AssetRequested += Content_AssetRequested;
 
             var harmony = new Harmony(ModManifest.UniqueID);
 
             harmony.Patch(
                original: AccessTools.Method(typeof(Farmer), nameof(Farmer.draw), new System.Type[] { typeof(SpriteBatch) }),
-               postfix: new HarmonyMethod(typeof(ModEntry), nameof(ModEntry.Farmer_draw_postfix))
+               postfix: new HarmonyMethod(typeof(ModEntry), nameof(Farmer_draw_postfix))
             );
             harmony.Patch(
                original: AccessTools.Method(typeof(Object), nameof(Object.draw), new System.Type[] { typeof(SpriteBatch), typeof(int), typeof(int), typeof(float) }),
-               postfix: new HarmonyMethod(typeof(ModEntry), nameof(ModEntry.Object_draw_postfix))
+               postfix: new HarmonyMethod(typeof(ModEntry), nameof(Object_draw_postfix))
             );
             harmony.Patch(
                original: AccessTools.Method(typeof(NPC), nameof(NPC.draw), new System.Type[] { typeof(SpriteBatch), typeof(float) }),
-               postfix: new HarmonyMethod(typeof(ModEntry), nameof(ModEntry.NPC_draw_postfix))
+               postfix: new HarmonyMethod(typeof(ModEntry), nameof(NPC_draw_postfix))
             );
+        }
+
+        private void Content_AssetRequested(object sender, StardewModdingAPI.Events.AssetRequestedEventArgs e)
+        {
+            if(Config.EnableMod && e.NameWithoutLocale.IsEquivalentTo(dictPath))
+            {
+                e.LoadFrom(() => new Dictionary<string, ParticleEffectData>(), StardewModdingAPI.Events.AssetLoadPriority.Exclusive);
+            }
         }
 
         private void Display_RenderedHud(object sender, StardewModdingAPI.Events.RenderedHudEventArgs e)
@@ -159,23 +168,5 @@ namespace ParticleEffects
 
         }
 
-        /// <summary>Get whether this instance can load the initial version of the given asset.</summary>
-        /// <param name="asset">Basic metadata about the asset being loaded.</param>
-        public bool CanLoad<T>(IAssetInfo asset)
-        {
-            if (!Config.EnableMod)
-                return false;
-
-            return asset.AssetNameEquals(dictPath);
-        }
-
-        /// <summary>Load a matched asset.</summary>
-        /// <param name="asset">Basic metadata about the asset being loaded.</param>
-        public T Load<T>(IAssetInfo asset)
-        {
-            Monitor.Log("Loading dictionary");
-
-            return (T)(object)new Dictionary<string, ParticleEffectData>();
-        }
     }
 }

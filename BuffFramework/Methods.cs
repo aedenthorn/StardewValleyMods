@@ -6,13 +6,14 @@ using StardewValley.Objects;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.Linq;
 using Object = StardewValley.Object;
 
 namespace BuffFramework
 {
     public partial class ModEntry
     {
-        private static float CheckGlowRate(Buff buff, float rate)
+        public static float CheckGlowRate(Buff buff, float rate)
         {
             if (!Config.ModEnabled)
                 return rate;
@@ -25,7 +26,7 @@ namespace BuffFramework
         }
 
 
-        private static void UpdateBuffs()
+        public static void UpdateBuffs()
         {
             if (farmerBuffs.Value is null)
                 farmerBuffs.Value = new();
@@ -42,7 +43,13 @@ namespace BuffFramework
                 int duration = 50;
                 var b = kvp.Value;
                 if (b.ContainsKey("consume"))
+                {
+                    if (farmerBuffs.Value.TryGetValue(kvp.Key, out var eatBuff))
+                    {
+                        newBuffDict.Add(kvp.Key, eatBuff);
+                    }
                     continue;
+                }
                 if (b.TryGetValue("hat", out var hat) && Game1.player.hat.Value?.Name != (string)hat)
                     continue;
                 if (b.TryGetValue("shirt", out var shirt) && Game1.player.shirtItem.Value?.Name != (string)shirt)
@@ -111,7 +118,7 @@ namespace BuffFramework
             farmerBuffs.Value = newBuffDict;
         }
 
-        private static Buff CreateBuff(string key, Dictionary<string, object> b, object food, int duration)
+        public static Buff CreateBuff(string key, Dictionary<string, object> b, object food, int duration)
         {
 
             Buff buff;
@@ -208,7 +215,7 @@ namespace BuffFramework
             return buff;
         }
 
-        private static int GetInt(object value)
+        public static int GetInt(object value)
         {
             if(value is long)
             {
@@ -228,7 +235,7 @@ namespace BuffFramework
             }
 
         }
-        private static float GetFloat(object r)
+        public static float GetFloat(object r)
         {
             if (r is float)
                 return (float)r;
@@ -240,7 +247,7 @@ namespace BuffFramework
         }
 
 
-        private static void ClearCues()
+        public static void ClearCues()
         {
             foreach (var cue in cues)
             {
