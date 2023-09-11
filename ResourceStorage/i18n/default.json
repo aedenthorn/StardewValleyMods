@@ -7,7 +7,7 @@
   "GMCM_Option_IconOffsetY_Name": "Icon Offset Y",
   "auto": "Auto Store",
   "take": "Take",
-  "added-x": "Added {0} to storage",
-  "removed-x": "Took {0} from storage",
+  "added-x-y": "Added {0} {1} to storage",
+  "removed-x-y": "Took {0} {1} from storage",
   "resources": "Resources"
 }

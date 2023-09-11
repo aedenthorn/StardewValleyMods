@@ -34,16 +34,7 @@ namespace ResourceStorage
         public ResourceMenu() : base(Game1.uiViewport.Width / 2 - (windowWidth + borderWidth * 2) / 2, -borderWidth, windowWidth + borderWidth * 2, Game1.uiViewport.Height, false)
         {
             scrolled = 0;
-            resources = ModEntry.GetFarmerResources(Game1.player);
-            foreach(var resource in resources)
-            {
-                int index = ModEntry.GetIndex(resource.Key);
-                if (index < 0)
-                    continue;
-                Object obj = new Object(index, (int)resource.Value);
-                //obj.stack.Value = obj.ParentSheetIndex * 193;
-                resourceList.Add(obj);
-            }
+
             RepopulateComponentList();
 
             exitFunction = emergencyShutDown;
@@ -53,6 +44,18 @@ namespace ResourceStorage
 
         public void RepopulateComponentList()
         {
+            resourceList.Clear();
+            resources = ModEntry.GetFarmerResources(Game1.player);
+            foreach (var resource in resources)
+            {
+                int index = ModEntry.GetIndex(resource.Key);
+                if (index < 0)
+                    continue;
+                Object obj = new Object(index, (int)resource.Value);
+                //obj.stack.Value = obj.ParentSheetIndex * 193;
+                resourceList.Add(obj);
+            }
+
             int lineHeight = 64;
             linesPerPage = (Game1.viewport.Height + 72 - spaceToClearTopBorder * 2 - 108) / lineHeight;
 
@@ -209,27 +212,10 @@ namespace ResourceStorage
                     }
 
                     Object obj = new Object(resourceList[i].ParentSheetIndex, stack);
-                    if (Game1.player.addItemToInventoryBool(obj))
+                    if (Game1.objectInformation.TryGetValue(obj.ParentSheetIndex, out string data) && Game1.player.addItemToInventoryBool(obj))
                     {
-                        ModEntry.SMonitor.Log($"Moving {obj.DisplayName}x{stack} from resources: {resourceList[i].Stack} > {resourceList[i].Stack - stack}");
-
                         Game1.playSound("Ship");
-                        if (resourceList[i].Stack <= stack)
-                        {
-                            resourceList.RemoveAt(i);
-                        }
-                        else
-                        {
-                            resourceList[i].stack.Value = resourceList[i].Stack - stack;
-                        }
-                        resources.Clear();
-                        foreach(var r in resourceList)
-                        {
-                            if(Game1.objectInformation.TryGetValue(r.ParentSheetIndex, out string data))
-                            {
-                                resources[ModEntry.GetIdString(data)] = r.Stack;
-                            }
-                        }
+                        ModEntry.ModifyResourceLevel(Game1.player, ModEntry.GetIdString(data), -stack);
                         RepopulateComponentList();
                     }
                     else

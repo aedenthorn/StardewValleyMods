@@ -1,4 +1,5 @@
-﻿using Microsoft.Xna.Framework;
+﻿using HarmonyLib;
+using Microsoft.Xna.Framework;
 using Newtonsoft.Json;
 using StardewValley;
 using System;
@@ -25,9 +26,17 @@ namespace ResourceStorage
             {
                 SMonitor.Log($"Modify resource {id} from {oldAmount} to {newAmount}");
                 Object item = new Object(GetIndex(id), (int)(newAmount - oldAmount));
-                Game1.addHUDMessage(new HUDMessage(newAmount > oldAmount ? string.Format(SHelper.Translation.Get("added-x"), item.DisplayName) : string.Format(SHelper.Translation.Get("removed-x"), item.DisplayName), (int)Math.Abs(newAmount - oldAmount), true, Color.WhiteSmoke, item));
+                try
+                {
+                    var hm = new HUDMessage(string.Format(newAmount > oldAmount ? SHelper.Translation.Get("added-x-y") : SHelper.Translation.Get("removed-x-y"), (int)Math.Abs(newAmount - oldAmount), item.DisplayName), Color.WhiteSmoke, 1000) { whatType = newAmount > oldAmount ? 4 : 3 };
+                    Game1.addHUDMessage(hm);
+                }
+                catch { }
             }
-            dict[id] = newAmount;
+            if (newAmount <= 0)
+                dict.Remove(id);
+            else
+                dict[id] = newAmount;
             return newAmount - oldAmount;
         }
 
