@@ -6,7 +6,7 @@
   "GMCM_Option_IconOffsetY_Name": "Ubicación del icono en Y",
   "auto": "Guardar automáticamente",
   "take": "Tomar",
-  "added-x": "Añadido {0} al almacenamiento",
-  "removed-x": "Tomado {0} del almacenamiento",
+  "added-x-y": "Añadido {0} {1} al almacenamiento",
+  "removed-x-y": "Tomado {0} {1} del almacenamiento",
   "resources": "Recursos"
 }

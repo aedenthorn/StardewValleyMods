@@ -68,7 +68,7 @@ namespace CustomOreNodes
         {
             if (e.NameWithoutLocale.IsEquivalentTo(dictPath))
             {
-                e.LoadFrom(() => new Dictionary<string, CustomOreNode>(), StardewModdingAPI.Events.AssetLoadPriority.Exclusive);
+                e.LoadFrom(() => new Dictionary<string, object>(), StardewModdingAPI.Events.AssetLoadPriority.Exclusive);
             }
         }
 

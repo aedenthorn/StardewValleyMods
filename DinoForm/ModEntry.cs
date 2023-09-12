@@ -43,9 +43,6 @@ namespace DinoForm
         {
             Config = Helper.ReadConfig<ModConfig>();
 
-            if (!Config.ModEnabled)
-                return;
-
             context = this;
 
             SMonitor = Monitor;
@@ -256,16 +253,28 @@ namespace DinoForm
 
                 configMenu.AddBoolOption(
                     mod: ModManifest,
-                    name: () => "Mod Enabled",
+                    name: () => Helper.Translation.Get("GMCM_Option_ModEnabled_Name"),
                     getValue: () => Config.ModEnabled,
                     setValue: value => Config.ModEnabled = value
                 );
 
+                configMenu.AddTextOption(
+                    mod: ModManifest,
+                    name: () => Helper.Translation.Get("GMCM_Option_EatTrigger_Name"),
+                    getValue: () => Config.EatTrigger,
+                    setValue: value => Config.EatTrigger = value
+                );
 
+                configMenu.AddNumberOption(
+                    mod: ModManifest,
+                    name: () => Helper.Translation.Get("GMCM_Option_EatLastSeconds_Name"),
+                    getValue: () => Config.EatLastSeconds,
+                    setValue: value => Config.EatLastSeconds = value
+                );
 
                 configMenu.AddKeybindList(
                     mod: ModManifest,
-                    name: () => "Transform Key",
+                    name: () => Helper.Translation.Get("GMCM_Option_TransformKey_Name"),
                     getValue: () => Config.TransformKey,
                     setValue: value => Config.TransformKey = value
                 );
@@ -273,30 +282,57 @@ namespace DinoForm
 
                 configMenu.AddKeybindList(
                     mod: ModManifest,
-                    name: () => "Fire Key",
+                    name: () => Helper.Translation.Get("GMCM_Option_FireKey_Name"),
                     getValue: () => Config.FireKey,
                     setValue: value => Config.FireKey = value
                 );
 
                 configMenu.AddNumberOption(
                     mod: ModManifest,
-                    name: () => "Move Speed",
+                    name: () => Helper.Translation.Get("GMCM_Option_MoveSpeed_Name"),
                     getValue: () => Config.MoveSpeed,
                     setValue: value => Config.MoveSpeed = value
+                );
+                
+                configMenu.AddNumberOption(
+                    mod: ModManifest,
+                    name: () => Helper.Translation.Get("GMCM_Option_Defense_Name"),
+                    getValue: () => Config.Defense,
+                    setValue: value => Config.Defense = value
                 );
 
                 configMenu.AddNumberOption(
                     mod: ModManifest,
-                    name: () => "Stamina Use",
+                    name: () => Helper.Translation.Get("GMCM_Option_StaminaUse_Name"),
                     getValue: () => Config.StaminaUse,
                     setValue: value => Config.StaminaUse = value
+                );
+                
+                configMenu.AddNumberOption(
+                    mod: ModManifest,
+                    name: () => Helper.Translation.Get("GMCM_Option_FireDamage_Name"),
+                    getValue: () => Config.FireDamage,
+                    setValue: value => Config.FireDamage = value
+                );
+                
+                configMenu.AddNumberOption(
+                    mod: ModManifest,
+                    name: () => Helper.Translation.Get("GMCM_Option_FireDistance_Name"),
+                    getValue: () => Config.FireDistance,
+                    setValue: value => Config.FireDistance = value
                 );
 
                 configMenu.AddTextOption(
                     mod: ModManifest,
-                    name: () => "Transform Sound",
+                    name: () => Helper.Translation.Get("GMCM_Option_TransformSound_Name"),
                     getValue: () => Config.TransformSound,
                     setValue: value => Config.TransformSound = value
+                );
+                configMenu.AddTextOption(
+                    mod: ModManifest,
+                    name: () => Helper.Translation.Get("GMCM_Option_FireSound_Name"),
+                    getValue: () => Config.FireSound,
+                    setValue: value => Config.FireSound = value
                 );
             }
 

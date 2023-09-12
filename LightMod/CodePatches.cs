@@ -153,7 +153,7 @@ namespace LightMod
                 __instance.initializeLightSource(__instance.TileLocation);
             }
         }
-        
+
         [HarmonyPatch(typeof(GameLocation), nameof(GameLocation.drawLightGlows))]
         private static class GameLocation_drawLightGlows_Patch
         {
@@ -177,6 +177,37 @@ namespace LightMod
                 return codes.AsEnumerable();
             }
         }
+        [HarmonyPatch(typeof(GameLocation), nameof(GameLocation.drawAboveFrontLayer))]
+        private static class GameLocation_drawAboveFrontLayer_Patch
+        {
+            public static void Postfix(GameLocation __instance, SpriteBatch b)
+            {
+                if (!Config.ModEnabled)
+                    return;
+
+                foreach(var npc in __instance.characters)
+                {
+                    if (!lightDataDict.TryGetValue(npc.Name, out var data))
+                        continue;
+
+                    float alpha = 1;
+                    float radius = data.radius;
+                    if (npc.modData.TryGetValue(alphaKey, out string astr) && int.TryParse(astr, out int a))
+                    {
+                        alpha = (byte)a / 255f;
+                    }
+                    if (npc.modData.TryGetValue(radiusKey, out string rstr) && float.TryParse(rstr, NumberStyles.Float, CultureInfo.InvariantCulture, out float r))
+                    {
+                        radius = r;
+                    }
+                    float scale = 1;
+                    Point location = Utility.Vector2ToPoint(Game1.GlobalToLocal(Game1.viewport, npc.GetBoundingBox().Center.ToVector2() - new Vector2(20.5f, 33.5f) * scale * 4));
+                    Point size = Utility.Vector2ToPoint(new Vector2(41f, 67f) * scale * 4);
+                    b.Draw(Game1.mouseCursors, new Rectangle(location, size), new Microsoft.Xna.Framework.Rectangle?(new Rectangle(21, 1695, 41, 67)), Color.Yellow * 0.5f, 0f, Vector2.Zero, SpriteEffects.None, 1f);
+
+                }
+            }
+        }
 
         [HarmonyPatch(typeof(Furniture), nameof(Furniture.removeLights))]
         private static class Furniture_removeLights_Patch
@@ -186,7 +217,7 @@ namespace LightMod
                 return (!Config.ModEnabled || !__instance.modData.TryGetValue(switchKey, out string status) || status == "off");
             }
         }
-
+        
         [HarmonyPatch(typeof(Game1), nameof(Game1.pressSwitchToolButton))]
         private static class Game1_pressSwitchToolButton_Patch
         {

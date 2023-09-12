@@ -1,4 +1,5 @@
 ﻿using Microsoft.Xna.Framework.Graphics;
+using Newtonsoft.Json;
 using StardewModdingAPI;
 using StardewValley;
 using StardewValley.Locations;
@@ -17,7 +18,8 @@ namespace CustomOreNodes
         {
 
             customOreNodesList.Clear();
-            CustomOreData data;
+            Helper.GameContent.InvalidateCache(dictPath);
+            CustomOreData data = new();
             int id = 42424000;
             Dictionary<int, int> existingPSIs = new Dictionary<int, int>();
             CustomOreConfig conf = Helper.Data.ReadJsonFile<CustomOreConfig>("ore_config.json") ?? new CustomOreConfig();
@@ -36,9 +38,9 @@ namespace CustomOreNodes
             }
             try
             {
+                int add = 0;
                 if (File.Exists(Path.Combine(Helper.DirectoryPath, "custom_ore_nodes.json")))
                 {
-                    int add = 0;
                     try
                     {
                         data = Helper.ModContent.Load<CustomOreData>("custom_ore_nodes.json");
@@ -58,63 +60,61 @@ namespace CustomOreNodes
                             Helper.Data.WriteJsonFile("custom_ore_nodes.json", data);
                         }
                     }
-                    conf = Helper.Data.ReadJsonFile<CustomOreConfig>("ore_config.json") ?? new CustomOreConfig();
-                    var dict = Helper.GameContent.Load<Dictionary<string, CustomOreNode>>(dictPath);
-                    foreach (var kvp in dict)
-                    {
-                        try
-                        {
-                            data.nodes.Add(kvp.Value);
-                        }
-                        catch(Exception ex)
-                        {
-                            Monitor.Log($"Exception adding {kvp.Key}: \r\n{ex}");
-                        }
-                    }
-                    foreach (object nodeObj in data.nodes)
-                    {
-                        CustomOreNode node = (CustomOreNode)nodeObj;
-
-                        if (node.spriteType == "mod")
-                        {
-                            node.texture = Helper.ModContent.Load<Texture2D>(node.spritePath);
-                        }
-                        else
-                        {
-                            node.texture = Helper.ModContent.Load<Texture2D>(node.spritePath);
-                        }
-                        if (conf.parentSheetIndexes.ContainsKey(add))
-                        {
-                            node.parentSheetIndex = conf.parentSheetIndexes[add];
-                        }
-                        else
-                        {
-                            while (existingPSIs.ContainsKey(id))
-                                id++;
-                            node.parentSheetIndex = id++;
-                        }
-                        conf.parentSheetIndexes[add] = node.parentSheetIndex;
-
-                        customOreNodesList.Add(node);
-                        add++;
-                    }
-                    if (first)
-                    {
-                        Monitor.Log($"Got {customOreNodesList.Count} ores from mod", LogLevel.Debug);
-                        Helper.Data.WriteJsonFile("ore_config.json", conf);
-                    }
-
                 }
-                else
+
+                var dict = Helper.GameContent.Load<Dictionary<string, object>>(dictPath);
+                foreach (var kvp in dict)
                 {
-                    SMonitor.Log("No custom_ore_nodes.json in mod directory.");
+                    try
+                    {
+                        var json = JsonConvert.SerializeObject(kvp.Value);
+                        var node = JsonConvert.DeserializeObject<CustomOreNode>(json);
+                        data.nodes.Add(node);
+                        SMonitor.Log($"Added dictionary node: {kvp.Key}");
+                    }
+                    catch (Exception ex)
+                    {
+                        Monitor.Log($"Exception adding {kvp.Key}: \r\n{ex}");
+                    }
+                }
+                conf = Helper.Data.ReadJsonFile<CustomOreConfig>("ore_config.json") ?? new CustomOreConfig();
+                foreach (object nodeObj in data.nodes)
+                {
+                    CustomOreNode node = (CustomOreNode)nodeObj;
+
+                    if (node.spriteType == "mod")
+                    {
+                        node.texture = Helper.ModContent.Load<Texture2D>(node.spritePath);
+                    }
+                    else
+                    {
+                        node.texture = Helper.GameContent.Load<Texture2D>(node.spritePath);
+                    }
+                    if (conf.parentSheetIndexes.ContainsKey(add))
+                    {
+                        node.parentSheetIndex = conf.parentSheetIndexes[add];
+                    }
+                    else
+                    {
+                        while (existingPSIs.ContainsKey(id))
+                            id++;
+                        node.parentSheetIndex = id++;
+                    }
+                    conf.parentSheetIndexes[add] = node.parentSheetIndex;
+
+                    customOreNodesList.Add(node);
+                    add++;
+                }
+                if (first)
+                {
+                    Monitor.Log($"Got {customOreNodesList.Count} ores from mod", LogLevel.Debug);
+                    Helper.Data.WriteJsonFile("ore_config.json", conf);
                 }
             }
             catch (Exception ex)
             {
                 SMonitor.Log("Error processing custom_ore_nodes.json: " + ex, LogLevel.Error);
             }
-
             foreach (IContentPack contentPack in Helper.ContentPacks.GetOwned())
             {
                 try

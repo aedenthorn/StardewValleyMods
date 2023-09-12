@@ -139,6 +139,21 @@ namespace LightMod
                     return;
                 }
             }
+            foreach (var n in Game1.currentLocation.characters)
+            {
+                if (n.GetBoundingBox().Contains(tile))
+                {
+                    if (Helper.Input.IsDown(Config.RadiusModButton))
+                    {
+                        ChangeLightRadius(n, e.Delta);
+                    }
+                    else
+                    {
+                        ChangeLightAlpha(n, e.Delta);
+                    }
+                    return;
+                }
+            }
         }
 
 

@@ -8,9 +8,13 @@
   <ItemGroup>
     <None Remove="i18n\es.json" />
     <None Remove="i18n\ru.json" />
+    <None Remove="i18n\tr.json" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="i18n\es.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="i18n\tr.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="i18n\ru.json">

@@ -11,7 +11,7 @@ namespace CustomOreNodes
         public List<OreLevelRange> oreLevelRanges = new List<OreLevelRange>();
         public string nodeDesc;
         public string spritePath;
-        public string spriteType;
+        public string spriteType = "game";
         public int spriteX;
         public int spriteY;
         public int spriteW;

@@ -14,9 +14,9 @@
   },
   "Dependencies": [
     {
-      "UniqueID": "Platonymous.ModUpdater",
-      "IsRequired": false
+      "UniqueID": "aedenthorn.BuffFramework",
+      "IsRequired": true
     }
   ],
-  "UpdateKeys": [ "Nexus:" ]
+  "UpdateKeys": [ "Nexus:18244" ]
 }
