@@ -79,46 +79,48 @@ namespace ContentPatcherEditor
 
             // get Generic Mod Config Menu's API (if it's installed)
             var configMenu = Helper.ModRegistry.GetApi<IGenericModConfigMenuApi>("spacechase0.GenericModConfigMenu");
-            if (configMenu is null)
-                return;
+            if (configMenu is not null)
+            {
 
-            // register mod
-            configMenu.Register(
-                mod: ModManifest,
-                reset: () => Config = new ModConfig(),
-                save: () => Helper.WriteConfig(Config)
-            );
+                // register mod
+                configMenu.Register(
+                    mod: ModManifest,
+                    reset: () => Config = new ModConfig(),
+                    save: () => Helper.WriteConfig(Config)
+                );
 
-            configMenu.AddBoolOption(
-                mod: ModManifest,
-                name: () => SHelper.Translation.Get("GMCM_Option_ModEnabled_Name"),
-                getValue: () => Config.ModEnabled,
-                setValue: value => Config.ModEnabled = value
-            );
-            configMenu.AddBoolOption(
-                mod: ModManifest,
-                name: () => SHelper.Translation.Get("GMCM_Option_ShowButton_Name"),
-                getValue: () => Config.ShowButton,
-                setValue: value => Config.ShowButton = value
-            );
-            configMenu.AddBoolOption(
-                mod: ModManifest,
-                name: () => SHelper.Translation.Get("GMCM_Option_Backup_Name"),
-                getValue: () => Config.Backup,
-                setValue: value => Config.Backup = value
-            );
-            configMenu.AddBoolOption(
-                mod: ModManifest,
-                name: () => SHelper.Translation.Get("GMCM_Option_OpenModsFolderAfterZip_Name"),
-                getValue: () => Config.OpenModsFolderAfterZip,
-                setValue: value => Config.OpenModsFolderAfterZip = value
-            );
-            configMenu.AddKeybindList(
-                mod: ModManifest,
-                name: () => SHelper.Translation.Get("GMCM_Option_MenuButton_Name"),
-                getValue: () => Config.MenuButton,
-                setValue: value => Config.MenuButton = value
-            );
+                configMenu.AddBoolOption(
+                    mod: ModManifest,
+                    name: () => SHelper.Translation.Get("GMCM_Option_ModEnabled_Name"),
+                    getValue: () => Config.ModEnabled,
+                    setValue: value => Config.ModEnabled = value
+                );
+                configMenu.AddBoolOption(
+                    mod: ModManifest,
+                    name: () => SHelper.Translation.Get("GMCM_Option_ShowButton_Name"),
+                    getValue: () => Config.ShowButton,
+                    setValue: value => Config.ShowButton = value
+                );
+                configMenu.AddBoolOption(
+                    mod: ModManifest,
+                    name: () => SHelper.Translation.Get("GMCM_Option_Backup_Name"),
+                    getValue: () => Config.Backup,
+                    setValue: value => Config.Backup = value
+                );
+                configMenu.AddBoolOption(
+                    mod: ModManifest,
+                    name: () => SHelper.Translation.Get("GMCM_Option_OpenModsFolderAfterZip_Name"),
+                    getValue: () => Config.OpenModsFolderAfterZip,
+                    setValue: value => Config.OpenModsFolderAfterZip = value
+                );
+                configMenu.AddKeybindList(
+                    mod: ModManifest,
+                    name: () => SHelper.Translation.Get("GMCM_Option_MenuButton_Name"),
+                    getValue: () => Config.MenuButton,
+                    setValue: value => Config.MenuButton = value
+                );
+
+            }
 
         }
 

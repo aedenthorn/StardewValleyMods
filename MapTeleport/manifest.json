@@ -1,7 +1,7 @@
 ﻿{
   "Name": "Map Teleport",
   "Author": "aedenthorn",
-  "Version": "0.4.1",
+  "Version": "0.5.0",
   "Description": "Teleport using the map.",
   "UniqueID": "aedenthorn.MapTeleport",
   "EntryDll": "MapTeleport.dll",

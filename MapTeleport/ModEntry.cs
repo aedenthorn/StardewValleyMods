@@ -7,7 +7,7 @@ using System.IO;
 
 namespace MapTeleport
 {
-    public partial class ModEntry : Mod 
+    public partial class ModEntry : Mod
     {
         public static ModEntry context;
         public static ModConfig Config;
@@ -21,7 +21,7 @@ namespace MapTeleport
         public override void Entry(IModHelper helper)
         {
             Config = Helper.ReadConfig<ModConfig>();
-            if (!Config.EnableMod)
+            if (!Config.ModEnabled)
                 return;
 
             context = this;
@@ -29,17 +29,19 @@ namespace MapTeleport
             SHelper = helper;
 
             helper.Events.Content.AssetRequested += Content_AssetRequested;
+            helper.Events.GameLoop.GameLaunched += GameLoop_GameLaunched;
             isSVE = Helper.ModRegistry.IsLoaded("FlashShifter.SVECode");
 
             harmony = new Harmony(ModManifest.UniqueID);
             harmony.PatchAll();
         }
 
+
         private void Content_AssetRequested(object sender, AssetRequestedEventArgs e)
         {
             if (e.NameWithoutLocale.IsEquivalentTo(dictPath))
             {
-                if(File.Exists(Path.Combine(SHelper.DirectoryPath, "coordinates.json")))
+                if (File.Exists(Path.Combine(SHelper.DirectoryPath, "coordinates.json")))
                 {
                     e.LoadFromModFile<CoordinatesList>("coordinates.json", AssetLoadPriority.Exclusive);
                 }
@@ -54,11 +56,36 @@ namespace MapTeleport
                     {
                         coordinatesList = Helper.Data.ReadJsonFile<CoordinatesList>("assets/coordinates.json");
                     }
-                    e.LoadFrom( ()=> coordinatesList, AssetLoadPriority.Exclusive);
-                    Helper.Data.WriteJsonFile("coordinates.json", coordinatesList);
+                    e.LoadFrom(() => coordinatesList, AssetLoadPriority.Exclusive);
                 }
             }
         }
 
+
+        private void GameLoop_GameLaunched(object sender, StardewModdingAPI.Events.GameLaunchedEventArgs e)
+        {
+
+            // get Generic Mod Config Menu's API (if it's installed)
+            var configMenu = Helper.ModRegistry.GetApi<IGenericModConfigMenuApi>("spacechase0.GenericModConfigMenu");
+            if (configMenu is not null)
+            {
+
+                // register mod
+                configMenu.Register(
+                    mod: ModManifest,
+                    reset: () => Config = new ModConfig(),
+                    save: () => Helper.WriteConfig(Config)
+                );
+
+                configMenu.AddBoolOption(
+                    mod: ModManifest,
+                    name: () => Helper.Translation.Get("GMCM_Option_ModEnabled_Name"),
+                    getValue: () => Config.ModEnabled,
+                    setValue: value => Config.ModEnabled = value
+                );
+
+            }
+
+        }
     }
 }

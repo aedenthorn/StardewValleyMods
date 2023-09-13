@@ -57,12 +57,12 @@ namespace ResourceStorage
             }
 
             int lineHeight = 64;
-            linesPerPage = (Game1.viewport.Height + 72 - spaceToClearTopBorder * 2 - 108) / lineHeight;
+            linesPerPage = (Game1.uiViewport.Height + 72 - spaceToClearTopBorder * 2 - 108) / lineHeight;
 
-            width = Math.Min(64 * 12, Game1.viewport.Width);
-            height = Math.Min(Game1.viewport.Height + 72, Math.Min(linesPerPage, resourceList.Count) * lineHeight + (borderWidth + spaceToClearTopBorder) * 2 - 32);
-            xPositionOnScreen = (Game1.viewport.Width - width) / 2;
-            yPositionOnScreen = Math.Max(-72, (Game1.viewport.Height - height) / 2 - 32);
+            width = Math.Min(64 * 12, Game1.uiViewport.Width);
+            height = Math.Min(Game1.uiViewport.Height + 72, Math.Min(linesPerPage, resourceList.Count) * lineHeight + (borderWidth + spaceToClearTopBorder) * 2 - 32);
+            xPositionOnScreen = (Game1.uiViewport.Width - width) / 2;
+            yPositionOnScreen = Math.Max(-72, (Game1.uiViewport.Height - height) / 2 - 32);
 
             //allComponents.Clear();
             autoCCs.Clear();
@@ -140,7 +140,7 @@ namespace ResourceStorage
         {
             ModEntry.gameMenu.draw(b);
             Game1.drawDialogueBox(xPositionOnScreen, yPositionOnScreen, width, height, false, true, null, false, true);
-            SpriteText.drawStringHorizontallyCenteredAt(b, ModEntry.SHelper.Translation.Get("resources"), Game1.viewport.Width / 2, yPositionOnScreen + spaceToClearTopBorder + borderWidth / 2);
+            SpriteText.drawStringHorizontallyCenteredAt(b, ModEntry.SHelper.Translation.Get("resources"), Game1.uiViewport.Width / 2, yPositionOnScreen + spaceToClearTopBorder + borderWidth / 2);
             b.Draw(Game1.menuTexture, new Rectangle(xPositionOnScreen + 32, yPositionOnScreen + borderWidth + spaceToClearTopBorder + 48, width - 64, 16), new Rectangle(40, 16, 1, 16), Color.White);
             int count = 0;
             for (int i = scrolled; i < Math.Min(linesPerPage + scrolled, resourceList.Count); i++)
@@ -412,7 +412,7 @@ namespace ResourceStorage
         public override void gameWindowSizeChanged(Rectangle oldBounds, Rectangle newBounds)
         {
             base.gameWindowSizeChanged(oldBounds, newBounds);
-            scrolled = Math.Min(scrolled, resourceList.Count - ((Game1.viewport.Height + 72 - spaceToClearTopBorder * 2 - 108) / 64));
+            scrolled = Math.Min(scrolled, resourceList.Count - ((Game1.uiViewport.Height + 72 - spaceToClearTopBorder * 2 - 108) / 64));
             RepopulateComponentList();
         }
 

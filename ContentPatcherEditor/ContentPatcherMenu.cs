@@ -38,8 +38,11 @@ namespace ContentPatcherEditor
         public ContentPatcherMenu() : base(Game1.uiViewport.Width / 2 - (windowWidth + borderWidth * 2) / 2, -borderWidth, windowWidth + borderWidth * 2, Game1.uiViewport.Height, false)
         {
             scrolled = 0;
-
-            foreach (var dir in Directory.GetDirectories(Path.Combine(Constants.GamePath, "Mods"), "*", SearchOption.AllDirectories))
+            string folder = ModEntry.Config.ModsFolder.Trim();
+            if (string.IsNullOrEmpty(folder))
+                folder = Path.Combine(Constants.GamePath, "Mods");
+            
+            foreach (var dir in Directory.GetDirectories(folder, "*", SearchOption.AllDirectories))
             {
                 if (File.Exists(Path.Combine(dir, "manifest.json")) && File.Exists(Path.Combine(dir, "content.json")))
                 {
