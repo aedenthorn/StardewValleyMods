@@ -7,6 +7,8 @@ using StardewValley.TerrainFeatures;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
+using System.Reflection.Emit;
 using Object = StardewValley.Object;
 
 namespace Wildflowers
@@ -204,7 +206,7 @@ namespace Wildflowers
                 SMonitor.Log($"Grass removed at {tileLocation}");
                 if (Config.WeaponsHarvestFlowers)
                 {
-
+                    crop.whichForageCrop.Value = -424242;
                     crop.harvest((int)tileLocation.X, (int)tileLocation.Y, new HoeDirt(1, crop));
                     locDict.Remove(tileLocation);
                     __instance.modData.Remove(wildKey);
@@ -212,22 +214,26 @@ namespace Wildflowers
                 }
             }
         }
-        //[HarmonyPatch(typeof(Object), nameof(Object.performDropDownAction))]
-        public class Object_performDropDownAction_Patch
+        [HarmonyPatch(typeof(Crop), nameof(Crop.harvest))]
+        public class Crop_harvest_Patch
         {
-            public static bool Prefix(Object __instance)
+            public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions)
             {
-                if (__instance.name.Equals("Bee House"))
+                SMonitor.Log($"Transpiling Crop.harvest");
+                var codes = new List<CodeInstruction>(instructions);
+                for (int i = 0; i < codes.Count; i++)
                 {
-                    if (__instance.heldObject.Value == null)
+                    if (i < codes.Count - 6 && codes[i].opcode == OpCodes.Ldc_I4_0 && codes[i + 5].opcode == OpCodes.Callvirt && codes[i + 5].operand is MethodInfo && (MethodInfo)codes[i + 5].operand == AccessTools.Method(typeof(Farmer), nameof(Farmer.gainExperience)))
                     {
-                        __instance.heldObject.Value = new Object(Vector2.Zero, 340, null, false, true, false, false);
-                        __instance.MinutesUntilReady = 0;
+                        SMonitor.Log($"adding method to switch exp type");
+                        codes.Insert(i + 1, new CodeInstruction(OpCodes.Call, AccessTools.Method(typeof(ModEntry), nameof(SwitchExpType))));
+                        codes.Insert(i + 1, new CodeInstruction(OpCodes.Ldarg_0));
                     }
-                    return false;
                 }
-                return true;
+
+                return codes.AsEnumerable();
             }
         }
+
     }
 }

@@ -1,48 +1,130 @@
 ﻿using HarmonyLib;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using Microsoft.Xna.Framework.Input;
 using StardewModdingAPI;
 using StardewModdingAPI.Events;
 using StardewValley;
+using System;
 using System.Collections.Generic;
+using System.Linq;
+using xTile;
 using xTile.Layers;
 using xTile.Tiles;
 
 namespace MapEdit
 {
-    public class HelperEvents
+    public partial class ModEntry
     {
-        public static ModConfig Config;
-        public static IModHelper Helper;
-        public static IMonitor Monitor;
-
-        public static void Initialize(ModConfig config, IMonitor monitor, IModHelper helper)
+        private void Content_AssetRequested(object sender, StardewModdingAPI.Events.AssetRequestedEventArgs e)
         {
-            Config = config;
-            Helper = helper;
-            Monitor = monitor;
+            if (!Config.EnableMod)
+                return;
+
+            foreach (string name in mapCollectionData.mapDataDict.Keys)
+            {
+                if (e.DataType == typeof(Map) && (e.NameWithoutLocale.IsEquivalentTo("Maps/" + name) || e.NameWithoutLocale.IsEquivalentTo(name)))
+                {
+                    e.Edit(delegate (IAssetData idata)
+                    {
+                        SMonitor.Log("Editing map " + e.Name);
+                        var mapData = idata.AsMap();
+                        MapData data = mapCollectionData.mapDataDict[name];
+                        foreach(var kvp in data.customSheets)
+                        {
+                            if (mapData.Data.TileSheets.FirstOrDefault(s => s.ImageSource == kvp.Value.path) != null)
+                                continue;
+                            string name = kvp.Key;
+                            int which = 0;
+                            while(mapData.Data.Layers.FirstOrDefault(l => l.Id == name) != null)
+                            {
+                                which++;
+                            }
+                            if(which > 0)
+                            {
+                                name += "_" + which;
+                            }
+                            mapData.Data.AddTileSheet(new TileSheet(name, mapData.Data, kvp.Value.path, new xTile.Dimensions.Size(kvp.Value.width, kvp.Value.height), new xTile.Dimensions.Size(16, 16)));
+                        }
+                        int count = 0;
+                        foreach (var kvp in data.tileDataDict)
+                        {
+                            foreach (Layer layer in mapData.Data.Layers)
+                            {
+                                if (layer.Id == "Paths")
+                                    continue;
+                                try
+                                {
+                                    layer.Tiles[(int)kvp.Key.X, (int)kvp.Key.Y] = null;
+                                }
+                                catch
+                                {
+
+                                }
+                            }
+                            foreach (var kvp2 in kvp.Value.tileDict)
+                            {
+                                try
+                                {
+                                    List<StaticTile> tiles = new List<StaticTile>();
+                                    for (int i = 0; i < kvp2.Value.tiles.Count; i++)
+                                    {
+                                        TileInfo tile = kvp2.Value.tiles[i];
+                                        tiles.Add(new StaticTile(mapData.Data.GetLayer(kvp2.Key), mapData.Data.GetTileSheet(tile.tileSheet), tile.blendMode, tile.tileIndex));
+                                        foreach (var prop in kvp2.Value.tiles[i].properties)
+                                        {
+                                            tiles[i].Properties[prop.Key] = prop.Value;
+                                        }
+                                    }
+
+                                    if (kvp2.Value.tiles.Count == 1)
+                                    {
+                                        mapData.Data.GetLayer(kvp2.Key).Tiles[(int)kvp.Key.X, (int)kvp.Key.Y] = tiles[0];
+                                    }
+                                    else
+                                    {
+                                        mapData.Data.GetLayer(kvp2.Key).Tiles[(int)kvp.Key.X, (int)kvp.Key.Y] = new AnimatedTile(mapData.Data.GetLayer(kvp2.Key), tiles.ToArray(), kvp2.Value.frameInterval);
+                                    }
+                                    count++;
+                                }
+                                catch
+                                {
+
+                                }
+                            }
+                        }
+                        SMonitor.Log($"Added {count} custom tiles to map {name}");
+                    }, StardewModdingAPI.Events.AssetEditPriority.Late);
+                    cleanMaps.Add(name);
+                }
+            }
         }
         public static void GameLoop_ReturnedToTitle(object sender, ReturnedToTitleEventArgs e)
         {
-            ModActions.DeactivateMod();
-            ModEntry.cleanMaps.Clear();
+            DeactivateMod();
+            cleanMaps.Clear();
         }
 
         public static void GameLoop_SaveLoaded(object sender, SaveLoadedEventArgs e)
         {
-            MapActions.GetMapCollectionData();
+            GetMapCollectionData();
         }
 
 
         public static void GameLoop_UpdateTicked(object sender, UpdateTickedEventArgs e)
         {
-            if (ModEntry.modActive.Value && (Helper.Input.IsDown(Config.PasteButton) || Helper.Input.IsSuppressed(Config.PasteButton)) && ModEntry.pastedTileLoc.Value.X > -1 && ModEntry.pastedTileLoc.Value != Game1.currentCursorTile)
+            if (MouseInMenu())
             {
-                TileActions.PasteCurrentTile();
+                pastedTileLoc.Value = -Vector2.One;
+                return;
             }
-            else if (ModEntry.modActive.Value && (Helper.Input.IsDown(Config.RevertButton) || Helper.Input.IsSuppressed(Config.RevertButton)) && MapActions.MapHasTile(Game1.currentCursorTile))
+            if (modActive.Value && (SHelper.Input.IsDown(Config.PasteButton) || SHelper.Input.IsSuppressed(Config.PasteButton)) && pastedTileLoc.Value.X > -1 && pastedTileLoc.Value != Game1.currentCursorTile)
             {
-                TileActions.RevertCurrentTile();
+                PasteCurrentTile();
+            }
+            else if (modActive.Value && (SHelper.Input.IsDown(Config.RevertButton) || SHelper.Input.IsSuppressed(Config.RevertButton)) && MapHasTile(Game1.currentCursorTile))
+            {
+                RevertCurrentTile();
             }
         }
 
@@ -51,79 +133,110 @@ namespace MapEdit
         {
             if (!Config.EnableMod)
                 return;
-            ModActions.DeactivateMod();
-            MapActions.UpdateCurrentMap(false);
+            DeactivateMod();
+            UpdateCurrentMap(false);
         }
-
+        private void Input_MouseWheelScrolled(object sender, MouseWheelScrolledEventArgs e)
+        {
+            if(MouseInMenu())
+            {
+                tileMenu.Value.receiveScrollWheelAction(e.Delta > 0 ? 1 : -1);
+            }
+        }
         public static void Input_ButtonPressed(object sender, ButtonPressedEventArgs e)
         {
             if (!Config.EnableMod || !Context.IsPlayerFree)
             {
-                ModActions.DeactivateMod();
+                DeactivateMod();
                 return;
             }
 
             if (e.Button == Config.ToggleButton)
             {
-                Helper.Input.Suppress(e.Button);
-                ModEntry.modActive.Value = !ModEntry.modActive.Value;
-                ModEntry.copiedTileLoc.Value = new Vector2(-1, -1);
-                ModEntry.currentTileDict.Value.Clear();
-                Monitor.Log($"Toggled mod: {ModEntry.modActive}");
-                if (ModEntry.modActive.Value)
-                    ModActions.ShowMessage(string.Format(Helper.Translation.Get("mod-active"), Config.ToggleButton));
+                SHelper.Input.Suppress(e.Button);
+                modActive.Value = !modActive.Value;
+                copiedTileLoc.Value = new Vector2(-1, -1);
+                currentTileDict.Value.Clear();
+                SMonitor.Log($"Toggled mod: {modActive}");
+                tileMenu.Value = null;
+                if (modActive.Value)
+                    ShowMessage(string.Format(SHelper.Translation.Get("mod-active"), Config.ToggleButton));
                 else
-                    ModActions.ShowMessage(string.Format(Helper.Translation.Get("mod-inactive"), Config.ToggleButton));
+                    ShowMessage(string.Format(SHelper.Translation.Get("mod-inactive"), Config.ToggleButton));
             }
-            else if (ModEntry.modActive.Value) 
+            else if (modActive.Value)
             {
+                if (MouseInMenu())
+                {
+                    if(e.Button == SButton.MouseLeft)
+                    {
+                        tileMenu.Value.receiveLeftClick(Game1.getMouseX(), Game1.getMouseY());
+                    }
+                    else if(e.Button == SButton.MouseRight)
+                    {
+                        tileMenu.Value.receiveRightClick(Game1.getMouseX(), Game1.getMouseY());
+                    }
+                    else
+                    {
+                        tileMenu.Value.receiveKeyPress((Keys)e.Button);
+                    }
+                    SHelper.Input.Suppress(e.Button);
+                    return;
+                }
                 if (e.Button == Config.CopyButton)
                 {
-                    Helper.Input.Suppress(e.Button);
+                    SHelper.Input.Suppress(e.Button);
 
-                    TileActions.CopyCurrentTile();
-
-                }
-                else if (ModEntry.copiedTileLoc.Value.X > -1 && e.Button == Config.PasteButton && ModEntry.pastedTileLoc.Value != Game1.currentCursorTile)
-                {
-                    Helper.Input.Suppress(e.Button);
-                    TileActions.PasteCurrentTile();
+                    CopyCurrentTile();
 
                 }
-                else if (e.Button == Config.RevertButton && MapActions.MapHasTile(Game1.currentCursorTile))
+                else if (currentTileDict.Value.Count > 0 && e.Button == Config.PasteButton && pastedTileLoc.Value != Game1.currentCursorTile)
                 {
-                    Helper.Input.Suppress(e.Button);
-                    TileActions.RevertCurrentTile();
+                    SHelper.Input.Suppress(e.Button);
+                    PasteCurrentTile();
+
+                }
+                else if (e.Button == Config.RevertButton)
+                {
+                    if (SHelper.Input.IsDown(Config.RevertModButton))
+                    {
+                        RevertCurrentMap();
+                    }
+                    else if(MapHasTile(Game1.currentCursorTile))
+                    {
+                        RevertCurrentTile();
+                    }
+                    SHelper.Input.Suppress(e.Button);
                 }
                 else if (e.Button == SButton.Escape)
                 {
-                    Helper.Input.Suppress(e.Button);
-                    if (ModEntry.copiedTileLoc.Value.X > -1)
+                    SHelper.Input.Suppress(e.Button);
+                    if (copiedTileLoc.Value.X > -1)
                     {
-                        ModEntry.copiedTileLoc.Value = new Vector2(-1, -1);
-                        ModEntry.pastedTileLoc.Value = new Vector2(-1, -1);
-                        ModEntry.currentLayer.Value = 0;
-                        ModEntry.currentTileDict.Value.Clear();
+                        copiedTileLoc.Value = new Vector2(-1, -1);
+                        pastedTileLoc.Value = new Vector2(-1, -1);
+                        currentLayer.Value = null;
+                        currentTileDict.Value.Clear();
                     }
                     else
-                        ModActions.DeactivateMod();
+                        DeactivateMod();
                 }
                 else if (e.Button == Config.RefreshButton)
                 {
-                    Helper.Input.Suppress(e.Button);
-                    ModEntry.cleanMaps.Clear();
-                    MapActions.GetMapCollectionData();
-                    MapActions.UpdateCurrentMap(true);
+                    SHelper.Input.Suppress(e.Button);
+                    cleanMaps.Clear();
+                    GetMapCollectionData();
+                    UpdateCurrentMap(true);
                 }
                 else if (e.Button == Config.ScrollUpButton)
                 {
-                    Helper.Input.Suppress(e.Button);
-                    ModActions.SwitchTile(true);
+                    SHelper.Input.Suppress(e.Button);
+                    SwitchTile(true);
                 }
                 else if (e.Button == Config.ScrollDownButton)
                 {
-                    Helper.Input.Suppress(e.Button);
-                    ModActions.SwitchTile(false);
+                    SHelper.Input.Suppress(e.Button);
+                    SwitchTile(false);
                 }
             } 
 
@@ -131,12 +244,26 @@ namespace MapEdit
 
         public static void Display_RenderedWorld(object sender, RenderedWorldEventArgs e)
         {
-            if (!Config.EnableMod || !ModEntry.modActive.Value)
+            if (!Config.EnableMod || !modActive.Value)
                 return;
 
             if (Game1.activeClickableMenu != null)
             {
-                ModEntry.modActive.Value = false;
+                modActive.Value = false;
+                return;
+            }
+            if (tileMenu.Value is null)
+            {
+                tileMenu.Value = new();
+            }
+            TileSelectMenu.button.draw(e.SpriteBatch);
+
+            if (MouseInMenu())
+            {
+                if (!tileMenu.Value.showing)
+                {
+                    tileMenu.Value.drawMouse(e.SpriteBatch, true);
+                }
                 return;
             }
 
@@ -144,12 +271,12 @@ namespace MapEdit
             Vector2 mouseTilePos = mouseTile * Game1.tileSize - new Vector2(Game1.viewport.X, Game1.viewport.Y);
             var ts1 = (Dictionary<TileSheet, Texture2D>)AccessTools.Field(Game1.mapDisplayDevice.GetType(), "m_tileSheetTextures")?.GetValue(Game1.mapDisplayDevice);
             var ts2 = (Dictionary<TileSheet, Texture2D>)AccessTools.Field(Game1.mapDisplayDevice.GetType(), "m_tileSheetTextures2")?.GetValue(Game1.mapDisplayDevice);
-            if (ModEntry.copiedTileLoc.Value.X > -1)
+            if (currentTileDict.Value.Count > 0)
             {
-                foreach (var kvp in ModEntry.currentTileDict.Value)
+                foreach (var kvp in currentTileDict.Value)
                 {
                     int offset = kvp.Key.Equals("Front") ? (16 * Game1.pixelZoom) : 0;
-                    float layerDepth = (ModEntry.copiedTileLoc.Value.Y * (16 * Game1.pixelZoom) + 16 * Game1.pixelZoom + offset) / 10000f;
+                    float layerDepth = (copiedTileLoc.Value.Y * (16 * Game1.pixelZoom) + 16 * Game1.pixelZoom + offset) / 10000f;
                     Tile tile = kvp.Value;
                     if (tile == null)
                         continue;
@@ -169,14 +296,24 @@ namespace MapEdit
                     if (texture2D != null)
                         e.SpriteBatch.Draw(texture2D, mouseTilePos, sourceRectangle, Color.White, 0f, Vector2.Zero, Layer.zoom, SpriteEffects.None, layerDepth);
                 }
-                e.SpriteBatch.Draw(ModEntry.copiedTexture, mouseTilePos, Color.White);
+                e.SpriteBatch.Draw(copiedTexture, mouseTilePos, Color.White);
 
             }
-            else if (MapActions.MapHasTile(mouseTile))
-                e.SpriteBatch.Draw(ModEntry.existsTexture, mouseTilePos, Color.White);
+            else if (MapHasTile(mouseTile))
+                e.SpriteBatch.Draw(existsTexture, mouseTilePos, Color.White);
             else
-                e.SpriteBatch.Draw(ModEntry.activeTexture, mouseTilePos, Color.White);
+                e.SpriteBatch.Draw(activeTexture, mouseTilePos, Color.White);
 
+        }
+        private void Display_RenderedHud(object sender, RenderedHudEventArgs e)
+        {
+            if (!Config.EnableMod || !modActive.Value)
+                return;
+            if (tileMenu.Value is null)
+            {
+                tileMenu.Value = new TileSelectMenu();
+            }
+            tileMenu.Value.draw(e.SpriteBatch);
         }
     }
 }

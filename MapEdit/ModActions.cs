@@ -2,48 +2,55 @@
 using Microsoft.Xna.Framework.Graphics;
 using StardewValley;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using xTile.Layers;
 using xTile.Tiles;
 
 namespace MapEdit
 {
-    public class ModActions
+    public partial class ModEntry
     {
         public static void SwitchTile(bool increase)
         {
             List<string> layers = new List<string>();
             foreach (Layer layer in Game1.player.currentLocation.map.Layers)
             {
-                if (ModEntry.currentTileDict.Value.ContainsKey(layer.Id))
+                if (currentTileDict.Value.ContainsKey(layer.Id))
                     layers.Add(layer.Id);
             }
-
-            if (ModEntry.SHelper.Input.IsDown(ModEntry.Config.LayerModButton))
+            int layerIndex = layers.IndexOf(currentLayer.Value);
+            if (layerIndex < 0)
+            {
+                layerIndex = 0;
+                currentLayer.Value = layers[0];
+                return;
+            }
+            if (SHelper.Input.IsDown(Config.LayerModButton))
             {
                 if (layers.Count < 2)
                     return;
                 if (increase)
                 {
-                    if (ModEntry.currentLayer.Value >= layers.Count - 1)
-                        ModEntry.currentLayer.Value = 0;
+                    if (layerIndex >= layers.Count - 1)
+                        currentLayer.Value = layers[0];
                     else
-                        ModEntry.currentLayer.Value++;
+                        currentLayer.Value = layers[layerIndex + 1];
                 }
                 else
                 {
-                    if (ModEntry.currentLayer.Value < 1)
-                        ModEntry.currentLayer.Value = layers.Count - 1;
+                    if (layerIndex < 1)
+                        currentLayer.Value = layers[layers.Count - 1];
                     else
-                        ModEntry.currentLayer.Value--;
+                        currentLayer.Value = layers[layerIndex - 1];
                 }
 
-                string text = string.Format(ModEntry.SHelper.Translation.Get("current-layer"), layers[ModEntry.currentLayer.Value]);
-                ModEntry.SMonitor.Log(text);
-                ModActions.ShowMessage(text);
+                string text = string.Format(SHelper.Translation.Get("current-layer"), currentLayer.Value);
+                SMonitor.Log(text);
+                ShowMessage(text);
             }
-            else if (ModEntry.SHelper.Input.IsDown(ModEntry.Config.SheetModButton))
+            else if (SHelper.Input.IsDown(Config.SheetModButton))
             {
-                if (ModEntry.currentTileDict.Value[layers[ModEntry.currentLayer.Value]] is AnimatedTile)
+                if (currentTileDict.Value[currentLayer.Value] is AnimatedTile)
                     return;
 
                 List<TileSheet> sheets = new List<TileSheet>();
@@ -54,10 +61,10 @@ namespace MapEdit
                 }
                 if (sheets.Count < 2)
                     return;
-                Tile tile = ModEntry.currentTileDict.Value[layers[ModEntry.currentLayer.Value]];
+                Tile tile = currentTileDict.Value[currentLayer.Value];
                 if (tile == null)
                 {
-                    Layer layer = Game1.player.currentLocation.map.GetLayer(layers[ModEntry.currentLayer.Value]);
+                    Layer layer = Game1.player.currentLocation.map.GetLayer(currentLayer.Value);
                     tile = new StaticTile(layer, sheets[0], BlendMode.Alpha, -1);
                 }
                 int tileSheetIndex = sheets.IndexOf(tile.TileSheet);
@@ -76,28 +83,28 @@ namespace MapEdit
                         tileSheetIndex--;
                 }
                 TileSheet tileSheet = sheets[tileSheetIndex];
-                ModEntry.SHelper.Reflection.GetField<TileSheet>(tile, "m_tileSheet").SetValue(tileSheet);
+                SHelper.Reflection.GetField<TileSheet>(tile, "m_tileSheet").SetValue(tileSheet);
                 tile.TileIndex = 0;
-                string text = string.Format(ModEntry.SHelper.Translation.Get("current-tilesheet"), tileSheet.Id);
-                ModEntry.SMonitor.Log(text);
-                ModActions.ShowMessage(text);
+                string text = string.Format(SHelper.Translation.Get("current-tilesheet"), tileSheet.Id);
+                SMonitor.Log(text);
+                ShowMessage(text);
             }
             else
             {
-                if (ModEntry.currentTileDict.Value[layers[ModEntry.currentLayer.Value]] == null)
+                if (!currentTileDict.Value.TryGetValue(currentLayer.Value, out var val) || val == null)
                 {
-                    ModEntry.currentTileDict.Value[layers[ModEntry.currentLayer.Value]] = new StaticTile(Game1.player.currentLocation.map.GetLayer(layers[ModEntry.currentLayer.Value]), Game1.player.currentLocation.map.TileSheets[0], BlendMode.Alpha, -1);
+                    currentTileDict.Value[currentLayer.Value] = new StaticTile(Game1.player.currentLocation.map.GetLayer(currentLayer.Value), Game1.player.currentLocation.map.TileSheets[0], BlendMode.Alpha, -1);
                 }
-                if (ModEntry.currentTileDict.Value[layers[ModEntry.currentLayer.Value]] is AnimatedTile)
+                if (currentTileDict.Value[currentLayer.Value] is AnimatedTile)
                     return;
 
-                Tile tile = ModEntry.currentTileDict.Value[layers[ModEntry.currentLayer.Value]];
+                Tile tile = currentTileDict.Value[currentLayer.Value];
                 //context.Monitor.Log($"old index {tile.TileIndex}");
                 if (tile == null)
                 {
-                    ModEntry.SMonitor.Log($"Layer {layers[ModEntry.currentLayer.Value]} copied tile is null, creating empty tile");
-                    Layer layer = Game1.player.currentLocation.map.GetLayer(layers[ModEntry.currentLayer.Value]);
-                    ModEntry.currentTileDict.Value[layers[ModEntry.currentLayer.Value]] = new StaticTile(layer, Game1.player.currentLocation.map.TileSheets[0], BlendMode.Alpha, -1);
+                    SMonitor.Log($"Layer {currentLayer.Value} copied tile is null, creating empty tile");
+                    Layer layer = Game1.player.currentLocation.map.GetLayer(currentLayer.Value);
+                    currentTileDict.Value[currentLayer.Value] = new StaticTile(layer, Game1.player.currentLocation.map.TileSheets[0], BlendMode.Alpha, -1);
                 }
                 if (increase)
                 {
@@ -115,66 +122,71 @@ namespace MapEdit
                 }
                 //context.Monitor.Log($"new index {tile.TileIndex}");
             }
-            Game1.playSound(ModEntry.Config.ScrollSound);
+            Game1.playSound(Config.ScrollSound);
         }
 
 
         public static void CreateTextures()
         {
-            int thickness = ModEntry.Config.BorderThickness;
+            int thickness = Config.BorderThickness;
 
-            ModEntry.existsTexture = new Texture2D(Game1.graphics.GraphicsDevice, Game1.tileSize, Game1.tileSize);
+            existsTexture = new Texture2D(Game1.graphics.GraphicsDevice, Game1.tileSize, Game1.tileSize);
             Color[] data = new Color[Game1.tileSize * Game1.tileSize];
             for (int i = 0; i < data.Length; i++)
             {
                 if (i < Game1.tileSize * thickness || i % Game1.tileSize < thickness || i % Game1.tileSize >= Game1.tileSize - thickness || i >= data.Length - Game1.tileSize * thickness)
-                    data[i] = ModEntry.Config.ExistsColor;
+                    data[i] = Config.ExistsColor;
                 else
                     data[i] = Color.Transparent;
             }
-            ModEntry.existsTexture.SetData(data);
+            existsTexture.SetData(data);
 
-            ModEntry.activeTexture = new Texture2D(Game1.graphics.GraphicsDevice, Game1.tileSize, Game1.tileSize);
+            activeTexture = new Texture2D(Game1.graphics.GraphicsDevice, Game1.tileSize, Game1.tileSize);
             data = new Color[Game1.tileSize * Game1.tileSize];
             for (int i = 0; i < data.Length; i++)
             {
                 if (i < Game1.tileSize * thickness || i % Game1.tileSize < thickness || i % Game1.tileSize >= Game1.tileSize - thickness || i >= data.Length - Game1.tileSize * thickness)
-                    data[i] = ModEntry.Config.ActiveColor;
+                    data[i] = Config.ActiveColor;
                 else
                     data[i] = Color.Transparent;
             }
-            ModEntry.activeTexture.SetData(data);
+            activeTexture.SetData(data);
 
-            ModEntry.copiedTexture = new Texture2D(Game1.graphics.GraphicsDevice, Game1.tileSize, Game1.tileSize);
+            copiedTexture = new Texture2D(Game1.graphics.GraphicsDevice, Game1.tileSize, Game1.tileSize);
             data = new Color[Game1.tileSize * Game1.tileSize];
             for (int i = 0; i < data.Length; i++)
             {
                 if (i < Game1.tileSize * thickness || i % Game1.tileSize < thickness || i % Game1.tileSize >= Game1.tileSize - thickness || i >= data.Length - Game1.tileSize * thickness)
-                    data[i] = ModEntry.Config.CopiedColor;
+                    data[i] = Config.CopiedColor;
                 else
                     data[i] = Color.Transparent;
             }
-            ModEntry.copiedTexture.SetData(data);
+            copiedTexture.SetData(data);
 
         }
 
         public static void DeactivateMod()
         {
-            ModEntry.modActive.Value = false;
-            ModEntry.copiedTileLoc.Value = new Vector2(-1, -1);
-            ModEntry.pastedTileLoc.Value = new Vector2(-1, -1);
-            ModEntry.currentTileDict.Value = new Dictionary<string, Tile>();
-            ModEntry.currentLayer.Value = 0;
+            modActive.Value = false;
+            copiedTileLoc.Value = new Vector2(-1, -1);
+            pastedTileLoc.Value = new Vector2(-1, -1);
+            currentTileDict.Value = new Dictionary<string, Tile>();
+            currentLayer.Value = null;
+            tileMenu.Value = null;
+            if(Game1.activeClickableMenu is TileSelectMenu)
+            {
+                Game1.activeClickableMenu = null;
+            }
         }
 
 
         public static void ShowMessage(string message)
         {
-            Game1.hudMessages.RemoveAll((HUDMessage p) => p.number == ModEntry.modNumber);
+            Game1.hudMessages.RemoveAll((HUDMessage p) => p.number == modNumber);
             Game1.addHUDMessage(new HUDMessage(message, 3)
             {
                 noIcon = true,
-                number = ModEntry.modNumber
+                number = modNumber
             });
         }
     }

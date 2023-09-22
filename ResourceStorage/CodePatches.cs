@@ -232,7 +232,7 @@ namespace ResourceStorage
         {
             public static void Postfix(InventoryPage __instance)
             {
-                if (!Config.ModEnabled)
+                if (!Config.ModEnabled || Game1.activeClickableMenu is not GameMenu)
                     return;
                 __instance.organizeButton.downNeighborID = 42999;
                 __instance.trashCan.upNeighborID = 42999;
@@ -243,7 +243,7 @@ namespace ResourceStorage
         {
             public static void Postfix(IClickableMenu __instance)
             {
-                if (!Config.ModEnabled || __instance is not InventoryPage || resourceButton is null)
+                if (!Config.ModEnabled || Game1.activeClickableMenu is not GameMenu || __instance is not InventoryPage || resourceButton is null)
                     return;
                 __instance.allClickableComponents.Add(resourceButton);
 
@@ -265,7 +265,7 @@ namespace ResourceStorage
         {
             public static bool Prefix(ref string ___hoverText, int x, int y)
             {
-                if (!Config.ModEnabled)
+                if (!Config.ModEnabled || Game1.activeClickableMenu is not GameMenu)
                     return true;
                 if(resourceButton.containsPoint(x, y))
                 {

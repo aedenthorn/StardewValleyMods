@@ -21,7 +21,7 @@ namespace CustomDecorationAreas
                 return;
             FloorWallData data = ModEntry.floorsWallsDataDict[__instance.Name];
             if (data.getFloorsFromFile?.Length > 0)
-                data.floors = ModEntry.PHelper.Content.Load<List<Rectangle>>(data.getFloorsFromFile, ContentSource.GameContent);
+                data.floors = ModEntry.PHelper.GameContent.Load<List<Rectangle>>(data.getFloorsFromFile);
             if (data.replaceFloors)
                 __result = data.floors;
             else
@@ -34,7 +34,7 @@ namespace CustomDecorationAreas
                 return;
             FloorWallData data = ModEntry.floorsWallsDataDict[__instance.Name];
             if (data.getWallsFromFile?.Length > 0)
-                data.walls = ModEntry.PHelper.Content.Load<List<Rectangle>>(data.getWallsFromFile, ContentSource.GameContent);
+                data.walls = ModEntry.PHelper.GameContent.Load<List<Rectangle>>(data.getWallsFromFile);
             if (data.replaceWalls)
                 __result = data.walls;
             else
@@ -49,7 +49,7 @@ namespace CustomDecorationAreas
                 if (Game1.locations[i].GetType() == typeof(GameLocation) && ModEntry.floorsWallsDataDict.ContainsKey(Game1.locations[i].Name))
                 {
                     GameLocation gl = Game1.locations[i];
-                    ModEntry.PMonitor.Log($"Converting {gl.name} to decoratable");
+                    ModEntry.PMonitor.Log($"Converting {gl.Name} to decoratable");
                     DecoratableLocation dl = new DecoratableLocation(gl.mapPath.Value, gl.Name);
                     if (dl.map.GetTileSheet("walls_and_floors") == null)
                     {

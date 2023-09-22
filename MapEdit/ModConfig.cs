@@ -12,6 +12,7 @@ namespace MapEdit
         public Color ActiveColor { get; set; } = new Color(0, 0, 1, 1f);
         public Color CopiedColor { get; set; } = new Color(0, 1, 0, 1f);
         public int BorderThickness { get; set; } = 4;
+        public int DefaultAnimationInterval { get; set; } = 250;
         public SButton ToggleButton { get; set; } = SButton.F10;
         public SButton RefreshButton { get; set; } = SButton.F5;
         public SButton CopyButton { get; set; } = SButton.MouseRight;

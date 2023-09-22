@@ -206,9 +206,17 @@ namespace ResourceStorage
                 if (takeCCs[i].containsPoint(x, y))
                 {
                     int stack = 1;
-                    if (ModEntry.SHelper.Input.IsDown(ModEntry.Config.ModKeyMax))
+                    if (ModEntry.SHelper.Input.IsDown(ModEntry.Config.ModKey1))
                     {
-                        stack = Math.Min(resourceList[i].Stack, resourceList[i].maximumStackSize());
+                        stack = Math.Min(Math.Min(resourceList[i].Stack, resourceList[i].maximumStackSize()), ModEntry.Config.ModKey1Amount);
+                    }
+                    else if (ModEntry.SHelper.Input.IsDown(ModEntry.Config.ModKey2))
+                    {
+                        stack = Math.Min(Math.Min(resourceList[i].Stack, resourceList[i].maximumStackSize()), ModEntry.Config.ModKey2Amount);
+                    }
+                    else if (ModEntry.SHelper.Input.IsDown(ModEntry.Config.ModKey3))
+                    {
+                        stack = Math.Min(Math.Min(resourceList[i].Stack, resourceList[i].maximumStackSize()), ModEntry.Config.ModKey3Amount);
                     }
 
                     Object obj = new Object(resourceList[i].ParentSheetIndex, stack);

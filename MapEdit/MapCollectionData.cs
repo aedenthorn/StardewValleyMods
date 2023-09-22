@@ -12,7 +12,15 @@ namespace MapEdit
 
     public class MapData
     {
+        public Dictionary<string, TileSheetData> customSheets = new Dictionary<string, TileSheetData>();
         public Dictionary<Vector2, TileLayers> tileDataDict = new Dictionary<Vector2, TileLayers>();
+    }
+    
+    public class TileSheetData
+    {
+        public string path;
+        public int width;
+        public int height;
     }
 
     public class TileLayers

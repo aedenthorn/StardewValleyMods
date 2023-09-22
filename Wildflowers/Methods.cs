@@ -33,5 +33,11 @@ namespace Wildflowers
         {
             return (!string.IsNullOrEmpty(cropData.harvestName) && Game1.objectInformation.TryGetValue(crop.indexOfHarvest.Value, out string harvest) && !harvest.StartsWith(cropData.harvestName + "/")) || (!string.IsNullOrEmpty(cropData.cropName) && Game1.objectInformation.TryGetValue(crop.netSeedIndex.Value, out string cropName) && cropName.Split('/', StringSplitOptions.None)[0] != cropData.cropName);
         }
+        private static int SwitchExpType(int type, Crop crop)
+        {
+            if (!Config.ModEnabled || crop.whichForageCrop.Value != -424242)
+                return type;
+            return Farmer.foragingSkill;
+        }
     }
 }

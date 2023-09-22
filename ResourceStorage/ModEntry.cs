@@ -128,11 +128,45 @@ namespace ResourceStorage
                 
                 configMenu.AddKeybind(
                     mod: ModManifest,
-                    name: () => SHelper.Translation.Get("GMCM_Option_ModKeyMax_Name"),
-                    getValue: () => Config.ModKeyMax,
-                    setValue: value => Config.ModKeyMax = value
+                    name: () => SHelper.Translation.Get("GMCM_Option_ModKey1_Name"),
+                    getValue: () => Config.ModKey1,
+                    setValue: value => Config.ModKey1 = value
                 );
                 
+                configMenu.AddNumberOption(
+                    mod: ModManifest,
+                    name: () => SHelper.Translation.Get("GMCM_Option_ModKey1Amount_Name"),
+                    getValue: () => Config.ModKey1Amount,
+                    setValue: value => Config.ModKey1Amount = value
+                );
+                
+                configMenu.AddKeybind(
+                    mod: ModManifest,
+                    name: () => SHelper.Translation.Get("GMCM_Option_ModKey2_Name"),
+                    getValue: () => Config.ModKey2,
+                    setValue: value => Config.ModKey2 = value
+                );
+                configMenu.AddNumberOption(
+                    mod: ModManifest,
+                    name: () => SHelper.Translation.Get("GMCM_Option_ModKey2Amount_Name"),
+                    getValue: () => Config.ModKey2Amount,
+                    setValue: value => Config.ModKey2Amount = value
+                );
+
+
+                configMenu.AddKeybind(
+                    mod: ModManifest,
+                    name: () => SHelper.Translation.Get("GMCM_Option_ModKey3_Name"),
+                    getValue: () => Config.ModKey3,
+                    setValue: value => Config.ModKey3 = value
+                );
+                configMenu.AddNumberOption(
+                    mod: ModManifest,
+                    name: () => SHelper.Translation.Get("GMCM_Option_ModKey3Amount_Name"),
+                    getValue: () => Config.ModKey3Amount,
+                    setValue: value => Config.ModKey3Amount = value
+                );
+
                 configMenu.AddNumberOption(
                     mod: ModManifest,
                     name: () => SHelper.Translation.Get("GMCM_Option_IconOffsetX_Name"),

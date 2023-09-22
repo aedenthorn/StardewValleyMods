@@ -1,35 +1,40 @@
-﻿using Microsoft.Xna.Framework;
+﻿using HarmonyLib;
+using Microsoft.Xna.Framework;
 using StardewModdingAPI;
 using StardewValley;
+using StardewValley.Menus;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
+using xTile;
+using xTile.Tiles;
 
 namespace MapEdit
 {
-    public class MapActions
+    public partial class ModEntry
     {
         public static void GetMapCollectionData()
         {
-            string modPath = ModEntry.SHelper.DirectoryPath;
-            ModEntry.mapCollectionData = new MapCollectionData();
+            string modPath = SHelper.DirectoryPath;
+            mapCollectionData = new MapCollectionData();
 
             var mapEdits = new List<MapCollectionData>();
 
-            if (ModEntry.Config.IncludeGlobalEdits && File.Exists(Path.Combine(modPath, "map_data.json")))
+            if (Config.IncludeGlobalEdits && File.Exists(Path.Combine(modPath, "map_data.json")))
             {
                 mapEdits.Add(GetMapEdits("map_data.json"));
             }
 
-            if (Directory.Exists(Path.Combine(ModEntry.SHelper.DirectoryPath, "custom")))
+            if (Directory.Exists(Path.Combine(SHelper.DirectoryPath, "custom")))
             {
-                foreach (string file in Directory.GetFiles(Path.Combine(ModEntry.SHelper.DirectoryPath, "custom"), "*.json"))
+                foreach (string file in Directory.GetFiles(Path.Combine(SHelper.DirectoryPath, "custom"), "*.json"))
                 {
                     mapEdits.Add(GetMapEdits(Path.Combine("custom", Path.GetFileName(file))));
                 }
             }
 
-            if (ModEntry.Config.UseSaveSpecificEdits)
+            if (Config.UseSaveSpecificEdits)
             {
                 if (!Directory.Exists(Path.Combine(modPath, "data")))
                     Directory.CreateDirectory(Path.Combine(modPath, "data"));
@@ -40,72 +45,49 @@ namespace MapEdit
             {
                 foreach(var map in data.mapDataDict)
                 {
-                    if (!ModEntry.mapCollectionData.mapDataDict.ContainsKey(map.Key))
+                    if (!mapCollectionData.mapDataDict.ContainsKey(map.Key))
                     {
-                        ModEntry.mapCollectionData.mapDataDict[map.Key] = map.Value;
+                        mapCollectionData.mapDataDict[map.Key] = map.Value;
                     }
                     else
                     {
                         foreach(var tile in map.Value.tileDataDict)
                         {
-                            ModEntry.mapCollectionData.mapDataDict[map.Key].tileDataDict[tile.Key] = tile.Value;
+                            mapCollectionData.mapDataDict[map.Key].tileDataDict[tile.Key] = tile.Value;
                         }
                     }
                 }
             }
 
-            ModEntry.SMonitor.Log($"Loaded map data for {ModEntry.mapCollectionData.mapDataDict.Count} maps");
+            SMonitor.Log($"Loaded map data for {mapCollectionData.mapDataDict.Count} maps");
         }
 
         private static MapCollectionData GetMapEdits(string path)
         {
-            ModEntry.SMonitor.Log($"Loading map data from file {path}");
-            MapCollectionData collection = ModEntry.SHelper.Data.ReadJsonFile<MapCollectionData>(path) ?? new MapCollectionData();
+            SMonitor.Log($"Loading map data from file {path}");
+            MapCollectionData collection = SHelper.Data.ReadJsonFile<MapCollectionData>(path) ?? new MapCollectionData();
             return collection;
         }
 
         public static void SaveMapData(string path, MapCollectionData collection)
         {
-            ModEntry.SHelper.Data.WriteJsonFile(path, collection);
-            ModEntry.SMonitor.Log($"Saved edits to file {path}");
+            SHelper.Data.WriteJsonFile(path, collection);
+            SMonitor.Log($"Saved edits to file {path}");
         }
 
-        public static void SaveMapTile(string map, Vector2 tileLoc, TileLayers tile)
+        public static void RevertCurrentMap()
         {
-            if (tile == null)
-            {
-                ModEntry.mapCollectionData.mapDataDict[map].tileDataDict.Remove(tileLoc);
-                if (ModEntry.mapCollectionData.mapDataDict[map].tileDataDict.Count == 0)
-                    ModEntry.mapCollectionData.mapDataDict.Remove(map);
-            }
-            else
-            {
-                if (!ModEntry.mapCollectionData.mapDataDict.ContainsKey(map))
-                    ModEntry.mapCollectionData.mapDataDict[map] = new MapData();
+            var mapName = Game1.player.currentLocation.mapPath.Value.Replace("Maps\\", "");
+            pastedTileLoc.Value = new Vector2(-1, -1);
+            mapCollectionData.mapDataDict.Remove(mapName);
 
-                ModEntry.mapCollectionData.mapDataDict[map].tileDataDict[Game1.currentCursorTile] = new TileLayers(ModEntry.currentTileDict.Value);
-            }
-
-            string modPath = ModEntry.SHelper.DirectoryPath;
-            if (ModEntry.Config.IncludeGlobalEdits)
+            string modPath = SHelper.DirectoryPath;
+            if (Config.IncludeGlobalEdits)
             {
                 var mapData = GetMapEdits("map_data.json");
-                if (tile == null)
+                if (mapData.mapDataDict.ContainsKey(mapName)) // only edit if custom file contains this
                 {
-                    if (mapData.mapDataDict.ContainsKey(map) && mapData.mapDataDict[map].tileDataDict.ContainsKey(tileLoc))
-                    {
-                        mapData.mapDataDict[map].tileDataDict.Remove(tileLoc);
-                        if (mapData.mapDataDict[map].tileDataDict.Count == 0)
-                            mapData.mapDataDict.Remove(map);
-                        SaveMapData(Path.Combine("map_data.json"), mapData);
-                    }
-                }
-                else if (!ModEntry.Config.UseSaveSpecificEdits || (mapData.mapDataDict.ContainsKey(map) && mapData.mapDataDict[map].tileDataDict.ContainsKey(tileLoc))) // save new to global if not using save specific
-                {
-                    if (!mapData.mapDataDict.ContainsKey(map))
-                        mapData.mapDataDict[map] = new MapData();
-
-                    mapData.mapDataDict[map].tileDataDict[tileLoc] = tile;
+                    mapData.mapDataDict.Remove(mapName);
                     SaveMapData(Path.Combine("map_data.json"), mapData);
                 }
             }
@@ -117,24 +99,97 @@ namespace MapEdit
                     string relPath = Path.Combine("custom", Path.GetFileName(file));
                     var mapData = GetMapEdits(relPath);
 
-                    if (mapData.mapDataDict.ContainsKey(map) && mapData.mapDataDict[map].tileDataDict.ContainsKey(tileLoc)) // only edit if custom file contains this
+                    if (mapData.mapDataDict.ContainsKey(mapName)) // only edit if custom file contains this
+                    {
+                        mapData.mapDataDict.Remove(mapName);
+                        SaveMapData(relPath, mapData);
+                    }
+                }
+            }
+
+            if (Config.UseSaveSpecificEdits)
+            {
+                string relPath = Path.Combine("data", Constants.SaveFolderName + "_map_data.json");
+                var mapData = new MapCollectionData();
+
+                if (!Directory.Exists(Path.Combine(modPath, "data")))
+                    Directory.CreateDirectory(Path.Combine(modPath, "data"));
+                else
+                    mapData = GetMapEdits(relPath);
+                if (mapData.mapDataDict.ContainsKey(mapName)) // only edit if custom file contains this
+                {
+                    mapData.mapDataDict.Remove(mapName);
+                    SaveMapData(relPath, mapData);
+                }
+            }
+            cleanMaps.Remove(mapName); UpdateCurrentMap(true);
+        }
+
+        public static void SaveMapTile(string mapName, Vector2 tileLoc, TileLayers tile)
+        {
+            if (tile == null)
+            {
+                mapCollectionData.mapDataDict[mapName].tileDataDict.Remove(tileLoc);
+                if (mapCollectionData.mapDataDict[mapName].tileDataDict.Count == 0)
+                    mapCollectionData.mapDataDict.Remove(mapName);
+            }
+            else
+            {
+                if (!mapCollectionData.mapDataDict.ContainsKey(mapName))
+                    mapCollectionData.mapDataDict[mapName] = new MapData();
+
+                mapCollectionData.mapDataDict[mapName].tileDataDict[Game1.currentCursorTile] = new TileLayers(currentTileDict.Value);
+            }
+
+            string modPath = SHelper.DirectoryPath;
+            if (Config.IncludeGlobalEdits)
+            {
+                var mapData = GetMapEdits("map_data.json");
+                if (tile == null)
+                {
+                    if (mapData.mapDataDict.ContainsKey(mapName) && mapData.mapDataDict[mapName].tileDataDict.ContainsKey(tileLoc))
+                    {
+                        mapData.mapDataDict[mapName].tileDataDict.Remove(tileLoc);
+                        if (mapData.mapDataDict[mapName].tileDataDict.Count == 0)
+                            mapData.mapDataDict.Remove(mapName);
+                        SaveMapData(Path.Combine("map_data.json"), mapData);
+                    }
+                }
+                else if (!Config.UseSaveSpecificEdits || (mapData.mapDataDict.ContainsKey(mapName) && mapData.mapDataDict[mapName].tileDataDict.ContainsKey(tileLoc))) // save new to global if not using save specific
+                {
+                    if (!mapData.mapDataDict.ContainsKey(mapName))
+                        mapData.mapDataDict[mapName] = new MapData();
+
+                    mapData.mapDataDict[mapName].tileDataDict[tileLoc] = tile;
+                    SaveMapData(Path.Combine("map_data.json"), mapData);
+                }
+            }
+
+            if (Directory.Exists(Path.Combine(modPath, "custom")))
+            {
+                foreach (string file in Directory.GetFiles(Path.Combine(modPath, "custom"), "*.json"))
+                {
+                    string relPath = Path.Combine("custom", Path.GetFileName(file));
+                    var mapData = GetMapEdits(relPath);
+
+                    if (mapData.mapDataDict.ContainsKey(mapName) && mapData.mapDataDict[mapName].tileDataDict.ContainsKey(tileLoc)) // only edit if custom file contains this
                     {
                         if (tile == null)
                         {
-                            mapData.mapDataDict[map].tileDataDict.Remove(tileLoc);
-                            if (mapData.mapDataDict[map].tileDataDict.Count == 0)
-                                mapData.mapDataDict.Remove(map);
+                            mapData.mapDataDict[mapName].tileDataDict.Remove(tileLoc);
+                            if (mapData.mapDataDict[mapName].tileDataDict.Count == 0)
+                                mapData.mapDataDict.Remove(mapName);
                         }
                         else
                         {
-                            mapData.mapDataDict[map].tileDataDict[tileLoc] = tile;
+                            mapData.mapDataDict[mapName].tileDataDict[tileLoc] = tile;
                         }
                         SaveMapData(relPath, mapData);
                     }
                 }
             }
 
-            if (ModEntry.Config.UseSaveSpecificEdits)
+            if (Config.UseSaveSpecificEdits)
             {
                 string relPath = Path.Combine("data", Constants.SaveFolderName + "_map_data.json");
                 var mapData = new MapCollectionData();
@@ -146,40 +201,130 @@ namespace MapEdit
 
                 if (tile == null)
                 {
-                    if (mapData.mapDataDict.ContainsKey(map) && mapData.mapDataDict[map].tileDataDict.ContainsKey(tileLoc))
+                    if (mapData.mapDataDict.ContainsKey(mapName) && mapData.mapDataDict[mapName].tileDataDict.ContainsKey(tileLoc))
                     {
-                        mapData.mapDataDict[map].tileDataDict.Remove(tileLoc);
-                        if (mapData.mapDataDict[map].tileDataDict.Count == 0)
-                            mapData.mapDataDict.Remove(map);
+                        mapData.mapDataDict[mapName].tileDataDict.Remove(tileLoc);
+                        if (mapData.mapDataDict[mapName].tileDataDict.Count == 0)
+                            mapData.mapDataDict.Remove(mapName);
                     }
                 }
                 else // always save new to save specific
                 {
-                    if (!mapData.mapDataDict.ContainsKey(map))
-                        mapData.mapDataDict[map] = new MapData();
-                    mapData.mapDataDict[map].tileDataDict[tileLoc] = tile;
+                    if (!mapData.mapDataDict.ContainsKey(mapName))
+                        mapData.mapDataDict[mapName] = new MapData();
+                    mapData.mapDataDict[mapName].tileDataDict[tileLoc] = tile;
                 }
                 SaveMapData(relPath, mapData);
             }
-            ModEntry.cleanMaps.Remove(map);
+            cleanMaps.Remove(mapName);
+        }
+        public static void AddTilesheet(TileSheet tileSheet, string mapName)
+        {
+            string modPath = SHelper.DirectoryPath;
+            string dataPath = "map_data.json";
+            if (Config.UseSaveSpecificEdits)
+            {
+                dataPath = Path.Combine("data", Constants.SaveFolderName + "_map_data.json");
+
+                if (!Directory.Exists(Path.Combine(modPath, "data")))
+                    Directory.CreateDirectory(Path.Combine(modPath, "data"));
+            }
+            var mapsData = GetMapEdits(dataPath);
+            if (!mapsData.mapDataDict.ContainsKey(mapName))
+            {
+                mapsData.mapDataDict[mapName] = new MapData();
+            }
+            if (mapsData.mapDataDict[mapName].customSheets is null)
+            {
+                mapsData.mapDataDict[mapName].customSheets = new();
+            }
+            if (mapsData.mapDataDict[mapName].customSheets.Values.FirstOrDefault(v => v.path == tileSheet.ImageSource) == null)
+            {
+                mapsData.mapDataDict[mapName].customSheets[tileSheet.Id] = new()
+                {
+                    path = tileSheet.ImageSource,
+                    width = tileSheet.SheetWidth, 
+                    height = tileSheet.SheetHeight
+                };
+            }
+            mapCollectionData = mapsData;
+
+            SaveMapData(dataPath, mapsData);
+            cleanMaps.Remove(mapName);
+            UpdateCurrentMap(false);
+            Game1.playSound(Config.PasteSound);
+            SMonitor.Log($"Added tilesheet {tileSheet.Id} to {mapName}");
+        }
+        
+        public static void RemoveTilesheet(string sheetName, string mapName)
+        {
+            mapCollectionData.mapDataDict[mapName].customSheets.Remove(sheetName);
+
+            string modPath = SHelper.DirectoryPath;
+            if (Config.IncludeGlobalEdits)
+            {
+                var mapData = GetMapEdits("map_data.json");
+
+                if (mapData.mapDataDict.TryGetValue(mapName, out var data))
+                {
+                    data.customSheets.Remove(sheetName);
+                    SaveMapData(Path.Combine("map_data.json"), mapData);
+                }
+            }
+
+            if (Directory.Exists(Path.Combine(modPath, "custom")))
+            {
+                foreach (string file in Directory.GetFiles(Path.Combine(modPath, "custom"), "*.json"))
+                {
+                    string relPath = Path.Combine("custom", Path.GetFileName(file));
+                    var mapData = GetMapEdits(relPath);
+
+                    if (mapData.mapDataDict.TryGetValue(mapName, out var data))
+                    {
+                        data.customSheets.Remove(sheetName);
+                        SaveMapData(relPath, mapData);
+                    }
+                }
+            }
+
+            if (Config.UseSaveSpecificEdits)
+            {
+                string relPath = Path.Combine("data", Constants.SaveFolderName + "_map_data.json");
+                var mapData = new MapCollectionData();
+
+                if (!Directory.Exists(Path.Combine(modPath, "data")))
+                    Directory.CreateDirectory(Path.Combine(modPath, "data"));
+                else
+                    mapData = GetMapEdits(relPath);
+
+                if (mapData.mapDataDict.TryGetValue(mapName, out var data))
+                {
+                    data.customSheets.Remove(sheetName);
+                    SaveMapData(relPath, mapData);
+                }
+            }
+            cleanMaps.Remove(mapName);
+            UpdateCurrentMap(false);
+            Game1.playSound(Config.PasteSound);
+            SMonitor.Log($"removed tilesheet {sheetName} from {mapName}");
         }
 
         public static void UpdateCurrentMap(bool force)
         {
-            if (!ModEntry.Config.EnableMod || Game1.player?.currentLocation?.mapPath?.Value is null)
+            if (!Config.EnableMod || Game1.player?.currentLocation?.mapPath?.Value is null)
                 return;
             string mapName = Game1.player.currentLocation.mapPath.Value.Replace("Maps\\", "");
 
-            if (!force && (!ModEntry.mapCollectionData.mapDataDict.ContainsKey(mapName) || ModEntry.cleanMaps.Contains(mapName)))
+            if (!force && (!mapCollectionData.mapDataDict.ContainsKey(mapName) || cleanMaps.Contains(mapName)))
                 return;
 
-            ModEntry.SHelper.GameContent.InvalidateCache("Maps/" + mapName);
+            SHelper.GameContent.InvalidateCache("Maps/" + mapName);
             Game1.player.currentLocation.reloadMap();
         }
         public static bool MapHasTile(Vector2 tileLoc)
         {
             string mapName = Game1.player.currentLocation.mapPath.Value.Replace("Maps\\", "");
-            return ModEntry.mapCollectionData.mapDataDict.ContainsKey(mapName) && ModEntry.mapCollectionData.mapDataDict[mapName].tileDataDict.ContainsKey(tileLoc);
+            return mapCollectionData.mapDataDict.ContainsKey(mapName) && mapCollectionData.mapDataDict[mapName].tileDataDict.ContainsKey(tileLoc);
         }
     }
 }
