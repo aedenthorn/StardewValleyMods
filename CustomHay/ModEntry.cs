@@ -81,22 +81,28 @@ namespace CustomHay
 
             configMenu.AddBoolOption(
                 mod: ModManifest,
-                name: () => "Mod Enabled",
+                name: () => ModEntry.SHelper.Translation.Get("GMCM_Option_ModEnabled_Name"),
                 getValue: () => Config.ModEnabled,
                 setValue: value => Config.ModEnabled = value
             );
 
-            configMenu.AddTextOption(
+            configMenu.AddNumberOption(
                 mod: ModManifest,
-                name: () => "Ordinary Chance",
-                getValue: () => (Config.OrdinaryHayChance * 100) + "",
-                setValue: delegate(string value) { if (int.TryParse(value, out int i)) { Config.OrdinaryHayChance = i / 100f; } }
+                name: () => ModEntry.SHelper.Translation.Get("GMCM_Option_OrdinaryHayChance_Name"),
+                getValue: () => Config.OrdinaryHayChance * 100f,
+                setValue: delegate(float value) { Config.OrdinaryHayChance = value / 100f; },
+                min: 0f,
+                max: 100f,
+                interval: 1f
             );
-            configMenu.AddTextOption(
+            configMenu.AddNumberOption(
                 mod: ModManifest,
-                name: () => "Gold Chance",
-                getValue: () => (Config.GoldHayChance * 100) + "",
-                setValue: delegate(string value) { if (int.TryParse(value, out int i)) { Config.GoldHayChance = i / 100f; } }
+                name: () => ModEntry.SHelper.Translation.Get("GMCM_Option_GoldHayChance_Name"),
+                getValue: () => Config.GoldHayChance * 100f,
+                setValue: delegate(float value) { Config.GoldHayChance = value / 100f; },
+                min: 0f,
+                max: 100f,
+                interval: 1f
             );
         }
     }
