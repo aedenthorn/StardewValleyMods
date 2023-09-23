@@ -20,6 +20,9 @@ namespace CustomLocks
 
         public static bool Mountain_checkAction_Prefix(Mountain __instance, Location tileLocation, xTile.Dimensions.Rectangle viewport, Farmer who)
         {
+            if (!ModEntry.Config.Enabled)
+                return true;
+
             try
             {
                 if (__instance.map.GetLayer("Buildings").Tiles[tileLocation] != null)
@@ -27,9 +30,22 @@ namespace CustomLocks
                     int tileIndex = __instance.map.GetLayer("Buildings").Tiles[tileLocation].TileIndex;
                     if (tileIndex == 1136 && !who.mailReceived.Contains("guildMember") && !who.hasQuest(16) && ModEntry.Config.AllowAdventureGuildEntry)
                     {
-                        __instance.playSoundAt("doorClose", new Vector2(tileLocation.X, tileLocation.Y), NetAudio.SoundContext.Default);
-                        Game1.warpFarmer("AdventureGuild", 6, 19, false);
-                        return false;
+                        if (__instance.map.GetLayer("Buildings").Tiles[tileLocation].Properties.TryGetValue("Action", out xTile.ObjectModel.PropertyValue propertyValue))
+                        {
+                            string[] actionParams = propertyValue.ToString().Split(' ');
+                            if ((Game1.timeOfDay < Convert.ToInt32(actionParams[4]) || Game1.timeOfDay >= Convert.ToInt32(actionParams[5])) && !ModEntry.Config.AllowOutsideTime)
+                            {
+                                string sub1 = Game1.getTimeOfDayString(Convert.ToInt32(actionParams[4])).Replace(" ", "");
+                                string sub2 = Game1.getTimeOfDayString(Convert.ToInt32(actionParams[5])).Replace(" ", "");
+                                Game1.drawObjectDialogue(Game1.content.LoadString("Strings\\Locations:LockedDoor_OpenRange", sub1, sub2));
+                            }
+                            else
+                            {
+                                __instance.playSoundAt("doorClose", new Vector2(tileLocation.X, tileLocation.Y), NetAudio.SoundContext.Default);
+                                Game1.warpFarmer("AdventureGuild", 6, 19, false);
+                            }
+                            return false;
+                        }
                     }
                 }
             }
@@ -41,6 +57,9 @@ namespace CustomLocks
         }
         public static bool GameLocation_performAction_Prefix(GameLocation __instance, string action, Farmer who, Location tileLocation)
         {
+            if (!ModEntry.Config.Enabled)
+                return true;
+
             try
             {
                 if (action != null && who.IsLocalPlayer)
@@ -84,6 +103,9 @@ namespace CustomLocks
         }
         public static bool GameLocation_performTouchAction_Prefix(GameLocation __instance, string fullActionString, Vector2 playerStandingPosition)
         {
+            if (!ModEntry.Config.Enabled)
+                return true;
+
             try
             {
                 if (Game1.eventUp && !ModEntry.Config.IgnoreEvents)
@@ -115,6 +137,9 @@ namespace CustomLocks
 
         public static bool GameLocation_lockedDoorWarp(GameLocation __instance, string[] actionParams)
         {
+            if (!ModEntry.Config.Enabled)
+                return true;
+
             try
             {
                 if (Utility.isFestivalDay(Game1.dayOfMonth, Game1.currentSeason) && Utility.getStartTimeOfFestival() < 1900)
@@ -124,12 +149,21 @@ namespace CustomLocks
                 {
                     if (ModEntry.Config.AllowSeedShopWed)
                     {
-                        ModEntry.DoWarp(actionParams, __instance);
+                        if ((Game1.timeOfDay < Convert.ToInt32(actionParams[4]) || Game1.timeOfDay >= Convert.ToInt32(actionParams[5])) && !ModEntry.Config.AllowOutsideTime)
+                        {
+                            string sub1 = Game1.getTimeOfDayString(Convert.ToInt32(actionParams[4])).Replace(" ", "");
+                            string sub2 = Game1.getTimeOfDayString(Convert.ToInt32(actionParams[5])).Replace(" ", "");
+                            Game1.drawObjectDialogue(Game1.content.LoadString("Strings\\Locations:LockedDoor_OpenRange", sub1, sub2));
+                        }
+                        else
+                        {
+                            ModEntry.DoWarp(actionParams, __instance);
+                        }
                         return false;
                     }
                 }
                 else if (
-                    (Game1.timeOfDay < Convert.ToInt32(actionParams[4]) || Game1.timeOfDay >= Convert.ToInt32(actionParams[5]) && ModEntry.Config.AllowOutsideTime) 
+                    ((Game1.timeOfDay < Convert.ToInt32(actionParams[4]) || Game1.timeOfDay >= Convert.ToInt32(actionParams[5])) && ModEntry.Config.AllowOutsideTime) 
                     && 
                     (actionParams.Length >= 7 && !Game1.currentSeason.Equals("winter") && (!Game1.player.friendshipData.ContainsKey(actionParams[6]) || Game1.player.friendshipData[actionParams[6]].Points < Convert.ToInt32(actionParams[7])) && ModEntry.Config.AllowStrangerHomeEntry)
                 )
@@ -149,7 +183,7 @@ namespace CustomLocks
                     return false;
                 }
                 else if (
-                    (Game1.timeOfDay < Convert.ToInt32(actionParams[4]) || Game1.timeOfDay >= Convert.ToInt32(actionParams[5]) && ModEntry.Config.AllowOutsideTime)
+                    ((Game1.timeOfDay < Convert.ToInt32(actionParams[4]) || Game1.timeOfDay >= Convert.ToInt32(actionParams[5])) && ModEntry.Config.AllowOutsideTime)
                     &&
                     (actionParams.Length < 7 || Game1.currentSeason.Equals("winter") || (Game1.player.friendshipData.ContainsKey(actionParams[6]) && Game1.player.friendshipData[actionParams[6]].Points >= Convert.ToInt32(actionParams[7])))
                 )
@@ -165,7 +199,14 @@ namespace CustomLocks
                 }
                 else if (ModEntry.Config.AllowStrangerHomeEntry)
                 {
-                    ModEntry.DoWarp(actionParams, __instance);
+                    if ((Game1.timeOfDay < Convert.ToInt32(actionParams[4]) || Game1.timeOfDay >= Convert.ToInt32(actionParams[5])) && !ModEntry.Config.AllowOutsideTime)
+                    {
+                        Game1.drawObjectDialogue(Game1.content.LoadString("Strings\\Locations:LockedDoor"));
+                    }
+                    else
+                    {
+                        ModEntry.DoWarp(actionParams, __instance);
+                    }
                     return false;
                 }
                 return true;
