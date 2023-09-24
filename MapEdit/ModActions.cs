@@ -186,7 +186,8 @@ namespace MapEdit
             Game1.addHUDMessage(new HUDMessage(message, 3)
             {
                 noIcon = true,
-                number = modNumber
+                number = modNumber,
+                timeLeft = 1000
             });
         }
     }

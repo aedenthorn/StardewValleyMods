@@ -2,9 +2,17 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using StardewModdingAPI;
+using StardewModdingAPI.Events;
+using StardewModdingAPI.Utilities;
 using StardewValley;
+using StardewValley.Menus;
 using StardewValley.Objects;
 using System;
+using System.Collections.Generic;
+using System.Xml.Linq;
+using xTile;
+using xTile.Layers;
+using xTile.Tiles;
 using Object = StardewValley.Object;
 using Rectangle = Microsoft.Xna.Framework.Rectangle;
 
@@ -17,7 +25,7 @@ namespace MapEdit
         {
             private static bool Prefix()
             {
-                if (!Config.EnableMod || !Context.IsPlayerFree || Game1.input.GetMouseState().ScrollWheelValue == Game1.oldMouseState.ScrollWheelValue || !modActive.Value)
+                if (!Config.ModEnabled || !Context.IsPlayerFree || Game1.input.GetMouseState().ScrollWheelValue == Game1.oldMouseState.ScrollWheelValue || !modActive.Value)
                     return true;
 
                 if (MouseInMenu())
@@ -35,7 +43,42 @@ namespace MapEdit
         {
             private static bool Prefix()
             {
-                return !Config.EnableMod || !modActive.Value || !MouseInMenu();
+                return !Config.ModEnabled || !modActive.Value || !MouseInMenu();
+            }
+        }
+        [HarmonyPatch(typeof(Toolbar), nameof(Toolbar.performHoverAction))]
+        public class Toolbar_performHoverAction_Patch
+        {
+            private static bool Prefix()
+            {
+                return !Config.ModEnabled || !modActive.Value || !MouseInMenu();
+            }
+        }
+        [HarmonyPatch(typeof(Game1), nameof(Game1.SetWindowSize))]
+        public class Game1_SetWindowSize_Patch
+        {
+            private static void Postfix()
+            {
+                if (!Config.ModEnabled || !modActive.Value || tileMenu.Value is null)
+                    return;
+                tileMenu.Value.RebuildElements();
+            }
+        }
+        [HarmonyPatch(typeof(GameLocation), nameof(GameLocation.resetForPlayerEntry))]
+        public class GameLocation_resetForPlayerEntry_Patch
+        {
+            private static void Prefix(GameLocation __instance)
+            {
+                if (!Config.ModEnabled || __instance.mapPath.Value is null)
+                    return;
+            }
+            private static void Postfix(GameLocation __instance)
+            {
+                if (!Config.ModEnabled || __instance.mapPath.Value is null)
+                    return;
+                if (!mapCollectionData.mapDataDict.TryGetValue("Maps/" + __instance.NameOrUniqueName, out var dict) && !mapCollectionData.mapDataDict.TryGetValue(__instance.NameOrUniqueName, out dict))
+                    return;
+                EditMap(__instance.mapPath.Value, __instance.Map, dict);
             }
         }
     }

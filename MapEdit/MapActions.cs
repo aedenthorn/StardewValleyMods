@@ -311,15 +311,15 @@ namespace MapEdit
 
         public static void UpdateCurrentMap(bool force)
         {
-            if (!Config.EnableMod || Game1.player?.currentLocation?.mapPath?.Value is null)
+            if (!Config.ModEnabled || Game1.player?.currentLocation?.mapPath?.Value is null)
                 return;
             string mapName = Game1.player.currentLocation.mapPath.Value.Replace("Maps\\", "");
 
             if (!force && (!mapCollectionData.mapDataDict.ContainsKey(mapName) || cleanMaps.Contains(mapName)))
                 return;
 
-            SHelper.GameContent.InvalidateCache("Maps/" + mapName);
-            Game1.player.currentLocation.reloadMap();
+            Game1.player.currentLocation.loadMap(Game1.player.currentLocation.mapPath.Value, true);
+            Game1.player.currentLocation.resetForPlayerEntry();
         }
         public static bool MapHasTile(Vector2 tileLoc)
         {

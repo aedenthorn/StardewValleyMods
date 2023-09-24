@@ -49,8 +49,10 @@ namespace MapEdit
 
             SHelper.Events.Display.RenderedWorld += Display_RenderedWorld;
             SHelper.Events.Display.RenderedHud += Display_RenderedHud;
+            SHelper.Events.Input.ButtonsChanged += Input_ButtonsChanged;
             SHelper.Events.Input.ButtonPressed += Input_ButtonPressed;
             SHelper.Events.Input.MouseWheelScrolled += Input_MouseWheelScrolled;
+            SHelper.Events.GameLoop.GameLaunched += GameLoop_GameLaunched;
             SHelper.Events.GameLoop.UpdateTicked += GameLoop_UpdateTicked;
             SHelper.Events.GameLoop.SaveLoaded += GameLoop_SaveLoaded;
             SHelper.Events.GameLoop.ReturnedToTitle += GameLoop_ReturnedToTitle;
@@ -62,5 +64,6 @@ namespace MapEdit
 
             harmony.PatchAll();
         }
+
     }
 }
