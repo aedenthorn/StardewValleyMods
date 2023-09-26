@@ -47,7 +47,7 @@ namespace MapEdit
         public static void GameLoop_SaveLoaded(object sender, SaveLoadedEventArgs e)
         {
             GetMapCollectionData();
-            Game1.currentLocation.loadMap(Game1.currentLocation.mapPath.Value, true);
+            UpdateCurrentMap(true);
         }
 
 

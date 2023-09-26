@@ -2,6 +2,7 @@
 using Microsoft.Xna.Framework;
 using StardewModdingAPI;
 using StardewValley;
+using StardewValley.Locations;
 using StardewValley.Menus;
 using System;
 using System.Collections.Generic;
@@ -122,7 +123,8 @@ namespace MapEdit
                     SaveMapData(relPath, mapData);
                 }
             }
-            cleanMaps.Remove(mapName); UpdateCurrentMap(true);
+            cleanMaps.Remove(mapName); 
+            UpdateCurrentMap(true);
         }
 
         public static void SaveMapTile(string mapName, Vector2 tileLoc, TileLayers tile)
@@ -315,11 +317,15 @@ namespace MapEdit
                 return;
             string mapName = Game1.player.currentLocation.mapPath.Value.Replace("Maps\\", "");
 
-            if (!force && (!mapCollectionData.mapDataDict.ContainsKey(mapName) || cleanMaps.Contains(mapName)))
+            if (!mapCollectionData.mapDataDict.ContainsKey(mapName) || (!force && cleanMaps.Contains(mapName)))
                 return;
-
+            if(Game1.player.currentLocation is FarmHouse)
+            {
+                AccessTools.Field(typeof(FarmHouse), "displayingSpouseRoom").SetValue(Game1.player.currentLocation, false);
+                AccessTools.Field(typeof(FarmHouse), "currentlyDisplayedUpgradeLevel").SetValue(Game1.player.currentLocation, 0);
+            }
             Game1.player.currentLocation.loadMap(Game1.player.currentLocation.mapPath.Value, true);
-            Game1.player.currentLocation.resetForPlayerEntry();
+            Game1.player.currentLocation.MakeMapModifications(true);
         }
         public static bool MapHasTile(Vector2 tileLoc)
         {

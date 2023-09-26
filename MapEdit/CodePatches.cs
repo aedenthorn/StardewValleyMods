@@ -64,14 +64,9 @@ namespace MapEdit
                 tileMenu.Value.RebuildElements();
             }
         }
-        [HarmonyPatch(typeof(GameLocation), nameof(GameLocation.resetForPlayerEntry))]
-        public class GameLocation_resetForPlayerEntry_Patch
+        [HarmonyPatch(typeof(GameLocation), nameof(GameLocation.MakeMapModifications))]
+        public class GameLocation_MakeMapModifications_Patch
         {
-            private static void Prefix(GameLocation __instance)
-            {
-                if (!Config.ModEnabled || __instance.mapPath.Value is null)
-                    return;
-            }
             private static void Postfix(GameLocation __instance)
             {
                 if (!Config.ModEnabled || __instance.mapPath.Value is null)

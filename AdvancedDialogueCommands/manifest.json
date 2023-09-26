@@ -1,16 +1,16 @@
 ﻿{
-  "Name": "Object Product Display",
+  "Name": "Advanced Dialogue Commands",
   "Author": "aedenthorn",
-  "Version": "0.1.1",
-  "Description": "Object Product Display.",
-  "UniqueID": "aedenthorn.ObjectProductDisplay",
-  "EntryDll": "ObjectProductDisplay.dll",
+  "Version": "0.1.0",
+  "Description": "Advanced Dialogue Commands.",
+  "UniqueID": "aedenthorn.AdvancedDialogueCommands",
+  "EntryDll": "AdvancedDialogueCommands.dll",
   "MinimumApiVersion": "3.15.0",
   "ModUpdater": {
     "Repository": "StardewValleyMods",
     "User": "aedenthorn",
     "Directory": "_releases",
-    "ModFolder": "ObjectProductDisplay"
+    "ModFolder": "AdvancedDialogueCommands"
   },
   "Dependencies": [
     {
@@ -18,5 +18,5 @@
       "IsRequired": false
     }
   ],
-  "UpdateKeys": [ "Nexus:18365" ]
+  "UpdateKeys": [ "Nexus:" ]
 }
