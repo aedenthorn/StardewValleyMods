@@ -69,7 +69,7 @@ namespace AdvancedDialogueCommands
                 var ds = person.CurrentDialogue;
                 Game1.warpCharacter(person, Game1.player.currentLocation, Game1.player.getTileLocation() + new Microsoft.Xna.Framework.Vector2(0, 1));
                 person.CurrentDialogue.Clear();
-                person.setNewDialogue("I made some dessert! Make sure to brush your teeth before bed, though. $sound=yoba$emoteNPC=32$emote=36$faceNPC=2$face=2 [$1000 232 234 223 220]$h", false, false);
+                person.setNewDialogue("I made some dessert!¶I made some dessert!¶I made some dessert!¶I made some dessert!¶I made some dessert!¶ Make sure to brush your teeth before bed, though.¶Make sure to brush your teeth before bed, though.¶Make sure to brush your teeth before bed, though.¶Make sure to brush your teeth before bed, though.$h", false, false);
 
             }
         }
