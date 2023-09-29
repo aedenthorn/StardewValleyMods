@@ -31,8 +31,12 @@ namespace MapEdit
         private bool addingTileSheets;
         private int mouseDownTicks;
         private float mapZoom = 1;
-        private int scrolled;
-        private int linesPerPage;
+        private int scrolledAdd;
+        private int scrolledSheets;
+        private int scrolledLayers;
+        private int linesPerPageAdd;
+        private int linesPerPageLayers;
+        private int linesPerPageSheets;
         private Point mouseLastPos;
         private Point mouseDownPos;
         private Point mapDisplayOffsetPos = Point.Zero;
@@ -50,7 +54,9 @@ namespace MapEdit
         {
             width = Game1.uiViewport.Width / 2;
             height = Game1.uiViewport.Height;
-            linesPerPage = (height - 64 - spaceToClearTopBorder  - spaceToClearSideBorder) / 48;
+            linesPerPageSheets = (height - 128 - spaceToClearTopBorder  - spaceToClearSideBorder) / 2 / 48 - 1;
+            linesPerPageLayers = (height - 128 - spaceToClearTopBorder  - spaceToClearSideBorder) / 2 / 64;
+            linesPerPageAdd = (height - 64 - spaceToClearTopBorder  - spaceToClearSideBorder) / 48;
             button = new ClickableTextureComponent(new Rectangle(0, Game1.uiViewport.Height / 2 - 60, 44, 60), Game1.mouseCursors, new Rectangle(180, 379, 11, 15), 4);
             backButton = new ClickableTextureComponent(new Rectangle(xPositionOnScreen + spaceToClearSideBorder * 2 + 16 + width / 3 - 64, yPositionOnScreen + spaceToClearTopBorder + 12, 28, 28), Game1.mouseCursors, new Rectangle(8, 269, 44, 40), 1);
             addSheetButton = new ClickableTextureComponent(new Rectangle(xPositionOnScreen + spaceToClearSideBorder * 2 + 16 + width / 3 - 56, yPositionOnScreen + spaceToClearTopBorder + 16, 28, 28), Game1.mouseCursors, new Rectangle(1, 412, 14, 14), 2);
@@ -77,7 +83,7 @@ namespace MapEdit
             if(addingTileSheets)
             {
                 var count = 0;
-                for (int i = scrolled; i < Math.Min(scrolled + linesPerPage, availableSheets.Count); i++)
+                for (int i = scrolledAdd; i < Math.Min(scrolledAdd + linesPerPageAdd, availableSheets.Count); i++)
                 {
                     sheetCCList.Add(new ClickableComponent(new Rectangle(xPositionOnScreen + spaceToClearSideBorder * 2, yPositionOnScreen + spaceToClearTopBorder + 8 + (count + 1) * 48, width / 3, 48), i.ToString()));
                     count++;
@@ -85,16 +91,18 @@ namespace MapEdit
             }
             else
             {
-                for (int i = 0; i < Game1.currentLocation.Map.TileSheets.Count; i++)
-                {
-                    sheetCCList.Add(new ClickableComponent(new Rectangle(xPositionOnScreen + spaceToClearSideBorder * 2, yPositionOnScreen + spaceToClearTopBorder + 8 + (i + 1) * 48, width / 3, 48), i.ToString()));
-                }
                 var count = 0;
-                foreach (var layer in Game1.currentLocation.Map.Layers)
+                for (int i = scrolledSheets; i < Math.Min(scrolledSheets + linesPerPageSheets, Game1.currentLocation.Map.TileSheets.Count); i++)
                 {
-                    if (layer.Id == "Paths")
+                    sheetCCList.Add(new ClickableComponent(new Rectangle(xPositionOnScreen + spaceToClearSideBorder * 2, yPositionOnScreen + spaceToClearTopBorder + 8 + (count + 1) * 48, width / 3, 48), i.ToString()));
+                    count++;
+                }
+                count = 0;
+                for (int i = scrolledLayers; i < Math.Min(scrolledLayers + linesPerPageLayers, Game1.currentLocation.Map.Layers.Count); i++)
+                {
+                    if (Game1.currentLocation.Map.Layers[i].Id == "Paths")
                         continue;
-                    layerCCList.Add(new ClickableComponent(new Rectangle(xPositionOnScreen + spaceToClearSideBorder * 2, yPositionOnScreen + height / 2 + (count + 1) * 64 - 8, width / 3, 64), layer.Id));
+                    layerCCList.Add(new ClickableComponent(new Rectangle(xPositionOnScreen + spaceToClearSideBorder * 2, yPositionOnScreen + height / 2 + (count + 1) * 64 - 8, width / 3, 64), Game1.currentLocation.Map.Layers[i].Id));
                     count++;
                 }
             }
@@ -127,7 +135,7 @@ namespace MapEdit
                 SpriteText.drawString(spriteBatch, ModEntry.SHelper.Translation.Get("available-sheets"), xPositionOnScreen + spaceToClearSideBorder * 2 + 8, yPositionOnScreen + spaceToClearTopBorder + 8);
                 backButton.draw(spriteBatch);
                 var count = 0;
-                for (int i = scrolled; i < Math.Min(scrolled + linesPerPage, availableSheets.Count); i++)
+                for (int i = scrolledAdd; i < Math.Min(scrolledAdd + linesPerPageAdd, availableSheets.Count); i++)
                 {
                     var ts = availableSheets[i];
                     if (currentTileSheet == i)
@@ -154,12 +162,13 @@ namespace MapEdit
             {
                 SpriteText.drawString(spriteBatch, ModEntry.SHelper.Translation.Get("tile-sheets"), xPositionOnScreen + spaceToClearSideBorder * 2 + 8, yPositionOnScreen + spaceToClearTopBorder + 8);
                 addSheetButton.draw(spriteBatch);
-                for (int i = 0; i < Game1.currentLocation.Map.TileSheets.Count; i++)
+                var count = 0;
+                for (int i = scrolledSheets; i < Math.Min(scrolledSheets + linesPerPageSheets, Game1.currentLocation.Map.TileSheets.Count); i++)
                 {
                     var ts = Game1.currentLocation.Map.TileSheets[i];
                     if (currentTileSheet == i)
                     {
-                        spriteBatch.Draw(Game1.staminaRect, new Rectangle(xPositionOnScreen + spaceToClearSideBorder * 2, yPositionOnScreen + spaceToClearTopBorder + 8 + (i + 1) * 48, width / 3, 48), selectColor * 0.5f);
+                        spriteBatch.Draw(Game1.staminaRect, new Rectangle(xPositionOnScreen + spaceToClearSideBorder * 2, yPositionOnScreen + spaceToClearTopBorder + 8 + (count + 1) * 48, width / 3, 48), selectColor * 0.5f);
                         if(mapTex is null)
                         {
                             ReloadMap(ts.ImageSource);
@@ -169,25 +178,26 @@ namespace MapEdit
                             removeThisSheetButton.draw(spriteBatch);
                         }
                     }
-                    spriteBatch.DrawString(Game1.dialogueFont, ts.Id, new Vector2(xPositionOnScreen + spaceToClearSideBorder * 2 + 8, yPositionOnScreen + spaceToClearTopBorder + 8 + (i + 1) * 48), Color.SaddleBrown);
-
+                    spriteBatch.DrawString(Game1.dialogueFont, ts.Id, new Vector2(xPositionOnScreen + spaceToClearSideBorder * 2 + 8, yPositionOnScreen + spaceToClearTopBorder + 8 + (count + 1) * 48), Color.SaddleBrown);
+                    count++;
                 }
                 SpriteText.drawString(spriteBatch, ModEntry.SHelper.Translation.Get("current-tile"), xPositionOnScreen + spaceToClearSideBorder * 2 + 8, yPositionOnScreen + height / 2);
-                var count = 0;
-                foreach (var layer in Game1.currentLocation.Map.Layers)
+                count = 0;
+                for (int i = scrolledLayers; i < Math.Min(scrolledLayers + linesPerPageLayers, Game1.currentLocation.Map.Layers.Count); i++)
                 {
-                    if (layer.Id == "Paths")
+                    var id = Game1.currentLocation.Map.Layers[i].Id;
+                    if (id == "Paths")
                         continue;
-                    if (layer.Id == ModEntry.currentLayer.Value)
+                    if (id == ModEntry.currentLayer.Value)
                     {
                         spriteBatch.Draw(Game1.staminaRect, new Rectangle(xPositionOnScreen + spaceToClearSideBorder * 2, yPositionOnScreen + height / 2 + (count + 1) * 64 - 8, width / 3, 64), selectColor * 0.5f);
                     }
-                    spriteBatch.DrawString(Game1.dialogueFont, layer.Id, new Vector2(xPositionOnScreen + spaceToClearSideBorder * 2 + 8, yPositionOnScreen + height / 2 + (count + 1) * 64), Color.SaddleBrown);
-                    if (ModEntry.currentTileDict.Value.TryGetValue(layer.Id, out var tile))
+                    spriteBatch.DrawString(Game1.dialogueFont, id, new Vector2(xPositionOnScreen + spaceToClearSideBorder * 2 + 8, yPositionOnScreen + height / 2 + (count + 1) * 64), Color.SaddleBrown);
+                    if (ModEntry.currentTileDict.Value.TryGetValue(id, out var tile))
                     {
                         var idx = tile.TileIndex;
-                        AccessTools.Field(typeof(Tile), "m_layer").SetValue(tile, Game1.currentLocation.Map.GetLayer(layer.Id)); 
-                        Game1.mapDisplayDevice.DrawTile(tile, new xTile.Dimensions.Location(xPositionOnScreen + spaceToClearSideBorder * 2 + 16 + (int)Game1.dialogueFont.MeasureString(layer.Id).X, yPositionOnScreen + height / 2 - 8 + (count + 1) * 64), 1);
+                        AccessTools.Field(typeof(Tile), "m_layer").SetValue(tile, Game1.currentLocation.Map.GetLayer(id)); 
+                        Game1.mapDisplayDevice.DrawTile(tile, new xTile.Dimensions.Location(xPositionOnScreen + spaceToClearSideBorder * 2 + 16 + (int)Game1.dialogueFont.MeasureString(id).X, yPositionOnScreen + height / 2 - 8 + (count + 1) * 64), 1);
                     }
                     count++;
                 }
@@ -313,16 +323,44 @@ namespace MapEdit
             if (!ModEntry.Config.ShowMenu)
                 return;
             var mousePos = Game1.getMousePosition(true);
-            if (addingTileSheets && mousePos.X < width / 3)
+            if (mousePos.X < width / 3)
             {
-                var oldScrolled = scrolled;
-                scrolled = Math.Clamp(scrolled - direction, 0, availableSheets.Count - linesPerPage);
-                if(oldScrolled != scrolled)
+                if (addingTileSheets)
                 {
-                    Game1.playSound("shiny4");
+                    var oldScrolled = scrolledAdd;
+                    scrolledAdd = Math.Clamp(scrolledAdd - direction, 0, Math.Max(0, availableSheets.Count - linesPerPageAdd));
+                    if (oldScrolled != scrolledAdd)
+                    {
+                        Game1.playSound("shiny4");
+                        addThisSheetButton.bounds = new Rectangle(xPositionOnScreen + spaceToClearSideBorder * 2 + width / 3 - 32, yPositionOnScreen + spaceToClearTopBorder + 20 + (currentTileSheet - scrolledAdd + 1) * 48, 28, 28);
+                        RebuildLists();
+                    }
                 }
-                addThisSheetButton.bounds = new Rectangle(xPositionOnScreen + spaceToClearSideBorder * 2 + width / 3 - 32, yPositionOnScreen + spaceToClearTopBorder + 20 + (currentTileSheet - scrolled + 1) * 48, 28, 28);
-                RebuildLists();
+                else
+                {
+                    if(mousePos.Y >= yPositionOnScreen + height / 2)
+                    {
+                        var oldScrolled = scrolledLayers;
+                        scrolledLayers = Math.Clamp(scrolledLayers - direction, 0, Math.Max(0, Game1.currentLocation.Map.Layers.Count - linesPerPageLayers));
+                        if (oldScrolled != scrolledLayers)
+                        {
+                            Game1.playSound("shiny4");
+                            RebuildLists();
+                        }
+                    }
+                    else
+                    {
+
+                        var oldScrolled = scrolledSheets;
+                        scrolledSheets = Math.Clamp(scrolledSheets - direction, 0, Math.Max(0, Game1.currentLocation.Map.TileSheets.Count - linesPerPageSheets));
+                        if (oldScrolled != scrolledSheets)
+                        {
+                            Game1.playSound("shiny4");
+                            removeThisSheetButton.bounds = new Rectangle(xPositionOnScreen + spaceToClearSideBorder * 2 + width / 3 - 16, yPositionOnScreen + spaceToClearTopBorder + 8 + (currentTileSheet - scrolledSheets + 1) * 48, 28, 28);
+                            RebuildLists();
+                        }
+                    }
+                }
             }
             else if (mapTex is not null && mapCanvasRect.Contains(mousePos)) 
             {
@@ -415,12 +453,13 @@ namespace MapEdit
                     }
                     for (int i = 0; i < sheetCCList.Count; i++)
                     {
-                        if (currentTileSheet == i)
+                        int idx = i + scrolledSheets;
+                        if (currentTileSheet == i + scrolledSheets)
                         {
 
-                            if (removeThisSheetButton.containsPoint(x, y) && ModEntry.mapCollectionData.mapDataDict.TryGetValue(Game1.currentLocation.Name, out var data) && data.customSheets.ContainsKey(Game1.currentLocation.Map.TileSheets[i].Id))
+                            if (removeThisSheetButton.containsPoint(x, y) && ModEntry.mapCollectionData.mapDataDict.TryGetValue(Game1.currentLocation.Name, out var data) && data.customSheets.ContainsKey(Game1.currentLocation.Map.TileSheets[idx].Id))
                             {
-                                ModEntry.RemoveTilesheet(Game1.currentLocation.Map.TileSheets[i].Id, Game1.player.currentLocation.mapPath.Value.Replace("Maps\\", ""));
+                                ModEntry.RemoveTilesheet(Game1.currentLocation.Map.TileSheets[idx].Id, Game1.player.currentLocation.mapPath.Value.Replace("Maps\\", ""));
                                 SetTileSheet(0, 0);
                                 return;
                             }
@@ -502,7 +541,7 @@ namespace MapEdit
         {
             foreach(var sheet in tileSheets) 
             {
-                if(availableSheets.FirstOrDefault(s => s.ImageSource == sheet.ImageSource) == null)
+                if(availableSheets.FirstOrDefault(s => s.ImageSource == sheet.ImageSource) == null && Game1.currentLocation.Map.TileSheets.FirstOrDefault(s => s.ImageSource == sheet.ImageSource) == null)
                     availableSheets.Add(sheet);
             }
         }
