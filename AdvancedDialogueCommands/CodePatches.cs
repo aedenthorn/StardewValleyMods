@@ -40,7 +40,7 @@ namespace AdvancedDialogueCommands
 
                 var currentDialogue = __instance.dialogues[__instance.currentDialogueIndex];
 
-                Regex pattern = new Regex(@"\$([A-Za-z]+)=([A-Za-z0-9,_]*)", RegexOptions.Compiled);
+                Regex pattern = new Regex(@"&([A-Za-z]+)=([A-Za-z0-9,_]+)", RegexOptions.Compiled);
                 Match m = pattern.Match(currentDialogue);
                 while(m.Success)
                 {
@@ -70,6 +70,9 @@ namespace AdvancedDialogueCommands
                                 break;
                             case "face":
                                 Game1.player.faceDirection(Convert.ToInt32(split[0]));
+                                break;
+                            case "faceNPC":
+                                __instance.speaker.faceDirection(Convert.ToInt32(split[0]));
                                 break;
                             case "money":
                                 Game1.player.addUnearnedMoney(Convert.ToInt32(split[0]));

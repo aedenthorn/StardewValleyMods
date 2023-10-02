@@ -330,7 +330,7 @@ namespace MapEdit
         public static bool MapHasTile(Vector2 tileLoc)
         {
             string mapName = Game1.player.currentLocation.mapPath.Value.Replace("Maps\\", "");
-            return mapCollectionData.mapDataDict.ContainsKey(mapName) && mapCollectionData.mapDataDict[mapName].tileDataDict.ContainsKey(tileLoc);
+            return mapCollectionData.mapDataDict.TryGetValue(mapName, out var data) && data.tileDataDict.ContainsKey(tileLoc);
         }
     }
 }

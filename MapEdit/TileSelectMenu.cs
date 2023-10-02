@@ -173,7 +173,7 @@ namespace MapEdit
                         {
                             ReloadMap(ts.ImageSource);
                         }
-                        if (ModEntry.mapCollectionData.mapDataDict.TryGetValue(Game1.currentLocation.Name, out var data) && data.customSheets.ContainsKey(ts.Id))
+                        if (ModEntry.mapCollectionData.mapDataDict.TryGetValue(Game1.currentLocation.mapPath.Value.Replace("Maps\\", ""), out var data) && data.customSheets.ContainsKey(ts.Id))
                         {
                             removeThisSheetButton.draw(spriteBatch);
                         }
@@ -457,7 +457,7 @@ namespace MapEdit
                         if (currentTileSheet == i + scrolledSheets)
                         {
 
-                            if (removeThisSheetButton.containsPoint(x, y) && ModEntry.mapCollectionData.mapDataDict.TryGetValue(Game1.currentLocation.Name, out var data) && data.customSheets.ContainsKey(Game1.currentLocation.Map.TileSheets[idx].Id))
+                            if (removeThisSheetButton.containsPoint(x, y) && ModEntry.mapCollectionData.mapDataDict.TryGetValue(Game1.currentLocation.mapPath.Value.Replace("Maps\\", ""), out var data) && data.customSheets.ContainsKey(Game1.currentLocation.Map.TileSheets[idx].Id))
                             {
                                 ModEntry.RemoveTilesheet(Game1.currentLocation.Map.TileSheets[idx].Id, Game1.player.currentLocation.mapPath.Value.Replace("Maps\\", ""));
                                 SetTileSheet(0, 0);

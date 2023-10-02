@@ -69,7 +69,7 @@ namespace AdvancedDialogueCommands
                 var ds = person.CurrentDialogue;
                 Game1.warpCharacter(person, Game1.player.currentLocation, Game1.player.getTileLocation() + new Microsoft.Xna.Framework.Vector2(0, 1));
                 person.CurrentDialogue.Clear();
-                person.setNewDialogue("*Feed {{Vincentvar}} 1 scoop of pellets,¶ *Fill up water,¶ *Clean all the poop.¶ (He's drawn a little disgusted face next to that last one.)", false, false);
+                person.setNewDialogue("This is a test!&money=100&sound=yoba&health=max&stamina=10&emote=36&emoteNPC=36&face=2&faceNPC=2", false, false);
 
             }
         }
