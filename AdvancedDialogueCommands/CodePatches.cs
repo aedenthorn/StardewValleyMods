@@ -40,29 +40,7 @@ namespace AdvancedDialogueCommands
 
                 var currentDialogue = __instance.dialogues[__instance.currentDialogueIndex];
 
-                // give gold
-
-                if (currentDialogue.Contains('[') && currentDialogue.IndexOf(']') > 0)
-                {
-                    string items = currentDialogue.Substring(currentDialogue.IndexOf('[') + 1, currentDialogue.IndexOf(']') - currentDialogue.IndexOf('[') - 1);
-                    List<string> split = items.Split(' ').ToList();
-                    for(int i = split.Count - 1; i >= 0; i--)
-                    {
-                        if (split[i].StartsWith("$"))
-                        {
-                            if(int.TryParse(split[i].Substring(1), out int amount))
-                            {
-                                Game1.player.addUnearnedMoney(amount);
-                            }
-                            split.RemoveAt(i);
-                        }
-                    }
-                    var newItems = "[" + string.Join(" ", split) + "]";
-                    currentDialogue = currentDialogue.Replace("[" + items + "]", newItems);
-                }
-
-
-                Regex pattern = new Regex(@"\$([A-Za-z]+)=([A-Za-z0-9,_]+)", RegexOptions.Compiled);
+                Regex pattern = new Regex(@"\$([A-Za-z]+)=([A-Za-z0-9,_]*)", RegexOptions.Compiled);
                 Match m = pattern.Match(currentDialogue);
                 while(m.Success)
                 {
@@ -83,7 +61,6 @@ namespace AdvancedDialogueCommands
                                 }
                                 break;
                             case "emoteNPC":
-                                Game1.player.EndEmoteAnimation();
                                 __instance.speaker.doEmote(Convert.ToInt32(split[0]));
 
                                 break;
@@ -93,6 +70,29 @@ namespace AdvancedDialogueCommands
                                 break;
                             case "face":
                                 Game1.player.faceDirection(Convert.ToInt32(split[0]));
+                                break;
+                            case "money":
+                                Game1.player.addUnearnedMoney(Convert.ToInt32(split[0]));
+                                break;
+                            case "health":
+                                if(split[0] == "max")
+                                {
+                                    Game1.player.health = Game1.player.maxHealth;
+                                }
+                                else
+                                {
+                                    Game1.player.health = Math.Min(Game1.player.health + Convert.ToInt32(split[0]), Game1.player.maxHealth);
+                                }
+                                break;
+                            case "stamina":
+                                if(split[0] == "max")
+                                {
+                                    Game1.player.stamina = Game1.player.MaxStamina;
+                                }
+                                else
+                                {
+                                    Game1.player.stamina = Math.Min(Game1.player.stamina + Convert.ToInt32(split[0]), Game1.player.MaxStamina);
+                                }
                                 break;
                         }
                     }
