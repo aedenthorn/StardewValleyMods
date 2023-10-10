@@ -8,6 +8,7 @@ using StardewModdingAPI;
 using StardewValley;
 using StardewValley.Network;
 using StardewValley.TerrainFeatures;
+using StardewValley.Tools;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -15,6 +16,7 @@ using System.Drawing;
 using System.Linq;
 using System.Threading;
 using xTile.Dimensions;
+using xTile.Tiles;
 using Color = Microsoft.Xna.Framework.Color;
 using Object = StardewValley.Object;
 using Rectangle = Microsoft.Xna.Framework.Rectangle;
@@ -109,7 +111,8 @@ namespace ImmersiveSprinklers
                 if (__instance.IsSprinkler())
                 {
                     SMonitor.Log($"Placing {__instance.Name} at {x},{y}:{which}");
-                    ReturnSprinkler(who, location, tf, placementTile, which);
+                    location.playSound("woodyStep");
+                    ReturnSprinkler(who, location, placementTile, which);
                     tf.modData[sprinklerKey + which] = GetSprinklerString(__instance);
                     if (__instance.bigCraftable.Value)
                     {
@@ -331,6 +334,40 @@ namespace ImmersiveSprinklers
                 }
             }
 
+        }
+        [HarmonyPatch(typeof(Axe), nameof(Axe.DoFunction))]
+        public class Axe_DoFunction_Patch
+        {
+            public static bool Prefix(GameLocation location, int x, int y, int power, Farmer who)
+            {
+                if (!Config.EnableMod || power > 1)
+                    return true;
+                Vector2 placementTile = new Vector2(x, y);
+                int which = GetMouseCorner();
+                if (ReturnSprinkler(Game1.player, location, Game1.currentCursorTile, which))
+                {
+                    location.playSound("hammer");
+                    return false;
+                }
+                return true;
+            }
+        }
+        [HarmonyPatch(typeof(Pickaxe), nameof(Pickaxe.DoFunction))]
+        public class Pickaxe_DoFunction_Patch
+        {
+            public static bool Prefix(GameLocation location, int x, int y, int power, Farmer who)
+            {
+                if (!Config.EnableMod)
+                    return true;
+                Vector2 placementTile = new Vector2(x, y);
+                int which = GetMouseCorner();
+                if (ReturnSprinkler(Game1.player, location, Game1.currentCursorTile, which))
+                {
+                    location.playSound("hammer");
+                    return false;
+                }
+                return true;
+            }
         }
     }
 }

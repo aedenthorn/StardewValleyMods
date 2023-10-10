@@ -162,9 +162,9 @@ namespace ImmersiveScarecrows
             return (location.terrainFeatures.TryGetValue(tile, out var tf) && tf.modData.TryGetValue(scarecrowKey + which, out var scarecrowString)) ? scarecrowString : null;
         }
 
-        private static bool ReturnScarecrow(Farmer who, GameLocation location, TerrainFeature tf, Vector2 placementTile, int which)
+        private static bool ReturnScarecrow(Farmer who, GameLocation location, Vector2 placementTile, int which)
         {
-            if (TryReturnScarecrow(who, location, tf, placementTile, which))
+            if (location.terrainFeatures.TryGetValue(placementTile, out var tf) && tf is HoeDirt && TryReturnScarecrow(who, location, tf, placementTile, which))
             { 
                 return true; 
             }

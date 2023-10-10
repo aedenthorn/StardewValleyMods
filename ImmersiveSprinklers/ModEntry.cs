@@ -116,10 +116,10 @@ namespace ImmersiveSprinklers
         {
             if (!Config.EnableMod)
                 return;
-            if (e.Button == Config.PickupButton && Context.CanPlayerMove && Game1.currentLocation.terrainFeatures.TryGetValue(Game1.currentCursorTile, out var tf) && tf is HoeDirt)
+            if (e.Button == Config.PickupButton && Context.CanPlayerMove)
             {
                 int which = GetMouseCorner();
-                if (ReturnSprinkler(Game1.player, Game1.currentLocation, tf, Game1.currentCursorTile, which))
+                if (ReturnSprinkler(Game1.player, Game1.currentLocation, Game1.currentCursorTile, which))
                 {
                     Helper.Input.Suppress(e.Button);
                 }

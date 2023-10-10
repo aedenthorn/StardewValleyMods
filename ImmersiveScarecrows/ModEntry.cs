@@ -106,10 +106,10 @@ namespace ImmersiveScarecrows
                 Game1.getFarm().addCrows();
                 Monitor.Log("Adding crows");
             }
-            if (e.Button == Config.PickupButton && Context.CanPlayerMove && Game1.currentLocation.terrainFeatures.TryGetValue(Game1.currentCursorTile, out var tf) && tf is HoeDirt)
+            if (e.Button == Config.PickupButton && Context.CanPlayerMove)
             {
                 int which = GetMouseCorner();
-                if (ReturnScarecrow(Game1.player, Game1.currentLocation, tf, Game1.currentCursorTile, which))
+                if (ReturnScarecrow(Game1.player, Game1.currentLocation, Game1.currentCursorTile, which))
                 {
                     Helper.Input.Suppress(e.Button);
                 }

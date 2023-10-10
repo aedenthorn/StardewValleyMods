@@ -18,6 +18,7 @@ using Object = StardewValley.Object;
 using Rectangle = Microsoft.Xna.Framework.Rectangle;
 using StardewValley.Objects;
 using StardewModdingAPI;
+using StardewValley.Tools;
 
 namespace ImmersiveScarecrows
 {
@@ -36,7 +37,7 @@ namespace ImmersiveScarecrows
                     return true;
                 int which = GetMouseCorner();
                 SMonitor.Log($"Placing {__instance.Name} at {x},{y}:{which}");
-                ReturnScarecrow(who, location, tf, placementTile, which);
+                ReturnScarecrow(who, location, placementTile, which);
                 tf.modData[scarecrowKey + which] = GetScarecrowString(__instance);
                 tf.modData[guidKey + which] = Guid.NewGuid().ToString();
                 tf.modData[scaredKey + which] = "0";
@@ -300,5 +301,39 @@ namespace ImmersiveScarecrows
             return false;
         }
 
+        [HarmonyPatch(typeof(Axe), nameof(Axe.DoFunction))]
+        public class Axe_DoFunction_Patch
+        {
+            public static bool Prefix(GameLocation location, int x, int y, int power, Farmer who)
+            {
+                if (!Config.EnableMod || power > 1)
+                    return true;
+                Vector2 placementTile = new Vector2(x, y);
+                int which = GetMouseCorner();
+                if (ReturnScarecrow(Game1.player, location, Game1.currentCursorTile, which))
+                {
+                    location.playSound("axechop");
+                    return false;
+                }
+                return true;
+            }
+        }
+        [HarmonyPatch(typeof(Pickaxe), nameof(Pickaxe.DoFunction))]
+        public class Pickaxe_DoFunction_Patch
+        {
+            public static bool Prefix(GameLocation location, int x, int y, int power, Farmer who)
+            {
+                if (!Config.EnableMod)
+                    return true;
+                Vector2 placementTile = new Vector2(x, y);
+                int which = GetMouseCorner();
+                if (ReturnScarecrow(Game1.player, location, Game1.currentCursorTile, which))
+                {
+                    location.playSound("axechop");
+                    return false;
+                }
+                return true;
+            }
+        }
     }
 }

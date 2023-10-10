@@ -128,7 +128,7 @@ namespace BatForm
             }
             e.SpriteBatch.Draw(batSprite.Value.Texture, Game1.player.getLocalPosition(Game1.viewport) + new Vector2(32f, -height.Value * 8), new Rectangle?(batSprite.Value.SourceRect), Color.White, 0f, new Vector2(8f, 16f), (1 + height.Value / 50f) * 4f, SpriteEffects.None, Game1.player.getStandingY() / 10000 + 0.05f + height.Value / 750f);
             batSprite.Value.Animate(Game1.currentGameTime, 0, 4, 80f);
-            if (batSprite.Value.currentFrame % 3 == 0 && Game1.soundBank != null && batSound.Value is null || !batSound.Value.IsPlaying && Game1.player.currentLocation == Game1.currentLocation)
+            if (batSprite.Value.currentFrame % 3 == 0 && Game1.soundBank != null && (batSound.Value is null || !batSound.Value.IsPlaying) && Game1.player.currentLocation == Game1.currentLocation)
             {
                 batSound.Value = Game1.soundBank.GetCue("batFlap");
                 batSound.Value.Play();

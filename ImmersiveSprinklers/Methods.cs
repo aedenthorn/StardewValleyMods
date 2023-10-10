@@ -171,9 +171,9 @@ namespace ImmersiveSprinklers
             return (location.terrainFeatures.TryGetValue(tile, out var tf) && tf.modData.TryGetValue(sprinklerKey + which, out var sprinklerString)) ? sprinklerString : null;
         }
 
-        private static bool ReturnSprinkler(Farmer who, GameLocation location, TerrainFeature tf, Vector2 placementTile, int which)
+        private static bool ReturnSprinkler(Farmer who, GameLocation location, Vector2 placementTile, int which)
         {
-            if (TryReturnSprinkler(who, location, tf, placementTile, which))
+            if (location.terrainFeatures.TryGetValue(placementTile, out var tf) && tf is HoeDirt && TryReturnSprinkler(who, location, tf, placementTile, which))
             { 
                 return true; 
             }

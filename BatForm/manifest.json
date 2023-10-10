@@ -1,7 +1,7 @@
 ﻿{
   "Name": "Bat Form",
   "Author": "aedenthorn",
-  "Version": "0.3.1",
+  "Version": "0.3.2",
   "Description": "Bat Form.",
   "UniqueID": "aedenthorn.BatForm",
   "EntryDll": "BatForm.dll",
