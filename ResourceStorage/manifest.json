@@ -1,7 +1,7 @@
 ﻿{
   "Name": "Resource Storage",
   "Author": "aedenthorn",
-  "Version": "0.5.1",
+  "Version": "0.6.0",
   "Description": "Resource Storage.",
   "UniqueID": "aedenthorn.ResourceStorage",
   "EntryDll": "ResourceStorage.dll",
@@ -12,11 +12,5 @@
     "Directory": "_releases",
     "ModFolder": "ResourceStorage"
   },
-  "Dependencies": [
-    {
-      "UniqueID": "Platonymous.ModUpdater",
-      "IsRequired": false
-    }
-  ],
   "UpdateKeys": [ "Nexus:17951" ]
 }

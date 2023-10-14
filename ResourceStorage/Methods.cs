@@ -24,14 +24,17 @@ namespace ResourceStorage
             var newAmount = Math.Max(oldAmount + amountToAdd, 0);
             if(newAmount != oldAmount)
             {
-                SMonitor.Log($"Modify resource {id} from {oldAmount} to {newAmount}");
-                Object item = new Object(GetIndex(id), (int)(newAmount - oldAmount));
-                try
+                SMonitor.Log($"Modified resource {id} from {oldAmount} to {newAmount}");
+                if (Config.ShowMessage)
                 {
-                    var hm = new HUDMessage(string.Format(newAmount > oldAmount ? SHelper.Translation.Get("added-x-y") : SHelper.Translation.Get("removed-x-y"), (int)Math.Abs(newAmount - oldAmount), item.DisplayName), Color.WhiteSmoke, 1000) { whatType = newAmount > oldAmount ? 4 : 3 };
-                    Game1.addHUDMessage(hm);
+                    Object item = new Object(GetIndex(id), (int)(newAmount - oldAmount));
+                    try
+                    {
+                        var hm = new HUDMessage(string.Format(newAmount > oldAmount ? SHelper.Translation.Get("added-x-y") : SHelper.Translation.Get("removed-x-y"), (int)Math.Abs(newAmount - oldAmount), item.DisplayName), Color.WhiteSmoke, 1000) { whatType = newAmount > oldAmount ? 4 : 3 };
+                        Game1.addHUDMessage(hm);
+                    }
+                    catch { }
                 }
-                catch { }
             }
             if (newAmount <= 0)
                 dict.Remove(id);

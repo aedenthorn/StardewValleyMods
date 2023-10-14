@@ -118,6 +118,13 @@ namespace ResourceStorage
                     getValue: () => Config.AutoUse,
                     setValue: value => Config.AutoUse = value
                 );
+
+                configMenu.AddBoolOption(
+                    mod: ModManifest,
+                    name: () => SHelper.Translation.Get("GMCM_Option_ShowMessage_Name"),
+                    getValue: () => Config.ShowMessage,
+                    setValue: value => Config.ShowMessage = value
+                );
                 
                 configMenu.AddKeybind(
                     mod: ModManifest,

@@ -73,7 +73,7 @@ namespace ImmersiveSprinklers
 
         private void Display_RenderedWorld(object sender, StardewModdingAPI.Events.RenderedWorldEventArgs e)
         {
-            if (!Config.EnableMod || !Context.IsPlayerFree || !Helper.Input.IsDown(Config.ShowRangeButton))
+            if (!Config.EnableMod || !Context.IsPlayerFree || !Helper.Input.IsDown(Config.ShowRangeButton) || Game1.currentLocation?.terrainFeatures is null)
                 return;
             List<Vector2> tiles = new List<Vector2>();
             foreach(var kvp in Game1.currentLocation.terrainFeatures.Pairs)
@@ -110,7 +110,6 @@ namespace ImmersiveSprinklers
                 e.SpriteBatch.Draw(Game1.mouseCursors, Game1.GlobalToLocal(new Vector2((float)((int)tile.X * 64), (float)((int)tile.Y * 64))), new Rectangle?(new Rectangle(194, 388, 16, 16)), Color.White, 0f, Vector2.Zero, 4f, SpriteEffects.None, 0.01f);
             }
         }
-
 
         private void Input_ButtonPressed(object sender, StardewModdingAPI.Events.ButtonPressedEventArgs e)
         {
@@ -222,8 +221,6 @@ namespace ImmersiveSprinklers
                 getValue: () => Config.DrawOffsetZ,
                 setValue: value => Config.DrawOffsetZ = value
             );
-
         }
-
     }
 }

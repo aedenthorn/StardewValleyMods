@@ -7,6 +7,7 @@ namespace ResourceStorage
     {
         public bool ModEnabled { get; set; } = true;
         public bool AutoUse { get; set; } = true;
+        public bool ShowMessage { get; set; } = false;
         public string AutoStore { get; set; } = "Sap,Wood,Hardwood,Stone,Coal,Fiber,Clay";
         public SButton ModKey1 { get; set; } = SButton.LeftShift;
         public SButton ModKey2 { get; set; } = SButton.LeftControl;
