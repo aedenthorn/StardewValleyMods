@@ -4,6 +4,7 @@ using StardewModdingAPI.Events;
 using StardewValley;
 using StardewValley.Menus;
 using System.IO;
+using System.Linq;
 
 namespace MapTeleport
 {
@@ -14,6 +15,8 @@ namespace MapTeleport
         public static IModHelper SHelper;
         public static IMonitor SMonitor;
         private static bool isSVE;
+        private static bool hasRSV;
+        private static bool hasES;
         private Harmony harmony;
 
         public static string dictPath = "aedenthorn.MapTeleport/coordinates";
@@ -31,6 +34,9 @@ namespace MapTeleport
             helper.Events.Content.AssetRequested += Content_AssetRequested;
             helper.Events.GameLoop.GameLaunched += GameLoop_GameLaunched;
             isSVE = Helper.ModRegistry.IsLoaded("FlashShifter.SVECode");
+            hasES = Helper.ModRegistry.IsLoaded("LemurKat.EastScarpe.SMAPI");
+            hasRSV = Helper.ModRegistry.IsLoaded("Rafseazz.RidgesideVillage");
+            
 
             harmony = new Harmony(ModManifest.UniqueID);
             harmony.PatchAll();
@@ -41,23 +47,28 @@ namespace MapTeleport
         {
             if (e.NameWithoutLocale.IsEquivalentTo(dictPath))
             {
-                if (File.Exists(Path.Combine(SHelper.DirectoryPath, "coordinates.json")))
+                CoordinatesList coordinatesList = new CoordinatesList();
+                if (File.Exists(Path.Combine(SHelper.DirectoryPath, "found_coordinates.json")))
                 {
-                    e.LoadFromModFile<CoordinatesList>("coordinates.json", AssetLoadPriority.Exclusive);
+                    coordinatesList.AddAll(Helper.Data.ReadJsonFile<CoordinatesList>("found_coordinates.json"));
+                }
+                if (isSVE)
+                {
+                    coordinatesList.AddAll(Helper.Data.ReadJsonFile<CoordinatesList>("assets/sve_coordinates.json"));
                 }
                 else
                 {
-                    CoordinatesList coordinatesList = new CoordinatesList();
-                    if (isSVE)
-                    {
-                        coordinatesList = Helper.Data.ReadJsonFile<CoordinatesList>("assets/sve_coordinates.json");
-                    }
-                    else
-                    {
-                        coordinatesList = Helper.Data.ReadJsonFile<CoordinatesList>("assets/coordinates.json");
-                    }
-                    e.LoadFrom(() => coordinatesList, AssetLoadPriority.Exclusive);
+                    coordinatesList.AddAll(Helper.Data.ReadJsonFile<CoordinatesList>("assets/coordinates.json"));
                 }
+                if (hasES)
+                {
+                    coordinatesList.AddAll(Helper.Data.ReadJsonFile<CoordinatesList>("assets/es_coordinates.json"));
+                }
+                if (hasRSV)
+                {
+                    coordinatesList.AddAll(Helper.Data.ReadJsonFile<CoordinatesList>("assets/rsv_coordinates.json"));
+                }
+                e.LoadFrom(() => coordinatesList, AssetLoadPriority.Exclusive);
             }
         }
 
