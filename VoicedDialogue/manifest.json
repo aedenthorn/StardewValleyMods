@@ -1,18 +1,18 @@
 ﻿{
-  "Name": "Custom Object Production",
+  "Name": "Voiced Dialogue",
   "Author": "aedenthorn",
-  "Version": "0.3.0",
-  "Description": "Custom Object Production.",
-  "UniqueID": "aedenthorn.CustomObjectProduction",
-  "EntryDll": "CustomObjectProduction.dll",
+  "Version": "0.1.0",
+  "Description": "Voiced Dialogue",
+  "UniqueID": "aedenthorn.VoicedDialogue",
+  "EntryDll": "VoicedDialogue.dll",
   "MinimumApiVersion": "3.15.0",
   "ModUpdater": {
     "Repository": "StardewValleyMods",
     "User": "aedenthorn",
     "Directory": "_releases",
-    "ModFolder": "CustomObjectProduction"
+    "ModFolder": "VoicedDialogue"
   },
-  "UpdateKeys": [ "Nexus:10152" ],
+  "UpdateKeys": [ "Nexus:" ],
   "Dependencies": [
     {
       "UniqueID": "Platonymous.ModUpdater",

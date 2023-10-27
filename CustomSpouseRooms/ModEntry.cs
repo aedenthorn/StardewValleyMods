@@ -17,6 +17,8 @@ namespace CustomSpouseRooms
         public static IMonitor SMonitor;
         public static IModHelper SHelper;
         public static ModConfig Config;
+        
+        public static string dictPath = "aedenthorn.CustomSpouseRooms/dict";
 
         public static Dictionary<string, int> roomIndexes = new Dictionary<string, int>{
             { "Abigail", 0 },
@@ -43,9 +45,6 @@ namespace CustomSpouseRooms
         public override void Entry(IModHelper helper)
         {
             Config = helper.ReadConfig<ModConfig>();
-
-            if (!Config.EnableMod)
-                return;
 
             SMonitor = Monitor;
             SHelper = helper;
@@ -97,8 +96,14 @@ namespace CustomSpouseRooms
 
         private void Content_AssetRequested(object sender, StardewModdingAPI.Events.AssetRequestedEventArgs e)
         {
+            if (!Config.EnableMod)
+                return;
             if(e.NameWithoutLocale.BaseName.Contains("custom_spouse_room_"))
                 e.LoadFromModFile<Map>(e.NameWithoutLocale.BaseName + ".tmx", StardewModdingAPI.Events.AssetLoadPriority.Exclusive);
+            else if (e.NameWithoutLocale.IsEquivalentTo(dictPath))
+            {
+                e.LoadFrom(() => new Dictionary<string, SpouseRoomData>(), StardewModdingAPI.Events.AssetLoadPriority.Exclusive);
+            }
         }
 
         private void GameLoop_SaveLoaded(object sender, StardewModdingAPI.Events.SaveLoadedEventArgs e)
@@ -127,6 +132,19 @@ namespace CustomSpouseRooms
                 }
 
                 SMonitor.Log($"Added {obj.data.Count} room datas from {contentPack.Manifest.Name}");
+            }
+            var dict = SHelper.GameContent.Load<Dictionary<string, SpouseRoomData>>(dictPath);
+            foreach (var srd in dict.Values)
+            {
+                try
+                {
+                    customRoomData.Add(srd.name, srd);
+                    SMonitor.Log($"Added {srd.name} room data, template {srd.templateName} start pos {srd.startPos}");
+                }
+                catch (Exception ex)
+                {
+                    SMonitor.Log($"Error adding {srd.name} room data, template {srd.templateName} start pos {srd.startPos}: \n\n{ex}", LogLevel.Error);
+                }
             }
         }
 

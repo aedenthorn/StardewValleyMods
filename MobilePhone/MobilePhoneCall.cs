@@ -499,7 +499,7 @@ namespace MobilePhone
             }
 
 
-            if (ModEntry.npcAdventureModApi.CanRecruit(Game1.player, npc))
+            if (ModEntry.npcAdventureModApi?.CanRecruit(Game1.player, npc) == true)
             {
                 Game1.drawDialogue(npc, Helper.Translation.Get("recruit-success"));
                 Game1.afterDialogues = delegate ()
@@ -538,7 +538,7 @@ namespace MobilePhone
                 return;
             }
 
-            if (ModEntry.npcAdventureModApi.RecruitCompanion(Game1.player, npc))
+            if (ModEntry.npcAdventureModApi?.Recruit(Game1.player, npc) == true)
             {
                 if (ModEntry.npcAdventureModApi.IsRecruited(npc))
                 {

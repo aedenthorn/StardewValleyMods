@@ -9,6 +9,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Reflection.Emit;
+using Object = StardewValley.Object;
 
 namespace InstantBuildingConstruction
 {
@@ -36,6 +37,28 @@ namespace InstantBuildingConstruction
                 __instance.daysOfConstructionLeft.Value = 0;
             }
         }
+        [HarmonyPatch(typeof(Building), nameof(Building.performActionOnConstruction))]
+        public class Building_performActionOnConstruction_Patch
+        {
+            public static void Postfix(Building __instance)
+            {
+                if (!Config.ModEnabled)
+                    return;
+
+                Game1.player.checkForQuestComplete(null, -1, -1, null, __instance.buildingType.Value, 8, -1);
+                if (__instance.buildingType.Equals("Slime Hutch") && __instance.indoors.Value != null)
+                {
+                    __instance.indoors.Value.objects[new Vector2(1f, 4f)] = new Object(new Vector2(1f, 4f), 156, false)
+                    {
+                        Fragility = 2
+                    };
+                    if (!Game1.player.mailReceived.Contains("slimeHutchBuilt"))
+                    {
+                        Game1.player.mailReceived.Add("slimeHutchBuilt");
+                    }
+                }
+            }
+        }
         [HarmonyPatch(typeof(CarpenterMenu), nameof(CarpenterMenu.tryToBuild))]
         public class CarpenterMenu_tryToBuild_Patch
         {
@@ -45,7 +68,10 @@ namespace InstantBuildingConstruction
                     return;
                 foreach(var b in Game1.getFarm().buildings)
                 {
-                    b.daysOfConstructionLeft.Value = 0;
+                    if(b.daysOfConstructionLeft.Value > 0)
+                    {
+                        b.daysOfConstructionLeft.Value = 0;
+                    }
                 }
             }
         }

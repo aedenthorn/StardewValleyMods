@@ -26,7 +26,6 @@ namespace BatForm
 
         public static ModEntry context;
 
-        public static int maxHeight = 50;
         
         public static string batFormKey = "aedenthorn.BatForm";
 
@@ -166,8 +165,8 @@ namespace BatForm
                     {
                         PlayTransform();
                     }
-                    height.Value = Math.Min(maxHeight, height.Value + 1);
-                    if (height.Value == maxHeight)
+                    height.Value = Math.Min(Config.MaxHeight, height.Value + 1);
+                    if (height.Value == Config.MaxHeight)
                     {
                         Game1.player.modData[batFormKey] = BatForm.Active + "";
                     }
@@ -247,6 +246,13 @@ namespace BatForm
                 name: () => "Transform Sound",
                 getValue: () => Config.TransformSound,
                 setValue: value => Config.TransformSound = value
+            );
+
+            configMenu.AddNumberOption(
+                mod: ModManifest,
+                name: () => "Max Height",
+                getValue: () => Config.MaxHeight,
+                setValue: value => Config.MaxHeight = value
             );
         }
     }

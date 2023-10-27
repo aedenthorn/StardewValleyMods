@@ -613,7 +613,7 @@ namespace MobilePhone
 
         public static void GameLoop_TimeChanged(object sender, TimeChangedEventArgs e)
         {
-            if (e.OldTime >= e.NewTime || ModEntry.callingNPC != null || ModEntry.inCall || !Config.EnableIncomingCalls || (!Config.ReceiveCallsUnderground && Game1.player.currentLocation is MineShaft))
+            if (e.NewTime > 2400 || Game1.player.isInBed.Value || Game1.player.passedOut || e.OldTime >= e.NewTime || ModEntry.callingNPC != null || ModEntry.inCall || !Config.EnableIncomingCalls || (!Config.ReceiveCallsUnderground && Game1.player.currentLocation is MineShaft))
                 return;
 
             if(Game1.random.NextDouble() < Config.FriendCallChance)

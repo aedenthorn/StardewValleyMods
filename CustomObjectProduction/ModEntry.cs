@@ -9,7 +9,7 @@ using Object = StardewValley.Object;
 namespace CustomObjectProduction
 {
     /// <summary>The mod entry point.</summary>
-    public partial class ModEntry : Mod, IAssetLoader
+    public partial class ModEntry : Mod
     {
 
         public static IMonitor SMonitor;
@@ -19,7 +19,6 @@ namespace CustomObjectProduction
         public static ModEntry context;
 
         public static readonly string dictPath = "custom_object_production_dictionary";
-        public static Dictionary<string, ProductData> objectProductionDataDict = new Dictionary<string, ProductData>();
         private static IDynamicGameAssetsApi apiDGA;
         private static IJsonAssetsApi apiJA;
 
@@ -29,16 +28,13 @@ namespace CustomObjectProduction
         {
             Config = Helper.ReadConfig<ModConfig>();
 
-            if (!Config.EnableMod)
-                return;
-
             context = this;
 
             SMonitor = Monitor;
             SHelper = helper;
 
             helper.Events.GameLoop.GameLaunched += GameLoop_GameLaunched;
-            helper.Events.GameLoop.SaveLoaded += GameLoop_SaveLoaded;
+            helper.Events.Content.AssetRequested += Content_AssetRequested;
 
             var harmony = new Harmony(ModManifest.UniqueID);
 
@@ -50,18 +46,18 @@ namespace CustomObjectProduction
                original: AccessTools.Method(typeof(GameLocation), nameof(GameLocation.checkAction)),
                prefix: new HarmonyMethod(typeof(ModEntry), nameof(ModEntry.GameLocation_checkAction_Prefix))
             );
-            harmony.Patch(
-               original: AccessTools.Method(typeof(Game1), "_newDayAfterFade"),
-               prefix: new HarmonyMethod(typeof(ModEntry), nameof(ModEntry.Game1__newDayAfterFade_Prefix))
-            );
-            
         }
 
-        private void GameLoop_SaveLoaded(object sender, StardewModdingAPI.Events.SaveLoadedEventArgs e)
+        private void Content_AssetRequested(object sender, StardewModdingAPI.Events.AssetRequestedEventArgs e)
         {
-            objectProductionDataDict = SHelper.Content.Load<Dictionary<string, ProductData>>(dictPath, ContentSource.GameContent) ?? new Dictionary<string, ProductData>();
-            SMonitor.Log($"Loaded {objectProductionDataDict.Count} products for today");
+            if (!Config.EnableMod)
+                return;
+            if (e.NameWithoutLocale.IsEquivalentTo(dictPath))
+            {
+                e.LoadFrom(() => new Dictionary<string, ProductData>(), StardewModdingAPI.Events.AssetLoadPriority.Exclusive);
+            }
         }
+
 
         private void GameLoop_GameLaunched(object sender, StardewModdingAPI.Events.GameLaunchedEventArgs e)
         {
@@ -140,23 +136,5 @@ namespace CustomObjectProduction
             return obj;
         }
 
-        /// <summary>Get whether this instance can load the initial version of the given asset.</summary>
-        /// <param name="asset">Basic metadata about the asset being loaded.</param>
-        public bool CanLoad<T>(IAssetInfo asset)
-        {
-            if (!Config.EnableMod)
-                return false;
-
-            return asset.AssetNameEquals(dictPath);
-        }
-
-        /// <summary>Load a matched asset.</summary>
-        /// <param name="asset">Basic metadata about the asset being loaded.</param>
-        public T Load<T>(IAssetInfo asset)
-        {
-            Monitor.Log("Loading dictionary");
-
-            return (T)(object)new Dictionary<string, ProductData>();
-        }
     }
 }
