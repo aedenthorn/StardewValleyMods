@@ -36,7 +36,7 @@ namespace MobilePhone
                 ModEntry.appRunning = false;
                 ModEntry.runningApp = null;
 
-                if (Config.ShowPhoneIcon && Game1.displayHUD && !Game1.eventUp && Game1.currentBillboard == 0 && Game1.gameMode == 3 && !Game1.freezeControls && !Game1.panMode && !Game1.HostPaused && !Game1.game1.takingMapScreenshot)
+                if (Config.ShowPhoneIcon && Game1.displayHUD && !Game1.eventUp &&  Game1.gameMode == 3 && !Game1.freezeControls && !Game1.panMode && !Game1.HostPaused && !Game1.game1.takingMapScreenshot)
                 {
                     PhoneUtils.CheckIconOffScreen();
                     if (ModEntry.clickingPhoneIcon)
@@ -170,7 +170,7 @@ namespace MobilePhone
                     ModEntry.iHDPortraitsAPI.DrawPortrait(e.SpriteBatch, ModEntry.callingNPC, 0, destRect);
                 }
 
-                SpriteText.drawStringHorizontallyCenteredAt(e.SpriteBatch, ModEntry.callingNPC.getName(), destRect.X + destRect.Width / 2, destRect.Bottom + 16, 999999, -1, 999999, 1f, 0.88f, false, -1, 99999);
+                SpriteText.drawStringHorizontallyCenteredAt(e.SpriteBatch, ModEntry.callingNPC.getName(), destRect.X + destRect.Width / 2, destRect.Bottom + 16, 999999, -1, 999999, 1f, 0.88f, false, null, 99999);
 
                 if (!ModEntry.inCall)
                 {

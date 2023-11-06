@@ -324,7 +324,7 @@ namespace MobilePhone
 
         public static Vector2 GetOpenSurroundingPosition()
         {
-            Vector2[] tiles = Utility.getSurroundingTileLocationsArray(Game1.player.getTileLocation());
+            Vector2[] tiles = Utility.getSurroundingTileLocationsArray(Game1.player.Tile);
             foreach(Vector2 tile in tiles)
             {
                 if(!Game1.player.currentLocation.isCollidingPosition(new Rectangle((int)tile.X * Game1.tileSize, (int)tile.Y * Game1.tileSize, Game1.tileSize, Game1.tileSize), Game1.viewport, true, 0, false, Game1.player)){

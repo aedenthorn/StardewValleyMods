@@ -62,7 +62,7 @@ namespace MobilePhone
                 {
                     Monitor.Log($"Reminiscing at night");
                     __instance.LightLevel = 0f;
-                    Game1.globalOutdoorLighting = 1f;
+                    //Game1.globalOutdoorLighting = 1f;
                     float transparency = Math.Min(0.93f, 0.75f + (2400 - Game1.getTrulyDarkTime() + Game1.gameTimeInterval / 7000f * 16.6f) * 0.000625f);
                     Game1.outdoorLight = Game1.eveningColor * transparency;
                     if (!(__instance is MineShaft) && !(__instance is Woods))
@@ -91,7 +91,7 @@ namespace MobilePhone
                     Monitor.Log($"Reminiscing during the day");
                     return;
                     __instance.LightLevel = 1f;
-                    Game1.globalOutdoorLighting = 1f;
+                    //Game1.globalOutdoorLighting = 1f;
                     Game1.outdoorLight = Color.White;
                     Game1.ambientLight = Color.White;
                     PropertyValue dayTiles;
@@ -212,10 +212,10 @@ namespace MobilePhone
                 Monitor.Log($"Reminiscing, renaming pet to {name}");
                 if (Game1.player.catPerson)
                 {
-                    Cat cat = Game1.getFarm().characters.FirstOrDefault(n => n is Cat) as Cat;
+                    Pet cat = Game1.getFarm().characters.FirstOrDefault(n => n is Pet) as Pet;
                     if(cat == null)
                     {
-                        cat = Utility.getHomeOfFarmer(Game1.player).characters.FirstOrDefault(n => n is Cat) as Cat;
+                        cat = Utility.getHomeOfFarmer(Game1.player).characters.FirstOrDefault(n => n is Pet) as Pet;
                     }
                     if (cat != null)
                     {
@@ -225,10 +225,10 @@ namespace MobilePhone
                 }
                 else
                 {
-                    Dog dog = Game1.getFarm().characters.FirstOrDefault(n => n is Dog) as Dog;
+                    Pet dog = Game1.getFarm().characters.FirstOrDefault(n => n is Pet) as Pet;
                     if (dog == null)
                     {
-                        dog = Utility.getHomeOfFarmer(Game1.player).characters.FirstOrDefault(n => n is Dog) as Dog;
+                        dog = Utility.getHomeOfFarmer(Game1.player).characters.FirstOrDefault(n => n is Pet) as Pet;
                     }
                     if (dog != null)
                     {
@@ -278,7 +278,7 @@ namespace MobilePhone
             {
                 RefreshView1();
             };
-            Game1.warpFarmer(locationRequest, Game1.player.getTileX(), Game1.player.getTileY(), Game1.player.facingDirection);
+            Game1.warpFarmer(locationRequest.Location.Name, Game1.player.TilePoint.X, Game1.player.TilePoint.Y, Game1.player.FacingDirection);
             return false;
         }
 
@@ -292,7 +292,7 @@ namespace MobilePhone
                 RefreshView2();
 
             };
-            Game1.warpFarmer(locationRequest, Game1.player.getTileX(), Game1.player.getTileY(), Game1.player.facingDirection);
+            Game1.warpFarmer(locationRequest.Location.Name, Game1.player.TilePoint.X, Game1.player.TilePoint.Y, Game1.player.FacingDirection);
             return false;
         }
         private static void RefreshView1()
@@ -331,24 +331,24 @@ namespace MobilePhone
             Game1.viewport.Location = new Location(320, 1536);
             Helper.Reflection.GetField<bool>(Game1.activeClickableMenu, "freeze").SetValue(false);
             Game1.displayFarmer = true;
-            robinPhoneConstructionMessage(Game1.activeClickableMenu, (Game1.activeClickableMenu as CarpenterMenu).CurrentBlueprint);
+            robinPhoneConstructionMessage(Game1.activeClickableMenu, (Game1.activeClickableMenu as CarpenterMenu).Blueprint);
         }
 
-        private static async void robinPhoneConstructionMessage(IClickableMenu instance, BluePrint CurrentBlueprint)
+        private static async void robinPhoneConstructionMessage(IClickableMenu instance, CarpenterMenu.BlueprintEntry CurrentBlueprint)
         {
             Game1.player.forceCanMove();
             string dialoguePath = "Data\\ExtraDialogue:Robin_" + (Helper.Reflection.GetField<bool>(instance, "upgrading").GetValue() ? "Upgrade" : "New") + "Construction";
-            if (Utility.isFestivalDay(Game1.dayOfMonth + 1, Game1.currentSeason))
+            if (Utility.isFestivalDay(Game1.dayOfMonth + 1, Game1.season))
             {
                 dialoguePath += "_Festival";
             }
-            if (CurrentBlueprint.daysToConstruct <= 0)
+            if (CurrentBlueprint.BuildDays <= 0)
             {
-                Game1.drawDialogue(Game1.getCharacterFromName("Robin", true), Game1.content.LoadString("Data\\ExtraDialogue:Robin_Instant", (LocalizedContentManager.CurrentLanguageCode == LocalizedContentManager.LanguageCode.de) ? CurrentBlueprint.displayName : CurrentBlueprint.displayName.ToLower()));
+                Game1.DrawDialogue(Game1.getCharacterFromName("Robin", true), Game1.content.LoadString("Data\\ExtraDialogue:Robin_Instant", (LocalizedContentManager.CurrentLanguageCode == LocalizedContentManager.LanguageCode.de) ? CurrentBlueprint.DisplayName : CurrentBlueprint.DisplayName.ToLower()));
             }
             else
             {
-                Game1.drawDialogue(Game1.getCharacterFromName("Robin", true), Game1.content.LoadString(dialoguePath, (LocalizedContentManager.CurrentLanguageCode == LocalizedContentManager.LanguageCode.de) ? CurrentBlueprint.displayName : CurrentBlueprint.displayName.ToLower(), (LocalizedContentManager.CurrentLanguageCode == LocalizedContentManager.LanguageCode.de) ? CurrentBlueprint.displayName.Split(' ').Last().Split('-').Last() : ((LocalizedContentManager.CurrentLanguageCode == LocalizedContentManager.LanguageCode.pt || LocalizedContentManager.CurrentLanguageCode == LocalizedContentManager.LanguageCode.es || LocalizedContentManager.CurrentLanguageCode == LocalizedContentManager.LanguageCode.it) ? CurrentBlueprint.displayName.ToLower().Split(' ').First() : CurrentBlueprint.displayName.ToLower().Split(' ').Last())));
+                Game1.DrawDialogue(Game1.getCharacterFromName("Robin", true), Game1.content.LoadString(dialoguePath, (LocalizedContentManager.CurrentLanguageCode == LocalizedContentManager.LanguageCode.de) ? CurrentBlueprint.DisplayName : CurrentBlueprint.DisplayName.ToLower(), (LocalizedContentManager.CurrentLanguageCode == LocalizedContentManager.LanguageCode.de) ? CurrentBlueprint.DisplayName.Split(' ').Last().Split('-').Last() : ((LocalizedContentManager.CurrentLanguageCode == LocalizedContentManager.LanguageCode.pt || LocalizedContentManager.CurrentLanguageCode == LocalizedContentManager.LanguageCode.es || LocalizedContentManager.CurrentLanguageCode == LocalizedContentManager.LanguageCode.it) ? CurrentBlueprint.DisplayName.ToLower().Split(' ').First() : CurrentBlueprint.DisplayName.ToLower().Split(' ').Last())));
             }
 
             while (Game1.activeClickableMenu is DialogueBox)

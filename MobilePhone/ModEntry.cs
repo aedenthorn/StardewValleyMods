@@ -170,47 +170,47 @@ namespace MobilePhone
                 prefix: new HarmonyMethod(typeof(PhonePatches), nameof(PhonePatches.GameLocation_answerDialogue_prefix))
             );
             harmony.Patch(
-                original: AccessTools.Method(typeof(Event), nameof(Event.command_awardFestivalPrize)),
+                original: AccessTools.Method(typeof(Event), nameof(Event.DefaultCommands.AwardFestivalPrize)),
                 prefix: new HarmonyMethod(typeof(PhonePatches), nameof(PhonePatches.Event_command_prefix))
             );
             harmony.Patch(
-                original: AccessTools.Method(typeof(Event), nameof(Event.command_addTool)),
+                original: AccessTools.Method(typeof(Event), nameof(Event.DefaultCommands.AddTool)),
                 prefix: new HarmonyMethod(typeof(PhonePatches), nameof(PhonePatches.Event_command_prefix))
             );
             harmony.Patch(
-                original: AccessTools.Method(typeof(Event), nameof(Event.command_addConversationTopic)),
+                original: AccessTools.Method(typeof(Event), nameof(Event.DefaultCommands.AddConversationTopic)),
                 prefix: new HarmonyMethod(typeof(PhonePatches), nameof(PhonePatches.Event_command_prefix))
             );
             harmony.Patch(
-                original: AccessTools.Method(typeof(Event), nameof(Event.command_addCookingRecipe)),
+                original: AccessTools.Method(typeof(Event), nameof(Event.DefaultCommands.AddCookingRecipe)),
                 prefix: new HarmonyMethod(typeof(PhonePatches), nameof(PhonePatches.Event_command_prefix))
             );
             harmony.Patch(
-                original: AccessTools.Method(typeof(Event), nameof(Event.command_addCraftingRecipe)),
+                original: AccessTools.Method(typeof(Event), nameof(Event.DefaultCommands.AddCraftingRecipe)),
                 prefix: new HarmonyMethod(typeof(PhonePatches), nameof(PhonePatches.Event_command_prefix))
             );
             harmony.Patch(
-                original: AccessTools.Method(typeof(Event), nameof(Event.command_money)),
+                original: AccessTools.Method(typeof(Event), nameof(Event.DefaultCommands.Money)),
                 prefix: new HarmonyMethod(typeof(PhonePatches), nameof(PhonePatches.Event_command_prefix))
             );
             harmony.Patch(
-                original: AccessTools.Method(typeof(Event), nameof(Event.command_removeItem)),
+                original: AccessTools.Method(typeof(Event), nameof(Event.DefaultCommands.RemoveItem)),
                 prefix: new HarmonyMethod(typeof(PhonePatches), nameof(PhonePatches.Event_command_prefix))
             );
             harmony.Patch(
-                original: AccessTools.Method(typeof(Event), nameof(Event.command_friendship)),
+                original: AccessTools.Method(typeof(Event), nameof(Event.DefaultCommands.Friendship)),
                 prefix: new HarmonyMethod(typeof(PhonePatches), nameof(PhonePatches.Event_command_prefix))
             );
             harmony.Patch(
-                original: AccessTools.Method(typeof(Event), nameof(Event.command_dump)),
+                original: AccessTools.Method(typeof(Event), nameof(Event.DefaultCommands.Dump)),
                 prefix: new HarmonyMethod(typeof(PhonePatches), nameof(PhonePatches.Event_command_prefix))
             );
             harmony.Patch(
-                original: AccessTools.Method(typeof(Event), nameof(Event.command_addQuest)),
+                original: AccessTools.Method(typeof(Event), nameof(Event.DefaultCommands.AddQuest)),
                 prefix: new HarmonyMethod(typeof(PhonePatches), nameof(PhonePatches.Event_command_prefix))
             );
             harmony.Patch(
-                original: AccessTools.Method(typeof(Event), nameof(Event.command_cutscene)),
+                original: AccessTools.Method(typeof(Event), nameof(Event.DefaultCommands.Cutscene)),
                 prefix: new HarmonyMethod(typeof(PhonePatches), nameof(PhonePatches.Event_command_cutscene_prefix))
             );
             harmony.Patch(

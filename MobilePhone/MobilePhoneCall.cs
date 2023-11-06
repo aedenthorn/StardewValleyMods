@@ -96,7 +96,7 @@ namespace MobilePhone
             }
             else if (whichAnswer == "PhoneApp_InCall_GoodBye")
             {
-                Game1.drawDialogue(npc, GetGoodBye(npc));
+                Game1.DrawDialogue(npc, GetGoodBye(npc));
                 EndCall();
             }
         }
@@ -289,7 +289,7 @@ namespace MobilePhone
             {
                 ShowMainCallDialogue(npc);
             }));
-            Game1.drawDialogue(npc, message);
+            Game1.DrawDialogue(npc, message);
         }
         private static void InviteOnPhone(NPC npc)
         {
@@ -437,7 +437,7 @@ namespace MobilePhone
             {
                 exitLocation = new LocationRequest(Game1.player.currentLocation.Name, Game1.player.currentLocation.isStructure.Value, Game1.player.currentLocation)
             };
-            Vector2 exitPos = Game1.player.getTileLocation();
+            Vector2 exitPos = Game1.player.Tile;
             e.onEventFinished += delegate ()
             {
                 Monitor.Log($"Event finished");
@@ -470,7 +470,7 @@ namespace MobilePhone
             {
                 exitLocation = new LocationRequest(Game1.player.currentLocation.Name, Game1.player.currentLocation.isStructure.Value, Game1.player.currentLocation)
             };
-            Vector2 exitPos = Game1.player.getTileLocation();
+            Vector2 exitPos = Game1.player.Tile;
             e.onEventFinished += delegate ()
             {
                 Monitor.Log($"Event finished");
@@ -501,7 +501,7 @@ namespace MobilePhone
 
             if (ModEntry.npcAdventureModApi?.CanRecruit(Game1.player, npc) == true)
             {
-                Game1.drawDialogue(npc, Helper.Translation.Get("recruit-success"));
+                Game1.DrawDialogue(npc, Helper.Translation.Get("recruit-success"));
                 Game1.afterDialogues = delegate ()
                 {
                     DoRecruit(npc);
@@ -509,7 +509,7 @@ namespace MobilePhone
             }
             else
             {
-                Game1.drawDialogue(npc, Helper.Translation.Get("recruit-fail"));
+                Game1.DrawDialogue(npc, Helper.Translation.Get("recruit-fail"));
                 Game1.afterDialogues = delegate ()
                 {
                     ShowMainCallDialogue(npc);
@@ -543,7 +543,7 @@ namespace MobilePhone
                 if (ModEntry.npcAdventureModApi.IsRecruited(npc))
                 {
                     Vector2 targetPos = PhoneUtils.GetOpenSurroundingPosition();
-                    Monitor.Log($"Recruiting {npc.Name} to {targetPos} (player: {Game1.player.getTileLocation()})");
+                    Monitor.Log($"Recruiting {npc.Name} to {targetPos} (player: {Game1.player.Tile})");
                     Game1.warpCharacter(npc, Game1.player.currentLocation, targetPos);
                     npc.Sprite.StopAnimation();
                     EndCall();

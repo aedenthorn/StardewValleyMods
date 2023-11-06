@@ -8,7 +8,7 @@ namespace MobilePhone
     {
         private IModHelper helper;
 
-        public CarpenterPhoneMenu(bool magicalConstruction, Farmer farmer, IModHelper helper) : base(magicalConstruction)
+        public CarpenterPhoneMenu(bool magicalConstruction, Farmer farmer, IModHelper helper) : base(Game1.builder_robin)
         {
             this.helper = helper;
             exitFunction = OnExit;

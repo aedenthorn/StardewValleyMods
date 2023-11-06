@@ -14,13 +14,8 @@ namespace MobilePhone
             for (int i = events.Count - 1; i >= 0; i--)
             {
                 string ids = events[i].eventId;
-                if(!int.TryParse(ids, out int id))
-                {
-                    if (!int.TryParse(ids.Split('/')[0], out id))
-                        continue;
-                }
 
-                if (!Game1.player.eventsSeen.Contains(id))
+                if (!Game1.player.eventsSeen.Contains(ids))
                     events.RemoveAt(i);
             }
         }
