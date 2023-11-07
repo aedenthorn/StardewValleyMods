@@ -52,7 +52,7 @@ namespace FreeLove
                 if (!spouses.TryGetValue(spouseName, out NPC spouse) || spouse is null || spouse.isMoving() || !ModEntry.IsInBed(__instance, spouse.GetBoundingBox()))
                     return true;
 
-                __result = spouse.getTileLocationPoint();
+                __result = spouse.TilePoint;
                 return false;
             }
             catch (Exception ex)
@@ -82,7 +82,7 @@ namespace FreeLove
         {
             try
             {
-                if (___oldMariner != null && ___oldMariner.getTileX() == tileLocation.X && ___oldMariner.getTileY() == tileLocation.Y)
+                if (___oldMariner != null && ___oldMariner.TilePoint.X == tileLocation.X && ___oldMariner.TilePoint.Y == tileLocation.Y)
                 {
                     string playerTerm = Game1.content.LoadString("Strings\\Locations:Beach_Mariner_Player_" + (who.IsMale ? "Male" : "Female"));
                     if (who.hasAFriendWithHeartLevel(10, true) && who.HouseUpgradeLevel == 0)
@@ -123,12 +123,7 @@ namespace FreeLove
                 string[] split = precondition.Split('/');
                 if (split.Length == 0)
                     return;
-                int eventId;
-                if (!int.TryParse(split[0], out eventId))
-                {
-                    return;
-                }
-                if (Game1.player.eventsSeen.Contains(eventId))
+                if (Game1.player.eventsSeen.Contains(split[0]))
                 {
                     return;
                 }
@@ -165,37 +160,13 @@ namespace FreeLove
             }
         }
 
-
-        public static void Desert_getDesertMerchantTradeStock_Postfix(Farmer who, ref Dictionary<ISalable, int[]> __result)
-        {
-            try
-            {
-                if (who != null && who.getFriendshipHeartLevelForNPC("Krobus") >= 10 && !who.friendshipData["Krobus"].RoommateMarriage && who.HouseUpgradeLevel >= 1 && (who.isMarried() || who.isEngaged()) && !who.hasItemInInventory(808, 1, 0))
-                {
-                    ISalable i = new StardewValley.Object(808, 1, false, -1, 0);
-                    __result.Add(i, new int[]
-                    {
-                        0,
-                        1,
-                        769,
-                        200
-                    });
-                }
-            }
-            catch (Exception ex)
-            {
-                Monitor.Log($"Failed in {nameof(Desert_getDesertMerchantTradeStock_Postfix)}:\n{ex}", LogLevel.Error);
-            }
-        }
-
-
         public static bool ManorHouse_performAction_Prefix(ManorHouse __instance, string action, Farmer who, ref bool __result)
         {
             try
             {
                 ModEntry.ResetSpouses(who);
                 Dictionary<string, NPC> spouses = ModEntry.GetSpouses(who, true);
-                if (action != null && who.IsLocalPlayer && !Game1.player.divorceTonight.Value && (Game1.player.isMarried() || spouses.Count > 0))
+                if (action != null && who.IsLocalPlayer && !Game1.player.divorceTonight.Value && (Game1.player.isMarriedOrRoommates() || spouses.Count > 0))
                 {
                     string a = action.Split(new char[]
                     {
@@ -248,13 +219,13 @@ namespace FreeLove
                 else
                 {
                     Game1.player.Money -= Config.PendantPrice;
-                    Game1.player.addItemByMenuIfNecessary(new Object(460, 1, false, -1, 0)
+                    Game1.player.addItemByMenuIfNecessary(new Object("(O)460", 1, false, -1, 0)
                     {
                         specialItem = true
                     }, null);
                     if (Game1.activeClickableMenu == null)
                     {
-                        Game1.player.holdUpItemThenMessage(new Object(460, 1, false, -1, 0), true);
+                        Game1.player.holdUpItemThenMessage(new Object("(O)460", 1, false, -1, 0), true);
                     }
                 }
                 __result = true;

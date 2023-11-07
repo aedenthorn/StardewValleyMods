@@ -1,0 +1,16 @@
+﻿{
+  "Name": "Close Doors",
+  "Author": "aedenthorn",
+  "Version": "0.1.0",
+  "Description": "Close Doors.",
+  "UniqueID": "aedenthorn.CloseDoors",
+  "EntryDll": "CloseDoors.dll",
+  "MinimumApiVersion": "3.99.0",
+  "ModUpdater": {
+    "Repository": "StardewValleyMods",
+    "User": "aedenthorn",
+    "Directory": "_releases",
+    "ModFolder": "CloseDoors"
+  },
+  "UpdateKeys": [ "Nexus:" ]
+}

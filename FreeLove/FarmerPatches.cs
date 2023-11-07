@@ -25,7 +25,7 @@ namespace FreeLove
             {
                 Monitor.Log("Trying to divorce");
                 __instance.divorceTonight.Value = false;
-                if (!__instance.isMarried() || ModEntry.spouseToDivorce == null)
+                if (!__instance.isMarriedOrRoommates() || ModEntry.spouseToDivorce == null)
                 {
                     Monitor.Log("Tried to divorce but no spouse to divorce!");
                     return false;
@@ -66,7 +66,7 @@ namespace FreeLove
                     Helper.GameContent.InvalidateCache("Maps/FarmHouse1_marriage");
                     Helper.GameContent.InvalidateCache("Maps/FarmHouse2_marriage");
 
-                    Monitor.Log($"New spouse: {__instance.spouse}, married {__instance.isMarried()}");
+                    Monitor.Log($"New spouse: {__instance.spouse}, married {__instance.isMarriedOrRoommates()}");
 
                     Utility.getHomeOfFarmer(__instance).showSpouseRoom();
                     Utility.getHomeOfFarmer(__instance).setWallpapers();

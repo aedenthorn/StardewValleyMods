@@ -22,16 +22,17 @@ namespace FreeLove
             Monitor = monitor;
             Helper = helper;
         }
-        public static void SocialPage_drawNPCSlot_prefix(SocialPage __instance, int i, List<string> ___kidsNames, ref Dictionary<string, string> ___npcNames)
+        public static void SocialPage_drawNPCSlot_prefix(SocialPage __instance, int i, ref Dictionary<string, string> ___npcNames)
         {
             try
             {
-                string name = __instance.names[i] as string;
-                if (___kidsNames.Contains(name))
+                SocialPage.SocialEntry entry = __instance.GetSocialEntry(i);
+                if (entry.IsChild)
                 {
-                    if (___npcNames[name].EndsWith(")"))
+                    if (entry.DisplayName.EndsWith(")"))
                     {
-                        ___npcNames[name] = string.Join(" ", ___npcNames[name].Split(' ').Reverse().Skip(1).Reverse());
+                        AccessTools.FieldRefAccess<SocialPage.SocialEntry, string>(entry, "DisplayName") = string.Join(" ", entry.DisplayName.Split(' ').Reverse().Skip(1).Reverse());
+                        __instance.SocialEntries[i] = entry;
                     }
                 }
             }
@@ -40,13 +41,13 @@ namespace FreeLove
                 Monitor.Log($"Failed in {nameof(SocialPage_drawNPCSlot_prefix)}:\n{ex}", LogLevel.Error);
             }
         }
-        public static bool SocialPage_isMarriedToAnyone_Prefix(string name, ref bool __result)
+        public static bool SocialPage_isMarriedToAnyone_Prefix(SocialPage.SocialEntry __instance, ref bool __result)
         {
             try
             {
                 foreach (Farmer farmer in Game1.getAllFarmers())
                 {
-                    if (farmer.spouse == name && farmer.friendshipData.TryGetValue(name, out Friendship friendship) && friendship.IsMarried())
+                    if (farmer.spouse == __instance.InternalName && farmer.friendshipData.TryGetValue(__instance.InternalName, out Friendship friendship) && friendship.IsMarried())
                     {
                         __result = true;
                     }

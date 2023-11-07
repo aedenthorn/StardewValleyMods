@@ -587,6 +587,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AdvancedDialogueCommands", 
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VoicedDialogue", "VoicedDialogue\VoicedDialogue.csproj", "{75EC3555-8390-4DDB-896B-5E9B17571E65}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CloseDoors", "CloseDoors\CloseDoors.csproj", "{05FD83DD-D98C-4C4C-812A-03F74C95740D}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -2891,6 +2893,14 @@ Global
 		{75EC3555-8390-4DDB-896B-5E9B17571E65}.Release|Any CPU.Build.0 = Release|Any CPU
 		{75EC3555-8390-4DDB-896B-5E9B17571E65}.Release|x64.ActiveCfg = Release|x64
 		{75EC3555-8390-4DDB-896B-5E9B17571E65}.Release|x64.Build.0 = Release|x64
+		{05FD83DD-D98C-4C4C-812A-03F74C95740D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{05FD83DD-D98C-4C4C-812A-03F74C95740D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{05FD83DD-D98C-4C4C-812A-03F74C95740D}.Debug|x64.ActiveCfg = Debug|x64
+		{05FD83DD-D98C-4C4C-812A-03F74C95740D}.Debug|x64.Build.0 = Debug|x64
+		{05FD83DD-D98C-4C4C-812A-03F74C95740D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{05FD83DD-D98C-4C4C-812A-03F74C95740D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{05FD83DD-D98C-4C4C-812A-03F74C95740D}.Release|x64.ActiveCfg = Release|x64
+		{05FD83DD-D98C-4C4C-812A-03F74C95740D}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

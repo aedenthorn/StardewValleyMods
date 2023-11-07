@@ -140,12 +140,12 @@ namespace FreeLove
                 chance += (Game1.player.hasDarkSkin() ? 0.5 : 0.0);
                 bool isDarkSkinned = new Random((int)Game1.uniqueIDForThisGame + (int)Game1.stats.DaysPlayed).NextDouble() < chance;
                 string newBabyName = ___babyName;
-                DisposableList<NPC> all_characters = Utility.getAllCharacters();
+                List<NPC> all_characters = Utility.getAllCharacters();
                 bool collision_found = false;
                 do
                 {
                     collision_found = false;
-                    using (DisposableList<NPC>.Enumerator enumerator = all_characters.GetEnumerator())
+                    using (List<NPC>.Enumerator enumerator = all_characters.GetEnumerator())
                     {
                         while (enumerator.MoveNext())
                         {

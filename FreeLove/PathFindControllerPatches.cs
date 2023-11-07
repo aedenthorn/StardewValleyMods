@@ -61,13 +61,13 @@ namespace FreeLove
         {
            
             Monitor.Log($"Checking {c.Name} endpoint in farmhouse");
-            using (IEnumerator<Character> characters = location.getCharacters().GetEnumerator())
+            using (IEnumerator<Character> characters = location.characters.GetEnumerator())
             {
                 while (characters.MoveNext())
                 {
                     if(characters.Current != c)
                     {
-                        if(characters.Current.getTileLocationPoint() == endPoint || (characters.Current is NPC && (characters.Current as NPC).controller?.endPoint == endPoint))
+                        if(characters.Current.TilePoint == endPoint || (characters.Current is NPC && (characters.Current as NPC).controller?.endPoint == endPoint))
                         {
                             Monitor.Log($"{c.Name} endpoint {endPoint} collides with {characters.Current.Name}");
                             return true;

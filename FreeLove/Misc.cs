@@ -168,7 +168,7 @@ namespace FreeLove
                     {
                         SMonitor.Log("made patio spouse: " + spouse.Name);
                         spouse.setUpForOutdoorPatioActivity();
-                        SMonitor.Log($"{spouse.Name} at {spouse.currentLocation.Name} {spouse.getTileLocation()}");
+                        SMonitor.Log($"{spouse.Name} at {spouse.currentLocation.Name} {spouse.TilePoint}");
                     }
                 }
             }
@@ -228,7 +228,7 @@ namespace FreeLove
                 { 
                     spouse.setTilePosition(farmHouse.getRandomOpenPointInHouse(myRand));
                     spouse.faceDirection(myRand.Next(0, 4));
-                    SMonitor.Log($"{spouse.Name} spouse random loc {spouse.getTileLocationPoint()}");
+                    SMonitor.Log($"{spouse.Name} spouse random loc {spouse.TilePoint}");
                     spouse.setRandomAfternoonMarriageDialogue(Game1.timeOfDay, farmHouse, false);
                 }
             }

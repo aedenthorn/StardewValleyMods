@@ -2,7 +2,9 @@
 using Microsoft.Xna.Framework;
 using StardewModdingAPI;
 using StardewValley;
+using StardewValley.Audio;
 using StardewValley.Characters;
+using StardewValley.Extensions;
 using StardewValley.Locations;
 using StardewValley.Network;
 using System;
@@ -193,7 +195,7 @@ namespace FreeLove
         {
             try
             {
-                if (Game1.player.isMarried() && Game1.player.friendshipData.ContainsKey(__instance.Name) &&  Game1.player.friendshipData[__instance.Name].IsMarried() && Game1.player.spouse != __instance.Name)
+                if (Game1.player.isMarriedOrRoommates() && Game1.player.friendshipData.ContainsKey(__instance.Name) &&  Game1.player.friendshipData[__instance.Name].IsMarried() && Game1.player.spouse != __instance.Name)
                 {
                     ModEntry.tempOfficialSpouse = __instance;
                     __state = true;
@@ -400,7 +402,7 @@ namespace FreeLove
         {
             if (!Config.EnableMod || currentLocation is not FarmHouse)
                 return true;
-            if (NPC.checkTileOccupancyForSpouse(currentLocation, __instance.getTileLocation(), __instance.Name))
+            if (NPC.checkTileOccupancyForSpouse(currentLocation, __instance.Tile, __instance.Name))
             {
                 Game1.warpCharacter(__instance, __instance.DefaultMap, (Game1.getLocationFromName(__instance.DefaultMap) as FarmHouse).getSpouseBedSpot(__instance.Name));
                 __instance.faceDirection(1);
@@ -521,7 +523,7 @@ namespace FreeLove
 
         public static bool NPC_checkAction_Prefix(ref NPC __instance, ref Farmer who, GameLocation l, ref bool __result)
         {
-            if (!Config.EnableMod || __instance.IsInvisible || __instance.isSleeping.Value || !who.canMove || who.checkForQuestComplete(__instance, -1, -1, who.ActiveObject, null, -1, 5) || (who.pantsItem.Value?.ParentSheetIndex == 15 && (__instance.Name.Equals("Lewis") || __instance.Name.Equals("Marnie"))) || (__instance.Name.Equals("Krobus") && who.hasQuest(28)))
+            if (!Config.EnableMod || __instance.IsInvisible || __instance.isSleeping.Value || !who.canMove || who.checkForQuestComplete(__instance, -1, -1, who.ActiveObject, null, -1, 5) || (who.pantsItem.Value?.ParentSheetIndex == 15 && (__instance.Name.Equals("Lewis") || __instance.Name.Equals("Marnie"))) || (__instance.Name.Equals("Krobus") && who.hasQuest("28")))
                 return true;
 
             try
@@ -534,14 +536,16 @@ namespace FreeLove
 
                     __instance.faceDirection(-3);
 
-                    if (who.friendshipData.ContainsKey(__instance.Name) && who.friendshipData[__instance.Name].Points >= 3125 && !who.mailReceived.Contains("CF_Spouse"))
+                    if (who.friendshipData.ContainsKey(__instance.Name) && who.friendshipData[__instance.Name].Points >= 3125 && who.mailReceived.Add("CF_Spouse"))
                     {
                         Monitor.Log($"getting starfruit");
-                        __instance.CurrentDialogue.Push(new Dialogue(Game1.content.LoadString(Game1.player.isRoommate(who.spouse) ? "Strings\\StringsFromCSFiles:Krobus_Stardrop" : "Strings\\StringsFromCSFiles:NPC.cs.4001"), __instance));
-                        Game1.player.addItemByMenuIfNecessary(new Object(Vector2.Zero, 434, "Cosmic Fruit", false, false, false, false), null);
+                        __instance.CurrentDialogue.Push(new Dialogue(__instance, Game1.player.isRoommate(who.spouse) ? "Strings\\StringsFromCSFiles:Krobus_Stardrop" : "Strings\\StringsFromCSFiles:NPC.cs.4001", false));
+                        Object stardrop = ItemRegistry.Create<Object>("(O)434", 1, 0, false);
+                        stardrop.CanBeSetDown = false;
+                        stardrop.CanBeGrabbed = false;
+                        Game1.player.addItemByMenuIfNecessary(stardrop, null);
                         __instance.shouldSayMarriageDialogue.Value = false;
                         __instance.currentMarriageDialogue.Clear();
-                        who.mailReceived.Add("CF_Spouse");
                         __result = true;
                         return false;
                     }
@@ -642,7 +646,7 @@ namespace FreeLove
                                         Monitor.Log($"Hugging {__instance.Name}");
                                         ModEntry.mp.broadcastSprites(who.currentLocation, new TemporaryAnimatedSprite[]
                                         {
-                                            new TemporaryAnimatedSprite("LooseSprites\\emojis", new Microsoft.Xna.Framework.Rectangle(0, 0, 9, 9), 2000f, 1, 0, new Vector2((float)__instance.getTileX(), (float)__instance.getTileY()) * 64f + new Vector2(16f, -64f), false, false, 1f, 0f, Color.White, 4f, 0f, 0f, 0f, false)
+                                            new TemporaryAnimatedSprite("LooseSprites\\emojis", new Microsoft.Xna.Framework.Rectangle(0, 0, 9, 9), 2000f, 1, 0, new Vector2((float)__instance.Tile.X, (float)__instance.Tile.Y) * 64f + new Vector2(16f, -64f), false, false, 1f, 0f, Color.White, 4f, 0f, 0f, 0f, false)
                                             {
                                                 motion = new Vector2(0f, -0.5f),
                                                 alphaFade = 0.01f
@@ -654,14 +658,14 @@ namespace FreeLove
                                         Monitor.Log($"Kissing {__instance.Name}");
                                         ModEntry.mp.broadcastSprites(who.currentLocation, new TemporaryAnimatedSprite[]
                                         {
-                                            new TemporaryAnimatedSprite("LooseSprites\\Cursors", new Microsoft.Xna.Framework.Rectangle(211, 428, 7, 6), 2000f, 1, 0, new Vector2((float)__instance.getTileX(), (float)__instance.getTileY()) * 64f + new Vector2(16f, -64f), false, false, 1f, 0f, Color.White, 4f, 0f, 0f, 0f, false)
+                                            new TemporaryAnimatedSprite("LooseSprites\\Cursors", new Microsoft.Xna.Framework.Rectangle(211, 428, 7, 6), 2000f, 1, 0, new Vector2((float)__instance.Tile.X, (float)__instance.Tile.Y) * 64f + new Vector2(16f, -64f), false, false, 1f, 0f, Color.White, 4f, 0f, 0f, 0f, false)
                                             {
                                                 motion = new Vector2(0f, -0.5f),
                                                 alphaFade = 0.01f
                                             }
                                         });
                                     }
-                                    __instance.currentLocation.playSound("dwop", NetAudio.SoundContext.NPC);
+                                    __instance.currentLocation.playSound("dwop", null, null, SoundContext.NPC);
                                     who.exhausted.Value = false;
 
                                 }
@@ -699,6 +703,8 @@ namespace FreeLove
         {
             try
             {
+                Friendship friendship;
+                who.friendshipData.TryGetValue(__instance.Name, out friendship);
                 string safe_name = __instance.Name.ToLower().Replace(' ', '_');
                 if (who.ActiveObject.HasContextTag("propose_roommate_" + safe_name))
                 {
@@ -729,7 +735,7 @@ namespace FreeLove
                     {
                         who.spouse = __instance.Name;
                         ModEntry.ResetSpouses(who);
-                        Game1.currentLocation.playSound("dwop", NetAudio.SoundContext.NPC);
+                        Game1.currentLocation.playSound("dwop", null, null, SoundContext.NPC);
                         if(ModEntry.customSpouseRoomsAPI == null)
                         {
                             FarmHouse fh = Utility.getHomeOfFarmer(who);
@@ -741,42 +747,43 @@ namespace FreeLove
 
                     if (!__instance.datable.Value)
                     {
-                        if (ModEntry.myRand.NextDouble() < 0.5)
+                        if (Game1.random.NextBool())
                         {
                             Game1.drawObjectDialogue(Game1.content.LoadString("Strings\\StringsFromCSFiles:NPC.cs.3955", __instance.displayName));
-                            return false;
                         }
-                        __instance.CurrentDialogue.Push(new Dialogue((ModEntry.myRand.NextDouble() < 0.5) ? Game1.content.LoadString("Strings\\StringsFromCSFiles:NPC.cs.3956") : Game1.LoadStringByGender(__instance.Gender, "Strings\\StringsFromCSFiles:NPC.cs.3957"), __instance));
+                        else
+                        {
+                            __instance.CurrentDialogue.Push(Game1.random.NextBool() ? new Dialogue(__instance, "Strings\\StringsFromCSFiles:NPC.cs.3956", false) : new Dialogue(__instance, "Strings\\StringsFromCSFiles:NPC.cs.3957", true));
+                        }
                         Game1.drawDialogue(__instance);
                         return false;
                     }
                     else
                     {
-                        if (who.friendshipData.ContainsKey(__instance.Name) && who.friendshipData[__instance.Name].IsDating())
+                        if (friendship?.IsDating() == true)
                         {
                             Game1.drawObjectDialogue(Game1.content.LoadString("Strings\\UI:AlreadyDatingBouquet", __instance.displayName));
                             return false;
                         }
-                        if (who.friendshipData.ContainsKey(__instance.Name) && who.friendshipData[__instance.Name].IsDivorced())
+                        if (friendship?.IsDivorced() == true)
                         {
-                            __instance.CurrentDialogue.Push(new Dialogue(Game1.content.LoadString("Strings\\Characters:Divorced_bouquet"), __instance));
+                            __instance.CurrentDialogue.Push(new Dialogue(__instance, "Strings\\Characters:Divorced_bouquet", true));
                             Game1.drawDialogue(__instance);
                             return false;
                         }
-                        if (who.friendshipData.ContainsKey(__instance.Name) && who.friendshipData[__instance.Name].Points < Config.MinPointsToDate / 2f)
+                        if (friendship?.Points < Config.MinPointsToDate / 2f)
                         {
-                            __instance.CurrentDialogue.Push(new Dialogue((ModEntry.myRand.NextDouble() < 0.5) ? Game1.content.LoadString("Strings\\StringsFromCSFiles:NPC.cs.3958") : Game1.LoadStringByGender(__instance.Gender, "Strings\\StringsFromCSFiles:NPC.cs.3959"), __instance));
+                            __instance.CurrentDialogue.Push(Game1.random.NextBool() ? new Dialogue(__instance, "Strings\\StringsFromCSFiles:NPC.cs.3958", false) : new Dialogue(__instance, "Strings\\StringsFromCSFiles:NPC.cs.3959", true));
                             Game1.drawDialogue(__instance);
                             return false;
                         }
-                        if (who.friendshipData.ContainsKey(__instance.Name) && who.friendshipData[__instance.Name].Points < Config.MinPointsToDate)
+                        if (friendship?.Points < Config.MinPointsToDate)
                         {
-                            __instance.CurrentDialogue.Push(new Dialogue((ModEntry.myRand.NextDouble() < 0.5) ? Game1.content.LoadString("Strings\\StringsFromCSFiles:NPC.cs.3960") : Game1.content.LoadString("Strings\\StringsFromCSFiles:NPC.cs.3961"), __instance));
+                            __instance.CurrentDialogue.Push(new Dialogue(__instance, "Strings\\StringsFromCSFiles:NPC.cs." + Game1.random.Choose("3960", "3961"), false));
                             Game1.drawDialogue(__instance);
                             return false;
                         }
-                        Friendship friendship = who.friendshipData[__instance.Name];
-                        if (!friendship.IsDating())
+                        if (friendship?.IsDating() == false)
                         {
                             friendship.Status = FriendshipStatus.Dating;
                             Multiplayer mp = ModEntry.SHelper.Reflection.GetField<Multiplayer>(typeof(Game1), "multiplayer").GetValue();
@@ -786,7 +793,7 @@ namespace FreeLove
                                     __instance.displayName
                             });
                         }
-                        __instance.CurrentDialogue.Push(new Dialogue((ModEntry.myRand.NextDouble() < 0.5) ? Game1.LoadStringByGender(__instance.Gender, "Strings\\StringsFromCSFiles:NPC.cs.3962") : Game1.LoadStringByGender(__instance.Gender, "Strings\\StringsFromCSFiles:NPC.cs.3963"), __instance));
+                        __instance.CurrentDialogue.Push(new Dialogue(__instance, "Strings\\StringsFromCSFiles:NPC.cs." + Game1.random.Choose("3962", "3963"), true));
                         who.changeFriendship(25, __instance);
                         who.reduceActiveItemByOne();
                         who.completelyStopAnimatingOrDoingAction();
@@ -802,7 +809,7 @@ namespace FreeLove
                     {
                         Monitor.Log($"Tried to give pendant while engaged");
 
-                        __instance.CurrentDialogue.Push(new Dialogue((ModEntry.myRand.NextDouble() < 0.5) ? Game1.LoadStringByGender(__instance.Gender, "Strings\\StringsFromCSFiles:NPC.cs.3965") : Game1.LoadStringByGender(__instance.Gender, "Strings\\StringsFromCSFiles:NPC.cs.3966"), __instance));
+                        __instance.CurrentDialogue.Push(new Dialogue(__instance, "Strings\\StringsFromCSFiles:NPC.cs." + Game1.random.Choose("3965", "3966"), true));
                         Game1.drawDialogue(__instance);
                         return false;
                     }
@@ -815,7 +822,7 @@ namespace FreeLove
                             Game1.drawObjectDialogue(Game1.content.LoadString("Strings\\StringsFromCSFiles:NPC.cs.3969", __instance.displayName));
                             return false;
                         }
-                        __instance.CurrentDialogue.Push(new Dialogue((__instance.Gender == 1) ? Game1.content.LoadString("Strings\\StringsFromCSFiles:NPC.cs.3970") : Game1.content.LoadString("Strings\\StringsFromCSFiles:NPC.cs.3971"), __instance));
+                        __instance.CurrentDialogue.Push(new Dialogue(__instance, "Strings\\StringsFromCSFiles:NPC.cs." + ((__instance.Gender == 1) ? "3970" : "3971"), false));
                         Game1.drawDialogue(__instance);
                         return false;
                     }
@@ -825,13 +832,13 @@ namespace FreeLove
 
                         if (!who.friendshipData[__instance.Name].ProposalRejected)
                         {
-                            __instance.CurrentDialogue.Push(new Dialogue((ModEntry.myRand.NextDouble() < 0.5) ? Game1.content.LoadString("Strings\\StringsFromCSFiles:NPC.cs.3972") : Game1.content.LoadString("Strings\\StringsFromCSFiles:NPC.cs.3973"), __instance));
+                            __instance.CurrentDialogue.Push(new Dialogue(__instance, "Strings\\StringsFromCSFiles:NPC.cs." + Game1.random.Choose("3972", "3973"), false));
                             Game1.drawDialogue(__instance);
                             who.changeFriendship(-20, __instance);
                             who.friendshipData[__instance.Name].ProposalRejected = true;
                             return false;
                         }
-                        __instance.CurrentDialogue.Push(new Dialogue((ModEntry.myRand.NextDouble() < 0.5) ? Game1.LoadStringByGender(__instance.Gender, "Strings\\StringsFromCSFiles:NPC.cs.3974") : Game1.LoadStringByGender(__instance.Gender, "Strings\\StringsFromCSFiles:NPC.cs.3975"), __instance));
+                        __instance.CurrentDialogue.Push(new Dialogue(__instance, "Strings\\StringsFromCSFiles:NPC.cs." + Game1.random.Choose("3974", "3975"), true));
                         Game1.drawDialogue(__instance);
                         who.changeFriendship(-50, __instance);
                         return false;
@@ -850,7 +857,7 @@ namespace FreeLove
                             Game1.drawObjectDialogue(Game1.content.LoadString("Strings\\StringsFromCSFiles:NPC.cs.3969", __instance.displayName));
                             return false;
                         }
-                        __instance.CurrentDialogue.Push(new Dialogue(Game1.content.LoadString("Strings\\StringsFromCSFiles:NPC.cs.3972"), __instance));
+                        __instance.CurrentDialogue.Push(new Dialogue(__instance, "Strings\\StringsFromCSFiles:NPC.cs.3972", false));
                         Game1.drawDialogue(__instance);
                         return false;
                     }
@@ -858,7 +865,7 @@ namespace FreeLove
                 else if (who.ActiveObject.ParentSheetIndex == 809 && !who.ActiveObject.bigCraftable.Value)
                 {
                     Monitor.Log($"Tried to give movie ticket to {__instance.Name}");
-                    if (ModEntry.GetSpouses(who, true).ContainsKey(__instance.Name) && Utility.doesMasterPlayerHaveMailReceivedButNotMailForTomorrow("ccMovieTheater") && !__instance.Name.Equals("Krobus") && who.lastSeenMovieWeek.Value < Game1.Date.TotalWeeks && !Utility.isFestivalDay(Game1.dayOfMonth, Game1.currentSeason) && Game1.timeOfDay <= 2100 && __instance.lastSeenMovieWeek.Value < Game1.Date.TotalWeeks && MovieTheater.GetResponseForMovie(__instance) != "reject")
+                    if (ModEntry.GetSpouses(who, true).ContainsKey(__instance.Name) && Utility.doesMasterPlayerHaveMailReceivedButNotMailForTomorrow("ccMovieTheater") && !__instance.Name.Equals("Krobus") && who.lastSeenMovieWeek.Value < Game1.Date.TotalWeeks && !Utility.isFestivalDay(Game1.dayOfMonth, Game1.season) && Game1.timeOfDay <= 2100 && __instance.lastSeenMovieWeek.Value < Game1.Date.TotalWeeks && MovieTheater.GetResponseForMovie(__instance) != "reject")
                     {
                         Monitor.Log($"Tried to give movie ticket to spouse");
                         foreach (MovieInvitation invitation in who.team.movieInvitations)
@@ -878,18 +885,12 @@ namespace FreeLove
 
                         Monitor.Log($"Giving movie ticket to spouse");
 
-                        if (LocalizedContentManager.CurrentLanguageCode == LocalizedContentManager.LanguageCode.en)
+                        Dialogue dialogue5;
+                        if ((dialogue5 = Dialogue.TryGetDialogue(__instance, "Strings\\Characters:MovieInvite_Spouse_" + __instance.Name)) == null)
                         {
-                            __instance.CurrentDialogue.Push(new Dialogue(__instance.GetDispositionModifiedString("Strings\\Characters:MovieInvite_Spouse_" + __instance.Name, new object[0]), __instance));
+                            dialogue5 = (__instance.TryGetDialogue("MovieInvitation") ?? new Dialogue(__instance, "Strings\\Characters:MovieInvite_Invited", __instance.GetDispositionModifiedString("Strings\\Characters:MovieInvite_Invited", Array.Empty<object>())));
                         }
-                        else if (LocalizedContentManager.CurrentLanguageCode == LocalizedContentManager.LanguageCode.en && ___dialogue != null && ___dialogue.ContainsKey("MovieInvitation"))
-                        {
-                            __instance.CurrentDialogue.Push(new Dialogue(___dialogue["MovieInvitation"], __instance));
-                        }
-                        else
-                        {
-                            __instance.CurrentDialogue.Push(new Dialogue(__instance.GetDispositionModifiedString("Strings\\Characters:MovieInvite_Invited", new object[0]), __instance));
-                        }
+                        Dialogue acceptDialogue = dialogue5;
                         Game1.drawDialogue(__instance);
                         who.reduceActiveItemByOne();
                         who.completelyStopAnimatingOrDoingAction();

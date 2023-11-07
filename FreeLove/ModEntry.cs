@@ -4,8 +4,10 @@ using StardewModdingAPI;
 using StardewValley;
 using StardewValley.Characters;
 using StardewValley.Events;
+using StardewValley.GameData.Shops;
 using StardewValley.Locations;
 using StardewValley.Menus;
+using StardewValley.Pathfinding;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -194,11 +196,6 @@ namespace FreeLove
                original: AccessTools.Method(typeof(GameLocation), "checkEventPrecondition"),
                prefix: new HarmonyMethod(typeof(LocationPatches), nameof(LocationPatches.GameLocation_checkEventPrecondition_Prefix))
             );
-            
-            harmony.Patch(
-               original: AccessTools.Method(typeof(Desert), nameof(Desert.getDesertMerchantTradeStock)),
-               postfix: new HarmonyMethod(typeof(LocationPatches), nameof(LocationPatches.Desert_getDesertMerchantTradeStock_Postfix))
-            );
 
             harmony.Patch(
                original: AccessTools.Method(typeof(ManorHouse), nameof(ManorHouse.performAction)),
@@ -246,7 +243,7 @@ namespace FreeLove
             );
             
             harmony.Patch(
-               original: AccessTools.Method(typeof(Farmer), nameof(Farmer.isMarried)),
+               original: AccessTools.Method(typeof(Farmer), nameof(Farmer.isMarriedOrRoommates)),
                prefix: new HarmonyMethod(typeof(FarmerPatches), nameof(FarmerPatches.Farmer_isMarried_Prefix))
             );
 
@@ -288,7 +285,7 @@ namespace FreeLove
             );
             
             harmony.Patch(
-               original: AccessTools.Method(typeof(SocialPage), nameof(SocialPage.isMarriedToAnyone)),
+               original: AccessTools.Method(typeof(SocialPage.SocialEntry), nameof(SocialPage.SocialEntry.IsMarriedToAnyone)),
                prefix: new HarmonyMethod(typeof(UIPatches), nameof(UIPatches.SocialPage_isMarriedToAnyone_Prefix))
             );
 
@@ -305,7 +302,7 @@ namespace FreeLove
                prefix: new HarmonyMethod(typeof(EventPatches), nameof(EventPatches.Event_answerDialogueQuestion_Prefix))
             );
             harmony.Patch(
-               original: AccessTools.Method(typeof(Event), nameof(Event.command_loadActors)),
+               original: AccessTools.Method(typeof(Event), nameof(Event.DefaultCommands.LoadActors)),
                prefix: new HarmonyMethod(typeof(EventPatches), nameof(EventPatches.Event_command_loadActors_Prefix)),
                postfix: new HarmonyMethod(typeof(EventPatches), nameof(EventPatches.Event_command_loadActors_Postfix))
             );
@@ -325,12 +322,30 @@ namespace FreeLove
             return new FreeLoveAPI();
         }
 
-
         private void Content_AssetRequested(object sender, StardewModdingAPI.Events.AssetRequestedEventArgs e)
         {
             if (!Config.EnableMod)
                 return;
-            if (e.NameWithoutLocale.IsEquivalentTo("Data/Events/HaleyHouse"))
+            if (e.NameWithoutLocale.IsEquivalentTo("Data/Shops"))
+            {
+                e.Edit(delegate (IAssetData data)
+                {
+                    var dict = data.AsDictionary<string, ShopData>();
+                    try
+                    {
+                        for(int i = 0; i < dict.Data["DesertTrade"].Items.Count; i++)
+                        {
+                            if (dict.Data["DesertTrade"].Items[i].ItemId == "(O)808")
+                                dict.Data["DesertTrade"].Items[i].Condition = "PLAYER_FARMHOUSE_UPGRADE Current 1, !PLAYER_HAS_ITEM Current 808";
+                        }
+                    }
+                    catch
+                    {
+
+                    }
+                });
+            }
+            else if (e.NameWithoutLocale.IsEquivalentTo("Data/Events/HaleyHouse"))
             {
                 e.Edit(delegate (IAssetData idata)
                 {
