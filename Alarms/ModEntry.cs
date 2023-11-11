@@ -1,8 +1,7 @@
 ﻿using HarmonyLib;
-using Microsoft.Xna.Framework.Graphics;
+using Newtonsoft.Json;
 using StardewModdingAPI;
 using StardewValley;
-using System;
 using System.Collections.Generic;
 
 namespace Alarms
@@ -16,6 +15,7 @@ namespace Alarms
         public static ModConfig Config;
 
         public static ModEntry context;
+        public static string modKey = "aedenthorn.Alarms/alarms";
 
         /// <summary>The mod entry point, called after the mod is first loaded.</summary>
         /// <param name="helper">Provides simplified APIs for writing mods.</param>
@@ -29,11 +29,29 @@ namespace Alarms
             SHelper = helper;
 
             Helper.Events.GameLoop.GameLaunched += GameLoop_GameLaunched;
+            Helper.Events.GameLoop.SaveLoaded += GameLoop_SaveLoaded;
+            Helper.Events.GameLoop.Saving += GameLoop_Saving;
             Helper.Events.Input.ButtonsChanged += Input_ButtonsChanged;
             Helper.Events.GameLoop.TimeChanged += GameLoop_TimeChanged;
 
             var harmony = new Harmony(ModManifest.UniqueID);
             harmony.PatchAll();
+        }
+
+        private void GameLoop_SaveLoaded(object sender, StardewModdingAPI.Events.SaveLoadedEventArgs e)
+        {
+            if(!Config.ModEnabled)
+            {
+                return;
+            }
+            if(Game1.player.modData.TryGetValue(modKey, out var dataString))
+            {
+                ClockSoundMenu.soundList = JsonConvert.DeserializeObject<List<ClockSound>>(dataString);
+            }
+        }
+        private void GameLoop_Saving(object sender, StardewModdingAPI.Events.SavingEventArgs e)
+        {
+            Game1.player.modData[modKey] = JsonConvert.SerializeObject(ClockSoundMenu.soundList);
         }
 
         private void Input_ButtonsChanged(object sender, StardewModdingAPI.Events.ButtonsChangedEventArgs e)

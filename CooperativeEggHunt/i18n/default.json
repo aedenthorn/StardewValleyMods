@@ -13,6 +13,13 @@
   "results-enough": "Congratulations everyone, you've found enough eggs! Everyone gets a prize!$h",
   "results-not-enough": "I'm sorry to say, that's not enough eggs to win. Better luck next year!",
 
+  "Maru_y2": "Think we'll win the egg hunt this year?",
+  "Sebastian_spouse": "I'll be rooting for you all in the egg hunt.$h",
+  "Jas_y2": "I'm going to try my best to make sure we win this year!",
+
+  "Abigail_spring_12": "I'm definitely going to join the egg hunt tomorrow. Are you?",
+  "MarriageDialogueAbigail_spring_12": "Hey, the egg festival is tomorrow. I know it's a cooperative effort, but I won't go easy on you because we're married!$h#$e#I plan on getting the most eggs! Go ahead and try to beat me!",
+
   // GMCM
   "GMCM_Option_ModEnabled_Name": "Mod Enabled",
   "GMCM_Option_EggsToWin_Name": "Eggs To Win",

@@ -50,7 +50,7 @@ namespace CooperativeEggHunt
 
                 string dialogue = string.Join("#$b#", dialogueArray);
                 var lewis = __instance.getActorByName("Lewis");
-                lewis.CurrentDialogue.Push(new Dialogue(dialogue, lewis));
+                lewis.CurrentDialogue.Push(new Dialogue(lewis, null, dialogue));
                 Game1.drawDialogue(lewis);
 
                 return false;

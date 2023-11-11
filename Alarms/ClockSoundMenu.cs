@@ -338,7 +338,7 @@ namespace Alarms
             downCC?.draw(b);
             if (hoverText != null && hoveredItem == null)
             {
-                drawHoverText(b, hoverText, Game1.smallFont, 0, 0, -1, null, -1, null, null, 0, -1, -1, -1, -1, 1f, null, null);
+                drawHoverText(b, hoverText, Game1.smallFont, 0, 0, -1, null, -1, null, null, 0, null, -1, -1, -1, 1f, null, null);
             }
             Game1.mouseCursorTransparency = 1f;
             drawMouse(b);

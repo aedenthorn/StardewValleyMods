@@ -121,7 +121,7 @@ namespace VoicedDialogue
         {
             if (!Config.EnableMod || dialogue.speaker == null || dialogue.dialogues[dialogue.currentDialogueIndex] == currentDialogue.Value)
                 return;
-            PlayDialogue(dialogue.speaker.Name, dialogue.dialogues[dialogue.currentDialogueIndex], null); // dialogue.TranslationKey + "_" + dialogue.currentDialogueIndex 
+            PlayDialogue(dialogue.speaker.Name, dialogue.dialogues[dialogue.currentDialogueIndex], dialogue.TranslationKey + "_" + dialogue.currentDialogueIndex);
         }
         public static void PlayDialogue(string name, string dialogue, string key) {
 
@@ -131,10 +131,10 @@ namespace VoicedDialogue
             var voiceDict = SHelper.GameContent.Load<Dictionary<string, VoiceData>>(dictPath) ?? new Dictionary<string, VoiceData>();
             foreach(var data in voiceDict.Values)
             {
-                if(data.speaker == name && data.dialogueString == dialogue)
+                if(data.speaker == name && (key == data.dialogueKey || data.dialogueString == dialogue))
                 {
                     currentDialogue.Value = dialogue;
-                    SMonitor.Log($"Dialogue found, playing voice line");
+                    SMonitor.Log($"Dialogue {(key == data.dialogueKey ? "key" : "string")} found, playing voice line");
                     try
                     {
                         voiceSound?.Dispose();
