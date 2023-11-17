@@ -21,7 +21,6 @@ namespace FurnitureDisplayFramework
         public static ModConfig Config;
 
         public static ModEntry context;
-        private static IDynamicGameAssetsApi apiDGA;
         private static IJsonAssetsApi apiJA;
         public static Dictionary<string, FurnitureDisplayData> furnitureDisplayDict = new Dictionary<string, FurnitureDisplayData>();
         public static readonly string frameworkPath = "Mods/aedenthorn.FurnitureDisplayFramework/dictionary";

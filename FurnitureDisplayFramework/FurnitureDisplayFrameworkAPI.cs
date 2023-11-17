@@ -31,10 +31,7 @@ namespace FurnitureDisplayFramework
             List<Object> list = new List<Object>();
             for(int i = 0; i < data.slots.Length; i++)
             {
-                if(f.modData.TryGetValue("aedenthorn.FurnitureDisplayFramework/" + i, out string slotString))
-                {
-                    list.Add(ModEntry.GetObjectFromSlot(slotString));
-                }
+                list.Add(ModEntry.GetObjectFromSlot(f.modData.TryGetValue("aedenthorn.FurnitureDisplayFramework/" + i, out string slotString) ? slotString : null));
             }
             return list;
         }

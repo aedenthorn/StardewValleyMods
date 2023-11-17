@@ -1,5 +1,7 @@
 ﻿using Newtonsoft.Json.Serialization;
 using StardewValley;
+using System;
+using Object = StardewValley.Object;
 
 namespace FurnitureDisplayFramework
 {
@@ -22,17 +24,7 @@ namespace FurnitureDisplayFramework
 
         private static Object GetObjectFromID(string id, int amount, int quality)
         {
-            if (int.TryParse(id, out int index))
-            {
-                //SMonitor.Log($"Spawning object with index {id}");
-                return new Object(index, amount, false, -1, quality);
-            }
-            foreach (var kvp in Game1.objectInformation)
-            {
-                if (kvp.Value.StartsWith(id + "/"))
-                    return new Object(kvp.Key, amount, false, -1, quality);
-            }
-            return null;
+            return new Object(id, amount, false, -1, quality);
             /*
             //SMonitor.Log($"Trying to get object {id}, DGA {apiDGA != null}, JA {apiJA != null}");
 
