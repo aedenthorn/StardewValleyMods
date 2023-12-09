@@ -589,6 +589,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VoicedDialogue", "VoicedDia
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CloseDoors", "CloseDoors\CloseDoors.csproj", "{05FD83DD-D98C-4C4C-812A-03F74C95740D}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CropStacking", "CropStacking\CropStacking.csproj", "{35078079-6D93-4E54-9FBD-CFE746BEC267}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -2901,6 +2903,14 @@ Global
 		{05FD83DD-D98C-4C4C-812A-03F74C95740D}.Release|Any CPU.Build.0 = Release|Any CPU
 		{05FD83DD-D98C-4C4C-812A-03F74C95740D}.Release|x64.ActiveCfg = Release|x64
 		{05FD83DD-D98C-4C4C-812A-03F74C95740D}.Release|x64.Build.0 = Release|x64
+		{35078079-6D93-4E54-9FBD-CFE746BEC267}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{35078079-6D93-4E54-9FBD-CFE746BEC267}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{35078079-6D93-4E54-9FBD-CFE746BEC267}.Debug|x64.ActiveCfg = Debug|x64
+		{35078079-6D93-4E54-9FBD-CFE746BEC267}.Debug|x64.Build.0 = Debug|x64
+		{35078079-6D93-4E54-9FBD-CFE746BEC267}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{35078079-6D93-4E54-9FBD-CFE746BEC267}.Release|Any CPU.Build.0 = Release|Any CPU
+		{35078079-6D93-4E54-9FBD-CFE746BEC267}.Release|x64.ActiveCfg = Release|x64
+		{35078079-6D93-4E54-9FBD-CFE746BEC267}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

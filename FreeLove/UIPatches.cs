@@ -22,7 +22,7 @@ namespace FreeLove
             Monitor = monitor;
             Helper = helper;
         }
-        public static void SocialPage_drawNPCSlot_prefix(SocialPage __instance, int i, ref Dictionary<string, string> ___npcNames)
+        public static void SocialPage_drawNPCSlot_prefix(SocialPage __instance, int i)
         {
             try
             {

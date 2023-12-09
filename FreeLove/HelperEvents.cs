@@ -129,7 +129,6 @@ namespace FreeLove
         {
             SetAllNPCsDatable();
             ResetSpouses(Game1.player);
-            SetNPCRelations();
         }
 
         public static void GameLoop_DayStarted(object sender, DayStartedEventArgs e)

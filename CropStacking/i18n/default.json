@@ -1,0 +1,16 @@
+{
+  "GMCM_Option_ModEnabled_Name": "Mod Enabled",
+  "GMCM_Option_EatTrigger_Name": "Eat Trigger",
+  "GMCM_Option_EatLastSeconds_Name": "Duration (s)",
+  "GMCM_Option_TransformKey_Name": "Key Trigger",
+  "GMCM_Option_FireKey_Name": "Fire Key",
+  "GMCM_Option_MoveSpeed_Name": "Move Speed",
+  "GMCM_Option_Defense_Name": "Defense",
+  "GMCM_Option_StaminaUse_Name": "Stamina Use",
+  "GMCM_Option_FireDamage_Name": "Fire Damage",
+  "GMCM_Option_FireDistance_Name": "Fire Distance",
+  "GMCM_Option_TransformSound_Name": "Transform Sound",
+  "GMCM_Option_FireSound_Name": "Mod",
+  "dino-form": "Dino Form",
+  "dino-buff-description": "Speed {0}\nDefense +{1}\nDemolish\nFire Breath"
+}

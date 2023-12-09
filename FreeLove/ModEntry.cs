@@ -12,6 +12,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
+using xTile.Dimensions;
 
 namespace FreeLove
 {
@@ -157,11 +158,15 @@ namespace FreeLove
             // Path patches
             
             harmony.Patch(
-               original: AccessTools.Constructor(typeof(PathFindController), new Type[] { typeof(Character), typeof(GameLocation), typeof(Point), typeof(int), typeof(bool), typeof(bool) }),
+               original: AccessTools.Constructor(typeof(PathFindController), new Type[] { typeof(Character), typeof(GameLocation), typeof(Point), typeof(int), typeof(bool) }),
                prefix: new HarmonyMethod(typeof(PathFindControllerPatches), nameof(PathFindControllerPatches.PathFindController_Prefix))
             );
             harmony.Patch(
                original: AccessTools.Constructor(typeof(PathFindController), new Type[] { typeof(Character), typeof(GameLocation), typeof(Point), typeof(int), typeof(PathFindController.endBehavior) }),
+               prefix: new HarmonyMethod(typeof(PathFindControllerPatches), nameof(PathFindControllerPatches.PathFindController_Prefix))
+            );
+            harmony.Patch(
+               original: AccessTools.Constructor(typeof(PathFindController), new Type[] { typeof(Character), typeof(GameLocation), typeof(Point), typeof(int), typeof(PathFindController.endBehavior), typeof(int) }),
                prefix: new HarmonyMethod(typeof(PathFindControllerPatches), nameof(PathFindControllerPatches.PathFindController_Prefix))
             );
             harmony.Patch(
@@ -193,12 +198,12 @@ namespace FreeLove
             );
             
             harmony.Patch(
-               original: AccessTools.Method(typeof(GameLocation), "checkEventPrecondition"),
+               original: AccessTools.Method(typeof(GameLocation), "checkEventPrecondition", new Type[] { typeof(string), typeof(bool) }),
                prefix: new HarmonyMethod(typeof(LocationPatches), nameof(LocationPatches.GameLocation_checkEventPrecondition_Prefix))
             );
 
             harmony.Patch(
-               original: AccessTools.Method(typeof(ManorHouse), nameof(ManorHouse.performAction)),
+               original: AccessTools.Method(typeof(ManorHouse), nameof(ManorHouse.performAction), new Type[] { typeof(string[]), typeof(Farmer), typeof(Location)  }),
                prefix: new HarmonyMethod(typeof(LocationPatches), nameof(LocationPatches.ManorHouse_performAction_Prefix))
             );
             
@@ -302,7 +307,7 @@ namespace FreeLove
                prefix: new HarmonyMethod(typeof(EventPatches), nameof(EventPatches.Event_answerDialogueQuestion_Prefix))
             );
             harmony.Patch(
-               original: AccessTools.Method(typeof(Event), nameof(Event.DefaultCommands.LoadActors)),
+               original: AccessTools.Method(typeof(Event.DefaultCommands), nameof(Event.DefaultCommands.LoadActors)),
                prefix: new HarmonyMethod(typeof(EventPatches), nameof(EventPatches.Event_command_loadActors_Prefix)),
                postfix: new HarmonyMethod(typeof(EventPatches), nameof(EventPatches.Event_command_loadActors_Postfix))
             );
@@ -311,7 +316,7 @@ namespace FreeLove
             // Game1 patches
 
             harmony.Patch(
-               original: AccessTools.Method(typeof(Game1), nameof(Game1.getCharacterFromName), new Type[] { typeof(string), typeof(bool), typeof(bool) }),
+               original: AccessTools.GetDeclaredMethods(typeof(Game1)).Where(m => m.Name == "getCharacterFromName" && m.ReturnType == typeof(NPC)).First(),
                prefix: new HarmonyMethod(typeof(Game1Patches), nameof(Game1Patches.getCharacterFromName_Prefix))
             );
 
@@ -459,8 +464,8 @@ namespace FreeLove
                     NPC npc = Game1.getCharacterFromName(name);
                     if (npc != null && npc.Age < 2 && !(npc is Child))
                     {
-                        string dispo = Game1.content.Load<Dictionary<string, string>>("Data/NPCDispositions")[name];
-                        if (dispo.Split('/')[5] != "datable")
+                        
+                        if (Game1.characterData[npc.Name].CanBeRomanced)
                         {
                             Monitor.Log($"can edit schedule for {name}");
                             e.Edit(delegate (IAssetData idata)

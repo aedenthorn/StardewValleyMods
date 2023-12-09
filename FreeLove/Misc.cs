@@ -76,33 +76,6 @@ namespace FreeLove
             }
         }
 
-        public static Dictionary<string, Dictionary<string, string>> relationships = new Dictionary<string, Dictionary<string, string>>();
-
-        public static void SetNPCRelations()
-        {
-            relationships.Clear();
-            Dictionary<string, string> NPCDispositions = SHelper.GameContent.Load<Dictionary<string, string>>("Data\\NPCDispositions");
-            foreach(KeyValuePair<string,string> kvp in NPCDispositions)
-            {
-                string[] relations = kvp.Value.Split('/')[9].Split(' ');
-                if (relations.Length > 0)
-                {
-                    relationships.Add(kvp.Key, new Dictionary<string, string>());
-                    for (int i = 0; i < relations.Length; i += 2)
-                    {
-                        try
-                        {
-                            relationships[kvp.Key].Add(relations[i], relations[i + 1].Replace("'", ""));
-                        }
-                        catch
-                        {
-
-                        }
-                    }
-                }
-            }
-        }
-
         public static string GetRandomSpouse(Farmer f)
         {
             var spouses = GetSpouses(f, true);
