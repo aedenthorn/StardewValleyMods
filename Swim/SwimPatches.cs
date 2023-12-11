@@ -425,7 +425,7 @@ namespace Swim
                 {
                     if (!who.mailReceived.Contains("SwimMod_Mariner_Completed"))
                     {
-                        if (ModEntry.oldMariner != null && ModEntry.oldMariner.Value.getTileX() == tileLocation.X && ModEntry.oldMariner.Value.getTileY() == tileLocation.Y)
+                        if (ModEntry.oldMariner != null && ModEntry.oldMariner.Value.Tile.X == tileLocation.X && ModEntry.oldMariner.Value.Tile.Y == tileLocation.Y)
                         {
                             string playerTerm = Game1.content.LoadString("Strings\\Locations:Beach_Mariner_Player_" + (who.IsMale ? "Male" : "Female"));
 
