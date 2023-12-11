@@ -30,15 +30,15 @@ namespace Swim
         {
             if (which == "ScubaTank" && !Game1.player.mailReceived.Contains(which))
             {
-                gameLocation.overlayObjects[pos] = new Chest(0, new List<Item>() { new Clothing(ModEntry.scubaTankID.Value) }, pos, false, 0);
+                gameLocation.overlayObjects[pos] = new Chest( new List<Item>() { new Clothing(ModEntry.scubaTankID.Value) }, pos, false, 0);
             }
             else if (which == "ScubaMask" && !Game1.player.mailReceived.Contains(which))
             {
-                gameLocation.overlayObjects[pos] = new Chest(0, new List<Item>() { new Hat(ModEntry.scubaMaskID.Value) }, pos, false, 0);
+                gameLocation.overlayObjects[pos] = new Chest( new List<Item>() { new Hat(ModEntry.scubaMaskID.Value) }, pos, false, 0);
             }
             else if (which == "ScubaFins" && !Game1.player.mailReceived.Contains(which))
             {
-                gameLocation.overlayObjects[pos] = new Chest(0, new List<Item>() { new Boots(ModEntry.scubaFinsID.Value) }, pos, false, 0);
+                gameLocation.overlayObjects[pos] = new Chest( new List<Item>() { new Boots(ModEntry.scubaFinsID.Value) }, pos, false, 0);
             }
         }
         public static void AddWaterTiles(GameLocation gameLocation)
@@ -106,53 +106,53 @@ namespace Swim
                 }
                 else if (chance < 0.4)
                 {
-                    l.overlayObjects[tile] = new StardewValley.Object(tile, 751, "Stone", true, false, false, false)
+                    l.overlayObjects[tile] = new StardewValley.Object(tile, "751")
                     {
                         MinutesUntilReady = 2
                     };
                 }
                 else if (chance < 0.5)
                 {
-                    l.overlayObjects[tile] = new StardewValley.Object(tile, 290, "Stone", true, false, false, false)
+                    l.overlayObjects[tile] = new StardewValley.Object(tile, "290")
                     {
                         MinutesUntilReady = 4 
                     };
                 }
                 else if (chance < 0.55)
                 {
-                    l.overlayObjects[tile] = new StardewValley.Object(tile, 764, "Stone", true, false, false, false)
+                    l.overlayObjects[tile] = new StardewValley.Object(tile, "764")
                     {
                         MinutesUntilReady = 8
                     };
                 }
                 else if (chance < 0.56)
                 {
-                    l.overlayObjects[tile] = new StardewValley.Object(tile, 765, "Stone", true, false, false, false)
+                    l.overlayObjects[tile] = new StardewValley.Object(tile, "765")
                     {
                         MinutesUntilReady = 16
                     };
                 }
                 else if (chance < 0.65)
                 {
-                    l.overlayObjects[tile] = new StardewValley.Object(tile, 80, "Stone", true, true, false, true);
+                    l.overlayObjects[tile] = new StardewValley.Object(tile, "80");
                 }
                 else if (chance < 0.74)
                 {
-                    l.overlayObjects[tile] = new StardewValley.Object(tile, 82, "Stone", true, true, false, true);
+                    l.overlayObjects[tile] = new StardewValley.Object(tile, "82");
                 }
                 else if (chance < 0.83)
                 {
-                    l.overlayObjects[tile] = new StardewValley.Object(tile, 84, "Stone", true, true, false, true);
+                    l.overlayObjects[tile] = new StardewValley.Object(tile, "84");
                 }
                 else if (chance < 0.90)
                 {
-                    l.overlayObjects[tile] = new StardewValley.Object(tile, 86, "Stone", true, true, false, true);
+                    l.overlayObjects[tile] = new StardewValley.Object(tile, "86");
                 }
                 else
                 {
-                    int[] gems = { 4,6,8,10,12,14,40 };
-                    int whichGem = gems[Game1.random.Next(gems.Length)];
-                    l.overlayObjects[tile] = new StardewValley.Object(tile, whichGem, "Stone", true, false, false, false)
+                    string[] gems = { "4","6","8","10","12","14","40" };
+                    string whichGem = gems[Game1.random.Next(gems.Length)];
+                    l.overlayObjects[tile] = new StardewValley.Object(tile, whichGem)
                     {
                         MinutesUntilReady = 5
 
@@ -276,56 +276,56 @@ namespace Swim
                 double chance = Game1.random.NextDouble();
                 if (chance < 0.25)
                 {
-                    l.overlayObjects[v] = new StardewValley.Object(v, 152, "Seaweed", true, true, false, true)
+                    l.overlayObjects[v] = new StardewValley.Object(v, "152")
                     {
                         CanBeGrabbed = true
                     };
                 }
                 else if (chance < 0.4)
                 {
-                    l.overlayObjects[v] = new StardewValley.Object(v, 153, "Green Algae", true, true, false, true)
+                    l.overlayObjects[v] = new StardewValley.Object(v, "153")
                     {
                         CanBeGrabbed = true
                     };
                 }
                 else if (chance < 0.6)
                 {
-                    l.overlayObjects[v] = new StardewValley.Object(v, 157, "White Algae", true, true, false, true)
+                    l.overlayObjects[v] = new StardewValley.Object(v, "157")
                     {
                         CanBeGrabbed = true
                     };
                 }
                 else if (chance < 0.75)
                 {
-                    l.overlayObjects[v] = new StardewValley.Object(v, 372, "Clam", true, true, false, true)
+                    l.overlayObjects[v] = new StardewValley.Object(v, "372")
                     {
                         CanBeGrabbed = true
                     };
                 }
                 else if (chance < 0.85)
                 {
-                    l.overlayObjects[v] = new StardewValley.Object(v, 393, "Coral", true, true, false, true)
+                    l.overlayObjects[v] = new StardewValley.Object(v,  "393")
                     {
                         CanBeGrabbed = true
                     };
                 }
                 else if (chance < 0.94)
                 {
-                    l.overlayObjects[v] = new StardewValley.Object(v, 397, "Sea Urchin", true, true, false, true)
+                    l.overlayObjects[v] = new StardewValley.Object(v, "397")
                     {
                         CanBeGrabbed = true
                     };
                 }
                 else if (chance < 0.97)
                 {
-                    l.overlayObjects[v] = new StardewValley.Object(v, 394, "Rainbow Shell", true, true, false, true)
+                    l.overlayObjects[v] = new StardewValley.Object(v, "394 ")
                     {
                         CanBeGrabbed = true
                     };
                 }
                 else
                 {
-                    l.overlayObjects[v] = new StardewValley.Object(v, 392, "Nautilus Shell", true, true, false, true)
+                    l.overlayObjects[v] = new StardewValley.Object(v, "392")
                     {
                         CanBeGrabbed = true
                     };
@@ -370,36 +370,36 @@ namespace Swim
                     chance *= 0.4f;
                     if (Game1.random.NextDouble() < 0.5)
                     {
-                        treasures.Add(new StardewValley.Object(774, 2 + ((Game1.random.NextDouble() < 0.25) ? 2 : 0), false, -1, 0));
+                        treasures.Add(new StardewValley.Object("774", 2 + ((Game1.random.NextDouble() < 0.25) ? 2 : 0), false, -1, 0));
                     }
                     switch (Game1.random.Next(4))
                     {
                         case 0:
                             if (Game1.random.NextDouble() < 0.03)
                             {
-                                treasures.Add(new StardewValley.Object(386, Game1.random.Next(1, 3), false, -1, 0));
+                                treasures.Add(new StardewValley.Object("386", Game1.random.Next(1, 3), false, -1, 0));
                             }
                             else
                             {
-                                List<int> possibles = new List<int>();
-                                possibles.Add(384);
+                                List<string> possibles = new List<string>();
+                                possibles.Add("384");
                                 if (possibles.Count == 0 || Game1.random.NextDouble() < 0.6)
                                 {
-                                    possibles.Add(380);
+                                    possibles.Add("380");
                                 }
                                 if (possibles.Count == 0 || Game1.random.NextDouble() < 0.6)
                                 {
-                                    possibles.Add(378);
+                                    possibles.Add("378");
                                 }
                                 if (possibles.Count == 0 || Game1.random.NextDouble() < 0.6)
                                 {
-                                    possibles.Add(388);
+                                    possibles.Add("388");
                                 }
                                 if (possibles.Count == 0 || Game1.random.NextDouble() < 0.6)
                                 {
-                                    possibles.Add(390);
+                                    possibles.Add("390");
                                 }
-                                possibles.Add(382);
+                                possibles.Add("382");
                                 treasures.Add(new StardewValley.Object(possibles.ElementAt(Game1.random.Next(possibles.Count)), Game1.random.Next(2, 7) * ((Game1.random.NextDouble() < 0.05 + (double)Game1.player.luckLevel.Value * 0.015) ? 2 : 1), false, -1, 0));
                                 if (Game1.random.NextDouble() < 0.05 + (double)Game1.player.LuckLevel * 0.03)
                                 {
@@ -410,40 +410,49 @@ namespace Swim
                         case 1:
                             if (Game1.random.NextDouble() < 0.1)
                             {
-                                treasures.Add(new StardewValley.Object(687, 1, false, -1, 0));
+                                treasures.Add(new StardewValley.Object("687", 1, false, -1, 0));
                             }
                             else if (Game1.random.NextDouble() < 0.25 && Game1.player.craftingRecipes.ContainsKey("Wild Bait"))
                             {
-                                treasures.Add(new StardewValley.Object(774, 5 + ((Game1.random.NextDouble() < 0.25) ? 5 : 0), false, -1, 0));
+                                treasures.Add(new StardewValley.Object("774", 5 + ((Game1.random.NextDouble() < 0.25) ? 5 : 0), false, -1, 0));
                             }
                             else
                             {
-                                treasures.Add(new StardewValley.Object(685, 10, false, -1, 0));
+                                treasures.Add(new StardewValley.Object("685", 10, false, -1, 0));
                             }
                             break;
                         case 2:
-                            if (Game1.random.NextDouble() < 0.1 && Game1.netWorldState.Value.LostBooksFound.Value < 21 && Game1.player.hasOrWillReceiveMail("lostBookFound"))
+                            if (Game1.random.NextDouble() < 0.1 && Game1.netWorldState.Value.LostBooksFound < 21 && Game1.player.hasOrWillReceiveMail("lostBookFound"))
                             {
-                                treasures.Add(new StardewValley.Object(102, 1, false, -1, 0));
+                                treasures.Add(new StardewValley.Object("102", 1, false, -1, 0));
                             }
                             else if (Game1.player.archaeologyFound.Count() > 0)
                             {
-                                if (Game1.random.NextDouble() < 0.25)
+                                if (Game1.random.NextDouble() < 0.125)
                                 {
-                                    treasures.Add(new StardewValley.Object(Game1.random.Next(585, 588), 1, false, -1, 0));
+                                    treasures.Add(new StardewValley.Object("585", 1, false, -1, 0));
+                                }
+                                else if (Game1.random.NextDouble() < 0.25)
+                                {
+                                    treasures.Add(new StardewValley.Object("588", 1, false, -1, 0));
                                 }
                                 else if (Game1.random.NextDouble() < 0.5)
                                 {
-                                    treasures.Add(new StardewValley.Object(Game1.random.Next(103, 120), 1, false, -1, 0));
+                                    treasures.Add(new StardewValley.Object("103", 1, false, -1, 0));
                                 }
+                                if (Game1.random.NextDouble() < 0.5)
+                                {
+                                    treasures.Add(new StardewValley.Object("120", 1, false, -1, 0));
+                                }
+
                                 else
                                 {
-                                    treasures.Add(new StardewValley.Object(535, 1, false, -1, 0));
+                                    treasures.Add(new StardewValley.Object("535", 1, false, -1, 0));
                                 }
                             }
                             else
                             {
-                                treasures.Add(new StardewValley.Object(382, Game1.random.Next(1, 3), false, -1, 0));
+                                treasures.Add(new StardewValley.Object("382", Game1.random.Next(1, 3), false, -1, 0));
                             }
                             break;
                         case 3:
@@ -471,7 +480,7 @@ namespace Swim
                                     switch (Game1.random.Next(4))
                                     {
                                         case 0:
-                                            treasures.Add(new StardewValley.Object(382, Game1.random.Next(1, 4), false, -1, 0));
+                                            treasures.Add(new StardewValley.Object("382", Game1.random.Next(1, 4), false, -1, 0));
                                             break;
                                         case 1:
                                             treasures.Add(new StardewValley.Object((Game1.random.NextDouble() < 0.3) ? 82 : ((Game1.random.NextDouble() < 0.5) ? 64 : 60), Game1.random.Next(1, 3), false, -1, 0));
@@ -485,7 +494,7 @@ namespace Swim
                                     }
                                     if (Game1.random.NextDouble() < 0.05)
                                     {
-                                        treasures.Add(new StardewValley.Object(72, 1, false, -1, 0));
+                                        treasures.Add(new StardewValley.Object("72", 1, false, -1, 0));
                                     }
                                     if (Game1.random.NextDouble() < 0.05)
                                     {
@@ -495,21 +504,21 @@ namespace Swim
                                 case 2:
                                     if (Game1.player.FishingLevel < 2)
                                     {
-                                        treasures.Add(new StardewValley.Object(770, Game1.random.Next(1, 4), false, -1, 0));
+                                        treasures.Add(new StardewValley.Object("770", Game1.random.Next(1, 4), false, -1, 0));
                                     }
                                     else
                                     {
                                         float luckModifier = (1f + (float)Game1.player.DailyLuck);
                                         if (Game1.random.NextDouble() < 0.05 * (double)luckModifier && !Game1.player.specialItems.Contains(14))
                                         {
-                                            treasures.Add(new MeleeWeapon(14)
+                                            treasures.Add(new MeleeWeapon("14")
                                             {
                                                 specialItem = true
                                             });
                                         }
                                         if (Game1.random.NextDouble() < 0.05 * (double)luckModifier && !Game1.player.specialItems.Contains(51))
                                         {
-                                            treasures.Add(new MeleeWeapon(51)
+                                            treasures.Add(new MeleeWeapon("51")
                                             {
                                                 specialItem = true
                                             });
@@ -519,10 +528,10 @@ namespace Swim
                                             switch (Game1.random.Next(3))
                                             {
                                                 case 0:
-                                                    treasures.Add(new Ring(516 + ((Game1.random.NextDouble() < (double)((float)Game1.player.LuckLevel / 11f)) ? 1 : 0)));
+                                                    treasures.Add(new Ring("516" + ((Game1.random.NextDouble() < (double)((float)Game1.player.LuckLevel / 11f)) ? 1 : 0)));
                                                     break;
                                                 case 1:
-                                                    treasures.Add(new Ring(518 + ((Game1.random.NextDouble() < (double)((float)Game1.player.LuckLevel / 11f)) ? 1 : 0)));
+                                                    treasures.Add(new Ring("518" + ((Game1.random.NextDouble() < (double)((float)Game1.player.LuckLevel / 11f)) ? 1 : 0)));
                                                     break;
                                                 case 2:
                                                     treasures.Add(new Ring(Game1.random.Next(529, 535)));
@@ -531,23 +540,23 @@ namespace Swim
                                         }
                                         if (Game1.random.NextDouble() < 0.02 * (double)luckModifier)
                                         {
-                                            treasures.Add(new StardewValley.Object(166, 1, false, -1, 0));
+                                            treasures.Add(new StardewValley.Object("166", 1, false, -1, 0));
                                         }
                                         if (Game1.random.NextDouble() < 0.001 * (double)luckModifier)
                                         {
-                                            treasures.Add(new StardewValley.Object(74, 1, false, -1, 0));
+                                            treasures.Add(new StardewValley.Object("74", 1, false, -1, 0));
                                         }
                                         if (Game1.random.NextDouble() < 0.01 * (double)luckModifier)
                                         {
-                                            treasures.Add(new StardewValley.Object(127, 1, false, -1, 0));
+                                            treasures.Add(new StardewValley.Object("127", 1, false, -1, 0));
                                         }
                                         if (Game1.random.NextDouble() < 0.01 * (double)luckModifier)
                                         {
-                                            treasures.Add(new StardewValley.Object(126, 1, false, -1, 0));
+                                            treasures.Add(new StardewValley.Object("126", 1, false, -1, 0));
                                         }
                                         if (Game1.random.NextDouble() < 0.01 * (double)luckModifier)
                                         {
-                                            treasures.Add(new Ring(527));
+                                            treasures.Add(new Ring("527"));
                                         }
                                         if (Game1.random.NextDouble() < 0.01 * (double)luckModifier)
                                         {
@@ -555,7 +564,7 @@ namespace Swim
                                         }
                                         if (treasures.Count == 1)
                                         {
-                                            treasures.Add(new StardewValley.Object(72, 1, false, -1, 0));
+                                            treasures.Add(new StardewValley.Object("72", 1, false, -1, 0));
                                         }
                                     }
                                     break;
@@ -565,12 +574,12 @@ namespace Swim
                 }
                 if (treasures.Count == 0)
                 {
-                    treasures.Add(new StardewValley.Object(685, Game1.random.Next(1, 4) * 5, false, -1, 0));
+                    treasures.Add(new StardewValley.Object("685", Game1.random.Next(1, 4) * 5, false, -1, 0));
                 }
                 if (treasures.Count > 0)
                 {
                     Color tint = Color.White;
-                    l.overlayObjects[v] = new Chest(Game1.random.Next(0, 1000), new List<Item>() { treasures[ModEntry.myRand.Value.Next(treasures.Count)] }, v, false, 0)
+                    l.overlayObjects[v] = new Chest( new List<Item>() { treasures[ModEntry.myRand.Value.Next(treasures.Count)] }, v, false, 0)
                     {
                         Tint = tint
                     };

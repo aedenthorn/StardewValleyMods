@@ -94,17 +94,17 @@ namespace Swim
             if (e.Player != Game1.player)
                 return;
 
-            if (!Game1.player.mailReceived.Contains("ScubaTank") && ModEntry.scubaTankID.Value != -1 && e.Added != null && e.Added.Count() > 0 && e.Added.FirstOrDefault() != null && e.Added.FirstOrDefault().GetType() == typeof(Clothing) && e.Added.FirstOrDefault().ParentSheetIndex == ModEntry.scubaTankID.Value)
+            if (!Game1.player.mailReceived.Contains("ScubaTank") && ModEntry.scubaTankID.Value != null && e.Added != null && e.Added.Count() > 0 && e.Added.FirstOrDefault() != null && e.Added.FirstOrDefault().GetType() == typeof(Clothing) && e.Added.FirstOrDefault().ParentSheetIndex == ModEntry.scubaTankID.Value)
             {
                 Monitor.Log("Player found scuba tank");
                 Game1.player.mailReceived.Add("ScubaTank");
             }
-            if (!Game1.player.mailReceived.Contains("ScubaMask") && ModEntry.scubaMaskID.Value != -1 && e.Added != null && e.Added.Count() > 0 && e.Added.FirstOrDefault() != null && e.Added.FirstOrDefault().GetType() == typeof(Hat) && (e.Added.FirstOrDefault() as Hat).which.Value == ModEntry.scubaMaskID.Value)
+            if (!Game1.player.mailReceived.Contains("ScubaMask") && ModEntry.scubaMaskID.Value != null && e.Added != null && e.Added.Count() > 0 && e.Added.FirstOrDefault() != null && e.Added.FirstOrDefault().GetType() == typeof(Hat) && (e.Added.FirstOrDefault() as Hat).which.Value == ModEntry.scubaMaskID.Value)
             {
                 Monitor.Log("Player found scuba mask");
                 Game1.player.mailReceived.Add("ScubaMask");
             }
-            if (!Game1.player.mailReceived.Contains("ScubaFins") && ModEntry.scubaFinsID.Value != -1 && e.Added != null && e.Added.Count() > 0 && e.Added.FirstOrDefault() != null && e.Added.FirstOrDefault().GetType() == typeof(Boots) && e.Added.FirstOrDefault().ParentSheetIndex == ModEntry.scubaFinsID.Value)
+            if (!Game1.player.mailReceived.Contains("ScubaFins") && ModEntry.scubaFinsID.Value != null && e.Added != null && e.Added.Count() > 0 && e.Added.FirstOrDefault() != null && e.Added.FirstOrDefault().GetType() == typeof(Boots) && e.Added.FirstOrDefault().ParentSheetIndex == ModEntry.scubaFinsID.Value)
             {
                 Monitor.Log("Player found scuba fins");
                 Game1.player.mailReceived.Add("ScubaFins");
@@ -158,7 +158,7 @@ namespace Swim
                 {
                     Monitor.Log("Can't get ID for Swim mod item #3. Some functionality will be lost.");
                 }
-                if (ModEntry.scubaFinsID.Value != -1)
+                if (ModEntry.scubaFinsID.Value != null)
                 {
                     Monitor.Log(string.Format("Swim mod item #3 ID is {0}.", ModEntry.scubaFinsID.Value));
                     if (Game1.player.boots.Value != null && Game1.player.boots.Value != null && Game1.player.boots.Value.Name == "Scuba Fins" && Game1.player.boots.Value.ParentSheetIndex != ModEntry.scubaFinsID.Value)
@@ -974,17 +974,17 @@ namespace Swim
                 else if (!Game1.player.bathingClothes.Value && !Config.NoAutoSwimSuit && (!SwimUtils.IsWearingScubaGear() || Config.SwimSuitAlways))
                     Game1.player.changeIntoSwimsuit();
 
-                if (Game1.player.boots.Value != null && ModEntry.scubaFinsID.Value != -1 && Game1.player.boots.Value.indexInTileSheet.Value == ModEntry.scubaFinsID.Value)
+                if (Game1.player.boots.Value != null && ModEntry.scubaFinsID.Value != null && Game1.player.boots.Value.indexInTileSheet.Value == ModEntry.scubaFinsID.Value)
                 {
-                    int buffId = 42883167;
-                    Buff buff = Game1.buffsDisplay.otherBuffs.FirstOrDefault((Buff p) => p.which == buffId);
+                    string buffId = "42883167";
+                    Buff buff = Game1.buffsDisplay.otherBuffs.FirstOrDefault((Buff p) => p.Equals(buffId));
                     if (buff == null)
                     {
                         BuffsDisplay buffsDisplay = Game1.buffsDisplay;
-                        Buff buff2 = new Buff(0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 1, "Scuba Fins", Helper.Translation.Get("scuba-fins"));
-                        buff2.which = buffId;
+                        Buff buff2 = new Buff("42883167",  "Scuba Fins", Helper.Translation.Get("scuba-fins"));
+                        
                         buff = buff2;
-                        buffsDisplay.addOtherBuff(buff2);
+                        buffsDisplay.updatedIDs.Add(buff2.id);
                     }
                     buff.millisecondsDuration = 50;
                 }

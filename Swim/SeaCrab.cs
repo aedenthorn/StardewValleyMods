@@ -32,7 +32,7 @@ namespace Swim
         protected override void initNetFields()
         {
             base.initNetFields();
-            NetFields.AddFields(new INetSerializable[]
+            NetFields.AddField(new INetSerializable[]
             {
                 shellGone,
                 shellHealth,
@@ -59,8 +59,8 @@ namespace Swim
                     shellGone.Value = true;
                     moveTowardPlayer(-1);
                     currentLocation.playSound("stoneCrack", NetAudio.SoundContext.Default);
-                    Game1.createRadialDebris(currentLocation, 14, getTileX(), getTileY(), Game1.random.Next(2, 7), false, -1, false, -1);
-                    Game1.createRadialDebris(currentLocation, 14, getTileX(), getTileY(), Game1.random.Next(2, 7), false, -1, false, -1);
+                    Game1.createRadialDebris(currentLocation, 14, Tile.X(), Tile.Y(), Game1.random.Next(2, 7), false, -1, false, -1);
+                    Game1.createRadialDebris(currentLocation, 14, Tile.X(), Tile.Y(), Game1.random.Next(2, 7), false, -1, false, -1);
                 }
                 return true;
             }
@@ -76,20 +76,20 @@ namespace Swim
             {
                 if (Math.Abs(Player.GetBoundingBox().Center.Y - GetBoundingBox().Center.Y) < Math.Abs(Player.GetBoundingBox().Center.X - GetBoundingBox().Center.X))
                 {
-                    if (Player.GetBoundingBox().Center.X - GetBoundingBox().Center.X > 0 && getTileLocationPoint().X > 0)
+                    if (Player.GetBoundingBox().Center.X - GetBoundingBox().Center.X > 0 && TilePoint.X > 0)
                     {
                         SetMovingLeft(true);
                     }
-                    else if (Player.GetBoundingBox().Center.X - GetBoundingBox().Center.X < 0 && getTileLocationPoint().X < currentLocation.map.Layers[0].TileWidth)
+                    else if (Player.GetBoundingBox().Center.X - GetBoundingBox().Center.X < 0 && TilePoint.X < currentLocation.map.Layers[0].TileWidth)
                     {
                         SetMovingRight(true);
                     }
                 }
-                else if (Player.GetBoundingBox().Center.Y - GetBoundingBox().Center.Y > 0 && getTileLocationPoint().Y > 0)
+                else if (Player.GetBoundingBox().Center.Y - GetBoundingBox().Center.Y > 0 && TilePoint.Y > 0)
                 {
                     SetMovingUp(true);
                 }
-                else if (Player.GetBoundingBox().Center.Y - GetBoundingBox().Center.Y < 0 && getTileLocationPoint().Y < currentLocation.map.Layers[0].TileHeight)
+                else if (Player.GetBoundingBox().Center.Y - GetBoundingBox().Center.Y < 0 && TilePoint.Y < currentLocation.map.Layers[0].TileHeight)
                 {
                     SetMovingDown(true);
                 }

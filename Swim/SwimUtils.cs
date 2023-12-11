@@ -91,7 +91,7 @@ namespace Swim
             if (dp == null)
             {
                 Monitor.Log($"Diving to existing tile position");
-                Point pos = Game1.player.getTileLocationPoint();
+                Point pos = Game1.player.TilePoint;
                 dp = new DivePosition()
                 {
                     X = pos.X,
@@ -104,7 +104,7 @@ namespace Swim
             }
             else
             {
-                Game1.changeMusicTrack("none", false, Game1.MusicContext.Default);
+                Game1.changeMusicTrack("none", false, StardewValley.GameData.MusicContext.Default);
             }
 
             Game1.playSound("pullItemFromWater");
@@ -179,7 +179,7 @@ namespace Swim
                             objectIndex = 96;
                             break;
                         case 1:
-                            objectIndex = (who.hasOrWillReceiveMail("lostBookFound") ? ((Game1.netWorldState.Value.LostBooksFound.Value < 21) ? 102 : 770) : 770);
+                            objectIndex = (who.hasOrWillReceiveMail("lostBookFound") ? ((Game1.netWorldState.Value.LostBooksFound < 21) ? 102 : 770) : 770);
                             break;
                         case 2:
                             objectIndex = 110;
@@ -249,8 +249,8 @@ namespace Swim
 
         public static bool IsWearingScubaGear()
         {
-            bool tank = ModEntry.scubaTankID.Value != -1 && Game1.player.shirtItem.Value != null && Game1.player.shirtItem.Value != null && Game1.player.shirtItem.Value.ParentSheetIndex == ModEntry.scubaTankID.Value;
-            bool mask = ModEntry.scubaMaskID.Value != -1 && Game1.player.hat.Value != null && Game1.player.hat.Value != null && Game1.player.hat.Value.which?.Value == ModEntry.scubaMaskID.Value;
+            bool tank = ModEntry.scubaTankID.Value != null && Game1.player.shirtItem.Value != null && Game1.player.shirtItem.Value != null && Game1.player.shirtItem.Value.ParentSheetIndex == ModEntry.scubaTankID.Value;
+            bool mask = ModEntry.scubaMaskID.Value != null && Game1.player.hat.Value != null && Game1.player.hat.Value != null && Game1.player.hat.Value.which?.Value == ModEntry.scubaMaskID.Value;
 
             return tank && mask;
         }
@@ -258,7 +258,7 @@ namespace Swim
         public static bool IsInWater()
         {
             var tiles = Game1.player.currentLocation.waterTiles;
-            Point p = Game1.player.getTileLocationPoint();
+            Point p = Game1.player.TilePoint;
 
             if (!Game1.player.swimming.Value && Game1.player.currentLocation.map.GetLayer("Buildings")?.PickTile(new Location(p.X, p.Y) * Game1.tileSize, Game1.viewport.Size) != null)
                 return false;
@@ -289,7 +289,7 @@ namespace Swim
 
                 for (int i = count; i > 0; i--)
                 {
-                    tiles.Add(Game1.player.getTileLocation() + new Vector2(i, 0));
+                    tiles.Add(Game1.player.Position + new Vector2(i, 0));
                 }
 
             }
@@ -299,7 +299,7 @@ namespace Swim
 
                 for (int i = count; i > 0; i--)
                 {
-                    tiles.Add(Game1.player.getTileLocation() + new Vector2(0, i));
+                    tiles.Add(Game1.player.Position + new Vector2(0, i));
                 }
 
             }
@@ -309,7 +309,7 @@ namespace Swim
 
                 for (int i = count; i > 0; i--)
                 {
-                    tiles.Add(Game1.player.getTileLocation() - new Vector2(i, 0));
+                    tiles.Add(Game1.player.Position - new Vector2(i, 0));
                 }
 
             }
@@ -319,7 +319,7 @@ namespace Swim
 
                 for (int i = count; i > 0; i--)
                 {
-                    tiles.Add(Game1.player.getTileLocation() - new Vector2(0, i));
+                    tiles.Add(Game1.player.Position - new Vector2(0, i));
                 }
 
             }
@@ -431,7 +431,7 @@ namespace Swim
                 string s = c.ToString().ToUpper();
                 if (seaMonsterSounds.ContainsKey(s))
                 {
-                    Game1.playSoundPitched("junimoMeep1", (seaMonsterSounds.Keys.ToList().IndexOf(s) / 26) * 2 - 1);
+                    Game1.playSound("junimoMeep1", (seaMonsterSounds.Keys.ToList().IndexOf(s) / 26) * 2 - 1);
                 }
                 await Task.Delay(100);
             }

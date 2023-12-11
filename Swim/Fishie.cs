@@ -36,11 +36,11 @@ namespace Swim
             invincibleCountdown = 1000;
             if (Utility.isOnScreen(base.Position, 128))
             {
-                b.Draw(Game1.shadowTexture, base.getLocalPosition(Game1.viewport) + new Vector2(64f, (float)GetBoundingBox().Height), new Rectangle?(Game1.shadowTexture.Bounds), Color.White, 0f, new Vector2((float)Game1.shadowTexture.Bounds.Center.X, (float)Game1.shadowTexture.Bounds.Center.Y), 3f, SpriteEffects.None, (float)(base.getStandingY() - 1) / 10000f);
-                b.Draw(Sprite.Texture, base.getLocalPosition(Game1.viewport) + new Vector2(64f, (float)(GetBoundingBox().Height / 2)), new Rectangle?(Sprite.SourceRect), Color.White, rotation, new Vector2(16f, 16f), Math.Max(0.2f, scale.Value) * 4f, flip ? SpriteEffects.FlipHorizontally : SpriteEffects.None, Math.Max(0f, drawOnTop ? 0.991f : ((float)(base.getStandingY() + 8) / 10000f)));
+                b.Draw(Game1.shadowTexture, base.getLocalPosition(Game1.viewport) + new Vector2(64f, (float)GetBoundingBox().Height), new Rectangle?(Game1.shadowTexture.Bounds), Color.White, 0f, new Vector2((float)Game1.shadowTexture.Bounds.Center.X, (float)Game1.shadowTexture.Bounds.Center.Y), 3f, SpriteEffects.None, (float)(base.StandingPixel.Y - 1) / 10000f);
+                b.Draw(Sprite.Texture, base.getLocalPosition(Game1.viewport) + new Vector2(64f, (float)(GetBoundingBox().Height / 2)), new Rectangle?(Sprite.SourceRect), Color.White, rotation, new Vector2(16f, 16f), Math.Max(0.2f, scale.Value) * 4f, flip ? SpriteEffects.FlipHorizontally : SpriteEffects.None, Math.Max(0f, drawOnTop ? 0.991f : ((float)(base.StandingPixel.Y + 8) / 10000f)));
                 if (isGlowing)
                 {
-                    b.Draw(Sprite.Texture, base.getLocalPosition(Game1.viewport) + new Vector2(64f, (float)(GetBoundingBox().Height / 2)), new Rectangle?(Sprite.SourceRect), glowingColor * glowingTransparency, rotation, new Vector2(16f, 16f), Math.Max(0.2f, scale.Value) * 4f, flip ? SpriteEffects.FlipHorizontally : SpriteEffects.None, Math.Max(0f, drawOnTop ? 0.991f : ((float)(base.getStandingY() + 8) / 10000f + 0.0001f)));
+                    b.Draw(Sprite.Texture, base.getLocalPosition(Game1.viewport) + new Vector2(64f, (float)(GetBoundingBox().Height / 2)), new Rectangle?(Sprite.SourceRect), glowingColor * glowingTransparency, rotation, new Vector2(16f, 16f), Math.Max(0.2f, scale.Value) * 4f, flip ? SpriteEffects.FlipHorizontally : SpriteEffects.None, Math.Max(0f, drawOnTop ? 0.991f : ((float)(base.StandingPixel.Y + 8) / 10000f + 0.0001f)));
                 }
             }
         }

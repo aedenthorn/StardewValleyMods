@@ -137,7 +137,7 @@ namespace PlaygroundMod
                 if (skip || !Context.IsPlayerFree)
                     return true;
 
-                var n = who.getTileLocationPoint();
+                var n = who.TilePoint;
                 int ticks;
                 if (who.IsSitting() && (n == new Point(15, 12) || n == new Point(17, 12)))
                 {
@@ -309,7 +309,7 @@ namespace PlaygroundMod
                         var scale = 1 + factor * 0.1f;
                         if (factor > 0)
                             factor *= 0.5f;
-                        int offset = (f.getTileLocationPoint() == new Point(17, 12)) ? 128 : 0;
+                        int offset = (f.TilePoint == new Point(17, 12)) ? 128 : 0;
                         b.Draw(swingTexture, Game1.GlobalToLocal(new Vector2(15 * 64 - 4 + offset, 10 * 64 - 8)), new Rectangle(Game1.currentSeason == "winter" ? 34 : 0, 5, 17, 61), Color.White, 0, Vector2.Zero, 4, SpriteEffects.None, f.getDrawLayer() + 0.0000001f);
 
                         var y = 10 * 64 + factor * 4 * 4 - 8;
