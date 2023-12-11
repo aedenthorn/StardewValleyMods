@@ -32,11 +32,12 @@ namespace Swim
         protected override void initNetFields()
         {
             base.initNetFields();
-            NetFields.AddField(new INetSerializable[]
-            {
-                shellGone,
-                shellHealth,
-            });
+            NetFields.AddField(
+                shellGone
+            );
+            NetFields.AddField(
+                shellHealth
+            );
             position.Field.AxisAlignedMovement = true;
         }
 
@@ -48,7 +49,7 @@ namespace Swim
         {
             if (t is Pickaxe && t.getLastFarmerToUse() != null && shellHealth.Value > 0)
             {
-                currentLocation.playSound("hammer", NetAudio.SoundContext.Default);
+                currentLocation.playSound("hammer");
                 NetInt netInt = shellHealth;
                 int value = netInt.Value;
                 netInt.Value = value - 1;
@@ -58,9 +59,9 @@ namespace Swim
                 {
                     shellGone.Value = true;
                     moveTowardPlayer(-1);
-                    currentLocation.playSound("stoneCrack", NetAudio.SoundContext.Default);
-                    Game1.createRadialDebris(currentLocation, 14, Tile.X(), Tile.Y(), Game1.random.Next(2, 7), false, -1, false, -1);
-                    Game1.createRadialDebris(currentLocation, 14, Tile.X(), Tile.Y(), Game1.random.Next(2, 7), false, -1, false, -1);
+                    currentLocation.playSound("stoneCrack");
+                    Game1.createRadialDebris(currentLocation, 14, (int)Tile.X, (int)Tile.Y, Game1.random.Next(2, 7), false, -1, false);
+                    Game1.createRadialDebris(currentLocation, 14, (int)Tile.X, (int)Tile.Y, Game1.random.Next(2, 7), false, -1, false);
                 }
                 return true;
             }

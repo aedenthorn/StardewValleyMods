@@ -128,7 +128,7 @@ namespace Swim
             string playerTerm = Game1.content.LoadString("Strings\\Locations:Beach_Mariner_Player_" + (Game1.player.IsMale ? "Male" : "Female"));
             string preface = Helper.Translation.Get("SwimMod_Mariner_Completed");
             Game1.drawObjectDialogue(string.Format(preface, playerTerm));
-            Game1.stopMusicTrack(Game1.MusicContext.Default);
+            Game1.stopMusicTrack(StardewValley.GameData.MusicContext.Default);
             Game1.playSound("Cowboy_Secret");
             Game1.player.mailReceived.Add("SwimMod_Mariner_Completed");
             Game1.player.currentLocation.resetForPlayerEntry();

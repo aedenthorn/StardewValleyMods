@@ -25,9 +25,9 @@ namespace Swim
         public static ModEntry context;
 
         public static PerScreen<Texture2D> OxygenBarTexture = new PerScreen<Texture2D>();
-        public static readonly PerScreen<string> scubaMaskID = new PerScreen<string>(() => null);
-        public static readonly PerScreen<string> scubaFinsID = new PerScreen<string>(() => null);
-        public static readonly PerScreen<string> scubaTankID = new PerScreen<string>(() => null);
+        public static readonly PerScreen<int> scubaMaskID = new PerScreen<int>();
+        public static readonly PerScreen<int> scubaFinsID = new PerScreen<int>();
+        public static readonly PerScreen<int> scubaTankID = new PerScreen<int>();
         public static readonly PerScreen<bool> myButtonDown = new PerScreen<bool>(() => false);
         public static readonly PerScreen<int> oxygen = new PerScreen<int>(() => 0);
         public static readonly PerScreen<int> lastUpdateMs = new PerScreen<int>(() => 0);

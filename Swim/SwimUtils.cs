@@ -249,8 +249,8 @@ namespace Swim
 
         public static bool IsWearingScubaGear()
         {
-            bool tank = ModEntry.scubaTankID.Value != null && Game1.player.shirtItem.Value != null && Game1.player.shirtItem.Value != null && Game1.player.shirtItem.Value.ParentSheetIndex == ModEntry.scubaTankID.Value;
-            bool mask = ModEntry.scubaMaskID.Value != null && Game1.player.hat.Value != null && Game1.player.hat.Value != null && Game1.player.hat.Value.which?.Value == ModEntry.scubaMaskID.Value;
+            bool tank = ModEntry.scubaTankID.Value != -1 && Game1.player.shirtItem.Value != null && Game1.player.shirtItem.Value != null && Game1.player.shirtItem.Value.ParentSheetIndex + "" == ModEntry.scubaTankID.Value + "";
+            bool mask = ModEntry.scubaMaskID.Value != -1 && Game1.player.hat.Value != null && Game1.player.hat.Value != null && Game1.player.hat.Value.ItemId == ModEntry.scubaMaskID.Value + "";
 
             return tank && mask;
         }
@@ -283,7 +283,7 @@ namespace Swim
         public static List<Vector2> GetTilesInDirection(int count)
         {
             List<Vector2> tiles = new List<Vector2>();
-            int dir = Game1.player.facingDirection;
+            int dir = Game1.player.FacingDirection;
             if (dir == 1)
             {
 
@@ -330,32 +330,32 @@ namespace Swim
 
         public static Vector2 GetNextTile()
         {
-            int dir = Game1.player.facingDirection;
+            int dir = Game1.player.FacingDirection;
             if (dir == 1)
             {
 
-                return Game1.player.getTileLocation() + new Vector2(1, 0);
+                return Game1.player.Tile + new Vector2(1, 0);
 
             }
 
             if (dir == 2)
             {
 
-                return Game1.player.getTileLocation() + new Vector2(0, 1);
+                return Game1.player.Tile + new Vector2(0, 1);
 
             }
 
             if (dir == 3)
             {
 
-                return Game1.player.getTileLocation() - new Vector2(1, 0);
+                return Game1.player.Tile - new Vector2(1, 0);
 
             }
 
             if (dir == 0)
             {
 
-                return Game1.player.getTileLocation() - new Vector2(0, 1);
+                return Game1.player.Tile - new Vector2(0, 1);
             }
             return Vector2.Zero;
         }
@@ -384,7 +384,7 @@ namespace Swim
                     data[i] = Color.Black;
                 }
             }
-            ModEntry.OxygenBarTexture.Value.SetData<Color>(data);
+            ModEntry.OxygenBarTexture.Value.SetData(data);
         }
 
         public static string doesTileHaveProperty(Map map, int xTile, int yTile, string propertyName, string layerName)
@@ -470,7 +470,7 @@ namespace Swim
                 }
             }
             Vector2 vLocation = new Vector2(tileLocation.X, tileLocation.Y);
-            if (location.terrainFeatures.TryGetValue(vLocation, out TerrainFeature feature) && feature != null && tileLocationRect.Intersects(feature.getBoundingBox(vLocation)) && (!feature.isPassable(null) || (feature is HoeDirt && ((HoeDirt)feature).crop != null)))
+            if (location.terrainFeatures.TryGetValue(vLocation, out TerrainFeature feature) && feature != null && tileLocationRect.Intersects(feature.getBoundingBox()) && (!feature.isPassable(null) || (feature is HoeDirt && ((HoeDirt)feature).crop != null)))
             {
                 return false;
             }

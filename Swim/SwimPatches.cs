@@ -510,11 +510,11 @@ namespace Swim
                     foreach(Chunk chunk in debris.Chunks)
                     {
 
-                        if(chunk.position == chunkPosition)
+                        if(chunk.position.Value == chunkPosition)
                         {
-                            Monitor.Log($"sink debris: creating copy of debris {debris.debrisType} chunk {chunk.debrisType} item {debris.item != null} on {diveLocation.OtherMapName}");
+                            Monitor.Log($"sink debris: creating copy of debris {debris.debrisType} item {debris.item != null} on {diveLocation.OtherMapName}");
 
-                            if (debris.debrisType.Value != Debris.DebrisType.ARCHAEOLOGY && debris.debrisType.Value != Debris.DebrisType.OBJECT && chunk.debrisType % 2 != 0)
+                            if (debris.debrisType.Value != Debris.DebrisType.ARCHAEOLOGY && debris.debrisType.Value != Debris.DebrisType.OBJECT && chunk.randomOffset % 2 != 0)
                             {
                                 Monitor.Log($"sink debris: non-item debris");
                                 break;
@@ -530,7 +530,7 @@ namespace Swim
                             }
                             else
                             {
-                                Game1.createItemDebris(new StardewValley.Object(chunk.debrisType, 1), newPos, Game1.random.Next(4), Game1.getLocationFromName(diveLocation.OtherMapName));
+                                Game1.createItemDebris(ItemRegistry.Create(debris.itemId.Value, 1, debris.itemQuality, false), newPos, Game1.random.Next(4), Game1.getLocationFromName(diveLocation.OtherMapName));
                             }
                             break; 
                         }
