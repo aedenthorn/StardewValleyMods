@@ -6,7 +6,7 @@ namespace CropsSurviveSeasonChange
     {
         private static bool CheckKill(bool outdoors, Crop crop, GameLocation environment)
         {
-            if (!Config.ModEnabled || crop.forageCrop.Value || crop.dead.Value || (!Config.IncludeRegrowables && crop.regrowAfterHarvest.Value != -1) || (environment.GetSeasonForLocation() == "winter" && !Config.IncludeWinter))
+            if (!Config.ModEnabled || crop.forageCrop.Value || crop.dead.Value || (!Config.IncludeRegrowables && crop.GetData().RegrowDays != -1) || (environment.GetSeason() == Season.Winter && !Config.IncludeWinter))
             {
                 return outdoors;
             }

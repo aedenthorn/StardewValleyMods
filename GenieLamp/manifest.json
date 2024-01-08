@@ -1,0 +1,9 @@
+﻿{
+  "Name": "Genie Lamp",
+  "Author": "aedenthorn",
+  "Version": "0.1.0",
+  "Description": "Genie Lamp.",
+  "UniqueID": "aedenthorn.GenieLamp",
+  "EntryDll": "GenieLamp.dll",
+  "UpdateKeys": [ "Nexus:19794" ]
+}

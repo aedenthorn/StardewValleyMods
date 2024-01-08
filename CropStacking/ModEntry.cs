@@ -39,7 +39,7 @@ namespace CropStacking
             SHelper = helper;
 
             helper.Events.GameLoop.GameLaunched += GameLoop_GameLaunched;
-            helper.Events.Input.ButtonPressed += Input_ButtonPressed;
+            //helper.Events.Input.ButtonPressed += Input_ButtonPressed;
 
             var harmony = new Harmony(ModManifest.UniqueID);
             harmony.PatchAll();

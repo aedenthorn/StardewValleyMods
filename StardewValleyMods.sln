@@ -591,6 +591,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CloseDoors", "CloseDoors\Cl
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CropStacking", "CropStacking\CropStacking.csproj", "{35078079-6D93-4E54-9FBD-CFE746BEC267}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GenieLamp", "GenieLamp\GenieLamp.csproj", "{CB5B27E0-7BE9-4DB5-8CE9-C25D8D6F3089}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -2919,6 +2921,14 @@ Global
 		{35078079-6D93-4E54-9FBD-CFE746BEC267}.Release|Any CPU.Build.0 = Release|Any CPU
 		{35078079-6D93-4E54-9FBD-CFE746BEC267}.Release|x64.ActiveCfg = Release|x64
 		{35078079-6D93-4E54-9FBD-CFE746BEC267}.Release|x64.Build.0 = Release|x64
+		{CB5B27E0-7BE9-4DB5-8CE9-C25D8D6F3089}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CB5B27E0-7BE9-4DB5-8CE9-C25D8D6F3089}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CB5B27E0-7BE9-4DB5-8CE9-C25D8D6F3089}.Debug|x64.ActiveCfg = Debug|x64
+		{CB5B27E0-7BE9-4DB5-8CE9-C25D8D6F3089}.Debug|x64.Build.0 = Debug|x64
+		{CB5B27E0-7BE9-4DB5-8CE9-C25D8D6F3089}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CB5B27E0-7BE9-4DB5-8CE9-C25D8D6F3089}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CB5B27E0-7BE9-4DB5-8CE9-C25D8D6F3089}.Release|x64.ActiveCfg = Release|x64
+		{CB5B27E0-7BE9-4DB5-8CE9-C25D8D6F3089}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

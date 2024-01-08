@@ -1,11 +1,11 @@
 ﻿{
   "Name": "Crops Survive Season Change",
   "Author": "aedenthorn",
-  "Version": "0.1.2",
+  "Version": "0.2.0",
   "Description": "Crops Survive Season Change.",
   "UniqueID": "aedenthorn.CropsSurviveSeasonChange",
   "EntryDll": "CropsSurviveSeasonChange.dll",
-  "MinimumApiVersion": "3.15.0",
+  "MinimumApiVersion": "3.16.0",
   "ModUpdater": {
     "Repository": "StardewValleyMods",
     "User": "aedenthorn",
