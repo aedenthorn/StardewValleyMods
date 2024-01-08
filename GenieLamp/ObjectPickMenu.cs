@@ -37,9 +37,10 @@ namespace GenieLamp
             }
             if(!string.IsNullOrEmpty(textBox.Text) && textBox.Text != lastText)
             {
+                lastText = textBox.Text;
                 names.Clear();
                 var dict = AccessTools.StaticFieldRefAccess<Dictionary<string, ItemMetadata>>(typeof(ItemRegistry), "CachedItems");
-                var lower = textBox.Text.ToLower();
+                var lower = lastText.ToLower();
                 foreach (var kvp in dict)
                 {
                     var data = kvp.Value.GetParsedData();
