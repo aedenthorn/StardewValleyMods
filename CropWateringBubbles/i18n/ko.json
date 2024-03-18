@@ -5,5 +5,6 @@
   "GMCM_Option_PressKeys_Name": "단축키 설정",
   "GMCM_Option_RepeatInterval_Name": "표시 시간 간격",
   "GMCM_Option_RequireKeyPress_Name": "단축키 사용할 때만 표시",
+  "GMCM_Option_IncludeGiantable_Name": "거대 작물 표시",
   "GMCM_Option_OnlyWhenWatering_Name": "물뿌리개 들고 있을 때만 표시"
 }
