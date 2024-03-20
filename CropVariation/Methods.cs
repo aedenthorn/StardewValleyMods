@@ -38,7 +38,7 @@ namespace CropVariation
         }
         private static int ChangeQuality(Crop crop, HoeDirt hoeDirt, int quality)
         {
-            if (!Config.EnableMod || crop.indexOfHarvest.Value == 771 || crop.indexOfHarvest.Value == 889)
+            if (!Config.EnableMod || crop.indexOfHarvest.Value == "771" || crop.indexOfHarvest.Value == "889")
                 return quality;
             float factor = 0;
             if(Config.ColorVariationQualityFactor > 0)

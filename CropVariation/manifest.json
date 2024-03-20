@@ -1,22 +1,10 @@
 ﻿{
   "Name": "Crop Variation",
   "Author": "aedenthorn",
-  "Version": "0.2.5",
-  "Description": "Crop Variation.",
+  "Version": "0.2.5.1-unofficial.1-Logophile",
+  "Description": "Adds visual variation to crops",
   "UniqueID": "aedenthorn.CropVariation",
   "EntryDll": "CropVariation.dll",
-  "MinimumApiVersion": "3.13.0",
-  "ModUpdater": {
-    "Repository": "StardewValleyMods",
-    "User": "aedenthorn",
-    "Directory": "_releases",
-    "ModFolder": "CropVariation"
-  },
-  "UpdateKeys": [ "Nexus:11467" ],
-  "Dependencies": [
-    {
-      "UniqueID": "Platonymous.ModUpdater",
-      "IsRequired": false
-    }
-  ]
+  "MinimumApiVersion": "4.0.0-alpha",
+  "UpdateKeys": [""]
 }
