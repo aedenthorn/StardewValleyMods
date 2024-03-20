@@ -1,22 +1,9 @@
 ﻿{
   "Name": "Gift Rejection",
   "Author": "aedenthorn",
-  "Version": "0.1.0",
-  "Description": "Gift Rejection.",
+  "Version": "0.1.1-unofficial.1-logophile",
+  "Description": "Causes NPCs to throw gifts they don't like.",
   "UniqueID": "aedenthorn.GiftRejection",
   "EntryDll": "GiftRejection.dll",
-  "MinimumApiVersion": "3.15.0",
-  "ModUpdater": {
-    "Repository": "StardewValleyMods",
-    "User": "aedenthorn",
-    "Directory": "_releases",
-    "ModFolder": "GiftRejection"
-  },
-  "Dependencies": [
-    {
-      "UniqueID": "Platonymous.ModUpdater",
-      "IsRequired": false
-    }
-  ],
-  "UpdateKeys": [ "Nexus:" ]
+  "MinimumApiVersion": "4.0.0-alpha",
 }

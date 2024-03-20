@@ -1,22 +1,9 @@
 ﻿{
   "Name": "Fish Spot Bait",
   "Author": "aedenthorn",
-  "Version": "0.1.1",
-  "Description": "Fish Spot Bait.",
+  "Version": "0.1.2-unofficial.1-logophile",
+  "Description": "Drop bait in the water to lure fish to that spot.",
   "UniqueID": "aedenthorn.FishSpotBait",
   "EntryDll": "FishSpotBait.dll",
-  "MinimumApiVersion": "3.15.0",
-  "ModUpdater": {
-    "Repository": "StardewValleyMods",
-    "User": "aedenthorn",
-    "Directory": "_releases",
-    "ModFolder": "FishSpotBait"
-  },
-  "Dependencies": [
-    {
-      "UniqueID": "Platonymous.ModUpdater",
-      "IsRequired": false
-    }
-  ],
-  "UpdateKeys": [ "Nexus:17581" ]
+  "MinimumApiVersion": "4.0.0-alpha"
 }
