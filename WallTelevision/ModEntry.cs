@@ -47,7 +47,7 @@ namespace WallTelevision
             }
             catch
             {
-                plasmaTexture = Helper.Content.Load<Texture2D>("assets/plasma.png");
+                plasmaTexture = Helper.ModContent.Load<Texture2D>("assets/plasma.png");
             }
             try
             {
@@ -55,7 +55,7 @@ namespace WallTelevision
             }
             catch
             {
-                tropicalTexture = Helper.Content.Load<Texture2D>("assets/tropical.png");
+                tropicalTexture = Helper.ModContent.Load<Texture2D>("assets/tropical.png");
             }
         }
 
