@@ -15,21 +15,21 @@ namespace HugsAndKisses
             Monitor = monitor;
             Helper = helper;
         }
-        public static bool Event_command_playSound_Prefix(Event __instance, string[] split)
+        public static bool Event_playSound_Prefix(Event @event, string[] args, EventContext context)
         {
             try
             {
-                if (split[1] == "dwop" && __instance.isWedding && ModEntry.Config.CustomKissSound.Length > 0 && Kissing.kissEffect != null)
+                if (args[1] == "dwop" && @event.isWedding && ModEntry.Config.CustomKissSound.Length > 0 && Kissing.kissEffect != null)
                 {
                     Kissing.kissEffect.Play();
-                    int num = __instance.CurrentCommand;
-                    __instance.CurrentCommand = num + 1;
+                    int num = @event.CurrentCommand;
+                    @event.CurrentCommand = num + 1;
                     return false;
                 }
             }
             catch (Exception ex)
             {
-                Monitor.Log($"Failed in {nameof(Event_command_playSound_Prefix)}:\n{ex}", LogLevel.Error);
+                Monitor.Log($"Failed in {nameof(Event_playSound_Prefix)}:\n{ex}", LogLevel.Error);
             }
             return true;
         }

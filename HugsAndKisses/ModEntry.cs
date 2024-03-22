@@ -49,8 +49,8 @@ namespace HugsAndKisses
             // Event patches
 
             harmony.Patch(
-               original: AccessTools.Method(typeof(Event), nameof(Event.command_playSound)),
-               prefix: new HarmonyMethod(typeof(EventPatches), nameof(EventPatches.Event_command_playSound_Prefix))
+               original: AccessTools.Method(typeof(Event.DefaultCommands), nameof(Event.DefaultCommands.PlaySound)),
+               prefix: new HarmonyMethod(typeof(EventPatches), nameof(EventPatches.Event_playSound_Prefix))
             );
 
             // NPC patches
