@@ -1,5 +1,6 @@
 ﻿using Microsoft.Xna.Framework;
 using StardewModdingAPI;
+using StardewModdingAPI.Framework.ModLoading.Rewriters.StardewValley_1_6;
 using StardewValley;
 using StardewValley.Buildings;
 using StardewValley.Characters;
@@ -63,14 +64,13 @@ namespace MobilePhone
                     Monitor.Log($"Reminiscing at night");
                     __instance.LightLevel = 0f;
                     //Game1.globalOutdoorLighting = 1f;
-                    float transparency = Math.Min(0.93f, 0.75f + (2400 - Game1.getTrulyDarkTime() + Game1.gameTimeInterval / 7000f * 16.6f) * 0.000625f);
+                    float transparency = Math.Min(0.93f, 0.75f + (2400 - Game1.getTrulyDarkTime(Game1.currentLocation) + Game1.gameTimeInterval / 7000f * 16.6f) * 0.000625f);
                     Game1.outdoorLight = Game1.eveningColor * transparency;
-                    if (!(__instance is MineShaft) && !(__instance is Woods))
+                    if (!(__instance is MineShaft) && __instance is not Woods)
                     {
                         __instance.lightGlows.Clear();
                     }
-                    PropertyValue nightTiles;
-                    __instance.map.Properties.TryGetValue("NightTiles", out nightTiles);
+                    __instance.map.Properties.TryGetValue("NightTiles", out PropertyValue nightTiles);
                     if (nightTiles != null)
                     {
                         string[] split6 = nightTiles.ToString().Split(new char[]
@@ -114,59 +114,73 @@ namespace MobilePhone
                 }
             }
         }
-        public static bool Event_command_cutscene_prefix(ref Event __instance, GameLocation location, GameTime time, string[] split, ref ICustomEventScript ___currentCustomEventScript)
+        public static bool Event_command_cutscene_prefix(ref Event @event, string[] args, EventContext context)
         {
             if (!ModEntry.isInviting)
-                return true;
-            string text = split[1];
-            if (___currentCustomEventScript != null)
             {
-                if (___currentCustomEventScript.update(time, __instance))
+                return true;
+            }
+
+            if (!ArgUtility.TryGet(args, 1, out var value, out var error))
+            {
+                context.LogErrorAndSkip(error);
+                return true;
+            }
+
+            if (@event.currentCustomEventScript != null)
+            {
+                if (@event.currentCustomEventScript.update(context.Time, @event))
                 {
-                    ___currentCustomEventScript = null;
-                    int num = __instance.CurrentCommand;
-                    __instance.CurrentCommand = num + 1;
+                    @event.currentCustomEventScript = null;
+                    int num = @event.CurrentCommand;
+                    @event.CurrentCommand = num + 1;
                     return false;
                 }
             }
-
-            if (Game1.currentMinigame != null)
-                return true;
-
-            if (text == "EventInvite_balloonChangeMap")
+            else
             {
-                location.TemporarySprites.Add(new TemporaryAnimatedSprite("LooseSprites\\Cursors", new Microsoft.Xna.Framework.Rectangle(0, 1183, 84, 160), 10000f, 1, 99999, new Vector2(22f, 36f) * 64f + new Vector2(-23f, 0f) * 4f, false, false, 2E-05f, 0f, Color.White, 4f, 0f, 0f, 0f, false)
+                if (Game1.currentMinigame != null)
                 {
-                    motion = new Vector2(0f, -2f),
-                    yStopCoordinate = 576,
-                    reachedStopCoordinate = new TemporaryAnimatedSprite.endBehavior(balloonInSky),
-                    attachedCharacter = __instance.farmer,
-                    id = 1
-                });
-                location.TemporarySprites.Add(new TemporaryAnimatedSprite("LooseSprites\\Cursors", new Microsoft.Xna.Framework.Rectangle(84, 1205, 38, 26), 10000f, 1, 99999, new Vector2(22f, 36f) * 64f + new Vector2(0f, 134f) * 4f, false, false, 0.2625f, 0f, Color.White, 4f, 0f, 0f, 0f, false)
+                    return true;
+                }
+
+                switch (value)
                 {
-                    motion = new Vector2(0f, -2f),
-                    id = 2,
-                    attachedCharacter = __instance.getActorByName(ModEntry.invitedNPC.Name)
-                });
-                int num = __instance.CurrentCommand;
-                __instance.CurrentCommand = num + 1;
-                Game1.globalFadeToClear(null, 0.01f);
-                return false;
+                    case "EventInvite_balloonChangeMap":
+                    {
+                        context.Location.TemporarySprites.Add(new TemporaryAnimatedSprite("LooseSprites\\Cursors", new Microsoft.Xna.Framework.Rectangle(0, 1183, 84, 160), 10000f, 1, 99999, new Vector2(22f, 36f) * 64f + new Vector2(-23f, 0f) * 4f, false, false, 2E-05f, 0f, Color.White, 4f, 0f, 0f, 0f, false)
+                        {
+                            motion = new Vector2(0f, -2f),
+                            yStopCoordinate = 576,
+                            reachedStopCoordinate = new TemporaryAnimatedSprite.endBehavior(balloonInSky),
+                            attachedCharacter = @event.farmer,
+                            id = 1
+                        });
+                        context.Location.TemporarySprites.Add(new TemporaryAnimatedSprite("LooseSprites\\Cursors", new Microsoft.Xna.Framework.Rectangle(84, 1205, 38, 26), 10000f, 1, 99999, new Vector2(22f, 36f) * 64f + new Vector2(0f, 134f) * 4f, false, false, 0.2625f, 0f, Color.White, 4f, 0f, 0f, 0f, false)
+                        {
+                            motion = new Vector2(0f, -2f),
+                            id = 2,
+                            attachedCharacter = @event.getActorByName(ModEntry.invitedNPC.Name)
+                        });
+                        @event.CurrentCommand++;
+                        Game1.globalFadeToClear(null, 0.01f);
+                        return false;
+                    }
+                    case "EventInvite_balloonDepart":
+                    {
+                        TemporaryAnimatedSprite temporarySpriteByID = context.Location.getTemporarySpriteByID(1);
+                        temporarySpriteByID.attachedCharacter = @event.farmer;
+                        temporarySpriteByID.motion = new Vector2(0f, -2f);
+                        TemporaryAnimatedSprite temporarySpriteByID2 = context.Location.getTemporarySpriteByID(2);
+                        temporarySpriteByID2.attachedCharacter = @event.getActorByName(ModEntry.invitedNPC.Name);
+                        temporarySpriteByID2.motion = new Vector2(0f, -2f);
+                        context.Location.getTemporarySpriteByID(3).scaleChange = -0.01f;
+                        @event.CurrentCommand++;
+                        return false;
+                    }
+                }
             }
-            if (text == "EventInvite_balloonDepart")
-            {
-                TemporaryAnimatedSprite temporarySpriteByID = location.getTemporarySpriteByID(1);
-                temporarySpriteByID.attachedCharacter = __instance.farmer;
-                temporarySpriteByID.motion = new Vector2(0f, -2f);
-                TemporaryAnimatedSprite temporarySpriteByID2 = location.getTemporarySpriteByID(2);
-                temporarySpriteByID2.attachedCharacter = __instance.getActorByName(ModEntry.invitedNPC.Name);
-                temporarySpriteByID2.motion = new Vector2(0f, -2f);
-                location.getTemporarySpriteByID(3).scaleChange = -0.01f;
-                int num = __instance.CurrentCommand;
-                __instance.CurrentCommand = num + 1;
-                return false;
-            }
+            
             return true;
         }
 
@@ -184,23 +198,23 @@ namespace MobilePhone
             }
         }
 
-        public static bool Event_command_prefix(Event __instance, string[] split)
+        public static bool Event_command_prefix(Event @event, string[] args, EventContext context)
         {
             if (ModEntry.isReminiscing)
             {
-                Monitor.Log($"Reminiscing, will not execute event command {string.Join(" ",split)}");
-                int num = __instance.CurrentCommand;
-                __instance.CurrentCommand = num + 1;
+                Monitor.Log($"Reminiscing, will not execute event command {string.Join(" ", args)} at {context.Location?.Name}");
+                int num = @event.CurrentCommand;
+                @event.CurrentCommand = num + 1;
                 return false;
             }
             return true;
         }
-        public static bool Event_endBehaviors_prefix(Event __instance, string[] split)
+        public static bool Event_endBehaviors_prefix(string[] args, GameLocation location)
         {
             if (ModEntry.isReminiscing)
             {
-                Monitor.Log($"Reminiscing, will not execute end behaviors {string.Join(" ", split)}");
-                __instance.exitEvent();
+                Monitor.Log($"Reminiscing, will not execute end behaviors {string.Join(" ", args)}");
+                location.currentEvent.exitEvent();
                 return false;
             }
             return true;
