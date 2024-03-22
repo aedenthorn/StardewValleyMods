@@ -23,8 +23,11 @@ namespace HugsAndKisses
 
             try
             {
-                if (!Config.EnableMod || __instance.IsInvisible || __instance.isSleeping.Value || !who.canMove || who.checkForQuestComplete(__instance, -1, -1, who.ActiveObject, null, -1, 5) || (who.pantsItem.Value?.ParentSheetIndex == 15 && (__instance.Name.Equals("Lewis") || __instance.Name.Equals("Marnie"))) || (__instance.Name.Equals("Krobus") && who.hasQuest(28)) || !who.IsLocalPlayer)
+                if (!Config.EnableMod || __instance.IsInvisible || __instance.isSleeping.Value || !who.canMove || who.checkForQuestComplete(__instance, -1, -1, who.ActiveObject, null, -1, 5) || (who.pantsItem.Value?.ParentSheetIndex == 15 && (__instance.Name.Equals("Lewis") || __instance.Name.Equals("Marnie"))) || (__instance.Name.Equals("Krobus") && who.hasQuest("28")) || !who.IsLocalPlayer)
+                {
                     return true;
+                }
+                    
 
                 if (
                     (who.friendshipData.ContainsKey(__instance.Name) && (who.friendshipData[__instance.Name].IsMarried() || who.friendshipData[__instance.Name].IsEngaged())) ||
