@@ -1,7 +1,6 @@
 ﻿using Microsoft.Xna.Framework;
 using MobilePhone.Api;
 using StardewModdingAPI;
-using StardewModdingAPI.Framework.ModLoading.Rewriters.StardewValley_1_6;
 using StardewValley;
 using StardewValley.Menus;
 using System;
