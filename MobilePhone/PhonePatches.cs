@@ -358,11 +358,23 @@ namespace MobilePhone
             }
             if (CurrentBlueprint.BuildDays <= 0)
             {
-                Game1.DrawDialogue(Game1.getCharacterFromName("Robin", true), Game1.content.LoadString("Data\\ExtraDialogue:Robin_Instant", (LocalizedContentManager.CurrentLanguageCode == LocalizedContentManager.LanguageCode.de) ? CurrentBlueprint.DisplayName : CurrentBlueprint.DisplayName.ToLower()));
+                var npc = Game1.getCharacterFromName("Robin", true);
+                var dialog = Game1.content.LoadString("Data\\ExtraDialogue:Robin_Instant", (LocalizedContentManager.CurrentLanguageCode == LocalizedContentManager.LanguageCode.de) 
+                    ? CurrentBlueprint.DisplayName 
+                    : CurrentBlueprint.DisplayName.ToLower());
+                Game1.DrawDialogue(new Dialogue(npc, null, dialog));
             }
             else
             {
-                Game1.DrawDialogue(Game1.getCharacterFromName("Robin", true), Game1.content.LoadString(dialoguePath, (LocalizedContentManager.CurrentLanguageCode == LocalizedContentManager.LanguageCode.de) ? CurrentBlueprint.DisplayName : CurrentBlueprint.DisplayName.ToLower(), (LocalizedContentManager.CurrentLanguageCode == LocalizedContentManager.LanguageCode.de) ? CurrentBlueprint.DisplayName.Split(' ').Last().Split('-').Last() : ((LocalizedContentManager.CurrentLanguageCode == LocalizedContentManager.LanguageCode.pt || LocalizedContentManager.CurrentLanguageCode == LocalizedContentManager.LanguageCode.es || LocalizedContentManager.CurrentLanguageCode == LocalizedContentManager.LanguageCode.it) ? CurrentBlueprint.DisplayName.ToLower().Split(' ').First() : CurrentBlueprint.DisplayName.ToLower().Split(' ').Last())));
+                var npc = Game1.getCharacterFromName("Robin", true);
+                var dialog = Game1.content.LoadString(dialoguePath, (LocalizedContentManager.CurrentLanguageCode == LocalizedContentManager.LanguageCode.de) 
+                    ? CurrentBlueprint.DisplayName 
+                    : CurrentBlueprint.DisplayName.ToLower(), (LocalizedContentManager.CurrentLanguageCode == LocalizedContentManager.LanguageCode.de) 
+                        ? CurrentBlueprint.DisplayName.Split(' ').Last().Split('-').Last() 
+                        : ((LocalizedContentManager.CurrentLanguageCode == LocalizedContentManager.LanguageCode.pt || LocalizedContentManager.CurrentLanguageCode == LocalizedContentManager.LanguageCode.es || LocalizedContentManager.CurrentLanguageCode == LocalizedContentManager.LanguageCode.it) 
+                            ? CurrentBlueprint.DisplayName.ToLower().Split(' ').First() 
+                            : CurrentBlueprint.DisplayName.ToLower().Split(' ').Last()));
+                Game1.DrawDialogue(new Dialogue(npc, null, dialog));
             }
 
             while (Game1.activeClickableMenu is DialogueBox)
