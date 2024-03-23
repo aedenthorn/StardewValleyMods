@@ -553,6 +553,10 @@ namespace OmniTools
             {
                 return new ToolDescription((byte)toolList.IndexOf(typeof(Slingshot)), itemId: t.ItemId);
             }
+            if (t is Pan)
+            {
+                return new ToolDescription((byte)toolList.IndexOf(typeof(Pan)), itemId: t.QualifiedItemId);
+            }
 
             return new ToolDescription((byte)toolList.IndexOf(t.GetType()), (byte)t.UpgradeLevel);
         }
@@ -586,7 +590,14 @@ namespace OmniTools
                     t = new MilkPail();
                     break;
                 case 8:
-                    t = new Pan();
+                    // Pans don't seem to work properly with upgradeLevel.
+                    if (ItemRegistry.IsQualifiedItemId(itemId)) {
+                        // 1.0.2-unofficial+
+                        t = (Tool)ItemRegistry.Create(itemId);
+                    } else {
+                        // Prior to 1.0.1-unofficial
+                        t = new Pan();
+                    }
                     break;
                 case 9:
                     t = new Shears();
