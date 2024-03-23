@@ -582,22 +582,25 @@ namespace OmniTools
                     t = new WateringCan();
                     break;
                 case 5:
-                    return new MeleeWeapon(itemId);
+                    if (itemId != null)
+                        return new MeleeWeapon(itemId); // 1.0.0-unofficial+
+                    else
+                        return new MeleeWeapon(upgradeLevel.ToString()); // Upgrade old saves.
                 case 6:
-                    t = new Slingshot(itemId);
+                    if (itemId != null)
+                        t = new Slingshot(itemId); // 1.0.0-unofficial+
+                    else
+                        return new Slingshot(upgradeLevel.ToString()); // Upgrade old saves.
                     break;
                 case 7:
                     t = new MilkPail();
                     break;
                 case 8:
                     // Pans don't seem to work properly with upgradeLevel.
-                    if (ItemRegistry.IsQualifiedItemId(itemId)) {
-                        // 1.0.2-unofficial+
-                        t = (Tool)ItemRegistry.Create(itemId);
-                    } else {
-                        // Prior to 1.0.1-unofficial
-                        t = new Pan();
-                    }
+                    if (ItemRegistry.IsQualifiedItemId(itemId))
+                        t = (Tool)ItemRegistry.Create(itemId); // 1.0.2-unofficial+
+                    else
+                        t = new Pan(); // Prior to 1.0.1-unofficial
                     break;
                 case 9:
                     t = new Shears();
