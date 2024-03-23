@@ -85,18 +85,6 @@ namespace OmniTools
                 __result += $" ({string.Join(", ", list)})";
             }
         }
-        [HarmonyPatch(typeof(FishingRod), nameof(FishingRod.DisplayName))]
-        [HarmonyPatch(MethodType.Getter)]
-        public class FishingRod_DisplayName_Patch
-        {
-            public static void Postfix(FishingRod __instance, ref string __result)
-            {
-                if (!Config.EnableMod || skip || !SHelper.Input.IsDown(Config.ModButton) || !__instance.modData.TryGetValue(toolsKey, out string toolsString))
-                    return;
-                var list = JsonConvert.DeserializeObject<List<ToolInfo>>(toolsString).Select(t => t.displayName);
-                __result += $" ({string.Join(", ", list)})";
-            }
-        }
         [HarmonyPatch(typeof(IClickableMenu), nameof(IClickableMenu.receiveKeyPress))]
         public class IClickableMenu_receiveKeyPress_Patch
         {
@@ -161,7 +149,7 @@ namespace OmniTools
                             return true;
                         if (__instance.actualInventory[slotNumber].GetType().Equals(toPlace.GetType()))
                         {
-                            if(toPlace is not MeleeWeapon || ((toPlace as MeleeWeapon).isScythe(toPlace.ParentSheetIndex) == (__instance.actualInventory[slotNumber] as MeleeWeapon).isScythe(__instance.actualInventory[slotNumber].ParentSheetIndex)))
+                            if (toPlace is not MeleeWeapon || (MeleeWeapon.IsScythe(toPlace.QualifiedItemId) == MeleeWeapon.IsScythe(__instance.actualInventory[slotNumber].QualifiedItemId)))
                             {
                                 return true;
                             }
@@ -173,7 +161,7 @@ namespace OmniTools
                             for(int i = 0; i < list.Count; i++)
                             {
                                 Tool t = GetToolFromInfo(list[i]);
-                                if (t.GetType().Equals(toPlace.GetType()) && (toPlace is not MeleeWeapon || ((toPlace as MeleeWeapon).isScythe(toPlace.ParentSheetIndex) == (t as MeleeWeapon).isScythe(t.ParentSheetIndex))))
+                                if (t.GetType().Equals(toPlace.GetType()) && (toPlace is not MeleeWeapon || (MeleeWeapon.IsScythe(toPlace.QualifiedItemId) == MeleeWeapon.IsScythe(t.QualifiedItemId))))
                                 {
                                     list.RemoveAt(i);
                                     SMonitor.Log($"Removing {t.Name} from {__instance.actualInventory[slotNumber].Name}");

@@ -3,6 +3,9 @@ using Microsoft.Xna.Framework;
 using Netcode;
 using Newtonsoft.Json;
 using StardewValley;
+using StardewValley.Buildings;
+using StardewValley.Enchantments;
+using StardewValley.GameData.Crops;
 using StardewValley.Locations;
 using StardewValley.Monsters;
 using StardewValley.Objects;
@@ -58,8 +61,7 @@ namespace OmniTools
                 return null;
             if (!currentTool.modData.TryGetValue(toolsKey, out var toolsString))
                 return null;
-            if (tools is null)
-                tools = JsonConvert.DeserializeObject<List<ToolInfo>>(toolsString);
+            tools ??= JsonConvert.DeserializeObject<List<ToolInfo>>(toolsString);
             for (int i = tools.Count - 1; i >= 0; i--)
             {
                 if (tools[i].description.index == index)
@@ -81,7 +83,7 @@ namespace OmniTools
                         currentTool.modData[toolCountKey] = tools.Count + "";
                         return null;
                     }
-                    if ((type == typeof(MeleeWeapon) && (newTool as MeleeWeapon).isScythe(newTool.ParentSheetIndex)) || (type is null && !(newTool as MeleeWeapon).isScythe(newTool.ParentSheetIndex)))
+                    if ((type == typeof(MeleeWeapon) && MeleeWeapon.IsScythe(newTool.QualifiedItemId)) || (type is null && !MeleeWeapon.IsScythe(newTool.QualifiedItemId)))
                         continue;
                     tools.RemoveAt(i);
                     tools.Add(new ToolInfo(t));
@@ -103,14 +105,14 @@ namespace OmniTools
         {
             if (!Config.SmartSwitch)
                 return null;
-            if (!Config.FromWeapon && currentTool is MeleeWeapon && !(currentTool as MeleeWeapon).isScythe(currentTool.ParentSheetIndex))
+            if (!Config.FromWeapon && currentTool is MeleeWeapon && !MeleeWeapon.IsScythe(currentTool.QualifiedItemId))
                 return null;
             if (Config.SwitchForMonsters && currentTool.getLastFarmerToUse() is not null)
             {
                 var f = currentTool.getLastFarmerToUse();
                 foreach (var t in GetToolsFromTool(currentTool))
                 {
-                    if (t is MeleeWeapon && !(t as MeleeWeapon).isScythe(t.ParentSheetIndex))
+                    if (MeleeWeapon.IsScythe(t.QualifiedItemId))
                     {
                         foreach (var c in currentLocation.characters)
                         {
@@ -181,13 +183,13 @@ namespace OmniTools
                 if (Config.SwitchForCrops && tf is HoeDirt && (tf as HoeDirt).crop != null)
                 {
                     var crop = (tf as HoeDirt).crop;
-                    if (crop.forageCrop.Value == false && (crop.harvestMethod.Value == 1 || Config.HarvestWithScythe) && crop.currentPhase.Value >= crop.phaseDays.Count - 1 && (!crop.fullyGrown.Value || crop.dayOfCurrentPhase.Value <= 0))
+                    if (crop.forageCrop.Value == false && (crop.GetHarvestMethod() == HarvestMethod.Scythe || Config.HarvestWithScythe) && crop.currentPhase.Value >= crop.phaseDays.Count - 1 && (!crop.fullyGrown.Value || crop.dayOfCurrentPhase.Value <= 0))
                     {
                         tool = SwitchTool(currentTool, null, tools);
                         if (tool != null)
                             return tool;
                     }
-                    else if ((tf as HoeDirt).crop.forageCrop.Value == true && (tf as HoeDirt).crop.whichForageCrop.Value == Crop.forageCrop_ginger)
+                    else if ((tf as HoeDirt).crop.forageCrop.Value == true && (tf as HoeDirt).crop.whichForageCrop.Value == Crop.forageCrop_gingerID)
                     {
                         tool = SwitchTool(currentTool, typeof(Hoe), tools);
                         if (tool != null)
@@ -202,7 +204,7 @@ namespace OmniTools
 
                 foreach (ResourceClump clump in currentLocation.resourceClumps)
                 {
-                    var bb = clump.getBoundingBox(clump.tile.Value);
+                    var bb = clump.getBoundingBox();
                     if (bb.Intersects(tileRect))
                     {
                         Tool tool = SwitchForClump(currentTool, clump, tools);
@@ -212,9 +214,11 @@ namespace OmniTools
                 }
                 if(currentLocation is Woods)
                 {
-                    foreach (ResourceClump clump in (currentLocation as Woods).stumps)
+                    foreach (ResourceClump clump in (currentLocation as Woods).resourceClumps)
                     {
-                        var bb = clump.getBoundingBox(clump.tile.Value);
+                        if (clump.parentSheetIndex.Value is not ResourceClump.stumpIndex or ResourceClump.hollowLogIndex)
+                            continue;
+                        var bb = clump.getBoundingBox();
                         if (bb.Intersects(tileRect))
                         {
                             Tool tool = SwitchForClump(currentTool, clump, tools);
@@ -223,17 +227,21 @@ namespace OmniTools
                         }
                     }
                 }
-                if (currentLocation is Forest && (Game1.currentLocation as Forest).log?.occupiesTile((int)tile.X, (int)tile.Y) == true)
+                if (currentLocation is Forest)
                 {
-                    Tool tool = SwitchForClump(currentTool, (Game1.currentLocation as Forest).log, tools);
-                    if (tool is not null)
-                        return tool;
+                    ResourceClump log = currentLocation.resourceClumps.FirstOrDefault(it => it.parentSheetIndex.Value == ResourceClump.hollowLogIndex);
+                    if (log?.occupiesTile((int)tile.X, (int)tile.Y) == true)
+                    {
+                        Tool tool = SwitchForClump(currentTool, log, tools);
+                        if (tool is not null)
+                            return tool;
+                    }
                 }
             }
             if (Config.SwitchForPan && currentTool.getLastFarmerToUse() is not null)
             {
                 Rectangle orePanRect = new Rectangle(currentLocation.orePanPoint.X * 64 - 64, currentLocation.orePanPoint.Y * 64 - 64, 256, 256);
-                if (orePanRect.Contains((int)tile.X * 64, (int)tile.Y * 64) && Utility.distance((float)currentTool.getLastFarmerToUse().getStandingX(), (float)orePanRect.Center.X, (float)currentTool.getLastFarmerToUse().getStandingY(), (float)orePanRect.Center.Y) <= 192f) 
+                if (orePanRect.Contains((int)tile.X * 64, (int)tile.Y * 64) && Utility.distance((float)currentTool.getLastFarmerToUse().StandingPixel.X, (float)orePanRect.Center.X, (float)currentTool.getLastFarmerToUse().StandingPixel.Y, (float)orePanRect.Center.Y) <= 192f) 
                 { 
                     Tool tool = SwitchTool(currentTool, typeof(Pan), tools); 
                     if (tool != null) 
@@ -254,7 +262,7 @@ namespace OmniTools
                     if (tool != null) return tool;
 
                 }
-                if (currentLocation is Farm && currentLocation.getTileIndexAt((int)tile.X, (int)tile.Y, "Buildings") == 1938 && !(currentLocation as Farm).petBowlWatered.Value)
+                if (currentLocation is Farm && currentLocation.getBuildingAt(tile) is PetBowl petBowl && !petBowl.watered.Value)
                 { 
                     Tool tool = SwitchTool(currentTool, typeof(WateringCan), tools);
                     if (tool != null) return tool;
@@ -279,7 +287,7 @@ namespace OmniTools
                 catch { }
             }
             
-            if (Config.SwitchForTilling && currentLocation.doesTileHaveProperty((int)tile.X, (int)tile.Y, "Diggable", "Back") != null && !currentLocation.isTileOccupied(tile, "", false) && currentLocation.isTilePassable(new Location((int)tile.X, (int)tile.Y), Game1.viewport))
+            if (Config.SwitchForTilling && currentLocation.doesTileHaveProperty((int)tile.X, (int)tile.Y, "Diggable", "Back") != null && !currentLocation.IsTileOccupiedBy(tile, CollisionMask.All) && currentLocation.isTilePassable(new Location((int)tile.X, (int)tile.Y), Game1.viewport))
             { 
                 Tool tool = SwitchTool(currentTool, typeof(Hoe), tools); 
                 if (tool != null) return tool; 
@@ -291,13 +299,13 @@ namespace OmniTools
         public static Tool SwitchForAnimal(Tool currentTool, FarmAnimal c, List<ToolInfo> tools = null)
         {
             //SMonitor.Log($"harvesting {c.Name}; age {c.age.Value}/{c.ageWhenMature.Value}; produce {c.currentProduce.Value} ({c.defaultProduceIndex.Value}); tool {Game1.player.CurrentTool?.Name} ({c.toolUsedForHarvest.Value} - {toolsString})");
-            if (c.toolUsedForHarvest.Value.Equals("Shears")) 
+            if (c.GetAnimalData().HarvestTool.Equals("Shears")) 
             { 
                 Tool tool = SwitchTool(currentTool, typeof(Shears), tools); 
                 if (tool != null) 
                     return tool; 
             }
-            else if (c.toolUsedForHarvest.Value.Equals("Milk Pail")) 
+            else if (c.GetAnimalData().HarvestTool.Equals("MilkPail")) 
             { 
                 Tool tool = SwitchTool(currentTool, typeof(MilkPail), tools); 
                 if (tool != null) 
@@ -405,7 +413,7 @@ namespace OmniTools
                 if (tool != null) 
                     return tool; 
             }
-            else if (Config.SwitchForCrops && tf is HoeDirt && (tf as HoeDirt).crop?.harvestMethod.Value == 1 && (tf as HoeDirt).crop.currentPhase.Value >= (tf as HoeDirt).crop.phaseDays.Count - 1 && (!(tf as HoeDirt).crop.fullyGrown.Value || (tf as HoeDirt).crop.dayOfCurrentPhase.Value <= 0)) 
+            else if (Config.SwitchForCrops && tf is HoeDirt && (tf as HoeDirt).crop?.GetHarvestMethod() == HarvestMethod.Scythe && (tf as HoeDirt).crop.currentPhase.Value >= (tf as HoeDirt).crop.phaseDays.Count - 1 && (!(tf as HoeDirt).crop.fullyGrown.Value || (tf as HoeDirt).crop.dayOfCurrentPhase.Value <= 0)) 
             { 
                 Tool tool = SwitchTool(currentTool, null, tools); 
                 if (tool != null) 
@@ -494,7 +502,7 @@ namespace OmniTools
         }
         public static Tool GetToolFromInfo(ToolInfo toolInfo)
         {
-            Tool t = GetToolFromDescription(toolInfo.description.index, toolInfo.description.upgradeLevel);
+            Tool t = GetToolFromDescription(toolInfo.description.index, toolInfo.description.upgradeLevel, toolInfo.description.itemId);
             for (int i = 0; i < toolInfo.enchantments.Count; i++)
             {
                 try
@@ -514,7 +522,7 @@ namespace OmniTools
                     Object a = null;
                     if (oi is not null)
                     {
-                        a = new Object(oi.parentSheetIndex, oi.stack, false, -1, oi.quality);
+                        a = new Object(oi.ItemId, oi.stack, false, -1, oi.quality);
                         a.uses.Value = oi.uses;
                     }
                     t.attachments.Add(a);
@@ -539,16 +547,21 @@ namespace OmniTools
                 return null;
             if (t is MeleeWeapon)
             {
-                return new ToolDescription((byte)toolList.IndexOf(typeof(MeleeWeapon)), t.ParentSheetIndex == -1 ? (byte)(t as MeleeWeapon).InitialParentTileIndex : (byte)t.ParentSheetIndex);
+                return new ToolDescription((byte)toolList.IndexOf(typeof(MeleeWeapon)), itemId: t.ItemId);
             }
             if (t is Slingshot)
             {
-                return new ToolDescription((byte)toolList.IndexOf(typeof(Slingshot)), (byte)(t as Slingshot).InitialParentTileIndex);
+                return new ToolDescription((byte)toolList.IndexOf(typeof(Slingshot)), itemId: t.ItemId);
             }
+            if (t is Pan)
+            {
+                return new ToolDescription((byte)toolList.IndexOf(typeof(Pan)), itemId: t.QualifiedItemId);
+            }
+
             return new ToolDescription((byte)toolList.IndexOf(t.GetType()), (byte)t.UpgradeLevel);
         }
 
-        public static Tool GetToolFromDescription(int index, byte upgradeLevel)
+        public static Tool GetToolFromDescription(int index, byte upgradeLevel, string itemId = null)
         {
             Tool t = null;
             switch (index)
@@ -569,15 +582,25 @@ namespace OmniTools
                     t = new WateringCan();
                     break;
                 case 5:
-                    return new MeleeWeapon(upgradeLevel);
+                    if (itemId != null)
+                        return new MeleeWeapon(itemId); // 1.0.0-unofficial+
+                    else
+                        return new MeleeWeapon(upgradeLevel.ToString()); // Upgrade old saves.
                 case 6:
-                    t = new Slingshot(upgradeLevel);
+                    if (itemId != null)
+                        t = new Slingshot(itemId); // 1.0.0-unofficial+
+                    else
+                        return new Slingshot(upgradeLevel.ToString()); // Upgrade old saves.
                     break;
                 case 7:
                     t = new MilkPail();
                     break;
                 case 8:
-                    t = new Pan();
+                    // Pans don't seem to work properly with upgradeLevel.
+                    if (ItemRegistry.IsQualifiedItemId(itemId))
+                        t = (Tool)ItemRegistry.Create(itemId); // 1.0.2-unofficial+
+                    else
+                        t = new Pan(); // Prior to 1.0.1-unofficial
                     break;
                 case 9:
                     t = new Shears();

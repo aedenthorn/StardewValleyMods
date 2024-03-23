@@ -6,6 +6,21 @@ using System.Collections.Generic;
 
 namespace OmniTools
 {
+    // Compat: removed from StardewValley.Tools
+    public struct ToolDescription {
+        public byte index;
+
+        public byte upgradeLevel;
+
+        public string itemId;
+
+        public ToolDescription(byte index, byte upgradeLevel = 0, string itemId = null) {
+            this.index = index;
+            this.upgradeLevel = upgradeLevel;
+            this.itemId = itemId;
+        }
+    }
+
     public class ToolInfo
     {
         public ToolDescription description;
@@ -32,7 +47,7 @@ namespace OmniTools
             }
             foreach (var o in tool.attachments)
             {
-                attachments.Add(o is not null ? new ObjectInfo(o.ParentSheetIndex, o.Stack, o.Quality, o.uses.Value) : null);
+                attachments.Add(o is not null ? new ObjectInfo(o.ItemId, o.Stack, o.Quality, o.uses.Value) : null);
             }
             foreach (var kvp in tool.modData.Pairs)
             {
@@ -49,14 +64,14 @@ namespace OmniTools
 
     public class ObjectInfo
     {
-        public int parentSheetIndex;
+        public string ItemId;
         public int stack;
         public int quality;
         public int uses;
 
-        public ObjectInfo(int parentSheetIndex, int stack, int quality, int uses)
+        public ObjectInfo(string ItemId, int stack, int quality, int uses)
         {
-            this.parentSheetIndex = parentSheetIndex;
+            this.ItemId = ItemId;
             this.stack = stack;
             this.quality = quality;
             this.uses = uses;

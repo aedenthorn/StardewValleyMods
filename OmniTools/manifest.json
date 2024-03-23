@@ -1,11 +1,11 @@
 ﻿{
   "Name": "Omni Tools",
   "Author": "aedenthorn",
-  "Version": "0.8.2",
+  "Version": "1.0.3-unofficial",
   "Description": "Omni Tools.",
   "UniqueID": "aedenthorn.OmniTools",
   "EntryDll": "OmniTools.dll",
-  "MinimumApiVersion": "3.15.0",
+  "MinimumApiVersion": "4.0.0",
   "ModUpdater": {
     "Repository": "StardewValleyMods",
     "User": "aedenthorn",
