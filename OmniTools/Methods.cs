@@ -502,7 +502,7 @@ namespace OmniTools
         }
         public static Tool GetToolFromInfo(ToolInfo toolInfo)
         {
-            Tool t = GetToolFromDescription(toolInfo.description.index, toolInfo.description.upgradeLevel);
+            Tool t = GetToolFromDescription(toolInfo.description.index, toolInfo.description.upgradeLevel, toolInfo.description.itemId);
             for (int i = 0; i < toolInfo.enchantments.Count; i++)
             {
                 try
