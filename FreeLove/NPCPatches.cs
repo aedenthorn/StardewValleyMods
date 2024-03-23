@@ -245,7 +245,7 @@ namespace FreeLove
                 {
                     ModEntry.tempOfficialSpouse = null;
                 }
-                return;
+                return; //TODO: Everything beyond this point is unreachable. Is this intentional? 
 
                 // custom dialogues
 
@@ -416,7 +416,7 @@ namespace FreeLove
             try
             {
 
-                if (!__instance.isVillager())
+                if (!__instance.IsVillager)
                 {
                     __result = false;
                     return false;
@@ -455,7 +455,7 @@ namespace FreeLove
         public static bool NPC_isMarried_Prefix(NPC __instance, ref bool __result)
         {
             __result = false;
-            if (!__instance.isVillager())
+            if (!__instance.IsVillager)
             {
                 return false;
             }
@@ -473,7 +473,7 @@ namespace FreeLove
         public static bool NPC_isMarriedOrEngaged_Prefix(NPC __instance, ref bool __result)
         {
             __result = false;
-            if (!__instance.isVillager())
+            if (!__instance.IsVillager)
             {
                 return false;
             }
@@ -822,7 +822,7 @@ namespace FreeLove
                             Game1.drawObjectDialogue(Game1.content.LoadString("Strings\\StringsFromCSFiles:NPC.cs.3969", __instance.displayName));
                             return false;
                         }
-                        __instance.CurrentDialogue.Push(new Dialogue(__instance, "Strings\\StringsFromCSFiles:NPC.cs." + ((__instance.Gender == 1) ? "3970" : "3971"), false));
+                        __instance.CurrentDialogue.Push(new Dialogue(__instance, "Strings\\StringsFromCSFiles:NPC.cs." + ((__instance.Gender == Gender.Female) ? "3970" : "3971"), false));
                         Game1.drawDialogue(__instance);
                         return false;
                     }
