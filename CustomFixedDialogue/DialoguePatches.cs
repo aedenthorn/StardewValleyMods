@@ -194,9 +194,9 @@ namespace CustomFixedDialogue
         }
 
         
-        public static void NPC_showTextAboveHead_Prefix(NPC __instance, ref string Text)
+        public static void NPC_showTextAboveHead_Prefix(NPC __instance, ref string text)
         {
-            FixString(__instance, ref Text);
+            FixString(__instance, ref text);
         }
 
         public static void NPC_getTermOfSpousalEndearment_Postfix(NPC __instance, ref string __result)
