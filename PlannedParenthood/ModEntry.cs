@@ -1,5 +1,7 @@
 ﻿using HarmonyLib;
 using StardewModdingAPI;
+using StardewValley;
+using System;
 
 namespace PlannedParenthood
 {
@@ -30,11 +32,24 @@ namespace PlannedParenthood
             SMonitor = Monitor;
             SHelper = helper;
 
-            helper.Events.GameLoop.GameLaunched += GameLoop_GameLaunched;
-
             var harmony = new Harmony(ModManifest.UniqueID);
-            harmony.PatchAll();
 
+            harmony.Patch(
+               original: AccessTools.Method(typeof(GameLocation), nameof(GameLocation.answerDialogueAction)),
+               prefix: new HarmonyMethod(typeof(ModEntry), nameof(GameLocation_answerDialogueAction_Prefix))
+            );
+
+            harmony.Patch(
+               original: AccessTools.Method(typeof(GameLocation), nameof(GameLocation.createQuestionDialogue), new Type[] { typeof(string), typeof(Response[]), typeof(string), typeof(StardewValley.Object) }),
+               prefix: new HarmonyMethod(typeof(ModEntry), nameof(GameLocation_createQuestionDialogue_Prefix))
+            );
+
+            harmony.Patch(
+               original: AccessTools.Method(typeof(Utility), nameof(Utility.pickPersonalFarmEvent)),
+               prefix: new HarmonyMethod(typeof(ModEntry), nameof(Utility_pickPersonalFarmEvent_Prefix))
+            );
+
+            helper.Events.GameLoop.GameLaunched += GameLoop_GameLaunched;
         }
         public override object GetApi()
         {
