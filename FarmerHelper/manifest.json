@@ -1,11 +1,11 @@
 ﻿{
   "Name": "Farmer Helper",
   "Author": "aedenthorn",
-  "Version": "0.4.2",
+  "Version": "0.4.3",
   "Description": "Farmer Helper.",
   "UniqueID": "aedenthorn.FarmerHelper",
   "EntryDll": "FarmerHelper.dll",
-  "MinimumApiVersion": "3.13.0",
+  "MinimumApiVersion": "4.0.0",
   "ModUpdater": {
     "Repository": "StardewValleyMods",
     "User": "aedenthorn",
