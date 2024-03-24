@@ -1,14 +1,14 @@
 ﻿{
   "Name": "Custom Spouse Rooms",
   "Author": "aedenthorn",
-  "Version": "0.8.3",
+  "Version": "0.9.0",
   "Description": "Custom spouse rooms.",
   "UniqueID": "aedenthorn.CustomSpouseRooms",
   "EntryDll": "CustomSpouseRooms.dll",
   "MinimumApiVersion": "4.0.0",
   "ModUpdater": {
     "Repository": "StardewValleyMods",
-    "User": "aedenthorn",
+    "User": "datamancer",
     "Directory": "_releases",
     "ModFolder": "CustomSpouseRooms"
   },
