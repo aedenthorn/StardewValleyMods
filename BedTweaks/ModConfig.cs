@@ -1,11 +1,14 @@
-﻿
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
 namespace BedTweaks
 {
-    public class ModConfig
+    public sealed class ModConfig
     {
         public bool EnableMod { get; set; } = true;
-        public bool RedrawMiddlePillows { get; set; } = true;
-        public int BedWidth { get; set; } = 5;
-        public float SheetTransparency { get; set; } = 1f;
+        public int BedWidth { get; set; } = 3;
     }
 }
