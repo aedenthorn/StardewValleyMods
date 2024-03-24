@@ -125,16 +125,15 @@ namespace FarmerHelper
             Helper.GameContent.InvalidateCache("Data/ObjectInformation");
         }
 
-        public static string[] seasons = new string[] { "spring", "summer", "fall", "winter" };
         private static bool EnoughDaysLeft(Crop c, HoeDirt hoeDirt)
         {
-            if (c.seasonsToGrowIn.Contains(seasons[(Utility.getSeasonNumber(Game1.currentSeason) + 1) % 4]))
+            if (c.GetData().Seasons.Contains((Season)((Game1.seasonIndex + 1) % 4)))
                 return true;
             if(hoeDirt is not null)
             {
                 HoeDirt d = new HoeDirt(hoeDirt.state.Value, c);
-                d.currentLocation = hoeDirt.currentLocation;
-                d.currentTileLocation = hoeDirt.currentTileLocation;
+                d.Location = hoeDirt.Location;
+                d.Tile = hoeDirt.Tile;
                 d.fertilizer.Value = hoeDirt.fertilizer.Value;
                 AccessTools.Method(typeof(HoeDirt), "applySpeedIncreases").Invoke(d, new object[] { Game1.player });
                 c = d.crop;
