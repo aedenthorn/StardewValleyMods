@@ -1,7 +1,7 @@
 {
   "Name": "Bed Tweaks",
   "Author": "aedenthorn",
-  "Version": "0.4.0",
+  "Version": "0.4.1",
   "Description": "Tweaks the bed.",
   "UniqueID": "aedenthorn.BedTweaks",
   "EntryDll": "BedTweaks.dll",
