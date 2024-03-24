@@ -151,43 +151,43 @@ namespace CustomFixedDialogue
                 return;
             ReplaceString(path, ref __result);
         }
-        public static void Game1_LoadStringByGender_Prefix1(int npcGender, string key, ref string __result)
+        public static void Game1_LoadStringByGender_Prefix1(Gender npcGender, string key, ref string __result)
         {
             dontFix = true;
         }
 
-        public static void Game1_LoadStringByGender_Postfix1(int npcGender, string key, ref string __result)
+        public static void Game1_LoadStringByGender_Postfix1(Gender npcGender, string key, ref string __result)
         {
             dontFix = false;
-            ReplaceString(key, ref __result, null, npcGender);
+            ReplaceString(key, ref __result, null, (int)npcGender);
         }
         
-        public static void Game1_LoadStringByGender_Prefix2(int npcGender, string key, object[] substitutions, ref string __result)
+        public static void Game1_LoadStringByGender_Prefix2(Gender npcGender, string key, object[] substitutions, ref string __result)
         {
             dontFix = true;
         }
 
-        public static void Game1_LoadStringByGender_Postfix2(int npcGender, string key, object[] substitutions, ref string __result)
+        public static void Game1_LoadStringByGender_Postfix2(Gender npcGender, string key, object[] substitutions, ref string __result)
         {
             dontFix = false;
-            ReplaceString(key, ref __result, substitutions, npcGender);
+            ReplaceString(key, ref __result, substitutions, (int)npcGender);
         }
 
-        public static void Dialogue_Prefix(Dialogue __instance, ref string masterDialogue, NPC speaker)
+        public static void Dialogue_Prefix(Dialogue __instance, NPC speaker, ref string translationKey, ref string dialogueText)
         {
-            FixString(speaker, ref masterDialogue);
+            FixString(speaker, ref dialogueText);
         }
-        
+
         public static void Dialogue_Box_Prefix(DialogueBox __instance, ref Dialogue dialogue)
         {
             var x = Environment.StackTrace;
 
             if (dialogue.dialogues.Count == 1)
             {
-                string d = dialogue.dialogues[0];
+                string d = dialogue.dialogues[0].Text;
                 if (FixString(dialogue.speaker, ref d))
                 {
-                    dialogue = new Dialogue(d, dialogue.speaker);
+                    dialogue = new Dialogue(dialogue.speaker, dialogue.TranslationKey, d);
                     return;
                 }
             }
