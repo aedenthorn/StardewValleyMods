@@ -3,6 +3,7 @@ using StardewModdingAPI.Events;
 using StardewValley;
 using StardewValley.Menus;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 
 namespace CustomSpousePatioRedux
@@ -31,6 +32,7 @@ namespace CustomSpousePatioRedux
                 return;
             }
             LoadSpouseAreaData();
+            Debug.Assert(outdoorAreas != null);
             DefaultSpouseAreaLocation = Game1.getFarm().GetSpouseOutdoorAreaCorner();
 
         }
@@ -82,9 +84,9 @@ namespace CustomSpousePatioRedux
 
                 DialogueBox db = menu as DialogueBox;
                 int resp = db.selectedResponse;
-                List<Response> resps = db.responses;
+               Response[] resps = db.responses;
 
-                if (resp < 0 || resps == null || resp >= resps.Count || resps[resp] == null)
+                if (resp < 0 || resps == null || resp >= resps.Length || resps[resp] == null)
                     return;
                 Monitor.Log($"Answered {Game1.player.currentLocation.lastQuestionKey} with {resps[resp].responseKey}");
 
