@@ -3,6 +3,7 @@ using Microsoft.Xna.Framework.Graphics;
 using StardewModdingAPI;
 using StardewValley;
 using StardewValley.BellsAndWhistles;
+using StardewValley.GameData.Characters;
 using StardewValley.Locations;
 using System;
 using System.Collections.Generic;
@@ -44,10 +45,13 @@ namespace CustomSpouseRooms
         public static bool DecoratableLocation_IsFloorableOrWallpaperableTile_Prefix(DecoratableLocation __instance, int x, int y, ref bool __result)
 		{
 			if (!Config.EnableMod || !(__instance is FarmHouse))
+			{
 				return true;
-			foreach(var room in ModEntry.currentRoomData.Values)
+			}
+            Rectangle spouseRoomArea = CharacterSpouseRoomData.DefaultMapSourceRect;
+            foreach (var room in ModEntry.currentRoomData.Values)
             {
-                Rectangle rect = new Rectangle(room.startPos.X + 1, room.startPos.Y + 1, (__instance as FarmHouse).GetSpouseRoomWidth(), (__instance as FarmHouse).GetSpouseRoomHeight());
+                Rectangle rect = new Rectangle(room.startPos.X + 1, room.startPos.Y + 1, spouseRoomArea.Width, spouseRoomArea.Height);
 				if (rect.Contains(x, y))
                 {
 					__result = true;
@@ -448,7 +452,7 @@ namespace CustomSpouseRooms
                 {
                     if (Game1.random.NextDouble() < 0.1 && Game1.timeOfDay > 610)
                     {
-                        DelayedAction.playSoundAfterDelay("croak", 1000, null, -1);
+                        DelayedAction.playSoundAfterDelay("croak", 1000, null);
                     }
                 }
             }
