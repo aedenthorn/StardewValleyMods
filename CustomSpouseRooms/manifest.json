@@ -1,7 +1,7 @@
 ﻿{
   "Name": "Custom Spouse Rooms",
   "Author": "aedenthorn",
-  "Version": "0.9.0",
+  "Version": "0.9.1",
   "Description": "Custom spouse rooms.",
   "UniqueID": "aedenthorn.CustomSpouseRooms",
   "EntryDll": "CustomSpouseRooms.dll",
@@ -12,7 +12,7 @@
     "Directory": "_releases",
     "ModFolder": "CustomSpouseRooms"
   },
-  "UpdateKeys": [ "Nexus:10029" ],
+  "UpdateKeys": [ "Nexus:20966" ],
   "Dependencies": [
     {
       "UniqueID": "Platonymous.ModUpdater",
