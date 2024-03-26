@@ -216,7 +216,7 @@ namespace DynamicMapTiles
                 else
                 {
                     Game1.player.health = Math.Min(Game1.player.health + number, Game1.player.maxHealth);
-                    Game1.player.currentLocation.debris.Add(new Debris(number, new Vector2((float)(Game1.player.getStandingX() + 8), (float)Game1.player.getStandingY()), Color.LimeGreen, 1f, Game1.player));
+                    Game1.player.currentLocation.debris.Add(new Debris(number, new Vector2((float)(Game1.player.StandingPixel.X + 8), (float)Game1.player.StandingPixel.Y), Color.LimeGreen, 1f, Game1.player));
                 }
             }
             if (tile.Properties.TryGetValue(staminaPerSecondKey, out value) && int.TryParse(value, out number))

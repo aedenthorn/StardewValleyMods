@@ -63,7 +63,7 @@ namespace MobilePhone
                     Monitor.Log($"Reminiscing at night");
                     __instance.LightLevel = 0f;
                     //Game1.globalOutdoorLighting = 1f;
-                    float transparency = Math.Min(0.93f, 0.75f + (2400 - Game1.getTrulyDarkTime() + Game1.gameTimeInterval / 7000f * 16.6f) * 0.000625f);
+                    float transparency = Math.Min(0.93f, 0.75f + (2400 - Game1.getTrulyDarkTime(__instance) + Game1.gameTimeInterval / 7000f * 16.6f) * 0.000625f);
                     Game1.outdoorLight = Game1.eveningColor * transparency;
                     if (!(__instance is MineShaft) && !(__instance is Woods))
                     {
@@ -112,18 +112,22 @@ namespace MobilePhone
                     }
 
                 }
+                
             }
         }
-        public static bool Event_command_cutscene_prefix(ref Event __instance, GameLocation location, GameTime time, string[] split, ref ICustomEventScript ___currentCustomEventScript)
+        //public static bool Event_command_cutscene_prefix(ref Event __instance, GameLocation location, GameTime time, string[] split)
+        public static bool Event_command_cutscene_prefix(ref Event __instance, string[] args, EventContext context)
         {
+            GameLocation location = context.Location;
+            GameTime time = context.Time;
             if (!ModEntry.isInviting)
                 return true;
-            string text = split[1];
-            if (___currentCustomEventScript != null)
+            string text = args[1];
+            if (__instance.currentCustomEventScript != null)
             {
-                if (___currentCustomEventScript.update(time, __instance))
+                if (__instance.currentCustomEventScript.update(time, __instance))
                 {
-                    ___currentCustomEventScript = null;
+                    __instance.currentCustomEventScript = null;
                     int num = __instance.CurrentCommand;
                     __instance.CurrentCommand = num + 1;
                     return false;
@@ -184,22 +188,22 @@ namespace MobilePhone
             }
         }
 
-        public static bool Event_command_prefix(Event __instance, string[] split)
+        public static bool Event_command_prefix(Event __instance, string[] args, EventContext context)
         {
             if (ModEntry.isReminiscing)
             {
-                Monitor.Log($"Reminiscing, will not execute event command {string.Join(" ",split)}");
+                Monitor.Log($"Reminiscing, will not execute event command {string.Join(" ",args)}");
                 int num = __instance.CurrentCommand;
                 __instance.CurrentCommand = num + 1;
                 return false;
             }
             return true;
         }
-        public static bool Event_endBehaviors_prefix(Event __instance, string[] split)
+        public static bool Event_endBehaviors_prefix(Event __instance, string[] args, GameLocation location)
         {
             if (ModEntry.isReminiscing)
             {
-                Monitor.Log($"Reminiscing, will not execute end behaviors {string.Join(" ", split)}");
+                Monitor.Log($"Reminiscing, will not execute end behaviors {string.Join(" ", args)}");
                 __instance.exitEvent();
                 return false;
             }

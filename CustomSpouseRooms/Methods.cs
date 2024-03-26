@@ -92,8 +92,13 @@ namespace CustomSpouseRooms
 			SMonitor.Log($"Checking spouse thing for {srd.name}");
 			if (srd.name == "Emily" && (srd.templateName == "Emily" || srd.templateName == null || srd.templateName == ""))
 			{
-				fh.temporarySprites.RemoveAll((s) => s is EmilysParrot);
-
+				for (int i = fh.temporarySprites.Count - 1; i >= 0; i--)
+				{
+					if (fh.temporarySprites[i] is EmilysParrot)
+					{
+						fh.temporarySprites.RemoveAt(i);
+					}
+				}
 				Vector2 spot = Utility.PointToVector2(srd.startPos + new Point(4, 2)) * 64;
 				spot += new Vector2(16, 32);
 				SMonitor.Log($"Building Emily's parrot at {spot}");

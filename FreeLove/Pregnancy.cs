@@ -105,7 +105,7 @@ namespace FreeLove
                     new Response("Not", Game1.content.LoadString("Strings\\Events:HaveBabyAnswer_No"))
                 };
 
-                if (!lastPregnantSpouse.isGaySpouse() || Config.GayPregnancies)
+                if (!lastPregnantSpouse.isAdoptionSpouse() || Config.GayPregnancies)
                 {
                     Game1.currentLocation.createQuestionDialogue(Game1.content.LoadString("Strings\\Events:HavePlayerBabyQuestion", lastPregnantSpouse.Name), answers, new GameLocation.afterQuestionBehavior(answerPregnancyQuestion), lastPregnantSpouse);
                 }
@@ -176,7 +176,7 @@ namespace FreeLove
                     Game1.getCharacterFromName(lastBirthingSpouse.Name).currentMarriageDialogue.Insert(0, new MarriageDialogueReference("Data\\ExtraDialogue", "NewChild_SecondChild" + myRand.Next(1, 3), true, new string[0]));
                     Game1.getSteamAchievement("Achievement_FullHouse");
                 }
-                else if (lastBirthingSpouse.isGaySpouse() && !Config.GayPregnancies)
+                else if (lastBirthingSpouse.isAdoptionSpouse() && !Config.GayPregnancies)
                 {
                     Game1.getCharacterFromName(lastBirthingSpouse.Name).currentMarriageDialogue.Insert(0, new MarriageDialogueReference("Data\\ExtraDialogue", "NewChild_Adoption", true, new string[]
                     {
@@ -226,7 +226,7 @@ namespace FreeLove
             NPC spouse = lastBirthingSpouse;
             Game1.player.CanMove = false;
             ___isMale = myRand.NextDouble() > 0.5f;
-            if (spouse.isGaySpouse())
+            if (spouse.isAdoptionSpouse())
             {
                 ___message = Game1.content.LoadString("Strings\\Events:BirthMessage_Adoption", Lexicon.getGenderedChildTerm(___isMale));
             }
@@ -249,7 +249,7 @@ namespace FreeLove
                 WorldDate birthingDate = new WorldDate(Game1.Date);
                 birthingDate.TotalDays += 14;
                 who.friendshipData[lastPregnantSpouse.Name].NextBirthingDate = birthingDate;
-                lastPregnantSpouse.isGaySpouse();
+                lastPregnantSpouse.isAdoptionSpouse();
             }
         }
     }

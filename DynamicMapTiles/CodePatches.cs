@@ -127,7 +127,7 @@ namespace DynamicMapTiles
             {
                 if (!Config.ModEnabled || (!Config.TriggerDuringEvents && Game1.eventUp) || __instance.currentLocation is null)
                     return;
-                var tileLoc = __instance.getTileLocation();
+                var tileLoc = __instance.Tile;
                 if (__instance.currentLocation.isTileOnMap(tileLoc))
                 {
                     var tile = __instance.currentLocation.Map.GetLayer("Back").Tiles[(int)tileLoc.X, (int)tileLoc.Y];
@@ -145,7 +145,7 @@ namespace DynamicMapTiles
             {
                 if (!Config.ModEnabled || (!Config.TriggerDuringEvents && Game1.eventUp) || __instance.currentLocation is null)
                     return;
-                var tileLoc = __instance.getTileLocation();
+                var tileLoc = __instance.Tile;
                 if (__instance.currentLocation.isTileOnMap(tileLoc))
                 {
                     var tile = __instance.currentLocation.Map.GetLayer("Back").Tiles[(int)tileLoc.X, (int)tileLoc.Y];
@@ -163,7 +163,7 @@ namespace DynamicMapTiles
             {
                 if (!Config.ModEnabled || (!Config.TriggerDuringEvents && Game1.eventUp) || __state is null || __instance.currentLocation is null)
                     return;
-                var tilePos = __instance.getTileLocationPoint();
+                var tilePos = __instance.TilePoint;
                 var oldTile = Utility.Vector2ToPoint(__state[1]);
                 if(oldTile != tilePos)
                 {

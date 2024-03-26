@@ -1,11 +1,11 @@
 ﻿{
   "Name": "Free Love",
   "Author": "aedenthorn",
-  "Version": "1.2.9",
+  "Version": "1.2.10",
   "Description": "Free Love",
   "UniqueID": "aedenthorn.FreeLove",
   "EntryDll": "FreeLove.dll",
-  "MinimumApiVersion": "3.13.0",
+  "MinimumApiVersion": "4.0.0",
   "UpdateKeys": [ "Nexus:10021" ],
   "ModUpdater": {
     "Repository": "StardewValleyMods",

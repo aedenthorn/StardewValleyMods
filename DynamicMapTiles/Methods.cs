@@ -230,7 +230,7 @@ namespace DynamicMapTiles
                                     var split2 = split[i].Split(',');
                                     if (int.TryParse(split2[1], out int delay))
                                     {
-                                        DelayedAction.playSoundAfterDelay(split2[0], delay, farmer.currentLocation, -1);
+                                        DelayedAction.playSoundAfterDelay(split2[0], delay, farmer.currentLocation);
                                     }
                                 }
                                 else
@@ -241,7 +241,7 @@ namespace DynamicMapTiles
                                     }
                                     else
                                     {
-                                        DelayedAction.playSoundAfterDelay(split[i], i * 300, farmer.currentLocation, -1);
+                                        DelayedAction.playSoundAfterDelay(split[i], i * 300, farmer.currentLocation);
                                     }
                                 }
                             }
@@ -252,7 +252,7 @@ namespace DynamicMapTiles
                         }
                         else if (key == eventKey)
                         {
-                            Game1.currentLocation.currentEvent = new Event(value, -1, null);
+                            Game1.currentLocation.currentEvent = new Event(value, null);
                             Game1.currentLocation.checkForEvents();
                         }
                         else if (key == musicKey)
@@ -325,7 +325,7 @@ namespace DynamicMapTiles
                             else
                             {
                                 Game1.player.health = Math.Min(Game1.player.health + number, Game1.player.maxHealth);
-                                Game1.player.currentLocation.debris.Add(new Debris(number, new Vector2((float)(Game1.player.getStandingX() + 8), (float)Game1.player.getStandingY()), Color.LimeGreen, 1f, Game1.player));
+                                Game1.player.currentLocation.debris.Add(new Debris(number, new Vector2((float)(Game1.player.StandingPixel.X + 8), (float)Game1.player.StandingPixel.Y), Color.LimeGreen, 1f, Game1.player));
                             }
                         }
                         else if (key == staminaKey && int.TryParse(value, out number))
@@ -334,7 +334,7 @@ namespace DynamicMapTiles
                         }
                         else if (key == buffKey && int.TryParse(value, out number))
                         {
-                            Game1.buffsDisplay.addOtherBuff(new Buff(number));
+                            Game1.player.buffs.Apply(new Buff("" + number));
                         }
                         else if (key == emoteKey && int.TryParse(value, out number))
                         {
@@ -353,25 +353,25 @@ namespace DynamicMapTiles
                             Vector2 p = new Vector2(int.Parse(split2[0]), int.Parse(split2[1]));
                             if (!farmer.currentLocation.objects.TryGetValue(p, out Object o) || o is not Chest)
                             {
-                                int money = 0;
+                                //int money = 0;
                                 var items = new List<Item>();
                                 split2 = split[1].Split(' ');
                                 foreach (var str in split2)
                                 {
-                                    if (str.StartsWith("Money/"))
+                                    /*if (str.StartsWith("Money/"))
                                     {
                                         int.TryParse(str.Split('/')[1], out money);
                                     }
                                     else
-                                    {
+                                    {*/
                                         var item = GetItemFromString(str);
                                         if (item is not null)
                                             items.Add(item);
-                                    }
+                                    //}
                                 }
-                                var chest = new Chest(true, p, 130);
-                                chest.items.AddRange(items);
-                                chest.coins.Value = money;
+                                var chest = new Chest(true, p);
+                                chest.Items.AddRange(items);
+                                //chest.coins.Value = money; - Deprecated in 1.6
                                 chest.Type = "interactive";
                                 chest.bigCraftable.Value = false;
                                 chest.CanBeSetDown = false;
@@ -474,7 +474,7 @@ namespace DynamicMapTiles
             {
                 if (int.TryParse(value, out number))
                 {
-                    item = new Object(number, 1);
+                    item = new Object("" + number, 1);
                 }
                 else
                 {
@@ -487,13 +487,13 @@ namespace DynamicMapTiles
                     }
                     if (int.TryParse(value, out number))
                     {
-                        item = new Object(number, amount);
+                        item = new Object("" + number, amount);
                     }
                     else
                     {
-                        foreach (var pair in Game1.objectInformation)
+                        foreach (var pair in Game1.objectData)
                         {
-                            if (pair.Value.StartsWith(value + "/"))
+                            if (pair.Value.DisplayName.StartsWith(value + "/"))
                             {
                                 item = new Object(pair.Key, amount);
                                 break;
@@ -510,11 +510,11 @@ namespace DynamicMapTiles
                     case "Hat":
                         if (int.TryParse(split[1], out number))
                         {
-                            item = new Hat(number);
+                            item = new Hat("" + number);
                         }
                         else
                         {
-                            Dictionary<int, string> dictionary = Game1.content.Load<Dictionary<int, string>>("Data\\hats");
+                            Dictionary<string, string> dictionary = Game1.content.Load<Dictionary<string, string>>("Data\\hats");
                             foreach (var pair in dictionary)
                             {
                                 if (pair.Value.StartsWith(split[1] + "/"))
@@ -528,16 +528,30 @@ namespace DynamicMapTiles
                     case "Clothing":
                         if (int.TryParse(split[1], out number))
                         {
-                            item = new Clothing(number);
+                            item = new Clothing("" + number);
                         }
                         else
                         {
-                            foreach (var pair in Game1.clothingInformation)
+                            bool found = false;
+                            foreach (var pair in Game1.shirtData)
                             {
-                                if (pair.Value.StartsWith(split[1] + "/"))
+                                if (pair.Value.DisplayName.StartsWith(split[1] + "/"))
                                 {
                                     item = new Clothing(pair.Key);
+                                    found = true;
                                     break;
+                                }
+                            }
+                            if (!found)
+                            {
+                                foreach (var pair in Game1.pantsData)
+                                {
+                                    if (pair.Value.DisplayName.StartsWith(split[1] + "/"))
+                                    {
+                                        item = new Clothing(pair.Key);
+                                        found = true;
+                                        break;
+                                    }
                                 }
                             }
                         }
@@ -545,13 +559,13 @@ namespace DynamicMapTiles
                     case "Craftable":
                         if (int.TryParse(split[1], out number))
                         {
-                            item = new Object(Vector2.Zero, number, false);
+                            item = new Object(Vector2.Zero, "" + number, false);
                         }
                         else
                         {
-                            foreach (var pair in Game1.bigCraftablesInformation)
+                            foreach (var pair in Game1.bigCraftableData)
                             {
-                                if (pair.Value.StartsWith(split[1] + "/"))
+                                if (pair.Value.DisplayName.StartsWith(split[1] + "/"))
                                 {
                                     item = new Object(Vector2.Zero, pair.Key, false);
                                     break;
@@ -562,11 +576,11 @@ namespace DynamicMapTiles
                     case "Furniture":
                         if (int.TryParse(split[1], out number))
                         {
-                            item = new Furniture(number, Vector2.Zero);
+                            item = new Furniture("" + number, Vector2.Zero);
                         }
                         else
                         {
-                            foreach (var pair in Game1.content.Load<Dictionary<int, string>>("Data\\Furniture"))
+                            foreach (var pair in Game1.content.Load<Dictionary<string, string>>("Data\\Furniture"))
                             {
                                 if (pair.Value.StartsWith(split[1] + "/"))
                                 {
@@ -579,11 +593,11 @@ namespace DynamicMapTiles
                     case "Weapon":
                         if (int.TryParse(split[1], out number))
                         {
-                            item = new MeleeWeapon(number);
+                            item = new MeleeWeapon("" + number);
                         }
                         else
                         {
-                            foreach (var pair in Game1.content.Load<Dictionary<int, string>>("Data\\weapons"))
+                            foreach (var pair in Game1.content.Load<Dictionary<string, string>>("Data\\weapons"))
                             {
                                 if (pair.Value.StartsWith(split[1] + "/"))
                                 {
