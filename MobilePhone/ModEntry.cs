@@ -112,7 +112,7 @@ namespace MobilePhone
         public static bool isReminiscingAtNight;
         public static Event reminisceEvent;
         public static bool buildingInCall;
-        
+
         public static List<string> calledToday = new List<string>();
 
         public static event EventHandler OnScreenRotated;
@@ -141,8 +141,8 @@ namespace MobilePhone
             PhoneUtils.Initialize(Helper, Monitor, Config);
             PhonePatches.Initialize(Helper, Monitor, Config);
 
-            if(Config.AddRotateApp)
-                apps.Add(Helper.ModRegistry.ModID+"_Rotate", new MobileApp(helper.Translation.Get("rotate-phone"), null, helper.ModContent.Load<Texture2D>("assets/rotate_icon.png")));
+            if (Config.AddRotateApp)
+                apps.Add(Helper.ModRegistry.ModID + "_Rotate", new MobileApp(helper.Translation.Get("rotate-phone"), null, helper.ModContent.Load<Texture2D>("assets/rotate_icon.png")));
 
             var harmony = new Harmony(ModManifest.UniqueID);
 
@@ -155,7 +155,7 @@ namespace MobilePhone
                 prefix: new HarmonyMethod(typeof(PhonePatches), nameof(PhonePatches.Event_endBehaviors_prefix))
             );
             harmony.Patch(
-                original: AccessTools.Method(typeof(Farmer), nameof(Farmer.addItemToInventory), new Type[] {typeof(Item), typeof(List<Item>) }),
+                original: AccessTools.Method(typeof(Farmer), nameof(Farmer.addItemToInventory), new Type[] { typeof(Item), typeof(List<Item>) }),
                 prefix: new HarmonyMethod(typeof(PhonePatches), nameof(PhonePatches.Farmer_addItemToInventory_prefix))
             );
             harmony.Patch(
@@ -174,11 +174,10 @@ namespace MobilePhone
                 original: AccessTools.Method(typeof(Event.DefaultCommands), nameof(Event.DefaultCommands.AwardFestivalPrize)),
                 prefix: new HarmonyMethod(typeof(PhonePatches), nameof(PhonePatches.Event_command_prefix))
             );
-            // <-- Depricated -->
-            // harmony.Patch(
-            //     original: AccessTools.Method(typeof(Event), nameof(Event.DefaultCommands.AddTool)),
-            //     prefix: new HarmonyMethod(typeof(PhonePatches), nameof(PhonePatches.Event_command_prefix))
-            // );
+            harmony.Patch(
+                original: AccessTools.Method(typeof(Event.DefaultCommands), nameof(Event.DefaultCommands.AddItem)),
+                prefix: new HarmonyMethod(typeof(PhonePatches), nameof(PhonePatches.Event_command_prefix))
+            );
             harmony.Patch(
                 original: AccessTools.Method(typeof(Event.DefaultCommands), nameof(Event.DefaultCommands.AddConversationTopic)),
                 prefix: new HarmonyMethod(typeof(PhonePatches), nameof(PhonePatches.Event_command_prefix))
@@ -237,7 +236,7 @@ namespace MobilePhone
             Helper.Events.GameLoop.SaveLoaded += PhoneGameLoop.GameLoop_SaveLoaded;
             Helper.Events.GameLoop.GameLaunched += PhoneGameLoop.GameLoop_GameLaunched;
             Helper.Events.GameLoop.ReturnedToTitle += PhoneGameLoop.ReturnedToTitle;
-            Helper.Events.GameLoop.DayStarted += PhoneGameLoop.GameLoop_DayStarted; 
+            Helper.Events.GameLoop.DayStarted += PhoneGameLoop.GameLoop_DayStarted;
             Helper.Events.GameLoop.TimeChanged += PhoneGameLoop.GameLoop_TimeChanged;
             Helper.Events.GameLoop.OneSecondUpdateTicked += PhoneGameLoop.GameLoop_OneSecondUpdateTicked;
             Helper.Events.Display.WindowResized += PhoneVisuals.Display_WindowResized;
@@ -274,7 +273,7 @@ namespace MobilePhone
                         foreach (EventFork fork in invite.forks)
                         {
                             var f = fork;
-                            e.Edit(delegate(IAssetData obj) {
+                            e.Edit(delegate (IAssetData obj) {
                                 var dict = obj.AsDictionary<string, string>();
                                 dict.Data.Add(fork.key, MobilePhoneCall.CreateEventString(fork.nodes, invitedNPC));
 
