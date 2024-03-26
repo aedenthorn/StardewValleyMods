@@ -403,16 +403,20 @@ namespace CustomBackpack
                 return false;
             }
         }
-        [HarmonyPatch(typeof(GameLocation), nameof(GameLocation.performAction))]
+        [HarmonyPatch(typeof(GameLocation), nameof(GameLocation.performAction), new Type[] { typeof(string[]), typeof(Farmer), typeof(Location) })]
         public class GameLocation_performAction_Patch
         {
-            public static bool Prefix(GameLocation __instance, string action, Farmer who, Location tileLocation, ref bool __result)
+            public static bool Prefix(GameLocation __instance, string[] action, Farmer who, Location tileLocation, ref bool __result)
             {
                 if (!Config.ModEnabled || !dataDict.Any())
+                {
                     return true;
-                string[] actionParams = action.Split(' ', StringSplitOptions.None);
-                string text = actionParams[0];
-                if (text != "BuyBackpack")
+                }
+                if (!ArgUtility.TryGet(action, 0, out var actionType, out var error))
+                {
+                    return true;
+                }
+                if (actionType != "BuyBackpack")
                 {
                     return true;
                 }
@@ -508,7 +512,7 @@ namespace CustomBackpack
         {
             public static bool Prefix(Farmer __instance, bool right)
             {
-                if (!Config.ModEnabled || Config.ShiftRows < 1 || Config.ShiftRows >= __instance.Items.Count / 12 || __instance.Items is null || __instance.Items.Count < 37 || __instance.UsingTool || Game1.dialogueUp || (!Game1.pickingTool && !Game1.player.CanMove) || __instance.areAllItemsNull() || Game1.eventUp || Game1.farmEvent != null)
+                if (!Config.ModEnabled || Config.ShiftRows < 1 || Config.ShiftRows >= __instance.Items.Count / 12 || __instance.Items is null || __instance.Items.Count < 37 || __instance.UsingTool || Game1.dialogueUp || !Game1.player.CanMove || __instance.Items.HasAny() || Game1.eventUp || Game1.farmEvent != null)
                     return true;
                 if (Config.ShiftRows == 1)
                     return false;
