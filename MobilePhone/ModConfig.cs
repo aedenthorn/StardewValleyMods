@@ -52,7 +52,7 @@ namespace MobilePhone
 
         // Phone book
 
-        public int MinPointsToCall { get; set; } = 1000;
+        public int MinPointsToCall { get; set; } = 1;
         public string CallBlockList { get; set; } = "";
         public string CallAllowList { get; set; } = "";
         public bool ShowNamesInPhoneBook { get; set; } = true;

@@ -96,7 +96,7 @@ namespace MobilePhone
             }
             else if (whichAnswer == "PhoneApp_InCall_GoodBye")
             {
-                Game1.DrawDialogue(npc, GetGoodBye(npc));
+                Game1.DrawDialogue(new Dialogue(npc, null, GetGoodBye(npc)));
                 EndCall();
             }
         }
@@ -289,7 +289,7 @@ namespace MobilePhone
             {
                 ShowMainCallDialogue(npc);
             }));
-            Game1.DrawDialogue(npc, message);
+            Game1.DrawDialogue(new Dialogue(npc, null, message));
         }
         private static void InviteOnPhone(NPC npc)
         {
@@ -501,7 +501,7 @@ namespace MobilePhone
 
             if (ModEntry.npcAdventureModApi?.CanRecruit(Game1.player, npc) == true)
             {
-                Game1.DrawDialogue(npc, Helper.Translation.Get("recruit-success"));
+                Game1.DrawDialogue(new Dialogue(npc, null, Helper.Translation.Get("recruit-success")));
                 Game1.afterDialogues = delegate ()
                 {
                     DoRecruit(npc);
@@ -509,7 +509,7 @@ namespace MobilePhone
             }
             else
             {
-                Game1.DrawDialogue(npc, Helper.Translation.Get("recruit-fail"));
+                Game1.DrawDialogue(new Dialogue(npc, null, Helper.Translation.Get("recruit-fail")));
                 Game1.afterDialogues = delegate ()
                 {
                     ShowMainCallDialogue(npc);
