@@ -63,7 +63,7 @@ namespace MobilePhone
                     Monitor.Log($"Reminiscing at night");
                     __instance.LightLevel = 0f;
                     //Game1.globalOutdoorLighting = 1f;
-                    float transparency = Math.Min(0.93f, 0.75f + (2400 - Game1.getTrulyDarkTime(Game1.currentLocation) + Game1.gameTimeInterval / 7000f * 16.6f) * 0.000625f);
+                    float transparency = Math.Min(0.93f, 0.75f + (2400 - Game1.getTrulyDarkTime(__instance) + Game1.gameTimeInterval / 7000f * 16.6f) * 0.000625f);
                     Game1.outdoorLight = Game1.eveningColor * transparency;
                     if (!(__instance is MineShaft) && __instance is not Woods)
                     {
@@ -136,47 +136,45 @@ namespace MobilePhone
                     return false;
                 }
             }
-            else
-            {
-                if (Game1.currentMinigame != null)
-                {
-                    return true;
-                }
 
-                switch (value)
+            if (Game1.currentMinigame != null)
+            {
+                return true;
+            }
+
+            switch (value)
+            {
+                case "EventInvite_balloonChangeMap":
                 {
-                    case "EventInvite_balloonChangeMap":
+                    context.Location.TemporarySprites.Add(new TemporaryAnimatedSprite("LooseSprites\\Cursors", new Microsoft.Xna.Framework.Rectangle(0, 1183, 84, 160), 10000f, 1, 99999, new Vector2(22f, 36f) * 64f + new Vector2(-23f, 0f) * 4f, false, false, 2E-05f, 0f, Color.White, 4f, 0f, 0f, 0f, false)
                     {
-                        context.Location.TemporarySprites.Add(new TemporaryAnimatedSprite("LooseSprites\\Cursors", new Microsoft.Xna.Framework.Rectangle(0, 1183, 84, 160), 10000f, 1, 99999, new Vector2(22f, 36f) * 64f + new Vector2(-23f, 0f) * 4f, false, false, 2E-05f, 0f, Color.White, 4f, 0f, 0f, 0f, false)
-                        {
-                            motion = new Vector2(0f, -2f),
-                            yStopCoordinate = 576,
-                            reachedStopCoordinate = new TemporaryAnimatedSprite.endBehavior(balloonInSky),
-                            attachedCharacter = @event.farmer,
-                            id = 1
-                        });
-                        context.Location.TemporarySprites.Add(new TemporaryAnimatedSprite("LooseSprites\\Cursors", new Microsoft.Xna.Framework.Rectangle(84, 1205, 38, 26), 10000f, 1, 99999, new Vector2(22f, 36f) * 64f + new Vector2(0f, 134f) * 4f, false, false, 0.2625f, 0f, Color.White, 4f, 0f, 0f, 0f, false)
-                        {
-                            motion = new Vector2(0f, -2f),
-                            id = 2,
-                            attachedCharacter = @event.getActorByName(ModEntry.invitedNPC.Name)
-                        });
-                        @event.CurrentCommand++;
-                        Game1.globalFadeToClear(null, 0.01f);
-                        return false;
-                    }
-                    case "EventInvite_balloonDepart":
+                        motion = new Vector2(0f, -2f),
+                        yStopCoordinate = 576,
+                        reachedStopCoordinate = new TemporaryAnimatedSprite.endBehavior(balloonInSky),
+                        attachedCharacter = @event.farmer,
+                        id = 1
+                    });
+                    context.Location.TemporarySprites.Add(new TemporaryAnimatedSprite("LooseSprites\\Cursors", new Microsoft.Xna.Framework.Rectangle(84, 1205, 38, 26), 10000f, 1, 99999, new Vector2(22f, 36f) * 64f + new Vector2(0f, 134f) * 4f, false, false, 0.2625f, 0f, Color.White, 4f, 0f, 0f, 0f, false)
                     {
-                        TemporaryAnimatedSprite temporarySpriteByID = context.Location.getTemporarySpriteByID(1);
-                        temporarySpriteByID.attachedCharacter = @event.farmer;
-                        temporarySpriteByID.motion = new Vector2(0f, -2f);
-                        TemporaryAnimatedSprite temporarySpriteByID2 = context.Location.getTemporarySpriteByID(2);
-                        temporarySpriteByID2.attachedCharacter = @event.getActorByName(ModEntry.invitedNPC.Name);
-                        temporarySpriteByID2.motion = new Vector2(0f, -2f);
-                        context.Location.getTemporarySpriteByID(3).scaleChange = -0.01f;
-                        @event.CurrentCommand++;
-                        return false;
-                    }
+                        motion = new Vector2(0f, -2f),
+                        id = 2,
+                        attachedCharacter = @event.getActorByName(ModEntry.invitedNPC.Name)
+                    });
+                    @event.CurrentCommand++;
+                    Game1.globalFadeToClear(null, 0.01f);
+                    return false;
+                }
+                case "EventInvite_balloonDepart":
+                {
+                    TemporaryAnimatedSprite temporarySpriteByID = context.Location.getTemporarySpriteByID(1);
+                    temporarySpriteByID.attachedCharacter = @event.farmer;
+                    temporarySpriteByID.motion = new Vector2(0f, -2f);
+                    TemporaryAnimatedSprite temporarySpriteByID2 = context.Location.getTemporarySpriteByID(2);
+                    temporarySpriteByID2.attachedCharacter = @event.getActorByName(ModEntry.invitedNPC.Name);
+                    temporarySpriteByID2.motion = new Vector2(0f, -2f);
+                    context.Location.getTemporarySpriteByID(3).scaleChange = -0.01f;
+                    @event.CurrentCommand++;
+                    return false;
                 }
             }
             
@@ -208,12 +206,12 @@ namespace MobilePhone
             }
             return true;
         }
-        public static bool Event_endBehaviors_prefix(string[] args, GameLocation location)
+        public static bool Event_endBehaviors_prefix(ref Event __instance, string[] args, GameLocation location)
         {
             if (ModEntry.isReminiscing)
             {
                 Monitor.Log($"Reminiscing, will not execute end behaviors {string.Join(" ", args)}");
-                location.currentEvent.exitEvent();
+                __instance.exitEvent();
                 return false;
             }
             return true;
