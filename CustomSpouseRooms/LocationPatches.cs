@@ -8,6 +8,7 @@ using StardewValley.Locations;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.Json;
 using xTile;
 using xTile.Dimensions;
 using xTile.Layers;
@@ -267,12 +268,15 @@ namespace CustomSpouseRooms
         private static void MakeSpouseRoom(DecoratableLocation location, HashSet<string> appliedMapOverrides, SpouseRoomData srd, bool first = false)
         {
 
-			SMonitor.Log($"Loading spouse room for {srd.name}. template {srd.templateName}, shellStart {srd.startPos}, spouse offset {srd.spousePosOffset}. Type: {srd.shellType}");
+			SMonitor.Log(
+				message: $"Loading spouse room for {srd.name}. template {srd.templateName}, shellStart {srd.startPos}, spouse offset {srd.spousePosOffset}. Type: {srd.shellType}",
+				level: LogLevel.Warn
+			);
 
 			var corner = srd.startPos + new Point(1, 1);
 			var spouse = srd.name;
 			var shellPath = srd.shellType;
-			var indexInSpouseMapSheet = srd.templateIndex;
+			//var indexInSpouseMapSheet = srd.templateIndex;
 			var spouseSpot = srd.startPos + srd.spousePosOffset;
 
             Rectangle shellAreaToRefurbish = new Rectangle(corner.X - 1, corner.Y - 1, 8, 12);
@@ -297,10 +301,24 @@ namespace CustomSpouseRooms
 					}
 				}
 			}
+			//TODODODODODODODO
+			//PSUEDO
+			var template = (srd.templateName == null ? spouse : srd.templateName);
+            Dictionary<string, CharacterData> characters_data = SHelper.GameContent.Load<Dictionary<string, CharacterData>>("Data\\Characters");
 
-            Dictionary<string, string> room_data = SHelper.GameContent.Load<Dictionary<string, string>>("Data\\SpouseRooms");
-			string map_path = "spouseRooms";
-			if (indexInSpouseMapSheet == -1 && room_data != null && srd.templateName != null && room_data.ContainsKey(srd.templateName))
+			CharacterData character_data = characters_data[template];//JsonSerializer.Deserialize<CharacterData>(characters_data[template]);
+			CharacterSpouseRoomData room_data = character_data.SpouseRoom;
+            //END PSUEDO
+            //REPLACE BELOW
+            if (room_data == null)
+			{
+				SMonitor.Log(level:  LogLevel.Error, message: "Failed to load Room Data for " + template);
+				return;
+			}
+			string map_path = room_data.MapAsset;
+
+
+            /*if (indexInSpouseMapSheet == -1 && room_data != null && srd.templateName != null && room_data.ContainsKey(srd.templateName))
 			{
 				try
 				{
@@ -345,13 +363,13 @@ namespace CustomSpouseRooms
 				}
 			}
 			int width = 6;
-			int height = 9;
+			int height = 9;*/
 
-            Rectangle areaToRefurbish = new Rectangle(corner.X, corner.Y, width, height);
-			Map refurbishedMap = Game1.game1.xTileContent.Load<Map>("Maps\\" + map_path);
-			int columns = refurbishedMap.Layers[0].LayerWidth / width;
-			int num2 = refurbishedMap.Layers[0].LayerHeight / height;
-			Point mapReader = new Point(indexInSpouseMapSheet % columns * width, indexInSpouseMapSheet / columns * height);
+            Rectangle areaToRefurbish = new Rectangle(corner.X, corner.Y, room_data.MapSourceRect.Width, room_data.MapSourceRect.Height);
+            Map refurbishedMap = Game1.game1.xTileContent.Load<Map>("Maps\\" + map_path);
+            //int columns = refurbishedMap.Layers[0].LayerWidth / width;
+			//int num2 = refurbishedMap.Layers[0].LayerHeight / height;
+			//Point mapReader = new Point(sourceTilesheetLoc.X % columns * width, sourceTilesheetLoc.Y / columns * height);
 			List<KeyValuePair<Point, Tile>> bottom_row_tiles = new List<KeyValuePair<Point, Tile>>();
 			Layer front_layer = location.map.GetLayer("Front");
 			for (int x = areaToRefurbish.Left; x < areaToRefurbish.Right; x++)
@@ -363,24 +381,26 @@ namespace CustomSpouseRooms
 					bottom_row_tiles.Add(new KeyValuePair<Point, Tile>(point, tile));
 				}
 			}
-
-			if (appliedMapOverrides.Contains("spouse_room_" + spouse))
+            
+            
+            if (appliedMapOverrides.Contains("spouse_room_" + spouse))
 			{
 				appliedMapOverrides.Remove("spouse_room_" + spouse);
 			}
 
-			location.ApplyMapOverride(map_path, "spouse_room_" + spouse, new Rectangle?(new Rectangle(mapReader.X, mapReader.Y, areaToRefurbish.Width, areaToRefurbish.Height)), new Rectangle?(areaToRefurbish));
-			for (int x = 0; x < areaToRefurbish.Width; x++)
+			//location.ApplyMapOverride(map_path, "spouse_room_" + spouse, new Rectangle?(new Rectangle(mapReader.X, mapReader.Y, areaToRefurbish.Width, areaToRefurbish.Height)), new Rectangle?(areaToRefurbish));
+            location.ApplyMapOverride(map_path, "spouse_room_" + spouse, room_data.MapSourceRect, new Rectangle?(areaToRefurbish));
+            for (int x = 0; x < areaToRefurbish.Width; x++)
 			{
 				for (int y = 0; y < areaToRefurbish.Height; y++)
 				{
-					if (refurbishedMap.GetLayer("Buildings")?.Tiles[mapReader.X + x, mapReader.Y + y] != null)
+					if (refurbishedMap.GetLayer("Buildings")?.Tiles[room_data.MapSourceRect.X + x, room_data.MapSourceRect.Y + y] != null)
 					{
-						SHelper.Reflection.GetMethod(location, "adjustMapLightPropertiesForLamp").Invoke(refurbishedMap.GetLayer("Buildings").Tiles[mapReader.X + x, mapReader.Y + y].TileIndex, areaToRefurbish.X + x, areaToRefurbish.Y + y, "Buildings");
+						SHelper.Reflection.GetMethod(location, "adjustMapLightPropertiesForLamp").Invoke(refurbishedMap.GetLayer("Buildings").Tiles[room_data.MapSourceRect.X + x, room_data.MapSourceRect.Y + y].TileIndex, areaToRefurbish.X + x, areaToRefurbish.Y + y, "Buildings");
 					}
-					if (y < areaToRefurbish.Height - 1 && refurbishedMap.GetLayer("Front")?.Tiles[mapReader.X + x, mapReader.Y + y] != null)
+					if (y < areaToRefurbish.Height - 1 && refurbishedMap.GetLayer("Front")?.Tiles[room_data.MapSourceRect.X + x, room_data.MapSourceRect.Y + y] != null)
 					{
-						SHelper.Reflection.GetMethod(location, "adjustMapLightPropertiesForLamp").Invoke(refurbishedMap.GetLayer("Front").Tiles[mapReader.X + x, mapReader.Y + y].TileIndex, areaToRefurbish.X + x, areaToRefurbish.Y + y, "Front");
+						SHelper.Reflection.GetMethod(location, "adjustMapLightPropertiesForLamp").Invoke(refurbishedMap.GetLayer("Front").Tiles[room_data.MapSourceRect.X + x, room_data.MapSourceRect.Y + y].TileIndex, areaToRefurbish.X + x, areaToRefurbish.Y + y, "Front");
 					}
 					/*
 					if (fh.map.GetLayer("Back").Tiles[corner.X + x, corner.Y + y] != null)
