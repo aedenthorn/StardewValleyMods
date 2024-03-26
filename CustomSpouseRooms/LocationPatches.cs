@@ -270,7 +270,7 @@ namespace CustomSpouseRooms
 
 			SMonitor.Log(
 				message: $"Loading spouse room for {srd.name}. template {srd.templateName}, shellStart {srd.startPos}, spouse offset {srd.spousePosOffset}. Type: {srd.shellType}",
-				level: LogLevel.Warn
+				level: LogLevel.Trace
 			);
 
 			var corner = srd.startPos + new Point(1, 1);
