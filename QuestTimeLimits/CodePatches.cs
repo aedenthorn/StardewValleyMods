@@ -10,6 +10,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Reflection.Emit;
+using StardewValley.SpecialOrders;
+using StardewValley.GameData.SpecialOrders;
 using xTile.Dimensions;
 
 namespace QuestTimeLimits
@@ -26,45 +28,6 @@ namespace QuestTimeLimits
 
                 __instance.dueDate.Value = Game1.Date.TotalDays + (int)Math.Round((__instance.dueDate.Value - Game1.Date.TotalDays) * Config.SpecialOrderMult);
                 SMonitor.Log($"Set special order quest days left to {__instance.dueDate.Value - Game1.Date.TotalDays}");
-            }
-        }
-        [HarmonyPatch(typeof(Game1), "_newDayAfterFade")]
-        public class Game1__newDayAfterFade_Patch
-        {
-            public static void Prefix()
-            {
-                if (!Config.ModEnabled || Config.SpecialOrderMult > 0)
-                    return;
-                if (Game1.IsMasterGame)
-                {
-                    Dictionary<string, SpecialOrderData> order_data = Game1.content.Load<Dictionary<string, SpecialOrderData>>("Data\\SpecialOrders");
-                    var orders = new List<SpecialOrder>(Game1.player.team.specialOrders.ToArray());
-                    orders.AddRange(Game1.player.team.availableSpecialOrders);
-                    for (int m = 0; m < orders.Count; m++)
-                    {
-                        SpecialOrder order = orders[m];
-                        if (order_data.TryGetValue(order.questKey.Value, out var data))
-                        {
-                            int days = 7;
-                            switch (data.Duration)
-                            {
-                                case "TwoWeeks":
-                                    days = 14;
-                                    break;
-                                case "Month":
-                                    days = WorldDate.DaysPerMonth;
-                                    break;
-                                case "TwoDays":
-                                    days = 2;
-                                    break;
-                                case "ThreeDays":
-                                    days = 3;
-                                    break;
-                            }
-                            order.dueDate.Value = Game1.Date.TotalDays + days;
-                        }
-                    }
-                }
             }
         }
 
