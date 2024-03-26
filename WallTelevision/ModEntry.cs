@@ -6,6 +6,7 @@ using StardewModdingAPI.Events;
 using StardewValley;
 using StardewValley.Locations;
 using StardewValley.Objects;
+using System.Collections.Generic;
 using Object = StardewValley.Object;
 
 namespace WallTelevision
@@ -37,6 +38,7 @@ namespace WallTelevision
             helper.Events.GameLoop.SaveLoaded += GameLoop_SaveLoaded;
             var harmony = new Harmony(ModManifest.UniqueID);
             harmony.PatchAll();
+            // Tropical tv item id is 2326
         }
 
         private void GameLoop_SaveLoaded(object sender, SaveLoadedEventArgs e)
@@ -47,7 +49,7 @@ namespace WallTelevision
             }
             catch
             {
-                plasmaTexture = Helper.Content.Load<Texture2D>("assets/plasma.png");
+                plasmaTexture = Helper.ModContent.Load<Texture2D>("assets/plasma.png");
             }
             try
             {
@@ -55,7 +57,7 @@ namespace WallTelevision
             }
             catch
             {
-                tropicalTexture = Helper.Content.Load<Texture2D>("assets/tropical.png");
+                tropicalTexture = Helper.ModContent.Load<Texture2D>("assets/tropical.png");
             }
         }
 
