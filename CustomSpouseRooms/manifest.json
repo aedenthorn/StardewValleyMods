@@ -1,9 +1,9 @@
 ﻿{
   "Name": "Custom Spouse Rooms",
-  "Author": "aedenthorn",
-  "Version": "0.9.1",
+  "Author": "datamancer",
+  "Version": "0.9.2",
   "Description": "Custom spouse rooms.",
-  "UniqueID": "aedenthorn.CustomSpouseRooms",
+  "UniqueID": "datamancer.CustomSpouseRooms",
   "EntryDll": "CustomSpouseRooms.dll",
   "MinimumApiVersion": "4.0.0",
   "ModUpdater": {
@@ -12,7 +12,7 @@
     "Directory": "_releases",
     "ModFolder": "CustomSpouseRooms"
   },
-  "UpdateKeys": [ "Nexus:20966" ],
+  "UpdateKeys": [ "Nexus:20966", "ModDrop:1534005" ],
   "Dependencies": [
     {
       "UniqueID": "Platonymous.ModUpdater",
