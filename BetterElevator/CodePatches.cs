@@ -16,10 +16,27 @@ namespace BetterElevator
 {
     public partial class ModEntry
     {
-        [HarmonyPatch(typeof(GameLocation), nameof(GameLocation.performAction))]
+        [HarmonyPatch(typeof(GameLocation), nameof(GameLocation.performAction), argumentTypes:new Type[] {typeof(string), typeof(Farmer), typeof(Location)})]
         public class GameLocation_performAction_Patch
         {
-            public static bool Prefix(GameLocation __instance, string action, Farmer who, ref bool __result)
+            public static bool Prefix(GameLocation __instance, string fullActionString, Farmer who, ref bool __result)
+            {
+                if (!Config.ModEnabled || fullActionString == null || !who.IsLocalPlayer || !SHelper.Input.IsDown(Config.ModKey))
+                    return true;
+                if (!Config.Unrestricted && MineShaft.lowestLevelReached < (Game1.player.currentLocation.Name == "SkullCave" ? 121 : 1))
+                {
+                    return true;
+                }
+
+                string[] actionParams = fullActionString.Split(' ');
+                return GameLocation_performAction_Patch2.Prefix(__instance, actionParams, who, ref __result);
+            }
+        }
+
+        [HarmonyPatch(typeof(GameLocation), nameof(GameLocation.performAction), argumentTypes: new Type[] { typeof(string[]), typeof(Farmer), typeof(Location) })]
+        public class GameLocation_performAction_Patch2
+        {
+            public static bool Prefix(GameLocation __instance, string[] action, Farmer who, ref bool __result)
             {
                 if (!Config.ModEnabled || action == null || !who.IsLocalPlayer || !SHelper.Input.IsDown(Config.ModKey))
                     return true;
@@ -28,7 +45,7 @@ namespace BetterElevator
                     return true;
                 }
 
-                string[] actionParams = action.Split(' ');
+                string[] actionParams = action;
                 string text = actionParams[0];
                 if (text == "SkullDoor")
                 {
@@ -48,6 +65,7 @@ namespace BetterElevator
                 return false;
             }
         }
+
         [HarmonyPatch(typeof(MineShaft), nameof(MineShaft.checkAction))]
         public class MineShaft_checkAction_Patch
         {
