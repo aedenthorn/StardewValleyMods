@@ -194,9 +194,6 @@ namespace Swim
                 original: AccessTools.Method(typeof(Game1), nameof(Game1.warpFarmer), new Type[] { typeof(LocationRequest), typeof(int), typeof(int), typeof(int) }),
                 prefix: new HarmonyMethod(typeof(SwimPatches), nameof(SwimPatches.Game1_WarpFarmer_Prefix))
             );
-
-            Texture2D texture = Helper.GameContent.Load<Texture2D>("Characters/Farmer/shirts");
-            texture.SaveAsPng(new FileStream("C:\\Users\\cabac\\Desktop\\shirts.png", FileMode.Create), texture.Width, texture.Height);
         }
 
         private void Content_AssetRequested(object sender, StardewModdingAPI.Events.AssetRequestedEventArgs e)
