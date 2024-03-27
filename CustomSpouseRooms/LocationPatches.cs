@@ -301,15 +301,11 @@ namespace CustomSpouseRooms
 					}
 				}
 			}
-			//TODODODODODODODO
-			//PSUEDO
 			var template = (srd.templateName == null ? spouse : srd.templateName);
             Dictionary<string, CharacterData> characters_data = SHelper.GameContent.Load<Dictionary<string, CharacterData>>("Data\\Characters");
 
 			CharacterData character_data = characters_data[template];//JsonSerializer.Deserialize<CharacterData>(characters_data[template]);
 			CharacterSpouseRoomData room_data = character_data.SpouseRoom;
-            //END PSUEDO
-            //REPLACE BELOW
             if (room_data == null)
 			{
 				SMonitor.Log(level:  LogLevel.Error, message: "Failed to load Room Data for " + template);
