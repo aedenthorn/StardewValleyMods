@@ -371,7 +371,7 @@ namespace Swim
                 configMenu.AddBoolOption(
                     mod: ModEntry.context.ModManifest,
                     name: () => "NoAutoSwimSuit",
-                    tooltip: () => "If set's false, character will NOT wear a swimsuit automatically, when you enter the water.",
+                    tooltip: () => "If set's false, character will NOT wear a swimsuit automatically when you enter the water.",
                     getValue: () => Config.NoAutoSwimSuit,
                     setValue: value => Config.NoAutoSwimSuit = value
                 );
@@ -395,6 +395,13 @@ namespace Swim
                     tooltip: () => "Enables or Disables possibility to manual jump to the water (by clicking certain key).",
                     getValue: () => Config.EnableClickToSwim,
                     setValue: value => Config.EnableClickToSwim = value
+                );
+                configMenu.AddBoolOption(
+                    mod: ModEntry.context.ModManifest,
+                    name: () => "MustClickOnOppositeTerrain",
+                    tooltip: () => "Whether you must click on land to leave the water (or vice versa) or can just click in the direction of land (when using click to swim).",
+                    getValue: () => Config.MustClickOnOppositeTerrain,
+                    setValue: value => Config.MustClickOnOppositeTerrain = value
                 );
                 configMenu.AddBoolOption(
                     mod: ModEntry.context.ModManifest,
@@ -1025,8 +1032,8 @@ namespace Swim
                     if (buff == null)
                     {
                         BuffsDisplay buffsDisplay = Game1.buffsDisplay;
-                        Buff buff2 = new Buff("42883167",  "Scuba Fins", Helper.Translation.Get("scuba-fins"));
-                        
+                        Buff buff2 = new Buff("42883167", "Scuba Fins", Helper.Translation.Get("scuba-fins"));
+
                         buff = buff2;
                         buffsDisplay.updatedIDs.Add(buff2.id);
                     }
@@ -1041,15 +1048,83 @@ namespace Swim
 
             // !IMP: Conditions with hand tools (i.e. rods), must be placed here.
             if ((Helper.Input.IsDown(SButton.MouseLeft) && !Game1.player.swimming.Value && (Game1.player.CurrentTool is WateringCan || Game1.player.CurrentTool is FishingRod)) ||
-                (Helper.Input.IsDown(SButton.MouseRight) && !Game1.player.swimming.Value && Game1.player.CurrentTool is MeleeWeapon))
+                (Helper.Input.IsDown(SButton.MouseRight) && !Game1.player.swimming.Value && (Game1.player.CurrentTool is MeleeWeapon || Game1.player.CurrentTool is WateringCan)))
                 return;
 
-            List<Vector2> tiles = SwimUtils.GetTilesInDirection(5);
-            Vector2 jumpLocation = Vector2.Zero;
+            int direction = Game1.player.FacingDirection;
 
+            if (Helper.Input.IsDown(Config.ManualJumpButton) && Config.EnableClickToSwim)
+            {
+                try
+                {
+                    int xTile = (int)Math.Round((Game1.viewport.X + Game1.getOldMouseX()) / 64f);
+                    int yTile = (int)Math.Round((Game1.viewport.Y + Game1.getOldMouseY()) / 64f);
+                    //Monitor.Log($"Click tile: ({xTile}, {yTile}), Player tile: ({Game1.player.TilePoint.X}, {Game1.player.TilePoint.Y})");
+                    bool clickTileIsWater = Game1.player.currentLocation.waterTiles[xTile, yTile];
+                    bool isClickingOnOppositeTerrain = clickTileIsWater != Game1.player.swimming.Value;
+                    if (isClickingOnOppositeTerrain || !Config.MustClickOnOppositeTerrain)
+                    {
+                        // Set the direction to the direction of the cursor relative to the player.
+                        if (Math.Abs(xTile - Game1.player.TilePoint.X) > Math.Abs(yTile - Game1.player.TilePoint.Y))
+                        {
+                            if (xTile - Game1.player.TilePoint.X > 0)
+                            {
+                                //Monitor.Log("Clicking right");
+                                direction = 1;
+                            }
+                            else
+                            {
+                                //Monitor.Log("Clicking left");
+                                direction = 3;
+                            }
+                        }
+                        else
+                        {
+                            if (yTile - Game1.player.TilePoint.Y > 0)
+                            {
+                                //Monitor.Log("Clicking down");
+                                direction = 2;
+                            }
+                            else
+                            {
+                                //Monitor.Log("Clicking up");
+                                direction = 0;
+                            }
+                        }
+                    }
+                    else // If the player is pressing the manual swim button, manual swim is on, they are not clicking on the opposite terrain, and mustClickOnOppositeTerrain is true
+                    {
+                        return;
+                    }
+                }
+                catch
+                {
+                    // Assiming this happens when the game can't get the mouse position
+                    Monitor.Log("Error in manual direction calculation!");
+                }
+            }
+
+            // At this point, direction will either be the direction the mouse is being clicked in, or the direction the player is facing, with the former prioritizing the latter
+
+            bool didJump = tryToJumpInDirection(direction);
+
+            // If we just tried to jump in the direction the player is facing, we don't want to try again. Additionally, if we jumped in the click direction, the player will now be facing that direction
+            // So this will only be run if we just tried to jump in the direction the player is clicking and failed.
+            if (!didJump && direction != Game1.player.FacingDirection)
+            {
+                tryToJumpInDirection(Game1.player.FacingDirection);
+            }
+        }
+
+        public static bool tryToJumpInDirection(int direction) // Returns whether or not it is jumping
+        {
             double distance = -1;
             int maxDistance = 0;
-            switch (Game1.player.FacingDirection)
+
+            List<Vector2> tiles = SwimUtils.GetTilesInDirection(5, direction);
+            Vector2 jumpLocation = Vector2.Zero;
+
+            switch (direction)
             {
                 case 0:
                     distance = Math.Abs(Game1.player.position.Y - tiles.Last().Y * Game1.tileSize);
@@ -1068,23 +1143,7 @@ namespace Swim
                     maxDistance = (int)Math.Round(Config.TriggerDistanceLeft * Config.TriggerDistanceMult);
                     break;
             }
-            if (Helper.Input.IsDown(SButton.MouseLeft))
-            {
-                try
-                {
-                    int xTile = (Game1.viewport.X + Game1.getOldMouseX()) / 64;
-                    int yTile = (Game1.viewport.Y + Game1.getOldMouseY()) / 64;
-                    bool water = Game1.player.currentLocation.waterTiles[xTile, yTile];
-                    if (Game1.player.swimming.Value != water)
-                    {
-                        distance = -1;
-                    }
-                }
-                catch
-                {
 
-                }
-            }
             //Monitor.Log("Distance: " + distance);
 
             bool nextToLand = Game1.player.swimming.Value && !SwimUtils.IsWaterTile(tiles[tiles.Count - 2]) && distance < maxDistance;
@@ -1152,6 +1211,7 @@ namespace Swim
 
             if (jumpLocation != Vector2.Zero)
             {
+                Game1.player.faceDirection(direction);
                 lastJump.Value = Game1.player.millisecondsPlayed;
                 //Monitor.Value.Log("got swim location");
                 if (Game1.player.swimming.Value)
@@ -1174,8 +1234,10 @@ namespace Swim
                 isJumping.Value = true;
                 startJumpLoc.Value = Game1.player.position.Value;
                 endJumpLoc.Value = new Vector2(jumpLocation.X * Game1.tileSize, jumpLocation.Y * Game1.tileSize);
+                return true;
             }
 
+            return false;
         }
 
         public static void AbigailCaveTick()

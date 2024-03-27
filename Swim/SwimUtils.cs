@@ -298,11 +298,10 @@ namespace Swim
             return output;
         }
 
-        public static List<Vector2> GetTilesInDirection(int count)
+        public static List<Vector2> GetTilesInDirection(int count, int direction)
         {
             List<Vector2> tiles = new List<Vector2>();
-            int dir = Game1.player.FacingDirection;
-            if (dir == 1)
+            if (direction == 1)
             {
 
                 for (int i = count; i > 0; i--)
@@ -312,7 +311,7 @@ namespace Swim
 
             }
 
-            if (dir == 2)
+            if (direction == 2)
             {
 
                 for (int i = count; i > 0; i--)
@@ -322,7 +321,7 @@ namespace Swim
 
             }
 
-            if (dir == 3)
+            if (direction == 3)
             {
 
                 for (int i = count; i > 0; i--)
@@ -332,7 +331,7 @@ namespace Swim
 
             }
 
-            if (dir == 0)
+            if (direction == 0)
             {
 
                 for (int i = count; i > 0; i--)
