@@ -8,7 +8,6 @@ using StardewValley.Menus;
 using StardewValley.Network;
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 
 namespace MobilePhone
@@ -113,7 +112,7 @@ namespace MobilePhone
         public static bool isReminiscingAtNight;
         public static Event reminisceEvent;
         public static bool buildingInCall;
-        
+
         public static List<string> calledToday = new List<string>();
 
         public static event EventHandler OnScreenRotated;
@@ -127,7 +126,9 @@ namespace MobilePhone
             SHelper = helper;
             SMonitor = Monitor;
             if (!Config.EnableMod)
+            {
                 return;
+            }
 
             api = (MobilePhoneApi)GetApi();
 
@@ -140,8 +141,8 @@ namespace MobilePhone
             PhoneUtils.Initialize(Helper, Monitor, Config);
             PhonePatches.Initialize(Helper, Monitor, Config);
 
-            if(Config.AddRotateApp)
-                apps.Add(Helper.ModRegistry.ModID+"_Rotate", new MobileApp(helper.Translation.Get("rotate-phone"), null, helper.ModContent.Load<Texture2D>("assets/rotate_icon.png")));
+            if (Config.AddRotateApp)
+                apps.Add(Helper.ModRegistry.ModID + "_Rotate", new MobileApp(helper.Translation.Get("rotate-phone"), null, helper.ModContent.Load<Texture2D>("assets/rotate_icon.png")));
 
             var harmony = new Harmony(ModManifest.UniqueID);
 
@@ -150,11 +151,11 @@ namespace MobilePhone
                 prefix: new HarmonyMethod(typeof(PhonePatches), nameof(PhonePatches.Game1_pressSwitchToolButton_prefix))
             );
             harmony.Patch(
-                original: AccessTools.Method(typeof(Event), nameof(Event.endBehaviors)),
+                original: AccessTools.Method(typeof(Event), nameof(Event.endBehaviors), new Type[] { typeof(string[]), typeof(GameLocation) }),
                 prefix: new HarmonyMethod(typeof(PhonePatches), nameof(PhonePatches.Event_endBehaviors_prefix))
             );
             harmony.Patch(
-                original: AccessTools.Method(typeof(Farmer), nameof(Farmer.addItemToInventory), new Type[] {typeof(Item), typeof(List<Item>) }),
+                original: AccessTools.Method(typeof(Farmer), nameof(Farmer.addItemToInventory), new Type[] { typeof(Item), typeof(List<Item>) }),
                 prefix: new HarmonyMethod(typeof(PhonePatches), nameof(PhonePatches.Farmer_addItemToInventory_prefix))
             );
             harmony.Patch(
@@ -170,47 +171,47 @@ namespace MobilePhone
                 prefix: new HarmonyMethod(typeof(PhonePatches), nameof(PhonePatches.GameLocation_answerDialogue_prefix))
             );
             harmony.Patch(
-                original: AccessTools.Method(typeof(Event), nameof(Event.DefaultCommands.AwardFestivalPrize)),
+                original: AccessTools.Method(typeof(Event.DefaultCommands), nameof(Event.DefaultCommands.AwardFestivalPrize)),
                 prefix: new HarmonyMethod(typeof(PhonePatches), nameof(PhonePatches.Event_command_prefix))
             );
             harmony.Patch(
-                original: AccessTools.Method(typeof(Event), nameof(Event.DefaultCommands.AddTool)),
+                original: AccessTools.Method(typeof(Event.DefaultCommands), nameof(Event.DefaultCommands.AddItem)),
                 prefix: new HarmonyMethod(typeof(PhonePatches), nameof(PhonePatches.Event_command_prefix))
             );
             harmony.Patch(
-                original: AccessTools.Method(typeof(Event), nameof(Event.DefaultCommands.AddConversationTopic)),
+                original: AccessTools.Method(typeof(Event.DefaultCommands), nameof(Event.DefaultCommands.AddConversationTopic)),
                 prefix: new HarmonyMethod(typeof(PhonePatches), nameof(PhonePatches.Event_command_prefix))
             );
             harmony.Patch(
-                original: AccessTools.Method(typeof(Event), nameof(Event.DefaultCommands.AddCookingRecipe)),
+                original: AccessTools.Method(typeof(Event.DefaultCommands), nameof(Event.DefaultCommands.AddCookingRecipe)),
                 prefix: new HarmonyMethod(typeof(PhonePatches), nameof(PhonePatches.Event_command_prefix))
             );
             harmony.Patch(
-                original: AccessTools.Method(typeof(Event), nameof(Event.DefaultCommands.AddCraftingRecipe)),
+                original: AccessTools.Method(typeof(Event.DefaultCommands), nameof(Event.DefaultCommands.AddCraftingRecipe)),
                 prefix: new HarmonyMethod(typeof(PhonePatches), nameof(PhonePatches.Event_command_prefix))
             );
             harmony.Patch(
-                original: AccessTools.Method(typeof(Event), nameof(Event.DefaultCommands.Money)),
+                original: AccessTools.Method(typeof(Event.DefaultCommands), nameof(Event.DefaultCommands.Money)),
                 prefix: new HarmonyMethod(typeof(PhonePatches), nameof(PhonePatches.Event_command_prefix))
             );
             harmony.Patch(
-                original: AccessTools.Method(typeof(Event), nameof(Event.DefaultCommands.RemoveItem)),
+                original: AccessTools.Method(typeof(Event.DefaultCommands), nameof(Event.DefaultCommands.RemoveItem)),
                 prefix: new HarmonyMethod(typeof(PhonePatches), nameof(PhonePatches.Event_command_prefix))
             );
             harmony.Patch(
-                original: AccessTools.Method(typeof(Event), nameof(Event.DefaultCommands.Friendship)),
+                original: AccessTools.Method(typeof(Event.DefaultCommands), nameof(Event.DefaultCommands.Friendship)),
                 prefix: new HarmonyMethod(typeof(PhonePatches), nameof(PhonePatches.Event_command_prefix))
             );
             harmony.Patch(
-                original: AccessTools.Method(typeof(Event), nameof(Event.DefaultCommands.Dump)),
+                original: AccessTools.Method(typeof(Event.DefaultCommands), nameof(Event.DefaultCommands.Dump)),
                 prefix: new HarmonyMethod(typeof(PhonePatches), nameof(PhonePatches.Event_command_prefix))
             );
             harmony.Patch(
-                original: AccessTools.Method(typeof(Event), nameof(Event.DefaultCommands.AddQuest)),
+                original: AccessTools.Method(typeof(Event.DefaultCommands), nameof(Event.DefaultCommands.AddQuest)),
                 prefix: new HarmonyMethod(typeof(PhonePatches), nameof(PhonePatches.Event_command_prefix))
             );
             harmony.Patch(
-                original: AccessTools.Method(typeof(Event), nameof(Event.DefaultCommands.Cutscene)),
+                original: AccessTools.Method(typeof(Event.DefaultCommands), nameof(Event.DefaultCommands.Cutscene)),
                 prefix: new HarmonyMethod(typeof(PhonePatches), nameof(PhonePatches.Event_command_cutscene_prefix))
             );
             harmony.Patch(
@@ -235,7 +236,7 @@ namespace MobilePhone
             Helper.Events.GameLoop.SaveLoaded += PhoneGameLoop.GameLoop_SaveLoaded;
             Helper.Events.GameLoop.GameLaunched += PhoneGameLoop.GameLoop_GameLaunched;
             Helper.Events.GameLoop.ReturnedToTitle += PhoneGameLoop.ReturnedToTitle;
-            Helper.Events.GameLoop.DayStarted += PhoneGameLoop.GameLoop_DayStarted; 
+            Helper.Events.GameLoop.DayStarted += PhoneGameLoop.GameLoop_DayStarted;
             Helper.Events.GameLoop.TimeChanged += PhoneGameLoop.GameLoop_TimeChanged;
             Helper.Events.GameLoop.OneSecondUpdateTicked += PhoneGameLoop.GameLoop_OneSecondUpdateTicked;
             Helper.Events.Display.WindowResized += PhoneVisuals.Display_WindowResized;
@@ -272,7 +273,7 @@ namespace MobilePhone
                         foreach (EventFork fork in invite.forks)
                         {
                             var f = fork;
-                            e.Edit(delegate(IAssetData obj) {
+                            e.Edit(delegate (IAssetData obj) {
                                 var dict = obj.AsDictionary<string, string>();
                                 dict.Data.Add(fork.key, MobilePhoneCall.CreateEventString(fork.nodes, invitedNPC));
 

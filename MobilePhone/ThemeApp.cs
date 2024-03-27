@@ -381,11 +381,15 @@ namespace MobilePhone
                         continue;
                     }
                     if (ringList[i] == Config.PhoneRingTone)
+                    {
                         e.SpriteBatch.Draw(ModEntry.ringListHighlightTexture, new Rectangle((int)(itemPos.X), (int)itemPos.Y, (int)(screenSize.X), Config.RingListItemHeight), Color.White);
+                    }
 
                     string itemName = ringList[i];
                     if (itemName.Contains(":"))
+                    {
                         itemName = itemName.Split(':')[1];
+                    }
                     e.SpriteBatch.DrawString(Game1.dialogueFont, itemName, itemPos, Config.RingListItemColor, 0, Vector2.Zero, Config.RingListItemScale, SpriteEffects.None, 0.86f);
                 }
             }

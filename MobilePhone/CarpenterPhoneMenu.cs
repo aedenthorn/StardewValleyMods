@@ -12,7 +12,6 @@ namespace MobilePhone
         {
             this.helper = helper;
             exitFunction = OnExit;
-
         }
 
         public void OnExit()
