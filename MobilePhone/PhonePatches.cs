@@ -289,7 +289,7 @@ namespace MobilePhone
             {
                 RefreshView1();
             };
-            Game1.warpFarmer(locationRequest.Location.Name, Game1.player.TilePoint.X, Game1.player.TilePoint.Y, Game1.player.FacingDirection);
+            Game1.warpFarmer(locationRequest, Game1.player.TilePoint.X, Game1.player.TilePoint.Y, Game1.player.FacingDirection);
             return false;
         }
 
@@ -303,7 +303,7 @@ namespace MobilePhone
                 RefreshView2();
 
             };
-            Game1.warpFarmer(locationRequest.Location.Name, Game1.player.TilePoint.X, Game1.player.TilePoint.Y, Game1.player.FacingDirection);
+            Game1.warpFarmer(locationRequest, Game1.player.TilePoint.X, Game1.player.TilePoint.Y, Game1.player.FacingDirection);
             return false;
         }
         private static void RefreshView1()
@@ -316,6 +316,7 @@ namespace MobilePhone
             Helper.Reflection.GetMethod(Game1.activeClickableMenu, "resetBounds").Invoke(new object[] { });
             Helper.Reflection.GetField<bool>(Game1.activeClickableMenu, "upgrading").SetValue(false);
             Helper.Reflection.GetField<bool>(Game1.activeClickableMenu, "moving").SetValue(false);
+            Helper.Reflection.GetField<bool>(Game1.activeClickableMenu, "painting").SetValue(false);
             Helper.Reflection.GetField<Building>(Game1.activeClickableMenu, "buildingToMove").SetValue(null);
             Helper.Reflection.GetField<bool>(Game1.activeClickableMenu, "freeze").SetValue(false);
             Game1.displayHUD = true;
