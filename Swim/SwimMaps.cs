@@ -31,15 +31,15 @@ namespace Swim
         {
             if (which == "ScubaTank" && !Game1.player.mailReceived.Contains(which))
             {
-                gameLocation.overlayObjects[pos] = new Chest( new List<Item>() { new Clothing(ModEntry.scubaTankID.Value+"") }, pos, false, 0);
+                gameLocation.overlayObjects[pos] = new Chest( new List<Item>() { new Clothing(ModEntry.scubaTankID.Value) }, pos, false, 0);
             }
             else if (which == "ScubaMask" && !Game1.player.mailReceived.Contains(which))
             {
-                gameLocation.overlayObjects[pos] = new Chest( new List<Item>() { new Hat(ModEntry.scubaMaskID.Value + "") }, pos, false, 0);
+                gameLocation.overlayObjects[pos] = new Chest( new List<Item>() { new Hat(ModEntry.scubaMaskID.Value )}, pos, false, 0);
             }
             else if (which == "ScubaFins" && !Game1.player.mailReceived.Contains(which))
             {
-                gameLocation.overlayObjects[pos] = new Chest( new List<Item>() { new Boots(ModEntry.scubaFinsID.Value + "") }, pos, false, 0);
+                gameLocation.overlayObjects[pos] = new Chest( new List<Item>() { new Boots(ModEntry.scubaFinsID.Value) }, pos, false, 0);
             }
         }
         public static void AddWaterTiles(GameLocation gameLocation)

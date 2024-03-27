@@ -1,16 +1,16 @@
 ﻿{
   "Name": "Swim Mod",
   "Author": "aedenthorn",
-  "Version": "3.5.4",
+  "Version": "3.5.5",
   "Description": "Allows you to swim.",
   "UniqueID": "aedenthorn.Swim",
   "EntryDll": "Swim.dll",
-  "MinimumApiVersion": "3.16.0",
-  "UpdateKeys": ["Nexus:6326"],
+  "MinimumApiVersion": "4.0.0",
+  "UpdateKeys": [ "Nexus:6326" ],
   "Dependencies": [
-      {
+    {
       "UniqueID": "spacechase0.JsonAssets",
-        "IsRequired": false
-      }
+      "IsRequired": false
+    }
   ]
 }

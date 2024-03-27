@@ -4,6 +4,8 @@
     "PurchasePrice": "50000",
     "ShowHair": true,
     "IgnoreHairstyleOffset": true,
+    "CanPurchase": false,
+    "PurchaseFrom": "",
   "NameLocalization":
   {
     // "es": "",

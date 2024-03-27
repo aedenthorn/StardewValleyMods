@@ -375,14 +375,27 @@ namespace Swim
                 Monitor.Log($"Failed in {nameof(GameLocation_UpdateWhenCurrentLocation_Postfix)}:\n{ex}", LogLevel.Error);
             }
         }
+
         public static void GameLocation_performTouchAction_Prefix(string fullActionString)
         {
             try
             {
-                string text = fullActionString.Split(new char[]
+                string[] text = fullActionString.Split(new char[]
                 {
                     ' '
-                })[0];
+                });
+                GameLocation_performTouchAction_PrefixArray(text);
+            }
+            catch (Exception ex)
+            {
+                Monitor.Log($"Failed in {nameof(GameLocation_performTouchAction_Prefix)}:\n{ex}", LogLevel.Error);
+            }
+        }
+        public static void GameLocation_performTouchAction_PrefixArray(string[] action)
+        {
+            try
+            {
+                string text = action[0];
                 if (text == "PoolEntrance")
                 {
                     if (!Game1.player.swimming.Value)
@@ -393,7 +406,7 @@ namespace Swim
             }
             catch (Exception ex)
             {
-                Monitor.Log($"Failed in {nameof(GameLocation_performTouchAction_Prefix)}:\n{ex}", LogLevel.Error);
+                Monitor.Log($"Failed in {nameof(GameLocation_performTouchAction_PrefixArray)}:\n{ex}", LogLevel.Error);
             }
         }
         public static void GameLocation_performTouchAction_Postfix(string fullActionString)
@@ -460,7 +473,7 @@ namespace Swim
                     return;
 
                 Vector2 next = SwimUtils.GetNextTile();
-                //Monitor.Log($"Checking collide {SwimUtils.doesTileHaveProperty(__instance.map, (int)next.X, (int)next.Y, "Water", "Back") != null}");
+                Monitor.Log($"Checking collide {SwimUtils.doesTileHaveProperty(__instance.map, (int)next.X, (int)next.Y, "Water", "Back") != null}");
                 if ((int)next.X <= 0 || (int)next.Y <= 0 || __instance.Map.Layers[0].LayerWidth <= (int)next.X || __instance.Map.Layers[0].LayerHeight <= (int)next.Y || SwimUtils.doesTileHaveProperty(__instance.map, (int)next.X, (int)next.Y, "Water", "Back") != null)
                 {
                     __result = false;
@@ -543,6 +556,21 @@ namespace Swim
             {
                 Monitor.Log($"Failed in {nameof(GameLocation_sinkDebris_Postfix)}:\n{ex}", LogLevel.Error);
             }
+        }
+
+        public static void Game1_WarpFarmer_Prefix(LocationRequest locationRequest, ref int tileX, ref int tileY)
+        {
+            // If warping from mountain to town through the lake,
+            if(Game1.player.currentLocation.Name == "Mountain" && locationRequest.Name == "Town" && Game1.player.TilePoint.X >= 64 && tileY <= 1)
+            {
+                // Warp to the bottom of the waterfall
+                tileX = 94;
+                tileY = 5;
+            }
+
+            Monitor.Log(locationRequest.Name + " " + Game1.currentLocation.Name + " LR");
+            Monitor.Log(tileX + " " + tileY);
+            Monitor.Log(Game1.player.TilePoint.X + " " + Game1.player.TilePoint.Y);
         }
     }
 }

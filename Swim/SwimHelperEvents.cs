@@ -7,6 +7,7 @@ using StardewModdingAPI;
 using StardewModdingAPI.Events;
 using StardewModdingAPI.Utilities;
 using StardewValley;
+using StardewValley.GameData.Shirts;
 using StardewValley.Locations;
 using StardewValley.Menus;
 using StardewValley.Monsters;
@@ -94,17 +95,17 @@ namespace Swim
             if (e.Player != Game1.player)
                 return;
 
-            if (!Game1.player.mailReceived.Contains("ScubaTank") && ModEntry.scubaTankID.Value != -1 && e.Added != null && e.Added.Count() > 0 && e.Added.FirstOrDefault() != null && e.Added.FirstOrDefault().GetType() == typeof(Clothing) && e.Added.FirstOrDefault().ParentSheetIndex == ModEntry.scubaTankID.Value)
+            if (!Game1.player.mailReceived.Contains("ScubaTank") && ModEntry.scubaTankID.Value != "" && e.Added != null && e.Added.Count() > 0 && e.Added.FirstOrDefault() != null && e.Added.FirstOrDefault().GetType() == typeof(Clothing) && e.Added.FirstOrDefault().ItemId == ModEntry.scubaTankID.Value)
             {
                 Monitor.Log("Player found scuba tank");
                 Game1.player.mailReceived.Add("ScubaTank");
             }
-            if (!Game1.player.mailReceived.Contains("ScubaMask") && ModEntry.scubaMaskID.Value != -1 && e.Added != null && e.Added.Count() > 0 && e.Added.FirstOrDefault() != null && e.Added.FirstOrDefault().GetType() == typeof(Hat) && (e.Added.FirstOrDefault() as Hat).ItemId == ModEntry.scubaMaskID.Value + "")
+            if (!Game1.player.mailReceived.Contains("ScubaMask") && ModEntry.scubaMaskID.Value != "" && e.Added != null && e.Added.Count() > 0 && e.Added.FirstOrDefault() != null && e.Added.FirstOrDefault().GetType() == typeof(Hat) && (e.Added.FirstOrDefault() as Hat).ItemId == ModEntry.scubaMaskID.Value + "")
             {
                 Monitor.Log("Player found scuba mask");
                 Game1.player.mailReceived.Add("ScubaMask");
             }
-            if (!Game1.player.mailReceived.Contains("ScubaFins") && ModEntry.scubaFinsID.Value != -1 && e.Added != null && e.Added.Count() > 0 && e.Added.FirstOrDefault() != null && e.Added.FirstOrDefault().GetType() == typeof(Boots) && e.Added.FirstOrDefault().ParentSheetIndex == ModEntry.scubaFinsID.Value)
+            if (!Game1.player.mailReceived.Contains("ScubaFins") && ModEntry.scubaTankID.Value != "" && e.Added != null && e.Added.Count() > 0 && e.Added.FirstOrDefault() != null && e.Added.FirstOrDefault().GetType() == typeof(Boots) && e.Added.FirstOrDefault().ItemId == ModEntry.scubaFinsID.Value)
             {
                 Monitor.Log("Player found scuba fins");
                 Game1.player.mailReceived.Add("ScubaFins");
@@ -126,24 +127,39 @@ namespace Swim
         public static void GameLoop_SaveLoaded(object sender, SaveLoadedEventArgs e)
         {
             // load scuba gear ids
-
+            
             if (ModEntry.JsonAssets != null)
             {
-                ModEntry.scubaMaskID.Value = ModEntry.JsonAssets.GetHatId("Scuba Mask");
-                ModEntry.scubaTankID.Value = ModEntry.JsonAssets.GetClothingId("Scuba Tank");
+                Monitor.Log("ids:" + ModEntry.scubaMaskID.Value + " " + ModEntry.scubaTankID.Value);
 
-                if (ModEntry.scubaMaskID.Value == -1)
+                if (ModEntry.scubaMaskID.Value == "" || ModEntry.scubaMaskID.Value == null)
                 {
-                    Monitor.Log("Can't get ID for Swim mod item #1. Some functionality will be lost.");
+                    ModEntry.scubaMaskID.Value = "Scuba_Mask";
+                    if (ModEntry.scubaMaskID.Value == "" || ModEntry.scubaMaskID.Value == null)
+                    {
+                        Monitor.Log("Can't get ID for Swim mod item #1. Some functionality will be lost.");
+                    }
+                    else
+                    {
+                        Monitor.Log($"Swim mod item #1 ID is {ModEntry.scubaMaskID.Value}");
+                    }
                 }
                 else
                 {
                     Monitor.Log(string.Format("Swim mod item #1 ID is {0}.", ModEntry.scubaMaskID.Value));
                 }
 
-                if (ModEntry.scubaTankID.Value == -1)
+                if (ModEntry.scubaTankID.Value == "" || ModEntry.scubaTankID.Value == null)
                 {
-                    Monitor.Log("Can't get ID for Swim mod item #2. Some functionality will be lost.");
+                    ModEntry.scubaTankID.Value = Helper.GameContent.Load<Dictionary<string, ShirtData>>(@"Data/Shirts").First(x => x.Value.Name.StartsWith("Scuba Tank")).Key;
+                    if (ModEntry.scubaMaskID.Value == "" || ModEntry.scubaMaskID.Value == null)
+                    {
+                        Monitor.Log("Can't get ID for Swim mod item #2. Some functionality will be lost.");
+                    }
+                    else
+                    {
+                        Monitor.Log($"Swim mod item #2 ID is {ModEntry.scubaTankID.Value}");
+                    }
                 }
                 else
                 {
@@ -152,16 +168,24 @@ namespace Swim
 
                 try
                 {
-                    ModEntry.scubaFinsID.Value = Helper.GameContent.Load<Dictionary<int, string>>(@"Data/Boots").First(x => x.Value.StartsWith("Scuba Fins")).Key;
+                    ModEntry.scubaFinsID.Value = Helper.GameContent.Load<Dictionary<string, string>>(@"Data/Boots").First(x => x.Value.StartsWith("Scuba Fins")).Key;
                 }
                 catch
                 {
-                    Monitor.Log("Can't get ID for Swim mod item #3. Some functionality will be lost.");
+                    ModEntry.scubaFinsID.Value = ModEntry.JsonAssets.GetClothingId("Scuba Fins");
+                    if (ModEntry.scubaMaskID.Value == "" || ModEntry.scubaMaskID.Value == null)
+                    {
+                        Monitor.Log("Can't get ID for Swim mod item #3. Some functionality will be lost.");
+                    }
+                    else
+                    {
+                        Monitor.Log($"Swim mod item #3 ID is {ModEntry.scubaFinsID.Value}");
+                    }
                 }
-                if (ModEntry.scubaFinsID.Value != -1)
+                if (ModEntry.scubaFinsID.Value != "")
                 {
                     Monitor.Log(string.Format("Swim mod item #3 ID is {0}.", ModEntry.scubaFinsID.Value));
-                    if (Game1.player.boots.Value != null && Game1.player.boots.Value != null && Game1.player.boots.Value.Name == "Scuba Fins" && Game1.player.boots.Value.ParentSheetIndex != ModEntry.scubaFinsID.Value)
+                    if (Game1.player.boots.Value != null && Game1.player.boots.Value != null && Game1.player.boots.Value.Name == "Scuba Fins" && Game1.player.boots.Value.ItemId != ModEntry.scubaFinsID.Value)
                     {
                         Game1.player.boots.Value = new Boots(ModEntry.scubaFinsID.Value + "");
                     }
@@ -690,11 +714,13 @@ namespace Swim
 
             if (e.Button == Config.DiveKey && Game1.activeClickableMenu == null && !Game1.player.UsingTool && ModEntry.diveMaps.ContainsKey(Game1.player.currentLocation.Name) && ModEntry.diveMaps[Game1.player.currentLocation.Name].DiveLocations.Count > 0)
             {
+                Monitor.Log("Trying to dive!");
                 Point pos = Game1.player.TilePoint;
                 Location loc = new Location(pos.X, pos.Y);
 
                 if (!SwimUtils.IsInWater())
                 {
+                    Monitor.Log("Not in water");
                     return;
                 }
 
@@ -848,12 +874,6 @@ namespace Swim
             var readyToAutoSwim = Config.ReadyToSwim;
             var manualSwim = Helper.Input.IsDown(Config.ManualJumpButton);
 
-            // !IMP: Conditions, with locations (i.e. locations with restricted swimming), must be checked here.
-            if ((!readyToAutoSwim && !manualSwim) || !Context.IsPlayerFree)
-            {
-                return;
-            }
-
             if (Game1.player.swimming.Value && !SwimUtils.IsInWater() && !isJumping.Value)
             {
                 Monitor.Log("Swimming out of water");
@@ -868,6 +888,30 @@ namespace Swim
                 Game1.player.swimming.Value = false;
                 if (Game1.player.bathingClothes.Value && !Config.SwimSuitAlways)
                     Game1.player.changeOutOfSwimSuit();
+            }
+
+            if (!Game1.player.swimming.Value && SwimUtils.IsInWater() && !isJumping.Value)
+            {
+                Monitor.Log("In water not swimming");
+
+                ModEntry.willSwim.Value = true;
+                Game1.player.freezePause = Config.JumpTimeInMilliseconds;
+                Game1.player.currentLocation.playSound("dwop");
+                isJumping.Value = true;
+                startJumpLoc.Value = Game1.player.position.Value;
+                endJumpLoc.Value = Game1.player.position.Value;
+
+
+                Game1.player.swimming.Value = true;
+                if (!Game1.player.bathingClothes.Value && !SwimUtils.IsWearingScubaGear() && !Config.NoAutoSwimSuit)
+                    Game1.player.changeIntoSwimsuit();
+            }
+
+
+            // !IMP: Conditions, with locations (i.e. locations with restricted swimming), must be checked here.
+            if ((!readyToAutoSwim && !manualSwim) || !Context.IsPlayerFree)
+            {
+                return;
             }
 
             if (Game1.player.swimming.Value)
@@ -974,7 +1018,7 @@ namespace Swim
                 else if (!Game1.player.bathingClothes.Value && !Config.NoAutoSwimSuit && (!SwimUtils.IsWearingScubaGear() || Config.SwimSuitAlways))
                     Game1.player.changeIntoSwimsuit();
 
-                if (Game1.player.boots.Value != null && ModEntry.scubaFinsID.Value != -1 && Game1.player.boots.Value.indexInTileSheet.Value == ModEntry.scubaFinsID.Value)
+                if (Game1.player.boots.Value != null && ModEntry.scubaFinsID.Value != "" && Game1.player.boots.Value.ItemId == ModEntry.scubaFinsID.Value)
                 {
                     string buffId = "42883167";
                     Buff buff = Game1.player.buffs.AppliedBuffs.Values.FirstOrDefault((Buff p) => p.Equals(buffId));
@@ -988,26 +1032,6 @@ namespace Swim
                     }
                     buff.millisecondsDuration = 50;
                 }
-            }
-            else
-            {
-                if (SwimUtils.IsInWater() && !isJumping.Value)
-                {
-                    Monitor.Log("In water not swimming");
-
-                    ModEntry.willSwim.Value = true;
-                    Game1.player.freezePause = Config.JumpTimeInMilliseconds;
-                    Game1.player.currentLocation.playSound("dwop");
-                    isJumping.Value = true;
-                    startJumpLoc.Value = Game1.player.position.Value;
-                    endJumpLoc.Value = Game1.player.position.Value;
-
-
-                    Game1.player.swimming.Value = true;
-                    if (!Game1.player.bathingClothes.Value && !SwimUtils.IsWearingScubaGear() && !Config.NoAutoSwimSuit)
-                        Game1.player.changeIntoSwimsuit();
-                }
-
             }
 
             SwimUtils.CheckIfMyButtonDown();
@@ -1061,7 +1085,7 @@ namespace Swim
 
                 }
             }
-            //Monitor.Value.Log("Distance: " + distance);
+            //Monitor.Log("Distance: " + distance);
 
             bool nextToLand = Game1.player.swimming.Value && !SwimUtils.IsWaterTile(tiles[tiles.Count - 2]) && distance < maxDistance;
 
@@ -1084,7 +1108,7 @@ namespace Swim
 
             if (nextToLand || nextToWater)
             {
-                //Monitor.Value.Log("okay to jump");
+                Monitor.Log("okay to jump");
                 for (int i = 0; i < tiles.Count; i++)
                 {
                     Vector2 tileV = tiles[i];
@@ -1095,7 +1119,7 @@ namespace Swim
                         Tile tile = Game1.player.currentLocation.map.GetLayer("Buildings").PickTile(new Location((int)tileV.X * Game1.tileSize, (int)tileV.Y * Game1.tileSize), Game1.viewport.Size);
                         isWater = SwimUtils.IsWaterTile(tileV);
                         isPassable = (nextToLand && !isWater && SwimUtils.IsTilePassable(Game1.player.currentLocation, new Location((int)tileV.X, (int)tileV.Y), Game1.viewport)) || (nextToWater && isWater && (tile == null || tile.TileIndex == 76));
-                        //Monitor.Value.Log($"Trying {tileV} is passable {isPassable} isWater {isWater}");
+                        Monitor.Log($"Trying {tileV} is passable {isPassable} isWater {isWater}");
                         if (!SwimUtils.IsTilePassable(Game1.player.currentLocation, new Location((int)tileV.X, (int)tileV.Y), Game1.viewport) && !isWater && nextToLand)
                         {
                             //Monitor.Value.Log($"Nixing {tileV}");

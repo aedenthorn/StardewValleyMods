@@ -4,6 +4,8 @@ using Microsoft.Xna.Framework.Graphics;
 using StardewModdingAPI;
 using StardewModdingAPI.Utilities;
 using StardewValley;
+using StardewValley.GameData.Locations;
+using StardewValley.GameData.Shirts;
 using StardewValley.Menus;
 using StardewValley.Tools;
 using System;
@@ -25,9 +27,9 @@ namespace Swim
         public static ModEntry context;
 
         public static PerScreen<Texture2D> OxygenBarTexture = new PerScreen<Texture2D>();
-        public static readonly PerScreen<int> scubaMaskID = new PerScreen<int>();
-        public static readonly PerScreen<int> scubaFinsID = new PerScreen<int>();
-        public static readonly PerScreen<int> scubaTankID = new PerScreen<int>();
+        public static readonly PerScreen<string> scubaMaskID = new PerScreen<string>();
+        public static readonly PerScreen<string> scubaFinsID = new PerScreen<string>();
+        public static readonly PerScreen<string> scubaTankID = new PerScreen<string>();
         public static readonly PerScreen<bool> myButtonDown = new PerScreen<bool>(() => false);
         public static readonly PerScreen<int> oxygen = new PerScreen<int>(() => 0);
         public static readonly PerScreen<int> lastUpdateMs = new PerScreen<int>(() => 0);
@@ -161,8 +163,13 @@ namespace Swim
             );
 
             harmony.Patch(
-               original: AccessTools.Method(typeof(GameLocation), nameof(GameLocation.performTouchAction)),
+               original: AccessTools.Method(typeof(GameLocation), nameof(GameLocation.performTouchAction), new Type[] {typeof(string), typeof(Vector2)}),
                prefix: new HarmonyMethod(typeof(SwimPatches), nameof(SwimPatches.GameLocation_performTouchAction_Prefix))
+            );
+
+            harmony.Patch(
+               original: AccessTools.Method(typeof(GameLocation), nameof(GameLocation.performTouchAction), new Type[] { typeof(string[]), typeof(Vector2) }),
+               prefix: new HarmonyMethod(typeof(SwimPatches), nameof(SwimPatches.GameLocation_performTouchAction_PrefixArray))
             );
 
             harmony.Patch(
@@ -170,8 +177,11 @@ namespace Swim
                prefix: new HarmonyMethod(typeof(SwimPatches), nameof(SwimPatches.GameLocation_checkAction_Prefix))
             );
 
+            //GameLocation e;
+            //e.isCollidingPosition()
+
             harmony.Patch(
-               original: AccessTools.Method(typeof(GameLocation), nameof(GameLocation.isCollidingPosition), new Type[] { typeof(Rectangle), typeof(xTile.Dimensions.Rectangle), typeof(bool), typeof(int), typeof(bool), typeof(Character), typeof(bool), typeof(bool), typeof(bool) }),
+               original: AccessTools.Method(typeof(GameLocation), nameof(GameLocation.isCollidingPosition), new Type[] { typeof(Rectangle), typeof(xTile.Dimensions.Rectangle), typeof(bool), typeof(int), typeof(bool), typeof(Character), typeof(bool), typeof(bool), typeof(bool), typeof(bool) }),
                postfix: new HarmonyMethod(typeof(SwimPatches), nameof(SwimPatches.GameLocation_isCollidingPosition_Postfix))
             );
 
@@ -179,6 +189,14 @@ namespace Swim
                original: AccessTools.Method(typeof(GameLocation), nameof(GameLocation.sinkDebris)),
                postfix: new HarmonyMethod(typeof(SwimPatches), nameof(SwimPatches.GameLocation_sinkDebris_Postfix))
             );
+
+            harmony.Patch(
+                original: AccessTools.Method(typeof(Game1), nameof(Game1.warpFarmer), new Type[] { typeof(LocationRequest), typeof(int), typeof(int), typeof(int) }),
+                prefix: new HarmonyMethod(typeof(SwimPatches), nameof(SwimPatches.Game1_WarpFarmer_Prefix))
+            );
+
+            Texture2D texture = Helper.GameContent.Load<Texture2D>("Characters/Farmer/shirts");
+            texture.SaveAsPng(new FileStream("C:\\Users\\cabac\\Desktop\\shirts.png", FileMode.Create), texture.Width, texture.Height);
         }
 
         private void Content_AssetRequested(object sender, StardewModdingAPI.Events.AssetRequestedEventArgs e)
@@ -186,6 +204,46 @@ namespace Swim
             if (e.NameWithoutLocale.StartsWith("aedenthorn.Swim/Fishies"))
             {
                 e.LoadFromModFile<Texture2D>($"assets/{e.NameWithoutLocale.ToString().Substring("aedenthorn.Swim/".Length)}.png", StardewModdingAPI.Events.AssetLoadPriority.Exclusive);
+            }
+            else if (e.NameWithoutLocale.IsEquivalentTo("Data/Shirts"))
+            {
+                e.Edit(asset =>
+                {
+                    //Try to make a content pack for this in the future. (Json assets not working for the shirt)
+                    var data = asset.AsDictionary<string, ShirtData>().Data;
+                    ShirtData scubaTankData = new ShirtData();
+                    scubaTankData.Name = "Scuba Tank";
+                    scubaTankData.DisplayName = "Scuba Tank";
+                    scubaTankData.Description = "A scuba tank for your respirator.";
+                    scubaTankData.Price = 100000;
+                    scubaTankData.Texture = "Swim/SubaTankTexture";
+                    scubaTankData.SpriteIndex = 0;
+                    scubaTankData.CanChooseDuringCharacterCustomization = false;
+                    scubaTankData.CanBeDyed = false;
+                    data.Add("Swim/Scuba_Tank", scubaTankData);
+                });
+            }
+            else if (e.NameWithoutLocale.IsEquivalentTo("Data/shirtData"))
+            {
+                e.Edit(asset =>
+                {
+                    //Try to make a content pack for this in the future. (Json assets not working for the shirt)
+                    var data = asset.AsDictionary<string, ShirtData>().Data;
+                    ShirtData scubaTankData = new ShirtData();
+                    scubaTankData.Name = "Scuba Tank";
+                    scubaTankData.DisplayName = "Scuba Tank";
+                    scubaTankData.Description = "A scuba tank for your respirator.";
+                    scubaTankData.Price = 100000;
+                    scubaTankData.Texture = "Swim/SubaTankTexture";
+                    scubaTankData.SpriteIndex = 0;
+                    scubaTankData.CanChooseDuringCharacterCustomization = false;
+                    scubaTankData.CanBeDyed = false;
+                    data.Add("Swim/Scuba_Tank", scubaTankData);
+                });
+            }
+            else if (e.NameWithoutLocale.IsEquivalentTo("Swim/SubaTankTexture"))
+            {
+                e.LoadFromModFile<Texture2D>("assets/json-assets/Shirts/Scuba Tank/SpriteSheet.png", StardewModdingAPI.Events.AssetLoadPriority.Medium);
             }
         }
 
