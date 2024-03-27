@@ -915,8 +915,8 @@ namespace Swim
             }
 
 
-            // !IMP: Conditions, with locations (i.e. locations with restricted swimming), must be checked here.
-            if ((!readyToAutoSwim && !manualSwim) || !Context.IsPlayerFree)
+            // !IMP: Conditions, with locations (i.e. locations with restricted swimming), must be checked here
+            if (!Context.IsPlayerFree)
             {
                 return;
             }
@@ -1018,6 +1018,11 @@ namespace Swim
                     {
                         Game1.warpFarmer("Forest", 119, 111, false);
                     }
+                }
+
+                if (!readyToAutoSwim && !manualSwim)
+                {
+                    return;
                 }
 
                 if (Game1.player.bathingClothes.Value && SwimUtils.IsWearingScubaGear() && !Config.SwimSuitAlways)
