@@ -4,6 +4,7 @@ using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using StardewValley;
 using StardewValley.BellsAndWhistles;
+using StardewValley.GameData.Shops;
 using StardewValley.Menus;
 using System;
 using System.Collections.Generic;
@@ -16,11 +17,12 @@ namespace CatalogueFilter
         private static TextBox filterField;
         private static List<ISalable> allItems;
 
-        [HarmonyPatch(typeof(ShopMenu), new Type[] { typeof(List<ISalable>), typeof(int), typeof(string), typeof(Func<ISalable, Farmer, int, bool>), typeof(Func<ISalable, bool>), typeof(string) })]
+        [HarmonyPatch(typeof(ShopMenu), new Type[] { typeof(string), typeof(ShopData), typeof(ShopOwnerData), typeof(NPC), typeof(Func<ISalable, Farmer, int, bool>), typeof(Func<ISalable, bool>), typeof(bool)})]
         [HarmonyPatch(MethodType.Constructor)]
         public class ShopMenu_Patch
         {
-            public static void Postfix(ShopMenu __instance, List<ISalable> itemsForSale)
+
+            public static void Postfix(ShopMenu __instance)
             {
                 if (!Config.ModEnabled)
                     return;
