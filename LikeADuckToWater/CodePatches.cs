@@ -34,7 +34,8 @@ namespace LikeADuckToWater
                     return;
                 if(__instance.hopOffset == Vector2.Zero && __state != __instance.Position)
                 {
-                    __instance.isSwimming.Value = currentLocation.isWaterTile(__instance.getTileX(), __instance.getTileY());
+                    __instance.isSwimming.Value = currentLocation.isWaterTile(__instance.TilePoint.X, __instance
+                    .TilePoint.Y);
                 }
             }
         }
@@ -86,7 +87,7 @@ namespace LikeADuckToWater
             {
                 if (__instance.hopOffset == Vector2.Zero)
                 {
-                    Point p = __instance.getTileLocationPoint();
+                    Point p = __instance.TilePoint;
                     __instance.isSwimming.Value = __instance.currentLocation.doesTileHaveProperty(p.X, p.Y, "Water", "Back") != null;
                 }
                 if (!__instance.modData.ContainsKey(swamTodayKey)) 

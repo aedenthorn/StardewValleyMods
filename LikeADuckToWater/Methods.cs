@@ -12,6 +12,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using StardewValley.Pathfinding;
 using xTile.Tiles;
 using Object = StardewValley.Object;
 
@@ -33,13 +34,13 @@ namespace LikeADuckToWater
                 if (a is not null && a.GetBoundingBox().Intersects(info.hoppedBox))
                     return false;
             }
-            var c = new PathFindController(animal, animal.currentLocation, new PathFindController.isAtEnd(PathFindController.isAtEndPoint), info.dir, false, new PathFindController.endBehavior(TryHop), 200, new Point((int)info.hopTile.X, (int)info.hopTile.Y), true);
+            var c = new PathFindController(animal, animal.currentLocation, PathFindController.isAtEndPoint, info.dir, TryHop, 200, new Point((int)info.hopTile.X, (int)info.hopTile.Y), true);
             FarmAnimal.NumPathfindingThisTick++;
             if (c.pathToEndPoint is not null)
             {
                 pickedTiles.Add(info.hopTile);
                 animal.controller = c;
-                SMonitor.Log($"{animal.displayName} is travelling from {animal.getTileLocation()} to {info.hopTile} to swim");
+                SMonitor.Log($"{animal.displayName} is travelling from {animal.Tile} to {info.hopTile} to swim");
                 return true;
             }
             return false;
@@ -152,7 +153,7 @@ namespace LikeADuckToWater
         private static List<HopInfo> GetHoppableDirs(Farm farm, FarmAnimal animal)
         {
             List<HopInfo> list = new List<HopInfo>();
-            var tile = animal.getTileLocationPoint();
+            var tile = animal.TilePoint;
             for(int i = 0; i < 4; i++)
             {
                 Vector2 offset = Utility.getTranslatedVector2(Vector2.Zero, i, 1f);
