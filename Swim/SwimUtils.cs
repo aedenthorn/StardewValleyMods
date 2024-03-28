@@ -249,8 +249,8 @@ namespace Swim
 
         public static bool IsWearingScubaGear()
         {
-            bool tank = ModEntry.scubaTankID.Value != -1 && Game1.player.shirtItem.Value != null && Game1.player.shirtItem.Value != null && Game1.player.shirtItem.Value.ParentSheetIndex + "" == ModEntry.scubaTankID.Value + "";
-            bool mask = ModEntry.scubaMaskID.Value != -1 && Game1.player.hat.Value != null && Game1.player.hat.Value != null && Game1.player.hat.Value.ItemId == ModEntry.scubaMaskID.Value + "";
+            bool tank = ModEntry.scubaTankID.Value != "" && Game1.player.shirtItem.Value != null && Game1.player.shirtItem.Value.ItemId == ModEntry.scubaTankID.Value;
+            bool mask = ModEntry.scubaMaskID.Value != "" && Game1.player.hat.Value != null && Game1.player.hat.Value.ItemId == ModEntry.scubaMaskID.Value;
 
             return tank && mask;
         }
@@ -261,9 +261,12 @@ namespace Swim
             Point p = Game1.player.TilePoint;
 
             if (!Game1.player.swimming.Value && Game1.player.currentLocation.map.GetLayer("Buildings")?.PickTile(new Location(p.X, p.Y) * Game1.tileSize, Game1.viewport.Size) != null)
+            {
+                //Monitor.Log("Not in water");
                 return false;
+            }
 
-            return IsMapUnderwater(Game1.player.currentLocation.Name)
+            bool output =  IsMapUnderwater(Game1.player.currentLocation.Name)
                 ||
                 (
                     tiles != null
@@ -278,48 +281,50 @@ namespace Swim
                         )
                     )
                 );
+
+            //Monitor.Log(output ? "In water" : "Not in water");
+            return output;
         }
 
-        public static List<Vector2> GetTilesInDirection(int count)
+        public static List<Vector2> GetTilesInDirection(int count, int direction)
         {
             List<Vector2> tiles = new List<Vector2>();
-            int dir = Game1.player.FacingDirection;
-            if (dir == 1)
+            if (direction == 1)
             {
 
                 for (int i = count; i > 0; i--)
                 {
-                    tiles.Add(Game1.player.Position + new Vector2(i, 0));
+                    tiles.Add(Game1.player.TilePoint.ToVector2() + new Vector2(i, 0));
                 }
 
             }
 
-            if (dir == 2)
+            if (direction == 2)
             {
 
                 for (int i = count; i > 0; i--)
                 {
-                    tiles.Add(Game1.player.Position + new Vector2(0, i));
+                    tiles.Add(Game1.player.TilePoint.ToVector2() + new Vector2(0, i));
                 }
 
             }
 
-            if (dir == 3)
+            if (direction == 3)
             {
 
                 for (int i = count; i > 0; i--)
                 {
-                    tiles.Add(Game1.player.Position - new Vector2(i, 0));
+                    tiles.Add(Game1.player.TilePoint.ToVector2() - new Vector2(i, 0));
                 }
 
             }
 
-            if (dir == 0)
+            if (direction == 0)
             {
 
                 for (int i = count; i > 0; i--)
                 {
-                    tiles.Add(Game1.player.Position - new Vector2(0, i));
+                    tiles.Add(Game1.player.TilePoint.ToVector2() - new Vector2(0, i));
                 }
 
             }
@@ -404,6 +409,7 @@ namespace Swim
             }
             if (property != null)
             {
+                Monitor.Log("Tile has property: " + property.ToString());
                 return property.ToString();
             }
             return null;

@@ -2,8 +2,8 @@
 {
     public interface IJsonAssetsApi
     {
-        int GetClothingId(string name);
-        int GetHatId(string name);
+        string GetClothingId(string name);
+        string GetHatId(string name);
         void LoadAssets(string path);
     }
 }
