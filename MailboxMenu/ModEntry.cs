@@ -18,6 +18,7 @@ namespace MailboxMenu
         public static ModConfig Config;
 
         public static ModEntry context;
+        public static bool isMailServicesActive;
 
         public static string npcPath = "aedenthorn.MailboxMenu/npcs";
         public static string mailPath = "aedenthorn.MailboxMenu/letters";
@@ -104,10 +105,13 @@ namespace MailboxMenu
             {
                 phoneAPI.AddApp("aedenthorn.MailboxMenu", "Mailbox", OpenMenu, Helper.ModContent.Load<Texture2D>(Path.Combine("assets", "icon.png")));
             }
+            
             // get Generic Mod Config Menu's API (if it's installed)
             var configMenu = Helper.ModRegistry.GetApi<IGenericModConfigMenuApi>("spacechase0.GenericModConfigMenu");
             if (configMenu is null)
                 return;
+
+            isMailServicesActive = Helper.ModRegistry.IsLoaded("Digus.MailServicesMod");
 
             // register mod
             configMenu.Register(
