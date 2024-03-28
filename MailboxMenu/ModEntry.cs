@@ -1,22 +1,11 @@
 ﻿using HarmonyLib;
-using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using Newtonsoft.Json;
 using StardewModdingAPI;
 using StardewValley;
-using StardewValley.BellsAndWhistles;
-using StardewValley.Locations;
-using StardewValley.Menus;
-using StardewValley.Objects;
-using StardewValley.TerrainFeatures;
-using System;
 using System.Collections.Generic;
-using System.Diagnostics;
-using System.Globalization;
 using System.IO;
 using System.Linq;
-using System.Security.Permissions;
-using Object = StardewValley.Object;
+using Microsoft.Xna.Framework;
 
 namespace MailboxMenu
 {
@@ -55,7 +44,10 @@ namespace MailboxMenu
             Helper.Events.Input.ButtonPressed += Input_ButtonPressed;
 
             var harmony = new Harmony(ModManifest.UniqueID);
-            harmony.PatchAll();
+            harmony.Patch(
+                original: AccessTools.Method(typeof(GameLocation), nameof(GameLocation.mailbox)),
+                prefix: new HarmonyMethod(typeof(GameLocation_mailbox_Patch), nameof(GameLocation_mailbox_Patch.Prefix))
+                );
         }
 
         private void Input_ButtonPressed(object sender, StardewModdingAPI.Events.ButtonPressedEventArgs e)
