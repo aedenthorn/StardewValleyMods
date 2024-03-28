@@ -1,14 +1,14 @@
 ﻿{
   "Name": "Mailbox Menu",
   "Author": "aedenthorn",
-  "Version": "0.3.4-unofficial.1-tem696969696969",
+  "Version": "0.3.4",
   "Description": "Mailbox Menu.",
   "UniqueID": "aedenthorn.MailboxMenu",
   "EntryDll": "MailboxMenu.dll",
   "MinimumApiVersion": "4.0.0",
   "ModUpdater": {
     "Repository": "StardewValleyMods",
-    "User": "aedenthorn",
+    "User": "tem696969696969",
     "Directory": "_releases",
     "ModFolder": "MailboxMenu"
   },
@@ -18,5 +18,5 @@
       "IsRequired": false
     }
   ],
-  "UpdateKeys": [ "Nexus:14439" ]
+  "UpdateKeys": [ "Nexus:21068" ]
 }

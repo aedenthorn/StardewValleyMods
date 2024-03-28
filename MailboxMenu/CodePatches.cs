@@ -2,15 +2,11 @@
 using StardewModdingAPI;
 using StardewValley;
 using System.Collections.Generic;
-using System.Linq;
-using System.Runtime.CompilerServices;
 
 namespace MailboxMenu
 {
     public partial class ModEntry
     {
-
-        [HarmonyPatch(typeof(GameLocation), nameof(GameLocation.mailbox))]
         public class GameLocation_mailbox_Patch
         {
             public static bool Prefix(GameLocation __instance)
