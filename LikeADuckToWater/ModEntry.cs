@@ -66,8 +66,67 @@ namespace LikeADuckToWater
             helper.Events.GameLoop.UpdateTicked += GameLoop_UpdateTicked;
 
             var harmony = new Harmony(ModManifest.UniqueID);
-            harmony.PatchAll();
-
+            
+            harmony.Patch(
+                original: AccessTools.Method(typeof(FarmAnimal), nameof(FarmAnimal.updatePerTenMinutes)),
+                postfix: new HarmonyMethod(typeof(FarmAnimal_updatePerTenMinutes_Patch), nameof
+                    (FarmAnimal_updatePerTenMinutes_Patch.Postfix))
+            );
+            
+            harmony.Patch(
+                original: AccessTools.Method(typeof(FarmAnimal), nameof(FarmAnimal.MovePosition)),
+                prefix: new HarmonyMethod(typeof(FarmAnimal_MovePosition_Patch), nameof
+                    (FarmAnimal_MovePosition_Patch.Prefix)),
+                postfix: new HarmonyMethod(typeof(FarmAnimal_MovePosition_Patch), nameof
+                    (FarmAnimal_MovePosition_Patch.Postfix))
+            );
+            
+            harmony.Patch(
+                original: AccessTools.Method(typeof(FarmAnimal), nameof(FarmAnimal.Eat)),
+                postfix: new HarmonyMethod(typeof(FarmAnimal_Eat_Patch), nameof
+                    (FarmAnimal_Eat_Patch.Postfix))
+            );
+            
+            harmony.Patch(
+                original: AccessTools.Method(typeof(FarmAnimal), nameof(FarmAnimal.pet)),
+                postfix: new HarmonyMethod(typeof(FarmAnimal_pet_Patch), nameof
+                    (FarmAnimal_pet_Patch.Postfix))
+            );
+            
+            harmony.Patch(
+                original: AccessTools.Method(typeof(GameLocation), nameof(GameLocation.isCollidingPosition), 
+                    new[] { typeof(Microsoft.Xna.Framework.Rectangle),
+                        typeof(xTile.Dimensions.Rectangle),
+                        typeof(bool),
+                        typeof(int), 
+                        typeof(bool), 
+                        typeof(Character), 
+                        typeof(bool), 
+                        typeof(bool), 
+                        typeof(bool),
+                        typeof(bool)
+                    }),
+                prefix: new HarmonyMethod(typeof(GameLocation_isCollidingPosition_Patch), nameof
+                    (GameLocation_isCollidingPosition_Patch.Prefix))
+            );
+            
+            harmony.Patch(
+                original: AccessTools.Method(typeof(FarmAnimal), nameof(FarmAnimal.dayUpdate)),
+                postfix: new HarmonyMethod(typeof(FarmAnimal_dayUpdate_Patch), nameof
+                    (FarmAnimal_dayUpdate_Patch.Postfix))
+            );
+            
+            harmony.Patch(
+                original: AccessTools.Method(typeof(FarmAnimal), nameof(FarmAnimal.HandleHop)),
+                postfix: new HarmonyMethod(typeof(FarmAnimal_HandleHop_Patch), nameof
+                    (FarmAnimal_HandleHop_Patch.Postfix))
+            );
+            
+            harmony.Patch(
+                original: AccessTools.Method(typeof(GameLocation), nameof(GameLocation.isOpenWater)),
+                prefix: new HarmonyMethod(typeof(GameLocation_isOpenWater_Patch), nameof
+                    (GameLocation_isOpenWater_Patch.Prefix))
+            );
         }
 
         private void GameLoop_UpdateTicked(object sender, StardewModdingAPI.Events.UpdateTickedEventArgs e)

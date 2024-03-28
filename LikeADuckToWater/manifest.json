@@ -1,14 +1,14 @@
 ﻿{
   "Name": "Like A Duck To Water",
   "Author": "aedenthorn",
-  "Version": "0.4.4",
+  "Version": "0.4.5",
   "Description": "Like A Duck To Water.",
   "UniqueID": "aedenthorn.LikeADuckToWater",
   "EntryDll": "LikeADuckToWater.dll",
-  "MinimumApiVersion": "3.15.0",
+  "MinimumApiVersion": "4.0.0",
   "ModUpdater": {
     "Repository": "StardewValleyMods",
-    "User": "aedenthorn",
+    "User": "tem696969696969",
     "Directory": "_releases",
     "ModFolder": "LikeADuckToWater"
   },
