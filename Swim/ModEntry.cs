@@ -241,6 +241,9 @@ namespace Swim
             else if (e.NameWithoutLocale.IsEquivalentTo("Swim/SubaTankTexture"))
             {
                 e.LoadFromModFile<Texture2D>("assets/json-assets/Shirts/Scuba Tank/SpriteSheet.png", StardewModdingAPI.Events.AssetLoadPriority.Medium);
+            }else if (e.NameWithoutLocale.IsEquivalentTo("Portraits\\Mariner"))
+            {
+                e.LoadFrom(() => {return Game1.content.Load<Texture2D>("Portraits\\Gil");}, StardewModdingAPI.Events.AssetLoadPriority.Low);
             }
         }
 

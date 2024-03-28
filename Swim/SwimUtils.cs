@@ -252,18 +252,6 @@ namespace Swim
             bool tank = ModEntry.scubaTankID.Value != "" && Game1.player.shirtItem.Value != null && Game1.player.shirtItem.Value.ItemId == ModEntry.scubaTankID.Value;
             bool mask = ModEntry.scubaMaskID.Value != "" && Game1.player.hat.Value != null && Game1.player.hat.Value.ItemId == ModEntry.scubaMaskID.Value;
 
-            if(tank && mask)
-            {
-                Monitor.Log("Wearing scuba gear!");
-            }
-            else
-            {
-                Monitor.LogOnce($"Tank: {tank}, Mask: {mask}");
-                if(mask && !tank)
-                {
-                    Monitor.LogOnce($"TankId: {ModEntry.scubaTankID.Value}, ShirtId: {Game1.player.shirtItem.Value.ItemId}");
-                }
-            }
             return tank && mask;
         }
 

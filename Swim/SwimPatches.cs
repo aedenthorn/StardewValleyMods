@@ -491,6 +491,8 @@ namespace Swim
                 if (__result == false || !Game1.IsMasterGame || !SwimUtils.DebrisIsAnItem(debris))
                     return;
 
+                Monitor.Log($"Sinking debris: {debris.itemId.Value} ({debris.item.Name})");
+
                 if (ModEntry.diveMaps.ContainsKey(__instance.Name) && ModEntry.diveMaps[__instance.Name].DiveLocations.Count > 0)
                 {
                     Point pos = new Point((int)chunkTile.X, (int)chunkTile.Y);
