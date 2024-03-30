@@ -30,7 +30,6 @@ namespace Swim
         public static readonly PerScreen<string> scubaMaskID = new PerScreen<string>();
         public static readonly PerScreen<string> scubaFinsID = new PerScreen<string>();
         public static readonly PerScreen<string> scubaTankID = new PerScreen<string>();
-        public static readonly PerScreen<bool> myButtonDown = new PerScreen<bool>(() => false);
         public static readonly PerScreen<int> oxygen = new PerScreen<int>(() => 0);
         public static readonly PerScreen<int> lastUpdateMs = new PerScreen<int>(() => 0);
         public static readonly PerScreen<bool> willSwim = new PerScreen<bool>(() => false);
@@ -82,7 +81,6 @@ namespace Swim
 
             helper.Events.GameLoop.UpdateTicked += SwimHelperEvents.GameLoop_UpdateTicked;
             helper.Events.Input.ButtonPressed += SwimHelperEvents.Input_ButtonPressed;
-            helper.Events.Input.ButtonReleased += SwimHelperEvents.Input_ButtonReleased;
             helper.Events.GameLoop.DayStarted += SwimHelperEvents.GameLoop_DayStarted;
             helper.Events.GameLoop.GameLaunched += SwimHelperEvents.GameLoop_GameLaunched;
             helper.Events.GameLoop.SaveLoaded += SwimHelperEvents.GameLoop_SaveLoaded;

@@ -61,7 +61,6 @@ namespace Swim
         internal static Texture2D bubbleTexture;
 
         private static readonly PerScreen<int> lastBreatheSound = new PerScreen<int>();
-        private static readonly PerScreen<bool> surfacing = new PerScreen<bool>();
 
         public static void Initialize(IMonitor monitor, IModHelper helper, ModConfig config)
         {
@@ -670,22 +669,10 @@ namespace Swim
             ModEntry.oxygen.Value = SwimUtils.MaxOxygen();
         }
 
-        public static void Input_ButtonReleased(object sender, ButtonReleasedEventArgs e)
-        {
-            if (Game1.player == null)
-            {
-                ModEntry.myButtonDown.Value = false;
-                return;
-            }
-            SwimUtils.CheckIfMyButtonDown();
-        }
-
-
         public static void Input_ButtonPressed(object sender, ButtonPressedEventArgs e)
         {
             if (Game1.player == null || Game1.player.currentLocation == null)
             {
-                ModEntry.myButtonDown.Value = false;
                 return;
             }
 
@@ -797,36 +784,7 @@ namespace Swim
 
             if (Game1.activeClickableMenu == null)
             {
-                if (ModEntry.isUnderwater.Value)
-                {
-                    if (ModEntry.oxygen.Value >= 0)
-                    {
-                        if (!SwimUtils.IsWearingScubaGear())
-                            ModEntry.oxygen.Value--;
-                        else
-                        {
-                            if (ModEntry.oxygen.Value < SwimUtils.MaxOxygen())
-                                ModEntry.oxygen.Value++;
-                            if (ModEntry.oxygen.Value < SwimUtils.MaxOxygen())
-                                ModEntry.oxygen.Value++;
-                        }
-                    }
-                    if (ModEntry.oxygen.Value < 0 && !surfacing.Value)
-                    {
-                        surfacing.Value = true;
-                        Game1.playSound("pullItemFromWater");
-                        DiveLocation diveLocation = ModEntry.diveMaps[Game1.player.currentLocation.Name].DiveLocations.Last();
-                        SwimUtils.DiveTo(diveLocation);
-                    }
-                }
-                else
-                {
-                    surfacing.Value = false;
-                    if (ModEntry.oxygen.Value < SwimUtils.MaxOxygen())
-                        ModEntry.oxygen.Value++;
-                    if (ModEntry.oxygen.Value < SwimUtils.MaxOxygen())
-                        ModEntry.oxygen.Value++;
-                }
+                SwimUtils.updateOxygenValue();
             }
 
             if (SwimUtils.IsWearingScubaGear())
@@ -876,10 +834,6 @@ namespace Swim
             }
             if (!SwimUtils.CanSwimHere())
                 return;
-
-            // only if ready to swim from here on!
-            var readyToAutoSwim = Config.ReadyToSwim;
-            var manualSwim = Helper.Input.IsDown(Config.ManualJumpButton);
 
             if (Game1.player.swimming.Value && !SwimUtils.IsInWater() && !isJumping.Value)
             {
@@ -1020,11 +974,6 @@ namespace Swim
                     }
                 }
 
-                if (!readyToAutoSwim && !manualSwim)
-                {
-                    return;
-                }
-
                 if (Game1.player.bathingClothes.Value && SwimUtils.IsWearingScubaGear() && !Config.SwimSuitAlways)
                     Game1.player.changeOutOfSwimSuit();
                 else if (!Game1.player.bathingClothes.Value && !Config.NoAutoSwimSuit && (!SwimUtils.IsWearingScubaGear() || Config.SwimSuitAlways))
@@ -1046,19 +995,17 @@ namespace Swim
                 }
             }
 
-            SwimUtils.CheckIfMyButtonDown();
-
-            if (!ModEntry.myButtonDown.Value || Game1.player.millisecondsPlayed - lastJump.Value < 250 || SwimUtils.IsMapUnderwater(Game1.player.currentLocation.Name))
+            if(!SwimUtils.isSafeToTryJump())
+            {
                 return;
-
-            // !IMP: Conditions with hand tools (i.e. rods), must be placed here.
-            if ((Helper.Input.IsDown(SButton.MouseLeft) && !Game1.player.swimming.Value && (Game1.player.CurrentTool is WateringCan || Game1.player.CurrentTool is FishingRod)) ||
-                (Helper.Input.IsDown(SButton.MouseRight) && !Game1.player.swimming.Value && (Game1.player.CurrentTool is MeleeWeapon || Game1.player.CurrentTool is WateringCan)))
-                return;
+            }
 
             int direction = Game1.player.FacingDirection;
 
-            if (Helper.Input.IsDown(Config.ManualJumpButton) && Config.EnableClickToSwim)
+            bool didJump = tryToJumpInDirection(direction); // Try to jump in the direction the player is facing
+
+            // If we didn't just jump, 
+            if (!didJump && Helper.Input.IsDown(Config.ManualJumpButton) && SwimUtils.isMouseButton(Config.ManualJumpButton) && Config.EnableClickToSwim)
             {
                 try
                 {
@@ -1074,27 +1021,28 @@ namespace Swim
                         {
                             if (xTile - Game1.player.TilePoint.X > 0)
                             {
-                                //Monitor.Log("Clicking right");
-                                direction = 1;
+                                direction = 1; // Right
                             }
                             else
                             {
-                                //Monitor.Log("Clicking left");
-                                direction = 3;
+                                direction = 3; // Left
                             }
                         }
                         else
                         {
                             if (yTile - Game1.player.TilePoint.Y > 0)
                             {
-                                //Monitor.Log("Clicking down");
-                                direction = 2;
+                                direction = 2; // Down
                             }
                             else
                             {
-                                //Monitor.Log("Clicking up");
-                                direction = 0;
+                                direction = 0; // Up
                             }
+                        }
+
+                        if(direction != Game1.player.FacingDirection)
+                        {
+                            tryToJumpInDirection(direction);
                         }
                     }
                     else // If the player is pressing the manual swim button, manual swim is on, they are not clicking on the opposite terrain, and mustClickOnOppositeTerrain is true
@@ -1107,17 +1055,6 @@ namespace Swim
                     // Assiming this happens when the game can't get the mouse position
                     Monitor.Log("Error in manual direction calculation!");
                 }
-            }
-
-            // At this point, direction will either be the direction the mouse is being clicked in, or the direction the player is facing, with the former prioritizing the latter
-
-            bool didJump = tryToJumpInDirection(direction);
-
-            // If we just tried to jump in the direction the player is facing, we don't want to try again. Additionally, if we jumped in the click direction, the player will now be facing that direction
-            // So this will only be run if we just tried to jump in the direction the player is clicking and failed.
-            if (!didJump && direction != Game1.player.FacingDirection)
-            {
-                tryToJumpInDirection(Game1.player.FacingDirection);
             }
         }
 

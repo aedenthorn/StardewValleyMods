@@ -3,11 +3,13 @@ using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using Netcode;
 using StardewModdingAPI;
+using StardewModdingAPI.Utilities;
 using StardewValley;
 using StardewValley.Locations;
 using StardewValley.TerrainFeatures;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using xTile;
@@ -120,50 +122,69 @@ namespace Swim
             return ModEntry.diveMaps.ContainsKey(name) && ModEntry.diveMaps[name].Features.Contains("Underwater");
         }
 
-
-        public static void CheckIfMyButtonDown()
+        // Replaces myButtonDown because this is what that variable really did
+        public static bool isSafeToTryJump()
         {
-            // !IMP: Base conditions to prevent from swimming placed here.
-            if (Game1.player == null || Game1.player.currentLocation == null || Game1.player.currentLocation.waterTiles == null || !Context.IsPlayerFree || Helper.Input.IsDown(SButton.LeftShift) ||
-                Game1.player.isRidingHorse())
+            // Null checks
+            if (Game1.player == null || Game1.player.currentLocation == null || Game1.player.currentLocation.waterTiles == null)
             {
-                ModEntry.myButtonDown.Value = false;
-                return;
+                return false;
             }
 
-            if (Config.ReadyToSwim && 
-                    (
-                        Game1.isOneOfTheseKeysDown(Game1.input.GetKeyboardState(), Game1.options.moveUpButton) || 
-                        Game1.isOneOfTheseKeysDown(Game1.input.GetKeyboardState(), Game1.options.moveDownButton) ||
-                        Game1.isOneOfTheseKeysDown(Game1.input.GetKeyboardState(), Game1.options.moveLeftButton) ||
-                        Game1.isOneOfTheseKeysDown(Game1.input.GetKeyboardState(), Game1.options.moveRightButton) ||
-                        (Game1.options.gamepadControls && 
-                            (
-                                Game1.input.GetGamePadState().ThumbSticks.Left.Y > 0.25 || 
-                                Game1.input.GetGamePadState().IsButtonDown(Buttons.DPadUp) ||
-                                Game1.input.GetGamePadState().ThumbSticks.Left.Y < -0.25 || 
-                                Game1.input.GetGamePadState().IsButtonDown(Buttons.DPadDown) ||
-                                Game1.input.GetGamePadState().ThumbSticks.Left.X < -0.25 || 
-                                Game1.input.GetGamePadState().IsButtonDown(Buttons.DPadLeft) ||
-                                Game1.input.GetGamePadState().ThumbSticks.Left.X > 0.25 || 
-                                Game1.input.GetGamePadState().IsButtonDown(Buttons.DPadRight)
-                            )
-                        )
-                    )
-                )
+            // Player state checks
+            if(!Context.IsPlayerFree || !Context.CanPlayerMove || Game1.player.isRidingHorse())
             {
-
-                ModEntry.myButtonDown.Value = true;
-                return;
+                return false;
             }
 
-            if (Helper.Input.IsDown(Config.ManualJumpButton) && !(Game1.player.CurrentTool is StardewValley.Tools.Pan) && !(Game1.player.CurrentTool is StardewValley.Tools.FishingRod) && Config.EnableClickToSwim)
+            // Modded player state checks
+            if(Game1.player.millisecondsPlayed - SwimHelperEvents.lastJump.Value < 250 || IsMapUnderwater(Game1.player.currentLocation.Name))
             {
-                ModEntry.myButtonDown.Value = true;
-                return;
+                return false;
             }
 
-            ModEntry.myButtonDown.Value = false;
+            // Player input checks
+            if(!((Game1.player.isMoving() && Config.ReadyToSwim) || (Helper.Input.IsDown(Config.ManualJumpButton) && Config.EnableClickToSwim)) || Helper.Input.IsDown(SButton.LeftShift))
+            {
+                return false;
+            }
+
+            return true;
+        }
+
+        private static readonly PerScreen<bool> surfacing = new PerScreen<bool>();
+        public static void updateOxygenValue()
+        {
+            if (ModEntry.isUnderwater.Value)
+            {
+                if (ModEntry.oxygen.Value >= 0)
+                {
+                    if (!IsWearingScubaGear())
+                        ModEntry.oxygen.Value--;
+                    else
+                    {
+                        if (ModEntry.oxygen.Value < MaxOxygen())
+                            ModEntry.oxygen.Value++;
+                        if (ModEntry.oxygen.Value < MaxOxygen())
+                            ModEntry.oxygen.Value++;
+                    }
+                }
+                if (ModEntry.oxygen.Value < 0 && !surfacing.Value)
+                {
+                    surfacing.Value = true;
+                    Game1.playSound("pullItemFromWater");
+                    DiveLocation diveLocation = ModEntry.diveMaps[Game1.player.currentLocation.Name].DiveLocations.Last();
+                    DiveTo(diveLocation);
+                }
+            }
+            else
+            {
+                surfacing.Value = false;
+                if (ModEntry.oxygen.Value < MaxOxygen())
+                    ModEntry.oxygen.Value++;
+                if (ModEntry.oxygen.Value < MaxOxygen())
+                    ModEntry.oxygen.Value++;
+            }
         }
 
         public static int CheckForBuriedItem(Farmer who)
@@ -409,7 +430,7 @@ namespace Swim
             }
             if (property != null)
             {
-                Monitor.Log("Tile has property: " + property.ToString());
+                //Monitor.Log("Tile has property: " + property.ToString());
                 return property.ToString();
             }
             return null;
@@ -482,6 +503,11 @@ namespace Swim
             }
             bool result = passable == null && tile == null && tmp != null;
             return result;
+        }
+
+        public static bool isMouseButton(SButton button)
+        {
+            return button == SButton.MouseLeft || button == SButton.MouseRight || button == SButton.MouseMiddle || button == SButton.MouseX1 || button == SButton.MouseX2;
         }
         public static bool DebrisIsAnItem(Debris debris)
         {

@@ -570,9 +570,9 @@ namespace Swim
                 tileY = 5;
             }
 
-            Monitor.Log(locationRequest.Name + " " + Game1.currentLocation.Name + " LR");
-            Monitor.Log(tileX + " " + tileY);
-            Monitor.Log(Game1.player.TilePoint.X + " " + Game1.player.TilePoint.Y);
+            //Monitor.Log(locationRequest.Name + " " + Game1.currentLocation.Name + " LR");
+            //Monitor.Log(tileX + " " + tileY);
+            //Monitor.Log(Game1.player.TilePoint.X + " " + Game1.player.TilePoint.Y);
         }
     }
 }
