@@ -9,5 +9,6 @@ namespace SeedInfo
         public bool ModEnabled { get; set; } = true;
         public int DaysPerMonth { get; set; } = 28;
         public Color PriceColor { get; set; } = new Color(100, 25, 25);
+        public bool DisplayMead { get; set; } = true;
     }
 }

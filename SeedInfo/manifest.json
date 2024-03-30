@@ -1,11 +1,11 @@
 ﻿{
   "Name": "Seed Info",
   "Author": "aedenthorn",
-  "Version": "0.1.1",
+  "Version": "0.1.2",
   "Description": "Seed Info.",
   "UniqueID": "aedenthorn.SeedInfo",
   "EntryDll": "SeedInfo.dll",
-  "MinimumApiVersion": "3.15.0",
+  "MinimumApiVersion": "4.0.0",
   "ModUpdater": {
     "Repository": "StardewValleyMods",
     "User": "aedenthorn",

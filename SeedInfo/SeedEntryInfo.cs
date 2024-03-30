@@ -1,5 +1,6 @@
 ﻿using HarmonyLib;
 using StardewValley;
+using StardewValley.Extensions;
 using System.Collections.Generic;
 
 namespace SeedInfo
@@ -7,7 +8,7 @@ namespace SeedInfo
     public class SeedEntryInfo
     {
         public List<QualityInfo> info = new();
-        public int needFertilizer;
+        public string needFertilizer;
 
         public SeedEntryInfo(Object seed)
         {

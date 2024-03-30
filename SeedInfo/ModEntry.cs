@@ -99,6 +99,13 @@ namespace SeedInfo
                 min: 0,
                 max: 255
             );
+            configMenu.AddBoolOption(
+                mod: ModManifest,
+                name: () => "Display Mead",
+                tooltip: () => "Whether to display mead as the keg option for flowers, which have no keg option otherwise.",
+                getValue: () => Config.DisplayMead,
+                setValue: value => Config.DisplayMead = value
+            );
         }
 
     }

@@ -2,27 +2,33 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using StardewValley;
+using StardewValley.GameData.Crops;
+using StardewValley.GameData.Machines;
+using StardewValley.GameData.Objects;
+using StardewValley.ItemTypeDefinitions;
 using StardewValley.Menus;
 using StardewValley.TerrainFeatures;
 using System;
 using System.Collections.Generic;
+using System.Threading;
 using Object = StardewValley.Object;
 
 namespace SeedInfo
 {
     public partial class ModEntry
     {
-        public static string[] seasons = new string[] { "spring", "summer", "fall", "winter" };
+        public static Season[] seasons = new Season[] {Season.Spring, Season.Summer, Season.Fall, Season.Winter};
+
+        public static ObjectDataDefinition preserveItemFactory = new ObjectDataDefinition();
 
         public static ObjectInfo GetCrop(Object seed, int quality)
         {
-            Dictionary<int, string> cropData = Game1.content.Load<Dictionary<int, string>>("Data\\Crops");
-            if (!cropData.TryGetValue(seed.ParentSheetIndex, out string data))
+            if (!tryGetCropData(seed.ItemId, out CropData data))
                 return null;
             try
             {
-                int index = int.Parse(data.Split('/')[3]);
-                var obj = new Object(index, 1, false, -1, quality);
+                Object obj = ItemRegistry.Create<Object>("(O)" + data.HarvestItemId, 1, quality, false); //  Add unique identifier because it seems to prefer BigCraftables when casting to Object (and crops aren't BigCraftables)
+                SMonitor.Log($"{seed.DisplayName}'s crop is {obj.DisplayName}.");
                 return new ObjectInfo(obj);
             }
             catch
@@ -30,42 +36,26 @@ namespace SeedInfo
             }
             return null;
         }
+
         public static ObjectInfo GetPickle(Object crop, int quality)
         {
             if (crop is null)
                 return null;
             Object obj;
-            if(crop.Category == Object.flowersCategory)
+            if (crop.Category == Object.flowersCategory)
             {
-                int honeyPriceAddition = Convert.ToInt32(Game1.objectInformation[crop.ParentSheetIndex].Split('/', StringSplitOptions.None)[1]) * 2;
-                
-                obj = new Object(Vector2.Zero, 340, crop.Name + " Honey", false, true, false, false)
-                {
-                    Price = Convert.ToInt32(Game1.objectInformation[340].Split('/', StringSplitOptions.None)[1]) + honeyPriceAddition,
-                    Quality = quality,
-                };
-                obj.preservedParentSheetIndex.Value = crop.ParentSheetIndex;
+                obj = preserveItemFactory.CreateFlavoredHoney(crop);
             }
             else if (crop.Category == Object.FruitsCategory)
             {
-                obj = new Object(Vector2.Zero, 344, crop.Name + " Jelly", false, true, false, false)
-                {
-                    Price = 50 + crop.Price * 2,
-                    Quality = quality
-                };
-                obj.preserve.Value = new Object.PreserveType?(Object.PreserveType.Jelly);
-                obj.preservedParentSheetIndex.Value = crop.ParentSheetIndex;
+                obj = preserveItemFactory.CreateFlavoredJelly(crop);
             }
             else
             {
-                obj = new Object(Vector2.Zero, 342, "Pickled " + crop.Name, false, true, false, false)
-                {
-                    Price = 50 + crop.Price * 2,
-                    Quality = quality
-                };
-                obj.preserve.Value = new Object.PreserveType?(Object.PreserveType.Pickle);
-                obj.preservedParentSheetIndex.Value = crop.ParentSheetIndex;
+                obj = preserveItemFactory.CreateFlavoredPickle(crop);
             }
+            obj.Quality = quality;
+            SMonitor.Log($"{crop.DisplayName} pickles to {obj?.DisplayName}");
             return new ObjectInfo(obj);
         }
 
@@ -74,77 +64,78 @@ namespace SeedInfo
             if (crop is null)
                 return null;
 
-            Object obj = null;
-
-            switch (crop.ParentSheetIndex)
+            if(crop.Category == Object.flowersCategory && Config.DisplayMead)
             {
-                case 262:
-                    obj = new Object(346, 1, false, -1, quality);
-                    break;
-                case 304:
-                    obj = new Object(303, 1, false, -1, quality);
-                    break;
-                case 433:
-                    obj = new Object(395, 1, false, -1, quality);
-                    break;
-                case 815:
-                    obj = new Object(614, 1, false, -1, quality);
-                    break;
-            }
-            if(obj is null)
-            {
-                switch (crop.Category)
+                Object pickle = GetPickle(crop, quality).obj;
+                if(pickle.ItemId == "340") // If it is honey
                 {
-                    case -80:
-                        obj = new Object(459, 1, false, -1, quality);
-                        break;
-                    case -79:
-                        obj = new Object(Vector2.Zero, 348, crop.Name + " Wine", false, true, false, false)
-                        {
-                            Price = crop.Price * 3,
-                            Quality = quality
-                        };
-                        obj.preserve.Value = new Object.PreserveType?(Object.PreserveType.Wine);
-                        obj.preservedParentSheetIndex.Value = crop.ParentSheetIndex;
-                        break;
-                    case -75:
-                        obj = new Object(Vector2.Zero, 350, crop.Name + " Juice", false, true, false, false)
-                        {
-                            Price = (int)((double)crop.Price * 2.25),
-                            Quality = quality
-                        };
-                        obj.preserve.Value = new Object.PreserveType?(Object.PreserveType.Juice);
-                        obj.preservedParentSheetIndex.Value = crop.ParentSheetIndex;
-                        break;
+                    return GetKeg(pickle, quality);
                 }
             }
-            if (obj is null)
+
+            Dictionary<string, MachineData> machineData = DataLoader.Machines(Game1.content);
+            MachineData kegData = machineData["(BC)12"]; // Keg
+            Object machine = ItemRegistry.Create<Object>("(BC)12");
+            Item cropItem = ItemRegistry.Create<Item>(crop.QualifiedItemId);
+
+            if (!MachineDataUtility.TryGetMachineOutputRule(machine, kegData, MachineOutputTrigger.ItemPlacedInMachine, cropItem, Game1.player, Game1.getFarm(), out MachineOutputRule rule, out MachineOutputTriggerRule triggerRule, out MachineOutputRule ruleIgnoringCount, out MachineOutputTriggerRule triggerIgnoringCount))
                 return null;
-            return new ObjectInfo(obj);
+
+            MachineItemOutput mio = MachineDataUtility.GetOutputData(machine, kegData, rule, cropItem, Game1.player, Game1.getFarm());
+
+            Item output = MachineDataUtility.GetOutputItem(machine, mio, cropItem, Game1.player, true, out int? _);
+
+            Object outputObject = ItemRegistry.Create<Object>(output.QualifiedItemId, 1, quality);
+
+            if (outputObject.preserve.Value is Object.PreserveType type)
+            {
+                SMonitor.Log($"Using the factory for {outputObject.DisplayName} with price {outputObject.salePrice()}");
+                outputObject = preserveItemFactory.CreateFlavoredItem(type, crop);
+                outputObject.Quality = quality;
+            }else if(outputObject.ItemId == "350") // Juice
+            {
+                SMonitor.Log($"Using the factory for {outputObject.DisplayName} with price {outputObject.salePrice()}");
+                outputObject = preserveItemFactory.CreateFlavoredJuice(crop);
+                outputObject.Quality = quality;
+            }else if(outputObject.ItemId == "348") // Wine
+            {
+                SMonitor.Log($"Using the factory for {outputObject.DisplayName} with price {outputObject.salePrice()}");
+                outputObject = preserveItemFactory.CreateFlavoredWine(crop);
+                outputObject.Quality = quality;
+            }
+
+            SMonitor.Log($"{crop.DisplayName} kegs to {outputObject?.DisplayName} with price {outputObject.salePrice()}");
+
+            return new ObjectInfo(outputObject);
         }
 
-        public static int NeedFertilizer(Object seed)
+        // Returns "" if it needs no fertilizer and null if no fertilizer could save it.
+        public static string NeedFertilizer(Object seed)
         {
-            Crop c = new Crop(seed.ParentSheetIndex, 0, 0);
+            if (!tryGetCropData(seed.ItemId, out CropData data))
+                return "";
 
-            if (c.seasonsToGrowIn.Contains(seasons[(Utility.getSeasonNumber(Game1.currentSeason) + 1) % 4]))
-                return 0;
-            if (HasEnoughDaysLeft(c, 0))
-                return 0;
-            if(HasEnoughDaysLeft(c, 465))
-                return 465;
-            if(HasEnoughDaysLeft(c, 466))
-                return 466;
-            if(HasEnoughDaysLeft(c, 918))
-                return 918;
-            return -1;
+            Crop crop = new Crop(seed.ItemId, 0, 0, Game1.getFarm());            
+
+            if (data.Seasons.Contains(seasons[(Utility.getSeasonNumber(Game1.currentSeason) + 1) % 4]))
+                return "";
+            if (HasEnoughDaysLeft(crop, null))
+                return "";
+            if (HasEnoughDaysLeft(crop, "(O)465"))
+                return "465";
+            if (HasEnoughDaysLeft(crop, "(O)466"))
+                return "466";
+            if (HasEnoughDaysLeft(crop, "(O)918"))
+                return "918";
+            return null;
         }
 
-        public static bool HasEnoughDaysLeft(Crop c, int fertilizer)
+        public static bool HasEnoughDaysLeft(Crop c, string fertilizer)
         {
             HoeDirt d = new HoeDirt(1, c);
-            d.currentLocation = Game1.getFarm();
-            d.currentTileLocation = new Vector2(0,0);
+            d.Location = Game1.getFarm();
+            d.Tile = new Vector2(0, 0);
+            
             d.fertilizer.Value = fertilizer;
             AccessTools.Method(typeof(HoeDirt), "applySpeedIncreases").Invoke(d, new object[] { Game1.player });
             c = d.crop;
@@ -173,19 +164,19 @@ namespace SeedInfo
                     continue;
                 var mousePos = Game1.getMousePosition();
                 var pos = GetIconPosition(shopMenu, i, 0);
-                if (info.needFertilizer == 0)
+                if (info.needFertilizer == "") // Needs no fertilizer
                 {
                     b.Draw(Game1.mouseCursors, pos, new Rectangle(145, 273, 32, 32), Color.White, 0f, Vector2.Zero, 1f, SpriteEffects.None, 1);
                 }
-                else if (info.needFertilizer < 0)
+                else if (info.needFertilizer == null) // Too late no matter what
                 {
                     b.Draw(Game1.mouseCursors, pos, new Rectangle(209, 273, 32, 32), Color.White, 0f, Vector2.Zero, 1f, SpriteEffects.None, 1);
                 }
                 else
                 {
-                    b.Draw(Game1.objectSpriteSheet, pos, Game1.getSourceRectForStandardTileSheet(Game1.objectSpriteSheet, info.needFertilizer, 16, 16), Color.White, 0f, Vector2.Zero, 2f, SpriteEffects.None, 1);
+                    b.Draw(Game1.objectSpriteSheet, pos, Game1.getSourceRectForStandardTileSheet(Game1.objectSpriteSheet, Game1.objectData[info.needFertilizer].SpriteIndex, 16, 16), Color.White, 0f, Vector2.Zero, 2f, SpriteEffects.None, 1);
                 }
-                if(new Rectangle((int)pos.X, (int)pos.Y, 32, 32).Contains(mousePos))
+                if (new Rectangle((int)pos.X, (int)pos.Y, 32, 32).Contains(mousePos))
                 {
                     AccessTools.FieldRefAccess<ShopMenu, string>(shopMenu, "hoverText") = "";
                     IClickableMenu.drawToolTip(b, SHelper.Translation.Get("need-fertilizer-" + info.needFertilizer), null, null);
@@ -241,7 +232,7 @@ namespace SeedInfo
                 if (hoverObj is not null)
                 {
                     AccessTools.FieldRefAccess<ShopMenu, string>(shopMenu, "hoverText") = "";
-                    IClickableMenu.drawToolTip(b, hoverObj.desc, hoverObj.name, hoverObj.obj, false, -1, shopMenu.currency, -1, -1, null, hoverObj.price);
+                    IClickableMenu.drawToolTip(b, hoverObj.desc, hoverObj.name, hoverObj.obj, false, -1, shopMenu.currency, null, -1, null, hoverObj.price);
                 }
             }
         }
@@ -260,7 +251,20 @@ namespace SeedInfo
 
         private static bool DrawInfo(Point mousePos, SpriteBatch b, Vector2 pos, int j, ObjectInfo info, int quality, Rectangle qr)
         {
-            b.Draw(Game1.objectSpriteSheet, pos + new Vector2(j * 96, 0), Game1.getSourceRectForStandardTileSheet(Game1.objectSpriteSheet, info.obj.ParentSheetIndex, 16, 16), Color.White, 0f, Vector2.Zero, 2f, SpriteEffects.None, 1);
+            ObjectData data = Game1.objectData[info.obj.ItemId];
+            Texture2D texture;
+            if (data != null)
+            {
+                string textureSheet = data.Texture;
+                texture = Game1.content.Load<Texture2D>(textureSheet == null ? "Maps/springobjects" : textureSheet);
+            }
+            else
+            {
+                texture = Game1.objectSpriteSheet;
+            }
+            
+
+            b.Draw(texture, pos + new Vector2(j * 96, 0), Game1.getSourceRectForStandardTileSheet(texture, info.obj.ParentSheetIndex, 16, 16), Color.White, 0f, Vector2.Zero, 2f, SpriteEffects.None, 1);
             if (quality > 0)
             {
                 b.Draw(Game1.mouseCursors, pos + new Vector2(j * 96, 16), qr, Color.White, 0f, Vector2.Zero, 2f, SpriteEffects.None, 1);
@@ -271,6 +275,16 @@ namespace SeedInfo
                 return true;
             }
             return false;
+        }
+
+        public static bool tryGetCropData(string seedId, out CropData data)
+        {
+            Dictionary<string, CropData> cropData = Game1.content.Load<Dictionary<string, CropData>>("Data\\Crops");
+            if(!cropData.TryGetValue(seedId, out data))
+            {
+                return false;
+            }
+            return true;
         }
     }
 }

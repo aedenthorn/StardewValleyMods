@@ -4,6 +4,7 @@ using Microsoft.Xna.Framework.Graphics;
 using StardewModdingAPI;
 using StardewValley;
 using StardewValley.BellsAndWhistles;
+using StardewValley.GameData.Shops;
 using StardewValley.Menus;
 using StardewValley.Network;
 using StardewValley.Objects;
@@ -23,7 +24,7 @@ namespace SeedInfo
     {
         public static Dictionary<int, SeedEntryInfo> shopDict = new();
 
-        [HarmonyPatch(typeof(ShopMenu), nameof(IClickableMenu.draw), new Type[] { typeof(List<ISalable>), typeof(int), typeof(string), typeof(Func<ISalable, Farmer, int, bool>), typeof(Func<ISalable, bool>), typeof(string) })]
+        [HarmonyPatch(typeof(ShopMenu), nameof(IClickableMenu.draw), new Type[] { typeof(string), typeof(ShopData), typeof(ShopOwnerData), typeof(NPC), typeof(Func<ISalable, Farmer, int, bool>), typeof(Func<ISalable, bool>), typeof(bool) })]
         [HarmonyPatch(MethodType.Constructor)]
         public class ShopMenu_Patch
         {
