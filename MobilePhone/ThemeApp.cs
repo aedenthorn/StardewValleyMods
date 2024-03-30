@@ -110,10 +110,10 @@ namespace MobilePhone
                 }
             }
 
-
-            if (Directory.Exists(Path.Combine(Helper.DirectoryPath, "assets", "ringtones")))
+            string fullpath = Path.Combine(Helper.DirectoryPath, "assets", "ringtones");
+            if (Directory.Exists(fullpath))
             {
-                string[] rings = Directory.GetFiles(Path.Combine(Helper.DirectoryPath, "assets", "ringtones"), "*.wav");
+                string[] rings = Directory.GetFiles(fullpath, "*.wav");
                 foreach (string path in rings)
                 {
                     try
@@ -141,12 +141,13 @@ namespace MobilePhone
                         Monitor.Log($"Couldn't load ring {path}:\r\n{ex}", LogLevel.Error);
                     }
                 }
-                rings = Config.BuiltInRingTones.Split(',');
-                foreach (string ring in rings)
-                {
-                    ringDict.Add(ring, null);
-                }
             }
+
+            foreach (string ring in Config.BuiltInRingTones.Split(','))
+            {
+                ringDict.Add(ring, null);
+            }
+
             ringList = ringDict.Keys.ToList();
             skinList = skinDict.Keys.ToList();
             backgroundList = backgroundDict.Keys.ToList();
@@ -381,11 +382,15 @@ namespace MobilePhone
                         continue;
                     }
                     if (ringList[i] == Config.PhoneRingTone)
+                    {
                         e.SpriteBatch.Draw(ModEntry.ringListHighlightTexture, new Rectangle((int)(itemPos.X), (int)itemPos.Y, (int)(screenSize.X), Config.RingListItemHeight), Color.White);
+                    }
 
                     string itemName = ringList[i];
                     if (itemName.Contains(":"))
+                    {
                         itemName = itemName.Split(':')[1];
+                    }
                     e.SpriteBatch.DrawString(Game1.dialogueFont, itemName, itemPos, Config.RingListItemColor, 0, Vector2.Zero, Config.RingListItemScale, SpriteEffects.None, 0.86f);
                 }
             }
