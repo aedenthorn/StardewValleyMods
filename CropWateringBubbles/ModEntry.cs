@@ -44,7 +44,11 @@ namespace CropWateringBubbles
             Helper.Events.Player.Warped += Player_Warped;
 
             var harmony = new Harmony(ModManifest.UniqueID);
-            harmony.PatchAll();
+
+            harmony.Patch(
+                original: AccessTools.Method(typeof(HoeDirt), nameof(HoeDirt.draw)),
+                postfix: new HarmonyMethod(typeof(HoeDirt_draw_Patch), nameof(HoeDirt_draw_Patch.Postfix))
+            );
         }
 
         private void Player_Warped(object sender, StardewModdingAPI.Events.WarpedEventArgs e)
