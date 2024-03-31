@@ -81,7 +81,7 @@ namespace BedTweaks
 
             if (e.NameWithoutLocale.IsEquivalentTo("Data\\Furniture"))
             {
-                Texture2D furnitureTextureSheet = SHelper.GameContent.Load<Texture2D>("TileSheets\\furniture");
+                Texture2D furnitureTextureSheet = SHelper.GameContent.Load<Texture2D>("TileSheets\\Furniture");
                 e.Edit(asset =>
                 {
                     var data = asset.AsDictionary<string, string>().Data;
