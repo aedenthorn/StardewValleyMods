@@ -69,11 +69,11 @@ namespace WallTelevision
 
                 if (Furniture.isDrawingLocationFurniture)
                 {
-                    spriteBatch.Draw(__instance.Name.Contains("Plasma") ? plasmaTexture : tropicalTexture, Game1.GlobalToLocal(Game1.viewport, ___drawPosition.Value + ((__instance.shakeTimer > 0) ? new Vector2((float)Game1.random.Next(-1, 2), (float)Game1.random.Next(-1, 2)) : Vector2.Zero)), source, Color.White * alpha, 0f, Vector2.Zero, 4f, __instance.Flipped ? SpriteEffects.FlipHorizontally : SpriteEffects.None, (__instance.boundingBox.Value.Bottom - 8) / 10000f);
+                    spriteBatch.Draw(__instance.Name.Contains("Plasma") ? getPlasmaTexture() : getTropicalTexture(), Game1.GlobalToLocal(Game1.viewport, ___drawPosition.Value + ((__instance.shakeTimer > 0) ? new Vector2((float)Game1.random.Next(-1, 2), (float)Game1.random.Next(-1, 2)) : Vector2.Zero)), source, Color.White * alpha, 0f, Vector2.Zero, 4f, __instance.Flipped ? SpriteEffects.FlipHorizontally : SpriteEffects.None, (__instance.boundingBox.Value.Bottom - 8) / 10000f);
                 }
                 else
                 {
-                    spriteBatch.Draw(__instance.Name.Contains("Plasma") ? plasmaTexture : tropicalTexture, Game1.GlobalToLocal(Game1.viewport, new Vector2((float)(x * 64 + ((__instance.shakeTimer > 0) ? Game1.random.Next(-1, 2) : 0)), (float)(y * 64 - (__instance.sourceRect.Height * 4 - __instance.boundingBox.Height) + ((__instance.shakeTimer > 0) ? Game1.random.Next(-1, 2) : 0)))), source, Color.White * alpha, 0f, Vector2.Zero, 4f, __instance.Flipped ? SpriteEffects.FlipHorizontally : SpriteEffects.None, (__instance.boundingBox.Value.Bottom - 8 ) / 10000f);
+                    spriteBatch.Draw(__instance.Name.Contains("Plasma") ? getPlasmaTexture() : getTropicalTexture(), Game1.GlobalToLocal(Game1.viewport, new Vector2((float)(x * 64 + ((__instance.shakeTimer > 0) ? Game1.random.Next(-1, 2) : 0)), (float)(y * 64 - (__instance.sourceRect.Height * 4 - __instance.boundingBox.Height) + ((__instance.shakeTimer > 0) ? Game1.random.Next(-1, 2) : 0)))), source, Color.White * alpha, 0f, Vector2.Zero, 4f, __instance.Flipped ? SpriteEffects.FlipHorizontally : SpriteEffects.None, (__instance.boundingBox.Value.Bottom - 8 ) / 10000f);
                 }
                 return false;
             }

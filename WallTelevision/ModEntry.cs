@@ -20,9 +20,6 @@ namespace WallTelevision
         public static ModConfig Config;
         public static ModEntry context;
 
-        private static Texture2D plasmaTexture;
-        private static Texture2D tropicalTexture;
-
         /// <summary>The mod entry point, called after the mod is first loaded.</summary>
         /// <param name="helper">Provides simplified APIs for writing mods.</param>
         public override void Entry(IModHelper helper)
@@ -35,29 +32,21 @@ namespace WallTelevision
             SHelper = helper;
 
             helper.Events.GameLoop.GameLaunched += GameLoop_GameLaunched;
-            helper.Events.GameLoop.SaveLoaded += GameLoop_SaveLoaded;
+            helper.Events.Content.AssetRequested += Content_AssetRequested;
             var harmony = new Harmony(ModManifest.UniqueID);
             harmony.PatchAll();
             // Tropical tv item id is 2326
+            // Plasma tv item it is 1468
         }
 
-        private void GameLoop_SaveLoaded(object sender, SaveLoadedEventArgs e)
+        private void Content_AssetRequested(object sender, AssetRequestedEventArgs args)
         {
-            try
+            if(args.NameWithoutLocale.IsEquivalentTo("aedenthorn.WallTelevision/plasma"))
             {
-                plasmaTexture = Game1.content.Load<Texture2D>("aedenthorn.WallTelevision/plasma");
-            }
-            catch
+                args.LoadFromModFile<Texture2D>("assets/plasma.png", AssetLoadPriority.Medium);
+            }else if(args.NameWithoutLocale.IsEquivalentTo("aedenthorn.WallTelevision/tropical"))
             {
-                plasmaTexture = Helper.ModContent.Load<Texture2D>("assets/plasma.png");
-            }
-            try
-            {
-                tropicalTexture = Game1.content.Load<Texture2D>("aedenthorn.WallTelevision/tropical");
-            }
-            catch
-            {
-                tropicalTexture = Helper.ModContent.Load<Texture2D>("assets/tropical.png");
+                args.LoadFromModFile<Texture2D>("assets/tropical.png", AssetLoadPriority.Medium);
             }
         }
 
@@ -82,6 +71,16 @@ namespace WallTelevision
                 getValue: () => Config.EnableMod,
                 setValue: value => Config.EnableMod = value
             );
+        }
+
+        private static Texture2D getPlasmaTexture()
+        {
+            return Game1.content.Load<Texture2D>("aedenthorn.WallTelevision/plasma");
+        }
+
+        private static Texture2D getTropicalTexture()
+        {
+            return Game1.content.Load<Texture2D>("aedenthorn.WallTelevision/tropical");
         }
     }
 }
