@@ -1,8 +1,6 @@
 ﻿using HarmonyLib;
 using Microsoft.Xna.Framework;
-using StardewModdingAPI;
 using StardewValley;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
@@ -21,26 +19,18 @@ namespace CustomSpousePatioRedux
             if (!Config.EnableMod)
                 return true;
 
-            try {
-                baseSpouseAreaTiles = new Dictionary<string, Dictionary<string, Dictionary<Point, Tile>>>();
-                CacheOffBasePatioArea("default", __instance, __instance.GetSpouseOutdoorAreaCorner());
+            baseSpouseAreaTiles = new Dictionary<string, Dictionary<string, Dictionary<Point, Tile>>>();
+            CacheOffBasePatioArea("default", __instance, __instance.GetSpouseOutdoorAreaCorner());
 
-                if (outdoorAreas == null || outdoorAreas.dict.Count == 0)
-                    return false;
-
-                foreach(var data in outdoorAreas.dict)
-                {
-                    CacheOffBasePatioArea(data.Key);
-                }
-
+            if (outdoorAreas == null || outdoorAreas.dict.Count == 0)
                 return false;
-            }
-            catch (Exception ex)
+
+            foreach(var data in outdoorAreas.dict)
             {
-                SMonitor.Log($"Failed in {nameof(Farm_CacheOffBasePatioArea_Prefix)}:\n{ex}", LogLevel.Error);
-                return true; // run original logic
+                CacheOffBasePatioArea(data.Key);
             }
-            
+
+            return false;
         }
 
         public static bool Farm_ReapplyBasePatioArea_Prefix(Farm __instance)
@@ -84,25 +74,18 @@ namespace CustomSpousePatioRedux
 
         public static void Farm_addSpouseOutdoorArea_Postfix(Farm __instance, string spouseName)
         {
-            try
+            if (!Config.EnableMod || outdoorAreas == null || outdoorAreas.dict.Count == 0 || spouseName == "" || spouseName == null)
+                return;
+            spousePositions[spouseName] = __instance.spousePatioSpot;
+            if (addingExtraAreas)
+                return;
+            addingExtraAreas = true;
+            foreach(var name in outdoorAreas.dict.Keys)
             {
-                if (!Config.EnableMod || outdoorAreas == null || outdoorAreas.dict.Count == 0 || spouseName == "" || spouseName == null)
-                    return;
-                spousePositions[spouseName] = __instance.spousePatioSpot;
-                if (addingExtraAreas)
-                    return;
-                addingExtraAreas = true;
-                foreach (var name in outdoorAreas.dict.Keys)
-                {
-                    if (name != spouseName)
-                        __instance.addSpouseOutdoorArea(name);
-                }
-                addingExtraAreas = false;
+                if(name != spouseName)
+                    __instance.addSpouseOutdoorArea(name);
             }
-            catch (Exception ex)
-            {
-                SMonitor.Log($"Failed in {nameof(Farm_addSpouseOutdoorArea_Postfix)}:\n{ex}", LogLevel.Error);
-            }
+            addingExtraAreas = false;
         }
 
         
@@ -118,52 +101,27 @@ namespace CustomSpousePatioRedux
                 return true;
             }
 
-            try
+            Vector2 patio_location = __instance.GetSpousePatioPosition();
+            if (NPC.checkTileOccupancyForSpouse(Game1.getLocationFromName(outdoorAreas.dict[__instance.Name].location), patio_location, ""))
             {
-                Vector2 patio_location = __instance.GetSpousePatioPosition();
-                if (NPC.checkTileOccupancyForSpouse(Game1.getLocationFromName(outdoorAreas.dict[__instance.Name].location), patio_location, ""))
-                {
-                    return false;
-                }
-                Game1.warpCharacter(__instance, outdoorAreas.dict[__instance.Name].location, patio_location);
-                __instance.popOffAnyNonEssentialItems();
-                __instance.currentMarriageDialogue.Clear();
-                __instance.addMarriageDialogue("MarriageDialogue", "patio_" + __instance.Name, false, new string[0]);
-                __instance.followSchedule = false;
-                __instance.setTilePosition((int)patio_location.X, (int)patio_location.Y);
-                __instance.shouldPlaySpousePatioAnimation.Value = true;
-
                 return false;
             }
-            catch (Exception ex)
-            {
-                SMonitor.Log($"Failed in {nameof(NPC_setUpForOutdoorPatioActivity_Prefix)}:\n{ex}", LogLevel.Error);
-                return true; // run original logic
-            }
-            
+            Game1.warpCharacter(__instance, outdoorAreas.dict[__instance.Name].location, patio_location);
+            __instance.popOffAnyNonEssentialItems();
+            __instance.currentMarriageDialogue.Clear();
+            __instance.addMarriageDialogue("MarriageDialogue", "patio_" + __instance.Name, false, new string[0]);
+            __instance.Schedule = new Dictionary<int, SchedulePathDescription>();
+            __instance.setTilePosition((int)patio_location.X, (int)patio_location.Y);
+            __instance.shouldPlaySpousePatioAnimation.Value = true;
+
+            return false;
         }
         public static bool NPC_GetSpousePatioPosition_Prefix(NPC __instance, ref Vector2 __result)
         {
-            if(!Config.EnableMod)
-            {
+            if (!Config.EnableMod || outdoorAreas == null || outdoorAreas.dict.Count == 0 || !spousePositions.ContainsKey(__instance.Name))
                 return true;
-            }
-
-            try
-            {
-                if (outdoorAreas == null || outdoorAreas.dict.Count == 0 || !spousePositions.ContainsKey(__instance.Name))
-                {
-                    return true;
-                }
-                    
-                __result = spousePositions[__instance.Name].ToVector2();
-                return false;
-            }
-            catch (Exception ex)
-            {
-                SMonitor.Log($"Failed in {nameof(NPC_GetSpousePatioPosition_Prefix)}:\n{ex}", LogLevel.Error);
-                return true; // run original logic
-            }
+            __result = spousePositions[__instance.Name].ToVector2();
+            return false;
         }
     }
 }

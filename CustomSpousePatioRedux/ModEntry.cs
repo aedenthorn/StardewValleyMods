@@ -223,15 +223,7 @@ namespace CustomSpousePatioRedux
                             Game1.drawObjectDialogue(string.Format(Helper.Translation.Get("patios-exist-for"), string.Join(", ", outdoorAreas.dict.Keys)));
                             return;
                         case "CSP_Wizard_Questions_ReloadPatios":
-                            OutdoorAreaData reloadedData = Helper.Data.ReadSaveData<OutdoorAreaData>(saveKey);
-                            if(reloadedData != null)
-                            {
-                                outdoorAreas = reloadedData;
-                            }
-                            else
-                            {
-                                Monitor.Log("Could not load data from the save file! Using old data.", LogLevel.Debug);
-                            }
+                            outdoorAreas = Helper.Data.ReadSaveData<OutdoorAreaData>(saveKey);
                             Game1.getFarm().UpdatePatio();
                             Game1.drawObjectDialogue(string.Format(Helper.Translation.Get("reloaded-patios"), outdoorAreas.dict.Count));
                             return;
