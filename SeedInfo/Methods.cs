@@ -8,9 +8,7 @@ using StardewValley.GameData.Objects;
 using StardewValley.ItemTypeDefinitions;
 using StardewValley.Menus;
 using StardewValley.TerrainFeatures;
-using System;
 using System.Collections.Generic;
-using System.Threading;
 using Object = StardewValley.Object;
 
 namespace SeedInfo
@@ -28,7 +26,7 @@ namespace SeedInfo
             try
             {
                 Object obj = ItemRegistry.Create<Object>("(O)" + data.HarvestItemId, 1, quality, false); //  Add unique identifier because it seems to prefer BigCraftables when casting to Object (and crops aren't BigCraftables)
-                SMonitor.Log($"{seed.DisplayName}'s crop is {obj.DisplayName}.");
+                //SMonitor.Log($"{seed.DisplayName}'s crop is {obj.DisplayName}.");
                 return new ObjectInfo(obj);
             }
             catch
@@ -55,7 +53,7 @@ namespace SeedInfo
                 obj = preserveItemFactory.CreateFlavoredPickle(crop);
             }
             obj.Quality = quality;
-            SMonitor.Log($"{crop.DisplayName} pickles to {obj?.DisplayName}");
+            //SMonitor.Log($"{crop.DisplayName} pickles to {obj?.DisplayName}");
             return new ObjectInfo(obj);
         }
 
@@ -83,28 +81,31 @@ namespace SeedInfo
 
             MachineItemOutput mio = MachineDataUtility.GetOutputData(machine, kegData, rule, cropItem, Game1.player, Game1.getFarm());
 
+            if(mio == null)
+                return null;
+
             Item output = MachineDataUtility.GetOutputItem(machine, mio, cropItem, Game1.player, true, out int? _);
 
             Object outputObject = ItemRegistry.Create<Object>(output.QualifiedItemId, 1, quality);
 
             if (outputObject.preserve.Value is Object.PreserveType type)
             {
-                SMonitor.Log($"Using the factory for {outputObject.DisplayName} with price {outputObject.salePrice()}");
+                //SMonitor.Log($"Using the factory for {outputObject.DisplayName} with price {outputObject.salePrice()}");
                 outputObject = preserveItemFactory.CreateFlavoredItem(type, crop);
                 outputObject.Quality = quality;
             }else if(outputObject.ItemId == "350") // Juice
             {
-                SMonitor.Log($"Using the factory for {outputObject.DisplayName} with price {outputObject.salePrice()}");
+                //SMonitor.Log($"Using the factory for {outputObject.DisplayName} with price {outputObject.salePrice()}");
                 outputObject = preserveItemFactory.CreateFlavoredJuice(crop);
                 outputObject.Quality = quality;
             }else if(outputObject.ItemId == "348") // Wine
             {
-                SMonitor.Log($"Using the factory for {outputObject.DisplayName} with price {outputObject.salePrice()}");
+                //SMonitor.Log($"Using the factory for {outputObject.DisplayName} with price {outputObject.salePrice()}");
                 outputObject = preserveItemFactory.CreateFlavoredWine(crop);
                 outputObject.Quality = quality;
             }
 
-            SMonitor.Log($"{crop.DisplayName} kegs to {outputObject?.DisplayName} with price {outputObject.salePrice()}");
+            //SMonitor.Log($"{crop.DisplayName} kegs to {outputObject?.DisplayName} with price {outputObject.salePrice()}");
 
             return new ObjectInfo(outputObject);
         }
@@ -160,7 +161,7 @@ namespace SeedInfo
             {
                 if (shopMenu.currentItemIndex + i > shopMenu.forSale.Count - 1)
                     break;
-                if (shopMenu.forSale[shopMenu.currentItemIndex + i] != shopMenu.hoveredItem || shopMenu.forSale[shopMenu.currentItemIndex + i] is not Object || !shopDict.TryGetValue(((Object)shopMenu.forSale[shopMenu.currentItemIndex + i]).ParentSheetIndex, out var info))
+                if (shopMenu.forSale[shopMenu.currentItemIndex + i] != shopMenu.hoveredItem || shopMenu.forSale[shopMenu.currentItemIndex + i] is not Object || !shopDict.TryGetValue(((Object)shopMenu.forSale[shopMenu.currentItemIndex + i]).QualifiedItemId, out var info))
                     continue;
                 var mousePos = Game1.getMousePosition();
                 var pos = GetIconPosition(shopMenu, i, 0);

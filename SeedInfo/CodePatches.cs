@@ -22,7 +22,7 @@ namespace SeedInfo
 {
     public partial class ModEntry
     {
-        public static Dictionary<int, SeedEntryInfo> shopDict = new();
+        public static Dictionary<string, SeedEntryInfo> shopDict = new();
 
         [HarmonyPatch(typeof(ShopMenu), nameof(IClickableMenu.draw), new Type[] { typeof(string), typeof(ShopData), typeof(ShopOwnerData), typeof(NPC), typeof(Func<ISalable, Farmer, int, bool>), typeof(Func<ISalable, bool>), typeof(bool) })]
         [HarmonyPatch(MethodType.Constructor)]
@@ -38,7 +38,7 @@ namespace SeedInfo
                 {
                     if (__instance.forSale[i] is not Object || (__instance.forSale[i] as Object).Category != Object.SeedsCategory)
                         continue;
-                    shopDict[((Object)__instance.forSale[i]).ParentSheetIndex] = new SeedEntryInfo((Object)__instance.forSale[i]);
+                    shopDict[((Object)__instance.forSale[i]).QualifiedItemId] = new SeedEntryInfo((Object)__instance.forSale[i]);
                 }
             }
         }
