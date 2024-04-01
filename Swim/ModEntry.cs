@@ -37,6 +37,7 @@ namespace Swim
         public static readonly PerScreen<NPC> oldMariner = new PerScreen<NPC>();
         public static readonly PerScreen<bool> marinerQuestionsWrongToday = new PerScreen<bool>(() => false);
         public static readonly PerScreen<Random> myRand = new PerScreen<Random>(() => new Random());
+        public static PerScreen<bool> locationIsPool = new PerScreen<bool>(() => false);
 
         //public static readonly PerScreen<Dictionary<string, DiveMap>> diveMaps = new PerScreen<Dictionary<string, DiveMap>>(() => new Dictionary<string, DiveMap>());
         public static Dictionary<string, DiveMap> diveMaps = new Dictionary<string, DiveMap>();

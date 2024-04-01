@@ -71,6 +71,11 @@ namespace Swim
 
         public static void Player_Warped(object sender, WarpedEventArgs e)
         {
+            if(!e.IsLocalPlayer)
+            {
+                return;
+            }
+
             if (e.NewLocation.Name == "Custom_ScubaAbigailCave")
             {
                 abigailTicks.Value = 0;
@@ -87,6 +92,8 @@ namespace Swim
             {
                 //SwimMaps.SwitchToWaterTiles(e.NewLocation);
             }
+
+            ModEntry.locationIsPool.Value = false;
         }
 
         public static void Player_InventoryChanged(object sender, InventoryChangedEventArgs e)

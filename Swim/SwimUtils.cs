@@ -516,7 +516,19 @@ namespace Swim
 
         internal static bool CanSwimHere()
         {
-            return (!Config.SwimIndoors || Game1.player.currentLocation.IsOutdoors) && Game1.player.currentLocation is not BeachNightMarket && Game1.player.currentLocation is not VolcanoDungeon && Game1.player.currentLocation is not BathHousePool;
+            bool result = (!Config.SwimIndoors || Game1.player.currentLocation.IsOutdoors) && Game1.player.currentLocation is not BeachNightMarket && Game1.player.currentLocation is not VolcanoDungeon && Game1.player.currentLocation is not BathHousePool && !ModEntry.locationIsPool.Value;
+            if (!result)
+                return false;
+            
+            Point playerPosition = Game1.player.TilePoint;
+            if (Game1.currentLocation.doesTileHaveProperty(playerPosition.X, playerPosition.Y, "TouchAction", "Back") == "PoolEntrance" || Game1.currentLocation.doesTileHaveProperty(playerPosition.X, playerPosition.Y, "TouchAction", "Back") == "ChangeIntoSwimsuit")
+            {
+                Monitor.Log("The current tile is a pool entrance! Disabling swimming in this location.");
+                ModEntry.locationIsPool.Value = true;
+                return false;
+            }
+
+            return true;
         }
     }
 }
