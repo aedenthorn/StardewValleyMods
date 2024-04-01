@@ -1,11 +1,11 @@
 ﻿{
   "Name": "April Fools",
   "Author": "aedenthorn",
-  "Version": "0.1.6",
+  "Version": "0.1.7",
   "Description": "April Fools.",
   "UniqueID": "aedenthorn.AprilFools",
   "EntryDll": "AprilFools.dll",
-  "MinimumApiVersion": "3.13.0",
+  "MinimumApiVersion": "4.0.0",
   "ModUpdater": {
     "Repository": "StardewValleyMods",
     "User": "aedenthorn",

@@ -12,7 +12,7 @@ namespace AprilFools
         public float textAboveHeadPreTimer;
         public int textAboveHeadTimer;
         public int textAboveHeadStyle;
-        public int textAboveHeadColor;
+        public Color textAboveHeadColor;
         public float bTextAboveHeadAlpha;
         public string bTextAboveHead;
         public float bTextAboveHeadPreTimer;
@@ -83,7 +83,7 @@ namespace AprilFools
             textAboveHeadPreTimer = 0;
             textAboveHeadTimer = 3000;
             textAboveHeadStyle = -1;
-            textAboveHeadColor = -1;
+            textAboveHeadColor = Color.Black;
 
             bID = b.myID.Value;
             bTextAboveHeadAlpha = 0f;
