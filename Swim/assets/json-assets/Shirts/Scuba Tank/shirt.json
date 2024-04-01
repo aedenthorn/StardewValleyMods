@@ -4,9 +4,8 @@
     "HasFemaleVariant": true,
     "Price": 100000,
     "Dyeable": true,
-  "NameLocalization":
-  {
-    // "es": "",
+  "NameLocalization": {
+    "es": "Tanque de bueco",
     "ko": "스쿠버 탱크",
     // "de": "",
     // "fr": "",
@@ -16,11 +15,10 @@
     "pt": "Tanque de mergulho",
     "ru": "Костюм аквалангиста",
     // "tr": "",
-    "zh":"水肺深潜气瓶",
+    "zh": "水肺深潜气瓶"
   },
-  "DescriptionLocalization":
-  {
-    // "es": "",
+  "DescriptionLocalization": {
+    "es": "Un tanque de bueco para su respirador.",
     "ko": "물 속에서 호흡하기 위한 스쿠버 탱크.",
     // "de": "",
     // "fr": "",
@@ -30,6 +28,6 @@
     "pt": "Um tanque de mergulho para seu respirador",
     "ru": "Костюм аквалангиста с кислородным баллоном.",
     // "tr": "",
-    "zh":"为你的水肺（自携式水下呼吸装置）准备一个气瓶。",
+    "zh": "为你的水肺（自携式水下呼吸装置）准备一个气瓶。"
   },
 }

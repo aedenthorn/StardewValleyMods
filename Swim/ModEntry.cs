@@ -23,7 +23,7 @@ namespace Swim
         
         public static ModConfig config;
         public static IMonitor SMonitor;
-        public static IJsonAssetsApi JsonAssets;
+        //public static IJsonAssetsApi JsonAssets;
         public static ModEntry context;
 
         public static PerScreen<Texture2D> OxygenBarTexture = new PerScreen<Texture2D>();
@@ -201,46 +201,7 @@ namespace Swim
             {
                 e.LoadFromModFile<Texture2D>($"assets/{e.NameWithoutLocale.ToString().Substring("aedenthorn.Swim/".Length)}.png", StardewModdingAPI.Events.AssetLoadPriority.Exclusive);
             }
-            else if (e.NameWithoutLocale.IsEquivalentTo("Data/Shirts"))
-            {
-                e.Edit(asset =>
-                {
-                    //Try to make a content pack for this in the future. (Json assets not working for the shirt)
-                    var data = asset.AsDictionary<string, ShirtData>().Data;
-                    ShirtData scubaTankData = new ShirtData();
-                    scubaTankData.Name = "Scuba Tank";
-                    scubaTankData.DisplayName = "Scuba Tank";
-                    scubaTankData.Description = "A scuba tank for your respirator.";
-                    scubaTankData.Price = 100000;
-                    scubaTankData.Texture = "Swim/SubaTankTexture";
-                    scubaTankData.SpriteIndex = 0;
-                    scubaTankData.CanChooseDuringCharacterCustomization = false;
-                    scubaTankData.CanBeDyed = false;
-                    data.Add("Swim/Scuba_Tank", scubaTankData);
-                });
-            }
-            else if (e.NameWithoutLocale.IsEquivalentTo("Data/shirtData"))
-            {
-                e.Edit(asset =>
-                {
-                    //Try to make a content pack for this in the future. (Json assets not working for the shirt)
-                    var data = asset.AsDictionary<string, ShirtData>().Data;
-                    ShirtData scubaTankData = new ShirtData();
-                    scubaTankData.Name = "Scuba Tank";
-                    scubaTankData.DisplayName = "Scuba Tank";
-                    scubaTankData.Description = "A scuba tank for your respirator.";
-                    scubaTankData.Price = 100000;
-                    scubaTankData.Texture = "Swim/SubaTankTexture";
-                    scubaTankData.SpriteIndex = 0;
-                    scubaTankData.CanChooseDuringCharacterCustomization = false;
-                    scubaTankData.CanBeDyed = false;
-                    data.Add("Swim/Scuba_Tank", scubaTankData);
-                });
-            }
-            else if (e.NameWithoutLocale.IsEquivalentTo("Swim/SubaTankTexture"))
-            {
-                e.LoadFromModFile<Texture2D>("assets/json-assets/Shirts/Scuba Tank/SpriteSheet.png", StardewModdingAPI.Events.AssetLoadPriority.Medium);
-            }else if (e.NameWithoutLocale.IsEquivalentTo("Portraits\\Mariner"))
+            else if (e.NameWithoutLocale.IsEquivalentTo("Portraits\\Mariner"))
             {
                 e.LoadFrom(() => {return Game1.content.Load<Texture2D>("Portraits\\Gil");}, StardewModdingAPI.Events.AssetLoadPriority.Low);
             }

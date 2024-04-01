@@ -5,9 +5,8 @@
   "PurchasePrice": 50000,
   "Defense": 0,
   "Immunity": 0,
-  "NameLocalization":
-  {
-    // "es": "",
+  "NameLocalization": {
+    "es": "Aletas de bueco",
     "ko": "스쿠버 핀",
     // "de": "",
     // "fr": "",
@@ -17,11 +16,10 @@
     "pt": "Barbatanas de mergulho",
     "ru": "Ласты",
     // "tr": "",
-    "zh":"水肺深潜脚跟鳍",
+    "zh": "水肺深潜脚跟鳍"
   },
-  "DescriptionLocalization":
-  {
-    // "es": "",
+  "DescriptionLocalization": {
+    "es": "¡Le hacen nadar más rápido!",
     "ko": "더 빨리 헤엄칠 수 있습니다!",
     // "de": "",
     // "fr": "",
@@ -31,6 +29,6 @@
     "pt": "Faz você nadar mais rápido",
     "ru": "Позволяет плыть быстрее!",
     // "tr": "",
-    "zh":"让你游得更快！",
+    "zh": "让你游得更快！"
   },
 }

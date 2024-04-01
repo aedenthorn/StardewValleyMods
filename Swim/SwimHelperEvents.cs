@@ -134,68 +134,49 @@ namespace Swim
         {
             // load scuba gear ids
             
-            if (ModEntry.JsonAssets != null)
+            if(DataLoader.Boots(Game1.content).ContainsKey("Swim_ScubaFins"))
             {
-                Monitor.Log("ids:" + ModEntry.scubaMaskID.Value + " " + ModEntry.scubaTankID.Value);
+                ModEntry.scubaFinsID.Value = "Swim_ScubaFins";
 
-                if (ModEntry.scubaMaskID.Value == "" || ModEntry.scubaMaskID.Value == null)
+                Monitor.Log($"Swim mod item #1 ID is {ModEntry.scubaFinsID.Value}.");
+                if (Game1.player.boots.Value != null && Game1.player.boots.Value.Name == "Scuba Fins" && Game1.player.boots.Value.ItemId != ModEntry.scubaFinsID.Value)
                 {
-                    ModEntry.scubaMaskID.Value = "Scuba_Mask";
-                    if (ModEntry.scubaMaskID.Value == "" || ModEntry.scubaMaskID.Value == null)
-                    {
-                        Monitor.Log("Can't get ID for Swim mod item #1. Some functionality will be lost.");
-                    }
-                    else
-                    {
-                        Monitor.Log($"Swim mod item #1 ID is {ModEntry.scubaMaskID.Value}");
-                    }
+                    Game1.player.boots.Value = ItemRegistry.Create<Boots>(ModEntry.scubaFinsID.Value);
                 }
-                else
-                {
-                    Monitor.Log(string.Format("Swim mod item #1 ID is {0}.", ModEntry.scubaMaskID.Value));
-                }
+            }
+            else
+            {
+                Monitor.Log("Could not find scuba fins! Do you have the swim items content pack installed?", LogLevel.Warn);
+            }
 
-                if (ModEntry.scubaTankID.Value == "" || ModEntry.scubaTankID.Value == null)
-                {
-                    ModEntry.scubaTankID.Value = Helper.GameContent.Load<Dictionary<string, ShirtData>>(@"Data/Shirts").First(x => x.Value.Name.StartsWith("Scuba Tank")).Key;
-                    if (ModEntry.scubaMaskID.Value == "" || ModEntry.scubaMaskID.Value == null)
-                    {
-                        Monitor.Log("Can't get ID for Swim mod item #2. Some functionality will be lost.");
-                    }
-                    else
-                    {
-                        Monitor.Log($"Swim mod item #2 ID is {ModEntry.scubaTankID.Value}");
-                    }
-                }
-                else
-                {
-                    Monitor.Log(string.Format("Swim mod item #2 ID is {0}.", ModEntry.scubaTankID.Value));
-                }
+            if (DataLoader.Shirts(Game1.content).ContainsKey("Swim_ScubaTank"))
+            {
+                ModEntry.scubaTankID.Value = "Swim_ScubaTank";
 
-                try
+                Monitor.Log($"Swim mod item #2 ID is {ModEntry.scubaTankID.Value}.");
+                if (Game1.player.shirtItem.Value != null && Game1.player.shirtItem.Value.Name == "Scuba Tank" && Game1.player.shirtItem.Value.ItemId != ModEntry.scubaTankID.Value)
                 {
-                    ModEntry.scubaFinsID.Value = Helper.GameContent.Load<Dictionary<string, string>>(@"Data/Boots").First(x => x.Value.StartsWith("Scuba Fins")).Key;
+                    Game1.player.shirtItem.Value = ItemRegistry.Create<Clothing>(ModEntry.scubaTankID.Value);
                 }
-                catch
+            }
+            else
+            {
+                Monitor.Log("Could not find scuba tank! Do you have the swim items content pack installed?", LogLevel.Warn);
+            }
+
+            if (DataLoader.Hats(Game1.content).ContainsKey("Swim_ScubaMask"))
+            {
+                ModEntry.scubaMaskID.Value = "Swim_ScubaMask";
+
+                Monitor.Log($"Swim mod item #3 ID is {ModEntry.scubaMaskID.Value}.");
+                if (Game1.player.hat.Value != null && Game1.player.hat.Value.Name == "Scuba Mask" && Game1.player.hat.Value.ItemId != ModEntry.scubaMaskID.Value)
                 {
-                    ModEntry.scubaFinsID.Value = ModEntry.JsonAssets.GetClothingId("Scuba Fins");
-                    if (ModEntry.scubaMaskID.Value == "" || ModEntry.scubaMaskID.Value == null)
-                    {
-                        Monitor.Log("Can't get ID for Swim mod item #3. Some functionality will be lost.");
-                    }
-                    else
-                    {
-                        Monitor.Log($"Swim mod item #3 ID is {ModEntry.scubaFinsID.Value}");
-                    }
+                    Game1.player.hat.Value = ItemRegistry.Create<Hat>(ModEntry.scubaMaskID.Value);
                 }
-                if (ModEntry.scubaFinsID.Value != "")
-                {
-                    Monitor.Log(string.Format("Swim mod item #3 ID is {0}.", ModEntry.scubaFinsID.Value));
-                    if (Game1.player.boots.Value != null && Game1.player.boots.Value != null && Game1.player.boots.Value.Name == "Scuba Fins" && Game1.player.boots.Value.ItemId != ModEntry.scubaFinsID.Value)
-                    {
-                        Game1.player.boots.Value = new Boots(ModEntry.scubaFinsID.Value + "");
-                    }
-                }
+            }
+            else
+            {
+                Monitor.Log("Could not find scuba mask! Do you have the swim items content pack installed?", LogLevel.Warn);
             }
 
             // load dive maps
@@ -293,6 +274,7 @@ namespace Swim
         {
             // load scuba gear
 
+            /*
             ModEntry.JsonAssets = Helper.ModRegistry.GetApi<IJsonAssetsApi>("spacechase0.JsonAssets");
             bool flag = ModEntry.JsonAssets == null;
             if (flag)
@@ -302,7 +284,7 @@ namespace Swim
             else
             {
                 ModEntry.JsonAssets.LoadAssets(Path.Combine(Helper.DirectoryPath, "assets/json-assets"));
-            }
+            }*/
 
             // fix dive maps
 
@@ -1323,7 +1305,7 @@ namespace Swim
 
             if (v != Vector2.Zero && Game1.player.millisecondsPlayed - lastProjectile.Value > 350)
             {
-                Game1.player.currentLocation.projectiles.Add(new AbigailProjectile(1, 383, 0, 0, 0, v.X * 6, v.Y * 6, new Vector2(Game1.player.StandingPixel.X - 24, Game1.player.StandingPixel.Y - 48), "Cowboy_monsterDie", null, "Cowboy_gunshot", false, true, Game1.player.currentLocation, Game1.player));
+                Game1.player.currentLocation.projectiles.Add(new AbigailProjectile(1, 3, 0, 0, 0, v.X * 6, v.Y * 6, new Vector2(Game1.player.StandingPixel.X - 24, Game1.player.StandingPixel.Y - 48), "Cowboy_monsterDie", null, "Cowboy_gunshot", false, true, Game1.player.currentLocation, Game1.player, shotItemId: "(O)382"));
                 lastProjectile.Value = Game1.player.millisecondsPlayed;
             }
 
