@@ -25,7 +25,7 @@ namespace Swim
 
         public SeaCrab(Vector2 position) : base(position)
         {
-            Sprite.LoadTexture("aedenthorn.Swim/Fishies/" + crabTextures[Game1.random.Next(100) < ModEntry.config.PercentChanceCrabIsMimic ? 1 : 0]);
+            Sprite.LoadTexture("aedenthorn.Swim/Fishies/" + crabTextures[Game1.random.Next(100) < ModEntry.Config.PercentChanceCrabIsMimic ? 1 : 0]);
             moveTowardPlayerThreshold.Value = 1;
             damageToFarmer.Value = 0;
         }
