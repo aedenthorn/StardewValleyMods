@@ -136,9 +136,7 @@ namespace MailboxMenu
             {
                 List<string> strings = new List<string>();
                 int count = 0;
-                for (int i = 0; i < Game1.player.mailReceived.Count; i++)
-                {
-                    string id = Game1.player.mailReceived[i];
+                foreach (var id in Game1.player.mailReceived) {
                     if (!mail.TryGetValue(id, out string mailData))
                         continue;
                     if (Game1.mailbox.Contains(id))
@@ -157,7 +155,7 @@ namespace MailboxMenu
                     }
                     if (count >= mainScrolled * ModEntry.Config.GridColumns)
                     {
-                            AddMail(id, count - mainScrolled * ModEntry.Config.GridColumns, mailData);
+                        AddMail(id, count - mainScrolled * ModEntry.Config.GridColumns, mailData);
                     }
                     count++;
                 }
@@ -347,8 +345,10 @@ namespace MailboxMenu
                     lines++;
                 }
             }
-            SpriteText.drawString(b, ModEntry.Config.InboxText, inboxButton.bounds.X, inboxButton.bounds.Y, color: whichTab == 0 ? 0 : 8);
-            SpriteText.drawString(b, ModEntry.Config.ArchiveText, allMailButton.bounds.X, allMailButton.bounds.Y, color: whichTab == 1 ? 0 : 8);
+            SpriteText.drawString(b, ModEntry.Config.InboxText, inboxButton.bounds.X, inboxButton.bounds.Y, 
+                color: whichTab == 0 ? Color.Black : Color.DarkGray);
+            SpriteText.drawString(b, ModEntry.Config.ArchiveText, allMailButton.bounds.X, allMailButton.bounds.Y, 
+                color: whichTab == 1 ? Color.Black : Color.DarkGray);
             for(int i = 0; i < senders.Count; i++)
             {
                 string str = senders[i].name;
