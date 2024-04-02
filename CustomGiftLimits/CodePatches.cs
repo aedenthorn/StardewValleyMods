@@ -89,13 +89,35 @@ namespace CustomGiftLimits
                 var codes = new List<CodeInstruction>(instructions);
                 for (int i = 0; i < codes.Count; i++)
                 {
-                    if (!found1 && i < codes.Count - 13 && codes[i].opcode == OpCodes.Callvirt && codes[i + 1].opcode == OpCodes.Ldc_I4_2 && codes[i + 2].opcode == OpCodes.Blt_S  && codes[i + 5].opcode == OpCodes.Callvirt && (MethodInfo)codes[i].operand == AccessTools.PropertyGetter(typeof(Friendship), nameof(Friendship.GiftsThisWeek)) && (MethodInfo)codes[i + 5].operand == AccessTools.PropertyGetter(typeof(Farmer), nameof(Farmer.spouse)))
+                    /*
+                     * 
+                     * // if ((value != null && value.GiftsThisWeek < 2) || who.spouse == base.Name || this is Child || this.isBirthday() || who.ActiveObject.QualifiedItemId == "(O)StardropTea")
+	                 *  IL_18d6: ldloc.1
+	                 *  IL_18d7: brfalse.s IL_18e2
+                     *
+	                 *  IL_18d9: ldloc.1
+	                 *  IL_18da: call instance int32 StardewValley.Friendship::get_GiftsThisWeek()
+	                 *  IL_18df: ldc.i4.2
+	                 *  IL_18e0: blt.s IL_1929
+                     *
+	                 *  // This is that "who.spouse == base.Name". We want to null out all of these codes
+	                 *  IL_18e2: ldloc.0
+	                 *  IL_18e3: ldfld class StardewValley.Farmer StardewValley.NPC/'<>c__DisplayClass234_0'::who
+	                 *  IL_18e8: callvirt instance string StardewValley.Farmer::get_spouse()
+	                 *  IL_18ed: ldarg.0
+	                 *  IL_18ee: call instance string StardewValley.Character::get_Name()
+	                 *  IL_18f3: call bool [System.Runtime]System.String::op_Equality(string, string)
+	                 *  IL_18f8: brtrue.s IL_1929
+                     */
+                    // For this first if, we want codes[i] to be that ldloc.0
+                    if (!found1 && i < codes.Count - 7 && codes[i].opcode == OpCodes.Ldloc_0 && codes[i + 1].opcode == OpCodes.Ldfld && codes[i + 2].opcode == OpCodes.Callvirt && codes[i + 3].opcode == OpCodes.Ldarg_0 && codes[i + 4].opcode == OpCodes.Call && codes[i + 5].opcode == OpCodes.Call && codes[i + 6].opcode == OpCodes.Brtrue_S 
+                        && (MethodInfo)codes[i+2].operand == AccessTools.Method(typeof(Farmer), "get_spouse") && (MethodInfo)codes[i + 4].operand == AccessTools.Method(typeof(Character), "get_Name"))
                     {
                         SMonitor.Log("Removing spouse infinite gifts per week");
-                        for(int j = 0; j < 11; j++)
+                        for(int j = 0; j < 7; j++)
                         {
-                            codes[i + 3 + j].opcode = OpCodes.Nop;
-                            codes[i + 3 + j].operand = null;
+                            codes[i + j].opcode = OpCodes.Nop;
+                            codes[i + j].operand = null;
                         }
                         found1 = true;
                     }
@@ -165,19 +187,58 @@ namespace CustomGiftLimits
         {
             public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions)
             {
+                /*
+                 * Before patch:
+                 * 
+                 * // if (!flag2 && !socialEntry.IsChild) <- the C# code we are replacing
+	             *  IL_039d: ldloc.s 5
+	             *  IL_039f: brtrue IL_063d
+                 *
+	             *  IL_03a4: ldloc.0
+	             *  IL_03a5: ldfld bool StardewValley.Menus.SocialPage/SocialEntry::IsChild
+	             *  IL_03aa: brtrue IL_063d
+                 * 
+                 * I want to replace the operations before the second brtrue with setting up and calling drawGiftAmounts (will take 4 operations)
+                 * drawGiftAmounts will always return true, so the brtrue will be hit
+                 * That if statement leads to the default game code for drawing the gifts, so if we hit the brtrue, it won't be run (good)
+                 * 
+                 * It should look as follows:
+                 * Load SocialPage
+                 * Load SpriteBatch
+                 * Load int
+                 * Call drawGiftAmounts
+                 * brtrue
+                 * 
+                 * After patch:
+                 * 
+                 * Load arg 0 - Load the SocialPage onto the stack
+                 * Load arg 1 - Load the SpriteBatch onto the stack
+                 * Load arg 2 - Load the int onto the stack
+                 * Call ModEntry.DrawGiftAmounts  (will consume the three things we just loaded)
+                 * IL_039f: brtrue IL_063d
+                 */
                 SMonitor.Log($"Transpiling SocialPage.drawNPCSlot");
 
                 var codes = new List<CodeInstruction>(instructions);
                 for (int i = 0; i < codes.Count; i++)
                 {
-                    if (i < codes.Count - 5 && codes[i].opcode == OpCodes.Ldloc_0 && codes[i + 1].opcode == OpCodes.Call && codes[i + 2].opcode == OpCodes.Callvirt  && codes[i + 5].opcode == OpCodes.Ldfld && (FieldInfo)codes[i + 5].operand == AccessTools.Field(typeof(SocialPage), "kidsNames") && (MethodInfo)codes[i + 2].operand == AccessTools.Method(typeof(Friendship), nameof(Friendship.IsMarried)) ) 
+                    // We want to make sure codes[i] is that ldloc.s
+                    if (i < codes.Count - 5 && codes[i].opcode == OpCodes.Ldloc_S && codes[i + 1].opcode == OpCodes.Brtrue && codes[i + 2].opcode == OpCodes.Ldloc_0  && codes[i + 3].opcode == OpCodes.Ldfld && codes[i + 4].opcode == OpCodes.Brtrue && 
+                        ((FieldInfo)codes[i + 3].operand) == AccessTools.Field(typeof(SocialPage.SocialEntry), nameof(SocialPage.SocialEntry.IsChild))) 
                     {
+
                         SMonitor.Log("replacing gift boxes");
-                        codes[i + 2].opcode = OpCodes.Call;
-                        codes[i + 2].operand = AccessTools.Method(typeof(ModEntry), nameof(ModEntry.DrawGiftAmounts));
-                        codes.Insert(i + 2, new CodeInstruction(OpCodes.Ldarg_2));
-                        codes.Insert(i + 2, new CodeInstruction(OpCodes.Ldarg_1));
-                        codes.Insert(i + 2, new CodeInstruction(OpCodes.Ldarg_0));
+                        codes[i].opcode = OpCodes.Ldarg_0; // Replaces the ldloc.s
+                        codes[i].operand = null;
+
+                        codes[i+1].opcode = OpCodes.Ldarg_1; // Replaces the first brtrue
+                        codes[i+1].operand = null;
+
+                        codes[i+2].opcode = OpCodes.Ldarg_2; // Replaces the ldloc.0
+                        codes[i+2].operand = null;
+
+                        codes[i+3].opcode = OpCodes.Call; // Replaces the ldfld
+                        codes[i+3].operand = AccessTools.Method(typeof(ModEntry), nameof(ModEntry.DrawGiftAmounts));
                         break;
                     }
                 }
@@ -186,17 +247,25 @@ namespace CustomGiftLimits
             }
         }
 
-        private static bool DrawGiftAmounts(Friendship f, SocialPage page, SpriteBatch b, int i)
+        private static bool DrawGiftAmounts(SocialPage page, SpriteBatch b, int i)
         {
-            if (!Config.ModEnabled)
-                return f.IsMarried();
+            Friendship f = page.GetSocialEntry(i).Friendship;
 
-            if (AccessTools.FieldRefAccess<SocialPage, List<string>>(page, "kidsNames").Contains(page.names[i] as string))
+            if (!Config.ModEnabled) // If the mod is disabled or f is null (the npc is unmet), just run the default code
+                return page.GetSocialEntry(i).IsMarriedToCurrentPlayer() || page.GetSocialEntry(i).IsChild;
+
+            if (Game1.player.getChildren().Contains(page.SocialEntries[i].Character))
                 return true;
 
             int perDay;
             int perWeek;
-            if (f.IsMarried() || f.IsRoommate())
+
+            if (f == null) // If they haven't been met yet.
+            {
+                perDay = Config.OrdinaryGiftsPerDay;
+                perWeek = Config.OrdinaryGiftsPerWeek;
+            }
+            else if (f.IsMarried() || f.IsRoommate())
             {
                 perDay = Config.SpouseGiftsPerDay;
                 perWeek = Config.SpouseGiftsPerWeek;
@@ -217,15 +286,15 @@ namespace CustomGiftLimits
                 perWeek = Config.OrdinaryGiftsPerWeek;
             }
 
-            string day = f.GiftsToday+"";
-            string week = f.GiftsThisWeek+"";
+            string day = f == null ? "0" : f.GiftsToday+"";
+            string week = f == null ? "0" : f.GiftsThisWeek+"";
             string perDayString = perDay + "";
             string perWeekString = perWeek + "";
 
             ClickableTextureComponent sprite = AccessTools.FieldRefAccess<SocialPage, List<ClickableTextureComponent>>(page, "sprites")[i];
 
             Utility.drawWithShadow(b, Game1.mouseCursors2, new Vector2(page.xPositionOnScreen + 384 + 424, sprite.bounds.Y), new Rectangle(180, 175, 13, 11), Color.White, 0f, Vector2.Zero, 4f, false, 0.88f, 0, -1, 0.2f);
-            b.Draw(Game1.mouseCursors, new Vector2(page.xPositionOnScreen + 384 + 432, sprite.bounds.Y + 32 + 20), new Rectangle?(new Rectangle(227 + (f.TalkedToToday ? 9 : 0), 425, 9, 9)), Color.White, 0f, Vector2.Zero, 4f, SpriteEffects.None, 0.88f);
+            b.Draw(Game1.mouseCursors, new Vector2(page.xPositionOnScreen + 384 + 432, sprite.bounds.Y + 32 + 20), new Rectangle?(new Rectangle(227 + (f !=null && f.TalkedToToday ? 9 : 0), 425, 9, 9)), Color.White, 0f, Vector2.Zero, 4f, SpriteEffects.None, 0.88f);
 
             if (perDay == 0 || perWeek == 0)
                 return true;
