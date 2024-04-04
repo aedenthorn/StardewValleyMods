@@ -20,19 +20,17 @@ namespace HugsAndKisses
 
         public static bool NPC_checkAction_Prefix(ref NPC __instance, ref Farmer who, GameLocation l, ref bool __result)
         {
-
             try
             {
-                if (!Config.EnableMod || __instance.IsInvisible || __instance.isSleeping.Value || !who.canMove || who.checkForQuestComplete(__instance, -1, -1, who.ActiveObject, null, -1, 5) || (who.pantsItem.Value?.ParentSheetIndex == 15 && (__instance.Name.Equals("Lewis") || __instance.Name.Equals("Marnie"))) || (__instance.Name.Equals("Krobus") && who.hasQuest("28")) || !who.IsLocalPlayer)
+                if (!Config.EnableMod || __instance.IsInvisible || __instance.isSleeping.Value || !who.canMove || who.checkForQuestComplete(__instance, -1, -1, who.ActiveObject, null, -1, 5) || who.pantsItem.Value?.ParentSheetIndex == 15 && (__instance.Name.Equals("Lewis") || __instance.Name.Equals("Marnie")) || __instance.Name.Equals("Krobus") && who.hasQuest("28") || !who.IsLocalPlayer)
                 {
                     return true;
                 }
-                    
 
-                if (
-                    (who.friendshipData.ContainsKey(__instance.Name) && (who.friendshipData[__instance.Name].IsMarried() || who.friendshipData[__instance.Name].IsEngaged())) ||
-                    ((__instance.datable.Value || Config.AllowNonDateableNPCsToHugAndKiss) && who.friendshipData.ContainsKey(__instance.Name) && !who.friendshipData[__instance.Name].IsMarried() && !who.friendshipData[__instance.Name].IsEngaged() && ((who.friendshipData[__instance.Name].IsDating() && Config.DatingKisses) || (who.getFriendshipHeartLevelForNPC(__instance.Name) >= Config.HeartsForFriendship && Config.FriendHugs)))
-                    )
+
+                if (who.friendshipData.ContainsKey(__instance.Name) && (who.friendshipData[__instance.Name].IsMarried() || who.friendshipData[__instance.Name].IsEngaged() || (who.friendshipData[__instance.Name].IsDating() && Config.DatingKisses))
+                 || ((__instance.datable.Value || Config.AllowNonDateableNPCsToHugAndKiss) && who.friendshipData.ContainsKey(__instance.Name) && !who.friendshipData[__instance.Name].IsMarried() && !who.friendshipData[__instance.Name].IsEngaged())
+                 || (who.getFriendshipHeartLevelForNPC(__instance.Name) >= Config.HeartsForFriendship && Config.FriendHugs))
                 {
                     __instance.faceDirection(-3);
 
