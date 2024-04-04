@@ -602,108 +602,17 @@ namespace Swim
                 return;
             }
 
+            if (Game1.player.swimming.Value && tryToWarp()) // Returns true if it is warping
+                return;
+
             if (Game1.player.swimming.Value)
             {
-                DiveMap dm = null;
-                Point edgePos = Game1.player.TilePoint;
-
-                if (ModEntry.diveMaps.ContainsKey(Game1.player.currentLocation.Name))
+                if (SwimUtils.IsWearingScubaGear() && !Config.SwimSuitAlways && SwimUtils.IsMapUnderwater(Game1.currentLocation.Name))
                 {
-                    dm = ModEntry.diveMaps[Game1.player.currentLocation.Name];
+                    if(Game1.player.bathingClothes.Value)
+                        Game1.player.changeOutOfSwimSuit();
                 }
-
-                if (Game1.player.position.Y > Game1.viewport.Y + Game1.viewport.Height - 16)
-                {
-                    Game1.player.position.Value = new Vector2(Game1.player.position.X, Game1.viewport.Y + Game1.viewport.Height - 17);
-                    if (dm != null)
-                    {
-                        EdgeWarp edge = dm.EdgeWarps.Find((x) => x.ThisMapEdge == "Bottom" && x.FirstTile <= edgePos.X && x.LastTile >= edgePos.X);
-                        if (edge != null)
-                        {
-                            Point pos = SwimUtils.GetEdgeWarpDestination(edgePos.X, edge);
-                            if (pos != Point.Zero)
-                            {
-                                Monitor.Log("warping south");
-                                Game1.warpFarmer(edge.OtherMapName, pos.X, pos.Y, false);
-                            }
-                        }
-                    }
-                }
-                else if (Game1.player.position.Y < Game1.viewport.Y - 16)
-                {
-                    Game1.player.position.Value = new Vector2(Game1.player.position.X, Game1.viewport.Y - 15);
-
-                    if (dm != null)
-                    {
-                        EdgeWarp edge = dm.EdgeWarps.Find((x) => x.ThisMapEdge == "Top" && x.FirstTile <= edgePos.X && x.LastTile >= edgePos.X);
-                        if (edge != null)
-                        {
-                            Point pos = SwimUtils.GetEdgeWarpDestination(edgePos.X, edge);
-                            if (pos != Point.Zero)
-                            {
-                                Monitor.Log("warping north");
-                                Game1.warpFarmer(edge.OtherMapName, pos.X, pos.Y, false);
-                            }
-                        }
-                    }
-                }
-                else if (Game1.player.position.X > Game1.viewport.X + Game1.viewport.Width - 32)
-                {
-                    Game1.player.position.Value = new Vector2(Game1.viewport.X + Game1.viewport.Width - 33, Game1.player.position.Y);
-
-                    if (dm != null)
-                    {
-                        EdgeWarp edge = dm.EdgeWarps.Find((x) => x.ThisMapEdge == "Right" && x.FirstTile <= edgePos.Y && x.LastTile >= edgePos.Y);
-                        if (edge != null)
-                        {
-                            Point pos = SwimUtils.GetEdgeWarpDestination(edgePos.Y, edge);
-                            if (pos != Point.Zero)
-                            {
-                                Monitor.Log("warping east");
-                                Game1.warpFarmer(edge.OtherMapName, pos.X, pos.Y, false);
-                            }
-                        }
-                    }
-
-                    if (Game1.player.currentLocation.Name == "Forest")
-                    {
-                        if (Game1.player.position.Y / 64 > 74)
-                            Game1.warpFarmer("Beach", 0, 13, false);
-                        else
-                            Game1.warpFarmer("Town", 0, 100, false);
-                    }
-                }
-                else if (Game1.player.position.X < Game1.viewport.X - 32)
-                {
-                    Game1.player.position.Value = new Vector2(Game1.viewport.X - 31, Game1.player.position.Y);
-
-                    if (dm != null)
-                    {
-                        EdgeWarp edge = dm.EdgeWarps.Find((x) => x.ThisMapEdge == "Left" && x.FirstTile <= edgePos.Y && x.LastTile >= edgePos.Y);
-                        if (edge != null)
-                        {
-                            Point pos = SwimUtils.GetEdgeWarpDestination(edgePos.Y, edge);
-                            if (pos != Point.Zero)
-                            {
-                                Monitor.Log("warping west");
-                                Game1.warpFarmer(edge.OtherMapName, pos.X, pos.Y, false);
-                            }
-                        }
-                    }
-
-                    if (Game1.player.currentLocation.Name == "Town")
-                    {
-                        Game1.warpFarmer("Forest", 119, 43, false);
-                    }
-                    else if (Game1.player.currentLocation.Name == "Beach")
-                    {
-                        Game1.warpFarmer("Forest", 119, 111, false);
-                    }
-                }
-
-                if (Game1.player.bathingClothes.Value && SwimUtils.IsWearingScubaGear() && !Config.SwimSuitAlways)
-                    Game1.player.changeOutOfSwimSuit();
-                else if (!Game1.player.bathingClothes.Value && !Config.NoAutoSwimSuit && (!SwimUtils.IsWearingScubaGear() || Config.SwimSuitAlways))
+                else if (!Game1.player.bathingClothes.Value && !Config.NoAutoSwimSuit)
                     Game1.player.changeIntoSwimsuit();
 
                 if (Game1.player.boots.Value != null && ModEntry.scubaFinsID.Value != "" && Game1.player.boots.Value.ItemId == ModEntry.scubaFinsID.Value)
@@ -1068,7 +977,6 @@ namespace Swim
                 }
             }
 
-
             abigailTicks.Value++;
             if (abigailTicks.Value > 80000 / 16f)
             {
@@ -1126,5 +1034,102 @@ namespace Swim
             }
         }
 
+        public static bool tryToWarp()
+        {
+            DiveMap dm = null;
+            Point edgePos = Game1.player.TilePoint;
+
+            string locationName = Game1.player.currentLocation.Name == "BeachNightMarket" ? "Beach" : Game1.player.currentLocation.Name;
+
+            if (ModEntry.diveMaps.ContainsKey(locationName))
+            {
+                dm = ModEntry.diveMaps[locationName];
+            }
+            else
+            {
+                return false;
+            }
+
+            if (Game1.player.position.Y > Game1.viewport.Y + Game1.viewport.Height - 16)
+            {
+                Game1.player.position.Value = new Vector2(Game1.player.position.X, Game1.viewport.Y + Game1.viewport.Height - 17);
+                if (dm != null)
+                {
+                    Monitor.Log($"Trying to warp from ({edgePos.X}, {edgePos.Y})");
+                    EdgeWarp edge = dm.EdgeWarps.Find((x) => x.ThisMapEdge == "Bottom" && x.FirstTile <= edgePos.X && x.LastTile >= edgePos.X);
+                    if (edge != null)
+                    {
+                        Point pos = SwimUtils.GetEdgeWarpDestination(edgePos.X, edge);
+                        if (pos != Point.Zero)
+                        {
+                            Monitor.Log("warping south");
+                            Game1.warpFarmer(edge.OtherMapName, pos.X, pos.Y, false);
+                            return true;
+                        }
+                    }
+                }
+            }
+            else if (Game1.player.position.Y < Game1.viewport.Y - 16)
+            {
+                Game1.player.position.Value = new Vector2(Game1.player.position.X, Game1.viewport.Y - 15);
+
+                if (dm != null)
+                {
+                    Monitor.Log($"Trying to warp from ({edgePos.X}, {edgePos.Y})");
+                    EdgeWarp edge = dm.EdgeWarps.Find((x) => x.ThisMapEdge == "Top" && x.FirstTile <= edgePos.X && x.LastTile >= edgePos.X);
+                    if (edge != null)
+                    {
+                        Point pos = SwimUtils.GetEdgeWarpDestination(edgePos.X, edge);
+                        if (pos != Point.Zero)
+                        {
+                            Monitor.Log("warping north");
+                            Game1.warpFarmer(edge.OtherMapName, pos.X, pos.Y, false);
+                            return true;
+                        }
+                    }
+                }
+            }
+            else if (Game1.player.position.X > Game1.viewport.X + Game1.viewport.Width - 32)
+            {
+                Game1.player.position.Value = new Vector2(Game1.viewport.X + Game1.viewport.Width - 33, Game1.player.position.Y);
+
+                if (dm != null)
+                {
+                    Monitor.Log($"Trying to warp from ({edgePos.X}, {edgePos.Y})");
+                    EdgeWarp edge = dm.EdgeWarps.Find((x) => x.ThisMapEdge == "Right" && x.FirstTile <= edgePos.Y && x.LastTile >= edgePos.Y);
+                    if (edge != null)
+                    {
+                        Point pos = SwimUtils.GetEdgeWarpDestination(edgePos.Y, edge);
+                        if (pos != Point.Zero)
+                        {
+                            Monitor.Log("warping east");
+                            Game1.warpFarmer(edge.OtherMapName, pos.X, pos.Y, false);
+                            return true;
+                        }
+                    }
+                }
+            }
+            else if (Game1.player.position.X < Game1.viewport.X - 32)
+            {
+                Game1.player.position.Value = new Vector2(Game1.viewport.X - 31, Game1.player.position.Y);
+
+                if (dm != null)
+                {
+                    Monitor.Log($"Trying to warp from ({edgePos.X}, {edgePos.Y})");
+                    EdgeWarp edge = dm.EdgeWarps.Find((x) => x.ThisMapEdge == "Left" && x.FirstTile <= edgePos.Y && x.LastTile >= edgePos.Y);
+                    if (edge != null)
+                    {
+                        Point pos = SwimUtils.GetEdgeWarpDestination(edgePos.Y, edge);
+                        if (pos != Point.Zero)
+                        {
+                            Monitor.Log("warping west");
+                            Game1.warpFarmer(edge.OtherMapName, pos.X, pos.Y, false);
+                            return true;
+                        }
+                    }
+                }
+            }
+            return false;
+        }
     }
 }

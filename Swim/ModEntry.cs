@@ -183,9 +183,6 @@ namespace Swim
                prefix: new HarmonyMethod(typeof(SwimPatches), nameof(SwimPatches.GameLocation_checkAction_Prefix))
             );
 
-            //GameLocation e;
-            //e.isCollidingPosition()
-
             harmony.Patch(
                original: AccessTools.Method(typeof(GameLocation), nameof(GameLocation.isCollidingPosition), new Type[] { typeof(Rectangle), typeof(xTile.Dimensions.Rectangle), typeof(bool), typeof(int), typeof(bool), typeof(Character), typeof(bool), typeof(bool), typeof(bool), typeof(bool) }),
                postfix: new HarmonyMethod(typeof(SwimPatches), nameof(SwimPatches.GameLocation_isCollidingPosition_Postfix))
@@ -197,20 +194,20 @@ namespace Swim
             );
 
             harmony.Patch(
-                original: AccessTools.Method(typeof(Game1), nameof(Game1.warpFarmer), new Type[] { typeof(LocationRequest), typeof(int), typeof(int), typeof(int) }),
-                prefix: new HarmonyMethod(typeof(SwimPatches), nameof(SwimPatches.Game1_WarpFarmer_Prefix))
+               original: AccessTools.Method(typeof(FarmerRenderer), nameof(FarmerRenderer.drawHairAndAccesories)),
+               transpiler: new HarmonyMethod(typeof(SwimPatches), nameof(SwimPatches.Farmer_DrawHairAndAccessories_Transpiler))
             );
         }
 
-        private void Content_AssetRequested(object sender, StardewModdingAPI.Events.AssetRequestedEventArgs e)
+        private void Content_AssetRequested(object sender, AssetRequestedEventArgs e)
         {
             if (e.NameWithoutLocale.StartsWith("aedenthorn.Swim/Fishies"))
             {
-                e.LoadFromModFile<Texture2D>($"assets/{e.NameWithoutLocale.ToString().Substring("aedenthorn.Swim/".Length)}.png", StardewModdingAPI.Events.AssetLoadPriority.Exclusive);
+                e.LoadFromModFile<Texture2D>($"assets/{e.NameWithoutLocale.ToString().Substring("aedenthorn.Swim/".Length)}.png", AssetLoadPriority.Exclusive);
             }
             else if (e.NameWithoutLocale.IsEquivalentTo("Portraits\\Mariner"))
             {
-                e.LoadFrom(() => {return Game1.content.Load<Texture2D>("Portraits\\Gil");}, StardewModdingAPI.Events.AssetLoadPriority.Low);
+                e.LoadFrom(() => {return Game1.content.Load<Texture2D>("Portraits\\Gil");}, AssetLoadPriority.Low);
             }
         }
 
@@ -268,6 +265,13 @@ namespace Swim
                     tooltip: () => "If set's false, character will NOT wear a swimsuit automatically when you enter the water.",
                     getValue: () => Config.NoAutoSwimSuit,
                     setValue: value => Config.NoAutoSwimSuit = value
+                );
+                configMenu.AddBoolOption(
+                    mod: ModEntry.context.ModManifest,
+                    name: () => "DisplayHatWithSwimsuit",
+                    tooltip: () => "If set to true, will display your hat while you are wearing your swimming suit.",
+                    getValue: () => Config.DisplayHatWithSwimsuit,
+                    setValue: value => Config.DisplayHatWithSwimsuit = value
                 );
                 configMenu.AddBoolOption(
                     mod: ModEntry.context.ModManifest,

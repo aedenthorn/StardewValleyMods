@@ -1,8 +1,10 @@
 ﻿using HarmonyLib;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using Netcode;
 using StardewModdingAPI;
 using StardewValley;
+using StardewValley.Objects;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -69,6 +71,57 @@ namespace Swim
             {
                 Monitor.Log($"Failed in {nameof(FarmerRenderer_draw_Postfix)}:\n{ex}", LogLevel.Error);
             }
+        }
+
+        public static IEnumerable<CodeInstruction> Farmer_DrawHairAndAccessories_Transpiler(IEnumerable<CodeInstruction> instructions)
+        {
+            var codes = new List<CodeInstruction>(instructions);
+
+            /*
+             * 
+             * 0  IL_0e8d: ldarg.3
+	         * 1  IL_0e8e: ldfld class Netcode.NetRef`1<class StardewValley.Objects.Hat> StardewValley.Farmer::hat
+	         * 2  IL_0e93: callvirt instance !0 class Netcode.NetFieldBase`2<class StardewValley.Objects.Hat, class Netcode.NetRef`1<class StardewValley.Objects.Hat>>::get_Value()
+	         * 3  IL_0e98: brfalse IL_116d
+             *
+             *    // We want to edit this section so that instead of checking farmer.bathingClothes, it calls SwimUtils.ShouldNotDrawHat()
+	         * 4  IL_0e9d: ldarg.3 <- keep (it loads the Farmer object onto the stack)
+	         * 5  IL_0e9e: ldfld class Netcode.NetBool StardewValley.Farmer::bathingClothes <- delete (we only need 3 instructions)
+	         * 6  IL_0ea3: call bool Netcode.NetBool::op_Implicit(class Netcode.NetBool) <- replace operand with SwimUtils.ShouldNotDrawHat()
+	         * 7  IL_0ea8: brtrue IL_116d <- keep
+             *
+	         * 8  IL_0ead: ldarg.3
+	         * 9  IL_0eae: callvirt instance class StardewValley.FarmerSprite StardewValley.Farmer::get_FarmerSprite()
+	         * 10 IL_0eb3: callvirt instance valuetype StardewValley.FarmerSprite/AnimationFrame StardewValley.FarmerSprite::get_CurrentAnimationFrame()
+	         * 11 IL_0eb8: ldfld bool StardewValley.FarmerSprite/AnimationFrame::flip
+             */
+
+            try
+            {
+                // We want codes[i] to be that first ldarg. We are going to check every instruction shown above because for this method, this code is kind of generic (similar checks happen multiple times)
+                for (int i = 0; i < codes.Count; i++)
+                {
+                    if (codes[i].opcode == OpCodes.Ldarg_3 && codes[i+1].opcode == OpCodes.Ldfld && codes[i+2].opcode == OpCodes.Callvirt && codes[i+3].opcode == OpCodes.Brfalse &&
+                        codes[i+4].opcode == OpCodes.Ldarg_3 && codes[i+5].opcode == OpCodes.Ldfld && codes[i+6].opcode == OpCodes.Call && codes[i+7].opcode == OpCodes.Brtrue &&
+                        codes[i+8].opcode == OpCodes.Ldarg_3 && codes[i+9].opcode == OpCodes.Callvirt && codes[i+10].opcode == OpCodes.Callvirt && codes[i+11].opcode == OpCodes.Ldfld &&
+                        (FieldInfo)codes[i+5].operand == AccessTools.Field(typeof(Farmer), nameof(Farmer.bathingClothes)) && (MethodInfo)codes[i+6].operand == AccessTools.Method(typeof(NetBool), "op_Implicit") &&
+                        (FieldInfo)codes[i+11].operand == AccessTools.Field(typeof(FarmerSprite.AnimationFrame), nameof(FarmerSprite.AnimationFrame.flip)))
+                    {
+                        Monitor.Log($"Transpiling Farmer.drawHairAndAccessories");
+
+                        codes[i + 5].opcode = OpCodes.Nop;
+                        codes[i + 5].operand = null;
+
+                        codes[i + 6].operand = AccessTools.Method(typeof(SwimUtils), nameof(SwimUtils.ShouldNotDrawHat));
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Monitor.Log($"Failed in {nameof(Farmer_DrawHairAndAccessories_Transpiler)}:\n{ex}", LogLevel.Error);
+            }
+
+            return codes.AsEnumerable();
         }
 
         internal static void GameLocation_StartEvent_Postfix()
@@ -558,21 +611,6 @@ namespace Swim
             {
                 Monitor.Log($"Failed in {nameof(GameLocation_sinkDebris_Postfix)}:\n{ex}", LogLevel.Error);
             }
-        }
-
-        public static void Game1_WarpFarmer_Prefix(LocationRequest locationRequest, ref int tileX, ref int tileY)
-        {
-            // If warping from mountain to town through the lake,
-            if(Game1.player.currentLocation.Name == "Mountain" && locationRequest.Name == "Town" && Game1.player.TilePoint.X >= 64 && tileY <= 1)
-            {
-                // Warp to the bottom of the waterfall
-                tileX = 94;
-                tileY = 5;
-            }
-
-            //Monitor.Log(locationRequest.Name + " " + Game1.currentLocation.Name + " LR");
-            //Monitor.Log(tileX + " " + tileY);
-            //Monitor.Log(Game1.player.TilePoint.X + " " + Game1.player.TilePoint.Y);
         }
     }
 }

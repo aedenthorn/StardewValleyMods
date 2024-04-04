@@ -8,6 +8,7 @@ namespace Swim
         public bool ReadyToSwim { get; set; }
         public bool SwimIndoors { get; set; }
         public bool SwimSuitAlways { get; set; }
+        public bool DisplayHatWithSwimsuit { get; set; }
         public bool NoAutoSwimSuit { get; set; }
         public bool ShowOxygenBar { get; set; }
         public int JumpTimeInMilliseconds { get; set; }
@@ -56,6 +57,7 @@ namespace Swim
             SwimIndoors = false;
             ShowOxygenBar = true;
             SwimSuitAlways = false;
+            DisplayHatWithSwimsuit = true;
             EnableClickToSwim = true;
             MustClickOnOppositeTerrain = false;
             BreatheSound = true;

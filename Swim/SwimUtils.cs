@@ -516,7 +516,7 @@ namespace Swim
 
         internal static bool CanSwimHere()
         {
-            bool result = (!Config.SwimIndoors || Game1.player.currentLocation.IsOutdoors) && Game1.player.currentLocation is not BeachNightMarket && Game1.player.currentLocation is not VolcanoDungeon && Game1.player.currentLocation is not BathHousePool && !ModEntry.locationIsPool.Value;
+            bool result = (!Config.SwimIndoors || Game1.player.currentLocation.IsOutdoors) && Game1.player.currentLocation is not VolcanoDungeon && Game1.player.currentLocation is not BathHousePool && !ModEntry.locationIsPool.Value;
             if (!result)
                 return false;
             
@@ -529,6 +529,11 @@ namespace Swim
             }
 
             return true;
+        }
+
+        public static bool ShouldNotDrawHat(Farmer farmer)
+        {
+            return (!Config.DisplayHatWithSwimsuit) && farmer.bathingClothes.Value;
         }
     }
 }
