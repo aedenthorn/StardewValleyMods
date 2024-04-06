@@ -7,6 +7,7 @@ using StardewModdingAPI;
 using StardewModdingAPI.Events;
 using StardewModdingAPI.Utilities;
 using StardewValley;
+using StardewValley.Buffs;
 using StardewValley.GameData.Shirts;
 using StardewValley.Locations;
 using StardewValley.Menus;
@@ -83,7 +84,7 @@ namespace Swim
 
 
                 Game1.player.changeOutOfSwimSuit();
-                if (Game1.player.hat.Value != null && Game1.player.hat.Value.ParentSheetIndex != 0)
+                if (Game1.player.hat.Value != null && Game1.player.hat.Value.ItemId != "0")
                     Game1.player.addItemToInventory(Game1.player.hat.Value);
                 Game1.player.hat.Value = new Hat("0");
                 Game1.player.doEmote(9);
@@ -610,25 +611,32 @@ namespace Swim
                 if (SwimUtils.IsWearingScubaGear() && !Config.SwimSuitAlways && SwimUtils.IsMapUnderwater(Game1.currentLocation.Name))
                 {
                     if(Game1.player.bathingClothes.Value)
+                    {
                         Game1.player.changeOutOfSwimSuit();
+                    }
                 }
                 else if (!Game1.player.bathingClothes.Value && !Config.NoAutoSwimSuit)
                     Game1.player.changeIntoSwimsuit();
 
+
                 if (Game1.player.boots.Value != null && ModEntry.scubaFinsID.Value != "" && Game1.player.boots.Value.ItemId == ModEntry.scubaFinsID.Value)
                 {
-                    string buffId = "42883167";
+                    string buffId = "Swim_ScubaFinsSpeed";
                     Buff buff = Game1.player.buffs.AppliedBuffs.Values.FirstOrDefault((Buff p) => p.Equals(buffId));
                     if (buff == null)
                     {
-                        BuffsDisplay buffsDisplay = Game1.buffsDisplay;
-                        Buff buff2 = new Buff("42883167", "Scuba Fins", Helper.Translation.Get("scuba-fins"));
+                        buff = new Buff(buffId, "Scuba Fins", Helper.Translation.Get("scuba-fins"), 50, Game1.content.Load<Texture2D>("TileSheets/BuffsIcons"), 9, new BuffEffects() {Speed = {2}});
 
-                        buff = buff2;
-                        buffsDisplay.updatedIDs.Add(buff2.id);
+                        Game1.player.applyBuff(buff);
                     }
-                    buff.millisecondsDuration = 50;
+                    else
+                    {
+                        buff.millisecondsDuration = 50;
+                    }
                 }
+
+                Game1.player.canOnlyWalk = true;
+                Game1.player.setRunning(false);
             }
 
             if(!SwimUtils.isSafeToTryJump())
@@ -653,28 +661,7 @@ namespace Swim
                     if (isClickingOnOppositeTerrain || !Config.MustClickOnOppositeTerrain)
                     {
                         // Set the direction to the direction of the cursor relative to the player.
-                        if (Math.Abs(xTile - Game1.player.TilePoint.X) > Math.Abs(yTile - Game1.player.TilePoint.Y))
-                        {
-                            if (xTile - Game1.player.TilePoint.X > 0)
-                            {
-                                direction = 1; // Right
-                            }
-                            else
-                            {
-                                direction = 3; // Left
-                            }
-                        }
-                        else
-                        {
-                            if (yTile - Game1.player.TilePoint.Y > 0)
-                            {
-                                direction = 2; // Down
-                            }
-                            else
-                            {
-                                direction = 0; // Up
-                            }
-                        }
+                        direction = SwimUtils.GetDirection(Game1.player.TilePoint.X, Game1.player.TilePoint.Y, xTile, yTile);
 
                         if(direction != Game1.player.FacingDirection)
                         {
@@ -954,6 +941,7 @@ namespace Swim
             {
                 Game1.player.currentLocation.projectiles.Add(new AbigailProjectile(1, 3, 0, 0, 0, v.X * 6, v.Y * 6, new Vector2(Game1.player.StandingPixel.X - 24, Game1.player.StandingPixel.Y - 48), "Cowboy_monsterDie", null, "Cowboy_gunshot", false, true, Game1.player.currentLocation, Game1.player, shotItemId: "(O)382"));
                 lastProjectile.Value = Game1.player.millisecondsPlayed;
+                Game1.player.faceDirection(SwimUtils.GetDirection(0, 0, v.X, v.Y));
             }
 
             foreach (SButton button in abigailShootButtons)

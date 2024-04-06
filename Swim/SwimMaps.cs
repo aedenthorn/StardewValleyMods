@@ -155,7 +155,7 @@ namespace Swim
                 }
                 else if (chance < 0.90)
                 {
-                    SpawnForageItem(l, tile, "(O)80"); // Earth crystal
+                    SpawnForageItem(l, tile, "(O)86"); // Earth crystal
                 }
                 else
                 {

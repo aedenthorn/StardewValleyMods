@@ -195,7 +195,7 @@ namespace Swim
 
             harmony.Patch(
                original: AccessTools.Method(typeof(FarmerRenderer), nameof(FarmerRenderer.drawHairAndAccesories)),
-               transpiler: new HarmonyMethod(typeof(SwimPatches), nameof(SwimPatches.Farmer_DrawHairAndAccessories_Transpiler))
+               transpiler: new HarmonyMethod(typeof(SwimPatches), nameof(SwimPatches.FarmerRenderer_drawHairAndAccessories_Transpiler))
             );
         }
 

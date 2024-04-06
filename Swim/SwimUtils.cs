@@ -278,7 +278,7 @@ namespace Swim
 
         public static bool IsInWater()
         {
-            var tiles = Game1.player.currentLocation.waterTiles;
+            WaterTiles tiles = Game1.player.currentLocation.waterTiles;
             Point p = Game1.player.TilePoint;
 
             if (!Game1.player.swimming.Value && Game1.player.currentLocation.map.GetLayer("Buildings")?.PickTile(new Location(p.X, p.Y) * Game1.tileSize, Game1.viewport.Size) != null)
@@ -516,12 +516,16 @@ namespace Swim
 
         internal static bool CanSwimHere()
         {
-            bool result = (!Config.SwimIndoors || Game1.player.currentLocation.IsOutdoors) && Game1.player.currentLocation is not VolcanoDungeon && Game1.player.currentLocation is not BathHousePool && !ModEntry.locationIsPool.Value;
+            GameLocation location = Game1.player.currentLocation;
+            bool result = (!Config.SwimIndoors || location.IsOutdoors) && location is not VolcanoDungeon && location is not BathHousePool && !ModEntry.locationIsPool.Value;
             if (!result)
                 return false;
             
             Point playerPosition = Game1.player.TilePoint;
-            if (Game1.currentLocation.doesTileHaveProperty(playerPosition.X, playerPosition.Y, "TouchAction", "Back") == "PoolEntrance" || Game1.currentLocation.doesTileHaveProperty(playerPosition.X, playerPosition.Y, "TouchAction", "Back") == "ChangeIntoSwimsuit")
+
+            string property = doesTileHaveProperty(location.Map, playerPosition.X, playerPosition.Y, "TouchAction", "Back");
+
+            if (property == "PoolEntrance" || property == "ChangeIntoSwimsuit")
             {
                 Monitor.Log("The current tile is a pool entrance! Disabling swimming in this location.");
                 ModEntry.locationIsPool.Value = true;
@@ -534,6 +538,43 @@ namespace Swim
         public static bool ShouldNotDrawHat(Farmer farmer)
         {
             return (!Config.DisplayHatWithSwimsuit) && farmer.bathingClothes.Value;
+        }
+
+        /// <summary>
+        /// Gets the direction of one point relative to another.
+        /// 
+        /// Point 1 is the starting point, and point 2 the endpoint.
+        /// Returns a cardinal direction using Stardew Valley's direction system (0 is up, 1 right, 2 down, and 3 left)
+        /// </summary>
+        /// <param name="x1">The x coordinate of the first point.</param>
+        /// <param name="y1">The y coordinate of the first point.</param>
+        /// <param name="x2">The x coordinate of the second point.</param>
+        /// <param name="y2">The y coordinate of the second point.</param>
+        /// <returns>A cardinal direction using Stardew Valley's direction system (0 is up, 1 right, 2 down, and 3 left)</returns>
+        public static int GetDirection(float x1, float y1, float x2, float y2)
+        {
+            if (Math.Abs(x1 - x2) > Math.Abs(y1 - y2))
+            {
+                if (x2 - x1 > 0)
+                {
+                    return 1; // Right
+                }
+                else
+                {
+                    return 3; // Left
+                }
+            }
+            else
+            {
+                if (y2 - y1 > 0)
+                {
+                    return 2; // Down
+                }
+                else
+                {
+                    return 0; // Up
+                }
+            }
         }
     }
 }

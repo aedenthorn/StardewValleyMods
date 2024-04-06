@@ -19,7 +19,6 @@ namespace Swim
             myCollisionSound = collisionSound;
             myExplode = explode;
         }
-
         public override void behaviorOnCollisionWithMonster(NPC n, GameLocation location)
         {
             explosionAnimation(location);
@@ -63,10 +62,8 @@ namespace Swim
                 }
             }
             
-            ModEntry.SMonitor.Log($"Debris: {whichDebris}");
             if (itemId.Value != null)
             {
-                ModEntry.SMonitor.Log($"Id is null");
                 Game1.createRadialDebris(location, whichDebris, (int)(position.X + 32f) / 64, (int)(position.Y + 32f) / 64, 6, false, -1, false);
             }
             else

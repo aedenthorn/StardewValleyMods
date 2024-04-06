@@ -29,12 +29,12 @@
             "Target": "Data/Boots",
             "Entries":{
                 "Swim_ScubaFins":
-                    "Scuba Fins/{{i18n:scubafins-desc}}/50000/0/0/72/{{i18n:scubafins-name}}//0/Swim\\boots"
+                    "Scuba Fins/{{i18n:scubafins-desc}}/50000/0/0/2/{{i18n:scubafins-name}}/Swim\\shoeColors/0/Swim\\boots"
             }
         },
         {
             "Action": "Load",
-            "Target": "Swim/shirts, Swim/hats, Swim/boots",
+            "Target": "Swim/shirts, Swim/hats, Swim/boots, Swim/shoeColors",
             "FromFile": "assets/{{TargetWithoutPath}}.png"
         }
     ]

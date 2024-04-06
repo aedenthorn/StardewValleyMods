@@ -4,7 +4,6 @@ using Microsoft.Xna.Framework.Graphics;
 using Netcode;
 using StardewModdingAPI;
 using StardewValley;
-using StardewValley.Objects;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,7 +11,6 @@ using System.Reflection;
 using System.Reflection.Emit;
 using System.Threading.Tasks;
 using xTile.Dimensions;
-using xTile.Tiles;
 
 namespace Swim
 {
@@ -73,7 +71,14 @@ namespace Swim
             }
         }
 
-        public static IEnumerable<CodeInstruction> Farmer_DrawHairAndAccessories_Transpiler(IEnumerable<CodeInstruction> instructions)
+
+        /// <summary>
+        /// Patches the check in FarmerRenderer.drawHairAndAccessories that causes the player's hat to not be drawn when they are wearing a bathing suit.
+        /// Instead, replaces that with a call to SwimUitls.ShouldNotDrawHat.
+        /// </summary>
+        /// <param name="instructions"></param>
+        /// <returns></returns>
+        public static IEnumerable<CodeInstruction> FarmerRenderer_drawHairAndAccessories_Transpiler(IEnumerable<CodeInstruction> instructions)
         {
             var codes = new List<CodeInstruction>(instructions);
 
@@ -118,7 +123,7 @@ namespace Swim
             }
             catch (Exception ex)
             {
-                Monitor.Log($"Failed in {nameof(Farmer_DrawHairAndAccessories_Transpiler)}:\n{ex}", LogLevel.Error);
+                Monitor.Log($"Failed in {nameof(FarmerRenderer_drawHairAndAccessories_Transpiler)}:\n{ex}", LogLevel.Error);
             }
 
             return codes.AsEnumerable();
