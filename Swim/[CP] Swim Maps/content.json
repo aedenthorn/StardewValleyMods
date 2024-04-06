@@ -1,0 +1,71 @@
+﻿{
+	"Format": "2.0.0",
+	"Changes": [
+        {
+            "Action": "Load",
+            "Target": "Maps/UnderwaterMountain, Maps/UnderwaterBeach, Maps/CrystalCave, Maps/CrystalCaveDark",
+            "FromFile": "assets/{{TargetWithoutPath}}.tbin"
+        },
+		{
+            "Action": "Load",
+            "Target": "Maps/ScubaMaskCave",
+            "FromFile": "assets/Cave.tbin"
+        },
+		{
+            "Action": "Load",
+            "Target": "Maps/ScubaAbigailCave",
+            "FromFile": "assets/Abigail.tbin"
+        },
+		{
+			"Action": "EditData",
+			"Target": "Data/Locations",
+			"Entries": {
+				"Custom_UnderwaterMountain": {
+					"DisplayName": "Underwater Mountain",
+					"CreateOnLoad": {
+						"MapPath": "Maps/UnderwaterMountain"
+					},
+					"CanPlantHere": false,
+					"ExcludeFromNpcPathfinding": true,
+					"MusicDefault": "starshoot"
+				},
+				"Custom_UnderwaterBeach": {
+					"DisplayName": "Underwater Beach",
+					"CreateOnLoad": {
+						"MapPath": "Maps/UnderwaterBeach"
+					},
+					"CanPlantHere": false,
+					"ExcludeFromNpcPathfinding": true,
+					"MusicDefault": "shaneTheme"
+				},
+				"Custom_ScubaCrystalCave": {
+					"DisplayName": "Ancient Mariner's Cave",
+					"CreateOnLoad": {
+						"MapPath": "Maps/CrystalCaveDark"
+					},
+					"CanPlantHere": false,
+					"ExcludeFromNpcPathfinding": true,
+					"MusicDefault": "SettlingIn"
+				},
+				"Custom_ScubaCave": {
+					"DisplayName": "Scuba Mask Cave",
+					"CreateOnLoad": {
+						"MapPath": "Maps/ScubaMaskCave"
+					},
+					"CanPlantHere": false,
+					"ExcludeFromNpcPathfinding": true,
+					"MusicDefault": "stardrop"
+				},
+				"Custom_ScubaAbigailCave": {
+					"DisplayName": "Prairie King Cave",
+					"CreateOnLoad": {
+						"MapPath": "Maps/ScubaAbigailCave"
+					},
+					"CanPlantHere": false,
+					"ExcludeFromNpcPathfinding": true,
+					"MusicDefault": "Cowboy_OVERWORLD"
+				}
+			}
+		}
+	]
+}
