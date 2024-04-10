@@ -1,5 +1,6 @@
 ﻿using HarmonyLib;
 using StardewValley;
+using StardewValley.Extensions;
 using System.Collections.Generic;
 
 namespace SeedInfo
@@ -7,7 +8,7 @@ namespace SeedInfo
     public class SeedEntryInfo
     {
         public List<QualityInfo> info = new();
-        public int needFertilizer;
+        public string needFertilizer;
 
         public SeedEntryInfo(Object seed)
         {
@@ -26,14 +27,22 @@ namespace SeedInfo
         public ObjectInfo crop;
         public ObjectInfo pickle;
         public ObjectInfo keg;
+        public ObjectInfo dehydrate;
         public QualityInfo(Object seed, int q)
         {
             quality = q;
             crop = ModEntry.GetCrop(seed, q);
             if (crop == null)
+            {
                 return;
+            }
             pickle = ModEntry.GetPickle(crop.obj, q);
             keg = ModEntry.GetKeg(crop.obj, q);
+            dehydrate = ModEntry.GetDehydrator(crop.obj, q);
+            if(ModEntry.Config.DivideDehydrate && dehydrate is not null)
+            {
+                dehydrate.price /= 5;
+            }
         }
     }
 
