@@ -106,6 +106,41 @@ namespace SeedInfo
                 getValue: () => Config.DisplayMead,
                 setValue: value => Config.DisplayMead = value
             );
+            configMenu.AddBoolOption(
+                mod: ModManifest,
+                name: () => "Display Crop",
+                tooltip: () => "Whether to display the base crop value in the shop menu.",
+                getValue: () => Config.DisplayCrop,
+                setValue: value => Config.DisplayCrop = value
+            );
+            configMenu.AddBoolOption(
+                mod: ModManifest,
+                name: () => "Display Pickle",
+                tooltip: () => "Whether to display the preserve jar output in the shop menu.",
+                getValue: () => Config.DisplayPickle,
+                setValue: value => Config.DisplayPickle = value
+            );
+            configMenu.AddBoolOption(
+                mod: ModManifest,
+                name: () => "Display Keg",
+                tooltip: () => "Whether to display the keg output in the shop menu.",
+                getValue: () => Config.DisplayKeg,
+                setValue: value => Config.DisplayKeg = value
+            );
+            configMenu.AddBoolOption(
+                mod: ModManifest,
+                name: () => "Display Dehydrate",
+                tooltip: () => "Whether to display the dehydrator output in the shop menu.",
+                getValue: () => Config.DisplayDehydrator,
+                setValue: value => Config.DisplayDehydrator = value
+            );
+            configMenu.AddBoolOption(
+                mod: ModManifest,
+                name: () => "Divide Dehydrate Value",
+                tooltip: () => "Whether to divide the dehydrator value by five to reflect the value per item.",
+                getValue: () => Config.DivideDehydrate,
+                setValue: value => Config.DivideDehydrate = value
+            );
         }
 
     }
