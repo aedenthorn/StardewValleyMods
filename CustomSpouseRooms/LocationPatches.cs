@@ -301,17 +301,29 @@ namespace CustomSpouseRooms
 					}
 				}
 			}
-			var template = (srd.templateName == null ? spouse : srd.templateName);
-            Dictionary<string, CharacterData> characters_data = SHelper.GameContent.Load<Dictionary<string, CharacterData>>("Data\\Characters");
-
-			CharacterData character_data = characters_data[template];//JsonSerializer.Deserialize<CharacterData>(characters_data[template]);
-			CharacterSpouseRoomData room_data = character_data.SpouseRoom;
+            var template = (srd.templateName == null ? spouse : srd.templateName);
+            SMonitor.Log(message: "Using template " + template, level: LogLevel.Info);
+			IDictionary<string, CharacterData> characters_data = Game1.characterData;
+            CharacterData character_data = characters_data[template];
+            if (character_data == null)
+            {
+                SMonitor.Log(level: LogLevel.Error, message: "Failed to load Character Data for " + template);
+                return;
+            }
+            //SMonitor.Log(level: LogLevel.Info, message: "Loaded Character Data for " + character_data.DisplayName);
+            
+            CharacterSpouseRoomData room_data = character_data.SpouseRoom;
             if (room_data == null)
 			{
 				SMonitor.Log(level:  LogLevel.Error, message: "Failed to load Room Data for " + template);
 				return;
 			}
-			string map_path = room_data.MapAsset;
+            //SMonitor.Log(level: LogLevel.Info, message: "Loaded Room Data for " + room_data.MapAsset);
+            string map_path = room_data.MapAsset;
+			if(map_path == null)
+			{
+				map_path = "spouseRooms"; //This is the default that is _supposed_ to be returned according to the doc, but it returns null instead
+            }
 
 
             /*if (indexInSpouseMapSheet == -1 && room_data != null && srd.templateName != null && room_data.ContainsKey(srd.templateName))
@@ -362,6 +374,7 @@ namespace CustomSpouseRooms
 			int height = 9;*/
 
             Rectangle areaToRefurbish = new Rectangle(corner.X, corner.Y, room_data.MapSourceRect.Width, room_data.MapSourceRect.Height);
+			SMonitor.Log(message: "Loading map at " + map_path, level: LogLevel.Info);
             Map refurbishedMap = Game1.game1.xTileContent.Load<Map>("Maps\\" + map_path);
             //int columns = refurbishedMap.Layers[0].LayerWidth / width;
 			//int num2 = refurbishedMap.Layers[0].LayerHeight / height;
