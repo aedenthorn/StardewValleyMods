@@ -117,6 +117,11 @@ namespace CustomFixedDialogue
             "5363",
             "5364",
         };
+
+        private static List<string> rawAllowed = new List<string>()
+        {
+            "MultiplePetBowls_watered"
+        };
         public static void LocalizedContentManager_LoadString_Prefix3(string path, object sub1, object sub2, object sub3, ref string __result)
         {
             dontFix = true;
@@ -180,8 +185,6 @@ namespace CustomFixedDialogue
 
         public static void Dialogue_Box_Prefix(DialogueBox __instance, ref Dialogue dialogue)
         {
-            var x = Environment.StackTrace;
-
             if (dialogue.dialogues.Count == 1)
             {
                 string d = dialogue.dialogues[0].Text;
@@ -209,10 +212,18 @@ namespace CustomFixedDialogue
             FixString(__instance, ref __result);
 
         }
-        public static void convertToDwarvish_Prefix(ref string str)
+        public static void convertToDwarvish_Prefix(Dialogue __instance)
         {
-            FixString(Game1.getCharacterFromName("Dwarf"), ref str);
-
+            if (__instance.dialogues.Count == 1)
+            {
+                string d = __instance.dialogues[0].Text;
+                if (FixString(Game1.getCharacterFromName("Dwarf"), ref d))
+                {
+                    __instance = new Dialogue(Game1.getCharacterFromName("Dwarf"), __instance.TranslationKey, d);
+                    __instance.convertToDwarvish();
+                    return;
+                }
+            };
         }
         public static void GetSummitDialogue_Patch(string key, ref string __result)
         {
@@ -254,6 +265,7 @@ namespace CustomFixedDialogue
                 (path.StartsWith(NPCPrefix) && NPCAllowed.Contains(path.Substring(NPCPrefix.Length)))
                 || (path.StartsWith(eventPrefix) && eventChanges.Contains(path.Substring(eventPrefix.Length)))
                 || (path.StartsWith(utilityPrefix) && utilityChanges.Contains(path.Substring(utilityPrefix.Length)))
+                || (path.StartsWith(CSPrefix) && rawAllowed.Contains(path.Substring(CSPrefix.Length)))
                 )
             {
                 data.modPath = path.Replace(CSPrefix, "");

@@ -36,10 +36,14 @@ namespace CustomFixedDialogue
 
             /* TODOTODOTODO!!! I cannot figure out how to fix this patch!
              * I'm really sorry, I tried my best, but I don't understand enough about harmony to fix this one
+             * EDIT: On further review...we may not need this? Hear me out - 
+             * This code is now called on an instance of Dialogue, like dialogue.convertToDwarvish - which I _think_ this might've not been
+             * like that in previous versions...so I suspect/assume that, by the time this is called, the other harmony Patches have maybe already
+             * fixed the dialog?*/
             harmony.Patch(
                 original: AccessTools.Method(typeof(Dialogue), nameof(Dialogue.convertToDwarvish)),
                 prefix: new HarmonyMethod(typeof(ModEntry), nameof(ModEntry.convertToDwarvish_Prefix))
-            );*/
+            );
             
             harmony.Patch(
                 original: AccessTools.Method(typeof(LocalizedContentManager), nameof(LocalizedContentManager.LoadString), new Type[] { typeof(string), typeof(object), typeof(object), typeof(object) }),

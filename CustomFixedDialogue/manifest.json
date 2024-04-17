@@ -1,7 +1,7 @@
 ﻿{
   "Name": "Custom Fixed Dialogue",
   "Author": "datamancer",
-  "Version": "2.4.3",
+  "Version": "2.4.4",
   "Description": "Custom fixed dialogue.",
   "UniqueID": "datamancer.CustomFixedDialogue",
   "EntryDll": "CustomFixedDialogue.dll",
