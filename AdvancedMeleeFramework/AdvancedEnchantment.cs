@@ -1,5 +1,6 @@
 ﻿using Microsoft.Xna.Framework;
 using StardewValley;
+using StardewValley.Enchantments;
 using StardewValley.Monsters;
 using StardewValley.Tools;
 using System;
@@ -7,7 +8,7 @@ using Object = StardewValley.Object;
 
 namespace AdvancedMeleeFramework
 {
-    public class AdvancedEnchantment: BaseWeaponEnchantment
+    public class AdvancedEnchantment : BaseWeaponEnchantment
     {
         private AdvancedMeleeWeapon advancedWeapon;
         private MeleeWeapon weapon;
@@ -38,7 +39,7 @@ namespace AdvancedMeleeFramework
                     {
                         int heal = Math.Max(1, (int)(amount * float.Parse(enchantment.parameters["amountMult"])));
                         who.health = Math.Min(who.maxHealth, Game1.player.health + heal);
-                        location.debris.Add(new Debris(heal, new Vector2((float)Game1.player.getStandingX(), (float)Game1.player.getStandingY()), Color.Lime, 1f, who));
+                        location.debris.Add(new Debris(heal, Game1.player.getStandingPosition(), Color.Lime, 1f, who));
                         if(enchantment.parameters.ContainsKey("sound"))
                             Game1.playSound(enchantment.parameters["sound"]);
                     }
@@ -75,7 +76,7 @@ namespace AdvancedMeleeFramework
                     {
                         int heal = Math.Max(1, (int)(m.Health * float.Parse(enchantment.parameters["amountMult"])));
                         who.health = Math.Min(who.maxHealth, Game1.player.health + heal);
-                        location.debris.Add(new Debris(heal, new Vector2((float)Game1.player.getStandingX(), (float)Game1.player.getStandingY()), Color.Lime, 1f, who));
+                        location.debris.Add(new Debris(heal, Game1.player.getStandingPosition(), Color.Lime, 1f, who));
                         if (enchantment.parameters.ContainsKey("sound"))
                             Game1.playSound(enchantment.parameters["sound"]);
                     }
@@ -100,18 +101,18 @@ namespace AdvancedMeleeFramework
                             {
                                 string[] ic = item.Split('_');
                                 if (ic.Length == 1)
-                                    Game1.createItemDebris(new Object(int.Parse(item), 1, false, -1, 0), m.Position, Game1.random.Next(4), m.currentLocation, -1);
+                                    Game1.createItemDebris(new Object(item, 1, false, -1, 0), m.Position, Game1.random.Next(4), m.currentLocation, -1);
                                 else if(ic.Length == 2)
                                 {
                                     float chance = int.Parse(ic[1]) / 100f;
                                     if (Game1.random.NextDouble() < chance)
-                                        Game1.createItemDebris(new Object(int.Parse(ic[0]), 1, false, -1, 0), m.Position, Game1.random.Next(4), m.currentLocation, -1);
+                                        Game1.createItemDebris(new Object(ic[0], 1, false, -1, 0), m.Position, Game1.random.Next(4), m.currentLocation, -1);
                                 }
                                 else if(ic.Length == 4)
                                 {
                                     float chance = int.Parse(ic[3]) / 100f;
                                     if (Game1.random.NextDouble() < chance)
-                                        Game1.createItemDebris(new Object(int.Parse(ic[0]), Game1.random.Next(int.Parse(ic[1]), int.Parse(ic[2]))), m.Position, Game1.random.Next(4), m.currentLocation, -1);
+                                        Game1.createItemDebris(new Object(ic[0], Game1.random.Next(int.Parse(ic[1]), int.Parse(ic[2]))), m.Position, Game1.random.Next(4), m.currentLocation, -1);
                                 }
                             }
                         }
@@ -124,7 +125,7 @@ namespace AdvancedMeleeFramework
                     if (Game1.random.NextDouble() < float.Parse(enchantment.parameters["chance"]) / 100f)
                     {
                         float mult = float.Parse(enchantment.parameters["amountMult"]);
-                        int amount = (int)Math.Round(mult * m.maxHealth);
+                        int amount = (int)Math.Round(mult * m.MaxHealth);
                         who.Money += amount;
                         if (enchantment.parameters.ContainsKey("sound"))
                             Game1.playSound(enchantment.parameters["sound"]);

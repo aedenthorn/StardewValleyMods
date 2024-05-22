@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace AdvancedMeleeFramework
 {
@@ -61,10 +62,13 @@ namespace AdvancedMeleeFramework
         public float startingPositionX = 0;
         public float startingPositionY = 0;
         public string collisionSound;
+        public string bounceSound;
         public string firingSound;
         public bool explode = false;
         public bool damagesMonsters = true;
+        [Obsolete("Replaced in 1.6 with shotItemId")]
         public bool spriteFromObjectSheet = false;
+        public string shotItemId;
         public Dictionary<string, string> config = new Dictionary<string, string>();
     }
 

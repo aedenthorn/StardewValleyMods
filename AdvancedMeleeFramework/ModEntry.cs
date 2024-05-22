@@ -3,6 +3,8 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using StardewModdingAPI;
 using StardewValley;
+using StardewValley.Audio;
+using StardewValley.Enchantments;
 using StardewValley.Network;
 using StardewValley.Projectiles;
 using StardewValley.Tools;
@@ -58,21 +60,21 @@ namespace AdvancedMeleeFramework
                 original: AccessTools.Method(typeof(MeleeWeapon), "doAnimateSpecialMove"),
                 prefix: new HarmonyMethod(typeof(AMFPatches), nameof(AMFPatches.doAnimateSpecialMove_Prefix))
             );
-            ConstructorInfo ci = typeof(MeleeWeapon).GetConstructor(new Type[] { typeof(int) });
+            ConstructorInfo ci = typeof(MeleeWeapon).GetConstructor(new Type[] { typeof(string) });
             harmony.Patch(
                original: ci,
                postfix: new HarmonyMethod(typeof(AMFPatches), nameof(AMFPatches.MeleeWeapon_Postfix))
             );
-            ci = typeof(MeleeWeapon).GetConstructor(new Type[] { });
+            ci = typeof(MeleeWeapon).GetConstructor(Array.Empty<Type>());
             harmony.Patch(
                original: ci,
                postfix: new HarmonyMethod(typeof(AMFPatches), nameof(AMFPatches.MeleeWeapon_Postfix))
             );
-            ci = typeof(MeleeWeapon).GetConstructor(new Type[] { typeof(int), typeof(int) });
+            /*ci = typeof(MeleeWeapon).GetConstructor(new Type[] { typeof(int), typeof(int) });
             harmony.Patch(
                original: ci,
                postfix: new HarmonyMethod(typeof(AMFPatches), nameof(AMFPatches.MeleeWeapon_Postfix))
-            );
+            );*/
             harmony.Patch(
                 original: AccessTools.Method(typeof(MeleeWeapon), nameof(MeleeWeapon.drawInMenu), new Type[] { typeof(SpriteBatch), typeof(Vector2), typeof(float), typeof(float), typeof(float), typeof(StackDrawType), typeof(Color), typeof(bool) }),
                 prefix: new HarmonyMethod(typeof(AMFPatches), nameof(AMFPatches.drawInMenu_Prefix)),
@@ -462,7 +464,7 @@ namespace AdvancedMeleeFramework
                     if (frame.sound != null)
                     {
                         //Monitor.Log($"Playing sound {frame.sound}");
-                        user.currentLocation.playSound(frame.sound, NetAudio.SoundContext.Default);
+                        user.currentLocation.playSound(frame.sound, context: SoundContext.Default);
                     }
                     foreach(AdvancedWeaponProjectile p in frame.projectiles)
                     {
@@ -473,7 +475,7 @@ namespace AdvancedMeleeFramework
 
                         //Monitor.Log($"player position: {user.Position}, start position: { new Vector2(startingPositionX, startingPositionY) }");
 
-                        user.currentLocation.projectiles.Add(new BasicProjectile(damage, p.parentSheetIndex, p.bouncesTillDestruct, p.tailLength, p.rotationVelocity, velocity.X, velocity.Y, user.Position + new Vector2(0, -64) + startPos, p.collisionSound, p.firingSound, p.explode, p.damagesMonsters, user.currentLocation, user, p.spriteFromObjectSheet));
+                        user.currentLocation.projectiles.Add(new BasicProjectile(damage, p.parentSheetIndex, p.bouncesTillDestruct, p.tailLength, p.rotationVelocity, velocity.X, velocity.Y, user.Position + new Vector2(0, -64) + startPos, p.collisionSound, p.bounceSound, p.firingSound, p.explode, p.damagesMonsters, user.currentLocation, user, null, p.shotItemId));
                     }
                 }
                 if (++weaponAnimationTicks >= frame.frameTicks)
@@ -566,7 +568,7 @@ namespace AdvancedMeleeFramework
 
             int radius = int.Parse(parameters["radius"]);
 
-            Vector2 playerLocation = who.position;
+            Vector2 playerLocation = who.Position;
             GameLocation currentLocation = who.currentLocation;
             Farm.LightningStrikeEvent lightningEvent = new Farm.LightningStrikeEvent();
             lightningEvent.bigFlash = true;
@@ -591,9 +593,9 @@ namespace AdvancedMeleeFramework
         }
         public void Explosion(Farmer user, MeleeWeapon weapon, Dictionary<string, string> parameters)
         {
-            Vector2 tileLocation = user.getTileLocation();
+            Vector2 tileLocation = user.Tile;//getTileLocation();
             if(parameters.ContainsKey("tileOffsetX") && parameters.ContainsKey("tileOffsetY")) 
-                tileLocation += TranslateVector(new Vector2(float.Parse(parameters["tileOffsetX"]), float.Parse(parameters["tileOffsetY"])), user.facingDirection);
+                tileLocation += TranslateVector(new Vector2(float.Parse(parameters["tileOffsetX"]), float.Parse(parameters["tileOffsetY"])), user.FacingDirection);
             int radius = int.Parse(parameters["radius"]);
             
             int damage;
