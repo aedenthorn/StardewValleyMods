@@ -5,6 +5,7 @@ using StardewModdingAPI;
 using StardewValley;
 using StardewValley.Audio;
 using StardewValley.Enchantments;
+using StardewValley.GameData.Weapons;
 using StardewValley.Network;
 using StardewValley.Projectiles;
 using StardewValley.Tools;
@@ -20,7 +21,7 @@ namespace AdvancedMeleeFramework
         public static ModEntry context;
         public ModConfig Config;
         public static Random myRand;
-        public static Dictionary<int, List<AdvancedMeleeWeapon>> advancedMeleeWeapons = new Dictionary<int, List<AdvancedMeleeWeapon>>();
+        public static Dictionary<string, List<AdvancedMeleeWeapon>> advancedMeleeWeapons = new Dictionary<string, List<AdvancedMeleeWeapon>>();
         public static Dictionary<int, List<AdvancedMeleeWeapon>> advancedMeleeWeaponsByType = new Dictionary<int, List<AdvancedMeleeWeapon>>() 
         {
             {1, new List<AdvancedMeleeWeapon>() },
@@ -318,12 +319,18 @@ namespace AdvancedMeleeFramework
                                 if (weapon.type == 0)
                                 {
                                     Monitor.Log($"Adding specific weapon {weapon.id}");
-                                    if (!int.TryParse(weapon.id, out int id))
+                                    string id;
+                                    var weapons = Helper.GameContent.Load<Dictionary<string, WeaponData>>("Data/weapons");
+                                    try
                                     {
-                                        Monitor.Log($"Got name instead of id {weapon.id}");
+                                        id = weapons.First(x => x.Key == weapon.id).Key;
+                                        Monitor.Log($"Got item-id'd weapon");
+                                    }
+                                    catch (Exception e)
+                                    {
                                         try
                                         {
-                                            id = Helper.GameContent.Load<Dictionary<int, string>>("Data/weapons").First(p => p.Value.StartsWith($"{weapon.id}/")).Key;
+                                            id = weapons.First(p => p.Value.Name == weapon.id).Key;
                                             Monitor.Log($"Got name-based id {id}");
                                         }
                                         catch (Exception ex)
@@ -331,7 +338,7 @@ namespace AdvancedMeleeFramework
                                             if (mJsonAssets != null)
                                             {
                                                 id = mJsonAssets.GetWeaponId(weapon.id);
-                                                if(id == -1)
+                                                if (string.IsNullOrWhiteSpace(id))
                                                 {
                                                     //Monitor.Log($"error getting JSON Assets weapon {weapon.id}\n{ex}", LogLevel.Error);
                                                     continue;
@@ -340,11 +347,10 @@ namespace AdvancedMeleeFramework
                                             }
                                             else
                                             {
-                                                Monitor.Log($"error getting weapon {weapon.id}\n{ex}", LogLevel.Error);
+                                                Monitor.Log($"error getting weapon {weapon.id}\n{e}\n{ex}", LogLevel.Error);
                                                 continue;
                                             }
                                         }
-                                        
                                     }
                                     if (!advancedMeleeWeapons.ContainsKey(id))
                                         advancedMeleeWeapons[id] = new List<AdvancedMeleeWeapon>();
@@ -617,10 +623,10 @@ namespace AdvancedMeleeFramework
         public static AdvancedMeleeWeapon GetAdvancedWeapon(MeleeWeapon weapon, Farmer user)
         {
             AdvancedMeleeWeapon advancedMeleeWeapon = null;
-            if (advancedMeleeWeapons.ContainsKey(weapon.InitialParentTileIndex))
+            if (advancedMeleeWeapons.ContainsKey(weapon.ItemId))
             {
                 int skillLevel = -1;
-                foreach (AdvancedMeleeWeapon amw in advancedMeleeWeapons[weapon.InitialParentTileIndex])
+                foreach (AdvancedMeleeWeapon amw in advancedMeleeWeapons[weapon.ItemId])
                 {
                     if (user == null || (amw.skillLevel <= user.getEffectiveSkillLevel(4) && amw.skillLevel > skillLevel))
                     {

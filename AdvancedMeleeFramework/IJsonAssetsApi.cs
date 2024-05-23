@@ -2,6 +2,6 @@
 {
     public interface IJsonAssetsApi
     {
-        int GetWeaponId(string name);
+        string GetWeaponId(string name);
     }
 }
