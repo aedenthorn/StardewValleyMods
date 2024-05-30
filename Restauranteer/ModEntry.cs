@@ -28,7 +28,7 @@ namespace Restauranteer
         public static ModConfig Config;
 
         public static ModEntry context;
-        
+
         public static string orderKey = "aedenthorn.Restauranteer/order";
         public static string fridgeKey = "aedenthorn.Restauranteer/fridge";
         public static Texture2D emoteSprite;
@@ -79,7 +79,7 @@ namespace Restauranteer
                                 Vector2 v = new Vector2(x, y);
                                 if (Config.AddFridgeObjects && !l.objects.TryGetValue(v, out Object obj))
                                 {
-                                    Chest fridge = new Chest(216, v, 217, 2)
+                                    Chest fridge = new Chest("216", v, 217, 2)
                                     {
                                         shakeTimer = 50
                                     };
@@ -100,7 +100,7 @@ namespace Restauranteer
 
         private void GameLoop_OneSecondUpdateTicked(object sender, StardewModdingAPI.Events.OneSecondUpdateTickedEventArgs e)
         {
-            if(Config.ModEnabled && Context.IsPlayerFree && Config.RestaurantLocations.Contains(Game1.player.currentLocation.Name) && (!Config.RequireEvent || Game1.player.eventsSeen.Contains(980558)))
+            if (Config.ModEnabled && Context.IsPlayerFree && Config.RestaurantLocations.Contains(Game1.player.currentLocation.Name) && (!Config.RequireEvent || Game1.player.eventsSeen.Contains("980558")))
             {
                 UpdateOrders();
             }
@@ -115,7 +115,7 @@ namespace Restauranteer
                 e.Edit(delegate (IAssetData data)
                 {
                     var dict = data.AsDictionary<string, string>();
-                    if(dict.Data.TryGetValue(Config.EventKey, out string str))
+                    if (dict.Data.TryGetValue(Config.EventKey, out string str))
                     {
                         dict.Data[Config.EventKey] = str.Replace(Config.EventReplacePart, string.Format(Config.EventReplaceWith, Helper.Translation.Get("gus-event-string")));
                     }
@@ -130,7 +130,7 @@ namespace Restauranteer
                     {
                         map.PatchMap(Helper.ModContent.Load<Map>(Path.Combine("assets", "SaloonKitchen.tmx")), targetArea: new Microsoft.Xna.Framework.Rectangle(10, 12, 8, 5), patchMode: PatchMapMode.Replace);
                     }
-                    foreach(var tile in Config.KitchenTiles)
+                    foreach (var tile in Config.KitchenTiles)
                     {
                         try
                         {
@@ -161,8 +161,8 @@ namespace Restauranteer
             object obj = Helper.ModRegistry.GetApi("blueberry.LoveOfCooking");
             if (obj is not null)
             {
-                harmony.Patch( 
-                    original: AccessTools.Constructor(obj.GetType().Assembly.GetType("LoveOfCooking.Objects.CookingMenu"), new Type[] { typeof(List<CraftingRecipe>), typeof(List<Chest>), typeof(string)  }),
+                harmony.Patch(
+                    original: AccessTools.Constructor(obj.GetType().Assembly.GetType("LoveOfCooking.Objects.CookingMenu"), new Type[] { typeof(List<CraftingRecipe>), typeof(List<Chest>), typeof(string) }),
                     prefix: new HarmonyMethod(typeof(ModEntry), nameof(ModEntry.LoveOfCooking_CookingMenu_Prefix))
                 );
             }
@@ -231,19 +231,19 @@ namespace Restauranteer
                 mod: ModManifest,
                 name: () => "Order Chance / s",
                 getValue: () => Config.OrderChance + "",
-                setValue: delegate(string value) { if (float.TryParse(value, NumberStyles.Any, CultureInfo.InvariantCulture, out float val)){ Config.OrderChance = val; } }
+                setValue: delegate (string value) { if (float.TryParse(value, NumberStyles.Any, CultureInfo.InvariantCulture, out float val)) { Config.OrderChance = val; } }
             );
             configMenu.AddTextOption(
                 mod: ModManifest,
                 name: () => "Loved Dish Order Chance",
                 getValue: () => Config.LovedDishChance + "",
-                setValue: delegate(string value) { if (float.TryParse(value, NumberStyles.Any, CultureInfo.InvariantCulture, out float val)){ Config.LovedDishChance = val; } }
+                setValue: delegate (string value) { if (float.TryParse(value, NumberStyles.Any, CultureInfo.InvariantCulture, out float val)) { Config.LovedDishChance = val; } }
             );
             configMenu.AddTextOption(
                 mod: ModManifest,
                 name: () => "Price Multiplier",
                 getValue: () => Config.PriceMarkup + "",
-                setValue: delegate(string value) { if (float.TryParse(value, NumberStyles.Any, CultureInfo.InvariantCulture, out float val)){ Config.PriceMarkup = val; } }
+                setValue: delegate (string value) { if (float.TryParse(value, NumberStyles.Any, CultureInfo.InvariantCulture, out float val)) { Config.PriceMarkup = val; } }
             );
             configMenu.AddNumberOption(
                 mod: ModManifest,
@@ -255,7 +255,7 @@ namespace Restauranteer
                 mod: ModManifest,
                 name: () => "Loved Friendship Change",
                 getValue: () => Config.LovedFriendshipChange,
-                setValue: value => Config.LovedFriendshipChange= value
+                setValue: value => Config.LovedFriendshipChange = value
             );
             configMenu.AddNumberOption(
                 mod: ModManifest,
@@ -270,9 +270,9 @@ namespace Restauranteer
             if (!Config.ModEnabled || !Config.RestaurantLocations.Contains(Game1.currentLocation.Name))
                 return;
             var fridge = GetFridge(Game1.currentLocation);
-            if(materialContainers is null)
+            if (materialContainers is null)
                 materialContainers = new List<Chest>();
-            materialContainers.Add( fridge );
+            materialContainers.Add(fridge.Value);
         }
     }
 }

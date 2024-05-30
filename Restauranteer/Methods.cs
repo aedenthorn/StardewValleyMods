@@ -1,10 +1,12 @@
 ﻿using Netcode;
 using Newtonsoft.Json;
 using StardewValley;
+using StardewValley.GameData.Objects;
 using StardewValley.Locations;
 using StardewValley.Objects;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.Design;
 using System.Linq;
 using Object = StardewValley.Object;
 
@@ -14,10 +16,10 @@ namespace Restauranteer
     {
         private void UpdateOrders()
         {
-            foreach(var c in Game1.player.currentLocation.characters)
+            foreach (var c in Game1.player.currentLocation.characters)
             {
 
-                if (c.isVillager() && !Config.IgnoredNPCs.Contains(c.Name))
+                if (c.IsVillager && !Config.IgnoredNPCs.Contains(c.Name))
                 {
                     CheckOrder(c, Game1.player.currentLocation);
                 }
@@ -38,7 +40,7 @@ namespace Restauranteer
             }
             if (!Game1.NPCGiftTastes.ContainsKey(npc.Name) || npcOrderNumbers.Value.TryGetValue(npc.Name, out int amount) && amount >= Config.MaxNPCOrdersPerNight)
                 return;
-            if(Game1.random.NextDouble() < Config.OrderChance)
+            if (Game1.random.NextDouble() < Config.OrderChance)
             {
                 StartOrder(npc, location);
             }
@@ -55,31 +57,31 @@ namespace Restauranteer
         private void StartOrder(NPC npc, GameLocation location)
         {
             List<int> loves = new();
-            foreach(var str in Game1.NPCGiftTastes["Universal_Love"].Split(' '))
+            foreach (var str in Game1.NPCGiftTastes["Universal_Love"].Split(' '))
             {
-                if (int.TryParse(str, out int i) && Game1.objectInformation.TryGetValue(i, out string data) && CraftingRecipe.cookingRecipes.ContainsKey(data.Split('/')[0]))
+                if (int.TryParse(str, out int i) && Game1.objectData.TryGetValue(i.ToString(), out ObjectData data) && CraftingRecipe.cookingRecipes.ContainsKey(data.Name))
                 {
                     loves.Add(int.Parse(str));
                 }
             }
-            foreach(var str in Game1.NPCGiftTastes[npc.Name].Split('/')[1].Split(' '))
+            foreach (var str in Game1.NPCGiftTastes[npc.Name].Split('/')[1].Split(' '))
             {
-                if (int.TryParse(str, out int i) && Game1.objectInformation.TryGetValue(i, out string data) && CraftingRecipe.cookingRecipes.ContainsKey(data.Split('/')[0]))
+                if (int.TryParse(str, out int i) && Game1.objectData.TryGetValue(i.ToString(), out ObjectData data) && CraftingRecipe.cookingRecipes.ContainsKey(data.Name))
                 {
                     loves.Add(int.Parse(str));
                 }
             }
             List<int> likes = new();
-            foreach(var str in Game1.NPCGiftTastes["Universal_Like"].Split(' '))
+            foreach (var str in Game1.NPCGiftTastes["Universal_Like"].Split(' '))
             {
-                if (int.TryParse(str, out int i) && Game1.objectInformation.TryGetValue(i, out string data) && CraftingRecipe.cookingRecipes.ContainsKey(data.Split('/')[0]))
+                if (int.TryParse(str, out int i) && Game1.objectData.TryGetValue(i.ToString(), out ObjectData data) && CraftingRecipe.cookingRecipes.ContainsKey(data.Name))
                 {
                     likes.Add(int.Parse(str));
                 }
             }
             foreach (var str in Game1.NPCGiftTastes[npc.Name].Split('/')[3].Split(' '))
             {
-                if (int.TryParse(str, out int i) && Game1.objectInformation.TryGetValue(i, out string data) && CraftingRecipe.cookingRecipes.ContainsKey(data.Split('/')[0]))
+                if (int.TryParse(str, out int i) && Game1.objectData.TryGetValue(i.ToString(), out ObjectData data) && CraftingRecipe.cookingRecipes.ContainsKey(data.Name))
                 {
                     likes.Add(int.Parse(str));
                 }
@@ -87,21 +89,20 @@ namespace Restauranteer
             if (!loves.Any() && !likes.Any())
                 return;
             bool loved = true;
-            int dish;
+            int dishID;
             if (loves.Any() && (!likes.Any() || (Game1.random.NextDouble() <= Config.LovedDishChance)))
             {
-                dish = loves[Game1.random.Next(loves.Count)];
+                dishID = loves[Game1.random.Next(loves.Count)];
             }
             else
             {
                 loved = false;
-                dish = likes[Game1.random.Next(likes.Count)];
+                dishID = likes[Game1.random.Next(likes.Count)];
             }
-            var name = Game1.objectInformation[dish].Split('/')[0];
-            int price = 0;
-            int.TryParse(Game1.objectInformation[dish].Split('/')[1], out price);
+            var name = Game1.objectData[dishID.ToString()].Name;
+            int price = Game1.objectData[dishID.ToString()].Price;
             Monitor.Log($"{npc.Name} is going to order {name}");
-            npc.modData[orderKey] = JsonConvert.SerializeObject(new OrderData(dish, name, price, loved));
+            npc.modData[orderKey] = JsonConvert.SerializeObject(new OrderData(dishID, name, price, loved));
             if (Config.AutoFillFridge)
             {
                 FillFridge(location);
@@ -110,27 +111,26 @@ namespace Restauranteer
 
         private static NetRef<Chest> GetFridge(GameLocation location)
         {
-            if(location is FarmHouse)
+            if (location is FarmHouse)
             {
                 return (location as FarmHouse).fridge;
             }
-            if(location is IslandFarmHouse)
+            if (location is IslandFarmHouse)
             {
                 return (location as IslandFarmHouse).fridge;
             }
             location.objects.Remove(fridgeHideTile);
-            
+
             if (!fridgeDict.TryGetValue(location.Name, out NetRef<Chest> fridge))
             {
-                fridge = fridgeDict[location.Name] = new NetRef<Chest>(new Chest(true, 130));
+                fridge = fridgeDict[location.Name] = new NetRef<Chest>(new Chest(true, "130"));
             }
             return fridge;
         }
         private void FillFridge(GameLocation __instance)
         {
             var fridge = GetFridge(__instance);
-
-            fridge.Value.items.Clear();
+            fridge.Value.Items.Clear();
             foreach (var c in __instance.characters)
             {
                 if (c.modData.TryGetValue(orderKey, out string dataString))
@@ -141,7 +141,7 @@ namespace Restauranteer
                     {
                         foreach (var key in r.recipeList.Keys)
                         {
-                            if (Game1.objectInformation.ContainsKey(key))
+                            if (Game1.objectData.ContainsKey(key))
                             {
                                 var obj = new Object(key, r.recipeList[key]);
                                 SMonitor.Log($"Adding {obj.Name} ({obj.ParentSheetIndex}) x{obj.Stack} to fridge");
@@ -149,19 +149,19 @@ namespace Restauranteer
                             }
                             else
                             {
-                                List<int> list = new List<int>();
-                                foreach (var kvp in Game1.objectInformation)
+                                List<string> list = new List<string>();
+                                foreach (var kvp in Game1.objectData)
                                 {
-                                    string[] objectInfoArray = kvp.Value.Split('/', StringSplitOptions.None);
-                                    string[] typeAndCategory = objectInfoArray[3].Split(' ', StringSplitOptions.None);
-                                    if (typeAndCategory.Length > 1 && typeAndCategory[1] == key.ToString())
+                                    string type = key.Split("/")[1];
+                                    // TODO: Double check this 
+                                    if (kvp.Value.Type == type)
                                     {
-                                        list.Add(kvp.Key);
+                                        list.Add(kvp.Key.ToString());
                                     }
                                 }
                                 if (list.Any())
                                 {
-                                    var obj = new Object(list[Game1.random.Next(list.Count)], r.recipeList[key]);
+                                    var obj = new Object(list[Game1.random.Next(list.Count)].ToString(), r.recipeList[key]);
                                     SMonitor.Log($"Adding {obj.Name} ({obj.ParentSheetIndex}) x{obj.Stack} to fridge");
                                     fridge.Value.addItem(obj);
                                 }
