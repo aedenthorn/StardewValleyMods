@@ -213,8 +213,8 @@ namespace AdvancedMeleeFramework
                                     if (config.variables.ContainsKey(kvp.Value))
                                     {
                                         var val = config.variables[kvp.Value];
-                                        if (val.GetType() == typeof(Int64))
-                                            fi.SetValue(weapon, Convert.ToInt32(config.variables[kvp.Value]));
+                                        if (val.GetType() == typeof(long))
+                                            fi.SetValue(weapon, Convert.ToInt32(config.variables[kvp.Value].ToString()));
                                         else
                                             fi.SetValue(weapon, config.variables[kvp.Value]);
                                     }
@@ -237,7 +237,11 @@ namespace AdvancedMeleeFramework
 
                                         if (config.variables.ContainsKey(kvp.Value))
                                         {
-                                            fi.SetValue(frame, config.variables[kvp.Value]);
+                                            var val = config.variables[kvp.Value];
+                                            if (val.GetType() == typeof(long))
+                                                fi.SetValue(frame, Convert.ToInt32(config.variables[kvp.Value].ToString()));
+                                            else
+                                                fi.SetValue(frame, config.variables[kvp.Value]);
                                         }
                                         else
                                         {
@@ -258,7 +262,11 @@ namespace AdvancedMeleeFramework
 
                                             if (config.variables.ContainsKey(kvp.Value))
                                             {
-                                                fi.SetValue(entry, config.variables[kvp.Value]);
+                                                var val = config.variables[kvp.Value];
+                                                if (val.GetType() == typeof(long))
+                                                    fi.SetValue(entry, Convert.ToInt32(config.variables[kvp.Value].ToString()));
+                                                else
+                                                    fi.SetValue(entry, config.variables[kvp.Value]);
                                             }
                                             else
                                             {
@@ -320,7 +328,7 @@ namespace AdvancedMeleeFramework
                                 {
                                     Monitor.Log($"Adding specific weapon {weapon.id}");
                                     string id;
-                                    var weapons = Helper.GameContent.Load<Dictionary<string, WeaponData>>("Data/weapons");
+                                    var weapons = Helper.GameContent.Load<Dictionary<string, WeaponData>>("Data/Weapons");
                                     try
                                     {
                                         id = weapons.First(x => x.Key == weapon.id).Key;
