@@ -13,7 +13,6 @@ using System.Globalization;
 using System.IO;
 using System.Text.RegularExpressions;
 using xTile;
-using xTile.Dimensions;
 using xTile.ObjectModel;
 using Object = StardewValley.Object;
 
@@ -54,8 +53,43 @@ namespace Restauranteer
             Helper.Events.Content.AssetRequested += Content_AssetRequested;
 
             harmony = new Harmony(ModManifest.UniqueID);
-            harmony.PatchAll();
+            //harmony.PatchAll();
+            harmony.Patch(
+                 original: AccessTools.Method(typeof(NPC), nameof(NPC.draw)),
+                postfix: new HarmonyMethod(typeof(ModEntry), nameof(NPCdraw_Postfix))
+               );
 
+
+            harmony.Patch(
+             original: AccessTools.Method(typeof(GameLocation), nameof(GameLocation.checkAction)),
+            prefix: new HarmonyMethod(typeof(ModEntry), nameof(GameLocationcheckAction_Prefix))
+           );
+
+            harmony.Patch(
+           original: AccessTools.Method(typeof(GameLocation), nameof(GameLocation.performAction)),
+          prefix: new HarmonyMethod(typeof(ModEntry), nameof(GameLocationPerformAction_Prefix))
+         );
+
+            harmony.Patch(
+           original: AccessTools.Method(typeof(GameLocation), nameof(GameLocation.UpdateWhenCurrentLocation)),
+          postfix: new HarmonyMethod(typeof(ModEntry), nameof(GameLocation_UpdateWhenCurrentLocation_Postfix))
+         );
+
+
+            harmony.Patch(
+                 original: AccessTools.Method(typeof(Utility), nameof(Utility.checkForCharacterInteractionAtTile)),
+      prefix: new HarmonyMethod(typeof(ModEntry), nameof(Utility_checkForCharacterInteractionAtTile_Prefix))
+     );
+
+            harmony.Patch(
+            original: AccessTools.Method(typeof(Utility), nameof(Utility.checkForCharacterInteractionAtTile)),
+ prefix: new HarmonyMethod(typeof(ModEntry), nameof(Utility_checkForCharacterInteractionAtTile_Prefix))
+);
+
+            harmony.Patch(
+                   original: AccessTools.Method(typeof(NPC), nameof(NPC.tryToReceiveActiveObject)),
+        prefix: new HarmonyMethod(typeof(ModEntry), nameof(NPC_tryToReceiveActiveObject_Prefix))
+       );
             npcOrderNumbers.Value = new Dictionary<string, int>();
         }
 
@@ -109,7 +143,10 @@ namespace Restauranteer
         private void Content_AssetRequested(object sender, StardewModdingAPI.Events.AssetRequestedEventArgs e)
         {
             if (!Config.ModEnabled)
+            {
                 return;
+            }
+
             if (e.NameWithoutLocale.IsEquivalentTo("Data/Events/Farm"))
             {
                 e.Edit(delegate (IAssetData data)
@@ -170,7 +207,9 @@ namespace Restauranteer
             // get Generic Mod Config Menu's API (if it's installed)
             var configMenu = Helper.ModRegistry.GetApi<IGenericModConfigMenuApi>("spacechase0.GenericModConfigMenu");
             if (configMenu is null)
+            {
                 return;
+            }
 
             // register mod
             configMenu.Register(
@@ -268,10 +307,12 @@ namespace Restauranteer
         private static void LoveOfCooking_CookingMenu_Prefix(ref List<Chest> materialContainers)
         {
             if (!Config.ModEnabled || !Config.RestaurantLocations.Contains(Game1.currentLocation.Name))
+            {
                 return;
+            }
+
             var fridge = GetFridge(Game1.currentLocation);
-            if (materialContainers is null)
-                materialContainers = new List<Chest>();
+            materialContainers ??= new List<Chest>();
             materialContainers.Add(fridge.Value);
         }
     }
