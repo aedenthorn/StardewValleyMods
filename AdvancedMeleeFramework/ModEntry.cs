@@ -1,662 +1,382 @@
-﻿using HarmonyLib;
+﻿using AdvancedMeleeFramework.Integrations;
 using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
 using StardewModdingAPI;
+using StardewModdingAPI.Events;
 using StardewValley;
-using StardewValley.Audio;
 using StardewValley.Enchantments;
-using StardewValley.GameData.Weapons;
-using StardewValley.Network;
+using StardewValley.Monsters;
 using StardewValley.Projectiles;
 using StardewValley.Tools;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Reflection;
 
 namespace AdvancedMeleeFramework
 {
-    public class ModEntry : Mod 
+    public class ModEntry : Mod
     {
-        public static ModEntry context;
+        public static ModEntry Instance;
         public ModConfig Config;
-        public static Random myRand;
-        public static Dictionary<string, List<AdvancedMeleeWeapon>> advancedMeleeWeapons = new Dictionary<string, List<AdvancedMeleeWeapon>>();
-        public static Dictionary<int, List<AdvancedMeleeWeapon>> advancedMeleeWeaponsByType = new Dictionary<int, List<AdvancedMeleeWeapon>>() 
+        public Random Random;
+        public Dictionary<string, List<AdvancedMeleeWeapon>> AdvancedMeleeWeapons = [];
+        public Dictionary<int, List<AdvancedMeleeWeapon>> AdvancedMeleeWeaponsByType = new()
         {
-            {1, new List<AdvancedMeleeWeapon>() },
-            {2, new List<AdvancedMeleeWeapon>() },
-            {3, new List<AdvancedMeleeWeapon>() }
+            { 1, [] },
+            { 2, [] },
+            { 3, [] },
         };
-        public static int weaponAnimationFrame = -1;
-        public int weaponAnimationTicks;
-        public static MeleeWeapon weaponAnimating;
-        public static int weaponStartFacingDirection;
-        public static AdvancedMeleeWeapon advancedWeaponAnimating = null;
-        public static IJsonAssetsApi mJsonAssets;
-        public static Dictionary<string, AdvancedEnchantmentData> advancedEnchantments = new Dictionary<string, AdvancedEnchantmentData>();
-        public static Dictionary<string, int> EnchantmentTriggers = new Dictionary<string, int>();
+        public Dictionary<string, AdvancedEnchantmentData> AdvancedEnchantments = [];
+        public Dictionary<string, int> EnchantmentTriggers = [];
+        public Dictionary<string, Action<Farmer, MeleeWeapon, Monster?, Dictionary<string, string>>> AdvancedEnchantmentCallbacks = [];
+        public Dictionary<string, Action<Farmer, MeleeWeapon, Dictionary<string, string>>> SpecialEffectCallbacks = [];
+        public int WeaponAnimationFrame = -1;
+        public int WeaponAnimationTicks = 0;
+        public int WeaponStartFacingDirection = 0;
+        public MeleeWeapon WeaponAnimating;
+        public AdvancedMeleeWeapon AdvancedWeaponAnimating;
+        public IJsonAssetsApi? JsonAssetsApi;
 
         public override void Entry(IModHelper helper)
         {
-            context = this;
+            Instance = this;
             Config = Helper.ReadConfig<ModConfig>();
-            if (!Config.EnableMod)
-                return;
 
             AMFPatches.Initialize(this);
+            Utils.Initialize(this);
 
-            Helper.Events.GameLoop.GameLaunched += GameLoop_GameLaunched;
-            Helper.Events.GameLoop.SaveLoaded += GameLoop_SaveLoaded;
-            Helper.Events.GameLoop.UpdateTicking += GameLoop_UpdateTicking;
-            Helper.Events.Input.ButtonPressed += Input_ButtonPressed;
-            Helper.Events.Player.InventoryChanged += Player_InventoryChanged;
+            Random = new();
 
+            Helper.Events.Player.InventoryChanged += onInventoryChanged;
 
-            myRand = new Random();
+            Helper.Events.GameLoop.GameLaunched += onGameLaunched;
+            Helper.Events.GameLoop.SaveLoaded += onSaveLoaded;
+            Helper.Events.GameLoop.UpdateTicking += onUpdateTicking;
 
-            var harmony = new Harmony(ModManifest.UniqueID);
+            Helper.Events.Input.ButtonPressed += onButtonPressed;
 
-            harmony.Patch(
-                original: AccessTools.Method(typeof(MeleeWeapon), "doAnimateSpecialMove"),
-                prefix: new HarmonyMethod(typeof(AMFPatches), nameof(AMFPatches.doAnimateSpecialMove_Prefix))
-            );
-            ConstructorInfo ci = typeof(MeleeWeapon).GetConstructor(new Type[] { typeof(string) });
-            harmony.Patch(
-               original: ci,
-               postfix: new HarmonyMethod(typeof(AMFPatches), nameof(AMFPatches.MeleeWeapon_Postfix))
-            );
-            ci = typeof(MeleeWeapon).GetConstructor(Array.Empty<Type>());
-            harmony.Patch(
-               original: ci,
-               postfix: new HarmonyMethod(typeof(AMFPatches), nameof(AMFPatches.MeleeWeapon_Postfix))
-            );
-            /*ci = typeof(MeleeWeapon).GetConstructor(new Type[] { typeof(int), typeof(int) });
-            harmony.Patch(
-               original: ci,
-               postfix: new HarmonyMethod(typeof(AMFPatches), nameof(AMFPatches.MeleeWeapon_Postfix))
-            );*/
-            harmony.Patch(
-                original: AccessTools.Method(typeof(MeleeWeapon), nameof(MeleeWeapon.drawInMenu), new Type[] { typeof(SpriteBatch), typeof(Vector2), typeof(float), typeof(float), typeof(float), typeof(StackDrawType), typeof(Color), typeof(bool) }),
-                prefix: new HarmonyMethod(typeof(AMFPatches), nameof(AMFPatches.drawInMenu_Prefix)),
-                postfix: new HarmonyMethod(typeof(AMFPatches), nameof(AMFPatches.drawInMenu_Postfix))
-            );
-
-            harmony.Patch(
-                original: AccessTools.Method(typeof(BaseEnchantment), "_OnDealDamage"),
-                prefix: new HarmonyMethod(typeof(AMFPatches), nameof(AMFPatches._OnDealDamage_Prefix))
-            );
-            harmony.Patch(
-                original: AccessTools.Method(typeof(BaseEnchantment), "_OnMonsterSlay"),
-                prefix: new HarmonyMethod(typeof(AMFPatches), nameof(AMFPatches._OnMonsterSlay_Prefix))
-            );
-
+            registerDefaultEnchantments();
+            registerDefaultSpecialEffects();
         }
 
-        private void Player_InventoryChanged(object sender, StardewModdingAPI.Events.InventoryChangedEventArgs e)
+        public override object GetApi(IModInfo mod) => new AdvancedMeleeFrameworkApi(mod, this);
+
+        private void onInventoryChanged(object sender, InventoryChangedEventArgs e)
         {
-            foreach(Item item in e.Player.Items)
+            foreach (var item in e.Player.Items)
+                if (item is MeleeWeapon mw)
+                    Utils.AddEnchantments(mw);
+        }
+
+        private void onGameLaunched(object sender, GameLaunchedEventArgs e)
+        {
+            JsonAssetsApi = Helper.ModRegistry.GetApi<IJsonAssetsApi>("spacechase0.JsonAssets");
+
+            var gmcm = Helper.ModRegistry.GetApi<IGenericModConfigMenuApi>("spacechase0.GenericModConfigMenu");
+            if (gmcm is null)
+                return;
+
+            gmcm.Register(ModManifest, () => Config = new(), () => Helper.WriteConfig(Config));
+            gmcm.AddBoolOption(ModManifest, () => Config.EnableMod, v => Config.EnableMod = v, () => "Enabled");
+        }
+
+        private void onSaveLoaded(object sender, SaveLoadedEventArgs e)
+        {
+            Utils.LoadAdvancedMeleeWeapons();
+            foreach (var item in Game1.player.Items)
+                if (item is MeleeWeapon mw)
+                    Utils.AddEnchantments(mw);
+        }
+
+        private void onUpdateTicking(object sender, UpdateTickingEventArgs e)
+        {
+            if (WeaponAnimationFrame < 0 || AdvancedWeaponAnimating is null)
+                return;
+            MeleeActionFrame frame = AdvancedWeaponAnimating.frames[WeaponAnimationFrame];
+            Farmer who = WeaponAnimating.getLastFarmerToUse();
+
+            if (WeaponAnimationFrame == 0 && WeaponAnimationTicks == 0)
+                WeaponStartFacingDirection = who.FacingDirection;
+
+            if (who.CurrentTool != WeaponAnimating)
             {
-                if(item is MeleeWeapon)
-                {
-                    AddEnchantments(item as MeleeWeapon);
-                }
-            }
-        }
-
-
-        public void GameLoop_GameLaunched(object sender, StardewModdingAPI.Events.GameLaunchedEventArgs e)
-        {
-            mJsonAssets = Helper.ModRegistry.GetApi<IJsonAssetsApi>("spacechase0.JsonAssets");
-        }
-
-        public void GameLoop_SaveLoaded(object sender, StardewModdingAPI.Events.SaveLoadedEventArgs e)
-        {
-            LoadAdvancedMeleeWeapons();
-            foreach (Item item in Game1.player.Items)
-            {
-                if (item is MeleeWeapon)
-                {
-                    AddEnchantments(item as MeleeWeapon);
-                }
-            }
-        }
-
-        public static void AddEnchantments(MeleeWeapon weapon)
-        {
-            AdvancedMeleeWeapon amw = GetAdvancedWeapon(weapon, null);
-            if (amw != null && amw.enchantments.Any())
-            {
-                weapon.enchantments.Clear();
-                foreach (AdvancedEnchantmentData aed in amw.enchantments)
-                {
-                    BaseWeaponEnchantment bwe = null;
-                    switch (aed.type)
-                    {
-                        case "vampiric":
-                            bwe = new VampiricEnchantment();
-                            break;
-                        case "jade":
-                            bwe = new JadeEnchantment();
-                            break;
-                        case "aquamarine":
-                            bwe = new AquamarineEnchantment();
-                            break;
-                        case "topaz":
-                            bwe = new TopazEnchantment();
-                            break;
-                        case "amethyst":
-                            bwe = new AmethystEnchantment();
-                            break;
-                        case "ruby":
-                            bwe = new RubyEnchantment();
-                            break;
-                        case "emerald":
-                            bwe = new EmeraldEnchantment();
-                            break;
-                        case "haymaker":
-                            bwe = new HaymakerEnchantment();
-                            break;
-                        case "bugkiller":
-                            bwe = new BugKillerEnchantment();
-                            break;
-                        case "crusader":
-                            bwe = new CrusaderEnchantment();
-                            break;
-                        case "magic":
-                            bwe = new MagicEnchantment();
-                            break;
-                        default:
-                            bwe = new BaseWeaponEnchantment();
-                            string key = aed.name;
-                            context.Helper.Reflection.GetField<string>(bwe, "_displayName").SetValue(key);
-                            break;
-                    }
-                    if(bwe != null)
-                    {
-                        weapon.enchantments.Add(bwe);
-                        //context.Monitor.Log($"added enchantment {aed.type} to {weapon.Name} {weapon.enchantments.Count}");
-                    }
-                }
-            }
-        }
-        public void LoadAdvancedMeleeWeapons()
-        {
-            advancedMeleeWeapons.Clear();
-            advancedMeleeWeaponsByType[1].Clear();
-            advancedMeleeWeaponsByType[2].Clear();
-            advancedMeleeWeaponsByType[3].Clear();
-            foreach (IContentPack contentPack in Helper.ContentPacks.GetOwned())
-            {
-                Monitor.Log($"Reading content pack: {contentPack.Manifest.Name} {contentPack.Manifest.Version} from {contentPack.DirectoryPath}", LogLevel.Debug);
-                try
-                {
-                    AdvancedMeleeWeaponData json = contentPack.ReadJsonFile<AdvancedMeleeWeaponData>("content.json") ?? null;
-                    WeaponPackConfigData config = contentPack.ReadJsonFile<WeaponPackConfigData>("config.json") ?? new WeaponPackConfigData();
-
-                    if (json != null)
-                    {
-                        if (json.weapons != null && json.weapons.Count > 0)
-                        {
-                            foreach (AdvancedMeleeWeapon weapon in json.weapons)
-                            {
-                                foreach(KeyValuePair<string, string> kvp in weapon.config)
-                                {
-                                    FieldInfo fi = weapon.GetType().GetField(kvp.Key);
-
-                                    if(fi == null)
-                                    {
-                                        Monitor.Log($"Error getting field {kvp.Key} in AdvancedMeleeWeapon class.", LogLevel.Error);
-                                        continue;
-                                    }
-
-                                    if (config.variables.ContainsKey(kvp.Value))
-                                    {
-                                        var val = config.variables[kvp.Value];
-                                        if (val.GetType() == typeof(long))
-                                            fi.SetValue(weapon, Convert.ToInt32(config.variables[kvp.Value].ToString()));
-                                        else
-                                            fi.SetValue(weapon, config.variables[kvp.Value]);
-                                    }
-                                    else
-                                    {
-                                        config.variables.Add(kvp.Value, fi.GetValue(weapon));
-                                    }
-                                }
-                                foreach(MeleeActionFrame frame in weapon.frames)
-                                {
-                                    foreach (KeyValuePair<string, string> kvp in frame.config)
-                                    {
-                                        FieldInfo fi = frame.GetType().GetField(kvp.Key);
-
-                                        if (fi == null)
-                                        {
-                                            Monitor.Log($"Error getting field {kvp.Key} in MeleeActionFrame class.", LogLevel.Error);
-                                            continue;
-                                        }
-
-                                        if (config.variables.ContainsKey(kvp.Value))
-                                        {
-                                            var val = config.variables[kvp.Value];
-                                            if (val.GetType() == typeof(long))
-                                                fi.SetValue(frame, Convert.ToInt32(config.variables[kvp.Value].ToString()));
-                                            else
-                                                fi.SetValue(frame, config.variables[kvp.Value]);
-                                        }
-                                        else
-                                        {
-                                            config.variables.Add(kvp.Value, fi.GetValue(frame));
-                                        }
-                                    }
-                                    foreach (AdvancedWeaponProjectile entry in frame.projectiles)
-                                    {
-                                        foreach (KeyValuePair<string, string> kvp in entry.config)
-                                        {
-                                            FieldInfo fi = entry.GetType().GetField(kvp.Key);
-
-                                            if (fi == null)
-                                            {
-                                                Monitor.Log($"Error getting field {kvp.Key} in AdvancedWeaponProjectile class.", LogLevel.Error);
-                                                continue;
-                                            }
-
-                                            if (config.variables.ContainsKey(kvp.Value))
-                                            {
-                                                var val = config.variables[kvp.Value];
-                                                if (val.GetType() == typeof(long))
-                                                    fi.SetValue(entry, Convert.ToInt32(config.variables[kvp.Value].ToString()));
-                                                else
-                                                    fi.SetValue(entry, config.variables[kvp.Value]);
-                                            }
-                                            else
-                                            {
-                                                config.variables.Add(kvp.Value, fi.GetValue(entry));
-                                            }
-                                        }
-                                    }
-                                    if(frame.special != null)
-                                    {
-                                        foreach (KeyValuePair<string, string> kvp in frame.special.config)
-                                        {
-                                            if (!frame.special.parameters.ContainsKey(kvp.Key))
-                                            {
-                                                Monitor.Log($"Error getting key {kvp.Key} in SpecialEffects.parameters", LogLevel.Error);
-                                                continue;
-                                            }
-                                            if (config.variables.ContainsKey(kvp.Value))
-                                            {
-                                                frame.special.parameters[kvp.Key] = config.variables[kvp.Value].ToString();
-                                            }
-                                            else
-                                            {
-                                                config.variables.Add(kvp.Value, frame.special.parameters[kvp.Key]);
-                                            }
-
-                                        }
-                                    }
-                                }
-                                foreach (AdvancedEnchantmentData entry in weapon.enchantments)
-                                {
-                                    int count = 0;
-                                    foreach (KeyValuePair<string, string> kvp in entry.config)
-                                    {
-                                        if (!entry.parameters.ContainsKey(kvp.Key))
-                                        {
-                                            Monitor.Log($"Error getting key {kvp.Key} in AdvancedEnchantmentData.parameters", LogLevel.Error);
-                                            continue;
-                                        }
-
-                                        if (config.variables.ContainsKey(kvp.Value))
-                                        {
-                                            entry.parameters[kvp.Key]  = config.variables[kvp.Value].ToString();
-                                        }
-                                        else
-                                        {
-                                            config.variables.Add(kvp.Value, entry.parameters[kvp.Key]);
-                                        }
-                                    }
-                                    advancedEnchantments[entry.name] = entry;
-                                    count++;
-                                }
-                                if (config.variables.Any())
-                                {
-                                    contentPack.WriteJsonFile("config.json", config);
-                                }
-
-
-                                if (weapon.type == 0)
-                                {
-                                    Monitor.Log($"Adding specific weapon {weapon.id}");
-                                    string id;
-                                    var weapons = Helper.GameContent.Load<Dictionary<string, WeaponData>>("Data/Weapons");
-                                    try
-                                    {
-                                        id = weapons.First(x => x.Key == weapon.id).Key;
-                                        Monitor.Log($"Got item-id'd weapon");
-                                    }
-                                    catch (Exception e)
-                                    {
-                                        try
-                                        {
-                                            id = weapons.First(p => p.Value.Name == weapon.id).Key;
-                                            Monitor.Log($"Got name-based id {id}");
-                                        }
-                                        catch (Exception ex)
-                                        {
-                                            if (mJsonAssets != null)
-                                            {
-                                                id = mJsonAssets.GetWeaponId(weapon.id);
-                                                if (string.IsNullOrWhiteSpace(id))
-                                                {
-                                                    //Monitor.Log($"error getting JSON Assets weapon {weapon.id}\n{ex}", LogLevel.Error);
-                                                    continue;
-                                                }
-                                                Monitor.Log($"Added JA weapon {weapon.id}, id {id}");
-                                            }
-                                            else
-                                            {
-                                                Monitor.Log($"error getting weapon {weapon.id}\n{e}\n{ex}", LogLevel.Error);
-                                                continue;
-                                            }
-                                        }
-                                    }
-                                    if (!advancedMeleeWeapons.ContainsKey(id))
-                                        advancedMeleeWeapons[id] = new List<AdvancedMeleeWeapon>();
-                                    advancedMeleeWeapons[id].Add(weapon);
-                                }
-                                else
-                                {
-                                    advancedMeleeWeaponsByType[weapon.type].Add(weapon);
-                                }
-                            }
-                        }
-                    }
-                }
-                catch (Exception ex)
-                {
-                    Monitor.Log($"error reading content.json file in content pack {contentPack.Manifest.Name}.\r\n{ex}", LogLevel.Error);
-                }
-            }
-            Monitor.Log($"Total advanced melee weapons: {advancedMeleeWeapons.Count}", LogLevel.Debug);
-            Monitor.Log($"Total advanced melee dagger attacks: {advancedMeleeWeaponsByType[1].Count}", LogLevel.Debug);
-            Monitor.Log($"Total advanced melee club attacks: {advancedMeleeWeaponsByType[2].Count}", LogLevel.Debug);
-            Monitor.Log($"Total advanced melee sword attacks: {advancedMeleeWeaponsByType[3].Count}", LogLevel.Debug);
-        }
-
-        public override object GetApi()
-        {
-            return new AdvancedMeleeFrameworkApi();
-        }
-        public void Input_ButtonPressed(object sender, StardewModdingAPI.Events.ButtonPressedEventArgs e)
-        {
-            if(e.Button == Config.ReloadButton)
-            {
-                LoadAdvancedMeleeWeapons();
-            }
-        }
-
-        public void GameLoop_UpdateTicking(object sender, StardewModdingAPI.Events.UpdateTickingEventArgs e)
-        {
-            //Monitor.Log($"player sprite frame {Game1.player.Sprite.currentFrame}");
-            if (weaponAnimationFrame > -1 && advancedWeaponAnimating != null)
-            {
-                MeleeActionFrame frame = advancedWeaponAnimating.frames[weaponAnimationFrame];
-                Farmer user = weaponAnimating.getLastFarmerToUse();
-
-                if (weaponAnimationFrame == 0 && weaponAnimationTicks == 0)
-                {
-                    weaponStartFacingDirection = user.facingDirection.Value;
-                    //Monitor.Log($"Starting animation, facing {weaponStartFacingDirection}");
-                }
-
-                if (user.CurrentTool != weaponAnimating)
-                {
-                    //Monitor.Log($"Switched tools to {Game1.player.CurrentTool?.DisplayName}");
-                    weaponAnimating = null;
-                    weaponAnimationFrame = -1; 
-                    weaponAnimationTicks = 0;
-                    advancedWeaponAnimating = null;
-                    return;
-                }
-                if (frame.invincible != null)
-                {
-                    //Monitor.Log($"Setting invincible as {frame.invincible}");
-                    user.temporarilyInvincible = (bool)frame.invincible;
-                }
-
-                if (weaponAnimationTicks == 0)
-                {
-                    //Monitor.Log($"Starting frame {weaponAnimationFrame}");
-
-                    user.faceDirection((weaponStartFacingDirection + frame.relativeFacingDirection) % 4);
-                    //Monitor.Log($"facing {user.getFacingDirection()}, relative {frame.relativeFacingDirection}");
-
-                    if(frame.special != null)
-                    {
-                        try
-                        {
-                            switch (frame.special.name)
-                            {
-                                case "lightning":
-                                    LightningStrike(user, weaponAnimating, frame.special.parameters);
-                                    break;
-                                case "explosion":
-                                    Explosion(user, weaponAnimating, frame.special.parameters);
-                                    break;
-                            }
-                        }
-                        catch (Exception ex)
-                        {
-                            Monitor.Log($"Exception thrown on special effect:\n{ex}", LogLevel.Error);
-                        }
-                    }
-
-                    if (frame.action == WeaponAction.NORMAL)
-                    {
-                        //Monitor.Log($"Starting normal attack");
-                        user.completelyStopAnimatingOrDoingAction();
-                        user.CanMove = false;
-                        user.UsingTool = true;
-                        user.canReleaseTool = true;
-                        weaponAnimating.setFarmerAnimating(user); 
-                    }
-                    else if (frame.action == WeaponAction.SPECIAL)
-                    {
-                        //Monitor.Log($"Starting special attack");
-                        weaponAnimating.animateSpecialMove(user); 
-                    }
-
-                    if(frame.trajectoryX != 0 || frame.trajectoryY != 0)
-                    {
-                        float trajectoryX = frame.trajectoryX;
-                        float trajectoryY = frame.trajectoryY;
-                        Vector2 rawTrajectory = TranslateVector(new Vector2(trajectoryX, trajectoryY), user.FacingDirection);
-                        user.setTrajectory(new Vector2(rawTrajectory.X, -rawTrajectory.Y)); // game trajectory y is backwards idek
-                        //Monitor.Log($"player trajectory {user.xVelocity},{user.yVelocity}");
-                    }
-
-                    if (frame.sound != null)
-                    {
-                        //Monitor.Log($"Playing sound {frame.sound}");
-                        user.currentLocation.playSound(frame.sound, context: SoundContext.Default);
-                    }
-                    foreach(AdvancedWeaponProjectile p in frame.projectiles)
-                    {
-                        Vector2 velocity = TranslateVector(new Vector2(p.xVelocity, p.yVelocity), user.FacingDirection);
-                        Vector2 startPos = TranslateVector(new Vector2(p.startingPositionX, p.startingPositionY), user.FacingDirection);
-
-                        int damage = advancedWeaponAnimating.type > 0 ? p.damage * myRand.Next(weaponAnimating.minDamage.Value, weaponAnimating.maxDamage.Value) : p.damage;
-
-                        //Monitor.Log($"player position: {user.Position}, start position: { new Vector2(startingPositionX, startingPositionY) }");
-
-                        user.currentLocation.projectiles.Add(new BasicProjectile(damage, p.parentSheetIndex, p.bouncesTillDestruct, p.tailLength, p.rotationVelocity, velocity.X, velocity.Y, user.Position + new Vector2(0, -64) + startPos, p.collisionSound, p.bounceSound, p.firingSound, p.explode, p.damagesMonsters, user.currentLocation, user, null, p.shotItemId));
-                    }
-                }
-                if (++weaponAnimationTicks >= frame.frameTicks)
-                {
-                    weaponAnimationFrame++;
-                    weaponAnimationTicks = 0;
-                    //Monitor.Log($"Advancing to frame {weaponAnimationFrame}");
-                }
-                if (weaponAnimationFrame >= advancedWeaponAnimating.frames.Count)
-                {
-                    //Monitor.Log($"Ending weapon animation");
-                    user.completelyStopAnimatingOrDoingAction();
-                    user.CanMove = true;
-                    user.UsingTool = false;
-                    user.setTrajectory(Vector2.Zero);
-
-                    if (user.IsLocalPlayer)
-                    {
-                        int cd = advancedWeaponAnimating.cooldown;
-                        if (user.professions.Contains(28))
-                        {
-                            cd /= 2;
-                        }
-                        if (weaponAnimating.hasEnchantmentOfType<ArtfulEnchantment>())
-                        {
-                            cd /= 2;
-                        }
-
-                        switch (weaponAnimating.type.Value)
-                        {
-                            case 1:
-                                MeleeWeapon.daggerCooldown = cd;
-                                break;
-                            case 2:
-                                MeleeWeapon.clubCooldown = cd;
-                                break;
-                            case 3:
-                                MeleeWeapon.defenseCooldown = cd;
-                                break;
-                        }
-                    }
-                    weaponAnimationFrame = -1;
-                    weaponAnimating = null;
-                    advancedWeaponAnimating  = null;
-                    weaponAnimationTicks = 0;
-                }
-
+                WeaponAnimating = null;
+                WeaponAnimationTicks = 0;
+                WeaponAnimationFrame = -1;
+                AdvancedWeaponAnimating = null;
                 return;
             }
-        }
 
-        public Vector2 TranslateVector(Vector2 vector, int facingDirection)
-        {
+            if (frame.invincible is { } invincible)
+                who.temporarilyInvincible = invincible;
 
-            float outx = vector.X;
-            float outy = vector.Y;
-            switch (facingDirection)
+            if (WeaponAnimationTicks == 0)
             {
-                case 2:
-                    break;
-                case 3:
-                    outx = -vector.Y;
-                    outy = vector.X;
-                    break;
-                case 0:
-                    outx = -vector.X;
-                    outy = -vector.Y;
-                    break;
-                case 1:
-                    outx = vector.Y;
-                    outy = -vector.X;
-                    break;
+                who.faceDirection((WeaponStartFacingDirection + frame.relativeFacingDirection) % 4);
+
+                if (frame.special is { } special)
+                {
+                    try
+                    {
+                        if (!SpecialEffectCallbacks.TryGetValue(special.name, out var callback))
+                            throw new($"No special effect found with name {special.name}");
+                        callback.Invoke(who, WeaponAnimating, special.parameters);
+                    }
+                    catch (Exception ex)
+                    {
+                        Monitor.Log($"Exception thrown on special effect:\n{ex}", LogLevel.Error);
+                    }
+                }
+
+                if (frame.action == WeaponAction.NORMAL)
+                {
+                    who.completelyStopAnimatingOrDoingAction();
+                    who.CanMove = false;
+                    who.UsingTool = true;
+                    who.canReleaseTool = true;
+                    WeaponAnimating.setFarmerAnimating(who);
+                }
+                else if (frame.action == WeaponAction.SPECIAL)
+                    WeaponAnimating.animateSpecialMove(who);
+
+                if (frame.trajectoryX != 0 || frame.trajectoryY != 0)
+                {
+                    Vector2 rawTrajectory = Utils.TranslateVector(new(frame.trajectoryX, frame.trajectoryY), who.FacingDirection);
+                    who.setTrajectory(new(rawTrajectory.X, -rawTrajectory.Y));
+                }
+
+                if (frame.sound is not null)
+                    who.currentLocation.playSound(frame.sound);
+
+                foreach (AdvancedWeaponProjectile p in frame.projectiles)
+                {
+                    Vector2 velocity = Utils.TranslateVector(new(p.xVelocity, p.yVelocity), who.FacingDirection);
+                    Vector2 startPos = Utils.TranslateVector(new(p.startingPositionX, p.startingPositionY), who.FacingDirection);
+
+                    int damage = AdvancedWeaponAnimating.type > 0 ? p.damage * Random.Next(WeaponAnimating.minDamage.Value, WeaponAnimating.maxDamage.Value) : p.damage;
+
+                    who.currentLocation.projectiles.Add(new BasicProjectile(damage,
+                                                                            p.parentSheetIndex,
+                                                                            p.bouncesTillDestruct,
+                                                                            p.tailLength,
+                                                                            p.rotationVelocity,
+                                                                            velocity.X,
+                                                                            velocity.Y,
+                                                                            who.Position + new Vector2(0, -64) + startPos,
+                                                                            p.collisionSound,
+                                                                            p.bounceSound,
+                                                                            p.firingSound,
+                                                                            p.explode,
+                                                                            p.damagesMonsters,
+                                                                            who.currentLocation,
+                                                                            who,
+                                                                            null,
+                                                                            p.shotItemId));
+                }
             }
-            return new Vector2(outx, outy);
+
+            if (++WeaponAnimationTicks >= frame.frameTicks)
+            {
+                WeaponAnimationFrame++;
+                WeaponAnimationTicks = 0;
+            }
+
+            if (WeaponAnimationFrame < AdvancedWeaponAnimating.frames.Count)
+                return;
+            who.completelyStopAnimatingOrDoingAction();
+            who.CanMove = true;
+            who.UsingTool = false;
+            who.setTrajectory(Vector2.Zero);
+
+            if (who.IsLocalPlayer)
+            {
+                int cd = AdvancedWeaponAnimating.cooldown;
+                if (who.professions.Contains(28))
+                    cd /= 2;
+                if (WeaponAnimating.hasEnchantmentOfType<ArtfulEnchantment>())
+                    cd /= 2;
+
+                switch (WeaponAnimating.type.Value)
+                {
+                    case 1:
+                        MeleeWeapon.daggerCooldown = cd;
+                        break;
+                    case 2:
+                        MeleeWeapon.clubCooldown = cd;
+                        break;
+                    case 3:
+                        MeleeWeapon.defenseCooldown = cd;
+                        break;
+                }
+            }
+
+            WeaponAnimationFrame = -1;
+            WeaponAnimating = null;
+            AdvancedWeaponAnimating = null;
+            WeaponAnimationTicks = 0;
         }
+
+        private void onButtonPressed(object sender, ButtonPressedEventArgs e)
+        {
+            if (e.Button == Config.ReloadButton)
+                Utils.LoadAdvancedMeleeWeapons();
+        }
+
+        private void registerDefaultEnchantments()
+        {
+            AdvancedEnchantmentCallbacks.Add("heal", Heal);
+            AdvancedEnchantmentCallbacks.Add("hurt", Hurt);
+            AdvancedEnchantmentCallbacks.Add("coins", Coins);
+            AdvancedEnchantmentCallbacks.Add("loot", Loot);
+        }
+
+        private void registerDefaultSpecialEffects()
+        {
+            SpecialEffectCallbacks.Add("lightning", LightningStrike);
+            SpecialEffectCallbacks.Add("explosion", Explosion);
+        }
+
+        public void Heal(Farmer who, MeleeWeapon weapon, Monster? monster, Dictionary<string, string> parameters)
+        {
+            if (Game1.random.NextDouble() < float.Parse(parameters["chance"]) / 100f)
+            {
+                int amount = monster is not null ? monster.Health : int.Parse(parameters["amount"]);
+                int heal = Math.Max(1, (int)(amount * float.Parse(parameters["amountMult"])));
+                who.health = Math.Min(who.maxHealth, Game1.player.health + heal);
+                who.currentLocation.debris.Add(new Debris(heal, who.getStandingPosition(), Color.Lime, 1f, who));
+                if (parameters.ContainsKey("sound"))
+                    Game1.playSound(parameters["sound"]);
+            }
+        }
+
+        public void Hurt(Farmer who, MeleeWeapon weapon, Monster? monster, Dictionary<string, string> parameters)
+        {
+            if (Game1.random.NextDouble() < float.Parse(parameters["chance"]) / 100f)
+            {
+                int amount = monster is not null ? monster.Health : int.Parse(parameters["amount"]);
+                int hurt = Math.Max(1, (int)(amount * float.Parse(parameters["amountMult"])));
+                who.takeDamage(hurt, true, null);
+                if (parameters.ContainsKey("sound"))
+                    Game1.playSound(parameters["sound"]);
+            }
+        }
+
+        public void Coins(Farmer who, MeleeWeapon weapon, Monster? monster, Dictionary<string, string> parameters)
+        {
+            if (Game1.random.NextDouble() < float.Parse(parameters["chance"]) / 100f)
+            {
+                int amount = monster is not null ? monster.MaxHealth : int.Parse(parameters["amount"]);
+                int coins = (int)Math.Round(amount * float.Parse(parameters["amountMult"]));
+                if (parameters.TryGetValue("dropType", out string dropType) && dropType.ToLower() == "wallet")
+                {
+                    who.Money += coins;
+                    if (parameters.TryGetValue("sound", out string sound))
+                        Game1.playSound(sound);
+                    return;
+                }
+                Item i = ItemRegistry.Create("(O)GoldCoin");
+                i.modData.Add(ModManifest.UniqueID + "/moneyAmount", coins.ToString());
+                Game1.createItemDebris(i, monster?.Position ?? Utility.PointToVector2(who.StandingPixel), who.FacingDirection, who.currentLocation);
+                if (parameters.ContainsKey("sound"))
+                    Game1.playSound(parameters["sound"]);
+            }
+        }
+
+        public void Loot(Farmer who, MeleeWeapon weapon, Monster? monster, Dictionary<string, string> parameters)
+        {
+            if (monster is null)
+                return;
+            if (Game1.random.NextDouble() < float.Parse(parameters["chance"]) / 100f)
+            {
+                Vector2 position = monster.Position;
+                if (parameters.ContainsKey("extraDropChecks"))
+                {
+                    int extraChecks = Math.Max(1, int.Parse(parameters["extraDropChecks"]));
+                    for (int i = 0; i < extraChecks; i++)
+                        who.currentLocation.monsterDrop(monster, monster.GetBoundingBox().Center.X, monster.GetBoundingBox().Center.Y, who);
+                }
+                else if (parameters.TryGetValue("extraDropItems", out string extraDrops))
+                {
+                    string[] items = extraDrops.Split(',');
+                    foreach (var item in items)
+                    {
+                        string[] itemData = item.Split('_');
+                        if (itemData.Length == 1)
+                            Game1.createItemDebris(ItemRegistry.Create(item), position, Game1.random.Next(4), who.currentLocation);
+                        else if (itemData.Length == 2)
+                        {
+                            float chance = int.Parse(itemData[1]) / 100f;
+                            if (Game1.random.NextDouble() < chance)
+                                Game1.createItemDebris(ItemRegistry.Create(itemData[0]), position, Game1.random.Next(4), who.currentLocation);
+                        }
+                        else if (itemData.Length == 4)
+                        {
+                            float chance = int.Parse(itemData[3]) / 100f;
+                            if (Game1.random.NextDouble() < chance)
+                                Game1.createItemDebris(ItemRegistry.Create(itemData[0], Game1.random.Next(int.Parse(itemData[1]), int.Parse(itemData[2]))), position, Game1.random.Next(4), who.currentLocation);
+                        }
+                    }
+                }
+                if (parameters.TryGetValue("sound", out var sound))
+                    Game1.playSound(sound);
+            }
+        }
+
         public void LightningStrike(Farmer who, MeleeWeapon weapon, Dictionary<string, string> parameters)
         {
             int minDamage = weapon.minDamage.Value;
             int maxDamage = weapon.maxDamage.Value;
-            if (parameters.ContainsKey("damageMult"))
+            if (parameters.TryGetValue("damageMult", out var damageMultStr) && float.TryParse(damageMultStr, out float damageMult))
             {
-                minDamage = (int)Math.Round(weapon.minDamage.Value * float.Parse(parameters["damageMult"]));
-                maxDamage = (int)Math.Round(weapon.maxDamage.Value * float.Parse(parameters["damageMult"]));
+                minDamage = (int)Math.Round(minDamage * damageMult);
+                maxDamage = (int)Math.Round(maxDamage * damageMult);
             }
-            else if (parameters.ContainsKey("minDamage") && parameters.ContainsKey("maxDamage"))
+            if (parameters.TryGetValue("minDamage", out var minDamageStr) && parameters.TryGetValue("maxDamage", out var maxDamageStr))
             {
-                minDamage = int.Parse(parameters["minDamage"]);
-                maxDamage = int.Parse(parameters["maxDamage"]);
+                minDamage = int.Parse(minDamageStr);
+                maxDamage = int.Parse(maxDamageStr);
             }
 
             int radius = int.Parse(parameters["radius"]);
-
-            Vector2 playerLocation = who.Position;
-            GameLocation currentLocation = who.currentLocation;
-            Farm.LightningStrikeEvent lightningEvent = new Farm.LightningStrikeEvent();
-            lightningEvent.bigFlash = true;
-            lightningEvent.createBolt = true;
+            Farm.LightningStrikeEvent lightningEvent = new()
+            {
+                bigFlash = true,
+                createBolt = true,
+            };
 
             Vector2 offset = Vector2.Zero;
-            if (parameters.ContainsKey("offsetX") && parameters.ContainsKey("offsetY"))
+            if (parameters.TryGetValue("offsetX", out var offsetX) && parameters.TryGetValue("offsetY", out var offsetY))
             {
-                float x = float.Parse(parameters["offsetX"]);
-                float y = float.Parse(parameters["offsetY"]);
-                offset = TranslateVector(new Vector2(x, y), who.FacingDirection);
+                float x = float.Parse(offsetX);
+                float y = float.Parse(offsetY);
+                offset = Utils.TranslateVector(new(x, y), who.FacingDirection);
             }
-            lightningEvent.boltPosition = playerLocation + new Vector2(32f, 32f) + offset;
+            lightningEvent.boltPosition = who.Position + new Vector2(32f) + offset;
             Game1.flashAlpha = (float)(0.5 + Game1.random.NextDouble());
-            
-            if(parameters.ContainsKey("sound"))
-                Game1.playSound(parameters["sound"]);
-            
-            Utility.drawLightningBolt(lightningEvent.boltPosition, currentLocation);
 
-            currentLocation.damageMonster(new Rectangle((int)Math.Round(playerLocation.X - radius), (int)Math.Round(playerLocation.Y - radius), radius * 2, radius * 2), minDamage, maxDamage, false, who);
+            if (parameters.TryGetValue("sound", out var sound))
+                Game1.playSound(sound);
+
+            Utility.drawLightningBolt(lightningEvent.boltPosition, who.currentLocation);
+
+            who.currentLocation.damageMonster(new((int)Math.Round(who.Position.X - radius), (int)Math.Round(who.Position.Y - radius), radius * 2, radius * 2), minDamage, maxDamage, false, who);
         }
-        public void Explosion(Farmer user, MeleeWeapon weapon, Dictionary<string, string> parameters)
-        {
-            Vector2 tileLocation = user.Tile;//getTileLocation();
-            if(parameters.ContainsKey("tileOffsetX") && parameters.ContainsKey("tileOffsetY")) 
-                tileLocation += TranslateVector(new Vector2(float.Parse(parameters["tileOffsetX"]), float.Parse(parameters["tileOffsetY"])), user.FacingDirection);
-            int radius = int.Parse(parameters["radius"]);
-            
-            int damage;
-            if (parameters.ContainsKey("damageMult"))
-            {
-                damage = (int)Math.Round(Game1.random.Next(weapon.minDamage.Value, weapon.maxDamage.Value + 1) * float.Parse(parameters["damageMult"]));
-            }
-            else if (parameters.ContainsKey("minDamage") && parameters.ContainsKey("maxDamage"))
-            {
-                damage = Game1.random.Next(int.Parse(parameters["minDamage"]), int.Parse(parameters["maxDamage"]) + 1);
 
-            }
-            else
+        public void Explosion(Farmer who, MeleeWeapon weapon, Dictionary<string, string> parameters)
+        {
+            Vector2 tileLocation = who.Tile;
+            if (parameters.TryGetValue("tileOffsetX", out var offsetX) && parameters.TryGetValue("tileOffsetY", out var offsetY))
+                tileLocation += Utils.TranslateVector(new(float.Parse(offsetX), float.Parse(offsetY)), who.FacingDirection);
+            int radius = int.Parse(parameters["radius"]);
+
+            int damage = -1;
+            if (parameters.TryGetValue("damageMult", out var damageMultStr) && float.TryParse(damageMultStr, out float damageMult))
+                damage = (int)Math.Round(Game1.random.Next(weapon.minDamage.Value, weapon.maxDamage.Value + 1) * damageMult);
+            if (parameters.TryGetValue("minDamage", out var minDamage) && parameters.TryGetValue("maxDamage", out var maxDamage))
+                damage = Game1.random.Next(int.Parse(minDamage), int.Parse(maxDamage));
+            if (damage < 0)
                 damage = Game1.random.Next(weapon.minDamage.Value, weapon.maxDamage.Value + 1);
 
-            user.currentLocation.explode(tileLocation, radius, user, false, damage);
-        }
-
-        public static AdvancedMeleeWeapon GetAdvancedWeapon(MeleeWeapon weapon, Farmer user)
-        {
-            AdvancedMeleeWeapon advancedMeleeWeapon = null;
-            if (advancedMeleeWeapons.ContainsKey(weapon.ItemId))
-            {
-                int skillLevel = -1;
-                foreach (AdvancedMeleeWeapon amw in advancedMeleeWeapons[weapon.ItemId])
-                {
-                    if (user == null || (amw.skillLevel <= user.getEffectiveSkillLevel(4) && amw.skillLevel > skillLevel))
-                    {
-                        skillLevel = amw.skillLevel;
-                        advancedMeleeWeapon = amw;
-                    }
-                }
-            }
-            if (advancedMeleeWeapon == null && advancedMeleeWeaponsByType.ContainsKey(weapon.type.Value) && user != null)
-            {
-                int skillLevel = -1;
-                foreach(AdvancedMeleeWeapon amw in advancedMeleeWeaponsByType[weapon.type.Value])
-                {
-                    if(amw.skillLevel <= user.getEffectiveSkillLevel(4) && amw.skillLevel > skillLevel)
-                    {
-                        skillLevel = amw.skillLevel;
-                        advancedMeleeWeapon = amw;
-                    }
-                }
-            }
-
-            return advancedMeleeWeapon;
+            who.currentLocation.explode(tileLocation, radius, who, false, damage);
         }
     }
 }

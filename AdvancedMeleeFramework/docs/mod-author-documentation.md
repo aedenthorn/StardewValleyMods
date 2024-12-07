@@ -4,6 +4,8 @@ This documentation outlines the things you need to know to start making content 
 
 This document is mostly based off of the original article outlining how to make content packs, which can be found [here](https://www.nexusmods.com/stardewvalley/articles/629)
 
+A full example pack using most available fields can be found [here](../examples/example%20pack%201/)
+
 * [Getting Started](#getting-started)
 * [Weapons](#weapons)
 * [Enchantments](#enchantments)
@@ -16,6 +18,7 @@ This document is mostly based off of the original article outlining how to make 
     * [Parameters](#parameters-1)
 * [Projectiles](#projectiles)
 * [Configuration](#configuration)
+* [C# Api](#c-api)
 * [Notes](#notes)
 
 ## Getting Started
@@ -38,7 +41,7 @@ Since you're making a content pack, add the following to the manifest:
 ```
 "ContentPackFor": {
     "UniqueID": "aedenthorn.AdvancedMeleeFramework",
-    "MinimumVersion": "0.8.2-unofficial.1-mindmeltmax"
+    "MinimumVersion": "0.8.2-unofficial.4-mindmeltmax"
 }
 ```
 
@@ -58,6 +61,9 @@ Any content will be added inside the ``[ ]``.
 
 When this documentation speaks of an object, it means it should be surrounded by ``{ }`` in the JSON.
 When this documentation speaks of a list, it means it should be surrounded by ``[ ]`` in  the JSON.
+
+
+(**Hint**: as of version 0.8.2-unofficial.4, the initial ``content.json`` can be shortened to just ``[ ]`` and still work the same)
 
 ## Weapons
 
@@ -200,6 +206,11 @@ A lot of the fields mentioned above can be made configurable. To do this, simply
 A full example can be found [in the provided example content pack](../examples/example%20pack%201/).
 
 Remember to not include your ``config.json`` file in the mod zip you upload to avoid overriding user settings.
+
+## C# Api
+As of version ``0.8.2-unofficial.4-mindmeltmax`` the C# api has been expanded to allow for custom enchantments (like heal, hurt, etc.) and custom special effects (like lightning and explosion).
+
+The api and it's documentation can be found [here](../AdvancedMeleeFrameworkApi.cs). The mod implements the default enchantments and effects in the same way so for examples, see [the modentry](../ModEntry.cs)
 
 ## Notes
 

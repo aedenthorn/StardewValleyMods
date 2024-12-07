@@ -1,4 +1,4 @@
-﻿namespace AdvancedMeleeFramework
+﻿namespace AdvancedMeleeFramework.Integrations
 {
     public interface IJsonAssetsApi
     {

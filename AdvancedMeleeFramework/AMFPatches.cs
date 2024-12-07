@@ -1,59 +1,82 @@
-﻿using Microsoft.Xna.Framework;
+﻿using HarmonyLib;
+using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
+using StardewModdingAPI;
 using StardewValley;
 using StardewValley.Enchantments;
 using StardewValley.Monsters;
 using StardewValley.Tools;
 using System;
+using System.Collections.Generic;
 using System.Linq;
-using Object = StardewValley.Object;
 
 namespace AdvancedMeleeFramework
 {
-    public class AMFPatches
+    internal static class AMFPatches
     {
-        private static ModEntry context;
+        private static ModEntry ctx;
 
-        public static void Initialize(ModEntry modEntry)
+        public static void Initialize(ModEntry context)
         {
-            context = modEntry;
+            ctx = context;
+
+            Harmony harmony = new(ctx.ModManifest.UniqueID);
+
+            harmony.Patch(
+                original: AccessTools.Constructor(typeof(MeleeWeapon), [typeof(string)]),
+                postfix: new(typeof(AMFPatches), nameof(MeleeWeapon_Postfix))
+            );
+            harmony.Patch(
+                original: AccessTools.Method(typeof(MeleeWeapon), "doAnimateSpecialMove"),
+                prefix: new(typeof(AMFPatches), nameof(MeleeWeapon_DoAnimateSpecialMove_Prefix))
+            );
+            harmony.Patch(
+                original: AccessTools.Constructor(typeof(MeleeWeapon), []),
+                postfix: new(typeof(AMFPatches), nameof(MeleeWeapon_Postfix))
+            );
+            harmony.Patch(
+                original: AccessTools.Method(typeof(MeleeWeapon), nameof(MeleeWeapon.drawInMenu), [typeof(SpriteBatch), typeof(Vector2), typeof(float), typeof(float), typeof(float), typeof(StackDrawType), typeof(Color), typeof(bool)]),
+                prefix: new(typeof(AMFPatches), nameof(MeleeWeapon_DrawInMenu_Prefix)),
+                postfix: new(typeof(AMFPatches), nameof(MeleeWeapon_DrawInMenu_Postfix))
+            );
+
+            harmony.Patch(
+                original: AccessTools.Method(typeof(BaseEnchantment), nameof(BaseEnchantment.OnDealtDamage)),
+                prefix: new(typeof(AMFPatches), nameof(BaseEnchantment_OnDealtDamage_Prefix))
+            );
+            harmony.Patch(
+                original: AccessTools.Method(typeof(BaseEnchantment), nameof(BaseEnchantment.OnMonsterSlay)),
+                prefix: new(typeof(AMFPatches), nameof(BaseEnchantment_OnMonsterSlay_Prefix))
+            );
+
+            harmony.Patch(
+                original: AccessTools.Method(typeof(Farmer), nameof(Farmer.OnItemReceived)),
+                prefix: new(typeof(AMFPatches), nameof(Farmer_OnItemReceived_Prefix))
+            );
         }
-        public static void MeleeWeapon_Postfix(MeleeWeapon __instance)
+
+        private static void MeleeWeapon_Postfix(MeleeWeapon __instance) => Utils.AddEnchantments(__instance);
+
+        private static bool MeleeWeapon_DoAnimateSpecialMove_Prefix(MeleeWeapon __instance, Farmer ___lastUser)
         {
-            //context.Monitor.Log($"0 created melee weapon {__instance.Name} {__instance.InitialParentTileIndex} {__instance.ParentSheetIndex} {Environment.StackTrace}");
-
-            ModEntry.AddEnchantments(__instance);
-        }
-
-
-        public static bool doAnimateSpecialMove_Prefix(MeleeWeapon __instance, Farmer ___lastUser)
-        {
-            context.Monitor.Log($"Special move for {__instance.Name}, id {__instance.InitialParentTileIndex}");
-
-            if (context.Config.RequireModKey && !context.Helper.Input.IsDown(context.Config.ModKey))
+            ctx.Monitor.VerboseLog($"Special move for {__instance.Name}, id {__instance.ItemId}");
+            if (ctx.Config.RequireModKey && !ctx.Helper.Input.IsDown(ctx.Config.ModKey))
                 return true;
-
-            ModEntry.advancedWeaponAnimating = ModEntry.GetAdvancedWeapon(__instance, ___lastUser);
-
-            if (ModEntry.weaponAnimationFrame > -1 || ModEntry.advancedWeaponAnimating == null || !ModEntry.advancedWeaponAnimating.frames.Any())
+            ctx.AdvancedWeaponAnimating = Utils.GetAdvancedMeleeWeapon(__instance, ___lastUser);
+            if (ctx.WeaponAnimationFrame > -1 || ctx.AdvancedWeaponAnimating == null || !ctx.AdvancedWeaponAnimating.frames.Any())
                 return true;
-
-            if (___lastUser == null || ___lastUser.CurrentTool != __instance)
-            {
+            if (___lastUser is null || ___lastUser.CurrentTool != __instance)
                 return false;
-            }
-
-            context.Monitor.Log($"Animating {__instance.DisplayName}");
-
+            ctx.Monitor.VerboseLog($"Animating {__instance.Name}");
             if (___lastUser.isEmoteAnimating)
-            {
                 ___lastUser.EndEmoteAnimation();
-            }
-            ModEntry.weaponStartFacingDirection = ___lastUser.getFacingDirection();
-            ModEntry.weaponAnimationFrame = 0;
-            ModEntry.weaponAnimating = __instance;
+            ctx.WeaponStartFacingDirection = ___lastUser.FacingDirection;
+            ctx.WeaponAnimationFrame = 0;
+            ctx.WeaponAnimating = __instance;
             return false;
         }
-        public static void drawInMenu_Prefix(MeleeWeapon __instance, ref int __state)
+
+        private static void MeleeWeapon_DrawInMenu_Prefix(MeleeWeapon __instance, ref int __state)
         {
             __state = 0;
             switch (__instance.type.Value)
@@ -82,7 +105,8 @@ namespace AdvancedMeleeFramework
                     break;
             }
         }
-        public static void drawInMenu_Postfix(MeleeWeapon __instance, int __state)
+
+        private static void MeleeWeapon_DrawInMenu_Postfix(MeleeWeapon __instance, int __state)
         {
             if (__state == 0)
                 return;
@@ -100,137 +124,63 @@ namespace AdvancedMeleeFramework
                     MeleeWeapon.clubCooldown = __state;
                     break;
             }
-
         }
 
-        public static bool _OnDealDamage_Prefix(BaseEnchantment __instance, string ____displayName, Monster monster, GameLocation location, Farmer who, int amount)
+        private static bool BaseEnchantment_OnDealtDamage_Prefix(BaseEnchantment __instance, string ____displayName, Monster monster, GameLocation location, Farmer who, int amount)
         {
-            if (__instance is not BaseWeaponEnchantment || who is null || who.CurrentTool is not MeleeWeapon || ____displayName == null  || ____displayName == "" || !ModEntry.advancedEnchantments.ContainsKey(____displayName) || (ModEntry.EnchantmentTriggers.TryGetValue(who.UniqueMultiplayerID + ____displayName, out int trigger) && trigger == Game1.ticks))
+            if (__instance is not BaseWeaponEnchantment || who is null || who.CurrentTool is not MeleeWeapon mw || string.IsNullOrEmpty(____displayName) || !ctx.AdvancedEnchantments.TryGetValue(____displayName, out var enchantment) || (ctx.EnchantmentTriggers.TryGetValue(who.UniqueMultiplayerID + ____displayName, out int triggerTicks) && triggerTicks == Game1.ticks))
                 return true;
-            AdvancedEnchantmentData enchantment = ModEntry.advancedEnchantments[____displayName];
-
-            if (enchantment?.parameters?.TryGetValue("trigger", out string triggerString) != true)
+            if (!(enchantment.parameters?.TryGetValue("trigger", out string trigger) ?? false))
                 return true;
-
-            if (triggerString == "damage" || (triggerString == "crit" && amount > (who.CurrentTool as MeleeWeapon).maxDamage.Value) && !Environment.StackTrace.Contains("OnCalculateDamage"))
+            if (trigger == "damage" || (trigger == "crit" && amount > mw.maxDamage.Value) && !Environment.StackTrace.Contains("OnCalculateDamage"))
             {
-                context.Monitor.Log($"Triggered enchantment {enchantment.name} on {triggerString} {amount} {(who.CurrentTool as MeleeWeapon).enchantments.Count}");
-                ModEntry.EnchantmentTriggers[who.UniqueMultiplayerID + ____displayName] = Game1.ticks;
-                if (enchantment.type == "heal")
+                ctx.Monitor.VerboseLog($"Triggered enchantment {enchantment.name} on {trigger}. {mw.Name} did {amount} damage and has {mw.enchantments.Count} enchantments");
+                ctx.EnchantmentTriggers[who.UniqueMultiplayerID + ____displayName] = Game1.ticks;
+                if (!ctx.AdvancedEnchantmentCallbacks.TryGetValue(enchantment.type, out var callback))
                 {
-                    if (Game1.random.NextDouble() < float.Parse(enchantment.parameters["chance"]) / 100f)
-                    {
-                        int heal = Math.Max(1, (int)(amount * float.Parse(enchantment.parameters["amountMult"])));
-                        who.health = Math.Min(who.maxHealth, Game1.player.health + heal);
-                        location.debris.Add(new Debris(heal, Game1.player.getStandingPosition(), Color.Lime, 1f, who));
-                        if (enchantment.parameters.ContainsKey("sound"))
-                            Game1.playSound(enchantment.parameters["sound"]);
-                    }
+                    ctx.Monitor.Log($"Triggered enchantment {enchantment.type} could not be found", LogLevel.Error);
+                    return false;
                 }
-                else if (enchantment.type == "hurt")
+                Dictionary<string, string> parameters = new(enchantment.parameters)
                 {
-                    if (Game1.random.NextDouble() < float.Parse(enchantment.parameters["chance"]) / 100f)
-                    {
-                        int hurt = Math.Max(1, (int)(amount * float.Parse(enchantment.parameters["amountMult"])));
-                        who.takeDamage(hurt, true, null);
-                        if (enchantment.parameters.ContainsKey("sound"))
-                            Game1.playSound(enchantment.parameters["sound"]);
-                    }
-                }
-                else if (enchantment.type == "coins")
-                {
-                    if (Game1.random.NextDouble() < float.Parse(enchantment.parameters["chance"]) / 100f)
-                    {
-                        float mult = float.Parse(enchantment.parameters["amountMult"]);
-                        int coins = (int)Math.Round(mult * amount);
-                        who.Money += coins;
-                        if (enchantment.parameters.ContainsKey("sound"))
-                            Game1.playSound(enchantment.parameters["sound"]);
-                    }
-                } 
+                    { "amount", amount.ToString() }
+                };
+
+                callback?.Invoke(who, mw, monster, parameters);
             }
             return false;
         }
-        public static bool _OnMonsterSlay_Prefix(BaseEnchantment __instance, string ____displayName, Monster m, GameLocation location, Farmer who)
+
+        private static bool BaseEnchantment_OnMonsterSlay_Prefix(BaseEnchantment __instance, string ____displayName, Monster monster, GameLocation location, Farmer who)
         {
-            if (!(__instance is BaseWeaponEnchantment) || ____displayName == null || who is null || !ModEntry.advancedEnchantments.TryGetValue(____displayName, out AdvancedEnchantmentData enchantment) || enchantment is null || (ModEntry.EnchantmentTriggers.ContainsKey(who.UniqueMultiplayerID + ____displayName) && ModEntry.EnchantmentTriggers[who.UniqueMultiplayerID + ____displayName] == Game1.ticks))
+            if (__instance is not BaseWeaponEnchantment || who is null || who.CurrentTool is not MeleeWeapon mw || string.IsNullOrEmpty(____displayName) || !ctx.AdvancedEnchantments.TryGetValue(____displayName, out var enchantment) || (ctx.EnchantmentTriggers.TryGetValue(who.UniqueMultiplayerID + ____displayName, out int triggerTicks) && triggerTicks == Game1.ticks))
                 return true;
-            
-            if (enchantment.parameters?.TryGetValue("trigger", out string trigger) == true && trigger == "slay")
+            if (!(enchantment.parameters?.TryGetValue("trigger", out string trigger) ?? false))
+                return true;
+
+            if (trigger == "slay")
             {
-                context.Monitor.Log($"Triggered enchantment {enchantment.name} on slay");
-                ModEntry.EnchantmentTriggers[who.UniqueMultiplayerID + ____displayName] = Game1.ticks;
-                if (enchantment.type == "heal")
+                ctx.Monitor.VerboseLog($"Triggered enchantment {enchantment.name} on {trigger}. Slayed {monster.Name} with {mw.Name}, which has {mw.enchantments.Count} enchantments");
+                ctx.EnchantmentTriggers[who.UniqueMultiplayerID + ____displayName] = Game1.ticks;
+                if (!ctx.AdvancedEnchantmentCallbacks.TryGetValue(enchantment.type, out var callback))
                 {
-                    if (Game1.random.NextDouble() < float.Parse(enchantment.parameters["chance"]) / 100f)
-                    {
-                        int heal = Math.Max(1, (int)(m.Health * float.Parse(enchantment.parameters["amountMult"])));
-                        who.health = Math.Min(who.maxHealth, Game1.player.health + heal);
-                        location.debris.Add(new Debris(heal, Game1.player.getStandingPosition(), Color.Lime, 1f, who));
-                        if (enchantment.parameters.ContainsKey("sound"))
-                            Game1.playSound(enchantment.parameters["sound"]);
-                    }
+                    ctx.Monitor.Log($"Triggered enchantment {enchantment.type} could not be found", LogLevel.Error);
+                    return false;
                 }
-                else if (enchantment.type == "hurt")
-                {
-                    if (Game1.random.NextDouble() < float.Parse(enchantment.parameters["chance"]) / 100f)
-                    {
-                        int hurt = Math.Max(1, (int)(m.Health * float.Parse(enchantment.parameters["amountMult"])));
-                        who.takeDamage(hurt, true, null);
-                        if (enchantment.parameters.ContainsKey("sound"))
-                            Game1.playSound(enchantment.parameters["sound"]);
-                    }
-                }
-                else if (enchantment.type == "loot")
-                {
-                    if (Game1.random.NextDouble() < float.Parse(enchantment.parameters["chance"]) / 100f)
-                    {
-                        if (enchantment.parameters.ContainsKey("extraDropChecks"))
-                        {
-                            int extraChecks = Math.Max(1, int.Parse(enchantment.parameters["extraDropChecks"]));
-                            for (int i = 0; i < extraChecks; i++)
-                            {
-                                location.monsterDrop(m, m.GetBoundingBox().Center.X, m.GetBoundingBox().Center.Y, who);
-                            }
-                        }
-                        else if (enchantment.parameters.TryGetValue("extraDropItems", out string extra))
-                        {
-                            string[] items = extra.Split(',');
-                            foreach (string item in items)
-                            {
-                                string[] ic = item.Split('_');
-                                if (ic.Length == 1)
-                                    Game1.createItemDebris(new Object(item, 1, false, -1, 0), m.Position, Game1.random.Next(4), m.currentLocation, -1);
-                                else if (ic.Length == 2)
-                                {
-                                    float chance = int.Parse(ic[1]) / 100f;
-                                    if (Game1.random.NextDouble() < chance)
-                                        Game1.createItemDebris(new Object(ic[0], 1, false, -1, 0), m.Position, Game1.random.Next(4), m.currentLocation, -1);
-                                }
-                                else if (ic.Length == 4)
-                                {
-                                    float chance = int.Parse(ic[3]) / 100f;
-                                    if (Game1.random.NextDouble() < chance)
-                                        Game1.createItemDebris(new Object(ic[0], Game1.random.Next(int.Parse(ic[1]), int.Parse(ic[2]))), m.Position, Game1.random.Next(4), m.currentLocation, -1);
-                                }
-                            }
-                        }
-                        if (enchantment.parameters.TryGetValue("sound", out string sound))
-                            Game1.playSound(sound);
-                    }
-                }
-                else if (enchantment.type == "coins")
-                {
-                    if (Game1.random.NextDouble() < float.Parse(enchantment.parameters["chance"]) / 100f)
-                    {
-                        float mult = float.Parse(enchantment.parameters["amountMult"]);
-                        int amount = (int)Math.Round(mult * m.MaxHealth);
-                        who.Money += amount;
-                        if (enchantment.parameters.TryGetValue("sound", out string sound))
-                            Game1.playSound(sound);
-                    }
-                }
+                callback?.Invoke(who, mw, monster, enchantment.parameters);
             }
+            return false;
+        }
+
+        private static bool Farmer_OnItemReceived_Prefix(Farmer __instance, Item item)
+        {
+            if (!__instance.IsLocalPlayer || item?.QualifiedItemId != "(O)GoldCoin" || !item.modData.TryGetValue(ctx.ModManifest.UniqueID + "/moneyAmount", out var amountStr))
+                return true;
+            Game1.playSound("moneyDial");
+            int amount = int.Parse(amountStr);
+            __instance.Money += amount;
+            __instance.removeItemFromInventory(item);
+            Game1.dayTimeMoneyBox.gotGoldCoin(amount);
             return false;
         }
     }
