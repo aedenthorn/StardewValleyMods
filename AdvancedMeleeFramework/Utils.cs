@@ -83,7 +83,8 @@ namespace AdvancedMeleeFramework
                 "vampiric" => new VampiricEnchantment(),
                 "haymaker" => new HaymakerEnchantment(),
                 "bugkiller" => new BugKillerEnchantment(),
-                "crusaded" => new CrusaderEnchantment(),
+                "crusader" => new CrusaderEnchantment(),
+                "artful" => new ArtfulEnchantment(),
                 "magic" => new MagicEnchantment(),
                 "jade" => new JadeEnchantment(),
                 "aquamarine" => new AquamarineEnchantment(),
@@ -195,17 +196,25 @@ namespace AdvancedMeleeFramework
 
         private static List<AdvancedMeleeWeapon>? ReadContentPack(IContentPack contentPack)
         {
+            List<AdvancedMeleeWeapon> weapons;
             try
             {
-                var weapons = contentPack.ReadJsonFile<AdvancedMeleeWeaponData>("content.json")?.weapons ?? contentPack.ReadJsonFile<List<AdvancedMeleeWeapon>>("content.json");
-                return weapons;
+                weapons = contentPack.ReadJsonFile<AdvancedMeleeWeaponData>("content.json").weapons;
             }
-            catch (Exception ex2)
+            catch
             {
-                ctx.Monitor.Log($"Could not read content.json file for content pack", LogLevel.Error);
-                ctx.Monitor.Log($"{ex2.GetType().Name} - {ex2.Message}\n{ex2.StackTrace}");
-                return null;
+                try
+                {
+                    weapons = contentPack.ReadJsonFile<List<AdvancedMeleeWeapon>>("content.json");
+                }
+                catch (Exception ex2)
+                {
+                    ctx.Monitor.Log($"Could not read content.json file for content pack", LogLevel.Error);
+                    ctx.Monitor.Log($"{ex2.GetType().Name} - {ex2.Message}\n{ex2.StackTrace}");
+                    return null;
+                }
             }
+            return weapons;
         }
 
         private static Dictionary<string, object>? ReadContentPackConfig(IContentPack contentPack)

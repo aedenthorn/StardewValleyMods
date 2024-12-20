@@ -77,6 +77,9 @@ namespace AdvancedMeleeFramework
 
             gmcm.Register(ModManifest, () => Config = new(), () => Helper.WriteConfig(Config));
             gmcm.AddBoolOption(ModManifest, () => Config.EnableMod, v => Config.EnableMod = v, () => "Enabled");
+            gmcm.AddKeybind(ModManifest, () => Config.ReloadButton, v => Config.ReloadButton = v, () => "Reload Button");
+            gmcm.AddBoolOption(ModManifest, () => Config.RequireModKey, v => Config.RequireModKey = v, () => "Require Activate Button");
+            gmcm.AddKeybind(ModManifest, () => Config.ModKey, v => Config.ModKey = v, () => "Activate Button");
         }
 
         private void onSaveLoaded(object sender, SaveLoadedEventArgs e)
@@ -235,16 +238,20 @@ namespace AdvancedMeleeFramework
             SpecialEffectCallbacks.Add("explosion", Explosion);
         }
 
+        private float defaultMultFromTrigger(string trigger) => trigger == "slay" ? .1f : 1f;
+
         public void Heal(Farmer who, MeleeWeapon weapon, Monster? monster, Dictionary<string, string> parameters)
         {
             if (Game1.random.NextDouble() < float.Parse(parameters["chance"]) / 100f)
             {
-                int amount = monster is not null ? monster.Health : int.Parse(parameters["amount"]);
-                int heal = Math.Max(1, (int)(amount * float.Parse(parameters["amountMult"])));
+                float mult = parameters.TryGetValue("amountMult", out var multStr) ? float.Parse(multStr) : defaultMultFromTrigger(parameters["trigger"]);
+                if (!int.TryParse(parameters["amount"], out int amount))
+                    amount = monster?.MaxHealth ?? 1;
+                int heal = Math.Max(1, (int)(amount * mult));
                 who.health = Math.Min(who.maxHealth, Game1.player.health + heal);
                 who.currentLocation.debris.Add(new Debris(heal, who.getStandingPosition(), Color.Lime, 1f, who));
-                if (parameters.ContainsKey("sound"))
-                    Game1.playSound(parameters["sound"]);
+                if (parameters.TryGetValue("sound", out var sound))
+                    Game1.playSound(sound);
             }
         }
 
@@ -252,11 +259,13 @@ namespace AdvancedMeleeFramework
         {
             if (Game1.random.NextDouble() < float.Parse(parameters["chance"]) / 100f)
             {
-                int amount = monster is not null ? monster.Health : int.Parse(parameters["amount"]);
-                int hurt = Math.Max(1, (int)(amount * float.Parse(parameters["amountMult"])));
+                float mult = parameters.TryGetValue("amountMult", out var multStr) ? float.Parse(multStr) : defaultMultFromTrigger(parameters["trigger"]);
+                if (!int.TryParse(parameters["amount"], out int amount))
+                    amount = monster?.MaxHealth ?? 1;
+                int hurt = Math.Max(1, (int)(amount * mult));
                 who.takeDamage(hurt, true, null);
-                if (parameters.ContainsKey("sound"))
-                    Game1.playSound(parameters["sound"]);
+                if (parameters.TryGetValue("sound", out var sound))
+                    Game1.playSound(sound);
             }
         }
 
@@ -264,20 +273,22 @@ namespace AdvancedMeleeFramework
         {
             if (Game1.random.NextDouble() < float.Parse(parameters["chance"]) / 100f)
             {
-                int amount = monster is not null ? monster.MaxHealth : int.Parse(parameters["amount"]);
-                int coins = (int)Math.Round(amount * float.Parse(parameters["amountMult"]));
+                float mult = parameters.TryGetValue("amountMult", out var multStr) ? float.Parse(multStr) : defaultMultFromTrigger(parameters["trigger"]);
+                if (!int.TryParse(parameters["amount"], out int amount))
+                    amount = monster?.MaxHealth ?? 1;
+                int coins = (int)Math.Round(amount * mult);
                 if (parameters.TryGetValue("dropType", out string dropType) && dropType.ToLower() == "wallet")
                 {
                     who.Money += coins;
-                    if (parameters.TryGetValue("sound", out string sound))
-                        Game1.playSound(sound);
+                    if (parameters.TryGetValue("sound", out string sound2))
+                        Game1.playSound(sound2);
                     return;
                 }
                 Item i = ItemRegistry.Create("(O)GoldCoin");
                 i.modData.Add(ModManifest.UniqueID + "/moneyAmount", coins.ToString());
                 Game1.createItemDebris(i, monster?.Position ?? Utility.PointToVector2(who.StandingPixel), who.FacingDirection, who.currentLocation);
-                if (parameters.ContainsKey("sound"))
-                    Game1.playSound(parameters["sound"]);
+                if (parameters.TryGetValue("sound", out var sound))
+                    Game1.playSound(sound);
             }
         }
 
@@ -325,18 +336,18 @@ namespace AdvancedMeleeFramework
         {
             int minDamage = weapon.minDamage.Value;
             int maxDamage = weapon.maxDamage.Value;
+            if (parameters.TryGetValue("minDamage", out var minDamageStr))
+                minDamage = int.Parse(minDamageStr);
+            if (parameters.TryGetValue("maxDamage", out var maxDamageStr))
+                maxDamage = int.Parse(maxDamageStr);
             if (parameters.TryGetValue("damageMult", out var damageMultStr) && float.TryParse(damageMultStr, out float damageMult))
             {
                 minDamage = (int)Math.Round(minDamage * damageMult);
                 maxDamage = (int)Math.Round(maxDamage * damageMult);
             }
-            if (parameters.TryGetValue("minDamage", out var minDamageStr) && parameters.TryGetValue("maxDamage", out var maxDamageStr))
-            {
-                minDamage = int.Parse(minDamageStr);
-                maxDamage = int.Parse(maxDamageStr);
-            }
 
-            int radius = int.Parse(parameters["radius"]);
+            if (!int.TryParse(parameters["radius"], out int radius))
+                radius = 3;
             Farm.LightningStrikeEvent lightningEvent = new()
             {
                 bigFlash = true,
@@ -344,13 +355,13 @@ namespace AdvancedMeleeFramework
             };
 
             Vector2 offset = Vector2.Zero;
-            if (parameters.TryGetValue("offsetX", out var offsetX) && parameters.TryGetValue("offsetY", out var offsetY))
-            {
-                float x = float.Parse(offsetX);
-                float y = float.Parse(offsetY);
+            if (!parameters.TryGetValue("offsetX", out var offsetX) || !float.TryParse(offsetX, out var x))
+                x = 0;
+            if (!parameters.TryGetValue("offsetY", out var offsetY) || !float.TryParse(offsetY, out var y))
+                y = 0;
+            if (x != 0 || y != 0)
                 offset = Utils.TranslateVector(new(x, y), who.FacingDirection);
-            }
-            lightningEvent.boltPosition = who.Position + new Vector2(32f) + offset;
+            lightningEvent.boltPosition = who.Position + new Vector2(32f, 0f) + (offset * 64f);
             Game1.flashAlpha = (float)(0.5 + Game1.random.NextDouble());
 
             if (parameters.TryGetValue("sound", out var sound))
@@ -358,15 +369,17 @@ namespace AdvancedMeleeFramework
 
             Utility.drawLightningBolt(lightningEvent.boltPosition, who.currentLocation);
 
-            who.currentLocation.damageMonster(new((int)Math.Round(who.Position.X - radius), (int)Math.Round(who.Position.Y - radius), radius * 2, radius * 2), minDamage, maxDamage, false, who);
+            who.currentLocation.damageMonster(new((int)Math.Round(lightningEvent.boltPosition.X / 64 - radius) * 64, (int)Math.Round(lightningEvent.boltPosition.Y / 64 - radius) * 64, (radius * 2 + 1) * 64, (radius * 2 + 1) * 64), minDamage, maxDamage, false, who);
         }
 
         public void Explosion(Farmer who, MeleeWeapon weapon, Dictionary<string, string> parameters)
         {
             Vector2 tileLocation = who.Tile;
-            if (parameters.TryGetValue("tileOffsetX", out var offsetX) && parameters.TryGetValue("tileOffsetY", out var offsetY))
+            if (parameters.TryGetValue("offsetX", out var offsetX) && parameters.TryGetValue("offsetY", out var offsetY))
                 tileLocation += Utils.TranslateVector(new(float.Parse(offsetX), float.Parse(offsetY)), who.FacingDirection);
-            int radius = int.Parse(parameters["radius"]);
+
+            if (!int.TryParse(parameters["radius"], out int radius))
+                radius = 3;
 
             int damage = -1;
             if (parameters.TryGetValue("damageMult", out var damageMultStr) && float.TryParse(damageMultStr, out float damageMult))

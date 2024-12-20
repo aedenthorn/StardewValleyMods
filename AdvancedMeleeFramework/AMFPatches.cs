@@ -143,7 +143,8 @@ namespace AdvancedMeleeFramework
                 }
                 Dictionary<string, string> parameters = new(enchantment.parameters)
                 {
-                    { "amount", amount.ToString() }
+                    { "amount", amount.ToString() },
+                    { "trigger", trigger }
                 };
 
                 callback?.Invoke(who, mw, monster, parameters);
@@ -167,7 +168,11 @@ namespace AdvancedMeleeFramework
                     ctx.Monitor.Log($"Triggered enchantment {enchantment.type} could not be found", LogLevel.Error);
                     return false;
                 }
-                callback?.Invoke(who, mw, monster, enchantment.parameters);
+                Dictionary<string, string> parameters = new(enchantment.parameters)
+                {
+                    { "trigger", trigger }
+                };
+                callback?.Invoke(who, mw, monster, parameters);
             }
             return false;
         }

@@ -102,6 +102,7 @@ The following are ids for vanila enchantment types. These do not accept paramete
 * **"haymaker"**
 * **"bugkiller"**
 * **"crusader"**
+* **"artful"**
 * **"magic"**
 
 For more information on these enchantments, read [the wiki page](https://stardewvalleywiki.com/Forge#Enchantments)
@@ -122,8 +123,8 @@ An object which contains fields used by custom enchantment types to determine th
 It has the following fields:
 * **"trigger"**: When the enchantment should be triggered. Available values for this are: **"slay"** (when a monster is slain), **"damage"** (when damage is dealt), **"crit"** (when a critical strike is dealt). Applicable to all custom enchants.
 * **"chance"**: The chance percentage of an enchantment to trigger. Applicable to all custom enchants.
-* **"amountMult"**: How much should be healed / dropped based on monster max hp (for trigger **"slay"**) or damage dealt (for trigger **"damage"** and **"crit"**). Applicable to **"heal"**, **"hurt"**, and **"coins"**.
-* **"sound"**: The name of the sound cue to play on trigger. Applicable to all custom enchants.
+* **"amountMult"**: How much should be healed / dropped based on monster max hp (for trigger **"slay"**) or damage dealt (for trigger **"damage"** and **"crit"**). Applicable to **"heal"**, **"hurt"**, and **"coins"**. (Optional, default value is 1 for damage and crit or 0.1 for slay)
+* **"sound"**: The name of the sound cue to play on trigger. Applicable to all custom enchants. (Optional)
 * **"extraDropChecks"**: How many extra times to check for loot when a monster is slain (use either this **or** **"extraDropItems"**). Applicable to **"loot"**.
 * **"extraDropItems"**: Add specific items to monster loot drops when a monster is slain (use either this **or** **"extraDropChecks"**). Applicable to **"loot"**.
 
@@ -140,14 +141,14 @@ Frames are objects added to weapon skills inside of the ``frames`` field.
 
 It has the following fields:
 * **"frameTicks"**: How many ticks to wait before starting the next frame.
-* **"invincible"**: When true, makes the user invincible for a few seconds. When false, this is skipped (default false).
+* **"invincible"**: When true, makes the user invincible for a few seconds. When false, this is skipped (Optional, default false).
 * **"action"**: Allowed values are: 0 (None), 1 (Regular Attack), 2 (Special attack (i.e. block for sword, slam for hammer, and stab for dagger)).
-* **"special"**: A [Special Effect](#special-effects) attached to this frame.
-* **"relativeFacingDirection"**: How may 90 degree clockwise turns to make from the original facing direction for this frame.
+* **"special"**: A [Special Effect](#special-effects) attached to this frame. (Optional)
+* **"relativeFacingDirection"**: How may 90 degree clockwise turns to make from the original facing direction for this frame. (Optional)
 * **"trajectoryX"**: Set the users horizontal trajectory relative to the users facing direction, as if the user were facing down. (More than 0: Move to the left; Less than 0: Move to the right).
 * **"trajectoryY"**: Set the users vertical trajectory relative to the users facing direction, as if the user were facing down. (More than 0: Move down; Less than 0: Move up).
-* **"sound"**: The name of the sound cue to play for this frame. (Remember: Attacks have their own sound already).
-* **"projectiles"**: A list of [Projectiles](#projectiles) attached to this frame.
+* **"sound"**: The name of the sound cue to play for this frame. (Optional; Remember: Attacks have their own sound already).
+* **"projectiles"**: A list of [Projectiles](#projectiles) attached to this frame. (Optional)
 * **"config"**: An object with fields which point to user configurable values. (see [the configuration section below](#configuration))
 
 ## Special Effects
@@ -171,11 +172,13 @@ The following are names of recognized special effect types.
 An object with fields used by special effects.
 
 It has the following fields:
-* **"damageMult"**: The amount of damage to inflict based on the weapon's min and max damage. (If you want to set Min/Max damage manually, use **"minDamage"** and **"maxDamage"** instead).
-* **"minDamage"**: The minimum amount of damage to inflict when a monster is hit.
-* **"maxDamage"**: The maximum amount of damage to inflict when a monster is hit.
-* **"radius"**: How big the area of the effect will be.
-* **"sound"**: The name of the sound cue to play for this effect.
+* **"damageMult"**: The amount of damage to inflict based on the weapon's min and max damage or the **"minDamage"** and **"maxDamage"** fields if set. (Optional, default 1)
+* **"minDamage"**: The minimum amount of damage to inflict when a monster is hit. (Optional, default weapon minimum damage)
+* **"maxDamage"**: The maximum amount of damage to inflict when a monster is hit. (Optional, default weapon maximum damage)
+* **"radius"**: How big the area of the effect will be. (Optional, default 3)
+* **"sound"**: The name of the sound cue to play for this effect. (Optional)
+* **"offsetX"**: The horizontal tile offset of the effect relative the players facing direction this frame. (Optional, default 0)
+* **"offsetY"**: The vertical tile offset of the effect relative the players facing direction this frame. (Optional, default 0)
 
 ## Projectiles
 
@@ -216,7 +219,7 @@ The api and it's documentation can be found [here](../AdvancedMeleeFrameworkApi.
 
 For a full list of available sound cues, read [this page](https://stardewvalleywiki.com/Modding:Audio#Sound). (Not fully up-to-date with 1.6 sounds).
 
-For a comprehensive list of qualified item ids, I recommend [this page](https://mateusaquino.github.io/stardewids/) which has sections for each item category with qualified ids (object ids are not qualified, these should be prefixed with ``(O)``).
+For a comprehensive list of qualified item ids, I recommend [this page](https://mateusaquino.github.io/stardewids/) which has sections for each item category with qualified ids (object ids are not qualified on the site, these should be prefixed with ``(O)``).
 
 If at any point you want to reload all weapon packs, the mod provides a reload button which can be found in the config (default is Numpad 0).
 
