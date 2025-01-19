@@ -144,7 +144,6 @@ namespace AdvancedMeleeFramework
                 Dictionary<string, string> parameters = new(enchantment.parameters)
                 {
                     { "amount", amount.ToString() },
-                    { "trigger", trigger }
                 };
 
                 callback?.Invoke(who, mw, monster, parameters);
@@ -170,7 +169,7 @@ namespace AdvancedMeleeFramework
                 }
                 Dictionary<string, string> parameters = new(enchantment.parameters)
                 {
-                    { "trigger", trigger }
+                    { "amount", monster.MaxHealth.ToString() }
                 };
                 callback?.Invoke(who, mw, monster, parameters);
             }

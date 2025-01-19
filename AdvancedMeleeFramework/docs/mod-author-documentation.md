@@ -41,7 +41,7 @@ Since you're making a content pack, add the following to the manifest:
 ```
 "ContentPackFor": {
     "UniqueID": "aedenthorn.AdvancedMeleeFramework",
-    "MinimumVersion": "0.8.2-unofficial.4-mindmeltmax"
+    "MinimumVersion": "0.8.2-unofficial.6-mindmeltmax"
 }
 ```
 
