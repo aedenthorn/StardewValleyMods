@@ -1,12 +1,12 @@
 ﻿{
   "Name": "Advanced Melee Framework",
   "Author": "aedenthorn",
-  "Version": "0.8.1",
+  "Version": "0.8.2-unofficial.6-mindmeltmax",
   "Description": "Advanced melee framework.",
   "UniqueID": "aedenthorn.AdvancedMeleeFramework",
   "EntryDll": "AdvancedMeleeFramework.dll",
-  "MinimumApiVersion": "3.15.0",
-  "UpdateKeys": ["Nexus:7886"],
+  "MinimumApiVersion": "4.1.0",
+  "UpdateKeys": ["Nexus:24374"],
   "ModUpdater": {
     "Repository": "StardewValleyMods",
     "User": "aedenthorn",
