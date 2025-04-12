@@ -20,19 +20,19 @@ namespace LightMod
 {
     public partial class ModEntry
     {
-        public static IEnumerable<CodeInstruction> SGame_DrawImpl_Transpiler(IEnumerable<CodeInstruction> instructions)
+        public static IEnumerable<CodeInstruction> LightSource_Draw_Transpiler(IEnumerable<CodeInstruction> instructions)
         {
-            SMonitor.Log($"Transpiling Game1._draw");
+            SMonitor.Log($"Transpiling LightSource.Draw");
 
             var codes = new List<CodeInstruction>(instructions);
             for (int i = 0; i < codes.Count; i++)
             {
-                if (i < codes.Count - 3 && codes[i].opcode == OpCodes.Ldloc_S && codes[i + 1].opcode == OpCodes.Ldfld && codes[i + 2].opcode == OpCodes.Callvirt && (FieldInfo)codes[i + 1].operand == AccessTools.Field(typeof(LightSource), nameof(LightSource.lightTexture)) && (MethodInfo)codes[i + 2].operand == AccessTools.PropertyGetter(typeof(Texture2D), nameof(Texture2D.Bounds)))
+                if (codes[i].opcode == OpCodes.Callvirt && (MethodInfo)codes[i].operand == AccessTools.PropertyGetter(typeof(Texture2D), nameof(Texture2D.Bounds)))
                 {
                     SMonitor.Log("adding method to check light source texture bounds");
-                    codes.Insert(i + 3, new CodeInstruction(OpCodes.Call, AccessTools.Method(typeof(ModEntry), nameof(ModEntry.GetTextureBounds))));
-                    codes.Insert(i + 3, codes[i].Clone());
-                    i += 4;
+                    codes.Insert(i + 1, new CodeInstruction(OpCodes.Call, AccessTools.Method(typeof(ModEntry), nameof(ModEntry.GetTextureBounds))));
+                    codes.Insert(i + 1, new CodeInstruction(OpCodes.Ldarg_0));
+                    i += 3;
                 }
             }
 
@@ -123,9 +123,9 @@ namespace LightMod
             {
                 return (!Config.ModEnabled || !__instance.modData.TryGetValue(switchKey, out string status) || status == "on");
             }
-            public static void Postfix(Furniture __instance, GameLocation environment)
-            {
-                if (!Config.ModEnabled || __instance.lightSource is null)
+            public static void Postfix(Furniture __instance)
+            {                          
+                if (!Config.ModEnabled || __instance.Location is null || __instance.lightSource is null)
                     return;
 
                 if (__instance.modData.TryGetValue(alphaKey, out string astr) && int.TryParse(astr, out int alpha))
@@ -138,8 +138,8 @@ namespace LightMod
                     __instance.lightSource.radius.Value = radius;
                     SMonitor.Log($"New light radius: {__instance.lightSource.radius.Value}");
                 }
-                environment.removeLightSource(__instance.lightSource.Identifier);
-                environment.sharedLights.Add(__instance.lightSource.Identifier, __instance.lightSource.Clone());
+                __instance.Location.removeLightSource(__instance.lightSource.Identifier);
+                __instance.Location.sharedLights.Add(__instance.lightSource.Identifier, __instance.lightSource.Clone());
             }
         }
         
@@ -164,7 +164,7 @@ namespace LightMod
                 var codes = new List<CodeInstruction>(instructions);
                 for (int i = 0; i < codes.Count; i++)
                 {
-                    if (codes[i].opcode == OpCodes.Call && (MethodInfo)codes[i].operand == AccessTools.PropertyGetter(typeof(Color), nameof(Color.White)))
+                    if (codes[i].opcode == OpCodes.Call && codes[i].operand.Equals(AccessTools.PropertyGetter(typeof(Color), nameof(Color.White))))
                     {
                         SMonitor.Log("adding method to change light glow alpha");
                         codes[i].operand = AccessTools.Method(typeof(ModEntry), nameof(ModEntry.GetLightGlowAlpha));
@@ -321,12 +321,12 @@ namespace LightMod
             }
         }
 
-        [HarmonyPatch(typeof(Furniture), nameof(Furniture.resetOnPlayerEntry))]
-        private static class Furniture_resetOnPlayerEntry_Patch
+        [HarmonyPatch(typeof(Furniture), nameof(Furniture.actionOnPlayerEntry))]
+        private static class Furniture_actionOnPlayerEntry_Patch
         {
-            public static void Postfix(Furniture __instance, GameLocation environment)
+            public static void Postfix(Furniture __instance)
             {
-                if (!Config.ModEnabled)
+                if (!Config.ModEnabled || __instance.Location is null)
                     return;
                 if(__instance.modData.TryGetValue(switchKey, out string status))
                 {
@@ -337,8 +337,8 @@ namespace LightMod
                     else
                     {
                         __instance.lightSource = null;
-                        environment.removeLightSource((int)(__instance.TileLocation.X * 2000f + __instance.TileLocation.Y));
-                        __instance.RemoveLightGlow(Game1.currentLocation);
+                        __instance.Location.removeLightSource((int)(__instance.TileLocation.X * 2000f + __instance.TileLocation.Y));
+                        __instance.RemoveLightGlow();
                     }
                 }
             }
