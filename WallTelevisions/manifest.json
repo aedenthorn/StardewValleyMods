@@ -1,0 +1,10 @@
+﻿{
+	"Name": "Wall Televisions",
+	"Author": "aedenthorn",
+	"Version": "0.2.1",
+	"Description": "Lets you mount flat screen televisions on walls.",
+	"UniqueID": "aedenthorn.WallTelevisions",
+	"EntryDll": "WallTelevisions.dll",
+	"MinimumApiVersion": "4.1.0",
+	"UpdateKeys": [ "Nexus:11448" ]
+}
