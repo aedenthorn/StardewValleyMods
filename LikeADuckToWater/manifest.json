@@ -1,22 +1,10 @@
 ﻿{
-  "Name": "Like A Duck To Water",
-  "Author": "aedenthorn",
-  "Version": "0.4.4",
-  "Description": "Like A Duck To Water.",
-  "UniqueID": "aedenthorn.LikeADuckToWater",
-  "EntryDll": "LikeADuckToWater.dll",
-  "MinimumApiVersion": "3.15.0",
-  "ModUpdater": {
-    "Repository": "StardewValleyMods",
-    "User": "aedenthorn",
-    "Directory": "_releases",
-    "ModFolder": "LikeADuckToWater"
-  },
-  "Dependencies": [
-    {
-      "UniqueID": "Platonymous.ModUpdater",
-      "IsRequired": false
-    }
-  ],
-  "UpdateKeys": [ "Nexus:15860" ]
+	"Name": "Like a Duck to Water",
+	"Author": "aedenthorn",
+	"Version": "0.4.5",
+	"Description": "Makes ducks actually want to swim in water once they have been fed and petted.",
+	"UniqueID": "aedenthorn.LikeADuckToWater",
+	"EntryDll": "LikeADuckToWater.dll",
+	"MinimumApiVersion": "4.0.0",
+	"UpdateKeys": [ "Nexus:15860" ]
 }
