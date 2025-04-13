@@ -1,22 +1,10 @@
 ﻿{
-  "Name": "Rainbow Trail",
-  "Author": "aedenthorn",
-  "Version": "0.1.1",
-  "Description": "Rainbow Trail.",
-  "UniqueID": "aedenthorn.RainbowTrail",
-  "EntryDll": "RainbowTrail.dll",
-  "MinimumApiVersion": "3.15.0",
-  "ModUpdater": {
-    "Repository": "StardewValleyMods",
-    "User": "aedenthorn",
-    "Directory": "_releases",
-    "ModFolder": "RainbowTrail"
-  },
-  "Dependencies": [
-    {
-      "UniqueID": "Platonymous.ModUpdater",
-      "IsRequired": false
-    }
-  ],
-  "UpdateKeys": [ "Nexus:16914" ]
+	"Name": "Rainbow Trail",
+	"Author": "aedenthorn",
+	"Version": "0.1.2",
+	"Description": "Gives your farmer a customizable rainbow trail and optional speed buff.",
+	"UniqueID": "aedenthorn.RainbowTrail",
+	"EntryDll": "RainbowTrail.dll",
+	"MinimumApiVersion": "4.0.0",
+	"UpdateKeys": [ "Nexus:16914" ]
 }
