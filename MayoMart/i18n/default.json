@@ -1,0 +1,20 @@
+{
+	// Values to replace the name Joja in your language.
+	// - Replace.Capitalized.Joja: The original capitalized name
+	// - Replace.Capitalized.Mayo: The new capitalized name
+	// - Replace.Uncapitalized.Joja: The original uncapitalized name
+	// - Replace.Uncapitalized.Mayo: The new uncapitalized name
+	// - Replace.FirstLetter.J: The original capitalized first letter
+	// - Replace.FirstLetter.M: The new capitalized first letter
+	"Replace.Capitalized.Joja": "Joja",
+	"Replace.Capitalized.Mayo": "Mayo",
+	"Replace.Uncapitalized.Joja": "joja",
+	"Replace.Uncapitalized.Mayo": "mayo",
+	"Replace.FirstLetter.Joja": "J",
+	"Replace.FirstLetter.Mayo": "M",
+
+	// GMCM
+	"GMCM.ModEnabled.Name": "Mod Enabled",
+	"GMCM.ReplaceTexts.Name": "Replace texts",
+	"GMCM.ReplaceTextures.Name": "Replace textures"
+}
