@@ -1,22 +1,10 @@
 ﻿{
-  "Name": "Advanced Cooking",
-  "Author": "aedenthorn",
-  "Version": "0.1.4",
-  "Description": "Advanced Cooking.",
-  "UniqueID": "aedenthorn.AdvancedCooking",
-  "EntryDll": "AdvancedCooking.dll",
-  "MinimumApiVersion": "3.13.0",
-  "ModUpdater": {
-    "Repository": "StardewValleyMods",
-    "User": "aedenthorn",
-    "Directory": "_releases",
-    "ModFolder": "AdvancedCooking"
-  },
-  "UpdateKeys": [ "Nexus:11264" ],
-  "Dependencies": [
-    {
-      "UniqueID": "Platonymous.ModUpdater",
-      "IsRequired": false
-    }
-  ]
+	"Name": "Advanced Cooking",
+	"Author": "aedenthorn",
+	"Version": "0.1.5",
+	"Description": "Lets you cook recipes based on ingredients, perform bulk cooking, and even cook dishes you haven't learned yet.",
+	"UniqueID": "aedenthorn.AdvancedCooking",
+	"EntryDll": "AdvancedCooking.dll",
+	"MinimumApiVersion": "4.1.0",
+	"UpdateKeys": [ "Nexus:11264" ]
 }
