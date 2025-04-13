@@ -1,11 +1,8 @@
-﻿
-using StardewModdingAPI;
-
-namespace PartialHearts
+﻿namespace PartialHearts
 {
-    public class ModConfig
-    {
-        public bool EnableMod { get; set; } = true;
-        public bool Granular { get; set; } = false;
-    }
+	public class ModConfig
+	{
+		public bool EnableMod { get; set; } = true;
+		public bool Granular { get; set; } = false;
+	}
 }
