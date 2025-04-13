@@ -1,0 +1,11 @@
+{
+	// GMCM
+	"GMCM.ModEnabled.Name": "Mod Enabled",
+	"GMCM.IgnoreEventConditions.Name": "Ignore Event Conditions",
+	"GMCM.CumulativeChance.Name": "Cumulative Chance",
+	"GMCM.CropFairyChance.Name": "Crop Fairy Chance",
+	"GMCM.WitchChance.Name": "Witch Chance",
+	"GMCM.MeteorChance.Name": "Meteor Chance",
+	"GMCM.StoneOwlChance.Name": "Stone Owl Chance",
+	"GMCM.StrangeCapsuleChance.Name": "Strange Capsule Chance"
+}
