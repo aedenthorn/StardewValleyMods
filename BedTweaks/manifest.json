@@ -1,26 +1,10 @@
 ﻿{
-  "Name": "Bed Tweaks",
-  "Author": "aedenthorn",
-  "Version": "0.3.0",
-  "Description": "Tweaks the bed.",
-  "UniqueID": "aedenthorn.BedTweaks",
-  "EntryDll": "BedTweaks.dll",
-  "MinimumApiVersion": "3.15.0",
-  "ModUpdater": {
-    "Repository": "StardewValleyMods",
-    "User": "aedenthorn",
-    "Directory": "_releases",
-    "ModFolder": "BedTweaks"
-  },
-  "UpdateKeys": [ "Nexus:10023" ],
-  "Dependencies": [
-    {
-      "UniqueID": "Platonymous.ModUpdater",
-      "IsRequired": false
-    },
-    {
-      "UniqueID": "aedenthorn.FreeLove",
-      "IsRequired": false
-    }
-  ]
+	"Name": "Bed Tweaks",
+	"Author": "aedenthorn",
+	"Version": "0.3.1",
+	"Description": "Lets you resize the double bed and change the transparency of the bed's blankets.",
+	"UniqueID": "aedenthorn.BedTweaks",
+	"EntryDll": "BedTweaks.dll",
+	"MinimumApiVersion": "4.0.0",
+	"UpdateKeys": [ "Nexus:10023" ]
 }

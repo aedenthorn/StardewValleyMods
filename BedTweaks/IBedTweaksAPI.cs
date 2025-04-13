@@ -1,7 +1,7 @@
 ﻿namespace BedTweaks
 {
-    public interface IBedTweaksAPI
-    {
-        int GetBedWidth();
-    }
+	public interface IBedTweaksAPI
+	{
+		int GetBedWidth();
+	}
 }

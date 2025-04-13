@@ -1,0 +1,7 @@
+{
+	// GMCM
+	"GMCM.ModEnabled.Name": "Activer le Mod",
+	"GMCM.RedrawMiddlePillows.Name": "Redessiner les oreillers du milieu",
+	"GMCM.BedWidth.Name": "Largeur du lit",
+	"GMCM.SheetTransparency.Name": "Opacité de la couverture (en %)"
+}

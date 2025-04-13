@@ -1,0 +1,7 @@
+{
+	// GMCM
+	"GMCM.ModEnabled.Name": "Mod Enabled",
+	"GMCM.RedrawMiddlePillows.Name": "Redraw Middle Pillows",
+	"GMCM.BedWidth.Name": "Bed Width",
+	"GMCM.SheetTransparency.Name": "Sheet Opacity %"
+}
