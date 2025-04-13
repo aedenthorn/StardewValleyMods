@@ -1,22 +1,10 @@
 ﻿{
-  "Name": "AdditionalMineMaps",
-  "Author": "aedenthorn",
-  "Version": "0.2.1",
-  "Description": "AdditionalMineMaps.",
-  "UniqueID": "aedenthorn.AdditionalMineMaps",
-  "EntryDll": "AdditionalMineMaps.dll",
-  "MinimumApiVersion": "3.15.0",
-  "ModUpdater": {
-    "Repository": "StardewValleyMods",
-    "User": "aedenthorn",
-    "Directory": "_releases",
-    "ModFolder": "AdditionalMineMaps"
-  },
-  "Dependencies": [
-    {
-      "UniqueID": "Platonymous.ModUpdater",
-      "IsRequired": false
-    }
-  ],
-  "UpdateKeys": [ "Nexus:14595" ]
+	"Name": "Additional Mine Maps",
+	"Author": "aedenthorn",
+	"Version": "0.2.2",
+	"Description": "Lets you add extra maps to the list of maps used by the mines and skull cave.",
+	"UniqueID": "aedenthorn.AdditionalMineMaps",
+	"EntryDll": "AdditionalMineMaps.dll",
+	"MinimumApiVersion": "4.0.0",
+	"UpdateKeys": [ "Nexus:14595" ]
 }
