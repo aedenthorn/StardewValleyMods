@@ -1,0 +1,10 @@
+﻿{
+	"Name": "Wall Planters",
+	"Author": "aedenthorn",
+	"Version": "0.1.2",
+	"Description": "Lets you place garden pots on walls in decoratable locations, converting them to wall planters with adjustable height.",
+	"UniqueID": "aedenthorn.WallPlanters",
+	"EntryDll": "WallPlanters.dll",
+	"MinimumApiVersion": "4.0.0",
+	"UpdateKeys": [ "Nexus:11339" ]
+}
