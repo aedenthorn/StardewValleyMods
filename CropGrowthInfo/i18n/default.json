@@ -1,0 +1,30 @@
+{
+	"name": "Crop Name",
+	"phase": "Phase {0}/{1}",
+	"current": "Day {0}/{1}",
+	"total": "Growth {0}/{1}",
+	"ready": "Ready!",
+
+	// GMCM
+	"GMCM.ModEnabled.Name": "Mod Enabled",
+	"GMCM.Keys.Text": "Keys",
+	"GMCM.RequireToggle.Name": "Require Toggle",
+	"GMCM.ToggleButton.Name": "Toggle Key",
+	"GMCM.Information.Text": "Information",
+	"GMCM.ShowCropName.Name": "Show Crop Name",
+	"GMCM.ShowCurrentPhase.Name": "Show Current Phase",
+	"GMCM.ShowDaysInCurrentPhase.Name": "Show Phase Days",
+	"GMCM.ShowTotalGrowth.Name": "Show Total Days",
+	"GMCM.ShowReadyText.Name": "Show Ready Text",
+	"GMCM.Display.Text": "Display",
+	"GMCM.TextScale.Name": "Text Scale",
+	"GMCM.CropNameColor.Name": "Name Color",
+	"GMCM.CurrentPhaseColor.Name": "Phase Color",
+	"GMCM.DaysInCurrentPhaseColor.Name": "Phase Days Color",
+	"GMCM.TotalGrowthColor.Name": "Total Days Color",
+	"GMCM.ReadyTextColor.Name": "Ready Color",
+	"GMCM.Red.Name": "Red",
+	"GMCM.Green.Name": "Green",
+	"GMCM.Blue.Name": "Blue",
+	"GMCM.CropOpacity.Name": "Crop Opacity"
+}
