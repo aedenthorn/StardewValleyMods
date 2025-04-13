@@ -1,0 +1,18 @@
+{
+	"item.space-laser.name": "Space Laser",
+	"item.space-laser.description": "A laser for shooting down meteorites.",
+
+	// GMCM
+	"GMCM.ModEnabled.Name": "Mod Enabled",
+	"GMCM.StrikeAnywhere.Name": "Strike Anywhere",
+	"GMCM.StrikeAnywhere.Tooltip": "Determine whether meteorites can strike anywhere on the farm, including buildings, inaccessible areas, etc.",
+	"GMCM.MinimumMeteorites.Name": "Minimum Meteorites",
+	"GMCM.MaximumMeteorites.Name": "Maximum Meteorites",
+	"GMCM.MeteoritesDestroyedPerObject.Name": "Meteorites Destroyed Per Object",
+	"GMCM.MeteoritesDestroyedPerObject.Tooltip": "Number of meteorites destroyed per space laser. A value of -1 allows a single object to destroy all meteorites.",
+	"GMCM.DefenceSound.Name": "Defence Sound",
+	"GMCM.DestructionSound.Name": "Destruction Sound",
+	"GMCM.ImpactSound.Name": "Impact Sound",
+	"GMCM.SkillsRequired.Name": "Skills Required",
+	"GMCM.SkillsRequired.Tooltip": "Type and skill level required to obtain the space laser recipe. Set the value to 'default' to automatically learn the recipe on day start."
+}
