@@ -1,106 +1,154 @@
-﻿using StardewModdingAPI;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Text.RegularExpressions;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
+using Microsoft.Xna.Framework.Graphics;
+using StardewModdingAPI;
+using StardewModdingAPI.Events;
 
 namespace WitcherMod
 {
-    public class ModEntry : Mod, IAssetEditor, IAssetLoader
-    {
-        private static ModConfig config;
+	/// <summary>The mod entry point.</summary>
+	public partial class ModEntry : Mod
+	{
+		internal static IMonitor SMonitor;
+		internal static IModHelper SHelper;
+		internal static ModConfig Config;
+		internal static ModEntry context;
 
-        public override void Entry(IModHelper helper)
-        {
-            config = Helper.ReadConfig<ModConfig>();
+		/// <summary>The mod entry point, called after the mod is first loaded.</summary>
+		/// <param name="helper">Provides simplified APIs for writing mods.</param>
+		public override void Entry(IModHelper helper)
+		{
+			Config = Helper.ReadConfig<ModConfig>();
 
-        }
+			context = this;
+			SMonitor = Monitor;
+			SHelper = helper;
 
-        /// <summary>Get whether this instance can load the initial version of the given asset.</summary>
-        /// <param name="asset">Basic metadata about the asset being loaded.</param>
-        public bool CanLoad<T>(IAssetInfo asset)
-        {
-            if (!config.EnableMod)
-                return false;
+			helper.Events.GameLoop.GameLaunched += GameLoop_GameLaunched;
+			helper.Events.Content.AssetRequested += Content_AssetRequested;
+		}
 
-            if (
-                (config.EnableGeralt 
-                    && ((config.EnableDialogueChanges && asset.AssetNameEquals("Characters/Dialogue/Elliott")) || asset.AssetNameEquals("Portraits/Elliott") || asset.AssetNameEquals("Characters/Elliott")))
-                || (config.EnableYennifer 
-                    && (asset.AssetNameEquals("Portraits/Abigail") || asset.AssetNameEquals("Characters/Abigail"))) 
-                || (config.EnableTriss 
-                    && (asset.AssetNameEquals("Portraits/Penny")  || asset.AssetNameEquals("Characters/Penny")))
-                )
-            {
-                return true;
-            }
+		private void Content_AssetRequested(object sender, AssetRequestedEventArgs e)
+		{
+			if (!Config.ModEnabled)
+				return;
 
-            return false;
-        }
+			if (Config.EnableGeralt)
+			{
+				if (e.NameWithoutLocale.IsEquivalentTo("Characters/Elliott") || e.NameWithoutLocale.IsEquivalentTo("Characters/Elliott_Winter"))
+				{
+					e.Edit((IAssetData data) => data.AsImage().PatchImage(Helper.ModContent.Load<Texture2D>("assets/Characters/Elliott.png"), null, null, PatchMode.Replace));
+				}
+				else if (Config.EnableDialogueChanges && e.NameWithoutLocale.IsEquivalentTo("Characters/Dialogue/Elliott"))
+				{
+					Dictionary<string, string> dialogues = Helper.ModContent.Load<Dictionary<string, string>>(e.Name switch
+					{
+						IAssetName name when name.IsEquivalentTo("Characters/Dialogue/Elliott.fr-FR") => "assets/Characters/Dialogue/Elliott.fr-FR.json",
+						_ => "assets/Characters/Dialogue/Elliott.json"
+					});
 
-        /// <summary>Load a matched asset.</summary>
-        /// <param name="asset">Basic metadata about the asset being loaded.</param>
-        public T Load<T>(IAssetInfo asset)
-        {
-            if (asset.AssetNameEquals("Portraits/Abigail") || asset.AssetNameEquals("Portraits/Elliott") || asset.AssetNameEquals("Portraits/Penny") || asset.AssetNameEquals("Characters/Abigail") || asset.AssetNameEquals("Characters/Elliott") || asset.AssetNameEquals("Characters/Penny"))
-            {
-                return this.Helper.Content.Load<T>($"assets/{asset.AssetName}.png", ContentSource.ModFolder);
-            }
-            else if (asset.AssetNameEquals("Characters/Dialogue/Elliott"))
-            {
-                return this.Helper.Content.Load<T>($"assets/{asset.AssetName}.json", ContentSource.ModFolder);
-            }
+					e.Edit((IAssetData data) => ReplaceDialogues(data, dialogues));
+				}
+				else if (e.NameWithoutLocale.IsEquivalentTo("Portraits/Elliott") || e.NameWithoutLocale.IsEquivalentTo("Portraits/Elliott_Winter"))
+				{
+					e.Edit((IAssetData data) => data.AsImage().PatchImage(Helper.ModContent.Load<Texture2D>("assets/Portraits/Elliott.png"), null, null, PatchMode.Replace));
+				}
+				else if (e.NameWithoutLocale.IsEquivalentTo("Strings/NPCNames"))
+				{
+					e.Edit((IAssetData data) => ReplaceNPCNames(data, "Elliott", SHelper.Translation.Get("Geralt")));
+				}
+			}
+			if (Config.EnableYennefer)
+			{
+				if (e.NameWithoutLocale.IsEquivalentTo("Characters/Abigail") || e.NameWithoutLocale.IsEquivalentTo("Characters/Abigail_Winter"))
+				{
+					e.Edit((IAssetData data) => data.AsImage().PatchImage(Helper.ModContent.Load<Texture2D>("assets/Characters/Abigail.png"), null, null, PatchMode.Replace));
+				}
+				else if (e.NameWithoutLocale.IsEquivalentTo("Portraits/Abigail") || e.NameWithoutLocale.IsEquivalentTo("Portraits/Abigail_Winter"))
+				{
+					e.Edit((IAssetData data) => data.AsImage().PatchImage(Helper.ModContent.Load<Texture2D>("assets/Portraits/Abigail.png"), null, null, PatchMode.Replace));
+				}
+				else if (e.NameWithoutLocale.IsEquivalentTo("Strings/NPCNames"))
+				{
+					e.Edit((IAssetData data) => ReplaceNPCNames(data, "Abigail", SHelper.Translation.Get("Yennefer")));
+				}
+			}
+			if (Config.EnableTriss)
+			{
+				if (e.NameWithoutLocale.IsEquivalentTo("Characters/Penny") || e.NameWithoutLocale.IsEquivalentTo("Characters/Penny_Winter"))
+				{
+					e.Edit((IAssetData data) => data.AsImage().PatchImage(Helper.ModContent.Load<Texture2D>("assets/Characters/Penny.png"), null, null, PatchMode.Replace));
+				}
+				else if (e.NameWithoutLocale.IsEquivalentTo("Portraits/Penny") || e.NameWithoutLocale.IsEquivalentTo("Portraits/Penny_Winter"))
+				{
+					e.Edit((IAssetData data) => data.AsImage().PatchImage(Helper.ModContent.Load<Texture2D>("assets/Portraits/Penny.png"), null, null, PatchMode.Replace));
+				}
+				else if (e.NameWithoutLocale.IsEquivalentTo("Strings/NPCNames"))
+				{
+					e.Edit((IAssetData data) => ReplaceNPCNames(data, "Penny", SHelper.Translation.Get("Triss")));
+				}
+			}
+		}
 
-            throw new InvalidOperationException($"Unexpected asset '{asset.AssetName}'.");
-        }
+		private void GameLoop_GameLaunched(object sender, GameLaunchedEventArgs e)
+		{
+			// get Generic Mod Config Menu's API (if it's installed)
+			var configMenu = Helper.ModRegistry.GetApi<IGenericModConfigMenuApi>("spacechase0.GenericModConfigMenu");
+			if (configMenu is null)
+				return;
 
-        /// <summary>Get whether this instance can edit the given asset.</summary>
-        /// <param name="asset">Basic metadata about the asset being loaded.</param>
-        public bool CanEdit<T>(IAssetInfo asset)
-        {
-            if (!config.EnableMod || !config.EnableDialogueChanges)
-                return false;
-            if (asset.AssetNameEquals("Data/NPCDispositions") || asset.AssetName.StartsWith("Characters/Dialogue/") || asset.AssetName.StartsWith("Characters\\Dialogue\\"))
-            {
-                return true;
-            }
+			// register mod
+			configMenu.Register(
+				mod: ModManifest,
+				reset: () => Config = new ModConfig(),
+				save: () => {
+					SHelper.GameContent.InvalidateCache(asset => asset.NameWithoutLocale.IsEquivalentTo("Characters/Elliott"));
+					SHelper.GameContent.InvalidateCache(asset => asset.NameWithoutLocale.IsEquivalentTo("Characters/Elliott_Winter"));
+					SHelper.GameContent.InvalidateCache(asset => asset.NameWithoutLocale.IsEquivalentTo("Characters/Dialogue/Elliott"));
+					SHelper.GameContent.InvalidateCache(asset => asset.NameWithoutLocale.IsEquivalentTo("Portraits/Elliott"));
+					SHelper.GameContent.InvalidateCache(asset => asset.NameWithoutLocale.IsEquivalentTo("Portraits/Elliott_Winter"));
+					SHelper.GameContent.InvalidateCache(asset => asset.NameWithoutLocale.IsEquivalentTo("Characters/Abigail"));
+					SHelper.GameContent.InvalidateCache(asset => asset.NameWithoutLocale.IsEquivalentTo("Characters/Abigail_Winter"));
+					SHelper.GameContent.InvalidateCache(asset => asset.NameWithoutLocale.IsEquivalentTo("Portraits/Abigail"));
+					SHelper.GameContent.InvalidateCache(asset => asset.NameWithoutLocale.IsEquivalentTo("Portraits/Abigail_Winter"));
+					SHelper.GameContent.InvalidateCache(asset => asset.NameWithoutLocale.IsEquivalentTo("Characters/Penny"));
+					SHelper.GameContent.InvalidateCache(asset => asset.NameWithoutLocale.IsEquivalentTo("Characters/Penny_Winter"));
+					SHelper.GameContent.InvalidateCache(asset => asset.NameWithoutLocale.IsEquivalentTo("Portraits/Penny"));
+					SHelper.GameContent.InvalidateCache(asset => asset.NameWithoutLocale.IsEquivalentTo("Portraits/Penny_Winter"));
+					SHelper.GameContent.InvalidateCache(asset => asset.NameWithoutLocale.IsEquivalentTo("Strings/NPCNames"));
+					Helper.WriteConfig(Config);
+				}
+			);
 
-            return false;
-        }
-
-        /// <summary>Edit a matched asset.</summary>
-        /// <param name="asset">A helper which encapsulates metadata about an asset and enables changes to it.</param>
-        public void Edit<T>(IAssetData asset)
-        {
-            if (asset.AssetNameEquals("Data/NPCDispositions"))
-            {
-                IDictionary<string, string> data = asset.AsDictionary<string, string>().Data;
-                if (config.EnableGeralt)
-                    data["Elliott"] = Regex.Replace(data["Elliott"],@"/[^/]+$", "/Geralt");
-                if(config.EnableYennifer)
-                    data["Abigail"] = Regex.Replace(data["Abigail"],@"/[^/]+$", "/Yennifer");
-                if (config.EnableTriss)
-                    data["Penny"] = Regex.Replace(data["Penny"],@"/[^/]+$", "/Triss");
-            }
-            else if (asset.AssetName.StartsWith("Characters/Dialogue/") || asset.AssetName.StartsWith("Characters\\Dialogue\\"))
-            {
-                IDictionary<string, string> data = asset.AsDictionary<string, string>().Data;
-                List<string> keys = new List<string>(data.Keys);
-                foreach (string key in keys)
-                {
-                    if (config.EnableGeralt)
-                        data[key] = Regex.Replace(data[key], @"Elliott", "Geralt");
-                    if (config.EnableYennifer)
-                    {
-                        data[key] = Regex.Replace(data[key], @"Abigail", "Yennifer");
-                        data[key] = Regex.Replace(data[key], @"Abby", "Yenn");
-                    }
-                    if (config.EnableTriss)
-                        data[key] = Regex.Replace(data[key], @"Penny", "Triss");
-                }
-            }
-        }
-    }
+			configMenu.AddBoolOption(
+				mod: ModManifest,
+				name: () => SHelper.Translation.Get("GMCM.ModEnabled.Name"),
+				getValue: () => Config.ModEnabled,
+				setValue: value => Config.ModEnabled = value
+			);
+			configMenu.AddBoolOption(
+				mod: ModManifest,
+				name: () => SHelper.Translation.Get("GMCM.EnableGeralt.Name"),
+				getValue: () => Config.EnableGeralt,
+				setValue: value => Config.EnableGeralt = value
+			);
+			configMenu.AddBoolOption(
+				mod: ModManifest,
+				name: () => SHelper.Translation.Get("GMCM.EnableYennefer.Name"),
+				getValue: () => Config.EnableYennefer,
+				setValue: value => Config.EnableYennefer = value
+			);
+			configMenu.AddBoolOption(
+				mod: ModManifest,
+				name: () => SHelper.Translation.Get("GMCM.EnableTriss.Name"),
+				getValue: () => Config.EnableTriss,
+				setValue: value => Config.EnableTriss = value
+			);
+			configMenu.AddBoolOption(
+				mod: ModManifest,
+				name: () => SHelper.Translation.Get("GMCM.EnableDialogueChanges.Name"),
+				getValue: () => Config.EnableDialogueChanges,
+				setValue: value => Config.EnableDialogueChanges = value
+			);
+		}
+	}
 }

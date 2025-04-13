@@ -1,0 +1,13 @@
+{
+	// NPC names
+	"Geralt": "Geralt",
+	"Yennefer": "Yennefer",
+	"Triss": "Triss",
+
+	// GMCM
+	"GMCM.ModEnabled.Name": "Mod Enabled",
+	"GMCM.EnableGeralt.Name": "Geralt",
+	"GMCM.EnableYennefer.Name": "Yennefer",
+	"GMCM.EnableTriss.Name": "Triss",
+	"GMCM.EnableDialogueChanges.Name": "Dialogue Changes"
+}
