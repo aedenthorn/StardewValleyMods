@@ -1,22 +1,10 @@
 ﻿{
-  "Name": "Better Elevator",
-  "Author": "aedenthorn",
-  "Version": "0.2.4",
-  "Description": "Better Elevator.",
-  "UniqueID": "aedenthorn.BetterElevator",
-  "EntryDll": "BetterElevator.dll",
-  "MinimumApiVersion": "3.15.0",
-  "ModUpdater": {
-    "Repository": "StardewValleyMods",
-    "User": "aedenthorn",
-    "Directory": "_releases",
-    "ModFolder": "BetterElevator"
-  },
-  "Dependencies": [
-    {
-      "UniqueID": "Platonymous.ModUpdater",
-      "IsRequired": false
-    }
-  ],
-  "UpdateKeys": [ "Nexus:12802" ]
+	"Name": "Better Elevator",
+	"Author": "aedenthorn",
+	"Version": "0.2.5",
+	"Description": "Lets you travel to any previously-visited level in the Mine or Skull Cavern using the stairs.",
+	"UniqueID": "aedenthorn.BetterElevator",
+	"EntryDll": "BetterElevator.dll",
+	"MinimumApiVersion": "4.1.0",
+	"UpdateKeys": [ "Nexus:12802" ]
 }

@@ -1,10 +1,10 @@
 {
-  "level-reached-x": "Niveau le plus bas atteint : {0}",
-  "enter-level": "Entrer au niveau :",
+	"level-reached-x": "Niveau le plus bas atteint : {0}",
+	"enter-level": "Entrer au niveau :",
 
-  // GMCM
-  "GMCM_Option_ModEnabled_Name": "Activer le Mod",
-  "GMCM_Option_ModKey_Name": "Touche du Mod",
-  "GMCM_Option_Unrestricted_Name": "Accès illimité",
-  "GMCM_Option_Unrestricted_Tooltip": "Vous permet de vous rendre à n'importe quel niveau, même ceux que vous n'avez pas encore atteints."
+	// GMCM
+	"GMCM.ModEnabled.Name": "Activer le Mod",
+	"GMCM.ModKey.Name": "Touche du Mod",
+	"GMCM.Unrestricted.Name": "Accès illimité",
+	"GMCM.Unrestricted_Tooltip": "Vous permet de vous rendre à n'importe quel niveau, même ceux que vous n'avez pas encore atteints."
 }
