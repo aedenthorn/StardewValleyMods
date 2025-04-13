@@ -1,9 +1,10 @@
 {
-  "GMCM_Option_ModEnabled_Name": "Mod Enabled",
-  "GMCM_Option_LampItem_Name": "Lamp Item",
-  "GMCM_Option_WishesPerItem_Name": "Wishes/Item",
-  "GMCM_Option_MenuSound_Name": "Menu Sound",
-  "GMCM_Option_WishSound_Name": "Wish Sound",
-  "WishMenuTitle": "What will you wish for? ({0} wishes remaining)",
-  "NoMoreWishes": "This item is out of wishes!"
+	"GMCM.ModEnabled.Name": "Mod Enabled",
+	"GMCM.LampItem.Name": "Genie Lamp Item",
+	"GMCM.WishesPerItem.Name": "Wishes/Item",
+	"GMCM.MenuSound.Name": "Menu Sound",
+	"GMCM.WishSound.Name": "Wish Sound",
+	"WishMenuTitleSingular": "What will you wish for? ({0} wish remaining)",
+	"WishMenuTitlePlural": "What will you wish for? ({0} wishes remaining)",
+	"NoMoreWishes": "This item is out of wishes!"
 }
