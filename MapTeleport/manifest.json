@@ -1,22 +1,10 @@
 ﻿{
-  "Name": "Map Teleport",
-  "Author": "aedenthorn",
-  "Version": "0.5.0",
-  "Description": "Teleport using the map.",
-  "UniqueID": "aedenthorn.MapTeleport",
-  "EntryDll": "MapTeleport.dll",
-  "MinimumApiVersion": "3.15.0",
-  "UpdateKeys": [ "Nexus:7675" ],
-  "ModUpdater": {
-    "Repository": "StardewValleyMods",
-    "User": "aedenthorn",
-    "Directory": "_releases",
-    "ModFolder": "MapTeleport"
-  },
-  "Dependencies": [
-    {
-      "UniqueID": "Platonymous.ModUpdater",
-      "IsRequired": false
-    }
-  ]
+	"Name": "Map Teleport",
+	"Author": "aedenthorn",
+	"Version": "0.5.1",
+	"Description": "Allows you to fast travel to any of the labelled locations on the map.",
+	"UniqueID": "aedenthorn.MapTeleport",
+	"EntryDll": "MapTeleport.dll",
+	"MinimumApiVersion": "4.0.0",
+	"UpdateKeys": [ "Nexus:7675" ]
 }

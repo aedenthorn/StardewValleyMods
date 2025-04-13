@@ -1,4 +1,3 @@
 {
-  "GMCM_Option_ModEnabled_Name": "Mod Enabled",
-  "GMCM_Option_TeleportKey_Name": "Teleport Key"
+	"GMCM.ModEnabled.Name": "Mod Enabled"
 }
