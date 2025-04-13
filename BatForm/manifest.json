@@ -1,22 +1,10 @@
 ﻿{
-  "Name": "Bat Form",
-  "Author": "aedenthorn",
-  "Version": "0.3.3",
-  "Description": "Bat Form.",
-  "UniqueID": "aedenthorn.BatForm",
-  "EntryDll": "BatForm.dll",
-  "MinimumApiVersion": "3.15.0",
-  "ModUpdater": {
-    "Repository": "StardewValleyMods",
-    "User": "aedenthorn",
-    "Directory": "_releases",
-    "ModFolder": "BatForm"
-  },
-  "Dependencies": [
-    {
-      "UniqueID": "Platonymous.ModUpdater",
-      "IsRequired": false
-    }
-  ],
-  "UpdateKeys": [ "Nexus:16825" ]
+	"Name": "Bat Form",
+	"Author": "aedenthorn",
+	"Version": "0.3.4",
+	"Description": "Lets you transform into a bat that provides a birds eye view of the valley and a movement speed buff.",
+	"UniqueID": "aedenthorn.BatForm",
+	"EntryDll": "BatForm.dll",
+	"MinimumApiVersion": "4.0.0",
+	"UpdateKeys": [ "Nexus:16825" ]
 }

@@ -1,0 +1,15 @@
+{
+	// GMCM
+	"GMCM.ModEnabled.Name": "Activer le Mod",
+	"GMCM.NightOnly.Name": "Uniquement la nuit",
+	"GMCM.OutdoorsOnly.Name": "Uniquement en extérieur",
+	"GMCM.TransformKey.Name": "Touche de transformation",
+	"GMCM.ActionsEnabled.Name": "Actions autorisées",
+	"GMCM.MoveSpeed.Name": "Vitesse de déplacement",
+	"GMCM.StaminaUse.Name": "Consommation d'endurance",
+	"GMCM.StaminaManaUse.Name": "Consommation d'endurance ou de mana",
+	"GMCM.UseMana.Name": "Utiliser du mana",
+	"GMCM.UseMana.Tooltip": "Détermine s'il faut consommer du mana au lieu de l'endurance pour maintenir la transformation.",
+	"GMCM.TransformSound.Name": "Son de transformation",
+	"GMCM.ZoomOutEnabled.Name": "Activer le zoom arrière"
+}

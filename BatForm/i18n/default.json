@@ -1,0 +1,15 @@
+{
+	// GMCM
+	"GMCM.ModEnabled.Name": "Mod Enabled",
+	"GMCM.NightOnly.Name": "Night Only",
+	"GMCM.OutdoorsOnly.Name": "Outdoors Only",
+	"GMCM.TransformKey.Name": "Transform Key",
+	"GMCM.ActionsEnabled.Name": "Actions Enabled",
+	"GMCM.MoveSpeed.Name": "Move Speed",
+	"GMCM.StaminaUse.Name": "Stamina Use",
+	"GMCM.StaminaManaUse.Name": "Stamina or Mana Use",
+	"GMCM.UseMana.Name": "Use Mana",
+	"GMCM.UseMana.Tooltip": "Determines whether to consume mana instead of stamina to maintain the bat form.",
+	"GMCM.TransformSound.Name": "Transform Sound",
+	"GMCM.ZoomOutEnabled.Name": "Zoom Out Enabled"
+}
