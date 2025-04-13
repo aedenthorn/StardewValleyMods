@@ -1,0 +1,10 @@
+﻿{
+	"Name": "Yet Another Jump Mod",
+	"Author": "aedenthorn",
+	"Version": "0.7.2",
+	"Description": "Lets you jump over things. Big things.",
+	"UniqueID": "aedenthorn.YetAnotherJumpMod",
+	"EntryDll": "YetAnotherJumpMod.dll",
+	"MinimumApiVersion": "4.0.0",
+	"UpdateKeys": [ "Nexus:6546" ]
+}
