@@ -1,27 +1,16 @@
 ﻿{
-  "Name": "Fishing Chests Expanded",
-  "Author": "aedenthorn",
-  "Version": "0.4.2",
-  "Description": "Expands the pool of rewards from fishing chests.",
-  "UniqueID": "aedenthorn.FishingChestsExpanded",
-  "EntryDll": "FishingChestsExpanded.dll",
-  "MinimumApiVersion": "3.8.0",
-  "UpdateKeys": ["Nexus:7694"],
-  "ModUpdater": {
-    "Repository": "StardewValleyMods",
-    "User": "aedenthorn",
-    "Directory": "_releases",
-    "ModFolder": "FishingChestsExpanded"
-  },
-  "Dependencies": [
-      {
-        "UniqueID": "Platonymous.ModUpdater",
-        "IsRequired": false
-      },
-      {
-        "UniqueID": "aedenthorn.AdvancedLootFramework",
-        "IsRequired": true,
-        "MinimumVersion": "0.4.0"
-      },
-  ]
+	"Name": "Fishing Chests Expanded",
+	"Author": "aedenthorn",
+	"Version": "0.4.3",
+	"Description": "This customizable mod greatly expands the range of items received in fishing treasure chests.",
+	"UniqueID": "aedenthorn.FishingChestsExpanded",
+	"EntryDll": "FishingChestsExpanded.dll",
+	"MinimumApiVersion": "4.0.0",
+	"Dependencies": [
+		{
+			"UniqueID": "aedenthorn.AdvancedLootFramework",
+			"IsRequired": true
+		}
+	],
+	"UpdateKeys": [ "Nexus:7694" ]
 }
