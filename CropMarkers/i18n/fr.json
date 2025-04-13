@@ -1,9 +1,9 @@
 {
-  "GMCM_Option_ModEnabled_Name": "Activer le Mod",
-  "GMCM_Option_OpacityPercent_Name": "Opacité (en %)",
-  "GMCM_Option_SizePercent_Name": "Taille (en %)",
-  "GMCM_Option_PressKeys_Name": "Touches d'activation",
-  "GMCM_Option_RequireKeyPress_Name": "Nécessite les touches d'activation",
-  "GMCM_Option_OffsetX_Name": "Décalage X",
-  "GMCM_Option_OffsetY_Name": "Décalage Y"
+	"GMCM.ModEnabled.Name": "Activer le Mod",
+	"GMCM.OpacityPercent.Name": "Opacité (en %)",
+	"GMCM.SizePercent.Name": "Taille (en %)",
+	"GMCM.PressKeys.Name": "Touches d'activation",
+	"GMCM.RequireKeyPress.Name": "Nécessite les touches d'activation",
+	"GMCM.OffsetX.Name": "Décalage X",
+	"GMCM.OffsetY.Name": "Décalage Y"
 }
