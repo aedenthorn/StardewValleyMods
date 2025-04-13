@@ -1,70 +1,104 @@
-﻿using HarmonyLib;
+﻿using System;
+using System.Collections.Generic;
+using HarmonyLib;
+using Microsoft.Xna.Framework.Graphics;
 using StardewModdingAPI;
+using StardewValley;
+using StardewValley.Menus;
+using Object = StardewValley.Object;
 
 namespace LivestockChoices
 {
-    public partial class ModEntry : Mod
-    {
+	public partial class ModEntry : Mod
+	{
+		internal static IMonitor SMonitor;
+		internal static IModHelper SHelper;
+		internal static ModConfig Config;
+		internal static ModEntry context;
 
-        public static IMonitor SMonitor;
-        public static IModHelper SHelper;
-        public static ModConfig Config;
-        public static ModEntry context;
+		public override void Entry(IModHelper helper)
+		{
+			Config = Helper.ReadConfig<ModConfig>();
 
-        public override void Entry(IModHelper helper)
-        {
-            Config = Helper.ReadConfig<ModConfig>();
+			context = this;
 
-            context = this;
+			SMonitor = Monitor;
+			SHelper = helper;
 
-            SMonitor = Monitor;
-            SHelper = helper;
+			helper.Events.GameLoop.GameLaunched += GameLoop_GameLaunched;
 
-            helper.Events.GameLoop.GameLaunched += GameLoop_GameLaunched;
-            var harmony = new Harmony(ModManifest.UniqueID);
-            harmony.PatchAll();
+			// Load Harmony patches
+			try
+			{
+				Harmony harmony = new(ModManifest.UniqueID);
 
-        }
+				harmony.Patch(
+					original: AccessTools.Constructor(typeof(PurchaseAnimalsMenu), new Type[] { typeof(List<Object>), typeof(GameLocation) }),
+					postfix: new HarmonyMethod(typeof(PurchaseAnimalsMenu_Patch), nameof(PurchaseAnimalsMenu_Patch.Postfix))
+				);
+				harmony.Patch(
+					original: AccessTools.Method(typeof(PurchaseAnimalsMenu), nameof(PurchaseAnimalsMenu.draw), new Type[] { typeof(SpriteBatch) }),
+					transpiler: new HarmonyMethod(typeof(PurchaseAnimalsMenu_draw_Patch), nameof(PurchaseAnimalsMenu_draw_Patch.Transpiler))
+				);
+				harmony.Patch(
+					original: AccessTools.Method(typeof(PurchaseAnimalsMenu), nameof(PurchaseAnimalsMenu.performHoverAction)),
+					postfix: new HarmonyMethod(typeof(PurchaseAnimalsMenu_performHoverAction_Patch), nameof(PurchaseAnimalsMenu_performHoverAction_Patch.Postfix))
+				);
+				harmony.Patch(
+					original: AccessTools.Method(typeof(FarmAnimal), nameof(FarmAnimal.GetShopDescription), new Type[] { typeof(string) }),
+					prefix: new HarmonyMethod(typeof(FarmAnimal_GetShopDescription_Patch), nameof(FarmAnimal_GetShopDescription_Patch.Prefix))
+				);
+				harmony.Patch(
+					original: AccessTools.Method(typeof(PurchaseAnimalsMenu), nameof(PurchaseAnimalsMenu.receiveLeftClick)),
+					prefix: new HarmonyMethod(typeof(PurchaseAnimalsMenu_receiveLeftClick_Patch), nameof(PurchaseAnimalsMenu_receiveLeftClick_Patch.Prefix))
+				);
+				harmony.Patch(
+					original: AccessTools.Method(typeof(PurchaseAnimalsMenu), nameof(PurchaseAnimalsMenu.receiveLeftClick)),
+					postfix: new HarmonyMethod(typeof(PurchaseAnimalsMenu_receiveLeftClick_Patch), nameof(PurchaseAnimalsMenu_receiveLeftClick_Patch.Postfix))
+				);
+			}
+			catch (Exception e)
+			{
+				Monitor.Log($"Issue with Harmony patching: {e}", LogLevel.Error);
+				return;
+			}
+		}
 
-        private void GameLoop_GameLaunched(object sender, StardewModdingAPI.Events.GameLaunchedEventArgs e)
-        {
-            var configMenu = Helper.ModRegistry.GetApi<IGenericModConfigMenuApi>("spacechase0.GenericModConfigMenu");
-            if (configMenu is null)
-                return;
+		private void GameLoop_GameLaunched(object sender, StardewModdingAPI.Events.GameLaunchedEventArgs e)
+		{
+			var configMenu = Helper.ModRegistry.GetApi<IGenericModConfigMenuApi>("spacechase0.GenericModConfigMenu");
+			if (configMenu is null)
+				return;
 
-            configMenu.Register(
-                mod: ModManifest,
-                reset: () => Config = new ModConfig(),
-                save: () => Helper.WriteConfig(Config)
-            );
-
-            configMenu.AddBoolOption(
-                mod: ModManifest,
-                name: () => "Mod Enabled",
-                getValue: () => Config.EnableMod,
-                setValue: value => Config.EnableMod = value
-            );
-
-            configMenu.AddNumberOption(
-                mod: ModManifest,
-                name: () => "Blue Chicken Price",
-                getValue: () => Config.BlueChickenPrice,
-                setValue: value => Config.BlueChickenPrice = value
-            );
-
-            configMenu.AddNumberOption(
-                mod: ModManifest,
-                name: () => "Void Chicken Price",
-                getValue: () => Config.VoidChickenPrice,
-                setValue: value => Config.VoidChickenPrice = value
-            );
-
-            configMenu.AddNumberOption(
-                mod: ModManifest,
-                name: () => "Golden Chicken Price",
-                getValue: () => Config.GoldenChickenPrice,
-                setValue: value => Config.GoldenChickenPrice = value
-            );
-        }
-    }
+			configMenu.Register(
+				mod: ModManifest,
+				reset: () => Config = new ModConfig(),
+				save: () => Helper.WriteConfig(Config)
+			);
+			configMenu.AddBoolOption(
+				mod: ModManifest,
+				name: () => SHelper.Translation.Get("GMCM.ModEnabled.Name"),
+				getValue: () => Config.EnableMod,
+				setValue: value => Config.EnableMod = value
+			);
+			configMenu.AddNumberOption(
+				mod: ModManifest,
+				name: () => SHelper.Translation.Get("GMCM.BlueChickenPrice.Name"),
+				getValue: () => Config.BlueChickenPrice,
+				setValue: value => Config.BlueChickenPrice = value
+			);
+			configMenu.AddNumberOption(
+				mod: ModManifest,
+				name: () => SHelper.Translation.Get("GMCM.VoidChickenPrice.Name"),
+				getValue: () => Config.VoidChickenPrice,
+				setValue: value => Config.VoidChickenPrice = value
+			);
+			configMenu.AddNumberOption(
+				mod: ModManifest,
+				name: () => SHelper.Translation.Get("GMCM.GoldenChickenPrice.Name"),
+				getValue: () => Config.GoldenChickenPrice,
+				setValue: value => Config.GoldenChickenPrice = value
+			);
+		}
+	}
 }
