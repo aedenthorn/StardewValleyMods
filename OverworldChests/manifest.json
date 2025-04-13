@@ -1,27 +1,16 @@
 ﻿{
-  "Name": "Overworld Chests",
-  "Author": "aedenthorn",
-  "Version": "0.5.3",
-  "Description": "Adds random chests to the Stardew Valley World.",
-  "UniqueID": "aedenthorn.OverworldChests",
-  "EntryDll": "OverworldChests.dll",
-  "MinimumApiVersion": "3.8.0",
-  "UpdateKeys": ["Nexus:7710"],
-  "ModUpdater": {
-    "Repository": "StardewValleyMods",
-    "User": "aedenthorn",
-    "Directory": "_releases",
-    "ModFolder": "OverworldChests"
-  },
-  "Dependencies": [
-      { 
-        "UniqueID": "Platonymous.ModUpdater",
-        "IsRequired": false
-      },
-      {
-        "UniqueID": "aedenthorn.AdvancedLootFramework",
-        "IsRequired": true,
-        "MinimumVersion": "0.4.0"
-      },
-  ]
+	"Name": "Overworld Chests",
+	"Author": "aedenthorn",
+	"Version": "0.5.4",
+	"Description": "Spawns random treasure chests throughout the Stardew Valley world every set number of days.",
+	"UniqueID": "aedenthorn.OverworldChests",
+	"EntryDll": "OverworldChests.dll",
+	"MinimumApiVersion": "4.1.0",
+	"Dependencies": [
+		{
+			"UniqueID": "aedenthorn.AdvancedLootFramework",
+			"IsRequired": true
+		}
+	],
+	"UpdateKeys": [ "Nexus:7710" ]
 }
