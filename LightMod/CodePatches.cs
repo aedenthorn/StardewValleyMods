@@ -109,8 +109,8 @@ namespace LightMod
                 }
                 if(__instance is Furniture && Game1.currentLocation.furniture.ToArray().Contains(__instance))
                 {
-                    Game1.currentLocation.removeLightSource(__instance.lightSource.Identifier);
-                    Game1.currentLocation.sharedLights.Add(__instance.lightSource.Identifier, __instance.lightSource.Clone());
+                    Game1.currentLocation.removeLightSource(__instance.lightSource.Id);
+                    Game1.currentLocation.sharedLights.Add(__instance.lightSource.Id, __instance.lightSource.Clone());
                 }
             }
         }
@@ -138,8 +138,8 @@ namespace LightMod
                     __instance.lightSource.radius.Value = radius;
                     SMonitor.Log($"New light radius: {__instance.lightSource.radius.Value}");
                 }
-                __instance.Location.removeLightSource(__instance.lightSource.Identifier);
-                __instance.Location.sharedLights.Add(__instance.lightSource.Identifier, __instance.lightSource.Clone());
+                __instance.Location.removeLightSource(__instance.lightSource.Id);
+                __instance.Location.sharedLights.Add(__instance.lightSource.Id, __instance.lightSource.Clone());
             }
         }
         
