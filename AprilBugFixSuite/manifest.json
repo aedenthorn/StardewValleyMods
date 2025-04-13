@@ -1,0 +1,10 @@
+﻿{
+	"Name": "April Bug Fix Suite",
+	"Author": "aedenthorn",
+	"Version": "0.1.7",
+	"Description": "Completely routine, yet absolutely critical suite of bug fixes in advance of April, 2022.",
+	"UniqueID": "aedenthorn.AprilBugFixSuite",
+	"EntryDll": "AprilBugFixSuite.dll",
+	"MinimumApiVersion": "4.0.0",
+	"UpdateKeys": [ "Nexus:11496" ]
+}
