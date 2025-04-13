@@ -1,7 +1,7 @@
 ﻿{
   "Name": "Placeable Mine Shafts",
   "Author": "aedenthorn",
-  "Version": "2.0.1",
+  "Version": "2.1.2",
   "Description": "Place mine shafts in the same way as staircases.",
   "UniqueID": "Aedenthorn.PlaceShaft",
   "EntryDll": "PlaceShaft.dll",
