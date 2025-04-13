@@ -1,155 +1,250 @@
-﻿using Force.DeepCloner;
+﻿using System;
+using System.Collections.Generic;
 using HarmonyLib;
-using Microsoft.Xna.Framework;
-using Newtonsoft.Json;
 using StardewModdingAPI;
+using StardewModdingAPI.Events;
 using StardewModdingAPI.Utilities;
 using StardewValley;
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
+using StardewValley.Buffs;
 
 namespace BuffFramework
 {
-    /// <summary>The mod entry point.</summary>
-    public partial class ModEntry : Mod
-    {
+	/// <summary>The mod entry point.</summary>
+	public partial class ModEntry : Mod
+	{
+		internal static IMonitor SMonitor;
+		internal static IModHelper SHelper;
+		internal static IManifest SModManifest;
+		internal static ModConfig Config;
+		internal static ModEntry context;
 
-        public static IMonitor SMonitor;
-        public static IModHelper SHelper;
-        public static ModConfig Config;
+		internal const string dictionaryKey = "aedenthorn.BuffFramework/dictionary";
+		internal const string healthRegenKey = "aedenthorn.BuffFramework.healthRegen";
+		internal const string staminaRegenKey = "aedenthorn.BuffFramework.staminaRegen";
+		internal const string soundKey = "aedenthorn.BuffFramework.sound";
+		internal static Dictionary<string, Dictionary<string, object>> buffDictionary = new();
+		internal static PerScreen<Dictionary<string, string>> healthRegenerationBuffs = new(() => new());
+		internal static PerScreen<Dictionary<string, string>> staminaRegenerationBuffs = new(() => new());
+		internal static PerScreen<Dictionary<string, string>> glowRateBuffs = new(() => new());
+		internal static Dictionary<string, (string, ICue)> soundBuffs = new();
+		internal static List<BuffFrameworkAPI> APIInstances = new();
+		internal static bool invokeApplyBuffsOnEquipOnNextTick = false;
+		internal static bool invokeUpdateBuffsOnNextTick = false;
 
-        public static ModEntry context;
-        public static string dictKey = "aedenthorn.BuffFramework/dictionary";
-        public static Dictionary<string, Dictionary<string, object>> buffDict = new();
-        public static PerScreen<Dictionary<string, Buff>> farmerBuffs = new();
-        public static Dictionary<string, ICue> cues = new();
+		private static float healthRegenerationRemainder = 0f;
 
-        /// <summary>The mod entry point, called after the mod is first loaded.</summary>
-        /// <param name="helper">Provides simplified APIs for writing mods.</param>
-        public override void Entry(IModHelper helper)
-        {
-            Config = Helper.ReadConfig<ModConfig>();
+		internal static Dictionary<string, string> HealthRegenerationBuffs
+		{
+			get => healthRegenerationBuffs.Value;
+			set => healthRegenerationBuffs.Value = value;
+		}
 
-            context = this;
+		internal static Dictionary<string, string> StaminaRegenerationBuffs
+		{
+			get => staminaRegenerationBuffs.Value;
+			set => staminaRegenerationBuffs.Value = value;
+		}
 
-            SMonitor = Monitor;
-            SHelper = helper;
+		internal static Dictionary<string, string> GlowRateBuffs
+		{
+			get => glowRateBuffs.Value;
+			set => glowRateBuffs.Value = value;
+		}
 
-            Helper.Events.GameLoop.GameLaunched += GameLoop_GameLaunched;
-            Helper.Events.GameLoop.DayStarted += GameLoop_DayStarted;
-            Helper.Events.Player.Warped += Player_Warped;
-            
-            Helper.Events.GameLoop.TimeChanged += GameLoop_TimeChanged;
-            Helper.Events.GameLoop.OneSecondUpdateTicked += GameLoop_OneSecondUpdateTicked;
-            Helper.Events.GameLoop.SaveLoaded += GameLoop_SaveLoaded;
-            Helper.Events.Content.AssetRequested += Content_AssetRequested;
-            Helper.Events.GameLoop.ReturnedToTitle += GameLoop_ReturnedToTitle;
+		/// <summary>The mod entry point, called after the mod is first loaded.</summary>
+		/// <param name="helper">Provides simplified APIs for writing mods.</param>
+		public override void Entry(IModHelper helper)
+		{
+			Config = Helper.ReadConfig<ModConfig>();
 
-            var harmony = new Harmony(ModManifest.UniqueID);
-            harmony.PatchAll();
-            return;
-            var dict = JsonConvert.DeserializeObject<Dictionary<string, Dictionary<string, string>>>(File.ReadAllText(Path.Combine(SHelper.DirectoryPath, "content.json")));
-            var outDict = new Dictionary<string, string>();
-            foreach(var k in dict.Keys.ToArray())
-            {
-                var key = "clothing-buff-"+k.Split('/')[1].Replace("Buff", "").ToLower();
-                outDict[key] = dict[k]["displaySource"];
-                dict[k]["displaySource"] = $"{{{{i18n: {key}}}}}";
-                if (dict[k].TryGetValue("description", out var desc))
-                {
-                    outDict[key + "-desc"] = desc;
-                    dict[k]["description"] = $"{{{{i18n: {key + "-desc"}}}}}";
-                }
-            }
-            File.WriteAllText(Path.Combine(SHelper.DirectoryPath, "out.json"), JsonConvert.SerializeObject(outDict, Formatting.Indented));
-            File.WriteAllText(Path.Combine(SHelper.DirectoryPath, "out2.json"), JsonConvert.SerializeObject(dict, Formatting.Indented));
-        }
+			context = this;
+			SMonitor = Monitor;
+			SHelper = helper;
+			SModManifest = ModManifest;
 
-        public override object GetApi()
-        {
-            return new BuffFrameworkAPI();
-        }
+			Helper.Events.GameLoop.GameLaunched += GameLoop_GameLaunched;
+			Helper.Events.GameLoop.DayStarted += GameLoop_DayStarted;
+			Helper.Events.GameLoop.TimeChanged += GameLoop_TimeChanged;
+			Helper.Events.GameLoop.OneSecondUpdateTicked += GameLoop_OneSecondUpdateTicked;
+			Helper.Events.GameLoop.UpdateTicked += GameLoop_UpdateTicked;
+			Helper.Events.Player.InventoryChanged += Player_InventoryChanged;
+			Helper.Events.Player.Warped += Player_Warped;
+			Helper.Events.GameLoop.DayEnding += GameLoop_DayEnding;
+			Helper.Events.GameLoop.ReturnedToTitle += GameLoop_ReturnedToTitle;
+			Helper.Events.Content.AssetRequested += Content_AssetRequested;
 
-        public void GameLoop_OneSecondUpdateTicked(object sender, StardewModdingAPI.Events.OneSecondUpdateTickedEventArgs e)
-        {
-            if(!Config.ModEnabled || !Context.IsPlayerFree) 
-                return;
-            foreach(var key in farmerBuffs.Value.Keys)
-            {
-                if (buffDict[key].TryGetValue("healthRegen", out var healthRegen))
-                {
-                    Game1.player.health = MathHelper.Clamp(Game1.player.health + GetInt(healthRegen), 0, Game1.player.maxHealth);
-                }
-                if(buffDict[key].TryGetValue("staminaRegen", out var staminaRegen))
-                {
-                    Game1.player.Stamina = MathHelper.Clamp(Game1.player.Stamina + GetInt(staminaRegen), 0, Game1.player.MaxStamina);
-                }
-            }
-        }
+			// Load Harmony patches
+			try
+			{
+				Harmony harmony = new(ModManifest.UniqueID);
 
-        public void GameLoop_ReturnedToTitle(object sender, StardewModdingAPI.Events.ReturnedToTitleEventArgs e)
-        {
-            ClearCues();
-        }
+				harmony.Patch(
+					original: AccessTools.PropertySetter(typeof(Farmer), nameof(Farmer.CurrentToolIndex)),
+					postfix: new HarmonyMethod(typeof(Farmer_ActiveItemSetter_Patch), nameof(Farmer_ActiveItemSetter_Patch.Postfix))
+				);
+				harmony.Patch(
+					original: AccessTools.Method(typeof(Farmer), nameof(Farmer.shiftToolbar)),
+					postfix: new HarmonyMethod(typeof(Farmer_shiftToolbar_Patch), nameof(Farmer_shiftToolbar_Patch.Postfix))
+				);
+				harmony.Patch(
+					original: AccessTools.Method(typeof(Tool), nameof(Tool.attach)),
+					postfix: new HarmonyMethod(typeof(Tool_attach_Patch), nameof(Tool_attach_Patch.Postfix))
+				);
+				harmony.Patch(
+					original: AccessTools.Method(typeof(Farmer), "farmerInit"),
+					postfix: new HarmonyMethod(typeof(Farmer_farmerInit_Patch), nameof(Farmer_farmerInit_Patch.Postfix))
+				);
+				harmony.Patch(
+					original: AccessTools.Method(typeof(Farmer), nameof(Farmer.doneEating)),
+					prefix: new HarmonyMethod(typeof(Farmer_doneEating_Patch), nameof(Farmer_doneEating_Patch.Prefix))
+				);
+				harmony.Patch(
+					original: AccessTools.Method(typeof(Buff), nameof(Buff.OnAdded)),
+					postfix: new HarmonyMethod(typeof(Buff_OnAdded_Patch), nameof(Buff_OnAdded_Patch.Postfix))
+				);
+				harmony.Patch(
+					original: AccessTools.Method(typeof(Buff), nameof(Buff.OnRemoved)),
+					postfix: new HarmonyMethod(typeof(Buff_OnRemoved_Patch), nameof(Buff_OnRemoved_Patch.Postfix))
+				);
+				harmony.Patch(
+					original: AccessTools.Method(typeof(BuffManager), nameof(BuffManager.GetValues)),
+					transpiler: new HarmonyMethod(typeof(BuffManager_GetValues_Patch), nameof(BuffManager_GetValues_Patch.Transpiler))
+				);
+				harmony.Patch(
+					original: AccessTools.Method(typeof(GameLocation), "startEvent", new Type[] { typeof(Event) }),
+					postfix: new HarmonyMethod(typeof(GameLocation_startEvent_Patch), nameof(GameLocation_startEvent_Patch.Postfix))
+				);
+			}
+			catch (Exception e)
+			{
+				Monitor.Log($"Issue with Harmony patching: {e}", LogLevel.Error);
+				return;
+			}
+		}
 
-        public void GameLoop_TimeChanged(object sender, StardewModdingAPI.Events.TimeChangedEventArgs e)
-        {
-            Helper.Events.GameLoop.UpdateTicking += GameLoop_UpdateTicking;
-        }
+		public override object GetApi(IModInfo mod)
+		{
+			BuffFrameworkAPI instance = new();
 
-        public void Player_Warped(object sender, StardewModdingAPI.Events.WarpedEventArgs e)
-        {
-            Helper.Events.GameLoop.UpdateTicking += GameLoop_UpdateTicking;
-        }
+			APIInstances.Add(instance);
+			return instance;
+		}
 
-        public void GameLoop_DayStarted(object sender, StardewModdingAPI.Events.DayStartedEventArgs e)
-        {
-            Helper.Events.GameLoop.UpdateTicking += GameLoop_UpdateTicking;
-        }
+		public void GameLoop_DayStarted(object sender, DayStartedEventArgs e)
+		{
+			healthRegenerationRemainder = 0f;
+			invokeUpdateBuffsOnNextTick = true;
+		}
 
-        public void GameLoop_UpdateTicking(object sender, StardewModdingAPI.Events.UpdateTickingEventArgs e)
-        {
-            UpdateBuffs();
-            Helper.Events.GameLoop.UpdateTicking -= GameLoop_UpdateTicking;
-        }
+		public void GameLoop_TimeChanged(object sender, TimeChangedEventArgs e)
+		{
+			invokeUpdateBuffsOnNextTick = true;
+		}
 
-        public void Content_AssetRequested(object sender, StardewModdingAPI.Events.AssetRequestedEventArgs e)
-        {
-            if (e.NameWithoutLocale.IsEquivalentTo(dictKey))
-            {
-                e.LoadFrom(() => new Dictionary<string, Dictionary<string, object>>(), StardewModdingAPI.Events.AssetLoadPriority.Exclusive);
-            }
-        }
+		public void GameLoop_OneSecondUpdateTicked(object sender, OneSecondUpdateTickedEventArgs e)
+		{
+			if (!Config.ModEnabled || !Game1.shouldTimePass())
+				return;
 
-        public void GameLoop_SaveLoaded(object sender, StardewModdingAPI.Events.SaveLoadedEventArgs e)
-        {
-            farmerBuffs.Value = new();
-        }
+			float totalHealthRegeneration = 0f;
+			float totalStaminaRegeneration = 0f;
 
-        public void GameLoop_GameLaunched(object sender, StardewModdingAPI.Events.GameLaunchedEventArgs e)
-        {
+			foreach (string healthRegen in HealthRegenerationBuffs.Values)
+			{
+				totalHealthRegeneration += GetFloat(healthRegen);
+			}
+			foreach (string staminaRegen in StaminaRegenerationBuffs.Values)
+			{
+				totalStaminaRegeneration += GetFloat(staminaRegen);
+			}
+			totalHealthRegeneration += healthRegenerationRemainder;
+			Game1.player.Stamina = Game1.player.Stamina + totalStaminaRegeneration;
+			Game1.player.health = Math.Clamp(Game1.player.health + (int)totalHealthRegeneration, 0, Game1.player.maxHealth);
+			healthRegenerationRemainder = totalHealthRegeneration % 1;
+		}
 
+		public void GameLoop_UpdateTicked(object sender, UpdateTickedEventArgs e)
+		{
+			if (invokeApplyBuffsOnEquipOnNextTick)
+			{
+				ApplyBuffsOnEquip();
+				invokeApplyBuffsOnEquipOnNextTick = false;
+			}
+			if (invokeUpdateBuffsOnNextTick)
+			{
+				UpdateBuffs();
+				invokeUpdateBuffsOnNextTick = false;
+			}
+		}
 
-            // get Generic Mod Config Menu's API (if it's installed)
-            var configMenu = Helper.ModRegistry.GetApi<IGenericModConfigMenuApi>("spacechase0.GenericModConfigMenu");
-            if (configMenu is not null)
-            {
-                // register mod
-                configMenu.Register(
-                    mod: ModManifest,
-                    reset: () => Config = new ModConfig(),
-                    save: () => Helper.WriteConfig(Config)
-                );
+		public void Player_InventoryChanged(object sender, InventoryChangedEventArgs e)
+		{
+			if (e.Player == Game1.player)
+			{
+				invokeApplyBuffsOnEquipOnNextTick = true;
+			}
+		}
 
-                configMenu.AddBoolOption(
-                    mod: ModManifest,
-                    name: () => SHelper.Translation.Get("GMCM_Option_ModEnabled_Name"),
-                    getValue: () => Config.ModEnabled,
-                    setValue: value => Config.ModEnabled = value
-                );
-            }
-        }
-    }
+		public void Player_Warped(object sender, WarpedEventArgs e)
+		{
+			if (!Game1.eventUp && !Game1.isFestival())
+			{
+				HandleEventAndFestivalFinished();
+			}
+			invokeUpdateBuffsOnNextTick = true;
+		}
+
+		public void GameLoop_DayEnding(object sender, DayEndingEventArgs e)
+		{
+			ClearAll();
+		}
+
+		public void GameLoop_ReturnedToTitle(object sender, ReturnedToTitleEventArgs e)
+		{
+			ClearAll();
+		}
+
+		public void Content_AssetRequested(object sender, AssetRequestedEventArgs e)
+		{
+			if (e.NameWithoutLocale.IsEquivalentTo(dictionaryKey))
+			{
+				e.LoadFrom(() => new Dictionary<string, Dictionary<string, object>>(), AssetLoadPriority.Exclusive);
+			}
+		}
+
+		public void GameLoop_GameLaunched(object sender, GameLaunchedEventArgs e)
+		{
+			// Get Generic Mod Config Menu's API
+			IGenericModConfigMenuApi gmcm = Helper.ModRegistry.GetApi<IGenericModConfigMenuApi>("spacechase0.GenericModConfigMenu");
+
+			if (gmcm is not null)
+			{
+				// Register mod
+				gmcm.Register(
+					mod: ModManifest,
+					reset: () => Config = new ModConfig(),
+					save: () => Helper.WriteConfig(Config)
+				);
+
+				// Main section
+				gmcm.AddBoolOption(
+					mod: ModManifest,
+					name: () => SHelper.Translation.Get("GMCM.ModEnabled.Name"),
+					getValue: () => Config.ModEnabled,
+					setValue: value => {
+						if (Config.ModEnabled && !value)
+						{
+							ClearAll();
+							Config.ModEnabled = value;
+						}
+						else if (!Config.ModEnabled && value)
+						{
+							Config.ModEnabled = value;
+							invokeUpdateBuffsOnNextTick = true;
+						}
+					}
+				);
+			}
+		}
+	}
 }
