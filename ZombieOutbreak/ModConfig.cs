@@ -1,15 +1,11 @@
-﻿using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Input;
-using StardewModdingAPI;
-
-namespace ZombieOutbreak
+﻿namespace ZombieOutbreak
 {
-    public class ModConfig
-    {
-        public bool EnableMod { get; set; } = true;
-        public float GreenAmount { get; set; } = 0.8f;
-        public float DailyZombificationChance { get; set; } = 0.1f;
-        public int InfectionDistance { get; set; } = 128;
-        public float InfectionChancePerSecond { get; set; } = 0.05f;
-    }
+	public class ModConfig
+	{
+		public bool ModEnabled { get; set; } = true;
+		public int DailyZombificationChance { get; set; } = 10;
+		public int InfectionRadius { get; set; } = 128;
+		public int InfectionChancePerSecond { get; set; } = 5;
+		public int GreenTint { get; set; } = 80;
+	}
 }
