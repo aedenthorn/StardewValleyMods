@@ -1,0 +1,12 @@
+{
+	"item.jungle-parrot-perch.name": "Perchoir pour perroquet de la jungle",
+	"item.jungle-parrot-perch.description": "Un perchoir de la jungle pour perroquet.",
+	"item.stone-parrot-perch.name": "Perchoir pour perroquet en pierre",
+	"item.stone-parrot-perch.description": "Un perchoir en pierre pour perroquet.",
+	"item.wooden-parrot-perch.name": "Perchoir pour perroquet en bois",
+	"item.wooden-parrot-perch.description": "Un perchoir en bois pour perroquet.",
+
+	// GMCM
+	"GMCM.DropGiftChance.Name": "Chance de cadeau",
+	"GMCM.DropGiftChance.Tooltip": "Le pourcentage de chance qu'un perroquet lâche un cadeau lorsqu'il est nourri avec des graines."
+}
