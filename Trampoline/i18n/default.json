@@ -1,0 +1,10 @@
+{
+	// GMCM
+	"GMCM.ModEnabled.Name": "Mod Enabled",
+	"GMCM.JumpSound.Name": "Jump Sound",
+	"GMCM.ConvertKey.Name": "Convert Key",
+	"GMCM.HigherKey.Name": "Higher Key",
+	"GMCM.LowerKey.Name": "Lower Key",
+	"GMCM.FasterKey.Name": "Faster Key",
+	"GMCM.SlowerKey.Name": "Slower Key"
+}
