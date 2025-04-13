@@ -1,0 +1,10 @@
+﻿{
+	"Name": "Enhanced Loot Magnet",
+	"Author": "Aedenthorn",
+	"Version": "1.2.1",
+	"Description": "Enhances loot pickup range, movement speed, and behaviour.",
+	"UniqueID": "Aedenthorn.EnhancedLootMagnet",
+	"EntryDll": "EnhancedLootMagnet.dll",
+	"MinimumApiVersion": "4.0.0",
+	"UpdateKeys": [ "Nexus:4856" ]
+}
