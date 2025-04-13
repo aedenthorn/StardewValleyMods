@@ -1,22 +1,10 @@
 ﻿{
-  "Name": "Advanced Loot Framework",
-  "Author": "aedenthorn",
-  "Version": "0.4.1",
-  "Description": "Advanced loot framework.",
-  "UniqueID": "aedenthorn.AdvancedLootFramework",
-  "EntryDll": "AdvancedLootFramework.dll",
-  "MinimumApiVersion": "3.15.0",
-  "UpdateKeys": ["Nexus:7739"],
-  "ModUpdater": {
-    "Repository": "StardewValleyMods",
-    "User": "aedenthorn",
-    "Directory": "_releases",
-    "ModFolder": "AdvancedLootFramework"
-  },
-  "Dependencies": [
-      {
-        "UniqueID": "Platonymous.ModUpdater",
-        "IsRequired": false
-      }
-  ]
+	"Name": "Advanced Loot Framework",
+	"Author": "aedenthorn",
+	"Version": "0.4.2",
+	"Description": "A modder's resource that provides an API for creating custom chests and loot lists.",
+	"UniqueID": "aedenthorn.AdvancedLootFramework",
+	"EntryDll": "AdvancedLootFramework.dll",
+	"MinimumApiVersion": "4.1.0",
+	"UpdateKeys": [ "Nexus:7739" ]
 }

@@ -1,16 +1,16 @@
 ﻿namespace AdvancedLootFramework
 {
-    public class Treasure
-    {
-        public int index;
-        public int value;
-        public string type;
+	public class Treasure
+	{
+		public string id;
+		public int value;
+		public string type;
 
-        public Treasure(int index, int value, string type)
-        {
-            this.index = index;
-            this.value = value;
-            this.type = type;
-        }
-    }
+		public Treasure(string id, int value, string type)
+		{
+			this.id = id;
+			this.value = value;
+			this.type = type;
+		}
+	}
 }
