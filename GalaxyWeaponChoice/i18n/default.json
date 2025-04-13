@@ -1,0 +1,16 @@
+{
+	// Hold Up Meessage
+	// Please base your translation on the vanilla game translation for the Galaxy Sword, as commented below
+	// "MeleeWeapon_GalaxySword": "The prismatic shard changes shape before your very eyes! This power is tremendous.^^     You've found the =Galaxy Sword=  ^",
+	"MeleeWeapon_GalaxyDagger": "The prismatic shard changes shape before your very eyes! This power is tremendous.^^     You've found the =Galaxy Dagger=  ^",
+	"MeleeWeapon_GalaxyHammer": "The prismatic shard changes shape before your very eyes! This power is tremendous.^^     You've found the =Galaxy Hammer=  ^",
+
+	// Multiplayer
+	// Please base your translation on the vanilla game translation for the Galaxy Sword, as commented below
+	// "Chat_GalaxySword": "{{PlayerName}} found the Galaxy Sword.",
+	"Chat_GalaxyDagger": "{{PlayerName}} found the Galaxy Dagger.",
+	"Chat_GalaxyHammer": "{{PlayerName}} found the Galaxy Hammer.",
+
+	// GMCM
+	"GMCM.ModEnabled.Name": "Mod Enabled"
+}
