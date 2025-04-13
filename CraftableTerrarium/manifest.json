@@ -1,0 +1,10 @@
+﻿{
+	"Name": "Craftable Terrarium",
+	"Author": "aedenthorn",
+	"Version": "0.1.3",
+	"Description": "Allows you to craft a frog terrarium.",
+	"UniqueID": "aedenthorn.CraftableTerrarium",
+	"EntryDll": "CraftableTerrarium.dll",
+	"MinimumApiVersion": "4.1.0",
+	"UpdateKeys": [ "Nexus:8031" ]
+}
