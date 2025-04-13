@@ -1,15 +1,19 @@
-﻿using Harmony;
+﻿using HarmonyLib;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using StardewModdingAPI;
 using StardewModdingAPI.Events;
 using StardewValley;
+using StardewValley.GameData.BigCraftables;
+using StardewValley.GameData.Objects;
 using StardewValley.Locations;
 using StardewValley.Network;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
+using System.Threading;
+using xTile;
 
 namespace PlaceShaft
 {
@@ -20,18 +24,19 @@ namespace PlaceShaft
         public static ModEntry context;
 
         public static ModConfig Config;
-        public IJsonAssetsApi JsonAssets { get; private set; }
+        public static string itemName;
 
 
         /// <summary>The mod entry point, called after the mod is first loaded.</summary>
         /// <param name="helper">Provides simplified APIs for writing mods.</param>
         public override void Entry(IModHelper helper)
         {
+            itemName = ModManifest.UniqueID + "_MineShaft";
             context = this;
             Config = Helper.ReadConfig<ModConfig>();
-            helper.Events.GameLoop.GameLaunched += this.GameLoop_GameLaunched;
+            helper.Events.Content.AssetRequested += Content_AssetRequested;
 
-            var harmony = HarmonyInstance.Create(this.ModManifest.UniqueID);
+            Harmony harmony = new(ModManifest.UniqueID);
 
             harmony.Patch(
                original: AccessTools.Method(typeof(StardewValley.Object), nameof(StardewValley.Object.placementAction)),
@@ -46,16 +51,36 @@ namespace PlaceShaft
                prefix: new HarmonyMethod(typeof(ModEntry), nameof(ModEntry.createQuestionDialogue_prefix))
             );
         }
-        public void GameLoop_GameLaunched(object sender, GameLaunchedEventArgs e)
+
+        private void Content_AssetRequested(object sender, AssetRequestedEventArgs e)
         {
-            this.JsonAssets = base.Helper.ModRegistry.GetApi<IJsonAssetsApi>("spacechase0.JsonAssets");
-            if (JsonAssets == null)
+            if (e.NameWithoutLocale.IsEquivalentTo("Data/BigCraftables"))
             {
-                Monitor.Log("Can't load Json Assets API for Placeable Mine Shaft", 0);
+                e.Edit(asset =>
+                {
+                    IDictionary<string, BigCraftableData> data = asset.AsDictionary<string, BigCraftableData>().Data;
+
+                    data[itemName] = new BigCraftableData()
+                    {
+                        Name = itemName,
+                        DisplayName = context.Helper.Translation.Get("DisplayName"),
+                        Description = context.Helper.Translation.Get("Description"),
+                        Price = 1000,
+                        Fragility = 2,
+                        CanBePlacedOutdoors = false,
+                        CanBePlacedIndoors = true,
+                        Texture = context.Helper.ModContent.GetInternalAssetName("assets/sprite").Name,
+                        SpriteIndex = 0
+                    };
+                });
             }
-            else
+            else if (e.NameWithoutLocale.IsEquivalentTo("Data/CraftingRecipes"))
             {
-                JsonAssets.LoadAssets(Path.Combine(Helper.DirectoryPath, "assets/json-assets"));
+                e.Edit(asset =>
+                {
+                    IDictionary<string, string> data = asset.AsDictionary<string, string>().Data;
+                    data[itemName] = $"390 200/Home/{itemName}/true/default/";
+                });
             }
         }
 
@@ -74,8 +99,8 @@ namespace PlaceShaft
             if (Config.PercentDamage == 100 && Config.PercentLevels == 100 && !Config.PreventGoingToSkullCave)
                 return true;
 
-            DelayedAction.playSoundAfterDelay("fallDown", 1200, null, -1);
-            DelayedAction.playSoundAfterDelay("clubSmash", 2200, null, -1);
+            DelayedAction.playSoundAfterDelay("fallDown", 1200, null);
+            DelayedAction.playSoundAfterDelay("clubSmash", 2200, null);
             Random random = new Random(__instance.mineLevel + (int)Game1.uniqueIDForThisGame + Game1.Date.TotalDays);
             int levelsDown = Math.Max(1,random.Next((int)Math.Round(3 * Config.PercentLevels / 100f),(int)Math.Round(9 * Config.PercentLevels / 100f)));
             if (random.NextDouble() < 0.1)
@@ -119,7 +144,7 @@ namespace PlaceShaft
 
         private static bool placementAction_prefix(StardewValley.Object __instance, ref bool __result, GameLocation location, int x, int y)
         {
-            if (__instance.name != "Mine Shaft")
+            if (__instance.name != itemName)
                 return true;
 
             Vector2 placementTile = new Vector2((float)(x / 64), (float)(y / 64));
@@ -147,9 +172,9 @@ namespace PlaceShaft
             {
                 Vector2 currentPoint = positionsToCheck.Dequeue();
                 closedList.Add(currentPoint);
-                if (!location.isTileOccupied(currentPoint, "ignoreMe", false) && location.isTileOnClearAndSolidGround(currentPoint) && location.isTileOccupiedByFarmer(currentPoint) == null && location.doesTileHaveProperty((int)currentPoint.X, (int)currentPoint.Y, "Type", "Back") != null && location.doesTileHaveProperty((int)currentPoint.X, (int)currentPoint.Y, "Type", "Back").Equals("Stone"))
+                if (!location.IsTileOccupiedBy(currentPoint) && location.isTileOnClearAndSolidGround(currentPoint) && location.isTileOccupiedByFarmer(currentPoint) == null && location.doesTileHaveProperty((int)currentPoint.X, (int)currentPoint.Y, "Type", "Back") != null && location.doesTileHaveProperty((int)currentPoint.X, (int)currentPoint.Y, "Type", "Back").Equals("Stone"))
                 {
-                    location.playSound("hoeHit", NetAudio.SoundContext.Default);
+                    location.playSound("hoeHit");
                     location.createLadderDown((int)currentPoint.X, (int)currentPoint.Y, true);
                     return true;
                 }
