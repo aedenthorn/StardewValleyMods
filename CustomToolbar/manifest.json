@@ -1,22 +1,10 @@
 ﻿{
-  "Name": "Custom Toolbar",
-  "Author": "aedenthorn",
-  "Version": "0.1.1",
-  "Description": "Custom Toolbar.",
-  "UniqueID": "aedenthorn.CustomToolbar",
-  "EntryDll": "CustomToolbar.dll",
-  "MinimumApiVersion": "3.13.0",
-  "ModUpdater": {
-    "Repository": "StardewValleyMods",
-    "User": "aedenthorn",
-    "Directory": "_releases",
-    "ModFolder": "CustomToolbar"
-  },
-  "UpdateKeys": [ "Nexus:11322" ],
-  "Dependencies": [
-    {
-      "UniqueID": "Platonymous.ModUpdater",
-      "IsRequired": false
-    }
-  ]
+	"Name": "Custom Toolbar",
+	"Author": "aedenthorn",
+	"Version": "0.1.2",
+	"Description": "Lets you change the positioning and the orientation of the toolbar.",
+	"UniqueID": "aedenthorn.CustomToolbar",
+	"EntryDll": "CustomToolbar.dll",
+	"MinimumApiVersion": "4.0.0",
+	"UpdateKeys": [ "Nexus:11322" ]
 }
