@@ -1,0 +1,17 @@
+{
+	// GMCM
+	"GMCM.ModEnabled.Name": "Activer le Mod",
+	"GMCM.ToggleButton.Name": "Touche d'activation",
+	"GMCM.EnableForShopTrading.Name": "Activer pour les échanges en magasin",
+	"GMCM.EnableForCrafting.Name": "Activer pour l'artisanat",
+	"GMCM.EnableForBuilding.Name": "Activer pour la construction",
+	"GMCM.EnableEverywhere.Name": "Activer pour tout",
+	"GMCM.IncludeFridge.Name": "Inclure le réfrigérateur",
+	"GMCM.IncludeMiniFridges.Name": "Inclure les mini-réfrigérateurs",
+	"GMCM.IncludeShippingBin.Name": "Inclure le bac d'expédition",
+	"GMCM.UnrestrictedShippingBin.Name": "Bac d'expédition non restreint",
+	"GMCM.UnrestrictedShippingBin.Tooltip": "Lorsque activé, les objets au-delà du dernier ajouté peuvent être consommés.",
+	"GMCM.IncludeMiniShippingBins.Name": "Inclure les mini-bacs d'expédition",
+	"GMCM.IncludeJunimoChests.Name": "Inclure les coffres Junimo",
+	"GMCM.IncludeAutoGrabbers.Name": "Inclure les récolteurs automatiques"
+}

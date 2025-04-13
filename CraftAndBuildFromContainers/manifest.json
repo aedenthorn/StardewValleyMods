@@ -1,0 +1,10 @@
+﻿{
+	"Name": "Craft and Build from Containers",
+	"Author": "aedenthorn",
+	"Version": "0.3.2",
+	"Description": "Lets you craft items and build buildings using resources stored in chests or storage furniture anywhere.",
+	"UniqueID": "aedenthorn.CraftAndBuildFromContainers",
+	"EntryDll": "CraftAndBuildFromContainers.dll",
+	"MinimumApiVersion": "4.1.0",
+	"UpdateKeys": [ "Nexus:15341" ]
+}
