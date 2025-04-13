@@ -1,0 +1,17 @@
+{
+	// GMCM
+	"GMCM.ModEnabled.Name": "Activer le Mod",
+	"GMCM.ShowWhenRaining.Name": "Afficher lorsqu'il pleut",
+	"GMCM.FixFlowerFind.Name": "Corriger la recherche de fleurs",
+	"GMCM.NumberBees.Name": "Nombre d'abeilles",
+	"GMCM.BeeRange.Name": "Portée des abeilles",
+	"GMCM.BeeDamage.Name": "Dégâts des abeilles",
+	"GMCM.BeeStingChance.Name": "Chance de piqûre (en %)",
+	"GMCM.BeeScale.Name": "Taille des abeilles",
+	"GMCM.BeeSpeed.Name": "Vitesse des abeilles",
+	"GMCM.BeeSound.Name": "Son des abeilles",
+	"GMCM.MaxSoundDistance.Name": "Portée du son des abeilles",
+	"GMCM.BeeColorR.Name": "Couleur R des abeilles",
+	"GMCM.BeeColorG.Name": "Couleur V des abeilles",
+	"GMCM.BeeColorB.Name": "Couleur B des abeilles"
+}

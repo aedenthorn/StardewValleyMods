@@ -1,0 +1,17 @@
+{
+	// GMCM
+	"GMCM.ModEnabled.Name": "Mod Enabled",
+	"GMCM.ShowWhenRaining.Name": "Show When Raining",
+	"GMCM.FixFlowerFind.Name": "Fix Flower Find",
+	"GMCM.NumberBees.Name": "Number of Bees",
+	"GMCM.BeeRange.Name": "Bee Range",
+	"GMCM.BeeDamage.Name": "Bee Damage",
+	"GMCM.BeeStingChance.Name": "Sting % Chance",
+	"GMCM.BeeScale.Name": "Bee Scale",
+	"GMCM.BeeSpeed.Name": "Bee Speed",
+	"GMCM.BeeSound.Name": "Bee Sound",
+	"GMCM.MaxSoundDistance.Name": "Bee Sound Distance",
+	"GMCM.BeeColorR.Name": "Bee Color R",
+	"GMCM.BeeColorG.Name": "Bee Color G",
+	"GMCM.BeeColorB.Name": "Bee Color B"
+}
