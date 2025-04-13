@@ -1,0 +1,13 @@
+{
+	"item.butterfly-hutch.description": "A hutch for butterflies.",
+
+	// GMCM
+	"GMCM.HutchCost.Name": "Hutch Cost",
+	"GMCM.HutchCost.Tooltip": "The material costs required to craft a butterfly hutch.",
+	"GMCM.SkillsRequired.Name": "Skills Required",
+	"GMCM.SkillsRequired.Tooltip": "Type and skill level required to obtain the butterfly hutch recipe.",
+	"GMCM.MinDensity.Name": "Min Density",
+	"GMCM.MinDensity.Tooltip": "Minimum butterfly density (1.0 is one butterfly per map tile).",
+	"GMCM.MaxDensity.Name": "Max Density",
+	"GMCM.MaxDensity.Tooltip": "Maximum butterfly density (1.0 is one butterfly per map tile)"
+}

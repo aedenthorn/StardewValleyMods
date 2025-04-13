@@ -1,0 +1,13 @@
+{
+	"item.butterfly-hutch.description": "Une huche pour papillons.",
+
+	// GMCM
+	"GMCM.HutchCost.Name": "Coût d'une huche",
+	"GMCM.HutchCost.Tooltip": "Le coût en matériaux nécessaire pour fabriquer une huche à papillons.",
+	"GMCM.SkillsRequired.Name": "Compétences requises",
+	"GMCM.SkillsRequired.Tooltip": "Type et niveau de compétence requis pour obtenir la recette de la huche à papillons.",
+	"GMCM.MinDensity.Name": "Densité minimale",
+	"GMCM.MinDensity.Tooltip": "Densité minimale de papillons (1.0 équivaut à un papillon par case de carte).",
+	"GMCM.MaxDensity.Name": "Densité maximale",
+	"GMCM.MaxDensity.Tooltip": "Densité maximale de papillons (1.0 équivaut à un papillon par case de carte)."
+}
