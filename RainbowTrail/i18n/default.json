@@ -1,0 +1,17 @@
+{
+	// Buff
+	"buff.rainbow-trail-buff.name": "Rainbow Trail",
+	"buff.rainbow-trail-buff.description": "Run at blazing speed and leave a dazzling rainbow trail behind you!",
+	"buff.rainbow-trail-buff.source": "Rainbow Trail mod",
+
+	// GMCM
+	"GMCM.ModEnabled.Name": "Mod Enabled",
+	"GMCM.ToggleKeys.Name": "Toggle Keys",
+	"GMCM.MoveSpeed.Name": "Move Speed",
+	"GMCM.StaminaUse.Name": "Stamina Use",
+	"GMCM.StaminaManaUse.Name": "Stamina or Mana Use",
+	"GMCM.UseMana.Name": "Use Mana",
+	"GMCM.UseMana.Tooltip": "Determines whether to consume mana instead of stamina to maintain the rainbow trail.",
+	"GMCM.EnableSound.Name": "Enable Sound",
+	"GMCM.MaxDuration.Name": "Max Rainbow Trail Duration"
+}
