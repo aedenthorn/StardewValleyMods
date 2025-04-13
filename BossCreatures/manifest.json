@@ -1,22 +1,10 @@
 ﻿{
-  "Name": "Boss Creatures",
-  "Author": "aedenthorn",
-  "Version": "1.5.0",
-  "Description": "Spawns boss creatures in dungeons and around Stardew Valley.",
-  "UniqueID": "Aedenthorn.BossCreatures",
-  "EntryDll": "BossCreatures.dll",
-  "MinimumApiVersion": "3.13.0",
-  "UpdateKeys": ["Nexus:5864"],
-  "ModUpdater": {
-    "Repository": "StardewValleyMods",
-    "User": "aedenthorn",
-    "Directory": "_releases",
-    "ModFolder": "BossCreatures"
-  },
-  "Dependencies": [
-      {
-        "UniqueID": "Platonymous.ModUpdater",
-        "IsRequired": false
-      },
-  ]
+	"Name": "Boss Creatures",
+	"Author": "aedenthorn",
+	"Version": "1.5.1",
+	"Description": "Spawns boss creatures in dungeons and around Stardew Valley.",
+	"UniqueID": "Aedenthorn.BossCreatures",
+	"EntryDll": "BossCreatures.dll",
+	"MinimumApiVersion": "4.1.0",
+	"UpdateKeys": [ "Nexus:5864" ]
 }
