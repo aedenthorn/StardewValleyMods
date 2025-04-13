@@ -1,7 +1,20 @@
 {
-  "amount": "Amount To Buy:",
-  "x-left-to-add": "({0} left to add)",
+	"amount": "Amount To Buy:",
+	"x-left-to-add": "({0} left to add)",
 
-  // GMCM
-  "GMCM_Option_ModEnabled_Name": "Mod Enabled?"
+	// GMCM
+	"GMCM.ModEnabled.Name": "Mod Enabled?",
+	"GMCM.InitialFriendship.Name": "Initial Friendship",
+	"GMCM.AdultAnimals.Name": "Adult Animals",
+	"GMCM.AdultAnimals.Tooltip": "Purchased animals and newborns (through incubation or reproduction) become instantly adults.",
+	"GMCM.Price.Text": "Price",
+	"GMCM.IncubationTime.Name": "Incubation Time",
+	"GMCM.IncubationTime.Desc": "The number of in-game minutes required for egg incubation. The minimum value is 10 minutes.",
+	"GMCM.Chicken.Name": "Chicken",
+	"GMCM.Cow.Name": "Cow",
+	"GMCM.GreenSlime.Name": "Green Slime",
+	"GMCM.BlueSlime.Name": "Blue Slime",
+	"GMCM.RedSlime.Name": "Red Slime",
+	"GMCM.PurpleSlime.Name": "Purple Slime",
+	"GMCM.TigerSlime.Name": "Tiger Slime"
 }
