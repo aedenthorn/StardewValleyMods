@@ -1,7 +1,7 @@
 ﻿{
   "Name": "Omni Tools",
   "Author": "aedenthorn",
-  "Version": "1.0.3-unofficial",
+  "Version": "1.0.3",
   "Description": "Omni Tools.",
   "UniqueID": "aedenthorn.OmniTools",
   "EntryDll": "OmniTools.dll",
@@ -12,11 +12,5 @@
     "Directory": "_releases",
     "ModFolder": "OmniTools"
   },
-  "UpdateKeys": [ "Nexus:14865" ],
-  "Dependencies": [
-    {
-      "UniqueID": "Platonymous.ModUpdater",
-      "IsRequired": false
-    }
-  ]
+  "UpdateKeys": [ "Nexus:14865" ]
 }
