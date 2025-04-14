@@ -3,6 +3,7 @@ using Microsoft.Xna.Framework.Graphics;
 using StardewValley;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using Rectangle = Microsoft.Xna.Framework.Rectangle;
 
 namespace AprilFools
@@ -27,12 +28,13 @@ namespace AprilFools
                 list[n] = value;
             }
         }
+
         private Color[] ScaleScreen(int scaleFactor, out int width, out int height)
         {
             var screenWidth = Game1.graphics.GraphicsDevice.PresentationParameters.BackBufferWidth;
             var screenHeight = Game1.graphics.GraphicsDevice.PresentationParameters.BackBufferHeight;
             Color[] screenData = new Color[screenWidth * screenHeight];
-            Game1.graphics.GraphicsDevice.GetBackBufferData(screenData);
+            Game1.graphics.GraphicsDevice.GetBackBufferData(screenData); // Seems to always be all black. Idk how I'd fix this. It might be specific to my system.
             if(screenTexture is null || screenTexture.Width != screenWidth || screenTexture.Height != screenHeight)
             {
                 screenTexture = new Texture2D(Game1.graphics.GraphicsDevice, screenWidth, screenHeight);
@@ -48,7 +50,7 @@ namespace AprilFools
             screenBatch.Draw(screenTexture, destinationRectangle, Color.White);
             screenBatch.End();
 
-            Game1.graphics.GraphicsDevice.SetRenderTarget(null);
+            //Game1.graphics.GraphicsDevice.SetRenderTarget(null); // I was getting a null pointer exception
             Color[] data = new Color[renderTarget.Width * renderTarget.Height];
             width = renderTarget.Width;
             height = renderTarget.Height;

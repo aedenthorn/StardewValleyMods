@@ -69,10 +69,12 @@ namespace AprilFools
         [HarmonyPatch(typeof(Tree), nameof(Tree.performToolAction))]
         public class Tree_performToolAction
         {
-            public static bool Prefix(Tree __instance, Tool t, Vector2 tileLocation, GameLocation location, ref float __state)
+            public static bool Prefix(Tree __instance, Tool t, Vector2 tileLocation, ref float __state)
             {
                 if (!IsModEnabled() || !Config.TreeScreamEnabled)
                     return true;
+
+                GameLocation location = __instance.Location ?? Game1.currentLocation; // Lifted straight from the decompiled code
                 __state = __instance.health.Value;
                 if (Game1.random.NextDouble() < 0.25 && t is Axe)
                 {
@@ -88,6 +90,7 @@ namespace AprilFools
                         {
                             location.terrainFeatures[tile] = __instance;
                             location.terrainFeatures.Remove(tileLocation);
+                            __instance.Location = location;
                             Game1.playSound("leafrustle");
                             return false;
                         }
@@ -113,14 +116,15 @@ namespace AprilFools
                 }
             }
         }
-        [HarmonyPatch(typeof(Tree), nameof(Tree.draw), new Type[] { typeof(SpriteBatch), typeof(Vector2) })]
+        [HarmonyPatch(typeof(Tree), nameof(Tree.draw), new Type[] { typeof(SpriteBatch)})]
         public class Tree_draw
         {
-            public static void Postfix(Tree __instance, SpriteBatch spriteBatch, Vector2 tileLocation, NetBool ___falling)
+            public static void Postfix(Tree __instance, SpriteBatch spriteBatch, NetBool ___falling)
             {
                 if (!IsModEnabled() || !Config.TreeScreamEnabled)
                     return;
-                if(screamTicks <= 120)
+                Vector2 tileLocation = __instance.Tile;
+                if (screamTicks <= 120)
                     screamTicks++;
                 __instance.modData.TryGetValue("aedenthorn.AprilFools/speech", out string speech);
                 if (!___falling.Value && speech == null)
@@ -149,7 +153,7 @@ namespace AprilFools
                     alpha = timer / 5f;
                 else if (timer > timerMax - 5)
                     alpha = timerMax - timer / 5f;
-                SpriteText.drawStringWithScrollCenteredAt(spriteBatch, speech, (int)local.X, (int)local.Y, "", alpha, -1, 1, 1, false);
+                SpriteText.drawStringWithScrollCenteredAt(spriteBatch, speech, (int)local.X, (int)local.Y, "", alpha, null, 1, 1, false);
             }
         }
         [HarmonyPatch(typeof(Farmer), nameof(Farmer.MovePosition))]
@@ -187,7 +191,7 @@ namespace AprilFools
         {
             public static void Prefix(NPC __instance, SpriteBatch b)
             {
-                if (!IsModEnabled() || !Config.GiantEnabled || !__instance.isVillager())
+                if (!IsModEnabled() || !Config.GiantEnabled || !__instance.IsVillager)
                     return;
                 __instance.Scale =  !gianting ? 1 : 1 + (float)new Random((int)Game1.stats.DaysPlayed + __instance.Name.GetHashCode()).NextDouble() * 2;
             }
@@ -228,7 +232,7 @@ namespace AprilFools
                 if (!IsModEnabled() || !Config.SlimeEnabled || !slimeFarmer)
                     return true;
                 slime.Position = __instance.Position;
-                b.Draw(slime.Sprite.Texture, slime.getLocalPosition(Game1.viewport) + new Vector2(56f, (float)(16 + slime.yJumpOffset)), new Rectangle?(slime.Sprite.SourceRect), Utility.GetPrismaticColor(348 + 50, 5f), slime.rotation, new Vector2(16f, 16f), Math.Max(0.2f, slime.Scale) * 4f, slime.flip ? SpriteEffects.FlipHorizontally : SpriteEffects.None, Math.Max(0f, slime.drawOnTop ? 0.991f : ((float)slime.getStandingY() / 10000f)));
+                b.Draw(slime.Sprite.Texture, slime.getLocalPosition(Game1.viewport) + new Vector2(56f, (float)(16 + slime.yJumpOffset)), new Rectangle?(slime.Sprite.SourceRect), Utility.GetPrismaticColor(348 + 50, 5f), slime.rotation, new Vector2(16f, 16f), Math.Max(0.2f, slime.Scale) * 4f, slime.flip ? SpriteEffects.FlipHorizontally : SpriteEffects.None, Math.Max(0f, slime.drawOnTop ? 0.991f : ((float)slime.getStandingPosition().Y / 10000f)));
                 return false;
             }
         }
@@ -300,26 +304,26 @@ namespace AprilFools
                     {
                         if (speakingAnimals.textAboveHeadTimer > 0 && speakingAnimals.textAboveHead != null)
                         {
-                            Vector2 local = Game1.GlobalToLocal(new Vector2((float)a.getStandingX(), (float)(a.getStandingY() - a.Sprite.SpriteHeight * 4 - 64 + a.yJumpOffset)));
+                            Vector2 local = Game1.GlobalToLocal(new Vector2((float)a.getStandingPosition().X, (float)(a.getStandingPosition().Y - a.Sprite.SpriteHeight * 4 - 64 + a.yJumpOffset)));
 
                             if (a.shouldShadowBeOffset)
                             {
-                                local += a.drawOffset.Value;
+                                local += a.drawOffset;
                             }
-                            SpriteText.drawStringWithScrollCenteredAt(b, speakingAnimals.textAboveHead, (int)local.X, (int)local.Y, "", speakingAnimals.textAboveHeadAlpha, speakingAnimals.textAboveHeadColor, 1, (float)(a.getTileY() * 64) / 10000f + 0.001f + (float)a.getTileX() / 10000f, false);
+                            SpriteText.drawStringWithScrollCenteredAt(b, speakingAnimals.textAboveHead, (int)local.X, (int)local.Y, "", speakingAnimals.textAboveHeadAlpha, speakingAnimals.textAboveHeadColor, 1, (float)(a.TilePoint.Y * 64) / 10000f + 0.001f + (float)a.TilePoint.X / 10000f, false);
                         }
                     }
                     else if (speakingAnimals.bID == a.myID.Value)
                     {
                         if (speakingAnimals.bTextAboveHeadTimer > 0 && speakingAnimals.bTextAboveHead != null)
                         {
-                            Vector2 local = Game1.GlobalToLocal(new Vector2((float)a.getStandingX(), (float)(a.getStandingY() - a.Sprite.SpriteHeight * 4 - 64 + a.yJumpOffset)));
+                            Vector2 local = Game1.GlobalToLocal(new Vector2((float)a.getStandingPosition().X, (float)(a.getStandingPosition().Y - a.Sprite.SpriteHeight * 4 - 64 + a.yJumpOffset)));
 
                             if (a.shouldShadowBeOffset)
                             {
-                                local += a.drawOffset.Value;
+                                local += a.drawOffset;
                             }
-                            SpriteText.drawStringWithScrollCenteredAt(b, speakingAnimals.bTextAboveHead, (int)local.X, (int)local.Y, "", speakingAnimals.bTextAboveHeadAlpha, speakingAnimals.bTextAboveHeadColor, 1, (float)(a.getTileY() * 64) / 10000f + 0.001f + (float)a.getTileX() / 10000f, false);
+                            SpriteText.drawStringWithScrollCenteredAt(b, speakingAnimals.bTextAboveHead, (int)local.X, (int)local.Y, "", speakingAnimals.bTextAboveHeadAlpha, speakingAnimals.textAboveHeadColor, 1, (float)(a.TilePoint.Y * 64) / 10000f + 0.001f + (float)a.TilePoint.X / 10000f, false);
                         }
                     }
                 }

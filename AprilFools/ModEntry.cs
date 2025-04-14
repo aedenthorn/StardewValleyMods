@@ -115,7 +115,7 @@ namespace AprilFools
                     {
                         if (a.myID.Value == b.myID.Value)
                             continue;
-                        if (Vector2.Distance(a.getTileLocation(), b.getTileLocation()) <= 10 && Game1.random.NextDouble() < 0.3)
+                        if (Vector2.Distance(a.TilePoint.ToVector2(), b.TilePoint.ToVector2()) <= 10 && Game1.random.NextDouble() < 0.3)
                         {
                             speakingAnimals = new SpeakingAnimalData(a, b);
                             return;
