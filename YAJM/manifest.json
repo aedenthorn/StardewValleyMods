@@ -3,8 +3,8 @@
 	"Author": "aedenthorn",
 	"Version": "0.7.2",
 	"Description": "Lets you jump over things. Big things.",
-	"UniqueID": "aedenthorn.YetAnotherJumpMod",
-	"EntryDll": "YetAnotherJumpMod.dll",
+	"UniqueID": "aedenthorn.YAJM",
+	"EntryDll": "YAJM.dll",
 	"MinimumApiVersion": "4.0.0",
 	"UpdateKeys": [ "Nexus:6546" ]
 }

@@ -3,8 +3,8 @@
 	"Author": "aedenthorn",
 	"Version": "0.2.1",
 	"Description": "Causes building construction and upgrade to finish immediately upon purchase.",
-	"UniqueID": "aedenthorn.InstantBuildingConstructionAndUpgrade",
-	"EntryDll": "InstantBuildingConstructionAndUpgrade.dll",
+	"UniqueID": "aedenthorn.InstantBuildingConstruction",
+	"EntryDll": "InstantBuildingConstruction.dll",
 	"MinimumApiVersion": "4.1.0",
 	"UpdateKeys": [ "Nexus:14110" ]
 }
