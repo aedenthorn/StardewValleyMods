@@ -1,10 +1,10 @@
 {
-  "level-reached-x": "Lowest Level Reached: {0}",
-  "enter-level": "Enter Level:",
+	"level-reached-x": "Lowest Level Reached: {0}",
+	"enter-level": "Enter Level:",
 
-  // GMCM
-  "GMCM_Option_ModEnabled_Name": "Mod Enabled?",
-  "GMCM_Option_ModKey_Name": "Mod Key",
-  "GMCM_Option_Unrestricted_Name": "Unrestricted",
-  "GMCM_Option_Unrestricted_Tooltip": "Lets you visit any floor, even those you haven't been to before."
+	// GMCM
+	"GMCM.ModEnabled.Name": "Mod Enabled?",
+	"GMCM.ModKey.Name": "Mod Key",
+	"GMCM.Unrestricted.Name": "Unrestricted",
+	"GMCM.Unrestricted_Tooltip": "Lets you visit any floor, even those you haven't been to before."
 }

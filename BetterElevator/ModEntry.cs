@@ -1,77 +1,92 @@
-﻿using HarmonyLib;
-using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
+﻿using System;
+using HarmonyLib;
+using xTile.Dimensions;
 using StardewModdingAPI;
+using StardewValley;
+using StardewValley.Locations;
 
 namespace BetterElevator
 {
-    /// <summary>The mod entry point.</summary>
-    public partial class ModEntry : Mod
-    {
+	/// <summary>The mod entry point.</summary>
+	public partial class ModEntry : Mod
+	{
+		internal static IMonitor SMonitor;
+		internal static IModHelper SHelper;
+		internal static IManifest SModManifest;
+		internal static ModConfig Config;
+		internal static ModEntry context;
 
-        public static IMonitor SMonitor;
-        public static IModHelper SHelper;
-        public static ModConfig Config;
+		/// <summary>The mod entry point, called after the mod is first loaded.</summary>
+		/// <param name="helper">Provides simplified APIs for writing mods.</param>
+		public override void Entry(IModHelper helper)
+		{
+			Config = Helper.ReadConfig<ModConfig>();
 
-        public static ModEntry context;
+			context = this;
+			SMonitor = Monitor;
+			SHelper = helper;
+			SModManifest = ModManifest;
 
-        public static string coopName;
+			helper.Events.GameLoop.GameLaunched += GameLoop_GameLaunched;
 
-        /// <summary>The mod entry point, called after the mod is first loaded.</summary>
-        /// <param name="helper">Provides simplified APIs for writing mods.</param>
-        public override void Entry(IModHelper helper)
-        {
-            Config = Helper.ReadConfig<ModConfig>();
+			// Load Harmony patches
+			try
+			{
+				Harmony harmony = new(ModManifest.UniqueID);
 
-            if (!Config.ModEnabled)
-                return;
+				harmony.Patch(
+					original: AccessTools.Method(typeof(GameLocation), nameof(GameLocation.performAction), new Type[] { typeof(string), typeof(Farmer), typeof(Location) }),
+					prefix: new HarmonyMethod(typeof(GameLocation_performAction_Patch), nameof(GameLocation_performAction_Patch.Prefix))
+				);
+				harmony.Patch(
+					original: AccessTools.Method(typeof(MineShaft), nameof(MineShaft.checkAction)),
+					prefix: new HarmonyMethod(typeof(MineShaft_checkAction_Patch), nameof(MineShaft_checkAction_Patch.Prefix))
+				);
+				harmony.Patch(
+					original: AccessTools.Method(typeof(MineShaft), nameof(MineShaft.shouldCreateLadderOnThisLevel)),
+					postfix: new HarmonyMethod(typeof(MineShaft_shouldCreateLadderOnThisLevel_Patch), nameof(MineShaft_shouldCreateLadderOnThisLevel_Patch.Postfix))
+				);
+			}
+			catch (Exception e)
+			{
+				Monitor.Log($"Issue with Harmony patching: {e}", LogLevel.Error);
+				return;
+			}
+		}
 
-            context = this;
+		private void GameLoop_GameLaunched(object sender, StardewModdingAPI.Events.GameLaunchedEventArgs e)
+		{
+			// get Generic Mod Config Menu's API (if it's installed)
+			var configMenu = Helper.ModRegistry.GetApi<IGenericModConfigMenuApi>("spacechase0.GenericModConfigMenu");
+			if (configMenu is null)
+				return;
 
-            SMonitor = Monitor;
-            SHelper = helper;
+			// register mod
+			configMenu.Register(
+				mod: ModManifest,
+				reset: () => Config = new ModConfig(),
+				save: () => Helper.WriteConfig(Config)
+			);
 
-            helper.Events.GameLoop.GameLaunched += GameLoop_GameLaunched;
-
-            var harmony = new Harmony(ModManifest.UniqueID);
-            harmony.PatchAll();
-
-        }
-        private void GameLoop_GameLaunched(object sender, StardewModdingAPI.Events.GameLaunchedEventArgs e)
-        {
-            // get Generic Mod Config Menu's API (if it's installed)
-            var configMenu = Helper.ModRegistry.GetApi<IGenericModConfigMenuApi>("spacechase0.GenericModConfigMenu");
-            if (configMenu is null)
-                return;
-
-            // register mod
-            configMenu.Register(
-                mod: ModManifest,
-                reset: () => Config = new ModConfig(),
-                save: () => Helper.WriteConfig(Config)
-            );
-
-            configMenu.AddBoolOption(
-                mod: ModManifest,
-                name: () => ModEntry.SHelper.Translation.Get("GMCM_Option_ModEnabled_Name"),
-                getValue: () => Config.ModEnabled,
-                setValue: value => Config.ModEnabled = value
-            );
-            
-            configMenu.AddKeybind(
-                mod: ModManifest,
-                name: () => ModEntry.SHelper.Translation.Get("GMCM_Option_ModKey_Name"),
-                getValue: () => Config.ModKey,
-                setValue: value => Config.ModKey = value
-            );
-
-            configMenu.AddBoolOption(
-                mod: ModManifest,
-                name: () => ModEntry.SHelper.Translation.Get("GMCM_Option_Unrestricted_Name"),
-                tooltip: () => ModEntry.SHelper.Translation.Get("GMCM_Option_Unrestricted_Tooltip"),
-                getValue: () => Config.Unrestricted,
-                setValue: value => Config.Unrestricted = value
-            );
-        }
-    }
+			configMenu.AddBoolOption(
+				mod: ModManifest,
+				name: () => ModEntry.SHelper.Translation.Get("GMCM.ModEnabled.Name"),
+				getValue: () => Config.ModEnabled,
+				setValue: value => Config.ModEnabled = value
+			);
+			configMenu.AddKeybind(
+				mod: ModManifest,
+				name: () => SHelper.Translation.Get("GMCM.ModKey.Name"),
+				getValue: () => Config.ModKey,
+				setValue: value => Config.ModKey = value
+			);
+			configMenu.AddBoolOption(
+				mod: ModManifest,
+				name: () => SHelper.Translation.Get("GMCM.Unrestricted.Name"),
+				tooltip: () => SHelper.Translation.Get("GMCM.Unrestricted_Tooltip"),
+				getValue: () => Config.Unrestricted,
+				setValue: value => Config.Unrestricted = value
+			);
+		}
+	}
 }

@@ -1,10 +1,10 @@
 {
-  "level-reached-x": "Нижний достигнутый уровень: {0}",
-  "enter-level": "Введите уровень:",
+	"level-reached-x": "Нижний достигнутый уровень: {0}",
+	"enter-level": "Введите уровень:",
 
-  // GMCM
-  "GMCM_Option_ModEnabled_Name": "Включить мод?",
-  "GMCM_Option_ModKey_Name": "Клавиша взаимодействия",
-  "GMCM_Option_Unrestricted_Name": "Свободный режим",
-  "GMCM_Option_Unrestricted_Tooltip": "Позволяет посетить любой этаж, даже если он не был посещён ранее."
+	// GMCM
+	"GMCM.ModEnabled.Name": "Включить мод?",
+	"GMCM.ModKey.Name": "Клавиша взаимодействия",
+	"GMCM.Unrestricted.Name": "Свободный режим",
+	"GMCM.Unrestricted_Tooltip": "Позволяет посетить любой этаж, даже если он не был посещён ранее."
 }
