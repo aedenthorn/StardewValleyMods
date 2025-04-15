@@ -1,0 +1,17 @@
+{
+	// GMCM
+	"GMCM.ModEnabled.Name": "Mod Enabled",
+	"GMCM.ToggleButton.Name": "Toggle Button",
+	"GMCM.EnableForShopTrading.Name": "Enable For Shop Trading",
+	"GMCM.EnableForCrafting.Name": "Enable For Crafting",
+	"GMCM.EnableForBuilding.Name": "Enable For Building",
+	"GMCM.EnableEverywhere.Name": "Enable Everywhere",
+	"GMCM.IncludeFridge.Name": "Include Fridge",
+	"GMCM.IncludeMiniFridges.Name": "Include Mini-Fridges",
+	"GMCM.IncludeShippingBin.Name": "Include Shipping Bin",
+	"GMCM.UnrestrictedShippingBin.Name": "Unrestricted Shipping Bin",
+	"GMCM.UnrestrictedShippingBin.Tooltip": "When enabled, items beyond the last one added can be consumed.",
+	"GMCM.IncludeMiniShippingBins.Name": "Include Mini-Shipping Bins",
+	"GMCM.IncludeJunimoChests.Name": "Include Junimo Chests",
+	"GMCM.IncludeAutoGrabbers.Name": "Include Auto-Grabbers"
+}
