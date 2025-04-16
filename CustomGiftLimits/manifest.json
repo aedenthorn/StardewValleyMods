@@ -1,11 +1,11 @@
 ﻿{
   "Name": "Custom Gift Limits",
   "Author": "aedenthorn",
-  "Version": "0.1.0",
+  "Version": "0.1.1",
   "Description": "Custom Gift Limits.",
   "UniqueID": "aedenthorn.CustomGiftLimits",
   "EntryDll": "CustomGiftLimits.dll",
-  "MinimumApiVersion": "3.15.0",
+  "MinimumApiVersion": "4.0.0",
   "ModUpdater": {
     "Repository": "StardewValleyMods",
     "User": "aedenthorn",
