@@ -62,17 +62,17 @@ namespace ImportMap
             DoImport();
         }
 
-        public static bool ChatBox_runCommand_Prefix(string command)
+        public static bool ChatBox_runCommand_Prefix(string commandText)
         {
             if (!Config.EnableMod)
                 return true;
 
-            if (command.Equals("nukemap"))
+            if (commandText.Equals("nukemap"))
             {
                 NukeMap(null, null);
                 return false;
             }
-            if (command.Equals("importmap"))
+            if (commandText.Equals("importmap"))
             {
                 DoImport();
                 return false;

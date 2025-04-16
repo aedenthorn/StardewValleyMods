@@ -69,7 +69,7 @@ namespace Swim
         }
         public override void behaviorAtGameTick(GameTime time)
         {
-            if (shellGone)
+            if (shellGone.Value)
             {
                 Sprite.CurrentFrame = 16 + Sprite.currentFrame % 4;
             }
