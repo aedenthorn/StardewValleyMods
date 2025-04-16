@@ -1,0 +1,18 @@
+{
+	"item.space-laser.name": "Laser spatial",
+	"item.space-laser.description": "Un laser pour abattre les météorites.",
+
+	// GMCM
+	"GMCM.ModEnabled.Name": "Activer le Mod",
+	"GMCM.StrikeAnywhere.Name": "S'écraser n'importe où",
+	"GMCM.StrikeAnywhere.Tooltip": "Détermine si les météorites peuvent s'écraser n'importe où sur la ferme, y compris sur les bâtiments, dans les zones inaccessibles, etc.",
+	"GMCM.MinimumMeteorites.Name": "Météorites minimum",
+	"GMCM.MaximumMeteorites.Name": "Météorites maximum",
+	"GMCM.MeteoritesDestroyedPerObject.Name": "Météorites détruites par objet",
+	"GMCM.MeteoritesDestroyedPerObject.Tooltip": "Nombre de météorites détruites par laser spatial. Une valeur de -1 permet à un seul objet de détruire toutes les météorites.",
+	"GMCM.DefenceSound.Name": "Son de défense",
+	"GMCM.DestructionSound.Name": "Son de destruction",
+	"GMCM.ImpactSound.Name": "Son d'impact",
+	"GMCM.SkillsRequired.Name": "Compétences requises",
+	"GMCM.SkillsRequired.Tooltip": "Type et niveau de compétence requis pour obtenir la recette du laser spatial. Définir la valeur sur 'default' pour apprendre automatiquement la recette au début de la journée."
+}

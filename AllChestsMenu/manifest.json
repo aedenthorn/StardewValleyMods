@@ -1,22 +1,10 @@
 ﻿{
-  "Name": "All Chests Menu",
-  "Author": "aedenthorn",
-  "Version": "0.3.1",
-  "Description": "All Chests Menu.",
-  "UniqueID": "aedenthorn.AllChestsMenu",
-  "EntryDll": "AllChestsMenu.dll",
-  "MinimumApiVersion": "3.15.0",
-  "ModUpdater": {
-    "Repository": "StardewValleyMods",
-    "User": "aedenthorn",
-    "Directory": "_releases",
-    "ModFolder": "AllChestsMenu"
-  },
-  "Dependencies": [
-    {
-      "UniqueID": "Platonymous.ModUpdater",
-      "IsRequired": false
-    }
-  ],
-  "UpdateKeys": [ "Nexus:14494" ]
+	"Name": "All Chests Menu",
+	"Author": "aedenthorn",
+	"Version": "0.3.2",
+	"Description": "Provides access to a menu displaying inventories of all player chests and the player backpack.",
+	"UniqueID": "aedenthorn.AllChestsMenu",
+	"EntryDll": "AllChestsMenu.dll",
+	"MinimumApiVersion": "4.1.0",
+	"UpdateKeys": [ "Nexus:14494" ]
 }

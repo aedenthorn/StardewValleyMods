@@ -1,0 +1,16 @@
+{
+	// GMCM
+	"GMCM.ModEnabled.Name": "Activer le Mod",
+	"GMCM.WaterAdjacentTiles.Name": "Arroser les tuiles adjacentes",
+	"GMCM.WaterAdjacentTiles.Tooltip": "En chargeant, arrose les tuiles adjacentes au lieu de créer une zone rectangulaire.",
+	"GMCM.WateringTileMultiplier.Name": "Multiplicateur de tuiles à arroser",
+	"GMCM.WateringTileMultiplier.Tooltip": "Multiplie le nombre de tuiles à arroser par ce montant.",
+	"GMCM.VolumeMultiplier.Name": "Multiplicateur de volume",
+	"GMCM.VolumeMultiplier.Tooltip": "Multiplie le volume d'eau que peut contenir l’arrosoir par ce montant.",
+	"GMCM.StaminaUseMultiplier.Name": "Multiplicateur de consommation d'endurance",
+	"GMCM.StaminaUseMultiplier.Tooltip": "Multiplie la consommation d'endurance pour l'arrosage par ce montant (uniquement si l'option \"Arroser les tuiles adjacentes\" est activée).",
+	"GMCM.StrafeWhileWatering.Name": "Se déplacer pendant l'arrosage",
+	"GMCM.StrafeWhileWatering.Tooltip": "Détermine si le joueur peut se déplacer pendant l'arrosage.",
+	"GMCM.AutoEndWateringAnimation.Name": "Terminer automatiquement l'animation d'arrosage",
+	"GMCM.AutoEndWateringAnimation.Tooltip": "Termine automatiquement l'animation d'arrosage lorsqu'il n'y a plus de tuiles à arroser, lorsque la charge maximale est atteinte, lorsque l'arrosoir est vide ou lorsque le joueur n'a plus d'endurance."
+}

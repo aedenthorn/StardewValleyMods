@@ -1,22 +1,10 @@
 ﻿{
-  "Name": "Submerged Crab Pots",
-  "Author": "aedenthorn",
-  "Version": "0.2.1",
-  "Description": "Submerged Crab Pots.",
-  "UniqueID": "aedenthorn.SubmergedCrabPots",
-  "EntryDll": "SubmergedCrabPots.dll",
-  "MinimumApiVersion": "3.13.0",
-  "ModUpdater": {
-    "Repository": "StardewValleyMods",
-    "User": "aedenthorn",
-    "Directory": "_releases",
-    "ModFolder": "SubmergedCrabPots"
-  },
-  "UpdateKeys": [ "Nexus:11719" ],
-  "Dependencies": [
-    {
-      "UniqueID": "Platonymous.ModUpdater",
-      "IsRequired": false
-    }
-  ]
+	"Name": "Submerged Crab Pots",
+	"Author": "aedenthorn",
+	"Version": "0.2.2",
+	"Description": "Causes Crab Pots to submerge when they contain bait or harvest.",
+	"UniqueID": "aedenthorn.SubmergedCrabPots",
+	"EntryDll": "SubmergedCrabPots.dll",
+	"MinimumApiVersion": "4.0.0",
+	"UpdateKeys": [ "Nexus:11719" ]
 }

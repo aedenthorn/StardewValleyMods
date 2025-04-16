@@ -1,22 +1,10 @@
 ﻿{
-  "Name": "Yet Another Jump Mod",
-  "Author": "aedenthorn",
-  "Version": "0.7.1",
-  "Description": "Advanced Jumping.",
-  "UniqueID": "aedenthorn.YAJM",
-  "EntryDll": "YAJM.dll",
-  "MinimumApiVersion": "3.12.6",
-  "UpdateKeys": ["Nexus:6546"],
-  "ModUpdater": {
-    "Repository": "StardewValleyMods",
-    "User": "aedenthorn",
-    "Directory": "_releases",
-    "ModFolder": "YAJM"
-  },
-  "Dependencies": [
-      {
-        "UniqueID": "Platonymous.ModUpdater",
-        "IsRequired": false
-      },
-  ]
+	"Name": "Yet Another Jump Mod",
+	"Author": "aedenthorn",
+	"Version": "0.7.2",
+	"Description": "Lets you jump over things. Big things.",
+	"UniqueID": "aedenthorn.YAJM",
+	"EntryDll": "YAJM.dll",
+	"MinimumApiVersion": "4.0.0",
+	"UpdateKeys": [ "Nexus:6546" ]
 }

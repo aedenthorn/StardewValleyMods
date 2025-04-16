@@ -1,5 +1,5 @@
 {
-  // GMCM
-  "GMCM_Option_ModEnabled_Name": "Activer le Mod",
-  "GMCM_Option_AllowVanillaMaps_Name": "Autoriser les cartes de base",
+	// GMCM
+	"GMCM.ModEnabled.Name": "Activer le Mod",
+	"GMCM.AllowVanillaMaps.Name": "Autoriser les cartes de base"
 }

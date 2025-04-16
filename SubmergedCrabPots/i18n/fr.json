@@ -1,0 +1,12 @@
+{
+	// GMCM
+	"GMCM.ModEnabled.Name": "Activer le Mod",
+	"GMCM.SubmergeHarvestable.Name": "Submerger lorsque récoltable",
+	"GMCM.ShowRipples.Name": "Afficher les ondulations",
+	"GMCM.ShowRipples.Tooltip": "Visible uniquement en l'absence de prise",
+	"GMCM.BobberScale.Name": "Échelle du flotteur",
+	"GMCM.BobberTintR.Name": "Teinte rouge",
+	"GMCM.BobberTintG.Name": "Teinte verte",
+	"GMCM.BobberTintB.Name": "Teinte bleue",
+	"GMCM.BobberOpacity.Name": "Opacité"
+}

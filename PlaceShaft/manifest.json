@@ -1,26 +1,16 @@
 ﻿{
   "Name": "Placeable Mine Shafts",
-  "Author": "Aedenthorn",
-  "Version": "2.0.0",
+  "Author": "aedenthorn",
+  "Version": "2.1.2",
   "Description": "Place mine shafts in the same way as staircases.",
   "UniqueID": "Aedenthorn.PlaceShaft",
   "EntryDll": "PlaceShaft.dll",
-  "MinimumApiVersion": "3.2.0",
-  "UpdateKeys": ["Nexus:5440"],
+  "MinimumApiVersion": "4.0.0",
+  "UpdateKeys": [ "Nexus:5440" ],
   "ModUpdater": {
     "Repository": "StardewValleyMods",
     "User": "aedenthorn",
     "Directory": "_releases",
     "ModFolder": "PlaceShaft"
-  },
-  "Dependencies": [
-      {
-        "UniqueID": "Platonymous.ModUpdater",
-        "IsRequired": false
-      },
-      {
-      "UniqueID": "spacechase0.JsonAssets",
-        "IsRequired": true
-      },
-  ]
+  }
 }

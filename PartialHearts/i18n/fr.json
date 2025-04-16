@@ -1,0 +1,6 @@
+{
+	// GMCM
+	"GMCM.ModEnabled.Name": "Activer le Mod",
+	"GMCM.Granular.Name": "Cœurs détaillés",
+	"GMCM.Granular.Tooltip": "Affiche la progression de l'amitié de manière plus précise en subdivisant les cœurs d'amitié en parties plus petites."
+}

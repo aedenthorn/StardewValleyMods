@@ -1,10 +1,10 @@
 ﻿{
-  "Name": "Magnet Mod",
-  "Author": "Aedenthorn",
-  "Version": "1.3.0",
-  "Description": "Increase loot magnet radius and speed.",
-  "UniqueID": "Aedenthorn.MagnetMod",
-  "EntryDll": "MagnetMod.dll",
-  "MinimumApiVersion": "3.0.0",
-  "UpdateKeys": ["Nexus:4856"]
+	"Name": "Enhanced Loot Magnet",
+	"Author": "Aedenthorn",
+	"Version": "1.2.1",
+	"Description": "Enhances loot pickup range, movement speed, and behaviour.",
+	"UniqueID": "Aedenthorn.EnhancedLootMagnet",
+	"EntryDll": "EnhancedLootMagnet.dll",
+	"MinimumApiVersion": "4.0.0",
+	"UpdateKeys": [ "Nexus:4856" ]
 }

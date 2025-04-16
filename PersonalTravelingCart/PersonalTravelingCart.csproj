@@ -1,0 +1,11 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+	<PropertyGroup>
+		<Version>0.3.6</Version>
+		<TargetFramework>net6.0</TargetFramework>
+		<EnableHarmony>true</EnableHarmony>
+	</PropertyGroup>
+	<ItemGroup>
+		<PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+		<PackageReference Include="Pathoschild.Stardew.ModBuildConfig" Version="4.3.2" />
+	</ItemGroup>
+</Project>

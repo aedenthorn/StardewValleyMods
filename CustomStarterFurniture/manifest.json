@@ -1,22 +1,10 @@
 ﻿{
-  "Name": "Custom Starter Furniture",
-  "Author": "aedenthorn",
-  "Version": "0.1.0",
-  "Description": "Custom Starter Furniture.",
-  "UniqueID": "aedenthorn.CustomStarterFurniture",
-  "EntryDll": "CustomStarterFurniture.dll",
-  "MinimumApiVersion": "3.15.0",
-  "ModUpdater": {
-    "Repository": "StardewValleyMods",
-    "User": "aedenthorn",
-    "Directory": "_releases",
-    "ModFolder": "CustomStarterFurniture"
-  },
-  "Dependencies": [
-    {
-      "UniqueID": "Platonymous.ModUpdater",
-      "IsRequired": false
-    }
-  ],
-  "UpdateKeys": [ "Nexus:16729" ]
+	"Name": "Custom Starter Furniture",
+	"Author": "aedenthorn",
+	"Version": "0.1.1",
+	"Description": "A framework for letting you add to or replace the furniture you start with at the beginning of the game.",
+	"UniqueID": "aedenthorn.CustomStarterFurniture",
+	"EntryDll": "CustomStarterFurniture.dll",
+	"MinimumApiVersion": "4.0.0",
+	"UpdateKeys": [ "Nexus:16729" ]
 }

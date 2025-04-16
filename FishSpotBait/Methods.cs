@@ -1,18 +1,26 @@
-﻿using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
+﻿using System;
+using Microsoft.Xna.Framework;
 using StardewValley;
-using StardewValley.Locations;
-using StardewValley.Quests;
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using static StardewValley.LocationRequest;
-using Object = StardewValley.Object;
 
 namespace FishSpotBait
 {
-    public partial class ModEntry
-    {
-    }
+	public partial class ModEntry
+	{
+		private static int GetPlayerDirectionTowardTile(Farmer player, Point targetTile)
+		{
+			Vector2 playerPosition = player.Position / 64f;
+			Vector2 targetPosition = new(targetTile.X, targetTile.Y);
+			float deltaX = targetPosition.X - playerPosition.X;
+			float deltaY = targetPosition.Y - playerPosition.Y;
+			float angle = (float)Math.Atan2(deltaY, deltaX);
+
+			return angle switch
+			{
+				_ when angle >= -Math.PI / 4 && angle < Math.PI / 4 => 1,
+				_ when angle >= Math.PI / 4 && angle < 3 * Math.PI / 4 => 2,
+				_ when angle >= -3 * Math.PI / 4 && angle < -Math.PI / 4 => 0,
+				_ => 3
+			};
+		}
+	}
 }

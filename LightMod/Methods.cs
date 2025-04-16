@@ -100,7 +100,7 @@ namespace LightMod
             if (Game1.currentLocation.sharedLights.TryGetValue(ident, out LightSource l))
             {
                 suppressingScroll = true;
-                
+
                 float shiftAmount = Config.RadiusAmount;
                 if (Helper.Input.IsDown(Config.ModButton1))
                 {
@@ -128,7 +128,7 @@ namespace LightMod
                 value.initializeLightSource(value.TileLocation);
             }
         }
-        
+
         private void ChangeLightGlowAlpha(Vector2 light, int delta)
         {
             suppressingScroll = true;
@@ -191,7 +191,7 @@ namespace LightMod
                             Game1.currentLocation.sharedLights[ident] = value.lightSource.Clone();
                         if (value is Furniture)
                         {
-                            (value as Furniture).addLights(Game1.currentLocation);
+                            (value as Furniture).addLights();
                         }
                     }
                 }
@@ -213,7 +213,7 @@ namespace LightMod
             Game1.currentLocation.removeLightSource((int)(value.TileLocation.X * 2000f + value.TileLocation.Y));
             if (value is Furniture)
             {
-                (value as Furniture).removeLights(Game1.currentLocation);
+                (value as Furniture).removeLights();
             }
         }
 
@@ -227,7 +227,7 @@ namespace LightMod
                 Game1.currentLocation.sharedLights[ident] = value.lightSource.Clone();
             if (value is Furniture)
             {
-                (value as Furniture).addLights(Game1.currentLocation);
+                (value as Furniture).addLights();
                 value.IsOn = true;
             }
         }
@@ -235,19 +235,19 @@ namespace LightMod
 
         private static int GetMorningLightTime()
         {
-        /*
-            switch (Game1.currentSeason)
-            {
-                case "spring":
-                    return Config.SpringMorningLightTime;
-                case "summer":
-                    return Config.SummerMorningLightTime;
-                case "fall":
-                    return Config.SummerMorningLightTime;
-                case "winter":
-                    return Config.SummerMorningLightTime;
-            }
-        */
+            /*
+                switch (Game1.currentSeason)
+                {
+                    case "spring":
+                        return Config.SpringMorningLightTime;
+                    case "summer":
+                        return Config.SummerMorningLightTime;
+                    case "fall":
+                        return Config.SummerMorningLightTime;
+                    case "winter":
+                        return Config.SummerMorningLightTime;
+                }
+            */
             return 0;
         }
         private static int GetNightDarkTime()

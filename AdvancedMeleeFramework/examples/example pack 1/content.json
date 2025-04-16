@@ -1,0 +1,300 @@
+{
+  "weapons": [
+    {
+      "id": "4",
+      "cooldown": "1000",
+      "frames": [
+        {
+          "frameTicks": 10,
+          "action": 1,
+          "relativeFacingDirection": 0
+        },
+        {
+          "frameTicks": 10,
+          "action": 1,
+          "relativeFacingDirection": 1
+        },
+        {
+          "frameTicks": 10,
+          "action": 1,
+          "relativeFacingDirection": 2
+        },
+        {
+          "frameTicks": 10,
+          "action": 1,
+          "relativeFacingDirection": 3
+        },
+        {
+          "frameTicks": 10,
+          "action": 1,
+          "relativeFacingDirection": 0
+        },
+        {
+          "frameTicks": 10,
+          "action": 1,
+          "relativeFacingDirection": 1
+        },
+        {
+          "frameTicks": 10,
+          "action": 1,
+          "relativeFacingDirection": 2
+        },
+        {
+          "frameTicks": 10,
+          "action": 1,
+          "relativeFacingDirection": 3
+        },
+        {
+          "frameTicks": 1,
+          "action": 0,
+          "relativeFacingDirection": 0
+        }
+      ]
+    },
+    {
+      "id": "8",
+      "skillLevel": 4,
+      "enchantments": [
+        {
+          "name": "MindMeltMax.AMFExamplePack/looting",
+          "type": "loot",
+          "parameters": {
+            "trigger": "slay",
+            "chance": "25",
+            "extraDropItems": "570_1_1_10,390_2_5_40",
+            "sound": "boulderBreak"
+          },
+          "config": {
+            "chance": "lootChance" //Will appear in the config.json as "lootChance": 25
+          }
+        }
+      ],
+      "frames": [
+        {
+          "frameTicks": 5,
+          "action": 1,
+          "relativeFacingDirection": 0,
+          "sound": "furnace",
+          "projectiles": [
+            {
+              "damage": 100,
+              "bouncesTillDestruct": 0,
+              "tailLength": 1,
+              "rotationVelocity": 1,
+              "xVelocity": 0,
+              "yVelocity": 10,
+              "startingPositionX": 0,
+              "startingPositionY": 96,
+              "collisionSound": "boulderCrack",
+              "firingSound": "",
+              "explode": false,
+              "damagesMonsters": true,
+              "shotItemId": "(O)570",
+              "config": {
+                "damage": "projectileDamage"
+              }
+            }
+          ]
+        },
+        {
+          "frameTicks": 5,
+          "action": 0,
+          "relativeFacingDirection": 0,
+          "projectiles": [
+            {
+              "damage": 100,
+              "parentSheetIndex": 10,
+              "bouncesTillDestruct": 0,
+              "tailLength": 1,
+              "rotationVelocity": 1,
+              "xVelocity": -7,
+              "yVelocity": 7,
+              "startingPositionX": -72,
+              "startingPositionY": 72,
+              "collisionSound": "boulderCrack",
+              "firingSound": "",
+              "explode": false,
+              "damagesMonsters": true,
+              "shotItemId": "(O)570",
+              "config": {
+                "damage": "projectileDamage"
+              }
+            }
+          ]
+        },
+        {
+          "frameTicks": 5,
+          "action": 1,
+          "relativeFacingDirection": 1,
+          "projectiles": [
+            {
+              "damage": 100,
+              "parentSheetIndex": 10,
+              "bouncesTillDestruct": 0,
+              "tailLength": 1,
+              "rotationVelocity": 1,
+              "xVelocity": 0,
+              "yVelocity": 10,
+              "startingPositionX": 0,
+              "startingPositionY": 96,
+              "collisionSound": "boulderCrack",
+              "firingSound": "",
+              "explode": false,
+              "damagesMonsters": true,
+              "shotItemId": "(O)570",
+              "config": {
+                "damage": "projectileDamage"
+              }
+            }
+          ]
+        },
+        {
+          "frameTicks": 5,
+          "action": 0,
+          "relativeFacingDirection": 1,
+          "projectiles": [
+            {
+              "damage": 100,
+              "parentSheetIndex": 10,
+              "bouncesTillDestruct": 0,
+              "tailLength": 1,
+              "rotationVelocity": 1,
+              "xVelocity": -7,
+              "yVelocity": 7,
+              "startingPositionX": -72,
+              "startingPositionY": 72,
+              "collisionSound": "boulderCrack",
+              "firingSound": "",
+              "explode": false,
+              "damagesMonsters": true,
+              "shotItemId": "(O)570",
+              "config": {
+                "damage": "projectileDamage"
+              }
+            }
+          ]
+        },
+        {
+          "frameTicks": 5,
+          "action": 1,
+          "relativeFacingDirection": 2,
+          "projectiles": [
+            {
+              "damage": 100,
+              "parentSheetIndex": 10,
+              "bouncesTillDestruct": 0,
+              "tailLength": 1,
+              "rotationVelocity": 1,
+              "xVelocity": 0,
+              "yVelocity": 10,
+              "startingPositionX": 0,
+              "startingPositionY": 96,
+              "collisionSound": "boulderCrack",
+              "firingSound": "",
+              "explode": false,
+              "damagesMonsters": true,
+              "shotItemId": "(O)570",
+              "config": {
+                "damage": "projectileDamage"
+              }
+            }
+          ]
+        },
+        {
+          "frameTicks": 5,
+          "action": 0,
+          "relativeFacingDirection": 2,
+          "projectiles": [
+            {
+              "damage": 100,
+              "parentSheetIndex": 10,
+              "bouncesTillDestruct": 0,
+              "tailLength": 1,
+              "rotationVelocity": 1,
+              "xVelocity": -7,
+              "yVelocity": 7,
+              "startingPositionX": -72,
+              "startingPositionY": 72,
+              "collisionSound": "boulderCrack",
+              "firingSound": "",
+              "explode": false,
+              "damagesMonsters": true,
+              "shotItemId": "(O)570",
+              "config": {
+                "damage": "projectileDamage"
+              }
+            }
+          ]
+        },
+        {
+          "frameTicks": 5,
+          "action": 1,
+          "relativeFacingDirection": 3,
+          "projectiles": [
+            {
+              "damage": 100,
+              "parentSheetIndex": 10,
+              "bouncesTillDestruct": 0,
+              "tailLength": 1,
+              "rotationVelocity": 1,
+              "xVelocity": 0,
+              "yVelocity": 10,
+              "startingPositionX": 0,
+              "startingPositionY": 96,
+              "collisionSound": "boulderCrack",
+              "firingSound": "",
+              "explode": false,
+              "damagesMonsters": true,
+              "shotItemId": "(O)570",
+              "config": {
+                "damage": "projectileDamage"
+              }
+            }
+          ]
+        },
+        {
+          "frameTicks": 5,
+          "action": 0,
+          "relativeFacingDirection": 3,
+          "projectiles": [
+            {
+              "damage": 100,
+              "parentSheetIndex": 10,
+              "bouncesTillDestruct": 0,
+              "tailLength": 1,
+              "rotationVelocity": 1,
+              "xVelocity": -7,
+              "yVelocity": 7,
+              "startingPositionX": -72,
+              "startingPositionY": 72,
+              "collisionSound": "boulderCrack",
+              "firingSound": "",
+              "explode": false,
+              "damagesMonsters": true,
+              "shotItemId": "(O)570",
+              "config": {
+                "damage": "projectileDamage"
+              }
+            }
+          ]
+        },
+        {
+          "frameTicks": 1,
+          "action": 0,
+          "relativeFacingDirection": 0
+        }
+      ]
+    },
+    {
+      "type": 1,
+      "frames": [
+        {
+          "frameTicks": 1,
+          "action": 0,
+          "invincible": true,
+          "trajectoryX": 10
+        }
+      ]
+    }
+  ]
+}

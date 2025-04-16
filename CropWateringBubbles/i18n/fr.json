@@ -1,10 +1,10 @@
 {
-  "GMCM_Option_ModEnabled_Name": "Activer le Mod",
-  "GMCM_Option_OpacityPercent_Name": "Opacité (en %)",
-  "GMCM_Option_SizePercent_Name": "Taille (en %)",
-  "GMCM_Option_PressKeys_Name": "Touches d'activation",
-  "GMCM_Option_RepeatInterval_Name": "Intervalle de répétition",
-  "GMCM_Option_RequireKeyPress_Name": "Nécessite les touches d'activation",
-  "GMCM_Option_IncludeGiantable_Name": "Afficher pour les cultures géantes",
-  "GMCM_Option_OnlyWhenWatering_Name": "Uniquement lors de l'arrosage"
+	"GMCM.ModEnabled.Name": "Activer le Mod",
+	"GMCM.OpacityPercent.Name": "Opacité (en %)",
+	"GMCM.SizePercent.Name": "Taille (en %)",
+	"GMCM.PressKeys.Name": "Touches d'activation",
+	"GMCM.RepeatInterval.Name": "Intervalle de répétition",
+	"GMCM.RequireKeyPress.Name": "Nécessite les touches d'activation",
+	"GMCM.IncludeGiantable.Name": "Afficher pour les cultures géantes",
+	"GMCM.OnlyWhenWatering.Name": "Uniquement lors de l'arrosage"
 }

@@ -1,0 +1,28 @@
+{
+	"item.weather_totem.name": "Totem météorologique",
+	"item.weather_totem.description": "À activer pour augmenter considérablement les chances d'une météo spécifique le lendemain. Disparaît après son utilisation.",
+	"menu.prompt": "Quel météo souhaitez-vous invoquer ?",
+	"menu.Sun": "Soleil",
+	"menu.Rain": "Pluie",
+	"menu.GreenRain": "Pluie verte",
+	"menu.Storm": "Orage",
+	"menu.Snow": "Neige",
+	"menu.Wind": "Vent",
+	"message.Sun": "Les rayons du soleil illuminent le paysage lointain...",
+	"message.Rain": "Les nuages se forment au loin...",
+	"message.GreenRain": "Une teinte verdâtre colore l'horizon...",
+	"message.Storm": "Le tonnerre gronde au loin...",
+	"message.Snow": "Des flocons blancs tourbillonnent doucement dans le ciel, formant un voile neigeux à l'horizon...",
+	"message.Wind": "Le vent se lève, faisant bruisser les feuilles...",
+	"message.Default": "La nature s'agite au loin, des changements météorologiques sont à prévoir...",
+
+	// GMCM
+	"GMCM.ModEnabled.Name": "Activer le Mod",
+	"GMCM.InvokeSound.Name": "Son d'invocation",
+	"GMCM.SunSound.Name": "Son du soleil",
+	"GMCM.RainSound.Name": "Son de la pluie",
+	"GMCM.GreenRainSound.Name": "Son de la pluie verte",
+	"GMCM.StormSound.Name": "Son de l'orage",
+	"GMCM.SnowSound.Name": "Son de la neige",
+	"GMCM.WindSound.Name": "Son du vent"
+}

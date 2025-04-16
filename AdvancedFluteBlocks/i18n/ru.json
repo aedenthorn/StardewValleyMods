@@ -1,8 +1,8 @@
 {
-  // GMCM
-  "GMCM_Option_ModEnabled_Name": "Мод включён?",
-  "GMCM_SectionTitle_KeyBinds_Text": "Привязки клавиш",
-  "GMCM_Option_PitchModKey_Name": "Клавиша звучания",
-  "GMCM_Option_ToneModKey_Name": "Клавиша тона",
-  "GMCM_Option_PitchStep_Name": "Клавиша шага звучания"
+	// GMCM
+	"GMCM.ModEnabled.Name": "Мод включён?",
+	"GMCM_SectionTitle_KeyBinds.Text": "Привязки клавиш",
+	"GMCM.PitchModKey.Name": "Клавиша звучания",
+	"GMCM.ToneModKey.Name": "Клавиша тона",
+	"GMCM.PitchStep.Name": "Клавиша шага звучания"
 }

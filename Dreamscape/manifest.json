@@ -1,22 +1,10 @@
 ﻿{
-  "Name": "Dreamscape",
-  "Author": "aedenthorn",
-  "Version": "0.1.0",
-  "Description": "Dreamscape.",
-  "UniqueID": "aedenthorn.Dreamscape",
-  "EntryDll": "Dreamscape.dll",
-  "MinimumApiVersion": "3.13.0",
-  "ModUpdater": {
-    "Repository": "StardewValleyMods",
-    "User": "aedenthorn",
-    "Directory": "_releases",
-    "ModFolder": "Dreamscape"
-  },
-  "UpdateKeys": [ "Nexus:11742" ],
-  "Dependencies": [
-    {
-      "UniqueID": "Platonymous.ModUpdater",
-      "IsRequired": false
-    }
-  ]
+	"Name": "Dreamscape",
+	"Author": "aedenthorn",
+	"Version": "0.1.1",
+	"Description": "Adds Emily's Dreamscape as a farmable, foragable game location with crystal weeds, gem spawns, real dream trees, and a rejuvenation fairy.",
+	"UniqueID": "aedenthorn.Dreamscape",
+	"EntryDll": "Dreamscape.dll",
+	"MinimumApiVersion": "4.1.0",
+	"UpdateKeys": [ "Nexus:11742" ]
 }
