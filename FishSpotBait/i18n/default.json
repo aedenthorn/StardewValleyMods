@@ -1,4 +1,8 @@
 {
-  "GMCM_Option_ModEnabled_Name": "Mod Enabled",
-  "GMCM_Option_BaitItem_Name": "Bait Item"
+	// GMCM
+	"GMCM.ModEnabled.Name": "Mod Enabled",
+	"GMCM.RandomRadius.Name": "Random Radius",
+	"GMCM.RandomRadius.Tooltip": "Radius of the random tile selection around the cursor.",
+	"GMCM.MaxRange.Name": "Max Range",
+	"GMCM.MaxRange.Tooltip": "Maximum range for selecting a tile with the cursor."
 }
