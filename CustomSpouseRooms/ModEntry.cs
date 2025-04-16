@@ -92,6 +92,7 @@ namespace CustomSpouseRooms
             SHelper.Events.GameLoop.GameLaunched += GameLoop_GameLaunched;
             SHelper.Events.GameLoop.SaveLoaded += GameLoop_SaveLoaded;
             SHelper.Events.Content.AssetRequested += Content_AssetRequested;
+            SHelper.Events.GameLoop.ReturnedToTitle += GameLoop_ReturnedToTitle;
         }
 
         private void Content_AssetRequested(object sender, StardewModdingAPI.Events.AssetRequestedEventArgs e)
@@ -104,6 +105,12 @@ namespace CustomSpouseRooms
             {
                 e.LoadFrom(() => new Dictionary<string, SpouseRoomData>(), StardewModdingAPI.Events.AssetLoadPriority.Exclusive);
             }
+        }
+
+        public static bool justLoadedSave = true;
+        private void GameLoop_ReturnedToTitle(object sender, StardewModdingAPI.Events.ReturnedToTitleEventArgs e)
+        {
+            justLoadedSave = true;
         }
 
         private void GameLoop_SaveLoaded(object sender, StardewModdingAPI.Events.SaveLoadedEventArgs e)

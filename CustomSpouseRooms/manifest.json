@@ -1,23 +1,13 @@
 ﻿{
   "Name": "Custom Spouse Rooms",
-  "Author": "datamancer",
-  "Version": "0.9.5",
+  "Author": "aedenthorn",
+  "Version": "0.9.0",
   "Description": "Custom spouse rooms.",
-  "UniqueID": "datamancer.CustomSpouseRooms",
+  "UniqueID": "aedenthorn.CustomSpouseRooms",
   "EntryDll": "CustomSpouseRooms.dll",
-  "MinimumApiVersion": "4.0.0",
-  "ModUpdater": {
-    "Repository": "StardewValleyMods",
-    "User": "datamancer",
-    "Directory": "_releases",
-    "ModFolder": "CustomSpouseRooms"
-  },
-  "UpdateKeys": [ "Nexus:20966", "ModDrop:1534005" ],
+  "MinimumApiVersion": "4.0.0"
+  "UpdateKeys": [ "Nexus:10029" ],
   "Dependencies": [
-    {
-      "UniqueID": "Platonymous.ModUpdater",
-      "IsRequired": false
-    },
     {
       "UniqueID": "aedenthorn.FreeLove",
       "IsRequired": false
