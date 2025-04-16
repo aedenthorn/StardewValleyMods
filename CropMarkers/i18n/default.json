@@ -1,9 +1,9 @@
 {
-  "GMCM_Option_ModEnabled_Name": "Mod Enabled",
-  "GMCM_Option_OpacityPercent_Name": "Opacity Percent",
-  "GMCM_Option_SizePercent_Name": "Size Percent",
-  "GMCM_Option_PressKeys_Name": "Press Keys",
-  "GMCM_Option_RequireKeyPress_Name": "Require Key Press",
-  "GMCM_Option_OffsetX_Name": "Offset X",
-  "GMCM_Option_OffsetY_Name": "Offset Y"
+	"GMCM.ModEnabled.Name": "Mod Enabled",
+	"GMCM.OpacityPercent.Name": "Opacity Percent",
+	"GMCM.SizePercent.Name": "Size Percent",
+	"GMCM.PressKeys.Name": "Press Keys",
+	"GMCM.RequireKeyPress.Name": "Require Key Press",
+	"GMCM.OffsetX.Name": "Offset X",
+	"GMCM.OffsetY.Name": "Offset Y"
 }
