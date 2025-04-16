@@ -1,22 +1,10 @@
 ﻿{
   "Name": "Import Map",
-  "Author": "datamancer",
+  "Author": "aedenthorn",
   "Version": "0.2.0",
   "Description": "Import Map.",
-  "UniqueID": "datamancer.ImportMap",
+  "UniqueID": "aedenthorn.ImportMap",
   "EntryDll": "ImportMap.dll",
   "MinimumApiVersion": "4.0.0",
-  "ModUpdater": {
-    "Repository": "StardewValleyMods",
-    "User": "datamancer",
-    "Directory": "_releases",
-    "ModFolder": "ImportMap"
-  },
-  "UpdateKeys": [ "Nexus:10965" ],
-  "Dependencies": [
-    {
-      "UniqueID": "Platonymous.ModUpdater",
-      "IsRequired": false
-    }
-  ]
+  "UpdateKeys": [ "Nexus:10965" ]
 }

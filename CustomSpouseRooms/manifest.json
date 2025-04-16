@@ -5,7 +5,7 @@
   "Description": "Custom spouse rooms.",
   "UniqueID": "aedenthorn.CustomSpouseRooms",
   "EntryDll": "CustomSpouseRooms.dll",
-  "MinimumApiVersion": "4.0.0"
+  "MinimumApiVersion": "4.0.0",
   "UpdateKeys": [ "Nexus:10029" ],
   "Dependencies": [
     {

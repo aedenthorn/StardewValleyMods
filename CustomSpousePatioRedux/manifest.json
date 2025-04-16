@@ -6,17 +6,6 @@
   "UniqueID": "aedenthorn.CustomSpousePatioRedux",
   "EntryDll": "CustomSpousePatioRedux.dll",
   "MinimumApiVersion": "4.0.0",
-  "UpdateKeys": [ "Nexus:10889" ],
-  "ModUpdater": {
-    "Repository": "StardewValleyMods",
-    "User": "aedenthorn",
-    "Directory": "_releases",
-    "ModFolder": "CustomSpousePatioRedux"
-  },
-  "Dependencies": [
-    {
-      "UniqueID": "Platonymous.ModUpdater",
-      "IsRequired": false
-    }
-  ]
+  "UpdateKeys": [ "Nexus:10889" ]
+  
 }

@@ -1,22 +1,16 @@
 ﻿{
   "Name": "Mobile Phone",
-  "Author": "datamancer",
-  "Version": "3.3.1",
+  "Author": "aedenthorn",
+  "Version": "3.3.2",
   "Description": "Gives you a mobile phone.",
-  "UniqueID": "datamancer.MobilePhone",
+  "UniqueID": "aedenthorn.MobilePhone",
   "EntryDll": "MobilePhone.dll",
   "MinimumApiVersion": "4.0.2",
-  "UpdateKeys": [ "Nexus:21076" ],
+  "UpdateKeys": [ "Nexus:6523" ],
   "ModUpdater": {
     "Repository": "StardewValleyMods",
-    "User": "datamancer",
+    "User": "aedenthorn",
     "Directory": "_releases",
     "ModFolder": "MobilePhone"
-  },
-  "Dependencies": [
-    {
-      "UniqueID": "Platonymous.ModUpdater",
-      "IsRequired": false
-    }
-  ]
+  }
 }
