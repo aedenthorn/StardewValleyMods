@@ -1,5 +1,6 @@
 ﻿using StardewModdingAPI;
 using StardewValley;
+using StardewValley.Quests;
 using System;
 
 namespace HugsAndKisses
@@ -18,17 +19,17 @@ namespace HugsAndKisses
             Helper = helper;
         }
 
-        public static bool NPC_checkAction_Prefix(ref NPC __instance, ref Farmer who, GameLocation l, ref bool __result)
+        public static bool NPC_checkAction_Prefix(NPC __instance, Farmer who, GameLocation l, ref bool __result)
         {
             try
             {
-                if (!Config.EnableMod || __instance.IsInvisible || __instance.isSleeping.Value || !who.canMove || who.checkForQuestComplete(__instance, -1, -1, who.ActiveObject, null, -1, 5) || who.pantsItem.Value?.ParentSheetIndex == 15 && (__instance.Name.Equals("Lewis") || __instance.Name.Equals("Marnie")) || __instance.Name.Equals("Krobus") && who.hasQuest("28") || !who.IsLocalPlayer)
+                if (!Config.EnableMod || __instance.IsInvisible || __instance.isSleeping.Value || !who.canMove || who.NotifyQuests((Quest quest) => quest.OnItemOfferedToNpc(__instance, who.ActiveObject, false), true) || (who.pantsItem.Value?.ParentSheetIndex == 15 && (__instance.Name.Equals("Lewis")) || __instance.Name.Equals("Marnie")) || (__instance.Name.Equals("Krobus") && who.hasQuest("28")) || !who.IsLocalPlayer)
                 {
                     return true;
                 }
 
 
-                Monitor.Log($"Checking action for {who.Name} kissing/hugging {__instance.Name}", LogLevel.Debug);
+                //Monitor.Log($"Checking action for {who.Name} kissing/hugging {__instance.Name}", LogLevel.Debug);
 
                 if (who.friendshipData.TryGetValue(__instance.Name, out var data)
                 && (data.IsMarried() || data.IsEngaged() || ((__instance.datable.Value || Config.AllowNonDateableNPCsToHugAndKiss) && !data.IsMarried() && !data.IsEngaged() && ((data.IsDating() && Config.DatingKisses) || (who.getFriendshipHeartLevelForNPC(__instance.Name) >= Config.HeartsForFriendship && Config.FriendHugs)))))
@@ -38,11 +39,11 @@ namespace HugsAndKisses
                     if (__instance.Sprite.CurrentAnimation == null && !__instance.hasTemporaryMessageAvailable() && __instance.currentMarriageDialogue.Count == 0 && __instance.CurrentDialogue.Count == 0 && Game1.timeOfDay < 2200 && !__instance.isMoving() && who.ActiveObject == null)
                     {
                         bool kissing = data.IsDating() || data.IsMarried() || data.IsEngaged();
-                        Monitor.Log($"{who.Name} {(kissing ? "kissing" : "hugging")} {__instance.Name}", LogLevel.Debug);
+                        //Monitor.Log($"{who.Name} {(kissing ? "kissing" : "hugging")} {__instance.Name}", LogLevel.Debug);
 
                         if (kissing && __instance.hasBeenKissedToday.Value && !Config.UnlimitedDailyKisses)
                         {
-                            Monitor.Log($"already kissed {__instance.Name}");
+                            //Monitor.Log($"already kissed {__instance.Name}");
                             return false;
                         }
 
@@ -63,17 +64,17 @@ namespace HugsAndKisses
                         }
                         else
                         {
-                            Monitor.Log($"Checking action failed, {__instance.Name} is facing the wrong direction");
+                            //Monitor.Log($"Checking action failed, {__instance.Name} is facing the wrong direction");
                         }
                     }
                     else
                     {
-                        Monitor.Log($"Checking action failed, {__instance.Name} is unavailable");
+                        //Monitor.Log($"Checking action failed, {__instance.Name} is unavailable");
                     }
                 }
                 else
                 {
-                    Monitor.Log($"Checking action failed, config disallow it");
+                    //Monitor.Log($"Checking action failed, config disallow it");
                 }
             }
             catch (Exception ex)

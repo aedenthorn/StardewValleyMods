@@ -202,13 +202,13 @@ namespace HugsAndKisses
             bool flip = (facingRight && npc.FacingDirection == 3) || (!facingRight && npc.FacingDirection == 1);
             if (!player.friendshipData.TryGetValue(npc.Name, out Friendship f))
             {
-                ModEntry.SMonitor.Log($"{player.Name} has no friendship data for {npc.Name}");
+                //ModEntry.SMonitor.Log($"{player.Name} has no friendship data for {npc.Name}");
                 return;
             }
 
             if (npc.hasBeenKissedToday.Value && !Config.UnlimitedDailyKisses)
             {
-                ModEntry.SMonitor.Log($"{player.Name} has already kissed {npc.Name} today");
+                //ModEntry.SMonitor.Log($"{player.Name} has already kissed {npc.Name} today");
                 return;
             }
 
@@ -229,7 +229,7 @@ namespace HugsAndKisses
             }
             if (accepted)
             {
-                ModEntry.SMonitor.Log($"Can kiss/hug {npc.Name}");
+                //ModEntry.SMonitor.Log($"Can kiss/hug {npc.Name}");
 
                 int delay = Game1.IsMultiplayer ? 1000 : 10;
                 npc.movementPause = delay;
@@ -245,12 +245,12 @@ namespace HugsAndKisses
 
                 if (!Config.RoommateKisses && player.friendshipData[npc.Name].RoommateMarriage)
                 {
-                    ModEntry.SMonitor.Log($"Hugging {npc.Name}");
+                    //ModEntry.SMonitor.Log($"Hugging {npc.Name}");
                     Misc.ShowSmiley(npc);
                 }
                 else
                 {
-                    ModEntry.SMonitor.Log($"Kissing {npc.Name}");
+                    //ModEntry.SMonitor.Log($"Kissing {npc.Name}");
                     Misc.ShowHeart(npc);
                 }
                 if (Config.RoommateKisses || !player.friendshipData[npc.Name].RoommateMarriage)
@@ -270,7 +270,7 @@ namespace HugsAndKisses
             }
             else
             {
-                ModEntry.SMonitor.Log($"Kiss/hug rejected by {npc.Name}");
+                //ModEntry.SMonitor.Log($"Kiss/hug rejected by {npc.Name}");
 
                 npc.faceDirection((ModEntry.myRand.NextDouble() < 0.5) ? 2 : 0);
                 npc.doEmote(12, true);
@@ -291,7 +291,7 @@ namespace HugsAndKisses
 
             bool flip = (facingRight && npc.FacingDirection == 3) || (!facingRight && npc.FacingDirection == 1);
 
-            ModEntry.SMonitor.Log($"Can hug {npc.Name}");
+            //ModEntry.SMonitor.Log($"Can hug {npc.Name}");
 
             int delay = Game1.IsMultiplayer ? 1000 : 10;
             npc.movementPause = delay;
@@ -301,7 +301,7 @@ namespace HugsAndKisses
                     }
             );
 
-            ModEntry.SMonitor.Log($"Hugging {npc.Name}");
+            //ModEntry.SMonitor.Log($"Hugging {npc.Name}");
             Misc.ShowSmiley(npc);
             if (Config.CustomHugSound.Length > 0 && hugEffect != null)
             {

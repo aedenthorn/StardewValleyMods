@@ -152,7 +152,7 @@ namespace HugsAndKisses
             {
                 if(spouses.Count > 0)
                 {
-                    Monitor.Log("No official spouse, setting official spouse to: " + spouses.First().Key);
+                    //Monitor.Log("No official spouse, setting official spouse to: " + spouses.First().Key);
                     f.spouse = spouses.First().Key;
                 }
             }
@@ -161,15 +161,15 @@ namespace HugsAndKisses
             {
                 if (f.friendshipData[name].IsEngaged())
                 {
-                    Monitor.Log($"{f.Name} is engaged to: {name} {f.friendshipData[name].CountdownToWedding} days until wedding");
+                    //Monitor.Log($"{f.Name} is engaged to: {name} {f.friendshipData[name].CountdownToWedding} days until wedding");
                     if (f.friendshipData[name].WeddingDate.TotalDays < new WorldDate(Game1.Date).TotalDays)
                     {
-                        Monitor.Log("invalid engagement: " + name);
+                        //Monitor.Log("invalid engagement: " + name);
                         f.friendshipData[name].WeddingDate.TotalDays = new WorldDate(Game1.Date).TotalDays + 1;
                     }
                     if(f.spouse != name)
                     {
-                        Monitor.Log("setting spouse to engagee: " + name);
+                        //Monitor.Log("setting spouse to engagee: " + name);
                         f.spouse = name;
                     }
                 }
@@ -178,12 +178,12 @@ namespace HugsAndKisses
                     //Monitor.Log($"{f.Name} is married to: {name}");
                     if (f.spouse != null && f.friendshipData[f.spouse] != null && !f.friendshipData[f.spouse].IsMarried() && !f.friendshipData[f.spouse].IsEngaged())
                     {
-                        Monitor.Log("invalid ospouse, setting ospouse to " + name);
+                        //Monitor.Log("invalid ospouse, setting ospouse to " + name);
                         f.spouse = name;
                     }
                     if (f.spouse == null)
                     {
-                        Monitor.Log("null ospouse, setting ospouse to " + name);
+                        //Monitor.Log("null ospouse, setting ospouse to " + name);
                         f.spouse = name;
                     }
                 }
