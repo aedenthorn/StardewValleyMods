@@ -1,27 +1,16 @@
 ﻿{
-  "Name": "TreasureChestsExpanded",
-  "Author": "aedenthorn",
-  "Version": "0.3.0",
-  "Description": "Expands the pool of rewards from treasure chests in the Skull Cave.",
-  "UniqueID": "aedenthorn.TreasureChestsExpanded",
-  "EntryDll": "TreasureChestsExpanded.dll",
-  "MinimumApiVersion": "3.8.0",
-  "UpdateKeys": ["Nexus:7685"],
-  "ModUpdater": {
-    "Repository": "StardewValleyMods",
-    "User": "aedenthorn",
-    "Directory": "_releases",
-    "ModFolder": "TreasureChestsExpanded"
-  },
-  "Dependencies": [
-      {
-        "UniqueID": "Platonymous.ModUpdater",
-        "IsRequired": false
-      },
-      {
-        "UniqueID": "aedenthorn.AdvancedLootFramework",
-        "IsRequired": true,
-        "MinimumVersion": "0.4.0"
-      },
-  ]
+	"Name": "Treasure Chests Expanded",
+	"Author": "aedenthorn",
+	"Version": "0.3.1",
+	"Description": "This customizable mod greatly expands the range of items received in underground treasure chests.",
+	"UniqueID": "aedenthorn.TreasureChestsExpanded",
+	"EntryDll": "TreasureChestsExpanded.dll",
+	"MinimumApiVersion": "4.0.0",
+	"Dependencies": [
+		{
+			"UniqueID": "aedenthorn.AdvancedLootFramework",
+			"IsRequired": true
+		}
+	],
+	"UpdateKeys": [ "Nexus:7685" ]
 }

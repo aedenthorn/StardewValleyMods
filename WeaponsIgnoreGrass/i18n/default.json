@@ -1,0 +1,13 @@
+{
+	// HUD messages
+	"enabled-message": "Enabled \"Ignore Grass\" mode.",
+	"disabled-message": "Disabled \"Ignore Grass\" mode.",
+
+	// GMCM
+	"GMCM.ModEnabled.Name": "Mod Enabled",
+	"GMCM.WeaponsIgnoreGrass.Name": "Weapons Ignore Grass",
+	"GMCM.ScythesIgnoreGrass.Name": "Scythes Ignore Grass",
+	"GMCM.ShowEnabledMessage.Name": "Show Enabled Message",
+	"GMCM.ShowDisabledMessage.Name": "Show Disabled Message",
+	"GMCM.ToggleKeys.Name": "Toggle Keys"
+}

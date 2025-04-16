@@ -1,15 +1,15 @@
 ﻿
 using StardewModdingAPI;
 
-namespace WallPlanter
+namespace WallPlanters
 {
-    public class ModConfig
-    {
-        public bool EnableMod { get; set; } = true;
-        public SButton ModKey { get; set; } = SButton.LeftShift;
-        public SButton UpButton { get; set; } = SButton.Up;
-        public SButton DownButton { get; set; } = SButton.Down;
-        public int OffsetY { get; set; } = 64;
-        public int InnerOffsetY { get; set; } = 0;
-    }
+	public class ModConfig
+	{
+		public bool EnableMod { get; set; } = true;
+		public SButton ContentOffsetKey { get; set; } = SButton.LeftShift;
+		public SButton UpKey { get; set; } = SButton.Up;
+		public SButton DownKey { get; set; } = SButton.Down;
+		public int OffsetY { get; set; } = 32;
+		public int InnerOffsetY { get; set; } = 0;
+	}
 }

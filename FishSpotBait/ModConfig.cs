@@ -1,12 +1,9 @@
-﻿using Microsoft.Xna.Framework;
-using StardewModdingAPI;
-using System.Collections.Generic;
-
-namespace FishSpotBait
+﻿namespace FishSpotBait
 {
-    public class ModConfig
-    {
-        public bool ModEnabled { get; set; } = true;
-        public string BaitItem { get; set; } = "685";
-    }
+	public class ModConfig
+	{
+		public bool ModEnabled { get; set; } = true;
+		public int RandomRadius { get; set; } = 1;
+		public int MaxRange { get; set; } = 6;
+	}
 }

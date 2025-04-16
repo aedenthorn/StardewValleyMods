@@ -19,7 +19,7 @@
 
   <ItemGroup>
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
-    <PackageReference Include="Pathoschild.Stardew.ModBuildConfig" Version="4.1.1" />
+    <PackageReference Include="Pathoschild.Stardew.ModBuildConfig" Version="4.3.2" />
   </ItemGroup>
 
   <ItemGroup>

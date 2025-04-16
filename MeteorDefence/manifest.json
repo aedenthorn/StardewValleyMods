@@ -1,22 +1,10 @@
 ﻿{
-  "Name": "Meteor Defence",
-  "Author": "aedenthorn",
-  "Version": "0.1.1",
-  "Description": "Meteor Defence.",
-  "UniqueID": "aedenthorn.MeteorDefence",
-  "EntryDll": "MeteorDefence.dll",
-  "MinimumApiVersion": "3.13.0",
-  "ModUpdater": {
-    "Repository": "StardewValleyMods",
-    "User": "aedenthorn",
-    "Directory": "_releases",
-    "ModFolder": "MeteorDefence"
-  },
-  "UpdateKeys": [ "Nexus:10641" ],
-  "Dependencies": [
-    {
-      "UniqueID": "Platonymous.ModUpdater",
-      "IsRequired": false
-    }
-  ]
+	"Name": "Meteor Defence",
+	"Author": "aedenthorn",
+	"Version": "0.1.2",
+	"Description": "Lets you designate a meteor defence object to place on your farm to shoot down meteors, causing them to drop resources.",
+	"UniqueID": "aedenthorn.MeteorDefence",
+	"EntryDll": "MeteorDefence.dll",
+	"MinimumApiVersion": "4.0.0",
+	"UpdateKeys": [ "Nexus:10641" ]
 }

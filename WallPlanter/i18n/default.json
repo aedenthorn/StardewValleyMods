@@ -1,0 +1,12 @@
+{
+	// GMCM
+	"GMCM.ModEnabled.Name": "Mod Enabled",
+	"GMCM.ContentOffsetKey.Name": "Content Offset Key",
+	"GMCM.ContentOffsetKey.Tooltip": "When held down, the up and down keys move the contents instead.",
+	"GMCM.UpKey.Name": "Up Key",
+	"GMCM.UpKey.Tooltip": "Moves the pot up when held down while hovering over the wall's bottom tile.",
+	"GMCM.DownKey.Name": "Down Key",
+	"GMCM.DownKey.Tooltip": "Moves the pot down when held down while hovering over the wall's bottom tile.",
+	"GMCM.OffsetY.Name": "Y Offset",
+	"GMCM.OffsetY.Tooltip": "Default wall position offset (positive is up)."
+}

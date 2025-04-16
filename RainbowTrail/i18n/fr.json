@@ -1,0 +1,17 @@
+{
+	// Buff
+	"buff.rainbow-trail-buff.name": "Traînée arc-en-ciel",
+	"buff.rainbow-trail-buff.description": "Courez à une vitesse fulgurante et laissez une traînée arc-en-ciel éblouissante derrière vous !",
+	"buff.rainbow-trail-buff.source": "Mod Rainbow Trail",
+
+	// GMCM
+	"GMCM.ModEnabled.Name": "Activer le Mod",
+	"GMCM.ToggleKeys.Name": "Touches d'activation",
+	"GMCM.MoveSpeed.Name": "Vitesse de déplacement",
+	"GMCM.StaminaUse.Name": "Consommation d'endurance",
+	"GMCM.StaminaManaUse.Name": "Consommation d'endurance ou de mana",
+	"GMCM.UseMana.Name": "Utiliser du mana",
+	"GMCM.UseMana.Tooltip": "Détermine s'il faut consommer du mana au lieu de l'endurance pour maintenir la traînée arc-en-ciel.",
+	"GMCM.EnableSound.Name": "Son d'activation",
+	"GMCM.MaxDuration.Name": "Durée maximale de la traînée"
+}

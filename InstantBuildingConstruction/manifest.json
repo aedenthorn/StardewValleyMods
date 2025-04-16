@@ -1,22 +1,10 @@
 ﻿{
-  "Name": "Instant Building Construction",
-  "Author": "aedenthorn",
-  "Version": "0.2.0",
-  "Description": "Instant Building Construction.",
-  "UniqueID": "aedenthorn.InstantBuildingConstruction",
-  "EntryDll": "InstantBuildingConstruction.dll",
-  "MinimumApiVersion": "3.15.0",
-  "ModUpdater": {
-    "Repository": "StardewValleyMods",
-    "User": "aedenthorn",
-    "Directory": "_releases",
-    "ModFolder": "InstantBuildingConstruction"
-  },
-  "Dependencies": [
-    {
-      "UniqueID": "Platonymous.ModUpdater",
-      "IsRequired": false
-    }
-  ],
-  "UpdateKeys": [ "Nexus:14110" ]
+	"Name": "Instant Building Construction and Upgrade",
+	"Author": "aedenthorn",
+	"Version": "0.2.1",
+	"Description": "Causes building construction and upgrade to finish immediately upon purchase.",
+	"UniqueID": "aedenthorn.InstantBuildingConstruction",
+	"EntryDll": "InstantBuildingConstruction.dll",
+	"MinimumApiVersion": "4.1.0",
+	"UpdateKeys": [ "Nexus:14110" ]
 }

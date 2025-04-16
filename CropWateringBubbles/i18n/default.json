@@ -1,10 +1,10 @@
 {
-  "GMCM_Option_ModEnabled_Name": "Mod Enabled",
-  "GMCM_Option_OpacityPercent_Name": "Opacity Percent",
-  "GMCM_Option_SizePercent_Name": "Size Percent",
-  "GMCM_Option_PressKeys_Name": "Press Keys",
-  "GMCM_Option_RepeatInterval_Name": "Repeat Interval",
-  "GMCM_Option_RequireKeyPress_Name": "Require Key Press",
-  "GMCM_Option_IncludeGiantable_Name": "Show For Giantable",
-  "GMCM_Option_OnlyWhenWatering_Name": "Only When Watering"
+	"GMCM.ModEnabled.Name": "Mod Enabled",
+	"GMCM.OpacityPercent.Name": "Opacity Percent",
+	"GMCM.SizePercent.Name": "Size Percent",
+	"GMCM.PressKeys.Name": "Press Keys",
+	"GMCM.RepeatInterval.Name": "Repeat Interval",
+	"GMCM.RequireKeyPress.Name": "Require Key Press",
+	"GMCM.IncludeGiantable.Name": "Show For Giantable",
+	"GMCM.OnlyWhenWatering.Name": "Only When Watering"
 }

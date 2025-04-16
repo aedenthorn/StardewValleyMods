@@ -1,5 +1,5 @@
 {
-  // GMCM
-  "GMCM_Option_ModEnabled_Name": "Мод включён?",
-  "GMCM_Option_AllowVanillaMaps_Name": "Разрешить стандартные карты"
+	// GMCM
+	"GMCM.ModEnabled.Name": "Мод включён?",
+	"GMCM.AllowVanillaMaps.Name": "Разрешить стандартные карты"
 }

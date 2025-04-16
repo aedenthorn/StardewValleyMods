@@ -1,16 +1,10 @@
 ﻿{
-  "Name": "Fire Breath",
-  "Author": "aedenthorn",
-  "Version": "0.1.0",
-  "Description": "Allows you to breathe fire.",
-  "UniqueID": "aedenthorn.FireBreath",
-  "EntryDll": "FireBreath.dll",
-  "MinimumApiVersion": "3.5.0",
-  "ModUpdater": {
-    "Repository": "StardewValleyMods",
-    "User": "aedenthorn",
-    "Directory": "_releases",
-    "ModFolder": "FireBreath"
-  },
-  "UpdateKeys": ["Nexus:7311"]
+	"Name": "Fire Breath",
+	"Author": "aedenthorn",
+	"Version": "0.1.1",
+	"Description": "Allows you to breathe fire.",
+	"UniqueID": "aedenthorn.FireBreath",
+	"EntryDll": "FireBreath.dll",
+	"MinimumApiVersion": "4.0.0",
+	"UpdateKeys": [ "Nexus:7311" ]
 }

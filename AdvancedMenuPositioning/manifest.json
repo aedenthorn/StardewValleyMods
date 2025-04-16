@@ -1,22 +1,10 @@
 ﻿{
-  "Name": "Advanced Menu Positioning",
-  "Author": "aedenthorn",
-  "Version": "0.2.0",
-  "Description": "Advanced Menu Positioning.",
-  "UniqueID": "aedenthorn.AdvancedMenuPositioning",
-  "EntryDll": "AdvancedMenuPositioning.dll",
-  "MinimumApiVersion": "3.13.0",
-  "ModUpdater": {
-    "Repository": "StardewValleyMods",
-    "User": "aedenthorn",
-    "Directory": "_releases",
-    "ModFolder": "AdvancedMenuPositioning"
-  },
-  "UpdateKeys": [ "Nexus:11315" ],
-  "Dependencies": [
-    {
-      "UniqueID": "Platonymous.ModUpdater",
-      "IsRequired": false
-    }
-  ]
+	"Name": "Advanced Menu Positioning",
+	"Author": "aedenthorn",
+	"Version": "0.2.1",
+	"Description": "Lets you move menus around the screen, detach the active menu so it stays persistent, and open multiple menus at once.",
+	"UniqueID": "aedenthorn.AdvancedMenuPositioning",
+	"EntryDll": "AdvancedMenuPositioning.dll",
+	"MinimumApiVersion": "4.0.0",
+	"UpdateKeys": [ "Nexus:11315" ]
 }

@@ -1,0 +1,18 @@
+{
+	"CannotPark": "You cannot park here.",
+	"CannotParkFestivalToday": "You cannot park here, a festival is taking place today.",
+	"CannotParkFestivalTomorrow": "You cannot park here, a festival will take place tomorrow.",
+	"CannotSleep": "You cannot sleep here.",
+	"CannotSleepFestivalToday": "You cannot sleep here, a festival is taking place today.",
+	"CannotSleepFestivalTomorrow": "You cannot sleep here, a festival will take place tomorrow.",
+
+	// GMCM
+	"GMCM.ModEnabled.Name": "Mod Enabled",
+	"GMCM.DrawCartExterior.Name": "Draw Cart Exterior",
+	"GMCM.DrawCartExteriorWeather.Name": "Draw Cart Exterior Weather",
+	"GMCM.CollisionsEnabled.Name": "Collisions Enabled",
+	"GMCM.HitchButton.Name": "Hitch Button",
+	"GMCM.WarpHorsesOnDayStart.Name": "Warp Horses On Day Start",
+	"GMCM.WarpHorsesOnDayStart.Tooltip": "Whether horses should be automatically warped to their stables at the start of the day.",
+	"GMCM.Debug.Name": "Debug"
+}

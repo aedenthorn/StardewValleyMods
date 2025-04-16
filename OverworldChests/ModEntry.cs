@@ -1,160 +1,380 @@
-﻿using HarmonyLib;
+﻿using System;
+using System.Collections.Generic;
+using HarmonyLib;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using StardewModdingAPI;
-using StardewValley;
-using StardewValley.Locations;
 using StardewValley.Objects;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using Object = StardewValley.Object;
 
 namespace OverworldChests
 {
-    public class ModEntry : Mod
-    {
-        public static ModEntry context;
+	public partial class ModEntry : Mod
+	{
+		internal static IMonitor SMonitor;
+		internal static IModHelper SHelper;
+		internal static IManifest SModManifest;
+		internal static ModConfig Config;
+		internal static ModEntry context;
 
-        public static ModConfig Config;
-        private List<string> niceNPCs = new List<string>();
-        public static IAdvancedLootFrameworkApi advancedLootFrameworkApi = null;
-        private Random myRand;
-        private Color[] tintColors = new Color[]
-        {
-            Color.DarkGray,
-            Color.Brown,
-            Color.Silver,
-            Color.Gold,
-            Color.Purple,
-        };
-        private static string namePrefix = "Overworld Chest Mod Chest";
-        private List<object> treasuresList;
+		private const string modKey = "aedenthorn.OverworldChests";
+		private const string modCoinKey = "aedenthorn.OverworldChests/Coin";
+		private static IAdvancedLootFrameworkApi advancedLootFrameworkApi = null;
+		private static List<object> treasuresList = new();
+		private static Random random;
+		private static int daysSinceLastSpawn;
+		private static readonly Color[] tintColors = new Color[]
+		{
+			Color.DarkGray,
+			Color.Brown,
+			Color.Silver,
+			Color.Gold,
+			Color.Purple,
+		};
 
-        /// <summary>The mod entry point, called after the mod is first loaded.</summary>
-        /// <param name="helper">Provides simplified APIs for writing mods.</param>
-        public override void Entry(IModHelper helper)
-        {
-            context = this;
-            Config = Helper.ReadConfig<ModConfig>();
-            if (!Config.EnableMod)
-                return;
+		/// <summary>The mod entry point, called after the mod is first loaded.</summary>
+		/// <param name="helper">Provides simplified APIs for writing mods.</param>
+		public override void Entry(IModHelper helper)
+		{
+			Config = Helper.ReadConfig<ModConfig>();
 
-            myRand = new Random();
+			context = this;
+			SMonitor = Monitor;
+			SHelper = helper;
+			SModManifest = ModManifest;
 
-            helper.Events.GameLoop.GameLaunched += GameLoop_GameLaunched;
-            helper.Events.GameLoop.DayStarted += GameLoop_DayStarted;
+			helper.Events.GameLoop.GameLaunched += GameLoop_GameLaunched;
+			helper.Events.GameLoop.SaveLoaded += GameLoop_SaveLoaded;
+			helper.Events.GameLoop.DayStarted += GameLoop_DayStarted;
 
-            var harmony = new Harmony(ModManifest.UniqueID);
+			// Load Harmony patches
+			try
+			{
+				Harmony harmony = new(ModManifest.UniqueID);
 
-            harmony.Patch(
-                original: AccessTools.Method(typeof(Chest), nameof(Chest.draw), new Type[] { typeof(SpriteBatch), typeof(int), typeof(int), typeof(float) }),
-                prefix: new HarmonyMethod(typeof(ModEntry), nameof(Chest_draw_Prefix))
-            );
-        }
+				harmony.Patch(
+					original: AccessTools.Method(typeof(Chest), nameof(Chest.draw), new Type[] { typeof(SpriteBatch), typeof(int), typeof(int), typeof(float) }),
+					prefix: new HarmonyMethod(typeof(Chest_draw_Patch), nameof(Chest_draw_Patch.Prefix))
+				);
+				harmony.Patch(
+					original: AccessTools.Method(typeof(Chest), nameof(Chest.ShowMenu), Array.Empty<Type>()),
+					postfix: new HarmonyMethod(typeof(Chest_showMenu_Patch), nameof(Chest_showMenu_Patch.Postfix))
+				);
+			}
+			catch (Exception e)
+			{
+				Monitor.Log($"Issue with Harmony patching: {e}", LogLevel.Error);
+				return;
+			}
+		}
 
-        private void GameLoop_GameLaunched(object sender, StardewModdingAPI.Events.GameLaunchedEventArgs e)
-        {
-            advancedLootFrameworkApi = context.Helper.ModRegistry.GetApi<IAdvancedLootFrameworkApi>("aedenthorn.AdvancedLootFramework");
-            if (advancedLootFrameworkApi != null)
-            {
-                Monitor.Log($"loaded AdvancedLootFramework API", LogLevel.Debug);
-            }
-            treasuresList = advancedLootFrameworkApi.LoadPossibleTreasures(Config.ItemListChances.Where(p => p.Value > 0).ToDictionary(s => s.Key, s => s.Value).Keys.ToArray(), Config.MinItemValue, Config.MaxItemValue);
-            Monitor.Log($"Got {treasuresList.Count} possible treasures");
-        }
+		private void GameLoop_SaveLoaded(object sender, StardewModdingAPI.Events.SaveLoadedEventArgs e)
+		{
+			daysSinceLastSpawn = int.MaxValue;
+		}
 
-        private static bool Chest_draw_Prefix(Chest __instance)
-        {
-            if (!__instance.name.StartsWith(namePrefix))
-                return true;
+		private void GameLoop_DayStarted(object sender, StardewModdingAPI.Events.DayStartedEventArgs e)
+		{
+			if (daysSinceLastSpawn >= Config.RespawnInterval)
+			{
+				RespawnChests();
+				daysSinceLastSpawn = 0;
+			}
+			daysSinceLastSpawn++;
+		}
 
-            if (!Game1.player.currentLocation.overlayObjects.ContainsKey(__instance.tileLocation) || (__instance.items.Count > 0 && __instance.items[0] != null) || __instance.coins > 0)
-                return true;
+		private void GameLoop_GameLaunched(object sender, StardewModdingAPI.Events.GameLaunchedEventArgs e)
+		{
+			random = new Random();
+			RegisterConsoleCommands();
 
-            context.Monitor.Log($"removing chest at {__instance.tileLocation}");
-            Game1.player.currentLocation.overlayObjects.Remove(__instance.tileLocation);
-            return false;
-        }
+			// Get Mobile Advanced Loot Framework's API
+			advancedLootFrameworkApi = Helper.ModRegistry.GetApi<IAdvancedLootFrameworkApi>("aedenthorn.AdvancedLootFramework");
+			if (advancedLootFrameworkApi is not null)
+			{
+				Monitor.Log($"Loaded AdvancedLootFramework API");
+				UpdateTreasuresList();
+				Monitor.Log($"Got {treasuresList.Count} possible treasures");
+			}
 
-        private void GameLoop_DayStarted(object sender, StardewModdingAPI.Events.DayStartedEventArgs e)
-        {
-            var spawn = Helper.Data.ReadSaveData<LastOverWorldChestSpawn>("lastOverworldChestSpawn") ?? new LastOverWorldChestSpawn();
-            int days = Game1.Date.TotalDays - spawn.lastOverworldChestSpawn;
-            Monitor.Log($"Last spawn: {days} days ago");
-            if (spawn.lastOverworldChestSpawn < 1 || Game1.Date.TotalDays < 2 || (Config.RespawnInterval > 0 && days >= Config.RespawnInterval)) 
-            {
-                Monitor.Log($"Respawning chests", LogLevel.Debug);
-                spawn.lastOverworldChestSpawn = Game1.Date.TotalDays;
-                Helper.Data.WriteSaveData("lastOverworldChestSpawn", spawn);
-                RespawnChests();
-            }
-        }
+			// Get Generic Mod Config Menu's API
+			IGenericModConfigMenuApi gmcm = Helper.ModRegistry.GetApi<IGenericModConfigMenuApi>("spacechase0.GenericModConfigMenu");
 
-        private void RespawnChests()
-        {
-            Utility.ForAllLocations(delegate(GameLocation l)
-            {
-                if (l is FarmHouse || (!Config.AllowIndoorSpawns && !l.IsOutdoors) || !IsLocationAllowed(l))
-                    return;
+			if (gmcm is not null)
+			{
+				// Register mod
+				gmcm.Register(
+					mod: ModManifest,
+					reset: () => Config = new ModConfig(),
+					save: () => Helper.WriteConfig(Config)
+				);
 
-                Monitor.Log($"Respawning chests in {l.name}");
-                IList<Vector2> objectsToRemovePos = l.overlayObjects
-                    .Where(o => o.Value is Chest && o.Value.Name.StartsWith(namePrefix))
-                    .Select(o => o.Key)
-                    .ToList();
-                int rem = objectsToRemovePos.Count;
-                foreach (var pos in objectsToRemovePos)
-                {
-                    l.overlayObjects.Remove(pos);
-                }
-                Monitor.Log($"Removed {rem} chests");
-                int width = l.map.Layers[0].LayerWidth;
-                int height = l.map.Layers[0].LayerHeight;
-                bool IsValid(Vector2 v) => !l.isWaterTile((int)v.X, (int)v.Y) && !l.isTileOccupiedForPlacement(v) && !l.isCropAtTile((int)v.X, (int)v.Y);
-                bool IsValidIndex(int i) => IsValid(new Vector2(i % width, i / width));
-                int freeTiles = Enumerable.Range(0, width * height).Count(IsValidIndex);
-                Monitor.Log($"Got {freeTiles} free tiles");
-                int maxChests = Math.Min(freeTiles, (int)Math.Floor(freeTiles * Config.ChestDensity) + (Config.RoundNumberOfChestsUp ? 1 : 0));
-                Monitor.Log($"Max chests: {maxChests}");
-                while (maxChests > 0)
-                {
-                    Vector2 freeTile = l.getRandomTile();
-                    if (!IsValid(freeTile))
-                        continue;
-                    Chest chest;
-                    if (advancedLootFrameworkApi == null)
-                    {
-                        //Monitor.Log($"Adding ordinary chest");
-                        chest = new Chest(0, new List<Item>() { MineShaft.getTreasureRoomItem() }, freeTile, false, 0);
-                    }
-                    else
-                    {
-                        double fraction = Math.Pow(myRand.NextDouble(), 1 / Config.RarityChance);
-                        int level = (int)Math.Ceiling(fraction * Config.Mult);
-                        //Monitor.Log($"Adding expanded chest of value {level} to {l.name}");
-                        chest = advancedLootFrameworkApi.MakeChest(treasuresList, Config.ItemListChances, Config.MaxItems, Config.MinItemValue, Config.MaxItemValue, level, Config.IncreaseRate, Config.ItemsBaseMaxValue, Config.CoinBaseMin, Config.CoinBaseMax, freeTile);
-                        chest.playerChoiceColor.Value = MakeTint(fraction);
-                    }
-                    chest.name = namePrefix;
-                    l.overlayObjects[freeTile] = chest;
-                    maxChests--;
-                }
-            });
-        }
-
-        private bool IsLocationAllowed(GameLocation l)
-        {
-            if(Config.OnlyAllowLocations.Length > 0)
-                return Config.OnlyAllowLocations.Split(',').Contains(l.name);
-            return !Config.DisallowLocations.Split(',').Contains(l.name);
-        }
-
-        private Color MakeTint(double fraction)
-        {
-            Color color = tintColors[(int)Math.Floor(fraction * tintColors.Length)];
-            return color;
-        }
-
-    }
+				// Main section
+				gmcm.AddBoolOption(
+					mod: ModManifest,
+					name: () => SHelper.Translation.Get("GMCM.ModEnabled.Name"),
+					getValue: () => Config.ModEnabled,
+					setValue: value => {
+						if (Config.ModEnabled != value)
+						{
+							if (value)
+							{
+								SpawnChests(true);
+							}
+							else
+							{
+								RemoveChests(true);
+							}
+						}
+						Config.ModEnabled = value;
+					}
+				);
+				gmcm.AddBoolOption(
+					mod: ModManifest,
+					name: () => SHelper.Translation.Get("GMCM.IncludeIndoorLocations.Name"),
+					tooltip: () => SHelper.Translation.Get("GMCM.IncludeIndoorLocations.Tooltip"),
+					getValue: () => Config.IncludeIndoorLocations,
+					setValue: value => Config.IncludeIndoorLocations = value
+				);
+				gmcm.AddNumberOption(
+					mod: ModManifest,
+					name: () => SHelper.Translation.Get("GMCM.RespawnInterval.Name"),
+					getValue: () => Config.RespawnInterval,
+					setValue: value => {
+						Config.RespawnInterval = Math.Max(1, value);
+					}
+				);
+				gmcm.AddBoolOption(
+					mod: ModManifest,
+					name: () => SHelper.Translation.Get("GMCM.RoundNumberOfChestsUp.Name"),
+					tooltip: () => SHelper.Translation.Get("GMCM.RoundNumberOfChestsUp.Tooltip"),
+					getValue: () => Config.RoundNumberOfChestsUp,
+					setValue: value => Config.RoundNumberOfChestsUp = value
+				);
+				gmcm.AddNumberOption(
+					mod: ModManifest,
+					name: () => SHelper.Translation.Get("GMCM.ChestDensity.Name"),
+					tooltip: () => SHelper.Translation.Get("GMCM.ChestDensity.Tooltip"),
+					getValue: () => Config.ChestDensity,
+					setValue: value => Config.ChestDensity = value,
+					min: 0f,
+					max: 1f,
+					interval: 0.001f
+				);
+				gmcm.AddNumberOption(
+					mod: ModManifest,
+					name: () => SHelper.Translation.Get("GMCM.RarityChance.Name"),
+					tooltip: () => SHelper.Translation.Get("GMCM.RarityChance.Tooltip"),
+					getValue: () => Config.RarityChance,
+					setValue: value => Config.RarityChance = value,
+					min: 0f,
+					max: 1f,
+					interval: 0.01f
+				);
+				gmcm.AddNumberOption(
+					mod: ModManifest,
+					name: () => SHelper.Translation.Get("GMCM.MaxItems.Name"),
+					tooltip: () => SHelper.Translation.Get("GMCM.MaxItems.Tooltip"),
+					getValue: () => Config.MaxItems,
+					setValue: value => Config.MaxItems = value
+				);
+				gmcm.AddNumberOption(
+					mod: ModManifest,
+					name: () => SHelper.Translation.Get("GMCM.ItemsBaseMaxValue.Name"),
+					tooltip: () => SHelper.Translation.Get("GMCM.ItemsBaseMaxValue.Tooltip"),
+					getValue: () => Config.ItemsBaseMaxValue,
+					setValue: value => Config.ItemsBaseMaxValue = value
+				);
+				gmcm.AddNumberOption(
+					mod: ModManifest,
+					name: () => SHelper.Translation.Get("GMCM.Mult.Name"),
+					tooltip: () => SHelper.Translation.Get("GMCM.Mult.Tooltip"),
+					getValue: () => Config.Mult,
+					setValue: value => Config.Mult = value
+				);
+				gmcm.AddNumberOption(
+					mod: ModManifest,
+					name: () => SHelper.Translation.Get("GMCM.MinItemValue.Name"),
+					tooltip: () => SHelper.Translation.Get("GMCM.MinItemValue.Tooltip"),
+					getValue: () => Config.MinItemValue,
+					setValue: value => Config.MinItemValue = value
+				);
+				gmcm.AddNumberOption(
+					mod: ModManifest,
+					name: () => SHelper.Translation.Get("GMCM.MaxItemValue.Name"),
+					tooltip: () => SHelper.Translation.Get("GMCM.MaxItemValue.Tooltip"),
+					getValue: () => Config.MaxItemValue,
+					setValue: value => Config.MaxItemValue = value
+				);
+				gmcm.AddNumberOption(
+					mod: ModManifest,
+					name: () => SHelper.Translation.Get("GMCM.CoinBaseMin.Name"),
+					tooltip: () => SHelper.Translation.Get("GMCM.CoinBaseMin.Tooltip"),
+					getValue: () => Config.CoinBaseMin,
+					setValue: value => Config.CoinBaseMin = value
+				);
+				gmcm.AddNumberOption(
+					mod: ModManifest,
+					name: () => SHelper.Translation.Get("GMCM.CoinBaseMax.Name"),
+					tooltip: () => SHelper.Translation.Get("GMCM.CoinBaseMax.Tooltip"),
+					getValue: () => Config.CoinBaseMax,
+					setValue: value => Config.CoinBaseMax = value
+				);
+				gmcm.AddNumberOption(
+					mod: ModManifest,
+					name: () => SHelper.Translation.Get("GMCM.IncreaseRate.Name"),
+					tooltip: () => SHelper.Translation.Get("GMCM.IncreaseRate.Tooltip"),
+					getValue: () => Config.IncreaseRate,
+					setValue: value => Config.IncreaseRate = value
+				);
+				gmcm.AddSectionTitle(
+					mod: ModManifest,
+					text: () => SHelper.Translation.Get("GMCM.ItemListChances.Text"),
+					tooltip: () => SHelper.Translation.Get("GMCM.ItemListChances.Tooltip")
+				);
+				gmcm.AddNumberOption(
+					mod: ModManifest,
+					name: () => SHelper.Translation.Get("GMCM.ItemListChancesHat.Name"),
+					getValue: () => Config.ItemListChances["Hat"],
+					setValue: value => {
+						Config.ItemListChances["Hat"] = value;
+						UpdateTreasuresList();
+					},
+					min: 0,
+					max: 100
+				);
+				gmcm.AddNumberOption(
+					mod: ModManifest,
+					name: () => SHelper.Translation.Get("GMCM.ItemListChancesShirt.Name"),
+					getValue: () => Config.ItemListChances["Shirt"],
+					setValue: value => {
+						Config.ItemListChances["Shirt"] = value;
+						UpdateTreasuresList();
+					},
+					min: 0,
+					max: 100
+				);
+				gmcm.AddNumberOption(
+					mod: ModManifest,
+					name: () => SHelper.Translation.Get("GMCM.ItemListChancesPants.Name"),
+					getValue: () => Config.ItemListChances["Pants"],
+					setValue: value => {
+						Config.ItemListChances["Pants"] = value;
+						UpdateTreasuresList();
+					},
+					min: 0,
+					max: 100
+				);
+				gmcm.AddNumberOption(
+					mod: ModManifest,
+					name: () => SHelper.Translation.Get("GMCM.ItemListChancesBoots.Name"),
+					getValue: () => Config.ItemListChances["Boots"],
+					setValue: value => {
+						Config.ItemListChances["Boots"] = value;
+						UpdateTreasuresList();
+					},
+					min: 0,
+					max: 100
+				);
+				gmcm.AddNumberOption(
+					mod: ModManifest,
+					name: () => SHelper.Translation.Get("GMCM.ItemListChancesMeleeWeapon.Name"),
+					getValue: () => Config.ItemListChances["MeleeWeapon"],
+					setValue: value => {
+						Config.ItemListChances["MeleeWeapon"] = value;
+						UpdateTreasuresList();
+					},
+					min: 0,
+					max: 100
+				);
+				gmcm.AddNumberOption(
+					mod: ModManifest,
+					name: () => SHelper.Translation.Get("GMCM.ItemListChancesRing.Name"),
+					getValue: () => Config.ItemListChances["Ring"],
+					setValue: value => {
+						Config.ItemListChances["Ring"] = value;
+						UpdateTreasuresList();
+					},
+					min: 0,
+					max: 100
+				);
+				gmcm.AddNumberOption(
+					mod: ModManifest,
+					name: () => SHelper.Translation.Get("GMCM.ItemListChancesRelic.Name"),
+					getValue: () => Config.ItemListChances["Relic"],
+					setValue: value => {
+						Config.ItemListChances["Relic"] = value;
+						UpdateTreasuresList();
+					},
+					min: 0,
+					max: 100
+				);
+				gmcm.AddNumberOption(
+					mod: ModManifest,
+					name: () => SHelper.Translation.Get("GMCM.ItemListChancesMineral.Name"),
+					getValue: () => Config.ItemListChances["Mineral"],
+					setValue: value => {
+						Config.ItemListChances["Mineral"] = value;
+						UpdateTreasuresList();
+					},
+					min: 0,
+					max: 100
+				);
+				gmcm.AddNumberOption(
+					mod: ModManifest,
+					name: () => SHelper.Translation.Get("GMCM.ItemListChancesCooking.Name"),
+					getValue: () => Config.ItemListChances["Cooking"],
+					setValue: value => {
+						Config.ItemListChances["Cooking"] = value;
+						UpdateTreasuresList();
+					},
+					min: 0,
+					max: 100
+				);
+				gmcm.AddNumberOption(
+					mod: ModManifest,
+					name: () => SHelper.Translation.Get("GMCM.ItemListChancesFish.Name"),
+					getValue: () => Config.ItemListChances["Fish"],
+					setValue: value => {
+						Config.ItemListChances["Fish"] = value;
+						UpdateTreasuresList();
+					},
+					min: 0,
+					max: 100
+				);
+				gmcm.AddNumberOption(
+					mod: ModManifest,
+					name: () => SHelper.Translation.Get("GMCM.ItemListChancesSeed.Name"),
+					getValue: () => Config.ItemListChances["Seed"],
+					setValue: value => {
+						Config.ItemListChances["Seed"] = value;
+						UpdateTreasuresList();
+					},
+					min: 0,
+					max: 100
+				);
+				gmcm.AddNumberOption(
+					mod: ModManifest,
+					name: () => SHelper.Translation.Get("GMCM.ItemListChancesBasicObject.Name"),
+					getValue: () => Config.ItemListChances["BasicObject"],
+					setValue: value => {
+						Config.ItemListChances["BasicObject"] = value;
+						UpdateTreasuresList();
+					},
+					min: 0,
+					max: 100
+				);
+				gmcm.AddNumberOption(
+					mod: ModManifest,
+					name: () => SHelper.Translation.Get("GMCM.ItemListChancesBigCraftable.Name"),
+					getValue: () => Config.ItemListChances["BigCraftable"],
+					setValue: value => {
+						Config.ItemListChances["BigCraftable"] = value;
+						UpdateTreasuresList();
+					},
+					min: 0,
+					max: 100
+				);
+			}
+		}
+	}
 }

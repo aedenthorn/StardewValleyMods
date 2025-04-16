@@ -1,10 +1,7 @@
-﻿using Microsoft.Xna.Framework;
-using StardewModdingAPI;
-
-namespace MapTeleport
+﻿namespace MapTeleport
 {
-    public class ModConfig
-    {
-        public bool ModEnabled { get; set; } = true;
-    }
+	public class ModConfig
+	{
+		public bool ModEnabled { get; set; } = true;
+	}
 }

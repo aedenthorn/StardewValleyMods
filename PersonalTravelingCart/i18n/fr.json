@@ -1,0 +1,18 @@
+{
+	"CannotPark": "Vous ne pouvez pas vous garer ici.",
+	"CannotParkFestivalToday": "Vous ne pouvez pas vous garer ici, un festival a lieu aujourd'hui.",
+	"CannotParkFestivalTomorrow": "Vous ne pouvez pas vous garer ici, un festival aura lieu demain.",
+	"CannotSleep": "Vous ne pouvez pas dormir ici.",
+	"CannotSleepFestivalToday": "Vous ne pouvez pas dormir ici, un festival a lieu aujourd'hui.",
+	"CannotSleepFestivalTomorrow": "Vous ne pouvez pas dormir ici, un festival aura lieu demain.",
+
+	// GMCM
+	"GMCM.ModEnabled.Name": "Activer le Mod",
+	"GMCM.DrawCartExterior.Name": "Afficher l'extérieur du chariot",
+	"GMCM.DrawCartExteriorWeather.Name": "Afficher la météo à l'extérieur du chariot",
+	"GMCM.CollisionsEnabled.Name": "Activer les collisions",
+	"GMCM.HitchButton.Name": "Touche d'attelage",
+	"GMCM.WarpHorsesOnDayStart.Name": "Rapatrier les chevaux au début de la journée",
+	"GMCM.WarpHorsesOnDayStart.Tooltip": "Détermine si les chevaux doivent être automatiquement rapatriés à leurs étables au début de la journée.",
+	"GMCM.Debug.Name": "Activer le mode de débogage"
+}

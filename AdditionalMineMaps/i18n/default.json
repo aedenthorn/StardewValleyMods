@@ -1,5 +1,5 @@
 {
-  // GMCM
-  "GMCM_Option_ModEnabled_Name": "Mod Enabled",
-  "GMCM_Option_AllowVanillaMaps_Name": "Allow Vanilla Maps",
+	// GMCM
+	"GMCM.ModEnabled.Name": "Mod Enabled",
+	"GMCM.AllowVanillaMaps.Name": "Allow Vanilla Maps"
 }

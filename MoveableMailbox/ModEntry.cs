@@ -1,262 +1,198 @@
-﻿using HarmonyLib;
-using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
-using StardewModdingAPI;
-using StardewValley;
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.IO;
-using xTile;
-using xTile.Dimensions;
+using HarmonyLib;
+using Microsoft.Xna.Framework;
+using StardewModdingAPI;
+using StardewModdingAPI.Events;
+using StardewValley;
+using StardewValley.Buildings;
+using StardewValley.GameData.BigCraftables;
+using StardewValley.GameData.Buildings;
 using Object = StardewValley.Object;
-using Rectangle = Microsoft.Xna.Framework.Rectangle;
 
 namespace MoveableMailbox
 {
-    /// <summary>The mod entry point.</summary>
-    public class ModEntry : Mod, IAssetEditor
-    {
+	/// <summary>The mod entry point.</summary>
+	public partial class ModEntry : Mod
+	{
+		internal static ModConfig Config;
+		internal static IMonitor SMonitor;
+		internal static IModHelper SHelper;
+		internal static ModEntry context;
 
-        public static IMonitor PMonitor;
-        public static IModHelper PHelper;
-        public static ModConfig config;
-        private static IJsonAssetsApi mJsonAssets;
+		public const string ownerKey = "aedenthorn.MoveableMailbox_Owner";
 
-        /// <summary>The mod entry point, called after the mod is first loaded.</summary>
-        /// <param name="helper">Provides simplified APIs for writing mods.</param>
-        public override void Entry(IModHelper helper)
-        {
-            config = Helper.ReadConfig<ModConfig>();
+		internal static List<Object> mailboxes = new();
 
-            if (!config.EnableMod)
-                return;
+		/// <summary>The mod entry point, called after the mod is first loaded.</summary>
+		/// <param name="helper">Provides simplified APIs for writing mods.</param>
+		public override void Entry(IModHelper helper)
+		{
+			Config = Helper.ReadConfig<ModConfig>();
 
-            PMonitor = Monitor;
-            PHelper = helper;
+			SMonitor = Monitor;
+			SHelper = helper;
+			context = this;
 
-            Helper.Events.GameLoop.GameLaunched += GameLoop_GameLaunched;
-            
-            Helper.Events.GameLoop.SaveLoaded += GameLoop_SaveLoaded;
+			Helper.Events.GameLoop.GameLaunched += GameLoop_GameLaunched;
+			Helper.Events.GameLoop.SaveLoaded += GameLoop_SaveLoaded;
+			helper.Events.Content.AssetRequested += Content_AssetRequested;
 
-            var harmony = new Harmony(ModManifest.UniqueID);
+			// Load Harmony patches
+			try
+			{
+				Harmony harmony = new(ModManifest.UniqueID);
 
-            harmony.Patch(
-               original: AccessTools.Method(typeof(Game1), nameof(Game1.loadForNewGame)),
-               postfix: new HarmonyMethod(typeof(ModEntry), nameof(loadForNewGame_Postfix))
-            );
+				harmony.Patch(
+					original: AccessTools.Method(typeof(Farm), nameof(Farm.GetMainMailboxPosition)),
+					postfix: new HarmonyMethod(typeof(Farm_GetMainMailboxPosition_Patch), nameof(Farm_GetMainMailboxPosition_Patch.Postfix))
+				);
+				harmony.Patch(
+					original: AccessTools.Method(typeof(Object), nameof(Object.placementAction)),
+					postfix: new HarmonyMethod(typeof(Object_placementAction_Patch), nameof(Object_placementAction_Patch.Postfix))
+				);
+				harmony.Patch(
+					original: AccessTools.Method(typeof(Object), nameof(Object.performRemoveAction)),
+					postfix: new HarmonyMethod(typeof(Object_performRemoveAction_Patch), nameof(Object_performRemoveAction_Patch.Postfix))
+				);
+				harmony.Patch(
+					original: AccessTools.Method(typeof(Object), nameof(Object.checkForAction)),
+					prefix: new HarmonyMethod(typeof(Object_checkForAction_Patch), nameof(Object_checkForAction_Patch.Prefix))
+				);
+				harmony.Patch(
+					original: AccessTools.Method(typeof(Object), nameof(Object.hoverAction)),
+					postfix: new HarmonyMethod(typeof(Object_hoverAction_Patch), nameof(Object_hoverAction_Patch.Postfix))
+				);
+				harmony.Patch(
+					original: AccessTools.Method(typeof(GameLocation), nameof(GameLocation.draw)),
+					postfix: new HarmonyMethod(typeof(Gamelocation_draw_Patch), nameof(Gamelocation_draw_Patch.Postfix))
+				);
+			}
+			catch (Exception e)
+			{
+				Monitor.Log($"Issue with Harmony patching: {e}", LogLevel.Error);
+				return;
+			}
+		}
 
-            harmony.Patch(
-               original: AccessTools.Method(typeof(Object), nameof(Object.checkForAction)),
-               prefix: new HarmonyMethod(typeof(ModEntry), nameof(checkForAction_Prefix))
-            );
+		private static void Content_AssetRequested(object sender, AssetRequestedEventArgs e)
+		{
+			if (e.Name.IsEquivalentTo("Data/Buildings"))
+			{
+				e.Edit(asset =>
+				{
+					IDictionary<string, BuildingData> data = asset.AsDictionary<string, BuildingData>().Data;
+					List<BuildingPlacementTile> placementTilesToRemove = new();
+					List<BuildingActionTile> actionTilesToRemove = new();
+					List<BuildingDrawLayer> drawLayersToRemove = new();
 
-            harmony.Patch(
-               original: AccessTools.Method(typeof(Object), nameof(Object.placementAction)),
-               postfix: new HarmonyMethod(typeof(ModEntry), nameof(placementAction_Postfix))
-            );
+					data["Farmhouse"].CollisionMap = data["Farmhouse"].CollisionMap.Replace(" ", "");
+					data["Farmhouse"].CollisionMap = data["Farmhouse"].CollisionMap.Remove(data["Farmhouse"].CollisionMap.Length - 2, 1);
+					foreach (BuildingPlacementTile placementTile in data["Farmhouse"].AdditionalPlacementTiles)
+					{
+						if (placementTile.TileArea == new Rectangle(9, 4, 1, 1) && !placementTile.OnlyNeedsToBePassable)
+						{
+							placementTilesToRemove.Add(placementTile);
+						}
+					}
+					foreach (BuildingActionTile actionTile in data["Farmhouse"].ActionTiles)
+					{
+						if (actionTile.Id.Equals("Default_Mailbox"))
+						{
+							actionTilesToRemove.Add(actionTile);
+						}
+					}
+					foreach (BuildingDrawLayer drawLayer in data["Farmhouse"].DrawLayers)
+					{
+						if (drawLayer.Id.Equals("Default_Mailbox"))
+						{
+							drawLayersToRemove.Add(drawLayer);
+						}
+					}
+					foreach (BuildingPlacementTile placementTile in placementTilesToRemove)
+					{
+						data["Farmhouse"].AdditionalPlacementTiles.Remove(placementTile);
+					}
+					foreach (BuildingActionTile actionTile in actionTilesToRemove)
+					{
+						data["Farmhouse"].ActionTiles.Remove(actionTile);
+					}
+					foreach (BuildingDrawLayer drawLayer in drawLayersToRemove)
+					{
+						data["Farmhouse"].DrawLayers.Remove(drawLayer);
+					}
+				});
+			}
+			if (e.Name.IsEquivalentTo("Data/CraftingRecipes"))
+			{
+				e.Edit(asset =>
+				{
+					IDictionary<string, string> data = asset.AsDictionary<string, string>().Data;
 
-            harmony.Patch(
-               original: AccessTools.Method(typeof(Object), nameof(Object.performRemoveAction)),
-               prefix: new HarmonyMethod(typeof(ModEntry), nameof(performRemoveAction_Prefix))
-            );
+					data.Add("aedenthorn.MoveableMailbox_Mailbox", "388 20 335 10/Home/aedenthorn.MoveableMailbox_Mailbox/true/default/");
+				});
+			}
+			if (e.Name.IsEquivalentTo("Data/BigCraftables"))
+			{
+				e.Edit(asset =>
+				{
+					IDictionary<string, BigCraftableData> data = asset.AsDictionary<string, BigCraftableData>().Data;
 
-        }
+					data.Add("aedenthorn.MoveableMailbox_Mailbox", new BigCraftableData()
+					{
+						Name = "Mailbox",
+						DisplayName = "[aedenthorn.MoveableMailbox_i18n item.mailbox.name]",
+						Description = "[aedenthorn.MoveableMailbox_i18n item.mailbox.description]",
+						Texture = "Buildings\\Mailbox",
+					});
+				});
+			}
+		}
 
-        private void GameLoop_GameLaunched(object sender, StardewModdingAPI.Events.GameLaunchedEventArgs e)
-        {
-            
-            mJsonAssets = base.Helper.ModRegistry.GetApi<IJsonAssetsApi>("spacechase0.JsonAssets");
-            if (mJsonAssets == null)
-            {
-                Monitor.Log("Can't load Json Assets API for Moveable Mailbox", LogLevel.Warn);
-            }
-            else
-            {
-                mJsonAssets.LoadAssets(Path.Combine(Helper.DirectoryPath, "json-assets"));
-            }
-        }
+		private static void GameLoop_SaveLoaded(object sender, SaveLoadedEventArgs e)
+		{
+			Farm farm = Game1.getFarm();
 
-        private void GameLoop_SaveLoaded(object sender, StardewModdingAPI.Events.SaveLoadedEventArgs e)
-        {
-            if (config.CustomMailbox)
-            {
-                try
-                {
-                    Texture2D tex = new Texture2D(Game1.graphics.GraphicsDevice, 16, 32);
-                    Color[] data = new Color[tex.Width * tex.Height];
-                    tex.GetData(data);
+			InitMailBoxesList();
+			if (!AnyOwnedMailbox(Game1.MasterPlayer.UniqueMultiplayerID.ToString()))
+			{
+				Building farmhouse = farm.GetMainFarmHouse();
 
-                    Texture2D source = Helper.Content.Load<Texture2D>($"Maps/{Game1.currentSeason.ToLower()}_outdoorsTileSheet", ContentSource.GameContent);
-                    Color[] srcData = new Color[source.Width * source.Height];
-                    source.GetData(srcData);
+				if (farmhouse is not null)
+				{
+					Vector2 tileLocation = new(farmhouse.tileX.Value + farmhouse.tilesWide.Value, farmhouse.tileY.Value + farmhouse.tilesHigh.Value - 1);
+					Object mailbox = new(tileLocation, "aedenthorn.MoveableMailbox_Mailbox");
 
-                    int width = 400;
-                    int startx = 80;
-                    int starty = 1232;
-                    int start = starty * width + startx;
-                    for (int i = 0; i < data.Length; i++)
-                    {
-                        int srcIdx = start + (i / 16 * width + i % 16); 
-                        data[i] = srcData[srcIdx];
-                    }
-                    tex.SetData(data);
-                    Stream stream = File.Create(Path.Combine(Helper.DirectoryPath, "json-assets", "BigCraftables", "Mailbox", "big-craftable.png"));
-                    tex.SaveAsPng(stream, tex.Width, tex.Height);
-                    stream.Close();
-                    Monitor.Log($"Wrote custom mailbox texture from Maps/{ Game1.currentSeason.ToLower()}_outdoorsTileSheet to {Path.Combine(Helper.DirectoryPath, "json-assets", "BigCraftables", "Mailbox", "big-craftable.png")}.", LogLevel.Debug);
-                    Helper.Content.InvalidateCache("Tilesheets/Craftables");
-                }
-                catch (Exception ex)
-                {
-                    Monitor.Log($"Error writing mailbox texture.\n{ex}", LogLevel.Warn);
-                }
-            }
+					mailbox.modData[ownerKey] = Game1.MasterPlayer.UniqueMultiplayerID.ToString();
+					farm.objects.Add(tileLocation, mailbox);
+					mailboxes.Add(mailbox);
+				}
+			}
+			farm.mapMainMailboxPosition = new Point(-1, -1);
+		}
 
-            Farm farm = Game1.getFarm();
-            foreach (KeyValuePair<Vector2, Object> kvp in farm.objects.Pairs)
-            {
-                if (kvp.Value.Name.EndsWith("Mailbox"))
-                {
-                    (farm as Farm).mapMainMailboxPosition = Utility.Vector2ToPoint(kvp.Key);
-                    PMonitor.Log($"Set mailbox location to {kvp.Key}");
-                    return;
-                }
-            }
-            farm.mapMainMailboxPosition = Point.Zero;
-            PMonitor.Log("Set mailbox location to 0,0");
-        }
+		private void GameLoop_GameLaunched(object sender, GameLaunchedEventArgs e)
+		{
+			TokensUtility.Register();
 
-        private static void loadForNewGame_Postfix()
-        {
-            Farm farm = Game1.getFarm();
+			// get Generic Mod Config Menu's API (if it's installed)
+			var configMenu = Helper.ModRegistry.GetApi<IGenericModConfigMenuApi>("spacechase0.GenericModConfigMenu");
+			if (configMenu is null)
+				return;
 
-            if (mJsonAssets != null)
-            {
-                int id = mJsonAssets.GetBigCraftableId("Mailbox");
-                farm.Objects.Add(Utility.PointToVector2(farm.GetMainMailboxPosition()), new Object(Utility.PointToVector2(farm.GetMainMailboxPosition()), id));
-                PMonitor.Log($"Added mailbox to farm, id {id}");
-            }
+			// register mod
+			configMenu.Register(
+				mod: ModManifest,
+				reset: () => Config = new ModConfig(),
+				save: () => Helper.WriteConfig(Config)
+			);
 
-        }
-
-        private static void placementAction_Postfix(Object __instance, bool __result, int x, int y, Farmer who)
-        {
-            if (!__result || !__instance.Name.EndsWith("Mailbox") || who == null)
-                return;
-
-            (who.currentLocation as Farm).mapMainMailboxPosition = new Point(x / 64, y / 64);
-            PMonitor.Log($"Set mailbox location to {(who.currentLocation as Farm).mapMainMailboxPosition}");
-        }
-
-        private static bool checkForAction_Prefix(Object __instance, ref bool __result, Farmer who, bool justCheckingForActivity)
-        {
-
-            if (__instance.Name.EndsWith("Mailbox") && !justCheckingForActivity)
-            {
-                PMonitor.Log("Clicked on mailbox");
-                Point mailbox_position = Game1.player.getMailboxPosition();
-                if (__instance.tileLocation.X != mailbox_position.X || __instance.tileLocation.Y != mailbox_position.Y)
-                {
-                    PMonitor.Log("Not our mailbox", LogLevel.Debug);
-                    Game1.drawObjectDialogue(Game1.content.LoadString("Strings\\Locations:Farm_OtherPlayerMailbox"));
-                    __result = true;
-                    return false;
-                }
-                who.currentLocation.mailbox();
-                __result = true;
-                return false;
-            }
-            return true;
-        }
-
-        private static void performRemoveAction_Prefix(Object __instance, Vector2 tileLocation, GameLocation environment)
-        {
-            if (__instance.Name.EndsWith("Mailbox") && environment is Farm)
-            {
-                PMonitor.Log("Removed mailbox");
-                foreach (KeyValuePair<Vector2, Object> kvp in environment.objects.Pairs)
-                {
-                    if (kvp.Value.Name.EndsWith("Mailbox") && kvp.Key != tileLocation)
-                    {
-                        (environment as Farm).mapMainMailboxPosition = Utility.Vector2ToPoint(kvp.Key);
-                        PMonitor.Log($"Set mailbox location to {kvp.Key}");
-                        return;
-                    }
-                }
-                (environment as Farm).mapMainMailboxPosition = Point.Zero;
-                PMonitor.Log("Set mailbox location to 0,0");
-            }
-        }
-
-
-        /// <summary>Get whether this instance can edit the given asset.</summary>
-        /// <param name="asset">Basic metadata about the asset being loaded.</param>
-        public bool CanEdit<T>(IAssetInfo asset)
-        {
-            if (!config.EnableMod)
-                return false;
-
-            if (mJsonAssets != null && asset.AssetNameEquals("Tilesheets/Craftables"))
-            {
-                return true;
-            }
-            if (asset.AssetNameEquals("Maps/Farm") || asset.AssetNameEquals("Maps/Farm_Combat") || asset.AssetNameEquals("Maps/Farm_Fishing") || asset.AssetNameEquals("Maps/Farm_Foraging") || asset.AssetNameEquals("Maps/Farm_FourCorners") || asset.AssetNameEquals("Maps/Farm_Island") || asset.AssetNameEquals("Maps/Farm_Mining"))
-            {
-                return true;
-            }
-
-            return false;
-        }
-
-        /// <summary>Edit a matched asset.</summary>
-        /// <param name="asset">A helper which encapsulates metadata about an asset and enables changes to it.</param>
-        public void Edit<T>(IAssetData asset)
-        {
-            Monitor.Log("Editing asset" + asset.AssetName);
-
-            if (asset.AssetName.StartsWith("Maps"))
-            {
-                try
-                {
-                    var mapData = asset.AsMap();
-                    for (int x = 0; x < mapData.Data.Layers[0].LayerWidth; x++)
-                    {
-                        for (int y = 0; y < mapData.Data.Layers[0].LayerHeight; y++)
-                        {
-                            //Monitor.Log($"{x},{y},{map.GetLayer("Buildings").Tiles[x, y]?.TileIndex},{map.GetLayer("Front").Tiles[x, y]?.TileIndex}",LogLevel.Warn);
-
-                            if (mapData.Data.GetLayer("Buildings").Tiles[x, y]?.TileIndex == 1955)
-                            {
-                                Monitor.Log("Removing existing mailbox stand.");
-                                mapData.Data.GetLayer("Buildings").Tiles[x, y] = null;
-                            }
-                            if (mapData.Data.GetLayer("Front").Tiles[x, y]?.TileIndex == 1930)
-                            {
-                                Monitor.Log("Removing existing mailbox top.");
-                                mapData.Data.GetLayer("Front").Tiles[x, y] = null;
-                            }
-                        }
-                    }
-
-                }
-                catch (Exception ex)
-                {
-                    Monitor.Log($"Exception removing existing mailbox.\n{ex}", LogLevel.Error);
-                }
-                return;
-            }
-            if (asset.AssetNameEquals("Tilesheets/Craftables"))
-            {
-                int id = mJsonAssets.GetBigCraftableId("Mailbox");
-                Monitor.Log($"mailbox id {id}");
-                if (id > 0)
-                {
-                    int x = id % 8 * 16;
-                    int y = id / 8 * 32;
-                    asset.AsImage().PatchImage(Helper.Content.Load<Texture2D>($"json-assets/BigCraftables/Mailbox/big-craftable.png"), targetArea: new Rectangle(x, y, 16, 32));
-                    Monitor.Log("patched craftables.");
-                }
-            }
-        }
-    }
+			configMenu.AddBoolOption(
+				mod: ModManifest,
+				name: () => SHelper.Translation.Get("GMCM.MultipleMailboxes.Name"),
+				getValue: () => Config.MultipleMailboxes,
+				setValue: value => Config.MultipleMailboxes = value
+			);
+		}
+	}
 }

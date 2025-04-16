@@ -1,12 +1,7 @@
-﻿using Microsoft.Xna.Framework;
-using StardewModdingAPI;
-using System.Collections.Generic;
-
-namespace FloatingGardenPots
+﻿namespace FloatingGardenPots
 {
-    public class ModConfig
-    {
-        public bool ModEnabled { get; set; } = true;
-        public string BaitItem { get; set; } = "685";
-    }
+	public class ModConfig
+	{
+		public bool ModEnabled { get; set; } = true;
+	}
 }

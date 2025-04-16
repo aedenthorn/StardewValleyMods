@@ -61,8 +61,8 @@ namespace LightMod
             harmony.PatchAll();
 
             harmony.Patch(
-                original: AccessTools.Method(Game1.game1.GetType(), "DrawImpl"),
-                transpiler: new HarmonyMethod(typeof(ModEntry), nameof(ModEntry.SGame_DrawImpl_Transpiler))
+                original: AccessTools.Method(typeof(LightSource), "Draw"),
+                transpiler: new HarmonyMethod(typeof(ModEntry), nameof(ModEntry.LightSource_Draw_Transpiler))
             );
 
         }
@@ -89,7 +89,7 @@ namespace LightMod
                 Point tile = Utility.Vector2ToPoint(Game1.currentCursorTile * 64);
                 foreach (var f in Game1.currentLocation.furniture)
                 {
-                    if (f.getBoundingBox(f.TileLocation).Contains(tile))
+                    if (f.GetBoundingBox().Contains(tile))
                     {
                         ToggleLight(f);
                         return;
@@ -126,7 +126,7 @@ namespace LightMod
             }
             foreach (var f in Game1.currentLocation.furniture)
             {
-                if (f.getBoundingBox(f.TileLocation).Contains(tile))
+                if (f.GetBoundingBox().Contains(tile))
                 {
                     if (Helper.Input.IsDown(Config.RadiusModButton))
                     {
@@ -260,11 +260,11 @@ namespace LightMod
                 if (lightDataDict[key].texturePath != null && lightDataDict[key].texturePath.Length > 0)
                 {
                     lightTextureList.Add(new TextureData()
-                        {
-                            texturePath = lightDataDict[key].texturePath,
-                            frames = lightDataDict[key].textureFrames,
-                            width = lightDataDict[key].frameWidth,
-                            duration = lightDataDict[key].frameSeconds
+                    {
+                        texturePath = lightDataDict[key].texturePath,
+                        frames = lightDataDict[key].textureFrames,
+                        width = lightDataDict[key].frameWidth,
+                        duration = lightDataDict[key].frameSeconds
                     }
                     );
                     lightDataDict[key].textureIndex = 8 + lightTextureList.Count;

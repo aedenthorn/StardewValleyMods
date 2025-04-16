@@ -1,6 +1,7 @@
 {
-  // GMCM
-  "GMCM_Option_ModEnabled_Name": "Activer le Mod",
-  "GMCM_Option_OrdinaryHayChance_Name": "Chance de la faux (en %)",
-  "GMCM_Option_GoldHayChance_Name": "Chance de la faux d'or (en %)"
+	// GMCM
+	"GMCM.ModEnabled.Name": "Activer le Mod",
+	"GMCM.OrdinaryHayChance.Name": "Chance de la faux (en %)",
+	"GMCM.GoldHayChance.Name": "Chance de la faux d'or (en %)",
+	"GMCM.IridiumHayChance.Name": "Chance de la faux d'iridium (en %)"
 }
