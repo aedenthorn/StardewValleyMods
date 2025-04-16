@@ -1,0 +1,9 @@
+{
+	// GMCM
+	"GMCM.ModEnabled.Name": "Mod Enabled",
+	"GMCM.JumpButton.Name": "Jump Button",
+	"GMCM.PlayJumpSound.Name": "Play Jump Sound",
+	"GMCM.JumpSound.Name": "Jump Sound",
+	"GMCM.MaxJumpDistance.Name": "Max Jump Distance",
+	"GMCM.OrdinaryJumpHeight.Name": "Ordinary Jump Height"
+}

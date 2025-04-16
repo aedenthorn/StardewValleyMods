@@ -1,22 +1,10 @@
 ﻿{
-  "Name": "Infallible Fishing",
-  "Author": "aedenthorn",
-  "Version": "0.1.1",
-  "Description": "Infallible Fishing.",
-  "UniqueID": "aedenthorn.InfallibleFishing",
-  "EntryDll": "InfallibleFishing.dll",
-  "MinimumApiVersion": "3.15.0",
-  "ModUpdater": {
-    "Repository": "StardewValleyMods",
-    "User": "aedenthorn",
-    "Directory": "_releases",
-    "ModFolder": "InfallibleFishing"
-  },
-  "Dependencies": [
-    {
-      "UniqueID": "Platonymous.ModUpdater",
-      "IsRequired": false
-    }
-  ],
-  "UpdateKeys": [ "Nexus:14639" ]
+	"Name": "Infallible Fishing",
+	"Author": "aedenthorn",
+	"Version": "0.1.2",
+	"Description": "Makes it so that you can take as long as you need to catch any fish without ever failing.",
+	"UniqueID": "aedenthorn.InfallibleFishing",
+	"EntryDll": "InfallibleFishing.dll",
+	"MinimumApiVersion": "4.0.0",
+	"UpdateKeys": [ "Nexus:14639" ]
 }

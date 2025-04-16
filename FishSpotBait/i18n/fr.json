@@ -1,0 +1,8 @@
+{
+	// GMCM
+	"GMCM.ModEnabled.Name": "Activer le Mod",
+	"GMCM.RandomRadius.Name": "Rayon de l'aléatoire",
+	"GMCM.RandomRadius.Tooltip": "Rayon de la sélection d'une tuile aléatoire autour du curseur.",
+	"GMCM.MaxRange.Name": "Portée maximale",
+	"GMCM.MaxRange.Tooltip": "Portée maximale pour sélectionner une tuile avec le curseur."
+}

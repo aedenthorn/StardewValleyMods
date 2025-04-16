@@ -1,0 +1,10 @@
+﻿{
+	"Name": "AFK Pause",
+	"Author": "aedenthorn",
+	"Version": "0.7.1",
+	"Description": "Pauses the game if it doesn't receive player input after a specified number of game ticks.",
+	"UniqueID": "aedenthorn.AFKPause",
+	"EntryDll": "AFKPause.dll",
+	"MinimumApiVersion": "4.0.0",
+	"UpdateKeys": [ "Nexus:14228" ]
+}

@@ -1,0 +1,10 @@
+{
+	"item.mailbox.name": "Mailbox",
+	"item.mailbox.description": "A place to receive your mail.",
+
+	// Dialogue box
+	"dialoguebox.message": "Would you like to use this mailbox to receive mail?",
+
+	// GMCM
+	"GMCM.MultipleMailboxes.Name": "Multiple Mailboxes"
+}

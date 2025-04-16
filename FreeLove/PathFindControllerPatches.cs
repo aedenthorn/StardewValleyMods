@@ -25,7 +25,7 @@ namespace FreeLove
         {
             try
             {
-                if (!Config.EnableMod || !(c is NPC) || !(c as NPC).isVillager() || !(c as NPC).isMarried() || !(location is FarmHouse) || endPoint == (location as FarmHouse).getEntryLocation())
+                if (!Config.EnableMod || !(c is NPC) || !(c as NPC).IsVillager || !(c as NPC).isMarried() || !(location is FarmHouse) || endPoint == (location as FarmHouse).getEntryLocation())
                     return;
 
                 if (ModEntry.IsInBed(location as FarmHouse, new Rectangle(endPoint.X * 64, endPoint.Y * 64, 64, 64)))

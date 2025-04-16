@@ -1,10 +1,7 @@
-﻿
-using StardewModdingAPI;
-
-namespace WallTelevision
+﻿namespace WallTelevisions
 {
-    public class ModConfig
-    {
-        public bool EnableMod { get; set; } = true;
-    }
+	public class ModConfig
+	{
+		public bool ModEnabled { get; set; } = true;
+	}
 }

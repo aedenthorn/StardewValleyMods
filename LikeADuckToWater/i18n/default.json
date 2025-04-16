@@ -1,0 +1,11 @@
+{
+	// GMCM
+	"GMCM.ModEnabled.Name": "Mod Enabled",
+	"GMCM.EatBeforeSwimming.Name": "Eat Before Swimming",
+	"GMCM.SwimAfterAutoPet.Name": "Swim After Auto Pet",
+	"GMCM.MaxDistance.Name": "Max Distance",
+	"GMCM.MaxDistance.Tooltip": "Max distance in tiles to allow adding to move queue.",
+	"GMCM.ChancePerTick.Name": "Chance / Tick",
+	"GMCM.ChancePerTick.Tooltip": "Chance for a queued duck to begin moving each game tick.",
+	"GMCM.FriendshipGain.Name": "Friendship Gain"
+}

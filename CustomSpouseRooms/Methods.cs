@@ -103,7 +103,6 @@ namespace CustomSpouseRooms
 				{
 					fh.TemporarySprites.Remove(sprite);
 				}
-
 				Vector2 spot = Utility.PointToVector2(srd.startPos + new Point(4, 2)) * 64;
 				spot += new Vector2(16, 32);
 				SMonitor.Log($"Building Emily's parrot at {spot}");

@@ -30,10 +30,10 @@ namespace FreeLove
                 if (answerKey == "danceAsk" && !who.HasPartnerForDance && Game1.player.friendshipData[who.Name].IsMarried())
                 {
                     string accept = "";
-                    int gender = who.Gender;
-                    if (gender != 0)
+                    Gender gender = who.Gender;
+                    if (gender != Gender.Male)
                     {
-                        if (gender == 1)
+                        if (gender == Gender.Female)
                         {
                             accept = Game1.content.LoadString("Strings\\StringsFromCSFiles:Event.cs.1634");
                         }

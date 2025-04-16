@@ -1,47 +1,59 @@
-﻿using HarmonyLib;
-using StardewValley;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Reflection.Emit;
+using HarmonyLib;
+using StardewModdingAPI;
+using StardewValley;
 using Object = StardewValley.Object;
 
 namespace AdvancedFluteBlocks
 {
-    public partial class ModEntry
-    {
-        public static IEnumerable<CodeInstruction> Object_FluteBlock_Transpiler(IEnumerable<CodeInstruction> instructions)
-        {
-            SMonitor.Log($"Transpiling Object");
+	public partial class ModEntry
+	{
+		public static IEnumerable<CodeInstruction> Object_FluteBlock_Transpiler(IEnumerable<CodeInstruction> instructions, MethodBase original)
+		{
+			try
+			{
+				List<CodeInstruction> list = instructions.ToList();
 
-            var codes = new List<CodeInstruction>(instructions);
-            for (int i = 0; i < codes.Count; i++)
-            {
-                if (i < codes.Count - 3 && codes[i].opcode == OpCodes.Ldsfld && (FieldInfo)codes[i].operand == AccessTools.Field(typeof(Game1), nameof(Game1.soundBank)) && codes[i + 1].opcode == OpCodes.Ldstr && (string)codes[i + 1].operand == "flute")
-                {
-                    SMonitor.Log("Overriding get flute cue");
-                    codes[i].opcode = OpCodes.Ldarg_0;
-                    codes[i].operand = null;
-                    codes[i + 2].opcode = OpCodes.Call;
-                    codes[i + 2].operand = AccessTools.Method(typeof(ModEntry), nameof(ModEntry.FluteCueOverride));
-                }
-            }
+				for (int i = 0; i < list.Count; i++)
+				{
+					if (list[i].opcode.Equals(OpCodes.Ldstr) && list[i].operand.Equals("flute"))
+					{
+						CodeInstruction[] replacementInstructions = new CodeInstruction[]
+						{
+							new(OpCodes.Ldarg_0),
+							new(list[i].opcode, list[i].operand),
+							new(OpCodes.Call, typeof(ModEntry).GetMethod("FluteCueNameOverride", BindingFlags.NonPublic | BindingFlags.Static))
+						};
+						list.InsertRange(i, replacementInstructions);
+						i += replacementInstructions.Length;
+						list.RemoveAt(i);
+					}
+				}
+				return list;
+			}
+			catch (Exception e)
+			{
+				SMonitor.Log($"There was an issue modifying the instructions for {typeof(Object)}.{original.Name}: {e}", LogLevel.Error);
+				return instructions;
+			}
+		}
 
-            return codes.AsEnumerable();
-        }
-        public static bool Game1_pressSwitchToolButton_Prefix()
-        {
-            return !Config.EnableMod || (!SHelper.Input.IsDown(Config.PitchModKey) && !SHelper.Input.IsDown(Config.ToneModKey) || !Game1.currentLocation.objects.TryGetValue(Game1.currentCursorTile, out Object obj) || !obj.Name.Equals("Flute Block"));
-        }
+		public static bool Game1_pressSwitchToolButton_Prefix()
+		{
+			return !Config.EnableMod || !SHelper.Input.IsDown(Config.PitchModKey) && !SHelper.Input.IsDown(Config.ToneModKey) || !Game1.currentLocation.objects.TryGetValue(Game1.currentCursorTile, out Object obj) || !obj.Name.Equals("Flute Block");
+		}
 
-        private static ICue FluteCueOverride(Object obj, string flute)
-        {
-            if(Config.EnableMod && obj.modData.TryGetValue("aedenthorn.AdvancedFluteBlocks/tone", out string tone))
-            {
-                return Game1.soundBank.GetCue(tone);
-            }
-            return Game1.soundBank.GetCue(flute);
-        }
-    }
+		private static string FluteCueNameOverride(Object __instance, string flute)
+		{
+			if (Config.EnableMod && __instance.modData.TryGetValue(advancedFluteBlocksKey, out string tone))
+			{
+				return tone;
+			}
+			return flute;
+		}
+	}
 }

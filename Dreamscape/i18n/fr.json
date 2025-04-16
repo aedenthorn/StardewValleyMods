@@ -1,0 +1,14 @@
+{
+	"location.dreamscape.name": "Monde onirique",
+
+	// GMCM
+	"GMCM.ModEnabled.Name": "Activer le Mod",
+	"GMCM.MaxTrees.Name": "Nombre maximum d'arbres",
+	"GMCM.MaxTrees.Tooltip": "Le nombre maximum d'arbres au-delà duquel aucun arbre supplémentaire ne se générera au début de la journée.",
+	"GMCM.TreeGrowthStage.Name": "Stade de croissance des arbres",
+	"GMCM.TreeGrowthStage.Tooltip": "Le stade de croissance des arbres générés au début de la journée.",
+	"GMCM.TreeSpawnChance.Name": "Chance d'apparition des arbres (en %)",
+	"GMCM.TreeSpawnChance.Tooltip": "Chance quotidienne pour qu'un arbre apparaisse sur chaque case de nuage vide.",
+	"GMCM.ObjectSpawnChance.Name": "Chance d'apparition des objets (en %)",
+	"GMCM.ObjectSpawnChance.Tooltip": "Chance quotidienne pour qu'un objet (cristal ou ressource minérale) apparaisse sur chaque case de nuage vide."
+}

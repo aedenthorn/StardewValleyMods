@@ -1,0 +1,19 @@
+{
+	// GMCM
+	"GMCM.ModEnabled.Name": "Activer le Mod",
+	"GMCM.ShowWithActiveMenu.Name": "Afficher dans les menus",
+	"GMCM.ShowWithActiveMenu.Tooltip": "Afficher la barre d'outils même lorsqu' un menu est ouvert.",
+	"GMCM.Vertical.Name": "Barre d'outils verticale",
+	"GMCM.RotateKey.Name": "Touche de rotation",
+	"GMCM.RotateKey.Tooltip": "Survolez la barre d'outils et appuyez sur cette touche pour la faire pivoter.",
+	"GMCM.PinToolbar.Name": "Épingler la barre d'outils",
+	"GMCM.PinToolbar.Tooltip": "Ne pas changer de côté la barre d'outils lorsque le joueur se déplace.",
+	"GMCM.SetPosition.Name": "Position fixe",
+	"GMCM.SetPosition.Tooltip": "Empêcher le déplacement de la barre d'outils en utilisant le mod Advanced Menu Positioning.",
+	"GMCM.MarginX.Name": "Marge X",
+	"GMCM.MarginY.Name": "Marge Y",
+	"GMCM.OffsetX.Name": "Décalage X",
+	"GMCM.OffsetY.Name": "Décalage Y",
+	"GMCM.PinnedPosition.Name": "Position épinglée",
+	"GMCM.PinnedPosition.Tooltip": "Lorsque la barre d'outils est épinglée, détermine la position à laquelle elle sera rattachée."
+}

@@ -5,19 +5,9 @@
   "Description": "Custom spouse rooms.",
   "UniqueID": "aedenthorn.CustomSpouseRooms",
   "EntryDll": "CustomSpouseRooms.dll",
-  "MinimumApiVersion": "4.0.0",
-  "ModUpdater": {
-    "Repository": "StardewValleyMods",
-    "User": "aedenthorn",
-    "Directory": "_releases",
-    "ModFolder": "CustomSpouseRooms"
-  },
+  "MinimumApiVersion": "4.0.0"
   "UpdateKeys": [ "Nexus:10029" ],
   "Dependencies": [
-    {
-      "UniqueID": "Platonymous.ModUpdater",
-      "IsRequired": false
-    },
     {
       "UniqueID": "aedenthorn.FreeLove",
       "IsRequired": false

@@ -1,11 +1,11 @@
 ﻿{
   "Name": "Bed Tweaks",
   "Author": "aedenthorn",
-  "Version": "0.3.0",
+  "Version": "0.3.1",
   "Description": "Tweaks the bed.",
   "UniqueID": "aedenthorn.BedTweaks",
   "EntryDll": "BedTweaks.dll",
-  "MinimumApiVersion": "3.15.0",
+  "MinimumApiVersion": "4.0.0",
   "ModUpdater": {
     "Repository": "StardewValleyMods",
     "User": "aedenthorn",

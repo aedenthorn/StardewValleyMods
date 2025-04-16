@@ -1,8 +1,8 @@
 {
-  // GMCM
-  "GMCM_Option_ModEnabled_Name": "Activer le Mod",
-  "GMCM_SectionTitle_KeyBinds_Text": "Raccourcis clavier",
-  "GMCM_Option_PitchModKey_Name": "Touche pour modifier la hauteur",
-  "GMCM_Option_ToneModKey_Name": "Touche pour modifier le timbre",
-  "GMCM_Option_PitchStep_Name": "Intervalle de la hauteur"
+	// GMCM
+	"GMCM.ModEnabled.Name": "Activer le Mod",
+	"GMCM_SectionTitle_KeyBinds.Text": "Raccourcis clavier",
+	"GMCM.PitchModKey.Name": "Touche pour modifier la hauteur",
+	"GMCM.ToneModKey.Name": "Touche pour modifier le timbre",
+	"GMCM.PitchStep.Name": "Intervalle de la hauteur"
 }

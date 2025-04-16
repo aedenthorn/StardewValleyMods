@@ -3,12 +3,15 @@ using Microsoft.Xna.Framework;
 using StardewModdingAPI;
 using StardewModdingAPI.Utilities;
 using StardewValley;
+using StardewValley.GameData.Crops;
 using StardewValley.Menus;
 using StardewValley.TerrainFeatures;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Runtime.Serialization;
+using System.Threading;
 using xTile;
 using xTile.Layers;
 using xTile.ObjectModel;
@@ -102,7 +105,7 @@ namespace ImportMap
                 SMonitor.Log("import file not found", LogLevel.Error);
                 return;
             }
-            Map map = SHelper.Content.Load<Map>("assets/import.tmx");
+            Map map = SHelper.ModContent.Load<Map>("assets/import.tmx");
             if (map == null)
             {
                 SMonitor.Log("map is null", LogLevel.Error);
@@ -117,7 +120,7 @@ namespace ImportMap
                     {
                         if(flooringLayer.Tiles[x, y] != null && flooringLayer.Tiles[x, y].TileIndex >= 0)
                         {
-                            Game1.player.currentLocation.terrainFeatures[new Vector2(x, y)] = new Flooring(flooringLayer.Tiles[x, y].TileIndex);
+                            Game1.player.currentLocation.terrainFeatures[new Vector2(x, y)] = new Flooring("" + flooringLayer.Tiles[x, y].TileIndex);
                         }
                     }
                 }
@@ -166,14 +169,14 @@ namespace ImportMap
                     {
                         if(fluteLayer.Tiles[x, y] != null && fluteLayer.Tiles[x, y].TileIndex >= 0 && !Game1.player.currentLocation.objects.ContainsKey(new Vector2(x, y)))
                         {
-                            var block = new Object(new Vector2(x, y), 464, 1);
-                            block.preservedParentSheetIndex.Value = fluteLayer.Tiles[x, y].TileIndex % 24 * 100;
+                            var block = new Object(new Vector2(x, y), "" + 464);
+                            block.preservedParentSheetIndex.Value = "" + fluteLayer.Tiles[x, y].TileIndex % 24 * 100;
                             if(fluteBlockApi != null)
                             {
                                 var tone = fluteBlockApi.GetFluteBlockToneFromIndex(fluteLayer.Tiles[x, y].TileIndex / 24);
                                 if(tone != null)
                                 {
-                                    block.modData["aedenthorn.AdvancedFluteBlocks/tone"] = tone;
+                                    block.modData["datamancer.AdvancedFluteBlocks/tone"] = tone;
                                 }
                             }
                             Game1.player.currentLocation.objects[new Vector2(x, y)] = block;
@@ -194,8 +197,8 @@ namespace ImportMap
                     {
                         if(drumLayer.Tiles[x, y] != null && drumLayer.Tiles[x, y].TileIndex >= 0 && !Game1.player.currentLocation.objects.ContainsKey(new Vector2(x, y)))
                         {
-                            var block = new Object(new Vector2(x, y), 463, 1);
-                            block.preservedParentSheetIndex.Value = drumLayer.Tiles[x, y].TileIndex;
+                            var block = new Object(new Vector2(x, y), "" + 463);
+                            block.preservedParentSheetIndex.Value = "" + drumLayer.Tiles[x, y].TileIndex;
                             Game1.player.currentLocation.objects[new Vector2(x, y)] = block;
                         }
                     }
@@ -203,7 +206,7 @@ namespace ImportMap
             }
             if (layersById.TryGetValue("Objects", out Layer objLayer))
             {
-                var dict = SHelper.Content.Load<Dictionary<int, string>>("Data/Crops", ContentSource.GameContent);
+                IDictionary<string, CropData> crop_data = Game1.cropData;
 
                 for (int y = 0; y < objLayer.LayerHeight; y++)
                 {
@@ -211,24 +214,26 @@ namespace ImportMap
                     {
                         if(objLayer.Tiles[x, y] != null && objLayer.Tiles[x, y].TileIndex >= 0 && !Game1.player.currentLocation.terrainFeatures.ContainsKey(new Vector2(x, y)) && !Game1.player.currentLocation.objects.ContainsKey(new Vector2(x, y)) && !Game1.player.currentLocation.objects.ContainsKey(new Vector2(x, y)))
                         {
-                            if (dict.TryGetValue(objLayer.Tiles[x, y].TileIndex, out string cropData))
+                            if (crop_data.ContainsKey("" + objLayer.Tiles[x, y].TileIndex))
                             {
-                                Crop crop = new Crop(objLayer.Tiles[x, y].TileIndex, x, y);
+                                SMonitor.Log("Partial crop at " + x + "," + y, level: LogLevel.Info);
+                                Crop crop = new Crop("" + objLayer.Tiles[x, y].TileIndex, x, y, Game1.player.currentLocation);
                                 HoeDirt dirt = new HoeDirt(1, crop);
                                 Game1.player.currentLocation.terrainFeatures.Add(new Vector2(x, y), dirt);
                                 continue;
                             }
-                            var cropkvp = dict.FirstOrDefault(kvp => kvp.Value.Split('/')[3] == objLayer.Tiles[x, y].TileIndex + "");
+                            var cropkvp = crop_data.FirstOrDefault(data => data.Value.HarvestItemId == objLayer.Tiles[x, y].TileIndex + "");
                             if (cropkvp.Value != null)
                             {
-                                Crop crop = new Crop(cropkvp.Key, x, y);
+                                SMonitor.Log("Grown crop at " + x + "," + y, level: LogLevel.Info);
+                                Crop crop = new Crop(cropkvp.Key, x, y, Game1.player.currentLocation);
                                 crop.growCompletely();
                                 HoeDirt dirt = new HoeDirt(1, crop);
                                 Game1.player.currentLocation.terrainFeatures.Add(new Vector2(x, y), dirt);
                             }
                             else
                             {
-                                var obj = new Object(new Vector2(x, y), objLayer.Tiles[x, y].TileIndex, 1);
+                                var obj = new Object(new Vector2(x, y), "" + objLayer.Tiles[x, y].TileIndex);
                                 Game1.player.currentLocation.objects[new Vector2(x, y)] = obj;
                             }
                         }
@@ -247,22 +252,22 @@ namespace ImportMap
                             switch(treeLayer.Tiles[x, y].TileIndex)
                             {
                                 case 9:
-                                    tree = new Tree(1, 5);
+                                    tree = new Tree("" + 1, 5);
                                     break;
                                 case 10:
-                                    tree = new Tree(2, 5);
+                                    tree = new Tree("" +2, 5);
                                     break;
                                 case 11:
-                                    tree = new Tree(3, 5);
+                                    tree = new Tree("" + 3, 5);
                                     break;
                                 case 12:
-                                    tree = new Tree(6, 5);
+                                    tree = new Tree("" + 6, 5);
                                     break;
                                 case 31:
-                                    tree = new Tree(7, 5);
+                                    tree = new Tree("" + 7, 5);
                                     break;
                                 case 32:
-                                    tree = new Tree(9, 5);
+                                    tree = new Tree("" + 9, 5);
                                     break;
                                 default:
                                     continue;

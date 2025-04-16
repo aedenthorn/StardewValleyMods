@@ -1,175 +1,238 @@
-﻿using HarmonyLib;
-using Microsoft.Xna.Framework;
+﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using xTile.Dimensions;
+using xTile.Layers;
+using xTile.Tiles;
 using StardewValley;
 using StardewValley.BellsAndWhistles;
-using StardewValley.Objects;
+using StardewValley.Locations;
 using StardewValley.TerrainFeatures;
-using System;
-using xTile.Dimensions;
-using Object = StardewValley.Object;
 using Rectangle = Microsoft.Xna.Framework.Rectangle;
 
 namespace Dreamscape
 {
-    public partial class ModEntry
-    {
+	public partial class ModEntry
+	{
+		public const int fairyPositionX = 3;
+		public const int fairyPositionY = 18;
+		private static TemporaryAnimatedSprite fairySprite = null;
+		private static bool fairyFlyingUp = true;
+		private static int xLocationAfterWarpingToFarmhouse = -1;
+		private static int yLocationAfterWarpingToFarmhouse = -1;
 
-        [HarmonyPatch(typeof(Tree), "loadTexture")]
-        public class Tree_loadTexture_Patch
-        {
-            public static bool Prefix(Tree __instance, ref Texture2D __result)
-            {
-                if (!Config.EnableMod || !__instance.currentLocation.Name.Equals("Dreamscape") || __instance.treeType.Value != 6)
-                    return true;
-                __result = palmTreeTexture;
-                return false;
-            }
-        }
-        [HarmonyPatch(typeof(GameLocation), nameof(GameLocation.doesTileSinkDebris))]
-        public class GameLocation_doesTileSinkDebris_Patch
-        {
-            public static bool Prefix(GameLocation __instance, int xTile, int yTile, Debris.DebrisType type, ref bool __result)
-            {
-                if (!Config.EnableMod || !__instance.Name.Equals("Dreamscape"))
-                    return true;
-                var tile = __instance.map.GetLayer("Back").PickTile(new Location(xTile * 64, yTile * 64), Game1.viewport.Size);
-                if ((tile != null && tile.TileIndex != 26 && tile.TileIndex != 15) || __instance.map.GetLayer("Back3").PickTile(new Location(xTile * 64, yTile * 64), Game1.viewport.Size) is not null)
-                {
-                    __result = true;
-                }
-                return false;
-            }
-        }
-        private static int fairyFrame;
-        [HarmonyPatch(typeof(GameLocation), nameof(GameLocation.draw), new Type[] { typeof(SpriteBatch) })]
-        public class GameLocation_draw_Patch
-        {
-            public static void Postfix(GameLocation __instance, SpriteBatch b)
-            {
-                if (!Config.EnableMod || !__instance.Name.Equals("Dreamscape"))
-                    return;
-                fairyFrame++;
-                fairyFrame %= 32;
+		public class EmilysParrot_doAction_Patch
+		{
+			public static bool Prefix(EmilysParrot __instance)
+			{
+				if (!Config.ModEnabled || __instance.GetType() != typeof(EmilysParrot))
+					return true;
 
-                b.Draw(Game1.mouseCursors, Game1.GlobalToLocal(Game1.viewport, new Vector2(3, 20) * 64 + new Vector2(32, 0)), new Rectangle?(new Rectangle(16 + fairyFrame / 8 * 16, 592, 16, 16)), Color.White, 0f, Vector2.Zero, 4f, SpriteEffects.None, 0.9999999f);
+				if (Game1.player.CanMove)
+				{
+					Game1.playSound("parrot");
+					Game1.player.CanMove = false;
+					DelayedAction.functionAfterDelay(() => {
+						if (Game1.currentLocation.Name.Equals($"{SModManifest.UniqueID}_Dreamscape"))
+						{
+							if (!Game1.player.friendshipData.TryGetValue("Emily", out Friendship friendship) || !friendship.IsMarried())
+							{
+								Game1.warpFarmer("HaleyHouse", 14, 5, 2);
+								return;
+							}
 
-            }
-        }
-        [HarmonyPatch(typeof(GameLocation), nameof(GameLocation.sinkDebris))]
-        public class GameLocation_sinkDebris_Patch
-        {
-            public static bool Prefix(GameLocation __instance, Debris debris, ref bool __result)
-            {
-                if (!Config.EnableMod || !__instance.Name.Equals("Dreamscape") || debris.isEssentialItem() || (debris.debrisType.Value == Debris.DebrisType.OBJECT && debris.chunkType.Value == 74))
-                    return true;
-                __instance.localSound("dwop");
-                __result = true;
-                return false;
-            }
-        }
+							FarmHouse farmHouse = Utility.getHomeOfFarmer(Game1.player);
+							Layer layer = farmHouse.map.GetLayer("Buildings");
 
-        [HarmonyPatch(typeof(GameLocation), nameof(GameLocation.checkAction))]
-        public class GameLocation_checkAction_Patch
-        {
-            public static bool Prefix(GameLocation __instance, Location tileLocation, xTile.Dimensions.Rectangle viewport, Farmer who)
-            {
-                if (!Config.EnableMod || !Game1.currentLocation.Name.Equals("Dreamscape"))
-                    return true;
+							SMonitor.Log($"Warping to FarmHouse");
+							for (int x = 0; x < layer.LayerWidth; x++)
+							{
+								for (int y = 0; y < layer.LayerHeight; y++)
+								{
+									if (layer.Tiles[new Location(x, y)]?.TileIndex == 2173)
+									{
+										xLocationAfterWarpingToFarmhouse = x;
+										yLocationAfterWarpingToFarmhouse = y + 1;
+										Game1.warpFarmer("FarmHouse", x, y + 1, 2);
+										return;
+									}
+								}
+							}
+							Game1.warpFarmer("FarmHouse", farmHouse.getEntryLocation().X, farmHouse.getEntryLocation().Y, 2);
+							return;
+						}
+						else
+						{
+							SMonitor.Log($"Warping to Dreamscape");
+							Game1.warpFarmer($"{SModManifest.UniqueID}_Dreamscape", 21, 15, 2);
+							return;
+						}
+					}, 600);
+				}
+				return false;
+			}
+		}
 
-                if(tileLocation.X == 21 && tileLocation.Y == 9)
-                {
-                    TemporaryAnimatedSprite t = __instance.getTemporarySpriteByID(5858585);
-                    if (t != null && t is EmilysParrot)
-                    {
-                        (t as EmilysParrot).doAction();
-                        return false;
-                    }
-                }
-                else if(new Rectangle(3, 20, 2, 2).Contains(new Point(tileLocation.X, tileLocation.Y)))
-                {
-                    __instance.localSound("yoba");
-                    who.health = who.maxHealth;
-                    who.stamina = who.MaxStamina;
-                }
+		public class GameLocation_resetLocalState_Patch
+		{
+			public static void Postfix(GameLocation __instance)
+			{
+				if (!Config.ModEnabled || !__instance.Name.Equals($"{SModManifest.UniqueID}_Dreamscape"))
+					return;
 
-                return true;
-            }
-        }
-        [HarmonyPatch(typeof(EmilysParrot), nameof(EmilysParrot.doAction))]
-        public class EmilysParrot_doAction_Patch
-        {
-            private static string currentMusic;
-            public static void Prefix(EmilysParrot __instance, int ___shakeTimer)
-            {
-                if (!Config.EnableMod || ___shakeTimer <= 200)
-                    return;
-                if (Game1.currentLocation.Name.Equals("Dreamscape"))
-                {
-                    if (!Game1.player.friendshipData.TryGetValue("Emily", out Friendship f) || !f.IsMarried())
-                    {
-                        Game1.warpFarmer("HaleyHouse", 14, 5, false);
-                    }
-                    var home = Utility.getHomeOfFarmer(Game1.player);
-                    var layer = home.map.GetLayer("Buildings");
-                    SMonitor.Log($"Warping to FarmHouse");
-                    for (int x = 0; x < layer.LayerWidth; x++)
-                    {
-                        for (int y = 0; y < layer.LayerHeight; y++)
-                        {
-                            if(layer.Tiles[new Location(x, y)]?.TileIndex == 2173)
-                            {
-                                Game1.warpFarmer("FarmHouse", x, y + 1, false);
-                                Game1.changeMusicTrack(currentMusic);
-                                return;
-                            }
-                        }
-                    }
-                    Game1.warpFarmer("FarmHouse", home.getEntryLocation().X, home.getEntryLocation().Y, false);
-                    Game1.changeMusicTrack(currentMusic);
-                }
-                else
-                {
-                    SMonitor.Log($"Warping to Dreamscape");
-                    currentMusic = Game1.getMusicTrackName(Game1.MusicContext.Default);
-                    Game1.warpFarmer("Dreamscape", 21, 15, false);
-                }
-            }
-        }
-        [HarmonyPatch(typeof(HoeDirt), nameof(HoeDirt.draw))]
-        public class HoeDirt_draw_Patch
-        {
-            public static void Prefix(ref Texture2D ___texture)
-            {
-                if (!Config.EnableMod || !Game1.currentLocation.Name.Equals("Dreamscape"))
-                    return;
-                ___texture = HoeDirt.snowTexture;
-            }
-        }
-        [HarmonyPatch(typeof(GameLocation), nameof(GameLocation.resetForPlayerEntry))]
-        public class GameLocation_resetForPlayerEntry_Patch
-        {
-            public static void Postfix(GameLocation __instance)
-            {
-                if (!Config.EnableMod || !__instance.Name.Equals("Dreamscape"))
-                    return;
-                SMonitor.Log($"Building Emily's parrot");
-                __instance.temporarySprites.Clear();
-                __instance.temporarySprites.Add(new EmilysParrot(new Vector2(21 * 64, 9 * 64)));
-            }
-        }
-        [HarmonyPatch(typeof(Game1), nameof(Game1.loadForNewGame))]
-        public class Game1_loadForNewGame_Patch
-        {
-            public static void Postfix()
-            {
-                if (!Config.EnableMod || !Game1.IsMasterGame)
-                    return;
-                mapAssetKey = SHelper.ModContent.GetInternalAssetName("assets/Dreamscape.tmx").BaseName;
-                GameLocation location = new GameLocation(mapAssetKey, "Dreamscape") { IsOutdoors = false, IsFarm = true, IsGreenhouse = true };
-                Game1.locations.Add(location);
-                SHelper.GameContent.InvalidateCache("Data/Locations");
-            }
-        }
-    }
+				SMonitor.Log($"Building Emily's parrot");
+				fairySprite = new TemporaryAnimatedSprite(Game1.mouseCursors.Name, new Rectangle(16, 592, 16, 16), 128, 4, 1, new Vector2(fairyPositionX, fairyPositionY) * Game1.tileSize + new Vector2(32, 0), false, false) {
+					scale = Game1.pixelZoom,
+					drawAboveAlwaysFront = true,
+					destroyable = false
+				};
+				__instance.temporarySprites.Add(new EmilysParrot(new Vector2(21 * Game1.tileSize, 9 * Game1.tileSize)));
+				__instance.temporarySprites.Add(fairySprite);
+			}
+		}
+
+		public class GameLocation_checkAction_Patch
+		{
+			public static bool Prefix(GameLocation __instance, Location tileLocation, Farmer who)
+			{
+				if (!Config.ModEnabled || !Game1.currentLocation.Name.Equals($"{SModManifest.UniqueID}_Dreamscape"))
+					return true;
+
+				if (tileLocation.X == 21 && tileLocation.Y == 9)
+				{
+					TemporaryAnimatedSprite temporaryAnimatedSprite = __instance.getTemporarySpriteByID(5858585);
+
+					if (temporaryAnimatedSprite is EmilysParrot emilysParrot)
+					{
+						emilysParrot.doAction();
+						return false;
+					}
+				}
+				else if (fairySprite is not null && fairySprite.shakeIntensity <= 0f && new Rectangle(fairyPositionX, fairyPositionY + 2, 2, 2).Contains(new Point(tileLocation.X, tileLocation.Y)))
+				{
+					fairySprite.shakeIntensity = 16;
+					fairySprite.shakeIntensityChange = -0.05f;
+					__instance.localSound("yoba");
+					who.health = who.maxHealth;
+					who.stamina = who.MaxStamina;
+				}
+				return true;
+			}
+		}
+
+		public class GameLocation_UpdateWhenCurrentLocation_Patch
+		{
+			public static void Postfix()
+			{
+				if (!Config.ModEnabled)
+					return;
+
+				if (fairySprite is not null)
+				{
+					if (fairyFlyingUp)
+					{
+						if (fairySprite.Position.Y > (fairyPositionY - 0.5f) * Game1.tileSize)
+						{
+							fairySprite.Position += new Vector2(0, -0.5f);
+						}
+						else
+						{
+							fairyFlyingUp = false;
+						}
+					}
+					else
+					{
+						if (fairySprite.Position.Y < (fairyPositionY + 0.5f) * Game1.tileSize)
+						{
+							fairySprite.Position += new Vector2(0, 0.5f);
+						}
+						else
+						{
+							fairyFlyingUp = true;
+						}
+					}
+				}
+			}
+		}
+
+		public class GameLocation_doesTileSinkDebris_Patch
+		{
+			public static bool Prefix(GameLocation __instance, int xTile, int yTile, ref bool __result)
+			{
+				if (!Config.ModEnabled || !__instance.Name.Equals($"{SModManifest.UniqueID}_Dreamscape"))
+					return true;
+
+				Tile tileBack = __instance.map.GetLayer("Back").PickTile(new Location(xTile * Game1.tileSize, yTile * Game1.tileSize), Game1.viewport.Size);
+				Tile tileBack3 = __instance.map.GetLayer("Back3").PickTile(new Location(xTile * Game1.tileSize, yTile * Game1.tileSize), Game1.viewport.Size);
+
+				if ((tileBack is null || (tileBack is not null && tileBack.TileIndex != 15 && tileBack.TileIndex != 26)) && tileBack3 is null)
+				{
+					__result = true;
+				}
+				return false;
+			}
+		}
+
+		public class GameLocation_sinkDebris_Patch
+		{
+			public static bool Prefix(GameLocation __instance, Debris debris, ref bool __result)
+			{
+				if (!Config.ModEnabled || !__instance.Name.Equals($"{SModManifest.UniqueID}_Dreamscape"))
+					return true;
+
+				if (debris.isEssentialItem())
+				{
+					__result = false;
+					return false;
+				}
+				if (debris.item is not null && debris.item.HasContextTag("book_item"))
+				{
+					__result = false;
+					return false;
+				}
+				if (debris.debrisType.Value == Debris.DebrisType.OBJECT && debris.chunkType.Value == 74)
+				{
+					__result = false;
+					return false;
+				}
+				if (debris.debrisType.Value == Debris.DebrisType.CHUNKS)
+				{
+					__result = false;
+					return false;
+				}
+				Game1.sounds.PlayLocal("throw", __instance, null, null, StardewValley.Audio.SoundContext.Default, out ICue cue);
+				cue.Volume = 0.15f;
+				__result = true;
+				return false;
+			}
+		}
+
+		public class HoeDirt_draw_Patch
+		{
+			public static void Prefix(ref Texture2D ___texture)
+			{
+				if (!Config.ModEnabled || !Game1.currentLocation.Name.Equals($"{SModManifest.UniqueID}_Dreamscape"))
+					return;
+
+				___texture = HoeDirt.snowTexture;
+			}
+		}
+
+		public class FarmHouse_resetLocalState_Patch
+		{
+			public static void Postfix()
+			{
+				if (!Config.ModEnabled)
+					return;
+
+				if (xLocationAfterWarpingToFarmhouse > 0 && yLocationAfterWarpingToFarmhouse > 0)
+				{
+					Game1.player.Position = new Vector2(xLocationAfterWarpingToFarmhouse, yLocationAfterWarpingToFarmhouse) * Game1.tileSize;
+					Game1.xLocationAfterWarp = Game1.player.TilePoint.X;
+					Game1.yLocationAfterWarp = Game1.player.TilePoint.Y;
+				}
+				xLocationAfterWarpingToFarmhouse = -1;
+				yLocationAfterWarpingToFarmhouse = -1;
+			}
+		}
+	}
 }

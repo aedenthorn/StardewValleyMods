@@ -1,6 +1,7 @@
 ﻿using Microsoft.Xna.Framework;
 using StardewModdingAPI;
 using StardewValley;
+using StardewValley.GameData.Characters;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -103,7 +104,7 @@ namespace HugsAndKisses
         {
             ModEntry.mp.broadcastSprites(npc.currentLocation, new TemporaryAnimatedSprite[]
             {
-                new TemporaryAnimatedSprite("LooseSprites\\Cursors", new Rectangle(211, 428, 7, 6), 2000f, 1, 0, new Vector2(npc.getTileX(), npc.getTileY()) * 64f + new Vector2(16f, -64f), false, false, 1f, 0f, Color.White, 4f, 0f, 0f, 0f, false)
+                new TemporaryAnimatedSprite("LooseSprites\\Cursors", new Rectangle(211, 428, 7, 6), 2000f, 1, 0, npc.Tile * 64f + new Vector2(16f, -64f), false, false, 1f, 0f, Color.White, 4f, 0f, 0f, 0f, false)
                 {
                     motion = new Vector2(0f, -0.5f),
                     alphaFade = 0.01f
@@ -114,7 +115,7 @@ namespace HugsAndKisses
         {
             ModEntry.mp.broadcastSprites(npc.currentLocation, new TemporaryAnimatedSprite[]
             {
-                    new TemporaryAnimatedSprite("LooseSprites\\emojis", new Rectangle(0, 0, 9, 9), 2000f, 1, 0, new Vector2(npc.getTileX(), npc.getTileY()) * 64f + new Vector2(16f, -64f), false, false, 1f, 0f, Color.White, 4f, 0f, 0f, 0f, false)
+                    new TemporaryAnimatedSprite("LooseSprites\\emojis", new Rectangle(0, 0, 9, 9), 2000f, 1, 0, npc.Tile * 64f + new Vector2(16f, -64f), false, false, 1f, 0f, Color.White, 4f, 0f, 0f, 0f, false)
                     {
                         motion = new Vector2(0f, -0.5f),
                         alphaFade = 0.01f
@@ -144,8 +145,6 @@ namespace HugsAndKisses
             return spouses;
         }
 
-
-
         public static void ResetSpouses(Farmer f)
         {
             Dictionary<string, NPC> spouses = GetSpouses(f,1);
@@ -153,7 +152,7 @@ namespace HugsAndKisses
             {
                 if(spouses.Count > 0)
                 {
-                    Monitor.Log("No official spouse, setting official spouse to: " + spouses.First().Key);
+                    //Monitor.Log("No official spouse, setting official spouse to: " + spouses.First().Key);
                     f.spouse = spouses.First().Key;
                 }
             }
@@ -162,15 +161,15 @@ namespace HugsAndKisses
             {
                 if (f.friendshipData[name].IsEngaged())
                 {
-                    Monitor.Log($"{f.Name} is engaged to: {name} {f.friendshipData[name].CountdownToWedding} days until wedding");
+                    //Monitor.Log($"{f.Name} is engaged to: {name} {f.friendshipData[name].CountdownToWedding} days until wedding");
                     if (f.friendshipData[name].WeddingDate.TotalDays < new WorldDate(Game1.Date).TotalDays)
                     {
-                        Monitor.Log("invalid engagement: " + name);
+                        //Monitor.Log("invalid engagement: " + name);
                         f.friendshipData[name].WeddingDate.TotalDays = new WorldDate(Game1.Date).TotalDays + 1;
                     }
                     if(f.spouse != name)
                     {
-                        Monitor.Log("setting spouse to engagee: " + name);
+                        //Monitor.Log("setting spouse to engagee: " + name);
                         f.spouse = name;
                     }
                 }
@@ -179,12 +178,12 @@ namespace HugsAndKisses
                     //Monitor.Log($"{f.Name} is married to: {name}");
                     if (f.spouse != null && f.friendshipData[f.spouse] != null && !f.friendshipData[f.spouse].IsMarried() && !f.friendshipData[f.spouse].IsEngaged())
                     {
-                        Monitor.Log("invalid ospouse, setting ospouse to " + name);
+                        //Monitor.Log("invalid ospouse, setting ospouse to " + name);
                         f.spouse = name;
                     }
                     if (f.spouse == null)
                     {
-                        Monitor.Log("null ospouse, setting ospouse to " + name);
+                        //Monitor.Log("null ospouse, setting ospouse to " + name);
                         f.spouse = name;
                     }
                 }
@@ -193,25 +192,11 @@ namespace HugsAndKisses
         public static void SetNPCRelations()
         {
             ModEntry.relationships.Clear();
-            Dictionary<string, string> NPCDispositions = Helper.GameContent.Load<Dictionary<string, string>>("Data\\NPCDispositions");
-            foreach (KeyValuePair<string, string> kvp in NPCDispositions)
+            var characters = Helper.GameContent.Load<Dictionary<string, CharacterData>>("Data/Characters");
+            
+            foreach (var (Key, Value) in characters)
             {
-                string[] relations = kvp.Value.Split('/')[9].Split(' ');
-                if (relations.Length > 0)
-                {
-                    ModEntry.relationships.Add(kvp.Key, new Dictionary<string, string>());
-                    for (int i = 0; i < relations.Length; i += 2)
-                    {
-                        try
-                        {
-                            ModEntry.relationships[kvp.Key].Add(relations[i], relations[i + 1].Replace("'", ""));
-                        }
-                        catch
-                        {
-
-                        }
-                    }
-                }
+                ModEntry.relationships[Key] = Value.FriendsAndFamily;
             }
         }
 

@@ -1,22 +1,10 @@
-﻿{
-  "Name": "DynamicMapTiles",
-  "Author": "aedenthorn",
-  "Version": "0.9.6",
-  "Description": "DynamicMapTiles.",
-  "UniqueID": "aedenthorn.DynamicMapTiles",
-  "EntryDll": "DynamicMapTiles.dll",
-  "MinimumApiVersion": "3.15.0",
-  "ModUpdater": {
-    "Repository": "StardewValleyMods",
-    "User": "aedenthorn",
-    "Directory": "_releases",
-    "ModFolder": "DynamicMapTiles"
-  },
-  "Dependencies": [
-    {
-      "UniqueID": "Platonymous.ModUpdater",
-      "IsRequired": false
-    }
-  ],
-  "UpdateKeys": [ "Nexus:14566" ]
+{
+	"Name": "Dynamic Map Tiles",
+	"Author": "aedenthorn",
+	"Version": "0.9.7",
+	"Description": "Makes map tiles dynamic - change tile, tile sheet, and properties on-the-fly.",
+	"UniqueID": "aedenthorn.DynamicMapTiles",
+	"EntryDll": "DynamicMapTiles.dll",
+	"MinimumApiVersion": "4.0.0",
+	"UpdateKeys": [ "Nexus:14566" ]
 }

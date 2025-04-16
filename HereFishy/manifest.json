@@ -1,22 +1,10 @@
 ﻿{
-  "Name": "Here Fishy",
-  "Author": "aedenthorn",
-  "Version": "0.4.0",
-  "Description": "Scientifically proven humane method of fish acquisition.",
-  "UniqueID": "aedenthorn.HereFishy",
-  "EntryDll": "HereFishy.dll",
-  "MinimumApiVersion": "3.15.0",
-  "UpdateKeys": ["Nexus:6586"],
-  "ModUpdater": {
-    "Repository": "StardewValleyMods",
-    "User": "aedenthorn",
-    "Directory": "_releases",
-    "ModFolder": "HereFishy"
-  },
-  "Dependencies": [
-      {
-        "UniqueID": "Platonymous.ModUpdater",
-        "IsRequired": false
-      },
-  ]
+	"Name": "Here Fishy",
+	"Author": "aedenthorn",
+	"Version": "0.4.1",
+	"Description": "Scientifically-proven humane method of acquiring fish.",
+	"UniqueID": "aedenthorn.HereFishy",
+	"EntryDll": "HereFishy.dll",
+	"MinimumApiVersion": "4.0.0",
+	"UpdateKeys": [ "Nexus:6586" ]
 }

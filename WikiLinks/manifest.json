@@ -1,22 +1,10 @@
 ﻿{
-  "Name": "Wiki Links",
-  "Author": "aedenthorn",
-  "Version": "0.1.2",
-  "Description": "Wiki Links.",
-  "UniqueID": "aedenthorn.WikiLinks",
-  "EntryDll": "WikiLinks.dll",
-  "MinimumApiVersion": "3.13.0",
-  "ModUpdater": {
-    "Repository": "StardewValleyMods",
-    "User": "aedenthorn",
-    "Directory": "_releases",
-    "ModFolder": "WikiLinks"
-  },
-  "UpdateKeys": [ "Nexus:11476" ],
-  "Dependencies": [
-    {
-      "UniqueID": "Platonymous.ModUpdater",
-      "IsRequired": false
-    }
-  ]
+	"Name": "Wiki Links",
+	"Author": "aedenthorn",
+	"Version": "0.1.3",
+	"Description": "Lets you directly open the wiki page for things by clicking on them in-game.",
+	"UniqueID": "aedenthorn.WikiLinks",
+	"EntryDll": "WikiLinks.dll",
+	"MinimumApiVersion": "4.0.0",
+	"UpdateKeys": [ "Nexus:11476" ]
 }
