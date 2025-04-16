@@ -1,0 +1,14 @@
+{
+	"location.dreamscape.name": "Dreamscape",
+
+	// GMCM
+	"GMCM.ModEnabled.Name": "Mod Enabled",
+	"GMCM.MaxTrees.Name": "Max Trees",
+	"GMCM.MaxTrees.Tooltip": "The maximum number of trees beyond which no more trees will spawn at the start of the day.",
+	"GMCM.TreeGrowthStage.Name": "Tree Growth Stage",
+	"GMCM.TreeGrowthStage.Tooltip": "Growth stage of trees spawned at the start of the day.",
+	"GMCM.TreeSpawnChance.Name": "Tree Spawn Chance",
+	"GMCM.TreeSpawnChance.Tooltip": "Daily chance for a tree to spawn on each empty cloud tile.",
+	"GMCM.ObjectSpawnChance.Name": "Object Spawn Chance",
+	"GMCM.ObjectSpawnChance.Tooltip": "Daily chance for an object (crystal or gem resource) to spawn on each empty cloud tile."
+}
