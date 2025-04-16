@@ -1,4 +1,6 @@
 {
-  // GMCM
-  "GMCM_Option_ModEnabled_Name": "Mod Enabled"
+	// GMCM
+	"GMCM.ModEnabled.Name": "Mod Enabled",
+	"GMCM.DisconnectKeys.Name": "Disconnect Keys",
+	"GMCM.DisconnectKeys.Tooltip": "This key bind allows you to disconnect and reconnect the texture of a garden pot."
 }

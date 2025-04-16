@@ -1,4 +1,6 @@
 {
-  // GMCM
-  "GMCM_Option_ModEnabled_Name": "Activer le Mod"
+	// GMCM
+	"GMCM.ModEnabled.Name": "Activer le Mod",
+	"GMCM.DisconnectKeys.Name": "Touches de dissociation",
+	"GMCM.DisconnectKeys.Tooltip": "Cette combinaison de touches permet de déconnecter et de reconnecter la texture d'un pot de jardin."
 }
