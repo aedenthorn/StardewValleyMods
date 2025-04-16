@@ -1,23 +1,30 @@
 {
-  "mainEvent-1": "C'est l'heure du moment fort des festivités d'aujourd'hui... La chasse aux œufs annuelle !$h",
-  "mainEvent-2": "Calmez-vous, les enfants. Vous allez tous avoir besoin d'énergie si vous espérez trouver suffisamment d'œufs et remporter le prix.",
-  "mainEvent-3": "A présent... Est-ce que tout le monde est prêt ?",
-  "mainEvent-4": "Que la chasse aux œufs commence !$h",
-  "afterEggHunt-1": "Wow, regardez tous ces œufs !$h#$b#Si seulement je pouvais faire en sorte que vous ramassiez les déchets aussi efficacement, nous aurions la ville la plus propre des côtes de la mer des Gemmes ! *rire*$h",
-  "afterEggHunt-2": "Et maintenant, les résultats de la chasse aux œufs de cette année...",
-  "afterEggHunt-3": "Voici votre prix ! Profitez-en.",
-  "afterEggHunt-4": "Eh bien, c'est tout pour le festival des œufs de cette année. Merci à tous d'être venus !",
-  "results-1": "{0} a trouvé 1 œuf !",
-  "results-x": "{0} a trouvé {1} œufs !",
-  "results-total": "Pour un total de {0} œufs !",
-  "results-enough": "Félicitations à tous, vous avez trouvé suffisamment d'œufs ! Tout le monde reçoit un prix !$h",
-  "results-not-enough": "Je suis désolé de vous annoncer que vous n'avez pas trouvé assez d'oeufs. Vous aurez peut-être plus de chance l'année prochaine !",
+	"mainEvent-1": "C'est l'heure du moment fort des festivités d'aujourd'hui... La chasse aux œufs annuelle !$h",
+	"mainEvent-2": "Calmez-vous, les enfants. Vous allez tous avoir besoin d'énergie si vous espérez trouver suffisamment d'œufs et remporter le prix.",
+	"mainEvent-3": "A présent... Est-ce que tout le monde est prêt ?",
+	"mainEvent-4": "Que la chasse aux œufs commence !$h",
+	"afterEggHunt-1": "Wow, regardez tous ces œufs !$h#$b#Si seulement je pouvais faire en sorte que vous ramassiez les déchets aussi efficacement, nous aurions la ville la plus propre des côtes de la mer des Gemmes ! *rire*$h",
+	"afterEggHunt-2": "Et maintenant, les résultats de la chasse aux œufs de cette année...",
+	"afterEggHunt-3": "Voici votre prix ! Profitez-en.",
+	"afterEggHunt-4": "Eh bien, c'est tout pour le festival des œufs de cette année. Merci à tous d'être venus !",
+	"results-1": "{0} a trouvé 1 œuf !",
+	"results-x": "{0} a trouvé {1} œufs !",
+	"results-total": "Pour un total de {0} œufs !",
+	"results-enough": "Félicitations à tous, vous avez trouvé suffisamment d'œufs ! Tout le monde reçoit un prix !$h",
+	"results-not-enough": "Je suis désolé de vous annoncer que vous n'avez pas trouvé assez d'oeufs. Vous aurez peut-être plus de chance l'année prochaine !",
 
-  // GMCM
-  "GMCM_Option_ModEnabled_Name": "Activer le Mod",
-  "GMCM_Option_EggsToWin_Name": "Œufs nécessaires pour gagner",
-  "GMCM_Option_NPCMinEggs_Name": "Œufs minimum par PNJ",
-  "GMCM_Option_NPCMaxEggs_Name": "Œufs maximum par PNJ",
-  "GMCM_Option_PointsPerEgg_Name": "Amitié nécessaire pour un œuf",
-  "GMCM_Option_EggsPerTalk_Name": "Œufs par discussion"
+	"Maru_y2": "Penses-tu que l'on va gagner la chasse aux œufs cette année ?",
+	"Sebastian_spouse": "Je vais tous vous encourager pendant la chasse aux œufs.$h",
+	"Jas_y2": "Je vais faire de mon mieux pour nous assurer la victoire cette année !",
+
+	"Abigail_spring_12": "Je vais participer à la chasse aux œufs demain. Et toi ?",
+	"MarriageDialogueAbigail_spring_12": "Hé, le festival des œufs a lieu demain. Je sais que c'est un effort coopératif, mais je ne vais pas te ménager !$h#$e#J'ai l'intention d'obtenir le plus d'œufs ! Allez, essaie de me battre !",
+
+	// GMCM
+	"GMCM.ModEnabled.Name": "Activer le Mod",
+	"GMCM.EggsToWin.Name": "Œufs nécessaires pour gagner",
+	"GMCM.NPCMinEggs.Name": "Œufs minimum par PNJ",
+	"GMCM.NPCMaxEggs.Name": "Œufs maximum par PNJ",
+	"GMCM.PointsPerEgg.Name": "Amitié nécessaire pour un œuf",
+	"GMCM.EggsPerTalk.Name": "Œufs par discussion"
 }
