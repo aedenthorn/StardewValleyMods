@@ -141,11 +141,10 @@ namespace MobilePhone
                         Monitor.Log($"Couldn't load ring {path}:\r\n{ex}", LogLevel.Error);
                     }
                 }
-                rings = Config.BuiltInRingTones.Split(',');
-                foreach (string ring in rings)
-                {
-                    ringDict.Add(ring, null);
-                }
+            }
+            foreach (string ring in Config.BuiltInRingTones.Split(','))
+            {
+                ringDict.Add(ring, null);
             }
             ringList = ringDict.Keys.ToList();
             skinList = skinDict.Keys.ToList();
@@ -268,7 +267,7 @@ namespace MobilePhone
                             whichTab = newTab;
                             yOffset = 0;
                             int listcount = whichTab == 0 ? skinList.Count : (whichTab == 1 ? backgroundList.Count : ringList.Count);
-                            Monitor.Log($"switching to tab {whichTab}: {listcount} items");
+                            Monitor.Log(message: $"switching to tab {whichTab}: {listcount} items");
                         }
 
                     }
@@ -311,6 +310,7 @@ namespace MobilePhone
                                 {
                                     Monitor.Log($"switching to {ringList[i]}");
                                     SetRing(ringList[i]);
+                                    PhoneUtils.PlayRingTone();
                                 }
                             }
                         }
@@ -386,6 +386,7 @@ namespace MobilePhone
                     string itemName = ringList[i];
                     if (itemName.Contains(":"))
                         itemName = itemName.Split(':')[1];
+                    //Monitor.Log(level: LogLevel.Info, message: "Drawing Ring " + itemName);
                     e.SpriteBatch.DrawString(Game1.dialogueFont, itemName, itemPos, Config.RingListItemColor, 0, Vector2.Zero, Config.RingListItemScale, SpriteEffects.None, 0.86f);
                 }
             }

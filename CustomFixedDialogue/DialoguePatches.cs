@@ -117,6 +117,11 @@ namespace CustomFixedDialogue
             "5363",
             "5364",
         };
+
+        private static List<string> rawAllowed = new List<string>()
+        {
+            "MultiplePetBowls_watered"
+        };
         public static void LocalizedContentManager_LoadString_Prefix3(string path, object sub1, object sub2, object sub3, ref string __result)
         {
             dontFix = true;
@@ -151,52 +156,50 @@ namespace CustomFixedDialogue
                 return;
             ReplaceString(path, ref __result);
         }
-        public static void Game1_LoadStringByGender_Prefix1(int npcGender, string key, ref string __result)
+        public static void Game1_LoadStringByGender_Prefix1(Gender npcGender, string key, ref string __result)
         {
             dontFix = true;
         }
 
-        public static void Game1_LoadStringByGender_Postfix1(int npcGender, string key, ref string __result)
+        public static void Game1_LoadStringByGender_Postfix1(Gender npcGender, string key, ref string __result)
         {
             dontFix = false;
-            ReplaceString(key, ref __result, null, npcGender);
+            ReplaceString(key, ref __result, null, (int)npcGender);
         }
         
-        public static void Game1_LoadStringByGender_Prefix2(int npcGender, string key, object[] substitutions, ref string __result)
+        public static void Game1_LoadStringByGender_Prefix2(Gender npcGender, string key, object[] substitutions, ref string __result)
         {
             dontFix = true;
         }
 
-        public static void Game1_LoadStringByGender_Postfix2(int npcGender, string key, object[] substitutions, ref string __result)
+        public static void Game1_LoadStringByGender_Postfix2(Gender npcGender, string key, object[] substitutions, ref string __result)
         {
             dontFix = false;
-            ReplaceString(key, ref __result, substitutions, npcGender);
+            ReplaceString(key, ref __result, substitutions, (int)npcGender);
         }
 
-        public static void Dialogue_Prefix(Dialogue __instance, ref string masterDialogue, NPC speaker)
+        public static void Dialogue_Prefix(Dialogue __instance, NPC speaker, ref string translationKey, ref string dialogueText)
         {
-            FixString(speaker, ref masterDialogue);
+            FixString(speaker, ref dialogueText);
         }
-        
+
         public static void Dialogue_Box_Prefix(DialogueBox __instance, ref Dialogue dialogue)
         {
-            var x = Environment.StackTrace;
-
             if (dialogue.dialogues.Count == 1)
             {
-                string d = dialogue.dialogues[0];
+                string d = dialogue.dialogues[0].Text;
                 if (FixString(dialogue.speaker, ref d))
                 {
-                    dialogue = new Dialogue(d, dialogue.speaker);
+                    dialogue = new Dialogue(dialogue.speaker, dialogue.TranslationKey, d);
                     return;
                 }
             }
         }
 
         
-        public static void NPC_showTextAboveHead_Prefix(NPC __instance, ref string Text)
+        public static void NPC_showTextAboveHead_Prefix(NPC __instance, ref string text)
         {
-            FixString(__instance, ref Text);
+            FixString(__instance, ref text);
         }
 
         public static void NPC_getTermOfSpousalEndearment_Postfix(NPC __instance, ref string __result)
@@ -209,10 +212,18 @@ namespace CustomFixedDialogue
             FixString(__instance, ref __result);
 
         }
-        public static void convertToDwarvish_Prefix(ref string str)
+        public static void convertToDwarvish_Prefix(Dialogue __instance)
         {
-            FixString(Game1.getCharacterFromName("Dwarf"), ref str);
-
+            if (__instance.dialogues.Count == 1)
+            {
+                string d = __instance.dialogues[0].Text;
+                if (FixString(Game1.getCharacterFromName("Dwarf"), ref d))
+                {
+                    __instance = new Dialogue(Game1.getCharacterFromName("Dwarf"), __instance.TranslationKey, d);
+                    __instance.convertToDwarvish();
+                    return;
+                }
+            };
         }
         public static void GetSummitDialogue_Patch(string key, ref string __result)
         {
@@ -254,6 +265,7 @@ namespace CustomFixedDialogue
                 (path.StartsWith(NPCPrefix) && NPCAllowed.Contains(path.Substring(NPCPrefix.Length)))
                 || (path.StartsWith(eventPrefix) && eventChanges.Contains(path.Substring(eventPrefix.Length)))
                 || (path.StartsWith(utilityPrefix) && utilityChanges.Contains(path.Substring(utilityPrefix.Length)))
+                || (path.StartsWith(CSPrefix) && rawAllowed.Contains(path.Substring(CSPrefix.Length)))
                 )
             {
                 data.modPath = path.Replace(CSPrefix, "");

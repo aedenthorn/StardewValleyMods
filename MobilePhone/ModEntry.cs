@@ -10,6 +10,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 
 namespace MobilePhone
 {
@@ -150,7 +151,7 @@ namespace MobilePhone
                 prefix: new HarmonyMethod(typeof(PhonePatches), nameof(PhonePatches.Game1_pressSwitchToolButton_prefix))
             );
             harmony.Patch(
-                original: AccessTools.Method(typeof(Event), nameof(Event.endBehaviors)),
+                original: AccessTools.Method(typeof(Event), nameof(Event.endBehaviors), new Type[] {typeof (string[]), typeof(GameLocation)}),
                 prefix: new HarmonyMethod(typeof(PhonePatches), nameof(PhonePatches.Event_endBehaviors_prefix))
             );
             harmony.Patch(
@@ -170,47 +171,47 @@ namespace MobilePhone
                 prefix: new HarmonyMethod(typeof(PhonePatches), nameof(PhonePatches.GameLocation_answerDialogue_prefix))
             );
             harmony.Patch(
-                original: AccessTools.Method(typeof(Event), nameof(Event.DefaultCommands.AwardFestivalPrize)),
+                original: RuntimeReflectionExtensions.GetMethodInfo(Event.DefaultCommands.AwardFestivalPrize),
                 prefix: new HarmonyMethod(typeof(PhonePatches), nameof(PhonePatches.Event_command_prefix))
             );
             harmony.Patch(
-                original: AccessTools.Method(typeof(Event), nameof(Event.DefaultCommands.AddTool)),
+                original: RuntimeReflectionExtensions.GetMethodInfo(Event.DefaultCommands.AddItem),
                 prefix: new HarmonyMethod(typeof(PhonePatches), nameof(PhonePatches.Event_command_prefix))
             );
             harmony.Patch(
-                original: AccessTools.Method(typeof(Event), nameof(Event.DefaultCommands.AddConversationTopic)),
+                original: RuntimeReflectionExtensions.GetMethodInfo(Event.DefaultCommands.AddConversationTopic),
                 prefix: new HarmonyMethod(typeof(PhonePatches), nameof(PhonePatches.Event_command_prefix))
             );
             harmony.Patch(
-                original: AccessTools.Method(typeof(Event), nameof(Event.DefaultCommands.AddCookingRecipe)),
+                original: RuntimeReflectionExtensions.GetMethodInfo(Event.DefaultCommands.AddCookingRecipe),
                 prefix: new HarmonyMethod(typeof(PhonePatches), nameof(PhonePatches.Event_command_prefix))
             );
             harmony.Patch(
-                original: AccessTools.Method(typeof(Event), nameof(Event.DefaultCommands.AddCraftingRecipe)),
+                original: RuntimeReflectionExtensions.GetMethodInfo(Event.DefaultCommands.AddCraftingRecipe),
                 prefix: new HarmonyMethod(typeof(PhonePatches), nameof(PhonePatches.Event_command_prefix))
             );
             harmony.Patch(
-                original: AccessTools.Method(typeof(Event), nameof(Event.DefaultCommands.Money)),
+                original: RuntimeReflectionExtensions.GetMethodInfo(Event.DefaultCommands.Money),
                 prefix: new HarmonyMethod(typeof(PhonePatches), nameof(PhonePatches.Event_command_prefix))
             );
             harmony.Patch(
-                original: AccessTools.Method(typeof(Event), nameof(Event.DefaultCommands.RemoveItem)),
+                original: RuntimeReflectionExtensions.GetMethodInfo(Event.DefaultCommands.RemoveItem),
                 prefix: new HarmonyMethod(typeof(PhonePatches), nameof(PhonePatches.Event_command_prefix))
             );
             harmony.Patch(
-                original: AccessTools.Method(typeof(Event), nameof(Event.DefaultCommands.Friendship)),
+                original: RuntimeReflectionExtensions.GetMethodInfo(Event.DefaultCommands.Friendship),
                 prefix: new HarmonyMethod(typeof(PhonePatches), nameof(PhonePatches.Event_command_prefix))
             );
             harmony.Patch(
-                original: AccessTools.Method(typeof(Event), nameof(Event.DefaultCommands.Dump)),
+                original: RuntimeReflectionExtensions.GetMethodInfo(Event.DefaultCommands.Dump),
                 prefix: new HarmonyMethod(typeof(PhonePatches), nameof(PhonePatches.Event_command_prefix))
             );
             harmony.Patch(
-                original: AccessTools.Method(typeof(Event), nameof(Event.DefaultCommands.AddQuest)),
+                original: RuntimeReflectionExtensions.GetMethodInfo(Event.DefaultCommands.AddQuest),
                 prefix: new HarmonyMethod(typeof(PhonePatches), nameof(PhonePatches.Event_command_prefix))
             );
             harmony.Patch(
-                original: AccessTools.Method(typeof(Event), nameof(Event.DefaultCommands.Cutscene)),
+                original: RuntimeReflectionExtensions.GetMethodInfo(Event.DefaultCommands.Cutscene),
                 prefix: new HarmonyMethod(typeof(PhonePatches), nameof(PhonePatches.Event_command_cutscene_prefix))
             );
             harmony.Patch(
