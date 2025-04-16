@@ -1,0 +1,7 @@
+{
+	// GMCM
+	"GMCM.ModEnabled.Name": "Activer le Mod",
+	"GMCM.RangeMultiplier.Name": "Multiplicateur de portée",
+	"GMCM.RangeMultiplier.Tooltip": "Le multiplicateur appliqué au rayon magnétique du joueur. Une valeur de 0 indique un rayon infini.",
+	"GMCM.SpeedMultiplier.Name": "Multiplicateur de vitesse"
+}
