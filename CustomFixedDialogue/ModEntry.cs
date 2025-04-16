@@ -24,15 +24,22 @@ namespace CustomFixedDialogue
             SHelper = Helper;
             var harmony = new Harmony(ModManifest.UniqueID);
 
-            harmony.Patch(
-                original: AccessTools.Constructor(typeof(Dialogue), new Type[] { typeof(string), typeof(NPC) }),
+           harmony.Patch(
+                original: AccessTools.Constructor(typeof(Dialogue), new Type[] { typeof(NPC), typeof(string), typeof(string)}),
                 prefix: new HarmonyMethod(typeof(ModEntry), nameof(ModEntry.Dialogue_Prefix))
             );
+
             harmony.Patch(
                 original: AccessTools.Constructor(typeof(DialogueBox), new Type[] { typeof(Dialogue) }),
                 prefix: new HarmonyMethod(typeof(ModEntry), nameof(ModEntry.Dialogue_Box_Prefix))
             );
 
+            /* TODOTODOTODO!!! I cannot figure out how to fix this patch!
+             * I'm really sorry, I tried my best, but I don't understand enough about harmony to fix this one
+             * EDIT: On further review...we may not need this? Hear me out - 
+             * This code is now called on an instance of Dialogue, like dialogue.convertToDwarvish - which I _think_ this might've not been
+             * like that in previous versions...so I suspect/assume that, by the time this is called, the other harmony Patches have maybe already
+             * fixed the dialog?*/
             harmony.Patch(
                 original: AccessTools.Method(typeof(Dialogue), nameof(Dialogue.convertToDwarvish)),
                 prefix: new HarmonyMethod(typeof(ModEntry), nameof(ModEntry.convertToDwarvish_Prefix))
@@ -59,12 +66,12 @@ namespace CustomFixedDialogue
                 postfix: new HarmonyMethod(typeof(ModEntry), nameof(ModEntry.LocalizedContentManager_LoadString_Postfix))
             );
             harmony.Patch(
-                original: AccessTools.Method(typeof(Game1), nameof(Game1.LoadStringByGender), new Type[] { typeof(int),  typeof(string) }),
+                original: AccessTools.Method(typeof(Game1), nameof(Game1.LoadStringByGender), new Type[] { typeof(Gender),  typeof(string) }),
                 prefix: new HarmonyMethod(typeof(ModEntry), nameof(ModEntry.Game1_LoadStringByGender_Prefix1)),
                 postfix: new HarmonyMethod(typeof(ModEntry), nameof(ModEntry.Game1_LoadStringByGender_Postfix1))
             );
             harmony.Patch(
-                original: AccessTools.Method(typeof(Game1), nameof(Game1.LoadStringByGender), new Type[] { typeof(int),  typeof(string), typeof(object[]) }),
+                original: AccessTools.Method(typeof(Game1), nameof(Game1.LoadStringByGender), new Type[] { typeof(Gender),  typeof(string), typeof(object[]) }),
                 prefix: new HarmonyMethod(typeof(ModEntry), nameof(ModEntry.Game1_LoadStringByGender_Prefix2)),
                 postfix: new HarmonyMethod(typeof(ModEntry), nameof(ModEntry.Game1_LoadStringByGender_Postfix2))
             );
@@ -102,14 +109,14 @@ namespace CustomFixedDialogue
 			{
 				var person = Game1.getCharacterFromName("Emily");
                 var ds = person.CurrentDialogue;
-                Game1.warpCharacter(person, Game1.player.currentLocation, Game1.player.getTileLocation() + new Microsoft.Xna.Framework.Vector2(0, 1));
+                Game1.warpCharacter(person, Game1.player.currentLocation, Game1.player.Tile + new Microsoft.Xna.Framework.Vector2(0, 1));
                 person.CurrentDialogue.Clear();
                 person.addMarriageDialogue("Strings\\StringsFromCSFiles", "NPC.cs.4486", false, new string[]
                 {
                     "%endearmentlower"
                 });
 
-                return;
+                return; //TODO: Unreachable code below. Is this intentional?
 
                 string relativeTitle = "father";
                 string itemName = "French Toast";

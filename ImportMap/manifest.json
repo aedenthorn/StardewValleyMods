@@ -1,14 +1,14 @@
 ﻿{
   "Name": "Import Map",
-  "Author": "aedenthorn",
-  "Version": "0.1.0",
+  "Author": "datamancer",
+  "Version": "0.2.0",
   "Description": "Import Map.",
-  "UniqueID": "aedenthorn.ImportMap",
+  "UniqueID": "datamancer.ImportMap",
   "EntryDll": "ImportMap.dll",
-  "MinimumApiVersion": "3.13.0",
+  "MinimumApiVersion": "4.0.0",
   "ModUpdater": {
     "Repository": "StardewValleyMods",
-    "User": "aedenthorn",
+    "User": "datamancer",
     "Directory": "_releases",
     "ModFolder": "ImportMap"
   },
