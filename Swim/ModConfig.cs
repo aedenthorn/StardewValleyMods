@@ -8,6 +8,7 @@ namespace Swim
         public bool ReadyToSwim { get; set; }
         public bool SwimIndoors { get; set; }
         public bool SwimSuitAlways { get; set; }
+        public bool DisplayHatWithSwimsuit { get; set; }
         public bool NoAutoSwimSuit { get; set; }
         public bool ShowOxygenBar { get; set; }
         public int JumpTimeInMilliseconds { get; set; }
@@ -22,6 +23,7 @@ namespace Swim
         public bool AddCrabs { get; set; }
         public bool BreatheSound { get; set; }
         public bool EnableClickToSwim { get; set; }
+        public bool MustClickOnOppositeTerrain {  get; set; } // In click to swim, whether you must click on land to leave water (and vice versa) or can just click in the direction of land.
         public int MineralPerThousandMin { get; set; }
         public int MineralPerThousandMax { get; set; }
         public int CrabsPerThousandMin { get; set; }
@@ -55,7 +57,9 @@ namespace Swim
             SwimIndoors = false;
             ShowOxygenBar = true;
             SwimSuitAlways = false;
+            DisplayHatWithSwimsuit = true;
             EnableClickToSwim = true;
+            MustClickOnOppositeTerrain = false;
             BreatheSound = true;
             SwimRestoresVitals = false;
 

@@ -3,11 +3,13 @@ using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using Netcode;
 using StardewModdingAPI;
+using StardewModdingAPI.Utilities;
 using StardewValley;
 using StardewValley.Locations;
 using StardewValley.TerrainFeatures;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using xTile;
@@ -120,50 +122,69 @@ namespace Swim
             return ModEntry.diveMaps.ContainsKey(name) && ModEntry.diveMaps[name].Features.Contains("Underwater");
         }
 
-
-        public static void CheckIfMyButtonDown()
+        // Replaces myButtonDown because this is what that variable really did
+        public static bool isSafeToTryJump()
         {
-            // !IMP: Base conditions to prevent from swimming placed here.
-            if (Game1.player == null || Game1.player.currentLocation == null || Game1.player.currentLocation.waterTiles == null || !Context.IsPlayerFree || Helper.Input.IsDown(SButton.LeftShift) ||
-                Game1.player.isRidingHorse())
+            // Null checks
+            if (Game1.player == null || Game1.player.currentLocation == null || Game1.player.currentLocation.waterTiles == null)
             {
-                ModEntry.myButtonDown.Value = false;
-                return;
+                return false;
             }
 
-            if (Config.ReadyToSwim && 
-                    (
-                        Game1.isOneOfTheseKeysDown(Game1.input.GetKeyboardState(), Game1.options.moveUpButton) || 
-                        Game1.isOneOfTheseKeysDown(Game1.input.GetKeyboardState(), Game1.options.moveDownButton) ||
-                        Game1.isOneOfTheseKeysDown(Game1.input.GetKeyboardState(), Game1.options.moveLeftButton) ||
-                        Game1.isOneOfTheseKeysDown(Game1.input.GetKeyboardState(), Game1.options.moveRightButton) ||
-                        (Game1.options.gamepadControls && 
-                            (
-                                Game1.input.GetGamePadState().ThumbSticks.Left.Y > 0.25 || 
-                                Game1.input.GetGamePadState().IsButtonDown(Buttons.DPadUp) ||
-                                Game1.input.GetGamePadState().ThumbSticks.Left.Y < -0.25 || 
-                                Game1.input.GetGamePadState().IsButtonDown(Buttons.DPadDown) ||
-                                Game1.input.GetGamePadState().ThumbSticks.Left.X < -0.25 || 
-                                Game1.input.GetGamePadState().IsButtonDown(Buttons.DPadLeft) ||
-                                Game1.input.GetGamePadState().ThumbSticks.Left.X > 0.25 || 
-                                Game1.input.GetGamePadState().IsButtonDown(Buttons.DPadRight)
-                            )
-                        )
-                    )
-                )
+            // Player state checks
+            if(!Context.IsPlayerFree || !Context.CanPlayerMove || Game1.player.isRidingHorse())
             {
-
-                ModEntry.myButtonDown.Value = true;
-                return;
+                return false;
             }
 
-            if (Helper.Input.IsDown(Config.ManualJumpButton) && !(Game1.player.CurrentTool is StardewValley.Tools.Pan) && !(Game1.player.CurrentTool is StardewValley.Tools.FishingRod) && Config.EnableClickToSwim)
+            // Modded player state checks
+            if(Game1.player.millisecondsPlayed - SwimHelperEvents.lastJump.Value < 250 || IsMapUnderwater(Game1.player.currentLocation.Name))
             {
-                ModEntry.myButtonDown.Value = true;
-                return;
+                return false;
             }
 
-            ModEntry.myButtonDown.Value = false;
+            // Player input checks
+            if(!((Game1.player.isMoving() && Config.ReadyToSwim) || (Helper.Input.IsDown(Config.ManualJumpButton) && Config.EnableClickToSwim)) || Helper.Input.IsDown(SButton.LeftShift))
+            {
+                return false;
+            }
+
+            return true;
+        }
+
+        private static readonly PerScreen<bool> surfacing = new PerScreen<bool>();
+        public static void updateOxygenValue()
+        {
+            if (ModEntry.isUnderwater.Value)
+            {
+                if (ModEntry.oxygen.Value >= 0)
+                {
+                    if (!IsWearingScubaGear())
+                        ModEntry.oxygen.Value--;
+                    else
+                    {
+                        if (ModEntry.oxygen.Value < MaxOxygen())
+                            ModEntry.oxygen.Value++;
+                        if (ModEntry.oxygen.Value < MaxOxygen())
+                            ModEntry.oxygen.Value++;
+                    }
+                }
+                if (ModEntry.oxygen.Value < 0 && !surfacing.Value)
+                {
+                    surfacing.Value = true;
+                    Game1.playSound("pullItemFromWater");
+                    DiveLocation diveLocation = ModEntry.diveMaps[Game1.player.currentLocation.Name].DiveLocations.Last();
+                    DiveTo(diveLocation);
+                }
+            }
+            else
+            {
+                surfacing.Value = false;
+                if (ModEntry.oxygen.Value < MaxOxygen())
+                    ModEntry.oxygen.Value++;
+                if (ModEntry.oxygen.Value < MaxOxygen())
+                    ModEntry.oxygen.Value++;
+            }
         }
 
         public static int CheckForBuriedItem(Farmer who)
@@ -249,21 +270,24 @@ namespace Swim
 
         public static bool IsWearingScubaGear()
         {
-            bool tank = ModEntry.scubaTankID.Value != -1 && Game1.player.shirtItem.Value != null && Game1.player.shirtItem.Value != null && Game1.player.shirtItem.Value.ParentSheetIndex + "" == ModEntry.scubaTankID.Value + "";
-            bool mask = ModEntry.scubaMaskID.Value != -1 && Game1.player.hat.Value != null && Game1.player.hat.Value != null && Game1.player.hat.Value.ItemId == ModEntry.scubaMaskID.Value + "";
+            bool tank = ModEntry.scubaTankID.Value != "" && Game1.player.shirtItem.Value != null && Game1.player.shirtItem.Value.ItemId == ModEntry.scubaTankID.Value;
+            bool mask = ModEntry.scubaMaskID.Value != "" && Game1.player.hat.Value != null && Game1.player.hat.Value.ItemId == ModEntry.scubaMaskID.Value;
 
             return tank && mask;
         }
 
         public static bool IsInWater()
         {
-            var tiles = Game1.player.currentLocation.waterTiles;
+            WaterTiles tiles = Game1.player.currentLocation.waterTiles;
             Point p = Game1.player.TilePoint;
 
             if (!Game1.player.swimming.Value && Game1.player.currentLocation.map.GetLayer("Buildings")?.PickTile(new Location(p.X, p.Y) * Game1.tileSize, Game1.viewport.Size) != null)
+            {
+                //Monitor.Log("Not in water");
                 return false;
+            }
 
-            return IsMapUnderwater(Game1.player.currentLocation.Name)
+            bool output =  IsMapUnderwater(Game1.player.currentLocation.Name)
                 ||
                 (
                     tiles != null
@@ -278,48 +302,50 @@ namespace Swim
                         )
                     )
                 );
+
+            //Monitor.Log(output ? "In water" : "Not in water");
+            return output;
         }
 
-        public static List<Vector2> GetTilesInDirection(int count)
+        public static List<Vector2> GetTilesInDirection(int count, int direction)
         {
             List<Vector2> tiles = new List<Vector2>();
-            int dir = Game1.player.FacingDirection;
-            if (dir == 1)
+            if (direction == 1)
             {
 
                 for (int i = count; i > 0; i--)
                 {
-                    tiles.Add(Game1.player.Position + new Vector2(i, 0));
+                    tiles.Add(Game1.player.TilePoint.ToVector2() + new Vector2(i, 0));
                 }
 
             }
 
-            if (dir == 2)
+            if (direction == 2)
             {
 
                 for (int i = count; i > 0; i--)
                 {
-                    tiles.Add(Game1.player.Position + new Vector2(0, i));
+                    tiles.Add(Game1.player.TilePoint.ToVector2() + new Vector2(0, i));
                 }
 
             }
 
-            if (dir == 3)
+            if (direction == 3)
             {
 
                 for (int i = count; i > 0; i--)
                 {
-                    tiles.Add(Game1.player.Position - new Vector2(i, 0));
+                    tiles.Add(Game1.player.TilePoint.ToVector2() - new Vector2(i, 0));
                 }
 
             }
 
-            if (dir == 0)
+            if (direction == 0)
             {
 
                 for (int i = count; i > 0; i--)
                 {
-                    tiles.Add(Game1.player.Position - new Vector2(0, i));
+                    tiles.Add(Game1.player.TilePoint.ToVector2() - new Vector2(0, i));
                 }
 
             }
@@ -404,6 +430,7 @@ namespace Swim
             }
             if (property != null)
             {
+                //Monitor.Log("Tile has property: " + property.ToString());
                 return property.ToString();
             }
             return null;
@@ -477,6 +504,11 @@ namespace Swim
             bool result = passable == null && tile == null && tmp != null;
             return result;
         }
+
+        public static bool isMouseButton(SButton button)
+        {
+            return button == SButton.MouseLeft || button == SButton.MouseRight || button == SButton.MouseMiddle || button == SButton.MouseX1 || button == SButton.MouseX2;
+        }
         public static bool DebrisIsAnItem(Debris debris)
         {
             return debris.debrisType.Value == Debris.DebrisType.OBJECT || debris.debrisType.Value == Debris.DebrisType.ARCHAEOLOGY || debris.debrisType.Value == Debris.DebrisType.RESOURCE || debris.item != null;
@@ -484,7 +516,65 @@ namespace Swim
 
         internal static bool CanSwimHere()
         {
-            return (!Config.SwimIndoors || Game1.player.currentLocation.IsOutdoors) && Game1.player.currentLocation is not BeachNightMarket && Game1.player.currentLocation is not VolcanoDungeon && Game1.player.currentLocation is not BathHousePool;
+            GameLocation location = Game1.player.currentLocation;
+            bool result = (!Config.SwimIndoors || location.IsOutdoors) && location is not VolcanoDungeon && location is not BathHousePool && !ModEntry.locationIsPool.Value;
+            if (!result)
+                return false;
+            
+            Point playerPosition = Game1.player.TilePoint;
+
+            string property = doesTileHaveProperty(location.Map, playerPosition.X, playerPosition.Y, "TouchAction", "Back");
+
+            if (property == "PoolEntrance" || property == "ChangeIntoSwimsuit")
+            {
+                Monitor.Log("The current tile is a pool entrance! Disabling swimming in this location.");
+                ModEntry.locationIsPool.Value = true;
+                return false;
+            }
+
+            return true;
+        }
+
+        public static bool ShouldNotDrawHat(Farmer farmer)
+        {
+            return (!Config.DisplayHatWithSwimsuit) && farmer.bathingClothes.Value;
+        }
+
+        /// <summary>
+        /// Gets the direction of one point relative to another.
+        /// 
+        /// Point 1 is the starting point, and point 2 the endpoint.
+        /// Returns a cardinal direction using Stardew Valley's direction system (0 is up, 1 right, 2 down, and 3 left)
+        /// </summary>
+        /// <param name="x1">The x coordinate of the first point.</param>
+        /// <param name="y1">The y coordinate of the first point.</param>
+        /// <param name="x2">The x coordinate of the second point.</param>
+        /// <param name="y2">The y coordinate of the second point.</param>
+        /// <returns>A cardinal direction using Stardew Valley's direction system (0 is up, 1 right, 2 down, and 3 left)</returns>
+        public static int GetDirection(float x1, float y1, float x2, float y2)
+        {
+            if (Math.Abs(x1 - x2) > Math.Abs(y1 - y2))
+            {
+                if (x2 - x1 > 0)
+                {
+                    return 1; // Right
+                }
+                else
+                {
+                    return 3; // Left
+                }
+            }
+            else
+            {
+                if (y2 - y1 > 0)
+                {
+                    return 2; // Down
+                }
+                else
+                {
+                    return 0; // Up
+                }
+            }
         }
     }
 }

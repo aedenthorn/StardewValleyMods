@@ -4,9 +4,8 @@
     "PurchasePrice": "50000",
     "ShowHair": true,
     "IgnoreHairstyleOffset": true,
-  "NameLocalization":
-  {
-    // "es": "",
+  "NameLocalization": {
+    "es": "Máscara de bueco",
     "ko": "스쿠버 마스크",
     // "de": "",
     // "fr": "",
@@ -16,11 +15,10 @@
     "pt": "Máscara de mergulho",
     "ru": "Маска аквалангиста",
     // "tr": "",
-    "zh":"水肺深潜面罩",
+    "zh": "水肺深潜面罩"
   },
-  "DescriptionLocalization":
-  {
-    // "es": "",
+  "DescriptionLocalization": {
+    "es": "Un respirador para su tanque de bueco.",
     "ko": "물 속에서 호흡하기 위한 스쿠버 마스크.",
     // "de": "",
     // "fr": "",
@@ -30,6 +28,6 @@
     "pt": "Um respirador para o seu tanque de mergulho",
     "ru": "Ребризер для длительных погружений.",
     // "tr": "",
-    "zh":"为你的气瓶配置的呼吸器。",
+    "zh": "为你的气瓶配置的呼吸器。"
   },
 }

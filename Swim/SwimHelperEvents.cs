@@ -7,6 +7,8 @@ using StardewModdingAPI;
 using StardewModdingAPI.Events;
 using StardewModdingAPI.Utilities;
 using StardewValley;
+using StardewValley.Buffs;
+using StardewValley.GameData.Shirts;
 using StardewValley.Locations;
 using StardewValley.Menus;
 using StardewValley.Monsters;
@@ -60,7 +62,6 @@ namespace Swim
         internal static Texture2D bubbleTexture;
 
         private static readonly PerScreen<int> lastBreatheSound = new PerScreen<int>();
-        private static readonly PerScreen<bool> surfacing = new PerScreen<bool>();
 
         public static void Initialize(IMonitor monitor, IModHelper helper, ModConfig config)
         {
@@ -71,6 +72,11 @@ namespace Swim
 
         public static void Player_Warped(object sender, WarpedEventArgs e)
         {
+            if(!e.IsLocalPlayer)
+            {
+                return;
+            }
+
             if (e.NewLocation.Name == "Custom_ScubaAbigailCave")
             {
                 abigailTicks.Value = 0;
@@ -78,7 +84,7 @@ namespace Swim
 
 
                 Game1.player.changeOutOfSwimSuit();
-                if (Game1.player.hat.Value != null && Game1.player.hat.Value.ParentSheetIndex != 0)
+                if (Game1.player.hat.Value != null && Game1.player.hat.Value.ItemId != "0")
                     Game1.player.addItemToInventory(Game1.player.hat.Value);
                 Game1.player.hat.Value = new Hat("0");
                 Game1.player.doEmote(9);
@@ -87,6 +93,8 @@ namespace Swim
             {
                 //SwimMaps.SwitchToWaterTiles(e.NewLocation);
             }
+
+            ModEntry.locationIsPool.Value = false;
         }
 
         public static void Player_InventoryChanged(object sender, InventoryChangedEventArgs e)
@@ -94,17 +102,17 @@ namespace Swim
             if (e.Player != Game1.player)
                 return;
 
-            if (!Game1.player.mailReceived.Contains("ScubaTank") && ModEntry.scubaTankID.Value != -1 && e.Added != null && e.Added.Count() > 0 && e.Added.FirstOrDefault() != null && e.Added.FirstOrDefault().GetType() == typeof(Clothing) && e.Added.FirstOrDefault().ParentSheetIndex == ModEntry.scubaTankID.Value)
+            if (!Game1.player.mailReceived.Contains("ScubaTank") && ModEntry.scubaTankID.Value != "" && e.Added != null && e.Added.Count() > 0 && e.Added.FirstOrDefault() != null && e.Added.FirstOrDefault().GetType() == typeof(Clothing) && e.Added.FirstOrDefault().ItemId == ModEntry.scubaTankID.Value)
             {
                 Monitor.Log("Player found scuba tank");
                 Game1.player.mailReceived.Add("ScubaTank");
             }
-            if (!Game1.player.mailReceived.Contains("ScubaMask") && ModEntry.scubaMaskID.Value != -1 && e.Added != null && e.Added.Count() > 0 && e.Added.FirstOrDefault() != null && e.Added.FirstOrDefault().GetType() == typeof(Hat) && (e.Added.FirstOrDefault() as Hat).ItemId == ModEntry.scubaMaskID.Value + "")
+            if (!Game1.player.mailReceived.Contains("ScubaMask") && ModEntry.scubaMaskID.Value != "" && e.Added != null && e.Added.Count() > 0 && e.Added.FirstOrDefault() != null && e.Added.FirstOrDefault().GetType() == typeof(Hat) && (e.Added.FirstOrDefault() as Hat).ItemId == ModEntry.scubaMaskID.Value + "")
             {
                 Monitor.Log("Player found scuba mask");
                 Game1.player.mailReceived.Add("ScubaMask");
             }
-            if (!Game1.player.mailReceived.Contains("ScubaFins") && ModEntry.scubaFinsID.Value != -1 && e.Added != null && e.Added.Count() > 0 && e.Added.FirstOrDefault() != null && e.Added.FirstOrDefault().GetType() == typeof(Boots) && e.Added.FirstOrDefault().ParentSheetIndex == ModEntry.scubaFinsID.Value)
+            if (!Game1.player.mailReceived.Contains("ScubaFins") && ModEntry.scubaTankID.Value != "" && e.Added != null && e.Added.Count() > 0 && e.Added.FirstOrDefault() != null && e.Added.FirstOrDefault().GetType() == typeof(Boots) && e.Added.FirstOrDefault().ItemId == ModEntry.scubaFinsID.Value)
             {
                 Monitor.Log("Player found scuba fins");
                 Game1.player.mailReceived.Add("ScubaFins");
@@ -126,46 +134,50 @@ namespace Swim
         public static void GameLoop_SaveLoaded(object sender, SaveLoadedEventArgs e)
         {
             // load scuba gear ids
-
-            if (ModEntry.JsonAssets != null)
+            
+            if(DataLoader.Boots(Game1.content).ContainsKey("Swim_ScubaFins"))
             {
-                ModEntry.scubaMaskID.Value = ModEntry.JsonAssets.GetHatId("Scuba Mask");
-                ModEntry.scubaTankID.Value = ModEntry.JsonAssets.GetClothingId("Scuba Tank");
+                ModEntry.scubaFinsID.Value = "Swim_ScubaFins";
 
-                if (ModEntry.scubaMaskID.Value == -1)
+                Monitor.Log($"Swim mod item #1 ID is {ModEntry.scubaFinsID.Value}.");
+                if (Game1.player.boots.Value != null && Game1.player.boots.Value.Name == "Scuba Fins" && Game1.player.boots.Value.ItemId != ModEntry.scubaFinsID.Value)
                 {
-                    Monitor.Log("Can't get ID for Swim mod item #1. Some functionality will be lost.");
+                    Game1.player.boots.Value = ItemRegistry.Create<Boots>(ModEntry.scubaFinsID.Value);
                 }
-                else
-                {
-                    Monitor.Log(string.Format("Swim mod item #1 ID is {0}.", ModEntry.scubaMaskID.Value));
-                }
+            }
+            else
+            {
+                Monitor.Log("Could not find scuba fins! Do you have the swim items content pack installed?", LogLevel.Warn);
+            }
 
-                if (ModEntry.scubaTankID.Value == -1)
-                {
-                    Monitor.Log("Can't get ID for Swim mod item #2. Some functionality will be lost.");
-                }
-                else
-                {
-                    Monitor.Log(string.Format("Swim mod item #2 ID is {0}.", ModEntry.scubaTankID.Value));
-                }
+            if (DataLoader.Shirts(Game1.content).ContainsKey("Swim_ScubaTank"))
+            {
+                ModEntry.scubaTankID.Value = "Swim_ScubaTank";
 
-                try
+                Monitor.Log($"Swim mod item #2 ID is {ModEntry.scubaTankID.Value}.");
+                if (Game1.player.shirtItem.Value != null && Game1.player.shirtItem.Value.Name == "Scuba Tank" && Game1.player.shirtItem.Value.ItemId != ModEntry.scubaTankID.Value)
                 {
-                    ModEntry.scubaFinsID.Value = Helper.GameContent.Load<Dictionary<int, string>>(@"Data/Boots").First(x => x.Value.StartsWith("Scuba Fins")).Key;
+                    Game1.player.shirtItem.Value = ItemRegistry.Create<Clothing>(ModEntry.scubaTankID.Value);
                 }
-                catch
+            }
+            else
+            {
+                Monitor.Log("Could not find scuba tank! Do you have the swim items content pack installed?", LogLevel.Warn);
+            }
+
+            if (DataLoader.Hats(Game1.content).ContainsKey("Swim_ScubaMask"))
+            {
+                ModEntry.scubaMaskID.Value = "Swim_ScubaMask";
+
+                Monitor.Log($"Swim mod item #3 ID is {ModEntry.scubaMaskID.Value}.");
+                if (Game1.player.hat.Value != null && Game1.player.hat.Value.Name == "Scuba Mask" && Game1.player.hat.Value.ItemId != ModEntry.scubaMaskID.Value)
                 {
-                    Monitor.Log("Can't get ID for Swim mod item #3. Some functionality will be lost.");
+                    Game1.player.hat.Value = ItemRegistry.Create<Hat>(ModEntry.scubaMaskID.Value);
                 }
-                if (ModEntry.scubaFinsID.Value != -1)
-                {
-                    Monitor.Log(string.Format("Swim mod item #3 ID is {0}.", ModEntry.scubaFinsID.Value));
-                    if (Game1.player.boots.Value != null && Game1.player.boots.Value != null && Game1.player.boots.Value.Name == "Scuba Fins" && Game1.player.boots.Value.ParentSheetIndex != ModEntry.scubaFinsID.Value)
-                    {
-                        Game1.player.boots.Value = new Boots(ModEntry.scubaFinsID.Value + "");
-                    }
-                }
+            }
+            else
+            {
+                Monitor.Log("Could not find scuba mask! Do you have the swim items content pack installed?", LogLevel.Warn);
             }
 
             // load dive maps
@@ -261,8 +273,10 @@ namespace Swim
 
         public static void GameLoop_GameLaunched(object sender, GameLaunchedEventArgs e)
         {
+            ModEntry.setupModConfig();
             // load scuba gear
 
+            /*
             ModEntry.JsonAssets = Helper.ModRegistry.GetApi<IJsonAssetsApi>("spacechase0.JsonAssets");
             bool flag = ModEntry.JsonAssets == null;
             if (flag)
@@ -272,7 +286,7 @@ namespace Swim
             else
             {
                 ModEntry.JsonAssets.LoadAssets(Path.Combine(Helper.DirectoryPath, "assets/json-assets"));
-            }
+            }*/
 
             // fix dive maps
 
@@ -301,262 +315,6 @@ namespace Swim
             if (Config.BreatheSound)
             {
                 LoadBreatheSound();
-            }
-
-            // get Generic Mod Config Menu's API (if it's installed)
-            var configMenu = Helper.ModRegistry.GetApi<IGenericModConfigMenuApi>("spacechase0.GenericModConfigMenu");
-            if (configMenu != null)
-            {
-                // Register mod.
-                configMenu.Register(
-                    mod: ModEntry.context.ModManifest,
-                    reset: () => Config = new ModConfig(),
-                    save: () => Helper.WriteConfig(Config)
-                );
-
-                #region Region: Basic Options.
-
-                configMenu.AddBoolOption(
-                    mod: ModEntry.context.ModManifest,
-                    name: () => "Mod Enabled?",
-                    tooltip: () => "Enables and Disables mod.",
-                    getValue: () => Config.EnableMod,
-                    setValue: value => Config.EnableMod = value
-                );
-                configMenu.AddBoolOption(
-                    mod: ModEntry.context.ModManifest,
-                    name: () => "Auto-Swim enabled?",
-                    tooltip: () => "Allow character to jump to the water automatically, when you walk to land edge.",
-                    getValue: () => Config.ReadyToSwim,
-                    setValue: value => Config.ReadyToSwim = value
-                );
-                configMenu.AddBoolOption(
-                    mod: ModEntry.context.ModManifest,
-                    name: () => "ShowOxygenBar",
-                    tooltip: () => "Define, will oxygen bar draw or not, when you dive to the water.",
-                    getValue: () => Config.ShowOxygenBar,
-                    setValue: value => Config.ShowOxygenBar = value
-                );
-                configMenu.AddBoolOption(
-                    mod: ModEntry.context.ModManifest,
-                    name: () => "SwimSuitAlways",
-                    tooltip: () => "If set's true, your character will always wear a swimsuit.",
-                    getValue: () => Config.SwimSuitAlways,
-                    setValue: value => Config.SwimSuitAlways = value
-                );
-                configMenu.AddBoolOption(
-                    mod: ModEntry.context.ModManifest,
-                    name: () => "NoAutoSwimSuit",
-                    tooltip: () => "If set's false, character will NOT wear a swimsuit automatically, when you enter the water.",
-                    getValue: () => Config.NoAutoSwimSuit,
-                    setValue: value => Config.NoAutoSwimSuit = value
-                );
-                configMenu.AddBoolOption(
-                    mod: ModEntry.context.ModManifest,
-                    name: () => "AllowActionsWhileInSwimsuit",
-                    tooltip: () => "Allow you to use items, while you're swimming (may cause some visual bugs).",
-                    getValue: () => Config.AllowActionsWhileInSwimsuit,
-                    setValue: value => Config.AllowActionsWhileInSwimsuit = value
-                );
-                configMenu.AddBoolOption(
-                    mod: ModEntry.context.ModManifest,
-                    name: () => "AllowRunningWhileInSwimsuit",
-                    tooltip: () => "Allow you to run, while you're swimming (may cause some visual bugs).",
-                    getValue: () => Config.AllowRunningWhileInSwimsuit,
-                    setValue: value => Config.AllowRunningWhileInSwimsuit = value
-                );
-                configMenu.AddBoolOption(
-                    mod: ModEntry.context.ModManifest,
-                    name: () => "EnableClickToSwim",
-                    tooltip: () => "Enables or Disables possibility to manual jump to the water (by clicking certain key).",
-                    getValue: () => Config.EnableClickToSwim,
-                    setValue: value => Config.EnableClickToSwim = value
-                );
-                configMenu.AddBoolOption(
-                    mod: ModEntry.context.ModManifest,
-                    name: () => "SwimRestoresVitals",
-                    tooltip: () => "If set's true, your HP and Energy will restore, while you're swimming (like in Bath).",
-                    getValue: () => Config.SwimRestoresVitals,
-                    setValue: value => Config.SwimRestoresVitals = value
-                );
-                #endregion
-
-                #region Region: Key Binds.
-
-                configMenu.AddKeybind(
-                    mod: ModEntry.context.ModManifest,
-                    name: () => "Enable Auto-Swimming",
-                    tooltip: () => "Enables and Disables auto-swimming option.",
-                    getValue: () => Config.SwimKey,
-                    setValue: value => Config.SwimKey = value
-                );
-                configMenu.AddKeybind(
-                    mod: ModEntry.context.ModManifest,
-                    name: () => "Toggle Swimsuit",
-                    tooltip: () => "Change character cloth to swimsuit and vice versa.",
-                    getValue: () => Config.SwimSuitKey,
-                    setValue: value => Config.SwimSuitKey = value
-                );
-                configMenu.AddKeybind(
-                    mod: ModEntry.context.ModManifest,
-                    name: () => "Dive",
-                    tooltip: () => "Change character cloth to swimsuit and vice versa.",
-                    getValue: () => Config.DiveKey,
-                    setValue: value => Config.DiveKey = value
-                );
-                configMenu.AddKeybind(
-                    mod: ModEntry.context.ModManifest,
-                    name: () => "Manual Jump",
-                    tooltip: () => "Allow you to jump into the water by clicking a certain key.",
-                    getValue: () => Config.ManualJumpButton,
-                    setValue: value => Config.ManualJumpButton = value
-                );
-                #endregion
-
-                #region Region: Advanced Tweaks.
-
-                configMenu.AddNumberOption(
-                    mod: ModEntry.context.ModManifest,
-                    name: () => "JumpTimeInMilliseconds",
-                    tooltip: () => "Sets jumping animation time.",
-                    getValue: () => Config.JumpTimeInMilliseconds,
-                    setValue: value => Config.JumpTimeInMilliseconds = value
-                );
-
-                configMenu.AddNumberOption(
-                    mod: ModEntry.context.ModManifest,
-                    name: () => "OxygenMult",
-                    tooltip: () => "Sets oxygen multiplier (Energy * Mult = O2).",
-                    getValue: () => Config.OxygenMult,
-                    setValue: value => Config.OxygenMult = value
-                );
-                configMenu.AddNumberOption(
-                    mod: ModEntry.context.ModManifest,
-                    name: () => "BubbleMult",
-                    tooltip: () => "Set's quantity multiplier of bubbles.",
-                    getValue: () => Config.BubbleMult,
-                    setValue: value => Config.BubbleMult = value
-                );
-                configMenu.AddBoolOption(
-                    mod: ModEntry.context.ModManifest,
-                    name: () => "AddFishies",
-                    tooltip: () => "Allow fishes to spawn in underwater.",
-                    getValue: () => Config.AddFishies,
-                    setValue: value => Config.AddFishies = value
-                );
-                configMenu.AddBoolOption(
-                    mod: ModEntry.context.ModManifest,
-                    name: () => "AddCrabs",
-                    tooltip: () => "Allow crabs to spawn in underwater.",
-                    getValue: () => Config.AddCrabs,
-                    setValue: value => Config.AddCrabs = value
-                );
-                configMenu.AddBoolOption(
-                    mod: ModEntry.context.ModManifest,
-                    name: () => "BreatheSound",
-                    tooltip: () => "If sets true, while you're underwater you will hear breathe sound.",
-                    getValue: () => Config.BreatheSound,
-                    setValue: value => Config.BreatheSound = value
-                );
-                configMenu.AddNumberOption(
-                    mod: ModEntry.context.ModManifest,
-                    name: () => "MineralPerThousandMin",
-                    tooltip: () => "Sets minimal quantity, that can be meet underwater.",
-                    getValue: () => Config.MineralPerThousandMin,
-                    setValue: value => Config.MineralPerThousandMin = value
-                );
-                configMenu.AddNumberOption(
-                    mod: ModEntry.context.ModManifest,
-                    name: () => "MineralPerThousandMax",
-                    tooltip: () => "Sets maximal quantity, that can be meet underwater.",
-                    getValue: () => Config.MineralPerThousandMax,
-                    setValue: value => Config.MineralPerThousandMax = value
-                );
-                configMenu.AddNumberOption(
-                    mod: ModEntry.context.ModManifest,
-                    name: () => "CrabsPerThousandMin",
-                    tooltip: () => "Sets minimal quantity, that can be meet underwater.",
-                    getValue: () => Config.CrabsPerThousandMin,
-                    setValue: value => Config.CrabsPerThousandMin = value
-                );
-                configMenu.AddNumberOption(
-                    mod: ModEntry.context.ModManifest,
-                    name: () => "CrabsPerThousandMax",
-                    tooltip: () => "Sets maximal quantity, that can be meet underwater.",
-                    getValue: () => Config.CrabsPerThousandMax,
-                    setValue: value => Config.CrabsPerThousandMax = value
-                );
-                configMenu.AddNumberOption(
-                    mod: ModEntry.context.ModManifest,
-                    name: () => "PercentChanceCrabIsMimic",
-                    tooltip: () => "Sets chance to change crab by the mimic one.",
-                    getValue: () => Config.PercentChanceCrabIsMimic,
-                    setValue: value => Config.PercentChanceCrabIsMimic = value
-                );
-                configMenu.AddNumberOption(
-                    mod: ModEntry.context.ModManifest,
-                    name: () => "MinSmolFishies",
-                    tooltip: () => "Sets minimal quantity, that can be meet underwater.",
-                    getValue: () => Config.MinSmolFishies,
-                    setValue: value => Config.MinSmolFishies = value
-                );
-                configMenu.AddNumberOption(
-                    mod: ModEntry.context.ModManifest,
-                    name: () => "MaxSmolFishies",
-                    tooltip: () => "Sets maximal quantity, that can be meet underwater.",
-                    getValue: () => Config.MaxSmolFishies,
-                    setValue: value => Config.MaxSmolFishies = value
-                );
-                configMenu.AddNumberOption(
-                    mod: ModEntry.context.ModManifest,
-                    name: () => "BigFishiesPerThousandMin",
-                    tooltip: () => "Sets minimal quantity, that can be meet underwater.",
-                    getValue: () => Config.BigFishiesPerThousandMin,
-                    setValue: value => Config.BigFishiesPerThousandMin = value
-                );
-                configMenu.AddNumberOption(
-                    mod: ModEntry.context.ModManifest,
-                    name: () => "BigFishiesPerThousandMax",
-                    tooltip: () => "Sets maximal quantity, that can be meet underwater.",
-                    getValue: () => Config.BigFishiesPerThousandMax,
-                    setValue: value => Config.BigFishiesPerThousandMax = value
-                );
-                configMenu.AddNumberOption(
-                    mod: ModEntry.context.ModManifest,
-                    name: () => "OceanForagePerThousandMin",
-                    tooltip: () => "Sets minimal quantity, that can be meet underwater.",
-                    getValue: () => Config.OceanForagePerThousandMin,
-                    setValue: value => Config.OceanForagePerThousandMin = value
-                );
-                configMenu.AddNumberOption(
-                    mod: ModEntry.context.ModManifest,
-                    name: () => "OceanForagePerThousandMax",
-                    tooltip: () => "Sets maximal quantity, that can be meet underwater.",
-                    getValue: () => Config.OceanForagePerThousandMax,
-                    setValue: value => Config.OceanForagePerThousandMax = value
-                );
-                configMenu.AddNumberOption(
-                    mod: ModEntry.context.ModManifest,
-                    name: () => "MinOceanChests",
-                    tooltip: () => "Sets minimal quantity, that can be meet in underwater biome ocean.",
-                    getValue: () => Config.MinOceanChests,
-                    setValue: value => Config.MinOceanChests = value
-                );
-                configMenu.AddNumberOption(
-                    mod: ModEntry.context.ModManifest,
-                    name: () => "MaxOceanChests",
-                    tooltip: () => "Sets maximal quantity, that can be meet in underwater biome ocean",
-                    getValue: () => Config.MaxOceanChests,
-                    setValue: value => Config.MaxOceanChests = value
-                );
-                configMenu.AddTextOption(
-                    mod: ModEntry.context.ModManifest,
-                    name: () => "JumpDistanceMult",
-                    tooltip: () => "Multiply jump sensitivity by this amount",
-                    getValue: () => Config.TriggerDistanceMult +"",
-                    setValue: delegate(string value) { if (float.TryParse(value, NumberStyles.Any, CultureInfo.InvariantCulture, out var f)) { Config.TriggerDistanceMult = f; } } 
-                );
-                #endregion
             }
         }
 
@@ -639,22 +397,10 @@ namespace Swim
             ModEntry.oxygen.Value = SwimUtils.MaxOxygen();
         }
 
-        public static void Input_ButtonReleased(object sender, ButtonReleasedEventArgs e)
-        {
-            if (Game1.player == null)
-            {
-                ModEntry.myButtonDown.Value = false;
-                return;
-            }
-            SwimUtils.CheckIfMyButtonDown();
-        }
-
-
         public static void Input_ButtonPressed(object sender, ButtonPressedEventArgs e)
         {
             if (Game1.player == null || Game1.player.currentLocation == null)
             {
-                ModEntry.myButtonDown.Value = false;
                 return;
             }
 
@@ -690,11 +436,13 @@ namespace Swim
 
             if (e.Button == Config.DiveKey && Game1.activeClickableMenu == null && !Game1.player.UsingTool && ModEntry.diveMaps.ContainsKey(Game1.player.currentLocation.Name) && ModEntry.diveMaps[Game1.player.currentLocation.Name].DiveLocations.Count > 0)
             {
+                Monitor.Log("Trying to dive!");
                 Point pos = Game1.player.TilePoint;
                 Location loc = new Location(pos.X, pos.Y);
 
                 if (!SwimUtils.IsInWater())
                 {
+                    Monitor.Log("Not in water");
                     return;
                 }
 
@@ -764,36 +512,7 @@ namespace Swim
 
             if (Game1.activeClickableMenu == null)
             {
-                if (ModEntry.isUnderwater.Value)
-                {
-                    if (ModEntry.oxygen.Value >= 0)
-                    {
-                        if (!SwimUtils.IsWearingScubaGear())
-                            ModEntry.oxygen.Value--;
-                        else
-                        {
-                            if (ModEntry.oxygen.Value < SwimUtils.MaxOxygen())
-                                ModEntry.oxygen.Value++;
-                            if (ModEntry.oxygen.Value < SwimUtils.MaxOxygen())
-                                ModEntry.oxygen.Value++;
-                        }
-                    }
-                    if (ModEntry.oxygen.Value < 0 && !surfacing.Value)
-                    {
-                        surfacing.Value = true;
-                        Game1.playSound("pullItemFromWater");
-                        DiveLocation diveLocation = ModEntry.diveMaps[Game1.player.currentLocation.Name].DiveLocations.Last();
-                        SwimUtils.DiveTo(diveLocation);
-                    }
-                }
-                else
-                {
-                    surfacing.Value = false;
-                    if (ModEntry.oxygen.Value < SwimUtils.MaxOxygen())
-                        ModEntry.oxygen.Value++;
-                    if (ModEntry.oxygen.Value < SwimUtils.MaxOxygen())
-                        ModEntry.oxygen.Value++;
-                }
+                SwimUtils.updateOxygenValue();
             }
 
             if (SwimUtils.IsWearingScubaGear())
@@ -844,16 +563,6 @@ namespace Swim
             if (!SwimUtils.CanSwimHere())
                 return;
 
-            // only if ready to swim from here on!
-            var readyToAutoSwim = Config.ReadyToSwim;
-            var manualSwim = Helper.Input.IsDown(Config.ManualJumpButton);
-
-            // !IMP: Conditions, with locations (i.e. locations with restricted swimming), must be checked here.
-            if ((!readyToAutoSwim && !manualSwim) || !Context.IsPlayerFree)
-            {
-                return;
-            }
-
             if (Game1.player.swimming.Value && !SwimUtils.IsInWater() && !isJumping.Value)
             {
                 Monitor.Log("Swimming out of water");
@@ -870,162 +579,117 @@ namespace Swim
                     Game1.player.changeOutOfSwimSuit();
             }
 
+            if (!Game1.player.swimming.Value && SwimUtils.IsInWater() && !isJumping.Value)
+            {
+                Monitor.Log("In water not swimming");
+
+                ModEntry.willSwim.Value = true;
+                Game1.player.freezePause = Config.JumpTimeInMilliseconds;
+                Game1.player.currentLocation.playSound("dwop");
+                isJumping.Value = true;
+                startJumpLoc.Value = Game1.player.position.Value;
+                endJumpLoc.Value = Game1.player.position.Value;
+
+
+                Game1.player.swimming.Value = true;
+                if (!Game1.player.bathingClothes.Value && !SwimUtils.IsWearingScubaGear() && !Config.NoAutoSwimSuit)
+                    Game1.player.changeIntoSwimsuit();
+            }
+
+
+            // !IMP: Conditions, with locations (i.e. locations with restricted swimming), must be checked here
+            if (!Context.IsPlayerFree)
+            {
+                return;
+            }
+
+            if (Game1.player.swimming.Value && tryToWarp()) // Returns true if it is warping
+                return;
+
             if (Game1.player.swimming.Value)
             {
-                DiveMap dm = null;
-                Point edgePos = Game1.player.TilePoint;
-
-                if (ModEntry.diveMaps.ContainsKey(Game1.player.currentLocation.Name))
+                if (SwimUtils.IsWearingScubaGear() && !Config.SwimSuitAlways && SwimUtils.IsMapUnderwater(Game1.currentLocation.Name))
                 {
-                    dm = ModEntry.diveMaps[Game1.player.currentLocation.Name];
-                }
-
-                if (Game1.player.position.Y > Game1.viewport.Y + Game1.viewport.Height - 16)
-                {
-                    Game1.player.position.Value = new Vector2(Game1.player.position.X, Game1.viewport.Y + Game1.viewport.Height - 17);
-                    if (dm != null)
+                    if(Game1.player.bathingClothes.Value)
                     {
-                        EdgeWarp edge = dm.EdgeWarps.Find((x) => x.ThisMapEdge == "Bottom" && x.FirstTile <= edgePos.X && x.LastTile >= edgePos.X);
-                        if (edge != null)
-                        {
-                            Point pos = SwimUtils.GetEdgeWarpDestination(edgePos.X, edge);
-                            if (pos != Point.Zero)
-                            {
-                                Monitor.Log("warping south");
-                                Game1.warpFarmer(edge.OtherMapName, pos.X, pos.Y, false);
-                            }
-                        }
+                        Game1.player.changeOutOfSwimSuit();
                     }
                 }
-                else if (Game1.player.position.Y < Game1.viewport.Y - 16)
-                {
-                    Game1.player.position.Value = new Vector2(Game1.player.position.X, Game1.viewport.Y - 15);
-
-                    if (dm != null)
-                    {
-                        EdgeWarp edge = dm.EdgeWarps.Find((x) => x.ThisMapEdge == "Top" && x.FirstTile <= edgePos.X && x.LastTile >= edgePos.X);
-                        if (edge != null)
-                        {
-                            Point pos = SwimUtils.GetEdgeWarpDestination(edgePos.X, edge);
-                            if (pos != Point.Zero)
-                            {
-                                Monitor.Log("warping north");
-                                Game1.warpFarmer(edge.OtherMapName, pos.X, pos.Y, false);
-                            }
-                        }
-                    }
-                }
-                else if (Game1.player.position.X > Game1.viewport.X + Game1.viewport.Width - 32)
-                {
-                    Game1.player.position.Value = new Vector2(Game1.viewport.X + Game1.viewport.Width - 33, Game1.player.position.Y);
-
-                    if (dm != null)
-                    {
-                        EdgeWarp edge = dm.EdgeWarps.Find((x) => x.ThisMapEdge == "Right" && x.FirstTile <= edgePos.Y && x.LastTile >= edgePos.Y);
-                        if (edge != null)
-                        {
-                            Point pos = SwimUtils.GetEdgeWarpDestination(edgePos.Y, edge);
-                            if (pos != Point.Zero)
-                            {
-                                Monitor.Log("warping east");
-                                Game1.warpFarmer(edge.OtherMapName, pos.X, pos.Y, false);
-                            }
-                        }
-                    }
-
-                    if (Game1.player.currentLocation.Name == "Forest")
-                    {
-                        if (Game1.player.position.Y / 64 > 74)
-                            Game1.warpFarmer("Beach", 0, 13, false);
-                        else
-                            Game1.warpFarmer("Town", 0, 100, false);
-                    }
-                }
-                else if (Game1.player.position.X < Game1.viewport.X - 32)
-                {
-                    Game1.player.position.Value = new Vector2(Game1.viewport.X - 31, Game1.player.position.Y);
-
-                    if (dm != null)
-                    {
-                        EdgeWarp edge = dm.EdgeWarps.Find((x) => x.ThisMapEdge == "Left" && x.FirstTile <= edgePos.Y && x.LastTile >= edgePos.Y);
-                        if (edge != null)
-                        {
-                            Point pos = SwimUtils.GetEdgeWarpDestination(edgePos.Y, edge);
-                            if (pos != Point.Zero)
-                            {
-                                Monitor.Log("warping west");
-                                Game1.warpFarmer(edge.OtherMapName, pos.X, pos.Y, false);
-                            }
-                        }
-                    }
-
-                    if (Game1.player.currentLocation.Name == "Town")
-                    {
-                        Game1.warpFarmer("Forest", 119, 43, false);
-                    }
-                    else if (Game1.player.currentLocation.Name == "Beach")
-                    {
-                        Game1.warpFarmer("Forest", 119, 111, false);
-                    }
-                }
-
-                if (Game1.player.bathingClothes.Value && SwimUtils.IsWearingScubaGear() && !Config.SwimSuitAlways)
-                    Game1.player.changeOutOfSwimSuit();
-                else if (!Game1.player.bathingClothes.Value && !Config.NoAutoSwimSuit && (!SwimUtils.IsWearingScubaGear() || Config.SwimSuitAlways))
+                else if (!Game1.player.bathingClothes.Value && !Config.NoAutoSwimSuit)
                     Game1.player.changeIntoSwimsuit();
 
-                if (Game1.player.boots.Value != null && ModEntry.scubaFinsID.Value != -1 && Game1.player.boots.Value.indexInTileSheet.Value == ModEntry.scubaFinsID.Value)
+
+                if (Game1.player.boots.Value != null && ModEntry.scubaFinsID.Value != "" && Game1.player.boots.Value.ItemId == ModEntry.scubaFinsID.Value)
                 {
-                    string buffId = "42883167";
+                    string buffId = "Swim_ScubaFinsSpeed";
                     Buff buff = Game1.player.buffs.AppliedBuffs.Values.FirstOrDefault((Buff p) => p.Equals(buffId));
                     if (buff == null)
                     {
-                        BuffsDisplay buffsDisplay = Game1.buffsDisplay;
-                        Buff buff2 = new Buff("42883167",  "Scuba Fins", Helper.Translation.Get("scuba-fins"));
-                        
-                        buff = buff2;
-                        buffsDisplay.updatedIDs.Add(buff2.id);
+                        buff = new Buff(buffId, "Scuba Fins", Helper.Translation.Get("scuba-fins"), 50, Game1.content.Load<Texture2D>("TileSheets/BuffsIcons"), 9, new BuffEffects() {Speed = {2}});
+
+                        Game1.player.applyBuff(buff);
                     }
-                    buff.millisecondsDuration = 50;
+                    else
+                    {
+                        buff.millisecondsDuration = 50;
+                    }
                 }
+
+                Game1.player.canOnlyWalk = true;
+                Game1.player.setRunning(false);
             }
-            else
+
+            if(!SwimUtils.isSafeToTryJump())
             {
-                if (SwimUtils.IsInWater() && !isJumping.Value)
-                {
-                    Monitor.Log("In water not swimming");
-
-                    ModEntry.willSwim.Value = true;
-                    Game1.player.freezePause = Config.JumpTimeInMilliseconds;
-                    Game1.player.currentLocation.playSound("dwop");
-                    isJumping.Value = true;
-                    startJumpLoc.Value = Game1.player.position.Value;
-                    endJumpLoc.Value = Game1.player.position.Value;
-
-
-                    Game1.player.swimming.Value = true;
-                    if (!Game1.player.bathingClothes.Value && !SwimUtils.IsWearingScubaGear() && !Config.NoAutoSwimSuit)
-                        Game1.player.changeIntoSwimsuit();
-                }
-
+                return;
             }
 
-            SwimUtils.CheckIfMyButtonDown();
+            int direction = Game1.player.FacingDirection;
 
-            if (!ModEntry.myButtonDown.Value || Game1.player.millisecondsPlayed - lastJump.Value < 250 || SwimUtils.IsMapUnderwater(Game1.player.currentLocation.Name))
-                return;
+            bool didJump = tryToJumpInDirection(direction); // Try to jump in the direction the player is facing
 
-            // !IMP: Conditions with hand tools (i.e. rods), must be placed here.
-            if ((Helper.Input.IsDown(SButton.MouseLeft) && !Game1.player.swimming.Value && (Game1.player.CurrentTool is WateringCan || Game1.player.CurrentTool is FishingRod)) ||
-                (Helper.Input.IsDown(SButton.MouseRight) && !Game1.player.swimming.Value && Game1.player.CurrentTool is MeleeWeapon))
-                return;
+            // If we didn't just jump, 
+            if (!didJump && Helper.Input.IsDown(Config.ManualJumpButton) && SwimUtils.isMouseButton(Config.ManualJumpButton) && Config.EnableClickToSwim)
+            {
+                try
+                {
+                    int xTile = (int)Math.Round((Game1.viewport.X + Game1.getOldMouseX()) / 64f);
+                    int yTile = (int)Math.Round((Game1.viewport.Y + Game1.getOldMouseY()) / 64f);
+                    //Monitor.Log($"Click tile: ({xTile}, {yTile}), Player tile: ({Game1.player.TilePoint.X}, {Game1.player.TilePoint.Y})");
+                    bool clickTileIsWater = Game1.player.currentLocation.waterTiles[xTile, yTile];
+                    bool isClickingOnOppositeTerrain = clickTileIsWater != Game1.player.swimming.Value;
+                    if (isClickingOnOppositeTerrain || !Config.MustClickOnOppositeTerrain)
+                    {
+                        // Set the direction to the direction of the cursor relative to the player.
+                        direction = SwimUtils.GetDirection(Game1.player.TilePoint.X, Game1.player.TilePoint.Y, xTile, yTile);
 
-            List<Vector2> tiles = SwimUtils.GetTilesInDirection(5);
-            Vector2 jumpLocation = Vector2.Zero;
+                        if(direction != Game1.player.FacingDirection)
+                        {
+                            tryToJumpInDirection(direction);
+                        }
+                    }
+                    else // If the player is pressing the manual swim button, manual swim is on, they are not clicking on the opposite terrain, and mustClickOnOppositeTerrain is true
+                    {
+                        return;
+                    }
+                }
+                catch
+                {
+                    // Assiming this happens when the game can't get the mouse position
+                    Monitor.Log("Error in manual direction calculation!");
+                }
+            }
+        }
 
+        public static bool tryToJumpInDirection(int direction) // Returns whether or not it is jumping
+        {
             double distance = -1;
             int maxDistance = 0;
-            switch (Game1.player.FacingDirection)
+
+            List<Vector2> tiles = SwimUtils.GetTilesInDirection(5, direction);
+            Vector2 jumpLocation = Vector2.Zero;
+
+            switch (direction)
             {
                 case 0:
                     distance = Math.Abs(Game1.player.position.Y - tiles.Last().Y * Game1.tileSize);
@@ -1044,24 +708,8 @@ namespace Swim
                     maxDistance = (int)Math.Round(Config.TriggerDistanceLeft * Config.TriggerDistanceMult);
                     break;
             }
-            if (Helper.Input.IsDown(SButton.MouseLeft))
-            {
-                try
-                {
-                    int xTile = (Game1.viewport.X + Game1.getOldMouseX()) / 64;
-                    int yTile = (Game1.viewport.Y + Game1.getOldMouseY()) / 64;
-                    bool water = Game1.player.currentLocation.waterTiles[xTile, yTile];
-                    if (Game1.player.swimming.Value != water)
-                    {
-                        distance = -1;
-                    }
-                }
-                catch
-                {
 
-                }
-            }
-            //Monitor.Value.Log("Distance: " + distance);
+            //Monitor.Log("Distance: " + distance);
 
             bool nextToLand = Game1.player.swimming.Value && !SwimUtils.IsWaterTile(tiles[tiles.Count - 2]) && distance < maxDistance;
 
@@ -1084,7 +732,7 @@ namespace Swim
 
             if (nextToLand || nextToWater)
             {
-                //Monitor.Value.Log("okay to jump");
+                Monitor.Log("okay to jump");
                 for (int i = 0; i < tiles.Count; i++)
                 {
                     Vector2 tileV = tiles[i];
@@ -1095,7 +743,7 @@ namespace Swim
                         Tile tile = Game1.player.currentLocation.map.GetLayer("Buildings").PickTile(new Location((int)tileV.X * Game1.tileSize, (int)tileV.Y * Game1.tileSize), Game1.viewport.Size);
                         isWater = SwimUtils.IsWaterTile(tileV);
                         isPassable = (nextToLand && !isWater && SwimUtils.IsTilePassable(Game1.player.currentLocation, new Location((int)tileV.X, (int)tileV.Y), Game1.viewport)) || (nextToWater && isWater && (tile == null || tile.TileIndex == 76));
-                        //Monitor.Value.Log($"Trying {tileV} is passable {isPassable} isWater {isWater}");
+                        Monitor.Log($"Trying {tileV} is passable {isPassable} isWater {isWater}");
                         if (!SwimUtils.IsTilePassable(Game1.player.currentLocation, new Location((int)tileV.X, (int)tileV.Y), Game1.viewport) && !isWater && nextToLand)
                         {
                             //Monitor.Value.Log($"Nixing {tileV}");
@@ -1128,6 +776,7 @@ namespace Swim
 
             if (jumpLocation != Vector2.Zero)
             {
+                Game1.player.faceDirection(direction);
                 lastJump.Value = Game1.player.millisecondsPlayed;
                 //Monitor.Value.Log("got swim location");
                 if (Game1.player.swimming.Value)
@@ -1150,8 +799,10 @@ namespace Swim
                 isJumping.Value = true;
                 startJumpLoc.Value = Game1.player.position.Value;
                 endJumpLoc.Value = new Vector2(jumpLocation.X * Game1.tileSize, jumpLocation.Y * Game1.tileSize);
+                return true;
             }
 
+            return false;
         }
 
         public static void AbigailCaveTick()
@@ -1288,8 +939,9 @@ namespace Swim
 
             if (v != Vector2.Zero && Game1.player.millisecondsPlayed - lastProjectile.Value > 350)
             {
-                Game1.player.currentLocation.projectiles.Add(new AbigailProjectile(1, 383, 0, 0, 0, v.X * 6, v.Y * 6, new Vector2(Game1.player.StandingPixel.X - 24, Game1.player.StandingPixel.Y - 48), "Cowboy_monsterDie", null, "Cowboy_gunshot", false, true, Game1.player.currentLocation, Game1.player));
+                Game1.player.currentLocation.projectiles.Add(new AbigailProjectile(1, 3, 0, 0, 0, v.X * 6, v.Y * 6, new Vector2(Game1.player.StandingPixel.X - 24, Game1.player.StandingPixel.Y - 48), "Cowboy_monsterDie", null, "Cowboy_gunshot", false, true, Game1.player.currentLocation, Game1.player, shotItemId: "(O)382"));
                 lastProjectile.Value = Game1.player.millisecondsPlayed;
+                Game1.player.faceDirection(SwimUtils.GetDirection(0, 0, v.X, v.Y));
             }
 
             foreach (SButton button in abigailShootButtons)
@@ -1312,7 +964,6 @@ namespace Swim
                     }
                 }
             }
-
 
             abigailTicks.Value++;
             if (abigailTicks.Value > 80000 / 16f)
@@ -1371,5 +1022,102 @@ namespace Swim
             }
         }
 
+        public static bool tryToWarp()
+        {
+            DiveMap dm = null;
+            Point edgePos = Game1.player.TilePoint;
+
+            string locationName = Game1.player.currentLocation.Name == "BeachNightMarket" ? "Beach" : Game1.player.currentLocation.Name;
+
+            if (ModEntry.diveMaps.ContainsKey(locationName))
+            {
+                dm = ModEntry.diveMaps[locationName];
+            }
+            else
+            {
+                return false;
+            }
+
+            if (Game1.player.position.Y > Game1.viewport.Y + Game1.viewport.Height - 16)
+            {
+                Game1.player.position.Value = new Vector2(Game1.player.position.X, Game1.viewport.Y + Game1.viewport.Height - 17);
+                if (dm != null)
+                {
+                    Monitor.Log($"Trying to warp from ({edgePos.X}, {edgePos.Y})");
+                    EdgeWarp edge = dm.EdgeWarps.Find((x) => x.ThisMapEdge == "Bottom" && x.FirstTile <= edgePos.X && x.LastTile >= edgePos.X);
+                    if (edge != null)
+                    {
+                        Point pos = SwimUtils.GetEdgeWarpDestination(edgePos.X, edge);
+                        if (pos != Point.Zero)
+                        {
+                            Monitor.Log("warping south");
+                            Game1.warpFarmer(edge.OtherMapName, pos.X, pos.Y, false);
+                            return true;
+                        }
+                    }
+                }
+            }
+            else if (Game1.player.position.Y < Game1.viewport.Y - 16)
+            {
+                Game1.player.position.Value = new Vector2(Game1.player.position.X, Game1.viewport.Y - 15);
+
+                if (dm != null)
+                {
+                    Monitor.Log($"Trying to warp from ({edgePos.X}, {edgePos.Y})");
+                    EdgeWarp edge = dm.EdgeWarps.Find((x) => x.ThisMapEdge == "Top" && x.FirstTile <= edgePos.X && x.LastTile >= edgePos.X);
+                    if (edge != null)
+                    {
+                        Point pos = SwimUtils.GetEdgeWarpDestination(edgePos.X, edge);
+                        if (pos != Point.Zero)
+                        {
+                            Monitor.Log("warping north");
+                            Game1.warpFarmer(edge.OtherMapName, pos.X, pos.Y, false);
+                            return true;
+                        }
+                    }
+                }
+            }
+            else if (Game1.player.position.X > Game1.viewport.X + Game1.viewport.Width - 32)
+            {
+                Game1.player.position.Value = new Vector2(Game1.viewport.X + Game1.viewport.Width - 33, Game1.player.position.Y);
+
+                if (dm != null)
+                {
+                    Monitor.Log($"Trying to warp from ({edgePos.X}, {edgePos.Y})");
+                    EdgeWarp edge = dm.EdgeWarps.Find((x) => x.ThisMapEdge == "Right" && x.FirstTile <= edgePos.Y && x.LastTile >= edgePos.Y);
+                    if (edge != null)
+                    {
+                        Point pos = SwimUtils.GetEdgeWarpDestination(edgePos.Y, edge);
+                        if (pos != Point.Zero)
+                        {
+                            Monitor.Log("warping east");
+                            Game1.warpFarmer(edge.OtherMapName, pos.X, pos.Y, false);
+                            return true;
+                        }
+                    }
+                }
+            }
+            else if (Game1.player.position.X < Game1.viewport.X - 32)
+            {
+                Game1.player.position.Value = new Vector2(Game1.viewport.X - 31, Game1.player.position.Y);
+
+                if (dm != null)
+                {
+                    Monitor.Log($"Trying to warp from ({edgePos.X}, {edgePos.Y})");
+                    EdgeWarp edge = dm.EdgeWarps.Find((x) => x.ThisMapEdge == "Left" && x.FirstTile <= edgePos.Y && x.LastTile >= edgePos.Y);
+                    if (edge != null)
+                    {
+                        Point pos = SwimUtils.GetEdgeWarpDestination(edgePos.Y, edge);
+                        if (pos != Point.Zero)
+                        {
+                            Monitor.Log("warping west");
+                            Game1.warpFarmer(edge.OtherMapName, pos.X, pos.Y, false);
+                            return true;
+                        }
+                    }
+                }
+            }
+            return false;
+        }
     }
 }

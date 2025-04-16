@@ -1,0 +1,11 @@
+﻿{
+    "Name": "Swim Mod Dive Maps",
+    "Author": "aedenthorn",
+    "Version": "0.1.1",
+    "Description": "Adds underwater maps.",
+    "UniqueID": "aedenthorn.SwimDiveMaps",
+    "MinimumApiVersion": "3.0",
+    "ContentPackFor": {
+       "UniqueID": "Pathoschild.ContentPatcher"
+    }
+}

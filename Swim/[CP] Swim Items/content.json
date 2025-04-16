@@ -1,0 +1,41 @@
+{
+    "Format": "2.0.0",
+    "Changes": [
+        {
+            "Action": "EditData",
+            "Target": "Data/Shirts",
+            "Entries":{
+                "Swim_ScubaTank":{
+                    "Name": "Scuba Tank",
+                    "DisplayName": "{{i18n:scubatank-name}}",
+                    "Description": "{{i18n:scubatank-desc}}",
+                    "Price": 50000,
+                    "Texture": "Swim/shirts",
+                    "SpriteIndex": 0
+                }
+            }
+                
+        },
+        {
+            "Action": "EditData",
+            "Target": "Data/Hats",
+            "Entries": {
+                "Swim_ScubaMask":
+                "Scuba Mask/{{i18n:scubamask-desc}}/true/true//{{i18n:scubamask-name}}/0/Swim\\hats"
+            }
+        },
+        {
+            "Action": "EditData",
+            "Target": "Data/Boots",
+            "Entries":{
+                "Swim_ScubaFins":
+                    "Scuba Fins/{{i18n:scubafins-desc}}/50000/0/0/2/{{i18n:scubafins-name}}/Swim\\shoeColors/0/Swim\\boots"
+            }
+        },
+        {
+            "Action": "Load",
+            "Target": "Swim/shirts, Swim/hats, Swim/boots, Swim/shoeColors",
+            "FromFile": "assets/{{TargetWithoutPath}}.png"
+        }
+    ]
+}

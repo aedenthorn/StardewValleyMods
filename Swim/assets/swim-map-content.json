@@ -45,15 +45,15 @@
                     "OtherMapName":"Town",
                 },
                 {
-                    "ThisMapEdge":"Right",
-                    "FirstTile": 14,
-                    "LastTile": 26,
+                    "ThisMapEdge": "Left",
+                    "FirstTile": 0,
+                    "LastTile": 49,
                     "DestinationHorizontal": false,
-                    "OtherMapIndex": 119,
-                    "OtherMapFirstTile": 106,
+                    "OtherMapIndex": 120,
+                    "OtherMapFirstTile": 104,
                     "OtherMapLastTile": 119,
-                    "OtherMapName":"Beach",
-                },
+                    "OtherMapName": "Forest"
+                }
             ]
         },
         {
@@ -93,8 +93,8 @@
                     "LastTile": 48,
                     "DestinationHorizontal": false,
                     "OtherMapIndex": 0,
-                    "OtherMapFirstTile": 96,
-                    "OtherMapLastTile": 103,
+                    "OtherMapFirstTile": 95,
+                    "OtherMapLastTile": 104,
                     "OtherMapName":"Town",
                 },
                 {
@@ -173,12 +173,12 @@
             "EdgeWarps":[
                 {
                     "ThisMapEdge":"Bottom",
-                    "FirstTile": 64,
-                    "LastTile": 78,
+                    "FirstTile": 62,
+                    "LastTile": 85,
                     "DestinationHorizontal": true,
-                    "OtherMapIndex": 0,
-                    "OtherMapFirstTile": 92,
-                    "OtherMapLastTile": 96,
+                    "OtherMapIndex": 5,
+                    "OtherMapFirstTile": 95,
+                    "OtherMapLastTile": 95,
                     "OtherMapName":"Town",
                 },
             ],
@@ -198,7 +198,7 @@
                 },
                 {
                     "ThisMapEdge":"Top",
-                    "FirstTile": 92,
+                    "FirstTile": 94,
                     "LastTile": 96,
                     "DestinationHorizontal": true,
                     "OtherMapIndex": 40,
@@ -208,8 +208,8 @@
                 },
                 {
                     "ThisMapEdge":"Left",
-                    "FirstTile": 96,
-                    "LastTile": 103,
+                    "FirstTile": 95,
+                    "LastTile": 104,
                     "DestinationHorizontal": false,
                     "OtherMapIndex": 119,
                     "OtherMapFirstTile": 39,

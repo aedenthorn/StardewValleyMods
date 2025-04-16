@@ -2,6 +2,7 @@
 using StardewModdingAPI;
 using StardewValley;
 using StardewValley.Objects;
+using StardewValley.TerrainFeatures;
 using StardewValley.Tools;
 using System;
 using System.Collections.Generic;
@@ -27,19 +28,38 @@ namespace Swim
             Helper = helper;
         }
 
+        public static Object SpawnForageItem(GameLocation location, Vector2 position, string itemID)
+        {
+            Object item = ItemRegistry.Create<Object>(itemID.StartsWith("(") ? itemID : "(O)" + itemID);
+            Monitor.Log($"Spawning forage {item.Name} at ({position.X}, {position.Y})");
+            location.numberOfSpawnedObjectsOnMap++;
+            location.overlayObjects[position] = item;
+            item.IsSpawnedObject = true;
+            item.CanBeGrabbed = true;
+            return item;
+        }
+
+        public static Object SpawnWorldItem(GameLocation location, Vector2 position, string itemID)
+        {
+            Object item = ItemRegistry.Create<Object>(itemID.StartsWith("(") ? itemID : "(O)" + itemID);
+            Monitor.Log($"Spawning world item {item.Name} at ({position.X}, {position.Y})");
+            location.overlayObjects[position] = item;
+            return item;
+        }
+
         public static void AddScubaChest(GameLocation gameLocation, Vector2 pos, string which)
         {
             if (which == "ScubaTank" && !Game1.player.mailReceived.Contains(which))
             {
-                gameLocation.overlayObjects[pos] = new Chest( new List<Item>() { new Clothing(ModEntry.scubaTankID.Value+"") }, pos, false, 0);
+                gameLocation.overlayObjects[pos] = new Chest( new List<Item>() { new Clothing(ModEntry.scubaTankID.Value) }, pos, false, 0);
             }
             else if (which == "ScubaMask" && !Game1.player.mailReceived.Contains(which))
             {
-                gameLocation.overlayObjects[pos] = new Chest( new List<Item>() { new Hat(ModEntry.scubaMaskID.Value + "") }, pos, false, 0);
+                gameLocation.overlayObjects[pos] = new Chest( new List<Item>() { new Hat(ModEntry.scubaMaskID.Value )}, pos, false, 0);
             }
             else if (which == "ScubaFins" && !Game1.player.mailReceived.Contains(which))
             {
-                gameLocation.overlayObjects[pos] = new Chest( new List<Item>() { new Boots(ModEntry.scubaFinsID.Value + "") }, pos, false, 0);
+                gameLocation.overlayObjects[pos] = new Chest( new List<Item>() { new Boots(ModEntry.scubaFinsID.Value) }, pos, false, 0);
             }
         }
         public static void AddWaterTiles(GameLocation gameLocation)
@@ -107,57 +127,41 @@ namespace Swim
                 }
                 else if (chance < 0.4)
                 {
-                    l.overlayObjects[tile] = new Object(tile, "751")
-                    {
-                        MinutesUntilReady = 2
-                    };
+                    SpawnWorldItem(l, tile, "(O)751").MinutesUntilReady = 2; // Copper stone
                 }
                 else if (chance < 0.5)
                 {
-                    l.overlayObjects[tile] = new Object(tile, "290")
-                    {
-                        MinutesUntilReady = 4 
-                    };
+                    SpawnWorldItem(l, tile, "(O)290").MinutesUntilReady = 4; // Iron stone
                 }
                 else if (chance < 0.55)
                 {
-                    l.overlayObjects[tile] = new Object(tile, "764")
-                    {
-                        MinutesUntilReady = 8
-                    };
+                    SpawnWorldItem(l, tile, "(O)764").MinutesUntilReady = 8; // Gold stone
                 }
                 else if (chance < 0.56)
                 {
-                    l.overlayObjects[tile] = new Object(tile, "765")
-                    {
-                        MinutesUntilReady = 16
-                    };
+                    SpawnWorldItem(l, tile, "(O)765").MinutesUntilReady = 16; // Iridium stone
                 }
                 else if (chance < 0.65)
                 {
-                    l.overlayObjects[tile] = new Object(tile, "80");
+                    SpawnForageItem(l, tile, "(O)80"); // Quartz 
                 }
                 else if (chance < 0.74)
                 {
-                    l.overlayObjects[tile] = new Object(tile, "82");
+                    SpawnForageItem(l, tile, "(O)82"); // Fire Quartz
                 }
                 else if (chance < 0.83)
                 {
-                    l.overlayObjects[tile] = new Object(tile, "84");
+                    SpawnForageItem(l, tile, "(O)84"); // Frozen Tear
                 }
                 else if (chance < 0.90)
                 {
-                    l.overlayObjects[tile] = new Object(tile, "86");
+                    SpawnForageItem(l, tile, "(O)86"); // Earth crystal
                 }
                 else
                 {
                     string[] gems = { "4","6","8","10","12","14","40" };
                     string whichGem = gems[Game1.random.Next(gems.Length)];
-                    l.overlayObjects[tile] = new Object(tile, whichGem)
-                    {
-                        MinutesUntilReady = 5
-
-                    };
+                    SpawnWorldItem(l, tile, whichGem).MinutesUntilReady = 5;
                 }
             }
         }
@@ -277,59 +281,35 @@ namespace Swim
                 double chance = Game1.random.NextDouble();
                 if (chance < 0.25)
                 {
-                    l.overlayObjects[v] = new Object(v, "152")
-                    {
-                        CanBeGrabbed = true
-                    };
+                    SpawnForageItem(l, v, "(O)152");// Seaweed
                 }
                 else if (chance < 0.4)
                 {
-                    l.overlayObjects[v] = new Object(v, "153")
-                    {
-                        CanBeGrabbed = true
-                    };
+                    SpawnForageItem(l, v, "(O)153");// Green Algae
                 }
                 else if (chance < 0.6)
                 {
-                    l.overlayObjects[v] = new Object(v, "157")
-                    {
-                        CanBeGrabbed = true
-                    };
+                    SpawnForageItem(l, v, "(O)157");// White Algae
                 }
                 else if (chance < 0.75)
                 {
-                    l.overlayObjects[v] = new Object(v, "372")
-                    {
-                        CanBeGrabbed = true
-                    };
+                    SpawnForageItem(l, v, "(O)372");// Clam
                 }
                 else if (chance < 0.85)
                 {
-                    l.overlayObjects[v] = new Object(v,  "393")
-                    {
-                        CanBeGrabbed = true
-                    };
+                    SpawnForageItem(l, v, "(O)393");// Coral
                 }
                 else if (chance < 0.94)
                 {
-                    l.overlayObjects[v] = new Object(v, "397")
-                    {
-                        CanBeGrabbed = true
-                    };
+                    SpawnForageItem(l, v, "(O)397");// Sea Urchin
                 }
                 else if (chance < 0.97)
                 {
-                    l.overlayObjects[v] = new Object(v, "394 ")
-                    {
-                        CanBeGrabbed = true
-                    };
+                    SpawnForageItem(l, v, "(O)394");// Rainbow Shell
                 }
                 else
                 {
-                    l.overlayObjects[v] = new Object(v, "392")
-                    {
-                        CanBeGrabbed = true
-                    };
+                    SpawnForageItem(l, v, "(O)392");// Nautilus Shell
                 }
             }
         }
@@ -463,10 +443,10 @@ namespace Swim
                                     switch (Game1.random.Next(3))
                                     {
                                         case 0:
-                                            treasures.Add(new Object((537 + ((Game1.random.NextDouble() < 0.4) ? Game1.random.Next(-2, 0) : 0)) + "", Game1.random.Next(1, 4), false, -1, 0));
+                                            treasures.Add(new Object((537 + ((Game1.random.NextDouble() < 0.4) ? Game1.random.Next(-2, 0) : 0)).ToString(), Game1.random.Next(1, 4), false, -1, 0));
                                             break;
                                         case 1:
-                                            treasures.Add(new Object((536 + ((Game1.random.NextDouble() < 0.4) ? -1 : 0)) + "", Game1.random.Next(1, 4), false, -1, 0));
+                                            treasures.Add(new Object((536 + ((Game1.random.NextDouble() < 0.4) ? -1 : 0)).ToString(), Game1.random.Next(1, 4), false, -1, 0));
                                             break;
                                         case 2:
                                             treasures.Add(new Object("535", Game1.random.Next(1, 4), false, -1, 0));
@@ -484,13 +464,13 @@ namespace Swim
                                             treasures.Add(new Object("382", Game1.random.Next(1, 4), false, -1, 0));
                                             break;
                                         case 1:
-                                            treasures.Add(new Object("" + ((Game1.random.NextDouble() < 0.3) ? 82 : ((Game1.random.NextDouble() < 0.5) ? 64 : 60)), Game1.random.Next(1, 3), false, -1, 0));
+                                            treasures.Add(new Object(((Game1.random.NextDouble() < 0.3) ? 82 : ((Game1.random.NextDouble() < 0.5) ? 64 : 60)).ToString(), Game1.random.Next(1, 3), false, -1, 0));
                                             break;
                                         case 2:
-                                            treasures.Add(new Object(""+((Game1.random.NextDouble() < 0.3) ? 84 : ((Game1.random.NextDouble() < 0.5) ? 70 : 62)), Game1.random.Next(1, 3), false, -1, 0));
+                                            treasures.Add(new Object(((Game1.random.NextDouble() < 0.3) ? 84 : ((Game1.random.NextDouble() < 0.5) ? 70 : 62)).ToString(), Game1.random.Next(1, 3), false, -1, 0));
                                             break;
                                         case 3:
-                                            treasures.Add(new Object("" + ((Game1.random.NextDouble() < 0.3) ? 86 : ((Game1.random.NextDouble() < 0.5) ? 66 : 68)), Game1.random.Next(1, 3), false, -1, 0));
+                                            treasures.Add(new Object(((Game1.random.NextDouble() < 0.3) ? 86 : ((Game1.random.NextDouble() < 0.5) ? 66 : 68)).ToString(), Game1.random.Next(1, 3), false, -1, 0));
                                             break;
                                     }
                                     if (Game1.random.NextDouble() < 0.05)
@@ -584,6 +564,10 @@ namespace Swim
                     {
                         Tint = tint
                     };
+                }
+                foreach (var obj in treasures)
+                {
+                    Monitor.Log($"Treasures: {obj.QualifiedItemId} {obj.DisplayName}");
                 }
             }
         }

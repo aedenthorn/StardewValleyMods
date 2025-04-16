@@ -1,0 +1,11 @@
+{
+    "Name": "Swim Items",
+    "Author": "aedenthorn",
+    "Version": "1.0.0",
+    "Description": "Adds swim mod's scuba gear.",
+    "UniqueID": "aedenthorn.SwimItems",
+    "UpdateKeys": [],
+    "ContentPackFor": {
+        "UniqueID": "Pathoschild.ContentPatcher"
+    }
+}
