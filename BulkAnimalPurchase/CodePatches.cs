@@ -16,7 +16,7 @@ namespace BulkAnimalPurchase
     /// <summary>The mod entry point.</summary>
     public partial class ModEntry
     {
-        [HarmonyPatch(typeof(PurchaseAnimalsMenu), new Type[] { typeof(List<Object>) })]
+        [HarmonyPatch(typeof(PurchaseAnimalsMenu), new Type[] { typeof(List<Object>), typeof(GameLocation) })]
         [HarmonyPatch(MethodType.Constructor)]
         public class PurchaseAnimalsMenu_Patch
         {
@@ -48,7 +48,7 @@ namespace BulkAnimalPurchase
             }
         }
         private static bool skip = false;
-        [HarmonyPatch(typeof(Game1), nameof(Game1.drawDialogueBox), new Type[] { typeof(int), typeof(int), typeof(int), typeof(int), typeof(bool),typeof(bool), typeof(string), typeof(bool), typeof(bool), typeof(int), typeof(int), typeof(int) })]
+        [HarmonyPatch(typeof(Game1), nameof(Game1.drawDialogueBox), new Type[] { typeof(int), typeof(int), typeof(int), typeof(int), typeof(bool), typeof(bool), typeof(string), typeof(bool), typeof(bool), typeof(int), typeof(int), typeof(int) })]
         public class Game1_drawDialogueBox_Patch
         {
             public static void Prefix()
@@ -76,7 +76,7 @@ namespace BulkAnimalPurchase
                 bool found = false;
                 for (int i = 0; i < codes.Count; i++)
                 {
-                    if (found && codes[i].opcode == OpCodes.Callvirt && (MethodInfo)codes[i].operand == AccessTools.Method(typeof(LocalizedContentManager), nameof(LocalizedContentManager.LoadString), new Type[] { typeof(string),typeof(object),typeof(object) }))
+                    if (found && codes[i].opcode == OpCodes.Callvirt && (MethodInfo)codes[i].operand == AccessTools.Method(typeof(LocalizedContentManager), nameof(LocalizedContentManager.LoadString), new Type[] { typeof(string), typeof(object), typeof(object) }))
                     {
                         SMonitor.Log("Adding to string result");
                         codes.Insert(i + 1, new CodeInstruction(OpCodes.Call, typeof(ModEntry).GetMethod(nameof(ModEntry.AddToString))));
@@ -121,7 +121,7 @@ namespace BulkAnimalPurchase
                 Game1.addHUDMessage(new HUDMessage(___animalBeingPurchased.isMale() ? Game1.content.LoadString("Strings\\StringsFromCSFiles:PurchaseAnimalsMenu.cs.11311", ___animalBeingPurchased.displayName) : Game1.content.LoadString("Strings\\StringsFromCSFiles:PurchaseAnimalsMenu.cs.11314", ___animalBeingPurchased.displayName), 1));
 
                 string type = ___animalBeingPurchased.type.Value;
-                if (!SHelper.ModRegistry.IsLoaded("aedenthorn.LivestockChoices")) 
+                if (!SHelper.ModRegistry.IsLoaded("aedenthorn.LivestockChoices"))
                 {
                     if (type.EndsWith(" Chicken") && !type.Equals("Void Chicken") && !type.Equals("Golden Chicken"))
                     {
@@ -159,7 +159,7 @@ namespace BulkAnimalPurchase
                 }
                 return true;
             }
-            public static void Postfix(int __state, ref int ___priceOfAnimal) 
+            public static void Postfix(int __state, ref int ___priceOfAnimal)
             {
                 if (!Config.EnableMod || __state == ___priceOfAnimal)
                     return;

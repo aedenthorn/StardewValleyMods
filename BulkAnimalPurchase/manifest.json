@@ -1,18 +1,18 @@
 ﻿{
   "Name": "Bulk Animal Purchase",
   "Author": "aedenthorn",
-  "Version": "0.2.1",
+  "Version": "0.2.2",
   "Description": "Bulk Animal Purchase.",
   "UniqueID": "aedenthorn.BulkAnimalPurchase",
   "EntryDll": "BulkAnimalPurchase.dll",
-  "MinimumApiVersion": "3.13.0",
+  "MinimumApiVersion": "4.0.0",
   "ModUpdater": {
     "Repository": "StardewValleyMods",
     "User": "aedenthorn",
     "Directory": "_releases",
     "ModFolder": "BulkAnimalPurchase"
   },
-  "UpdateKeys": [ "Nexus:11539" ],
+  "UpdateKeys": ["Nexus:11539"],
   "Dependencies": [
     {
       "UniqueID": "Platonymous.ModUpdater",
