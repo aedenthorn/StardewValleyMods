@@ -1,11 +1,11 @@
 ﻿{
   "Name": "Better Elevator",
   "Author": "aedenthorn",
-  "Version": "0.2.4",
+  "Version": "0.2.5",
   "Description": "Better Elevator.",
   "UniqueID": "aedenthorn.BetterElevator",
   "EntryDll": "BetterElevator.dll",
-  "MinimumApiVersion": "3.15.0",
+  "MinimumApiVersion": "4.0.0",
   "ModUpdater": {
     "Repository": "StardewValleyMods",
     "User": "aedenthorn",
