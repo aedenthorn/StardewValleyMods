@@ -1,6 +1,26 @@
 ﻿{
-    "zombie-cure-letter": "@,^^In response to the recent outbreak and with the help of Demetrius, I've come up with a potential cure for zombification.^^Unfortunately, I don't have all the ingredients on hand, but here's a list of what you will need.^^-Dr. Harvey%item craftingRecipe Zombie_Cure %%[#]From The Office Of Dr. Harvey",
-    "cured": "Thank you for curing me!",
-    "zombification": "Zombification",
-    "zombification-source": "zombie bite",
+	// Item
+	"item.zombie-cure.name": "Zombie cure",
+	"item.zombie-cure.description": "A potent medicine that can reverse the effects of zombification.",
+
+	// Mail
+	"mail.zombie-cure": "@,^^In response to the recent outbreak and with the help of Demetrius, I've come up with a potential cure for zombification.^^Unfortunately, I don't have all the ingredients on hand, but here's a list of what you will need.^^-Dr. Harvey{{craftingRecipe}}[#]From The Office Of Dr. Harvey",
+
+	// Dialogue
+	"dialogue.thanks.1": "Thank you for curing me! I thought I was lost forever.",
+	"dialogue.thanks.2": "I can't believe I'm back to normal... You're a lifesaver!",
+	"dialogue.thanks.3": "You have no idea how grateful I am... Thank you!",
+	"dialogue.thanks.4": "I'm finally myself again... Thanks to you.",
+
+	// Buff
+	"buff.zombification.name": "Zombification",
+	"buff.zombification.description": "You feel a strange urge for brains... and an uncontrollable hunger.",
+	"buff.zombification.source": "Unknown contagion",
+
+	// GMCM
+	"GMCM.ModEnabled.Name": "Mod Enabled",
+	"GMCM.DailyZombificationChance.Name": "Daily Zombification Chance",
+	"GMCM.InfectionRadius.Name": "Infection Radius",
+	"GMCM.InfectionChancePerSecond.Name": "Infection Chance Per Second",
+	"GMCM.GreenTint.Name": "Green Tint"
 }

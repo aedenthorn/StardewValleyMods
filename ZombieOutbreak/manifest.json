@@ -1,26 +1,10 @@
 ﻿{
-  "Name": "Zombie Outbreak",
-  "Author": "aedenthorn",
-  "Version": "0.2.3",
-  "Description": "Raaarrgh.",
-  "UniqueID": "aedenthorn.ZombieOutbreak",
-  "EntryDll": "ZombieOutbreak.dll",
-  "MinimumApiVersion": "3.5.0",
-  "UpdateKeys": ["Nexus:6743"],
-  "ModUpdater": {
-    "Repository": "StardewValleyMods",
-    "User": "aedenthorn",
-    "Directory": "_releases",
-    "ModFolder": "ZombieOutbreak"
-  },
-  "Dependencies": [
-      {
-        "UniqueID": "Platonymous.ModUpdater",
-        "IsRequired": false
-      },
-      {
-        "UniqueID": "spacechase0.JsonAssets",
-        "IsRequired": true
-      },
-  ]
+	"Name": "Zombie Outbreak",
+	"Author": "aedenthorn",
+	"Version": "0.2.4",
+	"Description": "Raaarrgh.",
+	"UniqueID": "aedenthorn.ZombieOutbreak",
+	"EntryDll": "ZombieOutbreak.dll",
+	"MinimumApiVersion": "4.1.0",
+	"UpdateKeys": [ "Nexus:6743" ]
 }
