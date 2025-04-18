@@ -62,11 +62,11 @@ namespace CustomBackpack
             {
                 if (hoverAmount > 0)
                 {
-                    drawToolTip(b, hoverText, hoverTitle, null, true, -1, 0, -1, -1, null, hoverAmount);
+                    drawToolTip(b, hoverText, hoverTitle, null, true, -1, 0, null, -1, null, hoverAmount);
                 }
                 else
                 {
-                    drawToolTip(b, hoverText, hoverTitle, hoveredItem, checkHeldItem(null), -1, 0, -1, -1, null, -1);
+                    drawToolTip(b, hoverText, hoverTitle, hoveredItem, checkHeldItem(null), -1, 0, null, -1, null, -1);
                 }
             }
             drawMouse(b);
