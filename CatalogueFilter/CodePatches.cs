@@ -4,6 +4,7 @@ using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using StardewValley;
 using StardewValley.BellsAndWhistles;
+using StardewValley.GameData.Shops;
 using StardewValley.Menus;
 using System;
 using System.Collections.Generic;
@@ -16,24 +17,32 @@ namespace CatalogueFilter
         private static TextBox filterField;
         private static List<ISalable> allItems;
 
-        [HarmonyPatch(typeof(ShopMenu), new Type[] { typeof(List<ISalable>), typeof(int), typeof(string), typeof(Func<ISalable, Farmer, int, bool>), typeof(Func<ISalable, bool>), typeof(string) })]
-        [HarmonyPatch(MethodType.Constructor)]
-        public class ShopMenu_Patch
+        // new Type[] { typeof(string), typeof(ShopData), typeof(ShopOwnerData), typeof(NPC), typeof(Func<ISalable, Farmer, int, bool>), typeof(Func<ISalable, bool>), typeof(bool)}
+        // new Type[] {typeof(string), typeof(Dictionary<ISalable, ItemStockInformation>), typeof(int), typeof(string), typeof(Func<ISalable, Farmer, int, bool>), typeof(Func<ISalable, bool>), typeof(bool)}
+        // new Type[] {typeof(string), typeof(List<ISalable>), typeof(int), typeof(string), typeof(Func<ISalable, Farmer, int, bool>), typeof(Func<ISalable, bool>), typeof(bool)}
+
+        public static void Shopmenu_Constructor_Postfix(ShopMenu __instance)
         {
-            public static void Postfix(ShopMenu __instance, List<ISalable> itemsForSale)
+            if (!Config.ModEnabled)
+                return;
+            allItems = new List<ISalable>(__instance.forSale);
+            filterField = new TextBox(Game1.content.Load<Texture2D>("LooseSprites\\textBox"), null, Game1.smallFont, Game1.textColor)
             {
-                if (!Config.ModEnabled)
-                    return;
-                allItems = new List<ISalable>(__instance.forSale);
-                filterField = new TextBox(Game1.content.Load<Texture2D>("LooseSprites\\textBox"), null, Game1.smallFont, Game1.textColor)
-                {
-                    X = __instance.xPositionOnScreen + 28,
-                    Y = __instance.yPositionOnScreen + __instance.height - 88,
-                    Text = ""
-                };
-            }
+                X = __instance.xPositionOnScreen + 28,
+                Y = __instance.yPositionOnScreen + __instance.height - 88,
+                Text = ""
+            };
         }
-        
+
+        public static void ShopMenu_applyTab_Postfix(ShopMenu __instance)
+        {
+            if (filterField != null)
+            {
+                filterField.Text = "";
+            }
+            allItems = new List<ISalable>(__instance.forSale);
+        }
+
         [HarmonyPatch(typeof(ShopMenu), nameof(ShopMenu.drawCurrency))]
         public class ShopMenu_drawCurrency_Patch
         {
@@ -104,18 +113,12 @@ namespace CatalogueFilter
         [HarmonyPatch(typeof(ShopMenu), nameof(ShopMenu.performHoverAction))]
         public class ShopMenu_performHoverAction_Patch
         {
-
             public static void Postfix(ShopMenu __instance, int x, int y)
             {
                 if (!Config.ModEnabled)
                     return;
                 filterField.Hover(x, y);
             }
-        }
-
-        private static void ChangeItemList(ShopMenu shopMenu)
-        {
-
         }
     }
 }
