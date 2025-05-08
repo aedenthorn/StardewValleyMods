@@ -1,22 +1,10 @@
 ﻿{
-  "Name": "Livestock Choices",
-  "Author": "aedenthorn",
-  "Version": "0.2.1",
-  "Description": "Livestock Choices.",
-  "UniqueID": "aedenthorn.LivestockChoices",
-  "EntryDll": "LivestockChoices.dll",
-  "MinimumApiVersion": "3.13.0",
-  "ModUpdater": {
-    "Repository": "StardewValleyMods",
-    "User": "aedenthorn",
-    "Directory": "_releases",
-    "ModFolder": "LivestockChoices"
-  },
-  "UpdateKeys": [ "Nexus:11551" ],
-  "Dependencies": [
-    {
-      "UniqueID": "Platonymous.ModUpdater",
-      "IsRequired": false
-    }
-  ]
+	"Name": "Livestock Choices",
+	"Author": "aedenthorn",
+	"Version": "0.2.2",
+	"Description": "Lets you purchase specific types of chicken and cow, including blue, void, and golden chickens.",
+	"UniqueID": "aedenthorn.LivestockChoices",
+	"EntryDll": "LivestockChoices.dll",
+	"MinimumApiVersion": "4.0.0",
+	"UpdateKeys": [ "Nexus:11551" ]
 }
