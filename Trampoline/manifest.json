@@ -1,22 +1,10 @@
 ﻿{
-  "Name": "Trampoline",
-  "Author": "aedenthorn",
-  "Version": "0.1.1",
-  "Description": "Trampoline.",
-  "UniqueID": "aedenthorn.Trampoline",
-  "EntryDll": "Trampoline.dll",
-  "MinimumApiVersion": "3.13.0",
-  "ModUpdater": {
-    "Repository": "StardewValleyMods",
-    "User": "aedenthorn",
-    "Directory": "_releases",
-    "ModFolder": "Trampoline"
-  },
-  "UpdateKeys": [ "Nexus:11619" ],
-  "Dependencies": [
-    {
-      "UniqueID": "Platonymous.ModUpdater",
-      "IsRequired": false
-    }
-  ]
+	"Name": "Trampoline",
+	"Author": "aedenthorn",
+	"Version": "0.1.2",
+	"Description": "Provides the essential game mechanic of jumping up and down on a trampoline.",
+	"UniqueID": "aedenthorn.Trampoline",
+	"EntryDll": "Trampoline.dll",
+	"MinimumApiVersion": "4.0.0",
+	"UpdateKeys": [ "Nexus:11619" ]
 }

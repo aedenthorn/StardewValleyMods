@@ -1,0 +1,10 @@
+{
+	// GMCM
+	"GMCM.ModEnabled.Name": "Activer le Mod",
+	"GMCM.JumpSound.Name": "Son des rebonds",
+	"GMCM.ConvertKey.Name": "Touche de conversion",
+	"GMCM.HigherKey.Name": "Touche pour rebondir plus haut",
+	"GMCM.LowerKey.Name": "Touche pour rebondir plus bas",
+	"GMCM.FasterKey.Name": "Touche pour rebondir plus vite",
+	"GMCM.SlowerKey.Name": "Touche pour rebondir plus lentement"
+}
