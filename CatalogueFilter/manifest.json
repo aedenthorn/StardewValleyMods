@@ -1,22 +1,10 @@
 ﻿{
-  "Name": "CatalogueFilter",
-  "Author": "aedenthorn",
-  "Version": "0.2.0",
-  "Description": "CatalogueFilter.",
-  "UniqueID": "aedenthorn.CatalogueFilter",
-  "EntryDll": "CatalogueFilter.dll",
-  "MinimumApiVersion": "3.15.0",
-  "ModUpdater": {
-    "Repository": "StardewValleyMods",
-    "User": "aedenthorn",
-    "Directory": "_releases",
-    "ModFolder": "CatalogueFilter"
-  },
-  "Dependencies": [
-    {
-      "UniqueID": "Platonymous.ModUpdater",
-      "IsRequired": false
-    }
-  ],
-  "UpdateKeys": [ "Nexus:" ]
+	"Name": "Catalogue Filter",
+	"Author": "aedenthorn",
+	"Version": "0.2.1",
+	"Description": "Adds a filter field for shop menus and catalogues that lets you filter shown items based on text input.",
+	"UniqueID": "aedenthorn.CatalogueFilter",
+	"EntryDll": "CatalogueFilter.dll",
+	"MinimumApiVersion": "4.1.0",
+	"UpdateKeys": [ "Nexus:13137" ]
 }

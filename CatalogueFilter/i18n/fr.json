@@ -1,6 +1,8 @@
 {
-  "filter": "Filtre",
+	"filter": "Filtre",
 
-  // GMCM
-  "GMCM_Option_ModEnabled_Name": "Activer le Mod"
+	// GMCM
+	"GMCM.ModEnabled.Name": "Activer le Mod",
+	"GMCM.ShowLabel.Name": "Afficher l'étiquette",
+	"GMCM.LabelColor.Name": "Couleur de l'étiquette"
 }
