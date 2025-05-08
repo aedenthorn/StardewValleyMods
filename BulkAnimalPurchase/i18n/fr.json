@@ -1,7 +1,20 @@
 {
-  "amount": "Nombre à acheter :",
-  "x-left-to-add": "({0} restant à placer)",
+	"amount": "Nombre à acheter :",
+	"x-left-to-add": "({0} restant à placer)",
 
-  // GMCM
-  "GMCM_Option_ModEnabled_Name": "Activer le Mod"
+	// GMCM
+	"GMCM.ModEnabled.Name": "Activer le Mod",
+	"GMCM.InitialFriendship.Name": "Amitié initiale",
+	"GMCM.AdultAnimals.Name": "Animaux adultes",
+	"GMCM.AdultAnimals.Tooltip": "Les animaux achetés et les nouveau-nés (par incubation ou reproduction) deviennent instantanément adultes.",
+	"GMCM.Price.Text": "Prix",
+	"GMCM.IncubationTime.Name": "Temps d'incubation",
+	"GMCM.IncubationTime.Desc": "Le nombre de minutes en jeu nécessaires pour l'incubation des œufs. La valeur minimale est de 10 minutes.",
+	"GMCM.Chicken.Name": "Poule",
+	"GMCM.Cow.Name": "Vache",
+	"GMCM.GreenSlime.Name": "Slime vert",
+	"GMCM.BlueSlime.Name": "Slime bleu",
+	"GMCM.RedSlime.Name": "Slime rouge",
+	"GMCM.PurpleSlime.Name": "Slime violet",
+	"GMCM.TigerSlime.Name": "Slime tigré"
 }
