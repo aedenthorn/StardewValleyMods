@@ -1,0 +1,10 @@
+﻿{
+	"Name": "Crop Growth Info",
+	"Author": "aedenthorn",
+	"Version": "0.1.1",
+	"Description": "Shows information about crop growth when hovering with the mouse and optionally holding down a toggle key.",
+	"UniqueID": "aedenthorn.CropGrowthInfo",
+	"EntryDll": "CropGrowthInfo.dll",
+	"MinimumApiVersion": "4.0.0",
+	"UpdateKeys": [ "Nexus:12178" ]
+}
