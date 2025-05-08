@@ -1,66 +1,66 @@
-﻿using StardewValley;
-using System.Text;
+﻿using System;
+using System.Collections.Generic;
+using System.Reflection;
+using StardewValley;
 
 namespace BirthdayBuff
 {
-    public partial class ModEntry
-    {
-        private string GetBuffDescription()
-        {
-            StringBuilder b = new StringBuilder();
-            if (Config.Farming != 0)
-            {
-                b.AppendLine(GetBuffLine(Game1.content.LoadString("Strings\\StringsFromCSFiles:Buff.cs.480"), Config.Farming));
-            }
-            if (Config.Fishing != 0)
-            {
-                b.AppendLine(GetBuffLine(Game1.content.LoadString("Strings\\StringsFromCSFiles:Buff.cs.483"), Config.Fishing));
-            }
-            if (Config.Mining != 0)
-            {
-                b.AppendLine(GetBuffLine(Game1.content.LoadString("Strings\\StringsFromCSFiles:Buff.cs.486"), Config.Mining));
-            }
-            if (Config.Luck != 0)
-            {
-                b.AppendLine(GetBuffLine(Game1.content.LoadString("Strings\\StringsFromCSFiles:Buff.cs.489"), Config.Luck));
-            }
-            if (Config.Foraging != 0)
-            {
-                b.AppendLine(GetBuffLine(Game1.content.LoadString("Strings\\StringsFromCSFiles:Buff.cs.492"), Config.Foraging));
-            }
-            if (Config.MaxStamina != 0)
-            {
-                b.AppendLine(GetBuffLine(Game1.content.LoadString("Strings\\StringsFromCSFiles:Buff.cs.495"), Config.MaxStamina));
-            }
-            if (Config.MagneticRadius != 0)
-            {
-                b.AppendLine(GetBuffLine(Game1.content.LoadString("Strings\\StringsFromCSFiles:Buff.cs.498"), Config.MagneticRadius));
-            }
-            if (Config.Defense != 0)
-            {
-                b.AppendLine(GetBuffLine(Game1.content.LoadString("Strings\\StringsFromCSFiles:Buff.cs.501"), Config.Defense));
-            }
-            if (Config.Attack != 0)
-            {
-                b.AppendLine(GetBuffLine(Game1.content.LoadString("Strings\\StringsFromCSFiles:Buff.cs.504"), Config.Attack));
-            }
-            if (Config.Speed != 0)
-            {
-                b.AppendLine(GetBuffLine(Game1.content.LoadString("Strings\\StringsFromCSFiles:Buff.cs.507"), Config.Speed));
-            }
-            return b.ToString();
-        }
+	public partial class ModEntry
+	{
+		public static void AddBirthdayBuff()
+		{
+			BuffFrameworkAPI.Add($"{SModManifest.UniqueID}/HappyBirthday", new Dictionary<string, object>()
+				{
+					{ "buffId", $"{SModManifest.UniqueID}/HappyBirthday" },
+					{ "displayName", SHelper.Translation.Get("birthday-buff-displayName") },
+					{ "source", SModManifest.UniqueID },
+					{ "displaySource", SHelper.Translation.Get("birthday-buff-displaySource") },
+					{ "texturePath", "Maps/springobjects" },
+					{ "textureX", "80" },
+					{ "textureY", "144" },
+					{ "textureWidth", "16" },
+					{ "textureHeight", "16" },
+					{ "farming", Config.Farming },
+					{ "mining", Config.Mining },
+					{ "foraging", Config.Foraging },
+					{ "fishing", Config.Fishing },
+					{ "attack", Config.Attack },
+					{ "defense", Config.Defense },
+					{ "speed", Config.Speed },
+					{ "magneticRadius", Config.MagneticRadius },
+					{ "luck", Config.Luck },
+					{ "maxStamina", Config.MaxStamina },
+					{ "sound", Config.Sound },
+					{ "glow", Config.GlowColor },
+					{ "glowRate", Config.GlowRate }
+				}, () => {
+					return cachedResult;
+				});
+		}
 
-        private string GetBuffLine(string v, int c)
-        {
-            if (LocalizedContentManager.CurrentLanguageCode == LocalizedContentManager.LanguageCode.es)
-            {
-                return v + (c > 0 ? "+" : "-") + c;
-            }
-            else
-            {
-                return (c > 0 ? "+" : "-") + c + v;
-            }
-        }
-    }
+		public static void RemoveBirthdayBuff()
+		{
+			BuffFrameworkAPI.Remove($"{SModManifest.UniqueID}/HappyBirthday");
+			Game1.player?.buffs.Remove($"{SModManifest.UniqueID}/HappyBirthday");
+		}
+
+		private static bool IsBirthdayDay()
+		{
+			Type happyBirthdayModCore = HappyBirthdayAPI.GetType().Assembly.GetType("Omegasis.HappyBirthday.HappyBirthdayModCore");
+			object instance = happyBirthdayModCore.GetField("Instance", BindingFlags.Public | BindingFlags.Static).GetValue(null);
+			object birthdayManager = instance.GetType().GetField("birthdayManager").GetValue(instance);
+			bool hasChosenBirthday = (bool)birthdayManager.GetType().GetMethod("hasChosenBirthday").Invoke(birthdayManager, null);
+
+			if (!hasChosenBirthday)
+			{
+				return false;
+			}
+
+			object playerBirthdayData = birthdayManager.GetType().GetField("playerBirthdayData").GetValue(birthdayManager);
+			int birthdayDay = (int)playerBirthdayData.GetType().GetField("BirthdayDay").GetValue(playerBirthdayData);
+			string birthdaySeason = (string)playerBirthdayData.GetType().GetField( "BirthdaySeason").GetValue(playerBirthdayData);
+
+			return Game1.player is not null && Game1.dayOfMonth == birthdayDay && Game1.currentSeason == birthdaySeason.ToLower();
+		}
+	}
 }
