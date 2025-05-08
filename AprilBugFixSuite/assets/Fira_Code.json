@@ -1,0 +1,1909 @@
+{
+	"LineSpacing": 20,
+	"Spacing": 0.0,
+	"DefaultCharacter": null,
+	"Characters": [
+		" ",
+		"!",
+		"\"",
+		"#",
+		"$",
+		"%",
+		"&",
+		"'",
+		"(",
+		")",
+		"*",
+		"+",
+		",",
+		"-",
+		".",
+		"/",
+		"0",
+		"1",
+		"2",
+		"3",
+		"4",
+		"5",
+		"6",
+		"7",
+		"8",
+		"9",
+		":",
+		";",
+		"<",
+		"=",
+		">",
+		"?",
+		"@",
+		"A",
+		"B",
+		"C",
+		"D",
+		"E",
+		"F",
+		"G",
+		"H",
+		"I",
+		"J",
+		"K",
+		"L",
+		"M",
+		"N",
+		"O",
+		"P",
+		"Q",
+		"R",
+		"S",
+		"T",
+		"U",
+		"V",
+		"W",
+		"X",
+		"Y",
+		"Z",
+		"[",
+		"\\",
+		"]",
+		"^",
+		"_",
+		"`",
+		"a",
+		"b",
+		"c",
+		"d",
+		"e",
+		"f",
+		"g",
+		"h",
+		"i",
+		"j",
+		"k",
+		"l",
+		"m",
+		"n",
+		"o",
+		"p",
+		"q",
+		"r",
+		"s",
+		"t",
+		"u",
+		"v",
+		"w",
+		"x",
+		"y",
+		"z",
+		"{",
+		"|",
+		"}",
+		"~"
+	],
+	"Glyphs": {
+		" ": {
+			"Character": " ",
+			"BoundsInTexture": {
+				"X": 124,
+				"Y": 33,
+				"Width": 1,
+				"Height": 1
+			},
+			"Cropping": {
+				"X": 0,
+				"Y": 34,
+				"Width": 10,
+				"Height": 20
+			},
+			"LeftSideBearing": 0.0,
+			"RightSideBearing": 10.0,
+			"Width": 0.0,
+			"WidthIncludingBearings": 10.0
+		},
+		"!": {
+			"Character": "!",
+			"BoundsInTexture": {
+				"X": 18,
+				"Y": 21,
+				"Width": 4,
+				"Height": 11
+			},
+			"Cropping": {
+				"X": 0,
+				"Y": 4,
+				"Width": 10,
+				"Height": 20
+			},
+			"LeftSideBearing": 3.0,
+			"RightSideBearing": 3.0,
+			"Width": 4.0,
+			"WidthIncludingBearings": 10.0
+		},
+		"\"": {
+			"Character": "\"",
+			"BoundsInTexture": {
+				"X": 69,
+				"Y": 87,
+				"Width": 6,
+				"Height": 5
+			},
+			"Cropping": {
+				"X": 0,
+				"Y": 2,
+				"Width": 10,
+				"Height": 20
+			},
+			"LeftSideBearing": 2.0,
+			"RightSideBearing": 2.0,
+			"Width": 6.0,
+			"WidthIncludingBearings": 10.0
+		},
+		"#": {
+			"Character": "#",
+			"BoundsInTexture": {
+				"X": 1,
+				"Y": 36,
+				"Width": 10,
+				"Height": 11
+			},
+			"Cropping": {
+				"X": 0,
+				"Y": 4,
+				"Width": 10,
+				"Height": 20
+			},
+			"LeftSideBearing": 0.0,
+			"RightSideBearing": 0.0,
+			"Width": 10.0,
+			"WidthIncludingBearings": 10.0
+		},
+		"$": {
+			"Character": "$",
+			"BoundsInTexture": {
+				"X": 25,
+				"Y": 1,
+				"Width": 10,
+				"Height": 17
+			},
+			"Cropping": {
+				"X": 0,
+				"Y": 1,
+				"Width": 10,
+				"Height": 20
+			},
+			"LeftSideBearing": 0.0,
+			"RightSideBearing": 0.0,
+			"Width": 10.0,
+			"WidthIncludingBearings": 10.0
+		},
+		"%": {
+			"Character": "%",
+			"BoundsInTexture": {
+				"X": 104,
+				"Y": 18,
+				"Width": 10,
+				"Height": 13
+			},
+			"Cropping": {
+				"X": 0,
+				"Y": 3,
+				"Width": 10,
+				"Height": 20
+			},
+			"LeftSideBearing": 0.0,
+			"RightSideBearing": 0.0,
+			"Width": 10.0,
+			"WidthIncludingBearings": 10.0
+		},
+		"&": {
+			"Character": "&",
+			"BoundsInTexture": {
+				"X": 90,
+				"Y": 47,
+				"Width": 10,
+				"Height": 11
+			},
+			"Cropping": {
+				"X": 0,
+				"Y": 4,
+				"Width": 10,
+				"Height": 20
+			},
+			"LeftSideBearing": 0.0,
+			"RightSideBearing": 0.0,
+			"Width": 10.0,
+			"WidthIncludingBearings": 10.0
+		},
+		"'": {
+			"Character": "'",
+			"BoundsInTexture": {
+				"X": 119,
+				"Y": 98,
+				"Width": 4,
+				"Height": 5
+			},
+			"Cropping": {
+				"X": 0,
+				"Y": 2,
+				"Width": 10,
+				"Height": 20
+			},
+			"LeftSideBearing": 3.0,
+			"RightSideBearing": 3.0,
+			"Width": 4.0,
+			"WidthIncludingBearings": 10.0
+		},
+		"(": {
+			"Character": "(",
+			"BoundsInTexture": {
+				"X": 7,
+				"Y": 1,
+				"Width": 7,
+				"Height": 18
+			},
+			"Cropping": {
+				"X": 0,
+				"Y": 0,
+				"Width": 10,
+				"Height": 20
+			},
+			"LeftSideBearing": 1.0,
+			"RightSideBearing": 2.0,
+			"Width": 7.0,
+			"WidthIncludingBearings": 10.0
+		},
+		")": {
+			"Character": ")",
+			"BoundsInTexture": {
+				"X": 16,
+				"Y": 1,
+				"Width": 7,
+				"Height": 18
+			},
+			"Cropping": {
+				"X": 0,
+				"Y": 0,
+				"Width": 10,
+				"Height": 20
+			},
+			"LeftSideBearing": 2.0,
+			"RightSideBearing": 1.0,
+			"Width": 7.0,
+			"WidthIncludingBearings": 10.0
+		},
+		"*": {
+			"Character": "*",
+			"BoundsInTexture": {
+				"X": 21,
+				"Y": 87,
+				"Width": 10,
+				"Height": 9
+			},
+			"Cropping": {
+				"X": 0,
+				"Y": 5,
+				"Width": 10,
+				"Height": 20
+			},
+			"LeftSideBearing": 0.0,
+			"RightSideBearing": 0.0,
+			"Width": 10.0,
+			"WidthIncludingBearings": 10.0
+		},
+		"+": {
+			"Character": "+",
+			"BoundsInTexture": {
+				"X": 33,
+				"Y": 87,
+				"Width": 10,
+				"Height": 9
+			},
+			"Cropping": {
+				"X": 0,
+				"Y": 5,
+				"Width": 10,
+				"Height": 20
+			},
+			"LeftSideBearing": 0.0,
+			"RightSideBearing": 0.0,
+			"Width": 10.0,
+			"WidthIncludingBearings": 10.0
+		},
+		",": {
+			"Character": ",",
+			"BoundsInTexture": {
+				"X": 78,
+				"Y": 74,
+				"Width": 4,
+				"Height": 7
+			},
+			"Cropping": {
+				"X": 0,
+				"Y": 12,
+				"Width": 10,
+				"Height": 20
+			},
+			"LeftSideBearing": 3.0,
+			"RightSideBearing": 3.0,
+			"Width": 4.0,
+			"WidthIncludingBearings": 10.0
+		},
+		"-": {
+			"Character": "-",
+			"BoundsInTexture": {
+				"X": 97,
+				"Y": 105,
+				"Width": 8,
+				"Height": 2
+			},
+			"Cropping": {
+				"X": 0,
+				"Y": 9,
+				"Width": 10,
+				"Height": 20
+			},
+			"LeftSideBearing": 1.0,
+			"RightSideBearing": 1.0,
+			"Width": 8.0,
+			"WidthIncludingBearings": 10.0
+		},
+		".": {
+			"Character": ".",
+			"BoundsInTexture": {
+				"X": 1,
+				"Y": 105,
+				"Width": 4,
+				"Height": 3
+			},
+			"Cropping": {
+				"X": 0,
+				"Y": 12,
+				"Width": 10,
+				"Height": 20
+			},
+			"LeftSideBearing": 3.0,
+			"RightSideBearing": 3.0,
+			"Width": 4.0,
+			"WidthIncludingBearings": 10.0
+		},
+		"/": {
+			"Character": "/",
+			"BoundsInTexture": {
+				"X": 46,
+				"Y": 1,
+				"Width": 10,
+				"Height": 16
+			},
+			"Cropping": {
+				"X": 0,
+				"Y": 1,
+				"Width": 10,
+				"Height": 20
+			},
+			"LeftSideBearing": 0.0,
+			"RightSideBearing": 0.0,
+			"Width": 10.0,
+			"WidthIncludingBearings": 10.0
+		},
+		"0": {
+			"Character": "0",
+			"BoundsInTexture": {
+				"X": 13,
+				"Y": 48,
+				"Width": 10,
+				"Height": 11
+			},
+			"Cropping": {
+				"X": 0,
+				"Y": 4,
+				"Width": 10,
+				"Height": 20
+			},
+			"LeftSideBearing": 0.0,
+			"RightSideBearing": 0.0,
+			"Width": 10.0,
+			"WidthIncludingBearings": 10.0
+		},
+		"1": {
+			"Character": "1",
+			"BoundsInTexture": {
+				"X": 109,
+				"Y": 61,
+				"Width": 9,
+				"Height": 11
+			},
+			"Cropping": {
+				"X": 0,
+				"Y": 4,
+				"Width": 10,
+				"Height": 20
+			},
+			"LeftSideBearing": 0.0,
+			"RightSideBearing": 0.0,
+			"Width": 10.0,
+			"WidthIncludingBearings": 10.0
+		},
+		"2": {
+			"Character": "2",
+			"BoundsInTexture": {
+				"X": 1,
+				"Y": 62,
+				"Width": 9,
+				"Height": 11
+			},
+			"Cropping": {
+				"X": 0,
+				"Y": 4,
+				"Width": 10,
+				"Height": 20
+			},
+			"LeftSideBearing": 0.0,
+			"RightSideBearing": 1.0,
+			"Width": 9.0,
+			"WidthIncludingBearings": 10.0
+		},
+		"3": {
+			"Character": "3",
+			"BoundsInTexture": {
+				"X": 85,
+				"Y": 73,
+				"Width": 9,
+				"Height": 11
+			},
+			"Cropping": {
+				"X": 0,
+				"Y": 4,
+				"Width": 10,
+				"Height": 20
+			},
+			"LeftSideBearing": 0.0,
+			"RightSideBearing": 1.0,
+			"Width": 9.0,
+			"WidthIncludingBearings": 10.0
+		},
+		"4": {
+			"Character": "4",
+			"BoundsInTexture": {
+				"X": 46,
+				"Y": 34,
+				"Width": 10,
+				"Height": 12
+			},
+			"Cropping": {
+				"X": 0,
+				"Y": 3,
+				"Width": 10,
+				"Height": 20
+			},
+			"LeftSideBearing": 0.0,
+			"RightSideBearing": 0.0,
+			"Width": 10.0,
+			"WidthIncludingBearings": 10.0
+		},
+		"5": {
+			"Character": "5",
+			"BoundsInTexture": {
+				"X": 12,
+				"Y": 74,
+				"Width": 9,
+				"Height": 11
+			},
+			"Cropping": {
+				"X": 0,
+				"Y": 4,
+				"Width": 10,
+				"Height": 20
+			},
+			"LeftSideBearing": 0.0,
+			"RightSideBearing": 1.0,
+			"Width": 9.0,
+			"WidthIncludingBearings": 10.0
+		},
+		"6": {
+			"Character": "6",
+			"BoundsInTexture": {
+				"X": 25,
+				"Y": 48,
+				"Width": 10,
+				"Height": 11
+			},
+			"Cropping": {
+				"X": 0,
+				"Y": 4,
+				"Width": 10,
+				"Height": 20
+			},
+			"LeftSideBearing": 0.0,
+			"RightSideBearing": 0.0,
+			"Width": 10.0,
+			"WidthIncludingBearings": 10.0
+		},
+		"7": {
+			"Character": "7",
+			"BoundsInTexture": {
+				"X": 80,
+				"Y": 34,
+				"Width": 8,
+				"Height": 12
+			},
+			"Cropping": {
+				"X": 0,
+				"Y": 4,
+				"Width": 10,
+				"Height": 20
+			},
+			"LeftSideBearing": 1.0,
+			"RightSideBearing": 1.0,
+			"Width": 8.0,
+			"WidthIncludingBearings": 10.0
+		},
+		"8": {
+			"Character": "8",
+			"BoundsInTexture": {
+				"X": 37,
+				"Y": 48,
+				"Width": 10,
+				"Height": 11
+			},
+			"Cropping": {
+				"X": 0,
+				"Y": 4,
+				"Width": 10,
+				"Height": 20
+			},
+			"LeftSideBearing": 0.0,
+			"RightSideBearing": 0.0,
+			"Width": 10.0,
+			"WidthIncludingBearings": 10.0
+		},
+		"9": {
+			"Character": "9",
+			"BoundsInTexture": {
+				"X": 46,
+				"Y": 19,
+				"Width": 10,
+				"Height": 13
+			},
+			"Cropping": {
+				"X": 0,
+				"Y": 4,
+				"Width": 10,
+				"Height": 20
+			},
+			"LeftSideBearing": 0.0,
+			"RightSideBearing": 0.0,
+			"Width": 10.0,
+			"WidthIncludingBearings": 10.0
+		},
+		":": {
+			"Character": ":",
+			"BoundsInTexture": {
+				"X": 120,
+				"Y": 61,
+				"Width": 4,
+				"Height": 9
+			},
+			"Cropping": {
+				"X": 0,
+				"Y": 6,
+				"Width": 10,
+				"Height": 20
+			},
+			"LeftSideBearing": 3.0,
+			"RightSideBearing": 3.0,
+			"Width": 4.0,
+			"WidthIncludingBearings": 10.0
+		},
+		";": {
+			"Character": ";",
+			"BoundsInTexture": {
+				"X": 1,
+				"Y": 23,
+				"Width": 4,
+				"Height": 11
+			},
+			"Cropping": {
+				"X": 0,
+				"Y": 6,
+				"Width": 10,
+				"Height": 20
+			},
+			"LeftSideBearing": 3.0,
+			"RightSideBearing": 3.0,
+			"Width": 4.0,
+			"WidthIncludingBearings": 10.0
+		},
+		"<": {
+			"Character": "<",
+			"BoundsInTexture": {
+				"X": 78,
+				"Y": 86,
+				"Width": 8,
+				"Height": 10
+			},
+			"Cropping": {
+				"X": 0,
+				"Y": 5,
+				"Width": 10,
+				"Height": 20
+			},
+			"LeftSideBearing": 1.0,
+			"RightSideBearing": 1.0,
+			"Width": 8.0,
+			"WidthIncludingBearings": 10.0
+		},
+		"=": {
+			"Character": "=",
+			"BoundsInTexture": {
+				"X": 109,
+				"Y": 98,
+				"Width": 8,
+				"Height": 5
+			},
+			"Cropping": {
+				"X": 0,
+				"Y": 8,
+				"Width": 10,
+				"Height": 20
+			},
+			"LeftSideBearing": 1.0,
+			"RightSideBearing": 1.0,
+			"Width": 8.0,
+			"WidthIncludingBearings": 10.0
+		},
+		">": {
+			"Character": ">",
+			"BoundsInTexture": {
+				"X": 11,
+				"Y": 87,
+				"Width": 8,
+				"Height": 10
+			},
+			"Cropping": {
+				"X": 0,
+				"Y": 5,
+				"Width": 10,
+				"Height": 20
+			},
+			"LeftSideBearing": 1.0,
+			"RightSideBearing": 1.0,
+			"Width": 8.0,
+			"WidthIncludingBearings": 10.0
+		},
+		"?": {
+			"Character": "?",
+			"BoundsInTexture": {
+				"X": 23,
+				"Y": 74,
+				"Width": 9,
+				"Height": 11
+			},
+			"Cropping": {
+				"X": 0,
+				"Y": 4,
+				"Width": 10,
+				"Height": 20
+			},
+			"LeftSideBearing": 0.0,
+			"RightSideBearing": 1.0,
+			"Width": 9.0,
+			"WidthIncludingBearings": 10.0
+		},
+		"@": {
+			"Character": "@",
+			"BoundsInTexture": {
+				"X": 116,
+				"Y": 17,
+				"Width": 10,
+				"Height": 14
+			},
+			"Cropping": {
+				"X": 0,
+				"Y": 4,
+				"Width": 10,
+				"Height": 20
+			},
+			"LeftSideBearing": -1.0,
+			"RightSideBearing": 0.0,
+			"Width": 11.0,
+			"WidthIncludingBearings": 10.0
+		},
+		"A": {
+			"Character": "A",
+			"BoundsInTexture": {
+				"X": 90,
+				"Y": 34,
+				"Width": 11,
+				"Height": 11
+			},
+			"Cropping": {
+				"X": 0,
+				"Y": 4,
+				"Width": 11,
+				"Height": 20
+			},
+			"LeftSideBearing": -1.0,
+			"RightSideBearing": -1.0,
+			"Width": 12.0,
+			"WidthIncludingBearings": 10.0
+		},
+		"B": {
+			"Character": "B",
+			"BoundsInTexture": {
+				"X": 49,
+				"Y": 48,
+				"Width": 10,
+				"Height": 11
+			},
+			"Cropping": {
+				"X": 0,
+				"Y": 4,
+				"Width": 10,
+				"Height": 20
+			},
+			"LeftSideBearing": 0.0,
+			"RightSideBearing": 0.0,
+			"Width": 10.0,
+			"WidthIncludingBearings": 10.0
+		},
+		"C": {
+			"Character": "C",
+			"BoundsInTexture": {
+				"X": 61,
+				"Y": 48,
+				"Width": 10,
+				"Height": 11
+			},
+			"Cropping": {
+				"X": 0,
+				"Y": 4,
+				"Width": 10,
+				"Height": 20
+			},
+			"LeftSideBearing": 0.0,
+			"RightSideBearing": 0.0,
+			"Width": 10.0,
+			"WidthIncludingBearings": 10.0
+		},
+		"D": {
+			"Character": "D",
+			"BoundsInTexture": {
+				"X": 73,
+				"Y": 48,
+				"Width": 10,
+				"Height": 11
+			},
+			"Cropping": {
+				"X": 0,
+				"Y": 4,
+				"Width": 10,
+				"Height": 20
+			},
+			"LeftSideBearing": 0.0,
+			"RightSideBearing": 0.0,
+			"Width": 10.0,
+			"WidthIncludingBearings": 10.0
+		},
+		"E": {
+			"Character": "E",
+			"BoundsInTexture": {
+				"X": 118,
+				"Y": 74,
+				"Width": 8,
+				"Height": 11
+			},
+			"Cropping": {
+				"X": 0,
+				"Y": 4,
+				"Width": 10,
+				"Height": 20
+			},
+			"LeftSideBearing": 1.0,
+			"RightSideBearing": 1.0,
+			"Width": 8.0,
+			"WidthIncludingBearings": 10.0
+		},
+		"F": {
+			"Character": "F",
+			"BoundsInTexture": {
+				"X": 34,
+				"Y": 74,
+				"Width": 9,
+				"Height": 11
+			},
+			"Cropping": {
+				"X": 0,
+				"Y": 4,
+				"Width": 10,
+				"Height": 20
+			},
+			"LeftSideBearing": 1.0,
+			"RightSideBearing": 0.0,
+			"Width": 9.0,
+			"WidthIncludingBearings": 10.0
+		},
+		"G": {
+			"Character": "G",
+			"BoundsInTexture": {
+				"X": 102,
+				"Y": 48,
+				"Width": 10,
+				"Height": 11
+			},
+			"Cropping": {
+				"X": 0,
+				"Y": 4,
+				"Width": 10,
+				"Height": 20
+			},
+			"LeftSideBearing": 0.0,
+			"RightSideBearing": 0.0,
+			"Width": 10.0,
+			"WidthIncludingBearings": 10.0
+		},
+		"H": {
+			"Character": "H",
+			"BoundsInTexture": {
+				"X": 45,
+				"Y": 74,
+				"Width": 9,
+				"Height": 11
+			},
+			"Cropping": {
+				"X": 0,
+				"Y": 4,
+				"Width": 10,
+				"Height": 20
+			},
+			"LeftSideBearing": 0.0,
+			"RightSideBearing": 1.0,
+			"Width": 9.0,
+			"WidthIncludingBearings": 10.0
+		},
+		"I": {
+			"Character": "I",
+			"BoundsInTexture": {
+				"X": 1,
+				"Y": 75,
+				"Width": 8,
+				"Height": 11
+			},
+			"Cropping": {
+				"X": 0,
+				"Y": 4,
+				"Width": 10,
+				"Height": 20
+			},
+			"LeftSideBearing": 1.0,
+			"RightSideBearing": 1.0,
+			"Width": 8.0,
+			"WidthIncludingBearings": 10.0
+		},
+		"J": {
+			"Character": "J",
+			"BoundsInTexture": {
+				"X": 56,
+				"Y": 74,
+				"Width": 9,
+				"Height": 11
+			},
+			"Cropping": {
+				"X": 0,
+				"Y": 4,
+				"Width": 10,
+				"Height": 20
+			},
+			"LeftSideBearing": 0.0,
+			"RightSideBearing": 1.0,
+			"Width": 9.0,
+			"WidthIncludingBearings": 10.0
+		},
+		"K": {
+			"Character": "K",
+			"BoundsInTexture": {
+				"X": 114,
+				"Y": 48,
+				"Width": 10,
+				"Height": 11
+			},
+			"Cropping": {
+				"X": 0,
+				"Y": 4,
+				"Width": 10,
+				"Height": 20
+			},
+			"LeftSideBearing": 0.0,
+			"RightSideBearing": 0.0,
+			"Width": 10.0,
+			"WidthIncludingBearings": 10.0
+		},
+		"L": {
+			"Character": "L",
+			"BoundsInTexture": {
+				"X": 67,
+				"Y": 74,
+				"Width": 9,
+				"Height": 11
+			},
+			"Cropping": {
+				"X": 0,
+				"Y": 4,
+				"Width": 10,
+				"Height": 20
+			},
+			"LeftSideBearing": 1.0,
+			"RightSideBearing": 0.0,
+			"Width": 9.0,
+			"WidthIncludingBearings": 10.0
+		},
+		"M": {
+			"Character": "M",
+			"BoundsInTexture": {
+				"X": 1,
+				"Y": 49,
+				"Width": 10,
+				"Height": 11
+			},
+			"Cropping": {
+				"X": 0,
+				"Y": 4,
+				"Width": 10,
+				"Height": 20
+			},
+			"LeftSideBearing": 0.0,
+			"RightSideBearing": 0.0,
+			"Width": 10.0,
+			"WidthIncludingBearings": 10.0
+		},
+		"N": {
+			"Character": "N",
+			"BoundsInTexture": {
+				"X": 96,
+				"Y": 74,
+				"Width": 9,
+				"Height": 11
+			},
+			"Cropping": {
+				"X": 0,
+				"Y": 4,
+				"Width": 10,
+				"Height": 20
+			},
+			"LeftSideBearing": 0.0,
+			"RightSideBearing": 1.0,
+			"Width": 9.0,
+			"WidthIncludingBearings": 10.0
+		},
+		"O": {
+			"Character": "O",
+			"BoundsInTexture": {
+				"X": 85,
+				"Y": 60,
+				"Width": 10,
+				"Height": 11
+			},
+			"Cropping": {
+				"X": 0,
+				"Y": 4,
+				"Width": 10,
+				"Height": 20
+			},
+			"LeftSideBearing": 0.0,
+			"RightSideBearing": 0.0,
+			"Width": 10.0,
+			"WidthIncludingBearings": 10.0
+		},
+		"P": {
+			"Character": "P",
+			"BoundsInTexture": {
+				"X": 107,
+				"Y": 74,
+				"Width": 9,
+				"Height": 11
+			},
+			"Cropping": {
+				"X": 0,
+				"Y": 4,
+				"Width": 10,
+				"Height": 20
+			},
+			"LeftSideBearing": 1.0,
+			"RightSideBearing": 0.0,
+			"Width": 9.0,
+			"WidthIncludingBearings": 10.0
+		},
+		"Q": {
+			"Character": "Q",
+			"BoundsInTexture": {
+				"X": 116,
+				"Y": 1,
+				"Width": 11,
+				"Height": 14
+			},
+			"Cropping": {
+				"X": 0,
+				"Y": 4,
+				"Width": 10,
+				"Height": 20
+			},
+			"LeftSideBearing": 0.0,
+			"RightSideBearing": -1.0,
+			"Width": 11.0,
+			"WidthIncludingBearings": 10.0
+		},
+		"R": {
+			"Character": "R",
+			"BoundsInTexture": {
+				"X": 13,
+				"Y": 61,
+				"Width": 10,
+				"Height": 11
+			},
+			"Cropping": {
+				"X": 0,
+				"Y": 4,
+				"Width": 10,
+				"Height": 20
+			},
+			"LeftSideBearing": 0.0,
+			"RightSideBearing": 0.0,
+			"Width": 10.0,
+			"WidthIncludingBearings": 10.0
+		},
+		"S": {
+			"Character": "S",
+			"BoundsInTexture": {
+				"X": 25,
+				"Y": 61,
+				"Width": 10,
+				"Height": 11
+			},
+			"Cropping": {
+				"X": 0,
+				"Y": 4,
+				"Width": 10,
+				"Height": 20
+			},
+			"LeftSideBearing": 0.0,
+			"RightSideBearing": 0.0,
+			"Width": 10.0,
+			"WidthIncludingBearings": 10.0
+		},
+		"T": {
+			"Character": "T",
+			"BoundsInTexture": {
+				"X": 37,
+				"Y": 61,
+				"Width": 10,
+				"Height": 11
+			},
+			"Cropping": {
+				"X": 0,
+				"Y": 4,
+				"Width": 10,
+				"Height": 20
+			},
+			"LeftSideBearing": 0.0,
+			"RightSideBearing": 0.0,
+			"Width": 10.0,
+			"WidthIncludingBearings": 10.0
+		},
+		"U": {
+			"Character": "U",
+			"BoundsInTexture": {
+				"X": 49,
+				"Y": 61,
+				"Width": 10,
+				"Height": 11
+			},
+			"Cropping": {
+				"X": 0,
+				"Y": 4,
+				"Width": 10,
+				"Height": 20
+			},
+			"LeftSideBearing": 0.0,
+			"RightSideBearing": 0.0,
+			"Width": 10.0,
+			"WidthIncludingBearings": 10.0
+		},
+		"V": {
+			"Character": "V",
+			"BoundsInTexture": {
+				"X": 61,
+				"Y": 61,
+				"Width": 10,
+				"Height": 11
+			},
+			"Cropping": {
+				"X": 0,
+				"Y": 4,
+				"Width": 10,
+				"Height": 20
+			},
+			"LeftSideBearing": -1.0,
+			"RightSideBearing": 0.0,
+			"Width": 11.0,
+			"WidthIncludingBearings": 10.0
+		},
+		"W": {
+			"Character": "W",
+			"BoundsInTexture": {
+				"X": 18,
+				"Y": 35,
+				"Width": 11,
+				"Height": 11
+			},
+			"Cropping": {
+				"X": 0,
+				"Y": 4,
+				"Width": 10,
+				"Height": 20
+			},
+			"LeftSideBearing": -1.0,
+			"RightSideBearing": 0.0,
+			"Width": 11.0,
+			"WidthIncludingBearings": 10.0
+		},
+		"X": {
+			"Character": "X",
+			"BoundsInTexture": {
+				"X": 73,
+				"Y": 61,
+				"Width": 10,
+				"Height": 11
+			},
+			"Cropping": {
+				"X": 0,
+				"Y": 4,
+				"Width": 10,
+				"Height": 20
+			},
+			"LeftSideBearing": 0.0,
+			"RightSideBearing": 0.0,
+			"Width": 10.0,
+			"WidthIncludingBearings": 10.0
+		},
+		"Y": {
+			"Character": "Y",
+			"BoundsInTexture": {
+				"X": 31,
+				"Y": 35,
+				"Width": 11,
+				"Height": 11
+			},
+			"Cropping": {
+				"X": 0,
+				"Y": 4,
+				"Width": 10,
+				"Height": 20
+			},
+			"LeftSideBearing": -1.0,
+			"RightSideBearing": 0.0,
+			"Width": 11.0,
+			"WidthIncludingBearings": 10.0
+		},
+		"Z": {
+			"Character": "Z",
+			"BoundsInTexture": {
+				"X": 97,
+				"Y": 61,
+				"Width": 10,
+				"Height": 11
+			},
+			"Cropping": {
+				"X": 0,
+				"Y": 4,
+				"Width": 10,
+				"Height": 20
+			},
+			"LeftSideBearing": 0.0,
+			"RightSideBearing": 0.0,
+			"Width": 10.0,
+			"WidthIncludingBearings": 10.0
+		},
+		"[": {
+			"Character": "[",
+			"BoundsInTexture": {
+				"X": 88,
+				"Y": 1,
+				"Width": 6,
+				"Height": 16
+			},
+			"Cropping": {
+				"X": 0,
+				"Y": 1,
+				"Width": 10,
+				"Height": 20
+			},
+			"LeftSideBearing": 2.0,
+			"RightSideBearing": 2.0,
+			"Width": 6.0,
+			"WidthIncludingBearings": 10.0
+		},
+		"\\": {
+			"Character": "\\",
+			"BoundsInTexture": {
+				"X": 58,
+				"Y": 1,
+				"Width": 10,
+				"Height": 16
+			},
+			"Cropping": {
+				"X": 0,
+				"Y": 1,
+				"Width": 10,
+				"Height": 20
+			},
+			"LeftSideBearing": 0.0,
+			"RightSideBearing": 0.0,
+			"Width": 10.0,
+			"WidthIncludingBearings": 10.0
+		},
+		"]": {
+			"Character": "]",
+			"BoundsInTexture": {
+				"X": 96,
+				"Y": 1,
+				"Width": 6,
+				"Height": 16
+			},
+			"Cropping": {
+				"X": 0,
+				"Y": 1,
+				"Width": 10,
+				"Height": 20
+			},
+			"LeftSideBearing": 2.0,
+			"RightSideBearing": 2.0,
+			"Width": 6.0,
+			"WidthIncludingBearings": 10.0
+		},
+		"^": {
+			"Character": "^",
+			"BoundsInTexture": {
+				"X": 97,
+				"Y": 98,
+				"Width": 10,
+				"Height": 5
+			},
+			"Cropping": {
+				"X": 0,
+				"Y": 1,
+				"Width": 10,
+				"Height": 20
+			},
+			"LeftSideBearing": 0.0,
+			"RightSideBearing": 0.0,
+			"Width": 10.0,
+			"WidthIncludingBearings": 10.0
+		},
+		"_": {
+			"Character": "_",
+			"BoundsInTexture": {
+				"X": 7,
+				"Y": 105,
+				"Width": 10,
+				"Height": 2
+			},
+			"Cropping": {
+				"X": 0,
+				"Y": 16,
+				"Width": 10,
+				"Height": 20
+			},
+			"LeftSideBearing": 0.0,
+			"RightSideBearing": 0.0,
+			"Width": 10.0,
+			"WidthIncludingBearings": 10.0
+		},
+		"`": {
+			"Character": "`",
+			"BoundsInTexture": {
+				"X": 13,
+				"Y": 99,
+				"Width": 6,
+				"Height": 4
+			},
+			"Cropping": {
+				"X": 0,
+				"Y": 1,
+				"Width": 10,
+				"Height": 20
+			},
+			"LeftSideBearing": 2.0,
+			"RightSideBearing": 2.0,
+			"Width": 6.0,
+			"WidthIncludingBearings": 10.0
+		},
+		"a": {
+			"Character": "a",
+			"BoundsInTexture": {
+				"X": 45,
+				"Y": 87,
+				"Width": 10,
+				"Height": 9
+			},
+			"Cropping": {
+				"X": 0,
+				"Y": 6,
+				"Width": 10,
+				"Height": 20
+			},
+			"LeftSideBearing": 0.0,
+			"RightSideBearing": 0.0,
+			"Width": 10.0,
+			"WidthIncludingBearings": 10.0
+		},
+		"b": {
+			"Character": "b",
+			"BoundsInTexture": {
+				"X": 70,
+				"Y": 19,
+				"Width": 9,
+				"Height": 13
+			},
+			"Cropping": {
+				"X": 0,
+				"Y": 2,
+				"Width": 10,
+				"Height": 20
+			},
+			"LeftSideBearing": 1.0,
+			"RightSideBearing": 0.0,
+			"Width": 9.0,
+			"WidthIncludingBearings": 10.0
+		},
+		"c": {
+			"Character": "c",
+			"BoundsInTexture": {
+				"X": 1,
+				"Y": 88,
+				"Width": 8,
+				"Height": 9
+			},
+			"Cropping": {
+				"X": 0,
+				"Y": 6,
+				"Width": 10,
+				"Height": 20
+			},
+			"LeftSideBearing": 1.0,
+			"RightSideBearing": 1.0,
+			"Width": 8.0,
+			"WidthIncludingBearings": 10.0
+		},
+		"d": {
+			"Character": "d",
+			"BoundsInTexture": {
+				"X": 81,
+				"Y": 19,
+				"Width": 9,
+				"Height": 13
+			},
+			"Cropping": {
+				"X": 0,
+				"Y": 2,
+				"Width": 10,
+				"Height": 20
+			},
+			"LeftSideBearing": 0.0,
+			"RightSideBearing": 1.0,
+			"Width": 9.0,
+			"WidthIncludingBearings": 10.0
+		},
+		"e": {
+			"Character": "e",
+			"BoundsInTexture": {
+				"X": 57,
+				"Y": 87,
+				"Width": 10,
+				"Height": 9
+			},
+			"Cropping": {
+				"X": 0,
+				"Y": 6,
+				"Width": 10,
+				"Height": 20
+			},
+			"LeftSideBearing": 0.0,
+			"RightSideBearing": 0.0,
+			"Width": 10.0,
+			"WidthIncludingBearings": 10.0
+		},
+		"f": {
+			"Character": "f",
+			"BoundsInTexture": {
+				"X": 58,
+				"Y": 34,
+				"Width": 9,
+				"Height": 12
+			},
+			"Cropping": {
+				"X": 0,
+				"Y": 3,
+				"Width": 10,
+				"Height": 20
+			},
+			"LeftSideBearing": 1.0,
+			"RightSideBearing": 0.0,
+			"Width": 9.0,
+			"WidthIncludingBearings": 10.0
+		},
+		"g": {
+			"Character": "g",
+			"BoundsInTexture": {
+				"X": 104,
+				"Y": 1,
+				"Width": 10,
+				"Height": 15
+			},
+			"Cropping": {
+				"X": 0,
+				"Y": 4,
+				"Width": 10,
+				"Height": 20
+			},
+			"LeftSideBearing": 0.0,
+			"RightSideBearing": 0.0,
+			"Width": 10.0,
+			"WidthIncludingBearings": 10.0
+		},
+		"h": {
+			"Character": "h",
+			"BoundsInTexture": {
+				"X": 36,
+				"Y": 20,
+				"Width": 8,
+				"Height": 13
+			},
+			"Cropping": {
+				"X": 0,
+				"Y": 2,
+				"Width": 10,
+				"Height": 20
+			},
+			"LeftSideBearing": 1.0,
+			"RightSideBearing": 1.0,
+			"Width": 8.0,
+			"WidthIncludingBearings": 10.0
+		},
+		"i": {
+			"Character": "i",
+			"BoundsInTexture": {
+				"X": 114,
+				"Y": 33,
+				"Width": 8,
+				"Height": 13
+			},
+			"Cropping": {
+				"X": 0,
+				"Y": 2,
+				"Width": 10,
+				"Height": 20
+			},
+			"LeftSideBearing": 1.0,
+			"RightSideBearing": 1.0,
+			"Width": 8.0,
+			"WidthIncludingBearings": 10.0
+		},
+		"j": {
+			"Character": "j",
+			"BoundsInTexture": {
+				"X": 37,
+				"Y": 1,
+				"Width": 7,
+				"Height": 17
+			},
+			"Cropping": {
+				"X": 0,
+				"Y": 2,
+				"Width": 10,
+				"Height": 20
+			},
+			"LeftSideBearing": 1.0,
+			"RightSideBearing": 2.0,
+			"Width": 7.0,
+			"WidthIncludingBearings": 10.0
+		},
+		"k": {
+			"Character": "k",
+			"BoundsInTexture": {
+				"X": 92,
+				"Y": 19,
+				"Width": 9,
+				"Height": 13
+			},
+			"Cropping": {
+				"X": 0,
+				"Y": 2,
+				"Width": 10,
+				"Height": 20
+			},
+			"LeftSideBearing": 1.0,
+			"RightSideBearing": 0.0,
+			"Width": 9.0,
+			"WidthIncludingBearings": 10.0
+		},
+		"l": {
+			"Character": "l",
+			"BoundsInTexture": {
+				"X": 25,
+				"Y": 20,
+				"Width": 9,
+				"Height": 13
+			},
+			"Cropping": {
+				"X": 0,
+				"Y": 2,
+				"Width": 10,
+				"Height": 20
+			},
+			"LeftSideBearing": 0.0,
+			"RightSideBearing": 1.0,
+			"Width": 9.0,
+			"WidthIncludingBearings": 10.0
+		},
+		"m": {
+			"Character": "m",
+			"BoundsInTexture": {
+				"X": 88,
+				"Y": 87,
+				"Width": 10,
+				"Height": 9
+			},
+			"Cropping": {
+				"X": 0,
+				"Y": 6,
+				"Width": 10,
+				"Height": 20
+			},
+			"LeftSideBearing": 0.0,
+			"RightSideBearing": 0.0,
+			"Width": 10.0,
+			"WidthIncludingBearings": 10.0
+		},
+		"n": {
+			"Character": "n",
+			"BoundsInTexture": {
+				"X": 67,
+				"Y": 98,
+				"Width": 8,
+				"Height": 9
+			},
+			"Cropping": {
+				"X": 0,
+				"Y": 6,
+				"Width": 10,
+				"Height": 20
+			},
+			"LeftSideBearing": 1.0,
+			"RightSideBearing": 1.0,
+			"Width": 8.0,
+			"WidthIncludingBearings": 10.0
+		},
+		"o": {
+			"Character": "o",
+			"BoundsInTexture": {
+				"X": 100,
+				"Y": 87,
+				"Width": 10,
+				"Height": 9
+			},
+			"Cropping": {
+				"X": 0,
+				"Y": 6,
+				"Width": 10,
+				"Height": 20
+			},
+			"LeftSideBearing": 0.0,
+			"RightSideBearing": 0.0,
+			"Width": 10.0,
+			"WidthIncludingBearings": 10.0
+		},
+		"p": {
+			"Character": "p",
+			"BoundsInTexture": {
+				"X": 7,
+				"Y": 21,
+				"Width": 9,
+				"Height": 13
+			},
+			"Cropping": {
+				"X": 0,
+				"Y": 6,
+				"Width": 10,
+				"Height": 20
+			},
+			"LeftSideBearing": 1.0,
+			"RightSideBearing": 0.0,
+			"Width": 9.0,
+			"WidthIncludingBearings": 10.0
+		},
+		"q": {
+			"Character": "q",
+			"BoundsInTexture": {
+				"X": 103,
+				"Y": 33,
+				"Width": 9,
+				"Height": 13
+			},
+			"Cropping": {
+				"X": 0,
+				"Y": 6,
+				"Width": 10,
+				"Height": 20
+			},
+			"LeftSideBearing": 0.0,
+			"RightSideBearing": 1.0,
+			"Width": 9.0,
+			"WidthIncludingBearings": 10.0
+		},
+		"r": {
+			"Character": "r",
+			"BoundsInTexture": {
+				"X": 45,
+				"Y": 98,
+				"Width": 9,
+				"Height": 9
+			},
+			"Cropping": {
+				"X": 0,
+				"Y": 6,
+				"Width": 10,
+				"Height": 20
+			},
+			"LeftSideBearing": 1.0,
+			"RightSideBearing": 0.0,
+			"Width": 9.0,
+			"WidthIncludingBearings": 10.0
+		},
+		"s": {
+			"Character": "s",
+			"BoundsInTexture": {
+				"X": 56,
+				"Y": 98,
+				"Width": 9,
+				"Height": 9
+			},
+			"Cropping": {
+				"X": 0,
+				"Y": 6,
+				"Width": 10,
+				"Height": 20
+			},
+			"LeftSideBearing": 0.0,
+			"RightSideBearing": 1.0,
+			"Width": 9.0,
+			"WidthIncludingBearings": 10.0
+		},
+		"t": {
+			"Character": "t",
+			"BoundsInTexture": {
+				"X": 69,
+				"Y": 34,
+				"Width": 9,
+				"Height": 12
+			},
+			"Cropping": {
+				"X": 0,
+				"Y": 3,
+				"Width": 10,
+				"Height": 20
+			},
+			"LeftSideBearing": 0.0,
+			"RightSideBearing": 1.0,
+			"Width": 9.0,
+			"WidthIncludingBearings": 10.0
+		},
+		"u": {
+			"Character": "u",
+			"BoundsInTexture": {
+				"X": 77,
+				"Y": 98,
+				"Width": 8,
+				"Height": 9
+			},
+			"Cropping": {
+				"X": 0,
+				"Y": 6,
+				"Width": 10,
+				"Height": 20
+			},
+			"LeftSideBearing": 1.0,
+			"RightSideBearing": 1.0,
+			"Width": 8.0,
+			"WidthIncludingBearings": 10.0
+		},
+		"v": {
+			"Character": "v",
+			"BoundsInTexture": {
+				"X": 112,
+				"Y": 87,
+				"Width": 10,
+				"Height": 9
+			},
+			"Cropping": {
+				"X": 0,
+				"Y": 6,
+				"Width": 10,
+				"Height": 20
+			},
+			"LeftSideBearing": 0.0,
+			"RightSideBearing": 0.0,
+			"Width": 10.0,
+			"WidthIncludingBearings": 10.0
+		},
+		"w": {
+			"Character": "w",
+			"BoundsInTexture": {
+				"X": 21,
+				"Y": 98,
+				"Width": 10,
+				"Height": 9
+			},
+			"Cropping": {
+				"X": 0,
+				"Y": 6,
+				"Width": 10,
+				"Height": 20
+			},
+			"LeftSideBearing": 0.0,
+			"RightSideBearing": 0.0,
+			"Width": 10.0,
+			"WidthIncludingBearings": 10.0
+		},
+		"x": {
+			"Character": "x",
+			"BoundsInTexture": {
+				"X": 33,
+				"Y": 98,
+				"Width": 10,
+				"Height": 9
+			},
+			"Cropping": {
+				"X": 0,
+				"Y": 6,
+				"Width": 10,
+				"Height": 20
+			},
+			"LeftSideBearing": 0.0,
+			"RightSideBearing": 0.0,
+			"Width": 10.0,
+			"WidthIncludingBearings": 10.0
+		},
+		"y": {
+			"Character": "y",
+			"BoundsInTexture": {
+				"X": 58,
+				"Y": 19,
+				"Width": 10,
+				"Height": 13
+			},
+			"Cropping": {
+				"X": 0,
+				"Y": 6,
+				"Width": 10,
+				"Height": 20
+			},
+			"LeftSideBearing": 0.0,
+			"RightSideBearing": 0.0,
+			"Width": 10.0,
+			"WidthIncludingBearings": 10.0
+		},
+		"z": {
+			"Character": "z",
+			"BoundsInTexture": {
+				"X": 87,
+				"Y": 98,
+				"Width": 8,
+				"Height": 9
+			},
+			"Cropping": {
+				"X": 0,
+				"Y": 6,
+				"Width": 10,
+				"Height": 20
+			},
+			"LeftSideBearing": 1.0,
+			"RightSideBearing": 1.0,
+			"Width": 8.0,
+			"WidthIncludingBearings": 10.0
+		},
+		"{": {
+			"Character": "{",
+			"BoundsInTexture": {
+				"X": 70,
+				"Y": 1,
+				"Width": 7,
+				"Height": 16
+			},
+			"Cropping": {
+				"X": 0,
+				"Y": 1,
+				"Width": 10,
+				"Height": 20
+			},
+			"LeftSideBearing": 1.0,
+			"RightSideBearing": 2.0,
+			"Width": 7.0,
+			"WidthIncludingBearings": 10.0
+		},
+		"|": {
+			"Character": "|",
+			"BoundsInTexture": {
+				"X": 1,
+				"Y": 1,
+				"Width": 4,
+				"Height": 20
+			},
+			"Cropping": {
+				"X": 0,
+				"Y": 0,
+				"Width": 10,
+				"Height": 20
+			},
+			"LeftSideBearing": 3.0,
+			"RightSideBearing": 3.0,
+			"Width": 4.0,
+			"WidthIncludingBearings": 10.0
+		},
+		"}": {
+			"Character": "}",
+			"BoundsInTexture": {
+				"X": 79,
+				"Y": 1,
+				"Width": 7,
+				"Height": 16
+			},
+			"Cropping": {
+				"X": 0,
+				"Y": 1,
+				"Width": 10,
+				"Height": 20
+			},
+			"LeftSideBearing": 2.0,
+			"RightSideBearing": 1.0,
+			"Width": 7.0,
+			"WidthIncludingBearings": 10.0
+		},
+		"~": {
+			"Character": "~",
+			"BoundsInTexture": {
+				"X": 1,
+				"Y": 99,
+				"Width": 10,
+				"Height": 4
+			},
+			"Cropping": {
+				"X": 0,
+				"Y": 8,
+				"Width": 10,
+				"Height": 20
+			},
+			"LeftSideBearing": 0.0,
+			"RightSideBearing": 0.0,
+			"Width": 10.0,
+			"WidthIncludingBearings": 10.0
+		}
+	}
+}
