@@ -1,0 +1,16 @@
+{
+	// Hold Up Meessage
+	// Please base your translation on the vanilla game translation for the Galaxy Sword, as commented below
+	// "MeleeWeapon_GalaxySword": "Le tesson prismatique change de forme sous vos yeux ! Son pouvoir est exceptionnel.^^Vous avez trouvé =L’épée Galactique=  ^",
+	"MeleeWeapon_GalaxyDagger": "Le tesson prismatique change de forme sous vos yeux ! Son pouvoir est exceptionnel.^^Vous avez trouvé =La dague galactique=  ^",
+	"MeleeWeapon_GalaxyHammer": "Le tesson prismatique change de forme sous vos yeux ! Son pouvoir est exceptionnel.^^Vous avez trouvé =Le marteau galactique=  ^",
+
+	// Multiplayer
+	// Please base your translation on the vanilla game translation for the Galaxy Sword, as commented below
+	// "Chat_GalaxySword": "{{PlayerName}} a trouvé l'épée galactique.",
+	"Chat_GalaxyDagger": "{{PlayerName}} a trouvé la dague galactique.",
+	"Chat_GalaxyHammer": "{{PlayerName}} a trouvé le marteau galactique.",
+
+	// GMCM
+	"GMCM.ModEnabled.Name": "Activer le Mod"
+}
