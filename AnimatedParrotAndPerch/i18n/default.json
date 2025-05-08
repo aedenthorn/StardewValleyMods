@@ -1,0 +1,12 @@
+{
+	"item.jungle-parrot-perch.name": "Jungle Parrot Perch",
+	"item.jungle-parrot-perch.description": "A jungle perch for a parrot.",
+	"item.stone-parrot-perch.name": "Stone Parrot Perch",
+	"item.stone-parrot-perch.description": "A stone perch for a parrot.",
+	"item.wooden-parrot-perch.name": "Wooden Parrot Perch",
+	"item.wooden-parrot-perch.description": "A wooden perch for a parrot.",
+
+	// GMCM
+	"GMCM.DropGiftChance.Name": "Drop Gift Chance",
+	"GMCM.DropGiftChance.Tooltip": "The percent chance that a parrot will drop a gift when fed with seeds."
+}

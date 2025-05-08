@@ -1,0 +1,10 @@
+﻿{
+	"Name": "Animated Parrot and Perch",
+	"Author": "aedenthorn",
+	"Version": "0.1.1",
+	"Description": "Adds three craftable parrot perches with an animated interactive parrot.",
+	"UniqueID": "aedenthorn.AnimatedParrotAndPerch",
+	"EntryDll": "AnimatedParrotAndPerch.dll",
+	"MinimumApiVersion": "4.1.0",
+	"UpdateKeys": [ "Nexus:7957" ]
+}
