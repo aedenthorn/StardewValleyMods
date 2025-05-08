@@ -1,0 +1,10 @@
+﻿{
+	"Name": "Birthday Knowledge Friendship",
+	"Author": "aedenthorn",
+	"Version": "0.1.1",
+	"Description": "Makes it so showing villagers birthdays on the calendar requires a minimum number of friendship hearts.",
+	"UniqueID": "aedenthorn.BirthdayKnowledgeFriendship",
+	"EntryDll": "BirthdayKnowledgeFriendship.dll",
+	"MinimumApiVersion": "4.0.0",
+	"UpdateKeys": [ "Nexus:17974" ]
+}
