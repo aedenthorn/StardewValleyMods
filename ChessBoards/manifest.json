@@ -1,22 +1,10 @@
 ﻿{
-  "Name": "Chess Boards",
-  "Author": "aedenthorn",
-  "Version": "0.1.0",
-  "Description": "Chess Boards.",
-  "UniqueID": "aedenthorn.ChessBoards",
-  "EntryDll": "ChessBoards.dll",
-  "MinimumApiVersion": "3.13.0",
-  "ModUpdater": {
-    "Repository": "StardewValleyMods",
-    "User": "aedenthorn",
-    "Directory": "_releases",
-    "ModFolder": "ChessBoards"
-  },
-  "UpdateKeys": [ "Nexus:11580" ],
-  "Dependencies": [
-    {
-      "UniqueID": "Platonymous.ModUpdater",
-      "IsRequired": false
-    }
-  ]
+	"Name": "Chess Boards",
+	"Author": "aedenthorn",
+	"Version": "0.1.1",
+	"Description": "Lets you set up functional chess boards on your farm.",
+	"UniqueID": "aedenthorn.ChessBoards",
+	"EntryDll": "ChessBoards.dll",
+	"MinimumApiVersion": "4.0.0",
+	"UpdateKeys": [ "Nexus:11580" ]
 }
