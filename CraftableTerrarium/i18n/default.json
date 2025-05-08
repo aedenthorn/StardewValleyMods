@@ -1,0 +1,8 @@
+{
+	"item.terrarium.name": "Terrarium",
+	"item.terrarium.description": "A terrarium for frogs.",
+
+	// GMCM
+	"GMCM.Frogs.Name": "Frogs",
+	"GMCM.Sound.Name": "Sound"
+}
