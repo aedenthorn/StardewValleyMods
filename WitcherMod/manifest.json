@@ -1,10 +1,10 @@
 ﻿{
-  "Name": "Witcher Mod",
-  "Author": "Aedenthorn",
-  "Version": "0.2.3",
-  "Description": "Replaces Elliott, Abigail and Penny with Geralt, Yen, and Triss",
-  "UniqueID": "Aedenthorn.WitcherMod",
-  "EntryDll": "WitcherMod.dll",
-  "MinimumApiVersion": "3.2.0",
-   "UpdateKeys": ["Nexus:5797"],
+	"Name": "Witcher Mod",
+	"Author": "Aedenthorn",
+	"Version": "0.2.4",
+	"Description": "Replaces characters and portraits of Elliott, Abigail and Penny with Geralt, Yennefer, and Triss.",
+	"UniqueID": "Aedenthorn.WitcherMod",
+	"EntryDll": "WitcherMod.dll",
+	"MinimumApiVersion": "4.0.0",
+	"UpdateKeys": [ "Nexus:5797" ]
 }
