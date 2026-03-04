@@ -101,7 +101,7 @@
 	"GMCM.ModKey2.Tooltip": "Segure esta tecla ao usar os botões 'Colocar Tudo' ou 'Pegar Tudo' para transferir apenas itens que correspondem ao que já está no inventário alvo.",
 	"GMCM.ControllerRequireModifierToOpen.Name": "Exigir Mod. (Controle)",
 	"GMCM.ControllerRequireModifierToOpen.Tooltip": "Se ativado, abrir com controle exige o botão modificador do controle abaixo",
-	"GMCM.ControllerOpenModifierButton.Name": "Botão Modificador para Abrir (Controle)",
+	"GMCM.ControllerOpenModifierButton.Name": "Botão Mod. de Abertura (Controle)",
 	"GMCM.ControllerOpenModifierButton.Tooltip": "Botão do controle usado como modificador quando 'Exigir Modificador para Abrir (Controle)' estiver ativo",
 	"GMCM.ControllerMenuButton.Name": "Botão de Abrir Menu (Controle)",
 	"GMCM.ControllerMenuButton.Tooltip": "Pressione este botão do controle para abrir o All Chests Menu",
