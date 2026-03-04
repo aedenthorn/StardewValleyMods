@@ -91,10 +91,12 @@
 	"GMCM.SecondarySortingPriority.Y": "Y (Haut en Bas)",
 
 	// Controls
-	"GMCM.MenuKey.Name": "Touche pour ouvrir le menu",
-	"GMCM.MenuKey.Tooltip": "Appuyez sur cette touche pour ouvrir le menu All Chests Menu",
+	"GMCM.KeyboardMenuKey.Name": "Touche d'ouverture du menu (Clavier)",
+	"GMCM.KeyboardMenuKey.Tooltip": "Appuyez sur cette touche du clavier pour ouvrir le menu All Chests Menu",
+	"GMCM.ControllerMenuButton.Name": "Bouton d'ouverture du menu (Manette)",
+	"GMCM.ControllerMenuButton.Tooltip": "Appuyez sur ce bouton de la manette pour ouvrir le menu All Chests Menu",
 	"GMCM.ModToOpen.Name": "Exiger la touche modificatrice",
-	"GMCM.ModToOpen.Tooltip": "Si activé, vous devez maintenir la touche modificatrice tout en appuyant sur la touche d'ouverture du menu pour ouvrir le menu",
+	"GMCM.ModToOpen.Tooltip": "Si activé, vous devez maintenir la touche modificatrice tout en appuyant sur la touche/bouton d'ouverture du menu",
 	"GMCM.ModKey.Name": "Touche modificatrice",
 	"GMCM.ModKey.Tooltip": "Maintenez cette touche en cliquant pour transférer des objets vers votre inventaire au lieu de les ramasser. Également utilisée pour ouvrir le menu si 'Exiger la touche modificatrice' est activé.",
 	"GMCM.ModKey2.Name": "Touche de transfert d'objets identiques",

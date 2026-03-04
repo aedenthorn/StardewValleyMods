@@ -91,10 +91,12 @@
 	"GMCM.SecondarySortingPriority.Y": "Y (Сверху вниз)",
 
 	// Controls
-	"GMCM.MenuKey.Name": "Клавиша открытия меню",
-	"GMCM.MenuKey.Tooltip": "Нажмите эту клавишу, чтобы открыть меню All Chests Menu",
+	"GMCM.KeyboardMenuKey.Name": "Клавиша открытия меню (Клавиатура)",
+	"GMCM.KeyboardMenuKey.Tooltip": "Нажмите эту клавишу на клавиатуре, чтобы открыть меню All Chests Menu",
+	"GMCM.ControllerMenuButton.Name": "Кнопка открытия меню (Контроллер)",
+	"GMCM.ControllerMenuButton.Tooltip": "Нажмите эту кнопку на контроллере, чтобы открыть меню All Chests Menu",
 	"GMCM.ModToOpen.Name": "Требовать модификатор",
-	"GMCM.ModToOpen.Tooltip": "Если включено, вы должны удерживать модификатор при нажатии клавиши открытия меню",
+	"GMCM.ModToOpen.Tooltip": "Если включено, нужно удерживать модификатор при нажатии клавиши/кнопки открытия меню",
 	"GMCM.ModKey.Name": "Модификатор",
 	"GMCM.ModKey.Tooltip": "Удерживайте при клике для передачи предметов в инвентарь вместо поднятия. Также используется для открытия меню, если включено 'Требовать модификатор'.",
 	"GMCM.ModKey2.Name": "Клавиша передачи одинаковых",
