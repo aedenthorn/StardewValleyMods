@@ -56,7 +56,13 @@ namespace AllChestsMenu
 
 		private void CalculateResponsiveLayout()
 		{
-			int availableWidth = Game1.uiViewport.Width - borderWidth * 4;
+			int viewportWidth = Game1.graphics?.GraphicsDevice?.Viewport.Width ?? Game1.uiViewport.Width;
+			int viewportHeight = Game1.graphics?.GraphicsDevice?.Viewport.Height ?? Game1.uiViewport.Height;
+			effectiveViewportWidth = Math.Min(Game1.uiViewport.Width, viewportWidth);
+			effectiveViewportHeight = Math.Min(Game1.uiViewport.Height, viewportHeight);
+			compactLayout = effectiveViewportWidth < 1250 || effectiveViewportHeight < 820;
+
+			int availableWidth = effectiveViewportWidth - borderWidth * 4;
 			int minChestWidth = 64 * 12 + 32; // Largura mínima para um baú
 
 			// Determinar número de colunas baseado no espaço disponível
@@ -64,8 +70,8 @@ namespace AllChestsMenu
 
 			// Recalcular dimensões (Adiciona 64px de largura extra para as bordas laterais)
 			int chestAreaWidth = numberOfChestColumns * (64 * 12 + 64) + borderWidth * 2 + 64;
-			width = Math.Min(chestAreaWidth, Game1.uiViewport.Width - borderWidth * 2);
-			xPositionOnScreen = (Game1.uiViewport.Width - width) / 2;
+			width = Math.Min(chestAreaWidth, effectiveViewportWidth - borderWidth * 2);
+			xPositionOnScreen = (effectiveViewportWidth - width) / 2;
 		}
 
 		public List<ChestData> allChestDataList = new();
@@ -151,12 +157,17 @@ namespace AllChestsMenu
 		
 		private bool gamepadShift = false;
 
-        public int clickpos;
+		public int clickpos;
         public bool draggingScrollbar;
 		public int scrollbarWidth;
         private bool scrolling;
         private int totalHeight;
 		public int bottomAreaHeight; // To store for drawing
+		private int locationOptionBaseId => 6 * ccMagnitude;
+		private int effectiveViewportWidth;
+		private int effectiveViewportHeight;
+		private bool compactLayout;
+		private float trashLidScale = 4f;
 
         public AllChestsMenu() : base(0, -borderWidth - 64, Game1.uiViewport.Width, Game1.uiViewport.Height + borderWidth * 2 + 64, false)
 		{
@@ -164,22 +175,26 @@ namespace AllChestsMenu
 			CalculateResponsiveLayout();
 
 			currentSort = ModEntry.Config.CurrentSort;
+			int actionButtonSize = compactLayout ? 48 : 64;
+			int actionButtonGap = compactLayout ? 6 : 8;
+			int actionButtonScale = compactLayout ? 3 : 4;
+			trashLidScale = compactLayout ? 3f : 4f;
 
 			// Layout claro: área de baús (topo) e área de inventário/filtros (fundo)
 			inventoryHeight = 64 * 3;  // Altura do inventário
 
 			// Filters stack height: 4 filtros + labels + espaçamento
-			int filterStackHeight = 380; // Aumentado para acomodar labels e espaçamento
-			// Added 64px gap for breathing room at the top divider (increased from 32px to raise the border higher)
-			bottomAreaHeight = Math.Max(inventoryHeight + 64, filterStackHeight) + borderWidth + 64;
-			cutoff = Game1.uiViewport.Height - bottomAreaHeight;  // Y onde a área de baús termina
+			int filterStackHeight = compactLayout ? 320 : 380;
+			int verticalPadding = compactLayout ? 40 : 64;
+			bottomAreaHeight = Math.Max(inventoryHeight + verticalPadding, filterStackHeight) + borderWidth + verticalPadding;
+			cutoff = effectiveViewportHeight - bottomAreaHeight;  // Y onde a área de baús termina
             
             // Centraliza o conjunto (inventário + botões) empurrado pra direita se necessário
-            int smallFilterWidth = 120;
+            int smallFilterWidth = compactLayout ? 104 : 120;
             int filterXStart = xPositionOnScreen + borderWidth + 24;
             int filtersTotalWidth = filterXStart + smallFilterWidth + 16;
 
-			int availableVerticalSpace = Game1.uiViewport.Height - cutoff;
+			int availableVerticalSpace = effectiveViewportHeight - cutoff;
 			int inventoryY = cutoff + (availableVerticalSpace - inventoryHeight) / 2;
 			widgetText = new string[]{
 				ModEntry.SHelper.Translation.Get("open"),
@@ -199,8 +214,8 @@ namespace AllChestsMenu
 			int capacity = rows * columns;
 
 			// Centraliza o conjunto (inventário + botões)
-			int totalBottomWidth = 64 * columns + 32 + (64 * 6); // inventario + espaco + botoes e lixeira
-			int startX = (Game1.uiViewport.Width - totalBottomWidth) / 2;
+			int totalBottomWidth = 64 * columns + 32 + (actionButtonSize * 5) + (actionButtonSize + 16); // inventario + espaco + botoes e lixeira
+			int startX = (effectiveViewportWidth - totalBottomWidth) / 2;
 			startX += 40; // Deslocar para a direita para balancear com os filtros na esqueda
 			if (startX < filtersTotalWidth) startX = filtersTotalWidth;
 
@@ -213,14 +228,14 @@ namespace AllChestsMenu
 				capacity,
 				rows);
 			SetPlayerInventoryNeighbours();
-			organizeButton = new ClickableTextureComponent("", new Rectangle(playerInventoryMenu.xPositionOnScreen + playerInventoryMenu.width + 32, playerInventoryMenu.yPositionOnScreen - 16, 64, 64), "", Game1.content.LoadString("Strings\\UI:ItemGrab_Organize"), Game1.mouseCursors, new Rectangle(162, 440, 16, 16), 4f, false)
+			organizeButton = new ClickableTextureComponent("", new Rectangle(playerInventoryMenu.xPositionOnScreen + playerInventoryMenu.width + 32, playerInventoryMenu.yPositionOnScreen - (compactLayout ? 8 : 16), actionButtonSize, actionButtonSize), "", Game1.content.LoadString("Strings\\UI:ItemGrab_Organize"), Game1.mouseCursors, new Rectangle(162, 440, 16, 16), actionButtonScale, false)
 			{
 				myID = 4 * ccMagnitude,
 				downNeighborID = 4 * ccMagnitude + 1,
 				leftNeighborID = 11,
 				rightNeighborID = 4 * ccMagnitude + 1
 			};
-			storeAlikeButton = new ClickableTextureComponent("", new Rectangle(organizeButton.bounds.X + 64 + 8, playerInventoryMenu.yPositionOnScreen - 16, 64, 64), "", Game1.content.LoadString("Strings\\UI:ItemGrab_FillStacks"), Game1.mouseCursors, new Rectangle(103, 469, 16, 16), 4f, false)
+			storeAlikeButton = new ClickableTextureComponent("", new Rectangle(organizeButton.bounds.X + actionButtonSize + actionButtonGap, organizeButton.bounds.Y, actionButtonSize, actionButtonSize), "", Game1.content.LoadString("Strings\\UI:ItemGrab_FillStacks"), Game1.mouseCursors, new Rectangle(103, 469, 16, 16), actionButtonScale, false)
 			{
 				myID = 4 * ccMagnitude + 1,
 				downNeighborID = 4 * ccMagnitude + 2,
@@ -232,7 +247,7 @@ namespace AllChestsMenu
 			// Consolidate button - merges duplicate items across chests
 			string consolidateText = ModEntry.SHelper.Translation.Get("consolidate");
 			string consolidateTooltip = ModEntry.SHelper.Translation.Get("consolidate-tooltip");
-			consolidateButton = new ClickableTextureComponent("", new Rectangle(storeAlikeButton.bounds.X + 64 + 8, playerInventoryMenu.yPositionOnScreen - 16, 64, 64), "", consolidateTooltip, Game1.mouseCursors, new Rectangle(257, 284, 16, 16), 4f, false)
+			consolidateButton = new ClickableTextureComponent("", new Rectangle(storeAlikeButton.bounds.X + actionButtonSize + actionButtonGap, organizeButton.bounds.Y, actionButtonSize, actionButtonSize), "", consolidateTooltip, Game1.mouseCursors, new Rectangle(257, 284, 16, 16), actionButtonScale, false)
 			{
 				myID = 4 * ccMagnitude + 2,
 				downNeighborID = 4 * ccMagnitude + 3,
@@ -244,7 +259,7 @@ namespace AllChestsMenu
 			// Sort all button - sorts all items in all chests
 			string sortAllText = ModEntry.SHelper.Translation.Get("sort-all");
 			string sortAllTooltip = ModEntry.SHelper.Translation.Get("sort-all-tooltip");
-			sortAllButton = new ClickableTextureComponent("", new Rectangle(consolidateButton.bounds.X + 64 + 8, playerInventoryMenu.yPositionOnScreen - 16, 64, 64), "", sortAllTooltip, Game1.mouseCursors, new Rectangle(162, 440, 16, 16), 4f, false)
+			sortAllButton = new ClickableTextureComponent("", new Rectangle(consolidateButton.bounds.X + actionButtonSize + actionButtonGap, organizeButton.bounds.Y, actionButtonSize, actionButtonSize), "", sortAllTooltip, Game1.mouseCursors, new Rectangle(162, 440, 16, 16), actionButtonScale, false)
 			{
 				myID = 4 * ccMagnitude + 3,
 				downNeighborID = 4 * ccMagnitude + 4,
@@ -254,7 +269,9 @@ namespace AllChestsMenu
 			};
 
 			// Update trashCan position - moved right of the buttons, aligned vertically
-			trashCan = new ClickableTextureComponent(new Rectangle(sortAllButton.bounds.X + 64 + 16, playerInventoryMenu.yPositionOnScreen + 28, 64, 104), Game1.mouseCursors, new Rectangle(564 + Game1.player.trashCanLevel * 18, 102, 18, 26), 4f, false)
+			int trashWidth = compactLayout ? 48 : 64;
+			int trashHeight = compactLayout ? 78 : 104;
+			trashCan = new ClickableTextureComponent(new Rectangle(sortAllButton.bounds.X + actionButtonSize + 16, playerInventoryMenu.yPositionOnScreen + (compactLayout ? 18 : 28), trashWidth, trashHeight), Game1.mouseCursors, new Rectangle(564 + Game1.player.trashCanLevel * 18, 102, 18, 26), actionButtonScale, false)
 			{
 				myID = 4 * ccMagnitude + 4,
 				leftNeighborID = 4 * ccMagnitude + 3,
@@ -288,10 +305,13 @@ namespace AllChestsMenu
 				int row = i % 2;
 				string name = s[i];
 				int idx = 5 * ccMagnitude;
+				int sortXStep = compactLayout ? 48 : 64;
+				int sortYStart = compactLayout ? 84 : 104;
+				int sortYStep = compactLayout ? 32 : 40;
+				int sortSize = compactLayout ? 26 : 32;
 
 				sortNames[name] = ModEntry.SHelper.Translation.Get("sort-" + name);
-				// Moved down to Y + 104 instead of 92 (and back to 64 spacing for centering relative to columns)
-				sortCCList.Add(new ClickableComponent(new Rectangle(organizeButton.bounds.X + (i / 2) * 64, organizeButton.bounds.Y + 104 + row * 40, 32, 32), name, name)
+				sortCCList.Add(new ClickableComponent(new Rectangle(organizeButton.bounds.X + (i / 2) * sortXStep, organizeButton.bounds.Y + sortYStart + row * sortYStep, sortSize, sortSize), name, name)
 				{
 					myID = idx + i,
 					leftNeighborID = i > 2 ? idx + i - 2: 4 * ccMagnitude + 1,
@@ -302,8 +322,8 @@ namespace AllChestsMenu
 			}
 
 			// Initialize new filter fields - layout vertical na esquerda
-			int filterYStart = Game1.uiViewport.Height - bottomAreaHeight + borderWidth + 64 + 16;
-			int filterSpacing = 84; // Espaço vertical entre cada filtro (aumentado para acomodar labels)
+			int filterYStart = effectiveViewportHeight - bottomAreaHeight + borderWidth + (compactLayout ? 52 : 64) + 16;
+			int filterSpacing = compactLayout ? 72 : 84;
 
 			// Chest Label filter
 			chestLabelText = new TextBox(Game1.content.Load<Texture2D>("LooseSprites\\textBox"), null, Game1.smallFont, Game1.textColor)
@@ -394,12 +414,12 @@ namespace AllChestsMenu
 			int clearBtnX = filterXStart + smallFilterWidth + 20;
 			clearFiltersButton = new ClickableTextureComponent(
 				"",
-				new Rectangle(clearBtnX, clearBtnY, 48, 48),
+				new Rectangle(clearBtnX, clearBtnY, compactLayout ? 40 : 48, compactLayout ? 40 : 48),
 				"",
 				ModEntry.SHelper.Translation.Get("clear-filters"),
 				Game1.mouseCursors,
 				new Rectangle(337, 494, 12, 12),  // X icon
-				4f,
+				compactLayout ? 3.3f : 4f,
 				false
 			)
 			{
@@ -428,8 +448,13 @@ namespace AllChestsMenu
 			{
 				string loc = uniqueLocations[i].locationDisplayName;
 				string displayLoc = loc;
-				locationOptionsCCList.Add(new ClickableComponent(new Rectangle(locationDropdownCC.bounds.X, locationDropdownCC.bounds.Bottom + i * 36, Math.Max(locationDropdownCC.bounds.Width, 300), 36), loc, displayLoc));
+				locationOptionsCCList.Add(new ClickableComponent(new Rectangle(locationDropdownCC.bounds.X, locationDropdownCC.bounds.Bottom + i * 36, Math.Max(locationDropdownCC.bounds.Width, 300), 36), loc, displayLoc)
+				{
+					myID = locationOptionBaseId + i
+				});
 			}
+			UpdateLocationOptionBounds();
+			RebuildControllerNavigation();
 
 			ResetChestList();
 		}
@@ -649,7 +674,7 @@ namespace AllChestsMenu
                 // Location grouping check
                 if (lastLocation != null && chestData.locationDisplayName != lastLocation)
                 {
-                    if (even) // Currently next chest would be on the right. We want to start on the left.
+                    if (numberOfChestColumns > 1 && even) // In 2-column mode, finish the partial row before starting a new location group
                     {
                         var prevChest = chestDataList[chestDataList.Count - 1];
                         rowsAlready += Math.Max(!prevChest.collapsed ? Math.Max(prevChest.menu.rows, 3) : 0, oddRows);
@@ -669,23 +694,32 @@ namespace AllChestsMenu
 				int columns = 12;
 				int rows = (int)Math.Ceiling(chestData.chest.GetActualCapacity() / (float)columns);
 
-				chestData.menu = new ChestMenu(xPositionOnScreen + borderWidth + 64 + (even ? (64 * 13) : 0), yPositionOnScreen - scrolled * scrollInterval + borderWidth + 64 + 64 * rowsAlready + 96 * (1 + menusAlready) + 48 * locationGaps, false, chestData.chest.Items, null, chestData.chest.GetActualCapacity(), rows);
+				int columnIndex = (numberOfChestColumns > 1 && even) ? 1 : 0;
+				chestData.menu = new ChestMenu(xPositionOnScreen + borderWidth + 64 + columnIndex * (64 * 13), yPositionOnScreen - scrolled * scrollInterval + borderWidth + 64 + 64 * rowsAlready + 96 * (1 + menusAlready) + 48 * locationGaps, false, chestData.chest.Items, null, chestData.chest.GetActualCapacity(), rows);
 				if (chestData.chest is ShippingBinChest && !ModEntry.Config.UnrestrictedShippingBin)
 				{
 					chestData.menu.highlightMethod = (Item i) => {
 						return i == Game1.getFarm().lastItemShipped;
 					};
 				}
-				if (!even)
+				if (numberOfChestColumns == 1)
 				{
-					oddRows = !chestData.collapsed ? Math.Max(chestData.menu.rows, 3) : 0;
+					rowsAlready += !chestData.collapsed ? Math.Max(chestData.menu.rows, 3) : 0;
+					menusAlready++;
 				}
 				else
 				{
-					rowsAlready += Math.Max(!chestData.collapsed ? Math.Max(chestData.menu.rows, 3) : 0, oddRows);
-					menusAlready++;
+					if (!even)
+					{
+						oddRows = !chestData.collapsed ? Math.Max(chestData.menu.rows, 3) : 0;
+					}
+					else
+					{
+						rowsAlready += Math.Max(!chestData.collapsed ? Math.Max(chestData.menu.rows, 3) : 0, oddRows);
+						menusAlready++;
+					}
+					even = !even;
 				}
-				even = !even;
 				if (chestDataList.Count >= 1000)
 				{
 					ModEntry.SMonitor.Log("More than 1000 chests. Giving up while we're ahead.", LogLevel.Warn);
@@ -723,7 +757,7 @@ namespace AllChestsMenu
 				ChestData chestData = chestDataList[i];
 				int count = chestData.menu.inventory.Count;
 				int lastCount = i > 0 ? chestDataList[i - 1].menu.inventory.Count : 0;
-				// int nextCount = i < chestDataList.Count - 1 ? chestDataList[i + 1].menu.inventory.Count : 0;
+				int nextCount = i < chestDataList.Count - 1 ? chestDataList[i + 1].menu.inventory.Count : 0;
 				int lastLastCount = i > 1 ? chestDataList[i - 2].menu.inventory.Count : 0;
 				int nextNextCount = i < chestDataList.Count - 2 ? chestDataList[i + 2].menu.inventory.Count : 0;
 				int index = ccMagnitude + i * ccMagnitude / 1000;
@@ -732,13 +766,14 @@ namespace AllChestsMenu
 				int lastLastIndex = ccMagnitude + (i - 2) * ccMagnitude / 1000;
 				int nextNextIndex = ccMagnitude + (i + 2) * ccMagnitude / 1000;
 
-				ClickableComponent headerCC = new ClickableComponent(new Rectangle(chestData.menu.xPositionOnScreen, chestData.menu.yPositionOnScreen - 48, (width - borderWidth * 2 - 128) / 2, 48), chestData.index.ToString(), chestData.label)
+				int headerWidth = numberOfChestColumns == 1 ? width - borderWidth * 2 - 128 : (width - borderWidth * 2 - 128) / 2;
+				ClickableComponent headerCC = new ClickableComponent(new Rectangle(chestData.menu.xPositionOnScreen, chestData.menu.yPositionOnScreen - 48, headerWidth, 48), chestData.index.ToString(), chestData.label)
 				{
 					myID = index + 5000,
 					downNeighborID = index + 0,
-					rightNeighborID = (i % 2 == 0 && i + 1 < chestDataList.Count) ? ccMagnitude + (i + 1) * ccMagnitude / 1000 + 5000 : -1,
-					leftNeighborID = (i % 2 == 1) ? ccMagnitude + (i - 1) * ccMagnitude / 1000 + 5000 : -1,
-					upNeighborID = (i > 1) ? ccMagnitude + (i - 2) * ccMagnitude / 1000 + 5000 : -1
+					rightNeighborID = numberOfChestColumns == 1 ? -1 : ((i % 2 == 0 && i + 1 < chestDataList.Count) ? ccMagnitude + (i + 1) * ccMagnitude / 1000 + 5000 : -1),
+					leftNeighborID = numberOfChestColumns == 1 ? -1 : ((i % 2 == 1) ? ccMagnitude + (i - 1) * ccMagnitude / 1000 + 5000 : -1),
+					upNeighborID = numberOfChestColumns == 1 ? (i > 0 ? ccMagnitude + (i - 1) * ccMagnitude / 1000 + 5000 : -1) : ((i > 1) ? ccMagnitude + (i - 2) * ccMagnitude / 1000 + 5000 : -1)
 				};
 				chestHeaders.Add(headerCC);
 
@@ -813,7 +848,11 @@ namespace AllChestsMenu
 					}
 					if (j >= count - columns)
 					{
-						if (i < chestDataList.Count - 2)
+						if (numberOfChestColumns == 1)
+						{
+							chestData.menu.inventory[j].downNeighborID = i < chestDataList.Count - 1 ? nextIndex + 5000 : -1;
+						}
+						else if (i < chestDataList.Count - 2)
 						{
 							chestData.menu.inventory[j].downNeighborID = nextNextIndex + 5000;
 						}
@@ -848,10 +887,10 @@ namespace AllChestsMenu
 						ClickableTextureComponent cc = new("", GetWidgetRectangle(chestData, j), "", widgetText[k], Game1.mouseCursors, widgetSources[k], 32f / widgetSources[k].Width, false)
 						{
 							myID = index + count + k,
-							downNeighborID = k < widgetTextLength - 1 ? index + count + k + 5 : (i < chestDataList.Count - 2 ? nextNextIndex + nextNextCount : -1),
+							downNeighborID = k < widgetTextLength - 1 ? index + count + k + 5 : (numberOfChestColumns == 1 ? (i < chestDataList.Count - 1 ? nextIndex + nextCount : -1) : (i < chestDataList.Count - 2 ? nextNextIndex + nextNextCount : -1)),
 							leftNeighborID = index + 11 + LeftRowIndex * columns - ((LeftRowIndex == (int)Math.Ceiling((double)count / columns) - 1) ? columns - (count % columns) : 0),
-							rightNeighborID = i < chestDataList.Count - 1 ? nextIndex + RightRowIndex * columns : -1,
-							upNeighborID = k > 0 ? index + count + k - 5: (i > 1 ? lastLastIndex + lastLastCount + widgetTextLength - 1: -1)
+							rightNeighborID = numberOfChestColumns == 1 ? -1 : (i < chestDataList.Count - 1 ? nextIndex + RightRowIndex * columns : -1),
+							upNeighborID = k > 0 ? index + count + k - 5: (numberOfChestColumns == 1 ? (i > 0 ? lastIndex + lastCount + widgetTextLength - 1 : -1) : (i > 1 ? lastLastIndex + lastLastCount + widgetTextLength - 1: -1))
 						};
 
 						chestData.inventoryButtons.Add(cc);
@@ -867,10 +906,10 @@ namespace AllChestsMenu
 						ClickableTextureComponent cc = new("", GetWidgetRectangle(chestData, j), "", widgetText[j], Game1.mouseCursors, widgetSources[j], 32f / widgetSources[j].Width, false)
 						{
 							myID = index + count + j,
-							downNeighborID = j < widgetText.Length - 1 ? index + count + j + 1 : (i < chestDataList.Count - 2 ? nextNextIndex + nextNextCount : -1),
+							downNeighborID = j < widgetText.Length - 1 ? index + count + j + 1 : (numberOfChestColumns == 1 ? (i < chestDataList.Count - 1 ? nextIndex + nextCount : -1) : (i < chestDataList.Count - 2 ? nextNextIndex + nextNextCount : -1)),
 							leftNeighborID = index + 11 + LeftRowIndex * columns - ((LeftRowIndex == (int)Math.Ceiling((double)count / columns) - 1) ? columns - (count % columns) : 0),
-							rightNeighborID = i < chestDataList.Count - 1 ? nextIndex + RightRowIndex * columns : -1,
-							upNeighborID = j > 0 ? index + count + j - 1: (i > 1 ? lastLastIndex + lastLastCount + widgetText.Length - 1: -1)
+							rightNeighborID = numberOfChestColumns == 1 ? -1 : (i < chestDataList.Count - 1 ? nextIndex + RightRowIndex * columns : -1),
+							upNeighborID = j > 0 ? index + count + j - 1: (numberOfChestColumns == 1 ? (i > 0 ? lastIndex + lastCount + widgetText.Length - 1 : -1) : (i > 1 ? lastLastIndex + lastLastCount + widgetText.Length - 1: -1))
 						};
 
 						chestData.inventoryButtons.Add(cc);
@@ -1059,7 +1098,9 @@ namespace AllChestsMenu
 			consolidateButton.draw(b);
 			sortAllButton.draw(b);
 			clearFiltersButton.draw(b);
-			b.Draw(Game1.mouseCursors, new Vector2(trashCan.bounds.X + 60, trashCan.bounds.Y + 40), new Rectangle?(new Rectangle(564 + Game1.player.trashCanLevel * 18, 129, 18, 10)), Color.White, trashCanLidRotation, new Vector2(16f, 10f), 4f, SpriteEffects.None, 0.86f);
+			float lidOffsetX = compactLayout ? 44f : 60f;
+			float lidOffsetY = compactLayout ? 30f : 40f;
+			b.Draw(Game1.mouseCursors, new Vector2(trashCan.bounds.X + lidOffsetX, trashCan.bounds.Y + lidOffsetY), new Rectangle?(new Rectangle(564 + Game1.player.trashCanLevel * 18, 129, 18, 10)), Color.White, trashCanLidRotation, new Vector2(16f, 10f), trashLidScale, SpriteEffects.None, 0.86f);
 			Game1.spriteBatch.Draw(Game1.menuTexture, new Rectangle(xPositionOnScreen + 16, -4, 24, 16), new Rectangle(16, 16, 24, 16), Color.White);
 			Game1.spriteBatch.Draw(Game1.menuTexture, new Rectangle(xPositionOnScreen + width - 32, -4, 16, 16), new Rectangle(225, 16, 16, 16), Color.White);
 			Game1.spriteBatch.Draw(Game1.menuTexture, new Rectangle(xPositionOnScreen + 40, -4, width - 72, 16), new Rectangle(40, 16, 1, 16), Color.White);
@@ -1090,18 +1131,13 @@ namespace AllChestsMenu
 				int listHeight = locationOptionsCCList.Count * 36;
 				if (listHeight > 0)
 				{
-					int startY = locationDropdownCC.bounds.Bottom;
-					if (startY + listHeight > Game1.uiViewport.Height)
-					{
-						startY = locationDropdownCC.bounds.Y - listHeight;
-					}
+					UpdateLocationOptionBounds();
+					int startY = locationOptionsCCList[0].bounds.Y - 8;
 					int dropdownWidth = Math.Max(locationDropdownCC.bounds.Width, 300);
 					IClickableMenu.drawTextureBox(b, Game1.menuTexture, new Rectangle(0, 256, 60, 60), locationDropdownCC.bounds.X, startY, dropdownWidth, listHeight + 16, Color.White * 0.95f, 1f, false);
 					for (int i = 0; i < locationOptionsCCList.Count; i++)
 					{
 						var cc = locationOptionsCCList[i];
-						// Update bounds real Y for clicking
-						cc.bounds.Y = startY + 8 + i * 36;
 						if (cc.containsPoint(Game1.getMouseX(), Game1.getMouseY()))
 						{
 							b.Draw(Game1.staminaRect, cc.bounds, Color.Wheat);
@@ -1147,7 +1183,7 @@ namespace AllChestsMenu
             base.releaseLeftClick(x, y);
 			scrolling = false;
         }
-        public override void receiveLeftClick(int x, int y, bool playSound = true)
+		public override void receiveLeftClick(int x, int y, bool playSound = true)
 		{
 			if (locationDropdownOpen)
 			{
@@ -1163,10 +1199,14 @@ namespace AllChestsMenu
 						ModEntry.SHelper.WriteConfig(ModEntry.Config);
 						Game1.playSound("drumkit6");
 						PopulateMenus(false);
+						RebuildControllerNavigation();
+						populateClickableComponentList();
 						return;
 					}
 				}
 				locationDropdownOpen = false;
+				RebuildControllerNavigation();
+				populateClickableComponentList();
 				if (locationDropdownCC.bounds.Contains(x, y))
 				{
 					Game1.playSound("drumkit6");
@@ -1177,6 +1217,14 @@ namespace AllChestsMenu
 			if (locationDropdownCC.bounds.Contains(x, y))
 			{
 				locationDropdownOpen = true;
+				UpdateLocationOptionBounds();
+				RebuildControllerNavigation();
+				populateClickableComponentList();
+				if (Game1.options.snappyMenus && Game1.options.gamepadControls && locationOptionsCCList.Count > 0)
+				{
+					currentlySnappedComponent = locationOptionsCCList[0];
+					snapCursorToCurrentSnappedComponent();
+				}
 				Game1.playSound("shwip");
 				return;
 			}
@@ -1504,7 +1552,44 @@ namespace AllChestsMenu
 				gamepadShift = false;
 				return;
 			}
+
+			if (b == Buttons.A && currentlySnappedComponent is not null)
+			{
+				receiveLeftClick(currentlySnappedComponent.bounds.Center.X, currentlySnappedComponent.bounds.Center.Y);
+				return;
+			}
 			base.receiveGamePadButton(b);
+		}
+
+		public override void populateClickableComponentList()
+		{
+			base.populateClickableComponentList();
+			allClickableComponents = new List<ClickableComponent>();
+
+			allClickableComponents.AddRange(inventoryCells);
+			allClickableComponents.AddRange(inventoryButtons);
+			allClickableComponents.AddRange(chestHeaders);
+			allClickableComponents.AddRange(playerInventoryMenu.inventory);
+			allClickableComponents.AddRange(sortCCList);
+			allClickableComponents.Add(organizeButton);
+			allClickableComponents.Add(storeAlikeButton);
+			allClickableComponents.Add(consolidateButton);
+			allClickableComponents.Add(sortAllButton);
+			allClickableComponents.Add(trashCan);
+			allClickableComponents.Add(clearFiltersButton);
+			allClickableComponents.Add(chestLabelCC);
+			allClickableComponents.Add(itemNameCC);
+			allClickableComponents.Add(itemDescCC);
+			allClickableComponents.Add(locationDropdownCC);
+
+			if (locationDropdownOpen)
+				allClickableComponents.AddRange(locationOptionsCCList);
+
+			if (renamingChest is not null)
+			{
+				allClickableComponents.Add(renameBoxCC);
+				allClickableComponents.Add(okButton);
+			}
 		}
 
 		public override void setUpForGamePadMode()
@@ -2266,20 +2351,76 @@ namespace AllChestsMenu
 
 		private void SetPlayerInventoryNeighbours()
 		{
+			int leftTop = chestLabelCC?.myID ?? 2 * ccMagnitude;
+			int leftMiddle = itemNameCC?.myID ?? 2 * ccMagnitude;
+			int leftBottom = itemDescCC?.myID ?? 2 * ccMagnitude;
+
 			if (playerInventoryMenu.inventory.Count >= 12)
 			{
-				playerInventoryMenu.inventory[0].leftNeighborID = 2 * ccMagnitude;
+				playerInventoryMenu.inventory[0].leftNeighborID = leftTop;
 				playerInventoryMenu.inventory[11].rightNeighborID = 4 * ccMagnitude;
 				if (playerInventoryMenu.inventory.Count >= 24)
 				{
-					playerInventoryMenu.inventory[12].leftNeighborID = 2 * ccMagnitude;
+					playerInventoryMenu.inventory[12].leftNeighborID = leftMiddle;
 					playerInventoryMenu.inventory[23].rightNeighborID = 4 * ccMagnitude + 1;
 					if (playerInventoryMenu.inventory.Count >= 36)
 					{
-						playerInventoryMenu.inventory[24].leftNeighborID = 2 * ccMagnitude;
+						playerInventoryMenu.inventory[24].leftNeighborID = leftBottom;
 						playerInventoryMenu.inventory[35].rightNeighborID = 4 * ccMagnitude + 1;
 					}
 				}
+			}
+		}
+
+		private void RebuildControllerNavigation()
+		{
+			SetPlayerInventoryNeighbours();
+
+			chestLabelCC.upNeighborID = -1;
+			chestLabelCC.downNeighborID = itemNameCC.myID;
+			chestLabelCC.rightNeighborID = playerInventoryMenu.inventory.Count > 0 ? playerInventoryMenu.inventory[0].myID : -1;
+
+			itemNameCC.upNeighborID = chestLabelCC.myID;
+			itemNameCC.downNeighborID = itemDescCC.myID;
+			itemNameCC.rightNeighborID = playerInventoryMenu.inventory.Count > 12 ? playerInventoryMenu.inventory[12].myID : chestLabelCC.rightNeighborID;
+
+			itemDescCC.upNeighborID = itemNameCC.myID;
+			itemDescCC.downNeighborID = locationDropdownCC.myID;
+			itemDescCC.rightNeighborID = playerInventoryMenu.inventory.Count > 24 ? playerInventoryMenu.inventory[24].myID : chestLabelCC.rightNeighborID;
+
+			locationDropdownCC.upNeighborID = itemDescCC.myID;
+			locationDropdownCC.downNeighborID = (locationDropdownOpen && locationOptionsCCList.Count > 0) ? locationOptionsCCList[0].myID : clearFiltersButton.myID;
+			locationDropdownCC.rightNeighborID = itemDescCC.rightNeighborID;
+
+			clearFiltersButton.leftNeighborID = locationDropdownCC.myID;
+			clearFiltersButton.rightNeighborID = chestLabelCC.rightNeighborID;
+			clearFiltersButton.upNeighborID = locationDropdownCC.myID;
+
+			for (int i = 0; i < locationOptionsCCList.Count; i++)
+			{
+				ClickableComponent cc = locationOptionsCCList[i];
+				cc.upNeighborID = i == 0 ? locationDropdownCC.myID : locationOptionsCCList[i - 1].myID;
+				cc.downNeighborID = i == locationOptionsCCList.Count - 1 ? clearFiltersButton.myID : locationOptionsCCList[i + 1].myID;
+				cc.leftNeighborID = locationDropdownCC.myID;
+				cc.rightNeighborID = locationDropdownCC.rightNeighborID;
+			}
+		}
+
+		private void UpdateLocationOptionBounds()
+		{
+			int listHeight = locationOptionsCCList.Count * 36;
+			if (listHeight <= 0)
+				return;
+
+			int startY = locationDropdownCC.bounds.Bottom;
+			if (startY + listHeight > Game1.uiViewport.Height)
+			{
+				startY = locationDropdownCC.bounds.Y - listHeight;
+			}
+
+			for (int i = 0; i < locationOptionsCCList.Count; i++)
+			{
+				locationOptionsCCList[i].bounds.Y = startY + 8 + i * 36;
 			}
 		}
 
