@@ -26,9 +26,15 @@ namespace AllChestsMenu
 		public bool IncludeAutoGrabbers { get; set; } = true;
 		public AllChestsMenu.Sort CurrentSort { get; set; } = AllChestsMenu.Sort.NA;
 		public string SecondarySortingPriority { get; set; } = "Y";
+		public bool KeyboardRequireModifierToOpen { get; set; } = false;
+		public bool ControllerRequireModifierToOpen { get; set; } = false;
+		public SButton KeyboardOpenModifierKey { get; set; } = SButton.LeftShift;
+		public SButton ControllerOpenModifierButton { get; set; } = SButton.LeftTrigger;
 		public SButton ModKey { get; set; } = SButton.LeftShift;
 		public SButton ModKey2 { get; set; } = SButton.LeftControl;
 		public SButton SwitchButton { get; set; } = SButton.ControllerBack;
-		public SButton MenuKey { get; set; } = SButton.F2;
+		public SButton KeyboardMenuKey { get; set; } = SButton.F2;
+		public SButton ControllerMenuButton { get; set; } = SButton.None;
+		public SButton MenuKey { get; set; } = SButton.None;
 	}
 }

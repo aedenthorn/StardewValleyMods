@@ -20,6 +20,7 @@ namespace AllChestsMenu
 		public override void Entry(IModHelper helper)
 		{
 			Config = Helper.ReadConfig<ModConfig>();
+			MigrateLegacyConfig();
 
 			context = this;
 			SMonitor = Monitor;
@@ -53,10 +54,68 @@ namespace AllChestsMenu
 					SHelper.Input.Suppress(e.Button);
 				}
 			}
-			if (e.Button == Config.MenuKey && (Config.ModKey == SButton.None || !Config.ModToOpen || Helper.Input.IsDown(Config.ModKey)))
+			bool keyboardOpen = e.Button == Config.KeyboardMenuKey
+				&& (!Config.KeyboardRequireModifierToOpen || Config.KeyboardOpenModifierKey == SButton.None || Helper.Input.IsDown(Config.KeyboardOpenModifierKey));
+			bool controllerOpen = e.Button == Config.ControllerMenuButton
+				&& (!Config.ControllerRequireModifierToOpen || Config.ControllerOpenModifierButton == SButton.None || Helper.Input.IsDown(Config.ControllerOpenModifierButton));
+			if (keyboardOpen || controllerOpen)
 			{
 				OpenMenu();
 			}
+		}
+
+		private void MigrateLegacyConfig()
+		{
+			bool changed = false;
+
+			if (Config.MenuKey != SButton.None)
+			{
+				if (Config.MenuKey.ToString().StartsWith("Controller"))
+				{
+					if (Config.ControllerMenuButton == SButton.None)
+					{
+						Config.ControllerMenuButton = Config.MenuKey;
+						changed = true;
+					}
+				}
+				else
+				{
+					if (Config.KeyboardMenuKey == SButton.None || Config.KeyboardMenuKey == SButton.F2)
+					{
+						Config.KeyboardMenuKey = Config.MenuKey;
+						changed = true;
+					}
+				}
+			}
+
+			if (Config.ModToOpen)
+			{
+				if (!Config.KeyboardRequireModifierToOpen)
+				{
+					Config.KeyboardRequireModifierToOpen = true;
+					changed = true;
+				}
+				if (!Config.ControllerRequireModifierToOpen)
+				{
+					Config.ControllerRequireModifierToOpen = true;
+					changed = true;
+				}
+			}
+
+			if (Config.KeyboardOpenModifierKey == SButton.LeftShift && Config.ModKey != SButton.LeftShift)
+			{
+				Config.KeyboardOpenModifierKey = Config.ModKey;
+				changed = true;
+			}
+
+			if (Config.MenuKey != SButton.None)
+			{
+				Config.MenuKey = SButton.None;
+				changed = true;
+			}
+
+			if (changed)
+				Helper.WriteConfig(Config);
 		}
 
 		public void GameLoop_GameLaunched(object sender, GameLaunchedEventArgs e)
@@ -195,34 +254,40 @@ namespace AllChestsMenu
 					tooltip: () => SHelper.Translation.Get("GMCM.Section.Controls.Desc")
 				);
 
-				gmcm.AddKeybind(
+				gmcm.AddSectionTitle(
 					mod: ModManifest,
-					name: () => SHelper.Translation.Get("GMCM.MenuKey.Name"),
-					tooltip: () => SHelper.Translation.Get("GMCM.MenuKey.Tooltip"),
-					getValue: () => Config.MenuKey,
-					setValue: value => Config.MenuKey = value
+					text: () => SHelper.Translation.Get("GMCM.Section.KeyboardControls.Name"),
+					tooltip: () => SHelper.Translation.Get("GMCM.Section.KeyboardControls.Desc")
 				);
 
 				gmcm.AddBoolOption(
 					mod: ModManifest,
-					name: () => SHelper.Translation.Get("GMCM.ModToOpen.Name"),
-					tooltip: () => SHelper.Translation.Get("GMCM.ModToOpen.Tooltip"),
-					getValue: () => Config.ModToOpen,
-					setValue: value => Config.ModToOpen = value
-				);
-
-				gmcm.AddBoolOption(
-					mod: ModManifest,
-					name: () => "Enable Controller Keyboard",
-					tooltip: () => "Opens an on-screen keyboard when selecting a text input using a controller.",
-					getValue: () => Config.EnableControllerKeyboard,
-					setValue: value => Config.EnableControllerKeyboard = value
+					name: () => SHelper.Translation.Get("GMCM.KeyboardRequireModifierToOpen.Name"),
+					tooltip: () => SHelper.Translation.Get("GMCM.KeyboardRequireModifierToOpen.Tooltip"),
+					getValue: () => Config.KeyboardRequireModifierToOpen,
+					setValue: value => Config.KeyboardRequireModifierToOpen = value
 				);
 
 				gmcm.AddKeybind(
 					mod: ModManifest,
-					name: () => SHelper.Translation.Get("GMCM.ModKey.Name"),
-					tooltip: () => SHelper.Translation.Get("GMCM.ModKey.Tooltip"),
+					name: () => SHelper.Translation.Get("GMCM.KeyboardOpenModifierKey.Name"),
+					tooltip: () => SHelper.Translation.Get("GMCM.KeyboardOpenModifierKey.Tooltip"),
+					getValue: () => Config.KeyboardOpenModifierKey,
+					setValue: value => Config.KeyboardOpenModifierKey = value
+				);
+
+				gmcm.AddKeybind(
+					mod: ModManifest,
+					name: () => SHelper.Translation.Get("GMCM.KeyboardMenuKey.Name"),
+					tooltip: () => SHelper.Translation.Get("GMCM.KeyboardMenuKey.Tooltip"),
+					getValue: () => Config.KeyboardMenuKey,
+					setValue: value => Config.KeyboardMenuKey = value
+				);
+
+				gmcm.AddKeybind(
+					mod: ModManifest,
+					name: () => SHelper.Translation.Get("GMCM.TransferModifierKey.Name"),
+					tooltip: () => SHelper.Translation.Get("GMCM.TransferModifierKey.Tooltip"),
 					getValue: () => Config.ModKey,
 					setValue: value => Config.ModKey = value
 				);
@@ -235,12 +300,50 @@ namespace AllChestsMenu
 					setValue: value => Config.ModKey2 = value
 				);
 
+				gmcm.AddSectionTitle(
+					mod: ModManifest,
+					text: () => SHelper.Translation.Get("GMCM.Section.ControllerControls.Name"),
+					tooltip: () => SHelper.Translation.Get("GMCM.Section.ControllerControls.Desc")
+				);
+
+				gmcm.AddBoolOption(
+					mod: ModManifest,
+					name: () => SHelper.Translation.Get("GMCM.ControllerRequireModifierToOpen.Name"),
+					tooltip: () => SHelper.Translation.Get("GMCM.ControllerRequireModifierToOpen.Tooltip"),
+					getValue: () => Config.ControllerRequireModifierToOpen,
+					setValue: value => Config.ControllerRequireModifierToOpen = value
+				);
+
+				gmcm.AddKeybind(
+					mod: ModManifest,
+					name: () => SHelper.Translation.Get("GMCM.ControllerOpenModifierButton.Name"),
+					tooltip: () => SHelper.Translation.Get("GMCM.ControllerOpenModifierButton.Tooltip"),
+					getValue: () => Config.ControllerOpenModifierButton,
+					setValue: value => Config.ControllerOpenModifierButton = value
+				);
+
+				gmcm.AddKeybind(
+					mod: ModManifest,
+					name: () => SHelper.Translation.Get("GMCM.ControllerMenuButton.Name"),
+					tooltip: () => SHelper.Translation.Get("GMCM.ControllerMenuButton.Tooltip"),
+					getValue: () => Config.ControllerMenuButton,
+					setValue: value => Config.ControllerMenuButton = value
+				);
+
 				gmcm.AddKeybind(
 					mod: ModManifest,
 					name: () => SHelper.Translation.Get("GMCM.SwitchButton.Name"),
 					tooltip: () => SHelper.Translation.Get("GMCM.SwitchButton.Tooltip"),
 					getValue: () => Config.SwitchButton,
 					setValue: value => Config.SwitchButton = value
+				);
+
+				gmcm.AddBoolOption(
+					mod: ModManifest,
+					name: () => SHelper.Translation.Get("GMCM.EnableControllerKeyboard.Name"),
+					tooltip: () => SHelper.Translation.Get("GMCM.EnableControllerKeyboard.Tooltip"),
+					getValue: () => Config.EnableControllerKeyboard,
+					setValue: value => Config.EnableControllerKeyboard = value
 				);
 			}
 		}
