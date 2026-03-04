@@ -1,4 +1,5 @@
-﻿
+﻿// ModConfig.cs
+
 using Microsoft.Xna.Framework;
 using StardewModdingAPI;
 using StardewModdingAPI.Utilities;
@@ -24,7 +25,7 @@ namespace ToolSmartSwitch
         public bool SwitchForTilling { get; set; } = true;
         public bool SwitchForAnimals { get; set; } = true;
         public bool SwitchForMonsters { get; set; } = true;
-        public float MonsterMaxDistance { get; set; } = 64;
+        public float MonsterMaxDistance { get; set; } = 128; // Increased from 64 to detect monsters earlier
 
     }
 }

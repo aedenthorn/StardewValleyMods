@@ -67,12 +67,34 @@ namespace ToolSmartSwitch
             }
             return f.CurrentTool.GetType() == type;
         }
+
+        // GetMeleeAttackArea - Methods.cs
+        // Returns the rectangular area that a melee weapon swing would hit based on player position and facing direction
+        private static Rectangle GetMeleeAttackArea(Farmer f)
+        {
+            int areaWidth = 96;  // Width of melee attack arc
+            int areaLength = 96; // Length/reach of melee attack
+            Rectangle playerBox = f.GetBoundingBox();
+            int centerX = playerBox.Center.X;
+            int centerY = playerBox.Center.Y;
+
+            return f.FacingDirection switch
+            {
+                0 => new Rectangle(centerX - areaWidth / 2, playerBox.Top - areaLength, areaWidth, areaLength), // Up
+                1 => new Rectangle(playerBox.Right, centerY - areaWidth / 2, areaLength, areaWidth),            // Right
+                2 => new Rectangle(centerX - areaWidth / 2, playerBox.Bottom, areaWidth, areaLength),           // Down
+                3 => new Rectangle(playerBox.Left - areaLength, centerY - areaWidth / 2, areaLength, areaWidth),// Left
+                _ => new Rectangle(centerX - areaWidth / 2, centerY - areaWidth / 2, areaWidth, areaWidth)
+            };
+        }
+
         public static void SwitchTool(Farmer f, int which)
         {
             Game1.player.CurrentToolIndex = which;
             Game1.playSound("toolSwap");
         }
 
+        // SmartSwitch - Methods.cs
         public static void SmartSwitch(Farmer f)
         {
             if (!Config.FromWeapon && f.CurrentTool is MeleeWeapon && !(f.CurrentTool as MeleeWeapon).isScythe())
@@ -96,13 +118,10 @@ namespace ToolSmartSwitch
                         var distance = Vector2.Distance(c.GetBoundingBox().Center.ToVector2(), f.GetBoundingBox().Center.ToVector2());
                         if (distance > Config.MonsterMaxDistance)
                             continue;
-                        if (f.FacingDirection == 0 && c.GetBoundingBox().Top > f.GetBoundingBox().Bottom)
-                            continue;
-                        if (f.FacingDirection == 1 && c.GetBoundingBox().Right < f.GetBoundingBox().Left)
-                            continue;
-                        if (f.FacingDirection == 2 && c.GetBoundingBox().Bottom < f.GetBoundingBox().Top)
-                            continue;
-                        if (f.FacingDirection == 3 && c.GetBoundingBox().Left > f.GetBoundingBox().Right)
+                        // Check if monster intersects with the player's potential melee weapon hit area
+                        // Melee weapons have a wider swing arc, so we use a more lenient check
+                        Rectangle attackArea = GetMeleeAttackArea(f);
+                        if (!c.GetBoundingBox().Intersects(attackArea))
                             continue;
                         if (SwitchToolType(f, typeof(MeleeWeapon), tools))
                             return;

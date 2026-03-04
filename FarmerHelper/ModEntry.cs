@@ -59,63 +59,64 @@ namespace FarmerHelper
                 save: () => Helper.WriteConfig(Config)
             );
 
+
+            configMenu.AddBoolOption(
+                    mod: ModManifest,
+                    name: () => SHelper.Translation.Get("Config.EnableMod"),
+                    getValue: () => Config.EnableMod,
+                    setValue: value => Config.EnableMod = value
+                );
             configMenu.AddBoolOption(
                 mod: ModManifest,
-                name: () => "Mod Enabled?",
-                getValue: () => Config.EnableMod,
-                setValue: value => Config.EnableMod = value
-            );
-            configMenu.AddBoolOption(
-                mod: ModManifest,
-                name: () => "Label late planting?",
+                name: () => SHelper.Translation.Get("Config.LabelLatePlanting"),
                 getValue: () => Config.LabelLatePlanting,
                 setValue: value => Config.LabelLatePlanting = value
             );
             configMenu.AddBoolOption(
                 mod: ModManifest,
-                name: () => "Prevent late planting?",
+                name: () => SHelper.Translation.Get("Config.PreventLatePlant"),
                 getValue: () => Config.PreventLatePlant,
                 setValue: value => Config.PreventLatePlant = value
             );
             configMenu.AddBoolOption(
                 mod: ModManifest,
-                name: () => "Warn plants unwatered?",
+                name: () => SHelper.Translation.Get("Config.WarnAboutPlantsUnwateredBeforeSleep"),
                 getValue: () => Config.WarnAboutPlantsUnwateredBeforeSleep,
                 setValue: value => Config.WarnAboutPlantsUnwateredBeforeSleep = value
-            );;
+            ); ;
             configMenu.AddBoolOption(
                 mod: ModManifest,
-                name: () => "Ignore Flowers?",
+                name: () => SHelper.Translation.Get("Config.IgnoreFlowers"),
                 getValue: () => Config.IgnoreFlowers,
                 setValue: value => Config.IgnoreFlowers = value
             );
             configMenu.AddBoolOption(
                 mod: ModManifest,
-                name: () => "Warn plants unharvested?",
+                name: () => SHelper.Translation.Get("Config.WarnAboutPlantsUnharvestedBeforeSleep"),
                 getValue: () => Config.WarnAboutPlantsUnharvestedBeforeSleep,
                 setValue: value => Config.WarnAboutPlantsUnharvestedBeforeSleep = value
             );
             configMenu.AddBoolOption(
                 mod: ModManifest,
-                name: () => "Warn animals outside?",
+                name: () => SHelper.Translation.Get("Config.WarnAboutAnimalsOutsideBeforeSleep"),
                 getValue: () => Config.WarnAboutAnimalsOutsideBeforeSleep,
                 setValue: value => Config.WarnAboutAnimalsOutsideBeforeSleep = value
             );
             configMenu.AddBoolOption(
                 mod: ModManifest,
-                name: () => "Warn animals hungry?",
+                name: () => SHelper.Translation.Get("Config.WarnAboutAnimalsHungryBeforeSleep"),
                 getValue: () => Config.WarnAboutAnimalsHungryBeforeSleep,
                 setValue: value => Config.WarnAboutAnimalsHungryBeforeSleep = value
             );
             configMenu.AddBoolOption(
                 mod: ModManifest,
-                name: () => "Warn animals unharvested?",
+                name: () => SHelper.Translation.Get("Config.WarnAboutAnimalsUnharvestedBeforeSleep"),
                 getValue: () => Config.WarnAboutAnimalsUnharvestedBeforeSleep,
                 setValue: value => Config.WarnAboutAnimalsUnharvestedBeforeSleep = value
             );
             configMenu.AddNumberOption(
                 mod: ModManifest,
-                name: () => "Days per month",
+                name: () => SHelper.Translation.Get("Config.DaysPerMonth"),
                 getValue: () => Config.DaysPerMonth,
                 setValue: value => Config.DaysPerMonth = value
             );
@@ -125,16 +126,15 @@ namespace FarmerHelper
             Helper.GameContent.InvalidateCache("Data/ObjectInformation");
         }
 
-        public static string[] seasons = new string[] { "spring", "summer", "fall", "winter" };
         private static bool EnoughDaysLeft(Crop c, HoeDirt hoeDirt)
         {
-            if (c.seasonsToGrowIn.Contains(seasons[(Utility.getSeasonNumber(Game1.currentSeason) + 1) % 4]))
+            if (c.GetData().Seasons.Contains((Season)((Utility.getSeasonNumber(Game1.currentSeason) + 1) % 4)))
                 return true;
             if(hoeDirt is not null)
             {
                 HoeDirt d = new HoeDirt(hoeDirt.state.Value, c);
-                d.currentLocation = hoeDirt.currentLocation;
-                d.currentTileLocation = hoeDirt.currentTileLocation;
+                d.Location = hoeDirt.Location;
+                d.Tile = hoeDirt.Tile;
                 d.fertilizer.Value = hoeDirt.fertilizer.Value;
                 AccessTools.Method(typeof(HoeDirt), "applySpeedIncreases").Invoke(d, new object[] { Game1.player });
                 c = d.crop;
