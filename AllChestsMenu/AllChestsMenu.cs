@@ -187,7 +187,7 @@ namespace AllChestsMenu
 			int sortOptionCount = Enum.GetNames(typeof(Sort)).Length - 1;
 			int sortLabelPixelWidth = stackedBottomControls ? (compactLayout ? 54 : 66) : 0;
 			int sortInlineGap = stackedBottomControls ? 6 : 0;
-			int sortXStep = stackedBottomControls ? (compactLayout ? 22 : 26) : (compactLayout ? 48 : 64);
+			int sortXStep = stackedBottomControls ? (compactLayout ? 25 : 30) : (compactLayout ? 48 : 64);
 			int sortYStep = stackedBottomControls ? 0 : (compactLayout ? 32 : 40);
 			int sortSize = stackedBottomControls ? (compactLayout ? 18 : 22) : (compactLayout ? 26 : 32);
 			int sortRowWidth = stackedBottomControls ? sortLabelPixelWidth + sortInlineGap + ((sortOptionCount - 1) * sortXStep) + sortSize : 0;
@@ -1173,7 +1173,7 @@ namespace AllChestsMenu
 			foreach (ClickableComponent cc in sortCCList)
 			{
 				Vector2 sortLabelPosition = cc.bounds.Location.ToVector2();
-				float sortScale = stackedBottomControls ? 0.9f : 1f;
+				float sortScale = stackedBottomControls ? 0.82f : 1f;
 				b.DrawString(Game1.smallFont, cc.label, sortLabelPosition + new Vector2(-1, 1), currentSort.ToString() == cc.label ? Color.Green : Color.Black, 0f, Vector2.Zero, sortScale, SpriteEffects.None, 0.88f);
 				b.DrawString(Game1.smallFont, cc.label, sortLabelPosition, currentSort.ToString() == cc.label ? Color.LightGreen : Color.White, 0f, Vector2.Zero, sortScale, SpriteEffects.None, 0.89f);
 			}
