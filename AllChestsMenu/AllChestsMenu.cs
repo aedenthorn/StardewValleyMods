@@ -167,35 +167,77 @@ namespace AllChestsMenu
 		private int effectiveViewportWidth;
 		private int effectiveViewportHeight;
 		private bool compactLayout;
+		private bool stackedBottomControls;
+		private int playerInventoryColumns = 12;
+		private int playerInventoryRows = 3;
 		private float trashLidScale = 4f;
 
         public AllChestsMenu() : base(0, -borderWidth - 64, Game1.uiViewport.Width, Game1.uiViewport.Height + borderWidth * 2 + 64, false)
 		{
 			// Calcular layout responsivo
 			CalculateResponsiveLayout();
+			stackedBottomControls = numberOfChestColumns == 1;
 
 			currentSort = ModEntry.Config.CurrentSort;
-			int actionButtonSize = compactLayout ? 48 : 64;
-			int actionButtonGap = compactLayout ? 6 : 8;
-			int actionButtonScale = compactLayout ? 3 : 4;
-			trashLidScale = compactLayout ? 3f : 4f;
+			int actionButtonSize = stackedBottomControls ? (compactLayout ? 40 : 52) : (compactLayout ? 48 : 64);
+			int actionButtonGap = stackedBottomControls ? (compactLayout ? 4 : 6) : (compactLayout ? 6 : 8);
+			float actionButtonScale = stackedBottomControls ? (compactLayout ? 2.5f : 3.3f) : (compactLayout ? 3f : 4f);
+			float compactFilterScale = stackedBottomControls ? 0.8f : 1f;
+			int stackedControlGap = compactLayout ? 8 : 10;
+			int sortOptionCount = Enum.GetNames(typeof(Sort)).Length - 1;
+			int sortLabelPixelWidth = stackedBottomControls ? (compactLayout ? 54 : 66) : 0;
+			int sortInlineGap = stackedBottomControls ? 6 : 0;
+			int sortXStep = stackedBottomControls ? (compactLayout ? 22 : 26) : (compactLayout ? 48 : 64);
+			int sortYStep = stackedBottomControls ? 0 : (compactLayout ? 32 : 40);
+			int sortSize = stackedBottomControls ? (compactLayout ? 18 : 22) : (compactLayout ? 26 : 32);
+			int sortRowWidth = stackedBottomControls ? sortLabelPixelWidth + sortInlineGap + ((sortOptionCount - 1) * sortXStep) + sortSize : 0;
+			int trashWidth = stackedBottomControls ? (compactLayout ? 30 : 40) : (compactLayout ? 48 : 64);
+			int trashHeight = stackedBottomControls ? (compactLayout ? 46 : 60) : (compactLayout ? 78 : 104);
+			int topControlsHeight = Math.Max(actionButtonSize, Math.Max(trashHeight, sortSize));
+			int topControlsOffset = stackedBottomControls ? actionButtonSize / 2 : 0;
+			int sortYStart = stackedBottomControls ? (topControlsHeight - sortSize) / 2 : (compactLayout ? 84 : 104);
+			int sortBlockBottom = stackedBottomControls ? topControlsOffset + topControlsHeight : sortYStart + sortYStep + sortSize;
+			int rightControlBlockHeight = stackedBottomControls ? sortBlockBottom : Math.Max(sortBlockBottom, actionButtonSize + stackedControlGap + trashHeight);
+			trashLidScale = actionButtonScale;
+			int totalPlayerSlots = Math.Max(12, Game1.player.Items.Count);
+			int smallFilterWidth = (int)Math.Round((compactLayout ? 104 : 120) * compactFilterScale);
+			int filterXStart = xPositionOnScreen + borderWidth + (stackedBottomControls ? 12 : 24);
+			int filtersTotalWidth = filterXStart + smallFilterWidth + 16;
+			if (stackedBottomControls)
+			{
+				int availableInventoryWidth = width - borderWidth * 2 - 12 - smallFilterWidth - 24 - 12;
+				playerInventoryColumns = Math.Max(6, Math.Min(12, availableInventoryWidth / 64));
+				playerInventoryRows = Math.Max(3, (int)Math.Ceiling(totalPlayerSlots / (float)playerInventoryColumns));
+			}
+			else
+			{
+				playerInventoryColumns = 12;
+				playerInventoryRows = Math.Min(3, (int)Math.Ceiling(totalPlayerSlots / 12f));
+			}
+
+			inventoryHeight = 64 * playerInventoryRows;
 
 			// Layout claro: área de baús (topo) e área de inventário/filtros (fundo)
 			inventoryHeight = 64 * 3;  // Altura do inventário
 
 			// Filters stack height: 4 filtros + labels + espaçamento
+			inventoryHeight = 64 * playerInventoryRows;
 			int filterStackHeight = compactLayout ? 320 : 380;
+			if (stackedBottomControls)
+			{
+				filterStackHeight = Math.Max(filterStackHeight, rightControlBlockHeight + stackedControlGap + inventoryHeight);
+			}
 			int verticalPadding = compactLayout ? 40 : 64;
 			bottomAreaHeight = Math.Max(inventoryHeight + verticalPadding, filterStackHeight) + borderWidth + verticalPadding;
 			cutoff = effectiveViewportHeight - bottomAreaHeight;  // Y onde a área de baús termina
             
             // Centraliza o conjunto (inventário + botões) empurrado pra direita se necessário
-            int smallFilterWidth = compactLayout ? 104 : 120;
-            int filterXStart = xPositionOnScreen + borderWidth + 24;
-            int filtersTotalWidth = filterXStart + smallFilterWidth + 16;
+
 
 			int availableVerticalSpace = effectiveViewportHeight - cutoff;
-			int inventoryY = cutoff + (availableVerticalSpace - inventoryHeight) / 2;
+			int inventoryY = stackedBottomControls
+				? cutoff + borderWidth + (compactLayout ? 14 : 20) + rightControlBlockHeight + stackedControlGap
+				: cutoff + (availableVerticalSpace - inventoryHeight) / 2;
 			widgetText = new string[]{
 				ModEntry.SHelper.Translation.Get("open"),
 				Game1.content.LoadString("Strings\\UI:ItemGrab_Organize"),
@@ -209,15 +251,31 @@ namespace AllChestsMenu
 			fridgeString = ModEntry.SHelper.Translation.Get("fridge");
 			sortString = ModEntry.SHelper.Translation.Get("sort");
 
-			int columns = 12;
-			int rows = Math.Min(3, (int)Math.Ceiling((double)Game1.player.Items.Count / columns));
+			int columns = playerInventoryColumns;
+			int rows = playerInventoryRows;
 			int capacity = rows * columns;
 
-			// Centraliza o conjunto (inventário + botões)
-			int totalBottomWidth = 64 * columns + 32 + (actionButtonSize * 5) + (actionButtonSize + 16); // inventario + espaco + botoes e lixeira
-			int startX = (effectiveViewportWidth - totalBottomWidth) / 2;
-			startX += 40; // Deslocar para a direita para balancear com os filtros na esqueda
-			if (startX < filtersTotalWidth) startX = filtersTotalWidth;
+			// Centraliza o inventário e evita sobreposição com os filtros no layout de 1 coluna
+			int inventoryPixelWidth = 64 * columns;
+			int startX;
+			if (stackedBottomControls)
+			{
+				int centeredInventoryX = xPositionOnScreen + (width - inventoryPixelWidth) / 2;
+				int maxInventoryX = xPositionOnScreen + width - borderWidth - inventoryPixelWidth - 12;
+				int maxFilterWidth = maxInventoryX - filterXStart - 24;
+				int minFilterWidth = compactLayout ? 44 : 56;
+				smallFilterWidth = Math.Max(minFilterWidth, Math.Min(smallFilterWidth, maxFilterWidth));
+				int minInventoryX = filterXStart + smallFilterWidth + 24;
+				startX = Math.Max(minInventoryX, centeredInventoryX);
+				startX = Math.Min(startX, maxInventoryX);
+			}
+			else
+			{
+				int totalBottomWidth = inventoryPixelWidth + 32 + (actionButtonSize * 5) + (actionButtonSize + 16); // inventario + espaco + botoes e lixeira
+				startX = (effectiveViewportWidth - totalBottomWidth) / 2;
+				startX += 40; // Deslocar para a direita para balancear com os filtros na esqueda
+				if (startX < filtersTotalWidth) startX = filtersTotalWidth;
+			}
 
 			playerInventoryMenu = new InventoryMenu(
 				startX,
@@ -228,11 +286,23 @@ namespace AllChestsMenu
 				capacity,
 				rows);
 			SetPlayerInventoryNeighbours();
-			organizeButton = new ClickableTextureComponent("", new Rectangle(playerInventoryMenu.xPositionOnScreen + playerInventoryMenu.width + 32, playerInventoryMenu.yPositionOnScreen - (compactLayout ? 8 : 16), actionButtonSize, actionButtonSize), "", Game1.content.LoadString("Strings\\UI:ItemGrab_Organize"), Game1.mouseCursors, new Rectangle(162, 440, 16, 16), actionButtonScale, false)
+			int playerTopRightSlot = GetPlayerInventoryRowEndIndex(0);
+			int topButtonBlockWidth = actionButtonSize * 4 + actionButtonGap * 4 + trashWidth;
+			int sortLabelX = stackedBottomControls
+				? playerInventoryMenu.xPositionOnScreen + playerInventoryMenu.width - (sortRowWidth + actionButtonGap + topButtonBlockWidth)
+				: 0;
+			int sortOptionsX = stackedBottomControls ? sortLabelX + sortLabelPixelWidth + sortInlineGap : 0;
+			int actionButtonsX = stackedBottomControls
+				? sortOptionsX + ((sortOptionCount - 1) * sortXStep) + sortSize + actionButtonGap
+				: playerInventoryMenu.xPositionOnScreen + playerInventoryMenu.width + 32;
+			int actionButtonsY = stackedBottomControls
+				? cutoff + borderWidth + (compactLayout ? 14 : 20) + topControlsOffset
+				: playerInventoryMenu.yPositionOnScreen - (compactLayout ? 8 : 16);
+			organizeButton = new ClickableTextureComponent("", new Rectangle(actionButtonsX, actionButtonsY, actionButtonSize, actionButtonSize), "", Game1.content.LoadString("Strings\\UI:ItemGrab_Organize"), Game1.mouseCursors, new Rectangle(162, 440, 16, 16), actionButtonScale, false)
 			{
 				myID = 4 * ccMagnitude,
 				downNeighborID = 4 * ccMagnitude + 1,
-				leftNeighborID = 11,
+				leftNeighborID = playerTopRightSlot,
 				rightNeighborID = 4 * ccMagnitude + 1
 			};
 			storeAlikeButton = new ClickableTextureComponent("", new Rectangle(organizeButton.bounds.X + actionButtonSize + actionButtonGap, organizeButton.bounds.Y, actionButtonSize, actionButtonSize), "", Game1.content.LoadString("Strings\\UI:ItemGrab_FillStacks"), Game1.mouseCursors, new Rectangle(103, 469, 16, 16), actionButtonScale, false)
@@ -268,10 +338,14 @@ namespace AllChestsMenu
 				upNeighborID = 4 * ccMagnitude
 			};
 
-			// Update trashCan position - moved right of the buttons, aligned vertically
-			int trashWidth = compactLayout ? 48 : 64;
-			int trashHeight = compactLayout ? 78 : 104;
-			trashCan = new ClickableTextureComponent(new Rectangle(sortAllButton.bounds.X + actionButtonSize + 16, playerInventoryMenu.yPositionOnScreen + (compactLayout ? 18 : 28), trashWidth, trashHeight), Game1.mouseCursors, new Rectangle(564 + Game1.player.trashCanLevel * 18, 102, 18, 26), actionButtonScale, false)
+			// Update trashCan position
+			int trashX = stackedBottomControls
+				? sortAllButton.bounds.Right + actionButtonGap
+				: sortAllButton.bounds.X + actionButtonSize + 16;
+			int trashY = stackedBottomControls
+				? organizeButton.bounds.Y + (actionButtonSize - trashHeight) / 2
+				: playerInventoryMenu.yPositionOnScreen + (compactLayout ? 18 : 28);
+			trashCan = new ClickableTextureComponent(new Rectangle(trashX, trashY, trashWidth, trashHeight), Game1.mouseCursors, new Rectangle(564 + Game1.player.trashCanLevel * 18, 102, 18, 26), actionButtonScale, false)
 			{
 				myID = 4 * ccMagnitude + 4,
 				leftNeighborID = 4 * ccMagnitude + 3,
@@ -302,28 +376,27 @@ namespace AllChestsMenu
 
 			for (int i = 0; i < s.Length - 1; i++)
 			{
-				int row = i % 2;
+				int row = stackedBottomControls ? 0 : i % 2;
 				string name = s[i];
 				int idx = 5 * ccMagnitude;
-				int sortXStep = compactLayout ? 48 : 64;
-				int sortYStart = compactLayout ? 84 : 104;
-				int sortYStep = compactLayout ? 32 : 40;
-				int sortSize = compactLayout ? 26 : 32;
 
 				sortNames[name] = ModEntry.SHelper.Translation.Get("sort-" + name);
-				sortCCList.Add(new ClickableComponent(new Rectangle(organizeButton.bounds.X + (i / 2) * sortXStep, organizeButton.bounds.Y + sortYStart + row * sortYStep, sortSize, sortSize), name, name)
+				int sortGridX = stackedBottomControls ? sortOptionsX : organizeButton.bounds.X;
+				int sortColumn = stackedBottomControls ? i : (i / 2);
+				sortCCList.Add(new ClickableComponent(new Rectangle(sortGridX + sortColumn * sortXStep, organizeButton.bounds.Y + sortYStart + row * sortYStep, sortSize, sortSize), name, name)
 				{
 					myID = idx + i,
-					leftNeighborID = i > 2 ? idx + i - 2: 4 * ccMagnitude + 1,
-					rightNeighborID = i < s.Length - 2 ? idx + i + 2 : -1,
-					downNeighborID = row == 0 ? idx + i + 1 : -1,
-					upNeighborID = row == 1 ? idx + i - 1 : -1
+					leftNeighborID = stackedBottomControls ? (i > 0 ? idx + i - 1 : 4 * ccMagnitude + 1) : (i > 2 ? idx + i - 2 : 4 * ccMagnitude + 1),
+					rightNeighborID = stackedBottomControls ? (i < s.Length - 2 ? idx + i + 1 : -1) : (i < s.Length - 2 ? idx + i + 2 : -1),
+					downNeighborID = stackedBottomControls ? -1 : (row == 0 ? idx + i + 1 : -1),
+					upNeighborID = stackedBottomControls ? -1 : (row == 1 ? idx + i - 1 : -1)
 				});
 			}
 
 			// Initialize new filter fields - layout vertical na esquerda
 			int filterYStart = effectiveViewportHeight - bottomAreaHeight + borderWidth + (compactLayout ? 52 : 64) + 16;
 			int filterSpacing = compactLayout ? 72 : 84;
+			int locationDropdownHeight = stackedBottomControls ? 32 : 40;
 
 			// Chest Label filter
 			chestLabelText = new TextBox(Game1.content.Load<Texture2D>("LooseSprites\\textBox"), null, Game1.smallFont, Game1.textColor)
@@ -352,7 +425,7 @@ namespace AllChestsMenu
 				myID = 2 * ccMagnitude + 4,
 				upNeighborID = 2 * ccMagnitude + 3,
 				downNeighborID = 2 * ccMagnitude + 6,
-				rightNeighborID = playerInventoryMenu.inventory.Count > 12 ? playerInventoryMenu.inventory[12].myID : playerInventoryMenu.inventory[0].myID
+				rightNeighborID = GetPlayerInventoryRowStartIndex(1) >= 0 ? playerInventoryMenu.inventory[GetPlayerInventoryRowStartIndex(1)].myID : playerInventoryMenu.inventory[0].myID
 			};
 
 			// Item Description filter
@@ -367,16 +440,16 @@ namespace AllChestsMenu
 				myID = 2 * ccMagnitude + 6,
 				upNeighborID = 2 * ccMagnitude + 4,
 				downNeighborID = 2 * ccMagnitude + 7,
-				rightNeighborID = playerInventoryMenu.inventory.Count > 24 ? playerInventoryMenu.inventory[24].myID : playerInventoryMenu.inventory[0].myID
+				rightNeighborID = GetPlayerInventoryRowStartIndex(2) >= 0 ? playerInventoryMenu.inventory[GetPlayerInventoryRowStartIndex(2)].myID : playerInventoryMenu.inventory[0].myID
 			};
 
 			// Location dropdown (vertical na esquerda)
-			locationDropdownCC = new ClickableComponent(new Rectangle(filterXStart, filterYStart + filterSpacing * 3, smallFilterWidth, 40), "location", "Location")
+			locationDropdownCC = new ClickableComponent(new Rectangle(filterXStart, filterYStart + filterSpacing * 3, smallFilterWidth, locationDropdownHeight), "location", "Location")
 			{
 				myID = 2 * ccMagnitude + 7,
 				upNeighborID = 2 * ccMagnitude + 6,
 				downNeighborID = 5 * ccMagnitude,
-				rightNeighborID = playerInventoryMenu.inventory.Count > 24 ? playerInventoryMenu.inventory[24].myID : playerInventoryMenu.inventory[0].myID
+				rightNeighborID = GetPlayerInventoryRowStartIndex(3) >= 0 ? playerInventoryMenu.inventory[GetPlayerInventoryRowStartIndex(3)].myID : playerInventoryMenu.inventory[GetPlayerInventoryRowStartIndex(2)].myID
 			};
 
 			// Keep original locationText for backward compatibility
@@ -398,7 +471,7 @@ namespace AllChestsMenu
 
 			// Filter checkboxes with controller navigation
 			int checkboxX = xPositionOnScreen + borderWidth;
-			int checkboxSize = 24;
+			int checkboxSize = stackedBottomControls ? 19 : 24;
 
 			filterCheckboxCCList.Add(new ClickableComponent(
 				new Rectangle(chestLabelText.X - checkboxSize - 4, chestLabelText.Y + 4, checkboxSize, checkboxSize), "chestLabelChk"));
@@ -410,16 +483,18 @@ namespace AllChestsMenu
 				new Rectangle(locationDropdownCC.bounds.X - checkboxSize - 4, locationDropdownCC.bounds.Y + 8, checkboxSize, checkboxSize), "locationChk"));
 
 			// Clear filters button - 20px to the right of the top filter, vertically centered with text box
-			int clearBtnY = filterYStart - 10;
-			int clearBtnX = filterXStart + smallFilterWidth + 20;
+			int clearButtonSize = stackedBottomControls ? (compactLayout ? 32 : 38) : (compactLayout ? 40 : 48);
+			float clearButtonScale = stackedBottomControls ? (compactLayout ? 2.6f : 3.1f) : (compactLayout ? 3.3f : 4f);
+			int clearBtnY = filterYStart - (stackedBottomControls ? 4 : 10);
+			int clearBtnX = filterXStart + smallFilterWidth + (stackedBottomControls ? 14 : 20);
 			clearFiltersButton = new ClickableTextureComponent(
 				"",
-				new Rectangle(clearBtnX, clearBtnY, compactLayout ? 40 : 48, compactLayout ? 40 : 48),
+				new Rectangle(clearBtnX, clearBtnY, clearButtonSize, clearButtonSize),
 				"",
 				ModEntry.SHelper.Translation.Get("clear-filters"),
 				Game1.mouseCursors,
 				new Rectangle(337, 494, 12, 12),  // X icon
-				compactLayout ? 3.3f : 4f,
+				clearButtonScale,
 				false
 			)
 			{
@@ -1057,16 +1132,17 @@ namespace AllChestsMenu
 
 			Game1.drawDialogueBox(xPositionOnScreen, cutoff - (borderWidth / 2), width, bottomAreaHeight + borderWidth + (borderWidth / 2), false, true, null, false, true);
 			playerInventoryMenu.draw(b);
-			b.DrawString(Game1.smallFont, filterString, new Vector2(locationText.X, locationText.Y - 29), Game1.textColor);
+			float filterLabelScale = stackedBottomControls ? 0.8f : 1f;
+			b.DrawString(Game1.smallFont, filterString, new Vector2(locationText.X, locationText.Y - 29), Game1.textColor, 0f, Vector2.Zero, filterLabelScale, SpriteEffects.None, 0.88f);
 			locationText.Draw(b);
 
 			// Draw additional filter fields
 			// Item Name filter
-			b.DrawString(Game1.smallFont, ModEntry.SHelper.Translation.Get("filter-item-name"), new Vector2(itemNameText.X, itemNameText.Y - 29), Game1.textColor);
+			b.DrawString(Game1.smallFont, ModEntry.SHelper.Translation.Get("filter-item-name"), new Vector2(itemNameText.X, itemNameText.Y - 29), Game1.textColor, 0f, Vector2.Zero, filterLabelScale, SpriteEffects.None, 0.88f);
 			itemNameText.Draw(b);
 
 			// Item Description filter
-			b.DrawString(Game1.smallFont, ModEntry.SHelper.Translation.Get("filter-item-description"), new Vector2(itemDescriptionText.X, itemDescriptionText.Y - 29), Game1.textColor);
+			b.DrawString(Game1.smallFont, ModEntry.SHelper.Translation.Get("filter-item-description"), new Vector2(itemDescriptionText.X, itemDescriptionText.Y - 29), Game1.textColor, 0f, Vector2.Zero, filterLabelScale, SpriteEffects.None, 0.88f);
 			itemDescriptionText.Draw(b);
 
 			// Location dropdown
@@ -1074,8 +1150,8 @@ namespace AllChestsMenu
 				? $"{ModEntry.Config.SelectedLocations.Count} {ModEntry.SHelper.Translation.Get("filter-location-select")}"
 				: ModEntry.SHelper.Translation.Get("category-all");
 			Game1.spriteBatch.Draw(Game1.menuTexture, locationDropdownCC.bounds, Game1.getSourceRectForStandardTileSheet(Game1.menuTexture, 10), Color.White);
-			b.DrawString(Game1.smallFont, "Loc", new Vector2(locationDropdownCC.bounds.X, locationDropdownCC.bounds.Y - 29), Game1.textColor);
-			b.DrawString(Game1.smallFont, locationLabelText, new Vector2(locationDropdownCC.bounds.X + 8, locationDropdownCC.bounds.Y + 8), Game1.textColor);
+			b.DrawString(Game1.smallFont, "Loc", new Vector2(locationDropdownCC.bounds.X, locationDropdownCC.bounds.Y - 29), Game1.textColor, 0f, Vector2.Zero, filterLabelScale, SpriteEffects.None, 0.88f);
+			b.DrawString(Game1.smallFont, locationLabelText, new Vector2(locationDropdownCC.bounds.X + 8, locationDropdownCC.bounds.Y + 8), Game1.textColor, 0f, Vector2.Zero, filterLabelScale, SpriteEffects.None, 0.88f);
 			// Dropdown arrow
 			b.Draw(Game1.mouseCursors, new Vector2(locationDropdownCC.bounds.Right - 20, locationDropdownCC.bounds.Y + locationDropdownCC.bounds.Height / 2 - 4),
 				new Rectangle(345, 494, 10, 6), Color.White, 0f, Vector2.Zero, 2f, SpriteEffects.None, 0.87f);
@@ -1086,11 +1162,20 @@ namespace AllChestsMenu
 				renameBox.Draw(b);
 				okButton.draw(b);
 			}
-			SpriteText.drawString(b, sortString, organizeButton.bounds.X, organizeButton.bounds.Y + 62);
+			int sortLabelX = stackedBottomControls && sortCCList.Count > 0 ? sortCCList[0].bounds.X - (compactLayout ? 60 : 72) : organizeButton.bounds.X;
+			int sortLabelY = stackedBottomControls
+				? organizeButton.bounds.Y + (compactLayout ? 10 : 14)
+				: organizeButton.bounds.Y + 62;
+			if (stackedBottomControls)
+				b.DrawString(Game1.smallFont, sortString, new Vector2(sortLabelX, sortLabelY), Game1.textColor, 0f, Vector2.Zero, 0.9f, SpriteEffects.None, 0.88f);
+			else
+				SpriteText.drawString(b, sortString, sortLabelX, sortLabelY);
 			foreach (ClickableComponent cc in sortCCList)
 			{
-				b.DrawString(Game1.smallFont, cc.label, cc.bounds.Location.ToVector2() + new Vector2(-1, 1), currentSort.ToString() == cc.label ? Color.Green : Color.Black);
-				b.DrawString(Game1.smallFont, cc.label, cc.bounds.Location.ToVector2(), currentSort.ToString() == cc.label ? Color.LightGreen : Color.White);
+				Vector2 sortLabelPosition = cc.bounds.Location.ToVector2();
+				float sortScale = stackedBottomControls ? 0.9f : 1f;
+				b.DrawString(Game1.smallFont, cc.label, sortLabelPosition + new Vector2(-1, 1), currentSort.ToString() == cc.label ? Color.Green : Color.Black, 0f, Vector2.Zero, sortScale, SpriteEffects.None, 0.88f);
+				b.DrawString(Game1.smallFont, cc.label, sortLabelPosition, currentSort.ToString() == cc.label ? Color.LightGreen : Color.White, 0f, Vector2.Zero, sortScale, SpriteEffects.None, 0.89f);
 			}
 			trashCan.draw(b);
 			organizeButton.draw(b);
@@ -1098,8 +1183,8 @@ namespace AllChestsMenu
 			consolidateButton.draw(b);
 			sortAllButton.draw(b);
 			clearFiltersButton.draw(b);
-			float lidOffsetX = compactLayout ? 44f : 60f;
-			float lidOffsetY = compactLayout ? 30f : 40f;
+			float lidOffsetX = stackedBottomControls ? (compactLayout ? 24f : 34f) : (compactLayout ? 44f : 60f);
+			float lidOffsetY = stackedBottomControls ? (compactLayout ? 16f : 24f) : (compactLayout ? 30f : 40f);
 			b.Draw(Game1.mouseCursors, new Vector2(trashCan.bounds.X + lidOffsetX, trashCan.bounds.Y + lidOffsetY), new Rectangle?(new Rectangle(564 + Game1.player.trashCanLevel * 18, 129, 18, 10)), Color.White, trashCanLidRotation, new Vector2(16f, 10f), trashLidScale, SpriteEffects.None, 0.86f);
 			Game1.spriteBatch.Draw(Game1.menuTexture, new Rectangle(xPositionOnScreen + 16, -4, 24, 16), new Rectangle(16, 16, 24, 16), Color.White);
 			Game1.spriteBatch.Draw(Game1.menuTexture, new Rectangle(xPositionOnScreen + width - 32, -4, 16, 16), new Rectangle(225, 16, 16, 16), Color.White);
@@ -2349,26 +2434,58 @@ namespace AllChestsMenu
 			});
 		}
 
+		private int GetPlayerInventoryRowStartIndex(int row)
+		{
+			if (playerInventoryMenu?.inventory == null || playerInventoryMenu.inventory.Count == 0)
+				return -1;
+
+			int clampedRow = Math.Min(row, Math.Max(0, playerInventoryRows - 1));
+			int index = clampedRow * playerInventoryColumns;
+			return Math.Min(index, playerInventoryMenu.inventory.Count - 1);
+		}
+
+		private int GetPlayerInventoryRowEndIndex(int row)
+		{
+			int start = GetPlayerInventoryRowStartIndex(row);
+			if (start < 0)
+				return -1;
+
+			int nextStart = GetPlayerInventoryRowStartIndex(row + 1);
+			if (nextStart > start)
+				return nextStart - 1;
+
+			return playerInventoryMenu.inventory.Count - 1;
+		}
+
 		private void SetPlayerInventoryNeighbours()
 		{
+			if (playerInventoryMenu?.inventory == null || playerInventoryMenu.inventory.Count == 0)
+				return;
+
 			int leftTop = chestLabelCC?.myID ?? 2 * ccMagnitude;
 			int leftMiddle = itemNameCC?.myID ?? 2 * ccMagnitude;
 			int leftBottom = itemDescCC?.myID ?? 2 * ccMagnitude;
 
-			if (playerInventoryMenu.inventory.Count >= 12)
+			int topStart = GetPlayerInventoryRowStartIndex(0);
+			int middleStart = GetPlayerInventoryRowStartIndex(1);
+			int bottomStart = GetPlayerInventoryRowStartIndex(2);
+			int topEnd = GetPlayerInventoryRowEndIndex(0);
+			int middleEnd = GetPlayerInventoryRowEndIndex(1);
+			int bottomEnd = GetPlayerInventoryRowEndIndex(2);
+
+			playerInventoryMenu.inventory[topStart].leftNeighborID = leftTop;
+			playerInventoryMenu.inventory[topEnd].rightNeighborID = 4 * ccMagnitude;
+
+			if (middleStart >= 0)
 			{
-				playerInventoryMenu.inventory[0].leftNeighborID = leftTop;
-				playerInventoryMenu.inventory[11].rightNeighborID = 4 * ccMagnitude;
-				if (playerInventoryMenu.inventory.Count >= 24)
-				{
-					playerInventoryMenu.inventory[12].leftNeighborID = leftMiddle;
-					playerInventoryMenu.inventory[23].rightNeighborID = 4 * ccMagnitude + 1;
-					if (playerInventoryMenu.inventory.Count >= 36)
-					{
-						playerInventoryMenu.inventory[24].leftNeighborID = leftBottom;
-						playerInventoryMenu.inventory[35].rightNeighborID = 4 * ccMagnitude + 1;
-					}
-				}
+				playerInventoryMenu.inventory[middleStart].leftNeighborID = leftMiddle;
+				playerInventoryMenu.inventory[middleEnd].rightNeighborID = 4 * ccMagnitude + 1;
+			}
+
+			if (bottomStart >= 0)
+			{
+				playerInventoryMenu.inventory[bottomStart].leftNeighborID = leftBottom;
+				playerInventoryMenu.inventory[bottomEnd].rightNeighborID = 4 * ccMagnitude + 1;
 			}
 		}
 
@@ -2382,11 +2499,11 @@ namespace AllChestsMenu
 
 			itemNameCC.upNeighborID = chestLabelCC.myID;
 			itemNameCC.downNeighborID = itemDescCC.myID;
-			itemNameCC.rightNeighborID = playerInventoryMenu.inventory.Count > 12 ? playerInventoryMenu.inventory[12].myID : chestLabelCC.rightNeighborID;
+			itemNameCC.rightNeighborID = GetPlayerInventoryRowStartIndex(1) >= 0 ? playerInventoryMenu.inventory[GetPlayerInventoryRowStartIndex(1)].myID : chestLabelCC.rightNeighborID;
 
 			itemDescCC.upNeighborID = itemNameCC.myID;
 			itemDescCC.downNeighborID = locationDropdownCC.myID;
-			itemDescCC.rightNeighborID = playerInventoryMenu.inventory.Count > 24 ? playerInventoryMenu.inventory[24].myID : chestLabelCC.rightNeighborID;
+			itemDescCC.rightNeighborID = GetPlayerInventoryRowStartIndex(2) >= 0 ? playerInventoryMenu.inventory[GetPlayerInventoryRowStartIndex(2)].myID : chestLabelCC.rightNeighborID;
 
 			locationDropdownCC.upNeighborID = itemDescCC.myID;
 			locationDropdownCC.downNeighborID = (locationDropdownOpen && locationOptionsCCList.Count > 0) ? locationOptionsCCList[0].myID : clearFiltersButton.myID;
