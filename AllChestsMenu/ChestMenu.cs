@@ -9,10 +9,11 @@ namespace AllChestsMenu
 {
 	public class ChestMenu : InventoryMenu
 	{
-		const int columns = 12;
+		public int columns { get; private set; } = 12;
 
-		public ChestMenu(int xPosition, int yPosition, bool playerInventory, IList<Item> actualInventory = null, highlightThisItem highlightMethod = null, int capacity = -1, int rows = 3, int horizontalGap = 0, int verticalGap = 0, bool drawSlots = true) : base(xPosition, yPosition, playerInventory, actualInventory, highlightMethod, capacity, rows, horizontalGap, verticalGap, drawSlots)
+		public ChestMenu(int xPosition, int yPosition, bool playerInventory, IList<Item> actualInventory = null, highlightThisItem highlightMethod = null, int capacity = -1, int rows = 3, int horizontalGap = 0, int verticalGap = 0, bool drawSlots = true, int chestColumns = 12) : base(xPosition, yPosition, playerInventory, actualInventory, highlightMethod, capacity, rows, horizontalGap, verticalGap, drawSlots)
 		{
+			this.columns = chestColumns;
 			initialize(xPositionOnScreen, yPositionOnScreen, 64 * columns, 64 * rows + 16);
 			inventory.Clear();
 			for (int j = 0; j < capacity; j++)

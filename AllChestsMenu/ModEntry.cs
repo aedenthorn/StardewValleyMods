@@ -1,4 +1,4 @@
-﻿using System.IO;
+using System.IO;
 using Microsoft.Xna.Framework.Graphics;
 using StardewModdingAPI;
 using StardewModdingAPI.Events;
@@ -20,6 +20,7 @@ namespace AllChestsMenu
 		public override void Entry(IModHelper helper)
 		{
 			Config = Helper.ReadConfig<ModConfig>();
+			MigrateLegacyConfig();
 
 			context = this;
 			SMonitor = Monitor;
@@ -53,10 +54,68 @@ namespace AllChestsMenu
 					SHelper.Input.Suppress(e.Button);
 				}
 			}
-			if (e.Button == Config.MenuKey && (Config.ModKey == SButton.None || !Config.ModToOpen || Helper.Input.IsDown(Config.ModKey)))
+			bool keyboardOpen = e.Button == Config.KeyboardMenuKey
+				&& (!Config.KeyboardRequireModifierToOpen || Config.KeyboardOpenModifierKey == SButton.None || Helper.Input.IsDown(Config.KeyboardOpenModifierKey));
+			bool controllerOpen = e.Button == Config.ControllerMenuButton
+				&& (!Config.ControllerRequireModifierToOpen || Config.ControllerOpenModifierButton == SButton.None || Helper.Input.IsDown(Config.ControllerOpenModifierButton));
+			if (keyboardOpen || controllerOpen)
 			{
 				OpenMenu();
 			}
+		}
+
+		private void MigrateLegacyConfig()
+		{
+			bool changed = false;
+
+			if (Config.MenuKey != SButton.None)
+			{
+				if (Config.MenuKey.ToString().StartsWith("Controller"))
+				{
+					if (Config.ControllerMenuButton == SButton.None)
+					{
+						Config.ControllerMenuButton = Config.MenuKey;
+						changed = true;
+					}
+				}
+				else
+				{
+					if (Config.KeyboardMenuKey == SButton.None || Config.KeyboardMenuKey == SButton.F2)
+					{
+						Config.KeyboardMenuKey = Config.MenuKey;
+						changed = true;
+					}
+				}
+			}
+
+			if (Config.ModToOpen)
+			{
+				if (!Config.KeyboardRequireModifierToOpen)
+				{
+					Config.KeyboardRequireModifierToOpen = true;
+					changed = true;
+				}
+				if (!Config.ControllerRequireModifierToOpen)
+				{
+					Config.ControllerRequireModifierToOpen = true;
+					changed = true;
+				}
+			}
+
+			if (Config.KeyboardOpenModifierKey == SButton.LeftShift && Config.ModKey != SButton.LeftShift)
+			{
+				Config.KeyboardOpenModifierKey = Config.ModKey;
+				changed = true;
+			}
+
+			if (Config.MenuKey != SButton.None)
+			{
+				Config.MenuKey = SButton.None;
+				changed = true;
+			}
+
+			if (changed)
+				Helper.WriteConfig(Config);
 		}
 
 		public void GameLoop_GameLaunched(object sender, GameLaunchedEventArgs e)
@@ -78,37 +137,65 @@ namespace AllChestsMenu
 					save: () => Helper.WriteConfig(Config)
 				);
 
-				// Main section
+				// ==================== GENERAL SECTION ====================
+				gmcm.AddSectionTitle(
+					mod: ModManifest,
+					text: () => SHelper.Translation.Get("GMCM.Section.General.Name"),
+					tooltip: () => SHelper.Translation.Get("GMCM.Section.General.Desc")
+				);
+
 				gmcm.AddBoolOption(
 					mod: ModManifest,
 					name: () => SHelper.Translation.Get("GMCM.ModEnabled.Name"),
+					tooltip: () => SHelper.Translation.Get("GMCM.ModEnabled.Tooltip"),
 					getValue: () => Config.ModEnabled,
 					setValue: value => Config.ModEnabled = value
 				);
+
+				// ==================== CONTAINERS SECTION ====================
+				gmcm.AddSectionTitle(
+					mod: ModManifest,
+					text: () => SHelper.Translation.Get("GMCM.Section.Containers.Name"),
+					tooltip: () => SHelper.Translation.Get("GMCM.Section.Containers.Desc")
+				);
+
 				gmcm.AddBoolOption(
 					mod: ModManifest,
 					name: () => SHelper.Translation.Get("GMCM.LimitToCurrentLocation.Name"),
+					tooltip: () => SHelper.Translation.Get("GMCM.LimitToCurrentLocation.Tooltip"),
 					getValue: () => Config.LimitToCurrentLocation,
 					setValue: value => Config.LimitToCurrentLocation = value
 				);
+
+				gmcm.AddParagraph(
+					mod: ModManifest,
+					text: () => ""
+				); // spacer
+
 				gmcm.AddBoolOption(
 					mod: ModManifest,
 					name: () => SHelper.Translation.Get("GMCM.IncludeFridge.Name"),
+					tooltip: () => SHelper.Translation.Get("GMCM.IncludeFridge.Tooltip"),
 					getValue: () => Config.IncludeFridge,
 					setValue: value => Config.IncludeFridge = value
 				);
+
 				gmcm.AddBoolOption(
 					mod: ModManifest,
 					name: () => SHelper.Translation.Get("GMCM.IncludeMiniFridges.Name"),
+					tooltip: () => SHelper.Translation.Get("GMCM.IncludeMiniFridges.Tooltip"),
 					getValue: () => Config.IncludeMiniFridges,
 					setValue: value => Config.IncludeMiniFridges = value
 				);
+
 				gmcm.AddBoolOption(
 					mod: ModManifest,
 					name: () => SHelper.Translation.Get("GMCM.IncludeShippingBin.Name"),
+					tooltip: () => SHelper.Translation.Get("GMCM.IncludeShippingBin.Tooltip"),
 					getValue: () => Config.IncludeShippingBin,
 					setValue: value => Config.IncludeShippingBin = value
 				);
+
 				gmcm.AddBoolOption(
 					mod: ModManifest,
 					name: () => SHelper.Translation.Get("GMCM.UnrestrictedShippingBin.Name"),
@@ -116,68 +203,95 @@ namespace AllChestsMenu
 					getValue: () => Config.UnrestrictedShippingBin,
 					setValue: value => Config.UnrestrictedShippingBin = value
 				);
-                gmcm.AddBoolOption(
-                    mod: ModManifest,
-                    name: () => SHelper.Translation.Get("GMCM.FilterItems.Name"),
-                    getValue: () => Config.FilterItems,
-                    setValue: value => Config.FilterItems = value
-                );
-                gmcm.AddBoolOption(
-                    mod: ModManifest,
-                    name: () => SHelper.Translation.Get("GMCM.FilterItemsCategory.Name"),
-                    getValue: () => Config.FilterItemsCategory,
-                    setValue: value => Config.FilterItemsCategory = value
-                );
-                gmcm.AddBoolOption(
-                    mod: ModManifest,
-                    name: () => SHelper.Translation.Get("GMCM.FilterItemsDescription.Name"),
-                    getValue: () => Config.FilterItemsDescription,
-                    setValue: value => Config.FilterItemsDescription = value
-                );
+
 				gmcm.AddBoolOption(
 					mod: ModManifest,
 					name: () => SHelper.Translation.Get("GMCM.IncludeMiniShippingBins.Name"),
+					tooltip: () => SHelper.Translation.Get("GMCM.IncludeMiniShippingBins.Tooltip"),
 					getValue: () => Config.IncludeMiniShippingBins,
 					setValue: value => Config.IncludeMiniShippingBins = value
 				);
+
 				gmcm.AddBoolOption(
 					mod: ModManifest,
 					name: () => SHelper.Translation.Get("GMCM.IncludeJunimoChests.Name"),
+					tooltip: () => SHelper.Translation.Get("GMCM.IncludeJunimoChests.Tooltip"),
 					getValue: () => Config.IncludeJunimoChests,
 					setValue: value => Config.IncludeJunimoChests = value
 				);
+
 				gmcm.AddBoolOption(
 					mod: ModManifest,
 					name: () => SHelper.Translation.Get("GMCM.IncludeAutoGrabbers.Name"),
+					tooltip: () => SHelper.Translation.Get("GMCM.IncludeAutoGrabbers.Tooltip"),
 					getValue: () => Config.IncludeAutoGrabbers,
 					setValue: value => Config.IncludeAutoGrabbers = value
 				);
+
+
+
+				// ==================== SORTING SECTION ====================
+				gmcm.AddSectionTitle(
+					mod: ModManifest,
+					text: () => SHelper.Translation.Get("GMCM.Section.Sorting.Name"),
+					tooltip: () => SHelper.Translation.Get("GMCM.Section.Sorting.Desc")
+				);
+
 				gmcm.AddTextOption(
 					mod: ModManifest,
 					name: () => SHelper.Translation.Get("GMCM.SecondarySortingPriority.Name"),
+					tooltip: () => SHelper.Translation.Get("GMCM.SecondarySortingPriority.Tooltip"),
 					getValue: () => Config.SecondarySortingPriority,
 					setValue: value => Config.SecondarySortingPriority = value,
-					allowedValues: new string[] { "X", "Y" }
+					allowedValues: new string[] { "X", "Y" },
+					formatAllowedValue: value => SHelper.Translation.Get($"GMCM.SecondarySortingPriority.{value}")
 				);
-				gmcm.AddKeybind(
+
+				// ==================== CONTROLS SECTION ====================
+				gmcm.AddSectionTitle(
 					mod: ModManifest,
-					name: () => SHelper.Translation.Get("GMCM.MenuKey.Name"),
-					getValue: () => Config.MenuKey,
-					setValue: value => Config.MenuKey = value
+					text: () => SHelper.Translation.Get("GMCM.Section.Controls.Name"),
+					tooltip: () => SHelper.Translation.Get("GMCM.Section.Controls.Desc")
 				);
+
+				gmcm.AddSectionTitle(
+					mod: ModManifest,
+					text: () => SHelper.Translation.Get("GMCM.Section.KeyboardControls.Name"),
+					tooltip: () => SHelper.Translation.Get("GMCM.Section.KeyboardControls.Desc")
+				);
+
 				gmcm.AddBoolOption(
 					mod: ModManifest,
-					name: () => SHelper.Translation.Get("GMCM.ModToOpen.Name"),
-					getValue: () => Config.ModToOpen,
-					setValue: value => Config.ModToOpen = value
+					name: () => SHelper.Translation.Get("GMCM.KeyboardRequireModifierToOpen.Name"),
+					tooltip: () => SHelper.Translation.Get("GMCM.KeyboardRequireModifierToOpen.Tooltip"),
+					getValue: () => Config.KeyboardRequireModifierToOpen,
+					setValue: value => Config.KeyboardRequireModifierToOpen = value
 				);
+
 				gmcm.AddKeybind(
 					mod: ModManifest,
-					name: () => SHelper.Translation.Get("GMCM.ModKey.Name"),
-					tooltip: () => SHelper.Translation.Get("GMCM.ModKey.Tooltip"),
+					name: () => SHelper.Translation.Get("GMCM.KeyboardOpenModifierKey.Name"),
+					tooltip: () => SHelper.Translation.Get("GMCM.KeyboardOpenModifierKey.Tooltip"),
+					getValue: () => Config.KeyboardOpenModifierKey,
+					setValue: value => Config.KeyboardOpenModifierKey = value
+				);
+
+				gmcm.AddKeybind(
+					mod: ModManifest,
+					name: () => SHelper.Translation.Get("GMCM.KeyboardMenuKey.Name"),
+					tooltip: () => SHelper.Translation.Get("GMCM.KeyboardMenuKey.Tooltip"),
+					getValue: () => Config.KeyboardMenuKey,
+					setValue: value => Config.KeyboardMenuKey = value
+				);
+
+				gmcm.AddKeybind(
+					mod: ModManifest,
+					name: () => SHelper.Translation.Get("GMCM.TransferModifierKey.Name"),
+					tooltip: () => SHelper.Translation.Get("GMCM.TransferModifierKey.Tooltip"),
 					getValue: () => Config.ModKey,
 					setValue: value => Config.ModKey = value
 				);
+
 				gmcm.AddKeybind(
 					mod: ModManifest,
 					name: () => SHelper.Translation.Get("GMCM.ModKey2.Name"),
@@ -185,12 +299,51 @@ namespace AllChestsMenu
 					getValue: () => Config.ModKey2,
 					setValue: value => Config.ModKey2 = value
 				);
+
+				gmcm.AddSectionTitle(
+					mod: ModManifest,
+					text: () => SHelper.Translation.Get("GMCM.Section.ControllerControls.Name"),
+					tooltip: () => SHelper.Translation.Get("GMCM.Section.ControllerControls.Desc")
+				);
+
+				gmcm.AddBoolOption(
+					mod: ModManifest,
+					name: () => SHelper.Translation.Get("GMCM.ControllerRequireModifierToOpen.Name"),
+					tooltip: () => SHelper.Translation.Get("GMCM.ControllerRequireModifierToOpen.Tooltip"),
+					getValue: () => Config.ControllerRequireModifierToOpen,
+					setValue: value => Config.ControllerRequireModifierToOpen = value
+				);
+
+				gmcm.AddKeybind(
+					mod: ModManifest,
+					name: () => SHelper.Translation.Get("GMCM.ControllerOpenModifierButton.Name"),
+					tooltip: () => SHelper.Translation.Get("GMCM.ControllerOpenModifierButton.Tooltip"),
+					getValue: () => Config.ControllerOpenModifierButton,
+					setValue: value => Config.ControllerOpenModifierButton = value
+				);
+
+				gmcm.AddKeybind(
+					mod: ModManifest,
+					name: () => SHelper.Translation.Get("GMCM.ControllerMenuButton.Name"),
+					tooltip: () => SHelper.Translation.Get("GMCM.ControllerMenuButton.Tooltip"),
+					getValue: () => Config.ControllerMenuButton,
+					setValue: value => Config.ControllerMenuButton = value
+				);
+
 				gmcm.AddKeybind(
 					mod: ModManifest,
 					name: () => SHelper.Translation.Get("GMCM.SwitchButton.Name"),
 					tooltip: () => SHelper.Translation.Get("GMCM.SwitchButton.Tooltip"),
 					getValue: () => Config.SwitchButton,
 					setValue: value => Config.SwitchButton = value
+				);
+
+				gmcm.AddBoolOption(
+					mod: ModManifest,
+					name: () => SHelper.Translation.Get("GMCM.EnableControllerKeyboard.Name"),
+					tooltip: () => SHelper.Translation.Get("GMCM.EnableControllerKeyboard.Tooltip"),
+					getValue: () => Config.EnableControllerKeyboard,
+					setValue: value => Config.EnableControllerKeyboard = value
 				);
 			}
 		}

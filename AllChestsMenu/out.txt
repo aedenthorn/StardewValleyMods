@@ -1,0 +1,11 @@
+  Determinando os projetos a serem restaurados...
+  Todos os projetos estão atualizados para restauração.
+C:\Users\rodol\Desktop\mods\StardewValleyMods\AllChestsMenu\AllChestsMenu.cs(564,4): error CS1513: } esperada [C:\Users\rodol\Desktop\mods\StardewValleyMods\AllChestsMenu\AllChestsMenu.csproj]
+
+FALHA da compilação.
+
+C:\Users\rodol\Desktop\mods\StardewValleyMods\AllChestsMenu\AllChestsMenu.cs(564,4): error CS1513: } esperada [C:\Users\rodol\Desktop\mods\StardewValleyMods\AllChestsMenu\AllChestsMenu.csproj]
+    0 Aviso(s)
+    1 Erro(s)
+
+Tempo Decorrido 00:00:00.75
