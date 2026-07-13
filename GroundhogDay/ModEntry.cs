@@ -1,4 +1,5 @@
-﻿using HarmonyLib;
+﻿using System;
+using HarmonyLib;
 using StardewModdingAPI;
 using StardewValley;
 
@@ -32,16 +33,23 @@ namespace GroundhogDay
 
             // Game1 Patches
 
-            var newDayAfterFade = AccessTools.Method(typeof(Game1), "_newDayAfterFade");
+            // Patch the public newDayAfterFade(Action) wrapper rather than the private
+            // _newDayAfterFade() iterator stub it calls: the stub is only 1-2 IL
+            // instructions (it just constructs the compiler-generated state machine),
+            // so the JIT inlines it at both call sites, which silently bypasses a
+            // Harmony patch on it (the patch "applies" with no error, but never runs).
+            // The wrapper has real logic and can't be inlined, and it always runs
+            // synchronously before the state machine's day-rollover logic does.
+            var newDayAfterFade = AccessTools.Method(typeof(Game1), "newDayAfterFade", new[] { typeof(Action) });
             if (newDayAfterFade is null)
             {
-                Monitor.Log("Couldn't find Game1._newDayAfterFade to patch — this mod may need an update for the current game version.", LogLevel.Error);
+                Monitor.Log("Couldn't find Game1.newDayAfterFade(Action) to patch — this mod may need an update for the current game version.", LogLevel.Error);
             }
             else
             {
                 harmony.Patch(
                    original: newDayAfterFade,
-                   prefix: new HarmonyMethod(typeof(ModEntry), nameof(ModEntry.Game1__newDayAfterFade_Prefix))
+                   prefix: new HarmonyMethod(typeof(ModEntry), nameof(ModEntry.Game1_newDayAfterFade_Prefix))
                 );
             }
         }

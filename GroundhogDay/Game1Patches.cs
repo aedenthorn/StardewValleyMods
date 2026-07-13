@@ -6,7 +6,7 @@ namespace GroundhogDay
     /// <summary>The mod entry point.</summary>
     public partial class ModEntry
     {
-        private static void Game1__newDayAfterFade_Prefix()
+        private static void Game1_newDayAfterFade_Prefix()
         {
             if (!Config.EnableMod)
                 return;
@@ -23,6 +23,11 @@ namespace GroundhogDay
 
             SMonitor.Log($"Repeating {Utility.getDateString()}");
             Game1.dayOfMonth--;
+
+            // Some scripted content (e.g. the vanilla earthquake event) is gated on
+            // total days played rather than the calendar date, so it can still fire
+            // "early" while the date is frozen unless this is held back too.
+            Game1.stats.DaysPlayed--;
         }
     }
 }
