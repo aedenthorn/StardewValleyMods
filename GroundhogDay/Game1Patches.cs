@@ -29,5 +29,27 @@ namespace GroundhogDay
             // "early" while the date is frozen unless this is held back too.
             Game1.stats.DaysPlayed--;
         }
+
+        /// <summary>
+        /// Mail queued via the "tomorrow" mechanism (vanilla or any mod's "AddMail ... tomorrow"
+        /// trigger action) isn't keyed to a calendar date at all - it's just a queue
+        /// (Farmer.mailForTomorrow) that this vanilla method unconditionally drains into the
+        /// mailbox on every sleep. Left alone, that content would arrive on every repeated day
+        /// instead of waiting for the date to actually advance. Hold the queue while the mod
+        /// is enabled; it keeps accumulating and gets delivered all at once once you toggle
+        /// the mod off and a real day passes.
+        /// </summary>
+        private static bool Game1_ReceiveMailForTomorrow_Prefix(string mail_to_transfer)
+        {
+            if (!Config.EnableMod)
+                return true;
+
+            // Let the game's own internal one-off calls (e.g. clearing a specific mail key)
+            // through; only hold back the general "flush everything for the new day" call.
+            if (mail_to_transfer != null)
+                return true;
+
+            return false;
+        }
     }
 }

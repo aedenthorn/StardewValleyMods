@@ -52,6 +52,23 @@ namespace GroundhogDay
                    prefix: new HarmonyMethod(typeof(ModEntry), nameof(ModEntry.Game1_newDayAfterFade_Prefix))
                 );
             }
+
+            // Mail queued via any "AddMail ... tomorrow" trigger action (vanilla or a content
+            // mod like Stardew Valley Expanded) isn't tied to the calendar - it's just a queue
+            // that this method drains into the mailbox on every sleep. Hold it back while the
+            // mod is enabled so that content doesn't arrive on every repeated day.
+            var receiveMailForTomorrow = AccessTools.Method(typeof(Game1), "ReceiveMailForTomorrow", new[] { typeof(string) });
+            if (receiveMailForTomorrow is null)
+            {
+                Monitor.Log("Couldn't find Game1.ReceiveMailForTomorrow(string) to patch — this mod may need an update for the current game version.", LogLevel.Error);
+            }
+            else
+            {
+                harmony.Patch(
+                   original: receiveMailForTomorrow,
+                   prefix: new HarmonyMethod(typeof(ModEntry), nameof(ModEntry.Game1_ReceiveMailForTomorrow_Prefix))
+                );
+            }
         }
 
         private void Input_ButtonPressed(object sender, StardewModdingAPI.Events.ButtonPressedEventArgs e)
