@@ -32,11 +32,18 @@ namespace GroundhogDay
 
             // Game1 Patches
 
-            harmony.Patch(
-               original: AccessTools.Method(typeof(Game1), "_newDayAfterFade"),
-               prefix: new HarmonyMethod(typeof(ModEntry), nameof(ModEntry.Game1__newDayAfterFade_Prefix))
-            );
-            
+            var newDayAfterFade = AccessTools.Method(typeof(Game1), "_newDayAfterFade");
+            if (newDayAfterFade is null)
+            {
+                Monitor.Log("Couldn't find Game1._newDayAfterFade to patch — this mod may need an update for the current game version.", LogLevel.Error);
+            }
+            else
+            {
+                harmony.Patch(
+                   original: newDayAfterFade,
+                   prefix: new HarmonyMethod(typeof(ModEntry), nameof(ModEntry.Game1__newDayAfterFade_Prefix))
+                );
+            }
         }
 
         private void Input_ButtonPressed(object sender, StardewModdingAPI.Events.ButtonPressedEventArgs e)
