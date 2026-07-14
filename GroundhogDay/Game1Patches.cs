@@ -35,9 +35,17 @@ namespace GroundhogDay
         /// trigger action) isn't keyed to a calendar date at all - it's just a queue
         /// (Farmer.mailForTomorrow) that this vanilla method unconditionally drains into the
         /// mailbox on every sleep. Left alone, that content would arrive on every repeated day
-        /// instead of waiting for the date to actually advance. Hold the queue while the mod
-        /// is enabled; it keeps accumulating and gets delivered all at once once you toggle
-        /// the mod off and a real day passes.
+        /// instead of waiting for the date to actually advance. Hold back visible letters while
+        /// the mod is enabled; they keep accumulating and get delivered once the mod is toggled
+        /// off and a real day passes.
+        ///
+        /// Entries suffixed with "%&amp;NL&amp;%" aren't letters at all - they're silent, permanent
+        /// world-state flags (e.g. "ccBoilerRoom" for a completed Community Center room, or
+        /// "leoMoved" for Leo relocating from Ginger Island). Those always go through immediately:
+        /// otherwise things like a just-completed Boiler Room repair would never actually take
+        /// effect (the cutscene plays, since that's decided by checking mailForTomorrow directly,
+        /// but the follow-up permanent flag never lands, so e.g. the minecarts stay "out of order"
+        /// forever while the mod is enabled).
         /// </summary>
         private static bool Game1_ReceiveMailForTomorrow_Prefix(string mail_to_transfer)
         {
@@ -48,6 +56,15 @@ namespace GroundhogDay
             // through; only hold back the general "flush everything for the new day" call.
             if (mail_to_transfer != null)
                 return true;
+
+            foreach (string item in Game1.player.mailForTomorrow)
+            {
+                if (item == null || !item.Contains("%&NL&%"))
+                    continue;
+
+                Game1.mailDeliveredFromMailForTomorrow.Add(item);
+                Game1.player.mailReceived.Add(item.Replace("%&NL&%", ""));
+            }
 
             return false;
         }
