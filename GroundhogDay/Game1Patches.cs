@@ -1,4 +1,5 @@
-﻿using StardewModdingAPI;
+﻿using System.Collections.Generic;
+using StardewModdingAPI;
 using StardewValley;
 
 namespace GroundhogDay
@@ -6,6 +7,18 @@ namespace GroundhogDay
     /// <summary>The mod entry point.</summary>
     public partial class ModEntry
     {
+        /// <summary>
+        /// Mail keys that should always be delivered on schedule even while the mod is enabled,
+        /// because they're a reward for something the player did (not tied to a calendar-locked
+        /// world event that can't actually happen while the date is frozen). There's no general
+        /// way to tell these apart automatically - both use the exact same "AddMail ... tomorrow"
+        /// mechanism - so this is a manually curated allowlist. Add more keys here as needed.
+        /// </summary>
+        private static readonly HashSet<string> AlwaysDeliverMailKeys = new HashSet<string>
+        {
+            "CarolineTea", // Tea Sapling recipe, the morning after Caroline's 2-heart tea ceremony event
+        };
+
         private static void Game1_newDayAfterFade_Prefix()
         {
             if (!Config.EnableMod)
@@ -46,6 +59,10 @@ namespace GroundhogDay
         /// effect (the cutscene plays, since that's decided by checking mailForTomorrow directly,
         /// but the follow-up permanent flag never lands, so e.g. the minecarts stay "out of order"
         /// forever while the mod is enabled).
+        ///
+        /// Keys in <see cref="AlwaysDeliverMailKeys"/> are also delivered immediately as normal
+        /// visible letters, for content that's a reward for the player's actions rather than tied
+        /// to a calendar-locked world event.
         /// </summary>
         private static bool Game1_ReceiveMailForTomorrow_Prefix(string mail_to_transfer)
         {
@@ -59,11 +76,20 @@ namespace GroundhogDay
 
             foreach (string item in Game1.player.mailForTomorrow)
             {
-                if (item == null || !item.Contains("%&NL&%"))
+                if (item == null)
+                    continue;
+
+                bool isFlagOnly = item.Contains("%&NL&%");
+                string key = item.Replace("%&NL&%", "");
+
+                if (!isFlagOnly && !AlwaysDeliverMailKeys.Contains(key))
                     continue;
 
                 Game1.mailDeliveredFromMailForTomorrow.Add(item);
-                Game1.player.mailReceived.Add(item.Replace("%&NL&%", ""));
+                if (isFlagOnly)
+                    Game1.player.mailReceived.Add(key);
+                else
+                    Game1.mailbox.Add(item);
             }
 
             return false;
