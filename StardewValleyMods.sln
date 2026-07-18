@@ -69,8 +69,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MobileCalendar", "MobileCal
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Murdercrows", "Murdercrows\Murdercrows.csproj", "{34F099DE-47AC-4BBE-B47C-DA84FF3808E0}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CustomSpousePatio", "CustomSpousePatio\CustomSpousePatio.csproj", "{C6719EE7-0B8B-4C05-A6D5-BA94DAA8C032}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CustomResourceClumps", "CustomResourceClumps\CustomResourceClumps.csproj", "{5BE0FDBC-2CCF-406D-B690-B15F15302438}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GemIsles", "GemIsles\GemIsles.csproj", "{C1507CF8-507E-475E-8387-9E1E5D148BB1}"
@@ -771,6 +769,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NozzleAndEnricher", "Nozzle
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WizardShop", "WizardShop\WizardShop.csproj", "{7590ED50-B54F-6237-B9EC-D31EB319A82B}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ChestSigns", "ChestSigns\ChestSigns.csproj", "{F5EBE0F4-76E8-654F-EC05-695AB909CD91}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -1043,14 +1043,6 @@ Global
 		{34F099DE-47AC-4BBE-B47C-DA84FF3808E0}.Release|Any CPU.Build.0 = Release|Any CPU
 		{34F099DE-47AC-4BBE-B47C-DA84FF3808E0}.Release|x64.ActiveCfg = Release|x64
 		{34F099DE-47AC-4BBE-B47C-DA84FF3808E0}.Release|x64.Build.0 = Release|x64
-		{C6719EE7-0B8B-4C05-A6D5-BA94DAA8C032}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{C6719EE7-0B8B-4C05-A6D5-BA94DAA8C032}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{C6719EE7-0B8B-4C05-A6D5-BA94DAA8C032}.Debug|x64.ActiveCfg = Debug|x64
-		{C6719EE7-0B8B-4C05-A6D5-BA94DAA8C032}.Debug|x64.Build.0 = Debug|x64
-		{C6719EE7-0B8B-4C05-A6D5-BA94DAA8C032}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{C6719EE7-0B8B-4C05-A6D5-BA94DAA8C032}.Release|Any CPU.Build.0 = Release|Any CPU
-		{C6719EE7-0B8B-4C05-A6D5-BA94DAA8C032}.Release|x64.ActiveCfg = Release|x64
-		{C6719EE7-0B8B-4C05-A6D5-BA94DAA8C032}.Release|x64.Build.0 = Release|x64
 		{5BE0FDBC-2CCF-406D-B690-B15F15302438}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{5BE0FDBC-2CCF-406D-B690-B15F15302438}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{5BE0FDBC-2CCF-406D-B690-B15F15302438}.Debug|x64.ActiveCfg = Debug|x64
@@ -3819,6 +3811,14 @@ Global
 		{7590ED50-B54F-6237-B9EC-D31EB319A82B}.Release|Any CPU.Build.0 = Release|Any CPU
 		{7590ED50-B54F-6237-B9EC-D31EB319A82B}.Release|x64.ActiveCfg = Release|x64
 		{7590ED50-B54F-6237-B9EC-D31EB319A82B}.Release|x64.Build.0 = Release|x64
+		{F5EBE0F4-76E8-654F-EC05-695AB909CD91}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F5EBE0F4-76E8-654F-EC05-695AB909CD91}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F5EBE0F4-76E8-654F-EC05-695AB909CD91}.Debug|x64.ActiveCfg = Debug|x64
+		{F5EBE0F4-76E8-654F-EC05-695AB909CD91}.Debug|x64.Build.0 = Debug|x64
+		{F5EBE0F4-76E8-654F-EC05-695AB909CD91}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F5EBE0F4-76E8-654F-EC05-695AB909CD91}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F5EBE0F4-76E8-654F-EC05-695AB909CD91}.Release|x64.ActiveCfg = Release|x64
+		{F5EBE0F4-76E8-654F-EC05-695AB909CD91}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

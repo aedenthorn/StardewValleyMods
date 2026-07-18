@@ -1,4 +1,5 @@
-﻿using Microsoft.Xna.Framework;
+﻿using Microsoft.VisualBasic;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using StardewValley;
 using StardewValley.ItemTypeDefinitions;
@@ -17,12 +18,10 @@ namespace FurnitureDisplayFramework
 
             foreach (Furniture f in __instance.furniture)
             {
-                var name = f.rotations.Value > 1 ? f.Name + ":" + f.currentRotation.Value : f.Name;
-
-                if (!furnitureDisplayDict.ContainsKey(name))
+                var name = f.Name;
+                if(!TryGetFurnitureData(f, out var data))
                     continue;
-
-                for(int i = 0; i < furnitureDisplayDict[name].slots.Length; i++)
+                for(int i = 0; i < data.slots.Length; i++)
                 {
                     if (!f.modData.TryGetValue("aedenthorn.FurnitureDisplayFramework/" + i, out var slotString) || slotString.Length == 0)
                         continue;
@@ -33,7 +32,8 @@ namespace FurnitureDisplayFramework
                     if (obj == null)
                         continue;
                     float scale = 4;
-                    var itemRect = new Rectangle(Utility.Vector2ToPoint(f.getLocalPosition(Game1.viewport) + new Vector2(furnitureDisplayDict[name].slots[i].itemRect.X, furnitureDisplayDict[name].slots[i].itemRect.Y) * scale), Utility.Vector2ToPoint(new Vector2(furnitureDisplayDict[name].slots[i].itemRect.Width, furnitureDisplayDict[name].slots[i].itemRect.Height) * scale));
+                    var tempRect = data.slots[i].itemRect;
+                    var itemRect = new Rectangle(Utility.Vector2ToPoint(f.getLocalPosition(Game1.viewport) + new Vector2(tempRect.X, tempRect.Y) * scale), Utility.Vector2ToPoint(new Vector2(tempRect.Width, tempRect.Height) * scale));
                     var layerDepth = ((f.furniture_type.Value == 12) ? (2E-09f + f.TileLocation.Y / 100000f) : ((f.boundingBox.Value.Bottom - ((f.furniture_type.Value == 6 || f.furniture_type.Value == 17 || f.furniture_type.Value == 13) ? 48 : 8)) + 1) / 10000f);
 
                     ParsedItemData itemData = ItemRegistry.GetDataOrErrorItem(obj.QualifiedItemId);

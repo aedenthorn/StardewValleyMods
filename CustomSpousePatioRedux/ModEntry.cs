@@ -2,10 +2,12 @@
 using Microsoft.Xna.Framework;
 using StardewModdingAPI;
 using StardewModdingAPI.Events;
+using StardewModdingAPI.Utilities;
 using StardewValley;
 using StardewValley.Menus;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using xTile.Layers;
 using xTile.Tiles;
@@ -42,7 +44,7 @@ namespace CustomSpousePatioRedux
             SMonitor = Monitor;
             SHelper = Helper;
 
-            //Helper.Events.GameLoop.GameLaunched += GameLoop_GameLaunched;
+            Helper.Events.GameLoop.GameLaunched += GameLoop_GameLaunched;
             Helper.Events.GameLoop.SaveLoaded += GameLoop_SaveLoaded;
             Helper.Events.GameLoop.Saving += GameLoop_Saving;
             Helper.Events.GameLoop.DayStarted += GameLoop_DayStarted;
@@ -98,7 +100,7 @@ namespace CustomSpousePatioRedux
             {
                 CacheOffBasePatioArea(area.Key);
             }
-            SMonitor.Log($"Total outdoor spouse areas: {outdoorAreas.dict.Count}", LogLevel.Debug);
+            //SMonitor.Log($"Total outdoor spouse areas: {outdoorAreas.dict.Count}", LogLevel.Debug);
         }
         private static Vector2 GetSpouseOutdoorAreaCorner(string spouseName)
         {
@@ -115,7 +117,7 @@ namespace CustomSpousePatioRedux
             GameLocation l = Game1.getLocationFromName(Config.EnableMod && outdoorAreas.dict.TryGetValue(spouseName, out OutdoorArea area) ? area.location : "Farm");
             if (l == null)
                 l = Game1.getFarm();
-            SMonitor.Log($"Applying patio map override for {spouseName} in {l.Name}");
+            //SMonitor.Log($"Applying patio map override for {spouseName} in {l.Name}");
             if (AccessTools.FieldRefAccess<GameLocation, HashSet<string>>(l, "_appliedMapOverrides").Contains("spouse_patio"))
             {
                 AccessTools.FieldRefAccess<GameLocation, HashSet<string>>(l, "_appliedMapOverrides").Remove("spouse_patio");
@@ -393,7 +395,7 @@ namespace CustomSpousePatioRedux
             if (l == null)
                 l = Game1.getFarm();
 
-            SMonitor.Log($"Reapplying base patio area for {spouse} in {l.Name}");
+            //SMonitor.Log($"Reapplying base patio area for {spouse} in {l.Name}");
 
             foreach (string layer in baseSpouseAreaTiles[spouse].Keys)
             {
@@ -429,7 +431,7 @@ namespace CustomSpousePatioRedux
         }
         private static void CacheOffBasePatioArea(string spouse, GameLocation l, Vector2 corner)
         {
-            SMonitor.Log($"Caching base patio area for {spouse} in {l.Name} at {corner}");
+            //SMonitor.Log($"Caching base patio area for {spouse} in {l.Name} at {corner}");
             baseSpouseAreaTiles[spouse] = new Dictionary<string, Dictionary<Point, Tile>>();
 
             List<string> layers_to_cache = new List<string>();
@@ -476,6 +478,117 @@ namespace CustomSpousePatioRedux
                 if (IsSpousePatioDay(npc))
                     npc.setUpForOutdoorPatioActivity();
             }
+        }
+        private void GameLoop_GameLaunched(object sender, GameLaunchedEventArgs e)
+        {
+            var configMenu = Helper.ModRegistry.GetApi<IGenericModConfigMenuApi>("spacechase0.GenericModConfigMenu");
+            if (configMenu is not null)
+            {
+                configMenu.Register(
+                    mod: ModManifest,
+                    reset: () => Config = new ModConfig(),
+                    save: () => Helper.WriteConfig(Config)
+                );
+
+                var exclude = new List<string>()
+                {
+                    "Debug"
+                };
+                var props = typeof(ModConfig).GetProperties().ToArray();
+
+
+                foreach (var p in props)
+                {
+                    if (exclude.Contains(p.Name))
+                        continue;
+                    if (p.PropertyType == typeof(bool))
+                    {
+                        configMenu.AddBoolOption(
+                            mod: ModManifest,
+                            name: () => {
+                                var t = Helper.Translation.Get(p.Name); return t.HasValue() ? t : AddSpaces(p.Name);
+                            },
+                            tooltip: () => { var t = Helper.Translation.Get(p.Name + ".Desc"); return t.HasValue() ? t : null; },
+                            getValue: () => (bool)p.GetValue(Config),
+                            setValue: value => p.SetValue(Config, value)
+                        );
+                    }
+                    else if (p.PropertyType == typeof(int))
+                    {
+                        configMenu.AddNumberOption(
+                            mod: ModManifest,
+                            name: () => { var t = Helper.Translation.Get(p.Name); return t.HasValue() ? t : AddSpaces(p.Name); },
+                            tooltip: () => { var t = Helper.Translation.Get(p.Name + ".Desc"); return t.HasValue() ? t : null; },
+                            getValue: () => (int)p.GetValue(Config),
+                            setValue: value => p.SetValue(Config, value)
+                        );
+                    }
+                    else if (p.PropertyType == typeof(float))
+                    {
+                        configMenu.AddNumberOption(
+                            mod: ModManifest,
+                            name: () => { var t = Helper.Translation.Get(p.Name); return t.HasValue() ? t : AddSpaces(p.Name); },
+                            tooltip: () => { var t = Helper.Translation.Get(p.Name + ".Desc"); return t.HasValue() ? t : null; },
+                            getValue: () => (float)p.GetValue(Config),
+                            setValue: value => p.SetValue(Config, value)
+                        );
+                    }
+                    else if (p.PropertyType == typeof(double))
+                    {
+                        configMenu.AddTextOption(
+                            mod: ModManifest,
+                            name: () => { var t = Helper.Translation.Get(p.Name); return t.HasValue() ? t : AddSpaces(p.Name); },
+                            tooltip: () => { var t = Helper.Translation.Get(p.Name + ".Desc"); return t.HasValue() ? t : null; },
+                            getValue: () => p.GetValue(Config).ToString(),
+                            setValue: value => { if (double.TryParse(value, NumberStyles.Any, CultureInfo.InvariantCulture, out var d)) { p.SetValue(Config, d); } }
+                        );
+                    }
+                    else if (p.PropertyType == typeof(string))
+                    {
+                        configMenu.AddTextOption(
+                            mod: ModManifest,
+                            name: () => { var t = Helper.Translation.Get(p.Name); return t.HasValue() ? t : AddSpaces(p.Name); },
+                            tooltip: () => { var t = Helper.Translation.Get(p.Name + ".Desc"); return t.HasValue() ? t : null; },
+                            getValue: () => (string)p.GetValue(Config),
+                            setValue: value => p.SetValue(Config, value)
+                        );
+                    }
+                    else if (p.PropertyType == typeof(KeybindList))
+                    {
+                        configMenu.AddKeybindList(
+                            mod: ModManifest,
+                            name: () => { var t = Helper.Translation.Get(p.Name); return t.HasValue() ? t : AddSpaces(p.Name); },
+                            tooltip: () => { var t = Helper.Translation.Get(p.Name + ".Desc"); return t.HasValue() ? t : null; },
+                            getValue: () => (KeybindList)p.GetValue(Config),
+                            setValue: value => p.SetValue(Config, value)
+                        );
+                    }
+                    else if (p.PropertyType == typeof(SButton))
+                    {
+                        configMenu.AddKeybind(
+                            mod: ModManifest,
+                            name: () => { var t = Helper.Translation.Get(p.Name); return t.HasValue() ? t : AddSpaces(p.Name); },
+                            tooltip: () => { var t = Helper.Translation.Get(p.Name + ".Desc"); return t.HasValue() ? t : null; },
+                            getValue: () => (SButton)p.GetValue(Config),
+                            setValue: value => p.SetValue(Config, value)
+                        );
+                    }
+                }
+            }
+        }
+
+        public static string AddSpaces(string str)
+        {
+            string newStr = "";
+            foreach (var c in str)
+            {
+                if (c >= 'A' && c <= 'Z' && newStr.Length > 0)
+                {
+                    newStr += " ";
+                }
+                newStr += c;
+            }
+            return newStr;
         }
     }
 

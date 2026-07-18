@@ -2,10 +2,13 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using StardewModdingAPI;
+using StardewModdingAPI.Events;
 using StardewValley;
+using StardewValley.Objects;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Xml.Linq;
 using System.Xml.Serialization;
 using Object = StardewValley.Object;
 
@@ -20,7 +23,13 @@ namespace FurnitureDisplayFramework
         public static ModConfig Config;
 
         public static ModEntry context;
-        public static Dictionary<string, FurnitureDisplayData> furnitureDisplayDict = new Dictionary<string, FurnitureDisplayData>();
+        public static Dictionary<string, FurnitureDisplayData> FurnitureDisplayDict
+        {
+            get
+            {
+                return SHelper.GameContent.Load<Dictionary<string, FurnitureDisplayData>>(frameworkPath);
+            }
+        }
         public static readonly string frameworkPath = "Mods/aedenthorn.FurnitureDisplayFramework/dictionary";
 
         /// <summary>The mod entry point, called after the mod is first loaded.</summary>
@@ -46,11 +55,40 @@ namespace FurnitureDisplayFramework
             );
         }
 
+        private void GameLoop_SaveLoaded(object sender, StardewModdingAPI.Events.SaveLoadedEventArgs e)
+        {
+            SHelper.GameContent.InvalidateCache(frameworkPath);
+        }
+
+
+
         private void Content_AssetRequested(object sender, StardewModdingAPI.Events.AssetRequestedEventArgs e)
         {
             if (e.Name.IsEquivalentTo(frameworkPath))
             {
-                e.LoadFrom(() => new Dictionary<string, FurnitureDisplayData>(), StardewModdingAPI.Events.AssetLoadPriority.Exclusive);
+                e.LoadFrom(() => new Dictionary<string, FurnitureDisplayData>(), AssetLoadPriority.Exclusive);
+                e.Edit((IAssetData data) =>
+                {
+                    var dict = data.AsDictionary<string, FurnitureDisplayData>().Data;
+                    var tempDisplayDict = new Dictionary<string, FurnitureDisplayData>();
+                    foreach (var kvp in dict)
+                    {
+                        var names = kvp.Key.Split(',');
+                        foreach (var name in names)
+                        {
+                            if (!string.IsNullOrEmpty(name))
+                            {
+                                tempDisplayDict.TryAdd(name, kvp.Value);
+                            }
+                        }
+                    }
+                    dict.Clear();
+                    foreach (var kvp in tempDisplayDict)
+                    {
+                        dict.Add(kvp.Key, kvp.Value);
+                    }
+                    Monitor.Log($"Loaded {dict.Count} furniture display templates");
+                }, (AssetEditPriority)int.MaxValue);
             }
         }
 
@@ -95,70 +133,19 @@ namespace FurnitureDisplayFramework
 
         }
 
-        private void GameLoop_SaveLoaded(object sender, StardewModdingAPI.Events.SaveLoadedEventArgs e)
+        private void Input_ButtonPressed(object sender, ButtonPressedEventArgs e)
         {
-            if (!Config.EnableMod)
+            if (!Config.EnableMod || Game1.activeClickableMenu != null || !Context.IsWorldReady || FurnitureDisplayDict.Count == 0)
                 return;
-            furnitureDisplayDict.Clear();
-            var tempDisplayDict = Helper.GameContent.Load<Dictionary<string, FurnitureDisplayData>>(frameworkPath);
-            foreach(var kvp in tempDisplayDict)
-            {
-                if (kvp.Key.Contains(","))
-                {
-                    var names = kvp.Key.Split(',');
-                    foreach(var name in names)
-                    {
-                        if (name.Contains(":"))
-                        {
-                            var parts = name.Split(':');
-                            var rots = parts[1].Split(',');
-                            foreach(var rot in rots)
-                            {
-                                furnitureDisplayDict.TryAdd(parts[0]+":"+rot, kvp.Value);
-                            }
-                        }
-                        else
-                        {
-                            furnitureDisplayDict.TryAdd(name, kvp.Value);
-                        }
-                        Monitor.Log($"Loaded furniture display template for {name}");
-                    }
-                }
-                else
-                {
-                    if (kvp.Key.Contains(":"))
-                    {
-                        var parts = kvp.Key.Split(':');
-                        var rots = parts[1].Split(',');
-                        foreach (var rot in rots)
-                        {
-                            furnitureDisplayDict.TryAdd(parts[0] + ":" + rot, kvp.Value);
-                        }
-                    }
-                    else
-                    {
-                        furnitureDisplayDict.TryAdd(kvp.Key, kvp.Value);
-                    }
-                    Monitor.Log($"Loaded furniture display template for {kvp.Key}");
-                }
-            }
-            Monitor.Log($"Loaded {furnitureDisplayDict.Count} furniture display templates");
-        }
-        private void Input_ButtonPressed(object sender, StardewModdingAPI.Events.ButtonPressedEventArgs e)
-        {
-            if (!Config.EnableMod || Game1.activeClickableMenu != null || !Context.IsWorldReady || furnitureDisplayDict.Count == 0)
-                return;
-            if(e.Button == Config.PlaceKey && Game1.player.ActiveObject is not null && !Game1.player.ActiveObject.bigCraftable.Value && Game1.player.ActiveObject.GetType().BaseType == typeof(Item))
+            if(e.Button == Config.PlaceKey && Game1.player.ActiveObject is Object held && !held.bigCraftable.Value)
             {
                 var aObj = (Object)Game1.player.ActiveObject.getOne();
                 var mx = Game1.viewport.X + Game1.getOldMouseX();
                 var my = Game1.viewport.Y + Game1.getOldMouseY();
                 foreach (var f in Game1.currentLocation.furniture)
                 {
-                    var name = f.rotations.Value > 1 ? f.Name + ":" + f.currentRotation.Value : f.Name;
-                    if (furnitureDisplayDict.ContainsKey(name))
+                    if (TryGetFurnitureData(f, out var data))
                     {
-                        FurnitureDisplayData data = furnitureDisplayDict[name];
                         for(int i = 0; i < data.slots.Length; i++)
                         {
                             Rectangle slotRect = new Rectangle((int)(f.boundingBox.X + data.slots[i].slotRect.X * 4), (int)(f.boundingBox.Y + data.slots[i].slotRect.Y * 4), (int)(data.slots[i].slotRect.Width * 4), (int)(data.slots[i].slotRect.Height * 4));
@@ -166,7 +153,7 @@ namespace FurnitureDisplayFramework
                             if (slotRect.Contains(mx, my))
                             {
                                 Object obj = null;
-                                var amount = Config.PlaceAllByDefault ? Game1.player.ActiveObject.Stack : 1;
+                                var amount = Config.PlaceAllByDefault ? held.Stack : 1;
                                 aObj.Stack = amount;
                                 //Monitor.Log($"Clicked on furniture display {name} slot {i}");
                                 Monitor.Log($"Placing {aObj.Name} x{amount} in slot {i}");
@@ -225,19 +212,18 @@ namespace FurnitureDisplayFramework
                     }
                 }
             }
-            if(e.Button == Config.TakeKey)
+            else if(e.Button == Config.TakeKey)
             {
                 foreach (var f in Game1.currentLocation.furniture)
                 {
                     var name = f.rotations.Value > 1 ? f.Name + ":" + f.currentRotation.Value : f.Name;
 
-                    if (furnitureDisplayDict.ContainsKey(name))
+                    if (TryGetFurnitureData(f, out var data))
                     {
-                        FurnitureDisplayData data = furnitureDisplayDict[name];
                         for (int i = 0; i < data.slots.Length; i++)
                         {
                             Rectangle slotRect = new Rectangle((int)(f.boundingBox.X + data.slots[i].slotRect.X * 4), (int)(f.boundingBox.Y + data.slots[i].slotRect.Y * 4), (int)(data.slots[i].slotRect.Width * 4), (int)(data.slots[i].slotRect.Height * 4));
-                            if (slotRect.Contains(Game1.viewport.X + Game1.getOldMouseX(), Game1.viewport.Y + Game1.getOldMouseY()) && furnitureDisplayDict.ContainsKey(name) && f.modData.TryGetValue("aedenthorn.FurnitureDisplayFramework/" + i, out string slotString))
+                            if (slotRect.Contains(Game1.viewport.X + Game1.getOldMouseX(), Game1.viewport.Y + Game1.getOldMouseY()) && f.modData.TryGetValue("aedenthorn.FurnitureDisplayFramework/" + i, out string slotString))
                             {
                                 Object obj = GetObjectFromSlot(slotString);
 
@@ -256,6 +242,27 @@ namespace FurnitureDisplayFramework
                     }
                 }
             }
+        }
+
+        public static bool TryGetFurnitureData(Furniture f, out FurnitureDisplayData data)
+        {
+            var name = f.Name;
+            if (!FurnitureDisplayDict.TryGetValue(name, out data))
+            {
+                var rot = ":" + f.currentRotation.Value;
+                name += rot;
+                if (!FurnitureDisplayDict.TryGetValue(name, out data))
+                {
+                    name = f.ItemId;
+                    name += rot;
+                    if (!FurnitureDisplayDict.TryGetValue(name, out data))
+                    {
+                        data = null;
+                        return false;
+                    }
+                }
+            }
+            return true;
         }
 
         private bool AreNotSame(Object obj1, Object obj2)

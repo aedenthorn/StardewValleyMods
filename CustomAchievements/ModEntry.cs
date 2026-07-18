@@ -1,4 +1,6 @@
-﻿using StardewModdingAPI;
+﻿using Force.DeepCloner;
+using StardewModdingAPI;
+using StardewModdingAPI.Events;
 using StardewValley;
 using System;
 using System.Collections.Generic;
@@ -10,7 +12,7 @@ namespace CustomAchievements
     {
 
         public static IMonitor PMonitor;
-        public static IModHelper PHelper;
+        public static IModHelper SHelper;
         public static ModConfig Config;
         
         public static readonly string dictPath = "custom_achievements_dictionary";
@@ -27,19 +29,23 @@ namespace CustomAchievements
                 return;
 
             PMonitor = Monitor;
-            PHelper = helper;
+            SHelper = helper;
 
             MyPatches.Initialize(Monitor, Helper, Config);
 
             MyPatches.MakePatches(ModManifest.UniqueID);
 
-            Helper.Events.GameLoop.SaveLoaded += GameLoop_SaveLoaded;
+            Helper.Events.GameLoop.ReturnedToTitle += GameLoop_ReturnedToTitle;
             Helper.Events.GameLoop.DayStarted += GameLoop_DayStarted;
             Helper.Events.GameLoop.TimeChanged += GameLoop_TimeChanged;
             Helper.Events.Player.Warped += Player_Warped;
             helper.Events.Content.AssetRequested += Content_AssetRequested;
         }
 
+        private void GameLoop_ReturnedToTitle(object sender, ReturnedToTitleEventArgs e)
+        {
+            currentAchievements.Clear();
+        }
         private void Content_AssetRequested(object sender, StardewModdingAPI.Events.AssetRequestedEventArgs e)
         {
 
@@ -61,17 +67,31 @@ namespace CustomAchievements
 
         private void GameLoop_DayStarted(object sender, StardewModdingAPI.Events.DayStartedEventArgs e)
         {
+            SHelper.Events.GameLoop.UpdateTicked += GameLoop_UpdateTicked;
+        }
+
+        private void GameLoop_UpdateTicked(object sender, StardewModdingAPI.Events.UpdateTickedEventArgs e)
+        {
             CheckForAchievements();
+            SHelper.Events.GameLoop.UpdateTicked -= GameLoop_UpdateTicked;
         }
 
         public static void CheckForAchievements()
         {
             var sound = false;
-            using (var dict = Game1.content.Load<Dictionary<string, CustomAcheivementData>>(dictPath).GetEnumerator())
+            var dict = Game1.content.Load<Dictionary<string, CustomAcheivementData>>(dictPath);
+            if(dict.Count != currentAchievements.Count)
             {
-                while (dict.MoveNext())
+                currentAchievements.Clear();
+                foreach(var a in dict.Values)
                 {
-                    var a = dict.Current.Value;
+                    currentAchievements[a.ID.GetHashCode()] = a;
+                }
+            }
+            else
+            {
+                foreach (var a in dict.Values)
+                {
                     if (currentAchievements.TryGetValue(a.ID.GetHashCode(), out var a1) && !a1.achieved && a.achieved)
                     {
                         PMonitor.Log($"Achievement {a.name} achieved!", LogLevel.Debug);
@@ -87,16 +107,5 @@ namespace CustomAchievements
             }
         }
 
-        private void GameLoop_SaveLoaded(object sender, StardewModdingAPI.Events.SaveLoadedEventArgs e)
-        {
-            using (var dict = Helper.GameContent.Load<Dictionary<string, CustomAcheivementData>>(dictPath).GetEnumerator())
-            {
-                while (dict.MoveNext())
-                {
-                    var a = dict.Current.Value;
-                    currentAchievements[a.ID.GetHashCode()] = a;
-                }
-            }
-        }
     }
 }
