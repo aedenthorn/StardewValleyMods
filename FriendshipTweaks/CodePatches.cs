@@ -87,7 +87,7 @@ namespace FriendshipTweaks
                 value = __instance.Points + change;
             }
         }
-
+        //by Xen0nex
         public static float CustomBirthdayMult()
         {
             if (!Config.ModEnabled)
