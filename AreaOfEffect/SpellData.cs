@@ -136,6 +136,7 @@ namespace AreaOfEffect
     public class SpellCastData
     {
         public string CastSound { get; set; }
+        public string TriggerAction { get; set; }
         public string TriggerSound { get; set; }
         public int Charges { get; set; } = 1;
         public AOEType AreaType { get; set; } = AOEType.Circle;
@@ -184,6 +185,7 @@ namespace AreaOfEffect
 
     public class SpellEffect
     {
+        public string TriggerAction { get; set; }
         public List<SpellAffectedType> Affected { get; set; }
         public List<SpellAffectedType> Unaffected { get; set; }
         public List<SpriteData> Sprites { get; set; } = new();

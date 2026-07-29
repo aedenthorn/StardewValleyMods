@@ -80,6 +80,7 @@ Spells are added to the mod using Content Patcher, e.g.:
 |:-----:|:----:|:------------|
 | CastSound | string | The sound that plays when the spell is cast. |
 | TriggerSound | string | The sound that plays when the spell is triggered (for spells with projectiles, when it hits an object or reaches the target tile). |
+| TriggerAction | string | A [trigger action](https://stardewvalleywiki.com/Modding:Trigger_actions) to trigger on casting this spell. |
 | Charges | int | The number of charges consumed when casting the spell at this level. |
 | AreaType | string | The type of area affected by the spell. Valid values are "Circle", "Square", and "Line". "Line" requires a projectile and causes its effect as the projectile travels. |
 | Radius | int | The tile radius of the area affected by the spell, besides the target tile for "Circle" and "Square" area types. A radius of 0 only affects the target tile. |

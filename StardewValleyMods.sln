@@ -771,6 +771,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WizardShop", "WizardShop\Wi
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ChestSigns", "ChestSigns\ChestSigns.csproj", "{F5EBE0F4-76E8-654F-EC05-695AB909CD91}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FishNibblingIndicator", "FishNibblingIndicator\FishNibblingIndicator.csproj", "{ADDA6C41-4B16-47ED-76AE-862CE14E16D3}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -3819,6 +3821,14 @@ Global
 		{F5EBE0F4-76E8-654F-EC05-695AB909CD91}.Release|Any CPU.Build.0 = Release|Any CPU
 		{F5EBE0F4-76E8-654F-EC05-695AB909CD91}.Release|x64.ActiveCfg = Release|x64
 		{F5EBE0F4-76E8-654F-EC05-695AB909CD91}.Release|x64.Build.0 = Release|x64
+		{ADDA6C41-4B16-47ED-76AE-862CE14E16D3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{ADDA6C41-4B16-47ED-76AE-862CE14E16D3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{ADDA6C41-4B16-47ED-76AE-862CE14E16D3}.Debug|x64.ActiveCfg = Debug|x64
+		{ADDA6C41-4B16-47ED-76AE-862CE14E16D3}.Debug|x64.Build.0 = Debug|x64
+		{ADDA6C41-4B16-47ED-76AE-862CE14E16D3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{ADDA6C41-4B16-47ED-76AE-862CE14E16D3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{ADDA6C41-4B16-47ED-76AE-862CE14E16D3}.Release|x64.ActiveCfg = Release|x64
+		{ADDA6C41-4B16-47ED-76AE-862CE14E16D3}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

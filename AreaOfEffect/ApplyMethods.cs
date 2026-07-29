@@ -1,4 +1,5 @@
 ﻿using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using StardewModdingAPI;
 using StardewValley;
 using StardewValley.Buildings;
@@ -6,9 +7,11 @@ using StardewValley.Characters;
 using StardewValley.Extensions;
 using StardewValley.Monsters;
 using StardewValley.TerrainFeatures;
+using StardewValley.Triggers;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using xTile.Tiles;
 using Object = StardewValley.Object;
 
 namespace AreaOfEffect
@@ -19,6 +22,10 @@ namespace AreaOfEffect
         {
             if (!Context.IsWorldReady || l is null || spell is null)
                 return;
+            if (!string.IsNullOrEmpty(spell.TriggerAction))
+            {
+                TriggerActionManager.TryRunAction(spell.TriggerAction, out _, out _);
+            }
             foreach (var str in spell.Buffs)
             {
                 who.applyBuff(str);
@@ -203,12 +210,16 @@ namespace AreaOfEffect
                 };
             }
         }
-        public static void ApplyCenteredEffect(GameLocation l, Farmer who, Vector2 center, SpellEffect e, int radius)
+        public static void ApplyCenteredEffect(GameLocation l, Farmer who, Vector2 center, SpellEffect effect, int radius)
         {
-            switch (e.EffectType)
+            if (!string.IsNullOrEmpty(effect.TriggerAction))
+            {
+                TriggerActionManager.TryRunAction(TriggerActionManager.ParseAction(effect.TriggerAction), new("Manual", new object[] { center.X, center.Y }, null), out _, out _);
+            }
+            switch (effect.EffectType)
             {
                 case SpellEffectType.Explode:
-                    l.explode(center, e.Radius > 0 ? (int)e.Radius : radius, who, e.Affected.Contains(SpellAffectedType.Farmer), (int)e.Value, e.Affected.Contains(SpellAffectedType.Object));
+                    l.explode(center, effect.Radius > 0 ? (int)effect.Radius : radius, who, effect.Affected.Contains(SpellAffectedType.Farmer), (int)effect.Value, effect.Affected.Contains(SpellAffectedType.Object));
                     break;
             }
         }
@@ -217,7 +228,11 @@ namespace AreaOfEffect
             if (!Context.IsWorldReady || l is null)
                 return false;
             bool result = false;
-            foreach(var t in effect.Affected)
+            if (!string.IsNullOrEmpty(effect.TriggerAction))
+            {
+                TriggerActionManager.TryRunAction(TriggerActionManager.ParseAction(effect.TriggerAction), new("Manual", new object[] { tile.X, tile.Y }, null), out _, out _);
+            }
+            foreach (var t in effect.Affected)
             {
                 result = ApplyEffect(l, who, tile, t, effect, applied);
                 if (effect.First && result)

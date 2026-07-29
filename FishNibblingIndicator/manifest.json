@@ -1,0 +1,10 @@
+﻿{
+  "Name": "Fish Nibbling Indicator",
+  "Author": "aedenthorn",
+  "Version": "0.2.0",
+  "Description": "Fish Nibbling Indicator.",
+  "UniqueID": "aedenthorn.FishNibblingIndicator",
+  "EntryDll": "FishNibblingIndicator.dll",
+  "MinimumApiVersion": "4.0.0",
+  "UpdateKeys": [ "Nexus:49633" ]
+}

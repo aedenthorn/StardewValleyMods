@@ -6,6 +6,7 @@ Different effect types will require different data. Generic effect fields are:
 
 | Field | Type | Description |
 |:-----|:----:|:------------|
+| TriggerAction | string | A [trigger action](https://stardewvalleywiki.com/Modding:Trigger_actions) to trigger for each tile affected, or the center tile if PerTile is false below. Passes the X and Y coordinates as arguments. |
 | Affected | string[] | Types of objects affected by the effect. |
 | Unaffected | string[] | Types of objects unaffected by the effect (used for sub-types, e.g. Trees vs TerrainFeatures). |
 | EffectType | string | The type of effect to apply (see below). |

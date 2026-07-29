@@ -222,7 +222,7 @@ namespace FurnitureDisplayFramework
                     {
                         for (int i = 0; i < data.slots.Length; i++)
                         {
-                            Rectangle slotRect = new Rectangle((int)(f.boundingBox.X + data.slots[i].slotRect.X * 4), (int)(f.boundingBox.Y + data.slots[i].slotRect.Y * 4), (int)(data.slots[i].slotRect.Width * 4), (int)(data.slots[i].slotRect.Height * 4));
+                            Rectangle slotRect = new((int)(f.boundingBox.X + data.slots[i].slotRect.X * 4), (int)(f.boundingBox.Y + data.slots[i].slotRect.Y * 4), (int)(data.slots[i].slotRect.Width * 4), (int)(data.slots[i].slotRect.Height * 4));
                             if (slotRect.Contains(Game1.viewport.X + Game1.getOldMouseX(), Game1.viewport.Y + Game1.getOldMouseY()) && f.modData.TryGetValue("aedenthorn.FurnitureDisplayFramework/" + i, out string slotString))
                             {
                                 Object obj = GetObjectFromSlot(slotString);

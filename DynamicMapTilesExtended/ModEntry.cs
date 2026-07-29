@@ -13,6 +13,9 @@ using StardewModdingAPI;
 using StardewModdingAPI.Events;
 using StardewModdingAPI.Utilities;
 using StardewValley;
+using StardewValley.Delegates;
+using StardewValley.Triggers;
+using xTile.Tiles;
 
 namespace DMT
 {
@@ -82,8 +85,29 @@ namespace DMT
             Helper.Events.GameLoop.SaveLoaded += onSaveLoad;
             Helper.Events.GameLoop.TimeChanged += onTimeChanged;
             Helper.Events.GameLoop.DayStarted += onDayStarted;
-
+            TriggerActionManager.RegisterAction($"{Helper.ModRegistry.ModID}_Trigger", TriggerTriggerAction);
             //Helper.ConsoleCommands.Add("dmt", "DMT test commands", onConsoleCommand);
+        }
+
+        private bool TriggerTriggerAction(string[] args, TriggerActionContext context, out string error)
+        {
+            // get args
+            if (!ArgUtility.TryGet(args, 2, out string Xs, out error, allowBlank: false) || !int.TryParse(Xs, out var X))
+                return false;
+            if (!ArgUtility.TryGet(args, 3, out string Ys, out error, allowBlank: false) || !int.TryParse(Ys, out var Y))
+                return false;
+            if (!ArgUtility.TryGet(args, 4, out string key, out error, allowBlank: false))
+                return false;
+            if (!ArgUtility.TryGet(args, 5, out string value, out error, allowBlank: false))
+                return false;
+
+            DynamicTileProperty prop = new()
+            {
+                Key = key,
+                value = value
+            };
+            DoTriggerActions(Game1.player, Game1.currentLocation, new(X, Y), [(prop, null)]);
+            return true;
         }
 
         private void onDayStarted(object? sender, DayStartedEventArgs e)
