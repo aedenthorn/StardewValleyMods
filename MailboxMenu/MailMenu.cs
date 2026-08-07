@@ -79,7 +79,7 @@ namespace MailboxMenu
             senders.Clear();
             possibleSenders.Clear();
             bool addUnknown = false;
-            Dictionary<string, string> mail = Game1.content.Load<Dictionary<string, string>>("Data\\mail");
+            Dictionary<string, string> mail = ModEntry.SHelper.GameContent.Load<Dictionary<string, string>>("Data\\mail");
             foreach (var id in Game1.player.mailReceived)
             {
                 if (!mail.ContainsKey(id))

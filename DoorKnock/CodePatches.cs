@@ -74,7 +74,7 @@ namespace DoorKnock
                         }
                     }
                     Friendship friendship;
-                    bool canOpenDoor = (town_key_applies || (Game1.timeOfDay >= openTime && Game1.timeOfDay < closeTime)) && (minFriendship <= 0 || __instance.IsWinterHere() || (Game1.player.friendshipData.TryGetValue(npcName, out friendship) && friendship.Points >= minFriendship));
+                    bool canOpenDoor = (town_key_applies || (Game1.timeOfDay >= openTime && Game1.timeOfDay < closeTime)) && (minFriendship <= 0 || __instance.IsWinterHere() || (who.friendshipData.TryGetValue(npcName, out friendship) && friendship.Points >= minFriendship));
                     if (!canOpenDoor)
                     {
                         KnockExteriorDoor(new Vector2(tileLocation.X, tileLocation.Y), action);

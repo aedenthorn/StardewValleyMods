@@ -58,43 +58,33 @@ namespace CustomSpouseRooms
 
         public static void ExtendMap(GameLocation location, int w, int h)
         {
-            List<Layer> layers = AccessTools.Field(typeof(Map), "m_layers").GetValue(location.map) as List<Layer>;
-            for (int i = 0; i < layers.Count; i++)
+            bool resized = false;
+            Map map = location.Map;
+            foreach (Layer layer in map.Layers)
             {
-                Tile[,] tiles = AccessTools.Field(typeof(Layer), "m_tiles").GetValue(layers[i]) as Tile[,];
-                Size size = (Size)AccessTools.Field(typeof(Layer), "m_layerSize").GetValue(layers[i]);
-                if (tiles.GetLength(0) >= w && tiles.GetLength(1) >= h)
-                    continue;
-
-                w = Math.Max(w, tiles.GetLength(0));
-                h = Math.Max(h, tiles.GetLength(1));
-
-                ModEntry.SMonitor.Log($"Extending layer {layers[i].Id} from {size.Width},{size.Height} ({tiles.GetLength(0)},{tiles.GetLength(1)}) to {w},{h}");
-
-                size = new Size(w, h);
-                AccessTools.Field(typeof(Layer), "m_layerSize").SetValue(layers[i], size);
-                AccessTools.Field(typeof(Map), "m_layers").SetValue(location.map, layers);
-
-                Tile[,] newTiles = new Tile[w, h];
-
-                for (int k = 0; k < tiles.GetLength(0); k++)
+                if (layer.LayerWidth < w || layer.LayerHeight < h)
                 {
-                    for (int l = 0; l < tiles.GetLength(1); l++)
+                    resized = true;
+                    int width = Math.Max(w, layer.LayerWidth);
+                    int height = Math.Max(h, layer.LayerHeight);
+                    Tile[,] tiles = new Tile[width, height];
+                    for (int x = 0; x < layer.LayerWidth; x++)
                     {
-                        newTiles[k, l] = tiles[k, l];
+                        for (int y = 0; y < layer.LayerHeight; y++)
+                        {
+                            tiles[x, y] = layer.Tiles[x, y];
+                        }
                     }
+                    AccessTools.Field(typeof(Layer), "m_tiles").SetValue(layer, tiles);
+                    AccessTools.Field(typeof(Layer), "m_tileArray").SetValue(layer, new TileArray(layer, tiles));
+                    AccessTools.Field(typeof(Layer), "m_layerSize").SetValue(layer, new Size(width, height));
                 }
-                AccessTools.Field(typeof(Layer), "m_tiles").SetValue(layers[i], newTiles);
-                AccessTools.Field(typeof(Layer), "m_tileArray").SetValue(layers[i], new TileArray(layers[i], newTiles));
-                AccessTools.Field(typeof(Layer), "_skipMap").SetValue(layers[i], null);
-
-                Size displaySize = layers[i].DisplaySize;
-				Size oldSize = AccessTools.FieldRefAccess<Map, Size>(location.Map, "m_displaySize");
-                AccessTools.FieldRefAccess<Map, Size>(location.Map, "m_displaySize") = new Size(Math.Max(oldSize.Width, displaySize.Width), Math.Max(oldSize.Height, displaySize.Height));
             }
-            AccessTools.Field(typeof(Map), "m_layers").SetValue(location.map, layers);
+            if (resized)
+            {
+                AccessTools.Method(typeof(Map), "UpdateDisplaySize").Invoke(map, Array.Empty<object>());
+            }
         }
-
         public static void CheckSpouseThing(FarmHouse fh, SpouseRoomData srd)
 		{
 			SMonitor.Log($"Checking spouse thing for {srd.name}");

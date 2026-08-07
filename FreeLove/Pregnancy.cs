@@ -136,7 +136,7 @@ namespace FreeLove
 
         public static bool BirthingEvent_tickUpdate_Prefix(GameTime time, BirthingEvent __instance, ref bool __result, ref int ___timer, string ___soundName, ref bool ___playedSound, string ___message, ref bool ___naming, bool ___getBabyName, bool ___isMale, string ___babyName)
         {
-            if (!Config.EnableMod || !___getBabyName)
+            if (!Config.EnableMod || !___getBabyName || lastBirthingSpouse is null)
                 return true;
 
             Game1.player.CanMove = false;

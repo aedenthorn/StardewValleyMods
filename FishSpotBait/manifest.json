@@ -1,7 +1,7 @@
 ﻿{
 	"Name": "Fish Spot Bait",
 	"Author": "aedenthorn",
-	"Version": "0.2.0",
+	"Version": "0.2.1",
 	"Description": "Lets you drop bait into the the water to lure fish to that spot.",
 	"UniqueID": "aedenthorn.FishSpotBait",
 	"EntryDll": "FishSpotBait.dll",

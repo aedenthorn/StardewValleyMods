@@ -142,7 +142,7 @@ namespace AreaOfEffect
         public AOEType AreaType { get; set; } = AOEType.Circle;
         public int Radius { get; set; }
         public List<string> Buffs { get; set; } = new();
-        public List<SpellProjectileData> Projectiles { get; set; } = new();
+        public List<SpellProjectileData> Projectiles { get; set; }
         public List<SpriteData> Sprites { get; set; } = new();
         public List<SpellEffect> Effects { get; set; } = new();
     }

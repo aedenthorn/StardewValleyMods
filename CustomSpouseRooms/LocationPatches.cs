@@ -172,18 +172,9 @@ namespace CustomSpouseRooms
 
         public static void _RebakeRow_Prefix(Layer __instance, int y, ref int[,] ____skipMap)
         {
-            int current_skip = -1;
-            for (int x = __instance.LayerWidth - 1; x >= 0; x--)
+            if(____skipMap.GetLength(0) < __instance.LayerWidth || ____skipMap.GetLength(1) < __instance.LayerHeight)
             {
-                if (current_skip >= 0)
-                {
-                    current_skip++;
-                }
-                ____skipMap[x, y] = current_skip;
-                if (__instance.Tiles[x, y] != null)
-                {
-                    current_skip = 0;
-                }
+                ____skipMap = new int[__instance.LayerWidth, __instance.LayerHeight];
             }
         }
 
@@ -333,8 +324,7 @@ namespace CustomSpouseRooms
                     }
                 }
 
-                CharacterData spouseData;
-                CharacterSpouseRoomData roomData = (NPC.TryGetData(spouse, out spouseData) ? ((spouseData != null) ? spouseData.SpouseRoom : null) : null);
+                CharacterSpouseRoomData roomData = (NPC.TryGetData(spouse, out var spouseData) ? ((spouseData != null) ? spouseData.SpouseRoom : null) : null);
                 string assetName = ((roomData != null) ? roomData.MapAsset : null) ?? "spouseRooms";
                 Rectangle sourceArea = ((roomData != null) ? roomData.MapSourceRect : CharacterSpouseRoomData.DefaultMapSourceRect);
 

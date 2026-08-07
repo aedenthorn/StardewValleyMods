@@ -12,7 +12,7 @@ namespace FishSpotBait
 	{
 		public class GameLocation_checkAction_Patch
 		{
-			public static bool Prefix(GameLocation __instance, Location tileLocation, Farmer who, ref bool __result)
+			public static bool Prefix(GameLocation __instance, Location tileLocation, ref int ___fishSplashPointTime, Farmer who, ref bool __result)
 			{
 				if (!Config.ModEnabled || (Config.ModKey != SButton.None && !SHelper.Input.IsDown(Config.ModKey)) || who.ActiveObject is null || who.ActiveObject.Category != Object.baitCategory)
 					return true;
@@ -83,7 +83,8 @@ namespace FishSpotBait
 				who.reduceActiveItemByOne();
 				__instance.playSound("dropItemInWater");
 				__instance.fishSplashPoint.Value = fishSpotTile;
-				__result = true;
+                ___fishSplashPointTime = Game1.timeOfDay;
+                __result = true;
 				SHelper.Events.GameLoop.UpdateTicked += GameLoop_UpdateTicked;
 				return false;
 			}
