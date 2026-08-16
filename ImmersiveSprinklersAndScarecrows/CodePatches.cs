@@ -439,14 +439,17 @@ namespace ImmersiveSprinklersAndScarecrows
             {
                 if (!Config.EnableMod || item is not Object obj || (!obj.IsSprinkler() && !obj.IsScarecrow()))
                     return true;
-                var tile = new Vector2(x / 64, y / 64);
-                for (int i = 0; i < 2; i++)
+                if (Config.RequireHoeDirt)
                 {
-                    for (int j = 0; j < 2; j++)
+                    var tile = new Vector2(x / 64, y / 64);
+                    for (int i = 0; i < 2; i++)
                     {
-                        if (!location.terrainFeatures.TryGetValue(tile + new Vector2(i, j), out var tf) || tf is not HoeDirt)
+                        for (int j = 0; j < 2; j++)
                         {
-                            return true;
+                            if (!location.terrainFeatures.TryGetValue(tile + new Vector2(i, j), out var tf) || tf is not HoeDirt)
+                            {
+                                return true;
+                            }
                         }
                     }
                 }

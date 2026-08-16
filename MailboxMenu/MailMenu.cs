@@ -103,7 +103,7 @@ namespace MailboxMenu
             var list = possibleSenders.Skip(sideScrolled).Take(count).ToList();
             for (int i = 0; i < list.Count; i++)
             {
-                senders.Add(new ClickableComponent(new Rectangle(xPositionOnScreen + borderWidth + 16, yPositionOnScreen + borderWidth + 64 + (textHeight + 8) * 2 + i * textHeight2, ModEntry.Config.SideWidth - borderWidth / 2, textHeight2), list[i])
+                senders.Add(new ClickableComponent(new Rectangle(xPositionOnScreen + borderWidth + 16, yPositionOnScreen + borderWidth + 64 + (textHeight + 8) * 2 + i * textHeight2, ModEntry.Config.SideWidth - borderWidth / 2, textHeight2), GetSender(list[i]))
                 {
                     myID = 902 + i,
                     upNeighborID = 902 + i - 1,
@@ -117,7 +117,7 @@ namespace MailboxMenu
 
         private void PopulateMailList()
         {
-            Dictionary<string, string> mail = Game1.content.Load<Dictionary<string, string>>("Data\\mail");
+            Dictionary<string, string> mail = ModEntry.SHelper.GameContent.Load<Dictionary<string, string>>("Data\\mail");
 
             currentMailList.Clear();
             if (whichTab == 0)
@@ -231,6 +231,10 @@ namespace MailboxMenu
                 rightNeighborID = (i % ModEntry.Config.GridColumns == ModEntry.Config.GridColumns - 1 ? -99999 : mailIndex + i + 1),
                 region = 4242
             });
+        }
+        public static string GetSender(string sender)
+        {
+            return Game1.getCharacterFromName(sender, false, true)?.displayName ?? (ModEntry.SHelper.Translation.ContainsKey(sender) ? ModEntry.SHelper.Translation.Get(sender) : sender);
         }
         public override void snapToDefaultClickableComponent()
         {

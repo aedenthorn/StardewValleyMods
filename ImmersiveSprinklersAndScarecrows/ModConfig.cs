@@ -10,6 +10,7 @@ namespace ImmersiveSprinklersAndScarecrows
         public bool EnableMod { get; set; } = true;
         public bool Debug { get; set; } = false;
         public bool ShowRangeWhenPlacing { get; set; } = true;
+        public bool RequireHoeDirt { get; set; } = true;
         public float Scale { get; set; } = 4;
         public float Alpha { get; set; } = 1;
         public Color BothRangeTint { get; set; } = Color.DarkGreen;

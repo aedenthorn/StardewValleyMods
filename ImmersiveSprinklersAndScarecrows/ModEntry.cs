@@ -2,10 +2,12 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using StardewModdingAPI;
+using StardewModdingAPI.Utilities;
 using StardewValley;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.Linq;
 using System.Reflection;
 using Object = StardewValley.Object;
 using Rectangle = Microsoft.Xna.Framework.Rectangle;
@@ -311,107 +313,121 @@ namespace ImmersiveSprinklersAndScarecrows
             atApi = Helper.ModRegistry.GetApi("PeacefulEnd.AlternativeTextures");
             // get Generic Mod Config Menu's API (if it's installed)
             var configMenu = Helper.ModRegistry.GetApi<IGenericModConfigMenuApi>("spacechase0.GenericModConfigMenu");
-            if (configMenu is null)
-                return;
+            if (configMenu is not null)
+            {
+                configMenu.Register(
+                    mod: ModManifest,
+                    reset: () => Config = new ModConfig(),
+                    save: () => Helper.WriteConfig(Config)
+                );
 
-            // register mod
-            configMenu.Register(
-                mod: ModManifest,
-                reset: () => Config = new ModConfig(),
-                save: () => Helper.WriteConfig(Config)
-            );
+                var exclude = new List<string>()
+                {
+                    "Debug"
+                };
+                var props = typeof(ModConfig).GetProperties().ToArray();
+                var configMenuExt = Helper.ModRegistry.GetApi<IGMCMOptionsAPI>("jltaylor-us.GMCMOptions");
 
-            configMenu.AddBoolOption(
-                mod: ModManifest,
-                name: () => SHelper.Translation.Get("GMCM.EnableMod.Name"),
-                getValue: () => Config.EnableMod,
-                setValue: value => Config.EnableMod = value
-            );
 
-            configMenu.AddBoolOption(
-                mod: ModManifest,
-                name: () => SHelper.Translation.Get("GMCM.ShowRangeWhenPlacing.Name"),
-                getValue: () => Config.ShowRangeWhenPlacing,
-                setValue: value => Config.ShowRangeWhenPlacing = value
-            );
-            configMenu.AddKeybind(
-                mod: ModManifest,
-                name: () => SHelper.Translation.Get("GMCM.PickupButton.Name"),
-                getValue: () => Config.PickupButton,
-                setValue: value => Config.PickupButton = value
-            );
-            configMenu.AddBoolOption(
-                mod: ModManifest,
-                name: () => SHelper.Translation.Get("GMCM.PickupNearby.Name"),
-                getValue: () => Config.PickupNearby,
-                setValue: value => Config.PickupNearby = value
-            );
-            configMenu.AddKeybind(
-                mod: ModManifest,
-                name: () => SHelper.Translation.Get("GMCM.ActivateButton.Name"),
-                getValue: () => Config.ActivateButton,
-                setValue: value => Config.ActivateButton = value
-            );
-            configMenu.AddBoolOption(
-                mod: ModManifest,
-                name: () => SHelper.Translation.Get("GMCM.ActivateNearby.Name"),
-                getValue: () => Config.ActivateNearby,
-                setValue: value => Config.ActivateNearby = value
-            );
-            configMenu.AddNumberOption(
-                mod: ModManifest,
-                name: () => SHelper.Translation.Get("GMCM.ActivateNearbyRange.Name"),
-                getValue: () => Config.ActivateNearbyRange,
-                setValue: value => Config.ActivateNearbyRange = value
-            );
-            configMenu.AddKeybind(
-                mod: ModManifest,
-                name: () => SHelper.Translation.Get("GMCM.ShowSprinklerRangeButton.Name"),
-                getValue: () => Config.ShowSprinklerRangeButton,
-                setValue: value => Config.ShowSprinklerRangeButton = value
-            );
-            configMenu.AddKeybind(
-                mod: ModManifest,
-                name: () => SHelper.Translation.Get("GMCM.ShowScarecrowRangeButton.Name"),
-                getValue: () => Config.ShowScarecrowRangeButton,
-                setValue: value => Config.ShowScarecrowRangeButton = value
-            );
-            configMenu.AddTextOption(
-                mod: ModManifest,
-                name: () => SHelper.Translation.Get("GMCM.Scale.Name"),
-                getValue: () => Config.Scale + "",
-                setValue: delegate (string value) { if (float.TryParse(value, NumberStyles.Any, CultureInfo.InvariantCulture, out float f)) { Config.Scale = f; } }
-            );
-            configMenu.AddTextOption(
-                mod: ModManifest,
-                name: () => SHelper.Translation.Get("GMCM.Alpha.Name"),
-                getValue: () => Config.Alpha + "",
-                setValue: delegate (string value) { if (float.TryParse(value, NumberStyles.Any, CultureInfo.InvariantCulture, out float f)) { Config.Alpha = f; } }
-            );
-            configMenu.AddTextOption(
-                mod: ModManifest,
-                name: () => SHelper.Translation.Get("GMCM.RangeAlpha.Name"),
-                getValue: () => Config.RangeAlpha + "",
-                setValue: delegate (string value) { if (float.TryParse(value, NumberStyles.Any, CultureInfo.InvariantCulture, out float f)) { Config.RangeAlpha = f; } }
-            );
-            configMenu.AddNumberOption(
-                mod: ModManifest,
-                name: () => SHelper.Translation.Get("GMCM.DrawOffsetX.Name"),
-                getValue: () => Config.DrawOffsetX,
-                setValue: value => Config.DrawOffsetX = value
-            );
-            configMenu.AddNumberOption(
-                mod: ModManifest,
-                name: () => SHelper.Translation.Get("GMCM.DrawOffsetY.Name"),
-                getValue: () => Config.DrawOffsetY,
-                setValue: value => Config.DrawOffsetY = value
-            );
-            configMenu.AddNumberOption(
-                mod: ModManifest,
-                name: () => SHelper.Translation.Get("GMCM.DrawOffsetZ.Name"),
-                getValue: () => Config.DrawOffsetZ,
-                setValue: value => Config.DrawOffsetZ = value
-            );
+                foreach (var p in props)
+                {
+                    if (exclude.Contains(p.Name))
+                        continue;
+                    if (p.PropertyType == typeof(bool))
+                    {
+                        configMenu.AddBoolOption(
+                            mod: ModManifest,
+                            name: () => { var t = Helper.Translation.Get(p.Name); return t.HasValue() ? t : AddSpaces(p.Name); },
+                            tooltip: () => { var t = Helper.Translation.Get(p.Name + ".Desc"); return t.HasValue() ? t : null; },
+                            getValue: () => (bool)p.GetValue(Config),
+                            setValue: value => p.SetValue(Config, value)
+                        );
+                    }
+                    else if (p.PropertyType == typeof(int))
+                    {
+                        configMenu.AddNumberOption(
+                            mod: ModManifest,
+                            name: () => { var t = Helper.Translation.Get(p.Name); return t.HasValue() ? t : AddSpaces(p.Name); },
+                            tooltip: () => { var t = Helper.Translation.Get(p.Name + ".Desc"); return t.HasValue() ? t : null; },
+                            getValue: () => (int)p.GetValue(Config),
+                            setValue: value => p.SetValue(Config, value)
+                        );
+                    }
+                    else if (p.PropertyType == typeof(float))
+                    {
+                        configMenu.AddNumberOption(
+                            mod: ModManifest,
+                            name: () => { var t = Helper.Translation.Get(p.Name); return t.HasValue() ? t : AddSpaces(p.Name); },
+                            tooltip: () => { var t = Helper.Translation.Get(p.Name + ".Desc"); return t.HasValue() ? t : null; },
+                            getValue: () => (float)p.GetValue(Config),
+                            setValue: value => p.SetValue(Config, value)
+                        );
+                    }
+                    else if (p.PropertyType == typeof(double))
+                    {
+                        configMenu.AddTextOption(
+                            mod: ModManifest,
+                            name: () => { var t = Helper.Translation.Get(p.Name); return t.HasValue() ? t : AddSpaces(p.Name); },
+                            tooltip: () => { var t = Helper.Translation.Get(p.Name + ".Desc"); return t.HasValue() ? t : null; },
+                            getValue: () => p.GetValue(Config).ToString(),
+                            setValue: value => { if (double.TryParse(value, NumberStyles.Any, CultureInfo.InvariantCulture, out var d)) { p.SetValue(Config, d); } }
+                        );
+                    }
+                    else if (p.PropertyType == typeof(string))
+                    {
+                        configMenu.AddTextOption(
+                            mod: ModManifest,
+                            name: () => { var t = Helper.Translation.Get(p.Name); return t.HasValue() ? t : AddSpaces(p.Name); },
+                            tooltip: () => { var t = Helper.Translation.Get(p.Name + ".Desc"); return t.HasValue() ? t : null; },
+                            getValue: () => (string)p.GetValue(Config),
+                            setValue: value => p.SetValue(Config, value)
+                        );
+                    }
+                    else if (p.PropertyType == typeof(KeybindList))
+                    {
+                        configMenu.AddKeybindList(
+                            mod: ModManifest,
+                            name: () => { var t = Helper.Translation.Get(p.Name); return t.HasValue() ? t : AddSpaces(p.Name); },
+                            tooltip: () => { var t = Helper.Translation.Get(p.Name + ".Desc"); return t.HasValue() ? t : null; },
+                            getValue: () => (KeybindList)p.GetValue(Config),
+                            setValue: value => p.SetValue(Config, value)
+                        );
+                    }
+                    else if (p.PropertyType == typeof(SButton))
+                    {
+                        configMenu.AddKeybind(
+                            mod: ModManifest,
+                            name: () => { var t = Helper.Translation.Get(p.Name); return t.HasValue() ? t : AddSpaces(p.Name); },
+                            tooltip: () => { var t = Helper.Translation.Get(p.Name + ".Desc"); return t.HasValue() ? t : null; },
+                            getValue: () => (SButton)p.GetValue(Config),
+                            setValue: value => p.SetValue(Config, value)
+                        );
+                    }
+                    else if (p.PropertyType == typeof(Color) && configMenuExt is not null)
+                    {
+                        configMenuExt.AddColorOption(
+                            mod: ModManifest,
+                            name: () => { var t = Helper.Translation.Get(p.Name); return t.HasValue() ? t : AddSpaces(p.Name); },
+                            tooltip: () => { var t = Helper.Translation.Get(p.Name + ".Desc"); return t.HasValue() ? t : null; },
+                            getValue: () => (Color)p.GetValue(Config),
+                            setValue: value => p.SetValue(Config, value)
+                        );
+                    }
+                }
+            }
+        }
+        public static string AddSpaces(string str)
+        {
+            string newStr = "";
+            foreach (var c in str)
+            {
+                if (c >= 'A' && c <= 'Z' && newStr.Length > 0)
+                {
+                    newStr += " ";
+                }
+                newStr += c;
+            }
+            return newStr;
         }
     }
 }

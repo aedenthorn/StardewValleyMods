@@ -1,22 +1,13 @@
 ﻿using HarmonyLib;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using Newtonsoft.Json;
 using StardewModdingAPI;
+using StardewModdingAPI.Utilities;
 using StardewValley;
-using StardewValley.BellsAndWhistles;
-using StardewValley.Locations;
-using StardewValley.Menus;
-using StardewValley.Objects;
-using StardewValley.TerrainFeatures;
-using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.Linq;
-using System.Security.Permissions;
-using Object = StardewValley.Object;
 
 namespace MailboxMenu
 {
@@ -112,97 +103,124 @@ namespace MailboxMenu
             {
                 phoneAPI.AddApp("aedenthorn.MailboxMenu", "Mailbox", OpenMenu, Helper.ModContent.Load<Texture2D>(Path.Combine("assets", "icon.png")));
             }
+
             // get Generic Mod Config Menu's API (if it's installed)
             var configMenu = Helper.ModRegistry.GetApi<IGenericModConfigMenuApi>("spacechase0.GenericModConfigMenu");
-            if (configMenu is null)
-                return;
+            if (configMenu is not null)
+            {
+                configMenu.Register(
+                    mod: ModManifest,
+                    reset: () => Config = new ModConfig(),
+                    save: () => Helper.WriteConfig(Config)
+                );
 
-            // register mod
-            configMenu.Register(
-                mod: ModManifest,
-                reset: () => Config = new ModConfig(),
-                save: () => Helper.WriteConfig(Config)
-            );
+                var exclude = new List<string>()
+                {
+                    "Debug"
+                };
+                var props = typeof(ModConfig).GetProperties().ToArray();
+                var configMenuExt = Helper.ModRegistry.GetApi<IGMCMOptionsAPI>("jltaylor-us.GMCMOptions");
 
-            configMenu.AddBoolOption(
-                mod: ModManifest,
-                name: () => "Mod Enabled",
-                getValue: () => Config.ModEnabled,
-                setValue: value => Config.ModEnabled = value
-            );
-            configMenu.AddBoolOption(
-                mod: ModManifest,
-                name: () => "Click Mailbox To Open",
-                getValue: () => Config.MenuOnMailbox,
-                setValue: value => Config.MenuOnMailbox = value
-            );
-            configMenu.AddKeybind(
-                mod: ModManifest,
-                name: () => "Menu Key",
-                getValue: () => Config.MenuKey,
-                setValue: value => Config.MenuKey = value
-            );
-            configMenu.AddKeybind(
-                mod: ModManifest,
-                name: () => "Mod Key",
-                tooltip: () => "Hold this down while interacting with the mailbox",
-                getValue: () => Config.ModKey,
-                setValue: value => Config.ModKey = value
-            );
-            configMenu.AddTextOption(
-                mod: ModManifest,
-                name: () => "Inbox Text",
-                getValue: () => Config.InboxText,
-                setValue: value => Config.InboxText = value
-            );
-            configMenu.AddTextOption(
-                mod: ModManifest,
-                name: () => "Archive Text",
-                getValue: () => Config.ArchiveText,
-                setValue: value => Config.ArchiveText = value
-            );
-            configMenu.AddNumberOption(
-                mod: ModManifest,
-                name: () => "Window Width",
-                getValue: () => Config.WindowWidth,
-                setValue: value => Config.WindowWidth = value
-            );
-            configMenu.AddNumberOption(
-                mod: ModManifest,
-                name: () => "Window Height",
-                getValue: () => Config.WindowHeight,
-                setValue: value => Config.WindowHeight = value
-            );
-            configMenu.AddNumberOption(
-                mod: ModManifest,
-                name: () => "Grid Columns",
-                getValue: () => Config.GridColumns,
-                setValue: value => Config.GridColumns = value
-            );
-            configMenu.AddNumberOption(
-                mod: ModManifest,
-                name: () => "Envelope Width",
-                getValue: () => Config.EnvelopeWidth,
-                setValue: value => Config.EnvelopeWidth = value
-            );
-            configMenu.AddNumberOption(
-                mod: ModManifest,
-                name: () => "Envelope Height",
-                getValue: () => Config.EnvelopeHeight,
-                setValue: value => Config.EnvelopeHeight = value
-            );
-            configMenu.AddNumberOption(
-                mod: ModManifest,
-                name: () => "Side Width",
-                getValue: () => Config.SideWidth,
-                setValue: value => Config.SideWidth = value
-            );
-            configMenu.AddNumberOption(
-                mod: ModManifest,
-                name: () => "Grid Spacing",
-                getValue: () => Config.GridSpace,
-                setValue: value => Config.GridSpace = value
-            );
+
+                foreach (var p in props)
+                {
+                    if (exclude.Contains(p.Name))
+                        continue;
+                    if (p.PropertyType == typeof(bool))
+                    {
+                        configMenu.AddBoolOption(
+                            mod: ModManifest,
+                            name: () => { var t = Helper.Translation.Get(p.Name); return t.HasValue() ? t : AddSpaces(p.Name); },
+                            tooltip: () => { var t = Helper.Translation.Get(p.Name + ".Desc"); return t.HasValue() ? t : null; },
+                            getValue: () => (bool)p.GetValue(Config),
+                            setValue: value => p.SetValue(Config, value)
+                        );
+                    }
+                    else if (p.PropertyType == typeof(int))
+                    {
+                        configMenu.AddNumberOption(
+                            mod: ModManifest,
+                            name: () => { var t = Helper.Translation.Get(p.Name); return t.HasValue() ? t : AddSpaces(p.Name); },
+                            tooltip: () => { var t = Helper.Translation.Get(p.Name + ".Desc"); return t.HasValue() ? t : null; },
+                            getValue: () => (int)p.GetValue(Config),
+                            setValue: value => p.SetValue(Config, value)
+                        );
+                    }
+                    else if (p.PropertyType == typeof(float))
+                    {
+                        configMenu.AddNumberOption(
+                            mod: ModManifest,
+                            name: () => { var t = Helper.Translation.Get(p.Name); return t.HasValue() ? t : AddSpaces(p.Name); },
+                            tooltip: () => { var t = Helper.Translation.Get(p.Name + ".Desc"); return t.HasValue() ? t : null; },
+                            getValue: () => (float)p.GetValue(Config),
+                            setValue: value => p.SetValue(Config, value)
+                        );
+                    }
+                    else if (p.PropertyType == typeof(double))
+                    {
+                        configMenu.AddTextOption(
+                            mod: ModManifest,
+                            name: () => { var t = Helper.Translation.Get(p.Name); return t.HasValue() ? t : AddSpaces(p.Name); },
+                            tooltip: () => { var t = Helper.Translation.Get(p.Name + ".Desc"); return t.HasValue() ? t : null; },
+                            getValue: () => p.GetValue(Config).ToString(),
+                            setValue: value => { if (double.TryParse(value, NumberStyles.Any, CultureInfo.InvariantCulture, out var d)) { p.SetValue(Config, d); } }
+                        );
+                    }
+                    else if (p.PropertyType == typeof(string))
+                    {
+                        configMenu.AddTextOption(
+                            mod: ModManifest,
+                            name: () => { var t = Helper.Translation.Get(p.Name); return t.HasValue() ? t : AddSpaces(p.Name); },
+                            tooltip: () => { var t = Helper.Translation.Get(p.Name + ".Desc"); return t.HasValue() ? t : null; },
+                            getValue: () => (string)p.GetValue(Config),
+                            setValue: value => p.SetValue(Config, value)
+                        );
+                    }
+                    else if (p.PropertyType == typeof(KeybindList))
+                    {
+                        configMenu.AddKeybindList(
+                            mod: ModManifest,
+                            name: () => { var t = Helper.Translation.Get(p.Name); return t.HasValue() ? t : AddSpaces(p.Name); },
+                            tooltip: () => { var t = Helper.Translation.Get(p.Name + ".Desc"); return t.HasValue() ? t : null; },
+                            getValue: () => (KeybindList)p.GetValue(Config),
+                            setValue: value => p.SetValue(Config, value)
+                        );
+                    }
+                    else if (p.PropertyType == typeof(SButton))
+                    {
+                        configMenu.AddKeybind(
+                            mod: ModManifest,
+                            name: () => { var t = Helper.Translation.Get(p.Name); return t.HasValue() ? t : AddSpaces(p.Name); },
+                            tooltip: () => { var t = Helper.Translation.Get(p.Name + ".Desc"); return t.HasValue() ? t : null; },
+                            getValue: () => (SButton)p.GetValue(Config),
+                            setValue: value => p.SetValue(Config, value)
+                        );
+                    }
+                    else if (p.PropertyType == typeof(Color) && configMenuExt is not null)
+                    {
+                        configMenuExt.AddColorOption(
+                            mod: ModManifest,
+                            name: () => { var t = Helper.Translation.Get(p.Name); return t.HasValue() ? t : AddSpaces(p.Name); },
+                            tooltip: () => { var t = Helper.Translation.Get(p.Name + ".Desc"); return t.HasValue() ? t : null; },
+                            getValue: () => (Color)p.GetValue(Config),
+                            setValue: value => p.SetValue(Config, value)
+                        );
+                    }
+                }
+            }
+        }
+        public static string AddSpaces(string str)
+        {
+            string newStr = "";
+            foreach (var c in str)
+            {
+                if (c >= 'A' && c <= 'Z' && newStr.Length > 0)
+                {
+                    newStr += " ";
+                }
+                newStr += c;
+            }
+            return newStr;
         }
 
         private void OpenMenu()

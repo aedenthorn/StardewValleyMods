@@ -587,6 +587,8 @@ namespace ImmersiveSprinklersAndScarecrows
         }
         public static bool CheckForHoeDirt(GameLocation l, Vector2 tile)
         {
+            if (!Config.RequireHoeDirt)
+                return true;
             for (int i = 0; i < 2; i++)
             {
                 for (int j = 0; j < 2; j++)
