@@ -58,13 +58,13 @@ namespace PersonalJukeBox
 
         public void RebuildElements()
         {
-            prevButton = new ClickableTextureComponent("prev", new Rectangle(new Point(16, 6), new Point(44, 44)), "", "Prev", Game1.mouseCursors, new Rectangle(351, 493, 14, 14), 4);
+            prevButton = new ClickableTextureComponent("prev", new Rectangle(new Point(16, 6), new Point(52, 52)), "", "Prev", Game1.mouseCursors, new Rectangle(352, 493, 13, 13), 4);
             musicDropdown = new DropDown(tracks, trackNames, prevButton.bounds.Right + 16, 12, dropDownWidth + 96, 44, 2);
             stopButton = new ClickableTextureComponent("stop", new Rectangle(new Point(musicDropdown.bounds.Right, 22), new Point(28, 28)), "", "Stop", Game1.staminaRect, new Rectangle(0,0,1,1), 24);
 
             playButton = new ClickableTextureComponent("play", new Rectangle(new Point(musicDropdown.bounds.Right, 18), new Point(32, 32)), "", "Play", Game1.mouseCursors, new Rectangle(448, 96, 32, 32), 1);
 
-            nextButton = new ClickableTextureComponent("next", new Rectangle(new Point(playButton.bounds.Right, 6), new Point(44, 44)), "", "Next", Game1.mouseCursors, new Rectangle(364, 493, 14, 14), 4);
+            nextButton = new ClickableTextureComponent("next", new Rectangle(new Point(playButton.bounds.Right, 6), new Point(52, 52)), "", "Next", Game1.mouseCursors, new Rectangle(365, 493, 13, 13), 4);
 
             addButton = new ClickableTextureComponent("add", new Rectangle(new Point(nextButton.bounds.Right + 16, 16), new Point(32, 32)), "", "Add", Game1.mouseCursors, addRect, 2);
 

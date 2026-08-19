@@ -122,8 +122,8 @@ namespace PersonalJukeBox
                 return;
             }
             Menu.hoverText = null;
-            var x = Game1.getMouseX();
-            var y = Game1.getMouseY();
+            var x = Game1.getMouseX(true);
+            var y = Game1.getMouseY(true);
             if (Menu.isWithinBounds(x, y))
             {
                 Menu.performHoverAction(x, y);
@@ -142,18 +142,18 @@ namespace PersonalJukeBox
                 var down = SHelper.Input.IsDown(SButton.MouseLeft) || SHelper.Input.IsSuppressed(SButton.MouseLeft);
                 if (down && clicked.Value)
                 {
-                    Menu.leftClickHeld(Game1.getMouseX(), Game1.getMouseY());
+                    Menu.leftClickHeld(Game1.getMouseX(true), Game1.getMouseY(true));
                     SHelper.Input.Suppress(SButton.MouseLeft);
                 }
                 else if (!down && clicked.Value)
                 {
                     clicked.Value = false;
-                    Menu.releaseLeftClick(Game1.getMouseX(), Game1.getMouseY());
+                    Menu.releaseLeftClick(Game1.getMouseX(true), Game1.getMouseY(true));
                 }
-                else if (down && !clicked.Value && Menu.isWithinBounds(Game1.getMouseX(), Game1.getMouseY()))
+                else if (down && !clicked.Value && Menu.isWithinBounds(Game1.getMouseX(true), Game1.getMouseY(true)))
                 {
                     clicked.Value = true;
-                    Menu.receiveLeftClick(Game1.getMouseX(), Game1.getMouseY());
+                    Menu.receiveLeftClick(Game1.getMouseX(true), Game1.getMouseY(true));
                     SHelper.Input.Suppress(SButton.MouseLeft);
                 }
             }

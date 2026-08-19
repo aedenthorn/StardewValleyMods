@@ -47,6 +47,17 @@ namespace MailboxMenu
 
             var harmony = new Harmony(ModManifest.UniqueID);
             harmony.PatchAll();
+
+            //var dict = SHelper.GameContent.Load<Dictionary<string, string>>("Data\\mail");
+            //var outs = new List<string>();
+            //foreach (var key in dict.Keys)
+            //{
+            //    if(!defaultMailSenders.ContainsKey(key))
+            //    {
+            //        outs.Add("{\""+key+"\", new EnvelopeData() { sender = \"\" }}");
+            //    }
+            //}
+            //File.WriteAllLines("defaultMailSenders.txt", outs);
         }
 
         private void Input_ButtonPressed(object sender, StardewModdingAPI.Events.ButtonPressedEventArgs e)

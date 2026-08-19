@@ -13,6 +13,7 @@ namespace MailboxMenu
     {
         public static int whichTab;
         public static string whichSender;
+        public static string whichSenderLabel;
         public static bool preserveScroll;
         public static int mainScrolled;
         public static int sideScrolled;
@@ -89,6 +90,11 @@ namespace MailboxMenu
                     if(!possibleSenders.Contains(data.sender))
                         possibleSenders.Add(data.sender);
                 }
+                else if (TryFigureOutSender(Game1.content.LoadBaseStringOrNull($"Data/mail:{id}"), out string sender))
+                {
+                    if (!possibleSenders.Contains(sender))
+                        possibleSenders.Add(sender);
+                }
                 else
                 {
                     addUnknown = true;
@@ -103,7 +109,7 @@ namespace MailboxMenu
             var list = possibleSenders.Skip(sideScrolled).Take(count).ToList();
             for (int i = 0; i < list.Count; i++)
             {
-                senders.Add(new ClickableComponent(new Rectangle(xPositionOnScreen + borderWidth + 16, yPositionOnScreen + borderWidth + 64 + (textHeight + 8) * 2 + i * textHeight2, ModEntry.Config.SideWidth - borderWidth / 2, textHeight2), GetSender(list[i]))
+                senders.Add(new ClickableComponent(new Rectangle(xPositionOnScreen + borderWidth + 16, yPositionOnScreen + borderWidth + 64 + (textHeight + 8) * 2 + i * textHeight2, ModEntry.Config.SideWidth - borderWidth / 2, textHeight2), list[i], GetSender(list[i]))
                 {
                     myID = 902 + i,
                     upNeighborID = 902 + i - 1,
@@ -113,6 +119,40 @@ namespace MailboxMenu
                 });
             }
             populateClickableComponentList();
+        }
+
+        public static bool TryFigureOutSender(string value, out string sender)
+        {
+            sender = null;
+            if(value == null) 
+                return false;
+            var senderText = value.Split("[#]")[0];
+            if (senderText.EndsWith("%%"))
+            {
+                senderText = senderText.Split("%")[0];
+            }
+            var lines = senderText.Split('^');
+            for(int i = lines.Length - 1; i >= 0; i--)
+            {
+                var line = lines[i].Trim();
+                if (line.StartsWith("-") || i == lines.Length - 1)
+                {
+                    line = line.Replace("-", "").Replace(",", "");
+                    foreach(var word in line.Split(' '))
+                    {
+                        if (Game1.getCharacterFromName(word, false, true) is not null || NPC.TryGetData(word, out _))
+                        {
+                            sender = word;
+                            return true;
+                        }
+                    }
+                }
+                else
+                {
+                    continue;
+                }
+            }
+            return false;
         }
 
         private void PopulateMailList()
@@ -299,7 +339,7 @@ namespace MailboxMenu
             }
             else
             {
-                SpriteText.drawStringWithScrollCenteredAt(b, whichSender, xPositionOnScreen + (borderWidth + ModEntry.Config.SideWidth + width) / 2, yPositionOnScreen + borderWidth + 64, width - borderWidth * 5 - ModEntry.Config.SideWidth);
+                SpriteText.drawStringWithScrollCenteredAt(b, whichSenderLabel, xPositionOnScreen + (borderWidth + ModEntry.Config.SideWidth + width) / 2, yPositionOnScreen + borderWidth + 64, width - borderWidth * 5 - ModEntry.Config.SideWidth);
             }
             contained = 0;
             foreach (var cc in currentMailList)
@@ -355,7 +395,7 @@ namespace MailboxMenu
             SpriteText.drawString(b, ModEntry.Config.ArchiveText, allMailButton.bounds.X, allMailButton.bounds.Y, color: whichTab == 1 ? Color.Black : Color.DarkSlateGray);
             for(int i = 0; i < senders.Count; i++)
             {
-                string str = senders[i].name;
+                string str = senders[i].label;
                 int cut = 0;
                 if(Game1.smallFont.MeasureString(str).X > ModEntry.Config.SideWidth)
                 {
@@ -404,6 +444,7 @@ namespace MailboxMenu
                 {
                     whichTab = 1;
                     whichSender = senders[i].name;
+                    whichSenderLabel = senders[i].label;
                     ModEntry.SMonitor.Log($"clicked on {senders[i].name}");
                     Game1.playSound("bigSelect");
                     PopulateMailList();

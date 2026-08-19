@@ -439,19 +439,9 @@ namespace ImmersiveSprinklersAndScarecrows
             {
                 if (!Config.EnableMod || item is not Object obj || (!obj.IsSprinkler() && !obj.IsScarecrow()))
                     return true;
-                if (Config.RequireHoeDirt)
+                if (!CheckForHoeDirt(location, new Vector2(x / 64, y / 64)))
                 {
-                    var tile = new Vector2(x / 64, y / 64);
-                    for (int i = 0; i < 2; i++)
-                    {
-                        for (int j = 0; j < 2; j++)
-                        {
-                            if (!location.terrainFeatures.TryGetValue(tile + new Vector2(i, j), out var tf) || tf is not HoeDirt)
-                            {
-                                return true;
-                            }
-                        }
-                    }
+                    return true;
                 }
                 __result = Utility.withinRadiusOfPlayer(x, y, 1, Game1.player);
                 return false;
@@ -466,15 +456,9 @@ namespace ImmersiveSprinklersAndScarecrows
                 if (!Config.EnableMod || !Context.IsPlayerFree || (!__instance.IsSprinkler() && !__instance.IsScarecrow()))
                     return true;
                 var mouseTile = GetMouseCornerTile().ToVector2();
-                for (int i = 0; i < 2; i++)
+                if (!CheckForHoeDirt(location, mouseTile))
                 {
-                    for (int j = 0; j < 2; j++)
-                    {
-                        if (!location.terrainFeatures.TryGetValue(mouseTile + new Vector2(i, j), out var tf) || tf is not HoeDirt)
-                        {
-                            return true;
-                        }
-                    }
+                    return true;
                 }
                 Vector2 pos = Game1.GlobalToLocal(mouseTile * 64 + new Vector2(32, 16));
 
