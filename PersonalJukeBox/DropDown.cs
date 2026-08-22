@@ -5,6 +5,7 @@ using StardewValley;
 using StardewValley.Menus;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace PersonalJukeBox
 {
@@ -206,7 +207,12 @@ namespace PersonalJukeBox
         }
         public string GetCurrentItem()
         {
-            return dropDownDisplayOptions[selectedOption];
+            if(selectedOption >= 0 && selectedOption < dropDownDisplayOptions.Count)
+            {
+                return dropDownDisplayOptions[selectedOption];
+            }
+            selectedOption = 0;
+            return dropDownDisplayOptions.Any() ? dropDownDisplayOptions.First() : "";
         }
         public void SetCurrentItem(string item)
         {

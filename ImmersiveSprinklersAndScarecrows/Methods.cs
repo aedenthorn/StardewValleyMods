@@ -321,6 +321,10 @@ namespace ImmersiveSprinklersAndScarecrows
         }
         public static List<Vector2> GetScarecrowTiles(Vector2 tileLocation, int radius)
         {
+            if(Config.ScarecrowRadius > 0)
+            {
+                radius = Config.ScarecrowRadius;
+            }
             Vector2 start = tileLocation + new Vector2(-1, -1) * (radius - 2);
             Vector2 position = tileLocation + new Vector2(0.5f, 0.5f);
             List<Vector2> list = new();
@@ -330,8 +334,7 @@ namespace ImmersiveSprinklersAndScarecrows
                 for (int y = 0; y < diameter; y++)
                 {
                     Vector2 tile = start + new Vector2(x, y);
-                    var distance = (int)Math.Ceiling(Vector2.Distance(position, tile));
-                    if (distance <= radius)
+                    if(Config.SquareScarecrowRange || Math.Ceiling(Vector2.Distance(position, tile)) <= radius)
                         list.Add(tile);
                 }
             }

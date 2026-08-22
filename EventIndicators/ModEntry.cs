@@ -43,6 +43,8 @@ namespace EventIndicators
 
         private void Player_Warped(object sender, StardewModdingAPI.Events.WarpedEventArgs e)
         {
+            if (Game1.currentLocation?.warps is null)
+                return;
             eventsDict.Clear();
             eventsDictFull.Clear();
             foreach (var w in Game1.currentLocation.warps)

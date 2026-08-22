@@ -1,7 +1,7 @@
 ﻿{
   "Name": "Personal Juke Box",
   "Author": "aedenthorn",
-  "Version": "0.2.3",
+  "Version": "0.2.4",
   "Description": "Personal Juke Box.",
   "UniqueID": "aedenthorn.PersonalJukeBox",
   "EntryDll": "PersonalJukeBox.dll",
