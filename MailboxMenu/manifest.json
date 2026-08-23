@@ -1,7 +1,7 @@
 ﻿{
   "Name": "Mailbox Menu",
   "Author": "aedenthorn",
-  "Version": "0.5.0",
+  "Version": "0.5.2",
   "Description": "Mailbox Menu.",
   "UniqueID": "aedenthorn.MailboxMenu",
   "EntryDll": "MailboxMenu.dll",

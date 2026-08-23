@@ -140,6 +140,11 @@ namespace MailboxMenu
                     line = line.Replace("-", "").Replace(",", "");
                     foreach(var word in line.Split(' '))
                     {
+                        if(ModEntry.Config.SenderAliases.TryGetValue(word, out string alias))
+                        {
+                            sender = alias;
+                            return true;
+                        }
                         if (Game1.getCharacterFromName(word, false, true) is not null || NPC.TryGetData(word, out _))
                         {
                             sender = word;
@@ -188,6 +193,11 @@ namespace MailboxMenu
                         if (ModEntry.envelopeData.TryGetValue(id, out EnvelopeData data))
                         {
                             if(data.sender != whichSender)
+                                continue;
+                        }
+                        else if (TryFigureOutSender(Game1.content.LoadBaseStringOrNull($"Data/mail:{id}"), out string sender))
+                        {
+                            if (sender != whichSender)
                                 continue;
                         }
                         else if(whichSender != "???") 

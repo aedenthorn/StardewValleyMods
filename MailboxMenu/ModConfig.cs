@@ -14,12 +14,15 @@ namespace MailboxMenu
         public string ArchiveText { get; set; } = "Old Mail";
         public int WindowWidth { get; set; } = 1600;
         public int WindowHeight { get; set; } = 1000;
-
         public int GridColumns { get; set; } = 4;
         public int EnvelopeWidth { get; set; } = 256;
         public int EnvelopeHeight { get; set; } = 192;
         public int SideWidth { get; set; } = 194;
         public int GridSpace { get; set; } = 64;
-
+        public Dictionary<string, string> SenderAliases = new()
+        {
+            { "Abby", "Abigail" },
+            { "Mayor", "Lewis" }
+        };
     }
 }
