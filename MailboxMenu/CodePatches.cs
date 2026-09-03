@@ -13,7 +13,7 @@ namespace MailboxMenu
         {
             public static bool Prefix(GameLocation __instance)
             {
-                if (!Config.ModEnabled || !Config.MenuOnMailbox || (Config.ModKey != SButton.None && !SHelper.Input.IsDown(Config.ModKey)))
+                if (!Config.ModEnabled || !Config.MenuOnMailbox || (Config.DontOpenWhenCarryingItem && Game1.player.ActiveObject?.IsHeldOverHead() == true) || (Config.ModKey != SButton.None && !SHelper.Input.IsDown(Config.ModKey)))
                     return true;
                 List<string> list = new List<string>();
                 foreach(var str in Game1.mailbox)

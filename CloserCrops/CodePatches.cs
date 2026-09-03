@@ -97,20 +97,32 @@ namespace CloserCrops
                 __instance.crop.modData[numberKey] = add.ToString();
             }
         }
+        [HarmonyPatch(typeof(Farmer), nameof(Farmer.addItemToInventoryBool))]
+        public static class Farmer_addItemToInventoryBool_Patch
+        {
+            public static void Postfix(Farmer __instance, Item item, ref bool __result)
+            {
+                if (!Config.ModEnabled || !skipCheckHarvest || __result)
+                    return;
+                Game1.createItemDebris(item, new Vector2((float)(__instance.Tile.X * 64 + 32), (float)(__instance.Tile.Y * 64 + 32)), -1, null, -1, false);
+                __result = true;
+            }
+        }
+        private static bool skipCheckHarvest;
+
         [HarmonyPatch(typeof(Crop), nameof(Crop.harvest))]
         public static class Crop_harvest_Patch
         {
-            private static bool skip = false;
             public static bool Prefix(Crop __instance, int xTile, int yTile, HoeDirt soil, JunimoHarvester junimoHarvester, bool isForcedScytheHarvest, ref bool __result)
             {
-                if (!Config.ModEnabled || skip || !Config.MultiplyPlantAndHarvest || !TryGetMiniCropNumber(__instance, out var num))
+                if (!Config.ModEnabled || skipCheckHarvest || !Config.MultiplyPlantAndHarvest || !TryGetMiniCropNumber(__instance, out var num))
                     return true;
-                skip = true;
+                skipCheckHarvest = true;
                 var days = __instance.dayOfCurrentPhase.Value;
                 for (int i = 0; i < num; i++)
                 {
                     __instance.modData[whichKey] = (i + 1).ToString();
-                    __result = __instance.harvest(xTile, yTile, soil, junimoHarvester, isForcedScytheHarvest);
+                    __result = __instance.harvest(xTile, yTile, soil, junimoHarvester, true);
                     __instance.modData.Remove(whichKey);
                     if (__instance.RegrowsAfterHarvest() && i < num - 1 && __instance.dayOfCurrentPhase.Value != days)
                     {
@@ -118,11 +130,11 @@ namespace CloserCrops
                     }
                     else if (!__result)
                     {
-                        skip = false;
+                        skipCheckHarvest = false;
                         return false;
                     }
                 }
-                skip = false;
+                skipCheckHarvest = false;
                 return false;
             }
 
