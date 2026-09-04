@@ -26,12 +26,13 @@ namespace MoolahMoneyMod
 					return;
 
 				BigInteger moolah = 0;
+				int delta = unchecked(value - __instance._money);
 
 				if (__instance.modData.TryGetValue(moolahKey, out string moolahString))
 				{
 					moolah = BigInteger.Parse(moolahString);
 				}
-				value = StoreOverflowAndClampMoney(__instance, value + moolah);
+				value = StoreOverflowAndClampMoney(__instance, __instance._money + moolah + delta);
 			}
 		}
 
