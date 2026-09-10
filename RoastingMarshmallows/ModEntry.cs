@@ -73,8 +73,6 @@ namespace RoastingMarshmallows
                 {
                     var dict = data.GetData<Dictionary<string, string>>();
                     dict["Raw Marshmallow"] = $"766 1 245 1/1 10/{rawItem}/default/";
-                    dict["Cooked Marshmallow"] = $"766 1 245 1/1 10/{cookedItem}/none/";
-                    dict["Burnt Marshmallow"] = $"766 1 245 1/1 10/{burntItem}/none/";
                 });
             }
             if (e.NameWithoutLocale.IsEquivalentTo("Data/Objects"))

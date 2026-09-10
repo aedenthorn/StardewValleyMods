@@ -1,7 +1,7 @@
 ﻿{
   "Name": "Lawn Grass",
   "Author": "aedenthorn",
-  "Version": "0.2.3",
+  "Version": "0.2.4",
   "Description": "Lawn Grass.",
   "UniqueID": "aedenthorn.LawnGrass",
   "EntryDll": "LawnGrass.dll",

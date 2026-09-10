@@ -172,7 +172,7 @@ namespace LawnGrass
         {
             public static void Prefix(Grass __instance, ref float shake, ref float rate)
             {
-                if (!Config.ModEnabled || !IsLawn(__instance) || __instance.numberOfWeeds.Value == 4)
+                if (!Config.ModEnabled || __instance.numberOfWeeds.Value == 4)
                     return;
                 shake *= (__instance.numberOfWeeds.Value / 4f);
             }

@@ -450,7 +450,7 @@ namespace OmniTools
                 tools.Add(new ToolInfo(currentTool));
             }
             t.modData[toolsKey] = JsonConvert.SerializeObject(tools);
-            t.modData[toolCountKey] = (tools.Count - 1) + "";
+            t.modData[toolCountKey] = tools.Count + "";
             Game1.playSound(GetToolSound(t));
             return t;
         }
