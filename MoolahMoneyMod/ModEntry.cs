@@ -130,7 +130,7 @@ namespace MoolahMoneyMod
 				return;
 			if(Config.Debug && Context.IsPlayerFree && e.Button == SButton.NumPad8)
 			{
-				SetMoolah(Game1.player, GetMoolah(Game1.player) * int.MaxValue);
+				//SetMoolah(Game1.player, GetMoolah(Game1.player) * int.MaxValue);
 			}
         }
 

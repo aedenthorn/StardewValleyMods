@@ -1,7 +1,7 @@
 ﻿{
 	"Name": "Moolah Money Mod",
 	"Author": "aedenthorn",
-	"Version": "0.7.0",
+	"Version": "0.7.2",
 	"Description": "Removes the 2 billion max money limit and adds a comma separator to the money display.",
 	"UniqueID": "aedenthorn.MoolahMoneyMod",
 	"EntryDll": "MoolahMoneyMod.dll",
