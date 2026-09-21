@@ -9,6 +9,7 @@ namespace LawnGrass
         public bool Debug { get; set; } = false;
         public int MaxDailyGrowth { get; set; } = 1;
         public float GrowChance { get; set; } = 0.5f;
+        public float SproutChance { get; set; } = 1f;
         public SButton ModKey { get; set; } = SButton.LeftControl;
         public bool LawnByDefault { get; set; } = true;
         public bool AllGrassIsLawn { get; set; } = false;

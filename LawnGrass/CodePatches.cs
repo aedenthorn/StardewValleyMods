@@ -132,7 +132,8 @@ namespace LawnGrass
                     return;
                 if(__instance.numberOfWeeds.Value > __state)
                 {
-                    __instance.numberOfWeeds.Value = Math.Clamp(__state + (Game1.random.NextDouble() < Config.GrowChance ? Game1.random.Next(1, Math.Max(Config.MaxDailyGrowth, 1)) : 0), 0, 4);
+                    var chance = __state == 0 ? Config.GrowChance * Config.SproutChance : Config.GrowChance; // mown lawn regrows slower
+                    __instance.numberOfWeeds.Value = Math.Clamp(__state + (Game1.random.NextDouble() < chance ? Game1.random.Next(1, Math.Max(Config.MaxDailyGrowth, 1)) : 0), 0, 4);
                 }
             }
         }

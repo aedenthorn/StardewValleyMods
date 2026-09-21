@@ -3,6 +3,8 @@
 	"MaxDailyGrowth": "Max Daily Growth",
 	"GrowChance": "Grow Chance",
 	"GrowChance.Desc": "Per day.",
+	"SproutChance": "Sprout Chance",
+	"SproutChance.Desc": "Multiplies Grow Chance for mown lawn (no grass left). Lower keeps a mown lawn mown; 1 is no change.",
 	"AllGrassIsLawn": "All Grass Is Lawn",
 	"AllGrassIsLawn.Desc": "Treat all grass starter grass as lawn",
 	"ReturnGrassStarter": "Return Grass Starter",
