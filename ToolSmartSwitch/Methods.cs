@@ -271,11 +271,12 @@ namespace ToolSmartSwitch
 
         public static bool SwitchForAnimal(Farmer f, FarmAnimal c, Dictionary<int, Tool> tools)
         {
-            if (c.GetAnimalData().HarvestTool.Equals("Shears")) 
+            string harvestTool = c.GetAnimalData()?.HarvestTool;
+            if (harvestTool == "Shears")
             { 
                 return SwitchToolType(f, typeof(Shears), tools); 
             }
-            else if (c.GetAnimalData().HarvestTool.Equals("Milk Pail")) 
+            else if (harvestTool == "Milk Pail")
             {
                 return SwitchToolType(f, typeof(MilkPail), tools);
 
