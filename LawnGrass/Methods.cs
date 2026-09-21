@@ -1,4 +1,6 @@
 ﻿using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
+using StardewModdingAPI;
 using Netcode;
 using StardewValley;
 using StardewValley.Network;
@@ -10,6 +12,62 @@ namespace LawnGrass
 {
     public partial class ModEntry
     {
+        public static void InvalidateLawn()
+        {
+            foreach (Season s in Enum.GetValues(typeof(Season)))
+                SHelper.GameContent.InvalidateCache(lawnPath + Utility.getSeasonKey(s));
+        }
+
+        /// <summary>Keep the lawn sprite's shape (alpha) and fill it with the map's grass tile, so the lawn matches whatever outdoor tilesheet is loaded (vanilla or a recolour).</summary>
+        public static void PaintLawnFromMap(IAssetData asset, string season)
+        {
+            var device = Game1.graphics?.GraphicsDevice;
+            if (device is null)
+                return;
+            Texture2D sheet;
+            try
+            {
+                sheet = SHelper.GameContent.Load<Texture2D>($"Maps/{season}_outdoorsTileSheet");
+            }
+            catch (Exception ex)
+            {
+                SMonitor.Log($"Couldn't load the {season} outdoor tilesheet, leaving the lawn as-is: {ex.Message}", StardewModdingAPI.LogLevel.Warn);
+                return;
+            }
+            int columns = sheet.Width / 16;
+            int tileX = columns > 0 ? Config.MapGrassTileIndex % columns * 16 : -1;
+            int tileY = columns > 0 ? Config.MapGrassTileIndex / columns * 16 : -1;
+            if (Config.MapGrassTileIndex < 0 || tileX < 0 || tileX + 16 > sheet.Width || tileY + 16 > sheet.Height)
+            {
+                SMonitor.Log($"Map Grass Tile {Config.MapGrassTileIndex} is outside the {season} outdoor tilesheet ({sheet.Width}x{sheet.Height}), leaving the lawn as-is.", StardewModdingAPI.LogLevel.Warn);
+                return;
+            }
+            var grass = new Color[16 * 16];
+            sheet.GetData(0, new Rectangle(tileX, tileY, 16, 16), grass, 0, grass.Length);
+
+            var image = asset.AsImage();
+            var lawn = image.Data;
+            var shape = new Color[lawn.Width * lawn.Height];
+            lawn.GetData(shape);
+            var output = new Color[shape.Length];
+            for (int y = 0; y < lawn.Height; y++)
+            {
+                for (int x = 0; x < lawn.Width; x++)
+                {
+                    int i = y * lawn.Width + x;
+                    byte alpha = shape[i].A;
+                    if (alpha == 0)
+                        continue;
+                    var source = grass[y % 16 * 16 + x % 16];
+                    float scale = alpha / 255f; // textures are premultiplied
+                    output[i] = new Color((byte)(source.R * scale), (byte)(source.G * scale), (byte)(source.B * scale), alpha);
+                }
+            }
+            var patched = new Texture2D(device, lawn.Width, lawn.Height);
+            patched.SetData(output);
+            image.PatchImage(patched);
+        }
+
         public static bool IsLawn(Grass grass)
         {
             return (Config.AllGrassIsLawn && grass.grassType.Value == 1) || grass.modData.ContainsKey(lawnKey);
