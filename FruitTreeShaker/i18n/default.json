@@ -1,7 +1,11 @@
 {
 	"ModEnabled": "Mod Enabled",
 	"DaysUntilFruitFalls": "Days Until Fruit Falls",
-	"DaysUntilFruitFalls.Desc": "Each fruit falls this many days after it appears on the tree. 0 = the same morning.",
+	"DaysUntilFruitFalls.Desc": "Each fruit falls this many days after it appears on the tree. 0 = the same morning. With Random Drops on, this is the minimum.",
+	"RandomDrops": "Random Drops",
+	"RandomDrops.Desc": "Each fruit picks its own day to fall, between Days Until Fruit Falls and Max Days Until Fruit Falls.",
+	"MaxDaysUntilFruitFalls": "Max Days Until Fruit Falls",
+	"MaxDaysUntilFruitFalls.Desc": "Only with Random Drops. The latest a fruit can fall, in days after it appears.",
 	"DropAllInStorm": "Storms Drop All Fruit",
 	"DropAllInStorm.Desc": "On a stormy (lightning) day every fruit tree drops all its fruit that morning.",
 	"FarmOnly": "Farm Only",
