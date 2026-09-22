@@ -1,0 +1,13 @@
+{
+	"ModEnabled": "Mod Enabled",
+	"DaysUntilFruitFalls": "Days Until Fruit Falls",
+	"DaysUntilFruitFalls.Desc": "Each fruit falls this many days after it appears on the tree. 0 = the same morning.",
+	"DropAllInStorm": "Storms Drop All Fruit",
+	"DropAllInStorm.Desc": "On a stormy (lightning) day every fruit tree drops all its fruit that morning.",
+	"FarmOnly": "Farm Only",
+	"FarmOnly.Desc": "Only trees on the farm. Off = every location.",
+	"ShakePalmTrees": "Shake Palm Trees",
+	"ShakePalmTrees.Desc": "Shake down coconuts from palm trees every morning.",
+	"ShakeNormalTrees": "Shake Normal Trees",
+	"ShakeNormalTrees.Desc": "Shake down seeds from other wild trees every morning."
+}
