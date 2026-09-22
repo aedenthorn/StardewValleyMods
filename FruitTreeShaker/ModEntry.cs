@@ -79,7 +79,7 @@ namespace FruitTreeShaker
             {
                 for (int i = fruits.Count - 1; i >= 0; i--)
                 {
-                    int lifetime = Config.RandomDrops ? fruits[i].Lifetime : Config.DaysUntilFruitFalls;
+                    int lifetime = Config.RandomDrops ? fruits[i].Lifetime : Config.DaysRipeBeforeFalling;
                     if (today - fruits[i].AppearDay >= lifetime && DropFruit(tree, tile, i))
                         fruits.RemoveAt(i);
                 }
@@ -96,8 +96,8 @@ namespace FruitTreeShaker
         /// <summary>Pick how many days a new fruit stays on the tree when RandomDrops is on.</summary>
         private static int RollLifetime()
         {
-            int min = Math.Max(0, Config.DaysUntilFruitFalls);
-            int max = Math.Max(min, Config.MaxDaysUntilFruitFalls);
+            int min = Math.Max(0, Config.DaysRipeBeforeFalling);
+            int max = Math.Max(min, Config.MaxDaysRipeBeforeFalling);
             return Game1.random.Next(min, max + 1);
         }
 
