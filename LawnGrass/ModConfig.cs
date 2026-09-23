@@ -16,5 +16,7 @@ namespace LawnGrass
         public bool ReturnGrassStarter { get; set; } = true;
         public bool ProtectNonLawn { get; set; } = true;
         public bool TrufflesInGrass { get; set; } = true;
+        public bool MatchMapGrass { get; set; } = false;
+        public int MapGrassTileIndex { get; set; } = 175;
     }
 }

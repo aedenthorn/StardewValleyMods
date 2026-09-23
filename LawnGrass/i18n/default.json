@@ -12,5 +12,9 @@
 	"ProtectNonLawn.Desc": "Prevent destruction of non-lawn grass starter grass.",
 	"ModKey": "Mod Key",
 	"TrufflesInGrass": "Dig In Grass",
-	"TrufflesInGrass.Desc": "Allow pigs to dig up truffles in grass."
+	"TrufflesInGrass.Desc": "Allow pigs to dig up truffles in grass.",
+	"MatchMapGrass": "Match Map Grass",
+	"MatchMapGrass.Desc": "Paint the lawn with the grass tile from the loaded outdoor tilesheet, so it matches vanilla or your recolour pack.",
+	"MapGrassTileIndex": "Map Grass Tile",
+	"MapGrassTileIndex.Desc": "Tile index in the outdoor tilesheet to take the grass from. 175 is the plain farm grass; 351 is the darker patch by the farmhouse."
 }

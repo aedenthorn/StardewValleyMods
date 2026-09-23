@@ -40,6 +40,7 @@ namespace LawnGrass
             helper.Events.GameLoop.GameLaunched += GameLoop_GameLaunched;
             helper.Events.GameLoop.DayStarted += (_, _) => heldMownTonight.Clear();
             helper.Events.Content.AssetRequested += Content_AssetRequested;
+            helper.Events.Content.AssetsInvalidated += Content_AssetsInvalidated;
             helper.Events.Display.RenderedStep += Display_RenderedStep;
 
 
@@ -86,8 +87,16 @@ namespace LawnGrass
                 if (e.NameWithoutLocale.IsEquivalentTo(lawnPath + season))
                 {
                     e.LoadFromModFile<Texture2D>($"assets/lawn_{season}.png", AssetLoadPriority.Exclusive);
+                    if (Config.MatchMapGrass)
+                        e.Edit(asset => PaintLawnFromMap(asset, season), AssetEditPriority.Late);
                 }
             }
+        }
+
+        private void Content_AssetsInvalidated(object sender, AssetsInvalidatedEventArgs e)
+        {
+            if (Config.MatchMapGrass && e.NamesWithoutLocale.Any(n => n.Name.Contains("_outdoorsTileSheet", StringComparison.OrdinalIgnoreCase)))
+                InvalidateLawn();
         }
 
         private void GameLoop_GameLaunched(object sender, GameLaunchedEventArgs e)
@@ -99,7 +108,7 @@ namespace LawnGrass
                 configMenu.Register(
                     mod: ModManifest,
                     reset: () => Config = new ModConfig(),
-                    save: () => Helper.WriteConfig(Config)
+                    save: () => { Helper.WriteConfig(Config); InvalidateLawn(); }
                 );
 
                 configMenu.AddBoolOption(
