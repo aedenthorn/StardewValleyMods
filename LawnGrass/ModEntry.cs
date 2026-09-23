@@ -7,6 +7,7 @@ using StardewModdingAPI.Utilities;
 using StardewValley;
 using StardewValley.TerrainFeatures;
 using System;
+using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 
@@ -25,6 +26,8 @@ namespace LawnGrass
         public const string posKey = "aedenthorn.LawnGrass/pos";
         public const string lawnPath = "aedenthorn.LawnGrass/lawn_";
         public static PerScreen<int> lastWeedCount = new();
+        /// <summary>Lawn tiles that stayed mown in dayUpdate tonight; growWeedGrass must not regrow them.</summary>
+        public static readonly HashSet<Grass> heldMownTonight = new(ReferenceEqualityComparer.Instance);
 
         public override void Entry(IModHelper helper)
         {
@@ -35,6 +38,7 @@ namespace LawnGrass
             context = this;
 
             helper.Events.GameLoop.GameLaunched += GameLoop_GameLaunched;
+            helper.Events.GameLoop.DayStarted += (_, _) => heldMownTonight.Clear();
             helper.Events.Content.AssetRequested += Content_AssetRequested;
             helper.Events.Display.RenderedStep += Display_RenderedStep;
 

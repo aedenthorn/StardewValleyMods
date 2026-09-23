@@ -135,6 +135,25 @@ namespace LawnGrass
                     var chance = __state == 0 ? Config.GrowChance * Config.SproutChance : Config.GrowChance; // mown lawn regrows slower
                     __instance.numberOfWeeds.Value = Math.Clamp(__state + (Game1.random.NextDouble() < chance ? Game1.random.Next(1, Math.Max(Config.MaxDailyGrowth, 1)) : 0), 0, 4);
                 }
+                if (__state == 0 && __instance.numberOfWeeds.Value == 0)
+                    heldMownTonight.Add(__instance); // the spreading pass runs next; keep it mown there too
+            }
+        }
+
+        // GameLocation.growWeedGrass runs after every tile's dayUpdate and grows existing grass again
+        // (65% chance of +0..2 per tile), which would regrow a lawn this mod just decided to keep mown.
+        [HarmonyPatch(typeof(GameLocation), nameof(GameLocation.growWeedGrass))]
+        public static class GameLocation_growWeedGrass_Patch
+        {
+            public static void Postfix()
+            {
+                if (!Config.ModEnabled)
+                    return;
+                foreach (var grass in heldMownTonight)
+                {
+                    if (grass.numberOfWeeds.Value > 0)
+                        grass.numberOfWeeds.Value = 0;
+                }
             }
         }
         [HarmonyPatch(typeof(Grass), nameof(Grass.reduceBy))] 
