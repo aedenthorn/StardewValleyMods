@@ -198,12 +198,20 @@ namespace FarmerPortraits
 
         public static string AddSpaces(string str)
         {
-            string newStr = "";
-            foreach (var c in str)
+            if (str?.Length < 2)
+                return str;
+            string newStr = str[0].ToString();
+            for(int i = 1; i < str.Length; i++)
             {
-                if (c >= 'A' && c <= 'Z' && newStr.Length > 0)
+                char c = str[i];
+                if (i < str.Length - 1)
                 {
-                    newStr += " ";
+                    char c1 = str[i + 1];
+                    char cm = str[i - 1];
+                    if (c >= 'A' && c <= 'Z' && ((c1 >= 'a' && c1 <= 'z') || (cm >= 'a' && cm <= 'z')))
+                    {
+                        newStr += " ";
+                    }
                 }
                 newStr += c;
             }
