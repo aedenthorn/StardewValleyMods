@@ -1,22 +1,16 @@
-﻿{
+{
   "Name": "Fruit Tree Shaker",
   "Author": "Aedenthorn",
-  "Version": "1.1.0",
-  "Description": "Shakes fruit trees daily.",
+  "Version": "2.0.0",
+  "Description": "Ripe fruit falls off fruit trees on its own after a few days, and in a storm.",
   "UniqueID": "Aedenthorn.FruitTreeShaker",
   "EntryDll": "FruitTreeShaker.dll",
-  "MinimumApiVersion": "2.10.0",
-  "UpdateKeys": ["Nexus:5776"],
-  "ModUpdater": {
-    "Repository": "StardewValleyMods",
-    "User": "aedenthorn",
-    "Directory": "_releases",
-    "ModFolder": "FruitTreeShaker"
-  },
+  "MinimumApiVersion": "4.0.0",
+  "UpdateKeys": [ "Nexus:5776" ],
   "Dependencies": [
-      {
-        "UniqueID": "Platonymous.ModUpdater",
-        "IsRequired": false
-      },
+    {
+      "UniqueID": "spacechase0.GenericModConfigMenu",
+      "IsRequired": false
+    }
   ]
 }
