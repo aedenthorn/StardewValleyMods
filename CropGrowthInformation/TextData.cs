@@ -1,17 +1,16 @@
 ﻿using Microsoft.Xna.Framework;
-using StardewModdingAPI;
 
-namespace CropGrowthInformation
+namespace CropGrowthInfo
 {
-    public class TextData
-    {
-        public Color color;
-        public string text;
+	public class TextData
+	{
+		public Color color;
+		public string text;
 
-        public TextData(string _text, Color _color)
-        {
-            text = _text;
-            color = _color;
-        }
-    }
+		public TextData(string _text, Color _color)
+		{
+			text = _text;
+			color = _color;
+		}
+	}
 }
