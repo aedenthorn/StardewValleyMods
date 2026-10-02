@@ -47,8 +47,7 @@ namespace DoorKnock
             }
             SMonitor.Log($"Starting to answer interior door: {npc.Name} at {npc.currentLocation.Name} {npc.Tile} for door at {doorTile}");
             npc.modData[answerPointKey] = $"{doorTile.X},{doorTile.Y},{(up ? 2 : 0)}";
-            delayDict[npc.Name] = Config.AnswerDelay;
-
+            AddDelay(npc.Name, Config.AnswerDelay);
         }
 
         public static void KnockExteriorDoor(Vector2 doorTile, string[] action)
@@ -69,7 +68,8 @@ namespace DoorKnock
             SMonitor.Log($"Starting to answer exterior door: {npc.Name} at {npc.currentLocation.Name} {npc.Tile} for door at {Game1.currentLocation.Name} {doorTile}");
 
             npc.modData[answerPointKey] = $"{doorTile.X},{doorTile.Y},2,{Game1.currentLocation.NameOrUniqueName}";
-            delayDict[npc.Name] = Config.AnswerDelay;
+            AddDelay(npc.Name, Config.AnswerDelay);
+
 
         }
         public static void PlayKnockSound(Vector2 doorTile)
@@ -134,8 +134,10 @@ namespace DoorKnock
             NPC npc = c as NPC;
             //var doorTile = c.TilePoint + new Point(0, c.FacingDirection == 0 ? -1 : 1);
             //c.currentLocation.openDoor(new xTile.Dimensions.Location(c.TilePoint.X, c.TilePoint.Y), true);
-            returnDict[npc.Name] = Config.WaitTime;
-        } 
+            AddReturn(npc.Name, Config.WaitTime);
+        }
+
+
         public static void DoneWaiting(NPC npc)
         {
             var ps = npc.modData[returnPointKey].Split(',');
@@ -193,5 +195,24 @@ namespace DoorKnock
             return false;
         }
 
+        public static void AddReturn(string name, int waitTime)
+        {
+            if (Game1.IsMasterGame)
+                returnDict[name] = waitTime;
+            else
+                SendMessage(name, waitTime, "Return");
+        }
+        public static void AddDelay(string name, int waitTime)
+        {
+            if (Game1.IsMasterGame)
+                delayDict[name] = waitTime;
+            else
+                SendMessage(name, waitTime, "Delay");
+        }
+        public static void SendMessage(string name, int delay, string type)
+        {
+            MyMessage message = new MyMessage(name, delay); // create your own class with the data to send
+            SHelper.Multiplayer.SendMessage(message, type);
+        }
     }
 }

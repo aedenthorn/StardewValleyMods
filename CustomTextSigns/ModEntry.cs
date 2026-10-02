@@ -4,14 +4,13 @@ using StardewModdingAPI;
 using StardewModdingAPI.Events;
 using StardewModdingAPI.Utilities;
 using StardewValley;
-using StardewValley.Objects;
+using StardewValley.GameData.BigCraftables;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 
-namespace DoorKnock
+namespace CustomTextSigns
 {
-    /// <summary>The mod entry point.</summary>
     public partial class ModEntry : Mod
     {
 
@@ -19,13 +18,8 @@ namespace DoorKnock
         public static IModHelper SHelper;
         public static ModConfig Config;
         public static ModEntry context;
-        public const string answerPointKey = "aedenthorn.DoorKnock/answer";
-        public const string returnPointKey = "aedenthorn.DoorKnock/return";
-        public const string animationKey = "aedenthorn.DoorKnock/animation";
-        public const string openKey = "aedenthorn.DoorFurniture/open";
-        public static Dictionary<string, int> delayDict = new Dictionary<string, int>();
-        public static Dictionary<string, int> returnDict = new Dictionary<string, int>();
-        public static PerScreen<Vector2?> farmerController = new PerScreen<Vector2?>();
+        public const string offsetKey = "aedenthorn.CustomTextSigns/offset";
+        public const string widthKey = "aedenthorn.CustomTextSigns/width";
 
         public override void Entry(IModHelper helper)
         {
@@ -36,98 +30,74 @@ namespace DoorKnock
             context = this;
 
             helper.Events.GameLoop.GameLaunched += GameLoop_GameLaunched;
-            helper.Events.GameLoop.DayStarted += GameLoop_DayStarted;
+            helper.Events.Content.AssetRequested += Content_AssetRequested;
             helper.Events.GameLoop.UpdateTicked += GameLoop_UpdateTicked;
-            helper.Events.Input.ButtonsChanged += Input_ButtonsChanged;
-            helper.Events.Multiplayer.ModMessageReceived += Multiplayer_ModMessageReceived;
 
             var harmony = new Harmony(ModManifest.UniqueID);
             harmony.PatchAll();
         }
 
-        private void Multiplayer_ModMessageReceived(object sender, ModMessageReceivedEventArgs e)
-        {
-            if(!Config.ModEnabled || !Game1.IsMasterGame)
-                return;
-            if (e.FromModID == ModManifest.UniqueID)
-            {
-                MyMessage message = e.ReadAs<MyMessage>();
-                switch (e.Type)
-                {
-                    case "Return":
-                        returnDict[message.name] = message.delay;
-                        return;
-                    case "Delay":
-                        delayDict[message.name] = message.delay;
-                        return;
-                    default:
-                        return;
-                }
-            }
-        }
-
-        private void GameLoop_DayStarted(object sender, DayStartedEventArgs e)
-        {
-            if(!Config.ModEnabled || !Game1.IsMasterGame)
-                return;
-            returnDict.Clear();
-            delayDict.Clear();
-        }
-
         private void GameLoop_UpdateTicked(object sender, UpdateTickedEventArgs e)
         {
-            if (!Config.ModEnabled || !Context.IsPlayerFree || !Game1.IsMasterGame)
+            SHelper.GameContent.InvalidateCache("Data/BigCraftables");
+            if (!Context.CanPlayerMove || !Config.ModEnabled)
                 return;
-            foreach(var key in delayDict.Keys.ToArray())
+            bool changingWidth = false;
+            int delta = 0;
+            SButton button;
+            if (SHelper.Input.IsDown(Config.UpKey) || SHelper.Input.IsSuppressed(Config.UpKey))
             {
-                delayDict[key]--;
-                if (delayDict[key] < 0)
-                {
-                    delayDict.Remove(key);
-                    var npc = Game1.getCharacterFromName(key, true);
-                    if(npc != null)
-                        DoneDelaying(npc);
-                }
+                button = Config.UpKey;
+                delta = -1;
             }
-            foreach(var key in returnDict.Keys.ToArray())
+            else if (SHelper.Input.IsDown(Config.DownKey) || SHelper.Input.IsSuppressed(Config.DownKey))
             {
-                returnDict[key]--;
-                if (returnDict[key] < 0)
+                button = Config.DownKey;
+                delta = 1;
+            }
+            else if (SHelper.Input.IsDown(Config.IncreaseWidthKey) || SHelper.Input.IsSuppressed(Config.IncreaseWidthKey))
+            {
+                changingWidth = true;
+                button = Config.IncreaseWidthKey;
+                delta = 1;
+            }
+            else if (SHelper.Input.IsDown(Config.DecreaseWidthKey) || SHelper.Input.IsSuppressed(Config.DecreaseWidthKey))
+            {
+                changingWidth = true;
+                button = Config.DecreaseWidthKey;
+                delta = -1;
+            }
+            else
+                return;
+
+            if (Game1.currentLocation.getObjectAtTile((int)Game1.currentCursorTile.X, (int)Game1.currentCursorTile.Y) is Object obj && obj.IsTextSign())
+            {
+                int offset = 0;
+                string key = changingWidth ? widthKey : offsetKey;
+                if (obj.modData.TryGetValue(key, out string offsetStr))
                 {
-                    returnDict.Remove(key);
-                    var npc = Game1.getCharacterFromName(key, true);
-                    if(npc != null)
-                        DoneWaiting(npc);
+                    int.TryParse(offsetStr, out offset);
                 }
+                offset += delta;
+                offset = MathHelper.Clamp(offset, changingWidth ? -128 : -128, changingWidth ? 256 : 96);
+                obj.modData[key] = offset.ToString();
+                SHelper.Input.Suppress(button);
             }
         }
 
-        private void Input_ButtonsChanged(object sender, ButtonsChangedEventArgs e)
+
+        private void Content_AssetRequested(object sender, AssetRequestedEventArgs e)
         {
-            if (!Config.ModEnabled || !Context.IsPlayerFree || !Config.KnockButton.JustPressed())
+            if (!Config.ModEnabled)
                 return;
-            if (Config.Debug)
+            if(Config.AllSignsTextSigns && e.NameWithoutLocale.IsEquivalentTo("Data/BigCraftables"))
             {
-                //farmerController.Value = Game1.player.Position;
-                //Game1.playSound("axchop");
-            }
-            var doorTile = Game1.player.GetGrabTile();
-            Furniture f = Game1.currentLocation.GetFurnitureAt(doorTile);
-            if (f?.modData.TryGetValue(openKey, out var open) == true && open == "closed")
-            {
-                PlayKnockSound(doorTile);
-                return;
-            }
-            var action = Game1.currentLocation.GetTilePropertySplitBySpaces("Action", "Buildings", (int)doorTile.X, (int)doorTile.Y);
-            if (action.Length > 1 && action[0] == "Door")
-            {
-                KnockInteriorDoor(doorTile, action);
-                return;
-            }
-            var door = doorTile.ToPoint();
-            if (Game1.currentLocation.doors.TryGetValue(door, out var target))
-            {
-                KnockExteriorDoor(doorTile, action);
+                e.Edit((IAssetData data) =>
+                {
+                    data.AsDictionary<string, BigCraftableData>().Data["37"].ContextTags.Add("text_sign");
+                    data.AsDictionary<string, BigCraftableData>().Data["38"].ContextTags.Add("text_sign");
+                    data.AsDictionary<string, BigCraftableData>().Data["39"].ContextTags.Add("text_sign");
+                });
             }
         }
 
@@ -155,7 +125,7 @@ namespace DoorKnock
                             name: () => { var t = Helper.Translation.Get(p.Name); return t.HasValue() ? t : AddSpaces(p.Name); },
                             tooltip: () => { var t = Helper.Translation.Get(p.Name + ".Desc"); return t.HasValue() ? t : null; },
                             getValue: () => (bool)p.GetValue(Config),
-                            setValue: value => p.SetValue(Config, value)
+                            setValue: value => { p.SetValue(Config, value); if (p.Name == nameof(Config.AllSignsTextSigns)) SHelper.GameContent.InvalidateCache("Data/BigCraftables"); }
                         );
                     }
                     else if (p.PropertyType == typeof(int))

@@ -1,7 +1,7 @@
 ﻿{
   "Name": "Door Knock",
   "Author": "aedenthorn",
-  "Version": "0.4.2",
+  "Version": "0.4.3",
   "Description": "Door Knock.",
   "UniqueID": "aedenthorn.DoorKnock",
   "EntryDll": "DoorKnock.dll",
