@@ -39,11 +39,10 @@ namespace CustomTextSigns
 
         private void GameLoop_UpdateTicked(object sender, UpdateTickedEventArgs e)
         {
-            SHelper.GameContent.InvalidateCache("Data/BigCraftables");
             if (!Context.CanPlayerMove || !Config.ModEnabled)
                 return;
             bool changingWidth = false;
-            int delta = 0;
+            int delta;
             SButton button;
             if (SHelper.Input.IsDown(Config.UpKey) || SHelper.Input.IsSuppressed(Config.UpKey))
             {

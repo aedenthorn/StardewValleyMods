@@ -115,8 +115,12 @@ namespace QuestHelper
             if (fishData.Length >= 6 && fishData[5] != "600 2600")
             {
                 var split = fishData[5].Split(' ');
-                if(split.Length == 2)
-                    output.Add(string.Format(SHelper.Translation.Get("fish-hours"), fish.DisplayName ?? itemId, split[0], split[1]));
+                if (split.Length == 2 && int.TryParse(split[0], out var startTime) && int.TryParse(split[1], out var endTime))
+                {
+                    var start = Game1.getTimeOfDayString(startTime);
+                    var end = Game1.getTimeOfDayString(endTime);
+                    output.Add(string.Format(SHelper.Translation.Get("fish-hours"), fish.DisplayName ?? itemId, start, end));
+                }
             }
             if (fishData.Length >= 8 && fishData[7] != "both")
             {

@@ -7,7 +7,7 @@
 	"fish-location": "{0} can be found in {1}",
 	"fish-sunny": "{0} can only be caught when it is sunny out.",
 	"fish-rainy": "{0} can only be caught when it is rainy out.",
-	"fish-hours": "{0} can only be caught between {1}h and {2}h.",
+	"fish-hours": "{0} can only be caught between {1} and {2}.",
 	"x-crafting-recipe-known": "{0} can be crafted in the crafting menu.",
 	"x-crafting-recipe-unknown": "{0} can be crafted in the crafting menu once you learn the recipe.",
 	"x-y-skill-crafting": "You will learn the recipe once you reach level {0} in {1}.",
