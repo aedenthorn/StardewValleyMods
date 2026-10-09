@@ -1,11 +1,11 @@
 ﻿{
   "Name": "Groundhog Day",
   "Author": "aedenthorn",
-  "Version": "0.2.0",
-  "Description": "Groundhog Day.",
+  "Version": "0.2.1",
+  "Description": "Groundhog Day. (Unofficial update for Stardew Valley 1.6.)",
   "UniqueID": "aedenthorn.GroundhogDay",
   "EntryDll": "GroundhogDay.dll",
-  "MinimumApiVersion": "3.13.0",
+  "MinimumApiVersion": "4.0.0",
   "ModUpdater": {
     "Repository": "StardewValleyMods",
     "User": "aedenthorn",
