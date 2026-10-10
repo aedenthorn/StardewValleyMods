@@ -4,7 +4,7 @@
 	"GMCM.ShowQuestDetails.Name": "Quest Details",
 	"left-to-greet": "Left: {0}",
 	"fish-everywhere": "{0} can found everywhere.",
-	"fish-location": "{0} can be found in {1}",
+	"fish-location": "{0} can be found in {1}.",
 	"fish-sunny": "{0} can only be caught when it is sunny out.",
 	"fish-rainy": "{0} can only be caught when it is rainy out.",
 	"fish-hours": "{0} can only be caught between {1} and {2}.",

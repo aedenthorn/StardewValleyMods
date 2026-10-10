@@ -2,6 +2,7 @@
 using Microsoft.Xna.Framework;
 using StardewModdingAPI;
 using StardewModdingAPI.Events;
+using StardewModdingAPI.Utilities;
 using StardewValley;
 using StardewValley.GameData.BigCraftables;
 using StardewValley.Locations;
@@ -165,8 +166,8 @@ namespace PlaceShaft
 
                 if (tileIndexAt == 174)
                 {
-                    playerLocation = Game1.player.position.Value;
-                    jumpLocation = new Vector2(tileLocation.X * 64, tileLocation.Y * 64);
+                    playerLocation.Value = Game1.player.position.Value;
+                    jumpLocation.Value = new Vector2(tileLocation.X * 64, tileLocation.Y * 64);
                     if (Config.SkipConfirmOnShaftJump)
                     {
                         __instance.enterMineShaft();
@@ -179,8 +180,8 @@ namespace PlaceShaft
 
         private static bool enterMineShaft_prefix(MineShaft __instance, ref bool ___isFallingDownShaft, ref int ___lastLevelsDownFallen, int ___deepestLevelOnCurrentDesertFestivalRun)
         {
-            ticks = 0;
-            lastYJumpVelocity = 0;
+            ticks.Value = 0;
+            lastYJumpVelocity.Value = 0;
             context.Helper.Events.GameLoop.UpdateTicked += GameLoop_UpdateTicked;
 
             if (Config.PercentDamage == 100 && Config.MaxLevels == 9 && Config.MinLevels == 3 && Config.PreventGoingToSkullCave)
@@ -193,11 +194,11 @@ namespace PlaceShaft
             {
                 levelsDown = levelsDown * 2 - 1;
             }
-            if (Config.PreventGoingToSkullCave && __instance.mineLevel < 220 && __instance.mineLevel + levelsDown > 220)
+            if (Config.PreventGoingToSkullCave && __instance.mineLevel < 120 && __instance.mineLevel + levelsDown > 120)
             {
-                levelsDown = 220 - __instance.mineLevel;
+                levelsDown = 120 - __instance.mineLevel;
             }
-            levelsFallen = levelsDown;
+            levelsFallen.Value = levelsDown;
             ___lastLevelsDownFallen = levelsDown;
             Game1.player.health = Math.Max(1, Game1.player.health - levelsDown * (int)Math.Round(3f * Config.PercentDamage / 100f));
             ___isFallingDownShaft = true;
@@ -219,29 +220,29 @@ namespace PlaceShaft
 
         public static void GameLoop_UpdateTicked(object sender, UpdateTickedEventArgs e)
         {
-            if (Game1.player.yJumpVelocity == 0f && lastYJumpVelocity < 0f)
+            if (Game1.player.yJumpVelocity == 0f && lastYJumpVelocity.Value < 0f)
             {
                 context.Helper.Events.GameLoop.UpdateTicked -= GameLoop_UpdateTicked;
                 return;
             }
-            ticks++;
+            ticks.Value++;
             //context.Monitor.Log($"{ticks}: {playerLocation}, {jumpLocation}, {Game1.player.position.Value}");
-            Game1.player.position.Value = Vector2.Lerp(playerLocation, jumpLocation, 1f / 30f * ticks);
-            lastYJumpVelocity = Game1.player.yJumpVelocity;
+            Game1.player.position.Value = Vector2.Lerp(playerLocation.Value, jumpLocation.Value, 1f / 30f * ticks.Value);
+            lastYJumpVelocity.Value = Game1.player.yJumpVelocity;
         }
 
-        private static int mineLevel;
-        private static int levelsFallen;
-        private static Vector2 playerLocation;
-        private static Vector2 jumpLocation;
-        private static float lastYJumpVelocity;
-        public static int ticks;
+        private static PerScreen<int> mineLevel = new(() => 0);
+        private static PerScreen<int> levelsFallen = new(()=> 0);
+        private static PerScreen<Vector2> playerLocation = new(() => Vector2.Zero);
+        private static PerScreen<Vector2> jumpLocation = new(() => Vector2.Zero);
+        private static PerScreen<float> lastYJumpVelocity = new(() => 0f);
+        public static PerScreen<int> ticks = new(() => 0);
 
         private static void afterFall()
         {
-            Game1.drawObjectDialogue(Game1.content.LoadString((levelsFallen > 7) ? "Strings\\Locations:Mines_FallenFar" : "Strings\\Locations:Mines_Fallen", levelsFallen));
+            Game1.drawObjectDialogue(Game1.content.LoadString((levelsFallen.Value > 7) ? "Strings\\Locations:Mines_FallenFar" : "Strings\\Locations:Mines_Fallen", levelsFallen));
             Game1.messagePause = true;
-            Game1.enterMine(mineLevel + levelsFallen);
+            Game1.enterMine(mineLevel.Value + levelsFallen.Value);
             Game1.fadeToBlackAlpha = 1f;
             Game1.player.faceDirection(2);
             Game1.player.showFrame(5, false);

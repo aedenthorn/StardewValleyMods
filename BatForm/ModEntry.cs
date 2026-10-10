@@ -234,7 +234,7 @@ namespace BatForm
 
 		private void Input_ButtonsChanged(object sender, StardewModdingAPI.Events.ButtonsChangedEventArgs e)
 		{
-			if (!Config.ModEnabled || !Context.CanPlayerMove || !Config.TransformKey.JustPressed() || BatFormStatus(Game1.player) == BatForm.SwitchingFrom || BatFormStatus(Game1.player) == BatForm.SwitchingTo || (Config.NightOnly && Game1.timeOfDay < 1800) || (Config.OutdoorsOnly && !Game1.player.currentLocation.IsOutdoors) || (!Config.ActionsEnabled && Game1.player.isRidingHorse()))
+			if (!Config.ModEnabled || !Context.CanPlayerMove || !Config.TransformKey.JustPressed() || BatFormStatus(Game1.player) == BatForm.SwitchingFrom || BatFormStatus(Game1.player) == BatForm.SwitchingTo || (Config.NightOnly && Game1.timeOfDay < 1800 && Game1.timeOfDay >= 600) || (Config.OutdoorsOnly && !Game1.player.currentLocation.IsOutdoors) || (!Config.ActionsEnabled && Game1.player.isRidingHorse()))
 				return;
 
 			if (manaBarApi is not null && Config.UseMana)
