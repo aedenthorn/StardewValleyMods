@@ -26,8 +26,10 @@ namespace FieldHarvest
 
             Crop sameCrop = __instance.crop;
 
-            List<Vector2> hoedirts = new List<Vector2>();
-            hoedirts.Add(tileLocation);
+            List<Vector2> hoedirts = new List<Vector2>
+            {
+                tileLocation
+            };
             GetHoeDirt(tileLocation, hoedirts, location);
             SMonitor.Log($"Got {hoedirts.Count} hoe dirt tiles");
             //hoedirts.Sort(delegate (Vector2 p1, Vector2 p2) { return Vector2.Distance(tileLocation, p1).CompareTo(Vector2.Distance(tileLocation, p2)); });

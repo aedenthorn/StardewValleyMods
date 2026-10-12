@@ -1,7 +1,7 @@
 ﻿{
   "Name": "SoundTweaker",
   "Author": "aedenthorn",
-  "Version": "0.5.0",
+  "Version": "0.5.1",
   "Description": "SoundTweaker.",
   "UniqueID": "aedenthorn.SoundTweaker",
   "EntryDll": "SoundTweaker.dll",

@@ -57,7 +57,7 @@ namespace SoundTweaker
 
         private void Input_ButtonPressed(object sender, StardewModdingAPI.Events.ButtonPressedEventArgs e)
         {
-            if (e.Button == SButton.Delete)
+            if (false && e.Button == SButton.Delete)
             {
                 Game1.stopMusicTrack(StardewValley.GameData.MusicContext.Default);
                 ReloadSounds();
