@@ -11,6 +11,7 @@ namespace NozzleAndEnricher
         public bool ModEnabled { get; set; } = true;
         public bool Debug { get; set; } = false;
         public int NozzleBonus { get; set; } = 1;
+        public bool InfiniteEnricherFertilizer { get; set; } = false;
         public SButton ModKey { get; set; } = SButton.LeftAlt;
 
     }

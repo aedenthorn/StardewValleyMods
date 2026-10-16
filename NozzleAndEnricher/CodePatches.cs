@@ -5,6 +5,9 @@ using StardewValley;
 using StardewValley.ItemTypeDefinitions;
 using StardewValley.Tools;
 using System;
+using System.Collections.Generic;
+using System.Reflection;
+using System.Reflection.Emit;
 using Object = StardewValley.Object;
 
 namespace NozzleAndEnricher
@@ -118,6 +121,39 @@ namespace NozzleAndEnricher
                     var obj = ItemRegistry.Create<Object>(id);
                     __instance.Location.debris.Add(new Debris(obj, __instance.TileLocation * 64f + new Vector2(32f, 32f)));
                     __instance.modData.Remove(scarecrowKey);
+                }
+            }
+        }
+
+        [HarmonyPatch]
+        public static class Object_placementAction_EnricherLambda_Patch
+        {
+            public static bool Prepare()
+            {
+                if (GetEnricherConsumeMethod() is null)
+                {
+                    SMonitor.Log("Couldn't find the enricher fertilizer method; InfiniteEnricherFertilizer won't work", StardewModdingAPI.LogLevel.Warn);
+                    return false;
+                }
+                return true;
+            }
+
+            public static MethodBase TargetMethod()
+            {
+                return GetEnricherConsumeMethod();
+            }
+
+            public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions)
+            {
+                var consume = AccessTools.Method(typeof(Item), nameof(Item.ConsumeStack));
+                foreach (var code in instructions)
+                {
+                    if (code.Calls(consume))
+                    {
+                        code.opcode = OpCodes.Call;
+                        code.operand = AccessTools.Method(typeof(ModEntry), nameof(ConsumeEnricherFertilizer));
+                    }
+                    yield return code;
                 }
             }
         }
