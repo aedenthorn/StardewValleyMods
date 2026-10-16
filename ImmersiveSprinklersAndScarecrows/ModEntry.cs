@@ -49,6 +49,7 @@ namespace ImmersiveSprinklersAndScarecrows
 
             Helper.Events.GameLoop.GameLaunched += GameLoop_GameLaunched;
             Helper.Events.GameLoop.DayStarted += GameLoop_DayStarted;
+            Helper.Events.Player.Warped += Player_Warped;
             Helper.Events.GameLoop.Saving += GameLoop_Saving;
             Helper.Events.Input.ButtonPressed += Input_ButtonPressed;
             Helper.Events.Display.RenderedWorld += Display_RenderedWorld;
@@ -82,14 +83,20 @@ namespace ImmersiveSprinklersAndScarecrows
             //}
         }
 
+        private void Player_Warped(object sender, StardewModdingAPI.Events.WarpedEventArgs e)
+        {
+            if (!Config.EnableMod)
+                return;
+            ReloadSprinklers(e.NewLocation);
+            ReloadScarecrows(e.NewLocation);
+        }
+
         private void Multiplayer_ModMessageReceived(object sender, StardewModdingAPI.Events.ModMessageReceivedEventArgs e)
         {
             if (!Config.EnableMod)
                 return;
             if (e.FromModID == ModManifest.UniqueID && e.Type == "UpdateImmersiveObjects")
             {
-                IEnumerable<Object> sp = new List<Object>();
-                IEnumerable<Object> sc = new List<Object>();
 
                 MyMessage m = e.ReadAs<MyMessage>();
                 var loc = Game1.getLocationFromName(m.Location);

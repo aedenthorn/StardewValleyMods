@@ -211,11 +211,13 @@ namespace DMT
             if (value.Contains('|'))
             {
                 var split = value.Split('|');
-                var letter = bool.Parse(split[0]);
+                var letter = bool.Parse(split[0].ToLower());
                 value = split[1];
                 if (letter)
+                {
                     Game1.drawLetterMessage(value);
-                return;
+                    return;
+                }
             }
 
             Game1.drawObjectDialogue(value);

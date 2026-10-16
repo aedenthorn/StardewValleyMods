@@ -502,7 +502,7 @@ namespace Swim
         }
         public static bool DebrisIsAnItem(Debris debris)
         {
-            return debris.debrisType.Value == Debris.DebrisType.OBJECT || debris.debrisType.Value == Debris.DebrisType.ARCHAEOLOGY || debris.debrisType.Value == Debris.DebrisType.RESOURCE || debris.item != null;
+            return (debris.debrisType.Value == Debris.DebrisType.OBJECT || debris.debrisType.Value == Debris.DebrisType.ARCHAEOLOGY || debris.debrisType.Value == Debris.DebrisType.RESOURCE) && debris.item != null && debris.itemId.Value != null;
         }
 
         internal static bool CanSwimHere()
