@@ -4,16 +4,15 @@ using Newtonsoft.Json;
 using StardewValley;
 using StardewValley.Extensions;
 using StardewValley.GameData.MakeoverOutfits;
-using StardewValley.ItemTypeDefinitions;
+using StardewValley.Menus;
 using StardewValley.Monsters;
 using StardewValley.Objects;
 using StardewValley.TerrainFeatures;
+using StardewValley.Triggers;
 using System.Reflection;
 using xTile.Dimensions;
 using xTile.Layers;
 using xTile.Tiles;
-using static HarmonyLib.Code;
-using static System.Net.WebRequestMethods;
 using Object = StardewValley.Object;
 
 namespace DMT
@@ -208,10 +207,9 @@ namespace DMT
 
         public static void DoShowMessage(string value)
         {
-            if (value.Contains('|'))
+            var split = value.Split('|');
+            if (split.Length > 1 && bool.TryParse(split[0].ToLower(), out bool letter))
             {
-                var split = value.Split('|');
-                var letter = bool.Parse(split[0].ToLower());
                 value = split[1];
                 if (letter)
                 {
@@ -221,6 +219,24 @@ namespace DMT
             }
 
             Game1.drawObjectDialogue(value);
+        }
+
+        public static void DoShowLetter(string value)
+        {
+            var split = value.Split('|');
+            var mailTitle = split[0];
+            bool collection = false;
+            if (split.Length > 1)
+                bool.TryParse(split[1], out collection);
+            string mail = DataLoader.Mail(Game1.content).GetValueOrDefault(mailTitle, "");
+            if(string.IsNullOrEmpty(mail))
+            {
+                SMonitor.Log($"[{nameof(DoShowLetter)}] Mail {mailTitle} not found", LogLevel.Warn);
+            }
+            else
+            {
+                Game1.activeClickableMenu = new LetterViewerMenu(mail, mailTitle, collection);
+            }
         }
 
         public static void DoSpawnMonster(GameLocation location, string value)
@@ -1138,6 +1154,13 @@ namespace DMT
                     dirt.crop.updateDrawMath(dirt.Tile);
                 }
             }
+        }
+
+        public static void DoTriggerAction(Farmer? who, GameLocation location, string value)
+        {
+            var split = value.Split('|');
+            var args = split.Length > 1 ? split.Skip(1).ToArray() : null;
+            TriggerActionManager.Raise(split[0], args, location, who); // trigger can pass optional trigger arguments
         }
     }
 }

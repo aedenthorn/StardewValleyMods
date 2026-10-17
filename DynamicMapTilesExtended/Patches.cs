@@ -131,11 +131,10 @@ namespace DMT
                 prefix: new(typeof(Patches), nameof(Furniture_canBeRemoved_Prefix))
             );
 
-            //Lags the game for some clients or just doesn't fire the attached actions
-            //harmony.Patch(
-            //    original: AccessTools.Method(typeof(Farmer), "setMount"),
-            //    prefix: new(typeof(Patches), nameof(Farmer_SetMount_Prefix))
-            //);
+            harmony.Patch(
+                original: AccessTools.Method(typeof(Farmer), "setMount"),
+                prefix: new(typeof(Patches), nameof(Farmer_SetMount_Prefix))
+            );
         }
         public static bool Furniture_canBeRemoved_Prefix(Furniture __instance, ref bool __result)
         {

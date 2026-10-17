@@ -31,6 +31,7 @@ namespace DMT.Data
         public const string HealthPerSecondContKey = "DMT/healthPerSecondContinuous";
         public const string InvalidateKey = "DMT/invalidate";
         public const string KillCropKey = "DMT/killCrop";
+        public const string LetterKey = "DMT/letter";
         public const string MailKey = "DMT/mail";
         public const string MailBoxKey = "DMT/mailbox";
         public const string MailRemoveKey = "DMT/mailRemove";
@@ -60,6 +61,7 @@ namespace DMT.Data
         public const string TerrainFeatureKey = "DMT/terrainFeature";
         public const string TransmogKey = "DMT/transmog";
         public const string TransmogGenderedKey = "DMT/transmogGendered";
+        public const string TriggerActionKey = "DMT/triggerAction";
         public const string WarpKey = "DMT/warp";
         public const string WardrobeKey = "DMT/wardrobe";
         public const string WardrobeGenderedKey = "DMT/wardrobeGendered";

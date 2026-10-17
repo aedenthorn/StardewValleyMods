@@ -106,6 +106,9 @@ namespace DMT
                         case Actions.KillCropKey:
                             DoKillCrop(location, value);
                             break;
+                        case Actions.LetterKey:
+                            DoShowLetter(value);
+                            break;
                         case Actions.MailBoxKey:
                             DoAddMailForTomorrow(who, value);
                             break;
@@ -177,6 +180,9 @@ namespace DMT
                             break;
                         case Actions.TransmogGenderedKey:
                             DoMakeover(who, value, true, false, true);
+                            break;
+                        case Actions.TriggerActionKey:
+                            DoTriggerAction(who, location, value);
                             break;
                         case Actions.WarpKey:
                             DoWarp(who, value);

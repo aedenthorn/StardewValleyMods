@@ -1,5 +1,12 @@
-# Tile Actions
-DMT currently recognizes the following action keys:
+Actions are (mostly) things that happen when a trigger is triggered.
+
+When adding map properties directly (as opposed to adding a field to the DMT dictionary), the format of the map property key should be:
+
+DMT/{ActionName}{_Once/Swap}{TriggerName}
+
+Once and Swap are optional.
+
+DMT currently recognizes the following action keys (triggers are listed [here](https://github.com/aedenthorn/StardewValleyMods/wiki/Dynamic-Map-Tiles-Extended-Triggers)):
 
 ## Map-Related Actions
 
@@ -52,6 +59,7 @@ DMT currently recognizes the following action keys:
 
 - [DMT/animation](#DMTanimation)
 - [DMT/animationOff](#DMTanimationOff)
+- [DMT/letter](#DMTletter)
 - [DMT/message](#DMTmessage)
 - [DMT/music](#DMTmusic)
 - [DMT/sound](#DMTsound)
@@ -62,9 +70,11 @@ DMT currently recognizes the following action keys:
 - [DMT/event](#DMTevent)
 - [DMT/explode](#DMTexplode)
 - [DMT/explosion](#DMTexplosion)
-- [DMT/object](#DMTobject)
 - [DMT/modData](#DMTmodData)
 - [DMT/monster](#DMTmonster)
+- [DMT/object](#DMTobject)
+- [DMT/terrainFeature](#DMTterrainFeature)
+- [DMT/triggerAction](#DMTtriggerAction)
 
 ## Crop Actions
 
@@ -116,10 +126,19 @@ The quest ID you wish to add.
 Add a tilesheet to the current map.
 
 ### Accepted Value
-A comma (',') delimited string of the id of the tilesheet (must be unique), and the path to the image tilesheet image
+A comma (',') delimited string of the id of the tilesheet (must be unique), and the path to the tilesheet image (tilesheet image can be loaded). 
+
+{  
+"LogName": "My Custom Tilesheet Load",  
+"Action": "Load",  
+"Target": "Maps/z_MyUniqueTilesheet",  
+"FromFile": "assets/z_MyUniqueTilesheet.png"  
+},
 
 ### Example
-"DMT/addTilesheet_Enter": "DMT/TestTilesheet,Assets/Maps/Tilesheets/paths.png"
+"DMT/addTilesheet_Enter": "{{ModId}}_MyTilesheetId1,TileSheets/furniture",  
+"DMT/addTilesheet_Load": "{{ModId}}_MyTilesheetId2,Maps/z_MyUniqueTilesheet",
+ "DMT/changeMultipleIndex_Item((O)390)": "Front 59 24={{ModId}}_MyTilesheetId2/0"
 
 
 
@@ -144,18 +163,20 @@ A list of character types separated by pipes ('|'). Possibe character types incl
 
 and all specific monster types. Note that character types will also check subtypes, so Character will check every character type, NPC will check NPCs and any NPC subtypes (like Pet, Monster, etc).
 
+Note that this doesn't work on flying monsters.
+
 ### Example
-"DMT/barrier": "AngryRoger|Serpent|Farmer|Pet"
+"DMT/barrier": "GreenSlime|Farmer|Pet"
 
 
 
 ## DMT/animation
-Animations are such complex objects (even with the new format), that they deserve their own file, which you can find [here](animations.md).
+Animations are such complex objects (even with the new format), that they deserve their own file, which you can find [here](Dynamic-Map-Tiles-Extended-Animations).
 
 
 
 ## DMT/animationOff
-Animations are such complex objects (even with the new format), that they deserve their own file, which you can find [here](animations.md).
+Animations are such complex objects (even with the new format), that they deserve their own file, which you can find [here](Dynamic-Map-Tiles-Extended-Animations).
 
 
 ## DMT/appearance
@@ -175,14 +196,15 @@ Multiple changes can be triggered using pipes to separate ('|').
 
 ### Example
 "DMT/appearance_On": "hairstyle,1"  
-"DMT/appearance_Off": "hairstyle,2|haircolor,#000000|"
+"DMT/appearance_Off": "hairstyle,2|haircolor,#000000"
+
 
 
 ## DMT/buff
 Add a buff or debuff to the player.
 
 ### Accepted Value
-A string with multiple id's of items in ``Data\\Buffs`` separated by pipes ('|'). Each id can also have a custom display source specified when followed by a comma (',').
+A string with multiple id's of items in ``Data\\Buffs`` separated by bars ('|'). Each id can also have a custom display source specified when followed by a comma (',').
 
 ### Example
 "DMT/buff_Once_On": "22|27"  
@@ -341,7 +363,7 @@ A comma (',') delimited string with multiple options to use when triggering the 
 Fertilize one or more tiles with a given fertilizer.
 
 ### Accepted Value
-A string of the format x,y=fertilizerName. If fertilizerName is omitted, the fertilizer will be removed from that tile. To fertilize multiple tiles at once repeat this pattern separated by pipes ('|').
+A string of the format x,y=fertilizerName. If fertilizerName is omitted, the fertilizer will be removed from that tile. To fertilize multiple tiles at once repeat this pattern separated by bars ('|').
 
 ### Example
 "DMT/fertilize": "64,19,368"
@@ -353,7 +375,7 @@ A string of the format x,y=fertilizerName. If fertilizerName is omitted, the fer
 Increase or decrease friendship with an npc or animal type
 
 ### Accepted Value
-A string with pairs of the NPC's internal name or the animal type, and the amount by which to change friendship, separated by a comma (','). To change multiple values at once repeat this pattern separated by pipes ('|')
+A string with pairs of the NPC's internal name or the animal type, and the amount by which to change friendship, separated by a comma (','). To change multiple values at once repeat this pattern separated by bars ('|')
 
 ### Example
 "DMT/friends": "Marnie,50|Cow,15|Chicken,15"
@@ -380,7 +402,7 @@ Give the player a specified item (or money)
 Grow one or more crops completely when triggered.
 
 ### Accepted Values
-A string a pair of x and y tile coordinates separated by a comma (','). To change multiple values at once repeat this pattern separated by pipes ('|')
+A string a pair of x and y tile coordinates separated by a comma (','). To change multiple values at once repeat this pattern separated by bars ('|')
 
 
 ### Example
@@ -428,7 +450,7 @@ a number value in string form specifying the amount of health restored/taken.
 Invalidate an asset from the game's asset cache, forcing it to be reloaded when next requested.
 
 ### Accepted Value
-The name of the asset you want to invalidate, may be split by pipes ('|') to invalidate multiple assets
+The name of the asset you want to invalidate, may be split by bars ('|') to invalidate multiple assets
 
 ### Example
 "DMT/invalidate_Enter": "Data/Locations"  
@@ -440,11 +462,29 @@ The name of the asset you want to invalidate, may be split by pipes ('|') to inv
 Kill one or more crops when triggered.
 
 ### Accepted Values
-A string a pair of x and y tile coordinates separated by a comma (','). To change multiple values at once repeat this pattern separated by pipes ('|')
+A string a pair of x and y tile coordinates separated by a comma (','). To change multiple values at once repeat this pattern separated by bars ('|')
 
 
 ### Example
 "DMT/killCrop_On": "64,19|64,20"
+
+
+
+
+## DMT/letter
+Show a mail letter from Data/mail.
+
+### Accepted Values
+Two fields separated by pipes ('|'):
+
+Fields are:
+
+- the mail key
+- whether the letter should behave as if it was opened from the collections menu (true or false)
+
+### Example
+"DMT/letter_MonsterSlain": "MindMeltMax.EndlessDungeon/TotallyTheLastOne|true"
+
 
 
 
@@ -539,6 +579,7 @@ Each monster to spawn should be a comma-separated list of values. Multiple moste
 ### Example
 "DMT/monster_On": "GreenSlime,640,1280,#00FF00|GreenSlime,704,1280,#0000FF"  
 "DMT/monster_Enter": "MyCustomMonster,640,1280" 
+
 
 
 ## DMT/modData
@@ -677,14 +718,16 @@ The quest ID you wish to remove.
 Set crop for one or more hoe dirt when triggered.
 
 ### Accepted Values
-A string in the format x,y=SeedId,GrowthPhase. To change multiple values at once repeat this pattern separated by pipes ('|')
+A string in the format x,y,SeedId,GrowthPhase. To change multiple values at once repeat this pattern separated by bars ('|')
+
+**Note** If a hoe dirt is not found at the coordinates, 
 
 **Note** GrowthPhase can be omitted to just plant a seed, or set to -1 to fully grow the crop.
 
-**Note** Existing crops will be replaced. If GrowthPhase is omitted, the old crop's growth progress will be transferred.
+**Note** Existing crops will be replaced.
 
 ### Example
-"DMT/setCrop_On": "64,19=433,1"
+"DMT/setCrop_On": "64,19,433,1"
 
 
 
@@ -766,6 +809,21 @@ a number value in string form specifying the amount of stamina restored/taken.
 
 
 
+## DMT/take
+Take a specified item (or money) from the player.
+
+### Accepted Values
+* A string beginning with "Money/" followed by the amount of money to be added.
+* A single qualified item id.
+* A comma (',') delimited string with: the qualified item id, the stack size, (optional) the quality; In that order.
+
+### Example
+"DMT/take_Once_Enter": "Money/500"  
+"DMT/take_Talk(Piere)": "(O)MindMeltMax.YouWishThisExisted/DiscountCoupon"  
+"DMT/take_Talk(Abigail)": "(O)66,5"
+
+
+
 ## DMT/teleport
 Teleport the player to a specified pixel coordinate.
 
@@ -786,20 +844,22 @@ A comma (',') delimited string with the X and Y tile coordinates.
 ### Example
 "DMT/teleportTile_Off": "6,13"
 
-
-
-## DMT/take
-Take a specified item (or money) from the player.
+## DMT/terrainFeature
+Spawn terrain features at given tiles.
 
 ### Accepted Values
-* A string beginning with "Money/" followed by the amount of money to be added.
-* A single qualified item id.
-* A comma (',') delimited string with: the qualified item id, the stack size, (optional) the quality; In that order.
+Each terrain feature to be spawned should be a comma-separated list of fields. Multiple terrain features can be spawn using a pipe ('|').
+
+Fields are:
+
+- X coordinate of the tile to spawn the terrain feature on
+- Y coordinate of the tile to spawn the terrain feature on
+- type of terrain feature to spawn (one of Tree, FruitTree, Grass, HoeDirt)
+- (optional) type of Grass, Tree, or Fruit Tree
+- (optional) number of grass weeds, Tree or Fruit Tree growth stage
 
 ### Example
-"DMT/take_Once_Enter": "Money/500"  
-"DMT/take_Talk(Piere)": "(O)MindMeltMax.YouWishThisExisted/DiscountCoupon"  
-"DMT/take_Talk(Abigail)": "(O)66,5"
+"DMT/terrainFeature_Load": "5,6,HoeDirt|10,6,Tree,1,5"
 
 
 
@@ -825,6 +885,18 @@ Two ids of makeover outfits for each gender, separated with a pipe '|'.
 
 
 
+## DMT/triggerAction
+Trigger a [Trigger Action](https://stardewvalleywiki.com/Modding:Trigger_actions).
+
+### Accepted Value
+The trigger action ID, and optionally text parameters separated with a pipe '|'.
+
+### Example
+"DMT/triggerAction_Once_Enter": "SomeTriggerAction"  
+"DMT/triggerAction_Once_Enter": "SomeTriggerAction|Parameter1|Parameter2"
+
+
+
 ## DMT/wardrobe
 Give a farmer a makeover outfit from "Data/MakeoverOutfits" if they have the required items in their inventory. Currently worn clothing will be returned to the player inventory or lost & found.
 
@@ -843,7 +915,7 @@ Give a farmer a makeover outfit from "Data/MakeoverOutfits" based on their gende
 Two ids of makeover outfits for each gender, separated with a pipe '|'.
 
 ### Example
-"DMT/wardrobeGendered_Swap_On": "Beanie_SkullShirt_FarmerPants|Beanie_ClassyTop_Dress"
+"DMT/wardrobeGendered_Swap_On": "Beanie_SkullShirt_FarmerPants|Beanie_ClassyTop_Dress"  
 "SwapDMT/wardrobeGendered_Swap_On": "None_GraySuit_FarmerPants|LogoCap_SugarShirt_Skirt"
 
 
