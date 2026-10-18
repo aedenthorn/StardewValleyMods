@@ -95,12 +95,12 @@ namespace ImmersiveSprinklersAndScarecrows
         {
             if (!Config.EnableMod)
                 return;
-            if (e.FromModID == ModManifest.UniqueID && e.Type == "UpdateImmersiveObjects")
+            if (e.FromModID == ModManifest.UniqueID)
             {
-
                 MyMessage m = e.ReadAs<MyMessage>();
+                SMonitor.Log($"Received message to reload {(m.Which == "sprinklers" ? "sprinklers" : (m.Which == "scarecrows" ? "scarecrows" : "all"))}{(m.Location == null ? "" : $" in {m.Location}")}");
                 var loc = Game1.getLocationFromName(m.Location);
-                if (loc == null)
+                if (true || loc == null)
                 {
                     foreach (var l in Game1.locations)
                     {
