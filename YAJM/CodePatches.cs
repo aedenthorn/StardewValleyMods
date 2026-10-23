@@ -76,5 +76,15 @@ namespace YetAnotherJumpMod
 				return true;
 			}
 		}
+
+		public class Farmer_passOutFromTired_Patch
+        {
+			public static void Postfix(Farmer who)
+			{
+				if (!Config.ModEnabled)
+					return;
+				who.yJumpVelocity = 0;
+			}
+		}
 	}
 }

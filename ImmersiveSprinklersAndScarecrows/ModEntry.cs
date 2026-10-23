@@ -87,9 +87,24 @@ namespace ImmersiveSprinklersAndScarecrows
         {
             if (!Config.EnableMod)
                 return;
+            //e.OldLocation.modData.OnValueAdded -= ModData_OnValueChanged;
+            //e.NewLocation.modData.OnValueAdded += ModData_OnValueChanged;
+            //e.OldLocation.modData.OnValueRemoved -= ModData_OnValueChanged;
+            //e.NewLocation.modData.OnValueRemoved += ModData_OnValueChanged;
             ReloadSprinklers(e.NewLocation);
             ReloadScarecrows(e.NewLocation);
         }
+
+        //private void ModData_OnValueChanged(string key, string value)
+        //{
+        //    if (!Config.EnableMod || !Context.IsWorldReady)
+        //        return;
+        //    if (key.StartsWith(dataKey))
+        //    {
+        //        ReloadSprinklers(Game1.currentLocation);
+        //        ReloadScarecrows(Game1.currentLocation);
+        //    }
+        //}
 
         private void Multiplayer_ModMessageReceived(object sender, StardewModdingAPI.Events.ModMessageReceivedEventArgs e)
         {

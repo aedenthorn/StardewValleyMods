@@ -91,6 +91,10 @@ namespace YetAnotherJumpMod
 					original: AccessTools.Method(typeof(Farmer), nameof(Farmer.getDrawLayer)),
 					prefix: new HarmonyMethod(typeof(Farmer_getDrawLayer_Patch), nameof(Farmer_getDrawLayer_Patch.Prefix))
 				);
+				harmony.Patch(
+					original: AccessTools.Method(typeof(Farmer), nameof(Farmer.passOutFromTired)),
+					postfix: new HarmonyMethod(typeof(Farmer_passOutFromTired_Patch), nameof(Farmer_passOutFromTired_Patch.Postfix))
+				);
 			}
 			catch (Exception e)
 			{
