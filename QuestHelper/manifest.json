@@ -1,7 +1,7 @@
 ﻿{
 	"Name": "Quest Helper",
 	"Author": "aedenthorn",
-	"Version": "0.3.4",
+	"Version": "0.4.1",
 	"Description": "Quest Helper.",
 	"UniqueID": "aedenthorn.QuestHelper",
 	"EntryDll": "QuestHelper.dll",

@@ -779,6 +779,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SittingAction", "SittingAct
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CustomTextSigns", "CustomTextSigns\CustomTextSigns.csproj", "{B95BE0EE-0D9A-68E1-24DB-6D4931E302E6}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ImmersiveToolbar", "ImmersiveToolbar\ImmersiveToolbar.csproj", "{B45E8D32-1EB5-3FB8-3E13-CFA8FB55B252}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -3859,6 +3861,14 @@ Global
 		{B95BE0EE-0D9A-68E1-24DB-6D4931E302E6}.Release|Any CPU.Build.0 = Release|Any CPU
 		{B95BE0EE-0D9A-68E1-24DB-6D4931E302E6}.Release|x64.ActiveCfg = Release|x64
 		{B95BE0EE-0D9A-68E1-24DB-6D4931E302E6}.Release|x64.Build.0 = Release|x64
+		{B45E8D32-1EB5-3FB8-3E13-CFA8FB55B252}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B45E8D32-1EB5-3FB8-3E13-CFA8FB55B252}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B45E8D32-1EB5-3FB8-3E13-CFA8FB55B252}.Debug|x64.ActiveCfg = Debug|x64
+		{B45E8D32-1EB5-3FB8-3E13-CFA8FB55B252}.Debug|x64.Build.0 = Debug|x64
+		{B45E8D32-1EB5-3FB8-3E13-CFA8FB55B252}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B45E8D32-1EB5-3FB8-3E13-CFA8FB55B252}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B45E8D32-1EB5-3FB8-3E13-CFA8FB55B252}.Release|x64.ActiveCfg = Release|x64
+		{B45E8D32-1EB5-3FB8-3E13-CFA8FB55B252}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

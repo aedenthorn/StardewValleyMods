@@ -7,6 +7,7 @@ using StardewValley.Menus;
 using StardewValley.Quests;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace QuestHelper
 {
@@ -28,13 +29,52 @@ namespace QuestHelper
 			SModManifest = ModManifest;
 
 			helper.Events.GameLoop.GameLaunched += GameLoop_GameLaunched;
+            helper.Events.GameLoop.SaveLoaded += GameLoop_SaveLoaded;
             helper.Events.Input.ButtonPressed += Input_ButtonPressed;
             Harmony harmony = new Harmony(ModManifest.UniqueID);
 			harmony.PatchAll();
         }
 
+        private void GameLoop_SaveLoaded(object sender, StardewModdingAPI.Events.SaveLoadedEventArgs e)
+        {
+            if (!Config.ModEnabled || !Config.RebuildSocializeQuest)
+                return;
+            for (int i = 0; i < Game1.player.questLog.Count; i++)
+            {
+                var q = Game1.player.questLog[i];
+                if (q is SocializeQuest sq && !sq.dailyQuest.Value)
+                {
+                    var all = Game1.characterData.Where(kvp => kvp.Value.IntroductionsQuest ?? (kvp.Value.HomeRegion == "Town")).Select(kvp => kvp.Key);
+                    bool rebuild = false;
+                    foreach(var npc in sq.whoToGreet)
+                    {
+                        if (!all.Contains(npc))
+                        {
+                            SMonitor.Log($"Socialize Quest contains NPC {npc}, but the game no longer has that sociable NPC.", LogLevel.Info);
+                            rebuild = true;
+                            break;
+                        }
+                    }
+                    foreach(var npc in all)
+                    {
+                        if (!sq.whoToGreet.Contains(npc))
+                        {
+                            SMonitor.Log($"Socialize Quest is missing existing sociable NPC {npc}.", LogLevel.Info);
+                            rebuild = true;
+                            break;
+                        }
+                    }
+                    if (rebuild)
+                    {
+                        SMonitor.Log($"Rebuilding Socialize Quest.", LogLevel.Info);
+                        sq.whoToGreet.Clear();
+                        sq.loadQuestInfo();
+                    }
+                }
+            }
+        }
 
-        private void Input_ButtonPressed(object sender, StardewModdingAPI.Events.ButtonPressedEventArgs e)
+        public void Input_ButtonPressed(object sender, StardewModdingAPI.Events.ButtonPressedEventArgs e)
         {
             if (false && e.Button == SButton.Home)
 			{
@@ -128,6 +168,12 @@ namespace QuestHelper
 					name: () => SHelper.Translation.Get("GMCM.ShowQuestDetails.Name"),
 					getValue: () => Config.ShowQuestDetails,
 					setValue: value => Config.ShowQuestDetails = value
+				);
+                gmcm.AddBoolOption(
+					mod: ModManifest,
+					name: () => SHelper.Translation.Get("GMCM.RebuildSocializeQuest.Name"),
+					getValue: () => Config.RebuildSocializeQuest,
+					setValue: value => Config.RebuildSocializeQuest = value
 				);
 			}
 		}

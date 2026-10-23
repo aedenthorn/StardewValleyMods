@@ -2,6 +2,7 @@
 	"GMCM.ModEnabled.Name": "Mod Enabled",
 	"GMCM.ShowQuestMarkers.Name": "Quest Markers",
 	"GMCM.ShowQuestDetails.Name": "Quest Details",
+	"GMCM.RebuildSocializeQuest.Name": "Rebuild Socialize Quest",
 	"left-to-greet": "Left: {0}",
 	"fish-everywhere": "{0} can found everywhere.",
 	"fish-location": "{0} can be found in {1}.",
