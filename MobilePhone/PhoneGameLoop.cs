@@ -260,6 +260,13 @@ namespace MobilePhone
                 
                 configMenu.AddBoolOption(
                     mod: ModManifest,
+                    name: () => "Movable Phone Icon",
+                    getValue: () => Config.MovablePhoneIcon,
+                    setValue: value => Config.MovablePhoneIcon = value
+                );
+                
+                configMenu.AddBoolOption(
+                    mod: ModManifest,
                     name: () => "Vibrate Phone Icon",
                     getValue: () => Config.VibratePhoneIcon,
                     setValue: value => Config.VibratePhoneIcon = value

@@ -13,6 +13,7 @@ namespace MobilePhone
         public SButton RotatePhoneKey { get; set; } = SButton.PageDown; 
         public bool AddRotateApp { get; set; } = true;
         public bool ShowPhoneIcon { get; set; } = true;
+        public bool MovablePhoneIcon { get; set; } = true;
         public bool VibratePhoneIcon { get; set; } = true;
         public string PhoneSkinPath { get; set; } = Path.Combine("assets", "skins", "black.png");
         public string BackgroundPath { get; set; } = Path.Combine("assets", "backgrounds", "clouds.png");

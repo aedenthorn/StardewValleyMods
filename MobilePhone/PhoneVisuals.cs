@@ -45,7 +45,7 @@ namespace MobilePhone
                     PhoneUtils.CheckIconOffScreen();
                     if (ModEntry.clickingPhoneIcon)
                     {
-                        if(Helper.Input.IsSuppressed(SButton.MouseLeft) && lastMousePos != mousePos)
+                        if(Config.MovablePhoneIcon && Helper.Input.IsSuppressed(SButton.MouseLeft) && lastMousePos != mousePos)
                         {
                             ModEntry.draggingPhoneIcon = true;
                             Config.PhoneIconOffsetX += mousePos.X - lastMousePos.X;

@@ -293,6 +293,19 @@ namespace WeddingTweaks
                     getValue: () => Config.AllowRandomNPCWitnesses,
                     setValue: value => Config.AllowRandomNPCWitnesses = value
                 );
+                configMenu.AddNumberOption(
+                    mod: ModManifest,
+                    name: () => Context.IsWorldReady && Game1.player.spouse != null && Game1.player.friendshipData.TryGetValue(Game1.player.spouse, out var friendship) && friendship.CountdownToWedding > 0 ? $"Days until wedding to {Game1.player.spouse}" : "No wedding scheduled",
+                    getValue: () => Context.IsWorldReady && Game1.player.spouse != null && Game1.player.friendshipData.TryGetValue(Game1.player.spouse, out var friendship) && friendship.CountdownToWedding > 0 ? friendship.CountdownToWedding : 0,
+                    setValue: value => {
+                        if (value > 0 && Context.IsWorldReady && Game1.player.spouse != null && Game1.player.friendshipData.TryGetValue(Game1.player.spouse, out var friendship) && friendship.CountdownToWedding > 0)
+                        {
+                            WorldDate weddingDate = new(Game1.Date);
+                            weddingDate.TotalDays += value;
+                            Game1.player.friendshipData[Game1.player.spouse].WeddingDate = weddingDate;
+                        }
+                    }
+                );
             }
         }
 
