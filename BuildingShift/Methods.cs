@@ -1,4 +1,5 @@
 ﻿using Microsoft.Xna.Framework;
+using StardewValley;
 using StardewValley.Buildings;
 
 namespace BuildingShift
@@ -66,7 +67,7 @@ namespace BuildingShift
             if (moved)
             {
                 SMonitor.Log($"{b.buildingType.Value} moved to tile {b.tileX.Value},{b.tileY.Value}");
-                b.updateInteriorWarps();
+                b.GetParentLocation().buildStructure(b, new Vector2(b.tileX.Value, b.tileY.Value), Game1.player, true);
             }
             SMonitor.Log($"{b.buildingType.Value} is shifted by {shift}");
             b.modData[shiftKey] = $"{shift.X},{shift.Y}";

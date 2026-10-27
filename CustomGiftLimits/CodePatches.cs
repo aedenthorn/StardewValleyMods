@@ -23,7 +23,7 @@ namespace CustomGiftLimits
         [HarmonyPatch(typeof(NPC), nameof(NPC.tryToReceiveActiveObject))]
         public static class NPC_tryToReceiveActiveObject_Patch
         {
-            public static void Prefix(NPC __instance, ref Farmer who, Dictionary<string, string> ___dialogue, ref List<int> __state)
+            public static void Prefix(NPC __instance, bool probe, ref Farmer who, Dictionary<string, string> ___dialogue, ref List<int> __state)
             {
                 if (!Config.ModEnabled || !Game1.NPCGiftTastes.ContainsKey(__instance.Name))
                     return;
@@ -58,7 +58,8 @@ namespace CustomGiftLimits
                     week = f.GiftsThisWeek;
                 }
 
-                SMonitor.Log($"Gift to {level} {__instance.Name}");
+                if(!probe)
+                    SMonitor.Log($"Gift to {level} {__instance.Name}");
                 __state = new List<int> {
                     today,
                     week,
@@ -141,7 +142,7 @@ namespace CustomGiftLimits
 
                 return codes.AsEnumerable();
             }
-            public static void Postfix(NPC __instance, ref Farmer who, List<int> __state)
+            public static void Postfix(NPC __instance, bool probe, ref Farmer who, List<int> __state)
             {
                 if (__state != null && __state.Count > 0 && who.friendshipData.ContainsKey(__instance.Name))
                 {
@@ -161,8 +162,11 @@ namespace CustomGiftLimits
                     {
                         who.friendshipData[__instance.Name].GiftsThisWeek = __state[1];
                     }
-                    SMonitor.Log($"gifts today {who.friendshipData[__instance.Name].GiftsToday}");
-                    SMonitor.Log($"gifts this week {who.friendshipData[__instance.Name].GiftsThisWeek}");
+                    if (!probe)
+                    {
+                        SMonitor.Log($"gifts today {who.friendshipData[__instance.Name].GiftsToday}");
+                        SMonitor.Log($"gifts this week {who.friendshipData[__instance.Name].GiftsThisWeek}");
+                    }
                 }
             }
         }

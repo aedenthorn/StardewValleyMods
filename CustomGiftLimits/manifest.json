@@ -1,7 +1,7 @@
 ﻿{
   "Name": "Custom Gift Limits",
   "Author": "aedenthorn",
-  "Version": "0.2.1",
+  "Version": "0.2.2",
   "Description": "Custom Gift Limits.",
   "UniqueID": "aedenthorn.CustomGiftLimits",
   "EntryDll": "CustomGiftLimits.dll",

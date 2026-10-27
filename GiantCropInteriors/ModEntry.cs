@@ -96,7 +96,7 @@ namespace GiantCropInteriors
         {
             if (!Config.ModEnabled)
                 return;
-            if (Config.Debug)
+            if (false && Config.Debug)
             {
                 if (Context.IsWorldReady)
                 {

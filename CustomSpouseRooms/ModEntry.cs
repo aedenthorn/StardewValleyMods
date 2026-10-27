@@ -115,6 +115,14 @@ namespace CustomSpouseRooms
             {
                 e.LoadFrom(() => new Dictionary<string, SpouseRoomData>(), StardewModdingAPI.Events.AssetLoadPriority.Exclusive);
             }
+            if(e.DataType == typeof(Map) && e.NameWithoutLocale.StartsWith("Maps/FarmHouse"))
+            {
+                e.Edit((IAssetData data) =>
+                {
+                    var map = data.AsMap().Data;
+                    ExtendMap(map, map.Layers[0].LayerWidth + Config.ExtraMapWidth, map.Layers[0].LayerHeight + Config.ExtraMapHeight);
+                });
+            }
         }
 
         private void GameLoop_ReturnedToTitle(object sender, StardewModdingAPI.Events.ReturnedToTitleEventArgs e)
