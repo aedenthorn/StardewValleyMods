@@ -331,29 +331,35 @@ namespace DMT
 
         public static void DoPlayEvent(string value)
         {
-            if (!value.Contains('|'))
+            var split = value.Split('|');
+            if (split.Length < 2)
             {
-                Game1.currentLocation.currentEvent = new(value, null, null);
-                Game1.currentLocation.checkForEvents();
+                SMonitor.Log("[DoPlayEvent] Invalid event string: " + value, LogLevel.Warn);
                 return;
             }
-            var split = value.Split('|');
-            var eventStr = split[0];
-            var assetName = split[1];
-            string assetKey = "";
-            if (assetName.Contains('#'))
-            {
-                var split2 = assetName.Split('#');
-                assetName = split2[0];
-                assetKey = split2[1];
-            }
-            var eventId = split[2];
+            var assetName = split[0];
+            var assetKey = split[1];
+            var eventId = split.Length > 2 ? split[2] : null;
 
-            if (!string.IsNullOrWhiteSpace(eventStr) && context.Helper.GameContent.Load<Dictionary<string, string>>(assetName).TryGetValue(assetKey, out eventStr))
+            if (context.Helper.GameContent.Load<Dictionary<string, string>>(assetName).TryGetValue(assetKey, out var eventStr))
             {
                 Game1.currentLocation.currentEvent = new(eventStr, assetName, eventId);
                 Game1.currentLocation.checkForEvents();
             }
+            else
+            {
+                SMonitor.Log($"[DoPlayEvent] Event not found: {assetName}#{assetKey}", LogLevel.Warn);
+            }
+        }
+
+        public static void DoPlayEventString(string value)
+        {
+            var split = value.Split('|');
+            var eventString = split[0];
+            var eventId = split.Length > 1 ? split[1] : null;
+            Game1.currentLocation.currentEvent = new(eventString, null, eventId);
+            Game1.currentLocation.checkForEvents();
+            return;
         }
 
         public static void DoPlayMusic(string value) => Game1.changeMusicTrack(Game1.random.Choose(value.Split('|')));

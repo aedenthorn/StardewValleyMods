@@ -68,6 +68,7 @@ DMT currently recognizes the following action keys (triggers are listed [here](h
 
 - [DMT/chest](#DMTchest)
 - [DMT/event](#DMTevent)
+- [DMT/eventString](#DMTeventString)
 - [DMT/explode](#DMTexplode)
 - [DMT/explosion](#DMTexplosion)
 - [DMT/modData](#DMTmodData)
@@ -307,20 +308,28 @@ The numerical id of the emote in string form. This can be found by opening ``Til
 
 
 ## DMT/event
-Start an event.
+Start an event from an asset.
 
 ### Accepted Values
-This action accepts a single string with the entire event script to be played.
-
-However this can now also be loaded directly from the asset.  
-The format for this is as follows, each part must be split by a pipe ('|'):
-* The event script, in case you just want to include the assetName / event id for the event.
-* The name of the asset, if loading from this, also include the asset key in this format: "AssetName#AssetKey"
-* The event id to add it to the players seen events.
+Fields split by pipes ('|'):
+* The asset name.
+* The event key in the asset.
+* The event id to add to the player's seen events.
 
 ### Example
-"DMT/event_Once_Enter": "|MindMeltMax.WeirdEvents#GoopAliens|goopAlienLanding"  
-"DMT/event_Once_On": "I need to write an event script here..."
+"DMT/event_Once_Enter": "MindMeltMax.WeirdEvents|GoopAliens|goopAlienLanding"
+
+
+## DMT/eventString
+Start an event from an event string.
+
+### Accepted Values
+Fields split by pipes ('|'):
+* The full event script.
+* The event id to add to the player's seen events.
+
+### Example
+"DMT/eventString_Once_Enter": "jaunty/13 17/farmer 13 19 0/end|goopAlienLanding"
 
 
 

@@ -783,6 +783,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ImmersiveToolbar", "Immersi
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FoodBuffMultiplier", "FoodBuffMultiplier\FoodBuffMultiplier.csproj", "{A500B8F0-0557-DAE4-6AC2-9AE0D1E7FD56}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ShipAbsolutelyEverything", "ShipAbsolutelyEverything\ShipAbsolutelyEverything.csproj", "{9D3F6A5D-04EE-886A-3737-568932387D0F}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -3879,6 +3881,14 @@ Global
 		{A500B8F0-0557-DAE4-6AC2-9AE0D1E7FD56}.Release|Any CPU.Build.0 = Release|Any CPU
 		{A500B8F0-0557-DAE4-6AC2-9AE0D1E7FD56}.Release|x64.ActiveCfg = Release|x64
 		{A500B8F0-0557-DAE4-6AC2-9AE0D1E7FD56}.Release|x64.Build.0 = Release|x64
+		{9D3F6A5D-04EE-886A-3737-568932387D0F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9D3F6A5D-04EE-886A-3737-568932387D0F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9D3F6A5D-04EE-886A-3737-568932387D0F}.Debug|x64.ActiveCfg = Debug|x64
+		{9D3F6A5D-04EE-886A-3737-568932387D0F}.Debug|x64.Build.0 = Debug|x64
+		{9D3F6A5D-04EE-886A-3737-568932387D0F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9D3F6A5D-04EE-886A-3737-568932387D0F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9D3F6A5D-04EE-886A-3737-568932387D0F}.Release|x64.ActiveCfg = Release|x64
+		{9D3F6A5D-04EE-886A-3737-568932387D0F}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

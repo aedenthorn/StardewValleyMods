@@ -20,6 +20,7 @@ namespace DMT.Data
         public const string ChestKey = "DMT/chest";
         public const string EmoteKey = "DMT/emote";
         public const string EventKey = "DMT/event";
+        public const string EventStringKey = "DMT/eventString";
         public const string ExplodeKey = "DMT/explode";
         public const string ExplosionKey = "DMT/explosion";
         public const string FertilizeKey = "DMT/fertilize";

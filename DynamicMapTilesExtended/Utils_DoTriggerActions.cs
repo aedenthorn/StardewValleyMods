@@ -76,6 +76,9 @@ namespace DMT
                         case Actions.EventKey:
                             DoPlayEvent(value);
                             break;
+                        case Actions.EventStringKey:
+                            DoPlayEventString(value);
+                            break;
                         case Actions.ExplosionKey:
                             DoExplode(who, location, value, tilePosition);
                             break;

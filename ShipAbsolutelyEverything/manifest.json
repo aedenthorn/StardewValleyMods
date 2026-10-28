@@ -1,0 +1,10 @@
+﻿{
+  "Name": "Ship Absolutely Everything",
+  "Author": "aedenthorn",
+  "Version": "0.1.0",
+  "Description": "Requires you to ship absolutely everything for perfection.",
+  "UniqueID": "aedenthorn.ShipAbsolutelyEverything",
+  "EntryDll": "ShipAbsolutelyEverything.dll",
+  "MinimumApiVersion": "4.0.0",
+  "UpdateKeys": [ "Nexus:" ]
+}
