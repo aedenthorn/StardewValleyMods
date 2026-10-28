@@ -313,7 +313,7 @@ Start an event from an asset.
 ### Accepted Values
 Fields split by pipes ('|'):
 * The asset name.
-* The event key in the asset.
+* The entire event key in the asset, including requirements (e.g. "3910674/f Shane 1000").
 * The event id to add to the player's seen events.
 
 ### Example
