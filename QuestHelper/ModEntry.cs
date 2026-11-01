@@ -45,6 +45,7 @@ namespace QuestHelper
                 if (q is SocializeQuest sq && !sq.dailyQuest.Value)
                 {
                     var all = Game1.characterData.Where(kvp => kvp.Value.IntroductionsQuest ?? (kvp.Value.HomeRegion == "Town")).Select(kvp => kvp.Key);
+                    List<string> newGreet = new();
                     bool rebuild = false;
                     foreach(var npc in sq.whoToGreet)
                     {
@@ -52,23 +53,26 @@ namespace QuestHelper
                         {
                             SMonitor.Log($"Socialize Quest contains NPC {npc}, but the game no longer has that sociable NPC.", LogLevel.Info);
                             rebuild = true;
-                            break;
+                            sq.total.Value--;
+                           continue;
                         }
+                        newGreet.Add(npc);
                     }
                     foreach(var npc in all)
                     {
-                        if (!sq.whoToGreet.Contains(npc))
+                        if (!newGreet.Contains(npc) && !Game1.player.friendshipData.ContainsKey(npc))
                         {
                             SMonitor.Log($"Socialize Quest is missing existing sociable NPC {npc}.", LogLevel.Info);
+                            newGreet.Add(npc);
                             rebuild = true;
-                            break;
+                            sq.total.Value++;
                         }
                     }
                     if (rebuild)
                     {
                         SMonitor.Log($"Rebuilding Socialize Quest.", LogLevel.Info);
                         sq.whoToGreet.Clear();
-                        sq.loadQuestInfo();
+                        sq.whoToGreet.AddRange(newGreet);
                     }
                 }
             }

@@ -1,13 +1,18 @@
 ﻿using HarmonyLib;
 using Microsoft.Xna.Framework;
 using StardewModdingAPI;
+using StardewModdingAPI.Events;
+using StardewModdingAPI.Integrations.GenericModConfigMenu;
+using StardewModdingAPI.Utilities;
 using StardewValley;
 using StardewValley.Locations;
 using StardewValley.Network;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using xTile;
+using xTile.Dimensions;
 using xTile.Layers;
 
 namespace CustomSpouseRooms
@@ -18,8 +23,11 @@ namespace CustomSpouseRooms
 
         public static IMonitor SMonitor;
         public static IModHelper SHelper;
+        public static Harmony harmony;
         public static ModConfig Config;
-        
+        public static Size newSize = Size.Zero;
+        public static bool resizing = false;
+
         public static string dictPath = "aedenthorn.CustomSpouseRooms/dict";
 
         public static Dictionary<string, int> roomIndexes = new Dictionary<string, int>{
@@ -54,55 +62,13 @@ namespace CustomSpouseRooms
             SMonitor = Monitor;
             SHelper = helper;
 
-            var harmony = new Harmony(ModManifest.UniqueID);
-
-            // Location patches
-
-            harmony.Patch(
-               original: AccessTools.Method(typeof(FarmHouse), "resetLocalState"),
-               postfix: new HarmonyMethod(typeof(ModEntry), nameof(ModEntry.FarmHouse_resetLocalState_Postfix))
-            );
-
-            harmony.Patch(
-               original: AccessTools.Method(typeof(FarmHouse), nameof(FarmHouse.checkAction)),
-               postfix: new HarmonyMethod(typeof(ModEntry), nameof(ModEntry.FarmHouse_checkAction_Postfix))
-            );
-
-            harmony.Patch(
-               original: AccessTools.Method(typeof(Layer), "_RebakeRow"),
-               prefix: new HarmonyMethod(typeof(ModEntry), nameof(ModEntry._RebakeRow_Prefix))
-            );
-            harmony.Patch(
-               original: AccessTools.Method(typeof(FarmHouse), nameof(FarmHouse.loadSpouseRoom)),
-               prefix: new HarmonyMethod(typeof(ModEntry), nameof(ModEntry.FarmHouse_loadSpouseRoom_Prefix))
-            );
-            harmony.Patch(
-               original: AccessTools.Method(typeof(FarmHouse), nameof(FarmHouse.updateFarmLayout)),
-               prefix: new HarmonyMethod(typeof(ModEntry), nameof(ModEntry.FarmHouse_updateFarmLayout_Prefix)),
-               postfix: new HarmonyMethod(typeof(ModEntry), nameof(ModEntry.FarmHouse_updateFarmLayout_Postfix))
-            );
-            harmony.Patch(
-               original: AccessTools.Method(typeof(DecoratableLocation), nameof(DecoratableLocation.MakeMapModifications)),
-               postfix: new HarmonyMethod(typeof(ModEntry), nameof(ModEntry.DecoratableLocation_MakeMapModifications_Postfix))
-            );
-            /*
-            harmony.Patch(
-               original: AccessTools.Method(typeof(DecoratableLocation), "IsFloorableOrWallpaperableTile"),
-               prefix: new HarmonyMethod(typeof(LocationPatches), nameof(LocationPatches.DecoratableLocation_IsFloorableOrWallpaperableTile_Prefix))
-            );
-            */
-
-            // NetWorldState patch 
-
-            harmony.Patch(
-               original: AccessTools.Method(typeof(NetWorldState), nameof(NetWorldState.hasWorldStateID)),
-               prefix: new HarmonyMethod(typeof(ModEntry), nameof(ModEntry.hasWorldStateID_Prefix))
-            );
+            harmony = new Harmony(ModManifest.UniqueID);
+            harmony.PatchAll();
 
             SHelper.Events.GameLoop.GameLaunched += GameLoop_GameLaunched;
             SHelper.Events.GameLoop.SaveLoaded += GameLoop_SaveLoaded;
-            SHelper.Events.Content.AssetRequested += Content_AssetRequested;
             SHelper.Events.GameLoop.ReturnedToTitle += GameLoop_ReturnedToTitle;
+            SHelper.Events.Content.AssetRequested += Content_AssetRequested;
         }
 
         private void Content_AssetRequested(object sender, StardewModdingAPI.Events.AssetRequestedEventArgs e)
@@ -115,12 +81,13 @@ namespace CustomSpouseRooms
             {
                 e.LoadFrom(() => new Dictionary<string, SpouseRoomData>(), StardewModdingAPI.Events.AssetLoadPriority.Exclusive);
             }
-            if(e.DataType == typeof(Map) && e.NameWithoutLocale.StartsWith("Maps/FarmHouse"))
+            if(resizing && e.DataType == typeof(Map) && e.NameWithoutLocale.StartsWith("Maps/FarmHouse"))
             {
+                resizing = false;
                 e.Edit((IAssetData data) =>
                 {
                     var map = data.AsMap().Data;
-                    ExtendMap(map, map.Layers[0].LayerWidth + Config.ExtraMapWidth, map.Layers[0].LayerHeight + Config.ExtraMapHeight);
+                    ExtendMap(map, newSize.Width, newSize.Height);
                 });
             }
         }
@@ -134,9 +101,105 @@ namespace CustomSpouseRooms
         {
             currentRoomData.Clear();
         }
-
-        private void GameLoop_GameLaunched(object sender, StardewModdingAPI.Events.GameLaunchedEventArgs e)
+        private void GameLoop_GameLaunched(object sender, GameLaunchedEventArgs e)
         {
+            var configMenu = Helper.ModRegistry.GetApi<IGenericModConfigMenuApi>("spacechase0.GenericModConfigMenu");
+            if (configMenu is not null)
+            {
+                configMenu.Register(
+                    mod: ModManifest,
+                    reset: () => Config = new ModConfig(),
+                    save: () => Helper.WriteConfig(Config)
+                );
+                var props = typeof(ModConfig).GetProperties().ToArray();
+                var configMenuExt = Helper.ModRegistry.GetApi<IGMCMOptionsAPI>("jltaylor-us.GMCMOptions");
+
+                foreach (var p in props)
+                {
+                    if (p.Name == "Debug")
+                        continue;
+                    if (p.PropertyType == typeof(bool))
+                    {
+                        configMenu.AddBoolOption(
+                            mod: ModManifest,
+                            name: () => { var t = Helper.Translation.Get(p.Name); return t.HasValue() ? t : AddSpaces(p.Name); },
+                            tooltip: () => { var t = Helper.Translation.Get(p.Name + ".Desc"); return t.HasValue() ? t : null; },
+                            getValue: () => (bool)p.GetValue(Config),
+                            setValue: value => { p.SetValue(Config, value); }
+                        );
+                    }
+                    else if (p.PropertyType == typeof(int))
+                    {
+                        configMenu.AddNumberOption(
+                            mod: ModManifest,
+                            name: () => { var t = Helper.Translation.Get(p.Name); return t.HasValue() ? t : AddSpaces(p.Name); },
+                            tooltip: () => { var t = Helper.Translation.Get(p.Name + ".Desc"); return t.HasValue() ? t : null; },
+                            getValue: () => (int)p.GetValue(Config),
+                            setValue: value => p.SetValue(Config, value)
+                        );
+                    }
+                    else if (p.PropertyType == typeof(float))
+                    {
+                        configMenu.AddNumberOption(
+                            mod: ModManifest,
+                            name: () => { var t = Helper.Translation.Get(p.Name); return t.HasValue() ? t : AddSpaces(p.Name); },
+                            tooltip: () => { var t = Helper.Translation.Get(p.Name + ".Desc"); return t.HasValue() ? t : null; },
+                            getValue: () => (float)p.GetValue(Config),
+                            setValue: value => p.SetValue(Config, value)
+                        );
+                    }
+                    else if (p.PropertyType == typeof(double))
+                    {
+                        configMenu.AddTextOption(
+                            mod: ModManifest,
+                            name: () => { var t = Helper.Translation.Get(p.Name); return t.HasValue() ? t : AddSpaces(p.Name); },
+                            tooltip: () => { var t = Helper.Translation.Get(p.Name + ".Desc"); return t.HasValue() ? t : null; },
+                            getValue: () => p.GetValue(Config).ToString(),
+                            setValue: value => { if (double.TryParse(value, NumberStyles.Any, CultureInfo.InvariantCulture, out var d)) { p.SetValue(Config, d); } }
+                        );
+                    }
+                    else if (p.PropertyType == typeof(string))
+                    {
+                        configMenu.AddTextOption(
+                            mod: ModManifest,
+                            name: () => { var t = Helper.Translation.Get(p.Name); return t.HasValue() ? t : AddSpaces(p.Name); },
+                            tooltip: () => { var t = Helper.Translation.Get(p.Name + ".Desc"); return t.HasValue() ? t : null; },
+                            getValue: () => (string)p.GetValue(Config),
+                            setValue: value => p.SetValue(Config, value)
+                        );
+                    }
+                    else if (p.PropertyType == typeof(KeybindList))
+                    {
+                        configMenu.AddKeybindList(
+                            mod: ModManifest,
+                            name: () => { var t = Helper.Translation.Get(p.Name); return t.HasValue() ? t : AddSpaces(p.Name); },
+                            tooltip: () => { var t = Helper.Translation.Get(p.Name + ".Desc"); return t.HasValue() ? t : null; },
+                            getValue: () => (KeybindList)p.GetValue(Config),
+                            setValue: value => p.SetValue(Config, value)
+                        );
+                    }
+                    else if (p.PropertyType == typeof(SButton))
+                    {
+                        configMenu.AddKeybind(
+                            mod: ModManifest,
+                            name: () => { var t = Helper.Translation.Get(p.Name); return t.HasValue() ? t : AddSpaces(p.Name); },
+                            tooltip: () => { var t = Helper.Translation.Get(p.Name + ".Desc"); return t.HasValue() ? t : null; },
+                            getValue: () => (SButton)p.GetValue(Config),
+                            setValue: value => p.SetValue(Config, value)
+                        );
+                    }
+                    else if (p.PropertyType == typeof(Color) && configMenuExt is not null)
+                    {
+                        configMenuExt.AddColorOption(
+                            mod: ModManifest,
+                            name: () => { var t = Helper.Translation.Get(p.Name); return t.HasValue() ? t : AddSpaces(p.Name); },
+                            tooltip: () => { var t = Helper.Translation.Get(p.Name + ".Desc"); return t.HasValue() ? t : null; },
+                            getValue: () => (Color)p.GetValue(Config),
+                            setValue: value => p.SetValue(Config, value)
+                        );
+                    }
+                }
+            }
 
             foreach (IContentPack contentPack in SHelper.ContentPacks.GetOwned())
             {
@@ -149,7 +212,7 @@ namespace CustomSpouseRooms
                         customRoomData.Add(srd.name, srd);
                         SMonitor.Log($"Added {srd.name} room data, template {srd.templateName} start pos {srd.startPos}");
                     }
-                    catch(Exception ex)
+                    catch (Exception ex)
                     {
                         SMonitor.Log($"Error adding {srd.name} room data, template {srd.templateName} start pos {srd.startPos}: \n\n{ex}", LogLevel.Error);
                     }
@@ -170,6 +233,28 @@ namespace CustomSpouseRooms
                     SMonitor.Log($"Error adding {srd.name} room data, template {srd.templateName} start pos {srd.startPos}: \n\n{ex}", LogLevel.Error);
                 }
             }
+        }
+
+        public static string AddSpaces(string str)
+        {
+            if (str?.Length < 2)
+                return str;
+            string newStr = str[0].ToString();
+            for (int i = 1; i < str.Length; i++)
+            {
+                char c = str[i];
+                if (i < str.Length - 1)
+                {
+                    char c1 = str[i + 1];
+                    char cm = str[i - 1];
+                    if (c >= 'A' && c <= 'Z' && ((c1 >= 'a' && c1 <= 'z') || (cm >= 'a' && cm <= 'z')))
+                    {
+                        newStr += " ";
+                    }
+                }
+                newStr += c;
+            }
+            return newStr;
         }
 
         public override object GetApi()

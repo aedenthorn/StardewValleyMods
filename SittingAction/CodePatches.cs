@@ -1,5 +1,7 @@
 ﻿using HarmonyLib;
+using Microsoft.Xna.Framework;
 using StardewValley;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
@@ -25,6 +27,18 @@ namespace SittingAction
             {
                 if (!Config.ModEnabled)
                     return;
+            }
+        }
+        [HarmonyPatch(typeof(Utility), nameof(Utility.withinRadiusOfPlayer))]
+        public static class Utility_withinRadiusOfPlayer_Patch
+        {
+            public static void Prefix(ref int tileRadius, Farmer f)
+            {
+                if (Config.ModEnabled && f.IsSitting())
+                {
+                    tileRadius = Config.MaxRadius;
+                }
+
             }
         }
         [HarmonyPatch(typeof(Farmer), nameof(Farmer.CanEmote))]

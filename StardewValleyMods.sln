@@ -785,6 +785,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FoodBuffMultiplier", "FoodB
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ShipAbsolutelyEverything", "ShipAbsolutelyEverything\ShipAbsolutelyEverything.csproj", "{9D3F6A5D-04EE-886A-3737-568932387D0F}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MonsterMuskExtended", "MonsterMuskExtended\MonsterMuskExtended.csproj", "{88749DE8-FD12-B4D4-F025-6A2D15FAB688}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -3889,6 +3891,14 @@ Global
 		{9D3F6A5D-04EE-886A-3737-568932387D0F}.Release|Any CPU.Build.0 = Release|Any CPU
 		{9D3F6A5D-04EE-886A-3737-568932387D0F}.Release|x64.ActiveCfg = Release|x64
 		{9D3F6A5D-04EE-886A-3737-568932387D0F}.Release|x64.Build.0 = Release|x64
+		{88749DE8-FD12-B4D4-F025-6A2D15FAB688}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{88749DE8-FD12-B4D4-F025-6A2D15FAB688}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{88749DE8-FD12-B4D4-F025-6A2D15FAB688}.Debug|x64.ActiveCfg = Debug|x64
+		{88749DE8-FD12-B4D4-F025-6A2D15FAB688}.Debug|x64.Build.0 = Debug|x64
+		{88749DE8-FD12-B4D4-F025-6A2D15FAB688}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{88749DE8-FD12-B4D4-F025-6A2D15FAB688}.Release|Any CPU.Build.0 = Release|Any CPU
+		{88749DE8-FD12-B4D4-F025-6A2D15FAB688}.Release|x64.ActiveCfg = Release|x64
+		{88749DE8-FD12-B4D4-F025-6A2D15FAB688}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

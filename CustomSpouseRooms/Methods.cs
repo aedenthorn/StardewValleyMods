@@ -11,6 +11,7 @@ using StardewValley.Monsters;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Cryptography.X509Certificates;
 using xTile;
 using xTile.Dimensions;
 using xTile.Layers;
@@ -23,6 +24,54 @@ namespace CustomSpouseRooms
     public partial class ModEntry
     {
 
+        private static void GetFarmHouseSpouseRooms(FarmHouse fh, List<string> orderableSpouses, out List<string> orderedSpouses, out List<string> customSpouses)
+        {
+            SMonitor.Log($"Getting {orderableSpouses.Count} spouse rooms");
+            customSpouses = new List<string>();
+            for (int i = orderableSpouses.Count - 1; i >= 0; i--)
+            {
+                if (customRoomData.TryGetValue(orderableSpouses[i], out SpouseRoomData srd) && !srd.islandFarmHouse && (srd.upgradeLevel == fh.upgradeLevel || srd.upgradeLevel < 0) && srd.startPos.X > -1)
+                {
+                    SMonitor.Log($"{orderableSpouses[i]} has custom spouse room");
+                    customSpouses.Add(orderableSpouses[i]);
+                    orderableSpouses.RemoveAt(i);
+                }
+            }
+
+            orderedSpouses = new List<string>();
+            string[] roomOrder = Config.SpouseRoomOrder.Split(',');
+            foreach (string str in roomOrder)
+            {
+                string s = str.Trim();
+                if (orderableSpouses.Contains(s))
+                {
+                    SMonitor.Log($"{s} has custom room order");
+                    orderedSpouses.Add(s);
+                    orderableSpouses.Remove(s);
+                }
+            }
+            foreach (string str in orderableSpouses)
+            {
+                SMonitor.Log($"{str} has no customization");
+                orderedSpouses.Add(str);
+                Config.SpouseRoomOrder += (Config.SpouseRoomOrder.Trim().Length > 0 ? "," : "") + str;
+            }
+            SHelper.WriteConfig(Config);
+        }
+
+        private static void GetIslandFarmHouseSpouseRooms(IslandFarmHouse fh, List<string> orderableSpouses, out List<string> customSpouses)
+        {
+            SMonitor.Log($"Getting {orderableSpouses.Count} island spouse rooms");
+            customSpouses = new List<string>();
+            for (int i = orderableSpouses.Count - 1; i >= 0; i--)
+            {
+                if (ModEntry.customRoomData.TryGetValue(orderableSpouses[i], out SpouseRoomData srd) && srd.islandFarmHouse && srd.startPos.X > -1)
+                {
+                    SMonitor.Log($"{orderableSpouses[i]} has custom island spouse room at {srd.startPos}");
+                    customSpouses.Add(orderableSpouses[i]);
+                }
+            }
+        }
 
         private static void MakeSpouseRoom(DecoratableLocation location, HashSet<string> appliedMapOverrides, SpouseRoomData srd, bool first = false)
         {
@@ -37,7 +86,12 @@ namespace CustomSpouseRooms
                 var spouseSpot = srd.startPos + srd.spousePosOffset;
 
                 Rectangle shellAreaToRefurbish = new Rectangle(corner.X - 1, corner.Y - 1, 8, 12);
-                //ExtendMap(location.Map, shellAreaToRefurbish.X + shellAreaToRefurbish.Width, shellAreaToRefurbish.Y + shellAreaToRefurbish.Height);
+                if(ExtendMap(location.Map, shellAreaToRefurbish.X + shellAreaToRefurbish.Width, shellAreaToRefurbish.Y + shellAreaToRefurbish.Height))
+                {
+                    SMonitor.Log($"Map resized to {newSize.Width}x{newSize.Height}; invalidating map asset");
+                    resizing = true;
+                    SHelper.GameContent.InvalidateCache(location.Map.assetPath);
+                }
 
                 // load shell
 
@@ -205,11 +259,8 @@ namespace CustomSpouseRooms
                     AccessTools.Field(typeof(Layer), "m_tileArray").SetValue(layer, new TileArray(layer, tiles));
 					layer.LayerHeight = height;
 					layer.LayerWidth = width;
+                    newSize = new Size(width, height);
                 }
-            }
-            if (resized)
-            {
-				AccessTools.Method(typeof(Map), "UpdateDisplaySize").Invoke(map, Array.Empty<object>());
             }
 			return resized;
         }

@@ -1,0 +1,10 @@
+﻿{
+  "Name": "Monster Musk Extended",
+  "Author": "aedenthorn",
+  "Version": "0.1.0",
+  "Description": "Extends Monster Musk.",
+  "UniqueID": "aedenthorn.MonsterMuskExtended",
+  "EntryDll": "MonsterMuskExtended.dll",
+  "MinimumApiVersion": "4.0.0",
+  "UpdateKeys": [ "Nexus:" ]
+}
