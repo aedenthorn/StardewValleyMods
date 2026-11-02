@@ -4,6 +4,11 @@ using StardewValley;
 using StardewValley.Extensions;
 using StardewValley.Locations;
 using StardewValley.Monsters;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Reflection;
+using System.Reflection.Emit;
 using xTile.Layers;
 
 namespace MonsterMuskExtended
@@ -58,5 +63,26 @@ namespace MonsterMuskExtended
                 }
             }
         }
+        [HarmonyPatch(typeof(VolcanoDungeon), nameof(VolcanoDungeon.GenerateEntities))]
+        public static class VolcanoDungeon_GenerateEntities_Patch
+        {
+            public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions) // reduce height for fewer weeds
+            {
+                SMonitor.Log($"Transpiling VolcanoDungeon.GenerateEntities");
+
+                var codes = new List<CodeInstruction>(instructions);
+                for (int i = 0; i < codes.Count; i++)
+                {
+                    if (codes[i].opcode == OpCodes.Ldc_I4_7 && codes[i+1].opcode == OpCodes.Blt)
+                    {
+                        codes.Insert(i + 1, new CodeInstruction(OpCodes.Call, AccessTools.Method(typeof(ModEntry), nameof(ModEntry.DoubleNumber))));
+                        i++;
+                    }
+                }
+
+                return codes.AsEnumerable();
+            }
+        }
+
     }
 }

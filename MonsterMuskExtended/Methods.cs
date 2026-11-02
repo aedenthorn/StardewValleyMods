@@ -20,5 +20,11 @@ namespace MonsterMuskExtended
             }
             return false;
         }
+        private static int DoubleNumber(int value)
+        {
+            if (!Config.ModEnabled || !AnyOnlineFarmerHasBuff("24"))
+                return value;
+            return value * 2;
+        }
     }
 }

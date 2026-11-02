@@ -6,5 +6,5 @@
   "UniqueID": "aedenthorn.SittingAction",
   "EntryDll": "SittingAction.dll",
   "MinimumApiVersion": "4.0.0",
-  "UpdateKeys": [ "Nexus:" ]
+  "UpdateKeys": [ "Nexus:54938" ]
 }

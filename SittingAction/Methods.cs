@@ -5,7 +5,7 @@
 
         public static bool SwitchBool(bool value)
         {
-            if(!Config.ModEnabled || SHelper.Input.IsDown(Config.SuppressKey) || !value)
+            if(!value || !Config.ModEnabled || SHelper.Input.IsDown(Config.SuppressKey))
                 return value;
             return false;
         }

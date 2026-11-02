@@ -11,17 +11,8 @@ namespace SittingAction
 {
     public partial class ModEntry
     {
-        [HarmonyPatch(typeof(Game1), nameof(Game1.pressActionButton))]
+        //[HarmonyPatch(typeof(Game1), nameof(Game1.pressActionButton))]
         public static class Game1_pressActionButton_Patch
-        {
-            public static void Prefix()
-            {
-                if (!Config.ModEnabled)
-                    return;
-            }
-        }
-        [HarmonyPatch(typeof(Game1), nameof(Game1.pressUseToolButton))]
-        public static class Game1_pressUseToolButton_Patch
         {
             public static void Prefix()
             {
@@ -39,6 +30,36 @@ namespace SittingAction
                     tileRadius = Config.MaxRadius;
                 }
 
+            }
+        }
+        [HarmonyPatch(typeof(Utility), nameof(Utility.tileWithinRadiusOfPlayer))]
+        public static class Utility_tileWithinRadiusOfPlayer_Patch
+        {
+            public static void Prefix(ref int tileRadius, Farmer f)
+            {
+                if (Config.ModEnabled && f.IsSitting())
+                {
+                    tileRadius = Config.MaxRadius;
+                }
+
+            }
+        }
+        [HarmonyPatch(typeof(Character), nameof(Character.GetGrabTile))]
+        public static class Character_GetGrabTile_Patch
+        {
+            public static bool Prefix(Character __instance, ref Vector2 __result)
+            {
+                if (!Config.ModEnabled || __instance is not Farmer f || f != Game1.player || !f.IsSitting())
+                    return true;
+                var x = Environment.StackTrace;
+                var tile = new Vector2((float)(Game1.getOldMouseX() + Game1.viewport.X), (float)(Game1.getOldMouseY() + Game1.viewport.Y)) / 64f;
+                var distance = Vector2.Distance(Game1.player.Tile, tile);
+                if (distance > Config.MaxRadius)
+                {
+                    tile = Vector2.Lerp(Game1.player.Tile, tile, Config.MaxRadius / distance);
+                }
+                __result = tile;
+                return false;
             }
         }
         [HarmonyPatch(typeof(Farmer), nameof(Farmer.CanEmote))]
