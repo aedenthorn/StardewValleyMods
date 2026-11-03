@@ -787,6 +787,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ShipAbsolutelyEverything", 
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MonsterMuskExtended", "MonsterMuskExtended\MonsterMuskExtended.csproj", "{88749DE8-FD12-B4D4-F025-6A2D15FAB688}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LineOfSight", "LineOfSight\LineOfSight.csproj", "{65D906D0-F7AA-BBBA-BE46-FD03FDB03347}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Bork", "Bork\Bork.csproj", "{486D5383-AB61-7DE7-7E52-709C6B50B47C}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -3899,6 +3903,22 @@ Global
 		{88749DE8-FD12-B4D4-F025-6A2D15FAB688}.Release|Any CPU.Build.0 = Release|Any CPU
 		{88749DE8-FD12-B4D4-F025-6A2D15FAB688}.Release|x64.ActiveCfg = Release|x64
 		{88749DE8-FD12-B4D4-F025-6A2D15FAB688}.Release|x64.Build.0 = Release|x64
+		{65D906D0-F7AA-BBBA-BE46-FD03FDB03347}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{65D906D0-F7AA-BBBA-BE46-FD03FDB03347}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{65D906D0-F7AA-BBBA-BE46-FD03FDB03347}.Debug|x64.ActiveCfg = Debug|x64
+		{65D906D0-F7AA-BBBA-BE46-FD03FDB03347}.Debug|x64.Build.0 = Debug|x64
+		{65D906D0-F7AA-BBBA-BE46-FD03FDB03347}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{65D906D0-F7AA-BBBA-BE46-FD03FDB03347}.Release|Any CPU.Build.0 = Release|Any CPU
+		{65D906D0-F7AA-BBBA-BE46-FD03FDB03347}.Release|x64.ActiveCfg = Release|x64
+		{65D906D0-F7AA-BBBA-BE46-FD03FDB03347}.Release|x64.Build.0 = Release|x64
+		{486D5383-AB61-7DE7-7E52-709C6B50B47C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{486D5383-AB61-7DE7-7E52-709C6B50B47C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{486D5383-AB61-7DE7-7E52-709C6B50B47C}.Debug|x64.ActiveCfg = Debug|x64
+		{486D5383-AB61-7DE7-7E52-709C6B50B47C}.Debug|x64.Build.0 = Debug|x64
+		{486D5383-AB61-7DE7-7E52-709C6B50B47C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{486D5383-AB61-7DE7-7E52-709C6B50B47C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{486D5383-AB61-7DE7-7E52-709C6B50B47C}.Release|x64.ActiveCfg = Release|x64
+		{486D5383-AB61-7DE7-7E52-709C6B50B47C}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

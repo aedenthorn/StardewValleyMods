@@ -1,7 +1,7 @@
 ﻿{
   "Name": "Building Shift",
   "Author": "aedenthorn",
-  "Version": "0.1.3",
+  "Version": "0.1.4",
   "Description": "Building Shift.",
   "UniqueID": "aedenthorn.BuildingShift",
   "EntryDll": "BuildingShift.dll",

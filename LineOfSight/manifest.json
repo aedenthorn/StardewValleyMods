@@ -1,0 +1,10 @@
+﻿{
+  "Name": "Line Of Sight",
+  "Author": "aedenthorn",
+  "Version": "0.1.0",
+  "Description": "Line Of Sight.",
+  "UniqueID": "aedenthorn.LineOfSight",
+  "EntryDll": "LineOfSight.dll",
+  "MinimumApiVersion": "4.0.0",
+  "UpdateKeys": [ "Nexus:" ]
+}

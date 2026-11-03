@@ -1,0 +1,66 @@
+{
+  "ItemCountInLocation": {
+    "Terms": [
+      "amount"
+    ],
+    "Variables": [
+      "item",
+      "location"
+    ],
+    "Response": "ItemCountInLocation"
+  },
+  "WhereNPC": {
+    "Terms": [
+      "where"
+    ],
+    "Variables": [
+      "npc"
+    ],
+    "Response": "WhereNPC"
+  },
+  "WeatherSeasonDay": {
+    "Terms": [
+      "weather"
+    ],
+    "Variables": [
+      "season",
+      "day"
+    ],
+    "Response": "WeatherSeasonDay"
+  },
+  "WeatherTomorrow": {
+    "Terms": [
+      "weather",
+      "tomorrow"
+    ],
+    "Response": "WeatherTomorrow"
+  },
+  "NPCBirthday": {
+    "Terms": [
+      "birthday"
+    ],
+    "Variables": [
+      "npc"
+    ],
+    "Response": "NPCBirthday"
+  },
+  "Joke": {
+    "Terms": [
+      "joke"
+    ],
+    "Response": "Joke"
+  },
+  "Quote": {
+    "Terms": [
+      "quote"
+    ],
+    "Response": "Quote"
+  },
+  "AboutYou": {
+    "Terms": [
+      "about",
+      "you"
+    ],
+    "Response": "AboutYou"
+  }
+}

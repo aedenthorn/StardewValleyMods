@@ -1,11 +1,17 @@
 ﻿using HarmonyLib;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Input;
 using StardewValley;
+using StardewValley.GameData.Objects;
+using StardewValley.Locations;
+using StardewValley.Objects;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Reflection.Emit;
+using static StardewValley.Minigames.MineCart.Whale;
+using Object = StardewValley.Object;
 
 namespace SittingAction
 {
@@ -14,10 +20,55 @@ namespace SittingAction
         //[HarmonyPatch(typeof(Game1), nameof(Game1.pressActionButton))]
         public static class Game1_pressActionButton_Patch
         {
-            public static void Prefix()
+            public static bool Prefix(ref bool __result, KeyboardState currentKBState, MouseState currentMouseState, GamePadState currentPadState)
             {
-                if (!Config.ModEnabled)
-                    return;
+
+                if (!Config.ModEnabled || __result || !Game1.player.IsSitting())
+                    return true;
+                if (!Game1.player.isEating && Game1.player.ActiveObject != null && !Game1.dialogueUp && !Game1.eventUp && !Game1.player.canOnlyWalk && !Game1.player.FarmerSprite.PauseForSingleAnimation && !Game1.fadeToBlack && Game1.player.ActiveObject.Edibility != -300 && Game1.didPlayerJustRightClick(true))
+                {
+                    if (Game1.player.team.SpecialOrderRuleActive("SC_NO_FOOD", null))
+                    {
+                        MineShaft mineShaft = Game1.player.currentLocation as MineShaft;
+                        if (mineShaft != null && mineShaft.getMineArea(-1) == 121)
+                        {
+                            Game1.addHUDMessage(new HUDMessage(Game1.content.LoadString("Strings\\StringsFromCSFiles:Object.cs.13053"), 3));
+                            __result = false;
+                            return false;
+                        }
+                    }
+                    if (Game1.player.hasBuff("25") && Game1.player.ActiveObject != null && !Game1.player.ActiveObject.HasContextTag("ginger_item"))
+                    {
+                        Game1.addHUDMessage(new HUDMessage(Game1.content.LoadString("Strings\\StringsFromCSFiles:Nauseous_CantEat"), 3));
+                        __result = false;
+                        return false;
+                    }
+                    Game1.player.itemToEat = Game1.player.ActiveObject;
+                    Game1.player.mostRecentlyGrabbedItem = Game1.player.ActiveObject;
+                    ObjectData objectData;
+                    if (Game1.objectData.TryGetValue(Game1.player.ActiveObject.ItemId, out objectData))
+                    {
+                        Game1.currentLocation.createQuestionDialogue((objectData.IsDrink && Game1.player.ActiveObject.preserve.Value.GetValueOrDefault() != Object.PreserveType.Pickle) ? Game1.content.LoadString("Strings\\StringsFromCSFiles:Game1.cs.3159", Game1.player.ActiveObject.DisplayName) : Game1.content.LoadString("Strings\\StringsFromCSFiles:Game1.cs.3160", Game1.player.ActiveObject.DisplayName), Game1.currentLocation.createYesNoResponses(), "Eat");
+                    }
+                    Game1.oldKBState = currentKBState;
+                    Game1.oldMouseState = Game1.input.GetMouseState();
+                    Game1.oldPadState = currentPadState;
+                    __result = false;
+                    return false;
+                }
+                return true;
+            }
+        }
+        //[HarmonyPatch(typeof(Farmer), nameof(Farmer.eatHeldObject))]
+        public static class Farmer_eatHeldObject_Patch
+        {
+            public static void Postfix(Farmer __instance)
+            {
+                if (Config.ModEnabled && __instance.IsSitting())
+                {
+                    __instance.isEating = false;
+                    __instance.FarmerSprite.ClearAnimation();
+                }
             }
         }
         [HarmonyPatch(typeof(Utility), nameof(Utility.withinRadiusOfPlayer))]
@@ -102,10 +153,9 @@ namespace SittingAction
             }
             public static void Postfix(Farmer who, ref bool __result)
             {
-                if (!Config.ModEnabled || __result || !who.IsSitting())
+                if (!Config.ModEnabled || __result || !Game1.player.IsSitting())
                     return;
-                who.StopSitting(true);
-                __result = true;
+                Game1.player.StopSitting(true);
             }
             public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions) // reduce height for fewer weeds
             {

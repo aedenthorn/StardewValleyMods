@@ -18,9 +18,9 @@ namespace BuildingShift
         {
             public static void Prefix(Building __instance, ref Vector2 tileLocation)
             {
+                return;
                 if (!Config.EnableMod || !TryGetShift(__instance, out var amount))
                     return;
-
 
                 Rectangle boundingBox = Game1.player.GetBoundingBox();
                 int x;
