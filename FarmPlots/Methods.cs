@@ -479,24 +479,27 @@ namespace FarmPlots
                 {
                     (item = new ColoredObject(crop.indexOfHarvest.Value, 1, crop.tintColor.Value)).Quality = cropQuality;
                 }
-                Item harvestedItem = item;
-
+                Item baseItem = item;
+                harvest.Add(baseItem.getOne());
                 if (crop.indexOfHarvest.Value == "421")
                 {
                     crop.indexOfHarvest.Value = "431";
                     numToHarvest = r2.Next(1, 4);
                 }
-                harvestedItem = (crop.programColored.Value ? new ColoredObject(crop.indexOfHarvest.Value, 1, crop.tintColor.Value) : ItemRegistry.Create(crop.indexOfHarvest.Value, 1, 0, false));
+                var extraItem = (crop.programColored.Value ? new ColoredObject(crop.indexOfHarvest.Value, 1, crop.tintColor.Value) : ItemRegistry.Create(crop.indexOfHarvest.Value, 1, 0, false));
                 int price = 0;
-                Object obj = harvestedItem as Object;
+                Object obj = extraItem as Object;
                 if (obj != null)
                 {
                     price = obj.Price;
                 }
                 float experience2 = (float)(16.0 * Math.Log(0.018 * (double)price + 1.0, 2.718281828459045));
                 Game1.player.gainExperience(0, (int)Math.Round((double)experience2));
-                obj.Stack = numToHarvest;
-                harvest.Add(obj);
+                obj.Stack = numToHarvest - 1;
+                if(obj.Stack > 0)
+                {
+                    harvest.Add(obj);
+                }
                 string text = crop.indexOfHarvest.Value;
                 if (!(text == "262"))
                 {

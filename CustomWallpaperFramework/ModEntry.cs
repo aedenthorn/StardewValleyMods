@@ -21,7 +21,13 @@ namespace CustomWallpaperFramework
         public static ModEntry context;
 
         public static readonly string dictPath = "aedenthorn.CustomWallpaperFramework/dictionary";
-        public static Dictionary<string, WallpaperData> wallpaperDataDict = new Dictionary<string, WallpaperData>();
+        public static Dictionary<string, WallpaperData> WallpaperDataDict
+        {
+            get
+            {
+                return SHelper.GameContent.Load<Dictionary<string, WallpaperData>>(dictPath) ?? new Dictionary<string, WallpaperData>();
+            }
+        }
         public static Dictionary<DecoratableLocation, Dictionary<string, WallPaperTileData>> locationDataDict = new Dictionary<DecoratableLocation, Dictionary<string, WallPaperTileData>>();
 
         /// <summary>The mod entry point, called after the mod is first loaded.</summary>
@@ -57,12 +63,6 @@ namespace CustomWallpaperFramework
 
         private void GameLoop_SaveLoaded(object sender, StardewModdingAPI.Events.SaveLoadedEventArgs e)
         {
-            wallpaperDataDict = SHelper.Content.Load<Dictionary<string, WallpaperData>>(dictPath, ContentSource.GameContent) ?? new Dictionary<string, WallpaperData>();
-            foreach(var data in wallpaperDataDict.Values)
-            {
-                data.texture = Game1.content.Load<Texture2D>(data.texturePath);
-            }
-            Monitor.Log($"Loaded {wallpaperDataDict.Count} wallpapers");
             foreach (var loc in Game1.locations)
             {
                 if (loc is DecoratableLocation)

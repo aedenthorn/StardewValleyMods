@@ -169,6 +169,7 @@ namespace PacifistValley
                 e.Edit(delegate (IAssetData data) {
                     var editor = data.AsDictionary<string, string>();
                     editor.Data["15"] = Helper.Translation.Get("Quests-15");
+                    editor.Data["16"] = Helper.Translation.Get("Quests-16");
                 });
 
             }

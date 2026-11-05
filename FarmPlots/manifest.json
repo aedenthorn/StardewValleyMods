@@ -1,7 +1,7 @@
 ﻿{
   "Name": "Farm Plots",
   "Author": "aedenthorn",
-  "Version": "0.2.2",
+  "Version": "0.2.3",
   "Description": "Farm Plots.",
   "UniqueID": "aedenthorn.FarmPlots",
   "EntryDll": "FarmPlots.dll",

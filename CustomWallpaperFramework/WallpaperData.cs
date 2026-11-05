@@ -6,7 +6,6 @@ namespace CustomWallpaperFramework
     {
         public string id;
         public string texturePath;
-        public Texture2D texture;
         public int width = 1;
         public int height = 3;
         public float scale = 4;

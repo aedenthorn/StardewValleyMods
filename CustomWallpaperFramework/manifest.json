@@ -1,22 +1,10 @@
 ﻿{
   "Name": "Custom Wallpaper Framework",
   "Author": "aedenthorn",
-  "Version": "0.2.0",
+  "Version": "0.3.0",
   "Description": "Custom Wallpaper Framework.",
   "UniqueID": "aedenthorn.CustomWallpaperFramework",
   "EntryDll": "CustomWallpaperFramework.dll",
-  "MinimumApiVersion": "3.13.0",
-  "ModUpdater": {
-    "Repository": "StardewValleyMods",
-    "User": "aedenthorn",
-    "Directory": "_releases",
-    "ModFolder": "CustomWallpaperFramework"
-  },
-  "UpdateKeys": [ "Nexus:12510" ],
-  "Dependencies": [
-    {
-      "UniqueID": "Platonymous.ModUpdater",
-      "IsRequired": false
-    }
-  ]
+  "MinimumApiVersion": "4.0.0",
+  "UpdateKeys": [ "Nexus:12510" ]
 }

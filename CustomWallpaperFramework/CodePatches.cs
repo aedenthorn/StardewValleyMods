@@ -17,58 +17,58 @@ namespace CustomWallpaperFramework
         [HarmonyPatch(typeof(DecoratableLocation), nameof(DecoratableLocation.UpdateWallpaper))]
         public class UpdateWallpaper_Patch
         {
-            public static void Postfix(DecoratableLocation __instance, string wallpaper_id)
+            public static void Postfix(DecoratableLocation __instance, string wallpaperId)
             {
-                if (!Config.EnableMod || !__instance.appliedWallpaper.ContainsKey(wallpaper_id) || !__instance.wallpaperTiles.ContainsKey(wallpaper_id))
+                if (!Config.EnableMod || !__instance.appliedWallpaper.ContainsKey(wallpaperId) || !__instance.wallpaperTiles.ContainsKey(wallpaperId))
                     return;
 
                 if (locationDataDict.TryGetValue(__instance, out Dictionary<string, WallPaperTileData> tileDataDict))
                 {
-                    locationDataDict[__instance].Remove(wallpaper_id);
+                    locationDataDict[__instance].Remove(wallpaperId);
                 }
 
-                if(!wallpaperDataDict.TryGetValue(__instance.appliedWallpaper[wallpaper_id].Split(':')[0], out WallpaperData data) || data.isFloor)
+                if(!WallpaperDataDict.TryGetValue(__instance.appliedWallpaper[wallpaperId].Split(':')[0], out WallpaperData data) || data.isFloor)
                     return;
 
-                string wallpaperKey = __instance.appliedWallpaper[wallpaper_id].Split(':')[0];
+                string wallpaperKey = __instance.appliedWallpaper[wallpaperId].Split(':')[0];
 
                 //SMonitor.Log($"Updatating custom-sized wallpaper {wallpaperKey} in area {wallpaper_id}");
 
                 if (!locationDataDict.ContainsKey(__instance))
                     locationDataDict.Add(__instance, new Dictionary<string, WallPaperTileData>());
-                if (!locationDataDict[__instance].ContainsKey(wallpaper_id))
+                if (!locationDataDict[__instance].ContainsKey(wallpaperId))
                 {
-                    locationDataDict[__instance].Add(wallpaper_id, new WallPaperTileData()
+                    locationDataDict[__instance].Add(wallpaperId, new WallPaperTileData()
                     {
                         id = data.id,
                     });
                 }
 
-                foreach (Vector3 vector in __instance.wallpaperTiles[wallpaper_id])
+                foreach (Vector3 vector in __instance.wallpaperTiles[wallpaperId])
                 {
-                    if(locationDataDict[__instance][wallpaper_id].startTile.X < 0)
+                    if (locationDataDict[__instance][wallpaperId].startTile.X < 0)
                     {
                         Vector2 startTile = new Vector2(vector.X, vector.Y);
-                        while (__instance.wallpaperTiles[wallpaper_id].Exists(v => v.X == startTile.X - 1))
+                        while (__instance.wallpaperTiles[wallpaperId].Exists(v => v.X == startTile.X - 1))
                         {
                             startTile = new Vector2(startTile.X - 1, startTile.Y);
                         }
-                        while (__instance.wallpaperTiles[wallpaper_id].Exists(v => v.Y == startTile.Y - 1))
+                        while (__instance.wallpaperTiles[wallpaperId].Exists(v => v.Y == startTile.Y - 1))
                         {
                             startTile = new Vector2(startTile.X, startTile.Y - 1);
                         }
-                        locationDataDict[__instance][wallpaper_id].startTile = startTile;
+                        locationDataDict[__instance][wallpaperId].startTile = startTile;
                     }
                     if (vector.Z == 2)
                     {
-                        if ((bool)AccessTools.Method(typeof(DecoratableLocation), "IsFloorableOrWallpaperableTile").Invoke(__instance, new object[] { (int)vector.X, (int)vector.Y, "Buildings" }))
+                        if ((bool)AccessTools.Method(typeof(DecoratableLocation), "IsFloorableOrWallpaperableTile", new Type[] { typeof(int), typeof(int), typeof(string) }).Invoke(__instance, new object[] { (int)vector.X, (int)vector.Y, "Buildings" }))
                         {
-                            locationDataDict[__instance][wallpaper_id].buildingTiles.Add(new Vector2(vector.X, vector.Y));
+                            locationDataDict[__instance][wallpaperId].buildingTiles.Add(new Vector2(vector.X, vector.Y));
                             continue;
                         }
                     }
-                    if((bool)AccessTools.Method(typeof(DecoratableLocation), "IsFloorableOrWallpaperableTile").Invoke(__instance, new object[] { (int)vector.X, (int)vector.Y, "Back" }))
-                        locationDataDict[__instance][wallpaper_id].backTiles.Add(new Vector2(vector.X, vector.Y));
+                    if ((bool)AccessTools.Method(typeof(DecoratableLocation), "IsFloorableOrWallpaperableTile", new Type[] { typeof(int), typeof(int), typeof(string) }).Invoke(__instance, new object[] { (int)vector.X, (int)vector.Y, "Back" }))
+                        locationDataDict[__instance][wallpaperId].backTiles.Add(new Vector2(vector.X, vector.Y));
                 }
             }
 
@@ -83,8 +83,9 @@ namespace CustomWallpaperFramework
                 int pixelZoom = 1;
                 foreach(var kvp in dict)
                 {
-                    var data = wallpaperDataDict[kvp.Value.id];
-                    Texture2D tex = data.texture;
+                    var data = WallpaperDataDict[kvp.Value.id];
+                    Texture2D tex = SHelper.GameContent.Load<Texture2D>(data.texturePath);
+
                     int tileSize = (int)Math.Floor(64 / data.scale);
                     var tiles = __instance.Id == "Buildings" ? kvp.Value.buildingTiles : kvp.Value.backTiles;
                     foreach (var v in tiles)
