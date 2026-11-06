@@ -1,7 +1,7 @@
 ﻿{
   "Name": "Farm Cave Framework",
   "Author": "aedenthorn",
-  "Version": "0.4.0",
+  "Version": "0.4.1",
   "Description": "Farm Cave Framework.",
   "UniqueID": "aedenthorn.FarmCaveFramework",
   "EntryDll": "FarmCaveFramework.dll",

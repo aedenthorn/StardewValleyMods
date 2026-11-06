@@ -16,15 +16,15 @@
     },
     {
       "name": "Olivia-event-2",
-      "location": "Saloon",
-      "eventId": "4000003",
+      "location": "Custom_JenkinsHouse",
+      "eventId": "4000004",
       "night": false,
       "mail": null
     },
     {
       "name": "Olivia-event-3",
-      "location": "Custom_OliviaCellar",
-      "eventId": "4000004",
+      "location": "Saloon",
+      "eventId": "4000003",
       "night": false,
       "mail": null
     },
