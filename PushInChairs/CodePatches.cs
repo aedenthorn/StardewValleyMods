@@ -127,7 +127,7 @@ namespace PushInChairs
                     return;
                 if (__instance.modData.ContainsKey(modKey))
                 {
-                    CheckFurniture(__instance);
+                    __instance.modData.Remove(modKey);
                 }
                 else if (IsTable(__instance))
                 {
