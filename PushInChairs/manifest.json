@@ -1,0 +1,10 @@
+﻿{
+  "Name": "Monster Musk Extended",
+  "Author": "aedenthorn",
+  "Version": "0.1.1",
+  "Description": "Lets you push in chairs underneath tables when not needed.",
+  "UniqueID": "aedenthorn.PushInChairs",
+  "EntryDll": "PushInChairs.dll",
+  "MinimumApiVersion": "4.0.0",
+  "UpdateKeys": [ "Nexus:55162" ]
+}

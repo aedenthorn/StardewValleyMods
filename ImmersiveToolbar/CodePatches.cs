@@ -40,6 +40,22 @@ namespace ImmersiveToolbar
                 scroll.Value = 96 * whichWay;
             }
         }
+        [HarmonyPatch(typeof(Toolbar), nameof(Toolbar.receiveLeftClick))]
+        public static class Toolbar_receiveLeftClick_Patch
+        {
+            public static bool Prefix()
+            {
+                return !Config.ModEnabled;
+            }
+        }
+        [HarmonyPatch(typeof(Toolbar), nameof(Toolbar.receiveRightClick))]
+        public static class Toolbar_receiveRightClick_Patch
+        {
+            public static bool Prefix()
+            {
+                return !Config.ModEnabled;
+            }
+        }
         [HarmonyPatch(typeof(Toolbar), nameof(Toolbar.performHoverAction))]
         public static class Toolbar_performHoverAction_Patch
         {
