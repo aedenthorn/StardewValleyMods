@@ -5,7 +5,6 @@ using StardewModdingAPI.Events;
 using StardewModdingAPI.Utilities;
 using StardewValley;
 using StardewValley.Objects;
-using System;
 using System.Globalization;
 using System.Linq;
 
@@ -51,12 +50,12 @@ namespace PushInChairs
                     if (f.modData.ContainsKey(modKey))
                     {
                         f.modData.Remove(modKey);
-                        Game1.playSound("grassyStep");
+                        Game1.playSound(Config.PushSound);
                     }
                     else
                     {
                         f.modData[modKey] = "true";
-                        Game1.playSound("grassyStep");
+                        Game1.playSound(Config.PushSound);
                     }
                     foreach (var kb in Config.ToggleKey.Keybinds)
                     {

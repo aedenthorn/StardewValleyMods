@@ -13,6 +13,7 @@ namespace PushInChairs
         public bool ModEnabled { get; set; } = true;
         public bool Debug { get; set; } = false;
         public KeybindList ToggleKey { get; set; } = new KeybindList(new Keybind(SButton.LeftShift, SButton.MouseLeft));
+        public string PushSound { get; set; } = "grassyStep";
     }
     
 }

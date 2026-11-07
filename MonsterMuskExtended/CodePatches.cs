@@ -1,5 +1,6 @@
 ﻿using HarmonyLib;
 using Microsoft.Xna.Framework;
+using Netcode;
 using StardewValley;
 using StardewValley.Extensions;
 using StardewValley.Locations;
@@ -25,6 +26,28 @@ namespace MonsterMuskExtended
                 {
                     monsterChance *= 2;
                 }
+            }
+        }
+
+        [HarmonyPatch(typeof(Woods), "resetSharedState")]
+        public class Woods_resetSharedState_Patch
+        {
+            public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions) // reduce height for fewer weeds
+            {
+                SMonitor.Log($"Transpiling Woods.resetSharedState");
+
+                var codes = new List<CodeInstruction>(instructions);
+                for (int i = 0; i < codes.Count; i++)
+                {
+                    if (codes[i].opcode == OpCodes.Ldc_I4_S && (sbyte)codes[i].operand == 50)
+                    {
+                        SMonitor.Log($"Adding method to double number");
+                        codes.Insert(i + 1, new CodeInstruction(OpCodes.Call, AccessTools.Method(typeof(ModEntry), nameof(ModEntry.DoubleNumber))));
+                        break;
+                    }
+                }
+
+                return codes.AsEnumerable();
             }
         }
 
@@ -75,8 +98,9 @@ namespace MonsterMuskExtended
                 {
                     if (codes[i].opcode == OpCodes.Ldc_I4_7 && codes[i+1].opcode == OpCodes.Blt)
                     {
+                        SMonitor.Log($"Adding method to double number");
                         codes.Insert(i + 1, new CodeInstruction(OpCodes.Call, AccessTools.Method(typeof(ModEntry), nameof(ModEntry.DoubleNumber))));
-                        i++;
+                        break;
                     }
                 }
 
