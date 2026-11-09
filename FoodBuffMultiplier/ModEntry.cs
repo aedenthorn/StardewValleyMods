@@ -95,7 +95,7 @@ namespace FoodBuffMultiplier
                 configMenu.Register(
                     mod: ModManifest,
                     reset: () => Config = new ModConfig(),
-                    save: () => Helper.WriteConfig(Config)
+                    save: () => { Helper.GameContent.InvalidateCache("Data/Objects"); Helper.WriteConfig(Config); }
                 );
                 var props = typeof(ModConfig).GetProperties().ToArray();
                 var configMenuExt = Helper.ModRegistry.GetApi<IGMCMOptionsAPI>("jltaylor-us.GMCMOptions");

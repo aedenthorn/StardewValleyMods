@@ -1,7 +1,7 @@
 ﻿{
   "Name": "Food Buff Multiplier",
   "Author": "aedenthorn",
-  "Version": "0.1.0",
+  "Version": "0.1.1",
   "Description": "Multiplies the effects of food buffs.",
   "UniqueID": "aedenthorn.FoodBuffMultiplier",
   "EntryDll": "FoodBuffMultiplier.dll",
