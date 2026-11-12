@@ -99,7 +99,7 @@ namespace HugsAndKisses
                         PerformEmbrace(npc1, midpoint, npc2.Name);
                         PerformEmbrace(npc2, midpoint, npc1.Name);
 
-                        if (playerSpouseKiss || npcMarriageKiss)
+                        if (!npcRelatedHug && (playerSpouseKiss || npcMarriageKiss))
                         {
                             if (Config.CustomKissSound.Length > 0 && kissEffect != null)
                             {

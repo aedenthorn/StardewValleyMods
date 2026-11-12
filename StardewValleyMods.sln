@@ -795,6 +795,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PushInChairs", "PushInChair
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CLCSharp", "CLCSharp\CLCSharp.csproj", "{B52539A1-8E64-0C8C-9B95-5888977D63C5}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CustomSeasoning", "CustomSeasoning\CustomSeasoning.csproj", "{4A0FB9AE-2F42-77D9-52DA-BB036EAC25DD}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -3939,6 +3941,14 @@ Global
 		{B52539A1-8E64-0C8C-9B95-5888977D63C5}.Release|Any CPU.Build.0 = Release|Any CPU
 		{B52539A1-8E64-0C8C-9B95-5888977D63C5}.Release|x64.ActiveCfg = Release|x64
 		{B52539A1-8E64-0C8C-9B95-5888977D63C5}.Release|x64.Build.0 = Release|x64
+		{4A0FB9AE-2F42-77D9-52DA-BB036EAC25DD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4A0FB9AE-2F42-77D9-52DA-BB036EAC25DD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4A0FB9AE-2F42-77D9-52DA-BB036EAC25DD}.Debug|x64.ActiveCfg = Debug|x64
+		{4A0FB9AE-2F42-77D9-52DA-BB036EAC25DD}.Debug|x64.Build.0 = Debug|x64
+		{4A0FB9AE-2F42-77D9-52DA-BB036EAC25DD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4A0FB9AE-2F42-77D9-52DA-BB036EAC25DD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4A0FB9AE-2F42-77D9-52DA-BB036EAC25DD}.Release|x64.ActiveCfg = Release|x64
+		{4A0FB9AE-2F42-77D9-52DA-BB036EAC25DD}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

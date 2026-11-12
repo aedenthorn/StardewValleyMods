@@ -19,64 +19,21 @@ namespace GiantCropInteriors
     public partial class ModEntry
     {
 
-        [HarmonyPatch(typeof(GiantCrop), nameof(GiantCrop.draw), new Type[] { typeof(SpriteBatch) })]
+        //[HarmonyPatch(typeof(GiantCrop), nameof(GiantCrop.draw), new Type[] { typeof(SpriteBatch) })]
         public class GiantCrop_draw_Patch
         {
             public static void Postfix(GiantCrop __instance)
             {
-                if (__instance.Location is null)
-                    return;
-                if (!Config.ModEnabled || !BuildingDict.ContainsKey(__instance.Id))
-                {
-                    if (__instance.modData.ContainsKey(builtAtKey) && __instance.Location.getBuildingAt(__instance.Tile) is Building old)
-                    {
-                        __instance.Location.buildings.Remove(old);
-                    }
-                    return;
-                }
-                if (__instance.Location.buildings.FirstOrDefault(i => (int)__instance.Tile.X == i.tileX.Value && (int)__instance.Tile.Y  == i.tileY.Value) is Building exists)
-                {
-                    if(exists.buildingType.Value == modPrefix + __instance.Id)
-                    {
-                        return;
-                    }
-                    __instance.Location.buildings.Remove(exists);
-                }
-                else if (__instance.modData.TryGetValue(builtAtKey, out var str) && __instance.Location.buildings.FirstOrDefault(i => str == $"{i.tileX},{i.tileY}") is Building moved && moved.buildingType.Value == modPrefix + __instance.Id)
-                {
-                    moved.tileX.Value = (int)__instance.Tile.X;
-                    moved.tileY.Value = (int)__instance.Tile.Y;
-                    return;
-                }
-                Building b = new Building(modPrefix + __instance.Id, __instance.Tile);
-                b.FinishConstruction(true);
-                b.LoadFromBuildingData(b.GetData(), false, true);
-                b.load();
-                b.modData[cropKey] = __instance.Id;
-                __instance.modData[builtAtKey] = $"{__instance.Tile.X},{__instance.Tile.Y}";
-                __instance.Location.buildings.Add(b);
+                
             }
         }
 
-        [HarmonyPatch(typeof(Building), nameof(Building.draw), new Type[] { typeof(SpriteBatch) })]
+        //[HarmonyPatch(typeof(Building), nameof(Building.draw), new Type[] { typeof(SpriteBatch) })]
         public class Building_draw_Patch
         {
             public static void Postfix(Building __instance)
             {
-                if (__instance.GetParentLocation() is not GameLocation l)
-                    return;
-                if (!__instance.modData.TryGetValue(cropKey, out var cropType))
-                    return;
-                if (!Config.ModEnabled)
-                {
-                    l.buildings.Remove(__instance);
-                    return;
-                }
-                if (__instance.GetParentLocation().resourceClumps.FirstOrDefault(rc => rc is GiantCrop g && g.Id == cropType && g.Tile.X == __instance.tileX.Value && g.Tile.Y == __instance.tileY.Value) == null)
-                {
-                    ToRemove.Add(__instance);
-                    SHelper.Events.GameLoop.UpdateTicked += GameLoop_UpdateTicked;
-                }
+                
             }
         }
 

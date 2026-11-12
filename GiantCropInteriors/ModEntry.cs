@@ -28,6 +28,7 @@ namespace GiantCropInteriors
         public const string giantCropKey = "aedenthorn.GiantCropInteriors/GiantCrop";
         public const string pumpkinKey = "aedenthorn.GiantCropInteriors/Pumpkin";
         public const string melonKey = "aedenthorn.GiantCropInteriors/Melon";
+        public const string powdermelonKey = "aedenthorn.GiantCropInteriors/Powdermelon";
         public const string builtAtKey = "aedenthorn.GiantCropInteriors/BuiltAt";
         public const string cropKey = "aedenthorn.GiantCropInteriors/Crop";
         public const string modPrefix = "aedenthorn.GiantCropInteriors/";
@@ -54,14 +55,31 @@ namespace GiantCropInteriors
             helper.Events.GameLoop.GameLaunched += GameLoop_GameLaunched;
             helper.Events.GameLoop.Saving += GameLoop_Saving;
             helper.Events.GameLoop.DayStarted += GameLoop_DayStarted;
+            helper.Events.GameLoop.OneSecondUpdateTicked += GameLoop_OneSecondUpdateTicked;
             helper.Events.Content.AssetRequested += Content_AssetRequested;
             helper.Events.Input.ButtonPressed += Input_ButtonPressed;
+
 
 
             var harmony = new Harmony(ModManifest.UniqueID);
             harmony.PatchAll();
 
         }
+
+        private void GameLoop_OneSecondUpdateTicked(object sender, OneSecondUpdateTickedEventArgs e)
+        {
+            if(!Config.ModEnabled || !Context.IsWorldReady || Game1.currentLocation is not GameLocation l)
+                return;
+            foreach(var b in l.buildings)
+            {
+                CheckBuilding(b);
+            }
+            foreach(var c in l.resourceClumps.Where(rc => rc is GiantCrop))
+            {
+                CheckCrop(c as GiantCrop);
+            }
+        }
+
 
         private void GameLoop_Saving(object sender, SavingEventArgs e)
         {
@@ -100,8 +118,8 @@ namespace GiantCropInteriors
             {
                 if (Context.IsWorldReady)
                 {
-                    Game1.currentLocation.MakeMapModifications();
-                    //SHelper.GameContent.InvalidateCache("Maps/GiantCrop");
+                    //Game1.newDayAfterFade(null);
+                    //SHelper.GameContent.InvalidateCache("Maps/Farm");
                     if (e.Button == SButton.NumPad7)
                     {
 
@@ -139,6 +157,13 @@ namespace GiantCropInteriors
                         new()
                         {
                             Texture = melonKey
+                        }
+                    },
+                    {
+                        "Powdermelon",
+                        new()
+                        {
+                            Texture = powdermelonKey
                         }
                     }
                 }, AssetLoadPriority.Exclusive);
@@ -189,6 +214,10 @@ namespace GiantCropInteriors
             else if (e.NameWithoutLocale.IsEquivalentTo(melonKey))
             {
                 e.LoadFromModFile<Texture2D>("assets/Melon.png", AssetLoadPriority.Exclusive);
+            }
+            else if (e.NameWithoutLocale.IsEquivalentTo(powdermelonKey))
+            {
+                e.LoadFromModFile<Texture2D>("assets/PowderMelon.png", AssetLoadPriority.Exclusive);
             }
         }
 

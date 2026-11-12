@@ -1,14 +1,11 @@
 ﻿using HarmonyLib;
-using Microsoft.CSharp;
 using Microsoft.Xna.Framework;
 using StardewModdingAPI;
 using StardewModdingAPI.Events;
 using StardewModdingAPI.Utilities;
 using System;
-using System.CodeDom.Compiler;
 using System.Globalization;
 using System.Linq;
-using System.Reflection;
 
 namespace CLCSharp
 {
@@ -29,69 +26,10 @@ namespace CLCSharp
             context = this;
 
             helper.Events.GameLoop.GameLaunched += GameLoop_GameLaunched;
-            Helper.ConsoleCommands.Add("cslog", "Log the results of a C# command.", new Action<string, string[]>(LogCommand));
-            Helper.ConsoleCommands.Add("cseval", "Evaluate a C# command.", new Action<string, string[]>(EvalCommand));
+            Helper.ConsoleCommands.Add("csharp", "Run c# code.", new Action<string, string[]>(ParseCommand));
 
             var harmony = new Harmony(ModManifest.UniqueID);
             harmony.PatchAll();
-        }
-
-        private void EvalCommand(string arg1, string[] arg2)
-        {
-            var expression = string.Join(" ", arg2);
-            CSharpCodeProvider codeProvider = new CSharpCodeProvider();
-            CompilerResults results =
-                codeProvider
-                .CompileAssemblyFromSource(new CompilerParameters(), new string[]
-                {
-                string.Format(@"
-                    namespace MyAssembly
-                    {{
-                        public class Evaluator
-                        {{
-                            public void Eval()
-                            {{
-                                {0};
-                            }}
-                        }}
-                    }}
-
-                ", expression)
-                });
-
-            Assembly assembly = results.CompiledAssembly;
-            dynamic evaluator =
-                Activator.CreateInstance(assembly.GetType("MyAssembly.Evaluator"));
-            evaluator.Eval();
-        }
-
-        private void LogCommand(string arg1, string[] arg2)
-        {
-            var expression = string.Join(" ", arg2);
-            CSharpCodeProvider codeProvider = new CSharpCodeProvider();
-            CompilerResults results =
-                codeProvider
-                .CompileAssemblyFromSource(new CompilerParameters(), new string[]
-                {
-                string.Format(@"
-                    namespace MyAssembly
-                    {{
-                        public class Evaluator
-                        {{
-                            public string Eval()
-                            {{
-                                return ({0}).ToString();
-                            }}
-                        }}
-                    }}
-
-                ", expression)
-                });
-
-            Assembly assembly = results.CompiledAssembly;
-            dynamic evaluator =
-                Activator.CreateInstance(assembly.GetType("MyAssembly.Evaluator"));
-            SMonitor.Log(evaluator.Eval());
         }
 
         private void GameLoop_GameLaunched(object sender, GameLaunchedEventArgs e)

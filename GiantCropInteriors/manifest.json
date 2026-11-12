@@ -1,7 +1,7 @@
 ﻿{
   "Name": "Giant Crop Interiors",
   "Author": "aedenthorn",
-  "Version": "0.1.1",
+  "Version": "0.2.0",
   "Description": "Giant Crop Interiors.",
   "UniqueID": "aedenthorn.GiantCropInteriors",
   "EntryDll": "GiantCropInteriors.dll",

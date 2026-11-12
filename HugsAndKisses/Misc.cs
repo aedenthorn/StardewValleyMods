@@ -202,6 +202,25 @@ namespace HugsAndKisses
 
         public static string[] relativeRoles = new string[]
         {
+            "Relative_Dad",
+            "Relative_Mom",
+            "Relative_Mother",
+            "Relative_HalfBrother",
+            "Relative_HalfSister",
+            "Relative_LittleBrother",
+            "Relative_Sister",
+            "Relative_Daughter",
+            "Relative_EldestSon",
+            "Relative_LittleBabyGirl",
+            "Relative_Son",
+            "Relative_YoungestBoy",
+            "Relative_YoungestSon",
+            "Relative_Aunt",
+            "Relative_Grandma",
+            "Relative_Grandpa",
+            "Relative_Grandson",
+            "Relative_Nephew",
+            "Relative_Niece",
             "son",
             "daughter",
             "sister",
@@ -227,9 +246,11 @@ namespace HugsAndKisses
             "grandniece",
             "grandnephew"
         };
-        
+
         public static string[] spouseRoles = new string[]
         {
+            "Relative_Husband",
+            "Relative_Wife",
             "husband",
             "wife",
             "partner",

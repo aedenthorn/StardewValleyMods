@@ -1,10 +1,10 @@
 ﻿{
-  "Name": "Food Buff Multiplier",
+  "Name": "Command-Line C Sharp",
   "Author": "aedenthorn",
-  "Version": "0.1.1",
-  "Description": "Multiplies the effects of food buffs.",
+  "Version": "0.1.0",
+  "Description": "Command-Line C Sharp.",
   "UniqueID": "aedenthorn.CLCSharp",
   "EntryDll": "CLCSharp.dll",
   "MinimumApiVersion": "4.0.0",
-  "UpdateKeys": [ "Nexus:54623" ]
+  "UpdateKeys": [ "Nexus:" ]
 }
