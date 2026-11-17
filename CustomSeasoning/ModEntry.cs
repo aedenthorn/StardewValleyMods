@@ -1,19 +1,12 @@
 ﻿using HarmonyLib;
 using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
 using StardewModdingAPI;
 using StardewModdingAPI.Events;
 using StardewModdingAPI.Utilities;
 using StardewValley;
-using StardewValley.GameData.BigCraftables;
-using StardewValley.GameData.Objects;
-using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
-using System.Reflection;
-using System.Reflection.Emit;
-using Object = StardewValley.Object;
 
 namespace CustomSeasoning
 {
@@ -50,6 +43,10 @@ namespace CustomSeasoning
             var harmony = new Harmony(ModManifest.UniqueID);
             harmony.PatchAll();
 
+        }
+        public override object GetApi()
+        {
+            return new CustomSeasoningAPI();
         }
 
         private void Input_ButtonPressed(object sender, ButtonPressedEventArgs e)

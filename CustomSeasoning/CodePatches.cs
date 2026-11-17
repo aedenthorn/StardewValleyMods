@@ -1,10 +1,12 @@
 ﻿using HarmonyLib;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using Microsoft.Xna.Framework.Input;
 using Netcode;
 using Newtonsoft.Json.Linq;
 using StardewValley;
 using StardewValley.Buffs;
+using StardewValley.GameData.Objects;
 using StardewValley.Menus;
 using StardewValley.Triggers;
 using System;
@@ -31,17 +33,17 @@ namespace CustomSeasoning
                 if(!Config.ModEnabled || !__instance.cooking || whichSeasoning != null)
                     return true;
                 List<Response> responses = new List<Response>();
-                if (Game1.player.Items.CountId("917") > 0)
+                var containers = (IList<Item>)AccessTools.Method(typeof(CraftingPage), "getContainerContents").Invoke(__instance, new object[0]);
+                if (CraftingRecipe.DoesFarmerHaveAdditionalIngredientsInInventory(new List<KeyValuePair<string, int>>() { new("917", 1) }, containers))
                 {
                     responses.Add(new Response("917", Object.GetObjectDisplayName("(O)917", null, null)));
                 }
-                var containers = (IList<Item>)AccessTools.Method(typeof(CraftingPage), "getContainerContents").Invoke(__instance, new object[0]);
                 foreach (var key in SeasoningDict.Keys)
                 {
                     List<KeyValuePair<string, int>> ingredients = new List<KeyValuePair<string, int>>() { new(key, 1) };
                     if (CraftingRecipe.DoesFarmerHaveAdditionalIngredientsInInventory(ingredients, containers))
                     {
-                        responses.Add(new Response(key, Object.GetObjectDisplayName("(O)"+key, null, null)));
+                        responses.Add(new Response(key, Object.GetObjectDisplayName("(O)" + key, null, null)));
                     }
                 }
                 if(responses.Count == 0)
@@ -60,10 +62,16 @@ namespace CustomSeasoning
                 SMonitor.Log($"Transpiling CraftingPage_clickCraftingRecipe");
 
                 var codes = new List<CodeInstruction>(instructions);
+                bool once = false;
                 for (int i = 0; i < codes.Count; i++)
                 {
                     if (codes[i].opcode == OpCodes.Ldnull && codes[i + 1].opcode == OpCodes.Stloc_1)
                     {
+                        if (!once) 
+                        {
+                            once = true;
+                            continue;
+                        }
                         SMonitor.Log($"Inserting method to add seasoning");
                         codes[i].opcode = OpCodes.Call;
                         codes[i].operand = AccessTools.Method(typeof(ModEntry), nameof(ModEntry.AddSeasoning));
@@ -89,13 +97,97 @@ namespace CustomSeasoning
             }
         }
 
+        [HarmonyPatch(typeof(DialogueBox), nameof(DialogueBox.draw), new Type[] { typeof(SpriteBatch) })]
+        public static class DialogueBox_draw_Patch
+        {
+            public static void Postfix(DialogueBox __instance, SpriteBatch b)
+            {
+                if (!Config.ModEnabled || __instance.responses == null || __instance.responseCC == null || Game1.currentLocation?.lastQuestionKey != "seasoning")
+                    return;
+                foreach(var cc in __instance.responseCC)
+                {
+                    if(cc.containsPoint(Game1.getMouseX(), Game1.getMouseY()))
+                    {
+                        var key = __instance.responses[cc.myID].responseKey;
+                        if (key == "none")
+                            return;
+                        else if (key == "917")
+                        {
+                            IClickableMenu.drawHoverText(b, SHelper.Translation.Get("gold"), Game1.smallFont);
+                            return;
+                        }
+                        if (!SeasoningDict.TryGetValue(key, out var seasoningData))
+                            return;
+                        List<string> tooltip = new();
+                        if(seasoningData.Quality != 0)
+                        {
+                            string quality = seasoningData.Quality switch
+                            {
+                                1 => SHelper.Translation.Get("silver"),
+                                2 => SHelper.Translation.Get("gold"),
+                                4 => SHelper.Translation.Get("iridium"),
+                                _ => seasoningData.Quality.ToString()
+                            };
+                            tooltip.Add(quality);
+                        }
+                        if(seasoningData.DurationMultiplier != 1)
+                        {
+                            tooltip.Add(string.Format(SHelper.Translation.Get("duration"), seasoningData.DurationMultiplier));
+                        }
+                        if(seasoningData.BuffData != null)
+                        {
+                            if (seasoningData.BuffData.CombatLevel != 0)
+                                tooltip.Add(string.Format(SHelper.Translation.Get("combat"), seasoningData.BuffData.CombatLevel));
+                            if (seasoningData.BuffData.FarmingLevel != 0)
+                                tooltip.Add(string.Format(SHelper.Translation.Get("farming"), seasoningData.BuffData.FarmingLevel));
+                            if (seasoningData.BuffData.FishingLevel != 0)
+                                tooltip.Add(string.Format(SHelper.Translation.Get("fishing"), seasoningData.BuffData.FishingLevel));
+                            if (seasoningData.BuffData.MiningLevel != 0)
+                                tooltip.Add(string.Format(SHelper.Translation.Get("mining"), seasoningData.BuffData.MiningLevel));
+                            if (seasoningData.BuffData.LuckLevel != 0)
+                                tooltip.Add(string.Format(SHelper.Translation.Get("luck"), seasoningData.BuffData.LuckLevel));
+                            if (seasoningData.BuffData.ForagingLevel != 0)
+                                tooltip.Add(string.Format(SHelper.Translation.Get("foraging"), seasoningData.BuffData.ForagingLevel));
+                            if (seasoningData.BuffData.MaxStamina != 0)
+                                tooltip.Add(string.Format(SHelper.Translation.Get("maxstamina"), seasoningData.BuffData.MaxStamina));
+                            if (seasoningData.BuffData.MagneticRadius != 0)
+                                tooltip.Add(string.Format(SHelper.Translation.Get("magneticradius"), seasoningData.BuffData.MagneticRadius));
+                            if (seasoningData.BuffData.Speed != 0)
+                                tooltip.Add(string.Format(SHelper.Translation.Get("speed"), seasoningData.BuffData.Speed));
+                            if (seasoningData.BuffData.Defense != 0)
+                                tooltip.Add(string.Format(SHelper.Translation.Get("defense"), seasoningData.BuffData.Defense));
+                            if (seasoningData.BuffData.Attack != 0)
+                                tooltip.Add(string.Format(SHelper.Translation.Get("attack"), seasoningData.BuffData.Attack));
+                            if (seasoningData.BuffData.AttackMultiplier != 0)
+                                tooltip.Add(string.Format(SHelper.Translation.Get("attackmultiplier"), seasoningData.BuffData.AttackMultiplier));
+                            if (seasoningData.BuffData.Immunity != 0)
+                                tooltip.Add(string.Format(SHelper.Translation.Get("immunity"), seasoningData.BuffData.Immunity));
+                            if (seasoningData.BuffData.KnockbackMultiplier != 0)
+                                tooltip.Add(string.Format(SHelper.Translation.Get("knockback"), seasoningData.BuffData.KnockbackMultiplier));
+                            if (seasoningData.BuffData.WeaponSpeedMultiplier != 0)
+                                tooltip.Add(string.Format(SHelper.Translation.Get("weaponspeed"), seasoningData.BuffData.WeaponSpeedMultiplier));
+                            if (seasoningData.BuffData.CriticalChanceMultiplier != 0)
+                                tooltip.Add(string.Format(SHelper.Translation.Get("critchance"), seasoningData.BuffData.CriticalChanceMultiplier));
+                            if (seasoningData.BuffData.CriticalPowerMultiplier != 0)
+                                tooltip.Add(string.Format(SHelper.Translation.Get("critpower"), seasoningData.BuffData.CriticalPowerMultiplier));
+                            if (seasoningData.BuffData.WeaponPrecisionMultiplier != 0)
+                                tooltip.Add(string.Format(SHelper.Translation.Get("weaponprecision"), seasoningData.BuffData.WeaponPrecisionMultiplier));
+
+                        }
+                        if(tooltip.Any())
+                            IClickableMenu.drawHoverText(b, string.Join('\n', tooltip), Game1.smallFont);
+                        return;
+                    }
+                }
+            }
+        }
+
         [HarmonyPatch(typeof(Farmer), nameof(Farmer.CanMove))]
         [HarmonyPatch(MethodType.Setter)]
         public static class Farmer_CanMove_Patch
         {
             public static void Prefix(bool value)
             {
-                var x = Environment.StackTrace;
             }
         }
 
@@ -185,18 +277,52 @@ namespace CustomSeasoning
         {
             public static void Prefix(Object __instance)
             {
+                buffing = null;
                 if (!Config.ModEnabled || !GetSeasoningData(__instance, out SeasoningData seasoningData))
                     return;
                 buffing = __instance;
+            }
+            public static void Postfix(Object __instance, ref IEnumerable<Buff> __result)
+            {
+                if (!Config.ModEnabled || !GetSeasoningData(__instance, out SeasoningData seasoningData) || __result?.Any() == true || seasoningData.BuffData == null || !Game1.objectData.TryGetValue(__instance.ItemId, out var data))
+                    return;
+                ObjectData newData = new();
+                foreach(var f in typeof(ObjectData).GetFields())
+                {
+                    f.SetValue(newData, f.GetValue(data));
+                }
+                newData.Buffs = new() { new ObjectBuffData(){
+                    Id = "Food",
+                    Duration = seasoningData.BaseDuration,
+                    CustomAttributes = new()
+
+                } };
+                __result = Object.TryCreateBuffsFromData(newData, __instance.Name, __instance.DisplayName, 1, new Action<BuffEffects>(__instance.ModifyItemBuffs));
             }
         }
         [HarmonyPatch(typeof(Object), nameof(Object.TryCreateBuffsFromData))]
         public static class Object_TryCreateBuffsFromData_Patch
         {
-            public static void Prefix(ref float durationMultiplier)
+            public static void Prefix(ref float durationMultiplier, ref ObjectData obj)
             {
-                if (!Config.ModEnabled || buffing == null || !GetSeasoningData(buffing, out SeasoningData seasoningData))
+                if (!Config.ModEnabled || buffing == null || !GetSeasoningData(buffing, out SeasoningData seasoningData) || seasoningData.BuffData == null)
                     return;
+                if (obj.Buffs?.Any() != true)
+                {
+                    ObjectData newData = new();
+                    foreach (var f in typeof(ObjectData).GetFields())
+                    {
+                        f.SetValue(newData, f.GetValue(obj));
+                    }
+                    newData.Buffs = new() { new ObjectBuffData()
+                        {
+                            Id = "Food",
+                            Duration = seasoningData.BaseDuration,
+                            CustomAttributes = new()
+                        }
+                    };
+                    obj = newData;
+                }
                 durationMultiplier = (1 + buffing.Quality / 4f) * seasoningData.DurationMultiplier;
                 buffing = null;
             }
@@ -206,8 +332,9 @@ namespace CustomSeasoning
         {
             public static bool Prefix(Object __instance, BuffEffects effects)
             {
-                if(!Config.ModEnabled || !GetSeasoningData(__instance, out SeasoningData seasoningData) || effects == null || __instance.Category != -7)
+                if(!Config.ModEnabled || !GetSeasoningData(__instance, out SeasoningData seasoningData) || (seasoningData.BuffData is null && seasoningData.Quality == 0) || __instance.Category != -7)
                     return true;
+
                 int buff_bonus = __instance.Quality / 2;
                 if (buff_bonus > 0)
                 {
@@ -241,6 +368,17 @@ namespace CustomSeasoning
                     effects.WeaponPrecisionMultiplier.Value += seasoningData.BuffData.WeaponPrecisionMultiplier;
                 }
                 return false;
+            }
+        }
+        [HarmonyPatch(typeof(IClickableMenu), nameof(IClickableMenu.drawToolTip))]
+        public static class IClickableMenu_drawToolTip_Patch
+        {
+            public static void Prefix(Item hoveredItem)
+            {
+                buffing = null;
+                if (!Config.ModEnabled || hoveredItem is not Object obj || !GetSeasoningData(hoveredItem, out SeasoningData seasoningData))
+                    return;
+                buffing = obj;
             }
         }
     }

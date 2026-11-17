@@ -1,4 +1,5 @@
 ﻿using StardewValley;
+using System;
 using System.Collections.Generic;
 
 namespace CustomSeasoning
@@ -24,6 +25,5 @@ namespace CustomSeasoning
             crafted.modData[seasoningKey] = whichSeasoning;
             return new() { new(whichSeasoning, 1) };
         }
-
     }
 }

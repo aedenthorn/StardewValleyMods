@@ -90,7 +90,6 @@ namespace CustomSpousePatioRedux
                     return;
                 Monitor.Log($"Answered {Game1.player.currentLocation.lastQuestionKey} with {resps[resp].responseKey}");
 
-                currentPage = 0;
                 CSPWizardDialogue(Game1.player.currentLocation.lastQuestionKey, resps[resp].responseKey);
                 return;
             }

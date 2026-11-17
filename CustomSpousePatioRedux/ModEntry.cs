@@ -150,7 +150,7 @@ namespace CustomSpousePatioRedux
             noCustomAreaSpouses = new List<string>();
             foreach (KeyValuePair<string, Friendship> spouse in pairs)
             {
-                if(!outdoorAreas.dict.ContainsKey(spouse.Key))
+                if (!outdoorAreas.dict.ContainsKey(spouse.Key))
                     noCustomAreaSpouses.Add(spouse.Key);
             }
 
@@ -173,7 +173,10 @@ namespace CustomSpousePatioRedux
         {
             Monitor.Log($"question: {whichQuestion}, answer: {whichAnswer}");
             if (whichAnswer == "cancel")
+            {
+                currentPage = 0;
                 return;
+            }
 
             List<Response> responses = new List<Response>();
             string header = "";
