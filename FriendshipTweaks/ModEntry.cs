@@ -1,4 +1,4 @@
-﻿using HarmonyLib;
+using HarmonyLib;
 using Microsoft.Xna.Framework;
 using StardewModdingAPI;
 using StardewModdingAPI.Utilities;
@@ -8,6 +8,7 @@ using System.Globalization;
 
 namespace FriendshipTweaks
 {
+    //by Xen0nex
     /// <summary>The mod entry point.</summary>
     public partial class ModEntry : Mod
     {
@@ -33,6 +34,16 @@ namespace FriendshipTweaks
 
             var harmony = new Harmony(ModManifest.UniqueID);
             harmony.PatchAll();
+
+            harmony.Patch(
+            original: AccessTools.Method(typeof(NPC), nameof(NPC.receiveGift)),
+            transpiler: new HarmonyMethod(typeof(New_Patches), nameof(New_Patches.GiftPatch))
+        );
+
+            harmony.Patch(
+            original: AccessTools.Method(typeof(Event), nameof(Event.chooseSecretSantaGift)),
+            transpiler: new HarmonyMethod(typeof(New_Patches), nameof(New_Patches.WinterStarPatch))
+        );
 
         }
 
@@ -61,10 +72,11 @@ namespace FriendshipTweaks
             configMenu.AddNumberOption(
                 mod: ModManifest,
                 name: () => "Max Hearts",
+                tooltip: () => "Applies to all NPCs. Vanilla max is 10 Hearts (14 for spouses).",
                 getValue: () => Config.MaxHearts,
                 setValue: value => Config.MaxHearts = value,
-                min: 14,
-                max: 20
+                min: 10,
+                max: 30
             );
             configMenu.AddTextOption(
                 mod: ModManifest,
@@ -79,6 +91,27 @@ namespace FriendshipTweaks
                 tooltip: () => "Multiply friendship decrease by this amount.",
                 getValue: () => "" + Config.DecreaseModifier,
                 setValue: delegate (string value) { try { Config.DecreaseModifier = float.Parse(value, CultureInfo.InvariantCulture); } catch { } }
+            );
+            configMenu.AddTextOption(
+                mod: ModManifest,
+                name: () => "Birthday Mult",
+                tooltip: () => "Multiply friendship increase from gifts on an NPC's birthday by this amount (Replaces the vanilla 8x Birthday Mult).",
+                getValue: () => "" + Config.BirthdayMultiplier,
+                setValue: delegate (string value) { try { Config.BirthdayMultiplier = float.Parse(value, CultureInfo.InvariantCulture); } catch { } }
+            );
+            configMenu.AddTextOption(
+                mod: ModManifest,
+                name: () => "Winter Star Mult",
+                tooltip: () => "Multiply friendship increase from giving your Secret Winter Star gift by this amount (Replaces the vanilla 5x Winter Star Mult).",
+                getValue: () => "" + Config.WinterStarMultiplier,
+                setValue: delegate (string value) { try { Config.WinterStarMultiplier = float.Parse(value, CultureInfo.InvariantCulture); } catch { } }
+            );
+            configMenu.AddTextOption(
+                mod: ModManifest,
+                name: () => "Stardrop Tea Special Mult",
+                tooltip: () => "Multiply friendship increase from giving Stardrop Tea as a gift on an NPC's Birthday or as a Secret Winter Star gift by this amount (Replaces the vanilla 3x Stardrop Tea Mult in those cases). If this multiplier is set higher than the Birthday or Winter Star Mult, it defaults to using those Mults instead when given as a Birthday / Winter Star gift.",
+                getValue: () => "" + Config.StardropTeaMultiplier,
+                setValue: delegate (string value) { try { Config.StardropTeaMultiplier = float.Parse(value, CultureInfo.InvariantCulture); } catch { } }
             );
         }
     }
