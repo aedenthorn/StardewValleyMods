@@ -92,7 +92,8 @@ namespace Bork
                         { "NPCBirthday", NPCBirthday },
                         { "Joke", Joke },
                         { "Quote", Quote  },
-                        { "AboutYou", AboutYou }
+                        { "AboutYou", AboutYou },
+                        { "Summary", Summary }
 
                     };
                     return dict;

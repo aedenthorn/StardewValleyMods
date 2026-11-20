@@ -1,0 +1,10 @@
+﻿{
+  "Name": "Set Tree Season",
+  "Author": "aedenthorn",
+  "Version": "0.1.0",
+  "Description": "Allows setting a tree's visible season.",
+  "UniqueID": "aedenthorn.SetTreeSeason",
+  "EntryDll": "SetTreeSeason.dll",
+  "MinimumApiVersion": "4.0.0",
+  "UpdateKeys": [ "Nexus:55740" ]
+}

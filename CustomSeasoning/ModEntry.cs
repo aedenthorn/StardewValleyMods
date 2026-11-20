@@ -77,7 +77,7 @@ namespace CustomSeasoning
                 configMenu.Register(
                     mod: ModManifest,
                     reset: () => Config = new ModConfig(),
-                    save: () => { Helper.GameContent.InvalidateCache("Data/Objects"); Helper.WriteConfig(Config); }
+                    save: () => { Helper.WriteConfig(Config); }
                 );
                 var props = typeof(ModConfig).GetProperties().ToArray();
                 var configMenuExt = Helper.ModRegistry.GetApi<IGMCMOptionsAPI>("jltaylor-us.GMCMOptions");

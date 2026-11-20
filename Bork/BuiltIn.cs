@@ -1,8 +1,11 @@
 ﻿using StardewModdingAPI;
 using StardewValley;
+using StardewValley.Buildings;
 using StardewValley.TokenizableStrings;
 using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Text;
 using Object = StardewValley.Object;
 
 namespace Bork
@@ -162,6 +165,66 @@ namespace Bork
             try
             {
                 return new List<string> { GetNumberedTranslation("about_you_") };
+            }
+            catch (Exception ex)
+            {
+                SMonitor.Log($"Error occurred in AboutYou: {ex.Message}", LogLevel.Error);
+            }
+            return new List<string>() { GetNumberedTranslation("error_processing_query_") };
+        }
+        public static List<string> Summary(Dictionary<string, string> list)
+        {
+            try
+            {
+                GameLocation location = Game1.currentLocation.GetRootLocation();
+                Farm farm = location as Farm;
+                bool flag = location.IsBuildableLocation() || location.buildings.Any<Building>();
+                string locationDisplayName = location.GetDisplayName();
+                int totalCrops = location.getTotalCrops();
+                int totalOpenHoeDirt = location.getTotalOpenHoeDirt();
+                int numCropsToHarvest = location.getTotalCropsReadyForHarvest();
+                int numUnwateredCrops = location.getTotalUnwateredCrops();
+                int? numGreenhouseCropsToHarvest = (location.HasMinBuildings("Greenhouse", 1) ? location.getTotalGreenhouseCropsReadyForHarvest() : null);
+                int numForage = location.getTotalForageItems();
+                int anyMachinesReady = location.getNumberOfMachinesReadyForHarvest();
+                bool? farmCaveNeedsHarvest = ((farm != null) ? new bool?(farm.doesFarmCaveNeedHarvesting()) : null);
+                StringBuilder report = new StringBuilder();
+                if (location is Farm)
+                {
+                    report.Append(Game1.content.LoadString("Strings\\StringsFromCSFiles:FarmComputer_Intro_Farm", Game1.player.farmName.Value));
+                }
+                else if (!string.IsNullOrWhiteSpace(locationDisplayName))
+                {
+                    report.Append(Game1.content.LoadString("Strings\\StringsFromCSFiles:FarmComputer_Intro_NamedLocation", locationDisplayName));
+                }
+                else
+                {
+                    report.Append(Game1.content.LoadString("Strings\\StringsFromCSFiles:FarmComputer_Intro_Generic"));
+                }
+                report.Append("^--------------^");
+                if (flag)
+                {
+                    report.Append(Game1.content.LoadString("Strings\\StringsFromCSFiles:FarmComputer_PiecesHay", location.piecesOfHay, location.GetHayCapacity())).Append(" ^");
+                }
+                report.Append(Game1.content.LoadString("Strings\\StringsFromCSFiles:FarmComputer_TotalCrops", totalCrops)).Append("  ^").Append(Game1.content.LoadString("Strings\\StringsFromCSFiles:FarmComputer_CropsReadyForHarvest", numCropsToHarvest))
+                    .Append("  ^")
+                    .Append(Game1.content.LoadString("Strings\\StringsFromCSFiles:FarmComputer_CropsUnwatered", numUnwateredCrops))
+                    .Append("  ^");
+                if (numGreenhouseCropsToHarvest != null)
+                {
+                    report.Append(Game1.content.LoadString("Strings\\StringsFromCSFiles:FarmComputer_CropsReadyForHarvest_Greenhouse", numGreenhouseCropsToHarvest)).Append("  ^");
+                }
+                report.Append(Game1.content.LoadString("Strings\\StringsFromCSFiles:FarmComputer_TotalOpenHoeDirt", totalOpenHoeDirt)).Append("  ^");
+                if (farm == null || farm.SpawnsForage())
+                {
+                    report.Append(Game1.content.LoadString("Strings\\StringsFromCSFiles:FarmComputer_TotalForage", numForage)).Append("  ^");
+                }
+                report.Append(Game1.content.LoadString("Strings\\StringsFromCSFiles:FarmComputer_MachinesReady", anyMachinesReady)).Append("  ^");
+                if (farmCaveNeedsHarvest != null)
+                {
+                    report.Append(Game1.content.LoadString("Strings\\StringsFromCSFiles:FarmComputer_FarmCave", farmCaveNeedsHarvest.Value ? Game1.content.LoadString("Strings\\Lexicon:QuestionDialogue_Yes") : Game1.content.LoadString("Strings\\Lexicon:QuestionDialogue_No")));
+                }
+                return new List<string> { report.ToString() };
             }
             catch (Exception ex)
             {

@@ -58,5 +58,17 @@ namespace SeedInfo
                 }
             }
         }
+
+        [HarmonyPatch(typeof(IClickableMenu), nameof(IClickableMenu.snapCursorToCurrentSnappedComponent))]
+        public class IClickableMenu_snapCursorToCurrentSnappedComponent_Patch
+        {
+            public static bool Prefix(IClickableMenu __instance)
+            {
+                if (!Config.ModEnabled || __instance is not ShopMenu menu || __instance.currentlySnappedComponent is not ClickableComponent cc || !menu.forSaleButtons.Contains(cc))
+                    return true;
+                Game1.setMousePosition(cc.bounds.Right - cc.bounds.Width / 8, cc.bounds.Bottom - cc.bounds.Height / 4, true);
+                return false;
+            }
+        }
     }
 }
