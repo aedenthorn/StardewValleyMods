@@ -27,6 +27,11 @@ namespace BuildingShift
 
         public void ShiftBuilding(Building b, int x, int y)
         {
+            if (b.modData.ContainsKey(lockedKey))
+            {
+                SMonitor.Log($"Building Shift disabled for {b.buildingType.Value}");
+                return;
+            }
             if (SHelper.Input.IsDown(Config.ModKey))
             {
                 x *= Config.ShiftAmountMod;

@@ -1,11 +1,4 @@
 {
-  "Config.EnableMod": "Enable Mod",
-  "Config.ShiftAmountNormal": "Shift Normal",
-  "Config.ShiftAmountMod": "Shift Mod",
-  "Config.ResetKey": "Reset Key",
-  "Config.ShiftDown": "Shift Down",
-  "Config.ShiftUp": "Shift Up",
-  "Config.ShiftRight": "Shift Right",
-  "Config.ShiftLeft": "Shift Left",
-  "Config.ModKey": "Mod Key"
+  "locked": "Building Position Locked",
+  "unlocked": "Building Position Unlocked"
 }

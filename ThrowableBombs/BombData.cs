@@ -5,9 +5,10 @@ namespace ThrowableBombs
 {
     public class BombData
     {
-        public GameLocation location;
+        public string location;
         public Vector2 startPos;
         public Vector2 currentPos;
         public Vector2 endPos;
+        public int id;
     }
 }

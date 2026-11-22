@@ -13,44 +13,7 @@ namespace BuildingShift
 {
     public partial class ModEntry
     {
-        [HarmonyPatch(typeof(Building), nameof(Building.doAction))]
-        public class Building_doAction_Patch
-        {
-            public static void Prefix(Building __instance, ref Vector2 tileLocation)
-            {
-                return;
-                if (!Config.EnableMod || !TryGetShift(__instance, out var amount))
-                    return;
-
-                Rectangle boundingBox = Game1.player.GetBoundingBox();
-                int x;
-                int y;
-                switch (Game1.player.FacingDirection)
-                {
-                    case 0:
-                        x = boundingBox.X + boundingBox.Width / 2;
-                        y = boundingBox.Y - 5;
-                        break;
-                    case 1:
-                        x = boundingBox.X + boundingBox.Width + 5;
-                        y = boundingBox.Y + boundingBox.Height / 2;
-                        break;
-                    case 2:
-                        x = boundingBox.X + boundingBox.Width / 2;
-                        y = boundingBox.Y + boundingBox.Height + 5;
-                        break;
-                    case 3:
-                        x = boundingBox.X - 5;
-                        y = boundingBox.Y + boundingBox.Height / 2;
-                        break;
-                    default:
-                        x = Game1.player.TilePoint.X;
-                        y = Game1.player.TilePoint.Y;
-                        break;
-                }
-                tileLocation = new Vector2((x - (int)amount.X * 4) / 64, (y - (int)amount.Y * 4) / 64);
-            }
-        }
+        
         [HarmonyPatch(typeof(Building), nameof(Building.isActionableTile))]
         public class Building_isActionableTile_Patch
         {

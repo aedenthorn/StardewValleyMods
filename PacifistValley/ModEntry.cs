@@ -34,9 +34,6 @@ namespace PacifistValley
             SMonitor = Monitor;
 
             Helper.Events.GameLoop.GameLaunched += GameLoop_GameLaunched;
-            
-            if (!Config.EnableMod)
-                return;
 
             Helper.Events.GameLoop.DayEnding += GameLoop_DayEnding;
             helper.Events.Content.AssetRequested += Content_AssetRequested;
@@ -135,6 +132,8 @@ namespace PacifistValley
 
         private void Content_AssetRequested(object sender, StardewModdingAPI.Events.AssetRequestedEventArgs e)
         {
+            if (!Config.EnableMod)
+                return;
             if (e.NameWithoutLocale.IsEquivalentTo("TileSheets/weapons"))
             {
                 e.LoadFromModFile<Texture2D>("assets/totally_not_weapons.png", StardewModdingAPI.Events.AssetLoadPriority.Exclusive);
@@ -367,7 +366,7 @@ namespace PacifistValley
                 configMenu.Register(
                     mod: ModManifest,
                     reset: () => Config = new ModConfig(),
-                    save: () => Helper.WriteConfig(Config)
+                    save: () => { Helper.WriteConfig(Config); ResetAssets(); }
                 );
                 configMenu.AddBoolOption(
                     mod: ModManifest,
@@ -420,6 +419,38 @@ namespace PacifistValley
             }
         }
 
+        private void ResetAssets()
+        {
+            Helper.GameContent.InvalidateCache("TileSheets/weapons");
+            Helper.GameContent.InvalidateCache("Data/weapons");
+            Helper.GameContent.InvalidateCache("Data/mail");
+            Helper.GameContent.InvalidateCache("Data/Quests");
+            Helper.GameContent.InvalidateCache("String/Locations");
+            Helper.GameContent.InvalidateCache("Strings/UI");
+            Helper.GameContent.InvalidateCache("Data/ObjectInformation");
+            Helper.GameContent.InvalidateCache("Strings/StringsFromCSFiles");
+            Helper.GameContent.InvalidateCache("Data/TV/TipChannel");
+            Helper.GameContent.InvalidateCache("LooseSprites/Cursors");
+            Helper.GameContent.InvalidateCache("Characters/Monsters/Dust Spirit");
+            Helper.GameContent.InvalidateCache("Characters/Monsters/Armored Bug");
+            Helper.GameContent.InvalidateCache("Characters/Monsters/Duggy");
+            Helper.GameContent.InvalidateCache("Characters/Monsters/Bat");
+            Helper.GameContent.InvalidateCache("Characters/Monsters/Frost Bat");
+            Helper.GameContent.InvalidateCache("Characters/Monsters/Lava Bat");
+            Helper.GameContent.InvalidateCache("Characters/Monsters/Iridium Bat");
+            Helper.GameContent.InvalidateCache("Characters/Monsters/Fly");
+            Helper.GameContent.InvalidateCache("Characters/Monsters/Green Slime");
+            Helper.GameContent.InvalidateCache("Characters/Monsters/Grub");
+            Helper.GameContent.InvalidateCache("Characters/Monsters/Iridium Crab");
+            Helper.GameContent.InvalidateCache("Characters/Monsters/Lava Crab");
+            Helper.GameContent.InvalidateCache("Characters/Monsters/Rock Crab");
+            Helper.GameContent.InvalidateCache("Characters/Monsters/Pepper Rex");
+            Helper.GameContent.InvalidateCache("Characters/Monsters/Skeleton");
+            Helper.GameContent.InvalidateCache("Characters/Monsters/Skeleton Mage");
+            Helper.GameContent.InvalidateCache("Characters/Monsters/Stone Golem");
+            Helper.GameContent.InvalidateCache("Characters/Monsters/Wilderness Golem");
+        }
+
         private void GameLoop_DayEnding(object sender, StardewModdingAPI.Events.DayEndingEventArgs e)
         {
             foreach(GameLocation l in Game1.locations)
@@ -435,6 +466,9 @@ namespace PacifistValley
 
         private static void DustSpirit_behaviorAtGameTick_Postfix(DustSpirit __instance, ref bool ___runningAwayFromFarmer, ref bool ___chargingFarmer)
         {
+            if (!Config.EnableMod)
+                return;
+
             if (__instance.Health <= 0 ||Config.MonstersIgnorePlayer)
             {
                 ___runningAwayFromFarmer = false;
@@ -445,6 +479,9 @@ namespace PacifistValley
 
         private static void GreenSlime_behaviorAtGameTick_prefix(GreenSlime __instance, GameTime time, ref int ___readyToJump)
         {
+            if (!Config.EnableMod)
+                return;
+
             if (__instance.Health <= 0 || Config.MonstersIgnorePlayer)
             {
                 ___readyToJump = -1;
@@ -452,6 +489,9 @@ namespace PacifistValley
         }
         private static void Fly_updateAnimation_prefix(Fly __instance, GameTime time, ref int ___invincibleCountdown)
         {
+            if (!Config.EnableMod)
+                return;
+
             if (__instance.Health <= 0 || Config.MonstersIgnorePlayer)
             {
                 ___invincibleCountdown = 1;
@@ -460,6 +500,9 @@ namespace PacifistValley
 
         private static void Bat_behaviorAtGameTick_Postfix(Bat __instance)
         {
+            if (!Config.EnableMod)
+                return;
+
             try
             {
                 if (__instance.Health <= 0 || Config.MonstersIgnorePlayer)
@@ -475,6 +518,9 @@ namespace PacifistValley
         }
         private static bool Serpent_updateAnimation_prefix(Serpent __instance, GameTime time)
         {
+            if (!Config.EnableMod)
+                return true;
+
             if (__instance.Health <= 0 || Config.MonstersIgnorePlayer)
             {
                 var ftn = typeof(Monster).GetMethod("updateAnimation", BindingFlags.NonPublic | BindingFlags.Instance).MethodHandle.GetFunctionPointer();
@@ -490,6 +536,9 @@ namespace PacifistValley
         }
         private static bool Monster_updateMovement_prefix(Monster __instance, GameTime time)
         {
+            if (!Config.EnableMod)
+                return true;
+
             if ((__instance.Health <= 0 && __instance.IsWalkingTowardPlayer) || Config.MonstersIgnorePlayer)
             {
                 __instance.defaultMovementBehavior(time);
@@ -499,7 +548,10 @@ namespace PacifistValley
         }
         private static bool Monster_ShouldMonsterBeRemoved_prefix(Monster __instance, ref bool __result)
         {
-            if(__instance.Health < 0)
+            if (!Config.EnableMod)
+                return true;
+
+            if (__instance.Health < 0)
                 EmoteMonster(__instance);
             __result = false;
             return false;
@@ -514,6 +566,8 @@ namespace PacifistValley
 
         private static void SquidKid_behaviorAtGameTick_prefix(ref GameTime time, SquidKid __instance, ref float ___lastFireball)
         {
+            if (!Config.EnableMod)
+                return;
             if (__instance.Health <= 0 || Config.MonstersIgnorePlayer)
             {
                 ___lastFireball = Math.Max(1f, ___lastFireball);
@@ -527,6 +581,8 @@ namespace PacifistValley
 
         private static void DinoMonster_behaviorAtGameTick_postfix(DinoMonster __instance, ref int ___nextFireTime)
         {
+            if (!Config.EnableMod)
+                return;
             if (__instance.Health <= 0 || Config.MonstersIgnorePlayer)
             {
                 ___nextFireTime = 0;
@@ -535,6 +591,8 @@ namespace PacifistValley
 
         private static bool Skeleton_behaviorAtGameTick_prefix(Skeleton __instance, GameTime time)
         {
+            if (!Config.EnableMod)
+                return true;
             if (__instance.Health <= 0 || Config.MonstersIgnorePlayer)
             {
                 var ftn = typeof(Monster).GetMethod("behaviorAtGameTick", BindingFlags.Public | BindingFlags.Instance).MethodHandle.GetFunctionPointer();
@@ -547,6 +605,8 @@ namespace PacifistValley
 
         private static void Skeleton_behaviorAtGameTick_postfix(Skeleton __instance, ref NetBool ___throwing)
         {
+            if (!Config.EnableMod)
+                return;
             if (__instance.Health <= 0 || Config.MonstersIgnorePlayer)
             {
                 __instance.Sprite.StopAnimation();
@@ -556,6 +616,8 @@ namespace PacifistValley
 
         private static void Grub_behaviorAtGameTick_postfix(Grub __instance, GameTime time, ref int ___metamorphCounter, ref NetBool ___pupating)
         {
+            if (!Config.EnableMod)
+                return;
             if (___pupating.Value && ___metamorphCounter <= time.ElapsedGameTime.Milliseconds)
             {
                     __instance.Health = -500;
@@ -571,6 +633,8 @@ namespace PacifistValley
 
         private static void monsterDrop_prefix(MineShaft __instance, NetVector2 ___netTileBeneathLadder)
         {
+            if (!Config.EnableMod)
+                return;
             if (__instance.mustKillAllMonstersToAdvance())
             {
                 int monsters = 0;
@@ -595,12 +659,16 @@ namespace PacifistValley
 
         private static bool beginSpecialMove_prefix(MeleeWeapon __instance, Farmer who)
         {
+            if (!Config.EnableMod)
+                return true;
             __instance.leftClick(who);
             return false;
         }
 
         private static bool drawCharacters_prefix(GameLocation __instance, SpriteBatch b)
         {
+            if (!Config.EnableMod)
+                return true;
             if (__instance.shouldHideCharacters())
             {
                 return false;
@@ -626,6 +694,8 @@ namespace PacifistValley
         }
         private static void damageMonster_Postfix(GameLocation __instance)
         {
+            if (!Config.EnableMod)
+                return;
             for (int i = __instance.characters.Count - 1; i >= 0; i--)
             {
                 Monster monster;
@@ -642,6 +712,8 @@ namespace PacifistValley
 
         private static bool setFarmerAnimating_prefix(MeleeWeapon __instance, Farmer who, ref bool ___anotherClick, Farmer ___lastUser)
         {
+            if (!Config.EnableMod)
+                return true;
             if (__instance.isScythe())
             {
                 return true;
@@ -689,7 +761,9 @@ namespace PacifistValley
         }
         private static bool takeDamage_prefix(Farmer __instance, Monster damager)
         {
-            if(damager != null && damager.Health <= 0)
+            if (!Config.EnableMod)
+                return true;
+            if (damager != null && damager.Health <= 0)
             {
                 __instance.doEmote(20, true);
             }
@@ -723,6 +797,8 @@ namespace PacifistValley
 
         private static bool PreventMonsterAttack(bool married)
         {
+            if (!Config.EnableMod)
+                return married;
             return false;
         }
     }
