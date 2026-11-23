@@ -799,6 +799,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CustomSeasoning", "CustomSe
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SetTreeSeason", "SetTreeSeason\SetTreeSeason.csproj", "{8013E437-B57D-30CA-6859-CC75C679A387}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SlimeHutchAggro", "SlimeHutchAggro\SlimeHutchAggro.csproj", "{64986B15-8165-D6FE-9801-93EBECBE5123}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -3959,6 +3961,14 @@ Global
 		{8013E437-B57D-30CA-6859-CC75C679A387}.Release|Any CPU.Build.0 = Release|Any CPU
 		{8013E437-B57D-30CA-6859-CC75C679A387}.Release|x64.ActiveCfg = Release|x64
 		{8013E437-B57D-30CA-6859-CC75C679A387}.Release|x64.Build.0 = Release|x64
+		{64986B15-8165-D6FE-9801-93EBECBE5123}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{64986B15-8165-D6FE-9801-93EBECBE5123}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{64986B15-8165-D6FE-9801-93EBECBE5123}.Debug|x64.ActiveCfg = Debug|x64
+		{64986B15-8165-D6FE-9801-93EBECBE5123}.Debug|x64.Build.0 = Debug|x64
+		{64986B15-8165-D6FE-9801-93EBECBE5123}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{64986B15-8165-D6FE-9801-93EBECBE5123}.Release|Any CPU.Build.0 = Release|Any CPU
+		{64986B15-8165-D6FE-9801-93EBECBE5123}.Release|x64.ActiveCfg = Release|x64
+		{64986B15-8165-D6FE-9801-93EBECBE5123}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -36,18 +36,5 @@ namespace FriendshipTweaks
                 amount = (int)Math.Round(amount * (Math.Sign(amount) > 0 ? Config.IncreaseModifier : Config.DecreaseModifier));
             }
         }
-        //[HarmonyPatch(typeof(Friendship), nameof(Friendship.Points))]
-        //[HarmonyPatch(MethodType.Setter)]
-        public class Friendship_Points_Patch
-        {
-            public static void Prefix(Friendship __instance, ref int value)
-            {
-                if (!Config.ModEnabled)
-                    return;
-                var change = value - __instance.Points;
-                change = (int)Math.Round(change * (Math.Sign(change) > 0 ? Config.IncreaseModifier : Config.DecreaseModifier));
-                value = __instance.Points + change;
-            }
-        }
     }
 }
