@@ -3,6 +3,7 @@ using Microsoft.Xna.Framework;
 using StardewModdingAPI;
 using StardewModdingAPI.Events;
 using StardewModdingAPI.Utilities;
+using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 
@@ -15,6 +16,7 @@ namespace FishTankCapacity
         public static IModHelper SHelper;
         public static ModConfig Config;
         public static ModEntry context;
+        public const string dictPath = "aedenthorn.FishTankCapacity/dict";
 
         public override void Entry(IModHelper helper)
         {
