@@ -109,7 +109,23 @@ namespace FishTankCapacity
                     {
                         Vector2 decoration_position = pair.Value;
                         float decoration_layer = Utility.Lerp(__instance.GetFishSortRegion().Y, __instance.GetFishSortRegion().X, decoration_position.Y / 20f) - 1E-06f;
-                        item.drawInMenu(spriteBatch, Game1.GlobalToLocal(new Vector2((float)__instance.GetTankBounds().Left + decoration_position.X * 4f - 32, (float)(__instance.GetTankBounds().Bottom - 4) - decoration_position.Y * 4f - 32)), 1f, 1f, decoration_layer, StackDrawType.Hide, Color.White, false);
+                        if(DecorationDict.TryGetValue(item.ItemId, out var list))
+                        {
+                            var data = list[Game1.random.Next(list.Count)];
+                            var texture = SHelper.GameContent.Load<Texture2D>(data.Texture);
+                            var sourceRect = data.SourceRect is null ? new Rectangle(0, 0, texture.Width, texture.Height) : data.SourceRect.Value;
+                            if(data.Frames > 1)
+                            {
+                                var offset = Game1.ticks / data.FrameDuration % data.Frames * sourceRect.Width;
+                                sourceRect.X += offset;
+                            }
+                            decoration_position += data.DrawOffset;
+                            spriteBatch.Draw(texture, Game1.GlobalToLocal(new Vector2((float)__instance.GetTankBounds().Left + decoration_position.X * 4f, (float)(__instance.GetTankBounds().Bottom - 4) - decoration_position.Y * 4f)), sourceRect, Color.White * alpha, 0f, new Vector2((float)(sourceRect.Width / 2), (float)(sourceRect.Height - 4)), data.Scale, SpriteEffects.None, decoration_layer);
+                        }
+                        else
+                        {
+                            item.drawInMenu(spriteBatch, Game1.GlobalToLocal(new Vector2((float)__instance.GetTankBounds().Left + decoration_position.X * 4f - 32, (float)(__instance.GetTankBounds().Bottom - 4) - decoration_position.Y * 4f - 32)), 1f, 1f, decoration_layer, StackDrawType.Hide, Color.White, false);
+                        }
                     }
                 }
             }

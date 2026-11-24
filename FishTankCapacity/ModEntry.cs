@@ -17,6 +17,12 @@ namespace FishTankCapacity
         public static ModConfig Config;
         public static ModEntry context;
         public const string dictPath = "aedenthorn.FishTankCapacity/dict";
+        public static Dictionary<string, List<DecorationInfo>> DecorationDict
+        {
+            get {
+                return SHelper.GameContent.Load<Dictionary<string, List<DecorationInfo>>>(dictPath);
+            }
+        }
 
         public override void Entry(IModHelper helper)
         {
@@ -27,12 +33,22 @@ namespace FishTankCapacity
             context = this;
 
             helper.Events.GameLoop.GameLaunched += GameLoop_GameLaunched;
+            helper.Events.Content.AssetRequested += Content_AssetRequested;
 
             var harmony = new Harmony(ModManifest.UniqueID);
             harmony.PatchAll();
 
         }
 
+        private void Content_AssetRequested(object sender, AssetRequestedEventArgs e)
+        {
+            if (!Config.ModEnabled)
+                return;
+            if (e.NameWithoutLocale.IsEquivalentTo(dictPath))
+            {
+                e.LoadFrom(() => new Dictionary<string, List<DecorationInfo>>(), AssetLoadPriority.Exclusive);
+            }
+        }
 
         private void GameLoop_GameLaunched(object sender, GameLaunchedEventArgs e)
         {

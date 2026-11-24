@@ -1,7 +1,7 @@
 ﻿{
   "Name": "Fish Tank Capacity",
   "Author": "aedenthorn",
-  "Version": "0.2.0",
+  "Version": "0.3.0",
   "Description": "Fish Tank Capacity.",
   "UniqueID": "aedenthorn.FishTankCapacity",
   "EntryDll": "FishTankCapacity.dll",
