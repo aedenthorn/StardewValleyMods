@@ -1,0 +1,10 @@
+﻿{
+  "Name": "MapClocks",
+  "Author": "aedenthorn",
+  "Version": "0.1.0",
+  "Description": "Map Clocks.",
+  "UniqueID": "aedenthorn.MapClocks",
+  "EntryDll": "MapClocks.dll",
+  "MinimumApiVersion": "4.0.0",
+  "UpdateKeys": [ "Nexus:" ]
+}

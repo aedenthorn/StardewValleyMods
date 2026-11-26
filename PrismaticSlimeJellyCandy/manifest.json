@@ -1,0 +1,10 @@
+﻿{
+  "Name": "PrismaticSlimeJellyCandy",
+  "Author": "aedenthorn",
+  "Version": "0.1.0",
+  "Description": "Prismatic Slime Jelly Candy.",
+  "UniqueID": "aedenthorn.PrismaticSlimeJellyCandy",
+  "EntryDll": "PrismaticSlimeJellyCandy.dll",
+  "MinimumApiVersion": "4.0.0",
+  "UpdateKeys": [ "Nexus:56002" ]
+}

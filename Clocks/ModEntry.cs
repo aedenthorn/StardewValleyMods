@@ -19,6 +19,7 @@ namespace Clocks
         public static ModConfig Config;
         public static ModEntry context;
         public const string dictPath = "aedenthorn.Clocks/dict";
+        public const string mapDictPath = "aedenthorn.Clocks/mapdict";
         public const string clockPath = "aedenthorn.Clocks/WallClock";
         public static Dictionary<string, ClockData> ClockDict
         {
@@ -27,6 +28,15 @@ namespace Clocks
                 return SHelper.GameContent.Load<Dictionary<string, ClockData>>(dictPath);
             }
         }
+
+        public static Dictionary<string, MapClockData> MapClockDict
+        {
+            get
+            {
+                return SHelper.GameContent.Load<Dictionary<string, MapClockData>>(mapDictPath);
+            }
+        }
+        public static Dictionary<string, List<MapClockData>> clockLocationCache = new();
 
         public override void Entry(IModHelper helper)
         {
@@ -38,11 +48,18 @@ namespace Clocks
 
             helper.Events.GameLoop.GameLaunched += GameLoop_GameLaunched;
             helper.Events.Content.AssetRequested += Content_AssetRequested;
+            helper.Events.Player.Warped += Player_Warped;
 
             var harmony = new Harmony(ModManifest.UniqueID);
             harmony.PatchAll();
-            
+
         }
+
+        private void Player_Warped(object sender, WarpedEventArgs e)
+        {
+            clockLocationCache.Clear();
+        }
+
 
         private void Content_AssetRequested(object sender, AssetRequestedEventArgs e)
         {
@@ -61,6 +78,10 @@ namespace Clocks
                         }
                     }
                 }, AssetLoadPriority.Exclusive);
+            }
+            else if (e.NameWithoutLocale.IsEquivalentTo(mapDictPath))
+            {
+                e.LoadFrom(() => new Dictionary<string, MapClockData>(), AssetLoadPriority.Exclusive);
             }
             else if (e.NameWithoutLocale.IsEquivalentTo("TileSheets/furniture_3"))
             {
@@ -178,14 +199,23 @@ namespace Clocks
             }
         }
 
+
         public static string AddSpaces(string str)
         {
-            string newStr = "";
-            foreach (var c in str)
+            if (str?.Length < 2)
+                return str;
+            string newStr = str[0].ToString();
+            for (int i = 1; i < str.Length; i++)
             {
-                if (c >= 'A' && c <= 'Z' && newStr.Length > 0)
+                char c = str[i];
+                if (i < str.Length - 1)
                 {
-                    newStr += " ";
+                    char c1 = str[i + 1];
+                    char cm = str[i - 1];
+                    if (c >= 'A' && c <= 'Z' && ((c1 >= 'a' && c1 <= 'z') || (cm >= 'a' && cm <= 'z')))
+                    {
+                        newStr += " ";
+                    }
                 }
                 newStr += c;
             }

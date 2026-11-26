@@ -159,7 +159,7 @@ namespace HugsAndKisses
             {
                 if (nameframe.StartsWith(name + ":"))
                 {
-                    int.TryParse(nameframe.Substring(name.Length + 1), out spouseFrame);
+                    spouseFrame = int.Parse(nameframe[(name.Length + 1)..]);
                     break;
                 }
             }

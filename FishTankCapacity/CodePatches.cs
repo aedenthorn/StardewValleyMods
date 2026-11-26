@@ -6,6 +6,8 @@ using StardewValley.Objects;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
+using System.Reflection.Emit;
 
 namespace FishTankCapacity
 {
@@ -58,6 +60,22 @@ namespace FishTankCapacity
         [HarmonyPatch(typeof(FishTankFurniture), nameof(FishTankFurniture.UpdateDecorAndFish))]
         public static class FishTankFurniture_UpdateDecorAndFish_Patch
         {
+            public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions)
+            {
+                SMonitor.Log($"Transpiling FishTankFurniture.UpdateDecorAndFish");
+
+                var codes = new List<CodeInstruction>(instructions);
+                for (int i = 0; i < codes.Count; i++)
+                {
+                    if (codes[i].operand is MethodInfo mi && mi == AccessTools.Method(typeof(FishTankFurniture), nameof(FishTankFurniture.GetItemCount)))
+                    {
+                        codes.Insert(i, new(OpCodes.Call, AccessTools.Method(typeof(ModEntry), nameof(ModEntry.GetItemCountCheck))));
+                        i++;
+                    }
+                }
+
+                return codes.AsEnumerable();
+            }
             public static void Postfix(FishTankFurniture __instance)
             {
                 if (!Config.ModEnabled)
@@ -67,14 +85,17 @@ namespace FishTankCapacity
                 {
                     var item = __instance.heldItems[i];
                     skip = true;
-                    if (!__instance.CanBeDeposited(item))
+                    if (!__instance.CanBeDeposited(item) || DecorationDict.ContainsKey(item.ItemId))
                     {
                         var slot = __instance.floorDecorations.FindIndex(kvp => kvp is null);
                         if(slot > -1)
                         {
-                            var slots = __instance.decorationSlots.Where(s => !__instance.floorDecorations.Any(f => f is KeyValuePair<Rectangle, Vector2> kvp && Vector2.Distance(kvp.Value, s) < 8));
-                            if(slots.Any())
-                                __instance.floorDecorations[slot] = new KeyValuePair<Rectangle, Vector2>(new Rectangle(i, 0, 0, 0), slots.ElementAt(Game1.random.Next(slots.Count())));
+                            var slots = __instance.decorationSlots.Where(s => !__instance.floorDecorations.Any(f => f is KeyValuePair<Rectangle, Vector2> kvp && Vector2.Distance(kvp.Value, s) < Config.MinPixelDistance));
+                            if (slots.Any())
+                            {
+                                var pos = slots.ElementAt(Game1.random.Next(slots.Count())) + new Vector2(Game1.random.Next(-Config.RandomShiftPixels, Config.RandomShiftPixels + 1), Game1.random.Next(-Config.RandomShiftPixels, Config.RandomShiftPixels + 1));
+                                __instance.floorDecorations[slot] = new KeyValuePair<Rectangle, Vector2>(new Rectangle(i, 0, 0, 0), pos);
+                            }
                         }
                     }
                     //else if(!placed.Contains(item.ItemId))
@@ -95,7 +116,11 @@ namespace FishTankCapacity
                     skip = false;
                 }
             }
+
         }
+
+       
+
         [HarmonyPatch(typeof(FishTankFurniture), nameof(FishTankFurniture.draw), new Type[] { typeof(SpriteBatch), typeof(int), typeof(int), typeof(float) })]
         public static class FishTankFurniture_draw_Patch
         {
@@ -116,14 +141,16 @@ namespace FishTankCapacity
                             var sourceRect = data.SourceRect is null ? new Rectangle(0, 0, texture.Width, texture.Height) : data.SourceRect.Value;
                             if(data.Frames > 1)
                             {
-                                var offset = Game1.ticks / data.FrameDuration % data.Frames * sourceRect.Width;
+                                var offset = Game1.ticks / 60 % data.Frames * sourceRect.Width;
                                 sourceRect.X += offset;
                             }
+                            AdjustPos(__instance, ref decoration_position, sourceRect.Width);
                             decoration_position += data.DrawOffset;
                             spriteBatch.Draw(texture, Game1.GlobalToLocal(new Vector2((float)__instance.GetTankBounds().Left + decoration_position.X * 4f, (float)(__instance.GetTankBounds().Bottom - 4) - decoration_position.Y * 4f)), sourceRect, Color.White * alpha, 0f, new Vector2((float)(sourceRect.Width / 2), (float)(sourceRect.Height - 4)), data.Scale, SpriteEffects.None, decoration_layer);
                         }
                         else
                         {
+                            AdjustPos(__instance, ref decoration_position, 16);
                             item.drawInMenu(spriteBatch, Game1.GlobalToLocal(new Vector2((float)__instance.GetTankBounds().Left + decoration_position.X * 4f - 32, (float)(__instance.GetTankBounds().Bottom - 4) - decoration_position.Y * 4f - 32)), 1f, 1f, decoration_layer, StackDrawType.Hide, Color.White, false);
                         }
                     }

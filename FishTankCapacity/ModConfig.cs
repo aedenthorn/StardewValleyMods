@@ -7,6 +7,8 @@ namespace FishTankCapacity
     {
         public bool ModEnabled { get; set; } = true;
         public bool Debug { get; set; } = false;
+        public int RandomShiftPixels { get; set; } = 4;
+        public int MinPixelDistance { get; set; } = 8;
         public bool UnlimitedCapacity { get; set; } = true;
         public SButton AddAnyItemModKey { get; set; } = SButton.LeftShift;
         public float CapacityMultiplier { get; set; } = 1;
