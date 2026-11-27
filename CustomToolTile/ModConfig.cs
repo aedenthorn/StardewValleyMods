@@ -10,10 +10,11 @@ namespace CustomToolTile
         public bool ModEnabled { get; set; } = true;
         public bool Debug { get; set; } = false;
         public bool ShowToolIcon { get; set; } = true;
+        public float ToolScale { get; set; } = 0.8f;
         public bool Prismatic { get; set; } = false;
-        public int PrismaticSpeed = 5;
+        public int PhaseSpeed { get; set; } = 1;
         public Color Color { get; set; } = Color.Green;
-        public Color Color2 { get; set; } = Color.Transparent;
+        public Color PhaseColor { get; set; } = Color.Transparent;
         public bool Shadow = true;
         public int ShadowOffset = 4;
 

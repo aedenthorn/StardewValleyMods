@@ -3,6 +3,7 @@ using Microsoft.Xna.Framework.Graphics;
 using Netcode;
 using StardewModdingAPI;
 using StardewValley;
+using StardewValley.Quests;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,6 +13,51 @@ namespace QuestHelper
 {
 	public partial class ModEntry : Mod
     {
+        public static void ResetIntroQuests()
+        {
+            if (!Context.IsWorldReady)
+            {
+                SMonitor.Log($"World not ready.", LogLevel.Warn);
+                return;
+            }
+            for (int i = 0; i < Game1.player.questLog.Count; i++)
+            {
+                var q = Game1.player.questLog[i];
+                if (q is SocializeQuest sq && !sq.dailyQuest.Value)
+                {
+                    var all = Game1.characterData.Where(kvp => kvp.Value.IntroductionsQuest ?? (kvp.Value.HomeRegion == "Town")).Select(kvp => kvp.Key);
+                    List<string> newGreet = new();
+                    bool rebuild = false;
+                    foreach (var npc in sq.whoToGreet)
+                    {
+                        if (!all.Contains(npc))
+                        {
+                            SMonitor.Log($"Socialize Quest contains NPC {npc}, but the game no longer has that sociable NPC.", LogLevel.Info);
+                            rebuild = true;
+                            sq.total.Value--;
+                            continue;
+                        }
+                        newGreet.Add(npc);
+                    }
+                    foreach (var npc in all)
+                    {
+                        if (!newGreet.Contains(npc) && !Game1.player.friendshipData.ContainsKey(npc))
+                        {
+                            SMonitor.Log($"Socialize Quest is missing existing sociable NPC {npc}.", LogLevel.Info);
+                            newGreet.Add(npc);
+                            rebuild = true;
+                            sq.total.Value++;
+                        }
+                    }
+                    if (rebuild)
+                    {
+                        SMonitor.Log($"Rebuilding Socialize Quest.", LogLevel.Info);
+                        sq.whoToGreet.Clear();
+                        sq.whoToGreet.AddRange(newGreet);
+                    }
+                }
+            }
+        }
 
         public static void DrawQuestMarker(SpriteBatch b, Vector2 position)
         {

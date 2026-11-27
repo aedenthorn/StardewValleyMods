@@ -34,9 +34,9 @@ namespace CustomToolTile
                 }
                 if (Config.ShowToolIcon && Game1.player.CurrentTool is Tool tool)
                 {
-                    tool.drawInMenu(__instance, position, 0.5f, 1f, (Game1.viewport.Y + position.Y + 32f + (((Game1.viewport.Y + position.Y) * 11f + (Game1.viewport.X + position.X) * 7f) % 10f - 5f) + 50) / 10000f);
+                    tool.drawInMenu(__instance, position, Config.ToolScale, 1f, (Game1.viewport.Y + position.Y + 32f + (((Game1.viewport.Y + position.Y) * 11f + (Game1.viewport.X + position.X) * 7f) % 10f - 5f) + 50) / 10000f);
                 }
-                __instance.Draw(SHelper.GameContent.Load<Texture2D>(squarePath), position, null, Config.Prismatic ? Utility.GetPrismaticColor(0, Config.PrismaticSpeed) : (Config.Color2 != Color.Transparent ? Utility.Get2PhaseColor(Config.Color, Config.Color2, 0, Config.PrismaticSpeed) : Config.Color), 0f, Vector2.Zero, scale, SpriteEffects.None, layerDepth);
+                __instance.Draw(SHelper.GameContent.Load<Texture2D>(squarePath), position, null, Config.Prismatic ? Utility.GetPrismaticColor(0, Config.PhaseSpeed) : (Config.PhaseColor != Color.Transparent ? Utility.Get2PhaseColor(Config.Color, Config.PhaseColor, 0, Config.PhaseSpeed) : Config.Color), 0f, Vector2.Zero, scale, SpriteEffects.None, layerDepth);
                 return false;
             }
         }
