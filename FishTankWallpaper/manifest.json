@@ -1,0 +1,10 @@
+﻿{
+  "Name": "Fish Tank Wallpaper",
+  "Author": "aedenthorn",
+  "Version": "0.1.0",
+  "Description": "Fish Tank Wallpaper.",
+  "UniqueID": "aedenthorn.FishTankWallpaper",
+  "EntryDll": "FishTankWallpaper.dll",
+  "MinimumApiVersion": "4.0.0",
+  "UpdateKeys": [ "Nexus:56087" ]
+}
