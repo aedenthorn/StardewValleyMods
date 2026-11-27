@@ -25,6 +25,8 @@ namespace HugsAndKisses
 
         public static bool GetFacingRight(string name)
         {
+            if (Config.CustomKissFacingLeft.Split(',').Contains(name))
+                return false;
             switch (name)
             {
                 case "Sam":
@@ -60,13 +62,11 @@ namespace HugsAndKisses
         {
             if (Game1.getCharacterFromName(name)?.datable.Value == false && !Config.UseNonDateableNPCsKissFrames)
                 return 0;
-            List<string> customFrames = Config.CustomKissFrames.Split(',').ToList();
-            foreach (string nameframe in customFrames)
+            foreach (string nameframe in Config.CustomKissFrames.Split(','))
             {
-                if (nameframe.StartsWith(name + ":"))
+                if (nameframe.Trim().StartsWith(name + ":") && int.TryParse(nameframe.Substring(name.Length + 1).Trim(), out int frame))
                 {
-                    if (int.TryParse(nameframe.Substring(name.Length + 1), out int frame))
-                        return frame;
+                    return frame;
                 }
             }
 

@@ -80,7 +80,6 @@ namespace FishTankWallpaper
                 return codes.AsEnumerable();
             }
         }
-       
 
         [HarmonyPatch(typeof(FishTankFurniture), nameof(FishTankFurniture.draw), new Type[] { typeof(SpriteBatch), typeof(int), typeof(int), typeof(float) })]
         public static class FishTankFurniture_draw_Patch

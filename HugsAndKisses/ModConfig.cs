@@ -16,6 +16,7 @@ namespace HugsAndKisses
         public string CustomKissSound { get; set; } = "kiss.wav";
         public string CustomHugSound { get; set; } = "";
         public string CustomKissFrames { get; set; } = "Sam:36,Penny:35";
+        public string CustomKissFacingLeft { get; set; } = "Maru,Emily";
         public float MaxDistanceToKiss { get; set; } = 200f;
         public double MinSpouseKissIntervalSeconds { get; set; } = 10;
         public bool AllowPlayerSpousesToKiss { get; set; } = true;

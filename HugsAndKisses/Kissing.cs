@@ -154,17 +154,6 @@ namespace HugsAndKisses
             int spouseFrame = Misc.GetKissingFrame(name);
             bool facingRight = Misc.GetFacingRight(name);
 
-            List<string> customFrames = Config.CustomKissFrames.Split(',').ToList();
-            foreach(string nameframe in customFrames)
-            {
-                if (nameframe.StartsWith(name + ":"))
-                {
-                    spouseFrame = int.Parse(nameframe[(name.Length + 1)..]);
-                    break;
-                }
-            }
-            
-
             bool right = npc.position.X < midpoint.X;
             if(npc.position.Value == midpoint)
             {
