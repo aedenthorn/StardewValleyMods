@@ -1,0 +1,7 @@
+{
+	// GMCM
+	"GMCM.ModEnabled.Name": "Mod Enabled",
+	"GMCM.RangeMultiplier.Name": "Range Multiplier",
+	"GMCM.RangeMultiplier.Tooltip": "The multiplier applied to the player's magnetic radius. A value of 0 indicates an infinite radius.",
+	"GMCM.SpeedMultiplier.Name": "Speed Multiplier"
+}

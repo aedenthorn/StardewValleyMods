@@ -1,0 +1,10 @@
+﻿{
+  "Name": "Light Switches",
+  "Author": "aedenthorn",
+  "Version": "0.2.1",
+  "Description": "Light Switches.",
+  "UniqueID": "aedenthorn.LightSwitches",
+  "EntryDll": "LightSwitches.dll",
+  "MinimumApiVersion": "4.0.0",
+  "UpdateKeys": [ "Nexus:47290" ]
+}

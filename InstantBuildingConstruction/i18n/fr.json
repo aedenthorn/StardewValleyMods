@@ -1,0 +1,8 @@
+{
+	// GMCM
+	"GMCM.ModEnabled.Name": "Activer le Mod",
+	"GMCM.InstantBuildingConstructionAndUpgrade.Name": "Construction et amélioration des bâtiments instantanées",
+	"GMCM.InstantFarmhouseUpgrade.Name": "Amélioration de la maison de ferme instantanée",
+	"GMCM.InstantCommunityUpgrade.Name": "Amélioration communautaire instantanée",
+	"GMCM.FreeConstructionAndUpgrade.Name": "Construction et amélioration gratuites"
+}

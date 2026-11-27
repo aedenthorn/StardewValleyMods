@@ -1,0 +1,10 @@
+﻿{
+	"Name": "Trash Cans On Horse",
+	"Author": "aedenthorn",
+	"Version": "0.1.2",
+	"Description": "Makes your mount a co-conspirator in dumpster diving, removing the rifling-through-residents'-rubbish requirement of dismount your horse.",
+	"UniqueID": "aedenthorn.TrashCansOnHorse",
+	"EntryDll": "TrashCansOnHorse.dll",
+	"MinimumApiVersion": "4.0.0",
+	"UpdateKeys": [ "Nexus:16394" ]
+}

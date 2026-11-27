@@ -1,0 +1,6 @@
+{
+  "ShowMisc.Desc": "Show for dialogue boxes that are neither questions nor have NPC portraits",
+  "FacingFront.Desc": "If not set, the portrait will face right (only meaningful if there is no custom portrait)",
+  "UseCustomPortrait.Desc": "If a custom portrait png is loaded, use it for the portrait",
+  "UseCustomBackground.Desc": "If a custom background png is loaded, use it for the background"
+}

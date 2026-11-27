@@ -1,0 +1,60 @@
+{
+  "events": [
+    {
+      "name": "Leah-event-0",
+      "location": "LeahHouse",
+      "eventId": "50",
+      "night": false,
+      "mail": "LeahArtShowSuggestion,LeahInternet"
+    },
+    {
+      "name": "Leah-event-1",
+      "location": "LeahHouse",
+      "eventId": "51",
+      "night": false,
+      "mail": null
+    },
+    {
+      "name": "Leah-event-2",
+      "location": "Farm",
+      "eventId": "992253",
+      "night": false,
+      "mail": null
+    },
+    {
+      "name": "Leah-event-3",
+      "location": "Forest",
+      "eventId": "52",
+      "night": false,
+      "mail": null
+    },
+    {
+      "name": "Leah-event-4",
+      "location": "LeahHouse",
+      "eventId": "584059",
+      "night": false,
+      "mail": null
+    },
+    {
+      "name": "Leah-event-5",
+      "location": "Town",
+      "eventId": "53",
+      "night": false,
+      "mail": null
+    },
+    {
+      "name": "Leah-event-6",
+      "location": "Forest",
+      "eventId": "54",
+      "night": false,
+      "mail": null
+    },
+    {
+      "name": "Leah-event-7",
+      "location": "Forest",
+      "eventId": "3091462",
+      "night": false,
+      "mail": null
+    }
+  ]
+}

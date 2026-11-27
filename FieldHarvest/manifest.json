@@ -1,0 +1,10 @@
+﻿{
+  "Name": "Field Harvest",
+  "Author": "aedenthorn",
+  "Version": "0.3.0",
+  "Description": "Field Harvest.",
+  "UniqueID": "aedenthorn.FieldHarvest",
+  "EntryDll": "FieldHarvest.dll",
+  "MinimumApiVersion": "4.0.0",
+  "UpdateKeys": [ "Nexus:11019" ]
+}

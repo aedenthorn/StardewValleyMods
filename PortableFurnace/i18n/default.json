@@ -1,0 +1,13 @@
+{
+  "Copper.name": "Copper Furnace",
+  "Copper.desc": "Turns ore and coal into metal bars.",
+  "Iron.name": "Iron Furnace",
+  "Iron.desc": "Turns ore and coal into metal bars.",
+  "Gold.name": "Gold Furnace",
+  "Gold.desc": "Turns ore and coal into metal bars.",
+  "Iridium.name": "Iridium Furnace",
+  "Iridium.desc": "Turns ore and coal into metal bars.",
+  "empty": "(Empty)",
+  "repeat": "(Repeating)",
+  "current-x-y":  "(Current Item: {0}, {1}min left)"
+}

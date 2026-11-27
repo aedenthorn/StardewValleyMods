@@ -1,0 +1,10 @@
+﻿{
+  "Name": "Tunnels",
+  "Author": "aedenthorn",
+  "Version": "0.3.1",
+  "Description": "Tunnels.",
+  "UniqueID": "aedenthorn.Tunnels",
+  "EntryDll": "Tunnels.dll",
+  "MinimumApiVersion": "4.0.0",
+  "UpdateKeys": [ "Nexus:" ]
+}

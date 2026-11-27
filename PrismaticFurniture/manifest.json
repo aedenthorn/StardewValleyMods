@@ -1,0 +1,22 @@
+﻿{
+  "Name": "Prismatic Furniture",
+  "Author": "aedenthorn",
+  "Version": "0.1.1",
+  "Description": "Prismatic Furniture.",
+  "UniqueID": "aedenthorn.PrismaticFurniture",
+  "EntryDll": "PrismaticFurniture.dll",
+  "MinimumApiVersion": "3.8.0",
+  "ModUpdater": {
+    "Repository": "StardewValleyMods",
+    "User": "aedenthorn",
+    "Directory": "_releases",
+    "ModFolder": "PrismaticFurniture"
+  },
+  "Dependencies": [
+    {
+      "UniqueID": "Platonymous.ModUpdater",
+      "IsRequired": false
+    }
+  ],
+  "UpdateKeys": [ "Nexus:12589" ]
+}

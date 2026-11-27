@@ -1,0 +1,7 @@
+{
+	// GMCM
+	"GMCM.ModEnabled.Name": "Mod Enabled",
+	"GMCM.AllowMultipleMounts.Name": "Multiple Mounts",
+	"GMCM.RenameModKey.Name": "Rename Mod Key",
+	"NameYourX": "Name Your {0}"
+}

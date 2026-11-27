@@ -1,0 +1,10 @@
+﻿{
+  "Name": "Profession Sell Bonuses",
+  "Author": "aedenthorn",
+  "Version": "0.1.0",
+  "Description": "Profession Sell Bonuses.",
+  "UniqueID": "aedenthorn.ProfessionSellBonuses",
+  "EntryDll": "ProfessionSellBonuses.dll",
+  "MinimumApiVersion": "4.0.0",
+  "UpdateKeys": [ "Nexus:" ]
+}

@@ -1,0 +1,10 @@
+﻿{
+  "Name": "Smart Blocks",
+  "Author": "aedenthorn",
+  "Version": "0.1.0",
+  "Description": "Smart Blocks.",
+  "UniqueID": "aedenthorn.SmartBlocks",
+  "EntryDll": "SmartBlocks.dll",
+  "MinimumApiVersion": "4.0.0",
+  "UpdateKeys": [ "Nexus:" ]
+}

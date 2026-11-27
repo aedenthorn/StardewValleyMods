@@ -1,0 +1,39 @@
+{
+  "events": [
+    {
+      "name": "Morgan-event-0",
+      "location": "wizardhouse",
+      "eventId": "5978927",
+      "night": false,
+      "mail": null
+    },
+    {
+      "name": "Morgan-event-1",
+      "location": "wizardhouse",
+      "eventId": "5978929",
+      "night": false,
+      "mail": null
+    },
+    {
+      "name": "Morgan-event-2",
+      "location": "forest",
+      "eventId": "5978935",
+      "night": false,
+      "mail": null
+    },
+    {
+      "name": "Morgan-event-3",
+      "location": "wizardhouse",
+      "eventId": "5978936",
+      "night": false,
+      "mail": null
+    },
+    {
+      "name": "Morgan-event-4",
+      "location": "wizardhouse",
+      "eventId": "5978937",
+      "night": false,
+      "mail": null
+    }
+  ]
+}

@@ -1,0 +1,22 @@
+﻿{
+  "Name": "Prismatic Fire",
+  "Author": "aedenthorn",
+  "Version": "0.4.0",
+  "Description": "Prismatic Fire.",
+  "UniqueID": "aedenthorn.PrismaticFire",
+  "EntryDll": "PrismaticFire.dll",
+  "MinimumApiVersion": "3.15.0",
+  "ModUpdater": {
+    "Repository": "StardewValleyMods",
+    "User": "aedenthorn",
+    "Directory": "_releases",
+    "ModFolder": "PrismaticFire"
+  },
+  "Dependencies": [
+    {
+      "UniqueID": "Platonymous.ModUpdater",
+      "IsRequired": false
+    }
+  ],
+  "UpdateKeys": [ "Nexus:12931" ]
+}

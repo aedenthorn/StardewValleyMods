@@ -1,0 +1,10 @@
+{
+  "Name": "Dynamic Map Tiles Extended",
+  "Author": "aedenthorn",
+  "Version": "1.14.0",
+  "Description": "Makes map tiles extensively dynamic.",
+  "UniqueID": "aedenthorn.DynamicMapTilesExtended",
+  "EntryDll": "DynamicMapTilesExtended.dll",
+  "MinimumApiVersion": "4.0.0",
+  "UpdateKeys": [ "Nexus:33900" ]
+}

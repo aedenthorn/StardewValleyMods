@@ -1,0 +1,22 @@
+﻿{
+  "Name": "DynamicMapTiles",
+  "Author": "aedenthorn",
+  "Version": "0.8.0",
+  "Description": "DynamicMapTiles.",
+  "UniqueID": "aedenthorn.DynamicMapTiles",
+  "EntryDll": "DynamicMapTiles.dll",
+  "MinimumApiVersion": "3.15.0",
+  "ModUpdater": {
+    "Repository": "StardewValleyMods",
+    "User": "aedenthorn",
+    "Directory": "_releases",
+    "ModFolder": "DynamicMapTiles"
+  },
+  "Dependencies": [
+    {
+      "UniqueID": "Platonymous.ModUpdater",
+      "IsRequired": false
+    }
+  ],
+  "UpdateKeys": [ "Nexus:14566" ]
+}

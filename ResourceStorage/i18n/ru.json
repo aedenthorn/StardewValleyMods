@@ -1,0 +1,12 @@
+{
+  "GMCM_Option_ModEnabled_Name": "Мод Активирован",
+  "GMCM_Option_AutoUse_Name": "Разрешить использование",
+  "GMCM_Option_ModKeyMax_Name": "Взять максимальное количество",
+  "GMCM_Option_IconOffsetX_Name": "Перемещение иконки X",
+  "GMCM_Option_IconOffsetY_Name": "Перемещение иконки Y",
+  "auto": "Автомагазин",
+  "take": "Взять",
+  "added-x-y": "Добавлено {0} {1} в хранилище",
+  "removed-x-y": "Взято {0} {1} из хранилища",
+  "resources": "Ресурсы"
+}

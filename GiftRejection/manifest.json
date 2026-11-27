@@ -1,0 +1,10 @@
+﻿{
+  "Name": "Gift Rejection",
+  "Author": "aedenthorn",
+  "Version": "0.2.0",
+  "Description": "Gift Rejection.",
+  "UniqueID": "aedenthorn.GiftRejection",
+  "EntryDll": "GiftRejection.dll",
+  "MinimumApiVersion": "4.0.0",
+  "UpdateKeys": [ "Nexus:14273" ]
+}

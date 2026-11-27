@@ -1,0 +1,10 @@
+{
+	"ModEnabled": "Mod Enabled",
+	"HoverForHotkey": "Hover For Hotkey",
+	"HoverForHotkey.Desc": "Require hovering over the player with the mouse for hotkeys to work",
+	"GlobalDefaultPockets": "Global Defaults",
+	"GlobalDefaultPockets.Desc": "Use a single set of default pockets unless worn clothes have custom pockets set",
+	"PocketAlpha": "Pocket Alpha",
+	"PocketAlpha.Desc": "Opacity of pocket rectangle, between 0 and 1",
+	"PocketColor": "Pocket Color"
+}

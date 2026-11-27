@@ -1,0 +1,46 @@
+{
+  "events": [
+    {
+      "name": "Abigail-event-0",
+      "location": "SeedShop",
+      "eventId": "1",
+      "night": false,
+      "mail": null
+    },
+    {
+      "name": "Abigail-event-1",
+      "location": "Mountain",
+      "eventId": "2",
+      "night": false,
+      "mail": null
+    },
+    {
+      "name": "Abigail-event-2",
+      "location": "Town",
+      "eventId": "4",
+      "night": true,
+      "mail": null
+    },
+    {
+      "name": "Abigail-event-3",
+      "location": "SeedShop",
+      "eventId": "3",
+      "night": false,
+      "mail": null
+    },
+    {
+      "name": "Abigail-event-4",
+      "location": "Mine",
+      "eventId": "901756",
+      "night": false,
+      "mail": null
+    },
+    {
+      "name": "Abigail-event-5",
+      "location": "Backwoods",
+      "eventId": "6963327",
+      "night": true,
+      "mail": null
+    }
+  ]
+}

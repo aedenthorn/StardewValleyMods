@@ -1,0 +1,33 @@
+{
+    "Name": "Gold Scarecrow",
+    "Description": "A scarecrow coated in gold alloy.",
+    "Recipe":
+    {
+        "ResultCount": 1,
+        "Ingredients":
+        [
+            {
+                "Object": 335,
+                "Count":20
+            },
+            {
+                "Object": 336,
+                "Count":10
+            },
+            {
+                "Object": 709,
+                "Count":25
+            },
+            {
+                "Object": 787,
+                "Count":1
+            },
+            {
+                "Object": 428,
+                "Count":5
+            }
+        ]
+    },
+    "SkillUnlockName": "Farming",
+    "SkillUnlockLevel": 7
+}

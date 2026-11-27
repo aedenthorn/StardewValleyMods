@@ -1,0 +1,10 @@
+﻿{
+	"Name": "Event Indicators",
+	"Author": "aedenthorn",
+	"Version": "0.1.2",
+	"Description": "Event Indicators.",
+	"UniqueID": "aedenthorn.EventIndicators",
+	"EntryDll": "EventIndicators.dll",
+	"MinimumApiVersion": "4.0.0",
+	"UpdateKeys": [ "Nexus:41183" ]
+}

@@ -1,0 +1,10 @@
+﻿{
+  "Name": "WizardShop",
+  "Author": "aedenthorn",
+  "Version": "0.1.0",
+  "Description": "WizardShop.",
+  "UniqueID": "aedenthorn.WizardShop",
+  "EntryDll": "WizardShop.dll",
+  "MinimumApiVersion": "4.0.0",
+  "UpdateKeys": [ "Nexus:48885" ]
+}

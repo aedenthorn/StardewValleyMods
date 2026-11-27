@@ -1,0 +1,23 @@
+{
+	"ModEnabled": "Mod Enabled",
+	"Scale": "Scale",
+	"XOffset": "X Offset",
+	"YOffset": "Y Offset",
+	"ShowButton": "Show Button",
+	"ToggleShow": "Toggle Show",
+	"ConstantQuality": "Constant Quality",
+	"ConstantQuality.Desc": "Make quality depend on day planted rather than current day.",
+	"RandomQuality": "Random Quality",
+	"RandomQuality.Desc": "Make quality depend on a random variable rather than current day. Constant Quality must be selected as well.",
+	"ResetConstantForRegrow": "Reset On Regrow",
+	"ResetConstantForRegrow.Desc": "For constant quality, reset the variable for regrowable crops.",
+	"QualityModifier": "Quality Modifier",
+	"QualityModifier.Desc": "Multiple for chance of gold and silver qualities.",
+	"IridiumChanceFertilized": "Iridium Chance (Deluxe)",
+	"IridiumChanceFertilized.Desc": "Chance for iridium harvest when using Deluxe Fertilizer, as a fraction of gold harvest chance.",
+	"IridiumChance": "Iridium Chance (Ordinary)",
+	"IridiumChance.Desc": "Chance for iridium harvest when not using Deluxe Fertilizer, as a fraction of gold harvest chance.",
+	"IridiumPulse": "Iridium Pulse",
+	"GoldMaxChance": "Gold Max Chance",
+	"SilverMaxChance": "Silver Max Chance"
+}

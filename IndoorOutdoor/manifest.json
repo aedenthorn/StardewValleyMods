@@ -1,0 +1,10 @@
+﻿{
+	"Name": "IndoorOutdoor",
+	"Author": "aedenthorn",
+	"Version": "0.1.0",
+	"Description": "Indoor Outdoor.",
+	"UniqueID": "aedenthorn.IndoorOutdoor",
+	"EntryDll": "IndoorOutdoor.dll",
+	"MinimumApiVersion": "4.1.0",
+	"UpdateKeys": [ "Nexus:" ]
+}

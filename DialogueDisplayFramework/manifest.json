@@ -1,0 +1,10 @@
+﻿{
+  "Name": "Dialogue Display Framework",
+  "Author": "aedenthorn",
+  "Version": "0.5.0",
+  "Description": "Dialogue Display Framework.",
+  "UniqueID": "aedenthorn.DialogueDisplayFramework",
+  "EntryDll": "DialogueDisplayFramework.dll",
+  "MinimumApiVersion": "4.0.0",
+  "UpdateKeys": [ "Nexus:11661" ]
+}

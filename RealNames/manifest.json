@@ -1,0 +1,10 @@
+﻿{
+  "Name": "Realistic Random Names",
+  "Author": "aedenthorn",
+  "Version": "0.2.0",
+  "Description": "Replaces the random name generator entries with real names.",
+  "UniqueID": "aedenthorn.RealNames",
+  "EntryDll": "RealNames.dll",
+  "MinimumApiVersion": "4.0.0",
+  "UpdateKeys": ["Nexus:6269"]
+}

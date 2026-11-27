@@ -1,0 +1,10 @@
+{
+	// GMCM
+	"GMCM.ModEnabled.Name": "Мод включён?",
+	"GMCM.FreezeGame.Name": "Заморозить игру",
+	"GMCM.FreezeGame.Tooltip": "По умолчанию, этот мод замораживает игру: это схоже с открытием инвентаря. Если эта опция будет включена, персонаж продолжит перемещение даже в AFK, но игровые часы будут остановлены.",
+	"GMCM.TicksTilAFK.Name": "Тиков до AFK",
+	"GMCM.ShowAFKText.Name": "Отображать текст в AFK",
+	"GMCM.AFKText.Name": "Текст в AFK",
+	"GMCM.WakeOnMouseMove.Name": "Пробуждение от мыши"
+}

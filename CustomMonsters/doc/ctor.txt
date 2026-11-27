@@ -1,0 +1,106 @@
+Vanilla monster types each have multiple constructors for creating monster instances under different conditions. This complicates the process of creating custom monsters based on vanilla types.
+
+Below is a list of all possible C# constructors for the vanilla monsters. The parameters are what you pass to the "Parameters" field in your content.json file to tell the mod which constructor to use. e.g.: 
+
+{
+  "Format": "2.9.0",
+  "Changes": [
+    {
+      "Action": "EditData",
+      "Target": "aedenthorn.CustomMonsters/dict",
+      "Entries": {
+      "MyCustomMonster": {
+        "Type": "Serpent",
+        "Parameters":"position,name",
+        "Name":"Royal Serpent"
+      }
+    }
+  ]
+}
+
+This will call the constructor for Serpent that has two parameters (position and name). The position parameter will be passed by whatever mod is spawning the monster. Here I supply the name parameter with "Name": "Royal Serpent", which tells the game to make a royal serpent type monster.
+
+For "name" fields, below I have included in parentheses names used by the game to create specific monster types. Unless you are intent on basing your monster off of one of these special types, you probably shouldn't use constructors that have the "name" parameter.
+
+For "switch" fields, below I have included in parenthesis the name of the switch that will toggle if you set "Switch": true for that monster type.
+
+See https://github.com/aedenthorn/StardewValleyMods/blob/master/CustomMonsters/doc/doc.md for more info.
+
+
+AngryRoger:
+AngryRoger: "position"
+AngryRoger: "position,name" ("Angry Roger")
+Bat:
+Bat: "position"
+Bat: "position,level" (corresponds to mine level, but -789 and -666 = Iridium Bat, -556 = Magma Sparker, -555 = Magma Sprite, 77377 = Lava Bat) 
+BigSlime:
+BigSlime: "position,level" (corresponds to certain mine areas: 0, 10, 40, 80, 121 create special slimes)
+BlueSquid:
+BlueSquid: "position"
+Bug:
+Bug: "position,facing,name" ("Assassin Bug")
+Bug: "position,level" (only 121 has any effect, making an armored bug)
+DinoMonster:
+DinoMonster: "position"
+Duggy:
+Duggy: "position"
+Duggy: "position,switch" (magmaDuggy)
+DustSpirit:
+DustSpirit: "position"
+DustSpirit: "position,switch" (chargingTowardFarmer)
+DwarvishSentry:
+DwarvishSentry: "position"
+Fly:
+Fly: "position"
+Fly: "position,switch" (hard)
+Ghost:
+Ghost: "position"
+Ghost: "position,name" ("Putrid Ghost", "Carbon Ghost")
+GreenSlime:
+GreenSlime: "position"
+GreenSlime: "position,level" (corresponds to mine level, but 77377 makes a "Sludge" and 9999899 makes a special aqua slime)
+GreenSlime: "position,color"
+Grub:
+Grub: "position"
+Grub: "position,switch" (hard)
+HotHead:
+HotHead: "position"
+LavaLurk:
+LavaLurk: "position"
+Leaper:
+Leaper: "position"
+MetalHead:
+MetalHead: "name,position" ("Hot Head")
+MetalHead: "position,level" (corresponds to certain mine areas: 0, 40, 80 create special metal heads)
+Monster:
+Monster: "name,position"
+Monster: "name,position,facing"
+Mummy:
+Mummy: "position"
+RockCrab:
+RockCrab: "position"
+RockCrab: "position,name" ("Truffle Crab", "Iridium Crab", "False Magma Cap")
+RockGolem:
+RockGolem: "position"
+RockGolem: "position,level" (level is just a straight "difficultyMod" multiplier. If difficultMod is >= 9, 50% chance it is "Iridium Golem" and 50% chance it is "Wilderness Golem")
+RockGolem: "position,switch" (alreadySpawned)
+Serpent:
+Serpent: "position"
+Serpent: "position,name" ("Royal Serpent")
+ShadowBrute:
+ShadowBrute: "position"
+ShadowGirl: "position"
+ShadowGirl:
+ShadowGuy: "position"
+ShadowGuy:
+ShadowShaman:
+ShadowShaman: "position"
+Shooter:
+Shooter: "position"
+Shooter: "position,name" ("Shadow Sniper")
+Skeleton:
+Skeleton: "position,switch" (isMage)
+Spiker:
+Spiker: "position,facing"
+SquidKid:
+SquidKid: "position"

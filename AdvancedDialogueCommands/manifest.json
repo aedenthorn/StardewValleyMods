@@ -1,0 +1,22 @@
+﻿{
+  "Name": "Advanced Dialogue Commands",
+  "Author": "aedenthorn",
+  "Version": "0.2.0",
+  "Description": "Advanced Dialogue Commands.",
+  "UniqueID": "aedenthorn.AdvancedDialogueCommands",
+  "EntryDll": "AdvancedDialogueCommands.dll",
+  "MinimumApiVersion": "3.15.0",
+  "ModUpdater": {
+    "Repository": "StardewValleyMods",
+    "User": "aedenthorn",
+    "Directory": "_releases",
+    "ModFolder": "AdvancedDialogueCommands"
+  },
+  "Dependencies": [
+    {
+      "UniqueID": "Platonymous.ModUpdater",
+      "IsRequired": false
+    }
+  ],
+  "UpdateKeys": [ "Nexus:" ]
+}

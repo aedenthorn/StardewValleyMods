@@ -1,0 +1,22 @@
+﻿{
+  "Name": "Auto Collect",
+  "Author": "aedenthorn",
+  "Version": "0.1.0",
+  "Description": "Auto Collect.",
+  "UniqueID": "aedenthorn.AutoCollect",
+  "EntryDll": "AutoCollect.dll",
+  "MinimumApiVersion": "3.15.0",
+  "ModUpdater": {
+    "Repository": "StardewValleyMods",
+    "User": "aedenthorn",
+    "Directory": "_releases",
+    "ModFolder": "AutoCollect"
+  },
+  "Dependencies": [
+    {
+      "UniqueID": "Platonymous.ModUpdater",
+      "IsRequired": false
+    }
+  ],
+  "UpdateKeys": [ "Nexus:" ]
+}

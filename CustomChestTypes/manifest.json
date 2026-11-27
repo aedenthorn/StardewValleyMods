@@ -1,0 +1,10 @@
+﻿{
+  "Name": "CustomChestTypes",
+  "Author": "aedenthorn",
+  "Version": "0.8.0",
+  "Description": "Creates custom chest types.",
+  "UniqueID": "aedenthorn.CustomChestTypes",
+  "EntryDll": "CustomChestTypes.dll",
+  "MinimumApiVersion": "4.0.0",
+  "UpdateKeys": [ "Nexus:7755" ]
+}

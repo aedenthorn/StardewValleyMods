@@ -1,0 +1,10 @@
+﻿{
+  "Name": "Furniture Display Framework",
+  "Author": "aedenthorn",
+  "Version": "0.6.0",
+  "Description": "FurnitureDisplayFramework.",
+  "UniqueID": "aedenthorn.FurnitureDisplayFramework",
+  "EntryDll": "FurnitureDisplayFramework.dll",
+  "MinimumApiVersion": "4.0.0",
+  "UpdateKeys": [ "Nexus:10855" ]
+} 

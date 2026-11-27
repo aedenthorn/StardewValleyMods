@@ -1,0 +1,22 @@
+﻿{
+  "Name": "Multiple Cribs",
+  "Author": "aedenthorn",
+  "Version": "0.1.0",
+  "Description": "Multiple Cribs.",
+  "UniqueID": "aedenthorn.MultipleCribs",
+  "EntryDll": "MultipleCribs.dll",
+  "MinimumApiVersion": "3.8.0",
+  "ModUpdater": {
+    "Repository": "StardewValleyMods",
+    "User": "aedenthorn",
+    "Directory": "_releases",
+    "ModFolder": "MultipleCribs"
+  },
+  "Dependencies": [
+    {
+      "UniqueID": "Platonymous.ModUpdater",
+      "IsRequired": false
+    }
+  ],
+  "UpdateKeys": [ "Nexus:12869" ]
+}

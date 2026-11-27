@@ -1,0 +1,10 @@
+﻿{
+  "Name": "Mine Helper",
+  "Author": "aedenthorn",
+  "Version": "0.1.0",
+  "Description": "Mine Helper.",
+  "UniqueID": "aedenthorn.MineHelper",
+  "EntryDll": "MineHelper.dll",
+  "MinimumApiVersion": "4.0.0",
+  "UpdateKeys": [ "Nexus:" ]
+}

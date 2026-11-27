@@ -1,0 +1,22 @@
+﻿{
+  "Name": "Custom Object Production",
+  "Author": "aedenthorn",
+  "Version": "0.3.0",
+  "Description": "Custom Object Production.",
+  "UniqueID": "aedenthorn.CustomObjectProduction",
+  "EntryDll": "CustomObjectProduction.dll",
+  "MinimumApiVersion": "3.15.0",
+  "ModUpdater": {
+    "Repository": "StardewValleyMods",
+    "User": "aedenthorn",
+    "Directory": "_releases",
+    "ModFolder": "CustomObjectProduction"
+  },
+  "UpdateKeys": [ "Nexus:10152" ],
+  "Dependencies": [
+    {
+      "UniqueID": "Platonymous.ModUpdater",
+      "IsRequired": false
+    }
+  ]
+}

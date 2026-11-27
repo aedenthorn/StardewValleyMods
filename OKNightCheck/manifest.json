@@ -1,0 +1,22 @@
+﻿{
+  "Name": "OK Night Check",
+  "Author": "aedenthorn",
+  "Version": "0.3.0",
+  "Description": "OK Night Check.",
+  "UniqueID": "aedenthorn.OKNightCheck",
+  "EntryDll": "OKNightCheck.dll",
+  "MinimumApiVersion": "3.15.0",
+  "ModUpdater": {
+    "Repository": "StardewValleyMods",
+    "User": "aedenthorn",
+    "Directory": "_releases",
+    "ModFolder": "OKNightCheck"
+  },
+  "Dependencies": [
+    {
+      "UniqueID": "Platonymous.ModUpdater",
+      "IsRequired": false
+    }
+  ],
+  "UpdateKeys": [ "Nexus:14231" ]
+}

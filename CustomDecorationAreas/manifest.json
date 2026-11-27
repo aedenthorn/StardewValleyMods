@@ -1,0 +1,10 @@
+﻿{
+  "Name": "Custom Decoration Areas",
+  "Author": "aedenthorn",
+  "Version": "0.5.0",
+  "Description": "Lets you define custom decoratable wall and floor areas.",
+  "UniqueID": "aedenthorn.CustomWallsAndFloors",
+  "EntryDll": "CustomDecorationAreas.dll",
+  "MinimumApiVersion": "4.0.0",
+  "UpdateKeys": [ "Nexus:9626" ]
+}

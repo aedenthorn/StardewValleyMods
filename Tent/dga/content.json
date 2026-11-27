@@ -1,0 +1,34 @@
+[
+	{
+		"$ItemType": "BigCraftable",
+		"ID": "Tent",
+		"Texture": "assets/tent.png:0",
+		"SellPrice": 1000
+	},
+	{
+		"$ItemType": "CraftingRecipe",
+		"ID": "Tent Recipe",
+		"SkillUnlockName": "Foraging",
+		"SkillUnlockLevel": 2,
+		"Ingredients": [
+			{
+				"Type": "VanillaObject",
+				"Value": 428,
+				"Quantity": 5
+			},
+			{
+				"Type": "VanillaObject",
+				"Value": 771,
+				"Quantity": 10
+			},
+		],
+		"Result": [    
+			{
+				"Value": 
+				{
+					"Value": "aedenthorn.TentDGA/Tent"
+				}
+			}
+		]
+	},
+]

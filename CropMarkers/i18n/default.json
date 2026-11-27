@@ -1,0 +1,9 @@
+{
+	"GMCM.ModEnabled.Name": "Mod Enabled",
+	"GMCM.OpacityPercent.Name": "Opacity Percent",
+	"GMCM.SizePercent.Name": "Size Percent",
+	"GMCM.PressKeys.Name": "Press Keys",
+	"GMCM.RequireKeyPress.Name": "Require Key Press",
+	"GMCM.OffsetX.Name": "Offset X",
+	"GMCM.OffsetY.Name": "Offset Y"
+}

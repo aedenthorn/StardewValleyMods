@@ -1,0 +1,22 @@
+﻿{
+  "Name": "Minute Display",
+  "Author": "aedenthorn",
+  "Version": "0.1.0",
+  "Description": "Minute Display.",
+  "UniqueID": "aedenthorn.MinuteDisplay",
+  "EntryDll": "MinuteDisplay.dll",
+  "MinimumApiVersion": "3.13.0",
+  "ModUpdater": {
+    "Repository": "StardewValleyMods",
+    "User": "aedenthorn",
+    "Directory": "_releases",
+    "ModFolder": "MinuteDisplay"
+  },
+  "UpdateKeys": [ "Nexus:" ],
+  "Dependencies": [
+    {
+      "UniqueID": "Platonymous.ModUpdater",
+      "IsRequired": false
+    }
+  ]
+}

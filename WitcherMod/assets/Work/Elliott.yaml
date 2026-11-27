@@ -1,0 +1,85 @@
+
+xnbData: 
+    target: "w"
+    compressed: true
+    hiDef: true
+    readerData: 
+        - 
+            type: "Microsoft.Xna.Framework.Content.DictionaryReader`2[[System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089],[System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089]]"
+            version: 0
+
+        - 
+            type: "Microsoft.Xna.Framework.Content.StringReader"
+            version: 0
+
+
+    numSharedResources: 0
+
+content:  #!Dictionary<String,String>
+    Introduction: "Hmm, the new farmer we've all been expecting...#$b#I'm Geralt... I live in the little cabin by the beach." #!String
+    danceRejection: "Excuse me... not today.$s" #!String
+    divorced: "...$s#$e#Why are you talking to me? Haven't you done enough?$s" #!String
+    dumped_Guys: "Go away. I don't want to see you.$s" #!String
+    secondChance_Guys: "You hurt me... but I'm willing to leave the past behind us.$s" #!String
+    breakUp: "Hmm... the wilted bouquet. A sight no one wants to see...$s#$b#I suppose there are other horizons to set my eyes upon...$s" #!String
+    Mon: "I'm new to this town myself, but it feels like home.$h#$e#I moved here only a year before you." #!String
+    Mon4: "I imagine you've come to think of this place as 'home'." #!String
+    Tue: "A drowner can attack when you least expect it... if your mind is busy you might be taken off guard.#$e#Well, I really must get back to my work." #!String
+    Tue6: "The clash of steel and smell of blood is etched in my soul.$u#$b#That's why I chose this beach as my home, so that I could be alone with my demons." #!String
+    Wed: "The forest is a quiet place. Have you been there?" #!String
+    Wed8: "Sorry, I'm feeling pensive today.$s#$e#There is never certainty about the future.$s#$e#I imagine I might grow old as a hermit on this beach...$s" #!String
+    Thu2: "I can't seem to find the inspiration to begin writing my autobiography...$s" #!String
+    Thu4: "I've been sensing something strange lately. Perhaps the weather is changing." #!String
+    Thu6: "Sometimes I wonder if I might be losing my hunting skills...$s#$e#No, no... I'm not becoming complacent. Just thinking of old times, I guess..." #!String
+    Thu8: "#$1 elliottApol#It's a quiet out here on the beach... so I apologize if I seemed out of sorts when we first met. I have just become unused to conversation.$k#$e#I find it welcoming to talk to someone new." #!String
+    Thu: "Hello, @.#$e#Are you well?" #!String
+    Fri: "The fresh air of this valley is good for the spirit.#$e#A hike outdoors always refreshes me." #!String
+    Fri4: "Hmm... I once burned off half my hair with a torch...$8" #!String
+    Fri8: "I'll tell you something... it isn't old age that made my hair grey." #!String
+    Sat: "You probably wouldn't like it in Kaedwen. It's a cold and unforgiving place.$s" #!String
+    Sat4: "Please excuse the humble state of my cabin." #!String
+    Sat6: "Some people are suspicious of strangers. Show them your worth and they'll come to appreciate you.#$e#Everyone appreciates competent people, like the blacksmith or the carpenter." #!String
+    Sun: "Hello. Is farming life panning out as you'd hoped?" #!String
+    Sun6: "Oh, @. I had a feeling you might show up.#$e#You have a strong presence.$h" #!String
+    event_idea1: "Mystery, huh? It's definitely an exciting genre. I'll remember that." #!String
+    event_idea2: "Ah, one of the classic genres. I'll remember that." #!String
+    event_idea3: "I would've never guessed! I suppose even those of the 'earthiest' profession sometimes have their heads in the stars.$h#$b#I'll remember that." #!String
+    event_boat1: "... I suspected you might not feel this way about another man, especially one as scarred as me.$l^So am I.$l" #!String
+    event_boat2: "Oh! I'm sorry.$8%fork" #!String
+    event_toast1: "Hmm...okay.#$b#Here's to @!" #!String
+    event_toast2: "That's a good idea.$h#$b#Here's to us!" #!String
+    event_toast3: "Hmm...never mind.$a" #!String
+    event_toast4: "Hmm, to a peaceful future for the community... a thoughtful sentiment.#$b#To the peace and prosperity of Pelican Town." #!String
+    summer_Mon: "A premonition woke me up this morning. I felt a great disturbance from the ocean.$u#$e#I'm sorry if that isn't very interesting to you." #!String
+    summer_Mon4: "I know that I am kind of an 'oddball'.#$e#I hope you don't mind.$h" #!String
+    summer_Mon6: "@, I know you respect my past as a witcher. I appreciate that.$h" #!String
+    summer_Tue: "I've encountered some suspicious shells in front of my house.#$e#I would imagine the larger creatures that once lived in them to be quite dangerous." #!String
+    summer_Tue6: "I'm writing my autobiography as a record of times gone by.$u#$e#...times are changing, though. People don't read anymore.$s" #!String
+    summer_Wed: "It must take patience to follow your crop from seed to harvest.#$e#It's as if your essence is infused into the fruit.$u" #!String
+    summer_Thu: "The most action I see on an average day is dumping crabs out of my boots.$s#$e#That's what comes from living on the beach." #!String
+    summer_Fri: "@? You seem troubled.#$b#The hot summer air can make one a little dizzy." #!String
+    summer_Sat: "The sun is powerful today... My skin used to more northern climates." #!String
+    summer_Sun: "You came all the way just to talk to me? That is thoughtful of you.$h" #!String
+    summer_Sun4: "You are welcome to visit my cabin whenever you like. I appreciate the company.$h" #!String
+    fall_Mon: "Hello @.#$e#Make sure and take note of your surroundings now and then." #!String
+    fall_Mon4: "Come visit me if you need advice on dealing with monsters.$h#$e#I'm usually in my cabin." #!String
+    fall_Tue: "It's been said that a pirate's ship, full of plundered gold, shipwrecked here a long time ago." #!String
+    fall_Tue8: "@, I was just thinking about you.$l#$e#Maybe you sensed it.$h#$e#You would make a good witcher." #!String
+    fall_Wed8: "I could have been a farmer, but my mother consigned me to the School of the Wolf to become a witcher.#$e#The atmosphere there was nothing like that of Stardew Valley.$h" #!String
+    fall_Thu: "Hmm. A small crab appears to have made his home in my shirt pocket.$l#$e#Such is life on the beach." #!String
+    fall_Fri4: "My legs are stiff from sitting at my writing desk all night.$s#$e#Sometimes I wonder if writing an autobiography is worth it." #!String
+    fall_Fri: "My legs are stiff from sitting at my writing desk all morning.$s" #!String
+    fall_Fri10: "@, when you're around... I feel unusually envigorated.$l#$e#I know... strange, but it's true." #!String
+    fall_Sat: "It gets windy this time of year. Makes it harder to sense one's surroundings.$h" #!String
+    fall_Sun: "I have to remember to water my plants today. And not with sea water this time." #!String
+    winter_Mon: "You've come to visit me in the cold...#$e#Maybe you would like Kaer Morhen." #!String
+    winter_Mon4: "@, you've trudged through the snow to visit me?#$e#Though this is mild compared to where I grew up.$h" #!String
+    winter_Tue: "People have scraped a living off the sea for thousands of years.#$e#These days I just go to the grocery store.$s" #!String
+    winter_Tue10: "@, I had a feeling that you would show up.#$e#Perhaps we're connected by an other-worldly thread.$l" #!String
+    -winter_Wed: "A day can never be wasted when you follow the instincts of your heart.$u#$e#What does your heart tell you to do?" #!String
+    winter_Thu: "Breathe deeply. Do you sense it? That's the power of the valley.#$e#How does it make you feel?" #!String
+    winter_Thu6: "Breathe deeply. Do you sense it? That's the power of the valley.#$e#Whenever I sense it, it reminds me of my youth. The mountains of Kaer Morhen really impressed me as a child." #!String
+    winter_Fri: "I used to practice with my swords daily, but now I find them gathering dust in the corner.#$e#It's a lot of work.#$e#I'm surprised I haven't had to use them in a long time.$h#$e#I suppose the valley really is a peaceful place." #!String
+    winter_Sat: "I've been doing indoor combat exercises, since it's often too cold to go out.#$e#I'm not as resiliant as I used to be.$s" #!String
+    winter_Sun: "I suppose I should scrub my floorboards some time. I think an algae is starting to form.$s#$e#Do you make time for cleaning?" #!String
+

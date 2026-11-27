@@ -1,0 +1,22 @@
+﻿{
+  "Name": "DialogueNewLine",
+  "Author": "aedenthorn",
+  "Version": "0.2.1",
+  "Description": "Insert newline into dialogue text.",
+  "UniqueID": "aedenthorn.DialogueNewLine",
+  "EntryDll": "DialogueNewLine.dll",
+  "MinimumApiVersion": "3.13.0",
+  "ModUpdater": {
+    "Repository": "StardewValleyMods",
+    "User": "aedenthorn",
+    "Directory": "_releases",
+    "ModFolder": "DialogueNewLine"
+  },
+  "UpdateKeys": [ "Nexus:12175" ],
+  "Dependencies": [
+    {
+      "UniqueID": "Platonymous.ModUpdater",
+      "IsRequired": false
+    }
+  ]
+}

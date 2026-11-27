@@ -1,0 +1,10 @@
+﻿{
+	"Name": "Advanced Auto-Grabber",
+	"Author": "aedenthorn",
+	"Version": "0.1.3",
+	"Description": "Advanced Auto-Grabber.",
+	"UniqueID": "aedenthorn.AdvancedAutoGrabber",
+	"EntryDll": "AdvancedAutoGrabber.dll",
+	"MinimumApiVersion": "4.0.0",
+	"UpdateKeys": [ "Nexus:46127" ]
+}

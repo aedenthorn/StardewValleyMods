@@ -1,0 +1,10 @@
+﻿{
+	"Name": "Buff Framework",
+	"Author": "aedenthorn",
+	"Version": "0.7.0",
+	"Description": "Lets modders trigger buffs using Content Patcher.",
+	"UniqueID": "aedenthorn.BuffFramework",
+	"EntryDll": "BuffFramework.dll",
+	"MinimumApiVersion": "4.1.0",
+	"UpdateKeys": [ "Nexus:17746" ]
+}

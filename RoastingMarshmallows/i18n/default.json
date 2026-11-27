@@ -1,0 +1,14 @@
+{
+	"GMCM.ModEnabled.Name": "Mod Enabled",
+	"GMCM.RoastKey.Name": "Roast Key",
+	"GMCM.RoastFrames.Name": "Roast Frames",
+	"GMCM.RawMarshmallowHealth.Name": "Raw Health",
+	"GMCM.CookedMarshmallowHealth.Name": "Cooked Health",
+	"GMCM.BurntMarshmallowHealth.Name": "Burnt Health",
+	"RawMarshmallow.Name": "Raw Marshmallow",
+	"RawMarshmallow.Description": "An uncooked marshmallow.",
+	"CookedMarshmallow.Name": "Cooked Marshmallow",
+	"CookedMarshmallow.Description": "A perfectly roasted marshmallow.",
+	"BurntMarshmallow.Name": "Burnt Marshmallow",
+	"BurntMarshmallow.Description": "A marshmallow that has been burnt to a crisp."
+}

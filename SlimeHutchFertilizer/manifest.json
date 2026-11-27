@@ -1,0 +1,10 @@
+﻿{
+  "Name": "Slime Hutch Fertilizer",
+  "Author": "aedenthorn",
+  "Version": "0.1.0",
+  "Description": "Slime Hutch Fertilizer.",
+  "UniqueID": "aedenthorn.SlimeHutchFertilizer",
+  "EntryDll": "SlimeHutchFertilizer.dll",
+  "MinimumApiVersion": "4.0.0",
+  "UpdateKeys": [ "Nexus:" ]
+}

@@ -1,0 +1,22 @@
+﻿{
+  "Name": "Custom Spouse Patio",
+  "Author": "aedenthorn",
+  "Version": "0.10.0",
+  "Description": "Lets you create a custom spouse patio.",
+  "UniqueID": "aedenthorn.CustomSpousePatio",
+  "EntryDll": "CustomSpousePatio.dll",
+  "MinimumApiVersion": "3.8.0",
+  "UpdateKeys": ["Nexus:6630"],
+  "ModUpdater": {
+    "Repository": "StardewValleyMods",
+    "User": "aedenthorn",
+    "Directory": "_releases",
+    "ModFolder": "CustomSpousePatio"
+  },
+  "Dependencies": [
+      {
+        "UniqueID": "Platonymous.ModUpdater",
+        "IsRequired": false
+      },
+  ]
+}

@@ -1,0 +1,7 @@
+{
+	// GMCM
+	"GMCM.ModEnabled.Name": "Mod Enabled",
+	"GMCM.OrdinaryHayChance.Name": "Scythe Percentage Chance",
+	"GMCM.GoldHayChance.Name": "Golden Scythe Percentage Chance",
+	"GMCM.IridiumHayChance.Name": "Iridium Scythe Percentage Chance"
+}

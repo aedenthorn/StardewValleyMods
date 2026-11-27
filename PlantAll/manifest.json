@@ -1,0 +1,10 @@
+﻿{
+  "Name": "Plant All",
+  "Author": "aedenthorn",
+  "Version": "0.6.0",
+  "Description": "Plant All.",
+  "UniqueID": "aedenthorn.PlantAll",
+  "EntryDll": "PlantAll.dll",
+  "MinimumApiVersion": "4.0.0",
+  "UpdateKeys": [ "Nexus:10482" ]
+}

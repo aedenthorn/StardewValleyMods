@@ -1,0 +1,28 @@
+{
+	"new-recipe-x": "You learned how to cook {0}!",
+	"cooking-failed": "You failed to cook anything useful...",
+	"ingredients": "Ingredients:",
+	"will-cook-1": "(will cook {0} item)",
+	"will-cook-x": "(will cook {0} items)",
+	"plus-x-more": "and {0} more",
+	"cook": "Cook",
+	"x-of-y": "{0} {1}",
+	"player": "Player",
+	"fridge-x": "Fridge {0}",
+
+	// GMCM
+	"GMCM.ModEnabled.Name": "Mod Enabled",
+	"GMCM.AllowUnknownRecipes.Name": "Allow Unknown Recipes",
+	"GMCM.LearnUnknownRecipes.Name": "Learn Unknown Recipes",
+	"GMCM.CookAllModKey.Name": "Cook All Mod Key",
+	"GMCM.HoldCookedItem.Name": "Hold Cooked Item",
+	"GMCM.ConsumeExtraIngredientsOnSucceed.Name": "Consume Excess On Success",
+	"GMCM.ConsumeIngredientsOnFail.Name": "Consume Ingredients On Fail",
+	"GMCM.GiveTrashOnFail.Name": "Give Trash On Fail",
+	"GMCM.GiveTrashOnFail.Tooltip": "Whether to produce trash on fail. No trash will be produced if the 'Consume Ingredients on Fail' option is disabled.",
+	"GMCM.ShowProductInfo.Name": "Show Product Info",
+	"GMCM.ShowCookTooltip.Name": "Show Cook Tooltip",
+	"GMCM.ShowProductsInTooltip.Name": "Show Products In Tooltip",
+	"GMCM.MaxItemsInTooltip.Name": "Max Items in Tooltip",
+	"GMCM.YOffset.Name": "Height Offset"
+}

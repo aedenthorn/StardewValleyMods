@@ -1,0 +1,23 @@
+DspParameter,DspParameter.Value,DspParameter.MinValue,DspParameter.MaxValue
+"Value:15 MinValue:0 MaxValue:300",15,0,300
+"Value:22 MinValue:0 MaxValue:85",22,0,85
+"Value:6 MinValue:0 MaxValue:30",6,0,30
+"Value:6 MinValue:0 MaxValue:30",6,0,30
+"Value:27 MinValue:0 MaxValue:30",27,0,30
+"Value:27 MinValue:0 MaxValue:30",27,0,30
+"Value:15 MinValue:0 MaxValue:15",15,0,15
+"Value:15 MinValue:0 MaxValue:15",15,0,15
+"Value:8 MinValue:0 MaxValue:12",8,0,12
+"Value:4 MinValue:0 MaxValue:9",4,0,9
+"Value:8 MinValue:0 MaxValue:8",8,0,8
+"Value:6 MinValue:0 MaxValue:14",6,0,14
+"Value:5 MinValue:0 MaxValue:5",5,0,5
+"Value:6198.799 MinValue:20 MaxValue:20000",6198.799,20,20000
+"Value:-10 MinValue:-100 MaxValue:0",-10,-100,0
+"Value:0 MinValue:-100 MaxValue:0",0,-100,0
+"Value:-6.02 MinValue:-100 MaxValue:20",-6.02,-100,20
+"Value:-12 MinValue:-100 MaxValue:20",-12,-100,20
+"Value:4 MinValue:0.1 MaxValue:30",4,0.1,30
+"Value:100 MinValue:0 MaxValue:100",100,0,100
+"Value:100 MinValue:1 MaxValue:100",100,1,100
+"Value:100 MinValue:0 MaxValue:100",100,0,100

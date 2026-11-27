@@ -1,0 +1,11 @@
+{
+  "ModEnabled": "Mod Enabled?",
+  "SameLocation": "Same Location Only?",
+  "SameLocation.Desc": "Only play with NPCs in the same location as you",
+  "MinHearts": "Min Hearts To Invite",
+  "coop-game": "Co-op Game",
+  "which-npc": "Choose a Partner:",
+  "end": "We beat the level!",
+  "endboss": "Yes! We beat them!",
+  "endgame": "Wow! We beat the game!"
+}

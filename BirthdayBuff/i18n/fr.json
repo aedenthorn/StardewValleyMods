@@ -1,0 +1,16 @@
+{
+  "GMCM_Option_ModEnabled_Name": "Activer le Mod",
+  "GMCM_Option_ShowSeparate_Name": "Afficher séparément",
+  "GMCM_Option_Sound_Name": "Son",
+  "GMCM_Option_Farming_Name": "Agriculture",
+  "GMCM_Option_Fishing_Name": "Pêche",
+  "GMCM_Option_Mining_Name": "Extraction minière",
+  "GMCM_Option_Luck_Name": "Chance",
+  "GMCM_Option_Foraging_Name": "Cueillette",
+  "GMCM_Option_MaxStamina_Name": "Énergie max",
+  "GMCM_Option_MagneticRadius_Name": "Rayon magnétique",
+  "GMCM_Option_Speed_Name": "Vitesse",
+  "GMCM_Option_Defense_Name": "Défense",
+  "GMCM_Option_Attack_Name": "Attaque",
+  "birthday-buff": "Bonus d'anniversaire"
+}

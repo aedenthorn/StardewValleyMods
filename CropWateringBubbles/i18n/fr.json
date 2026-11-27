@@ -1,0 +1,10 @@
+{
+	"GMCM.ModEnabled.Name": "Activer le Mod",
+	"GMCM.OpacityPercent.Name": "Opacité (en %)",
+	"GMCM.SizePercent.Name": "Taille (en %)",
+	"GMCM.PressKeys.Name": "Touches d'activation",
+	"GMCM.RepeatInterval.Name": "Intervalle de répétition",
+	"GMCM.RequireKeyPress.Name": "Nécessite les touches d'activation",
+	"GMCM.IncludeGiantable.Name": "Afficher pour les cultures géantes",
+	"GMCM.OnlyWhenWatering.Name": "Uniquement lors de l'arrosage"
+}

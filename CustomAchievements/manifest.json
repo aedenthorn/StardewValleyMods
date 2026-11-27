@@ -1,0 +1,12 @@
+﻿{
+	"Name": "Custom Achievements",
+	"Author": "aedenthorn",
+	"Version": "0.4.1",
+	"Description": "Custom achievements framework.",
+	"UniqueID": "aedenthorn.CustomAchievements",
+	"EntryDll": "CustomAchievements.dll",
+	"MinimumApiVersion": "4.0.0",
+	"UpdateKeys": [
+		"Nexus:10047"
+	]
+}

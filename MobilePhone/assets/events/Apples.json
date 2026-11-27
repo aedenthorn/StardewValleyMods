@@ -1,0 +1,46 @@
+{
+  "events": [
+    {
+      "name": "Apples-event-0",
+      "location": "custom_forestwest",
+      "eventId": "7776002",
+      "night": false,
+      "mail": null
+    },
+    {
+      "name": "Apples-event-1",
+      "location": "custom_forestwest",
+      "eventId": "7776003",
+      "night": false,
+      "mail": null
+    },
+    {
+      "name": "Apples-event-2",
+      "location": "farm",
+      "eventId": "7776004",
+      "night": false,
+      "mail": null
+    },
+    {
+      "name": "Apples-event-3",
+      "location": "Custom_AuroraVineyard",
+      "eventId": "7776005",
+      "night": false,
+      "mail": null
+    },
+    {
+      "name": "Apples-event-4",
+      "location": "custom_forestwest",
+      "eventId": "7776006",
+      "night": false,
+      "mail": null
+    },
+    {
+      "name": "Apples-event-5",
+      "location": "Custom_AuroraVineyard",
+      "eventId": "7776007",
+      "night": false,
+      "mail": null
+    }
+  ]
+}

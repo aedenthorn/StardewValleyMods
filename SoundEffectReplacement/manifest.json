@@ -1,0 +1,22 @@
+﻿{
+  "Name": "Sound Effect Replacement",
+  "Author": "aedenthorn",
+  "Version": "0.2.0",
+  "Description": "Sound Effect Replacement.",
+  "UniqueID": "aedenthorn.SoundEffectReplacement",
+  "EntryDll": "SoundEffectReplacement.dll",
+  "MinimumApiVersion": "3.13.0",
+  "ModUpdater": {
+    "Repository": "StardewValleyMods",
+    "User": "aedenthorn",
+    "Directory": "_releases",
+    "ModFolder": "SoundEffectReplacement"
+  },
+  "UpdateKeys": [ "Nexus:10232" ],
+  "Dependencies": [
+    {
+      "UniqueID": "Platonymous.ModUpdater",
+      "IsRequired": false
+    }
+  ]
+}

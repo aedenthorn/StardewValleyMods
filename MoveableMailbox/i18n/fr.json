@@ -1,0 +1,10 @@
+{
+	"item.mailbox.name": "Boîte aux lettres",
+	"item.mailbox.description": "Une boîte aux lettres pour recevoir votre courrier.",
+
+	// Dialogue box
+	"dialoguebox.message": "Voulez-vous utiliser cette boîte aux lettres pour recevoir le courrier ?",
+
+	// GMCM
+	"GMCM.MultipleMailboxes.Name": "Boîtes aux lettres multiples"
+}

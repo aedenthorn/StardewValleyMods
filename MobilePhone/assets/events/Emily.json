@@ -1,0 +1,46 @@
+{
+  "events": [
+    {
+      "name": "Emily-event-0",
+      "location": "HaleyHouse",
+      "eventId": "471942",
+      "night": false,
+      "mail": null
+    },
+    {
+      "name": "Emily-event-1",
+      "location": "Town",
+      "eventId": "463391",
+      "night": false,
+      "mail": null
+    },
+    {
+      "name": "Emily-event-2",
+      "location": "HaleyHouse",
+      "eventId": "917409",
+      "night": false,
+      "mail": null
+    },
+    {
+      "name": "Emily-event-3",
+      "location": "ManorHouse",
+      "eventId": "2123243",
+      "night": false,
+      "mail": null
+    },
+    {
+      "name": "Emily-event-4",
+      "location": "Woods",
+      "eventId": "2123343",
+      "night": true,
+      "mail": null
+    },
+    {
+      "name": "Emily-event-5",
+      "location": "FarmHouse",
+      "eventId": "3917601",
+      "night": true,
+      "mail": null
+    }
+  ]
+}

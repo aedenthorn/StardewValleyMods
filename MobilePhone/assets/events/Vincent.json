@@ -1,0 +1,11 @@
+{
+  "events": [
+    {
+      "name": "Vincent-event-0",
+      "location": "Forest",
+      "eventId": "3910979",
+      "night": false,
+      "mail": null
+    }
+  ]
+}

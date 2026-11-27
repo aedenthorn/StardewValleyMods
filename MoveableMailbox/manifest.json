@@ -1,0 +1,10 @@
+﻿{
+	"Name": "Moveable Mailbox",
+	"Author": "aedenthorn",
+	"Version": "0.2.1",
+	"Description": "Converts the farm's mailbox into a moveable object that you can place anywhere on your farm.",
+	"UniqueID": "aedenthorn.MoveableMailbox",
+	"EntryDll": "MoveableMailbox.dll",
+	"MinimumApiVersion": "4.0.0",
+	"UpdateKeys": [ "Nexus:7834" ]
+}

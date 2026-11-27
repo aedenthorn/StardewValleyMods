@@ -1,0 +1,10 @@
+﻿{
+  "Name": "Quotes",
+  "Author": "aedenthorn",
+  "Version": "0.7.1",
+  "Description": "Displays a quote of the day.",
+  "UniqueID": "aedenthorn.Quotes",
+  "EntryDll": "Quotes.dll",
+  "MinimumApiVersion": "4.0.0",
+  "UpdateKeys": [ "Nexus:6503" ]
+}

@@ -1,0 +1,10 @@
+﻿{
+  "Name": "Door Furniture",
+  "Author": "aedenthorn",
+  "Version": "0.3.0",
+  "Description": "Door Furniture.",
+  "UniqueID": "aedenthorn.DoorFurniture",
+  "EntryDll": "DoorFurniture.dll",
+  "MinimumApiVersion": "4.0.0",
+  "UpdateKeys": [ "Nexus:46789" ]
+}

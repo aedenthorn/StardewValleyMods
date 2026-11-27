@@ -1,0 +1,9 @@
+{
+  // Mod Options.
+  "Mod.Options.IsEnabled": "Мод активирован?",
+
+  "Mod.Options.InBedOnly.Name": "Только в кровати?",
+  "Mod.Options.InBedOnly.Description": "Позволяет выбирать только тех супругов, что в данный момент спят.",
+
+  "Mod.Options.MinHearts.Name": "Мин. сердец для приглашения"
+}

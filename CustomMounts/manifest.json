@@ -1,0 +1,10 @@
+﻿{
+	"Name": "CustomMounts",
+	"Author": "aedenthorn",
+	"Version": "0.6.4",
+	"Description": "Custom Mounts.",
+	"UniqueID": "aedenthorn.CustomMounts",
+	"EntryDll": "CustomMounts.dll",
+	"MinimumApiVersion": "4.1.0",
+	"UpdateKeys": [ "Nexus:35810" ]
+}

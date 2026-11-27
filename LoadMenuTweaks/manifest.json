@@ -1,0 +1,22 @@
+﻿{
+  "Name": "LoadMenuTweaks",
+  "Author": "aedenthorn",
+  "Version": "0.1.0",
+  "Description": "Load Menu Tweaks.",
+  "UniqueID": "aedenthorn.LoadMenuTweaks",
+  "EntryDll": "LoadMenuTweaks.dll",
+  "MinimumApiVersion": "3.13.0",
+  "ModUpdater": {
+    "Repository": "StardewValleyMods",
+    "User": "aedenthorn",
+    "Directory": "_releases",
+    "ModFolder": "LoadMenuTweaks"
+  },
+  "UpdateKeys": [ "Nexus:" ],
+  "Dependencies": [
+    {
+      "UniqueID": "Platonymous.ModUpdater",
+      "IsRequired": false
+    }
+  ]
+}

@@ -1,0 +1,122 @@
+{
+  "Format": "2.9.0",
+  "Changes": [
+    {
+      "LogName": "Angry Roger Texture Load",
+      "Action": "Load",
+      "Target": "{{ModId}}/CustomAngryRoger, {{ModId}}/CustomDino, {{ModId}}/CustomFire, {{ModId}}/Spiker",
+      "FromFile": "assets/{{TargetWithoutPath}}.png"
+    },
+    {
+      "LogName": "Custom Monster Dictionary",
+      "Action": "EditData",
+      "Target": "aedenthorn.CustomMonsters/dict",
+      "Entries": {
+        "MyCustomMonster": {
+          "Type": "DinoMonster",
+          "Parameters": "position",
+          "MoveSound": "squid_hit",
+          "ProjectileSound": "yoba",
+          "Sprite": "{{ModId}}/CustomDino",
+          "ProjectileSprite": "{{ModId}}/CustomFire",
+          "Drops": [
+            {
+              "ItemId": "(O)74",
+              "MinQuantity": 1,
+              "MaxQuantity": 4,
+              "Chance": 10
+            }
+          ]
+        },
+        "MyCustomMonster2": {
+          "Type": "AngryRoger",
+          "Parameters": "position",
+          "Sprite": "Characters/Monsters/Angry Roger",
+          "MoveSound": "squid_hit",
+          "Drops": [
+            {
+              "ItemId": "(O)74",
+              "MinQuantity": 1,
+              "MaxQuantity": 4,
+              "Chance": 10
+            }
+          ]
+        },
+        "MyCustomMonster3": {
+          "Type": "Spiker",
+          "Parameters": "position,facing",
+          "Facing": 1,
+          "MoveSound": "squid_hit",
+          "MoveSound2": "yoba",
+          "Sprite": "{{ModId}}/Spiker",
+          "Vulnerable": true,
+          "Drops": [
+            {
+              "ItemId": "(O)74",
+              "MinQuantity": 1,
+              "MaxQuantity": 4,
+              "Chance": 10
+            }
+          ]
+        },
+        "MyCustomMonster4": {
+          "Type": "BigSlime",
+          "Parameters": "position,level",
+          "MoveSound": "squid_hit",
+          "HeldItem": [
+            {
+              "ItemId": "(O)74",
+              "MinQuantity": 1,
+              "MaxQuantity": 4,
+              "Chance": 100
+            }
+          ],
+          "MineSpawns": [
+            {
+              "MinLevel": 100,
+              "MaxLevel": 120,
+              "Chance": 10
+            }
+          ]
+        }
+      }
+    },
+    {
+      "LogName": "Monster Spawn Test",
+      "Action": "EditMap",
+      "Target": "Maps/Town",
+      "MapTiles": [
+        {
+          "Position": {
+            "X": 28,
+            "Y": 67
+          },
+          "Layer": "Back",
+          "SetProperties": {
+            "DMT/monster_Once_Action": "MyCustomMonster 1792 4288"
+          }
+        },
+        {
+          "Position": {
+            "X": 29,
+            "Y": 67
+          },
+          "Layer": "Back",
+          "SetProperties": {
+            "DMT/monster_Once_Action": "MyCustomMonster2 1792 4288"
+          }
+        },
+        {
+          "Position": {
+            "X": 30,
+            "Y": 67
+          },
+          "Layer": "Back",
+          "SetProperties": {
+            "DMT/monster_Once_Action": "MyCustomMonster3 1792 4288"
+          }
+        }
+      ]
+    }
+  ]
+}

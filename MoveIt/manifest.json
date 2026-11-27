@@ -1,0 +1,10 @@
+﻿{
+  "Name": "MoveIt",
+  "Author": "aedenthorn",
+  "Version": "0.4.0",
+  "Description": "MoveIt.",
+  "UniqueID": "aedenthorn.MoveIt",
+  "EntryDll": "MoveIt.dll",
+  "MinimumApiVersion": "4.0.0",
+  "UpdateKeys": [ "Nexus:15163" ]
+}

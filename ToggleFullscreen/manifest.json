@@ -1,0 +1,22 @@
+﻿{
+  "Name": "Toggle FullScreen",
+  "Author": "aedenthorn",
+  "Version": "0.1.0",
+  "Description": "Toggle FullScreen.",
+  "UniqueID": "aedenthorn.ToggleFullScreen",
+  "EntryDll": "ToggleFullScreen.dll",
+  "MinimumApiVersion": "3.15.0",
+  "ModUpdater": {
+    "Repository": "StardewValleyMods",
+    "User": "aedenthorn",
+    "Directory": "_releases",
+    "ModFolder": "ToggleFullScreen"
+  },
+  "UpdateKeys": [ "Nexus:" ],
+  "Dependencies": [
+    {
+      "UniqueID": "Platonymous.ModUpdater",
+      "IsRequired": false
+    }
+  ]
+}

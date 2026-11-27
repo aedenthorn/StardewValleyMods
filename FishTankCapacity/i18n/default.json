@@ -1,0 +1,27 @@
+{
+  "choose-seasoning": "Choose a seasoning to add",
+  "none": "None",
+  "silver": "Silver Quality",
+  "gold": "Gold Quality",
+  "iridium": "Iridium Quality",
+  "combat": "Combat +{0}",
+  "farming": "Farming +{0}",
+  "fishing": "Fishing +{0}",
+  "mining": "Mining +{0}",
+  "luck": "Luck +{0}",
+  "foraging": "Foraging +{0}",
+  "maxstamina": "Max Stamina +{0}",
+  "magneticradius": "Magnetic Radius +{0}",
+  "speed": "Speed +{0}",
+  "defense": "Defense +{0}",
+  "attack": "Attack +{0}",
+  "attackmultiplier": "Attack Multiplier +{0}",
+  "immunity": "Immunity +{0}",
+  "knockback": "Knockback +{0}",
+  "weaponspeed": "Weapon Speed Mult +{0}",
+  "critchance": "Crit Chance Mult +{0}",
+  "critpower": "Crit Power Mult +{0}",
+  "weaponprecision": "Weapon Precision Mult +{0}"
+}
+
+

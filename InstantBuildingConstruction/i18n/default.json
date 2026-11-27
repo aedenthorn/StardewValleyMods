@@ -1,0 +1,8 @@
+{
+	// GMCM
+	"GMCM.ModEnabled.Name": "Mod Enabled",
+	"GMCM.InstantBuildingConstructionAndUpgrade.Name": "Instant Building Construction and Upgrade",
+	"GMCM.InstantFarmhouseUpgrade.Name": "Instant Farmhouse Upgrade",
+	"GMCM.InstantCommunityUpgrade.Name": "Instant Community Upgrade",
+	"GMCM.FreeConstructionAndUpgrade.Name": "Free Construction and Upgrade"
+}

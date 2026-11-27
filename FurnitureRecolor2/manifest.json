@@ -1,0 +1,10 @@
+﻿{
+  "Name": "Furniture Recolor 2",
+  "Author": "aedenthorn",
+  "Version": "2.0.0",
+  "Description": "Furniture Recolor 2.",
+  "UniqueID": "aedenthorn.FurnitureRecolor2",
+  "EntryDll": "FurnitureRecolor2.dll",
+  "MinimumApiVersion": "4.0.0",
+  "UpdateKeys": [ "Nexus:" ]
+}

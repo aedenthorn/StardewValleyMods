@@ -1,0 +1,16 @@
+﻿{
+  "Name": "Terrarium",
+  "Author": "aedenthorn",
+  "Version": "0.1.2",
+  "Description": "Adds a craftable terrarium.",
+  "UniqueID": "aedenthorn.Terrarium",
+  "EntryDll": "Terrarium.dll",
+  "MinimumApiVersion": "3.8.0",
+  "UpdateKeys": ["Nexus:8031"],
+  "ModUpdater": {
+    "Repository": "StardewValleyMods",
+    "User": "aedenthorn",
+    "Directory": "_releases",
+    "ModFolder": "ATerrarium"
+  },
+}

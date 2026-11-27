@@ -1,0 +1,10 @@
+﻿{
+  "Name": "Mailbox Menu",
+  "Author": "aedenthorn",
+  "Version": "0.5.3",
+  "Description": "Mailbox Menu.",
+  "UniqueID": "aedenthorn.MailboxMenu",
+  "EntryDll": "MailboxMenu.dll",
+  "MinimumApiVersion": "4.0.0",
+  "UpdateKeys": [ "Nexus:14439" ]
+}

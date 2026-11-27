@@ -1,0 +1,10 @@
+﻿{
+  "Name": "Immersive Sprinklers",
+  "Author": "aedenthorn",
+  "Version": "1.4.0",
+  "Description": "Immersive Sprinklers.",
+  "UniqueID": "aedenthorn.ImmersiveSprinklers",
+  "EntryDll": "ImmersiveSprinklers.dll",
+  "MinimumApiVersion": "4.0.0",
+  "UpdateKeys": [ "Nexus:15239" ]
+}

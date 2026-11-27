@@ -1,0 +1,10 @@
+﻿{
+  "Name": "Immersive Sprinklers & Scarecrows",
+  "Author": "aedenthorn",
+  "Version": "0.1.0",
+  "Description": "Immersive sprinklers & scarecrows.",
+  "UniqueID": "aedenthorn.ImmersiveSprinklersScarecrows",
+  "EntryDll": "ImmersiveSprinklersScarecrows.dll",
+  "MinimumApiVersion": "4.0.0",
+  "UpdateKeys": [ "Nexus:" ]
+}

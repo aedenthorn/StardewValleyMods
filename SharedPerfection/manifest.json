@@ -1,0 +1,10 @@
+﻿{
+	"Name": "Shared Perfection",
+	"Author": "aedenthorn",
+	"Version": "0.1.0",
+	"Description": "Shared Perfection.",
+	"UniqueID": "aedenthorn.SharedPerfection",
+	"EntryDll": "SharedPerfection.dll",
+	"MinimumApiVersion": "4.0.0",
+	"UpdateKeys": [ "Nexus:45671" ]
+}

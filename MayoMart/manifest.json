@@ -1,0 +1,12 @@
+﻿{
+	"Name": "Mayo Mart",
+	"Author": "aedenthorn",
+	"Version": "0.2.0",
+	"Description": "Replaces the terrible Joja Corporation with the more benevolent Mayo Corporation.",
+	"UniqueID": "aedenthorn.MayoMart",
+	"EntryDll": "MayoMart.dll",
+	"MinimumApiVersion": "4.1.0",
+	"UpdateKeys": [
+		"Nexus:17175"
+	]
+}

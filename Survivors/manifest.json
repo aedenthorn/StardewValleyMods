@@ -1,0 +1,10 @@
+﻿{
+  "Name": "Stardew Survivors",
+  "Author": "aedenthorn",
+  "Version": "0.7.0",
+  "Description": "Sorry, but the vampire is in another coffin.",
+  "UniqueID": "aedenthorn.Survivors",
+  "EntryDll": "Survivors.dll",
+  "MinimumApiVersion": "4.0.0",
+  "UpdateKeys": [ "Nexus:" ]
+}

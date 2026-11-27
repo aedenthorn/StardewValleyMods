@@ -1,0 +1,46 @@
+{
+  "events": [
+    {
+      "name": "Victor-event-0",
+      "location": "Custom_JenkinsHouse",
+      "eventId": "2000000",
+      "night": false,
+      "mail": null
+    },
+    {
+      "name": "Victor-event-1",
+      "location": "Custom_ShearwaterBridge",
+      "eventId": "2000050",
+      "night": false,
+      "mail": null
+    },
+    {
+      "name": "Victor-event-2",
+      "location": "Town",
+      "eventId": "2000001",
+      "night": false,
+      "mail": null
+    },
+    {
+      "name": "Victor-event-3",
+      "location": "Town",
+      "eventId": "2000002",
+      "night": false,
+      "mail": null
+    },
+    {
+      "name": "Victor-event-4",
+      "location": "Custom_JenkinsHouse",
+      "eventId": "2000003",
+      "night": false,
+      "mail": null
+    },
+    {
+      "name": "Victor-event-5",
+      "location": "Town",
+      "eventId": "2000004",
+      "night": false,
+      "mail": null
+    }
+  ]
+}

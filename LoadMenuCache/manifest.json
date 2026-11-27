@@ -1,0 +1,10 @@
+﻿{
+  "Name": "Load Menu Cache",
+  "Author": "aedenthorn",
+  "Version": "0.1.0",
+  "Description": "Load Menu Cache.",
+  "UniqueID": "aedenthorn.LoadMenuCache",
+  "EntryDll": "LoadMenuCache.dll",
+  "MinimumApiVersion": "4.0.0",
+  "UpdateKeys": [ "Nexus:" ]
+}

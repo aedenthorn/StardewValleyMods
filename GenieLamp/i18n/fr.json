@@ -1,0 +1,10 @@
+{
+	"GMCM.ModEnabled.Name": "Activer le Mod",
+	"GMCM.LampItem.Name": "Objet lampe de génie",
+	"GMCM.WishesPerItem.Name": "Nombre de vœux",
+	"GMCM.MenuSound.Name": "Son d'ouverture du menu",
+	"GMCM.WishSound.Name": "Son de réalisation du vœu",
+	"WishMenuTitleSingular": "Que souhaitez-vous ? ({0} vœu restant)",
+	"WishMenuTitlePlural": "Que souhaitez-vous ? ({0} vœux restants)",
+	"NoMoreWishes": "Cet objet ne peut plus réaliser de vœux !"
+}

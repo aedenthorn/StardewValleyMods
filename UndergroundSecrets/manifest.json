@@ -1,0 +1,16 @@
+﻿{
+  "Name": "Underground Secrets",
+  "Author": "aedenthorn",
+  "Version": "0.6.0",
+  "Description": "To dungeons deep and caverns old...",
+  "UniqueID": "aedenthorn.UndergroundSecrets",
+  "EntryDll": "UndergroundSecrets.dll",
+  "MinimumApiVersion": "3.8.0",
+  "UpdateKeys": ["Nexus:6597"],
+  "ModUpdater": {
+    "Repository": "StardewValleyMods",
+    "User": "aedenthorn",
+    "Directory": "_releases",
+    "ModFolder": "UndergroundSecrets"
+  },
+}

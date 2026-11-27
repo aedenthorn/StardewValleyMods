@@ -1,0 +1,10 @@
+﻿{
+  "Name": "Custom Picture Frames",
+  "Author": "aedenthorn",
+  "Version": "0.5.0",
+  "Description": "Custom Picture Frames.",
+  "UniqueID": "aedenthorn.CustomPictureFrames",
+  "EntryDll": "CustomPictureFrames.dll",
+  "MinimumApiVersion": "4.0.0",
+  "UpdateKeys": [ "Nexus:10704" ]
+}

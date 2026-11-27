@@ -1,0 +1,10 @@
+﻿{
+	"Name": "PortableBasements",
+	"Author": "aedenthorn",
+	"Version": "0.2.1",
+	"Description": "Portable basements.",
+	"UniqueID": "aedenthorn.PortableBasements",
+	"EntryDll": "PortableBasements.dll",
+	"MinimumApiVersion": "4.1.0",
+	"UpdateKeys": [ "Nexus:" ]
+}

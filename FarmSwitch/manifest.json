@@ -1,0 +1,10 @@
+﻿{
+  "Name": "Farm Switch",
+  "Author": "aedenthorn",
+  "Version": "0.1.0",
+  "Description": "Farm Switch.",
+  "UniqueID": "aedenthorn.FarmSwitch",
+  "EntryDll": "FarmSwitch.dll",
+  "MinimumApiVersion": "4.0.0",
+  "UpdateKeys": [ "Nexus:" ]
+}

@@ -1,0 +1,19 @@
+{
+	"welcome": "What do you want to do with {{thingName}}?",
+	"pickup": "Pick up",
+	"rename": "Rename",
+	"grow": "Grow",
+	"water": "Water",
+	"revive": "Revive",
+	"move": "Move",
+	"kill": "Kill",
+	"remove": "Remove",
+
+	"what-name": "What do you want to rename it to?",
+	"confirm-move": "Move in which direction?",
+	"confirm-remove": "Really remove it from the game?",
+
+	// GMCM
+	"GMCM.ModEnabled.Name": "Mod Enabled",
+	"GMCM.WizardKey.Name": "Wizard Key"
+}

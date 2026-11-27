@@ -1,0 +1,10 @@
+{
+  // GMCM
+  "GMCM_Option_ModEnabled_Name": "Activer le Mod",
+  "GMCM_Option_AllowSeedShopWed_Name": "Autoriser l'entrée dans le magasin général de Pierre le mercredi",
+  "GMCM_Option_AllowOutsideTime_Name": "Autoriser l'entrée en dehors des horaires d'ouverture",
+  "GMCM_Option_AllowStrangerHomeEntry_Name": "Autoriser l'entrée dans les maisons en tant qu'étranger",
+  "GMCM_Option_AllowStrangerRoomEntry_Name": "Autoriser l'entrée dans les chambres en tant qu'étranger",
+  "GMCM_Option_AllowAdventureGuildEntry_Name": "Autoriser l'entrée dans la guilde des aventuriers sans être membre",
+  "GMCM_Option_IgnoreEvents_Name": "Ignorer les événements"
+}

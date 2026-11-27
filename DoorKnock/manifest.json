@@ -1,0 +1,10 @@
+﻿{
+  "Name": "Door Knock",
+  "Author": "aedenthorn",
+  "Version": "0.4.3",
+  "Description": "Door Knock.",
+  "UniqueID": "aedenthorn.DoorKnock",
+  "EntryDll": "DoorKnock.dll",
+  "MinimumApiVersion": "4.0.0",
+  "UpdateKeys": [ "Nexus:46880" ]
+}

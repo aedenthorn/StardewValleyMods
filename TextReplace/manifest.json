@@ -1,0 +1,10 @@
+﻿{
+  "Name": "TextReplace",
+  "Author": "aedenthorn",
+  "Version": "0.1.1",
+  "Description": "TextReplace.",
+  "UniqueID": "aedenthorn.TextReplace",
+  "EntryDll": "TextReplace.dll",
+  "MinimumApiVersion": "4.0.0",
+  "UpdateKeys": [ "Nexus:47339" ]
+}

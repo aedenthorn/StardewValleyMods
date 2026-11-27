@@ -1,0 +1,9 @@
+﻿{
+  "Name": "Longer Seasons",
+  "Author": "aedenthorn",
+  "Version": "0.4.0",
+  "Description": "Longer seasons.",
+  "UniqueID": "aedenthorn.LongerSeasons",
+  "EntryDll": "LongerSeasons.dll",
+  "MinimumApiVersion": "4.1.0"
+}

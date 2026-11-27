@@ -1,0 +1,10 @@
+﻿{
+  "Name": "Nozzle and Enricher",
+  "Author": "aedenthorn",
+  "Version": "0.2.1",
+  "Description": "Nozzle and Enricher.",
+  "UniqueID": "aedenthorn.NozzleAndEnricher",
+  "EntryDll": "NozzleAndEnricher.dll",
+  "MinimumApiVersion": "4.0.0",
+  "UpdateKeys": [ "Nexus:48642" ]
+}

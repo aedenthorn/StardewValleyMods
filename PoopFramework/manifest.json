@@ -1,0 +1,10 @@
+﻿{
+  "Name": "Poop Framework",
+  "Author": "aedenthorn",
+  "Version": "0.4.2",
+  "Description": "Poop Framework.",
+  "UniqueID": "aedenthorn.PoopFramework",
+  "EntryDll": "PoopFramework.dll",
+  "MinimumApiVersion": "4.0.0",
+  "UpdateKeys": [ "Nexus:17152" ]
+}

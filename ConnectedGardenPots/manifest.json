@@ -1,0 +1,10 @@
+﻿{
+	"Name": "Connected Garden Pots",
+	"Author": "aedenthorn",
+	"Version": "0.1.1",
+	"Description": "Draws adjacent garden pots connected as one big garden plot.",
+	"UniqueID": "aedenthorn.ConnectedGardenPots",
+	"EntryDll": "ConnectedGardenPots.dll",
+	"MinimumApiVersion": "4.1.0",
+	"UpdateKeys": [ "Nexus:11411" ]
+}

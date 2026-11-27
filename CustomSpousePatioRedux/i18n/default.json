@@ -1,0 +1,32 @@
+{
+  "welcome": "Welcome to the Custom Spouse Patio Wizard. What do you want to do?",
+
+  "new-patio": "Add a patio at {0},{1}",
+  "new-patio-which": "Create spouse patio for which spouse?",
+  "new-patio-use-tiles": "Use which default tiles?",
+  "created-patio": "Created spouse patio at {0},{1}!",
+
+  "move-patio": "Move existing spouse patio",
+  "move-patio-which": "Move spouse patio of which spouse?",
+  "move-patio-which-way": "Move spouse patio where?",
+  "cursor-location": "To cursor location ({0},{1})",
+  "up": "Up",
+  "down": "Down",
+  "left": "Left",
+  "right": "Right",
+  "moved-patio": "Moved spouse patio for {0}!",
+  "not-moved-patio": "Couldn't move spouse patio for {0}! It would be off the map!",
+  "cursor-out-of-bounds": "Couldn't create spouse patio at {0},{1}! It would be off the map!",
+
+  "remove-patio": "Remove existing spouse patio",
+  "remove-patio-which": "Remove spouse patio of which spouse?",
+  "removed-patio": "Removed spouse patio for {0}!",
+  "not-removed-patio": "Couldn't remove spouse patio for {0}! Probably their patio is in a content pack.",
+
+  "list-patios": "List existing custom patios",
+  "patios-exist-for": "Custom patios exist for {0}.",
+
+  "reload-patios": "Reload custom patios",
+  "reloaded-patios": "Reloaded {0} spouse patios!",
+  "cancel": "Cancel"
+}

@@ -1,0 +1,22 @@
+{
+	"GMCM.ModEnabled.Name": "Mod Enabled",
+	"GMCM.ShowQuestMarkers.Name": "Quest Markers",
+	"GMCM.ShowQuestDetails.Name": "Quest Details",
+	"GMCM.RebuildSocializeQuest.Name": "Rebuild Socialize Quest",
+	"left-to-greet": "Left: {0}",
+	"fish-everywhere": "{0} can found everywhere.",
+	"fish-location": "{0} can be found in {1}.",
+	"fish-sunny": "{0} can only be caught when it is sunny out.",
+	"fish-rainy": "{0} can only be caught when it is rainy out.",
+	"fish-hours": "{0} can only be caught between {1} and {2}.",
+	"x-crafting-recipe-known": "{0} can be crafted in the crafting menu.",
+	"x-crafting-recipe-unknown": "{0} can be crafted in the crafting menu once you learn the recipe.",
+	"x-y-skill-crafting": "You will learn the recipe once you reach level {0} in {1}.",
+	"x-y-friendship-crafting": "You will learn the recipe once you reach friendship {0} with {1}.",
+	"special-crafting": "There are special requirements for learning the recipe for {0}.",
+	"x-cooking-recipe-known": "{0} can be made at a cooking station.",
+	"x-cooking-recipe-unknown": "{0} can be made at a cooking station once you learn the recipe.",
+	"x-y-skill": "You will learn the recipe once you reach level {0} in {1}.",
+	"x-y-friendship": "You will learn the recipe once you reach friendship level {0} with {1}.",
+	"x-special-recipe": "There are special requirements for learning the recipe for {0}."
+}

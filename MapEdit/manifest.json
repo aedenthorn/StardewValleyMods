@@ -1,0 +1,10 @@
+﻿{
+  "Name": "Map Editor Extended",
+  "Author": "aedenthorn",
+  "Version": "1.4.2",
+  "Description": "Enables in-game editing of map tiles.",
+  "UniqueID": "aedenthorn.MapEdit",
+  "EntryDll": "MapEdit.dll",
+  "MinimumApiVersion": "4.0.0",
+  "UpdateKeys": [ "Nexus:18387" ]
+}

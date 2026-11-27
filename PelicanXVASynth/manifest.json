@@ -1,0 +1,22 @@
+﻿{
+  "Name": "Pelican xVASynth",
+  "Author": "aedenthorn",
+  "Version": "0.1.0",
+  "Description": "xVASynth TTS",
+  "UniqueID": "aedenthorn.PelicanXVASynth",
+  "EntryDll": "PelicanXVASynth.dll",
+  "MinimumApiVersion": "3.13.0",
+  "ModUpdater": {
+    "Repository": "StardewValleyMods",
+    "User": "aedenthorn",
+    "Directory": "_releases",
+    "ModFolder": "PelicanXVASynth"
+  },
+  "UpdateKeys": [ "Nexus:10250" ],
+  "Dependencies": [
+    {
+      "UniqueID": "Platonymous.ModUpdater",
+      "IsRequired": false
+    }
+  ]
+}

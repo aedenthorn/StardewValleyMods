@@ -1,0 +1,14 @@
+{
+	"ModEnabled": "Mod Enabled",
+	"MaxDailyGrowth": "Max Daily Growth",
+	"GrowChance": "Grow Chance",
+	"GrowChance.Desc": "Per day.",
+	"AllGrassIsLawn": "All Grass Is Lawn",
+	"AllGrassIsLawn.Desc": "Treat all grass starter grass as lawn",
+	"ReturnGrassStarter": "Return Grass Starter",
+	"ProtectNonLawn": "Protect Non-Lawn",
+	"ProtectNonLawn.Desc": "Prevent destruction of non-lawn grass starter grass.",
+	"ModKey": "Mod Key",
+	"TrufflesInGrass": "Dig In Grass",
+	"TrufflesInGrass.Desc": "Allow pigs to dig up truffles in grass."
+}

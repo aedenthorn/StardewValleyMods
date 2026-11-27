@@ -1,0 +1,10 @@
+﻿{
+  "Name": "Crop Quality",
+  "Author": "aedenthorn",
+  "Version": "0.2.0",
+  "Description": "Crop Quality.",
+  "UniqueID": "aedenthorn.CropQuality",
+  "EntryDll": "CropQuality.dll",
+  "MinimumApiVersion": "4.0.0",
+  "UpdateKeys": [ "Nexus:47141" ]
+}

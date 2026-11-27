@@ -1,0 +1,10 @@
+﻿{
+	"Name": "Advanced Flute Blocks",
+	"Author": "aedenthorn",
+	"Version": "0.2.1",
+	"Description": "Provides advanced control over flute blocks.",
+	"UniqueID": "aedenthorn.AdvancedFluteBlocks",
+	"EntryDll": "AdvancedFluteBlocks.dll",
+	"MinimumApiVersion": "4.0.0",
+	"UpdateKeys": [ "Nexus:10934" ]
+}

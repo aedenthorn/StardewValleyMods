@@ -1,0 +1,22 @@
+﻿{
+  "Name": "Dino Form",
+  "Author": "aedenthorn",
+  "Version": "0.1.0",
+  "Description": "Bat Form.",
+  "UniqueID": "aedenthorn.DinoForm",
+  "EntryDll": "DinoForm.dll",
+  "MinimumApiVersion": "3.15.0",
+  "ModUpdater": {
+    "Repository": "StardewValleyMods",
+    "User": "aedenthorn",
+    "Directory": "_releases",
+    "ModFolder": "DinoForm"
+  },
+  "Dependencies": [
+    {
+      "UniqueID": "aedenthorn.BuffFramework",
+      "IsRequired": true
+    }
+  ],
+  "UpdateKeys": [ "Nexus:18244" ]
+}

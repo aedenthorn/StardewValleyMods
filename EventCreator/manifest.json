@@ -1,0 +1,10 @@
+﻿{
+  "Name": "Event Creator",
+  "Author": "aedenthorn",
+  "Version": "0.1.0",
+  "Description": "Event Creator.",
+  "UniqueID": "aedenthorn.EventCreator",
+  "EntryDll": "EventCreator.dll",
+  "MinimumApiVersion": "4.0.0",
+  "UpdateKeys": [ "Nexus:" ]
+}

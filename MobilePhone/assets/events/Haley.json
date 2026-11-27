@@ -1,0 +1,46 @@
+{
+  "events": [
+    {
+      "name": "Haley-event-0",
+      "location": "HaleyHouse",
+      "eventId": "11",
+      "night": false,
+      "mail": null
+    },
+    {
+      "name": "Haley-event-1",
+      "location": "HaleyHouse",
+      "eventId": "12",
+      "night": false,
+      "mail": null
+    },
+    {
+      "name": "Haley-event-2",
+      "location": "Beach",
+      "eventId": "13",
+      "night": false,
+      "mail": null
+    },
+    {
+      "name": "Haley-event-3",
+      "location": "Forest",
+      "eventId": "14",
+      "night": false,
+      "mail": null
+    },
+    {
+      "name": "Haley-event-4",
+      "location": "HaleyHouse",
+      "eventId": "15",
+      "night": false,
+      "mail": null
+    },
+    {
+      "name": "Haley-event-5",
+      "location": "Town",
+      "eventId": "6184644",
+      "night": false,
+      "mail": null
+    }
+  ]
+}

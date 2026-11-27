@@ -1,0 +1,17 @@
+﻿{
+  "select-ingredient": "Select an ingredient to add. Be aware that the quality, price, and edibility of your choice will affect everyone's opinion of you!",
+  "Lewis": "Look sharp! The governor's here for his annual visit.#$b#If you brought something for the potluck make sure and add it to the soup cauldron. Remember, quality, cost, and edibility may affect the taste of the soup!",
+  "item-info": "Item Type: {0}, Friendship: {1}",
+  "Config.EnableMod": "Mod Enabled",
+  "Config.ShowItemReactions": "Preview Reactions",
+  "Config.EveryoneMustContribute": "All Must Add",
+  "Config.EveryoneMustContribute.Desc": "Disable to not require every player to add an item to receive ingredient results",
+  "friendship-special": "Special",
+  "friendship-6": "Shorts",
+  "friendship-4": "Loved",
+  "friendship-3": "Liked",
+  "friendship-2": "Neutral",
+  "friendship-1": "Disliked",
+  "friendship-0": "Hated",
+  "Config.WarnMessage": "Add Warning"
+}

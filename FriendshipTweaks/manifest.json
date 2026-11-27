@@ -1,0 +1,10 @@
+﻿{
+  "Name": "Friendship Tweaks",
+  "Author": "aedenthorn",
+  "Version": "0.2.0",
+  "Description": "Friendship Tweaks.",
+  "UniqueID": "aedenthorn.FriendshipTweaks",
+  "EntryDll": "FriendshipTweaks.dll",
+  "MinimumApiVersion": "4.0.0",
+  "UpdateKeys": [ "Nexus:17055" ]
+}

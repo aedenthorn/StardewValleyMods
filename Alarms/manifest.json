@@ -1,0 +1,10 @@
+﻿{
+	"Name": "Alarms",
+	"Author": "aedenthorn",
+	"Version": "0.2.0",
+	"Description": "Lets you set multiple alarms to play sounds and/or show notifications messages at any time of day.",
+	"UniqueID": "aedenthorn.Alarms",
+	"EntryDll": "Alarms.dll",
+	"MinimumApiVersion": "4.0.0",
+	"UpdateKeys": [ "Nexus:17607" ]
+}

@@ -1,0 +1,20 @@
+﻿{
+  "catalogues": "Мобильный Каталог",
+  "not-enough-money": "У Вас недостаточно денег!",
+  "buy-catalogue-question": "Купить каталог {0} за {1}з?",
+  "bought-catalogue": "Каталог {0} куплен!",
+  "catalogue": "Стены & Полы",
+  "furniture-catalogue": "Фурнитура",
+  "seed-catalogue": "Семена",
+  "travel-catalogue": "Странствующий торговец",
+  "desert-catalogue": "Пустынный торговец",
+  "hat-catalogue": "Шляпный мыш",
+  "clothing-catalogue": "Одежда",
+  "dwarf-catalogue": "Лавка Дварфа",
+  "krobus-catalogue": "Лавка Кробуса",
+  "guild-catalogue": "Магазин гильдии Искателей приключений",
+  "traveling-merchant-not-here": "Странствующий торговец сегодня не в городе!",
+  "desert-merchant-cannot-ship": "Товары пустынного торговца не могут быть отгружены пока автобус не будет починен!",
+  "catalog-not-available": "Этот каталог пока недоступен."
+}
+

@@ -1,0 +1,22 @@
+﻿{
+  "Name": "Guitardew Valley Hero",
+  "Author": "aedenthorn",
+  "Version": "0.1.0",
+  "Description": "Guitardew Valley Hero.",
+  "UniqueID": "aedenthorn.GuitardewValleyHero",
+  "EntryDll": "GuitardewValleyHero.dll",
+  "MinimumApiVersion": "3.13.0",
+  "ModUpdater": {
+    "Repository": "StardewValleyMods",
+    "User": "aedenthorn",
+    "Directory": "_releases",
+    "ModFolder": "GuitardewValleyHero"
+  },
+  "UpdateKeys": [ "Nexus:" ],
+  "Dependencies": [
+    {
+      "UniqueID": "Platonymous.ModUpdater",
+      "IsRequired": false
+    }
+  ]
+}

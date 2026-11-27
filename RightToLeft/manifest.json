@@ -1,0 +1,22 @@
+﻿{
+  "Name": "RightToLeft",
+  "Author": "aedenthorn",
+  "Version": "0.1.0",
+  "Description": "RightToLeft.",
+  "UniqueID": "aedenthorn.RightToLeft",
+  "EntryDll": "RightToLeft.dll",
+  "MinimumApiVersion": "3.15.0",
+  "ModUpdater": {
+    "Repository": "StardewValleyMods",
+    "User": "aedenthorn",
+    "Directory": "_releases",
+    "ModFolder": "RightToLeft"
+  },
+  "Dependencies": [
+    {
+      "UniqueID": "Platonymous.ModUpdater",
+      "IsRequired": false
+    }
+  ],
+  "UpdateKeys": [ "Nexus:" ]
+}

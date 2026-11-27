@@ -1,0 +1,10 @@
+﻿{
+  "Name": "Tree Hat",
+  "Author": "aedenthorn",
+  "Version": "0.1.0",
+  "Description": "Tree Hat.",
+  "UniqueID": "aedenthorn.TreeHat",
+  "EntryDll": "TreeHat.dll",
+  "MinimumApiVersion": "4.0.0",
+  "UpdateKeys": [ "Nexus:" ]
+}

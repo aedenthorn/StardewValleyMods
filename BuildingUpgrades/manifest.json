@@ -1,0 +1,22 @@
+﻿{
+  "Name": "Custom Building Upgrades",
+  "Author": "aedenthorn",
+  "Version": "0.1.0",
+  "Description": "Custom Building Upgrades.",
+  "UniqueID": "aedenthorn.BuildingUpgrades",
+  "EntryDll": "BuildingUpgrades.dll",
+  "MinimumApiVersion": "3.15.0",
+  "ModUpdater": {
+    "Repository": "StardewValleyMods",
+    "User": "aedenthorn",
+    "Directory": "_releases",
+    "ModFolder": "BuildingUpgrades"
+  },
+  "Dependencies": [
+    {
+      "UniqueID": "Platonymous.ModUpdater",
+      "IsRequired": false
+    }
+  ],
+  "UpdateKeys": [ "Nexus:14092" ]
+}

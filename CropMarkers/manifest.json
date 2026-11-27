@@ -1,0 +1,10 @@
+﻿{
+	"Name": "Crop Markers",
+	"Author": "aedenthorn",
+	"Version": "0.2.1",
+	"Description": "Places markers beside planted crops that show the harvest produce of the planted seed, like you see in real gardens.",
+	"UniqueID": "aedenthorn.CropMarkers",
+	"EntryDll": "CropMarkers.dll",
+	"MinimumApiVersion": "4.0.0",
+	"UpdateKeys": [ "Nexus:18120" ]
+}

@@ -1,0 +1,10 @@
+﻿{
+	"Name": "Stardew Drops",
+	"Author": "aedenthorn",
+	"Version": "0.1.0",
+	"Description": "Stardew Drops.",
+	"UniqueID": "aedenthorn.SGStardewDrops",
+	"EntryDll": "SGStardewDrops.dll",
+	"MinimumApiVersion": "4.0.0",
+	"UpdateKeys": [ "Nexus:" ]
+}

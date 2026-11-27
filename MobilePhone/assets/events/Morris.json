@@ -1,0 +1,39 @@
+{
+  "events": [
+    {
+      "name": "Morris-event-0",
+      "location": "town",
+      "eventId": "6663501",
+      "night": false,
+      "mail": null
+    },
+    {
+      "name": "Morris-event-1",
+      "location": "jojamart",
+      "eventId": "6663411",
+      "night": false,
+      "mail": null
+    },
+    {
+      "name": "Morris-event-2",
+      "location": "town",
+      "eventId": "6663915",
+      "night": false,
+      "mail": null
+    },
+    {
+      "name": "Morris-event-3",
+      "location": "town",
+      "eventId": "6665290",
+      "night": false,
+      "mail": null
+    },
+    {
+      "name": "Morris-event-4",
+      "location": "town",
+      "eventId": "502261",
+      "night": false,
+      "mail": null
+    }
+  ]
+}

@@ -1,0 +1,112 @@
+﻿using HarmonyLib;
+using Microsoft.Xna.Framework;
+using Netcode;
+using StardewValley;
+using StardewValley.Extensions;
+using StardewValley.Locations;
+using StardewValley.Monsters;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Reflection;
+using System.Reflection.Emit;
+using xTile.Layers;
+
+namespace MonsterMuskExtended
+{
+    public partial class ModEntry
+    {
+
+        [HarmonyPatch(typeof(MineShaft), "adjustLevelChances")]
+        public class MineShaft_adjustLevelChances_Patch
+        {
+            public static void Postfix(MineShaft __instance, ref double monsterChance)
+            {
+                if (Config.ModEnabled && (__instance.isQuarryArea || __instance.getMineArea() == 77377) && AnyOnlineFarmerHasBuff("24"))
+                {
+                    monsterChance *= 2;
+                }
+            }
+        }
+
+        [HarmonyPatch(typeof(Woods), "resetSharedState")]
+        public class Woods_resetSharedState_Patch
+        {
+            public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions) // reduce height for fewer weeds
+            {
+                SMonitor.Log($"Transpiling Woods.resetSharedState");
+
+                var codes = new List<CodeInstruction>(instructions);
+                for (int i = 0; i < codes.Count; i++)
+                {
+                    if (codes[i].opcode == OpCodes.Ldc_I4_S && (sbyte)codes[i].operand == 50)
+                    {
+                        SMonitor.Log($"Adding method to double number");
+                        codes.Insert(i + 1, new CodeInstruction(OpCodes.Call, AccessTools.Method(typeof(ModEntry), nameof(ModEntry.DoubleNumber))));
+                        break;
+                    }
+                }
+
+                return codes.AsEnumerable();
+            }
+        }
+
+        [HarmonyPatch(typeof(BugLand), nameof(BugLand.InitializeBugLand))]
+        public class BugLand_InitializeBugLand_Patch
+        {
+            public static void Prefix(BugLand __instance, ref bool __state)
+            {
+                if (Config.ModEnabled && !__instance.hasSpawnedBugsToday && AnyOnlineFarmerHasBuff("24"))
+                {
+                    __state = true;
+                }
+            }
+            public static void Postfix(BugLand __instance, bool __state)
+            {
+                if (!__state)
+                    return;
+                Layer pathsLayer = __instance.map.RequireLayer("Paths");
+                for (int x = 0; x < __instance.map.Layers[0].LayerWidth; x++)
+                {
+                    for (int y = 0; y < __instance.map.Layers[0].LayerHeight; y++)
+                    {
+                        if (Game1.random.NextDouble() < 0.33)
+                        {
+                            int tileIndex = pathsLayer.GetTileIndexAt(x, y, null);
+                            if (tileIndex == 28)
+                            {
+                                Vector2 tile = new Vector2((float)x, (float)y);
+                                if (__instance.CanSpawnCharacterHere(tile) && __instance.characters.Count < 100)
+                                {
+                                    __instance.characters.Add(new Grub(new Vector2(tile.X * 64f, tile.Y * 64f), true));
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        [HarmonyPatch(typeof(VolcanoDungeon), nameof(VolcanoDungeon.GenerateEntities))]
+        public static class VolcanoDungeon_GenerateEntities_Patch
+        {
+            public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions) // reduce height for fewer weeds
+            {
+                SMonitor.Log($"Transpiling VolcanoDungeon.GenerateEntities");
+
+                var codes = new List<CodeInstruction>(instructions);
+                for (int i = 0; i < codes.Count; i++)
+                {
+                    if (codes[i].opcode == OpCodes.Ldc_I4_7 && codes[i+1].opcode == OpCodes.Blt)
+                    {
+                        SMonitor.Log($"Adding method to double number");
+                        codes.Insert(i + 1, new CodeInstruction(OpCodes.Call, AccessTools.Method(typeof(ModEntry), nameof(ModEntry.DoubleNumber))));
+                        break;
+                    }
+                }
+
+                return codes.AsEnumerable();
+            }
+        }
+
+    }
+}

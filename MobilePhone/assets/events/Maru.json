@@ -1,0 +1,46 @@
+{
+  "events": [
+    {
+      "name": "Maru-event-0",
+      "location": "ScienceHouse",
+      "eventId": "6",
+      "night": false,
+      "mail": null
+    },
+    {
+      "name": "Maru-event-1",
+      "location": "Hospital",
+      "eventId": "7",
+      "night": false,
+      "mail": null
+    },
+    {
+      "name": "Maru-event-2",
+      "location": "Mountain",
+      "eventId": "8",
+      "night": false,
+      "mail": null
+    },
+    {
+      "name": "Maru-event-3",
+      "location": "ScienceHouse",
+      "eventId": "9",
+      "night": false,
+      "mail": null
+    },
+    {
+      "name": "Maru-event-4",
+      "location": "ScienceHouse",
+      "eventId": "10",
+      "night": false,
+      "mail": null
+    },
+    {
+      "name": "Maru-event-5",
+      "location": "Mountain",
+      "eventId": "5183338",
+      "night": false,
+      "mail": null
+    }
+  ]
+}

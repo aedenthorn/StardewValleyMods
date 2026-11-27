@@ -1,0 +1,10 @@
+﻿{
+	"Name": "PetClothes",
+	"Author": "aedenthorn",
+	"Version": "0.1.0",
+	"Description": "Pet Clothes.",
+	"UniqueID": "aedenthorn.PetClothes",
+	"EntryDll": "PetClothes.dll",
+	"MinimumApiVersion": "4.1.0",
+	"UpdateKeys": [ "Nexus:36122" ]
+}

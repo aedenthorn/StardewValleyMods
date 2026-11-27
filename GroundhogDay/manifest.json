@@ -1,0 +1,22 @@
+﻿{
+  "Name": "Groundhog Day",
+  "Author": "aedenthorn",
+  "Version": "0.2.0",
+  "Description": "Groundhog Day.",
+  "UniqueID": "aedenthorn.GroundhogDay",
+  "EntryDll": "GroundhogDay.dll",
+  "MinimumApiVersion": "3.13.0",
+  "ModUpdater": {
+    "Repository": "StardewValleyMods",
+    "User": "aedenthorn",
+    "Directory": "_releases",
+    "ModFolder": "GroundhogDay"
+  },
+  "UpdateKeys": [ "Nexus:10151" ],
+  "Dependencies": [
+    {
+      "UniqueID": "Platonymous.ModUpdater",
+      "IsRequired": false
+    }
+  ]
+}

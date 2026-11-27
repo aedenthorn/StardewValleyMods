@@ -1,0 +1,9 @@
+{
+	"GMCM.ModEnabled.Name": "Mod Enabled",
+	"GMCM.ShiftKey.Name": "Shift Key",
+	"GMCM.ColorKey.Name": "Color Key",
+	"stone-block": "Stone Letter Block",
+	"stone-block-desc": "A stone block that displays a single letter.",
+	"wood-block": "Wood Letter Block.",
+	"wood-block-desc": "A wood block that displays a single letter."
+}

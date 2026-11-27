@@ -1,0 +1,9 @@
+{
+  // GMCM
+  "GMCM_Option_ModEnabled_Name": "Mod Enabled",
+  "GMCM_Option_EnableTrellisResize_Name": "Resize Trellis",
+  "GMCM_Option_SizeVariationPercent_Name": "Max Size Var %",
+  "GMCM_Option_ColorVariation_Name": "Max Color Var",
+  "GMCM_Option_SizeVariationQualityFactor_Name": "Size Quality Factor",
+  "GMCM_Option_ColorVariationQualityFactor_Name": "Color Quality Factor"
+}

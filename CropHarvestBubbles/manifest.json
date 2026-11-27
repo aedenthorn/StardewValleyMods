@@ -1,0 +1,10 @@
+﻿{
+	"Name": "Crop Harvest Bubbles",
+	"Author": "aedenthorn",
+	"Version": "0.6.2",
+	"Description": "Shows produce items in bubbles above crops that are ready to harvest.",
+	"UniqueID": "aedenthorn.CropHarvestBubbles",
+	"EntryDll": "CropHarvestBubbles.dll",
+	"MinimumApiVersion": "4.0.0",
+	"UpdateKeys": [ "Nexus:17761" ]
+}

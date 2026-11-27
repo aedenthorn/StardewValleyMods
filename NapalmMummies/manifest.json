@@ -1,0 +1,10 @@
+﻿{
+	"Name": "Napalm Mummies",
+	"Author": "aedenthorn",
+	"Version": "0.1.4",
+	"Description": "Causes the napalm ring to instantly kill downed mummies.",
+	"UniqueID": "aedenthorn.NapalmMummies",
+	"EntryDll": "NapalmMummies.dll",
+	"MinimumApiVersion": "4.0.0",
+	"UpdateKeys": [ "Nexus:15933" ]
+}

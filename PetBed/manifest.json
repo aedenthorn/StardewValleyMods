@@ -1,0 +1,10 @@
+﻿{
+  "Name": "Pet Bed",
+  "Author": "aedenthorn",
+  "Version": "0.7.0",
+  "Description": "Pet Bed.",
+  "UniqueID": "aedenthorn.PetBed",
+  "EntryDll": "PetBed.dll",
+  "MinimumApiVersion": "4.0.0",
+  "UpdateKeys": [ "Nexus:10462" ]
+}

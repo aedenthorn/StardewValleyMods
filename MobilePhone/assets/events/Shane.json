@@ -1,0 +1,74 @@
+{
+  "events": [
+    {
+      "name": "Shane-event-0",
+      "location": "Forest",
+      "eventId": "611944",
+      "night": false,
+      "mail": null
+    },
+    {
+      "name": "Shane-event-1",
+      "location": "AnimalShop",
+      "eventId": "3910674",
+      "night": false,
+      "mail": null
+    },
+    {
+      "name": "Shane-event-2",
+      "location": "Forest",
+      "eventId": "3910975",
+      "night": false,
+      "mail": null
+    },
+    {
+      "name": "Shane-event-3",
+      "location": "Farm",
+      "eventId": "2118991",
+      "night": false,
+      "mail": null
+    },
+    {
+      "name": "Shane-event-4",
+      "location": "AnimalShop",
+      "eventId": "3910974",
+      "night": false,
+      "mail": null
+    },
+    {
+      "name": "Shane-event-5",
+      "location": "Town",
+      "eventId": "831125",
+      "night": false,
+      "mail": null
+    },
+    {
+      "name": "Shane-event-6",
+      "location": "ManorHouse",
+      "eventId": "3900074",
+      "night": false,
+      "mail": null
+    },
+    {
+      "name": "Shane-event-7",
+      "location": "BusStop",
+      "eventId": "9581348",
+      "night": false,
+      "mail": null
+    },
+    {
+      "name": "Shane-event-8",
+      "location": "Town",
+      "eventId": "3917585",
+      "night": false,
+      "mail": null
+    },
+    {
+      "name": "Shane-event-9",
+      "location": "Town",
+      "eventId": "3917586",
+      "night": false,
+      "mail": null
+    }
+  ]
+}

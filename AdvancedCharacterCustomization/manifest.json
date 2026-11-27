@@ -1,0 +1,10 @@
+﻿{
+  "Name": "Advanced Character Customization",
+  "Author": "aedenthorn",
+  "Version": "0.3.0",
+  "Description": "Advanced Character Customization.",
+  "UniqueID": "aedenthorn.AdvancedCharacterCustomization",
+  "EntryDll": "AdvancedCharacterCustomization.dll",
+  "MinimumApiVersion": "4.0.0",
+  "UpdateKeys": [ "Nexus:47785" ]
+}

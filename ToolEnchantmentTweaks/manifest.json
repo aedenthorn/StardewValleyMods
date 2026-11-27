@@ -1,0 +1,22 @@
+﻿{
+  "Name": "Tool Enchantment Tweaks",
+  "Author": "aedenthorn",
+  "Version": "0.1.0",
+  "Description": "Tool Enchantment Tweaks.",
+  "UniqueID": "aedenthorn.ToolEnchantmentTweaks",
+  "EntryDll": "ToolEnchantmentTweaks.dll",
+  "MinimumApiVersion": "3.15.0",
+  "ModUpdater": {
+    "Repository": "StardewValleyMods",
+    "User": "aedenthorn",
+    "Directory": "_releases",
+    "ModFolder": "ToolEnchantmentTweaks"
+  },
+  "Dependencies": [
+    {
+      "UniqueID": "Platonymous.ModUpdater",
+      "IsRequired": false
+    }
+  ],
+  "UpdateKeys": [ "Nexus:" ]
+}

@@ -1,0 +1,22 @@
+﻿{
+  "Name": "Advanced Drum Blocks",
+  "Author": "aedenthorn",
+  "Version": "0.1.0",
+  "Description": "Advanced Drum Blocks.",
+  "UniqueID": "aedenthorn.AdvancedDrumBlocks",
+  "EntryDll": "AdvancedDrumBlocks.dll",
+  "MinimumApiVersion": "3.13.0",
+  "ModUpdater": {
+    "Repository": "StardewValleyMods",
+    "User": "aedenthorn",
+    "Directory": "_releases",
+    "ModFolder": "AdvancedDrumBlocks"
+  },
+  "UpdateKeys": [ "Nexus:" ],
+  "Dependencies": [
+    {
+      "UniqueID": "Platonymous.ModUpdater",
+      "IsRequired": false
+    }
+  ]
+}

@@ -1,0 +1,14 @@
+{
+	"ModEnabled": "Mod Enabled",
+	"AutoCollect": "Auto Collect",
+	"DropIfFull": "Drop If Full",
+	"NoReduction": "No Reduction",
+	"NoReduction.Desc": "Don't let the chest capture bar deplete.",
+	"ChestWithoutFish": "Chest w/o Fish",
+	"ChestWithoutFish.Desc": "Receive caught chests even if the fish gets away.",
+	"ChestMovement": "Chest Movement",
+	"ChestMovement.Desc": "One of 'None', 'Random', 'Legend', or 'Follow'",
+	"GoldenChestMovement": "Gold Chest Movement",
+	"GoldenChestMovement.Desc": "One of 'None', 'Random', 'Legend', or 'Follow'"
+
+}

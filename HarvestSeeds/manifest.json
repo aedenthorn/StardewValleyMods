@@ -1,0 +1,22 @@
+﻿{
+  "Name": "Harvest Seeds",
+  "Author": "aedenthorn",
+  "Version": "0.2.2",
+  "Description": "Harvest Seeds.",
+  "UniqueID": "aedenthorn.HarvestSeeds",
+  "EntryDll": "HarvestSeeds.dll",
+  "MinimumApiVersion": "3.13.0",
+  "ModUpdater": {
+    "Repository": "StardewValleyMods",
+    "User": "aedenthorn",
+    "Directory": "_releases",
+    "ModFolder": "HarvestSeeds"
+  },
+  "UpdateKeys": [ "Nexus:11773" ],
+  "Dependencies": [
+    {
+      "UniqueID": "Platonymous.ModUpdater",
+      "IsRequired": false
+    }
+  ]
+}

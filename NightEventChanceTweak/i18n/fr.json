@@ -1,0 +1,11 @@
+{
+	// GMCM
+	"GMCM.ModEnabled.Name": "Activer le Mod",
+	"GMCM.IgnoreEventConditions.Name": "Ignorer les conditions des événements",
+	"GMCM.CumulativeChance.Name": "Chance cumulative",
+	"GMCM.CropFairyChance.Name": "Chance de fée des récoltes (en %)",
+	"GMCM.WitchChance.Name": "Chance de sorcière (en %)",
+	"GMCM.MeteorChance.Name": "Chance de météorite (en %)",
+	"GMCM.StoneOwlChance.Name": "Chance de hibou en pierre (en %)",
+	"GMCM.StrangeCapsuleChance.Name": "Chance de capsule étrange (en %)"
+}

@@ -1,0 +1,33 @@
+{
+    "Name": "Iridium Scarecrow",
+    "Description": "A scarecrow coated in iridium alloy.",
+    "Recipe":
+    {
+        "ResultCount": 1,
+        "Ingredients":
+        [
+            {
+                "Object": 335,
+                "Count":20
+            },
+            {
+                "Object": 337,
+                "Count":10
+            },
+            {
+                "Object": 709,
+                "Count":50
+            },
+            {
+                "Object": 787,
+                "Count":2
+            },
+            {
+                "Object": 428,
+                "Count":10
+            }
+        ]
+    },
+    "SkillUnlockName": "Farming",
+    "SkillUnlockLevel": 10
+}

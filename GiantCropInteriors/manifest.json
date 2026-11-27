@@ -1,0 +1,10 @@
+﻿{
+  "Name": "Giant Crop Interiors",
+  "Author": "aedenthorn",
+  "Version": "0.2.0",
+  "Description": "Giant Crop Interiors.",
+  "UniqueID": "aedenthorn.GiantCropInteriors",
+  "EntryDll": "GiantCropInteriors.dll",
+  "MinimumApiVersion": "4.0.0",
+  "UpdateKeys": [ "Nexus:47973" ]
+}

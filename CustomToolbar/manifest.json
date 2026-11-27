@@ -1,0 +1,10 @@
+﻿{
+	"Name": "Custom Toolbar",
+	"Author": "aedenthorn",
+	"Version": "0.1.3",
+	"Description": "Lets you change the positioning and the orientation of the toolbar.",
+	"UniqueID": "aedenthorn.CustomToolbar",
+	"EntryDll": "CustomToolbar.dll",
+	"MinimumApiVersion": "4.0.0",
+	"UpdateKeys": [ "Nexus:11322" ]
+}

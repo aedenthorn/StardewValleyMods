@@ -1,0 +1,302 @@
+﻿using HarmonyLib;
+using Microsoft.Xna.Framework;
+using StardewModdingAPI;
+using StardewModdingAPI.Events;
+using StardewModdingAPI.Utilities;
+using StardewValley;
+using StardewValley.GameData.BigCraftables;
+using StardewValley.Locations;
+using StardewValley.SDKs;
+using System;
+using System.Collections.Generic;
+
+namespace PlaceShaft
+{
+    /// <summary>The mod entry point.</summary>
+    public class ModEntry : Mod
+    {
+
+        public static ModEntry context;
+
+        public static ModConfig Config;
+        public static string itemName;
+
+
+        /// <summary>The mod entry point, called after the mod is first loaded.</summary>
+        /// <param name="helper">Provides simplified APIs for writing mods.</param>
+        public override void Entry(IModHelper helper)
+        {
+            itemName = ModManifest.UniqueID + "_MineShaft";
+            context = this;
+            Config = Helper.ReadConfig<ModConfig>();
+            if (!Config.EnableMod)
+                return;
+            helper.Events.Content.AssetRequested += Content_AssetRequested;
+            helper.Events.GameLoop.GameLaunched += GameLoop_GameLaunched;
+
+            Harmony harmony = new(ModManifest.UniqueID);
+
+            harmony.Patch(
+               original: AccessTools.Method(typeof(StardewValley.Object), nameof(StardewValley.Object.placementAction)),
+               prefix: new HarmonyMethod(typeof(ModEntry), nameof(ModEntry.placementAction_prefix))
+            );
+            harmony.Patch(
+               original: AccessTools.Method(typeof(MineShaft), nameof(MineShaft.enterMineShaft)),
+               prefix: new HarmonyMethod(typeof(ModEntry), nameof(ModEntry.enterMineShaft_prefix))
+            );
+            harmony.Patch(
+               original: AccessTools.Method(typeof(MineShaft), nameof(MineShaft.checkAction)),
+               prefix: new HarmonyMethod(typeof(ModEntry), nameof(ModEntry.MineShaft_checkAction_prefix))
+            );
+        }
+
+
+        private void GameLoop_GameLaunched(object sender, GameLaunchedEventArgs e)
+        {
+            // get Generic Mod Config Menu's API (if it's installed)
+            var configMenu = Helper.ModRegistry.GetApi<IGenericModConfigMenuApi>("spacechase0.GenericModConfigMenu");
+            if (configMenu is null)
+                return;
+
+            // register mod
+            configMenu.Register(
+                mod: ModManifest,
+                reset: () => Config = new ModConfig(),
+                save: () => Helper.WriteConfig(Config)
+            );
+
+            configMenu.AddBoolOption(
+                mod: ModManifest,
+                name: () => Helper.Translation.Get("GMCM.EnableMod"),
+                getValue: () => Config.EnableMod,
+                setValue: value => Config.EnableMod = value
+            );
+            configMenu.AddBoolOption(
+                mod: ModManifest,
+                name: () => Helper.Translation.Get("GMCM.PreventGoingToSkullCave"),
+                getValue: () => Config.PreventGoingToSkullCave,
+                setValue: value => Config.PreventGoingToSkullCave = value
+            );
+            configMenu.AddBoolOption(
+                mod: ModManifest,
+                name: () => Helper.Translation.Get("GMCM.SkipConfirmOnShaftJump"),
+                getValue: () => Config.SkipConfirmOnShaftJump,
+                setValue: value => Config.SkipConfirmOnShaftJump = value
+            );
+            configMenu.AddTextOption(
+                mod: ModManifest,
+                name: () => Helper.Translation.Get("GMCM.ShaftCost"),
+                tooltip: () => Helper.Translation.Get("GMCM.ShaftCost.TT"),
+                getValue: () => Config.ShaftCost,
+                setValue: value => Config.ShaftCost = value
+            );
+            configMenu.AddTextOption(
+                mod: ModManifest,
+                name: () => Helper.Translation.Get("GMCM.SkillReq"),
+                getValue: () => Config.SkillReq,
+                setValue: value => Config.SkillReq = value
+            );
+            configMenu.AddNumberOption(
+                mod: ModManifest,
+                name: () => Helper.Translation.Get("GMCM.MinLevels"),
+                getValue: () => Config.MinLevels,
+                setValue: value => Config.MinLevels = value
+            );
+            configMenu.AddNumberOption(
+                mod: ModManifest,
+                name: () => Helper.Translation.Get("GMCM.MinLevels"),
+                getValue: () => Config.MaxLevels,
+                setValue: value => Config.MaxLevels = value
+            );
+            configMenu.AddNumberOption(
+                mod: ModManifest,
+                name: () => Helper.Translation.Get("GMCM.PercentDamage"),
+                getValue: () => Config.PercentDamage,
+                setValue: value => Config.PercentDamage = value
+            );
+        }
+
+        private void Content_AssetRequested(object sender, AssetRequestedEventArgs e)
+        {
+            if (e.NameWithoutLocale.IsEquivalentTo("Data/BigCraftables"))
+            {
+                e.Edit(asset =>
+                {
+                    IDictionary<string, BigCraftableData> data = asset.AsDictionary<string, BigCraftableData>().Data;
+
+                    data[itemName] = new BigCraftableData()
+                    {
+                        Name = itemName,
+                        DisplayName = context.Helper.Translation.Get("DisplayName"),
+                        Description = context.Helper.Translation.Get("Description"),
+                        Price = 1000,
+                        Fragility = 2,
+                        CanBePlacedOutdoors = false,
+                        CanBePlacedIndoors = true,
+                        Texture = context.Helper.ModContent.GetInternalAssetName("assets/sprite").Name,
+                        SpriteIndex = 0
+                    };
+                });
+            }
+            else if (e.NameWithoutLocale.IsEquivalentTo("Data/CraftingRecipes"))
+            {
+                e.Edit(asset =>
+                {
+                    IDictionary<string, string> data = asset.AsDictionary<string, string>().Data;
+                    data[itemName] = $"{Config.ShaftCost}/Home/{itemName}/true/{(string.IsNullOrEmpty(Config.SkillReq) ? "null" : $"s {Config.SkillReq}")}/";
+                });
+            }
+            else if (e.NameWithoutLocale.StartsWith("Maps/Mines/mine") && !e.NameWithoutLocale.StartsWith("Maps/Mines/mine_desert"))
+            {
+                e.Edit(asset =>
+                {
+                    var editor = asset.AsImage();
+                    IRawTextureData sourceImage = this.Helper.ModContent.Load<IRawTextureData>("assets/sprite.png");
+                    editor.PatchImage(sourceImage, sourceArea: new Rectangle(0, 16, 16, 16), targetArea: new Rectangle(224, 160, 16, 16));
+                });
+            }
+        }
+
+
+        private static bool MineShaft_checkAction_prefix(MineShaft __instance, xTile.Dimensions.Location tileLocation, Farmer who)
+        {
+            if (who.IsLocalPlayer)
+            {
+                int tileIndexAt = __instance.getTileIndexAt(tileLocation, "Buildings", "mine");
+
+                if (tileIndexAt == 174)
+                {
+                    playerLocation.Value = Game1.player.position.Value;
+                    jumpLocation.Value = new Vector2(tileLocation.X * 64, tileLocation.Y * 64);
+                    if (Config.SkipConfirmOnShaftJump)
+                    {
+                        __instance.enterMineShaft();
+                        return false;
+                    }
+                }
+            }
+            return true;
+        }
+
+        private static bool enterMineShaft_prefix(MineShaft __instance, ref bool ___isFallingDownShaft, ref int ___lastLevelsDownFallen, int ___deepestLevelOnCurrentDesertFestivalRun)
+        {
+            ticks.Value = 0;
+            lastYJumpVelocity.Value = 0;
+            context.Helper.Events.GameLoop.UpdateTicked += GameLoop_UpdateTicked;
+
+            if (Config.PercentDamage == 100 && Config.MaxLevels == 9 && Config.MinLevels == 3 && Config.PreventGoingToSkullCave)
+                return true;
+            DelayedAction.playSoundAfterDelay("fallDown", 800, __instance, null, -1, false);
+            DelayedAction.playSoundAfterDelay("clubSmash", 1800, null, null, -1, false);
+            Random random = Utility.CreateRandom((double)__instance.mineLevel, Game1.uniqueIDForThisGame, (double)Game1.Date.TotalDays, 0.0, 0.0);
+            int levelsDown = random.Next(Config.MinLevels, Config.MaxLevels);
+            if (random.NextDouble() < 0.1)
+            {
+                levelsDown = levelsDown * 2 - 1;
+            }
+            if (Config.PreventGoingToSkullCave && __instance.mineLevel < 120 && __instance.mineLevel + levelsDown > 120)
+            {
+                levelsDown = 120 - __instance.mineLevel;
+            }
+            levelsFallen.Value = levelsDown;
+            ___lastLevelsDownFallen = levelsDown;
+            Game1.player.health = Math.Max(1, Game1.player.health - levelsDown * (int)Math.Round(3f * Config.PercentDamage / 100f));
+            ___isFallingDownShaft = true;
+            Game1.globalFadeToBlack(new Game1.afterFadeFunction(afterFall), 0.045f);
+            Game1.player.CanMove = false;
+            Game1.player.jump();
+
+            Game1.player.temporarilyInvincible = true;
+            Game1.player.temporaryInvincibilityTimer = 0;
+            Game1.player.flashDuringThisTemporaryInvincibility = false;
+            Game1.player.currentTemporaryInvincibilityDuration = 700;
+            if (Utility.GetDayOfPassiveFestival("DesertFestival") > 0 && Game1.IsMasterGame && ___lastLevelsDownFallen + __instance.mineLevel > ___deepestLevelOnCurrentDesertFestivalRun && __instance.isFallingDownShaft && (___lastLevelsDownFallen + __instance.mineLevel) / 5 > __instance.mineLevel / 5)
+            {
+                Game1.player.team.calicoEggSkullCavernRating.Value += (___lastLevelsDownFallen + __instance.mineLevel) / 5 - __instance.mineLevel / 5;
+            }
+
+            return false;
+        }
+
+        public static void GameLoop_UpdateTicked(object sender, UpdateTickedEventArgs e)
+        {
+            if (Game1.player.yJumpVelocity == 0f && lastYJumpVelocity.Value < 0f)
+            {
+                context.Helper.Events.GameLoop.UpdateTicked -= GameLoop_UpdateTicked;
+                return;
+            }
+            ticks.Value++;
+            //context.Monitor.Log($"{ticks}: {playerLocation}, {jumpLocation}, {Game1.player.position.Value}");
+            Game1.player.position.Value = Vector2.Lerp(playerLocation.Value, jumpLocation.Value, 1f / 30f * ticks.Value);
+            lastYJumpVelocity.Value = Game1.player.yJumpVelocity;
+        }
+
+        private static PerScreen<int> mineLevel = new(() => 0);
+        private static PerScreen<int> levelsFallen = new(()=> 0);
+        private static PerScreen<Vector2> playerLocation = new(() => Vector2.Zero);
+        private static PerScreen<Vector2> jumpLocation = new(() => Vector2.Zero);
+        private static PerScreen<float> lastYJumpVelocity = new(() => 0f);
+        public static PerScreen<int> ticks = new(() => 0);
+
+        private static void afterFall()
+        {
+            Game1.drawObjectDialogue(Game1.content.LoadString((levelsFallen.Value > 7) ? "Strings\\Locations:Mines_FallenFar" : "Strings\\Locations:Mines_Fallen", levelsFallen));
+            Game1.messagePause = true;
+            Game1.enterMine(mineLevel.Value + levelsFallen.Value);
+            Game1.fadeToBlackAlpha = 1f;
+            Game1.player.faceDirection(2);
+            Game1.player.showFrame(5, false);
+        }
+
+        private static bool placementAction_prefix(StardewValley.Object __instance, ref bool __result, GameLocation location, int x, int y)
+        {
+            if (__instance.name != itemName)
+                return true;
+
+            Vector2 placementTile = new Vector2((float)(x / 64), (float)(y / 64));
+            if (location is MineShaft)
+            {
+                if ((location as MineShaft).shouldCreateLadderOnThisLevel() && recursiveTryToCreateLadderDown(location as MineShaft, placementTile, "hoeHit", 16))
+                {
+                    __result = true;
+                    return false;
+                }
+                Game1.showRedMessage(Game1.content.LoadString("Strings\\StringsFromCSFiles:Object.cs.13053"));
+            }
+            __result = false;
+            return false;
+        }
+
+        private static bool recursiveTryToCreateLadderDown(MineShaft location, Vector2 centerTile, string sound, int maxIterations)
+        {
+
+            int iterations = 0;
+            Queue<Vector2> positionsToCheck = new Queue<Vector2>();
+            positionsToCheck.Enqueue(centerTile);
+            List<Vector2> closedList = new List<Vector2>();
+            while (iterations < maxIterations && positionsToCheck.Count > 0)
+            {
+                Vector2 currentPoint = positionsToCheck.Dequeue();
+                closedList.Add(currentPoint);
+                if (!location.IsTileOccupiedBy(currentPoint) && location.isTileOnClearAndSolidGround(currentPoint) && location.isTileOccupiedByFarmer(currentPoint) == null && location.doesTileHaveProperty((int)currentPoint.X, (int)currentPoint.Y, "Type", "Back") != null && location.doesTileHaveProperty((int)currentPoint.X, (int)currentPoint.Y, "Type", "Back").Equals("Stone"))
+                {
+                    location.playSound("hoeHit");
+                    location.createLadderDown((int)currentPoint.X, (int)currentPoint.Y, true);
+                    location.updateMap();
+                    return true;
+                }
+                foreach (Vector2 v in Utility.DirectionsTileVectors)
+                {
+                    if (!closedList.Contains(currentPoint + v))
+                    {
+                        positionsToCheck.Enqueue(currentPoint + v);
+                    }
+                }
+                iterations++;
+            }
+
+            return false;
+        }
+    }
+
+}

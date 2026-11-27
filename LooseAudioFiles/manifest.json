@@ -1,0 +1,10 @@
+﻿{
+  "Name": "Loose Audio Files",
+  "Author": "aedenthorn",
+  "Version": "0.1.0",
+  "Description": "Plays audio from loose files.",
+  "UniqueID": "aedenthorn.LooseAudioFiles",
+  "EntryDll": "LooseAudioFiles.dll",
+  "MinimumApiVersion": "3.4.0",
+  "UpdateKeys": ["Nexus:"]
+}

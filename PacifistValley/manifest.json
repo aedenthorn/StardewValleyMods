@@ -1,0 +1,10 @@
+﻿{
+  "Name": "Pacifist Valley",
+  "Author": "Aedenthorn",
+  "Version": "1.1.2",
+  "Description": "Changes killing into kissing.",
+  "UniqueID": "Aedenthorn.PacifistValley",
+  "EntryDll": "PacifistValley.dll",
+  "MinimumApiVersion": "4.0.0",
+  "UpdateKeys": ["Nexus:5464"]
+}

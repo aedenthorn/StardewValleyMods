@@ -1,0 +1,10 @@
+﻿{
+  "Name": "Musical Paths",
+  "Author": "aedenthorn",
+  "Version": "0.2.2",
+  "Description": "Musical Paths.",
+  "UniqueID": "aedenthorn.MusicalPaths",
+  "EntryDll": "MusicalPaths.dll",
+  "MinimumApiVersion": "4.0.0",
+  "UpdateKeys": [ "Nexus:13197" ]
+}

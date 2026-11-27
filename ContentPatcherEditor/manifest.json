@@ -1,0 +1,26 @@
+﻿{
+  "Name": "Content Patcher Editor",
+  "Author": "aedenthorn",
+  "Version": "0.5.2",
+  "Description": "Content Patcher Editor.",
+  "UniqueID": "aedenthorn.ContentPatcherEditor",
+  "EntryDll": "ContentPatcherEditor.dll",
+  "MinimumApiVersion": "3.15.0",
+  "ModUpdater": {
+    "Repository": "StardewValleyMods",
+    "User": "aedenthorn",
+    "Directory": "_releases",
+    "ModFolder": "ContentPatcherEditor"
+  },
+  "Dependencies": [
+    {
+      "UniqueID": "Platonymous.ModUpdater",
+      "IsRequired": false
+    },
+    {
+      "UniqueID": "Pathoschild.ContentPatcher",
+      "IsRequired": true
+    }
+  ],
+  "UpdateKeys": [ "Nexus:17661" ]
+}

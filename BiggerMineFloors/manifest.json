@@ -1,0 +1,22 @@
+﻿{
+  "Name": "Bigger Mine Floors",
+  "Author": "aedenthorn",
+  "Version": "0.1.0",
+  "Description": "Bigger Mine Floors.",
+  "UniqueID": "aedenthorn.BiggerMineFloors",
+  "EntryDll": "BiggerMineFloors.dll",
+  "MinimumApiVersion": "3.5.0",
+  "UpdateKeys": ["Nexus:"],
+  "ModUpdater": {
+    "Repository": "StardewValleyMods",
+    "User": "aedenthorn",
+    "Directory": "_releases",
+    "ModFolder": "BiggerMineFloors"
+  },
+  "Dependencies": [
+      {
+        "UniqueID": "Platonymous.ModUpdater",
+        "IsRequired": false
+      },
+  ]
+}

@@ -1,0 +1,16 @@
+{
+	// GMCM
+	"GMCM.ModEnabled.Name": "Mod Enabled",
+	"GMCM.WaterAdjacentTiles.Name": "Water Adjacent Tiles",
+	"GMCM.WaterAdjacentTiles.Tooltip": "When charging, fill adjacent tiles instead of creating a rectangular area.",
+	"GMCM.WateringTileMultiplier.Name": "Watering Tile Multiplier",
+	"GMCM.WateringTileMultiplier.Tooltip": "Multiply the number of tiles to water by this amount.",
+	"GMCM.VolumeMultiplier.Name": "Volume Multiplier",
+	"GMCM.VolumeMultiplier.Tooltip": "Multiply watering can volume by this amount.",
+	"GMCM.StaminaUseMultiplier.Name": "Stamina Use Multiplier",
+	"GMCM.StaminaUseMultiplier.Tooltip": "Multiply stamina used for charged watering by this amount (only if Water Adjacent is enabled).",
+	"GMCM.StrafeWhileWatering.Name": "Strafe While Watering",
+	"GMCM.StrafeWhileWatering.Tooltip": "Whether to allow the player to strafe while watering.",
+	"GMCM.AutoEndWateringAnimation.Name": "Auto End Watering Animation",
+	"GMCM.AutoEndWateringAnimation.Tooltip": "Automatically ends the watering animation when there are no more tiles to water, when the maximum charge is reached, when the watering can is empty, or when the player runs out of stamina."
+}

@@ -1,0 +1,10 @@
+﻿{
+	"Name": "Crop Watering Bubbles",
+	"Author": "aedenthorn",
+	"Version": "0.3.0",
+	"Description": "Causes unwatered crops to show their need for water via emotes.",
+	"UniqueID": "aedenthorn.CropWateringBubbles",
+	"EntryDll": "CropWateringBubbles.dll",
+	"MinimumApiVersion": "4.0.0",
+	"UpdateKeys": [ "Nexus:17773" ]
+}

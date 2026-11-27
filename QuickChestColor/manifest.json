@@ -1,0 +1,10 @@
+﻿{
+	"Name": "Quick Chest Color",
+	"Author": "aedenthorn",
+	"Version": "0.1.0",
+	"Description": "Quick Chest Color.",
+	"UniqueID": "aedenthorn.QuickChestColor",
+	"EntryDll": "QuickChestColor.dll",
+	"MinimumApiVersion": "4.1.0",
+	"UpdateKeys": [ "Nexus:36289" ]
+}

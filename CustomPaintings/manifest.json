@@ -1,0 +1,22 @@
+﻿{
+  "Name": "CustomChestTypes",
+  "Author": "aedenthorn",
+  "Version": "0.6.0",
+  "Description": "Creates custom chest types.",
+  "UniqueID": "aedenthorn.CustomChestTypes",
+  "EntryDll": "CustomChestTypes.dll",
+  "MinimumApiVersion": "3.8.0",
+  "UpdateKeys": ["Nexus:"],
+  "ModUpdater": {
+    "Repository": "StardewValleyMods",
+    "User": "aedenthorn",
+    "Directory": "_releases",
+    "ModFolder": "CustomChestTypes"
+  },
+  "Dependencies": [
+      {
+        "UniqueID": "Platonymous.ModUpdater",
+        "IsRequired": false
+      },
+  ],
+}

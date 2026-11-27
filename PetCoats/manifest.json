@@ -1,0 +1,10 @@
+﻿{
+  "Name": "Pet Coats",
+  "Author": "aedenthorn",
+  "Version": "0.2.0",
+  "Description": "Pet Coats.",
+  "UniqueID": "aedenthorn.PetCoats",
+  "EntryDll": "PetCoats.dll",
+  "MinimumApiVersion": "4.0.0",
+  "UpdateKeys": [ "Nexus:40750" ]
+}

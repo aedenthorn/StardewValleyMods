@@ -1,0 +1,10 @@
+﻿{
+	"Name": "Blink Teleport",
+	"Author": "aedenthorn",
+	"Version": "0.1.0",
+	"Description": "Blink Teleport.",
+	"UniqueID": "aedenthorn.BlinkTeleport",
+	"EntryDll": "BlinkTeleport.dll",
+	"MinimumApiVersion": "4.0.0",
+	"UpdateKeys": [ "Nexus:45855" ]
+}

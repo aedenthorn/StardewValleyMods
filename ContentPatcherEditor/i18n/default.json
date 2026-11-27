@@ -1,0 +1,23 @@
+{
+  "GMCM_Option_ModEnabled_Name": "Mod Enabled",
+  "GMCM_Option_ShowButton_Name": "Title Menu Button",
+  "GMCM_Option_Backup_Name": "Backup Files",
+  "GMCM_Option_MenuButton_Name": "Menu Hotkey",
+  "GMCM_Option_OpenModsFolderAfterZip_Name": "Open Mods Folder On Zip",
+  "content-packs": "CP Content Packs",
+  "manifest": "Manifest",
+  "changes": "Changes",
+  "config": "Config",
+  "add": "Add New",
+  "back": "Back to pack list",
+  "up": "Up",
+  "down": "Down",
+  "remove": "Remove",
+  "allow-blank": "Allow blank values",
+  "allow-multiple": "Allow multiple values",
+  "folder": "Open Folder",
+  "zip": "Create Zip File",
+  "save": "Save Content Pack",
+  "reload": "Reload Content Pack",
+  "revert": "Revert Content Pack"
+}

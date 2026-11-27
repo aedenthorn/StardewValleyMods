@@ -1,0 +1,22 @@
+﻿{
+  "Name": "Weapon Knockback",
+  "Author": "aedenthorn",
+  "Version": "0.1.0",
+  "Description": "Weapon Knockback.",
+  "UniqueID": "aedenthorn.WeaponKnockback",
+  "EntryDll": "WeaponKnockback.dll",
+  "MinimumApiVersion": "3.15.0",
+  "ModUpdater": {
+    "Repository": "StardewValleyMods",
+    "User": "aedenthorn",
+    "Directory": "_releases",
+    "ModFolder": "WeaponKnockback"
+  },
+  "Dependencies": [
+    {
+      "UniqueID": "Platonymous.ModUpdater",
+      "IsRequired": false
+    }
+  ],
+  "UpdateKeys": [ "Nexus:" ]
+}

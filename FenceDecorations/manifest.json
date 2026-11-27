@@ -1,0 +1,10 @@
+﻿{
+  "Name": "Fence Decorations",
+  "Author": "aedenthorn",
+  "Version": "0.3.1",
+  "Description": "Fence Decorations.",
+  "UniqueID": "aedenthorn.FenceDecorations",
+  "EntryDll": "FenceDecorations.dll",
+  "MinimumApiVersion": "4.0.0",
+  "UpdateKeys": [ "Nexus:46374" ]
+}

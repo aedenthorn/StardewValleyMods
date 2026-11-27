@@ -1,0 +1,20 @@
+{
+	"ModEnabled": "Mod Enabled",
+	"MaxDailyGrowth": "Max Daily Growth",
+	"GrowChance": "Grow Chance",
+	"GrowChance.Desc": "Per day.",
+	"SproutChance": "Sprout Chance",
+	"SproutChance.Desc": "Multiplies Grow Chance for mown lawn (no grass left). Lower keeps a mown lawn mown; 1 is no change.",
+	"AllGrassIsLawn": "All Grass Is Lawn",
+	"AllGrassIsLawn.Desc": "Treat all grass starter grass as lawn",
+	"ReturnGrassStarter": "Return Grass Starter",
+	"ProtectNonLawn": "Protect Non-Lawn",
+	"ProtectNonLawn.Desc": "Prevent destruction of non-lawn grass starter grass.",
+	"ModKey": "Mod Key",
+	"TrufflesInGrass": "Dig In Grass",
+	"TrufflesInGrass.Desc": "Allow pigs to dig up truffles in grass.",
+	"MatchMapGrass": "Match Map Grass",
+	"MatchMapGrass.Desc": "Paint the lawn with the grass tile from the loaded outdoor tilesheet, so it matches vanilla or your recolour pack.",
+	"MapGrassTileIndex": "Map Grass Tile",
+	"MapGrassTileIndex.Desc": "Tile index in the outdoor tilesheet to take the grass from. 175 is the plain farm grass; 351 is the darker patch by the farmhouse."
+}

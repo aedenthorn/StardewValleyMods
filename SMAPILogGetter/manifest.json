@@ -1,0 +1,22 @@
+﻿{
+  "Name": "SMAPI Log Getter",
+  "Author": "aedenthorn",
+  "Version": "0.2.0",
+  "Description": "Get the current SMAPI log.",
+  "UniqueID": "aedenthorn.SMAPILogGetter",
+  "EntryDll": "SMAPILogGetter.dll",
+  "MinimumApiVersion": "3.8.0",
+  "UpdateKeys": ["Nexus:"],
+  "ModUpdater": {
+    "Repository": "StardewValleyMods",
+    "User": "aedenthorn",
+    "Directory": "_releases",
+    "ModFolder": "SMAPILogGetter"
+  },
+  "Dependencies": [
+      {
+        "UniqueID": "Platonymous.ModUpdater",
+        "IsRequired": false
+      },
+  ]
+}

@@ -1,0 +1,10 @@
+{
+	"GMCM.ModEnabled.Name": "Mod Enabled",
+	"GMCM.LampItem.Name": "Genie Lamp Item",
+	"GMCM.WishesPerItem.Name": "Wishes/Item",
+	"GMCM.MenuSound.Name": "Menu Sound",
+	"GMCM.WishSound.Name": "Wish Sound",
+	"WishMenuTitleSingular": "What will you wish for? ({0} wish remaining)",
+	"WishMenuTitlePlural": "What will you wish for? ({0} wishes remaining)",
+	"NoMoreWishes": "This item is out of wishes!"
+}

@@ -1,0 +1,70 @@
+[
+  {
+    "id": "14",
+    "enchantments": [
+      {
+        "name": "Healing",
+        "type": "heal",
+        "parameters": {
+          "trigger": "slay",
+          "chance": "50",
+          "sound": "healSound"
+        }
+      }
+    ],
+    "frames": [
+      {
+        "frameTicks": 15,
+        "action": 1,
+        "relativeFacingDirection": 0,
+        "sound": "thunder",
+        "special": {
+          "name": "lightning",
+          "parameters": {
+            "radius": "5",
+            "offsetY": "2"
+          }
+        }
+      },
+      {
+        "frameTicks": 15,
+        "action": 1,
+        "relativeFacingDirection": 1,
+        "sound": "thunder",
+        "special": {
+          "name": "lightning",
+          "parameters": {
+            "radius": "5",
+            "offsetY": "2"
+          }
+        }
+      },
+      {
+        "frameTicks": 15,
+        "action": 1,
+        "relativeFacingDirection": 2,
+        "sound": "thunder",
+        "special": {
+          "name": "lightning",
+          "parameters": {
+            "radius": "5",
+            "offsetY": "2"
+          }
+        }
+      },
+      {
+        "frameTicks": 15,
+        "action": 1,
+        "relativeFacingDirection": 3,
+        "sound": "thunder",
+        "special": {
+          "name": "lightning",
+          "parameters": {
+            "radius": "5",
+            "offsetY": "2"
+          }
+        }
+      }
+    ]
+  }
+]

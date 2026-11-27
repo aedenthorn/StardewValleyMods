@@ -1,0 +1,10 @@
+﻿{
+  "Name": "Immersive Scarecrows",
+  "Author": "aedenthorn",
+  "Version": "1.5.0",
+  "Description": "Immersive Scarecrows.",
+  "UniqueID": "aedenthorn.ImmersiveScarecrows",
+  "EntryDll": "ImmersiveScarecrows.dll",
+  "MinimumApiVersion": "4.0.0",
+  "UpdateKeys": [ "Nexus:15290" ]
+}

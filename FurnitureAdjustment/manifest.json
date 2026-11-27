@@ -1,0 +1,10 @@
+﻿{
+  "Name": "Furniture Adjustment",
+  "Author": "aedenthorn",
+  "Version": "0.4.1",
+  "Description": "Furniture Adjustment.",
+  "UniqueID": "aedenthorn.FurnitureAdjustment",
+  "EntryDll": "FurnitureAdjustment.dll",
+  "MinimumApiVersion": "4.0.0",
+  "UpdateKeys": [ "Nexus:10213" ]
+}

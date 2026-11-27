@@ -1,0 +1,10 @@
+﻿{
+	"Name": "Statue Shorts",
+	"Author": "aedenthorn",
+	"Version": "0.1.1",
+	"Description": "Lets you put a certain pair of shorts on a certain statue.",
+	"UniqueID": "aedenthorn.StatueShorts",
+	"EntryDll": "StatueShorts.dll",
+	"MinimumApiVersion": "4.0.0",
+	"UpdateKeys": [ "Nexus:17642" ]
+}

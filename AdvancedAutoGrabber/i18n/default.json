@@ -1,0 +1,14 @@
+{
+	// GMCM
+	"GMCM.ModEnabled.Name": "Mod Enabled",
+	"GMCM.GrabOnDugUp.Name": "Grab Dug Products",
+	"GMCM.SendToChests.Name": "Send to Chests",
+	"GMCM.SendToChests.Desc": "Only sends products to chests containing the same product.",
+	"GMCM.IncludeBuildingChests.Name": "Building Chests",
+	"GMCM.OpacityPercent.Name": "Opacity %",
+	"GMCM.OpacityPercent.Desc": "For showing product type on front of grabber",
+	"GMCM.GrabRange.Name": "Grab Range",
+	"GMCM.GrabRange.Desc": "Max tile distance to grab from",
+	"GMCM.ChestRange.Name": "Chest Range",
+	"GMCM.ChestRange.Desc": "Max tile distance to send to chests"
+}

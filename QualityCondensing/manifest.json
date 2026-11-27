@@ -1,0 +1,10 @@
+﻿{
+  "Name": "Quality Condensing",
+  "Author": "aedenthorn",
+  "Version": "0.1.0",
+  "Description": "Quality Condensing.",
+  "UniqueID": "aedenthorn.QualityCondensing",
+  "EntryDll": "QualityCondensing.dll",
+  "MinimumApiVersion": "4.0.0",
+  "UpdateKeys": [ "Nexus:47256" ]
+}

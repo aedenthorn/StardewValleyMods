@@ -1,0 +1,10 @@
+﻿{
+	"Name": "Instant Building Construction and Upgrade",
+	"Author": "aedenthorn",
+	"Version": "0.3.1",
+	"Description": "Causes building construction and upgrade to finish immediately upon purchase.",
+	"UniqueID": "aedenthorn.InstantBuildingConstruction",
+	"EntryDll": "InstantBuildingConstruction.dll",
+	"MinimumApiVersion": "4.1.0",
+	"UpdateKeys": [ "Nexus:14110" ]
+}

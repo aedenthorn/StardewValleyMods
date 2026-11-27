@@ -1,0 +1,8 @@
+{
+  "GMCM_Option_ModEnabled_Name": "Mod Enabled",
+  "GMCM_Option_CreateChest_Name": "Create Chest",
+  "GMCM_Option_DropEverything_Name": "Drop Everything",
+  "GMCM_Option_DropNothing_Name": "Drop Nothing",
+  "GMCM_Option_MoneyLostMult_Name": "Money Lost Mult",
+  "tombstone": "{0} died here."
+}

@@ -1,0 +1,13 @@
+{
+  "Config.EnableMod": "Enable Mod",
+  "Config.MenuKey": "Menu Key",
+  "Config.CreateKey": "Create Key",
+  "Config.DeleteKey": "Delete Key",
+  "Config.OnlyTakeFromChestsInPlot": "Only Chests In Plot",
+  "Select": "Select or create a plot",
+  "Harvest": "Harvest",
+  "Till": "Till",
+  "Buy": "Buy",
+  "Active": "Active",
+  "Update": "Update Now"
+}

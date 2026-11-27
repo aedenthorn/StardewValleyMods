@@ -1,0 +1,22 @@
+﻿{
+  "Name": "Chat Sounds",
+  "Author": "aedenthorn",
+  "Version": "0.1.0",
+  "Description": "Chat Sounds.",
+  "UniqueID": "aedenthorn.ChatSounds",
+  "EntryDll": "ChatSounds.dll",
+  "MinimumApiVersion": "3.15.0",
+  "ModUpdater": {
+    "Repository": "StardewValleyMods",
+    "User": "aedenthorn",
+    "Directory": "_releases",
+    "ModFolder": "ChatSounds"
+  },
+  "UpdateKeys": [ "Nexus:" ],
+  "Dependencies": [
+    {
+      "UniqueID": "Platonymous.ModUpdater",
+      "IsRequired": false
+    }
+  ]
+}

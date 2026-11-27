@@ -1,0 +1,9 @@
+{
+	"GMCM.ModEnabled.Name": "Activer le Mod",
+	"GMCM.OpacityPercent.Name": "Opacité (en %)",
+	"GMCM.SizePercent.Name": "Taille (en %)",
+	"GMCM.PressKeys.Name": "Touches d'activation",
+	"GMCM.RequireKeyPress.Name": "Nécessite les touches d'activation",
+	"GMCM.OffsetX.Name": "Décalage X",
+	"GMCM.OffsetY.Name": "Décalage Y"
+}

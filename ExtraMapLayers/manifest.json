@@ -1,0 +1,22 @@
+﻿{
+  "Name": "Extra Map Layers",
+  "Author": "aedenthorn",
+  "Version": "0.3.10",
+  "Description": "Draws additional layers from map files.",
+  "UniqueID": "aedenthorn.ExtraMapLayers",
+  "EntryDll": "ExtraMapLayers.dll",
+  "MinimumApiVersion": "3.12.0",
+  "ModUpdater": {
+    "Repository": "StardewValleyMods",
+    "User": "aedenthorn",
+    "Directory": "_releases",
+    "ModFolder": "ExtraMapLayers"
+  },
+  "UpdateKeys": [ "Nexus:9633" ],
+  "Dependencies": [
+    {
+      "UniqueID": "Platonymous.ModUpdater",
+      "IsRequired": false
+    }
+  ]
+}

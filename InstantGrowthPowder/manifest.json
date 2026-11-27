@@ -1,0 +1,22 @@
+﻿{
+  "Name": "InstantGrowthPowder",
+  "Author": "aedenthorn",
+  "Version": "0.7.0",
+  "Description": "Lets you plant and grow seeds anywhere.",
+  "UniqueID": "aedenthorn.InstantGrowthPowder",
+  "EntryDll": "InstantGrowthPowder.dll",
+  "MinimumApiVersion": "3.8.0",
+  "UpdateKeys": ["Nexus:7727"],
+  "ModUpdater": {
+    "Repository": "StardewValleyMods",
+    "User": "aedenthorn",
+    "Directory": "_releases",
+    "ModFolder": "InstantGrowthPowder"
+  },
+  "Dependencies": [
+      {
+        "UniqueID": "Platonymous.ModUpdater",
+        "IsRequired": false
+      },
+  ]
+}

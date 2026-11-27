@@ -1,0 +1,9 @@
+﻿{
+  "Name": "Expert Sitting",
+  "Author": "aedenthorn",
+  "Version": "0.4.0",
+  "Description": "Teaches the farmer the advanced skill of how to sit on stuff.",
+  "UniqueID": "aedenthorn.ExpertSitting",
+  "EntryDll": "ExpertSitting.dll",
+  "MinimumApiVersion": "4.0.0"
+}

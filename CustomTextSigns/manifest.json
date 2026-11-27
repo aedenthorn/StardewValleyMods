@@ -1,0 +1,10 @@
+﻿{
+  "Name": "Custom Text Signs",
+  "Author": "aedenthorn",
+  "Version": "0.1.2",
+  "Description": "Custom Text Signs.",
+  "UniqueID": "aedenthorn.CustomTextSigns",
+  "EntryDll": "CustomTextSigns.dll",
+  "MinimumApiVersion": "4.0.0",
+  "UpdateKeys": [ "Nexus:53263" ]
+}

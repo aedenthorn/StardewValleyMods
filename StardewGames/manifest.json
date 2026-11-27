@@ -1,0 +1,10 @@
+﻿{
+	"Name": "Stardew Games",
+	"Author": "aedenthorn",
+	"Version": "0.1.0",
+	"Description": "Stardew Games.",
+	"UniqueID": "aedenthorn.StardewGames",
+	"EntryDll": "StardewGames.dll",
+	"MinimumApiVersion": "4.0.0",
+	"UpdateKeys": [ "Nexus:41623" ]
+}

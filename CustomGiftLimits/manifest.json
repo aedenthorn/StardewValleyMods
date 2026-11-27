@@ -1,0 +1,10 @@
+﻿{
+  "Name": "Custom Gift Limits",
+  "Author": "aedenthorn",
+  "Version": "0.2.2",
+  "Description": "Custom Gift Limits.",
+  "UniqueID": "aedenthorn.CustomGiftLimits",
+  "EntryDll": "CustomGiftLimits.dll",
+  "MinimumApiVersion": "4.0.0",
+  "UpdateKeys": [ "Nexus:13964" ]
+}

@@ -1,0 +1,11 @@
+{
+	// GMCM
+	"GMCM.ModEnabled.Name": "Mod Enabled",
+	"GMCM.OutdoorsOnly.Name": "Outdoors Only",
+	"GMCM.BlinkKey.Name": "Blink Key",
+	"GMCM.StaminaUse.Name": "Stamina Use",
+	"GMCM.StaminaManaUse.Name": "Stamina or Mana Use",
+	"GMCM.UseMana.Name": "Use Mana",
+	"GMCM.UseMana.Tooltip": "Determines whether to consume mana instead of stamina to maintain the bat form.",
+	"GMCM.BlinkSound.Name": "Blink Sound"
+}

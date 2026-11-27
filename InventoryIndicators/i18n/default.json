@@ -1,0 +1,22 @@
+{
+
+	// GMCM
+	"GMCM.ModEnabled.Name": "Mod Enabled",
+	"GMCM.ShowOnlyInMenu.Name": "Only In Menu",
+	"GMCM.ShowFavorites.Name": "Favorites",
+	"GMCM.ShowUniversalFavorites.Name": "Universal Favorites",
+	"GMCM.ShowUngiftedFavorites.Name": "Ungifted Favorites",
+	"GMCM.ShowBundleItems.Name": "Bundle Items",
+	"GMCM.ShowPlantableSeeds.Name": "Plantable Seeds",
+	"GMCM.OutlineWidth.Name": "Outline Width",
+	"GMCM.OutlineWidth.Desc": "Set to 0 to use full background",
+	"GMCM.JunimoColor.Name": "Junimo Color",
+	"can_plant": "This seed can be planted now!",
+	"can_bundle": "This item can be used in a bundle!",
+	"universal_love": "This item is universally loved!",
+	"x_love": "This item is loved by {0}!",
+	"x_love_duo": "This item is loved by {0} and {1}!",
+	"x_love_mult": "This item is loved by {0}, and {1}!",
+	"x_love_mult_separator": ", ",
+	"x_color": "Color for {0}"
+}

@@ -1,0 +1,16 @@
+{
+	"GMCM.ModEnabled.Name": "모드 활성화",
+	"GMCM.FuseConnected.Name": "연결된 조각 고정",
+	"GMCM.ShuffleMusic.Name": "음악 셔플",
+	"GMCM.Snap.Name": "조각 스냅",
+	"GMCM.SnapKey.Name": "스냅 토글",
+	"GMCM.SolveKey.Name": "해결 키",
+	"GMCM.SnapSound.Name": "스냅 효과음",
+	"GMCM.SolveSound.Name": "해결 효과음",
+	"box": "직소 퍼즐 상자",
+	"menu-text": "직소 퍼즐",
+	"music": "음악",
+	"map": "지도",
+	"season": "계절",
+	"piece-size": "조각 크기"
+}

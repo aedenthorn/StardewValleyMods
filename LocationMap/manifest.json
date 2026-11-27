@@ -1,0 +1,10 @@
+﻿{
+  "Name": "Location Map",
+  "Author": "aedenthorn",
+  "Version": "0.1.1",
+  "Description": "Location Map.",
+  "UniqueID": "aedenthorn.LocationMap",
+  "EntryDll": "LocationMap.dll",
+  "MinimumApiVersion": "4.0.0",
+  "UpdateKeys": [ "Nexus:46233" ]
+}

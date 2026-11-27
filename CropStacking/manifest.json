@@ -1,0 +1,9 @@
+﻿{
+  "Name": "Crop Stacking",
+  "Author": "aedenthorn",
+  "Version": "0.1.0",
+  "Description": "Close Doors.",
+  "UniqueID": "aedenthorn.CropStacking",
+  "EntryDll": "CropStacking.dll",
+  "UpdateKeys": [ "Nexus:" ]
+}

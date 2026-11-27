@@ -1,0 +1,15 @@
+﻿{
+  "Name": "Email",
+  "Author": "aedenthorn",
+  "Version": "0.2.0",
+  "Description": "Check mail on your mobile phone.",
+  "UniqueID": "aedenthorn.Email",
+  "EntryDll": "Email.dll",
+  "MinimumApiVersion": "4.0.0",
+  "Dependencies": [
+    {
+      "UniqueID": "aedenthorn.MobilePhone",
+      "IsRequired": true
+    }
+  ]
+}

@@ -1,0 +1,22 @@
+﻿{
+  "Name": "Ghost Speed",
+  "Author": "aedenthorn",
+  "Version": "0.1.0",
+  "Description": "Ghost Speed.",
+  "UniqueID": "aedenthorn.GhostSpeed",
+  "EntryDll": "GhostSpeed.dll",
+  "MinimumApiVersion": "3.15.0",
+  "ModUpdater": {
+    "Repository": "StardewValleyMods",
+    "User": "aedenthorn",
+    "Directory": "_releases",
+    "ModFolder": "GhostSpeed"
+  },
+  "Dependencies": [
+    {
+      "UniqueID": "Platonymous.ModUpdater",
+      "IsRequired": false
+    }
+  ],
+  "UpdateKeys": [ "Nexus:" ]
+}

@@ -1,0 +1,164 @@
+{
+  "6": {
+    "X": 0,
+    "Y": 2,
+    "flippedX": 0,
+    "flippedY": 2,
+    "facingUp": null,
+    "facingRight": null,
+    "facingDown": {
+      "X": 0,
+      "Y": 0,
+      "flippedX": 0,
+      "flippedY": -1,
+      "disable": false
+    },
+    "facingLeft": null
+  },
+  "11": {
+    "X": 0,
+    "Y": 0,
+    "flippedX": 0,
+    "flippedY": 0,
+    "facingUp": null,
+    "facingRight": {
+      "X": -2,
+      "Y": 0,
+      "flippedX": 2,
+      "flippedY": 0,
+      "disable": false
+    },
+    "facingDown": null,
+    "facingLeft": {
+      "X": -2,
+      "Y": 0,
+      "flippedX": 2,
+      "flippedY": 0,
+      "disable": false
+    }
+  },
+  "10": {
+    "X": 0,
+    "Y": 3,
+    "flippedX": 0,
+    "flippedY": 0,
+    "facingUp": {
+      "X": 0,
+      "Y": 0,
+      "flippedX": 0,
+      "flippedY": 0,
+      "disable": true
+    },
+    "facingRight": null,
+    "facingDown": null,
+    "facingLeft": null
+  },
+  "14": {
+    "X": 0,
+    "Y": 0,
+    "flippedX": 0,
+    "flippedY": 0,
+    "facingUp": {
+      "X": 0,
+      "Y": 0,
+      "flippedX": 0,
+      "flippedY": 0,
+      "disable": true
+    },
+    "facingRight": null,
+    "facingDown": null,
+    "facingLeft": null
+  },
+  "26": {
+    "X": 0,
+    "Y": 0,
+    "flippedX": 0,
+    "flippedY": 0,
+    "facingUp": null,
+    "facingRight": {
+      "X": -1,
+      "Y": 0,
+      "flippedX": 1,
+      "flippedY": 0,
+      "disable": false
+    },
+    "facingDown": null,
+    "facingLeft": {
+      "X": -1,
+      "Y": 0,
+      "flippedX": 1,
+      "flippedY": 0,
+      "disable": false
+    }
+  },
+  "31": {
+    "X": 0,
+    "Y": 1,
+    "flippedX": 0,
+    "flippedY": 0,
+    "facingUp": null,
+    "facingRight": null,
+    "facingDown": null,
+    "facingLeft": null
+  },
+  "32": {
+    "X": 0,
+    "Y": 0,
+    "flippedX": 0,
+    "flippedY": 0,
+    "facingUp": {
+      "X": 0,
+      "Y": 1,
+      "flippedX": 0,
+      "flippedY": 1,
+      "disable": false
+    },
+    "facingRight": null,
+    "facingDown": {
+      "X": 0,
+      "Y": 1,
+      "flippedX": 0,
+      "flippedY": 1,
+      "disable": false
+    },
+    "facingLeft": null
+  },
+  "56": {
+    "X": 0,
+    "Y": 0,
+    "flippedX": 0,
+    "flippedY": 0,
+    "facingUp": {
+      "X": 0,
+      "Y": 0,
+      "flippedX": 0,
+      "flippedY": 0,
+      "disable": true
+    },
+    "facingRight": null,
+    "facingDown": null,
+    "facingLeft": null
+  },
+  "61": {
+    "X": 0,
+    "Y": 0,
+    "flippedX": 0,
+    "flippedY": 0,
+    "facingUp": {
+      "X": 0,
+      "Y": -1,
+      "flippedX": 0,
+      "flippedY": -1,
+      "disable": false
+    },
+    "facingRight": null,
+    "facingDown": {
+      "X": 0,
+      "Y": -1,
+      "flippedX": 0,
+      "flippedY": -1,
+      "disable": false
+    },
+    "facingLeft": null
+  }
+}

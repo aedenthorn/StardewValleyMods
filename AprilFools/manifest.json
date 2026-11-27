@@ -1,0 +1,10 @@
+﻿{
+  "Name": "April Fools",
+  "Author": "aedenthorn",
+  "Version": "0.2.0",
+  "Description": "April Fools.",
+  "UniqueID": "aedenthorn.AprilFools",
+  "EntryDll": "AprilFools.dll",
+  "MinimumApiVersion": "4.0.0",
+  "UpdateKeys": [ "Nexus:11496" ]
+}

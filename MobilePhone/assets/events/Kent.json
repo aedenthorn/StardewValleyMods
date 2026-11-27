@@ -1,0 +1,11 @@
+{
+  "events": [
+    {
+      "name": "Kent-event-0",
+      "location": "SamHouse",
+      "eventId": "100",
+      "night": false,
+      "mail": null
+    }
+  ]
+}

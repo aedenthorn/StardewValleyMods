@@ -1,0 +1,10 @@
+﻿{
+  "Name": "People Seeds",
+  "Author": "aedenthorn",
+  "Version": "0.1.0",
+  "Description": "People Seeds.",
+  "UniqueID": "aedenthorn.PeopleSeeds",
+  "EntryDll": "PeopleSeeds.dll",
+  "MinimumApiVersion": "4.0.0",
+  "UpdateKeys": [ "Nexus:" ]
+}

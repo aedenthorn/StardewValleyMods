@@ -1,0 +1,10 @@
+﻿{
+  "Name": "Custom Bouquets",
+  "Author": "aedenthorn",
+  "Version": "0.1.0",
+  "Description": "Custom Bouquets.",
+  "UniqueID": "aedenthorn.CustomBouquets",
+  "EntryDll": "CustomBouquets.dll",
+  "MinimumApiVersion": "4.0.0",
+  "UpdateKeys": [ "Nexus:43809" ]
+}

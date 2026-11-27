@@ -1,0 +1,12 @@
+{
+	// GMCM
+	"GMCM.ModEnabled.Name": "Activer le Mod",
+	"GMCM.ContentOffsetKey.Name": "Touche de décalage du contenu",
+	"GMCM.ContentOffsetKey.Tooltip": "Lorsqu'elle est maintenue enfoncée, les touches haut et bas déplacent le contenu.",
+	"GMCM.UpKey.Name": "Touche haut",
+	"GMCM.UpKey.Tooltip": "Déplace le pot vers le haut lorsqu'elle est maintenue enfoncée tout en survolant la tuile du bas du mur.",
+	"GMCM.DownKey.Name": "Touche bas",
+	"GMCM.DownKey.Tooltip": "Déplace le pot vers le bas lorsqu'elle est maintenue enfoncée tout en survolant la tuile du bas du mur.",
+	"GMCM.OffsetY.Name": "Décalage Y",
+	"GMCM.OffsetY.Tooltip": "Décalage par défaut du pot sur le mur (positif vers le haut)."
+}

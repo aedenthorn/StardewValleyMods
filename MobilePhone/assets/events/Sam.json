@@ -1,0 +1,74 @@
+{
+  "events": [
+    {
+      "name": "Sam-event-0",
+      "location": "SamHouse",
+      "eventId": "44",
+      "night": false,
+      "mail": null
+    },
+    {
+      "name": "Sam-event-1",
+      "location": "SamHouse",
+      "eventId": "46",
+      "night": false,
+      "mail": null
+    },
+    {
+      "name": "Sam-event-2",
+      "location": "Beach",
+      "eventId": "733330",
+      "night": false,
+      "mail": null
+    },
+    {
+      "name": "Sam-event-3",
+      "location": "Town",
+      "eventId": "45",
+      "night": false,
+      "mail": null
+    },
+    {
+      "name": "Sam-event-4",
+      "location": "BusStop",
+      "eventId": "4081148",
+      "night": false,
+      "mail": null
+    },
+    {
+      "name": "Sam-event-5",
+      "location": "Town",
+      "eventId": "233104",
+      "night": false,
+      "mail": null
+    },
+    {
+      "name": "Sam-event-6",
+      "location": "FarmHouse",
+      "eventId": "3918600",
+      "night": false,
+      "mail": null
+    },
+    {
+      "name": "Sam-event-7",
+      "location": "FarmHouse",
+      "eventId": "3918601",
+      "night": false,
+      "mail": null
+    },
+    {
+      "name": "Sam-event-8",
+      "location": "FarmHouse",
+      "eventId": "3918602",
+      "night": false,
+      "mail": null
+    },
+    {
+      "name": "Sam-event-9",
+      "location": "FarmHouse",
+      "eventId": "3918603",
+      "night": false,
+      "mail": null
+    }
+  ]
+}

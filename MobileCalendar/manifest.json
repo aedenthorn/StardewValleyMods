@@ -1,0 +1,16 @@
+﻿{
+  "Name": "Mobile Calendar",
+  "Author": "aedenthorn",
+  "Version": "0.4.0",
+  "Description": "A Calendar app for your mobile phone.",
+  "UniqueID": "aedenthorn.MobileCalendar",
+  "EntryDll": "MobileCalendar.dll",
+  "MinimumApiVersion": "4.0.0",
+  "UpdateKeys": [ "Nexus:6601" ],
+  "Dependencies": [
+    {
+      "UniqueID": "aedenthorn.MobilePhone",
+      "IsRequired": true
+    }
+  ]
+}

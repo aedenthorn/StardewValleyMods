@@ -1,0 +1,10 @@
+﻿{
+	"Name": "Watering Can Tweaks",
+	"Author": "aedenthorn",
+	"Version": "0.3.2",
+	"Description": "Tweaks watering cans to water connected tiles when charging.",
+	"UniqueID": "aedenthorn.WateringCanTweaks",
+	"EntryDll": "WateringCanTweaks.dll",
+	"MinimumApiVersion": "4.0.0",
+	"UpdateKeys": [ "Nexus:10947" ]
+}

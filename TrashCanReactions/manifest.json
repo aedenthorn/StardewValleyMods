@@ -1,0 +1,22 @@
+﻿{
+  "Name": "Trash Can Reactions",
+  "Author": "aedenthorn",
+  "Version": "0.3.0",
+  "Description": "Allows customization of NPC reactions when they see a farmer rummaging through the trash.",
+  "UniqueID": "aedenthorn.TrashCanReactions",
+  "EntryDll": "TrashCanReactions.dll",
+  "MinimumApiVersion": "3.8.0",
+  "ModUpdater": {
+    "Repository": "StardewValleyMods",
+    "User": "aedenthorn",
+    "Directory": "_releases",
+    "ModFolder": "TrashCanReactions"
+  },
+  "Dependencies": [
+      {
+        "UniqueID": "Platonymous.ModUpdater",
+        "IsRequired": false
+      }
+  ],
+  "UpdateKeys": ["Nexus:7643"]
+}

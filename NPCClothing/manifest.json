@@ -1,0 +1,10 @@
+﻿{
+  "Name": "NPC Clothing",
+  "Author": "aedenthorn",
+  "Version": "0.2.0",
+  "Description": "NPC Clothing.",
+  "UniqueID": "aedenthorn.NPCClothing",
+  "EntryDll": "NPCClothing.dll",
+  "MinimumApiVersion": "4.0.0",
+  "UpdateKeys": [ "Nexus:13940" ]
+}

@@ -1,0 +1,8 @@
+{
+  "grilled-x": "Grilled {0}",
+  "grilled-desc": "Grilled to perfection.",
+  "burnt-x": "Burnt {0}",
+  "burnt-desc": "Burnt to a crisp.",
+  "cooker-busy": "Still cooking...",
+  "BurntAt.Desc": "Multiplier for grill time determining when an item becomes burnt."
+}

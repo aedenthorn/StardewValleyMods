@@ -1,0 +1,233 @@
+﻿{
+  "1": {
+    "stumpWood": [ { "id": "388" } ],
+    "stumpSap": [ { "id": "92" } ],
+    "stumpHardwood": [],
+    "stumpItems": [],
+    "wood": [
+      {
+        "id": "388",
+        "min": "12",
+        "max": "12"
+      }
+    ],
+    "sap": [
+      {
+        "id": "92",
+        "min": 5,
+        "max": 5
+      }
+    ],
+    "hardwood": [
+      {
+        "id": "709",
+        "min": 0,
+        "max": 0
+      }
+    ],
+    "items": [
+      {
+        "id": "309",
+        "min": 1,
+        "max": 2
+      }
+    ]
+  },
+  "2": {
+    "stumpWood": [ { "id": "388" } ],
+    "stumpSap": [ { "id": "92" } ],
+    "stumpHardwood": [],
+    "stumpItems": [],
+    "wood": [
+      {
+        "id": "388",
+        "min": "12",
+        "max": "12"
+      }
+    ],
+    "sap": [
+      {
+        "id": "92",
+        "min": 5,
+        "max": 5
+      }
+    ],
+    "hardwood": [
+      {
+        "id": "709",
+        "min": 0,
+        "max": 0
+      }
+    ],
+    "items": [
+      {
+        "id": "310",
+        "min": 1,
+        "max": 2
+      }
+    ]
+  },
+  "3": {
+    "stumpWood": [ { "id": "388" } ],
+    "stumpSap": [ { "id": "92" } ],
+    "stumpHardwood": [],
+    "stumpItems": [],
+    "wood": [
+      {
+        "id": "388",
+        "min": "12",
+        "max": "12"
+      }
+    ],
+    "sap": [
+      {
+        "id": "92",
+        "min": 5,
+        "max": 5
+      }
+    ],
+    "hardwood": [
+      {
+        "id": "709",
+        "min": 0,
+        "max": 0
+      }
+    ],
+    "items": [
+      {
+        "id": "311",
+        "min": 1,
+        "max": 2
+      }
+    ]
+  },
+  "4": {
+    "stumpWood": [ { "id": "388" } ],
+    "stumpSap": [ { "id": "92" } ],
+    "stumpHardwood": [],
+    "stumpItems": [],
+    "wood": [
+      {
+        "id": "388",
+        "min": "12",
+        "max": "12"
+      }
+    ],
+    "sap": [
+      {
+        "id": "92",
+        "min": 5,
+        "max": 5
+      }
+    ],
+    "hardwood": [
+      {
+        "id": "709",
+        "min": 0,
+        "max": 0
+      }
+    ],
+    "items": []
+  },
+  "5": {
+    "stumpWood": [ { "id": "388" } ],
+    "stumpSap": [ { "id": "92" } ],
+    "stumpHardwood": [],
+    "stumpItems": [],
+    "wood": [
+      {
+        "id": "388",
+        "min": "12",
+        "max": "12"
+      }
+    ],
+    "sap": [
+      {
+        "id": "92",
+        "min": 5,
+        "max": 5
+      }
+    ],
+    "hardwood": [
+      {
+        "id": "709",
+        "min": 0,
+        "max": 0
+      }
+    ],
+    "items": []
+  },
+  "6": {
+    "stumpWood": [ { "id": "388" } ],
+    "stumpSap": [ { "id": "92" } ],
+    "stumpHardwood": [],
+    "stumpItems": [],
+    "wood": [
+      {
+        "id": "388",
+        "min": "12",
+        "max": "12"
+      }
+    ],
+    "sap": [
+      {
+        "id": "92",
+        "min": 5,
+        "max": 5
+      }
+    ],
+    "hardwood": [
+      {
+        "id": "709",
+        "min": 0,
+        "max": 0
+      }
+    ],
+    "items": []
+  },
+  "7": {
+    "stumpWood": [],
+    "stumpSap": [],
+    "stumpHardwood": [],
+    "stumpItems": [],
+    "wood": [],
+    "sap": [],
+    "hardwood": [],
+    "items": [
+      {
+        "id": "420",
+        "min": 5,
+        "max": 5
+      }
+    ]
+  },
+  "8": {
+    "stumpWood": [],
+    "stumpSap": [ { "id": "92" } ],
+    "stumpHardwood": [
+      { "id": "709" }
+    ],
+    "stumpItems": [],
+    "wood": [],
+    "sap": [],
+    "hardwood": [
+      {
+        "id": "709",
+        "min": 0,
+        "max": 0
+      },
+      {
+        "id": "709",
+        "min": 7,
+        "max": 11
+      }
+    ],
+    "items": [
+      {
+        "id": "292",
+        "min": 1,
+        "max": 2
+      }
+    ]
+  }
+}

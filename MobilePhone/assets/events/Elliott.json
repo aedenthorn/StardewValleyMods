@@ -1,0 +1,53 @@
+{
+  "events": [
+    {
+      "name": "Elliott-event-0",
+      "location": "ElliottHouse",
+      "eventId": "39",
+      "night": false,
+      "mail": null
+    },
+    {
+      "name": "Elliott-event-1",
+      "location": "Saloon",
+      "eventId": "40",
+      "night": false,
+      "mail": null
+    },
+    {
+      "name": "Elliott-event-2",
+      "location": "ElliottHouse",
+      "eventId": "423502",
+      "night": false,
+      "mail": null
+    },
+    {
+      "name": "Elliott-event-3",
+      "location": "ArchaeologyHouse",
+      "eventId": "1848481",
+      "night": false,
+      "mail": null
+    },
+    {
+      "name": "Elliott-event-4",
+      "location": "Beach",
+      "eventId": "43",
+      "night": false,
+      "mail": null
+    },
+    {
+      "name": "Elliott-event-5",
+      "location": "Farm",
+      "eventId": "3912125",
+      "night": false,
+      "mail": null
+    },
+    {
+      "name": "Elliott-event-6",
+      "location": "FarmHouse",
+      "eventId": "3912132",
+      "night": false,
+      "mail": null
+    }
+  ]
+}

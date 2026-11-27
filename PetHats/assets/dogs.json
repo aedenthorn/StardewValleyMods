@@ -1,0 +1,280 @@
+{
+  "0": {
+    "X": 28,
+    "Y": -62,
+    "flippedX": 24,
+    "flippedY": -62,
+    "direction": 2,
+    "disable": false
+  },
+  "2": {
+    "X": 28,
+    "Y": -62,
+    "flippedX": 24,
+    "flippedY": -62,
+    "direction": 2,
+    "disable": false
+  },
+  "1": {
+    "X": 28,
+    "Y": -58,
+    "flippedX": 24,
+    "flippedY": -58,
+    "direction": 2,
+    "disable": false
+  },
+  "3": {
+    "X": 28,
+    "Y": -58,
+    "flippedX": 24,
+    "flippedY": -58,
+    "direction": 2,
+    "disable": false
+  },
+  "4": {
+    "X": 52,
+    "Y": -62,
+    "flippedX": 0,
+    "flippedY": -62,
+    "direction": 1,
+    "disable": false
+  },
+  "6": {
+    "X": 52,
+    "Y": -62,
+    "flippedX": 0,
+    "flippedY": -62,
+    "direction": 1,
+    "disable": false
+  },
+  "5": {
+    "X": 52,
+    "Y": -58,
+    "flippedX": 0,
+    "flippedY": -58,
+    "direction": 1,
+    "disable": false
+  },
+  "7": {
+    "X": 52,
+    "Y": -58,
+    "flippedX": 0,
+    "flippedY": -58,
+    "direction": 1,
+    "disable": false
+  },
+  "8": {
+    "X": 28,
+    "Y": -90,
+    "flippedX": 24,
+    "flippedY": -90,
+    "direction": 0,
+    "disable": false
+  },
+  "10": {
+    "X": 28,
+    "Y": -90,
+    "flippedX": 24,
+    "flippedY": -90,
+    "direction": 0,
+    "disable": false
+  },
+  "9": {
+    "X": 28,
+    "Y": -86,
+    "flippedX": 24,
+    "flippedY": -86,
+    "direction": 0,
+    "disable": false
+  },
+  "11": {
+    "X": 28,
+    "Y": -86,
+    "flippedX": 24,
+    "flippedY": -86,
+    "direction": 0,
+    "disable": false
+  },
+  "12": {
+    "X": 0,
+    "Y": -62,
+    "flippedX": 52,
+    "flippedY": -62,
+    "direction": 3,
+    "disable": false
+  },
+  "14": {
+    "X": 0,
+    "Y": -62,
+    "flippedX": 52,
+    "flippedY": -62,
+    "direction": 3,
+    "disable": false
+  },
+  "13": {
+    "X": 0,
+    "Y": -58,
+    "flippedX": 52,
+    "flippedY": -58,
+    "direction": 3,
+    "disable": false
+  },
+  "15": {
+    "X": 0,
+    "Y": -58,
+    "flippedX": 52,
+    "flippedY": -58,
+    "direction": 3,
+    "disable": false
+  },
+  "16": {
+    "X": 28,
+    "Y": -70,
+    "flippedX": 24,
+    "flippedY": -70,
+    "direction": 2,
+    "disable": false
+  },
+  "21": {
+    "X": 50,
+    "Y": -72,
+    "flippedX": 2,
+    "flippedY": -72,
+    "direction": 1,
+    "disable": false
+  },
+  "23": {
+    "X": 44,
+    "Y": -80,
+    "flippedX": 8,
+    "flippedY": -80,
+    "direction": 1,
+    "disable": false
+  },
+  "24": {
+    "X": 44,
+    "Y": -80,
+    "flippedX": 8,
+    "flippedY": -80,
+    "direction": 1,
+    "disable": false
+  },
+  "17": {
+    "X": 28,
+    "Y": -80,
+    "flippedX": 24,
+    "flippedY": -80,
+    "direction": 2,
+    "disable": false
+  },
+  "20": {
+    "X": 54,
+    "Y": -60,
+    "flippedX": -2,
+    "flippedY": -60,
+    "direction": 1,
+    "disable": false
+  },
+  "22": {
+    "X": 44,
+    "Y": -80,
+    "flippedX": 8,
+    "flippedY": -80,
+    "direction": 1,
+    "disable": false
+  },
+  "18": {
+    "X": 28,
+    "Y": -84,
+    "flippedX": 24,
+    "flippedY": -84,
+    "direction": 2,
+    "disable": false
+  },
+  "19": {
+    "X": 28,
+    "Y": -84,
+    "flippedX": 24,
+    "flippedY": -84,
+    "direction": 2,
+    "disable": false
+  },
+  "25": {
+    "X": 44,
+    "Y": -80,
+    "flippedX": 8,
+    "flippedY": -80,
+    "direction": 1,
+    "disable": false
+  },
+  "26": {
+    "X": 44,
+    "Y": -80,
+    "flippedX": 8,
+    "flippedY": -80,
+    "direction": 1,
+    "disable": false
+  },
+  "27": {
+    "X": 28,
+    "Y": -80,
+    "flippedX": 24,
+    "flippedY": -80,
+    "direction": 2,
+    "disable": false
+  },
+  "28": {
+    "X": 46,
+    "Y": -50,
+    "flippedX": 6,
+    "flippedY": -50,
+    "direction": 2,
+    "disable": false
+  },
+  "29": {
+    "X": 46,
+    "Y": -50,
+    "flippedX": 6,
+    "flippedY": -50,
+    "direction": 2,
+    "disable": false
+  },
+  "30": {
+    "disable": true
+  },
+  "31": {
+    "X": 44,
+    "Y": -80,
+    "flippedX": 8,
+    "flippedY": -80,
+    "direction": 1,
+    "disable": false
+  },
+  "32": {
+    "X": 56,
+    "Y": -72,
+    "flippedX": -4,
+    "flippedY": -72,
+    "direction": 1,
+    "disable": false
+  },
+  "33": {
+    "X": 56,
+    "Y": -68,
+    "flippedX": -4,
+    "flippedY": -68,
+    "direction": 1,
+    "disable": false
+  },
+  "34": {
+    "X": 56,
+    "Y": -62,
+    "flippedX": -4,
+    "flippedY": -62,
+    "direction": 1,
+    "disable": false
+  },
+  "35": {
+    "disable": true
+  }
+}

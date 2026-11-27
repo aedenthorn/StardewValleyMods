@@ -1,0 +1,10 @@
+﻿{
+  "Name": "Petting Animation",
+  "Author": "aedenthorn",
+  "Version": "0.1.4",
+  "Description": "Petting Animation.",
+  "UniqueID": "aedenthorn.PettingAnimation",
+  "EntryDll": "PettingAnimation.dll",
+  "MinimumApiVersion": "4.0.0",
+  "UpdateKeys": [ "Nexus:48311" ]
+}

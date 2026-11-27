@@ -1,0 +1,10 @@
+﻿{
+  "Name": "Custom Crane Game",
+  "Author": "aedenthorn",
+  "Version": "0.1.0",
+  "Description": "Custom Crane Game.",
+  "UniqueID": "aedenthorn.CustomCraneGame",
+  "EntryDll": "CustomCraneGame.dll",
+  "MinimumApiVersion": "4.0.0",
+  "UpdateKeys": [ "Nexus:" ]
+}

@@ -1,0 +1,20 @@
+﻿{
+	"Name": "Stardew VN",
+	"Author": "aedenthorn",
+	"Version": "0.1.0",
+	"Description": "Visual Novel Framewor.",
+	"UniqueID": "aedenthorn.StardewVN",
+	"EntryDll": "StardewVN.dll",
+	"MinimumApiVersion": "4.0.0",
+	"UpdateKeys": [ "Nexus:" ],
+	"Dependencies": [
+		{
+			"UniqueID": "aedenthorn.StardewGames",
+			"IsRequired": true
+		},
+		{
+			"UniqueID": "Pathoschild.ContentPatcher",
+			"IsRequired": true
+		}
+	]
+}

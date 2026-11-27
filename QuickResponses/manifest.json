@@ -1,0 +1,22 @@
+﻿{
+  "Name": "Quick Responses",
+  "Author": "aedenthorn",
+  "Version": "0.2.0",
+  "Description": "Quick responses.",
+  "UniqueID": "aedenthorn.QuickResponses",
+  "EntryDll": "QuickResponses.dll",
+  "MinimumApiVersion": "3.5.0",
+  "UpdateKeys": ["Nexus:6548"],
+  "ModUpdater": {
+    "Repository": "StardewValleyMods",
+    "User": "aedenthorn",
+    "Directory": "_releases",
+    "ModFolder": "QuickResponses"
+  },
+  "Dependencies": [
+      {
+        "UniqueID": "Platonymous.ModUpdater",
+        "IsRequired": false
+      },
+  ]
+}

@@ -1,0 +1,17 @@
+{
+	"ModEnabled": "Mod Enabled",
+	"DaysRipeBeforeFalling": "Days Ripe Before Falling",
+	"DaysRipeBeforeFalling.Desc": "A fruit is ripe the day it appears. It falls this many days later. 0 = the morning it appears. With Random Drops on, this is the minimum.",
+	"RandomDrops": "Random Drops",
+	"RandomDrops.Desc": "Each fruit picks its own day to fall, between Days Ripe Before Falling and Max Days Ripe Before Falling.",
+	"MaxDaysRipeBeforeFalling": "Max Days Ripe Before Falling",
+	"MaxDaysRipeBeforeFalling.Desc": "Only with Random Drops. The most days a ripe fruit stays on the tree before it falls.",
+	"DropAllInStorm": "Storms Drop All Fruit",
+	"DropAllInStorm.Desc": "On a stormy (lightning) day every fruit tree drops all its fruit that morning.",
+	"FarmOnly": "Farm Only",
+	"FarmOnly.Desc": "Only trees on the farm. Off = every location.",
+	"ShakePalmTrees": "Shake Palm Trees",
+	"ShakePalmTrees.Desc": "Shake down coconuts from palm trees every morning.",
+	"ShakeNormalTrees": "Shake Normal Trees",
+	"ShakeNormalTrees.Desc": "Shake down seeds from other wild trees every morning."
+}

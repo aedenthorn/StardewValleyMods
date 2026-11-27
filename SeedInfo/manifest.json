@@ -1,0 +1,10 @@
+﻿{
+  "Name": "Seed Info",
+  "Author": "aedenthorn",
+  "Version": "0.2.1",
+  "Description": "Seed Info.",
+  "UniqueID": "aedenthorn.SeedInfo",
+  "EntryDll": "SeedInfo.dll",
+  "MinimumApiVersion": "4.0.0",
+  "UpdateKeys": [ "Nexus:15754" ]
+}

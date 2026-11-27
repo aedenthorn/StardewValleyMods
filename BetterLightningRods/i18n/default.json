@@ -1,0 +1,12 @@
+{
+  // GMCM
+  "GMCM_Option_ModEnabled_Name": "Mod Enabled",
+  "GMCM_Option_UniqueCheck_Name": "Unique Check?",
+  "GMCM_Option_UniqueCheck_Tooltip": "Don't check the same rod twice per strike.",
+  "GMCM_Option_RodsToCheck_Name": "Rods To Check",
+  "GMCM_Option_RodsToCheck_Tooltip": "Each time lightning strikes, check this many rods to see if they can receive the charge.",
+  "GMCM_Option_LightningChance_Name": "Lightning Chance",
+  "GMCM_Option_LightningChance_Tooltip": "Percent chance for lightning to strike, every ten minutes.",
+  "GMCM_Option_Astraphobia_Name": "Astraphobia",
+  "GMCM_Option_Astraphobia_Tooltip": "Disable storm-related audio and visual effects."
+}

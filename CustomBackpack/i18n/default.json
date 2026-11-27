@@ -1,0 +1,13 @@
+﻿{
+  "backpack-upgrade-x": "Backpack Upgrade -- {0} slots",
+  "buy-backpack-for-x": "Purchase ({0:#,##0}g)",
+  "farmer-bought-x": "{{0}} bought the {0}.",
+
+  // GMCM
+  "GMCM_Option_ModEnabled_Name": "Mod Enabled?",
+  "GMCM_Option_ShowArrows_Name": "Show Arrows?",
+  "GMCM_Option_ShowRowNumbers_Name": "Show Row Numbers?",
+  "GMCM_Option_MinHandleHeight_Name": "Min Handle Height",
+  "GMCM_Option_ShowExpandedButton_Name": "Expand Button",
+  "GMCM_Option_ShiftRows_Name": "Toolbar Rows To Shift"
+}

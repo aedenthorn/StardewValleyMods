@@ -1,0 +1,10 @@
+﻿{
+  "Name": "Closer Crops",
+  "Author": "aedenthorn",
+  "Version": "0.2.7",
+  "Description": "Closer Crops.",
+  "UniqueID": "aedenthorn.CloserCrops",
+  "EntryDll": "CloserCrops.dll",
+  "MinimumApiVersion": "4.0.0",
+  "UpdateKeys": [ "Nexus:47027" ]
+}

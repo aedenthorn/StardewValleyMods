@@ -1,0 +1,16 @@
+﻿{
+  "Name": "Mobile Catalogues",
+  "Author": "aedenthorn",
+  "Version": "1.1.0",
+  "Description": "Online shopping for your mobile phone.",
+  "UniqueID": "aedenthorn.MobileCatalogues",
+  "EntryDll": "MobileCatalogues.dll",
+  "MinimumApiVersion": "4.0.0",
+  "UpdateKeys": [ "Nexus:6543" ],
+  "Dependencies": [
+    {
+      "UniqueID": "aedenthorn.MobilePhone",
+      "IsRequired": true
+    }
+  ]
+}

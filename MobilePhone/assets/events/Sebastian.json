@@ -1,0 +1,53 @@
+{
+  "events": [
+    {
+      "name": "Sebastian-event-0",
+      "location": "SebastianRoom",
+      "eventId": "2794460",
+      "night": false,
+      "mail": null
+    },
+    {
+      "name": "Sebastian-event-1",
+      "location": "Mountain",
+      "eventId": "384883",
+      "night": false,
+      "mail": null
+    },
+    {
+      "name": "Sebastian-event-2",
+      "location": "SebastianRoom",
+      "eventId": "27",
+      "night": false,
+      "mail": "choseWarrior,choseWizard,choseHealer,killedSkeleton,destroyedPods,savedFriends"
+    },
+    {
+      "name": "Sebastian-event-3",
+      "location": "Beach",
+      "eventId": "29",
+      "night": false,
+      "mail": null
+    },
+    {
+      "name": "Sebastian-event-4",
+      "location": "Mountain",
+      "eventId": "384882",
+      "night": false,
+      "mail": null
+    },
+    {
+      "name": "Sebastian-event-5",
+      "location": "Mountain",
+      "eventId": "9333219",
+      "night": false,
+      "mail": null
+    },
+    {
+      "name": "Sebastian-event-6",
+      "location": "FarmHouse",
+      "eventId": "9333220",
+      "night": false,
+      "mail": null
+    }
+  ]
+}

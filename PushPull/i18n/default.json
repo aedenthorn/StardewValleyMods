@@ -1,0 +1,12 @@
+{
+	// GMCM
+	"GMCM.ModEnabled.Name": "Mod Enabled",
+	"GMCM.Sound.Name": "Sound",
+	"GMCM.Speed.Name": "Move Speed",
+	"GMCM.Delay.Name": "Delay",
+	"GMCM.Pull.Name": "Enable Pulling",
+	"GMCM.Rocks.Name": "Move Rocks",
+	"GMCM.Sticks.Name": "Move Sticks",
+	"GMCM.Constructs.Name": "Move Constructs",
+	"GMCM.Clumps.Name": "Move Resource Clumps"
+}

@@ -1,0 +1,25 @@
+{
+  "events": [
+    {
+      "name": "Gus-event-0",
+      "location": "Town",
+      "eventId": "502969",
+      "night": false,
+      "mail": null
+    },
+    {
+      "name": "Gus-event-1",
+      "location": "Saloon",
+      "eventId": "96",
+      "night": false,
+      "mail": null
+    },
+    {
+      "name": "Gus-event-2",
+      "location": "Farm",
+      "eventId": "980558",
+      "night": false,
+      "mail": null
+    }
+  ]
+}

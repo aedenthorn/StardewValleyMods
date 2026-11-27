@@ -1,0 +1,22 @@
+﻿{
+  "Name": "Farm Anywhere",
+  "Author": "aedenthorn",
+  "Version": "0.1.0",
+  "Description": "Lets you plant and grow seeds anywhere.",
+  "UniqueID": "aedenthorn.FarmAnywhere",
+  "EntryDll": "FarmAnywhere.dll",
+  "MinimumApiVersion": "3.8.0",
+  "UpdateKeys": ["Nexus:7726"],
+  "ModUpdater": {
+    "Repository": "StardewValleyMods",
+    "User": "aedenthorn",
+    "Directory": "_releases",
+    "ModFolder": "FarmAnywhere"
+  },
+  "Dependencies": [
+      {
+        "UniqueID": "Platonymous.ModUpdater",
+        "IsRequired": false
+      },
+  ]
+}

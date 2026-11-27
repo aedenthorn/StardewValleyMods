@@ -1,0 +1,12 @@
+{
+  // GMCM
+  "GMCM_Option_ModEnabled_Name": "Activer le Mod",
+  "GMCM_Option_UniqueCheck_Name": "Vérification unique",
+  "GMCM_Option_UniqueCheck_Tooltip": "Ne pas vérifier le même paratonnerre deux fois par frappe.",
+  "GMCM_Option_RodsToCheck_Name": "Paratonnerres à vérifier",
+  "GMCM_Option_RodsToCheck_Tooltip": "À chaque fois qu'un éclair frappe, vérifiez ce nombre de paratonnerres pour voir s'ils peuvent recevoir la charge.",
+  "GMCM_Option_LightningChance_Name": "Chance d'éclair (en %)",
+  "GMCM_Option_LightningChance_Tooltip": "Pourcentage de chance qu'un éclair frappe, toutes les dix minutes.",
+  "GMCM_Option_Astraphobia_Name": "Astraphobie",
+  "GMCM_Option_Astraphobia_Tooltip": "Désactive les effets audio et visuels liés aux orages."
+}

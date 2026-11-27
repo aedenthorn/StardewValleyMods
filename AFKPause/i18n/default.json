@@ -1,0 +1,10 @@
+{
+	// GMCM
+	"GMCM.ModEnabled.Name": "Mod Enabled",
+	"GMCM.FreezeGame.Name": "Freeze Game",
+	"GMCM.FreezeGame.Tooltip": "By default the mod freezes the game, which is similar to having a menu open. If you disable this option, character movement will continue while AFK, but the game clock will be paused.",
+	"GMCM.TicksTilAFK.Name": "Ticks Until AFK",
+	"GMCM.ShowAFKText.Name": "Show AFK Text",
+	"GMCM.AFKText.Name": "AFK Text",
+	"GMCM.WakeOnMouseMove.Name": "Wake On Mouse"
+}

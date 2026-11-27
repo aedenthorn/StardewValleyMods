@@ -1,0 +1,5 @@
+{
+  "not-empty": "Giant crop is not empty!",
+  "ModEnabled.Desc": "Disabling the mod will remove crop buildings and their contents for the current save only!",
+  "ProtectObjects.Desc": "Prevents destroying giant crops with objects in their interior."
+}

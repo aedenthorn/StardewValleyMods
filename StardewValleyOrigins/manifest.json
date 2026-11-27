@@ -1,0 +1,22 @@
+﻿{
+  "Name": "Stardew Valley Origins",
+  "Author": "aedenthorn",
+  "Version": "0.1.0",
+  "Description": "Rainbow Trail.",
+  "UniqueID": "aedenthorn.StardewValleyOrigins",
+  "EntryDll": "StardewValleyOrigins.dll",
+  "MinimumApiVersion": "3.15.0",
+  "ModUpdater": {
+    "Repository": "StardewValleyMods",
+    "User": "aedenthorn",
+    "Directory": "_releases",
+    "ModFolder": "StardewValleyOrigins"
+  },
+  "Dependencies": [
+    {
+      "UniqueID": "Platonymous.ModUpdater",
+      "IsRequired": false
+    }
+  ],
+  "UpdateKeys": [ "Nexus:" ]
+}

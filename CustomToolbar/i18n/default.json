@@ -1,0 +1,19 @@
+{
+	// GMCM
+	"GMCM.ModEnabled.Name": "Mod Enabled",
+	"GMCM.ShowWithActiveMenu.Name": "Show With Menu",
+	"GMCM.ShowWithActiveMenu.Tooltip": "Show toolbar while menu is open.",
+	"GMCM.Vertical.Name": "Vertical Toolbar",
+	"GMCM.RotateKey.Name": "Rotate Key",
+	"GMCM.RotateKey.Tooltip": "Hover over the toolbar and press this key to rotate.",
+	"GMCM.PinToolbar.Name": "Pin Toolbar",
+	"GMCM.PinToolbar.Tooltip": "Don't swap sides when player moves.",
+	"GMCM.SetPosition.Name": "Set Position",
+	"GMCM.SetPosition.Tooltip": "Don't allow toolbar to move using Advanced Menu Positioning.",
+	"GMCM.MarginX.Name": "Set Margin X",
+	"GMCM.MarginY.Name": "Set Margin Y",
+	"GMCM.OffsetX.Name": "Set Offset X",
+	"GMCM.OffsetY.Name": "Set Offset Y",
+	"GMCM.PinnedPosition.Name": "Pinned Position",
+	"GMCM.PinnedPosition.Tooltip": "When pinned is set, which of the four positions to keep the toolbar in."
+}

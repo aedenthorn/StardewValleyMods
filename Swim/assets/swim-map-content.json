@@ -1,0 +1,222 @@
+﻿{
+    "maps":[
+        {
+            "Name":"Custom_UnderwaterBeach",
+            "Features":[
+                "SmolFishies",
+                "Crabs",
+                "OceanTreasure",
+                "OceanResources",
+                "Underwater"
+            ],
+            "DiveLocations": [
+                {
+                    "StartX":3,
+                    "StartY":27,
+                    "Width":4,
+                    "Height":2,
+                    "OtherMapName":"Custom_ScubaCrystalCave",
+                    "OtherMapPos":{
+                        "X":10,
+                        "Y":12,
+                    }
+                },
+                {
+                    "OtherMapName":"Beach",
+                },
+            ],
+        },
+        {
+            "Name":"Beach",
+            "DiveLocations": [
+                {
+                    "OtherMapName":"Custom_UnderwaterBeach",
+                },
+            ],
+            "EdgeWarps":[
+                {
+                    "ThisMapEdge":"Top",
+                    "FirstTile": 57,
+                    "LastTile": 62,
+                    "DestinationHorizontal": true,
+                    "OtherMapIndex": 109,
+                    "OtherMapFirstTile": 88,
+                    "OtherMapLastTile": 92,
+                    "OtherMapName":"Town",
+                },
+                {
+                    "ThisMapEdge": "Left",
+                    "FirstTile": 0,
+                    "LastTile": 49,
+                    "DestinationHorizontal": false,
+                    "OtherMapIndex": 120,
+                    "OtherMapFirstTile": 104,
+                    "OtherMapLastTile": 119,
+                    "OtherMapName": "Forest"
+                }
+            ]
+        },
+        {
+            "Name":"Custom_ScubaCrystalCave",
+            "Features":[
+                "WaterTiles",
+            ],
+            "DiveLocations": [
+                {
+                    "OtherMapName":"Custom_UnderwaterBeach",
+                    "OtherMapPos":{
+                        "X":5,
+                        "Y":28,
+                    }
+                },
+            ],
+        },
+        {
+            "Name":"Forest",
+            "DiveLocations": [
+                {
+                    "StartX":37,
+                    "StartY":29,
+                    "Width":3,
+                    "Height":8,
+                    "OtherMapName":"Custom_ScubaCave",
+                    "OtherMapPos":{
+                        "X":9,
+                        "Y":6,
+                    }
+                },
+            ],
+            "EdgeWarps":[
+                {
+                    "ThisMapEdge":"Right",
+                    "FirstTile": 39,
+                    "LastTile": 48,
+                    "DestinationHorizontal": false,
+                    "OtherMapIndex": 0,
+                    "OtherMapFirstTile": 95,
+                    "OtherMapLastTile": 104,
+                    "OtherMapName":"Town",
+                },
+                {
+                    "ThisMapEdge":"Right",
+                    "FirstTile": 106,
+                    "LastTile": 119,
+                    "DestinationHorizontal": false,
+                    "OtherMapIndex": 0,
+                    "OtherMapFirstTile": 14,
+                    "OtherMapLastTile": 26,
+                    "OtherMapName":"Beach",
+                },
+            ]
+        },    
+        {
+            "Name":"Custom_ScubaCave",
+            "Features":[
+                "WaterTiles",
+            ],
+            "DiveLocations": [
+                {
+                    "OtherMapName":"Forest",
+                    "OtherMapPos":{
+                        "X":38,
+                        "Y":33,
+                    }
+                },
+            ],
+        },
+        {
+            "Name":"Custom_ScubaAbigailCave",
+            "DiveLocations": [
+                {
+                    "OtherMapName":"Custom_UnderwaterMountain",
+                    "OtherMapPos":{
+                        "X":48,
+                        "Y":5,
+                    }
+                },
+            ],
+        },
+        {
+            "Name":"Custom_UnderwaterMountain",
+            "Features":[
+                "BigFishies",
+                "Minerals",
+                "Underwater"
+            ],
+            "DiveLocations": [
+                {
+                    "StartX":47,
+                    "StartY":4,
+                    "Width":2,
+                    "Height":1,
+                    "OtherMapName":"Custom_ScubaAbigailCave",
+                    "OtherMapPos":{
+                        "X":8,
+                        "Y":9,
+                    }
+                },
+                {
+                    "OtherMapName":"Mountain",
+                },
+            ],
+        },
+        {
+            "Name":"Mountain",
+            "Features":[
+                "FixWaterTiles"
+            ],
+            "DiveLocations": [
+                {
+                    "OtherMapName":"Custom_UnderwaterMountain",
+                },
+            ],
+            "EdgeWarps":[
+                {
+                    "ThisMapEdge":"Bottom",
+                    "FirstTile": 62,
+                    "LastTile": 85,
+                    "DestinationHorizontal": true,
+                    "OtherMapIndex": 5,
+                    "OtherMapFirstTile": 95,
+                    "OtherMapLastTile": 95,
+                    "OtherMapName":"Town",
+                },
+            ],
+        },
+        {
+            "Name":"Town",
+            "EdgeWarps":[
+                {
+                    "ThisMapEdge":"Bottom",
+                    "FirstTile": 88,
+                    "LastTile": 92,
+                    "DestinationHorizontal": true,
+                    "OtherMapIndex": 0,
+                    "OtherMapFirstTile": 57,
+                    "OtherMapLastTile": 62,
+                    "OtherMapName":"Beach",
+                },
+                {
+                    "ThisMapEdge":"Top",
+                    "FirstTile": 94,
+                    "LastTile": 96,
+                    "DestinationHorizontal": true,
+                    "OtherMapIndex": 40,
+                    "OtherMapFirstTile": 64,
+                    "OtherMapLastTile": 78,
+                    "OtherMapName":"Mountain",
+                },
+                {
+                    "ThisMapEdge":"Left",
+                    "FirstTile": 95,
+                    "LastTile": 104,
+                    "DestinationHorizontal": false,
+                    "OtherMapIndex": 119,
+                    "OtherMapFirstTile": 39,
+                    "OtherMapLastTile": 48,
+                    "OtherMapName":"Forest",
+                },
+            ]
+        },
+    ]
+}

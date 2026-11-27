@@ -1,0 +1,12 @@
+{
+	// GMCM
+	"GMCM.ModEnabled.Name": "Mod Enabled",
+	"GMCM.SubmergeHarvestable.Name": "Submerge When Harvestable",
+	"GMCM.ShowRipples.Name": "Show Ripples",
+	"GMCM.ShowRipples.Tooltip": "Only shown when no harvest",
+	"GMCM.BobberScale.Name": "Bobber Scale",
+	"GMCM.BobberTintR.Name": "Red Tint",
+	"GMCM.BobberTintG.Name": "Green Tint",
+	"GMCM.BobberTintB.Name": "Blue Tint",
+	"GMCM.BobberOpacity.Name": "Opacity"
+}

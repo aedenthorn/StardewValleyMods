@@ -1,0 +1,12 @@
+{
+	"GMCM.ModEnabled.Name": "Mod Enabled",
+	"GMCM.OpacityPercent.Name": "Opacity Percent",
+	"GMCM.SizePercent.Name": "Size Percent",
+	"GMCM.PressKeys.Name": "Press Keys",
+	"GMCM.RepeatInterval.Name": "Repeat Interval",
+	"GMCM.RequireKeyPress.Name": "Require Key Press",
+	"GMCM.IncludeGiantable.Name": "Show For Giantable",
+	"GMCM.OnlyWhenWatering.Name": "Only When Watering",
+	"GMCM.XOffset.Name": "X Offset",
+	"GMCM.YOffset.Name": "Y Offset"
+}

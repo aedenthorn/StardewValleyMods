@@ -1,0 +1,10 @@
+﻿{
+  "Name": "FuzzyTime",
+  "Author": "aedenthorn",
+  "Version": "0.2.0",
+  "Description": "FuzzyTime.",
+  "UniqueID": "aedenthorn.FuzzyTime",
+  "EntryDll": "FuzzyTime.dll",
+  "MinimumApiVersion": "4.0.0",
+  "UpdateKeys": [ "Nexus:47831" ]
+}

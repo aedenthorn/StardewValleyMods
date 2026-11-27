@@ -1,0 +1,10 @@
+﻿{
+  "Name": "Playground Mod",
+  "Author": "aedenthorn",
+  "Version": "0.5.0",
+  "Description": "Playground Mod.",
+  "UniqueID": "aedenthorn.PlaygroundMod",
+  "EntryDll": "PlaygroundMod.dll",
+  "MinimumApiVersion": "4.1.0",
+  "UpdateKeys": [ "Nexus:14125" ]
+}

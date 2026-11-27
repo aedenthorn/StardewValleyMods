@@ -1,0 +1,60 @@
+{
+  "events": [
+    {
+      "name": "Alex-event-0",
+      "location": "Beach",
+      "eventId": "20",
+      "night": false,
+      "mail": null
+    },
+    {
+      "name": "Alex-event-1",
+      "location": "Town",
+      "eventId": "2481135",
+      "night": false,
+      "mail": null
+    },
+    {
+      "name": "Alex-event-2",
+      "location": "JoshHouse",
+      "eventId": "21",
+      "night": false,
+      "mail": null
+    },
+    {
+      "name": "Alex-event-3",
+      "location": "JoshHouse",
+      "eventId": "2119820",
+      "night": false,
+      "mail": null
+    },
+    {
+      "name": "Alex-event-4",
+      "location": "Beach",
+      "eventId": "288847",
+      "night": false,
+      "mail": null
+    },
+    {
+      "name": "Alex-event-5",
+      "location": "Saloon",
+      "eventId": "911526",
+      "night": false,
+      "mail": null
+    },
+    {
+      "name": "Alex-event-6",
+      "location": "Saloon",
+      "eventId": "3917590",
+      "night": false,
+      "mail": null
+    },
+    {
+      "name": "Alex-event-7",
+      "location": "Farm",
+      "eventId": "3917587",
+      "night": false,
+      "mail": "gaveAlexMoney"
+    }
+  ]
+}

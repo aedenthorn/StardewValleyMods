@@ -1,0 +1,10 @@
+﻿{
+  "Name": "Tutorials",
+  "Author": "aedenthorn",
+  "Version": "0.1.0",
+  "Description": "Tutorials.",
+  "UniqueID": "aedenthorn.Tutorials",
+  "EntryDll": "Tutorials.dll",
+  "MinimumApiVersion": "4.0.0",
+  "UpdateKeys": [ "Nexus:48555" ]
+}

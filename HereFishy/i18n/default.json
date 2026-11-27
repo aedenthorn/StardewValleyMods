@@ -1,0 +1,10 @@
+{
+	// GMCM
+	"GMCM.ModEnabled.Name": "Mod Enabled",
+	"GMCM.PlaySound.Name": "Play Sound",
+	"GMCM.PlayGenderedSound.Name": "Gendered Sound",
+	"GMCM.StaminaCost.Name": "Stamina Cost",
+	"GMCM.AllowMovement.Name": "Allow Movement",
+	"GMCM.RequireRod.Name": "Require Rod",
+	"GMCM.TriggerButton.Name": "Trigger Button"
+}

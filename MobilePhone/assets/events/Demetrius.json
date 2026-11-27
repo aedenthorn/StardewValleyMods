@@ -1,0 +1,18 @@
+{
+  "events": [
+    {
+      "name": "Demetrius-event-0",
+      "location": "Farm",
+      "eventId": "65",
+      "night": false,
+      "mail": null
+    },
+    {
+      "name": "Demetrius-event-1",
+      "location": "ScienceHouse",
+      "eventId": "25",
+      "night": false,
+      "mail": null
+    }
+  ]
+}

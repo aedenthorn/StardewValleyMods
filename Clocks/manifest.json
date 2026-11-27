@@ -1,0 +1,10 @@
+﻿{
+  "Name": "Clocks",
+  "Author": "aedenthorn",
+  "Version": "0.2.2",
+  "Description": "Clocks.",
+  "UniqueID": "aedenthorn.Clocks",
+  "EntryDll": "Clocks.dll",
+  "MinimumApiVersion": "4.0.0",
+  "UpdateKeys": [ "Nexus:47733" ]
+}

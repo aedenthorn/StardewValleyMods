@@ -1,0 +1,74 @@
+{
+  "events": [
+    {
+      "name": "Sophia-event-0",
+      "location": "Custom_BlueMoonVineyard",
+      "eventId": "8185290",
+      "night": false,
+      "mail": null
+    },
+    {
+      "name": "Sophia-event-1",
+      "location": "Custom_BlueMoonVineyard",
+      "eventId": "8185291",
+      "night": false,
+      "mail": null
+    },
+    {
+      "name": "Sophia-event-2",
+      "location": "Town",
+      "eventId": "8185292",
+      "night": false,
+      "mail": null
+    },
+    {
+      "name": "Sophia-event-3",
+      "location": "Town",
+      "eventId": "8185293",
+      "night": false,
+      "mail": null
+    },
+    {
+      "name": "Sophia-event-4",
+      "location": "Custom_SophiaHouse",
+      "eventId": "8185294",
+      "night": false,
+      "mail": null
+    },
+    {
+      "name": "Sophia-event-5",
+      "location": "Custom_SophiaHouse",
+      "eventId": "8185297",
+      "night": false,
+      "mail": null
+    },
+    {
+      "name": "Sophia-event-6",
+      "location": "Custom_SophiaHouse",
+      "eventId": "8185298",
+      "night": false,
+      "mail": null
+    },
+    {
+      "name": "Sophia-event-7",
+      "location": "Town",
+      "eventId": "8185295",
+      "night": false,
+      "mail": null
+    },
+    {
+      "name": "Sophia-event-8",
+      "location": "Custom_SophiaHouse",
+      "eventId": "8185296",
+      "night": false,
+      "mail": null
+    },
+    {
+      "name": "Sophia-event-10",
+      "location": "Custom_SophiaHouse",
+      "eventId": "8185296",
+      "night": false,
+      "mail": null
+    }
+  ]
+}

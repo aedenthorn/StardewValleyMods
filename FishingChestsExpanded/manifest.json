@@ -1,0 +1,16 @@
+﻿{
+	"Name": "Fishing Chests Expanded",
+	"Author": "aedenthorn",
+	"Version": "0.4.3",
+	"Description": "This customizable mod greatly expands the range of items received in fishing treasure chests.",
+	"UniqueID": "aedenthorn.FishingChestsExpanded",
+	"EntryDll": "FishingChestsExpanded.dll",
+	"MinimumApiVersion": "4.0.0",
+	"Dependencies": [
+		{
+			"UniqueID": "aedenthorn.AdvancedLootFramework",
+			"IsRequired": true
+		}
+	],
+	"UpdateKeys": [ "Nexus:7694" ]
+}

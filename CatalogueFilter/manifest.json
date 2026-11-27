@@ -1,0 +1,10 @@
+﻿{
+  "Name": "CatalogueFilter",
+  "Author": "aedenthorn",
+  "Version": "0.3.2",
+  "Description": "CatalogueFilter.",
+  "UniqueID": "aedenthorn.CatalogueFilter",
+  "EntryDll": "CatalogueFilter.dll",
+  "MinimumApiVersion": "4.0.0",
+  "UpdateKeys": [ "Nexus:13137" ]
+}

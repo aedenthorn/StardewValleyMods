@@ -1,0 +1,19 @@
+{
+	"welcome": "Que voulez-vous faire avec {{thingName}} ?",
+	"pickup": "Ramasser",
+	"rename": "Renommer",
+	"grow": "Faire grandir",
+	"water": "Arroser",
+	"revive": "Faire revivre",
+	"move": "Déplacer",
+	"kill": "Tuer",
+	"remove": "Supprimer",
+
+	"what-name": "Quel nom souhaitez-vous lui donner ?",
+	"confirm-move": "Dans quelle direction le déplacer ?",
+	"confirm-remove": "Voulez-vous vraiment le supprimer du jeu ?",
+
+	// GMCM
+	"GMCM.ModEnabled.Name": "Activer le Mod",
+	"GMCM.WizardKey.Name": "Touche de l'assistant"
+}

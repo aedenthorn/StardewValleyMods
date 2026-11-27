@@ -1,0 +1,22 @@
+﻿{
+  "Name": "Non-Random Prarie King",
+  "Author": "aedenthorn",
+  "Version": "0.1.0",
+  "Description": "Removes randomness almost entirely from Prarie King game.",
+  "UniqueID": "aedenthorn.NonRandomPrairieKing",
+  "EntryDll": "NonRandomPrairieKing.dll",
+  "MinimumApiVersion": "3.5.0",
+  "UpdateKeys": ["Nexus:6509"],
+  "ModUpdater": {
+    "Repository": "StardewValleyMods",
+    "User": "aedenthorn",
+    "Directory": "_releases",
+    "ModFolder": "NonRandomPrairieKing"
+  },
+  "Dependencies": [
+      {
+        "UniqueID": "Platonymous.ModUpdater",
+        "IsRequired": false
+      },
+  ]
+}

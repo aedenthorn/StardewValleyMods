@@ -1,0 +1,10 @@
+﻿{
+	"Name": "Prismatic Flowers",
+	"Author": "aedenthorn",
+	"Version": "0.2.1",
+	"Description": "Prismatic Flowers.",
+	"UniqueID": "aedenthorn.PrismaticFlowers",
+	"EntryDll": "PrismaticFlowers.dll",
+	"MinimumApiVersion": "4.0.0",
+	"UpdateKeys": [ "Nexus:46031" ]
+}

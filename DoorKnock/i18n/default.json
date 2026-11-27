@@ -1,0 +1,13 @@
+{
+	"ModEnabled": "Mod Enabled",
+	"WakeWhenSleeping": "Wake Sleeping",
+	"OverrideRebuff": "Override Rebuff",
+	"OverrideRebuff.Desc": "Knock instead of showing message preventing entry.",
+	"KnockButton": "Knock Button",
+	"KnockSound": "Knock Sound",
+	"KnockNumber": "Knock Times",
+	"KnockInterval": "Knock Interval",
+	"AnswerDelay": "Answer Delay",
+	"WaitTime": "Wait Time"
+
+}

@@ -1,0 +1,10 @@
+﻿{
+  "Name": "Immersive Toolbar",
+  "Author": "aedenthorn",
+  "Version": "0.1.0",
+  "Description": "Immersive Toolbar.",
+  "UniqueID": "aedenthorn.ImmersiveToolbar",
+  "EntryDll": "ImmersiveToolbar.dll",
+  "MinimumApiVersion": "4.0.0",
+  "UpdateKeys": [ "Nexus:54385" ]
+}

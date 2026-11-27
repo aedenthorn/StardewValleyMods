@@ -1,0 +1,10 @@
+﻿{
+  "Name": "Object Product Display",
+  "Author": "aedenthorn",
+  "Version": "0.2.0",
+  "Description": "Object Product Display.",
+  "UniqueID": "aedenthorn.ObjectProductDisplay",
+  "EntryDll": "ObjectProductDisplay.dll",
+  "MinimumApiVersion": "4.0.0",
+  "UpdateKeys": [ "Nexus:18365" ]
+}

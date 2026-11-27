@@ -1,0 +1,8 @@
+{
+	// GMCM
+	"GMCM.ModEnabled.Name": "Activer le Mod",
+	"GMCM.Separator.Name": "Séparateur",
+	"GMCM.SeparatorX.Name": "Séparateur X",
+	"GMCM.SeparatorY.Name": "Séparateur Y",
+	"GMCM.SeparatorInterval.Name": "Interval de séparation"
+}

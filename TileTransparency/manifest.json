@@ -1,0 +1,10 @@
+﻿{
+  "Name": "Tile Transparency",
+  "Author": "aedenthorn",
+  "Version": "0.3.0",
+  "Description": "Tile Transparency.",
+  "UniqueID": "aedenthorn.TileTransparency",
+  "EntryDll": "TileTransparency.dll",
+  "MinimumApiVersion": "4.0.0",
+  "UpdateKeys": [ "Nexus:17288" ]
+}

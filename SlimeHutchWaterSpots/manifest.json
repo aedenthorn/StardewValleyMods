@@ -1,0 +1,10 @@
+﻿{
+  "Name": "SlimeHutchWaterSpots",
+  "Author": "aedenthorn",
+  "Version": "0.2.0",
+  "Description": "SlimeHutchWaterSpots.",
+  "UniqueID": "aedenthorn.SlimeHutchWaterSpots",
+  "EntryDll": "SlimeHutchWaterSpots.dll",
+  "MinimumApiVersion": "4.0.0",
+  "UpdateKeys": [ "Nexus:13778" ]
+}

@@ -1,0 +1,7 @@
+﻿{
+  "Config.EnableMod": "Mod Enabled",
+  "Config.AllowMultSame": "Allow Same Flower",
+  "Config.AllowMultSame.Desc": "Show crafting options where the same flower is used more than once.",
+  "Config.ForceColorFlowers": "Force Colored",
+  "Config.ForceColorFlowers.Desc": "Forcibly convert non-colored flowers (e.g. added by cheats) in inventory to randomly colored flowers when opening the crafting menu."
+}

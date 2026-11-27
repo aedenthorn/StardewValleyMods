@@ -1,0 +1,16 @@
+﻿{
+  "Name": "Fashion Sense Appearance Menu",
+  "Author": "aedenthorn",
+  "Version": "0.1.1",
+  "Description": "Fashion Sense Appearance Menu.",
+  "UniqueID": "aedenthorn.FashionSenseAppearanceMenu",
+  "EntryDll": "FashionSenseAppearanceMenu.dll",
+  "MinimumApiVersion": "4.0.0",
+  "UpdateKeys": [ "Nexus:47865" ],
+  "Dependencies": [
+    {
+      "UniqueID": "PeacefulEnd.FashionSense",
+      "IsRequired": true
+    }
+  ]
+}

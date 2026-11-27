@@ -1,0 +1,10 @@
+﻿{
+  "Name": "Custom Ore Nodes",
+  "Author": "aedenthorn",
+  "Version": "3.0.0",
+  "Description": "Spawns custom ore nodes in mines.",
+  "UniqueID": "aedenthorn.CustomOreNodes",
+  "EntryDll": "CustomOreNodes.dll",
+  "UpdateKeys": [ "Nexus:5966" ],
+  "MinimumApiVersion": "4.0.0"
+}

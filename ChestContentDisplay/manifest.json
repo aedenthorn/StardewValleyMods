@@ -1,0 +1,10 @@
+﻿{
+	"Name": "Chest Content Display",
+	"Author": "aedenthorn",
+	"Version": "0.1.0",
+	"Description": "Chest Content Display.",
+	"UniqueID": "aedenthorn.ChestContentDisplay",
+	"EntryDll": "ChestContentDisplay.dll",
+	"MinimumApiVersion": "4.0.0",
+	"UpdateKeys": [ "Nexus:" ]
+}

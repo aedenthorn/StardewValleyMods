@@ -1,0 +1,10 @@
+﻿{
+  "Name": "Shipping Bonuses",
+  "Author": "aedenthorn",
+  "Version": "0.1.0",
+  "Description": "Shipping Bonuses.",
+  "UniqueID": "aedenthorn.ShippingBonuses",
+  "EntryDll": "ShippingBonuses.dll",
+  "MinimumApiVersion": "4.0.0",
+  "UpdateKeys": [ "Nexus:" ]
+}

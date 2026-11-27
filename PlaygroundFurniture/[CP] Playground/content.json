@@ -1,0 +1,54 @@
+﻿{
+	"Format": "2.9.0",
+	"Changes": [
+		{
+			"Action": "EditData",
+			"Target": "Data/Furniture",
+			"Entries": {
+				"{{ModId}}_Swings": "{{ModId}}_Swings/chair/5 5/5 1/1/10000/-1/{{i18n:furniture.Swings.name}}/0/{{ModId}}\\Swings/false/",
+				"{{ModId}}_Slide": "{{ModId}}_Slide/chair/5 5/5 2/1/5000/-1/{{i18n:furniture.Slide.name}}/0/{{ModId}}\\Slide/false/",
+				"{{ModId}}_Duck": "{{ModId}}_Duck/chair/2 2/2 1/1/2000/-1/{{i18n:furniture.Duck.name}}/0/{{ModId}}\\Duck/false/",
+			}
+		},
+		{
+			"Action": "EditData",
+			"Target": "Data/Shops",
+			"TargetField": [
+				"Carpenter",
+				"Items"
+			],
+			"Entries": {
+				"{{ModId}}_Swings": {
+					"Id": "{{ModId}}_Swings",
+					"ItemId": "{{ModId}}_Swings",
+					"Price": 10000
+				},
+				"{{ModId}}_Slide": {
+					"Id": "{{ModId}}_Slide",
+					"ItemId": "{{ModId}}_Slide",
+					"Price": 5000
+				},
+				"{{ModId}}_Duck": {
+					"Id": "{{ModId}}_Duck",
+					"ItemId": "{{ModId}}_Duck",
+					"Price": 400
+				}
+			}
+		},
+		{
+			"Action": "Load",
+			"Target": "{{ModId}}/Slide",
+			"FromFile": "assets/Slide.png"
+		},
+		{
+			"Action": "Load",
+			"Target": "{{ModId}}/Swings",
+			"FromFile": "assets/Swings.png"
+		},
+		{
+			"Action": "Load",
+			"Target": "{{ModId}}/Duck",
+			"FromFile": "assets/Duck.png"
+		}
+	]
+}

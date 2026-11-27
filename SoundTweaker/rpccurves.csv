@@ -1,0 +1,12 @@
+RpcCurve,RpcCurve.FileOffset,RpcCurve.Variable,RpcCurve.IsGlobal,RpcCurve.Parameter
+0 - 280,6,Pitch
+1 - 303,7,Volume
+2 - 335,8,FilterFrequency
+3 - 358,9,Pitch
+4 - 381,8,FilterFrequency
+5 - 404,8,FilterQFactor
+6 - 427,7,Volume
+7 - 477,8,FilterQFactor
+8 - 599,8,FilterFrequency
+9 - 658,8,Pitch
+10 - 708,7,Volume

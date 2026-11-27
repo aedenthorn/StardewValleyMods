@@ -1,0 +1,10 @@
+﻿{
+	"Name": "Map Teleport",
+	"Author": "aedenthorn",
+	"Version": "0.5.1",
+	"Description": "Allows you to fast travel to any of the labelled locations on the map.",
+	"UniqueID": "aedenthorn.MapTeleport",
+	"EntryDll": "MapTeleport.dll",
+	"MinimumApiVersion": "4.0.0",
+	"UpdateKeys": [ "Nexus:7675" ]
+}

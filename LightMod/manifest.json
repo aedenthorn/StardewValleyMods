@@ -1,0 +1,16 @@
+﻿{
+  "Name": "Light Mod",
+  "Author": "aedenthorn",
+  "Version": "0.4.0",
+  "Description": "Light Mod.",
+  "UniqueID": "aedenthorn.LightMod",
+  "EntryDll": "LightMod.dll",
+  "MinimumApiVersion": "4.1.0",
+  "ModUpdater": {
+    "Repository": "StardewValleyMods",
+    "User": "aedenthorn",
+    "Directory": "_releases",
+    "ModFolder": "LightMod"
+  },
+  "UpdateKeys": [ "Nexus:14387" ]
+}

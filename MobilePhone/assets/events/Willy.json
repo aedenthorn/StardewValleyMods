@@ -1,0 +1,25 @@
+{
+  "events": [
+    {
+      "name": "Willy-event-0",
+      "location": "Beach",
+      "eventId": "739330",
+      "night": false,
+      "mail": null
+    },
+    {
+      "name": "Willy-event-1",
+      "location": "Beach",
+      "eventId": "404798",
+      "night": false,
+      "mail": null
+    },
+    {
+      "name": "Willy-event-2",
+      "location": "Beach",
+      "eventId": "711130",
+      "night": false,
+      "mail": null
+    }
+  ]
+}

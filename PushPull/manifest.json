@@ -1,0 +1,10 @@
+﻿{
+	"Name": "Push Pull",
+	"Author": "aedenthorn",
+	"Version": "0.1.3",
+	"Description": "Lets you push and pull stuff.",
+	"UniqueID": "aedenthorn.PushPull",
+	"EntryDll": "PushPull.dll",
+	"MinimumApiVersion": "4.1.0",
+	"UpdateKeys": [ "Nexus:34375" ]
+}

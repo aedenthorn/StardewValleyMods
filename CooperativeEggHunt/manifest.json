@@ -1,0 +1,10 @@
+﻿{
+	"Name": "Cooperative Egg Hunt",
+	"Author": "aedenthorn",
+	"Version": "0.1.1",
+	"Description": "Makes the spring egg hunt cooperative.",
+	"UniqueID": "aedenthorn.CooperativeEggHunt",
+	"EntryDll": "CooperativeEggHunt.dll",
+	"MinimumApiVersion": "4.0.0",
+	"UpdateKeys": [ "Nexus:17058" ]
+}

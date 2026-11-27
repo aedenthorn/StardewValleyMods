@@ -1,0 +1,13 @@
+{
+	"GMCM.EnableMod": "Mod Enabled",
+	"GMCM.PreventGoingToSkullCave": "Prevent Fall to Skull Cave ",
+	"GMCM.SkipConfirmOnShaftJump": "Skip Confirm",
+	"GMCM.ShaftCost": "Shaft Cost",
+	"GMCM.ShaftCost.TT": "Which HowMuch",
+	"GMCM.SkillReq": "Skill Req.",
+	"GMCM.PercentDamage": "% Damage",
+	"GMCM.MinLevels": "Min Levels",
+	"GMCM.MaxLevels": "Max Levels",
+	"DisplayName": "Mine Shaft",
+	"Description": "It's a hole."
+}

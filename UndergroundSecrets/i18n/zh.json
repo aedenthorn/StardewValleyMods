@@ -1,0 +1,10 @@
+{
+	"disarmed-trap": "你发现了一个陷阱并解除了它",
+	"triggered-trap": "你触发了陷阱",
+	"altar-type-0": "阴森的祭坛",
+	"altar-type-1": "可怕的祭坛",
+	"altar-type-2": "由巴祭坛",
+	"altar-explain-0": "一个阴森的祭坛，像是残暴的神灵。它正在等待着献祭。",
+	"altar-explain-1": "一个可怕的祭坛，像是邪恶的神灵。它似乎接受了祭品。",
+	"altar-explain-2": "一个漂亮的由巴祭坛。你感觉到它正在等待着献祭。",
+}

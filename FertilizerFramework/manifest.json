@@ -1,0 +1,10 @@
+﻿{
+	"Name": "Fertilizer Framework",
+	"Author": "aedenthorn",
+	"Version": "0.1.0",
+	"Description": "Fertilizer Framework.",
+	"UniqueID": "aedenthorn.FertilizerFramework",
+	"EntryDll": "FertilizerFramework.dll",
+	"MinimumApiVersion": "4.0.0",
+	"UpdateKeys": [ "Nexus:" ]
+}

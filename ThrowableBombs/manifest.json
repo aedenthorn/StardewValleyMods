@@ -1,0 +1,10 @@
+﻿{
+  "Name": "Throwable Bombs",
+  "Author": "aedenthorn",
+  "Version": "0.1.0",
+  "Description": "Throwable Bombs.",
+  "UniqueID": "aedenthorn.ThrowableBombs",
+  "EntryDll": "ThrowableBombs.dll",
+  "MinimumApiVersion": "4.0.0",
+  "UpdateKeys": [ "Nexus:55856" ]
+}

@@ -1,0 +1,10 @@
+﻿{
+  "Name": "Show Missing Collection Entries",
+  "Author": "aedenthorn",
+  "Version": "0.2.0",
+  "Description": "Show Missing Collection Entries.",
+  "UniqueID": "aedenthorn.ShowMissingCollectionEntries",
+  "EntryDll": "ShowMissingCollectionEntries.dll",
+  "MinimumApiVersion": "4.0.0",
+  "UpdateKeys": [ "Nexus:47916" ]
+}

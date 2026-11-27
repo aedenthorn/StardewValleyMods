@@ -1,0 +1,10 @@
+﻿{
+	"Name": "Giant Trees",
+	"Author": "aedenthorn",
+	"Version": "0.1.0",
+	"Description": "Turns groups of trees into giant trees a la Minecraft.",
+	"UniqueID": "aedenthorn.GiantTrees",
+	"EntryDll": "GiantTrees.dll",
+	"MinimumApiVersion": "4.1.0",
+	"UpdateKeys": [ "Nexus:" ]
+}

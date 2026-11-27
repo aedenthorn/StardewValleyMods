@@ -1,0 +1,22 @@
+﻿{
+  "Name": "Train Tracks",
+  "Author": "aedenthorn",
+  "Version": "0.5.0",
+  "Description": "Train Tracks.",
+  "UniqueID": "aedenthorn.TrainTracks",
+  "EntryDll": "TrainTracks.dll",
+  "MinimumApiVersion": "3.13.0",
+  "ModUpdater": {
+    "Repository": "StardewValleyMods",
+    "User": "aedenthorn",
+    "Directory": "_releases",
+    "ModFolder": "TrainTracks"
+  },
+  "UpdateKeys": [ "Nexus:10927" ],
+  "Dependencies": [
+    {
+      "UniqueID": "Platonymous.ModUpdater",
+      "IsRequired": false
+    }
+  ]
+}

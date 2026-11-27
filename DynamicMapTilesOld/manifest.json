@@ -1,0 +1,10 @@
+{
+	"Name": "Dynamic Map Tiles",
+	"Author": "aedenthorn",
+	"Version": "0.9.7",
+	"Description": "Makes map tiles dynamic - change tile, tile sheet, and properties on-the-fly.",
+	"UniqueID": "aedenthorn.DynamicMapTiles",
+	"EntryDll": "DynamicMapTiles.dll",
+	"MinimumApiVersion": "4.0.0",
+	"UpdateKeys": [ "Nexus:14566" ]
+}

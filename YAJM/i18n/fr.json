@@ -1,0 +1,9 @@
+{
+	// GMCM
+	"GMCM.ModEnabled.Name": "Activer le Mod",
+	"GMCM.JumpButton.Name": "Touche de saut",
+	"GMCM.PlayJumpSound.Name": "Activer le son du saut",
+	"GMCM.JumpSound.Name": "Son du saut",
+	"GMCM.MaxJumpDistance.Name": "Distance maximale de saut",
+	"GMCM.OrdinaryJumpHeight.Name": "Hauteur du saut simple"
+}

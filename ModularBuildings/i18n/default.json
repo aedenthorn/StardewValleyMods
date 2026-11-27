@@ -1,0 +1,13 @@
+{
+  "new-recipe-x": "You learned how to cook {0}!",
+  "cooking-failed": "You failed to cook anything useful...",
+  "ingredients": "Ingredients:",
+  "will-cook-1": "(will cook {0} item)",
+  "will-cook-x": "(will cook {0} items)",
+  "plus-x-more": "and {0} more",
+  "cannot-cook": "Cannot cook while holding a different item!",
+  "cook": "Cook",
+  "x-of-y": "{0} {1}",
+  "player": "Player",
+  "fridge-x": "Fridge {0}"
+}

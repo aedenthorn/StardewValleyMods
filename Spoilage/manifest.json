@@ -1,0 +1,9 @@
+﻿{
+  "Name": "Spoilage",
+  "Author": "aedenthorn",
+  "Version": "0.4.1",
+  "Description": "Spoilage.",
+  "UniqueID": "aedenthorn.Spoilage",
+  "EntryDll": "Spoilage.dll",
+  "UpdateKeys": [ "Nexus:14712" ]
+}

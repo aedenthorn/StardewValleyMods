@@ -1,0 +1,10 @@
+﻿{
+  "Name": "Farm Plots",
+  "Author": "aedenthorn",
+  "Version": "0.2.3",
+  "Description": "Farm Plots.",
+  "UniqueID": "aedenthorn.FarmPlots",
+  "EntryDll": "FarmPlots.dll",
+  "MinimumApiVersion": "4.0.0",
+  "UpdateKeys": [ "Nexus:40026" ]
+}

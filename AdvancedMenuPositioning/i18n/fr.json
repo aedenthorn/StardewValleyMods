@@ -1,0 +1,9 @@
+{
+	// GMCM
+	"GMCM.ModEnabled.Name": "Activer le Mod",
+	"GMCM.MoveKeys.Name": "Touches pour déplacer",
+	"GMCM.DetachKeys.Name": "Touches pour détacher",
+	"GMCM.CloseKeys.Name": "Touches pour fermer",
+	"GMCM.StrictKeybindings.Name": "Activer les raccourcis stricts",
+	"GMCM.StrictKeybindings_Tooltip": "Lorsque activé, le mode de raccourcis stricts garantit que seules les touches désignées sont appuyées. Cela permet d'effectuer les actions par défaut du jeu associées à ces touches (par exemple, dans le menu de fabrication, MajGauche + ClicGauche déplacera le menu, et MajGauche + ClicGauche + UneAutreTouche fabriquera 5 objets à la fois)."
+}

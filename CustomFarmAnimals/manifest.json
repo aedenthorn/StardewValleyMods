@@ -1,0 +1,22 @@
+﻿{
+  "Name": "Custom Farm Animals",
+  "Author": "aedenthorn",
+  "Version": "0.1.0",
+  "Description": "Custom Farm Animals.",
+  "UniqueID": "aedenthorn.CustomFarmAnimals",
+  "EntryDll": "CustomFarmAnimals.dll",
+  "MinimumApiVersion": "3.13.0",
+  "ModUpdater": {
+    "Repository": "StardewValleyMods",
+    "User": "aedenthorn",
+    "Directory": "_releases",
+    "ModFolder": "CustomFarmAnimals"
+  },
+  "UpdateKeys": [ "Nexus:" ],
+  "Dependencies": [
+    {
+      "UniqueID": "Platonymous.ModUpdater",
+      "IsRequired": false
+    }
+  ]
+}

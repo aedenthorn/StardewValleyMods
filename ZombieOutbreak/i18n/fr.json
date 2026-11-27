@@ -1,0 +1,26 @@
+﻿{
+	// Item
+	"item.zombie-cure.name": "Remède contre le virus zombie",
+	"item.zombie-cure.description": "Un médicament puissant qui peut inverser les effets de la zombification.",
+
+	// Mail
+	"mail.zombie-cure": "@,^^En réponse à la récente épidémie et avec l'aide de Demetrius, j'ai mis au point un remède potentiel contre la zombification.^^Malheureusement, je n'ai pas tous les ingrédients sous la main, mais voici une liste de ce dont tu auras besoin.^^-Dr. Harvey{{craftingRecipe}}[#]Du docteur Harvey",
+
+	// Dialogue
+	"dialogue.thanks.1": "Merci de m'avoir guéri ! Je pensais que j'étais perdu à jamais.",
+	"dialogue.thanks.2": "Je n'arrive pas à croire que je sois redevenu normal... Tu m'as sauvé la vie !",
+	"dialogue.thanks.3": "Tu n'as pas idée à quel point je suis reconnaissant... Merci !",
+	"dialogue.thanks.4": "Je suis enfin redevenu moi-même... Grâce à toi.",
+
+	// Buff
+	"buff.zombification.name": "Zombification",
+	"buff.zombification.description": "Vous ressentez une étrange envie de cerveaux... et une faim incontrôlable.",
+	"buff.zombification.source": "Contagion inconnue",
+
+	// GMCM
+	"GMCM.ModEnabled.Name": "Activer le Mod",
+	"GMCM.DailyZombificationChance.Name": "Chance de zombification quotidienne (en %)",
+	"GMCM.InfectionRadius.Name": "Rayon d'infection",
+	"GMCM.InfectionChancePerSecond.Name": "Chance d'infection par seconde (en %)",
+	"GMCM.GreenTint.Name": "Teinte verte (en %)"
+}

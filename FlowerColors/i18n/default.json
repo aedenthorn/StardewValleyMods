@@ -1,0 +1,19 @@
+{
+	"ModEnabled": "Mod Enabled",
+	"HoverToShowCombined": "Show Combined on Hover",
+	"HoverToShowCombined.Desc": "Only cycle through colors when hovering over a combined flower stack.",
+	"CombineOnOrganize": "Combine on Organize",
+	"CombineOnOrganize.Desc": "Combine all flowers when pressing the Organize button.",
+	"AppendCombinedNumberToName": "Show Combined Number",
+	"AppendCombinedNumberToName.Desc": "Show the number of different colors after a combined stack's name.",
+	"FixSliderBar": "Fix SliderBar",
+	"FixSliderBar.Desc": "Fix a vanilla bug not letting slider bars reach 100.",
+	"FixWhiteFlowerDrawing": "Fix Flower Drawing",
+	"FixWhiteFlowerDrawing.Desc": "Fix a vanilla bug not drawing white flowers.",
+	"CombineButton": "Combine Button",
+	"CopyButton": "Copy Button",
+	"PasteButton": "Paste Button",
+	"PickButton": "Pick Button",
+	"PrismaticModKey": "Prismatic Mod Key",
+	"ScrollModKey": "Scroll Mod Key"
+}

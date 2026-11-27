@@ -1,0 +1,10 @@
+﻿{
+  "Name": "Crop Hat",
+  "Author": "aedenthorn",
+  "Version": "0.2.0",
+  "Description": "Crop Hat.",
+  "UniqueID": "aedenthorn.CropHat",
+  "EntryDll": "CropHat.dll",
+  "MinimumApiVersion": "3.13.0",
+  "UpdateKeys": [ "Nexus:11787" ]
+}

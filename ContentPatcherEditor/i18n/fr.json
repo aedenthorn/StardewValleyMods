@@ -1,0 +1,23 @@
+{
+  "GMCM_Option_ModEnabled_Name": "Activer le Mod",
+  "GMCM_Option_ShowButton_Name": "Bouton sur l'écran-titre",
+  "GMCM_Option_Backup_Name": "Fichiers de sauvegarde",
+  "GMCM_Option_MenuButton_Name": "Touches pour ouvrir le menu",
+  "GMCM_Option_OpenModsFolderAfterZip_Name": "Ouvrir le dossier après la compression",
+  "content-packs": "Packs de contenu CP",
+  "manifest": "Manifeste",
+  "changes": "Changements",
+  "config": "Configuration",
+  "add": "Ajouter",
+  "back": "Retour à la liste des packs",
+  "up": "Haut",
+  "down": "Bas",
+  "remove": "Supprimer",
+  "allow-blank": "Autoriser les valeurs vides",
+  "allow-multiple": "Autoriser les valeurs multiples",
+  "folder": "Ouvrir le dossier",
+  "zip": "Créer un fichier zip",
+  "save": "Sauvegarder le pack de contenu",
+  "reload": "Recharger le pack de contenu",
+  "revert": "Annuler les modifications du pack de contenu"
+}

@@ -1,0 +1,16 @@
+﻿{
+  "Name": "Free Love",
+  "Author": "aedenthorn",
+  "Version": "1.5.7",
+  "Description": "Free Love",
+  "UniqueID": "aedenthorn.FreeLove",
+  "EntryDll": "FreeLove.dll",
+  "MinimumApiVersion": "4.0.0",
+  "UpdateKeys": [ "Nexus:10021" ],
+  "Dependencies": [
+    {
+      "UniqueID": "Pathoschild.ContentPatcher",
+      "IsRequired": false
+    }
+  ]
+}

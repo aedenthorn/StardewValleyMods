@@ -1,0 +1,22 @@
+﻿{
+  "Name": "Sprinkler Mod",
+  "Author": "aedenthorn",
+  "Version": "0.1.5",
+  "Description": "Sprinkler Mod.",
+  "UniqueID": "aedenthorn.SprinklerMod",
+  "EntryDll": "SprinklerMod.dll",
+  "MinimumApiVersion": "3.15.0",
+  "ModUpdater": {
+    "Repository": "StardewValleyMods",
+    "User": "aedenthorn",
+    "Directory": "_releases",
+    "ModFolder": "SprinklerMod"
+  },
+  "UpdateKeys": [ "Nexus:15385" ],
+  "Dependencies": [
+    {
+      "UniqueID": "Platonymous.ModUpdater",
+      "IsRequired": false
+    }
+  ]
+}

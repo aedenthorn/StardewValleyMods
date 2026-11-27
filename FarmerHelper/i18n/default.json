@@ -1,0 +1,19 @@
+﻿{
+  "Config.EnableMod": "Mod Enabled?",
+  "Config.LabelLatePlanting": "Label late planting?",
+  "Config.PreventLatePlant": "Prevent late planting?",
+  "Config.WarnAboutPlantsUnwateredBeforeSleep": "Warn plants unwatered?",
+  "Config.IgnoreFlowers": "Ignore Flowers?",
+  "Config.WarnAboutPlantsUnharvestedBeforeSleep": "Warn plants unharvested?",
+  "Config.WarnAboutAnimalsOutsideBeforeSleep": "Warn animals outside?",
+  "Config.WarnAboutAnimalsHungryBeforeSleep": "Warn animals hungry?",
+  "Config.WarnAboutAnimalsUnharvestedBeforeSleep": "Warn animals unharvested?",
+  "Config.DaysPerMonth": "Days per month",
+  "too-late": "[Late] {0}",
+  "too-late-message": "Too late to plant {0}!",
+  "animals-outside": "{0} You have animals still outside!",
+  "animals-need-petting": "{0} You have animals still to pet!",
+  "animals-need-harvesting": "{0} You have animals that still need harvesting!",
+  "plants-need-watering": "{0} You have plants that need watering!",
+  "plants-ready-for-harvest": "{0} You have plants ready for harvest!"
+}

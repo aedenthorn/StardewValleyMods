@@ -1,0 +1,10 @@
+﻿{
+  "Name": "Planned Parenthood",
+  "Author": "aedenthorn",
+  "Version": "0.3.1",
+  "Description": "Planned Parenthood.",
+  "UniqueID": "aedenthorn.PlannedParenthood",
+  "EntryDll": "PlannedParenthood.dll",
+  "MinimumApiVersion": "4.0.0",
+  "UpdateKeys": [ "Nexus:12869" ]
+}

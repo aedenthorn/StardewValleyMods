@@ -1,0 +1,10 @@
+﻿{
+  "Name": "Quest Time Limits",
+  "Author": "aedenthorn",
+  "Version": "0.2.0",
+  "Description": "Quest Time Limits.",
+  "UniqueID": "aedenthorn.QuestTimeLimits",
+  "EntryDll": "QuestTimeLimits.dll",
+  "MinimumApiVersion": "4.0.0",
+  "UpdateKeys": [ "Nexus:16403" ]
+}

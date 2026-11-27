@@ -1,0 +1,10 @@
+﻿{
+	"Name": "Like a Duck to Water",
+	"Author": "aedenthorn",
+	"Version": "0.5.1",
+	"Description": "Makes ducks actually want to swim in water once they have been fed and petted.",
+	"UniqueID": "aedenthorn.LikeADuckToWater",
+	"EntryDll": "LikeADuckToWater.dll",
+	"MinimumApiVersion": "4.0.0",
+	"UpdateKeys": [ "Nexus:15860" ]
+}

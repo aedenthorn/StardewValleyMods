@@ -1,0 +1,10 @@
+{
+	// GMCM
+	"GMCM.ModEnabled.Name": "Activer le Mod",
+	"GMCM.FreezeGame.Name": "Figer le jeu",
+	"GMCM.FreezeGame.Tooltip": "Par défaut, le mod fige le jeu, ce qui est similaire à avoir un menu ouvert. Si vous désactivez cette option, le mouvement des personnages se poursuivra lorsque vous êtes absent, mais l'horloge du jeu sera arrêtée.",
+	"GMCM.TicksTilAFK.Name": "Ticks avant d'être absent",
+	"GMCM.ShowAFKText.Name": "Afficher le message d'absence",
+	"GMCM.AFKText.Name": "Message d'absence",
+	"GMCM.WakeOnMouseMove.Name": "Désactiver l'absence au mouvement de la souris"
+}

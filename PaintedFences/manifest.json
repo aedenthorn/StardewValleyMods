@@ -1,0 +1,10 @@
+﻿{
+  "Name": "Painted Fences",
+  "Author": "aedenthorn",
+  "Version": "0.1.0",
+  "Description": "Painted Fences.",
+  "UniqueID": "aedenthorn.PaintedFences",
+  "EntryDll": "PaintedFences.dll",
+  "MinimumApiVersion": "4.0.0",
+  "UpdateKeys": [ "Nexus:44823" ]
+}

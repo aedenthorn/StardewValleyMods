@@ -1,0 +1,10 @@
+﻿{
+	"Name": "Fillable Vases",
+	"Author": "aedenthorn",
+	"Version": "0.1.0",
+	"Description": "Fillable Vases.",
+	"UniqueID": "aedenthorn.FillableVases",
+	"EntryDll": "FillableVases.dll",
+	"MinimumApiVersion": "4.0.0",
+	"UpdateKeys": [ "Nexus:" ]
+}

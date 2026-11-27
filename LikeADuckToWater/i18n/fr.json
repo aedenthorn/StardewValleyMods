@@ -1,0 +1,11 @@
+{
+	// GMCM
+	"GMCM.ModEnabled.Name": "Activer le Mod",
+	"GMCM.EatBeforeSwimming.Name": "Manger avant de nager",
+	"GMCM.SwimAfterAutoPet.Name": "Nager après une caresse automatique",
+	"GMCM.MaxDistance.Name": "Distance maximale",
+	"GMCM.MaxDistance.Tooltip": "La distance maximale en tuiles autorisée pour ajouter un canard à la file d'attente.",
+	"GMCM.ChancePerTick.Name": "Chance par tick",
+	"GMCM.ChancePerTick.Tooltip": "Probabilité qu'un canard en attente se mette en mouvement à chaque tick du jeu.",
+	"GMCM.FriendshipGain.Name": "Gain d'amitié"
+}

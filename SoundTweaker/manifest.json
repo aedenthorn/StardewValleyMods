@@ -1,0 +1,10 @@
+﻿{
+  "Name": "SoundTweaker",
+  "Author": "aedenthorn",
+  "Version": "0.5.1",
+  "Description": "SoundTweaker.",
+  "UniqueID": "aedenthorn.SoundTweaker",
+  "EntryDll": "SoundTweaker.dll",
+  "MinimumApiVersion": "4.1.0",
+  "UpdateKeys": [ "Nexus:14767" ]
+}

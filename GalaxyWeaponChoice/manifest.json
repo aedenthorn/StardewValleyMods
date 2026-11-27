@@ -1,0 +1,22 @@
+﻿{
+  "Name": "Galaxy Weapon Choice",
+  "Author": "aedenthorn",
+  "Version": "0.1.0",
+  "Description": "Galaxy Weapon Choice.",
+  "UniqueID": "aedenthorn.GalaxyWeaponChoice",
+  "EntryDll": "GalaxyWeaponChoice.dll",
+  "MinimumApiVersion": "3.15.0",
+  "ModUpdater": {
+    "Repository": "StardewValleyMods",
+    "User": "aedenthorn",
+    "Directory": "_releases",
+    "ModFolder": "GalaxyWeaponChoice"
+  },
+  "Dependencies": [
+    {
+      "UniqueID": "Platonymous.ModUpdater",
+      "IsRequired": false
+    }
+  ],
+  "UpdateKeys": [ "Nexus:" ]
+}

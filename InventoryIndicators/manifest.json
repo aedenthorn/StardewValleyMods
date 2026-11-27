@@ -1,0 +1,10 @@
+﻿{
+	"Name": "Inventory Indicators",
+	"Author": "aedenthorn",
+	"Version": "0.5.0",
+	"Description": "Adds info to inventory icons.",
+	"UniqueID": "aedenthorn.InventoryIndicators",
+	"EntryDll": "InventoryIndicators.dll",
+	"MinimumApiVersion": "4.1.0",
+	"UpdateKeys": [ "Nexus:37876" ]
+}

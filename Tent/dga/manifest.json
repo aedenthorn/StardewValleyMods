@@ -1,0 +1,14 @@
+﻿{
+	"Name": "DGA Tent",
+	"Author": "aedenthorn",
+	"Version": "0.1.0",
+	"Description": "",
+	"UniqueID": "aedenthorn.TentDGA",
+	"MinimumApiVersion": "3.13.0",
+	"ContentPackFor": {
+		"UniqueID": "spacechase0.DynamicGameAssets"
+	},
+	"UpdateKeys": ["Nexus:"],
+	"DGA.FormatVersion": 2,
+	"DGA.ConditionsFormatVersion": "1.23.0"
+}

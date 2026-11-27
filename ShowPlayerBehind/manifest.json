@@ -1,0 +1,16 @@
+﻿{
+  "Name": "Show Players Behind Buildings",
+  "Author": "aedenthorn",
+  "Version": "0.4.3",
+  "Description": "Lets you see farmers behind buildings.",
+  "UniqueID": "aedenthorn.ShowPlayerBehind",
+  "EntryDll": "ShowPlayerBehind.dll",
+  "MinimumApiVersion": "4.0.0",
+  "UpdateKeys": [ "Nexus:6540" ],
+  "Dependencies": [
+    {
+      "UniqueID": "aedenthorn.TileTransparency",
+      "IsRequired": true
+    }
+  ]
+}

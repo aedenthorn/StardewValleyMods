@@ -1,0 +1,13 @@
+{
+	// HUD messages
+	"enabled-message": "Activation du mode « Ignorer l'herbe ».",
+	"disabled-message": "Désactivation du mode « Ignorer l'herbe ».",
+
+	// GMCM
+	"GMCM.ModEnabled.Name": "Activer le Mod",
+	"GMCM.WeaponsIgnoreGrass.Name": "Les armes ignorent l'herbe",
+	"GMCM.ScythesIgnoreGrass.Name": "Les faux ignorent l'herbe",
+	"GMCM.ShowEnabledMessage.Name": "Afficher le message d'activation",
+	"GMCM.ShowDisabledMessage.Name": "Afficher le message de désactivation",
+	"GMCM.ToggleKeys.Name": "Touche d'activation"
+}

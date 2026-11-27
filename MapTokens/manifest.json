@@ -1,0 +1,16 @@
+﻿{
+	"Name": "Map Tokens",
+	"Author": "aedenthorn",
+	"Version": "0.3.0",
+	"Description": "Map tokens.",
+	"UniqueID": "aedenthorn.MapTokens",
+	"EntryDll": "MapTokens.dll",
+	"MinimumApiVersion": "4.0.0",
+	"UpdateKeys": [ "Nexus:41702" ],
+	"Dependencies": [
+		{
+			"UniqueID": "Pathoschild.ContentPatcher",
+			"IsRequired": true
+		}
+	]
+}

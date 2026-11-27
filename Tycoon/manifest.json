@@ -1,0 +1,10 @@
+﻿{
+	"Name": "Tycoon",
+	"Author": "aedenthorn",
+	"Version": "0.1.0",
+	"Description": "Tycoon.",
+	"UniqueID": "aedenthorn.Tycoon",
+	"EntryDll": "Tycoon.dll",
+	"MinimumApiVersion": "4.0.0",
+	"UpdateKeys": [ "Nexus:" ]
+}

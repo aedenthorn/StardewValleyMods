@@ -1,0 +1,10 @@
+﻿{
+	"Name": "Partial Hearts",
+	"Author": "aedenthorn",
+	"Version": "0.2.2",
+	"Description": "Shows partial friendship hearts on the social page and CJB Cheats Menu.",
+	"UniqueID": "aedenthorn.PartialHearts",
+	"EntryDll": "PartialHearts.dll",
+	"MinimumApiVersion": "4.0.0",
+	"UpdateKeys": [ "Nexus:11628" ]
+}

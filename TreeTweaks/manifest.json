@@ -1,0 +1,22 @@
+﻿{
+  "Name": "Tree Tweaks",
+  "Author": "aedenthorn",
+  "Version": "0.1.2",
+  "Description": "Tree Tweaks.",
+  "UniqueID": "aedenthorn.TreeTweaks",
+  "EntryDll": "TreeTweaks.dll",
+  "MinimumApiVersion": "3.13.0",
+  "ModUpdater": {
+    "Repository": "StardewValleyMods",
+    "User": "aedenthorn",
+    "Directory": "_releases",
+    "ModFolder": "TreeTweaks"
+  },
+  "UpdateKeys": [ "Nexus:10760" ],
+  "Dependencies": [
+    {
+      "UniqueID": "Platonymous.ModUpdater",
+      "IsRequired": false
+    }
+  ]
+}

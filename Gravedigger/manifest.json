@@ -1,0 +1,10 @@
+﻿{
+	"Name": "Gravedigger",
+	"Author": "aedenthorn",
+	"Version": "0.2.0",
+	"Description": "Gravedigger.",
+	"UniqueID": "aedenthorn.Gravedigger",
+	"EntryDll": "Gravedigger.dll",
+	"MinimumApiVersion": "4.0.0",
+	"UpdateKeys": [ "Nexus:43558" ]
+}

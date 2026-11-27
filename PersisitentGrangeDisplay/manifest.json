@@ -1,0 +1,22 @@
+﻿{
+  "Name": "Persistent Grange Display",
+  "Author": "aedenthorn",
+  "Version": "0.1.1",
+  "Description": "Maintains grange display item list.",
+  "UniqueID": "aedenthorn.PersisitentGrangeDisplay",
+  "EntryDll": "PersisitentGrangeDisplay.dll",
+  "MinimumApiVersion": "3.8.0",
+  "UpdateKeys": ["Nexus:7977"],
+  "ModUpdater": {
+    "Repository": "StardewValleyMods",
+    "User": "aedenthorn",
+    "Directory": "_releases",
+    "ModFolder": "PersisitentGrangeDisplay"
+  },
+  "Dependencies": [
+      {
+        "UniqueID": "Platonymous.ModUpdater",
+        "IsRequired": false
+      },
+  ]
+}

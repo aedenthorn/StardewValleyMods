@@ -1,0 +1,10 @@
+﻿{
+  "Name": "AreaOfEffect",
+  "Author": "aedenthorn",
+  "Version": "0.2.0",
+  "Description": "AreaOfEffect.",
+  "UniqueID": "aedenthorn.AreaOfEffect",
+  "EntryDll": "AreaOfEffect.dll",
+  "MinimumApiVersion": "4.0.0",
+  "UpdateKeys": [ "Nexus:48900" ]
+}

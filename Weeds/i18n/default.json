@@ -1,0 +1,14 @@
+{
+	// GMCM
+	"GMCM.ModEnabled.Name": "Mod Enabled",
+	"GMCM.WeedExp.Name": "Farming exp gain for weeding",
+	"GMCM.WeedGrowthPerDayMin.Name": "Min growth % per day",
+	"GMCM.WeedGrowthPerDayMax.Name": "Max growth % per day",
+	"GMCM.WeedsStopGrowth.Name": "Weeds stop growth",
+	"GMCM.WeededDoubleGrowth.Name": "Double growth when weeded",
+	"GMCM.WeedStaminaUse.Name": "Weeding stamina use",
+	"GMCM.WeedTintR.Name": "Weed Tint R",
+	"GMCM.WeedTintG.Name": "Weed Tint G",
+	"GMCM.WeedTintB.Name": "Weed Tint B",
+	"GMCM.WeedTintA.Name": "Weed Tint A"
+}

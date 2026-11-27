@@ -1,0 +1,10 @@
+﻿{
+	"Name": "Submerged Crab Pots",
+	"Author": "aedenthorn",
+	"Version": "0.3.0",
+	"Description": "Causes Crab Pots to submerge when they contain bait or harvest.",
+	"UniqueID": "aedenthorn.SubmergedCrabPots",
+	"EntryDll": "SubmergedCrabPots.dll",
+	"MinimumApiVersion": "4.0.0",
+	"UpdateKeys": [ "Nexus:11719" ]
+}

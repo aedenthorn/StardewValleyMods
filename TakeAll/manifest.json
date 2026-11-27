@@ -1,0 +1,22 @@
+﻿{
+  "Name": "Take All",
+  "Author": "aedenthorn",
+  "Version": "0.1.0",
+  "Description": "Take All.",
+  "UniqueID": "aedenthorn.TakeAll",
+  "EntryDll": "TakeAll.dll",
+  "MinimumApiVersion": "3.15.0",
+  "ModUpdater": {
+    "Repository": "StardewValleyMods",
+    "User": "aedenthorn",
+    "Directory": "_releases",
+    "ModFolder": "TakeAll"
+  },
+  "Dependencies": [
+    {
+      "UniqueID": "Platonymous.ModUpdater",
+      "IsRequired": false
+    }
+  ],
+  "UpdateKeys": [ "Nexus:14247" ]
+}

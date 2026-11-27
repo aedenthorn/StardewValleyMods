@@ -1,0 +1,12 @@
+{
+    "Name": "[CP] Playground Furniture",
+    "Author": "aedenthorn",
+    "Version": "0.1.0",
+    "Description": "CP Playground Furniture",
+    "UniqueID": "aedenthorn.PlaygroundFurniture",
+    "MinimumApiVersion": "4.0.0",
+    "UpdateKeys": [ "Nexus:" ],
+    "ContentPackFor": {
+       "UniqueID": "Pathoschild.ContentPatcher"
+    }
+ }

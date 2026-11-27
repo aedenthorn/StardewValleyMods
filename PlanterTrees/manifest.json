@@ -1,0 +1,10 @@
+﻿{
+  "Name": "Planter Trees",
+  "Author": "aedenthorn",
+  "Version": "0.3.0",
+  "Description": "Planter Trees.",
+  "UniqueID": "aedenthorn.PlanterTrees",
+  "EntryDll": "PlanterTrees.dll",
+  "MinimumApiVersion": "4.0.0",
+  "UpdateKeys": [ "Nexus:11687" ]
+}

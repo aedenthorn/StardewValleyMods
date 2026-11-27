@@ -1,0 +1,10 @@
+{
+	"level-reached-x": "Nível mais baixo alcançado: {0}",
+	"enter-level": "Digite o nível:",
+
+	// GMCM
+	"GMCM.ModEnabled.Name": "Ativar o mod?",
+	"GMCM.ModKey.Name": "Tecla de interação",
+	"GMCM.Unrestricted.Name": "Modo livre",
+	"GMCM.Unrestricted_Tooltip": "Permite visitar qualquer andar, mesmo que não tenha sido explorado antes."
+}

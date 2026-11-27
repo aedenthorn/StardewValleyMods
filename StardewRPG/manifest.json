@@ -1,0 +1,16 @@
+﻿{
+  "Name": "Stardew RPG",
+  "Author": "aedenthorn",
+  "Version": "0.6.0",
+  "Description": "Stardew RPG.",
+  "UniqueID": "aedenthorn.StardewRPG",
+  "EntryDll": "StardewRPG.dll",
+  "MinimumApiVersion": "4.0.0",
+  "UpdateKeys": [ "Nexus:11132" ],
+  "Dependencies": [
+    {
+      "UniqueID": "Pathoschild.ContentPatcher",
+      "IsRequired": false
+    }
+  ]
+}

@@ -1,0 +1,10 @@
+﻿{
+	"Name": "Weeds",
+	"Author": "aedenthorn",
+	"Version": "0.2.2",
+	"Description": "Causes weeds to grow in crop plots.",
+	"UniqueID": "aedenthorn.Weeds",
+	"EntryDll": "Weeds.dll",
+	"MinimumApiVersion": "4.1.0",
+	"UpdateKeys": [ "Nexus:35225" ]
+}

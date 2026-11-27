@@ -1,0 +1,10 @@
+{
+	"level-reached-x": "Lowest Level Reached: {0}",
+	"enter-level": "Enter Level:",
+
+	// GMCM
+	"GMCM.ModEnabled.Name": "Mod Enabled?",
+	"GMCM.ModKey.Name": "Mod Key",
+	"GMCM.Unrestricted.Name": "Unrestricted",
+	"GMCM.Unrestricted_Tooltip": "Lets you visit any floor, even those you haven't been to before."
+}

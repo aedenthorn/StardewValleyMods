@@ -1,0 +1,25 @@
+{
+  "events": [
+    {
+      "name": "Linus-event-0",
+      "location": "Town",
+      "eventId": "502969",
+      "night": false,
+      "mail": null
+    },
+    {
+      "name": "Linus-event-1",
+      "location": "Mountain",
+      "eventId": "26",
+      "night": true,
+      "mail": null
+    },
+    {
+      "name": "Linus-event-2",
+      "location": "Mountain",
+      "eventId": "371652",
+      "night": false,
+      "mail": null
+    }
+  ]
+}

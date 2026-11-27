@@ -1,0 +1,10 @@
+﻿{
+  "Name": "Advanced Smoking",
+  "Author": "aedenthorn",
+  "Version": "0.1.0",
+  "Description": "Advanced Smoking.",
+  "UniqueID": "aedenthorn.AdvancedSmoking",
+  "EntryDll": "AdvancedSmoking.dll",
+  "MinimumApiVersion": "4.0.0",
+  "UpdateKeys": [ "Nexus:" ]
+}

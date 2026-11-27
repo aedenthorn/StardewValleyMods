@@ -1,0 +1,10 @@
+﻿{
+	"Name": "Video Movies",
+	"Author": "aedenthorn",
+	"Version": "0.1.0",
+	"Description": "Video Movies.",
+	"UniqueID": "aedenthorn.VideoMovies",
+	"EntryDll": "VideoMovies.dll",
+	"MinimumApiVersion": "4.0.0",
+	"UpdateKeys": [ "Nexus:" ]
+}

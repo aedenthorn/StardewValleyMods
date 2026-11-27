@@ -1,0 +1,10 @@
+﻿{
+	"Name": "Crops Survive Season Change",
+	"Author": "aedenthorn",
+	"Version": "0.1.3",
+	"Description": "Lets planted crops survive the change of seasons (except winter, by default) so you don't get punished for calculation mistakes when planting crops.",
+	"UniqueID": "aedenthorn.CropsSurviveSeasonChange",
+	"EntryDll": "CropsSurviveSeasonChange.dll",
+	"MinimumApiVersion": "4.0.0",
+	"UpdateKeys": [ "Nexus:18030" ]
+}

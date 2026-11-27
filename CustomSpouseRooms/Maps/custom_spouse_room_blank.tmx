@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<map version="1.5" tiledversion="1.7.2" orientation="orthogonal" renderorder="right-down" compressionlevel="0" width="8" height="12" tilewidth="16" tileheight="16" infinite="0" nextlayerid="7" nextobjectid="9">
+ <properties>
+  <property name="DayTiles_asdf" value="Buildings 3 1 15 Buildings 3 2 27 Back 3 4 51 Back 3 5 63"/>
+  <property name="NightTiles_asdf" value="Buildings 3 1 144 Buildings 3 2 156 Back 3 4 53 Back 3 5 65"/>
+  <property name="ViewportFollowPlayer" type="bool" value="true"/>
+  <property name="Warp" value="9 12 Farm 64 15"/>
+  <property name="asdf" type="bool" value="false"/>
+ </properties>
+ <tileset firstgid="1" name="indoor" tilewidth="16" tileheight="16" tilecount="0" columns="32">
+  <image source="townInterior" width="512" height="1088"/>
+ </tileset>
+ <tileset firstgid="1428" name="sewer" tilewidth="16" tileheight="16" tilecount="0" columns="8">
+  <image source="SewerTiles" width="128" height="176"/>
+ </tileset>
+ <tileset firstgid="1428" name="untitled tile sheet" tilewidth="16" tileheight="16" tilecount="0" columns="12">
+  <image source="farmhouse_tiles" width="192" height="352"/>
+ </tileset>
+ <tileset firstgid="1564" name="walls_and_floors" tilewidth="16" tileheight="16" tilecount="0" columns="16">
+  <image source="walls_and_floors" width="256" height="560"/>
+ </tileset>
+ <tileset firstgid="1918" name="indoor" tilewidth="16" tileheight="16" tilecount="0" columns="32">
+  <image source="townInterior" width="512" height="1088"/>
+ </tileset>
+ <layer id="1" name="Back" width="8" height="12">
+  <data encoding="csv">
+0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0
+</data>
+ </layer>
+ <layer id="2" name="Buildings" width="8" height="12">
+  <data encoding="csv">
+0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0
+</data>
+ </layer>
+ <layer id="3" name="Front" width="8" height="12">
+  <data encoding="csv">
+0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0
+</data>
+ </layer>
+ <objectgroup id="4" name="Back">
+  <object id="8" name="TileData" x="64" y="80" width="16" height="16">
+   <properties>
+    <property name="NoFurniture" value="T"/>
+   </properties>
+  </object>
+ </objectgroup>
+ <objectgroup id="5" name="Buildings"/>
+ <objectgroup id="6" name="Front"/>
+</map>

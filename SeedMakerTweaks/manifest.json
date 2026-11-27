@@ -1,0 +1,22 @@
+﻿{
+  "Name": "Seed Maker Tweaks",
+  "Author": "aedenthorn",
+  "Version": "0.2.0",
+  "Description": "Seed Maker Tweaks.",
+  "UniqueID": "aedenthorn.SeedMakerTweaks",
+  "EntryDll": "SeedMakerTweaks.dll",
+  "MinimumApiVersion": "3.13.0",
+  "ModUpdater": {
+    "Repository": "StardewValleyMods",
+    "User": "aedenthorn",
+    "Directory": "_releases",
+    "ModFolder": "SeedMakerTweaks"
+  },
+  "UpdateKeys": [ "Nexus:10681" ],
+  "Dependencies": [
+    {
+      "UniqueID": "Platonymous.ModUpdater",
+      "IsRequired": false
+    }
+  ]
+}

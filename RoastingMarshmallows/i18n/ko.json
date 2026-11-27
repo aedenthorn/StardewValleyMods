@@ -1,0 +1,15 @@
+﻿ {
+    "GMCM.ModEnabled.Name": "모드 활성화",
+    "GMCM.RoastKey.Name": "굽기 시작 키",
+    "GMCM.RoastFrames.Name": "굽기 프레임 수",
+    "GMCM.RoastFrames.Description": "굽기 애니메이션의 프레임 수를 조절합니다.",
+
+    "RawMarshmallow.Name": "생 마시멜로우",
+    "RawMarshmallow.Description": "익히지 않은 마시멜로우입니다.",
+
+    "CookedMarshmallow.Name": "구운 마시멜로우",
+    "CookedMarshmallow.Description": "완벽하게 구운 마시멜로우입니다.",
+
+    "BurntMarshmallow.Name": "탄 마시멜로우",
+    "BurntMarshmallow.Description": "바삭하게 탄 마시멜로우입니다."
+} 

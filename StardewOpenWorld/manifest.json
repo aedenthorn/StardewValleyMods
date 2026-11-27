@@ -1,0 +1,10 @@
+﻿{
+  "Name": "Stardew Open World",
+  "Author": "aedenthorn",
+  "Version": "0.7.0",
+  "Description": "Stardew Open World.",
+  "UniqueID": "aedenthorn.StardewOpenWorld",
+  "EntryDll": "StardewOpenWorld.dll",
+  "MinimumApiVersion": "4.0.0",
+  "UpdateKeys": [ "Nexus:36906" ]
+}

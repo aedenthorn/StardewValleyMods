@@ -1,0 +1,10 @@
+﻿{
+	"Name": "Floating Garden Pots",
+	"Author": "aedenthorn",
+	"Version": "0.1.1",
+	"Description": "Lets garden pots be placed on water to not require daily watering.",
+	"UniqueID": "aedenthorn.FloatingGardenPots",
+	"EntryDll": "FloatingGardenPots.dll",
+	"MinimumApiVersion": "4.1.0",
+	"UpdateKeys": [ "Nexus:17582" ]
+}

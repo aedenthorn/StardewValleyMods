@@ -1,0 +1,13 @@
+{
+  "GMCM_Option_ModEnabled_Name": "Mod'u Aktif Et",
+  "GMCM_Option_AutoUse_Name": "Tüketime İzin Ver",
+  "GMCM_Option_ResourcesKey_Name": "Kısayol Tuşu",
+  "GMCM_Option_ModKeyMax_Name": "Hepsini Al Tuşu",
+  "GMCM_Option_IconOffsetX_Name": "İkon Konumu (Dikey)",
+  "GMCM_Option_IconOffsetY_Name": "İkon Konumu (Yatay)",
+  "auto": "Otomatik Depola",
+  "take": "Al",
+  "added-x-y": "Depoya {0} {1} eklendi",
+  "removed-x-y": "Depodan {0} {1} alındı",
+  "resources": "Kaynaklar"
+}

@@ -1,0 +1,13 @@
+{
+  "Name": "AMF Example Pack 2",
+  "Author": "MindMeltMax",
+  "Version": "1.0.0",
+  "Description": "Another example content pack for Advanced melee framework.",
+  "UniqueID": "MindMeltMax.AMFExamplePack2",
+  "MinimumApiVersion": "4.0.0",
+  "UpdateKeys": [ "Nexus:X" ],
+  "ContentPackFor": {
+    "UniqueID": "aedenthorn.AdvancedMeleeFramework",
+    "MinimumVersion": "0.8.2-unofficial.5-mindmeltmax"
+  }
+}

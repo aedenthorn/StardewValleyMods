@@ -1,0 +1,30 @@
+{
+	"name": "Nom de la culture",
+	"phase": "Étape {0}/{1}",
+	"current": "Jour {0}/{1}",
+	"total": "Croissance {0}/{1}",
+	"ready": "Prête !",
+
+	// GMCM
+	"GMCM.ModEnabled.Name": "Activer le Mod",
+	"GMCM.Keys.Text": "Touches",
+	"GMCM.RequireToggle.Name": "Nécessite la touche d'activation",
+	"GMCM.ToggleButton.Name": "Touche d'activation",
+	"GMCM.Information.Text": "Informations",
+	"GMCM.ShowCropName.Name": "Afficher le nom de la culture",
+	"GMCM.ShowCurrentPhase.Name": "Afficher l'étape actuelle",
+	"GMCM.ShowDaysInCurrentPhase.Name": "Afficher les jours de l'étape",
+	"GMCM.ShowTotalGrowth.Name": "Afficher le nombre total de jours",
+	"GMCM.ShowReadyText.Name": "Afficher un texte lorsque prête",
+	"GMCM.Display.Text": "Affichage",
+	"GMCM.TextScale.Name": "Échelle du texte",
+	"GMCM.CropNameColor.Name": "Couleur du nom de la culture",
+	"GMCM.CurrentPhaseColor.Name": "Couleur de l'étape actuelle",
+	"GMCM.DaysInCurrentPhaseColor.Name": "Couleur des jours de l'étape",
+	"GMCM.TotalGrowthColor.Name": "Couleur du nombre total de jours",
+	"GMCM.ReadyTextColor.Name": "Couleur du texte lorsque prête",
+	"GMCM.Red.Name": "Rouge",
+	"GMCM.Green.Name": "Vert",
+	"GMCM.Blue.Name": "Bleu",
+	"GMCM.CropOpacity.Name": "Opacité de la culture"
+}

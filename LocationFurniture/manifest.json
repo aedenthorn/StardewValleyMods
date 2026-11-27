@@ -1,0 +1,10 @@
+﻿{
+	"Name": "Location Furniture",
+	"Author": "aedenthorn",
+	"Version": "0.2.0",
+	"Description": "A framework for letting you add furniture to any location at the beginning of the game.",
+	"UniqueID": "aedenthorn.LocationFurniture",
+	"EntryDll": "LocationFurniture.dll",
+	"MinimumApiVersion": "4.0.0",
+	"UpdateKeys": [ "Nexus:" ]
+}

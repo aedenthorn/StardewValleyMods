@@ -1,0 +1,22 @@
+﻿{
+  "Name": "Playing Cards",
+  "Author": "aedenthorn",
+  "Version": "0.1.0",
+  "Description": "Playing Cards.",
+  "UniqueID": "aedenthorn.PlayingCards",
+  "EntryDll": "PlayingCards.dll",
+  "MinimumApiVersion": "3.13.0",
+  "ModUpdater": {
+    "Repository": "StardewValleyMods",
+    "User": "aedenthorn",
+    "Directory": "_releases",
+    "ModFolder": "PlayingCards"
+  },
+  "UpdateKeys": [ "Nexus:" ],
+  "Dependencies": [
+    {
+      "UniqueID": "Platonymous.ModUpdater",
+      "IsRequired": false
+    }
+  ]
+}

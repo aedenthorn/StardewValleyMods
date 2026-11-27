@@ -1,0 +1,9 @@
+﻿{
+  "Config.EnableMod": "Mod Enabled",
+  "Config.ModKey": "Mod Key",
+  "Config.CoatKey": "Coat Key",
+  "Config.BreedKey": "Breed Key",
+  "Config.TypeKey": "Type Key",
+  "x-custom": "This breed has {0} custom coats.",
+  "1-custom": "This breed has {0} custom coat."
+}

@@ -1,0 +1,15 @@
+﻿{
+    "catalogues": "Catálogos móviles",
+    "not-enough-money": "¡No tienes suficiente dinero!",
+    "buy-catalogue-question": "¿Adquirir catálogo de {0} por {1}g?",
+    "bought-catalogue": "¡Catálogo de {0} adquirido!",
+    "catalogue": "Paredes y pisos",
+    "furniture-catalogue": "Muebles",
+    "seed-catalogue": "Semillas",
+    "travel-catalogue": "Mercader viajero",
+    "desert-catalogue": "Mercader del desierto",
+    "hat-catalogue": "Ratón de los sombreros",
+    "traveling-merchant-not-here": "¡El mercader viajero no está en el pueblo hoy!",
+    "desert-merchant-cannot-ship": "¡El mercader del desierto no puede hacer entregas hasta que el autobús esté arreglado!",
+    "catalog-not-available": "Este catálogo no está disponible todavía.",
+}

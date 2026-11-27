@@ -1,0 +1,10 @@
+﻿{
+	"Name": "Dreamscape",
+	"Author": "aedenthorn",
+	"Version": "0.1.1",
+	"Description": "Adds Emily's Dreamscape as a farmable, foragable game location with crystal weeds, gem spawns, real dream trees, and a rejuvenation fairy.",
+	"UniqueID": "aedenthorn.Dreamscape",
+	"EntryDll": "Dreamscape.dll",
+	"MinimumApiVersion": "4.1.0",
+	"UpdateKeys": [ "Nexus:11742" ]
+}

@@ -1,0 +1,10 @@
+﻿{
+  "Config.EnableMod": "Mod Enabled",
+  "Config.RevealAllTastes": "Reveal All Tastes",
+  "Config.IncreaseForFirst": "Increase First",
+  "Config.IncreaseForBirthday": "Birthday Increase",
+  "Config.LovedToLiked": "Loved To Liked",
+  "Config.LikedToNeutral": "Liked To Neutral",
+  "Config.NeutralToDisliked": "Neutral To Disliked",
+  "Config.DislikedToHated": "Disliked To Hated"
+}

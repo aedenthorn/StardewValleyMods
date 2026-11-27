@@ -1,0 +1,10 @@
+﻿{
+	"Name": "Genie Lamp",
+	"Author": "aedenthorn",
+	"Version": "0.1.5",
+	"Description": "Lets you specify an item you can rub to obtain a certain number of wishes, letting you spawn any object or furniture (modded as well).",
+	"UniqueID": "aedenthorn.GenieLamp",
+	"EntryDll": "GenieLamp.dll",
+	"MinimumApiVersion": "4.0.0",
+	"UpdateKeys": [ "Nexus:19794" ]
+}

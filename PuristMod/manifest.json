@@ -1,0 +1,22 @@
+﻿{
+  "Name": "Purist Mod",
+  "Author": "aedenthorn",
+  "Version": "0.69.420",
+  "Description": "Purist Mod.",
+  "UniqueID": "aedenthorn.PuristMod",
+  "EntryDll": "PuristMod.dll",
+  "MinimumApiVersion": "3.15.0",
+  "ModUpdater": {
+    "Repository": "StardewValleyMods",
+    "User": "aedenthorn",
+    "Directory": "_releases",
+    "ModFolder": "PuristMod"
+  },
+  "Dependencies": [
+    {
+      "UniqueID": "Platonymous.ModUpdater",
+      "IsRequired": false
+    }
+  ],
+  "UpdateKeys": [ "Nexus:16097" ]
+}

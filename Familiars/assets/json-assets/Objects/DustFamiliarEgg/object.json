@@ -1,0 +1,61 @@
+{
+  "Name": "Dust Sprite Familiar Egg",
+  "Description": "Lets you hatch a dust sprite familiar.",
+  "Category": "AnimalGoods",
+  "Edibility": -300,
+  "EdibleIsDrink": false,
+  "EdibleBuffs": null,
+  "Price": 10000,
+  "IsColored": false,
+  "GiftTastes": {
+    "Hate": ["Alex", "Abigail", "Caroline", "Clint", "Demetrius", "Dwarf", "Elliott", "Evelyn", "George", "Gus", "Jodi", "Kent", "Krobus", "Lewis", "Linus", "Maru", "Pam", "Penny", "Pierre", "Robin", "Sam", "Sandy", "Shane", "Willy", "Wizard", "Vincent", "Emily", "Haley", "Harvey", "Jas", "Leah", "Marnie", "Sebastian"],
+  },
+  "Recipe": {
+    "ResultCount": 1,
+    "Ingredients": [
+      {
+        "Object": "Coal",
+        "Count": 100,
+      },
+      {
+        "Object": "Diamond",
+        "Count": 2,
+      },
+      {
+        "Object": "Battery Pack",
+        "Count": 1,
+      }
+    ],
+    "CanPurchase": false,
+    "SkillUnlockName": "Combat",
+    "SkillUnlockLevel": 8,
+  },
+  "NameLocalization":
+  {
+    // "es": "",
+    "ko": "먼지 정령 패밀리어 알",
+    // "de": "",
+    // "fr": "",
+    // "hu": "",
+    // "it": "",
+    // "ja": "",
+    // "pt": "",
+    // "ru": "",
+    // "tr": "",
+    //"zh":"",
+  },
+  "DescriptionLocalization":
+  {
+    // "es": "",
+    "ko": "당신의 먼지 정령 패밀리어를 부화시키세요.",
+    // "de": "",
+    // "fr": "",
+    // "hu": "",
+    // "it": "",
+    // "ja": "",
+    // "pt": "",
+    // "ru": "",
+    // "tr": "",
+    //"zh":"",
+  },
+}

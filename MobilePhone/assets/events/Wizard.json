@@ -1,0 +1,25 @@
+{
+  "events": [
+    {
+      "name": "Wizard-event-0",
+      "location": "Railroad",
+      "eventId": "529952",
+      "night": false,
+      "mail": null
+    },
+    {
+      "name": "Wizard-event-1",
+      "location": "WizardHouse",
+      "eventId": "112",
+      "night": false,
+      "mail": null
+    },
+    {
+      "name": "Wizard-event-2",
+      "location": "WizardHouse",
+      "eventId": "418172",
+      "night": false,
+      "mail": null
+    }
+  ]
+}

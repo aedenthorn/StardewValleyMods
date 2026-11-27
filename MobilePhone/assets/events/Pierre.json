@@ -1,0 +1,25 @@
+{
+  "events": [
+    {
+      "name": "Pierre-event-0",
+      "location": "Town",
+      "eventId": "3102768",
+      "night": false,
+      "mail": null
+    },
+    {
+      "name": "Pierre-event-1",
+      "location": "Town",
+      "eventId": "191393",
+      "night": false,
+      "mail": null
+    },
+    {
+      "name": "Pierre-event-2",
+      "location": "SeedShop",
+      "eventId": "16",
+      "night": false,
+      "mail": null
+    }
+  ]
+}

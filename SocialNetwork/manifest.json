@@ -1,0 +1,26 @@
+﻿{
+  "Name": "Social Network",
+  "Author": "aedenthorn",
+  "Version": "0.1.0",
+  "Description": "A social network app for your mobile phone.",
+  "UniqueID": "aedenthorn.SocialNetwork",
+  "EntryDll": "SocialNetwork.dll",
+  "MinimumApiVersion": "3.5.0",
+  "UpdateKeys": ["Nexus:"],
+  "ModUpdater": {
+    "Repository": "StardewValleyMods",
+    "User": "aedenthorn",
+    "Directory": "_releases",
+    "ModFolder": "SocialNetwork"
+  },
+  "Dependencies": [
+      {
+        "UniqueID": "Platonymous.ModUpdater",
+        "IsRequired": false
+      },
+      {
+        "UniqueID": "aedenthorn.MobilePhone",
+        "IsRequired": true
+      },
+  ]
+}

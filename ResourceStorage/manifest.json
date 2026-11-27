@@ -1,0 +1,16 @@
+﻿{
+  "Name": "Resource Storage",
+  "Author": "aedenthorn",
+  "Version": "0.6.0",
+  "Description": "Resource Storage.",
+  "UniqueID": "aedenthorn.ResourceStorage",
+  "EntryDll": "ResourceStorage.dll",
+  "MinimumApiVersion": "3.15.0",
+  "ModUpdater": {
+    "Repository": "StardewValleyMods",
+    "User": "aedenthorn",
+    "Directory": "_releases",
+    "ModFolder": "ResourceStorage"
+  },
+  "UpdateKeys": [ "Nexus:17951" ]
+}

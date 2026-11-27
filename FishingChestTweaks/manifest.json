@@ -1,0 +1,10 @@
+﻿{
+  "Name": "Fishing Chest Tweaks",
+  "Author": "aedenthorn",
+  "Version": "0.1.0",
+  "Description": "Fishing Chest Tweaks.",
+  "UniqueID": "aedenthorn.FishingChestTweaks",
+  "EntryDll": "FishingChestTweaks.dll",
+  "MinimumApiVersion": "4.0.0",
+  "UpdateKeys": [ "Nexus:" ]
+}

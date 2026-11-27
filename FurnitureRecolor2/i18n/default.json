@@ -1,0 +1,41 @@
+{
+	"ModEnabled": "Mod Enabled",
+	"AutoOpen": "Auto Open",
+	"NPCCloseDelay": "NPC Close Delay",
+	"NPCCloseDelay.Desc": "How many game ticks before NPCs close doors after walking through them. Starts after NPC leaves door range.",
+	"AutoCloseDelay": "Auto Close Delay",
+	"AutoCloseDelay.Desc": "How many game ticks before closing doors after players open them. Starts after leaving door range.",
+	"PreventAutoCloseBuffer": "Door Range",
+	"PreventAutoCloseBuffer.Desc": "Pixel boundary around door tile to prevent auto close when farmer is in range.",
+	"FlipButton": "Flip Button",
+	"LockButton": "Lock Button",
+	"CombineButton": "Combine Button",
+	"CopyButton": "Copy Button",
+	"ColorButton": "Color Button",
+
+	"WoodenDoorPrice": "Wood Door Price",
+	"WoodenDoorIngredients": "Wood Door Ing.",
+	"MetalDoorPrice": "Metal Door Price",
+	"MetalDoorIngredients": "Metal Door Ing.",
+
+	"DoorCategoryColor": "Door Category",
+	"KeyCategoryColor": "Key Category",
+	"KeyRingCategoryColor": "Keyring Category",
+
+	"FixSliderBar": "Fix Color Slider",
+	"FixSliderBar.Desc": "Fixes a bug with color sliders making it impossible to slide to 100",
+
+	"door-type": "Door",
+	"door-description": "Can be opened and closed.",
+
+	"aedenthorn.FurnitureRecolor_key": "Door Key",
+	"aedenthorn.FurnitureRecolor_key.Desc": "Unlocks a locked door.",
+	"aedenthorn.FurnitureRecolor_keyring": "Key Ring",
+	"aedenthorn.FurnitureRecolor_keyring.Desc": "Contains keys for unlocking doors",
+	"aedenthorn.FurnitureRecolor_door": "Wooden Door",
+	"aedenthorn.FurnitureRecolor_door2": "Metal Door",
+	"name-menu": "Name Your Key",
+	"no-key": "You don't have a key for this door.",
+	"locked-with-x": "Locked with {0}",
+	"unlocked-with-x": "Unlocked with {0}"
+}

@@ -1,0 +1,74 @@
+{
+  "events": [
+    {
+      "name": "Marlon-event-0",
+      "location": "adventureguild",
+      "eventId": "1000034",
+      "night": false,
+      "mail": null
+    },
+    {
+      "name": "Marlon-event-1",
+      "location": "adventureguild",
+      "eventId": "1050034",
+      "night": false,
+      "mail": null
+    },
+    {
+      "name": "Marlon-event-2",
+      "location": "railroad",
+      "eventId": "1004200",
+      "night": false,
+      "mail": null
+    },
+    {
+      "name": "Marlon-event-3",
+      "location": "adventureguild",
+      "eventId": "1090501",
+      "night": false,
+      "mail": null
+    },
+    {
+      "name": "Marlon-event-4",
+      "location": "summit",
+      "eventId": "0002577",
+      "night": false,
+      "mail": null
+    },
+    {
+      "name": "Marlon-event-5",
+      "location": "farm",
+      "eventId": "690006",
+      "night": false,
+      "mail": null
+    },
+    {
+      "name": "Marlon-event-6",
+      "location": "mine",
+      "eventId": "100162",
+      "night": false,
+      "mail": null
+    },
+    {
+      "name": "Marlon-event-7",
+      "location": "adventureguild",
+      "eventId": "1337098",
+      "night": false,
+      "mail": null
+    },
+    {
+      "name": "Marlon-event-8",
+      "location": "adventureguild",
+      "eventId": "1579123",
+      "night": false,
+      "mail": null
+    },
+    {
+      "name": "Marlon-event-9",
+      "location": "wizardhouse",
+      "eventId": "1579124",
+      "night": false,
+      "mail": null
+    }
+  ]
+}

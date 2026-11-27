@@ -1,0 +1,16 @@
+{
+	"GMCM.ModEnabled.Name": "Mod Enabled",
+	"GMCM.FuseConnected.Name": "Fuse Connected",
+	"GMCM.ShuffleMusic.Name": "Shuffle Music",
+	"GMCM.Snap.Name": "Snap Pieces",
+	"GMCM.SnapKey.Name": "Toggle Snap",
+	"GMCM.SolveKey.Name": "Solve Key",
+	"GMCM.SnapSound.Name": "Snap Sound",
+	"GMCM.SolveSound.Name": "Solve Sound",
+	"box": "Jigsaw Puzzle Box",
+	"menu-text": "Jigsaw Puzzle",
+	"music": "Music",
+	"map": "Map",
+	"season": "Season",
+	"piece-size": "Piece Size"
+}

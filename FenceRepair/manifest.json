@@ -1,0 +1,10 @@
+﻿{
+  "Name": "Fence Repair",
+  "Author": "aedenthorn",
+  "Version": "0.1.0",
+  "Description": "Fence Repair.",
+  "UniqueID": "aedenthorn.FenceRepair",
+  "EntryDll": "FenceRepair.dll",
+  "MinimumApiVersion": "4.0.0",
+  "UpdateKeys": [ "Nexus:46299" ]
+}

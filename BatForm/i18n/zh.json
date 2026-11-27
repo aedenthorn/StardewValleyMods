@@ -1,0 +1,15 @@
+{
+	// GMCM
+	"GMCM.ModEnabled.Name": "模组启用",
+	"GMCM.NightOnly.Name": "仅限夜晚",
+	"GMCM.OutdoorsOnly.Name": "仅限户外",
+	"GMCM.TransformKey.Name": "变形快捷键",
+	"GMCM.ActionsEnabled.Name": "启用动作",
+	"GMCM.MoveSpeed.Name": "移动速度",
+	"GMCM.StaminaUse.Name": "体力消耗",
+	"GMCM.StaminaManaUse.Name": "体力或法力消耗",
+	"GMCM.UseMana.Name": "使用法力",
+	"GMCM.UseMana.Tooltip": "确定是否消耗法力而非体力来维持蝙蝠形态",
+	"GMCM.TransformSound.Name": "变形音效",
+	"GMCM.ZoomOutEnabled.Name": "启用镜头缩放"
+}

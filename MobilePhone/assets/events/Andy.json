@@ -1,0 +1,46 @@
+{
+  "events": [
+    {
+      "name": "Andy-event-0",
+      "location": "farm",
+      "eventId": "1111101",
+      "night": false,
+      "mail": null
+    },
+    {
+      "name": "Andy-event-1",
+      "location": "Town",
+      "eventId": "5000001",
+      "night": false,
+      "mail": null
+    },
+    {
+      "name": "Andy-event-2",
+      "location": "forest",
+      "eventId": "5000002",
+      "night": false,
+      "mail": null
+    },
+    {
+      "name": "Andy-event-3",
+      "location": "forest",
+      "eventId": "5000003",
+      "night": false,
+      "mail": null
+    },
+    {
+      "name": "Andy-event-4",
+      "location": "andyhouse",
+      "eventId": "5000005",
+      "night": false,
+      "mail": null
+    },
+    {
+      "name": "Andy-event-5",
+      "location": "andyhouse",
+      "eventId": "5000006",
+      "night": false,
+      "mail": null
+    }
+  ]
+}

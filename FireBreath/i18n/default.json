@@ -1,0 +1,14 @@
+{
+	// GMCM
+	"GMCM.ModEnabled.Name": "Mod Enabled",
+	"GMCM.FireButton.Name": "Fire Button",
+	"GMCM.ScaleWithSkill.Name": "Scale With Combat Skill",
+	"GMCM.FireDamage.Name": "Fire Damage",
+	"GMCM.FireDistance.Name": "Fire Distance",
+	"GMCM.FireSound.Name": "Fire Sound",
+	"GMCM.StaminaUse.Name": "Stamina Use",
+	"GMCM.StaminaManaUse.Name": "Stamina or Mana Use",
+	"GMCM.UseMana.Name": "Use Mana",
+	"GMCM.UseMana.Tooltip": "Determines whether to consume mana instead of stamina to breathe fire.",
+	"GMCM.FireAnnoysNonMonsters.Name": "Fire Annoys Non-Monsters"
+}

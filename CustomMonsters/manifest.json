@@ -1,0 +1,10 @@
+﻿{
+	"Name": "Custom Monsters",
+	"Author": "aedenthorn",
+	"Version": "0.5.0",
+	"Description": "Custom Monsters.",
+	"UniqueID": "aedenthorn.CustomMonsters",
+	"EntryDll": "CustomMonsters.dll",
+	"MinimumApiVersion": "4.0.0",
+	"UpdateKeys": [ "Nexus:45642" ]
+}

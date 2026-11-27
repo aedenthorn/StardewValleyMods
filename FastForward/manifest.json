@@ -1,0 +1,10 @@
+﻿{
+  "Name": "FastForward",
+  "Author": "aedenthorn",
+  "Version": "0.2.0",
+  "Description": "FastForward.",
+  "UniqueID": "aedenthorn.FastForward",
+  "EntryDll": "FastForward.dll",
+  "MinimumApiVersion": "4.0.0",
+  "UpdateKeys": [ "Nexus:" ]
+}

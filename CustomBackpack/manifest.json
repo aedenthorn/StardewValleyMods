@@ -1,0 +1,10 @@
+﻿{
+  "Name": "Custom Backpack Framework",
+  "Author": "aedenthorn",
+  "Version": "2.0.1",
+  "Description": "CustomBackpack.",
+  "UniqueID": "aedenthorn.CustomBackpack",
+  "EntryDll": "CustomBackpack.dll",
+  "MinimumApiVersion": "4.0.0",
+  "UpdateKeys": [ "Nexus:13826" ]
+}

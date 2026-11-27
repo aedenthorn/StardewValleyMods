@@ -1,0 +1,10 @@
+﻿{
+  "Name": "Food on the Table",
+  "Author": "aedenthorn",
+  "Version": "0.6.0",
+  "Description": "FoodOnTheTable.",
+  "UniqueID": "aedenthorn.FoodOnTheTable",
+  "EntryDll": "FoodOnTheTable.dll",
+  "MinimumApiVersion": "4.0.0",
+  "UpdateKeys": [ "Nexus:10886" ]
+}

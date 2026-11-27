@@ -1,0 +1,9 @@
+{
+	// GMCM
+	"GMCM.ModEnabled.Name": "Mod Enabled",
+	"GMCM.PrevKey.Name": "Prev. Color Key",
+	"GMCM.NextKey.Name": "Next Color Key",
+	"GMCM.CopyPasteKey.Name": "Copy/Paste Key",
+	"GMCM.ModKey.Name": "Mod Key",
+	"GMCM.HalfByDefault.Name": "Half By Default"
+}

@@ -1,0 +1,22 @@
+﻿{
+  "Name": "NPC Status Icons",
+  "Author": "aedenthorn",
+  "Version": "0.1.0",
+  "Description": "NPC Status Icons.",
+  "UniqueID": "aedenthorn.NPCStatusIcons",
+  "EntryDll": "NPCStatusIcons.dll",
+  "MinimumApiVersion": "3.15.0",
+  "ModUpdater": {
+    "Repository": "StardewValleyMods",
+    "User": "aedenthorn",
+    "Directory": "_releases",
+    "ModFolder": "NPCStatusIcons"
+  },
+  "Dependencies": [
+    {
+      "UniqueID": "Platonymous.ModUpdater",
+      "IsRequired": false
+    }
+  ],
+  "UpdateKeys": [ "Nexus:" ]
+}

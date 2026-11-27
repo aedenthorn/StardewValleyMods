@@ -1,0 +1,11 @@
+{
+  "events": [
+    {
+      "name": "Sandy-event-0",
+      "location": "SandyHouse",
+      "eventId": "67",
+      "night": false,
+      "mail": null
+    }
+  ]
+}

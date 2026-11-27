@@ -1,0 +1,10 @@
+﻿{
+  "Name": "Farmer Portraits",
+  "Author": "aedenthorn",
+  "Version": "1.0.1",
+  "Description": "Farmer Portraits.",
+  "UniqueID": "aedenthorn.FarmerPortraits",
+  "EntryDll": "FarmerPortraits.dll",
+  "MinimumApiVersion": "4.1.0",
+  "UpdateKeys": [ "Nexus:11398" ]
+}

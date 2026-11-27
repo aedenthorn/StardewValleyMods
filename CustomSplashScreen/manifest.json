@@ -1,0 +1,10 @@
+﻿{
+	"Name": "Custom Splash Screen",
+	"Author": "aedenthorn",
+	"Version": "0.2.0",
+	"Description": "Custom Splash Screen.",
+	"UniqueID": "aedenthorn.CustomSplashScreen",
+	"EntryDll": "CustomSplashScreen.dll",
+	"MinimumApiVersion": "4.0.0",
+	"UpdateKeys": [ "Nexus:41736" ]
+}

@@ -1,0 +1,22 @@
+﻿{
+  "Name": "Tent",
+  "Author": "aedenthorn",
+  "Version": "0.1.0",
+  "Description": "Tent.",
+  "UniqueID": "aedenthorn.Tent",
+  "EntryDll": "Tent.dll",
+  "MinimumApiVersion": "3.13.0",
+  "ModUpdater": {
+    "Repository": "StardewValleyMods",
+    "User": "aedenthorn",
+    "Directory": "_releases",
+    "ModFolder": "Tent"
+  },
+  "UpdateKeys": [ "Nexus:" ],
+  "Dependencies": [
+    {
+      "UniqueID": "Platonymous.ModUpdater",
+      "IsRequired": false
+    }
+  ]
+}

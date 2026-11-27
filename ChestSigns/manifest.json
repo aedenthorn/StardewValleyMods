@@ -1,0 +1,10 @@
+﻿{
+  "Name": "Chest Signs",
+  "Author": "aedenthorn",
+  "Version": "0.1.0",
+  "Description": "Chest Signsr.",
+  "UniqueID": "aedenthorn.ChestSigns",
+  "EntryDll": "ChestSigns.dll",
+  "MinimumApiVersion": "4.0.0",
+  "UpdateKeys": [ "Nexus:48642" ]
+}

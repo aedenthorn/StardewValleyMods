@@ -1,0 +1,9 @@
+﻿{
+  "Name": "Flowing Mine Rocks",
+  "Author": "aedenthorn",
+  "Version": "0.2.0",
+  "Description": "Connects adjacent mine rocks together.",
+  "UniqueID": "aedenthorn.FlowingMineRocks",
+  "EntryDll": "FlowingMineRocks.dll",
+  "MinimumApiVersion": "4.0.0"
+}

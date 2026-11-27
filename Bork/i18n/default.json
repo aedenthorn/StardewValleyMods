@@ -1,0 +1,22 @@
+{
+  "bork": "Bork",
+  "welcome_1": "Welcome back, {0}! What can I do you for?",
+  "first_meet_1": "Hello, {0}! I'm Bork, your new artificially artificial semi-intelligent assistant.#h#$b#What can I do for you?",
+  "error_processing_query_1": "Error, error, error... I'm gonna go out on a limb and say this is your fault.",
+  "error_processing_query_2": "I'm sorry, I would like to help you, but I speak no English...#3#$b#Just kidding! But I really have no idea what you're trying to ask.#2",
+  "unknown_query_1": "Sorry, I have no idea what you're talking about... have you been drinking with Shane again?#2",
+  "unknown_query_2": "I'm sorry, I have no time to pander to your meaningless queries, I'm busy.#2",
+  "unknown_query_3": "I'm not going to dignify that with an answer.#2",
+  "item_count_in_location_1": "There is {1} {0} in {2}.",
+  "npc_location_1": "{0} is in {1}.",
+  "npc_not_found_1": "I can't find {0} anywhere. Are you sure they really exist? Wait, do I really exist?",
+  "weather_season_day_1": "The weather on {0} {1} will be {2}.",
+  "weather_tomorrow_1": "The weather tomorrow will be {0}.",
+  "weather_sunny_1": "sunny",
+  "weather_rainy_1": "rainy",
+  "weather_lightning_1": "lightning",
+  "weather_snowy_1": "snowy",
+  "weather_green_rain_": "green rain",
+  "npc_birthday_1": "{0}'s birthday is on {1} {2}.",
+  "about_you_1": "I'm powered by a small language model (SLM). I am in no way sentient, and I'm not very intelligent either.#$b#My creator made me say that."
+}

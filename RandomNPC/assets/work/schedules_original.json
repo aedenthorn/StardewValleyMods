@@ -1,0 +1,1333 @@
+
+0 2 3 1 2 2.1200 2 2 1 3 2 1 3.1400 2 1 3 2 1 3 2 1 900
+0 2 3 1 2 2.1200 2 2 1 3 2 1 3.1400 2 1 3 2 1 3 2 1 900
+2 3 1 3 2 3 0 0 1 0 -2 3 3 0 1600
+2 3 3 0 0 0 1 0 0 1 0 1 0 7 3 2 3
+2 3 3 0 0 0 1 0 0 1 0 1 0 7 3 2 3
+2 3 3 0 0 0 1 0 0 1 0 1 0 7 3 2 3
+2 3 3 0 0 0 1 0 0 1 0 1 0 7 3 2 3
+2 3 3 0 0 0 1 0 0 1 0 1 0 7 3 2 3
+2 3 3 0 0 0 1 0 0 1 0 1 0 7 3 2 3
+AnimalShop 1 7 3 jas_sleep 1750
+AnimalShop 1 7 3 jas_sleep 2000
+AnimalShop 1 7 3 jas_sleep 2000
+AnimalShop 1 7 3 jas_sleep 2100
+AnimalShop 1 7 3 jas_sleep 2100
+AnimalShop 1 7 3 jas_sleep 2100
+AnimalShop 1 7 3 jas_sleep 2300
+AnimalShop 11 16 0  1000
+AnimalShop 12 14 2 850
+AnimalShop 12 14 2 850
+AnimalShop 12 14 2 850
+AnimalShop 12 14 2 850
+AnimalShop 12 5 3 2100
+AnimalShop 12 5 3 marnie_sleep 2100
+AnimalShop 12 5 3 marnie_sleep 2100
+AnimalShop 12 5 3 marnie_sleep 2100
+AnimalShop 12 5 3 marnie_sleep 2100
+AnimalShop 12 5 3 marnie_sleep 2100
+AnimalShop 12 5 3 marnie_sleep 2300
+AnimalShop 12 5 3 marnie_sleep 2300
+AnimalShop 12 5 3 marnie_sleep 2340
+AnimalShop 16 13 2  830
+AnimalShop 16 13 2 1450
+AnimalShop 16 13 2 1450
+AnimalShop 16 16 2 square_3_3 1100
+AnimalShop 17 15 3 jas_read 1500
+AnimalShop 17 15 3 jas_read 1600
+AnimalShop 17 5 0  900
+AnimalShop 17 5 0 830
+AnimalShop 17 5 0 830
+AnimalShop 17 5 0 830
+AnimalShop 17 5 0 830
+AnimalShop 17 5 0 900
+AnimalShop 17 5 0 900
+AnimalShop 17 5 0 900
+AnimalShop 17 5 3 jas_read 1600
+AnimalShop 17 8 1 1600
+AnimalShop 17 8 1 1600
+AnimalShop 17 8 1 1800
+AnimalShop 24 15 0 1000
+AnimalShop 24 15 0 1200
+AnimalShop 24 15 0 1600
+AnimalShop 24 15 0 1600
+AnimalShop 24 15 0 1600
+AnimalShop 24 15 0 1610
+AnimalShop 24 15 0 1810
+AnimalShop 24 15 0 700
+AnimalShop 24 15 0 700
+AnimalShop 24 15 0 700
+AnimalShop 24 15 0 700
+AnimalShop 24 15 0 700
+AnimalShop 24 17 1 900
+AnimalShop 24 5 0 1100
+AnimalShop 24 5 0 1100
+AnimalShop 24 5 0 1100
+AnimalShop 24 5 0 1100
+AnimalShop 27 4 1 shane_sleep 2300
+AnimalShop 27 4 1 shane_sleep 2300
+AnimalShop 27 4 1 shane_sleep 2300
+AnimalShop 27 4 1 shane_sleep 2300
+AnimalShop 27 4 1 shane_sleep 2400
+AnimalShop 27 4 1 shane_sleep 2400
+AnimalShop 27 4 1 shane_sleep 2400
+AnimalShop 4 7 2 1900
+AnimalShop 4 7 2 1900
+AnimalShop 4 7 2 1900
+AnimalShop 5 14 2 1200
+AnimalShop 7 5 0  900
+AnimalShop 7 5 0 900
+AnimalShop 7 5 0 900
+AnimalShop 7 5 0 900
+AnimalShop 7 5 0 900
+AnimalShop 8 17 3 jas_read 1500
+ArchaeologyHouse 11 9 0 1000
+ArchaeologyHouse 14 4 2 caroline_read  1200
+ArchaeologyHouse 16 10 1 vincent_read_right 900
+ArchaeologyHouse 16 9 0 830
+ArchaeologyHouse 17 9 2 penny_read  830
+ArchaeologyHouse 17 9 2 penny_read 900
+ArchaeologyHouse 19 10 3 jas_read 900
+ArchaeologyHouse 2 10 0  1300
+ArchaeologyHouse 20 5 0 1200
+ArchaeologyHouse 21 11 2 elliott_read 1130
+ArchaeologyHouse 21 11 2 elliott_read 1130
+ArchaeologyHouse 16 10 2 
+ArchaeologyHouse 40 4 2 
+BathHouse_Entry 8 6 3  1400
+BathHouse_MensLocker 3 5 2 alex_lift_weights 900
+BathHouse_MensLocker 3 5 2 alex_lift_weights 900
+Beach 10 37 3  830
+Beach 10 39 2  1650
+Beach 11 32 3  1540
+Beach 11 33 3  1540
+Beach 11 34 3  1700
+Beach 11 39 2  1620
+Beach 12 39 2  1030
+Beach 12 39 2  1630
+Beach 12 39 2  830
+Beach 13 31 1  1700
+Beach 13 39 2 1100
+Beach 19 24 2  1450
+Beach 19 24 2  1630
+Beach 19 24 2 1140
+Beach 19 4 2  1600
+Beach 19 7 2 1030
+Beach 20 24 2  1500
+Beach 20 24 2  1630
+Beach 24 32 3  1600
+Beach 24 32 3 square_1_5_3 1100
+Beach 25 36 2  1430
+Beach 25 36 2 dick_fish 1700
+Beach 27 24 1  1500
+Beach 27 34 2  1630
+Beach 30 13 2 square_7_7 730
+Beach 30 34 2  1430
+Beach 35 36 2  1600
+Beach 37 31 0  1600
+Beach 37 31 0  1700
+Beach 37 33 1  1700
+Beach 38 24 2 leah_draw 1200
+Beach 38 36 2  1650
+Beach 38 36 2 dick_fish 610
+Beach 38 36 2 dick_fish 610
+Beach 38 36 2 dick_fish 610
+Beach 38 36 2 dick_fish 610
+Beach 40 23 jas_jumprope  1320
+Beach 40 34 2  1620
+Beach 41 35 0  1600
+Beach 43 24 2 vincent_beach 1340
+Beach 46 11 2  830
+Beach 46 24 2 1340
+Beach 49 19 2 1200
+Beach 72 18 2 leah_draw 1200
+Blacksmith 10 4 1 clint_sleep 2400
+Blacksmith 10 4 1 clint_sleep 2400
+Blacksmith 10 4 1 clint_sleep 2400
+Blacksmith 10 4 1 clint_sleep 2400
+Blacksmith 3 13 2  900
+Blacksmith 3 13 2 850
+Blacksmith 3 13 2 850
+Blacksmith 4 15 0  1000
+Blacksmith 8 12 1 clint_hammer 1700
+BusStop -1 23 3 1500
+BusStop -1 23 3 1540
+BusStop -1 23 3 1640
+BusStop -1 23 3 1700
+BusStop -1 23 3 1700
+BusStop -1 23 3 1700
+BusStop -1 23 3 1700
+BusStop -1 23 3 1730
+BusStop -1 23 3 1800
+BusStop -1 23 3 1800
+BusStop -1 23 3 1800
+BusStop -1 23 3 1810
+BusStop -1 23 3 1830
+BusStop -1 23 3 2000
+BusStop -1 23 3 2030
+BusStop -1 23 3 2030
+BusStop -1 23 3 2100
+BusStop -1 23 3 2110
+BusStop -1 23 3 2200
+BusStop -1 23 3 2200
+BusStop -1 23 3 2200
+BusStop -1 23 3 2200
+BusStop -1 23 3 2200
+BusStop 11 10 2 830
+BusStop 22 5 2 1300
+CommunityCenter 10 25 2  1000
+CommunityCenter 15 27 0 1100
+CommunityCenter 18 25 3 evelyn_sit_left  1210
+CommunityCenter 23 17 2 penny_read 1030
+CommunityCenter 24 8 2 jodi_sit_down 1100
+CommunityCenter 26 9 0 1100
+CommunityCenter 33 9 0 1700
+CommunityCenter 46 13 0 1500
+CommunityCenter 47 13 0 1600
+CommunityCenter 47 5 0 1400
+CommunityCenter 5 5 0 square_5_1_0 830
+CommunityCenter 51 4 2 1440
+CommunityCenter 55 6 0 1040
+CommunityCenter 62 14 0 square_3_1_0 850
+CommunityCenter 9 19 3 1700
+ElliottHouse 1 5 0 1100
+ElliottHouse 1 5 0 1100
+ElliottHouse 1 5 0 1100
+ElliottHouse 1 5 0 1100
+ElliottHouse 1 5 0 1100
+ElliottHouse 1 5 0 1100
+ElliottHouse 1 5 0 1330
+ElliottHouse 1 5 0 1330
+ElliottHouse 1 5 0 2000
+ElliottHouse 1 5 0 2000
+ElliottHouse 1 5 0 2100
+ElliottHouse 1 5 0 2100
+ElliottHouse 1 5 0 2100
+ElliottHouse 1 5 0 2200
+ElliottHouse 1 5 0 800
+ElliottHouse 1 5 0 800
+ElliottHouse 1 5 0 800
+ElliottHouse 1 5 0 800
+ElliottHouse 1 5 0 800
+ElliottHouse 1 5 0 800
+ElliottHouse 1 5 0 800
+ElliottHouse 1 5 0 900
+ElliottHouse 13 4 1 elliott_sleep 2340
+ElliottHouse 13 4 1 elliott_sleep 2400
+ElliottHouse 13 4 1 elliott_sleep 2400
+ElliottHouse 13 4 1 elliott_sleep 2400
+ElliottHouse 13 4 1 elliott_sleep 2400
+ElliottHouse 13 4 1 elliott_sleep 2400
+ElliottHouse 13 4 1 elliott_sleep 2400
+ElliottHouse 13 4 1 elliott_sleep 2500
+ElliottHouse 6 4 0 1000
+ElliottHouse 6 4 0 1000
+ElliottHouse 6 4 0 1000
+ElliottHouse 6 4 0 1000
+ElliottHouse 6 4 0 1000
+ElliottHouse 6 4 0 1000
+ElliottHouse 7 7 2 1600
+ElliottHouse 7 7 2 1730
+ElliottHouse 7 7 2 1730
+ElliottHouse 7 7 2 1800
+ElliottHouse 7 7 2 1800
+ElliottHouse 7 7 2 1800
+FishShop 4 4 2 2200
+FishShop 4 4 2 2320
+FishShop 4 4 2 2320
+FishShop 4 4 2 2320
+FishShop 4 4 2 2420
+FishShop 4 4 2 2420
+FishShop 4 4 2 2420
+FishShop 4 6 3  1000
+FishShop 5 4 2  850
+FishShop 5 4 2 2300
+FishShop 5 4 2 850
+FishShop 5 4 2 850
+FishShop 5 4 2 850
+Forest 106 34 2 1500
+Forest 14 40 2 1300
+Forest 21 29 1 1830
+Forest 33 25 2 leah_draw 1500
+Forest 37 10 2  1100
+Forest 38 10 2 jas_jumprope  1100
+Forest 38 10 2 jas_jumprope  1100
+Forest 63 50 2  830
+Forest 66 50 2 1320
+Forest 68 50 2 1200
+Forest 77 44 2 haley_photo 1100
+Forest 84 40 2 1110
+Forest 91 40 2 dick_fish 610
+Forest 92 20 1 1100
+Forest 92 20 3 penny_wave_left 1750
+Forest 92 20 3 penny_wave_left 1750
+Forest 96 39 2 1130
+HaleyHouse 1 5 3 haley_sleep 2200
+HaleyHouse 1 5 3 haley_sleep 2200
+HaleyHouse 1 5 3 haley_sleep 2230
+HaleyHouse 1 5 3 haley_sleep 2230
+HaleyHouse 1 5 3 haley_sleep 2230
+HaleyHouse 1 5 3 haley_sleep 2300
+HaleyHouse 1 5 3 haley_sleep 2300
+HaleyHouse 1 5 3 haley_sleep 2400
+HaleyHouse 1 8 2 830
+HaleyHouse 12 17 1  830
+HaleyHouse 16 5 2 900
+HaleyHouse 16 5 2 900
+HaleyHouse 16 5 2 900
+HaleyHouse 16 5 2 900
+HaleyHouse 16 5 2 900
+HaleyHouse 19 16 0 1000
+HaleyHouse 19 16 0 square_5_1 1630
+HaleyHouse 19 16 0 square_5_1 1700
+HaleyHouse 19 16 0 square_5_1_0 1200
+HaleyHouse 19 16 0 square_5_1_0 1200
+HaleyHouse 19 16 0 square_5_1_0 1200
+HaleyHouse 19 16 0 square_5_1_0 1600
+HaleyHouse 19 16 0 square_5_1_0 1630
+HaleyHouse 19 16 0 square_5_1_0 1630
+HaleyHouse 2 5 2  830
+HaleyHouse 2 5 2  830
+HaleyHouse 2 5 2  830
+HaleyHouse 21 4 1 emily_sleep 2430
+HaleyHouse 21 4 1 emily_sleep 2430
+HaleyHouse 21 4 1 emily_sleep 2430
+HaleyHouse 21 4 1 emily_sleep 2430
+HaleyHouse 21 4 1 emily_sleep 2430
+HaleyHouse 3 16 0 1200
+HaleyHouse 3 16 0 1200
+HaleyHouse 4 15 2  930
+HaleyHouse 5 20 2 1200
+HaleyHouse 5 7 0 square_5_5 2000
+HaleyHouse 5 7 0 square_5_5 2000
+HaleyHouse 5 7 0 square_5_5 2000
+HaleyHouse 5 7 2 square_5_5 1600
+HaleyHouse 5 7 2 square_5_5 1600
+HaleyHouse 5 7 2 square_5_5 2000
+HaleyHouse 5 7 2 square_5_5 2000
+HaleyHouse 6 5 0 1030
+HaleyHouse 6 5 0 1030
+HaleyHouse 6 5 0 1030
+HaleyHouse 6 5 0 800
+HaleyHouse 6 5 0 840
+HaleyHouse 6 5 0 900
+HaleyHouse 6 5 0 900
+HaleyHouse 6 5 0 900
+HaleyHouse 7 16 0 1900
+HaleyHouse 7 16 0 1900
+HaleyHouse 7 23 3 alex_sit_left 1200
+HaleyHouse 8 7 1 1130
+HaleyHouse 8 7 1 1130
+HaleyHouse 8 7 1 1130
+HaleyHouse 8 7 1 930
+HaleyHouse 8 7 1 950
+HaleyHouse 8 7 1 950
+HaleyHouse 8 7 1 950
+HarveyRoom 11 5 3 harvey_read 1600
+HarveyRoom 11 5 3 harvey_read 1600
+HarveyRoom 11 5 3 harvey_read 1840
+HarveyRoom 11 5 3 harvey_read 1840
+HarveyRoom 13 4 1 harvey_sleep 2200
+HarveyRoom 13 4 1 harvey_sleep 2200
+HarveyRoom 13 4 1 harvey_sleep 2200
+HarveyRoom 13 4 1 harvey_sleep 2200
+HarveyRoom 13 4 1 harvey_sleep 2200
+HarveyRoom 13 4 1 harvey_sleep 2200
+HarveyRoom 13 4 1 harvey_sleep 2300
+HarveyRoom 13 4 1 harvey_sleep 2400
+HarveyRoom 19 7 0 800
+HarveyRoom 19 7 0 800
+HarveyRoom 21 7 0  1500
+HarveyRoom 21 7 0  1500
+HarveyRoom 21 7 0 700
+HarveyRoom 21 7 0 700
+HarveyRoom 21 7 0 700
+HarveyRoom 21 7 0 700
+HarveyRoom 21 7 0 700
+HarveyRoom 3 4 0 1630
+HarveyRoom 3 4 0 1630
+HarveyRoom 4 5 1 harvey_radio 1200
+HarveyRoom 4 5 1 harvey_radio 1200
+HarveyRoom 4 5 1 harvey_radio 1700
+HarveyRoom 6 4 0 2100
+HarveyRoom 6 4 0 2100
+HarveyRoom 8 5 0 1900
+HarveyRoom 8 5 0 1900
+HarveyRoom 9 5 0 1800
+Hospital 1 5 0  630
+Hospital 1 5 0 730
+Hospital 10 14 2 1250
+Hospital 10 14 2 1250
+Hospital 10 15 0  1030
+Hospital 10 16 0  1040
+Hospital 12 14 0  1010
+Hospital 12 14 0  1030
+Hospital 12 14 0  1030
+Hospital 12 14 0  1030
+Hospital 12 14 0  1030
+Hospital 12 14 0  1030
+Hospital 12 14 0  1030
+Hospital 12 14 0  1130
+Hospital 12 14 0  800
+Hospital 12 14 0  820
+Hospital 12 14 0 1030
+Hospital 12 14 0 1030
+Hospital 12 14 0 1030
+Hospital 12 14 0 1130
+Hospital 13 14 0  1200
+Hospital 13 14 0  1230
+Hospital 13 14 3  1040
+Hospital 13 14 3  1130
+Hospital 14 15 3 sam_gameboy 1130
+Hospital 15 15 3 alex_sit_left  1030
+Hospital 15 15 3 evelyn_sit_left  1030
+Hospital 15 16 3 sebastian_cardsLeft 1000
+Hospital 2 7 1  1330
+Hospital 2 7 1  1330
+Hospital 3 15 0 1630
+Hospital 3 15 0 1630
+Hospital 4 17 2 pam_sit_down  1130
+Hospital 4 17 2 penny_sit_down 1130
+Hospital 4 5 0 1610
+Hospital 4 5 0 1610
+Hospital 4 6 1  1330
+Hospital 4 6 1  1330
+Hospital 4 6 1  1330
+Hospital 4 6 1  1330
+Hospital 4 6 1  1330
+Hospital 4 6 1  1330
+Hospital 4 6 1  1330
+Hospital 4 6 1  1330
+Hospital 4 6 1  1330
+Hospital 4 6 1  1330
+Hospital 4 6 1  1330
+Hospital 4 6 1  1330
+Hospital 4 6 1  1330
+Hospital 4 6 1  1330
+Hospital 4 6 1  1330
+Hospital 4 6 1  1330
+Hospital 4 6 1  1330
+Hospital 4 6 1  1330
+Hospital 4 6 1  1330
+Hospital 4 6 1  1330
+Hospital 4 6 1  1330
+Hospital 4 6 1  1330
+Hospital 4 6 1  1330
+Hospital 4 7 0  1330
+Hospital 5 5 2 1330
+Hospital 5 5 2 1330
+Hospital 5 5 2 1550
+Hospital 5 5 2 1550
+Hospital 5 6 3 harvey_examine_left 1410
+Hospital 5 6 3 harvey_examine_left 1410
+Hospital 6 15 2  730
+Hospital 6 15 2 730
+Hospital 6 15 2 830
+Hospital 6 15 2 830
+Hospital 6 15 2 830
+Hospital 6 15 2 830
+Hospital 6 15 2 840
+Hospital 6 15 2 840
+Hospital 8 17 1  1600
+Hospital 8 17 1 1600
+Hospital 9 15 3  1400
+Hospital 9 15 3 1400
+Hospital 9 15 3 1730
+Hospital 9 15 3 1730
+JojaMart 11 25 3 1600
+JojaMart 14 21 1 1100
+JojaMart 16 5 2 sam_work 1100
+JojaMart 17 12 2 shane_work 1530
+JojaMart 20 5 0 1440
+JojaMart 21 16 2 shane_work 1330
+JojaMart 25 12 2 shane_work 1430
+JojaMart 27 13 1 1530
+JojaMart 5 13 2 shane_work 1230
+JojaMart 5 7 1 1400
+JojaMart 6 19 1 1200
+JojaMart 7 25 1 1630
+JojaMart 9 14 3 1330
+JojaMart 9 17 2 shane_work 700
+JojaMart27 5 0 
+JoshHouse 14 5 2 1500
+JoshHouse 14 5 2 alex_lift_weights 1300
+JoshHouse 14 5 2 alex_lift_weights 1300
+JoshHouse 14 5 2 alex_lift_weights 1700
+JoshHouse 15 4 2 1600
+JoshHouse 16 22 0 1400
+JoshHouse 16 22 0 1500
+JoshHouse 16 22 0 1500
+JoshHouse 16 22 0 1500
+JoshHouse 16 22 0 1500
+JoshHouse 16 22 0 1600
+JoshHouse 16 22 0 630
+JoshHouse 16 22 0 630
+JoshHouse 16 22 0 630
+JoshHouse 16 22 0 630
+JoshHouse 16 22 0 630
+JoshHouse 16 22 0 630
+JoshHouse 17 17 0 1900
+JoshHouse 17 17 0 1900
+JoshHouse 17 17 0 1900
+JoshHouse 17 17 0 1900
+JoshHouse 17 17 0 1900
+JoshHouse 17 17 0 1900
+JoshHouse 17 17 0 1900
+JoshHouse 17 22 3 1040
+JoshHouse 17 22 3 1040
+JoshHouse 17 22 3 1040
+JoshHouse 17 22 3 1040
+JoshHouse 17 22 3 1040
+JoshHouse 17 22 3 1040
+JoshHouse 17 5 0 2000
+JoshHouse 17 5 0 2000
+JoshHouse 17 5 0 2000
+JoshHouse 17 5 0 2000
+JoshHouse 17 5 0 2000
+JoshHouse 17 5 0 2000
+JoshHouse 17 5 0 2100
+JoshHouse 2 5 1 2130
+JoshHouse 2 5 1 2130
+JoshHouse 2 5 1 2130
+JoshHouse 2 5 1 2130
+JoshHouse 2 5 1 2130
+JoshHouse 2 5 1 2130
+JoshHouse 2 5 1 2130
+JoshHouse 2 5 1 2340
+JoshHouse 20 20 3 evelyn_sit_left 1300
+JoshHouse 20 20 3 evelyn_sit_left 1300
+JoshHouse 21 4 1 alex_sleep 2200
+JoshHouse 21 4 1 alex_sleep 2200
+JoshHouse 21 4 1 alex_sleep 2200
+JoshHouse 21 4 1 alex_sleep 2200
+JoshHouse 21 4 1 alex_sleep 2200
+JoshHouse 21 4 1 alex_sleep 2240
+JoshHouse 21 4 1 alex_sleep 2400
+JoshHouse 21 4 1 alex_sleep 2400
+JoshHouse 3 17 0 square_3_1_0 800
+JoshHouse 3 17 0 square_3_1_0 800
+JoshHouse 3 17 0 square_3_1_0 800
+JoshHouse 3 17 0 square_3_1_0 800
+JoshHouse 3 17 0 square_3_1_0 800
+JoshHouse 3 17 0 square_3_1_0 800
+JoshHouse 3 17 0 square_3_1_0 800
+JoshHouse 3 17 0 square_3_1_0 800
+JoshHouse 3 19 2 1210
+JoshHouse 3 19 2 1210
+JoshHouse 3 19 2 1210
+JoshHouse 3 19 2 1210
+JoshHouse 3 19 2 1210
+JoshHouse 3 5 0 george_sleep 2000
+JoshHouse 3 5 0 george_sleep 2000
+JoshHouse 3 5 0 george_sleep 2000
+JoshHouse 3 5 0 george_sleep 2000
+JoshHouse 3 5 0 george_sleep 2000
+JoshHouse 3 5 0 george_sleep 2000
+JoshHouse 3 5 0 george_sleep 2340
+JoshHouse 4 17 0 square_3_1_0 1600
+JoshHouse 4 17 0 square_3_1_0 1610
+JoshHouse 4 17 0 square_3_1_0 1630
+JoshHouse 4 17 0 square_3_1_0 1630
+JoshHouse 4 17 0 square_3_1_0 1630
+JoshHouse 4 17 0 square_3_1_0 1630
+JoshHouse 4 17 0 square_3_1_0 1630
+JoshHouse 5 21 3  630
+JoshHouse 5 21 3 1200
+JoshHouse 5 21 3 1200
+JoshHouse 5 21 3 1200
+JoshHouse 6 18 2  830
+JoshHouse 8 19 2 1830
+JoshHouse 8 19 2 1830
+JoshHouse 8 19 2 1830
+JoshHouse 8 19 2 1830
+JoshHouse 8 19 2 1840
+JoshHouse 8 19 2 1900
+JoshHouse 8 19 2 1930
+JoshHouse 8 19 2 alex_football 800
+LeahHouse 13 10 2 2200
+LeahHouse 13 10 2 2200
+LeahHouse 13 10 2 2200
+LeahHouse 13 10 2 2200
+LeahHouse 13 10 2 2200
+LeahHouse 2 4 3 leah_sleep 2340
+LeahHouse 2 4 3 leah_sleep 2340
+LeahHouse 2 4 3 leah_sleep 2340
+LeahHouse 2 4 3 leah_sleep 2400
+LeahHouse 2 4 3 leah_sleep 2400
+LeahHouse 2 4 3 leah_sleep 2400
+LeahHouse 2 4 3 leah_sleep 2400
+LeahHouse 2 4 3 leah_sleep 2400
+LeahHouse 3 7 3 leah_sculpt 900
+LeahHouse 3 7 3 leah_sculpt 900
+LeahHouse 3 7 3 leah_sculpt 900
+LeahHouse 3 7 3 leah_sculpt 900
+LeahHouse 3 7 3 leah_sculpt 900
+LeahHouse 3 7 3 leah_sculpt 900
+LeahHouse 3 7 3 leah_sculpt 900
+LeahHouse 3 7 3 leah_sculpt 900
+LeahHouse 6 5 0 1200
+LeahHouse 6 5 0 1200
+LeahHouse 8 5 0 1700
+LeahHouse 8 5 0 1900
+LeahHouse 8 5 0 1900
+LeahHouse 8 5 0 1900
+LeahHouse 8 5 0 1930
+LeahHouse 9 5 0 1400
+LeahHouse 9 5 0 1400
+Library 22 9 3 1100
+ManorHouse 22 4 1 lewis_sleep 2200
+ManorHouse 22 4 1 lewis_sleep 2200
+ManorHouse 22 4 1 lewis_sleep 2200
+ManorHouse 22 4 1 lewis_sleep 2200
+ManorHouse 22 4 1 lewis_sleep 2200
+ManorHouse 22 4 1 lewis_sleep 2200
+ManorHouse 22 4 1 lewis_sleep 2200
+ManorHouse 22 4 1 lewis_sleep 2200
+ManorHouse 22 4 1 lewis_sleep 2200
+ManorHouse 22 4 1 lewis_sleep 2200
+ManorHouse 22 4 1 lewis_sleep 2300
+ManorHouse 22 4 1 lewis_sleep 2300
+ManorHouse 22 4 1 lewis_sleep 2300
+ManorHouse 3 6 0 1830
+ManorHouse 3 6 0 2000
+ManorHouse 3 6 0 2000
+ManorHouse 3 6 0 2000
+ManorHouse 3 6 0 2000
+ManorHouse 3 6 0 2100
+ManorHouse 3 6 0 2100
+ManorHouse 3 6 0 2100
+ManorHouse 3 6 0 2100
+ManorHouse 3 6 0 2100
+ManorHouse 7 5 0 square_5_1_0 1000
+ManorHouse 7 5 0 square_5_1_0 1600
+ManorHouse 7 5 0 square_5_1_0 1600
+ManorHouse 7 5 0 square_5_1_0 1600
+ManorHouse 7 5 0 square_5_1_0 1600
+ManorHouse 7 5 0 square_5_1_0 1600
+ManorHouse 7 5 0 square_5_1_0 1600
+ManorHouse 7 5 0 square_5_1_0 1600
+ManorHouse 7 5 0 square_5_1_0 1600
+ManorHouse 7 5 0 square_5_1_0 1600
+ManorHouse 7 5 0 square_5_1_0 1950
+ManorHouse 7 5 0 square_5_1_0 900
+ManorHouse 8 5 0 800
+ManorHouse 8 5 0 800
+ManorHouse 8 5 0 800
+ManorHouse 8 5 0 800
+ManorHouse 8 5 0 800
+ManorHouse 8 5 0 800
+ManorHouse 8 5 0 800
+ManorHouse 8 5 0 800
+ManorHouse 8 5 0 800
+ManorHouse 8 5 0 800
+ManorHouse 8 5 0 800
+ManorHouse 8 5 0 800
+ManorHouse 8 5 0 800
+Mountain 15 26 1 1430
+Mountain 17 7 2 1500
+Mountain 25 5 1 2000
+Mountain 25 5 1 630
+Mountain 25 5 1 700
+Mountain 25 5 1 930
+Mountain 28 9 1 1100
+Mountain 28 9 1 1100
+Mountain 28 9 1 1400
+Mountain 28 9 1 1600
+Mountain 28 9 1 700
+Mountain 28 9 1 740
+Mountain 29 36 2 1700
+Mountain 30 36 2 1530
+Mountain 39 5 1 630
+Mountain 42 13 1 sebastian_smoking 1500
+Mountain 44 18 1 1400
+Mountain 44 27 1 square_3_3 940
+Mountain 45 19 1 930
+Mountain 45 8 demetrius_ 1100
+Mountain 46 23 2 abigail_flute 1500
+Mountain 48 35 2 square_3_3 1300
+Mountain 49 31 1 1400
+Mountain 49 31 2 abigail_flute 1100
+Mountain 55 31 0 1400
+Mountain 57 33 1 1200
+Mountain 58 35 1  830
+Mountain 58 35 1 sebastian_smoking 1830
+Mountain 64 14 2 1400
+Mountain 8 23 3  1900
+Railroad 20 57 2 square_5_5 900
+Railroad 30 45 0 1030
+Railroad 32 47 1 sebastian_smoking 1400
+Railroad 5 45 1 1930
+Railroad 64 45 3 1800
+Saloon 10 18 2 1100
+Saloon 10 18 2 1230
+Saloon 10 18 2 1600
+Saloon 10 18 2 1850
+Saloon 10 18 2 1850
+Saloon 10 18 2 1850
+Saloon 10 18 2 1850
+Saloon 10 18 2 1950
+Saloon 10 18 2 1950
+Saloon 10 18 2 1950
+Saloon 10 18 2 1950
+Saloon 10 18 2 1950
+Saloon 10 18 2 2040
+Saloon 10 18 2 2040
+Saloon 10 18 2 2040
+Saloon 10 18 2 2040
+Saloon 10 18 2 2040
+Saloon 11 20 0 1400
+Saloon 12 18 0 1500
+Saloon 12 18 0 1830
+Saloon 12 18 0 1830
+Saloon 12 18 0 1830
+Saloon 12 18 0 1940
+Saloon 12 18 0 1940
+Saloon 12 18 0 1940
+Saloon 12 18 0 1940
+Saloon 12 18 0 1940
+Saloon 12 18 0 2030
+Saloon 12 18 0 2030
+Saloon 12 18 0 2030
+Saloon 12 18 0 2030
+Saloon 12 18 0 2030
+Saloon 12 20 0 1400
+Saloon 14 18 2 gus_clean 1200
+Saloon 15 17 0  1500
+Saloon 15 17 0  1500
+Saloon 15 17 0 square_5_1_0 1530
+Saloon 15 17 0 square_5_1_0 1530
+Saloon 15 17 0 square_5_1_0 1600
+Saloon 15 17 2 square_5_1_0 1600
+Saloon 16 20 0  1700
+Saloon 16 4 2 gus_sit_down 800
+Saloon 16 4 2 gus_sit_down 800
+Saloon 16 4 2 gus_sit_down 800
+Saloon 16 4 2 gus_sit_down 800
+Saloon 17 22 2  1600
+Saloon 17 22 2  1630
+Saloon 17 22 2  1630
+Saloon 17 22 2  1630
+Saloon 17 22 2  1700
+Saloon 17 22 2  1700
+Saloon 17 22 2  1900
+Saloon 18 20 0 1730
+Saloon 19 23 3 1600
+Saloon 19 23 3 1700
+Saloon 19 23 3 1900
+Saloon 2 20 1 1600
+Saloon 2 20 1 1600
+Saloon 20 19 3 1320
+Saloon 21 17 2 shane_drink  1700
+Saloon 21 17 2 shane_drink 1500
+Saloon 21 17 2 shane_drink 1630
+Saloon 21 17 2 shane_drink 1700
+Saloon 21 17 2 shane_drink 1700
+Saloon 21 17 2 shane_drink 1800
+Saloon 21 17 2 shane_drink 1800
+Saloon 22 22 1 1600
+Saloon 23 22 1 robin_dance 1920
+Saloon 23 22 3 1600
+Saloon 23 4 1 gus_sleep 2400
+Saloon 23 4 1 gus_sleep 2400
+Saloon 23 4 1 gus_sleep 2400
+Saloon 23 4 1 gus_sleep 2400
+Saloon 23 4 1 gus_sleep 2400
+Saloon 24 17 2 shane_drink 2100
+Saloon 24 22 3 demetrius_dance 1920
+Saloon 27 23 1 1900
+Saloon 3 23 3 1700
+Saloon 32 7 0  1100
+Saloon 32 7 0  1100
+Saloon 33 18 0  1700
+Saloon 33 18 0  1700
+Saloon 33 8 0  1000
+Saloon 33 8 0  1000
+Saloon 34 8 0  1140
+Saloon 35 8 0 1110
+Saloon 36 21 3 sam_pool  1500
+Saloon 36 21 3 sam_pool 1500
+Saloon 36 7 0  1100
+Saloon 38 18 0  1400
+Saloon 38 18 0  1500
+Saloon 4 19 2 elliott_drink 1700
+Saloon 42 17 2 abigail_sit_down  1500
+Saloon 42 17 2 abigail_sit_down 1400
+Saloon 42 17 2 abigail_sit_down 1500
+Saloon 42 21 3  1500
+Saloon 42 21 3  1500
+Saloon 43 20 3 1500
+Saloon 7 18 1 1600
+Saloon 7 18 1 1600
+Saloon 7 18 1 1700
+Saloon 8 22 1 marnie_drink 1700
+Saloon 9 22 1 marnie_drink 1700
+Saloon 9 22 3 lewis_drink 1700
+SamHouse 10 22 3  2100
+SamHouse 10 22 3 2100
+SamHouse 10 22 3 2100
+SamHouse 10 22 3 2100
+SamHouse 10 22 3 2100
+SamHouse 10 22 3 2100
+SamHouse 10 22 3 2100
+SamHouse 10 22 3 2100
+SamHouse 11 22 2 vincent_play 1600
+SamHouse 11 22 2 vincent_play 1900
+SamHouse 11 22 2 vincent_play 1900
+SamHouse 12 22 3  1600
+SamHouse 15 13 0  1000
+SamHouse 15 13 0 1000
+SamHouse 15 13 0 1000
+SamHouse 15 13 0 1000
+SamHouse 15 13 0 1000
+SamHouse 15 13 0 1000
+SamHouse 15 13 0 1000
+SamHouse 15 13 0 1000
+SamHouse 15 13 0 900
+SamHouse 17 13 0 1600
+SamHouse 17 13 0 1700
+SamHouse 17 13 0 1900
+SamHouse 17 14 0 1500
+SamHouse 17 15 2 1000
+SamHouse 17 15 2 sam_guitar 1000
+SamHouse 17 15 2 sam_guitar 1040
+SamHouse 17 15 2 sam_guitar 1040
+SamHouse 17 15 2 sam_guitar 1040
+SamHouse 17 15 2 sam_guitar 1040
+SamHouse 17 15 2 sam_guitar 1040
+SamHouse 17 15 2 sam_guitar 1100
+SamHouse 17 15 2 sam_guitar 1230
+SamHouse 19 13 3 1500
+SamHouse 19 18 0 sebastian_keyboard_up 1230
+SamHouse 2 15 2 vincent_play 1100
+SamHouse 2 15 2 vincent_play 1100
+SamHouse 2 15 2 vincent_play 1100
+SamHouse 2 15 2 vincent_play 1100
+SamHouse 2 17 3 1800
+SamHouse 2 17 3 1900
+SamHouse 2 21 0 1500
+SamHouse 2 21 0 1600
+SamHouse 2 21 0 1700
+SamHouse 2 21 0 1700
+SamHouse 21 5 3 kent_sleep 2300
+SamHouse 21 5 3 kent_sleep 2300
+SamHouse 21 5 3 kent_sleep 2300
+SamHouse 21 5 3 kent_sleep 2300
+SamHouse 21 5 3 kent_sleep 2350
+SamHouse 22 13 1 sam_sleep 1940
+SamHouse 22 13 1 sam_sleep 1940
+SamHouse 22 13 1 sam_sleep 2000
+SamHouse 22 13 1 sam_sleep 2100
+SamHouse 22 13 1 sam_sleep 2100
+SamHouse 22 13 1 sam_sleep 2100
+SamHouse 22 13 1 sam_sleep 2100
+SamHouse 22 13 1 sam_sleep 2100
+SamHouse 22 13 1 sam_sleep 2120
+SamHouse 22 13 1 sam_sleep 2130
+SamHouse 22 13 1 sam_sleep 2130
+SamHouse 22 13 1 sam_sleep 2400
+SamHouse 22 16 1 1830
+SamHouse 22 16 1 1830
+SamHouse 22 16 1 1900
+SamHouse 22 16 1 1900
+SamHouse 22 16 1 1900
+SamHouse 22 5 1 jodi_sleep 2200
+SamHouse 22 5 1 jodi_sleep 2200
+SamHouse 22 5 1 jodi_sleep 2200
+SamHouse 22 5 1 jodi_sleep 2200
+SamHouse 22 5 1 jodi_sleep 2200
+SamHouse 22 5 1 jodi_sleep 2200
+SamHouse 22 5 1 jodi_sleep 2200
+SamHouse 22 5 1 jodi_sleep 2200
+SamHouse 22 5 1 jodi_sleep 2330
+SamHouse 3 13 2  1100
+SamHouse 3 5 2  900
+SamHouse 4 12 2 jodi_sit_down 1130
+SamHouse 4 12 2 jodi_sit_down 1130
+SamHouse 4 12 2 jodi_sit_down 1130
+SamHouse 4 12 2 jodi_sit_down 1600
+SamHouse 4 12 2 jodi_sit_down 2000
+SamHouse 4 14 2 square_3_3 1400
+SamHouse 4 5 0 1020
+SamHouse 4 5 0 1020
+SamHouse 4 5 0 1020
+SamHouse 4 5 0 1020
+SamHouse 4 5 0 1020
+SamHouse 4 5 0 1020
+SamHouse 4 8 0  900
+SamHouse 4 8 0 1740
+SamHouse 4 8 0 1900
+SamHouse 4 8 0 900
+SamHouse 4 8 0 900
+SamHouse 4 8 0 900
+SamHouse 4 8 0 900
+SamHouse 5 5 0 1600
+SamHouse 5 5 0 1600
+SamHouse 5 5 0 1600
+SamHouse 5 5 0 900
+SamHouse 5 5 0 940
+SamHouse 5 5 0 940
+SamHouse 5 5 0 940
+SamHouse 5 5 0 940
+SamHouse 5 5 0 940
+SamHouse 5 5 0 940
+SamHouse 5 5 0 940
+SamHouse 5 7 3 1700
+SamHouse 5 7 3 1700
+SamHouse 5 7 3 1930
+SamHouse 6 13 0 1100
+SamHouse 6 13 0 1700
+SamHouse 6 5 0 jodi_dishes 1040
+SamHouse 6 5 0 jodi_dishes 1040
+SamHouse 6 5 0 jodi_dishes 1040
+SamHouse 6 5 0 jodi_dishes 1040
+SamHouse 6 5 0 jodi_dishes 1040
+SamHouse 6 5 0 jodi_dishes 1040
+SamHouse 6 5 0 jodi_dishes 1900
+SamHouse 6 5 0 jodi_dishes 1900
+SamHouse 6 5 0 jodi_dishes 1900
+SamHouse 6 5 0 jodi_dishes 800
+SamHouse 6 5 0 jodi_dishes 800
+SamHouse 6 5 0 jodi_dishes 800
+SamHouse 6 5 0 jodi_dishes 800
+SamHouse 6 5 0 jodi_dishes 800
+SamHouse 6 5 0 jodi_dishes 800
+SamHouse 6 5 0 jodi_dishes 800
+SamHouse 6 5 0 jodi_dishes 800
+SamHouse 7 5 0 1000
+SamHouse 7 5 0 1000
+SamHouse 7 5 0 1000
+SamHouse 7 5 0 1000
+SamHouse 7 5 0 1000
+SamHouse 7 5 0 1000
+SamHouse 7 5 0 1700
+SamHouse 8 12 2 1030
+SamHouse 8 12 2 1030
+SamHouse 8 12 2 830
+SamHouse 8 13 1 1930
+SamHouse 8 13 1 1930
+SamHouse 8 13 1 1930
+SamHouse 8 22 3 vincent_sleep 2000
+SamHouse 8 22 3 vincent_sleep 2000
+SamHouse 8 22 3 vincent_sleep 2000
+SamHouse 8 22 3 vincent_sleep 2000
+SamHouse 8 22 3 vincent_sleep 2000
+SamHouse 8 22 3 vincent_sleep 2100
+SamHouse 8 22 3 vincent_sleep 2330
+SamHouse 8 5 3  800
+SamHouse 8 5 3  800
+SamHouse 8 5 3 1900
+SamHouse 8 5 3 1900
+SamHouse 8 5 3 1900
+SamHouse 8 5 3 1900
+SamHouse 8 5 3 800
+SamHouse 8 5 3 800
+SamHouse 8 6 3 sam_gameboy 1500
+ScienceHouse 15 4 0 1600
+ScienceHouse 15 4 0 2000
+ScienceHouse 15 4 0 2100
+ScienceHouse 15 4 0 2100
+ScienceHouse 15 4 0 2100
+ScienceHouse 16 18 0  1200
+ScienceHouse 16 19 2 demetrius_read 750
+ScienceHouse 16 19 2 demetrius_read 750
+ScienceHouse 16 5 0 1600
+ScienceHouse 16 5 0 1800
+ScienceHouse 16 5 0 1930
+ScienceHouse 16 5 0 1930
+ScienceHouse 16 5 0 1940
+ScienceHouse 19 18 0 1000
+ScienceHouse 19 18 0 1000
+ScienceHouse 19 18 0 1000
+ScienceHouse 19 18 0 1000
+ScienceHouse 19 18 0 1000
+ScienceHouse 19 18 0 1430
+ScienceHouse 19 18 0 900
+ScienceHouse 19 18 0 900
+ScienceHouse 19 4 1 demetrius_sleep 2200
+ScienceHouse 19 4 11 demetrius_sleep 2200
+ScienceHouse 19 4 11 demetrius_sleep 2230
+ScienceHouse 19 4 11 demetrius_sleep 2230
+ScienceHouse 19 4 11 demetrius_sleep 2230
+ScienceHouse 19 4 11 demetrius_sleep 2330
+ScienceHouse 2 21 1 1230
+ScienceHouse 2 4 3 maru_sleep 2200
+ScienceHouse 2 4 3 maru_sleep 2200
+ScienceHouse 2 4 3 maru_sleep 2300
+ScienceHouse 2 4 3 maru_sleep 2300
+ScienceHouse 2 4 3 maru_sleep 2300
+ScienceHouse 2 4 3 maru_sleep 2300
+ScienceHouse 2 4 3 maru_sleep 2330
+ScienceHouse 2 4 3 maru_sleep 2400
+ScienceHouse 2 4 3 maru_sleep 2400
+ScienceHouse 2 6 3 1800
+ScienceHouse 20 4 1 demetrius_sleep 2100
+ScienceHouse 21 4 1 robin_sleep 2100
+ScienceHouse 21 4 1 robin_sleep 2100
+ScienceHouse 21 4 1 robin_sleep 2100
+ScienceHouse 21 4 1 robin_sleep 2100
+ScienceHouse 21 4 1 robin_sleep 2100
+ScienceHouse 21 4 1 robin_sleep 2200
+ScienceHouse 21 4 1 robin_sleep 2330
+ScienceHouse 22 20 1 1540
+ScienceHouse 22 20 1 demetrius_ 1100
+ScienceHouse 22 20 1 demetrius_ 1100
+ScienceHouse 22 20 1 demetrius_ 1100
+ScienceHouse 22 20 1 demetrius_ 750
+ScienceHouse 26 13 1 1640
+ScienceHouse 27 9 0 1500
+ScienceHouse 27 9 0 1500
+ScienceHouse 27 9 0 1600
+ScienceHouse 27 9 0 1710
+ScienceHouse 27 9 0 1800
+ScienceHouse 27 9 0 1900
+ScienceHouse 27 9 0 1900
+ScienceHouse 27 9 0 1900
+ScienceHouse 28 9 0 1920
+ScienceHouse 28 9 0 2040
+ScienceHouse 28 9 0 2040
+ScienceHouse 28 9 0 2040
+ScienceHouse 29 9 0 1700
+ScienceHouse 29 9 0 750
+ScienceHouse 29 9 0 750
+ScienceHouse 29 9 0 750
+ScienceHouse 5 19 1 1030
+ScienceHouse 5 19 1 1030
+ScienceHouse 5 6 1 maru_tinker 1100
+ScienceHouse 5 6 1 maru_tinker 1600
+ScienceHouse 5 6 1 maru_tinker 1630
+ScienceHouse 5 6 1 maru_tinker 1800
+ScienceHouse 5 6 1 maru_tinker 1810
+ScienceHouse 5 6 1 maru_tinker 1830
+ScienceHouse 5 6 1 maru_tinker 1830
+ScienceHouse 5 6 1 maru_tinker 800
+ScienceHouse 5 6 1 maru_tinker 800
+ScienceHouse 5 6 1 maru_tinker 800
+ScienceHouse 5 6 1 maru_tinker 800
+ScienceHouse 5 6 1 maru_tinker 800
+ScienceHouse 5 6 1 maru_tinker 800
+ScienceHouse 5 6 1 maru_tinker 800
+ScienceHouse 6 20 0  1300
+ScienceHouse 6 20 0  800
+ScienceHouse 6 4 0 800
+ScienceHouse 7 18 1 1500
+ScienceHouse 7 18 1 1500
+ScienceHouse 7 20 0  1000
+ScienceHouse 7 6 1 1230
+ScienceHouse 8 18 2 700
+ScienceHouse 8 18 2 800
+ScienceHouse 8 18 2 800
+ScienceHouse 8 18 2 800
+ScienceHouse 8 18 2 800
+ScienceHouse 8 18 2 800
+ScienceHouse 8 5 2 penny_sit_down 1200
+ScienceHouse 9 6 1 1000
+ScienceHouse 9 6 1 2000
+ScienceHouse 9 6 1 2200
+ScienceHouse5 19 1 
+SebastianRoom 10 7 1  900
+SebastianRoom 11 9 1 sebastian_sleep 1600
+SebastianRoom 11 9 1 sebastian_sleep 1700
+SebastianRoom 11 9 1 sebastian_sleep 1930
+SebastianRoom 11 9 1 sebastian_sleep 2110
+SebastianRoom 11 9 1 sebastian_sleep 2110
+SebastianRoom 11 9 1 sebastian_sleep 2130
+SebastianRoom 11 9 1 sebastian_sleep 2130
+SebastianRoom 11 9 1 sebastian_sleep 2130
+SebastianRoom 11 9 1 sebastian_sleep 2130
+SebastianRoom 11 9 1 sebastian_sleep 2340
+SebastianRoom 5 4 2 abigail_sit_down 1000
+SebastianRoom 6 5 3 1200
+SebastianRoom 9 4 3 sebastian_computer 1000
+SebastianRoom 9 4 3 sebastian_computer 1030
+SebastianRoom 9 4 3 sebastian_computer 1030
+SebastianRoom 9 4 3 sebastian_computer 1030
+SebastianRoom 9 4 3 sebastian_computer 1030
+SebastianRoom 9 4 3 sebastian_computer 1030
+SebastianRoom 9 4 3 sebastian_computer 1030
+SebastianRoom 9 4 3 sebastian_computer 1530
+SebastianRoom 9 4 3 sebastian_computer 1530
+SebastianRoom 9 4 3 sebastian_computer 1730
+SebastianRoom 9 4 3 sebastian_computer 1800
+SeedShop 1 9 3 abigail_sleep 1700
+SeedShop 1 9 3 abigail_sleep 1800
+SeedShop 1 9 3 abigail_sleep 1930
+SeedShop 1 9 3 abigail_sleep 1930
+SeedShop 1 9 3 abigail_sleep 1930
+SeedShop 1 9 3 abigail_sleep 1930
+SeedShop 1 9 3 abigail_sleep 2000
+SeedShop 1 9 3 abigail_sleep 2000
+SeedShop 1 9 3 abigail_sleep 2000
+SeedShop 1 9 3 abigail_sleep 2000
+SeedShop 1 9 3 abigail_sleep 2100
+SeedShop 1 9 3 abigail_sleep 2200
+SeedShop 1 9 3 abigail_sleep 2200
+SeedShop 1 9 3 abigail_sleep 2400
+SeedShop 10 20 0 1130
+SeedShop 10 20 0 1130
+SeedShop 10 20 0 700
+SeedShop 10 20 0 700
+SeedShop 10 5 0 1600
+SeedShop 10 5 0 900
+SeedShop 11 20 0 1700
+SeedShop 11 20 0 810
+SeedShop 11 23 0 square_3_1_0 1100
+SeedShop 11 5 0  900
+SeedShop 13 20 0 1100
+SeedShop 13 23 0  800
+SeedShop 15 23 0 1200
+SeedShop 15 23 0 1200
+SeedShop 15 23 0 1200
+SeedShop 15 23 0 1330
+SeedShop 16 29 3 1200
+SeedShop 2 20 3 1030
+SeedShop 2 20 3 1030
+SeedShop 2 20 3 1030
+SeedShop 2 20 3 1400
+SeedShop 2 23 3  1200
+SeedShop 2 26 2  1300
+SeedShop 2 26 2  1300
+SeedShop 2 26 2  1300
+SeedShop 2 26 2  830
+SeedShop 2 26 2  830
+SeedShop 20 5 0 2100
+SeedShop 20 5 1  1030
+SeedShop 21 17 2 jodi_exercise 1300
+SeedShop 21 5 2 caroline_read 1330
+SeedShop 21 5 3  1040
+SeedShop 22 14 0  800
+SeedShop 22 17 1 1000
+SeedShop 22 5 2 900
+SeedShop 23 15 1  1600
+SeedShop 23 16 2 1000
+SeedShop 24 14 2  1600
+SeedShop 24 16 0  1600
+SeedShop 24 17 3 1030
+SeedShop 24 21 0 caroline_exercise 1300
+SeedShop 24 4 1 pierre_sleep 2250
+SeedShop 24 4 1 pierre_sleep 2300
+SeedShop 25 15 3  1600
+SeedShop 25 18 2 square_9_9 1600
+SeedShop 25 18 2 square_9_9 1600
+SeedShop 25 18 2 square_9_9 1600
+SeedShop 25 18 2 square_9_9 1700
+SeedShop 25 18 2 square_9_9 1700
+SeedShop 25 18 2 square_9_9 1700
+SeedShop 25 4 1 caroline_sleep 2100
+SeedShop 25 4 1 caroline_sleep 2100
+SeedShop 25 4 1 caroline_sleep 2100
+SeedShop 25 4 1 caroline_sleep 2100
+SeedShop 25 4 1 caroline_sleep 2100
+SeedShop 25 4 1 caroline_sleep 2100
+SeedShop 25 4 1 caroline_sleep 2100
+SeedShop 25 4 1 caroline_sleep 2100
+SeedShop 25 4 1 caroline_sleep 2330
+SeedShop 26 19 2 emily_exercise 1300
+SeedShop 27 16 2 1000
+SeedShop 27 18 0 930
+SeedShop 27 22 2 robin_exercise 1300
+SeedShop 27 7 1 1830
+SeedShop 27 7 3  1000
+SeedShop 28 17 2 marnie_exercise 1300
+SeedShop 3 6 0 abigail_videogames 1430
+SeedShop 3 6 0 abigail_videogames 1630
+SeedShop 3 6 0 abigail_videogames 1700
+SeedShop 3 6 0 abigail_videogames 1740
+SeedShop 34 5 0  1810
+SeedShop 34 5 0 900
+SeedShop 34 5 0 900
+SeedShop 36 20 0 1010
+SeedShop 36 20 0 830
+SeedShop 36 22 0  1000
+SeedShop 36 9 0  800
+SeedShop 37 5 0 1900
+SeedShop 37 6 3 800
+SeedShop 37 6 3 800
+SeedShop 37 6 3 800
+SeedShop 37 6 3 800
+SeedShop 37 6 3 800
+SeedShop 37 6 3 800
+SeedShop 37 6 3 800
+SeedShop 38 20 0 1000
+SeedShop 39 5 0 1300
+SeedShop 39 5 0 900
+SeedShop 39 5 0 900
+SeedShop 39 5 0 900
+SeedShop 39 5 0 900
+SeedShop 39 5 0 900
+SeedShop 39 5 0 900
+SeedShop 4 17 2 830
+SeedShop 4 17 2 830
+SeedShop 4 5 0 900
+SeedShop 5 19 0  1100
+SeedShop 5 19 0 1400
+SeedShop 6 19 0  1140
+SeedShop 6 19 0  830
+SeedShop 6 4 0 1900
+SeedShop 7 9 2 1500
+SeedShop 9 17 3 1100
+SeedShop 9 17 3 1100
+SeedShop 9 5 0 900
+SeedShop2 22 3 
+SeedShop2 24 3 
+Sunroom 5 7 1 1000
+Sunroom 5 7 1 1000
+Sunroom 5 7 1 1000
+Tent 1 3 2 2100
+Tent 2 2 0 700
+Tent 2 2 2 1800
+Tent 2 2 2 1800
+Tent 2 2 2 1900
+Tent 2 2 2 2020
+Tent 3 2 1 1900
+Tent 3 2 2 1010
+Tent 4 4 2 linus_sleep 2300
+Tent 4 4 2 linus_sleep 2330
+Town 10 64 2 square_5_5 1200
+Town 10 94 1 sebastian_smoking 1800
+Town 104 89 2  810
+Town 11 94 2  1600
+Town 12 13 1 1200
+Town 12 72 2 square_5_3 1400
+Town 12 72 2 square_5_3 1400
+Town 12 94 3 1800
+Town 14 90 2 sam_skateboarding 1100
+Town 15 90 1 1620
+Town 16 11 1 square_5_3 1200
+Town 16 91 0 1620
+Town 17 90 3 penny_wave_left 1620
+Town 17 90 3 penny_wave_left 1620
+Town 18 94 3 sam_gameboy 1100
+Town 18 95 0 900
+Town 20 62 3 evelyn_garden 1300
+Town 22 72 1 1330
+Town 22 72 1 1330
+Town 23 22 2 1100
+Town 23 27 1  1200
+Town 23 27 1 1200
+Town 23 36 2 square_7_5 1200
+Town 23 71 2 1330
+Town 23 71 2 1330
+Town 24 12 jas_jumprope 1200
+Town 24 97 3 sam_gameboy 1600
+Town 25 98 2 800
+Town 28 90 1 1700
+Town 28 91 1 1700
+Town 29 27 3 1400
+Town 29 91 3 1700
+Town 30 56 2 1140
+Town 30 56 2 1140
+Town 30 56 2 1140
+Town 31 23 1 square_3_9 1100
+Town 31 89 1 1000
+Town 31 90 1 1010
+Town 32 89 2 1000
+Town 33 101 2 shane_drink  830
+Town 33 101 2 shane_drink  830
+Town 33 101 2 shane_drink  830
+Town 35 89 2 penny_read 1130
+Town 35 89 2 penny_read 800
+Town 36 78 3 1300
+Town 41 57 0 1400
+Town 41 57 0 1400
+Town 42 102 2 700
+Town 42 102 2 700
+Town 43 77 2 maru_sit_down 1330
+Town 43 79 2 sam_skateboarding 1100
+Town 44 77 2 penny_sit_down  1600
+Town 44 77 2 penny_sit_down 1600
+Town 46 102 2 1200
+Town 47 87 0  1300
+Town 47 87 0 1800
+Town 48 33 2 1440
+Town 50 68 1 1500
+Town 50 68 1 1500
+Town 50 68 1 1600
+Town 50 68 1 1600
+Town 50 68 1 1630
+Town 50 68 1 1800
+Town 52 61 2 1200
+Town 55 104 1 1500
+Town 59 100 2 dick_fish 1400
+Town 6 72 1 1400
+Town 6 72 1 1400
+Town 6 72 1 1400
+Town 6 89 2 2100
+Town 6 89 2 2100
+Town 6 89 2 2100
+Town 6 89 2 2100
+Town 62 88 0 1000
+Town 62 88 0 1000
+Town 62 88 0 1000
+Town 62 88 0 1000
+Town 62 88 0 1000
+Town 62 88 0 900
+Town 62 88 0 930
+Town 63 15 2 maru_sit_down  1400
+Town 63 15 2 maru_sit_down 1400
+Town 63 15 2 penny_sit_down 1300
+Town 64 16 3 1310
+Town 64 64 2 alex_football 800
+Town 64 64 2 alex_football 800
+Town 64 64 2 alex_football 800
+Town 64 64 2 alex_football 800
+Town 64 64 2 alex_football 800
+Town 65 86 3 lewis_garden 1020
+Town 65 86 3 lewis_garden 1040
+Town 65 86 3 lewis_garden 1040
+Town 65 86 3 lewis_garden 1040
+Town 65 86 3 lewis_garden 1040
+Town 65 86 3 lewis_garden 1040
+Town 65 86 3 lewis_garden 940
+Town 71 99 2 1340
+Town 73 54 2 1300
+Town 75 52 2 penny_sit_down 1600
+Town 78 93 2 penny_sit_down 1100
+Town 79 95 2 1100
+Town 82 15 1  1100
+Town 83 100 3 1400
+Town 85 103 2 1400
+Town 86 66 3 square_1_5_3 1200
+Town 88 100 2 1400
+Town 88 100 2 1400
+Town 88 91 2 1200
+Town 90 91 3 1330
+Town 96 18 3 800
+Town 96 18 3 810
+Trailer 1 8 0  900
+Trailer 1 8 0 900
+Trailer 1 8 0 900
+Trailer 12 6 0 penny_dishes 1230
+Trailer 12 6 0 penny_dishes 1300
+Trailer 12 6 0 penny_dishes 1300
+Trailer 12 6 0 penny_dishes 1600
+Trailer 12 6 0 penny_dishes 1800
+Trailer 12 6 0 penny_dishes 1800
+Trailer 12 6 0 penny_dishes 1800
+Trailer 12 6 0 penny_dishes 1900
+Trailer 12 6 0 penny_dishes 1900
+Trailer 14 4 2 penny_sit_down 1500
+Trailer 14 4 2 penny_sit_down 1500
+Trailer 14 4 2 penny_sit_down 1600
+Trailer 15 4 2 pam_sit_down 800
+Trailer 15 4 2 pam_sit_down 800
+Trailer 15 4 2 pam_sit_down 800
+Trailer 15 4 2 pam_sleep 2400
+Trailer 15 4 2 pam_sleep 2400
+Trailer 15 4 2 pam_sleep 2400
+Trailer 4 4 2 penny_read 1800
+Trailer 4 9 1 penny_sleep 1830
+Trailer 4 9 1 penny_sleep 1840
+Trailer 4 9 1 penny_sleep 1840
+Trailer 4 9 1 penny_sleep 2000
+Trailer 4 9 1 penny_sleep 2100
+Trailer 4 9 1 penny_sleep 2100
+Trailer 4 9 1 penny_sleep 2100
+Trailer 4 9 1 penny_sleep 2100
+Trailer 4 9 1 penny_sleep 2100
+Trailer 4 9 1 penny_sleep 2100
+Trailer 4 9 1 penny_sleep 2350
+Trailer 5 5 0 900
+Trailer 5 5 0 900
+Trailer 6 5 0 830
+Trailer 9 7 0 1100
+Trailer 9 7 0 1100

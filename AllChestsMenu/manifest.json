@@ -1,0 +1,10 @@
+﻿{
+	"Name": "All Chests Menu",
+	"Author": "aedenthorn",
+	"Version": "0.4.2",
+	"Description": "Provides access to a menu displaying inventories of all player chests and the player backpack.",
+	"UniqueID": "aedenthorn.AllChestsMenu",
+	"EntryDll": "AllChestsMenu.dll",
+	"MinimumApiVersion": "4.0.0",
+	"UpdateKeys": [ "Nexus:14494" ]
+}

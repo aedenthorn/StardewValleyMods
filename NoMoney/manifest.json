@@ -1,0 +1,10 @@
+﻿{
+	"Name": "No Money",
+	"Author": "aedenthorn",
+	"Version": "0.2.0",
+	"Description": "No money.",
+	"UniqueID": "aedenthorn.NoMoney",
+	"EntryDll": "NoMoney.dll",
+	"MinimumApiVersion": "4.0.0",
+	"UpdateKeys": [ "Nexus:43337" ]
+}

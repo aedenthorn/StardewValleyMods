@@ -1,0 +1,10 @@
+﻿{
+  "Name": "Screenshot",
+  "Author": "aedenthorn",
+  "Version": "0.3.0",
+  "Description": "Screenshot.",
+  "UniqueID": "aedenthorn.Screenshot",
+  "EntryDll": "Screenshot.dll",
+  "MinimumApiVersion": "4.0.0",
+  "UpdateKeys": [ "Nexus:10178" ]
+}

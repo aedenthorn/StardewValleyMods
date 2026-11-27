@@ -1,0 +1,23 @@
+﻿{
+  "ModEnabled": "Mod Enabled",
+  "SwitchEnabled": "Switch Enabled",
+  "ToggleButton": "Toggle Button",
+  "HoldingTool": "Only When Holding",
+  "FromWeapon": "Switch From Weapon",
+  "SwitchForObjects": "Switch For Objects",
+  "SwitchForTrees": "Switch For Trees",
+  "SwitchForResourceClumps": "Switch For Clumps",
+  "SwitchForGrass": "Switch For Grass",
+  "SwitchForCrops": "Switch For Crops",
+  "HarvestWithScythe": "Harvest With Scythe",
+  "SwitchForPan": "Switch To Pan",
+  "SwitchForWateringCan": "Switch To Watering",
+  "SwitchForFishing": "Switch For Fishing",
+  "SwitchForWatering": "Switch For Watering",
+  "SwitchForTilling": "Switch For Tilling",
+  "SwitchForAnimals": "Switch For Animals",
+  "SwitchForMonsters": "Switch For Monsters",
+  "MonsterMaxDistance": "Monster Max Distance",
+  "enabled-true": "Tool Smart-Switch Enabled",
+  "enabled-false": "Tool Smart-Switch Disabled"
+}

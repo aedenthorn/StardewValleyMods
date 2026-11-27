@@ -1,0 +1,10 @@
+﻿{
+  "Name": "Import Map",
+  "Author": "aedenthorn",
+  "Version": "0.2.1",
+  "Description": "Import Map.",
+  "UniqueID": "aedenthorn.ImportMap",
+  "EntryDll": "ImportMap.dll",
+  "MinimumApiVersion": "4.0.0",
+  "UpdateKeys": [ "Nexus:10965" ]
+}

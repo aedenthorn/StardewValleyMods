@@ -1,0 +1,10 @@
+﻿{
+  "Name": "Sewer Slimes",
+  "Author": "aedenthorn",
+  "Version": "0.2.0",
+  "Description": "Sewer Slimes.",
+  "UniqueID": "aedenthorn.SewerSlimes",
+  "EntryDll": "SewerSlimes.dll",
+  "MinimumApiVersion": "4.0.0",
+  "UpdateKeys": [ "Nexus:18195" ]
+}

@@ -1,0 +1,10 @@
+﻿{
+	"Name": "Here Fishy",
+	"Author": "aedenthorn",
+	"Version": "0.7.0",
+	"Description": "Scientifically-proven humane method of acquiring fish.",
+	"UniqueID": "aedenthorn.HereFishy",
+	"EntryDll": "HereFishy.dll",
+	"MinimumApiVersion": "4.0.0",
+	"UpdateKeys": [ "Nexus:6586" ]
+}

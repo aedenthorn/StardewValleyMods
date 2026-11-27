@@ -1,0 +1,10 @@
+﻿{
+  "Name": "Dynamic Flooring",
+  "Author": "aedenthorn",
+  "Version": "0.2.0",
+  "Description": "Dynamic Flooring.",
+  "UniqueID": "aedenthorn.DynamicFlooring",
+  "EntryDll": "DynamicFlooring.dll",
+  "MinimumApiVersion": "4.0.0",
+  "UpdateKeys": [ "Nexus:14780" ]
+}

@@ -1,0 +1,16 @@
+﻿{
+  "Name": "Quick Load",
+  "Author": "aedenthorn",
+  "Version": "0.1.1",
+  "Description": "Allows you to quickly load the last saved or loaded game.",
+  "UniqueID": "aedenthorn.QuickLoad",
+  "EntryDll": "QuickLoad.dll",
+  "MinimumApiVersion": "4.0.0",
+  "UpdateKeys": ["Nexus:7756"],
+  "ModUpdater": {
+    "Repository": "StardewValleyMods",
+    "User": "aedenthorn",
+    "Directory": "_releases",
+    "ModFolder": "QuickLoad"
+  }
+}

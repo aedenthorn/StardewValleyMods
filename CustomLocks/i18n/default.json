@@ -1,0 +1,10 @@
+{
+  // GMCM
+  "GMCM_Option_ModEnabled_Name": "Mod Enabled?",
+  "GMCM_Option_AllowSeedShopWed_Name": "Allow Seed Shop on Wed?",
+  "GMCM_Option_AllowOutsideTime_Name": "Allow Outside Hours?",
+  "GMCM_Option_AllowStrangerHomeEntry_Name": "Allow Stranger Home Entry?",
+  "GMCM_Option_AllowStrangerRoomEntry_Name": "Allow Stranger Room Entry?",
+  "GMCM_Option_AllowAdventureGuildEntry_Name": "Allow Adventure Guild Entry?",
+  "GMCM_Option_IgnoreEvents_Name": "Ignore Events?"
+}

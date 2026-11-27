@@ -1,0 +1,10 @@
+﻿{
+	"Name": "Zombie Outbreak",
+	"Author": "aedenthorn",
+	"Version": "0.3.1",
+	"Description": "Raaarrgh.",
+	"UniqueID": "aedenthorn.ZombieOutbreak",
+	"EntryDll": "ZombieOutbreak.dll",
+	"MinimumApiVersion": "4.1.0",
+	"UpdateKeys": [ "Nexus:6743" ]
+}

@@ -1,0 +1,10 @@
+﻿{
+	"Name": "Letter Blocks",
+	"Author": "aedenthorn",
+	"Version": "0.1.0",
+	"Description": "Letter Blocks.",
+	"UniqueID": "aedenthorn.LetterBlocks",
+	"EntryDll": "LetterBlocks.dll",
+	"MinimumApiVersion": "4.0.0",
+	"UpdateKeys": [ "Nexus:" ]
+}

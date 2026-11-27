@@ -1,0 +1,10 @@
+﻿{
+	"Name": "Bee Paths",
+	"Author": "aedenthorn",
+	"Version": "0.3.0",
+	"Description": "Indicates flower <-> bee house connections by showing bees traveling between them.",
+	"UniqueID": "aedenthorn.BeePaths",
+	"EntryDll": "BeePaths.dll",
+	"MinimumApiVersion": "4.0.0",
+	"UpdateKeys": [ "Nexus:14812" ]
+}

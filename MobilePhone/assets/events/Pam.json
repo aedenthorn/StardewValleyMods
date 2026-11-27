@@ -1,0 +1,18 @@
+{
+  "events": [
+    {
+      "name": "Pam-event-0",
+      "location": "Saloon",
+      "eventId": "96",
+      "night": false,
+      "mail": null
+    },
+    {
+      "name": "Pam-event-1",
+      "location": "Trailer_big",
+      "eventId": "503180",
+      "night": false,
+      "mail": null
+    }
+  ]
+}

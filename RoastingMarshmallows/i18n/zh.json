@@ -1,0 +1,11 @@
+﻿{
+	"GMCM.ModEnabled.Name": "模组启用",
+	"GMCM.RoastKey.Name": "烘烤按键",
+	"GMCM.RoastFrames.Name": "烘烤帧数",
+	"RawMarshmallow.Name": "生棉花糖",
+	"RawMarshmallow.Description": "一块未烘烤的棉花糖。",
+	"CookedMarshmallow.Name": "烤棉花糖",
+	"CookedMarshmallow.Description": "一块完美烘烤的棉花糖。",
+	"BurntMarshmallow.Name": "焦糊棉花糖",
+	"BurntMarshmallow.Description": "一块烤得焦黑的棉花糖。"
+}

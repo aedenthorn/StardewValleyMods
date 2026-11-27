@@ -1,0 +1,53 @@
+{
+  "events": [
+    {
+      "name": "Penny-event-0",
+      "location": "Town",
+      "eventId": "34",
+      "night": false,
+      "mail": null
+    },
+    {
+      "name": "Penny-event-1",
+      "location": "Trailer",
+      "eventId": "35",
+      "night": false,
+      "mail": null
+    },
+    {
+      "name": "Penny-event-2",
+      "location": "Trailer",
+      "eventId": "36",
+      "night": false,
+      "mail": null
+    },
+    {
+      "name": "Penny-event-3",
+      "location": "Forest",
+      "eventId": "181928",
+      "night": false,
+      "mail": null
+    },
+    {
+      "name": "Penny-event-4",
+      "location": "BathHouse_Pool",
+      "eventId": "38",
+      "night": false,
+      "mail": null
+    },
+    {
+      "name": "Penny-event-5",
+      "location": "FarmHouse",
+      "eventId": "4325434",
+      "night": false,
+      "mail": "pennyQuilt0,pennyQuilt1,pennyQuilt2,noQuilt"
+    },
+    {
+      "name": "Penny-event-6",
+      "location": "FarmHouse",
+      "eventId": "4324303",
+      "night": false,
+      "mail": null
+    }
+  ]
+}
