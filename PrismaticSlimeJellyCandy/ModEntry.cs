@@ -3,6 +3,7 @@ using Microsoft.Xna.Framework;
 using StardewModdingAPI;
 using StardewModdingAPI.Events;
 using StardewModdingAPI.Utilities;
+using StardewValley.GameData.Objects;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
@@ -43,6 +44,14 @@ namespace PrismaticSlimeJellyCandy
                 {
                     var dict = data.GetData<Dictionary<string, string>>();
                     dict["aedenthorn.MagicRockCandy"] = $"245 1 876 1/1 10/279/default/";
+                });
+            }
+            else if (e.NameWithoutLocale.IsEquivalentTo("Data/Objects"))
+            {
+                e.Edit((IAssetData data) =>
+                {
+                    var dict = data.GetData<Dictionary<string, ObjectData>>();
+                    dict["876"].Type = "Basic";
                 });
             }
         }

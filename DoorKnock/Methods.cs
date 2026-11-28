@@ -129,7 +129,7 @@ namespace DoorKnock
                 farmerController.Value = Game1.player.Position;
             }
         }
-       public static void WaitBehaviour(Character c, GameLocation l)
+        public static void WaitBehaviour(Character c, GameLocation l)
         {
             NPC npc = c as NPC;
             //var doorTile = c.TilePoint + new Point(0, c.FacingDirection == 0 ? -1 : 1);

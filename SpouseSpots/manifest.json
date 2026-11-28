@@ -1,0 +1,10 @@
+﻿{
+  "Name": "Spouse Spots",
+  "Author": "aedenthorn",
+  "Version": "0.1.0",
+  "Description": "Spouse Spots.",
+  "UniqueID": "aedenthorn.SpouseSpots",
+  "EntryDll": "SpouseSpots.dll",
+  "MinimumApiVersion": "4.0.0",
+  "UpdateKeys": [ "Nexus:" ]
+}

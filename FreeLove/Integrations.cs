@@ -13,6 +13,7 @@ namespace FreeLove
         public static ICustomSpouseRoomsAPI customSpouseRoomsAPI;
         public static IPlannedParenthoodAPI plannedParenthoodAPI;
         public static IContentPatcherAPI contentPatcherAPI;
+        public static ISpouseSpotAPI spouseSpotAPI;
 
         public static void LoadModApis()
         {
@@ -21,6 +22,7 @@ namespace FreeLove
             childrenAPI = SHelper.ModRegistry.GetApi<IChildrenTweaksAPI>("aedenthorn.ChildrenTweaks");
             customSpouseRoomsAPI = SHelper.ModRegistry.GetApi<ICustomSpouseRoomsAPI>("aedenthorn.CustomSpouseRooms");
             plannedParenthoodAPI = SHelper.ModRegistry.GetApi<IPlannedParenthoodAPI>("aedenthorn.PlannedParenthood");
+            spouseSpotAPI = SHelper.ModRegistry.GetApi<ISpouseSpotAPI>("aedenthorn.SpouseSpots");
 
             if (kissingAPI != null)
             {
@@ -41,6 +43,10 @@ namespace FreeLove
             if (plannedParenthoodAPI != null)
             {
                 SMonitor.Log("PlannedParenthood API loaded");
+            }
+            if (spouseSpotAPI != null)
+            {
+                SMonitor.Log("SpouseSpots API loaded");
             }
             contentPatcherAPI = SHelper.ModRegistry.GetApi<IContentPatcherAPI>("Pathoschild.ContentPatcher");
             if(contentPatcherAPI is not null)

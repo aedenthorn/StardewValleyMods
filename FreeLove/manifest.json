@@ -1,7 +1,7 @@
 ﻿{
   "Name": "Free Love",
   "Author": "aedenthorn",
-  "Version": "1.5.7",
+  "Version": "1.6.0",
   "Description": "Free Love",
   "UniqueID": "aedenthorn.FreeLove",
   "EntryDll": "FreeLove.dll",

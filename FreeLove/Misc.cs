@@ -1,4 +1,5 @@
-﻿using Microsoft.Xna.Framework;
+﻿using HarmonyLib;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using StardewModdingAPI;
 using StardewValley;
@@ -122,12 +123,15 @@ namespace FreeLove
                 {
                     if (!Game1.getFarm().Equals(spouse.currentLocation))
                     {
-                        SMonitor.Log($"{spouse.Name} is not in farmhouse ({spouse.currentLocation.Name})");
+                        SMonitor.Log($"{spouse.Name} is not on farm or in farmhouse ({spouse.currentLocation.Name})");
                         continue;
                     }
                     else if(porchSpouse == null)
                     {
                         porchSpouse = spouse.Name;
+                        spouse.Sprite.StopAnimation();
+                        spouse.isSleeping.Value = false;
+                        AccessTools.Field(typeof(NPC), "isPlayingSleepingAnimation").SetValue(spouse, false);
                         continue;
                     }
                     else
@@ -135,6 +139,9 @@ namespace FreeLove
                         Game1.warpCharacter(spouse, farmHouse.NameOrUniqueName, farmHouse.getRandomOpenPointInHouse(myRand));
                     }
                 }
+                spouse.Sprite.StopAnimation();
+                spouse.isSleeping.Value = false;
+                AccessTools.Field(typeof(NPC), "isPlayingSleepingAnimation").SetValue(spouse, false);
                 int type = myRand.Next(0, 100);
 
                 SMonitor.Log($"spouse rand {type}, bed: {Config.PercentChanceForSpouseInBed} kitchen {Config.PercentChanceForSpouseInKitchen}");
@@ -172,7 +179,11 @@ namespace FreeLove
                 if (spouse is null)
                     continue;
                 SMonitor.Log("placing " + spouse.Name);
-
+                if (spouseSpotAPI is not null && Game1.random.NextDouble() < spouseSpotAPI.ChanceAtNewDay() && spouseSpotAPI.SetRandomSpot(spouse, farmHouse))
+                {
+                    SMonitor.Log($"{spouse.Name} spouse spot mod loc {spouse.TilePoint}");
+                    continue;
+                }
                 Point spouseRoomSpot = new Point(-1, -1); 
                 
                 if(customSpouseRoomsAPI != null)
@@ -218,7 +229,7 @@ namespace FreeLove
                     spouse.setTilePosition(spouseRoomSpot);
                     spouse.setSpouseRoomMarriageDialogue();
                 }
-                else 
+                else
                 {
                     Point point = new(-1, -1);
                     for(int i = 0; i < 100; i++)
