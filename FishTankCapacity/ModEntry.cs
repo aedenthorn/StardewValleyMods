@@ -16,11 +16,12 @@ namespace FishTankCapacity
         public static IModHelper SHelper;
         public static ModConfig Config;
         public static ModEntry context;
-        public const string dictPath = "aedenthorn.FishTankCapacity/dict";
-        public static Dictionary<string, List<DecorationInfo>> DecorationDict
+        public const string dictPath = "aedenthorn.FishTankCapacity/decor";
+        public const string whichKey = "aedenthorn.FishTankCapacity/which";
+        public static Dictionary<string, Dictionary<string, DecorationInfo>> DecorationDict
         {
             get {
-                return SHelper.GameContent.Load<Dictionary<string, List<DecorationInfo>>>(dictPath);
+                return SHelper.GameContent.Load<Dictionary<string, Dictionary<string, DecorationInfo>>>(dictPath);
             }
         }
 
@@ -46,7 +47,7 @@ namespace FishTankCapacity
                 return;
             if (e.NameWithoutLocale.IsEquivalentTo(dictPath))
             {
-                e.LoadFrom(() => new Dictionary<string, List<DecorationInfo>>(), AssetLoadPriority.Exclusive);
+                e.LoadFrom(() => new Dictionary<string, Dictionary<string, DecorationInfo>>(), AssetLoadPriority.Exclusive);
             }
         }
 

@@ -85,7 +85,8 @@ namespace FishTankCapacity
                 {
                     var item = __instance.heldItems[i];
                     skip = true;
-                    if (!__instance.CanBeDeposited(item) || DecorationDict.ContainsKey(item.ItemId))
+                    Dictionary<string, DecorationInfo> dict = null;
+                    if (!__instance.CanBeDeposited(item) || DecorationDict.TryGetValue(item.ItemId, out dict))
                     {
                         var slot = __instance.floorDecorations.FindIndex(kvp => kvp is null);
                         if(slot > -1)
@@ -93,6 +94,10 @@ namespace FishTankCapacity
                             var slots = __instance.decorationSlots.Where(s => !__instance.floorDecorations.Any(f => f is KeyValuePair<Rectangle, Vector2> kvp && Vector2.Distance(kvp.Value, s) < Config.MinPixelDistance));
                             if (slots.Any())
                             {
+                                if(dict is not null)
+                                {
+                                    item.modData[whichKey] = dict.Keys.ToArray()[Game1.random.Next(dict.Count)];
+                                }
                                 var pos = slots.ElementAt(Game1.random.Next(slots.Count())) + new Vector2(Game1.random.Next(-Config.RandomShiftPixels, Config.RandomShiftPixels + 1), Game1.random.Next(-Config.RandomShiftPixels, Config.RandomShiftPixels + 1));
                                 __instance.floorDecorations[slot] = new KeyValuePair<Rectangle, Vector2>(new Rectangle(i, 0, 0, 0), pos);
                             }
@@ -134,9 +139,14 @@ namespace FishTankCapacity
                     {
                         Vector2 decoration_position = pair.Value;
                         float decoration_layer = Utility.Lerp(__instance.GetFishSortRegion().Y, __instance.GetFishSortRegion().X, decoration_position.Y / 20f) - 1E-06f;
-                        if(DecorationDict.TryGetValue(item.ItemId, out var list))
+                        if(DecorationDict.TryGetValue(item.ItemId, out var dict))
                         {
-                            var data = list[Game1.random.Next(list.Count)];
+                            if(!item.modData.TryGetValue(whichKey, out var which) || !dict.TryGetValue(which, out var data))
+                            {
+                                which = dict.Keys.ToList()[Game1.random.Next(dict.Count)];
+                                item.modData[whichKey] = which;
+                                data = dict[which];
+                            }
                             var texture = SHelper.GameContent.Load<Texture2D>(data.Texture);
                             var sourceRect = data.SourceRect is null ? new Rectangle(0, 0, texture.Width, texture.Height) : data.SourceRect.Value;
                             if(data.Frames > 1)
