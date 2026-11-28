@@ -66,28 +66,27 @@ namespace SpouseSpots
 
         public static KeyValuePair<string, SpotData> GetRandomSpot(string name, FarmHouse fh)
         {
+            List<KeyValuePair<string, SpotData>> list = new();
             if (Config.Spots.TryGetValue(name, out var dict))
             {
-                var npc = Game1.getCharacterFromName(name);
-                var poss = dict.Where(kvp => kvp.Value.StartTime <= Game1.timeOfDay && kvp.Value.EndTime > Game1.timeOfDay && kvp.Value.MinFarmHouseLevel <= fh.upgradeLevel && kvp.Value.MaxFarmHouseLevel >= fh.upgradeLevel && fh.CanItemBePlacedHere(kvp.Value.Tile.ToVector2(), false, CollisionMask.All, ~CollisionMask.Objects, false, false));
-                if (poss.Any())
-                {
-                    KeyValuePair<string, SpotData> kvp = GetRandomSpot(poss);
-                    if (kvp.Key != null)
-                        return kvp;
-                }
+                list.AddRange(GetPossible(name, fh, dict));
             }
             if (SpotDict.TryGetValue(name, out dict))
             {
-                var npc = Game1.getCharacterFromName(name);
-                var poss = dict.Where(kvp => kvp.Value.StartTime <= Game1.timeOfDay && kvp.Value.EndTime > Game1.timeOfDay && kvp.Value.MinFarmHouseLevel <= fh.upgradeLevel && kvp.Value.MaxFarmHouseLevel >= fh.upgradeLevel && fh.CanItemBePlacedHere(kvp.Value.Tile.ToVector2(), false, CollisionMask.All, ~CollisionMask.Objects, false, false));
-                if (poss.Any())
-                {
-                    return GetRandomSpot(poss);
-                }
-
+                list.AddRange(GetPossible(name, fh, dict));
+            }
+            if (list.Any())
+            {
+                KeyValuePair<string, SpotData> kvp = GetRandomSpot(list);
+                if (kvp.Key != null)
+                    return kvp;
             }
             return new KeyValuePair<string, SpotData>(null, null);
+        }
+
+        private static IEnumerable<KeyValuePair<string, SpotData>> GetPossible(string name, FarmHouse fh, Dictionary<string, SpotData> dict)
+        {
+            return dict.Where(kvp => kvp.Value.StartTime <= Game1.timeOfDay && kvp.Value.EndTime > Game1.timeOfDay && kvp.Value.MinFarmHouseLevel <= fh.upgradeLevel && kvp.Value.MaxFarmHouseLevel >= fh.upgradeLevel && fh.CanItemBePlacedHere(kvp.Value.Tile.ToVector2(), false, CollisionMask.All, ~CollisionMask.Objects, false, false));
         }
 
         private static KeyValuePair<string, SpotData> GetRandomSpot(IEnumerable<KeyValuePair<string, SpotData>> poss)
